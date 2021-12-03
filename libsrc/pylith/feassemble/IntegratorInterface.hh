@@ -41,7 +41,7 @@ public:
     enum FaceEnum {
         NEGATIVE_FACE=0,
         POSITIVE_FACE=1,
-        FAULT_FACE=2,
+        COHESIVE_FACE=2,
     }; // FaceEnum
 
     // PUBLIC STRUCTS /////////////////////////////////////////////////////////////////////////////
@@ -58,7 +58,7 @@ public:
         ResidualKernels(void) :
             subfield(""),
             part(pylith::feassemble::Integrator::RESIDUAL_LHS),
-            face(FAULT_FACE),
+            face(COHESIVE_FACE),
             r0(NULL),
             r1(NULL) {}
 
@@ -92,7 +92,7 @@ public:
             subfieldTrial(""),
             subfieldBasis(""),
             part(JACOBIAN_LHS),
-            face(FAULT_FACE),
+            face(COHESIVE_FACE),
             j0(NULL),
             j1(NULL),
             j2(NULL),
@@ -221,6 +221,24 @@ public:
      */
     void computeLHSJacobianLumpedInv(pylith::topology::Field* jacobianInv,
                                      const pylith::problems::IntegrationData& integrationData);
+
+    // PRIVATE ENUM ///////////////////////////////////////////////////////////////////////////////
+private:
+
+    enum ResidualPartKey {
+        RESIDUAL_LHS_NEG=0, // LHS residual negative face.
+        RESIDUAL_LHS_POS=1, // LHS residual positive face.
+        RESIDUAL_LHS_FAULT=2, // LHS residual hybrid cell.
+        RESIDUAL_RHS_NEG=4, // RHS residual negative face.
+        RESIDUAL_RHS_POS=5, // RHS residual negative face.
+        RESIDUAL_RHS_FAULT=6, // RHS residual negative face.
+    };
+
+    enum JacobianPartKey {
+        JACOBIAN_LHS_NEG=0, // LHS Jacobian negative face.
+        JACOBIAN_LHS_POS=1, // LHS Jacobian positive face.
+        JACOBIAN_LHS_FAULT=2, // LHS Jacobian hybrid cell.
+    };
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
 private:

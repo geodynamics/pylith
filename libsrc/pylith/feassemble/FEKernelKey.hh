@@ -74,29 +74,17 @@ public:
      */
     const PetscWeakForm getWeakForm(void) const;
 
-    /** Get PETSc weak form key for residual.
+    /** Get PETSc weak form key.
      *
      * @param[in] solution Solution field.
-     * @param[in] residualPart Residual part for weak form key.
-     * @param[in] subfield Name of solution subfield associated with integration kernel.
-     *
-     * @returns PETSc weak form key.
-     */
-    PetscFormKey getPetscKey(const pylith::topology::Field& solution,
-                             pylith::feassemble::Integrator::ResidualPart residualPart,
-                             const char* subfield=NULL) const;
-
-    /** Get PETSc weak form key for Jacobian.
-     *
-     * @param[in] solution Solution field.
-     * @param[in] jacobianPart Jacobian part for weak form key.
+     * @param[in] part Residual or Jacobian part for weak form key.
      * @param[in] subfieldTrial Name of solution subfield associated with trial function.
      * @param[in] subfieldBasis Name of solution subfield associated with basis function.
      *
      * @returns PETSc weak form key.
      */
     PetscFormKey getPetscKey(const pylith::topology::Field& solution,
-                             pylith::feassemble::Integrator::JacobianPart jacobianPart,
+                             const PetscInt jacobianPart,
                              const char* subfieldTrial=NULL,
                              const char* subfieldBasis=NULL) const;
 

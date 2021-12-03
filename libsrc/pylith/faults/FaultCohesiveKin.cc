@@ -589,7 +589,7 @@ pylith::faults::FaultCohesiveKin::_setKernelsResidual(pylith::feassemble::Integr
                                      f0u_neg, f1u_neg);
         kernels[1] = ResidualKernels("displacement", integrator_t::RESIDUAL_LHS, integrator_t::POSITIVE_FACE,
                                      f0u_pos, f1u_pos);
-        kernels[2] = ResidualKernels("lagrange_multiplier_fault", integrator_t::RESIDUAL_LHS, integrator_t::FAULT_FACE,
+        kernels[2] = ResidualKernels("lagrange_multiplier_fault", integrator_t::RESIDUAL_LHS, integrator_t::COHESIVE_FACE,
                                      f0l, f1l);
 
         break;
@@ -604,7 +604,7 @@ pylith::faults::FaultCohesiveKin::_setKernelsResidual(pylith::feassemble::Integr
         const PetscBdPointFunc g1v_pos = NULL;
 
         // Fault slip constraint equation.
-        const PetscBdPointFunc f0l = pylith::fekernels::FaultCohesiveKin::f0l_a;
+        const PetscBdPointFunc f0l = pylith::fekernels::FaultCohesiveKin::f0l_u;
         const PetscBdPointFunc f1l = NULL;
 
         kernels.resize(3);
@@ -612,7 +612,7 @@ pylith::faults::FaultCohesiveKin::_setKernelsResidual(pylith::feassemble::Integr
                                      g0v_neg, g1v_neg);
         kernels[1] = ResidualKernels("velocity", integrator_t::RESIDUAL_LHS, integrator_t::POSITIVE_FACE,
                                      g0v_pos, g1v_pos);
-        kernels[2] = ResidualKernels("lagrange_multiplier_fault", integrator_t::RESIDUAL_LHS, integrator_t::FAULT_FACE,
+        kernels[2] = ResidualKernels("lagrange_multiplier_fault", integrator_t::RESIDUAL_LHS, integrator_t::COHESIVE_FACE,
                                      f0l, f1l);
 
         break;
@@ -666,7 +666,7 @@ pylith::faults::FaultCohesiveKin::_setKernelsJacobian(pylith::feassemble::Integr
         kernels[1] = JacobianKernels(nameDisplacement, nameLagrangeMultiplier, integrator_t::JACOBIAN_LHS,
                                      integrator_t::POSITIVE_FACE, Jf0ul_pos, Jf1ul_pos, Jf2ul_pos, Jf3ul_pos);
         kernels[2] = JacobianKernels(nameLagrangeMultiplier, nameDisplacement, integrator_t::JACOBIAN_LHS,
-                                     integrator_t::FAULT_FACE, Jf0lu, Jf1lu, Jf2lu, Jf3lu);
+                                     integrator_t::COHESIVE_FACE, Jf0lu, Jf1lu, Jf2lu, Jf3lu);
         break;
     } // QUASISTATIC
     case pylith::problems::Physics::DYNAMIC_IMEX: {
