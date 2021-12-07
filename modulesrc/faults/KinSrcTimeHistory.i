@@ -23,59 +23,58 @@
 
 namespace pylith {
     namespace faults {
+        class KinSrcTimeHistory : public pylith::faults::KinSrc {
+            // PUBLIC METHODS /////////////////////////////////////////////////
+public:
 
-	class KinSrcTimeHistory : public pylith::faults::KinSrc {
+            /// Default constructor.
+            KinSrcTimeHistory(void);
 
-	    // PUBLIC METHODS /////////////////////////////////////////////////
-	public :
+            /// Destructor.
+            ~KinSrcTimeHistory(void);
 
-	    /// Default constructor.
-	    KinSrcTimeHistory(void);
-      
-	    /// Destructor.
-	    ~KinSrcTimeHistory(void);
-	  
-	  /** Set time history database.
-	   *
-	   * @param[in] db Time history database.
-	   */
-	  void setTimeHistoryDB(spatialdata::spatialdb::TimeHistory* th);
-	  
-	  /** Get time history database.
-	   *
-	   * @preturns Time history database.
-	   */
-	  const spatialdata::spatialdb::TimeHistory* getTimeHistoryDB(void);
-	  
-            /** Set slip values at time t.
+            /** Set time history database.
              *
-             * @param[inout] slipLocalVec Local PETSc vector for slip values.
-             * @param[in] faultAuxiliaryField Auxiliary field for fault.
-             * @param[in] t Current time.
-             * @param[in] dt Current time step.
-             * @param[in] timeScale Time scale for nondimensionalization.
+             * @param[in] db Time history database.
              */
-            void updateSlip(PetscVec slipLocalVec,
-                            pylith::topology::Field* faultAuxiliaryField,
-                            const PylithReal t,
-                            const PylithReal dt,
-                            const PylithReal timeScale);
+            void setTimeHistoryDB(spatialdata::spatialdb::TimeHistory* th);
 
-	    // PROTECTED METHODS //////////////////////////////////////////////////
-	protected:
+            /** Get time history database.
+             *
+             * @preturns Time history database.
+             */
+            const spatialdata::spatialdb::TimeHistory* getTimeHistoryDB(void);
 
-	    /** Setup auxiliary subfields (discretization and query fns).
-	     *
-	     * @param[in] normalizer Normalizer for nondimensionalizing values.
-	     * @param[in] cs Coordinate system for problem.
-	     */
-	    void _auxiliaryFieldSetup(const spatialdata::units::Nondimensional& normalizer,
-				const spatialdata::geocoords::CoordSys* cs);
-	    
-	}; // class KinSrcTimeHistory
+            /** Get requested slip subfields at time t.
+             *
+             *@param[inout] slipLocalVec Local PETSc vector for slip, slip rate, or slip accelerationvalues.
+             *@param[in] faultAuxiliaryField Auxiliary field for fault.
+             *@param[in] t Current time.
+             *@param[in] dt Current time step.
+             *@param[in] timeScale Time scale for nondimensionalization.
+             *@param[in] bitSlipSubfields Slip subfields to compute.
+             */
+            void getSlipSubfields(PetscVec slipLocalVec,
+                                  pylith::topology::Field* faultAuxiliaryField,
+                                  const PylithReal t,
+                                  const PylithReal dt,
+                                  const PylithReal timeScale,
+                                  const int bitSlipSubfields);
+
+            // PROTECTED METHODS //////////////////////////////////////////////////
+protected:
+
+            /** Setup auxiliary subfields (discretization and query fns).
+             *
+             * @param[in] normalizer Normalizer for nondimensionalizing values.
+             * @param[in] cs Coordinate system for problem.
+             */
+            void _auxiliaryFieldSetup(const spatialdata::units::Nondimensional& normalizer,
+                                      const spatialdata::geocoords::CoordSys* cs);
+
+        }; // class KinSrcTimeHistory
 
     } // faults
 } // pylith
 
-
-// End of file 
+// End of file

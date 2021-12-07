@@ -251,12 +251,11 @@ pylith::feassemble::IntegratorInterface::setKernels(const std::vector<ResidualKe
         const PetscWeakForm weakForm = iter->second.cohesive.getWeakForm();
         std::vector<ResidualKernels> kernelsPatch(kernels);
 
-#if 0
         _IntegratorInterface::addMaterialKernels(&kernelsPatch, pylith::feassemble::IntegratorInterface::NEGATIVE_FACE,
                                                  iter->second.negative, solution, materials);
         _IntegratorInterface::addMaterialKernels(&kernelsPatch, pylith::feassemble::IntegratorInterface::POSITIVE_FACE,
                                                  iter->second.positive, solution, materials);
-#endif
+
         for (size_t i = 0; i < kernelsPatch.size(); ++i) {
             PetscFormKey key;
 

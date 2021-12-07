@@ -295,7 +295,6 @@ pylith::fekernels::Elasticity::f0l_neg(const PylithInt dim,
 
     const PylithInt spaceDim = dim + 1; // :KLUDGE: dim passed in is spaceDim-1
 
-    const PylithInt fOffN = 0;
     const PylithInt sOffLagrange = pylith::fekernels::_Elasticity::lagrange_sOff(sOff, numS);
     assert(sOffLagrange >= 0);
 
@@ -303,7 +302,7 @@ pylith::fekernels::Elasticity::f0l_neg(const PylithInt dim,
     const PylithScalar* lagrange = &s[sOffLagrange];
 
     for (PylithInt i = 0; i < spaceDim; ++i) {
-        f0[fOffN+i] += +lagrange[i] / density;
+        f0[i] += +lagrange[i] / density;
     } // for
 } // f0l_neg
 
@@ -350,7 +349,6 @@ pylith::fekernels::Elasticity::f0l_pos(const PylithInt dim,
 
     const PylithInt spaceDim = dim + 1; // :KLUDGE: dim passed in is spaceDim-1
 
-    const PylithInt fOffP = 0;
     const PylithInt sOffLagrange = pylith::fekernels::_Elasticity::lagrange_sOff(sOff, numS);
     assert(sOffLagrange >= 0);
 
@@ -358,7 +356,7 @@ pylith::fekernels::Elasticity::f0l_pos(const PylithInt dim,
     const PylithScalar* lagrange = &s[sOffLagrange];
 
     for (PylithInt i = 0; i < spaceDim; ++i) {
-        f0[fOffP+i] += +lagrange[i] / density;
+        f0[i] += +lagrange[i] / density;
     } // for
 } // f0l_pos
 
@@ -406,12 +404,10 @@ pylith::fekernels::Elasticity::f0l_neg_grav(const PylithInt dim,
 
     const PylithInt spaceDim = dim + 1; // :KLUDGE: dim passed in is spaceDim-1
 
-    const PylithInt fOffN = 0;
-
     const PylithScalar* gravityField = &a[aOff[i_gravityField]];
 
     for (PylithInt i = 0; i < spaceDim; ++i) {
-        f0[fOffN+i] += -gravityField[i];
+        f0[i] += -gravityField[i];
     } // for
 }
 
@@ -459,12 +455,10 @@ pylith::fekernels::Elasticity::f0l_pos_grav(const PylithInt dim,
 
     const PylithInt spaceDim = dim + 1; // :KLUDGE: dim passed in is spaceDim-1
 
-    const PylithInt fOffP = 0;
-
     const PylithScalar* gravityField = &a[aOff[i_gravityField]];
 
     for (PylithInt i = 0; i < spaceDim; ++i) {
-        f0[fOffP+i] += +gravityField[i];
+        f0[i] += +gravityField[i];
     } // for
 }
 
@@ -512,13 +506,11 @@ pylith::fekernels::Elasticity::f0l_neg_bodyforce(const PylithInt dim,
 
     const PylithInt spaceDim = dim + 1; // :KLUDGE: dim passed in is spaceDim-1
 
-    const PylithInt fOffN = 0;
-
     const PylithScalar density = a[aOff[i_density]];assert(density > _Elasticity::tolerance);
     const PylithScalar* bodyForce = &a[aOff[i_bodyForce]];
 
     for (PylithInt i = 0; i < spaceDim; ++i) {
-        f0[fOffN+i] += -bodyForce[i] / density;
+        f0[i] += -bodyForce[i] / density;
     } // for
 }
 
@@ -566,13 +558,11 @@ pylith::fekernels::Elasticity::f0l_pos_bodyforce(const PylithInt dim,
 
     const PylithInt spaceDim = dim + 1; // :KLUDGE: dim passed in is spaceDim-1
 
-    const PylithInt fOffP = 0;
-
     const PylithScalar density = a[aOff[i_density]];assert(density > _Elasticity::tolerance);
     const PylithScalar* bodyForce = &a[aOff[i_bodyForce]];
 
     for (PylithInt i = 0; i < spaceDim; ++i) {
-        f0[fOffP+i] += +bodyForce[i] / density;
+        f0[i] += +bodyForce[i] / density;
     } // for
 }
 
@@ -714,14 +704,12 @@ pylith::fekernels::Elasticity::Jf0ll_neg(const PylithInt dim,
 
     const PylithScalar density = a[aOff[i_density]];assert(density > _Elasticity::tolerance);
 
-    const PylithInt gOffN = 0;
-    const PylithInt ncols = 2*spaceDim;
+    const PylithInt ncols = spaceDim;
 
     for (PylithInt i = 0; i < spaceDim; ++i) {
-        Jf0[i*ncols+gOffN+i] += +1.0 / density;
+        Jf0[i*ncols+i] += +1.0 / density;
     } // for
-
-}
+} // Jf0ll_neg
 
 
 // ------------------------------------------------------------------------------------------------
@@ -763,14 +751,12 @@ pylith::fekernels::Elasticity::Jf0ll_pos(const PylithInt dim,
 
     const PylithScalar density = a[aOff[i_density]];assert(density > _Elasticity::tolerance);
 
-    const PylithInt gOffP = 0;
-    const PylithInt ncols = 2*spaceDim;
+    const PylithInt ncols = spaceDim;
 
     for (PylithInt i = 0; i < spaceDim; ++i) {
-        Jf0[i*ncols+gOffP+i] += +1.0 / density;
+        Jf0[i*ncols+i] += +1.0 / density;
     } // for
-
-}
+} // Jf0ll_pos
 
 
 // ================================================================================================
@@ -891,11 +877,9 @@ PylithInt
 pylith::fekernels::_Elasticity::lagrange_sOff(const PylithInt sOff[],
                                               const PylithInt numS) {
     PylithInt off = 0;
-    const PylithInt numCount = numS - 1; // Don't include last field (Lagrange multiplier)
-    for (PylithInt i = 0; i < numCount; ++i) {
-        off += 2*(sOff[i+1] - sOff[i]);
-    } // for
-    return off;
+    const PylithInt numHybridFields = 1;
+    const PylithInt index = numS - numHybridFields;
+    return sOff[index];
 } // lagrange_sOff
 
 

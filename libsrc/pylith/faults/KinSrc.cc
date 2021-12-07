@@ -33,6 +33,11 @@
 #include <cassert> // USES assert()
 
 // ----------------------------------------------------------------------
+const int pylith::faults::KinSrc::GET_SLIP = 0x1;
+const int pylith::faults::KinSrc::GET_SLIP_RATE = 0x2;
+const int pylith::faults::KinSrc::GET_SLIP_ACC = 0x4;
+
+// ----------------------------------------------------------------------
 // Default constructor.
 pylith::faults::KinSrc::KinSrc(void) :
     _auxiliaryFactory(new pylith::faults::KinSrcAuxiliaryFactory),
@@ -110,9 +115,9 @@ pylith::faults::KinSrc::initialize(const pylith::topology::Field& faultAuxField,
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("initialize(faultAuxField"<<faultAuxField.getLabel()<<", normalizer, cs="<<typeid(cs).name()<<")");
 
-    // Set default discretization of auxiliary subfields to match slip/slip_rate subfield in integrator auxiliary field.
+    // Set default discretization of auxiliary subfields to match slip subfield in integrator auxiliary field.
     assert(_auxiliaryFactory);
-    const char* slipFieldName = faultAuxField.hasSubfield("slip") ? "slip" : "slip_acceleration";
+    const char* slipFieldName = "slip";
     const pylith::topology::FieldBase::Discretization& discretization = faultAuxField.getSubfieldInfo(slipFieldName).fe;
     _auxiliaryFactory->setSubfieldDiscretization("default", discretization.basisOrder, discretization.quadOrder,
                                                  discretization.dimension, discretization.isFaultOnly,
@@ -140,16 +145,18 @@ pylith::faults::KinSrc::initialize(const pylith::topology::Field& faultAuxField,
 
 
 // ----------------------------------------------------------------------
-// Set slip values at time t.
+// Get requested slip subfields at time t.
 void
-pylith::faults::KinSrc::updateSlip(PetscVec slipLocalVec,
-                                   pylith::topology::Field* faultAuxiliaryField,
-                                   const PylithReal t,
-                                   const PylithReal dt,
-                                   const PylithReal timeScale) {
+pylith::faults::KinSrc::getSlipSubfields(PetscVec slipLocalVec,
+                                         pylith::topology::Field* faultAuxiliaryField,
+                                         const PylithReal t,
+                                         const PylithReal dt,
+                                         const PylithReal timeScale,
+                                         const int bitSlipSubfields) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("updateSlip(slipLocalVec="<<slipLocalVec<<", faultAuxiliaryField="<<faultAuxiliaryField
-                                                     <<", t="<<t<<", dt="<<dt<<", timeScale="<<timeScale<<")");
+    PYLITH_COMPONENT_DEBUG("getSlipSubfields="<<slipLocalVec<<", faultAuxiliaryField="<<faultAuxiliaryField
+                                              <<", t="<<t<<", dt="<<dt<<", timeScale="<<timeScale
+                                              <<", bitSlipSubfields="<<bitSlipSubfields<<")");
 
     if (!_slipFnKernel || (t < _originTime)) {
         PYLITH_METHOD_END;
@@ -160,8 +167,18 @@ pylith::faults::KinSrc::updateSlip(PetscVec slipLocalVec,
 
     _setFEConstants(*faultAuxiliaryField, dt); // Constants are attached to the auxiliary field for the slip vector.
 
-    PetscPointFunc subfieldKernels[1];
-    subfieldKernels[0] = _slipFnKernel;
+    PetscPointFunc subfieldKernels[3];
+    size_t numSubfields = 0;
+    if (bitSlipSubfields & GET_SLIP) {
+        subfieldKernels[numSubfields++] = _slipFnKernel;
+    } // if
+    if (bitSlipSubfields & GET_SLIP_RATE) {
+        subfieldKernels[numSubfields++] = _slipRateFnKernel;
+    } // if
+    if (bitSlipSubfields & GET_SLIP_ACC) {
+        subfieldKernels[numSubfields++] = _slipAccFnKernel;
+    } // if
+    assert(faultAuxiliaryField->getSubfieldNames().size() == numSubfields);
 
     // Create local vector for slip for this source.
     PetscErrorCode err = 0;
@@ -174,85 +191,7 @@ pylith::faults::KinSrc::updateSlip(PetscVec slipLocalVec,
                               slipLocalVec);PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
-} // updateSlip
-
-
-// ----------------------------------------------------------------------
-// Set slip rate values at time t.
-void
-pylith::faults::KinSrc::updateSlipRate(PetscVec slipRateLocalVec,
-                                       pylith::topology::Field* faultAuxiliaryField,
-                                       const PylithReal t,
-                                       const PylithReal dt,
-                                       const PylithReal timeScale) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("updateSlipRate(slipRate="<<slipRateLocalVec<<", faultAuxiliaryField="<<faultAuxiliaryField
-                                                     <<", t="<<t<<", dt="<<dt<<", timeScale="<<timeScale<<")");
-
-    if (!_slipRateFnKernel || (t < _originTime)) {
-        PYLITH_METHOD_END;
-    } // if
-
-    assert(slipRateLocalVec);
-    assert(_auxiliaryField);
-
-    _setFEConstants(*faultAuxiliaryField, dt); // Constants are attached to the auxiliary field for the slip rate
-                                               // vector.
-
-    PetscPointFunc subfieldKernels[1];
-    subfieldKernels[0] = _slipRateFnKernel;
-
-    // Create local vector for slip for this source.
-    PetscErrorCode err = 0;
-    PetscDM faultAuxiliaryDM = faultAuxiliaryField->getDM();
-    PetscDMLabel dmLabel = NULL;
-    PetscInt labelValue = 0;
-    err = DMSetAuxiliaryVec(faultAuxiliaryDM, dmLabel, labelValue,
-                            _auxiliaryField->getLocalVector());PYLITH_CHECK_ERROR(err);
-    err = DMProjectFieldLocal(faultAuxiliaryDM, t, slipRateLocalVec, subfieldKernels, INSERT_VALUES,
-                              slipRateLocalVec);PYLITH_CHECK_ERROR(err);
-
-    PYLITH_METHOD_END;
-} // updateSlipRate
-
-
-// ----------------------------------------------------------------------
-// Set slip acceleration values at time t.
-void
-pylith::faults::KinSrc::updateSlipAcc(PetscVec slipAccLocalVec,
-                                      pylith::topology::Field* faultAuxiliaryField,
-                                      const PylithReal t,
-                                      const PylithReal dt,
-                                      const PylithReal timeScale) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("updateSlipAcc(slipAccLocalVec="<<slipAccLocalVec<<", faultAuxiliaryField="<<faultAuxiliaryField
-                                                           <<", t="<<t<<", dt="<<dt<<", timeScale="<<timeScale<<")");
-
-    if (!_slipAccFnKernel || (t < _originTime)) {
-        PYLITH_METHOD_END;
-    } // if
-
-    assert(slipAccLocalVec);
-    assert(_auxiliaryField);
-
-    _setFEConstants(*faultAuxiliaryField, dt); // Constants are attached to the auxiliary field for the slip rate
-                                               // vector.
-
-    PetscPointFunc subfieldKernels[1];
-    subfieldKernels[0] = _slipAccFnKernel;
-
-    // Create local vector for slip for this source.
-    PetscErrorCode err = 0;
-    PetscDM faultAuxiliaryDM = faultAuxiliaryField->getDM();
-    PetscDMLabel dmLabel = NULL;
-    PetscInt labelValue = 0;
-    err = DMSetAuxiliaryVec(faultAuxiliaryDM, dmLabel, labelValue,
-                            _auxiliaryField->getLocalVector());PYLITH_CHECK_ERROR(err);
-    err = DMProjectFieldLocal(faultAuxiliaryDM, t, slipAccLocalVec, subfieldKernels, INSERT_VALUES,
-                              slipAccLocalVec);PYLITH_CHECK_ERROR(err);
-
-    PYLITH_METHOD_END;
-} // updateSlipAcc
+} // getSlipSubfields
 
 
 // ----------------------------------------------------------------------

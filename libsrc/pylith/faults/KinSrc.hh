@@ -41,15 +41,21 @@
 // KinSrc -------------------------------------------------------------
 /** @brief Kinematic earthquake source.
  *
- * KinSrc is responsible for providing the value of slip at time t
- * over a fault surface.
+ * KinSrc is responsible for providing the value of slip, slip rate, or
+ * slip acceleration at time t over a fault surface.
  *
- * The fault integrator's auxiliary field has the 'slip' subfield. The
- * auxiliary subfields in this object use the discretization from the
- * 'slip' subfield.
+ * The auxiliary subfields in this object use the discretization from the
+ * fault 'slip' auxiliary subfield.
  */
 class pylith::faults::KinSrc : public pylith::utils::PyreComponent {
     friend class TestKinSrc; // unit testing
+
+    // PUBLIC METHODS /////////////////////////////////////////////////////
+public:
+
+    static const int GET_SLIP;
+    static const int GET_SLIP_RATE;
+    static const int GET_SLIP_ACC;
 
     // PUBLIC METHODS /////////////////////////////////////////////////////
 public:
@@ -98,50 +104,22 @@ public:
                     const spatialdata::units::Nondimensional& normalizer,
                     const spatialdata::geocoords::CoordSys* cs);
 
-    /** Set slip values at time t.
+    /** Get requested slip subfields at time t.
      *
-     * @param[inout] slipLocalVec Local PETSc vector for slip values.
+     * @param[inout] slipLocalVec Local PETSc vector for slip, slip rate, or slip accelerationvalues.
      * @param[in] faultAuxiliaryField Auxiliary field for fault.
      * @param[in] t Current time.
      * @param[in] dt Current time step.
      * @param[in] timeScale Time scale for nondimensionalization.
+     * @param[in] bitSlipSubfields Slip subfields to compute.
      */
     virtual
-    void updateSlip(PetscVec slipLocalVec,
-                    pylith::topology::Field* faultAuxiliaryField,
-                    const PylithReal t,
-                    const PylithReal dt,
-                    const PylithReal timeScale);
-
-    /** Set slip rate values at time t.
-     *
-     * @param[inout] slipRateLocalVec Local PETSc vector for slip values.
-     * @param[in] faultAuxiliaryField Auxiliary field for fault.
-     * @param[in] t Current time.
-     * @param[in] dt Current time step.
-     * @param[in] timeScale Time scale for nondimensionalization.
-     */
-    virtual
-    void updateSlipRate(PetscVec slipRateLocalVec,
-                        pylith::topology::Field* faultAuxiliaryField,
-                        const PylithReal t,
-                        const PylithReal dt,
-                        const PylithReal timeScale);
-
-    /** Set slip acceleration values at time t.
-     *
-     * @param[inout] slipAccLocalVec Local PETSc vector for slip values.
-     * @param[in] faultAuxiliaryField Auxiliary field for fault.
-     * @param[in] t Current time.
-     * @param[in] dt Current time step.
-     * @param[in] timeScale Time scale for nondimensionalization.
-     */
-    virtual
-    void updateSlipAcc(PetscVec slipAccLocalVec,
-                       pylith::topology::Field* faultAuxiliaryField,
-                       const PylithReal t,
-                       const PylithReal dt,
-                       const PylithReal timeScale);
+    void getSlipSubfields(PetscVec slipLocalVec,
+                          pylith::topology::Field* faultAuxiliaryField,
+                          const PylithReal t,
+                          const PylithReal dt,
+                          const PylithReal timeScale,
+                          const int bitSlipSubfields);
 
     // PROTECTED METHODS //////////////////////////////////////////////////
 protected:

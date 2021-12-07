@@ -142,18 +142,17 @@ pylith::faults::FaultCohesiveKin::verifyConfiguration(const pylith::topology::Fi
     } // if
 
     switch (_formulation) {
-    case QUASISTATIC:
-        if (!solution.hasSubfield("displacement")) {
-            std::ostringstream msg;
-            msg << "Cannot find 'displacement' subfield in solution field for fault implementation in component '"
-                << PyreComponent::getIdentifier() << "'.";
-            throw std::runtime_error(msg.str());
-        } // if
-        break;
     case DYNAMIC_IMEX:
         if (!solution.hasSubfield("velocity")) {
             std::ostringstream msg;
             msg << "Cannot find 'velocity' subfield in solution field for fault implementation in component '"
+                << PyreComponent::getIdentifier() << "'.";
+            throw std::runtime_error(msg.str());
+        } // if
+    case QUASISTATIC:
+        if (!solution.hasSubfield("displacement")) {
+            std::ostringstream msg;
+            msg << "Cannot find 'displacement' subfield in solution field for fault implementation in component '"
                 << PyreComponent::getIdentifier() << "'.";
             throw std::runtime_error(msg.str());
         } // if
@@ -304,7 +303,8 @@ pylith::faults::FaultCohesiveKin::createAuxiliaryField(const pylith::topology::F
         _auxiliaryFactory->addSlip(); // 0
         break;
     case DYNAMIC_IMEX:
-        _auxiliaryFactory->addSlipAcceleration(); // 0
+        _auxiliaryFactory->addSlip(); // 0
+        _auxiliaryFactory->addSlipAcceleration(); // 1
         break;
     case DYNAMIC:
         PYLITH_COMPONENT_LOGICERROR("Fault implementation is incompatible with 'dynamic' time-stepping formulation. Use 'dynamic_imex'.");
@@ -361,12 +361,13 @@ pylith::faults::FaultCohesiveKin::updateAuxiliaryField(pylith::topology::Field* 
     assert(auxiliaryField);
     assert(_normalizer);
 
+    int bitSlipSubfields = 0x0;
     switch (_formulation) {
     case QUASISTATIC:
-        this->_updateSlip(auxiliaryField, t, dt);
+        bitSlipSubfields = pylith::faults::KinSrc::GET_SLIP;
         break;
     case DYNAMIC_IMEX:
-        this->_updateSlipAcceleration(auxiliaryField, t, dt);
+        bitSlipSubfields = pylith::faults::KinSrc::GET_SLIP | pylith::faults::KinSrc::GET_SLIP_ACC;
         break;
     case DYNAMIC:
         PYLITH_COMPONENT_LOGICERROR("Fault implementation is incompatible with 'dynamic' formulation. Use 'dynamic_imex'.");
@@ -374,6 +375,8 @@ pylith::faults::FaultCohesiveKin::updateAuxiliaryField(pylith::topology::Field* 
     default:
         PYLITH_COMPONENT_LOGICERROR("Unknown formulation for equations (" << _formulation << ").");
     } // switch
+
+    this->_updateSlip(auxiliaryField, t, dt, bitSlipSubfields);
 
     PYLITH_METHOD_END;
 } // updateAuxiliaryField
@@ -411,7 +414,8 @@ pylith::faults::FaultCohesiveKin::_updateKernelConstants(const PylithReal dt) {
 void
 pylith::faults::FaultCohesiveKin::_updateSlip(pylith::topology::Field* auxiliaryField,
                                               const PylithReal t,
-                                              const PylithReal dt) {
+                                              const PylithReal dt,
+                                              const int bitSlipSubfields) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("updateSlip(auxiliaryField="<<auxiliaryField<<", t="<<t<<", dt="<<dt<<")");
 
@@ -425,138 +429,51 @@ pylith::faults::FaultCohesiveKin::_updateSlip(pylith::topology::Field* auxiliary
         err = VecSet(_slipVecRupture, 0.0);PYLITH_CHECK_ERROR(err);
 
         KinSrc* src = r_iter->second;assert(src);
-        src->updateSlip(_slipVecRupture, auxiliaryField, t, dt, _normalizer->getTimeScale());
+        src->getSlipSubfields(_slipVecRupture, auxiliaryField, t, dt, _normalizer->getTimeScale(), bitSlipSubfields);
         err = VecAYPX(_slipVecTotal, 1.0, _slipVecRupture);
     } // for
 
     // Transfer slip values from local PETSc slip vector to fault auxiliary field.
     PetscInt pStart = 0, pEnd = 0;
     err = PetscSectionGetChart(auxiliaryField->getLocalSection(), &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
+    PetscInt subfieldIndices[3];
+    PetscInt numSubfields = 0;
+    if (bitSlipSubfields & KinSrc::GET_SLIP) {
+        subfieldIndices[numSubfields++] = auxiliaryField->getSubfieldInfo("slip").index;
+    } // if
+    if (bitSlipSubfields & KinSrc::GET_SLIP_RATE) {
+        subfieldIndices[numSubfields++] = auxiliaryField->getSubfieldInfo("slip_rate").index;
+    } // if
+    if (bitSlipSubfields & KinSrc::GET_SLIP_ACC) {
+        subfieldIndices[numSubfields++] = auxiliaryField->getSubfieldInfo("slip_acceleration").index;
+    } // if
 
-    pylith::topology::VecVisitorMesh auxiliaryVisitor(*auxiliaryField, "slip");
+    pylith::topology::VecVisitorMesh auxiliaryVisitor(*auxiliaryField);
     PylithScalar* auxiliaryArray = auxiliaryVisitor.localArray();
 
     const PylithScalar* slipArray = NULL;
     err = VecGetArrayRead(_slipVecTotal, &slipArray);PYLITH_CHECK_ERROR(err);
 
-    for (PetscInt p = pStart, iSlip = 0; p < pEnd; ++p) {
-        const PetscInt slipDof = auxiliaryVisitor.sectionDof(p);
-        const PetscInt slipOff = auxiliaryVisitor.sectionOffset(p);
-        for (PetscInt iDof = 0; iDof < slipDof; ++iDof, ++iSlip) {
-            auxiliaryArray[slipOff+iDof] = slipArray[iSlip];
+    for (PetscInt point = pStart, iSlip = 0; point < pEnd; ++point) {
+        for (PetscInt iSubfield = 0; iSubfield < numSubfields; ++iSubfield) {
+            const PetscInt subfieldIndex = subfieldIndices[iSubfield];
+            const PetscInt subfieldDof = auxiliaryVisitor.sectionSubfieldDof(subfieldIndex, point);
+            const PetscInt subfieldOff = auxiliaryVisitor.sectionSubfieldOffset(subfieldIndex, point);
+            for (PetscInt iDof = 0; iDof < subfieldDof; ++iDof, ++iSlip) {
+                auxiliaryArray[subfieldOff+iDof] = slipArray[iSlip];
+            } // for
         } // for
     } // for
+
     err = VecRestoreArrayRead(_slipVecTotal, &slipArray);PYLITH_CHECK_ERROR(err);
 
     pythia::journal::debug_t debug(pylith::utils::PyreComponent::getName());
     if (debug.state()) {
-        auxiliaryField->view("Fault auxiliary field after setting slip.");
+        auxiliaryField->view("Fault auxiliary field after updating slip subfields.");
     } // if
 
     PYLITH_METHOD_END;
 } // _updateSlip
-
-
-// ------------------------------------------------------------------------------------------------
-// Update slip rate subfield in auxiliary field at beginning of time step.
-void
-pylith::faults::FaultCohesiveKin::_updateSlipRate(pylith::topology::Field* auxiliaryField,
-                                                  const PylithReal t,
-                                                  const PylithReal dt) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_updateSlipRate(auxiliaryField="<<auxiliaryField<<", t="<<t<<", dt="<<dt<<")");
-
-    assert(auxiliaryField);
-    assert(_normalizer);
-
-    // Update slip rate subfield at current time step
-    PetscErrorCode err = VecSet(_slipVecTotal, 0.0);PYLITH_CHECK_ERROR(err);
-    const srcs_type::const_iterator rupturesEnd = _ruptures.end();
-    for (srcs_type::iterator r_iter = _ruptures.begin(); r_iter != rupturesEnd; ++r_iter) {
-        err = VecSet(_slipVecRupture, 0.0);PYLITH_CHECK_ERROR(err);
-
-        KinSrc* src = r_iter->second;assert(src);
-        src->updateSlipRate(_slipVecRupture, auxiliaryField, t, dt, _normalizer->getTimeScale());
-        err = VecAYPX(_slipVecTotal, 1.0, _slipVecRupture);
-    } // for
-
-    // Transfer slip values from local PETSc slip vector to fault auxiliary field.
-    PetscInt pStart = 0, pEnd = 0;
-    err = PetscSectionGetChart(auxiliaryField->getLocalSection(), &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
-
-    pylith::topology::VecVisitorMesh auxiliaryVisitor(*auxiliaryField, "slip_rate");
-    PylithScalar* auxiliaryArray = auxiliaryVisitor.localArray();
-
-    const PylithScalar* slipRateArray = NULL;
-    err = VecGetArrayRead(_slipVecTotal, &slipRateArray);PYLITH_CHECK_ERROR(err);
-
-    for (PetscInt p = pStart, iSlipRate = 0; p < pEnd; ++p) {
-        const PetscInt slipRateDof = auxiliaryVisitor.sectionDof(p);
-        const PetscInt slipRateOff = auxiliaryVisitor.sectionOffset(p);
-        for (PetscInt iDof = 0; iDof < slipRateDof; ++iDof, ++iSlipRate) {
-            auxiliaryArray[slipRateOff+iDof] = slipRateArray[iSlipRate];
-        } // for
-    } // for
-    err = VecRestoreArrayRead(_slipVecTotal, &slipRateArray);PYLITH_CHECK_ERROR(err);
-
-    pythia::journal::debug_t debug(pylith::utils::PyreComponent::getName());
-    if (debug.state()) {
-        auxiliaryField->view("Fault auxiliary field after setting slip rate.");
-    } // if
-
-    PYLITH_METHOD_END;
-} // _updateSlipRate
-
-
-// ------------------------------------------------------------------------------------------------
-// Update slip acceleration subfield in auxiliary field at beginning of time step.
-void
-pylith::faults::FaultCohesiveKin::_updateSlipAcceleration(pylith::topology::Field* auxiliaryField,
-                                                          const PylithReal t,
-                                                          const PylithReal dt) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_updateSlipAcceleration(auxiliaryField="<<auxiliaryField<<", t="<<t<<", dt="<<dt<<")");
-
-    assert(auxiliaryField);
-    assert(_normalizer);
-
-    // Update slip acceleration subfield at current time step
-    PetscErrorCode err = VecSet(_slipVecTotal, 0.0);PYLITH_CHECK_ERROR(err);
-    const srcs_type::const_iterator rupturesEnd = _ruptures.end();
-    for (srcs_type::iterator r_iter = _ruptures.begin(); r_iter != rupturesEnd; ++r_iter) {
-        err = VecSet(_slipVecRupture, 0.0);PYLITH_CHECK_ERROR(err);
-
-        KinSrc* src = r_iter->second;assert(src);
-        src->updateSlipAcc(_slipVecRupture, auxiliaryField, t, dt, _normalizer->getTimeScale());
-        err = VecAYPX(_slipVecTotal, 1.0, _slipVecRupture);
-    } // for
-
-    // Transfer slip values from local PETSc slip vector to fault auxiliary field.
-    PetscInt pStart = 0, pEnd = 0;
-    err = PetscSectionGetChart(auxiliaryField->getLocalSection(), &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
-
-    pylith::topology::VecVisitorMesh auxiliaryVisitor(*auxiliaryField, "slip_acceleration");
-    PylithScalar* auxiliaryArray = auxiliaryVisitor.localArray();
-
-    const PylithScalar* slipAccArray = NULL;
-    err = VecGetArrayRead(_slipVecTotal, &slipAccArray);PYLITH_CHECK_ERROR(err);
-
-    for (PetscInt p = pStart, iSlipAcc = 0; p < pEnd; ++p) {
-        const PetscInt slipAccDof = auxiliaryVisitor.sectionDof(p);
-        const PetscInt slipAccOff = auxiliaryVisitor.sectionOffset(p);
-        for (PetscInt iDof = 0; iDof < slipAccDof; ++iDof, ++iSlipAcc) {
-            auxiliaryArray[slipAccOff+iDof] = slipAccArray[iSlipAcc];
-        } // for
-    } // for
-    err = VecRestoreArrayRead(_slipVecTotal, &slipAccArray);PYLITH_CHECK_ERROR(err);
-
-    pythia::journal::debug_t debug(pylith::utils::PyreComponent::getName());
-    if (debug.state()) {
-        auxiliaryField->view("Fault auxiliary field after setting slip acceleration.");
-    } // if
-
-    PYLITH_METHOD_END;
-} // _updateSlipAcceleration
 
 
 // ------------------------------------------------------------------------------------------------
@@ -604,16 +521,22 @@ pylith::faults::FaultCohesiveKin::_setKernelsResidual(pylith::feassemble::Integr
         const PetscBdPointFunc g1v_pos = NULL;
 
         // Fault slip constraint equation.
-        const PetscBdPointFunc f0l = pylith::fekernels::FaultCohesiveKin::f0l_u;
-        const PetscBdPointFunc f1l = NULL;
+        const PetscBdPointFunc f0l_slip = pylith::fekernels::FaultCohesiveKin::f0l_u;
+        const PetscBdPointFunc f1l_slip = NULL;
 
-        kernels.resize(3);
+        // Fault DAE equation.
+        const PetscBdPointFunc f0l_dae = pylith::fekernels::FaultCohesiveKin::f0l_a;
+        const PetscBdPointFunc f1l_dae = NULL;
+
+        kernels.resize(4);
         kernels[0] = ResidualKernels("velocity", integrator_t::RESIDUAL_LHS, integrator_t::NEGATIVE_FACE,
                                      g0v_neg, g1v_neg);
         kernels[1] = ResidualKernels("velocity", integrator_t::RESIDUAL_LHS, integrator_t::POSITIVE_FACE,
                                      g0v_pos, g1v_pos);
         kernels[2] = ResidualKernels("lagrange_multiplier_fault", integrator_t::RESIDUAL_LHS, integrator_t::COHESIVE_FACE,
-                                     f0l, f1l);
+                                     f0l_slip, f1l_slip);
+        kernels[3] = ResidualKernels("lagrange_multiplier_fault", integrator_t::RESIDUAL_LHS, integrator_t::COHESIVE_FACE,
+                                     f0l_dae, f1l_dae);
 
         break;
     } // DYNAMIC_IMEX
@@ -670,6 +593,16 @@ pylith::faults::FaultCohesiveKin::_setKernelsJacobian(pylith::feassemble::Integr
         break;
     } // QUASISTATIC
     case pylith::problems::Physics::DYNAMIC_IMEX: {
+        const PetscBdPointJac Jf0lu = pylith::fekernels::FaultCohesiveKin::Jf0lu;
+        const PetscBdPointJac Jf1lu = NULL;
+        const PetscBdPointJac Jf2lu = NULL;
+        const PetscBdPointJac Jf3lu = NULL;
+
+        kernels.resize(1);
+        const char* nameDisplacement = "displacement";
+        const char* nameLagrangeMultiplier = "lagrange_multiplier_fault";
+        kernels[0] = JacobianKernels(nameLagrangeMultiplier, nameDisplacement, integrator_t::JACOBIAN_LHS,
+                                     integrator_t::COHESIVE_FACE, Jf0lu, Jf1lu, Jf2lu, Jf3lu);
         break;
     } // DYNAMIC_IMEX
     case pylith::problems::Physics::DYNAMIC:

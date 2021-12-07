@@ -61,23 +61,24 @@ pylith::faults::KinSrcTimeHistory::getTimeHistoryDB(void) {
 } // getTimeHistoryDB
 
 
-// ---------------------------------------------------------------------------------------------------------------------
-// Update slip subfield to current time.
+// ----------------------------------------------------------------------
+// Get requested slip subfields at time t.
 void
-pylith::faults::KinSrcTimeHistory::updateSlip(PetscVec slipLocalVec,
-                                              pylith::topology::Field* faultAuxiliaryField,
-                                              const PylithReal t,
-                                              const PylithReal dt,
-                                              const PylithReal timeScale) {
+pylith::faults::KinSrcTimeHistory::getSlipSubfields(PetscVec slipLocalVec,
+                                                    pylith::topology::Field* faultAuxiliaryField,
+                                                    const PylithReal t,
+                                                    const PylithReal dt,
+                                                    const PylithReal timeScale,
+                                                    const int bitSlipSubfields) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("updateSlip(slipLocalVec="<<slipLocalVec<<", faultAuxiliaryField="<<faultAuxiliaryField
-                                                     <<", t="<<t<<", dt="<<dt<<", timeScale="<<timeScale<<")");
-
+    PYLITH_COMPONENT_DEBUG("getSlipSubfields="<<slipLocalVec<<", faultAuxiliaryField="<<faultAuxiliaryField
+                                              <<", t="<<t<<", dt="<<dt<<", timeScale="<<timeScale
+                                              <<", bitSlipSubfields="<<bitSlipSubfields<<")");
     KinSrcAuxiliaryFactory::updateTimeHistoryValue(_auxiliaryField, t, timeScale, _dbTimeHistory);
-    KinSrc::updateSlip(slipLocalVec, faultAuxiliaryField, t, dt, timeScale);
+    KinSrc::getSlipSubfields(slipLocalVec, faultAuxiliaryField, t, dt, timeScale, bitSlipSubfields);
 
     PYLITH_METHOD_END;
-} // updateSlip
+} // getSlipSubfields
 
 
 // ---------------------------------------------------------------------------------------------------------------------

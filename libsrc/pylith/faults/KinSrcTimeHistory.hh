@@ -53,19 +53,21 @@ public:
      */
     const spatialdata::spatialdb::TimeHistory* getTimeHistoryDB(void);
 
-    /** Set slip values at time t.
+    /** Get requested slip subfields at time t.
      *
-     * @param[inout] slipLocalVec Local PETSc vector for slip values.
-     * @param[in] faultAuxiliaryField Auxiliary field for fault.
-     * @param[in] t Current time.
-     * @param[in] dt Current time step.
-     * @param[in] timeScale Time scale for nondimensionalization.
+     *@param[inout] slipLocalVec Local PETSc vector for slip, slip rate, or slip accelerationvalues.
+     *@param[in] faultAuxiliaryField Auxiliary field for fault.
+     *@param[in] t Current time.
+     *@param[in] dt Current time step.
+     *@param[in] timeScale Time scale for nondimensionalization.
+     *@param[in] bitSlipSubfields Slip subfields to compute.
      */
-    void updateSlip(PetscVec slipLocalVec,
-                    pylith::topology::Field* faultAuxiliaryField,
-                    const PylithReal t,
-                    const PylithReal dt,
-                    const PylithReal timeScale);
+    void getSlipSubfields(PetscVec slipLocalVec,
+                          pylith::topology::Field* faultAuxiliaryField,
+                          const PylithReal t,
+                          const PylithReal dt,
+                          const PylithReal timeScale,
+                          const int bitSlipSubfields);
 
     /** Slip time function kernel.
      *
