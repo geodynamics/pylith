@@ -75,9 +75,10 @@ pylith::fekernels::WellboreSource::f0p(const PylithInt dim,
 
     PylithScalar r_e = 0.28 * ( PetscSqrtReal(PetscSqrtReal(isotropicPermeability / isotropicPermeability) * PetscSqr(elementDimensions[0]) + PetscSqrtReal(isotropicPermeability/isotropicPermeability) * PetscSqr(elementDimensions[1]) ) /
                                 ( PetscPowReal(isotropicPermeability/isotropicPermeability, 0.25) + PetscPowReal(isotropicPermeability/isotropicPermeability, 0.25) ) );
-    PylithScalar W = 2.0*PETSC_PI * ( PetscSqrtReal(isotropicPermeability*isotropicPermeability)*wellboreLength / PetscLogReal(r_e / wellboreRadius) );
+    // Well Index, L**3
+    PylithScalar WI = 2.0*PETSC_PI * ( PetscSqrtReal(isotropicPermeability*isotropicPermeability)*wellboreLength / PetscLogReal(r_e / wellboreRadius) );
 
-    f0[0] += W * wellboreCharacter * (fluidDensity / fluidViscosity) * (pressure - wellborePressure);
+    f0[0] += WI * wellboreCharacter * (1.0 / fluidViscosity) * (pressure - wellborePressure);
 } // f0p
 
 
@@ -124,7 +125,7 @@ pylith::fekernels::WellboreSource::Jf0pp(const PylithInt dim,
                                 ( PetscPowReal(isotropicPermeability/isotropicPermeability, 0.25) + PetscPowReal(isotropicPermeability/isotropicPermeability, 0.25) ) );
     PylithScalar W = 2.0*PETSC_PI * ( PetscSqrtReal(isotropicPermeability*isotropicPermeability)*wellboreLength / PetscLogReal(r_e / wellboreRadius) );
 
-    Jf0[0] += W * wellboreCharacter * (fluidDensity / fluidViscosity);
+    Jf0[0] += W * wellboreCharacter * (1.0 / fluidViscosity);
 
 } // Jf0uu
 
