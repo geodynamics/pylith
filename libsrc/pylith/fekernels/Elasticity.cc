@@ -877,9 +877,11 @@ PylithInt
 pylith::fekernels::_Elasticity::lagrange_sOff(const PylithInt sOff[],
                                               const PylithInt numS) {
     PylithInt off = 0;
-    const PylithInt numHybridFields = 1;
-    const PylithInt index = numS - numHybridFields;
-    return sOff[index];
+    const PylithInt numCount = numS - 1; // Don't include Lagrange multiplier
+    for (PylithInt i = 0; i < numCount; ++i) {
+        off += 2 * (sOff[i + 1] - sOff[i]);
+    } // for
+    return off;
 } // lagrange_sOff
 
 
