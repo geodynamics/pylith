@@ -33,43 +33,6 @@
  * ======================================================================
  */
 
-namespace pylith {
-    namespace fekernels {
-        class _FaultCohesiveKin {
-public:
-
-            /** Get offset in s where velocity subfield starts.
-             *
-             * Normally this would be sOff, but sOff doesn't account for having DOF for the two sides of the fault
-             * passed to the hybrid kernels. This functions computes the correct offset into s for the velocity
-             * subfield.
-             *
-             * @param[in] sOff Offset of registered subfields in solution field [numS].
-             * @param[in] numS Number of registered subfields in solution field.
-             *
-             * @returns Offset of velocity subfield in s.
-             */
-            static PylithInt velocity_sOff(const PylithInt sOff[],
-                                           const PylithInt numS);
-
-        }; // _FaultCohesiveKin
-    } // fekernels
-} // pylith
-
-// ----------------------------------------------------------------------
-// Get offset in s where velocity subfield starts.
-PylithInt
-pylith::fekernels::_FaultCohesiveKin::velocity_sOff(const PylithInt sOff[],
-                                                    const PylithInt numS) {
-    PylithInt off = 0;
-    const PylithInt numCount = 1; // [displacement, velocity, ...]
-    for (PylithInt i = 0; i < numCount; ++i) {
-        off += 2*(sOff[i+1] - sOff[i]);
-    } // for
-    return off;
-} // velocity_sOff
-
-
 // ----------------------------------------------------------------------
 // f0 function for elasticity equation: f0u = +\lambda (neg side).
 void

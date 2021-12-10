@@ -26,10 +26,6 @@ namespace pylith {
     namespace fekernels {
         namespace _Elasticity {
             const PylithScalar tolerance = 1.0e-30;
-
-            PylithInt lagrange_sOff(const PylithInt sOff[],
-                                    const PylithInt numS);
-
         }
     }
 }
@@ -295,7 +291,7 @@ pylith::fekernels::Elasticity::f0l_neg(const PylithInt dim,
 
     const PylithInt spaceDim = dim + 1; // :KLUDGE: dim passed in is spaceDim-1
 
-    const PylithInt sOffLagrange = pylith::fekernels::_Elasticity::lagrange_sOff(sOff, numS);
+    const PylithInt sOffLagrange = sOff[numS-1];
     assert(sOffLagrange >= 0);
 
     const PylithScalar density = a[aOff[i_density]];assert(density > _Elasticity::tolerance);
@@ -349,7 +345,7 @@ pylith::fekernels::Elasticity::f0l_pos(const PylithInt dim,
 
     const PylithInt spaceDim = dim + 1; // :KLUDGE: dim passed in is spaceDim-1
 
-    const PylithInt sOffLagrange = pylith::fekernels::_Elasticity::lagrange_sOff(sOff, numS);
+    const PylithInt sOffLagrange = sOff[numS-1];
     assert(sOffLagrange >= 0);
 
     const PylithScalar density = a[aOff[i_density]];assert(density > _Elasticity::tolerance);
@@ -869,20 +865,5 @@ pylith::fekernels::Elasticity3D::cauchyStrain(const PylithInt dim,
     strain[4] = strain_yz;
     strain[5] = strain_xz;
 } // cauchyStrain
-
-
-// ----------------------------------------------------------------------
-// Get offset in s where Lagrange multiplier field starts.
-PylithInt
-pylith::fekernels::_Elasticity::lagrange_sOff(const PylithInt sOff[],
-                                              const PylithInt numS) {
-    PylithInt off = 0;
-    const PylithInt numCount = numS - 1; // Don't include Lagrange multiplier
-    for (PylithInt i = 0; i < numCount; ++i) {
-        off += 2 * (sOff[i + 1] - sOff[i]);
-    } // for
-    return off;
-} // lagrange_sOff
-
 
 // End of file
