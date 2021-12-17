@@ -320,7 +320,7 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::f0l_neg(const PylithInt
                      t, x, numConstants, constants, stressTensor);
     for (PylithInt j = 0; j < _dim; ++j) {
         for (PylithInt i = 0; i < _dim; ++i) {
-            f0[j] += density_x[i] / (density*density) * stressTensor[i*_dim+j];
+            f0[j] -= density_x[i] / (density*density) * stressTensor[i*_dim+j];
         } // for
     } // for
 } // f0l_neg
@@ -393,7 +393,7 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::f0l_pos(const PylithInt
                      t, x, numConstants, constants, stressTensor);
     for (PylithInt j = 0; j < _dim; ++j) {
         for (PylithInt i = 0; i < _dim; ++i) {
-            f0[j] -= density_x[i] / (density*density) * stressTensor[i*_dim+j];
+            f0[j] += density_x[i] / (density*density) * stressTensor[i*_dim+j];
         } // for
     } // for
 } // f0l_pos
@@ -468,7 +468,7 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::f0l_refstate_neg(const 
                               t, x, numConstants, constants, stressTensor);
     for (PylithInt j = 0; j < _dim; ++j) {
         for (PylithInt i = 0; i < _dim; ++i) {
-            f0[j] += density_x[i] / (density*density) * stressTensor[i*_dim+j];
+            f0[j] -= density_x[i] / (density*density) * stressTensor[i*_dim+j];
         } // for
     } // for
 } // f0l_refstate_neg
@@ -543,7 +543,7 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::f0l_refstate_pos(const 
                               t, x, numConstants, constants, stressTensor);
     for (PylithInt j = 0; j < _dim; ++j) {
         for (PylithInt i = 0; i < _dim; ++i) {
-            f0[j] -= density_x[i] / (density*density) * stressTensor[i*_dim+j];
+            f0[j] += density_x[i] / (density*density) * stressTensor[i*_dim+j];
         } // for
     } // for
 } // f0l_refstate_pos
@@ -612,11 +612,12 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::f1l_neg(const PylithInt
     deviatoricStress(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
                      t, x, numConstants, constants, stressTensor);
     for (PylithInt i = 0; i < _dim*_dim; ++i) {
-        f1[i] += stressTensor[i] / (density*density);
+        f1[i] -= stressTensor[i] / density;
     } // for
 } // f1l_neg
 
 
+#include <iostream>
 // ------------------------------------------------------------------------------------------------
 // f1 function for positive fault face.
 void
@@ -668,6 +669,9 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::f1l_pos(const PylithInt
     const PylithInt sOffDisp[1] = { sOff[i_disp] };
     const PylithInt sOffDisp_x[1] = { sOff_x[i_disp] };
 
+    std::cout << "SOLUTION, disp=("<< s[sOff[0]+0] << ", " << s[sOff[0]+1] << "), vel=("<<s[sOff[1]+0] << ", " << s[sOff[1]+1] << ")" << std::endl;
+    std::cout << "GRADIENT, disp=("<< s_x[sOff_x[0]+0] << ", " << s_x[sOff_x[0]+1] << ", " << s_x[sOff_x[0]+2] << ", " << s_x[sOff_x[0]+3] << "), vel=("<< s_x[sOff_x[1]+0] << ", " << s_x[sOff_x[1]+1] << ", " << s_x[sOff_x[1]+2] << ", " << s_x[sOff_x[1]+3] << ")" << std::endl;
+
     const PylithInt numAMean = 1; // Number passed to mean stress kernel.
     const PylithInt aOffMean[1] = { aOff[i_bulkModulus] };
 
@@ -680,7 +684,7 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::f1l_pos(const PylithInt
     deviatoricStress(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
                      t, x, numConstants, constants, stressTensor);
     for (PylithInt i = 0; i < _dim*_dim; ++i) {
-        f1[i] -= stressTensor[i] / (density*density);
+        f1[i] += stressTensor[i] / density;
     } // for
 } // f1l_pos
 
@@ -752,7 +756,7 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::f1l_refstate_neg(const 
     deviatoricStress_refstate(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
                               t, x, numConstants, constants, stressTensor);
     for (PylithInt i = 0; i < _dim*_dim; ++i) {
-        f1[i] += stressTensor[i] / (density*density);
+        f1[i] -= stressTensor[i] / density;
     } // for
 } // f1l_refstate_neg
 
@@ -824,7 +828,7 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::f1l_refstate_pos(const 
     deviatoricStress_refstate(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
                               t, x, numConstants, constants, stressTensor);
     for (PylithInt i = 0; i < _dim*_dim; ++i) {
-        f1[i] -= stressTensor[i] / (density*density);
+        f1[i] += stressTensor[i] / density;
     } // for
 } // f1l_refstate_pos
 
@@ -875,6 +879,7 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::Jf1lu_neg(const PylithI
     for (size_t i = 0; i < size; ++i) {
         elasticConstants[i] = 0.0;
     } // for
+    // Jf3vu returns -elasticConstants
     Jf3vu(_dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, s_tshift, x,
           numConstants, constants, elasticConstants);
 
@@ -886,7 +891,7 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::Jf1lu_neg(const PylithI
         for (PylithInt j = 0; j < _dim; ++j) {
             for (PylithInt l = 0; l < _dim; ++l) {
                 for (PylithInt k = 0; k < _dim; ++k) {
-                    Jf1[i*dim3+j*dim1+l] += density_x[k] / (density*density) * elasticConstants[i*dim3+k*dim2+j*dim1+l];
+                    Jf1[i*dim3+j*dim1+l] -= density_x[k] / (density*density) * -elasticConstants[i*dim3+k*dim2+j*dim1+l];
                 } // for`
             } // for`
         } // for`
@@ -940,6 +945,7 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::Jf1lu_pos(const PylithI
     for (size_t i = 0; i < size; ++i) {
         elasticConstants[i] = 0.0;
     } // for
+    // Jf3vu returns -elasticConstants
     Jf3vu(_dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, s_tshift, x,
           numConstants, constants, elasticConstants);
 
@@ -951,7 +957,7 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::Jf1lu_pos(const PylithI
         for (PylithInt j = 0; j < _dim; ++j) {
             for (PylithInt l = 0; l < _dim; ++l) {
                 for (PylithInt k = 0; k < _dim; ++k) {
-                    Jf1[i*dim3+j*dim1+l] -= density_x[k] / (density*density) * elasticConstants[i*dim3+k*dim2+j*dim1+l];
+                    Jf1[i*dim3+j*dim1+l] += density_x[k] / (density*density) * -elasticConstants[i*dim3+k*dim2+j*dim1+l];
                 } // for`
             } // for`
         } // for`
@@ -1002,10 +1008,11 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::Jf3lu_neg(const PylithI
     for (size_t i = 0; i < size; ++i) {
         elasticConstants[i] = 0.0;
     } // for
+    // Jf3vu returns -elasticConstants
     Jf3vu(_dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, s_tshift, x,
           numConstants, constants, elasticConstants);
     for (size_t i = 0; i < size; ++i) {
-        Jf3[i] += elasticConstants[i] / density;
+        Jf3[i] -= -elasticConstants[i] / density;
     } // for
 } // Jf3lu_neg
 
@@ -1053,10 +1060,11 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::Jf3lu_pos(const PylithI
     for (size_t i = 0; i < size; ++i) {
         elasticConstants[i] = 0.0;
     } // for
+    // Jf3vu returns -elasticConstants
     Jf3vu(_dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, s_tshift, x,
           numConstants, constants, elasticConstants);
     for (size_t i = 0; i < size; ++i) {
-        Jf3[i] -= elasticConstants[i] / density;
+        Jf3[i] += -elasticConstants[i] / density;
     } // for
 } // Jf3lu_pos
 
