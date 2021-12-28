@@ -670,7 +670,8 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::f1l_pos(const PylithInt
     const PylithInt sOffDisp_x[1] = { sOff_x[i_disp] };
 
     std::cout << "SOLUTION, disp=("<< s[sOff[0]+0] << ", " << s[sOff[0]+1] << "), vel=("<<s[sOff[1]+0] << ", " << s[sOff[1]+1] << ")" << std::endl;
-    std::cout << "GRADIENT, disp=("<< s_x[sOff_x[0]+0] << ", " << s_x[sOff_x[0]+1] << ", " << s_x[sOff_x[0]+2] << ", " << s_x[sOff_x[0]+3] << "), vel=("<< s_x[sOff_x[1]+0] << ", " << s_x[sOff_x[1]+1] << ", " << s_x[sOff_x[1]+2] << ", " << s_x[sOff_x[1]+3] << ")" << std::endl;
+    std::cout << "GRADIENT, disp=("<< s_x[sOff_x[0]+0] << ", " << s_x[sOff_x[0]+1] << ", " << s_x[sOff_x[0]+2] << ", " << s_x[sOff_x[0]+3]
+              << "), vel=("<< s_x[sOff_x[1]+0] << ", " << s_x[sOff_x[1]+1] << ", " << s_x[sOff_x[1]+2] << ", " << s_x[sOff_x[1]+3] << ")" << std::endl;
 
     const PylithInt numAMean = 1; // Number passed to mean stress kernel.
     const PylithInt aOffMean[1] = { aOff[i_bulkModulus] };

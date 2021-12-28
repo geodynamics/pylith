@@ -112,6 +112,7 @@ pylith::fekernels::FaultCohesiveKin::f0u_pos(const PylithInt dim,
 } // f0u_pos
 
 
+#include <iostream>
 // ----------------------------------------------------------------------
 // f0 function for slip constraint equation: f0\lambda = (u^+ - u^-) - d
 void
@@ -163,6 +164,7 @@ pylith::fekernels::FaultCohesiveKin::f0l_u(const PylithInt dim,
             const PylithScalar slipXY = n[i]*slip[0] + tanDir[i]*slip[1];
             f0[i] += dispP[i] - dispN[i] - slipXY;
         } // for
+        std::cout<<"t="<<t<<", slip="<<slip[1]<<", relDisp="<<dispP[1]-dispN[1]<<std::endl;
         break;
     } // case 2
     case 3: {

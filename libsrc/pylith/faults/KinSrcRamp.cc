@@ -80,6 +80,7 @@ pylith::faults::KinSrcRamp::slipFn(const PylithInt dim,
     const PylithScalar originTime = constants[i_originTime];
     const PylithScalar t0 = originTime + initiationTime;
 
+#if 0
     if (t >= t0 + riseTime) {
         for (PylithInt i = 0; i < dim; ++i) {
             slip[i] = finalSlip[i];
@@ -89,6 +90,17 @@ pylith::faults::KinSrcRamp::slipFn(const PylithInt dim,
             slip[i] = finalSlip[i] * (t - t0) / riseTime;
         } // for
     } // if/else
+#else
+    if (t >= t0 + riseTime) {
+        for (PylithInt i = 0; i < dim; ++i) {
+            slip[i] = finalSlip[i];
+        } // for
+    } else if (t >= t0) {
+        for (PylithInt i = 0; i < dim; ++i) {
+            slip[i] = finalSlip[i] * ((2.0*M_PI) * sin(2.0*M_PI*(t-t0)/riseTime) + (t-t0)/riseTime);
+        } // for
+    } // if/else
+#endif
 } // slipFn
 
 
@@ -182,6 +194,7 @@ pylith::faults::KinSrcRamp::slipAccFn(const PylithInt dim,
     const PylithScalar t0 = originTime + initiationTime;
     const PylithScalar t1 = t0 + riseTime;
 
+#if 0
     if (t <= t0) {
         for (PylithInt i = 0; i < dim; ++i) {
             slipAcc[i] = 0.0;
@@ -203,6 +216,21 @@ pylith::faults::KinSrcRamp::slipAccFn(const PylithInt dim,
             slipAcc[i] = 0.0;
         } // for
     } // else
+#else
+    if (t <= t0) {
+        for (PylithInt i = 0; i < dim; ++i) {
+            slipAcc[i] = 0.0;
+        } // for
+    } else if (t <= t0 + riseTime) {
+        for (PylithInt i = 0; i < dim; ++i) {
+            slipAcc[i] = 2.0*M_PI / (riseTime*riseTime) * finalSlip[i] * sin(2.0*M_PI*(t-t0)/riseTime);
+        } // for
+    } else {
+        for (PylithInt i = 0; i < dim; ++i) {
+            slipAcc[i] = 0.0;
+        } // for
+    }
+#endif
 } // slipAccFn
 
 
