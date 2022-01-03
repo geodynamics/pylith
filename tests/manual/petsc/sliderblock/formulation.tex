@@ -1,0 +1,92 @@
+\documentclass{article}
+
+\usepackage{amsmath}
+\usepackage{mathtools}
+\usepackage{bm}
+
+\newcommand{\trialvec}[1][]{{\vec{\psi}_\mathit{trial}^{#1}}}
+\newcommand{\trialscalar}[1][]{{\psi_\mathit{trial}^{#1}}}
+\newcommand{\basisvec}[1][]{{\vec{\psi}_\mathit{basis}^{#1}}}
+\newcommand{\basisscalar}[1][]{{\psi_\mathit{basis}^{#1}}}
+
+\newcommand{\tensor}[1]{\bm{#1}}
+
+\begin{document}
+
+\section{Dynamic Prescribed Slip Formulation}
+
+Our DAE equation is trying to enforce
+\begin{equation}
+  \dot{v}^+ - \dot{v}^- - \ddot{d} = 0,
+\end{equation}
+where $v$ is velocity and $d$ is slip.
+Our momentum equation looks like
+\begin{gather}
+  \begin{multlined}
+  \frac{\partial \vec{v}}{\partial t}
+  = M_v^{-1} \int_\Omega \trialvec[v] \cdot \vec{f}(\vec{x},t) + \nabla \trialvec[v] : -\tensor{\sigma}(\vec{u}) \, d\Omega
+  + M_v^{-1} \int_{\Gamma_\tau} \trialvec[v] \cdot \vec{\tau}(\vec{x},t) \, d\Gamma \\
+  + M_{v^+}^{-1} \int_{\Gamma_{f}} \trialvec[v^+] \cdot \left(-\vec{\lambda}(\vec{x},t)\right) \, d\Gamma
+  + M_{v^-}^{-1} \int_{\Gamma_{f}}\trialvec[v^-] \cdot \left(+\vec{\lambda}(\vec{x},t)\right) \, d\Gamma,
+\end{multlined}\\
+M_v = \mathit{Lump}\left( \int_\Omega \trialscalar[v]_i \rho(\vec{x}) \delta_{ij} \basisscalar[v]_j \, d\Omega \right).
+\end{gather}
+
+If we were to build our DAE equation from our assembled system of equations, then the equations for $\dot{v}^+$ and $\dot{v}^-$ would have the stress terms in them.
+I don't think we can form the DAE equation using only the cohesive cell and taking the limit as the volume goes to zero.
+We need the terms with the gradient in the trial function double contracted with the stress.
+
+\subsection{Slider Block Test}
+
+In our slider block test of the formulation we have:
+\begin{gather}
+   \vec{s} = [u_0, u_1, u_2, u_3, v_0, v_1, v_2, v_3, \lambda]^T \\
+   \dot{u_0} = v_0 \\
+   \dot{u_1} = v_1 \\
+   \dot{u_2} = v_2 \\
+   \dot{u_3} = v_3 \\
+   \dot{v_0} = 1/m_a * (-2*k_a*u_0 + k_a*u_1) \\
+   \dot{v_1} = 1/m_a * (k_a*u_0 - k_a*u_1 + \lambda) \\
+   \dot{v_2} = 1/m_b * (-k_b*u_2 + k_b*u_3 - \lambda) \\
+   \dot{v_3} = 1/m_b * (k_b*u_2 - 2*k_b*u_3 + k_b*u_4)
+ \end{gather}
+ Our DAE is
+ \begin{equation}
+   \dot{v_1} - \dot{v_2} - \ddot{d} = 0
+ \end{equation}
+ Substituting and collecting terms leads to
+ \begin{equation}
+   \frac{1}{m_a} \left(k_a*u_0 - k_a*u_1\right) + \frac{1}{m_b} \left(k_b*u_2 - k_b*u_3\right) + \left(\frac{1}{m_a} + \frac{1}{m_b}\right) \lambda + \ddot{d} = 0.
+ \end{equation}
+ The first two terms are equivalent to the stress terms in the continuum formulation.
+
+\subsection{Bottom Line}
+
+ We need to figure out how to compute the second integral in
+\begin{equation}
+\int_{\Gamma_f} \trialvec[v^+] \cdot \left(-\frac{1}{\rho(x)} \vec{\lambda} \right) \, d\Gamma
+  + \int_\Omega \nabla\trialvec[v^+] : \left(-\frac{1}{\rho(\vec{x})} \tensor{\sigma}(\vec{u}) \right)
+  + \trialvec[v^+] \cdot \, \left(-\frac{\nabla \rho(\vec{x})}{\rho^2} \cdot \tensor{\sigma}(\vec{u}) \right) \, d\Omega
+\end{equation}
+and
+\begin{equation}
+\int_{\Gamma_f} \trialvec[v^-] \cdot \left(+\frac{1}{\rho(x)} \vec{\lambda} \right) \, d\Gamma
+  + \int_\Omega \nabla\trialvec[v^-] : \left(-\frac{1}{\rho(\vec{x})} \tensor{\sigma}(\vec{u}) \right)
+  + \trialvec[v^-] \cdot \, \left(-\frac{\nabla \rho(\vec{x})}{\rho^2} \cdot \tensor{\sigma}(\vec{u}) \right) \, d\Omega.
+\end{equation}
+
+In PyLith v2 we use the assembled system of equations.
+This would be very messy to do in PyLith v3, because we form the RHS and LHS residuals and Jacobians independently.
+I think we may need to assume the gradients in the trial function perpendicular to the fault are zero.
+
+\section{Additional note}
+Recall that we add the slip constraint
+\begin{equation}
+  \vec{u}^+ - \vec{u}^- - \vec{d} = 0
+\end{equation}
+to the DAE to prevent the slip rate from diverging from zero.
+However, we still do not do a great job of matching the prescribed slip.
+We get oscillations in the slip about the prescribed value.
+The oscillations do decrease with the time step, but our slip time history doesn't match the prescribed slip within the solver tolerance as it does in the quasistatic case where we use the slip constraint only.
+
+\end{document}
