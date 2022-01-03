@@ -50,7 +50,7 @@ QuasistaticPrescribedSlip::_computeLHSResidual(const PetscReal t,
     const PetscScalar* u = &solutionArray[0];
     const PetscScalar lambda = solutionArray[_numDOFAll-1];
 
-    const PetscScalar d = PrescribedSlip::slip(t);
+    const PetscScalar d = SlipFnRamp::slip(t);
     const PetscScalar u4 = DisplacementBC::displacement(t);
 
     residualArray[0] = -2*_ka*u[0] + _ka*u[1];

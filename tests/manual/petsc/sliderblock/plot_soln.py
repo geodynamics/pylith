@@ -3,7 +3,7 @@
 import h5py
 import matplotlib.pyplot as pyplot
 
-fullpath = "/Users/baagaard/scratch/build/clang-3.6.0-py38/cig/pylith/tests/manual/petsc/sliderblock/sliderblock_qsfriction.h5"
+fullpath = "/Users/baagaard/scratch/build/clang-13.0/cig/pylith-debug/tests/manual/petsc/sliderblock/sliderblock.h5"
 
 h5 = h5py.File(fullpath, "r")
 t = h5["time"][:].squeeze()
@@ -22,4 +22,7 @@ pyplot.plot(t, (u[:, 2, :]-u[:, 1, :]).squeeze())
 pyplot.show()
 
 pyplot.plot(t, (v[:, 2, :]-v[:, 1, :]).squeeze())
+pyplot.show()
+
+pyplot.plot(t, l.squeeze())
 pyplot.show()

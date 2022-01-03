@@ -64,7 +64,7 @@ DynamicPrescribedSlip::_computeLHSResidual(const PetscReal t,
     const PetscScalar* udot = &solutionDotArray[0];
     const PetscScalar* vdot = &solutionDotArray[_numDOFDisp];
 
-    const PetscScalar d2 = PrescribedSlip::slipAcc(t);
+    const PetscScalar d2 = SlipFnRamp::slipAcc(t);
 
     for (size_t i = 0; i < _numDOFDisp; ++i) {
         residualArray[i] = udot[i];
@@ -74,12 +74,12 @@ DynamicPrescribedSlip::_computeLHSResidual(const PetscReal t,
     }
 
     residualArray[_numDOFAll-1] = (1.0/_ma + 1.0/_mb) * lambda
-                                  + 1.0/_ma * (_ka*u[0] - _ka*u[1])
-                                  + 1.0/_mb * (_kb*u[2] - _kb*u[3])
+      + 1.0/_ma * (_ka*u[0] - _ka*u[1])
+      + 1.0/_mb * (_kb*u[2] - _kb*u[3])
                                   + d2;
 
-    const PetscScalar d = PrescribedSlip::slip(t);
-    residualArray[_numDOFAll-1] += u[1] - u[2] + d;
+    const PetscScalar d = SlipFnRamp::slip(t);
+    residualArray[_numDOFAll-1] += 1*(u[1] - u[2] + d);
 
     err = VecRestoreArrayRead(solution, &solutionArray);CHECK_ERROR(err);
     err = VecRestoreArrayRead(solutionDot, &solutionDotArray);CHECK_ERROR(err);
@@ -103,7 +103,7 @@ DynamicPrescribedSlip::_computeRHSResidual(const PetscReal t,
     const PetscScalar* v = &solutionArray[_numDOFDisp];
     const PetscScalar lambda = solutionArray[_numDOFAll-1];
 
-    const PetscScalar u4 = DisplacementBC::displacement(t);
+    const PetscScalar u4 = 0.0;//DisplacementBC::displacement(t);
 
     for (size_t i = 0; i < _numDOFDisp; ++i) {
         residualArray[i] = v[i];
