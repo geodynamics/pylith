@@ -10,5 +10,6 @@ The PyLith manual has not yet been migrated. Please use the PDF version.
 preface.md
 intro/index.md
 install/index.md
+governingeqns/index.md
 examples/index.md
 :::

@@ -6,7 +6,7 @@ In all of our derivations, we use the notation described in {ref}`tab:notation`.
 ```{table} Mathematical notation
 :name: tab:notation
 |    **Symbol**     | **Description**             |
-|:-----------------:|:----------------------------|
+| :---------------: | :-------------------------- |
 |     $\vec{a}$     | Vector field a              |
 |   $\mathbf{a}$    | Second order tensor field a |
 |     $\vec{u}$     | Displacement vector field   |
@@ -20,8 +20,6 @@ In all of our derivations, we use the notation described in {ref}`tab:notation`.
 ```
 
 :::{toctree}
-elasticity_derivation.md
-formulation/index.md
-elasticity-infstrain/index.md
-elasticity-infstrain-prescribedslip/index.md
+elasticity-derivation.md
+petsc-formulation.md
 :::
