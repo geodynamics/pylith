@@ -38,10 +38,10 @@ import numpy
 rho_s = 2500  # kg / m**3
 rho_f = 1000  # kg / m**3
 mu_f = 0.001  # Pa*s
-G = 3.0  # Pa
-K_sg = 10.0  # Pa
+G = 6e9  # Pa
+K_sg = 10e9  # Pa
 K_fl = 2e9  # Pa
-K_d = 4.0  # Pa
+K_d = 20e9  # Pa
 # K_u = 2.6941176470588233 # Pa
 alpha = 1.0 # -
 phi = 0.2  # -
@@ -250,6 +250,19 @@ class AnalyticalSoln(object):
         strain[:, :, 3] = exy
         return strain
 
+    def initial_displacement(self, locs):
+        """Compute initial displacement at locations
+        """
+        (npts, dim) = locs.shape
+        displacement = numpy.zeros((1, npts, dim), dtype=numpy.float64)
+        x = locs[:, 0]
+        z = locs[:, 1]
+
+        displacement[0, :, 0] = 0.0  # (F*nu_u*x)/(2.*G*a)
+        displacement[0, :, 1] = 0.0  # -1.*(F*(1.-nu_u)*z)/(2.*G*a)
+
+        return displacement
+
     def initial_pressure(self, locs):
         """Compute initial pressure at locations
         """
@@ -270,7 +283,7 @@ class AnalyticalSoln(object):
         z = locs[:, 1]
         z_star = z / L
 
-        trace_strain[0, :] = -(P_0 * (1.0 - 2.0 * nu_u)) / (2.0 * G * (1.0 - nu_u))
+        trace_strain[0, :] = 0
 
         return trace_strain
 

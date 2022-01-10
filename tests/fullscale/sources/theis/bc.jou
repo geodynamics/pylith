@@ -20,16 +20,9 @@ nodeset 3 group x_pos
 nodeset 3 name "x_pos"
 
 # ----------------------------------------------------------------------
-# Create nodeset for +y edge Dirichlet
+# Create nodeset for +y edge
 # ----------------------------------------------------------------------
-group "y_pos_dir" add node in curve  2
-nodeset 4 group y_pos_dir
-nodeset 4 name "y_pos_dir"
-
-# ----------------------------------------------------------------------
-# Create nodeset for +y edge Neumann
-# ----------------------------------------------------------------------
-group "y_pos_neu" add node in curve  2
-nodeset 5 group y_pos_neu
-nodeset 5 name "y_pos_neu"
+group "y_pos" add node in curve  2
+nodeset 4 group y_pos
+nodeset 4 name "y_pos"
 
