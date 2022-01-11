@@ -37,6 +37,7 @@ QuasistaticPrescribedSlip::~QuasistaticPrescribedSlip(void) {}
 // --------------------------------------------------------------------------------------------------
 void
 QuasistaticPrescribedSlip::_computeLHSResidual(const PetscReal t,
+					       const PetscReal dt,
                                                const PetscVec solution,
                                                const PetscVec solutionDot,
                                                PetscVec residual) {
@@ -67,6 +68,7 @@ QuasistaticPrescribedSlip::_computeLHSResidual(const PetscReal t,
 // --------------------------------------------------------------------------------------------------
 void
 QuasistaticPrescribedSlip::_computeLHSJacobian(const PetscReal t,
+					       const PetscReal dt,
                                                const PetscVec solution,
                                                const PetscVec solutionDot,
                                                const PetscReal stshift,

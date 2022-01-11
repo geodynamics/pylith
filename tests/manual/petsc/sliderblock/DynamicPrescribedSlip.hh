@@ -14,15 +14,18 @@ public:
 protected:
 
     void _computeLHSResidual(const PetscReal t,
+                             const PetscReal dt,
                              const PetscVec solution,
                              const PetscVec solutionDot,
                              PetscVec residual);
 
     void _computeRHSResidual(const PetscReal t,
+                             const PetscReal dt,
                              const PetscVec solution,
                              PetscVec residual);
 
     void _computeLHSJacobian(const PetscReal t,
+			     const PetscReal dt,
                              const PetscVec solution,
                              const PetscVec solutionDot,
                              const PetscReal shift,

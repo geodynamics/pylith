@@ -166,9 +166,12 @@ Formulation::computeLHSResidual(PetscTS ts,
                                 void *context) {
     PetscFunctionBeginUser;
 
+    PetscReal dt;
+    PetscErrorCode err = TSGetTimeStep(ts, &dt);CHECK_ERROR(err);
+    
     Formulation* formulation = (Formulation*)context;assert(formulation);
     assert(formulation->_hasLHSResidual);
-    formulation->_computeLHSResidual(t, solution, solutionDot, residual);
+    formulation->_computeLHSResidual(t, dt, solution, solutionDot, residual);
 
     PetscFunctionReturn(0);
 }
@@ -183,9 +186,12 @@ Formulation::computeRHSResidual(PetscTS ts,
                                 void *context) {
     PetscFunctionBeginUser;
 
+    PetscReal dt;
+    PetscErrorCode err = TSGetTimeStep(ts, &dt);CHECK_ERROR(err);
+    
     Formulation* formulation = (Formulation*)context;assert(formulation);
     assert(formulation->_hasRHSResidual);
-    formulation->_computeRHSResidual(t, solution, residual);
+    formulation->_computeRHSResidual(t, dt, solution, residual);
 
     PetscFunctionReturn(0);
 }
@@ -203,11 +209,13 @@ Formulation::computeLHSJacobian(PetscTS ts,
                                 void *context) {
     PetscFunctionBeginUser;
 
+    PetscReal dt;
+    PetscErrorCode err = TSGetTimeStep(ts, &dt);CHECK_ERROR(err);
+    
     Formulation* formulation = (Formulation*)context;assert(formulation);
     assert(formulation->_hasLHSJacobian);
-    formulation->_computeLHSJacobian(t, solution, solutionDot, shift, jacobian, preconditioner);
+    formulation->_computeLHSJacobian(t, dt, solution, solutionDot, shift, jacobian, preconditioner);
 
-    PetscErrorCode err = 0;
     err = MatAssemblyBegin(jacobian, MAT_FINAL_ASSEMBLY);CHECK_ERROR(err);
     err = MatAssemblyEnd(jacobian, MAT_FINAL_ASSEMBLY);CHECK_ERROR(err);
     if (jacobian != preconditioner) {
@@ -229,11 +237,13 @@ Formulation::computeRHSJacobian(PetscTS ts,
                                 void *context) {
     PetscFunctionBeginUser;
 
+    PetscReal dt;
+    PetscErrorCode err = TSGetTimeStep(ts, &dt);CHECK_ERROR(err);
+    
     Formulation* formulation = (Formulation*)context;assert(formulation);
     assert(formulation->_hasRHSJacobian);
-    formulation->_computeRHSJacobian(t, solution, jacobian, preconditioner);
+    formulation->_computeRHSJacobian(t, dt, solution, jacobian, preconditioner);
 
-    PetscErrorCode err = 0;
     err = MatAssemblyBegin(jacobian, MAT_FINAL_ASSEMBLY);CHECK_ERROR(err);
     err = MatAssemblyEnd(jacobian, MAT_FINAL_ASSEMBLY);CHECK_ERROR(err);
     if (jacobian != preconditioner) {
@@ -261,6 +271,7 @@ Formulation::poststep(PetscTS ts) {
 // --------------------------------------------------------------------------------------------------
 void
 Formulation::_computeLHSResidual(const PetscReal,
+				 const PetscReal,
                                  const PetscVec,
                                  const PetscVec,
                                  PetscVec) {
@@ -271,6 +282,7 @@ Formulation::_computeLHSResidual(const PetscReal,
 // --------------------------------------------------------------------------------------------------
 void
 Formulation::_computeLHSJacobian(const PetscReal,
+				 const PetscReal,
                                  const PetscVec,
                                  const PetscVec,
                                  const PetscReal,
@@ -283,6 +295,7 @@ Formulation::_computeLHSJacobian(const PetscReal,
 // --------------------------------------------------------------------------------------------------
 void
 Formulation::_computeRHSResidual(const PetscReal,
+				 const PetscReal,
                                  const PetscVec,
                                  PetscVec) {
     throw std::logic_error("_computeRHSResidual() not implemented.");
@@ -292,6 +305,7 @@ Formulation::_computeRHSResidual(const PetscReal,
 // --------------------------------------------------------------------------------------------------
 void
 Formulation::_computeRHSJacobian(const PetscReal,
+				 const PetscReal,
                                  const PetscVec,
                                  PetscMat,
                                  PetscMat) {

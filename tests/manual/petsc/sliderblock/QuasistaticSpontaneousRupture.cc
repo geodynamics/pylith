@@ -90,6 +90,7 @@ QuasistaticSpontaneousRupture::_setSolutionBounds(PetscTS ts) {
 // --------------------------------------------------------------------------------------------------
 void
 QuasistaticSpontaneousRupture::_computeLHSResidual(const PetscReal t,
+						   const PetscReal dt,
                                                    const PetscVec solution,
                                                    const PetscVec solutionDot,
                                                    PetscVec residual) {
@@ -152,6 +153,7 @@ QuasistaticSpontaneousRupture::_computeLHSResidual(const PetscReal t,
 // --------------------------------------------------------------------------------------------------
 void
 QuasistaticSpontaneousRupture::_computeLHSJacobian(const PetscReal t,
+						   const PetscReal dt,
                                                    const PetscVec solution,
                                                    const PetscVec solutionDot,
                                                    const PetscReal stshift,

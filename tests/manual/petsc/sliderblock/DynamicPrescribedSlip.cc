@@ -44,9 +44,11 @@ DynamicPrescribedSlip::DynamicPrescribedSlip(void) {
 DynamicPrescribedSlip::~DynamicPrescribedSlip(void) {}
 
 
+#include <iostream>
 // --------------------------------------------------------------------------------------------------
 void
 DynamicPrescribedSlip::_computeLHSResidual(const PetscReal t,
+					   const PetscReal dt,
                                            const PetscVec solution,
                                            const PetscVec solutionDot,
                                            PetscVec residual) {
@@ -79,7 +81,8 @@ DynamicPrescribedSlip::_computeLHSResidual(const PetscReal t,
                                   + d2;
 
     const PetscScalar d = SlipFnRamp::slip(t);
-    residualArray[_numDOFAll-1] += 1*(u[1] - u[2] + d);
+    const PetscReal scale = std::min(1.0/dt, 1.0e+4);
+    residualArray[_numDOFAll-1] += scale * (u[1] - u[2] + d);
 
     err = VecRestoreArrayRead(solution, &solutionArray);CHECK_ERROR(err);
     err = VecRestoreArrayRead(solutionDot, &solutionDotArray);CHECK_ERROR(err);
@@ -90,6 +93,7 @@ DynamicPrescribedSlip::_computeLHSResidual(const PetscReal t,
 // --------------------------------------------------------------------------------------------------
 void
 DynamicPrescribedSlip::_computeRHSResidual(const PetscReal t,
+                                           const PetscReal dt,
                                            const PetscVec solution,
                                            PetscVec residual) {
     PetscErrorCode err = 0;
@@ -124,6 +128,7 @@ DynamicPrescribedSlip::_computeRHSResidual(const PetscReal t,
 // --------------------------------------------------------------------------------------------------
 void
 DynamicPrescribedSlip::_computeLHSJacobian(const PetscReal t,
+					   const PetscReal dt,
                                            const PetscVec solution,
                                            const PetscVec solutionDot,
                                            const PetscReal shift,
@@ -151,8 +156,9 @@ DynamicPrescribedSlip::_computeLHSJacobian(const PetscReal t,
     jacobianArray[8][3] = -_kb/_mb;
     jacobianArray[8][8] = 1.0/_ma + 1.0/_mb;
 
-    jacobianArray[8][1] += +1.0;
-    jacobianArray[8][2] += -1.0;
+    const PetscReal scale = std::min(1.0/dt, 1.0e+4);
+    jacobianArray[8][1] += +1.0 * scale;
+    jacobianArray[8][2] += -1.0 * scale;
 
     PetscErrorCode err = 0;
     err = MatSetValues(jacobian, _numDOFAll, indices, _numDOFAll, indices, &jacobianArray[0][0],

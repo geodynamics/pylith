@@ -63,17 +63,20 @@ protected:
 
     virtual
     void _computeLHSResidual(const PetscReal,
+			     const PetscReal,
                              const PetscVec,
                              const PetscVec,
                              PetscVec);
 
     virtual
     void _computeRHSResidual(const PetscReal,
+			     const PetscReal,
                              const PetscVec,
                              PetscVec);
 
     virtual
     void _computeLHSJacobian(const PetscReal,
+			     const PetscReal,
                              const PetscVec,
                              const PetscVec,
                              const PetscReal,
@@ -82,6 +85,7 @@ protected:
 
     virtual
     void _computeRHSJacobian(const PetscReal,
+			     const PetscReal,
                              const PetscVec,
                              PetscMat,
                              PetscMat);
