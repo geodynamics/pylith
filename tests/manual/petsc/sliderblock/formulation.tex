@@ -13,80 +13,69 @@
 
 \begin{document}
 
-\section{Dynamic Prescribed Slip Formulation}
+\section{Prescribed Slip}
 
-Our DAE equation is trying to enforce
+We apply conservation of momemtum,
 \begin{equation}
-  \dot{v}^+ - \dot{v}^- - \ddot{d} = 0,
+  \int_\Omega \rho(\vec{x}) \frac{\partial \vec{v}}{\partial t} \, d\Omega = \int_\Omega \vec{f}(\vec{x},t) \, d\Omega + \int_\Gamma \vec{\tau}(\vec{x},t) \, d\Gamma,
 \end{equation}
-where $v$ is velocity and $d$ is slip.
-Our momentum equation looks like
+to a fault interface $\Omega_f$ with boundaries $\Gamma_{f^+}$ and $\Gamma_{f^-}$.
+For a fault interface, the body force is zero ($\vec{f}(\vec{x},t) = \vec{0}$).
+The tractions on the positive and negative fault faces are
 \begin{gather}
-  \begin{multlined}
-  \frac{\partial \vec{v}}{\partial t}
-  = M_v^{-1} \int_\Omega \trialvec[v] \cdot \vec{f}(\vec{x},t) + \nabla \trialvec[v] : -\tensor{\sigma}(\vec{u}) \, d\Omega
-  + M_v^{-1} \int_{\Gamma_\tau} \trialvec[v] \cdot \vec{\tau}(\vec{x},t) \, d\Gamma \\
-  + M_{v^+}^{-1} \int_{\Gamma_{f}} \trialvec[v^+] \cdot \left(-\vec{\lambda}(\vec{x},t)\right) \, d\Gamma
-  + M_{v^-}^{-1} \int_{\Gamma_{f}}\trialvec[v^-] \cdot \left(+\vec{\lambda}(\vec{x},t)\right) \, d\Gamma,
-\end{multlined}\\
-M_v = \mathit{Lump}\left( \int_\Omega \trialscalar[v]_i \rho(\vec{x}) \delta_{ij} \basisscalar[v]_j \, d\Omega \right).
+  \tau^+(\vec{x},t) = \tensor{\sigma}^+ \cdot \vec{n} + \vec{\lambda} \\
+  \tau^-(\vec{x},t) = \tensor{\sigma}^- \cdot \vec{n} - \vec{\lambda},
+\end{gather}
+where $\vec{\lambda}$ is the Lagrange multiplier that corresponds to the fault traction generating the prescribed slip.
+Thus, for a fault interface, we have
+\begin{equation}
+  \int_{\Omega_f} \rho(\vec{x}) \frac{\partial \vec{v}}{\partial t} \, d\Omega = \int_{\Gamma_{f^+}} \tensor{\sigma} \cdot \vec{n} + \vec{\lambda} \, d\Gamma + \int_{\Gamma_{f^-}} \tensor{\sigma} \cdot \vec{n} - \vec{\lambda} \, d\Gamma.
+\end{equation}
+
+\subsection{Quasistatic Prescribed Slip}
+
+In the quasistatic case we neglect inertia, so we have
+\begin{equation}
+  \int_{\Gamma_{f^+}} \tensor{\sigma} \cdot \vec{n} + \vec{\lambda} \, d\Gamma + \int_{\Gamma_{f^-}} \tensor{\sigma} \cdot \vec{n} - \vec{\lambda} \, d\Gamma = 0.
+\end{equation}
+We enforce this equation on each portion of the fault interface along with our prescribed slip constraint, which leads to
+\begin{gather}
+  \tensor{\sigma} \cdot \vec{n} + \vec{\lambda} = \vec{0} \text{ on } \Gamma_{f^+}, \\
+  \tensor{\sigma} \cdot \vec{n} - \vec{\lambda} = \vec{0}\text{ on } \Gamma_{f^-}, \\
+  \vec{u}^+ - \vec{u}^- - \vec{d} = \vec{0},  
 \end{gather}
 
-If we were to build our DAE equation from our assembled system of equations, then the equations for $\dot{v}^+$ and $\dot{v}^-$ would have the stress terms in them.
-I don't think we can form the DAE equation using only the cohesive cell and taking the limit as the volume goes to zero.
-We need the terms with the gradient in the trial function double contracted with the stress.
 
-\subsection{Slider Block Test}
+\section{Dynamic Prescribed Slip}
 
-In our slider block test of the formulation we have:
+When we integrate the weak form of the momentum equation in the dynamic case, we select numerical quadrature that yields a lumped mass matrix.
+That is, we have
+\begin{equation}
+  \int_\Omega \trialvec[v] \cdot \rho(\vec{x}) \frac{\partial \vec{v}}{\partial t} \, d\Omega = M_v \frac{\partial \vec{v}}{\partial t},
+\end{equation}
+where $M_v$ is the lumped mass matrix.
+We can separate the integration of the weak form for negative and positive sides of the fault interface, which yields
 \begin{gather}
-   \vec{s} = [u_0, u_1, u_2, u_3, v_0, v_1, v_2, v_3, \lambda]^T \\
-   \dot{u_0} = v_0 \\
-   \dot{u_1} = v_1 \\
-   \dot{u_2} = v_2 \\
-   \dot{u_3} = v_3 \\
-   \dot{v_0} = 1/m_a * (-2*k_a*u_0 + k_a*u_1) \\
-   \dot{v_1} = 1/m_a * (k_a*u_0 - k_a*u_1 + \lambda) \\
-   \dot{v_2} = 1/m_b * (-k_b*u_2 + k_b*u_3 - \lambda) \\
-   \dot{v_3} = 1/m_b * (k_b*u_2 - 2*k_b*u_3 + k_b*u_4)
- \end{gather}
- Our DAE is
- \begin{equation}
-   \dot{v_1} - \dot{v_2} - \ddot{d} = 0
- \end{equation}
- Substituting and collecting terms leads to
- \begin{equation}
-   \frac{1}{m_a} \left(k_a*u_0 - k_a*u_1\right) + \frac{1}{m_b} \left(k_b*u_2 - k_b*u_3\right) + \left(\frac{1}{m_a} + \frac{1}{m_b}\right) \lambda + \ddot{d} = 0.
- \end{equation}
- The first two terms are equivalent to the stress terms in the continuum formulation.
+  M_{v^+} \frac{\partial \vec{v}^+}{\partial t} = \int_{\Gamma_{f^+}} \trialvec[\lambda] \cdot \left( \tensor{\sigma} \cdot \vec{n} + \vec{\lambda} \right) \, d\Gamma, \\
+  M_{v^-} \frac{\partial \vec{v}^-}{\partial t} = \int_{\Gamma_{f^-}} \trialvec[\lambda] \cdot \left( \tensor{\sigma} \cdot \vec{n} - \vec{\lambda} \right) \, d\Gamma.
+\end{gather}
 
-\subsection{Bottom Line}
-
- We need to figure out how to compute the second integral in
+Our constraint for prescribed slip is
 \begin{equation}
-\int_{\Gamma_f} \trialvec[v^+] \cdot \left(-\frac{1}{\rho(x)} \vec{\lambda} \right) \, d\Gamma
-  + \int_\Omega \nabla\trialvec[v^+] : \left(-\frac{1}{\rho(\vec{x})} \tensor{\sigma}(\vec{u}) \right)
-  + \trialvec[v^+] \cdot \, \left(-\frac{\nabla \rho(\vec{x})}{\rho^2} \cdot \tensor{\sigma}(\vec{u}) \right) \, d\Omega
+  \vec{u}^+ - \vec{u}^- - \vec{d} = \vec{0},
 \end{equation}
-and
+where $\vec{u}$ is the displacement vector and $\vec{d}$ is the slip vector.
+In order to match the order of the time derivative in the elasticity equation, we take the second derivative of the prescribed slip equation,
 \begin{equation}
-\int_{\Gamma_f} \trialvec[v^-] \cdot \left(+\frac{1}{\rho(x)} \vec{\lambda} \right) \, d\Gamma
-  + \int_\Omega \nabla\trialvec[v^-] : \left(-\frac{1}{\rho(\vec{x})} \tensor{\sigma}(\vec{u}) \right)
-  + \trialvec[v^-] \cdot \, \left(-\frac{\nabla \rho(\vec{x})}{\rho^2} \cdot \tensor{\sigma}(\vec{u}) \right) \, d\Omega.
+  \frac{\partial \vec{v}^+}{\partial t} - \frac{\partial \vec{v}^-}{\partial t} - \frac{\partial^2 \vec{d}}{\partial t^2} = \vec{0}.
 \end{equation}
-
-In PyLith v2 we use the assembled system of equations.
-This would be very messy to do in PyLith v3, because we form the RHS and LHS residuals and Jacobians independently.
-I think we may need to assume the gradients in the trial function perpendicular to the fault are zero.
-
-\section{Additional note}
-Recall that we add the slip constraint
+We form the weak form in the usual way,
 \begin{equation}
-  \vec{u}^+ - \vec{u}^- - \vec{d} = 0
+  \int_{\Gamma_f} \trialvec[\lambda] \cdot \left( \frac{\partial \vec{v}^+}{\partial t} - \frac{\partial \vec{v}^-}{\partial t} - \frac{\partial^2 \vec{d}}{\partial t^2} \right) \, d\Gamma = 0.
 \end{equation}
-to the DAE to prevent the slip rate from diverging from zero.
-However, we still do not do a great job of matching the prescribed slip.
-We get oscillations in the slip about the prescribed value.
-The oscillations do decrease with the time step, but our slip time history doesn't match the prescribed slip within the solver tolerance as it does in the quasistatic case where we use the slip constraint only.
+Substituting in the expressions for the time derivative of the velocity on the negative and positive sides of the fault using the weak form of our conservation of momemtum yields
+\begin{equation}
+M_{v^+}^{-1} \int_{\Gamma_f^+} \trialvec[\lambda] \cdot \left(\tensor{\sigma} \cdot \vec{n} + \vec{\lambda}\right) \, d\Gamma + M_{v^-}^{-1} \int_{\Gamma_f^-} \trialvec[\lambda] \cdot \left( -\tensor{\sigma} \cdot \vec{n} + \vec{\lambda} \right) \, d\Gamma - \int_{\Gamma_f} \trialvec[\lambda] \cdot \frac{\partial^2 \vec{d}}{\partial t^2} \, d\Gamma = \vec{0}.
+\end{equation}
 
 \end{document}
