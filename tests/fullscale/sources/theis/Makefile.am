@@ -43,7 +43,7 @@ noinst_TMP = \
 
 
 # 'export' the input files by performing a mock install
-export_datadir = $(abs_top_builddir)/tests/fullscale/poroelasticity/theis
+export_datadir = $(abs_top_builddir)/tests/fullscale/sources/theis
 export-data: $(dist_noinst_PYTHON) $(dist_noinst_DATA)
 	for f in $(dist_noinst_PYTHON) $(dist_noinst_DATA); do $(install_sh_DATA) $(srcdir)/$$f $(export_datadir); done
 
