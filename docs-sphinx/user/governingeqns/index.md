@@ -22,4 +22,5 @@ In all of our derivations, we use the notation described in {ref}`tab:notation`.
 :::{toctree}
 elasticity-derivation.md
 petsc-formulation.md
+elasticity-infstrain/index.md
 :::
