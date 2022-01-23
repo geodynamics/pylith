@@ -28,6 +28,7 @@ swig_sources = \
 	sources.i \
 	../problems/Physics.i \
 	Source.i \
+	PointForce.i \
 	WellboreSource.i \
 	../utils/PyreComponent.i
 

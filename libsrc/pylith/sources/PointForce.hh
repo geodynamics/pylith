@@ -16,29 +16,29 @@
 // ----------------------------------------------------------------------
 //
 
-/** @file libsrc/sources/PointSource.hh
+/** @file libsrc/sources/PointForce.hh
  *
- * @brief C++ class for solving pointsource equation.
+ * @brief C++ class for solving pointforce equation.
  */
 
-#if !defined(pylith_sources_pointsource_hh)
-#define pylith_sources_pointsource_hh
+#if !defined(pylith_sources_pointforce_hh)
+#define pylith_sources_pointforce_hh
 
 #include "sourcesfwd.hh" // forward declarations
 
 #include "pylith/sources/Source.hh" // ISA Source
 
-class pylith::sources::PointSource : public pylith::sources::Source {
-    friend class TestPointSource; // unit testing
+class pylith::sources::PointForce : public pylith::sources::Source {
+    friend class TestPointForce; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Default constructor.
-    PointSource(void);
+    PointForce(void);
 
     /// Destructor.
-    ~PointSource(void);
+    ~PointForce(void);
 
     /// Deallocate PETSc and local data structures.
     void deallocate(void);
@@ -89,38 +89,38 @@ protected:
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    /** Set kernels for LHS residual.
+    /** Set kernels for residual.
      *
      * @param[out] integrator Integrator for source.
      * @param[in] solution Solution field.
      */
-    void _setKernelsLHSResidual(pylith::feassemble::IntegratorDomain* integrator,
+    void _setKernelsResidual(pylith::feassemble::IntegratorDomain* integrator,
                                 const pylith::topology::Field& solution) const;
 
-    /** Set kernels for LHS Jacobian.
+    /** Set kernels for Jacobian.
      *
      * @param[out] integrator Integrator for source.
      * @param[in] solution Solution field.
      */
-    void _setKernelsLHSJacobian(pylith::feassemble::IntegratorDomain* integrator,
+    void _setKernelsJacobian(pylith::feassemble::IntegratorDomain* integrator,
                                 const pylith::topology::Field& solution) const;
 
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
     bool _useInertia; ///< Flag to include inertial term.
-    pylith::sources::AuxiliaryFactoryPointSource* _auxiliaryFactory; ///< Factory for auxiliary subfields.
+    pylith::sources::AuxiliaryFactoryPointForce* _auxiliaryFactory; ///< Factory for auxiliary subfields.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    PointSource(const PointSource&); ///< Not implemented.
-    const PointSource& operator=(const PointSource&); /// Not implemented.
+    PointForce(const PointForce&); ///< Not implemented.
+    const PointForce& operator=(const PointForce&); /// Not implemented.
 
 };
 
-// class PointSource
+// class PointForce
 
-#endif // pylith_sources_pointsource_hh
+#endif // pylith_sources_pointforce_hh
 
 // End of file

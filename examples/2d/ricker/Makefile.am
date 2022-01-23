@@ -9,15 +9,23 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2022 University of California, Davis
+# Copyright (c) 2010-2021 University of California, Davis
 #
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
 #
 
-SUBDIRS = \
-	userguide
+dist_noinst_DATA = \
+	README.md \
+	geometry.jou \
+	bc.jou \
+	mesh_tri.jou \
+	mesh_tri.exo \
+	mesh_quad.jou \
+	mesh_quad.exo \
+	pylithapp.cfg \
+	step01_ricker.cfg 
 
 # 'export' the input files by performing a mock install
 export_datadir = $(top_builddir)/examples/2d/ricker
@@ -36,4 +44,4 @@ clean-local-tmp:
 	-rm *.pyc output/*
 
 
-# End of file
+# End of file 

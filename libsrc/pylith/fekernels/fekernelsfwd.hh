@@ -74,6 +74,7 @@ namespace pylith {
         class FaultCohesiveKin;
 
         class WellboreSource;
+        class PointForce;
 
         class BoundaryDirections;
     } // fekernels

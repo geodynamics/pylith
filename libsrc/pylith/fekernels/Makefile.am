@@ -38,7 +38,8 @@ subpkginclude_HEADERS = \
 	FaultCohesiveKin.hh \
 	IsotropicLinearPoroelasticity.hh \
 	Poroelasticity.hh \
-	WellboreSource.hh
+	WellboreSource.hh \
+	PointForce.hh
 
 dist_noinst_HEADERS =
 

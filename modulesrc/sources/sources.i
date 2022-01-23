@@ -19,6 +19,7 @@
 %{
 #include "pylith/sources/Source.hh"
 #include "pylith/sources/WellboreSource.hh"
+#include "pylith/sources/PointForce.hh"
 #include "pylith/utils/arrayfwd.hh"
 %}
 %include "exception.i"

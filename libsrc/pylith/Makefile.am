@@ -88,6 +88,8 @@ libpylith_la_SOURCES = \
 	fekernels/NeumannTimeDependent.cc \
 	fekernels/AbsorbingDampers.cc \
 	fekernels/FaultCohesiveKin.cc \
+	fekernels/WellboreSource.cc \
+	fekernels/PointForce.cc \
 	materials/Material.cc \
 	materials/Elasticity.cc \
 	materials/RheologyElasticity.cc \

@@ -127,7 +127,7 @@ pylith::fekernels::WellboreSource::Jf0pp(const PylithInt dim,
 
     Jf0[0] += W * wellboreCharacter * (1.0 / fluidViscosity);
 
-} // Jf0uu
+} // Jf0pp
 
 
 // End of file

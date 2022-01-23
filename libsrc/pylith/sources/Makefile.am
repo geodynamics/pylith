@@ -22,7 +22,9 @@ include $(top_srcdir)/subpackage.am
 subpkginclude_HEADERS = \
 	Source.hh \
 	WellboreSource.hh \
+	PointForce.hh \
 	AuxiliaryFactoryWellboreSource.hh \
+	AuxiliaryFactoryPointForce.hh \
 	sourcesfwd.hh
 
 

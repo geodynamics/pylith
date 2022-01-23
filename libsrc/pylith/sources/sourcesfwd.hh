@@ -33,7 +33,9 @@ namespace pylith {
         class Source;
 
         class WellboreSource;
+        class PointForce;
         class AuxiliaryFactoryWellboreSource;
+        class AuxiliaryFactoryPointForce;
 
     } // sources
 } // pylith

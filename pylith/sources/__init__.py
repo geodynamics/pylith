@@ -21,7 +21,9 @@
 __all__ = [
     "Source",
     "AuxSubfieldsWellboreSource",
+    "AuxSubfieldsPointForce",
     "WellboreSource",
+    "PointForce",
 ]
 
 

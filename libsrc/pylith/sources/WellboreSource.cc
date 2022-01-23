@@ -144,8 +144,8 @@ pylith::sources::WellboreSource::createIntegrator(const pylith::topology::Field&
     printf("In WellboreSource end\n");
     DMView(dmSoln, NULL);
 
-    _setKernelsLHSResidual(integrator, solution);
-    _setKernelsLHSJacobian(integrator, solution);
+    _setKernelsResidual(integrator, solution);
+    _setKernelsJacobian(integrator, solution);
 
     PYLITH_METHOD_RETURN(integrator);
 } // createIntegrator
@@ -222,10 +222,10 @@ pylith::sources::WellboreSource::_getAuxiliaryFactory(void) {
 // ---------------------------------------------------------------------------------------------------------------------
 // Set kernels for LHS residual F(t,s,\dot{s}).
 void
-pylith::sources::WellboreSource::_setKernelsLHSResidual(pylith::feassemble::IntegratorDomain* integrator,
+pylith::sources::WellboreSource::_setKernelsResidual(pylith::feassemble::IntegratorDomain* integrator,
                                                         const topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_setKernelsLHSResidual(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
+    PYLITH_COMPONENT_DEBUG("_setKernelsResidual(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
 
     const spatialdata::geocoords::CoordSys* coordsys = solution.getMesh().getCoordSys();
 
@@ -255,16 +255,16 @@ pylith::sources::WellboreSource::_setKernelsLHSResidual(pylith::feassemble::Inte
     integrator->setKernelsResidual(kernels, solution);
 
     PYLITH_METHOD_END;
-} // _setKernelsLHSResidual
+} // _setKernelsResidual
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Set kernels for LHS Jacobian F(t,s,\dot{s}).
 void
-pylith::sources::WellboreSource::_setKernelsLHSJacobian(pylith::feassemble::IntegratorDomain* integrator,
+pylith::sources::WellboreSource::_setKernelsJacobian(pylith::feassemble::IntegratorDomain* integrator,
                                                         const topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_setKernelsLHSJacobian(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
+    PYLITH_COMPONENT_DEBUG("_setKernelsJacobian(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
 
     const spatialdata::geocoords::CoordSys* coordsys = solution.getMesh().getCoordSys();
 
@@ -294,7 +294,7 @@ pylith::sources::WellboreSource::_setKernelsLHSJacobian(pylith::feassemble::Inte
     integrator->setKernelsJacobian(kernels, solution);
 
     PYLITH_METHOD_END;
-} // _setKernelsLHSJacobian
+} // _setKernelsJacobian
 
 
 // End of file
