@@ -46,13 +46,13 @@ With the augmented system, we have
 % Displacement-velocity
 \frac{\partial \vec{u}}{\partial t}  = M_u^{-1} \int_\Omega {\vec{\psi}_\mathit{trial}^{u}} \cdot \vec{v} \, d\Omega, \\
 % Elasticity
-\frac{\partial \vec{v}}{\partial t} = M_v^{-1} \int_\Omega {\vec{\psi}_\mathit{trial}^{v}} \cdot \left( \vec{f}(t) + \boldsymbol{\nabla} \cdot \boldsymbol{\sigma} (\vec{u}) \right) \, d\Omega, \\
+\frac{\partial \vec{v}}{\partial t} = M_v^{-1} \left(\int_\Omega \vec{\psi}_\mathit{trial}^{v} \cdot \vec{f}(\vec{x},t) + \nabla \vec{\psi}_\mathit{trial}^{v} : -\boldsymbol{\sigma}(\vec{u}) \, d\Omega  + \int_{\Gamma_\tau} \vec{\psi}_\mathit{trial}^{v} \cdot \vec{\tau}(\vec{x},t) \, d\Gamma \right), \\
 % Mu
 M_u = \mathit{Lump}\left( \int_\Omega {\psi_\mathit{trial}^{u}}_i \delta_{ij} {\psi_\mathit{basis}^{u}}_j \, d\Omega \right), \\
 % Mv
 M_v = \mathit{Lump}\left( \int_\Omega {\psi_\mathit{trial}^{v}}_i \rho(\vec{x}) \delta_{ij} {\psi_\mathit{basis}^{v}}_j \, d\Omega \right).
 \end{gather}
-%
+
 ## Residual Pointwise Functions
 
 With explicit time stepping the PETSc TS assumes the LHS is $\dot{s}$, so we only need the RHS residual functions:
