@@ -83,7 +83,7 @@ public:
      * @returns Constraint if applicable, otherwise NULL.
      */
     virtual
-    pylith::feassemble::Constraint* createConstraint(const pylith::topology::Field& solution);
+    std::vector<pylith::feassemble::Constraint*> createConstraints(const pylith::topology::Field& solution);
 
     /** Set coordinates and names of points.
      *

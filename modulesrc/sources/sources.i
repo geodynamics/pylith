@@ -15,13 +15,16 @@
 //
 // SWIG interface
 %module sources
+
 // Header files for module C++ code
 %{
 #include "pylith/sources/Source.hh"
 #include "pylith/sources/WellboreSource.hh"
 #include "pylith/sources/PointForce.hh"
+
 #include "pylith/utils/arrayfwd.hh"
 %}
+
 %include "exception.i"
 %exception {
   try {
@@ -30,9 +33,11 @@
     SWIG_exception(SWIG_RuntimeError, err.what());
   } // try/catch
  } // exception
+
 %include "typemaps.i"
 %include "../include/scalartypemaps.i"
 %include "../include/chararray.i"
+
 // Numpy interface stuff
 %{
 #define SWIG_FILE_WITH_INIT
@@ -41,9 +46,13 @@
 %init %{
 import_array();
 %}
+
 // Interfaces
 %include "../utils/PyreComponent.i"
 %include "../problems/Physics.i"
+
 %include "Source.i"
 %include "WellboreSource.i"
+%include "PointForce.i"
+
 // End of file

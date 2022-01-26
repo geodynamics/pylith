@@ -76,8 +76,8 @@ pylith::sources::PointForce::verifyConfiguration(const pylith::topology::Field& 
     PYLITH_COMPONENT_DEBUG("verifyConfiguration(solution="<<solution.getLabel()<<")");
 
     // Verify solution contains expected fields.
-    if (!solution.hasSubfield("pressure")) {
-        throw std::runtime_error("Cannot find 'pressure' field in solution; required for 'PointForce'.");
+    if (!solution.hasSubfield("velocity")) {
+        throw std::runtime_error("Cannot find 'velocity' field in solution; required for 'PointForce'.");
     } // if
 
     PYLITH_METHOD_END;
@@ -208,7 +208,7 @@ pylith::sources::PointForce::_getAuxiliaryFactory(void) {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Set kernels for LHS residual F(t,s,\dot{s}).
+// Set kernels for RHS residual G(t,s).
 void
 pylith::sources::PointForce::_setKernelsResidual(pylith::feassemble::IntegratorDomain* integrator,
                                                         const topology::Field& solution) const {
@@ -242,6 +242,19 @@ pylith::sources::PointForce::_setKernelsResidual(pylith::feassemble::IntegratorD
 
     PYLITH_METHOD_END;
 } // _setKernelsResidual
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Set kernels for RHS Jacobian G(t,s).
+void
+pylith::sources::PointForce::_setKernelsJacobian(pylith::feassemble::IntegratorDomain* integrator,
+                                                        const topology::Field& solution) const {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("_setKernelsJacobian(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
+
+    // Default is to do nothing.
+
+    PYLITH_METHOD_END;
+} // _setKernelsJacobian
 
 
 // End of file

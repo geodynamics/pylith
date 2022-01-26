@@ -100,7 +100,7 @@ pylith::sources::AuxiliaryFactoryPointForce::addRickerTimeDelay(void) {
     description.validator = pylith::topology::FieldQuery::validatorNonnegative;
 
     _field->subfieldAdd(description, getSubfieldDiscretization(subfieldName));
-    pylith::sources::Query::shearModulusFromVM(subfieldName, this);
+    this->setSubfieldQuery(subfieldName);
 
     PYLITH_METHOD_END;
 } // addRickerTimeDelay
@@ -127,8 +127,8 @@ pylith::sources::AuxiliaryFactoryPointForce::addRickerCenterFrequency(void) {
     description.validator = pylith::topology::FieldQuery::validatorNonnegative;
 
     _field->subfieldAdd(description, getSubfieldDiscretization(subfieldName));
-    pylith::sources::Query::shearModulusFromVM(subfieldName, this);
-
+    this->setSubfieldQuery(subfieldName);
+    
     PYLITH_METHOD_END;
 } // addRickerCenterFrequency
 

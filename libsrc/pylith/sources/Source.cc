@@ -92,10 +92,14 @@ pylith::sources::Source::getDescriptiveLabel(void) const {
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Create constraint and set kernels.
-pylith::feassemble::Constraint*
-pylith::sources::Source::createConstraint(const pylith::topology::Field& solution) {
-    return NULL;
-} // createConstraint
+std::vector<pylith::feassemble::Constraint*>
+pylith::sources::Source::createConstraints(const pylith::topology::Field& solution) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("createConstraints(solution="<<solution.getLabel()<<") empty method");
+    std::vector<pylith::feassemble::Constraint*> constraintArray;
+
+    PYLITH_METHOD_RETURN(constraintArray);
+} // createConstraints
 
 
 // ------------------------------------------------------------------------------------------------

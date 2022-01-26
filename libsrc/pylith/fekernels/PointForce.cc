@@ -46,7 +46,6 @@ pylith::fekernels::PointForce::g1v(const PylithInt dim,
                                        PylithScalar g1[]) {
     assert(sOff);
     assert(s);
-    assert(s_t);
     assert(g1);
 
     // Incoming re-packed solution field.

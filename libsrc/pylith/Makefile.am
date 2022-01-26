@@ -43,8 +43,10 @@ libpylith_la_SOURCES = \
 	bc/AbsorbingDampers.cc \
 	bc/AbsorbingDampersAuxiliaryFactory.cc \
 	sources/AuxiliaryFactoryWellboreSource.cc \
+	sources/AuxiliaryFactoryPointForce.cc \
 	sources/Source.cc \
 	sources/WellboreSource.cc \
+	sources/PointForce.cc \
 	faults/FaultCohesive.cc \
 	faults/FaultCohesiveKin.cc \
 	faults/FaultCohesiveImpulses.cc \

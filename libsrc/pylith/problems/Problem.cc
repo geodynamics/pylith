@@ -508,7 +508,7 @@ pylith::problems::Problem::_createIntegrators(void) {
     const size_t numSources = _sources.size();
     const size_t numBC = _bc.size();
 
-    const size_t maxSize = numMaterials + numInterfaces + numBC;
+    const size_t maxSize = numMaterials + numInterfaces + numSources + numBC;
     _integrators.resize(maxSize);
     size_t count = 0;
 

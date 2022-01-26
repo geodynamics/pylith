@@ -71,7 +71,10 @@ class Source(Physics, ModuleSource):
         convert(sourceCoords, problem.mesh().getCoordSys(), self.reader.coordsys)
 
         # Nondimensionalize
-        sourceCoords /= problem.normalizer.lengthScale.value
+        if hasattr(problem.normalizer,'lengthScale'):
+            sourceCoords /= problem.normalizer.lengthScale.value
+        else:
+            sourceCoords /= (problem.normalizer.shearWaveSpeed.value * problem.normalizer.wavePeriod.value)
 
         ModuleSource.setPoints(self, sourceCoords, sourceNames)
         return
