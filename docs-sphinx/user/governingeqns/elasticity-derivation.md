@@ -1,4 +1,4 @@
-## Derivation of Elasticity Equation
+# Derivation of Elasticity Equation
 
 For completeness we start our discussion of the governing equations with a derivation of the elasticity equation.
 Consider domain $\Omega$ bounded by boundary $\Gamma$.
