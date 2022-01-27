@@ -74,7 +74,10 @@ namespace pylith {
         class FaultCohesiveKin;
 
         class WellboreSource;
-        class PointForce;
+
+        class RickerFunction;
+        class RickerFunctionPlaneStrain;
+        class RickerFunction3D;
 
         class BoundaryDirections;
     } // fekernels

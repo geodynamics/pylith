@@ -25,6 +25,8 @@ subpkginclude_HEADERS = \
 	PointForce.hh \
 	AuxiliaryFactoryWellboreSource.hh \
 	AuxiliaryFactoryPointForce.hh \
+	AuxiliaryFactoryRickerFunction.hh \
+	RickerFunction.hh \
 	sourcesfwd.hh
 
 

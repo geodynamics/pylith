@@ -80,13 +80,13 @@ pylith::sources::AuxiliaryFactoryPointForce::addMomentTensor(void) { // momentTe
 } // addMomentTensor
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Add time delay of Ricker source time function to auxiliary fields.
+// Add time delay of source time function to auxiliary fields.
 void
-pylith::sources::AuxiliaryFactoryPointForce::addRickerTimeDelay(void) {
+pylith::sources::AuxiliaryFactoryPointForce::addTimeDelay(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addRickerTimeDelay(void)");
+    PYLITH_JOURNAL_DEBUG("addTimeDelay(void)");
 
-    const char* subfieldName = "ricker_time_delay";
+    const char* subfieldName = "time_delay";
 
     pylith::topology::Field::Description description;
     const PylithReal timeScale = _normalizer->getTimeScale();
@@ -103,33 +103,6 @@ pylith::sources::AuxiliaryFactoryPointForce::addRickerTimeDelay(void) {
     this->setSubfieldQuery(subfieldName);
 
     PYLITH_METHOD_END;
-} // addRickerTimeDelay
-
-// End of file
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Add center frequency of Ricker source time function to auxiliary fields.
-void
-pylith::sources::AuxiliaryFactoryPointForce::addRickerCenterFrequency(void) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addRickerCenterFrequency(void)");
-
-    const char* subfieldName = "ricker_center_frequency";
-
-    pylith::topology::Field::Description description;
-    description.label = subfieldName;
-    description.alias = subfieldName;
-    description.vectorFieldType = pylith::topology::Field::SCALAR;
-    description.numComponents = 1;
-    description.componentNames.resize(1);
-    description.componentNames[0] = subfieldName;
-    description.scale = 1.0;
-    description.validator = pylith::topology::FieldQuery::validatorNonnegative;
-
-    _field->subfieldAdd(description, getSubfieldDiscretization(subfieldName));
-    this->setSubfieldQuery(subfieldName);
-    
-    PYLITH_METHOD_END;
-} // addRickerCenterFrequency
+} // addTimeDelay
 
 // End of file

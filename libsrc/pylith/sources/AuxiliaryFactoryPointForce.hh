@@ -45,10 +45,7 @@ public:
     void addMomentTensor(void);
 
     /// Add fluid viscosity subfield to auxiliary subfields.
-    void addRickerTimeDelay(void);
-
-    /// Add isotropic permeability subfield to auxiliary subfields.
-    void addRickerCenterFrequency(void);
+    void addTimeDelay(void);
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:

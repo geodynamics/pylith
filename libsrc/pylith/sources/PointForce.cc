@@ -20,13 +20,12 @@
 
 #include "pylith/sources/PointForce.hh" // implementation of object methods
 
+#include "pylith/sources/SourceTimeFunctionPointForce.hh" // HASA SourceTimeFunctionPointSource
 #include "pylith/sources/AuxiliaryFactoryPointForce.hh" // USES AuxiliaryFactoryPointForce
 #include "pylith/feassemble/IntegratorDomain.hh" // USES IntegratorDomain
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field::SubfieldInfo
 #include "pylith/topology/FieldOps.hh" // USES FieldOps
-
-#include "pylith/fekernels/PointForce.hh" // USES PointForce kernels
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
@@ -45,8 +44,7 @@ typedef pylith::feassemble::Integrator::JacobianPart JacobianPart;
 // ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::sources::PointForce::PointForce(void) :
-    _useInertia(false),
-    _auxiliaryFactory(new pylith::sources::AuxiliaryFactoryPointForce) {
+    _sourceTimeFunction(NULL) {
     pylith::utils::PyreComponent::setName("pointforce");
 } // constructor
 
@@ -64,8 +62,23 @@ void
 pylith::sources::PointForce::deallocate(void) {
     Source::deallocate();
 
-    delete _auxiliaryFactory;_auxiliaryFactory = NULL;
+    _sourceTimeFunction = NULL;
 } // deallocate
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Set source time function.
+void
+pylith::sources::PointForce::setSourceTimeFunction(pylith::sources::SourceTimeFunctionPointForce* const sourceTimeFunction) {
+    _sourceTimeFunction = sourceTimeFunction;
+} // setSourceTimeFunction
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Get bulk source time function.
+pylith::sources::SourceTimeFunctionPointForce*
+pylith::sources::PointForce::getSourceTimeFunction(void) const {
+    return _sourceTimeFunction;
+} // getSourceTimeFunction
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -146,6 +159,8 @@ pylith::sources::PointForce::createIntegrator(const pylith::topology::Field& sol
 
     _setKernelsResidual(integrator, solution);
     _setKernelsJacobian(integrator, solution);
+    _setKernelsUpdateStateVars(integrator, solution);
+    _setKernelsDerivedField(integrator, solution);
 
     PYLITH_METHOD_RETURN(integrator);
 } // createIntegrator
@@ -162,14 +177,18 @@ pylith::sources::PointForce::createAuxiliaryField(const pylith::topology::Field&
     pylith::topology::Field* auxiliaryField = new pylith::topology::Field(domainMesh);assert(auxiliaryField);
     auxiliaryField->setLabel("PointForce auxiliary field");
 
+    assert(_sourceTimeFunction);
+    pylith::sources::AuxiliaryFactoryPointForce* auxiliaryFactory = _sourceTimeFunction->getAuxiliaryFactory();assert(auxiliaryFactory);
+
     assert(_normalizer);
-    _auxiliaryFactory->initialize(auxiliaryField, *_normalizer, domainMesh.getDimension());
+    auxiliaryFactory->initialize(auxiliaryField, *_normalizer, domainMesh.getDimension());
 
     // :ATTENTION: The order for adding subfields must match the order of the auxiliary fields in the FE kernels.
 
-    _auxiliaryFactory->addMomentTensor(); // 0
-    _auxiliaryFactory->addRickerTimeDelay(); // 1
-    _auxiliaryFactory->addRickerCenterFrequency(); // 2 
+    auxiliaryFactory->addMomentTensor(); // 0
+    auxiliaryFactory->addTimeDelay(); // 1
+
+    _sourceTimeFunction->addAuxiliarySubfields();
 
     auxiliaryField->subfieldsSetup();
     auxiliaryField->createDiscretization();
@@ -177,8 +196,8 @@ pylith::sources::PointForce::createAuxiliaryField(const pylith::topology::Field&
     auxiliaryField->allocate();
     auxiliaryField->createOutputVector();
 
-    assert(_auxiliaryFactory);
-    _auxiliaryFactory->setValuesFromDB();
+    assert(auxiliaryFactory);
+    auxiliaryFactory->setValuesFromDB();
 
     // Debug option
     auxiliaryField->view("Point auxiliary field.");
@@ -203,8 +222,25 @@ pylith::sources::PointForce::createDerivedField(const pylith::topology::Field& s
 // Get auxiliary factory associated with physics.
 pylith::feassemble::AuxiliaryFactory*
 pylith::sources::PointForce::_getAuxiliaryFactory(void) {
-    return _auxiliaryFactory;
+    assert(_sourceTimeFunction);
+    return _sourceTimeFunction->getAuxiliaryFactory();    
 } // _getAuxiliaryFactory
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Update kernel constants.
+void
+pylith::sources::PointForce::_updateKernelConstants(const PylithReal dt) {
+    assert(_sourceTimeFunction);
+    _sourceTimeFunction->updateKernelConstants(&_kernelConstants, dt);
+} // _updateKernelConstants
+
+
+// // ---------------------------------------------------------------------------------------------------------------------
+// // Get derived factory associated with physics.
+// pylith::topology::FieldFactory*
+// pylith::sources::PointForce::_getDerivedFactory(void) {
+//     return _derivedFactory;
+// } // _getDerivedFactory
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -227,7 +263,7 @@ pylith::sources::PointForce::_setKernelsResidual(pylith::feassemble::IntegratorD
     case DYNAMIC: {
         // Velocity
         const PetscPointFunc g0v = NULL;
-        const PetscPointFunc g1v = pylith::fekernels::PointForce::g1v;
+        const PetscPointFunc g1v = _sourceTimeFunction->getKernelg1v_explicit(coordsys);
 
         kernels.resize(1);
         kernels[0] = ResidualKernels("velocity",  pylith::feassemble::Integrator::RESIDUAL_RHS, g0v, g1v);        
@@ -256,5 +292,36 @@ pylith::sources::PointForce::_setKernelsJacobian(pylith::feassemble::IntegratorD
     PYLITH_METHOD_END;
 } // _setKernelsJacobian
 
+// ---------------------------------------------------------------------------------------------------------------------
+// Set kernels for computing updated state variables in auxiliary field.
+void
+pylith::sources::PointForce::_setKernelsUpdateStateVars(pylith::feassemble::IntegratorDomain* integrator,
+                                                          const topology::Field& solution) const {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("_setKernelsUpdateStateVars(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
+
+    const spatialdata::geocoords::CoordSys* coordsys = solution.getMesh().getCoordSys();
+    assert(coordsys);
+
+    std::vector<ProjectKernels> kernels;
+    _sourceTimeFunction->addKernelsUpdateStateVars(&kernels, coordsys);
+
+    integrator->setKernelsUpdateStateVars(kernels);
+
+    PYLITH_METHOD_END;
+} // _setKernelsUpdateStateVars
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Set kernels for computing derived field.
+void
+pylith::sources::PointForce::_setKernelsDerivedField(pylith::feassemble::IntegratorDomain* integrator,
+                                                       const topology::Field& solution) const {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("_setKernelsDerivedField(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
+
+    // Default is to do nothing.
+
+    PYLITH_METHOD_END;
+} // _setKernelsDerivedField
 
 // End of file

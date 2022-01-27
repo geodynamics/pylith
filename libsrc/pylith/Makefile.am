@@ -44,9 +44,12 @@ libpylith_la_SOURCES = \
 	bc/AbsorbingDampersAuxiliaryFactory.cc \
 	sources/AuxiliaryFactoryWellboreSource.cc \
 	sources/AuxiliaryFactoryPointForce.cc \
+	sources/AuxiliaryFactoryRickerFunction.cc \
 	sources/Source.cc \
 	sources/WellboreSource.cc \
 	sources/PointForce.cc \
+	sources/RickerFunction.cc \
+	sources/SourceTimeFunctionPointForce.cc \
 	faults/FaultCohesive.cc \
 	faults/FaultCohesiveKin.cc \
 	faults/FaultCohesiveImpulses.cc \

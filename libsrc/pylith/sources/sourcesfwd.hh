@@ -32,10 +32,16 @@ namespace pylith {
         // New stuff
         class Source;
 
-        class WellboreSource;
         class PointForce;
-        class AuxiliaryFactoryWellboreSource;
         class AuxiliaryFactoryPointForce;
+        
+        class SourceTimeFunctionPointForce;
+        class RickerFunction;
+        class AuxiliaryFactoryRickerFunction;
+
+        class WellboreSource;        
+        class AuxiliaryFactoryWellboreSource;
+        
 
     } // sources
 } // pylith

@@ -43,6 +43,18 @@ public:
     /// Deallocate PETSc and local data structures.
     void deallocate(void);
 
+    /** Set source time function.
+     *
+     * @param[in] sourceTimeFunction Source time function for point force.
+     */
+    void setSourceTimeFunction(pylith::sources::SourceTimeFunctionPointForce* const sourceTimeFunction);
+
+    /** Get source time function.
+     *
+     * @returns Source time function for point force.
+     */
+    pylith::sources::SourceTimeFunctionPointForce* getSourceTimeFunction(void) const;    
+
     /** Verify configuration is acceptable.
      *
      * @param[in] solution Solution field.
@@ -86,6 +98,12 @@ protected:
      */
     pylith::feassemble::AuxiliaryFactory* _getAuxiliaryFactory(void);
 
+    /** Update kernel constants.
+     *
+     * @param[in] dt Current time step.
+     */
+    void _updateKernelConstants(const PylithReal dt);
+
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
@@ -105,11 +123,27 @@ private:
     void _setKernelsJacobian(pylith::feassemble::IntegratorDomain* integrator,
                                 const pylith::topology::Field& solution) const;
 
+    /** Set kernels for computing updated state variables in auxiliary field.
+     *
+     * @param[out] integrator Integrator for material.
+     * @param[in] solution Solution field.
+     */
+    void _setKernelsUpdateStateVars(pylith::feassemble::IntegratorDomain* integrator,
+                                    const pylith::topology::Field& solution) const;
+
+    /** Set kernels for computing derived field.
+     *
+     * @param[out] integrator Integrator for material.
+     * @param[in] solution Solution field.
+     */
+    void _setKernelsDerivedField(pylith::feassemble::IntegratorDomain* integrator,
+                                 const pylith::topology::Field& solution) const;
+
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    bool _useInertia; ///< Flag to include inertial term.
-    pylith::sources::AuxiliaryFactoryPointForce* _auxiliaryFactory; ///< Factory for auxiliary subfields.
+    pylith::sources::SourceTimeFunctionPointForce* _sourceTimeFunction; ///< Source time function for point force.
+    // pylith::sources::DerivedFactoryPointForce* _derivedFactory; ///< Factory for creating derived fields.    
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
