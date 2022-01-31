@@ -25,7 +25,7 @@
 #define pylith_sources_auxiliaryfactoryrickerfunction_hh
 
 #include "sourcesfwd.hh" // forward declarations
-#include "pylith/sources/AuxiliaryFactoryPointForce.hh" // ISA AuxiliaryFactory
+#include "pylith/sources/AuxiliaryFactoryPointForce.hh" // ISA AuxiliaryFactoryPointForce
 
 class pylith::sources::AuxiliaryFactoryRickerFunction : public pylith::sources::AuxiliaryFactoryPointForce {
     friend class TestAuxiliaryFactoryRickerFunction; // unit testing

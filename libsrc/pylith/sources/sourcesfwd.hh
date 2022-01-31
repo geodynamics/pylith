@@ -34,6 +34,7 @@ namespace pylith {
 
         class PointForce;
         class AuxiliaryFactoryPointForce;
+        class DerivedFactoryPointForce;
         
         class SourceTimeFunctionPointForce;
         class RickerFunction;

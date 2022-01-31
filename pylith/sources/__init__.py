@@ -22,8 +22,10 @@ __all__ = [
     "Source",
     "AuxSubfieldsWellboreSource",
     "AuxSubfieldsPointForce",
+    "AuxSubfieldsRickerFunction",
     "WellboreSource",
     "PointForce",
+    "RickerFunction",
 ]
 
 

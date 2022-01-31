@@ -44,6 +44,7 @@ libpylith_la_SOURCES = \
 	bc/AbsorbingDampersAuxiliaryFactory.cc \
 	sources/AuxiliaryFactoryWellboreSource.cc \
 	sources/AuxiliaryFactoryPointForce.cc \
+	sources/DerivedFactoryPointForce.cc \
 	sources/AuxiliaryFactoryRickerFunction.cc \
 	sources/Source.cc \
 	sources/WellboreSource.cc \
@@ -94,7 +95,7 @@ libpylith_la_SOURCES = \
 	fekernels/AbsorbingDampers.cc \
 	fekernels/FaultCohesiveKin.cc \
 	fekernels/WellboreSource.cc \
-	fekernels/PointForce.cc \
+	fekernels/RickerFunction.cc \
 	materials/Material.cc \
 	materials/Elasticity.cc \
 	materials/RheologyElasticity.cc \

@@ -36,6 +36,10 @@ pylith::sources::AuxiliaryFactoryRickerFunction::AuxiliaryFactoryRickerFunction(
     GenericComponent::setName("auxiliaryfactoryrickerfunction");
 } // constructor
 
+// ---------------------------------------------------------------------------------------------------------------------
+// Destructor.
+pylith::sources::AuxiliaryFactoryRickerFunction::~AuxiliaryFactoryRickerFunction(void) {}
+
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Add center frequency of Ricker source time function to auxiliary fields.

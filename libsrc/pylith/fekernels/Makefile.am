@@ -39,7 +39,7 @@ subpkginclude_HEADERS = \
 	IsotropicLinearPoroelasticity.hh \
 	Poroelasticity.hh \
 	WellboreSource.hh \
-	PointForce.hh
+	RickerFunction.hh
 
 dist_noinst_HEADERS =
 

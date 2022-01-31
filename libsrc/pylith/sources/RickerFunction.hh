@@ -59,7 +59,7 @@ public:
      *
      * @param[in] coordsys Coordinate system.
      *
-     * @return LHS residual kernel for stress.
+     * @return residual kernel for g1v.
      */
     PetscPointFunc getKernelg1v_explicit(const spatialdata::geocoords::CoordSys* coordsys) const;
 
@@ -78,4 +78,4 @@ private:
 
 #endif // pylith_materials_rickerfunction_hh
 
-// End of file
+// End of file 

@@ -13,15 +13,15 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file pylith/sources/AuxSubieldsPointForce.py
+# @file pylith/sources/AuxSubfieldsRickerFunction.py
 #
-# @brief Python container for pointforce equation subfields.
+# @brief Python container for RickerFunction equation subfields.
 
 from pylith.utils.PetscComponent import PetscComponent
 
 
-class AuxSubfieldsPointForce(PetscComponent):
-    """Python container for pointforce equation subfields.
+class AuxSubfieldsRickerFunction(PetscComponent):
+    """Python container for RickerFunction equation subfields.
 
     FACTORY: auxiliary_subfields
     """
@@ -30,15 +30,12 @@ class AuxSubfieldsPointForce(PetscComponent):
 
     from pylith.topology.Subfield import Subfield
 
-    momentTensor = pythia.pyre.inventory.facility("moment_tensor", family="auxiliary_subfield", factory=Subfield)
-    momentTensor.meta['tip'] = "Moment tensor subfield."
-
-    TimeDelay = pythia.pyre.inventory.facility("time_delay", family="auxiliary_subfield", factory=Subfield)
-    TimeDelay.meta['tip'] = "time delay subfield."
+    rickerCenterFrequency = pythia.pyre.inventory.facility("ricker_center_frequency", family="auxiliary_subfield", factory=Subfield)
+    rickerCenterFrequency.meta['tip'] = "Ricker center frequency subfield."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
-    def __init__(self, name="auxsubfieldspointforce"):
+    def __init__(self, name="auxsubfieldsrickerfunction"):
         """Constructor.
         """
         PetscComponent.__init__(self, name, facility="auxiliary_subfields")
@@ -54,9 +51,9 @@ class AuxSubfieldsPointForce(PetscComponent):
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def auxiliary_subfields():
-    """Factory associated with AuxSubfieldsPointForce.
+    """Factory associated with AuxSubfieldsRickerFunction.
     """
-    return AuxSubfieldsPointForce()
+    return AuxSubfieldsRickerFunction()
 
 
 # End of file

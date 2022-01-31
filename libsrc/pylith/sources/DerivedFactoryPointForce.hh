@@ -1,0 +1,61 @@
+// -*- C++ -*-
+//
+// ----------------------------------------------------------------------
+//
+// Brad T. Aagaard, U.S. Geological Survey
+// Charles A. Williams, GNS Science
+// Matthew G. Knepley, University at Buffalo
+//
+// This code was developed as part of the Computational Infrastructure
+// for Geodynamics (http://geodynamics.org).
+//
+// Copyright (c) 2010-2021 University of California, Davis
+//
+// See LICENSE.md for license information.
+//
+// ----------------------------------------------------------------------
+//
+
+/** @file libsrc/sources/DerivedFactoryPointForce.hh
+ *
+ * @brief C++ helper class for setting up derived subfields for elastic sources.
+ */
+
+#if !defined(pylith_sources_derivedfactorypointforce_hh)
+#define pylith_sources_derivedfactorypointforce_hh
+
+#include "sourcesfwd.hh" // forward declarations
+#include "pylith/topology/FieldFactory.hh" // ISA AuxiliaryFactory
+
+class pylith::sources::DerivedFactoryPointForce : public pylith::topology::FieldFactory {
+    friend class TestDerivedFactoryPointForce; // unit testing
+
+    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
+public:
+
+    /// Default constructor.
+    DerivedFactoryPointForce(void);
+
+    /// Destructor.
+    virtual ~DerivedFactoryPointForce(void);
+
+    /// Add Cauchy stress subfield to derived field.
+    void addCauchyStress(void);
+
+    /// Add Cauchy (infinitesimal) strain subfield to derived field.
+    void addCauchyStrain(void);
+
+    /// Add subfields using discretizations provided.
+    void addSubfields(void);
+
+    // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
+private:
+
+    DerivedFactoryPointForce(const DerivedFactoryPointForce &); ///< Not implemented.
+    const DerivedFactoryPointForce& operator=(const DerivedFactoryPointForce&); ///< Not implemented
+
+}; // class DerivedFactoryPointForce
+
+#endif // pylith_materials_derivedfactorypointforce_hh
+
+// End of file

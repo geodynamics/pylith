@@ -22,6 +22,7 @@
 
 #include "pylith/sources/SourceTimeFunctionPointForce.hh" // HASA SourceTimeFunctionPointSource
 #include "pylith/sources/AuxiliaryFactoryPointForce.hh" // USES AuxiliaryFactoryPointForce
+#include "pylith/sources/DerivedFactoryPointForce.hh" // USES DerivedFactoryPointForce
 #include "pylith/feassemble/IntegratorDomain.hh" // USES IntegratorDomain
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field::SubfieldInfo
@@ -44,7 +45,8 @@ typedef pylith::feassemble::Integrator::JacobianPart JacobianPart;
 // ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::sources::PointForce::PointForce(void) :
-    _sourceTimeFunction(NULL) {
+    _sourceTimeFunction(NULL),
+    _derivedFactory(new pylith::sources::DerivedFactoryPointForce) {
     pylith::utils::PyreComponent::setName("pointforce");
 } // constructor
 
@@ -62,6 +64,7 @@ void
 pylith::sources::PointForce::deallocate(void) {
     Source::deallocate();
 
+    delete _derivedFactory;_derivedFactory = NULL;
     _sourceTimeFunction = NULL;
 } // deallocate
 
@@ -235,12 +238,12 @@ pylith::sources::PointForce::_updateKernelConstants(const PylithReal dt) {
 } // _updateKernelConstants
 
 
-// // ---------------------------------------------------------------------------------------------------------------------
-// // Get derived factory associated with physics.
-// pylith::topology::FieldFactory*
-// pylith::sources::PointForce::_getDerivedFactory(void) {
-//     return _derivedFactory;
-// } // _getDerivedFactory
+// ---------------------------------------------------------------------------------------------------------------------
+// Get derived factory associated with physics.
+pylith::topology::FieldFactory*
+pylith::sources::PointForce::_getDerivedFactory(void) {
+    return _derivedFactory;
+} // _getDerivedFactory
 
 
 // ---------------------------------------------------------------------------------------------------------------------

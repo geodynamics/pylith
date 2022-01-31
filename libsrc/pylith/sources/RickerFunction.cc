@@ -83,7 +83,7 @@ pylith::sources::RickerFunction::addAuxiliarySubfields(void) {
 PetscPointFunc
 pylith::sources::RickerFunction::getKernelg1v_explicit(const spatialdata::geocoords::CoordSys* coordsys) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("getKernelg1v_explicti(coordsys="<<typeid(coordsys).name()<<")");
+    PYLITH_COMPONENT_DEBUG("getKernelg1v_explicit(coordsys="<<typeid(coordsys).name()<<")");
 
     const int spaceDim = coordsys->getSpaceDim();
     PetscPointFunc g1v =

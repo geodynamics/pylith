@@ -104,6 +104,12 @@ protected:
      */
     void _updateKernelConstants(const PylithReal dt);
 
+    /** Get derived factory associated with physics.
+     *
+     * @return Derived factory for physics object.
+     */
+    pylith::topology::FieldFactory* _getDerivedFactory(void);
+
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
@@ -143,7 +149,7 @@ private:
 private:
 
     pylith::sources::SourceTimeFunctionPointForce* _sourceTimeFunction; ///< Source time function for point force.
-    // pylith::sources::DerivedFactoryPointForce* _derivedFactory; ///< Factory for creating derived fields.    
+    pylith::sources::DerivedFactoryPointForce* _derivedFactory; ///< Factory for creating derived fields.    
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
