@@ -36,6 +36,18 @@ public:
             /// Deallocate PETSc and local data structures.
             void deallocate(void);
 
+            /** Set source time function.
+                *
+                * @param[in] sourceTimeFunction Source time function for point force.
+                */
+            void setSourceTimeFunction(pylith::sources::SourceTimeFunctionPointForce* const sourceTimeFunction);
+
+            /** Get source time function.
+                *
+                * @returns Source time function for point force.
+                */
+            pylith::sources::SourceTimeFunctionPointForce* getSourceTimeFunction(void) const;
+
             /** Verify configuration is acceptable.
              *
              * @param[in] solution Solution field.

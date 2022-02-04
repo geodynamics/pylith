@@ -51,8 +51,10 @@ class PointForce(Source, ModulePointForce):
     def preinitialize(self, problem):
         """Setup source.
         """
+        self.source_time_function.preinitialize(problem)
         Source.preinitialize(self, problem)
 
+        self.source_time_function.addAuxiliarySubfields(self, problem)
 
         return
 
@@ -60,6 +62,7 @@ class PointForce(Source, ModulePointForce):
         """Create handle to C++ PointForce.
         """
         ModulePointForce.__init__(self)
+        ModulePointForce.setSourceTimeFunction(self, self.source_time_function)  # Material sets auxiliary db in source_time_function.
         return
 
 

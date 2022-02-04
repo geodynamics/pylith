@@ -15,8 +15,7 @@
 #
 # @file pylith/sources/RickerFunction.py
 #
-# @brief Python material for isotropic, linearly elastic, plane
-# strain material.
+# @brief Python source time functiof for a ricker wavelet.
 #
 # Factory: pointforce_sourcetimefunction
 
