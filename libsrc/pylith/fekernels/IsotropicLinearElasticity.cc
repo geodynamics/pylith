@@ -279,9 +279,9 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::f0l_neg(const PylithInt
 
     // Incoming solution fields.
     const PylithInt i_disp = 0;
+    const PylithInt i_lagrange = 2;
 
     // Incoming auxiliary fields.
-    const PylithInt i_density = 0;
     const PylithInt i_shearModulus = numA-2;
     const PylithInt i_bulkModulus = numA-1;
 
@@ -290,18 +290,15 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::f0l_neg(const PylithInt
     assert(numA >= 3);
     assert(sOff);
     assert(sOff[i_disp] >= 0);
+    assert(sOff[i_lagrange] >= 0);
     assert(sOff_x);
     assert(sOff_x[i_disp] >= 0);
     assert(aOff);
-    assert(aOff[i_density] >= 0);
     assert(aOff[i_shearModulus] >= 0);
     assert(aOff[i_bulkModulus] >= 0);
-    assert(aOff_x);
-    assert(aOff_x[i_density] >= 0);
     assert(f0);
 
-    const PylithScalar density = a[aOff[i_density]];assert(density > 0.0);
-    const PylithScalar* density_x = &a_x[aOff_x[i_density]];
+    const PylithScalar* lagrange = &s[sOff[i_lagrange]];
 
     const PylithInt _numS = 1; // Number passed on to stress kernels.
     const PylithInt sOffDisp[1] = { sOff[i_disp] };
@@ -318,9 +315,10 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::f0l_neg(const PylithInt
                t, x, numConstants, constants, stressTensor);
     deviatoricStress(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
                      t, x, numConstants, constants, stressTensor);
-    for (PylithInt j = 0; j < _dim; ++j) {
-        for (PylithInt i = 0; i < _dim; ++i) {
-            f0[j] -= density_x[i] / (density*density) * stressTensor[i*_dim+j];
+    for (PylithInt i = 0; i < _dim; ++i) {
+        f0[i] += lagrange[i];
+        for (PylithInt j = 0; j < _dim; ++j) {
+            f0[i] -= n[j] * stressTensor[j*_dim+i];
         } // for
     } // for
 } // f0l_neg
@@ -352,9 +350,9 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::f0l_pos(const PylithInt
 
     // Incoming solution fields.
     const PylithInt i_disp = 0;
+    const PylithInt i_lagrange = 2;
 
     // Incoming auxiliary fields.
-    const PylithInt i_density = 0;
     const PylithInt i_shearModulus = numA-2;
     const PylithInt i_bulkModulus = numA-1;
 
@@ -363,18 +361,15 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::f0l_pos(const PylithInt
     assert(numA >= 3);
     assert(sOff);
     assert(sOff[i_disp] >= 0);
+    assert(sOff[i_lagrange] >= 0);
     assert(sOff_x);
     assert(sOff_x[i_disp] >= 0);
     assert(aOff);
-    assert(aOff[i_density] >= 0);
     assert(aOff[i_shearModulus] >= 0);
     assert(aOff[i_bulkModulus] >= 0);
-    assert(aOff_x);
-    assert(aOff_x[i_density] >= 0);
     assert(f0);
 
-    const PylithScalar density = a[aOff[i_density]];assert(density > 0.0);
-    const PylithScalar* density_x = &a_x[aOff_x[i_density]];
+    const PylithScalar* lagrange = &s[sOff[i_lagrange]];
 
     const PylithInt _numS = 1; // Number passed on to stress kernels.
     const PylithInt sOffDisp[1] = { sOff[i_disp] };
@@ -391,9 +386,10 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::f0l_pos(const PylithInt
                t, x, numConstants, constants, stressTensor);
     deviatoricStress(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
                      t, x, numConstants, constants, stressTensor);
-    for (PylithInt j = 0; j < _dim; ++j) {
-        for (PylithInt i = 0; i < _dim; ++i) {
-            f0[j] += density_x[i] / (density*density) * stressTensor[i*_dim+j];
+    for (PylithInt i = 0; i < _dim; ++i) {
+        f0[i] += lagrange[i];
+        for (PylithInt j = 0; j < _dim; ++j) {
+            f0[i] += n[j] * stressTensor[j*_dim+i];
         } // for
     } // for
 } // f0l_pos
@@ -425,9 +421,9 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::f0l_refstate_neg(const 
 
     // Incoming solution fields.
     const PylithInt i_disp = 0;
+    const PylithInt i_lagrange = 2;
 
     // Incoming auxiliary fields.
-    const PylithInt i_density = 0;
     const PylithInt i_rstress = numA-4;
     const PylithInt i_rstrain = numA-3;
     const PylithInt i_shearModulus = numA-2;
@@ -438,18 +434,17 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::f0l_refstate_neg(const 
     assert(numA >= 4);
     assert(sOff);
     assert(sOff[i_disp] >= 0);
+    assert(sOff[i_lagrange] >= 0);
     assert(sOff_x);
     assert(sOff_x[i_disp] >= 0);
     assert(aOff);
-    assert(aOff[i_density] >= 0);
     assert(aOff[i_shearModulus] >= 0);
     assert(aOff[i_bulkModulus] >= 0);
     assert(aOff[i_rstress] >= 0);
     assert(aOff[i_rstrain] >= 0);
     assert(f0);
 
-    const PylithScalar density = a[aOff[i_density]];assert(density > 0.0);
-    const PylithScalar* density_x = &a_x[aOff_x[i_density]];
+    const PylithScalar* lagrange = &s[sOff[i_lagrange]];
 
     const PylithInt _numS = 1; // Number passed on to stress kernels.
     const PylithInt sOffDisp[1] = { sOff[i_disp] };
@@ -466,9 +461,10 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::f0l_refstate_neg(const 
                         t, x, numConstants, constants, stressTensor);
     deviatoricStress_refstate(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
                               t, x, numConstants, constants, stressTensor);
-    for (PylithInt j = 0; j < _dim; ++j) {
-        for (PylithInt i = 0; i < _dim; ++i) {
-            f0[j] -= density_x[i] / (density*density) * stressTensor[i*_dim+j];
+    for (PylithInt i = 0; i < _dim; ++i) {
+        f0[i] += lagrange[i];
+        for (PylithInt j = 0; j < _dim; ++j) {
+            f0[i] -= n[j] * stressTensor[j*_dim+i];
         } // for
     } // for
 } // f0l_refstate_neg
@@ -500,9 +496,9 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::f0l_refstate_pos(const 
 
     // Incoming solution fields.
     const PylithInt i_disp = 0;
+    const PylithInt i_lagrange = 0;
 
     // Incoming auxiliary fields.
-    const PylithInt i_density = 0;
     const PylithInt i_rstress = numA-4;
     const PylithInt i_rstrain = numA-3;
     const PylithInt i_shearModulus = numA-2;
@@ -513,18 +509,17 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::f0l_refstate_pos(const 
     assert(numA >= 4);
     assert(sOff);
     assert(sOff[i_disp] >= 0);
+    assert(sOff[i_lagrange] >= 0);
     assert(sOff_x);
     assert(sOff_x[i_disp] >= 0);
     assert(aOff);
-    assert(aOff[i_density] >= 0);
     assert(aOff[i_shearModulus] >= 0);
     assert(aOff[i_bulkModulus] >= 0);
     assert(aOff[i_rstress] >= 0);
     assert(aOff[i_rstrain] >= 0);
     assert(f0);
 
-    const PylithScalar density = a[aOff[i_density]];assert(density > 0.0);
-    const PylithScalar* density_x = &a_x[aOff_x[i_density]];
+    const PylithScalar* lagrange = &s[sOff[i_lagrange]];
 
     const PylithInt _numS = 1; // Number passed on to stress kernels.
     const PylithInt sOffDisp[1] = { sOff[i_disp] };
@@ -541,297 +536,13 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::f0l_refstate_pos(const 
                         t, x, numConstants, constants, stressTensor);
     deviatoricStress_refstate(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
                               t, x, numConstants, constants, stressTensor);
-    for (PylithInt j = 0; j < _dim; ++j) {
-        for (PylithInt i = 0; i < _dim; ++i) {
-            f0[j] += density_x[i] / (density*density) * stressTensor[i*_dim+j];
+    for (PylithInt i = 0; i < _dim; ++i) {
+        f0[i] += lagrange[i];
+        for (PylithInt j = 0; j < _dim; ++j) {
+            f0[i] += n[j] * stressTensor[j*_dim+i];
         } // for
     } // for
 } // f0l_refstate_pos
-
-
-// ------------------------------------------------------------------------------------------------
-// f1 function for negative fault face.
-void
-pylith::fekernels::IsotropicLinearElasticityPlaneStrain::f1l_neg(const PylithInt dim,
-                                                                 const PylithInt numS,
-                                                                 const PylithInt numA,
-                                                                 const PylithInt sOff[],
-                                                                 const PylithInt sOff_x[],
-                                                                 const PylithScalar s[],
-                                                                 const PylithScalar s_t[],
-                                                                 const PylithScalar s_x[],
-                                                                 const PylithInt aOff[],
-                                                                 const PylithInt aOff_x[],
-                                                                 const PylithScalar a[],
-                                                                 const PylithScalar a_t[],
-                                                                 const PylithScalar a_x[],
-                                                                 const PylithReal t,
-                                                                 const PylithScalar x[],
-                                                                 const PylithReal n[],
-                                                                 const PylithInt numConstants,
-                                                                 const PylithScalar constants[],
-                                                                 PylithScalar f1[]) {
-    const PylithInt _dim = 2;
-
-    // Incoming solution fields.
-    const PylithInt i_disp = 0;
-
-    // Incoming auxiliary fields.
-    const PylithInt i_density = 0;
-    const PylithInt i_shearModulus = numA-2;
-    const PylithInt i_bulkModulus = numA-1;
-
-    assert(_dim == dim + 1);
-    assert(numS >= 1);
-    assert(numA >= 3);
-    assert(sOff);
-    assert(sOff[i_disp] >= 0);
-    assert(sOff_x);
-    assert(sOff_x[i_disp] >= 0);
-    assert(aOff);
-    assert(aOff[i_density] >= 0);
-    assert(aOff[i_shearModulus] >= 0);
-    assert(aOff[i_bulkModulus] >= 0);
-    assert(f1);
-
-    const PylithScalar density = a[aOff[i_density]];assert(density > 0.0);
-
-    const PylithInt _numS = 1; // Number passed on to stress kernels.
-    const PylithInt sOffDisp[1] = { sOff[i_disp] };
-    const PylithInt sOffDisp_x[1] = { sOff_x[i_disp] };
-
-    const PylithInt numAMean = 1; // Number passed to mean stress kernel.
-    const PylithInt aOffMean[1] = { aOff[i_bulkModulus] };
-
-    const PylithInt numADev = 1; // Number passed to deviatoric stress kernel.
-    const PylithInt aOffDev[1] = { aOff[i_shearModulus] };
-
-    PylithScalar stressTensor[4] = {0.0, 0.0, 0.0, 0.0};
-    meanStress(_dim, _numS, numAMean, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffMean, NULL, a, a_t, NULL,
-               t, x, numConstants, constants, stressTensor);
-    deviatoricStress(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
-                     t, x, numConstants, constants, stressTensor);
-    for (PylithInt i = 0; i < _dim*_dim; ++i) {
-        f1[i] -= stressTensor[i] / density;
-    } // for
-} // f1l_neg
-
-
-#include <iostream>
-// ------------------------------------------------------------------------------------------------
-// f1 function for positive fault face.
-void
-pylith::fekernels::IsotropicLinearElasticityPlaneStrain::f1l_pos(const PylithInt dim,
-                                                                 const PylithInt numS,
-                                                                 const PylithInt numA,
-                                                                 const PylithInt sOff[],
-                                                                 const PylithInt sOff_x[],
-                                                                 const PylithScalar s[],
-                                                                 const PylithScalar s_t[],
-                                                                 const PylithScalar s_x[],
-                                                                 const PylithInt aOff[],
-                                                                 const PylithInt aOff_x[],
-                                                                 const PylithScalar a[],
-                                                                 const PylithScalar a_t[],
-                                                                 const PylithScalar a_x[],
-                                                                 const PylithReal t,
-                                                                 const PylithScalar x[],
-                                                                 const PylithReal n[],
-                                                                 const PylithInt numConstants,
-                                                                 const PylithScalar constants[],
-                                                                 PylithScalar f1[]) {
-    const PylithInt _dim = 2;
-
-    // Incoming solution fields.
-    const PylithInt i_disp = 0;
-
-    // Incoming auxiliary fields.
-    const PylithInt i_density = 0;
-    const PylithInt i_shearModulus = numA-2;
-    const PylithInt i_bulkModulus = numA-1;
-
-    assert(_dim == dim + 1);
-    assert(numS >= 1);
-    assert(numA >= 3);
-    assert(sOff);
-    assert(sOff[i_disp] >= 0);
-    assert(sOff_x);
-    assert(sOff_x[i_disp] >= 0);
-    assert(aOff);
-    assert(aOff[i_density] >= 0);
-    assert(aOff[i_shearModulus] >= 0);
-    assert(aOff[i_bulkModulus] >= 0);
-    assert(f1);
-
-    const PylithScalar density = a[aOff[i_density]];assert(density > 0.0);
-
-    const PylithInt _numS = 1; // Number passed on to stress kernels.
-    const PylithInt sOffDisp[1] = { sOff[i_disp] };
-    const PylithInt sOffDisp_x[1] = { sOff_x[i_disp] };
-
-    std::cout << "SOLUTION, disp=("<< s[sOff[0]+0] << ", " << s[sOff[0]+1] << "), vel=("<<s[sOff[1]+0] << ", " << s[sOff[1]+1] << ")" << std::endl;
-    std::cout << "GRADIENT, disp=("<< s_x[sOff_x[0]+0] << ", " << s_x[sOff_x[0]+1] << ", " << s_x[sOff_x[0]+2] << ", " << s_x[sOff_x[0]+3]
-              << "), vel=("<< s_x[sOff_x[1]+0] << ", " << s_x[sOff_x[1]+1] << ", " << s_x[sOff_x[1]+2] << ", " << s_x[sOff_x[1]+3] << ")" << std::endl;
-
-    const PylithInt numAMean = 1; // Number passed to mean stress kernel.
-    const PylithInt aOffMean[1] = { aOff[i_bulkModulus] };
-
-    const PylithInt numADev = 1; // Number passed to deviatoric stress kernel.
-    const PylithInt aOffDev[1] = { aOff[i_shearModulus] };
-
-    PylithScalar stressTensor[4] = {0.0, 0.0, 0.0, 0.0};
-    meanStress(_dim, _numS, numAMean, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffMean, NULL, a, a_t, NULL,
-               t, x, numConstants, constants, stressTensor);
-    deviatoricStress(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
-                     t, x, numConstants, constants, stressTensor);
-    for (PylithInt i = 0; i < _dim*_dim; ++i) {
-        f1[i] += stressTensor[i] / density;
-    } // for
-} // f1l_pos
-
-
-// ------------------------------------------------------------------------------------------------
-// f1 function with reference state for negative fault face.
-void
-pylith::fekernels::IsotropicLinearElasticityPlaneStrain::f1l_refstate_neg(const PylithInt dim,
-                                                                          const PylithInt numS,
-                                                                          const PylithInt numA,
-                                                                          const PylithInt sOff[],
-                                                                          const PylithInt sOff_x[],
-                                                                          const PylithScalar s[],
-                                                                          const PylithScalar s_t[],
-                                                                          const PylithScalar s_x[],
-                                                                          const PylithInt aOff[],
-                                                                          const PylithInt aOff_x[],
-                                                                          const PylithScalar a[],
-                                                                          const PylithScalar a_t[],
-                                                                          const PylithScalar a_x[],
-                                                                          const PylithReal t,
-                                                                          const PylithScalar x[],
-                                                                          const PylithReal n[],
-                                                                          const PylithInt numConstants,
-                                                                          const PylithScalar constants[],
-                                                                          PylithScalar f1[]) {
-    const PylithInt _dim = 2;
-
-    // Incoming solution fields.
-    const PylithInt i_disp = 0;
-
-    // Incoming auxiliary fields.
-    const PylithInt i_density = 0;
-    const PylithInt i_rstress = numA-4;
-    const PylithInt i_rstrain = numA-3;
-    const PylithInt i_shearModulus = numA-2;
-    const PylithInt i_bulkModulus = numA-1;
-
-    assert(_dim == dim + 1);
-    assert(numS >= 1);
-    assert(numA >= 3);
-    assert(sOff);
-    assert(sOff[i_disp] >= 0);
-    assert(sOff_x);
-    assert(sOff_x[i_disp] >= 0);
-    assert(aOff);
-    assert(aOff[i_density] >= 0);
-    assert(aOff[i_shearModulus] >= 0);
-    assert(aOff[i_bulkModulus] >= 0);
-    assert(aOff[i_rstress] >= 0);
-    assert(aOff[i_rstrain] >= 0);
-    assert(f1);
-
-    const PylithScalar density = a[aOff[i_density]];assert(density > 0.0);
-
-    const PylithInt _numS = 1; // Number passed on to stress kernels.
-    const PylithInt sOffDisp[1] = { sOff[i_disp] };
-    const PylithInt sOffDisp_x[1] = { sOff_x[i_disp] };
-
-    const PylithInt numAMean = 3; // Number passed to mean stress kernel.
-    const PylithInt aOffMean[3] = { aOff[i_rstress], aOff[i_rstrain], aOff[i_bulkModulus] };
-
-    const PylithInt numADev = 3; // Number passed to deviatoric stress kernel.
-    const PylithInt aOffDev[3] = { aOff[i_rstress], aOff[i_rstrain], aOff[i_shearModulus] };
-
-    PylithScalar stressTensor[4] = {0.0, 0.0, 0.0, 0.0};
-    meanStress_refstate(_dim, _numS, numAMean, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffMean, NULL, a, a_t, NULL,
-                        t, x, numConstants, constants, stressTensor);
-    deviatoricStress_refstate(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
-                              t, x, numConstants, constants, stressTensor);
-    for (PylithInt i = 0; i < _dim*_dim; ++i) {
-        f1[i] -= stressTensor[i] / density;
-    } // for
-} // f1l_refstate_neg
-
-
-// ------------------------------------------------------------------------------------------------
-// f1 function with reference state for positive fault face.
-void
-pylith::fekernels::IsotropicLinearElasticityPlaneStrain::f1l_refstate_pos(const PylithInt dim,
-                                                                          const PylithInt numS,
-                                                                          const PylithInt numA,
-                                                                          const PylithInt sOff[],
-                                                                          const PylithInt sOff_x[],
-                                                                          const PylithScalar s[],
-                                                                          const PylithScalar s_t[],
-                                                                          const PylithScalar s_x[],
-                                                                          const PylithInt aOff[],
-                                                                          const PylithInt aOff_x[],
-                                                                          const PylithScalar a[],
-                                                                          const PylithScalar a_t[],
-                                                                          const PylithScalar a_x[],
-                                                                          const PylithReal t,
-                                                                          const PylithScalar x[],
-                                                                          const PylithReal n[],
-                                                                          const PylithInt numConstants,
-                                                                          const PylithScalar constants[],
-                                                                          PylithScalar f1[]) {
-    const PylithInt _dim = 2;
-
-    // Incoming solution fields.
-    const PylithInt i_disp = 0;
-
-    // Incoming auxiliary fields.
-    const PylithInt i_density = 0;
-    const PylithInt i_rstress = numA-4;
-    const PylithInt i_rstrain = numA-3;
-    const PylithInt i_shearModulus = numA-2;
-    const PylithInt i_bulkModulus = numA-1;
-
-    assert(_dim == dim + 1);
-    assert(numS >= 1);
-    assert(numA >= 3);
-    assert(sOff);
-    assert(sOff[i_disp] >= 0);
-    assert(sOff_x);
-    assert(sOff_x[i_disp] >= 0);
-    assert(aOff);
-    assert(aOff[i_density] >= 0);
-    assert(aOff[i_shearModulus] >= 0);
-    assert(aOff[i_bulkModulus] >= 0);
-    assert(aOff[i_rstress] >= 0);
-    assert(aOff[i_rstrain] >= 0);
-    assert(f1);
-
-    const PylithScalar density = a[aOff[i_density]];assert(density > 0.0);
-
-    const PylithInt _numS = 1; // Number passed on to stress kernels.
-    const PylithInt sOffDisp[1] = { sOff[i_disp] };
-    const PylithInt sOffDisp_x[1] = { sOff_x[i_disp] };
-
-    const PylithInt numAMean = 3; // Number passed to mean stress kernel.
-    const PylithInt aOffMean[3] = { aOff[i_rstress], aOff[i_rstrain], aOff[i_bulkModulus] };
-
-    const PylithInt numADev = 3; // Number passed to deviatoric stress kernel.
-    const PylithInt aOffDev[3] = { aOff[i_rstress], aOff[i_rstrain], aOff[i_shearModulus] };
-
-    PylithScalar stressTensor[4] = {0.0, 0.0, 0.0, 0.0};
-    meanStress_refstate(_dim, _numS, numAMean, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffMean, NULL, a, a_t, NULL,
-                        t, x, numConstants, constants, stressTensor);
-    deviatoricStress_refstate(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
-                              t, x, numConstants, constants, stressTensor);
-    for (PylithInt i = 0; i < _dim*_dim; ++i) {
-        f1[i] += stressTensor[i] / density;
-    } // for
-} // f1l_refstate_pos
 
 
 // ------------------------------------------------------------------------------------------------
@@ -859,21 +570,10 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::Jf1lu_neg(const PylithI
                                                                    PylithScalar Jf1[]) {
     const PylithInt _dim = 2;
 
-    // Incoming auxiliary fields.
-    const PylithInt i_density = 0;
-
     assert(_dim == dim + 1);
     assert(numS >= 1);
-    assert(numA >= 2);
-    assert(aOff);
-    assert(aOff[i_density] >= 0);
-    assert(aOff_x);
-    assert(aOff_x[i_density] >= 0);
     assert(a);
     assert(Jf1);
-
-    const PylithScalar density = a[aOff[i_density]];assert(density > 0.0);
-    const PylithScalar* density_x = &a_x[aOff_x[i_density]];
 
     const size_t size = 16;
     PylithScalar elasticConstants[size];
@@ -884,7 +584,7 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::Jf1lu_neg(const PylithI
     Jf3vu(_dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, s_tshift, x,
           numConstants, constants, elasticConstants);
 
-    // j(f,g,dg) = rho,df * C(f,df,g,dg)
+    // j(f,g,dg) = n_df * C(f,df,g,dg)
     const PylithInt dim3 = _dim*_dim*_dim;
     const PylithInt dim2 = _dim*_dim;
     const PylithInt dim1 = _dim;
@@ -892,7 +592,7 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::Jf1lu_neg(const PylithI
         for (PylithInt j = 0; j < _dim; ++j) {
             for (PylithInt l = 0; l < _dim; ++l) {
                 for (PylithInt k = 0; k < _dim; ++k) {
-                    Jf1[i*dim3+j*dim1+l] -= density_x[k] / (density*density) * -elasticConstants[i*dim3+k*dim2+j*dim1+l];
+                    Jf1[i*dim3+j*dim1+l] -= n[k]* -elasticConstants[i*dim3+k*dim2+j*dim1+l];
                 } // for`
             } // for`
         } // for`
@@ -925,21 +625,10 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::Jf1lu_pos(const PylithI
                                                                    PylithScalar Jf1[]) {
     const PylithInt _dim = 2;
 
-    // Incoming auxiliary fields.
-    const PylithInt i_density = 0;
-
     assert(_dim == dim + 1);
     assert(numS >= 1);
-    assert(numA >= 2);
-    assert(aOff);
-    assert(aOff[i_density] >= 0);
-    assert(aOff_x);
-    assert(aOff_x[i_density] >= 0);
     assert(a);
     assert(Jf1);
-
-    const PylithScalar density = a[aOff[i_density]];assert(density > 0.0);
-    const PylithScalar* density_x = &a_x[aOff_x[i_density]];
 
     const size_t size = 16;
     PylithScalar elasticConstants[size];
@@ -958,116 +647,12 @@ pylith::fekernels::IsotropicLinearElasticityPlaneStrain::Jf1lu_pos(const PylithI
         for (PylithInt j = 0; j < _dim; ++j) {
             for (PylithInt l = 0; l < _dim; ++l) {
                 for (PylithInt k = 0; k < _dim; ++k) {
-                    Jf1[i*dim3+j*dim1+l] += density_x[k] / (density*density) * -elasticConstants[i*dim3+k*dim2+j*dim1+l];
+                    Jf1[i*dim3+j*dim1+l] += n[k] * -elasticConstants[i*dim3+k*dim2+j*dim1+l];
                 } // for`
             } // for`
         } // for`
     } // for`
 } // Jf1lu_pos
-
-
-// ------------------------------------------------------------------------------------------------
-// Jf3lu function for dynamic slip constraint equation for negative fault face.
-void
-pylith::fekernels::IsotropicLinearElasticityPlaneStrain::Jf3lu_neg(const PylithInt dim,
-                                                                   const PylithInt numS,
-                                                                   const PylithInt numA,
-                                                                   const PylithInt sOff[],
-                                                                   const PylithInt sOff_x[],
-                                                                   const PylithScalar s[],
-                                                                   const PylithScalar s_t[],
-                                                                   const PylithScalar s_x[],
-                                                                   const PylithInt aOff[],
-                                                                   const PylithInt aOff_x[],
-                                                                   const PylithScalar a[],
-                                                                   const PylithScalar a_t[],
-                                                                   const PylithScalar a_x[],
-                                                                   const PylithReal t,
-                                                                   const PylithReal s_tshift,
-                                                                   const PylithScalar x[],
-                                                                   const PylithReal n[],
-                                                                   const PylithInt numConstants,
-                                                                   const PylithScalar constants[],
-                                                                   PylithScalar Jf3[]) {
-    const PylithInt _dim = 2;
-
-    // Incoming auxiliary fields.
-    const PylithInt i_density = 0;
-
-    assert(_dim == dim + 1);
-    assert(numS >= 1);
-    assert(numA >= 2);
-    assert(aOff);
-    assert(aOff[i_density] >= 0);
-    assert(a);
-    assert(Jf3);
-
-    const PylithScalar density = a[aOff[i_density]];assert(density > 0.0);
-
-    const size_t size = 16;
-    PylithScalar elasticConstants[size];
-    for (size_t i = 0; i < size; ++i) {
-        elasticConstants[i] = 0.0;
-    } // for
-    // Jf3vu returns -elasticConstants
-    Jf3vu(_dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, s_tshift, x,
-          numConstants, constants, elasticConstants);
-    for (size_t i = 0; i < size; ++i) {
-        Jf3[i] -= -elasticConstants[i] / density;
-    } // for
-} // Jf3lu_neg
-
-
-// ------------------------------------------------------------------------------------------------
-// Jf3lu function for dynamic slip constraint equation for positive fault face.
-void
-pylith::fekernels::IsotropicLinearElasticityPlaneStrain::Jf3lu_pos(const PylithInt dim,
-                                                                   const PylithInt numS,
-                                                                   const PylithInt numA,
-                                                                   const PylithInt sOff[],
-                                                                   const PylithInt sOff_x[],
-                                                                   const PylithScalar s[],
-                                                                   const PylithScalar s_t[],
-                                                                   const PylithScalar s_x[],
-                                                                   const PylithInt aOff[],
-                                                                   const PylithInt aOff_x[],
-                                                                   const PylithScalar a[],
-                                                                   const PylithScalar a_t[],
-                                                                   const PylithScalar a_x[],
-                                                                   const PylithReal t,
-                                                                   const PylithReal s_tshift,
-                                                                   const PylithScalar x[],
-                                                                   const PylithReal n[],
-                                                                   const PylithInt numConstants,
-                                                                   const PylithScalar constants[],
-                                                                   PylithScalar Jf3[]) {
-    const PylithInt _dim = 2;
-
-    // Incoming auxiliary fields.
-    const PylithInt i_density = 0;
-
-    assert(_dim == dim + 1);
-    assert(numS >= 1);
-    assert(numA >= 2);
-    assert(aOff);
-    assert(aOff[i_density] >= 0);
-    assert(a);
-    assert(Jf3);
-
-    const PylithScalar density = a[aOff[i_density]];assert(density > 0.0);
-
-    const size_t size = 16;
-    PylithScalar elasticConstants[size];
-    for (size_t i = 0; i < size; ++i) {
-        elasticConstants[i] = 0.0;
-    } // for
-    // Jf3vu returns -elasticConstants
-    Jf3vu(_dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, s_tshift, x,
-          numConstants, constants, elasticConstants);
-    for (size_t i = 0; i < size; ++i) {
-        Jf3[i] += -elasticConstants[i] / density;
-    } // for
-} // Jf3lu_pos
 
 
 // ------------------------------------------------------------------------------------------------
@@ -1817,9 +1402,9 @@ pylith::fekernels::IsotropicLinearElasticity3D::f0l_neg(const PylithInt dim,
 
     // Incoming solution fields.
     const PylithInt i_disp = 0;
+    const PylithInt i_lagrange = 2;
 
     // Incoming auxiliary fields.
-    const PylithInt i_density = 0;
     const PylithInt i_shearModulus = numA-2;
     const PylithInt i_bulkModulus = numA-1;
 
@@ -1828,18 +1413,15 @@ pylith::fekernels::IsotropicLinearElasticity3D::f0l_neg(const PylithInt dim,
     assert(numA >= 3);
     assert(sOff);
     assert(sOff[i_disp] >= 0);
+    assert(sOff[i_lagrange] >= 0);
     assert(sOff_x);
     assert(sOff_x[i_disp] >= 0);
     assert(aOff);
-    assert(aOff[i_density] >= 0);
     assert(aOff[i_shearModulus] >= 0);
     assert(aOff[i_bulkModulus] >= 0);
-    assert(aOff_x);
-    assert(aOff_x[i_density] >= 0);
     assert(f0);
 
-    const PylithScalar density = a[aOff[i_density]];assert(density > 0.0);
-    const PylithScalar* density_x = &a_x[aOff_x[i_density]];
+    const PylithScalar* lagrange = &s[sOff[i_lagrange]];
 
     const PylithInt _numS = 1; // Number passed on to stress kernels.
     const PylithInt sOffDisp[1] = { sOff[i_disp] };
@@ -1856,9 +1438,10 @@ pylith::fekernels::IsotropicLinearElasticity3D::f0l_neg(const PylithInt dim,
                t, x, numConstants, constants, stressTensor);
     deviatoricStress(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
                      t, x, numConstants, constants, stressTensor);
-    for (PylithInt j = 0; j < _dim; ++j) {
-        for (PylithInt i = 0; i < _dim; ++i) {
-            f0[j] += density_x[i] / (density*density) * stressTensor[i*_dim+j];
+    for (PylithInt i = 0; i < _dim; ++i) {
+        f0[i] += lagrange[i];
+        for (PylithInt j = 0; j < _dim; ++j) {
+            f0[i] -= n[j] * stressTensor[j*_dim+i];
         } // for
     } // for
 } // f0l_neg
@@ -1890,9 +1473,9 @@ pylith::fekernels::IsotropicLinearElasticity3D::f0l_pos(const PylithInt dim,
 
     // Incoming solution fields.
     const PylithInt i_disp = 0;
+    const PylithInt i_lagrange = 2;
 
     // Incoming auxiliary fields.
-    const PylithInt i_density = 0;
     const PylithInt i_shearModulus = numA-2;
     const PylithInt i_bulkModulus = numA-1;
 
@@ -1901,18 +1484,15 @@ pylith::fekernels::IsotropicLinearElasticity3D::f0l_pos(const PylithInt dim,
     assert(numA >= 3);
     assert(sOff);
     assert(sOff[i_disp] >= 0);
+    assert(sOff[i_lagrange] >= 0);
     assert(sOff_x);
     assert(sOff_x[i_disp] >= 0);
     assert(aOff);
-    assert(aOff[i_density] >= 0);
     assert(aOff[i_shearModulus] >= 0);
     assert(aOff[i_bulkModulus] >= 0);
-    assert(aOff_x);
-    assert(aOff_x[i_density] >= 0);
     assert(f0);
 
-    const PylithScalar density = a[aOff[i_density]];assert(density > 0.0);
-    const PylithScalar* density_x = &a_x[aOff_x[i_density]];
+    const PylithScalar* lagrange = &s[sOff[i_lagrange]];
 
     const PylithInt _numS = 1; // Number passed on to stress kernels.
     const PylithInt sOffDisp[1] = { sOff[i_disp] };
@@ -1929,9 +1509,10 @@ pylith::fekernels::IsotropicLinearElasticity3D::f0l_pos(const PylithInt dim,
                t, x, numConstants, constants, stressTensor);
     deviatoricStress(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
                      t, x, numConstants, constants, stressTensor);
-    for (PylithInt j = 0; j < _dim; ++j) {
-        for (PylithInt i = 0; i < _dim; ++i) {
-            f0[j] -= density_x[i] / (density*density) * stressTensor[i*_dim+j];
+    for (PylithInt i = 0; i < _dim; ++i) {
+        f0[i] += lagrange[i];
+        for (PylithInt j = 0; j < _dim; ++j) {
+            f0[i] += n[j] * stressTensor[j*_dim+i];
         } // for
     } // for
 } // f0l_pos
@@ -1963,9 +1544,9 @@ pylith::fekernels::IsotropicLinearElasticity3D::f0l_refstate_neg(const PylithInt
 
     // Incoming solution fields.
     const PylithInt i_disp = 0;
+    const PylithInt i_lagrange = 2;
 
     // Incoming auxiliary fields.
-    const PylithInt i_density = 0;
     const PylithInt i_rstress = numA-4;
     const PylithInt i_rstrain = numA-3;
     const PylithInt i_shearModulus = numA-2;
@@ -1976,18 +1557,17 @@ pylith::fekernels::IsotropicLinearElasticity3D::f0l_refstate_neg(const PylithInt
     assert(numA >= 4);
     assert(sOff);
     assert(sOff[i_disp] >= 0);
+    assert(sOff[i_lagrange] >= 0);
     assert(sOff_x);
     assert(sOff_x[i_disp] >= 0);
     assert(aOff);
-    assert(aOff[i_density] >= 0);
     assert(aOff[i_shearModulus] >= 0);
     assert(aOff[i_bulkModulus] >= 0);
     assert(aOff[i_rstress] >= 0);
     assert(aOff[i_rstrain] >= 0);
     assert(f0);
 
-    const PylithScalar density = a[aOff[i_density]];assert(density > 0.0);
-    const PylithScalar* density_x = &a_x[aOff_x[i_density]];
+    const PylithScalar* lagrange = &s[sOff[i_lagrange]];
 
     const PylithInt _numS = 1; // Number passed on to stress kernels.
     const PylithInt sOffDisp[1] = { sOff[i_disp] };
@@ -2004,9 +1584,10 @@ pylith::fekernels::IsotropicLinearElasticity3D::f0l_refstate_neg(const PylithInt
                         t, x, numConstants, constants, stressTensor);
     deviatoricStress_refstate(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
                               t, x, numConstants, constants, stressTensor);
-    for (PylithInt j = 0; j < _dim; ++j) {
-        for (PylithInt i = 0; i < _dim; ++i) {
-            f0[j] += density_x[i] / (density*density) * stressTensor[i*_dim+j];
+    for (PylithInt i = 0; i < _dim; ++i) {
+        f0[i] += lagrange[i];
+        for (PylithInt j = 0; j < _dim; ++j) {
+            f0[i] -= n[j] * stressTensor[j*_dim+i];
         } // for
     } // for
 } // f0l_refstate_neg
@@ -2038,9 +1619,9 @@ pylith::fekernels::IsotropicLinearElasticity3D::f0l_refstate_pos(const PylithInt
 
     // Incoming solution fields.
     const PylithInt i_disp = 0;
+    const PylithInt i_lagrange = 0;
 
     // Incoming auxiliary fields.
-    const PylithInt i_density = 0;
     const PylithInt i_rstress = numA-4;
     const PylithInt i_rstrain = numA-3;
     const PylithInt i_shearModulus = numA-2;
@@ -2051,18 +1632,17 @@ pylith::fekernels::IsotropicLinearElasticity3D::f0l_refstate_pos(const PylithInt
     assert(numA >= 4);
     assert(sOff);
     assert(sOff[i_disp] >= 0);
+    assert(sOff[i_lagrange] >= 0);
     assert(sOff_x);
     assert(sOff_x[i_disp] >= 0);
     assert(aOff);
-    assert(aOff[i_density] >= 0);
     assert(aOff[i_shearModulus] >= 0);
     assert(aOff[i_bulkModulus] >= 0);
     assert(aOff[i_rstress] >= 0);
     assert(aOff[i_rstrain] >= 0);
     assert(f0);
 
-    const PylithScalar density = a[aOff[i_density]];assert(density > 0.0);
-    const PylithScalar* density_x = &a_x[aOff_x[i_density]];
+    const PylithScalar* lagrange = &s[sOff[i_lagrange]];
 
     const PylithInt _numS = 1; // Number passed on to stress kernels.
     const PylithInt sOffDisp[1] = { sOff[i_disp] };
@@ -2079,292 +1659,13 @@ pylith::fekernels::IsotropicLinearElasticity3D::f0l_refstate_pos(const PylithInt
                         t, x, numConstants, constants, stressTensor);
     deviatoricStress_refstate(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
                               t, x, numConstants, constants, stressTensor);
-    for (PylithInt j = 0; j < _dim; ++j) {
-        for (PylithInt i = 0; i < _dim; ++i) {
-            f0[j] -= density_x[i] / (density*density) * stressTensor[i*_dim+j];
+    for (PylithInt i = 0; i < _dim; ++i) {
+        f0[i] += lagrange[i];
+        for (PylithInt j = 0; j < _dim; ++j) {
+            f0[i] += n[j] * stressTensor[j*_dim+i];
         } // for
     } // for
 } // f0l_refstate_pos
-
-
-// ------------------------------------------------------------------------------------------------
-// f1 function for negative fault face.
-void
-pylith::fekernels::IsotropicLinearElasticity3D::f1l_neg(const PylithInt dim,
-                                                        const PylithInt numS,
-                                                        const PylithInt numA,
-                                                        const PylithInt sOff[],
-                                                        const PylithInt sOff_x[],
-                                                        const PylithScalar s[],
-                                                        const PylithScalar s_t[],
-                                                        const PylithScalar s_x[],
-                                                        const PylithInt aOff[],
-                                                        const PylithInt aOff_x[],
-                                                        const PylithScalar a[],
-                                                        const PylithScalar a_t[],
-                                                        const PylithScalar a_x[],
-                                                        const PylithReal t,
-                                                        const PylithScalar x[],
-                                                        const PylithReal n[],
-                                                        const PylithInt numConstants,
-                                                        const PylithScalar constants[],
-                                                        PylithScalar f1[]) {
-    const PylithInt _dim = 3;
-
-    // Incoming solution fields.
-    const PylithInt i_disp = 0;
-
-    // Incoming auxiliary fields.
-    const PylithInt i_density = 0;
-    const PylithInt i_shearModulus = numA-2;
-    const PylithInt i_bulkModulus = numA-1;
-
-    assert(_dim == dim);
-    assert(numS >= 1);
-    assert(numA >= 3);
-    assert(sOff);
-    assert(sOff[i_disp] >= 0);
-    assert(sOff_x);
-    assert(sOff_x[i_disp] >= 0);
-    assert(aOff);
-    assert(aOff[i_density] >= 0);
-    assert(aOff[i_shearModulus] >= 0);
-    assert(aOff[i_bulkModulus] >= 0);
-    assert(f1);
-
-    const PylithScalar density = a[aOff[i_density]];assert(density > 0.0);
-
-    const PylithInt _numS = 1; // Number passed on to stress kernels.
-    const PylithInt sOffDisp[1] = { sOff[i_disp] };
-    const PylithInt sOffDisp_x[1] = { sOff_x[i_disp] };
-
-    const PylithInt numAMean = 1; // Number passed to mean stress kernel.
-    const PylithInt aOffMean[1] = { aOff[i_bulkModulus] };
-
-    const PylithInt numADev = 1; // Number passed to deviatoric stress kernel.
-    const PylithInt aOffDev[1] = { aOff[i_shearModulus] };
-
-    PylithScalar stressTensor[4] = {0.0, 0.0, 0.0, 0.0};
-    meanStress(_dim, _numS, numAMean, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffMean, NULL, a, a_t, NULL,
-               t, x, numConstants, constants, stressTensor);
-    deviatoricStress(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
-                     t, x, numConstants, constants, stressTensor);
-    for (PylithInt i = 0; i < _dim*_dim; ++i) {
-        f1[i] += stressTensor[i] / density;
-    } // for
-} // f1l_neg
-
-
-// ------------------------------------------------------------------------------------------------
-// f1 function for positive fault face.
-void
-pylith::fekernels::IsotropicLinearElasticity3D::f1l_pos(const PylithInt dim,
-                                                        const PylithInt numS,
-                                                        const PylithInt numA,
-                                                        const PylithInt sOff[],
-                                                        const PylithInt sOff_x[],
-                                                        const PylithScalar s[],
-                                                        const PylithScalar s_t[],
-                                                        const PylithScalar s_x[],
-                                                        const PylithInt aOff[],
-                                                        const PylithInt aOff_x[],
-                                                        const PylithScalar a[],
-                                                        const PylithScalar a_t[],
-                                                        const PylithScalar a_x[],
-                                                        const PylithReal t,
-                                                        const PylithScalar x[],
-                                                        const PylithReal n[],
-                                                        const PylithInt numConstants,
-                                                        const PylithScalar constants[],
-                                                        PylithScalar f1[]) {
-    const PylithInt _dim = 3;
-
-    // Incoming solution fields.
-    const PylithInt i_disp = 0;
-
-    // Incoming auxiliary fields.
-    const PylithInt i_density = 0;
-    const PylithInt i_shearModulus = numA-2;
-    const PylithInt i_bulkModulus = numA-1;
-
-    assert(_dim == dim);
-    assert(numS >= 1);
-    assert(numA >= 3);
-    assert(sOff);
-    assert(sOff[i_disp] >= 0);
-    assert(sOff_x);
-    assert(sOff_x[i_disp] >= 0);
-    assert(aOff);
-    assert(aOff[i_density] >= 0);
-    assert(aOff[i_shearModulus] >= 0);
-    assert(aOff[i_bulkModulus] >= 0);
-    assert(f1);
-
-    const PylithScalar density = a[aOff[i_density]];assert(density > 0.0);
-
-    const PylithInt _numS = 1; // Number passed on to stress kernels.
-    const PylithInt sOffDisp[1] = { sOff[i_disp] };
-    const PylithInt sOffDisp_x[1] = { sOff_x[i_disp] };
-
-    const PylithInt numAMean = 1; // Number passed to mean stress kernel.
-    const PylithInt aOffMean[1] = { aOff[i_bulkModulus] };
-
-    const PylithInt numADev = 1; // Number passed to deviatoric stress kernel.
-    const PylithInt aOffDev[1] = { aOff[i_shearModulus] };
-
-    PylithScalar stressTensor[4] = {0.0, 0.0, 0.0, 0.0};
-    meanStress(_dim, _numS, numAMean, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffMean, NULL, a, a_t, NULL,
-               t, x, numConstants, constants, stressTensor);
-    deviatoricStress(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
-                     t, x, numConstants, constants, stressTensor);
-    for (PylithInt i = 0; i < _dim*_dim; ++i) {
-        f1[i] -= stressTensor[i] / density;
-    } // for
-} // f1l_pos
-
-
-// ------------------------------------------------------------------------------------------------
-// f1 function with reference state for negative fault face.
-void
-pylith::fekernels::IsotropicLinearElasticity3D::f1l_refstate_neg(const PylithInt dim,
-                                                                 const PylithInt numS,
-                                                                 const PylithInt numA,
-                                                                 const PylithInt sOff[],
-                                                                 const PylithInt sOff_x[],
-                                                                 const PylithScalar s[],
-                                                                 const PylithScalar s_t[],
-                                                                 const PylithScalar s_x[],
-                                                                 const PylithInt aOff[],
-                                                                 const PylithInt aOff_x[],
-                                                                 const PylithScalar a[],
-                                                                 const PylithScalar a_t[],
-                                                                 const PylithScalar a_x[],
-                                                                 const PylithReal t,
-                                                                 const PylithScalar x[],
-                                                                 const PylithReal n[],
-                                                                 const PylithInt numConstants,
-                                                                 const PylithScalar constants[],
-                                                                 PylithScalar f1[]) {
-    const PylithInt _dim = 3;
-
-    // Incoming solution fields.
-    const PylithInt i_disp = 0;
-
-    // Incoming auxiliary fields.
-    const PylithInt i_density = 0;
-    const PylithInt i_rstress = numA-4;
-    const PylithInt i_rstrain = numA-3;
-    const PylithInt i_shearModulus = numA-2;
-    const PylithInt i_bulkModulus = numA-1;
-
-    assert(_dim == dim);
-    assert(numS >= 1);
-    assert(numA >= 3);
-    assert(sOff);
-    assert(sOff[i_disp] >= 0);
-    assert(sOff_x);
-    assert(sOff_x[i_disp] >= 0);
-    assert(aOff);
-    assert(aOff[i_density] >= 0);
-    assert(aOff[i_shearModulus] >= 0);
-    assert(aOff[i_bulkModulus] >= 0);
-    assert(aOff[i_rstress] >= 0);
-    assert(aOff[i_rstrain] >= 0);
-    assert(f1);
-
-    const PylithScalar density = a[aOff[i_density]];assert(density > 0.0);
-
-    const PylithInt _numS = 1; // Number passed on to stress kernels.
-    const PylithInt sOffDisp[1] = { sOff[i_disp] };
-    const PylithInt sOffDisp_x[1] = { sOff_x[i_disp] };
-
-    const PylithInt numAMean = 3; // Number passed to mean stress kernel.
-    const PylithInt aOffMean[3] = { aOff[i_rstress], aOff[i_rstrain], aOff[i_bulkModulus] };
-
-    const PylithInt numADev = 3; // Number passed to deviatoric stress kernel.
-    const PylithInt aOffDev[3] = { aOff[i_rstress], aOff[i_rstrain], aOff[i_shearModulus] };
-
-    PylithScalar stressTensor[4] = {0.0, 0.0, 0.0, 0.0};
-    meanStress_refstate(_dim, _numS, numAMean, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffMean, NULL, a, a_t, NULL,
-                        t, x, numConstants, constants, stressTensor);
-    deviatoricStress_refstate(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
-                              t, x, numConstants, constants, stressTensor);
-    for (PylithInt i = 0; i < _dim*_dim; ++i) {
-        f1[i] += stressTensor[i] / density;
-    } // for
-} // f1l_refstate_neg
-
-
-// ------------------------------------------------------------------------------------------------
-// f1 function with reference state for positive fault face.
-void
-pylith::fekernels::IsotropicLinearElasticity3D::f1l_refstate_pos(const PylithInt dim,
-                                                                 const PylithInt numS,
-                                                                 const PylithInt numA,
-                                                                 const PylithInt sOff[],
-                                                                 const PylithInt sOff_x[],
-                                                                 const PylithScalar s[],
-                                                                 const PylithScalar s_t[],
-                                                                 const PylithScalar s_x[],
-                                                                 const PylithInt aOff[],
-                                                                 const PylithInt aOff_x[],
-                                                                 const PylithScalar a[],
-                                                                 const PylithScalar a_t[],
-                                                                 const PylithScalar a_x[],
-                                                                 const PylithReal t,
-                                                                 const PylithScalar x[],
-                                                                 const PylithReal n[],
-                                                                 const PylithInt numConstants,
-                                                                 const PylithScalar constants[],
-                                                                 PylithScalar f1[]) {
-    const PylithInt _dim = 3;
-
-    // Incoming solution fields.
-    const PylithInt i_disp = 0;
-
-    // Incoming auxiliary fields.
-    const PylithInt i_density = 0;
-    const PylithInt i_rstress = numA-4;
-    const PylithInt i_rstrain = numA-3;
-    const PylithInt i_shearModulus = numA-2;
-    const PylithInt i_bulkModulus = numA-1;
-
-    assert(_dim == dim);
-    assert(numS >= 1);
-    assert(numA >= 3);
-    assert(sOff);
-    assert(sOff[i_disp] >= 0);
-    assert(sOff_x);
-    assert(sOff_x[i_disp] >= 0);
-    assert(aOff);
-    assert(aOff[i_density] >= 0);
-    assert(aOff[i_shearModulus] >= 0);
-    assert(aOff[i_bulkModulus] >= 0);
-    assert(aOff[i_rstress] >= 0);
-    assert(aOff[i_rstrain] >= 0);
-    assert(f1);
-
-    const PylithScalar density = a[aOff[i_density]];assert(density > 0.0);
-
-    const PylithInt _numS = 1; // Number passed on to stress kernels.
-    const PylithInt sOffDisp[1] = { sOff[i_disp] };
-    const PylithInt sOffDisp_x[1] = { sOff_x[i_disp] };
-
-    const PylithInt numAMean = 3; // Number passed to mean stress kernel.
-    const PylithInt aOffMean[3] = { aOff[i_rstress], aOff[i_rstrain], aOff[i_bulkModulus] };
-
-    const PylithInt numADev = 3; // Number passed to deviatoric stress kernel.
-    const PylithInt aOffDev[3] = { aOff[i_rstress], aOff[i_rstrain], aOff[i_shearModulus] };
-
-    PylithScalar stressTensor[4] = {0.0, 0.0, 0.0, 0.0};
-    meanStress_refstate(_dim, _numS, numAMean, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffMean, NULL, a, a_t, NULL,
-                        t, x, numConstants, constants, stressTensor);
-    deviatoricStress_refstate(_dim, _numS, numADev, sOffDisp, sOffDisp_x, s, s_t, s_x, aOffDev, NULL, a, a_t, NULL,
-                              t, x, numConstants, constants, stressTensor);
-    for (PylithInt i = 0; i < _dim*_dim; ++i) {
-        f1[i] -= stressTensor[i] / density;
-    } // for
-} // f1l_refstate_pos
 
 
 // ------------------------------------------------------------------------------------------------
@@ -2392,31 +1693,21 @@ pylith::fekernels::IsotropicLinearElasticity3D::Jf1lu_neg(const PylithInt dim,
                                                           PylithScalar Jf1[]) {
     const PylithInt _dim = 3;
 
-    // Incoming auxiliary fields.
-    const PylithInt i_density = 0;
-
     assert(_dim == dim + 1);
     assert(numS >= 1);
-    assert(numA >= 2);
-    assert(aOff);
-    assert(aOff[i_density] >= 0);
-    assert(aOff_x);
-    assert(aOff_x[i_density] >= 0);
     assert(a);
     assert(Jf1);
-
-    const PylithScalar density = a[aOff[i_density]];assert(density > 0.0);
-    const PylithScalar* density_x = &a_x[aOff_x[i_density]];
 
     const size_t size = 32;
     PylithScalar elasticConstants[size];
     for (size_t i = 0; i < size; ++i) {
         elasticConstants[i] = 0.0;
     } // for
+    // Jf3vu returns -elasticConstants
     Jf3vu(_dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, s_tshift, x,
           numConstants, constants, elasticConstants);
 
-    // j(f,g,dg) = rho,df * C(f,df,g,dg)
+    // j(f,g,dg) = n_df * C(f,df,g,dg)
     const PylithInt dim3 = _dim*_dim*_dim;
     const PylithInt dim2 = _dim*_dim;
     const PylithInt dim1 = _dim;
@@ -2424,7 +1715,7 @@ pylith::fekernels::IsotropicLinearElasticity3D::Jf1lu_neg(const PylithInt dim,
         for (PylithInt j = 0; j < _dim; ++j) {
             for (PylithInt l = 0; l < _dim; ++l) {
                 for (PylithInt k = 0; k < _dim; ++k) {
-                    Jf1[i*dim3+j*dim1+l] += density_x[k] / (density*density) * elasticConstants[i*dim3+k*dim2+j*dim1+l];
+                    Jf1[i*dim3+j*dim1+l] -= n[k]* -elasticConstants[i*dim3+k*dim2+j*dim1+l];
                 } // for`
             } // for`
         } // for`
@@ -2457,31 +1748,21 @@ pylith::fekernels::IsotropicLinearElasticity3D::Jf1lu_pos(const PylithInt dim,
                                                           PylithScalar Jf1[]) {
     const PylithInt _dim = 3;
 
-    // Incoming auxiliary fields.
-    const PylithInt i_density = 0;
-
     assert(_dim == dim + 1);
     assert(numS >= 1);
-    assert(numA >= 2);
-    assert(aOff);
-    assert(aOff[i_density] >= 0);
-    assert(aOff_x);
-    assert(aOff_x[i_density] >= 0);
     assert(a);
     assert(Jf1);
-
-    const PylithScalar density = a[aOff[i_density]];assert(density > 0.0);
-    const PylithScalar* density_x = &a_x[aOff_x[i_density]];
 
     const size_t size = 32;
     PylithScalar elasticConstants[size];
     for (size_t i = 0; i < size; ++i) {
         elasticConstants[i] = 0.0;
     } // for
+    // Jf3vu returns -elasticConstants
     Jf3vu(_dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, s_tshift, x,
           numConstants, constants, elasticConstants);
 
-    // j(f,g,dg) = rho,df * C(f,df,g,dg)
+    // j(f,g,dg) = n_df * C(f,df,g,dg)
     const PylithInt dim3 = _dim*_dim*_dim;
     const PylithInt dim2 = _dim*_dim;
     const PylithInt dim1 = _dim;
@@ -2489,114 +1770,12 @@ pylith::fekernels::IsotropicLinearElasticity3D::Jf1lu_pos(const PylithInt dim,
         for (PylithInt j = 0; j < _dim; ++j) {
             for (PylithInt l = 0; l < _dim; ++l) {
                 for (PylithInt k = 0; k < _dim; ++k) {
-                    Jf1[i*dim3+j*dim1+l] -= density_x[k] / (density*density) * elasticConstants[i*dim3+k*dim2+j*dim1+l];
+                    Jf1[i*dim3+j*dim1+l] += n[k] * -elasticConstants[i*dim3+k*dim2+j*dim1+l];
                 } // for`
             } // for`
         } // for`
     } // for`
 } // Jf1lu_pos
-
-
-// ------------------------------------------------------------------------------------------------
-// Jf3lu function for dynamic slip constraint equation for negative fault face.
-void
-pylith::fekernels::IsotropicLinearElasticity3D::Jf3lu_neg(const PylithInt dim,
-                                                          const PylithInt numS,
-                                                          const PylithInt numA,
-                                                          const PylithInt sOff[],
-                                                          const PylithInt sOff_x[],
-                                                          const PylithScalar s[],
-                                                          const PylithScalar s_t[],
-                                                          const PylithScalar s_x[],
-                                                          const PylithInt aOff[],
-                                                          const PylithInt aOff_x[],
-                                                          const PylithScalar a[],
-                                                          const PylithScalar a_t[],
-                                                          const PylithScalar a_x[],
-                                                          const PylithReal t,
-                                                          const PylithReal s_tshift,
-                                                          const PylithScalar x[],
-                                                          const PylithReal n[],
-                                                          const PylithInt numConstants,
-                                                          const PylithScalar constants[],
-                                                          PylithScalar Jf3[]) {
-    const PylithInt _dim = 3;
-
-    // Incoming auxiliary fields.
-    const PylithInt i_density = 0;
-
-    assert(_dim == dim + 1);
-    assert(numS >= 1);
-    assert(numA >= 2);
-    assert(aOff);
-    assert(aOff[i_density] >= 0);
-    assert(a);
-    assert(Jf3);
-
-    const PylithScalar density = a[aOff[i_density]];assert(density > 0.0);
-
-    const size_t size = 32;
-    PylithScalar elasticConstants[size];
-    for (size_t i = 0; i < size; ++i) {
-        elasticConstants[i] = 0.0;
-    } // for
-    Jf3vu(_dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, s_tshift, x,
-          numConstants, constants, elasticConstants);
-    for (size_t i = 0; i < size; ++i) {
-        Jf3[i] += elasticConstants[i] / density;
-    } // for
-} // Jf3lu_neg
-
-
-// ------------------------------------------------------------------------------------------------
-// Jf3lu function for dynamic slip constraint equation for positive fault face.
-void
-pylith::fekernels::IsotropicLinearElasticity3D::Jf3lu_pos(const PylithInt dim,
-                                                          const PylithInt numS,
-                                                          const PylithInt numA,
-                                                          const PylithInt sOff[],
-                                                          const PylithInt sOff_x[],
-                                                          const PylithScalar s[],
-                                                          const PylithScalar s_t[],
-                                                          const PylithScalar s_x[],
-                                                          const PylithInt aOff[],
-                                                          const PylithInt aOff_x[],
-                                                          const PylithScalar a[],
-                                                          const PylithScalar a_t[],
-                                                          const PylithScalar a_x[],
-                                                          const PylithReal t,
-                                                          const PylithReal s_tshift,
-                                                          const PylithScalar x[],
-                                                          const PylithReal n[],
-                                                          const PylithInt numConstants,
-                                                          const PylithScalar constants[],
-                                                          PylithScalar Jf3[]) {
-    const PylithInt _dim = 3;
-
-    // Incoming auxiliary fields.
-    const PylithInt i_density = 0;
-
-    assert(_dim == dim + 1);
-    assert(numS >= 1);
-    assert(numA >= 2);
-    assert(aOff);
-    assert(aOff[i_density] >= 0);
-    assert(a);
-    assert(Jf3);
-
-    const PylithScalar density = a[aOff[i_density]];assert(density > 0.0);
-
-    const size_t size = 32;
-    PylithScalar elasticConstants[size];
-    for (size_t i = 0; i < size; ++i) {
-        elasticConstants[i] = 0.0;
-    } // for
-    Jf3vu(_dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, s_tshift, x,
-          numConstants, constants, elasticConstants);
-    for (size_t i = 0; i < size; ++i) {
-        Jf3[i] -= elasticConstants[i] / density;
-    } // for
-} // Jf3lu_pos
 
 
 // ------------------------------------------------------------------------------------------------

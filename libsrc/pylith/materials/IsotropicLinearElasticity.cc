@@ -198,44 +198,6 @@ pylith::materials::IsotropicLinearElasticity::getInterfaceKernelResidualF0Pos(co
 
 
 // ------------------------------------------------------------------------------------------------
-// Get f1 kernel for LHS interface residual, F(t,s), for negative fault face.
-PetscBdPointFunc
-pylith::materials::IsotropicLinearElasticity::getInterfaceKernelResidualF1Neg(const spatialdata::geocoords::CoordSys* coordsys) const {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("getInterfaceKernelResidualF1Neg(coordsys="<<typeid(coordsys).name()<<")");
-
-    const int spaceDim = coordsys->getSpaceDim();
-    PetscBdPointFunc kernel =
-        (!_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticity3D::f1l_neg :
-        (!_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticityPlaneStrain::f1l_neg :
-        (_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticity3D::f1l_refstate_neg :
-        (_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticityPlaneStrain::f1l_refstate_neg :
-        NULL;
-
-    PYLITH_METHOD_RETURN(kernel);
-}
-
-
-// ------------------------------------------------------------------------------------------------
-// Get f1 kernel for LHS interface residual, F(t,s), for positive fault face.
-PetscBdPointFunc
-pylith::materials::IsotropicLinearElasticity::getInterfaceKernelResidualF1Pos(const spatialdata::geocoords::CoordSys* coordsys) const {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("getInterfaceKernelResidualF1Pos(coordsys="<<typeid(coordsys).name()<<")");
-
-    const int spaceDim = coordsys->getSpaceDim();
-    PetscBdPointFunc kernel =
-        (!_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticity3D::f1l_pos :
-        (!_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticityPlaneStrain::f1l_pos :
-        (_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticity3D::f1l_refstate_pos :
-        (_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticityPlaneStrain::f1l_refstate_pos :
-        NULL;
-
-    PYLITH_METHOD_RETURN(kernel);
-}
-
-
-// ------------------------------------------------------------------------------------------------
 // Get Jf1lu kernel for LHS Jacobian F(t,s,dot{s}) for negative fault face.
 PetscBdPointJac
 pylith::materials::IsotropicLinearElasticity::getInterfaceKernelJacobianF1Neg(const spatialdata::geocoords::CoordSys* coordsys) const {
@@ -263,40 +225,6 @@ pylith::materials::IsotropicLinearElasticity::getInterfaceKernelJacobianF1Pos(co
     PetscBdPointJac kernel =
         (3 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticity3D::Jf1lu_pos :
         (2 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticityPlaneStrain::Jf1lu_pos :
-        NULL;
-
-    PYLITH_METHOD_RETURN(kernel);
-}
-
-
-// ------------------------------------------------------------------------------------------------
-// Get Jf3lu kernel for LHS Jacobian F(t,s,dot{s}) for negative fault face.
-PetscBdPointJac
-pylith::materials::IsotropicLinearElasticity::getInterfaceKernelJacobianF3Neg(const spatialdata::geocoords::CoordSys* coordsys) const {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("getInterfaceKernelResidualF1Pos(coordsys="<<typeid(coordsys).name()<<")");
-
-    const int spaceDim = coordsys->getSpaceDim();
-    PetscBdPointJac kernel =
-        (3 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticity3D::Jf3lu_neg :
-        (2 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticityPlaneStrain::Jf3lu_neg :
-        NULL;
-
-    PYLITH_METHOD_RETURN(kernel);
-}
-
-
-// ------------------------------------------------------------------------------------------------
-// Get Jf3lu kernel for LHS Jacobian F(t,s,dot{s}) for positive fault face.
-PetscBdPointJac
-pylith::materials::IsotropicLinearElasticity::getInterfaceKernelJacobianF3Pos(const spatialdata::geocoords::CoordSys* coordsys) const {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("getInterfaceKernelResidualF1Pos(coordsys="<<typeid(coordsys).name()<<")");
-
-    const int spaceDim = coordsys->getSpaceDim();
-    PetscBdPointJac kernel =
-        (3 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticity3D::Jf3lu_pos :
-        (2 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticityPlaneStrain::Jf3lu_pos :
         NULL;
 
     PYLITH_METHOD_RETURN(kernel);

@@ -229,24 +229,6 @@ pylith::materials::IsotropicLinearMaxwell::getInterfaceKernelResidualF0Pos(const
 
 
 // ------------------------------------------------------------------------------------------------
-// Get f1 kernel for LHS interface residual, F(t,s), for negative fault face.
-PetscBdPointFunc
-pylith::materials::IsotropicLinearMaxwell::getInterfaceKernelResidualF1Neg(const spatialdata::geocoords::CoordSys* coordsys) const {
-    PYLITH_COMPONENT_LOGICERROR(":TODO: @brad Implement getInterfaceKernelResidualF1Neg().");
-    return NULL;
-}
-
-
-// ------------------------------------------------------------------------------------------------
-// Get f1 kernel for LHS interface residual, F(t,s), for positive fault face.
-PetscBdPointFunc
-pylith::materials::IsotropicLinearMaxwell::getInterfaceKernelResidualF1Pos(const spatialdata::geocoords::CoordSys* coordsys) const {
-    PYLITH_COMPONENT_LOGICERROR(":TODO: @brad Implement getInterfaceKernelResidualF1Pos().");
-    return NULL;
-}
-
-
-// ------------------------------------------------------------------------------------------------
 // Get Jf1lu kernel for LHS Jacobian F(t,s,dot{s}) for negative fault face.
 PetscBdPointJac
 pylith::materials::IsotropicLinearMaxwell::getInterfaceKernelJacobianF1Neg(const spatialdata::geocoords::CoordSys* coordsys) const {
@@ -260,24 +242,6 @@ pylith::materials::IsotropicLinearMaxwell::getInterfaceKernelJacobianF1Neg(const
 PetscBdPointJac
 pylith::materials::IsotropicLinearMaxwell::getInterfaceKernelJacobianF1Pos(const spatialdata::geocoords::CoordSys* coordsys) const {
     PYLITH_COMPONENT_LOGICERROR(":TODO: @brad Implement getInterfaceKernelJacobianF1Pos().");
-    return NULL;
-}
-
-
-// ------------------------------------------------------------------------------------------------
-// Get Jf3lu kernel for LHS Jacobian F(t,s,dot{s}) for negative fault face.
-PetscBdPointJac
-pylith::materials::IsotropicLinearMaxwell::getInterfaceKernelJacobianF3Neg(const spatialdata::geocoords::CoordSys* coordsys) const {
-    PYLITH_COMPONENT_LOGICERROR(":TODO: @brad Implement getInterfaceKernelJacobianF3Neg().");
-    return NULL;
-}
-
-
-// ------------------------------------------------------------------------------------------------
-// Get Jf3lu kernel for LHS Jacobian F(t,s,dot{s}) for positive fault face.
-PetscBdPointJac
-pylith::materials::IsotropicLinearMaxwell::getInterfaceKernelJacobianF3Pos(const spatialdata::geocoords::CoordSys* coordsys) const {
-    PYLITH_COMPONENT_LOGICERROR(":TODO: @brad Implement getInterfaceKernelJacobianF3Pos().");
     return NULL;
 }
 

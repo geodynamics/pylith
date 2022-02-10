@@ -259,10 +259,10 @@ pylith::materials::Elasticity::getInterfaceKernelsResidual(const pylith::topolog
 
         switch (face) {
         case pylith::feassemble::IntegratorInterface::NEGATIVE_FACE:
-            f0l = pylith::fekernels::Elasticity::f0l_neg;
+            f0l = _rheology->getInterfaceKernelResidualF0Neg(coordsys);
             break;
         case pylith::feassemble::IntegratorInterface::POSITIVE_FACE:
-            f0l = pylith::fekernels::Elasticity::f0l_pos;
+            f0l = _rheology->getInterfaceKernelResidualF0Pos(coordsys);
             break;
         default:
             PYLITH_COMPONENT_LOGICERROR("Unknown interface face ("<<face<<").");
@@ -288,8 +288,6 @@ pylith::materials::Elasticity::getInterfaceKernelsJacobian(const pylith::topolog
                                                            InterfaceFace face) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("getInterfaceKernelsJacobian(solution="<<solution.getLabel()<<", face="<<face<<")");
-
-    const spatialdata::geocoords::CoordSys* coordsys = solution.getMesh().getCoordSys();
 
     std::vector<InterfaceJacobianKernels> kernels;
     switch (_formulation) {
@@ -368,23 +366,15 @@ pylith::materials::Elasticity::_setKernelsResidual(pylith::feassemble::Integrato
     const int bitUse = bitBodyForce | bitGravity;
 
     PetscPointFunc r0 = NULL;
-    PetscBdPointFunc l0_neg_bodyforce = NULL;
-    PetscBdPointFunc l0_pos_bodyforce = NULL;
     switch (bitUse) {
     case 0x1:
         r0 = pylith::fekernels::Elasticity::g0v_bodyforce;
-        l0_neg_bodyforce = pylith::fekernels::Elasticity::f0l_neg_bodyforce;
-        l0_pos_bodyforce = pylith::fekernels::Elasticity::f0l_pos_bodyforce;
         break;
     case 0x2:
         r0 = pylith::fekernels::Elasticity::g0v_grav;
-        l0_neg_bodyforce = pylith::fekernels::Elasticity::f0l_neg_grav;
-        l0_pos_bodyforce = pylith::fekernels::Elasticity::f0l_pos_grav;
         break;
     case 0x3:
         r0 = pylith::fekernels::Elasticity::g0v_gravbodyforce;
-        l0_neg_bodyforce = pylith::fekernels::Elasticity::f0l_neg_gravbodyforce;
-        l0_pos_bodyforce = pylith::fekernels::Elasticity::f0l_pos_gravbodyforce;
         break;
     case 0x0:
         break;

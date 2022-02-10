@@ -22,14 +22,6 @@
 
 #include <cassert> // USES assert()
 
-namespace pylith {
-    namespace fekernels {
-        namespace _Elasticity {
-            const PylithScalar tolerance = 1.0e-30;
-        }
-    }
-}
-
 // ================================================================================================
 // Generic elasticity kernels for inertia and body forces.
 // ================================================================================================
@@ -250,418 +242,6 @@ pylith::fekernels::Elasticity::g0v_gravbodyforce(const PylithInt dim,
 
 
 // ------------------------------------------------------------------------------------------------
-/** f0 function for negative fault face (+lambda).
- *
- * Solution fields: [disp(dim), vel(dim), lagrange_multiplier(dim)]
- * Auxiliary fields: [density(1), ...]
- */
-void
-pylith::fekernels::Elasticity::f0l_neg(const PylithInt dim,
-                                       const PylithInt numS,
-                                       const PylithInt numA,
-                                       const PylithInt sOff[],
-                                       const PylithInt sOff_x[],
-                                       const PylithScalar s[],
-                                       const PylithScalar s_t[],
-                                       const PylithScalar s_x[],
-                                       const PylithInt aOff[],
-                                       const PylithInt aOff_x[],
-                                       const PylithScalar a[],
-                                       const PylithScalar a_t[],
-                                       const PylithScalar a_x[],
-                                       const PylithReal t,
-                                       const PylithScalar x[],
-                                       const PylithReal n[],
-                                       const PylithInt numConstants,
-                                       const PylithScalar constants[],
-                                       PylithScalar f0[]) {
-    // Incoming auxiliary fields.
-    const PylithInt i_density = 0;
-
-    assert(numS >= 3);
-    assert(numA >= 1);
-
-    assert(sOff);
-    assert(s);
-    assert(f0);
-
-    assert(aOff);
-    assert(aOff[i_density] >= 0);
-    assert(a);
-
-    const PylithInt spaceDim = dim + 1; // :KLUDGE: dim passed in is spaceDim-1
-
-    const PylithInt sOffLagrange = sOff[numS-1];
-    assert(sOffLagrange >= 0);
-
-    const PylithScalar density = a[aOff[i_density]];assert(density > _Elasticity::tolerance);
-    const PylithScalar* lagrange = &s[sOffLagrange];
-
-    for (PylithInt i = 0; i < spaceDim; ++i) {
-        f0[i] += +lagrange[i] / density;
-    } // for
-} // f0l_neg
-
-
-// ------------------------------------------------------------------------------------------------
-/** f0 function for positive fault face (+lambda).
- *
- * Solution fields: [disp(dim), vel(dim), lagrange_multiplier(dim)]
- * Auxiliary fields: [density(1), ...]
- */
-void
-pylith::fekernels::Elasticity::f0l_pos(const PylithInt dim,
-                                       const PylithInt numS,
-                                       const PylithInt numA,
-                                       const PylithInt sOff[],
-                                       const PylithInt sOff_x[],
-                                       const PylithScalar s[],
-                                       const PylithScalar s_t[],
-                                       const PylithScalar s_x[],
-                                       const PylithInt aOff[],
-                                       const PylithInt aOff_x[],
-                                       const PylithScalar a[],
-                                       const PylithScalar a_t[],
-                                       const PylithScalar a_x[],
-                                       const PylithReal t,
-                                       const PylithScalar x[],
-                                       const PylithReal n[],
-                                       const PylithInt numConstants,
-                                       const PylithScalar constants[],
-                                       PylithScalar f0[]) {
-    // Incoming auxiliary fields.
-    const PylithInt i_density = 0;
-
-    assert(numS >= 3);
-    assert(numA > 1);
-
-    assert(sOff);
-    assert(s);
-    assert(f0);
-
-    assert(aOff);
-    assert(aOff[i_density] >= 0);
-    assert(a);
-
-    const PylithInt spaceDim = dim + 1; // :KLUDGE: dim passed in is spaceDim-1
-
-    const PylithInt sOffLagrange = sOff[numS-1];
-    assert(sOffLagrange >= 0);
-
-    const PylithScalar density = a[aOff[i_density]];assert(density > _Elasticity::tolerance);
-    const PylithScalar* lagrange = &s[sOffLagrange];
-
-    for (PylithInt i = 0; i < spaceDim; ++i) {
-        f0[i] += +lagrange[i] / density;
-    } // for
-} // f0l_pos
-
-
-// ------------------------------------------------------------------------------------------------
-/** f0 for negative fault face with gravitational body force.
- *
- * Auxiliary fields: [density, gravity_field(dim)]
- */
-void
-pylith::fekernels::Elasticity::f0l_neg_grav(const PylithInt dim,
-                                            const PylithInt numS,
-                                            const PylithInt numA,
-                                            const PylithInt sOff[],
-                                            const PylithInt sOff_x[],
-                                            const PylithScalar s[],
-                                            const PylithScalar s_t[],
-                                            const PylithScalar s_x[],
-                                            const PylithInt aOff[],
-                                            const PylithInt aOff_x[],
-                                            const PylithScalar a[],
-                                            const PylithScalar a_t[],
-                                            const PylithScalar a_x[],
-                                            const PylithReal t,
-                                            const PylithScalar x[],
-                                            const PylithReal n[],
-                                            const PylithInt numConstants,
-                                            const PylithScalar constants[],
-                                            PylithScalar f0[]) {
-    const PylithInt _numA = 2;
-
-    // Incoming auxiliary fields.
-    const PylithInt i_gravityField = 1;
-
-    assert(numS >= 3);
-    assert(_numA <= numA);
-
-    assert(sOff);
-    assert(s);
-    assert(f0);
-
-    assert(aOff);
-    assert(aOff[i_gravityField] >= 0);
-    assert(a);
-
-    const PylithInt spaceDim = dim + 1; // :KLUDGE: dim passed in is spaceDim-1
-
-    const PylithScalar* gravityField = &a[aOff[i_gravityField]];
-
-    for (PylithInt i = 0; i < spaceDim; ++i) {
-        f0[i] += -gravityField[i];
-    } // for
-}
-
-
-// ------------------------------------------------------------------------------------------------
-/** f0 for positive fault face with gravitational body force.
- *
- * Auxiliary fields: [density, gravity_field(dim)]
- */
-void
-pylith::fekernels::Elasticity::f0l_pos_grav(const PylithInt dim,
-                                            const PylithInt numS,
-                                            const PylithInt numA,
-                                            const PylithInt sOff[],
-                                            const PylithInt sOff_x[],
-                                            const PylithScalar s[],
-                                            const PylithScalar s_t[],
-                                            const PylithScalar s_x[],
-                                            const PylithInt aOff[],
-                                            const PylithInt aOff_x[],
-                                            const PylithScalar a[],
-                                            const PylithScalar a_t[],
-                                            const PylithScalar a_x[],
-                                            const PylithReal t,
-                                            const PylithScalar x[],
-                                            const PylithReal n[],
-                                            const PylithInt numConstants,
-                                            const PylithScalar constants[],
-                                            PylithScalar f0[]) {
-    const PylithInt _numA = 2;
-
-    // Incoming auxiliary fields.
-    const PylithInt i_gravityField = 1;
-
-    assert(numS >= 3);
-    assert(_numA <= numA);
-
-    assert(sOff);
-    assert(s);
-    assert(f0);
-
-    assert(aOff);
-    assert(aOff[i_gravityField] >= 0);
-    assert(a);
-
-    const PylithInt spaceDim = dim + 1; // :KLUDGE: dim passed in is spaceDim-1
-
-    const PylithScalar* gravityField = &a[aOff[i_gravityField]];
-
-    for (PylithInt i = 0; i < spaceDim; ++i) {
-        f0[i] += +gravityField[i];
-    } // for
-}
-
-
-// ------------------------------------------------------------------------------------------------
-/** f0 function for negative fault face with body force.
- *
- * Auxiliary fields: [density, body_force(dim)]
- */
-void
-pylith::fekernels::Elasticity::f0l_neg_bodyforce(const PylithInt dim,
-                                                 const PylithInt numS,
-                                                 const PylithInt numA,
-                                                 const PylithInt sOff[],
-                                                 const PylithInt sOff_x[],
-                                                 const PylithScalar s[],
-                                                 const PylithScalar s_t[],
-                                                 const PylithScalar s_x[],
-                                                 const PylithInt aOff[],
-                                                 const PylithInt aOff_x[],
-                                                 const PylithScalar a[],
-                                                 const PylithScalar a_t[],
-                                                 const PylithScalar a_x[],
-                                                 const PylithReal t,
-                                                 const PylithScalar x[],
-                                                 const PylithReal n[],
-                                                 const PylithInt numConstants,
-                                                 const PylithScalar constants[],
-                                                 PylithScalar f0[]) {
-    // Incoming auxiliary fields.
-    const PylithInt i_density = 0;
-    const PylithInt i_bodyForce = 1;
-
-    assert(numS >= 3);
-    assert(numA >= 2);
-
-    assert(sOff);
-    assert(s);
-    assert(f0);
-
-    assert(aOff);
-    assert(aOff[i_density] >= 0);
-    assert(aOff[i_bodyForce] >= 0);
-    assert(a);
-
-    const PylithInt spaceDim = dim + 1; // :KLUDGE: dim passed in is spaceDim-1
-
-    const PylithScalar density = a[aOff[i_density]];assert(density > _Elasticity::tolerance);
-    const PylithScalar* bodyForce = &a[aOff[i_bodyForce]];
-
-    for (PylithInt i = 0; i < spaceDim; ++i) {
-        f0[i] += -bodyForce[i] / density;
-    } // for
-}
-
-
-// ------------------------------------------------------------------------------------------------
-/** f0 function for positive fault face with body force.
- *
- * Auxiliary fields: [density, body_force(dim)]
- */
-void
-pylith::fekernels::Elasticity::f0l_pos_bodyforce(const PylithInt dim,
-                                                 const PylithInt numS,
-                                                 const PylithInt numA,
-                                                 const PylithInt sOff[],
-                                                 const PylithInt sOff_x[],
-                                                 const PylithScalar s[],
-                                                 const PylithScalar s_t[],
-                                                 const PylithScalar s_x[],
-                                                 const PylithInt aOff[],
-                                                 const PylithInt aOff_x[],
-                                                 const PylithScalar a[],
-                                                 const PylithScalar a_t[],
-                                                 const PylithScalar a_x[],
-                                                 const PylithReal t,
-                                                 const PylithScalar x[],
-                                                 const PylithReal n[],
-                                                 const PylithInt numConstants,
-                                                 const PylithScalar constants[],
-                                                 PylithScalar f0[]) {
-    // Incoming auxiliary fields.
-    const PylithInt i_density = 0;
-    const PylithInt i_bodyForce = 1;
-
-    assert(numS >= 3);
-    assert(numA >= 2);
-
-    assert(sOff);
-    assert(s);
-    assert(f0);
-
-    assert(aOff);
-    assert(aOff[i_density] >= 0);
-    assert(aOff[i_bodyForce] >= 0);
-    assert(a);
-
-    const PylithInt spaceDim = dim + 1; // :KLUDGE: dim passed in is spaceDim-1
-
-    const PylithScalar density = a[aOff[i_density]];assert(density > _Elasticity::tolerance);
-    const PylithScalar* bodyForce = &a[aOff[i_bodyForce]];
-
-    for (PylithInt i = 0; i < spaceDim; ++i) {
-        f0[i] += +bodyForce[i] / density;
-    } // for
-}
-
-
-// ------------------------------------------------------------------------------------------------
-/** f0 function for negative fault face with both gravitational and body forces.
- *
- * Auxiliary fields: [density(1), body_force(dim), gravity_field(dim), ...]
- */
-void
-pylith::fekernels::Elasticity::f0l_neg_gravbodyforce(const PylithInt dim,
-                                                     const PylithInt numS,
-                                                     const PylithInt numA,
-                                                     const PylithInt sOff[],
-                                                     const PylithInt sOff_x[],
-                                                     const PylithScalar s[],
-                                                     const PylithScalar s_t[],
-                                                     const PylithScalar s_x[],
-                                                     const PylithInt aOff[],
-                                                     const PylithInt aOff_x[],
-                                                     const PylithScalar a[],
-                                                     const PylithScalar a_t[],
-                                                     const PylithScalar a_x[],
-                                                     const PylithReal t,
-                                                     const PylithScalar x[],
-                                                     const PylithReal n[],
-                                                     const PylithInt numConstants,
-                                                     const PylithScalar constants[],
-                                                     PylithScalar f0[]) {
-    const PylithInt _numA = 3;
-
-    // Incoming auxiliary fields.
-    const PylithInt i_density = 0;
-    const PylithInt i_bodyForce = 1;
-    const PylithInt i_gravityField = 2;
-
-    assert(_numA <= numA);
-    assert(aOff);
-
-    const PylithInt numSGrav = 0; // Number passed on to f0l_neg_grav.
-    const PylithInt numAGrav = 2; // Number passed on to f0l_neg_grav.
-    const PylithInt aOffGrav[2] = { aOff[i_density], aOff[i_gravityField] };
-    f0l_neg_grav(dim, numSGrav, numAGrav, NULL, NULL, NULL, NULL, NULL, aOffGrav, NULL, a, a_t, NULL,
-                 t, x, n, numConstants, constants, f0);
-
-    const PylithInt numSBody = 0; // Number passed on to f0l_neg_bodyforce.
-    const PylithInt numABody = 2; // Number passed on to f0l_neg_bodyforce.
-    const PylithInt aOffBody[2] = { aOff[i_density], aOff[i_bodyForce] };
-    f0l_neg_bodyforce(dim, numSBody, numABody, NULL, NULL, NULL, NULL, NULL, aOffBody, NULL, a, a_t, NULL,
-                      t, x, n, numConstants, constants, f0);
-}
-
-
-// ------------------------------------------------------------------------------------------------
-/** f0 function for positive fault face with both gravitational and body forces.
- *
- * Auxiliary fields: [density(1), body_force(dim), gravity_field(dim), ...]
- */
-void
-pylith::fekernels::Elasticity::f0l_pos_gravbodyforce(const PylithInt dim,
-                                                     const PylithInt numS,
-                                                     const PylithInt numA,
-                                                     const PylithInt sOff[],
-                                                     const PylithInt sOff_x[],
-                                                     const PylithScalar s[],
-                                                     const PylithScalar s_t[],
-                                                     const PylithScalar s_x[],
-                                                     const PylithInt aOff[],
-                                                     const PylithInt aOff_x[],
-                                                     const PylithScalar a[],
-                                                     const PylithScalar a_t[],
-                                                     const PylithScalar a_x[],
-                                                     const PylithReal t,
-                                                     const PylithScalar x[],
-                                                     const PylithReal n[],
-                                                     const PylithInt numConstants,
-                                                     const PylithScalar constants[],
-                                                     PylithScalar f0[]) {
-    const PylithInt _numA = 3;
-
-    // Incoming auxiliary fields.
-    const PylithInt i_density = 0;
-    const PylithInt i_bodyForce = 1;
-    const PylithInt i_gravityField = 2;
-
-    assert(_numA <= numA);
-    assert(aOff);
-
-    const PylithInt numSGrav = 0; // Number passed on to f0l_pos_grav.
-    const PylithInt numAGrav = 2; // Number passed on to f0l_pos_grav.
-    const PylithInt aOffGrav[2] = { aOff[i_density], aOff[i_gravityField] };
-    f0l_pos_grav(dim, numSGrav, numAGrav, NULL, NULL, NULL, NULL, NULL, aOffGrav, NULL, a, a_t, NULL,
-                 t, x, n, numConstants, constants, f0);
-
-    const PylithInt numSBody = 0; // Number passed on to f0l_pos_bodyforce.
-    const PylithInt numABody = 2; // Number passed on to f0l_pos_bodyforce.
-    const PylithInt aOffBody[2] = { aOff[i_density], aOff[i_bodyForce] };
-    f0l_pos_bodyforce(dim, numSBody, numABody, NULL, NULL, NULL, NULL, NULL, aOffBody, NULL, a, a_t, NULL,
-                      t, x, n, numConstants, constants, f0);
-}
-
-
-// ------------------------------------------------------------------------------------------------
 // Jf0 function for dynamic slip constraint equation for negative side of the fault.
 void
 pylith::fekernels::Elasticity::Jf0ll_neg(const PylithInt dim,
@@ -684,26 +264,17 @@ pylith::fekernels::Elasticity::Jf0ll_neg(const PylithInt dim,
                                          const PylithInt numConstants,
                                          const PylithScalar constants[],
                                          PylithScalar Jf0[]) {
-    const PylithInt i_density = 0;
-
     assert(numS >= 1);
     assert(a);
-    assert(aOff);
-    assert(aOff[i_density] >= 0);
 
     assert(numS >= 2);
     assert(Jf0);
     assert(sOff);
-    assert(n);
 
     const PylithInt spaceDim = dim+1; // :KLUDGE: dim passed in is spaceDim-1
 
-    const PylithScalar density = a[aOff[i_density]];assert(density > _Elasticity::tolerance);
-
-    const PylithInt ncols = spaceDim;
-
     for (PylithInt i = 0; i < spaceDim; ++i) {
-        Jf0[i*ncols+i] += +1.0 / density;
+        Jf0[i*spaceDim+i] += +1.0;
     } // for
 } // Jf0ll_neg
 
@@ -731,26 +302,17 @@ pylith::fekernels::Elasticity::Jf0ll_pos(const PylithInt dim,
                                          const PylithInt numConstants,
                                          const PylithScalar constants[],
                                          PylithScalar Jf0[]) {
-    const PylithInt i_density = 0;
-
     assert(numS >= 1);
     assert(a);
-    assert(aOff);
-    assert(aOff[i_density] >= 0);
 
     assert(numS >= 2);
     assert(Jf0);
     assert(sOff);
-    assert(n);
 
     const PylithInt spaceDim = dim+1; // :KLUDGE: dim passed in is spaceDim-1
 
-    const PylithScalar density = a[aOff[i_density]];assert(density > _Elasticity::tolerance);
-
-    const PylithInt ncols = spaceDim;
-
     for (PylithInt i = 0; i < spaceDim; ++i) {
-        Jf0[i*ncols+i] += +1.0 / density;
+        Jf0[i*spaceDim+i] += +1.0;
     } // for
 } // Jf0ll_pos
 
@@ -865,5 +427,6 @@ pylith::fekernels::Elasticity3D::cauchyStrain(const PylithInt dim,
     strain[4] = strain_yz;
     strain[5] = strain_xz;
 } // cauchyStrain
+
 
 // End of file
