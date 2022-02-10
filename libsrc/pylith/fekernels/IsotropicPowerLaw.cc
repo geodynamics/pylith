@@ -2338,7 +2338,7 @@ void pylith::fekernels::IsotropicPowerLaw3D::deviatoricStress(const PylithInt di
         dtTest = 1.0e30;
     } else {
         dtTest = pow((powerLawReferenceStress/j2Test), (powerLawExponent - 1.0)) *
-            (powerLawReferenceStress/shearModulus)/(powerLawReferenceStrainRate * 6.0);
+            (powerLawReferenceStress/shearModulus)/(powerLawReferenceStrainRate * 2.0);
     } //else
     std::cout << "Relaxation time:" << dtTest << std::endl;
     std::cout << "strainTpdt:"; for(int i=0;i<6;++i) {std::cout << " " << strainTpdt[i]; } std::cout << std::endl;
@@ -2356,7 +2356,7 @@ void pylith::fekernels::IsotropicPowerLaw3D::deviatoricStress(const PylithInt di
     else
     {
         dtTest = pow((powerLawReferenceStress / j2Test), (powerLawExponent - 1.0)) *
-                 (powerLawReferenceStress / shearModulus) / (powerLawReferenceStrainRate * 6.0);
+                 (powerLawReferenceStress / shearModulus) / (powerLawReferenceStrainRate * 2.0);
     } //else
     std::cout << "Relaxation time:" << dtTest << std::endl;
 #endif
@@ -2518,7 +2518,7 @@ void pylith::fekernels::IsotropicPowerLaw3D::deviatoricStress_refstate(const Pyl
         dtTest = 1.0e30;
     } else {
         dtTest = pow((powerLawReferenceStress/j2Test), (powerLawExponent - 1.0)) *
-            (powerLawReferenceStress/shearModulus)/(powerLawReferenceStrainRate * 6.0);
+            (powerLawReferenceStress/shearModulus)/(powerLawReferenceStrainRate * 2.0);
     } //else
     std::cout << "Relaxation time:" << dtTest << std::endl;
     std::cout << "strainTpdt:"; for(int i=0;i<6;++i) {std::cout << " " << strainTpdt[i]; } std::cout << std::endl;
@@ -2536,7 +2536,7 @@ void pylith::fekernels::IsotropicPowerLaw3D::deviatoricStress_refstate(const Pyl
     else
     {
         dtTest = pow((powerLawReferenceStress / j2Test), (powerLawExponent - 1.0)) *
-                 (powerLawReferenceStress / shearModulus) / (powerLawReferenceStrainRate * 6.0);
+                 (powerLawReferenceStress / shearModulus) / (powerLawReferenceStrainRate * 2.0);
     } //else
     std::cout << "Relaxation time:" << dtTest << std::endl;
 #endif
