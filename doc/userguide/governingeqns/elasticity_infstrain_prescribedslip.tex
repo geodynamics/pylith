@@ -1,33 +1,30 @@
 % ----------------------------------------------------------------------
 \section{Elasticity with Infinitesimal Strain and Prescribed Slip on Faults}
 
-For each fault, which is an internal interface, we add a boundary
-condition to the elasticity equation prescribing the jump in the
-displacement field across the fault,
+For each fault, which is an internal interface, we add a boundary condition to the elasticity equation prescribing the jump in the displacement field across the fault,
 \begin{gather}
   \label{eqn:bc:prescribed_slip}
-  \vec{u}^+(\vec{x},t) - \vec{u}^-(\vec{x},t) - \vec{d}(\vec{x},t) = \vec{0} \text{ on }\Gamma_f,
+  \vec{u}^+ - \vec{u}^- - \vec{d}(\vec{x},t) = \vec{0} \text{ on }\Gamma_f,
 \end{gather}
-where $\vec{u}^+$ is the displacement vector on the ``positive'' side
-of the fault, $\vec{u}^-$ is the displacement vector on the
-``negative'' side of the fault, $\vec{d}$ is the slip vector on the
-fault, and $\vec{n}$ is the fault normal which points from the
-negative side of the fault to the positive side of the fault. Note
-that as an alternative to prescribing the jump in displacement across
-the fault, we can also prescribe the jump in velocity or acceleration
-across the fault in terms of slip rate or slip acceleration,
-respectively.
+where $\vec{u}^+$ is the displacement vector on the ``positive'' side of the fault, $\vec{u}^-$ is the displacement vector on the ``negative'' side of the fault, $\vec{d}$ is the slip vector on the fault, and $\vec{n}$ is the fault normal which points from the negative side of the fault to the positive side of the fault.
+We enforce the jump in displacements across the fault using a Lagrange multiplier corresponding to equal and opposite tractions on the two sides of the fault.
 
-Using a domain decomposition approach for constraining the fault slip
-yields additional Neumann-like boundary conditions on the fault
-surface,
+We apply conservation of momemtum,
+\begin{equation}
+  \int_\Omega \rho(\vec{x}) \frac{\partial \vec{v}}{\partial t} \, d\Omega = \int_\Omega \vec{f}(\vec{x},t) \, d\Omega + \int_\Gamma \vec{\tau}(\vec{x},t) \, d\Gamma,
+\end{equation}
+to a fault interface $\Omega_f$ with boundaries $\Gamma_{f^+}$ and $\Gamma_{f^-}$.
+For a fault interface, the body force is zero, $\vec{f}(\vec{x},t) = \vec{0}$.
+The tractions on the positive and negative fault faces are
 \begin{gather}
-  \tensor{\sigma} \cdot \vec{n} = -\vec{\lambda}(\vec{x},t) \text{ on }\Gamma_{f^+}, \\
-  \tensor{\sigma} \cdot \vec{n} = +\vec{\lambda}(\vec{x},t) \text{ on }\Gamma_{f^-},
+  \tau^+(\vec{x},t) = \tensor{\sigma}^+ \cdot \vec{n} + \vec{\lambda} \\
+  \tau^-(\vec{x},t) = \tensor{\sigma}^- \cdot \vec{n} - \vec{\lambda},
 \end{gather}
-where $\vec{\lambda}$ is the vector of Lagrange multipliers
-corresponding to the tractions applied to the fault surface to
-generate the prescribed slip. 
+where $\vec{\lambda}$ is the Lagrange multiplier that corresponds to the fault traction generating the prescribed slip and $\tensor{\sigma}^+$ and $\tensor{\sigma}^-$ are the stresses in the domain at the positive and negative sides of the fault.
+Thus, for a fault interface, we have
+\begin{equation}
+  \int_{\Omega_f} \rho(\vec{x}) \frac{\partial \vec{v}}{\partial t} \, d\Omega = \int_{\Gamma_{f^+}} \tensor{\sigma} \cdot \vec{n} + \vec{\lambda} \, d\Gamma + \int_{\Gamma_{f^-}} \tensor{\sigma} \cdot \vec{n} - \vec{\lambda} \, d\Gamma.
+\end{equation}
 
 \begin{table}[htbp]
   \caption{Mathematical notation for elasticity equation with
@@ -54,13 +51,20 @@ Source terms & $\vec{f}$ & Body force per unit volume, for example $\rho \vec{g}
 
 \subsection{Quasistatic}
 
-As in the case of elasticity without faults, we first consider the
-quasistatic case in which we neglect the inertial term
-($\rho \frac{\partial \vec{v}}{\partial t} \approx \vec{0}$). We place
-all of the terms in the elasticity equation on the LHS, consistent
-with implicit time stepping. Our solution vector consists of both
-displacements and Lagrange multipliers, and the strong form for the
-system of equations is
+As in the case of elasticity without faults, we first consider the quasistatic case in which we neglect the inertial term ($\rho \frac{\partial \vec{v}}{\partial t} \approx \vec{0}$).
+We place all of the terms in the elasticity equation on the LHS, consistent with implicit time stepping.
+Our equation of the conservation of momentum on the fault interface reduces to
+\begin{equation}
+  \int_{\Gamma_{f^+}} \tensor{\sigma} \cdot \vec{n} + \vec{\lambda} \, d\Gamma + \int_{\Gamma_{f^-}} \tensor{\sigma} \cdot \vec{n} - \vec{\lambda} \, d\Gamma = 0.
+\end{equation}
+We enforce this equation on each portion of the fault interface along with our prescribed slip constraint, which leads to
+\begin{gather}
+  \tensor{\sigma} \cdot \vec{n} + \vec{\lambda} = \vec{0} \text{ on } \Gamma_{f^+}, \\
+  \tensor{\sigma} \cdot \vec{n} - \vec{\lambda} = \vec{0}\text{ on } \Gamma_{f^-}, \\
+  \vec{u}^+ - \vec{u}^- - \vec{d}(\vec{x},t) = \vec{0},  
+\end{gather}
+
+Our solution vector consists of both displacements and Lagrange multipliers, and the strong form for the system of equations is
 \begin{gather}
   % Solution
   \vec{s}^T = \left( \vec{u} \quad \vec{\lambda} \right)^T \\
@@ -71,14 +75,12 @@ system of equations is
   % Dirichlet
   \vec{u} = \vec{u}_0(\vec{x},t) \text{ on }\Gamma_u, \\
   % Prescribed slip
-  \vec{u}^+(\vec{x},t) - \vec{u}^-(\vec{x},t) - \vec{d}(\vec{x},t) = \vec{0} \text{ on }\Gamma_f,  \\
+  \vec{u}^+ - \vec{u}^- - \vec{d}(\vec{x},t) = \vec{0} \text{ on }\Gamma_f,  \\
   \tensor{\sigma} \cdot \vec{n} = -\vec{\lambda}(\vec{x},t) \text{ on }\Gamma_{f^+}, \text{ and}\\
   \tensor{\sigma} \cdot \vec{n} = +\vec{\lambda}(\vec{x},t) \text{ on }\Gamma_{f^-}.
 \end{gather}
-We create the weak form by taking the dot product with the trial
-function $\trialvec[u]$ or $\trialvec[\lambda]$ and integrating over
-the domain. After using the divergence theorem and incorporating the
-Neumann boundary and fault interface conditions, we have
+We create the weak form by taking the dot product with the trial function $\trialvec[u]$ or $\trialvec[\lambda]$ and integrating over the domain.
+After using the divergence theorem and incorporating the Neumann boundary and fault interface conditions, we have
 \begin{gather}
   % Elasticity
   \int_\Omega \trialvec[u] \cdot \vec{f}(\vec{x},t) + \nabla \trialvec[v] : -\tensor{\sigma}(\vec{u}) \, d\Omega
@@ -87,12 +89,10 @@ Neumann boundary and fault interface conditions, we have
   + \trialvec[u^-] \cdot \left(+\vec{\lambda}(\vec{x},t)\right)\, d\Gamma = 0\\
   % Prescribed slip
   \int_{\Gamma_{f}} \trialvec[\lambda] \cdot \left(
-    -\vec{u}^+(\vec{x},t) + \vec{u}^-(\vec{x},t) + \vec{d}(\vec{x},t) \right) \, d\Gamma = 0.
+    -\vec{u}^+ + \vec{u}^- + \vec{d}(\vec{x},t) \right) \, d\Gamma = 0.
 \end{gather}
-We have chosen the signs in the last equation so that the Jacobian
-will be symmetric with respect to the Lagrange multiplier. We solve
-the system of equations using implicit time stepping, making use of
-residuals functions and Jacobians for the LHS.
+We have chosen the signs in the last equation so that the Jacobian will be symmetric with respect to the Lagrange multiplier.
+We solve the system of equations using implicit time stepping, making use of residuals functions and Jacobians for the LHS.
 
 
 \subsubsection{Residual Pointwise Functions}
@@ -106,16 +106,14 @@ F^u(t,s,\dot{s}) &= \int_\Omega \trialvec[u] \cdot \eqnannotate{\vec{f}(\vec{x},
   + \trialvec[u^-] \cdot \eqnannotate{\left(+\vec{\lambda}(\vec{x},t)\right)}{\vec{f}^u_0}\, d\Gamma \\
   % Fl
   F^\lambda(t,s,\dot{s}) &= \int_{\Gamma_{f}} \trialvec[\lambda] \cdot \eqnannotate{\left(
-    -\vec{u}^+(\vec{x},t) + \vec{u}^-(\vec{x},t) + \vec{d}(\vec{x},t) \right)}{\vec{f}^\lambda_0} \, d\Gamma, \\
+    -\vec{u}^+ + \vec{u}^- + \vec{d}(\vec{x},t) \right)}{\vec{f}^\lambda_0} \, d\Gamma, \\
   % Gu
   G^u(t,s) &= 0 \\
   % Gl
   G^\lambda(t,s) &= 0
 \end{align}
-Compared to the quasistatic elasticity case without a fault, we have
-simply added additional pointwise functions associated with the
-fault. Our fault implementation does not change the formulation for
-the materials or external Dirichlet or Neumann boundary conditions.
+Compared to the quasistatic elasticity case without a fault, we have simply added additional pointwise functions associated with the fault.
+Our fault implementation does not change the formulation for the materials or external Dirichlet or Neumann boundary conditions.
 
 \subsubsection{Jacobian Pointwise Functions}
 
@@ -143,70 +141,58 @@ This LHS Jacobian has the structure
   J_F = \left( \begin{array} {cc} J_F^{uu} & J_F^{u\lambda} \\ J_F^{\lambda u} & 0 \end{array} \right)
       = \left( \begin{array} {cc} J_F^{uu} & C^T \\ C & 0 \end{array} \right),
 \end{equation}
-where $C$ contains entries of $\pm 1$ for degrees of
-freedom on the two sides of the fault. The Schur complement of $J$
-with respect to $J_F^{uu}$ is $-C\left(J_F^{uu}\right)^{-1}C^T$.
+where $C$ contains entries of $\pm 1$ for degrees of freedom on the two sides of the fault. The Schur complement of $J$ with respect to $J_F^{uu}$ is $-C\left(J_F^{uu}\right)^{-1}C^T$.
 
 
 \subsection{Dynamic}
 
-The equation prescribing fault slip is independent of the Lagrange
-multiplier, so we do not have a system of equations that we can put in
-the form $\dot{s} = G^*(t,s)$. Instead, we have a
-differential-algebraic set of equations (DAEs), which we solve using
-an implicit-explicit (IMEX) time integration scheme. As in the case of
-dynamic elasticity without faults, we introduce the velocity
-($\vec{v}$) as an unknown to turn the elasticity equation into two
-first order equations. The strong form for our system of equations is:
+The equation prescribing fault slip is independent of the Lagrange multiplier, so we do not have a system of equations that we can put in
+the form $\dot{s} = G^*(t,s)$.
+Instead, we have a differential-algebraic set of equations (DAEs), which we solve using an implicit-explicit (IMEX) time integration scheme.
+As in the case of dynamic elasticity without faults, we introduce the velocity ($\vec{v}$) as an unknown to turn the elasticity equation into two first order equations.
+Our constraint for prescribed slip is
+\begin{equation}
+  \vec{u}^+ - \vec{u}^- - \vec{d} = \vec{0},
+\end{equation}
+where $\vec{u}$ is the displacement vector and $\vec{d}$ is the slip vector.
+In order to match the order of the time derivative in the elasticity equation, we take the second derivative of the prescribed slip equation with respect to time,
+\begin{equation}
+  \frac{\partial \vec{v}^+}{\partial t} - \frac{\partial \vec{v}^-}{\partial t} - \frac{\partial^2 \vec{d}}{\partial t^2} = \vec{0}.
+\end{equation}
+This means that our differential algebraic equations has a differentiation index of 2.
+
+The strong form for our system of equations is:
 \begin{gather}
   % Solution
   \vec{s}^T = \left( \vec{u} \quad \vec{v} \quad \vec{\lambda} \right)^T \\
   % Displacement-velocity
   \frac{\partial \vec{u}}{\partial t} = \vec{v}, \\
   % Elasticity
-  \rho(\vec{x}) \frac{\partial \vec{v}}{\partial t} =
-  \vec{f}(\vec{x},t) + \nabla \cdot \tensor{\sigma}(\vec{u}), \\
+  \rho(\vec{x}) \frac{\partial \vec{v}}{\partial t} = \vec{f}(\vec{x},t) + \nabla \cdot \tensor{\sigma}(\vec{u}), \\
   % Neumann BC
   \tensor{\sigma} \cdot \vec{n} = \vec{\tau} \text{ on } \Gamma_\tau. \\
   % Dirichlet BC
   \vec{u} = \vec{u}_0 \text{ on } \Gamma_u, \\
   % Presribed slip
-  \vec{u}^+(\vec{x},t) - \vec{u}^-(\vec{x},t) - \vec{d}(\vec{x},t) = \vec{0} \text{ on }\Gamma_f,  \\
-  \tensor{\sigma} \cdot \vec{n} = -\vec{\lambda}(\vec{x},t) \text{ on }\Gamma_{f^+}, \text{ and}\\
-  \tensor{\sigma} \cdot \vec{n} = +\vec{\lambda}(\vec{x},t) \text{ on }\Gamma_{f^-}.
-\end{gather}
-The differentiation index is 2 because we must take the second time
-derivative of the prescribed slip equation to match the order of the
-time derivative in the elasticity equation,
-\begin{gather}
-  \frac{\partial \vec{v}^+}{\partial t} - \frac{\partial \vec{v}^-}{\partial t} -
-  \frac{\partial^2 \vec{d}(\vec{x},t)}{\partial t^2} = \vec{0}.
+  \frac{\partial \vec{v}^+}{\partial t} - \frac{\partial \vec{v}^-}{\partial t} - \frac{\partial^2 \vec{d}(\vec{x},t)}{\partial t^2} = \vec{0}, \\
+  \int_{\Omega_f} \rho(\vec{x}) \frac{\partial \vec{v}}{\partial t} \, d\Omega = \int_{\Gamma_{f^+}} \tensor{\sigma} \cdot \vec{n} + \vec{\lambda} \, d\Gamma + \int_{\Gamma_{f^-}} \tensor{\sigma} \cdot \vec{n} - \vec{\lambda} \, d\Gamma.
 \end{gather}
 We generate the weak form in the usual way,
 \begin{gather}
   % Displacement-velocity
-  \int_{\Omega} \trialvec[u] \cdot \frac{\partial \vec{u}}{\partial t} \, d\Omega = 
-  \int_{\Omega} \trialvec[u] \cdot \vec{v} \, d\Omega, \\
+  \int_{\Omega} \trialvec[u] \cdot \frac{\partial \vec{u}}{\partial t} \, d\Omega =  \int_{\Omega} \trialvec[u] \cdot \vec{v} \, d\Omega, \\
   % Elasticity
   \begin{multlined}
-  \int_{\Omega} \trialvec[v] \cdot \rho(\vec{x}) \frac{\partial \vec{v}}{\partial t} \, d\Omega 
-  = \int_\Omega \trialvec[v] \cdot \vec{f}(\vec{x},t) + \nabla \trialvec[v] : -\tensor{\sigma}(\vec{u}) \, d\Omega
-  + \int_{\Gamma_\tau} \trialvec[v] \cdot \vec{\tau}(\vec{x},t) \, d\Gamma \\
-  + \int_{\Gamma_{f}} \trialvec[v^+] \cdot \left(-\vec{\lambda}(\vec{x},t)\right)
-  + \trialvec[v^-] \cdot \left(+\vec{\lambda}(\vec{x},t)\right)\, d\Gamma,
+  \int_{\Omega} \trialvec[v] \cdot \rho(\vec{x}) \frac{\partial \vec{v}}{\partial t} \, d\Omega  = \int_\Omega \trialvec[v] \cdot \vec{f}(\vec{x},t) + \nabla \trialvec[v] : -\tensor{\sigma}(\vec{u}) \, d\Omega + \int_{\Gamma_\tau} \trialvec[v] \cdot \vec{\tau}(\vec{x},t) \, d\Gamma \\
+  + \int_{\Gamma_{f}} \trialvec[v^+] \cdot \left(-\vec{\lambda}(\vec{x},t)\right) + \trialvec[v^-] \cdot \left(+\vec{\lambda}(\vec{x},t)\right)\, d\Gamma,
   \end{multlined}\\
   % Prescribed slip
-  \int_{\Gamma_f} \trialvec[\lambda] \cdot \left(
-    \frac{\partial \vec{v}^+}{\partial t} - \frac{\partial \vec{v}^-}{\partial t} -
-    \frac{\partial^2 \vec{d}(\vec{x},t)}{\partial t^2} \right) \, d\Gamma = 0.
+  \int_{\Gamma_f} \trialvec[\lambda] \cdot \left(\frac{\partial \vec{v}^+}{\partial t} - \frac{\partial \vec{v}^-}{\partial t} - \frac{\partial^2 \vec{d}(\vec{x},t)}{\partial t^2} \right) \, d\Gamma = 0. \\
+  \int_{\Omega_f} \trialvec[\lambda] \cdot \rho(\vec{x}) \frac{\partial \vec{v}}{\partial t} \, d\Omega = \int_{\Gamma_{f^+}} \trialvec[\lambda] \cdot \left( \tensor{\sigma} \cdot \vec{n} + \vec{\lambda} \right) \, d\Gamma + \int_{\Gamma_{f^-}} \trialvec[\lambda] \cdot \left( \tensor{\sigma} \cdot \vec{n} - \vec{\lambda} \right) \, d\Gamma.
 \end{gather}
 
-For compatibility with PETSc TS IMEX implementations, we need
-$\dot{\vec{s}}$ on the LHS for the explicit part (displacement-velocity and
-elasticity equations) and we need $\vec{\lambda}$ in the equation for
-the implicit part (prescribed slip equation). We first focus on the
-explicit part and create a lumped LHS Jacobian matrix, $M$, so that we
-have
+For compatibility with PETSc TS IMEX implementations, we need $\dot{\vec{s}}$ on the LHS for the explicit part (displacement-velocity and elasticity equations) and we need $\vec{\lambda}$ in the equation for the implicit part (prescribed slip equation).
+We first focus on the explicit part and select numerical quadrature that yields a lumped mass matrix, $M$, so that we have
 \begin{gather}
   % Displacement-velocity
   \label{eqn:displacement:velocity:prescribed:slip:weak:form}
@@ -214,88 +200,22 @@ have
   % Elasticity
   \label{eqn:elasticity:prescribed:slip:dynamic:weak:form}
   \begin{multlined}
-  \frac{\partial \vec{v}}{\partial t}
-  = M_v^{-1} \int_\Omega \trialvec[v] \cdot \vec{f}(\vec{x},t) + \nabla \trialvec[v] : -\tensor{\sigma}(\vec{u}) \, d\Omega
-  + M_v^{-1} \int_{\Gamma_\tau} \trialvec[v] \cdot \vec{\tau}(\vec{x},t) \, d\Gamma \\
-  + M_{v^+}^{-1} \int_{\Gamma_{f}} \trialvec[v^+] \cdot \left(-\vec{\lambda}(\vec{x},t)\right) \, d\Gamma
-  + M_{v^-}^{-1} \int_{\Gamma_{f}}\trialvec[v^-] \cdot \left(+\vec{\lambda}(\vec{x},t)\right) \, d\Gamma,
-\end{multlined}\\
-% Mu
-M_u = \mathit{Lump}\left( \int_\Omega \trialscalar[u]_i \delta_{ij} \basisscalar[u]_j \, d\Omega \right), \\
-% Mv
-M_v = \mathit{Lump}\left( \int_\Omega \trialscalar[v]_i \rho(\vec{x}) \delta_{ij} \basisscalar[v]_j \, d\Omega \right).
+  \frac{\partial \vec{v}}{\partial t} = M_v^{-1} \int_\Omega \trialvec[v] \cdot \vec{f}(\vec{x},t) + \nabla \trialvec[v] : -\tensor{\sigma}(\vec{u}) \, d\Omega + M_v^{-1} \int_{\Gamma_\tau} \trialvec[v] \cdot \vec{\tau}(\vec{x},t) \, d\Gamma \\
+  + M_{v^+}^{-1} \int_{\Gamma_{f}} \trialvec[v^+] \cdot \left(-\vec{\lambda}(\vec{x},t)\right) \, d\Gamma + M_{v^-}^{-1} \int_{\Gamma_{f}}\trialvec[v^-] \cdot \left(+\vec{\lambda}(\vec{x},t)\right) \, d\Gamma,
+  \end{multlined}\\
+  M_u = \mathit{Lump}\left( \int_\Omega \trialscalar[u]_i \delta_{ij} \basisscalar[u]_j \, d\Omega \right), \\
+  M_v = \mathit{Lump}\left( \int_\Omega \trialscalar[v]_i \rho(\vec{x}) \delta_{ij} \basisscalar[v]_j \, d\Omega \right).
 \end{gather}
-Now, focusing on the implicit part we want to introduce
-$\vec{\lambda}$ into the prescribed slip equation. We solve the
-elasticity equation for $\frac{\partial \vec{v}}{\partial t}$, create
-the weak form, and substitute into the prescribed slip
-equation. Solving the elasticity equation for
-$\frac{\partial \vec{v}}{\partial t}$, we have
-\begin{equation}
-  \frac{\partial \vec{v}}{\partial t} = \frac{1}{\rho(x)} \vec{f}(\vec{x},t) + \frac{1}{\rho(x)} \left(\nabla \cdot \tensor{\sigma}(\vec{u}) \right),
-\end{equation}
-and the corresponding weak form is
-\begin{equation}
-  \label{eqn:prescribed:slip:DAE:weak:form}
-  \int_{\Omega} \trialvec[v] \cdot \frac{\partial \vec{v}}{\partial t} \, d\Omega
-  = \int_\Omega \trialvec[v] \cdot \frac{1}{\rho(x)} \vec{f}(\vec{x},t) + \trialvec[v] \cdot \frac{1}{\rho(x)} \left(\nabla \cdot \tensor{\sigma}(\vec{u}) \right) \, d\Omega,
-\end{equation}
-We apply the divergence theorem,
-\begin{equation}
-  \int_{\Omega} \nabla \cdot \vec{F} \, d\Omega = \int_\Gamma \vec{F} \cdot \vec{n} \, d\Gamma,
-\end{equation}
-with $\vec{F} = \trialvec[v] \cdot \frac{1}{\rho(x)} \left(\nabla \cdot \tensor{\sigma}(\vec{u})\right)$ to get
-\begin{equation}
-  \int_\Omega \trialvec[v] \cdot \frac{1}{\rho(x)} \left(\nabla \cdot \tensor{\sigma}(\vec{u}) \right) \, d\Omega
-  = \int_\Gamma \trialvec[v] \cdot \left( \frac{1}{\rho(x)} \tensor{\sigma}(\vec{u}) \cdot \vec{n} \right) \, d\Gamma
-  + \int_\Omega \nabla\trialvec[v] : \left(-\frac{1}{\rho(\vec{x})} \tensor{\sigma}(\vec{u}) \right)
-  + \trialvec[v] \cdot \left(-\frac{\nabla \rho(\vec{x})}{\rho^2} \cdot \tensor{\sigma}(\vec{u}) \right) \, d\Omega.
-\end{equation}
-This equations applies throughout the entire domain, but we are only interested in the fault interface.
-The fault interface is interior to the domain, so there is no overlap with external Neumann boundary conditions.
-Restricting this equation to the cohesive cells (fault interface) and taking the limit as the cell collapses to zero volume yields
+For the implicit part, we can separate the integration of the weak form for negative and positive sides of the fault interface, which yields
 \begin{gather}
-  \int_\Omega \trialvec[v^+] \cdot \frac{1}{\rho(x)} \left(\nabla \cdot \tensor{\sigma}(\vec{u}) \right) \, d\Omega
-  = \int_{\Gamma_f} \trialvec[v^+] \cdot \left(-\frac{1}{\rho(x)} \vec{\lambda} \right) \, d\Gamma
-  + \int_\Omega \nabla\trialvec[v^+] : \left(-\frac{1}{\rho(\vec{x})} \tensor{\sigma}(\vec{u}) \right)
-  + \trialvec[v^+] \cdot \, \left(-\frac{\nabla \rho(\vec{x})}{\rho^2} \cdot \tensor{\sigma}(\vec{u}) \right) \, d\Omega, \\
-  \int_\Omega \trialvec[v^-] \cdot \frac{1}{\rho(x)} \left(\nabla \cdot \tensor{\sigma}(\vec{u}) \right) \, d\Omega
-  = \int_{\Gamma_f} \trialvec[v^-] \cdot \left(+\frac{1}{\rho(x)} \vec{\lambda} \right) \, d\Gamma
-  + \int_\Omega \nabla\trialvec[v^-] : \left(-\frac{1}{\rho(\vec{x})} \tensor{\sigma}(\vec{u}) \right)
-  + \trialvec[v^-] \cdot \, \left(-\frac{\nabla \rho(\vec{x})}{\rho^2} \cdot \tensor{\sigma}(\vec{u}) \right) \, d\Omega.
+  M_{v^+} \frac{\partial \vec{v}^+}{\partial t} = \int_{\Gamma_{f^+}} \trialvec[\lambda] \cdot \left( \tensor{\sigma} \cdot \vec{n} + \vec{\lambda} \right) \, d\Gamma, \\
+  M_{v^-} \frac{\partial \vec{v}^-}{\partial t} = \int_{\Gamma_{f^-}} \trialvec[\lambda] \cdot \left( \tensor{\sigma} \cdot \vec{n} - \vec{\lambda} \right) \, d\Gamma.
 \end{gather}
-Picking $\trialvec[v]=\trialvec[\lambda]$ and substituting into equation~\vref{eqn:prescribed:slip:DAE:weak:form} gives
-\begin{multline}
-  \int_{\Gamma_f} \trialvec[\lambda] \cdot \left(
-    \frac{\partial \vec{v}^+}{\partial t} - \frac{\partial \vec{v}^-}{\partial t} -
-    \frac{\partial^2 \vec{d}(\vec{x},t)}{\partial t^2} \right) \, d\Gamma = \\
-  \int_\Omega \trialvec[v^+] \cdot \left( \frac{1}{\rho(\vec{x})} \vec{f}(\vec{x}, t)
-    -\frac{\nabla \rho(\vec{x})}{\rho^2(\vec{x})} \cdot \tensor{\sigma}(\vec{u}) \right) 
-  + \nabla \trialvec[v^+] : \left(-\frac{1}{\rho(\vec{x})} \tensor{\sigma}(\vec{u}) \right) \, d\Omega
-  + \int_{\Gamma_f} \trialvec[v^+] \cdot \left(-\frac{1}{\rho(\vec{x})} \vec{\lambda} \right) \, d\Gamma \\
-  - \int_\Omega \trialvec[v^-] \cdot \left( \frac{1}{\rho(\vec{x})} \vec{f}(\vec{x}, t)
-  -\frac{\nabla \rho(\vec{x})}{\rho^2(\vec{x})} \cdot \tensor{\sigma}(\vec{u}) \right)
-  + \nabla \trialvec[v^-] : \left(-\frac{1}{\rho(\vec{x})} \tensor{\sigma}(\vec{u}) \right) \, d\Omega
-  + \int_{\Gamma_f} \trialvec[v^-] \cdot \left(-\frac{1}{\rho(\vec{x})} \vec{\lambda} \right) \, d\Gamma \\
-  - \int_{\Gamma_f} \trialvec[\lambda] \cdot \frac{\partial^2 \vec{d}(\vec{x}, t)}{\partial t^2} \, d\Gamma.
-\end{multline}
-We rewrite the integrals over the domain involving the degrees of
-freedom adjacent to the fault, which correspond to the faces of the cohesive cells, as integrals over the positive and
-negative sides of the fault. These are implemented as integrals over
-the faces of cells adjacent to the fault; they involve quantities,
-such as density, that are defined only within the domain cells. After
-collecting and rearranging terms, we have
-\begin{multline}
+Using these equations to substitute in the expressions for the time derivative of the velocity on the negative and positive sides of the fault into the prescribed slip constraint equation yields
+\begin{equation}
   \label{eqn:elasticity:prescribed:slip:dynamic:DAE:weak:form}
-  \int_{\Gamma_{f^+}} \trialvec[\lambda] \cdot \frac{1}{\rho(\vec{x})} \left(
-    \vec{\lambda} - \vec{f}(\vec{x},t) + \frac{\nabla\rho(\vec{x})}{\rho(\vec{x})} \cdot \tensor{\sigma}(\vec{u}) \right)
-  + \nabla \trialvec[\lambda] : \left(+\frac{1}{\rho(\vec{x})} \tensor{\sigma}(\vec{u}) \right) \, d\Gamma \\
-  + \int_{\Gamma_{f^-}} \trialvec[\lambda] \cdot \frac{1}{\rho(\vec{x})} \left(
-    \vec{\lambda} + \vec{f}(\vec{x},t) - \frac{\nabla\rho(\vec{x})}{\rho(\vec{x})} \cdot \tensor{\sigma}(\vec{u}) \right)
-  + \nabla \trialvec[\lambda] : \left(-\frac{1}{\rho(\vec{x})} \tensor{\sigma}(\vec{u}) \right)  \, d\Gamma \\
-  + \int_{\Gamma_f} \trialvec[\lambda] \cdot \frac{\partial^2 \vec{d}(\vec{x}, t)}{\partial t^2} \, d\Gamma
-  = 0.
-\end{multline}
+  M_{v^+}^{-1} \int_{\Gamma_f^+} \trialvec[\lambda] \cdot \left(\tensor{\sigma} \cdot \vec{n} + \vec{\lambda}\right) \, d\Gamma + M_{v^-}^{-1} \int_{\Gamma_f^-} \trialvec[\lambda] \cdot \left( -\tensor{\sigma} \cdot \vec{n} + \vec{\lambda} \right) \, d\Gamma - \int_{\Gamma_f} \trialvec[\lambda] \cdot \frac{\partial^2 \vec{d}}{\partial t^2} \, d\Gamma = \vec{0}.
+\end{equation}
 
 
 \subsubsection{Residual Pointwise Functions}
@@ -307,32 +227,23 @@ Combining the explicit parts of the weak form in equations~\ref{eqn:displacement
   % Fv
   F^v(t,s,\dot{s}) = \frac{\partial \vec{v}}{\partial t} \\
   % Fl
-  \begin{multlined}
-    F^\lambda(t,s,\dot{s}) =   \int_{\Gamma_{f^+}} \trialvec[\lambda] \cdot \eqnannotate{\frac{1}{\rho(\vec{x})} \left(
-    \vec{\lambda} - \vec{f}(\vec{x},t) + \frac{\nabla\rho(\vec{x})}{\rho(\vec{x})} \cdot \tensor{\sigma}(\vec{u}) \right)}{f^\lambda_0}
-  + \nabla \trialvec[\lambda] : \eqnannotate{\left(+\frac{1}{\rho(\vec{x})} \tensor{\sigma}(\vec{u})\right)}{f^\lambda_1} \, d\Gamma \\
-  + \int_{\Gamma_{f^-}} \trialvec[\lambda] \cdot \eqnannotate{\frac{1}{\rho(\vec{x})} \left(
-    \vec{\lambda} + \vec{f}(\vec{x},t) - \frac{\nabla\rho(\vec{x})}{\rho(\vec{x})} \cdot \tensor{\sigma}(\vec{u}) \right)}{f^\lambda_0}
-  + \nabla \trialvec[\lambda] : \eqnannotate{\left(-\frac{1}{\rho(\vec{x})} \tensor{\sigma}(\vec{u}) \right)}{f^\lambda_1}  \, d\Gamma \\
-  + \int_{\Gamma_f} \trialvec[\lambda] \cdot \eqnannotate{\frac{\partial^2 \vec{d}(\vec{x}, t)}{\partial t^2}}{f^\lambda_0} \, d\Gamma
-  \end{multlined}\\
+    F^\lambda(t,s,\dot{s}) = \eqnannotate{M_{v^+}^{-1}}{c^+} \int_{\Gamma_f^+} \trialvec[\lambda] \cdot \eqnannotate{\left(\tensor{\sigma} \cdot \vec{n} + \vec{\lambda}\right)}{f^\lambda_0} \, d\Gamma + \eqnannotate{M_{v^-}^{-1}}{c^-} \int_{\Gamma_f^-} \trialvec[\lambda] \cdot \eqnannotate{\left( -\tensor{\sigma} \cdot \vec{n} + \vec{\lambda} \right)}{f^\lambda_0} \, d\Gamma - \int_{\Gamma_f} \trialvec[\lambda] \cdot \eqnannotate{\frac{\partial^2 \vec{d}}{\partial t^2}}{f^\lambda_0} \, d\Gamma = \vec{0}, \\
   % Gu
-  G^u(t,s) = \int_\Omega \trialvec[u] \cdot \eqnannotate{\vec{v}}{\vec{g}^u_0} \, d\Omega, \\
+  G^u(t,s) = \eqnannotate{M_{u}^{-1}}{c} \int_\Omega \trialvec[u] \cdot \eqnannotate{\vec{v}}{\vec{g}^u_0} \, d\Omega, \\
   % Gv
-  G^v(t,s) =  \int_\Omega \trialvec[v] \cdot \eqnannotate{\vec{f}(\vec{x},t)}{\vec{g}^v_0} + \nabla \trialvec[v] : \eqnannotate{-\tensor{\sigma}(\vec{u})}{\tensor{g^v_1}} \, d\Omega
+  G^v(t,s) =  \eqnannotate{M_{v}^{-1}}{c} \left( \int_\Omega \trialvec[v] \cdot \eqnannotate{\vec{f}(\vec{x},t)}{\vec{g}^v_0} + \nabla \trialvec[v] : \eqnannotate{-\tensor{\sigma}(\vec{u})}{\tensor{g^v_1}} \, d\Omega
   + \int_{\Gamma_\tau} \trialvec[v] \cdot \eqnannotate{\vec{\tau}(\vec{x},t)}{\vec{g}^v_0} \, d\Gamma,
   + \int_{\Gamma_{f}} \trialvec[v^+] \cdot \eqnannotate{\left(-\vec{\lambda}(\vec{x},t)\right)}{\vec{g}^v_0}
-             + \trialvec[v^-] \cdot \eqnannotate{\left(+\vec{\lambda}(\vec{x},t)\right)}{\vec{g}^v_0} \, d\Gamma, \\
+             + \trialvec[v^-] \cdot \eqnannotate{\left(+\vec{\lambda}(\vec{x},t)\right)}{\vec{g}^v_0} \, d\Gamma \right), \\
   % Gl
   G^\lambda(t,s) = 0
 \end{gather}
-
+The integrals for the explicit part are all weighted by the inverse of the lumped mass matrix.
+For the implicit part, only the integrals over the positive and negative sides of the fault are weighted by the inverse of the lumped mass matrix.
 
 \subsubsection{Jacobian Pointwise Functions}
 
-For the explicit part we have pointwise functions for computing the
-lumped LHS Jacobian. These are exactly the same pointwise functions as
-in the dynamic case without a fault,
+For the explicit part we have pointwise functions for computing the lumped LHS Jacobian. These are exactly the same pointwise functions as in the dynamic case without a fault,
 \begin{align}
   % J_F uu
   J_F^{uu} &= \frac{\partial F^u}{\partial u} + s_\mathit{tshift} \frac{\partial F^u}{\partial \dot{u}} =
@@ -345,16 +256,13 @@ For the implicit part, we have pointwise functions for the LHS Jacobians associa
 \begin{gather}
   \begin{multlined}
   % J_F lu
-  J_F^{\lambda u} = \frac{\partial F^\lambda}{\partial u} + s_\mathit{tshift} \frac{\partial F^\lambda}{\partial \dot{u}} = \\
-                    \int_{\Gamma_{f^+}} \trialscalar[\lambda]_i \eqnannotate{\frac{\rho_{,k}(\vec{x})}{\rho^2(\vec{x})} C_{ikjl}}{J^{\lambda u}_{f1}} \basisscalar[u]_{j,l}
-                    + \trialscalar[\lambda]_{i,k} \eqnannotate{+\frac{1}{\rho(\vec{x})} C_{ikjl}}{J^{\lambda u}_{f3}} \basisscalar[u]_{j,l} \, d\Gamma \\
-                    +\int_{\Gamma_{f^-}} \trialscalar[\lambda]_i \eqnannotate{-\frac{\rho_{,k}(\vec{x})}{\rho^2(\vec{x})} C_{ikjl}}{J^{\lambda u}_{f1}} \basisscalar[u]_{j,l}
-                    + \trialscalar[\lambda]_{i,k} \eqnannotate{-\frac{1}{\rho(\vec{x})} C_{ikjl}}{J^{\lambda u}_{f3}} \basisscalar[u]_{j,l} \, d\Gamma
+  J_F^{\lambda u} = \frac{\partial F^\lambda}{\partial u} + s_\mathit{tshift} \frac{\partial F^\lambda}{\partial \dot{u}} = 
+  \eqnannotate{M_{v^+}^{-1}}{c^+} \int_{\Gamma_{f^+}} \trialscalar[\lambda]_i \eqnannotate{ C_{kijl} n_k}{J^{\lambda u}_{f1}} \basisscalar[u]_{j,l} \, d\Gamma + \eqnannotate{M_{v^-}^{-1}}{c^-} \int_{\Gamma_{f^-}} \trialscalar[\lambda]_i \eqnannotate{- C_{kijl} n_k}{J^{\lambda u}_{f1}} \basisscalar[u]_{j,l} \, d\Gamma
                   \end{multlined} \\
   % J_F ll
   J_F^{\lambda \lambda} = \frac{\partial F^\lambda}{\partial \lambda} + s_\mathit{tshift} \frac{\partial F^\lambda}{\partial \dot{\lambda}} =
-             \int_{\Gamma_{f^+}} \trialscalar[\lambda]_i \eqnannotate{\frac{1}{\rho(\vec{x})} \delta_{ij}}{J^{\lambda\lambda}_{f0}} \basisscalar[\lambda]_j \, d\Gamma
-            + \int_{\Gamma_{f^-}} \trialscalar[\lambda]_i \eqnannotate{\frac{1}{\rho(\vec{x})} \delta_{ij}}{J^{\lambda\lambda}_{f0}} \basisscalar[\lambda]_j \, d\Gamma
+  \eqnannotate{M_{v^+}^{-1}}{c^+} \int_{\Gamma_{f^+}} \trialscalar[\lambda]_i \eqnannotate{ \delta_{ij}}{J^{\lambda\lambda}_{f0}} \basisscalar[\lambda]_j \, d\Gamma
+            + \eqnannotate{M_{v^-}^{-1}}{c^-} \int_{\Gamma_{f^-}} \trialscalar[\lambda]_i \eqnannotate{ \delta_{ij}}{J^{\lambda\lambda}_{f0}} \basisscalar[\lambda]_j \, d\Gamma
 \end{gather}
 
 
