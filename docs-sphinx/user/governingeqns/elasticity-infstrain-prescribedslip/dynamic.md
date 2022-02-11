@@ -32,16 +32,20 @@ The differentiation index is 2 because we must take the second time derivative o
 %
 We generate the weak form in the usual way,
 %
-\begin{gather}
+\begin{equation}
 % Displacement-velocity
 \int_{\Omega} {\vec{\psi}_\mathit{trial}^{u}} \cdot \frac{\partial \vec{u}}{\partial t} \, d\Omega = \int_{\Omega} {\vec{\psi}_\mathit{trial}^{u}} \cdot \vec{v} \, d\Omega, \\
 % Elasticity
-\int_{\Omega} {\vec{\psi}_\mathit{trial}^{v}} \cdot \rho(\vec{x}) \frac{\partial \vec{v}}{\partial t} \, d\Omega = \int_\Omega {\vec{\psi}_\mathit{trial}^{v}} \cdot \vec{f}(\vec{x},t) + \nabla {\vec{\psi}_\mathit{trial}^{v}} : -\boldsymbol{\sigma}(\vec{u}) \, d\Omega + \int_{\Gamma_\tau} {\vec{\psi}_\mathit{trial}^{v}} \cdot \vec{\tau}(\vec{x},t) \, d\Gamma \dots \\
-\dots + \int_{\Gamma_{f}} {\vec{\psi}_\mathit{trial}^{v^+}} \cdot \left(-\vec{\lambda}(\vec{x},t)\right) + {\vec{\psi}_\mathit{trial}^{v^-}} \cdot \left(+\vec{\lambda}(\vec{x},t)\right)\, d\Gamma, \\
+\end{equation}
+\begin{multline}
+\int_{\Omega} {\vec{\psi}_\mathit{trial}^{v}} \cdot \rho(\vec{x}) \frac{\partial \vec{v}}{\partial t} \, d\Omega = \int_\Omega {\vec{\psi}_\mathit{trial}^{v}} \cdot \vec{f}(\vec{x},t) + \nabla {\vec{\psi}_\mathit{trial}^{v}} : -\boldsymbol{\sigma}(\vec{u}) \, d\Omega + \int_{\Gamma_\tau} {\vec{\psi}_\mathit{trial}^{v}} \cdot \vec{\tau}(\vec{x},t) \, d\Gamma \\
+ + \int_{\Gamma_{f}} {\vec{\psi}_\mathit{trial}^{v^+}} \cdot \left(-\vec{\lambda}(\vec{x},t)\right) + {\vec{\psi}_\mathit{trial}^{v^-}} \cdot \left(+\vec{\lambda}(\vec{x},t)\right)\, d\Gamma, \\
+\end{multline}
 % Prescribed slip
+\begin{equation}
 \int_{\Gamma_f} {\vec{\psi}_\mathit{trial}^{\lambda}} \cdot \left(\frac{\partial \vec{v}^+}{\partial t} - \frac{\partial \vec{v}^-}{\partial t} - \frac{\partial^2 \vec{d}(\vec{x},t)}{\partial t^2} \right) \, d\Gamma = 0.
-\end{gather}
-
+\end{equation}
+%
 For compatibility with PETSc TS IMEX implementations, we need $\dot{\vec{s}}$ on the LHS for the explicit part (displacement-velocity and elasticity equations) and we need $\vec{\lambda}$ in the equation for the implicit part (prescribed slip equation).
 We first focus on the explicit part and create a lumped LHS Jacobian matrix, $M$, so that we have
 
@@ -53,8 +57,10 @@ We first focus on the explicit part and create a lumped LHS Jacobian matrix, $M$
 ```{math}
 :label: eqn:elasticity:prescribed:slip:dynamic:weak:form
 % Elasticity
-\frac{\partial \vec{v}}{\partial t} = M_v^{-1} \int_\Omega {\vec{\psi}_\mathit{trial}^{v}} \cdot \vec{f}(\vec{x},t) + \nabla {\vec{\psi}_\mathit{trial}^{v}} : -\boldsymbol{\sigma}(\vec{u}) \, d\Omega + M_v^{-1} \int_{\Gamma_\tau} {\vec{\psi}_\mathit{trial}^{v}} \cdot \vec{\tau}(\vec{x},t) \, d\Gamma \dots \\
-\dots + M_{v^+}^{-1} \int_{\Gamma_{f}} {\vec{\psi}_\mathit{trial}^{v^+}} \cdot \left(-\vec{\lambda}(\vec{x},t)\right) \, d\Gamma + M_{v^-}^{-1} \int_{\Gamma_{f}}{\vec{\psi}_\mathit{trial}^{v^-}} \cdot \left(+\vec{\lambda}(\vec{x},t)\right) \, d\Gamma, \\
+\begin{multline}
+\frac{\partial \vec{v}}{\partial t} = M_v^{-1} \int_\Omega {\vec{\psi}_\mathit{trial}^{v}} \cdot \vec{f}(\vec{x},t) + \nabla {\vec{\psi}_\mathit{trial}^{v}} : -\boldsymbol{\sigma}(\vec{u}) \, d\Omega + M_v^{-1} \int_{\Gamma_\tau} {\vec{\psi}_\mathit{trial}^{v}} \cdot \vec{\tau}(\vec{x},t) \, d\Gamma \\
+ + M_{v^+}^{-1} \int_{\Gamma_{f}} {\vec{\psi}_\mathit{trial}^{v^+}} \cdot \left(-\vec{\lambda}(\vec{x},t)\right) \, d\Gamma + M_{v^-}^{-1} \int_{\Gamma_{f}}{\vec{\psi}_\mathit{trial}^{v^-}} \cdot \left(+\vec{\lambda}(\vec{x},t)\right) \, d\Gamma, \\
+\end{multline}
 ```
 
 \begin{gather}
@@ -119,7 +125,7 @@ After collecting and rearranging terms, we have
 \end{gather}
 ```
 
-### Residual Pointwise Functions
+## Residual Pointwise Functions
 
 Combining the explicit parts of the weak form in equations {math:numref}`eqn:displacement:velocity:prescribed:slip:weak:form` and {math:numref}`eqn:elasticity:prescribed:slip:dynamic:weak:form` with the implicit part of the weak form in equation {math:numref}`eqn:elasticity:prescribed:slip:dynamic:DAE:weak:form` and identifying $F(t,s,\dot{s})$ and $G(t,s)$, we have
 %
@@ -129,10 +135,14 @@ F^u(t,s,\dot{s}) = \frac{\partial \vec{u}}{\partial t} \\
 % Fv
 F^v(t,s,\dot{s}) = \frac{\partial \vec{v}}{\partial t} \\
 % Fl
-F^\lambda(t,s,\dot{s}) =   \int_{\Gamma_{f^+}} {\vec{\psi}_\mathit{trial}^{\lambda}} \cdot{\color{blue}\underbrace{\color{black}\frac{1}{\rho(\vec{x})} \left(  \vec{\lambda} - \vec{f}(\vec{x},t) + \frac{\nabla\rho(\vec{x})}{\rho(\vec{x})} \cdot \boldsymbol{\sigma}(\vec{u}) \right)}_{\color{blue}{f^\lambda_0}}} + \nabla {\vec{\psi}_\mathit{trial}^{\lambda}} : {\color{blue}\underbrace{\color{black}\left(+\frac{1}{\rho(\vec{x})} \boldsymbol{\sigma}(\vec{u})\right)}_{\color{blue}{f^\lambda_1}}} \, d\Gamma \dots \\
-\dots + \int_{\Gamma_{f^-}} {\vec{\psi}_\mathit{trial}^{\lambda}} \cdot {\color{blue} \underbrace{\color{black}\frac{1}{\rho(\vec{x})} \left(\vec{\lambda} + \vec{f}(\vec{x},t) - \frac{\nabla\rho(\vec{x})}{\rho(\vec{x})} \cdot \boldsymbol{\sigma}(\vec{u}) \right)}_{\color{blue}{f^\lambda_0}}} + \nabla {\vec{\psi}_\mathit{trial}^{\lambda}} : {\color{blue}\underbrace{\color{black}\left(-\frac{1}{\rho(\vec{x})} \boldsymbol{\sigma}(\vec{u}) \right)}_{\color{blue}{f^\lambda_1}}}  \, d\Gamma \dots \\
-\dots + \int_{\Gamma_f} {\vec{\psi}_\mathit{trial}^{\lambda}} \cdot {\color{blue}\underbrace{\color{black}\frac{\partial^2 \vec{d}(\vec{x}, t)}{\partial t^2}}_{\color{blue}{f^\lambda_0}}} \, d\Gamma \\
+\end{gather}
+\begin{multline}
+F^\lambda(t,s,\dot{s}) =   \int_{\Gamma_{f^+}} {\vec{\psi}_\mathit{trial}^{\lambda}} \cdot{\color{blue}\underbrace{\color{black}\frac{1}{\rho(\vec{x})} \left(  \vec{\lambda} - \vec{f}(\vec{x},t) + \frac{\nabla\rho(\vec{x})}{\rho(\vec{x})} \cdot \boldsymbol{\sigma}(\vec{u}) \right)}_{\color{blue}{f^\lambda_0}}} + \nabla {\vec{\psi}_\mathit{trial}^{\lambda}} : {\color{blue}\underbrace{\color{black}\left(+\frac{1}{\rho(\vec{x})} \boldsymbol{\sigma}(\vec{u})\right)}_{\color{blue}{f^\lambda_1}}} \, d\Gamma \\
++ \int_{\Gamma_{f^-}} {\vec{\psi}_\mathit{trial}^{\lambda}} \cdot {\color{blue} \underbrace{\color{black}\frac{1}{\rho(\vec{x})} \left(\vec{\lambda} + \vec{f}(\vec{x},t) - \frac{\nabla\rho(\vec{x})}{\rho(\vec{x})} \cdot \boldsymbol{\sigma}(\vec{u}) \right)}_{\color{blue}{f^\lambda_0}}} + \nabla {\vec{\psi}_\mathit{trial}^{\lambda}} : {\color{blue}\underbrace{\color{black}\left(-\frac{1}{\rho(\vec{x})} \boldsymbol{\sigma}(\vec{u}) \right)}_{\color{blue}{f^\lambda_1}}}  \, d\Gamma \\
++ \int_{\Gamma_f} {\vec{\psi}_\mathit{trial}^{\lambda}} \cdot {\color{blue}\underbrace{\color{black}\frac{\partial^2 \vec{d}(\vec{x}, t)}{\partial t^2}}_{\color{blue}{f^\lambda_0}}} \, d\Gamma \\
+\end{multline}
 % Gu
+\begin{gather}
 G^u(t,s) = \int_\Omega {\vec{\psi}_\mathit{trial}^{u}} \cdot{\color{blue}\underbrace{\color{black}\vec{v}}_{\color{blue}{\vec{g}^u_0}}} \, d\Omega, \\
 % Gv
 G^v(t,s) =  \int_\Omega {\vec{\psi}_\mathit{trial}^{v}} \cdot{\color{blue}\underbrace{\color{black}\vec{f}(\vec{x},t)}_{\color{blue}{\vec{g}^v_0}}} + \nabla {\vec{\psi}_\mathit{trial}^{v}} : {\color{blue}\underbrace{\color{black}-\boldsymbol{\sigma}(\vec{u})}_{\color{blue}{\boldsymbol{g^v_1}}}} \, d\Omega + \int_{\Gamma_\tau} {\vec{\psi}_\mathit{trial}^{v}} \cdot {\color{blue}\underbrace{\color{black}\vec{\tau}(\vec{x},t)}_{\color{blue}{\vec{g}^v_0}}} \, d\Gamma, + \int_{\Gamma_{f}} {\vec{\psi}_\mathit{trial}^{v^+}} \cdot {\color{blue}\underbrace{\color{black}\left(-\vec{\lambda}(\vec{x},t)\right)}_{\color{blue}{\vec{g}^v_0}}} + {\vec{\psi}_\mathit{trial}^{v^-}} \cdot {\color{blue}\underbrace{\color{black}\left(+\vec{\lambda}(\vec{x},t)\right)}_{\color{blue}{\vec{g}^v_0}}} \, d\Gamma, \\
@@ -140,7 +150,7 @@ G^v(t,s) =  \int_\Omega {\vec{\psi}_\mathit{trial}^{v}} \cdot{\color{blue}\under
 G^l(t,s) = 0
 \end{gather}
 %
-### Jacobian Pointwise Functions
+## Jacobian Pointwise Functions
 
 For the explicit part we have pointwise functions for computing the lumped LHS Jacobian.
 These are exactly the same pointwise functions as in the dynamic case without a fault,
@@ -156,11 +166,13 @@ J_F^{vv} &= \frac{\partial F^v}{\partial v} + s_\mathit{tshift} \frac{\partial F
 %
 For the implicit part, we have pointwise functions for the LHS Jacobians associated with the prescribed slip,
 %
-\begin{gather}
+\begin{multline}
 % J_F lu
-J_F^{\lambda u} = \frac{\partial F^\lambda}{\partial u} + s_\mathit{tshift} \frac{\partial F^\lambda}{\partial \dot{u}} = \dots \\
-\dots \int_{\Gamma_{f^+}} {\psi_\mathit{trial}^{\lambda}}_i {\color{blue}\underbrace{\color{black}\frac{\rho_{,j}(\vec{x})}{\rho^2(\vec{x})} C_{ikjl} {\psi_\mathit{basis}^{u}}_{j,l}}_{\color{blue}{J^{\lambda u}_{fX}}}} + {\psi_\mathit{trial}^{\lambda}}_{i,k}{\color{blue}  \underbrace{\color{black}+\frac{1}{\rho(\vec{x})} C_{ikjl} {\psi_\mathit{basis}^{u}}_{k,l}}_{\color{blue}{J^{\lambda u}_{f3}}}} \, d\Gamma \dots \\
-\dots +\int_{\Gamma_{f^-}} {\psi_\mathit{trial}^{\lambda}}_i{\color{blue}\underbrace{\color{black}-\frac{\rho_{,j}(\vec{x})}{\rho^2(\vec{x})} C_{ikjl} {\psi_\mathit{basis}^{u}}_{j,l}}_{\color{blue}{J^{\lambda u}_{fX}}}} + {\psi_\mathit{trial}^{\lambda}}_{i,k} {\color{blue}\underbrace{\color{black}-\frac{1}{\rho(\vec{x})} C_{ikjl} {\psi_\mathit{basis}^{u}}_{k,l}}_{\color{blue}{J^{\lambda u}_{f3}}}} \, d\Gamma \\
+J_F^{\lambda u} = \frac{\partial F^\lambda}{\partial u} + s_\mathit{tshift} \frac{\partial F^\lambda}{\partial \dot{u}} = \\
+\int_{\Gamma_{f^+}} {\psi_\mathit{trial}^{\lambda}}_i {\color{blue}\underbrace{\color{black}\frac{\rho_{,j}(\vec{x})}{\rho^2(\vec{x})} C_{ikjl} {\psi_\mathit{basis}^{u}}_{j,l}}_{\color{blue}{J^{\lambda u}_{fX}}}} + {\psi_\mathit{trial}^{\lambda}}_{i,k}{\color{blue}  \underbrace{\color{black}+\frac{1}{\rho(\vec{x})} C_{ikjl} {\psi_\mathit{basis}^{u}}_{k,l}}_{\color{blue}{J^{\lambda u}_{f3}}}} \, d\Gamma \\
++\int_{\Gamma_{f^-}} {\psi_\mathit{trial}^{\lambda}}_i{\color{blue}\underbrace{\color{black}-\frac{\rho_{,j}(\vec{x})}{\rho^2(\vec{x})} C_{ikjl} {\psi_\mathit{basis}^{u}}_{j,l}}_{\color{blue}{J^{\lambda u}_{fX}}}} + {\psi_\mathit{trial}^{\lambda}}_{i,k} {\color{blue}\underbrace{\color{black}-\frac{1}{\rho(\vec{x})} C_{ikjl} {\psi_\mathit{basis}^{u}}_{k,l}}_{\color{blue}{J^{\lambda u}_{f3}}}} \, d\Gamma \\
+\end{multline}
 % J_F ll
+\begin{equation}
 J_F^{\lambda \lambda} = \frac{\partial F^\lambda}{\partial \lambda} + s_\mathit{tshift} \frac{\partial F^\lambda}{\partial \dot{\lambda}} = \int_{\Gamma_{f^+}} {\psi_\mathit{trial}^{\lambda}}_i {\color{blue}\underbrace{\color{black}\frac{1}{\rho(\vec{x})} \delta_{ij}}_{\color{blue}{J^{\lambda\lambda}_{f0}}}} {\psi_\mathit{basis}^{\lambda}}_j \, d\Gamma + \int_{\Gamma_{f^-}} {\psi_\mathit{trial}^{\lambda}}_i {\color{blue}\underbrace{\color{black}\frac{1}{\rho(\vec{x})} \delta_{ij}}_{\color{blue}{J^{\lambda\lambda}_{f0}}}} {\psi_\mathit{basis}^{\lambda}}_j \, d\Gamma
-\end{gather}
+\end{equation}
