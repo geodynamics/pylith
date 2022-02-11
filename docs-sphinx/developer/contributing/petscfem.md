@@ -1,3 +1,4 @@
+(sec-developer-petsc-fem)=
 # PETSc Finite-Element Implementation
 
 Formulating the weak form of the governing equation in terms of pointwise functions allows the PyLith implementation of the equations to be done at a rather high level.
@@ -168,7 +169,7 @@ This function is called from `IntegratorBoundary`.
 This function and the functions it calls handle looping over the cohesive cells , integrating the weak form for each of the fields, and adding them to the residual.
 This function is called from `IntegratorInterface`.
 
-
+(sec-developer-petsc-projection)=
 ## Projection
 
 Input and output often involve projecting fields to/from the finite-element space.

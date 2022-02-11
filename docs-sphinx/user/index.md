@@ -12,4 +12,5 @@ intro/index.md
 install/index.md
 governingeqns/index.md
 examples/index.md
+glossary/index.md
 :::
