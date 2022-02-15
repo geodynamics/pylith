@@ -9,7 +9,7 @@ Installation of PyLith on other operating systems - or installation on a cluster
 We have created a small utility called PyLith Installer that makes installing PyLith and all of its dependencies from source much easier.
 
 :::{figure-md} fig:install:choices
-<img src="figs/installchoices.*" alt="Guide for selecting the appropriate installation choice based on a hardware and intended use. The installation options are discussed in more detail in the following sections." width = "100%" />
+<img src="figs/install_choices.*" alt="Guide for selecting the appropriate installation choice based on a hardware and intended use. The installation options are discussed in more detail in the following sections." width = "100%" />
 
 Guide for selecting the appropriate installation choice based on a hardware and intended use. The installation options are discussed in more detail in the following sections.
 :::
