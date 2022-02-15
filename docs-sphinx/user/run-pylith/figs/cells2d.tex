@@ -1,0 +1,44 @@
+\documentclass[crop,tikz]{standalone}
+\usepackage{tikz}
+\usepackage[scaled]{helvet}
+\renewcommand*\familydefault{\sfdefault}
+
+\begin{document}
+
+\usetikzlibrary{shapes,calc}
+\input{../../../palettes/figcolors}
+
+\tikzstyle{vertex}=[circle,color=orange,fill=orange,inner sep=1.5pt, minimum size=2mm]
+\tikzstyle{cell}=[color=blue,line width=1.0pt]
+\tikzstyle{annotation}=[text=black,font=\bfseries\large]
+
+\begin{tikzpicture}
+
+% Reference points
+\coordinate (o1) at (0mm,0mm);
+\coordinate (o2) at (60mm,0mm);
+
+  % Tri
+  \node[vertex] (v0) at ($ (o1) $) {};
+  \node[vertex] (v1) at ($ (o1)+(30mm,0) $) {};
+  \node[vertex] (v2) at ($ (o1)+(15mm,30mm) $)  {};
+  \draw[cell] (v0) -- (v1) -- (v2) -- (v0);
+  \node[annotation, below left] at (v0) {0};
+  \node[annotation, below right] at (v1) {1};
+  \node[annotation, right] at (v2) {2};
+
+  % Quad
+  \node[vertex] (v10) at ($ (o2) $) {};
+  \node[vertex] (v11) at ($ (o2)+(30mm,0) $) {};
+  \node[vertex] (v12) at ($ (o2)+(30mm,30mm) $)  {};
+  \node[vertex] (v13) at ($ (o2)+(0mm,30mm) $)  {};
+  \draw[cell] (v10) -- (v11) -- (v12) -- (v13) -- (v10);
+  \node[annotation, below left] at (v10) {0};
+  \node[annotation, below right] at (v11) {1};
+  \node[annotation, above right] at (v12) {2};
+  \node[annotation, above left] at (v13) {3};
+
+
+\end{tikzpicture}
+
+\end{document}

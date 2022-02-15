@@ -130,10 +130,12 @@ ksp_rtol = 1.0e-3
 
 ## Tables
 
-Please see {numref}`tab-quickref`.
+Please see {numref}`tab:quickref`.
+Figure labels cannot contain more than one dash, so we use colons instead.
+This is likely a bug.
 
 ```{table} Table caption
-:name: tab-quickref
+:name: tab:quickref
 |             Header 1 |   Header 2    | Header 3       |
 | -------------------: | :-----------: | :------------- |
 |        right aligned |   centered    | left aligned   |
@@ -142,10 +144,12 @@ Please see {numref}`tab-quickref`.
 
 ## Figures
 
-Please see {numref}`fig-quickref`.
+Please see {numref}`fig:quickref`.
+Figure labels cannot contain more than one dash, so we use colons instead.
+This is likely a bug.
 
 
-:::{figure-md} fig-quickref
+:::{figure-md} fig:quickref
 <img src="_static/images/cig_short_nolabel.*" alt="Screenshot"  width="100px"/>
 
 This is the figure caption.

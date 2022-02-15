@@ -18,7 +18,7 @@
 # -- Project information -----------------------------------------------------
 
 project = 'PyLith'
-copyright = '2021, University of California, Davis'
+copyright = '2021-2022, University of California, Davis'
 author = 'Brad T. Aagaard, Matthew Knepley, Charles A. Williams'
 
 # The full version, including alpha/beta/rc tags
@@ -37,6 +37,7 @@ extensions = [
 myst_enable_extensions = [
     "colon_fence",
     "deflist",
+    "fieldlist",
     "substitution",
     "dollarmath",
     "amsmath",

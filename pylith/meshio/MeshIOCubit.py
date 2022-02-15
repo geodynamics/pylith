@@ -39,7 +39,11 @@ def validateFilename(value):
 class MeshIOCubit(MeshIOObj, ModuleMeshIOCubit):
     """Python object for reading/writing finite-element mesh from Cubit.
 
-    FACTORY: mesh_io
+:::{warning}
+The coordinate system associated with the mesh must be a Cartesian coordinate system, such as a generic Cartesian coordinate system or a geographic projection.
+:::
+
+FACTORY: mesh_io
     """
 
     import pythia.pyre.inventory
@@ -51,8 +55,7 @@ class MeshIOCubit(MeshIOObj, ModuleMeshIOCubit):
     useNames.meta['tip'] = "Use nodeset names instead of ids."
 
     from spatialdata.geocoords.CSCart import CSCart
-    coordsys = pythia.pyre.inventory.facility("coordsys", family="coordsys",
-                                       factory=CSCart)
+    coordsys = pythia.pyre.inventory.facility("coordsys", family="coordsys", factory=CSCart)
     coordsys.meta['tip'] = "Coordinate system associated with mesh."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////

@@ -30,7 +30,7 @@ Its primary applications are quasistatic and dynamic modeling of earthquake faul
     * Pythia/Pyre, spatialdata, and PyLith have all been migrated to Python 3.
     * The nemesis package has been merged into Pyre/Pyre.
 
-See [Release Notes](release-notes.md) for a summary of features and bug fixes for each release.
+See [Release Notes](../intro/release-notes.md) for a summary of features and bug fixes for each release.
 
 ## History
 

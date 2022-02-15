@@ -39,21 +39,18 @@ def validateFilename(value):
 
 
 class MeshIOAscii(MeshIOObj, ModuleMeshIOAscii):
-    """Python object for reading/writing finite-element mesh from simple
-    ASCII file.
+    """Read and write finite-element meshes using a simple ASCII format.
 
     Factory: mesh_io
     """
 
     import pythia.pyre.inventory
 
-    filename = pythia.pyre.inventory.str("filename", default="",
-                                  validator=validateFilename)
+    filename = pythia.pyre.inventory.str("filename", default="", validator=validateFilename)
     filename.meta['tip'] = "Name of mesh file"
 
     from spatialdata.geocoords.CSCart import CSCart
-    coordsys = pythia.pyre.inventory.facility("coordsys", family="coordsys",
-                                       factory=CSCart)
+    coordsys = pythia.pyre.inventory.facility("coordsys", family="coordsys", factory=CSCart)
     coordsys.meta['tip'] = "Coordinate system associated with mesh."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
