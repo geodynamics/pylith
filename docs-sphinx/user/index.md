@@ -8,7 +8,6 @@ If what you are looking for is not here, please see the PDF version.
 :::
 
 :::{toctree}
-preface.md
 intro/index.md
 install/index.md
 governingeqns/index.md

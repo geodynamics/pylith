@@ -48,6 +48,53 @@ PyLith requires a finite-element mesh (three different mechanisms for generating
 PyLith writes the solution output to either VTK or HDF5/Xdmf files, which can be visualized with ParaView or Visit. Post-processing is generally done using the HDF5 files with Python or Matlab scripts.
 :::
 
+## Finite-Element Implementation User Interface
+
+In specifying simulation parameters, some details of the finite-element implementation using the PETSc `DMPlex` is exposed to the user.
+In this section we describe the data structures to give the user greater context for understanding what the parameters mean.
+
+:::{tip}
+See {ref}`sec-developer-code-layout` for a detailed discussion of the we organize the PyLith code.
+:::
+
+### Fields and Subfields
+
+Finite-element coefficients for the finite-element basis functions (sometimes thought of as the values at vertices, on edges and faces, or in cells) are stored in a `Field`.
+A `Field` is composed of a `Section`, which associates the points (vertices, edges, faces, and cells) with the finite-element coefficients, and a `Vec`, which is a vector storing the finite-element coefficients.
+A `Field` may hold a single subfield, such as displacement, or it may hold several subfields, such as the density, shear modulus, and bulk modulus for an isotropic, linear elastic material.
+
+Spatial discretization is specified for each subfield.
+That is, each subfield within a `Field` can have a different discretization.
+For example, a displacement field may use a second order discretization while a pressure field may use a first order discretization.
+If we have uniform material properties, we use a zero order discretization (uniform values within a cell) to reduce the storage requirements.
+
+The two main types of fields are the solution field and auxiliary fields.
+
+#### Solution Field
+
+The solution field contains all of the finite-element coefficients corresponding to the problem solution.
+As discussed in the multiphysics finite-element formulation in {ref}`sec-user-petsc-fe-formulation`, if the governing equations have multiple unknowns, such as displacement and fluid pressure for poroelasticity, then the solution field will have multiple subfields.
+See [Solution component](../components/problems/Solution.md) for details of the user interface and predefined containers for common subfield collections.
+
+#### Auxiliary Field
+
+We specify parameters for materials, boundary conditions, and fault interfaces using fields we refer to as the ``auxiliary'' fields.
+Each parameter (scalar, vector, tensor, or other) is held in a separate subfield.
+We also store state variables in the auxiliary field, with each state variable as a different subfield.
+This provides a single container for the collection of spatially varying parameters while maintaining the flexibility to specify the discretization of each parameter separately.
+
+#### Discretization
+
+The discretization of a field is given in terms of the topology (vertices, edges, faces, and cells) associated with the field and the basis order and quadrature order.
+The basis order refers to the highest order in the basis functions.
+For example, a basis order of 0 has just a constant and a basis order of 2 for a polynomial basis has constant, linear, and quadratic terms.
+
+:::{warning}
+Currently, the quadrature order **MUST** be the same for all subfields in a simulation.
+This restriction may be relaxed in the future.
+PyLith verifies that the quadrature order is the same for all subfields, and it will indicate if a subfield has a quadrature order that does not match the quadrature order of the first solution subfield.
+:::
+
 (sec-user-run-pylith-setting-parameters)=
 ## Setting PyLith Parameters
 
@@ -165,7 +212,7 @@ The `pylithapp.cfg` files placed in (3) will override those in (2), (2) override
 :::
 
 :::{tip}
-See {ref}`sec-user-run-pylith-utilities` and {ref}`sec-user-run-pylith-paramtere-view` for several helpful utilities for viewing PyLith parameters and finding examples using specific features.
+See {ref}`sec-user-run-pylith-utilities` and {ref}`sec-user-run-pylith-parameter-gui` for several helpful utilities for viewing PyLith parameters and finding examples using specific features.
 :::
 
 % End of file

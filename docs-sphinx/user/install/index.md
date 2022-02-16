@@ -1,8 +1,8 @@
 (cha:installation)=
-# Installation and Getting Help
+# Installation
 
 {numref}`fig:install:choices` provides a guide to select the appropriate method for installing PyLith.
-Installation of PyLith on a desktop or laptop machine is, in most cases, very easy. Binary packages have been created for Linux and Mac OS X (Darwin) platforms.
+Installation of PyLith on a desktop or laptop machine is, in most cases, very easy. Binary packages have been created for Linux and Mac OS X (macOS) platforms.
 For Windows 10 users, we recommend installing the Windows Subsystem for Linux and using the Linux binary (see instructions in Section {ref}`sec:install:windows`).
 You can also run PyLith inside a Docker container, which provides a virtual Linux environment on any platform that Docker supports, including Linux, Mac OS X, and Windows.
 Installation of PyLith on other operating systems - or installation on a cluster - requires building the software from the source code, which can be difficult for inexperienced users.
@@ -21,20 +21,18 @@ See Section {ref}`sec:help` for more information.
 
 The binaries are intended for users running on laptops or desktop computers (as opposed to clusters).
 The binaries contain the compilers and header files, so users wishing to extend the code can still use the binary and do not need to build PyLith and its dependencies from source.
-See Chapter {ref}`cha:extending` for more information on extending PyLith.
+See {ref}`sec-developer-contributing` for more information on extending PyLith.
 
 Binary executables are available for Linux (glibc 2.12 and later) and Mac OS X (Intel 10.13 and later) from the PyLith web page <https://geodynamics.org/cig/software/pylith/>.
 Users running Windows 10 build 14316 and later can install a Linux bash environment and use the PyLith binary for Linux (see Section {ref}`sec:install:windows` for more information).
 
 :::{tip}
-On Linux systems you can check which version of glibc you have by running `1dd-version`
+On Linux systems you can check which version of glibc you have by running `ldd-version`
+
+On macOS systems running OS X, you can check the operating system version by clicking on the Apple icon and *About this Mac*.
 :::
 
-:::{tip}
-On Darwin systems running OS X, you can check the operating system version by clicking on the Apple icon and *About this Mac*.
-:::
-
-### Linux and Mac OS X (Darwin)
+### Linux and Mac OS X (macOS)
 
 1.  Open a terminal window and change to the directory where you want to place the distribution.
     ```{code-block} bash
@@ -42,7 +40,7 @@ On Darwin systems running OS X, you can check the operating system version by cl
     $ mkdir pylith
     $ cd pylith
     ```
-2.  Download the Linux or Mac OS X (Darwin) tarball from the PyLith web page
+2.  Download the Linux or Mac OS X (macOS) tarball from the PyLith web page
     <https://geodynamics.org/cig/software/pylith/>, and save it to
     the desired location, e.g., `$HOME/pylith`.
 3.  Unpack the tarball.
@@ -52,7 +50,7 @@ On Darwin systems running OS X, you can check the operating system version by cl
       # Linux 64-bit
       $ tar -xzf pylith-3.0.0beta-linux-x86_64.tgz
       # Mac OS X
-      $ tar -xzf pylith-3.0.0beta-darwin-10.11.6.tgz
+      $ tar -xzf pylith-3.0.0beta-macOS-10.11.6.tgz
       ```
 4. Set environment variables.
 The provided `setup.sh` script only works if you are using bash shell.
@@ -64,12 +62,12 @@ $ source setup.sh
 :::{warning}
 The binary distribution contains PyLith and all of its dependencies.
 If you have any of this software already installed on your system, you need to be careful in setting up your environment so that preexisting software does not conflict with the PyLith binary.
-By default the `setup.sh` script will prepend to the PATH and PYTHONPATH (for Darwin and Linux) and LD_LIBRARY_PATH (for Linux) environment variables.
+By default the `setup.sh` script will prepend to the PATH and PYTHONPATH (for macOS and Linux) and LD_LIBRARY_PATH (for Linux) environment variables.
 This will prevent most conflicts.
 :::
 
 :::{warning}
-The PyLith binary distribution for **Darwin** systems is built using the system clang compiler suite and system Python. **This means the system Python must be in your path to use the PyLith binary executable**; ensure `/bin` and `/usr/bin` are at the beginning of the PATH environment variable, which is done automatically if you use the `setup.sh` script. **This condition is often violated if you have Python installed from Anaconda, HomeBrew, MacPorts, etc. and set the PATH variable in your bash configuration file.**
+The PyLith binary distribution for **macOS** systems is built using the system clang compiler suite and system Python. **This means the system Python must be in your path to use the PyLith binary executable**; ensure `/bin` and `/usr/bin` are at the beginning of the PATH environment variable, which is done automatically if you use the `setup.sh` script. **This condition is often violated if you have Python installed from Anaconda, HomeBrew, MacPorts, etc. and set the PATH variable in your bash configuration file.**
 :::
 
 (sec:install:windows)=
@@ -81,31 +79,27 @@ This permits use of the PyLith Linux x86_64 binary within the bash environment.
 
 To enable the Linux subsystem on Windows 10 build 14316 and later (users running an earlier Windows build should use the PyLith Docker container):
 
-1.  Go to *Settings* &#8594; *Security* .
-
-2.  Under *For developers* select *Developer mode*.
+1. Go to *Settings* &#8594; *Security* .
+2. Under *For developers* select *Developer mode*.
 This step should not be required for Windows build 16215 and later.
-
-3.  Go to *Control Panel* &#8594; *Programs* &#8594; *Turn Windows Features On or Off*.
-
-4.  Enable *Windows Subsystem for Linux* and click *OK* .
-
-5.  Restart the computer.
-
-6.  Go to *Start* &#8594; *bash*.
+3. Go to *Control Panel* &#8594; *Programs* &#8594; *Turn Windows Features On or Off*.
+4. Enable *Windows Subsystem for Linux* and click *OK* .
+5. Restart the computer.
+6. Go to *Start* &#8594; *bash*.
 You will be prompted to download "Bash on Ubuntu on Windows" from the Windows Store.
 Create a user account and password for the bash environment.
-
-7.  Install the PyLith Linux x86 binary within the bash environment following the instructions for installing the PyLith binary for Linux.
+7. Install the PyLith Linux x86 binary within the bash environment following the instructions for installing the PyLith binary for Linux.
 You will run PyLith within the bash environment just like you would for a Linux operating system.
 
 ### Extending PyLith and/or Integrating Other Software Into PyLith
 
-*New in v.2.2.0*
+:::{note}
+New in v.2.2.0.
+:::
 
 We have constructed the binary package so that you can extend PyLith and/or build additional software for integration with PyLith using the binary distribution.
 
-**Darwin**  
+**macOS**  
 The binary package includes the header files for PyLith and all of its dependencies.
 Use the clang compiler and Python provided with the operating system.
 You will need to install XCode command line tools or XCode.
@@ -122,14 +116,14 @@ We encourage anyone extending PyLith to fork the PyLith repository and build fro
 :::{admonition} TODO
 :class: error
 
-Update `fig:pylith-dependencies`
+Update `fig:pylith:dependencies`
 :::
 
-PyLith depends on a number of other packages (see {numref}`fig:pylith-dependencies`).
+PyLith depends on a number of other packages (see {numref}`fig:pylith:dependencies`).
 This complicates building the software from the source code.
 In many cases some of the packages required by PyLith are available as binary packages.
 On the one hand, using the binary packages for the dependencies removes the burden of configuring, building, and installing these dependencies, but that can come with its own host of complications if consistent compiler and configuration settings are not used across all of the packages on which PyLith depends.
-This is usually not an issue with Linux distributions, such as Fedora, Ubuntu, and Debian that have good quality control; it can be an issue with Darwin package managers, such as Fink, MacPorts, and Homebrew, where there is limited enforcement of consistency across packages.
+This is usually not an issue with Linux distributions, such as Fedora, Ubuntu, and Debian that have good quality control; it can be an issue with macOS package managers, such as Fink, MacPorts, and Homebrew, where there is limited enforcement of consistency across packages.
 Nevertheless, PyLith can be built on most systems provided the instructions are followed carefully.
 PyLith is developed and tested on Linux and Mac OS X.
 
@@ -147,9 +141,9 @@ Point `sec:example:3dhex8-static` reference to correct example
 :::
 
 The easiest way to verify that PyLith has been installed correctly is to run one or more of the examples supplied with the binary and source code.
-In the binary distribution, the examples are located in `src/pylith-3.0.0dev/examples` while in the source distribution, they are located in `pylith-3.0.0dev/examples`.
-Chapter {ref}`cha:examples` discusses how to run and visualize the results for the examples.
-To run the example discussed in Section {ref}`sec:example:3dhex8-static`:
+In the binary distribution, the examples are located in `src/pylith-3.0.0/examples` while in the source distribution, they are located in `pylith-3.0.0/examples`.
+{ref}`sec-examples` discusses how to run and visualize the results for the examples.
+To run the example discussed in Section {ref}`sec-examples-2d-box`:
 
 ```{code-block} bash
 $ cd examples/2d/box
@@ -211,6 +205,7 @@ launcher = mpich
 
 You may find the 'dry' option useful while debugging the **launcher** and **scheduler** configuration.
 This option causes PyLith to perform a "dry run," dumping the batch script or mpirun command to the console, instead of actually submitting it for execution (the output is only meaningful if you're using a batch system).
+
 ```{code-block} bash
 # Display the bash script that would be submitted.
 $ pylith --scheduler.dry
@@ -243,6 +238,7 @@ This strategy gives you the flexibility to create an assortment of `cfg` files (
 
 If your machine list does not change often, you may find it more convenient to specify default values for **nodegen** and **nodelist** in `$HOME/.pyre/pylithapp/pylithapp.cfg` (which is read automatically).
 Then, you can run any simulation with no additional arguments:
+
 ```{code-block} console
 $ pylilth example.cfg
 ```
@@ -319,14 +315,4 @@ command = mpirun -np ${nodes} -machinefile ${PBS_NODEFILE}
 
 For most PBS batch systems you can specify N processes per compute node via the command line argument `--scheduler.ppn=N`.
 
-(sec:help)=
-## Getting Help and Reporting Bugs
-
-The CIG forum has a category dedicated to CIG issues associated with PyLith.
-You can discuss PyLith, get help with installation, and more at <https://community.geodynamics.org/c/pylith/29>.
-
-CIG uses *GitHub* for source control and bug tracking.
-If you find a bug in PyLith, please submit a bug report to the GitHub issue tracking system for PyLith <https://github.com/geodynamics/pylith/issues>.
-Of course, it is helpful to first check to see if someone else already submitted a report related to the issue; one of the CIG developers may have posted a work around to the problem.
-You can reply to a current issue by clicking on the issue title.
-To submit a new issue, click on the *New Issue* button. 
+% End of file

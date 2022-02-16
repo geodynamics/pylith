@@ -1,12 +1,5 @@
 # Preface
 
-## About This Document
-
-This document is organized into two parts.
-The first part begins with an introduction to PyLith and discusses the types of problems that PyLith can solve and how to run the software; the second part provides appendices and references.
-
-## Who Will Use This Documentation
-
 This documentation is aimed at two categories of users: scientists who prefer to use prepackaged and specialized analysis tools, and experienced computational Earth scientists.
 Of the latter, there are likely to be two classes of users: those who just run models, and those who modify the source code.
 Users who modify the source are likely to have familiarity with scripting, software installation, and programming, but are not necessarily professional programmers.
@@ -60,7 +53,7 @@ bc = [x_pos, x_neg]
 
 ## Citation
 
-The Computational Infrastructure for Geodynamics (CIG) ([geodynamics.org](https://geodynamics.org/)) is making this source code available to you at no cost in hopes that the software will enhance your research in geophysics.
+The Computational Infrastructure for Geodynamics (CIG) ([geodynamics.org](https://geodynamics.org/)) is making this software and source code available to you at no cost in hopes that the software will enhance your research in geophysics.
 A number of individuals have contributed a significant portion of their careers toward the development of this software.
 It is essential that you recognize these individuals in the normal scientific practice by citing the appropriate peer-reviewed papers and making appropriate acknowledgments in talks and publications.
 The preferred way to generate the list of publications (in BibTeX format) to cite is to run your simulations with the `--include-citations` command line argument, or equivalently, the `--petsc.citations` command line argument.
@@ -68,20 +61,13 @@ The `--help-citations` command line argument will generate the BibTeX entries fo
 
 The following peer-reviewed paper discussed the development of PyLith:
 
--   Aagaard, B. T., M. G. Knepley, and C. A. Williams (2013). A domain
-    decomposition approach to implementing fault slip in finite-element models
-    of quasistatic and dynamic crustal deformation, *Journal of Geophysical
-    Research: Solid Earth*, 118, doi: 10.1002/jgrb.50217.
+- Aagaard, B. T., M. G. Knepley, and C. A. Williams (2013). A domain decomposition approach to implementing fault slip in finite-element models of quasistatic and dynamic crustal deformation, *Journal of Geophysical Research: Solid Earth*, 118, doi: 10.1002/jgrb.50217.
 
 To cite the software and manual, use:
 
--   Aagaard, B., M. Knepley, C. Williams (2017), *PyLith v3.0.0dev.* Davis,
-    CA: Computational Infrastructure of Geodynamics. DOI:
-    10.5281/zenodo.XXXXXX.
+- Aagaard, B., M. Knepley, C. Williams (2017), *PyLith v3.0.0dev.* Davis, CA: Computational Infrastructure of Geodynamics. DOI: 10.5281/zenodo.XXXXXX.
 
--   Aagaard, B., M. Knepley, C. Williams (2017), *PyLith User Manual, Version
-    3.0.0dev.* Davis, CA: Computational Infrastructure of Geodynamics. URL:
-    geodynamics.org/cig/software/github/pylith/v3.0.0dev/pylith-3.0.0dev_manual.pdf
+- Aagaard, B., M. Knepley, C. Williams (2017), *PyLith User Manual, Version 3.0.0dev.* Davis, CA: Computational Infrastructure of Geodynamics. https://geodynamics.org/cig/software/github/pylith/v3.0.0dev/pylith-3.0.0dev_manual.pdf
 
 ## Support
 
@@ -98,6 +84,5 @@ In particular, we thank Surendra Somala for contributing to the development of t
 
 ## Request for Comments
 
-Your suggestions and corrections can only improve this documentation. Please
-report any errors, inaccuracies, or typos to the CIG Short-Term Tectonics
-email list <cig-short@geodynamics.org> or create a GitHub pull request.
+Your suggestions and corrections can only improve this documentation.
+Please report any errors, inaccuracies, or typos to the PyLith section of the CIG Community Forum <https://community.geodynamics.org/c/pylith> or create a GitHub pull request.

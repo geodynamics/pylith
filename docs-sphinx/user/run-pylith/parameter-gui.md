@@ -32,7 +32,7 @@ The steps to run the parameter viewer are:
 ### Generate the parameter JSON file
 
 The parameter viewer uses a JSON file with all of the parameters collected from `cfg` files, command line arguments, etc as input.
-This file can be generated using {ref}`src-user-run-pylith-pylith-dumpparameters`) and, by default, it will be generated whenever a PyLith simulation is run.
+This file can be generated using {ref}`sec-user-run-pylith-pylith-dumpparameters`) and, by default, it will be generated whenever a PyLith simulation is run.
 When using `pylith_dumpparameters` the name of the parameter file can be set via a command line argument.
 When using PyLith the DumpParametersJSON component contains a property for the name of the file.
 You can set the filename on the command line

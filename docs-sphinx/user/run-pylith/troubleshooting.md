@@ -69,7 +69,7 @@ In the latter case, check your environment variables (order matters!) to make su
 A segmentation fault usually results from an invalid read/write to memory.
 It might be caused by an error that wasn't trapped or a bug in the code.
 Please report these cases so that we can fix these problems (either trap the error and provide the user with an informative error message, or fix the bug).
-If this occurs with any of the problems distributed with PyLith, simply submit a bug report (see {ref}`sec-user-help`) indicating which problem you ran and your platform.
+If this occurs with any of the problems distributed with PyLith, simply submit a bug report (see {ref}`sec-getting-help`) indicating which problem you ran and your platform.
 
 :::{important}
 PETSc will often report errors as semgentation faults even if the underlying problem is not an invalid read/write.

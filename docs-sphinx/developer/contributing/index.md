@@ -1,3 +1,4 @@
+(sec-developer-contributing)=
 # Contributing to PyLith
 
 :::{toctree}

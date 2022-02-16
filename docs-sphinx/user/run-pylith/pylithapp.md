@@ -1,3 +1,4 @@
+(sec-user-run-pylith-pylithapp)=
 # PyLith Application
 
 The top-level object is the PyLith application with five facilities:

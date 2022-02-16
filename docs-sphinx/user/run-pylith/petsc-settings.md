@@ -1,4 +1,4 @@
-(sec-user-petsc-settings)=
+(sec-user-run-pylith-petsc-settings)=
 # PETSc Settings
 
 PyLith relies on PETSc for the finite-element data structures, linear and nonlinear solvers, and time-stepping algorithms.

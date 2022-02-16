@@ -209,11 +209,11 @@ step03_multislip_velbc.cfg v1.0.0; requires PyLith >=3.0 and <4.0
 
 ## pylith_runner
 
-:::{node}
+:::{note}
 New in v3.0.0
 :::
 
-The runner utility searches a directory path for `.cfg` files with `arguments` in the simulation metadata (see {numref}`sec-user-pylith-user-pylithapp` for details).
+The runner utility searches a directory path for `.cfg` files with `arguments` in the simulation metadata (see {ref}`sec-user-run-pylith-pylithapp` for details).
 It uses those arguments to run PyLith simulations.
 
 :::{important}

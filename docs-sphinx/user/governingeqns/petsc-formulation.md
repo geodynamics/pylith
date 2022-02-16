@@ -1,3 +1,4 @@
+(sec-user-petsc-fe-formulation)=
 # Finite-Element Formulation with PETSc
 
 Within the PETSc solver framework, we want to solve a system of partial differential equations in which the weak form can be expressed as $F(t,s,\dot{s}) = G(t,s)$, $s(t_0) = s_0$, where $F$ and $G$ are vector functions, $t$ is time, and $s$ is the solution vector.
