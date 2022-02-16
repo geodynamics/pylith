@@ -36,14 +36,13 @@ class PyLithApp(PetscApplication):
                                       validator=pythia.pyre.inventory.choice(['relaxed', 'strict', 'pedantic']))
     typos.meta['tip'] = "Specifies the handling of unknown properties and facilities"
 
+    initializeOnly = pythia.pyre.inventory.bool("initialize_only", default=False)
+    initializeOnly.meta['tip'] = "Stop simulation after initializing problem."
+
     from pylith.utils.SimulationMetadata import SimulationMetadata
     metadata = pythia.pyre.inventory.facility(
         "metadata", family="simulation_metadata", factory=SimulationMetadata)
     metadata.meta["tip"] = "Simulation metadata."
-
-    initializeOnly = pythia.pyre.inventory.bool(
-        "initialize_only", default=False)
-    initializeOnly.meta['tip'] = "Stop simulation after initializing problem."
 
     from pylith.utils.DumpParametersJson import DumpParametersJson
     parameters = pythia.pyre.inventory.facility(
@@ -56,9 +55,8 @@ class PyLithApp(PetscApplication):
     mesher.meta['tip'] = "Generates or imports the computational mesh."
 
     from pylith.problems.TimeDependent import TimeDependent
-    problem = pythia.pyre.inventory.facility(
-        "problem", family="problem", factory=TimeDependent)
-    problem.meta['tip'] = "Computational problem to solve."
+    problem = pythia.pyre.inventory.facility("problem", family="problem", factory=TimeDependent)
+    problem.meta['tip'] = "Boundary value problem to solve."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 

@@ -1,4 +1,4 @@
-(cha:examples)=
+(sec-examples)=
 # Examples
 
 ## Overview

@@ -1,3 +1,4 @@
+(sec-developer)=
 # Developer Guide
 
 :::{admonition} Under construction.

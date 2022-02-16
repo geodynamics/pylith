@@ -10,8 +10,8 @@ Add brief overview of PyLith.
 ---
 maxdepth: 2
 ---
+preface.md
 quickstart.md
 release-notes.md
 development-plan.md
 ```
-%architecture.md

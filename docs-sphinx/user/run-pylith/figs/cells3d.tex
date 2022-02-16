@@ -1,0 +1,62 @@
+\documentclass[crop,tikz]{standalone}
+\usepackage{tikz}
+\usepackage[scaled]{helvet}
+\renewcommand*\familydefault{\sfdefault}
+
+\begin{document}
+
+\usetikzlibrary{shapes,calc,3d}
+\input{../../../palettes/figcolors}
+
+\tikzstyle{vertex}=[circle,color=orange,fill=orange,inner sep=1.5pt, minimum size=2mm]
+\tikzstyle{cell}=[color=blue,line width=1.0pt]
+\tikzstyle{annotation}=[text=black,font=\bfseries\large]
+
+\begin{tikzpicture}[x={(0.25mm,0mm)},
+  y={(0.216mm,0.125mm)},
+  z={(0cm,0.25mm)}]
+
+% Reference points
+\coordinate (o1) at (0,0,0);
+\coordinate (o2) at (60mm,0,0);
+
+  % Tet
+  \node[vertex] (v0) at ($ (o1) $) {};
+  \node[vertex] (v1) at ($ (o1)+(30mm,0,0) $) {};
+  \node[vertex] (v2) at ($ (o1)+(0,30mm,0) $) {};
+  \node[vertex] (v3) at ($ (o1)+(0,0,30mm) $) {};
+  \draw[cell] (v0) -- (v1) -- (v3) -- (v0);
+  \draw[cell] (v1) -- (v2) -- (v3);
+  \draw[cell,dashed] (v0) -- (v2);
+  \node[annotation, below left] at (v0) {0};
+  \node[annotation, below right] at (v1) {1};
+  \node[annotation, above right] at (v2) {2};
+  \node[annotation, above left] at (v3) {3};
+
+  % Hex
+  \node[vertex] (v10) at ($ (o2) $) {};
+  \node[vertex] (v11) at ($ (o2)+(30mm,0,0) $) {};
+  \node[vertex] (v12) at ($ (o2)+(30mm,30mm,0) $) {};
+  \node[vertex] (v13) at ($ (o2)+(0,30mm,0) $) {};
+  \node[vertex] (v14) at ($ (o2)+(0,0,30mm) $) {};
+  \node[vertex] (v15) at ($ (o2)+(30mm,0,30mm) $) {};
+  \node[vertex] (v16) at ($ (o2)+(30mm,30mm,30mm) $) {};
+  \node[vertex] (v17) at ($ (o2)+(0,30mm,30mm) $) {};
+  \draw[cell] (v10) -- (v11) -- (v15) -- (v14) -- (v10);
+  \draw[cell] (v11) -- (v12) -- (v16) -- (v17) -- (v14);
+  \draw[cell] (v15) -- (v16);
+  \draw[cell,dashed] (v10) -- (v13) -- (v12);
+  \draw[cell,dashed] (v13) -- (v17);
+  \node[annotation, below left] at (v10) {0};
+  \node[annotation, below right] at (v11) {1};
+  \node[annotation, above right] at (v12) {2};
+  \node[annotation, above left] at (v13) {3};
+  \node[annotation, below left] at (v14) {4};
+  \node[annotation, below right] at (v15) {5};
+  \node[annotation, above right] at (v16) {6};
+  \node[annotation, above left] at (v17) {7};
+
+
+\end{tikzpicture}
+
+\end{document}

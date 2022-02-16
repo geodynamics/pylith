@@ -23,10 +23,19 @@ from .MeshGenerator import MeshGenerator
 
 
 class MeshImporter(MeshGenerator):
-    """Python implementation of importing a mesh.
+    """Pyre component for reading a finite-element mesh from files.
 
-    FACTORY: mesh_generator.
-    """
+```{code-block} cfg
+---
+caption: Setting `MeshImporter` properties and facilities in a `cfg` file.
+[pylithapp.mesher.]
+reorder_mesh = True
+reader = pylith.meshio.MeshIOCubit
+refiner = pylith.topology.RefineUniform
+```
+
+FACTORY: mesh_generator.
+"""
 
     import pythia.pyre.inventory
 
@@ -35,15 +44,15 @@ class MeshImporter(MeshGenerator):
 
     from pylith.meshio.MeshIOAscii import MeshIOAscii
     reader = pythia.pyre.inventory.facility("reader", family="mesh_io", factory=MeshIOAscii)
-    reader.meta['tip'] = "Mesh reader."
+    reader.meta['tip'] = "Reader for mesh files."
 
     from .Distributor import Distributor
     distributor = pythia.pyre.inventory.facility("distributor", family="mesh_distributor", factory=Distributor)
-    distributor.meta['tip'] = "Mesh distributor."
+    distributor.meta['tip'] = "Distributes mesh among processes."
 
     from .MeshRefiner import MeshRefiner
     refiner = pythia.pyre.inventory.facility("refiner", family="mesh_refiner", factory=MeshRefiner)
-    refiner.meta['tip'] = "Mesh refiner."
+    refiner.meta['tip'] = "Performs uniform global mesh refinement after distribution among processes (default is no refinement)."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 

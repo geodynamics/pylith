@@ -1,3 +1,4 @@
+(sec-developer-code-layout)=
 # Code Layout
 
 The PyLith software suite is composed of a C++ library, Python modules, a Python application, and a few Python preprocessing and post-processing utilities.
