@@ -45,7 +45,7 @@ class ProblemDefaults(Component):
     quadOrder = pythia.pyre.inventory.int("quadrature_order", default=1, validator=pythia.pyre.inventory.greater(0))
     quadOrder.meta['tip'] = "Finite-element quadrature order."
 
-    outputBasisOrder = pythia.pyre.inventory.int("output_basis_order", default=1, validator=pythia.pyre.inventory.choice((0,1)))
+    outputBasisOrder = pythia.pyre.inventory.int("output_basis_order", default=1, validator=pythia.pyre.inventory.choice([0,1]))
     outputBasisOrder.meta['tip'] = "Basis order for output."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
