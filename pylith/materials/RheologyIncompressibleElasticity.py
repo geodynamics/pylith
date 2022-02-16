@@ -40,7 +40,7 @@ class RheologyIncompressibleElasticity(PetscComponent, ModuleRheology):
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
-    def __init__(self, name):
+    def __init__(self, name="rheologyincompressibleelasticity"):
         """Constructor.
         """
         PetscComponent.__init__(
