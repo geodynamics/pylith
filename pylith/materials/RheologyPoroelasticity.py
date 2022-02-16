@@ -41,7 +41,7 @@ class RheologyPoroelasticity(PetscComponent, ModuleRheology):
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
-    def __init__(self, name):
+    def __init__(self, name="rheologyporoelasticity"):
         """Constructor.
         """
         PetscComponent.__init__(self, name, facility="rheologyporoelasticity")
