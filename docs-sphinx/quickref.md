@@ -57,8 +57,6 @@ This is a `seealso` admonition.
 This is a custom `TODO` admonition.
 :::
 
-
-
 ## Lists
 
 ### Itemized lists
@@ -127,7 +125,6 @@ journal.info.problem = 1
 ksp_rtol = 1.0e-3
 ```
 
-
 ## Tables
 
 Please see {numref}`tab:quickref`.
@@ -154,6 +151,15 @@ This is likely a bug.
 
 This is the figure caption.
 :::
+
+## Math
+
+Look at {math:numref}`eqn:one:two`.
+
+```{math}
+:label: eqn:one:two
+F = m a
+```
 
 ## Citations
 
