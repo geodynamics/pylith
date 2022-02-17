@@ -1,0 +1,8 @@
+#!/bin/bash
+
+pylith sheartraction_powerlaw_norefstate.cfg sheartraction_powerlaw_norefstate_dt0.01_onecell_hex.cfg > sheartraction_powerlaw_norefstate_dt0.01_onecell_hex.log 2>&1
+pylith sheartraction_powerlaw_norefstate.cfg sheartraction_powerlaw_norefstate_dt0.05_onecell_hex.cfg > sheartraction_powerlaw_norefstate_dt0.05_onecell_hex.log 2>&1
+pylith sheartraction_powerlaw_norefstate.cfg sheartraction_powerlaw_norefstate_dt0.1_onecell_hex.cfg > sheartraction_powerlaw_norefstate_dt0.1_onecell_hex.log 2>&1
+pylith sheartraction_powerlaw_norefstate.cfg sheartraction_powerlaw_norefstate_dt0.5_onecell_hex.cfg > sheartraction_powerlaw_norefstate_dt0.5_onecell_hex.log 2>&1
+pylith sheartraction_powerlaw_norefstate.cfg sheartraction_powerlaw_norefstate_dt1.0_onecell_hex.cfg > sheartraction_powerlaw_norefstate_dt1.0_onecell_hex.log 2>&1
+pylith sheartraction_powerlaw_norefstate.cfg sheartraction_powerlaw_norefstate_dt5.0_onecell_hex.cfg > sheartraction_powerlaw_norefstate_dt5.0_onecell_hex.log 2>&1
