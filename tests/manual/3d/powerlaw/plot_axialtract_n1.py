@@ -65,20 +65,26 @@ def scanLogfile(fileName):
     """
     matchStr = '||J - Jfd||_F/||J||_F ='
     endStr = ','
-    f = open(fileName, 'r')
-    lines = reversed(f.readlines())
     lastLine = None
-    for line in lines:
-        if (matchStr in line):
-            lastLine = line
-            break
-    val = float((lastLine.split(matchStr))[1].split(endStr)[0])
+    val = None
+    try:
+        f = open(fileName, 'r')
+        lines = reversed(f.readlines())
+        for line in lines:
+            if (matchStr in line):
+                lastLine = line
+                break
+        if (lastLine):
+            val = float((lastLine.split(matchStr))[1].split(endStr)[0])
+    except FileNotFoundError:
+        pass
 
     return val
     
 # Create subplots and loop over simulations.
 fig, a = plt.subplots(2,2)
 jacobianDiff = numpy.zeros(numSims, dtype=numpy.float64)
+jacobianInfo = False
 
 for simNum in range(numSims):
     baseName = basePrefix + stepSizesStr[simNum] + baseSuffix
@@ -87,6 +93,8 @@ for simNum in range(numSims):
     (timeYears, sxx, ezz, dispz, locs) = getVars(h5File)
     timeSecs = year*timeYears
     jacobianDiff[simNum] = scanLogfile(logFile)
+    if (jacobianDiff[simNum]):
+        jacobianInfo = True
     if (simNum == 0):
         (dispzAnl, stressAnl, devStressAnl, strainAnl, devStrainAnl,
          maxwellVisStrain, powerLawVisStrain) = AnalyticalSoln(timeSecs, locs[0,:].reshape(1,3))
@@ -97,7 +105,6 @@ for simNum in range(numSims):
     a[1][0].plot(timeYears, ezz, lineDefs[simNum], label="dt={0}".format(stepSizesStr[simNum]))
     a[0][1].plot(timeYears, dispz, lineDefs[simNum], label="dt={0}".format(stepSizesStr[simNum]))
 
-a[1][1].loglog(stepSizes, jacobianDiff, 'k+-')
 a[0][0].set_xlabel('Time (years)')
 a[0][0].set_ylabel('Stress_xx (Pa)')
 a[0][0].legend(loc="upper right")
@@ -107,8 +114,10 @@ a[1][0].legend(loc="upper right")
 a[0][1].set_xlabel('Time (years)')
 a[0][1].set_ylabel('Displacement_z (m)')
 a[0][1].legend(loc="upper right")
-a[1][1].set_xlabel('Time step size (years)')
-a[1][1].set_ylabel('Jacobian difference')
+if (jacobianInfo):
+    a[1][1].loglog(stepSizes, jacobianDiff, 'k+-')
+    a[1][1].set_xlabel('Time step size (years)')
+    a[1][1].set_ylabel('Jacobian difference')
 plt.show()
 
 # End of file
