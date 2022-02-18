@@ -1,5 +1,9 @@
 # Dynamic
 
+:::{admonition} TODO @rwalkerlewis
+This section will need to be updated for consistency with the dynamic prescribed slip formulation.
+:::
+
 For compatibility with PETSc TS algorithms, we want to turn the second order elasticity equation into two first order equations.
 We introduce velocity as a unknown, $\vec{v}=\frac{\partial u}{\partial t}$, which leads to a slightly different three field problem,
 %
