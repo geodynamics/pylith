@@ -26,7 +26,7 @@ For compatibility with PETSc TS explicit time stepping algorithms, we need the l
 We replace the variation of fluid content variable, $\zeta$, with its definition in the conservation of fluid mass equation and solve for the rate of change of pressure,
 %
 \begin{gather}
-  \frac{\partial}{\partial t}\left[\alpha \epsilon_{v} + \frac{p}{M}\right] - \gamma\left(\vec{x},t\right) + \nabla \cdot \vec{q} = 0 \\
+  \frac{\partial}{\partial t}\left(\alpha \epsilon_{v} + \frac{p}{M}\right) - \gamma\left(\vec{x},t\right) + \nabla \cdot \vec{q} = 0 \\
   \alpha \dot{\epsilon}_{v} + \frac{\dot{p}}{M} - \gamma \left(\vec{x},t\right) + \nabla \cdot \vec{q} = 0 \\
   \frac{\dot{p}}{M} = \gamma \left(\vec{x},t \right) - \alpha \dot{\epsilon}_{v} -\nabla \cdot \vec{q} \\
   \frac{\dot{p}}{M} = \gamma \left(\vec{x},t \right) - \alpha \left( \nabla \cdot \dot{\vec{u}} \right) -\nabla \cdot \vec{q}.
