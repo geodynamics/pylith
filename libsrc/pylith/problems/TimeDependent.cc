@@ -773,8 +773,13 @@ pylith::problems::TimeDependent::computeLHSResidual(PetscTS ts,
     // Get current time step.
     PylithReal dt;
     PetscErrorCode err = TSGetTimeStep(ts, &dt);PYLITH_CHECK_ERROR(err);
-
     pylith::problems::TimeDependent* problem = (pylith::problems::TimeDependent*)context;
+
+    if (pylith::problems::Physics::DYNAMIC_IMEX == problem->getFormulation()) {
+        const PylithReal s_tshift = 1.0; // Keep shift terms on LHS, so use 1.0 for terms moved to RHS.
+        problem->computeLHSJacobianLumpedInv(t, dt, s_tshift, solutionVec);
+    } // if
+
     problem->computeLHSResidual(residualVec, t, dt, solutionVec, solutionDotVec);
 
     PYLITH_METHOD_RETURN(0);
