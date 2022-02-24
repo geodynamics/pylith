@@ -38,10 +38,8 @@
 void
 pylith::testing::MMSTest::setUp(void) {
     GenericComponent::setName("mmstest"); // Override in child class for finer control of journal output.
-    _problem = new pylith::problems::TimeDependent;
-    CPPUNIT_ASSERT(_problem);
-    _mesh = new pylith::topology::Mesh();
-    CPPUNIT_ASSERT(_mesh);
+    _problem = new pylith::problems::TimeDependent;CPPUNIT_ASSERT(_problem);
+    _mesh = new pylith::topology::Mesh();CPPUNIT_ASSERT(_mesh);
     _solution = NULL;
     _solutionExactVec = NULL;
     _solutionDotExactVec = NULL;
@@ -81,10 +79,10 @@ pylith::testing::MMSTest::testDiscretization(void) {
     _initialize();
 
     CPPUNIT_ASSERT(_problem);
-    CPPUNIT_ASSERT(_solution);
+    const pylith::topology::Field* solution = _problem->getSolution();CPPUNIT_ASSERT(solution);
     PetscErrorCode err = 0;
     const PylithReal tolerance = -1.0, t = 0.0;
-    const pylith::string_vector subfieldNames = _solution->getSubfieldNames();
+    const pylith::string_vector subfieldNames = solution->getSubfieldNames();
     const size_t numSubfields = subfieldNames.size();
     pylith::real_array error(numSubfields);
     err = DMSNESCheckDiscretization(_problem->getPetscSNES(), _problem->getPetscDM(), t, _solutionExactVec,
@@ -126,9 +124,10 @@ pylith::testing::MMSTest::testResidual(void) {
 
     _initialize();
 
-    CPPUNIT_ASSERT(_solution);
+    CPPUNIT_ASSERT(_problem);
+    const pylith::topology::Field* solution = _problem->getSolution();CPPUNIT_ASSERT(solution);
     if (debug.state()) {
-        _solution->view("Solution field layout", pylith::topology::Field::VIEW_LAYOUT);
+        solution->view("Solution field layout", pylith::topology::Field::VIEW_LAYOUT);
     } // if
 
     CPPUNIT_ASSERT(_problem);
@@ -139,7 +138,7 @@ pylith::testing::MMSTest::testResidual(void) {
     err = DMTSCheckResidual(_problem->getPetscTS(), _problem->getPetscDM(), _problem->getStartTime(), _solutionExactVec,
                             _solutionDotExactVec, tolerance, &norm);
     if (debug.state()) {
-        _solution->view("Solution field");
+        solution->view("Solution field");
     } // if
     if (!_allowZeroResidual) {
         CPPUNIT_ASSERT_MESSAGE("L2 normal of residual is exactly zero, which suggests suspicious case with all residuals "
@@ -163,7 +162,6 @@ pylith::testing::MMSTest::testJacobianTaylorSeries(void) {
     _initialize();
 
     CPPUNIT_ASSERT(_problem);
-    CPPUNIT_ASSERT(_solution);
     CPPUNIT_ASSERT(_solutionExactVec);
     CPPUNIT_ASSERT(_solutionDotExactVec);
     PetscErrorCode err = 0;
@@ -211,7 +209,6 @@ pylith::testing::MMSTest::testJacobianFiniteDiff(void) {
     err = SNESSetFromOptions(_problem->getPetscSNES());CPPUNIT_ASSERT(!err);
 
     CPPUNIT_ASSERT(_problem);
-    CPPUNIT_ASSERT(_solution);
 
     _problem->solve();
     std::cout << "IMPORTANT: You must check the Jacobian values printed here manually!\n"
@@ -230,7 +227,6 @@ pylith::testing::MMSTest::_initialize(void) {
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(_problem);
-    CPPUNIT_ASSERT(_solution);
 
     _problem->setSolverType(pylith::problems::Problem::NONLINEAR);
     _problem->setMaxTimeSteps(1);
@@ -242,12 +238,13 @@ pylith::testing::MMSTest::_initialize(void) {
     _setExactSolution();
 
     // Global vectors to use for analytical solution in MMS tests.
-    PetscErrorCode err = VecDuplicate(_solution->getGlobalVector(), &_solutionExactVec);CPPUNIT_ASSERT(!err);
+    const pylith::topology::Field* solution = _problem->getSolution();CPPUNIT_ASSERT(solution);
+    PetscErrorCode err = VecDuplicate(solution->getGlobalVector(), &_solutionExactVec);CPPUNIT_ASSERT(!err);
     err = VecDuplicate(_solutionExactVec, &_solutionDotExactVec);CPPUNIT_ASSERT(!err);
 
     pythia::journal::debug_t debug(GenericComponent::getName());
     if (debug.state()) {
-        const pylith::topology::Mesh& mesh = _solution->getMesh();
+        const pylith::topology::Mesh& mesh = solution->getMesh();
         mesh.view();
     } // if
 

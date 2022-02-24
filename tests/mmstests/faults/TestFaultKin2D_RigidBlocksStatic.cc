@@ -315,9 +315,10 @@ protected:
 
     // Set exact solution in domain.
     void _setExactSolution(void) {
-        CPPUNIT_ASSERT(_solution);
+        const pylith::topology::Field* solution = _problem->getSolution();
+        CPPUNIT_ASSERT(solution);
 
-        PetscDM dm = _solution->getDM();
+        PetscDM dm = solution->getDM();
         PetscDMLabel label;
         PetscIS is;
         PetscInt cohesiveCell;

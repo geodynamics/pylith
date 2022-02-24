@@ -48,8 +48,7 @@ pylith::feassemble::Integrator::Integrator(pylith::problems::Physics* const phys
     _hasLHSJacobian(false),
     _hasLHSJacobianLumped(false),
     _needNewLHSJacobian(true),
-    _needNewLHSJacobianLumped(true)
-{}
+    _needNewLHSJacobianLumped(true) {}
 
 
 // ---------------------------------------------------------------------------------------------------------------------

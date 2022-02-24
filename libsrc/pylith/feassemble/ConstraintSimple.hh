@@ -33,7 +33,7 @@
 #include "pylith/utils/utilsfwd.hh" // HOLDSA Logger
 
 class pylith::feassemble::ConstraintSimple : public pylith::feassemble::Constraint {
-    //friend class TestConstraintSimple; // unit testing
+    // friend class TestConstraintSimple; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
@@ -62,12 +62,10 @@ public:
 
     /** Set constrained values in solution field.
      *
-     * @param[out] solution Solution field.
-     * @param[in] t Current time.
+     * @param[inout] integrationData Data needed to integrate governing equation.
      */
     virtual
-    void setSolution(pylith::topology::Field* solution,
-                     const double t);
+    void setSolution(pylith::problems::IntegrationData* integrationData);
 
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:

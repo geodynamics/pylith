@@ -40,6 +40,8 @@ namespace pylith {
         class ObserversPhysics;
         class ObserverPhysics;
 
+        class IntegrationData;
+
         class InitialCondition;
         class InitialConditionDomain;
         class InitialConditionPatch;
@@ -47,7 +49,7 @@ namespace pylith {
         class ProgressMonitor;
         class ProgressMonitorTime;
         class PrograssMonitorStep;
-      
+
     } // problems
 } // pylith
 

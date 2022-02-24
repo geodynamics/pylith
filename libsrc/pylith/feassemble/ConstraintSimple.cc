@@ -24,6 +24,7 @@
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
+#include "pylith/problems/IntegrationData.hh" // USES IntegrationData
 #include "pylith/problems/ObserversPhysics.hh" // USES ObserversPhysics
 #include "pylith/problems/Physics.hh" // USES Physics
 
@@ -113,7 +114,7 @@ pylith::feassemble::ConstraintSimple::initialize(const pylith::topology::Field& 
     err = DMPlexRestoreTransitiveClosure(solution.getDM(), point, PETSC_FALSE, &clSize, &closure);PYLITH_CHECK_ERROR(err);
     err = DMGetLabel(solution.getDM(), _constraintLabel.c_str(), &label);PYLITH_CHECK_ERROR(err);
     err = PetscDSAddBoundary(ds, DM_BC_ESSENTIAL, _constraintLabel.c_str(), label, 1, &labelId, i_field,
-                             _constrainedDOF.size(), &_constrainedDOF[0], (void (*)(void))_fn, NULL, context, NULL);
+                             _constrainedDOF.size(), &_constrainedDOF[0], (void (*)(void)) _fn, NULL, context, NULL);
     PYLITH_CHECK_ERROR(err);
     err = DMViewFromOptions(dm, NULL, "-constraint_simple_dm_view");PYLITH_CHECK_ERROR(err);
     {
@@ -132,12 +133,14 @@ pylith::feassemble::ConstraintSimple::initialize(const pylith::topology::Field& 
 // ---------------------------------------------------------------------------------------------------------------------
 // Set constrained values in solution field.
 void
-pylith::feassemble::ConstraintSimple::setSolution(pylith::topology::Field* solution,
-                                                  const double t) {
+pylith::feassemble::ConstraintSimple::setSolution(pylith::problems::IntegrationData* integrationData) {
+    assert(integrationData);
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("setSolution(solution="<<solution->getLabel()<<", t="<<t<<")");
+    PYLITH_JOURNAL_DEBUG("setSolution(integrationData="<<integrationData->str()<<")");
 
+    const pylith::topology::Field* solution = integrationData->getField(pylith::problems::IntegrationData::solution);
     assert(solution);
+    const PylithReal t = integrationData->getScalar(pylith::problems::IntegrationData::time);
 
     PetscErrorCode err = 0;
     PetscDM dmSoln = solution->getDM();

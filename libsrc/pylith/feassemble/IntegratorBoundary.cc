@@ -25,6 +25,7 @@
 #include "pylith/topology/MeshOps.hh" // USES createLowerDimMesh()
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/problems/Physics.hh" // USES Physics
+#include "pylith/problems/IntegrationData.hh" // USES IntegrationData
 #include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor::optimizeClosure()
 
 #include "spatialdata/spatialdb/GravityField.hh" // HASA GravityField
@@ -233,28 +234,31 @@ pylith::feassemble::IntegratorBoundary::updateState(const double t) {
 // Compute RHS residual for G(t,s).
 void
 pylith::feassemble::IntegratorBoundary::computeRHSResidual(pylith::topology::Field* residual,
-                                                           const PylithReal t,
-                                                           const PylithReal dt,
-                                                           const pylith::topology::Field& solution) {
+                                                           const pylith::problems::IntegrationData& integrationData) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("computeRHSResidual(residual="<<residual<<", t="<<t<<", dt="<<dt<<", solution="<<solution.getLabel()<<")");
+    PYLITH_JOURNAL_DEBUG("computeRHSResidual(residual="<<residual<<", integrationData="<<integrationData.str()<<")");
     if (!_hasRHSResidual) { PYLITH_METHOD_END;}
     assert(residual);
 
-    DSLabelAccess dsLabel(solution.getDM(), _labelName.c_str(), _labelValue);
-    _setKernelConstants(solution, dt);
+    const pylith::topology::Field* solution = integrationData.getField(pylith::problems::IntegrationData::solution);
+    assert(solution);
+    const PylithReal t = integrationData.getScalar(pylith::problems::IntegrationData::time);
+    const PylithReal dt = integrationData.getScalar(pylith::problems::IntegrationData::time_step);
+
+    DSLabelAccess dsLabel(solution->getDM(), _labelName.c_str(), _labelValue);
+    _setKernelConstants(*solution, dt);
 
     PetscFormKey key;
     key.label = dsLabel.label();
     key.value = dsLabel.value();
-    key.field = solution.getSubfieldInfo(_subfieldName.c_str()).index;
+    key.field = solution->getSubfieldInfo(_subfieldName.c_str()).index;
     key.part = pylith::feassemble::Integrator::RESIDUAL_RHS;
 
     PetscErrorCode err;
-    assert(solution.getLocalVector());
+    assert(solution->getLocalVector());
     assert(residual->getLocalVector());
     PetscVec solutionDotVec = NULL;
-    err = DMPlexComputeBdResidualSingle(dsLabel.dm(), t, dsLabel.weakForm(), key, solution.getLocalVector(), solutionDotVec,
+    err = DMPlexComputeBdResidualSingle(dsLabel.dm(), t, dsLabel.weakForm(), key, solution->getLocalVector(), solutionDotVec,
                                         residual->getLocalVector());PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
@@ -265,29 +269,33 @@ pylith::feassemble::IntegratorBoundary::computeRHSResidual(pylith::topology::Fie
 // Compute LHS residual for F(t,s,\dot{s}).
 void
 pylith::feassemble::IntegratorBoundary::computeLHSResidual(pylith::topology::Field* residual,
-                                                           const PylithReal t,
-                                                           const PylithReal dt,
-                                                           const pylith::topology::Field& solution,
-                                                           const pylith::topology::Field& solutionDot) {
+                                                           const pylith::problems::IntegrationData& integrationData) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("computeLHSResidual(residual="<<residual<<", t="<<t<<", dt="<<dt<<", solution="<<solution.getLabel()<<")");
+    PYLITH_JOURNAL_DEBUG("computeLHSResidual(residual="<<residual<<", integrationData="<<integrationData.str()<<")");
     if (!_hasLHSResidual) { PYLITH_METHOD_END;}
     assert(residual);
 
-    DSLabelAccess dsLabel(solution.getDM(), _labelName.c_str(), _labelValue);
-    _setKernelConstants(solution, dt);
+    const pylith::topology::Field* solution = integrationData.getField(pylith::problems::IntegrationData::solution);
+    assert(solution);
+    const pylith::topology::Field* solutionDot = integrationData.getField(pylith::problems::IntegrationData::solution_dot);
+    assert(solutionDot);
+    const PylithReal t = integrationData.getScalar(pylith::problems::IntegrationData::time);
+    const PylithReal dt = integrationData.getScalar(pylith::problems::IntegrationData::time_step);
+
+    DSLabelAccess dsLabel(solution->getDM(), _labelName.c_str(), _labelValue);
+    _setKernelConstants(*solution, dt);
 
     PetscFormKey key;
     key.label = dsLabel.label();
     key.value = dsLabel.value();
-    key.field = solution.getSubfieldInfo(_subfieldName.c_str()).index;
+    key.field = solution->getSubfieldInfo(_subfieldName.c_str()).index;
     key.part = pylith::feassemble::Integrator::RESIDUAL_LHS;
 
     PetscErrorCode err;
-    assert(solution.getLocalVector());
+    assert(solution->getLocalVector());
     assert(residual->getLocalVector());
-    err = DMPlexComputeBdResidualSingle(dsLabel.dm(), t, dsLabel.weakForm(), key, solution.getLocalVector(), solutionDot.getLocalVector(),
-                                        residual->getLocalVector());PYLITH_CHECK_ERROR(err);
+    err = DMPlexComputeBdResidualSingle(dsLabel.dm(), t, dsLabel.weakForm(), key, solution->getLocalVector(),
+                                        solutionDot->getLocalVector(), residual->getLocalVector());PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // computeLHSResidual
@@ -298,13 +306,9 @@ pylith::feassemble::IntegratorBoundary::computeLHSResidual(pylith::topology::Fie
 void
 pylith::feassemble::IntegratorBoundary::computeLHSJacobian(PetscMat jacobianMat,
                                                            PetscMat precondMat,
-                                                           const PylithReal t,
-                                                           const PylithReal dt,
-                                                           const PylithReal s_tshift,
-                                                           const pylith::topology::Field& solution,
-                                                           const pylith::topology::Field& solutionDot) {
+                                                           const pylith::problems::IntegrationData& integrationData) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("computeLHSJacobian(jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", t="<<t<<", dt="<<dt<<", solution="<<solution.getLabel()<<", solutionDot="<<solutionDot.getLabel()<<") empty method");
+    PYLITH_JOURNAL_DEBUG("computeLHSJacobian(jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", integrationData="<<integrationData.str()<<") empty method");
 
     _needNewLHSJacobian = false;
     // No implementation needed for boundary.
@@ -317,12 +321,9 @@ pylith::feassemble::IntegratorBoundary::computeLHSJacobian(PetscMat jacobianMat,
 // Compute LHS Jacobian for F(t,s,\dot{s}).
 void
 pylith::feassemble::IntegratorBoundary::computeLHSJacobianLumpedInv(pylith::topology::Field* jacobianInv,
-                                                                    const PylithReal t,
-                                                                    const PylithReal dt,
-                                                                    const PylithReal s_tshift,
-                                                                    const pylith::topology::Field& solution) {
+                                                                    const pylith::problems::IntegrationData& integrationData) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("computeLHSJacobianLumpedInv(jacobianInv="<<jacobianInv<<", t="<<t<<", dt="<<dt<<", solution="<<solution.getLabel()<<") empty method");
+    PYLITH_JOURNAL_DEBUG("computeLHSJacobianLumpedInv(jacobianInv="<<jacobianInv<<", integrationData="<<integrationData.str()<<") empty method");
 
     _needNewLHSJacobianLumped = false;
     // No implementation needed for boundary.

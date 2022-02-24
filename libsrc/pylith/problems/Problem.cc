@@ -20,6 +20,7 @@
 
 #include "Problem.hh" // implementation of class methods
 
+#include "pylith/problems/IntegrationData.hh" // HOLDSA IntegrationData
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // HASA Field
 #include "pylith/topology/FieldOps.hh" // USES FieldOps
@@ -45,7 +46,7 @@
 // ----------------------------------------------------------------------
 // Constructor
 pylith::problems::Problem::Problem() :
-    _solution(NULL),
+    _integrationData(new pylith::problems::IntegrationData),
     _normalizer(NULL),
     _gravityField(NULL),
     _observers(new pylith::problems::ObserversSoln),
@@ -76,7 +77,7 @@ pylith::problems::Problem::deallocate(void) {
         delete _constraints[i];_constraints[i] = NULL;
     } // for
 
-    _solution = NULL; // Held by Python. :KLUDGE: :TODO: Use shared pointer.
+    delete _integrationData;_integrationData = NULL;
     delete _normalizer;_normalizer = NULL;
     _gravityField = NULL; // Held by Python. :KLUDGE: :TODO: Use shared pointer.
     delete _observers;_observers = NULL;
@@ -186,8 +187,25 @@ void
 pylith::problems::Problem::setSolution(pylith::topology::Field* field) {
     PYLITH_COMPONENT_DEBUG("Problem::setSolution(field="<<typeid(*field).name()<<")");
 
-    _solution = field;
+    assert(_integrationData);
+    _integrationData->setField("solution", field);
 } // setSolution
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Get solution field.
+const pylith::topology::Field*
+pylith::problems::Problem::getSolution(void) const {
+    PYLITH_METHOD_BEGIN;
+
+    assert(_integrationData);
+    pylith::topology::Field* solution = NULL;
+    if (_integrationData->hasField(IntegrationData::solution)) {
+        solution = _integrationData->getField(IntegrationData::solution);
+    } // if
+
+    PYLITH_METHOD_RETURN(solution);
+}
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -289,33 +307,35 @@ pylith::problems::Problem::verifyConfiguration(void) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("Problem::verifyConfiguration(void)");
 
-    assert(_solution);
+    assert(_integrationData);
+    const pylith::topology::Field* solution = _integrationData->getField("solution");
+    assert(solution);
 
     // Check to make sure materials are compatible with the solution.
     const size_t numMaterials = _materials.size();
     for (size_t i = 0; i < numMaterials; ++i) {
         assert(_materials[i]);
-        _materials[i]->verifyConfiguration(*_solution);
+        _materials[i]->verifyConfiguration(*solution);
     } // for
 
     // Check to make sure interfaces are compatible with the solution.
     const size_t numInterfaces = _interfaces.size();
     for (size_t i = 0; i < numInterfaces; ++i) {
         assert(_interfaces[i]);
-        _interfaces[i]->verifyConfiguration(*_solution);
+        _interfaces[i]->verifyConfiguration(*solution);
     } // for
 
     // Check to make sure boundary conditions are compatible with the solution.
     const size_t numBC = _bc.size();
     for (size_t i = 0; i < numBC; ++i) {
         assert(_bc[i]);
-        _bc[i]->verifyConfiguration(*_solution);
+        _bc[i]->verifyConfiguration(*solution);
     } // for
 
     _checkMaterialIds();
 
     assert(_observers);
-    _observers->verifyObservers(*_solution);
+    _observers->verifyObservers(*solution);
 
     PYLITH_METHOD_END;
 } // verifyConfiguration
@@ -328,13 +348,15 @@ pylith::problems::Problem::initialize(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("Problem::initialize()");
 
-    assert(_solution);
+    assert(_integrationData);
+    pylith::topology::Field* solution = _integrationData->getField("solution");
+    assert(solution);
 
     // Initialize solution field.
-    PetscErrorCode err = DMSetFromOptions(_solution->getDM());PYLITH_CHECK_ERROR(err);
+    PetscErrorCode err = DMSetFromOptions(solution->getDM());PYLITH_CHECK_ERROR(err);
     _setupSolution();
 
-    const pylith::topology::Mesh& mesh = _solution->getMesh();
+    const pylith::topology::Mesh& mesh = solution->getMesh();
     pylith::topology::CoordsVisitor::optimizeClosure(mesh.getDM());
 
     // Initialize integrators.
@@ -342,7 +364,7 @@ pylith::problems::Problem::initialize(void) {
     const size_t numIntegrators = _integrators.size();
     for (size_t i = 0; i < numIntegrators; ++i) {
         assert(_integrators[i]);
-        _integrators[i]->initialize(*_solution);
+        _integrators[i]->initialize(*solution);
     } // for
 
     // Initialize constraints.
@@ -350,17 +372,17 @@ pylith::problems::Problem::initialize(void) {
     const size_t numConstraints = _constraints.size();
     for (size_t i = 0; i < numConstraints; ++i) {
         assert(_constraints[i]);
-        _constraints[i]->initialize(*_solution);
+        _constraints[i]->initialize(*solution);
     } // for
 
-    _solution->allocate();
-    _solution->createGlobalVector();
-    _solution->createOutputVector();
+    solution->allocate();
+    solution->createGlobalVector();
+    solution->createOutputVector();
 
     pythia::journal::debug_t debug(PyreComponent::getName());
     if (debug.state()) {
         PYLITH_COMPONENT_DEBUG("Displaying solution field layout");
-        _solution->view("Solution field", pylith::topology::Field::VIEW_LAYOUT);
+        solution->view("Solution field", pylith::topology::Field::VIEW_LAYOUT);
     } // if
 
     PYLITH_METHOD_END;
@@ -388,7 +410,10 @@ pylith::problems::Problem::_checkMaterialIds(void) const {
         materialIds[count++] = _interfaces[i]->getInterfaceId();
     } // for
 
-    pylith::topology::MeshOps::checkMaterialIds(_solution->getMesh(), materialIds);
+    assert(_integrationData);
+    const pylith::topology::Field* solution = _integrationData->getField("solution");
+    assert(solution);
+    pylith::topology::MeshOps::checkMaterialIds(solution->getMesh(), materialIds);
 
     PYLITH_METHOD_END;
 } // _checkMaterialIds
@@ -409,16 +434,20 @@ pylith::problems::Problem::_createIntegrators(void) {
     _integrators.resize(maxSize);
     size_t count = 0;
 
+    assert(_integrationData);
+    const pylith::topology::Field* solution = _integrationData->getField("solution");
+    assert(solution);
+
     for (size_t i = 0; i < numMaterials; ++i) {
         assert(_materials[i]);
-        pylith::feassemble::Integrator* integrator = _materials[i]->createIntegrator(*_solution);
+        pylith::feassemble::Integrator* integrator = _materials[i]->createIntegrator(*solution);
         assert(count < maxSize);
         if (integrator) { _integrators[count++] = integrator;}
     } // for
 
     for (size_t i = 0; i < numInterfaces; ++i) {
         assert(_interfaces[i]);
-        pylith::feassemble::Integrator* integrator = _interfaces[i]->createIntegrator(*_solution);
+        pylith::feassemble::Integrator* integrator = _interfaces[i]->createIntegrator(*solution);
         assert(count < maxSize);
         if (integrator) { _integrators[count++] = integrator;}
     } // for
@@ -426,7 +455,7 @@ pylith::problems::Problem::_createIntegrators(void) {
     // Check to make sure boundary conditions are compatible with the solution.
     for (size_t i = 0; i < numBC; ++i) {
         assert(_bc[i]);
-        pylith::feassemble::Integrator* integrator = _bc[i]->createIntegrator(*_solution);
+        pylith::feassemble::Integrator* integrator = _bc[i]->createIntegrator(*solution);
         assert(count < maxSize);
         if (integrator) { _integrators[count++] = integrator;}
     } // for
@@ -448,26 +477,29 @@ pylith::problems::Problem::_createConstraints(void) {
     const size_t numInterfaces = _interfaces.size();
     const size_t numBC = _bc.size();
 
-    _constraints.resize(0); // insure we start with an empty array.
+    assert(_integrationData);
+    const pylith::topology::Field* solution = _integrationData->getField("solution");
+    assert(solution);
 
+    _constraints.resize(0); // insure we start with an empty array.
 
     for (size_t i = 0; i < numMaterials; ++i) {
         assert(_materials[i]);
-        std::vector<pylith::feassemble::Constraint*> constraints = _materials[i]->createConstraints(*_solution);
+        std::vector<pylith::feassemble::Constraint*> constraints = _materials[i]->createConstraints(*solution);
         _constraints.insert(_constraints.end(), constraints.begin(), constraints.end());
 
     } // for
 
     for (size_t i = 0; i < numInterfaces; ++i) {
         assert(_interfaces[i]);
-        std::vector<pylith::feassemble::Constraint*> constraints = _interfaces[i]->createConstraints(*_solution);
+        std::vector<pylith::feassemble::Constraint*> constraints = _interfaces[i]->createConstraints(*solution);
         _constraints.insert(_constraints.end(), constraints.begin(), constraints.end());
 
     } // for
 
     for (size_t i = 0; i < numBC; ++i) {
         assert(_bc[i]);
-        std::vector<pylith::feassemble::Constraint*> constraints = _bc[i]->createConstraints(*_solution);
+        std::vector<pylith::feassemble::Constraint*> constraints = _bc[i]->createConstraints(*solution);
         _constraints.insert(_constraints.end(), constraints.begin(), constraints.end());
 
     } // for
@@ -483,19 +515,21 @@ pylith::problems::Problem::_setupSolution(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("Problem::_setupSolution()");
 
-    assert(_solution);
-    _solution->subfieldsSetup();
-    _solution->createDiscretization();
+    assert(_integrationData);
+    pylith::topology::Field* solution = _integrationData->getField("solution");
+    assert(solution);
+    solution->subfieldsSetup();
+    solution->createDiscretization();
 
     // Mark fault fields as implicit.
-    const pylith::string_vector& subfieldNames = _solution->getSubfieldNames();
+    const pylith::string_vector& subfieldNames = solution->getSubfieldNames();
     for (size_t i = 0; i < subfieldNames.size(); ++i) {
-        const pylith::topology::Field::SubfieldInfo& subfieldInfo = _solution->getSubfieldInfo(subfieldNames[i].c_str());
+        const pylith::topology::Field::SubfieldInfo& subfieldInfo = solution->getSubfieldInfo(subfieldNames[i].c_str());
         if (subfieldInfo.fe.isFaultOnly) {
             PetscErrorCode err;
             PetscDS ds = NULL;
             PetscInt cStart = 0, cEnd = 0;
-            PetscDM dmSoln = _solution->getDM();assert(dmSoln);
+            PetscDM dmSoln = solution->getDM();assert(dmSoln);
             err = DMPlexGetHeightStratum(dmSoln, 0, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
             PetscInt cell = cStart;
             for (; cell < cEnd; ++cell) {

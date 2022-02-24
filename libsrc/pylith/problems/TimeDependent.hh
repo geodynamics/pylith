@@ -300,13 +300,6 @@ private:
     std::vector<pylith::problems::InitialCondition*> _ic; ///< Array of initial conditions.
     pylith::problems::ProgressMonitorTime* _monitor; ///< Monitor for simulation progress.
 
-    pylith::topology::Field* _solutionDot; ///< Time derivative of solution field.
-    pylith::topology::Field* _residual; ///< Handle to residual field.
-    pylith::topology::Field* _jacobianLHSLumpedInv; ///< Handle to inverse lumped Jacobian.
-
-    PylithReal _dtJacobian; ///< Time step used to compute LHS Jacobian.
-    PylithReal _dtLHSJacobianLumped; ///< Time step used to compute LHS lumped Jacobian.
-    PylithReal _tResidual; ///< Time for current residual.
     bool _needNewLHSJacobian; ///< True if need to recompute LHS Jacobian.
     bool _haveNewLHSJacobian; ///< True if LHS Jacobian was reformed.
     bool _shouldNotifyIC;
