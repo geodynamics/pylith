@@ -129,60 +129,36 @@ public:
     /** Compute RHS residual for G(t,s).
      *
      * @param[out] residual Field for residual.
-     * @param[in] t Current time.
-     * @param[in] dt Current time step.
-     * @param[in] solution Field with current trial solution.
+     * @param[in] integrationData Data needed to integrate governing equations.
      */
     void computeRHSResidual(pylith::topology::Field* residual,
-                            const PylithReal t,
-                            const PylithReal dt,
-                            const pylith::topology::Field& solution);
+                            const pylith::problems::IntegrationData& integrationData);
 
     /** Compute LHS residual for F(t,s,\dot{s}).
      *
      * @param[out] residual Field for residual.
-     * @param[in] t Current time.
-     * @param[in] dt Current time step.
-     * @param[in] solution Field with current trial solution.
-     * @param[in] solutionDot Field with time derivative of current trial solution.
+     * @param[in] integrationData Data needed to integrate governing equations.
      */
     void computeLHSResidual(pylith::topology::Field* residual,
-                            const PylithReal t,
-                            const PylithReal dt,
-                            const pylith::topology::Field& solution,
-                            const pylith::topology::Field& solutionDot);
+                            const pylith::problems::IntegrationData& integrationData);
 
     /** Compute LHS Jacobian and preconditioner for F(t,s,\dot{s}) with implicit time-stepping.
      *
      * @param[out] jacobianMat PETSc Mat with Jacobian sparse matrix.
      * @param[out] precondMat PETSc Mat with Jacobian preconditioning sparse matrix.
-     * @param[in] t Current time.
-     * @param[in] dt Current time step.
-     * @param[in] s_tshift Scale for time derivative.
-     * @param[in] solution Field with current trial solution.
-     * @param[in] solutionDot Field with time derivative of current trial solution.
+     * @param[in] integrationData Data needed to integrate governing equations.
      */
     void computeLHSJacobian(PetscMat jacobianMat,
                             PetscMat precondMat,
-                            const PylithReal t,
-                            const PylithReal dt,
-                            const PylithReal s_tshift,
-                            const pylith::topology::Field& solution,
-                            const pylith::topology::Field& solutionDot);
+                            const pylith::problems::IntegrationData& integrationData);
 
     /** Compute inverse of lumped LHS Jacobian for F(t,s,\dot{s}) with explicit time-stepping.
      *
      * @param[out] jacobianInv Inverse of lumped Jacobian as a field.
-     * @param[in] t Current time.
-     * @param[in] dt Current time step.
-     * @param[in] s_tshift Scale for time derivative.
-     * @param[in] solution Field with current trial solution.
+     * @param[in] integrationData Data needed to integrate governing equations.
      */
     void computeLHSJacobianLumpedInv(pylith::topology::Field* jacobianInv,
-                                     const PylithReal t,
-                                     const PylithReal dt,
-                                     const PylithReal s_tshift,
-                                     const pylith::topology::Field& solution);
+                                     const pylith::problems::IntegrationData& integrationData);
 
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:

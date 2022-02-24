@@ -203,16 +203,4 @@ pylith::feassemble::Constraint::updateState(const PylithReal t) {
 } // updateState
 
 
-// ---------------------------------------------------------------------------------------------------------------------
-// Set solution time derivative
-void
-pylith::feassemble::Constraint::setSolutionDot(pylith::topology::Field* solutionDot,
-                                               const PylithReal t) {
-    PYLITH_METHOD_BEGIN;
-    // Default is to do nothing.
-
-    PYLITH_METHOD_END;
-} // updateState
-
-
 // End of file

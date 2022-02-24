@@ -249,11 +249,12 @@ protected:
 
     // Set exact solution in domain.
     void _setExactSolution(void) {
-        CPPUNIT_ASSERT(_solution);
+        const pylith::topology::Field* solution = _problem->getSolution();
+        CPPUNIT_ASSERT(solution);
 
         PetscErrorCode err = 0;
         PetscDS prob = NULL;
-        err = DMGetDS(_solution->getDM(), &prob);CPPUNIT_ASSERT(!err);
+        err = DMGetDS(solution->getDM(), &prob);CPPUNIT_ASSERT(!err);
         err = PetscDSSetExactSolution(prob, 0, solnkernel_disp, NULL);CPPUNIT_ASSERT(!err);
     } // _setExactSolution
 

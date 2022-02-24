@@ -128,16 +128,10 @@ public:
 
     /** Set constrained values in solution field.
      *
-     * @param[out] solution Solution field.
-     * @param[in] t Current time.
+     * @param[inout] integrationData Data needed to integrate governing equation.
      */
     virtual
-    void setSolution(pylith::topology::Field* solution,
-                     const double t) = 0;
-
-    virtual
-    void setSolutionDot(pylith::topology::Field* solutionDot,
-                        const double t);
+    void setSolution(pylith::problems::IntegrationData* integrationData) = 0;
 
     // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:

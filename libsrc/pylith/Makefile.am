@@ -137,6 +137,7 @@ libpylith_la_SOURCES = \
 	problems/Physics.cc \
 	problems/ObserverPhysics.cc \
 	problems/ObserversPhysics.cc \
+	problems/IntegrationData.cc \
 	problems/InitialCondition.cc \
 	problems/InitialConditionDomain.cc \
 	problems/InitialConditionPatch.cc \

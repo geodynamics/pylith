@@ -34,6 +34,7 @@
 
 class pylith::feassemble::ConstraintUserFn : public pylith::feassemble::Constraint {
     friend class TestConstraintUserFn; // unit testing
+    friend class _ConstraintUserFn; /// private utility class
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
@@ -68,21 +69,9 @@ public:
 
     /** Set constrained values in solution field.
      *
-     * @param[out] solution Solution field.
-     * @param[in] t Current time.
+     * @param[inout] integrationData Data needed to integrate governing equation.
      */
-    virtual
-    void setSolution(pylith::topology::Field* solution,
-                     const double t);
-
-    /** Set constrained values time derivative in solution field.
-     *
-     * @param[out] solutionDot Solution field.
-     * @param[in] t Current time.
-     */
-    virtual
-    void setSolutionDot(pylith::topology::Field* solutionDot,
-                        const double t);
+    void setSolution(pylith::problems::IntegrationData* integrationData);
 
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:

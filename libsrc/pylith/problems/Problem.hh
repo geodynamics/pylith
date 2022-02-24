@@ -127,6 +127,12 @@ public:
      */
     void setSolution(pylith::topology::Field* field);
 
+    /** Get solution field.
+     *
+     * @returns Solution field.
+     */
+    const pylith::topology::Field* getSolution(void) const;
+
     /** Set materials.
      *
      * @param[in] materials Array of materials.
@@ -169,7 +175,7 @@ public:
     // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
 
-    pylith::topology::Field* _solution; ///< Solution field.
+    pylith::problems::IntegrationData* _integrationData; /// > Data needed to integrate PDE.
 
     spatialdata::units::Nondimensional* _normalizer; ///< Nondimensionalization of scales.
     spatialdata::spatialdb::GravityField* _gravityField; ///< Gravity field.
