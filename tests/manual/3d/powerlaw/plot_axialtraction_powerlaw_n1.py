@@ -29,14 +29,10 @@ from axialtraction_maxwell_soln import AnalyticalSoln
 year = 60.0*60.0*24.0*365.25
 
 # Input files.
-stepSizes = numpy.array([0.01, 0.02, 0.05, 0.1, 0.2], dtype=numpy.float64)
-stepSizesStr = ['0.01', '0.02', '0.05', '0.1', '0.2']
 lineDefs = ['r+', 'g+', 'b+', 'c+', 'm+', 'y+']
 lineDefAnl = 'k-'
 legendAnl = 'Analytical'
-numSims = len(stepSizes)
-basePrefix = 'axialtraction_powerlaw_n1_norefstate_dt'
-baseSuffix = '_onecell_hex'
+basePrefix = 'axialtraction_powerlaw_n1_dt'
 
     
 def getVars(fileName):
@@ -81,43 +77,51 @@ def scanLogfile(fileName):
 
     return val
     
-# Create subplots and loop over simulations.
-fig, a = plt.subplots(2,2)
-jacobianDiff = numpy.zeros(numSims, dtype=numpy.float64)
-jacobianInfo = False
+def run(stepSizes):
+    """
+    Create subplots and loop over simulations.
+    """
+    numSims = len(stepSizes)
+    fig, a = plt.subplots(2,2)
+    jacobianDiff = numpy.zeros(numSims, dtype=numpy.float64)
+    jacobianInfo = False
 
-for simNum in range(numSims):
-    baseName = basePrefix + stepSizesStr[simNum] + baseSuffix
-    h5File = 'output/' + baseName + '-viscomat.h5'
-    logFile = baseName + '.log'
-    (timeYears, sxx, ezz, dispz, locs) = getVars(h5File)
-    timeSecs = year*timeYears
-    jacobianDiff[simNum] = scanLogfile(logFile)
-    if (jacobianDiff[simNum]):
-        jacobianInfo = True
-    if (simNum == 0):
-        (dispzAnl, stressAnl, devStressAnl, strainAnl, devStrainAnl,
-         maxwellVisStrain, powerLawVisStrain) = AnalyticalSoln(timeSecs, locs[0,:].reshape(1,3))
-        a[0][0].plot(timeYears, stressAnl[:,0], lineDefAnl, label=legendAnl)
-        a[1][0].plot(timeYears, strainAnl[:,2], lineDefAnl, label=legendAnl)
-        a[0][1].plot(timeYears, dispzAnl, lineDefAnl, label=legendAnl)
-    a[0][0].plot(timeYears, sxx, lineDefs[simNum], label="dt={0}".format(stepSizesStr[simNum]))
-    a[1][0].plot(timeYears, ezz, lineDefs[simNum], label="dt={0}".format(stepSizesStr[simNum]))
-    a[0][1].plot(timeYears, dispz, lineDefs[simNum], label="dt={0}".format(stepSizesStr[simNum]))
+    for simNum in range(numSims):
+        dt = stepSizes[simNum]
+        dtStr = repr(dt)
+        baseName = basePrefix + dtStr
+        h5File = 'output/' + baseName + '-viscomat.h5'
+        logFile = baseName + '.log'
+        (timeYears, sxx, ezz, dispz, locs) = getVars(h5File)
+        timeSecs = year*timeYears
+        jacobianDiff[simNum] = scanLogfile(logFile)
+        if (jacobianDiff[simNum]):
+            jacobianInfo = True
+        if (simNum == 0):
+            (dispzAnl, stressAnl, devStressAnl, strainAnl, devStrainAnl,
+             maxwellVisStrain, powerLawVisStrain) = AnalyticalSoln(timeSecs, locs[0,:].reshape(1,3))
+            a[0][0].plot(timeYears, stressAnl[:,0], lineDefAnl, label=legendAnl)
+            a[1][0].plot(timeYears, strainAnl[:,2], lineDefAnl, label=legendAnl)
+            a[0][1].plot(timeYears, dispzAnl, lineDefAnl, label=legendAnl)
+        a[0][0].plot(timeYears, sxx, lineDefs[simNum], label="dt={0}".format(dtStr))
+        a[1][0].plot(timeYears, ezz, lineDefs[simNum], label="dt={0}".format(dtStr))
+        a[0][1].plot(timeYears, dispz, lineDefs[simNum], label="dt={0}".format(dtStr))
+        
+    a[0][0].set_xlabel('Time (years)')
+    a[0][0].set_ylabel('Stress_xx (Pa)')
+    a[0][0].legend(loc="upper right")
+    a[1][0].set_xlabel('Time (years)')
+    a[1][0].set_ylabel('Strain_zz')
+    a[1][0].legend(loc="upper right")
+    a[0][1].set_xlabel('Time (years)')
+    a[0][1].set_ylabel('Displacement_z (m)')
+    a[0][1].legend(loc="upper right")
+    if (jacobianInfo):
+        a[1][1].loglog(stepSizes, jacobianDiff, 'k+-')
+        a[1][1].set_xlabel('Time step size (years)')
+        a[1][1].set_ylabel('Jacobian difference')
+    plt.show()
 
-a[0][0].set_xlabel('Time (years)')
-a[0][0].set_ylabel('Stress_xx (Pa)')
-a[0][0].legend(loc="upper right")
-a[1][0].set_xlabel('Time (years)')
-a[1][0].set_ylabel('Strain_zz')
-a[1][0].legend(loc="upper right")
-a[0][1].set_xlabel('Time (years)')
-a[0][1].set_ylabel('Displacement_z (m)')
-a[0][1].legend(loc="upper right")
-if (jacobianInfo):
-    a[1][1].loglog(stepSizes, jacobianDiff, 'k+-')
-    a[1][1].set_xlabel('Time step size (years)')
-    a[1][1].set_ylabel('Jacobian difference')
-plt.show()
+    return
 
 # End of file

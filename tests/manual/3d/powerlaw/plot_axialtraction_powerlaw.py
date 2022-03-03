@@ -28,12 +28,8 @@ import matplotlib.pyplot as plt
 year = 60.0*60.0*24.0*365.25
 
 # Input files.
-stepSizes = numpy.array([0.01, 0.05, 0.1, 0.5, 1.0, 5.0], dtype=numpy.float64)
-stepSizesStr = ['0.01', '0.05', '0.1', '0.5', '1.0', '5.0']
 lineDefs = ['k-', 'r+', 'g+', 'b+', 'c+', 'm+']
-numSims = len(stepSizes)
-basePrefix = 'axialtraction_powerlaw_norefstate_dt'
-baseSuffix = '_onecell_hex'
+basePrefix = 'axialtraction_powerlaw_dt'
 
 def getVars(fileName):
     """
@@ -77,36 +73,44 @@ def scanLogfile(fileName):
 
     return val
     
-# Create subplots and loop over simulations.
-fig, a = plt.subplots(2,2)
-jacobianDiff = numpy.zeros(numSims, dtype=numpy.float64)
-jacobianInfo = False
+def run(stepSizes):
+    """
+    Create subplots and loop over simulations.
+    """
+    numSims = len(stepSizes)
+    fig, a = plt.subplots(2,2)
+    jacobianDiff = numpy.zeros(numSims, dtype=numpy.float64)
+    jacobianInfo = False
 
-for simNum in range(numSims):
-    baseName = basePrefix + stepSizesStr[simNum] + baseSuffix
-    h5File = 'output/' + baseName + '-viscomat.h5'
-    logFile = baseName + '.log'
-    (timeYears, sxx, ezz, dispz, locs) = getVars(h5File)
-    jacobianDiff[simNum] = scanLogfile(logFile)
-    if (jacobianDiff[simNum]):
-        jacobianInfo = True
-    a[0][0].plot(timeYears, sxx, lineDefs[simNum], label="dt={0}".format(stepSizesStr[simNum]))
-    a[1][0].plot(timeYears, ezz, lineDefs[simNum], label="dt={0}".format(stepSizesStr[simNum]))
-    a[0][1].plot(timeYears, dispz, lineDefs[simNum], label="dt={0}".format(stepSizesStr[simNum]))
+    for simNum in range(numSims):
+        dt = stepSizes[simNum]
+        dtStr = repr(dt)
+        baseName = basePrefix + dtStr
+        h5File = 'output/' + baseName + '-viscomat.h5'
+        logFile = baseName + '.log'
+        (timeYears, sxx, ezz, dispz, locs) = getVars(h5File)
+        jacobianDiff[simNum] = scanLogfile(logFile)
+        if (jacobianDiff[simNum]):
+            jacobianInfo = True
+        a[0][0].plot(timeYears, sxx, lineDefs[simNum], label="dt={0}".format(dtStr))
+        a[1][0].plot(timeYears, ezz, lineDefs[simNum], label="dt={0}".format(dtStr))
+        a[0][1].plot(timeYears, dispz, lineDefs[simNum], label="dt={0}".format(dtStr))
 
-a[0][0].set_xlabel('Time (years)')
-a[0][0].set_ylabel('Stress_xx (Pa)')
-a[0][0].legend(loc="upper right")
-a[1][0].set_xlabel('Time (years)')
-a[1][0].set_ylabel('Strain_zz')
-a[1][0].legend(loc="upper right")
-a[0][1].set_xlabel('Time (years)')
-a[0][1].set_ylabel('Displacement_z (m)')
-a[0][1].legend(loc="upper right")
-if (jacobianInfo):
-    a[1][1].loglog(stepSizes, jacobianDiff, 'k+-')
-    a[1][1].set_xlabel('Time step size (years)')
-    a[1][1].set_ylabel('Jacobian difference')
-plt.show()
+    a[0][0].set_xlabel('Time (years)')
+    a[0][0].set_ylabel('Stress_xx (Pa)')
+    a[0][0].legend(loc="upper right")
+    a[1][0].set_xlabel('Time (years)')
+    a[1][0].set_ylabel('Strain_zz')
+    a[1][0].legend(loc="upper right")
+    a[0][1].set_xlabel('Time (years)')
+    a[0][1].set_ylabel('Displacement_z (m)')
+    a[0][1].legend(loc="upper right")
+    if (jacobianInfo):
+        a[1][1].loglog(stepSizes, jacobianDiff, 'k+-')
+        a[1][1].set_xlabel('Time step size (years)')
+        a[1][1].set_ylabel('Jacobian difference')
+    plt.show()
+
+    return
 
 # End of file

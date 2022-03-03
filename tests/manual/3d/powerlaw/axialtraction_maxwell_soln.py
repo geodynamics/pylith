@@ -40,29 +40,24 @@
 
 import numpy
 
-# Physical properties.
-p_density = 2500.0
-p_vs = 3464.1016
-p_vp = 6000.0
-p_viscosity = 9.467279917257993e17
-p_power_law_exponent = 1.0
-p_power_law_reference_strain_rate = 1.0e-6
-# p_power_law_reference_stress = 5680367950354.795
-p_power_law_reference_stress = 6.0*p_viscosity*p_power_law_reference_strain_rate
-
-p_mu = p_density*p_vs*p_vs
-p_lambda = p_density*p_vp*p_vp - 2.0*p_mu
-p_youngs = p_mu*(3.0*p_lambda + 2.0*p_mu)/(p_lambda + p_mu)
-p_poissons = 0.5*p_lambda/(p_lambda + p_mu)
-
-# Uniform stress field (plane strain).
-T0 = -1.0e9
-
 #-------------------------------------------------------------------------------
-def AnalyticalSoln(times, locs):
+def AnalyticalSoln(times, locs, params):
     """
     Compute stresses, strains, and state variables at time times.
     """
+    p_density = params['p_density']
+    p_vs = params['p_vs']
+    p_vp = params['p_vp']
+    p_viscosity = params['p_viscosity']
+    p_power_law_exponent = params['p_power_law_exponent']
+    p_power_law_reference_strain_rate = params['p_power_law_reference_strain_rate']
+    p_power_law_reference_stress = params['p_power_law_reference_stress']
+    p_mu = params['p_mu']
+    p_lambda = params['p_lambda']
+    p_youngs = params['p_youngs']
+    p_poissons = params['p_poissons']
+    T0 = params['T0']
+
     tensorSize = 6
     numSteps = times.shape[0]
     numPoints = locs.shape[0]
