@@ -118,7 +118,6 @@ We define the global error in a similar fashion,
 \end{equation}
 %
 where we sum the L2 norm computed for the local error over all of the cells before taking the square root and dividing by the volume of the domain.
-CIG has developed a package called Cigma <https://geodynamics.org/cig/software/packages/cs/cigma> that computes these local and global error metrics.
 
 Figures {numref}`fig:benchmark:strikeslip:tet4:1000m` through {numref}`fig:benchmark:strikeslip:hex8:250m` show the local error for each of the three resolutions and two cell types.
 The error decreases with decreasing cell size as expected for a converging solution.
