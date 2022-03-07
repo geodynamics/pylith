@@ -16,5 +16,8 @@ problems/index.md
 physics/index.md
 components/index.md
 examples/index.md
+benchmarks/index.md
 glossary/index.md
+file-formats/index.md
+appendices/index.md
 :::

@@ -1,0 +1,53 @@
+\documentclass[crop,tikz]{standalone}
+\usepackage{tikz}
+\usepackage[scaled]{helvet}
+\renewcommand*\familydefault{\sfdefault}
+
+\begin{document}
+
+\usetikzlibrary{shapes,calc,patterns}
+\input{../../../palettes/figcolors}
+
+\tikzstyle{domain1}=[color=blue,line width=1.0pt]
+\tikzstyle{traction}=[color=red,ultra thick,-latex]
+\tikzstyle{roller}=[color=orange,line width=1.0pt]
+\tikzstyle{ground}=[fill,pattern color=orange,pattern=north east lines,draw=none,anchor=north,minimum width=0.8cm,minimum height=0.3cm]
+\tikzstyle{annotation}=[text=black,font=\bfseries\large]
+
+\begin{tikzpicture}
+
+% Reference points
+\coordinate (p0) at (0mm,0mm);
+\coordinate (p1) at (60mm,0mm);
+\coordinate (p2) at (60mm,30mm);
+\coordinate (p3) at (0mm,30mm);
+
+  % Domain
+  \draw[domain1] (p0) -- (p1) -- (p2) -- (p3) -- (p0);
+  \node[annotation, below left] at (p0) {$(x_0,y_0)$};
+  \node[annotation, below right] at (p1) {$(x_1,y_0)$};
+  \node[annotation, above right] at (p2) {$(x_1,y_1)$};
+  \node[annotation, above left] at (p3) {$(x_0,y_1)$};
+
+  % Traction
+  \foreach \x in {1,...,5}{\draw[traction] ($(p1)+(0,\x*5mm)$) -- +(10mm,0);}
+  \node[text=red] at ($(p1)+(12mm,15mm)$){$\tau_0$};
+
+  % BC x=x0
+  \foreach \x in {0,...,2}{%
+    \draw[roller] ($(p0)+(10mm+\x*20mm,-1.6mm)$) circle (1.5mm);
+    \node[ground] at ($(p0)+(10mm+\x*20mm,-3.1mm)$) {};
+    \draw[roller] ($(p0)+(10mm+\x*20mm-4.0mm,-3.1mm)$) -- +(8mm,0);
+    }
+
+  % BC y=y0
+  \foreach \y in {0,...,1}{%
+    \draw[roller] ($(p0)+(-1.6mm,10mm+\y*10mm)$) circle (1.5mm);
+    \node[ground, anchor=east, minimum height=0.8cm,minimum width=0.3cm] at ($(p0)+(-3.1mm,10mm+\y*10mm)$) {};
+    \draw[roller] ($(p0)+(-3.1mm,10mm+\y*10mm-4.0mm)$) -- +(0,8mm);
+    }
+
+
+\end{tikzpicture}
+
+\end{document}
