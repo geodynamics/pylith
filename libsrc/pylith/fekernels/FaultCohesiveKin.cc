@@ -52,20 +52,6 @@ public:
             static PylithInt velocity_sOff(const PylithInt sOff[],
                                            const PylithInt numS);
 
-            /** Get offset in s where Lagrange multiplier subfield starts.
-             *
-             * Normally this would be sOff, but sOff doesn't account for having DOF for the two sides of the fault
-             * passed to the hybrid kernels. This functions computes the correct offset into s for the Lagrange
-             * multiplier subfield.
-             *
-             * @param[in] sOff Offset of registered subfields in solution field [numS].
-             * @param[in] numS Number of registered subfields in solution field.
-             *
-             * @returns Offset of Lagrange multiplier subfield in s.
-             */
-            static PylithInt lagrange_sOff(const PylithInt sOff[],
-                                           const PylithInt numS);
-
         }; // _FaultCohesiveKin
     } // fekernels
 } // pylith
@@ -82,20 +68,6 @@ pylith::fekernels::_FaultCohesiveKin::velocity_sOff(const PylithInt sOff[],
     } // for
     return off;
 } // velocity_sOff
-
-
-// ----------------------------------------------------------------------
-// Get offset in s where Lagrange multiplier field starts.
-PylithInt
-pylith::fekernels::_FaultCohesiveKin::lagrange_sOff(const PylithInt sOff[],
-                                                    const PylithInt numS) {
-    PylithInt off = 0;
-    const PylithInt numCount = numS - 1; // Don't include last field (Lagrange multiplier)
-    for (PylithInt i = 0; i < numCount; ++i) {
-        off += 2*(sOff[i+1] - sOff[i]);
-    } // for
-    return off;
-} // lagrange_sOff
 
 
 // ----------------------------------------------------------------------
@@ -129,7 +101,7 @@ pylith::fekernels::FaultCohesiveKin::f0u_neg(const PylithInt dim,
     const PylithInt spaceDim = dim + 1; // :KLUDGE: dim passed in is spaceDim-1
 
     const PylithInt fOffN = 0;
-    const PylithInt sOffLagrange = pylith::fekernels::_FaultCohesiveKin::lagrange_sOff(sOff, numS);
+    const PylithInt sOffLagrange = sOff[numS-1];
     const PylithScalar* lagrange = &s[sOffLagrange];
 
     for (PylithInt i = 0; i < spaceDim; ++i) {
@@ -169,7 +141,7 @@ pylith::fekernels::FaultCohesiveKin::f0u_pos(const PylithInt dim,
     const PylithInt spaceDim = dim + 1; // :KLUDGE: dim passed in is spaceDim-1
 
     const PylithInt fOffP = 0;
-    const PylithInt sOffLagrange = pylith::fekernels::_FaultCohesiveKin::lagrange_sOff(sOff, numS);
+    const PylithInt sOffLagrange = sOff[numS-1];
     const PylithScalar* lagrange = &s[sOffLagrange];
 
     for (PylithInt i = 0; i < spaceDim; ++i) {
@@ -211,7 +183,7 @@ pylith::fekernels::FaultCohesiveKin::f0l_u(const PylithInt dim,
     assert(numA >= 1);
 
     const PylithInt spaceDim = dim + 1; // :KLUDGE: dim passed in is spaceDim-1
-    const PylithInt i_slip = numA-1;
+    const PylithInt i_slip = 0;
     const PylithInt i_disp = 0;
 
     const PylithScalar* slip = &a[aOff[i_slip]];
@@ -473,11 +445,10 @@ pylith::fekernels::FaultCohesiveKin::Jf0ul_pos(const PylithInt dim,
 
     const PylithInt spaceDim = dim + 1; // :KLUDGE: dim passed in is spaceDim-1
 
-    const PylithInt gOffP = 0;
     const PylithInt ncols = spaceDim;
 
     for (PylithInt i = 0; i < spaceDim; ++i) {
-        Jf0[(gOffP+i)*ncols+i] += +1.0;
+        Jf0[i*ncols+i] += +1.0;
     } // for
 } // Jg0ul_pos
 
