@@ -26,4 +26,5 @@ elasticity-infstrain/index.md
 elasticity-infstrain-prescribedslip/index.md
 incompressible-elasticity.md
 poroelasticity/index.md
+alt-formulations.md
 :::
