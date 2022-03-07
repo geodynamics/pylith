@@ -1,7 +1,6 @@
 # Appendices
 
 :::{toctree}
-fileformats/index.md
-analyticalsolns.md
-altformulations.md
+analytical-solns.md
+alt-formulations.md
 :::

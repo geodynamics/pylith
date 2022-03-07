@@ -1,16 +1,16 @@
-(sec:format:MeshIOAscii)=
-# PyLith Mesh ASCII Files
+(sec-user-file-formats-meshio-ascii)=
+# PyLith Mesh ASCII File
 
 PyLith mesh ASCII files allow quick specification of the mesh information for very small, simple meshes that are most easily written by hand.
 We do not recommend using this format for anything other than these very small, simple meshes.
 
 :::{figure-md} fig:meshioascii:diagram
-<img src="figs/meshquad4.*" alt="Diagram of mesh specified in the file."  width="100%"/>
+<img src="figs/mesh_quad.*" alt="Diagram of mesh specified in the file."  width="400px"/>
 
 Diagram of mesh specified in the file.
 :::
 
-```{code-block} cfg
+```{code-block} c++
 // This mesh file defines a finite-element mesh composed of two
 // square cells of edge length 2.
 //

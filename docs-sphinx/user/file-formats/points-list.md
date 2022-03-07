@@ -1,10 +1,10 @@
-(sec:format:PointsList)=
-# *PointsList* File
+(sec-user-file-formats-points-list)=
+# Points List File
 
 This file lists the coordinates of the locations where output is requested for the `OutputSolnPoints` component.
 The coordinate system is specified in the `OutputSolnPoints` component.
 
-```{code-block} cfg
+```{code-block} python
 # Comments are limited to complete lines. The default delimiter for comments
 # is '#', which can be changed via parameters. Additionally, the delimiter
 # separating values can also be customized (default is whitespace).
