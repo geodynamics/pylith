@@ -1065,7 +1065,7 @@ pylith::fekernels::IsotropicLinearMaxwell3D::Jf3vu(const PylithInt dim,
     const PylithReal C1111 = bulkModulus + 4.0*dq*shearModulus/3.0;
     const PylithReal C1122 = bulkModulus - 2.0*dq*shearModulus/3.0;
     const PylithReal C1212 = dq*shearModulus;
-#if 1
+#if 0
     const PylithReal C2222 = C1111;
     const PylithReal C3333 = C1111;
     const PylithReal C1313 = C1212;
@@ -1271,7 +1271,7 @@ pylith::fekernels::IsotropicLinearMaxwell3D::deviatoricStress(const PylithInt di
     stress[6] += stress[2]; // stress_zx
     stress[7] += stress[5]; // stress_zy
     stress[8] += 2.0 * shearModulus * visStrainTpdt[2]; // stress_zz
-#if 1
+#if 0
     const PylithScalar maxwellTime = a[aOff[i_maxwellTime]];
      std::cout << "Maxwell time:" << maxwellTime << std::endl;
 #endif

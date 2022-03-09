@@ -2345,7 +2345,7 @@ void pylith::fekernels::IsotropicPowerLaw3D::deviatoricStress(const PylithInt di
     std::cout << "devStressT:"; for(int i=0;i<6;++i) {std::cout << " " << devStressT[i]; } std::cout << std::endl;
     std::cout << "devStressTpdt:"; for(int i=0;i<6;++i) {std::cout << " " << devStressTpdt[i]; } std::cout << std::endl;
 #endif
-#if 1
+#if 0
     const PylithScalar devStressProdTpdt = pylith::fekernels::Viscoelasticity::scalarProduct3D(devStressTpdt, devStressTpdt);
     const PylithScalar j2Test = sqrt(0.5 * devStressProdTpdt);
     PylithScalar dtTest = 0.0;
@@ -2525,7 +2525,7 @@ void pylith::fekernels::IsotropicPowerLaw3D::deviatoricStress_refstate(const Pyl
     std::cout << "devStressT:"; for(int i=0;i<6;++i) {std::cout << " " << devStressT[i]; } std::cout << std::endl;
     std::cout << "devStressTpdt:"; for(int i=0;i<6;++i) {std::cout << " " << devStressTpdt[i]; } std::cout << std::endl;
 #endif
-#if 1
+#if 0
     const PylithScalar devStressProdTpdt = pylith::fekernels::Viscoelasticity::scalarProduct3D(devStressTpdt, devStressTpdt);
     const PylithScalar j2Test = sqrt(0.5 * devStressProdTpdt);
     PylithScalar dtTest = 0.0;
