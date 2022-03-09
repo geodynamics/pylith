@@ -2,7 +2,7 @@
 # Simulation Types
 
 :::{toctree}
-:::
-% problems.md
+problems.md
 % observers.md
 % injectors.md
+:::
