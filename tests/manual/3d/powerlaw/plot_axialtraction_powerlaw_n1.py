@@ -77,7 +77,7 @@ def scanLogfile(fileName):
 
     return val
     
-def run(stepSizes):
+def run(params, stepSizes):
     """
     Create subplots and loop over simulations.
     """
@@ -99,7 +99,7 @@ def run(stepSizes):
             jacobianInfo = True
         if (simNum == 0):
             (dispzAnl, stressAnl, devStressAnl, strainAnl, devStrainAnl,
-             maxwellVisStrain, powerLawVisStrain) = AnalyticalSoln(timeSecs, locs[0,:].reshape(1,3))
+             maxwellVisStrain, powerLawVisStrain) = AnalyticalSoln(timeSecs, locs[0,:].reshape(1,3), params)
             a[0][0].plot(timeYears, stressAnl[:,0], lineDefAnl, label=legendAnl)
             a[1][0].plot(timeYears, strainAnl[:,2], lineDefAnl, label=legendAnl)
             a[0][1].plot(timeYears, dispzAnl, lineDefAnl, label=legendAnl)

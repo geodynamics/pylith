@@ -86,7 +86,10 @@ def run_sims(sims, jacobianArgs):
             f.close()
         plotModule = 'plot_' + sim
         plot = importlib.import_module(plotModule)
-        plot.run(dt)
+        if (sim == 'axialtraction_powerlaw_n1'):
+            plot.run(params, dt)
+        else:
+            plot.run(dt)
 
 # ======================================================================
 if __name__ == "__main__":

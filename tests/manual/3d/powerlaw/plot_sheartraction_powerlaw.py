@@ -29,11 +29,11 @@ year = 60.0*60.0*24.0*365.25
 
 # Input files.
 lineDefs = ['k-', 'r+', 'g+', 'b+', 'c+', 'm+']
-basePrefix = 'sheartraction_powerlaw_norefstate_dt'
+basePrefix = 'sheartraction_powerlaw_dt'
 
 def getVars(fileName):
     """
-    Get time, sxx, ezz, and dispz from given file.
+    Get time, second deviatoric stress invariant, eyz, dispz, and vertex coords from given file.
     """
     h5 = h5py.File(fileName, 'r')
     time = h5['time'][:].flatten()
@@ -78,6 +78,7 @@ def scanLogfile(fileName):
         pass
 
     return val
+
     
 def run(stepSizes):
     """

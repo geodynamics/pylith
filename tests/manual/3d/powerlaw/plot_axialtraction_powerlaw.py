@@ -33,7 +33,7 @@ basePrefix = 'axialtraction_powerlaw_dt'
 
 def getVars(fileName):
     """
-    Get time, sxx, ezz, and dispz from given file.
+    Get time, sxx, ezz, dispz, and vertex coords from given file.
     """
     h5 = h5py.File(fileName, 'r')
     time = h5['time'][:].flatten()
@@ -72,6 +72,7 @@ def scanLogfile(fileName):
         pass
 
     return val
+
     
 def run(stepSizes):
     """
