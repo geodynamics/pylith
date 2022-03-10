@@ -390,7 +390,7 @@ pylith::feassemble::IntegratorDomain::computeLHSJacobian(PetscMat jacobianMat,
                                          solutionDot->getLocalVector(), jacobianMat, precondMat, NULL);PYLITH_CHECK_ERROR(err);
 
     if (_jacobianValues) {
-        _jacobianValues->computeLHSJacobian(jacobianMat, precondMat, t, dt, s_tshift, solution, dsLabel);
+        _jacobianValues->computeLHSJacobian(jacobianMat, precondMat, t, dt, s_tshift, *solution, dsLabel);
         err = MatAssemblyBegin(jacobianMat, MAT_FINAL_ASSEMBLY);PYLITH_CHECK_ERROR(err);
         err = MatAssemblyEnd(jacobianMat, MAT_FINAL_ASSEMBLY);PYLITH_CHECK_ERROR(err);
         if (precondMat && ( precondMat != jacobianMat) ) {
