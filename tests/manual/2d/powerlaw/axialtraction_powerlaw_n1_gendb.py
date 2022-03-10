@@ -112,9 +112,9 @@ def run(params):
     dataPowerLaw['values'][6]['data'] = numpy.array(powerLawVisStrain[0,0]).reshape(1)
     dataPowerLaw['values'][7]['data'] = numpy.array(powerLawVisStrain[0,1]).reshape(1)
     dataPowerLaw['values'][8]['data'] = numpy.array(powerLawVisStrain[0,2]).reshape(1)
-    dataPowerLaw['values'][12]['data'] = numpy.array(devStress[0,0]).reshape(1)
-    dataPowerLaw['values'][13]['data'] = numpy.array(devStress[0,1]).reshape(1)
-    dataPowerLaw['values'][14]['data'] = numpy.array(devStress[0,2]).reshape(1)
+    dataPowerLaw['values'][10]['data'] = numpy.array(devStress[0,0]).reshape(1)
+    dataPowerLaw['values'][11]['data'] = numpy.array(devStress[0,1]).reshape(1)
+    dataPowerLaw['values'][12]['data'] = numpy.array(devStress[0,2]).reshape(1)
 
     ioPowerLaw = createWriter(fileNamePowerLaw)
     ioPowerLaw.write(dataPowerLaw)
