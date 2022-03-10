@@ -1,0 +1,40 @@
+// -*- C++ -*- (syntax highlighting)
+#SPATIAL.ascii 1
+SimpleDB {
+  num-values =     22
+  value-names =  density  vs  vp power_law_reference_strain_rate power_law_reference_stress power_law_exponent  viscous_strain_xx viscous_strain_yy viscous_strain_zz viscous_strain_xy deviatoric_stress_xx deviatoric_stress_yy deviatoric_stress_zz deviatoric_stress_xy reference_stress_xx  reference_stress_yy  reference_stress_zz  reference_stress_xy reference_strain_xx  reference_strain_yy  reference_strain_zz  reference_strain_xy
+  value-units =  kg/m**3  m/s  m/s 1/s Pa None  None None None None Pa Pa Pa Pa Pa Pa Pa Pa None None None None
+  num-locs =      1
+  data-dim =    0
+  space-dim =    2
+  cs-data = cartesian {
+    to-meters = 1.0
+    space-dim = 2
+  }
+}
+// Columns are
+// (1) x coordinate (m)
+// (2) y coordinate (m)
+// (3) density (kg/m**3)
+// (4) vs (m/s)
+// (5) vp (m/s)
+// (6) power_law_reference_strain_rate (1/s)
+// (7) power_law_reference_stress (Pa)
+// (8) power_law_exponent (None)
+// (9) viscous_strain_xx (None)
+// (10) viscous_strain_yy (None)
+// (11) viscous_strain_zz (None)
+// (12) viscous_strain_xy (None)
+// (13) deviatoric_stress_xx (Pa)
+// (14) deviatoric_stress_yy (Pa)
+// (15) deviatoric_stress_zz (Pa)
+// (16) deviatoric_stress_xy (Pa)
+// (17) reference_stress_xx (Pa)
+// (18) reference_stress_yy (Pa)
+// (19) reference_stress_zz (Pa)
+// (29) reference_stress_xy (Pa)
+// (21) reference_strain_xx (None)
+// (22) reference_strain_yy (None)
+// (23) reference_strain_zz (None)
+// (24) reference_strain_xy (None)
+  0.0 0.0  2500.0 3464.1016 6000.0  1.00e-6 1.798919e+10 3.50  0.0 0.0 0.0 0.0  0.0 0.0 0.0 0.0  0.0 0.0 0.0 0.0  0.0 0.0 0.0 0.0
