@@ -74,12 +74,11 @@ def scanLogfile(fileName):
     return val
 
     
-def run(stepSizes):
+def run(axs, colNum, stepSizes, useJacobian):
     """
     Create subplots and loop over simulations.
     """
     numSims = len(stepSizes)
-    fig, a = plt.subplots(2,2)
     jacobianDiff = numpy.zeros(numSims, dtype=numpy.float64)
     jacobianInfo = False
 
@@ -93,24 +92,25 @@ def run(stepSizes):
         jacobianDiff[simNum] = scanLogfile(logFile)
         if (jacobianDiff[simNum]):
             jacobianInfo = True
-        a[0][0].plot(timeYears, sxx, lineDefs[simNum], label="dt={0}".format(dtStr))
-        a[1][0].plot(timeYears, ezz, lineDefs[simNum], label="dt={0}".format(dtStr))
-        a[0][1].plot(timeYears, dispz, lineDefs[simNum], label="dt={0}".format(dtStr))
+        axs[0][colNum].plot(timeYears, sxx, lineDefs[simNum], label="dt={0}".format(dtStr))
+        axs[1][colNum].plot(timeYears, ezz, lineDefs[simNum], label="dt={0}".format(dtStr))
+        axs[2][colNum].plot(timeYears, dispz, lineDefs[simNum], label="dt={0}".format(dtStr))
 
-    a[0][0].set_xlabel('Time (years)')
-    a[0][0].set_ylabel('Stress_xx (Pa)')
-    a[0][0].legend(loc="upper right")
-    a[1][0].set_xlabel('Time (years)')
-    a[1][0].set_ylabel('Strain_zz')
-    a[1][0].legend(loc="upper right")
-    a[0][1].set_xlabel('Time (years)')
-    a[0][1].set_ylabel('Displacement_z (m)')
-    a[0][1].legend(loc="upper right")
-    if (jacobianInfo):
-        a[1][1].loglog(stepSizes, jacobianDiff, 'k+-')
-        a[1][1].set_xlabel('Time step size (years)')
-        a[1][1].set_ylabel('Jacobian difference')
-    plt.show()
+    axs[0][colNum].set_xlabel('Time (years)')
+    axs[0][colNum].set_ylabel('Stress_xx (Pa)')
+    axs[0][colNum].legend(loc="upper right")
+    axs[0][colNum].set_title('Axial traction')
+    axs[1][colNum].set_xlabel('Time (years)')
+    axs[1][colNum].set_ylabel('Strain_zz')
+    axs[1][colNum].legend(loc="upper right")
+    axs[2][colNum].set_xlabel('Time (years)')
+    axs[2][colNum].set_ylabel('Displacement_z (m)')
+    axs[2][colNum].legend(loc="upper right")
+    jacobianPlot = useJacobian and jacobianInfo
+    if (jacobianPlot):
+        axs[3][colNum].loglog(stepSizes, jacobianDiff, 'k+-')
+        axs[3][colNum].set_xlabel('Time step size (years)')
+        axs[3][colNum].set_ylabel('Jacobian difference')
 
     return
 

@@ -23,6 +23,7 @@
 import numpy
 import subprocess
 import importlib
+import matplotlib.pyplot as plt
 
 import axialtraction_powerlaw_n1_gendb as gendb
 
@@ -70,6 +71,17 @@ def run_sims(sims, jacobianArgs):
     # Generate spatialdb for axial traction (n=1).
     gendb.run(params)
 
+    # Create plot.
+    numSims = len(sims)
+    numRows = 4
+    useJacobian = True
+    if len(jacobianArgs) == 0:
+        numRows = 3
+        useJacobian = False
+    fig, axs = plt.subplots(numRows, numSims)
+    axs = axs.reshape(numRows, numSims)
+    simNum = 0
+
     for sim in sims:
         for stepNum in range(numSteps):
             dtStr = repr(dt[stepNum])
@@ -87,9 +99,13 @@ def run_sims(sims, jacobianArgs):
         plotModule = 'plot_' + sim
         plot = importlib.import_module(plotModule)
         if (sim == 'axialtraction_powerlaw_n1'):
-            plot.run(params, dt)
+            plot.run(axs, simNum, params, dt, useJacobian)
         else:
-            plot.run(dt)
+            plot.run(axs, simNum, dt, useJacobian)
+
+        simNum += 1
+
+    plt.show()
 
 # ======================================================================
 if __name__ == "__main__":
@@ -103,7 +119,7 @@ if __name__ == "__main__":
     if args.sims == 'all':
         sims = allSims
     else:
-        sims = args.sims
+        sims = [args.sims]
 
     jacobianArgs = []
     if args.test_jacobians:
