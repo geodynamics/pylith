@@ -23,7 +23,7 @@
 
 namespace pylith {
     namespace materials {
-        class RheologyElasticity : public pylith::utils::PyreComponent {
+        class RheologyElasticity: public pylith::utils::PyreComponent {
             // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////
 public:
 
@@ -83,24 +83,6 @@ public:
             virtual
             PetscBdPointFunc getInterfaceKernelResidualF0Pos(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
 
-            /** Get f1 kernel for LHS interface residual, F(t,s,dot{s}), for negative fault face.
-             *
-             * @param[in] coordsys Coordinate system.
-             *
-             * @return LHS residual f1 kernel.
-             */
-            virtual
-            PetscBdPointFunc getInterfaceKernelResidualF1Neg(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
-
-            /** Get f1 kernel for LHS interface residual, F(t,s,dot{s}), for positive fault face.
-             *
-             * @param[in] coordsys Coordinate system.
-             *
-             * @return LHS residual f1 kernel.
-             */
-            virtual
-            PetscBdPointFunc getInterfaceKernelResidualF1Pos(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
-
             /** Get Jf1lu kernel for LHS Jacobian F(t,s,dot{s}) for negative fault face.
              *
              * @param[in] coordsys Coordinate system.
@@ -119,24 +101,6 @@ public:
             virtual
             PetscBdPointJac getInterfaceKernelJacobianF1Pos(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
 
-            /** Get Jf3lu kernel for LHS Jacobian F(t,s,dot{s}) for negative fault face.
-             *
-             * @param[in] coordsys Coordinate system.
-             *
-             * @return LHS Jacobian kernel Jf3lu.
-             */
-            virtual
-            PetscBdPointJac getInterfaceKernelJacobianF3Neg(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
-
-            /** Get Jf3lu kernel for LHS Jacobian F(t,s,dot{s}) for positive fault face.
-             *
-             * @param[in] coordsys Coordinate system.
-             *
-             * @return LHS Jacobian kernel Jf3lu.
-             */
-            virtual
-            PetscBdPointJac getInterfaceKernelJacobianF3Pos(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
-
             /** Get stress kernel for derived field.
              *
              * @param[in] coordsys Coordinate system.
@@ -152,7 +116,7 @@ public:
              * @param[in] coordsys Coordinate system.
              */
             virtual
-            void addKernelsUpdateStateVars(std::vector<pylith::feassemble::IntegratorDomain::ProjectKernels>* kernels,
+            void addKernelsUpdateStateVars(std::vector < pylith::feassemble::IntegratorDomain::ProjectKernels > * kernels,
                                            const spatialdata::geocoords::CoordSys* coordsys) const;
 
             /** Update kernel constants.
