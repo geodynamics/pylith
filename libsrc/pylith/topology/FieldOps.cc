@@ -82,7 +82,7 @@ pylith::topology::FieldOps::createFE(const FieldBase::Discretization& feinfo,
         PetscDualSpace dualspace = NULL;
         PetscDM dmCell = NULL;
         err = PetscDualSpaceCreate(PetscObjectComm((PetscObject) dm), &dualspace);PYLITH_CHECK_ERROR(err);
-        err = PetscDualSpaceCreateReferenceCell(dualspace, dim, simplexBasis, &dmCell);PYLITH_CHECK_ERROR(err);
+        err = DMPlexCreateReferenceCell(PETSC_COMM_SELF, DMPolytopeTypeSimpleShape(dim, simplexBasis), &dmCell);PYLITH_CHECK_ERROR(err);
         err = PetscDualSpaceSetDM(dualspace, dmCell);PYLITH_CHECK_ERROR(err);
         err = DMDestroy(&dmCell);PYLITH_CHECK_ERROR(err);
         err = PetscDualSpaceSetNumComponents(dualspace, numComponents);PYLITH_CHECK_ERROR(err);
