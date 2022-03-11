@@ -162,7 +162,9 @@ pylith::feassemble::IntegratorInterface::IntegratorInterface(pylith::problems::P
     Integrator(physics),
     _interfaceMesh(NULL),
     _interfaceSurfaceLabel(""),
-    _integrationPatches(NULL) {
+    _integrationPatches(NULL),
+    _weightingDM(NULL),
+    _weightingVec(NULL) {
     GenericComponent::setName(_IntegratorInterface::genericComponent);
     _labelValue = 100;
     _labelName = pylith::topology::Mesh::getCellsLabelName();
@@ -186,6 +188,9 @@ pylith::feassemble::IntegratorInterface::deallocate(void) {
 
     delete _interfaceMesh;_interfaceMesh = NULL;
     delete _integrationPatches;_integrationPatches = NULL;
+
+    DMDestroy(&_weightingDM);
+    VecDestroy(&_weightingVec);
 
     PYLITH_METHOD_END;
 } // deallocate
@@ -280,6 +285,7 @@ pylith::feassemble::IntegratorInterface::setKernels(const std::vector<ResidualKe
 
             switch (kernelsPatch[i].part) {
             case RESIDUAL_LHS:
+            case RESIDUAL_LHS_WEIGHTED:
                 _hasLHSResidual = true;
                 break;
             case RESIDUAL_RHS:
@@ -298,7 +304,7 @@ pylith::feassemble::IntegratorInterface::setKernels(const std::vector<ResidualKe
     } // if
 
     PYLITH_METHOD_END;
-} // setKernelsRHSResidual
+} // setKernels
 
 
 // ------------------------------------------------------------------------------------------------
@@ -525,6 +531,7 @@ pylith::feassemble::_IntegratorInterface::computeResidual(pylith::topology::Fiel
     assert(solution);
     const PylithReal t = integrationData.getScalar(pylith::problems::IntegrationData::time);
     const PylithReal dt = integrationData.getScalar(pylith::problems::IntegrationData::time_step);
+
     PetscVec solutionDotVec = NULL;
     if (residualPart == pylith::feassemble::Integrator::RESIDUAL_LHS) {
         const pylith::topology::Field* solutionDot = integrationData.getField(pylith::problems::IntegrationData::solution_dot);

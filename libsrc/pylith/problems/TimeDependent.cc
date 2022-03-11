@@ -29,7 +29,7 @@
 #include "pylith/problems/ObserversSoln.hh" // USES ObserversSoln
 #include "pylith/problems/InitialCondition.hh" // USES InitialCondition
 #include "pylith/problems/ProgressMonitorTime.hh" // USES ProgressMonitorTime
-
+#include "pylith/faults/FaultOps.hh" // USES FaultOps
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 #include "petscts.h" // USES PetscTS
@@ -368,6 +368,7 @@ pylith::problems::TimeDependent::initialize(void) {
         err = TSSetIFunction(_ts, NULL, computeLHSResidual, (void*)this);PYLITH_CHECK_ERROR(err);
         err = TSSetIJacobian(_ts, NULL, NULL, computeLHSJacobian, (void*)this);PYLITH_CHECK_ERROR(err);
         err = TSSetEquationType(_ts, TS_EQ_EXPLICIT);PYLITH_CHECK_ERROR(err);
+        pylith::faults::FaultOps::createDAEMassWeighting(_integrationData, *solution);
     case pylith::problems::Physics::DYNAMIC: {
         PYLITH_COMPONENT_DEBUG("Setting PetscTS callback for computeRHSFunction().");
         err = TSSetRHSFunction(_ts, NULL, computeRHSResidual, (void*)this);PYLITH_CHECK_ERROR(err);
@@ -375,7 +376,8 @@ pylith::problems::TimeDependent::initialize(void) {
         pylith::topology::Field* jacobianLHSLumpedInv = new pylith::topology::Field(*solution);assert(jacobianLHSLumpedInv);
         jacobianLHSLumpedInv->setLabel("JacobianLHS_lumped_inverse");
         jacobianLHSLumpedInv->createGlobalVector();
-        _integrationData->setField("jacobian_lhs_lumped_inverse", jacobianLHSLumpedInv);
+        _integrationData->setField(pylith::problems::IntegrationData::lumped_jacobian_inverse, jacobianLHSLumpedInv);
+        _integrationData->setScalar(pylith::problems::IntegrationData::dt_lumped_jacobian_inverse, -1.0);
         break;
     }
     default: {
@@ -713,6 +715,9 @@ pylith::problems::TimeDependent::computeLHSJacobianLumpedInv(const PylithReal t,
     jacobianLumpedInv->scatterLocalToVector(jacobianLumpedInv->getGlobalVector());
 
     _integrationData->setScalar(IntegrationData::dt_lumped_jacobian_inverse, dt);
+    if (_integrationData->hasField(pylith::problems::IntegrationData::dae_mass_weighting)) {
+        pylith::faults::FaultOps::updateDAEMassWeighting(_integrationData);
+    } // if
 
     PYLITH_METHOD_END;
 } // computeLHSJacobianLumpedInv

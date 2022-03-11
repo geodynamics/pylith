@@ -282,8 +282,8 @@ private:
 
     /** Set state (auxiliary field values) of system for time t.
      *
-     * * @param[in] t Current time.
-     * * @param[in] dt Current time step.
+     * @param[in] t Current time.
+     * @param[in] dt Current time step.
      */
     void _setState(const PylithReal t,
                    const PylithReal dt);

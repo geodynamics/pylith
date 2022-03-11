@@ -42,6 +42,7 @@ public:
     enum ResidualPart {
         RESIDUAL_LHS=0, // LHS residual.
         RESIDUAL_RHS=1, // RHS residual.
+        RESIDUAL_LHS_WEIGHTED=2, // LHS residual with weighting of terms.
     };
 
     enum JacobianPart {

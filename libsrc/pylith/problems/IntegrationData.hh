@@ -46,6 +46,7 @@ public:
     static const std::string dt_residual;
     static const std::string dt_jacobian;
     static const std::string dt_lumped_jacobian_inverse;
+    static const std::string dae_mass_weighting;
 
     static const std::string solution;
     static const std::string solution_dot;
@@ -85,7 +86,7 @@ public:
      */
     void removeScalar(const std::string& name);
 
-    /** Check if we have field with given name.
+    /** Check if we have mesh with given name.
      *
      * @param[in] name Name of field.
      * @returns True if we have field, otherwise false.
@@ -107,6 +108,21 @@ public:
      */
     pylith::topology::Field* getField(const std::string& name) const;
 
+    /** Set mesh.
+     *
+     * @param[in] name Name of mesh.
+     * @param[in] mesh Finite-element mesh.
+     */
+    void setMesh(const std::string& name,
+                 pylith::topology::Mesh* const mesh);
+
+    /** Get mesh.
+     *
+     * @param[in] name Name of mesh.
+     * @returns Finite-elemebt mesh.
+     */
+    pylith::topology::Mesh* getMesh(const std::string& name) const;
+
     /** Dump integration data to std::string.
      *
      * @returns Integration data information as string.
@@ -118,9 +134,11 @@ private:
 
     typedef std::map<std::string, PylithReal> scalars_map_t;
     typedef std::map<std::string, pylith::topology::Field*> fields_map_t;
+    typedef std::map<std::string, pylith::topology::Mesh*> meshes_map_t;
 
     scalars_map_t _scalars;
     fields_map_t _fields;
+    meshes_map_t _meshes;
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
 private:

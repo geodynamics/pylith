@@ -529,14 +529,14 @@ pylith::faults::FaultCohesiveKin::_setKernelsResidual(pylith::feassemble::Integr
         const PetscBdPointFunc f1l_dae = NULL;
 
         kernels.resize(4);
-        kernels[0] = ResidualKernels("velocity", integrator_t::RESIDUAL_LHS, integrator_t::NEGATIVE_FACE,
-                                     g0v_neg, g1v_neg);
-        kernels[1] = ResidualKernels("velocity", integrator_t::RESIDUAL_LHS, integrator_t::POSITIVE_FACE,
-                                     g0v_pos, g1v_pos);
-        kernels[2] = ResidualKernels("lagrange_multiplier_fault", integrator_t::RESIDUAL_LHS, integrator_t::COHESIVE_FACE,
-                                     f0l_slip, f1l_slip);
-        kernels[3] = ResidualKernels("lagrange_multiplier_fault", integrator_t::RESIDUAL_LHS, integrator_t::COHESIVE_FACE,
-                                     f0l_dae, f1l_dae);
+        kernels[0] = ResidualKernels("velocity", integrator_t::RESIDUAL_LHS,
+                                     integrator_t::NEGATIVE_FACE, g0v_neg, g1v_neg);
+        kernels[1] = ResidualKernels("velocity", integrator_t::RESIDUAL_LHS,
+                                     integrator_t::POSITIVE_FACE, g0v_pos, g1v_pos);
+        kernels[2] = ResidualKernels("lagrange_multiplier_fault", integrator_t::RESIDUAL_LHS,
+                                     integrator_t::COHESIVE_FACE, f0l_slip, f1l_slip);
+        kernels[3] = ResidualKernels("lagrange_multiplier_fault", integrator_t::RESIDUAL_LHS_WEIGHTED,
+                                     integrator_t::COHESIVE_FACE, f0l_dae, f1l_dae);
 
         break;
     } // DYNAMIC_IMEX

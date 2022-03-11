@@ -34,6 +34,14 @@
 #include <typeinfo> // USES typeid()
 #include <cassert>
 
+// ------------------------------------------------------------------------------------------------
+const std::string pylith::problems::SolutionFactory::displacement = "displacement";
+const std::string pylith::problems::SolutionFactory::velocity = "velocity";
+const std::string pylith::problems::SolutionFactory::pressure = "pressure";
+const std::string pylith::problems::SolutionFactory::trace_strain = "trace_strain";
+const std::string pylith::problems::SolutionFactory::temperature = "temperature";
+const std::string pylith::problems::SolutionFactory::lagrange_multiplier_fault = "lagrange_multiplier_fault";
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::problems::SolutionFactory::SolutionFactory(pylith::topology::Field& solution,

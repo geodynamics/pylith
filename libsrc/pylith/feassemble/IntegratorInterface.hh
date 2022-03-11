@@ -232,6 +232,9 @@ private:
         RESIDUAL_RHS_NEG=4, // RHS residual negative face.
         RESIDUAL_RHS_POS=5, // RHS residual negative face.
         RESIDUAL_RHS_FAULT=6, // RHS residual negative face.
+        RESIDUAL_LHS_WT_NEG=7, // LHS weighted residual negative face.
+        RESIDUAL_LHS_WT_POS=8, // LHS weighted residual negative face.
+        RESIDUAL_LHS_WT_FAULT=9, // LHS weighted residual negative face.
     };
 
     enum JacobianPartKey {
@@ -247,6 +250,9 @@ private:
     std::string _interfaceSurfaceLabel; ///< Name of label identifying interface surface.
 
     pylith::feassemble::InterfacePatches* _integrationPatches; ///< Face patches.
+
+    PetscDM _weightingDM; ///< PETSc DM for weighting.
+    PetscVec _weightingVec; ///< PETSc Vec for weighting values.
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
 private:

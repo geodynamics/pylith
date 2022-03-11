@@ -41,6 +41,7 @@ const std::string pylith::problems::IntegrationData::solution = "solution";
 const std::string pylith::problems::IntegrationData::solution_dot = "solution_dot";
 const std::string pylith::problems::IntegrationData::residual = "residual";
 const std::string pylith::problems::IntegrationData::lumped_jacobian_inverse = "lumped_jacobian_inverse";
+const std::string pylith::problems::IntegrationData::dae_mass_weighting = "dae_mass_weighting";
 
 // ------------------------------------------------------------------------------------------------
 // Constructor
@@ -69,6 +70,11 @@ pylith::problems::IntegrationData::deallocate(void) {
         } // if
     } // for
     _fields.clear();
+
+    for (meshes_map_t::iterator iter = _meshes.begin(); iter != _meshes.end(); ++iter) {
+        delete iter->second;iter->second = NULL;
+    } // for
+    _meshes.clear();
 } // deallocate
 
 
@@ -154,6 +160,41 @@ pylith::problems::IntegrationData::getField(const std::string& name) const {
     fields_map_t::const_iterator iter = _fields.find(name);
     if (iter == _fields.end()) {
         PYLITH_JOURNAL_LOGICERROR("No field '" << name << "' in integration data.");
+    } // if
+
+    PYLITH_METHOD_RETURN(iter->second);
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// Set mesh.
+void
+pylith::problems::IntegrationData::setMesh(const std::string& name,
+                                           pylith::topology::Mesh* const mesh) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("setMesh(name="<<name<<", mesh="<<typeid(mesh).name()<<")");
+
+    meshes_map_t::iterator iter = _meshes.find(name);
+    if (iter != _meshes.end()) {
+        delete iter->second;iter->second = mesh;
+    } else {
+        _meshes[name] = mesh;
+    } // if/else
+
+    PYLITH_METHOD_END;
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// Get mesh.
+pylith::topology::Mesh*
+pylith::problems::IntegrationData::getMesh(const std::string& name) const {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("getMesh(name="<<name<<")");
+
+    meshes_map_t::const_iterator iter = _meshes.find(name);
+    if (iter == _meshes.end()) {
+        PYLITH_JOURNAL_LOGICERROR("No mesh '" << name << "' in integration data.");
     } // if
 
     PYLITH_METHOD_RETURN(iter->second);

@@ -16,15 +16,13 @@
 // ----------------------------------------------------------------------
 //
 
-/** @file libsrc/problems/SolutionFactory.hh
- *
+/**
  * @brief C++ helper class for setting up solution fields for testing.
  */
 
 #if !defined(pylith_problems_solutionfactory_hh)
 #define pylith_problems_solutionfactory_hh
 
-// Include directives ---------------------------------------------------
 #include "problemsfwd.hh" // forward declarations
 #include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
@@ -37,6 +35,21 @@
 /// @brief C++ helper class for setting up solution subfields for unit tests.
 class pylith::problems::SolutionFactory : public pylith::utils::GenericComponent {
     friend class TestSolutionFactory; // unit testing
+
+    // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
+public:
+
+    /** Names of solution fields.
+     *
+     * Using the static public data members for names results in typos generating compiling errors
+     * rather than runtime errors.
+     */
+    static const std::string displacement;
+    static const std::string velocity;
+    static const std::string pressure;
+    static const std::string trace_strain;
+    static const std::string temperature;
+    static const std::string lagrange_multiplier_fault;
 
     // PUBLIC METHODS /////////////////////////////////////////////////////
 public:
