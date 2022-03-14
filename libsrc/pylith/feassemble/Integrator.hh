@@ -48,6 +48,7 @@ public:
     enum JacobianPart {
         JACOBIAN_LHS=0, // LHS Jacobian.
         JACOBIAN_LHS_LUMPED_INV=1, // Inverse of LHS lumped Jacobian.
+        JACOBIAN_LHS_WEIGHTED=2, // LHS Jacobian with weighting of terms.
     };
 
     enum NewJacobianTriggers {

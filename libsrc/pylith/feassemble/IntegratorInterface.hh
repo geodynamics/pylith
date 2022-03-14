@@ -254,6 +254,9 @@ private:
     PetscDM _weightingDM; ///< PETSc DM for weighting.
     PetscVec _weightingVec; ///< PETSc Vec for weighting values.
 
+    bool _hasLHSResidualWeighted; ///< Has LHS Residual with weighted terms.
+    bool _hasLHSJacobianWeighted; ///< Has LHS Jacobian with weighted terms.
+
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
 private:
 

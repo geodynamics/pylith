@@ -164,7 +164,9 @@ pylith::feassemble::IntegratorInterface::IntegratorInterface(pylith::problems::P
     _interfaceSurfaceLabel(""),
     _integrationPatches(NULL),
     _weightingDM(NULL),
-    _weightingVec(NULL) {
+    _weightingVec(NULL),
+    _hasLHSResidualWeighted(false),
+    _hasLHSJacobianWeighted(false) {
     GenericComponent::setName(_IntegratorInterface::genericComponent);
     _labelValue = 100;
     _labelName = pylith::topology::Mesh::getCellsLabelName();
@@ -285,8 +287,10 @@ pylith::feassemble::IntegratorInterface::setKernels(const std::vector<ResidualKe
 
             switch (kernelsPatch[i].part) {
             case RESIDUAL_LHS:
-            case RESIDUAL_LHS_WEIGHTED:
                 _hasLHSResidual = true;
+                break;
+            case RESIDUAL_LHS_WEIGHTED:
+                _hasLHSResidualWeighted = true;
                 break;
             case RESIDUAL_RHS:
                 _hasRHSResidual = true;
@@ -364,6 +368,9 @@ pylith::feassemble::IntegratorInterface::setKernels(const std::vector<JacobianKe
             case JACOBIAN_LHS_LUMPED_INV:
                 _hasLHSJacobianLumped = true;
                 break;
+            case JACOBIAN_LHS_WEIGHTED:
+                _hasLHSJacobianWeighted = true;
+                break;
             default:
                 PYLITH_JOURNAL_LOGICERROR("Unknown Jacobian part (" << kernelsPatch[i].part <<").");
             } // switch
@@ -402,7 +409,8 @@ pylith::feassemble::IntegratorInterface::initialize(const pylith::topology::Fiel
     const keysmap_t& keysmap = _integrationPatches->getKeys();
     const pylith::topology::Field* auxiliaryField = getAuxiliaryField();assert(auxiliaryField);
     for (keysmap_t::const_iterator iter = keysmap.begin(); iter != keysmap.end(); ++iter) {
-        PetscFormKey key = iter->second.cohesive.getPetscKey(solution, pylith::feassemble::Integrator::RESIDUAL_LHS);
+        const PetscInt part = -1; // Not used in setting auxiliary vector
+        PetscFormKey key = iter->second.cohesive.getPetscKey(solution, part);
         err = DMSetAuxiliaryVec(dmSoln, key.label, key.value, auxiliaryField->getLocalVector());PYLITH_CHECK_ERROR(err);
     } // for
 
@@ -458,9 +466,16 @@ pylith::feassemble::IntegratorInterface::computeLHSResidual(pylith::topology::Fi
                                                             const pylith::problems::IntegrationData& integrationData) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("computeLHSResidual(residual="<<residual<<", integrationData="<<integrationData.str()<<")");
-    if (!_hasLHSResidual) { PYLITH_METHOD_END;}
 
-    _IntegratorInterface::computeResidual(residual, this, pylith::feassemble::Integrator::RESIDUAL_LHS, integrationData);
+    if (_hasLHSResidual) {
+        const pylith::feassemble::Integrator::ResidualPart residualPart = pylith::feassemble::Integrator::RESIDUAL_LHS;
+        _IntegratorInterface::computeResidual(residual, this, residualPart, integrationData);
+    }
+
+    if (_hasLHSResidualWeighted) {
+        const pylith::feassemble::Integrator::ResidualPart residualPart = pylith::feassemble::Integrator::RESIDUAL_LHS_WEIGHTED;
+        _IntegratorInterface::computeResidual(residual, this, residualPart, integrationData);
+    }
 
     PYLITH_METHOD_END;
 } // computeLHSResidual
@@ -478,7 +493,11 @@ pylith::feassemble::IntegratorInterface::computeLHSJacobian(PetscMat jacobianMat
     _needNewLHSJacobian = false;
     if (!_hasLHSJacobian) { PYLITH_METHOD_END;}
 
-    _IntegratorInterface::computeJacobian(jacobianMat, precondMat, this, pylith::feassemble::Integrator::JACOBIAN_LHS, integrationData);
+    pylith::feassemble::Integrator::JacobianPart jacobianPart = pylith::feassemble::Integrator::JACOBIAN_LHS;
+    _IntegratorInterface::computeJacobian(jacobianMat, precondMat, this, jacobianPart, integrationData);
+
+    jacobianPart = pylith::feassemble::Integrator::JACOBIAN_LHS_WEIGHTED;
+    _IntegratorInterface::computeJacobian(jacobianMat, precondMat, this, jacobianPart, integrationData);
 
     PYLITH_METHOD_END;
 } // computeLHSJacobian
@@ -533,7 +552,8 @@ pylith::feassemble::_IntegratorInterface::computeResidual(pylith::topology::Fiel
     const PylithReal dt = integrationData.getScalar(pylith::problems::IntegrationData::time_step);
 
     PetscVec solutionDotVec = NULL;
-    if (residualPart == pylith::feassemble::Integrator::RESIDUAL_LHS) {
+    if ((residualPart == pylith::feassemble::Integrator::RESIDUAL_LHS) ||
+        (residualPart == pylith::feassemble::Integrator::RESIDUAL_LHS_WEIGHTED) ) {
         const pylith::topology::Field* solutionDot = integrationData.getField(pylith::problems::IntegrationData::solution_dot);
         assert(solutionDot);
         solutionDotVec = solutionDot->getLocalVector();
@@ -556,6 +576,18 @@ pylith::feassemble::_IntegratorInterface::computeResidual(pylith::topology::Fiel
 
         weakFormKeys[2] = iter->second.cohesive.getPetscKey(*solution, residualPart);
         weakFormKeys[2].part = _IntegratorInterface::computeWeakFormPart(residualPart, IntegratorInterface::COHESIVE_FACE);
+
+        { // TEMPORARY KLUDGE
+            // :TODO: :KLUDGE: Need a way to set the auxliary vector for only one part of the residual.
+            if (pylith::feassemble::Integrator::RESIDUAL_LHS_WEIGHTED == residualPart) {
+                // Set auxiliary vector for weighting of terms.
+                const pylith::topology::Field* weighting = integrationData.getField(pylith::problems::IntegrationData::dae_mass_weighting);
+                err = DMSetAuxiliaryVec(dmSoln, weakFormKeys[2].label, -weakFormKeys[2].value, weighting->getLocalVector());PYLITH_CHECK_ERROR(err);
+            } else {
+                // No auxiliary vector for weighting of terms.
+                err = DMSetAuxiliaryVec(dmSoln, weakFormKeys[2].label, -weakFormKeys[2].value, NULL);PYLITH_CHECK_ERROR(err);
+            } // if/else
+        } // TEMPORARY KLUDGE
 
         PetscIS patchCellsIS = NULL;
         PetscInt numPatchCells = 0;
