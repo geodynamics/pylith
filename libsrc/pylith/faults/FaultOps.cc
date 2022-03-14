@@ -92,10 +92,14 @@ pylith::faults::FaultOps::updateDAEMassWeighting(pylith::problems::IntegrationDa
             const PetscInt faultsOff = faultsVisitor.sectionOffset(point);
             for (PetscInt iDof = 0; iDof < numDof; ++iDof) {
                 faultsArray[faultsOff+iDof] = domainArray[domainOff+iDof];
-            } // for1
+            } // for
 
         } // if
     } // for
+
+    { // TEMPORARY DEBUGGING
+        weighting->view("DAE WEIGHTING", pylith::topology::Field::VIEW_ALL);
+    } // TEMPORARY DEBUGGING
 
     PYLITH_METHOD_END;
 } // updateDAEMassWeighting
