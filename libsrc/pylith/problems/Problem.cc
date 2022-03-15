@@ -532,7 +532,7 @@ pylith::problems::Problem::_createIntegrators(void) {
 
     for (size_t i = 0; i < numSources; ++i) {
         assert(_sources[i]);
-        pylith::feassemble::Integrator* integrator = _sources[i]->createIntegrator(*_solution);
+        pylith::feassemble::Integrator* integrator = _sources[i]->createIntegrator(*solution);
         assert(count < maxSize);
         if (integrator) { _integrators[count++] = integrator;}
     } // for
