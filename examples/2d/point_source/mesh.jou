@@ -6,12 +6,12 @@ playback 'geometry.jou'
 # ----------------------------------------------------------------------
 # Set discretization size
 # ----------------------------------------------------------------------
-surface all size 0.1
+surface 1 size 5
 
 # ----------------------------------------------------------------------
 # Generate the mesh
 # ----------------------------------------------------------------------
-surface all scheme submap
+surface all scheme circle
 mesh surface all
 
 # ----------------------------------------------------------------------
@@ -19,17 +19,20 @@ mesh surface all
 # ----------------------------------------------------------------------
 block 1 surface 1
 block 1 name "poroelastic"
-block 1 element type quad
+
 
 # ----------------------------------------------------------------------
 # Mark entities for boundary conditions, etc.
 # ----------------------------------------------------------------------
-#playback 'bc.jou'
+playback 'bc.jou'
 
 # ----------------------------------------------------------------------
 # Export exodus file
 # ----------------------------------------------------------------------
-#export mesh "mesh_quad.exo" dimension 2 overwrite
+export mesh "mesh.exo" dimension 2 overwrite
+
+
+
 
 
 

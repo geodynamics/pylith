@@ -68,6 +68,7 @@ pylith::sources::PointForce::deallocate(void) {
     _sourceTimeFunction = NULL;
 } // deallocate
 
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Set source time function.
 void
@@ -127,9 +128,9 @@ pylith::sources::PointForce::createIntegrator(const pylith::topology::Field& sol
                                 &_pointCoords[0], &vecPoints);PYLITH_CHECK_ERROR(err);
 
     // Debug
-    PetscPrintf(PetscObjectComm((PetscObject) dmSoln), "_pointCoords\n");
-    PetscPrintf(PetscObjectComm((PetscObject) dmSoln), " x = %g\n", _pointCoords[0]);
-    PetscPrintf(PetscObjectComm((PetscObject) dmSoln), " y = %g\n", _pointCoords[1]);
+    // PetscPrintf(PetscObjectComm((PetscObject) dmSoln), "_pointCoords\n");
+    // PetscPrintf(PetscObjectComm((PetscObject) dmSoln), " x = %g\n", _pointCoords[0]);
+    // PetscPrintf(PetscObjectComm((PetscObject) dmSoln), " y = %g\n", _pointCoords[1]);
     // Erzatz from ex17
     // err = VecCreateSeq(PETSC_COMM_SELF, dim, &vecPoints);PYLITH_CHECK_ERROR(err);
     // err = VecSetBlockSize(vecPoints, _pointCoords.size());PYLITH_CHECK_ERROR(err);
@@ -146,7 +147,7 @@ pylith::sources::PointForce::createIntegrator(const pylith::topology::Field& sol
     err = PetscSFGetGraph(sfPoints, &numRoots, &numLeaves, &localPoints, &remotePoints);PYLITH_CHECK_ERROR(err);
     err = MPI_Comm_rank(PetscObjectComm((PetscObject) dmSoln), &rank);PYLITH_CHECK_ERROR(err);
     // Debug
-    PetscPrintf(PetscObjectComm((PetscObject) dmSoln), "localPoints: %D\n", numLeaves);
+    // PetscPrintf(PetscObjectComm((PetscObject) dmSoln), "localPoints: %D\n", numLeaves);
     for (PetscInt p = 0; p < numLeaves; ++p) {
         if (remotePoints[p].rank == rank) {
             err = DMLabelSetValue(label, remotePoints[p].index, 2);PYLITH_CHECK_ERROR(err);
@@ -173,7 +174,7 @@ pylith::sources::PointForce::createIntegrator(const pylith::topology::Field& sol
 // Create auxiliary field.
 pylith::topology::Field*
 pylith::sources::PointForce::createAuxiliaryField(const pylith::topology::Field& solution,
-                                                      const pylith::topology::Mesh& domainMesh) {
+                                                  const pylith::topology::Mesh& domainMesh) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("createAuxiliaryField(solution="<<solution.getLabel()<<", domainMesh="<<typeid(domainMesh).name()<<")");
 
@@ -213,7 +214,7 @@ pylith::sources::PointForce::createAuxiliaryField(const pylith::topology::Field&
 // Create derived field.
 pylith::topology::Field*
 pylith::sources::PointForce::createDerivedField(const pylith::topology::Field& solution,
-                                                    const pylith::topology::Mesh& domainMesh) {
+                                                const pylith::topology::Mesh& domainMesh) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("createDerivedField(solution="<<solution.getLabel()<<", domainMesh=)"<<typeid(domainMesh).name()<<") empty method");
 
@@ -226,8 +227,9 @@ pylith::sources::PointForce::createDerivedField(const pylith::topology::Field& s
 pylith::feassemble::AuxiliaryFactory*
 pylith::sources::PointForce::_getAuxiliaryFactory(void) {
     assert(_sourceTimeFunction);
-    return _sourceTimeFunction->getAuxiliaryFactory();    
+    return _sourceTimeFunction->getAuxiliaryFactory();
 } // _getAuxiliaryFactory
+
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Update kernel constants.
@@ -250,7 +252,7 @@ pylith::sources::PointForce::_getDerivedFactory(void) {
 // Set kernels for RHS residual G(t,s).
 void
 pylith::sources::PointForce::_setKernelsResidual(pylith::feassemble::IntegratorDomain* integrator,
-                                                        const topology::Field& solution) const {
+                                                 const topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_setKernelsResidual(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
 
@@ -269,7 +271,7 @@ pylith::sources::PointForce::_setKernelsResidual(pylith::feassemble::IntegratorD
         const PetscPointFunc g1v = _sourceTimeFunction->getKernelg1v_explicit(coordsys);
 
         kernels.resize(1);
-        kernels[0] = ResidualKernels("velocity",  pylith::feassemble::Integrator::RESIDUAL_RHS, g0v, g1v);        
+        kernels[0] = ResidualKernels("velocity",  pylith::feassemble::Integrator::RESIDUAL_RHS, g0v, g1v);
         break;
     } // DYNAMIC
     default:
@@ -282,11 +284,12 @@ pylith::sources::PointForce::_setKernelsResidual(pylith::feassemble::IntegratorD
     PYLITH_METHOD_END;
 } // _setKernelsResidual
 
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Set kernels for RHS Jacobian G(t,s).
 void
 pylith::sources::PointForce::_setKernelsJacobian(pylith::feassemble::IntegratorDomain* integrator,
-                                                        const topology::Field& solution) const {
+                                                 const topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_setKernelsJacobian(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
 
@@ -295,11 +298,12 @@ pylith::sources::PointForce::_setKernelsJacobian(pylith::feassemble::IntegratorD
     PYLITH_METHOD_END;
 } // _setKernelsJacobian
 
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Set kernels for computing updated state variables in auxiliary field.
 void
 pylith::sources::PointForce::_setKernelsUpdateStateVars(pylith::feassemble::IntegratorDomain* integrator,
-                                                          const topology::Field& solution) const {
+                                                        const topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_setKernelsUpdateStateVars(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
 
@@ -314,11 +318,12 @@ pylith::sources::PointForce::_setKernelsUpdateStateVars(pylith::feassemble::Inte
     PYLITH_METHOD_END;
 } // _setKernelsUpdateStateVars
 
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Set kernels for computing derived field.
 void
 pylith::sources::PointForce::_setKernelsDerivedField(pylith::feassemble::IntegratorDomain* integrator,
-                                                       const topology::Field& solution) const {
+                                                     const topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_setKernelsDerivedField(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
 
@@ -326,5 +331,6 @@ pylith::sources::PointForce::_setKernelsDerivedField(pylith::feassemble::Integra
 
     PYLITH_METHOD_END;
 } // _setKernelsDerivedField
+
 
 // End of file

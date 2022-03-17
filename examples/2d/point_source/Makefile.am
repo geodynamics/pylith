@@ -23,10 +23,12 @@ dist_noinst_DATA = \
 	mesh_tri.exo \
 	mesh_quad.jou \
 	mesh_quad.exo \
+	mesh.exo \
 	source_sites.txt \
 	pylithapp.cfg \
 	step01_tri.cfg \
-	step01_quad.cfg
+	step01_quad.cfg \
+	step01_circle.cfg
 
 # 'export' the input files by performing a mock install
 export_datadir = $(top_builddir)/examples/2d/point_source
