@@ -409,9 +409,9 @@ pylith::feassemble::IntegratorInterface::initialize(const pylith::topology::Fiel
     const keysmap_t& keysmap = _integrationPatches->getKeys();
     const pylith::topology::Field* auxiliaryField = getAuxiliaryField();assert(auxiliaryField);
     for (keysmap_t::const_iterator iter = keysmap.begin(); iter != keysmap.end(); ++iter) {
-        const PetscInt part = -1; // Not used in setting auxiliary vector
+        const PetscInt part = 0; // Not used in setting auxiliary vector
         PetscFormKey key = iter->second.cohesive.getPetscKey(solution, part);
-        err = DMSetAuxiliaryVec(dmSoln, key.label, key.value, auxiliaryField->getLocalVector());PYLITH_CHECK_ERROR(err);
+        err = DMSetAuxiliaryVec(dmSoln, key.label, key.value, 0, auxiliaryField->getLocalVector());PYLITH_CHECK_ERROR(err);
     } // for
 
     PYLITH_METHOD_END;
@@ -582,10 +582,10 @@ pylith::feassemble::_IntegratorInterface::computeResidual(pylith::topology::Fiel
             if (pylith::feassemble::Integrator::RESIDUAL_LHS_WEIGHTED == residualPart) {
                 // Set auxiliary vector for weighting of terms.
                 const pylith::topology::Field* weighting = integrationData.getField(pylith::problems::IntegrationData::dae_mass_weighting);
-                err = DMSetAuxiliaryVec(dmSoln, weakFormKeys[2].label, -weakFormKeys[2].value, weighting->getLocalVector());PYLITH_CHECK_ERROR(err);
+                err = DMSetAuxiliaryVec(dmSoln, weakFormKeys[2].label, -weakFormKeys[2].value, 0, weighting->getLocalVector());PYLITH_CHECK_ERROR(err);
             } else {
                 // No auxiliary vector for weighting of terms.
-                err = DMSetAuxiliaryVec(dmSoln, weakFormKeys[2].label, -weakFormKeys[2].value, NULL);PYLITH_CHECK_ERROR(err);
+                err = DMSetAuxiliaryVec(dmSoln, weakFormKeys[2].label, -weakFormKeys[2].value, 0, NULL);PYLITH_CHECK_ERROR(err);
             } // if/else
         } // TEMPORARY KLUDGE
 

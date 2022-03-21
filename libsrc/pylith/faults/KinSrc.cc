@@ -185,7 +185,7 @@ pylith::faults::KinSrc::getSlipSubfields(PetscVec slipLocalVec,
     PetscDM faultAuxiliaryDM = faultAuxiliaryField->getDM();
     PetscDMLabel dmLabel = NULL;
     PetscInt labelValue = 0;
-    err = DMSetAuxiliaryVec(faultAuxiliaryDM, dmLabel, labelValue,
+    err = DMSetAuxiliaryVec(faultAuxiliaryDM, dmLabel, labelValue, 0,
                             _auxiliaryField->getLocalVector());PYLITH_CHECK_ERROR(err);
     err = DMProjectFieldLocal(faultAuxiliaryDM, t, slipLocalVec, subfieldKernels, INSERT_VALUES,
                               slipLocalVec);PYLITH_CHECK_ERROR(err);

@@ -241,7 +241,7 @@ pylith::feassemble::IntegratorDomain::initialize(const pylith::topology::Field& 
     PetscDM dmSoln = solution.getDM();assert(dmSoln);
     PetscDMLabel dmLabel = NULL;
     err = DMGetLabel(dmSoln, _labelName.c_str(), &dmLabel);PYLITH_CHECK_ERROR(err);
-    err = DMSetAuxiliaryVec(dmSoln, dmLabel, _labelValue, _auxiliaryField->getLocalVector());PYLITH_CHECK_ERROR(err);
+    err = DMSetAuxiliaryVec(dmSoln, dmLabel, _labelValue, 0, _auxiliaryField->getLocalVector());PYLITH_CHECK_ERROR(err);
 
     if (_kernelsUpdateStateVars.size() > 0) {
         delete _updateState;_updateState = new pylith::feassemble::UpdateStateVars;assert(_updateState);
@@ -476,7 +476,7 @@ pylith::feassemble::IntegratorDomain::_updateStateVars(const PylithReal t,
     PetscDM stateVarsDM = _updateState->stateVarsDM();
     PetscDMLabel dmLabel = NULL;
     PetscInt labelValue = 0;
-    err = DMSetAuxiliaryVec(stateVarsDM, dmLabel, labelValue, _auxiliaryField->getLocalVector());PYLITH_CHECK_ERROR(err);
+    err = DMSetAuxiliaryVec(stateVarsDM, dmLabel, labelValue, 0, _auxiliaryField->getLocalVector());PYLITH_CHECK_ERROR(err);
     err = DMProjectFieldLocal(stateVarsDM, t, solution.getLocalVector(), kernelsStateVars, INSERT_VALUES,
                               _updateState->stateVarsLocalVector());PYLITH_CHECK_ERROR(err);
     _updateState->restore(_auxiliaryField);
@@ -516,7 +516,7 @@ pylith::feassemble::IntegratorDomain::_computeDerivedField(const PylithReal t,
     assert(_auxiliaryField);
     PetscDMLabel dmLabel = NULL;
     PetscInt labelValue = 0;
-    err = DMSetAuxiliaryVec(derivedDM, dmLabel, labelValue, _auxiliaryField->getLocalVector());PYLITH_CHECK_ERROR(err);
+    err = DMSetAuxiliaryVec(derivedDM, dmLabel, labelValue, 0, _auxiliaryField->getLocalVector());PYLITH_CHECK_ERROR(err);
     err = DMProjectFieldLocal(derivedDM, t, solution.getLocalVector(), kernelsArray, INSERT_VALUES, _derivedField->getLocalVector());PYLITH_CHECK_ERROR(err);
     delete[] kernelsArray;kernelsArray = NULL;
 
