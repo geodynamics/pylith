@@ -424,11 +424,11 @@ pylith::bc::_NeumannTimeDependent::setKernelsResidual(pylith::feassemble::Integr
     std::vector<ResidualKernels> kernels(1);
     switch (formulation) {
     case pylith::problems::Physics::QUASISTATIC:
-        kernels[0] = ResidualKernels(bc.getSubfieldName(), pylith::feassemble::Integrator::RESIDUAL_LHS, r0, r1);
+        kernels[0] = ResidualKernels(bc.getSubfieldName(), pylith::feassemble::Integrator::LHS, r0, r1);
         break;
     case pylith::problems::Physics::DYNAMIC_IMEX:
     case pylith::problems::Physics::DYNAMIC:
-        kernels[0] = ResidualKernels(bc.getSubfieldName(), pylith::feassemble::Integrator::RESIDUAL_RHS, r0, r1);
+        kernels[0] = ResidualKernels(bc.getSubfieldName(), pylith::feassemble::Integrator::RHS, r0, r1);
         break;
     default: {
         PYLITH_JOURNAL_LOGICERROR("Unknown formulation for equations ("<<formulation<<").");

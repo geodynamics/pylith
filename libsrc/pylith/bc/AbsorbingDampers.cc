@@ -244,7 +244,7 @@ pylith::bc::_AbsorbingDampers::setKernelsResidual(pylith::feassemble::Integrator
     PetscBdPointFunc g1 = NULL;
 
     std::vector<ResidualKernels> kernels(1);
-    kernels[0] = ResidualKernels(bc.getSubfieldName(), pylith::feassemble::Integrator::RESIDUAL_RHS, g0, g1);
+    kernels[0] = ResidualKernels(bc.getSubfieldName(), pylith::feassemble::Integrator::RHS, g0, g1);
 
     assert(integrator);
     integrator->setKernelsResidual(kernels, solution);

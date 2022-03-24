@@ -27,7 +27,7 @@
 #include "feassemblefwd.hh" // forward declarations
 
 #include "pylith/topology/topologyfwd.hh" // USES Field
-#include "pylith/feassemble/Integrator.hh" // USES ResidualPart, JacobianPart
+#include "pylith/feassemble/Integrator.hh" // USES EquationPart, eqnPart
 #include "pylith/utils/petscfwd.h" // HASA PetscDM
 
 class pylith::feassemble::FEKernelKey {
@@ -62,29 +62,17 @@ public:
      */
     const PetscWeakForm getWeakForm(void) const;
 
-    /** Get PETSc weak form key for residual.
+    /** Get PETSc weak form key for integration.
      *
      * @param[in] solution Solution field.
-     * @param[in] residualPart Residual part for weak form key.
-     * @param[in] field Name of solution subfield associated with integration kernel.
-     *
-     * @returns PETSc weak form key.
-     */
-    PetscFormKey getPetscKey(const pylith::topology::Field& solution,
-                             pylith::feassemble::Integrator::ResidualPart residualPart,
-                             const char* field=NULL) const;
-
-    /** Get PETSc weak form key for Jacobian.
-     *
-     * @param[in] solution Solution field.
-     * @param[in] jacobianPart Jacobian part for weak form key.
+     * @param[in] equationPart Equation part for weak form key.
      * @param[in] fieldTrial Name of solution subfield associated with trial function.
      * @param[in] fieldTrial Name of solution subfield associated with basis function.
      *
      * @returns PETSc weak form key.
      */
     PetscFormKey getPetscKey(const pylith::topology::Field& solution,
-                             pylith::feassemble::Integrator::JacobianPart jacobianPart,
+                             pylith::feassemble::Integrator::EquationPart equationPart,
                              const char* fieldTrial=NULL,
                              const char* fieldBasis=NULL) const;
 

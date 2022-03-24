@@ -45,7 +45,7 @@
 typedef pylith::feassemble::IntegratorDomain::ResidualKernels ResidualKernels;
 typedef pylith::feassemble::IntegratorDomain::JacobianKernels JacobianKernels;
 typedef pylith::feassemble::IntegratorDomain::ProjectKernels ProjectKernels;
-typedef pylith::feassemble::Integrator::JacobianPart JacobianPart;
+typedef pylith::feassemble::Integrator::EquationPart EquationPart;
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
@@ -293,8 +293,8 @@ pylith::materials::IncompressibleElasticity::_setKernelsResidual(pylith::feassem
     const PetscPointFunc f1p = NULL;
 
     std::vector<ResidualKernels> kernels(2);
-    kernels[0] = ResidualKernels("displacement", pylith::feassemble::Integrator::RESIDUAL_LHS, f0u, f1u);
-    kernels[1] = ResidualKernels("pressure", pylith::feassemble::Integrator::RESIDUAL_LHS, f0p, f1p);
+    kernels[0] = ResidualKernels("displacement", pylith::feassemble::Integrator::LHS, f0u, f1u);
+    kernels[1] = ResidualKernels("pressure", pylith::feassemble::Integrator::LHS, f0p, f1p);
 
     assert(integrator);
     integrator->setKernelsResidual(kernels, solution);
@@ -335,11 +335,11 @@ pylith::materials::IncompressibleElasticity::_setKernelsJacobian(pylith::feassem
     const PetscPointJac Jf2pp = NULL;
     const PetscPointJac Jf3pp = NULL;
 
-    const JacobianPart jacobianPart = pylith::feassemble::Integrator::JACOBIAN_LHS;
-    kernels[0] = JacobianKernels("displacement", "displacement", jacobianPart, Jf0uu, Jf1uu, Jf2uu, Jf3uu);
-    kernels[1] = JacobianKernels("displacement", "pressure", jacobianPart, Jf0up, Jf1up, Jf2up, Jf3up);
-    kernels[2] = JacobianKernels("pressure", "displacement", jacobianPart, Jf0pu, Jf1pu, Jf2pu, Jf3pu);
-    kernels[3] = JacobianKernels("pressure", "pressure", jacobianPart, Jf0pp, Jf1pp, Jf2pp, Jf3pp);
+    const EquationPart equationPart = pylith::feassemble::Integrator::LHS;
+    kernels[0] = JacobianKernels("displacement", "displacement", equationPart, Jf0uu, Jf1uu, Jf2uu, Jf3uu);
+    kernels[1] = JacobianKernels("displacement", "pressure", equationPart, Jf0up, Jf1up, Jf2up, Jf3up);
+    kernels[2] = JacobianKernels("pressure", "displacement", equationPart, Jf0pu, Jf1pu, Jf2pu, Jf3pu);
+    kernels[3] = JacobianKernels("pressure", "pressure", equationPart, Jf0pp, Jf1pp, Jf2pp, Jf3pp);
 
     assert(integrator);
     integrator->setKernelsJacobian(kernels, solution);
