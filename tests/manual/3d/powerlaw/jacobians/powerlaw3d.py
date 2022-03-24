@@ -18,8 +18,6 @@
 # PREREQUISITES:  sympy
 # ----------------------------------------------------------------------
 #
-# import pdb
-# pdb.set_trace()
 import sympy
 import sympy.tensor
 import sympy.tensor.array

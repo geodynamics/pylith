@@ -289,6 +289,14 @@ void pylith::fekernels::IsotropicPowerLawPlaneStrain::Jf3vu(const PylithInt dim,
     PylithReal C2211 = C1122;
     PylithReal C1212 = shearModulus;
     PylithReal C2222 = C1111;
+#if 0
+    std::cout << "Elastic Jacobian:" << std::endl;
+    std::cout << "    C1111:" << C1111 << std::endl;
+    std::cout << "    C1122:" << C1122 << std::endl;
+    std::cout << "    C1212:" << C1212 << std::endl;
+    std::cout << "    C2211:" << C2211 << std::endl;
+    std::cout << "    C2222:" << C2222 << std::endl;
+#endif
 
     // Compute viscoelastic Jacobian if effective stress is nonzero.
     if (j2Tpdt != 0.0 && j2Tau != 0.0)
@@ -311,6 +319,14 @@ void pylith::fekernels::IsotropicPowerLawPlaneStrain::Jf3vu(const PylithInt dim,
                                         factor4 * devStressTpdt[1] * devStressT[1] + ae));
         C2222 = bulkModulus + 2 / (3 * (factor3 * devStressTpdt[1] * devStressTpdt[1] + factor1 +
                                         factor4 * devStressTpdt[1] * devStressT[1] + ae));
+#if 0
+    std::cout << "Viscoelastic Jacobian:" << std::endl;
+    std::cout << "    C1111:" << C1111 << std::endl;
+    std::cout << "    C1122:" << C1122 << std::endl;
+    std::cout << "    C1212:" << C1212 << std::endl;
+    std::cout << "    C2211:" << C2211 << std::endl;
+    std::cout << "    C2222:" << C2222 << std::endl;
+#endif
     } // if
 
     /* j(f,g,df,dg) = C(f,df,g,dg)
@@ -459,6 +475,14 @@ void pylith::fekernels::IsotropicPowerLawPlaneStrain::Jf3vu_refstate(const Pylit
     PylithReal C2211 = C1122;
     PylithReal C1212 = shearModulus;
     PylithReal C2222 = C1111;
+#if 0
+    std::cout << "Elastic Jacobian:" << std::endl;
+    std::cout << "    C1111:" << C1111 << std::endl;
+    std::cout << "    C1122:" << C1122 << std::endl;
+    std::cout << "    C1212:" << C1212 << std::endl;
+    std::cout << "    C2211:" << C2211 << std::endl;
+    std::cout << "    C2222:" << C2222 << std::endl;
+#endif
 
     // Compute viscoelastic Jacobian if effective stress is nonzero.
     if (j2Tpdt != 0.0 && j2Tau != 0.0)
@@ -481,6 +505,14 @@ void pylith::fekernels::IsotropicPowerLawPlaneStrain::Jf3vu_refstate(const Pylit
                                         factor4 * devStressTpdt[1] * devStressT[1] + ae));
         C2222 = bulkModulus + 2 / (3 * (factor3 * devStressTpdt[1] * devStressTpdt[1] + factor1 +
                                         factor4 * devStressTpdt[1] * devStressT[1] + ae));
+#if 0
+    std::cout << "Viscoelastic Jacobian:" << std::endl;
+    std::cout << "    C1111:" << C1111 << std::endl;
+    std::cout << "    C1122:" << C1122 << std::endl;
+    std::cout << "    C1212:" << C1212 << std::endl;
+    std::cout << "    C2211:" << C2211 << std::endl;
+    std::cout << "    C2222:" << C2222 << std::endl;
+#endif
     } // if
 
     /* j(f,g,df,dg) = C(f,df,g,dg)
@@ -762,7 +794,7 @@ void pylith::fekernels::IsotropicPowerLawPlaneStrain::deviatoricStress4(const Py
         strainTpdt[0] - meanStrainTpdt,
         strainTpdt[1] - meanStrainTpdt,
         -meanStrainTpdt,
-        strainTpdt[2],
+        strainTpdt[3],
     };
     const PylithScalar strainPPTpdt[4] = {
         devStrainTpdt[0] - visStrainT[0],
