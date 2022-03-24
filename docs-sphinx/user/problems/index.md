@@ -1,8 +1,7 @@
 (sec-user-problems)=
-# Simulation Types
+# Simulations
 
 :::{toctree}
 problems.md
-% observers.md
-% injectors.md
+output.md
 :::
