@@ -24,10 +24,29 @@ from .faults import KinSrcTimeHistory as ModuleKinSrc
 
 
 class KinSrcTimeHistory(KinSrc, ModuleKinSrc):
-    """Python object for time history data file slip time function.
-
-    Factory: eq_kinematic_src
     """
+    Time history slip time function.
+
+    The slip time function is given in a `TimeHistory` database.
+
+    Implements `KinSrc`.
+    """
+    DOC_CONFIG = {
+        "cfg": """
+            [pylithapp.problem.interfaces.fault.eq_ruptures.rupture]
+            origin_time = 10*year
+
+            db_auxiliary_field = spatialdata.spatialdb.UniformDB
+            db_auxiliary_field.label = Time history slip time function auxiliary field spatial database
+            db_auxiliary_field.values = [initiation_time, final_slip_left_lateral, final_slip_opening]
+            db_auxiliary_field.data = [0.0*s, -2.0*m, 0.0*m]
+
+            time_history.label = Slip time function time history
+            time_history.filename = slipfn.timedb
+            """
+    }
+
+
     import pythia.pyre.inventory
 
     from spatialdata.spatialdb.TimeHistory import TimeHistory

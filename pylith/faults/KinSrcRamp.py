@@ -12,32 +12,35 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-# @file pylith/faults/KinSrcRamp.py
-#
-# @brief Python object for a ramp slip time function.
-#
-# Factory: eq_kinematic_src
 
 from .KinSrc import KinSrc
 from .faults import KinSrcRamp as ModuleKinSrc
 
 
 class KinSrcRamp(KinSrc, ModuleKinSrc):
-    """Python object for a ramp slip time function.
-
-    Factory: eq_kinematic_src
     """
+    Linear ramp slip time function.
 
-    # PUBLIC METHODS /////////////////////////////////////////////////////
+    Implements `KinSrc`.
+    """
+    DOC_CONFIG = {
+        "cfg": """
+            [pylithapp.problem.interfaces.fault.eq_ruptures.rupture]
+            origin_time = 10*year
+
+            db_auxiliary_field = spatialdata.spatialdb.UniformDB
+            db_auxiliary_field.label = Ramp slip time function auxiliary field spatial database
+            db_auxiliary_field.values = [initiation_time, rise_time, final_slip_left_lateral, final_slip_opening]
+            db_auxiliary_field.data = [0.0*s, 3.0*s, -2.0*m, 0.0*m]
+            """
+    }
+
 
     def __init__(self, name="kinsrcramp"):
         """Constructor.
         """
         KinSrc.__init__(self, name)
         return
-
-    # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _createModuleObj(self):
         """Call constructor for module object for access to C++ object.
