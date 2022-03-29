@@ -22,18 +22,33 @@ from pylith.utils.PetscComponent import PetscComponent
 
 
 class AuxSubfieldsTimeDependent(PetscComponent):
-    """Python subfields container for time dependent boundary conditions.
-
-    f(x,t) = f_0(x) + \dot{f}_1(x)(t-t_1(x)) + f_2(x)a(t-t_2(x))
-
-    f_0(x): initial_amplitude
-    \dot{f}_1(x): rate_amplitude
-    t_1(x): rate_start
-    f_2(x): time_history_amplitude
-    t_2(x): time_history_start
-
-    FACTORY: auxiliary_subfields
     """
+    Auxiliary subfields for time-dependent boundary conditions.
+
+    The boundary conditions values have the functional form:
+
+    \\begin{equation}
+      f(x,t) = f_0(x) + \dot{f}_1(x)(t-t_1(x)) + f_2(x)a(t-t_2(x))
+    \end{equation}
+
+    The association of these functions with the auxiliary subfields is:
+
+    :$f_0(x)$: `initial_amplitude`
+    :$\dot{f}_1(x)$: `rate_amplitude`
+    :$t_1(x)$: `rate_start`
+    :$f_2(x)$: `time_history_amplitude`
+    :$t_2(x)$: `time_history_start`
+    """
+    DOC_CONFIG = {
+        "cfg": """
+            [time_dependent_subfields]
+            initial_amplitude.basis_order = 1
+            rate_amplitude.basis_order = 0
+            rate_start_time.basis_order = 1
+            time_history_amplitude.basis_order = 1
+            time_history_start_time.basis_order = 1
+            """,
+    }
 
     import pythia.pyre.inventory
 

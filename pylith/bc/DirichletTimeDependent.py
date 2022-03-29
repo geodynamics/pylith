@@ -12,13 +12,6 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-# @file pylith/bc/DirichletTimeDependent.py
-#
-# @brief Python object for managing a time-dependent Dirichlet (prescribed
-# values) boundary condition.
-#
-# Factory: boundary_condition
 
 from .BoundaryCondition import BoundaryCondition
 from .bc import DirichletTimeDependent as ModuleDirichletTimeDependent
@@ -26,18 +19,44 @@ from pylith.utils.NullComponent import NullComponent
 
 
 class DirichletTimeDependent(BoundaryCondition, ModuleDirichletTimeDependent):
-    """Python object for managing a time-dependent Dirichlet (prescribed values)
-    boundary condition.
-
-    Factory: boundary_condition
     """
+    Dirichlet (prescribed values) time-dependent boundary condition.
+
+    This boundary condition sets values of a single solution subfield on a boundary.
+    To set multiple solution subfields on a boundary, use multiple Dirichlet boundary conditions.
+
+    :::{seealso}
+    See [`AuxSubfieldsTimeDependent` Component](AuxSubfieldsTimeDependent.md) for the functional form of the time depenence.
+    :::
+
+    Implements `BoundaryCondition`.
+    """
+    DOC_CONFIG = {
+        "cfg": """
+            # Dirichlet (prescribed displacements) boundary condition constraining the x and y degrees of freedom on the +y boundary.
+            [pylithapp.problem.bc.bc_ypos]
+            constrained_dof = [0, 1]
+            label = boundary_ypos
+            field = displacement
+
+            use_initial = False
+            use_time_history = True
+            db_auxiliary_field = spatialdata.spatialdb.UniformDB
+            db_auxiliary_field.label = Displacement Dirichlet BC +y boundary
+            db_auxiliary_field.values = [time_history_amplitude_x, time_history_amplitude_y, time_history_start_time]
+            db_auxiliary_field.data = [1.0*m, 0.0*m, 0.0]
+
+            time_history = spatialdata.spatialdb.TimeHistory
+            time_history.label = Impulse time history
+            time_history.filename = impulse.timedb
+            """,
+    }
+
 
     import pythia.pyre.inventory
 
-    constrainedDOF = pythia.pyre.inventory.array(
-        "constrained_dof", converter=int, default=[])
-    constrainedDOF.meta[
-        'tip'] = "Array of constrained degrees of freedom (0=1st DOF, 1=2nd DOF, etc)."
+    constrainedDOF = pythia.pyre.inventory.array("constrained_dof", converter=int, default=[])
+    constrainedDOF.meta['tip'] = "Array of constrained degrees of freedom (0=1st DOF, 1=2nd DOF, etc)."
 
     useInitial = pythia.pyre.inventory.bool("use_initial", default=True)
     useInitial.meta['tip'] = "Use initial term in time-dependent expression."
@@ -45,13 +64,11 @@ class DirichletTimeDependent(BoundaryCondition, ModuleDirichletTimeDependent):
     useRate = pythia.pyre.inventory.bool("use_rate", default=False)
     useRate.meta['tip'] = "Use rate term in time-dependent expression."
 
-    useTimeHistory = pythia.pyre.inventory.bool(
-        "use_time_history", default=False)
+    useTimeHistory = pythia.pyre.inventory.bool("use_time_history", default=False)
     useTimeHistory.meta['tip'] = "Use time history term in time-dependent expression."
 
-    dbTimeHistory = pythia.pyre.inventory.facility(
-        "time_history", factory=NullComponent, family="temporal_database")
-    dbTimeHistory.meta['tip'] = "Time history with normalized amplitude as a function of time."
+    dbTimeHistory = pythia.pyre.inventory.facility("time_history", factory=NullComponent, family="temporal_database")
+    dbTimeHistory.meta['tip'] = "Time history with normalized amplitude."
 
     def __init__(self, name="dirichlettimedependent"):
         """Constructor.

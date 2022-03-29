@@ -37,12 +37,7 @@ def validateLabel(value):
 class BoundaryCondition(Physics,
                         ModuleBoundaryCondition):
     """
-    Python abstract base class for managing a boundary condition.
-
-    This implementation of a boundary condition applies to a single
-    boundary of an domain.
-
-    FACTORY: boundary_condition
+    Abstract base class for boundary conditions.
     """
 
     import pythia.pyre.inventory
@@ -51,7 +46,7 @@ class BoundaryCondition(Physics,
     field.meta['tip'] = "Solution subfield associated with boundary condition."
 
     label = pythia.pyre.inventory.str("label", default="", validator=validateLabel)
-    label.meta['tip'] = "Label identifier for boundary."
+    label.meta['tip'] = "Label identifying boundary."
 
     def __init__(self, name="boundarycondition"):
         """Constructor.
