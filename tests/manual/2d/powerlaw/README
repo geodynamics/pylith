@@ -12,4 +12,3 @@ Run a single test (no Jacobian test):
 ./run_tests.py --sims axialtraction_powerlaw
 
 Results are displayed in a set of plots.
-NOTE:  --test_jacobians has no effect for these 2D problems.
