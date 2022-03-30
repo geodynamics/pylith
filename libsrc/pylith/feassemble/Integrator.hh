@@ -134,12 +134,12 @@ public:
                   const PylithReal dt,
                   const pylith::topology::Field& solution);
 
-    /** Update auxiliary field values to current time.
+    /** Set auxiliary field values for current time.
      *
      * @param[in] t Current time.
      */
     virtual
-    void updateState(const PylithReal t);
+    void setState(const PylithReal t);
 
     /** Compute RHS residual for G(t,s).
      *

@@ -331,13 +331,13 @@ pylith::feassemble::IntegratorInterface::initialize(const pylith::topology::Fiel
 
 
 // ------------------------------------------------------------------------------------------------
-// Update auxiliary field values to current time.
+// Set auxiliary field values for current time.
 void
-pylith::feassemble::IntegratorInterface::updateState(const double t) {
+pylith::feassemble::IntegratorInterface::setState(const double t) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("updateState(t="<<t<<")");
+    PYLITH_JOURNAL_DEBUG("setState(t="<<t<<")");
 
-    Integrator::updateState(t);
+    Integrator::setState(t);
 
     assert(_physics);
     _physics->updateAuxiliaryField(_auxiliaryField, t);
@@ -352,7 +352,7 @@ pylith::feassemble::IntegratorInterface::updateState(const double t) {
     } // if
 
     PYLITH_METHOD_END;
-} // updateState
+} // setState
 
 
 // ------------------------------------------------------------------------------------------------
