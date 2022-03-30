@@ -12,13 +12,6 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-# @file pythia.pyre/meshio/MeshIOAscii.py
-#
-# @brief Python object for reading/writing finite-element mesh from
-# simple ASCII file.
-#
-# Factory: mesh_io
 
 from .MeshIOObj import MeshIOObj
 from .meshio import MeshIOAscii as ModuleMeshIOAscii
@@ -39,10 +32,22 @@ def validateFilename(value):
 
 
 class MeshIOAscii(MeshIOObj, ModuleMeshIOAscii):
-    """Read and write finite-element meshes using a simple ASCII format.
-
-    Factory: mesh_io
     """
+    Reader for finite-element meshes using a simple ASCII format.
+
+    :::{warning}
+    The coordinate system associated with the mesh must be a Cartesian coordinate system, such as a generic Cartesian coordinate system or a geographic projection.
+    :::
+
+    Implements `MeshIOObj`.
+    """
+    DOC_CONFIG = {
+        "cfg": """
+            [pylithapp.mesh_generator.reader]
+            filename = mesh_quad.txt
+            coordsys.space_dim = 2
+        """
+    }
 
     import pythia.pyre.inventory
 
@@ -53,34 +58,25 @@ class MeshIOAscii(MeshIOObj, ModuleMeshIOAscii):
     coordsys = pythia.pyre.inventory.facility("coordsys", family="coordsys", factory=CSCart)
     coordsys.meta['tip'] = "Coordinate system associated with mesh."
 
-    # PUBLIC METHODS /////////////////////////////////////////////////////
-
     def __init__(self, name="meshioascii"):
         """Constructor.
         """
         MeshIOObj.__init__(self, name)
-        return
 
     def preinitialize(self):
         """Do minimal initialization."""
         MeshIOObj.preinitialize(self)
-
         ModuleMeshIOAscii.filename(self, self.filename)
-        return
-
-    # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
         """Set members based using inventory.
         """
         MeshIOObj._configure(self)
-        return
 
     def _createModuleObj(self):
         """Create C++ MeshIOAscii object.
         """
         ModuleMeshIOAscii.__init__(self)
-        return
 
 
 # FACTORIES ////////////////////////////////////////////////////////////

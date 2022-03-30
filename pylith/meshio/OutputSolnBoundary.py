@@ -12,13 +12,6 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-# @file pythia.pyre/meshio/OutputSolnBoundary.py
-#
-# @brief Python object for managing output of finite-element solution
-# information over a subdomain.
-#
-# Factory: observer
 
 from .OutputSoln import OutputSoln
 from .meshio import OutputSolnBoundary as ModuleOutputSolnBoundary
@@ -33,24 +26,43 @@ def validateLabel(value):
 
 
 class OutputSolnBoundary(OutputSoln, ModuleOutputSolnBoundary):
-    """Python object for managing output of finite-element solution
-    information over a boundary.
-
-    Factory: observer
     """
+    Output of solution subfields over an external boundary.
+
+    :::{tip}
+    Most output information can be configured at the problem level using the [`ProblemDefaults` Component](../problems/ProblemDefaults.md).
+    :::
+
+    Implements `OutputSoln`.
+    """
+    DOC_CONFIG = {
+        "cfg": """
+            [observer]
+            data_fields = [displacement]
+
+            label = boundary_xpos
+
+            # Skip two time steps between output.
+            output_trigger = pylith.meshio.OutputTriggerStep
+            output_trigger.num_skip = 2
+
+            # Write output to HDF5 file with name `boundary_xpos.h5`.
+            writer = pylith.meshio.DataWriterHDF5
+            writer.filename = boundary_xpos.h5
+
+            output_basis_order = 1
+        """
+    }
 
     import pythia.pyre.inventory
 
     label = pythia.pyre.inventory.str("label", default="", validator=validateLabel)
-    label.meta['tip'] = "Label identifier for boundary."
-
-    # PUBLIC METHODS /////////////////////////////////////////////////////
+    label.meta['tip'] = "Label identifier for external boundary."
 
     def __init__(self, name="outputsolnsubset"):
         """Constructor.
         """
         OutputSoln.__init__(self, name)
-        return
 
     def preinitialize(self, problem):
         """Do mimimal initialization.
@@ -60,21 +72,16 @@ class OutputSolnBoundary(OutputSoln, ModuleOutputSolnBoundary):
 
         identifier = self.aliases[-1]
         self.writer.setFilename(problem.defaults.outputDir, problem.defaults.simName, identifier)
-        return
-
-    # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
         """Set members based using inventory.
         """
         OutputSoln._configure(self)
-        return
 
     def _createModuleObj(self):
         """Create handle to C++ object.
         """
         ModuleOutputSolnBoundary.__init__(self)
-        return
 
 
 # FACTORIES ////////////////////////////////////////////////////////////

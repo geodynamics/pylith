@@ -12,31 +12,42 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-# @file pythia.pyre/meshio/OutputSoln.py
-#
-# @brief Python object for managing output of solution information over the domain.
-#
-# Factory: observer
 
 from .OutputSoln import OutputSoln
 from .meshio import OutputSolnDomain as ModuleOutputSolnDomain
 
 
 class OutputSolnDomain(OutputSoln, ModuleOutputSolnDomain):
-    """Python object for managing output of finite-element solution
-    information.
-
-    FACTORY: observer
     """
+    Output of solution subfields over the simulation domain.
 
-    # PUBLIC METHODS /////////////////////////////////////////////////////
+    :::{tip}
+    Most output information can be configured at the problem level using the [`ProblemDefaults` Component](../problems/ProblemDefaults.md).
+    :::
+
+    Implements `OutputSoln`.
+    """
+    DOC_CONFIG = {
+        "cfg": """
+            [observer]
+            data_fields = [displacement]
+
+            # Skip two time steps between output.
+            output_trigger = pylith.meshio.OutputTriggerStep
+            output_trigger.num_skip = 2
+
+            # Write output to HDF5 file with name `domain.h5`.
+            writer = pylith.meshio.DataWriterHDF5
+            writer.filename = domain.h5
+
+            output_basis_order = 1
+        """
+    }
 
     def __init__(self, name="outputsolndomain"):
         """Constructor.
         """
         OutputSoln.__init__(self, name)
-        return
 
     def preinitialize(self, problem):
         """Do mimimal initialization.
@@ -45,21 +56,16 @@ class OutputSolnDomain(OutputSoln, ModuleOutputSolnDomain):
 
         identifier = self.aliases[-1]
         self.writer.setFilename(problem.defaults.outputDir, problem.defaults.simName, identifier)
-        return
-
-    # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
         """Set members based using inventory.
         """
         OutputSoln._configure(self)
-        return
 
     def _createModuleObj(self):
         """Create handle to C++ object.
         """
         ModuleOutputSolnDomain.__init__(self)
-        return
 
 
 # FACTORIES ////////////////////////////////////////////////////////////

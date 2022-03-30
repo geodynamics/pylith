@@ -12,51 +12,37 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-# @file pythia.pyre/meshio/OutputSoln.py
-#
-# @brief Python object for managing output of finite-element
-# solution information.
-#
-# Factory: observer
 
 from .OutputObserver import OutputObserver
 from .meshio import OutputSoln as ModuleOutputSoln
 
 
 class OutputSoln(OutputObserver, ModuleOutputSoln):
-    """Python object for managing output of finite-element solution
-    information.
+    """
+    Abstract base class for output of solution subfields.
 
-    FACTORY: observer
+    Implements `OutputObserver`.
     """
 
     import pythia.pyre.inventory
 
     dataFields = pythia.pyre.inventory.list("data_fields", default=["all"])
-    dataFields.meta['tip'] = "Names of data fields to output."
-
-    # PUBLIC METHODS /////////////////////////////////////////////////////
+    dataFields.meta['tip'] = "Names of solution subfields to include in output."
 
     def __init__(self, name="outputsoln"):
         """Constructor.
         """
         OutputObserver.__init__(self, name)
-        return
 
     def preinitialize(self, problem):
         """Do mimimal initialization.
         """
         OutputObserver.preinitialize(self, problem)
         ModuleOutputSoln.setOutputSubfields(self, self.dataFields)
-        return
-
-    # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
         """Set members based using inventory.
         """
         OutputObserver._configure(self)
-        return
 
 # End of file

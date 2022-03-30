@@ -12,12 +12,6 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-# @file pythia.pyre/meshio/PointsList.py
-#
-# @brief Python object for reading list of points from a file.
-#
-# Factory: output_manager
 
 from pythia.pyre.components.Component import Component
 
@@ -31,10 +25,24 @@ def validateFilename(value):
 
 
 class PointsList(Component):
-    """Python object for reading a list of points from a file.
-
-    FACTORY: points_list
     """
+    Reader for a list of points from an ASCII file.
+
+    :::{seealso}
+    See [`OutputSolnPoints` Component](OutputSolnPoints.md).
+    :::
+    """
+    DOC_CONFIG = {
+        "cfg": """
+            [points]
+            filename = stations.txt
+            comment_delimiter = #
+            value_delimiter = ,
+            
+            coordsys = spatialdata.geocoords.CSCart
+            coordsys.space_dim = 2
+        """
+    }
 
     import pythia.pyre.inventory
 
@@ -51,13 +59,10 @@ class PointsList(Component):
     coordsys = pythia.pyre.inventory.facility("coordsys", family="coordsys", factory=CSCart)
     coordsys.meta['tip'] = "Coordinate system associated with points."
 
-    # PUBLIC METHODS /////////////////////////////////////////////////////
-
     def __init__(self, name="pointslist"):
         """Constructor.
         """
         Component.__init__(self, name)
-        return
 
     def read(self):
         """Read points from file.
@@ -103,13 +108,10 @@ class PointsList(Component):
 
         return stations, points
 
-    # PRIVATE METHODS ////////////////////////////////////////////////////
-
     def _configure(self):
         """Set members based using inventory.
         """
         Component._configure(self)
-        return
 
 
 # FACTORIES ////////////////////////////////////////////////////////////

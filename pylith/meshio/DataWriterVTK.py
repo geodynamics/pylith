@@ -12,20 +12,26 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-# @file pythia.pyre/meshio/DataWriterVTK.py
-#
-# @brief Python object for writing finite-element data to VTK file.
 
 from .DataWriter import DataWriter
 from .meshio import DataWriterVTK as ModuleDataWriterVTK
 
 
 class DataWriterVTK(DataWriter, ModuleDataWriterVTK):
-    """Python object for writing finite-element data to VTK file.
-
-    FACTORY: data_writer
     """
+    Writer of solution, auxiliary, and derived subfields to a VTK file.
+
+    Implements `DataWriter`.
+    """
+    DOC_CONFIG = {
+        "cfg": """
+            [data_writer]
+            filename = domain_solution.vtk
+            time_format = %0.2f
+            time_constant = 1.0*year
+            float_precision = 6
+        """
+    }
 
     import pythia.pyre.inventory
 
@@ -36,22 +42,17 @@ class DataWriterVTK(DataWriter, ModuleDataWriterVTK):
     timeFormat.meta['tip'] = "C style format string for time stamp in filename."
 
     from pythia.pyre.units.time import second
-    timeConstant = pythia.pyre.inventory.dimensional(
-        "time_constant", default=1.0 * second, validator=pythia.pyre.inventory.greater(0.0 * second))
+    timeConstant = pythia.pyre.inventory.dimensional("time_constant", default=1.0 * second, validator=pythia.pyre.inventory.greater(0.0 * second))
     timeConstant.meta['tip'] = "Values used to normalize time stamp in filename."
 
-    precision = pythia.pyre.inventory.int("float_precision", default=6,
-                                   validator=pythia.pyre.inventory.greater(0))
+    precision = pythia.pyre.inventory.int("float_precision", default=6, validator=pythia.pyre.inventory.greater(0))
     precision.meta['tip'] = "Precision of floating point values in output."
-
-    # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="datawritervtk"):
         """Constructor.
         """
         DataWriter.__init__(self, name)
         ModuleDataWriterVTK.__init__(self)
-        return
 
     def preinitialize(self):
         """Initialize writer.
@@ -61,7 +62,6 @@ class DataWriterVTK(DataWriter, ModuleDataWriterVTK):
         ModuleDataWriterVTK.timeFormat(self, self.timeFormat)
         ModuleDataWriterVTK.timeConstant(self, self.timeConstant.value)
         ModuleDataWriterVTK.precision(self, self.precision)
-        return
 
     def setFilename(self, outputDir, simName, label):
         """Set filename from default options and inventory. If filename is given in inventory, use it,
@@ -70,17 +70,11 @@ class DataWriterVTK(DataWriter, ModuleDataWriterVTK):
         filename = self.filename or DataWriter.mkfilename(outputDir, simName, label, "vtk")
         self.mkpath(filename)
         ModuleDataWriterVTK.filename(self, filename)
-        return
-
-    # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
         """Configure object.
         """
         DataWriter._configure(self)
-        return
-
-    # PRIVATE METHODS /////////////////////////////////////////////////////
 
     def _createModuleObj(self):
         """Create handle to C++ object."""

@@ -24,26 +24,42 @@ from .meshio import OutputPhysics as ModuleOutputPhysics
 
 
 class OutputPhysics(OutputObserver, ModuleOutputPhysics):
-    """Python object for managing output over points with constrained degrees of freedom.
-
-    Factory: observer
     """
+    Output for objects implementing physics (materials and boundary conditions).
+
+    :::{tip}
+    Most output information can be configured at the problem level using the [`ProblemDefaults` Component](../problems/ProblemDefaults.md).
+    :::
+
+    Implements `OutputObserver`.
+    """
+    DOC_CONFIG = {
+        "cfg": """
+            [observer]
+            # Skip two time steps between output.
+            output_trigger = pylith.meshio.OutputTriggerStep
+            output_trigger.num_skip = 2
+
+            # Write output to HDF5 file with name `boundary_xpos.h5`.
+            writer = pylith.meshio.DataWriterHDF5
+            writer.filename = boundary_xpos.h5
+
+            output_basis_order = 1
+        """
+    }
 
     import pythia.pyre.inventory
 
     infoFields = pythia.pyre.inventory.list("info_fields", default=["all"])
-    infoFields.meta['tip'] = "Names of info fields to output."
+    infoFields.meta['tip'] = "Names of auxiliary subfields to include in info output."
 
     dataFields = pythia.pyre.inventory.list("data_fields", default=["all"])
-    dataFields.meta['tip'] = "Names of data fields to output."
-
-    # PUBLIC METHODS /////////////////////////////////////////////////////
+    dataFields.meta['tip'] = "Names of solution, auxiliary, and derived subfields to include in data output."
 
     def __init__(self, name="outputphysics"):
         """Constructor.
         """
         OutputObserver.__init__(self, name)
-        return
 
     def preinitialize(self, problem, identifier):
         """Do mimimal initialization.
@@ -53,15 +69,11 @@ class OutputPhysics(OutputObserver, ModuleOutputPhysics):
         ModuleOutputPhysics.setDataFields(self, self.dataFields)
 
         self.writer.setFilename(problem.defaults.outputDir, problem.defaults.simName, identifier)
-        return
-
-    # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _createModuleObj(self):
         """Create handle to C++ object.
         """
         ModuleOutputPhysics.__init__(self)
-        return
 
 
 # FACTORIES ////////////////////////////////////////////////////////////

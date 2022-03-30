@@ -12,11 +12,6 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-# @file pythia.pyre/meshio/DataWriterHDF5Ext.py
-#
-# @brief Python object for writing finite-element data to HDF5 file
-# with datasets stored in external binary files.
 
 from .DataWriter import DataWriter
 from .meshio import DataWriterHDF5Ext as ModuleDataWriterHDF5Ext
@@ -24,30 +19,31 @@ from .meshio import DataWriterHDF5Ext as ModuleDataWriterHDF5Ext
 
 class DataWriterHDF5Ext(DataWriter, ModuleDataWriterHDF5Ext):
     """
-    @brief Python object for writing finite-element data to HDF5 file
-    with datasets stored in external binary files.
+    Writer of solution, auxiliary, and derived subfields to an HDF5 file with datasets stored in external binary files.
 
-    FACTORY: data_writer
+    Implements `DataWriter`.
     """
+    DOC_CONFIG = {
+        "cfg": """
+            [data_writer]
+            filename = domain_solution.h5
+        """
+    }
 
     import pythia.pyre.inventory
 
     filename = pythia.pyre.inventory.str("filename", default="")
     filename.meta['tip'] = "Name of HDF5 file."
 
-    # PUBLIC METHODS /////////////////////////////////////////////////////
-
     def __init__(self, name="datawriterhdf5"):
         """Constructor.
         """
         DataWriter.__init__(self, name)
-        return
 
     def preinitialize(self):
         """Initialize writer.
         """
         DataWriter.preinitialize(self)
-        return
 
     def setFilename(self, outputDir, simName, label):
         """Set filename from default options and inventory. If filename is given in inventory, use it,
@@ -56,7 +52,6 @@ class DataWriterHDF5Ext(DataWriter, ModuleDataWriterHDF5Ext):
         filename = self.filename or DataWriter.mkfilename(outputDir, simName, label, "h5")
         self.mkpath(filename)
         ModuleDataWriterHDF5Ext.filename(self, filename)
-        return
 
     def close(self):
         """Close writer.
@@ -71,14 +66,10 @@ class DataWriterHDF5Ext(DataWriter, ModuleDataWriterHDF5Ext):
             xdmf = Xdmf()
             xdmf.write(ModuleDataWriterHDF5Ext.hdf5Filename(
                 self), verbose=False)
-        return
-
-    # PRIVATE METHODS /////////////////////////////////////////////////////
 
     def _createModuleObj(self):
         """Create handle to C++ object."""
         ModuleDataWriterHDF5Ext.__init__(self)
-        return
 
 
 # FACTORIES ////////////////////////////////////////////////////////////

@@ -12,38 +12,25 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-# @file pylith/meshio/OutputTrigger.py
-#
-# @brief Python abstract base class for defining how often output is written.
-#
-# Factory: output_trigger
 
 from pylith.utils.PetscComponent import PetscComponent
 from .meshio import OutputTrigger as ModuleOutputTrigger
 
 
 class OutputTrigger(PetscComponent, ModuleOutputTrigger):
-    """Python abstract base class for managing how often output is written.
-
-    FACTORY: output_trigger
     """
-
-    # PUBLIC METHODS /////////////////////////////////////////////////////
+    Abstract base class for managing how often output is written.
+    """
 
     def __init__(self, name="outputtrigger"):
         """Constructor.
         """
         PetscComponent.__init__(self, name, facility="outputtrigger")
-        return
-
-    # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
         """Set members based using inventory.
         """
         PetscComponent._configure(self)
-        return
 
 
 # End of file
