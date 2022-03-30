@@ -181,19 +181,19 @@ pylith::feassemble::TestIntegratorDomain::testPoststep(void) {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Test updateState().
+// Test setState().
 void
-pylith::feassemble::TestIntegratorDomain::testUpdateState(void) {
+pylith::feassemble::TestIntegratorDomain::testSetState(void) {
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(_integrator);
     CPPUNIT_ASSERT(_data);
-    _integrator->updateState(_data->t);
+    _integrator->setState(_data->t);
 
-    // Nothing to check. updateState() should not do anything.
+    // Nothing to check. setState() should not do anything.
 
     PYLITH_METHOD_END;
-} // testUpdateState
+} // testSetState
 
 
 // ---------------------------------------------------------------------------------------------------------------------
