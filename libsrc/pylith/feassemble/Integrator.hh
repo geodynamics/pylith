@@ -43,6 +43,7 @@ public:
         LHS=0,
         RHS=1,
         LHS_LUMPED_INV=2,
+        LHS_WEIGHTED=3,
     };
 
     enum NewJacobianTriggers {
