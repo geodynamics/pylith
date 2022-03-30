@@ -154,10 +154,10 @@ pylith::feassemble::IntegratorBoundary::setKernelsResidual(const std::vector<Res
                                          kernels[i].r0, kernels[i].r1);PYLITH_CHECK_ERROR(err);
 
         switch (kernels[i].part) {
-        case RESIDUAL_LHS:
+        case LHS:
             _hasLHSResidual = true;
             break;
-        case RESIDUAL_RHS:
+        case RHS:
             _hasRHSResidual = true;
             break;
         default:
@@ -193,7 +193,8 @@ pylith::feassemble::IntegratorBoundary::initialize(const pylith::topology::Field
     PetscDM dmSoln = solution.getDM();assert(dmSoln);
     PetscDMLabel dmLabel = NULL;
     err = DMGetLabel(dmSoln, _labelName.c_str(), &dmLabel);PYLITH_CHECK_ERROR(err);
-    err = DMSetAuxiliaryVec(dmSoln, dmLabel, _labelValue, _auxiliaryField->getLocalVector());PYLITH_CHECK_ERROR(err);
+    err = DMSetAuxiliaryVec(dmSoln, dmLabel, _labelValue, LHS, _auxiliaryField->getLocalVector());PYLITH_CHECK_ERROR(err);
+    err = DMSetAuxiliaryVec(dmSoln, dmLabel, _labelValue, RHS, _auxiliaryField->getLocalVector());PYLITH_CHECK_ERROR(err);
 
     pythia::journal::debug_t debug(GenericComponent::getName());
     if (debug.state()) {
@@ -252,7 +253,7 @@ pylith::feassemble::IntegratorBoundary::computeRHSResidual(pylith::topology::Fie
     key.label = dsLabel.label();
     key.value = dsLabel.value();
     key.field = solution->getSubfieldInfo(_subfieldName.c_str()).index;
-    key.part = pylith::feassemble::Integrator::RESIDUAL_RHS;
+    key.part = pylith::feassemble::Integrator::RHS;
 
     PetscErrorCode err;
     assert(solution->getLocalVector());
@@ -289,7 +290,7 @@ pylith::feassemble::IntegratorBoundary::computeLHSResidual(pylith::topology::Fie
     key.label = dsLabel.label();
     key.value = dsLabel.value();
     key.field = solution->getSubfieldInfo(_subfieldName.c_str()).index;
-    key.part = pylith::feassemble::Integrator::RESIDUAL_LHS;
+    key.part = pylith::feassemble::Integrator::LHS;
 
     PetscErrorCode err;
     assert(solution->getLocalVector());

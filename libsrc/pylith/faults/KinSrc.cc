@@ -167,7 +167,8 @@ pylith::faults::KinSrc::updateSlip(PetscVec slipLocalVec,
     PetscDM faultAuxiliaryDM = faultAuxiliaryField->getDM();
     PetscDMLabel dmLabel = NULL;
     PetscInt labelValue = 0;
-    err = DMSetAuxiliaryVec(faultAuxiliaryDM, dmLabel, labelValue,
+    const PetscInt part = 0;
+    err = DMSetAuxiliaryVec(faultAuxiliaryDM, dmLabel, labelValue, part,
                             _auxiliaryField->getLocalVector());PYLITH_CHECK_ERROR(err);
     err = DMProjectFieldLocal(faultAuxiliaryDM, t, slipLocalVec, subfieldKernels, INSERT_VALUES,
                               slipLocalVec);PYLITH_CHECK_ERROR(err);
@@ -204,7 +205,8 @@ pylith::faults::KinSrc::updateSlipRate(PetscVec slipRateLocalVec,
     PetscDM faultAuxiliaryDM = faultAuxiliaryField->getDM();
     PetscDMLabel dmLabel = NULL;
     PetscInt labelValue = 0;
-    err = DMSetAuxiliaryVec(faultAuxiliaryDM, dmLabel, labelValue,
+    const PetscInt part = 0;
+    err = DMSetAuxiliaryVec(faultAuxiliaryDM, dmLabel, labelValue, part,
                             _auxiliaryField->getLocalVector());PYLITH_CHECK_ERROR(err);
     err = DMProjectFieldLocal(faultAuxiliaryDM, t, slipRateLocalVec, subfieldKernels, INSERT_VALUES,
                               slipRateLocalVec);PYLITH_CHECK_ERROR(err);

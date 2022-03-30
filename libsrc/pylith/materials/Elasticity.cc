@@ -44,7 +44,7 @@
 typedef pylith::feassemble::IntegratorDomain::ResidualKernels ResidualKernels;
 typedef pylith::feassemble::IntegratorDomain::JacobianKernels JacobianKernels;
 typedef pylith::feassemble::IntegratorDomain::ProjectKernels ProjectKernels;
-typedef pylith::feassemble::Integrator::JacobianPart JacobianPart;
+typedef pylith::feassemble::Integrator::EquationPart EquationPart;
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
@@ -300,7 +300,7 @@ pylith::materials::Elasticity::_setKernelsResidual(pylith::feassemble::Integrato
         const PetscPointFunc f1u = r1;
 
         kernels.resize(1);
-        kernels[0] = ResidualKernels("displacement", pylith::feassemble::Integrator::RESIDUAL_LHS, f0u, f1u);
+        kernels[0] = ResidualKernels("displacement", pylith::feassemble::Integrator::LHS, f0u, f1u);
         break;
     } // QUASISTATIC
     case DYNAMIC_IMEX:
@@ -318,10 +318,10 @@ pylith::materials::Elasticity::_setKernelsResidual(pylith::feassemble::Integrato
         const PetscPointFunc g1v = r1;
 
         kernels.resize(4);
-        kernels[0] = ResidualKernels("displacement", pylith::feassemble::Integrator::RESIDUAL_LHS, f0u, f1u);
-        kernels[1] = ResidualKernels("displacement", pylith::feassemble::Integrator::RESIDUAL_RHS, g0u, g1u);
-        kernels[2] = ResidualKernels("velocity", pylith::feassemble::Integrator::RESIDUAL_LHS, f0v, f1v);
-        kernels[3] = ResidualKernels("velocity", pylith::feassemble::Integrator::RESIDUAL_RHS, g0v, g1v);
+        kernels[0] = ResidualKernels("displacement", pylith::feassemble::Integrator::LHS, f0u, f1u);
+        kernels[1] = ResidualKernels("displacement", pylith::feassemble::Integrator::RHS, g0u, g1u);
+        kernels[2] = ResidualKernels("velocity", pylith::feassemble::Integrator::LHS, f0v, f1v);
+        kernels[3] = ResidualKernels("velocity", pylith::feassemble::Integrator::RHS, g0v, g1v);
         break;
     } // DYNAMIC
     default:
@@ -358,8 +358,8 @@ pylith::materials::Elasticity::_setKernelsJacobian(pylith::feassemble::Integrato
         integrator->setLHSJacobianTriggers(_rheology->getLHSJacobianTriggers());
 
         kernels.resize(1);
-        const JacobianPart jacobianPart = pylith::feassemble::Integrator::JACOBIAN_LHS;
-        kernels[0] = JacobianKernels("displacement", "displacement", jacobianPart, Jf0uu, Jf1uu, Jf2uu, Jf3uu);
+        const EquationPart equationPart = pylith::feassemble::Integrator::LHS;
+        kernels[0] = JacobianKernels("displacement", "displacement", equationPart, Jf0uu, Jf1uu, Jf2uu, Jf3uu);
         break;
     } // QUASISTATIC
     case DYNAMIC:
@@ -387,11 +387,11 @@ pylith::materials::Elasticity::_setKernelsJacobian(pylith::feassemble::Integrato
         integrator->setLHSJacobianTriggers(pylith::feassemble::Integrator::NEW_JACOBIAN_TIME_STEP_CHANGE);
 
         kernels.resize(4);
-        const JacobianPart jacobianPart = pylith::feassemble::Integrator::JACOBIAN_LHS_LUMPED_INV;
-        kernels[0] = JacobianKernels("displacement", "displacement", jacobianPart, Jf0uu, Jf1uu, Jf2uu, Jf3uu);
-        kernels[1] = JacobianKernels("displacement", "velocity", jacobianPart, Jf0uv, Jf1uv, Jf2uv, Jf3uv);
-        kernels[2] = JacobianKernels("velocity", "displacement", jacobianPart, Jf0vu, Jf1vu, Jf2vu, Jf3vu);
-        kernels[3] = JacobianKernels("velocity", "velocity", jacobianPart, Jf0vv, Jf1vv, Jf2vv, Jf3vv);
+        const EquationPart equationPart = pylith::feassemble::Integrator::LHS_LUMPED_INV;
+        kernels[0] = JacobianKernels("displacement", "displacement", equationPart, Jf0uu, Jf1uu, Jf2uu, Jf3uu);
+        kernels[1] = JacobianKernels("displacement", "velocity", equationPart, Jf0uv, Jf1uv, Jf2uv, Jf3uv);
+        kernels[2] = JacobianKernels("velocity", "displacement", equationPart, Jf0vu, Jf1vu, Jf2vu, Jf3vu);
+        kernels[3] = JacobianKernels("velocity", "velocity", equationPart, Jf0vv, Jf1vv, Jf2vv, Jf3vv);
         break;
     } // DYNAMIC_IMEX
     default:

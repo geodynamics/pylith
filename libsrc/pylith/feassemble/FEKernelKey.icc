@@ -64,43 +64,20 @@ pylith::feassemble::FEKernelKey::create(PetscWeakForm weakForm,
 
 
 // ------------------------------------------------------------------------------------------------
-// Get PETSc weak form key for residual.
-inline
-PetscFormKey
-pylith::feassemble::FEKernelKey::getPetscKey(const pylith::topology::Field& solution,
-                                             pylith::feassemble::Integrator::ResidualPart residualPart,
-                                             const char* field) const {
-    PetscDM dmSoln = solution.getDM();
-    PetscDMLabel label = NULL;
-    PetscErrorCode err = DMGetLabel(dmSoln, _name.c_str(), &label);PYLITH_CHECK_ERROR(err);
-    PetscInt fieldIndex = -1;
-    if (field) {
-        fieldIndex = solution.getSubfieldInfo(field).index;assert(fieldIndex >= 0);
-    } // if
-
-    PetscFormKey weakFormKey;
-    weakFormKey.label = label;
-    weakFormKey.value = _value;
-    weakFormKey.part = residualPart;
-    weakFormKey.field = fieldIndex;
-
-    return weakFormKey;
-} // petscKey
-
-
-// ------------------------------------------------------------------------------------------------
 // Get PETSc weak form key for Jacobian.
 inline
 PetscFormKey
 pylith::feassemble::FEKernelKey::getPetscKey(const pylith::topology::Field& solution,
-                                             pylith::feassemble::Integrator::JacobianPart jacobianPart,
+                                             pylith::feassemble::Integrator::EquationPart equationPart,
                                              const char* fieldTrial,
                                              const char* fieldBasis) const {
     PetscDM dmSoln = solution.getDM();
     PetscDMLabel label = NULL;
     PetscErrorCode err = DMGetLabel(dmSoln, _name.c_str(), &label);PYLITH_CHECK_ERROR(err);
     PetscInt fieldIndex = -1;
-    if (fieldTrial && fieldBasis) {
+    if (fieldTrial && !fieldBasis) {
+        fieldIndex = solution.getSubfieldInfo(fieldTrial).index;assert(fieldIndex >= 0);
+    } else if (fieldTrial && fieldBasis) {
         PetscInt i_field = -1;
         PetscInt j_field = -1;
         PetscInt numFields = 0;
@@ -113,7 +90,7 @@ pylith::feassemble::FEKernelKey::getPetscKey(const pylith::topology::Field& solu
     PetscFormKey weakFormKey;
     weakFormKey.label = label;
     weakFormKey.value = _value;
-    weakFormKey.part = jacobianPart;
+    weakFormKey.part = equationPart;
     weakFormKey.field = fieldIndex;
 
     return weakFormKey;

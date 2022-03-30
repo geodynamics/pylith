@@ -39,19 +39,19 @@ public:
     /// Kernels (point-wise functions) for residual.
     struct ResidualKernels {
         std::string subfield; ///< Name of subfield.
-        ResidualPart part; ///< Residual part (LHS or RHS).
+        EquationPart part; ///< Residual part (LHS or RHS).
         PetscPointFunc r0; ///< f0 (RHS) or g0 (LHS) function.
         PetscPointFunc r1; ///< f1 (RHS) or g1 (LHS) function.
 
         ResidualKernels(void) :
             subfield(""),
-            part(RESIDUAL_LHS),
+            part(LHS),
             r0(NULL),
             r1(NULL) {}
 
 
         ResidualKernels(const char* subfieldValue,
-                        const ResidualPart partValue,
+                        const EquationPart partValue,
                         PetscPointFunc r0Value,
                         PetscPointFunc r1Value) :
             subfield(subfieldValue),
@@ -66,7 +66,7 @@ public:
     struct JacobianKernels {
         std::string subfieldTrial; ///< Name of subfield associated with trial function (row in Jacobian).
         std::string subfieldBasis; ///< Name of subfield associated with basis function (column in Jacobian).
-        JacobianPart part; ///< Jacobian part (LHS or LHS lumped inverse).
+        EquationPart part; ///< Jacobian part (LHS or LHS lumped inverse).
         PetscPointJac j0; ///< J0 function.
         PetscPointJac j1; ///< J1 function.
         PetscPointJac j2; ///< J2 function.
@@ -75,7 +75,7 @@ public:
         JacobianKernels(void) :
             subfieldTrial(""),
             subfieldBasis(""),
-            part(JACOBIAN_LHS),
+            part(LHS),
             j0(NULL),
             j1(NULL),
             j2(NULL),
@@ -84,7 +84,7 @@ public:
 
         JacobianKernels(const char* subfieldTrialValue,
                         const char* subfieldBasisValue,
-                        JacobianPart partValue,
+                        EquationPart partValue,
                         PetscPointJac j0Value,
                         PetscPointJac j1Value,
                         PetscPointJac j2Value,

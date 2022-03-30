@@ -40,19 +40,19 @@ public:
     /// Kernels (point-wise functions) for residual.
     struct ResidualKernels {
         std::string subfield; ///< Name of subfield
-        ResidualPart part; ///< Residual part (LHS or RHS).
+        EquationPart part; ///< Residual part (LHS or RHS).
         PetscBdPointFunc r0; ///< f0 (RHS) or g0 (LHS) function.
         PetscBdPointFunc r1; ///< f1 (RHS) or g1 (LHS) function.
 
         ResidualKernels(void) :
             subfield(""),
-            part(pylith::feassemble::Integrator::RESIDUAL_LHS),
+            part(pylith::feassemble::Integrator::LHS),
             r0(NULL),
             r1(NULL) {}
 
 
         ResidualKernels(const char* subfieldValue,
-                        const ResidualPart partValue,
+                        const EquationPart partValue,
                         PetscBdPointFunc r0Value,
                         PetscBdPointFunc r1Value) :
             subfield(subfieldValue),

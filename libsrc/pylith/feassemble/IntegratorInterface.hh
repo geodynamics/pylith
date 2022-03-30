@@ -49,21 +49,21 @@ public:
     /// Kernels (pointwise functions) for residual.
     struct ResidualKernels {
         std::string subfield; ///< Name of subfield
-        ResidualPart part; ///< Residual part (LHS or RHS).
+        EquationPart part; ///< Residual part (LHS or RHS).
         FaceEnum face; ///< Face domain.
         PetscBdPointFunc r0; ///< f0 (RHS) or g0 (LHS) function.
         PetscBdPointFunc r1; ///< f1 (RHS) or g1 (LHS) function.
 
         ResidualKernels(void) :
             subfield(""),
-            part(pylith::feassemble::Integrator::RESIDUAL_LHS),
+            part(pylith::feassemble::Integrator::LHS),
             face(FAULT_FACE),
             r0(NULL),
             r1(NULL) {}
 
 
         ResidualKernels(const char* subfieldValue,
-                        const ResidualPart partValue,
+                        const EquationPart partValue,
                         FaceEnum faceValue,
                         PetscBdPointFunc r0Value,
                         PetscBdPointFunc r1Value) :
@@ -80,7 +80,7 @@ public:
     struct JacobianKernels {
         std::string subfieldTrial; ///< Name of subfield associated with trial function (row in Jacobian).
         std::string subfieldBasis; ///< Name of subfield associated with basis function (column in Jacobian).
-        JacobianPart part; ///< Jacobian part (LHS or LHS lumped inverse).
+        EquationPart part; ///< Jacobian part (LHS or LHS lumped inverse).
         FaceEnum face; ///< Integration domain.
         PetscBdPointJac j0; ///< J0 function.
         PetscBdPointJac j1; ///< J1 function.
@@ -90,7 +90,7 @@ public:
         JacobianKernels(void) :
             subfieldTrial(""),
             subfieldBasis(""),
-            part(JACOBIAN_LHS),
+            part(LHS),
             face(FAULT_FACE),
             j0(NULL),
             j1(NULL),
@@ -100,7 +100,7 @@ public:
 
         JacobianKernels(const char* subfieldTrialValue,
                         const char* subfieldBasisValue,
-                        JacobianPart partValue,
+                        EquationPart partValue,
                         FaceEnum faceValue,
                         PetscBdPointJac j0Value,
                         PetscBdPointJac j1Value,

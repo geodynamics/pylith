@@ -39,14 +39,10 @@ class pylith::feassemble::Integrator : public pylith::feassemble::PhysicsImpleme
     // PUBLIC ENUM /////////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
-    enum ResidualPart {
-        RESIDUAL_LHS=0, // LHS residual.
-        RESIDUAL_RHS=1, // RHS residual.
-    };
-
-    enum JacobianPart {
-        JACOBIAN_LHS=0, // LHS Jacobian.
-        JACOBIAN_LHS_LUMPED_INV=1, // Inverse of LHS lumped Jacobian.
+    enum EquationPart {
+        LHS=0,
+        RHS=1,
+        LHS_LUMPED_INV=2,
     };
 
     enum NewJacobianTriggers {

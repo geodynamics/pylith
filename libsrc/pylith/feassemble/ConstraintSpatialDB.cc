@@ -139,7 +139,8 @@ pylith::feassemble::ConstraintSpatialDB::setSolution(pylith::problems::Integrati
     // Set auxiliary data
     PetscDMLabel dmLabel = NULL;
     PetscInt labelValue = 0;
-    err = DMSetAuxiliaryVec(dmSoln, dmLabel, labelValue, _auxiliaryField->getLocalVector());PYLITH_CHECK_ERROR(err);
+    const PetscInt part = 0;
+    err = DMSetAuxiliaryVec(dmSoln, dmLabel, labelValue, part, _auxiliaryField->getLocalVector());PYLITH_CHECK_ERROR(err);
 
     // Get label for constraint.
     err = DMGetLabel(dmSoln, _constraintLabel.c_str(), &dmLabel);PYLITH_CHECK_ERROR(err);
