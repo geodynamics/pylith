@@ -223,7 +223,7 @@ public:
      * Should be followed by calls to subfieldsSetup() and allocate().
      *
      * @param[in] description Description for subfield.
-     * @param[in] discretization Deiscretization information for subfield.
+     * @param[in] discretization Discretization information for subfield.
      */
     void subfieldAdd(const Description& description,
                      const Discretization& discretization);
