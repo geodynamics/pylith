@@ -12,23 +12,28 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-# @file pylith/materials/AuxSubfieldsIsotropicLinearMaxwell.py
-#
-# @brief Python subfields container for isotropic, linear Maxwell
-# viscoelastic subfields.
 
 from pylith.utils.PetscComponent import PetscComponent
 
 
 class AuxSubfieldsIsotropicLinearMaxwell(PetscComponent):
-    """Python container for isotropic, linear Maxwell viscoelastic subfields.
-
-    FACTORY: auxiliary_subfields
     """
+    Auxiliary subfields associated with the isotropic linear Maxwell viscoelastic bulk rheology.
+    """
+    DOC_CONFIG = {
+        "cfg": """
+            [pylithapp.problem.materials.mat_maxwell.rheology.auxiliary_fields]
+            shear_modulus.basis_order = 1
+            bulk_modulus.basis_order = 1
+            maxwell_time.basis_order = 1
+            total_strain.basis_order = 1
+            viscous_strain.basis_order = 1
+            reference_stress.basis_order = 0
+            reference_strain.basis_order = 0
+        """
+    }
 
     import pythia.pyre.inventory
-
     from pylith.topology.Subfield import Subfield
 
     shearModulus = pythia.pyre.inventory.facility("shear_modulus", family="auxiliary_subfield", factory=Subfield)
@@ -52,19 +57,13 @@ class AuxSubfieldsIsotropicLinearMaxwell(PetscComponent):
     referenceStrain = pythia.pyre.inventory.facility("reference_strain", family="auxiliary_subfield", factory=Subfield)
     referenceStrain.meta['tip'] = "Reference strain subfield."
 
-    # PUBLIC METHODS /////////////////////////////////////////////////////
-
     def __init__(self, name="auxfieldsisotropiclinearmaxwell"):
         """Constructor.
         """
         PetscComponent.__init__(self, name, facility="auxiliary_fields")
-        return
-
-    # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
         PetscComponent._configure(self)
-        return
 
 
 # FACTORIES ////////////////////////////////////////////////////////////

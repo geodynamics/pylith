@@ -12,22 +12,14 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-# @file pylith/materials/RheologyPoroelasticity.py
-#
-# @brief Python material for isotropic, linearly poroelastic, plane
-# strain material.
-#
-# Factory: poroelasticity_rheology
 
 from pylith.utils.PetscComponent import PetscComponent
 from .materials import RheologyPoroelasticity as ModuleRheology
 
 
 class RheologyPoroelasticity(PetscComponent, ModuleRheology):
-    """Python object for bulk rheology of a poroelastic material.
-
-    FACTORY: poroelasticity_rheology
+    """
+    Abstract base class for bulk rheology of poroelastic material.
     """
 
     import pythia.pyre.inventory
@@ -35,17 +27,13 @@ class RheologyPoroelasticity(PetscComponent, ModuleRheology):
     from pylith.topology.Subfield import subfieldFactory
     from pylith.utils.EmptyBin import EmptyBin
 
-    auxiliarySubfields = pythia.pyre.inventory.facilityArray(
-        "auxiliary_subfields", itemFactory=subfieldFactory, factory=EmptyBin)
+    auxiliarySubfields = pythia.pyre.inventory.facilityArray("auxiliary_subfields", itemFactory=subfieldFactory, factory=EmptyBin)
     auxiliarySubfields.meta['tip'] = "Discretization information for physical properties and state variables."
-
-    # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="rheologyporoelasticity"):
         """Constructor.
         """
         PetscComponent.__init__(self, name, facility="rheologyporoelasticity")
-        return
 
     def preinitialize(self, problem):
         from pylith.mpi.Communicator import mpi_comm_world
@@ -55,7 +43,6 @@ class RheologyPoroelasticity(PetscComponent, ModuleRheology):
                            self.aliases[-1])
 
         self._createModuleObj()
-        return
 
     def addAuxiliarySubfields(self, material, problem):
         for subfield in self.auxiliarySubfields.components():
@@ -67,9 +54,6 @@ class RheologyPoroelasticity(PetscComponent, ModuleRheology):
                 quadOrder = subfield.quadOrder
             material.setAuxiliarySubfieldDiscretization(fieldName, subfield.basisOrder, quadOrder, subfield.dimension,
                                                         subfield.cellBasis, subfield.feSpace, subfield.isBasisContinuous)
-        return
-
-    # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _createModuleObj(self):
         """Call constructor for module object for access to C++ object.

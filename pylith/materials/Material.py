@@ -12,13 +12,6 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-# @file pylith/materials/Material.py
-#
-# @brief Python abstract base class for managing physical properties
-# and state variables of a material.
-#
-# Factory: material
 
 from pylith.problems.Physics import Physics
 from .materials import Material as ModuleMaterial
@@ -33,9 +26,8 @@ def validateLabel(value):
 
 
 class Material(Physics, ModuleMaterial):
-    """Python material property manager.
-
-    FACTORY: material
+    """
+    Abstract base class for a bulk material.
     """
 
     import pythia.pyre.inventory
@@ -50,16 +42,13 @@ class Material(Physics, ModuleMaterial):
         """Constructor.
         """
         Physics.__init__(self, name)
-        return
 
     def preinitialize(self, problem):
         """Setup material.
         """
         Physics.preinitialize(self, problem)
-
         ModuleMaterial.setMaterialId(self, self.materialId)
         ModuleMaterial.setDescriptiveLabel(self, self.label)
-        return
 
 
 # End of file

@@ -12,12 +12,6 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-# @file pylith/materials/Poroelasticity.py
-#
-# @brief Python object for solving the Poroelasticity equation.
-#
-# Factory: material
 
 from .Material import Material
 from .materials import Poroelasticity as ModulePoroelasticity
@@ -26,10 +20,25 @@ from .IsotropicLinearPoroelasticity import IsotropicLinearPoroelasticity
 
 
 class Poroelasticity(Material, ModulePoroelasticity):
-    """Python material property manager.
-
-    FACTORY: material
     """
+    Material behavior governed by the poroelasticity equation.
+
+    Implements `Material`.
+    """
+    DOC_CONFIG = {
+        "cfg": """
+            [pylithapp.problem.materials.mat_poroelastic]
+            id = 3
+            label = Upper crust poroelastic material
+            use_body_force = True
+            use_source_density = False
+            use_state_variables = True
+            bulk_rheology = pylith.materials.IsotropicLinearPoroelasticity
+
+            auxiliary_subfields.density.basis_order = 0
+            auxiliary_subfields.body_force.basis_order = 0
+        """
+    }
 
     import pythia.pyre.inventory
 
@@ -39,21 +48,16 @@ class Poroelasticity(Material, ModulePoroelasticity):
     useSourceDensity = pythia.pyre.inventory.bool("use_source_density", default=False)
     useSourceDensity.meta['tip'] = "Include source_density term in Poroelasticity equation."
 
-    useStateVars = pythia.pyre.inventory.bool(
-        "use_state_variables", default=False)
+    useStateVars = pythia.pyre.inventory.bool("use_state_variables", default=False)
     useStateVars.meta['tip'] = "Update porosity state variable using compaction formulation."
 
-    rheology = pythia.pyre.inventory.facility(
-        "bulk_rheology", family="poroelasticity_rheology", factory=IsotropicLinearPoroelasticity)
+    rheology = pythia.pyre.inventory.facility("bulk_rheology", family="poroelasticity_rheology", factory=IsotropicLinearPoroelasticity)
     rheology.meta['tip'] = "Bulk rheology for poroelastic material."
-
-    # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="poroelasticity"):
         """Constructor.
         """
         Material.__init__(self, name)
-        return
 
     def _defaults(self):
         from .AuxSubfieldsPoroelasticity import AuxSubfieldsPoroelasticity
@@ -73,14 +77,12 @@ class Poroelasticity(Material, ModulePoroelasticity):
         ModulePoroelasticity.useBodyForce(self, self.useBodyForce)
         ModulePoroelasticity.useSourceDensity(self, self.useSourceDensity)
         ModulePoroelasticity.useStateVars(self, self.useStateVars)        
-        return
 
     def _createModuleObj(self):
         """Create handle to C++ Poroelasticity.
         """
         ModulePoroelasticity.__init__(self)
         ModulePoroelasticity.setBulkRheology(self, self.rheology)  # Material sets auxiliary db in rheology.
-        return
 
 
 # Factories

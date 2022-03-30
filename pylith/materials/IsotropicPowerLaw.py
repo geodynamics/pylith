@@ -13,36 +13,36 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-
-# @file pylith/materials/IsotropicPowerLaw.py
-##
-# @brief Python material for isotropic power-law viscoelastic material.
-##
-# Factory: elasticity_rheology
 
 from .RheologyElasticity import RheologyElasticity
 from .materials import IsotropicPowerLaw as ModuleLinearElasticity
 
 
 class IsotropicPowerLaw(RheologyElasticity, ModuleLinearElasticity):
-    """Python material for isotropic power-law viscoelastic material.
-
-    FACTORY: elasticity_rheology
     """
+    Isotropic power law viscoelastic bulk rheology.
+
+    Implements `RheologyElasticity`.
+    """
+    DOC_CONFIG = {
+        "cfg": """
+            [pylithapp.problem.materials.mat_powerlaw.rheology]
+            use_reference_state = False
+
+            auxiliary_subfields.shear_modulus.basis_order = 0
+            auxiliary_subfields.bulk_modulus.basis_order = 0
+        """
+    }
 
     import pythia.pyre.inventory
 
     useReferenceState = pythia.pyre.inventory.bool("use_reference_state", default=False)
     useReferenceState.meta['tip'] = "Use reference stress/strain state."
 
-    # PUBLIC METHODS /////////////////////////////////////////////////////
-
     def __init__(self, name="isotropicpowerlaw"):
         """Constructor.
         """
         RheologyElasticity.__init__(self, name)
-        return
 
     def _defaults(self):
         from .AuxSubfieldsIsotropicPowerLaw import AuxSubfieldsIsotropicPowerLaw
@@ -50,12 +50,7 @@ class IsotropicPowerLaw(RheologyElasticity, ModuleLinearElasticity):
 
     def preinitialize(self, problem):
         RheologyElasticity.preinitialize(self, problem)
-
         ModuleLinearElasticity.useReferenceState(self, self.useReferenceState)
-
-        return
-
-    # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _createModuleObj(self):
         """Call constructor for module object for access to C++ object.

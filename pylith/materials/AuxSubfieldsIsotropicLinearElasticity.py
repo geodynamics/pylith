@@ -12,19 +12,29 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-# @file pylith/materials/AuxSubfieldsIsotropicLinearElasticity.py
-#
-# @brief Python container for isotropic, linear elasticity subfields.
 
 from pylith.utils.PetscComponent import PetscComponent
 
 
 class AuxSubfieldsIsotropicLinearElasticity(PetscComponent):
-    """Python container for isotropic, linear elasticity subfields.
-
-    FACTORY: auxiliary_subfields
     """
+    Auxiliary subfields associated with the isotropic linear elastic bulk rheology.
+
+    :::{important}
+    The auxiliary subfields (internal representation of material properties) do not necessarily match the values in the spatial database.
+    For example, the spatial database uses density, Vp, and Vs instead of density, shear modulus, and bulk modulus because that is how they are usually characterized in seismic velocity models.
+    PyLith converts the values provided by the user in a spatial database to the internal representation stored in the auxiliary field.
+    :::
+    """
+    DOC_CONFIG = {
+        "cfg": """
+            [pylithapp.problem.materials.mat_elastic.rheology.auxiliary_fields]
+            shear_modulus.basis_order = 1
+            bulk_modulus.basis_order = 1
+            reference_stress.basis_order = 0
+            reference_strain.basis_order = 0
+        """
+    }
 
     import pythia.pyre.inventory
 
@@ -42,19 +52,13 @@ class AuxSubfieldsIsotropicLinearElasticity(PetscComponent):
     referenceStrain = pythia.pyre.inventory.facility("reference_strain", family="auxiliary_subfield", factory=Subfield)
     referenceStrain.meta['tip'] = "Reference strain subfield."
 
-    # PUBLIC METHODS /////////////////////////////////////////////////////
-
     def __init__(self, name="auxsubfieldsisotropiclinearelasticity"):
         """Constructor.
         """
         PetscComponent.__init__(self, name, facility="auxiliary_subfields")
-        return
-
-    # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
         PetscComponent._configure(self)
-        return
 
 
 # FACTORIES ////////////////////////////////////////////////////////////
