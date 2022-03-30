@@ -22,7 +22,8 @@
 
 #include "pylith/feassemble/UpdateStateVars.hh" // HOLDSA UpdateStateVars
 #include "pylith/feassemble/DSLabelAccess.hh" // USES DSLabelAccess
-#include "pylith/problems/IntegrationData.hh" // IntegrattionData
+#include "pylith/problems/Physics.hh" // USES Physics
+#include "pylith/problems/IntegrationData.hh" // USES IntegrationData
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES createSubdomainMesh()
 #include "pylith/topology/Field.hh" // USES Field
@@ -73,7 +74,8 @@ extern "C" PetscErrorCode DMPlexComputeJacobian_Action_Internal(PetscDM,
 pylith::feassemble::IntegratorDomain::IntegratorDomain(pylith::problems::Physics* const physics) :
     Integrator(physics),
     _materialMesh(NULL),
-    _updateState(NULL) {
+    _updateState(NULL),
+    _jacobianValues(NULL) {
     GenericComponent::setName("integratordomain");
 } // constructor
 
@@ -95,6 +97,7 @@ pylith::feassemble::IntegratorDomain::deallocate(void) {
 
     delete _materialMesh;_materialMesh = NULL;
     delete _updateState;_updateState = NULL;
+    delete _jacobianValues;_jacobianValues = NULL;
 
     PYLITH_METHOD_END;
 } // deallocate
@@ -180,7 +183,18 @@ pylith::feassemble::IntegratorDomain::setKernelsJacobian(const std::vector<Jacob
     } // if
 
     PYLITH_METHOD_END;
-} // setKernelsLHSJacobian
+} // setKernelsJacobian
+
+
+// ------------------------------------------------------------------------------------------------
+// Set kernels for Jacobian without finite-element integration.
+void
+pylith::feassemble::IntegratorDomain::setKernelsJacobian(const std::vector<pylith::feassemble::JacobianValues::JacobianKernel>& kernelsJacobian,
+                                                         const std::vector<pylith::feassemble::JacobianValues::JacobianKernel>& kernelsPrecond) {
+    delete _jacobianValues;_jacobianValues = new pylith::feassemble::JacobianValues();assert(_jacobianValues);
+    _jacobianValues->setKernels(kernelsJacobian, kernelsPrecond);
+    _hasLHSJacobian = true;
+} // setJacobianValues
 
 
 // ------------------------------------------------------------------------------------------------
@@ -242,6 +256,31 @@ pylith::feassemble::IntegratorDomain::initialize(const pylith::topology::Field& 
 
     PYLITH_METHOD_END;
 } // initialize
+
+
+// ------------------------------------------------------------------------------------------------
+// Set auxiliary field values for current time.
+void
+pylith::feassemble::IntegratorDomain::setState(const PylithReal t) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("setState(t="<<t<<")");
+
+    Integrator::setState(t);
+
+    assert(_physics);
+    _physics->updateAuxiliaryField(_auxiliaryField, t);
+
+    pythia::journal::debug_t debug(GenericComponent::getName());
+    if (debug.state()) {
+        assert(_auxiliaryField);
+        PYLITH_JOURNAL_DEBUG("IntegratorInterface component '" << GenericComponent::getName() << "' for '"
+                                                               <<_physics->getIdentifier()
+                                                               << "': viewing auxiliary field.");
+        _auxiliaryField->view("IntegratorInterface auxiliary field", pylith::topology::Field::VIEW_ALL);
+    } // if
+
+    PYLITH_METHOD_END;
+} // setState
 
 
 // ------------------------------------------------------------------------------------------------
@@ -348,6 +387,16 @@ pylith::feassemble::IntegratorDomain::computeLHSJacobian(PetscMat jacobianMat,
     assert(precondMat);
     err = DMPlexComputeJacobian_Internal(dsLabel.dm(), key, dsLabel.cellsIS(), t, s_tshift, solution->getLocalVector(),
                                          solutionDot->getLocalVector(), jacobianMat, precondMat, NULL);PYLITH_CHECK_ERROR(err);
+
+    if (_jacobianValues) {
+        _jacobianValues->computeLHSJacobian(jacobianMat, precondMat, t, dt, s_tshift, *solution, dsLabel);
+        err = MatAssemblyBegin(jacobianMat, MAT_FINAL_ASSEMBLY);PYLITH_CHECK_ERROR(err);
+        err = MatAssemblyEnd(jacobianMat, MAT_FINAL_ASSEMBLY);PYLITH_CHECK_ERROR(err);
+        if (precondMat && ( precondMat != jacobianMat) ) {
+            err = MatAssemblyBegin(precondMat, MAT_FINAL_ASSEMBLY);PYLITH_CHECK_ERROR(err);
+            err = MatAssemblyEnd(precondMat, MAT_FINAL_ASSEMBLY);PYLITH_CHECK_ERROR(err);
+        } // if
+    } // if
 
     PYLITH_METHOD_END;
 } // computeLHSJacobian

@@ -28,6 +28,7 @@
 #include "feassemblefwd.hh" // forward declarations
 
 #include "pylith/feassemble/Integrator.hh" // ISA Integrator
+#include "pylith/feassemble/JacobianValues.hh" // USES JacobianValues::JacobianKernels
 #include "pylith/utils/arrayfwd.hh" // HASA std::vector
 
 class pylith::feassemble::IntegratorDomain : public pylith::feassemble::Integrator {
@@ -139,7 +140,7 @@ public:
 
     /** Set kernels for residual.
      *
-     * @param[in] kernels Array of kernerls for computing the residual.
+     * @param[in] kernels Array of kernels for computing the residual.
      * @param[in] solution Solution field.
      */
     void setKernelsResidual(const std::vector<ResidualKernels>& kernels,
@@ -147,11 +148,20 @@ public:
 
     /** Set kernels for Jacobian.
      *
-     * @param[in] kernels Array of kernerls for computing the Jacobian.
+     * @param[in] kernels Array of kernels for computing the Jacobian.
      * @param[in] solution Solution field.
      */
     void setKernelsJacobian(const std::vector<JacobianKernels>& kernels,
                             const pylith::topology::Field& solution);
+
+    /** Set kernels for Jacobian without finite-element integration.
+     *
+     * @param[in] kernelsJacobian Array of kernels for computing the Jacobian values without integration.
+     * @param[in] kernelsPrecond Array of kernels for computing the preconditioner values without integration.
+     * @param[in] solution Solution field.
+     */
+    void setKernelsJacobian(const std::vector<pylith::feassemble::JacobianValues::JacobianKernel>& kernelsJacobian,
+                            const std::vector<pylith::feassemble::JacobianValues::JacobianKernel>& kernelsPrecond);
 
     /** Set kernels for updating state variables.
      *
@@ -170,6 +180,12 @@ public:
      * @param[in] solution Solution field (layout).
      */
     void initialize(const pylith::topology::Field& solution);
+
+    /** Set auxiliary field values for current time.
+     *
+     * @param[in] t Current time.
+     */
+    void setState(const PylithReal t);
 
     /** Compute RHS residual for G(t,s).
      *
@@ -237,6 +253,7 @@ private:
     pylith::topology::Mesh* _materialMesh; ///< Mesh associated with material.
 
     pylith::feassemble::UpdateStateVars* _updateState; ///< Data structure for layout needed to update state vars.
+    pylith::feassemble::JacobianValues* _jacobianValues; ///< Jacobian values without finite-element integration.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:

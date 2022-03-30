@@ -31,6 +31,7 @@ subpkginclude_HEADERS = \
 	IntegratorInterface.hh \
 	InterfacePatches.hh \
 	UpdateStateVars.hh \
+	JacobianValues.hh \
 	Constraint.hh \
 	ConstraintSpatialDB.hh \
 	ConstraintUserFn.hh \
