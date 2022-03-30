@@ -163,8 +163,6 @@ pylith::feassemble::Integrator::initialize(const pylith::topology::Field& soluti
 } // initialize
 
 
-#include <iostream>
-
 // ---------------------------------------------------------------------------------------------------------------------
 // Set auxiliary field values for current time.
 void
