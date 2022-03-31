@@ -22,11 +22,11 @@
 
 #include <cassert> // USES assert()
 
-// =====================================================================================================================
+// ================================================================================================
 // Generic elasticity kernels for inertia and body forces.
-// =====================================================================================================================
+// ================================================================================================
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // f0 function for elasticity equation.
 void
 pylith::fekernels::Elasticity::f0v(const PylithInt dim,
@@ -74,7 +74,7 @@ pylith::fekernels::Elasticity::f0v(const PylithInt dim,
 } // f0v
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Jf0 function for elasticity equation.
 void
 pylith::fekernels::Elasticity::Jf0vv(const PylithInt dim,
@@ -114,7 +114,7 @@ pylith::fekernels::Elasticity::Jf0vv(const PylithInt dim,
 } // Jf0vv
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // g0 function for elasticity equation with gravitational body forces.
 void
 pylith::fekernels::Elasticity::g0v_grav(const PylithInt dim,
@@ -137,10 +137,8 @@ pylith::fekernels::Elasticity::g0v_grav(const PylithInt dim,
                                         PylithScalar g0[]) {
     const PylithInt _numA = 2;
 
-    // Incoming solution fields.
-    const PylithInt i_density = 0;
-
     // Incoming auxiliary fields.
+    const PylithInt i_density = 0;
     const PylithInt i_gravityField = 1;
 
     assert(_numA <= numA);
@@ -158,7 +156,7 @@ pylith::fekernels::Elasticity::g0v_grav(const PylithInt dim,
 } // g0v_grav
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // g0 function for elasticity equation with body forces.
 void
 pylith::fekernels::Elasticity::g0v_bodyforce(const PylithInt dim,
@@ -198,7 +196,7 @@ pylith::fekernels::Elasticity::g0v_bodyforce(const PylithInt dim,
 } // g0v_bodyforce
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // g0 function for elasticity with both gravitational and body forces.
 void
 pylith::fekernels::Elasticity::g0v_gravbodyforce(const PylithInt dim,
@@ -243,11 +241,87 @@ pylith::fekernels::Elasticity::g0v_gravbodyforce(const PylithInt dim,
 } // g0v_gravbodyforce
 
 
-// =====================================================================================================================
-// Kernels for elasticity plane strain.
-// =====================================================================================================================
+// ------------------------------------------------------------------------------------------------
+// Jf0 function for dynamic slip constraint equation for negative side of the fault.
+void
+pylith::fekernels::Elasticity::Jf0ll_neg(const PylithInt dim,
+                                         const PylithInt numS,
+                                         const PylithInt numA,
+                                         const PylithInt sOff[],
+                                         const PylithInt sOff_x[],
+                                         const PylithScalar s[],
+                                         const PylithScalar s_t[],
+                                         const PylithScalar s_x[],
+                                         const PylithInt aOff[],
+                                         const PylithInt aOff_x[],
+                                         const PylithScalar a[],
+                                         const PylithScalar a_t[],
+                                         const PylithScalar a_x[],
+                                         const PylithReal t,
+                                         const PylithReal s_tshift,
+                                         const PylithScalar x[],
+                                         const PylithReal n[],
+                                         const PylithInt numConstants,
+                                         const PylithScalar constants[],
+                                         PylithScalar Jf0[]) {
+    assert(numS >= 1);
+    assert(a);
 
-// ---------------------------------------------------------------------------------------------------------------------
+    assert(numS >= 2);
+    assert(Jf0);
+    assert(sOff);
+
+    const PylithInt spaceDim = dim+1; // :KLUDGE: dim passed in is spaceDim-1
+
+    for (PylithInt i = 0; i < spaceDim; ++i) {
+        Jf0[i*spaceDim+i] += +1.0;
+    } // for
+} // Jf0ll_neg
+
+
+// ------------------------------------------------------------------------------------------------
+// Jf0 function for dynamic slip constraint equation for positive side of the fault.
+void
+pylith::fekernels::Elasticity::Jf0ll_pos(const PylithInt dim,
+                                         const PylithInt numS,
+                                         const PylithInt numA,
+                                         const PylithInt sOff[],
+                                         const PylithInt sOff_x[],
+                                         const PylithScalar s[],
+                                         const PylithScalar s_t[],
+                                         const PylithScalar s_x[],
+                                         const PylithInt aOff[],
+                                         const PylithInt aOff_x[],
+                                         const PylithScalar a[],
+                                         const PylithScalar a_t[],
+                                         const PylithScalar a_x[],
+                                         const PylithReal t,
+                                         const PylithReal s_tshift,
+                                         const PylithScalar x[],
+                                         const PylithReal n[],
+                                         const PylithInt numConstants,
+                                         const PylithScalar constants[],
+                                         PylithScalar Jf0[]) {
+    assert(numS >= 1);
+    assert(a);
+
+    assert(numS >= 2);
+    assert(Jf0);
+    assert(sOff);
+
+    const PylithInt spaceDim = dim+1; // :KLUDGE: dim passed in is spaceDim-1
+
+    for (PylithInt i = 0; i < spaceDim; ++i) {
+        Jf0[i*spaceDim+i] += +1.0;
+    } // for
+} // Jf0ll_pos
+
+
+// ================================================================================================
+// Kernels for elasticity plane strain.
+// ================================================================================================
+
+// ------------------------------------------------------------------------------------------------
 /* Calculate Cauchy strain for 2-D plane strain elasticity.
  *
  * Order of output components is xx, yy, zz, xy.
@@ -297,11 +371,11 @@ pylith::fekernels::ElasticityPlaneStrain::cauchyStrain(const PylithInt dim,
 } // cauchyStrain
 
 
-// =====================================================================================================================
+// ================================================================================================
 // Kernels for elasticity in 3D
-// =====================================================================================================================
+// ================================================================================================
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 /** Calculate Cauchy strain for 3-D elasticity.
  *
  * Order of output components is xx, yy, zz, xy, yz, xz.

@@ -28,6 +28,8 @@
 
 #include "pylith/problems/Physics.hh" // ISA Physics
 
+#include "pylith/feassemble/IntegratorInterface.hh" // USES IntegratorInterface
+
 #include <string> // HASA std::string
 
 // Material -------------------------------------------------------------
@@ -52,7 +54,13 @@
 class pylith::materials::Material : public pylith::problems::Physics {
     friend class TestMaterial; // unit testing
 
-    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
+    // PUBLIC TYPEDEFS ////////////////////////////////////////////////////////////////////////////
+public:
+
+    typedef pylith::feassemble::IntegratorInterface::ResidualKernels InterfaceResidualKernels;
+    typedef pylith::feassemble::IntegratorInterface::JacobianKernels InterfaceJacobianKernels;
+
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Default constructor.
@@ -103,7 +111,7 @@ public:
 
     /** Set gravity field.
      *
-     * @param g Gravity field.
+     * @param[in] g Gravity field.
      */
     void setGravityField(spatialdata::spatialdb::GravityField* const g);
 
@@ -115,19 +123,39 @@ public:
     virtual
     std::vector<pylith::feassemble::Constraint*> createConstraints(const pylith::topology::Field& solution);
 
-    // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
+    /** Get residual kernels for an interior interface bounding material.
+     *
+     * @param[in] solution Solution field.
+     * @param[in] face Side of interior interface for kernels.
+     * @returns Array of residual kernels for interior interface.
+     */
+    virtual
+    std::vector<InterfaceResidualKernels> getInterfaceKernelsResidual(const pylith::topology::Field& solution,
+                                                                      pylith::feassemble::IntegratorInterface::FaceEnum face) const;
+
+    /** Get Jacobian kernels for an interior interface bounding material.
+     *
+     * @param[in] solution Solution field.
+     * @param[in] face Side of interior interface for kernels.
+     * @returns Array of Jacobian kernels for interior interface.
+     */
+    virtual
+    std::vector<InterfaceJacobianKernels> getInterfaceKernelsJacobian(const pylith::topology::Field& solution,
+                                                                      pylith::feassemble::IntegratorInterface::FaceEnum face) const;
+
+    // PROTECTED MEMBERS //////////////////////////////////////////////////////////////////////////
 protected:
 
     spatialdata::spatialdb::GravityField* _gravityField; ///< Gravity field for gravitational body forces.
 
-    // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
+    // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
 private:
 
     std::string _description; ///< Descriptive label for material.
     std::string _labelName; ///< Name of label in mesh for material.
     int _labelValue; ///< Value of label in mesh for material.
 
-    // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
+    // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
 private:
 
     Material(const Material&); ///< Not implemented.

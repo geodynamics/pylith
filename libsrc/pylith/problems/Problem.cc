@@ -447,7 +447,7 @@ pylith::problems::Problem::_createIntegrators(void) {
 
     for (size_t i = 0; i < numInterfaces; ++i) {
         assert(_interfaces[i]);
-        pylith::feassemble::Integrator* integrator = _interfaces[i]->createIntegrator(*solution);
+        pylith::feassemble::Integrator* integrator = _interfaces[i]->createIntegrator(*solution, _materials);
         assert(count < maxSize);
         if (integrator) { _integrators[count++] = integrator;}
     } // for

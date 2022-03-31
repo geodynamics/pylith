@@ -29,6 +29,8 @@
 
 #include "pylith/problems/Physics.hh" // ISA Physics
 
+#include "pylith/materials/materialsfwd.hh" // USES Material
+
 #include <string> // HASA std::string
 
 class pylith::faults::FaultCohesive : public pylith::problems::Physics {
@@ -137,6 +139,16 @@ public:
      */
     void adjustTopology(pylith::topology::Mesh* const mesh);
 
+    /** Create integrator and set kernels.
+     *
+     * @param[in] solution Solution field.
+     * @param[in] materials Materials in problem.
+     * @returns Integrator if applicable, otherwise NULL.
+     */
+    virtual
+    pylith::feassemble::Integrator* createIntegrator(const pylith::topology::Field& solution,
+                                                     const std::vector<pylith::materials::Material*>& materials) = 0;
+
     // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
 protected:
 
@@ -176,6 +188,8 @@ private:
 
     FaultCohesive(const FaultCohesive&); ///< Not implemented
     const FaultCohesive& operator=(const FaultCohesive&); ///< Not implemented
+
+    pylith::feassemble::Integrator* createIntegrator(const pylith::topology::Field& solution); // Empty method
 
 }; // class FaultCohesive
 

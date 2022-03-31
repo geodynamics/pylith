@@ -38,7 +38,7 @@
 class pylith::materials::RheologyElasticity : public pylith::utils::PyreComponent {
     friend class TestIsotropicLinearElasticity; // unit testing
 
-    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Default constructor.
@@ -79,6 +79,42 @@ public:
     virtual
     PetscPointJac getKernelJacobianElasticConstants(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
 
+    /** Get f0 kernel for LHS interface residual, F(t,s,dot{s}), for negative fault face.
+     *
+     * @param[in] coordsys Coordinate system.
+     *
+     * @return LHS residual f0 kernel.
+     */
+    virtual
+    PetscBdPointFunc getInterfaceKernelResidualF0Neg(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
+
+    /** Get f0 kernel for LHS interface residual, F(t,s,dot{s}), for positive fault face.
+     *
+     * @param[in] coordsys Coordinate system.
+     *
+     * @return LHS residual f0 kernel.
+     */
+    virtual
+    PetscBdPointFunc getInterfaceKernelResidualF0Pos(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
+
+    /** Get Jf1lu kernel for LHS Jacobian F(t,s,dot{s}) for negative fault face.
+     *
+     * @param[in] coordsys Coordinate system.
+     *
+     * @return LHS Jacobian kernel Jf1lu.
+     */
+    virtual
+    PetscBdPointJac getInterfaceKernelJacobianF1Neg(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
+
+    /** Get Jf1lu kernel for LHS Jacobian F(t,s,dot{s}) for positive fault face.
+     *
+     * @param[in] coordsys Coordinate system.
+     *
+     * @return LHS Jacobian kernel Jf1lu.
+     */
+    virtual
+    PetscBdPointJac getInterfaceKernelJacobianF1Pos(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
+
     /** Get triggers for needing to compute the elastic constants for the RHS Jacobian.
      *
      * @returns Triggers for needing to recompute the RHS Jacobian.
@@ -112,11 +148,11 @@ public:
     void updateKernelConstants(pylith::real_array* kernelConstants,
                                const PylithReal dt) const;
 
-    // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
+    // PROTECTED MEMBERS //////////////////////////////////////////////////////////////////////////
 
     int _lhsJacobianTriggers; ///< Triggers for needing to recompute the RHS Jacobian.
 
-    // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
+    // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
 private:
 
     RheologyElasticity(const RheologyElasticity&); ///< Not implemented.
