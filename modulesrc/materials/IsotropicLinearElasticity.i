@@ -23,7 +23,7 @@
 
 namespace pylith {
     namespace materials {
-        class IsotropicLinearElasticity : public pylith::materials::RheologyElasticity {
+        class IsotropicLinearElasticity: public pylith::materials::RheologyElasticity {
             // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////
 public:
 
@@ -77,6 +77,38 @@ public:
              * @return RHS Jacobian kernel for elastic constants.
              */
             PetscPointJac getKernelJacobianElasticConstants(const spatialdata::geocoords::CoordSys* coordsys) const;
+
+            /** Get f0 kernel for LHS interface residual, F(t,s,dot{s}), for negative fault face.
+             *
+             * @param[in] coordsys Coordinate system.
+             *
+             * @return LHS residual f0 kernel.
+             */
+            PetscBdPointFunc getInterfaceKernelResidualF0Neg(const spatialdata::geocoords::CoordSys* coordsys) const;
+
+            /** Get f0 kernel for LHS interface residual, F(t,s,dot{s}), for positive fault face.
+             *
+             * @param[in] coordsys Coordinate system.
+             *
+             * @return LHS residual f0 kernel.
+             */
+            PetscBdPointFunc getInterfaceKernelResidualF0Pos(const spatialdata::geocoords::CoordSys* coordsys) const;
+
+            /** Get Jf1lu kernel for LHS Jacobian F(t,s,dot{s}) for negative fault face.
+             *
+             * @param[in] coordsys Coordinate system.
+             *
+             * @return LHS Jacobian kernel Jf1lu.
+             */
+            PetscBdPointJac getInterfaceKernelJacobianF1Neg(const spatialdata::geocoords::CoordSys* coordsys) const;
+
+            /** Get Jf1lu kernel for LHS Jacobian F(t,s,dot{s}) for positive fault face.
+             *
+             * @param[in] coordsys Coordinate system.
+             *
+             * @return LHS Jacobian kernel Jf1lu.
+             */
+            PetscBdPointJac getInterfaceKernelJacobianF1Pos(const spatialdata::geocoords::CoordSys* coordsys) const;
 
             /** Get stress kernel for derived field.
              *

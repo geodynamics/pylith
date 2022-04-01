@@ -46,7 +46,7 @@ class KinSrc(PetscComponent, ModuleKinSrc):
 
         ModuleKinSrc.setIdentifier(self, self.aliases[-1])
         ModuleKinSrc.auxFieldDB(self, self.auxFieldDB)
-        ModuleKinSrc.originTime(self, self.originTime.value)
+        ModuleKinSrc.setOriginTime(self, self.originTime.value)
         return
 
     def verifyConfiguration(self):
