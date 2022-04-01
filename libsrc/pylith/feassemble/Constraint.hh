@@ -143,7 +143,7 @@ public:
      * @param[inout] integrationData Data needed to integrate governing equation.
      */
     virtual
-    void setSolution(pylith::problems::IntegrationData* integrationData) = 0;
+    void setSolution(pylith::feassemble::IntegrationData* integrationData) = 0;
 
     // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:

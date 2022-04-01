@@ -71,7 +71,7 @@ pylith::faults::KinSrcAuxiliaryFactory::addInitiationTime(void) {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Add riseTime subfield to auxiliary field.
+// Add rise time subfield to auxiliary field.
 void
 pylith::faults::KinSrcAuxiliaryFactory::addRiseTime(void) {
     PYLITH_METHOD_BEGIN;
@@ -95,6 +95,33 @@ pylith::faults::KinSrcAuxiliaryFactory::addRiseTime(void) {
 
     PYLITH_METHOD_END;
 } // addRiseTime
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Add impulse duration subfield to auxiliary field.
+void
+pylith::faults::KinSrcAuxiliaryFactory::addImpulseDuration(void) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("addImpulseDuration(void)");
+
+    const char* subfieldName = "impulse_duration";
+    const PylithReal timeScale = _normalizer->getTimeScale();
+
+    pylith::topology::Field::Description description;
+    description.label = subfieldName;
+    description.alias = subfieldName;
+    description.vectorFieldType = pylith::topology::Field::SCALAR;
+    description.numComponents = 1;
+    description.componentNames.resize(1);
+    description.componentNames[0] = subfieldName;
+    description.scale = timeScale;
+    description.validator = NULL;
+
+    _field->subfieldAdd(description, getSubfieldDiscretization(subfieldName));
+    this->setSubfieldQuery(subfieldName);
+
+    PYLITH_METHOD_END;
+} // addImpulseDuration
 
 
 // ---------------------------------------------------------------------------------------------------------------------

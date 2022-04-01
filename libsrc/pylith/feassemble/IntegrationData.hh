@@ -17,15 +17,15 @@
 //
 
 /**
- * @file libsrc/problems/IntegrationData.hh
+ * @file libsrc/feassemble/IntegrationData.hh
  *
  * @brief Object for managing data needed to integrate governing equations.
  */
 
-#if !defined(pylith_problems_integrationdata_hh)
-#define pylith_problems_integrationdata_hh
+#if !defined(pylith_feassemble_integrationdata_hh)
+#define pylith_feassemble_integrationdata_hh
 
-#include "pylith/problems/problemsfwd.hh" // Forward declarations
+#include "pylith/feassemble/feassemblefwd.hh" // Forward declarations
 #include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
 #include "pylith/topology/topologyfwd.hh" // USES Field
@@ -33,7 +33,7 @@
 #include <string> // USES std::string
 #include <map> // USES std::map
 
-class pylith::problems::IntegrationData : pylith::utils::GenericComponent {
+class pylith::feassemble::IntegrationData : pylith::utils::GenericComponent {
     friend class TestIntegrationData; // unit testing
 
     // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
@@ -51,6 +51,7 @@ public:
     static const std::string solution_dot;
     static const std::string residual;
     static const std::string lumped_jacobian_inverse;
+    static const std::string dae_mass_weighting;
 
     // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
 public:
@@ -85,7 +86,7 @@ public:
      */
     void removeScalar(const std::string& name);
 
-    /** Check if we have field with given name.
+    /** Check if we have mesh with given name.
      *
      * @param[in] name Name of field.
      * @returns True if we have field, otherwise false.
@@ -107,6 +108,21 @@ public:
      */
     pylith::topology::Field* getField(const std::string& name) const;
 
+    /** Set mesh.
+     *
+     * @param[in] name Name of mesh.
+     * @param[in] mesh Finite-element mesh.
+     */
+    void setMesh(const std::string& name,
+                 pylith::topology::Mesh* const mesh);
+
+    /** Get mesh.
+     *
+     * @param[in] name Name of mesh.
+     * @returns Finite-elemebt mesh.
+     */
+    pylith::topology::Mesh* getMesh(const std::string& name) const;
+
     /** Dump integration data to std::string.
      *
      * @returns Integration data information as string.
@@ -118,9 +134,11 @@ private:
 
     typedef std::map<std::string, PylithReal> scalars_map_t;
     typedef std::map<std::string, pylith::topology::Field*> fields_map_t;
+    typedef std::map<std::string, pylith::topology::Mesh*> meshes_map_t;
 
     scalars_map_t _scalars;
     fields_map_t _fields;
+    meshes_map_t _meshes;
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
 private:
@@ -130,6 +148,6 @@ private:
 
 }; // IntegrationData
 
-#endif // pylith_problems_integrationdata_hh
+#endif // pylith_feassemble_integrationdata_hh
 
 // End of file

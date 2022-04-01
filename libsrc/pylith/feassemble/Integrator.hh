@@ -149,7 +149,7 @@ public:
      */
     virtual
     void computeRHSResidual(pylith::topology::Field* residual,
-                            const pylith::problems::IntegrationData& integrationData) = 0;
+                            const pylith::feassemble::IntegrationData& integrationData) = 0;
 
     /** Compute LHS residual for F(t,s,\dot{s}).
      *
@@ -158,7 +158,7 @@ public:
      */
     virtual
     void computeLHSResidual(pylith::topology::Field* residual,
-                            const pylith::problems::IntegrationData& integrationData) = 0;
+                            const pylith::feassemble::IntegrationData& integrationData) = 0;
 
     /** Compute LHS Jacobian and preconditioner for F(t,s,\dot{s}) with implicit time-stepping.
      *
@@ -169,7 +169,7 @@ public:
     virtual
     void computeLHSJacobian(PetscMat jacobianMat,
                             PetscMat precondMat,
-                            const pylith::problems::IntegrationData& integrationData) = 0;
+                            const pylith::feassemble::IntegrationData& integrationData) = 0;
 
     /** Compute inverse of lumped LHS Jacobian for F(t,s,\dot{s}) with explicit time-stepping.
      *
@@ -178,7 +178,7 @@ public:
      */
     virtual
     void computeLHSJacobianLumpedInv(pylith::topology::Field* jacobianInv,
-                                     const pylith::problems::IntegrationData& integrationData) = 0;
+                                     const pylith::feassemble::IntegrationData& integrationData) = 0;
 
     // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:

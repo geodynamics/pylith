@@ -62,13 +62,13 @@ public:
 
     /** Get auxiliary field.
      *
-     * @returns field Field over boundary.
+     * @returns field Auxiliary field over integrator domain.
      */
     const pylith::topology::Field* getAuxiliaryField(void) const;
 
     /** Get derived field.
      *
-     * @return field Field over integrator domain.
+     * @return field Derived field over integrator domain.
      */
     const pylith::topology::Field* getDerivedField(void) const;
 
@@ -85,9 +85,9 @@ public:
     // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
 
-    pylith::problems::Physics* const _physics; ///< Physics associated with constraint.
-    pylith::topology::Field* _auxiliaryField; ///< Auxiliary field for this constraint.
-    pylith::topology::Field* _derivedField; ///< Derived field for this constraint.
+    pylith::problems::Physics* const _physics; ///< Physics associated with this implementation.
+    pylith::topology::Field* _auxiliaryField; ///< Auxiliary field for this implementation.
+    pylith::topology::Field* _derivedField; ///< Derived field for this implementation.
     pylith::problems::ObserversPhysics* _observers; ///< Observers component.
 
     pylith::utils::EventLogger* _logger; ///< Event logger.

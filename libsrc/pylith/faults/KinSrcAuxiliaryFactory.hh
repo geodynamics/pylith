@@ -45,6 +45,9 @@ public:
     /// Add rise time subfield to auxiliary field.
     void addRiseTime(void);
 
+    /// Add impulse duration subfield to auxiliary field.
+    void addImpulseDuration(void);
+
     /// Add final_slip subfield to auxiliary field.
     void addFinalSlip(void);
 

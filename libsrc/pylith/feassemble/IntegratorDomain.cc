@@ -23,7 +23,7 @@
 #include "pylith/feassemble/UpdateStateVars.hh" // HOLDSA UpdateStateVars
 #include "pylith/feassemble/DSLabelAccess.hh" // USES DSLabelAccess
 #include "pylith/problems/Physics.hh" // USES Physics
-#include "pylith/problems/IntegrationData.hh" // USES IntegrationData
+#include "pylith/feassemble/IntegrationData.hh" // USES IntegrationData
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES createSubdomainMesh()
 #include "pylith/topology/Field.hh" // USES Field
@@ -287,16 +287,16 @@ pylith::feassemble::IntegratorDomain::setState(const PylithReal t) {
 // Compute RHS residual for G(t,s).
 void
 pylith::feassemble::IntegratorDomain::computeRHSResidual(pylith::topology::Field* residual,
-                                                         const pylith::problems::IntegrationData& integrationData) {
+                                                         const pylith::feassemble::IntegrationData& integrationData) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" computeRHSResidual(residual="<<residual<<", integrationData="<<integrationData.str()<<")");
     if (!_hasRHSResidual) { PYLITH_METHOD_END;}
     assert(residual);
 
-    const pylith::topology::Field* solution = integrationData.getField(pylith::problems::IntegrationData::solution);
+    const pylith::topology::Field* solution = integrationData.getField(pylith::feassemble::IntegrationData::solution);
     assert(solution);
-    const PylithReal t = integrationData.getScalar(pylith::problems::IntegrationData::time);
-    const PylithReal dt = integrationData.getScalar(pylith::problems::IntegrationData::time_step);
+    const PylithReal t = integrationData.getScalar(pylith::feassemble::IntegrationData::time);
+    const PylithReal dt = integrationData.getScalar(pylith::feassemble::IntegrationData::time_step);
 
     DSLabelAccess dsLabel(solution->getDM(), _labelName.c_str(), _labelValue);
     _setKernelConstants(*solution, dt);
@@ -321,17 +321,17 @@ pylith::feassemble::IntegratorDomain::computeRHSResidual(pylith::topology::Field
 // Compute LHS residual for F(t,s,\dot{s}).
 void
 pylith::feassemble::IntegratorDomain::computeLHSResidual(pylith::topology::Field* residual,
-                                                         const pylith::problems::IntegrationData& integrationData) {
+                                                         const pylith::feassemble::IntegrationData& integrationData) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" computeLHSResidual(residual="<<residual<<", integrationData="<<integrationData.str()<<")");
     if (!_hasLHSResidual) { PYLITH_METHOD_END; }
 
-    const pylith::topology::Field* solution = integrationData.getField(pylith::problems::IntegrationData::solution);
+    const pylith::topology::Field* solution = integrationData.getField(pylith::feassemble::IntegrationData::solution);
     assert(solution);
-    const pylith::topology::Field* solutionDot = integrationData.getField(pylith::problems::IntegrationData::solution_dot);
+    const pylith::topology::Field* solutionDot = integrationData.getField(pylith::feassemble::IntegrationData::solution_dot);
     assert(solutionDot);
-    const PylithReal t = integrationData.getScalar(pylith::problems::IntegrationData::time);
-    const PylithReal dt = integrationData.getScalar(pylith::problems::IntegrationData::time_step);
+    const PylithReal t = integrationData.getScalar(pylith::feassemble::IntegrationData::time);
+    const PylithReal dt = integrationData.getScalar(pylith::feassemble::IntegrationData::time_step);
 
     DSLabelAccess dsLabel(solution->getDM(), _labelName.c_str(), _labelValue);
     _setKernelConstants(*solution, dt);
@@ -357,20 +357,20 @@ pylith::feassemble::IntegratorDomain::computeLHSResidual(pylith::topology::Field
 void
 pylith::feassemble::IntegratorDomain::computeLHSJacobian(PetscMat jacobianMat,
                                                          PetscMat precondMat,
-                                                         const pylith::problems::IntegrationData& integrationData) {
+                                                         const pylith::feassemble::IntegrationData& integrationData) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" computeLHSJacobian(jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", integrationData="<<integrationData.str()<<")");
 
     _needNewLHSJacobian = false;
     if (!_hasLHSJacobian) { PYLITH_METHOD_END;}
 
-    const pylith::topology::Field* solution = integrationData.getField(pylith::problems::IntegrationData::solution);
+    const pylith::topology::Field* solution = integrationData.getField(pylith::feassemble::IntegrationData::solution);
     assert(solution);
-    const pylith::topology::Field* solutionDot = integrationData.getField(pylith::problems::IntegrationData::solution_dot);
+    const pylith::topology::Field* solutionDot = integrationData.getField(pylith::feassemble::IntegrationData::solution_dot);
     assert(solutionDot);
-    const PylithReal t = integrationData.getScalar(pylith::problems::IntegrationData::time);
-    const PylithReal dt = integrationData.getScalar(pylith::problems::IntegrationData::time_step);
-    const PylithReal s_tshift = integrationData.getScalar(pylith::problems::IntegrationData::s_tshift);
+    const PylithReal t = integrationData.getScalar(pylith::feassemble::IntegrationData::time);
+    const PylithReal dt = integrationData.getScalar(pylith::feassemble::IntegrationData::time_step);
+    const PylithReal s_tshift = integrationData.getScalar(pylith::feassemble::IntegrationData::s_tshift);
 
     DSLabelAccess dsLabel(solution->getDM(), _labelName.c_str(), _labelValue);
     _setKernelConstants(*solution, dt);
@@ -406,18 +406,18 @@ pylith::feassemble::IntegratorDomain::computeLHSJacobian(PetscMat jacobianMat,
 // Compute inverse of lumped LHS Jacobian for F(t,s,\dot{s}).
 void
 pylith::feassemble::IntegratorDomain::computeLHSJacobianLumpedInv(pylith::topology::Field* jacobianInv,
-                                                                  const pylith::problems::IntegrationData& integrationData) {
+                                                                  const pylith::feassemble::IntegrationData& integrationData) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" computeLHSJacobianLumpedInv(jacobianInv="<<jacobianInv<<", integrationData="<<integrationData.str()<<")");
 
     _needNewLHSJacobianLumped = false;
     if (!_hasLHSJacobianLumped) { PYLITH_METHOD_END;}
 
-    const pylith::topology::Field* solution = integrationData.getField(pylith::problems::IntegrationData::solution);
+    const pylith::topology::Field* solution = integrationData.getField(pylith::feassemble::IntegrationData::solution);
     assert(solution);
-    const PylithReal t = integrationData.getScalar(pylith::problems::IntegrationData::time);
-    const PylithReal dt = integrationData.getScalar(pylith::problems::IntegrationData::time_step);
-    const PylithReal s_tshift = integrationData.getScalar(pylith::problems::IntegrationData::s_tshift);
+    const PylithReal t = integrationData.getScalar(pylith::feassemble::IntegrationData::time);
+    const PylithReal dt = integrationData.getScalar(pylith::feassemble::IntegrationData::time_step);
+    const PylithReal s_tshift = integrationData.getScalar(pylith::feassemble::IntegrationData::s_tshift);
 
     DSLabelAccess dsLabel(solution->getDM(), _labelName.c_str(), _labelValue);
     _setKernelConstants(*solution, dt);

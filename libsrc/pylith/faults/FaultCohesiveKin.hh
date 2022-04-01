@@ -66,9 +66,11 @@ public:
     /** Create integrator and set kernels.
      *
      * @param[in] solution Solution field.
+     * @param[in] materials Materials in problem.
      * @returns Integrator if applicable, otherwise NULL.
      */
-    pylith::feassemble::Integrator* createIntegrator(const pylith::topology::Field& solution);
+    pylith::feassemble::Integrator* createIntegrator(const pylith::topology::Field& solution,
+                                                     const std::vector<pylith::materials::Material*>& materials);
 
     /** Create constraint and set kernels.
      *
@@ -124,25 +126,11 @@ protected:
      *
      * @param[out] auxiliaryField Auxiliary field.
      * @param[in] t Current time.
+     * @param[in] bitSlipSubfields Slip subfields to update.
      */
     void _updateSlip(pylith::topology::Field* auxiliaryField,
-                     const double t);
-
-    /** Update slip rate subfield in auxiliary field at beginning of time step.
-     *
-     * @param[out] auxiliaryField Auxiliary field.
-     * @param[in] t Current time.
-     */
-    void _updateSlipRate(pylith::topology::Field* auxiliaryField,
-                         const double t);
-
-    /** Update slip acceleration subfield in auxiliary field at beginning of time step.
-     *
-     * @param[out] auxiliaryField Auxiliary field.
-     * @param[in] t Current time.
-     */
-    void _updateSlipAcceleration(pylith::topology::Field* auxiliaryField,
-                                 const double t);
+                     const double t,
+                     const int bitSlipSubfields);
 
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
@@ -150,18 +138,22 @@ private:
     /** Set kernels for residual.
      *
      * @param[out] integrator Integrator for material.
+     * @param[in] materials Materials in problem.
      * @param[in] solution Solution field.
      */
     void _setKernelsResidual(pylith::feassemble::IntegratorInterface* integrator,
-                             const pylith::topology::Field& solution) const;
+                             const pylith::topology::Field& solution,
+                             const std::vector<pylith::materials::Material*>& materials) const;
 
     /** Set kernels for Jacobian.
      *
      * @param[out] integrator Integrator for material.
+     * @param[in] materials Materials in problem.
      * @param[in] solution Solution field.
      */
     void _setKernelsJacobian(pylith::feassemble::IntegratorInterface* integrator,
-                             const pylith::topology::Field& solution) const;
+                             const pylith::topology::Field& solution,
+                             const std::vector<pylith::materials::Material*>& materials) const;
 
     // PRIVATE TYPEDEFS ////////////////////////////////////////////////////////////////////////////////////////////////
 private:

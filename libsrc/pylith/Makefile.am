@@ -43,6 +43,7 @@ libpylith_la_SOURCES = \
 	bc/AbsorbingDampersAuxiliaryFactory.cc \
 	faults/FaultCohesive.cc \
 	faults/FaultCohesiveKin.cc \
+	faults/FaultOps.cc \
 	faults/AuxiliaryFactoryKinematic.cc \
 	faults/KinSrc.cc \
 	faults/KinSrcStep.cc \
@@ -54,6 +55,7 @@ libpylith_la_SOURCES = \
 	faults/KinSrcAuxiliaryFactory.cc \
 	faults/TopologyOps.cc \
 	feassemble/PhysicsImplementation.cc \
+	feassemble/IntegrationData.cc \
 	feassemble/Integrator.cc \
 	feassemble/IntegratorDomain.cc \
 	feassemble/IntegratorBoundary.cc \
@@ -139,7 +141,6 @@ libpylith_la_SOURCES = \
 	problems/Physics.cc \
 	problems/ObserverPhysics.cc \
 	problems/ObserversPhysics.cc \
-	problems/IntegrationData.cc \
 	problems/InitialCondition.cc \
 	problems/InitialConditionDomain.cc \
 	problems/InitialConditionPatch.cc \

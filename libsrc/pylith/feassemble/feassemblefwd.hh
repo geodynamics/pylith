@@ -35,6 +35,8 @@ namespace pylith {
 
         class DSLabelAccess; ///< Utility class for accessing PetscDMLabel, PetscDS, and PetscWeakForm.
         class FEKernelKey; ///< Utility class for managing keys for pointwise functions in finite-element integrations.
+	class IntegrationData; ///< Container for data needed for finite-element integration.
+
         class Integrator; ///< Abstract base class for finite-element integration.
         class IntegratorDomain; ///< Abstract base class for finite-element integration over portions on the domain.
         class IntegratorBoundary; ///< Abstract base class for finite-element integration over a boundary.

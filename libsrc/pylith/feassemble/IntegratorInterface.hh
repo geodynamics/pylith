@@ -29,6 +29,7 @@
 
 #include "pylith/feassemble/Integrator.hh" // ISA Integrator
 #include "pylith/feassemble/FEKernelKey.hh" // HASA FEKernelKey
+#include "pylith/materials/materialsfwd.hh" // USES Material
 #include "pylith/utils/arrayfwd.hh" // HASA std::vector
 
 class pylith::feassemble::IntegratorInterface : public pylith::feassemble::Integrator {
@@ -160,20 +161,23 @@ public:
      * @param kernels Array of kernels for computing the residual.
      * @param[in] solution Field with current trial solution.
      */
-    void setKernelsResidual(const std::vector<ResidualKernels>& kernels,
-                            const pylith::topology::Field& solution);
+    void setKernels(const std::vector<ResidualKernels>& kernels,
+                    const pylith::topology::Field& solution,
+                    const std::vector<pylith::materials::Material*>& materials);
 
     /** Set kernels for Jacobian.
      *
      * @param kernels Array of kernels for computing the Jacobian.
      * @param[in] solution Field with current trial solution.
      */
-    void setKernelsJacobian(const std::vector<JacobianKernels>& kernels,
-                            const pylith::topology::Field& solution);
+    void setKernels(const std::vector<JacobianKernels>& kernels,
+                    const pylith::topology::Field& solution,
+                    const std::vector<pylith::materials::Material*>& materials);
 
     /** Initialize integration domain, auxiliary field, and derived field. Update observers.
      *
      * @param[in] solution Solution field (layout).
+     * @param[in] integrationData Data needed to integrate governing equations.
      */
     void initialize(const pylith::topology::Field& solution);
 
@@ -189,7 +193,7 @@ public:
      * @param[in] integrationData Data needed to integrate governing equations.
      */
     void computeRHSResidual(pylith::topology::Field* residual,
-                            const pylith::problems::IntegrationData& integrationData);
+                            const pylith::feassemble::IntegrationData& integrationData);
 
     /** Compute LHS residual for F(t,s,\dot{s}).
      *
@@ -197,7 +201,7 @@ public:
      * @param[in] integrationData Data needed to integrate governing equations.
      */
     void computeLHSResidual(pylith::topology::Field* residual,
-                            const pylith::problems::IntegrationData& integrationData);
+                            const pylith::feassemble::IntegrationData& integrationData);
 
     /** Compute LHS Jacobian and preconditioner for F(t,s,\dot{s}) with implicit time-stepping.
      *
@@ -207,7 +211,7 @@ public:
      */
     void computeLHSJacobian(PetscMat jacobianMat,
                             PetscMat precondMat,
-                            const pylith::problems::IntegrationData& integrationData);
+                            const pylith::feassemble::IntegrationData& integrationData);
 
     /** Compute inverse of lumped LHS Jacobian for F(t,s,\dot{s}) with explicit time-stepping.
      *
@@ -215,7 +219,7 @@ public:
      * @param[in] integrationData Data needed to integrate governing equations.
      */
     void computeLHSJacobianLumpedInv(pylith::topology::Field* jacobianInv,
-                                     const pylith::problems::IntegrationData& integrationData);
+                                     const pylith::feassemble::IntegrationData& integrationData);
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
 private:
@@ -224,6 +228,12 @@ private:
     std::string _surfaceLabelName; ///< Name of label identifying interface surface.
 
     pylith::feassemble::InterfacePatches* _integrationPatches; ///< Face patches.
+
+    PetscDM _weightingDM; ///< PETSc DM for weighting.
+    PetscVec _weightingVec; ///< PETSc Vec for weighting values.
+
+    bool _hasLHSResidualWeighted; ///< Has LHS Residual with weighted terms.
+    bool _hasLHSJacobianWeighted; ///< Has LHS Jacobian with weighted terms.
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
 private:

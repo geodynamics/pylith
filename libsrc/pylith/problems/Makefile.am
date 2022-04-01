@@ -28,7 +28,6 @@ subpkginclude_HEADERS = \
 	Physics.hh \
 	ObserverPhysics.hh \
 	ObserversPhysics.hh \
-	IntegrationData.hh \
 	InitialCondition.hh \
 	InitialConditionDomain.hh \
 	InitialConditionPatch.hh \

@@ -25,6 +25,7 @@ subpkginclude_HEADERS = \
 	DSLabelAccess.icc \
 	FEKernelKey.hh \
 	FEKernelKey.icc \
+	IntegrationData.hh \
 	Integrator.hh \
 	IntegratorDomain.hh \
 	IntegratorBoundary.hh \
