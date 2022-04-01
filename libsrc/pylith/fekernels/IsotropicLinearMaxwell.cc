@@ -519,10 +519,6 @@ pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::computeViscousStrain(const
     };
     const PylithReal meanStrainTpdt = (strainTpdt[0] + strainTpdt[1])/3.0;
     const PylithReal meanStrainT = (totalStrain[0] + totalStrain[1])/3.0;
-#if 0 // :DEBUG:
-    std::cout << "totalStrain[0]:  " << totalStrain[0] << std::endl;
-    std::cout << "strainTpdt[0]:  " << strainTpdt[0] << std::endl;
-#endif
 
     const PylithScalar devStrainTpdt[4] = {
         strainTpdt[0] - meanStrainTpdt,
@@ -1438,10 +1434,6 @@ pylith::fekernels::IsotropicLinearMaxwell3D::computeViscousStrain(const PylithIn
     };
     const PylithReal meanStrainTpdt = (strainTpdt[0] + strainTpdt[1] + strainTpdt[2])/3.0;
     const PylithReal meanStrainT = (totalStrain[0] + totalStrain[1] + totalStrain[2])/3.0;
-#if 0 // :DEBUG:
-    std::cout << "totalStrain[0]:  " << totalStrain[0] << std::endl;
-    std::cout << "strainTpdt[0]:  " << strainTpdt[0] << std::endl;
-#endif
 
     const PylithScalar devStrainTpdt[6] = {
         strainTpdt[0] - meanStrainTpdt,
