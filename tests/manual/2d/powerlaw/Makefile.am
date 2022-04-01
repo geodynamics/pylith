@@ -22,16 +22,15 @@ dist_noinst_DATA = \
 	axialtraction_powerlaw_n1.cfg \
 	pylithapp.cfg \
 	sheartraction_powerlaw.cfg \
-	bc.jou \
-	geometry.jou \
-	mesh_quad_onecell.jou \
-	mesh_quad_onecell.exo \
+	onecell_quad.mesh \
 	axialtraction_maxwell_soln.py \
 	axialtraction_powerlaw_n1_gendb.py \
 	plot_axialtraction_powerlaw.py \
 	plot_axialtraction_powerlaw_n1.py \
 	plot_sheartraction_powerlaw.py \
 	run_tests.py \
+	jacobian_common.py \
+	jacobian_powerlaw.py \
 	mat_powerlaw.spatialdb
 
 

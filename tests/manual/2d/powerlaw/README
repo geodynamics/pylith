@@ -12,3 +12,7 @@ Run a single test (no Jacobian test):
 ./run_tests.py --sims axialtraction_powerlaw
 
 Results are displayed in a set of plots.
+
+The jacobian_powerlaw.py script is used to compute the Jacobian for
+a power-law material:
+./jacobian_powerlaw.py
