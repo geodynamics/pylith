@@ -12,10 +12,6 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-# @file pylith/utils/DumpParameters.py
-#
-# @brief Python DumpParameters object for dumping PyLith parameter information to a file.
 
 from pythia.pyre.components.Component import Component
 
@@ -23,18 +19,15 @@ from .PropertyList import PropertyList
 
 
 class DumpParameters(Component):
-    """Python DumpParameters object for dumping PyLith parameter information to a file.
     """
-
-    # PUBLIC METHODS /////////////////////////////////////////////////////
+    Abstract base class for dumping PyLith parameter information to a file.
+    """
 
     def __init__(self, name="dumpparameters"):
         """Constructor.
         """
-        Component.__init__(self, name="dumpparamters",
-                           facility="dumpparameters")
+        Component.__init__(self, name="dumpparamters", facility="dumpparameters")
         self.info = None
-        return
 
     def preinitialize(self):
         """Do minimal initialization."""
@@ -60,9 +53,6 @@ class DumpParameters(Component):
             "properties": properties,
             "components": components,
         }
-        return
-
-    # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _getPropertiesComponents(self, obj):
         """Get objects properties and components.
@@ -144,7 +134,6 @@ class DumpParameters(Component):
             comm = mpi_comm_world()
             if 0 == comm.rank:
                 os.makedirs(relpath)
-        return
 
 
 # End of file

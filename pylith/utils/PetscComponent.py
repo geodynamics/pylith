@@ -12,27 +12,19 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-# @file pylith/utils/PetscComponent.py
-#
-# @brief Python PetscComponent object for aid in deallocating data
-# structures before calling PetscFinalize().
 
 from pythia.pyre.components.Component import Component
 
 
 class PetscComponent(Component):
-    """Python PetscComponent object for aid in deallocating data structures
-    before calling PetscFinalize().
     """
-
-    # PUBLIC METHODS /////////////////////////////////////////////////////
+    Extension of Pyre Component object for deallocating data structures before calling PetscFinalize().
+    """
 
     def __init__(self, name, facility):
         """Constructor.
         """
         Component.__init__(self, name, facility)
-        return
 
     def cleanup(self):
         """Deallocate data structures.
@@ -48,9 +40,6 @@ class PetscComponent(Component):
                         subcomponent.cleanup()
 
         self._cleanup()
-        return
-
-    # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _cleanup(self):
         """Deallocate locally managed data structures.
@@ -62,7 +51,6 @@ class PetscComponent(Component):
         deallocate = getattr(self, "deallocate", None)
         if callable(deallocate):
             deallocate()
-        return
 
 
 # End of file

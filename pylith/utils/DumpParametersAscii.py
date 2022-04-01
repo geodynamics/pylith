@@ -12,19 +12,26 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-# @file pylith/utils/DumpParametersAscii.py
-#
-# @brief Python DumpParameters object for dumping PyLith parameter information to an ASCII file.
 
 from .DumpParameters import DumpParameters
 
 
 class DumpParametersAscii(DumpParameters):
-    """Python DumpParameters object for dumping PyLith parameter information to an ASCII file.
-
-        FACTORY: dump_parameters
     """
+    Dump PyLith parameter information to an ASCII file.
+
+    Implements `DumpParameters`.
+    """
+    DOC_CONFIG = {
+        "cfg": """
+            [pylithapp]
+            dump_parameters = pylith.utils.DumpParametersAscii
+
+            [pylithapp.dump_parameters]
+            filename = output/parameters.txt
+            verbose = True
+        """
+    }
 
     import pythia.pyre.inventory
 
@@ -37,13 +44,10 @@ class DumpParametersAscii(DumpParameters):
     verbose = pythia.pyre.inventory.bool("verbose", default=True)
     verbose.meta["tip"] = "Include description, location, and aliases."
 
-    # PUBLIC METHODS /////////////////////////////////////////////////////
-
     def __init__(self, name="dumpparametersascii"):
         """Constructor.
         """
         DumpParameters.__init__(self, name)
-        return
 
     def write(self, app):
         """Write parameters to ASCII file.
@@ -62,9 +66,6 @@ class DumpParametersAscii(DumpParameters):
             fout.write("\nApplication: %(name)s %(class)s\n" % parameters)
             depth = 0
             self._writeComponent(fout, parameters, depth + 1)
-        return
-
-    # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
         """Configure object.
@@ -74,7 +75,6 @@ class DumpParametersAscii(DumpParameters):
         self.indent = self.inventory.indent
         self.verbose = self.inventory.verbose
         self.tab = " " * self.indent
-        return
 
     def _writeComponent(self, fout, obj, depth):
         """Write component parameters to file.
@@ -98,7 +98,6 @@ class DumpParametersAscii(DumpParameters):
                 fout.write("%sSet from: %s\n" % (indent2, item["setFrom"]))
 
             self._writeComponent(fout, item, depth + 1)
-        return
 
 # FACTORIES ////////////////////////////////////////////////////////////
 

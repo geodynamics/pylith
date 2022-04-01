@@ -12,33 +12,31 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-# @file pylith/utils/PetscManager.py
-#
-# @brief Python PetscManager object for managing PETSc options.
-#
-# The PetscManager also takes care of initializing and finalizing
-# PETSc.
-#
-# Factory: petsc_manager
 
 from .PropertyList import PropertyList
 import pylith.utils.petsc as petsc
 
 
 class PetscManager(PropertyList):
-    """Python PetscManager object for managing PETSc options.
-
-    Factory: property_list
     """
-
-    # PUBLIC METHODS /////////////////////////////////////////////////////
+    Manage PETSc options.
+    """
+    DOC_CONFIG = {
+        "cfg": """
+            [pylithapp.petsc]
+            ts_monitor = true
+            ksp_monitor = true
+            ksp_converged_reason = true
+            snes_monitor = true
+            snes_converged_reason = true
+            snes_linesearch_monitor = true
+        """
+    }
 
     def __init__(self, name="petsc"):
         """Constructor.
         """
         PropertyList.__init__(self, name)
-        return
 
     def initialize(self):
         """Initialize PETSc.
@@ -54,7 +52,6 @@ class PetscManager(PropertyList):
         comm = petsc_comm_world()
         if 0 == comm.rank:
             self._info.log("Initialized PETSc.")
-        return
 
     def finalize(self):
         """Finalize PETSc.
@@ -64,15 +61,11 @@ class PetscManager(PropertyList):
         if 0 == comm.rank:
             self._info.log("Finalizing PETSc.")
         petsc.finalize()
-        return
 
     def setOption(self, name, value):
         """Set option after PETSc initialization.
         """
         petsc.optionsSetValue(name, value)
-        return
-
-    # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _getOptions(self):
         """Cleanup options for PETSc.
