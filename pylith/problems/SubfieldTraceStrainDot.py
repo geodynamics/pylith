@@ -12,31 +12,23 @@
 # See COPYING for license information.
 #
 # ----------------------------------------------------------------------
-#
-
-# @file pylith/problems/SubfieldTraceStrainDot.py
-##
-# @brief Python object for trace_strain_t subfield.
-##
-# Factory: subfield.
 
 from .SolutionSubfield import SolutionSubfield
 
 
 class SubfieldTraceStrainDot(SolutionSubfield):
     """
-    Python object for trace_strain_t subfield.
+    Object for defining attributes of the time derivative of trace strain solution subfield.
 
-    INVENTORY
-
-    Properties
-      - *alias* User-specified name for subfield.
-
-    Facilities
-      - None
-
-    FACTORY: subfield
+    Implements `SolutionSubfield`.
     """
+    DOC_CONFIG = {
+        "cfg": """
+        [pylithapp.problems.solution.subfields.trace_strain_t]
+        alias = trace_strain_t
+        basis_order = 1
+        """
+    }
 
     import pythia.pyre.inventory
 
@@ -47,14 +39,11 @@ class SubfieldTraceStrainDot(SolutionSubfield):
 
     fieldName = "trace_strain_t"
 
-    # PUBLIC METHODS /////////////////////////////////////////////////////
-
     def __init__(self, name="subfieldtracestrain_t"):
         """
         Constructor.
         """
         SolutionSubfield.__init__(self, name)
-        return
 
     def initialize(self, normalizer, spaceDim):
         """
@@ -65,16 +54,12 @@ class SubfieldTraceStrainDot(SolutionSubfield):
         self.vectorFieldType = Field.SCALAR
         self.scale = one / normalizer.getTimeScale()
         self._setComponents(spaceDim)
-        return
-
-    # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
         """
         Set members based using inventory.
         """
         SolutionSubfield._configure(self)
-        return
 
 # FACTORIES ////////////////////////////////////////////////////////////
 

@@ -12,21 +12,23 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-# @file pylith/problems/SubfieldDisplacement.py
-#
-# @brief Python object for displacement subfield.
-#
-# Factory: subfield.
 
 from .SolutionSubfield import SolutionSubfield
 
 
 class SubfieldDisplacement(SolutionSubfield):
-    """Python object for displacement subfield.
-
-    FACTORY: soln_subfield
     """
+    Object for defining attributes of the displacement solution subfield.
+
+    Implements `SolutionSubfield`.
+    """
+    DOC_CONFIG = {
+        "cfg": """
+        [pylithapp.problems.solution.subfields.displacement]
+        alias = displacement
+        basis_order = 1
+        """
+    }
 
     import pythia.pyre.inventory
 
@@ -36,13 +38,10 @@ class SubfieldDisplacement(SolutionSubfield):
 
     fieldName = "displacement"
 
-    # PUBLIC METHODS /////////////////////////////////////////////////////
-
     def __init__(self, name="subfielddisplacement"):
         """Constructor.
         """
         SolutionSubfield.__init__(self, name)
-        return
 
     def initialize(self, normalizer, spaceDim):
         """Initialize subfield metadata.
@@ -51,15 +50,11 @@ class SubfieldDisplacement(SolutionSubfield):
         self.vectorFieldType = Field.VECTOR
         self.scale = normalizer.getLengthScale()
         self._setComponents(spaceDim)
-        return
-
-    # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
         """Set members based using inventory.
         """
         SolutionSubfield._configure(self)
-        return
 
 # FACTORIES ////////////////////////////////////////////////////////////
 

@@ -12,22 +12,23 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-
-# @file pylith/problems/SubfieldTraceStrain.py
-##
-# @brief Python object for trace_strain subfield.
-##
-# Factory: subfield.
 
 from .SolutionSubfield import SolutionSubfield
 
 
 class SubfieldTraceStrain(SolutionSubfield):
-    """Python object for trace_strain subfield.
-
-    FACTORY: soln_subfield
     """
+    Object for defining attributes of the trace strain solution subfield.
+
+    Implements `SolutionSubfield`.
+    """
+    DOC_CONFIG = {
+        "cfg": """
+        [pylithapp.problems.solution.subfields.trace_strain]
+        alias = trace_strain
+        basis_order = 1
+        """
+    }
 
     import pythia.pyre.inventory
 

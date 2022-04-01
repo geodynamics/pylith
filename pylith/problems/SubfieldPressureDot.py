@@ -24,36 +24,31 @@ from .SolutionSubfield import SolutionSubfield
 
 class SubfieldPressureDot(SolutionSubfield):
     """
-    Python object for pressure_t subfield.
+    Object for defining attributes of the time derivative of pressure solution subfield.
 
-    INVENTORY
-
-    Properties
-      - *alias* User-specified name for subfield.
-
-    Facilities
-      - None
-
-    FACTORY: subfield
+    Implements `SolutionSubfield`.
     """
+    DOC_CONFIG = {
+        "cfg": """
+        [pylithapp.problems.solution.subfields.pressure_t]
+        alias = pressure_t
+        basis_order = 1
+        """
+    }
 
     import pythia.pyre.inventory
 
     from .SolutionSubfield import validateAlias
-    userAlias = pythia.pyre.inventory.str(
-        "alias", default="pressure_t", validator=validateAlias)
+    userAlias = pythia.pyre.inventory.str("alias", default="pressure_t", validator=validateAlias)
     userAlias.meta['tip'] = "Name for subfield."
 
     fieldName = "pressure_t"
-
-    # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="subfieldpressure_t"):
         """
         Constructor.
         """
         SolutionSubfield.__init__(self, name)
-        return
 
     def initialize(self, normalizer, spaceDim):
         """
@@ -63,16 +58,12 @@ class SubfieldPressureDot(SolutionSubfield):
         self.vectorFieldType = Field.SCALAR
         self.scale = normalizer.getPressureScale() / normalizer.getTimeScale()
         self._setComponents(spaceDim)
-        return
-
-    # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
         """
         Set members based using inventory.
         """
         SolutionSubfield._configure(self)
-        return
 
 # FACTORIES ////////////////////////////////////////////////////////////
 

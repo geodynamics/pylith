@@ -12,21 +12,23 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-# @file pylith/problems/SubfieldVelocity.py
-#
-# @brief Python object for velocity subfield.
-#
-# Factory: subfield.
 
 from .SolutionSubfield import SolutionSubfield
 
 
 class SubfieldVelocity(SolutionSubfield):
-    """Python object for velocity subfield.
-
-    FACTORY: soln_subfield
     """
+    Object for defining attributes of the velocity solution subfield.
+
+    Implements `SolutionSubfield`.
+    """
+    DOC_CONFIG = {
+        "cfg": """
+        [pylithapp.problems.solution.subfields.velocity]
+        alias = velocity
+        basis_order = 1
+        """
+    }
 
     import pythia.pyre.inventory
 
@@ -36,13 +38,10 @@ class SubfieldVelocity(SolutionSubfield):
 
     fieldName = "velocity"
 
-    # PUBLIC METHODS /////////////////////////////////////////////////////
-
     def __init__(self, name="subfieldvelocity"):
         """Constructor.
         """
         SolutionSubfield.__init__(self, name)
-        return
 
     def initialize(self, normalizer, spaceDim):
         """Initialize subfield metadata.
@@ -51,15 +50,11 @@ class SubfieldVelocity(SolutionSubfield):
         self.vectorFieldType = Field.VECTOR
         self.scale = normalizer.getLengthScale() / normalizer.getTimeScale()
         self._setComponents(spaceDim)
-        return
-
-    # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
         """Set members based using inventory.
         """
         SolutionSubfield._configure(self)
-        return
 
 # FACTORIES ////////////////////////////////////////////////////////////
 

@@ -12,45 +12,38 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-
-# @file pylith/problems/ProgressMonitorTime.py
-##
-# @brief Python PyLith object for monitoring progress of time-dependent problem.
-##
-# Factory: progress_monitor
 
 from .ProgressMonitor import ProgressMonitor
 from .problems import ProgressMonitorTime as ModuleProgressMonitorTime
 
 
 class ProgressMonitorTime(ProgressMonitor, ModuleProgressMonitorTime):
-    """Python PyLith object for monitoring progress of time dependent problem.
-
-    Factory: progress_monitor.
     """
+    Progress monitor for time-dependent problem.
+    """
+    DOC_CONFIG = {
+        "cfg": """
+            [pylithapp.timedependent.progress_monitor]
+            filename = output/step01-progress.txt
+            t_units = year
+        """
+    }
 
     import pythia.pyre.inventory
 
     tUnits = pythia.pyre.inventory.str("t_units", default="year")
-    tUnits.meta['tip'] = "Units for simulation time in output."
-
-    # PUBLIC METHODS /////////////////////////////////////////////////////
+    tUnits.meta['tip'] = "Units used for simulation time in output."
 
     def __init__(self, name="progressmonitortime"):
         """Constructor.
         """
         ProgressMonitor.__init__(self, name)
-        return
 
     def preinitialize(self):
         """Do minimal initialization.
         """
         ProgressMonitor.preinitialize(self)
         ModuleProgressMonitorTime.setTimeUnit(self, self.tUnits)
-        return
-
-    # PRIVATE METHODS /////////////////////////////////////////////////////
 
     def _createModuleObj(self):
         """Create handle to corresponding C++ object.

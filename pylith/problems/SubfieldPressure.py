@@ -12,21 +12,23 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-# @file pylith/problems/SubfieldPressure.py
-#
-# @brief Python object for pressure subfield.
-#
-# Factory: subfield.
 
 from .SolutionSubfield import SolutionSubfield
 
 
 class SubfieldPressure(SolutionSubfield):
-    """Python object for pressure subfield.
-
-    FACTORY: soln_subfield
     """
+    Object for defining attributes of the pressure solution subfield.
+
+    Implements `SolutionSubfield`.
+    """
+    DOC_CONFIG = {
+        "cfg": """
+        [pylithapp.problems.solution.subfields.pressure]
+        alias = pressure
+        basis_order = 1
+        """
+    }
 
     import pythia.pyre.inventory
 

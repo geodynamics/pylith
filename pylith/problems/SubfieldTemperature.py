@@ -12,21 +12,23 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-# @file pylith/problems/SubfieldTemperature.py
-#
-# @brief Python object for temperature subfield.
-#
-# Factory: subfield.
 
 from .SolutionSubfield import SolutionSubfield
 
 
 class SubfieldTemperature(SolutionSubfield):
-    """Python object for temperature subfield.
-
-    FACTORY: soln_subfield
     """
+    Object for defining attributes of the temperature solution subfield.
+
+    Implements `SolutionSubfield`.
+    """
+    DOC_CONFIG = {
+        "cfg": """
+        [pylithapp.problems.solution.subfields.temperature]
+        alias = absolute_temperature
+        basis_order = 1
+        """
+    }
 
     import pythia.pyre.inventory
 
@@ -36,13 +38,10 @@ class SubfieldTemperature(SolutionSubfield):
 
     fieldName = "temperature"
 
-    # PUBLIC METHODS /////////////////////////////////////////////////////
-
     def __init__(self, name="subfieldtemperature"):
         """Constructor.
         """
         SolutionSubfield.__init__(self, name)
-        return
 
     def initialize(self, normalizer, spaceDim):
         """Initialize subfield metadata.
@@ -51,15 +50,11 @@ class SubfieldTemperature(SolutionSubfield):
         self.vectorFieldType = Field.SCALAR
         self.scale = normalizer.getTemperatureScale()
         self._setComponents(spaceDim)
-        return
-
-    # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
         """Set members based using inventory.
         """
         SolutionSubfield._configure(self)
-        return
 
 # FACTORIES ////////////////////////////////////////////////////////////
 

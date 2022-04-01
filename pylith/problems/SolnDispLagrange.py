@@ -23,11 +23,15 @@ from .Solution import Solution as SolutionBase
 
 
 class SolnDispLagrange(PetscComponent):
-    """Python subfields container with displacement and fault Lagrange multiplier subfields.
-
-    IMPORTANT: Use the Solution class (below) to set this object as the default facilities array for the solution
-    subfields.
     """
+    Container for solution subfields with displacement and fault Lagrange multiplier subfields.
+    """
+    DOC_CONFIG = {
+        "cfg": """
+            [pylithapp.problem]
+            solution = pylith.problems.SolnDispLagrange
+        """
+    }
 
     import pythia.pyre.inventory
 
@@ -60,7 +64,8 @@ class SolnDispLagrange(PetscComponent):
 
 
 class Solution(SolutionBase):
-    """Python solution field with displacement and Lagrange multiplier subfields.
+    """
+    Solution field with displacement and Lagrange multiplier subfields.
     """
 
     import pythia.pyre.inventory

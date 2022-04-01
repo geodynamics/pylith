@@ -12,22 +12,30 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-# @file pylith/problems/InitialConditionDomain.py
-#
-# @brief Python object for specifying initial conditions over the entire domain.
-#
-# Factory: initial_conditions.
 
 from pylith.problems.InitialCondition import InitialCondition
 from .problems import InitialConditionDomain as ModuleInitialCondition
 
 
 class InitialConditionDomain(InitialCondition, ModuleInitialCondition):
-    """Python object for specifying initial conditions over the entire domain.
-
-    FACTORY: initial_conditions
     """
+    Initial conditions for the solution over the entire domain.
+
+    Implements `InitialCondition`.
+    """
+    DOC_CONFIG = {
+        "cfg": """
+            # Create a single initial condition over the domain.
+            [pylithapp.problem]
+            ic = [domain]
+            ic.domain = pylith.problems.InitialConditionDomain
+
+            [pylithapp.problem.ic.domain]
+            db = spatialdata.spatialdb.SimpleGridDB
+            db.label = Initial conditions over domain
+            db.filename = sheardisp_ic.spatialdb
+        """
+    }
 
     import pythia.pyre.inventory
     from spatialdata.spatialdb.SimpleDB import SimpleDB
@@ -35,13 +43,10 @@ class InitialConditionDomain(InitialCondition, ModuleInitialCondition):
     db = pythia.pyre.inventory.facility("db", family="spatial_database", factory=SimpleDB)
     db.meta["tip"] = "Spatial database with values for initial condition."
 
-    # PUBLIC METHODS /////////////////////////////////////////////////////
-
     def __init__(self, name="initialconditionsdomain"):
         """Constructor.
         """
         InitialCondition.__init__(self, name)
-        return
 
     def preinitialize(self, problem):
         """Setup initial conditions.
@@ -49,15 +54,11 @@ class InitialConditionDomain(InitialCondition, ModuleInitialCondition):
         InitialCondition.preinitialize(self, problem)
 
         ModuleInitialCondition.setDB(self, self.db)
-        return
 
     def _configure(self):
         """Setup members using inventory.
         """
         InitialCondition._configure(self)
-        return
-
-    # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _createModuleObj(self):
         """Call constructor for module object for access to C++ object.

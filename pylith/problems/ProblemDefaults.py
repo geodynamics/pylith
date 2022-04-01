@@ -12,12 +12,6 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-# @file pylith/problems/ProblemDefaults.py
-#
-# @brief Python class for default options for a problem.
-#
-# Factory: problem_defaults.
 
 from pythia.pyre.components.Component import Component
 
@@ -29,10 +23,20 @@ def validateName(value):
 
 
 class ProblemDefaults(Component):
-    """Python class for default options for a problem.
-
-    FACTORY: problem_defaults
     """
+    Default options for a problem.
+    Specifying defaults at the problem level (here) will override defaults for individual components.
+    Non-default values specified for individual components will override the problem defaults (specified here).
+    """
+    DOC_CONFIG = {
+        "cfg": """
+            [pylithapp.problem.defaults]
+            output_directory = output
+            name = step01
+            quadrature_order = 1
+            output_basis_order = 0
+        """
+    }
 
     import pythia.pyre.inventory
 
@@ -46,7 +50,7 @@ class ProblemDefaults(Component):
     quadOrder.meta['tip'] = "Finite-element quadrature order."
 
     outputBasisOrder = pythia.pyre.inventory.int("output_basis_order", default=1, validator=pythia.pyre.inventory.choice([0,1]))
-    outputBasisOrder.meta['tip'] = "Basis order for output."
+    outputBasisOrder.meta['tip'] = "Default basis order for output."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 

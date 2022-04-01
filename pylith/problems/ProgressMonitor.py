@@ -12,22 +12,14 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-
-# @file pylith/problems/ProgressMonitor.py
-##
-# @brief Python PyLith abstract base class for progress monitor.
-##
-# Factory: progress_monitor
 
 from pylith.utils.PetscComponent import PetscComponent
 from .problems import ProgressMonitor as ModuleProgressMonitor
 
 
 class ProgressMonitor(PetscComponent, ModuleProgressMonitor):
-    """Python abstract base class for progress monitor.
-
-    FACTORY: progress_monitor.
+    """
+    Abstract base class for simulation progress monitor.
     """
 
     import pythia.pyre.inventory
@@ -39,13 +31,10 @@ class ProgressMonitor(PetscComponent, ModuleProgressMonitor):
         "update_percent", default=5.0, validator=pythia.pyre.inventory.greater(0))
     updatePercent.meta['tip'] = "Frequency of progress updates (percent)."
 
-    # PUBLIC METHODS /////////////////////////////////////////////////////
-
     def __init__(self, name="progressmonitor"):
         """Constructor.
         """
         PetscComponent.__init__(self, name, facility="progress_monitor")
-        return
 
     def preinitialize(self):
         """Do minimal initialization.
@@ -54,9 +43,6 @@ class ProgressMonitor(PetscComponent, ModuleProgressMonitor):
         ModuleProgressMonitor.setFilename(self, self.filename)
         ModuleProgressMonitor.setUpdatePercent(self, self.updatePercent)
         self._createPath()
-        return
-
-    # PRIVATE METHODS /////////////////////////////////////////////////////
 
     def _createPath(self):
         """Create path for filename if it doesn't exist.
@@ -70,7 +56,6 @@ class ProgressMonitor(PetscComponent, ModuleProgressMonitor):
             isMaster = 0 == mpi.rank()
             if isMaster:
                 os.makedirs(relpath)
-        return
 
     def _createModuleObj(self):
         """Create handle to corresponding C++ object.
