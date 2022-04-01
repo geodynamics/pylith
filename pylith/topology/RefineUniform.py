@@ -12,43 +12,40 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-# @file pylith/topology/RefineUniform.py
-#
-# @brief Python manager for uniform global refinement of mesh in
-# parallel.
-#
-# Factory: mesh_refiner.
 
 from .MeshRefiner import MeshRefiner
 from .topology import RefineUniform as ModuleRefineUniform
 
 
 class RefineUniform(MeshRefiner, ModuleRefineUniform):
-    """Python manager for uniform global refinement of mesh in parallel.
-
-    Factory: mesh_refiner
     """
+    Uniform global mesh refinement in parallel.
+
+    Implements `MeshRefiner`.
+    """
+    DOC_CONFIG = {
+        "cfg": """
+            # Refine mesh twice to reduce size of cell edges by a factor of 4.
+            [pylithapp.mesh_generator.refiner]
+            levels = 2
+        """
+    }
 
     import pythia.pyre.inventory
 
     levels = pythia.pyre.inventory.int("levels", default=1, validator=pythia.pyre.inventory.greaterEqual(1))
     levels.meta['tip'] = "Number of refinement levels."
 
-    # PUBLIC METHODS /////////////////////////////////////////////////////
-
     def __init__(self, name="refineuniform"):
         """Constructor.
         """
         MeshRefiner.__init__(self, name)
-        return
 
     def preinitialize(self):
         """Do minimal initialization."""
         MeshRefiner.preinitialize(self)
 
         self._createModuleObj()
-        return
 
     def refine(self, mesh):
         """Refine mesh.
@@ -72,19 +69,15 @@ class RefineUniform(MeshRefiner, ModuleRefineUniform):
         self._eventLogger.eventEnd(logEvent)
         return newMesh
 
-    # PRIVATE METHODS ////////////////////////////////////////////////////
-
     def _configure(self):
         """Set members based using inventory.
         """
         MeshRefiner._configure(self)
-        return
 
     def _createModuleObj(self):
         """Create handle to C++ object.
         """
         ModuleRefineUniform.__init__(self)
-        return
 
 
 # FACTORIES ////////////////////////////////////////////////////////////

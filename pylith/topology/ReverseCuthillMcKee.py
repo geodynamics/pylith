@@ -12,21 +12,14 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-# @file pylith/topology/ReverseCuthillMcKee.py
-#
-# @brief Python interface to PETSc reverse Cuthill-McKee reordering
-# of mesh cells and vertices.
 
 from .topology import ReverseCuthillMcKee as ModuleReverseCuthillMcKee
 
 
 class ReverseCuthillMcKee(ModuleReverseCuthillMcKee):
-    """Python interface to PETSc reverse Cuthill-McKee reordering of mesh
-    cells and vertices.
     """
-
-    # PUBLIC METHODS /////////////////////////////////////////////////////
+    Interface to PETSc reverse Cuthill-McKee reordering of mesh cells and vertices.
+    """
 
     def __init__(self):
         """Constructor.
@@ -37,7 +30,6 @@ class ReverseCuthillMcKee(ModuleReverseCuthillMcKee):
         """Set communicator.
         """
         ModuleReverseCuthillMcKee.reorder(mesh)
-        return
 
 
 # End of file

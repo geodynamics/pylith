@@ -12,22 +12,17 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-
-# @file pylith/topology/MeshImporterDist.py
-##
-# @brief Python implementation of importing a mesh that is already
-# partitioned (distributed).
-##
-# Factory: mesh_generator.
 
 from .MeshGenerator import MeshGenerator
 
 
 class MeshImporterDist(MeshGenerator):
-    """Python implementation of importing a mesh.
+    """
+    Read a finite-element mesh in parallel.
 
-    Factory: mesh_generator.
+    :::{danger}
+    Implementation is incomplete.
+    :::
     """
 
     import pythia.pyre.inventory
@@ -40,14 +35,11 @@ class MeshImporterDist(MeshGenerator):
     refiner = pythia.pyre.inventory.facility("refiner", family="mesh_refiner", factory=MeshRefiner)
     refiner.meta['tip'] = "Mesh refiner."
 
-    # PUBLIC METHODS /////////////////////////////////////////////////////
-
     def __init__(self, name="meshimporter"):
         """Constructor.
         """
         MeshGenerator.__init__(self, name)
         self._loggingPrefix = "MeIm "
-        return
 
     def create(self, normalizer, faults=None):
         """Hook for creating mesh.

@@ -12,20 +12,13 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-# @file pylith/topology/MeshGenerator.py
-#
-# @brief Python abstract base class for mesh generator.
-#
-# Factory: mesh_generator.
 
 from pylith.utils.PetscComponent import PetscComponent
 
 
 class MeshGenerator(PetscComponent):
-    """Python abstract base class for mesh generator.
-
-    FACTORY: mesh_generator
+    """
+    Abstract base class for mesh generator.
     """
 
     import pythia.pyre.inventory
@@ -35,8 +28,6 @@ class MeshGenerator(PetscComponent):
 
     interpolate = pythia.pyre.inventory.bool("interpolate", default=True)
     interpolate.meta['tip'] = "Build intermediate mesh topology elements"
-
-    # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="meshgenerator"):
         """Constructor.
@@ -49,7 +40,6 @@ class MeshGenerator(PetscComponent):
     def preinitialize(self, problem):
         """Do minimal initialization.
         """
-        return
 
     def create(self, normalizer, faults=None):
         """Generate a Mesh.
@@ -58,7 +48,6 @@ class MeshGenerator(PetscComponent):
         # Need to nondimensionalize coordinates.
 
         raise NotImplementedError("MeshGenerator.create() not implemented.")
-        return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
@@ -66,7 +55,6 @@ class MeshGenerator(PetscComponent):
         """Set members based using inventory.
         """
         PetscComponent._configure(self)
-        return
 
     def _adjustTopology(self, mesh, interfaces, problem):
         """Adjust topology for interface implementation.
@@ -85,7 +73,6 @@ class MeshGenerator(PetscComponent):
                 interface.adjustTopology(mesh)
 
         self._eventLogger.eventEnd(logEvent)
-        return
 
     def _setupLogging(self):
         """Setup event logging.
@@ -104,7 +91,6 @@ class MeshGenerator(PetscComponent):
             logger.registerEvent("%s%s" % (self._loggingPrefix, event))
 
         self._eventLogger = logger
-        return
 
 
 # End of file

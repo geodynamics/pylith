@@ -12,29 +12,19 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-# @file pylith/topology/MeshRefiner.py
-#
-# @brief Python manager for refining mesh in parallel.
-#
-# Factory: mesh_refiner.
 
 from pylith.utils.PetscComponent import PetscComponent
 
 
 class MeshRefiner(PetscComponent):
-    """Python abstract base class for refining mesh in parallel.
-
-    Factory: mesh_refiner
     """
-
-    # PUBLIC METHODS /////////////////////////////////////////////////////
+    Abstract base class for refining a mesh in parallel.
+    """
 
     def __init__(self, name="refiner"):
         """Constructor.
         """
         PetscComponent.__init__(self, name, facility="refiner")
-        return
 
     def preinitialize(self):
         """Do minimal initialization."""
@@ -45,13 +35,10 @@ class MeshRefiner(PetscComponent):
         """
         return mesh
 
-    # PRIVATE METHODS ////////////////////////////////////////////////////
-
     def _configure(self):
         """Set members based using inventory.
         """
         PetscComponent._configure(self)
-        return
 
     def _setupLogging(self):
         """Setup event logging.
@@ -66,7 +53,6 @@ class MeshRefiner(PetscComponent):
             logger.registerEvent("%s%s" % (self._loggingPrefix, event))
 
         self._eventLogger = logger
-        return
 
 
 # End of file
