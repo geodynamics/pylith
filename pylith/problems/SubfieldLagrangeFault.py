@@ -30,18 +30,15 @@ class SubfieldLagrangeFault(SolutionSubfield):
         """
     }
 
-    import pythia.pyre.inventory
-
-    from .SolutionSubfield import validateAlias
-    userAlias = pythia.pyre.inventory.str("alias", default="lagrange_multiplier_fault", validator=validateAlias)
-    userAlias.meta['tip'] = "Name for subfield."
-
     fieldName = "lagrange_multiplier_fault"
 
     def __init__(self, name="subfieldlagrangefault"):
         """Constructor.
         """
         SolutionSubfield.__init__(self, name)
+
+    def _defaults(self):
+        self.userAlias = self.fieldName
 
     def initialize(self, normalizer, spaceDim):
         """Initialize subfield metadata.

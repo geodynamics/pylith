@@ -30,18 +30,15 @@ class SubfieldDisplacement(SolutionSubfield):
         """
     }
 
-    import pythia.pyre.inventory
-
-    from .SolutionSubfield import validateAlias
-    userAlias = pythia.pyre.inventory.str("alias", default="displacement", validator=validateAlias)
-    userAlias.meta['tip'] = "Name for subfield."
-
     fieldName = "displacement"
 
     def __init__(self, name="subfielddisplacement"):
         """Constructor.
         """
         SolutionSubfield.__init__(self, name)
+
+    def _defaults(self):
+        self.userAlias = self.fieldName
 
     def initialize(self, normalizer, spaceDim):
         """Initialize subfield metadata.

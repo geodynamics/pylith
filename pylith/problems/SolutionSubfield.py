@@ -34,7 +34,7 @@ class SolutionSubfield(Subfield):
 
     import pythia.pyre.inventory
 
-    # Override userAlias in derived class with appropriate default.
+    # Set appropriate default in derived class using _defaults().
     userAlias = pythia.pyre.inventory.str("alias", default="", validator=validateAlias)
     userAlias.meta['tip'] = "Name for subfield."
 

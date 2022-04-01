@@ -30,22 +30,16 @@ class SubfieldTraceStrain(SolutionSubfield):
         """
     }
 
-    import pythia.pyre.inventory
-
-    from .SolutionSubfield import validateAlias
-    userAlias = pythia.pyre.inventory.str(
-        "alias", default="trace_strain", validator=validateAlias)
-    userAlias.meta['tip'] = "Name for subfield."
-
     fieldName = "trace_strain"
-
-    # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="subfieldtracestrain"):
         """Constructor.
         """
         SolutionSubfield.__init__(self, name)
         return
+
+    def _defaults(self):
+        self.userAlias = self.fieldName
 
     def initialize(self, normalizer, spaceDim):
         """Initialize subfield metadata.
