@@ -14,15 +14,10 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-# @file tests/manual/2d/powerlaw/axialtraction_powerlaw_n1_gendb.py
-#
-# @brief Python script to generate spatial database of material properties
-# and state variables for the axial traction test.
 
 import numpy
 
-fileNamePowerLaw = 'mat_powerlaw_n1' + '.spatialdb'
+fileNamePowerLaw = 'mat_powerlaw_n1.spatialdb'
 
 # Initial state from elastic solution.
 time = numpy.array([0.0], dtype=numpy.float64)
