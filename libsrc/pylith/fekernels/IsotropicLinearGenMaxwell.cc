@@ -160,13 +160,6 @@ pylith::fekernels::IsotropicLinearGenMaxwellPlaneStrain::f1v_refstate(const Pyli
     assert(aOff[i_rstrain] >= 0);
     assert(f1);
 
-    assert(_dim == dim);
-    assert(numS >= 1);
-    assert(numA >= 14);
-    assert(sOff);
-    assert(sOff_x);
-    assert(aOff);
-
     const PylithInt _numS = 1; // Number passed on to stress kernels.
     const PylithInt sOffDisp[1] = { sOff[i_disp] };
     const PylithInt sOffDisp_x[1] = { sOff_x[i_disp] };
@@ -1252,13 +1245,6 @@ pylith::fekernels::IsotropicLinearGenMaxwell3D::f1v_refstate(const PylithInt dim
     assert(aOff[i_totalStrain] >= 0);
     assert(aOff[i_rstress] >= 0);
     assert(aOff[i_rstrain] >= 0);
-
-    assert(_dim == dim);
-    assert(numS >= 1);
-    assert(numA >= 14);
-    assert(sOff);
-    assert(sOff_x);
-    assert(aOff);
 
     const PylithInt _numS = 1; // Number passed on to stress kernels.
     const PylithInt sOffDisp[1] = { sOff[i_disp] };
