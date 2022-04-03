@@ -13,15 +13,12 @@
 #
 # ----------------------------------------------------------------------
 #
-
 # @file pylith/materials/AuxSubfieldsIsotropicPowerLaw.py
 ##
 # @brief Python subfields container for isotropic power-law
 # viscoelastic subfields.
 
 from pylith.utils.PetscComponent import PetscComponent
-
-# AuxSubfieldsIsotropicPowerLaw class
 
 
 class AuxSubfieldsIsotropicPowerLaw(PetscComponent):
@@ -54,8 +51,8 @@ class AuxSubfieldsIsotropicPowerLaw(PetscComponent):
     viscousStrain = pythia.pyre.inventory.facility("viscous_strain", family="auxiliary_subfield", factory=Subfield)
     viscousStrain.meta['tip'] = "Viscous strain subfield."
 
-    stress = pythia.pyre.inventory.facility("stress", family="auxiliary_subfield", factory=Subfield)
-    stress.meta['tip'] = "Stress subfield."
+    deviatoricStress = pythia.pyre.inventory.facility("deviatoric_stress", family="auxiliary_subfield", factory=Subfield)
+    deviatoricStress.meta['tip'] = "Deviatoric stress subfield."
 
     referenceStress = pythia.pyre.inventory.facility("reference_stress", family="auxiliary_subfield", factory=Subfield)
     referenceStress.meta['tip'] = "Reference stress subfield."
