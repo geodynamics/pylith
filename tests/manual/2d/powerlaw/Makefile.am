@@ -18,20 +18,20 @@
 
 dist_noinst_DATA = \
 	README \
-	axialdisp2d.cfg \
-	axialdisp3d.cfg \
-	axialdisp_init_stress_2d.cfg \
-	axialdisp_init_stress_3d.cfg \
-	init_state_2d.spatialdb \
-	init_stress_2d.spatialdb \
-	init_stress_3d.spatialdb \
-	planestrain2d.cfg \
-	planestrain3d.cfg \
+	axialtraction_powerlaw.cfg \
+	axialtraction_powerlaw_n1.cfg \
 	pylithapp.cfg \
-	sheardisp2d.cfg \
-	sheardisp3d.cfg \
-	twohex8.mesh \
-	twoquad4.mesh
+	sheartraction_powerlaw.cfg \
+	onecell_quad.mesh \
+	axialtraction_maxwell_soln.py \
+	axialtraction_powerlaw_n1_gendb.py \
+	plot_axialtraction_powerlaw.py \
+	plot_axialtraction_powerlaw_n1.py \
+	plot_sheartraction_powerlaw.py \
+	run_tests.py \
+	jacobian_common.py \
+	jacobian_powerlaw.py \
+	mat_powerlaw.spatialdb
 
 
 # End of file 
