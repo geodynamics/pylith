@@ -15,8 +15,7 @@
 #
 # ----------------------------------------------------------------------
 
-import contextlib
-import io
+import subprocess
 import importlib
 import matplotlib.pyplot as pyplot
 
@@ -31,7 +30,7 @@ class RunnerApp():
         'axialtraction_powerlaw': ['axialtraction_powerlaw.cfg'],
         'axialtraction_powerlaw_n1': ['axialtraction_powerlaw_n1.cfg'],
         'sheartraction_powerlaw': ['sheartraction_powerlaw.cfg'],
-        }
+    }
     TIMESTEPS = [0.01, 0.05, 0.1, 0.5, 1.0, 5.0]
 
     def main(self):
@@ -59,6 +58,7 @@ class RunnerApp():
     def _run_sims(self, sims, test_jacobian):
         ARGS_JACOBIAN = ['--petsc.snes_test_jacobian', '--petsc.snes_test_jacobian_view']
         args_jacobian = ARGS_JACOBIAN if test_jacobian else []
+        pylith_run = ['pylith']
 
         for isim, sim in enumerate(sims.keys()):
             for dt in self.TIMESTEPS:
@@ -67,20 +67,20 @@ class RunnerApp():
 
                 args_sim = [
                     f"--problem.defaults.name={sim_fullname}",
+                    f"--metadata.arguments=[{sims[sim]}]",
                     f"--dump_parameters.filename=output/{sim_fullname}-parameters.json",
                     f"--problem.progress_monitor.filename=output/{sim_fullname}-progress.txt",
                     f"--problem.initial_dt={dt:04.2f}*year",
                 ]
-                pylith_args = sims[sim] + args_sim + args_jacobian
-                with contextlib.redirect_stdout(io.StringIO()) as sout:
-                    app = PyLithApp()
-                    app.run(argv=["pylith"] + pylith_args)
+                pylith_args = pylith_run + sims[sim] + args_sim + args_jacobian
+                # Note that the previous method using contextlib will only work with pure Python code,
+                # and will not work with C stdout.
                 with open(log_filename, "w") as log:
-                    log.write(sout.getvalue())
+                    subprocess.run(pylith_args, stdout=log, stderr=log, check=True)
 
             plot_module = f"plot_{sim}"
             plotter = importlib.import_module(plot_module)
-            plotter.run(self.axes, isim, dt, test_jacobian)
+            plotter.run(self.axes, isim, self.TIMESTEPS, test_jacobian)
 
     def _show_plot(self):
         pyplot.show()

@@ -84,7 +84,7 @@ def run(axs, colNum, stepSizes, useJacobian):
 
     for simNum in range(numSims):
         dt = stepSizes[simNum]
-        dtStr = repr(dt)
+        dtStr = f"{dt:04.2f}"
         baseName = basePrefix + dtStr
         h5File = 'output/' + baseName + '-viscomat.h5'
         logFile = baseName + '.log'
