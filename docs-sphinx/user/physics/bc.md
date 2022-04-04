@@ -33,7 +33,6 @@ caption: Array of boundary conditions in a `cfg` file
 [pylithapp.problem]
 # Array of four boundary conditions
 bc = [x_neg, x_pos, y_pos, z_neg]
-
 # Default boundary condition is DirichletBC
 # Keep default value for x_neg and x_pos
 bc.y_pos = pylith.bc.AbsorbingDampers
@@ -52,62 +51,14 @@ where $f(\vec{x})$ may be a scalar or vector parameter, $f_{0}(\vec{x})$ is a co
 This common formulation permits easy specification of a scalar or vector with a constant value, constant rate of change of a value, and/or modulation of a value in time.
 One can specify just the initial value, just the rate of change of the value (along with the corresponding onset time), or just the modulation in amplitude (along with the corresponding temporal variation and onset time), or any combination of the three.
 
-## Time-Dependent Dirichlet Boundary Conditions (*DirichletTimeDependent*)
+## Time-Dependent Dirichlet Boundary Conditions (`DirichletTimeDependent`)
 
 Dirichlet boundary conditions in PyLith prescribe the a solution subfield on a subset of the vertices of the finite-element mesh.
 Currently, these constraints are required to be associated with vertices on a simply-connected boundary surface.
 
-The properties and components common to both the *DirichletTimeDependent* and *DirichletBoundary* boundary conditions are:
-
-:label: Label of the group of vertices associated with the boundary condition (default="");
-:field: Solution subfield associated with boundary condition (default=displacement);
-:db_auxiliary_field: Database for boundary condition parameter values (default=*SimpleDB*);
-:observers: Observers of boundary condition, e.g., output (default=[*PhysicsObservers*]);
-:constrained_dof: Array of degrees of freedom to be fixed (first degree of freedom is 0, default=[]);
-:use_initial: use initial term in time-dependent expression (default=True);
-:use_rate: Use rate term in time-dependent expression (default=False);
-:time_history: Time history database with normalized amplitude as a function of time (default=*TimeHistoryDB*); and
-:auxiliary_subfields: Discretization of auxiliary subfields.
-
-```{code-block} cfg
----
-caption: *DirichletTimeDependent* parameters in a `cfg` file
----
-[pylithapp.problem]
-bc = [mybc]
-
-[pylithapp.problem.bc.mybc]
-# Constrain the z-displacment (2) on a boundary associated with the `group A' vertices.
-label = group A
-field = displacement
-constrained_dof = [2]
-observers.observer.writer.filename = output/step02-groupA.h5
-
-db_auxiliary_field = spatialdata.spatialdb.SimpleDB
-db_initial.iohandler.filename = displacement.spatialdb
-# Use linear interpolation
-db_initial.query_type = linear
-
-# Set basis order to its default value
-auxiliary_subfields.initial_amplitude.basis_order = 1
-```
-
-### Dirichlet Boundary Condition Spatial Database Files
-
-The spatial database files for the Dirichlet boundary condition specify the parameters for the time-dependent expression.
-
-:::{important}
-The spatial database files for Dirichlet boundary conditions must contain values for all degrees of freedom (x and y for 2-D, and x, y, and z for 3-D) even if they are not constrained. This limitation is imposed by the *DMPlex* interface.
+:::{seealso}
+[`DirichletTimeDependent` Component](../components/bc/DirichletTimeDependent.md)
 :::
-
-```{table} Values in the spatial databases used for Dirichlet boundary conditions.
-:name:
-|  Flag   |      Required Values                                                |
-|:----|:-------------------------------------------------------------------------------------------------|
-|  **use_initial**   | initial_amplitude_x, initial_amplitude_y, initial_amplitude_z                                    |
-| **use_rate**    | rate_start_time, rate_amplitude_x, rate_amplitude_y, rate_amplitude_z                            |
-|  **use_time_history**   | time_history_start, time_history_amplitude_x, time_history_amplitude_y, time_history_amplitude_z |
-```
 
 ## Neumann Boundary Conditions
 
@@ -115,53 +66,9 @@ Neumann boundary conditions are surface tractions applied over a boundary.
 As with the *DirichletTimeDependent* condition, each Neumann boundary condition can only be applied to a simply-connected surface.
 The surface over which the tractions are applied always has a spatial dimension that is one less than the dimension of the finite-element mesh.
 
-The Neumann boundary condition properties and facilities are:
-
-:label: Label of the group of vertices associated with the boundary condition (default="");
-:field: Solution subfield associated with boundary condition (default=displacement);
-:db_auxiliary_field: Database for boundary condition parameter values (default=*SimpleDB*);
-:observers: Observers of boundary condition, e.g., output (default=[*PhysicsObserver*]);
-:scale_name: Type of scale for nondimensionalizing values (default="pressure");
-:use_initial: Use initial term in time-dependent expression (default=True);
-:use_rate: Use rate term in time-dependent expression (default=False);
-:ref_dir_1: First choice for reference direction to discriminate among tangential directions in 3-D (default=[0,0,1]);
-:ref_dir_2: Second choice for reference direction to discriminate among tangential directions in 3-D (default=[0,1,0]);
-:time_history: Time history database with normalized amplitude as a function of time (default=*TimeHistoryDB*); and
-:auxiliary_subfields: Discretization of auxiliary subfields.
-
-The components are specified in the local normal/tangential coordinate system for the boundary.
-Ambiguities in specifying the shear (tangential) tractions in 3-D problems are resolved using the **ref_dir_1** and **ref_dir_2** properties.
-The first tangential direction is $\vec{z} \times \vec{r}_1$ unless these are colinear, then $\vec{r}_2$ (**ref_dir_2**) is used.
-The second tangential direction is $\vec{n} \times \vec{t}_1$.
-
-```{code-block} cfg
----
-caption: Neumann parameters in a `cfg` file
----
-[pylithapp.problem] bc = [x_neg, y_neg, x_pos, y_pos]
-bc.x_neg = pylith.bc.DirichletTimeDependent
-bc.y_neg = pylith.bc.DirichletTimeDependent
-bc.x_pos = pylith.bc.NeumannTimeDependent
-bc.y_pos = pylith.bc.NeumannTimeDependent
-
-[pylithapp.problem.bc.x_pos]
-label = boundary_xpos
-db_auxiliary_field = spatialdata.spatialdb.UniformDB
-db_auxiliary_field.label = Neumann BC +x edge
-db_auxiliary_field.values = [initial_amplitude_tangential, initial_amplitude_normal]
-db_auxiliary_field.data = [+4.5*MPa, 0*MPa]
-
-observers.observer.writer.filename = output/step03_sheardisptract-bc_xpos.h5
-
-[pylithapp.problem.bc.y_pos]
-label = boundary_ypos
-db_auxiliary_field = spatialdata.spatialdb.UniformDB
-db_auxiliary_field.label = Neumann BC +y edge
-db_auxiliary_field.values = [initial_amplitude_tangential, initial_amplitude_normal]
-db_auxiliary_field.data = [-4.5*MPa, 0*MPa]
-
-observers.observer.writer.filename = output/step03_sheardisptract-bc_ypos.h5
-```
+:::{seealso}
+[`Neumann` Component](../components/bc/Neumann.md)
+:::
 
 ### Neumann Boundary Condition Spatial Database Files
 
@@ -177,7 +84,8 @@ The spatial database file the auxiliary subfields for the Neumann boundary condi
 |     | **use_rate**     | rate_start_time, rate_amplitude_normal, rate_amplitude_tangential_1, rate_amplitude_tangential_2                            |
 |     |  **use_time_history**    | time_history_start, time_history_amplitude_normal, time_history_amplitude_tangential_1, time_history_amplitude_tangential_2 |
 ```
-# Absorbing Boundary Conditions (*AbsorbingDampers*)
+
+# Absorbing Boundary Conditions (`AbsorbingDampers`)
 
 This *AbsorbingDampers* boundary condition attempts to prevent seismic waves reflecting off of a boundary by placing simple dashpots on the boundary.
 Normally incident dilatational and shear waves are perfectly absorbed.
@@ -185,14 +93,9 @@ Waves incident at other angles are only partially absorbed.
 This boundary condition is simpler than a perfectly matched layer (PML) boundary condition but does not perform quite as well, especially for surface waves.
 If the waves arriving at the absorbing boundary are relatively small in amplitude compared to the amplitudes of primary interest, this boundary condition gives reasonable results.
 
-The *AbsorbingDampers* boundary condition properties and components are:
-
-:label: Label of the group of vertices associated with the boundary condition (default="");
-:field: Solution subfield associated with boundary condition (default=displacement);
-:db_auxiliary_field: Database for boundary condition parameter values (default=*SimpleDB*);
-:observers: Observers of boundary condition, e.g., output (default=*[PhysicsObserver]*);
-
-The auxiliary subfields in this case are the bulk rheology properties for an isotrpoic, linear elastic material (density, vs (S-wave speed), and vp (P-wave speed).
+:::{seealso}
+[`AbsorbingDampers` Component](../components/bc/AbsorbingDampers.md)
+:::
 
 ## Finite-Element Implementation of Absorbing Boundary
 
@@ -201,7 +104,6 @@ The auxiliary subfields in this case are the bulk rheology properties for an iso
 
 Move this to the multiphysics implementation section.
 :::
-
 
 Consider a plane wave propagating at a velocity $c$.
 We can write the displacement field as

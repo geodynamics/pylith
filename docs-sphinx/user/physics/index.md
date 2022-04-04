@@ -6,7 +6,3 @@ materials.md
 bc.md
 faults.md
 :::
-% materials.md
-% bc.md
-% faults.md
-% sources.md

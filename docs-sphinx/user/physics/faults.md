@@ -89,7 +89,7 @@ Output of fault orientation information is not yet available in the beta release
 Implement output of fault orientation information.
 :::
 
-## Kinematic Earthquake Rupture (*FaultCohesiveKin*)
+## Kinematic Earthquake Rupture (`FaultCohesiveKin`)
 
 Kinematic earthquake ruptures use the *FaultCohesiveKin* object to prescribe the slip as a function of time on the fault surface.
 Slip may evolve simultaneously over the fault surface instantaneously in a single time step (as is usually done in quasistatic simulations) or propagate over the fault surface over hundreds and up to thousands of time steps (as is usually done in a dynamic simulation).
@@ -105,33 +105,15 @@ The default dynamic array contains a single earthquake rupture, &ldquo;rupture.&
 Add note about discretization of "slip" auxiliary subfield.
 :::
 
-### Kinematic Rupture Parameters (*KinSrc*)
+### Kinematic Rupture Parameters (`KinSrc`)
 
 The kinematic rupture parameters include the origin time and slip time function.
 The slip initiation time in the slip time function is relative to the origin time (default is 0).
 This means that slip initiates at a point at a time corresponding to the sum of the kinematic rupture&rsquo;s origin time and the slip initiation time for that point.
 
-```{code-block} cfg
----
-caption: FaultCohesiveKin parameters in a `cfg` file
----
-[pylithapp.problem]
-interfaces = [fault]
-# FaultCohesiveKin is the default for a fault.
-
-[pylithapp.problem.interfaces.fault]
-id = 10
-label = fault_x
-edge = fault_x_buried_edge
-
-# KinSrcStep is the default slip-time function.
-
-[pylithapp.problem.interfaces.fault.eq_ruptures.rupture]
-db_auxiliary_field = spatialdata.spatialdb.UniformDB
-db_auxiliary_field.label = Fault rupture auxiliary field spatial
-database db_auxiliary_field.values = [initiation_time, final_slip_left_lateral, final_slip_opening]
-db_auxiliary_field.data = [0.0*s, -2.0*m, 0.0*m]
-```
+:::{seealso}
+[`KinSrc` Component](../components/faults/KinSrc.md)
+:::
 
 ### Slip Time Function
 
@@ -140,7 +122,7 @@ Currently, two slip time functions are available: (1) a step-function for quasis
 Additional slip time functions will likely be available in future releases.
 The default slip time function is the step-function slip function.
 
-#### Step-Function Slip Time Function (*KinSrcStep*)
+#### Step-Function Slip Time Function (`KinSrcStep`)
 
 This slip function prescribes a step in slip at a given time at a point:
 %
@@ -162,7 +144,7 @@ The slip is specified independently for each of the components of slip, and the 
 | final_slip      | opening, left_lateral, reverse |
 ```
 
-#### Constant Slip Rate Slip Time Function (*KinSrcConstRate*)
+#### Constant Slip Rate Slip Time Function (`KinSrcConstRate`)
 
 This slip function prescribes a constant slip rate for the evolution of slip at a point:
 %

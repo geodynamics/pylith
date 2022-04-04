@@ -18,25 +18,15 @@ Associating material properties with a given cell involves several steps.
 4.  Specify the parameters for the material properties, e.g., linear variation in density with depth, using a spatial database file.
 This allows variation of the material properties across cells with the same material identifier.
 
-Facilities and properties common to all materials:
-
-:id: This is the material identifier that matches the integer value assigned to each cell in the mesh generation process (default=0);
-:label: Name or label for the material (default=""), this is used in error and diagnostic reports);
-:db_auxiliary_field:  Spatial database for physical property parameters;
-:observers: Observers of physics, i.e., output (default=[*PhysicsObserver*]); and
-:auxiliary_subfields: Discretization information for auxiliary subfields.
-
-## Elasticity (*Elasticity*)
+## Elasticity (`Elasticity`)
 
 The *Elasticity* is used to solve the elasticity equation with or without inertia.
 Whether inertia or body forces are included is determined by the *Elasticity* property settings.
 Gravitational body forces are included if the **gravity_field** is set in the *Problem*.
-The properties and facilities are;
 
-:derived_subfields: Discretization information for derived subfields.
-:use_inertia: Include inertial term in elasticity equation (default=False);
-:use_body_force: Include body force term in elasticity equation (default=False); and
-:bulk_rheology: Bulk rheology for an elastic material.
+:::{seealso}
+[`Elasticity` Component](../components/materials/Elasticity.md)
+:::
 
 {numref}`tab:elasticity:rheologies` lists the bulk rheologies implemented for the elaticity equation.
 
@@ -110,86 +100,24 @@ DP: isotropic Drucker-Prager elastoplasticity
 |:--------------|:---:|:---:|:---:|:---:|:---:|:-----------------------|
 | cauchy_stress |  ✓  |  ✓ |  ✓  |  ✓  |  ✓ | xx, yy, zz, xy, yz, xz |
 | cauchy_strain |  ✓  |  ✓ |  ✓  |  ✓  |  ✓ | xx, yy, zz, yz, yz, xz |
-
 ```
 
-Property common to all bulk rheologies for elasticity:
-
-:use_reference_state: Flag indicating to compute deformation relative to the supplied reference state (default=False).
-
-```{code-block} cfg
----
-caption: Parameters for two materials in a `cfg` file
----
-[pylithapp.problem]
-materials = [elastic, viscoelastic]
-materials.viscoelastic.bulk_rheology = pylith.materials.IsotropicLinearMaxwell
-
-[pylithapp.problem.materials.elastic]
-label = Elastic material
-id = 1
-db_auxiliary_field = spatialdata.spatialdb.UniformDB
-db_auxiliary_field.label = Elastic properties
-db_auxiliary_field.values = [density, vs, vp]
-db_auxiliary_field.data = [2500*kg/m**3, 3.0*km/s, 5.2915026*km/s]
-
-observers.observer.writer.filename = output/step01-elastic.h5
-
-# Set the discretization of the material auxiliary fields (properties).
-# With uniform material properties, we can use a basis order of 0.
-auxiliary_subfields.density.basis_order = 0
-auxiliary_subfields.density.quadrature_order = 1
-
-[pylithapp.problem.materials.elastic.bulk_rheology]
-auxiliary_subfields.bulk_modulus.basis_order = 0
-auxiliary_subfields.bulk_modulus.quadrature_order = 1
-
-auxiliary_subfields.shear_modulus.basis_order = 0
-auxiliary_subfields.shear_modulus.quadrature_order = 1
-
-[pylithapp.problem.materials.viscoelastic]
-label = Viscoelastic material
-id = 2
-db_auxiliary_field = spatialdata.spatialdb.SimpleGridDB
-db_auxiliary_field.label = Viscoelastic properties
-db_auxiliary_field.filename = mat_viscoelastic.spatialdb
-
-observers.observer.writer.filename = output/step01-viscoelastic.h5
-
-# Set the discretization of the material auxiliary fields (properties).
-# We will assume we have a linear variation in material properties in
-# mat_viscoelastic.spatialdb, so we use a basis order of 1.
-auxiliary_subfields.density.basis_order = 1
-auxiliary_subfields.density.quadrature_order = 1
-
-[pylithapp.problem.materials.elastic.bulk_rheology]
-auxiliary_subfields.bulk_modulus.basis_order = 1
-auxiliary_subfields.bulk_modulus.quadrature_order = 1
-
-auxiliary_subfields.shear_modulus.basis_order = 1
-auxiliary_subfields.shear_modulus.quadrature_order = 1
-
-auxiliary_subfields.viscosity.basis_order = 1
-auxiliary_subfields.viscosity.quadrature_order = 1
-```
-
-## Incompressible Elasticity (*IncompressibleElasticity*)
+## Incompressible Elasticity (`IncompressibleElasticity`)
 
 Estimating realistic distributions of initial stress fields consistent with gravitational body forces can be quite difficult due to our lack of knowledge of the deformation history.
 A simple way to approximate the lithostatic load is to solve for the stress field imposed by gravitational body forces assuming an incompressible elastic material.
 This limits the volumetric deformation.
 In this context we do not include inertia, so the *IncompressibleElasticity* object does not include an inertial term.
-Gravitational body forces are included if the **gravity_field** is set in the . The properties and facilities are;
+Gravitational body forces are included if the **gravity_field** is set in the *Problem*.
 
-:derived_subfields: Discretization information for derived subfields.
-:use_body_force: Include body force term in elasticity equation (default=False); and
-:bulk_rheology: Bulk rheology for an elastic material.
+:::{seealso}
+[`IncompressibleElasticity` Component](../components/materials/IncompressibleElasticity.md)
+:::
 
 {numref}`tab:incompressible:elasticity:rheologies` lists the bulk rheologies implemented for the elaticity equation.
 
 ```{table} Incompressible elasticity bulk rheologies.
 :name: tab:incompressible:elasticity:rheologies
-
 |   Bulk Rheology  | Description                                            |
 |:----|:--------------------------------------------|
 |  *IsotropicLinearincompElasticity*   | Isotropic, linear incompressible elasticity |
@@ -197,7 +125,6 @@ Gravitational body forces are included if the **gravity_field** is set in the . 
 
 ```{table} Auxiliary subfields for incompressible elasticity bulk rheologies.
 :name: tab:incompressible:elasticity:auxiliary:subfields
-
 |           Subfield         |   L | LM  |  GM |  PL |    Components          |
 |:---------------------------|:---:|:---:|:---:|:---:|:-----------------------|
 | density                    |  X  |  X  |  X  |  X  |                        |
@@ -224,46 +151,4 @@ PL: isotropic power-law viscoelasticity
 |:--------------|:---:|:---:|:---:|:---:|:----------------------|
 | cauchy_stress |  ✓  |  ✓ |  ✓  |  ✓  |xx, yy, zz, xy, yz, xz |
 | cauchy_strain |  ✓  |  ✓ |  ✓  |  ✓  |xx, yy, zz, yz, yz, xz |
-```
-
-Property common to all bulk rheologies for elasticity:
-
-:use_reference_state: Flag indicating to compute deformation relative to the supplied reference state (default=False).
-
-```{code-block} cfg
----
-caption: Parameters for an incompressible material in a `cfg` file
----
-[pylithapp.problem]
-materials = [elastic]
-materials.elastic = pylith.materials.IncompressibleElasticity
-# Use the default bulk_rheology: IsotropicLinearIncompElasticity
-
-gravity_field = spatialdata.spatialdb.GravityField
-gravity_field.gravity_dir = [0.0, -1.0, 0.0]
-
-# With incompressible elasticity, the solution subfields are displacement and pressure.
-solution = pylith.problems.SolnDispPres
-
-[pylithapp.problem.materials.elastic]
-label = Elastic material
-id = 1
-db_auxiliary_field = spatialdata.spatialdb.UniformDB
-db_auxiliary_field.label = Elastic properties
-db_auxiliary_field.values = [density, vs, vp]
-db_auxiliary_field.data = [2500*kg/m**3, 3.0*km/s, 1.0e+12*km/s]
-
-observers.observer.writer.filename = output/step01-elastic.h5
-
-# Set the discretization of the material auxiliary fields (properties).
-# With uniform material properties, we can use a basis order of 0.
-auxiliary_subfields.density.basis_order = 0
-auxiliary_subfields.density.quadrature_order = 1
-
-[pylithapp.problem.materials.elastic.bulk_rheology]
-auxiliary_subfields.bulk_modulus.basis_order = 0
-auxiliary_subfields.bulk_modulus.quadrature_order = 1
-
-auxiliary_subfields.shear_modulus.basis_order = 0
-auxiliary_subfields.shear_modulus.quadrature_order = 1
 ```
