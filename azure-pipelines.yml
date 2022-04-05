@@ -53,16 +53,18 @@ stages:
               BASE_IMAGE: "testenv-ubuntu-18.04"
             ubuntu_20.04:
               BASE_IMAGE: "testenv-ubuntu-20.04"
-            ubuntu_21.04:
-              BASE_IMAGE: "testenv-ubuntu-21.04"
-            fedora_33:
-              BASE_IMAGE: "testenv-fedora-33"
-            fedora_34:
-              BASE_IMAGE: "testenv-fedora-34"
-            centos_8:
-              BASE_IMAGE: "testenv-centos-8"
+            ubuntu_21.10:
+              BASE_IMAGE: "testenv-ubuntu-21.10"
+            ubuntu_22.04:
+              BASE_IMAGE: "testenv-ubuntu-22.04"
+            fedora_35:
+              BASE_IMAGE: "testenv-fedora-35"
+            fedora_36:
+              BASE_IMAGE: "testenv-fedora-36"
             centos_7:
               BASE_IMAGE: "testenv-centos-7"
+            rockylinux_8:
+              BASE_IMAGE: "testenv-rockylinux-8"
         steps:
           - checkout: self
             submodules: "true"
