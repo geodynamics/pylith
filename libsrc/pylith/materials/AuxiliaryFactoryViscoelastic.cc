@@ -257,27 +257,28 @@ pylith::materials::AuxiliaryFactoryViscoelastic::addTotalStrain(void) {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Add stress subfield to auxiliary fields.
+// Add deviatoric stress subfield to auxiliary fields.
 void
-pylith::materials::AuxiliaryFactoryViscoelastic::addStress(void) {
+pylith::materials::AuxiliaryFactoryViscoelastic::addDeviatoricStress(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addStress(void)");
+    PYLITH_JOURNAL_DEBUG("addDeviatoricStress(void)");
 
-    const char* subfieldName = "stress";
+    const char* subfieldName = "deviatoric_stress";
     const char* componentNames[6] = {
-        "stress_xx",
-        "stress_yy",
-        "stress_zz",
-        "stress_xy",
-        "stress_yz",
-        "stress_xz"
+        "deviatoric_stress_xx",
+        "deviatoric_stress_yy",
+        "deviatoric_stress_zz",
+        "deviatoric_stress_xy",
+        "deviatoric_stress_yz",
+        "deviatoric_stress_xz"
     };
     const int stressSize = (3 == _spaceDim) ? 6 : (2 == _spaceDim) ? 4 : 1;
+    const PylithReal pressureScale = _normalizer->getPressureScale();
 
     pylith::topology::Field::Description description;
     description.label = subfieldName;
     description.alias = subfieldName;
-    description.vectorFieldType = pylith::topology::Field::OTHER;
+    description.vectorFieldType = (3 == _spaceDim) ? pylith::topology::Field::TENSOR : pylith::topology::Field::OTHER;
     description.numComponents = stressSize;
     description.componentNames.resize(stressSize);
     description.hasHistory = true;
@@ -285,14 +286,14 @@ pylith::materials::AuxiliaryFactoryViscoelastic::addStress(void) {
     for (int i = 0; i < stressSize; ++i) {
         description.componentNames[i] = componentNames[i];
     } // for
-    description.scale = 1.0;
+    description.scale = pressureScale;
     description.validator = NULL;
 
     _field->subfieldAdd(description, getSubfieldDiscretization(subfieldName));
     this->setSubfieldQuery(subfieldName);
 
     PYLITH_METHOD_END;
-} // addStress
+} // addDeviatoricStress
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -316,7 +317,7 @@ pylith::materials::AuxiliaryFactoryViscoelastic::addViscousStrain(void) {
     pylith::topology::Field::Description description;
     description.label = subfieldName;
     description.alias = subfieldName;
-    description.vectorFieldType = pylith::topology::Field::OTHER;
+    description.vectorFieldType = (3 == _spaceDim) ? pylith::topology::Field::TENSOR : pylith::topology::Field::OTHER;
     description.numComponents = strainSize;
     description.componentNames.resize(strainSize);
     description.hasHistory = true;

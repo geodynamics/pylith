@@ -22,7 +22,7 @@ dist_noinst_DATA = \
 	axialtraction_powerlaw_n1.cfg \
 	pylithapp.cfg \
 	sheartraction_powerlaw.cfg \
-	onecell_quad.mesh \
+	onecell_hex.mesh \
 	axialtraction_maxwell_soln.py \
 	axialtraction_powerlaw_n1_gendb.py \
 	plot_axialtraction_powerlaw.py \

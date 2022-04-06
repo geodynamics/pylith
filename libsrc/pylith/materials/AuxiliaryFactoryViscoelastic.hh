@@ -62,7 +62,7 @@ public:
     void addTotalStrain(void);
 
     /// Add stress subfield to auxiliary subfields.
-    void addStress(void);
+    void addDeviatoricStress(void);
 
     /// Add viscous strain subfield to auxiliary subfields.
     void addViscousStrain(void);

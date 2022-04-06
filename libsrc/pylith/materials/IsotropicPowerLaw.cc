@@ -22,6 +22,7 @@
 
 #include "pylith/materials/AuxiliaryFactoryViscoelastic.hh" // USES AuxiliaryFactoryViscoelastic
 #include "pylith/fekernels/IsotropicPowerLaw.hh" // USES IsotropicPowerLaw kernels
+#include "pylith/feassemble/Integrator.hh" // USES Integrator
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 
@@ -37,6 +38,7 @@ typedef pylith::feassemble::IntegratorDomain::ProjectKernels ProjectKernels;
 pylith::materials::IsotropicPowerLaw::IsotropicPowerLaw(void) :
     _auxiliaryFactory(new pylith::materials::AuxiliaryFactoryViscoelastic),
     _useReferenceState(false) {
+    _lhsJacobianTriggers = pylith::feassemble::Integrator::NEW_JACOBIAN_ALWAYS;
     pylith::utils::PyreComponent::setName("isotropicpowerlaw");
 } // constructor
 
@@ -96,17 +98,17 @@ pylith::materials::IsotropicPowerLaw::addAuxiliarySubfields(void) {
     // :ATTENTION: The order for adding subfields must match the order of the auxiliary fields in the point-wise
     // functions (kernels).
 
+    if (_useReferenceState) {
+        _auxiliaryFactory->addReferenceStress();
+        _auxiliaryFactory->addReferenceStrain();
+    } // if
     _auxiliaryFactory->addShearModulus();
     _auxiliaryFactory->addBulkModulus();
     _auxiliaryFactory->addPowerLawReferenceStrainRate();
     _auxiliaryFactory->addPowerLawReferenceStress();
     _auxiliaryFactory->addPowerLawExponent();
     _auxiliaryFactory->addViscousStrain();
-    _auxiliaryFactory->addStress();
-    if (_useReferenceState) {
-        _auxiliaryFactory->addReferenceStress();
-        _auxiliaryFactory->addReferenceStrain();
-    } // if
+    _auxiliaryFactory->addDeviatoricStress();
 
     PYLITH_METHOD_END;
 } // addAuxiliarySubfields
@@ -176,7 +178,6 @@ pylith::materials::IsotropicPowerLaw::updateKernelConstants(pylith::real_array* 
                                                             const PylithReal dt) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("updateKernelConstants(kernelConstants"<<kernelConstants<<", dt="<<dt<<")");
-    // ******** Should alpha (time integration parameter) be included here?
 
     assert(kernelConstants);
 
@@ -202,18 +203,18 @@ pylith::materials::IsotropicPowerLaw::addKernelsUpdateStateVars(std::vector<Proj
         (_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicPowerLaw3D::updateViscousStrain_refstate :
         (_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicPowerLawPlaneStrain::updateViscousStrain_refstate :
         NULL;
-    const PetscPointFunc funcStress =
-        (!_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicPowerLaw3D::updateStress :
-        (!_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicPowerLawPlaneStrain::updateStress :
-        (_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicPowerLaw3D::updateStress_refstate :
-        (_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicPowerLawPlaneStrain::updateStress_refstate :
+    const PetscPointFunc funcDeviatoricStress =
+        (!_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicPowerLaw3D::updateDeviatoricStress :
+        (!_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicPowerLawPlaneStrain::updateDeviatoricStress :
+        (_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicPowerLaw3D::updateDeviatoricStress_refstate :
+        (_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicPowerLawPlaneStrain::updateDeviatoricStress_refstate :
         NULL;
 
     assert(kernels);
     size_t prevNumKernels = kernels->size();
     kernels->resize(prevNumKernels + 2);
     (*kernels)[prevNumKernels+0] = ProjectKernels("viscous_strain", funcViscousStrain);
-    (*kernels)[prevNumKernels+1] = ProjectKernels("stress", funcStress);
+    (*kernels)[prevNumKernels+1] = ProjectKernels("deviatoric_stress", funcDeviatoricStress);
 
     PYLITH_METHOD_END;
 } // addKernelsUpdateStateVars
