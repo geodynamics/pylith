@@ -132,10 +132,9 @@ pylith::feassemble::ConstraintSpatialDB::setSolution(pylith::feassemble::Integra
     assert(solution);
     const PylithReal t = integrationData->getScalar(pylith::feassemble::IntegrationData::time);
 
+    // Get label for constraint.
     PetscErrorCode err = 0;
     PetscDM dmSoln = solution->getDM();
-
-    // Get label for constraint.
     PetscDMLabel dmLabel = NULL;
     err = DMGetLabel(dmSoln, _labelName.c_str(), &dmLabel);PYLITH_CHECK_ERROR(err);
 
