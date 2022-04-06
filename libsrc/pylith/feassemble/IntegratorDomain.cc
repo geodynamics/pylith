@@ -24,6 +24,7 @@
 #include "pylith/feassemble/DSLabelAccess.hh" // USES DSLabelAccess
 #include "pylith/problems/Physics.hh" // USES Physics
 #include "pylith/feassemble/IntegrationData.hh" // USES IntegrationData
+#include "pylith/feassemble/IntegratorInterface.hh" // USES IntegratorInterface::FaceEnum
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES createSubdomainMesh()
 #include "pylith/topology/Field.hh" // USES Field
@@ -242,6 +243,31 @@ pylith::feassemble::IntegratorDomain::initialize(const pylith::topology::Field& 
     err = DMSetAuxiliaryVec(dmSoln, dmLabel, _labelValue, LHS, _auxiliaryField->getLocalVector());PYLITH_CHECK_ERROR(err);
     err = DMSetAuxiliaryVec(dmSoln, dmLabel, _labelValue, RHS, _auxiliaryField->getLocalVector());PYLITH_CHECK_ERROR(err);
     err = DMSetAuxiliaryVec(dmSoln, dmLabel, _labelValue, LHS_LUMPED_INV, _auxiliaryField->getLocalVector());PYLITH_CHECK_ERROR(err);
+
+    { // KLUDGE
+        /* Set auxiliary vector for use in interface integration of negative and positive fault faces.
+         * Can't do it in IntegratorIntrface because it doesn't have access to the auxiliary field.
+         */
+        const PetscInt numTotalFaces = 3;
+        const PetscInt numFaultFaces = 2;
+        const PetscInt faces[numFaultFaces] = {
+            pylith::feassemble::IntegratorInterface::NEGATIVE_FACE,
+            pylith::feassemble::IntegratorInterface::POSITIVE_FACE,
+        };
+        const PetscInt numParts = 3;
+        const PetscInt parts[numParts] = {
+            LHS,
+            RHS,
+            LHS_WEIGHTED,
+        };
+        for (PetscInt iPart = 0; iPart < numParts; ++iPart) {
+            for (PetscInt iFace = 0; iFace < numFaultFaces; ++iFace) {
+                const PetscInt part = numTotalFaces*parts[iPart] + faces[iFace];
+                err = DMSetAuxiliaryVec(dmSoln, dmLabel, _labelValue, part,
+                                        _auxiliaryField->getLocalVector());PYLITH_CHECK_ERROR(err);
+            } // for
+        } // for
+    } // KLUDGE
 
     if (_kernelsUpdateStateVars.size() > 0) {
         delete _updateState;_updateState = new pylith::feassemble::UpdateStateVars;assert(_updateState);
