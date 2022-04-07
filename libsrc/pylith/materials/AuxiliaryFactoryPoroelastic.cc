@@ -138,34 +138,6 @@ pylith::materials::AuxiliaryFactoryPoroelastic::addDrainedBulkModulus(void) { //
     PYLITH_METHOD_END;
 } // addDrainedBulkModulus
 
-
-// --------------------------------------------------------------------
-// Add fluid bulk modulus subfield to auxiliary fields.
-void
-pylith::materials::AuxiliaryFactoryPoroelastic::addFluidBulkModulus(void) { // fluidBulkModulus
-    PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addFluidBulkModulus(void)");
-
-    const char* subfieldName = "fluid_bulk_modulus";
-    const PylithReal pressureScale = _normalizer->getPressureScale();
-
-    pylith::topology::Field::Description description;
-    description.label = subfieldName;
-    description.alias = subfieldName;
-    description.vectorFieldType = pylith::topology::Field::SCALAR;
-    description.numComponents = 1;
-    description.componentNames.resize(1);
-    description.componentNames[0] = subfieldName;
-    description.scale = pressureScale;
-    description.validator = pylith::topology::FieldQuery::validatorPositive;
-
-    _field->subfieldAdd(description, getSubfieldDiscretization(subfieldName));
-    this->setSubfieldQuery(subfieldName);
-
-    PYLITH_METHOD_END;
-} // addFluidBulkModulus
-
-
 // ---------------------------------------------------------------------
 // Add biot coefficient subfield to auxiliary fields.
 void
@@ -321,33 +293,6 @@ pylith::materials::AuxiliaryFactoryPoroelastic::addShearModulus(void) {
 
     PYLITH_METHOD_END;
 } // addShearModulus
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Add solid bulk modulus subfield to auxiliary fields.
-void
-pylith::materials::AuxiliaryFactoryPoroelastic::addSolidBulkModulus(void) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addSolidBulkModulus(void)");
-
-    const char* subfieldName = "solid_bulk_modulus";
-    const PylithReal pressureScale = _normalizer->getPressureScale();
-
-    pylith::topology::Field::Description description;
-    description.label = subfieldName;
-    description.alias = subfieldName;
-    description.vectorFieldType = pylith::topology::Field::SCALAR;
-    description.numComponents = 1;
-    description.componentNames.resize(1);
-    description.componentNames[0] = subfieldName;
-    description.scale = pressureScale;
-    description.validator = pylith::topology::FieldQuery::validatorPositive;
-
-    _field->subfieldAdd(description, getSubfieldDiscretization(subfieldName));
-    this->setSubfieldQuery(subfieldName);
-
-    PYLITH_METHOD_END;
-} // addSolidBulkModulus
 
 
 // End of file

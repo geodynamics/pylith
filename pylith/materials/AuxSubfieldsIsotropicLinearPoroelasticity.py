@@ -58,14 +58,6 @@ class AuxSubfieldsIsotropicLinearPoroelasticity(PetscComponent):
         "tensor_permeability", family="auxiliary_subfield", factory=Subfield)
     tensorPermeability.meta['tip'] = "Tensor permeability subfield."
 
-    solidBulkModulus = pythia.pyre.inventory.facility(
-        "solid_bulk_modulus", family="auxiliary_subfield", factory=Subfield)
-    solidBulkModulus.meta['tip'] = "Solid bulk modulus subfield."
-
-    fluidBulkModulus = pythia.pyre.inventory.facility(
-        "fluid_bulk_modulus", family="auxiliary_subfield", factory=Subfield)
-    fluidBulkModulus.meta['tip'] = "Fluid bulk modulus subfield."
-
     drainedBulkModulus = pythia.pyre.inventory.facility(
         "drained_bulk_modulus", family="auxiliary_subfield", factory=Subfield)
     drainedBulkModulus.meta['tip'] = "Drained bulk modulus subfield."
