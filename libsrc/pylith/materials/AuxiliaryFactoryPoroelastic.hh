@@ -72,12 +72,6 @@ public:
     /// Add solid bulk modulus subfield to auxiliary subfields.
     void addSolidBulkModulus(void);
 
-    /// Add shear modulus subfield to auxiliary subfields.
-    void addYoungsModulus(void);
-
-    /// Add solid bulk modulus subfield to auxiliary subfields.
-    void addPoissonsRatio(void);
-
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
