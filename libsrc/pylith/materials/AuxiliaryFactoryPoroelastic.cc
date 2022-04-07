@@ -140,33 +140,6 @@ pylith::materials::AuxiliaryFactoryPoroelastic::addDrainedBulkModulus(void) { //
 
 
 // --------------------------------------------------------------------
-// Add undrained bulk modulus subfield to auxiliary fields.
-void
-pylith::materials::AuxiliaryFactoryPoroelastic::addUndrainedBulkModulus(void) { // UndrainedBulkModulus
-    PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addUndrainedBulkModulus(void)");
-
-    const char* subfieldName = "undrained_bulk_modulus";
-    const PylithReal pressureScale = _normalizer->getPressureScale();
-
-    pylith::topology::Field::Description description;
-    description.label = subfieldName;
-    description.alias = subfieldName;
-    description.vectorFieldType = pylith::topology::Field::SCALAR;
-    description.numComponents = 1;
-    description.componentNames.resize(1);
-    description.componentNames[0] = subfieldName;
-    description.scale = pressureScale;
-    description.validator = pylith::topology::FieldQuery::validatorPositive;
-
-    _field->subfieldAdd(description, getSubfieldDiscretization(subfieldName));
-    this->setSubfieldQuery(subfieldName);
-
-    PYLITH_METHOD_END;
-} // addUndrainedBulkModulus
-
-
-// --------------------------------------------------------------------
 // Add fluid bulk modulus subfield to auxiliary fields.
 void
 pylith::materials::AuxiliaryFactoryPoroelastic::addFluidBulkModulus(void) { // fluidBulkModulus

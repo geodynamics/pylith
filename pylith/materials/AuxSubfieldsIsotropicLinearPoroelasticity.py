@@ -70,10 +70,6 @@ class AuxSubfieldsIsotropicLinearPoroelasticity(PetscComponent):
         "drained_bulk_modulus", family="auxiliary_subfield", factory=Subfield)
     drainedBulkModulus.meta['tip'] = "Drained bulk modulus subfield."
 
-    undrainedBulkModulus = pythia.pyre.inventory.facility(
-        "undrained_bulk_modulus", family="auxiliary_subfield", factory=Subfield)
-    undrainedBulkModulus.meta['tip'] = "Undrained bulk modulus subfield."
-
     biotModulus = pythia.pyre.inventory.facility(
         "biot_modulus", family="auxiliary_subfield", factory=Subfield)
     biotModulus.meta['tip'] = "Biot modulus subfield."
