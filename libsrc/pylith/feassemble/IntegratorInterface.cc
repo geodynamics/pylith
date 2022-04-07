@@ -282,7 +282,7 @@ pylith::feassemble::IntegratorInterface::setKernels(const std::vector<ResidualKe
                 PYLITH_JOURNAL_LOGICERROR("Unknown integration face ("<<kernelsPatch[i].face<<").");
             } // switch
             err = PetscWeakFormAddBdResidual(weakForm, key.label, key.value, key.field, key.part,
-                                             kernelsPatch[i].r0, kernels[i].r1);PYLITH_CHECK_ERROR(err);
+                                             kernelsPatch[i].r0, kernelsPatch[i].r1);PYLITH_CHECK_ERROR(err);
 
             switch (kernelsPatch[i].part) {
             case LHS:
@@ -407,10 +407,6 @@ pylith::feassemble::IntegratorInterface::initialize(const pylith::topology::Fiel
     typedef InterfacePatches::keysmap_t keysmap_t;
     const keysmap_t& keysmap = _integrationPatches->getKeys();
     const pylith::topology::Field* auxiliaryField = getAuxiliaryField();assert(auxiliaryField);
-#if 0
-    const pylith::topology::Field* daeWeighting =
-        integrationData->getField(pylith::feassemble::IntegrationData::dae_mass_weighting);
-#endif
 
     for (keysmap_t::const_iterator iter = keysmap.begin(); iter != keysmap.end(); ++iter) {
         const size_t numParts = 3;
@@ -425,11 +421,6 @@ pylith::feassemble::IntegratorInterface::initialize(const pylith::topology::Fiel
             err = DMSetAuxiliaryVec(dmSoln, key.label, key.value, part,
                                     auxiliaryField->getLocalVector());PYLITH_CHECK_ERROR(err);
         } // for
-#if 0
-        PetscFormKey key = iter->second.cohesive.getPetscKey(*solution, LHS_WEIGHTED);
-        PetscInt part = _IntegratorInterface::computeWeakFormPart(key.part, IntegratorInterface::FAULT_FACE);
-        err = DMSetAuxiliaryVec(dmSoln, key.label, -key.value, part, daeWeighting->getLocalVector());PYLITH_CHECK_ERROR(err);
-#endif
     } // for
 
     PYLITH_METHOD_END;
@@ -490,6 +481,29 @@ pylith::feassemble::IntegratorInterface::computeLHSResidual(pylith::topology::Fi
     } // if
 
     if (_hasLHSResidualWeighted) {
+        { // KLUDGE
+            PetscErrorCode err = 0;
+            const pylith::topology::Field* daeWeighting =
+                integrationData.getField(pylith::feassemble::IntegrationData::dae_mass_weighting);
+            const pylith::topology::Field* solution =
+                integrationData.getField(pylith::feassemble::IntegrationData::solution);
+            PetscDM dmSoln = solution->getDM();
+            typedef InterfacePatches::keysmap_t keysmap_t;
+            const keysmap_t& keysmap = _integrationPatches->getKeys();
+
+            for (keysmap_t::const_iterator iter = keysmap.begin(); iter != keysmap.end(); ++iter) {
+                const PetscFormKey key = iter->second.cohesive.getPetscKey(*solution, LHS_WEIGHTED);
+                PetscInt part = _IntegratorInterface::computeWeakFormPart(key.part, IntegratorInterface::FAULT_FACE);
+                err = DMSetAuxiliaryVec(dmSoln, key.label, -key.value, part, daeWeighting->getLocalVector());PYLITH_CHECK_ERROR(err);
+
+                part = _IntegratorInterface::computeWeakFormPart(key.part, IntegratorInterface::NEGATIVE_FACE);
+                err = DMSetAuxiliaryVec(dmSoln, key.label, -key.value, part, daeWeighting->getLocalVector());PYLITH_CHECK_ERROR(err);
+
+                part = _IntegratorInterface::computeWeakFormPart(key.part, IntegratorInterface::POSITIVE_FACE);
+                err = DMSetAuxiliaryVec(dmSoln, key.label, -key.value, part, daeWeighting->getLocalVector());PYLITH_CHECK_ERROR(err);
+            } // for
+        } // KLUDGE
+
         const pylith::feassemble::Integrator::EquationPart equationPart = pylith::feassemble::Integrator::LHS_WEIGHTED;
         _IntegratorInterface::computeResidual(residual, this, equationPart, integrationData);
     } // if
