@@ -1,3 +1,4 @@
+(sec-user-governing-eqns)=
 # Governing Equations
 
 This chapter presents the solution schemes we use for solving variations of the elasticity equation using the finite-element method.
