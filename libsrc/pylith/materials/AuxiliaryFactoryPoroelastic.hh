@@ -48,12 +48,6 @@ public:
     /// Add drained Bulk Modulus subfield to auxiliary subfields.
     void addDrainedBulkModulus(void);
 
-    /// Add undrained Bulk Modulus subfield to auxiliary subfields.
-    void addUndrainedBulkModulus(void);
-
-    /// Add fluid Bulk Modulus subfield to auxiliary subfields.
-    void addFluidBulkModulus(void);
-
     /// Add fluid Biot Coefficient subfield to auxiliary subfields.
     void addBiotCoefficient(void);
 
@@ -68,15 +62,6 @@ public:
 
     /// Add shear modulus subfield to auxiliary subfields.
     void addShearModulus(void);
-
-    /// Add solid bulk modulus subfield to auxiliary subfields.
-    void addSolidBulkModulus(void);
-
-    /// Add shear modulus subfield to auxiliary subfields.
-    void addYoungsModulus(void);
-
-    /// Add solid bulk modulus subfield to auxiliary subfields.
-    void addPoissonsRatio(void);
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:

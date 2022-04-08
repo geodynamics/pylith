@@ -58,33 +58,13 @@ class AuxSubfieldsIsotropicLinearPoroelasticity(PetscComponent):
         "tensor_permeability", family="auxiliary_subfield", factory=Subfield)
     tensorPermeability.meta['tip'] = "Tensor permeability subfield."
 
-    solidBulkModulus = pythia.pyre.inventory.facility(
-        "solid_bulk_modulus", family="auxiliary_subfield", factory=Subfield)
-    solidBulkModulus.meta['tip'] = "Solid bulk modulus subfield."
-
-    fluidBulkModulus = pythia.pyre.inventory.facility(
-        "fluid_bulk_modulus", family="auxiliary_subfield", factory=Subfield)
-    fluidBulkModulus.meta['tip'] = "Fluid bulk modulus subfield."
-
     drainedBulkModulus = pythia.pyre.inventory.facility(
         "drained_bulk_modulus", family="auxiliary_subfield", factory=Subfield)
     drainedBulkModulus.meta['tip'] = "Drained bulk modulus subfield."
 
-    undrainedBulkModulus = pythia.pyre.inventory.facility(
-        "undrained_bulk_modulus", family="auxiliary_subfield", factory=Subfield)
-    undrainedBulkModulus.meta['tip'] = "Undrained bulk modulus subfield."
-
     biotModulus = pythia.pyre.inventory.facility(
         "biot_modulus", family="auxiliary_subfield", factory=Subfield)
     biotModulus.meta['tip'] = "Biot modulus subfield."
-
-    youngsModulus = pythia.pyre.inventory.facility(
-        "youngs_modulus", family="auxiliary_subfield", factory=Subfield)
-    youngsModulus.meta['tip'] = "Young's modulus subfield."
-
-    poissonsRatio = pythia.pyre.inventory.facility(
-        "poissons_ratio", family="auxiliary_subfield", factory=Subfield)
-    poissonsRatio.meta['tip'] = "Poisson's ratio subfield."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
