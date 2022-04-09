@@ -46,6 +46,12 @@ This slip function prescribes a step in slip at a given time at a point:
 where $D(t)$ is slip at time $t$, $D_{final}$ is the final slip, and $t_r$ is the slip initiation time (time when rupture reaches the location).
 The slip is specified independently for each of the components of slip, and the slip and slip starting time may vary over the fault surface.
 
+:::{figure-md} fig:slipfn:step
+<img src="figs/slipfn-step.*" alt="Step slip time function." width="600px"/>
+
+Step slip time function.
+:::
+
 ```{table} Values in the auxiliary field spatial database for KinSrcStep.
 :name: tab:slip:function:step
 |      Subfield     |           Components                 |
@@ -71,6 +77,12 @@ This slip function prescribes a constant slip rate for the evolution of slip at 
 %
 where $D(t)$ is slip at time $t$, $V$ is the slip rate, and $t_r$ is the slip initiation time (time when rupture reaches the location).
 The slip rate is specified independently for each of the components of slip, and the slip rate and slip starting time may vary over the fault surface.
+
+:::{figure-md} fig:slipfn:constrate
+<img src="figs/slipfn-constrate.*" alt="Constant rate slip time function." width="600px"/>
+
+Constant rate slip time function.
+:::
 
 ```{table} Values in the auxiliary field spatial database for KinSrcConstRate.
 :name: tab:slip:function:step
@@ -163,6 +175,12 @@ t_1 = &t_\mathit{rise} - \frac{1}{2} t_\mathit{acc}
 where $D(t)$ is slip at time $t$, $t_r$ is the slip initiation time (time when rupture reaches the location), $t_\mathit{rise}$ is the rise time, and $t_\mathit{acc}$ is the duration of the acceleration impulse.
 The slip is specified independently for each of the components of slip, and the slip rate and slip starting time may vary over the fault surface.
 
+:::{figure-md} fig:slipfn:ramp
+<img src="figs/slipfn-ramp.*" alt="Ramp slip time function." width="600px"/>
+
+Ramp slip time function.
+:::
+
 ```{table} Values in the auxiliary field spatial database for KinSrcRamp.
 :name: tab:slip:function:step
 |  Subfield          |  Components                          |
@@ -190,6 +208,12 @@ This slip function corresponds to the integral of Brune's far-field time functio
 \end{gather}
 where $D(t)$ is slip at time $t$, $D_{final}$ is the final slip at the location, $t_r$ is the slip initiation time (time when rupture reaches the location), and $t_\mathit{rise}$ is the rise time.
 Because the slip time function approaches the final slip asymptotically, we use the time it takes for the slip to reach 95\% of the final slip value as the rise time.
+
+:::{figure-md} fig:slipfn:brune
+<img src="figs/slipfn-brune.*" alt="Brune slip time function." width="600px"/>
+
+Brune slip time function.
+:::
 
 ```{table} Values in the auxiliary field spatial database for KinSrcBrune.
 :name: tab:slip:function:step
@@ -224,6 +248,12 @@ The evolution of slip at a point follows:
 \end{gather}
 %
 where $D(t)$ is slip at time $t$, $D_{final}$ is the final slip at the location, $t_r$ is the slip initiation time (time when rupture reaches the location), and $t_\mathit{rise}$ is the rise time.
+
+:::{figure-md} fig:slipfn:liucos
+<img src="figs/slipfn-liucos.*" alt="Liu-cosine slip time function." width="600px"/>
+
+Liu-cosine slip time function.
+:::
 
 ```{table} Values in the auxiliary field spatial database for KinSrcLiuCos.
 :name: tab:slip:function:step
