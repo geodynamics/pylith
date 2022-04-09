@@ -72,5 +72,5 @@ The vectors in the fault coordinate system can be transformed to the global coor
 
 :::{toctree}
 prescribed-slip.md
-spontaneous-rupture.md
+slip-impulses.md
 :::
