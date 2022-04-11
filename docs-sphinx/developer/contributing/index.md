@@ -8,6 +8,6 @@ codelayout.md
 petscfem.md
 newmaterial.md
 rebuilding.md
-documentation.md
+documentation/index.md
 :::
 %adding-materials.md
