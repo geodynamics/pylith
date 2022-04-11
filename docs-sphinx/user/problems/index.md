@@ -1,5 +1,5 @@
 (sec-user-problems)=
-# Simulations
+# Defining Simulations
 
 :::{toctree}
 problems.md
