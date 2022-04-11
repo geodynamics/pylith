@@ -23,11 +23,15 @@ from .Solution import Solution as SolutionBase
 
 
 class SolnDispPresTracStrainVelPdotTdot(PetscComponent):
-    """Python subfields container with displacement, pore pressure, and trace strain subfields.
-
-    IMPORTANT: Use the Solution class (below) to set this object as the default facilities array for the solution
-    subfields.
     """
+    Container for solution subfields with displacement, pore pressure, and trace strain subfields, along with their time derivatices.
+    """
+    DOC_CONFIG = {
+        "cfg": """
+            [pylithapp.problem]
+            solution = pylith.problems.SolnDispPresTracStrainVelPdotTdot
+        """
+    }
 
     import pythia.pyre.inventory
 
@@ -61,17 +65,13 @@ class SolnDispPresTracStrainVelPdotTdot(PetscComponent):
         "trace_strain_t", family="soln_subfield", factory=SubfieldTraceStrainDot)
     trace_strain_t.meta['tip'] = "Trace strain_t subfield."
 
-    # PUBLIC METHODS /////////////////////////////////////////////////////
-
     def __init__(self, name="solndispprestracstrainveltdotpdot"):
         """Constructor.
         """
         PetscComponent.__init__(self, name, facility="soln_subfields")
-        return
 
     def _configure(self):
         PetscComponent._configure(self)
-        return
 
     def components(self):
         """Order of facilities in Inventory is ambiguous, so overwrite

@@ -5,6 +5,7 @@ PyLith currently supports two types of problems:
 * Time dependent, and
 * Static Green's functions.
 
+(sec-user-problems-time-dependent)=
 ## Time-Dependent Problem (`TimeDependent`)
 
 This type of problem solves a time-dependent boundary value problem and applies to static, quasistatic, and dynamic simulations.

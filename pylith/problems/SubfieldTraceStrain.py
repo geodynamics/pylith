@@ -12,39 +12,34 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-
-# @file pylith/problems/SubfieldTraceStrain.py
-##
-# @brief Python object for trace_strain subfield.
-##
-# Factory: subfield.
 
 from .SolutionSubfield import SolutionSubfield
 
 
 class SubfieldTraceStrain(SolutionSubfield):
-    """Python object for trace_strain subfield.
-
-    FACTORY: soln_subfield
     """
+    Object for defining attributes of the trace strain solution subfield.
 
-    import pythia.pyre.inventory
-
-    from .SolutionSubfield import validateAlias
-    userAlias = pythia.pyre.inventory.str(
-        "alias", default="trace_strain", validator=validateAlias)
-    userAlias.meta['tip'] = "Name for subfield."
+    Implements `SolutionSubfield`.
+    """
+    DOC_CONFIG = {
+        "cfg": """
+        [pylithapp.problems.solution.subfields.trace_strain]
+        alias = trace_strain
+        basis_order = 1
+        """
+    }
 
     fieldName = "trace_strain"
-
-    # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="subfieldtracestrain"):
         """Constructor.
         """
         SolutionSubfield.__init__(self, name)
         return
+
+    def _defaults(self):
+        self.userAlias = self.fieldName
 
     def initialize(self, normalizer, spaceDim):
         """Initialize subfield metadata.

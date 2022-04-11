@@ -12,13 +12,6 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-
-# @file pythia.pyre/meshio/Xdmf.py
-##
-# @brief Python class for Xdmf metadata file associated with an HDF5 file.
-##
-# Factory: xdmf
 
 
 class Field(object):
@@ -41,18 +34,14 @@ class Field(object):
         return
 
 
-# Xdmf class
 class Xdmf(object):
     """Python class for Xdmf metadata file associated with an HDF5 file.
     """
-
-    # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self):
         """Constructor.
         """
         self.file = None
-        return
 
     def write(self, filenameH5, filenameXdmf=None, verbose=False):
         """Write Xdmf file corresponding to given HDF5 file.
@@ -122,14 +111,10 @@ class Xdmf(object):
         self._closeDomain()
         self._closeXdmf()
         self._close()
-        return
-
-    # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _close(self):
         self.h5.close()
         self.file.close()
-        return
 
     def _getSpaceDim(self):
         vertices = self.h5["/geometry/vertices"]
@@ -238,7 +223,6 @@ class Xdmf(object):
             "<Xdmf>\n"
             % (filenameH5,)
         )
-        return
 
     def _closeXdmf(self):
         """Close Xdmf element.
@@ -246,7 +230,6 @@ class Xdmf(object):
         self.file.write(
             "</Xdmf>\n"
         )
-        return
 
     def _openDomain(self, cells, vertices):
         self.file.write("  <Domain Name=\"domain\">\n")
@@ -316,7 +299,6 @@ class Xdmf(object):
             self._close()
             raise ValueError(
                 "Unexpected spatial dimension %d when writing domain vertices." % spaceDim)
-        return
 
     def _closeDomain(self):
         """Close domain element.
@@ -324,7 +306,6 @@ class Xdmf(object):
         self.file.write(
             "  </Domain>\n"
         )
-        return
 
     def _openTimeCollection(self):
         """Create Grid element for collection of time grids.
@@ -332,7 +313,6 @@ class Xdmf(object):
         self.file.write(
             "    <Grid Name=\"TimeSeries\" GridType=\"Collection\" CollectionType=\"Temporal\">\n"
         )
-        return
 
     def _closeTimeCollection(self):
         """Close Grid element for collection of time grids.
@@ -340,7 +320,6 @@ class Xdmf(object):
         self.file.write(
             "    </Grid>\n"
         )
-        return
 
     def _writeTimeStamps(self, tstamps):
         """Write time stamps.
@@ -358,7 +337,6 @@ class Xdmf(object):
             "        </DataItem>\n"
             "      </Time>\n"
         )
-        return
 
     def _openTimeGrid(self):
         """Create Grid element for a single time step.
@@ -366,7 +344,6 @@ class Xdmf(object):
         self.file.write(
             "      <Grid Name=\"domain\" GridType=\"Uniform\">\n"
         )
-        return
 
     def _closeTimeGrid(self):
         """Close Grid element for a single time step.
@@ -374,7 +351,6 @@ class Xdmf(object):
         self.file.write(
             "      </Grid>\n"
         )
-        return
 
     def _writeGridTopology(self, cells):
         """Write topology information for current grid.
@@ -391,7 +367,6 @@ class Xdmf(object):
             "        </Topology>\n"
             % (cellType, numCells,)
         )
-        return
 
     def _writeGridGeometry(self, vertices):
         """Write vertices information for current grid.
@@ -403,7 +378,6 @@ class Xdmf(object):
             "          </DataItem>\n"
             "        </Geometry>\n"
         )
-        return
 
     def _writeGridFieldComponent(self, field, iTime, iComponent):
         """Write single component of field for current time step.
@@ -458,7 +432,6 @@ class Xdmf(object):
                "h5Name": h5Name,
                }
         )
-        return
 
     def _writeGridField(self, field, iTime):
         """Write field for current time step.
@@ -546,8 +519,6 @@ class Xdmf(object):
                 "        </Attribute>\n"
                 % {"numTimeSteps": numTimeSteps, "numPoints": numPoints, "iStep": iStep, "numComponents": numComponents, "h5Name": h5Name}
             )
-
-            return
 
 
 # End of file

@@ -1,16 +1,10 @@
-(cha:materials:alternative:formulations)=
+(sec-user-governing-eqns-alternative-formulations)=
 # Alternative Material Model Formulations
 
-(sec:materials:formulations:viscoelastic)=
-## Formulations
+In some cases there are alternative formulations that may be used in future versions of PyLith, and we describe those here.
 
-The viscoelastic formulations presently used in PyLith are described in Section {ref}`sec:materials:viscoelastic`.
-In some cases there are alternative formulations that may be used in future versions of PyLith, and those are described here.
+## Effective Stress Formulation for a Linear Maxwell Viscoelastic Material
 
-(sub:Effective-Stress-Formulation-Maxwell)=
-### Effective Stress Formulation for a Linear Maxwell Viscoelastic Material
-
-An alternative technique for solving the equations for a Maxwell viscoelastic material is based on the effective stress formulation described in Section {ref}`sec:materials:formulation:viscoelastic:effective`.
 A linear Maxwell viscoelastic material may be characterized by the same elastic parameters as an isotropic elastic material ($E$ and $\nu$), as well as the viscosity, $\eta$.
 The creep strain increment is
 ```{math}
@@ -26,7 +20,7 @@ Therefore,
 \Delta\overline{e}^{C}=\frac{\Delta t\sqrt{^{\tau}J_{2}^{\prime}}}{\sqrt{3\eta}}=\frac{\Delta t\phantom{}^{\tau}\overline{\sigma}}{3\eta}\,,\,\mathrm{and}\,^{\tau}\gamma=\frac{1}{2\eta}\,\,.
 \end{gathered}
 ```
-Substituting Equations {math:numref}`eq:46`, {math:numref}`eq:D1`, and {math:numref}`eq:D2` into {math:numref}`eq:43`, we obtain
+Substituting equations {math:numref}`eq:46`, {math:numref}`eq:D1`, and {math:numref}`eq:D2` into {math:numref}`eq:43`, we obtain
 ```{math}
 :label: eq:D3
 $$\begin{gathered}
@@ -79,6 +73,7 @@ C_{ij}^{VE}=\frac{1}{3a_{m}}\left[\begin{array}{cccccc}
 ```
 Note that the coefficient of the second matrix approaches $E/3(1+\nu)=1/3a_{E}$ as $\eta$ goes to infinity.
 To check the results we make sure that the regular elastic constitutive matrix is obtained for selected terms in the case where $\eta$ goes to infinity.
+%
 ```{math}
 :label: eq:D14
 \begin{gathered}
@@ -87,5 +82,6 @@ C_{12}^{E}=\frac{E\nu}{(1+\nu)(1-2\nu)}\,.\\
 C_{44}^{E}=\frac{E}{1+\nu}\,\,\nonumber
 \end{gathered}
 ```
+%
 This is consistent with the regular elasticity matrix, and {math:numref}`eq:D13` should thus be used when forming the stiffness matrix.
 We do not presently use this formulation, but it may be included in future versions.

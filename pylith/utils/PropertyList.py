@@ -12,20 +12,13 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-# @file pylith/utils/PropertyList.py
-#
-# @brief Python class for holding a list of Pyre properties.
-#
-# The properties are given one per line or one per command line argument.
 
 from pythia.pyre.components.Component import Component
 
 
 class PropertyList(Component):
-    """Python object for holding a list of items (one per line).
-
-    FACTORY: property_list
+    """
+    Container for holding a list of items (one per line).
     """
 
     def __init__(self, name="propertylist"):

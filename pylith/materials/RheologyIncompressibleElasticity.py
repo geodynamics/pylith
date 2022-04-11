@@ -12,40 +12,27 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-# @file pylith/materials/RheologyIncompressibleElasticity.py
-#
-# @brief Python material for isotropic, linearly elastic, plane
-# strain material.
-#
-# Factory: incompressible_elasticity_rheology
 
 from pylith.utils.PetscComponent import PetscComponent
 from .materials import RheologyIncompressibleElasticity as ModuleRheology
 
 
 class RheologyIncompressibleElasticity(PetscComponent, ModuleRheology):
-    """Python object for bulk rheology of an incompressible elastic material.
-
-    FACTORY: incompressible_elasticity_rheology
+    """
+    Abstract base class for bulk rheology of incompressible elastic material.
     """
     import pythia.pyre.inventory
 
     from pylith.topology.Subfield import subfieldFactory
     from pylith.utils.EmptyBin import EmptyBin
 
-    auxiliarySubfields = pythia.pyre.inventory.facilityArray(
-        "auxiliary_subfields", itemFactory=subfieldFactory, factory=EmptyBin)
+    auxiliarySubfields = pythia.pyre.inventory.facilityArray("auxiliary_subfields", itemFactory=subfieldFactory, factory=EmptyBin)
     auxiliarySubfields.meta['tip'] = "Discretization information for physical properties and state variables."
-
-    # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="rheologyincompressibleelasticity"):
         """Constructor.
         """
-        PetscComponent.__init__(
-            self, name, facility="rheologyincompressibleelasticity")
-        return
+        PetscComponent.__init__(self, name, facility="rheologyincompressibleelasticity")
 
     def preinitialize(self, problem):
         from pylith.mpi.Communicator import mpi_comm_world
@@ -55,7 +42,6 @@ class RheologyIncompressibleElasticity(PetscComponent, ModuleRheology):
                            self.aliases[-1])
 
         self._createModuleObj()
-        return
 
     def addAuxiliarySubfields(self, material, problem):
         for subfield in self.auxiliarySubfields.components():
@@ -67,9 +53,6 @@ class RheologyIncompressibleElasticity(PetscComponent, ModuleRheology):
                 quadOrder = subfield.quadOrder
             material.setAuxiliarySubfieldDiscretization(fieldName, subfield.basisOrder, quadOrder, subfield.dimension,
                                                         subfield.cellBasis, subfield.feSpace, subfield.isBasisContinuous)
-        return
-
-    # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _createModuleObj(self):
         """Call constructor for module object for access to C++ object.

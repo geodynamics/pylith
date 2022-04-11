@@ -40,7 +40,7 @@ The spatial database files for Dirichlet boundary conditions must contain values
 ```
 
 :::{seealso}
-[`DirichletTimeDependent` Component](../components/bc/DirichletTimeDependent.md) for the Pyre properties and facilities and configuration examples.
+[`DirichletTimeDependent` Component](../../components/bc/DirichletTimeDependent.md) for the Pyre properties and facilities and configuration examples.
 :::
 
 ## Neumann Time-Dependent Boundary Conditions
@@ -61,5 +61,5 @@ The spatial database file the auxiliary subfields for the Neumann boundary condi
 ```
 
 :::{seealso}
-[`NeumannTimeDependent` Component](../components/bc/NeumannTimeDependent.md) for the Pyre properties and facilities and configuration examples.
+[`NeumannTimeDependent` Component](../../components/bc/NeumannTimeDependent.md) for the Pyre properties and facilities and configuration examples.
 :::

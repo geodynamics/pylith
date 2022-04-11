@@ -12,29 +12,31 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-# @file pylith/materials/IsotropicLinearMaxwell.py
-#
-# @brief Python material for isotropic, linearly Maxwell viscoelastic material.
-#
-# Factory: elasticity_rheology
 
 from .RheologyElasticity import RheologyElasticity
 from .materials import IsotropicLinearMaxwell as ModuleLinearElasticity
 
 
 class IsotropicLinearMaxwell(RheologyElasticity, ModuleLinearElasticity):
-    """Python material for isotropic, linear Maxwell viscoelastic.
-
-    FACTORY: elasticity_rheology
     """
+    Isotropic linear Maxwell viscoelastic bulk rheology.
+
+    Implements `RheologyElasticity`.
+    """
+    DOC_CONFIG = {
+        "cfg": """
+            [pylithapp.problem.materials.mat_maxwell.rheology]
+            use_reference_state = False
+
+            auxiliary_subfields.shear_modulus.basis_order = 0
+            auxiliary_subfields.bulk_modulus.basis_order = 0
+        """
+    }
 
     import pythia.pyre.inventory
 
     useReferenceState = pythia.pyre.inventory.bool("use_reference_state", default=False)
     useReferenceState.meta['tip'] = "Use reference stress/strain state."
-
-    # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="isotropiclinearmaxwell"):
         """Constructor.
@@ -52,8 +54,6 @@ class IsotropicLinearMaxwell(RheologyElasticity, ModuleLinearElasticity):
         ModuleLinearElasticity.useReferenceState(self, self.useReferenceState)
 
         return
-
-    # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _createModuleObj(self):
         """Call constructor for module object for access to C++ object.

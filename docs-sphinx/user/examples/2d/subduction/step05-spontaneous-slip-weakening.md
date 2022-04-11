@@ -52,12 +52,12 @@ In order to generate stick-slip events, we need the coefficient of friction to d
 We choose a slip-weakening friction model with a dynamic coefficient of friction that is less than the static coefficient of friction to provide this behavior.
 In quasistatic modeling we use time steps much longer than the slip rise time in an earthquake, so we want the slip confined to one time step or just a few time steps.
 This means the drop in the coefficient of friction should be independent in each time step; that is, we want the fault to fully heal between time steps.
-This corresponds to setting the **force_healing** property of the *SlipWeakening* object.
+This corresponds to setting the `force_healing` property of the `SlipWeakening` object.
 
 A common feature in numerical modeling of subduction zones is stable sliding near the trench and below the seismogenic zone.
 We implement stable sliding with the slip-weakening friction via a constant coefficient of friction (equal values for the static and dynamic coefficients of friction).
-We create a lower dynamic coefficient of friction in the seismogenic zone, by introducing depth-dependent variations in the dynamic coefficient of friction using a *SimpleGridDB* spatial database as discussed in {ref}`sec:spatial:databases`.
-This provides more efficient interpolation compared to the *SimpleDB* implementation.
+We create a lower dynamic coefficient of friction in the seismogenic zone, by introducing depth-dependent variations in the dynamic coefficient of friction using a [`SimpleGridDB` spatial database](https://spatialdata.readthedocs.io/user/spatialdb/simplegriddb.md).
+This provides more efficient interpolation compared to the `SimpleDB` implementation.
 We impose initial tractions on the fault in a similar fashion as we did in Step 4.
 We reduce the initial shear tractions slightly in the seismogenic zone, consistent with a stress drop in the penultimate earthquake followed by loading during the interseismic period.
 

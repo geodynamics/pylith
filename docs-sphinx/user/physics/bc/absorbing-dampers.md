@@ -11,7 +11,7 @@ The auxiliary field spatial database contains the bulk rheology properties for a
 You can simply use the same spatial database that was used to specify the elastic properties of the material.
 
 :::{seealso}
-See [`AbsorbingDampers` Component](../components/bc/AbsorbingDampers.md) for the Pyre properties and facilities and configuration examples.
+See [`AbsorbingDampers` Component](../../components/bc/AbsorbingDampers.md) for the Pyre properties and facilities and configuration examples.
 
 See {ref}`sec-user-governing-eqns-absorbing-boundary` for the derivation of the finite-element implementation of the absorbing boundary.
 :::

@@ -12,20 +12,13 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-# @file pylith/problems/Solution.py
-#
-# @brief Python solution field for problem.
-#
-# Factory: solution.
 
 from pylith.utils.PetscComponent import PetscComponent
 
 
 class Solution(PetscComponent):
-    """Python abstract base class for solution field for problem.
-
-    FACTORY: solution.
+    """
+    Abstract base class for solution field for problem.
     """
 
     import pythia.pyre.inventory
@@ -36,14 +29,11 @@ class Solution(PetscComponent):
                                                     itemFactory=subfieldFactory, factory=SolnDisp)
     subfields.meta['tip'] = "Subfields in solution."
 
-    # PUBLIC METHODS /////////////////////////////////////////////////////
-
     def __init__(self, name="solution"):
         """Constructor.
         """
         PetscComponent.__init__(self, name, facility="solution")
         self.field = None
-        return
 
     def preinitialize(self, problem, mesh):
         """Do minimal initialization of solution.
@@ -71,20 +61,15 @@ class Solution(PetscComponent):
                                    subfield.componentNames, subfield.scale.value, subfield.basisOrder, 
                                    quadOrder, subfield.dimension, subfield.isFaultOnly,
                                    subfield.cellBasis, subfield.feSpace, subfield.isBasisContinuous)
-        return
-
-    # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
         """Set members based using inventory.
         """
         PetscComponent._configure(self)
-        return
 
     def _cleanup(self):
         if self.field:
             self.field.deallocate()
-        return
 
 # FACTORIES ////////////////////////////////////////////////////////////
 

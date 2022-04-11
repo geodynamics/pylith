@@ -12,22 +12,39 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-# @file pylith/problems/InitialConditionPatch.py
-#
-# @brief Python object for specifying initial conditions over a portion of the domain (patch).
-#
-# Factory: initial_conditions.
 
 from pylith.problems.InitialCondition import InitialCondition
 from .problems import InitialConditionPatch as ModuleInitialCondition
 
 
 class InitialConditionPatch(InitialCondition, ModuleInitialCondition):
-    """Python object for specifying initial conditions over a portion of the domain (patch).
-
-    FACTORY: initial_conditions
     """
+    Initial conditions over a portion of the domain (patch).
+
+    Implements `InitialCondition`.
+    """
+    DOC_CONFIG = {
+        "cfg": """
+            # Create separate initial conditions for two materials.
+            # This is often useful if the materials have different properties.
+            [pylithapp.problem]
+            ic = [mat1, mat2]
+            ic.mat1 = pylith.problems.InitialConditionPatch
+            ic.mat2 = pylith.problems.InitialConditionPatch
+
+            [pylithapp.problem.ic.mat1]
+            id = 1
+            db = spatialdata.spatialdb.SimpleGridDB
+            db.label = Initial conditions over material 1
+            db.filename = shearmat1_ic.spatialdb
+
+            [pylithapp.problem.ic.mat2]
+            id = 2
+            db = spatialdata.spatialdb.SimpleGridDB
+            db.label = Initial conditions over material 2
+            db.filename = shearmat2_ic.spatialdb
+        """
+    }
 
     import pythia.pyre.inventory
     from spatialdata.spatialdb.SimpleDB import SimpleDB
@@ -38,30 +55,22 @@ class InitialConditionPatch(InitialCondition, ModuleInitialCondition):
     db = pythia.pyre.inventory.facility("db", family="spatial_database", factory=SimpleDB)
     db.meta["tip"] = "Spatial database with values for initial condition."
 
-    # PUBLIC METHODS /////////////////////////////////////////////////////
-
     def __init__(self, name="initialconditionspatch"):
         """Constructor.
         """
         InitialCondition.__init__(self, name)
-        return
 
     def preinitialize(self, problem):
         """Setup initial conditions.
         """
         InitialCondition.preinitialize(self, problem)
-
         ModuleInitialCondition.setMaterialId(self, self.matId)
         ModuleInitialCondition.setDB(self, self.db)
-        return
 
     def _configure(self):
         """Setup members using inventory.
         """
         InitialCondition._configure(self)
-        return
-
-    # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _createModuleObj(self):
         """Call constructor for module object for access to C++ object.

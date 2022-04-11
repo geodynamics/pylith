@@ -12,23 +12,24 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-# @file pylith/faults/SingleRupure.py
-#
-# @brief Python kinematic rupture container with one rupture.
 
 from pylith.utils.PetscComponent import PetscComponent
 
 
 class SingleRupture(PetscComponent):
-    """Python kinematic rupture container with one rupture.
+    """
+    Kinematic slip source container with one source.
+
+    :::{seealso}
+    See [`FaultCohesiveKin` Component](FaultCohesiveKin.md).
+    :::
     """
 
     import pythia.pyre.inventory
 
     from .KinSrcStep import KinSrcStep
     rupture = pythia.pyre.inventory.facility("rupture", family="eq_kinematic_src", factory=KinSrcStep)
-    rupture.meta['tip'] = "Kinematic earthquake rupture in problem."
+    rupture.meta['tip'] = "Kinematic slip source (for example, an earthquake rupture) for fault."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 

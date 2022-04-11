@@ -12,24 +12,29 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-# @file pylith/faults/KinSrcBrune.py
-#
-# @brief Python object for a Brune's (1970) slip time function.
-#
-# Factory: eq_kinematic_src
 
 from .KinSrc import KinSrc
 from .faults import KinSrcBrune as ModuleKinSrc
 
 
 class KinSrcBrune(KinSrc, ModuleKinSrc):
-    """Python object for Brune's (1970) far-field slip time function.
-
-    Factory: eq_kinematic_src
     """
+    Brune's (1970) far-field slip time function.
 
-    # PUBLIC METHODS /////////////////////////////////////////////////////
+    Implements `KinSrc`.
+    """
+    DOC_CONFIG = {
+        "cfg": """
+            [pylithapp.problem.interfaces.fault.eq_ruptures.rupture]
+            origin_time = 10*year
+
+            db_auxiliary_field = spatialdata.spatialdb.UniformDB
+            db_auxiliary_field.label = Brune far-field slip time function auxiliary field spatial database
+            db_auxiliary_field.values = [initiation_time, rise_time, final_slip_left_lateral, final_slip_opening]
+            db_auxiliary_field.data = [0.0*s, 3.0*s, -2.0*m, 0.0*m]
+            """
+    }
+
 
     def __init__(self, name="kinsrcbrune"):
         """Constructor.

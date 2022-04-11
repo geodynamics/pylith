@@ -12,16 +12,17 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-# @file pylith/materials/Homogeneous.py
-#
-# @brief Python materials container with one material.
 
 from pylith.utils.PetscComponent import PetscComponent
 
 
 class Homogeneous(PetscComponent):
-    """Python materials container with one material.
+    """
+    Materials container with one material.
+
+    :::{seealso}
+    See [`Problems` Component](../problems/Problem.md).
+    :::
     """
 
     import pythia.pyre.inventory
@@ -36,7 +37,6 @@ class Homogeneous(PetscComponent):
         """Constructor.
         """
         PetscComponent.__init__(self, name, facility="material")
-        return
 
 
 # End of file

@@ -12,25 +12,14 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-# @file pylith/faults/KinSrc.py
-#
-# @brief Python abstract base class for managing parameters for a kinematic
-# earthquake sources.
-#
-# KinSrc is responsible for providing the value of slip at time t
-# over a fault surface.
-#
-# Factory: eq_kinematic_src
 
 from pylith.utils.PetscComponent import PetscComponent
 from .faults import KinSrc as ModuleKinSrc
 
 
 class KinSrc(PetscComponent, ModuleKinSrc):
-    """Python object for managing parameters for a kinematic earthquake sources.
-
-    Factory: eq_kinematic_src
+    """
+    Abstract base class for a prescribed slip source.
     """
 
     import pythia.pyre.inventory
@@ -41,9 +30,8 @@ class KinSrc(PetscComponent, ModuleKinSrc):
 
     from pythia.pyre.units.time import second
     originTime = pythia.pyre.inventory.dimensional("origin_time", default=0.0 * second)
-    originTime.meta['tip'] = "Origin time for earthquake rupture."
+    originTime.meta['tip'] = "Origin time for slip source."
 
-    # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="kinsrc"):
         """Constructor.

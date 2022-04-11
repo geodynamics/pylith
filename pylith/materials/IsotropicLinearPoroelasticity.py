@@ -25,10 +25,20 @@ from .materials import IsotropicLinearPoroelasticity as ModuleLinearPoroelastici
 
 
 class IsotropicLinearPoroelasticity(RheologyPoroelasticity, ModuleLinearPoroelasticity):
-    """Python material for isotropic, linearly poroelastic plane strain.
-
-    FACTORY: poroelasticity_rheology
     """
+    Isotropic linear incompressible elastic bulk rheology.
+
+    Implements `RheologyIncompressibleElasticity`.
+    """
+    DOC_CONFIG = {
+        "cfg": """
+            [pylithapp.problem.materials.mat_incompelastic.rheology]
+            use_reference_state = False
+
+            auxiliary_subfields.shear_modulus.basis_order = 0
+            auxiliary_subfields.bulk_modulus.basis_order = 0
+        """
+    }
 
     import pythia.pyre.inventory
 

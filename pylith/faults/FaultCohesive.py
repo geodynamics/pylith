@@ -12,13 +12,6 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-# @file pylith/faults/FaultCohesive.py
-#
-# @brief Python abstract base class for a fault surface implemented
-# with cohesive elements.
-#
-# Factory: fault
 
 from pylith.problems.Physics import Physics
 from .faults import FaultCohesive as ModuleFaultCohesive
@@ -49,10 +42,8 @@ def validateDir(value):
 
 
 class FaultCohesive(Physics, ModuleFaultCohesive):
-    """Python abstract base class for a fault surface implemeted with
-    cohesive elements.
-
-    FACTORY: fault
+    """
+    Abstract base class for a fault surface implemeted with cohesive cells.
     """
 
     import pythia.pyre.inventory
@@ -60,19 +51,16 @@ class FaultCohesive(Physics, ModuleFaultCohesive):
     matId = pythia.pyre.inventory.int("id", default=100)
     matId.meta['tip'] = "Fault identifier (must be unique across all faults and materials)."
 
-    label = pythia.pyre.inventory.str(
-        "label", default="", validator=validateLabel)
+    label = pythia.pyre.inventory.str("label", default="", validator=validateLabel)
     label.meta['tip'] = "Label identifier for fault."
 
     edge = pythia.pyre.inventory.str("edge", default="")
     edge.meta['tip'] = "Label identifier for buried fault edges."
 
-    refDir1 = pythia.pyre.inventory.list(
-        "ref_dir_1", default=[0.0, 0.0, 1.0], validator=validateDir)
+    refDir1 = pythia.pyre.inventory.list("ref_dir_1", default=[0.0, 0.0, 1.0], validator=validateDir)
     refDir1.meta['tip'] = "First choice for reference direction to discriminate among tangential directions in 3-D."
 
-    refDir2 = pythia.pyre.inventory.list(
-        "ref_dir_2", default=[0.0, 1.0, 0.0], validator=validateDir)
+    refDir2 = pythia.pyre.inventory.list("ref_dir_2", default=[0.0, 1.0, 0.0], validator=validateDir)
     refDir2.meta['tip'] = "Second choice for reference direction to discriminate among tangential directions in 3-D."
 
     def __init__(self, name="fault"):

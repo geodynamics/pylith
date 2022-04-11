@@ -12,21 +12,13 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-# @file pylith/topology/Subfield.py
-#
-# @brief Python object for defining attributes of a subfield within a
-# field.
-#
-# Factory: subfield.
 
 from pythia.pyre.components.Component import Component
 
 
 class Subfield(Component):
-    """Python object for defining discretization of a subfield.
-
-    FACTORY: subfield
+    """
+    Python object for defining discretization of a subfield.
     """
 
     import pythia.pyre.inventory

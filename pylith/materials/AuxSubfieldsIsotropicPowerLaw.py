@@ -12,20 +12,28 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-# @file pylith/materials/AuxSubfieldsIsotropicPowerLaw.py
-##
-# @brief Python subfields container for isotropic power-law
-# viscoelastic subfields.
 
 from pylith.utils.PetscComponent import PetscComponent
 
 
 class AuxSubfieldsIsotropicPowerLaw(PetscComponent):
-    """Python container for isotropic power-law viscoelastic subfields.
-
-    FACTORY: auxiliary_subfields
     """
+    Auxiliary subfields associated with the isotropic linear power law viscoelastic bulk rheology.
+    """
+    DOC_CONFIG = {
+        "cfg": """
+            [pylithapp.problem.materials.mat_powerlaw.rheology.auxiliary_fields]
+            shear_modulus.basis_order = 1
+            bulk_modulus.basis_order = 1
+            power_law_reference_strain_rate = 1
+            power_law_reference_stress = 1
+            power_law_exponent.basis_order = 1
+            viscous_strain.basis_order = 1
+            stress.basis_order = 1
+            reference_stress.basis_order = 0
+            reference_strain.basis_order = 0
+        """
+    }
 
     import pythia.pyre.inventory
 
@@ -37,12 +45,10 @@ class AuxSubfieldsIsotropicPowerLaw(PetscComponent):
     bulkModulus = pythia.pyre.inventory.facility("bulk_modulus", family="auxiliary_subfield", factory=Subfield)
     bulkModulus.meta['tip'] = "Bulk modulus subfield."
 
-    powerLawReferenceStrainRate = pythia.pyre.inventory.facility("power_law_reference_strain_rate", family="auxiliary_subfield",
-                                                                 factory=Subfield)
+    powerLawReferenceStrainRate = pythia.pyre.inventory.facility("power_law_reference_strain_rate", family="auxiliary_subfield", factory=Subfield)
     powerLawReferenceStrainRate.meta['tip'] = "Power-law reference strain rate subfield."
 
-    powerLawReferenceStress = pythia.pyre.inventory.facility("power_law_reference_stress", family="auxiliary_subfield",
-                                                             factory=Subfield)
+    powerLawReferenceStress = pythia.pyre.inventory.facility("power_law_reference_stress", family="auxiliary_subfield", factory=Subfield)
     powerLawReferenceStress.meta['tip'] = "Power-law reference stress subfield."
 
     powerLawExponent = pythia.pyre.inventory.facility("power_law_exponent", family="auxiliary_subfield", factory=Subfield)
@@ -60,19 +66,13 @@ class AuxSubfieldsIsotropicPowerLaw(PetscComponent):
     referenceStrain = pythia.pyre.inventory.facility("reference_strain", family="auxiliary_subfield", factory=Subfield)
     referenceStrain.meta['tip'] = "Reference strain subfield."
 
-    # PUBLIC METHODS /////////////////////////////////////////////////////
-
     def __init__(self, name="auxfieldsisotropicpowerlaw"):
         """Constructor.
         """
         PetscComponent.__init__(self, name, facility="auxiliary_subfields")
-        return
-
-    # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
         PetscComponent._configure(self)
-        return
 
 
 # FACTORIES ////////////////////////////////////////////////////////////

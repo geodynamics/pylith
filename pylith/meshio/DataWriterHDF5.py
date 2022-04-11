@@ -12,40 +12,40 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-# @file pythia.pyre/meshio/DataWriterHDF5.py
-#
-# @brief Python object for writing finite-element data to HDF5 file.
 
 from .DataWriter import DataWriter
 from .meshio import DataWriterHDF5 as ModuleDataWriterHDF5
 
 
 class DataWriterHDF5(DataWriter, ModuleDataWriterHDF5):
-    """Python object for writing finite-element data to HDF5 file.
-
-    FACTORY: data_writer
     """
+    Writer of solution, auxiliary, and derived subfields to an HDF5 file.
+
+    Implements `DataWriter`.
+    """
+    DOC_CONFIG = {
+        "cfg": """
+            [data_writer]
+            filename = domain_solution.h5
+        """
+    }
+    
 
     import pythia.pyre.inventory
 
     filename = pythia.pyre.inventory.str("filename", default="")
     filename.meta['tip'] = "Name of HDF5 file."
 
-    # PUBLIC METHODS /////////////////////////////////////////////////////
-
     def __init__(self, name="datawriterhdf5"):
         """Constructor.
         """
         DataWriter.__init__(self, name)
         ModuleDataWriterHDF5.__init__(self)
-        return
 
     def preinitialize(self):
         """Initialize writer.
         """
         DataWriter.preinitialize(self)
-        return
 
     def setFilename(self, outputDir, simName, label):
         """Set filename from default options and inventory. If filename is given in inventory, use it,
@@ -54,14 +54,10 @@ class DataWriterHDF5(DataWriter, ModuleDataWriterHDF5):
         filename = self.filename or DataWriter.mkfilename(outputDir, simName, label, "h5")
         self.mkpath(filename)
         ModuleDataWriterHDF5.filename(self, filename)
-        return
-
-    # PRIVATE METHODS /////////////////////////////////////////////////////
 
     def _createModuleObj(self):
         """Create handle to C++ object."""
         ModuleDataWriterHDF5.__init__(self)
-        return
 
 
 # FACTORIES ////////////////////////////////////////////////////////////

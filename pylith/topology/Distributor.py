@@ -12,22 +12,21 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-# @file pylith/topology/Distributor.py
-#
-# @brief Python manager for distributing mesh among processors.
-#
-# Factory: mesh_distributor.
 
 from pylith.utils.PetscComponent import PetscComponent
 from .topology import Distributor as ModuleDistributor
 
 
 class Distributor(PetscComponent, ModuleDistributor):
-    """Python manager for distributing mesh among processors.
-
-    FACTORY: mesh_distributor
     """
+    Distributor of the the mesh among processes.
+    """
+    DOC_CONFIG = {
+        "cfg": """
+            [pylithapp.mesh_generator.distributor]
+            partitioner = parmetis
+        """
+    }
 
     import pythia.pyre.inventory
 
@@ -42,18 +41,14 @@ class Distributor(PetscComponent, ModuleDistributor):
     dataWriter = pythia.pyre.inventory.facility("data_writer", factory=DataWriterVTK, family="data_writer")
     dataWriter.meta['tip'] = "Data writer for partition information."
 
-    # PUBLIC METHODS /////////////////////////////////////////////////////
-
     def __init__(self, name="mesh_distributor"):
         """Constructor.
         """
         PetscComponent.__init__(self, name, facility="mesh_distributor")
-        return
 
     def preinitialize(self):
         """Do minimal initialization."""
         ModuleDistributor.__init__(self)
-        return
 
     def distribute(self, mesh, normalizer):
         """Distribute a Mesh
@@ -79,13 +74,10 @@ class Distributor(PetscComponent, ModuleDistributor):
         self._eventLogger.eventEnd(logEvent)
         return newMesh
 
-    # PRIVATE METHODS ////////////////////////////////////////////////////
-
     def _configure(self):
         """Set members based using inventory.
         """
         PetscComponent._configure(self)
-        return
 
     def _setupLogging(self):
         """Setup event logging.
@@ -100,7 +92,6 @@ class Distributor(PetscComponent, ModuleDistributor):
             logger.registerEvent("%s%s" % (self._loggingPrefix, event))
 
         self._eventLogger = logger
-        return
 
 
 # FACTORIES ////////////////////////////////////////////////////////////

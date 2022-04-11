@@ -12,37 +12,34 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-# @file pylith/problems/SubfieldPressure.py
-#
-# @brief Python object for pressure subfield.
-#
-# Factory: subfield.
 
 from .SolutionSubfield import SolutionSubfield
 
 
 class SubfieldPressure(SolutionSubfield):
-    """Python object for pressure subfield.
-
-    FACTORY: soln_subfield
     """
+    Object for defining attributes of the pressure solution subfield.
 
-    import pythia.pyre.inventory
-
-    from .SolutionSubfield import validateAlias
-    userAlias = pythia.pyre.inventory.str("alias", default="pressure", validator=validateAlias)
-    userAlias.meta['tip'] = "Name for subfield."
+    Implements `SolutionSubfield`.
+    """
+    DOC_CONFIG = {
+        "cfg": """
+        [pylithapp.problems.solution.subfields.pressure]
+        alias = pressure
+        basis_order = 1
+        """
+    }
 
     fieldName = "pressure"
-
-    # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="subfieldpressure"):
         """Constructor.
         """
         SolutionSubfield.__init__(self, name)
         return
+
+    def _defaults(self):
+        self.userAlias = self.fieldName
 
     def initialize(self, normalizer, spaceDim):
         """Initialize subfield metadata.

@@ -12,23 +12,21 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-# @file pylith/problems/SolnDispVelLagrange.py
-#
-# @brief Python subfields container with displacement, velocity, and
-# fault Lagrange multiplier subfields.
 
 from pylith.utils.PetscComponent import PetscComponent
 from .Solution import Solution as SolutionBase
 
 
 class SolnDispVelLagrange(PetscComponent):
-    """Python subfields container with displacement, velocity, and fault
-    Lagrange multiplier subfields.
-
-    IMPORTANT: Use the Solution class (below) to set this object as the default facilities array for the solution
-    subfields.
     """
+    Container for solution subfields with displacement, velocity, and fault Lagrange multiplier subfields.
+    """
+    DOC_CONFIG = {
+        "cfg": """
+            [pylithapp.problem]
+            solution = pylith.problems.SolnDispVelLagrange
+        """
+    }
 
     import pythia.pyre.inventory
 
@@ -44,22 +42,17 @@ class SolnDispVelLagrange(PetscComponent):
     lagrangeFault = pythia.pyre.inventory.facility("lagrange_fault", family="soln_subfield", factory=SubfieldLagrangeFault)
     lagrangeFault.meta['tip'] = "Fault Lagrange multiplier subfield."
 
-    # PUBLIC METHODS /////////////////////////////////////////////////////
-
     def __init__(self, name="solndispvel"):
         """Constructor.
         """
         PetscComponent.__init__(self, name, facility="soln_subfields")
-        return
 
     def _configure(self):
         PetscComponent._configure(self)
-        return
 
     def components(self):
         """Order of facilities in Inventory is ambiguous, so overwrite
         components() to insure order is [displacement, velocity, lagrange_fault].
-
         """
         return [self.displacement, self.velocity, self.lagrangeFault]
 
@@ -67,7 +60,6 @@ class SolnDispVelLagrange(PetscComponent):
 class Solution(SolutionBase):
     """Python solution field with displacement, velocity, and Lagrange multiplier subfields.
     """
-
     import pythia.pyre.inventory
 
     from .SolutionSubfield import subfieldFactory

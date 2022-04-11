@@ -12,21 +12,21 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-# @file pylith/problems/SolnDispPres.py
-#
-# @brief Python subfields container with displacement and pressure subfields.
 
 from pylith.utils.PetscComponent import PetscComponent
 from .Solution import Solution as SolutionBase
 
 
 class SolnDispPres(PetscComponent):
-    """Python subfields container with displacement and pressure subfields.
-
-    IMPORTANT: Use the Solution class (below) to set this object as the default facilities array for the solution
-    subfields.
     """
+    Container for solution subfields with displacement and pressure subfields.
+    """
+    DOC_CONFIG = {
+        "cfg": """
+            [pylithapp.problem]
+            solution = pylith.problems.SolnDispPres
+        """
+    }
 
     import pythia.pyre.inventory
 
@@ -38,17 +38,13 @@ class SolnDispPres(PetscComponent):
     pressure = pythia.pyre.inventory.facility("pressure", family="soln_subfield", factory=SubfieldPressure)
     pressure.meta['tip'] = "Pressure subfield."
 
-    # PUBLIC METHODS /////////////////////////////////////////////////////
-
     def __init__(self, name="solndisppres"):
         """Constructor.
         """
         PetscComponent.__init__(self, name, facility="soln_subfields")
-        return
 
     def _configure(self):
         PetscComponent._configure(self)
-        return
 
     def components(self):
         """Order of facilities in Inventory is ambiguous, so overwrite
@@ -61,7 +57,6 @@ class SolnDispPres(PetscComponent):
 class Solution(SolutionBase):
     """Python solution field with displacement, pressure, and Lagrange multiplier subfields.
     """
-
     import pythia.pyre.inventory
 
     from .SolutionSubfield import subfieldFactory

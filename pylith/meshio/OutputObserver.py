@@ -12,46 +12,33 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-# @file pylith/meshio/OutputObserver.py
-#
-# @brief Python class for managing output of finite-element information.
-#
-# Factory: observer
 
 from pylith.utils.PetscComponent import PetscComponent
 from .meshio import OutputObserver as ModuleOutputObserver
 
 
 class OutputObserver(PetscComponent, ModuleOutputObserver):
-    """Python abstract base class for managing output of finite-element
-    information.
-
-    FACTORY: observer
+    """
+    Abstract base class for managing output of solution information.
     """
 
     import pythia.pyre.inventory
 
     from .OutputTriggerStep import OutputTriggerStep
-    trigger = pythia.pyre.inventory.facility(
-        "trigger", family="output_trigger", factory=OutputTriggerStep)
+    trigger = pythia.pyre.inventory.facility("trigger", family="output_trigger", factory=OutputTriggerStep)
     trigger.meta['tip'] = "Trigger defining how often output is written."
 
     from .DataWriterHDF5 import DataWriterHDF5
-    writer = pythia.pyre.inventory.facility(
-        "writer", factory=DataWriterHDF5, family="data_writer")
+    writer = pythia.pyre.inventory.facility("writer", factory=DataWriterHDF5, family="data_writer")
     writer.meta['tip'] = "Writer for data."
 
     outputBasisOrder = pythia.pyre.inventory.int("output_basis_order", default=1, validator=pythia.pyre.inventory.choice([0,1]))
     outputBasisOrder.meta['tip'] = "Basis order for output."
 
-    # PUBLIC METHODS /////////////////////////////////////////////////////
-
     def __init__(self, name="outputobserver"):
         """Constructor.
         """
         PetscComponent.__init__(self, name, facility="outputobserver")
-        return
 
     def preinitialize(self, problem):
         """Setup output manager.
@@ -72,21 +59,15 @@ class OutputObserver(PetscComponent, ModuleOutputObserver):
         self.writer.preinitialize()
         ModuleOutputObserver.setWriter(self, self.writer)
 
-        return
-
-    # PRIVATE METHODS ////////////////////////////////////////////////////
-
     def _configure(self):
         """Set members based using inventory.
         """
         PetscComponent._configure(self)
-        return
 
     def _createModuleObj(self):
         """Create handle to C++ object.
         """
         raise NotImplementedError("Implement in subclass.")
-        return
 
 
 # End of file

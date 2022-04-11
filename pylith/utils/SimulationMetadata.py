@@ -21,34 +21,33 @@ from pythia.pyre.components.Component import Component
 
 
 class SimulationMetadata(Component):
-    """Python object for holding simulation metadata.
+    """
+    Metadata for simulation.
 
-When using ``base` to specify other files with metadata, the `keywords` and `eatures` will be appended, whereas other metadata will be overwritten (the same behavior as other Pyre properties).
+    When using `base` to specify other files with metadata, the other files will append to the `keywords` and `features` lists, whereas other metadata will be overwritten (the same behavior as other Pyre properties).
+    """
+    DOC_CONFIG = {
+        "cfg": """
+            [pylithapp.metadata]
+            base = [pylithapp.cfg]
+            description = Axial extension using Dirichlet boundary conditions.
+            keywords = [example, 2D, box, axial extension]
+            features = [
+                Quadrilateral cells,
+                pylith.meshio.MeshIOAscii,
+                pylith.problems.TimeDependent,
+                pylith.materials.Elasticity,
+                pylith.materials.IsotropicLinearElasticity,
+                spatialdata.spatialdb.UniformDB,
+                pylith.meshio.DataWriterHDF5
+                ]
+            authors = [Brad Aagaard]
+            version = 1.0.0
+            arguments = [step01_axialdisp.cfg]
+            pylith_version = [>=3.0, <4.0]
+        """
+    }
 
-```{code-block} cfg
-:title: Example of `SimulationMetadata`1 in a `.cfg` file.
-
-[pylithapp.metadata]
-base = [pylithapp.cfg]
-description = Axial extension using Dirichlet boundary conditions.
-keywords = [example, 2D, box, axial extension]
-features = [
-    Quadrilateral cells,
-    pylith.meshio.MeshIOAscii,
-    pylith.problems.TimeDependent,
-    pylith.materials.Elasticity,
-    pylith.materials.IsotropicLinearElasticity,
-    spatialdata.spatialdb.UniformDB,
-    pylith.meshio.DataWriterHDF5
-    ]
-authors = [Brad Aagaard]
-version = 1.0.0
-arguments = [step01_axialdisp.cfg]
-pylith_version = [>=3.0, <4.0]
-```
-
-FACTORY: simulation_metadata
-"""
 
     import pythia.pyre.inventory
 

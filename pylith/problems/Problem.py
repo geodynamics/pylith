@@ -12,12 +12,6 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-# @file pylith/problems/Problem.py
-#
-# @brief Python abstract base class for crustal dynamics problems.
-#
-# Factory: problem.
 
 from pylith.utils.PetscComponent import PetscComponent
 from .problems import Problem as ModuleProblem
@@ -25,8 +19,6 @@ from .problems import Physics
 from pylith.utils.NullComponent import NullComponent
 from .ProblemDefaults import ProblemDefaults
 
-
-# Factories for items in facility arrays
 
 def materialFactory(name):
     """Factory for material items.
@@ -61,9 +53,8 @@ def observerFactory(name):
 
 
 class Problem(PetscComponent, ModuleProblem):
-    """Python abstract base class for crustal dynamics problems.
-
-    FACTORY: problem
+    """
+    Abstract base class for a problem.
     """
 
     import pythia.pyre.inventory
@@ -106,14 +97,11 @@ class Problem(PetscComponent, ModuleProblem):
     gravityField = pythia.pyre.inventory.facility("gravity_field", family="spatial_database", factory=NullComponent)
     gravityField.meta['tip'] = "Database used for gravity field."
 
-    # PUBLIC METHODS /////////////////////////////////////////////////////
-
     def __init__(self, name="problem"):
         """Constructor.
         """
         PetscComponent.__init__(self, name, facility="problem")
         self.mesh = None
-        return
 
     def preinitialize(self, mesh):
         """Do minimal initialization.
@@ -172,7 +160,6 @@ class Problem(PetscComponent, ModuleProblem):
             ModuleProblem.registerObserver(self, observer)
 
         ModuleProblem.preinitialize(self, mesh)
-        return
 
     def verifyConfiguration(self):
         """Verify compatibility of configuration.
@@ -183,9 +170,7 @@ class Problem(PetscComponent, ModuleProblem):
             self._info.log("Verifying compatibility of problem configuration.")
 
         ModuleProblem.verifyConfiguration(self)
-
         self._printInfo()
-        return
 
     def initialize(self):
         """Initialize integrators and constraints.
@@ -196,13 +181,11 @@ class Problem(PetscComponent, ModuleProblem):
             self._info.log("Initializing {} problem.".format(self.formulation))
 
         ModuleProblem.initialize(self)
-        return
 
     def run(self, app):
         """Solve the problem.
         """
         raise NotImplementedError("run() not implemented.")
-        return
 
     def finalize(self):
         """Cleanup after running problem.
@@ -211,13 +194,11 @@ class Problem(PetscComponent, ModuleProblem):
         comm = mpi_comm_world()
         if 0 == comm.rank:
             self._info.log("Finalizing problem.")
-        return
 
     def checkpoint(self):
         """Save problem state for restart.
         """
         raise NotImplementedError("checkpoint() not implemented.")
-        return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
@@ -233,7 +214,6 @@ class Problem(PetscComponent, ModuleProblem):
             "    Temperature scale: {}".format(self.normalizer.getTemperatureScale()),
         )
         self._info.log("\n".join(msg))
-        return
 
     def _setupLogging(self):
         """Setup event logging.
@@ -245,9 +225,7 @@ class Problem(PetscComponent, ModuleProblem):
         logger = EventLogger()
         logger.setClassName("Problem")
         logger.initialize()
-
         self._eventLogger = logger
-        return
 
 
 # End of file

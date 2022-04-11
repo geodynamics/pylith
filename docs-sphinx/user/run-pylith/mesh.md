@@ -12,7 +12,7 @@ In most realistic problems, there will be several vertex groups, each with a uni
 For example, one group might define a surface of the mesh where displacement (Dirichlet) boundary conditions will be applied, another might define a surface where traction (Neumann) boundary conditions will be applied, while a third might specify a surface that defines a fault.
 Similarly, the mesh information contains cell labels that define the material type for each cell in the mesh.
 For a mesh with a single material type, there will only be a single label for every cell in the mesh.
-See {ref}`sec-user-physics-materials` and {ref}`src-user-physics-boundary-conditions` for more detailed discussions of setting the materials and boundary conditions.
+See {ref}`sec-user-physics-materials` and {ref}`sec-user-physics-boundary-conditions` for more detailed discussions of setting the materials and boundary conditions.
 
 :::{figure-md} fig:2d:cells
 <img src="figs/cells2d.*" alt="2D cell types" width="400px">
@@ -41,7 +41,7 @@ See [`MeshImporter` component](../components/topology/MeshImporter.md)
 
 The `MeshIOAscii` object is intended for reading small, simple ASCII files containing a mesh constructed by hand.
 We use this file format extensively in small tests.
-{ref}`src-user-formats-MeshIOAscii` describes the format of the files.
+{ref}`sec-user-file-formats-meshio-ascii` describes the format of the files.
 
 :::{seealso}
 [`MeshIOAscii` Component](../components/meshio/MeshIOAscii.md)

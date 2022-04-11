@@ -15,7 +15,7 @@ Guide for selecting the appropriate installation choice based on a hardware and 
 :::
 
 Help for installing and using PyLith is available from both a CIG forum and the GitHub issue tracking system <https://github.com/geodynamics/pylith/issues>.
-See Section {ref}`sec:help` for more information.
+See {ref}`sec-getting-help` for more information.
 
 ## Installation of Binary Executable
 

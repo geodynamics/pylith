@@ -12,30 +12,24 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-# @file pylith/topology/MeshImporter.py
-#
-# @brief Python implementation of importing a mesh.
-#
-# Factory: mesh_generator.
 
 from .MeshGenerator import MeshGenerator
 
 
 class MeshImporter(MeshGenerator):
-    """Pyre component for reading a finite-element mesh from files.
+    """
+    Base class for reading a finite-element mesh from files.
 
-```{code-block} cfg
----
-caption: Setting `MeshImporter` properties and facilities in a `cfg` file.
-[pylithapp.mesher.]
-reorder_mesh = True
-reader = pylith.meshio.MeshIOCubit
-refiner = pylith.topology.RefineUniform
-```
-
-FACTORY: mesh_generator.
-"""
+    Implements `MeshGenerator`.
+    """
+    DOC_CONFIG = {
+        "cfg": """
+            [pylithapp.meshimporter]
+            reorder_mesh = True
+            reader = pylith.meshio.MeshIOCubit
+            refiner = pylith.topology.RefineUniform
+        """
+    }
 
     import pythia.pyre.inventory
 
@@ -54,14 +48,11 @@ FACTORY: mesh_generator.
     refiner = pythia.pyre.inventory.facility("refiner", family="mesh_refiner", factory=MeshRefiner)
     refiner.meta['tip'] = "Performs uniform global mesh refinement after distribution among processes (default is no refinement)."
 
-    # PUBLIC METHODS /////////////////////////////////////////////////////
-
     def __init__(self, name="meshimporter"):
         """Constructor.
         """
         MeshGenerator.__init__(self, name)
         self._loggingPrefix = "MeIm "
-        return
 
     def preinitialize(self, problem):
         """Do minimal initialization.
@@ -71,7 +62,6 @@ FACTORY: mesh_generator.
         self.reader.preinitialize()
         self.distributor.preinitialize()
         self.refiner.preinitialize()
-        return
 
     def create(self, problem, faults=None):
         """Hook for creating mesh.
@@ -133,20 +123,16 @@ FACTORY: mesh_generator.
         self._eventLogger.eventEnd(logEvent)
         return newMesh
 
-    # PRIVATE METHODS ////////////////////////////////////////////////////
-
     def _configure(self):
         """Set members based on inventory.
         """
         MeshGenerator._configure(self)
-        return
 
     def _setupLogging(self):
         """Setup event logging.
         """
         MeshGenerator._setupLogging(self)
         self._eventLogger.registerEvent("%sreorder" % self._loggingPrefix)
-        return
 
 
 # FACTORIES ////////////////////////////////////////////////////////////

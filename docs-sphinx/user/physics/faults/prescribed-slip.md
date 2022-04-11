@@ -85,7 +85,7 @@ Constant rate slip time function.
 :::
 
 ```{table} Values in the auxiliary field spatial database for KinSrcConstRate.
-:name: tab:slip:function:step
+:name: tab:slip:function:constrate
 |  Subfield         |  Components                          |
 |:------------------|:-------------------------------------|
 | `initiation_time` ($t_r$) |            --                        |
@@ -182,7 +182,7 @@ Ramp slip time function.
 :::
 
 ```{table} Values in the auxiliary field spatial database for KinSrcRamp.
-:name: tab:slip:function:step
+:name: tab:slip:function:ramp
 |  Subfield          |  Components                          |
 |:-------------------|:-------------------------------------|
 | `initiation_time` ($t_r$)  |            --                        |
@@ -216,7 +216,7 @@ Brune slip time function.
 :::
 
 ```{table} Values in the auxiliary field spatial database for KinSrcBrune.
-:name: tab:slip:function:step
+:name: tab:slip:function:brune
 |  Subfield                       |  Components                          |
 |:--------------------------------|:-------------------------------------|
 | `initiation_time` ($t_r$)       |            --                        |
@@ -256,7 +256,7 @@ Liu-cosine slip time function.
 :::
 
 ```{table} Values in the auxiliary field spatial database for KinSrcLiuCos.
-:name: tab:slip:function:step
+:name: tab:slip:function:liucos
 |  Subfield                       |  Components                          |
 |:--------------------------------|:-------------------------------------|
 | `initiation_time` ($t_r$)       |            --                        |
@@ -274,7 +274,7 @@ This slip time function reads the slip time function from a data file, so it can
 The slip and slip initiation times are specified using spatial databases, so the slip time function should use a normalized amplitude (0 $\rightarrow$ 1).
 
 ```{table} Values in the auxiliary field spatial database for KinSrcTimeHistory.
-:name: tab:slip:function:step
+:name: tab:slip:function:timehistory
 |  Subfield         |  Components                          |
 |:------------------|:-------------------------------------|
 | `initiation_time` |            --                        |

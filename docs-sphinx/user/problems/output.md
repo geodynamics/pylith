@@ -4,7 +4,7 @@ PyLith produces four kinds of output:
 
 * Information written to stdout (default) or other devices that is controlled by the Pyre journal settings;
 * Information written to stdout that is controlled by PETSc options;
-* Information about the progress of the simulation written to a text file that is controlled by progress monitors (see {ref}`sec-user-progress-monitors)`;
+* Information about the progress of the simulation written to a text file that is controlled by progress monitors (see {ref}`sec-user-progress-monitors`;
 * Output of the solution over the domain, external boundary, or at discrete points (see {ref}`sec-user-solution-observers`); and
 * Output of the solution or state variables over a material, interface, or external boundary (see {ref}`sec-user-physics-observers`).
 
@@ -71,7 +71,7 @@ The solution observers get notified of updates to the solution.
 ```
 
 :::{seealso}
-[`OutputSoln` Component](../components/problems/OutputSoln.md), [`OutputSolnBoundary` Component](../components/problems/OutputSolnBoundary.md), and [`OutputSolnPoints` Component](../components/problems/OutputSolnPoints.md).
+[`OutputSoln` Component](../components/meshio/OutputSoln.md), [`OutputSolnBoundary` Component](../components/meshio/OutputSolnBoundary.md), and [`OutputSolnPoints` Component](../components/meshio/OutputSolnPoints.md).
 :::
 
 (sec-user-output-solution-points)=
@@ -83,7 +83,7 @@ In many situations with recorded observations, one would like to extract the sol
 #### `PointsList` Reader
 
 This object corresponds to a simple text file containing a list of points (one per line) where output is desired.
-See {ref}`src-format-points-list)` for file format specifications.
+See {ref}`sec-user-file-formats-points-list` for file format specifications.
 The points are specified in the coordinate system specified by `OutputSolnPoints`.
 The coordinates will be transformed into the coordinate system of the mesh prior to interpolation. 
 
@@ -126,8 +126,13 @@ The dimensions of the data sets are shown in parentheses.
 Most HDF5 files will contain either `vertex_fields` or `cell_fields` but not both.
 :::
 
-See {numref}`tab:materials:statevars`for a table of component values for tensor output in HDF5 files.
-To avoid confusion about the ordering of components for tensor data, we separate the components in the Xdmf file.
+```{table} General ordering and names of vector and tensor components in HDF5 output.
+:name: tab:output:components:order
+| Vector Field Type| Components         |
+|:-------------|:-----------------------|
+| vector       | x, y, z                |
+| tensor       | xx, yy, zz, xy, yz, xz |
+```
 
 PyLith provides two different data writers for HDF5 files.
 The `DataWriterHDF5` object writes all information into the HDF5 file, whereas the `DataWriterHDF5Ext` object writes the data to external binary files and only the metadata to the HDF5 file.

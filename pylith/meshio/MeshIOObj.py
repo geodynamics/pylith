@@ -12,35 +12,26 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-# @file pythia.pyre/meshio/MeshIOObj.py
-#
-# @brief Python abstract base class for finite-element mesh I/O.
-#
-# Factory: mesh_io
 
 from pylith.utils.PetscComponent import PetscComponent
 from .meshio import MeshIO as ModuleMeshIO
 
 
 class MeshIOObj(PetscComponent, ModuleMeshIO):
-    """Python abstract base class for finite-element mesh I/O.
     """
-
-    # PUBLIC METHODS /////////////////////////////////////////////////////
+    Abstract base class for finite-element mesh readers.
+    """
 
     def __init__(self, name="meshio"):
         """Constructor.
         """
         PetscComponent.__init__(self, name, facility="mesh_io")
         self.coordsys = None
-        return
 
     def preinitialize(self):
         """Do minimal initialization."""
         self._createModuleObj()
         ModuleMeshIO.setIdentifier(self, self.aliases[-1])
-        return
 
     def read(self, debug):
         """Read finite-element mesh and store in Sieve mesh object.
@@ -78,21 +69,16 @@ class MeshIOObj(PetscComponent, ModuleMeshIO):
         if 0 == comm.rank:
             self._info.log("Writing finite-element mesh")
         ModuleMeshIO.write(self, mesh)
-        return
-
-    # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
         """Set members based using inventory.
         """
         PetscComponent._configure(self)
-        return
 
     def _createModuleObj(self):
         """Create C++ MeshIO object.
         """
         raise NotImplementedError("MeshIO is an abstract base class.")
-        return
 
 
 # End of file

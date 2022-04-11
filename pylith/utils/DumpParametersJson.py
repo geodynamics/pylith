@@ -12,19 +12,27 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-# @file pylith/utils/DumpParametersJson.py
-#
-# @brief Python DumpParameters object for dumping PyLith parameter information to a JSON file.
 
 from .DumpParameters import DumpParameters
 
 
 class DumpParametersJson(DumpParameters):
-    """Python DumpParameters object for dumping PyLith parameter information to a JSON file.
-
-    FACTORY: dump_parameters
     """
+    Dump PyLith parameter information to an ASCII file.
+
+    Implements `DumpParameters`.
+    """
+    DOC_CONFIG = {
+        "cfg": """
+            [pylithapp]
+            dump_parameters = pylith.utils.DumpParametersJson
+
+            [pylithapp.dump_parameters]
+            filename = output/parameters.json
+            style = normal
+            verbose = True
+        """
+    }
 
     import pythia.pyre.inventory
 
@@ -37,13 +45,10 @@ class DumpParametersJson(DumpParameters):
     indent = pythia.pyre.inventory.int("indent", default=4)
     indent.meta['tip'] = "Nmber of spaces to indent, use a negative number for no newlines."
 
-    # PUBLIC METHODS /////////////////////////////////////////////////////
-
     def __init__(self, name="dumpparametersjson"):
         """Constructor.
         """
         DumpParameters.__init__(self, name)
-        return
 
     def write(self, app):
         """Write parameters to JSON file.
@@ -64,7 +69,6 @@ class DumpParametersJson(DumpParameters):
                 raise ValueError("Unknown JSON style '%s'." % self.style)
 
             json.dump(self.info, fout, indent=indent, separators=separators)
-        return
 
 # FACTORIES ////////////////////////////////////////////////////////////
 

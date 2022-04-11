@@ -12,13 +12,6 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-# @file pylith/problems/TimeDependent.py
-#
-# @brief Python class for time dependent crustal
-# dynamics problems.
-#
-# Factory: problem.
 
 from .Problem import Problem
 from .problems import TimeDependent as ModuleTimeDependent
@@ -33,10 +26,45 @@ def icFactory(name):
 
 
 class TimeDependent(Problem, ModuleTimeDependent):
-    """Python class for time dependent crustal dynamics problems.
-
-    FACTORY: problem.
     """
+    Static, quasistatic, or dynamic time-dependent problem.
+
+    Implements `Problem`.
+    """
+    DOC_CONFIG = {
+        "cfg": """
+            # Set boundary conditions, faults, and materials
+            bc = [boundary_xpos, boundary_xneg]
+            interfaces = [san_andreas, hayward]
+            materials = [crust, mantle]
+
+            # Create an initial condition over the domain
+            ic = [domain]
+
+            # Turn on gravitational body forces
+            gravity_field = spatialdata.spatialdb.GravityField
+
+            # Set the normalizer for nondimensionalizing the problem
+            normalizer = spatialdata.units.NondimElasticQuasistatic
+
+            # Set the subfields in the solution
+            solution = = pylith.problems.SolnDispLagrange
+
+            # Output the solution for the domain and ground surface
+            solution_observers = [domain, ground_surface]
+
+            # Use the quasistatic formulation and linear solver
+            formulation = quasistatic
+            solver = linear
+
+            # Use a maximum of 20 time steps to simulation from -0.5 years to 2.0 years with an initial time step of 0.5 years.
+            # The first time step will compute the solution at time 0.
+            start_time = -0.5*year
+            end_time = 2.0*year
+            initial_dt = 0.5*year
+            max_timesteps = 20
+        """
+    }
 
     import pythia.pyre.inventory
     from pythia.pyre.units.time import year
@@ -67,13 +95,10 @@ class TimeDependent(Problem, ModuleTimeDependent):
         "progress_monitor", family="progress_monitor", factory=ProgressMonitorTime)
     progressMonitor.meta['tip'] = "Simple progress monitor via text file."
 
-    # PUBLIC METHODS /////////////////////////////////////////////////////
-
     def __init__(self, name="timedependent"):
         """Constructor.
         """
         Problem.__init__(self, name)
-        return
 
     def preinitialize(self, mesh):
         """Setup integrators for each element family (material/quadrature,
@@ -99,7 +124,6 @@ class TimeDependent(Problem, ModuleTimeDependent):
 
         self.progressMonitor.preinitialize()
         ModuleTimeDependent.setProgressMonitor(self, self.progressMonitor)
-        return
 
     def run(self, app):
         """Solve time dependent problem.
@@ -111,9 +135,6 @@ class TimeDependent(Problem, ModuleTimeDependent):
             self._info.log("Solving problem.")
 
         ModuleTimeDependent.solve(self)
-        return
-
-    # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
         """Set members based using inventory.
@@ -121,13 +142,11 @@ class TimeDependent(Problem, ModuleTimeDependent):
         Problem._configure(self)
         if self.startTime > self.endTime:
             raise ValueError("End time {} must be later than start time {}.".format(self.startTime, self.endTime))
-        return
 
     def _createModuleObj(self):
         """Create handle to C++ object.
         """
         ModuleTimeDependent.__init__(self)
-        return
 
 
 # FACTORIES ////////////////////////////////////////////////////////////

@@ -12,19 +12,14 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-# @file pylith/topology/Mesh.py
-#
-# @brief Python Mesh for finite-element topology information.
 
 from .topology import Mesh as ModuleMesh
 
 
 class Mesh(ModuleMesh):
-    """Python Mesh for finite-element topology information.
     """
-
-    # PUBLIC METHODS /////////////////////////////////////////////////////
+    Finite-element mesh defining the topology of the discretization.
+    """
 
     def __init__(self, dim=None, comm=None, mesh=None, label=None, isSubmesh=False):
         """Constructor.
@@ -42,7 +37,6 @@ class Mesh(ModuleMesh):
         # Name of logging stage for mesh. We progress through various
         # stages as we read, distribute, and refine mesh.
         self.memLoggingStage = "Mesh"
-        return
 
     def comm(self):
         """Get communicator.
@@ -57,7 +51,6 @@ class Mesh(ModuleMesh):
         """
         from .topology import MeshOps_checkMaterialIds
         MeshOps_checkMaterialIds(self, materialIds)
-        return
 
     def groupSizes(self):
         """Return the name and number of vertices for each group
@@ -72,7 +65,6 @@ class Mesh(ModuleMesh):
         """Deallocate locally managed data structures.
         """
         self.deallocate()
-        return
 
 
 # End of file

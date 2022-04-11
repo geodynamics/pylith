@@ -12,21 +12,21 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-# @file pylith/problems/SolnDispVel.py
-#
-# @brief Python subfields container with displacement and velocity subfields.
 
 from pylith.utils.PetscComponent import PetscComponent
 from .Solution import Solution as SolutionBase
 
 
 class SolnDispVel(PetscComponent):
-    """Python subfields container with displacement and velocity subfields.
-
-    IMPORTANT: Use the Solution class (below) to set this object as the default facilities array for the solution
-    subfields.
     """
+    Container for solution subfields with displacement and velocity subfields.
+    """
+    DOC_CONFIG = {
+        "cfg": """
+            [pylithapp.problem]
+            solution = pylith.problems.SolnDispVel
+        """
+    }
 
     import pythia.pyre.inventory
 
@@ -38,17 +38,13 @@ class SolnDispVel(PetscComponent):
     velocity = pythia.pyre.inventory.facility("velocity", family="soln_subfield", factory=SubfieldVelocity)
     velocity.meta['tip'] = "Velocity subfield."
 
-    # PUBLIC METHODS /////////////////////////////////////////////////////
-
     def __init__(self, name="solndispvel"):
         """Constructor.
         """
         PetscComponent.__init__(self, name, facility="soln_subfields")
-        return
 
     def _configure(self):
         PetscComponent._configure(self)
-        return
 
     def components(self):
         """Order of facilities in Inventory is ambiguous, so overwrite

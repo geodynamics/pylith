@@ -12,35 +12,26 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-# @file pythia.pyre/meshio/DataWriter.py
-#
-# @brief Python abstract base class for writing finite-element data.
-#
-# Factory: output_data_writer
-
-from pylith.utils.PetscComponent import PetscComponent
 
 import os
 
+from pylith.utils.PetscComponent import PetscComponent
+
 
 class DataWriter(PetscComponent):
-    """Python abstract base class for writing finite-element data.
     """
-
-    # PUBLIC METHODS /////////////////////////////////////////////////////
+    Abstract base class writing solution, auxiliary, and derived subfields.
+    """
 
     def __init__(self, name="datawriter"):
         """Constructor.
         """
         PetscComponent.__init__(self, name, facility="datawriter")
-        return
 
     def preinitialize(self):
         """Setup data writer.
         """
         self._createModuleObj()
-        return
 
     @staticmethod
     def mkfilename(outputDir, simName, label, suffix):
@@ -61,14 +52,10 @@ class DataWriter(PetscComponent):
             comm = mpi_comm_world()
             if not comm.rank:
                 os.makedirs(relpath)
-        return
 
     def verifyConfiguration(self):
         """Verify compatibility of configuration.
         """
-        return
-
-    # PRIVATE METHODS /////////////////////////////////////////////////////
 
     def _createModuleObj(self):
         """Create handle to C++ object."""

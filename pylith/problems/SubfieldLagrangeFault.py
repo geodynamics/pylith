@@ -12,37 +12,33 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-# @file pylith/problems/SubfieldLagrangeFault.py
-#
-# @brief Python object for fault Lagrange multipliers subfield.
-#
-# Factory: subfield.
 
 from .SolutionSubfield import SolutionSubfield
 
 
 class SubfieldLagrangeFault(SolutionSubfield):
-    """Python object for fault Lagrange multipliers subfield.
-
-    FACTORY: soln_subfield
     """
+    Object for defining attributes of the fault Lagrange multiplier solution subfield.
 
-    import pythia.pyre.inventory
-
-    from .SolutionSubfield import validateAlias
-    userAlias = pythia.pyre.inventory.str("alias", default="lagrange_multiplier_fault", validator=validateAlias)
-    userAlias.meta['tip'] = "Name for subfield."
+    Implements `SolutionSubfield`.
+    """
+    DOC_CONFIG = {
+        "cfg": """
+        [pylithapp.problems.solution.subfields.lagrange_fault]
+        alias = lagrange_multiplier_fault
+        basis_order = 1
+        """
+    }
 
     fieldName = "lagrange_multiplier_fault"
-
-    # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="subfieldlagrangefault"):
         """Constructor.
         """
         SolutionSubfield.__init__(self, name)
-        return
+
+    def _defaults(self):
+        self.userAlias = self.fieldName
 
     def initialize(self, normalizer, spaceDim):
         """Initialize subfield metadata.
@@ -53,15 +49,11 @@ class SubfieldLagrangeFault(SolutionSubfield):
         self.scale = normalizer.getPressureScale()
         self._setComponents(spaceDim)
         self.isFaultOnly = True
-        return
-
-    # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
         """Set members based using inventory.
         """
         SolutionSubfield._configure(self)
-        return
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
