@@ -2,16 +2,18 @@
 # Installation
 
 {numref}`fig:install:choices` provides a guide to select the appropriate method for installing PyLith.
-Installation of PyLith on a desktop or laptop machine is, in most cases, very easy. Binary packages have been created for Linux and Mac OS X (macOS) platforms.
-For Windows 10 users, we recommend installing the Windows Subsystem for Linux and using the Linux binary (see instructions in Section {ref}`sec:install:windows`).
-You can also run PyLith inside a Docker container, which provides a virtual Linux environment on any platform that Docker supports, including Linux, Mac OS X, and Windows.
+Installation of PyLith on a desktop or laptop machine is, in most cases, very easy.
+Binary packages have been created for Linux and macOS platforms.
+For Windows users, we recommend installing the Windows Subsystem for Linux and using the Linux binary (see instructions in Section {ref}`sec:install:windows`).
+You can also run PyLith inside a Docker container, which provides a virtual Linux environment on any platform that Docker supports, including Linux, macOS, and Windows.
 Installation of PyLith on other operating systems - or installation on a cluster - requires building the software from the source code, which can be difficult for inexperienced users.
 We have created a small utility called PyLith Installer that makes installing PyLith and all of its dependencies from source much easier.
 
 :::{figure-md} fig:install:choices
 <img src="figs/install_choices.*" alt="Guide for selecting the appropriate installation choice based on a hardware and intended use. The installation options are discussed in more detail in the following sections." width = "100%" />
 
-Guide for selecting the appropriate installation choice based on a hardware and intended use. The installation options are discussed in more detail in the following sections.
+Guide for selecting the appropriate installation choice based on a hardware and intended use.
+The installation options are discussed in more detail in the following sections.
 :::
 
 Help for installing and using PyLith is available from both a CIG forum and the GitHub issue tracking system <https://github.com/geodynamics/pylith/issues>.
@@ -29,10 +31,10 @@ Users running Windows 10 build 14316 and later can install a Linux bash environm
 :::{tip}
 On Linux systems you can check which version of glibc you have by running `ldd-version`
 
-On macOS systems running OS X, you can check the operating system version by clicking on the Apple icon and *About this Mac*.
+On macOS systems running OS X, you can check the operating system version by clicking on the Apple icon and *About This Mac*.
 :::
 
-### Linux and Mac OS X (macOS)
+### Linux and macOS
 
 1.  Open a terminal window and change to the directory where you want to place the distribution.
     ```{code-block} bash
@@ -40,16 +42,14 @@ On macOS systems running OS X, you can check the operating system version by cli
     $ mkdir pylith
     $ cd pylith
     ```
-2.  Download the Linux or Mac OS X (macOS) tarball from the PyLith web page
+2.  Download the Linux or macOS tarball from the PyLith web page
     <https://geodynamics.org/cig/software/pylith/>, and save it to
     the desired location, e.g., `$HOME/pylith`.
 3.  Unpack the tarball.
     ```{code-block} bash
-      # Linux 32-bit
-      $ tar -xzf pylith-3.0.0beta-linux-i686.tgz
       # Linux 64-bit
       $ tar -xzf pylith-3.0.0beta-linux-x86_64.tgz
-      # Mac OS X
+      # macOS
       $ tar -xzf pylith-3.0.0beta-macOS-10.11.6.tgz
       ```
 4. Set environment variables.
@@ -71,10 +71,10 @@ The PyLith binary distribution for **macOS** systems is built using the system c
 :::
 
 (sec:install:windows)=
-### Windows 10
+### Windows
 
 PyLith is developed within the Unix/Linux framework, and we do not provide a native PyLith binary distribution for Windows.
-The preferred approach to installing PyLith on a computer running Windows 10 is to enable use of a Linux subsystem.
+The preferred approach to installing PyLith on a computer running Windows is to enable use of a Linux subsystem.
 This permits use of the PyLith Linux x86_64 binary within the bash environment.
 
 To enable the Linux subsystem on Windows 10 build 14316 and later (users running an earlier Windows build should use the PyLith Docker container):
@@ -91,25 +91,13 @@ Create a user account and password for the bash environment.
 7. Install the PyLith Linux x86 binary within the bash environment following the instructions for installing the PyLith binary for Linux.
 You will run PyLith within the bash environment just like you would for a Linux operating system.
 
-### Extending PyLith and/or Integrating Other Software Into PyLith
+### Extending PyLith or Integrating Other Software Into PyLith
 
 :::{note}
-New in v.2.2.0.
+New in v3.0.0
 :::
 
-We have constructed the binary package so that you can extend PyLith and/or build additional software for integration with PyLith using the binary distribution.
-
-**macOS**  
-The binary package includes the header files for PyLith and all of its dependencies.
-Use the clang compiler and Python provided with the operating system.
-You will need to install XCode command line tools or XCode.
-
-**Linux**  
-The binary package includes the GNU compilers, Python, as well as header files for PyLith and all of its dependencies.
-
-:::{tip}
-We encourage anyone extending PyLith to fork the PyLith repository and build from source using the PyLith Installer Utility to facilitate contributing these features back into the CIG repository via pull requests.
-:::
+We strongly recommend using the [PyLith development environment Docker container](https://pylith-installer.readthedocs.io/en/latest/devenv/index.html) if you want to extend PyLith or integrate PyLith into other software.
 
 ## Installation from Source
 

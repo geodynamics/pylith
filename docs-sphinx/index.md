@@ -5,12 +5,8 @@
 
 We are in the process of migrating the documentation from LaTeX producing a PDF file to Markedly Structured Text (MyST) and Sphinx producing this online documentation, a PDF file, and epub.
 
-The developer guide has been migrated (but is still a work in progress).
-We are starting to migrate the user guide.
+Most of the user guide has been migrated, but there are still some examples that are missing documentation.
 ```
-
-[MyST Quick Reference](quickref.md)
-
 
 ## Description
 
@@ -21,9 +17,7 @@ PyLith is an open-source finite-element code for dynamic and quasistatic simulat
 * PyLith v3.0.0rc1 manual [PDF](https://github.com/geodynamics/pylith/releases/download/v3.0.0beta1/pylith-3.0.0b1_manual.pdf)
 * [PyLith tutorials](https://wiki.geodynamics.org/software:pylith:start)
 * [PyLith installer documentation](https://pylith_installer.readthedocs.io)
-* Spatialdata documentation (under construction)
-* Pythia documentation (under construction)
-
+* [Spatial Data documentation](https://spatialdata.readthedocs.io)
 
 ```{include} ../LICENSE.md
 ```
