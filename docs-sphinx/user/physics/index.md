@@ -1,9 +1,8 @@
 (sec-user-physics)=
-# Physics Implementation
+# Physics Implementations
 
 :::{toctree}
+materials/index.md
+bc/index.md
+faults/index.md
 :::
-% materials.md
-% bc.md
-% faults.md
-% sources.md

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 26.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 172 150" style="enable-background:new 0 0 172 150;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:none;stroke:#000000;stroke-width:0.45;stroke-miterlimit:10;stroke-dasharray:0.9,1.8;stroke-dashoffset:1;}
+	.st1{fill:none;stroke:#000000;stroke-width:0.45;stroke-miterlimit:10;}
+	.st2{fill:none;stroke:#FF0000;stroke-width:0.45;stroke-miterlimit:10;}
+	.st3{fill:none;stroke:#1E6E90;stroke-width:0.45;stroke-miterlimit:10;}
+	.st4{fill:none;stroke:#010101;stroke-width:0.45;stroke-miterlimit:10;}
+	.st5{font-family:'Arial-BoldMT';}
+	.st6{font-size:7.2px;}
+	.st7{fill:#1E6E90;}
+	.st8{font-family:'Symbol';}
+	.st9{fill-rule:evenodd;clip-rule:evenodd;fill:#F9BA69;}
+	.st10{fill:none;stroke:#F07F00;stroke-width:0.9;stroke-miterlimit:10;}
+	.st11{fill:none;stroke:#0000FF;stroke-width:0.45;stroke-miterlimit:10;}
+	.st12{fill:none;stroke:#00FF00;stroke-width:0.45;stroke-miterlimit:10;}
+	
+		.st13{clip-path:url(#SVGID_00000107552168826473919970000017241905536252495529_);fill:none;stroke:#60C60E;stroke-width:0.9;stroke-miterlimit:10;}
+	.st14{fill-rule:evenodd;clip-rule:evenodd;fill:#60C60E;}
+	.st15{fill:none;stroke:#60C60E;stroke-width:0.45;stroke-miterlimit:10;}
+	.st16{fill:#60C60E;}
+</style>
+<line class="st0" x1="0.7" y1="59.3" x2="144.7" y2="95.3"/>
+<line class="st0" x1="144.7" y1="41.3" x2="0.7" y2="113.3"/>
+<line class="st0" x1="72.7" y1="5.3" x2="72.7" y2="149.3"/>
+<line class="st1" x1="72.7" y1="77.3" x2="72.7" y2="5.3"/>
+<line class="st2" x1="72.7" y1="77.3" x2="162.7" y2="54.8"/>
+<line class="st3" x1="72.7" y1="77.3" x2="144.7" y2="41.3"/>
+<line class="st4" x1="72.7" y1="77.3" x2="144.7" y2="95.3"/>
+<text transform="matrix(1 0 0 1 144.7001 99.7998)" class="st5 st6">East, x</text>
+<text transform="matrix(1 0 0 1 138.9999 39.2002)" class="st5 st6">North, y</text>
+<text transform="matrix(1 0 0 1 72.7002 5.3004)" class="st5 st6">Up, z</text>
+<path class="st3" d="M142.53,42.8c6.45,1.92,11.01,7.67,11.41,14.39"/>
+<text transform="matrix(1 0 0 1 151.54 48.5)" class="st7 st8 st6">φ</text>
+<path class="st3" d="M55.54,45.2c-4.15,2.29-6.73,6.66-6.73,11.4c0,0.6,0.04,1.2,0.12,1.79"/>
+<line class="st0" x1="72.7" y1="77.3" x2="39.94" y2="52.1"/>
+<polyline class="st9" points="72.7,77.3 54.7,41.3 126.7,23.3 144.7,59.3 "/>
+<polygon class="st10" points="72.7,77.3 54.7,41.3 126.7,23.3 144.7,59.3 "/>
+<text transform="matrix(1 0 0 1 45.3398 50.3003)" class="st7 st8 st6">δ</text>
+<line class="st2" x1="72.7" y1="77.3" x2="117.7" y2="36.8"/>
+<line class="st11" x1="72.7" y1="77.3" x2="86.2" y2="23.3"/>
+<line class="st12" x1="72.7" y1="77.3" x2="27.7" y2="36.8"/>
+<text transform="matrix(1 0 0 1 164.2001 55.7002)" class="st5 st6">r0</text>
+<text transform="matrix(1 0 0 1 85.6001 21.8003)" class="st5 st6">t</text>
+<text transform="matrix(1 0 0 1 24.7002 35.6001)" class="st5 st6">s</text>
+<text transform="matrix(1 0 0 1 117.7001 36.8003)" class="st5 st6">r</text>
+<path class="st3" d="M103.53,50.6c6.72,2.61,11.22,9,11.41,16.2"/>
+<g>
+	<defs>
+		<path id="SVGID_1_" d="M115.06,42.02l-2.4-2.7l-6.78,6.06l6.6-3.42l-4.2,6.12L115.06,42.02z M0,150V0h171.96v150H0z"/>
+	</defs>
+	<clipPath id="SVGID_00000101801991942744050030000014518500607389644695_">
+		<use xlink:href="#SVGID_1_"  style="overflow:visible;"/>
+	</clipPath>
+	
+		<line style="clip-path:url(#SVGID_00000101801991942744050030000014518500607389644695_);fill:none;stroke:#60C60E;stroke-width:0.9;stroke-miterlimit:10;" x1="72.7" y1="77.3" x2="113.2" y2="41.3"/>
+</g>
+<polyline class="st14" points="108.28,48.08 112.48,41.96 105.88,45.38 108.28,48.08 "/>
+<polygon class="st15" points="108.28,48.08 112.48,41.96 105.88,45.38 "/>
+<text transform="matrix(1 0 0 1 110.1396 53.6001)" class="st7 st8 st6">λ</text>
+<text transform="matrix(1 0 0 1 91.5996 45.5)" class="st16 st5 st6">Slip</text>
+</svg>
