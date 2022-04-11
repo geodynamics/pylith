@@ -63,13 +63,3 @@ The spatial database file the auxiliary subfields for the Neumann boundary condi
 :::{seealso}
 [`NeumannTimeDependent` Component](../components/bc/NeumannTimeDependent.md) for the Pyre properties and facilities and configuration examples.
 :::
-
-:::{admonition} TODO
-:class: error
-Move to `NeumannTimeDependent.py`.
-
-The components are specified in the local normal-tangential coordinate system for the boundary. Ambiguities in specifying the shear (tangential) tractions in 3D problems are resolved using the
-`ref_dir_1` and `ref_dir_2` properties.
-The first tangential direction is $\vec{z} \times \vec{r}_1$ unless these are colinear, then $\vec{r}_2$ (`ref_dir_2`) is used.
-The second tangential direction is $\vec{n} \times \vec{t}_1$.
-:::
