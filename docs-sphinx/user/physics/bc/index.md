@@ -1,4 +1,4 @@
-(sec-user-physics-bc)=
+(sec-user-physics-boundary-conditions)=
 # Boundary Conditions
 
 ## Assigning Boundary Conditions
