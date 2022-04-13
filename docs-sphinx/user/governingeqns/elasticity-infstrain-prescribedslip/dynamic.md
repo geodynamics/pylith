@@ -70,7 +70,7 @@ Using these equations to substitute in the expressions for the time derivative o
 ```{math}
 :label: eqn:elasticity:prescribed:slip:dynamic:DAE:weak:form
 \begin{equation}
-  M_{v^+}^{-1} \int_{\Gamma_f^+} \vec{\psi}_\mathit{trial}^\lambda \cdot \left(\boldsymbol{\sigma} \cdot \vec{n} + \vec{\lambda}\right) \, d\Gamma + M_{v^-}^{-1} \int_{\Gamma_f^-} \vec{\psi}_\mathit{trial}^\lambda \cdot \left( -\boldsymbol{\sigma} \cdot \vec{n} + \vec{\lambda} \right) \, d\Gamma - \int_{\Gamma_f} \vec{\psi}_\mathit{trial}^\lambda \cdot \frac{\partial^2 \vec{d}}{\partial t^2} \, d\Gamma = \vec{0}.
+  M_{v^+}^{-1} \int_{\Gamma_f^+} \vec{\psi}_\mathit{trial}^\lambda \cdot \left(\boldsymbol{\sigma} \cdot \vec{n} + \vec{\lambda}\right) \, d\Gamma + M_{v^-}^{-1} \int_{\Gamma_f^-} \vec{\psi}_\mathit{trial}^\lambda \cdot \left( -\boldsymbol{\sigma} \cdot \vec{n} + \vec{\lambda} \right) \, d\Gamma + \int_{\Gamma_f} \vec{\psi}_\mathit{trial}^\lambda \cdot \left(-\frac{\partial^2 \vec{d}}{\partial t^2} \right) \, d\Gamma = \vec{0}.
 \end{equation}
 ```
 
@@ -83,7 +83,7 @@ Combining the explicit parts of the weak form in equation {math:numref}`eqn:dyna
 % Fv
   F^v(t,s,\dot{s}) = \frac{\partial \vec{v}}{\partial t} \\
 % Fl
-  F^\lambda(t,s,\dot{s}) = {\color{blue}\underbrace{\color{black}M_{v^+}^{-1}}_{\color{blue}{c^+}}} \int_{\Gamma_f^+} \vec{\psi}_\mathit{trial}^\lambda \cdot {\color{blue}\underbrace{\color{black}\left(\boldsymbol{\sigma} \cdot \vec{n} + \vec{\lambda}\right)}_{\color{blue}{f^\lambda_0}}} \, d\Gamma + {\color{blue}\underbrace{\color{black}M_{v^-}^{-1}}_{\color{blue}{c^-}}} \int_{\Gamma_f^-} \vec{\psi}_\mathit{trial}^\lambda \cdot {\color{blue}\underbrace{\color{black}\left( -\boldsymbol{\sigma} \cdot \vec{n} + \vec{\lambda} \right)}_{\color{blue}{f^\lambda_0}}} \, d\Gamma - \int_{\Gamma_f} \vec{\psi}_\mathit{trial}^\lambda \cdot {\color{blue}\underbrace{\color{black}\frac{\partial^2 \vec{d}}{\partial t^2}}_{\color{blue}{f^\lambda_0}}} \, d\Gamma \\
+  F^\lambda(t,s,\dot{s}) = {\color{blue}\underbrace{\color{black}M_{v^+}^{-1}}_{\color{blue}{c^+}}} \int_{\Gamma_f^+} \vec{\psi}_\mathit{trial}^\lambda \cdot {\color{blue}\underbrace{\color{black}\left(\boldsymbol{\sigma} \cdot \vec{n} + \vec{\lambda}\right)}_{\color{blue}{f^\lambda_0}}} \, d\Gamma + {\color{blue}\underbrace{\color{black}M_{v^-}^{-1}}_{\color{blue}{c^-}}} \int_{\Gamma_f^-} \vec{\psi}_\mathit{trial}^\lambda \cdot {\color{blue}\underbrace{\color{black}\left( -\boldsymbol{\sigma} \cdot \vec{n} + \vec{\lambda} \right)}_{\color{blue}{f^\lambda_0}}} \, d\Gamma + \int_{\Gamma_f} \vec{\psi}_\mathit{trial}^\lambda \cdot {\color{blue}\underbrace{\color{black}-\frac{\partial^2 \vec{d}}{\partial t^2}}_{\color{blue}{f^\lambda_0}}} \, d\Gamma \\
 % Gu
   G^u(t,s) = {\color{blue}\underbrace{\color{black}M_{u}^{-1}}_{\color{blue}{c}}} \int_\Omega \vec{\psi}_\mathit{trial}^u \cdot {\color{blue}\underbrace{\color{black}\vec{v}}_{\color{blue}{\vec{g}^u_0}}} \, d\Omega, \\
  % Gv
