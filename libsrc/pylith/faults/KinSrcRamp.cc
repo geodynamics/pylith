@@ -99,7 +99,7 @@ pylith::faults::KinSrcRamp::slipFn(const PylithInt dim,
     const double slipCoef = 2.0 * _KinSrcRamp::maxAcc(finalSlipMag, riseTime, impulseDuration) / impulseDuration;
 
     double slipTimeFn = 0.0;
-    if (t-t0 < 0.0) {
+    if (t-t0 <= 0.0) {
         slipTimeFn = 0.0;
     } else if (t-t0 <= 0.5*impulseDuration) {
         slipTimeFn = 1/6.0*pow(t,3);

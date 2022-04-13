@@ -268,7 +268,7 @@ pylith::materials::Elasticity::getInterfaceKernelsResidual(const pylith::topolog
         } // switch
 
         kernels.resize(1);
-        const EquationPart eqnPart = pylith::feassemble::Integrator::LHS;
+        const EquationPart eqnPart = pylith::feassemble::Integrator::LHS_WEIGHTED;
         kernels[0] = InterfaceResidualKernels("lagrange_multiplier_fault", eqnPart, face, f0l, f1l);
         break;
     } // DYNAMIC_IMEX
