@@ -75,7 +75,7 @@ html_theme_options = {
     "footer_items": ["last-updated"],
 }
 html_sidebars = {
-    "**": ["search-field", "sidebar-nav-bs", "sidebar-ethical-ads", "sidebar-cig"]
+    "**": ["search-field", "sidebar-nav-bs", "sidebar-cig"]
 }
 bibtex_bibfiles = ["references.bib"]
 bibtex_default_style = "alpha"

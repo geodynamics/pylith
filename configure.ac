@@ -260,11 +260,10 @@ AC_CONFIG_FILES([Makefile
 		tests/manual/2d/powerlaw/Makefile
 		tests/manual/3d/powerlaw/Makefile
         developer/Makefile
-		doc/Makefile
-		doc/install/Makefile
-		doc/releasenotes/Makefile
-		doc/userguide/Makefile
-		docs-sphinx/Makefile
+		doc-latex/Makefile
+		doc-latex/userguide/Makefile
+		docs/Makefile
+		release-notes/Makefile
 		examples/Makefile
 		examples/barwaves-2d/Makefile
 		examples/box-2d/Makefile

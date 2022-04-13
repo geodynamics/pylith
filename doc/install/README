@@ -1,8 +1,0 @@
-If you are new to PyLith, we recommend using the PyLith binary
-distributions to get up and running quickly. Once you are familiar
-with PyLith and want a custom installation, then we recommend that you
-use the PyLith Installer to build PyLith and its dependencies. The
-PyLith Installer is available on the PyLith website
-http://www.geodynamics.org/cig/software/pylith/. Instructions for how
-to use the installer are bundled in its distribution.
-

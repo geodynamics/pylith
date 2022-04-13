@@ -29,8 +29,9 @@ endif
 
 DIST_SUBDIRS = $(SUBDIRS) \
 	examples \
-	doc \
-	docs-sphinx \
+	doc-latex \
+	docs \
+	release-notes \
 	templates \
 	share
 
