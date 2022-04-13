@@ -225,7 +225,7 @@ pylith::fekernels::FaultCohesiveKin::f0l_a(const PylithInt dim,
         const PylithScalar tanDir[2] = {-n[1], n[0] };
         for (PylithInt i = 0; i < _spaceDim; ++i) {
             const PylithScalar slipAccXY = n[i]*slipAcc[0] + tanDir[i]*slipAcc[1];
-            f0[i] += slipAccXY;
+            f0[i] -= slipAccXY;
         } // for
         break;
     } // case 2
@@ -238,7 +238,7 @@ pylith::fekernels::FaultCohesiveKin::f0l_a(const PylithInt dim,
 
         for (PylithInt i = 0; i < _spaceDim; ++i) {
             const PylithScalar slipAccXYZ = n[i]*slipAcc[0] + tanDir1[i]*slipAcc[1] + tanDir2[i]*slipAcc[2];
-            f0[i] += slipAccXYZ;
+            f0[i] -= slipAccXYZ;
         } // for
         break;
     } // case 3
