@@ -35,7 +35,7 @@ DIST_SUBDIRS = $(SUBDIRS) \
 	share
 
 EXTRA_DIST = \
-	CHANGES \
+	CHANGES.md \
 	DEPENDENCIES \
 	docker/pylith-testenv \
 	docker/pylith-docenv

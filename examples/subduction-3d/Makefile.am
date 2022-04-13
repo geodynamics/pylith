@@ -22,7 +22,6 @@ dist_noinst_DATA = \
 	greensfns.cfg \
 	mat_elastic.cfg \
 	mat_elastic_incompressible.cfg \
-	mat_elastic_refstate.cfg \
 	mat_viscoelastic.cfg \
 	solver_algebraicmultigrid.cfg \
 	solver_fieldsplit.cfg \

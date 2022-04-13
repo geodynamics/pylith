@@ -17,11 +17,11 @@ dnl ----------------------------------------------------------------------
 dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT([PyLith], [3.0.0beta2], [cig-short@geodynamics.org])
+AC_INIT([PyLith], [3.0.0beta3], [cig-short@geodynamics.org])
 AC_CONFIG_AUX_DIR([./aux-config])
 AC_CONFIG_HEADER([portinfo])
 AC_CONFIG_MACRO_DIR([m4])
-AM_INIT_AUTOMAKE([foreign subdir-objects])
+AM_INIT_AUTOMAKE([foreign subdir-objects tar-pax])
 
 dnl ----------------------------------------------------------------------
 dnl PYTHON
@@ -259,11 +259,12 @@ AC_CONFIG_FILES([Makefile
 		tests/fullscale/eqinfo/Makefile
 		tests/manual/2d/powerlaw/Makefile
 		tests/manual/3d/powerlaw/Makefile
-    developer/Makefile
+        developer/Makefile
 		doc/Makefile
 		doc/install/Makefile
 		doc/releasenotes/Makefile
 		doc/userguide/Makefile
+		docs-sphinx/Makefile
 		examples/Makefile
 		examples/barwaves-2d/Makefile
 		examples/box-2d/Makefile
