@@ -234,17 +234,20 @@ AC_CONFIG_FILES([Makefile
 		tests/libtests/utils/Makefile
 		tests/pytests/Makefile
 		tests/mmstests/Makefile
-		tests/mmstests/elasticity/Makefile
+		tests/mmstests/linearelasticity/Makefile
 		tests/mmstests/incompressibleelasticity/Makefile
 		tests/mmstests/faults/Makefile
 		tests/fullscale/Makefile
 		tests/fullscale/cornercases/Makefile
-		tests/fullscale/cornercases/2d/Makefile
-		tests/fullscale/cornercases/3d/Makefile
+		tests/fullscale/cornercases/nofaults-2d/Makefile
+		tests/fullscale/cornercases/nofaults-3d/Makefile
 		tests/fullscale/linearelasticity/Makefile
 		tests/fullscale/linearelasticity/nofaults-2d/Makefile
 		tests/fullscale/linearelasticity/nofaults-3d/Makefile
 		tests/fullscale/linearelasticity/faults-2d/Makefile
+		tests/fullscale/incompressibleelasticity/Makefile
+		tests/fullscale/incompressibleelasticity/nofaults-2d/Makefile
+		tests/fullscale/incompressibleelasticity/nofaults-3d/Makefile
 		tests/fullscale/viscoelasticity/Makefile
 		tests/fullscale/viscoelasticity/nofaults-2d/Makefile
 		tests/fullscale/viscoelasticity/nofaults-3d/Makefile
@@ -262,26 +265,23 @@ AC_CONFIG_FILES([Makefile
 		doc/releasenotes/Makefile
 		doc/userguide/Makefile
 		examples/Makefile
-		examples/2d/Makefile
-		examples/2d/box/Makefile
-		examples/2d/strikeslip/Makefile
-		examples/2d/reverse/Makefile
-		examples/2d/subduction/Makefile
-		examples/2d/bar_waves/Makefile
-		examples/3d/Makefile
-		examples/3d/box/Makefile
-		examples/3d/subduction/Makefile
-		examples/meshing/Makefile
-		examples/meshing/surface_nurbs/Makefile
-		examples/meshing/surface_nurbs/dem/Makefile
-		examples/meshing/surface_nurbs/dem/ulines/Makefile
-		examples/meshing/surface_nurbs/dem/vlines/Makefile
-		examples/meshing/surface_nurbs/triangles/Makefile
-		examples/meshing/surface_nurbs/merge_surfs/Makefile
-		examples/meshing/surface_nurbs/subduction/Makefile
-		examples/meshing/cubit_cellsize/Makefile
-		examples/troubleshooting/Makefile
-		examples/troubleshooting/nofaults-2d/Makefile
+		examples/barwaves-2d/Makefile
+		examples/box-2d/Makefile
+		examples/box-3d/Makefile
+		examples/meshing-cubit/Makefile
+		examples/meshing-cubit/surface_nurbs/Makefile
+		examples/meshing-cubit/surface_nurbs/dem/Makefile
+		examples/meshing-cubit/surface_nurbs/dem/ulines/Makefile
+		examples/meshing-cubit/surface_nurbs/dem/vlines/Makefile
+		examples/meshing-cubit/surface_nurbs/triangles/Makefile
+		examples/meshing-cubit/surface_nurbs/merge_surfs/Makefile
+		examples/meshing-cubit/surface_nurbs/subduction/Makefile
+		examples/meshing-cubit/cubit_cellsize/Makefile
+		examples/reverse-2d/Makefile
+		examples/strikeslip-2d/Makefile
+		examples/subduction-2d/Makefile
+		examples/subduction-3d/Makefile
+		examples/troubleshooting-2d/Makefile
 		templates/Makefile
 		share/Makefile
 		])

@@ -14,21 +14,10 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
 
-dist_noinst_DATA = \
-	README.md \
-	geometry.jou \
-	bc.jou \
-	tri_200m.jou \
-	tri_200m.exo \
-	quad_200m.jou \
-	quad_200m.exo \
-	pylithapp.cfg \
-	step01_pwave_reflected.cfg \
-	traction_impulse.timedb \
-	shearwave_slip.spatialdb \
-	shearwave_risetime.spatialdb \
-	shearwave_sliptime.spatialdb
+SUBDIRS = \
+	nofaults-2d \
+	nofaults-3d
+
 
 # End of file 

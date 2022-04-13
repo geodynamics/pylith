@@ -21,28 +21,28 @@ dist_check_SCRIPTS = test_pylith.py
 
 dist_noinst_PYTHON = \
 	meshes.py \
-	TestAxialDispOneCell.py \
-	TestAxialDispConstrained.py \
-	axialdisp_soln.py \
-	axialdisp_gendb.py
+	TestGravityIncompressible.py \
+	gravity_incompressible_soln.py
 
 dist_noinst_DATA = \
-	twocells_tri.mesh \
-	onecell_quad.mesh \
+	geometry.jou \
+	bc.jou \
+	mesh_tet.jou \
+	mesh_tet.exo \
+	mesh_hex.jou \
+	mesh_hex.exo \
+	output_points.txt \
 	pylithapp.cfg \
-	axialdisp.cfg \
-	axialdisp_quad.cfg \
-	dofconstrained.cfg \
-	dofconstrained_tri.cfg \
-	dofconstrained_quad.cfg
+	gravity_incompressible.cfg \
+	gravity_incompressible_hex.cfg \
+	gravity_incompressible_tet.cfg
 
-noinst_TMP = \
-	axialdisp_bc.spatialdb
+noinst_TMP = 
 
 
 
 # 'export' the input files by performing a mock install
-export_datadir = $(abs_top_builddir)/tests/fullscale/cornercases/2d
+export_datadir = $(abs_top_builddir)/tests/fullscale/incompressibleelasticity/nofaults-3d
 export-data: $(dist_noinst_PYTHON) $(dist_noinst_DATA)
 	for f in $(dist_noinst_PYTHON) $(dist_noinst_DATA); do $(install_sh_DATA) $(srcdir)/$$f $(export_datadir); done
 

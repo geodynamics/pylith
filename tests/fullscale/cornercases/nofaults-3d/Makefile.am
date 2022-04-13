@@ -21,57 +21,28 @@ dist_check_SCRIPTS = test_pylith.py
 
 dist_noinst_PYTHON = \
 	meshes.py \
-	TestAxialDisp.py \
+	TestAxialDispOneCell.py \
+	TestAxialDispConstrained.py \
 	axialdisp_soln.py \
-	axialdisp_gendb.py \
-	TestShearTraction.py \
-	sheartraction_soln.py \
-	sheartraction_gendb.py \
-	TestShearTractionRate.py \
-	sheartraction_rate_soln.py \
-	sheartraction_rate_gendb.py \
-	TestGravity.py \
-	gravity_soln.py \
-	TestGravityRefState.py \
-	gravity_refstate_soln.py \
-	gravity_refstate_gendb.py
+	axialdisp_gendb.py
 
 dist_noinst_DATA = \
-	geometry.jou \
-	bc.jou \
-	mesh_tri.jou \
-	mesh_tri.exo \
-	mesh_quad.jou \
-	mesh_quad.exo \
+	fivecells_tet.mesh \
+	onecell_hex.mesh \
 	pylithapp.cfg \
 	axialdisp.cfg \
-	axialdisp_tri.cfg \
-	axialdisp_quad.cfg \
-	sheartraction.cfg \
-	sheartraction_tri.cfg \
-	sheartraction_quad.cfg \
-	sheartraction_rate.cfg \
-	sheartraction_rate_tri.cfg \
-	sheartraction_rate_quad.cfg \
-	gravity.cfg \
-	gravity_tri.cfg \
-	gravity_quad.cfg \
-	gravity_refstate.cfg \
-	gravity_refstate_tri.cfg \
-	gravity_refstate_quad.cfg \
-	output_points.txt
+	axialdisp_hex.cfg \
+	dofconstrained.cfg \
+	dofconstrained_tet.cfg \
+	dofconstrained_hex.cfg
 
 noinst_TMP = \
-	axialdisp_bc.spatialdb \
-	axialdisp_ic.spatialdb \
-	sheartraction_disp.spatialdb \
-	sheartraction_rate_disp.spatialdb \
-	gravity_refstate_matfields.spatialdb
+	axialdisp_bc.spatialdb
 
 
 
 # 'export' the input files by performing a mock install
-export_datadir = $(abs_top_builddir)/tests/fullscale/linearelasticity/nofaults-2d
+export_datadir = $(abs_top_builddir)/tests/fullscale/cornercases/nofaults-3d
 export-data: $(dist_noinst_PYTHON) $(dist_noinst_DATA)
 	for f in $(dist_noinst_PYTHON) $(dist_noinst_DATA); do $(install_sh_DATA) $(srcdir)/$$f $(export_datadir); done
 

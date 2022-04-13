@@ -18,6 +18,7 @@
 SUBDIRS = \
 	cornercases \
 	linearelasticity \
+	incompressibleelasticity \
 	viscoelasticity \
 	poroelasticity \
 	petsc \

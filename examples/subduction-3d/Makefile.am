@@ -21,24 +21,25 @@ dist_noinst_DATA = \
 	pylithapp.cfg \
 	greensfns.cfg \
 	mat_elastic.cfg \
+	mat_elastic_incompressible.cfg \
+	mat_elastic_refstate.cfg \
 	mat_viscoelastic.cfg \
 	solver_algebraicmultigrid.cfg \
 	solver_fieldsplit.cfg \
-	step01.cfg \
-	step02.cfg \
-	step03.cfg \
-	step04.cfg \
-	step05.cfg \
-	step06.cfg \
-	step07a.cfg \
-	step07b.cfg \
-	step08a.cfg \
-	step08b.cfg \
-	step08c.cfg \
+	step01_axialdisp.cfg \
+	step02_coseismic.cfg \
+	step03_interseismic.cfg \
+	step04_eqcycle.cfg \
+	step06_slowslip.cfg \
+	step07a_leftlateral.cfg \
+	step07b_reverse.cfg \
+	step08a_gravity_refstate.cfg \
+	step08b_gravity_incompressible.cfg \
+	step08c_gravity_viscoelastic.cfg \
 	cgps_sites.txt \
 	make_synthetic_gpsdisp.cfg \
-	slip_invert.cfg \
 	make_synthetic_gpsdisp.py \
+	slip_invert.cfg \
 	slip_invert.py \
 	mesh/bc.jou \
 	mesh/cas_contours_dep.in.txt.gz \

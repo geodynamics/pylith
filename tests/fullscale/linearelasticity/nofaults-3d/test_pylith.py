@@ -55,10 +55,6 @@ class TestApp(TestDriver):
         for test in TestGravityRefState.test_cases():
             suite.addTest(unittest.makeSuite(test))
 
-        import TestGravityIncompressible
-        for test in TestGravityIncompressible.test_cases():
-            suite.addTest(unittest.makeSuite(test))
-
         return suite
 
 

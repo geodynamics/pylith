@@ -16,7 +16,7 @@
 # ----------------------------------------------------------------------
 
 SUBDIRS = \
-	elasticity \
+	linearelasticity \
 	incompressibleelasticity \
 	faults
 
