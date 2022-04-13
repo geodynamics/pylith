@@ -1,7 +1,9 @@
 (sec:ParaView:Python:scripts)=
 # ParaView Python Scripts
 
-**New in v2.2.1**
+:::{note}
+New in v2.2.1
+:::
 
 In some of the examples (currently only the 2D and 3D subduction zone examples) we provide ParaView Python scripts for visualizing the input finite-element mesh and the PyLith simulation results.
 Some of these scripts are very generic and are easily reused; others are more specific to the examples.
@@ -42,7 +44,7 @@ For example, to set the value of the variable `EXODUS_FILE` to the absolute path
 ---
 caption: ParaView Python shell
 ---
->>> EXODUS_FILE = "/home/johndoe/pylith/examples/3d/subduction/mesh/mesh_tet.exo"
+>>> EXODUS_FILE = "/home/johndoe/pylith/examples/subduction-3d/mesh/mesh_tet.exo"
 ```
 
 In this case, we use the Python os module to get the absolute path of the home directory and append the path to the Exodus file with the appropriate separators for the operating system.
@@ -50,4 +52,3 @@ In this case, we use the Python os module to get the absolute path of the home d
 :::{important}
 In each of the ParaView Python scripts, the names of the variables and their default values are given by the DEFAULTS dictionary near the top of the file.
 :::
-

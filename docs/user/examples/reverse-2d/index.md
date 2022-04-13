@@ -4,19 +4,19 @@
 
 This suite of examples demonstrates use of a number of features for a simple two-dimensional model.
 This example also shows how to produce a mesh with a somewhat complex geometry.
-Although the problem geometry ({numref}`fig:example:2d:reverse:geometry`) includes a simple planar splay fault intersecting a planar thrust fault, the first 3 steps actually focus on gravitational body forces, reference stresses, and incompressible elasticity.
+Although the problem geometry ({numref}`fig:example:reverse-2d:geometry`) includes a simple planar splay fault intersecting a planar thrust fault, the first 3 steps actually focus on gravitational body forces, reference stresses, and incompressible elasticity.
 The fourth example demonstrates the use of traction boundary conditions to represent a surface load.
 The remainder of the examples focus on slip on one or more faults, including an example of multiple ruptures on a single fault.
 To keep the meshing and computation time in these examples short, we limit our model to a 200 km x 100 km domain and we will use a relatively coarse discretization.
 
-:::{figure-md} fig:example:2d:reverse:geometry
+:::{figure-md} fig:example:reverse-2d:geometry
 <img src="figs/geometry.*" alt="Geometry used for 2D reverse fault example." width="100%"/>
 
 Geometry used for 2D reverse fault example.
 :::
 
 Note that although we label the different parts of the mesh as slab, crust, and wedge, the actual thrust fault only extends 60 km downdip, and we do not provide bottom boundaries for the crust and slab.
-The files associated with this suite of examples are contained in the directory `examples/2d/reverse`.
+The files associated with this suite of examples are contained in the directory `examples/reverse-2d`.
 This directory contains several files:
 
 * **\*.jou** Files used to construct the finite-element mesh using CUBIT/Trelis.
@@ -38,7 +38,6 @@ Use script to create `features.md`.
 With the intent of illustrating features used in research simulations, we use HDF5 output and we make extensive use the most efficient implementations of spatial databases (UniformDB and ZeroDB).
 We also use ParaView Python scripts for visualizing the output.
 These scripts can be run within the ParaView GUI or outside the ParaView GUI, although the interaction is limited to rotating, translating, and zooming when run outside the ParaView GUI.
-
 
 ## Organization of Simulation Parameters
 

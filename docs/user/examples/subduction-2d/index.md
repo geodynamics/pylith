@@ -36,28 +36,28 @@ PyLith features discussed in this example:
 * CUBIT/Trelis mesh generation w/APREPRO
 * Nonplanar geometry
 * Variable mesh resolution
-*  Linear triangular cells
-*  HDF5 output
-*  Dirichlet displacement and velocity boundary conditions
-*  ZeroDispDB spatial database
-*  UniformDB spatial database
-*  SimpleDB spatial database
-*  SimpleGridDB
-*  Multiple materials
-*  Nonlinear solver
-*  Plane strain linearly elastic material
-*  Plane strain linear Maxwell viscoelastic material
-*  Prescribed slip
-*  Spontaneous rupture
-*  Multiple faults
-*  Spatially variable coseismic slip
-*  Spatially variable aseismic creep
-*  Afterslip via fault friction
-*  Static friction
-*  Slip-weakening friction
-*  Rate-state friction
+* Linear triangular cells
+* HDF5 output
+* Dirichlet displacement and velocity boundary conditions
+* ZeroDispDB spatial database
+* UniformDB spatial database
+* SimpleDB spatial database
+* SimpleGridDB
+* Multiple materials
+* Nonlinear solver
+* Plane strain linearly elastic material
+* Plane strain linear Maxwell viscoelastic material
+* Prescribed slip
+* Spontaneous rupture
+* Multiple faults
+* Spatially variable coseismic slip
+* Spatially variable aseismic creep
+* Afterslip via fault friction
+* Static friction
+* Slip-weakening friction
+* Rate-state friction
 
-All of the files necessary to run the examples are contained in the directory `examples/2d/subduction`.
+All of the files necessary to run the examples are contained in the directory `examples/subduction-2d`.
 
 ## Example Workflow
 
@@ -78,16 +78,16 @@ step08-twofaults-powerlaw.md
 
 The list below includes some suggested modifications to these examples that will allow you to become more familiar with PyLith while examining some interesting physics.
 
-*  Change the resolution of the mesh by editing the `mesh_tri3.jou` journal file.
+* Change the resolution of the mesh by editing the `mesh_tri3.jou` journal file.
 Change the resolution and bias factor.
-*  Add depth dependent viscosity to the mantle and crust.
+* Add depth dependent viscosity to the mantle and crust.
 This requires using the linear Maxwell plane strain bulk constitutive model in the crust as well and creating spatial databases that include viscosity for the crust.
 Specifying a depth dependent variation in the parameters will require adding points, updating num-locs accordingly, and changing data-dim to 1.
-*  Modify the spatial database files for the material properties to use depth-dependent elastic properties based on PREM (Dziewonski and Anderson, 1981, 10.1016/0031-9201(81)90046-7). See <http://ds.iris.edu/ds/products/emc-prem/> for a simple table of values. Add points, update num-locs accordingly, and change data-dim to 1.
-*  Modify the CUBIT journal files to use quad4 cells rather than tri3 cells.
+* Modify the spatial database files for the material properties to use depth-dependent elastic properties based on PREM (Dziewonski and Anderson, 1981, 10.1016/0031-9201(81)90046-7). See <http://ds.iris.edu/ds/products/emc-prem/> for a simple table of values. Add points, update num-locs accordingly, and change data-dim to 1.
+* Modify the CUBIT journal files to use quad4 cells rather than tri3 cells.
 This requires using the pave mesh scheme.
-*  Modify Steps 5 and 6 to use a user-defined variable time step.
+* Modify Steps 5 and 6 to use a user-defined variable time step.
 Experiment with longer time steps between earthquake ruptures and smaller time steps around the time of the earthquake ruptures.
 Can you develop a simple algorithm for choosing the time step?
-*  Adjust the parameters of the friction models and examine the effects on the deformation and the convergence of the nonlinear solve.
+* Adjust the parameters of the friction models and examine the effects on the deformation and the convergence of the nonlinear solve.
 In which cases do you need to adjust the time step to retain reasonable convergence?

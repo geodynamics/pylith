@@ -2,16 +2,15 @@
 
 ## CUBIT Meshing Examples
 
-The directory `examples/meshing` contains several examples of using CUBIT to construct finite-element meshes for complex geometry.
+The directory `examples/meshing-cubit` contains several examples of using CUBIT to construct finite-element meshes for complex geometry.
 This includes features such as constructing nonplanar fault geometry from contours, constructing topography from a DEM, and merging sheet bodies (surfaces).
 A separate examples discusses defining the discretization size using a vertex field in an Exodus-II file.
 See the `README` files in the subdirectories for more detailed descriptions of these examples.
 
 ## Troubleshooting Examples
 
-The directory `examples/troubleshooting` contains a few examples to practice troubleshooting a variety of user errors in parameters files and problem setup.
-The files with the errors corrected are in `examples/troubleshooting/correct`.
-Step-by-step corrections are discussed in the troubleshooting PyLith simulations sessions of the 2014, 2015, 2017, and 2019 PyLith tutorials (<https://wiki.geodynamics.org/software:pylith:start>).
+The directory `examples/troubleshooting-2d` contains a few examples to practice troubleshooting a variety of user errors in parameters files and problem setup.
+The files with the errors corrected are in `examples/troubleshooting-2d/correct`.
 
 ## Code Verification Benchmarks
 

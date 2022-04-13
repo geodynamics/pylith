@@ -129,7 +129,7 @@ pylith_cfgsearch [--help] [--path SEARCHPATH] [--display DISPLAY] [--verbose] [-
 
 ```{code-block} console
 ---
-caption: Example of running `pylith_cfgsearch` in `examples/2d/strikeslip`.
+caption: Example of running `pylith_cfgsearch` in `examples/strikeslip-2d`.
 ---
 $ pylith_cfgsearch
 step01_slip.cfg v1.0.0; requires PyLith >=3.0 and <4.0
@@ -166,7 +166,7 @@ step03_multislip_velbc.cfg v1.0.0; requires PyLith >=3.0 and <4.0
 
 ```{code-block} console
 ---
-caption: Example of running `pylith_cfgsearch` in `examples/2d/strikeslip`, limiting output to the description and keywords.
+caption: Example of running `pylith_cfgsearch` in `examples/strikeslip-2d`, limiting output to the description and keywords.
 ---
 $ pylith_cfgsearch --display=description,keywords
 step01_slip.cfg
@@ -182,7 +182,7 @@ step03_multislip_velbc.cfg
 
 ```{code-block} console
 ---
-caption: Example of running `pylith_cfgsearch` in `examples/2d/strikeslip`, filtering search results to quasistatic simulations.
+caption: Example of running `pylith_cfgsearch` in `examples/strikeslip-2d`, filtering search results to quasistatic simulations.
 ---
 $ pylith_cfgsearch --features="Quasistatic simulation"
 step02_slip_velbc.cfg v1.0.0; requires PyLith >=3.0 and <4.0
@@ -230,9 +230,9 @@ pylith_runner [--help] [--path SEARCHPATH] [--verbose]
 
 ```{code-block} console
 ---
-caption: Example of using `pylith_runner` to run all simulations in `examples/2d` (output omitted).
+caption: Example of using `pylith_runner` to run all simulations in `examples/box-2d` (output omitted).
 ---
-$ pylith_runner --path=examples/2d
+$ pylith_runner --path=examples/box-2d
 ```
 
 (sec-user-run-pylith-pylith-dumpparameters)=
