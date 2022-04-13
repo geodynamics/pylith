@@ -24,7 +24,7 @@ dist_noinst_PYTHON = \
 	apps/__init__.py \
 	apps/TestPetscApplication.py \
 	apps/TestPyLithApp.py \
-	apps/TestEqInfoAPp.py \
+	apps/TestEqInfoApp.py \
 	bc/__init__.py \
 	bc/TestDirichletTimeDependent.py \
 	bc/TestNeumannTimeDependent.py \
@@ -40,7 +40,6 @@ dist_noinst_PYTHON = \
 	faults/TestKinSrcBrune.py \
 	faults/TestKinSrcLiuCos.py \
 	faults/TestKinSrcTimeHistory.py \
-	faults/SingleRupture.py \
 	materials/__init__.py \
 	materials/TestElasticity.py \
 	materials/TestHomogeneous.py \
@@ -54,7 +53,7 @@ dist_noinst_PYTHON = \
 	meshio/TestDataWriter.py \
 	meshio/TestDataWriterHDF5.py \
 	meshio/TestDataWriterHDF5Ext.py \
-	meshio/TestDataWRiterVTK.py \
+	meshio/TestDataWriterVTK.py \
 	meshio/TestXdmf.py
 
 

@@ -11,8 +11,8 @@ USER ${TEST_USER}
 ENV src_dir=${TOPSRC_DIR}/pylith
 
 COPY --chown=pylith-tester:pylith-tester . ${src_dir}
-WORKDIR ${src_dir}/docs-sphinx
-RUN python3 -m pip install sphinx==4.2.0 myst-parser pydata-sphinx-theme sphinxcontrib.bibtex
+WORKDIR ${src_dir}/docs
+RUN python3 -m pip install sphinx myst-parser pydata-sphinx-theme sphinxcontrib.bibtex
 RUN ./build.sh
 
 CMD /bin/bash

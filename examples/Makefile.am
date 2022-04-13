@@ -14,16 +14,20 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
 
 dist_noinst_DATA = \
 	README.md
 
 SUBDIRS = \
-	2d \
-	3d \
-	meshing \
-	troubleshooting
+	barwaves-2d \
+	box-2d \
+	box-3d \
+	meshing-cubit \
+	reverse-2d \
+	strikeslip-2d \
+	subduction-2d \
+	subduction-3d \
+	troubleshooting-2d
 
 
 # End of file 

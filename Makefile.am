@@ -29,13 +29,14 @@ endif
 
 DIST_SUBDIRS = $(SUBDIRS) \
 	examples \
-	doc \
-	docs-sphinx \
+	doc-latex \
+	docs \
+	release-notes \
 	templates \
 	share
 
 EXTRA_DIST = \
-	CHANGES \
+	CHANGES.md \
 	DEPENDENCIES \
 	docker/pylith-testenv \
 	docker/pylith-docenv

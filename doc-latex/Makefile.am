@@ -14,15 +14,10 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
+#
 
 SUBDIRS = \
-	cornercases \
-	linearelasticity \
-	incompressibleelasticity \
-	viscoelasticity \
-	poroelasticity \
-	petsc \
-	eqinfo
+	userguide
 
 
 # End of file
