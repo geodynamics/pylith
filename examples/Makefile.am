@@ -28,7 +28,9 @@ SUBDIRS = \
 	strikeslip-2d \
 	subduction-2d \
 	subduction-3d \
-	troubleshooting-2d
+	troubleshooting-2d \
+	point_source-2d \
+	ricker_source-2d
 
 
 # End of file 
