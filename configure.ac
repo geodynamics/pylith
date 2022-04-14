@@ -280,6 +280,9 @@ AC_CONFIG_FILES([Makefile
 		examples/subduction-2d/Makefile
 		examples/subduction-3d/Makefile
 		examples/magma-2d/Makefile
+		examples/point_source-2d/Makefile
+		examples/ricker_source-2d/Makefile
+		examples/SPE10-2d/Makefile
 		examples/troubleshooting-2d/Makefile
 		examples/meshing-cubit/Makefile
 		examples/meshing-cubit/surface-nurbs/Makefile

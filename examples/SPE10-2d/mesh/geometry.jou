@@ -1,0 +1,47 @@
+# -*- Python -*-
+# ----------------------------------------------------------------------
+# Set units to SI.
+# ----------------------------------------------------------------------
+${Units('si')}
+
+# ----------------------------------------------------------------------
+# Reset geometry.
+# ----------------------------------------------------------------------
+reset
+
+# ----------------------------------------------------------------------
+# Create surface using vertices
+# ----------------------------------------------------------------------
+
+# Block is 1200' x 2200' x 170'
+
+# {dx=20*ft}
+# {dy=10*ft}
+# {dz=2*ft}
+
+# {nx=60}
+# {ny=220}
+# {nz=85}
+
+#create vertex {dx} {dy} 0.0
+#create vertex {dx} {dy*ny- dy} 0.0
+#create vertex {dx*nx - dx} {dy*ny - dy} 0.0
+#create vertex {dx*nx - dx} {dy} 0.0
+#
+
+create vertex 0.0 0.0 0.0
+create vertex 0.0 {dy*ny} 0.0
+create vertex {dx*nx} {dy*ny} 0.0
+create vertex {dx*nx} 0.0 0.0
+
+create surface vertex 1 2 3 4
+#delete vertex all
+
+# End of file
+
+
+
+
+
+
+

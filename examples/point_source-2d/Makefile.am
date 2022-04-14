@@ -31,7 +31,7 @@ dist_noinst_DATA = \
 	step01_circle.cfg
 
 # 'export' the input files by performing a mock install
-export_datadir = $(top_builddir)/examples/2d/point_source
+export_datadir = $(top_builddir)/examples/point_source-2d
 export-data: $(dist_noinst_PYTHON) $(dist_noinst_DATA)
 	for f in $(dist_noinst_PYTHON) $(dist_noinst_DATA); do $(install_sh_DATA) $(srcdir)/$$f $(export_datadir); done
 

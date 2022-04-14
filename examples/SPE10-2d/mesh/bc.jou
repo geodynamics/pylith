@@ -1,0 +1,48 @@
+# -*- Python -*-
+# ----------------------------------------------------------------------
+# Create blocks for materials
+#
+# We only use one material in the simulations, so we lump the two
+# meshed volumes into a single block.
+# ----------------------------------------------------------------------
+block 1 surface 1
+block 1 name "poroelastic"
+
+# In order to create nodesets (marking boundaries, faults, etc), we
+# first create a group and then form a nodeset from the group, because
+# we often need to perform boolean operations to get the nodesets we
+# want, and groups suppoert boolean operations (union, intersect, etc)
+# but nodesets do not.
+
+# ----------------------------------------------------------------------
+# Create nodeset for +x boundary
+# ----------------------------------------------------------------------
+group "boundary_xpos" add node in curve 3
+nodeset 1 group boundary_xpos
+nodeset 1 name "boundary_xpos"
+
+# ----------------------------------------------------------------------
+# Create nodeset for -x boundary
+# ----------------------------------------------------------------------
+group "boundary_xneg" add node in curve 1
+nodeset 2 group boundary_xneg
+nodeset 2 name "boundary_xneg"
+
+# ----------------------------------------------------------------------
+# Create nodeset for +y boundary
+# ----------------------------------------------------------------------
+group "boundary_ypos" add node in curve 2
+nodeset 3 group boundary_ypos
+nodeset 3 name "boundary_ypos"
+
+# ----------------------------------------------------------------------
+# Create nodeset for -y boundary
+# ----------------------------------------------------------------------
+group "boundary_yneg" add node in curve  4
+nodeset 4 group boundary_yneg
+nodeset 4 name "boundary_yneg"
+
+
+
+
+
