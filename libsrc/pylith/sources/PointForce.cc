@@ -40,7 +40,7 @@
 typedef pylith::feassemble::IntegratorDomain::ResidualKernels ResidualKernels;
 typedef pylith::feassemble::IntegratorDomain::JacobianKernels JacobianKernels;
 typedef pylith::feassemble::IntegratorDomain::ProjectKernels ProjectKernels;
-typedef pylith::feassemble::Integrator::JacobianPart JacobianPart;
+typedef pylith::feassemble::Integrator::EquationPart EquationPart;
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
@@ -271,7 +271,7 @@ pylith::sources::PointForce::_setKernelsResidual(pylith::feassemble::IntegratorD
         const PetscPointFunc g1v = _sourceTimeFunction->getKernelg1v_explicit(coordsys);
 
         kernels.resize(1);
-        kernels[0] = ResidualKernels("velocity",  pylith::feassemble::Integrator::RESIDUAL_RHS, g0v, g1v);
+        kernels[0] = ResidualKernels("velocity",  pylith::feassemble::Integrator::RHS, g0v, g1v);
         break;
     } // DYNAMIC
     default:

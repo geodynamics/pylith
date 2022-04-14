@@ -26,7 +26,7 @@ dist_noinst_DATA = \
 	mesh.exo \
 	source_sites.txt \
 	pylithapp.cfg \
-	step00_steadystate.cfg \
+	step00_steadystate.cfg
 
 # 'export' the input files by performing a mock install
 export_datadir = $(top_builddir)/examples/SPE10-2d

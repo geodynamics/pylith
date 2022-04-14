@@ -40,7 +40,7 @@
 typedef pylith::feassemble::IntegratorDomain::ResidualKernels ResidualKernels;
 typedef pylith::feassemble::IntegratorDomain::JacobianKernels JacobianKernels;
 typedef pylith::feassemble::IntegratorDomain::ProjectKernels ProjectKernels;
-typedef pylith::feassemble::Integrator::JacobianPart JacobianPart;
+typedef pylith::feassemble::Integrator::EquationPart EquationPart;
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
@@ -238,7 +238,7 @@ pylith::sources::WellboreSource::_setKernelsResidual(pylith::feassemble::Integra
         const PetscPointFunc f1p = NULL;
 
         kernels.resize(1);
-        kernels[0] = ResidualKernels("pressure",  pylith::feassemble::Integrator::RESIDUAL_LHS, f0p, f1p);
+        kernels[0] = ResidualKernels("pressure",  pylith::feassemble::Integrator::LHS, f0p, f1p);
         break;
     } // QUASISTATIC
     case DYNAMIC_IMEX: {
@@ -278,8 +278,8 @@ pylith::sources::WellboreSource::_setKernelsJacobian(pylith::feassemble::Integra
         const PetscPointJac Jf3pp = NULL;
 
         kernels.resize(1);
-        const JacobianPart jacobianPart = pylith::feassemble::Integrator::JACOBIAN_LHS;
-        kernels[0] = JacobianKernels("pressure", "pressure", jacobianPart, Jf0pp, Jf1pp, Jf2pp, Jf3pp);
+        const EquationPart equationPart = pylith::feassemble::Integrator::LHS;
+        kernels[0] = JacobianKernels("pressure", "pressure", equationPart, Jf0pp, Jf1pp, Jf2pp, Jf3pp);
         break;
     } // QUASISTATIC
     case DYNAMIC:
