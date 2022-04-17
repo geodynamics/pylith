@@ -17,36 +17,40 @@
 //
 
 #if !defined(pylith_meshio_meshiopetsc_hh)
-#error "MeshIOPETSc.icc must be included only from MeshIOPETSc.icc"
+#error "MeshIOPetsc.icc must be included only from MeshIOPetsc.icc"
 #else
 
 // Set filename for PETSc.
 inline
 void
-pylith::meshio::MeshIOPETSc::filename(const char* name) {
-  _filename = name;
+pylith::meshio::MeshIOPetsc::filename(const char* name) {
+    _filename = name;
 }
+
 
 // Get filename for PETSc.
 inline
 const char*
-pylith::meshio::MeshIOPETSc::filename(void) const {
-  return _filename.c_str();
+pylith::meshio::MeshIOPetsc::filename(void) const {
+    return _filename.c_str();
 }
+
 
 // Set options prefix for mesh.
 inline
 void
-pylith::meshio::MeshIOPETSc::prefix(const char* name) {
-  _prefix = name;
+pylith::meshio::MeshIOPetsc::prefix(const char* name) {
+    _prefix = name;
 }
+
 
 // Get options prefix for mesh.
 inline
 const char*
-pylith::meshio::MeshIOPETSc::prefix(void) const {
-  return _prefix.c_str();
+pylith::meshio::MeshIOPetsc::prefix(void) const {
+    return _prefix.c_str();
 }
+
 
 #endif
 

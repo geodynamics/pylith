@@ -12,67 +12,48 @@
 # See COPYING for license information.
 #
 # ----------------------------------------------------------------------
-#
-# @file pythia.pyre/meshio/MeshIOPETSc.py
-#
-# @brief Python object for reading/writing finite-element mesh from
-# simple gmsh file.
-#
-# Factory: mesh_io
 
 from .MeshIOObj import MeshIOObj
-from .meshio import MeshIOPETSc as ModuleMeshIOPETSc
+from .meshio import MeshIOPetsc as ModuleMeshIOPetsc
 
 
-class MeshIOPETSc(MeshIOObj, ModuleMeshIOPETSc):
-    """Python object for reading/writing finite-element mesh from simple
-    PETSc file.
-
-    Factory: mesh_io
+class MeshIOPetsc(MeshIOObj, ModuleMeshIOPetsc):
+    """
+    Python object for reading/writing finite-element mesh from simple PETSc file.
     """
 
     import pythia.pyre.inventory
 
     from spatialdata.geocoords.CSCart import CSCart
-    coordsys = pythia.pyre.inventory.facility("coordsys", family="coordsys",
-                                       factory=CSCart)
+    coordsys = pythia.pyre.inventory.facility("coordsys", family="coordsys", factory=CSCart)
     coordsys.meta['tip'] = "Coordinate system associated with mesh."
-
-    # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="meshiopetsc"):
         """Constructor.
         """
         MeshIOObj.__init__(self, name)
-        return
 
     def preinitialize(self):
         """Do minimal initialization."""
         MeshIOObj.preinitialize(self)
 
-        return
-
-    # PRIVATE METHODS ////////////////////////////////////////////////////
-
     def _configure(self):
         """Set members based using inventory.
         """
         MeshIOObj._configure(self)
-        return
 
     def _createModuleObj(self):
-        """Create C++ MeshIOPETSc object.
+        """Create C++ MeshIOPetsc object.
         """
-        ModuleMeshIOPETSc.__init__(self)
-        return
+        ModuleMeshIOPetsc.__init__(self)
 
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def mesh_io():
-    """Factory associated with MeshIOPETSc.
+    """Factory associated with MeshIOPetsc.
     """
-    return MeshIOPETSc()
+    return MeshIOPetsc()
 
 
 # End of file

@@ -109,7 +109,7 @@ libpylith_la_SOURCES = \
 	meshio/MeshBuilder.cc \
 	meshio/MeshIO.cc \
 	meshio/MeshIOAscii.cc \
-	meshio/MeshIOPETSc.cc \
+	meshio/MeshIOPetsc.cc \
 	meshio/MeshIOLagrit.cc \
 	meshio/PsetFile.cc \
 	meshio/PsetFileAscii.cc \

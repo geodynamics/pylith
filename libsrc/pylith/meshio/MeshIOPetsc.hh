@@ -17,7 +17,7 @@
 //
 
 /**
- * @file libsrc/meshio/MeshIOPETSc.hh
+ * @file libsrc/meshio/MeshIOPetsc.hh
  *
  * @brief C++ input/output manager for PyLith PETSc gmsh mesh files.
  */
@@ -29,17 +29,17 @@
 
 #include <string> // HASA std::string
 
-class pylith::meshio::MeshIOPETSc : public MeshIO {
-    friend class TestMeshIOPETSc; // unit testing
+class pylith::meshio::MeshIOPetsc : public MeshIO {
+    friend class TestMeshIOPetsc; // unit testing
 
-    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Constructor
-    MeshIOPETSc(void);
+    MeshIOPetsc(void);
 
     /// Destructor
-    ~MeshIOPETSc(void);
+    ~MeshIOPetsc(void);
 
     /// Deallocate PETSc and local data structures.
     void deallocate(void);
@@ -68,8 +68,7 @@ public:
      */
     const char* prefix(void) const;
 
-
-    // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
+    // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
 protected:
 
     /// Write mesh
@@ -78,15 +77,15 @@ protected:
     /// Read mesh
     void _read(void);
 
-    // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
+    // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
 private:
 
     std::string _filename; ///< Name of file
     std::string _prefix; ///< Options prefix for mesh
 
-}; // MeshIOPETSc
+}; // MeshIOPetsc
 
-#include "MeshIOPETSc.icc" // inline methods
+#include "MeshIOPetsc.icc" // inline methods
 
 #endif // pylith_meshio_meshiopetsc_hh
 

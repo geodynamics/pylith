@@ -18,7 +18,7 @@
 
 #include <portinfo>
 
-#include "MeshIOPETSc.hh" // implementation of class methods
+#include "MeshIOPetsc.hh" // implementation of class methods
 
 #include "MeshBuilder.hh" // USES MeshBuilder
 #include "pylith/topology/Mesh.hh" // USES Mesh
@@ -37,32 +37,31 @@
 #include <sstream> // USES std::ostringstream
 #include <typeinfo> // USES std::typeid
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 namespace pylith {
-    namespace meshio {
-    } // meshio
+    namespace meshio {} // meshio
 } // pylith
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Constructor
-pylith::meshio::MeshIOPETSc::MeshIOPETSc(void) :
+pylith::meshio::MeshIOPetsc::MeshIOPetsc(void) :
     _filename(""),
     _prefix("") { // constructor
     PyreComponent::setName("meshiopetsc");
 } // constructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Destructor
-pylith::meshio::MeshIOPETSc::~MeshIOPETSc(void) { // destructor
+pylith::meshio::MeshIOPetsc::~MeshIOPetsc(void) {
     deallocate();
 } // destructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
-pylith::meshio::MeshIOPETSc::deallocate(void) { // deallocate
+pylith::meshio::MeshIOPetsc::deallocate(void) {
     PYLITH_METHOD_BEGIN;
 
     MeshIO::deallocate();
@@ -71,13 +70,12 @@ pylith::meshio::MeshIOPETSc::deallocate(void) { // deallocate
 } // deallocate
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Read mesh.
 void
-pylith::meshio::MeshIOPETSc::_read(void) { // _read
+pylith::meshio::MeshIOPetsc::_read(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_read()");
-
     assert(_mesh);
 
     MPI_Comm comm = _mesh->getComm();
@@ -86,14 +84,16 @@ pylith::meshio::MeshIOPETSc::_read(void) { // _read
     PetscErrorCode err;
 
     if (!_filename.empty()) {
-      err = PetscOptionsSetValue(NULL, opt.c_str(), filename());PYLITH_CHECK_ERROR(err);
-      err = PetscOptionsSetValue(NULL, opt2.c_str(), "");PYLITH_CHECK_ERROR(err);
-    }
+        err = PetscOptionsSetValue(NULL, opt.c_str(), filename());PYLITH_CHECK_ERROR(err);
+        err = PetscOptionsSetValue(NULL, opt2.c_str(), "");PYLITH_CHECK_ERROR(err);
+    } // if
 
     PetscDM dm = NULL;
     err = DMCreate(comm, &dm);PYLITH_CHECK_ERROR(err);
     err = DMSetType(dm, DMPLEX);PYLITH_CHECK_ERROR(err);
-    if (!_prefix.empty()) {err = PetscObjectSetOptionsPrefix((PetscObject) dm, prefix());PYLITH_CHECK_ERROR(err);}
+    if (!_prefix.empty()) {
+        err = PetscObjectSetOptionsPrefix((PetscObject) dm, prefix());PYLITH_CHECK_ERROR(err);
+    } // if
     err = DMSetFromOptions(dm);PYLITH_CHECK_ERROR(err);
     err = DMViewFromOptions(dm, NULL, "-dm_view");PYLITH_CHECK_ERROR(err);
     _mesh->setDM(dm);
@@ -102,7 +102,7 @@ pylith::meshio::MeshIOPETSc::_read(void) { // _read
 } // read
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Write mesh to file.
 void
-pylith::meshio::MeshIOPETSc::_write(void) const {  } // write
+pylith::meshio::MeshIOPetsc::_write(void) const {  }
