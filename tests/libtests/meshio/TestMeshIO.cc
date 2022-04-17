@@ -64,7 +64,7 @@ DMPlexInvertCell_Private(PetscInt dim,
 // ----------------------------------------------------------------------
 // Setup testing data.
 void
-pylith::meshio::TestMeshIO::setUp(void) { // setUp
+pylith::meshio::TestMeshIO::setUp(void) {
     PYLITH_METHOD_BEGIN;
 
     _mesh = NULL;
@@ -76,7 +76,7 @@ pylith::meshio::TestMeshIO::setUp(void) { // setUp
 // ----------------------------------------------------------------------
 // Tear down testing data.
 void
-pylith::meshio::TestMeshIO::tearDown(void) { // tearDown
+pylith::meshio::TestMeshIO::tearDown(void) {
     PYLITH_METHOD_BEGIN;
 
     delete _mesh;_mesh = NULL;
@@ -88,7 +88,7 @@ pylith::meshio::TestMeshIO::tearDown(void) { // tearDown
 // ----------------------------------------------------------------------
 // Get simple mesh for testing I/O.
 void
-pylith::meshio::TestMeshIO::_createMesh(void) { // _createMesh
+pylith::meshio::TestMeshIO::_createMesh(void) {
     PYLITH_METHOD_BEGIN;
 
     const TestMeshIO_Data* data = _getData();CPPUNIT_ASSERT(data);
@@ -166,9 +166,9 @@ pylith::meshio::TestMeshIO::_createMesh(void) { // _createMesh
 
 
 // ----------------------------------------------------------------------
-// Check values in mesh against data->
+// Check values in mesh against data.
 void
-pylith::meshio::TestMeshIO::_checkVals(void) { // _checkVals
+pylith::meshio::TestMeshIO::_checkVals(void) {
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(_mesh);
@@ -196,11 +196,8 @@ pylith::meshio::TestMeshIO::_checkVals(void) { // _checkVals
         CPPUNIT_ASSERT_EQUAL(spaceDim, coordsVisitor.sectionDof(v));
 
         for (int iDim = 0; iDim < spaceDim; ++iDim, ++index) {
-            if (data->vertices[index] < 1.0) {
-                CPPUNIT_ASSERT_DOUBLES_EQUAL(data->vertices[index], coordsArray[off+iDim], tolerance);
-            } else {
-                CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, coordsArray[off+iDim]/data->vertices[index], tolerance);
-            } // if/else
+            const double vtolerance = std::max(tolerance, fabs(data->vertices[index])*tolerance);
+            CPPUNIT_ASSERT_DOUBLES_EQUAL(data->vertices[index], coordsArray[off+iDim], vtolerance);
         } // for
     } // for
 
@@ -271,13 +268,15 @@ pylith::meshio::TestMeshIO::_checkVals(void) { // _checkVals
             } // if
         } // for
         std::string groupType = (firstPoint >= cStart && firstPoint < cEnd) ? "cell" : "vertex";
+        const PylithInt labelValue = data->groupTags ? data->groupTags[iGroup] : 1;
         CPPUNIT_ASSERT_EQUAL(std::string(data->groupTypes[iGroup]), groupType);
         PylithInt numPoints, numVertices = 0;
-        err = DMGetStratumSize(dmMesh, groupName, 1, &numPoints);PYLITH_CHECK_ERROR(err);
+        err = DMGetStratumSize(dmMesh, groupName, labelValue, &numPoints);PYLITH_CHECK_ERROR(err);
+        CPPUNIT_ASSERT(numPoints > 0);
         PetscIS pointIS = NULL;
         const PylithInt *points = NULL;
         const PylithInt offset = ("vertex" == groupType) ? numCells : 0;
-        err = DMGetStratumIS(dmMesh, groupName, 1, &pointIS);PYLITH_CHECK_ERROR(err);
+        err = DMGetStratumIS(dmMesh, groupName, labelValue, &pointIS);PYLITH_CHECK_ERROR(err);
         err = ISGetIndices(pointIS, &points);PYLITH_CHECK_ERROR(err);
         for (PylithInt p = 0; p < numPoints; ++p) {
             const PylithInt pStart = ("vertex" == groupType) ? vStart : cStart;
@@ -299,7 +298,7 @@ pylith::meshio::TestMeshIO::_checkVals(void) { // _checkVals
 // ----------------------------------------------------------------------
 // Test debug()
 void
-pylith::meshio::TestMeshIO::_testDebug(MeshIO& iohandler) { // _testDebug
+pylith::meshio::TestMeshIO::_testDebug(MeshIO& iohandler) {
     PYLITH_METHOD_BEGIN;
 
     bool debug = false;
@@ -327,17 +326,16 @@ pylith::meshio::TestMeshIO_Data::TestMeshIO_Data(void) :
     materialIds(NULL),
     groups(NULL),
     groupSizes(NULL),
+    groupTags(NULL),
     groupNames(NULL),
     groupTypes(NULL),
     numGroups(0),
-    useIndexZero(true) { // constructor
-} // constructor
+    useIndexZero(true) {}
 
 
 // ----------------------------------------------------------------------
 // Destructor
-pylith::meshio::TestMeshIO_Data::~TestMeshIO_Data(void) { // destructor
-} // destructor
+pylith::meshio::TestMeshIO_Data::~TestMeshIO_Data(void) {}
 
 
 // End of file

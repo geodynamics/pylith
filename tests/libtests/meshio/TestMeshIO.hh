@@ -45,7 +45,6 @@ namespace pylith {
 
 // ----------------------------------------------------------------------
 class pylith::meshio::TestMeshIO : public CppUnit::TestFixture {
-
     // PUBLIC METHODS ///////////////////////////////////////////////////////
 public:
 
@@ -82,13 +81,10 @@ protected:
 
     pylith::topology::Mesh* _mesh; ///< Finite-element mesh.
 
-
 }; // class TestMeshIO
-
 
 // ----------------------------------------------------------------------
 class pylith::meshio::TestMeshIO_Data {
-
     // PUBLIC METHODS ///////////////////////////////////////////////////////
 public:
 
@@ -113,6 +109,7 @@ public:
 
     PylithInt* groups; ///< Array of pointers to indices of points in groups
     PylithInt* groupSizes; ///< Array of sizes of each group
+    PylithInt* groupTags; ///< Array of label values (tags) for each group.
     char** groupNames; ///< Array of group names
     char** groupTypes; ///< Array of group types
     PylithInt numGroups; ///< Number of groups
@@ -121,8 +118,6 @@ public:
 
 };
 
-
 #endif // pylith_meshio_testmeshio_hh
-
 
 // End of file

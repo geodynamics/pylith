@@ -89,9 +89,15 @@ pylith::meshio::TestMeshIOPetsc::testFilename(void) {
 
     CPPUNIT_ASSERT(_io);
 
+<<<<<<< HEAD
     const std::string& filename = "hi.txt";
     _io->setFilename(filename.c_str());
     CPPUNIT_ASSERT_EQUAL(filename, std::string(_io->getFilename()));
+=======
+    const char* filename = "hi.txt";
+    _io->filename(filename);
+    CPPUNIT_ASSERT(0 == strcasecmp(filename, _io->filename()));
+>>>>>>> bc4def2b2 (Add libtests for MeshIOPetsc (reading Gmsh files).)
 
     PYLITH_METHOD_END;
 } // testFilename
@@ -106,7 +112,11 @@ pylith::meshio::TestMeshIOPetsc::testRead(void) {
     CPPUNIT_ASSERT(_io);
     CPPUNIT_ASSERT(_data);
 
+<<<<<<< HEAD
     _io->setFilename(_data->filename);
+=======
+    _io->filename(_data->filename);
+>>>>>>> bc4def2b2 (Add libtests for MeshIOPetsc (reading Gmsh files).)
 
     // Read mesh
     delete _mesh;_mesh = new topology::Mesh;CPPUNIT_ASSERT(_mesh);

@@ -113,6 +113,11 @@ pylith::meshio::TestMeshIOCubit::testRead(void) {
     delete _mesh;_mesh = new topology::Mesh;CPPUNIT_ASSERT(_mesh);
     _io->read(_mesh);
 
+    pythia::journal::debug_t debug("TestMeshIOCubit");
+    if (debug.state()) {
+        _mesh->view();
+    } // if
+
     // Make sure mesh matches data
     _checkVals();
 
