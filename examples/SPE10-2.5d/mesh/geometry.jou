@@ -1,0 +1,55 @@
+# -*- Python -*-
+# ----------------------------------------------------------------------
+# Set units to SI.
+# ----------------------------------------------------------------------
+${Units('si')}
+
+# ----------------------------------------------------------------------
+# Reset geometry.
+# ----------------------------------------------------------------------
+reset
+
+# Turn on IDless journal files for maximum compatibility.
+# The commands echoed to the log will replace the object ID with a
+# geometric specification of the object. Note that this means changing
+# the geometry will require changes to subsequent journal commands.
+# The commented-out commands below are the commands that were originally
+# used, and the uncommented commands are those that were produced by
+# turning on idless journaling.
+journal idless on
+
+# ----------------------------------------------------------------------
+# Create block
+# ----------------------------------------------------------------------
+# Block is 1200' x 2200' x 170'
+
+# {dx=20*ft}
+# {dy=10*ft}
+# {dz=2*ft}
+
+# {nx=60}
+# {ny=220}
+# {nz=85}
+
+# -6 km <= x <= 6 km
+# -6 km <= y <= 6 km
+# -9 km <= z <= 0 km
+brick x {dx*nx} y {dy*ny} z {dz*1}
+
+# Center of block will be at (0,0,0), so move it down half the height
+# to align the top at z=0.
+volume 1 move x {dx*nx*0.5} y {dy*ny*0.5} z 0
+
+volume 1 name "poroelastic"
+
+
+
+# End of file
+
+
+
+
+
+
+
+

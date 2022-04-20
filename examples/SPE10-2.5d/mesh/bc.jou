@@ -1,0 +1,63 @@
+# -*- Python -*-
+# ----------------------------------------------------------------------
+# Create blocks for materials
+#
+# We only use one material in the simulations, so we lump the two
+# meshed volumes into a single block.
+# ----------------------------------------------------------------------
+block 1 volume 1
+block 1 name "poroelastic"
+
+# In order to create nodesets (marking boundaries, faults, etc), we
+# first create a group and then form a nodeset from the group, because
+# we often need to perform boolean operations to get the nodesets we
+# want, and groups suppoert boolean operations (union, intersect, etc)
+# but nodesets do not.
+
+# ----------------------------------------------------------------------
+# Create nodeset for +z boundary
+# ----------------------------------------------------------------------
+group "boundary_zpos" add node in surface 1
+nodeset 20 group boundary_zpos
+nodeset 20 name "boundary_zpos"
+
+# ----------------------------------------------------------------------
+# Create nodeset for -z boundary
+# ----------------------------------------------------------------------
+group "boundary_zneg" add node in surface 2
+nodeset 21 group boundary_zneg
+nodeset 21 name "boundary_zneg"
+
+# ----------------------------------------------------------------------
+# Create nodeset for -y boundary
+# ----------------------------------------------------------------------
+group "boundary_yneg" add node in curve 3
+nodeset 22 group boundary_yneg
+nodeset 22 name "boundary_yneg"
+
+# ----------------------------------------------------------------------
+# Create nodeset for -x boundary
+# ----------------------------------------------------------------------
+group "boundary_xneg" add node in curve 4
+nodeset 23 group boundary_xneg
+nodeset 23 name "boundary_xneg"
+
+# ----------------------------------------------------------------------
+# Create nodeset for +y boundary
+# ----------------------------------------------------------------------
+group "boundary_ypos" add node in curve 5
+nodeset 24 group boundary_ypos
+nodeset 24 name "boundary_ypos"
+
+# ----------------------------------------------------------------------
+# Create nodeset for +x boundary
+# ----------------------------------------------------------------------
+group "boundary_xpos" add node in curve  6
+nodeset 25 group boundary_xpos
+nodeset 25 name "boundary_xpos"
+
+
+
+
+
+

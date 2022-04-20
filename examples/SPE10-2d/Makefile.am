@@ -17,16 +17,20 @@
 #
 
 dist_noinst_DATA = \
-	geometry.jou \
-	bc.jou \
-	mesh_tri.jou \
-	mesh_tri.exo \
-	mesh_quad.jou \
-	mesh_quad.exo \
-	mesh.exo \
 	source_sites.txt \
 	pylithapp.cfg \
-	step00_steadystate.cfg
+	step00_steadystate.cfg \
+	mesh/geometry.jou \
+	mesh/bc.jou \
+	mesh/mesh_quad.jou \
+	mesh/mesh_quad.exo \
+    spatialdb/spe_perm.dat \
+    spatialdb/spe_phi.dat \
+    spatialdb/SPE10_grid_pylith.py \
+    spatialdb/SPE10_pylith.py \
+    spatialdb/SPE10_parameters_grid.spatialdb \
+    spatialdb/SPE10_parameters.spatialdb
+
 
 # 'export' the input files by performing a mock install
 export_datadir = $(top_builddir)/examples/SPE10-2d

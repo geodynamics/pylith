@@ -68,4 +68,21 @@ dist_noinst_DATA = \
 	scratch/README.md
 
 
+# 'export' the input files by performing a mock install
+export_datadir = $(top_builddir)/examples/subduction-3d
+export-data: $(dist_noinst_PYTHON) $(dist_noinst_DATA)
+	for f in $(dist_noinst_PYTHON) $(dist_noinst_DATA); do $(install_sh_DATA) $(srcdir)/$$f $(export_datadir); done
+
+clean-data:
+	if [ "X$(abs_top_srcdir)" != "X$(abs_top_builddir)" ]; then for f in $(dist_noinst_PYTHON) $(dist_noinst_DATA) $(noinst_TMP); do $(RM) $(RM_FLAGS) $(export_datadir)/$$f; done; fi
+
+
+BUILT_SOURCES = export-data
+
+clean-local: clean-local-tmp clean-data
+.PHONY: clean-local-tmp
+clean-local-tmp:
+	-rm *.pyc output/*
+
+
 # End of file 
