@@ -29,6 +29,8 @@
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 
+#include "petscviewerhdf5.h" // USES PetscViewerHDF5
+
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION(pylith::topology::TestMesh);
 
@@ -184,8 +186,21 @@ pylith::topology::TestMesh::testView(void) { // testView
     iohandler.read(&mesh);
 
     mesh.view();
-    mesh.view(":mesh.view:ascii_info_detail");
+    mesh.view("ascii:mesh.txt:ascii_info_detail");
     mesh.view("vtk:mesh.vtk:ascii_vtk");
+    mesh.view("vtk:mesh.vtu:vtk_vtu");
+    mesh.view("ascii:mesh.tex:ascii_latex");
+    mesh.view("hdf5:mesh_xdmf.h5:hdf5_xdmf");
+    mesh.view("hdf5:mesh_petsc.h5:hdf5_petsc");
+
+    PetscErrorCode err = 0;
+    PetscViewer viewer = NULL;
+    PetscDM dm = NULL;
+    err = PetscViewerHDF5Open(PETSC_COMM_SELF, "mesh_petsc.h5", FILE_MODE_READ, &viewer);CPPUNIT_ASSERT(!err);
+    err = DMCreate(PETSC_COMM_SELF, &dm);CPPUNIT_ASSERT(!err);
+    err = DMLoad(dm, viewer);CPPUNIT_ASSERT(!err);
+    err = DMDestroy(&dm);CPPUNIT_ASSERT(!err);
+    err = PetscViewerDestroy(&viewer);CPPUNIT_ASSERT(!err);
 
     PYLITH_METHOD_END;
 } // testView
