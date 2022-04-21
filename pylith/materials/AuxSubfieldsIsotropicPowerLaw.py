@@ -18,7 +18,7 @@ from pylith.utils.PetscComponent import PetscComponent
 
 class AuxSubfieldsIsotropicPowerLaw(PetscComponent):
     """
-    Auxiliary subfields associated with the isotropic linear power law viscoelastic bulk rheology.
+    Auxiliary subfields associated with the isotropic power-law viscoelastic bulk rheology.
     """
     DOC_CONFIG = {
         "cfg": """
@@ -29,7 +29,7 @@ class AuxSubfieldsIsotropicPowerLaw(PetscComponent):
             power_law_reference_stress = 1
             power_law_exponent.basis_order = 1
             viscous_strain.basis_order = 1
-            stress.basis_order = 1
+            deviatoric_stress.basis_order = 1
             reference_stress.basis_order = 0
             reference_strain.basis_order = 0
         """
