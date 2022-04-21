@@ -38,4 +38,5 @@ Because both $\vec{\tau}$ and $\vec{u}$ are vector quantities, there can be some
 :::{toctree}
 quasistatic.md
 dynamic.md
+bulk-rheologies/index.md
 :::
