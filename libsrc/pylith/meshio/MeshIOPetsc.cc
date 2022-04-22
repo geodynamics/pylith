@@ -91,13 +91,18 @@ pylith::meshio::MeshIOPetsc::_read(void) {
     assert(_mesh);
 
     MPI_Comm comm = _mesh->getComm();
-    std::string opt("-" + _prefix + "dm_plex_filename");
-    std::string opt2("-" + _prefix + "dm_plex_gmsh_use_regions");
-    PetscErrorCode err;
+    const size_t noptions = 3;
+    std::string options[noptions*2] = {
+        "-" + _prefix + "dm_plex_filename", _filename,
+        "-" + _prefix + "dm_plex_gmsh_use_regions", "",
+        "-" + _prefix + "dm_plex_gmsh_mark_vertices", "",
+    };
 
+    PetscErrorCode err;
     if (!_filename.empty()) {
-        err = PetscOptionsSetValue(NULL, opt.c_str(), filename());PYLITH_CHECK_ERROR(err);
-        err = PetscOptionsSetValue(NULL, opt2.c_str(), "");PYLITH_CHECK_ERROR(err);
+        for (size_t i = 0; i < noptions; ++i) {
+            err = PetscOptionsSetValue(NULL, options[2*i+0].c_str(), options[2*i+1].c_str());
+        } // for
     } // if
 
     PetscDM dm = NULL;
