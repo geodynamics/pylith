@@ -111,9 +111,9 @@ pylith::sources::WellboreSource::createIntegrator(const pylith::topology::Field&
                                 &_pointCoords[0], &vecPoints);PYLITH_CHECK_ERROR(err);
 
     // Debug
-    PetscPrintf(PetscObjectComm((PetscObject) dmSoln), "_pointCoords\n");
-    PetscPrintf(PetscObjectComm((PetscObject) dmSoln), " x = %g\n", _pointCoords[0]);
-    PetscPrintf(PetscObjectComm((PetscObject) dmSoln), " y = %g\n", _pointCoords[1]);
+    // PetscPrintf(PetscObjectComm((PetscObject) dmSoln), "_pointCoords\n");
+    // PetscPrintf(PetscObjectComm((PetscObject) dmSoln), " x = %g\n", _pointCoords[0]);
+    // PetscPrintf(PetscObjectComm((PetscObject) dmSoln), " y = %g\n", _pointCoords[1]);
     // Erzatz from ex17
     // err = VecCreateSeq(PETSC_COMM_SELF, dim, &vecPoints);PYLITH_CHECK_ERROR(err);
     // err = VecSetBlockSize(vecPoints, _pointCoords.size());PYLITH_CHECK_ERROR(err);
@@ -130,7 +130,7 @@ pylith::sources::WellboreSource::createIntegrator(const pylith::topology::Field&
     err = PetscSFGetGraph(sfPoints, &numRoots, &numLeaves, &localPoints, &remotePoints);PYLITH_CHECK_ERROR(err);
     err = MPI_Comm_rank(PetscObjectComm((PetscObject) dmSoln), &rank);PYLITH_CHECK_ERROR(err);
     // Debug
-    PetscPrintf(PetscObjectComm((PetscObject) dmSoln), "localPoints: %D\n", numLeaves);
+    // PetscPrintf(PetscObjectComm((PetscObject) dmSoln), "localPoints: %D\n", numLeaves);
     for (PetscInt p = 0; p < numLeaves; ++p) {
         if (remotePoints[p].rank == rank) {
             err = DMLabelSetValue(label, remotePoints[p].index, 2);PYLITH_CHECK_ERROR(err);
@@ -223,7 +223,7 @@ pylith::sources::WellboreSource::_getAuxiliaryFactory(void) {
 // Set kernels for LHS residual F(t,s,\dot{s}).
 void
 pylith::sources::WellboreSource::_setKernelsResidual(pylith::feassemble::IntegratorDomain* integrator,
-                                                        const topology::Field& solution) const {
+                                                     const topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_setKernelsResidual(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
 
@@ -262,7 +262,7 @@ pylith::sources::WellboreSource::_setKernelsResidual(pylith::feassemble::Integra
 // Set kernels for LHS Jacobian F(t,s,\dot{s}).
 void
 pylith::sources::WellboreSource::_setKernelsJacobian(pylith::feassemble::IntegratorDomain* integrator,
-                                                        const topology::Field& solution) const {
+                                                     const topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_setKernelsJacobian(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
 
