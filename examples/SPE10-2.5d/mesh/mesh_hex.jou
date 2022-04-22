@@ -22,7 +22,7 @@ playback 'bc.jou'
 # ----------------------------------------------------------------------
 # Export exodus file
 # ----------------------------------------------------------------------
-#export mesh "mesh_hex.exo" dimension 3 overwrite
+export mesh "mesh_hex.exo" dimension 3 overwrite
 
 
 

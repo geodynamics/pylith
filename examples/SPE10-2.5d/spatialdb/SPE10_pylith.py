@@ -19,7 +19,6 @@ import numpy
 from netCDF4 import Dataset
 import scipy.ndimage
 import matplotlib.pyplot as plt
-from spatialdata.geocoords.CSCart import CSCart
 
 # mesh = Dataset('mesh_hex.exo','r')
 
@@ -70,29 +69,48 @@ drained_bulk_modulus = 10e9 * numpy.ones(nx*ny) # Pa
 solid_bulk_modulus = 11039657020.4 * numpy.ones(nx*ny) # Pa
 
 class GenerateDB(object):
-  def run(self):
-    """Generate the database.
+	def run(self):
+		
+  	"""Generate the database.
     """
         
     # Domain, centroid
     x = (numpy.arange(0, nx*dx, dx) + dx/2)
     y = (numpy.arange(0, ny*dy, dy) + dy/2)
     z = (numpy.arange(0, nz*dz, dz) + dz/2)
-    
-    x3, y3, z3 = numpy.meshgrid(x,y,z)
-    
+
     npts_x = x.shape[0]
     npts_y = y.shape[0]
     npts_z = z.shape[0]
+
+		xyz = numpy.zeros((npts_x*npts_y*npts_z, 3), dtype=numpy.float64)
+		xyz[:, 0] = x3.ravel()
+		xyz[:, 1] = y3.ravel()
+		xyz[:, 2] = z3.ravel()
+
+    # xx = x * numpy.ones([npts_y, 1], dtype=numpy.float64)
+    # yy = y * numpy.ones([npts_x, 1], dtype=numpy.float64)
+    # xy = numpy.zeros([npts_x*npts_y, 2], dtype=numpy.float64)
+    # xy[:, 0] = numpy.ravel(xx)
+    # xy[:, 1] = numpy.ravel(numpy.transpose(yy))
     
-    xyz = numpy.zeros((npts_x*npts_y*npts_z, 3), dtype=numpy.float64)
-    xyz[:, 0] = x3.ravel()
-    xyz[:, 1] = y3.ravel()
-    xyz[:, 2] = z3.ravel()
+    # xx = x.reshape([1, x.shape[0]]) * numpy.ones([ny ,1])
+    # yy = y.reshape([y.shape[0], 1]) * numpy.ones([1, nx])
+    # xy[:, 0] = numpy.ravel(xx)
+    # xy[:, 1] = numpy.ravel(numpy.transpose(yy))
+    # xy[:, 0] = x2.ravel()
+    # xy[:, 1] = y2.ravel()
+
+    # x2, y2 = numpy.meshgrid(x,y)                
+    # xy = numpy.column_stack((
+    #       x2.flatten(),
+    #       y2.flatten()
+    # ))        
     
+    from spatialdata.geocoords.CSCart import CSCart
     cs = CSCart()
     cs.inventory.units = 'foot'
-    cs.inventory.spaceDim = 3
+    cs.inventory.spaceDim = 2
     cs._configure()
     
     porosityGrid = {"name": "porosity",

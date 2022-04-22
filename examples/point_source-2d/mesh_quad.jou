@@ -4,35 +4,33 @@
 playback 'geometry.jou'
 
 # ----------------------------------------------------------------------
-# Set discretization size
+# Set discretization size and  scheme
 # ----------------------------------------------------------------------
-surface all size 0.1
+#surface all scheme submap
+
+surface domain size 300
+surface intrusion size 150
 
 # ----------------------------------------------------------------------
 # Generate the mesh
 # ----------------------------------------------------------------------
-surface all scheme submap
-mesh surface all
+mesh curve intrusion_interface 
+mesh surface intrusion
+mesh surface domain
+refine curve intrusion_interface numsplit 1
 
 # ----------------------------------------------------------------------
-# Create blocks for materials
+# Smooth mesh to improve quality
 # ----------------------------------------------------------------------
-block 1 surface 1
-block 1 name "poroelastic"
-block 1 element type quad
+#surface all smooth scheme condition number beta 1.4 cpu 10
+#smooth surface all
 
 # ----------------------------------------------------------------------
 # Mark entities for boundary conditions, etc.
 # ----------------------------------------------------------------------
-#playback 'bc.jou'
+playback 'bc.jou'
 
 # ----------------------------------------------------------------------
 # Export exodus file
 # ----------------------------------------------------------------------
-#export mesh "mesh_quad.exo" dimension 2 overwrite
-
-
-
-
-
-
+export mesh "mesh_quad.exo" dimension 2 overwrite
