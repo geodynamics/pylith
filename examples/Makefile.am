@@ -30,6 +30,8 @@ SUBDIRS = \
 	subduction-3d \
 	troubleshooting-2d \
 	point_source-2d \
+	point_source-2.5d \
+	point_source_intrusion-2d \
 	ricker_source-2d \
 	SPE10-2d \
 	SPE10-2.5d \

@@ -1,0 +1,9 @@
+
+# ----------------------------------------------------------------------
+# Create surface using vertices
+# ----------------------------------------------------------------------
+
+# Disk is radius 100m 
+
+reset
+create surface circle radius 100 zplane

@@ -25,7 +25,9 @@ dist_noinst_DATA = \
 	mesh_quad.exo \
     mesh_tri.exo \
     pylithapp.cfg \
-    step00_quad.cfg
+    step00_quad.cfg \
+    step00_tri.cfg
+
 
 
 

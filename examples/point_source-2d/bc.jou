@@ -1,0 +1,7 @@
+
+# ----------------------------------------------------------------------
+# Create nodeset for edge
+# ----------------------------------------------------------------------
+group "curve_edge" add node in curve 1
+nodeset 1 group curve_edge
+nodeset 1 name "curve_edge"

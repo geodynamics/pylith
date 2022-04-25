@@ -1,0 +1,14 @@
+
+# ----------------------------------------------------------------------
+# Create surface using vertices
+# ----------------------------------------------------------------------
+
+# Disk is radius 100m 
+# {TD=1 * meter}
+# {r_w=0.015 * meter}
+# {rad=100 * meter}
+
+
+reset
+create cylinder height {TD} radius {rad}
+

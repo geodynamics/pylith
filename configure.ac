@@ -281,6 +281,8 @@ AC_CONFIG_FILES([Makefile
 		examples/subduction-3d/Makefile
 		examples/magma-2d/Makefile
 		examples/point_source-2d/Makefile
+		examples/point_source-2.5d/Makefile
+		examples/point_source_intrusion-2d/Makefile
 		examples/ricker_source-2d/Makefile
 		examples/SPE10-2d/Makefile
 		examples/SPE10-2.5d/Makefile

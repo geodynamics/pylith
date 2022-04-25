@@ -1,0 +1,15 @@
+
+# ----------------------------------------------------------------------
+# Create nodeset for edge
+# ----------------------------------------------------------------------
+group "surface_edge" add node in surface 1
+nodeset 1 group surface_edge
+nodeset 1 name "surface_edge"
+
+group "zneg" add node in surface 2
+nodeset 2 group zneg
+nodeset 2 name "zneg"
+
+group "zpos" add node in surface 3
+nodeset 3 group zpos
+nodeset 3 name "zpos"
