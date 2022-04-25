@@ -1,0 +1,10 @@
+utils/PylithVersion.lo: utils/PylithVersion.cc /usr/include/stdc-predef.h \
+ ../../portinfo utils/PylithVersion.hh utils/utilsfwd.hh
+
+/usr/include/stdc-predef.h:
+
+../../portinfo:
+
+utils/PylithVersion.hh:
+
+utils/utilsfwd.hh:

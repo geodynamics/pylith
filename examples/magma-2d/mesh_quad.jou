@@ -1,26 +1,29 @@
-# Cubit Journal file for generating mesh with quadrilateral cells.
-#
 # ----------------------------------------------------------------------
 # Generate geometry
 # ----------------------------------------------------------------------
 playback 'geometry.jou'
 
 # ----------------------------------------------------------------------
-# Set discretization size and  scheme,  and then mesh
+# Set discretization size and  scheme
 # ----------------------------------------------------------------------
-surface all scheme pave
+#surface all scheme submap
 
-surface reservoir size 500
-mesh surface reservoir
+surface domain size 300
+surface intrusion size 150
 
-surface domain size 1000
+# ----------------------------------------------------------------------
+# Generate the mesh
+# ----------------------------------------------------------------------
+mesh curve crossflow west_conduit intrusion_interface east_conduit
+mesh surface intrusion
 mesh surface domain
+refine curve crossflow west_conduit intrusion_interface east_conduit numsplit 0
 
 # ----------------------------------------------------------------------
 # Smooth mesh to improve quality
 # ----------------------------------------------------------------------
-surface all smooth scheme condition number beta 1.4 cpu 10
-smooth surface all
+#surface all smooth scheme condition number beta 1.4 cpu 10
+#smooth surface all
 
 # ----------------------------------------------------------------------
 # Mark entities for boundary conditions, etc.
@@ -31,4 +34,3 @@ playback 'bc.jou'
 # Export exodus file
 # ----------------------------------------------------------------------
 export mesh "mesh_quad.exo" dimension 2 overwrite
-

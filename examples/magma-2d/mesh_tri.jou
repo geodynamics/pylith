@@ -1,5 +1,3 @@
-# Cubit Journal file for generating mesh with triangular cells.
-#
 # ----------------------------------------------------------------------
 # Generate geometry
 # ----------------------------------------------------------------------
@@ -9,21 +7,25 @@ playback 'geometry.jou'
 # Set discretization size and  scheme
 # ----------------------------------------------------------------------
 surface all scheme trimesh
+#curve all scheme default
+#surface all sizing function none
 
-surface domain size 1000
-surface reservoir size 500
+surface domain size 300
+surface intrusion size 150
 
 # ----------------------------------------------------------------------
 # Generate the mesh
 # ----------------------------------------------------------------------
-mesh surface reservoir
+mesh curve crossflow west_conduit intrusion_interface east_conduit
+mesh surface intrusion
 mesh surface domain
+refine curve crossflow west_conduit intrusion_interface east_conduit numsplit 0
 
 # ----------------------------------------------------------------------
 # Smooth mesh to improve quality
 # ----------------------------------------------------------------------
-surface all smooth scheme condition number beta 1.4 cpu 10
-smooth surface all
+#surface all smooth scheme condition number beta 1.4 cpu 10
+#smooth surface all
 
 # ----------------------------------------------------------------------
 # Mark entities for boundary conditions, etc.

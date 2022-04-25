@@ -32,7 +32,7 @@
 # ----------------------------------------------------------------------
 #
 
-VPATH = /opt/pylith/src/pylith/examples/SPE10-2d
+
 am__is_gnu_make = { \
   if test -z '$(MAKELEVEL)'; then \
     false; \
@@ -188,7 +188,7 @@ INSTALL_DATA = ${INSTALL} -m 644
 INSTALL_PROGRAM = ${INSTALL}
 INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
-LCOV = 
+LCOV = /usr/bin/lcov
 LD = /usr/bin/ld -m elf_x86_64
 LDFLAGS = -L/usr/lib/x86_64-linux-gnu/hdf5/mpich -L/opt/dependencies/lib -L/opt/pylith/dest/debug/lib --coverage
 LIBOBJS = 
@@ -246,7 +246,7 @@ PYLITH_SWIG_CPPFLAGS = -DENABLE_HDF5 -DENABLE_CUBIT
 PYTHON = /opt/pylith/dest/debug/bin/nemesis
 PYTHONPATH = /opt/pylith/dest/debug/lib/python3.8/site-packages:/opt/dependencies/lib/python3.8/site-packages
 PYTHON_BLDLIBRARY = -L/usr/lib/python3.8/config-3.8-x86_64-linux-gnu -lpython3.8
-PYTHON_COVERAGE = 
+PYTHON_COVERAGE = /opt/dependencies/bin/coverage3
 PYTHON_CPPFLAGS = -I/usr/include/python3.8 -I/usr/include/python3.8
 PYTHON_EXEC_PREFIX = ${exec_prefix}
 PYTHON_INCDIR = /usr/include/python3.8
@@ -272,9 +272,9 @@ STRIP = strip
 SWIG = /usr/bin/swig
 SWIG_LIB = /usr/share/swig4.0
 VERSION = 3.0.0beta3
-abs_builddir = /opt/pylith/build/debug/pylith/examples/SPE10-2d
+abs_builddir = /opt/pylith/src/pylith/examples/SPE10-2d
 abs_srcdir = /opt/pylith/src/pylith/examples/SPE10-2d
-abs_top_builddir = /opt/pylith/build/debug/pylith
+abs_top_builddir = /opt/pylith/src/pylith
 abs_top_srcdir = /opt/pylith/src/pylith
 ac_ct_AR = ar
 ac_ct_CC = mpicc
@@ -320,17 +320,17 @@ prefix = /opt/pylith/dest/debug
 program_transform_name = s,x,x,
 psdir = ${docdir}
 pyexecdir = ${exec_prefix}/lib/python3.8/site-packages
-python_coverage = coverage2
+python_coverage = coverage3
 pythondir = ${prefix}/lib/python3.8/site-packages
 runstatedir = ${localstatedir}/run
 sbindir = ${exec_prefix}/sbin
 sharedstatedir = ${prefix}/com
-srcdir = /opt/pylith/src/pylith/examples/SPE10-2d
+srcdir = .
 sysconfdir = ${prefix}/etc
 target_alias = 
 top_build_prefix = ../../
 top_builddir = ../..
-top_srcdir = /opt/pylith/src/pylith
+top_srcdir = ../..
 dist_noinst_DATA = \
 	source_sites.txt \
 	pylithapp.cfg \

@@ -1,35 +1,54 @@
+# -*- Python -*- (syntax highlighting)
+# ----------------------------------------------------------------------
+#
+# Brad T. Aagaard, U.S. Geological Survey
+# Charles A. Williams, GNS Science
+# Matthew G. Knepley, University at Buffalo
+#
+# This code was developed as part of the Computational Infrastructure
+# for Geodynamics (http://geodynamics.org).
+#
+# Copyright (c) 2010-2021 University of California, Davis
+#
+# See LICENSE.md for license information.
+#
+# ----------------------------------------------------------------------
+#
 # CUBIT journal file for creating blocks and nodesets associated with
 # materials and boundary conditions.
+#
+# NOTE: We remove the overlap between groups associated with 
+# Dirichlet BC and groups associated with faults because PyLith
+# does not allow Dirichlet BC to be applied to nodes adjacent to the fault.
 #
 # ----------------------------------------------------------------------
 # Create blocks for materials
 # ----------------------------------------------------------------------
 block 1 surface domain
-block 1 name "crust"
+block 1 name "domain"
 
-block 2 surface reservoir
-block 2 name "reservoir"
+block 2 surface intrusion
+block 2 name "intrusion"
 
 # ----------------------------------------------------------------------
 # Create nodeset for boundaries
 # ----------------------------------------------------------------------
-group "boundary_xneg" add node in curve 2
-nodeset 20 group boundary_xneg
-nodeset 20 name "boundary_xneg"
+group "xneg" add node in curve 2
+nodeset 20 group xneg
+nodeset 20 name "xneg"
 
-group "boundary_xpos" add node in curve 4
-nodeset 21 group boundary_xpos
-nodeset 21 name "boundary_xpos"
+group "xpos" add node in curve 4
+nodeset 21 group xpos
+nodeset 21 name "xpos"
 
-group "boundary_yneg" add node in curve 8 16 17
-nodeset 22 group boundary_yneg
-nodeset 22 name "boundary_yneg"
+group "ypos" add node in curve 1
+nodeset 22 group ypos
+nodeset 22 name "ypos"
 
-group "boundary_ypos" add node in curve 1
-nodeset 23 group boundary_ypos
-nodeset 23 name "boundary_ypos"
+group "yneg" add node in curve 8 16 17
+nodeset 23 group yneg
+nodeset 23 name "yneg"
 
-group "boundary_flow" add node in curve inflow
-nodeset 24 group boundary_flow
-nodeset 24 name "boundary_flow"
-
+group "xflow" add node in curve crossflow
+nodeset 24 group xflow
+nodeset 24 name "xflow"

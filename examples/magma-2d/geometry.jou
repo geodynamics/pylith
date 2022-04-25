@@ -32,38 +32,33 @@ Create Surface rectangle width {length} height {depth} ZPLANE
 surface {Id("surface")} move x {length/2} y {depth/-2} z 0
 surface {Id("surface")} name "domain"
 
-# reservoir
 Create Surface Ellipse major radius {major} minor radius {minor} on surface domain
 surface {Id("surface")} move x {length/2} y {-depth*(2/3)} z 0
-surface {Id("surface")} name "mirror_reservoir"
+surface {Id("surface")} name "mirror_intrusion"
 
-# Conduit
 Create Surface rectangle width {c_length} height {c_depth} on surface domain
 surface {Id("surface")} move x {length/2} y {-depth + c_depth/2} z 0
 surface {Id("surface")} name "mirror_conduit"
 
-## Combine conduit and reservoir
-unite volume 2 3
+## Combine conduit and intrusion
+unite surface mirror_conduit mirror_intrusion
+surface {Id("surface")} rename "intrusion"
 
-## Use imprint to get reservoir and domain
+## Merge with domain
+subtract surface intrusion from surface domain keep_tool
 imprint all
 merge all
-delete body 2
-
-#surface 4 rename "reservoir"
-surface  ( at 10000 -16166.7 0 ordinal 1 ordered )  rename "reservoir"
-#surface 5 rename "domain"
-surface  ( at 10000 -10000 0 ordinal 1 ordered )  rename "domain"
 
 ## Identify curves of interest
-#curve 8 name "inflow"
-curve  ( at 10000 -20000 0 ordinal 1 ordered )  name "inflow"
+curve 8 name "crossflow"
+curve 10 name "west_conduit"
+curve 11 name "intrusion_interface"
+curve 12 name "east_conduit"
 
-#curve 10 name "west_conduit"
-curve  ( at 9500 -17164.2 0 ordinal 1 ordered )  name "west_conduit"
 
-#curve 11 name "reservoir_interface"
-curve  ( at 7627.89 -12453 0 ordinal 1 ordered )  name "reservoir_interface"
 
-#curve 12 name "east_conduit"
-curve  ( at 12868.4 -14152.4 0 ordinal 1 ordered )  name "east_conduit"
+#surface intrusion domain scheme map
+#
+#
+#
+#

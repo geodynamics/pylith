@@ -31,7 +31,9 @@ SUBDIRS = \
 	troubleshooting-2d \
 	point_source-2d \
 	ricker_source-2d \
-	SPE10-2d
+	SPE10-2d \
+	SPE10-2.5d \
+	magma-2d
 
 
 # End of file 
