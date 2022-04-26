@@ -106,7 +106,7 @@ protected:
         _data->auxiliaryDB->addValue("body_force_y", body_force_y, body_force_units());
         _data->auxiliaryDB->addValue("gravitational_acceleration_x", gravity_field_x, gravity_field_units());
         _data->auxiliaryDB->addValue("gravitational_acceleration_y", gravity_field_y, gravity_field_units());
-        _data->auxiliaryDB->setLabel("auxiliary");
+        _data->auxiliaryDB->setDescription("auxiliary");
         _data->auxiliaryDB->setCoordSys(*_data->cs);
 
         _data->subfields["body_force"].description.numComponents = 2;
@@ -207,7 +207,7 @@ protected:
         _data->auxiliaryDB->addValue("gravitational_acceleration_x", gravity_field_x, gravity_field_units());
         _data->auxiliaryDB->addValue("gravitational_acceleration_y", gravity_field_y, gravity_field_units());
         _data->auxiliaryDB->addValue("gravitational_acceleration_z", gravity_field_z, gravity_field_units());
-        _data->auxiliaryDB->setLabel("auxiliary");
+        _data->auxiliaryDB->setDescription("auxiliary");
         _data->auxiliaryDB->setCoordSys(*_data->cs);
 
         _data->gravityField->setGravityDir(0.0, 0.0, -1.0);

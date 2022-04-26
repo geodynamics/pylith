@@ -67,12 +67,12 @@ class NeumannTimeDependent(BoundaryCondition, ModuleNeumannTimeDependent):
             use_initial = False
             use_time_history = True
             db_auxiliary_field = spatialdata.spatialdb.UniformDB
-            db_auxiliary_field.label = Displacement Neumann BC +y boundary
+            db_auxiliary_field.description = Displacement Neumann BC +y boundary
             db_auxiliary_field.values = [time_history_amplitude_tangential, time_history_amplitude_normal, time_history_start_time]
             db_auxiliary_field.data = [2.0*MPa, -1.0*MPa, 0.0]
 
             time_history = spatialdata.spatialdb.TimeHistory
-            time_history.label = Impulse time history
+            time_history.description = Impulse time history
             time_history.filename = impulse.timedb
             """,
     }

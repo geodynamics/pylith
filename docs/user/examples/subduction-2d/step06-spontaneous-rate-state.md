@@ -33,12 +33,12 @@ friction.linear_slip_rate = 1.0e-6
 
 # Set spatial database for distribution of friction parameters
 friction.db_properties = spatialdata.spatialdb.SimpleGridDB
-friction.db_properties.label = Slip weakening
+friction.db_properties.description = Slip weakening
 friction.db_properties.filename = fault_slabtop_ratestate.spatialdb
 
 # Set spatial database for the initial value of the state variable.
 friction.db_initial_state = spatialdata.spatialdb.UniformDB
-friction.db_initial_state.label = Rate State Ageing State
+friction.db_initial_state.description = Rate State Ageing State
 friction.db_initial_state.values = [state-variable]
 # theta_ss = characteristic_slip_dist / reference_slip_rate
 friction.db_initial_state.data = [20.0*year]
@@ -46,7 +46,7 @@ friction.db_initial_state.data = [20.0*year]
 # Initial fault tractions
 traction_perturbation = pylith.faults.TractPerturbation
 traction_perturbation.db_initial = spatialdata.spatialdb.UniformDB
-traction_perturbation.db_initial.label = Initial fault tractions
+traction_perturbation.db_initial.description = Initial fault tractions
 traction_perturbation.db_initial.values = [traction-shear, traction-normal]
 traction_perturbation.db_initial.data = [-12.0*MPa, -20.0*MPa]
 

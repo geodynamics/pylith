@@ -177,7 +177,7 @@ protected:
         _data->auxiliaryDB->addValue("reference_strain_yy", reference_strain_xx, strain_units());
         _data->auxiliaryDB->addValue("reference_strain_zz", reference_strain_xx, strain_units());
         _data->auxiliaryDB->addValue("reference_strain_xy", reference_strain_xx, strain_units());
-        _data->auxiliaryDB->setLabel("auxiliary");
+        _data->auxiliaryDB->setDescription("auxiliary");
         _data->auxiliaryDB->setCoordSys(*_data->cs);
 
         _data->subfields["reference_stress"].description.numComponents = 4;
@@ -378,7 +378,7 @@ protected:
         _data->auxiliaryDB->addValue("reference_strain_xy", reference_strain_xx, strain_units());
         _data->auxiliaryDB->addValue("reference_strain_yz", reference_strain_xx, strain_units());
         _data->auxiliaryDB->addValue("reference_strain_xz", reference_strain_xx, strain_units());
-        _data->auxiliaryDB->setLabel("auxiliary");
+        _data->auxiliaryDB->setDescription("auxiliary");
         _data->auxiliaryDB->setCoordSys(*_data->cs);
 
         _initialize();

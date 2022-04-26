@@ -80,7 +80,7 @@ protected:
         _data->solutionDB->addValue("displacement_x", displacement_x, displacement_units());
         _data->solutionDB->addValue("displacement_y", displacement_y, displacement_units());
         _data->solutionDB->addValue("pressure", pressure, pressure_units());
-        _data->solutionDB->setLabel("solution");
+        _data->solutionDB->setDescription("solution");
         _data->solutionDB->setCoordSys(*_data->cs);
 
         _data->subfields["displacement"].description.numComponents = 2;
@@ -152,7 +152,7 @@ protected:
         _data->solutionDB->addValue("displacement_y", displacement_y, displacement_units());
         _data->solutionDB->addValue("displacement_z", displacement_z, displacement_units());
         _data->solutionDB->addValue("pressure", pressure, pressure_units());
-        _data->solutionDB->setLabel("solution");
+        _data->solutionDB->setDescription("solution");
         _data->solutionDB->setCoordSys(*_data->cs);
 
         _initialize();

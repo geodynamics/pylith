@@ -230,7 +230,7 @@ pylith::faults::KinSrcAuxiliaryFactory::updateTimeHistoryValue(pylith::topology:
             const int err = dbTimeHistory->query(&value, tDim);
             if (err) {
                 std::ostringstream msg;
-                msg << "Error querying for time '" << tDim << "' in time history database '" << dbTimeHistory->getLabel() << "'.";
+                msg << "Error querying for time '" << tDim << "' in time history database '" << dbTimeHistory->getDescription() << "'.";
                 throw std::runtime_error(msg.str());
             } // if
         } // if

@@ -54,7 +54,7 @@ class FaultCohesiveKin(FaultCohesive, ModuleFaultCohesiveKin):
             origin_time = 10*year
 
             db_auxiliary_field = spatialdata.spatialdb.UniformDB
-            db_auxiliary_field.label = Fault rupture auxiliary field spatial database
+            db_auxiliary_field.description = Fault rupture auxiliary field spatial database
             db_auxiliary_field.values = [initiation_time, final_slip_left_lateral, final_slip_opening]
             db_auxiliary_field.data = [0.0*s, -2.0*m, 0.0*m]
 
@@ -63,7 +63,7 @@ class FaultCohesiveKin(FaultCohesive, ModuleFaultCohesiveKin):
             origin_time = 50*year
             
             db_auxiliary_field = spatialdata.spatialdb.UniformDB
-            db_auxiliary_field.label = Fault rupture auxiliary field spatial database
+            db_auxiliary_field.description = Fault rupture auxiliary field spatial database
             db_auxiliary_field.values = [initiation_time, final_slip_left_lateral, final_slip_opening]
             db_auxiliary_field.data = [0.0*s, -1.0*m, 0.0*m]
             """
