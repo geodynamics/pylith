@@ -16,6 +16,34 @@ List of new features currently available in the `main` branch.
 * Output of subfields with user-defined basis order
 * Simulation metadata with command line utility for searching metadata
 * Convert to Python 3
+* Automatically assign label value for fault cohesive cells (`id` setting is obsolete).
+* Use `description` for descriptive labels and `label` and `label_value` for tagging entities. PyLith's use of`label` and `label_value` now corresponds to PETSc labels and label values.
+
+### SpatialData settings
+
+```{code-block} cfg
+db = spatialdata.spatialdb.UniformDB
+
+# Old
+db.label = Slip spatial database
+
+# New
+db.description = Slip spatial database
+```
+
+### Material settings
+
+```{code-block} cfg
+material = pylith.materials.Elasticity
+
+# Old
+material.label = Elastic material
+material.id = 2
+
+# New
+material.description = Elastic material
+material.label_value = 2
+```
 
 ## Version 3.0.0
 
