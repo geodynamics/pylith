@@ -316,31 +316,35 @@ protected:
         _bcs.resize(4);
         { // boundary_xneg
             pylith::bc::DirichletUserFn* bc = new pylith::bc::DirichletUserFn();
-            bc->setConstrainedDOF(constrainedDOF, numConstrained);
-            bc->setMarkerLabel("boundary_xneg");
             bc->setSubfieldName("displacement");
+            bc->setLabelName("boundary_xneg");
+            bc->setLabelValue(1);
+            bc->setConstrainedDOF(constrainedDOF, numConstrained);
             bc->setUserFn(solnkernel_disp);
             _bcs[0] = bc;
         } // boundary_xneg
         { // boundary_xpos
             pylith::bc::DirichletUserFn* bc = new pylith::bc::DirichletUserFn();
-            bc->setConstrainedDOF(constrainedDOF, numConstrained);
-            bc->setMarkerLabel("boundary_xpos");
             bc->setSubfieldName("displacement");
+            bc->setLabelName("boundary_xpos");
+            bc->setLabelValue(1);
+            bc->setConstrainedDOF(constrainedDOF, numConstrained);
             bc->setUserFn(solnkernel_disp);
             _bcs[1] = bc;
         } // boundary_xpos
         { // boundary_yneg
             pylith::bc::NeumannUserFn* bc = new pylith::bc::NeumannUserFn();
-            bc->setMarkerLabel("boundary_yneg");
             bc->setSubfieldName("displacement");
+            bc->setLabelName("boundary_yneg");
+            bc->setLabelValue(1);
             bc->setUserFn(boundary_tractions);
             _bcs[2] = bc;
         } // boundary_yneg
         { // boundary_ypos
             pylith::bc::NeumannUserFn* bc = new pylith::bc::NeumannUserFn();
-            bc->setMarkerLabel("boundary_ypos");
             bc->setSubfieldName("displacement");
+            bc->setLabelName("boundary_ypos");
+            bc->setLabelValue(1);
             bc->setUserFn(boundary_tractions);
             _bcs[3] = bc;
         } // boundary_ypos

@@ -293,17 +293,19 @@ protected:
         _bcs.resize(2);
         { // boundary_xpos
             pylith::bc::DirichletUserFn* bc = new pylith::bc::DirichletUserFn();
-            bc->setConstrainedDOF(constrainedDOF, numConstrained);
-            bc->setMarkerLabel("boundary_xpos");
             bc->setSubfieldName("displacement");
+            bc->setLabelName("boundary_xpos");
+            bc->setLabelValue(1);
+            bc->setConstrainedDOF(constrainedDOF, numConstrained);
             bc->setUserFn(solnkernel_disp);
             _bcs[0] = bc;
         } // boundary_xpos
         { // boundary_xneg
             pylith::bc::DirichletUserFn* bc = new pylith::bc::DirichletUserFn();
-            bc->setConstrainedDOF(constrainedDOF, numConstrained);
-            bc->setMarkerLabel("boundary_xneg");
             bc->setSubfieldName("displacement");
+            bc->setLabelName("boundary_xneg");
+            bc->setLabelValue(1);
+            bc->setConstrainedDOF(constrainedDOF, numConstrained);
             bc->setUserFn(solnkernel_disp);
             _bcs[1] = bc;
         } // boundary_zneg

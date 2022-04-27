@@ -220,12 +220,12 @@ pylith::faults::FaultCohesiveKin::createConstraints(const pylith::topology::Fiel
     PetscInt n;
     std::ostringstream labelstream;
     labelstream << getBuriedEdgesMarkerLabel() << "_cohesive";
-    std::string labelname = labelstream.str();
+    std::string buriedLabelName = labelstream.str();
     PetscErrorCode err;
 
-    err = DMCreateLabel(dm, labelname.c_str());PYLITH_CHECK_ERROR(err);
+    err = DMCreateLabel(dm, buriedLabelName.c_str());PYLITH_CHECK_ERROR(err);
     err = DMGetLabel(dm, getBuriedEdgesMarkerLabel(), &buriedLabel);PYLITH_CHECK_ERROR(err);
-    err = DMGetLabel(dm, labelname.c_str(), &buriedCohesiveLabel);PYLITH_CHECK_ERROR(err);
+    err = DMGetLabel(dm, buriedLabelName.c_str(), &buriedCohesiveLabel);PYLITH_CHECK_ERROR(err);
     err = DMLabelGetStratumIS(buriedLabel, 1, &pointIS);PYLITH_CHECK_ERROR(err);
     err = ISGetLocalSize(pointIS, &n);PYLITH_CHECK_ERROR(err);
     err = ISGetIndices(pointIS, &points);PYLITH_CHECK_ERROR(err);
@@ -257,7 +257,7 @@ pylith::faults::FaultCohesiveKin::createConstraints(const pylith::topology::Fiel
 
     std::vector<pylith::feassemble::Constraint*> constraintArray;
     pylith::feassemble::ConstraintSimple *constraint = new pylith::feassemble::ConstraintSimple(this);assert(constraint);
-    constraint->setMarkerLabel(labelname.c_str());
+    constraint->setLabelName(buriedLabelName.c_str());
     err = PetscObjectViewFromOptions((PetscObject) buriedLabel, NULL, "-buried_edge_label_view");
     err = PetscObjectViewFromOptions((PetscObject) buriedCohesiveLabel, NULL, "-buried_cohesive_edge_label_view");
     constraint->setConstrainedDOF(&constrainedDOF[0], constrainedDOF.size());

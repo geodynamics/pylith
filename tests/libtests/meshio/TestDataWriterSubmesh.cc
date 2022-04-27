@@ -91,7 +91,8 @@ pylith::meshio::TestDataWriterSubmesh::_initialize(void) {
     } // if
 
     CPPUNIT_ASSERT(data->bcLabel);
-    delete _submesh;_submesh = pylith::topology::MeshOps::createLowerDimMesh(*_mesh, data->bcLabel);CPPUNIT_ASSERT(_submesh);
+    const int labelValue = 1;
+    delete _submesh;_submesh = pylith::topology::MeshOps::createLowerDimMesh(*_mesh, data->bcLabel, labelValue);CPPUNIT_ASSERT(_submesh);
 
     PYLITH_METHOD_END;
 } // _initialize

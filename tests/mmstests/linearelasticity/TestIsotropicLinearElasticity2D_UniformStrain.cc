@@ -188,9 +188,10 @@ protected:
 
         static const PylithInt constrainedDOF[2] = {0, 1};
         static const PylithInt numConstrained = 2;
-        _bc->setConstrainedDOF(constrainedDOF, numConstrained);
-        _bc->setMarkerLabel("boundary");
         _bc->setSubfieldName("displacement");
+        _bc->setLabelName("boundary");
+        _bc->setLabelValue(1);
+        _bc->setConstrainedDOF(constrainedDOF, numConstrained);
         _bc->setUserFn(solnkernel_disp);
 
     } // setUp

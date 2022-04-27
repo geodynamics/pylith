@@ -1,6 +1,6 @@
 // -*- C++ -*-
 //
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 //
 // Brad T. Aagaard, U.S. Geological Survey
 // Charles A. Williams, GNS Science
@@ -13,8 +13,7 @@
 //
 // See LICENSE.md for license information.
 //
-// ---------------------------------------------------------------------------------------------------------------------
-//
+// ------------------------------------------------------------------------------------------------
 
 #include <portinfo>
 
@@ -37,7 +36,7 @@
 #include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Local "private" functions.
 namespace pylith {
     namespace feassemble {
@@ -51,7 +50,7 @@ public:
     } // feassemble
 } // pylith
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::feassemble::IntegratorBoundary::IntegratorBoundary(pylith::problems::Physics* const physics) :
     Integrator(physics),
@@ -62,14 +61,14 @@ pylith::feassemble::IntegratorBoundary::IntegratorBoundary(pylith::problems::Phy
 } // constructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Destructor.
 pylith::feassemble::IntegratorBoundary::~IntegratorBoundary(void) {
     deallocate();
 } // destructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
 pylith::feassemble::IntegratorBoundary::deallocate(void) {
@@ -83,29 +82,7 @@ pylith::feassemble::IntegratorBoundary::deallocate(void) {
 } // deallocate
 
 
-// ---------------------------------------------------------------------------------------------------------------------
-// Set label marking boundary associated with boundary condition surface.
-void
-pylith::feassemble::IntegratorBoundary::setMarkerLabel(const char* value) {
-    PYLITH_JOURNAL_DEBUG("setMarkerLabel(value="<<value<<")");
-
-    if (strlen(value) == 0) {
-        throw std::runtime_error("Empty string given for boundary condition integrator label.");
-    } // if
-
-    _boundarySurfaceLabel = value;
-} // setMarkerLabel
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Get label marking boundary associated with boundary condition surface.
-const char*
-pylith::feassemble::IntegratorBoundary::getMarkerLabel(void) const {
-    return _boundarySurfaceLabel.c_str();
-} // getMarkerLabel
-
-
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Set name of solution subfield associated with boundary condition.
 void
 pylith::feassemble::IntegratorBoundary::setSubfieldName(const char* value) {
@@ -121,7 +98,7 @@ pylith::feassemble::IntegratorBoundary::setSubfieldName(const char* value) {
 } // setSubfieldName
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get name of solution subfield associated with boundary condition.
 const char*
 pylith::feassemble::IntegratorBoundary::getSubfieldName(void) const {
@@ -129,7 +106,7 @@ pylith::feassemble::IntegratorBoundary::getSubfieldName(void) const {
 } // getSubfieldName
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get mesh associated with integration domain.
 const pylith::topology::Mesh&
 pylith::feassemble::IntegratorBoundary::getPhysicsDomainMesh(void) const {
@@ -138,7 +115,7 @@ pylith::feassemble::IntegratorBoundary::getPhysicsDomainMesh(void) const {
 } // domainMesh
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 void
 pylith::feassemble::IntegratorBoundary::setKernelsResidual(const std::vector<ResidualKernels>& kernels,
                                                            const pylith::topology::Field& solution) {
@@ -174,7 +151,7 @@ pylith::feassemble::IntegratorBoundary::setKernelsResidual(const std::vector<Res
 } // setKernelsResidual
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Initialize integration domain, auxiliary field, and derived field. Update observers.
 void
 pylith::feassemble::IntegratorBoundary::initialize(const pylith::topology::Field& solution) {
@@ -182,7 +159,7 @@ pylith::feassemble::IntegratorBoundary::initialize(const pylith::topology::Field
     PYLITH_JOURNAL_DEBUG("intialize(solution="<<solution.getLabel()<<")");
 
     delete _boundaryMesh;
-    _boundaryMesh = pylith::topology::MeshOps::createLowerDimMesh(solution.getMesh(), _boundarySurfaceLabel.c_str());
+    _boundaryMesh = pylith::topology::MeshOps::createLowerDimMesh(solution.getMesh(), _labelName.c_str(), _labelValue);
     assert(_boundaryMesh);
     pylith::topology::CoordsVisitor::optimizeClosure(_boundaryMesh->getDM());
 
@@ -206,7 +183,7 @@ pylith::feassemble::IntegratorBoundary::initialize(const pylith::topology::Field
 } // initialize
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Update auxiliary field values to current time.
 void
 pylith::feassemble::IntegratorBoundary::updateState(const double t) {
@@ -231,7 +208,7 @@ pylith::feassemble::IntegratorBoundary::updateState(const double t) {
 } // updateState
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Compute RHS residual for G(t,s).
 void
 pylith::feassemble::IntegratorBoundary::computeRHSResidual(pylith::topology::Field* residual,
@@ -266,7 +243,7 @@ pylith::feassemble::IntegratorBoundary::computeRHSResidual(pylith::topology::Fie
 } // computeRHSResidual
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Compute LHS residual for F(t,s,\dot{s}).
 void
 pylith::feassemble::IntegratorBoundary::computeLHSResidual(pylith::topology::Field* residual,
@@ -302,7 +279,7 @@ pylith::feassemble::IntegratorBoundary::computeLHSResidual(pylith::topology::Fie
 } // computeLHSResidual
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Compute LHS Jacobian for F(t,s,\dot{s}).
 void
 pylith::feassemble::IntegratorBoundary::computeLHSJacobian(PetscMat jacobianMat,
@@ -318,7 +295,7 @@ pylith::feassemble::IntegratorBoundary::computeLHSJacobian(PetscMat jacobianMat,
 } // computeLHSJacobian
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Compute LHS Jacobian for F(t,s,\dot{s}).
 void
 pylith::feassemble::IntegratorBoundary::computeLHSJacobianLumpedInv(pylith::topology::Field* jacobianInv,

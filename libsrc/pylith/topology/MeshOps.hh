@@ -42,7 +42,7 @@ public:
     /** Create subdomain mesh using label.
      *
      * @param[in] mesh Mesh for domain.
-     * @param[in] label Name of label marking subdomain.
+     * @param[in] labelName Name of label marking subdomain.
      * @param[in] labelValue Value of label marking subdomain.
      * @param[in] descriptiveLabel Descriptive label for subdomain.
      *
@@ -50,20 +50,22 @@ public:
      */
     static
     pylith::topology::Mesh* createSubdomainMesh(const pylith::topology::Mesh& mesh,
-                                                const char* label,
+                                                const char* labelName,
                                                 const int labelValue,
                                                 const char* descriptiveLabel);
 
     /** Create lower dimension mesh using label.
      *
      * @param[in] mesh Mesh for domain.
-     * @param[in] label Label for vertices marking lower dimension domain.
+     * @param[in] labelName Name of label marking subdomain.
+     * @param[in] labelValue Value of label marking subdomain.
      *
      * @returns Lower dimension mesh.
      */
     static
     pylith::topology::Mesh* createLowerDimMesh(const pylith::topology::Mesh& mesh,
-                                               const char* label);
+                                               const char* labelName,
+                                               const int labelValue);
 
     /** Create 0-dimension mesh from points.
      *

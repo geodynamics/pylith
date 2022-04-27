@@ -56,8 +56,11 @@ class OutputSolnBoundary(OutputSoln, ModuleOutputSolnBoundary):
 
     import pythia.pyre.inventory
 
-    label = pythia.pyre.inventory.str("label", default="", validator=validateLabel)
-    label.meta['tip'] = "Label identifier for external boundary."
+    labelName = pythia.pyre.inventory.str("label", default="", validator=validateLabel)
+    labelName.meta['tip'] = "Name of label identifier for external boundary."
+
+    labelValue = pythia.pyre.inventory.int("label_value", default=1)
+    labelValue.meta['tip'] = "Value of label identifier for external boundary (tag of physical group in Gmsh files)."
 
     def __init__(self, name="outputsolnsubset"):
         """Constructor.
@@ -68,7 +71,8 @@ class OutputSolnBoundary(OutputSoln, ModuleOutputSolnBoundary):
         """Do mimimal initialization.
         """
         OutputSoln.preinitialize(self, problem)
-        ModuleOutputSolnBoundary.setLabel(self, self.label)
+        ModuleOutputSolnBoundary.setLabelName(self, self.labelName)
+        ModuleOutputSolnBoundary.setLabelValue(self, self.labelValue)
 
         identifier = self.aliases[-1]
         self.writer.setFilename(problem.defaults.outputDir, problem.defaults.simName, identifier)

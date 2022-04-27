@@ -35,23 +35,24 @@
 #include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::feassemble::Constraint::Constraint(pylith::problems::Physics* const physics) :
     PhysicsImplementation(physics),
-    _constraintLabel(""),
     _subfieldName(""),
+    _labelName(""),
+    _labelValue(1),
     _boundaryMesh(NULL) {}
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Destructor.
 pylith::feassemble::Constraint::~Constraint(void) {
     deallocate();
 } // destructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
 pylith::feassemble::Constraint::deallocate(void) {
@@ -63,7 +64,70 @@ pylith::feassemble::Constraint::deallocate(void) {
 } // deallocate
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
+// Set name of constrained solution subfield.
+void
+pylith::feassemble::Constraint::setSubfieldName(const char* value) {
+    PYLITH_JOURNAL_DEBUG("setSubfieldName(value="<<value<<")");
+
+    if (!value || (0 == strlen(value))) {
+        std::ostringstream msg;
+        assert(_physics);
+        msg << "Empty string given for name of solution subfield for constraint '" << _physics->getIdentifier()
+            <<"'.";
+        throw std::runtime_error(msg.str());
+    } // if
+    _subfieldName = value;
+} // setSubfieldName
+
+
+// ------------------------------------------------------------------------------------------------
+// Get name of constrained solution subfield.
+const char*
+pylith::feassemble::Constraint::getSubfieldName(void) const {
+    return _subfieldName.c_str();
+} // getSubfieldName
+
+
+// ------------------------------------------------------------------------------------------------
+// Set name of label marking boundary associated with constraint.
+void
+pylith::feassemble::Constraint::setLabelName(const char* value) {
+    PYLITH_JOURNAL_DEBUG("setLabelName(value="<<value<<")");
+
+    if (strlen(value) == 0) {
+        throw std::runtime_error("Empty string given for constraint label.");
+    } // if
+
+    _labelName = value;
+} // setLabelName
+
+
+// ------------------------------------------------------------------------------------------------
+// Get name of label marking boundary associated with constraint.
+const char*
+pylith::feassemble::Constraint::getLabelName(void) const {
+    return _labelName.c_str();
+} // getLabelName
+
+
+// ------------------------------------------------------------------------------------------------
+// Set value of label marking boundary associated with constraint.
+void
+pylith::feassemble::Constraint::setLabelValue(const int value) {
+    _labelValue = value;
+} // setLabelValue
+
+
+// ------------------------------------------------------------------------------------------------
+// Get value of label marking boundary associated with constraint.
+int
+pylith::feassemble::Constraint::getLabelValue(void) const {
+    return _labelValue;
+} // getLabelValue
+
+
+// ------------------------------------------------------------------------------------------------
 // Set indices of constrained degrees of freedom at each location.
 void
 pylith::feassemble::Constraint::setConstrainedDOF(const int* flags,
@@ -88,7 +152,7 @@ pylith::feassemble::Constraint::setConstrainedDOF(const int* flags,
 } // setConstrainedDOF
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get indices of constrained degrees of freedom.
 const pylith::int_array&
 pylith::feassemble::Constraint::getConstrainedDOF(void) const {
@@ -96,54 +160,7 @@ pylith::feassemble::Constraint::getConstrainedDOF(void) const {
 } // getConstrainedDOF
 
 
-// ---------------------------------------------------------------------------------------------------------------------
-// Set label marking constrained degrees of freedom.
-void
-pylith::feassemble::Constraint::setMarkerLabel(const char* value) {
-    PYLITH_JOURNAL_DEBUG("setMarkerLabel(value="<<value<<")");
-
-    if (strlen(value) == 0) {
-        throw std::runtime_error("Empty string given for boundary condition constraint label.");
-    } // if
-
-    _constraintLabel = value;
-} // setMarkerLabel
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Get label marking constrained degrees of freedom.
-const char*
-pylith::feassemble::Constraint::getMarkerLabel(void) const {
-    return _constraintLabel.c_str();
-} // getMarkerLabel
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Set name of constrained solution subfield.
-void
-pylith::feassemble::Constraint::setSubfieldName(const char* value) {
-    PYLITH_JOURNAL_DEBUG("setSubfieldName(value="<<value<<")");
-
-    if (!value || (0 == strlen(value))) {
-        std::ostringstream msg;
-        assert(_physics);
-        msg << "Empty string given for name of solution subfield for constraint '" << _physics->getIdentifier()
-            <<"'.";
-        throw std::runtime_error(msg.str());
-    } // if
-    _subfieldName = value;
-} // setSubfieldName
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Get name of constrained solution subfield.
-const char*
-pylith::feassemble::Constraint::getSubfieldName(void) const {
-    return _subfieldName.c_str();
-} // getSubfieldName
-
-
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get mesh associated with constrained boundary.
 const pylith::topology::Mesh&
 pylith::feassemble::Constraint::getPhysicsDomainMesh(void) const {
@@ -159,7 +176,7 @@ pylith::feassemble::Constraint::initialize(const pylith::topology::Field& soluti
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("initialize(solution="<<solution.getLabel()<<")");
 
-    delete _boundaryMesh;_boundaryMesh = pylith::topology::MeshOps::createLowerDimMesh(solution.getMesh(), _constraintLabel.c_str());assert(_boundaryMesh);
+    delete _boundaryMesh;_boundaryMesh = pylith::topology::MeshOps::createLowerDimMesh(solution.getMesh(), _labelName.c_str(), _labelValue);assert(_boundaryMesh);
     PetscDM dmBoundary = _boundaryMesh->getDM();assert(dmBoundary);
     pylith::topology::CoordsVisitor::optimizeClosure(dmBoundary);
 
@@ -174,7 +191,7 @@ pylith::feassemble::Constraint::initialize(const pylith::topology::Field& soluti
 } // initialize
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Update at end of time step.
 void
 pylith::feassemble::Constraint::poststep(const PylithReal t,
@@ -190,7 +207,7 @@ pylith::feassemble::Constraint::poststep(const PylithReal t,
 } // poststep
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Update auxiliary field values to current time.
 void
 pylith::feassemble::Constraint::updateState(const PylithReal t) {

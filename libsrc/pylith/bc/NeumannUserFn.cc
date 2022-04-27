@@ -121,9 +121,9 @@ pylith::bc::NeumannUserFn::createIntegrator(const pylith::topology::Field& solut
     PYLITH_COMPONENT_DEBUG("createIntegrator(solution="<<solution.getLabel()<<")");
 
     pylith::feassemble::IntegratorBoundary* integrator = new pylith::feassemble::IntegratorBoundary(this);assert(integrator);
-    integrator->setMarkerLabel(getMarkerLabel());
     integrator->setSubfieldName(getSubfieldName());
-    integrator->setLabelName(getMarkerLabel());
+    integrator->setLabelName(getLabelName());
+    integrator->setLabelValue(getLabelValue());
 
     _NeumannUserFn::setKernelsResidual(integrator, *this, solution, _formulation);
 

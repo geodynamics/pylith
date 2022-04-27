@@ -24,7 +24,7 @@
 
 namespace pylith {
     namespace meshio {
-        class OutputSolnBoundary : public pylith::meshio::OutputSoln {
+        class OutputSolnBoundary: public pylith::meshio::OutputSoln {
             // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////
 public:
 
@@ -34,11 +34,17 @@ public:
             /// Destructor
             virtual ~OutputSolnBoundary(void);
 
-            /** Set label identifier for subdomain.
+            /** Set name of label identifier for subdomain.
              *
-             * @param[in] value Label of subdomain.
+             * @param[in] value Name of label for subdomain.
              */
-            void setLabel(const char* value);
+            void setLabelName(const char* value);
+
+            /** Set value of label identifier for subdomain.
+             *
+             * @param[in] value Value of label for subdomain.
+             */
+            void setLabelValue(const int value);
 
             /** Verify configuration.
              *

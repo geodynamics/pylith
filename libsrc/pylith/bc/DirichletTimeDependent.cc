@@ -246,9 +246,10 @@ pylith::bc::DirichletTimeDependent::createConstraints(const pylith::topology::Fi
     std::vector<pylith::feassemble::Constraint*> constraintArray;
     pylith::feassemble::ConstraintSpatialDB* constraint = new pylith::feassemble::ConstraintSpatialDB(this);assert(constraint);
 
-    constraint->setMarkerLabel(getMarkerLabel());
-    constraint->setConstrainedDOF(&_constrainedDOF[0], _constrainedDOF.size());
     constraint->setSubfieldName(_subfieldName.c_str());
+    constraint->setLabelName(getLabelName());
+    constraint->setLabelValue(getLabelValue());
+    constraint->setConstrainedDOF(&_constrainedDOF[0], _constrainedDOF.size());
 
     _DirichletTimeDependent::setKernelConstraint(constraint, *this, solution);
 

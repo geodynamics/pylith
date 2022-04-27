@@ -70,8 +70,7 @@ public:
 // ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::bc::AbsorbingDampers::AbsorbingDampers(void) :
-    _auxiliaryFactory(new pylith::bc::AbsorbingDampersAuxiliaryFactory),
-    _boundaryLabel("") {
+    _auxiliaryFactory(new pylith::bc::AbsorbingDampersAuxiliaryFactory) {
     PyreComponent::setName(_AbsorbingDampers::pyreComponent);
 
     _subfieldName = "velocity";
@@ -127,9 +126,9 @@ pylith::bc::AbsorbingDampers::createIntegrator(const pylith::topology::Field& so
     PYLITH_COMPONENT_DEBUG("createIntegrator(solution="<<solution.getLabel()<<")");
 
     pylith::feassemble::IntegratorBoundary* integrator = new pylith::feassemble::IntegratorBoundary(this);assert(integrator);
-    integrator->setMarkerLabel(getMarkerLabel());
     integrator->setSubfieldName(getSubfieldName());
-    integrator->setLabelName(getMarkerLabel());
+    integrator->setLabelName(getLabelName());
+    integrator->setLabelValue(getLabelValue());
 
     _AbsorbingDampers::setKernelsResidual(integrator, *this, solution);
 
