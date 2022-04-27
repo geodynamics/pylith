@@ -187,8 +187,8 @@ pylith::materials::Poroelasticity::createIntegrator(const pylith::topology::Fiel
     PYLITH_COMPONENT_DEBUG("createIntegrator(solution="<<solution.getLabel()<<")");
 
     pylith::feassemble::IntegratorDomain* integrator = new pylith::feassemble::IntegratorDomain(this);assert(integrator);
-    integrator->setLabelName("material-id");
-    integrator->setLabelValue(getMaterialId());
+    integrator->setLabelName(getLabelName());
+    integrator->setLabelValue(getLabelValue());
 
     _setKernelsResidual(integrator, solution);
     _setKernelsJacobian(integrator, solution);

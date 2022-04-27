@@ -20,6 +20,7 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 
+#include "pylith/topology/Mesh.hh" // USES Mesh::cells_label_name
 #include "pylith/testing/FaultCohesiveStub.hh" // USES FaultCohesiveStub
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
 
@@ -41,37 +42,52 @@ class pylith::faults::TestFaultCohesive : public CppUnit::TestFixture {
     // PUBLIC METHODS /////////////////////////////////////////////////////
 public:
 
-    /// Test set/getInterfaceId(), set/getSurfaceMarkerLabel(), set/getBuriedEdgesMarkerLabel(), setRefDir1/2().
+    /// Test set/getCohesiveLabelValue(), set/getSurfaceLabelName(), set/getBuriedEdgesLabelName(), setRefDir1/2().
     void testAccessors(void);
 
 }; // class TestFaultCohesive
 
 // ------------------------------------------------------------------------------------------------
-// Test set/getInterfaceId(), set/getSurfaceMarkerLabel(), set/getBuriedEdgesMarkerLabel(), setRefDir1/2().
+// Test set/getCohesiveLabelValue(), set/getSurfaceLabelName(), set/getBuriedEdgesLabelName(), setRefDir1/2().
 void
 pylith::faults::TestFaultCohesive::testAccessors(void) {
     PYLITH_METHOD_BEGIN;
 
     FaultCohesiveStub fault;
 
-    const int interfaceId = 23;
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in default interface id.", 100, fault.getInterfaceId());
-    fault.setInterfaceId(interfaceId);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in interface id.", interfaceId, fault.getInterfaceId());
+    const std::string& cohesiveLabelName = "cohesive-id";
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in default cohesive label name.", std::string(pylith::topology::Mesh::cells_label_name), std::string(fault.getCohesiveLabelName()));
+    fault.setCohesiveLabelName(cohesiveLabelName.c_str());
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in cohesive label name.", cohesiveLabelName, std::string(fault.getCohesiveLabelName()));
+
+    const int cohesiveLabelValue = 23;
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in default cohesive label value.", 100, fault.getCohesiveLabelValue());
+    fault.setCohesiveLabelValue(cohesiveLabelValue);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in cohesive label value.", cohesiveLabelValue, fault.getCohesiveLabelValue());
 
     const std::string& surfaceLabel = "surface label";
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in default surface marker label.",
-                                 std::string(""), std::string(fault.getSurfaceMarkerLabel()));
-    fault.setSurfaceMarkerLabel(surfaceLabel.c_str());
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in surface marker label.",
-                                 surfaceLabel, std::string(fault.getSurfaceMarkerLabel()));
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in default surface label name.",
+                                 std::string(""), std::string(fault.getSurfaceLabelName()));
+    fault.setSurfaceLabelName(surfaceLabel.c_str());
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in surface label name.",
+                                 surfaceLabel, std::string(fault.getSurfaceLabelName()));
+
+    const int surfaceValue = 4;
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in default surface label value.", 1, fault.getSurfaceLabelValue());
+    fault.setSurfaceLabelValue(surfaceValue);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in surface label value.", surfaceValue, fault.getSurfaceLabelValue());
 
     const std::string& edgeLabel = "edge label";
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in default edge marker label.",
-                                 std::string(""), std::string(fault.getBuriedEdgesMarkerLabel()));
-    fault.setBuriedEdgesMarkerLabel(edgeLabel.c_str());
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in edge marker label.",
-                                 edgeLabel, std::string(fault.getBuriedEdgesMarkerLabel()));
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in default edge label name.",
+                                 std::string(""), std::string(fault.getBuriedEdgesLabelName()));
+    fault.setBuriedEdgesLabelName(edgeLabel.c_str());
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in edge label name.",
+                                 edgeLabel, std::string(fault.getBuriedEdgesLabelName()));
+
+    const int edgeValue = 4;
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in default edge label value.", 1, fault.getBuriedEdgesLabelValue());
+    fault.setBuriedEdgesLabelValue(edgeValue);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in edge label value.", edgeValue, fault.getBuriedEdgesLabelValue());
 
     const int dim = 3;
     const PylithReal default1[3] = { 0.0, 0.0, 1.0 };

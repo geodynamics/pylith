@@ -140,15 +140,15 @@ public:
     static
     PylithInt getNumCorners(const pylith::topology::Mesh& mesh);
 
-    /** Check to make sure material id of every cell matches the id of
+    /** Check to make sure material label value for every cell matches the label value of
      *  one of the materials.
      *
      * @param[in] mesh Finite-element mesh.
-     * @param[in] materialIds Array of ids for all materials and interior interfaces.
+     * @param[in] labelValues Array of label values for all materials and interior interfaces.
      */
     static
-    void checkMaterialIds(const Mesh& mesh,
-                          pylith::int_array& materialIds);
+    void checkMaterialLabels(const Mesh& mesh,
+                             pylith::int_array& labelValues);
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:

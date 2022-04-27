@@ -107,11 +107,11 @@ public:
 pylith::feassemble::IntegratorInterface::IntegratorInterface(pylith::problems::Physics* const physics) :
     Integrator(physics),
     _interfaceMesh(NULL),
-    _interfaceSurfaceLabel(""),
+    _surfaceLabelName(""),
     _integrationPatches(NULL) {
     GenericComponent::setName(_IntegratorInterface::genericComponent);
     _labelValue = 100;
-    _labelName = pylith::topology::Mesh::getCellsLabelName();
+    _labelName = pylith::topology::Mesh::cells_label_name;
 } // constructor
 
 
@@ -140,23 +140,23 @@ pylith::feassemble::IntegratorInterface::deallocate(void) {
 // ------------------------------------------------------------------------------------------------
 // Set label marking boundary associated with boundary condition surface.
 void
-pylith::feassemble::IntegratorInterface::setSurfaceMarkerLabel(const char* value) {
-    PYLITH_JOURNAL_DEBUG("setSurfaceMarkerLabel(value="<<value<<")");
+pylith::feassemble::IntegratorInterface::setSurfaceLabelName(const char* value) {
+    PYLITH_JOURNAL_DEBUG("setSurfaceLabelName(value="<<value<<")");
 
     if (strlen(value) == 0) {
         throw std::runtime_error("Empty string given for boundary condition label.");
     } // if
 
-    _interfaceSurfaceLabel = value;
-} // setSurfaceMarkerLabel
+    _surfaceLabelName = value;
+} // setSurfaceLabelName
 
 
 // ------------------------------------------------------------------------------------------------
 // Get label marking boundary associated with boundary condition surface.
 const char*
-pylith::feassemble::IntegratorInterface::getSurfaceMarkerLabel(void) const {
-    return _interfaceSurfaceLabel.c_str();
-} // getSurfaceMarkerLabel
+pylith::feassemble::IntegratorInterface::getSurfaceLabelName(void) const {
+    return _surfaceLabelName.c_str();
+} // getSurfaceLabelName
 
 
 // ------------------------------------------------------------------------------------------------
@@ -309,7 +309,7 @@ pylith::feassemble::IntegratorInterface::initialize(const pylith::topology::Fiel
     const bool isSubmesh = true;
     delete _interfaceMesh;_interfaceMesh = new pylith::topology::Mesh(isSubmesh);assert(_interfaceMesh);
     pylith::faults::TopologyOps::createFaultParallel(_interfaceMesh, solution.getMesh(), _labelValue, _labelName.c_str(),
-                                                     _interfaceSurfaceLabel.c_str());
+                                                     _surfaceLabelName.c_str());
     pylith::topology::MeshOps::checkTopology(*_interfaceMesh);
     pylith::topology::CoordsVisitor::optimizeClosure(_interfaceMesh->getDM());
 

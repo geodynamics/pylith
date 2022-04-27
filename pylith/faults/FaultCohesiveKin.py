@@ -40,7 +40,7 @@ class FaultCohesiveKin(FaultCohesive, ModuleFaultCohesiveKin):
             # Specify prescribed slip on a fault via two earthquakes in a 2D domain.
             [pylithapp.problem.interfaces.fault]
             label = fault
-            id = 10
+            edge = fault_edge
 
             observers.observer.data_fields = [slip]
 
@@ -78,10 +78,6 @@ class FaultCohesiveKin(FaultCohesive, ModuleFaultCohesiveKin):
     from pylith.utils.NullComponent import NullComponent
     auxiliaryFieldDB = pythia.pyre.inventory.facility("db_auxiliary_field", family="spatial_database", factory=NullComponent)
 
-    #from pylith.meshio.OutputFaultKin import OutputFaultKin
-    #outputManager = pythia.pyre.inventory.facility("output", family="output_manager", factory=OutputFaultKin)
-    #output.meta['tip'] = "Output manager associated with fault information."
-
     def __init__(self, name="faultcohesivekin"):
         """Initialize configuration.
         """
@@ -94,7 +90,7 @@ class FaultCohesiveKin(FaultCohesive, ModuleFaultCohesiveKin):
         from pylith.mpi.Communicator import mpi_comm_world
         comm = mpi_comm_world()
         if 0 == comm.rank:
-            self._info.log("Pre-initializing fault '%s'." % self.label)
+            self._info.log("Pre-initializing fault '%s'." % self.labelName)
 
         FaultCohesive.preinitialize(self, problem)
 
@@ -122,8 +118,6 @@ class FaultCohesiveKin(FaultCohesive, ModuleFaultCohesiveKin):
         for eqsrc in self.eqRuptures.components():
             eqsrc.finalize()
         FaultCohesive.finalize(self)
-        # self.output.close()
-        # self.output.finalize()
         return
 
     def _configure(self):

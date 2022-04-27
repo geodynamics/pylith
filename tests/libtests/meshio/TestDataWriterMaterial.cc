@@ -85,13 +85,13 @@ pylith::meshio::TestDataWriterMaterial::_initialize(void) {
 
     if (data->faultLabel) {
         pylith::faults::FaultCohesiveStub fault;
-        fault.setSurfaceMarkerLabel(data->faultLabel);
-        fault.setInterfaceId(data->faultId);
+        fault.setSurfaceLabelName(data->faultLabel);
+        fault.setCohesiveLabelValue(data->faultId);
         fault.adjustTopology(_domainMesh);
     } // if
 
     delete _materialMesh;
-    _materialMesh = pylith::topology::MeshOps::createSubdomainMesh(*_domainMesh, "material-id", data->materialId, ":UNKNOWN:");
+    _materialMesh = pylith::topology::MeshOps::createSubdomainMesh(*_domainMesh, pylith::topology::Mesh::cells_label_name, data->materialId, ":UNKNOWN:");
     CPPUNIT_ASSERT(_materialMesh);
 
     PYLITH_METHOD_END;

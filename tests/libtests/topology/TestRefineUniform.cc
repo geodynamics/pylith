@@ -130,7 +130,7 @@ pylith::topology::TestRefineUniform::testRefine(void) {
     PetscInt matId = 0;
     PetscInt matIdSum = 0; // Use sum of material ids as simple checksum.
     for (PetscInt c = cStart; c < cEnd; ++c) {
-        err = DMGetLabelValue(dmMesh, "material-id", c, &matId);CPPUNIT_ASSERT(!err);
+        err = DMGetLabelValue(dmMesh, pylith::topology::Mesh::cells_label_name, c, &matId);CPPUNIT_ASSERT(!err);
         matIdSum += matId;
     } // for
     CPPUNIT_ASSERT_EQUAL(_data->matIdSum, matIdSum);
@@ -206,15 +206,15 @@ pylith::topology::TestRefineUniform::_initializeMesh(Mesh* const mesh) {
     // Adjust topology if necessary.
     if (_data->faultA) {
         faults::FaultCohesiveStub faultA;
-        faultA.setInterfaceId(100);
-        faultA.setSurfaceMarkerLabel(_data->faultA);
+        faultA.setCohesiveLabelValue(100);
+        faultA.setSurfaceLabelName(_data->faultA);
         faultA.adjustTopology(mesh);
     } // if
 
     if (_data->faultB) {
         faults::FaultCohesiveStub faultB;
-        faultB.setInterfaceId(101);
-        faultB.setSurfaceMarkerLabel(_data->faultB);
+        faultB.setCohesiveLabelValue(101);
+        faultB.setSurfaceLabelName(_data->faultB);
         faultB.adjustTopology(mesh);
     } // if
 

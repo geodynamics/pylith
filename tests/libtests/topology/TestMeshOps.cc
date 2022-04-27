@@ -163,14 +163,14 @@ pylith::topology::TestMeshOps::testCheckMaterialIds(void) {
     iohandler.filename("data/tri3.mesh");
     iohandler.read(&mesh);
 
-    pylith::int_array materialIds(2);
-    materialIds[0] = 4;
-    materialIds[1] = 3;
+    pylith::int_array materialValues(2);
+    materialValues[0] = 4;
+    materialValues[1] = 3;
 
-    MeshOps::checkMaterialIds(mesh, materialIds);
+    MeshOps::checkMaterialLabels(mesh, materialValues);
 
-    materialIds[0] = 99;
-    CPPUNIT_ASSERT_THROW(MeshOps::checkMaterialIds(mesh, materialIds), std::runtime_error);
+    materialValues[0] = 99;
+    CPPUNIT_ASSERT_THROW(MeshOps::checkMaterialLabels(mesh, materialValues), std::runtime_error);
 
     PYLITH_METHOD_END;
 } // testCheckMaterialIds

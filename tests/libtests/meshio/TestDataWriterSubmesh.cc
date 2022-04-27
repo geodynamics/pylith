@@ -85,8 +85,8 @@ pylith::meshio::TestDataWriterSubmesh::_initialize(void) {
 
     if (data->faultLabel) {
         pylith::faults::FaultCohesiveStub fault;
-        fault.setSurfaceMarkerLabel(data->faultLabel);
-        fault.setInterfaceId(data->faultId);
+        fault.setSurfaceLabelName(data->faultLabel);
+        fault.setCohesiveLabelValue(data->faultId);
         fault.adjustTopology(_mesh);
     } // if
 

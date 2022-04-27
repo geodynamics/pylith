@@ -40,13 +40,13 @@
 
 #include <typeinfo> // USES typeid()
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 typedef pylith::feassemble::IntegratorDomain::ResidualKernels ResidualKernels;
 typedef pylith::feassemble::IntegratorDomain::JacobianKernels JacobianKernels;
 typedef pylith::feassemble::IntegratorDomain::ProjectKernels ProjectKernels;
 typedef pylith::feassemble::Integrator::EquationPart EquationPart;
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::materials::Elasticity::Elasticity(void) :
     _useBodyForce(false),
@@ -56,14 +56,14 @@ pylith::materials::Elasticity::Elasticity(void) :
 } // constructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Destructor.
 pylith::materials::Elasticity::~Elasticity(void) {
     deallocate();
 } // destructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
 pylith::materials::Elasticity::deallocate(void) {
@@ -74,7 +74,7 @@ pylith::materials::Elasticity::deallocate(void) {
 } // deallocate
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Include body force?
 void
 pylith::materials::Elasticity::useBodyForce(const bool value) {
@@ -84,7 +84,7 @@ pylith::materials::Elasticity::useBodyForce(const bool value) {
 } // useBodyForce
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Include body force?
 bool
 pylith::materials::Elasticity::useBodyForce(void) const {
@@ -92,7 +92,7 @@ pylith::materials::Elasticity::useBodyForce(void) const {
 } // useBodyForce
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Set bulk rheology.
 void
 pylith::materials::Elasticity::setBulkRheology(pylith::materials::RheologyElasticity* const rheology) {
@@ -100,7 +100,7 @@ pylith::materials::Elasticity::setBulkRheology(pylith::materials::RheologyElasti
 } // setBulkRheology
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get bulk rheology.
 pylith::materials::RheologyElasticity*
 pylith::materials::Elasticity::getBulkRheology(void) const {
@@ -108,7 +108,7 @@ pylith::materials::Elasticity::getBulkRheology(void) const {
 } // getBulkRheology
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Verify configuration is acceptable.
 void
 pylith::materials::Elasticity::verifyConfiguration(const pylith::topology::Field& solution) const {
@@ -138,7 +138,7 @@ pylith::materials::Elasticity::verifyConfiguration(const pylith::topology::Field
 } // verifyConfiguration
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Create integrator and set kernels.
 pylith::feassemble::Integrator*
 pylith::materials::Elasticity::createIntegrator(const pylith::topology::Field& solution) {
@@ -146,8 +146,8 @@ pylith::materials::Elasticity::createIntegrator(const pylith::topology::Field& s
     PYLITH_COMPONENT_DEBUG("createIntegrator(solution="<<solution.getLabel()<<")");
 
     pylith::feassemble::IntegratorDomain* integrator = new pylith::feassemble::IntegratorDomain(this);assert(integrator);
-    integrator->setLabelName(pylith::topology::Mesh::getCellsLabelName());
-    integrator->setLabelValue(getMaterialId());
+    integrator->setLabelName(getLabelName());
+    integrator->setLabelValue(getLabelValue());
 
     _setKernelsResidual(integrator, solution);
     _setKernelsJacobian(integrator, solution);
@@ -158,7 +158,7 @@ pylith::materials::Elasticity::createIntegrator(const pylith::topology::Field& s
 } // createIntegrator
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Create auxiliary field.
 pylith::topology::Field*
 pylith::materials::Elasticity::createAuxiliaryField(const pylith::topology::Field& solution,
@@ -205,7 +205,7 @@ pylith::materials::Elasticity::createAuxiliaryField(const pylith::topology::Fiel
 } // createAuxiliaryField
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Create derived field.
 pylith::topology::Field*
 pylith::materials::Elasticity::createDerivedField(const pylith::topology::Field& solution,
@@ -235,7 +235,7 @@ pylith::materials::Elasticity::createDerivedField(const pylith::topology::Field&
 } // createDerivedField
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get auxiliary factory associated with physics.
 pylith::feassemble::AuxiliaryFactory*
 pylith::materials::Elasticity::_getAuxiliaryFactory(void) {
@@ -244,7 +244,7 @@ pylith::materials::Elasticity::_getAuxiliaryFactory(void) {
 } // _getAuxiliaryFactory
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Update kernel constants.
 void
 pylith::materials::Elasticity::_updateKernelConstants(const PylithReal dt) {
@@ -253,7 +253,7 @@ pylith::materials::Elasticity::_updateKernelConstants(const PylithReal dt) {
 } // _updateKernelConstants
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get derived factory associated with physics.
 pylith::topology::FieldFactory*
 pylith::materials::Elasticity::_getDerivedFactory(void) {
@@ -261,7 +261,7 @@ pylith::materials::Elasticity::_getDerivedFactory(void) {
 } // _getDerivedFactory
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Set kernels for residual.
 void
 pylith::materials::Elasticity::_setKernelsResidual(pylith::feassemble::IntegratorDomain* integrator,
@@ -335,7 +335,7 @@ pylith::materials::Elasticity::_setKernelsResidual(pylith::feassemble::Integrato
 } // _setKernelsResidual
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Set kernels for Jacobian.
 void
 pylith::materials::Elasticity::_setKernelsJacobian(pylith::feassemble::IntegratorDomain* integrator,
@@ -404,7 +404,7 @@ pylith::materials::Elasticity::_setKernelsJacobian(pylith::feassemble::Integrato
 } // _setKernelsJacobian
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Set kernels for computing updated state variables in auxiliary field.
 void
 pylith::materials::Elasticity::_setKernelsUpdateStateVars(pylith::feassemble::IntegratorDomain* integrator,
@@ -424,7 +424,7 @@ pylith::materials::Elasticity::_setKernelsUpdateStateVars(pylith::feassemble::In
 } // _setKernelsUpdateStateVars
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Set kernels for computing derived field.
 void
 pylith::materials::Elasticity::_setKernelsDerivedField(pylith::feassemble::IntegratorDomain* integrator,

@@ -65,29 +65,41 @@ public:
     virtual
     void deallocate(void);
 
-    /** Set value of label material-id used to identify material cells.
-     *
-     * @param value Material identifier
-     */
-    void setMaterialId(const int value);
-
-    /** Get value of label material-id used to identify material cells.
-     *
-     * @returns Material identifier
-     */
-    int getMaterialId(void) const;
-
     /** Set descriptive label for material.
      *
      * @param value Label of material.
      */
-    void setDescriptiveLabel(const char* value);
+    void setDescription(const char* value);
 
     /** Get descruptive label of material.
      *
      * @returns Label of material
      */
-    const char* getDescriptiveLabel(void) const;
+    const char* getDescription(void) const;
+
+    /** Set name of label marking material.
+     *
+     * @param[in] value Name of label for material (from mesh generator).
+     */
+    void setLabelName(const char* value);
+
+    /** Get name of label marking material.
+     *
+     * @returns Name of label for material (from mesh generator).
+     */
+    const char* getLabelName(void) const;
+
+    /** Set value of label marking material.
+     *
+     * @param[in] value Value of label for material (from mesh generator).
+     */
+    void setLabelValue(const int value);
+
+    /** Get value of label marking material.
+     *
+     * @returns Value of label for material (from mesh generator).
+     */
+    int getLabelValue(void) const;
 
     /** Set gravity field.
      *
@@ -111,8 +123,9 @@ protected:
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    int _materialId; ///< Value of material-id label in mesh.
-    std::string _descriptiveLabel; ///< Descriptive label for material.
+    std::string _description; ///< Descriptive label for material.
+    std::string _labelName; ///< Name of label in mesh for material.
+    int _labelValue; ///< Value of label in mesh for material.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:

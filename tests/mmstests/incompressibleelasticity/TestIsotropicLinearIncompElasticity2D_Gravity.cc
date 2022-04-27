@@ -221,8 +221,8 @@ protected:
         _material->useBodyForce(false);
         _rheology->useReferenceState(false);
 
-        _material->setDescriptiveLabel("Isotropic Linear Incompressible Elascitity Plane Strain");
-        _material->setMaterialId(24);
+        _material->setDescription("Isotropic Linear Incompressible Elascitity Plane Strain");
+        _material->setLabelValue(24);
 
         static const PylithInt constrainedDispDOF[2] = {0, 1};
         static const PylithInt numConstrainedDisp = 2;

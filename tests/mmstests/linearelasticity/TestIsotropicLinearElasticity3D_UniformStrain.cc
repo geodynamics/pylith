@@ -206,8 +206,8 @@ protected:
         _material->useBodyForce(false);
         _rheology->useReferenceState(false);
 
-        _material->setDescriptiveLabel("Isotropic Linear Elascitity");
-        _material->setMaterialId(24);
+        _material->setDescription("Isotropic Linear Elascitity");
+        _material->setLabelValue(24);
 
         static const PylithInt constrainedDOF[3] = { 0, 1, 2 };
         static const PylithInt numConstrained = 3;

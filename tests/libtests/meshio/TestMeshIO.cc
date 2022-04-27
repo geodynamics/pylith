@@ -130,7 +130,7 @@ pylith::meshio::TestMeshIO::_createMesh(void) { // _createMesh
     PylithInt cStart, cEnd;
     err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
     for (PylithInt c = cStart; c < cEnd; ++c) {
-        err = DMSetLabelValue(dmMesh, "material-id", c, data->materialIds[c-cStart]);PYLITH_CHECK_ERROR(err);
+        err = DMSetLabelValue(dmMesh, pylith::topology::Mesh::cells_label_name, c, data->materialIds[c-cStart]);PYLITH_CHECK_ERROR(err);
     } // for
 
     // Groups
@@ -235,7 +235,7 @@ pylith::meshio::TestMeshIO::_checkVals(void) { // _checkVals
     // check materials
     PylithInt matId = 0;
     for (PylithInt c = cStart; c < cEnd; ++c) {
-        err = DMGetLabelValue(dmMesh, "material-id", c, &matId);PYLITH_CHECK_ERROR(err);
+        err = DMGetLabelValue(dmMesh, pylith::topology::Mesh::cells_label_name, c, &matId);PYLITH_CHECK_ERROR(err);
         CPPUNIT_ASSERT_EQUAL(data->materialIds[c-cStart], matId);
     } // for
 

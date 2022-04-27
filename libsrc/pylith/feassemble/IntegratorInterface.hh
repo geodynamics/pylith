@@ -131,17 +131,17 @@ public:
     virtual
     void deallocate(void);
 
-    /** Set label marking interior interface surface.
+    /** Set name of label marking interior interface surface.
      *
-     * @param[in] value Label of surface (from mesh generator).
+     * @param[in] value Name of label of surface (from mesh generator).
      */
-    void setSurfaceMarkerLabel(const char* value);
+    void setSurfaceLabelName(const char* value);
 
-    /** Get label marking interior interface surface.
+    /** Get name of label marking interior interface surface.
      *
-     * @returns Label of surface (from mesh generator).
+     * @returns Name of label of surface (from mesh generator).
      */
-    const char* getSurfaceMarkerLabel(void) const;
+    const char* getSurfaceLabelName(void) const;
 
     /** Get mesh associated with integrator domain.
      *
@@ -221,7 +221,7 @@ public:
 private:
 
     pylith::topology::Mesh* _interfaceMesh; ///< Boundary mesh.
-    std::string _interfaceSurfaceLabel; ///< Name of label identifying interface surface.
+    std::string _surfaceLabelName; ///< Name of label identifying interface surface.
 
     pylith::feassemble::InterfacePatches* _integrationPatches; ///< Face patches.
 

@@ -47,41 +47,77 @@ public:
     virtual
     void deallocate(void);
 
-    /** Set identifier for fault cohesive cells.
+    /** Set name of label identifying cohesive cells.
      *
-     * @param[in] value Fault identifier
+     * @param[in] value Name of label.
      */
-    void setInterfaceId(const int value);
+    void setCohesiveLabelName(const char* value);
 
-    /** Get identifier for fault cohesive cells.
+    /** Get name of label identifying cohesive cells.
      *
-     * @returns Fault identifier
+     * @returns Name of label.
      */
-    int getInterfaceId(void) const;
+    const char* getCohesiveLabelName(void) const;
 
-    /** Set label marking surface of interface.
+    /** Set value of label identifying cohesive cells.
      *
-     * @param[in] value Label of surface (from mesh generator).
+     * @param[in] value Value of label.
      */
-    void setSurfaceMarkerLabel(const char* value);
+    void setCohesiveLabelValue(const int value);
 
-    /** Get label marking surface of interface.
+    /** Get value of label identifying cohesive cells.
      *
-     * @returns Label of surface (from mesh generator).
+     * @returns Value of label.
      */
-    const char* getSurfaceMarkerLabel(void) const;
+    int getCohesiveLabelValue(void) const;
 
-    /** Set label marking buried edges of interface surface.
+    /** Set name of label marking surface of interface.
      *
-     * @param[in] value Label of buried surface edge (from mesh generator).
+     * @param[in] value Name of label of surface (from mesh generator).
      */
-    void setBuriedEdgesMarkerLabel(const char* value);
+    void setSurfaceLabelName(const char* value);
 
-    /** Get label marking buried edges of interface surface.
+    /** Get name of label marking surface of interface.
      *
-     * @returns Label of buried surface edge (from mesh generator).
+     * @returns Name of label of surface (from mesh generator).
      */
-    const char* getBuriedEdgesMarkerLabel(void) const;
+    const char* getSurfaceLabelName(void) const;
+
+    /** Set value of label marking surface of interface.
+     *
+     * @param[in] value Value of label of surface (from mesh generator).
+     */
+    void setSurfaceLabelValue(const int value);
+
+    /** Get value of label marking surface of interface.
+     *
+     * @returns Value of label of surface (from mesh generator).
+     */
+    int getSurfaceLabelValue(void) const;
+
+    /** Set name of label marking buried edges of interface surface.
+     *
+     * @param[in] value Name of label of buried surface edge (from mesh generator).
+     */
+    void setBuriedEdgesLabelName(const char* value);
+
+    /** Get name of label marking buried edges of interface surface.
+     *
+     * @returns Name of label of buried surface edge (from mesh generator).
+     */
+    const char* getBuriedEdgesLabelName(void) const;
+
+    /** Set value of label marking buried edges of interface surface.
+     *
+     * @param[in] value Value of label of buried surface edge (from mesh generator).
+     */
+    void setBuriedEdgesLabelValue(const int value);
+
+    /** Get value of label marking buried edges of interface surface.
+     *
+     * @returns Value of label of buried surface edge (from mesh generator).
+     */
+    int getBuriedEdgesLabelValue(void) const;
 
     /** Set first choice for reference direction to discriminate among tangential directions in 3-D.
      *
@@ -128,9 +164,12 @@ protected:
     // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
 private:
 
-    int _interfaceId; ///< Identifier for cohesive cells.
-    std::string _interfaceLabel; ///< Label identifying vertices associated with fault.
-    std::string _buriedEdgesLabel; ///< Label identifying vertices along buried edges of fault.
+    std::string _cohesiveLabelName; ///< Name of label for cohesive cells.
+    std::string _surfaceLabelName; ///< Name of label identifying points associated with fault.
+    std::string _buriedEdgesLabelName; ///< Name of label identifying buried edges of fault.
+    int _cohesiveLabelValue; ///< Value of label for cohesive cells.
+    int _surfaceLabelValue; ///< Value of label identifying points associated with fault.
+    int _buriedEdgesLabelValue; ///< Value of label identifying buried edges of fault.
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
 private:

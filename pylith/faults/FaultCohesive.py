@@ -48,14 +48,17 @@ class FaultCohesive(Physics, ModuleFaultCohesive):
 
     import pythia.pyre.inventory
 
-    matId = pythia.pyre.inventory.int("id", default=100)
-    matId.meta['tip'] = "Fault identifier (must be unique across all faults and materials)."
+    labelName = pythia.pyre.inventory.str("label", default="", validator=validateLabel)
+    labelName.meta['tip'] = "Name of label identifier for fault."
 
-    label = pythia.pyre.inventory.str("label", default="", validator=validateLabel)
-    label.meta['tip'] = "Label identifier for fault."
+    labelValue = pythia.pyre.inventory.int("label_value", default=1)
+    labelValue.meta['tip'] = "Value of label identifier for fault."
 
-    edge = pythia.pyre.inventory.str("edge", default="")
-    edge.meta['tip'] = "Label identifier for buried fault edges."
+    edgeName = pythia.pyre.inventory.str("edge", default="")
+    edgeName.meta['tip'] = "Name of label identifier for buried fault edges."
+
+    edgeValue = pythia.pyre.inventory.int("edge_value", default=1)
+    edgeValue.meta['tip'] = "Value of label identifier for buried fault edges."
 
     refDir1 = pythia.pyre.inventory.list("ref_dir_1", default=[0.0, 0.0, 1.0], validator=validateDir)
     refDir1.meta['tip'] = "First choice for reference direction to discriminate among tangential directions in 3-D."
@@ -74,9 +77,10 @@ class FaultCohesive(Physics, ModuleFaultCohesive):
         """
         Physics.preinitialize(self, problem)
 
-        ModuleFaultCohesive.setInterfaceId(self, self.matId)
-        ModuleFaultCohesive.setSurfaceMarkerLabel(self, self.label)
-        ModuleFaultCohesive.setBuriedEdgesMarkerLabel(self, self.edge)
+        ModuleFaultCohesive.setSurfaceLabelName(self, self.labelName)
+        ModuleFaultCohesive.setSurfaceLabelValue(self, self.labelValue)
+        ModuleFaultCohesive.setBuriedEdgesLabelName(self, self.edgeName)
+        ModuleFaultCohesive.setBuriedEdgesLabelValue(self, self.edgeValue)
         ModuleFaultCohesive.setRefDir1(self, self.refDir1)
         ModuleFaultCohesive.setRefDir2(self, self.refDir2)
         return

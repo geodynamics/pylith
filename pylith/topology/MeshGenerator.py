@@ -68,7 +68,7 @@ class MeshGenerator(PetscComponent):
         if not interfaces is None:
             for interface in interfaces:
                 if 0 == comm.rank:
-                    self._info.log("Adjusting topology for fault '%s'." % interface.label)
+                    self._info.log("Adjusting topology for fault '%s'." % interface.labelName)
                 interface.preinitialize(problem)
                 interface.adjustTopology(mesh)
 

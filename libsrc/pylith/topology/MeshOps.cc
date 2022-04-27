@@ -383,17 +383,17 @@ pylith::topology::MeshOps::getNumCorners(const pylith::topology::Mesh& mesh) {
 
 // ---------------------------------------------------------------------------------------------------------------------
 void
-pylith::topology::MeshOps::checkMaterialIds(const pylith::topology::Mesh& mesh,
-                                            pylith::int_array& materialIds) {
+pylith::topology::MeshOps::checkMaterialLabels(const pylith::topology::Mesh& mesh,
+                                               pylith::int_array& labelValues) {
     PYLITH_METHOD_BEGIN;
 
     PetscErrorCode err;
 
     // Create map with indices for each material
-    const size_t numIds = materialIds.size();
+    const size_t numIds = labelValues.size();
     std::map<int, int> materialIndex;
     for (size_t i = 0; i < numIds; ++i) {
-        materialIndex[materialIds[i]] = i;
+        materialIndex[labelValues[i]] = i;
     } // for
 
     int_array matCellCounts(numIds);
@@ -405,11 +405,11 @@ pylith::topology::MeshOps::checkMaterialIds(const pylith::topology::Mesh& mesh,
     const PetscInt cEnd = cellsStratum.end();
 
     PetscDMLabel materialsLabel = NULL;
-    const char* const labelName = pylith::topology::Mesh::getCellsLabelName();
+    const char* const labelName = pylith::topology::Mesh::cells_label_name;
     err = DMGetLabel(dmMesh, labelName, &materialsLabel);PYLITH_CHECK_ERROR(err);assert(materialsLabel);
 
-    int *matBegin = &materialIds[0];
-    int *matEnd = &materialIds[0] + materialIds.size();
+    int *matBegin = &labelValues[0];
+    int *matEnd = &labelValues[0] + labelValues.size();
     std::sort(matBegin, matEnd);
 
     for (PetscInt c = cStart; c < cEnd; ++c) {
@@ -440,7 +440,7 @@ pylith::topology::MeshOps::checkMaterialIds(const pylith::topology::Mesh& mesh,
     err = MPI_Allreduce(&matCellCounts[0], &matCellCountsAll[0],
                         matCellCounts.size(), MPI_INT, MPI_SUM, mesh.getComm());PYLITH_CHECK_ERROR(err);
     for (size_t i = 0; i < numIds; ++i) {
-        const int matId = materialIds[i];
+        const int matId = labelValues[i];
         const size_t matIndex = materialIndex[matId];
         assert(0 <= matIndex && matIndex < numIds);
         if (matCellCountsAll[matIndex] <= 0) {

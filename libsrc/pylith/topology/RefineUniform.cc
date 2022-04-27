@@ -89,8 +89,8 @@ pylith::topology::RefineUniform::refine(Mesh* const newMesh,
 
     newMesh->setDM(dmNew);
 
-    // Remove all non-cells from material id label
-    const char* const labelName = pylith::topology::Mesh::getCellsLabelName();
+    // Remove all non-cells from cells label
+    const char* const labelName = pylith::topology::Mesh::cells_label_name;
     PetscDMLabel matidLabel = NULL;
     PetscIS valuesIS = NULL;
     const PetscInt *values = NULL;

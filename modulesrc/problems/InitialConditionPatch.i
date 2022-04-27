@@ -24,7 +24,7 @@
 
 namespace pylith {
     namespace problems {
-        class InitialConditionPatch : public pylith::problems::InitialCondition {
+        class InitialConditionPatch: public pylith::problems::InitialCondition {
             // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////
 public:
 
@@ -37,17 +37,29 @@ public:
             /// Deallocate PETSc and local data structures.
             void deallocate(void);
 
-            /** Set material id associated with patch.
+            /** Set name of label marking material.
              *
-             * @param[in] value Material id associated with patch.
+             * @param[in] value Name of label for material (from mesh generator).
              */
-            void setMaterialId(const int value);
+            void setLabelName(const char* value);
 
-            /** Get material id associated with patch.
+            /** Get name of label marking material.
              *
-             * @returns Material id associated with patch.
+             * @returns Name of label for material (from mesh generator).
              */
-            int getMaterialId(void) const;
+            const char* getLabelName(void) const;
+
+            /** Set value of label marking material.
+             *
+             * @param[in] value Value of label for material (from mesh generator).
+             */
+            void setLabelValue(const int value);
+
+            /** Get value of label marking material.
+             *
+             * @returns Value of label for material (from mesh generator).
+             */
+            int getLabelValue(void) const;
 
             /** Set spatial database holding initial conditions.
              *
