@@ -70,7 +70,7 @@ plt.imsave('check_grid.png',check)
 # Test Diffusion Values
 
 fluid_density = 1000 * numpy.ones(nx*ny) # kg / m**3
-solid_density = 2300 * numpy.ones(nx*ny)# kg / m**3
+solid_density = 2300 * numpy.ones(nx*ny) # kg / m**3
 biot_coefficient = 0.8 * numpy.ones(nx*ny)
 fluid_viscosity = 0.001 * numpy.ones(nx*ny) # Pa*s
 shear_modulus = 8662741799.83 * numpy.ones(nx*ny) # Pa

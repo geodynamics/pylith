@@ -17,13 +17,15 @@
 #
 
 dist_noinst_DATA = \
-	source_sites.txt \
+	extraction_3d.txt \
+	injection_3d.txt \
 	pylithapp.cfg \
 	step00_steadystate.cfg \
+	step01_5Spot_Pattern.cfg \
 	mesh/geometry.jou \
 	mesh/bc.jou \
-	mesh/mesh_quad.jou \
-	mesh/mesh_quad.exo \
+	mesh/mesh_hex.jou \
+	mesh/mesh_hex.exo \
     spatialdb/spe_perm.dat \
     spatialdb/spe_phi.dat \
     spatialdb/SPE10_grid_pylith.py \

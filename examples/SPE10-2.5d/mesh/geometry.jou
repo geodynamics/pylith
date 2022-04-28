@@ -31,20 +31,21 @@ journal idless on
 # {ny=220}
 # {nz=85}
 
-# -6 km <= x <= 6 km
-# -6 km <= y <= 6 km
-# -9 km <= z <= 0 km
+#  0' <= x <= 1200'
+#  0' <= y <= 2200'
+# -2' <= z <= 0'
 brick x {dx*nx} y {dy*ny} z {dz*1}
 
 # Center of block will be at (0,0,0), so move it down half the height
 # to align the top at z=0.
-volume 1 move x {dx*nx*0.5} y {dy*ny*0.5} z 0
+volume 1 move x {dx*nx*0.5} y {dy*ny*0.5} z {-dz*0.5}
 
 volume 1 name "poroelastic"
 
 
 
 # End of file
+
 
 
 

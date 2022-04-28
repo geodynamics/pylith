@@ -31,30 +31,31 @@ nodeset 21 name "boundary_zneg"
 # ----------------------------------------------------------------------
 # Create nodeset for -y boundary
 # ----------------------------------------------------------------------
-group "boundary_yneg" add node in curve 3
+group "boundary_yneg" add node in surface 3
 nodeset 22 group boundary_yneg
 nodeset 22 name "boundary_yneg"
 
 # ----------------------------------------------------------------------
 # Create nodeset for -x boundary
 # ----------------------------------------------------------------------
-group "boundary_xneg" add node in curve 4
+group "boundary_xneg" add node in surface 4
 nodeset 23 group boundary_xneg
 nodeset 23 name "boundary_xneg"
 
 # ----------------------------------------------------------------------
 # Create nodeset for +y boundary
 # ----------------------------------------------------------------------
-group "boundary_ypos" add node in curve 5
+group "boundary_ypos" add node in surface 5
 nodeset 24 group boundary_ypos
 nodeset 24 name "boundary_ypos"
 
 # ----------------------------------------------------------------------
 # Create nodeset for +x boundary
 # ----------------------------------------------------------------------
-group "boundary_xpos" add node in curve  6
+group "boundary_xpos" add node in surface 6
 nodeset 25 group boundary_xpos
 nodeset 25 name "boundary_xpos"
+
 
 
 
