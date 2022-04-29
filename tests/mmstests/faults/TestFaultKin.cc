@@ -187,10 +187,10 @@ pylith::mmstests::TestFaultKin_Data::TestFaultKin_Data(void) :
     CPPUNIT_ASSERT(normalizer);
 
     CPPUNIT_ASSERT(matAuxDB);
-    matAuxDB->setLabel("material auxiliary field spatial database");
+    matAuxDB->setDescription("material auxiliary field spatial database");
 
     CPPUNIT_ASSERT(faultAuxDB);
-    faultAuxDB->setLabel("fault auxiliary field spatial database");
+    faultAuxDB->setDescription("fault auxiliary field spatial database");
 } // constructor
 
 

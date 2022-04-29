@@ -163,7 +163,7 @@ pylith::mmstests::TestIncompressibleElasticity_Data::TestIncompressibleElasticit
     CPPUNIT_ASSERT(normalizer);
 
     CPPUNIT_ASSERT(auxDB);
-    auxDB->setLabel("auxiliary field spatial database");
+    auxDB->setDescription("auxiliary field spatial database");
 } // constructor
 
 

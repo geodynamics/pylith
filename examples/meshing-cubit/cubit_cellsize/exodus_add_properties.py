@@ -45,7 +45,7 @@ def getCellSizeDB(points):
     dbIO._configure()
     db = SimpleDB()
     db.inventory.iohandler = dbIO
-    db.inventory.label = "Physical properties"
+    db.inventory.description = "Physical properties"
     db.inventory.queryType = "linear"
     db._configure()
 

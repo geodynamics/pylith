@@ -30,7 +30,7 @@ caption: Excerpt from `step05.cfg`
 [pylithapp.timedependent.bc.boundary_west]
 bc_dof = [0, 1]
 label = bndry_west
-db_initial.label = Dirichlet BC on west boundary
+db_initial.description = Dirichlet BC on west boundary
 ```
 
 We replace the prescribed aseismic slip on the subduction interface that we used in Step 2 with a friction interface with the slip-weakening fault constitutive model.
@@ -75,13 +75,13 @@ friction.label = Slip weakening
 friction.force_healing = True
 
 friction.db_properties = spatialdata.spatialdb.SimpleGridDB
-friction.db_properties.label = Slip weakening
+friction.db_properties.description = Slip weakening
 friction.db_properties.filename = fault_slabtop_slipweakening.spatialdb
 
 # Initial fault tractions
 traction_perturbation = pylith.faults.TractPerturbation
 traction_perturbation.db_initial = spatialdata.spatialdb.SimpleGridDB
-traction_perturbation.db_initial.label = Initial fault tractions
+traction_perturbation.db_initial.description = Initial fault tractions
 traction_perturbation.db_initial.filename = fault_slabtop_tractions.spatialdb
 ```
 

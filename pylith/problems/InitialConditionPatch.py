@@ -35,13 +35,13 @@ class InitialConditionPatch(InitialCondition, ModuleInitialCondition):
             [pylithapp.problem.ic.mat1]
             id = 1
             db = spatialdata.spatialdb.SimpleGridDB
-            db.label = Initial conditions over material 1
+            db.description = Initial conditions over material 1
             db.filename = shearmat1_ic.spatialdb
 
             [pylithapp.problem.ic.mat2]
             id = 2
             db = spatialdata.spatialdb.SimpleGridDB
-            db.label = Initial conditions over material 2
+            db.description = Initial conditions over material 2
             db.filename = shearmat2_ic.spatialdb
         """
     }

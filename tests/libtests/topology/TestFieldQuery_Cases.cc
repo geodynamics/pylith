@@ -121,7 +121,7 @@ protected:
         _data->cs->setSpaceDim(2);
 
         CPPUNIT_ASSERT(_data->auxDB);
-        _data->auxDB->setLabel("Auxiliary db 2D");
+        _data->auxDB->setDescription("Auxiliary db 2D");
         _data->auxDB->setCoordSys(*_data->cs);
         _data->auxDB->addValue("displacement_x", disp_x, disp_units());
         _data->auxDB->addValue("displacement_y", disp_y, disp_units());
@@ -241,7 +241,7 @@ protected:
         _data->cs->setSpaceDim(3);
 
         CPPUNIT_ASSERT(_data->auxDB);
-        _data->auxDB->setLabel("Auxiliary db 3D");
+        _data->auxDB->setDescription("Auxiliary db 3D");
         _data->auxDB->setCoordSys(*_data->cs);
         _data->auxDB->addValue("displacement_x", disp_x, disp_units());
         _data->auxDB->addValue("displacement_y", disp_y, disp_units());

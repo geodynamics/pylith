@@ -309,7 +309,7 @@ pylith::topology::FieldQuery::queryDBPointFn(PylithInt dim,
         for (int i = 0; i < dim; ++i) {
             msg << "  " << xDim[i];
         }
-        msg << ") in spatial database '" << queryctx->db->getLabel() << "'.";
+        msg << ") in spatial database '" << queryctx->db->getDescription() << "'.";
         PYLITH_ERROR_RETURN(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
     } // if
 
@@ -322,7 +322,7 @@ pylith::topology::FieldQuery::queryDBPointFn(PylithInt dim,
             for (int i = 0; i < dim; ++i) {
                 msg << "  " << xDim[i];
             }
-            msg << ") in spatial database '" << queryctx->db->getLabel() << "'. "
+            msg << ") in spatial database '" << queryctx->db->getDescription() << "'. "
                 << invalidMsg;
             PYLITH_ERROR_RETURN(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
         }
@@ -342,7 +342,7 @@ pylith::topology::FieldQuery::queryDBPointFn(PylithInt dim,
                 for (int i = 0; i < dim; ++i) {
                     msg << "  " << xDim[i];
                 }
-                msg << ") from spatial database '" << queryctx->db->getLabel() << "'. ";
+                msg << ") from spatial database '" << queryctx->db->getDescription() << "'. ";
                 msg << invalidMsg;
                 PYLITH_ERROR_RETURN(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
             } // if
@@ -402,11 +402,11 @@ pylith::topology::_FieldQuery::findQueryIndices(FieldQuery::DBQueryContext* cont
             if (0 == numDBValues) {
                 delete dbValues;dbValues = NULL;
                 msg << "No values found in spatial database '"
-                    << context->db->getLabel() << "'. Did you forget to open the database?";
+                    << context->db->getDescription() << "'. Did you forget to open the database?";
                 throw std::logic_error(msg.str());
             } // if
             msg << "Could not find value '" << valuesForSubfield[iValue] << "' in spatial database '"
-                << context->db->getLabel() << "'. Available values are:";
+                << context->db->getDescription() << "'. Available values are:";
             for (size_t iValueDB = 0; iValueDB < numDBValues; ++iValueDB) {
                 msg << "\n  " << dbValues[iValueDB];
             } // for

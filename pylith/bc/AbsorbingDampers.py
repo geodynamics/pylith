@@ -30,7 +30,7 @@ class AbsorbingDampers(BoundaryCondition, ModuleAbsorbingDampers):
             field = velocity
 
             db_auxiliary_field = spatialdata.spatialdb.UniformDB
-            db_auxiliary_field.label = Material properties for absorbing boundary
+            db_auxiliary_field.description = Material properties for absorbing boundary
             db_auxiliary_field.values = [density, vs, vp]
             db_auxiliary_field.data = [2500*kg/m**3, 1.0*km/s, 1.732*km/s]
 

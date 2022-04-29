@@ -42,12 +42,12 @@ class DirichletTimeDependent(BoundaryCondition, ModuleDirichletTimeDependent):
             use_initial = False
             use_time_history = True
             db_auxiliary_field = spatialdata.spatialdb.UniformDB
-            db_auxiliary_field.label = Displacement Dirichlet BC +y boundary
+            db_auxiliary_field.description = Displacement Dirichlet BC +y boundary
             db_auxiliary_field.values = [time_history_amplitude_x, time_history_amplitude_y, time_history_start_time]
             db_auxiliary_field.data = [1.0*m, 0.0*m, 0.0]
 
             time_history = spatialdata.spatialdb.TimeHistory
-            time_history.label = Impulse time history
+            time_history.description = Impulse time history
             time_history.filename = impulse.timedb
             """,
     }

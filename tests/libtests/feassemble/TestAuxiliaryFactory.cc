@@ -90,7 +90,7 @@ void
 pylith::feassemble::TestAuxiliaryFactory::testQueryDB(void) {
     spatialdata::spatialdb::UserFunctionDB db;
     const std::string& dbLabel = "test database";
-    db.setLabel(dbLabel.c_str());
+    db.setDescription(dbLabel.c_str());
 
     CPPUNIT_ASSERT(_factory);
     CPPUNIT_ASSERT_MESSAGE("Default spatial database should be NULL.", !_factory->getQueryDB());
@@ -98,7 +98,7 @@ pylith::feassemble::TestAuxiliaryFactory::testQueryDB(void) {
 
     const spatialdata::spatialdb::SpatialDB* dbTest = _factory->getQueryDB();
     CPPUNIT_ASSERT(dbTest);
-    CPPUNIT_ASSERT_EQUAL(dbLabel, std::string(dbTest->getLabel()));
+    CPPUNIT_ASSERT_EQUAL(dbLabel, std::string(dbTest->getDescription()));
 } // testQueryDB
 
 

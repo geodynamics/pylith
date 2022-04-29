@@ -31,7 +31,7 @@ class ZeroDB(UniformDB):
             field = displacement
 
             db_auxiliary_field = pylith.bc.ZeroDB
-            db_auxiliary_field.label = Dirichlet displacement boundary condition on the -y boundary
+            db_auxiliary_field.description = Dirichlet displacement boundary condition on the -y boundary
             """
     }
 

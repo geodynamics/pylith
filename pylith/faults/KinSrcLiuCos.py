@@ -35,7 +35,7 @@ class KinSrcLiuCos(KinSrc, ModuleKinSrc):
             origin_time = 10*year
 
             db_auxiliary_field = spatialdata.spatialdb.UniformDB
-            db_auxiliary_field.label = Liu cosine-sine slip time function auxiliary field spatial database
+            db_auxiliary_field.description = Liu cosine-sine slip time function auxiliary field spatial database
             db_auxiliary_field.values = [initiation_time, rise_time, final_slip_left_lateral, final_slip_opening]
             db_auxiliary_field.data = [0.0*s, 3.0*s, -2.0*m, 0.0*m]
             """
