@@ -7,31 +7,10 @@ Elements have an element tag, dimension, element type, list of node tags, and an
 """
 
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
 import gmsh
 import numpy
 
-def create_group(name, tag, dim, entities, recursive=True):
-    gmsh.model.add_physical_group(dim, entities, tag)
-    gmsh.model.set_physical_name(dim, tag, name)
-    entities_lowerdim = []
-    for entity in entities:
-        entities_up, entities_down = gmsh.model.get_adjacencies(dim, entity)
-        entities_lowerdim += [e for e in entities_down]
-    if recursive and dim >= 1:
-        create_group(name, tag, dim-1, entities_lowerdim)
-
-
-def create_material(tag, entities):
-    if tag <= 0:
-        raise ValueError(f"ERROR: Attempting to use non-positive material tag '{tag}'. Tags for physical groups must be positive.")
-    dim = gmsh.model.get_dimension()
-    name = gmsh.model.get_physical_name(dim, tag)
-    if name:
-        raise ValueError(f"ERROR: Attempting to use material tag '{tag}' that is already in use for material '{name}'.")
-    gmsh.model.addPhysicalGroup(dim, entities, tag)
-    gmsh.model.setPhysicalName(dim, tag, f"material-id:{tag}")
-
+from pylith.meshio.gmsh_utils import (VertexGroup, MaterialGroup)
 
 def get_vertices():
     dim = gmsh.model.get_dimension()
@@ -76,13 +55,15 @@ def get_material_ids(cells):
 
 
 def get_vertex_groups():
-    dim = gmsh.model.get_dimension()-1
-    physical_groups = gmsh.model.get_physical_groups(dim)
+    mesh_dim = gmsh.model.get_dimension()
     groups = {}
-    for dim, tag in physical_groups:
-        name = gmsh.model.get_physical_name(dim, tag)
-        node_tags, node_coords = gmsh.model.mesh.get_nodes_for_physical_group(dim, tag)
-        groups[name] = node_tags
+    for dim in (mesh_dim-1, mesh_dim-2):
+        physical_groups = gmsh.model.get_physical_groups(dim)
+        for dim, tag in physical_groups:
+            name = gmsh.model.get_physical_name(dim, tag)
+            node_tags, node_coords = gmsh.model.mesh.get_nodes_for_physical_group(dim, tag)
+            if not name in groups:
+                groups[name] = node_tags
     return groups
 
 
@@ -149,16 +130,6 @@ def write_mesh(writer=WriterCxx()):
     del cells
     writer.write_vertex_groups(get_vertex_groups())
 
-@dataclass
-class VertexGroup:
-    name: str
-    tag: int
-    entities: list
-
-@dataclass
-class MaterialGroup:
-    tag: int
-    entities: list
 
 class GenerateApp(ABC):
 
@@ -240,6 +211,7 @@ class Generate2D(GenerateApp):
         self.l_ypos1 = gmsh.model.geo.addLine(p4, p5)
         self.l_xneg = gmsh.model.geo.addLine(p5, p0)
         self.l_fault = gmsh.model.geo.addLine(p1, p4)
+        self.p_fault_end = p1
 
         c0 = gmsh.model.geo.addCurveLoop([self.l_yneg0, self.l_fault, self.l_ypos1, self.l_xneg])
         self.s_xneg = gmsh.model.geo.addPlaneSurface([c0])
@@ -254,17 +226,18 @@ class Generate2D(GenerateApp):
             MaterialGroup(tag=2, entities=[self.s_xpos]),
         )
         for material in materials:
-            create_material(material.tag, material.entities)
+            material.create_physical_group()
 
         vertex_groups = (
-            VertexGroup(name="boundary_xneg", tag=10, entities=[self.l_xneg]),
-            VertexGroup(name="boundary_xpos", tag=11, entities=[self.l_xpos]),
-            VertexGroup(name="boundary_yneg", tag=12, entities=[self.l_yneg0, self.l_yneg1]),
-            VertexGroup(name="boundary_ypos", tag=13, entities=[self.l_ypos0, self.l_ypos1]),
-            VertexGroup(name="fault", tag=20, entities=[self.l_fault]),
+            VertexGroup(name="boundary_xneg", tag=10, dim=1, entities=[self.l_xneg]),
+            VertexGroup(name="boundary_xpos", tag=11, dim=1, entities=[self.l_xpos]),
+            VertexGroup(name="boundary_yneg", tag=12, dim=1, entities=[self.l_yneg0, self.l_yneg1]),
+            VertexGroup(name="boundary_ypos", tag=13, dim=1, entities=[self.l_ypos0, self.l_ypos1]),
+            VertexGroup(name="fault", tag=20, dim=1, entities=[self.l_fault]),
+            VertexGroup(name="fault_end", tag=21, dim=0, entities=[self.p_fault_end]),
         )
         for group in vertex_groups:
-            create_group(group.name, group.tag, gmsh.model.get_dimension()-1, group.entities)
+            group.create_physical_group()
 
     def generate_mesh(self):
         # right angle tris
@@ -308,6 +281,7 @@ class Generate3D(GenerateApp):
         self.s_zneg = gmsh.model.get_entities_in_bounding_box(bbox[0]-dx, bbox[1]-dx, bbox[2]-dx, bbox[3]+dx, bbox[4]+dx, bbox[2]+dx, dim=2)
         self.s_zpos = gmsh.model.get_entities_in_bounding_box(bbox[0]-dx, bbox[1]-dx, bbox[5]-dx, bbox[3]+dx, bbox[4]+dx, bbox[5]+dx, dim=2)
         self.s_fault = gmsh.model.get_entities_in_bounding_box(-dx, bbox[1]-dx, bbox[2]-dx, +dx, bbox[4]+dx, bbox[5]+dx, dim=2)
+        self.l_fault_end = gmsh.model.get_entities_in_bounding_box(-dx, bbox[1]-dx, bbox[2]-dx, +dx, bbox[1]+dx, bbox[5]+dx, dim=1)
 
         self.v_xneg = dimTags[0]
         self.v_xpos = dimTags[1]
@@ -318,19 +292,20 @@ class Generate3D(GenerateApp):
             MaterialGroup(tag=2, entities=[self.v_xpos[1]]),
         )
         for material in materials:
-            create_material(material.tag, material.entities)
+            material.create_physical_group()
 
         vertex_groups = (
-            VertexGroup(name="boundary_xneg", tag=10, entities=[tag for dim, tag in self.s_xneg]),
-            VertexGroup(name="boundary_xpos", tag=11, entities=[tag for dim, tag in self.s_xpos]),
-            VertexGroup(name="boundary_yneg", tag=12, entities=[tag for dim, tag in self.s_yneg]),
-            VertexGroup(name="boundary_ypos", tag=13, entities=[tag for dim, tag in self.s_ypos]),
-            VertexGroup(name="boundary_zneg", tag=14, entities=[tag for dim, tag in self.s_zneg]),
-            VertexGroup(name="boundary_zpos", tag=15, entities=[tag for dim, tag in self.s_zpos]),
-            VertexGroup(name="fault", tag=20, entities=[tag for dim,tag in self.s_fault]),
+            VertexGroup(name="boundary_xneg", tag=10, dim=2, entities=[tag for dim, tag in self.s_xneg]),
+            VertexGroup(name="boundary_xpos", tag=11, dim=2, entities=[tag for dim, tag in self.s_xpos]),
+            VertexGroup(name="boundary_yneg", tag=12, dim=2, entities=[tag for dim, tag in self.s_yneg]),
+            VertexGroup(name="boundary_ypos", tag=13, dim=2, entities=[tag for dim, tag in self.s_ypos]),
+            VertexGroup(name="boundary_zneg", tag=14, dim=2, entities=[tag for dim, tag in self.s_zneg]),
+            VertexGroup(name="boundary_zpos", tag=15, dim=2, entities=[tag for dim, tag in self.s_zpos]),
+            VertexGroup(name="fault", tag=20, dim=2, entities=[tag for dim,tag in self.s_fault]),
+            VertexGroup(name="fault_end", tag=21, dim=1, entities=[tag for dim,tag in self.l_fault_end]),
         )
         for group in vertex_groups:
-            create_group(group.name, group.tag, gmsh.model.get_dimension()-1, group.entities)
+            group.create_physical_group()
 
     def generate_mesh(self):
         gmsh.option.setNumber("Mesh.MeshSizeMin", self.DX)
