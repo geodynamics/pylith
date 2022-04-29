@@ -22,6 +22,7 @@ TESTS = test_pylith.py
 dist_check_SCRIPTS = test_pylith.py
 
 dist_noinst_PYTHON = \
+	generate_gmsh.py \
 	meshes.py \
 	TestTwoBlocks.py \
 	twoblocks_soln.py

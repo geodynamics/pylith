@@ -268,20 +268,14 @@ AC_CONFIG_FILES([Makefile
 		examples/barwaves-2d/Makefile
 		examples/box-2d/Makefile
 		examples/box-3d/Makefile
-		examples/meshing-cubit/Makefile
-		examples/meshing-cubit/surface_nurbs/Makefile
-		examples/meshing-cubit/surface_nurbs/dem/Makefile
-		examples/meshing-cubit/surface_nurbs/dem/ulines/Makefile
-		examples/meshing-cubit/surface_nurbs/dem/vlines/Makefile
-		examples/meshing-cubit/surface_nurbs/triangles/Makefile
-		examples/meshing-cubit/surface_nurbs/merge_surfs/Makefile
-		examples/meshing-cubit/surface_nurbs/subduction/Makefile
-		examples/meshing-cubit/cubit_cellsize/Makefile
 		examples/reverse-2d/Makefile
 		examples/strikeslip-2d/Makefile
 		examples/subduction-2d/Makefile
 		examples/subduction-3d/Makefile
 		examples/troubleshooting-2d/Makefile
+		examples/meshing-cubit/Makefile
+		examples/meshing-cubit/surface-nurbs/Makefile
+		examples/meshing-cubit/cellsize/Makefile
 		templates/Makefile
 		share/Makefile
 		])
