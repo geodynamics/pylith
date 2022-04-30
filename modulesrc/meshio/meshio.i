@@ -23,8 +23,8 @@
 %{
 #include "pylith/meshio/MeshIO.hh"
 #include "pylith/meshio/MeshIOAscii.hh"
-#include "pylith/meshio/MeshIOPetsc.hh"
 #include "pylith/meshio/MeshIOLagrit.hh"
+#include "pylith/meshio/MeshIOPetsc.hh"
 #if defined(ENABLE_CUBIT)
 #include "pylith/meshio/MeshIOCubit.hh"
 #endif
@@ -46,17 +46,16 @@
 #include "pylith/meshio/OutputPhysics.hh"
 
 #include "pylith/utils/arrayfwd.hh"
-    %
-}
+%}
 
 %include "exception.i"
 %exception {
-    try {
-        $ action
-    } catch (const std::exception& err) {
-        SWIG_exception (SWIG_RuntimeError, err.what ());
-    } // try/catch
-} // exception
+  try {
+    $action
+  } catch (const std::exception& err) {
+    SWIG_exception(SWIG_RuntimeError, err.what());
+  } // try/catch
+ } // exception
 
 %include "std_string.i"
 %include "typemaps.i"
@@ -66,13 +65,11 @@
 // Numpy interface stuff
 %{
 #define SWIG_FILE_WITH_INIT
-    %
-}
+%}
 %include "../include/numpy.i"
 %init %{
-    import_array();
-    %
-}
+import_array();
+%}
 
 // Interfaces
 %include "../utils/PyreComponent.i"
@@ -80,7 +77,6 @@
 %include "../problems/ObserverPhysics.i"
 %include "MeshIOObj.i"
 %include "MeshIOAscii.i"
-%include "MeshIOPetsc.i"
 %include "MeshIOLagrit.i"
 %include "MeshIOPetsc.i"
 #if defined(ENABLE_CUBIT)
@@ -102,5 +98,6 @@
 %include "OutputSolnBoundary.i"
 %include "OutputSolnPoints.i"
 %include "OutputPhysics.i"
+
 
 // End of file
