@@ -194,8 +194,8 @@ protected:
     // PRIVATE METHODS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    /// Check material and interface ids.
-    void _checkMaterialIds(void) const;
+    /// Check material and interface label values.
+    void _checkMaterialLabels(void) const;
 
     /// Create array of integrators from materials, interfaces, and boundary conditions.
     void _createIntegrators(void);

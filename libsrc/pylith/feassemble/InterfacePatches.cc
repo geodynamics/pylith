@@ -56,7 +56,7 @@ namespace pylith {
 // ------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::feassemble::InterfacePatches::InterfacePatches(void) :
-    _labelName(pylith::topology::Mesh::getCellsLabelName()) {}
+    _labelName(pylith::topology::Mesh::cells_label_name) {}
 
 
 // ------------------------------------------------------------------------------------------------
@@ -88,8 +88,8 @@ pylith::feassemble::InterfacePatches::createMaterialPairs(const pylith::faults::
     PYLITH_METHOD_BEGIN;
 
     assert(fault);
-    const char* const cellsLabelName = pylith::topology::Mesh::getCellsLabelName();
-    const std::string& patchLabelName = fault->getSurfaceMarkerLabel() + std::string("-integration-patches");
+    const char* const cellsLabelName = pylith::topology::Mesh::cells_label_name;
+    const std::string& patchLabelName = fault->getSurfaceLabelName() + std::string("-integration-patches");
     InterfacePatches* patches = new InterfacePatches();assert(patches);
     patches->_labelName = patchLabelName;
 
@@ -101,7 +101,7 @@ pylith::feassemble::InterfacePatches::createMaterialPairs(const pylith::faults::
     PetscIS cohesiveCellsIS = NULL;
     PylithInt numCohesiveCells = 0;
     const PylithInt* cohesiveCells = NULL;
-    err = DMGetStratumIS(dmSoln, cellsLabelName, fault->getInterfaceId(), &cohesiveCellsIS);PYLITH_CHECK_ERROR(err);
+    err = DMGetStratumIS(dmSoln, cellsLabelName, fault->getCohesiveLabelValue(), &cohesiveCellsIS);PYLITH_CHECK_ERROR(err);
     err = ISGetSize(cohesiveCellsIS, &numCohesiveCells);PYLITH_CHECK_ERROR(err);assert(numCohesiveCells > 0);
     err = ISGetIndices(cohesiveCellsIS, &cohesiveCells);PYLITH_CHECK_ERROR(err);assert(cohesiveCells);
 
@@ -123,7 +123,7 @@ pylith::feassemble::InterfacePatches::createMaterialPairs(const pylith::faults::
             pythia::journal::debug_t debug("interfacepatches");
             // debug.activate();
             debug << pythia::journal::at(__HERE__)
-                  << "Creating integration patch on fault '" << fault->getSurfaceMarkerLabel()
+                  << "Creating integration patch on fault '" << fault->getSurfaceLabelName()
                   << "' for material pair ("<< matPair.first << "," << matPair.second<< ") "
                   << "using label '" << patchLabelName << "' with value " << patchLabelValue << "."
                   << pythia::journal::endl;

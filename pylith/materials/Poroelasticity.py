@@ -28,8 +28,8 @@ class Poroelasticity(Material, ModulePoroelasticity):
     DOC_CONFIG = {
         "cfg": """
             [pylithapp.problem.materials.mat_poroelastic]
-            id = 3
-            label = Upper crust poroelastic material
+            description = Upper crust poroelastic material
+            label_value = 3
             use_body_force = True
             use_source_density = False
             use_state_variables = True

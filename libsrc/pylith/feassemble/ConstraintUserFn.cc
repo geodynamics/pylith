@@ -101,11 +101,10 @@ pylith::feassemble::ConstraintUserFn::initialize(const pylith::topology::Field& 
     PetscDS prob = NULL;
     DMLabel label = NULL;
     void* context = NULL;
-    const PylithInt labelId = 1;
     err = DMGetDS(solution.getDM(), &prob);PYLITH_CHECK_ERROR(err);
     const PetscInt i_field = solution.getSubfieldInfo(_subfieldName.c_str()).index;
-    err = DMGetLabel(solution.getDM(), _constraintLabel.c_str(), &label);PYLITH_CHECK_ERROR(err);
-    err = PetscDSAddBoundary(prob, DM_BC_ESSENTIAL, _constraintLabel.c_str(), label, 1, &labelId, i_field,
+    err = DMGetLabel(solution.getDM(), _labelName.c_str(), &label);PYLITH_CHECK_ERROR(err);
+    err = PetscDSAddBoundary(prob, DM_BC_ESSENTIAL, _labelName.c_str(), label, 1, &_labelValue, i_field,
                              _constrainedDOF.size(), &_constrainedDOF[0], (void (*)(void)) _fn, (void (*)(void)) _fnDot, context, NULL);
     PYLITH_CHECK_ERROR(err);
 
@@ -152,16 +151,15 @@ pylith::feassemble::_ConstraintUserFn::setSolution(const pylith::topology::Field
 
     // Get label for constraint.
     PetscDMLabel dmLabel = NULL;
-    err = DMGetLabel(dmField, constraint._constraintLabel.c_str(), &dmLabel);PYLITH_CHECK_ERROR(err);
+    err = DMGetLabel(dmField, constraint._labelName.c_str(), &dmLabel);PYLITH_CHECK_ERROR(err);
 
     void* context = NULL;
-    const int labelId = 1;
     const int fieldIndex = field->getSubfieldInfo(constraint._subfieldName.c_str()).index;
     const PylithInt numConstrained = constraint._constrainedDOF.size();
     assert(field->getLocalVector());
     err = DMPlexLabelAddCells(dmField, dmLabel);PYLITH_CHECK_ERROR(err);
     err = DMPlexInsertBoundaryValuesEssential(dmField, t, fieldIndex, numConstrained, &constraint._constrainedDOF[0], dmLabel, 1,
-                                              &labelId, fn, context, field->getLocalVector());PYLITH_CHECK_ERROR(err);
+                                              &constraint._labelValue, fn, context, field->getLocalVector());PYLITH_CHECK_ERROR(err);
     err = DMPlexLabelClearCells(dmField, dmLabel);PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;

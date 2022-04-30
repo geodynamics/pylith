@@ -332,7 +332,7 @@ pylith::problems::Problem::verifyConfiguration(void) const {
         _bc[i]->verifyConfiguration(*solution);
     } // for
 
-    _checkMaterialIds();
+    _checkMaterialLabels();
 
     assert(_observers);
     _observers->verifyObservers(*solution);
@@ -392,31 +392,31 @@ pylith::problems::Problem::initialize(void) {
 // ---------------------------------------------------------------------------------------------------------------------
 // Check material and interface ids.
 void
-pylith::problems::Problem::_checkMaterialIds(void) const {
+pylith::problems::Problem::_checkMaterialLabels(void) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("Problem::_checkMaterialIds()");
+    PYLITH_COMPONENT_DEBUG("Problem::_checkMaterialLabels()");
 
     const size_t numMaterials = _materials.size();
     const size_t numInterfaces = _interfaces.size();
 
-    pylith::int_array materialIds(numMaterials + numInterfaces);
+    pylith::int_array labelValues(numMaterials + numInterfaces);
     size_t count = 0;
     for (size_t i = 0; i < numMaterials; ++i) {
         assert(_materials[i]);
-        materialIds[count++] = _materials[i]->getMaterialId();
+        labelValues[count++] = _materials[i]->getLabelValue();
     } // for
     for (size_t i = 0; i < numInterfaces; ++i) {
         assert(_interfaces[i]);
-        materialIds[count++] = _interfaces[i]->getInterfaceId();
+        labelValues[count++] = _interfaces[i]->getCohesiveLabelValue();
     } // for
 
     assert(_integrationData);
     const pylith::topology::Field* solution = _integrationData->getField("solution");
     assert(solution);
-    pylith::topology::MeshOps::checkMaterialIds(solution->getMesh(), materialIds);
+    pylith::topology::MeshOps::checkMaterialLabels(solution->getMesh(), labelValues);
 
     PYLITH_METHOD_END;
-} // _checkMaterialIds
+} // _checkMaterialLabels
 
 
 // ---------------------------------------------------------------------------------------------------------------------

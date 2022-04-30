@@ -212,8 +212,8 @@ pylith::topology::TestReverseCuthillMcKee::_initialize() {
     // Adjust topology if necessary.
     if (_data->faultLabel) {
         pylith::faults::FaultCohesiveStub fault;
-        fault.setInterfaceId(100);
-        fault.setSurfaceMarkerLabel(_data->faultLabel);
+        fault.setCohesiveLabelValue(100);
+        fault.setSurfaceLabelName(_data->faultLabel);
         fault.adjustTopology(_mesh);
     } // if
 

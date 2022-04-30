@@ -31,23 +31,24 @@
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 #include <cassert> // USES assert()
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Constructor
 pylith::problems::InitialConditionPatch::InitialConditionPatch(void) :
-    _patchId(0),
+    _labelName(pylith::topology::Mesh::cells_label_name),
+    _labelValue(1),
     _db(NULL) {
     PyreComponent::setName("initialconditionpatch");
 } // constructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Destructor
 pylith::problems::InitialConditionPatch::~InitialConditionPatch(void) {
     deallocate();
 } // destructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
 pylith::problems::InitialConditionPatch::deallocate(void) {
@@ -59,28 +60,45 @@ pylith::problems::InitialConditionPatch::deallocate(void) {
 } // deallocate
 
 
-// ---------------------------------------------------------------------------------------------------------------------
-// Set material id associated with patch.
+// ------------------------------------------------------------------------------------------------
+// Set name of label marking initial condition patch.
 void
-pylith::problems::InitialConditionPatch::setMaterialId(const int value) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("setMaterialId(value="<<value<<")");
+pylith::problems::InitialConditionPatch::setLabelName(const char* value) {
+    PYLITH_COMPONENT_DEBUG("setLabelName(value="<<value<<")");
 
-    _patchId = value;
+    if (strlen(value) == 0) {
+        throw std::runtime_error("Empty string given for label of initial condition patch.");
+    } // if
 
-    PYLITH_METHOD_END;
-} // setMaterialId
+    _labelName = value;
+} // setLabelName
 
 
-// ---------------------------------------------------------------------------------------------------------------------
-// Get material id associated with patch.
+// ------------------------------------------------------------------------------------------------
+// Get name of label marking initial condition patch.
+const char*
+pylith::problems::InitialConditionPatch::getLabelName(void) const {
+    return _labelName.c_str();
+} // getLabelName
+
+
+// ------------------------------------------------------------------------------------------------
+// Set value of label marking initial condition patch.
+void
+pylith::problems::InitialConditionPatch::setLabelValue(const int value) {
+    _labelValue = value;
+} // setLabelValue
+
+
+// ------------------------------------------------------------------------------------------------
+// Get value of label marking initial condition patch.
 int
-pylith::problems::InitialConditionPatch::getMaterialId(void) const {
-    return _patchId;
-} // getMaterialId
+pylith::problems::InitialConditionPatch::getLabelValue(void) const {
+    return _labelValue;
+} // getLabelValue
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Set spatial database holding initial conditions.
 void
 pylith::problems::InitialConditionPatch::setDB(spatialdata::spatialdb::SpatialDB* db) {
@@ -93,7 +111,7 @@ pylith::problems::InitialConditionPatch::setDB(spatialdata::spatialdb::SpatialDB
 } // setDB
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Verify configuration is acceptable.
 void
 pylith::problems::InitialConditionPatch::verifyConfiguration(const pylith::topology::Field& solution) const {
@@ -104,22 +122,21 @@ pylith::problems::InitialConditionPatch::verifyConfiguration(const pylith::topol
 
     const PetscDM dmSoln = solution.getDM();
     PetscBool hasLabel = PETSC_FALSE;
-    const char* const labelName = pylith::topology::Mesh::getCellsLabelName();
-    PetscErrorCode err = DMHasLabel(dmSoln, labelName, &hasLabel);PYLITH_CHECK_ERROR(err);
+    PetscErrorCode err = DMHasLabel(dmSoln, _labelName.c_str(), &hasLabel);PYLITH_CHECK_ERROR(err);
     if (!hasLabel) {
         std::ostringstream msg;
-        msg << "Could not find label '" << labelName << "' for setting patch for initial condition '"
+        msg << "Could not find label '" << _labelName << "' for setting patch for initial condition '"
             << PyreComponent::getIdentifier() << "'.";
         throw std::runtime_error(msg.str());
     } // if
 
     PetscDMLabel dmLabel = NULL;
-    err = DMGetLabel(solution.getDM(), labelName, &dmLabel);PYLITH_CHECK_ERROR(err);
+    err = DMGetLabel(solution.getDM(), _labelName.c_str(), &dmLabel);PYLITH_CHECK_ERROR(err);
     PetscBool hasValue = PETSC_FALSE;
-    err = DMLabelHasValue(dmLabel, _patchId, &hasValue);PYLITH_CHECK_ERROR(err);
+    err = DMLabelHasValue(dmLabel, _labelValue, &hasValue);PYLITH_CHECK_ERROR(err);
     if (!hasValue) {
         std::ostringstream msg;
-        msg << "Label '" << labelName << "' missing value '" << _patchId << "' for initial condition '"
+        msg << "Label '" << _labelName << "' missing value '" << _labelValue << "' for initial condition '"
             << PyreComponent::getIdentifier() << "'.";
         throw std::runtime_error(msg.str());
     } // if
@@ -130,7 +147,7 @@ pylith::problems::InitialConditionPatch::verifyConfiguration(const pylith::topol
 } // verifyConfiguration
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Set solver type.
 void
 pylith::problems::InitialConditionPatch::setValues(pylith::topology::Field* solution,
@@ -151,8 +168,7 @@ pylith::problems::InitialConditionPatch::setValues(pylith::topology::Field* solu
     } // for
 
     fieldQuery.openDB(_db, normalizer.getLengthScale());
-    const char* const labelName = pylith::topology::Mesh::getCellsLabelName();
-    fieldQuery.queryDBLabel(labelName, _patchId);
+    fieldQuery.queryDBLabel(_labelName.c_str(), _labelValue);
     fieldQuery.closeDB(_db);
 
     pythia::journal::debug_t debug(PyreComponent::getName());

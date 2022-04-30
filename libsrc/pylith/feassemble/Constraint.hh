@@ -52,6 +52,42 @@ public:
     virtual
     void deallocate(void);
 
+    /** Set name of constrained solution subfield.
+     *
+     * @param[in] value Name of solution subfield.
+     */
+    void setSubfieldName(const char* value);
+
+    /** Get name of constrained solution subfield.
+     *
+     * @preturn Name of solution subfield.
+     */
+    const char* getSubfieldName(void) const;
+
+    /** Set name of label marking boundary associated with constraint.
+     *
+     * @param[in] value Name of label for surface (from mesh generator).
+     */
+    void setLabelName(const char* value);
+
+    /** Get name of label marking boundary associated with constraint.
+     *
+     * @returns Name of label for surface (from mesh generator).
+     */
+    const char* getLabelName(void) const;
+
+    /** Set value of label marking boundary associated with constraint.
+     *
+     * @param[in] value Value of label for surface (from mesh generator).
+     */
+    void setLabelValue(const int value);
+
+    /** Get value of label marking boundary associated with constraint.
+     *
+     * @returns Value of label for surface (from mesh generator).
+     */
+    int getLabelValue(void) const;
+
     /** Set indices of constrained degrees of freedom at each location.
      *
      * Example: [0, 1] to apply forces to x and y degrees of freedom in
@@ -68,30 +104,6 @@ public:
      * @returns Array of indices for constrained degrees of freedom.
      */
     const pylith::int_array& getConstrainedDOF(void) const;
-
-    /** Set label marking constrained degrees of freedom.
-     *
-     * @param[in] value Label of constrained degrees of freedom (from mesh generator).
-     */
-    void setMarkerLabel(const char* value);
-
-    /** Get label marking constrained degrees of freedom.
-     *
-     * @returns Label of constrained degrees of freedom (from mesh generator).
-     */
-    const char* getMarkerLabel(void) const;
-
-    /** Set name of constrained solution subfield.
-     *
-     * @param[in] value Name of solution subfield.
-     */
-    void setSubfieldName(const char* value);
-
-    /** Get name of constrained solution subfield.
-     *
-     * @preturn Name of solution subfield.
-     */
-    const char* getSubfieldName(void) const;
 
     /** Get mesh associated with constrained boundary.
      *
@@ -136,9 +148,11 @@ public:
     // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
 
-    int_array _constrainedDOF; ///< List of constrained degrees of freedom at each location.
-    std::string _constraintLabel; ///< Label marking constrained degrees of freedom.
     std::string _subfieldName; ///< Name of solution subfield that is constrained.
+    std::string _labelName; ///< Name of label associated with integration domain.
+    int _labelValue; ///< Value of label associated with integration domain.
+
+    int_array _constrainedDOF; ///< List of constrained degrees of freedom at each location.
     pylith::topology::Mesh* _boundaryMesh; ///< Boundary mesh.
     PylithReal _tSolution; ///< Time used for current solution.
 

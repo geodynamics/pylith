@@ -12,15 +12,6 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-# @file pylith/bc/BoundaryCondition.py
-#
-# @brief Python abstract base class for managing a boundary condition.
-#
-# This implementation of a boundary condition applies to a single
-# boundary of an domain.
-#
-# Factory: boundary_condition
 
 from pylith.problems.Physics import Physics
 from .bc import BoundaryCondition as ModuleBoundaryCondition
@@ -34,8 +25,7 @@ def validateLabel(value):
     return value
 
 
-class BoundaryCondition(Physics,
-                        ModuleBoundaryCondition):
+class BoundaryCondition(Physics, ModuleBoundaryCondition):
     """
     Abstract base class for boundary conditions.
     """
@@ -45,8 +35,11 @@ class BoundaryCondition(Physics,
     field = pythia.pyre.inventory.str("field", default="displacement")
     field.meta['tip'] = "Solution subfield associated with boundary condition."
 
-    label = pythia.pyre.inventory.str("label", default="", validator=validateLabel)
-    label.meta['tip'] = "Label identifying boundary."
+    labelName = pythia.pyre.inventory.str("label", default="", validator=validateLabel)
+    labelName.meta['tip'] = "Name of label identifying boundary."
+
+    labelValue = pythia.pyre.inventory.int("label_value", default=1)
+    labelValue.meta['tip'] = "Value of label identifying boundary (tag of physical group in Gmsh files)."
 
     def __init__(self, name="boundarycondition"):
         """Constructor.
@@ -59,8 +52,9 @@ class BoundaryCondition(Physics,
         """
         Physics.preinitialize(self, problem)
 
-        ModuleBoundaryCondition.setMarkerLabel(self, self.label)
         ModuleBoundaryCondition.setSubfieldName(self, self.field)
+        ModuleBoundaryCondition.setLabelName(self, self.labelName)
+        ModuleBoundaryCondition.setLabelValue(self, self.labelValue)
         return
 
     def _configure(self):

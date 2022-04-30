@@ -62,7 +62,8 @@ pylith::topology::TestSubmesh::testCreateLowerDimMesh(void) {
     CPPUNIT_ASSERT(_data);
 
     _buildMesh();
-    delete _testMesh;_testMesh = MeshOps::createLowerDimMesh(*_domainMesh, _data->groupLabel);CPPUNIT_ASSERT(_testMesh);
+    const int labelValue = 1;
+    delete _testMesh;_testMesh = MeshOps::createLowerDimMesh(*_domainMesh, _data->groupLabel, labelValue);CPPUNIT_ASSERT(_testMesh);
 
     CPPUNIT_ASSERT_EQUAL(_data->cellDim-1, _testMesh->getDimension());
 
@@ -93,7 +94,8 @@ pylith::topology::TestSubmesh::testCreateLowerDimMesh(void) {
         CPPUNIT_ASSERT_EQUAL(_data->submeshCells[iC], c);
     } // for
 
-    CPPUNIT_ASSERT_THROW(MeshOps::createLowerDimMesh(*_domainMesh, "zzyyxx"), std::runtime_error);
+    CPPUNIT_ASSERT_THROW(MeshOps::createLowerDimMesh(*_domainMesh, "zzyyxx", labelValue), std::runtime_error);
+    CPPUNIT_ASSERT_THROW(MeshOps::createLowerDimMesh(*_domainMesh, _data->groupLabel, labelValue+99), std::runtime_error);
 
     PYLITH_METHOD_END;
 } // testCreateLowerDimMesh
@@ -155,7 +157,8 @@ pylith::topology::TestSubmesh::testAccessors(void) {
     CPPUNIT_ASSERT(_data);
 
     _buildMesh();
-    delete _testMesh;_testMesh = MeshOps::createLowerDimMesh(*_domainMesh, _data->groupLabel);CPPUNIT_ASSERT(_testMesh);
+    const int labelValue = 1;
+    delete _testMesh;_testMesh = MeshOps::createLowerDimMesh(*_domainMesh, _data->groupLabel, labelValue);CPPUNIT_ASSERT(_testMesh);
     CPPUNIT_ASSERT(_testMesh->getCoordSys());
 
     CPPUNIT_ASSERT_EQUAL(size_t(_data->cellDim), _testMesh->getCoordSys()->getSpaceDim());
@@ -179,7 +182,8 @@ pylith::topology::TestSubmesh::testSizes(void) {
     CPPUNIT_ASSERT_EQUAL(0, submesh.getDimension());
 
     _buildMesh();
-    delete _testMesh;_testMesh = MeshOps::createLowerDimMesh(*_domainMesh, _data->groupLabel);CPPUNIT_ASSERT(_testMesh);
+    const int labelValue = 1;
+    delete _testMesh;_testMesh = MeshOps::createLowerDimMesh(*_domainMesh, _data->groupLabel, labelValue);CPPUNIT_ASSERT(_testMesh);
     CPPUNIT_ASSERT(_testMesh);
 
     CPPUNIT_ASSERT_EQUAL(_data->cellDim-1, _testMesh->getDimension());

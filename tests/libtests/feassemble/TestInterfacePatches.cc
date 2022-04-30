@@ -64,7 +64,7 @@ pylith::feassemble::TestInterfacePatches::testAccessors(void) {
 
     InterfacePatches patches;
 
-    const std::string& defaultName = pylith::topology::Mesh::getCellsLabelName();
+    const std::string& defaultName = pylith::topology::Mesh::cells_label_name;
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in default label name.", defaultName, patches._labelName);
 
     const std::string& name = "fault patches";
@@ -94,7 +94,7 @@ pylith::feassemble::TestInterfacePatches::testCreateMaterialPairs(void) {
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in number of integration patches",
                                  numPatches, patches->_keys.size());
 
-    const std::string& cellsLabelName = pylith::topology::Mesh::getCellsLabelName();
+    const std::string& cellsLabelName = pylith::topology::Mesh::cells_label_name;
     CPPUNIT_ASSERT(_data->patchKeys);
     CPPUNIT_ASSERT(_data->patchNumCells);
     CPPUNIT_ASSERT(_data->patchCells);
@@ -167,10 +167,13 @@ pylith::feassemble::TestInterfacePatches::_initialize() {
 
     CPPUNIT_ASSERT(_data->faultLabel);
     _fault = new pylith::faults::FaultCohesiveStub();CPPUNIT_ASSERT(_fault);
-    _fault->setInterfaceId(101);
-    _fault->setSurfaceMarkerLabel(_data->faultLabel);
+    _fault->setCohesiveLabelName(pylith::topology::Mesh::cells_label_name);
+    _fault->setCohesiveLabelValue(101);
+    _fault->setSurfaceLabelName(_data->faultLabel);
+    _fault->setSurfaceLabelValue(1);
     if (_data->edgeLabel) {
-        _fault->setBuriedEdgesMarkerLabel(_data->edgeLabel);
+        _fault->setBuriedEdgesLabelName(_data->edgeLabel);
+        _fault->setBuriedEdgesLabelValue(1);
     } // if
     _fault->adjustTopology(_mesh);
 

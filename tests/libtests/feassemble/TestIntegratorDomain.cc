@@ -88,7 +88,7 @@ pylith::feassemble::TestIntegratorDomain::testAccessors(void) {
 
     CPPUNIT_ASSERT(_data);
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Test of default label name failed.",
-                                 std::string("material-id"), std::string(_integrator->getLabelName()));
+                                 std::string(pylith::topology::Mesh::cells_label_name), std::string(_integrator->getLabelName()));
     const std::string& labelName = "material-label";
     _integrator->setLabelName(labelName.c_str());
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Test of custom label name failed.",

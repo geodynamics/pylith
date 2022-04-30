@@ -76,18 +76,6 @@ public:
     virtual
     void deallocate(void);
 
-    /** Set label marking boundary associated with boundary condition surface.
-     *
-     * @param[in] value Label of surface (from mesh generator).
-     */
-    void setMarkerLabel(const char* value);
-
-    /** Get label marking boundary associated with boundary condition surface.
-     *
-     * @returns Label of surface (from mesh generator).
-     */
-    const char* getMarkerLabel(void) const;
-
     /** Set name of solution subfield associated with boundary condition.
      *
      * @param[in] value Name of solution subfield.

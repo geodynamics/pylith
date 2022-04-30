@@ -1,6 +1,6 @@
 // -*- C++ -*-
 //
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 //
 // Brad T. Aagaard, U.S. Geological Survey
 // Charles A. Williams, GNS Science
@@ -13,8 +13,7 @@
 //
 // See LICENSE.md for license information.
 //
-// ---------------------------------------------------------------------------------------------------------------------
-//
+// ------------------------------------------------------------------------------------------------
 
 #include <portinfo>
 
@@ -26,22 +25,23 @@
 #include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::materials::Material::Material(void) :
     _gravityField(NULL),
-    _materialId(0),
-    _descriptiveLabel("") {}
+    _description(""),
+    _labelName("material-id"),
+    _labelValue(1) {}
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Destructor.
 pylith::materials::Material::~Material(void) {
     deallocate();
 } // destructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
 pylith::materials::Material::deallocate(void) {
@@ -55,43 +55,63 @@ pylith::materials::Material::deallocate(void) {
 } // deallocate
 
 
-// ---------------------------------------------------------------------------------------------------------------------
-// Set value of label material-id used to identify material cells.
-void
-pylith::materials::Material::setMaterialId(const int value) {
-    PYLITH_COMPONENT_DEBUG("setMaterialId(value="<<value<<")");
-
-    _materialId = value;
-} // setMaterialId
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Get value of label material-id used to identify material cells.
-int
-pylith::materials::Material::getMaterialId(void) const {
-    return _materialId;
-} // getMaterialId
-
-
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Set descriptive label of material.
 void
-pylith::materials::Material::setDescriptiveLabel(const char* value) {
-    PYLITH_COMPONENT_DEBUG("setDescriptiveLabel(value="<<value<<")");
+pylith::materials::Material::setDescription(const char* value) {
+    PYLITH_COMPONENT_DEBUG("setDescription(value="<<value<<")");
 
-    _descriptiveLabel = value;
-} // setDescriptiveLabel
+    _description = value;
+} // setDescription
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get label of material.
 const char*
-pylith::materials::Material::getDescriptiveLabel(void) const {
-    return _descriptiveLabel.c_str();
-} // getDescriptiveLabel
+pylith::materials::Material::getDescription(void) const {
+    return _description.c_str();
+} // getDescription
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
+// Set name of label marking material.
+void
+pylith::materials::Material::setLabelName(const char* value) {
+    PYLITH_COMPONENT_DEBUG("setLabelName(value="<<value<<")");
+
+    if (strlen(value) == 0) {
+        throw std::runtime_error("Empty string given for material label.");
+    } // if
+
+    _labelName = value;
+} // setLabelName
+
+
+// ------------------------------------------------------------------------------------------------
+// Get name of label marking material.
+const char*
+pylith::materials::Material::getLabelName(void) const {
+    return _labelName.c_str();
+} // getLabelName
+
+
+// ------------------------------------------------------------------------------------------------
+// Set value of label marking material.
+void
+pylith::materials::Material::setLabelValue(const int value) {
+    _labelValue = value;
+} // setLabelValue
+
+
+// ------------------------------------------------------------------------------------------------
+// Get value of label marking material.
+int
+pylith::materials::Material::getLabelValue(void) const {
+    return _labelValue;
+} // getLabelValue
+
+
+// ------------------------------------------------------------------------------------------------
 // Set gravity field.
 void
 pylith::materials::Material::setGravityField(spatialdata::spatialdb::GravityField* const g) {
@@ -99,7 +119,7 @@ pylith::materials::Material::setGravityField(spatialdata::spatialdb::GravityFiel
 } // setGravityField
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Create constraint and set kernels.
 std::vector<pylith::feassemble::Constraint*>
 pylith::materials::Material::createConstraints(const pylith::topology::Field& solution) {
@@ -109,5 +129,6 @@ pylith::materials::Material::createConstraints(const pylith::topology::Field& so
 
     PYLITH_METHOD_RETURN(constraintArray);
 } // createConstraints
+
 
 // End of file

@@ -235,7 +235,7 @@ pylith::meshio::MeshIO::_getCells(int_array* cells,
 // ----------------------------------------------------------------------
 // Tag cells in mesh with material identifiers.
 void
-pylith::meshio::MeshIO::_setMaterials(const int_array& materialIds) { // _setMaterials
+pylith::meshio::MeshIO::_setMaterials(const int_array& materialIds) {
     PYLITH_METHOD_BEGIN;
 
     assert(_mesh);
@@ -253,7 +253,7 @@ pylith::meshio::MeshIO::_setMaterials(const int_array& materialIds) { // _setMat
             throw std::runtime_error(msg.str());
         } // if
         PetscErrorCode err = 0;
-        const char* const labelName = pylith::topology::Mesh::getCellsLabelName();
+        const char* const labelName = pylith::topology::Mesh::cells_label_name;
         for (PetscInt c = cStart; c < cEnd; ++c) {
             err = DMSetLabelValue(dmMesh, labelName, c, materialIds[c-cStart]);PYLITH_CHECK_ERROR(err);
         } // for
@@ -280,7 +280,7 @@ pylith::meshio::MeshIO::_getMaterials(int_array* materialIds) const {
     materialIds->resize(cellsStratum.size());
     PetscErrorCode err = 0;
     PetscInt matId = 0;
-    const char* const labelName = pylith::topology::Mesh::getCellsLabelName();
+    const char* const labelName = pylith::topology::Mesh::cells_label_name;
     for (PetscInt c = cStart, index = 0; c < cEnd; ++c) {
         err = DMGetLabelValue(dmMesh, labelName, c, &matId);PYLITH_CHECK_ERROR(err);
         (*materialIds)[index++] = matId;
@@ -379,7 +379,7 @@ pylith::meshio::MeshIO::_getGroupNames(string_vector* names) const { // _getGrou
     const PetscInt numGroups = numLabels - 3; // Remove depth, celltype, and material labels.
     names->resize(numGroups);
 
-    const std::string& materialLabelName = pylith::topology::Mesh::getCellsLabelName();
+    const std::string& materialLabelName = pylith::topology::Mesh::cells_label_name;
     for (int iGroup = 0, iLabel = 0; iLabel < numLabels; ++iLabel) {
         const char* labelName = NULL;
         err = DMGetLabelName(dmMesh, iLabel, &labelName);PYLITH_CHECK_ERROR(err);

@@ -173,9 +173,10 @@ pylith::bc::DirichletUserFn::createConstraints(const pylith::topology::Field& so
 
     std::vector<pylith::feassemble::Constraint*> constraintArray;
     pylith::feassemble::ConstraintUserFn* constraint = new pylith::feassemble::ConstraintUserFn(this);assert(constraint);
-    constraint->setMarkerLabel(getMarkerLabel());
-    constraint->setConstrainedDOF(&_constrainedDOF[0], _constrainedDOF.size());
     constraint->setSubfieldName(_subfieldName.c_str());
+    constraint->setLabelName(getLabelName());
+    constraint->setLabelValue(getLabelValue());
+    constraint->setConstrainedDOF(&_constrainedDOF[0], _constrainedDOF.size());
     constraint->setUserFn(_fn);
     constraint->setUserFnDot(_fnDot);
 

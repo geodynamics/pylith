@@ -33,6 +33,9 @@
 #include <cassert> // USES assert()
 
 // ------------------------------------------------------------------------------------------------
+const char* pylith::topology::Mesh::cells_label_name = "material-id";
+
+// ------------------------------------------------------------------------------------------------
 // Default constructor
 pylith::topology::Mesh::Mesh(void) :
     _coordSys(NULL),
@@ -216,14 +219,6 @@ pylith::topology::Mesh::view(const char* viewOption) const {
 
     PYLITH_METHOD_END;
 } // view
-
-
-// ------------------------------------------------------------------------------------------------
-// Get name of label for all mesh cells, including hybrid cells.
-const char* const
-pylith::topology::Mesh::getCellsLabelName(void) {
-    return "material-id";
-} // getCellsLabelName
 
 
 // End of file

@@ -40,6 +40,11 @@
 class pylith::topology::Mesh { // Mesh
     friend class TestMesh; // unit testing
 
+    // PUBLIC MEMBERS ///////////////////////////////////////////////////////
+public:
+
+    static const char* cells_label_name; ///< Name of label covering all cells.
+
     // PUBLIC METHODS ///////////////////////////////////////////////////////
 public:
 
@@ -122,13 +127,6 @@ public:
      *   VTK vtk:refined.vtk:ascii_vtk
      */
     void view(const char* viewOption="::ascii_info_detail") const;
-
-    /** Get name of label for all mesh cells, including hybrid cells.
-     *
-     * @returns Name of label.
-     */
-    static
-    const char* const getCellsLabelName(void);
 
     // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private:

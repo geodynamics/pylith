@@ -17,11 +17,11 @@ from pylith.problems.Physics import Physics
 from .materials import Material as ModuleMaterial
 
 
-def validateLabel(value):
-    """Validate descriptive label.
+def validateDescription(value):
+    """Validate description.
     """
     if 0 == len(value):
-        raise ValueError("Descriptive label for material not specified.")
+        raise ValueError("Description for material not specified.")
     return value
 
 
@@ -32,11 +32,14 @@ class Material(Physics, ModuleMaterial):
 
     import pythia.pyre.inventory
 
-    materialId = pythia.pyre.inventory.int("id", default=0)
-    materialId.meta['tip'] = "Material identifier (from mesh generator)."
+    description = pythia.pyre.inventory.str("description", default="", validator=validateDescription)
+    description.meta['tip'] = "Descriptive label for material."
 
-    label = pythia.pyre.inventory.str("label", default="", validator=validateLabel)
-    label.meta['tip'] = "Descriptive label for material."
+    labelName = pythia.pyre.inventory.str("label", default="material-id", validator=pythia.pyre.inventory.choice(["material-id"]))
+    labelName.meta['tip'] = "Name of label for material. Currently only 'material-id' is allowed."
+
+    labelValue = pythia.pyre.inventory.int("label_value", default=1)
+    labelValue.meta["tip"] = "Value of label for material."
 
     def __init__(self, name="material"):
         """Constructor.
@@ -47,8 +50,9 @@ class Material(Physics, ModuleMaterial):
         """Setup material.
         """
         Physics.preinitialize(self, problem)
-        ModuleMaterial.setMaterialId(self, self.materialId)
-        ModuleMaterial.setDescriptiveLabel(self, self.label)
+        ModuleMaterial.setDescription(self, self.description)
+        ModuleMaterial.setLabelName(self, self.labelName)
+        ModuleMaterial.setLabelValue(self, self.labelValue)
 
 
 # End of file

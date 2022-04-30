@@ -32,7 +32,7 @@ pylith::topology::ReverseCuthillMcKee::reorder(topology::Mesh* mesh) {
 
     PetscDMLabel dmLabel = NULL;
     PetscDM dmOrig = mesh->getDM();
-    const char* const labelName = pylith::topology::Mesh::getCellsLabelName();
+    const char* const labelName = pylith::topology::Mesh::cells_label_name;
     err = DMGetLabel(dmOrig, labelName, &dmLabel);PYLITH_CHECK_ERROR(err);
 
     PetscIS permutation = NULL;
@@ -66,7 +66,7 @@ pylith::topology::ReverseCuthillMcKee::reorder(topology::Mesh* mesh) {
                 err = ISDestroy(&valuesIS);PYLITH_CHECK_ERROR(err);
 
                 std::ostringstream msg;
-                msg << "Cells for label material-id " << values[iValue] << " are not consecutive (" << points[iPoint] << " and " << points[iPoint-1] << ").";
+                msg << "Cells for label '" << labelName << "' with value " << values[iValue] << " are not consecutive (" << points[iPoint] << " and " << points[iPoint-1] << ").";
                 throw std::runtime_error(msg.str());
             } // if
         } // for

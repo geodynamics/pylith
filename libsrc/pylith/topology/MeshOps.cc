@@ -38,33 +38,33 @@
 // Create subdomain mesh using label.
 pylith::topology::Mesh*
 pylith::topology::MeshOps::createSubdomainMesh(const pylith::topology::Mesh& mesh,
-                                               const char* label,
+                                               const char* labelName,
                                                const int labelValue,
                                                const char* descriptiveLabel) {
     PYLITH_METHOD_BEGIN;
 
-    assert(label);
+    assert(labelName);
 
     PetscDM dmDomain = mesh.getDM();assert(dmDomain);
     PetscErrorCode err = 0;
 
     PetscBool hasLabel = PETSC_FALSE;
-    err = DMHasLabel(dmDomain, label, &hasLabel);PYLITH_CHECK_ERROR(err);
+    err = DMHasLabel(dmDomain, labelName, &hasLabel);PYLITH_CHECK_ERROR(err);
     if (!hasLabel) {
         std::ostringstream msg;
-        msg << "Could not find group of points '" << label << "' in PETSc DM mesh.";
+        msg << "Could not find group of points '" << labelName << "' in PETSc DM mesh.";
         throw std::runtime_error(msg.str());
     } // if
 
     /* TODO: Add creation of pointSF for submesh */
     PetscDMLabel dmLabel = NULL;
-    err = DMGetLabel(dmDomain, label, &dmLabel);PYLITH_CHECK_ERROR(err);
+    err = DMGetLabel(dmDomain, labelName, &dmLabel);PYLITH_CHECK_ERROR(err);
 
     PetscBool hasLabelValue = PETSC_FALSE;
     err = DMLabelHasValue(dmLabel, labelValue, &hasLabelValue);PYLITH_CHECK_ERROR(err);
     if (!hasLabelValue) {
         std::ostringstream msg;
-        msg << "Could not find value " << labelValue << " in label '" << label << "' in PETSc DM mesh.";
+        msg << "Could not find value " << labelValue << " in label '" << labelName << "' in PETSc DM mesh.";
         throw std::runtime_error(msg.str());
     } // if
 
@@ -79,7 +79,7 @@ pylith::topology::MeshOps::createSubdomainMesh(const pylith::topology::Mesh& mes
     if (maxConeSize <= 0) {
         err = DMDestroy(&dmSubdomain);PYLITH_CHECK_ERROR(err);
         std::ostringstream msg;
-        msg << "Error while creating mesh of subdomain. Subdomain mesh '" << label << "' does not contain any cells.\n";
+        msg << "Error while creating mesh of subdomain. Subdomain mesh '" << labelName << "' does not contain any cells.\n";
         throw std::runtime_error(msg.str());
     } // if
 
@@ -103,19 +103,20 @@ pylith::topology::MeshOps::createSubdomainMesh(const pylith::topology::Mesh& mes
 // Create lower dimension mesh using label.
 pylith::topology::Mesh*
 pylith::topology::MeshOps::createLowerDimMesh(const pylith::topology::Mesh& mesh,
-                                              const char* label) {
+                                              const char* labelName,
+                                              const int labelValue) {
     PYLITH_METHOD_BEGIN;
 
-    assert(label);
+    assert(labelName);
 
     PetscDM dmDomain = mesh.getDM();assert(dmDomain);
     PetscErrorCode err = 0;
 
     PetscBool hasLabel = PETSC_FALSE;
-    err = DMHasLabel(dmDomain, label, &hasLabel);PYLITH_CHECK_ERROR(err);
+    err = DMHasLabel(dmDomain, labelName, &hasLabel);PYLITH_CHECK_ERROR(err);
     if (!hasLabel) {
         std::ostringstream msg;
-        msg << "Could not find group of points '" << label << "' in PETSc DM mesh.";
+        msg << "Could not find group of points '" << labelName << "' in PETSc DM mesh.";
         throw std::runtime_error(msg.str());
     } // if
 
@@ -127,16 +128,17 @@ pylith::topology::MeshOps::createLowerDimMesh(const pylith::topology::Mesh& mesh
     /* TODO: Add creation of pointSF for submesh */
     PetscDM dmSubmesh = NULL;
     PetscDMLabel dmLabel = NULL;
-    err = DMGetLabel(dmDomain, label, &dmLabel);PYLITH_CHECK_ERROR(err);
+    err = DMGetLabel(dmDomain, labelName, &dmLabel);PYLITH_CHECK_ERROR(err);
     PetscBool hasLabelValue = PETSC_FALSE;
-    err = DMLabelHasValue(dmLabel, 1, &hasLabelValue);PYLITH_CHECK_ERROR(err);
+    err = DMLabelHasValue(dmLabel, labelValue, &hasLabelValue);PYLITH_CHECK_ERROR(err);
     if (!hasLabelValue) {
         std::ostringstream msg;
-        msg << "Could not find value 1 in label for group of points '" << label << "' in PETSc DM mesh.";
-        throw std::logic_error(msg.str());
+        msg << "Could not find value '" << labelValue << "' in label for group of points '"
+            << labelName << "' in PETSc DM mesh.";
+        throw std::runtime_error(msg.str());
     } // if
 
-    err = DMPlexCreateSubmesh(dmDomain, dmLabel, 1, PETSC_FALSE, &dmSubmesh);PYLITH_CHECK_ERROR(err);
+    err = DMPlexCreateSubmesh(dmDomain, dmLabel, labelValue, PETSC_FALSE, &dmSubmesh);PYLITH_CHECK_ERROR(err);
 
     PetscInt maxConeSizeLocal = 0, maxConeSize = 0;
     err = DMPlexGetMaxSizes(dmSubmesh, &maxConeSizeLocal, NULL);PYLITH_CHECK_ERROR(err);
@@ -146,12 +148,12 @@ pylith::topology::MeshOps::createLowerDimMesh(const pylith::topology::Mesh& mesh
     if (maxConeSize <= 0) {
         err = DMDestroy(&dmSubmesh);PYLITH_CHECK_ERROR(err);
         std::ostringstream msg;
-        msg << "Error while creating lower dimension mesh. Submesh '" << label << "' does not contain any cells.\n";
+        msg << "Error while creating lower dimension mesh. Submesh '" << labelName << "' does not contain any cells.\n";
         throw std::runtime_error(msg.str());
     } // if
 
     // Set name
-    std::string meshLabel = "subdomain_" + std::string(label);
+    std::string meshLabel = "subdomain_" + std::string(labelName);
     err = PetscObjectSetName((PetscObject) dmSubmesh, meshLabel.c_str());PYLITH_CHECK_ERROR(err);
 
     // Set lengthscale
@@ -381,17 +383,17 @@ pylith::topology::MeshOps::getNumCorners(const pylith::topology::Mesh& mesh) {
 
 // ---------------------------------------------------------------------------------------------------------------------
 void
-pylith::topology::MeshOps::checkMaterialIds(const pylith::topology::Mesh& mesh,
-                                            pylith::int_array& materialIds) {
+pylith::topology::MeshOps::checkMaterialLabels(const pylith::topology::Mesh& mesh,
+                                               pylith::int_array& labelValues) {
     PYLITH_METHOD_BEGIN;
 
     PetscErrorCode err;
 
     // Create map with indices for each material
-    const size_t numIds = materialIds.size();
+    const size_t numIds = labelValues.size();
     std::map<int, int> materialIndex;
     for (size_t i = 0; i < numIds; ++i) {
-        materialIndex[materialIds[i]] = i;
+        materialIndex[labelValues[i]] = i;
     } // for
 
     int_array matCellCounts(numIds);
@@ -403,11 +405,11 @@ pylith::topology::MeshOps::checkMaterialIds(const pylith::topology::Mesh& mesh,
     const PetscInt cEnd = cellsStratum.end();
 
     PetscDMLabel materialsLabel = NULL;
-    const char* const labelName = pylith::topology::Mesh::getCellsLabelName();
+    const char* const labelName = pylith::topology::Mesh::cells_label_name;
     err = DMGetLabel(dmMesh, labelName, &materialsLabel);PYLITH_CHECK_ERROR(err);assert(materialsLabel);
 
-    int *matBegin = &materialIds[0];
-    int *matEnd = &materialIds[0] + materialIds.size();
+    int *matBegin = &labelValues[0];
+    int *matEnd = &labelValues[0] + labelValues.size();
     std::sort(matBegin, matEnd);
 
     for (PetscInt c = cStart; c < cEnd; ++c) {
@@ -438,7 +440,7 @@ pylith::topology::MeshOps::checkMaterialIds(const pylith::topology::Mesh& mesh,
     err = MPI_Allreduce(&matCellCounts[0], &matCellCountsAll[0],
                         matCellCounts.size(), MPI_INT, MPI_SUM, mesh.getComm());PYLITH_CHECK_ERROR(err);
     for (size_t i = 0; i < numIds; ++i) {
-        const int matId = materialIds[i];
+        const int matId = labelValues[i];
         const size_t matIndex = materialIndex[matId];
         assert(0 <= matIndex && matIndex < numIds);
         if (matCellCountsAll[matIndex] <= 0) {

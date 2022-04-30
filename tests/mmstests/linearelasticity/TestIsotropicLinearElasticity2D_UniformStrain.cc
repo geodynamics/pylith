@@ -183,14 +183,15 @@ protected:
         _material->useBodyForce(false);
         _rheology->useReferenceState(false);
 
-        _material->setDescriptiveLabel("Isotropic Linear Elasticity Plane Strain");
-        _material->setMaterialId(24);
+        _material->setDescription("Isotropic Linear Elasticity Plane Strain");
+        _material->setLabelValue(24);
 
         static const PylithInt constrainedDOF[2] = {0, 1};
         static const PylithInt numConstrained = 2;
-        _bc->setConstrainedDOF(constrainedDOF, numConstrained);
-        _bc->setMarkerLabel("boundary");
         _bc->setSubfieldName("displacement");
+        _bc->setLabelName("boundary");
+        _bc->setLabelValue(1);
+        _bc->setConstrainedDOF(constrainedDOF, numConstrained);
         _bc->setUserFn(solnkernel_disp);
 
     } // setUp

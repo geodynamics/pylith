@@ -84,11 +84,10 @@ pylith::feassemble::ConstraintSpatialDB::initialize(const pylith::topology::Fiel
     PetscErrorCode err = DMGetDS(dmSoln, &prob);PYLITH_CHECK_ERROR(err);assert(prob);
 
     void* context = NULL;
-    const int labelId = 1;
     const PylithInt numConstrained = _constrainedDOF.size();
     const PetscInt i_field = solution.getSubfieldInfo(_subfieldName.c_str()).index;
-    err = DMGetLabel(dmSoln, _constraintLabel.c_str(), &label);PYLITH_CHECK_ERROR(err);
-    err = PetscDSAddBoundary(prob, DM_BC_ESSENTIAL_BD_FIELD, _constraintLabel.c_str(), label, 1, &labelId, i_field,
+    err = DMGetLabel(dmSoln, _labelName.c_str(), &label);PYLITH_CHECK_ERROR(err);
+    err = PetscDSAddBoundary(prob, DM_BC_ESSENTIAL_BD_FIELD, _labelName.c_str(), label, 1, &_labelValue, i_field,
                              numConstrained, &_constrainedDOF[0], (void (*)()) _kernelConstraint, NULL, context, NULL);PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
@@ -143,7 +142,7 @@ pylith::feassemble::ConstraintSpatialDB::setSolution(pylith::problems::Integrati
     err = DMSetAuxiliaryVec(dmSoln, dmLabel, labelValue, part, _auxiliaryField->getLocalVector());PYLITH_CHECK_ERROR(err);
 
     // Get label for constraint.
-    err = DMGetLabel(dmSoln, _constraintLabel.c_str(), &dmLabel);PYLITH_CHECK_ERROR(err);
+    err = DMGetLabel(dmSoln, _labelName.c_str(), &dmLabel);PYLITH_CHECK_ERROR(err);
 
     void* context = NULL;
     const int labelId = 1;

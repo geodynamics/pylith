@@ -38,7 +38,7 @@ public:
              * @param comm MPI communicator for mesh.
              */
             Mesh(const int dim,
-                 const MPI_Comm& comm=PETSC_COMM_WORLD);
+                 const MPI_Comm& comm = PETSC_COMM_WORLD);
 
             /// Default destructor
             ~Mesh(void);
@@ -109,13 +109,6 @@ public:
              *   VTK vtk:refined.vtk:ascii_vtk
              */
             void view(const char* viewOption="") const;
-
-            /** Get name of label for all mesh cells, including hybrid cells.
-             *
-             * @returns Name of label.
-             */
-            static
-            const char* const getCellsLabelName(void);
 
         }; // Mesh
 

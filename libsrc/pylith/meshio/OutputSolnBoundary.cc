@@ -29,23 +29,24 @@
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Constructor
 pylith::meshio::OutputSolnBoundary::OutputSolnBoundary(void) :
-    _label(""),
-    _boundaryMesh(NULL) {
+    _boundaryMesh(NULL),
+    _labelName(""),
+    _labelValue(1) {
     PyreComponent::setName("outputsolnboundary");
 } // constructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Destructor
 pylith::meshio::OutputSolnBoundary::~OutputSolnBoundary(void) {
     deallocate();
 } // destructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
 pylith::meshio::OutputSolnBoundary::deallocate(void) {
@@ -59,19 +60,31 @@ pylith::meshio::OutputSolnBoundary::deallocate(void) {
 } // deallocate
 
 
-// ---------------------------------------------------------------------------------------------------------------------
-// Set label identifier for subdomain.
+// ------------------------------------------------------------------------------------------------
+// Set name of label identifier for subdomain.
 void
-pylith::meshio::OutputSolnBoundary::setLabel(const char* value) {
+pylith::meshio::OutputSolnBoundary::setLabelName(const char* value) {
     PYLITH_METHOD_BEGIN;
 
-    _label = value;
+    _labelName = value;
 
     PYLITH_METHOD_END;
-} // setLabel
+} // setLabelName
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
+// Set value of label identifier for subdomain.
+void
+pylith::meshio::OutputSolnBoundary::setLabelValue(const int value) {
+    PYLITH_METHOD_BEGIN;
+
+    _labelValue = value;
+
+    PYLITH_METHOD_END;
+} // setLabelValue
+
+
+// ------------------------------------------------------------------------------------------------
 // Verify configuration is acceptable.
 void
 pylith::meshio::OutputSolnBoundary::verifyConfiguration(const pylith::topology::Field& solution) const {
@@ -82,10 +95,22 @@ pylith::meshio::OutputSolnBoundary::verifyConfiguration(const pylith::topology::
 
     PetscDM dmSoln = solution.getDM();assert(dmSoln);
     PetscBool hasLabel = PETSC_FALSE;
-    PetscErrorCode err = DMHasLabel(dmSoln, _label.c_str(), &hasLabel);PYLITH_CHECK_ERROR(err);
+    PetscErrorCode err = DMHasLabel(dmSoln, _labelName.c_str(), &hasLabel);PYLITH_CHECK_ERROR(err);
     if (!hasLabel) {
         std::ostringstream msg;
-        msg << "Mesh missing group of vertices '" << _label << " for output using solution boundary observer '"
+        msg << "Mesh missing group of points '" << _labelName << " for output using solution boundary observer '"
+            << PyreComponent::getIdentifier() << "'.";
+        throw std::runtime_error(msg.str());
+    } // if
+
+    PetscDMLabel dmLabel = NULL;
+    PetscInt index = -1;
+    err = DMGetLabel(dmSoln, _labelName.c_str(), &dmLabel);PYLITH_CHECK_ERROR(err);
+    err = DMLabelGetValueIndex(dmLabel, _labelValue, &index);PYLITH_CHECK_ERROR(err);
+    if (index < 0) {
+        std::ostringstream msg;
+        msg << "Finite-element mesh is missing value '" << _labelValue << "' for label '"
+            << _labelName << "' for identifying points on boundary for solution observer '"
             << PyreComponent::getIdentifier() << "'.";
         throw std::runtime_error(msg.str());
     } // if
@@ -94,7 +119,7 @@ pylith::meshio::OutputSolnBoundary::verifyConfiguration(const pylith::topology::
 } // verifyConfiguration
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Write data for step in solution.
 void
 pylith::meshio::OutputSolnBoundary::_writeSolnStep(const PylithReal t,
@@ -104,7 +129,7 @@ pylith::meshio::OutputSolnBoundary::_writeSolnStep(const PylithReal t,
     PYLITH_COMPONENT_DEBUG("_writeSolnStep(t="<<t<<", tindex="<<tindex<<", solution="<<solution.getLabel()<<")");
 
     if (!_boundaryMesh) {
-        _boundaryMesh = pylith::topology::MeshOps::createLowerDimMesh(solution.getMesh(), _label.c_str());
+        _boundaryMesh = pylith::topology::MeshOps::createLowerDimMesh(solution.getMesh(), _labelName.c_str(), _labelValue);
         assert(_boundaryMesh);
     } // if
 

@@ -76,10 +76,13 @@ pylith::faults::TestAdjustTopology::testAdjustTopology(void) {
         CPPUNIT_ASSERT(_data->faultSurfaceLabels);
         CPPUNIT_ASSERT(_data->faultEdgeLabels);
 
-        fault.setInterfaceId(_data->interfaceIds[i]);
-        fault.setSurfaceMarkerLabel(_data->faultSurfaceLabels[i]);
+        fault.setCohesiveLabelName(pylith::topology::Mesh::cells_label_name);
+        fault.setCohesiveLabelValue(_data->interfaceIds[i]);
+        fault.setSurfaceLabelName(_data->faultSurfaceLabels[i]);
+        fault.setSurfaceLabelValue(1);
         if (_data->faultEdgeLabels[i]) {
-            fault.setBuriedEdgesMarkerLabel(_data->faultEdgeLabels[i]);
+            fault.setBuriedEdgesLabelName(_data->faultEdgeLabels[i]);
+            fault.setBuriedEdgesLabelValue(1);
         } // if
         if (!_data->failureExpected) {
             fault.adjustTopology(_mesh);
@@ -127,7 +130,7 @@ pylith::faults::TestAdjustTopology::testAdjustTopology(void) {
     // check materials
     CPPUNIT_ASSERT(_data->materialIds);
     PetscDMLabel labelMaterials = NULL;
-    const char* const cellsLabelName = pylith::topology::Mesh::getCellsLabelName();
+    const char* const cellsLabelName = pylith::topology::Mesh::cells_label_name;
     err = DMGetLabel(dmMesh, cellsLabelName, &labelMaterials);PYLITH_CHECK_ERROR(err);
     CPPUNIT_ASSERT(labelMaterials);
     const PetscInt idDefault = -999;
@@ -157,7 +160,7 @@ pylith::faults::TestAdjustTopology::testAdjustTopology(void) {
         const char *labelName = NULL;
         std::set<std::string> ignoreLabels;
         ignoreLabels.insert("depth");
-        ignoreLabels.insert("material-id");
+        ignoreLabels.insert(pylith::topology::Mesh::cells_label_name);
         ignoreLabels.insert("vtk");
         ignoreLabels.insert("ghost");
         ignoreLabels.insert("dim");

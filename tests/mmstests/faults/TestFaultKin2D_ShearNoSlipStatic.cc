@@ -34,6 +34,7 @@
 #include "pylith/bc/DirichletUserFn.hh" // USES DirichletUserFn
 #include "pylith/bc/NeumannUserFn.hh" // USES NeumannUserFn
 
+#include "pylith/topology/Mesh.hh" // USES pylith::topology::Mesh::cells_label_name
 #include "pylith/topology/Field.hh" // USES pylith::topology::Field::Discretization
 #include "pylith/utils/journals.hh" // USES pythia::journal::debug_t
 
@@ -295,8 +296,8 @@ protected:
             pylith::materials::Elasticity* material = new pylith::materials::Elasticity();assert(material);
             material->setFormulation(pylith::problems::Physics::QUASISTATIC);
             material->useBodyForce(false);
-            material->setDescriptiveLabel("Isotropic Linear Elasticity Plane Strain");
-            material->setMaterialId(10);
+            material->setDescription("Isotropic Linear Elasticity Plane Strain");
+            material->setLabelValue(10);
             material->setBulkRheology(_data->rheology);
             _materials[0] = material;
         } // xneg
@@ -304,8 +305,8 @@ protected:
             pylith::materials::Elasticity* material = new pylith::materials::Elasticity();assert(material);
             material->setFormulation(pylith::problems::Physics::QUASISTATIC);
             material->useBodyForce(false);
-            material->setDescriptiveLabel("Isotropic Linear Elasticity Plane Strain");
-            material->setMaterialId(20);
+            material->setDescription("Isotropic Linear Elasticity Plane Strain");
+            material->setLabelValue(20);
             material->setBulkRheology(_data->rheology);
             _materials[1] = material;
         } // xpos
@@ -316,37 +317,41 @@ protected:
         _bcs.resize(4);
         { // boundary_xneg
             pylith::bc::DirichletUserFn* bc = new pylith::bc::DirichletUserFn();
-            bc->setConstrainedDOF(constrainedDOF, numConstrained);
-            bc->setMarkerLabel("boundary_xneg");
             bc->setSubfieldName("displacement");
+            bc->setLabelName("boundary_xneg");
+            bc->setLabelValue(1);
+            bc->setConstrainedDOF(constrainedDOF, numConstrained);
             bc->setUserFn(solnkernel_disp);
             _bcs[0] = bc;
         } // boundary_xneg
         { // boundary_xpos
             pylith::bc::DirichletUserFn* bc = new pylith::bc::DirichletUserFn();
-            bc->setConstrainedDOF(constrainedDOF, numConstrained);
-            bc->setMarkerLabel("boundary_xpos");
             bc->setSubfieldName("displacement");
+            bc->setLabelName("boundary_xpos");
+            bc->setLabelValue(1);
+            bc->setConstrainedDOF(constrainedDOF, numConstrained);
             bc->setUserFn(solnkernel_disp);
             _bcs[1] = bc;
         } // boundary_xpos
         { // boundary_yneg
             pylith::bc::NeumannUserFn* bc = new pylith::bc::NeumannUserFn();
-            bc->setMarkerLabel("boundary_yneg");
             bc->setSubfieldName("displacement");
+            bc->setLabelName("boundary_yneg");
+            bc->setLabelValue(1);
             bc->setUserFn(boundary_tractions);
             _bcs[2] = bc;
         } // boundary_yneg
         { // boundary_ypos
             pylith::bc::NeumannUserFn* bc = new pylith::bc::NeumannUserFn();
-            bc->setMarkerLabel("boundary_ypos");
             bc->setSubfieldName("displacement");
+            bc->setLabelName("boundary_ypos");
+            bc->setLabelValue(1);
             bc->setUserFn(boundary_tractions);
             _bcs[3] = bc;
         } // boundary_ypos
 
-        _fault->setInterfaceId(100);
-        _fault->setSurfaceMarkerLabel("fault");
+        _fault->setCohesiveLabelValue(100);
+        _fault->setSurfaceLabelName("fault");
 
     } // setUp
 
@@ -363,8 +368,8 @@ protected:
         PetscDS prob = NULL;
         err = DMGetDS(dm, &prob);CPPUNIT_ASSERT(!err);
         err = PetscDSSetExactSolution(prob, 0, solnkernel_disp, dm);CPPUNIT_ASSERT(!err);
-        err = DMGetLabel(dm, "material-id", &label);CPPUNIT_ASSERT(!err);
-        err = DMLabelGetStratumIS(label, _fault->getInterfaceId(), &is);CPPUNIT_ASSERT(!err);
+        err = DMGetLabel(dm, pylith::topology::Mesh::cells_label_name, &label);CPPUNIT_ASSERT(!err);
+        err = DMLabelGetStratumIS(label, _fault->getCohesiveLabelValue(), &is);CPPUNIT_ASSERT(!err);
         err = ISGetMinMax(is, &cohesiveCell, NULL);CPPUNIT_ASSERT(!err);
         err = ISDestroy(&is);CPPUNIT_ASSERT(!err);
         err = DMGetCellDS(dm, cohesiveCell, &prob);CPPUNIT_ASSERT(!err);

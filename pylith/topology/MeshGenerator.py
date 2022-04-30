@@ -47,7 +47,7 @@ class MeshGenerator(PetscComponent):
 
         # Need to nondimensionalize coordinates.
 
-        raise NotImplementedError("MeshGenerator.create() not implemented.")
+        raise NotImplementedError("MeshGenerator.create() not implemented.")    
 
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
@@ -66,11 +66,17 @@ class MeshGenerator(PetscComponent):
         comm = mpi_comm_world()
 
         if not interfaces is None:
+            cohesiveLabelValue = 100
+            for material in problem.materials.components():
+                labelValue = material.labelValue
+                cohesiveLabelValue = max(cohesiveLabelValue, labelValue+1)
             for interface in interfaces:
                 if 0 == comm.rank:
-                    self._info.log("Adjusting topology for fault '%s'." % interface.label)
+                    self._info.log("Adjusting topology for fault '%s'." % interface.labelName)
                 interface.preinitialize(problem)
+                interface.setCohesiveLabelValue(cohesiveLabelValue)
                 interface.adjustTopology(mesh)
+                cohesiveLabelValue += 1
 
         self._eventLogger.eventEnd(logEvent)
 

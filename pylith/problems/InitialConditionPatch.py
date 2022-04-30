@@ -33,13 +33,13 @@ class InitialConditionPatch(InitialCondition, ModuleInitialCondition):
             ic.mat2 = pylith.problems.InitialConditionPatch
 
             [pylithapp.problem.ic.mat1]
-            id = 1
+            label_value = 1
             db = spatialdata.spatialdb.SimpleGridDB
             db.description = Initial conditions over material 1
             db.filename = shearmat1_ic.spatialdb
 
             [pylithapp.problem.ic.mat2]
-            id = 2
+            label_value = 2
             db = spatialdata.spatialdb.SimpleGridDB
             db.description = Initial conditions over material 2
             db.filename = shearmat2_ic.spatialdb
@@ -49,8 +49,11 @@ class InitialConditionPatch(InitialCondition, ModuleInitialCondition):
     import pythia.pyre.inventory
     from spatialdata.spatialdb.SimpleDB import SimpleDB
 
-    matId = pythia.pyre.inventory.int("id", default=0)
-    matId.meta["tip"] = "Material id associated with patch."
+    labelName = pythia.pyre.inventory.str("label", default="material-id")
+    labelName.meta['tip'] = "Name of label for patch."
+
+    labelValue = pythia.pyre.inventory.int("label_value", default=1)
+    labelValue.meta["tip"] = "Value of label associated with initial condition patch, usually the material label value."
 
     db = pythia.pyre.inventory.facility("db", family="spatial_database", factory=SimpleDB)
     db.meta["tip"] = "Spatial database with values for initial condition."
@@ -64,7 +67,8 @@ class InitialConditionPatch(InitialCondition, ModuleInitialCondition):
         """Setup initial conditions.
         """
         InitialCondition.preinitialize(self, problem)
-        ModuleInitialCondition.setMaterialId(self, self.matId)
+        ModuleInitialCondition.setLabelName(self, self.labelName)
+        ModuleInitialCondition.setLabelValue(self, self.labelValue)
         ModuleInitialCondition.setDB(self, self.db)
 
     def _configure(self):
