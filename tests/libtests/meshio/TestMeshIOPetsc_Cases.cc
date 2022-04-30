@@ -372,7 +372,7 @@ public:
                 };
                 _data->materialIds = const_cast<PylithInt*>(materialIds);
 
-                _data->numGroups = 7;
+                _data->numGroups = 8;
                 static const PylithInt groupSizes[8] = {9, 9, 9, 9, 9, 9, 9, 3};
                 _data->groupSizes = const_cast<PylithInt*>(groupSizes);
                 static const PylithInt groups[66] = {
