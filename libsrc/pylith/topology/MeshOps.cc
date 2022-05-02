@@ -58,7 +58,7 @@ pylith::topology::MeshOps::createSubdomainMesh(const pylith::topology::Mesh& mes
 
     /* TODO: Add creation of pointSF for submesh */
     PetscDMLabel dmLabel = NULL;
-    err = DMGetLabel(dmDomain, labelName, &dmLabel);PYLITH_CHECK_ERROR(err);
+    err = DMGetLabel(dmDomain, labelName, &dmLabel);PYLITH_CHECK_ERROR(err);assert(dmLabel);
 
     PetscBool hasLabelValue = PETSC_FALSE;
     err = DMLabelHasValue(dmLabel, labelValue, &hasLabelValue);PYLITH_CHECK_ERROR(err);
@@ -128,7 +128,7 @@ pylith::topology::MeshOps::createLowerDimMesh(const pylith::topology::Mesh& mesh
     /* TODO: Add creation of pointSF for submesh */
     PetscDM dmSubmesh = NULL;
     PetscDMLabel dmLabel = NULL;
-    err = DMGetLabel(dmDomain, labelName, &dmLabel);PYLITH_CHECK_ERROR(err);
+    err = DMGetLabel(dmDomain, labelName, &dmLabel);PYLITH_CHECK_ERROR(err);assert(dmLabel);
     PetscBool hasLabelValue = PETSC_FALSE;
     err = DMLabelHasValue(dmLabel, labelValue, &hasLabelValue);PYLITH_CHECK_ERROR(err);
     if (!hasLabelValue) {
