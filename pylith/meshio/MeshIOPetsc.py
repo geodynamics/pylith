@@ -24,6 +24,12 @@ class MeshIOPetsc(MeshIOObj, ModuleMeshIOPetsc):
 
     import pythia.pyre.inventory
 
+    filename = pythia.pyre.inventory.str("filename", default="")
+    filename.meta['tip'] = "Name of mesh file for reading with PETSc."
+
+    prefix = pythia.pyre.inventory.str("options_prefix", default="")
+    prefix.meta['tip'] = "Name of PETSc options prefix for this mesh."
+
     from spatialdata.geocoords.CSCart import CSCart
     coordsys = pythia.pyre.inventory.facility("coordsys", family="coordsys", factory=CSCart)
     coordsys.meta['tip'] = "Coordinate system associated with mesh."
@@ -36,6 +42,8 @@ class MeshIOPetsc(MeshIOObj, ModuleMeshIOPetsc):
     def preinitialize(self):
         """Do minimal initialization."""
         MeshIOObj.preinitialize(self)
+        ModuleMeshIOPetsc.setFilename(self, self.filename)
+        ModuleMeshIOPetsc.setPrefix(self, self.prefix)
 
     def _configure(self):
         """Set members based using inventory.

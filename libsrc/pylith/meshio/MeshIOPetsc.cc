@@ -39,14 +39,26 @@
 
 // ------------------------------------------------------------------------------------------------
 namespace pylith {
-    namespace meshio {} // meshio
+    namespace meshio {
+        class _MeshIOPetsc {
+public:
+
+            /** Remove everything but cells from label for materials.
+             *
+             * @param[inout] dmMesh PETSc DM for mesh.
+             */
+            static
+            void fixMaterialLabel(PetscDM* dmMesh);
+
+        }; // _MeshIOPetsc
+    } // meshio
 } // pylith
 
 // ------------------------------------------------------------------------------------------------
 // Constructor
 pylith::meshio::MeshIOPetsc::MeshIOPetsc(void) :
     _filename(""),
-    _prefix("") { // constructor
+    _prefix("") {
     PyreComponent::setName("meshiopetsc");
 } // constructor
 
@@ -92,10 +104,10 @@ pylith::meshio::MeshIOPetsc::_read(void) {
     err = DMCreate(comm, &dm);PYLITH_CHECK_ERROR(err);
     err = DMSetType(dm, DMPLEX);PYLITH_CHECK_ERROR(err);
     if (!_prefix.empty()) {
-        err = PetscObjectSetOptionsPrefix((PetscObject) dm, prefix());PYLITH_CHECK_ERROR(err);
+        err = PetscObjectSetOptionsPrefix((PetscObject) dm, _prefix.c_str());PYLITH_CHECK_ERROR(err);
     } // if
     err = DMSetFromOptions(dm);PYLITH_CHECK_ERROR(err);
-    err = DMViewFromOptions(dm, NULL, "-dm_view");PYLITH_CHECK_ERROR(err);
+    _MeshIOPetsc::fixMaterialLabel(&dm);
     _mesh->setDM(dm);
 
     PYLITH_METHOD_END;
@@ -106,3 +118,36 @@ pylith::meshio::MeshIOPetsc::_read(void) {
 // Write mesh to file.
 void
 pylith::meshio::MeshIOPetsc::_write(void) const {  }
+
+
+// ------------------------------------------------------------------------------------------------
+// Write mesh to file.
+void
+pylith::meshio::_MeshIOPetsc::fixMaterialLabel(PetscDM* dmMesh) {
+    PYLITH_METHOD_BEGIN;
+    assert(dmMesh);
+    PetscErrorCode err = 0;
+
+    const PetscInt cellHeight = 0;
+    PetscInt cStart = -1, cEnd = -1;
+    err = DMPlexGetHeightStratum(*dmMesh, cellHeight, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
+
+    PetscDMLabel dmLabel = NULL;
+    PetscInt pStart = -1, pEnd = -1;
+    err = DMGetLabel(*dmMesh, pylith::topology::Mesh::cells_label_name, &dmLabel);PYLITH_CHECK_ERROR(err);
+    err = DMLabelGetBounds(dmLabel, &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
+    if (pStart == cStart) { pStart = cEnd; }
+    if (pEnd == cEnd) { pEnd = cStart; }
+
+    for (PetscInt point = pStart; point < pEnd; ++point) {
+        PetscBool hasLabel = PETSC_FALSE;
+        err = DMLabelHasPoint(dmLabel, point, &hasLabel);PYLITH_CHECK_ERROR(err);
+        if (hasLabel) {
+            PetscInt labelValue;
+            err = DMLabelGetValue(dmLabel, point, &labelValue);PYLITH_CHECK_ERROR(err);
+            err = DMLabelClearValue(dmLabel, point, labelValue);PYLITH_CHECK_ERROR(err);
+        } // if
+    } // for
+
+    PYLITH_METHOD_END;
+} // fixMaterialLabel

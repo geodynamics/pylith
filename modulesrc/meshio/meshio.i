@@ -82,6 +82,7 @@
 %include "MeshIOAscii.i"
 %include "MeshIOPetsc.i"
 %include "MeshIOLagrit.i"
+%include "MeshIOPetsc.i"
 #if defined(ENABLE_CUBIT)
 %include "MeshIOCubit.i"
 #endif

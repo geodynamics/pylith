@@ -23,7 +23,7 @@
 // Set filename for PETSc.
 inline
 void
-pylith::meshio::MeshIOPetsc::filename(const char* name) {
+pylith::meshio::MeshIOPetsc::setFilename(const char* name) {
     _filename = name;
 }
 
@@ -31,7 +31,7 @@ pylith::meshio::MeshIOPetsc::filename(const char* name) {
 // Get filename for PETSc.
 inline
 const char*
-pylith::meshio::MeshIOPetsc::filename(void) const {
+pylith::meshio::MeshIOPetsc::getFilename(void) const {
     return _filename.c_str();
 }
 
@@ -39,7 +39,7 @@ pylith::meshio::MeshIOPetsc::filename(void) const {
 // Set options prefix for mesh.
 inline
 void
-pylith::meshio::MeshIOPetsc::prefix(const char* name) {
+pylith::meshio::MeshIOPetsc::setPrefix(const char* name) {
     _prefix = name;
 }
 
@@ -47,7 +47,7 @@ pylith::meshio::MeshIOPetsc::prefix(const char* name) {
 // Get options prefix for mesh.
 inline
 const char*
-pylith::meshio::MeshIOPetsc::prefix(void) const {
+pylith::meshio::MeshIOPetsc::getPrefix(void) const {
     return _prefix.c_str();
 }
 

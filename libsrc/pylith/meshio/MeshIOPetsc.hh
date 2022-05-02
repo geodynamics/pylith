@@ -48,25 +48,25 @@ public:
      *
      * @param name Name of file
      */
-    void filename(const char* name);
+    void setFilename(const char* name);
 
     /** Get filename of ASCII file.
      *
      * @returns Name of file
      */
-    const char* filename(void) const;
+    const char* getFilename(void) const;
 
     /** Set options prefix for this mesh.
      *
      * @param name Options prefix
      */
-    void prefix(const char* name);
+    void setPrefix(const char* name);
 
     /** Get options prefix for this mesh.
      *
      * @returns Options prefix
      */
-    const char* prefix(void) const;
+    const char* getPrefix(void) const;
 
     // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
 protected:
