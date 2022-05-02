@@ -79,26 +79,25 @@ endsWith(const std::string& str,
 void
 pylith::mmstests::TestElasticity::_initialize(void) {
     PYLITH_METHOD_BEGIN;
-
     CPPUNIT_ASSERT(_mesh);
-    pylith::meshio::MeshIOAscii iohandlera;
-    pylith::meshio::MeshIOPetsc iohandlerp;
-    PetscErrorCode err;
 
-    if (_data->meshOptions) {err = PetscOptionsInsertString(NULL, _data->meshOptions);PYLITH_CHECK_ERROR(err);}
+    PetscErrorCode err = 0;
+
     if (_data->meshFilename) {
         std::string name(_data->meshFilename);
-
         if (endsWith(name, ".mesh")) {
-            iohandlera.filename(_data->meshFilename);
-            iohandlera.read(_mesh);CPPUNIT_ASSERT(_mesh);
+            pylith::meshio::MeshIOAscii iohandler;
+            iohandler.setFilename(_data->meshFilename);
+            iohandler.read(_mesh);CPPUNIT_ASSERT(_mesh);
         } else {
-            iohandlerp.filename(_data->meshFilename);
-            iohandlerp.read(_mesh);CPPUNIT_ASSERT(_mesh);
-        }
-    } else {
-        iohandlerp.read(_mesh);CPPUNIT_ASSERT(_mesh);
-    }
+            if (_data->meshOptions) {
+                err = PetscOptionsInsertString(NULL, _data->meshOptions);PYLITH_CHECK_ERROR(err);
+            } // if
+            pylith::meshio::MeshIOPetsc iohandler;
+            iohandler.setFilename(_data->meshFilename);
+            iohandler.read(_mesh);CPPUNIT_ASSERT(_mesh);
+        } // if/else
+    } // if/else
 
     CPPUNIT_ASSERT_MESSAGE("Test mesh does not contain any cells.",
                            pylith::topology::MeshOps::getNumCells(*_mesh) > 0);

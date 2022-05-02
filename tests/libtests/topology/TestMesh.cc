@@ -130,7 +130,7 @@ pylith::topology::TestMesh::testAccessors(void) { // testAccessors
         const char* filename = "data/tri3.mesh";
         Mesh mesh;
         meshio::MeshIOAscii iohandler;
-        iohandler.filename(filename);
+        iohandler.setFilename(filename);
         iohandler.read(&mesh);
 
         CPPUNIT_ASSERT_EQUAL(4, pylith::topology::MeshOps::getNumVertices(mesh));
@@ -141,7 +141,7 @@ pylith::topology::TestMesh::testAccessors(void) { // testAccessors
         const char* filename = "data/twohex8.mesh";
         Mesh mesh;
         meshio::MeshIOAscii iohandler;
-        iohandler.filename(filename);
+        iohandler.setFilename(filename);
         iohandler.read(&mesh);
 
         CPPUNIT_ASSERT_EQUAL(12, pylith::topology::MeshOps::getNumVertices(mesh));
@@ -182,7 +182,7 @@ pylith::topology::TestMesh::testView(void) { // testView
 
     Mesh mesh;
     meshio::MeshIOAscii iohandler;
-    iohandler.filename(filename);
+    iohandler.setFilename(filename);
     iohandler.read(&mesh);
 
     mesh.view();

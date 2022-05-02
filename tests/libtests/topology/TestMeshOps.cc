@@ -53,7 +53,7 @@ pylith::topology::TestMeshOps::testNondimensionalize(void) {
 
     Mesh mesh;
     meshio::MeshIOAscii iohandler;
-    iohandler.filename("data/tri3.mesh");
+    iohandler.setFilename("data/tri3.mesh");
     iohandler.read(&mesh);
 
     spatialdata::geocoords::CSCart cs;
@@ -109,7 +109,7 @@ pylith::topology::TestMeshOps::testCheckTopology(void) {
         const char* filename = filenames[i];
         Mesh mesh;
         meshio::MeshIOAscii iohandler;
-        iohandler.filename(filename);
+        iohandler.setFilename(filename);
         iohandler.read(&mesh);
         MeshOps::checkTopology(mesh);
     } // for
@@ -143,7 +143,7 @@ pylith::topology::TestMeshOps::testIsSimplexMesh(void) {
         const bool isSimplex = results[i];
         Mesh mesh;
         meshio::MeshIOAscii iohandler;
-        iohandler.filename(filename);
+        iohandler.setFilename(filename);
         iohandler.read(&mesh);
         CPPUNIT_ASSERT_EQUAL(isSimplex, MeshOps::isSimplexMesh(mesh));
     } // for
@@ -160,7 +160,7 @@ pylith::topology::TestMeshOps::testCheckMaterialIds(void) {
 
     Mesh mesh;
     meshio::MeshIOAscii iohandler;
-    iohandler.filename("data/tri3.mesh");
+    iohandler.setFilename("data/tri3.mesh");
     iohandler.read(&mesh);
 
     pylith::int_array materialValues(2);

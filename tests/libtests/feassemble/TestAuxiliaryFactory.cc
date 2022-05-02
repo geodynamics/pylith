@@ -243,7 +243,7 @@ pylith::feassemble::TestAuxiliaryFactory::testSetValuesFromDB(void) {
 
     pylith::topology::Mesh mesh;
     pylith::meshio::MeshIOAscii iohandler;
-    iohandler.filename("data/tri.mesh");
+    iohandler.setFilename("data/tri.mesh");
     iohandler.read(&mesh);
     mesh.setCoordSys(&cs);
     pylith::topology::MeshOps::nondimensionalize(&mesh, normalizer);
