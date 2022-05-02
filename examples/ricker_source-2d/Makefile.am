@@ -35,7 +35,6 @@ export-data: $(dist_noinst_PYTHON) $(dist_noinst_DATA)
 clean-data:
 	if [ "X$(abs_top_srcdir)" != "X$(abs_top_builddir)" ]; then for f in $(dist_noinst_PYTHON) $(dist_noinst_DATA) $(noinst_TMP); do $(RM) $(RM_FLAGS) $(export_datadir)/$$f; done; fi
 
-
 BUILT_SOURCES = export-data
 
 clean-local: clean-local-tmp clean-data
