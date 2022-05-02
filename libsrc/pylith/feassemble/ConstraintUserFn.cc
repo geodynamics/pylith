@@ -87,7 +87,7 @@ pylith::feassemble::ConstraintUserFn::setUserFnDot(const PetscUserFieldFunc fnDo
 void
 pylith::feassemble::ConstraintUserFn::initialize(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("intialize(solution="<<solution.getLabel()<<")");
+    PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" intialize(solution="<<solution.getLabel()<<")");
 
     Constraint::initialize(solution);
 
@@ -95,8 +95,7 @@ pylith::feassemble::ConstraintUserFn::initialize(const pylith::topology::Field& 
     _observers->notifyObservers(0.0, 0, solution, infoOnly);
 
     // :KLUDGE: Potentially we may have multiple PetscDS objects. This assumes that the first one (with a NULL
-    // label) is
-    // the correct one.
+    // label) is the correct one.
     PetscErrorCode err = 0;
     PetscDS prob = NULL;
     DMLabel label = NULL;
@@ -118,7 +117,7 @@ void
 pylith::feassemble::ConstraintUserFn::setSolution(pylith::problems::IntegrationData* integrationData) {
     assert(integrationData);
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("setSolution(integrationData="<<integrationData->str()<<")");
+    PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" setSolution(integrationData="<<integrationData->str()<<")");
 
     const pylith::topology::Field* solution = integrationData->getField(pylith::problems::IntegrationData::solution);
     assert(solution);
