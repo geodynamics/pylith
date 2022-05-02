@@ -14,14 +14,10 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-# @file tests/fullscale/linearelasticity/faults-2d/TestTwoBlocks.py
-#
-# @brief Test suite for testing pylith with 2-D fault shear displacement.
 
 import unittest
 
-from pylith.testing.FullTestApp import (FullTestCase, Check, check_data)
+from pylith.testing.FullTestApp import (FullTestCase, Check)
 
 import meshes
 import twoblocks_soln
@@ -51,6 +47,7 @@ class TestCase(FullTestCase):
             Check(
                 mesh_entities=["mat_xneg", "mat_xmid", "mat_xposypos", "mat_xposyneg"],
                 vertex_fields = ["displacement", "cauchy_strain", "cauchy_stress"],
+                tolerance = 1.0e-4,
                 defaults=defaults,
             ),
             Check(
@@ -71,11 +68,11 @@ class TestCase(FullTestCase):
 
 
 # -------------------------------------------------------------------------------------------------
-class TestQuad(TestCase):
+class TestQuadGmsh(TestCase):
 
     def setUp(self):
         self.name = "twoblocks_quad"
-        self.mesh = meshes.Quad()
+        self.mesh = meshes.QuadGmsh()
         super().setUp()
 
         TestCase.run_pylith(self, self.name, ["twoblocks.cfg", "twoblocks_quad.cfg"])
@@ -83,11 +80,11 @@ class TestQuad(TestCase):
 
 
 # -------------------------------------------------------------------------------------------------
-class TestTri(TestCase):
+class TestTriGmsh(TestCase):
 
     def setUp(self):
         self.name = "twoblocks_tri"
-        self.mesh = meshes.Tri()
+        self.mesh = meshes.TriGmsh()
         super().setUp()
 
         TestCase.run_pylith(self, self.name, ["twoblocks.cfg", "twoblocks_tri.cfg"])
@@ -95,10 +92,36 @@ class TestTri(TestCase):
 
 
 # -------------------------------------------------------------------------------------------------
+class TestQuadCubit(TestCase):
+
+    def setUp(self):
+        self.name = "twoblocks_cubit_quad"
+        self.mesh = meshes.QuadCubit()
+        super().setUp()
+
+        TestCase.run_pylith(self, self.name, ["twoblocks.cfg", "twoblocks_cubit_quad.cfg"])
+        return
+
+
+# -------------------------------------------------------------------------------------------------
+class TestTriCubit(TestCase):
+
+    def setUp(self):
+        self.name = "twoblocks_cubit_tri"
+        self.mesh = meshes.TriCubit()
+        super().setUp()
+
+        TestCase.run_pylith(self, self.name, ["twoblocks.cfg", "twoblocks_cubit_tri.cfg"])
+        return
+
+
+# -------------------------------------------------------------------------------------------------
 def test_cases():
     return [
-        TestQuad,
-        TestTri,
+        TestQuadGmsh,
+        TestTriGmsh,
+        TestQuadCubit,
+        TestTriCubit,
     ]
 
 

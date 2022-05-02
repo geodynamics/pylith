@@ -14,14 +14,10 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-# @file tests/fullscale/linearelasticity/nofaults-2d/TestGravityRefState.py
-#
-# @brief Test suite for testing pylith with 2-D gravitational body forces with initial stress and no displacement.
 
 import unittest
 
-from pylith.testing.FullTestApp import (FullTestCase, Check, check_data)
+from pylith.testing.FullTestApp import (FullTestCase, Check)
 
 import meshes
 import gravity_refstate_soln
@@ -79,7 +75,7 @@ class TestQuad(TestCase):
 
     def setUp(self):
         self.name = "gravity_refstate_quad"
-        self.mesh = meshes.Quad()
+        self.mesh = meshes.QuadGmsh()
         super().setUp()
 
         TestCase.run_pylith(self, self.name, ["gravity_refstate.cfg", "gravity_refstate_quad.cfg"])
@@ -87,11 +83,11 @@ class TestQuad(TestCase):
 
 
 # -------------------------------------------------------------------------------------------------
-class TestTri(TestCase, meshes.Tri):
+class TestTri(TestCase):
 
     def setUp(self):
         self.name = "gravity_refstate_tri"
-        self.mesh = meshes.Tri()
+        self.mesh = meshes.TriGmsh()
         super().setUp()
 
         TestCase.run_pylith(self, self.name, ["gravity_refstate.cfg", "gravity_refstate_tri.cfg"])

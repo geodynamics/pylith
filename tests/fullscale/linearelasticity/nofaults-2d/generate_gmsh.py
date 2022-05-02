@@ -66,9 +66,8 @@ class App(GenerateMesh):
         """Mark geometry for materials, boundary conditions, faults, etc.
         """
         materials = (
-            MaterialGroup(tag=1, entities=[self.s_xneg0]),
-            MaterialGroup(tag=2, entities=[self.s_xneg1]),
-            MaterialGroup(tag=3, entities=[self.s_xpos]),
+            MaterialGroup(tag=1, entities=[self.s_xneg0, self.s_xneg1]),
+            MaterialGroup(tag=2, entities=[self.s_xpos]),
         )
         for material in materials:
             material.create_physical_group()

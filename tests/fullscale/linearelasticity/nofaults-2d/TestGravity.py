@@ -14,14 +14,10 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-# @file tests/fullscale/linearelasticity/nofaults-2d/TestGravity.py
-#
-# @brief Test suite for testing pylith with 2-D gravitational body forces (no initial stress).
 
 import unittest
 
-from pylith.testing.FullTestApp import (FullTestCase, Check, check_data)
+from pylith.testing.FullTestApp import (FullTestCase, Check)
 
 import meshes
 import gravity_soln
@@ -76,7 +72,7 @@ class TestQuad(TestCase):
 
     def setUp(self):
         self.name = "gravity_quad"
-        self.mesh = meshes.Quad()
+        self.mesh = meshes.QuadGmsh()
         super().setUp()
 
         TestCase.run_pylith(self, self.name, ["gravity.cfg", "gravity_quad.cfg"])
@@ -84,11 +80,11 @@ class TestQuad(TestCase):
 
 
 # -------------------------------------------------------------------------------------------------
-class TestTri(TestCase, meshes.Tri):
+class TestTri(TestCase):
 
     def setUp(self):
         self.name = "gravity_tri"
-        self.mesh = meshes.Tri()
+        self.mesh = meshes.TriGmsh()
         super().setUp()
 
         TestCase.run_pylith(self, self.name, ["gravity.cfg", "gravity_tri.cfg"])

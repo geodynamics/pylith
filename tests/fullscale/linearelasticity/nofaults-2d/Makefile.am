@@ -38,6 +38,8 @@ dist_noinst_PYTHON = \
 	gravity_refstate_gendb.py
 
 dist_noinst_DATA = \
+	mesh_tri.msh \
+	mesh_quad.msh \
 	geometry.jou \
 	bc.jou \
 	mesh_tri.jou \
@@ -48,6 +50,8 @@ dist_noinst_DATA = \
 	axialdisp.cfg \
 	axialdisp_tri.cfg \
 	axialdisp_quad.cfg \
+	axialdisp_cubit_tri.cfg \
+	axialdisp_cubit_quad.cfg \
 	sheartraction.cfg \
 	sheartraction_tri.cfg \
 	sheartraction_quad.cfg \
