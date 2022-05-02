@@ -31,7 +31,8 @@
 void
 pylith::faults::TopologyOps::createFault(pylith::topology::Mesh* faultMesh,
                                          const pylith::topology::Mesh& mesh,
-                                         PetscDMLabel groupField) {
+                                         PetscDMLabel surfaceLabel,
+                                         const int surfaceLabelValue) {
     PYLITH_METHOD_BEGIN;
 
     assert(faultMesh);
@@ -44,15 +45,17 @@ pylith::faults::TopologyOps::createFault(pylith::topology::Mesh* faultMesh,
     PetscDM subdm = NULL;
     const char *groupName = "";
 
-    if (groupField) {err = PetscObjectGetName((PetscObject)groupField, &groupName);PYLITH_CHECK_ERROR(err);}
-    err = DMPlexCreateSubmesh(dmMesh, groupField, 1, PETSC_FALSE, &subdm);PYLITH_CHECK_ERROR(err);
-    // Check that no cell have all vertices on the fault
-    if (groupField) {
+    if (surfaceLabel) {
+        err = PetscObjectGetName((PetscObject)surfaceLabel, &groupName);PYLITH_CHECK_ERROR(err);
+    }
+    err = DMPlexCreateSubmesh(dmMesh, surfaceLabel, surfaceLabelValue, PETSC_FALSE, &subdm);PYLITH_CHECK_ERROR(err);
+    // Check that no cells have all vertices on the fault
+    if (surfaceLabel) {
         IS subpointIS;
         const PetscInt *dmpoints;
         PetscInt defaultValue, cStart, cEnd, vStart, vEnd;
 
-        err = DMLabelGetDefaultValue(groupField, &defaultValue);PYLITH_CHECK_ERROR(err);
+        err = DMLabelGetDefaultValue(surfaceLabel, &defaultValue);PYLITH_CHECK_ERROR(err);
         err = DMPlexGetSubpointIS(subdm, &subpointIS);PYLITH_CHECK_ERROR(err);
         err = DMPlexGetHeightStratum(subdm, 0, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
         err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);PYLITH_CHECK_ERROR(err);
@@ -67,7 +70,7 @@ pylith::faults::TopologyOps::createFault(pylith::topology::Mesh* faultMesh,
                 PetscInt value = 0;
 
                 if ((closure[cl] < vStart) || (closure[cl] >= vEnd)) { continue;}
-                err = DMLabelGetValue(groupField, closure[cl], &value);PYLITH_CHECK_ERROR(err);
+                err = DMLabelGetValue(surfaceLabel, closure[cl], &value);PYLITH_CHECK_ERROR(err);
                 if (value == defaultValue) {invalidCell = PETSC_FALSE;break;}
             } // for
             err = DMPlexRestoreTransitiveClosure(dmMesh, dmpoints[c], PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
@@ -95,7 +98,8 @@ void
 pylith::faults::TopologyOps::create(pylith::topology::Mesh* mesh,
                                     const pylith::topology::Mesh& faultMesh,
                                     PetscDMLabel faultBdLabel,
-                                    const int materialId) {
+                                    const int faultBdLabelValue,
+                                    const int cohesiveLabelValue) {
     assert(mesh);
     PetscDM sdm = NULL;
     PetscDM dm = mesh->getDM();assert(dm);
@@ -122,7 +126,7 @@ pylith::faults::TopologyOps::create(pylith::topology::Mesh* mesh,
         PetscInt fStart, fEnd, n, i;
 
         err = DMPlexGetHeightStratum(dm, 1, &fStart, &fEnd);PYLITH_CHECK_ERROR(err);
-        err = DMLabelGetStratumIS(faultBdLabel, 1, &bdIS);PYLITH_CHECK_ERROR(err);
+        err = DMLabelGetStratumIS(faultBdLabel, faultBdLabelValue, &bdIS);PYLITH_CHECK_ERROR(err);
         err = ISGetLocalSize(bdIS, &n);PYLITH_CHECK_ERROR(err);
         err = ISGetIndices(bdIS, &bd);PYLITH_CHECK_ERROR(err);
         for (i = 0; i < n; ++i) {
@@ -134,7 +138,7 @@ pylith::faults::TopologyOps::create(pylith::topology::Mesh* mesh,
                 PetscInt numEdges, numVerts, supportSizeA, sA, supportSizeB, sB, val, bval, e, s;
                 PetscBool found = PETSC_FALSE;
 
-                err = DMLabelClearValue(faultBdLabel, p, 1);PYLITH_CHECK_ERROR(err);
+                err = DMLabelClearValue(faultBdLabel, p, faultBdLabelValue);PYLITH_CHECK_ERROR(err);
                 // Remove the cross edge
                 err = DMPlexGetCone(dm, p, &edges);PYLITH_CHECK_ERROR(err);
                 err = DMPlexGetConeSize(dm, p, &numEdges);PYLITH_CHECK_ERROR(err);
@@ -166,7 +170,7 @@ pylith::faults::TopologyOps::create(pylith::topology::Mesh* mesh,
                         if (( val >= 0) && ( bval >= 0) ) { ++sB;}
                     }
                     if ((sA > 2) && (sB > 2)) {
-                        err = DMLabelClearValue(faultBdLabel, edges[e], 1);PYLITH_CHECK_ERROR(err);
+                        err = DMLabelClearValue(faultBdLabel, edges[e], faultBdLabelValue);PYLITH_CHECK_ERROR(err);
                         found = PETSC_TRUE;
                         break;
                     }
@@ -182,7 +186,7 @@ pylith::faults::TopologyOps::create(pylith::topology::Mesh* mesh,
         err = ISDestroy(&bdIS);PYLITH_CHECK_ERROR(err);
     }
     // Completes the set of cells scheduled to be replaced
-    err = DMPlexLabelCohesiveComplete(dm, label, faultBdLabel, PETSC_FALSE, faultMesh.getDM());PYLITH_CHECK_ERROR(err);
+    err = DMPlexLabelCohesiveComplete(dm, label, faultBdLabel, faultBdLabelValue, PETSC_FALSE, faultMesh.getDM());PYLITH_CHECK_ERROR(err);
     err = DMPlexConstructCohesiveCells(dm, label, NULL, &sdm);PYLITH_CHECK_ERROR(err);
 
     const char* interfaceLabelName = pylith::topology::Mesh::cells_label_name;
@@ -201,7 +205,7 @@ pylith::faults::TopologyOps::create(pylith::topology::Mesh* mesh,
              * they are marked with -(cell number) since the hybrid cell number aliases vertices in the old mesh */
             err = DMLabelGetValue(label, -cell, &onBd);PYLITH_CHECK_ERROR(err);
             // if (onBd == dim) continue;
-            err = DMLabelSetValue(mlabel, cell, materialId);PYLITH_CHECK_ERROR(err);
+            err = DMLabelSetValue(mlabel, cell, cohesiveLabelValue);PYLITH_CHECK_ERROR(err);
         }
     }
     err = DMLabelDestroy(&label);PYLITH_CHECK_ERROR(err);

@@ -233,7 +233,7 @@ pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh) {
         // Get group of vertices associated with fault
         PetscDM dmMesh = mesh->getDM();assert(dmMesh);
 
-        PetscDMLabel groupField = NULL;
+        PetscDMLabel surfaceLabel = NULL;
         PetscBool hasLabel = PETSC_FALSE;
         PetscInt depth, gdepth, dim;
         PetscMPIInt rank;
@@ -250,8 +250,8 @@ pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh) {
         err = DMGetDimension(dmMesh, &dim);PYLITH_CHECK_ERROR(err);
         err = DMPlexGetDepth(dmMesh, &depth);PYLITH_CHECK_ERROR(err);
         err = MPI_Allreduce(&depth, &gdepth, 1, MPIU_INT, MPI_MAX, mesh->getComm());PYLITH_CHECK_ERROR(err);
-        err = DMGetLabel(dmMesh, _surfaceLabelName.c_str(), &groupField);PYLITH_CHECK_ERROR(err);
-        TopologyOps::createFault(&faultMesh, *mesh, groupField);
+        err = DMGetLabel(dmMesh, _surfaceLabelName.c_str(), &surfaceLabel);PYLITH_CHECK_ERROR(err);
+        TopologyOps::createFault(&faultMesh, *mesh, surfaceLabel, _surfaceLabelValue);
         PetscDMLabel buriedEdgesLabel = NULL;
 
         // We do not have labels on all ranks until after distribution
@@ -263,7 +263,7 @@ pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh) {
                 throw std::runtime_error(msg.str());
             } // if
         } // if
-        TopologyOps::create(mesh, faultMesh, buriedEdgesLabel, _cohesiveLabelValue);
+        TopologyOps::create(mesh, faultMesh, buriedEdgesLabel, _buriedEdgesLabelValue, _cohesiveLabelValue);
 
         // Check consistency of mesh.
         pylith::topology::MeshOps::checkTopology(*mesh);
