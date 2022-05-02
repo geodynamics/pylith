@@ -45,19 +45,16 @@ public:
      *
      * @param faultMesh Finite-element mesh of fault (output).
      * @param mesh Finite-element mesh of domain.
-     * @param groupdField Group of vertices assocated with faces of
-     *   cells defining fault surface
+     * @param surfaceLabel Label for points on fault surface.
+     * @param surfaceLabelValue Value for label for points on fault surface.
      */
     static
     void createFault(topology::Mesh* faultMesh,
                      const topology::Mesh& mesh,
-                     DMLabel groupField);
+                     PetscDMLabel surfaceLabel,
+                     const int surfaceLabelValue);
 
     /** Create cohesive cells in an interpolated mesh.
-     *
-     * If firstFaultVertex == 0, then firstFaultVertex is set to the first point
-     * not currently used in the mesh, and firstFaultCell is incremented with this
-     * point. These values are updated as new fault vertices and cells are added.
      *
      * @param fault Finite-element mesh of fault (output)
      * @param mesh Finite-element mesh
@@ -67,7 +64,8 @@ public:
     void create(topology::Mesh* mesh,
                 const topology::Mesh& faultMesh,
                 PetscDMLabel faultBdLabel,
-                const int materialId);
+                const int faultBdLabelValue,
+                const int cohesiveLabelValue);
 
     /** Create (distributed) fault mesh from cohesive cells.
      *
