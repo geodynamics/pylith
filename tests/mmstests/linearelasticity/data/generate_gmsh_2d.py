@@ -1,69 +1,82 @@
-#!/usr/bin/env python3
+#!/usr/bin/env nemesis
 
 import gmsh
+from pylith.meshio.gmsh_utils import (VertexGroup, MaterialGroup, GenerateMesh)
 
-DOMAIN_X = DOMAIN_Y = 8.0e+3
-DX = 4.0e+3
+class App(GenerateMesh):
+    """
+    Block is DOMAIN_X by DOMAIN_Y with discretization size DX.
 
-# Physical groups have a name, dimension, and physical tag. We will make a label for each physical group.
-# Entities have a dimension, bounding box, and physical tag
-# Nodes have a node tag, coordinates, and an entity. We need to lookup the entity to get the physical tag for a node.
-# Elements have an element tag, dimension, element type, list of node tags, and an entity. We need to lookup the entity to get the physical tag for a node.
+    p4----------p3
+    |            |
+    |            |
+    |            |
+    |            |
+    p1----------p2
+    """
+    DOMAIN_X = DOMAIN_Y = 8.0e+3
+    DX = 4.0e+3
 
-def generate_mesh(cell="tri"):
+    def __init__(self):
+        self.cell_choices = {
+            "required": True,
+            "choices": ["tri", "quad"],
+            }
 
-    gmsh.initialize()
-    gmsh.model.add("mesh")
+    def create_geometry(self):
+        """Create geometry.
+        """
+        lx = self.DOMAIN_X
+        ly = self.DOMAIN_Y
+        x0 = -0.5 * lx
+        y0 = -0.5 * ly
 
-    x0 = -0.5 * DOMAIN_X
-    y0 = -0.5 * DOMAIN_Y
-    v0 = gmsh.model.geo.addPoint(x0, y0, 0, DX)
-    v1 = gmsh.model.geo.addPoint(x0+DOMAIN_X, y0, 0, DX)
-    v2 = gmsh.model.geo.addPoint(x0+DOMAIN_X, y0+DOMAIN_Y, 0, DX)
-    v3 = gmsh.model.geo.addPoint(x0, y0+DOMAIN_Y, 0, DX)
+        p1 = gmsh.model.geo.add_point(x0, y0, 0.0)
+        p2 = gmsh.model.geo.add_point(x0+lx, y0, 0.0)
+        p3 = gmsh.model.geo.add_point(x0+lx, y0+ly, 0.0)
+        p4 = gmsh.model.geo.add_point(x0, y0+ly, 0.0)
 
-    e0 = gmsh.model.geo.addLine(v0, v1)
-    e1 = gmsh.model.geo.addLine(v1, v2)
-    e2 = gmsh.model.geo.addLine(v2, v3)
-    e3 = gmsh.model.geo.addLine(v3, v0)
+        self.l_yneg = gmsh.model.geo.add_line(p1, p2)
+        self.l_xpos = gmsh.model.geo.add_line(p2, p3)
+        self.l_ypos = gmsh.model.geo.add_line(p3, p4)
+        self.l_xneg = gmsh.model.geo.add_line(p4, p1)
 
-    c0 = gmsh.model.geo.addCurveLoop([e0, e1, e2, e3])
-    s0 = gmsh.model.geo.addPlaneSurface([c0])
+        c0 = gmsh.model.geo.add_curve_loop([self.l_yneg, self.l_xpos, self.l_ypos, self.l_xneg])
+        self.s_domain = gmsh.model.geo.add_plane_surface([c0])
 
-    gmsh.model.geo.synchronize()
+        gmsh.model.geo.synchronize()
 
-    # This adds "boundary" to the PhysicalNames section with the next available tag
-    boundaryV = gmsh.model.addPhysicalGroup(0, [v0, v1, v2, v3], 1)
-    gmsh.model.setPhysicalName(0, boundaryV, "boundary")
+    def mark(self):
+        """Mark geometry for materials, boundary conditions, faults, etc.
+        """
+        materials = (
+            MaterialGroup(tag=24, entities=[self.s_domain]),
+        )
+        for material in materials:
+            material.create_physical_group()
 
-    # This adds "boundary" to the PhysicalNames section with the next available tag
-    boundary = gmsh.model.addPhysicalGroup(1, [e0, e1, e2, e3], 1)
-    gmsh.model.setPhysicalName(1, boundary, "boundary")
+        vertex_groups = (
+            VertexGroup(name="boundary", tag=1, dim=1, entities=[self.l_xneg, self.l_yneg, self.l_xpos, self.l_ypos]),
+        )
+        for group in vertex_groups:
+            group.create_physical_group()
 
-    # This adds "material-id" to the PhysicalNames section with tag 24
-    material = gmsh.model.addPhysicalGroup(2, [s0], 24)
-    gmsh.model.setPhysicalName(2, material, "material-id")
+    def generate_mesh(self, cell):
+        """Generate the mesh. Should also include optimizing the mesh quality.
+        """
+        gmsh.option.setNumber("Mesh.MeshSizeMin", self.DX)
+        gmsh.option.setNumber("Mesh.MeshSizeMax", self.DX)
+        if cell == "quad":
+            gmsh.model.mesh.set_transfinite_automatic(recombine=True)
+        else:
+            gmsh.option.setNumber("Mesh.Algorithm", 8)
 
-    # right angle tris
-    gmsh.option.setNumber("Mesh.Algorithm", 8)
+        gmsh.model.mesh.generate(2)
+        gmsh.model.mesh.optimize("Laplace2D")
 
-    if cell == "quad":
-        gmsh.option.setNumber("Mesh.RecombineAll", 1)
-
-    # Can set refinement criterion
-    # gmsh.model.mesh.setSize(0, maxSize)
-
-    gmsh.model.mesh.generate(2)
-    gmsh.write(f"{cell}_gmsh.msh")
-
-    gmsh.fltk.run()
-    gmsh.finalize()
 
 if __name__ == "__main__":
-    import argparse
+    App().main()
 
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--cell", action="store", dest="cell", required=True, choices=["tri","quad"])
-    args = parser.parse_args()
 
-    generate_mesh(args.cell)
+# End of file

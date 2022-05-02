@@ -267,7 +267,7 @@ class pylith::mmstests::TestIsotropicLinearElasticity3D_UniformStrain_TetP2 :
         TestIsotropicLinearElasticity3D_UniformStrain::setUp();
         CPPUNIT_ASSERT(_data);
 
-        _data->meshFilename = "data/tet.mesh";
+        _data->meshFilename = "data/tet.msh";
 
         static const pylith::topology::Field::Discretization _auxDiscretizations[3] = {
             pylith::topology::Field::Discretization(0, 2), // density
@@ -360,7 +360,7 @@ class pylith::mmstests::TestIsotropicLinearElasticity3D_UniformStrain_HexQ1 :
         TestIsotropicLinearElasticity3D_UniformStrain::setUp();
         CPPUNIT_ASSERT(_data);
 
-        _data->meshFilename = "data/hex.mesh";
+        _data->meshFilename = "data/hex.msh";
 
         _data->numSolnSubfields = 1;
         static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
@@ -415,7 +415,7 @@ class pylith::mmstests::TestIsotropicLinearElasticity3D_UniformStrain_HexQ3 :
         TestIsotropicLinearElasticity3D_UniformStrain::setUp();
         CPPUNIT_ASSERT(_data);
 
-        _data->meshFilename = "data/hex.mesh";
+        _data->meshFilename = "data/hex.msh";
 
         static const pylith::topology::Field::Discretization _auxDiscretizations[3] = {
             pylith::topology::Field::Discretization(0, 3), // density

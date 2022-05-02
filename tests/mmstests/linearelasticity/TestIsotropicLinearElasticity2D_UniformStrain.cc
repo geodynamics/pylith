@@ -275,7 +275,7 @@ class pylith::mmstests::TestIsotropicLinearElasticity2D_UniformStrain_TriP3 :
         TestIsotropicLinearElasticity2D_UniformStrain::setUp();
         CPPUNIT_ASSERT(_data);
 
-        _data->meshFilename = "data/tri.mesh";
+        _data->meshFilename = "data/tri.msh";
 
         static const pylith::topology::Field::Discretization _auxDiscretizations[3] = {
             pylith::topology::Field::Discretization(0, 3), // density
@@ -385,7 +385,7 @@ class pylith::mmstests::TestIsotropicLinearElasticity2D_UniformStrain_QuadQ2 :
         TestIsotropicLinearElasticity2D_UniformStrain::setUp();
         CPPUNIT_ASSERT(_data);
 
-        _data->meshFilename = "data/quad.mesh";
+        _data->meshFilename = "data/quad.msh";
 
         static const pylith::topology::Field::Discretization _auxDiscretizations[3] = {
             pylith::topology::Field::Discretization(0, 2), // density
