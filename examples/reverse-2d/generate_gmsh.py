@@ -61,41 +61,47 @@ class App(GenerateMesh):
         # Create points for fault
         w = self.FAULT_WIDTH
         fault_dip = self.FAULT_DIP / 180.0 * math.pi
-        x5 = -0.5 * w * math.cos(fault_dip)
-        y5 = -w * math.sin(fault_dip)
-        x6 = x5+w*math.cos(fault_dip)
-        p5 = gmsh.model.geo.add_point(x5, y5, 0.0)
-        p6 = gmsh.model.geo.add_point(x6, 0.0, 0.0)
-        self.p_fault_end = p5
+        x6 = -0.5 * w * math.cos(fault_dip)
+        y6 = -w * math.sin(fault_dip)
+        x7 = x6+w*math.cos(fault_dip)
+        y5 = -(x7-x1)*math.tan(fault_dip)
+        p5 = gmsh.model.geo.add_point(x1, y5, 0.0)
+        p6 = gmsh.model.geo.add_point(x6, y6, 0.0)
+        p7 = gmsh.model.geo.add_point(x7, 0.0, 0.0)
+        self.p_fault_end = p6
 
         # Create points for splay
         splay_dip = self.SPLAY_DIP / 180.0 * math.pi
         w = self.SPLAY_OFFSET * math.sin(fault_dip) / (math.sin(splay_dip)*math.cos(fault_dip) - math.sin(fault_dip)*math.cos(splay_dip))
-        x8 = x6 - self.SPLAY_OFFSET
-        x7 = x8 - w*math.cos(splay_dip)
-        y7 = -w * math.sin(splay_dip)
-        p7 = gmsh.model.geo.add_point(x7, y7, 0.0)
-        p8 = gmsh.model.geo.add_point(x8, 0.0, 0.0)
-        self.p_splay_end = p7
+        x9 = x7 - self.SPLAY_OFFSET
+        x8 = x9 - w*math.cos(splay_dip)
+        y8 = -w * math.sin(splay_dip)
+        p8 = gmsh.model.geo.add_point(x8, y8, 0.0)
+        p9 = gmsh.model.geo.add_point(x9, 0.0, 0.0)
+        self.p_splay_end = p8
 
         # Create curves. We store the curve tag as a data member
         # so that we can refer to them later.
         self.l_yneg = gmsh.model.geo.add_line(p1, p2)
         self.l_xpos = gmsh.model.geo.add_line(p2, p3)
-        self.l_ypos0 = gmsh.model.geo.add_line(p3, p6)
-        self.l_ypos1 = gmsh.model.geo.add_line(p6, p8)
-        self.l_ypos2 = gmsh.model.geo.add_line(p8, p4)
-        self.l_xneg = gmsh.model.geo.add_line(p4, p1)
+        self.l_ypos0 = gmsh.model.geo.add_line(p3, p7)
+        self.l_ypos1 = gmsh.model.geo.add_line(p7, p9)
+        self.l_ypos2 = gmsh.model.geo.add_line(p9, p4)
+        self.l_xneg0 = gmsh.model.geo.add_line(p4, p5)
+        self.l_xneg1 = gmsh.model.geo.add_line(p5, p1)
 
-        self.l_fault0 = gmsh.model.geo.add_line(p5, p7)
-        self.l_fault1 = gmsh.model.geo.add_line(p7, p6)
+        self.l_moho = gmsh.model.geo.add_line(p5, p6)
+        self.l_fault0 = gmsh.model.geo.add_line(p6, p8)
+        self.l_fault1 = gmsh.model.geo.add_line(p8, p7)
 
-        self.l_splay = gmsh.model.geo.add_line(p7, p8)
+        self.l_splay = gmsh.model.geo.add_line(p8, p9)
 
-        c0 = gmsh.model.geo.add_curve_loop([self.l_yneg, self.l_xpos, self.l_ypos0, -self.l_fault1, -self.l_fault0, self.l_fault0, self.l_splay, self.l_ypos2, self.l_xneg])
-        self.s_domain = gmsh.model.geo.add_plane_surface([c0])
-        c1 = gmsh.model.geo.add_curve_loop([self.l_fault1, self.l_ypos1, -self.l_splay])
-        self.s_wedge = gmsh.model.geo.add_plane_surface([c1])
+        c0 = gmsh.model.geo.add_curve_loop([self.l_yneg, self.l_xpos, self.l_ypos0, -self.l_fault1, -self.l_fault0, -self.l_moho, self.l_xneg1])
+        self.s_slab = gmsh.model.geo.add_plane_surface([c0])
+        c0 = gmsh.model.geo.add_curve_loop([self.l_moho, self.l_fault0, self.l_splay, self.l_ypos2, self.l_xneg0])
+        self.s_plate = gmsh.model.geo.add_plane_surface([c0])
+        c0 = gmsh.model.geo.add_curve_loop([self.l_fault1, self.l_ypos1, -self.l_splay])
+        self.s_wedge = gmsh.model.geo.add_plane_surface([c0])
 
         gmsh.model.geo.synchronize()
 
@@ -107,14 +113,16 @@ class App(GenerateMesh):
         """
         # Create two materials, one for each side of the fault.
         materials = (
-            MaterialGroup(tag=1, entities=[self.s_domain, self.s_wedge]),
+            MaterialGroup(tag=1, entities=[self.s_slab]),
+            MaterialGroup(tag=2, entities=[self.s_plate]),
+            MaterialGroup(tag=3, entities=[self.s_wedge]),
         )
         for material in materials:
             material.create_physical_group()
 
         # Create physical groups for the boundaries and the fault.
         vertex_groups = (
-            VertexGroup(name="boundary_xneg", tag=10, dim=1, entities=[self.l_xneg]),
+            VertexGroup(name="boundary_xneg", tag=10, dim=1, entities=[self.l_xneg0, self.l_xneg1]),
             VertexGroup(name="boundary_xpos", tag=11, dim=1, entities=[self.l_xpos]),
             VertexGroup(name="boundary_yneg", tag=12, dim=1, entities=[self.l_yneg]),
             VertexGroup(name="boundary_ypos", tag=13, dim=1, entities=[self.l_ypos0, self.l_ypos1, self.l_ypos2]),

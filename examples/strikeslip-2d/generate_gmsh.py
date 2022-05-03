@@ -45,7 +45,7 @@ class App(GenerateMesh):
         # with the default cell type `tri` matching the PyLith parameter files.
         self.cell_choices = {
             "default": "tri",
-            "choices": ["tri", "quad"],
+            "choices": ["tri"],
             }
 
     def create_geometry(self):
@@ -114,6 +114,9 @@ class App(GenerateMesh):
         """Generate the mesh.
         """
         # Set discretization size with geometric progression from distance to the fault
+        gmsh.option.set_number("Mesh.MeshSizeFromPoints", 0)
+        gmsh.option.set_number("Mesh.MeshSizeFromCurvature", 0)
+        gmsh.option.set_number("Mesh.MeshSizeExtendFromBoundary", 0)
 
         # First, we setup a field `field_distance` with the distance from the fault.
         field_distance = gmsh.model.mesh.field.add("Distance")

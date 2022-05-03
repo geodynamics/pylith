@@ -15,9 +15,13 @@
 #
 # ----------------------------------------------------------------------
 
+dist_noinst_PYTHON = \
+	generate_gmsh.py
+
+
 dist_noinst_DATA = \
 	README.md \
-	generate_gmsh.py \
+	mesh_tri.msh \
 	geometry.jou \
 	gradient.jou \
 	createbc.jou \

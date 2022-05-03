@@ -13,11 +13,8 @@ and a latitude of 38.0 degrees (WGS84).
 
 Run `generate_gmsh.py --help` to see the command line options.
 """
-import math
-from re import S
-
 import gmsh
-from pylith.meshio.gmsh_utils import (VertexGroup, MaterialGroup, GenerateMesh)
+from pylith.meshio.gmsh_utils import (VertexGroup, MaterialGroup, GenerateMesh, group_exclude)
 
 class App(GenerateMesh):
     """
@@ -212,8 +209,7 @@ class App(GenerateMesh):
         # Create physical groups for the boundaries and the fault.
         vertex_groups = (
             VertexGroup(name="groundsurf", tag=10, dim=1, entities=[self.l_topography_west, self.l_topography_east]),
-            VertexGroup(name="bndry_west", tag=11, dim=1, entities=[self.l_west_mantle, self.l_west_crust]),
-            #VertexGroup(name="bndry_west_incslab", tag=12, dim=1, entities=[p_slabtop_coseismic]),
+            VertexGroup(name="bndry_west_incslab", tag=12, dim=1, entities=[self.l_west_mantle, self.l_west_crust]),
             VertexGroup(name="bndry_east_crust", tag=13, dim=1, entities=[self.l_east_crust]),
             VertexGroup(name="bndry_east_mantle", tag=14, dim=1, entities=[self.l_east_mantle]),
             VertexGroup(name="bndry_bot_slab", tag=15, dim=1, entities=[self.l_bot_slab]),
@@ -225,6 +221,7 @@ class App(GenerateMesh):
         )
         for group in vertex_groups:
             group.create_physical_group()
+        group_exclude("bndry_west_incslab", "fault_slabtop", new_name="bndry_west", new_tag=11)
 
     def generate_mesh(self, cell):
         """Generate the mesh.
