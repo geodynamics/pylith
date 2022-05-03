@@ -10,7 +10,7 @@ from abc import ABC, abstractmethod
 import gmsh
 import numpy
 
-from pylith.meshio.gmsh_utils import (VertexGroup, MaterialGroup)
+from pylith.meshio.gmsh_utils import (VertexGroup, MaterialGroup, group_exclude)
 
 def get_vertices():
     dim = gmsh.model.get_dimension()
@@ -55,9 +55,11 @@ def get_material_ids(cells):
 
 
 def get_vertex_groups():
+    """IMPORTANT: This grabs the nodes at the highest dimension. It does not produce
+    correct results if we have excluded entities at lower dimensions."""
     mesh_dim = gmsh.model.get_dimension()
     groups = {}
-    for dim in (mesh_dim-1, mesh_dim-2):
+    for dim in range(mesh_dim-1,-1,-1):
         physical_groups = gmsh.model.get_physical_groups(dim)
         for dim, tag in physical_groups:
             name = gmsh.model.get_physical_name(dim, tag)
@@ -238,6 +240,7 @@ class Generate2D(GenerateApp):
         )
         for group in vertex_groups:
             group.create_physical_group()
+        group_exclude("boundary_ypos", "fault", new_name="boundary_ypos_nofault", new_tag=14)
 
     def generate_mesh(self):
         # right angle tris
@@ -306,6 +309,7 @@ class Generate3D(GenerateApp):
         )
         for group in vertex_groups:
             group.create_physical_group()
+        group_exclude("boundary_ypos", "fault", new_name="boundary_ypos_nofault", new_tag=16)
 
     def generate_mesh(self):
         gmsh.option.setNumber("Mesh.MeshSizeMin", self.DX)

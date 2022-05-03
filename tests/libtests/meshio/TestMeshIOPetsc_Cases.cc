@@ -65,32 +65,35 @@ public:
                 };
                 _data->materialIds = const_cast<PylithInt*>(materialIds);
 
-                _data->numGroups = 6;
-                static const PylithInt groupSizes[6] = {3, 3, 3, 3, 3, 1};
+                _data->numGroups = 7;
+                static const PylithInt groupSizes[7] = {3, 3, 3, 3, 3, 1, 2};
                 _data->groupSizes = const_cast<PylithInt*>(groupSizes);
-                static const PylithInt groups[16] = {
+                static const PylithInt groups[18] = {
                     0, 5, 7,
                     2, 3, 6,
                     0, 1, 2,
                     3, 4, 5,
                     1, 4, 8,
                     1,
+                    3, 5,
                 };
                 _data->groups = const_cast<PylithInt*>(groups);
-                static const char* groupNames[6] = {
+                static const char* groupNames[7] = {
                     "boundary_xneg",
                     "boundary_xpos",
                     "boundary_yneg",
                     "boundary_ypos",
                     "fault",
                     "fault_end",
+                    "boundary_ypos_nofault",
                 };
                 _data->groupNames = const_cast<char**>(groupNames);
-                static const PylithInt groupTags[6] = {
-                    10, 11, 12, 13, 20, 21,
+                static const PylithInt groupTags[7] = {
+                    10, 11, 12, 13, 20, 21, 14,
                 };
                 _data->groupTags = const_cast<PylithInt*>(groupTags);
-                static const char* groupTypes[6] = {
+                static const char* groupTypes[7] = {
+                    "vertex",
                     "vertex",
                     "vertex",
                     "vertex",
@@ -180,32 +183,35 @@ public:
                 };
                 _data->materialIds = const_cast<PylithInt*>(materialIds);
 
-                _data->numGroups = 6;
-                static const PylithInt groupSizes[6] = {4, 4, 3, 3, 4, 1};
+                _data->numGroups = 7;
+                static const PylithInt groupSizes[7] = {4, 4, 3, 3, 4, 1, 2};
                 _data->groupSizes = const_cast<PylithInt*>(groupSizes);
-                static const PylithInt groups[19] = {
+                static const PylithInt groups[21] = {
                     0, 5, 8, 9,
                     2, 3, 6, 7,
                     0, 1, 2,
                     3, 4, 5,
                     1, 4, 10, 11,
                     1,
+                    3, 5,
                 };
                 _data->groups = const_cast<PylithInt*>(groups);
-                static const char* groupNames[6] = {
+                static const char* groupNames[7] = {
                     "boundary_xneg",
                     "boundary_xpos",
                     "boundary_yneg",
                     "boundary_ypos",
                     "fault",
                     "fault_end",
+                    "boundary_ypos_nofault",
                 };
                 _data->groupNames = const_cast<char**>(groupNames);
-                static const PylithInt groupTags[6] = {
-                    10, 11, 12, 13, 20, 21,
+                static const PylithInt groupTags[7] = {
+                    10, 11, 12, 13, 20, 21, 14,
                 };
                 _data->groupTags = const_cast<PylithInt*>(groupTags);
-                static const char* groupTypes[6] = {
+                static const char* groupTypes[7] = {
+                    "vertex",
                     "vertex",
                     "vertex",
                     "vertex",
@@ -372,10 +378,10 @@ public:
                 };
                 _data->materialIds = const_cast<PylithInt*>(materialIds);
 
-                _data->numGroups = 8;
-                static const PylithInt groupSizes[8] = {9, 9, 9, 9, 9, 9, 9, 3};
+                _data->numGroups = 9;
+                static const PylithInt groupSizes[9] = {9, 9, 9, 9, 9, 9, 9, 3, 6};
                 _data->groupSizes = const_cast<PylithInt*>(groupSizes);
-                static const PylithInt groups[66] = {
+                static const PylithInt groups[72] = {
                     0, 1, 2, 3, 12, 13, 14, 15, 24,
                     8, 9, 10, 11, 20, 21, 22, 23, 26,
                     0, 1, 4, 5, 8, 9, 12, 16, 20,
@@ -384,10 +390,10 @@ public:
                     0, 2, 5, 6, 9, 11, 13, 17, 22,
                     4, 5, 6, 7, 16, 17, 18, 19, 25,
                     4, 5, 16,
+                    2, 3, 10, 11, 14, 23,
                 };
-
                 _data->groups = const_cast<PylithInt*>(groups);
-                static const char* groupNames[8] = {
+                static const char* groupNames[9] = {
                     "boundary_xneg",
                     "boundary_xpos",
                     "boundary_yneg",
@@ -396,13 +402,15 @@ public:
                     "boundary_zpos",
                     "fault",
                     "fault_end",
+                    "boundary_ypos_nofault",
                 };
                 _data->groupNames = const_cast<char**>(groupNames);
-                static const PylithInt groupTags[8] = {
-                    10, 11, 12, 13, 14, 15, 20, 21,
+                static const PylithInt groupTags[9] = {
+                    10, 11, 12, 13, 14, 15, 20, 21, 16,
                 };
                 _data->groupTags = const_cast<PylithInt*>(groupTags);
-                static const char* groupTypes[8] = {
+                static const char* groupTypes[9] = {
+                    "vertex",
                     "vertex",
                     "vertex",
                     "vertex",
@@ -538,10 +546,10 @@ public:
                 };
                 _data->materialIds = const_cast<PylithInt*>(materialIds);
 
-                _data->numGroups = 8;
-                static const PylithInt groupSizes[8] = {16, 16, 12, 12, 12, 12, 16, 4};
+                _data->numGroups = 9;
+                static const PylithInt groupSizes[9] = {16, 16, 12, 12, 12, 12, 16, 4, 8};
                 _data->groupSizes = const_cast<PylithInt*>(groupSizes);
-                static const PylithInt groups[100] = {
+                static const PylithInt groups[108] = {
                     0, 1, 2, 3, 12, 13, 14, 15, 16, 17, 18, 19, 36, 37, 38, 39,
                     8, 9, 10, 11, 28, 29, 30, 31, 32, 33, 34, 35, 44, 45, 46, 47,
                     0, 1, 4, 5, 8, 9, 12, 13, 20, 21, 28, 29,
@@ -550,9 +558,10 @@ public:
                     0, 2, 5, 6, 9, 11, 14, 15, 22, 23, 32, 33,
                     4, 5, 6, 7, 20, 21, 22, 23, 24, 25, 26, 27, 40, 41, 42, 43,
                     4, 5, 20, 21,
+                    2, 3, 10, 11, 16, 17, 34, 35,
                 };
                 _data->groups = const_cast<PylithInt*>(groups);
-                static const char* groupNames[8] = {
+                static const char* groupNames[9] = {
                     "boundary_xneg",
                     "boundary_xpos",
                     "boundary_yneg",
@@ -561,13 +570,15 @@ public:
                     "boundary_zpos",
                     "fault",
                     "fault_end",
+                    "boundary_ypos_nofault",
                 };
                 _data->groupNames = const_cast<char**>(groupNames);
-                static const PylithInt groupTags[8] = {
-                    10, 11, 12, 13, 14, 15, 20, 21,
+                static const PylithInt groupTags[9] = {
+                    10, 11, 12, 13, 14, 15, 20, 21, 16,
                 };
                 _data->groupTags = const_cast<PylithInt*>(groupTags);
-                static const char* groupTypes[8] = {
+                static const char* groupTypes[9] = {
+                    "vertex",
                     "vertex",
                     "vertex",
                     "vertex",

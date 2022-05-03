@@ -25,7 +25,8 @@ class MaterialGroup:
     def create_physical_group(self):
         create_material(self.tag, self.entities)
 
-def create_group(name, tag, dim, entities, recursive=True):
+
+def create_group(name, tag, dim, entities, recursive=True, exclude=None):
     gmsh.model.add_physical_group(dim, entities, tag)
     gmsh.model.set_physical_name(dim, tag, name)
     entities_lowerdim = []
@@ -34,6 +35,34 @@ def create_group(name, tag, dim, entities, recursive=True):
         entities_lowerdim += [e for e in entities_down]
     if recursive and dim >= 1:
         create_group(name, tag, dim-1, entities_lowerdim)
+
+
+def get_physical_group(name):
+    """Get all physical groups matching name.
+    """
+    groups = {}
+    dimTags = gmsh.model.get_physical_groups()
+    for dim, tag in dimTags:
+        if gmsh.model.get_physical_name(dim, tag) == name:
+            groups[dim] = tag
+    if len(groups) == 0:
+        raise ValueError(f"Could not find physical group '{name}'.")
+    return groups
+
+def group_exclude(group_name, exclude_name, new_name, new_tag):
+    """Remove entities from physical group `exclude_name` from physical group `group_name`.
+    """
+    groups = get_physical_group(group_name)
+    groups_exclude = get_physical_group(exclude_name)
+
+    for dim, tag in groups.items():
+        entities = set(gmsh.model.get_entities_for_physical_group(dim, tag))
+        if dim in groups_exclude:
+            entities_exclude = gmsh.model.get_entities_for_physical_group(dim, groups_exclude[dim])
+            entities = entities.difference(set(entities_exclude))
+        tags = [tag for tag in entities]
+        gmsh.model.add_physical_group(dim, tags, new_tag)
+        gmsh.model.set_physical_name(dim, new_tag, new_name)
 
 
 def create_material(tag, entities):
