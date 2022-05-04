@@ -125,7 +125,11 @@ pylith::faults::KinSrcLiuCos::slipFn(const PylithInt dim,
         for (PylithInt i = 0; i < dim; ++i) {
             slip[i] = finalSlip[i] * slipAmplitude;
         } // for
-    } // if
+    } else {
+        for (PylithInt i = 0; i < dim; ++i) {
+            slip[i] = 0.0;
+        } // for
+    } // if/else
 } // slipFn
 
 
@@ -192,7 +196,11 @@ pylith::faults::KinSrcLiuCos::slipRateFn(const PylithInt dim,
         for (PylithInt i = 0; i < dim; ++i) {
             slipRate[i] = finalSlip[i] * slipRateAmplitude;
         } // for
-    } // if
+    } else {
+        for (PylithInt i = 0; i < dim; ++i) {
+            slipRate[i] = 0.0;
+        } // for
+    } // if/else
 } // slipRateFn
 
 
@@ -259,7 +267,11 @@ pylith::faults::KinSrcLiuCos::slipAccFn(const PylithInt dim,
         for (PylithInt i = 0; i < dim; ++i) {
             slipAcc[i] = finalSlip[i] * slipAccAmplitude;
         } // for
-    } // if
+    } else {
+        for (PylithInt i = 0; i < dim; ++i) {
+            slipAcc[i] = 0.0;
+        } // for
+    } // if/else
 } // slipAccFn
 
 

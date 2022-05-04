@@ -122,7 +122,11 @@ pylith::faults::KinSrcTimeHistory::slipFn(const PylithInt dim,
         for (PylithInt i = 0; i < dim; ++i) {
             slip[i] = finalSlip[i] * timeHistoryValue;
         } // for
-    } // if
+    } else {
+        for (PylithInt i = 0; i < dim; ++i) {
+            slip[i] = 0.0;
+        } // for
+    } // if/else
 
 } // slipFn
 
@@ -170,7 +174,11 @@ pylith::faults::KinSrcTimeHistory::slipRateFn(const PylithInt dim,
         for (PylithInt i = 0; i < dim; ++i) {
             slipRate[i] = finalSlip[i] * timeHistoryValue;
         } // for
-    } // if
+    } else {
+        for (PylithInt i = 0; i < dim; ++i) {
+            slipRate[i] = 0.0;
+        } // for
+    } // if/else
 
 } // slipRateFn
 
@@ -218,7 +226,11 @@ pylith::faults::KinSrcTimeHistory::slipAccFn(const PylithInt dim,
         for (PylithInt i = 0; i < dim; ++i) {
             slipAcc[i] = finalSlip[i] * timeHistoryValue;
         } // for
-    } // if
+    } else {
+        for (PylithInt i = 0; i < dim; ++i) {
+            slipAcc[i] = 0.0;
+        } // for
+    } // if/else
 
 } // slipAccFn
 

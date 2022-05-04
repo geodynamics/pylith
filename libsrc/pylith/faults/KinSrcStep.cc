@@ -41,6 +41,7 @@ pylith::faults::KinSrcStep::KinSrcStep(void) {
 pylith::faults::KinSrcStep::~KinSrcStep(void) {}
 
 
+#include <iostream>
 // ---------------------------------------------------------------------------------------------------------------------
 // Slip time function kernel.
 void
@@ -82,7 +83,11 @@ pylith::faults::KinSrcStep::slipFn(const PylithInt dim,
         for (PylithInt i = 0; i < dim; ++i) {
             slip[i] = finalSlip[i];
         } // for
-    } // if
+    } else {
+        for (PylithInt i = 0; i < dim; ++i) {
+            slip[i] = 0.0;
+        } // for
+    } // for
 
 } // slipFn
 
