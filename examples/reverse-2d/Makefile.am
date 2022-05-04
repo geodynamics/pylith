@@ -25,8 +25,7 @@ dist_noinst_DATA = \
 	mesh_tri.exo \
 	mesh_tri.jou \
 	pylithapp.cfg \
-	solver_onefault.cfg \
-	solver_twofaults.cfg \
+	solver_fault.cfg \
 	step01_gravity.cfg \
 	step02_gravity_refstate.cfg \
 	step03_gravity_incompressible.cfg \

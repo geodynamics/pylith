@@ -99,7 +99,11 @@ pylith::faults::KinSrcBrune::slipFn(const PylithInt dim,
         for (PylithInt i = 0; i < dim; ++i) {
             slip[i] = finalSlip[i] * (1.0 - exp(-(t-t0)/tau) * (1.0 + (t-t0)/tau));
         } // for
-    } // if
+    } else {
+        for (PylithInt i = 0; i < dim; ++i) {
+            slip[i] = 0.0;
+        } // for
+    } // if/else
 } // slipFn
 
 
@@ -147,7 +151,11 @@ pylith::faults::KinSrcBrune::slipRateFn(const PylithInt dim,
         for (PylithInt i = 0; i < dim; ++i) {
             slipRate[i] = finalSlip[i] * (t-t0)/(tau*tau) * exp(-(t-t0)/tau);
         } // for
-    } // if
+    } else {
+        for (PylithInt i = 0; i < dim; ++i) {
+            slipRate[i] = 0.0;
+        } // for
+    } // if/else
 } // slipRateFn
 
 
@@ -195,7 +203,11 @@ pylith::faults::KinSrcBrune::slipAccFn(const PylithInt dim,
         for (PylithInt i = 0; i < dim; ++i) {
             slipAcc[i] = finalSlip[i] * 1.0/(tau*tau) * (1.0 - (t-t0)/tau) * exp(-(t-t0)/tau);
         } // for
-    } // if
+    } else {
+        for (PylithInt i = 0; i < dim; ++i) {
+            slipAcc[i] = 0.0;
+        } // for
+    } // if/else
 } // slipAccFn
 
 
@@ -211,7 +223,8 @@ pylith::faults::KinSrcBrune::_auxiliaryFieldSetup(const spatialdata::units::Nond
     assert(cs);
     _auxiliaryFactory->initialize(_auxiliaryField, normalizer, cs->getSpaceDim());
 
-    // :ATTENTION: The order for adding subfields must match the order of the auxiliary fields in the slip time function
+    // :ATTENTION: The order for adding subfields must match the order of the auxiliary fields in the slip time
+    // function
     // kernel.
 
     _auxiliaryFactory->addInitiationTime(); // 0

@@ -88,6 +88,10 @@ pylith::faults::KinSrcRamp::slipFn(const PylithInt dim,
         for (PylithInt i = 0; i < dim; ++i) {
             slip[i] = finalSlip[i] * (t - t0) / riseTime;
         } // for
+    } else {
+        for (PylithInt i = 0; i < dim; ++i) {
+            slip[i] = 0.0;
+        } // for
     } // if/else
 } // slipFn
 
@@ -135,7 +139,11 @@ pylith::faults::KinSrcRamp::slipRateFn(const PylithInt dim,
         for (PylithInt i = 0; i < dim; ++i) {
             slipRate[i] = finalSlip[i] / riseTime;
         } // for
-    } // if
+    } else {
+        for (PylithInt i = 0; i < dim; ++i) {
+            slipRate[i] = 0.0;
+        } // for
+    } // if/else
 } // slipRateFn
 
 

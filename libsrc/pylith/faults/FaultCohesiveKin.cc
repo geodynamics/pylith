@@ -322,8 +322,8 @@ pylith::faults::FaultCohesiveKin::createAuxiliaryField(const pylith::topology::F
     auxiliaryField->allocate();
     auxiliaryField->createOutputVector();
 
-    // We don't populate the auxiliary field via a spatial database, because they will be set from the earthquake
-    // rupture.
+    // We don't populate the auxiliary field via a spatial database, because they will be set from
+    // the earthquake rupture.
 
     // Initialize auxiliary fields for kinematic ruptures.
     assert(auxiliaryField);

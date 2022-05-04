@@ -82,7 +82,11 @@ pylith::faults::KinSrcConstRate::slipFn(const PylithInt dim,
         for (PylithInt i = 0; i < dim; ++i) {
             slip[i] = slipRate[i] * (t - t0);
         } // for
-    } // if
+    } else {
+        for (PylithInt i = 0; i < dim; ++i) {
+            slip[i] = 0.0;
+        } // for
+    } // if/else
 
 } // slipFn
 
@@ -128,7 +132,11 @@ pylith::faults::KinSrcConstRate::slipRateFn(const PylithInt dim,
         for (PylithInt i = 0; i < dim; ++i) {
             slipRate[i] = slipRateAux[i];
         } // for
-    } // if
+    } else {
+        for (PylithInt i = 0; i < dim; ++i) {
+            slipRate[i] = 0.0;
+        } // for
+    } // if/else
 
 } // slipRateFn
 
