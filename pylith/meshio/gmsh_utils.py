@@ -93,6 +93,7 @@ class GenerateMesh(ABC):
 
     def __init__(self):
         self.cell_choices = {"required": False}
+        self.filename = "mesh.msh"
 
     def main(self):
         """
@@ -101,13 +102,13 @@ class GenerateMesh(ABC):
         args = self._parse_command_line()
 
         self.initialize(args.name)
-        if args.geometry or args.all:
+        if args.geometry:
             self.create_geometry()
-        if args.mark or args.all:
+        if args.mark:
             self.mark()
-        if args.generate or args.all:
+        if args.generate:
             self.generate_mesh(args.cell)
-        if args.write or args.all:
+        if args.write:
             self.write(args.filename, args.binary)
         self.finalize(args.gui)
 
@@ -165,17 +166,23 @@ class GenerateMesh(ABC):
         parser.add_argument("--generate", action="store_true", dest="generate", help="Generate mesh.")
         parser.add_argument("--write", action="store_true", dest="write", help="Write mesh to file.")
 
-        parser.add_argument("--name", action="store", dest="name", help="Name of mesh.", default="mesh")
-        parser.add_argument("--filename", action="store", dest="filename", help="Name of mesh file.", default="mesh.msh")
-        parser.add_argument("--ascii", action="store_false", dest="binary", help="Write mesh to ASCII file", default=True)
+        parser.add_argument("--name", action="store", dest="name", help="Name of mesh in Gmsh.", default="mesh")
+        parser.add_argument("--filename", action="store", dest="filename", help="Name of output mesh file.", default=self.filename)
+        parser.add_argument("--ascii", action="store_false", dest="binary", help="Write mesh to ASCII file (detault is binary).", default=True)
 
         parser.add_argument("--cell", action="store", dest="cell", **self.cell_choices)
 
-        parser.add_argument("--all", action="store_true", dest="all", help="Run all steps.")
-        parser.add_argument("--gui", action="store_true", dest="gui", help="Show GUI.")
+        parser.add_argument("--gui", action="store_true", dest="gui", help="Show GUI after running steps.")
 
         GenerateMesh._add_arguments(parser)
-        return parser.parse_args()
+        args = parser.parse_args()
+        if args.write:
+            args.generate = True
+        if args.generate:
+            args.mark = True
+        if args.mark:
+            args.geometry = True
+        return args
 
     @staticmethod
     def _add_arguments(parser):

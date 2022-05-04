@@ -40,8 +40,9 @@ class App(GenerateMesh):
         # with the default cell type `tri` matching the PyLith parameter files.
         self.cell_choices = {
             "default": "tri",
-            "choices": ["tri", "quad"],
+            "choices": ["tri"],
             }
+        self.filename = "mesh_tri.msh"
 
     def create_geometry(self):
         """Create geometry.
