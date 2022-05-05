@@ -227,7 +227,11 @@ class App(GenerateMesh):
     def generate_mesh(self, cell):
         """Generate the mesh.
         """
-        # Set discretization size with geometric progression from distance to the fault
+        # Set discretization size with geometric progression from distance to the fault.
+        # We turn off the default sizing methods.
+        gmsh.option.set_number("Mesh.MeshSizeFromPoints", 0)
+        gmsh.option.set_number("Mesh.MeshSizeFromCurvature", 0)
+        gmsh.option.set_number("Mesh.MeshSizeExtendFromBoundary", 0)
 
         # First, we setup a field `field_distance` with the distance from the fault.
         fault_distance = gmsh.model.mesh.field.add("Distance")
