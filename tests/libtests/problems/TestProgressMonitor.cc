@@ -15,20 +15,62 @@
 //
 // ----------------------------------------------------------------------
 //
+/** C++ unit testing for ProgressMonitor.
+ */
 
 #include <portinfo>
 
-#include "TestProgressMonitor.hh" // Implementation of class methods
+#include <cppunit/extensions/HelperMacros.h>
 
 #include "pylith/testing/ProgressMonitorStub.hh" // USES ProgressMonitorStub
 #include "pylith/testing/StubMethodTracker.hh" // USES StubMethodTracker
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
+/// Namespace for pylith package
+namespace pylith {
+    namespace problems {
+        class TestProgressMonitor;
+    } // problems
+} // pylith
+
+class pylith::problems::TestProgressMonitor : public CppUnit::TestFixture {
+    CPPUNIT_TEST_SUITE(TestProgressMonitor);
+
+    CPPUNIT_TEST(testAccessors);
+    CPPUNIT_TEST(testOpenClose);
+    CPPUNIT_TEST(testUpdate);
+
+    CPPUNIT_TEST_SUITE_END();
+
+public:
+
+    /// Setup testing data.
+    void setUp(void);
+
+    /// Tear down testing data.
+    void tearDown(void);
+
+    /// Test get/setUpdatePercent() and get/setFilename().
+    void testAccessors(void);
+
+    /// Test open() and close().
+    void testOpenClose(void);
+
+    /// Test update().
+    void testUpdate(void);
+
+private:
+
+    pylith::problems::ProgressMonitorStub* _monitor; ///< Test subject.
+
+}; // class TestProgressMonitor
+
+// ------------------------------------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION(pylith::problems::TestProgressMonitor);
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Setup testing data.
 void
 pylith::problems::TestProgressMonitor::setUp(void) {
@@ -36,7 +78,7 @@ pylith::problems::TestProgressMonitor::setUp(void) {
 } // setUp
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Tear down testing data.
 void
 pylith::problems::TestProgressMonitor::tearDown(void) {
@@ -44,7 +86,7 @@ pylith::problems::TestProgressMonitor::tearDown(void) {
 } // tearDown
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test get/setUpdatePercent() and get/setFilename().
 void
 pylith::problems::TestProgressMonitor::testAccessors(void) {
@@ -75,7 +117,7 @@ pylith::problems::TestProgressMonitor::testAccessors(void) {
 } // testAccessors
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test open() and close().
 void
 pylith::problems::TestProgressMonitor::testOpenClose(void) {
@@ -98,7 +140,7 @@ pylith::problems::TestProgressMonitor::testOpenClose(void) {
 } // testOpenClose
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test update().
 void
 pylith::problems::TestProgressMonitor::testUpdate(void) {
@@ -109,30 +151,6 @@ pylith::problems::TestProgressMonitor::testUpdate(void) {
 
     CPPUNIT_ASSERT(_monitor);
     _monitor->open();
-
-    size_t count = 0;
-    double current = 2.0;
-    double start = 2.0;
-    double stop = 12.0;
-    const double tolerance = 1.0e-6;
-
-    _monitor->update(current, start, stop);
-    CPPUNIT_ASSERT_EQUAL(++count, tracker.getMethodCount("pylith::problems::ProgressMonitorStub::_update"));
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(current, _monitor->_state.current, tolerance);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, _monitor->_state.percentComplete, tolerance);
-
-    current = 4.0;
-    _monitor->update(current, start, stop);
-    CPPUNIT_ASSERT_EQUAL(++count, tracker.getMethodCount("pylith::problems::ProgressMonitorStub::_update"));
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(current, _monitor->_state.current, tolerance);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(20.0, _monitor->_state.percentComplete, tolerance);
-
-    current = 4.1;
-    _monitor->update(current, start, stop);
-    CPPUNIT_ASSERT_EQUAL(count, tracker.getMethodCount("pylith::problems::ProgressMonitorStub::_update"));
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(4.0, _monitor->_state.current, tolerance);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(20.0, _monitor->_state.percentComplete, tolerance);
-
     _monitor->close();
 
     PYLITH_METHOD_END;

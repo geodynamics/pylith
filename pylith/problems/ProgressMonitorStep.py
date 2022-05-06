@@ -12,39 +12,33 @@
 # See COPYING for license information.
 #
 # ----------------------------------------------------------------------
-#
-
-# @file pylith/problems/ProgressMonitorStep.py
-##
-# @brief Python PyLith object for monitoring progress of Green's functions problem.
-##
-# Factory: progress_monitor
 
 from .ProgressMonitor import ProgressMonitor
 from .problems import ProgressMonitorStep as ModuleProgressMonitorStep
 
 
 class ProgressMonitorStep(ProgressMonitor, ModuleProgressMonitorStep):
-    """Python PyLith object for monitoring progress of Green's functions problem.
-
-    Factory: progress_monitor.
     """
+    Progress monitor for problems with a given number of steps, such as Green's functions problem.
 
-    # PUBLIC METHODS /////////////////////////////////////////////////////
+    Implementes `ProgressMonitor`.
+    """
+    DOC_CONFIG = {
+        "cfg": """
+            [pylithapp.timedependent.progress_monitor]
+            filename = output/greensfns01-progress.txt
+        """
+    }
 
-    def __init__(self, name="ProgressMonitorStep"):
+    def __init__(self, name="progressmonitorstep"):
         """Constructor.
         """
         ProgressMonitor.__init__(self, name)
-        return
 
     def preinitialize(self):
         """Do minimal initialization.
         """
         ProgressMonitor.preinitialize(self)
-        return
-
-    # PRIVATE METHODS /////////////////////////////////////////////////////
 
     def _createModuleObj(self):
         """Create handle to corresponding C++ object.

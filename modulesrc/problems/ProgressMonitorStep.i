@@ -16,44 +16,32 @@
 // ----------------------------------------------------------------------
 //
 
-/** @file modulesrc/problems/ProgressMonitorTime.i
+/** @file modulesrc/problems/ProgressMonitorStep.i
  *
- * Python interface to C++ abstract base class ProgressMonitorTime.
+ * Python interface to C++ class ProgressMonitorStep.
  */
 
 namespace pylith {
     namespace problems {
-        class ProgressMonitorTime: public pylith::problems::ProgressMonitor {
+        class ProgressMonitorStep: public pylith::problems::ProgressMonitor {
             // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////
 public:
 
             /// Constructor
-            ProgressMonitorTime(void);
+            ProgressMonitorStep(void);
 
             /// Destructor
-            virtual ~ProgressMonitorTime(void);
-
-            /** Set unit for simulation time in output.
-             *
-             * @param[in] Unit of time.
-             */
-            void setTimeUnit(const char* value);
-
-            /** Set unit for simulation time in output.
-             *
-             * @param[in] Unit of time.
-             */
-            const char* getTimeUnit(void) const;
+            virtual ~ProgressMonitorStep(void);
 
             /** Update progress.
              *
-             * @param[in] current Current time.
-             * @param[in] start Starting time.
-             * @param[in] stop Ending time.
+             * @param[in] current Current step.
+             * @param[in] start Starting step.
+             * @param[in] stop Ending step.
              */
-            void update(const double current,
-                        const double start,
-                        const double stop);
+            void update(const size_t current,
+                        const size_t start,
+                        const size_t stop);
 
             // PROTECTED MEMBERS //////////////////////////////////////////////////////////////////
 protected:
@@ -66,17 +54,17 @@ protected:
 
             /** Update progress.
              *
-             * @param[in] t Current time.
+             * @param[in] setp Current step.
              * @param[in] now Current date/time.
              * @param[in] percentComplete Percent completed
              * @param[in] finished Time stamp of estimated finish.
              */
-            void _update(const double t,
+            void _update(const size_t step,
                          const time_t& now,
                          const double percentComplete,
                          const char* finished);
 
-        }; // class ProgressMonitorTime
+        }; // class ProgressMonitorStep
 
     } // problems
 } // pylith

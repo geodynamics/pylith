@@ -15,29 +15,26 @@
 //
 // ----------------------------------------------------------------------
 //
-/** C++ unit testing for ProgressMonitor.
- */
 
 #include <portinfo>
 
 #include <cppunit/extensions/HelperMacros.h>
 
-#include "pylith/problems/ProgressMonitorTime.hh" // USES ProgressMonitorTime
+#include "pylith/problems/ProgressMonitorStep.hh" // USES ProgressMonitorStep
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 
+// ------------------------------------------------------------------------------------------------
 /// Namespace for pylith package
 namespace pylith {
     namespace problems {
-        class TestProgressMonitorTime;
+        class TestProgressMonitorStep;
     } // problems
 } // pylith
 
-// ------------------------------------------------------------------------------------------------
-class pylith::problems::TestProgressMonitorTime : public CppUnit::TestFixture {
-    CPPUNIT_TEST_SUITE(TestProgressMonitorTime);
+class pylith::problems::TestProgressMonitorStep : public CppUnit::TestFixture {
+    CPPUNIT_TEST_SUITE(TestProgressMonitorStep);
 
-    CPPUNIT_TEST(testAccessors);
     CPPUNIT_TEST(testOpenClose);
     CPPUNIT_TEST(testUpdate);
 
@@ -51,9 +48,6 @@ public:
     /// Tear down testing data.
     void tearDown(void);
 
-    /// Test get/setTimeUnit().
-    void testAccessors(void);
-
     /// Test open() and close().
     void testOpenClose(void);
 
@@ -62,52 +56,33 @@ public:
 
 private:
 
-    pylith::problems::ProgressMonitorTime* _monitor; ///< Test subject.
+    pylith::problems::ProgressMonitorStep* _monitor; ///< Test subject.
 
-}; // class TestProgressMonitorTime
+}; // class TestProgressMonitorStep
 
 // ------------------------------------------------------------------------------------------------
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::problems::TestProgressMonitorTime);
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::problems::TestProgressMonitorStep);
 
 // ------------------------------------------------------------------------------------------------
 // Setup testing data.
 void
-pylith::problems::TestProgressMonitorTime::setUp(void) {
-    _monitor = new ProgressMonitorTime();CPPUNIT_ASSERT(_monitor);
+pylith::problems::TestProgressMonitorStep::setUp(void) {
+    _monitor = new ProgressMonitorStep();CPPUNIT_ASSERT(_monitor);
 } // setUp
 
 
 // ------------------------------------------------------------------------------------------------
 // Tear down testing data.
 void
-pylith::problems::TestProgressMonitorTime::tearDown(void) {
+pylith::problems::TestProgressMonitorStep::tearDown(void) {
     delete _monitor;_monitor = NULL;
 } // tearDown
 
 
 // ------------------------------------------------------------------------------------------------
-// Test get/setUpdatePercent() and get/setFilename().
-void
-pylith::problems::TestProgressMonitorTime::testAccessors(void) {
-    PYLITH_METHOD_BEGIN;
-
-    CPPUNIT_ASSERT(_monitor);
-
-    std::string unit = "second";
-    CPPUNIT_ASSERT_EQUAL(unit, std::string(_monitor->getTimeUnit()));
-
-    unit = "year";
-    _monitor->setTimeUnit(unit.c_str());
-    CPPUNIT_ASSERT_EQUAL(unit, std::string(_monitor->getTimeUnit()));
-
-    PYLITH_METHOD_END;
-} // testAccessors
-
-
-// ------------------------------------------------------------------------------------------------
 // Test open() and close().
 void
-pylith::problems::TestProgressMonitorTime::testOpenClose(void) {
+pylith::problems::TestProgressMonitorStep::testOpenClose(void) {
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(_monitor);
@@ -122,17 +97,17 @@ pylith::problems::TestProgressMonitorTime::testOpenClose(void) {
 // ------------------------------------------------------------------------------------------------
 // Test update().
 void
-pylith::problems::TestProgressMonitorTime::testUpdate(void) {
+pylith::problems::TestProgressMonitorStep::testUpdate(void) {
     PYLITH_METHOD_BEGIN;
 
-    const double start = 1.0;
-    const double stop = 11.0;
+    const size_t start = 2;
+    const size_t stop = 52;
     const int numUpdateCalls = 7;
-    const double current[numUpdateCalls] = { 1.0, 2.0, 2.1, 4.0, 6.1, 6.2, 10.0 };
+    const size_t current[numUpdateCalls] = { 2, 5, 7, 8, 10, 11, 15 };
     const int numUpdates = 5;
-    const double percentComplete[numUpdates] = { 0.0, 10.0, 30.0, 51.0, 90.0 };
+    const double percentComplete[numUpdates] = { 0.0, 6.0, 10.0, 16.0, 26.0 };
     const double tolerance = 1.0e-6;
-    const char* filename = "progress_time.txt";
+    const char* filename = "progress_step.txt";
 
     CPPUNIT_ASSERT(_monitor);
     _monitor->setFilename(filename);
@@ -152,7 +127,7 @@ pylith::problems::TestProgressMonitorTime::testUpdate(void) {
     fin.getline(buffer, maxlen); // Ignore header
     fin.getline(buffer, maxlen);
     while (fin.good()) {
-        const double percentCompleteValue = stof(std::string(buffer).substr(43, 12));
+        const double percentCompleteValue = stof(std::string(buffer).substr(41, 12));
         CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Incorrect percent complete in progress monitor output.",
                                              percentComplete[count++], percentCompleteValue, tolerance);
         fin.getline(buffer, maxlen);

@@ -22,125 +22,127 @@
  * @brief Object for Green's functions problem.
  */
 
-
 namespace pylith {
     namespace problems {
-
-class pylith::problems::GreensFns : public pylith::problems::Problem {
-
-    // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
+        class pylith::problems::GreensFns: public pylith::problems::Problem {
+            // PUBLIC MEMBERS
+            // //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
-    /// Constructor
-    GreensFns(void);
+            /// Constructor
+            GreensFns(void);
 
-    /// Destructor
-    ~GreensFns(void);
+            /// Destructor
+            ~GreensFns(void);
 
-    /// Deallocate PETSc and local data structures.
-    void deallocate(void);
+            /// Deallocate PETSc and local data structures.
+            void deallocate(void);
 
-    /** Set id for fault with impulses.
-     *
-     * @param[in] value Id for fault with impulses.
-     */
-    void setFaultId(const int value);
+            /** Set name of label for fault with impulses.
+             *
+             * @param[in] value Name of label for fault with impulses.
+             */
+            void setFaultLabelName(const char* value);
 
-    /** Get id for fault with impulses.
-     *
-     * @returns Id for fault with impulses.
-     */
-    int getFaultId(void) const;
+            /** Get label name for fault with impulses.
+             *
+             * @returns Name of label for fault with impulses.
+             */
+            const char* getFaultLabelName(void) const;
 
-    /** Set progress monitor.
-     *
-     * @param[in] monitor Progress monitor for Green's functions simulation.
-     */
-    void setProgressMonitor(pylith::problems::ProgressMonitorStep* monitor);
+            /** Set value of label for fault with impulses.
+             *
+             * @param[in] value Value of label for fault with impulses.
+             */
+            void setFaultLabelValue(const int value);
 
-    /** Get Petsc DM for problem.
-     *
-     * @returns PETSc DM for problem.
-     */
-    PetscDM getPetscDM(void);
+            /** Get label value for fault with impulses.
+             *
+             * @returns Value of label for fault with impulses.
+             */
+            int getFaultLabelValue(void) const;
 
-    /// Verify configuration.
-    void verifyConfiguration(void) const;
+            /** Set progress monitor.
+             *
+             * @param[in] monitor Progress monitor for Green's functions simulation.
+             */
+            void setProgressMonitor(pylith::problems::ProgressMonitorStep* monitor);
 
-    /// Initialize.
-    void initialize(void);
+            /** Get Petsc DM for problem.
+             *
+             * @returns PETSc DM for problem.
+             */
+            PetscDM getPetscDM(void);
 
-    /** Solve Green's function problem.
-     */
-    void solve(void);
+            /// Verify configuration.
+            void verifyConfiguration(void) const;
 
-    /** Perform operations after advancing solution of one impulse
-     *
-     * @param[in] impulseReal 
-     */
-    void poststep(const double impulseReal);
+            /// Initialize.
+            void initialize(void);
 
-    /** Set solution values according to constraints (Dirichlet BC).
-     *
-     * @param[in] solutionVec PETSc Vec with current global view of solution.
-     */
-    void setSolutionLocal(PetscVec solutionVec);
+            /** Solve Green's function problem.
+             */
+            void solve(void);
 
-    /** Compute residual and assemble into global vector.
-     *
-     * @param[out] residualVec PETSc Vec for residual.
-     * @param[in] solutionVec PETSc Vec with current trial solution.
-     */
-    void computeResidual(PetscVec residualVec,
-                         PetscVec solutionVec);
+            /** Perform operations after advancing solution of one impulse
+             *
+             * @param[in] impulseReal
+             */
+            void poststep(const double impulseReal);
 
-    /** Compute Jacobian for F(s,\dot{s})
-     *
-     * @param[out] jacobianMat PETSc Mat for Jacobian.
-     * @param[out] precondMat PETSc Mat for preconditioner for Jacobian.
-     * @param[in] solutionVec PETSc Vec with current trial solution.
-     */
-    void computeJacobian(PetscMat jacobianMat,
-                         PetscMat precondMat,
-                         PetscVec solutionVec);
+            /** Set solution values according to constraints (Dirichlet BC).
+             *
+             * @param[in] solutionVec PETSc Vec with current global view of solution.
+             */
+            void setSolutionLocal(PetscVec solutionVec);
 
-     /** Create Jacobian
-     *
-     * @param[out] jacobianMat PETSc Mat for Jacobian.
-     * @param[out] precondMat PETSc Mat for preconditioner for Jacobian.
-     */
-    void createJacobian(PetscMat jacobianMat,
-                         PetscMat precondMat);
+            /** Compute residual and assemble into global vector.
+             *
+             * @param[out] residualVec PETSc Vec for residual.
+             * @param[in] solutionVec PETSc Vec with current trial solution.
+             */
+            void computeResidual(PetscVec residualVec,
+                                 PetscVec solutionVec);
 
-    /** Callback static method for computing residual.
-     *
-     * @param[in] snes PETSc solver
-     * @param[in] solutionVec PetscVec for solution.
-     * @param[out] residualvec PetscVec for residual.
-     * @param[in] context User context (GreensFns).
-     */
-    static
-    PetscErrorCode computeResidual(PetscSNES snes,
-                                      PetscVec solutionVec,
-                                      PetscVec residualVec,
-                                      void* context);
+            /** Compute Jacobian for F(s,\dot{s})
+             *
+             * @param[out] jacobianMat PETSc Mat for Jacobian.
+             * @param[out] precondMat PETSc Mat for preconditioner for Jacobian.
+             * @param[in] solutionVec PETSc Vec with current trial solution.
+             */
+            void computeJacobian(PetscMat jacobianMat,
+                                 PetscMat precondMat,
+                                 PetscVec solutionVec);
 
-    /* Callback static method for computing Jacobian.
-     *
-     * @param[in] SNES PETSc solver
-     * @param[out] jacobianMat PETSc Mat for Jacobian.
-     * @param[out] precondMat PETSc Mat for preconditioner for Jacobian.
-     * @param[in] solutionVec PETSc Vec with current trial solution.
-     * @param[in] context User context (GreensFns).
-     */
-    static
-    PetscErrorCode computeJacobian(PetscSNES snes,
-                                    PetscVec solutionVec,
-                                    PetscMat jacobianMat,
-                                    PetscMat precondMat,
-                                    void* context);
+            /** Callback static method for computing residual.
+             *
+             * @param[in] snes PETSc solver
+             * @param[in] solutionVec PetscVec for solution.
+             * @param[out] residualvec PetscVec for residual.
+             * @param[in] context User context (GreensFns).
+             */
+            static
+            PetscErrorCode computeResidual(PetscSNES snes,
+                                           PetscVec solutionVec,
+                                           PetscVec residualVec,
+                                           void* context);
 
-}; // GreensFns
+            /* Callback static method for computing Jacobian.
+             *
+             * @param[in] SNES PETSc solver
+             * @param[out] jacobianMat PETSc Mat for Jacobian.
+             * @param[out] precondMat PETSc Mat for preconditioner for Jacobian.
+             * @param[in] solutionVec PETSc Vec with current trial solution.
+             * @param[in] context User context (GreensFns).
+             */
+            static
+            PetscErrorCode computeJacobian(PetscSNES snes,
+                                           PetscVec solutionVec,
+                                           PetscMat jacobianMat,
+                                           PetscMat precondMat,
+                                           void* context);
+
+        }; // GreensFns
     }
 }
 

@@ -24,28 +24,49 @@ from .problems import GreensFns as ModuleGreensFns
 
 
 class GreensFns(Problem, ModuleGreensFns):
-    """Python class for Green's functions problem.
-
-    FACTORY: problem.
     """
+    Static Green's function problem type with each Green's function corresponding to a fault slip impulses.
+
+    Implements `Problem`.
+    """
+    DOC_CONFIG = {
+        "cfg": """
+            [pylithapp]
+            problem = pylith.problems.GreensFns
+
+            [pylithapp.greensfns]
+            label = fault
+            label_value = 1
+
+            interfaces = [fault]
+            interfaces.fault = pylith.faults.FaultCohesiveImpulses
+
+            [pylithapp.greensfns.interfaces.fault]
+            label = fault
+            label_value = 20
+            
+            # Impulses for left-lateral slip (dof=1)
+            impulse_dof = [1]
+        """
+    }
 
     import pythia.pyre.inventory
 
-    faultId = pythia.pyre.inventory.int("fault_id", default=100)
-    faultId.meta['tip'] = "Id of fault on which to impose impulses."
+    faultLabelName = pythia.pyre.inventory.str("label", default="fault")
+    faultLabelName.meta['tip'] = "Name of label identifier for fault surface on which to impose impulses."
+
+    faultLabelValue = pythia.pyre.inventory.int("label_value", default=1)
+    faultLabelValue.meta['tip'] = "Value of label identifier for fault surface on which to impose impulses."
 
     from .ProgressMonitorStep import ProgressMonitorStep
     progressMonitor = pythia.pyre.inventory.facility(
         "progress_monitor", family="progress_monitor", factory=ProgressMonitorStep)
     progressMonitor.meta['tip'] = "Simple progress monitor via text file."
 
-    # PUBLIC METHODS /////////////////////////////////////////////////////
-
     def __init__(self, name="greensfns"):
         """Constructor.
         """
         Problem.__init__(self, name)
-        return
 
     def preinitialize(self, mesh):
         """Setup integrators for each element family (material/quadrature,
@@ -58,11 +79,11 @@ class GreensFns(Problem, ModuleGreensFns):
 
         Problem.preinitialize(self, mesh)
 
-        ModuleGreensFns.setFaultId(self, self.faultId)
+        ModuleGreensFns.setFaultLabelName(self, self.faultLabelName)
+        ModuleGreensFns.setFaultLabelValue(self, self.faultLabelValue)
 
         self.progressMonitor.preinitialize()
         ModuleGreensFns.setProgressMonitor(self, self.progressMonitor)
-        return
 
     def run(self, app):
         """Solve time dependent problem.
@@ -74,21 +95,16 @@ class GreensFns(Problem, ModuleGreensFns):
             self._info.log("Solving problem.")
 
         ModuleGreensFns.solve(self)
-        return
-
-    # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
         """Set members based using inventory.
         """
         Problem._configure(self)
-        return
 
     def _createModuleObj(self):
         """Create handle to C++ object.
         """
         ModuleGreensFns.__init__(self)
-        return
 
 
 # FACTORIES ////////////////////////////////////////////////////////////

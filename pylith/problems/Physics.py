@@ -66,6 +66,7 @@ class Physics(PetscComponent, ModulePhysics):
         self._createModuleObj()
         identifier = self.aliases[-1]
         ModulePhysics.setIdentifier(self, identifier)
+        ModulePhysics.setNormalizer(self, problem.normalizer)
 
         if not isinstance(self.auxiliaryFieldDB, NullComponent):
             ModulePhysics.setAuxiliaryFieldDB(self, self.auxiliaryFieldDB)

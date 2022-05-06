@@ -23,19 +23,19 @@
 #include "pylith/testing/StubMethodTracker.hh" // USES StubMethodTracker
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::faults::FaultCohesiveStub::FaultCohesiveStub(void) {}
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Destructor.
 pylith::faults::FaultCohesiveStub::~FaultCohesiveStub(void) {
     deallocate();
 } // destructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Verify configuration is acceptable.
 void
 pylith::faults::FaultCohesiveStub::verifyConfiguration(const pylith::topology::Field& solution) const {
@@ -43,29 +43,7 @@ pylith::faults::FaultCohesiveStub::verifyConfiguration(const pylith::topology::F
 } // verifyConfiguration
 
 
-// ---------------------------------------------------------------------------------------------------------------------
-// Create integrator and set kernels.
-pylith::feassemble::Integrator*
-pylith::faults::FaultCohesiveStub::createIntegrator(const pylith::topology::Field& solution) {
-    pylith::testing::StubMethodTracker tracker("pylith::faults::FaultCohesiveStub::createIntegrator");
-
-    return NULL;
-} // createIntegrator
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Create constraint and set kernels.
-std::vector<pylith::feassemble::Constraint*>
-pylith::faults::FaultCohesiveStub::createConstraints(const pylith::topology::Field& solution) {
-    PYLITH_METHOD_BEGIN;
-    pylith::testing::StubMethodTracker tracker("pylith::faults::FaultCohesiveStub::createConstraints");
-    std::vector<pylith::feassemble::Constraint*> constraintArray;
-
-    PYLITH_METHOD_RETURN(constraintArray);
-} // createConstraints
-
-
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Create auxiliary field.
 pylith::topology::Field*
 pylith::faults::FaultCohesiveStub::createAuxiliaryField(const pylith::topology::Field& solution,
@@ -76,18 +54,7 @@ pylith::faults::FaultCohesiveStub::createAuxiliaryField(const pylith::topology::
 } // createAuxiliaryField
 
 
-// ---------------------------------------------------------------------------------------------------------------------
-// Create derived field.
-pylith::topology::Field*
-pylith::faults::FaultCohesiveStub::createDerivedField(const pylith::topology::Field& solution,
-                                                      const pylith::topology::Mesh& physicsMesh) {
-    pylith::testing::StubMethodTracker tracker("pylith::faults::FaultCohesiveStub::createDerivedField");
-
-    return NULL;
-} // createDerivedField
-
-
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get auxiliary factory associated with physics.
 pylith::feassemble::AuxiliaryFactory*
 pylith::faults::FaultCohesiveStub::_getAuxiliaryFactory(void) {
@@ -95,10 +62,18 @@ pylith::faults::FaultCohesiveStub::_getAuxiliaryFactory(void) {
 } // _getAuxiliaryFactory
 
 
-// ---------------------------------------------------------------------------------------------------------------------
-// Update kernel constants.
+// ------------------------------------------------------------------------------------------------
+// Set kernels for residual.
 void
-pylith::faults::FaultCohesiveStub::_updateKernelConstants(const PylithReal dt) {}
+pylith::faults::FaultCohesiveStub::_setKernelsResidual(pylith::feassemble::IntegratorInterface* integrator,
+                                                       const pylith::topology::Field& solution) const {}
+
+
+// ------------------------------------------------------------------------------------------------
+// Set kernels for Jacobian.
+void
+pylith::faults::FaultCohesiveStub::_setKernelsJacobian(pylith::feassemble::IntegratorInterface* integrator,
+                                                       const pylith::topology::Field& solution) const {}
 
 
 // End of file

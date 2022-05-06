@@ -20,6 +20,8 @@
 __all__ = [
     "FaultCohesive",
     "FaultCohesiveKin",
+    "FaultCohesiveImpulses",
+    "AuxSubfieldsFault",
     "KinSrc",
     "KinSrcConstRate",
     "KinSrcStep",
