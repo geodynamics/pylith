@@ -13,7 +13,7 @@ It displays the hiearchy of components and the parameters for each one, includin
 
 The PyLith Parameter Viewer is included in the PyLith binary distributions and PyLith Docker container for versions 2.1.5 and later.
 Additionally, the PyLith Installer will install the Parameter Viewer by default.
-For manual installation you can download the PyLith Parameter Viewer tarball from the PyLith software page <https://geodynamics.org/cig/software/pylith/>.
+For manual installation you can download the PyLith Parameter Viewer tarball from the PyLith software page <https://geodynamics.org/resources/pylith/supportingdocs/>.
 After downloading the tarball, unpack it.
 We recommend unpacking the tarball in the top-level PyLith directory.
 

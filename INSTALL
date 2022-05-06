@@ -1,6 +1,5 @@
 Installation instructions are available in the PyLith manual
-available on the CIG website
-(https://geodynamics.org/cig/software/pylith).
+available online at https://pylith.readthedocs.io.
 
 We *STRONGLY* recommend that you first become familiar with PyLith
 using the binary packages before attempting to install PyLith from
