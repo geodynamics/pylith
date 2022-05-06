@@ -25,7 +25,7 @@ The binaries are intended for users running on laptops or desktop computers (as 
 The binaries contain the compilers and header files, so users wishing to extend the code can still use the binary and do not need to build PyLith and its dependencies from source.
 See {ref}`sec-developer-contributing` for more information on extending PyLith.
 
-Binary executables are available for Linux (glibc 2.12 and later) and Mac OS X (Intel 10.13 and later) from the PyLith web page <https://geodynamics.org/cig/software/pylith/>.
+Binary executables are available for Linux (glibc 2.12 and later) and Mac OS X (Intel 10.13 and later) from the PyLith web page <https://geodynamics.org/resources/pylith/>.
 Users running Windows 10 build 14316 and later can install a Linux bash environment and use the PyLith binary for Linux (see Section {ref}`sec:install:windows` for more information).
 
 :::{tip}
@@ -43,7 +43,7 @@ On macOS systems running OS X, you can check the operating system version by cli
     $ cd pylith
     ```
 2.  Download the Linux or macOS tarball from the PyLith web page
-    <https://geodynamics.org/cig/software/pylith/>, and save it to
+    <https://geodynamics.org/resources/pylith/supportingdocs/>, and save it to
     the desired location, e.g., `$HOME/pylith`.
 3.  Unpack the tarball.
     ```{code-block} bash
@@ -118,7 +118,7 @@ PyLith is developed and tested on Linux and Mac OS X.
 A small utility, PyLith Installer, removes most of the obstacles in building PyLith and its dependencies from source.
 For each package this utility downloads the source code, configures it, builds it, and installs it.
  This insures that the versions of the dependencies are consistent with PyLith and that the proper configure arguments are used.
- The minimum requirements for using the PyLith installer are a C compiler, `tar`, and `wget` or `curl`. Detailed instructions for how to install PyLith using the installer are included in the installer distribution, which is available from the PyLith web page <https://geodynamics.org/cig/software/pylith/>.
+ The minimum requirements for using the PyLith installer are a C compiler, `tar`, and `wget` or `curl`. Detailed instructions for how to install PyLith using the installer are included in the installer distribution, which is available from the PyLith web page <https://geodynamics.org/resources/pylith/supportingdocs/>.
 
 ## Verifying PyLith is Installed Correctly
 
@@ -259,7 +259,7 @@ $ pylith example1.cfg \
 :::{important}
 The value for nodes is equal to the number of compute nodes times the number of processes (usually the number of cores) requested per compute node.
 Specifying the number of processes per compute node depends on the batch system.
-For more information on configuring Pyre for your batch system, see CIG's Pythia page <https://geodynamics.org/cig/software/pythia/>.
+For more information on configuring Pyre for your batch system, see CIG's Pythia page <https://geodynamics.org/resources/pythiaXX/>.
 :::
 
 #### LSF Batch System
