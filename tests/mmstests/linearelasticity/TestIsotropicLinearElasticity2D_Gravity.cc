@@ -311,7 +311,7 @@ class pylith::mmstests::TestIsotropicLinearElasticity2D_Gravity_QuadQ2 :
         TestIsotropicLinearElasticity2D_Gravity::setUp();
         CPPUNIT_ASSERT(_data);
 
-        _data->meshFilename = "data/quad.mesh";
+        _data->meshFilename = "data/quad.msh";
 
         _data->numSolnSubfields = 1;
         static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {

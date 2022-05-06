@@ -22,11 +22,14 @@ TESTS = test_pylith.py
 dist_check_SCRIPTS = test_pylith.py
 
 dist_noinst_PYTHON = \
+	generate_gmsh.py \
 	meshes.py \
 	TestTwoBlocks.py \
 	twoblocks_soln.py
 
 dist_noinst_DATA = \
+	mesh_tri.msh \
+	mesh_quad.msh \
 	geometry.jou \
 	bc.jou \
 	mesh_tri.jou \
@@ -37,6 +40,8 @@ dist_noinst_DATA = \
 	twoblocks.cfg \
 	twoblocks_quad.cfg \
 	twoblocks_tri.cfg \
+	twoblocks_cubit_quad.cfg \
+	twoblocks_cubit_tri.cfg \
 	twoblocks_ic.cfg \
 	twoblocks_ic_quad.cfg \
 	twoblocks_ic_tri.cfg

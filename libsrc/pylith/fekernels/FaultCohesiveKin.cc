@@ -145,7 +145,6 @@ pylith::fekernels::FaultCohesiveKin::f0u_pos(const PylithInt dim,
     const PylithScalar* lagrange = &s[sOffLagrange];
 
     for (PylithInt i = 0; i < spaceDim; ++i) {
-        // f0[fOffN+i] += -lagrange[i];
         f0[fOffP+i] += +lagrange[i];
     } // for
 } // f0u_pos

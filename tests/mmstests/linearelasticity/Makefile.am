@@ -87,6 +87,10 @@ dist_noinst_DATA = \
 	data/quad_distorted.mesh \
 	data/tet.mesh \
 	data/hex.mesh \
+	data/tri.msh \
+	data/quad.msh \
+	data/tet.msh \
+	data/hex.msh \
 	data/tri_twocells.mesh \
 	data/tri_fourcells.mesh \
 	data/quad_fourcells.mesh

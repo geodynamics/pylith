@@ -14,14 +14,10 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-# @file tests/fullscale/linearelasticity/nofaults-2d/TestAxialDisp.py
-#
-# @brief Test suite for testing pylith with 2-D axial extension.
 
 import unittest
 
-from pylith.testing.FullTestApp import (FullTestCase, Check, check_data)
+from pylith.testing.FullTestApp import (FullTestCase, Check)
 
 import meshes
 import axialdisp_soln
@@ -72,11 +68,11 @@ class TestCase(FullTestCase):
 
 
 # -------------------------------------------------------------------------------------------------
-class TestQuad(TestCase):
+class TestQuadGmsh(TestCase):
 
     def setUp(self):
         self.name = "axialdisp_quad"
-        self.mesh = meshes.Quad()
+        self.mesh = meshes.QuadGmsh()
         super().setUp()
 
         TestCase.run_pylith(self, self.name, ["axialdisp.cfg", "axialdisp_quad.cfg"])
@@ -84,11 +80,11 @@ class TestQuad(TestCase):
 
 
 # -------------------------------------------------------------------------------------------------
-class TestTri(TestCase):
+class TestTriGmsh(TestCase):
 
     def setUp(self):
         self.name = "axialdisp_tri"
-        self.mesh = meshes.Tri()
+        self.mesh = meshes.TriGmsh()
         super().setUp()
 
         TestCase.run_pylith(self, self.name, ["axialdisp.cfg", "axialdisp_tri.cfg"])
@@ -96,10 +92,36 @@ class TestTri(TestCase):
 
 
 # -------------------------------------------------------------------------------------------------
+class TestQuadCubit(TestCase):
+
+    def setUp(self):
+        self.name = "axialdisp_cubit_quad"
+        self.mesh = meshes.QuadCubit()
+        super().setUp()
+
+        TestCase.run_pylith(self, self.name, ["axialdisp.cfg", "axialdisp_cubit_quad.cfg"])
+        return
+
+
+# -------------------------------------------------------------------------------------------------
+class TestTriCubit(TestCase):
+
+    def setUp(self):
+        self.name = "axialdisp_cubit_tri"
+        self.mesh = meshes.TriCubit()
+        super().setUp()
+
+        TestCase.run_pylith(self, self.name, ["axialdisp.cfg", "axialdisp_cubit_tri.cfg"])
+        return
+
+
+# -------------------------------------------------------------------------------------------------
 def test_cases():
     return [
-        TestQuad,
-        TestTri,
+        TestQuadGmsh,
+        TestTriGmsh,
+        TestQuadCubit,
+        TestTriCubit,
     ]
 
 

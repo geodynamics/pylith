@@ -34,6 +34,8 @@ subpkginclude_HEADERS = \
 	MeshIO.icc \
 	MeshIOAscii.hh \
 	MeshIOAscii.icc \
+	MeshIOPetsc.hh \
+	MeshIOPetsc.icc \
 	MeshIOLagrit.hh \
 	MeshIOLagrit.icc \
 	OutputObserver.hh \

@@ -141,7 +141,7 @@ pylith::testing::MMSTest::testResidual(void) {
         solution->view("Solution field");
     } // if
     if (!_allowZeroResidual) {
-        CPPUNIT_ASSERT_MESSAGE("L2 normal of residual is exactly zero, which suggests suspicious case with all residuals "
+        CPPUNIT_ASSERT_MESSAGE("L2 normal of residual is exactly zero, which suggests suspicious case with all residual "
                                "entries exactly zero.",
                                norm > 0.0);
     } // if

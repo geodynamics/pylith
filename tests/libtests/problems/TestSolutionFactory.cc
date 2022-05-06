@@ -307,7 +307,7 @@ pylith::problems::TestSolutionFactory::_initialize(void) {
 
     pylith::meshio::MeshIOAscii iohandler;
     CPPUNIT_ASSERT(_data->meshFilename);
-    iohandler.filename(_data->meshFilename);
+    iohandler.setFilename(_data->meshFilename);
     _mesh = new pylith::topology::Mesh();CPPUNIT_ASSERT(_mesh);
     iohandler.read(_mesh);
 
@@ -334,8 +334,7 @@ pylith::problems::TestSolutionFactory_Data::TestSolutionFactory_Data(void) :
     meshFilename(NULL),
     cs(NULL),
     normalizer(new spatialdata::units::Nondimensional),
-    solutionDB(new spatialdata::spatialdb::UserFunctionDB)
-{}
+    solutionDB(new spatialdata::spatialdb::UserFunctionDB) {}
 
 
 // ---------------------------------------------------------------------------------------------------------------------

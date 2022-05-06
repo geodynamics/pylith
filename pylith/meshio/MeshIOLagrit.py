@@ -106,11 +106,11 @@ class MeshIOLagrit(MeshIOObj, ModuleMeshIOLagrit):
         """Do minimal initialization."""
         MeshIOObj.preinitialize(self)
 
-        ModuleMeshIOLagrit.filenameGmv(self, self.filenameGmv)
-        ModuleMeshIOLagrit.filenamePset(self, self.filenamePset)
-        ModuleMeshIOLagrit.flipEndian(self, self.flipEndian)
-        ModuleMeshIOLagrit.ioInt32(self, self.ioInt32)
-        ModuleMeshIOLagrit.isRecordHeader32Bit(self, self.isRecordHeader32Bit)
+        ModuleMeshIOLagrit.setFilenameGmv(self, self.filenameGmv)
+        ModuleMeshIOLagrit.setFilenamePset(self, self.filenamePset)
+        ModuleMeshIOLagrit.setFlipEndian(self, self.flipEndian)
+        ModuleMeshIOLagrit.setIOInt32(self, self.ioInt32)
+        ModuleMeshIOLagrit.setIsRecordHeader32Bit(self, self.isRecordHeader32Bit)
 
     def _configure(self):
         """Set members based using inventory.

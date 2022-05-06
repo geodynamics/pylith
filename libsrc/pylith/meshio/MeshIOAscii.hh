@@ -51,13 +51,13 @@ public:
      *
      * @param filename Name of file
      */
-    void filename(const char* name);
+    void setFilename(const char* name);
 
     /** Get filename of ASCII file.
      *
      * @returns Name of file
      */
-    const char* filename(void) const;
+    const char* getFilename(void) const;
 
     // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:

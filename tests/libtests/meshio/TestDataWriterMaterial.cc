@@ -72,7 +72,7 @@ pylith::meshio::TestDataWriterMaterial::_initialize(void) {
 
     delete _domainMesh;_domainMesh = new topology::Mesh;CPPUNIT_ASSERT(_domainMesh);
     MeshIOAscii iohandler;
-    iohandler.filename(data->meshFilename);
+    iohandler.setFilename(data->meshFilename);
     iohandler.read(_domainMesh);
 
     spatialdata::geocoords::CSCart cs;

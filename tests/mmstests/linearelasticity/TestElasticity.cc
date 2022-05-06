@@ -33,6 +33,7 @@
 #include "pylith/feassemble/AuxiliaryFactory.hh" // USES AuxiliaryFactory
 #include "pylith/problems/SolutionFactory.hh" // USES SolutionFactory
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
+#include "pylith/meshio/MeshIOPetsc.hh" // USES MeshIOPetsc
 #include "pylith/bc/DirichletUserFn.hh" // USES DirichletUserFn
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 #include "pylith/utils/journals.hh" // pythia::journal
@@ -66,17 +67,37 @@ pylith::mmstests::TestElasticity::tearDown(void) {
 } // tearDown
 
 
+static bool
+endsWith(const std::string& str,
+         const std::string& suffix) {
+    return str.size() >= suffix.size() && 0 == str.compare(str.size()-suffix.size(), suffix.size(), suffix);
+}
+
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Initialize objects for test.
 void
 pylith::mmstests::TestElasticity::_initialize(void) {
     PYLITH_METHOD_BEGIN;
-
     CPPUNIT_ASSERT(_mesh);
-    pylith::meshio::MeshIOAscii iohandler;
-    CPPUNIT_ASSERT(_data->meshFilename);
-    iohandler.filename(_data->meshFilename);
-    iohandler.read(_mesh);CPPUNIT_ASSERT(_mesh);
+
+    PetscErrorCode err = 0;
+
+    if (_data->meshFilename) {
+        std::string name(_data->meshFilename);
+        if (endsWith(name, ".mesh")) {
+            pylith::meshio::MeshIOAscii iohandler;
+            iohandler.setFilename(_data->meshFilename);
+            iohandler.read(_mesh);CPPUNIT_ASSERT(_mesh);
+        } else {
+            if (_data->meshOptions) {
+                err = PetscOptionsInsertString(NULL, _data->meshOptions);PYLITH_CHECK_ERROR(err);
+            } // if
+            pylith::meshio::MeshIOPetsc iohandler;
+            iohandler.setFilename(_data->meshFilename);
+            iohandler.read(_mesh);CPPUNIT_ASSERT(_mesh);
+        } // if/else
+    } // if/else
 
     CPPUNIT_ASSERT_MESSAGE("Test mesh does not contain any cells.",
                            pylith::topology::MeshOps::getNumCells(*_mesh) > 0);
@@ -138,6 +159,7 @@ pylith::mmstests::TestElasticity::_initialize(void) {
 pylith::mmstests::TestElasticity_Data::TestElasticity_Data(void) :
     spaceDim(0),
     meshFilename(NULL),
+    meshOptions(NULL),
     boundaryLabel(NULL),
     cs(NULL),
     gravityField(NULL),

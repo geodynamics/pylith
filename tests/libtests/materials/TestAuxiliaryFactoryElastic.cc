@@ -241,7 +241,7 @@ pylith::materials::TestAuxiliaryFactoryElastic::_initialize(void) {
 
     pylith::meshio::MeshIOAscii iohandler;
     CPPUNIT_ASSERT(_data->meshFilename);
-    iohandler.filename(_data->meshFilename);
+    iohandler.setFilename(_data->meshFilename);
     _mesh = new pylith::topology::Mesh();CPPUNIT_ASSERT(_mesh);
     iohandler.read(_mesh);
 
@@ -280,8 +280,7 @@ pylith::materials::TestAuxiliaryFactoryElastic_Data::TestAuxiliaryFactoryElastic
     meshFilename(NULL),
     cs(NULL),
     normalizer(new spatialdata::units::Nondimensional),
-    auxiliaryDB(new spatialdata::spatialdb::UserFunctionDB)
-{}
+    auxiliaryDB(new spatialdata::spatialdb::UserFunctionDB) {}
 
 
 // ---------------------------------------------------------------------------------------------------------------------

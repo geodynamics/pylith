@@ -98,11 +98,11 @@ pylith::meshio::TestMeshIOLagrit::testFilename(void) {
 
     const char* filenameGmv = "hi.txt";
     const char* filenamePset = "hi2.txt";
-    _io->filenameGmv(filenameGmv);
-    _io->filenamePset(filenamePset);
+    _io->setFilenameGmv(filenameGmv);
+    _io->setFilenamePset(filenamePset);
 
-    CPPUNIT_ASSERT(0 == strcasecmp(filenameGmv, _io->filenameGmv()));
-    CPPUNIT_ASSERT(0 == strcasecmp(filenamePset, _io->filenamePset()));
+    CPPUNIT_ASSERT(0 == strcasecmp(filenameGmv, _io->getFilenameGmv()));
+    CPPUNIT_ASSERT(0 == strcasecmp(filenamePset, _io->getFilenamePset()));
 
     PYLITH_METHOD_END;
 } // testFilename
@@ -117,17 +117,17 @@ pylith::meshio::TestMeshIOLagrit::testRead(void) {
     CPPUNIT_ASSERT(_io);
     CPPUNIT_ASSERT(_data);
 
-    _io->filenameGmv(_data->filenameGmv);
-    _io->filenamePset(_data->filenamePset);
-    _io->ioInt32(_data->ioInt32);
-    _io->isRecordHeader32Bit(_data->isRecordHeader32Bit);
+    _io->setFilenameGmv(_data->filenameGmv);
+    _io->setFilenamePset(_data->filenamePset);
+    _io->setIOInt32(_data->ioInt32);
+    _io->setIsRecordHeader32Bit(_data->isRecordHeader32Bit);
 
     // LaGriT file was created on little endian machine, so flip endian if
     // running test on big endian machine.
 #if defined(NATIVE_LITTLE_ENDIAN)
-    _io->flipEndian(false);
+    _io->setFlipEndian(false);
 #else
-    _io->flipEndian(true);
+    _io->setFlipEndian(true);
 #endif
 
     // Read mesh

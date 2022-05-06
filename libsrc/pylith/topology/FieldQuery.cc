@@ -239,7 +239,7 @@ pylith::topology::FieldQuery::queryDBLabel(const char* labelName,
     } // for
 
     PetscDMLabel dmLabel = NULL;
-    err = DMGetLabel(_field.getDM(), labelName, &dmLabel);PYLITH_CHECK_ERROR(err);
+    err = DMGetLabel(_field.getDM(), labelName, &dmLabel);PYLITH_CHECK_ERROR(err);assert(dmLabel);
     err = DMProjectFunctionLabelLocal(_field.getDM(), dummyTime, dmLabel, 1, &labelValue,
                                       numSubfields, &subfieldIndices[0], _functions, (void**)_contextPtrs,
                                       INSERT_ALL_VALUES, _field.getLocalVector());PYLITH_CHECK_ERROR(err);

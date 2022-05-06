@@ -57,7 +57,7 @@ nodeset 22 group fault_slabtop
 nodeset 22 name "fault_slabtop"
 
 group "fault_slabbot" add node in slabbot@B
-group "fault_slabbot" add node in slabbot@C
+group "fault_slabbot" add node in slabbot@D
 group "fault_slabbot" add node in slabbot
 nodeset 23 group fault_slabbot
 nodeset 23 name "fault_slabbot"
@@ -115,6 +115,7 @@ nodeset 16 name "bndry_bot_mantle"
 
 
 # End of file
+
 
 
 

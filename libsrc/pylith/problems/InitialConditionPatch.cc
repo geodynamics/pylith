@@ -131,7 +131,7 @@ pylith::problems::InitialConditionPatch::verifyConfiguration(const pylith::topol
     } // if
 
     PetscDMLabel dmLabel = NULL;
-    err = DMGetLabel(solution.getDM(), _labelName.c_str(), &dmLabel);PYLITH_CHECK_ERROR(err);
+    err = DMGetLabel(solution.getDM(), _labelName.c_str(), &dmLabel);PYLITH_CHECK_ERROR(err);assert(dmLabel);
     PetscBool hasValue = PETSC_FALSE;
     err = DMLabelHasValue(dmLabel, _labelValue, &hasValue);PYLITH_CHECK_ERROR(err);
     if (!hasValue) {

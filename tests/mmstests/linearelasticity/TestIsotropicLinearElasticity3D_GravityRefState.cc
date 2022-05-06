@@ -308,7 +308,7 @@ class pylith::mmstests::TestIsotropicLinearElasticity3D_GravityRefState_TetP2 :
         TestIsotropicLinearElasticity3D_GravityRefState::setUp();
         CPPUNIT_ASSERT(_data);
 
-        _data->meshFilename = "data/tet.mesh";
+        _data->meshFilename = "data/tet.msh";
 
         _data->numSolnSubfields = 1;
         static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
@@ -375,7 +375,7 @@ class pylith::mmstests::TestIsotropicLinearElasticity3D_GravityRefState_HexQ1 :
         TestIsotropicLinearElasticity3D_GravityRefState::setUp();
         CPPUNIT_ASSERT(_data);
 
-        _data->meshFilename = "data/hex.mesh";
+        _data->meshFilename = "data/hex.msh";
 
         _data->numSolnSubfields = 1;
         static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {

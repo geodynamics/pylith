@@ -14,14 +14,10 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-# @file tests/fullscale/linearelasticity/nofaults-2d/TestShearTraction.py
-#
-# @brief Test suite for testing pylith with 2-D simple shear.
 
 import unittest
 
-from pylith.testing.FullTestApp import (FullTestCase, Check, check_data)
+from pylith.testing.FullTestApp import (FullTestCase, Check)
 
 import meshes
 import sheartraction_soln
@@ -77,7 +73,7 @@ class TestQuad(TestCase):
 
     def setUp(self):
         self.name = "sheartraction_quad"
-        self.mesh = meshes.Quad()
+        self.mesh = meshes.QuadGmsh()
         super().setUp()
 
         TestCase.run_pylith(self, self.name, ["sheartraction.cfg", "sheartraction_quad.cfg"])
@@ -85,11 +81,11 @@ class TestQuad(TestCase):
 
 
 # -------------------------------------------------------------------------------------------------
-class TestTri(TestCase, meshes.Tri):
+class TestTri(TestCase):
 
     def setUp(self):
         self.name = "sheartraction_tri"
-        self.mesh = meshes.Tri()
+        self.mesh = meshes.TriGmsh()
         super().setUp()
 
         TestCase.run_pylith(self, self.name, ["sheartraction.cfg", "sheartraction_tri.cfg"])

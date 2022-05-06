@@ -32,7 +32,7 @@
 const std::string pylith::problems::IntegrationData::time = "t";
 const std::string pylith::problems::IntegrationData::time_step = "dt";
 const std::string pylith::problems::IntegrationData::s_tshift = "s_tshift";
-const std::string pylith::problems::IntegrationData::t_state = "s_tshift";
+const std::string pylith::problems::IntegrationData::t_state = "t_state";
 const std::string pylith::problems::IntegrationData::dt_residual = "dt_residual";
 const std::string pylith::problems::IntegrationData::dt_jacobian = "dt_jacobian";
 const std::string pylith::problems::IntegrationData::dt_lumped_jacobian_inverse = "dt_lumped_jacobian_inverse";

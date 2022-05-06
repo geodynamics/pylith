@@ -14,14 +14,10 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-# @file tests/fullscale/linearelasticity/nofaults-2d/TestShearTractionRate.py
-#
-# @brief Test suite for testing pylith with 2-D time-dependent simple shear.
 
 import unittest
 
-from pylith.testing.FullTestApp import (FullTestCase, Check, check_data)
+from pylith.testing.FullTestApp import (FullTestCase, Check)
 
 import meshes
 import sheartraction_rate_soln
@@ -76,7 +72,7 @@ class TestQuad(TestCase):
 
     def setUp(self):
         self.name = "sheartraction_rate_quad"
-        self.mesh = meshes.Quad()
+        self.mesh = meshes.QuadGmsh()
         super().setUp()
 
         TestCase.run_pylith(self, self.name, ["sheartraction_rate.cfg", "sheartraction_rate_quad.cfg"])
@@ -88,7 +84,7 @@ class TestTri(TestCase):
 
     def setUp(self):
         self.name = "sheartraction_rate_tri"
-        self.mesh = meshes.Tri()
+        self.mesh = meshes.TriGmsh()
         super().setUp()
 
         TestCase.run_pylith(self, self.name, ["sheartraction_rate.cfg", "sheartraction_rate_tri.cfg"])

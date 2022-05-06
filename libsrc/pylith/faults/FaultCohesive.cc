@@ -269,6 +269,11 @@ pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh) {
         pylith::topology::MeshOps::checkTopology(*mesh);
         pylith::topology::MeshOps::checkTopology(faultMesh);
 
+        pythia::journal::debug_t debug(PyreComponent::getName());
+        if (debug.state()) {
+            mesh->view("::ascii_info_detail");
+        } // if
+
     } catch (const std::exception& err) {
         std::ostringstream msg;
         msg << "Error occurred while adjusting topology to create cohesive cells for fault '" << _surfaceLabelName << "'.\n"

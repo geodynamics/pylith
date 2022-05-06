@@ -31,6 +31,8 @@ test_meshio_SOURCES = \
 	TestMeshIO.cc \
 	TestMeshIOAscii.cc \
 	TestMeshIOAscii_Cases.cc \
+	TestMeshIOPetsc.cc \
+	TestMeshIOPetsc_Cases.cc \
 	TestMeshIOLagrit.cc \
 	TestMeshIOLagrit_Cases.cc \
 	TestOutputTriggerStep.cc \
@@ -104,6 +106,7 @@ noinst_HEADERS = \
 	TestMeshIO.hh \
 	TestMeshIOAscii.hh \
 	TestMeshIOLagrit.hh \
+	TestMeshIOPetsc.hh \
 	TestOutputTriggerStep.hh \
 	TestOutputTriggerTime.hh \
 	FieldFactory.hh \

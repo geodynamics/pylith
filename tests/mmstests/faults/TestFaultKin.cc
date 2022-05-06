@@ -80,7 +80,7 @@ pylith::mmstests::TestFaultKin::_initialize(void) {
     CPPUNIT_ASSERT(_mesh);
     pylith::meshio::MeshIOAscii iohandler;
     CPPUNIT_ASSERT(_data->meshFilename);
-    iohandler.filename(_data->meshFilename);
+    iohandler.setFilename(_data->meshFilename);
     iohandler.read(_mesh);CPPUNIT_ASSERT(_mesh);
 
     CPPUNIT_ASSERT_MESSAGE("Test mesh does not contain any cells.",

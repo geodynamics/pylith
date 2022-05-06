@@ -200,7 +200,7 @@ pylith::topology::TestRefineUniform::_initializeMesh(Mesh* const mesh) {
     CPPUNIT_ASSERT(mesh);
 
     pylith::meshio::MeshIOAscii iohandler;
-    iohandler.filename(_data->filename);
+    iohandler.setFilename(_data->filename);
     iohandler.read(mesh);
 
     // Adjust topology if necessary.

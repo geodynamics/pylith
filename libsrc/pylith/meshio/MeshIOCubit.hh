@@ -48,19 +48,19 @@ public:
      *
      * @param filename Name of file
      */
-    void filename(const char* name);
+    void setFilename(const char* name);
 
     /** Get filename of Cubit file.
      *
      * @returns Name of file
      */
-    const char* filename(void) const;
+    const char* getFilename(void) const;
 
     /** Set flag on whether to use nodeset ids or names.
      *
      * @param flag True to use node set names.
      */
-    void useNodesetNames(const bool flag);
+    void setUseNodesetNames(const bool flag);
 
     // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:

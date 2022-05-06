@@ -23,16 +23,18 @@
 // Set filename for ASCII file.
 inline
 void
-pylith::meshio::MeshIOAscii::filename(const char* name) {
-  _filename = name;
+pylith::meshio::MeshIOAscii::setFilename(const char* name) {
+    _filename = name;
 }
+
 
 // Get filename of ASCII file.
 inline
-const char* 
-pylith::meshio::MeshIOAscii::filename(void) const {
-  return _filename.c_str();
+const char*
+pylith::meshio::MeshIOAscii::getFilename(void) const {
+    return _filename.c_str();
 }
+
 
 #endif
 

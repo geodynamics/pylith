@@ -88,6 +88,7 @@ public:
 
     int spaceDim; ///< Spatial dimension of domain.
     const char* meshFilename; ///< Name of file with ASCII mesh.
+    const char* meshOptions; ///< Command line options for mesh.
     const char* boundaryLabel; ///< Group defining domain boundary.
 
     spatialdata::geocoords::CoordSys* cs; ///< Coordinate system.

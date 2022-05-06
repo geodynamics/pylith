@@ -31,32 +31,32 @@ nodeset 10 name "fault"
 # ----------------------------------------------------------------------
 # Create nodeset for +x face
 # ----------------------------------------------------------------------
-group "face_xpos" add node in curve edge_xpos
-nodeset 21 group face_xpos
-nodeset 21 name "face_xpos"
+group "boundary_xpos" add node in curve edge_xpos
+nodeset 21 group boundary_xpos
+nodeset 21 name "boundary_xpos"
 
 # ----------------------------------------------------------------------
 # Create nodeset for -x face
 # ----------------------------------------------------------------------
-group "face_xneg" add node in curve edge_xneg
-nodeset 22 group face_xneg
-nodeset 22 name "face_xneg"
+group "boundary_xneg" add node in curve edge_xneg
+nodeset 22 group boundary_xneg
+nodeset 22 name "boundary_xneg"
 
 # ----------------------------------------------------------------------
 # Create nodeset for +y face
 # ----------------------------------------------------------------------
-group "face_ypos" add node in curve edge_ypos_xneg
-group "face_ypos" add node in curve edge_ypos_xpos
-nodeset 23 group face_ypos
-nodeset 23 name "face_ypos"
+group "boundary_ypos" add node in curve edge_ypos_xneg
+group "boundary_ypos" add node in curve edge_ypos_xpos
+nodeset 23 group boundary_ypos
+nodeset 23 name "boundary_ypos"
 
 # ----------------------------------------------------------------------
 # Create nodeset for -y face
 # ----------------------------------------------------------------------
-group "face_yneg" add node in curve edge_yneg_xneg
-group "face_yneg" add node in curve edge_yneg_xpos
-nodeset 24 group face_yneg
-nodeset 24 name "face_yneg"
+group "boundary_yneg" add node in curve edge_yneg_xneg
+group "boundary_yneg" add node in curve edge_yneg_xpos
+nodeset 24 group boundary_yneg
+nodeset 24 name "boundary_yneg"
 
 
 # End of file

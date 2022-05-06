@@ -104,6 +104,11 @@ pylith::meshio::MeshIO::read(topology::Mesh* mesh) {
 
     // Check mesh consistency
     topology::MeshOps::checkTopology(*_mesh);
+
+    pythia::journal::debug_t debug(PyreComponent::getName());
+    if (debug.state()) {
+        _mesh->view("::ascii_info_detail");
+    } // if
     // Respond to PETSc diagnostic output
     err = DMViewFromOptions(_mesh->getDM(), NULL, "-pylith_dm_view");PYLITH_CHECK_ERROR(err);
 

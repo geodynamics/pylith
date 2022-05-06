@@ -62,7 +62,7 @@ pylith::feassemble::ConstraintSpatialDB::setKernelConstraint(const PetscBdPointF
 void
 pylith::feassemble::ConstraintSpatialDB::initialize(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("intialize(solution="<<solution.getLabel()<<")");
+    PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" intialize(solution="<<solution.getLabel()<<")");
 
     assert(_physics);
 
@@ -99,7 +99,7 @@ pylith::feassemble::ConstraintSpatialDB::initialize(const pylith::topology::Fiel
 void
 pylith::feassemble::ConstraintSpatialDB::updateState(const double t) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("updateState(t="<<t<<")");
+    PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" updateState(t="<<t<<")");
 
     assert(_physics);
     _physics->updateAuxiliaryField(_auxiliaryField, t);
@@ -123,7 +123,7 @@ void
 pylith::feassemble::ConstraintSpatialDB::setSolution(pylith::problems::IntegrationData* integrationData) {
     assert(integrationData);
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("setSolution(integrationData="<<integrationData->str()<<")");
+    PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" setSolution(integrationData="<<integrationData->str()<<")");
 
     assert(_auxiliaryField);
     assert(_physics);
@@ -135,23 +135,21 @@ pylith::feassemble::ConstraintSpatialDB::setSolution(pylith::problems::Integrati
     PetscErrorCode err = 0;
     PetscDM dmSoln = solution->getDM();
 
-    // Set auxiliary data
-    PetscDMLabel dmLabel = NULL;
-    PetscInt labelValue = 0;
-    const PetscInt part = 0;
-    err = DMSetAuxiliaryVec(dmSoln, dmLabel, labelValue, part, _auxiliaryField->getLocalVector());PYLITH_CHECK_ERROR(err);
-
     // Get label for constraint.
+    PetscDMLabel dmLabel = NULL;
     err = DMGetLabel(dmSoln, _labelName.c_str(), &dmLabel);PYLITH_CHECK_ERROR(err);
 
+    // Set auxiliary data
+    const PetscInt part = 0;
+    err = DMSetAuxiliaryVec(dmSoln, dmLabel, _labelValue, part, _auxiliaryField->getLocalVector());PYLITH_CHECK_ERROR(err);
+
     void* context = NULL;
-    const int labelId = 1;
     const int fieldIndex = solution->getSubfieldInfo(_subfieldName.c_str()).index;
     const PylithInt numConstrained = _constrainedDOF.size();
     assert(solution->getLocalVector());
     err = DMPlexLabelAddFaceCells(dmSoln, dmLabel);PYLITH_CHECK_ERROR(err);
     err = DMPlexInsertBoundaryValuesEssentialBdField(dmSoln, t, solution->getLocalVector(), fieldIndex,
-                                                     numConstrained, &_constrainedDOF[0], dmLabel, 1, &labelId,
+                                                     numConstrained, &_constrainedDOF[0], dmLabel, 1, &_labelValue,
                                                      _kernelConstraint, context, solution->getLocalVector());PYLITH_CHECK_ERROR(err);
     err = DMPlexLabelClearCells(dmSoln, dmLabel);PYLITH_CHECK_ERROR(err);
 

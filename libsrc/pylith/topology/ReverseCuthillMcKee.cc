@@ -33,7 +33,7 @@ pylith::topology::ReverseCuthillMcKee::reorder(topology::Mesh* mesh) {
     PetscDMLabel dmLabel = NULL;
     PetscDM dmOrig = mesh->getDM();
     const char* const labelName = pylith::topology::Mesh::cells_label_name;
-    err = DMGetLabel(dmOrig, labelName, &dmLabel);PYLITH_CHECK_ERROR(err);
+    err = DMGetLabel(dmOrig, labelName, &dmLabel);PYLITH_CHECK_ERROR(err);assert(dmLabel);
 
     PetscIS permutation = NULL;
     PetscDM dmNew = NULL;
@@ -46,7 +46,7 @@ pylith::topology::ReverseCuthillMcKee::reorder(topology::Mesh* mesh) {
     PetscIS valuesIS = NULL;
     PetscInt numValues = 0;
     const PetscInt* values = NULL;
-    err = DMGetLabel(dmNew, labelName, &dmLabel);PYLITH_CHECK_ERROR(err);
+    err = DMGetLabel(dmNew, labelName, &dmLabel);PYLITH_CHECK_ERROR(err);assert(dmLabel);
     err = DMLabelGetValueIS(dmLabel, &valuesIS);PYLITH_CHECK_ERROR(err);
     err = ISGetLocalSize(valuesIS, &numValues);PYLITH_CHECK_ERROR(err);
     err = ISGetIndices(valuesIS, &values);PYLITH_CHECK_ERROR(err);

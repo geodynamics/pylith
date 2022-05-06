@@ -204,7 +204,7 @@ pylith::topology::TestReverseCuthillMcKee::_initialize() {
     delete _mesh;_mesh = new Mesh;CPPUNIT_ASSERT(_mesh);
 
     meshio::MeshIOAscii iohandler;
-    iohandler.filename(_data->filename);
+    iohandler.setFilename(_data->filename);
     iohandler.read(_mesh);
     CPPUNIT_ASSERT(pylith::topology::MeshOps::getNumCells(*_mesh) > 0);
     CPPUNIT_ASSERT(pylith::topology::MeshOps::getNumVertices(*_mesh) > 0);

@@ -37,16 +37,19 @@ and strains for each material every 10 years.
 For each of the simulations, we recommend examining the displacements,
 stress field, and fault slip.
 
-## Mesh generation using CUBIT/Trelis (optional)
+## Mesh generation using Gmsh (optional)
 
 **WARNING**: The result of this step will overwrite the included file
-tri_mesh.exo. You may want to copy/rename this file so that you have a
-backup copy in case you have difficulty running CUBIT/Trelis.
+tri_mesh.msh. You may want to copy/rename this file so that you have a
+backup copy in case you have difficulty running Gmsh.
 
-Start CUBIT/Trelis and play the journal file `mesh_tri.jou`. We highly
-recommend that you study the contents of the journal files to
-understand the mesh generation process.
+Run the Gmsh Python script:
+```
+generate_gmsh.py --all --filename=mesh_tri.msh
+```
 
+We highly recommend that you study the contents of the Gmsh Python script
+to understand the mesh generation process.
 
 ## Step01: Coseismic slip simulation
 
@@ -76,7 +79,6 @@ To run the example:
 ```
 pylith step02_interseismic.cfg
 ```
-
 
 ## Step03: Pseudo-earthquake cycle model
 
@@ -141,4 +143,3 @@ Run the simulation and capture the output via the following commands:
 pylith step06_eqcycleratestate.cfg >& step06.log &
 tail -f step06.log
 ```
-
