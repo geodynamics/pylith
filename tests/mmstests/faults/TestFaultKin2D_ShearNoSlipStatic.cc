@@ -372,7 +372,7 @@ protected:
         err = DMLabelGetStratumIS(label, _fault->getCohesiveLabelValue(), &is);CPPUNIT_ASSERT(!err);
         err = ISGetMinMax(is, &cohesiveCell, NULL);CPPUNIT_ASSERT(!err);
         err = ISDestroy(&is);CPPUNIT_ASSERT(!err);
-        err = DMGetCellDS(dm, cohesiveCell, &prob);CPPUNIT_ASSERT(!err);
+        err = DMGetCellDS(dm, cohesiveCell, &prob, NULL);CPPUNIT_ASSERT(!err);
         err = PetscDSSetExactSolution(prob, 0, solnkernel_disp, NULL);CPPUNIT_ASSERT(!err);
         err = PetscDSSetExactSolution(prob, 1, solnkernel_lagrangemultiplier, NULL);CPPUNIT_ASSERT(!err);
     } // _setExactSolution

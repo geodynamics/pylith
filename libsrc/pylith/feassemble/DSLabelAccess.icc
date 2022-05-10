@@ -56,7 +56,7 @@ pylith::feassemble::DSLabelAccess::DSLabelAccess(const PetscDM dm,
     err = ISGetSize(_cellsIS, &_numCells);PYLITH_CHECK_ERROR(err);assert(_numCells > 0);
     err = ISGetIndices(_cellsIS, &cellIndices);PYLITH_CHECK_ERROR(err);assert(cellIndices);
 
-    err = DMGetCellDS(dm, cellIndices[0], &_ds);PYLITH_CHECK_ERROR(err);assert(_ds);
+    err = DMGetCellDS(dm, cellIndices[0], &_ds, NULL);PYLITH_CHECK_ERROR(err);assert(_ds);
     err = PetscDSGetWeakForm(_ds, &_weakForm);PYLITH_CHECK_ERROR(err);assert(_weakForm);
 
     err = ISRestoreIndices(_cellsIS, &cellIndices);PYLITH_CHECK_ERROR(err);

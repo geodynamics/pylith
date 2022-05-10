@@ -93,7 +93,7 @@ pylith::feassemble::ConstraintSimple::initialize(const pylith::topology::Field& 
         PetscInt Nf;
 
         if ((q < cStart) || (q >= cEnd)) { continue;}
-        err = DMGetCellDS(dm, q, &cds);PYLITH_CHECK_ERROR(err);
+        err = DMGetCellDS(dm, q, &cds, NULL);PYLITH_CHECK_ERROR(err);
         err = PetscDSGetNumFields(cds, &Nf);PYLITH_CHECK_ERROR(err);
         for (int f = 0; f < Nf; ++f) {
             PetscObject disc;
@@ -120,7 +120,7 @@ pylith::feassemble::ConstraintSimple::initialize(const pylith::topology::Field& 
         PetscInt Nds;
         err = DMGetNumDS(dm, &Nds);PYLITH_CHECK_ERROR(err);
         for (int s = 0; s < Nds; ++s) {
-            err = DMGetRegionNumDS(dm, s, NULL, NULL, &ds);PYLITH_CHECK_ERROR(err);
+            err = DMGetRegionNumDS(dm, s, NULL, NULL, &ds, NULL);PYLITH_CHECK_ERROR(err);
             err = PetscObjectViewFromOptions((PetscObject) ds, NULL, "-constraint_simple_ds_view");PYLITH_CHECK_ERROR(err);
         }
     }
