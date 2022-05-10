@@ -63,39 +63,15 @@ public:
      */
     void verifyConfiguration(const pylith::topology::Field& solution) const;
 
-    /** Create integrator and set kernels.
-     *
-     * @param[in] solution Solution field.
-     * @returns Integrator if applicable, otherwise NULL.
-     */
-    pylith::feassemble::Integrator* createIntegrator(const pylith::topology::Field& solution);
-
-    /** Create constraint and set kernels.
-     *
-     * @param[in] solution Solution field.
-     * @returns Constraint if applicable, otherwise NULL.
-     */
-    std::vector<pylith::feassemble::Constraint*> createConstraints(const pylith::topology::Field& solution);
-
     /** Create auxiliary field.
      *
      * @param[in] solution Solution field.
-     * @param[in\ domainMesh Finite-element mesh associated with integration domain.
+     * @param[in] domainMesh Finite-element mesh associated with integration domain.
      *
      * @returns Auxiliary field if applicable, otherwise NULL.
      */
     pylith::topology::Field* createAuxiliaryField(const pylith::topology::Field& solution,
                                                   const pylith::topology::Mesh& domainMesh);
-
-    /** Create derived field.
-     *
-     * @param[in] solution Solution field.
-     * @param[in\ domainMesh Finite-element mesh associated with integration domain.
-     *
-     * @returns Derived field if applicable, otherwise NULL.
-     */
-    pylith::topology::Field* createDerivedField(const pylith::topology::Field& solution,
-                                                const pylith::topology::Mesh& domainMesh);
 
     /** Update auxiliary subfields at beginning of time step.
      *
@@ -105,7 +81,7 @@ public:
     void updateAuxiliaryField(pylith::topology::Field* auxiliaryField,
                               const double t);
 
-    // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
+    // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
 protected:
 
     /** Get auxiliary factory associated with physics.
@@ -113,12 +89,6 @@ protected:
      * @return Auxiliary factory for physics object.
      */
     pylith::feassemble::AuxiliaryFactory* _getAuxiliaryFactory(void);
-
-    /** Update kernel constants.
-     *
-     * @param[in] dt Current time step.
-     */
-    void _updateKernelConstants(const PylithReal dt);
 
     /** Update slip subfield in auxiliary field at beginning of time step.
      *
@@ -144,9 +114,6 @@ protected:
     void _updateSlipAcceleration(pylith::topology::Field* auxiliaryField,
                                  const double t);
 
-    // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
-
     /** Set kernels for residual.
      *
      * @param[out] integrator Integrator for material.
@@ -163,12 +130,12 @@ private:
     void _setKernelsJacobian(pylith::feassemble::IntegratorInterface* integrator,
                              const pylith::topology::Field& solution) const;
 
-    // PROTECTED TYPEDEFS /////////////////////////////////////////////////////////////////////////////////////////////
+    // PROTECTED TYPEDEFS /////////////////////////////////////////////////////////////////////////
 protected:
 
     typedef std::map<std::string, KinSrc*> srcs_type;
 
-    // PROTECTED MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////
+    // PROTECTED MEMBERS //////////////////////////////////////////////////////////////////////////
 protected:
 
     pylith::faults::AuxiliaryFactoryKinematic* _auxiliaryFactory; ///< Factory for auxiliary subfields.
@@ -176,23 +143,11 @@ protected:
     PetscVec _slipVecRupture; ///< PETSc local Vec to hold slip for one kinematic rupture.
     PetscVec _slipVecTotal; ///< PETSc local Vec to hold slip for all kinematic ruptures.
 
-    // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
+    // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
 private:
 
     FaultCohesiveKin(const FaultCohesiveKin&); ///< Not implemented
     const FaultCohesiveKin& operator=(const FaultCohesiveKin&); ///< Not implemented.
-
-    static PetscErrorCode _zero(PetscInt dim,
-                                PetscReal t,
-                                const PetscReal x[],
-                                PetscInt Nc,
-                                PetscScalar *u,
-                                void *ctx) {
-        for (int c = 0; c < Nc; ++c) {
-            u[c] = 0.0;
-        }
-        return 0;
-    }
 
 }; // class FaultCohesiveKin
 

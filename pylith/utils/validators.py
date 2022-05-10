@@ -16,7 +16,6 @@
 """
 
 def notEmptyList(value):
-    print(f"LENGTH of {value}= {len(value)}")
     if len(value) > 0:
         return value
     raise ValueError("Nonempty list required.")

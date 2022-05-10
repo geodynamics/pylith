@@ -43,7 +43,7 @@
 #include <cassert> // USES assert()
 #include <typeinfo> // USES typeid()
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Constructor
 pylith::problems::Problem::Problem() :
     _integrationData(new pylith::problems::IntegrationData),
@@ -54,14 +54,14 @@ pylith::problems::Problem::Problem() :
     _solverType(LINEAR) {}
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Destructor
 pylith::problems::Problem::~Problem(void) {
     deallocate();
 } // destructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
 pylith::problems::Problem::deallocate(void) {
@@ -88,7 +88,7 @@ pylith::problems::Problem::deallocate(void) {
 } // deallocate
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Set formulation for solving equation.
 void
 pylith::problems::Problem::setFormulation(const pylith::problems::Physics::FormulationEnum value) {
@@ -101,7 +101,7 @@ pylith::problems::Problem::setFormulation(const pylith::problems::Physics::Formu
 } // setFormulation
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get formulation for solving equation.
 pylith::problems::Physics::FormulationEnum
 pylith::problems::Problem::getFormulation(void) const {
@@ -109,7 +109,7 @@ pylith::problems::Problem::getFormulation(void) const {
 } // getFormulation
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Set problem type.
 void
 pylith::problems::Problem::setSolverType(const SolverTypeEnum value) {
@@ -119,7 +119,7 @@ pylith::problems::Problem::setSolverType(const SolverTypeEnum value) {
 } // setSolverType
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get problem type.
 pylith::problems::Problem::SolverTypeEnum
 pylith::problems::Problem::getSolverType(void) const {
@@ -127,7 +127,7 @@ pylith::problems::Problem::getSolverType(void) const {
 } // getSolverType
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Set manager of scales used to nondimensionalize problem.
 void
 pylith::problems::Problem::setNormalizer(const spatialdata::units::Nondimensional& dim) {
@@ -141,7 +141,7 @@ pylith::problems::Problem::setNormalizer(const spatialdata::units::Nondimensiona
 } // setNormalizer
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Set gravity field.
 void
 pylith::problems::Problem::setGravityField(spatialdata::spatialdb::GravityField* const g) {
@@ -181,7 +181,7 @@ pylith::problems::Problem::removeObserver(pylith::problems::ObserverSoln* observ
 } // removeObserver
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Set solution field.
 void
 pylith::problems::Problem::setSolution(pylith::topology::Field* field) {
@@ -192,7 +192,7 @@ pylith::problems::Problem::setSolution(pylith::topology::Field* field) {
 } // setSolution
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get solution field.
 const pylith::topology::Field*
 pylith::problems::Problem::getSolution(void) const {
@@ -208,7 +208,7 @@ pylith::problems::Problem::getSolution(void) const {
 }
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Set materials.
 void
 pylith::problems::Problem::setMaterials(pylith::materials::Material* materials[],
@@ -227,7 +227,7 @@ pylith::problems::Problem::setMaterials(pylith::materials::Material* materials[]
 } // setMaterials
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Set boundary conditions.
 void
 pylith::problems::Problem::setBoundaryConditions(pylith::bc::BoundaryCondition* bc[],
@@ -246,7 +246,7 @@ pylith::problems::Problem::setBoundaryConditions(pylith::bc::BoundaryCondition* 
 } // setBoundaryConditions
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Set materials.
 void
 pylith::problems::Problem::setInterfaces(pylith::faults::FaultCohesive* interfaces[],
@@ -389,7 +389,7 @@ pylith::problems::Problem::initialize(void) {
 } // initialize
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Check material and interface ids.
 void
 pylith::problems::Problem::_checkMaterialLabels(void) const {
@@ -419,7 +419,7 @@ pylith::problems::Problem::_checkMaterialLabels(void) const {
 } // _checkMaterialLabels
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Create array of integrators from materials, interfaces, and boundary conditions.
 void
 pylith::problems::Problem::_createIntegrators(void) {
@@ -466,7 +466,7 @@ pylith::problems::Problem::_createIntegrators(void) {
 } // _createIntegrators
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Create array of constraints from materials, interfaces, and boundary conditions.
 void
 pylith::problems::Problem::_createConstraints(void) {
@@ -508,7 +508,7 @@ pylith::problems::Problem::_createConstraints(void) {
 } // _createConstraints
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Setup solution subfields and discretization.
 void
 pylith::problems::Problem::_setupSolution(void) {

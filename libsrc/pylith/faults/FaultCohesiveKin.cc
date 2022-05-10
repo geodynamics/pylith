@@ -170,111 +170,6 @@ pylith::faults::FaultCohesiveKin::verifyConfiguration(const pylith::topology::Fi
 
 
 // ------------------------------------------------------------------------------------------------
-// Create integrator and set kernels.
-pylith::feassemble::Integrator*
-pylith::faults::FaultCohesiveKin::createIntegrator(const pylith::topology::Field& solution) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("createIntegrator(solution="<<solution.getLabel()<<")");
-
-    pylith::feassemble::IntegratorInterface* integrator = new pylith::feassemble::IntegratorInterface(this);assert(integrator);
-    integrator->setLabelName(getCohesiveLabelName());
-    integrator->setLabelValue(getCohesiveLabelValue());
-    integrator->setSurfaceLabelName(getSurfaceLabelName());
-
-    pylith::feassemble::InterfacePatches* patches =
-        pylith::feassemble::InterfacePatches::createMaterialPairs(this, solution.getDM());
-    integrator->setIntegrationPatches(patches);
-
-    _setKernelsResidual(integrator, solution);
-    _setKernelsJacobian(integrator, solution);
-
-    PYLITH_METHOD_RETURN(integrator);
-} // createIntegrator
-
-
-// ------------------------------------------------------------------------------------------------
-// Create constraint for buried fault edges and faces.
-std::vector<pylith::feassemble::Constraint*>
-pylith::faults::FaultCohesiveKin::createConstraints(const pylith::topology::Field& solution) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("createConstraints(solution="<<solution.getLabel()<<")");
-
-    if (0 == strlen(getBuriedEdgesLabelName())) {
-        std::vector<pylith::feassemble::Constraint*> constraintArray;
-        PYLITH_METHOD_RETURN(constraintArray);
-    } // if
-
-    const char* lagrangeName = "lagrange_multiplier_fault";
-    const PylithInt numComponents = solution.getSpaceDim();
-
-    pylith::int_array constrainedDOF;
-    constrainedDOF.resize(numComponents);
-    for (int c = 0; c < numComponents; ++c) {
-        constrainedDOF[c] = c;
-    }
-    // Make new label for cohesive edges and faces
-    PetscDM dm = solution.getDM();
-    PetscDMLabel buriedLabel = NULL;
-    PetscDMLabel buriedCohesiveLabel = NULL;
-    PetscIS pointIS = NULL;
-    const PetscInt *points = NULL;
-    PetscInt n;
-    std::ostringstream labelstream;
-    labelstream << getBuriedEdgesLabelName() << "_cohesive";
-    std::string buriedLabelName = labelstream.str();
-    PetscErrorCode err;
-
-    err = DMCreateLabel(dm, buriedLabelName.c_str());PYLITH_CHECK_ERROR(err);
-    err = DMGetLabel(dm, getBuriedEdgesLabelName(), &buriedLabel);PYLITH_CHECK_ERROR(err);
-    err = DMGetLabel(dm, buriedLabelName.c_str(), &buriedCohesiveLabel);PYLITH_CHECK_ERROR(err);
-    err = DMLabelGetStratumIS(buriedLabel, getBuriedEdgesLabelValue(), &pointIS);PYLITH_CHECK_ERROR(err);
-    err = ISGetLocalSize(pointIS, &n);PYLITH_CHECK_ERROR(err);
-    err = ISGetIndices(pointIS, &points);PYLITH_CHECK_ERROR(err);
-    for (int p = 0; p < n; ++p) {
-        const PetscInt *support = NULL;
-        PetscInt supportSize;
-
-        err = DMPlexGetSupportSize(dm, points[p], &supportSize);PYLITH_CHECK_ERROR(err);
-        err = DMPlexGetSupport(dm, points[p], &support);PYLITH_CHECK_ERROR(err);
-        for (int s = 0; s < supportSize; ++s) {
-            DMPolytopeType ct;
-            const PetscInt spoint = support[s];
-
-            err = DMPlexGetCellType(dm, spoint, &ct);PYLITH_CHECK_ERROR(err);
-            if ((ct == DM_POLYTOPE_SEG_PRISM_TENSOR) || (ct == DM_POLYTOPE_POINT_PRISM_TENSOR)) {
-                const PetscInt *cone = NULL;
-                PetscInt coneSize;
-
-                err = DMPlexGetConeSize(dm, spoint, &coneSize);PYLITH_CHECK_ERROR(err);
-                err = DMPlexGetCone(dm, spoint, &cone);PYLITH_CHECK_ERROR(err);
-                for (int c = 0; c < coneSize; ++c) {
-                    PetscInt val;
-                    err = DMLabelGetValue(buriedLabel, cone[c], &val);PYLITH_CHECK_ERROR(err);
-                    if (val >= 0) {
-                        err = DMLabelSetValue(buriedCohesiveLabel, spoint, 1);PYLITH_CHECK_ERROR(err);
-                        break;
-                    } // if
-                } // for
-            } // if
-        } // for
-    } // for
-
-    std::vector<pylith::feassemble::Constraint*> constraintArray;
-    pylith::feassemble::ConstraintSimple *constraint = new pylith::feassemble::ConstraintSimple(this);assert(constraint);
-    constraint->setLabelName(buriedLabelName.c_str());
-    err = PetscObjectViewFromOptions((PetscObject) buriedLabel, NULL, "-buried_edge_label_view");
-    err = PetscObjectViewFromOptions((PetscObject) buriedCohesiveLabel, NULL, "-buried_cohesive_edge_label_view");
-    constraint->setConstrainedDOF(&constrainedDOF[0], constrainedDOF.size());
-    constraint->setSubfieldName(lagrangeName);
-    constraint->setUserFn(_zero);
-
-    constraintArray.resize(1);
-    constraintArray[0] = constraint;
-    PYLITH_METHOD_RETURN(constraintArray);
-} // createConstraints
-
-
-// ------------------------------------------------------------------------------------------------
 // Create auxiliary field.
 pylith::topology::Field*
 pylith::faults::FaultCohesiveKin::createAuxiliaryField(const pylith::topology::Field& solution,
@@ -344,15 +239,6 @@ pylith::faults::FaultCohesiveKin::createAuxiliaryField(const pylith::topology::F
 
 
 // ------------------------------------------------------------------------------------------------
-// Create derived field.
-pylith::topology::Field*
-pylith::faults::FaultCohesiveKin::createDerivedField(const pylith::topology::Field& solution,
-                                                     const pylith::topology::Mesh& domainMesh) {
-    return NULL;
-} // createDerivedField
-
-
-// ------------------------------------------------------------------------------------------------
 // Update auxiliary fields at beginning of time step.
 void
 pylith::faults::FaultCohesiveKin::updateAuxiliaryField(pylith::topology::Field* auxiliaryField,
@@ -387,25 +273,6 @@ pylith::feassemble::AuxiliaryFactory*
 pylith::faults::FaultCohesiveKin::_getAuxiliaryFactory(void) {
     return _auxiliaryFactory;
 } // _getAuxiliaryFactory
-
-
-// ------------------------------------------------------------------------------------------------
-// Update kernel constants.
-void
-pylith::faults::FaultCohesiveKin::_updateKernelConstants(const PylithReal dt) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_setKernelConstants(dt="<<dt<<")");
-
-    if (6 != _kernelConstants.size()) { _kernelConstants.resize(6);}
-    _kernelConstants[0] = _refDir1[0];
-    _kernelConstants[1] = _refDir1[1];
-    _kernelConstants[2] = _refDir1[2];
-    _kernelConstants[3] = _refDir2[0];
-    _kernelConstants[4] = _refDir2[1];
-    _kernelConstants[5] = _refDir2[2];
-
-    PYLITH_METHOD_END;
-} // _updateKernelConstants
 
 
 // ------------------------------------------------------------------------------------------------

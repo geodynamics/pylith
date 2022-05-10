@@ -22,7 +22,7 @@
 
 #include "pylith/testing/StubMethodTracker.hh" // USES StubMethodTracker
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Constructor.
 pylith::problems::ProgressMonitorStub::ProgressMonitorStub(void) {
     _state.current = 0;
@@ -32,14 +32,14 @@ pylith::problems::ProgressMonitorStub::ProgressMonitorStub(void) {
 } // constructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Destructor
 pylith::problems::ProgressMonitorStub::~ProgressMonitorStub(void) {
     deallocate();
 } // destructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Open progress monitor.
 void
 pylith::problems::ProgressMonitorStub::_open(void) {
@@ -47,27 +47,12 @@ pylith::problems::ProgressMonitorStub::_open(void) {
 } // _open
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Close progress monitor.
 void
 pylith::problems::ProgressMonitorStub::_close(void) {
     pylith::testing::StubMethodTracker tracker("pylith::problems::ProgressMonitorStub::_close");
 } // _close
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Update progress.
-void
-pylith::problems::ProgressMonitorStub::_update(const double current,
-                                               const time_t& now,
-                                               const double percentComplete,
-                                               const char* finished) {
-    pylith::testing::StubMethodTracker tracker("pylith::problems::ProgressMonitorStub::_update");
-    _state.current = current;
-    _state.now = now;
-    _state.percentComplete = percentComplete;
-    _state.finished = finished;
-} // _update
 
 
 // End of file

@@ -25,12 +25,12 @@
 #if !defined(pylith_faults_faultcohesiveimpulses_hh)
 #define pylith_faults_faultcohesiveimpulses_hh
 
-#include "FaultCohesiveKin.hh" // ISA FaultCohesiveKin
+#include "FaultCohesive.hh" // ISA FaultCohesive
 
-class pylith::faults::FaultCohesiveImpulses : public pylith::faults::FaultCohesiveKin {
+class pylith::faults::FaultCohesiveImpulses : public pylith::faults::FaultCohesive {
     friend class TestFaultCohesiveImpulses; // unit testing
 
-    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Default constructor.
@@ -39,24 +39,96 @@ public:
     /// Destructor.
     ~FaultCohesiveImpulses(void);
 
-    /** Return the number of impulses
+    /// Deallocate PETSc and local data structures.
+    void deallocate(void);
+
+    /** Set indices of fault degrees of freedom associated with
+     * impulses.
      *
-     * @param[out] the number of impulses
+     * @param flags Array of indices for degrees of freedom.
+     * @param size Size of array
      */
-    PylithInt getNumImpulses(void);
+    void setImpulseDOF(const int* flags,
+                       const size_t size);
 
-    // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
-protected:
+    /** Set threshold for nonzero impulse amplitude.
+     *
+     * @param value Threshold for detecting nonzero amplitude.
+     */
+    void setThreshold(const double value);
 
-    /** Update slip subfield in auxiliary field at beginning of time step.
+    /** Get the total number of impulses that will be applied.
+     *
+     * @returns Number of impulses.
+     */
+    size_t getNumImpulses(void);
+
+    /** Verify configuration is acceptable.
+     *
+     * @param[in] solution Solution field.
+     */
+    void verifyConfiguration(const pylith::topology::Field& solution) const;
+
+    /** Create auxiliary field.
+     *
+     * @param[in] solution Solution field.
+     * @param[in] domainMesh Finite-element mesh associated with integration domain.
+     *
+     * @returns Auxiliary field if applicable, otherwise NULL.
+     */
+    pylith::topology::Field* createAuxiliaryField(const pylith::topology::Field& solution,
+                                                  const pylith::topology::Mesh& domainMesh);
+
+    /** Update auxiliary subfields at beginning of time step.
      *
      * @param[out] auxiliaryField Auxiliary field.
      * @param[in] t Current time.
      */
-    void _updateSlip(pylith::topology::Field* auxiliaryField,
-                     const double t);
+    void updateAuxiliaryField(pylith::topology::Field* auxiliaryField,
+                              const double t);
 
-    // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
+    // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
+protected:
+
+    /** Get auxiliary factory associated with physics.
+     *
+     * @return Auxiliary factory for physics object.
+     */
+    pylith::feassemble::AuxiliaryFactory* _getAuxiliaryFactory(void);
+
+    /** Update slip subfield in auxiliary field at beginning of time step.
+     *
+     * @param[out] auxiliaryField Auxiliary field.
+     * @param[in] impulseIndex Index of impulse.
+     */
+    void _updateSlip(pylith::topology::Field* auxiliaryField,
+                     const size_t impulseIndex);
+
+    /** Set kernels for residual.
+     *
+     * @param[out] integrator Integrator for material.
+     * @param[in] solution Solution field.
+     */
+    void _setKernelsResidual(pylith::feassemble::IntegratorInterface* integrator,
+                             const pylith::topology::Field& solution) const;
+
+    /** Set kernels for Jacobian.
+     *
+     * @param[out] integrator Integrator for material.
+     * @param[in] solution Solution field.
+     */
+    void _setKernelsJacobian(pylith::feassemble::IntegratorInterface* integrator,
+                             const pylith::topology::Field& solution) const;
+
+    // PRIVATE METHODS ////////////////////////////////////////////////////////////////////////////
+private:
+
+    pylith::faults::AuxiliaryFactoryKinematic* _auxiliaryFactory; ///< Factory for auxiliary subfields.
+    PylithReal _threshold; ///< Threshold for nonzero impulse amplitude.
+    int_array _impulseDOF; ///< Degrees of freedom with impulses.
+    int_array _impulsePoints; ///< Points with nonzero threshold.
+
+    // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
 private:
 
     FaultCohesiveImpulses(const FaultCohesiveImpulses&); ///< Not implemented

@@ -32,7 +32,7 @@
 class pylith::problems::ProgressMonitorStep : public pylith::problems::ProgressMonitor {
     friend class TestProgressMonitorStep; // unit testing
 
-    // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
+    // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Constructor
@@ -44,7 +44,17 @@ public:
     /// Deallocate PETSc and local data structures.
     void deallocate(void);
 
-    // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
+    /** Update progress.
+     *
+     * @param[in] current Current step.
+     * @param[in] start Starting step.
+     * @param[in] stop Ending step.
+     */
+    void update(const size_t current,
+                const size_t start,
+                const size_t stop);
+
+    // PROTECTED MEMBERS //////////////////////////////////////////////////////////////////////////
 protected:
 
     /// Open progress monitor.
@@ -55,12 +65,12 @@ protected:
 
     /** Update progress.
      *
-     * @param[in] current step.
-     * @param[in] now Current time.
+     * @param[in] setp Current step.
+     * @param[in] now Current date/time.
      * @param[in] percentComplete Percent completed
      * @param[in] finished Time stamp of estimated finish.
      */
-    void _update(const int current,
+    void _update(const size_t step,
                  const time_t& now,
                  const double percentComplete,
                  const char* finished);
@@ -70,7 +80,7 @@ private:
 
     std::ofstream _sout; ///< Output stream.
 
-    // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
+    // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
 private:
 
     ProgressMonitorStep(const ProgressMonitorStep&); ///< Not implemented.

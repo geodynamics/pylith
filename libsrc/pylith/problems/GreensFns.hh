@@ -48,17 +48,29 @@ public:
     /// Deallocate PETSc and local data structures.
     void deallocate(void);
 
-    /** Set id for fault with impulses.
+    /** Set name of label for fault with impulses.
      *
-     * @param[in] value Id for fault with impulses.
+     * @param[in] value Name of label for fault with impulses.
      */
-    void setFaultId(const int value);
+    void setFaultLabelName(const char* value);
 
-    /** Get id for fault with impulses.
+    /** Get label name for fault with impulses.
      *
-     * @returns Id for fault with impulses.
+     * @returns Name of label for fault with impulses.
      */
-    int getFaultId(void) const;
+    const char* getFaultLabelName(void) const;
+
+    /** Set value of label for fault with impulses.
+     *
+     * @param[in] value Value of label for fault with impulses.
+     */
+    void setFaultLabelValue(const int value);
+
+    /** Get label value for fault with impulses.
+     *
+     * @returns Value of label for fault with impulses.
+     */
+    int getFaultLabelValue(void) const;
 
     /** Set progress monitor.
      *
@@ -84,9 +96,9 @@ public:
 
     /** Perform operations after advancing solution of one impulse
      *
-     * @param[in] impulseReal
+     * @param[in] impulse Index of current impulse.
      */
-    void poststep(const double impulseReal);
+    void poststep(const size_t impulse);
 
     /** Set solution values according to constraints (Dirichlet BC).
      *
@@ -111,14 +123,6 @@ public:
     void computeJacobian(PetscMat jacobianMat,
                          PetscMat precondMat,
                          PetscVec solutionVec);
-
-    /** Create Jacobian
-     *
-     * @param[out] jacobianMat PETSc Mat for Jacobian.
-     * @param[out] precondMat PETSc Mat for preconditioner for Jacobian.
-     */
-    void createJacobian(PetscMat jacobianMat,
-                        PetscMat precondMat);
 
     /** Callback static method for computing residual.
      *
@@ -148,18 +152,16 @@ public:
                                    PetscMat precondMat,
                                    void* context);
 
-    // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
+    // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
 private:
 
-    PylithInt _faultId;
+    std::string _faultLabelName; ///< Name of label for fault with impulses.
+    PylithInt _faultLabelValue; ///< Value of label for fault with impulses.
     pylith::faults::FaultCohesiveImpulses* _faultImpulses; ///< Fault interface with Green's functions impulses.
     pylith::feassemble::Integrator* _integratorImpulses; ///< Integrator for Green's functions impulses.
 
     PetscSNES _snes; ///< PETSc SNES solver.
     pylith::problems::ProgressMonitorStep* _monitor; ///< Monitor for simulation progress.
-
-    pylith::topology::Field* _residual; ///< Handle to residual field.
-    pylith::topology::Field* _solutionDot; ///< Handle to time derivative of solution.
 
 }; // GreensFns
 

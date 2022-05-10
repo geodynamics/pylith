@@ -32,6 +32,7 @@
 #include "pylith/problems/InitialConditionPatch.hh"
 #include "pylith/problems/ProgressMonitor.hh"
 #include "pylith/problems/ProgressMonitorTime.hh"
+#include "pylith/problems/ProgressMonitorStep.hh"
 %}
 
 %include "exception.i"
@@ -72,5 +73,6 @@
 %include "InitialConditionPatch.i"
 %include "ProgressMonitor.i"
 %include "ProgressMonitorTime.i"
+%include "ProgressMonitorStep.i"
 
 // End of file
