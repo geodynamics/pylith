@@ -29,6 +29,7 @@ test_faultkin_SOURCES = \
 	TestFaultKin.cc \
 	TestFaultKin2D_RigidBlocksStatic.cc \
 	TestFaultKin2D_ShearNoSlipStatic.cc \
+	TestFaultKin2D_ConstRateDynamic.cc \
 	test_driver.cc
 
 
