@@ -35,6 +35,7 @@
 #include "petscds.h" // USES PetscDS
 
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
+
 #include <cassert> // USES assert()
 #include <typeinfo> // USES typeid()
 #include <stdexcept> // USES std::runtime_error
@@ -738,11 +739,10 @@ pylith::feassemble::_IntegratorInterface::getMaterial(const std::vector<pylith::
                                                       const int labelValue) {
     PYLITH_METHOD_BEGIN;
 
-    const std::string& materialLabelName = pylith::topology::Mesh::getCellsLabelName();
-
     pylith::materials::Material* material = NULL;
     for (size_t i = 0; i < materials.size(); ++i) {
-        if ((labelName == materialLabelName) && (labelValue == materials[i]->getMaterialId())) {
+        assert(materials[i]);
+        if ((std::string(labelName) == std::string(materials[i]->getLabelName())) && (labelValue == materials[i]->getLabelValue())) {
             material = materials[i];
             break;
         } // if
