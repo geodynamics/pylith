@@ -140,9 +140,10 @@ class pylith::mmstests::TestFaultKin2D_ConstRateDynamic :
                              const double y,
                              PetscInt flag) {
         if (!flag) {
-            return x < 0.0 ? -VELOCITY : +VELOCITY;
+            return 0.5*SLIPRATE + (VELOCITY - 0.5*SLIPRATE) * x / DOMAIN_X;
         } else {
-            return flag < 0 ? -VELOCITY : +VELOCITY;
+            const double amplitude = 0.5*SLIPRATE + (VELOCITY - 0.5*SLIPRATE) * x / (0.5*DOMAIN_X);
+            return flag < 0 ? -amplitude : +amplitude;
         } // if/else
     } // velocity_y
 
@@ -172,7 +173,7 @@ class pylith::mmstests::TestFaultKin2D_ConstRateDynamic :
                                   const double y) {
         const double shearModulusN = density(x,y) * pow(vs(x,y), 2) / PRESSURE_SCALE;
 
-        return shearModulusN * (VELOCITY - 0.5*SLIPRATE) * TIMESTAMP / DOMAIN_X;
+        return shearModulusN * (VELOCITY - 0.5*SLIPRATE) * TIMESTAMP / (0.5*DOMAIN_X);
     } // faulttraction_y
 
     static PetscErrorCode bckernel_disp(PetscInt spaceDim,
