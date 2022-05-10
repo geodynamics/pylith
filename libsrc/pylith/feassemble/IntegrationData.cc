@@ -30,18 +30,18 @@
 #include <stdexcept> // USES std::runtime_error
 
 // ------------------------------------------------------------------------------------------------
-const std::string pylith::problems::IntegrationData::time = "t";
-const std::string pylith::problems::IntegrationData::time_step = "dt";
-const std::string pylith::problems::IntegrationData::s_tshift = "s_tshift";
-const std::string pylith::problems::IntegrationData::t_state = "t_state";
-const std::string pylith::problems::IntegrationData::dt_residual = "dt_residual";
-const std::string pylith::problems::IntegrationData::dt_jacobian = "dt_jacobian";
-const std::string pylith::problems::IntegrationData::dt_lumped_jacobian_inverse = "dt_lumped_jacobian_inverse";
+const std::string pylith::feassemble::IntegrationData::time = "t";
+const std::string pylith::feassemble::IntegrationData::time_step = "dt";
+const std::string pylith::feassemble::IntegrationData::s_tshift = "s_tshift";
+const std::string pylith::feassemble::IntegrationData::t_state = "t_state";
+const std::string pylith::feassemble::IntegrationData::dt_residual = "dt_residual";
+const std::string pylith::feassemble::IntegrationData::dt_jacobian = "dt_jacobian";
+const std::string pylith::feassemble::IntegrationData::dt_lumped_jacobian_inverse = "dt_lumped_jacobian_inverse";
 
-const std::string pylith::problems::IntegrationData::solution = "solution";
-const std::string pylith::problems::IntegrationData::solution_dot = "solution_dot";
-const std::string pylith::problems::IntegrationData::residual = "residual";
-const std::string pylith::problems::IntegrationData::lumped_jacobian_inverse = "lumped_jacobian_inverse";
+const std::string pylith::feassemble::IntegrationData::solution = "solution";
+const std::string pylith::feassemble::IntegrationData::solution_dot = "solution_dot";
+const std::string pylith::feassemble::IntegrationData::residual = "residual";
+const std::string pylith::feassemble::IntegrationData::lumped_jacobian_inverse = "lumped_jacobian_inverse";
 const std::string pylith::feassemble::IntegrationData::dae_mass_weighting = "dae_mass_weighting";
 
 // ------------------------------------------------------------------------------------------------
