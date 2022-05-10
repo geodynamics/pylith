@@ -22,6 +22,7 @@ include $(top_srcdir)/subpackage.am
 subpkginclude_HEADERS = \
 	Problem.hh \
 	TimeDependent.hh \
+	GreensFns.hh \
 	SolutionFactory.hh \
 	ObserverSoln.hh \
 	ObserversSoln.hh \
@@ -34,6 +35,7 @@ subpkginclude_HEADERS = \
 	InitialConditionPatch.hh \
 	ProgressMonitor.hh \
 	ProgressMonitorTime.hh \
+	ProgressMonitorStep.hh \
 	problemsfwd.hh
 
 noinst_HEADERS =

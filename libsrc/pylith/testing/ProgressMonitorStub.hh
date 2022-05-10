@@ -33,7 +33,7 @@
 class pylith::problems::ProgressMonitorStub : public pylith::problems::ProgressMonitor {
     friend class TestProgressMonitor; // unit testing
 
-    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Constructor.
@@ -42,7 +42,7 @@ public:
     /// Destructor
     ~ProgressMonitorStub(void);
 
-    // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
+    // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
 protected:
 
     /// Open progress monitor.
@@ -51,19 +51,7 @@ protected:
     /// Close progress monitor.
     void _close(void);
 
-    /** Update progress.
-     *
-     * @param[in current Current step.
-     * @param[in] now Current time.
-     * @param[in] percentComplete Percent completed
-     * @param[in] finished Time stamp of estimated finish.
-     */
-    void _update(const double current,
-                 const time_t& now,
-                 const double percentComplete,
-                 const char* finished);
-
-    // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
+    // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
 
     struct State {
         double current; ///< Current time/step.

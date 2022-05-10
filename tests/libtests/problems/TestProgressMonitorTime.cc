@@ -15,19 +15,61 @@
 //
 // ----------------------------------------------------------------------
 //
+/** C++ unit testing for ProgressMonitor.
+ */
 
 #include <portinfo>
 
-#include "TestProgressMonitorTime.hh" // Implementation of class methods
+#include <cppunit/extensions/HelperMacros.h>
 
 #include "pylith/problems/ProgressMonitorTime.hh" // USES ProgressMonitorTime
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 
-// ---------------------------------------------------------------------------------------------------------------------
+/// Namespace for pylith package
+namespace pylith {
+    namespace problems {
+        class TestProgressMonitorTime;
+    } // problems
+} // pylith
+
+// ------------------------------------------------------------------------------------------------
+class pylith::problems::TestProgressMonitorTime : public CppUnit::TestFixture {
+    CPPUNIT_TEST_SUITE(TestProgressMonitorTime);
+
+    CPPUNIT_TEST(testAccessors);
+    CPPUNIT_TEST(testOpenClose);
+    CPPUNIT_TEST(testUpdate);
+
+    CPPUNIT_TEST_SUITE_END();
+
+public:
+
+    /// Setup testing data.
+    void setUp(void);
+
+    /// Tear down testing data.
+    void tearDown(void);
+
+    /// Test get/setTimeUnit().
+    void testAccessors(void);
+
+    /// Test open() and close().
+    void testOpenClose(void);
+
+    /// Test update().
+    void testUpdate(void);
+
+private:
+
+    pylith::problems::ProgressMonitorTime* _monitor; ///< Test subject.
+
+}; // class TestProgressMonitorTime
+
+// ------------------------------------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION(pylith::problems::TestProgressMonitorTime);
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Setup testing data.
 void
 pylith::problems::TestProgressMonitorTime::setUp(void) {
@@ -35,7 +77,7 @@ pylith::problems::TestProgressMonitorTime::setUp(void) {
 } // setUp
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Tear down testing data.
 void
 pylith::problems::TestProgressMonitorTime::tearDown(void) {
@@ -43,7 +85,7 @@ pylith::problems::TestProgressMonitorTime::tearDown(void) {
 } // tearDown
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test get/setUpdatePercent() and get/setFilename().
 void
 pylith::problems::TestProgressMonitorTime::testAccessors(void) {
@@ -62,7 +104,7 @@ pylith::problems::TestProgressMonitorTime::testAccessors(void) {
 } // testAccessors
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test open() and close().
 void
 pylith::problems::TestProgressMonitorTime::testOpenClose(void) {
@@ -77,7 +119,7 @@ pylith::problems::TestProgressMonitorTime::testOpenClose(void) {
 } // testOpenClose
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test update().
 void
 pylith::problems::TestProgressMonitorTime::testUpdate(void) {

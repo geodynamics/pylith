@@ -29,30 +29,29 @@
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Constructor
 pylith::problems::ProgressMonitor::ProgressMonitor(void) :
     _updatePercent(5.0),
     _filename("progress.txt"),
     _iUpdate(-1),
-    _isMaster(true)
-{}
+    _isMaster(true) {}
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Destructor
 pylith::problems::ProgressMonitor::~ProgressMonitor(void) {
     deallocate();
 } // destructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
 pylith::problems::ProgressMonitor::deallocate(void) {}
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Set how often to report status.
 void
 pylith::problems::ProgressMonitor::setUpdatePercent(const double value) {
@@ -66,7 +65,7 @@ pylith::problems::ProgressMonitor::setUpdatePercent(const double value) {
 } // setUpdatePercent
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get how often to report status.
 double
 pylith::problems::ProgressMonitor::getUpdatePercent(void) const {
@@ -74,7 +73,7 @@ pylith::problems::ProgressMonitor::getUpdatePercent(void) const {
 } // getUpdatePercent
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Set filename for output.
 void
 pylith::problems::ProgressMonitor::setFilename(const char* filename) {
@@ -85,7 +84,7 @@ pylith::problems::ProgressMonitor::setFilename(const char* filename) {
 } // setFilename
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get filename for output.
 const char*
 pylith::problems::ProgressMonitor::getFilename(void) const {
@@ -93,7 +92,7 @@ pylith::problems::ProgressMonitor::getFilename(void) const {
 } // getFilename
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Open progress monitor.
 void
 pylith::problems::ProgressMonitor::open(void) {
@@ -110,7 +109,7 @@ pylith::problems::ProgressMonitor::open(void) {
 } // open
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Close progress monitor.
 void
 pylith::problems::ProgressMonitor::close(void) {
@@ -120,42 +119,28 @@ pylith::problems::ProgressMonitor::close(void) {
 } // close
 
 
-// ---------------------------------------------------------------------------------------------------------------------
-// Update progress.
-void
-pylith::problems::ProgressMonitor::update(const double current,
-                                          const double start,
-                                          const double stop) {
-    double percentComplete = 0.0;
-    if (_iUpdate >= 0) {
-        percentComplete = (100*(current-start)) / (stop-start);
+// ------------------------------------------------------------------------------------------------
+// Compute finish time.
+std::string
+pylith::problems::ProgressMonitor::_calcFinishTime(const double percentComplete,
+                                                   const time_t& now,
+                                                   const time_t& startTime) {
+    std::string finished;
+    if (percentComplete > 0.0) {
+        const double durationSec = 100.0 / percentComplete * difftime(now, startTime);
+
+        struct std::tm start_tm = *localtime(&startTime);
+        struct std::tm finished_tm = start_tm;
+        finished_tm.tm_sec += durationSec;
+        mktime(&finished_tm);
+        finished = asctime(&finished_tm);
+        finished = finished.erase(finished.find_last_not_of('\n')+1);
     } else {
-        _iUpdate = 0;
-        percentComplete = 0.0;
+        finished = "TBD";
     } // if/else
 
-    if (percentComplete >= _iUpdate * _updatePercent) {
-        time_t now = time(NULL);
-        std::string finished;
-        if (percentComplete > 0.0) {
-            const double durationSec = 100.0 / percentComplete * difftime(now, _startTime);
-
-            struct std::tm start_tm = *localtime(&_startTime);
-            struct std::tm finished_tm = start_tm;
-            finished_tm.tm_sec += durationSec;
-            mktime(&finished_tm);
-            finished = asctime(&finished_tm);
-            finished = finished.erase(finished.find_last_not_of('\n')+1);
-        } else {
-            finished = "TBD";
-        } // if/else
-        if (_isMaster) {
-            _update(current, now, percentComplete, finished.c_str());
-        } // if
-        _iUpdate = int(percentComplete / _updatePercent) + 1;
-    } // if
-
-} // update
+    return finished;
+} // calcFinishTime
 
 
 // End of file

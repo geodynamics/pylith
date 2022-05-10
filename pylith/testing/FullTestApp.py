@@ -128,12 +128,10 @@ class FullTestCase(unittest.TestCase):
         return
 
 
-# ----------------------------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------
 class TestDriver(object):
     """Driver application for running full-scale tests.
     """
-
-    # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self):
         """Constructor.
@@ -151,7 +149,7 @@ class TestDriver(object):
         return
 
 
-# ----------------------------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------
 class HDF5Checker(object):
 
     def __init__(self, filename, testcase, mesh):
@@ -255,7 +253,36 @@ class HDF5Checker(object):
         self.testcase.assertEqual(nsteps*npts*ncomps, numpy.sum(okay), msg="\n".join(msg))
 
 
-# ----------------------------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------
+class HDF5SizeChecker(HDF5Checker):
+
+    def checkVertexField(self, fieldName, mesh, exact_soln):
+        self.testcase.assertTrue("vertex_fields" in self.h5.keys(), "Missing `vertex_fields`.")
+        fieldsH5 = self.h5["vertex_fields"].keys()
+        self.testcase.assertTrue(fieldName in fieldsH5,
+                                 f"Could not find field in vertex fields {fieldsH5}")
+        dims = self.h5["vertex_fields/" + fieldName].shape
+        dimsE = exact_soln.getDims(fieldName, mesh)
+        self._checkDims(dimsE, dims)
+
+    def checkCellField(self, fieldName, mesh, exact_soln):
+        self.testcase.assertTrue("cell_fields" in self.h5.keys(), "Missing `cell_fields`.")
+        fieldsH5 = self.h5["cell_fields"].keys()
+        self.testcase.assertTrue(fieldName in fieldsH5,
+                                 f"Could not find field in cell fields {fieldsH5}")
+        dims = self.h5["cell_fields/" + fieldName].shape
+        dimsE = exact_soln.getDims(fieldName, mesh)
+        self._checkDims(dimsE, dims)
+
+    def _checkDims(self, dimsE, dims):
+        (nstepsE, nptsE, ncompsE) = dimsE
+        (nsteps, npts, ncomps) = dims
+        self.testcase.assertEqual(nstepsE, nsteps, msg="Mismatch in number of time steps")
+        self.testcase.assertEqual(nptsE, npts, msg="Mismatch in number of points")
+        self.testcase.assertEqual(ncompsE, ncomps, msg="Mismatch in number of components")
+
+
+# -------------------------------------------------------------------------------------------------
 def check_data(testcase, filename, check, mesh_entity, mesh):
     """Check vertex and cell fields in specified file.
     """
@@ -278,7 +305,26 @@ def check_data(testcase, filename, check, mesh_entity, mesh):
     return
 
 
-# ----------------------------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------
+def check_sizes(testcase, filename, check, mesh_entity, mesh):
+    """Check sizes of vertex and cell fields in specified file.
+    """
+    if not has_h5py():
+        return
+
+    checker = HDF5SizeChecker(filename, testcase, mesh)
+
+    for field in check.vertex_fields:
+        with testcase.subTest(vertex_field=field):
+            checker.checkVertexField(field, mesh, check.exact_soln)
+
+    for field in check.cell_fields:
+        with testcase.subTest(cell_field=field):
+            checker.checkCellField(field, mesh, check.exact_soln)
+    return
+
+
+# -------------------------------------------------------------------------------------------------
 def run_pylith(appName, cfgfiles=[], dbClass=None, nprocs=1):
     """Helper function to generate spatial databases and run PyLith.
     """

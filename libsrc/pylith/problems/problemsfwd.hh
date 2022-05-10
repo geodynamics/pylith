@@ -31,6 +31,7 @@ namespace pylith {
     namespace problems {
         class Problem;
         class TimeDependent;
+        class GreensFns;
 
         class SolutionFactory;
         class ObserversSoln;
@@ -48,7 +49,7 @@ namespace pylith {
 
         class ProgressMonitor;
         class ProgressMonitorTime;
-        class PrograssMonitorStep;
+        class ProgressMonitorStep;
 
     } // problems
 } // pylith

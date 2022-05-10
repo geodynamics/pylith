@@ -30,22 +30,21 @@
 #include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Constructor
 pylith::problems::ProgressMonitorTime::ProgressMonitorTime(void) :
     _baseTime(1.0),
-    _baseUnit("second")
-{}
+    _baseUnit("second") {}
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Destructor
 pylith::problems::ProgressMonitorTime::~ProgressMonitorTime(void) {
     deallocate();
 } // destructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
 pylith::problems::ProgressMonitorTime::deallocate(void) {
@@ -57,7 +56,7 @@ pylith::problems::ProgressMonitorTime::deallocate(void) {
 } // deallocate
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Set units for simulation time in output.
 void
 pylith::problems::ProgressMonitorTime::setTimeUnit(const char* value) {
@@ -68,7 +67,7 @@ pylith::problems::ProgressMonitorTime::setTimeUnit(const char* value) {
 } // setTimeUnit
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Set units for simulation time in output.
 const char*
 pylith::problems::ProgressMonitorTime::getTimeUnit(void) const {
@@ -76,7 +75,7 @@ pylith::problems::ProgressMonitorTime::getTimeUnit(void) const {
 } // getTimeUnit
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Open progress monitor.
 void
 pylith::problems::ProgressMonitorTime::_open(void) {
@@ -86,7 +85,7 @@ pylith::problems::ProgressMonitorTime::_open(void) {
 } // _open
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Close progress monitor.
 void
 pylith::problems::ProgressMonitorTime::_close(void) {
@@ -96,15 +95,40 @@ pylith::problems::ProgressMonitorTime::_close(void) {
 } // _close
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Update progress.
 void
-pylith::problems::ProgressMonitorTime::_update(const double current,
+pylith::problems::ProgressMonitorTime::update(const double current,
+                                              const double start,
+                                              const double stop) {
+    double percentComplete = 0.0;
+    if (_iUpdate != -1) {
+        percentComplete = (100*(current-start)) / (stop-start);
+    } else {
+        _iUpdate = 0;
+        percentComplete = 0.0;
+    } // if/else
+    if (percentComplete >= _iUpdate * _updatePercent) {
+        time_t now = time(NULL);
+        const std::string& finished = ProgressMonitor::_calcFinishTime(percentComplete, now, _startTime);
+        if (_isMaster) {
+            _update(current, now, percentComplete, finished.c_str());
+        } // if
+        _iUpdate = int(percentComplete / _updatePercent) + 1;
+    } // if
+
+} // update
+
+
+// ------------------------------------------------------------------------------------------------
+// Update progress.
+void
+pylith::problems::ProgressMonitorTime::_update(const double t,
                                                const time_t& now,
                                                const double percentComplete,
                                                const char* finished) {
     assert(_sout.is_open());
-    const double tSimNorm = current / _baseTime;
+    const double tSimNorm = t / _baseTime;
     std::tm* now_tm = localtime(&now);
     std::string now_str = asctime(now_tm);
     now_str = now_str.erase(now_str.find_last_not_of('\n')+1);

@@ -31,6 +31,7 @@ namespace pylith {
     namespace faults {
         class FaultCohesive;
         class FaultCohesiveKin;
+        class FaultCohesiveImpulses;
         class AuxiliaryFactoryKinematic;
 
         class KinSrc;

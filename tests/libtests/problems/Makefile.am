@@ -34,6 +34,7 @@ test_problems_SOURCES = \
 	TestSolutionFactory_Cases.cc \
 	TestProgressMonitor.cc \
 	TestProgressMonitorTime.cc \
+	TestProgressMonitorStep.cc \
 	test_driver.cc
 
 
@@ -42,9 +43,12 @@ noinst_HEADERS = \
 	TestPhysics.hh \
 	TestObserversSoln.hh \
 	TestObserversPhysics.hh \
-	TestSolutionFactory.hh \
-	TestProgressMonitor.hh \
-	TestProgressMonitor.hh
+	TestSolutionFactory.hh
+
+noinst_TMP = \
+	progress.txt \
+	progress_time.txt \
+	progress_step.txt
 
 AM_CPPFLAGS += \
 	$(PETSC_CC_INCLUDES) \
