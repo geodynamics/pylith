@@ -28,7 +28,7 @@ Example of setting `KinSrcConstRate` Pyre properties and facilities in a paramet
 origin_time = 100*year
 
 db_auxiliary_field = spatialdata.spatialdb.UniformDB
-db_auxiliary_field.label = Constant slip rate slip time function auxiliary field spatial database
+db_auxiliary_field.description = Constant slip rate slip time function auxiliary field spatial database
 db_auxiliary_field.values = [initiation_time, slip_rate_left_lateral, slip_rate_opening]
 db_auxiliary_field.data = [0.0*s, -2.0*mm/year, 0.0*mm/year]
 :::

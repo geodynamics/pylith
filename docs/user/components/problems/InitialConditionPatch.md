@@ -15,9 +15,12 @@ Implements `InitialCondition`.
 
 ## Pyre Properties
 
-* `id`=\<int\>: Material id associated with patch.
-  - **default value**: 0
-  - **current value**: 0, from {default}
+* `label`=\<str\>: Name of label for patch.
+  - **default value**: 'material-id'
+  - **current value**: 'material-id', from {default}
+* `label_value`=\<int\>: Value of label associated with initial condition patch, usually the material label value.
+  - **default value**: 1
+  - **current value**: 1, from {default}
 * `subfields`=\<list\>: Names of solution subfields for initial condition.
   - **default value**: ['displacement']
   - **current value**: ['displacement'], from {default}
@@ -35,15 +38,15 @@ ic.mat1 = pylith.problems.InitialConditionPatch
 ic.mat2 = pylith.problems.InitialConditionPatch
 
 [pylithapp.problem.ic.mat1]
-id = 1
+label_value = 1
 db = spatialdata.spatialdb.SimpleGridDB
-db.label = Initial conditions over material 1
+db.description = Initial conditions over material 1
 db.filename = shearmat1_ic.spatialdb
 
 [pylithapp.problem.ic.mat2]
-id = 2
+label_value = 2
 db = spatialdata.spatialdb.SimpleGridDB
-db.label = Initial conditions over material 2
+db.description = Initial conditions over material 2
 db.filename = shearmat2_ic.spatialdb
 :::
 

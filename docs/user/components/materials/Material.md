@@ -22,11 +22,15 @@ Abstract base class for a bulk material.
 
 ## Pyre Properties
 
-* `id`=\<int\>: Material identifier (from mesh generator).
-  - **default value**: 0
-  - **current value**: 0, from {default}
-* `label`=\<str\>: Descriptive label for material.
+* `description`=\<str\>: Descriptive label for material.
   - **default value**: ''
   - **current value**: '', from {default}
-  - **validator**: <function validateLabel at 0x117b40310>
+  - **validator**: <function validateDescription at 0x7fe78d337790>
+* `label`=\<str\>: Name of label for material. Currently only 'material-id' is allowed.
+  - **default value**: 'material-id'
+  - **current value**: 'material-id', from {default}
+  - **validator**: (in ['material-id'])
+* `label_value`=\<int\>: Value of label for material.
+  - **default value**: 1
+  - **current value**: 1, from {default}
 

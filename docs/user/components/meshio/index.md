@@ -14,6 +14,7 @@ MeshIOAscii.md
 MeshIOCubit.md
 MeshIOLagrit.md
 MeshIOObj.md
+MeshIOPetsc.md
 OutputObserver.md
 OutputPhysics.md
 OutputSoln.md

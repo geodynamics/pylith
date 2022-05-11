@@ -31,7 +31,7 @@ ic.domain = pylith.problems.InitialConditionDomain
 
 [pylithapp.problem.ic.domain]
 db = spatialdata.spatialdb.SimpleGridDB
-db.label = Initial conditions over domain
+db.description = Initial conditions over domain
 db.filename = sheardisp_ic.spatialdb
 :::
 

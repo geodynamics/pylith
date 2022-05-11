@@ -12,6 +12,10 @@ Implements `SpatialDB`.
 * `data`=\<list\>: Values in spatial database.
   - **default value**: []
   - **current value**: [], from {default}
+* `description`=\<str\>: Description for database.
+  - **default value**: ''
+  - **current value**: '', from {default}
+  - **validator**: <function validateDescription at 0x7fe78d2e1430>
 * `label`=\<str\>: Label for ZeroDB spatial database.
   - **default value**: 'Zero initial amplitude spatial database.'
   - **current value**: 'Zero initial amplitude spatial database.', from {default}
@@ -31,6 +35,6 @@ label = boundary_yneg
 field = displacement
 
 db_auxiliary_field = pylith.bc.ZeroDB
-db_auxiliary_field.label = Dirichlet displacement boundary condition on the -y boundary
+db_auxiliary_field.description = Dirichlet displacement boundary condition on the -y boundary
 :::
 
