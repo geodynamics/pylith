@@ -435,6 +435,7 @@ pylith::faults::_FaultCohesiveImpulses::findImpulsePoints(int_array* impulsePoin
         for (PetscInt iDOF = 0; iDOF < slipDof; ++iDOF) {
             if (auxiliaryArray[slipOff+iDOF] > threshold) {
                 ++count;
+                break;
             } // if
         } // for
     } // for

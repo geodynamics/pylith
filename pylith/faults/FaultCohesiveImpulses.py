@@ -42,6 +42,8 @@ class FaultCohesiveImpulses(FaultCohesive, ModuleFaultCohesiveImpulses):
     """
     Fault surface with slip impulses for Green's functions implemented with cohesive cells.
 
+    The comopnents 
+
     Implements `FaultCohesiveKin`.
     """
     DOC_CONFIG = {
@@ -56,6 +58,17 @@ class FaultCohesiveImpulses(FaultCohesive, ModuleFaultCohesiveImpulses):
             
             # Impulses for left-lateral slip (dof=1)
             impulse_dof = [1]
+            threshold = 0.5
+
+            # Create impulses at all points on the fault by specifying a uniform amplitude of 1.0.
+            # Impulses will be applied at any location with a slip component greater than the threshold.
+            db_auxiliary_field = spatialdata.spatialdb.UniformDB
+            db_auxiliary_field.description = Slip impulse amplitude
+            db_auxiliary_field.values = [slip_left_lateral, slip_opening]
+            db_auxiliary_field.data = [1.0*m, 0.0*m]
+
+            # Represent the impulse as a linear variation in slip centered on each point.
+            auxiliary_subfields.slip.basis_order = 1
             """
     }
 
@@ -69,7 +82,7 @@ class FaultCohesiveImpulses(FaultCohesive, ModuleFaultCohesiveImpulses):
     threshold.meta['tip'] = "Threshold for non-zero amplitude."
 
     impulseDOF = pythia.pyre.inventory.list("impulse_dof", default=[], validator=validateDOF)
-    impulseDOF.meta['tip'] = "Indices of impulse components (0=1st DOF, 1=2nd DOF, etc)."
+    impulseDOF.meta['tip'] = "Indices of impulse components; 0=fault opening, 1=left lateral, 2=reverse (3D only)."
 
     def __init__(self, name="faultcohesiveimpulses"):
         """
