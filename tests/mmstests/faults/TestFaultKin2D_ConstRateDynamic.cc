@@ -139,12 +139,14 @@ class pylith::mmstests::TestFaultKin2D_ConstRateDynamic :
     static double velocity_y(const double x,
                              const double y,
                              PetscInt flag) {
+        double amplitude = 0.0;
         if (!flag) {
-            return 0.5*SLIPRATE + (VELOCITY - 0.5*SLIPRATE) * x / DOMAIN_X;
+            amplitude = x < 0 ? -0.5*SLIPRATE : +0.5*SLIPRATE;
         } else {
-            const double amplitude = 0.5*SLIPRATE + (VELOCITY - 0.5*SLIPRATE) * x / (0.5*DOMAIN_X);
-            return flag < 0 ? -amplitude : +amplitude;
+            amplitude = flag < 0 ? -0.5*SLIPRATE : +0.5*SLIPRATE;
         } // if/else
+        amplitude += (VELOCITY - 0.5*SLIPRATE) * x / (0.5*DOMAIN_X);
+        return amplitude;
     } // velocity_y
 
     // Displacement
@@ -157,11 +159,7 @@ class pylith::mmstests::TestFaultKin2D_ConstRateDynamic :
                          const double y,
                          PetscInt flag) {
         const double disp = velocity_y(x, y, flag) * TIMESTAMP;
-        if (!flag) {
-            return x < 0.0 ? -disp : +disp;
-        } else {
-            return flag < 0 ? -disp : +disp;
-        } // if/else
+        return disp;
     } // disp_y
 
     static double faulttraction_x(const double x,
@@ -384,8 +382,8 @@ protected:
 
 }; // TestFaultKin2D_ConstRateDynamic
 const double pylith::mmstests::TestFaultKin2D_ConstRateDynamic::SLIPRATE = 1.5;
-const double pylith::mmstests::TestFaultKin2D_ConstRateDynamic::VELOCITY = 1.5;
-const double pylith::mmstests::TestFaultKin2D_ConstRateDynamic::TIMESTAMP = 1.0;
+const double pylith::mmstests::TestFaultKin2D_ConstRateDynamic::VELOCITY = 4.0;
+const double pylith::mmstests::TestFaultKin2D_ConstRateDynamic::TIMESTAMP = 10.0;
 const double pylith::mmstests::TestFaultKin2D_ConstRateDynamic::LENGTH_SCALE = 1000.0;
 const double pylith::mmstests::TestFaultKin2D_ConstRateDynamic::PRESSURE_SCALE = 2.5e+10;
 const double pylith::mmstests::TestFaultKin2D_ConstRateDynamic::TIME_SCALE = 2.0;
