@@ -25,10 +25,13 @@ Implements `OutputSoln`.
 * `data_fields`=\<list\>: Names of solution subfields to include in output.
   - **default value**: ['all']
   - **current value**: ['all'], from {default}
-* `label`=\<str\>: Label identifier for external boundary.
+* `label`=\<str\>: Name of label identifier for external boundary.
   - **default value**: ''
   - **current value**: '', from {default}
-  - **validator**: <function validateLabel at 0x117b1ff70>
+  - **validator**: <function validateLabel at 0x7fe786866af0>
+* `label_value`=\<int\>: Value of label identifier for external boundary (tag of physical group in Gmsh files).
+  - **default value**: 1
+  - **current value**: 1, from {default}
 * `output_basis_order`=\<int\>: Basis order for output.
   - **default value**: 1
   - **current value**: 1, from {default}

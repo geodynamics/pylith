@@ -6,7 +6,9 @@
 ---
 maxdepth: 1
 ---
+AuxSubfieldsFault.md
 FaultCohesive.md
+FaultCohesiveImpulses.md
 FaultCohesiveKin.md
 KinSrc.md
 KinSrcBrune.md

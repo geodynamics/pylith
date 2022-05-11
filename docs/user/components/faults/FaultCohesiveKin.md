@@ -30,24 +30,27 @@ Implements `FaultCohesive`.
 
 ## Pyre Properties
 
-* `edge`=\<str\>: Label identifier for buried fault edges.
+* `edge`=\<str\>: Name of label identifier for buried fault edges.
   - **default value**: ''
   - **current value**: '', from {default}
-* `id`=\<int\>: Fault identifier (must be unique across all faults and materials).
-  - **default value**: 100
-  - **current value**: 100, from {default}
-* `label`=\<str\>: Label identifier for fault.
+* `edge_value`=\<int\>: Value of label identifier for buried fault edges.
+  - **default value**: 1
+  - **current value**: 1, from {default}
+* `label`=\<str\>: Name of label identifier for fault.
   - **default value**: ''
   - **current value**: '', from {default}
-  - **validator**: <function validateLabel at 0x117d5e280>
+  - **validator**: <function validateLabel at 0x7fe78c8fea60>
+* `label_value`=\<int\>: Value of label identifier for fault.
+  - **default value**: 1
+  - **current value**: 1, from {default}
 * `ref_dir_1`=\<list\>: First choice for reference direction to discriminate among tangential directions in 3-D.
   - **default value**: [0.0, 0.0, 1.0]
   - **current value**: [0.0, 0.0, 1.0], from {default}
-  - **validator**: <function validateDir at 0x117d5e550>
+  - **validator**: <function validateDir at 0x7fe78c8feaf0>
 * `ref_dir_2`=\<list\>: Second choice for reference direction to discriminate among tangential directions in 3-D.
   - **default value**: [0.0, 1.0, 0.0]
   - **current value**: [0.0, 1.0, 0.0], from {default}
-  - **validator**: <function validateDir at 0x117d5e550>
+  - **validator**: <function validateDir at 0x7fe78c8feaf0>
 
 ## Example
 
@@ -57,7 +60,7 @@ Example of setting `FaultCohesiveKin` Pyre properties and facilities in a parame
 # Specify prescribed slip on a fault via two earthquakes in a 2D domain.
 [pylithapp.problem.interfaces.fault]
 label = fault
-id = 10
+edge = fault_edge
 
 observers.observer.data_fields = [slip]
 
@@ -71,7 +74,7 @@ quake50 = pylith.faults.KinSrcLiuCosine
 origin_time = 10*year
 
 db_auxiliary_field = spatialdata.spatialdb.UniformDB
-db_auxiliary_field.label = Fault rupture auxiliary field spatial database
+db_auxiliary_field.description = Fault rupture auxiliary field spatial database
 db_auxiliary_field.values = [initiation_time, final_slip_left_lateral, final_slip_opening]
 db_auxiliary_field.data = [0.0*s, -2.0*m, 0.0*m]
 
@@ -80,7 +83,7 @@ db_auxiliary_field.data = [0.0*s, -2.0*m, 0.0*m]
 origin_time = 50*year
 
 db_auxiliary_field = spatialdata.spatialdb.UniformDB
-db_auxiliary_field.label = Fault rupture auxiliary field spatial database
+db_auxiliary_field.description = Fault rupture auxiliary field spatial database
 db_auxiliary_field.values = [initiation_time, final_slip_left_lateral, final_slip_opening]
 db_auxiliary_field.data = [0.0*s, -1.0*m, 0.0*m]
 :::

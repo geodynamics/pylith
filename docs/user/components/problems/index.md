@@ -6,6 +6,7 @@
 ---
 maxdepth: 1
 ---
+GreensFns.md
 InitialCondition.md
 InitialConditionDomain.md
 InitialConditionPatch.md
@@ -13,6 +14,7 @@ Physics.md
 Problem.md
 ProblemDefaults.md
 ProgressMonitor.md
+ProgressMonitorStep.md
 ProgressMonitorTime.md
 SolnDisp.md
 SolnDispLagrange.md

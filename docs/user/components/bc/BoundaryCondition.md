@@ -25,8 +25,11 @@ Abstract base class for boundary conditions.
 * `field`=\<str\>: Solution subfield associated with boundary condition.
   - **default value**: 'displacement'
   - **current value**: 'displacement', from {default}
-* `label`=\<str\>: Label identifying boundary.
+* `label`=\<str\>: Name of label identifying boundary.
   - **default value**: ''
   - **current value**: '', from {default}
-  - **validator**: <function validateLabel at 0x117dfa700>
+  - **validator**: <function validateLabel at 0x7fe783ff31f0>
+* `label_value`=\<int\>: Value of label identifying boundary (tag of physical group in Gmsh files).
+  - **default value**: 1
+  - **current value**: 1, from {default}
 

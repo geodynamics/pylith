@@ -17,7 +17,7 @@ Implements `BoundaryCondition`.
 ## Pyre Facilities
 
 * `auxiliary_subfields`: Discretization information for auxiliary subfields.
-  - **current value**: 'auxiliary_subfields', from {file='/Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pythia/pyre/inventory/ConfigurableClass.py', line=26, function='__set__'}
+  - **current value**: 'auxiliary_subfields', from {file='/software/baagaard/py38-venv/pylith-debug/lib/python3.8/site-packages/pythia/pyre/inventory/ConfigurableClass.py', line=26, function='__set__'}
   - **configurable as**: auxiliary_subfields
 * `db_auxiliary_field`: Database for physical property parameters.
   - **current value**: 'simpledb', from {default}
@@ -40,10 +40,13 @@ Implements `BoundaryCondition`.
 * `field`=\<str\>: Solution subfield associated with boundary condition.
   - **default value**: 'displacement'
   - **current value**: 'displacement', from {default}
-* `label`=\<str\>: Label identifying boundary.
+* `label`=\<str\>: Name of label identifying boundary.
   - **default value**: ''
   - **current value**: '', from {default}
-  - **validator**: <function validateLabel at 0x117dfa700>
+  - **validator**: <function validateLabel at 0x7fe783ff31f0>
+* `label_value`=\<int\>: Value of label identifying boundary (tag of physical group in Gmsh files).
+  - **default value**: 1
+  - **current value**: 1, from {default}
 * `use_initial`=\<bool\>: Use initial term in time-dependent expression.
   - **default value**: True
   - **current value**: True, from {default}
@@ -68,12 +71,12 @@ field = displacement
 use_initial = False
 use_time_history = True
 db_auxiliary_field = spatialdata.spatialdb.UniformDB
-db_auxiliary_field.label = Displacement Dirichlet BC +y boundary
+db_auxiliary_field.description = Displacement Dirichlet BC +y boundary
 db_auxiliary_field.values = [time_history_amplitude_x, time_history_amplitude_y, time_history_start_time]
 db_auxiliary_field.data = [1.0*m, 0.0*m, 0.0]
 
 time_history = spatialdata.spatialdb.TimeHistory
-time_history.label = Impulse time history
+time_history.description = Impulse time history
 time_history.filename = impulse.timedb
 :::
 
