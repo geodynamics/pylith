@@ -1,5 +1,69 @@
 See <https://github.com/geodynamics/pylith/commits/main> for the complete log of changes made to PyLith.
 
+## Version 3.0.0
+
+Version 3.0.0 includes major changes to the underlying finite-element formulation and implementation in order to support a more flexible specification of the governing equations and higher order basis functions.
+These changes affect how simulations are defined.
+Parameter files for previous versions will need to be updated; the changes are too complex for a simple translation table.
+Some features present in v2.2.2, such as spontaneous rupture and finite strain, have not yet been implemented in the new formulation.
+
+* Multiphysics
+  * Elasticity for linear isotropic materials and linear Maxwell, generalized Maxwell, and power law viscoelastic models
+  * Incompressible elasticity for linear isotropic materials
+  * Prescribed slip for quasistatic and dynamic simulations
+* Higher order basis functions
+    Allow user to select order of basis functions independent of the mesh (which defines the geometry). This permits higher resolution for a given mesh.
+* Switch to using PETSc time-stepping (TS) algorithms
+  Replace simple Python-based time-stepping implementations with PETSc time-stepping algorithms that provide support for higher order discretization in time and real adaptive time stepping.
+* Static Green's functions with user-specified discretization of fault slip impulses
+* Import finite-element meshes from Cubit (Exodus II), Gmsh, and LaGriT
+* Modular approach for initial conditions
+* Output of subfields with user-defined basis order
+* Simulation metadata with command line utility for searching metadata
+* Convert to Python 3
+* Convert LaTeX documentation to Sphinx + MyST
+* Testing with the Method of Manufactured Solutions
+* Automatically assign label value for fault cohesive cells (`id` setting is obsolete).
+* Use `description` for descriptive labels and `label` and `label_value` for tagging entities. PyLith's use of`label` and `label_value` now corresponds to PETSc labels and label values.
+
+### SpatialData settings
+
+```{code-block} cfg
+db = spatialdata.spatialdb.UniformDB
+
+# Old
+db.label = Slip spatial database
+
+# New
+db.description = Slip spatial database
+```
+
+### Material settings
+
+```{code-block} cfg
+material = pylith.materials.Elasticity
+
+# Old
+material.label = Elastic material
+material.id = 2
+
+# New
+material.description = Elastic material
+material.label_value = 2
+```
+
+### Contributors
+
+* Brad Aagaard
+* Matthew Kneply
+* Charles Williams
+* Robert Walker
+* Chris Mills
+* Thea Ragon
+* Alex Berne
+* Kali Allison
+* Lorraine Hwang
+
 ## Version 2.2.1
 
 * Added new examples.
@@ -630,6 +694,9 @@ No changes in parameters are required. Version 1.6.1 does require users to speci
 
 * Fixed memory bug for a fault in a 1-D mesh when constructing the cohesive cells.
 
+### Contributors
+
+* Surendra Somala - fault friction implementation.
 
 ### Migrating from v1.4.x to 1.5.x
 
