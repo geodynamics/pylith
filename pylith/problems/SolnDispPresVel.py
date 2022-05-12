@@ -64,8 +64,7 @@ class Solution(SolutionBase):
     import pythia.pyre.inventory
 
     from .SolutionSubfield import subfieldFactory
-    subfields = pythia.pyre.inventory.facilityArray(
-        "subfields", family="soln_subfields", itemFactory=subfieldFactory, factory=SolnDispPresVel)
+    subfields = pythia.pyre.inventory.facilityArray("subfields", family="soln_subfields", itemFactory=subfieldFactory, factory=SolnDispPresVel)
     subfields.meta['tip'] = "Subfields in solution."
 
 

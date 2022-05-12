@@ -58,6 +58,7 @@ def sourceFactory(name):
     from pythia.pyre.inventory import facility
     from pylith.sources.WellboreSource import WellboreSource
     return facility(name, family="source", factory=WellboreSource)
+    
 class Problem(PetscComponent, ModuleProblem):
     """
     Abstract base class for a problem.

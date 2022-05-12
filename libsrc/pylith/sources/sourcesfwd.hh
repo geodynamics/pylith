@@ -39,6 +39,7 @@ namespace pylith {
         class SourceTimeFunctionPointForce;
         class AuxiliaryFactorySourceTime;
         class RickerWavelet;
+        class GaussianWavelet;
 
         class WellboreSource;        
         class AuxiliaryFactoryWellboreSource;
