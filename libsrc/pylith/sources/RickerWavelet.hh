@@ -16,29 +16,29 @@
 // ----------------------------------------------------------------------
 //
 
-/** @file libsrc/sources/RickerFunction.hh
+/** @file libsrc/sources/RickerWavelet.hh
  *
  * @brief C++ class for Ricker source time function.
  */
 
-#if !defined(pylith_materials_rickerfunction_hh)
-#define pylith_materials_rickerfunction_hh
+#if !defined(pylith_materials_rickerwavelet_hh)
+#define pylith_materials_rickerwavelet_hh
 
 #include "sourcesfwd.hh" // forward declarations
 
 #include "pylith/sources/SourceTimeFunctionPointForce.hh" // ISA SourceTimeFunctionPointForce
 
-class pylith::sources::RickerFunction : public pylith::sources::SourceTimeFunctionPointForce {
-    friend class TestRickerFunction; // unit testing
+class pylith::sources::RickerWavelet : public pylith::sources::SourceTimeFunctionPointForce {
+    friend class TestRickerWavelet; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Default constructor.
-    RickerFunction(void);
+    RickerWavelet(void);
 
     /// Destructor.
-    ~RickerFunction(void);
+    ~RickerWavelet(void);
 
     /// Deallocate PETSc and local data structures.
     void deallocate(void);
@@ -66,16 +66,16 @@ public:
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    pylith::sources::AuxiliaryFactoryRickerFunction* _auxiliaryFactory; ///< Factory for creating auxiliary subfields.
+    pylith::sources::AuxiliaryFactorySourceTime* _auxiliaryFactory; ///< Factory for creating auxiliary subfields.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    RickerFunction(const RickerFunction&); ///< Not implemented.
-    const RickerFunction& operator=(const RickerFunction&); /// Not implemented.
+    RickerWavelet(const RickerWavelet&); ///< Not implemented.
+    const RickerWavelet& operator=(const RickerWavelet&); /// Not implemented.
 
-}; // class RickerFunction
+}; // class RickerWavelet
 
-#endif // pylith_materials_rickerfunction_hh
+#endif // pylith_materials_rickerwavelet_hh
 
 // End of file 

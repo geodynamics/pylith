@@ -18,10 +18,10 @@
 
 #include <portinfo>
 
-#include "pylith/sources/RickerFunction.hh" // implementation of object methods
+#include "pylith/sources/GaussianWavelet.hh" // implementation of object methods
 
-#include "pylith/sources/AuxiliaryFactoryRickerFunction.hh" // USES AuxiliaryFactoryRickerFunction
-#include "pylith/fekernels/RickerFunction.hh" // USES RickerFunction kernels
+#include "pylith/sources/AuxiliaryFactorySourceTime.hh" // USES AuxiliaryFactorySourceTime
+#include "pylith/fekernels/GaussianWavelet.hh" // USES GaussianWavelet kernels
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 
@@ -31,16 +31,16 @@
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
-pylith::sources::RickerFunction::RickerFunction(void) :
-    _auxiliaryFactory(new pylith::sources::AuxiliaryFactoryRickerFunction)
+pylith::sources::GaussianWavelet::GaussianWavelet(void) :
+    _auxiliaryFactory(new pylith::sources::AuxiliaryFactorySourceTime)
      {
-    pylith::utils::PyreComponent::setName("rickerfunction");
+    pylith::utils::PyreComponent::setName("gaussianwavelet");
 } // constructor
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Destructor.
-pylith::sources::RickerFunction::~RickerFunction(void) {
+pylith::sources::GaussianWavelet::~GaussianWavelet(void) {
     deallocate();
 } // destructor
 
@@ -48,7 +48,7 @@ pylith::sources::RickerFunction::~RickerFunction(void) {
 // ---------------------------------------------------------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
-pylith::sources::RickerFunction::deallocate(void) {
+pylith::sources::GaussianWavelet::deallocate(void) {
     SourceTimeFunctionPointForce::deallocate();
 
     delete _auxiliaryFactory;_auxiliaryFactory = NULL;
@@ -57,7 +57,7 @@ pylith::sources::RickerFunction::deallocate(void) {
 // ---------------------------------------------------------------------------------------------------------------------
 // Get auxiliary factory associated with physics.
 pylith::sources::AuxiliaryFactoryPointForce*
-pylith::sources::RickerFunction::getAuxiliaryFactory(void) {
+pylith::sources::GaussianWavelet::getAuxiliaryFactory(void) {
     return _auxiliaryFactory;
 } // getAuxiliaryFactory
 
@@ -65,14 +65,14 @@ pylith::sources::RickerFunction::getAuxiliaryFactory(void) {
 // ---------------------------------------------------------------------------------------------------------------------
 // Add source time subfields to auxiliary field.
 void
-pylith::sources::RickerFunction::addAuxiliarySubfields(void) {
+pylith::sources::GaussianWavelet::addAuxiliarySubfields(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("addAuxiliarySubfields(void)");
 
     // :ATTENTION: The order for adding subfields must match the order of the auxiliary fields in the point-wise
     // functions (kernels).
 
-    _auxiliaryFactory->addRickerCenterFrequency(); // numA - 1
+    _auxiliaryFactory->addCenterFrequency(); // numA - 1
     
     PYLITH_METHOD_END;
 } // addAuxiliarySubfields
@@ -81,14 +81,14 @@ pylith::sources::RickerFunction::addAuxiliarySubfields(void) {
 // ---------------------------------------------------------------------------------------------------------------------
 // Get g1v kernel for residual, G(t,s).
 PetscPointFunc
-pylith::sources::RickerFunction::getKernelg1v_explicit(const spatialdata::geocoords::CoordSys* coordsys) const {
+pylith::sources::GaussianWavelet::getKernelg1v_explicit(const spatialdata::geocoords::CoordSys* coordsys) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("getKernelg1v_explicit(coordsys="<<typeid(coordsys).name()<<")");
 
     const int spaceDim = coordsys->getSpaceDim();
     PetscPointFunc g1v =
-        (3 == spaceDim) ? pylith::fekernels::RickerFunction3D::g1v :
-        (2 == spaceDim) ? pylith::fekernels::RickerFunctionPlaneStrain::g1v :
+        (3 == spaceDim) ? pylith::fekernels::GaussianWavelet3D::g1v :
+        (2 == spaceDim) ? pylith::fekernels::GaussianWaveletPlaneStrain::g1v :
         NULL;
 
     PYLITH_METHOD_RETURN(g1v);

@@ -142,8 +142,8 @@ pylith::sources::PointForce::createIntegrator(const pylith::topology::Field& sol
 
     err = DMLocatePoints(dmSoln, vecPoints, DM_POINTLOCATION_NONE, &sfPoints);PYLITH_CHECK_ERROR(err);
     err = VecDestroy(&vecPoints);PYLITH_CHECK_ERROR(err);
-    err = DMCreateLabel(dmSoln,PyreComponent::getIdentifier());PYLITH_CHECK_ERROR(err);
-    err = DMGetLabel(dmSoln, PyreComponent::getIdentifier(), &label);PYLITH_CHECK_ERROR(err);
+    err = DMCreateLabel(dmSoln,getLabelName());PYLITH_CHECK_ERROR(err);
+    err = DMGetLabel(dmSoln,getLabelName(), &label);PYLITH_CHECK_ERROR(err);
     err = PetscSFGetGraph(sfPoints, &numRoots, &numLeaves, &localPoints, &remotePoints);PYLITH_CHECK_ERROR(err);
     err = MPI_Comm_rank(PetscObjectComm((PetscObject) dmSoln), &rank);PYLITH_CHECK_ERROR(err);
     // Debug
@@ -156,8 +156,8 @@ pylith::sources::PointForce::createIntegrator(const pylith::topology::Field& sol
     err = PetscSFDestroy(&sfPoints);PYLITH_CHECK_ERROR(err);
 
     pylith::feassemble::IntegratorDomain* integrator = new pylith::feassemble::IntegratorDomain(this);assert(integrator);
-    integrator->setLabelName(PyreComponent::getIdentifier());
-    integrator->setLabelValue(_sourceId);
+    integrator->setLabelName(getLabelName());
+    integrator->setLabelValue(getLabelValue());
     printf("In PointForce end\n");
     DMView(dmSoln, NULL);
 

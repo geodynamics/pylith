@@ -16,12 +16,12 @@
  * ----------------------------------------------------------------------
  */
 
-/** @file libsrc/fekernels/RickerFunction.hh
+/** @file libsrc/fekernels/GaussianWavelet.hh
  *
  */
 
-#if !defined(pylith_fekernels_rickerfunction_hh)
-#define pylith_fekernels_rickerfunction_hh
+#if !defined(pylith_fekernels_gaussianwavelet_hh)
+#define pylith_fekernels_gaussianwavelet_hh
 
 // Include directives ---------------------------------------------------
 #include "fekernelsfwd.hh" // forward declarations
@@ -32,7 +32,7 @@
 // Kernels for the Ricker Source Time Function in 2D.
 // =====================================================================================================================
 
-class pylith::fekernels::RickerFunctionPlaneStrain {
+class pylith::fekernels::GaussianWaveletPlaneStrain {
     // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public:
 
@@ -81,13 +81,13 @@ public:
              const PylithScalar constants[],
              PylithScalar g1[]);
 
-}; // RickerFunctionPlaneStrain
+}; // GaussianWaveletPlaneStrain
 
 // =====================================================================================================================
 // Kernels for the Ricker Source Time Function in 3D.
 // =====================================================================================================================
 
-class pylith::fekernels::RickerFunction3D {
+class pylith::fekernels::GaussianWavelet3D {
     // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public:
 
@@ -136,8 +136,8 @@ public:
              const PylithScalar constants[],
              PylithScalar g1[]);
 
-}; // RickerFunctionPlaneStrain
+}; // GaussianWaveletPlaneStrain
 
-#endif /* pylith_fekernels_rickerfunction_hh */
+#endif /* pylith_fekernels_gaussianwavelet_hh */
 
 /* End of file */

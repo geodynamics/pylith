@@ -40,29 +40,41 @@ public:
             virtual
             void deallocate(void);
 
-            /** Set value of label source-id used to identify source cells.
-             *
-             * @param value Source identifier
-             */
-            void setSourceId(const int value);
-
-            /** Get value of label source-id used to identify source cells.
-             *
-             * @returns Source identifier
-             */
-            int getSourceId(void) const;
-
             /** Set descriptive label for source.
              *
              * @param value Label of source.
              */
-            void setDescriptiveLabel(const char* value);
+            void setDescription(const char* value);
 
             /** Get descruptive label of source.
              *
              * @returns Label of source
              */
-            const char* getDescriptiveLabel(void) const;
+            const char* getDescription(void) const;
+
+            /** Set name of label marking source.
+             *
+             * @param[in] value Name of label for source (from mesh generator).
+             */
+            void setLabelName(const char* value);
+
+            /** Get name of label marking boundary associated with boundary condition surface.
+             *
+             * @returns Name of label for source (from mesh generator).
+             */
+            const char* getLabelName(void) const;
+
+            /** Set value of label marking source.
+             *
+             * @param[in] value Value of label for source (from mesh generator).
+             */
+            void setLabelValue(const int value);
+
+            /** Get value of label marking source.
+             *
+             * @returns Value of label for source (from mesh generator).
+             */
+            int getLabelValue(void) const;
 
 	    /** Create constraint and set kernels.
 	     *

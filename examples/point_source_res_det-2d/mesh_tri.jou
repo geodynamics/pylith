@@ -4,17 +4,28 @@
 playback 'geometry.jou'
 
 # ----------------------------------------------------------------------
-# Set discretization size
+# Set discretization size and  scheme
 # ----------------------------------------------------------------------
-${dx=120.0*m}
-surface all size {dx}
+surface all scheme trimesh
+#curve all scheme default
+#surface all sizing function none
 
+surface domain size 300
+surface intrusion size 150
 
 # ----------------------------------------------------------------------
 # Generate the mesh
 # ----------------------------------------------------------------------
-surface all scheme submap
-mesh surface all
+mesh curve intrusion_interface 
+mesh surface intrusion
+mesh surface domain
+refine curve intrusion_interface numsplit 1
+
+# ----------------------------------------------------------------------
+# Smooth mesh to improve quality
+# ----------------------------------------------------------------------
+#surface all smooth scheme condition number beta 1.4 cpu 10
+#smooth surface all
 
 # ----------------------------------------------------------------------
 # Mark entities for boundary conditions, etc.
@@ -24,7 +35,4 @@ playback 'bc.jou'
 # ----------------------------------------------------------------------
 # Export exodus file
 # ----------------------------------------------------------------------
-export mesh "mesh_quad.exo" dimension 2 overwrite
-
-
-
+export mesh "mesh_tri.exo" dimension 2 overwrite

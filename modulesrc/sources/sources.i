@@ -21,7 +21,8 @@
 #include "pylith/sources/Source.hh"
 #include "pylith/sources/PointForce.hh"
 #include "pylith/sources/SourceTimeFunctionPointForce.hh"
-#include "pylith/sources/RickerFunction.hh"
+#include "pylith/sources/RickerWavelet.hh"
+#include "pylith/sources/GaussianWavelet.hh"
 #include "pylith/sources/WellboreSource.hh"
 
 #include "pylith/utils/arrayfwd.hh"
@@ -56,7 +57,8 @@ import_array();
 %include "Source.i"
 %include "PointForce.i"
 %include "SourceTimeFunctionPointForce.i"
-%include "RickerFunction.i"
+%include "RickerWavelet.i"
+%include "GaussianWavelet.i"
 %include "WellboreSource.i"
 
 // End of file

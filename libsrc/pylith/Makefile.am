@@ -45,11 +45,12 @@ libpylith_la_SOURCES = \
 	sources/AuxiliaryFactoryWellboreSource.cc \
 	sources/AuxiliaryFactoryPointForce.cc \
 	sources/DerivedFactoryPointForce.cc \
-	sources/AuxiliaryFactoryRickerFunction.cc \
+	sources/AuxiliaryFactorySourceTime.cc \
 	sources/Source.cc \
 	sources/WellboreSource.cc \
 	sources/PointForce.cc \
-	sources/RickerFunction.cc \
+	sources/RickerWavelet.cc \
+	sources/GaussianWavelet.cc \	
 	sources/SourceTimeFunctionPointForce.cc \
 	faults/FaultCohesive.cc \
 	faults/FaultCohesiveKin.cc \
@@ -95,7 +96,8 @@ libpylith_la_SOURCES = \
 	fekernels/AbsorbingDampers.cc \
 	fekernels/FaultCohesiveKin.cc \
 	fekernels/WellboreSource.cc \
-	fekernels/RickerFunction.cc \
+	fekernels/RickerWavelet.cc \
+	fekernels/GaussianWavelet.cc \	
 	materials/Material.cc \
 	materials/Elasticity.cc \
 	materials/RheologyElasticity.cc \

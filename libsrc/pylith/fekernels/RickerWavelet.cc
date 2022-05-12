@@ -18,7 +18,7 @@
 
 #include <portinfo>
 
-#include "pylith/fekernels/RickerFunction.hh"
+#include "pylith/fekernels/RickerWavelet.hh"
 
 #include <cassert> // USES assert()
 #include <iostream> // debugging.
@@ -30,7 +30,7 @@
 // ----------------------------------------------------------------------
 // g1 entry function for velocity equation
 void
-pylith::fekernels::RickerFunctionPlaneStrain::g1v(const PylithInt dim,
+pylith::fekernels::RickerWaveletPlaneStrain::g1v(const PylithInt dim,
                                        const PylithInt numS,
                                        const PylithInt numA,
                                        const PylithInt sOff[],
@@ -60,20 +60,20 @@ pylith::fekernels::RickerFunctionPlaneStrain::g1v(const PylithInt dim,
     // Incoming re-packed auxiliary field.
     const PylithInt i_momentTensor = 0;
     const PylithInt i_timeDelay = 1;
-    const PylithInt i_rickerfunctionCenterFrequency = numA - 1;
+    const PylithInt i_rickerwaveletCenterFrequency = numA - 1;
     
     const PylithScalar* momentTensor = &a[aOff[i_momentTensor]];
     const PylithScalar timeDelay = a[aOff[i_timeDelay]];
-    const PylithScalar rickerfunctionCenterFrequency = a[aOff[i_rickerfunctionCenterFrequency]];
+    const PylithScalar rickerwaveletCenterFrequency = a[aOff[i_rickerwaveletCenterFrequency]];
 
-    // RickerFunction source time function (time domain)
+    // RickerWavelet source time function (time domain)
 
     PylithScalar rt = t - timeDelay;
-    PylithScalar rickerfunction = (1.0 - 2.0*PETSC_PI*PETSC_PI*rickerfunctionCenterFrequency*rickerfunctionCenterFrequency*rt*rt) * 
-                           PetscExpReal(-PETSC_PI*PETSC_PI*rickerfunctionCenterFrequency*rickerfunctionCenterFrequency*rt*rt);
+    PylithScalar rickerwavelet = (1.0 - 2.0*PETSC_PI*PETSC_PI*rickerwaveletCenterFrequency*rickerwaveletCenterFrequency*rt*rt) * 
+                           PetscExpReal(-PETSC_PI*PETSC_PI*rickerwaveletCenterFrequency*rickerwaveletCenterFrequency*rt*rt);
 
     for (PylithInt i = 0; i < dim*dim; ++i) {
-        g1[i] -= momentTensor[i] * rickerfunction;
+        g1[i] -= momentTensor[i] * rickerwavelet;
     } // for
 } // g1v
 
@@ -85,7 +85,7 @@ pylith::fekernels::RickerFunctionPlaneStrain::g1v(const PylithInt dim,
 // ----------------------------------------------------------------------
 // g1 entry function for velocity equation
 void
-pylith::fekernels::RickerFunction3D::g1v(const PylithInt dim,
+pylith::fekernels::RickerWavelet3D::g1v(const PylithInt dim,
                                        const PylithInt numS,
                                        const PylithInt numA,
                                        const PylithInt sOff[],
@@ -115,20 +115,20 @@ pylith::fekernels::RickerFunction3D::g1v(const PylithInt dim,
     // Incoming re-packed auxiliary field.
     const PylithInt i_momentTensor = 0;
     const PylithInt i_timeDelay = 1;
-    const PylithInt i_rickerfunctionCenterFrequency = numA - 1;
+    const PylithInt i_rickerwaveletCenterFrequency = numA - 1;
     
     const PylithScalar* momentTensor = &a[aOff[i_momentTensor]];
     const PylithScalar timeDelay = a[aOff[i_timeDelay]];
-    const PylithScalar rickerfunctionCenterFrequency = a[aOff[i_rickerfunctionCenterFrequency]];
+    const PylithScalar rickerwaveletCenterFrequency = a[aOff[i_rickerwaveletCenterFrequency]];
 
-    // RickerFunction source time function (time domain)
+    // RickerWavelet source time function (time domain)
 
     PylithScalar rt = t - timeDelay;
-    PylithScalar rickerfunction = (1.0 - 2.0*PETSC_PI*PETSC_PI*rickerfunctionCenterFrequency*rickerfunctionCenterFrequency*rt*rt) * 
-                           PetscExpReal(-PETSC_PI*PETSC_PI*rickerfunctionCenterFrequency*rickerfunctionCenterFrequency*rt*rt);
+    PylithScalar rickerwavelet = (1.0 - 2.0*PETSC_PI*PETSC_PI*rickerwaveletCenterFrequency*rickerwaveletCenterFrequency*rt*rt) * 
+                           PetscExpReal(-PETSC_PI*PETSC_PI*rickerwaveletCenterFrequency*rickerwaveletCenterFrequency*rt*rt);
 
     for (PylithInt i = 0; i < dim*dim; ++i) {
-        g1[i] -= momentTensor[i] * rickerfunction;
+        g1[i] -= momentTensor[i] * rickerwavelet;
     } // for
 } // g1v
 

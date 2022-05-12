@@ -18,7 +18,7 @@
 
 #include <portinfo>
 
-#include "AuxiliaryFactoryRickerFunction.hh" // implementation of object methods
+#include "AuxiliaryFactorySourceTime.hh" // implementation of object methods
 
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/FieldQuery.hh" // HOLDSA FieldQuery
@@ -32,23 +32,23 @@
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
-pylith::sources::AuxiliaryFactoryRickerFunction::AuxiliaryFactoryRickerFunction(void) {
-    GenericComponent::setName("auxiliaryfactoryrickerfunction");
+pylith::sources::AuxiliaryFactorySourceTime::AuxiliaryFactorySourceTime(void) {
+    GenericComponent::setName("auxiliaryfactorysourcetime");
 } // constructor
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Destructor.
-pylith::sources::AuxiliaryFactoryRickerFunction::~AuxiliaryFactoryRickerFunction(void) {}
+pylith::sources::AuxiliaryFactorySourceTime::~AuxiliaryFactorySourceTime(void) {}
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Add center frequency of Ricker source time function to auxiliary fields.
+// Add center frequency of source time function to auxiliary fields.
 void
-pylith::sources::AuxiliaryFactoryRickerFunction::addRickerCenterFrequency(void) {
+pylith::sources::AuxiliaryFactorySourceTime::addCenterFrequency(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addRickerCenterFrequency(void)");
+    PYLITH_JOURNAL_DEBUG("addCenterFrequency(void)");
 
-    const char* subfieldName = "ricker_center_frequency";
+    const char* subfieldName = "center_frequency";
 
     pylith::topology::Field::Description description;
     description.label = subfieldName;

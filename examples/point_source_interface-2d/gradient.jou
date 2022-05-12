@@ -1,0 +1,60 @@
+# -*- Python -*- (syntax highlighting)
+# ----------------------------------------------------------------------
+#
+# Brad T. Aagaard, U.S. Geological Survey
+# Charles A. Williams, GNS Science
+# Matthew G. Knepley, University at Buffalo
+#
+# This code was developed as part of the Computational Infrastructure
+# for Geodynamics (http://geodynamics.org).
+#
+# Copyright (c) 2010-2021 University of California, Davis
+#
+# See LICENSE.md for license information.
+#
+# ----------------------------------------------------------------------
+# Set vertex spacing with increasing spacing away from fault
+# ----------------------------------------------------------------------
+${bias_factor=1.05}
+
+# Function for computing discretization size at end of curve with bias
+${fun_dx='dxStart*bias_factor**ceil( ln(1-curveL/dxStart*(1-bias_factor))/ln(bias_factor))'}
+
+# ----------------------------------------------------------------------
+# Compute sizes at curve endpoints
+# ----------------------------------------------------------------------
+
+# dxA - size at vertex_ypos_xpos, vertex_ypos_xneg, vertex_yneg_xpos, vertex_yneg_xneg
+${dxStart=dx}{curveL=Length(Id("edge_ypos_xneg"))}{execute("dxA="//fun_dx)}
+
+# ----------------------------------------------------------------------
+# Reset sizes
+# ----------------------------------------------------------------------
+curve all scheme default
+surface all sizing function none
+
+# Set size on faults
+curve fault_surface size {dx}
+
+# Fault to edge
+curve edge_ypos_xneg scheme bias fine size {dx} factor {bias_factor} start vertex vertex_fault_ypos
+curve edge_ypos_xpos scheme bias fine size {dx} factor {bias_factor} start vertex vertex_fault_ypos
+curve edge_yneg_xneg scheme bias fine size {dx} factor {bias_factor} start vertex vertex_fault_yneg
+curve edge_yneg_xpos scheme bias fine size {dx} factor {bias_factor} start vertex vertex_fault_yneg
+
+# Mesh edges
+curve edge_xneg size {dxA}
+curve edge_xpos size {dxA}
+
+# For CUBIT 15.4
+set trimesher surface gradation {bias_factor}
+
+# For earlier versions of CUBIT
+surface all sizing function type bias start curve fault_surface factor {bias_factor}
+
+# End of file
+
+
+
+
+

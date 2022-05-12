@@ -13,17 +13,17 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file pylith/sources/RickerFunction.py
+# @file pylith/sources/GaussianWavelet.py
 #
-# @brief Python source time functiof for a ricker wavelet.
+# @brief Python source time functiof for a gaussian wavelet.
 #
 # Factory: pointforce_sourcetimefunction
 
 from .SourceTimeFunctionPointForce import SourceTimeFunctionPointForce
-from .sources import RickerFunction as ModuleRickerFunction
+from .sources import GaussianWavelet as ModuleGaussianWavelet
 
 
-class RickerFunction(SourceTimeFunctionPointForce, ModuleRickerFunction):
+class GaussianWavelet(SourceTimeFunctionPointForce, ModuleGaussianWavelet):
     """Python source time function for ricker source.
 
     FACTORY: pointforce_sourcetimefunction
@@ -33,15 +33,15 @@ class RickerFunction(SourceTimeFunctionPointForce, ModuleRickerFunction):
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
-    def __init__(self, name="rickerfunction"):
+    def __init__(self, name="gaussianwavelet"):
         """Constructor.
         """
         SourceTimeFunctionPointForce.__init__(self, name)
         return
 
     def _defaults(self):
-        from .AuxSubfieldsRickerFunction import AuxSubfieldsRickerFunction
-        self.auxiliarySubfields = AuxSubfieldsRickerFunction("auxiliary_subfields")
+        from .AuxSubfieldsSourceTime import AuxSubfieldsSourceTime
+        self.auxiliarySubfields = AuxSubfieldsSourceTime("auxiliary_subfields")
 
     def preinitialize(self, problem):
         SourceTimeFunctionPointForce.preinitialize(self, problem)
@@ -54,15 +54,15 @@ class RickerFunction(SourceTimeFunctionPointForce, ModuleRickerFunction):
     def _createModuleObj(self):
         """Call constructor for module object for access to C++ object.
         """
-        ModuleRickerFunction.__init__(self)
+        ModuleGaussianWavelet.__init__(self)
 
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def pointforce_sourcetimefunction():
-    """Factory associated with RickerFunction.
+    """Factory associated with GaussianWavelet.
     """
-    return RickerFunction()
+    return GaussianWavelet()
 
 
 # End of file

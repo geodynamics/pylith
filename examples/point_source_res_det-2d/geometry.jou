@@ -1,0 +1,38 @@
+${Units('si')}
+
+undo on
+reset
+
+## Domain
+#{length = 20*km}
+#{depth  = 20*km}
+#{pay = 0.1*km}
+
+## Magma Intrusion
+#{major = 6*km}
+#{minor  = 0.5*km}
+
+## Magma conduit
+#{c_length = 1*km}
+#{c_depth = 6*km}
+
+Create Surface rectangle width {length} height {depth} ZPLANE
+surface {Id("surface")} move x {length/2} y {depth/-2} z 0
+surface {Id("surface")} name "domain"
+
+Create Surface Ellipse major radius {major} minor radius {minor} on surface domain
+surface {Id("surface")} move x {length/2} y {-depth*(2/3)} z 0
+surface {Id("surface")} name "intrusion"
+
+
+## Merge with domain
+subtract surface intrusion from surface domain keep_tool
+imprint all
+merge all
+
+## Identify curves of interest
+curve 5 name "intrusion_interface"
+
+
+
+

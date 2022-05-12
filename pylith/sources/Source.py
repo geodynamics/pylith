@@ -24,11 +24,11 @@ from pylith.problems.Physics import Physics
 from .sources import Source as ModuleSource
 
 
-def validateLabel(value):
-    """Validate descriptive label.
+def validateDescription(value):
+    """Validate description.
     """
     if 0 == len(value):
-        raise ValueError("Descriptive label for source not specified.")
+        raise ValueError("Description for material not specified.")
     return value
 
 
@@ -40,11 +40,14 @@ class Source(Physics, ModuleSource):
 
     import pythia.pyre.inventory
 
-    sourceId = pythia.pyre.inventory.int("id", default=0)
-    sourceId.meta['tip'] = "Source identifier (from mesh generator)."
+    description = pythia.pyre.inventory.str("description", default="", validator=validateDescription)
+    description.meta['tip'] = "Descriptive label for material."
 
-    label = pythia.pyre.inventory.str("label", default="", validator=validateLabel)
-    label.meta['tip'] = "Descriptive label for source."
+    labelName = pythia.pyre.inventory.str("label", default="source-id", validator=pythia.pyre.inventory.choice(["source-id"]))
+    labelName.meta['tip'] = "Name of label for source. Currently only 'source-id' is allowed."
+
+    labelValue = pythia.pyre.inventory.int("label_value", default=1)
+    labelValue.meta['tip'] = "Value of label identifying source."
 
     from pylith.meshio.PointsList import PointsList
     reader = pythia.pyre.inventory.facility("reader", factory=PointsList, family="points_list")
@@ -60,9 +63,9 @@ class Source(Physics, ModuleSource):
         """Setup source.
         """
         Physics.preinitialize(self, problem)
-
-        ModuleSource.setSourceId(self, self.sourceId)
-        ModuleSource.setDescriptiveLabel(self, self.label)
+        ModuleSource.setDescription(self, self.description)
+        ModuleSource.setLabelName(self, self.labelName)
+        ModuleSource.setLabelValue(self, self.labelValue)
 
         sourceNames, sourceCoords = self.reader.read()
 

@@ -29,8 +29,9 @@
 // ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::sources::Source::Source(void) :
-    _sourceId(0),
-    _descriptiveLabel("") {
+    _description(""),
+    _labelName(""),
+    _labelValue(1) {
     //
 } // constructor
 
@@ -53,41 +54,60 @@ pylith::sources::Source::deallocate(void) {
     PYLITH_METHOD_END;
 } // deallocate
 
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Set value of label source-id used to identify source cells.
-void
-pylith::sources::Source::setSourceId(const int value) {
-    PYLITH_COMPONENT_DEBUG("setsourceId(value="<<value<<")");
-
-    _sourceId = value;
-} // setSourceId
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Get value of label source-id used to identify source cells.
-int
-pylith::sources::Source::getSourceId(void) const {
-    return _sourceId;
-} // getSourceId
-
-
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Set descriptive label of source.
 void
-pylith::sources::Source::setDescriptiveLabel(const char* value) {
-    PYLITH_COMPONENT_DEBUG("setDescriptiveLabel(value="<<value<<")");
+pylith::sources::Source::setDescription(const char* value) {
+    PYLITH_COMPONENT_DEBUG("setDescription(value="<<value<<")");
 
-    _descriptiveLabel = value;
-} // setDescriptiveLabel
+    _description = value;
+} // setDescription
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get label of source.
 const char*
-pylith::sources::Source::getDescriptiveLabel(void) const {
-    return _descriptiveLabel.c_str();
-} // getDescriptiveLabel
+pylith::sources::Source::getDescription(void) const {
+    return _description.c_str();
+} // getDescription
+
+
+// ------------------------------------------------------------------------------------------------
+// Set name of label marking material.
+void
+pylith::sources::Source::setLabelName(const char* value) {
+    PYLITH_COMPONENT_DEBUG("setLabelName(value="<<value<<")");
+
+    if (strlen(value) == 0) {
+        throw std::runtime_error("Empty string given for material label.");
+    } // if
+
+    _labelName = value;
+} // setLabelName
+
+
+// ------------------------------------------------------------------------------------------------
+// Get name of label marking material.
+const char*
+pylith::sources::Source::getLabelName(void) const {
+    return _labelName.c_str();
+} // getLabelName
+
+
+// ------------------------------------------------------------------------------------------------
+// Set value of label marking material.
+void
+pylith::sources::Source::setLabelValue(const int value) {
+    _labelValue = value;
+} // setLabelValue
+
+
+// ------------------------------------------------------------------------------------------------
+// Get value of label marking material.
+int
+pylith::sources::Source::getLabelValue(void) const {
+    return _labelValue;
+} // getLabelValue
 
 
 // ---------------------------------------------------------------------------------------------------------------------

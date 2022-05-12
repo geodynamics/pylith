@@ -19,7 +19,7 @@
 #
 # Factory: source
 
-from pylith.sources.RickerFunction import RickerFunction
+from pylith.sources.RickerWavelet import RickerWavelet
 from .Source import Source
 from .sources import PointForce as ModulePointForce
 
@@ -32,7 +32,7 @@ class PointForce(Source, ModulePointForce):
 
     import pythia.pyre.inventory
 
-    source_time_function = pythia.pyre.inventory.facility("source_time_function", family="pointforce_sourcetimefunction", factory=RickerFunction)
+    source_time_function = pythia.pyre.inventory.facility("source_time_function", family="pointforce_sourcetimefunction", factory=RickerWavelet)
     source_time_function.meta['tip'] = "Source time function for point force."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////

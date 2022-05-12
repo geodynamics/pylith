@@ -16,22 +16,22 @@
 // ----------------------------------------------------------------------
 //
 
-/** @file modulesrc/sources/RickerFunction.i
+/** @file modulesrc/sources/RickerWavelet.i
  *
- * Python interface to C++ RickerFunction.
+ * Python interface to C++ RickerWavelet.
  */
 
 namespace pylith {
     namespace sources {
-        class RickerFunction : public pylith::sources::SourceTimeFunctionPointForce {
+        class RickerWavelet : public pylith::sources::SourceTimeFunctionPointForce {
             // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////
 public:
 
             /// Default constructor.
-            RickerFunction(void);
+            RickerWavelet(void);
 
             /// Destructor.
-            ~RickerFunction(void);
+            ~RickerWavelet(void);
 
             /// Deallocate PETSc and local data structures.
             void deallocate(void);
@@ -59,7 +59,7 @@ public:
 
         };
 
-        // class RickerFunction
+        // class RickerWavelet
 
     } // sources
 } // pylith

@@ -30,7 +30,8 @@ swig_sources = \
 	Source.i \
 	PointForce.i \
 	SourceTimeFunctionPointForce.i \
-	RickerFunction.i \
+	RickerWavelet.i \
+	GaussianWavelet.i \	
 	WellboreSource.i \
 	../utils/PyreComponent.i
 

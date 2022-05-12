@@ -1,0 +1,53 @@
+# -*- Python -*- (syntax highlighting)
+# ----------------------------------------------------------------------
+#
+# Brad T. Aagaard, U.S. Geological Survey
+# Charles A. Williams, GNS Science
+# Matthew G. Knepley, University at Buffalo
+#
+# This code was developed as part of the Computational Infrastructure
+# for Geodynamics (http://geodynamics.org).
+#
+# Copyright (c) 2010-2021 University of California, Davis
+#
+# See LICENSE.md for license information.
+#
+# ----------------------------------------------------------------------
+# Create tri mesh at 4 km resolution.
+
+# ----------------------------------------------------------------------
+# Generate geometry
+# ----------------------------------------------------------------------
+playback 'geometry.jou'
+
+# ----------------------------------------------------------------------
+# Set discretization size and scheme
+# ----------------------------------------------------------------------
+${dx=4.0*km}
+surface all scheme trimesh
+playback 'gradient.jou'
+
+# ----------------------------------------------------------------------
+# Generate the mesh
+# ----------------------------------------------------------------------
+# preview mesh surface all
+mesh surface all
+
+# ----------------------------------------------------------------------
+# Smooth mesh to improve quality
+# ----------------------------------------------------------------------
+surface all smooth scheme condition number beta 1.1 cpu 10
+smooth surface all
+
+# ----------------------------------------------------------------------
+# Setup boundary conditions.
+# ----------------------------------------------------------------------
+playback 'createbc.jou'
+
+# ----------------------------------------------------------------------
+# Export exodus file
+# ----------------------------------------------------------------------
+export mesh "mesh_tri.exo" dimension 2 overwrite
+
+
+# End of file

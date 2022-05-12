@@ -75,9 +75,13 @@ namespace pylith {
 
         class WellboreSource;
 
-        class RickerFunction;
-        class RickerFunctionPlaneStrain;
-        class RickerFunction3D;
+        class RickerWavelet;
+        class RickerWaveletPlaneStrain;
+        class RickerWavelet3D;
+
+        class GaussianWavelet;
+        class GaussianWaveletPlaneStrain;
+        class GaussianWavelet3D;
 
         class BoundaryDirections;
     } // fekernels

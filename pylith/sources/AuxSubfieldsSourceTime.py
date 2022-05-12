@@ -13,15 +13,15 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file pylith/sources/AuxSubfieldsRickerFunction.py
+# @file pylith/sources/AuxSubfieldsSourceTime.py
 #
-# @brief Python container for RickerFunction equation subfields.
+# @brief Python container for SourceTime equation subfields.
 
 from pylith.utils.PetscComponent import PetscComponent
 
 
-class AuxSubfieldsRickerFunction(PetscComponent):
-    """Python container for RickerFunction equation subfields.
+class AuxSubfieldsSourceTime(PetscComponent):
+    """Python container for SourceTime equation subfields.
 
     FACTORY: auxiliary_subfields
     """
@@ -30,12 +30,12 @@ class AuxSubfieldsRickerFunction(PetscComponent):
 
     from pylith.topology.Subfield import Subfield
 
-    rickerCenterFrequency = pythia.pyre.inventory.facility("ricker_center_frequency", family="auxiliary_subfield", factory=Subfield)
-    rickerCenterFrequency.meta['tip'] = "Ricker center frequency subfield."
+    CenterFrequency = pythia.pyre.inventory.facility("center_frequency", family="auxiliary_subfield", factory=Subfield)
+    CenterFrequency.meta['tip'] = "center frequency subfield."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
-    def __init__(self, name="auxsubfieldsrickerfunction"):
+    def __init__(self, name="auxsubfieldssourcetime"):
         """Constructor.
         """
         PetscComponent.__init__(self, name, facility="auxiliary_subfields")
@@ -51,9 +51,9 @@ class AuxSubfieldsRickerFunction(PetscComponent):
 # FACTORIES ////////////////////////////////////////////////////////////
 
 def auxiliary_subfields():
-    """Factory associated with AuxSubfieldsRickerFunction.
+    """Factory associated with AuxSubfieldsSourceTime.
     """
-    return AuxSubfieldsRickerFunction()
+    return AuxSubfieldsSourceTime()
 
 
 # End of file
