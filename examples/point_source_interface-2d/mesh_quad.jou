@@ -25,21 +25,22 @@ playback 'geometry.jou'
 #
 # The "pave" scheme is an unstructured 2-D quad meshing scheme.
 # ----------------------------------------------------------------------
-${dx=500*m}
+${dx=1000*m}
 surface all scheme pave
-playback 'gradient.jou'
+#playback 'gradient.jou'
 
 # ----------------------------------------------------------------------
 # Generate the mesh
 # ----------------------------------------------------------------------
 # preview mesh surface all
+surface all size {dx}
 mesh surface all
 
 # ----------------------------------------------------------------------
 # Smooth mesh to improve quality
 # ----------------------------------------------------------------------
-surface all smooth scheme condition number beta 1.1 cpu 10
-smooth surface all
+#surface all smooth scheme condition number beta 2.1 cpu 10
+#smooth surface all
 
 # ----------------------------------------------------------------------
 # Setup boundary conditions.
@@ -53,4 +54,7 @@ export mesh "mesh_quad.exo" dimension 2 overwrite
 
 
 # End of file
+
+
+
 

@@ -41,14 +41,15 @@ group "xpos" add node in curve 4
 nodeset 21 group xpos
 nodeset 21 name "xpos"
 
-group "ypos" add node in curve 1
-nodeset 22 group ypos
-nodeset 22 name "ypos"
-
 group "yneg" add node in curve 8 16 17
-nodeset 23 group yneg
-nodeset 23 name "yneg"
+nodeset 22 group yneg
+nodeset 22 name "yneg"
+
+group "ypos" add node in curve 1
+nodeset 23 group ypos
+nodeset 23 name "ypos"
 
 group "xflow" add node in curve crossflow
 nodeset 24 group xflow
 nodeset 24 name "xflow"
+
