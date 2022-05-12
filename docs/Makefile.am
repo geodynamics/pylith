@@ -23,7 +23,7 @@ dist_noinst_DATA = \
 	_static/images/cig_short_nolabel.png \
 	_static/images/cig_short_pylith.png \
 	_templates/sidebar-cig.html \
-	palettes/figcolors.tex \
+	tikz-styles/figcolors.tex \
 	index.md \
 	references.bib \
 	references.md \
