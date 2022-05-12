@@ -64,8 +64,11 @@ material.label_value = 2
 * Charles Williams
 * Robert Walker
 * Chris Mills
+* Shengduo Liu
 * Thea Ragon
 * Alex Berne
+* Jed Brown
+* Rey Koki
 * Kali Allison
 * Lorraine Hwang
 
