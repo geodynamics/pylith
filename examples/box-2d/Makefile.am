@@ -31,7 +31,7 @@ dist_noinst_DATA = \
 	sheardisp_bc_ypos.spatialdb \
 	sheardisp_ic.spatialdb \
 	sheardisprate_bc_xneg.spatialdb \
-	sheardisprate_bc_yneg.spatialdb \
+	sheardisprate_bc_xpos.spatialdb \
 	viz/plot_dispwarp.py
 
 

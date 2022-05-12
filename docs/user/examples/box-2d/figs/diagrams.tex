@@ -1,0 +1,217 @@
+\documentclass[crop,tikz]{standalone}
+\usepackage{tikz}
+\usepackage{ifthen}
+\usepackage[scaled]{helvet}
+\renewcommand*\familydefault{\sfdefault}
+
+\begin{document}
+
+\input{../../../../tikz-styles/figcolors}
+\input{../../../../tikz-styles/example-style}
+
+
+\foreach \figpart in {1,...,6}{
+
+% -------------------------------------------------------------------------------------------------
+\begin{tikzpicture}[scale=0.5]
+
+\def\domainx{12}
+\def\domainy{16}
+\def\axesshift{0.05*\domainx}
+\def\bndryshift{4*\axesshift}
+\def\ticksize{0.5*\axesshift}
+\def\dx{4.0}
+\pgfmathsetmacro\halfheight{0.5*\domainy}
+
+% Reference points
+\coordinate (p0) at (-0.5*\domainx,-\domainy);
+\coordinate (p1) at (+0.5*\domainx,-\domainy);
+\coordinate (p2) at (+0.5*\domainx,0.0mm);
+\coordinate (p3) at (-0.5*\domainx,0.0mm);
+
+% Domain
+\draw[curve,gdomain] (p0) -- (p1) -- (p2) -- (p3) -- cycle;
+
+% -------------------------------------------------------------------------------------------------
+% Geometry
+% -------------------------------------------------------------------------------------------------
+\ifthenelse{\figpart=1}{
+
+% Axes
+\draw[axes,arrow] ($(p0)+(0,-\axesshift)$) to ($(p1)+(2*\axesshift,-\axesshift)$);
+\node[axes-label,right] at ($(p1)+(2*\axesshift,-\axesshift)$) {x};
+\foreach \ix in {0,1}{%
+    \pgfmathsetmacro{\x}{-0.5*\domainx+\ix*\domainx}
+    \draw[axes] ($(p0)+(\ix*\domainx,-\axesshift)$) -- ++(0,-\ticksize) node[below]{\x\,km};
+}
+
+\draw[axes,arrow] ($(p0)+(-\axesshift,0)$) to ($(p3)+(-\axesshift,+2*\axesshift)$);
+\node[axes-label,above] at ($(p3)+(-\axesshift,2*\axesshift)$) {y};
+\foreach \iy in {0,1}{%
+    \pgfmathsetmacro{\y}{-\domainy+\iy*\domainy}
+    \draw[axes] ($(p0)+(-\axesshift,\iy*\domainy)$) -- ++(-\ticksize,0) node[left]{\y\,km};
+}
+
+% Boundaries
+\node[bc-label, anchor=east] (xneg-label) at ($(p0)+(-\bndryshift,0.5*\domainy)$) {boundary\_xneg};
+\draw[bc,arrow] (xneg-label) to[out=10,in=-170,looseness=2] ($(p0)+(0,0.5*\domainy)$);
+
+\node[bc-label, anchor=west] (xpos-label) at ($(p1)+(+\bndryshift,0.5*\domainy)$) {boundary\_xpos};
+\draw[bc,arrow] (xpos-label) to[out=-170,in=+10,looseness=2] ($(p1)+(0,0.5*\domainy)$);
+
+\node[bc-label, anchor=north] (yneg-label) at ($(p0)+(0.5*\domainx,-\bndryshift)$) {boundary\_yneg};
+\draw[bc,arrow] (yneg-label) to[out=80,in=-80,looseness=2] ($(p0)+(0.5*\domainx,0)$);
+
+\node[bc-label, anchor=south] (ypos-label) at ($(p3)+(0.5*\domainx,\bndryshift)$) {boundary\_ypos};
+\draw[bc,arrow] (ypos-label) to[out=-80,in=100,looseness=2] ($(p3)+(0.5*\domainx,0)$);
+
+}{}
+
+
+% -------------------------------------------------------------------------------------------------
+% Mesh
+% -------------------------------------------------------------------------------------------------
+\ifthenelse{\figpart=2}{
+
+% Cells
+\foreach \ix in {0,...,3}{%
+    \draw[cell] ($(p0)+(\ix*\dx,0)$) -- ++(0,\domainy);
+}
+\foreach \iy in {0,...,4}{%
+    \draw[cell] ($(p0)+(0,\iy*\dx)$) -- ++(\domainx,0);
+}
+\foreach \ix in {0,...,2}{%
+    \foreach \iy in {0,...,3}{%
+    \pgfmathsetmacro\clabel{3*\iy+\ix}%
+        \node[cell-label] at ($(p0)+(\ix*\dx+0.5*\dx,\iy*\dx+0.5*\dx)$) {\pgfmathprintnumber{\clabel}};
+    }
+}
+
+% Vertices
+\foreach \ix in {0,...,3}{%
+    \foreach \iy in {0,...,4}{%
+    \pgfmathsetmacro\vlabel{5*\ix+\iy}%
+    \node[fevertex] (v) at ($(p0)+(\ix*\dx,\iy*\dx)$) {};
+    \node[fevertex-label, above right] at (v) {\pgfmathprintnumber{\vlabel}}; 
+    }
+}
+
+% Axes
+\draw[axes,arrow] ($(p0)+(0,-\axesshift)$) to ($(p1)+(2*\axesshift,-\axesshift)$);
+\node[axes-label,right] at ($(p1)+(2*\axesshift,-\axesshift)$) {x};
+\foreach \ix in {0,...,3}{%
+    \pgfmathsetmacro\x{-0.5*\domainx+\ix*\dx}%
+    \draw[axes] ($(p0)+(\dx*\ix,-\axesshift)$) -- ++(0,-\ticksize) node[below]{\pgfmathprintnumber{\x}\,km};
+    }
+
+\draw[axes,arrow] ($(p0)+(-\axesshift,0)$) to ($(p3)+(-\axesshift,+2*\axesshift)$);
+\node[axes-label,above] at ($(p3)+(-\axesshift,2*\axesshift)$) {y};
+\foreach \iy in {0,...,4}{%
+    \pgfmathsetmacro\y{-\domainy+\iy*\dx}%
+    \draw[axes] ($(p0)+(-\axesshift,\dx*\iy)$) -- ++(-\ticksize,0) node[left]{\pgfmathprintnumber{\y}\,km};
+    }
+
+}{} % if/else
+
+% -------------------------------------------------------------------------------------------------
+% Step 1
+% -------------------------------------------------------------------------------------------------
+\ifthenelse{\figpart=3}{
+
+    % Dirichlet BC on +x and -x boundaries
+    \draw[bc,arrow] ($(p0)+(0,0.5*\domainy)$) -- ++(-\bndryshift,0) node[left,bc-label] {$u_x=-u_0$};
+    \draw[bc,arrow] ($(p1)+(0,0.5*\domainy)$) -- ++(\bndryshift,0) node[right,bc-label] {$u_x=+u_0$};
+    
+    % Dirichlet roller BC on -y boundary
+    \def\radius{0.15*\bndryshift}%
+    \foreach \ix in {0,...,2}{%
+        \draw[roller] ($(p0)+(\ix*\dx+0.5*\dx,-\radius)$) circle (\radius);
+        \node[ground] at ($(p0)+(\ix*\dx+0.5*\dx,-2*\radius)$) {};
+    }
+    \node[bc-label] at ($(p0)+(0.5*\domainx,-\bndryshift)$) {$u_y=0$};
+
+}{} % if/else
+
+
+% -------------------------------------------------------------------------------------------------
+% Step 2
+% -------------------------------------------------------------------------------------------------
+\ifthenelse{\figpart=4}{
+
+    % Dirichlet BC on -x
+    \coordinate (x) at ($(p0)+(0,0.5*\domainy)$);
+    \draw[bc,arrow] ($(x)+(0,+0.5*\bndryshift)$) -- ++(0,-\bndryshift) node[midway,anchor=east,bc-label] {$u_y=ax$};
+
+    % Dirichlet BC on +x
+    \coordinate (x) at ($(p1)+(0,0.5*\domainy)$);
+    \draw[bc,arrow] ($(x)+(0,-0.5*\bndryshift)$) -- ++(0,+\bndryshift) node[midway,anchor=west,bc-label] {$u_y=ax$};
+
+    % Dirichlet BC on -y
+    \coordinate (x) at ($(p0)+(0.5*\domainx,0)$);
+    \draw[bc,arrow] ($(x)+(+0.5*\bndryshift,0)$) -- ++(-\bndryshift,0) node[midway,anchor=north,bc-label] {$u_x=a(y+\pgfmathprintnumber{\halfheight}\,km)$};
+
+    % Dirichlet BC on +y
+    \coordinate (x) at ($(p3)+(0.5*\domainx,0)$);
+    \draw[bc,arrow] ($(x)+(-0.5*\bndryshift,0)$) -- ++(+\bndryshift,0) node[midway,anchor=south,bc-label] {$u_x=a(y+\pgfmathprintnumber{\halfheight}\,km)$};
+
+}{} % if/else
+
+
+% -------------------------------------------------------------------------------------------------
+% Step 3
+% -------------------------------------------------------------------------------------------------
+\ifthenelse{\figpart=5}{
+
+    % Dirichlet BC on -x
+    \coordinate (x) at ($(p0)+(0,0.5*\domainy)$);
+    \draw[bc,arrow] ($(x)+(0,+0.5*\bndryshift)$) -- ++(0,-\bndryshift) node[midway,anchor=east,bc-label] {$\begin{array}{l} u_x = a(y+\halfheight\,km) \\ u_y = ax\end{array}$};
+
+    % Dirichlet BC on +x
+    \coordinate (x) at ($(p1)+(0,0.5*\domainy)$);
+    \draw[bc,arrow] ($(x)+(0,-0.5*\bndryshift)$) -- ++(0,+\bndryshift) node[midway,anchor=west,bc-label] {$\begin{array}{l} u_x = a(y+\halfheight\,km) \\ u_y = ax\end{array}$};
+
+    % Neumann BC on -y
+    \coordinate (x) at ($(p0)+(0.5*\domainx,0)$);
+    \draw[bc,arrow] ($(x)+(+0.5*\bndryshift,0)$) -- ++(-\bndryshift,0) node[midway,anchor=north,bc-label] {$\tau_t=-2\mu a$};
+
+    % Neumann BC on +y
+    \coordinate (x) at ($(p3)+(0.5*\domainx,0)$);
+    \draw[bc,arrow] ($(x)+(-0.5*\bndryshift,0)$) -- ++(+\bndryshift,0) node[midway,anchor=south,bc-label] {$\tau_t=-2\mu a$};
+
+}{} % if/else
+
+
+% -------------------------------------------------------------------------------------------------
+% Step 5
+% -------------------------------------------------------------------------------------------------
+\ifthenelse{\figpart=6}{
+
+    % Dirichlet BC on -x
+    \coordinate (x) at ($(p0)+(0,0.5*\domainy)$);
+    \draw[bc,arrow] ($(x)+(0,+0.5*\bndryshift)$) -- ++(0,-\bndryshift) node[midway,anchor=east,bc-label] {$\begin{array}{l}
+         u_x = a(y+\halfheight\,km) + bt(y+\halfheight\,km)H(t-1 yr) \\
+         u_y = ax + btxH(t-1 yr)
+        \end{array}$};
+
+    % Dirichlet BC on +x
+    \coordinate (x) at ($(p1)+(0,0.5*\domainy)$);
+    \draw[bc,arrow] ($(x)+(0,-0.5*\bndryshift)$) -- ++(0,+\bndryshift) node[midway,anchor=west,bc-label] {$\begin{array}{l}
+        u_x = a(y+\halfheight\,km) + bt(y+\halfheight\,km)H(t-1 yr) \\
+        u_y = ax + btxH(t-1 yr)
+       \end{array}$};
+
+    % Neumann BC on -y
+    \coordinate (x) at ($(p0)+(0.5*\domainx,0)$);
+    \draw[bc,arrow] ($(x)+(+0.5*\bndryshift,0)$) -- ++(-\bndryshift,0) node[midway,anchor=north,bc-label] {$\tau_t=-2\mu (a + btH(t-1 yr))$};
+
+    % Neumann BC on +y
+    \coordinate (x) at ($(p3)+(0.5*\domainx,0)$);
+    \draw[bc,arrow] ($(x)+(-0.5*\bndryshift,0)$) -- ++(+\bndryshift,0) node[midway,anchor=south,bc-label] {$\tau_t=-2\mu (a + btH(t-1 yr))$};
+
+
+}{} % if/else
+
+
+\end{tikzpicture}}
+
+\end{document}

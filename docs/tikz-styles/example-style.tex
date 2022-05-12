@@ -1,0 +1,36 @@
+\usetikzlibrary{positioning,arrows.meta,shapes,calc,patterns}
+
+% Basic entities
+\tikzstyle{arrow} = [-{Latex[length=9pt,width=6pt]}]
+\tikzstyle{vertex}=[circle,inner sep=1.5pt, minimum size=2mm]
+
+\tikzstyle{bc}=[color=purple, line width=2.0pt]
+\tikzstyle{bc-label}=[text=purple]
+
+\tikzstyle{gdomain}=[fill=ltblue!25!white]
+
+% Finite-element entities
+\tikzstyle{point-label}=[font=\bfseries]
+\tikzstyle{fevertex}=[vertex, color=orange,fill=orange]
+\tikzstyle{fevertex-label}=[point-label, text=orange]
+
+\tikzstyle{cell}=[color=blue,line width=1.0pt]
+\tikzstyle{cell-label}=[point-label, text=blue]
+
+
+% Geometry entities
+\tikzstyle{gvertex}=[vertex, color=orange,fill=orange]
+\tikzstyle{gvertex-label}=[point-label, text=orange]
+
+\tikzstyle{curve}=[line width=1.0pt, color=blue]
+\tikzstyle{curve-dir}=[line with=1.0pt, arrow=>latex, color=blue]
+\tikzstyle{curve-label}=[point-label, text=blue]
+
+
+% Annotation
+\tikzstyle{axes}=[line width=1.0pt, color=gray]
+\tikzstyle{axes-label}=[font=\bfseries, color=gray]
+
+
+\tikzstyle{roller}=[color=green,line width=1.0pt]
+\tikzstyle{ground}=[fill,pattern color=green,pattern=north east lines,draw=none,anchor=north,minimum width=0.8cm,minimum height=0.3cm]
