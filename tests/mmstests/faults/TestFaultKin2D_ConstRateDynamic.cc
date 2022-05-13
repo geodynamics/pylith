@@ -549,7 +549,7 @@ class pylith::mmstests::TestFaultKin2D_ConstRateDynamic_QuadQ1 :
     } // setUp
 
 }; // TestFaultKin2D_ConstRateDynamic_QuadQ1
-// CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestFaultKin2D_ConstRateDynamic_QuadQ1);
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestFaultKin2D_ConstRateDynamic_QuadQ1);
 
 // ---------------------------------------------------------------------------------------------------------------------
 class pylith::mmstests::TestFaultKin2D_ConstRateDynamic_QuadQ2 :
