@@ -1,4 +1,4 @@
-(sec:ParaView:Python:scripts)=
+(sec-paraview-python-scripts)=
 # ParaView Python Scripts
 
 :::{note}
@@ -11,9 +11,9 @@ The primary advantage of the ParaView Python scripts is that they make it easy t
 
 There are several different ways to run the ParaView Python scripts:
 
-* Within the ParaView GUI, select `Tools`&#8594;`Python Shell`.
+* Within the ParaView GUI, select `View`&#8594;`Python Shell`.
 Override the default parameters as desired (which we will discuss later in this section).
-Click on the button, and navigate to the select the script you want to run.
+Click on the `Run Script` button, and navigate to the select the script you want to run.
 * From a shell (terminal window) start ParaView from the command line with the `--script=FILENAME` where `FILENAME` is the relative or absolute path to the ParaView Python script.
 Note that this method does not provide a mechanism for overriding the default parameters.
 * Run the ParaView Python script directly from a shell (terminal window) via the command line.
@@ -21,21 +21,25 @@ You can use command line arguments to override the default values for the parame
 If pvpython is not in your PATH, then you can run a script called `MY_SCRIPT` using: `PATH_TO_PVPYTHON/pvpython MY_SCRIPT.py`
 
 :::{tip}
-Running the ParaView Python script from within the ParaView GUI allows further manipulation of the data, which is not possible when running the ParaView Python script outside the ParaView GUI. When run outside the ParaView GUI, the interaction is limited to rotating, translating, and zooming.
+Running the ParaView Python script from within the ParaView GUI allows further manipulation of the data, which is not possible when running the ParaView Python script outside the ParaView GUI.
+When run outside the ParaView GUI, the interaction is limited to rotating, translating, and zooming.
 :::
 
 :::{important}
-The ParaView Python scripts run Python via `pvpython`, which is a customized version of the Python interpreter included in the ParaView distribution. This is different from python provided with your operating system and/or the one included in the PyLith distribution. This means you cannot, in general, import Python modules provided with the PyLith distribution into ParaView.
+The ParaView Python scripts run Python via `pvpython`, which is a customized version of the Python interpreter included in the ParaView distribution.
+This is different from python provided with your operating system and/or the one included in the PyLith distribution.
+This means you cannot, in general, import Python modules provided with the PyLith distribution into ParaView.
 :::
 
 :::{tip}
-In creating the ParaView Python scripts, we performed the steps within the GUI while capturing the commands using `Tools`&#8594;`Start Trace` and then `Tools`&#8594;`Start Trace`. This makes it very easy to create the Python script. Note that we have omitted superfluous commands in the trace when transferring the trace into a Python script. See the ParaView documentation for additional information about the Python API.
+In creating the ParaView Python scripts, we performed the steps within the GUI while capturing the commands using `Tools`&#8594;`Start Trace` and then `Tools`&#8594;`Stop Trace`.
+This makes it very easy to create the Python script. Note that we have omitted superfluous commands in the trace when transferring the trace into a Python script. See the ParaView documentation for additional information about the Python API.
 :::
 
 ## Overriding Default Parameters
 
 We setup the ParaView Python scripts, so that when they are run from the command line in the main directory for a given example, e.g., `examples/3d/subduction`, the script will produce the output discussed in the manual.
-If you start ParaView from the OS X Dock or a similar method, like a shortcut, then you will need to override at least the default values for the data file(s).
+If you start ParaView from the macOS Dock or a similar method, like a shortcut, then you will need to override at least the default values for the output directory.
 
 In order to override the default values from within the ParaView GUI, simply set the values within the Python shell.
 For example, to set the value of the variable `EXODUS_FILE` to the absolute path of the input file,
@@ -44,10 +48,11 @@ For example, to set the value of the variable `EXODUS_FILE` to the absolute path
 ---
 caption: ParaView Python shell
 ---
->>> EXODUS_FILE = "/home/johndoe/pylith/examples/subduction-3d/mesh/mesh_tet.exo"
+>>> import os
+>>> EXODUS_FILE = os.path.join(os.environ["HOME", "pylith", "examples", "subduction-3d", "mesh", "mesh_tet.exo"])
 ```
 
-In this case, we use the Python os module to get the absolute path of the home directory and append the path to the Exodus file with the appropriate separators for the operating system.
+In this case we use the Python `os` module to get the absolute path of the home directory and append the path to the Exodus file with the appropriate separators for the operating system.
 
 :::{important}
 In each of the ParaView Python scripts, the names of the variables and their default values are given by the DEFAULTS dictionary near the top of the file.
