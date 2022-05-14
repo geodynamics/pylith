@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // This spatial database specifies the initial displacement and
-// velocity on the -y boundary. For the linear variation (data-dim ==
+// velocity on the +x boundary. For the linear variation (data-dim ==
 // 1) in displacement, we only need to specify the two end points with
 // a SimpleDB.
 #SPATIAL.ascii 1
@@ -25,5 +25,5 @@ SimpleDB {
 // (5) x velocity (m/year)
 // (6) y velocity (m/year)
 // (7) velocity start time (year)
--6.0 -16.0  -1.6 -0.6   -0.4  -0.15  1.0
-+6.0 -16.0  -1.6 +0.6   -0.4  +0.15  1.0
++6.0 -16.0  -1.6  0.6   -0.4   0.15  1.0
++6.0   0.0   1.6  0.6    0.4   0.15  1.0

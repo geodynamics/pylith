@@ -3,7 +3,7 @@
 
 ## Overview
 
-This section includes several suites of examples.
+This section includes several suites of examples available in the `examples` directory.
 Each suite includes several "steps" which are examples that increase in complexity from one "step" to the next.
 In some cases, a later step may make use of output from an earlier step; these cases are clearly documented.
 {numref}`tab:examples:overview` classifies the level of difficulty of each example suite and provides a general description of the type of problems discussed.

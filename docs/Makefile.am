@@ -23,7 +23,7 @@ dist_noinst_DATA = \
 	_static/images/cig_short_nolabel.png \
 	_static/images/cig_short_pylith.png \
 	_templates/sidebar-cig.html \
-	palettes/figcolors.tex \
+	tikz-styles/figcolors.tex \
 	index.md \
 	references.bib \
 	references.md \
@@ -84,6 +84,7 @@ dist_noinst_DATA = \
     user/components/bc/index.md \
     user/components/faults/FaultCohesive.md \
     user/components/faults/FaultCohesiveKin.md \
+    user/components/faults/FaultCohesiveImpulses.md \
     user/components/faults/KinSrc.md \
     user/components/faults/KinSrcBrune.md \
     user/components/faults/KinSrcConstRate.md \
@@ -136,6 +137,7 @@ dist_noinst_DATA = \
     user/components/meshio/OutputTriggerTime.md \
     user/components/meshio/PointsList.md \
     user/components/meshio/index.md \
+    user/components/problems/GreensFns.md \
     user/components/problems/InitialCondition.md \
     user/components/problems/InitialConditionDomain.md \
     user/components/problems/InitialConditionPatch.md \
@@ -188,10 +190,35 @@ dist_noinst_DATA = \
     user/components/utils/SimulationMetadata.md \
     user/components/utils/index.md \
     user/examples/box-2d/index.md \
+    user/examples/box-2d/common-information.md \
+    user/examples/box-2d/exercises.md \
+    user/examples/box-2d/step01-axialdisp.md \
+    user/examples/box-2d/step02-sheardisp.md \
+    user/examples/box-2d/step03-sheardisptract.md \
+    user/examples/box-2d/step04-sheardispic.md \
+    user/examples/box-2d/step05-sheardisptractrate.md \
+    user/examples/box-2d/figs/diagrams.tex \
+    user/examples/box-2d/figs/generate.sh \
+    user/examples/box-2d/figs/geometry.pdf \
+    user/examples/box-2d/figs/geometry.svg \
+    user/examples/box-2d/figs/mesh.pdf \
+    user/examples/box-2d/figs/mesh.svg \
+    user/examples/box-2d/figs/step01-diagram.pdf \
+    user/examples/box-2d/figs/step01-diagram.svg \
+    user/examples/box-2d/figs/step01-solution.png \
+    user/examples/box-2d/figs/step02-diagram.pdf \
+    user/examples/box-2d/figs/step02-diagram.svg \
+    user/examples/box-2d/figs/step02-solution.png \
+    user/examples/box-2d/figs/step03-diagram.pdf \
+    user/examples/box-2d/figs/step03-diagram.svg \
+    user/examples/box-2d/figs/step03-solution.png \
+    user/examples/box-2d/figs/step04-solution.png \
+    user/examples/box-2d/figs/step05-diagram.pdf \
+    user/examples/box-2d/figs/step05-diagram.svg \
+    user/examples/box-2d/figs/step05-solution.png \
+    user/examples/reverse-2d/index.md \
     user/examples/reverse-2d/figs/geometry.pdf \
     user/examples/reverse-2d/figs/geometry.png \
-    user/examples/reverse-2d/index.md \
-    user/examples/reverse-2d/meshing.md \
     user/examples/strikeslip-2d/index.md \
     user/examples/subduction-2d/common-information.md \
     user/examples/subduction-2d/figs/cartoon_general.pdf \

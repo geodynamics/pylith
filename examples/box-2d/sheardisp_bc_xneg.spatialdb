@@ -21,5 +21,5 @@ SimpleDB {
 // (2) y coordinate (km)
 // (3) initial x displacement (m)
 // (4) initial y displacement (m)
--6.0 -16.0  -1.6 -0.6
--6.0   0.0   0.0 -0.6
+-6.0 -16.0   -1.6 -0.6
+-6.0   0.0    0.0 -0.6
