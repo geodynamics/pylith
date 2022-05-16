@@ -24,8 +24,8 @@ ${fun_dx='dxStart*bias_factor**ceil( ln(1-curveL/dxStart*(1-bias_factor))/ln(bia
 # Compute sizes at curve endpoints
 # ----------------------------------------------------------------------
 
-# dxA - size at vertex_ypos_xpos, vertex_ypos_xneg, vertex_yneg_xpos, vertex_yneg_xneg
-${dxStart=dx}{curveL=Length(Id("edge_ypos_xneg"))}{execute("dxA="//fun_dx)}
+# dxA - size at v_ypos_xpos, v_ypos_xneg, v_yneg_xpos, v_yneg_xneg
+${dxStart=dx}{curveL=Length(Id("c_ypos_xneg"))}{execute("dxA="//fun_dx)}
 
 # ----------------------------------------------------------------------
 # Reset sizes
@@ -37,14 +37,14 @@ surface all sizing function none
 curve fault_surface size {dx}
 
 # Fault to edge
-curve edge_ypos_xneg scheme bias fine size {dx} factor {bias_factor} start vertex vertex_fault_ypos
-curve edge_ypos_xpos scheme bias fine size {dx} factor {bias_factor} start vertex vertex_fault_ypos
-curve edge_yneg_xneg scheme bias fine size {dx} factor {bias_factor} start vertex vertex_fault_yneg
-curve edge_yneg_xpos scheme bias fine size {dx} factor {bias_factor} start vertex vertex_fault_yneg
+curve c_ypos_xneg scheme bias fine size {dx} factor {bias_factor} start vertex v_fault_ypos
+curve c_ypos_xpos scheme bias fine size {dx} factor {bias_factor} start vertex v_fault_ypos
+curve c_yneg_xneg scheme bias fine size {dx} factor {bias_factor} start vertex v_fault_yneg
+curve c_yneg_xpos scheme bias fine size {dx} factor {bias_factor} start vertex v_fault_yneg
 
 # Mesh edges
-curve edge_xneg size {dxA}
-curve edge_xpos size {dxA}
+curve c_xneg size {dxA}
+curve c_xpos size {dxA}
 
 # For CUBIT 15.4
 set trimesher surface gradation {bias_factor}

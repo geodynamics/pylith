@@ -24,37 +24,37 @@ block 2 name "elastic_xpos"
 # ----------------------------------------------------------------------
 # Create nodeset for fault
 # ----------------------------------------------------------------------
-group "fault" add node in fault_surface
+group "fault" add node in curve fault
 nodeset 10 group fault
 nodeset 10 name "fault"
 
 # ----------------------------------------------------------------------
 # Create nodeset for +x face
 # ----------------------------------------------------------------------
-group "boundary_xpos" add node in curve edge_xpos
+group "boundary_xpos" add node in curve c_xpos
 nodeset 21 group boundary_xpos
 nodeset 21 name "boundary_xpos"
 
 # ----------------------------------------------------------------------
 # Create nodeset for -x face
 # ----------------------------------------------------------------------
-group "boundary_xneg" add node in curve edge_xneg
+group "boundary_xneg" add node in curve c_xneg
 nodeset 22 group boundary_xneg
 nodeset 22 name "boundary_xneg"
 
 # ----------------------------------------------------------------------
 # Create nodeset for +y face
 # ----------------------------------------------------------------------
-group "boundary_ypos" add node in curve edge_ypos_xneg
-group "boundary_ypos" add node in curve edge_ypos_xpos
+group "boundary_ypos" add node in curve c_ypos_xneg
+group "boundary_ypos" add node in curve c_ypos_xpos
 nodeset 23 group boundary_ypos
 nodeset 23 name "boundary_ypos"
 
 # ----------------------------------------------------------------------
 # Create nodeset for -y face
 # ----------------------------------------------------------------------
-group "boundary_yneg" add node in curve edge_yneg_xneg
-group "boundary_yneg" add node in curve edge_yneg_xpos
+group "boundary_yneg" add node in curve c_yneg_xneg
+group "boundary_yneg" add node in curve c_yneg_xpos
 nodeset 24 group boundary_yneg
 nodeset 24 name "boundary_yneg"
 

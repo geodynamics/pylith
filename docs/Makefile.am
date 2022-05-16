@@ -220,6 +220,30 @@ dist_noinst_DATA = \
     user/examples/reverse-2d/figs/geometry.pdf \
     user/examples/reverse-2d/figs/geometry.png \
     user/examples/strikeslip-2d/index.md \
+    user/examples/strikeslip-2d/common-information.md \
+    user/examples/strikeslip-2d/exercises.md \
+    user/examples/strikeslip-2d/meshing-cubit.md \
+    user/examples/strikeslip-2d/meshing-gmsh.md \
+    user/examples/strikeslip-2d/step01-slip.md \
+    user/examples/strikeslip-2d/step02-slip-velbc.md \
+    user/examples/strikeslip-2d/step03-multislip-velbc.md \
+    user/examples/strikeslip-2d/figs/diagrams.tex \
+    user/examples/strikeslip-2d/figs/generate.sh \
+    user/examples/strikeslip-2d/figs/geometry.pdf \
+    user/examples/strikeslip-2d/figs/geometry.svg \
+    user/examples/strikeslip-2d/figs/geometry-cubit.pdf \
+    user/examples/strikeslip-2d/figs/geometry-cubit.svg \
+    user/examples/strikeslip-2d/figs/geometry-gmsh.pdf \
+    user/examples/strikeslip-2d/figs/geometry-gmsh.svg \
+    user/examples/strikeslip-2d/figs/step01-diagram.pdf \
+    user/examples/strikeslip-2d/figs/step01-diagram.svg \
+    user/examples/strikeslip-2d/figs/step01-solution.jpg \
+    user/examples/strikeslip-2d/figs/step02-diagram.pdf \
+    user/examples/strikeslip-2d/figs/step02-diagram.svg \
+    user/examples/strikeslip-2d/figs/step02-solution.jpg \
+    user/examples/strikeslip-2d/figs/step03-diagram.pdf \
+    user/examples/strikeslip-2d/figs/step03-diagram.svg \
+    user/examples/strikeslip-2d/figs/step03-solution.jpg \
     user/examples/subduction-2d/common-information.md \
     user/examples/subduction-2d/figs/cartoon_general.pdf \
     user/examples/subduction-2d/figs/cartoon_general.svg \
