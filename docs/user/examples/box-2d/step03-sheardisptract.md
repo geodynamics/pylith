@@ -20,7 +20,7 @@ We apply tangential (shear) tractions on the +y and -y boundaries.
 
 ## Simulation parameters
 
-The parameters specific to this example are in `step03-sheardisptract.cfg`.
+The parameters specific to this example are in `step03_sheardisptract.cfg`.
 
 The primary change from Step 2 is the use of Neumann (traction) boundary conditions in `pylith.problem.bc`.
 The tractions are uniform on each of the two boundaries, so we use a `UniformDB`.

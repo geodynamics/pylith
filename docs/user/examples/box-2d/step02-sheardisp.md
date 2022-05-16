@@ -18,7 +18,7 @@ We constrain the y displacement on the +x and -x boundaries and the x displaceme
 
 ## Simulation parameters
 
-The parameters specific to this example are in `step02-sheardisp.cfg`.
+The parameters specific to this example are in `step02_sheardisp.cfg`.
 These include:
 
 * `pylithapp.metadata` Metadata for this simulation. Even when the author and version are the same for all simulations in a directory, we prefer to keep that metadata in each simulation file as a reminder to keep it up-to-date for each simulation.
@@ -62,7 +62,7 @@ The output written to the terminal is nearly identical to what we saw for Step 1
 ## Visualizing the results
 
 In {numref}`fig:example:box:2d:step02:solution` we use ParaView to visualize the x displacement field using the `viz/plot_dispwarp.py` Python script.
-We first start ParaView from the `examples/box-2d` directory.
+First, we start ParaView from the `examples/box-2d` directory.
 
 ```{code-block} console
 ---

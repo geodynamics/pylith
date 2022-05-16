@@ -21,7 +21,7 @@ At a time of 1 year we increase the amplitude at a constrant rate $b$ ($H(t)$ co
 
 ## Simulation parameters
 
-The parameters specific to this example are in `step05-sheardisptractrate.cfg`.
+The parameters specific to this example are in `step05_sheardisptractrate.cfg`.
 This is a time-dependent problem, so we must specify the start and end times of the simulation along with the initial time step.
 With an initial time step of 1 year, we start the simulation at -1 year so that the first solve will advance the simulation to a time of 0.
 We also specify a relaxation time on the order of the time scale of the simulation to allow for reasonable nondimensionalization of time.

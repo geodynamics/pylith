@@ -10,7 +10,7 @@ We set the displacement field over the domain to the analytical solutin as an in
 
 ## Simulation parameters
 
-The parameters specific to this example are in `step04-sheardispic.cfg`.
+The parameters specific to this example are in `step04_sheardispic.cfg`.
 The only difference with respect to Step 2 is the addition of the initial condition.
 From our boundary conditions we can see that the analytical solution to our boundary value problem is $\vec{u}(x,y)=(ay,ax)$.
 Because we are specifying the displacement field over the domain, we use the `SimpleGridDB`, which specifies the values on a logically rectangular grid aligned with the coordinate axes.

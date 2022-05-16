@@ -9,6 +9,6 @@ pdfextract 6 6 diagrams.pdf step05-diagram.pdf
 for fin in *.pdf; do
   fout1=`echo $fin | sed -e s/\.pdf/1\.svg/g`
   fout=`echo $fin | sed -e s/\.pdf/\.svg/g`
-  mutool convert -F svg -o $fout $fin && mv $fout1 $fout
-  #rm diagrams?.svg
+  mutool convert -F svg -o $fout $fin && mv -f $fout1 $fout
+  rm -f diagrams?.svg
 done 

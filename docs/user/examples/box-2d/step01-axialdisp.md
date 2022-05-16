@@ -19,7 +19,7 @@ We constrain the x displacement on the +x and -x boundaries and set the y displa
 
 ## Simulation parameters
 
-The parameters specific to this example are in `step01-axialdisp.cfg`.
+The parameters specific to this example are in `step01_axialdisp.cfg`.
 These include:
 
 * `pylithapp.metadata` Metadata for this simulation. Even when the author and version are the same for all simulations in a directory, we prefer to keep that metadata in each simulation file as a reminder to keep it up-to-date for each simulation.
@@ -71,7 +71,8 @@ The HDF5 (`.h5`) files contain the mesh geometry and topology information along 
 The Xdmf (`.xmf`) files contain metadata that allow visualization tools like ParaView to know where to find the information in the HDF5 files.
 To visualize the data using ParaView or Visit, load the Xdmf files.
 
-In {numref}`fig:example:box:2d:step01:solution` we use ParaView to visualize the x displacement field using the `viz/plot_dispwarp.py` Python script. We first start ParaView from the `examples/box-2d` directory.
+In {numref}`fig:example:box:2d:step01:solution` we use ParaView to visualize the x displacement field using the `viz/plot_dispwarp.py` Python script.
+First, we first start ParaView from the `examples/box-2d` directory.
 
 ```{code-block} console
 ---
