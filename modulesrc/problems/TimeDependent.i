@@ -60,6 +60,11 @@ public:
              * @returns End time (seconds).
              */
             double getEndTime(void) const;
+            
+            /** Update start and end times in ts.
+             *
+             */
+            void updateTimes();
 
             /** Update start and end times in ts.
              *

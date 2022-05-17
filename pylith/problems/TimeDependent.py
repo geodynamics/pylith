@@ -135,6 +135,14 @@ class TimeDependent(Problem, ModuleTimeDependent):
         finalTime = ModuleTimeDependent.solve(self)*second
         return finalTime
 
+    def updateStartEndTimes(self, startTime, endTime):
+        self.startTime = startTime
+        self.endTime = endTime
+
+        ModuleTimeDependent.setStartTime(self, startTime.value)
+        ModuleTimeDependent.setEndTime(self, endTime.value)
+        ModuleTimeDependent.updateTimes(self)
+
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
