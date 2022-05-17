@@ -1,3 +1,4 @@
+(sec-user-governing-eqns-incompressible-elasticity)=
 # Incompressible Isotropic Elasticity with Infinitesimal Strain (Bathe)
 
 In this section we apply a similar approach to the one we use for the elasticity equation to the case of an incompressible material.
@@ -31,17 +32,17 @@ We place all terms for the elasticity and pressure equations on the left-hand-si
 ```{table} Mathematical notation for incompressible elasticity with infinitesimal strain
 :name: tab:notation:incompressible:elasticity
 
-| Category | Symbol  | Description                                           |
-|:---------|:-------:|:------------------------------------------------------|
-| Unknowns | $\vec{u}$ | Displacement field |
-|          | $p$       | Pressure field ($p>0$ corresponds to negative mean stress |
-| Derived quantities |  $\boldsymbol{\sigma}$  | Cauchy stress tensor              |
-|                    | $\boldsymbol{\sigma}^\mathit{dev}$ | Cauchy deviatoric stress tensor |
-|                    | $\boldsymbol{\epsilon}$ | Cauchy strain tensor              |
-| Common constitutive parameters | $\rho$ | Density                                |
-|                                | $\mu$  | Shear modulus                          |
-|                                | $K$    | Bulk modulus                           |
-| Source terms                   | $\vec{f}$ | Body force per unit volume, for example $\rho \vec{g}$ |
+| Category                       |               Symbol               | Description                                               |
+| :----------------------------- | :--------------------------------: | :-------------------------------------------------------- |
+| Unknowns                       |             $\vec{u}$              | Displacement field                                        |
+|                                |                $p$                 | Pressure field ($p>0$ corresponds to negative mean stress |
+| Derived quantities             |       $\boldsymbol{\sigma}$        | Cauchy stress tensor                                      |
+|                                | $\boldsymbol{\sigma}^\mathit{dev}$ | Cauchy deviatoric stress tensor                           |
+|                                |      $\boldsymbol{\epsilon}$       | Cauchy strain tensor                                      |
+| Common constitutive parameters |               $\rho$               | Density                                                   |
+|                                |               $\mu$                | Shear modulus                                             |
+|                                |                $K$                 | Bulk modulus                                              |
+| Source terms                   |             $\vec{f}$              | Body force per unit volume, for example $\rho \vec{g}$    |
 ```
 
 Using trial functions ${\vec{\psi}_\mathit{trial}^{u}}$ and ${\psi_\mathit{trial}^{p}}$ and incorporating the Neumann boundary conditions, we write the weak form as

@@ -78,83 +78,83 @@ split surface  ( at -62990.4 -36367.5 0 ordinal 1 ordered )  across location pos
 # Name surfaces
 # ----------------------------------------------------------------------
 # Material on the footwall.
-# surface 9 name "slab_material"
-surface  ( at -25980.8 -50000 0 ordinal 1 ordered )  name "slab_material"
+# surface 9 name "surface_slab"
+surface  ( at -25980.8 -50000 0 ordinal 1 ordered )  name "surface_slab"
 
 # Material on the hanging wall.
-# surface 10 name "plate_material"
-surface  ( at -72990.4 -36367.5 0 ordinal 1 ordered )  name "plate_material"
+# surface 10 name "surface_plate"
+surface  ( at -72990.4 -36367.5 0 ordinal 1 ordered )  name "surface_plate"
 
 # Material between faul and splay.
-# surface 11 name "wedge_material"
-surface  ( at -18583.2 -10729 0 ordinal 1 ordered )  name "wedge_material"
+# surface 11 name "surface_wedge"
+surface  ( at -18583.2 -10729 0 ordinal 1 ordered )  name "surface_wedge"
 
 # ----------------------------------------------------------------------
 # Name curves
 # ----------------------------------------------------------------------
-# curve 26 name "fault_surface_bottom"
-curve  ( at -44564 -25729 0 ordinal 1 ordered )  name "fault_surface_bot"
+# curve 26 name "c_fault_lower"
+curve  ( at -44564 -25729 0 ordinal 1 ordered )  name "c_fault_lower"
 
-# curve 27 name "fault_surface_top"
-curve  ( at -18583.2 -10729 0 ordinal 1 ordered )  name "fault_surface_top"
+# curve 27 name "c_fault_upper"
+curve  ( at -18583.2 -10729 0 ordinal 1 ordered )  name "c_fault_upper"
 
-# curve 24 name "splay_surface"
-curve  ( at -28583.2 -10729 0 ordinal 1 ordered )  name "splay_surface"
+# curve 24 name "c_splay"
+curve  ( at -28583.2 -10729 0 ordinal 1 ordered )  name "c_splay"
 
-# curve 21 name "ground_fw"
-curve  ( at 37009.6 0 0 ordinal 1 ordered )  name "ground_fw"
+# curve 21 name "c_ypos_fw"
+curve  ( at 37009.6 0 0 ordinal 1 ordered )  name "c_ypos_fw"
 
-# curve 28 name "ground_wedge"
-curve  ( at -10000 0 0 ordinal 1 ordered )  name "ground_wedge"
+# curve 28 name "c_ypos_w"
+curve  ( at -10000 0 0 ordinal 1 ordered )  name "c_ypos_w"
 
-# curve 25 name "ground_hw"
-curve  ( at -72990.4 0 0 ordinal 1 ordered )  name "ground_hw"
+# curve 25 name "c_ypos_hw"
+curve  ( at -72990.4 0 0 ordinal 1 ordered )  name "c_ypos_hw"
 
-# curve 14 name "curve_xpos"
-curve  ( at 74019.2 -50000 0 ordinal 1 ordered )  name "curve_xpos"
+# curve 14 name "c_xpos"
+curve  ( at 74019.2 -50000 0 ordinal 1 ordered )  name "c_xpos"
 
-# curve 20 name "curve_xneg_fw"
-curve  ( at -125981 -86367.5 0 ordinal 1 ordered )  name "curve_xneg_fw"
+# curve 20 name "c_xneg_fw"
+curve  ( at -125981 -86367.5 0 ordinal 1 ordered )  name "c_xneg_fw"
 
-# curve 19 name "curve_xneg_hw"
-curve  ( at -125981 -36367.5 0 ordinal 1 ordered )  name "curve_xneg_hw"
+# curve 19 name "c_xneg_hw"
+curve  ( at -125981 -36367.5 0 ordinal 1 ordered )  name "c_xneg_hw"
 
-# curve 13 name "curve_yneg"
-curve  ( at -25980.8 -100000 0 ordinal 1 ordered )  name "curve_yneg"
+# curve 13 name "c_yneg"
+curve  ( at -25980.8 -100000 0 ordinal 1 ordered )  name "c_yneg"
 
-# curve 23 name "fault_extended"
-curve  ( at -88971.1 -51367.5 0 ordinal 1 ordered )  name "fault_extended"
+# curve 23 name "c_fault_ext"
+curve  ( at -88971.1 -51367.5 0 ordinal 1 ordered )  name "c_fault_ext"
 
 # ----------------------------------------------------------------------
 # Name vertices
 # ----------------------------------------------------------------------
 
-# vertex 15 name "vertex_fault_bot"
-vertex  ( at -51961.5 -30000 0 ordinal 1 ordered )  name "vertex_fault_bot"
+# vertex 15 name "v_fault_bot"
+vertex  ( at -51961.5 -30000 0 ordinal 1 ordered )  name "v_fault_bot"
 
-# vertex 13 name "vertex_fault_top"
-vertex  ( at 0 0 0 ordinal 1 ordered )  name "vertex_fault_top"
+# vertex 13 name "v_fault_top"
+vertex  ( at 0 0 0 ordinal 1 ordered )  name "v_fault_top"
 
-# vertex 17 name "vertex_splay_bot"
-vertex  ( at -37166.4 -21458.1 0 ordinal 1 ordered )  name "vertex_splay_bot"
+# vertex 17 name "v_splay_bot"
+vertex  ( at -37166.4 -21458.1 0 ordinal 1 ordered )  name "v_splay_bot"
 
-# vertex 16 name "vertex_splay_top"
-vertex  ( at -20000 -3.63798e-12 0 ordinal 1 ordered )  name "vertex_splay_top"
+# vertex 16 name "v_splay_top"
+vertex  ( at -20000 -3.63798e-12 0 ordinal 1 ordered )  name "v_splay_top"
 
-# vertex 14 name "vertex_fault_xneg"
-vertex  ( at -125981 -72735 0 ordinal 1 ordered )  name "vertex_fault_xneg"
+# vertex 14 name "v_fault_xneg"
+vertex  ( at -125981 -72735 0 ordinal 1 ordered )  name "v_fault_xneg"
 
-# vertex 11 name "vertex_top_xpos"
-vertex  ( at 74019.2 0 0 ordinal 1 ordered )  name "vertex_top_xpos"
+# vertex 11 name "v_ypos_xpos"
+vertex  ( at 74019.2 0 0 ordinal 1 ordered )  name "v_ypos_xpos"
 
-# vertex 12 name "vertex_top_xneg"
-vertex  ( at -125981 0 0 ordinal 1 ordered )  name "vertex_top_xneg"
+# vertex 12 name "v_ypos_xneg"
+vertex  ( at -125981 0 0 ordinal 1 ordered )  name "v_ypos_xneg"
 
-# vertex 9 name "vertex_bot_xpos"
-vertex  ( at 74019.2 -100000 0 ordinal 1 ordered )  name "vertex_bot_xpos"
+# vertex 9 name "v_yneg_xpos"
+vertex  ( at 74019.2 -100000 0 ordinal 1 ordered )  name "v_yneg_xpos"
 
-# vertex 10 name "vertex_bot_xneg"
-vertex  ( at -125981 -100000 0 ordinal 1 ordered )  name "vertex_bot_xneg"
+# vertex 10 name "v_yneg_xneg"
+vertex  ( at -125981 -100000 0 ordinal 1 ordered )  name "v_yneg_xneg"
 
 
 # End of file

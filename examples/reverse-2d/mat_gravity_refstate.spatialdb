@@ -1,8 +1,11 @@
 #SPATIAL.ascii 1
 SimpleDB {
+  // We need to specify the material properties (density, Vs, and Vp) as well as the 4 plane strain components of the reference stress and strain tensors.
   num-values =     11
   value-names =  density  vs  vp  reference_stress_xx  reference_stress_yy  reference_stress_zz  reference_stress_xy  reference_strain_xx  reference_strain_yy  reference_strain_zz  reference_strain_xy
   value-units =  kg/m**3  m/s  m/s  Pa  Pa  Pa  Pa  none  none  none  none
+  
+  // The reference stress varies linearly with depth, so we use 2 control points, which corresponds to a data dimension of 1.
   num-locs =      2
   data-dim =    1
   space-dim =    2

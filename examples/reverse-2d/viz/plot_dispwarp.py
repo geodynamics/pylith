@@ -29,15 +29,15 @@ example, set OUTPUT_DIR to the absolute path if not starting
 ParaView from the terminal shell where you ran PyLith:
 
 import os
-OUTPUT_DIR = os.path.join(os.environ["HOME"], "src", "pylith", "examples", "2d", "box", "output")
+OUTPUT_DIR = os.path.join(os.environ["HOME"], "src", "pylith", "examples", "reverse-2d", "output")
 """
 
 DEFAULTS = {
     "OUTPUT_DIR": "output",
-    "SIM": "step01_axialdisp",
+    "SIM": "step01_gravity",
     "WARP_SCALE": 1.0e+3,
     "FIELD": "displacement",
-    "FIELD_COMPONENT": "X",
+    "FIELD_COMPONENT": "Magnitude",
     "TIMESTEP": 0,  # Use 0 for first, -1 for last.
 }
 
@@ -85,8 +85,9 @@ def visualize(parameters):
     colorbar = GetScalarBar(displacementLUT, view)
     if parameters.field_component.lower() == "magnitude":
         colorbar.Title = "Displacement Mag. (m)"
+        displacementLUT.ApplyPreset('Inferno (matplotlib)', True)
     else:
-        colorbar.Title = "%s-displacement (m)" % parameters.field_component.lower()
+        colorbar.Title = "%s displacement (m)" % parameters.field_component.lower()
     colorbar.ComponentTitle = ""
 
     # Annotate time
@@ -136,8 +137,8 @@ if __name__ == "__main__":
 
     view = GetRenderView()
     view.ViewSize = [1024, 540]
-    view.CameraPosition = [68527.89880980579, -152111.39463431376, 1405120.1034155919]
-    view.CameraFocalPoint = [68527.89880980579, -152111.39463431376, -1004573.5784798338]
+    view.CameraPosition = [13000, -50000, 200000]
+    view.CameraFocalPoint = [13000, -50000, -200000]
     view.Update()
 
     if args.screenshot:
