@@ -58,7 +58,7 @@ class Distributor(PetscComponent, ModuleDistributor):
         self._eventLogger.eventBegin(logEvent)
 
         from pylith.topology.Mesh import Mesh
-        newMesh = Mesh(mesh.dimension())
+        newMesh = Mesh(mesh.getDimension())
         if self.partitioner == "metis":
             partitionerName = "parmetis"
         else:
