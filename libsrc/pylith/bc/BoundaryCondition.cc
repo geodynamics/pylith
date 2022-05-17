@@ -183,18 +183,6 @@ pylith::bc::BoundaryCondition::verifyConfiguration(const pylith::topology::Field
         throw std::runtime_error(msg.str());
     } // if
 
-    PetscDMLabel dmLabel = NULL;
-    PetscInt index = -1;
-    err = DMGetLabel(dmSoln, _labelName.c_str(), &dmLabel);PYLITH_CHECK_ERROR(err);
-    err = DMLabelGetValueIndex(dmLabel, _labelValue, &index);PYLITH_CHECK_ERROR(err);
-    if (index < 0) {
-        std::ostringstream msg;
-        msg << "Finite-element mesh is missing value '" << _labelValue << "' for label '"
-            << _labelName << "' for identifying points in boundary condition '"
-            << PyreComponent::getIdentifier() << "'.";
-        throw std::runtime_error(msg.str());
-    } // if
-
     PYLITH_METHOD_END;
 } // verifyConfiguration
 
