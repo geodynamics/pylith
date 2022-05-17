@@ -13,9 +13,8 @@ We constrain the x and y displacements on the +x and -x boundaries.
 We apply tangential (shear) tractions on the +y and -y boundaries.
 :::
 
-## Features
-
-```{include} step03-sheardisptract-features.md
+% Meatadata extracted from parameter files
+```{include} step03_sheardisptract-synopsis.md
 ```
 
 ## Simulation parameters
@@ -46,18 +45,21 @@ $ pylith step03_sheardisptract.cfg
 
 # -- many lines omitted --
 
+ >> /Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/TimeDependent.py:139:run
+ -- timedependent(info)
  -- Solving problem.
 0 TS dt 0.01 time 0.
     0 SNES Function norm 6.059797141590e-03 
-    Linear solve converged due to CONVERGED_RTOL iterations 7
-        Line search: Using full step: fnorm 6.059797141590e-03 gnorm 6.553589141484e-12
-    1 SNES Function norm 6.553589141484e-12 
+    Linear solve converged due to CONVERGED_ATOL iterations 1
+    1 SNES Function norm 2.140441363908e-18 
   Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
 1 TS dt 0.01 time 0.01
+ >> /Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:201:finalize
+ -- timedependent(info)
+ -- Finalizing problem.
 ```
 
-The output written to the terminal is nearly identical to what we saw for Step 2.
-The linear solve did require only 7 iteration to converge.
+As expected, the output written to the terminal is nearly identical to what we saw for Steps 1 and 2.
 
 ## Visualizing the results
 

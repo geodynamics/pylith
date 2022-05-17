@@ -2,6 +2,14 @@
 # Axial and Shear Deformation (2D Box)
 
 The files are in the directory `examples/box-2d`.
+The files and directories for this set of examples includes:
+
+:`README.md`: README file containing a brief description of the various examples.
+:`*.cfg`: PyLith parameter files.
+:`*.mesh`: Finite-element mesh files generated manually using a text editor.
+:`*.spatialdb`: Spatial database filesFiles associated with the spatial databases.
+:`viz`: Directory containing ParaView Python scripts and other files for visualizing results.
+:`output`: Directory containing simulation output. It is created automatically when running the simulations.
 
 ## Overview
 

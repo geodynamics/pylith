@@ -14,9 +14,8 @@ We apply tangential (shear) tractions on the +y and -y boundaries.
 At a time of 1 year we increase the amplitude at a constrant rate $b$ ($H(t)$ corresponds to the heavyside step function).
 :::
 
-## Features
-
-```{include} step05-sheardisptractrate-features.md
+% Meatadata extracted from parameter files
+```{include} step05_sheardisptractrate-synopsis.md
 ```
 
 ## Simulation parameters
@@ -47,19 +46,18 @@ $ pylith step05_sheardisptractrate.cfg
 # -- many lines omitted --
 
 5 TS dt 0.1 time 0.4
-    0 SNES Function norm 1.467261025065e-03 
-    Linear solve converged due to CONVERGED_RTOL iterations 6
-        Line search: Using full step: fnorm 1.467261025065e-03 gnorm 3.110527441584e-11
-    1 SNES Function norm 3.110527441584e-11 
+    0 SNES Function norm 1.467261021331e-03 
+    Linear solve converged due to CONVERGED_ATOL iterations 1
+    1 SNES Function norm 7.893110957891e-19 
   Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
 6 TS dt 0.1 time 0.5
- >> /Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:196:finalize
+ >> /Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:201:finalize
  -- timedependent(info)
  -- Finalizing problem.
 ```
 
 The output written to the terminal now contains multiple time steps.
-The PETSc TS (time stepping) monitor shows the time step and time in nondimensional units.
+The PETSc TS (time stepping) monitor shows the time step number followed by the time step and time in nondimensional units.
 
 ## Visualizing the results
 

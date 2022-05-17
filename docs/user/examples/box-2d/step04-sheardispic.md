@@ -3,9 +3,8 @@
 In this example we demonstrate the use of initial conditions for the boundary value problem in Step 2.
 We set the displacement field over the domain to the analytical solutin as an initial condition.
 
-## Features
-
-```{include} step04-sheardispic-features.md
+% Meatadata extracted from parameter files
+```{include} step04_sheardispic-synopsis.md
 ```
 
 ## Simulation parameters
@@ -34,12 +33,14 @@ $ pylith step04_sheardispic.cfg
 
 # -- many lines omitted --
 
+ >> /Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/TimeDependent.py:139:run
+ -- timedependent(info)
  -- Solving problem.
 0 TS dt 0.01 time 0.
     0 SNES Function norm 4.968438524050e-19 
   Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 0
 1 TS dt 0.01 time 0.01
- >> /Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:196:finalize
+ >> /Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:201:finalize
  -- timedependent(info)
  -- Finalizing problem.
 WARNING! There are options you set that were not used!

@@ -11,9 +11,8 @@ Boundary conditions for shear deformation.
 We constrain the y displacement on the +x and -x boundaries and the x displacement on the +y and -y boundaries.
 :::
 
-## Features
-
-```{include} step02-sheardisp-features.md
+% Meatadata extracted from parameter files
+```{include} step02_sheardisp-synopsis.md
 ```
 
 ## Simulation parameters
@@ -44,20 +43,22 @@ $ pylith step02_sheardisp.cfg
 
 # -- many lines omitted --
 
+ >> /Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/TimeDependent.py:139:run
+ -- timedependent(info)
  -- Solving problem.
 0 TS dt 0.01 time 0.
     0 SNES Function norm 2.239977678460e-03 
-    Linear solve converged due to CONVERGED_RTOL iterations 9
-        Line search: Using full step: fnorm 2.239977678460e-03 gnorm 3.205623348644e-12
-    1 SNES Function norm 3.205623348644e-12 
+    Linear solve converged due to CONVERGED_ATOL iterations 1
+    1 SNES Function norm 1.964321818484e-18 
   Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
 1 TS dt 0.01 time 0.01
- >> /Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:196:finalize
+ >> /Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:201:finalize
  -- timedependent(info)
  -- Finalizing problem.
- ```
+```
 
 The output written to the terminal is nearly identical to what we saw for Step 1.
+We omit the middle portion of the output which shows that the domain, the scales for nondimensionalization, and PETSc options all remain the same.
 
 ## Visualizing the results
 
