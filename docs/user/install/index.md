@@ -1,4 +1,4 @@
-(cha:installation)=
+(sec-install)=
 # Installation
 
 {numref}`fig:install:choices` provides a guide to select the appropriate method for installing PyLith.
