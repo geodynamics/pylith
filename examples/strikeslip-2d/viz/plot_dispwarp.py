@@ -86,7 +86,7 @@ def visualize(parameters):
     if parameters.field_component.lower() == "magnitude":
         colorbar.Title = "Displacement Mag. (m)"
     else:
-        colorbar.Title = "%s-displacement (m)" % parameters.field_component.lower()
+        colorbar.Title = "%s displacement (m)" % parameters.field_component.lower()
     colorbar.ComponentTitle = ""
 
     # Annotate time
@@ -96,7 +96,7 @@ def visualize(parameters):
 
     tstampDisplay = Show(tstamp, view)
     tstampDisplay.FontFamily = "Courier"
-    tstampDisplay.FontSize = 12
+    tstampDisplay.FontSize = 14
 
     view.ResetCamera()
     view.Update()

@@ -2,7 +2,6 @@
 
 In addition to the finite-element mesh, PyLith requires files to specify the simulation parameters.
 We specify parameters common to all simulations in a directory in `pylithapp.cfg`.
-This limits duplicate information in the parameter files for each simulation.
 The `pylithapp.cfg` file contains numerous comments, so we only summarize the parameters here.
 
 The settings contained in `pylithapp.cfg` for this problem consist of:
@@ -12,11 +11,15 @@ The settings contained in `pylithapp.cfg` for this problem consist of:
 * `pylithapp.mesh_generator` Parameters for importing the finite-element mesh.
 * `pylithapp.problem` Parameters that define the boundary value problem and it solution, such as the type of solver, solution fields.
 * `pylithapp.problem.materials` Paramters that specify the governing equation and bulk rheologies.
+* `pylithapp.problem.fault` Fault parameters common among the simulations in this directory.
+* `pylithapp.problem.bc` Boundary condition parameters common aomong the simulations in this directory.
 * `pylithapp.petsc` Parameters passed directly to PETSc associated with the solver.
 
-The physical properties for each material are specified in a spatial database.
-In this case we have only one material and the material properties are uniform, so we use a single `UniformDB` to specify the material properties in `pylithapp.cfg`.
-When we have a spatial variation in the material properties, we specify them in a spatial database file.
+These quasistatic simulations solve the elasticity equation and include a fault, so we have a solution field with both displacement and Lagrange multiplier subfields.
+We specify a basis order of 1 for each of the subfields, corresponding to the default value.
 
-In the PETSc parameters we specify settings that are robust for small problems.
+We use the material properties in all of the simulations in this directory, so we specify them in `pylithapp.cfg` to avoid repeating the information in the file with parameters for each simulation.
+Similarly, we set the fault parameters and boundary condition information common to all simulations in the directory.
+
+In the PETSc parameters, we specify preconditioner settings that scale well with problem size and minimize the runtime.
 See {ref}`sec-user-run-pylith-petsc-settings` for more information.

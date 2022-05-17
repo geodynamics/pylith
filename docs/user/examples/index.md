@@ -13,12 +13,12 @@ In some cases, a later step may make use of output from an earlier step; these c
 
 | **Example Suite**                         | **Difficulty** | **Description** |
 |:------------------------------------------|:------------:|:---------------------------------------------------------------------------------------------|
-| [`box-2d`](box-2d/index.md)               | novice       | Simple axial and shear deformation in static and quasistatic simulations in 2D box with a CUBIT mesh.
-| [`box-3d`](box-3d/index.md)               | novice       | Same as `2d/box` but with a 3D box with a CUBIT mesh.
-| [`strikeslip-2d`](strikeslip-2d/index.md) | beginner     | Prescribed coseismic slip and multiple earthquake ruptures in 2D with a CUBIT mesh.
-| [`reverse-2d`](reverse-2d/index.md)       | beginner     | Gravity, surface loads, and prescribed coseismic slip on multiple reverse faults in 2D with a CUBIT mesh.
-| [`subduction-2d`](subduction-2d/index.md) | intermediate | Coseismic, postseismic, and creep deformation using a 2D subduction zone cross-section with a CUBIT mesh.
-| [`subduction-3d`](subduction-3d/index.md) | intermediate | Close to research-complexity for a 3D subduction zone with a CUBIT mesh.
+| [`box-2d`](box-2d/index.md)               | novice       | Simple axial and shear deformation in static and quasistatic simulations in 2D box with a mesh in an ASCII text file.
+| [`box-3d`](box-3d/index.md)               | novice       | Same as `2d/box` but with a 3D box and a mesh from Gmsh or Cubit.
+| [`strikeslip-2d`](strikeslip-2d/index.md) | beginner     | Prescribed coseismic slip and multiple earthquake ruptures in 2D with a mesh from Gmsh or Cubit.
+| [`reverse-2d`](reverse-2d/index.md)       | beginner     | Gravity, surface loads, and prescribed coseismic slip on multiple reverse faults in 2D with a mesh from Gmsh or Cubit.
+| [`subduction-2d`](subduction-2d/index.md) | intermediate | Coseismic, postseismic, and creep deformation using a 2D subduction zone cross-section with a mesh from Gmsh or Cubit.
+| [`subduction-3d`](subduction-3d/index.md) | intermediate | Close to research-complexity for a 3D subduction zone with a mesh from Cubit.
 ```
 
 The `subduction-3d` example suite is the most advanced.
@@ -26,14 +26,14 @@ Users wanting to use PyLith in their research should work through relevant begin
 
 ### Prerequisites
 
-Before you begin any of the examples, you will need to install PyLith following the instructions in {ref}`cha:installation`.
-For more complex examples, you will also need either Coreform Cubit (available from <https://coreform.com/>), CUBIT (available to US federal government agencies from <https://cubit.sandia.gov/>) or LaGriT (available from <https://meshing.lanl.gov/>) mesh generation software to create the meshes.
-If you do not wish to create your own mesh at this time, the meshes are also provided as part of the example.
+Before you begin any of the examples, you will need to install PyLith following the instructions in {ref}`sec-install`.
+You should also read {ref}`sec-user-run-pylith`.
+Complete sets of input files are included in the examples.
+However, if you wish to generate the finite-element meshes yourself, you will also need Gmsh (available from <https://gmsh.info> and included in the PyLith binary package), Coreform Cubit (available from <https://coreform.com/>), CUBIT (available to US federal government agencies from <https://cubit.sandia.gov/>) or LaGriT (available from <https://meshing.lanl.gov/>).
 The ParaView <https://www.paraview.org/> visualization package may be used to view simulation results.
 ParaView includes built-in documentation that is accessed by clicking on the Help menu item.
 Some additional documentation is available on the ParaView Wiki site <https://www.paraview.org/Wiki/ParaView>.
 You may use other visualization software, but some adaption from what is described here will be necessary.
-Furthermore, you can complete a subset of the example using files provided (as described below), skipping the steps for which you do not have the proper software packages installed.
 
 ### Input Files
 
@@ -43,7 +43,7 @@ All of the files used in the example problems are extensively documented with co
 ### Visualizing PyLith Output
 
 See [ParaView Python Scripts](paraview-python.md) for a description of how to make use of the provided Python scripts for visualizing simulation output with ParaView.
-Alternatively, you can use manually construct the visuzliation pipeline in several open-source visualization tools, such as ParaView and Visit. 
+Alternatively, you can manually construct the visuzliation pipeline in several open-source visualization tools, such as ParaView and Visit.
 
 ## Examples
 

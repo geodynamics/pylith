@@ -1,0 +1,49 @@
+# Gmsh Mesh
+
+## Geometry
+
+We construct the geometry by first creating points, then connecting the points into curves, and finally the curves into surfaces.
+{numref}`fig:example:strikeslip:2d:geometry:gmsh` shows the geometry and variables names of the vertices and curves.
+
+:::{figure-md} fig:example:strikeslip:2d:geometry:gmsh
+<img src="figs/geometry-gmsh.*" alt="Geometry created in Gmsh for generating the mesh." scale="75%"/>
+
+Geometry created in Gmsh for generating the finite-element mesh.
+We construct curves from points (`p1`, ..., `p6`) and surfaces from the curves (for example, `c_yneg1`).
+The arrows indicate the direction (orientation) of the curves.
+:::
+
+:::{important}
+Each curve in Gmsh has a direction (orientation).
+The direction is from the starting point to the ending point.
+When connecting curves into surfaces, you must connect the curves in a consistent direction.
+We connect the curves in a counter-clockwise direction.
+To reverse the direction of a curve, use the negative tag.
+:::
+
+## Meshing using Python Script
+
+We use the Python script `generate_gmsh.py` to create the geometry and generate the mesh.
+The script makes use of the `gmsh_utils.GenerateMesh` class (discussed in {ref}`sec-usr-run-pylith-gmsh-utils`), which provides the command line arguments and boilerplate methods.
+In our `generate_gmsh.py` Python script, we create a class `App` that implements the functionality missing in `gmsh_utils.GenerateMesh`.
+We must implement the `create_geometry()`, `mark()`, and `generate_mesh()` methods that are abstract in the `GenerateMesh` base class.
+
+We use the Gmsh MeshSize options to define a discretization size the grows slowly at a geometric rate with distance from the fault.
+See [6.3.1 Specifying mesh element sizes in the Gmsh documentation](https://gmsh.info/doc/texinfo/gmsh.html#Specifying-mesh-element-sizes) for more information.
+
+```{code-block} console
+---
+caption: Run the `generate_gmsh.py` Python script to generate the mesh.
+---
+# Generate a mesh with triangular cells and save it to `mesh_tri.msh` (default filename).
+$ ./generate_gmsh.py --write
+
+# Save as above but start the Gmsh graphical interface after saving the mesh.
+$ ./generate_gmsh.py --write --gui
+
+# Create only the geometry and start the Gmsh graphical interface.
+$ ./generate_gmsh.py --geometry --gui
+
+# Show available command line arguments.
+$ ./generate_gmsh.py --help
+```
