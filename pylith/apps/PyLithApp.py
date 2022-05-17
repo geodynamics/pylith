@@ -21,14 +21,14 @@ def problemFactory(name):
     """
     from pythia.pyre.inventory import facility
     from pylith.problems.TimeDependent import TimeDependent
-    return facility(name, family="problem", factory=TimeDependent)
+    return facility(name, family="problems.problems.problem", factory=TimeDependent)
 
 def problemFactory(name):
     """Factory for problem items.
     """
     from pythia.pyre.inventory import facility
     from pylith.problems.TimeDependent import TimeDependent
-    return facility(name, family="problem", factory=TimeDependent)
+    return facility(name, family="problems.problems.problem", factory=TimeDependent)
 
 
 
@@ -125,13 +125,6 @@ class PyLithApp(PetscApplication):
         if self.initializeOnly:
             return
 
-        # print stuff for clarity
-        print("overall start and end times: %.3e %.3e." %(self.startTime.value, self.endTime.value) )
-        problemNum = 0
-        for problem in self.problems.components():
-             print("    problem %i: %.3e %.3e." %(problemNum, problem.startTime.value, problem.endTime.value) )
-             problemNum += 1
-
 
         # Cycle over all problems, stopping if either maxNumIterations or endTime is reached
         prevEndTime = self.startTime
@@ -151,7 +144,6 @@ class PyLithApp(PetscApplication):
 
                 currEndTime = problem.run()
                 self._debug.log(resourceUsageString())
-                print("round %i problem %i: %.3e %.3e." %(numIts, problemNum, currStartTime.value, currEndTime.value) )
 
                 prevEndTime = currEndTime
 
@@ -266,13 +258,13 @@ class PyLithApp(PetscApplication):
         msg = (
             "\nExamples using step01.cfg in directory examples/3d/hex8):\n"
             "1. List components and properties for a given component (--help)\n"
-            "  pylith step01.cfg --problem.bc.z_neg.help\n"
+            "  pylith step01.cfg --problems.problems.problem.bc.z_neg.help\n"
             "\n"
             "2. List components of a given component (--help-components)\n"
-            "  pylith step01.cfg --problem.bc.z_neg.help-components\n"
+            "  pylith step01.cfg --problems.problems.problem.bc.z_neg.help-components\n"
             "\n"
             "3. List properties of a given component (--help-properties)\n"
-            "  pylith step01.cfg --problem.bc.z_neg.help-properties\n"
+            "  pylith step01.cfg --problems.problems.problem.bc.z_neg.help-properties\n"
         )
         if self.inventory.usage:
             print(msg)
