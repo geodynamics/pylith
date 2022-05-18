@@ -27,94 +27,90 @@
 block 1 surface concrust
 block 1 name "concrust"
 
-block 2 surface conmantle
-block 2 name "conmantle"
+block 2 surface oceancrust
+block 2 name "oceancrust"
 
-block 3 surface oceancrust
-block 3 name "oceancrust"
-
-block 4 surface oceanmantle
-block 4 name "oceanmantle"
+block 3 surface mantle
+block 3 name "mantle"
 
 # ----------------------------------------------------------------------
 # Create nodeset for fault interfaces
 # ----------------------------------------------------------------------
 # Fault (coseismic region only)
-group "fault_coseismic" add node in slabtop@A
-group "fault_coseismic" add node in slabtop@D
+group "fault_coseismic" add node in c_slabtop@A
+group "fault_coseismic" add node in c_slabtop
 nodeset 20 group fault_coseismic
 nodeset 20 name "fault_coseismic"
 
 # Fault edge (coseismic region only)
-group "fault_coseismic_edge" add node in vertex 74
-nodeset 21 group fault_coseismic_edge
-nodeset 21 name "fault_coseismic_edge"
+group "fault_coseismic_edge" add node in vertex 65
+nodeset 30 group fault_coseismic_edge
+nodeset 30 name "fault_coseismic_edge"
 
-group "fault_slabtop" add node in slabtop@A
-group "fault_slabtop" add node in slabtop@D
-group "fault_slabtop" add node in slabtop
-nodeset 22 group fault_slabtop
-nodeset 22 name "fault_slabtop"
+group "fault_slabtop" add node in c_slabtop@A
+group "fault_slabtop" add node in c_slabtop
+group "fault_slabtop" add node in c_slabtop@D
+nodeset 21 group fault_slabtop
+nodeset 21 name "fault_slabtop"
 
-group "fault_slabbot" add node in slabbot@B
-group "fault_slabbot" add node in slabbot@D
-group "fault_slabbot" add node in slabbot
-nodeset 23 group fault_slabbot
-nodeset 23 name "fault_slabbot"
+# Fault edge (slabtop)
+group "fault_slabtop_edge" add node in vertex 33
+nodeset 31 group fault_slabtop_edge
+nodeset 31 name "fault_slabtop_edge"
+
+group "fault_slabbot" add node in c_slabbot@B
+group "fault_slabbot" add node in c_slabbot@D
+group "fault_slabbot" add node in c_slabbot
+nodeset 22 group fault_slabbot
+nodeset 22 name "fault_slabbot"
+
+# Fault edge (slabbot)
+group "fault_slabbot_edge" add node in vertex 24
+nodeset 32 group fault_slabbot_edge
+nodeset 32 name "fault_slabbot_edge"
+
 
 # ----------------------------------------------------------------------
 # Create nodeset for topography/bathymetry
 # ----------------------------------------------------------------------
-group "groundsurf" add node in curve topobathy
-group "groundsurf" add node in curve topobathy@A
-group "groundsurf" add node in curve topobathy@B
+group "groundsurf" add node in curve c_topo
+group "groundsurf" add node in curve c_topo@A
+group "groundsurf" add node in curve c_topo@B
 nodeset 10 group groundsurf
 nodeset 10 name "groundsurf"
 
 # ----------------------------------------------------------------------
 # Create nodesets for west boundary
 # ----------------------------------------------------------------------
-group "bndry_west" add node in curve edgewest
-group "bndry_west" add node in curve edgewest@A
-group "bndry_west" remove node in group fault_slabtop
+group "bndry_west" add node in curve c_west
+group "bndry_west" add node in curve c_west@A
 nodeset 11 group bndry_west
 nodeset 11 name "bndry_west"
-
-group "bndry_west_incslab" add node in curve edgewest
-group "bndry_west_incslab" add node in curve edgewest@A
-nodeset 12 group bndry_west_incslab
-nodeset 12 name "bndry_west_incslab"
 
 # ----------------------------------------------------------------------
 # Create nodeset for east boundary
 # ----------------------------------------------------------------------
 # Crust
-group "bndry_east_crust" add node in curve edgeeast
-nodeset 13 group bndry_east_crust
-nodeset 13 name "bndry_east_crust"
+group "bndry_east_crust" add node in curve c_east
+nodeset 12 group bndry_east_crust
+nodeset 12 name "bndry_east_crust"
 
 # Mantle
-group "bndry_east_mantle" add node in curve edgeeast@A
+group "bndry_east_mantle" add node in curve c_east@A
 group "bndry_east_mantle" remove node in group fault_slabbot
-nodeset 14 group bndry_east_mantle
-nodeset 14 name "bndry_east_mantle"
+nodeset 13 group bndry_east_mantle
+nodeset 13 name "bndry_east_mantle"
 
 # ----------------------------------------------------------------------
 # Create nodesets for bottom boundary
 # ----------------------------------------------------------------------
-# Slab (oceanic crust)
-group "bndry_bot_slab" add node in curve edgebot
-nodeset 15 group bndry_bot_slab
-nodeset 15 name "bndry_bot_slab"
-
-# Mantle
-group "bndry_bot_mantle" add node in curve edgebot@A
-group "bndry_bot_mantle" remove node in group fault_slabbot
-nodeset 16 group bndry_bot_mantle
-nodeset 16 name "bndry_bot_mantle"
+group "bndry_bot" add node in curve c_bot
+nodeset 14 group bndry_bot
+nodeset 14 name "bndry_bot"
 
 
 # End of file
+
 
 
 

@@ -27,12 +27,12 @@
 # ParaView from the terminal shell where you ran PyLith:
 #
 # import os
-# OUTPUT_DIR = os.path.join(os.environ["HOME"], "src", "pylith", "examples", "2d", "subduction", "output")
+# OUTPUT_DIR = os.path.join(os.environ["HOME"], "src", "pylith", "examples", "subduction-2d", "output")
 
 DEFAULTS = {
     "OUTPUT_DIR": "output",
-    "SIM": "step05",
-    "WARP_SCALE": 10.0e+3,
+    "SIM": "step01_coseismic",
+    "WARP_SCALE": 1.0e+3,
     "FIELD": "displacement",
     "FIELD_COMPONENT": "X",
     "TIMESTEP": 0, # Use 0 for first, -1 for last.
@@ -48,7 +48,7 @@ def visualize(parameters):
     paraview.simple._DisableFirstRenderCameraReset()
 
     # Read data
-    filename = os.path.join(parameters.output_dir, "%s.xmf" % parameters.sim)
+    filename = os.path.join(parameters.output_dir, "%s-domain.xmf" % parameters.sim)
     if not os.path.isfile(filename):
         raise IOError("File '%s' does not exist." % filename)
     dataDomain = XDMFReader(FileNames=[filename])
@@ -86,7 +86,7 @@ def visualize(parameters):
     if parameters.field_component.lower() == "magnitude":
         colorbar.Title = "Displacement Mag. (m)"
     else:
-        colorbar.Title = "%s-displacement (m)" % parameters.field_component.lower()
+        colorbar.Title = "%s displacement (m)" % parameters.field_component.lower()
     colorbar.ComponentTitle = ""
 
     # Annotate time

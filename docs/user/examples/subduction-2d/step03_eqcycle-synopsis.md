@@ -1,0 +1,19 @@
+
+**Features**
+
+* Triangular cells
+* field split preconditioner
+* Schur complement
+* pylith.meshio.MeshIOPetsc
+* pylith.problems.TimeDependent
+* pylith.materials.Elasticity
+* pylith.materials.IsotropicLinearElasticity
+* pylith.meshio.OutputSolnBoundary
+* pylith.meshio.DataWriterHDF5
+* Quasitatic simulation
+* pylith.faults.FaultCohesiveKin
+* pylith.bc.DirichletTimeDependent
+* spatialdata.spatialdb.SimpleDB
+* spatialdata.spatialdb.UniformDB
+* pylith.faults.KinSrcConstRate
+* pylith.bc.ZeroDB

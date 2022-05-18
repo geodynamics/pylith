@@ -1,0 +1,493 @@
+\documentclass[crop,tikz]{standalone}
+\usepackage{tikz}
+\usepackage{ifthen}
+\usepackage[scaled]{helvet}
+\renewcommand*\familydefault{\sfdefault}
+
+\begin{document}
+
+\input{../../../../tikz-styles/figcolors}
+\input{../../../../tikz-styles/example-style}
+
+
+\foreach \figpart in {1,...,7}{
+
+% -------------------------------------------------------------------------------------------------
+\begin{tikzpicture}[scale=0.1]
+
+\def\domainx{120}
+\def\domainy{60}
+\def\mohoy{-4}
+\def\slaby{-24}
+\def\axesshift{0.05*\domainx}
+\def\bndryshift{1.5*\axesshift}
+\def\ticksize{0.25*\axesshift}
+\def\dirsize{0.08*\domainx}
+
+% Reference points
+\coordinate (p1) at (-0.5*\domainx,-\domainy);
+\coordinate (p2) at (+0.5*\domainx,-\domainy);
+\coordinate (p3) at (+0.5*\domainx,0.0mm);
+\coordinate (p4) at (-0.5*\domainx,0.0mm);
+\coordinate (p5) at (-42.2,\slaby);
+\coordinate (p6) at (-42.2+12,\slaby);
+\coordinate (p7) at (+0.5*\domainx,\mohoy);
+\coordinate (p8) at (-0.5*\domainx,\mohoy);
+\coordinate (p9) at (-0.79,\mohoy);
+\coordinate (p10) at (-8.45,-6.30);
+\coordinate (p11) at (16.56,0);
+
+% -------------------------------------------------------------------------------------------------
+% Domain
+% -------------------------------------------------------------------------------------------------
+% Continental crust
+\draw[curve,fill=ltgreen] (p4) -- (p8) -- (p10) -- (p11) -- cycle;
+
+% Mantle
+\draw[curve,fill=yellow] (p1) -- (p2) -- (p7) -- (p8) -- cycle;
+
+% Oceanic crust
+\draw[curve,fill=ltblue] plot[smooth] coordinates { (p6) (-14.16,-14.0) (-6.26,-10.0) (4.45, -6.3) (20,-4) (p7) } -- (p3) -- 
+plot[smooth] coordinates { (p11) (p9) (p10) (-18.26,-10.0) (-26.16,-14.0) (p5)} -- cycle;
+
+
+% -------------------------------------------------------------------------------------------------
+% Cartoon
+% -------------------------------------------------------------------------------------------------
+\ifthenelse{\figpart=1}{
+
+% Materials
+\node[material-label] at ($0.5*(p8)+0.5*(p11)$) {Continental crust};
+\node[material-label,yshift=1.0mm] at ($0.5*(p10)+0.5*(p3)$) {Oceanic crust};
+\node[material-label] at ($0.5*(p1)+0.5*(p7)$) {Mantle};
+
+\draw[bc,arrow] ($(p10)+(-5,-4)$) -- ($(p6)+(5,7)$);
+
+}{}
+
+
+\ifthenelse{\figpart>1}{%
+% Domain
+
+\ifthenelse{\figpart=2}{%
+    \draw[curve,bc] plot[smooth] coordinates { (p5) (-26.16,-14.0) (-18.26,-10.0) (p10) (p9) (p11) };
+    \draw[curve,bc] plot[smooth] coordinates { (p6) (-14.16,-14.0) (-6.26,-10.0) (4.45, -6.3) (20,-4) (p7) };
+}{\ifthenelse{\figpart<5}{%
+    \draw[curve] plot[smooth] coordinates { (p5) (-26.16,-14.0) (-18.26,-10.0) (p10) (p9) (p11) };
+    \draw[curve] plot[smooth] coordinates { (p6) (-14.16,-14.0) (-6.26,-10.0) (4.45, -6.3) (20,-4) (p7) };
+}{\ifthenelse{\figpart=5}{%
+    \draw[curve,bc] plot[smooth] coordinates { (p10) (p9) (p11) };
+}{\ifthenelse{\figpart>5}{%
+    \draw[curve,bc] plot[smooth] coordinates { (p5) (-26.16,-14.0) (-18.26,-10.0) (p10) (p9) (p11) };
+    \draw[curve,bc] plot[smooth] coordinates { (p6) (-14.16,-14.0) (-6.26,-10.0) (4.45, -6.3) (20,-4) (p7) };
+}}}}
+
+}{}
+
+
+
+% -------------------------------------------------------------------------------------------------
+% Domain
+% -------------------------------------------------------------------------------------------------
+\ifthenelse{\figpart=2}{%
+
+% Axes
+\draw[axes,arrow] ($(p1)+(0,-\axesshift)$) to ($(p2)+(1.0*\axesshift,-\axesshift)$);
+\node[axes-label,right] at ($(p2)+(1.0*\axesshift,-\axesshift)$) {x};
+\foreach \ix in {0,1}{%
+    \pgfmathsetmacro{\x}{10*(-0.5*\domainx+\ix*\domainx)}
+    \draw[axes] ($(p1)+(\ix*\domainx,-\axesshift)$) -- ++(0,-\ticksize) node[below]{\pgfmathprintnumber{\x}\,km};
+}
+
+\draw[axes,arrow] ($(p1)+(-\axesshift,0)$) to ($(p4)+(-\axesshift,+1.0*\axesshift)$);
+\node[axes-label,above] at ($(p4)+(-\axesshift,1.0*\axesshift)$) {y};
+\foreach \iy in {0,1}{%
+    \pgfmathsetmacro{\y}{10*(-1.0*\domainy+\iy*\domainy)}
+    \draw[axes] ($(p1)+(-\axesshift,\iy*\domainy)$) -- ++(-\ticksize,0) node[left]{\pgfmathprintnumber{\y}\,km};
+}
+
+% Materials
+\node[material-label] at ($0.5*(p8)+0.5*(p11)$) {concrust};
+\node[material-label,yshift=1.0mm] at ($0.5*(p10)+0.5*(p3)$) {oceancrust};
+\node[material-label] at ($0.5*(p1)+0.5*(p7)$) {mantle};
+
+% Boundaries
+\node[bc-label, anchor=east] (xneg-label) at ($(p1)+(-\bndryshift,0.5*\domainy)$) {boundary\_west};
+\draw[bc,arrow] (xneg-label) to[out=10,in=-170,looseness=2] ($(p1)+(0,0.5*\domainy)$);
+
+\node[bc-label, anchor=west] (xpos-label) at ($(p2)+(+\bndryshift,0.5*\domainy)$) {boundary\_east};
+\draw[bc,arrow] (xpos-label) to[out=-170,in=+10,looseness=2] ($(p2)+(0,0.5*\domainy)$);
+
+\node[bc-label, anchor=north] (yneg-label) at ($0.5*(p1)+0.5*(p2)+(0,-\bndryshift)$) {boundary\_bot};
+\draw[bc,arrow] (yneg-label) to[out=100,in=-80,looseness=2] ($0.5*(p1)+0.5*(p2)$);
+
+\node[bc-label, anchor=south] (ypos-label) at ($(p4)+(0.5*\domainx,\bndryshift)$) {groundsurf};
+\draw[bc,arrow] (ypos-label) to[out=-80,in=100,looseness=2] ($(p4)+(0.5*\domainx,0)$);
+
+% Faults
+\node[bc-label, anchor=south, rotate=30] at ($0.7*(p5)+0.3*(p9)$) {slabtop};
+\node[bc-label, anchor=north, rotate=30] at ($0.7*(p6)+0.3*(p10)$) {slabbot};
+
+}{}
+
+
+% -------------------------------------------------------------------------------------------------
+% Gmsh Geometry
+% -------------------------------------------------------------------------------------------------
+\ifthenelse{\figpart=3}{
+
+% Points
+\node[fevertex] (v1) at (p1) {};
+\node[fevertex-label, below left, anchor=north east] at (v1) {p\_bot\_west};
+
+\node[fevertex] (v2) at (p2) {};
+\node[fevertex-label, below right, anchor=north west] at (v2) {p\_bot\_east};
+
+\node[fevertex] (v3) at (p3) {};
+\node[fevertex-label, above right, anchor=south west] at (v3) {p\_topo\_east};
+
+\node[fevertex] (v4) at (p4) {};
+\node[fevertex-label, above left, anchor=south east] at (v4) {p\_topo\_west};
+
+
+\node[fevertex] (v1) at (p5) {};
+\node[fevertex-label, below left, anchor=north east] at (v1) {p\_slabtop\_west};
+
+\node[fevertex] (v5) at (p6) {};
+\node[fevertex-label, below, anchor=north west] at (v5) {p\_slabbot\_west};
+
+\node[fevertex] (v6) at (p7) {};
+\node[fevertex-label, above, anchor=north west] at (v6) {p\_slabbot\_east};
+
+\node[fevertex] (v7) at (p8) {};
+\node[fevertex-label, above, anchor=north east] at (v7) {p\_moho\_west};
+
+\node[fevertex] (v8) at (p9) {};
+\node[fevertex-label, above, anchor=south east] at (v8) {p\_slabtop\_moho};
+
+\node[fevertex] (v9) at (p10) {};
+\node[fevertex-label, above, anchor=east] at (v9) {p\_slabtop\_coseismic};
+
+\node[fevertex] (v10) at (p11) {};
+\node[fevertex-label, above, anchor=south] at (v10) {p\_topo\_trench};
+
+% Curves
+\def\doffset{1.5}
+
+\node (bot-slab) at ($0.5*(p1)+0.5*(p2)$) {};
+\node[curve-label, below] at (bot-slab) {c\_bot};
+\draw[curve-dir] ($(bot-slab)+(-0.5*\dirsize,\doffset)$) -- ++(\dirsize,0);
+
+\node (east-mantle) at ($0.5*(p2)+0.5*(p7)$) {};
+\node[curve-label, right, rotate=90, anchor=north] at (east-mantle) {c\_east\_mantle};
+\draw[curve-dir] ($(east-mantle)+(-\doffset,-0.5*\dirsize)$) -- ++(0,\dirsize);
+
+\node (east-crust) at ($0.5*(p7)+0.5*(p3)$) {};
+\node[curve-label, right, rotate=90, anchor=west] at ($(east-crust)+(-\doffset,\doffset)$) {c\_east\_crust};
+\draw[curve-dir] ($(east-crust)+(-\doffset,-0.25*\dirsize)$) -- ++(0,0.5*\dirsize);
+
+\node (topo-east) at ($0.3*(p11)+0.7*(p3)$) {};
+\node[curve-label, above] at (topo-east) {c\_topo\_east};
+\draw[curve-dir] ($(topo-east)+(-0.5*\dirsize,-\doffset)$) -- ++(\dirsize,0);
+
+\node (topo-west) at ($0.65*(p4)+0.35*(p11)$) {};
+\node[curve-label, above] at (topo-west) {c\_topo\_west};
+\draw[curve-dir] ($(topo-west)+(-0.5*\dirsize,-\doffset)$) -- ++(\dirsize,0);
+
+\node (west-crust) at ($0.5*(p4)+0.5*(p8)$) {};
+\node[curve-label, left, rotate=-90, anchor=east] at ($(west-crust)+(\doffset,\doffset)$) {c\_west\_crust};
+\draw[curve-dir] ($(west-crust)+(\doffset,-0.25*\dirsize)$) -- ++(0,0.5*\dirsize);
+
+\node (west-mantle) at ($0.3*(p8)+0.7*(p1)$) {};
+\node[curve-label, left, rotate=-90, anchor=north] at (west-mantle) {c\_west\_mantle};
+\draw[curve-dir] ($(west-mantle)+(\doffset,-0.5*\dirsize)$) -- ++(0,\dirsize);
+
+\node (conmoho) at ($0.8*(p8)+0.2*(p9)$) {};
+\node[curve-label, below, anchor=north] at (conmoho) {c\_conmoho};
+\draw[curve-dir] ($(conmoho)+(-0.5*\dirsize,\doffset)$) -- ++(\dirsize,0);
+
+\pgfmathsetmacro{\xstart}{-\doffset*sin(30)-0.5*\dirsize*cos(30)}%
+\pgfmathsetmacro{\ystart}{+\doffset*cos(30)-0.5*\dirsize*sin(30)}%
+\pgfmathsetmacro{\dx}{\dirsize*cos(30)}%
+\pgfmathsetmacro{\dy}{\dirsize*sin(30)}%
+\node (slabbot) at ($0.5*(p6)+0.5*(p11)+(-4,0)$) {};
+\node[curve-label, below, rotate=30, anchor=north] at (slabbot) {c\_slabbot};
+\draw[curve-dir] ($(slabbot)+(\xstart,\ystart)$) -- ++(\dx,\dy);
+
+\node (slabtop-mantle) at ($0.45*(p5)+0.55*(p10)+(-2,0)$) {};
+\node[curve-label, below, rotate=30, anchor=north] at (slabtop-mantle) {c\_slabtop\_mantle};
+\draw[curve-dir] ($(slabtop-mantle)+(\xstart,\ystart)$) -- ++(\dx,\dy);
+
+\pgfmathsetmacro{\xstart}{-\doffset*sin(15)-0.5*\dirsize*cos(15)}%
+\pgfmathsetmacro{\ystart}{+\doffset*cos(15)-0.5*\dirsize*sin(15)}%
+\pgfmathsetmacro{\dx}{\dirsize*cos(15)}%
+\pgfmathsetmacro{\dy}{\dirsize*sin(15)}%
+\node (slabtop-crust) at ($0.5*(p9)+0.5*(p11)$) {};
+\node[curve-label, below, rotate=15, anchor=north] at (slabtop-crust) {c\_slabtop\_crust};
+\draw[curve-dir] ($(slabtop-crust)+(\xstart,\ystart)$) -- ++(\dx,\dy);
+
+\node (slab-end) at ($0.5*(p5)+0.5*(p6)$) {};
+\node[curve-label, below, anchor=north, yshift=-2mm] at (slab-end) {c\_slab\_end};
+\draw[curve-dir] ($(slab-end)+(-0.25*\dirsize,-\doffset)$) -- ++(0.5*\dirsize,0);
+
+
+% Axes
+\draw[axes,arrow] ($(p1)+(0,-\axesshift)$) to ($(p2)+(1.0*\axesshift,-\axesshift)$);
+\node[axes-label,right] at ($(p2)+(1.0*\axesshift,-\axesshift)$) {x};
+\foreach \ix in {0,1}{%
+    \pgfmathsetmacro{\x}{10*(-0.5*\domainx+\ix*\domainx)}
+    \draw[axes] ($(p1)+(\ix*\domainx,-\axesshift)$) -- ++(0,-\ticksize) node[below]{\pgfmathprintnumber{\x}\,km};
+}
+
+\draw[axes,arrow] ($(p1)+(-\axesshift,0)$) to ($(p4)+(-\axesshift,+1.0*\axesshift)$);
+\node[axes-label,above] at ($(p4)+(-\axesshift,1.0*\axesshift)$) {y};
+\foreach \iy in {0,1}{%
+    \pgfmathsetmacro{\y}{10*(-\domainy+\iy*\domainy)}
+    \draw[axes] ($(p1)+(-\axesshift,\iy*\domainy)$) -- ++(-\ticksize,0) node[left]{\pgfmathprintnumber{\y}\,km};
+}
+
+}{} % if/else
+
+
+% -------------------------------------------------------------------------------------------------
+% Cubit Geometry
+% -------------------------------------------------------------------------------------------------
+\ifthenelse{\figpart=4}{
+
+% Points
+\node[fevertex] (v1) at (p1) {};
+\node[fevertex-label, below left, anchor=north east] at (v1) {p\_bot\_west};
+
+\node[fevertex] (v2) at (p2) {};
+\node[fevertex-label, below right, anchor=north west] at (v2) {p\_bot\_east};
+
+\node[fevertex] (v3) at (p3) {};
+\node[fevertex-label, above right, anchor=south west] at (v3) {p\_topo\_east};
+
+\node[fevertex] (v4) at (p4) {};
+\node[fevertex-label, above left, anchor=south east] at (v4) {p\_topo\_west};
+
+
+\node[fevertex] (v1) at (p5) {};
+\node[fevertex-label, below left, anchor=north east] at (v1) {p\_slabtop\_west};
+
+\node[fevertex] (v5) at (p6) {};
+\node[fevertex-label, below, anchor=north west] at (v5) {p\_slabbot\_west};
+
+\node[fevertex] (v6) at (p7) {};
+\node[fevertex-label, above, anchor=north west] at (v6) {p\_slabbot\_east};
+
+\node[fevertex] (v7) at (p8) {};
+\node[fevertex-label, above, anchor=north east] at (v7) {p\_moho\_west};
+
+\node[fevertex] (v8) at (p9) {};
+\node[fevertex-label, above, anchor=south east] at (v8) {p\_slabtop\_moho};
+
+\node[fevertex] (v9) at (p10) {};
+\node[fevertex-label, above, anchor=east] at (v9) {p\_slabtop\_coseismic};
+
+\node[fevertex] (v10) at (p11) {};
+\node[fevertex-label, above, anchor=south] at (v10) {p\_topo\_trench};
+
+% Curves
+\def\doffset{1.5}
+
+\node (bot-mantle) at ($0.5*(p1)+0.5*(p2)$) {};
+\node[curve-label, below] at (bot-mantle) {c\_bot};
+
+\node (east-mantle) at ($0.5*(p2)+0.5*(p7)$) {};
+\node[curve-label, right, rotate=90, anchor=north] at (east-mantle) {c\_east@A};
+
+\node (east-crust) at ($0.5*(p7)+0.5*(p3)$) {};
+\node[curve-label, right, rotate=90, anchor=west] at ($(east-crust)+(-\doffset,\doffset)$) {c\_east};
+
+\node (topo-east) at ($0.3*(p11)+0.7*(p3)$) {};
+\node[curve-label, above] at (topo-east) {c\_topo@A};
+
+\node (topo-trench) at ($0.25*(p4)+0.75*(p11)$) {};
+\node[curve-label, above] at (topo-trench) {c\_topo};
+
+\node (topo-west) at ($0.65*(p4)+0.35*(p11)$) {};
+\node[curve-label, above] at (topo-west) {c\_topo@B};
+
+\node (west-crust) at ($0.5*(p4)+0.5*(p8)$) {};
+\node[curve-label, left, rotate=-90, anchor=east] at ($(west-crust)+(\doffset,\doffset)$) {c\_west};
+
+\node (west-mantle) at ($0.3*(p8)+0.7*(p1)$) {};
+\node[curve-label, left, rotate=-90, anchor=north] at (west-mantle) {c\_west@A};
+
+\node (conmoho) at ($0.8*(p8)+0.2*(p9)$) {};
+\node[curve-label, below, anchor=north] at (conmoho) {c\_conmoho};
+
+% slabbot
+\node (slabbot) at ($0.7*(p6)+0.3*(p11)+(-4,0)$) {};
+\node[curve-label, below, rotate=30, anchor=north] at (slabbot) {c\_slabbot};
+
+\node (slabbot2) at ($0.3*(p6)+0.7*(p11)+(-2,0)$) {};
+\node[curve-label, below, rotate=20, anchor=north] at (slabbot2) {c\_slabbot@D};
+
+\node (slabbot-moho) at ($(p7)+(-2,0)$) {};
+\node[curve-label, below, anchor=north east] at (slabbot-moho) {c\_slabbot@B};
+
+% slabtop
+\node (slabtop-mantle) at ($0.6*(p5)+0.4*(p10)+(-2,0)$) {};
+\node[curve-label, below, rotate=30, anchor=north] at (slabtop-mantle) {c\_slabtop@D};
+
+\node (slabtop-mantle2) at ($0.1*(p5)+0.9*(p10)+(-2,0)$) {};
+\node[curve-label, below, rotate=25, anchor=north] at (slabtop-mantle2) {c\_slabtop};
+
+\node (slabtop-crust) at ($0.5*(p9)+0.5*(p11)+(0,1)$) {};
+\node[curve-label, below, rotate=15, anchor=north] at (slabtop-crust) {c\_slabtop@A};
+
+
+% Axes
+\draw[axes,arrow] ($(p1)+(0,-\axesshift)$) to ($(p2)+(1.0*\axesshift,-\axesshift)$);
+\node[axes-label,right] at ($(p2)+(1.0*\axesshift,-\axesshift)$) {x};
+\foreach \ix in {0,1}{%
+    \pgfmathsetmacro{\x}{10*(-0.5*\domainx+\ix*\domainx)}
+    \draw[axes] ($(p1)+(\ix*\domainx,-\axesshift)$) -- ++(0,-\ticksize) node[below]{\pgfmathprintnumber{\x}\,km};
+}
+
+\draw[axes,arrow] ($(p1)+(-\axesshift,0)$) to ($(p4)+(-\axesshift,+1.0*\axesshift)$);
+\node[axes-label,above] at ($(p4)+(-\axesshift,1.0*\axesshift)$) {y};
+\foreach \iy in {0,1}{%
+    \pgfmathsetmacro{\y}{10*(-\domainy+\iy*\domainy)}
+    \draw[axes] ($(p1)+(-\axesshift,\iy*\domainy)$) -- ++(-\ticksize,0) node[left]{\pgfmathprintnumber{\y}\,km};
+}
+
+\node (slab-end) at ($0.5*(p5)+0.5*(p6)$) {};
+\node[curve-label, below, anchor=north, yshift=-2mm] at (slab-end) {c\_slab\_end};
+
+
+}{} % if/else
+
+
+% -------------------------------------------------------------------------------------------------
+% Dirichlet boundary conditions 
+% -------------------------------------------------------------------------------------------------
+\ifthenelse{\figpart>4}{
+% Roller boundary conditions on west, east, and bottom boundaries
+\def\radius{0.15*\bndryshift}%
+\def\rspacing{0.5*\domainy}%
+
+% -x
+\foreach \iy in {0,...,1}{%
+\draw[roller] ($(p1)+(-\radius,\iy*\rspacing+0.5*\rspacing)$) circle (\radius);
+\node[ground, anchor=north, rotate=-90] at ($(p1)+(-2*\radius,\iy*\rspacing+0.5*\rspacing)$) {};
+}
+\node[bc-label] at ($(p1)+(-\bndryshift,0.5*\domainy)$) {$u_x=0$};
+
+
+% +x
+\foreach \iy in {0,...,1}{%
+\draw[roller] ($(p2)+(+\radius,\iy*\rspacing+0.5*\rspacing)$) circle (\radius);
+\node[ground, anchor=north, rotate=+90] at ($(p2)+(+2*\radius,\iy*\rspacing+0.5*\rspacing)$) {};
+}
+\node[bc-label] at ($(p2)+(+\bndryshift,0.5*\domainy)$) {$u_x=0$};
+
+
+% -y
+\foreach \ix in {0,...,3}{%
+\draw[roller] ($(p1)+(\ix*\rspacing+0.5*\rspacing,-\radius)$) circle (\radius);
+\node[ground] at ($(p1)+(\ix*\rspacing+0.5*\rspacing,-2*\radius)$) {};
+}
+\node[bc-label] at ($(p1)+(0.5*\domainx,-\bndryshift)$) {$u_y=0$};
+
+}{}
+
+
+% -------------------------------------------------------------------------------------------------
+% Step 1 (coseismic)
+% -------------------------------------------------------------------------------------------------
+\ifthenelse{\figpart=5}{
+
+    % Fault slip
+    \pgfmathsetmacro{\xstart}{-1.5*sin(15)-0.5*\dirsize*cos(15)}%
+    \pgfmathsetmacro{\ystart}{+1.5*cos(15)-0.5*\dirsize*sin(15)}%
+    \pgfmathsetmacro{\dx}{\dirsize*cos(15)}%
+    \pgfmathsetmacro{\dy}{\dirsize*sin(15)}%
+    \coordinate (x) at ($0.5*(p10)+0.5*(p11)$);
+    \draw[bc,arrow] ($(x)+(\xstart,\ystart)$) -- ++(\dx,\dy);
+    \draw[bc,arrow] ($(x)+(-\xstart,-\ystart)$) -- ++(-\dx,-\dy);
+    \node[bc-label, anchor=north, below, rotate=15, yshift=-5] at (x) {$d=d(y)$};
+
+}{} % if/else
+
+
+% -------------------------------------------------------------------------------------------------
+% Step 2 (interseismic)
+% -------------------------------------------------------------------------------------------------
+\ifthenelse{\figpart=6}{
+
+    % Slab top
+    \pgfmathsetmacro{\xstart}{-1.5*sin(15)-0.5*\dirsize*cos(15)}%
+    \pgfmathsetmacro{\ystart}{+1.5*cos(15)-0.5*\dirsize*sin(15)}%
+    \pgfmathsetmacro{\dx}{\dirsize*cos(15)}%
+    \pgfmathsetmacro{\dy}{\dirsize*sin(15)}%
+    \coordinate (x) at ($0.5*(p10)+0.5*(p11)$);
+    \draw[bc,arrow] ($(x)+(\xstart,\ystart)$) -- ++(\dx,\dy);
+    \draw[bc,arrow] ($(x)+(-\xstart,-\ystart)$) -- ++(-\dx,-\dy);
+    \node[bc-label, anchor=south, above, rotate=15, yshift=6] at (x) {$\dot{d}=0$};
+
+    \pgfmathsetmacro{\xstart}{-1.5*sin(30)-0.5*\dirsize*cos(30)}%
+    \pgfmathsetmacro{\ystart}{+1.5*cos(30)-0.5*\dirsize*sin(30)}%
+    \pgfmathsetmacro{\dx}{\dirsize*cos(30)}%
+    \pgfmathsetmacro{\dy}{\dirsize*sin(30)}%
+    \coordinate (x) at ($0.5*(p5)+0.5*(p10)+(0,1.5)$);
+    \draw[bc,arrow] ($(x)+(\xstart,\ystart)$) -- ++(\dx,\dy);
+    \draw[bc,arrow] ($(x)+(-\xstart,-\ystart)$) -- ++(-\dx,-\dy);
+    \node[bc-label, anchor=south, above, rotate=30, yshift=4] at (x) {$\dot{d}=-8 \textrm{cm/yr}$};
+
+    % Slab bot
+    \pgfmathsetmacro{\xstart}{+1.5*sin(30)-0.5*\dirsize*cos(30)}%
+    \pgfmathsetmacro{\ystart}{-1.5*cos(30)-0.5*\dirsize*sin(30)}%
+    \pgfmathsetmacro{\dx}{\dirsize*cos(30)}%
+    \pgfmathsetmacro{\dy}{\dirsize*sin(30)}%
+    \coordinate (x) at ($0.6*(p6)+0.4*(p11)+(0,2.0)$);
+    \draw[bc,arrow] ($(x)+(\xstart,\ystart)$) -- ++(\dx,\dy);
+    \draw[bc,arrow] ($(x)+(-\xstart,-\ystart)$) -- ++(-\dx,-\dy);
+    \node[bc-label, anchor=north, below, rotate=30, yshift=-5] at (x) {$\dot{d}=+8 \textrm{cm/yr}$};
+
+}{} % if/else
+
+
+% -------------------------------------------------------------------------------------------------
+% Step 3 (eqcycle)
+% -------------------------------------------------------------------------------------------------
+\ifthenelse{\figpart=7}{
+
+    % Slab top
+    \pgfmathsetmacro{\xstart}{-1.5*sin(15)-0.5*\dirsize*cos(15)}%
+    \pgfmathsetmacro{\ystart}{+1.5*cos(15)-0.5*\dirsize*sin(15)}%
+    \pgfmathsetmacro{\dx}{\dirsize*cos(15)}%
+    \pgfmathsetmacro{\dy}{\dirsize*sin(15)}%
+    \coordinate (x) at ($0.5*(p10)+0.5*(p11)$);
+    \draw[bc,arrow] ($(x)+(\xstart,\ystart)$) -- ++(\dx,\dy);
+    \draw[bc,arrow] ($(x)+(-\xstart,-\ystart)$) -- ++(-\dx,-\dy);
+    \node[bc-label, anchor=south, above, rotate=15, yshift=6] at (x) {$d=d(y)H(t-150\textrm{yr})$};
+
+    \pgfmathsetmacro{\xstart}{-1.5*sin(30)-0.5*\dirsize*cos(30)}%
+    \pgfmathsetmacro{\ystart}{+1.5*cos(30)-0.5*\dirsize*sin(30)}%
+    \pgfmathsetmacro{\dx}{\dirsize*cos(30)}%
+    \pgfmathsetmacro{\dy}{\dirsize*sin(30)}%
+    \coordinate (x) at ($0.5*(p5)+0.5*(p10)+(0,1.5)$);
+    \draw[bc,arrow] ($(x)+(\xstart,\ystart)$) -- ++(\dx,\dy);
+    \draw[bc,arrow] ($(x)+(-\xstart,-\ystart)$) -- ++(-\dx,-\dy);
+    \node[bc-label, anchor=south, above, rotate=30, yshift=4] at (x) {$\dot{d}=-8 \textrm{cm/yr}$};
+
+    % Slab bot
+    \pgfmathsetmacro{\xstart}{+1.5*sin(30)-0.5*\dirsize*cos(30)}%
+    \pgfmathsetmacro{\ystart}{-1.5*cos(30)-0.5*\dirsize*sin(30)}%
+    \pgfmathsetmacro{\dx}{\dirsize*cos(30)}%
+    \pgfmathsetmacro{\dy}{\dirsize*sin(30)}%
+    \coordinate (x) at ($0.6*(p6)+0.4*(p11)+(0,2.0)$);
+    \draw[bc,arrow] ($(x)+(\xstart,\ystart)$) -- ++(\dx,\dy);
+    \draw[bc,arrow] ($(x)+(-\xstart,-\ystart)$) -- ++(-\dx,-\dy);
+    \node[bc-label, anchor=north, below, rotate=30, yshift=-5] at (x) {$\dot{d}=+8 \textrm{cm/yr}$};
+
+}{} % if/else
+
+
+\end{tikzpicture}}
+
+\end{document}

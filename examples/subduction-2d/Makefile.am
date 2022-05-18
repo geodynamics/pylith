@@ -27,6 +27,7 @@ dist_noinst_DATA = \
 	step05_eqcycleslipweakening.cfg \
 	step06_eqcycleratestate.cfg \
 	geometry.jou \
+	generate_gmsh.py \
 	createbc.jou \
 	mesh_tri.jou \
 	mesh_tri.exo \
@@ -36,9 +37,8 @@ dist_noinst_DATA = \
 	fault_slabtop_slipweakening.spatialdb \
 	fault_slabtop_tractions.spatialdb \
 	mat_concrust.spatialdb \
-	mat_conmantle.spatialdb \
 	mat_oceancrust.spatialdb \
-	mat_oceanmantle.spatialdb \
+	mat_mantle.spatialdb \
 	afterslip_tractions.spatialdb \
 	afterslip_tractions.py
 
