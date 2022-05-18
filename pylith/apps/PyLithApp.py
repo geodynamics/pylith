@@ -21,14 +21,7 @@ def problemFactory(name):
     """
     from pythia.pyre.inventory import facility
     from pylith.problems.TimeDependent import TimeDependent
-    return facility(name, family="problems.problems.problem", factory=TimeDependent)
-
-def problemFactory(name):
-    """Factory for problem items.
-    """
-    from pythia.pyre.inventory import facility
-    from pylith.problems.TimeDependent import TimeDependent
-    return facility(name, family="problems.problems.problem", factory=TimeDependent)
+    return facility(name, family="problem", factory=TimeDependent)
 
 
 
