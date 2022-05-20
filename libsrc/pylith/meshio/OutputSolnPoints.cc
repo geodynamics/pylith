@@ -226,7 +226,10 @@ pylith::meshio::OutputSolnPoints::_setupInterpolator(const pylith::topology::Fie
     const pylith::string_vector& subfieldNames = solution.getSubfieldNames();
     const size_t numSubfields = subfieldNames.size();
     for (size_t i = 0; i < numSubfields; ++i) {
-        numDof += solution.getSubfieldInfo(subfieldNames[i].c_str()).description.numComponents;
+        const pylith::topology::Field::SubfieldInfo& info = solution.getSubfieldInfo(subfieldNames[i].c_str());
+        if (!info.fe.isFaultOnly) {
+            numDof += info.description.numComponents;
+        } // if
     } // for
     err = DMInterpolationSetDof(_interpolator, numDof);PYLITH_CHECK_ERROR(err);
 
