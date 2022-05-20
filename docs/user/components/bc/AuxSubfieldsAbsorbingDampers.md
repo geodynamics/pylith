@@ -1,7 +1,8 @@
 # AuxSubfieldsAbsorbingDampers
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.bc.AuxSubfieldsAbsorbingDampers`
+:Full name: `pylith.bc.AuxSubfieldsAbsorbingDampers`
+:Journal name: `auxsubfieldsabsorbingdampers`
 
 Auxiliary subfields for the absorbing dampers boundary condition.
 

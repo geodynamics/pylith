@@ -1,7 +1,8 @@
 # SolnDispPresTracStrainVelPdotTdot
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.problems.SolnDispPresTracStrainVelPdotTdot`
+:Full name: `pylith.problems.SolnDispPresTracStrainVelPdotTdot`
+:Journal name: `solndispprestracstrainveltdotpdot`
 
 Container for solution subfields with displacement, pore pressure, and trace strain subfields, along with their time derivatices.
 

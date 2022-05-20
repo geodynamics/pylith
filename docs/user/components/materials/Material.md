@@ -1,7 +1,8 @@
 # Material
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.materials.Material`
+:Full name: `pylith.materials.Material`
+:Journal name: `material`
 
 Abstract base class for a bulk material.
 
@@ -25,7 +26,7 @@ Abstract base class for a bulk material.
 * `description`=\<str\>: Descriptive label for material.
   - **default value**: ''
   - **current value**: '', from {default}
-  - **validator**: <function validateDescription at 0x7fe78d337790>
+  - **validator**: <function validateDescription at 0x1248ef790>
 * `label`=\<str\>: Name of label for material. Currently only 'material-id' is allowed.
   - **default value**: 'material-id'
   - **current value**: 'material-id', from {default}

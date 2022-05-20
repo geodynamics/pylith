@@ -1,7 +1,8 @@
 # ProgressMonitorStep
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.problems.ProgressMonitorStep`
+:Full name: `pylith.problems.ProgressMonitorStep`
+:Journal name: `progressmonitorstep`
 
 Progress monitor for problems with a given number of steps, such as Green's functions problem.
 

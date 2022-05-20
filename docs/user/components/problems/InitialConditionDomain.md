@@ -1,7 +1,8 @@
 # InitialConditionDomain
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.problems.InitialConditionDomain`
+:Full name: `pylith.problems.InitialConditionDomain`
+:Journal name: `initialconditionsdomain`
 
 Initial conditions for the solution over the entire domain.
 

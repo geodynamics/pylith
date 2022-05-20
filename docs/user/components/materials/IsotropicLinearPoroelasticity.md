@@ -1,7 +1,8 @@
 # IsotropicLinearPoroelasticity
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.materials.IsotropicLinearPoroelasticity`
+:Full name: `pylith.materials.IsotropicLinearPoroelasticity`
+:Journal name: `isotropiclinearporoelasticity`
 
 Isotropic linear incompressible elastic bulk rheology.
 

@@ -1,7 +1,8 @@
 # KinSrcRamp
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.faults.KinSrcRamp`
+:Full name: `pylith.faults.KinSrcRamp`
+:Journal name: `kinsrcramp`
 
 Linear ramp slip time function.
 

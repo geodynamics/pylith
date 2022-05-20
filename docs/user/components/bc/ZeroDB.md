@@ -1,7 +1,8 @@
 # ZeroDB
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.bc.ZeroDB`
+:Full name: `pylith.bc.ZeroDB`
+:Journal name: `zerodb`
 
 Special case of a `UniformDB` spatial database with uniform zero initial amplitude values for degrees of freedom.
 
@@ -15,7 +16,7 @@ Implements `SpatialDB`.
 * `description`=\<str\>: Description for database.
   - **default value**: ''
   - **current value**: '', from {default}
-  - **validator**: <function validateDescription at 0x7fe78d2e1430>
+  - **validator**: <function validateDescription at 0x124922820>
 * `label`=\<str\>: Label for ZeroDB spatial database.
   - **default value**: 'Zero initial amplitude spatial database.'
   - **current value**: 'Zero initial amplitude spatial database.', from {default}

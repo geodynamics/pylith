@@ -1,7 +1,8 @@
 # KinSrcStep
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.faults.KinSrcStep`
+:Full name: `pylith.faults.KinSrcStep`
+:Journal name: `kinsrcstep`
 
 Step slip time function.
 

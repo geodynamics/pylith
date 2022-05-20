@@ -1,7 +1,8 @@
 # TimeDependent
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.problems.TimeDependent`
+:Full name: `pylith.problems.TimeDependent`
+:Journal name: `timedependent`
 
 Static, quasistatic, or dynamic time-dependent problem.
 

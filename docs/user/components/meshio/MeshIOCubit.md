@@ -1,7 +1,8 @@
 # MeshIOCubit
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.meshio.MeshIOCubit`
+:Full name: `pylith.meshio.MeshIOCubit`
+:Journal name: `meshiocubit`
 
 Reader for finite-element meshes from Exodus II files (usually from Cubit).
 
@@ -22,7 +23,7 @@ Implements `MeshIOObj`.
 * `filename`=\<str\>: Name of Cubit Exodus file.
   - **default value**: 'mesh.exo'
   - **current value**: 'mesh.exo', from {default}
-  - **validator**: <function validateFilename at 0x117b365e0>
+  - **validator**: <function validateFilename at 0x1248de790>
 * `use_nodeset_names`=\<bool\>: Use nodeset names instead of ids.
   - **default value**: True
   - **current value**: True, from {default}

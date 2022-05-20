@@ -1,7 +1,8 @@
 # KinSrcLiuCos
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.faults.KinSrcLiuCos`
+:Full name: `pylith.faults.KinSrcLiuCos`
+:Journal name: `kinsrcliucos`
 
 Liu, Archuleta, and Hartzell, BSSA, 2006 cosine-sine slip time function.
 

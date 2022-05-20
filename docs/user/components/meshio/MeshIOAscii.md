@@ -1,7 +1,8 @@
 # MeshIOAscii
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.meshio.MeshIOAscii`
+:Full name: `pylith.meshio.MeshIOAscii`
+:Journal name: `meshioascii`
 
 Reader for finite-element meshes using a simple ASCII format.
 
@@ -22,7 +23,7 @@ Implements `MeshIOObj`.
 * `filename`=\<str\>: Name of mesh file
   - **default value**: ''
   - **current value**: '', from {default}
-  - **validator**: <function validateFilename at 0x117a4aa60>
+  - **validator**: <function validateFilename at 0x11f289670>
 
 ## Example
 

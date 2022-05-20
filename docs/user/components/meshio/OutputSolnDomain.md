@@ -1,7 +1,8 @@
 # OutputSolnDomain
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.meshio.OutputSolnDomain`
+:Full name: `pylith.meshio.OutputSolnDomain`
+:Journal name: `outputsolndomain`
 
 Output of solution subfields over the simulation domain.
 

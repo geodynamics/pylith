@@ -1,7 +1,8 @@
 # KinSrcConstRate
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.faults.KinSrcConstRate`
+:Full name: `pylith.faults.KinSrcConstRate`
+:Journal name: `kinsrcconstrate`
 
 Constant slip rate slip time function.
 

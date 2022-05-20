@@ -1,7 +1,8 @@
 # AuxSubfieldsFault
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.faults.AuxSubfieldsFault`
+:Full name: `pylith.faults.AuxSubfieldsFault`
+:Journal name: `auxsubfieldfault`
 
 Auxiliary subfields associated with a fault.
 

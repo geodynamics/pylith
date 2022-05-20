@@ -1,7 +1,8 @@
 # IsotropicLinearElasticity
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.materials.IsotropicLinearElasticity`
+:Full name: `pylith.materials.IsotropicLinearElasticity`
+:Journal name: `isotropiclinearelasticity`
 
 Isotropic linear elastic bulk rheology.
 

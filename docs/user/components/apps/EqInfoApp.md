@@ -1,7 +1,8 @@
 # EqInfoApp
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.apps.EqInfoApp`
+:Full name: `pylith.apps.EqInfoApp`
+:Journal name: `eqinfoapp`
 
 
 ## Pyre Facilities

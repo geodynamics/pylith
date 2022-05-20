@@ -1,7 +1,8 @@
 # AbsorbingDampers
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.bc.AbsorbingDampers`
+:Full name: `pylith.bc.AbsorbingDampers`
+:Journal name: `absorbingdampers`
 
 Absorbing dampers boundary condition.
 
@@ -10,7 +11,7 @@ Implements `BoundaryCondition`.
 ## Pyre Facilities
 
 * `auxiliary_subfields`: Discretization information for auxiliary subfields.
-  - **current value**: 'auxiliary_subfields', from {file='/software/baagaard/py38-venv/pylith-debug/lib/python3.8/site-packages/pythia/pyre/inventory/ConfigurableClass.py', line=26, function='__set__'}
+  - **current value**: 'auxiliary_subfields', from {file='/Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pythia/pyre/inventory/ConfigurableClass.py', line=26, function='__set__'}
   - **configurable as**: auxiliary_subfields
 * `db_auxiliary_field`: Database for physical property parameters.
   - **current value**: 'simpledb', from {default}
@@ -30,7 +31,7 @@ Implements `BoundaryCondition`.
 * `label`=\<str\>: Name of label identifying boundary.
   - **default value**: ''
   - **current value**: '', from {default}
-  - **validator**: <function validateLabel at 0x7fe783ff31f0>
+  - **validator**: <function validateLabel at 0x124bbc4c0>
 * `label_value`=\<int\>: Value of label identifying boundary (tag of physical group in Gmsh files).
   - **default value**: 1
   - **current value**: 1, from {default}

@@ -1,7 +1,8 @@
 # MeshIOPetsc
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.meshio.MeshIOPetsc`
+:Full name: `pylith.meshio.MeshIOPetsc`
+:Journal name: `meshiopetsc`
 
 Python object for reading/writing finite-element mesh from simple PETSc file.
 

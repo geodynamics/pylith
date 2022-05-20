@@ -1,7 +1,8 @@
 # Problem
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.problems.Problem`
+:Full name: `pylith.problems.Problem`
+:Journal name: `problem`
 
 Abstract base class for a problem.
 

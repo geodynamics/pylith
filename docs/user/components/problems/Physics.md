@@ -1,7 +1,8 @@
 # Physics
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.problems.Physics`
+:Full name: `pylith.problems.Physics`
+:Journal name: `physics`
 
 Abstract base class for objects defining physics.
 

@@ -1,7 +1,8 @@
 # OutputObserver
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.meshio.OutputObserver`
+:Full name: `pylith.meshio.OutputObserver`
+:Journal name: `outputobserver`
 
 Abstract base class for managing output of solution information.
 

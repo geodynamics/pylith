@@ -1,7 +1,8 @@
 # IsotropicLinearIncompElasticity
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.materials.IsotropicLinearIncompElasticity`
+:Full name: `pylith.materials.IsotropicLinearIncompElasticity`
+:Journal name: `isotropiclinearincompelasticity`
 
 Isotropic linear incompressible elastic bulk rheology.
 

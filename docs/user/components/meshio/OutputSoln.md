@@ -1,7 +1,8 @@
 # OutputSoln
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.meshio.OutputSoln`
+:Full name: `pylith.meshio.OutputSoln`
+:Journal name: `outputsoln`
 
 Abstract base class for output of solution subfields.
 

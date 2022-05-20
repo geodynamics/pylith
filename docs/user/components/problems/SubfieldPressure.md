@@ -1,7 +1,8 @@
 # SubfieldPressure
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.problems.SubfieldPressure`
+:Full name: `pylith.problems.SubfieldPressure`
+:Journal name: `subfieldpressure`
 
 Object for defining attributes of the pressure solution subfield.
 
@@ -12,7 +13,7 @@ Implements `SolutionSubfield`.
 * `alias`=\<str\>: Name for subfield.
   - **default value**: ''
   - **current value**: 'pressure', from {file='/Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pythia/pyre/inventory/ConfigurableClass.py', line=26, function='__set__'}
-  - **validator**: <function validateAlias at 0x117e73700>
+  - **validator**: <function validateAlias at 0x124c314c0>
 * `basis_order`=\<int\>: Order of basis functions.
   - **default value**: 1
   - **current value**: 1, from {default}

@@ -1,7 +1,8 @@
 # PointsList
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.meshio.PointsList`
+:Full name: `pylith.meshio.PointsList`
+:Journal name: `pointslist`
 
 Reader for a list of points from an ASCII file.
 
@@ -23,7 +24,7 @@ See [`OutputSolnPoints` Component](OutputSolnPoints.md).
 * `filename`=\<str\>: Filename for list of points.
   - **default value**: ''
   - **current value**: '', from {default}
-  - **validator**: <function validateFilename at 0x117b09dc0>
+  - **validator**: <function validateFilename at 0x11f3209d0>
 * `value_delimiter`=\<str\>: Delimiter used to separate values.
   - **default value**: None
   - **current value**: None, from {default}

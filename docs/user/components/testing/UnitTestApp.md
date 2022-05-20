@@ -1,7 +1,8 @@
 # UnitTestApp
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.testing.UnitTestApp`
+:Full name: `pylith.testing.UnitTestApp`
+:Journal name: `unittestapp`
 
 
 ## Pyre Facilities

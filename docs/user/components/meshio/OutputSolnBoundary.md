@@ -1,7 +1,8 @@
 # OutputSolnBoundary
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.meshio.OutputSolnBoundary`
+:Full name: `pylith.meshio.OutputSolnBoundary`
+:Journal name: `outputsolnsubset`
 
 Output of solution subfields over an external boundary.
 
@@ -28,7 +29,7 @@ Implements `OutputSoln`.
 * `label`=\<str\>: Name of label identifier for external boundary.
   - **default value**: ''
   - **current value**: '', from {default}
-  - **validator**: <function validateLabel at 0x7fe786866af0>
+  - **validator**: <function validateLabel at 0x11f366af0>
 * `label_value`=\<int\>: Value of label identifier for external boundary (tag of physical group in Gmsh files).
   - **default value**: 1
   - **current value**: 1, from {default}

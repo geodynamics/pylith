@@ -1,7 +1,8 @@
 # RheologyPoroelasticity
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.materials.RheologyPoroelasticity`
+:Full name: `pylith.materials.RheologyPoroelasticity`
+:Journal name: `rheologyporoelasticity`
 
 Abstract base class for bulk rheology of poroelastic material.
 

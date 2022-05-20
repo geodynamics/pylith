@@ -1,7 +1,8 @@
 # SolnDispPres
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.problems.SolnDispPres`
+:Full name: `pylith.problems.SolnDispPres`
+:Journal name: `solndisppres`
 
 Container for solution subfields with displacement and pressure subfields.
 

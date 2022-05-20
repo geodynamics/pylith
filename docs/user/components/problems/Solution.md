@@ -1,7 +1,8 @@
 # Solution
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.problems.Solution`
+:Full name: `pylith.problems.Solution`
+:Journal name: `solution`
 
 Abstract base class for solution field for problem.
 

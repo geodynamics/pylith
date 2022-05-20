@@ -1,7 +1,8 @@
 # SolutionSubfield
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.problems.SolutionSubfield`
+:Full name: `pylith.problems.SolutionSubfield`
+:Journal name: `solution_subfield`
 
 Base class for defining attributes of a subfield within a field.
 
@@ -10,7 +11,7 @@ Base class for defining attributes of a subfield within a field.
 * `alias`=\<str\>: Name for subfield.
   - **default value**: ''
   - **current value**: '', from {default}
-  - **validator**: <function validateAlias at 0x117e73700>
+  - **validator**: <function validateAlias at 0x124c314c0>
 * `basis_order`=\<int\>: Order of basis functions.
   - **default value**: 1
   - **current value**: 1, from {default}

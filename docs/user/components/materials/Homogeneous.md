@@ -1,7 +1,8 @@
 # Homogeneous
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.materials.Homogeneous`
+:Full name: `pylith.materials.Homogeneous`
+:Journal name: `homogeneous`
 
 Materials container with one material.
 

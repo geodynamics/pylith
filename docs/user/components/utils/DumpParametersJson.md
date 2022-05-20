@@ -1,7 +1,8 @@
 # DumpParametersJson
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.utils.DumpParametersJson`
+:Full name: `pylith.utils.DumpParametersJson`
+:Journal name: `dumpparamters`
 
 Dump PyLith parameter information to an ASCII file.
 

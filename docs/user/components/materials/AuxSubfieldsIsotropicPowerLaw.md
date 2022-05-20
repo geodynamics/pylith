@@ -1,7 +1,8 @@
 # AuxSubfieldsIsotropicPowerLaw
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.materials.AuxSubfieldsIsotropicPowerLaw`
+:Full name: `pylith.materials.AuxSubfieldsIsotropicPowerLaw`
+:Journal name: `auxfieldsisotropicpowerlaw`
 
 Auxiliary subfields associated with the isotropic linear power law viscoelastic bulk rheology.
 

@@ -1,7 +1,8 @@
 # DataWriterHDF5
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.meshio.DataWriterHDF5`
+:Full name: `pylith.meshio.DataWriterHDF5`
+:Journal name: `datawriterhdf5`
 
 Writer of solution, auxiliary, and derived subfields to an HDF5 file.
 

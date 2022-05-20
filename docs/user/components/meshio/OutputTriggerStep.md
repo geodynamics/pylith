@@ -1,7 +1,8 @@
 # OutputTriggerStep
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.meshio.OutputTriggerStep`
+:Full name: `pylith.meshio.OutputTriggerStep`
+:Journal name: `outputtriggerstep`
 
 Define how often output is written in terms of solution steps.
 

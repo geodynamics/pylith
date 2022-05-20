@@ -1,7 +1,8 @@
 # SolnDispPresVel
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.problems.SolnDispPresVel`
+:Full name: `pylith.problems.SolnDispPresVel`
+:Journal name: `solndisppresvel`
 
 Container for solution subfields with displacement, pore pressure, and velocity subfields.
 
