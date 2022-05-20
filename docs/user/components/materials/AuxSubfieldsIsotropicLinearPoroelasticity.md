@@ -1,7 +1,8 @@
 # AuxSubfieldsIsotropicLinearPoroelasticity
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.materials.AuxSubfieldsIsotropicLinearPoroelasticity`
+:Full name: `pylith.materials.AuxSubfieldsIsotropicLinearPoroelasticity`
+:Journal name: `auxfieldsisotropiclinearporoelasticity`
 
 Auxiliary subfields associated with the isotropic linear poroelastic bulk rheology.
 

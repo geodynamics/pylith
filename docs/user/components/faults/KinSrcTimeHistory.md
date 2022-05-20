@@ -1,7 +1,8 @@
 # KinSrcTimeHistory
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.faults.KinSrcTimeHistory`
+:Full name: `pylith.faults.KinSrcTimeHistory`
+:Journal name: `kinsrctimehistory`
 
 Time history slip time function.
 

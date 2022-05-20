@@ -1,7 +1,8 @@
 # ProgressMonitorTime
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.problems.ProgressMonitorTime`
+:Full name: `pylith.problems.ProgressMonitorTime`
+:Journal name: `progressmonitortime`
 
 Progress monitor for time-dependent problem.
 

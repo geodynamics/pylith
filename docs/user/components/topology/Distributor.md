@@ -1,7 +1,8 @@
 # Distributor
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.topology.Distributor`
+:Full name: `pylith.topology.Distributor`
+:Journal name: `mesh_distributor`
 
 Distributor of the the mesh among processes.
 

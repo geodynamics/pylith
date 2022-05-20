@@ -1,7 +1,8 @@
 # MeshImporterDist
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.topology.MeshImporterDist`
+:Full name: `pylith.topology.MeshImporterDist`
+:Journal name: `meshimporter`
 
 Read a finite-element mesh in parallel.
 

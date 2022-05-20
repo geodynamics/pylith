@@ -1,7 +1,8 @@
 # SolnDisp
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.problems.SolnDisp`
+:Full name: `pylith.problems.SolnDisp`
+:Journal name: `solndisp`
 
 Container for solution subfields with displacement subfield.
 

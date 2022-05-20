@@ -1,7 +1,8 @@
 # OutputTriggerTime
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.meshio.OutputTriggerTime`
+:Full name: `pylith.meshio.OutputTriggerTime`
+:Journal name: `outputtriggertime`
 
 Define how often output is written in terms of elasped simulation time.
 

@@ -1,7 +1,8 @@
 # InitialConditionPatch
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.problems.InitialConditionPatch`
+:Full name: `pylith.problems.InitialConditionPatch`
+:Journal name: `initialconditionspatch`
 
 Initial conditions over a portion of the domain (patch).
 

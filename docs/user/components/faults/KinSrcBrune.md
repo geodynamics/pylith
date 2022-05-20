@@ -1,7 +1,8 @@
 # KinSrcBrune
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.faults.KinSrcBrune`
+:Full name: `pylith.faults.KinSrcBrune`
+:Journal name: `kinsrcbrune`
 
 Brune's (1970) far-field slip time function.
 

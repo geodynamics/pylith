@@ -1,7 +1,8 @@
 # AuxSubfieldsElasticity
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.materials.AuxSubfieldsElasticity`
+:Full name: `pylith.materials.AuxSubfieldsElasticity`
+:Journal name: `auxsubfieldselasticity`
 
 Auxiliary subfields associated with the elasticity equation.
 

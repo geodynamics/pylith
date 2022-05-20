@@ -1,7 +1,8 @@
 # KinSrc
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.faults.KinSrc`
+:Full name: `pylith.faults.KinSrc`
+:Journal name: `kinsrc`
 
 Abstract base class for a prescribed slip source.
 

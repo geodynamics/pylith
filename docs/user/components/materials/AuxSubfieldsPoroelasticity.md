@@ -1,7 +1,8 @@
 # AuxSubfieldsPoroelasticity
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.materials.AuxSubfieldsPoroelasticity`
+:Full name: `pylith.materials.AuxSubfieldsPoroelasticity`
+:Journal name: `auxsubfieldsporoelasticity`
 
 Auxiliary subfields associated with the poroelasticity equation.
 

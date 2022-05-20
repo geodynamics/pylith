@@ -1,7 +1,8 @@
 # OutputSolnPoints
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.meshio.OutputSolnPoints`
+:Full name: `pylith.meshio.OutputSolnPoints`
+:Journal name: `outputsolnpoints`
 
 Output of solution subfields at discrete points in the domain.
 

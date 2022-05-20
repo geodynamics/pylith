@@ -1,7 +1,8 @@
 # FaultCohesiveKin
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.faults.FaultCohesiveKin`
+:Full name: `pylith.faults.FaultCohesiveKin`
+:Journal name: `faultcohesivekin`
 
 Fault surface with kinematic (prescribed) slip implemented with cohesive cells.
 
@@ -39,18 +40,18 @@ Implements `FaultCohesive`.
 * `label`=\<str\>: Name of label identifier for fault.
   - **default value**: ''
   - **current value**: '', from {default}
-  - **validator**: <function validateLabel at 0x7fe78c8fea60>
+  - **validator**: <function validateLabel at 0x124b02ca0>
 * `label_value`=\<int\>: Value of label identifier for fault.
   - **default value**: 1
   - **current value**: 1, from {default}
 * `ref_dir_1`=\<list\>: First choice for reference direction to discriminate among tangential directions in 3-D.
   - **default value**: [0.0, 0.0, 1.0]
   - **current value**: [0.0, 0.0, 1.0], from {default}
-  - **validator**: <function validateDir at 0x7fe78c8feaf0>
+  - **validator**: <function validateDir at 0x124b02dc0>
 * `ref_dir_2`=\<list\>: Second choice for reference direction to discriminate among tangential directions in 3-D.
   - **default value**: [0.0, 1.0, 0.0]
   - **current value**: [0.0, 1.0, 0.0], from {default}
-  - **validator**: <function validateDir at 0x7fe78c8feaf0>
+  - **validator**: <function validateDir at 0x124b02dc0>
 
 ## Example
 

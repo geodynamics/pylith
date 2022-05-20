@@ -1,7 +1,8 @@
 # AuxSubfieldsIsotropicLinearMaxwell
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.materials.AuxSubfieldsIsotropicLinearMaxwell`
+:Full name: `pylith.materials.AuxSubfieldsIsotropicLinearMaxwell`
+:Journal name: `auxfieldsisotropiclinearmaxwell`
 
 Auxiliary subfields associated with the isotropic linear Maxwell viscoelastic bulk rheology.
 

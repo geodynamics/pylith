@@ -1,7 +1,8 @@
 # OutputPhysics
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.meshio.OutputPhysics`
+:Full name: `pylith.meshio.OutputPhysics`
+:Journal name: `outputphysics`
 
 Output for objects implementing physics (materials and boundary conditions).
 

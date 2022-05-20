@@ -1,7 +1,8 @@
 # DumpParametersAscii
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.utils.DumpParametersAscii`
+:Full name: `pylith.utils.DumpParametersAscii`
+:Journal name: `dumpparamters`
 
 Dump PyLith parameter information to an ASCII file.
 

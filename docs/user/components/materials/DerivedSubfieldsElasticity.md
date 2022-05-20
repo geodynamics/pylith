@@ -1,7 +1,8 @@
 # DerivedSubfieldsElasticity
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.materials.DerivedSubfieldsElasticity`
+:Full name: `pylith.materials.DerivedSubfieldsElasticity`
+:Journal name: `derivedsubfieldselasticity`
 
 Derived subfields associated with the elasticity equation.
 

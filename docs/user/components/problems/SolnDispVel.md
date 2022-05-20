@@ -1,7 +1,8 @@
 # SolnDispVel
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.problems.SolnDispVel`
+:Full name: `pylith.problems.SolnDispVel`
+:Journal name: `solndispvel`
 
 Container for solution subfields with displacement and velocity subfields.
 

@@ -1,7 +1,8 @@
 # SingleRupture
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.faults.SingleRupture`
+:Full name: `pylith.faults.SingleRupture`
+:Journal name: `singlerupture`
 
 Kinematic slip source container with one source.
 

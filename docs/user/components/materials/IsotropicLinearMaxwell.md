@@ -1,7 +1,8 @@
 # IsotropicLinearMaxwell
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.materials.IsotropicLinearMaxwell`
+:Full name: `pylith.materials.IsotropicLinearMaxwell`
+:Journal name: `isotropiclinearmaxwell`
 
 Isotropic linear Maxwell viscoelastic bulk rheology.
 

@@ -1,7 +1,8 @@
 # ProgressMonitor
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.problems.ProgressMonitor`
+:Full name: `pylith.problems.ProgressMonitor`
+:Journal name: `progressmonitor`
 
 Abstract base class for simulation progress monitor.
 

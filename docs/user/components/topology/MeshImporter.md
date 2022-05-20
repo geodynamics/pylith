@@ -1,7 +1,8 @@
 # MeshImporter
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.topology.MeshImporter`
+:Full name: `pylith.topology.MeshImporter`
+:Journal name: `meshimporter`
 
 Base class for reading a finite-element mesh from files.
 

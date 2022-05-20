@@ -1,7 +1,8 @@
 # RefineUniform
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.topology.RefineUniform`
+:Full name: `pylith.topology.RefineUniform`
+:Journal name: `refineuniform`
 
 Uniform global mesh refinement in parallel.
 

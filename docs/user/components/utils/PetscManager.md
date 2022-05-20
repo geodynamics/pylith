@@ -1,7 +1,8 @@
 # PetscManager
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.utils.PetscManager`
+:Full name: `pylith.utils.PetscManager`
+:Journal name: `petsc`
 
 Manage PETSc options.
 

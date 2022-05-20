@@ -1,7 +1,8 @@
 # SimulationMetadata
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.utils.SimulationMetadata`
+:Full name: `pylith.utils.SimulationMetadata`
+:Journal name: `metadata`
 
 Metadata for simulation.
 
@@ -21,7 +22,7 @@ When using `base` to specify other files with metadata, the other files will app
 * `description`=\<str\>: Description of simulation.
   - **default value**: ''
   - **current value**: '', from {default}
-  - **validator**: <function notEmptyString at 0x117f1a3a0>
+  - **validator**: <function notEmptyString at 0x124cdf820>
 * `features`=\<list\>: PyLith features used in simulation.
   - **default value**: []
   - **current value**: [], from {default}

@@ -1,7 +1,8 @@
 # SolnDispLagrange
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.problems.SolnDispLagrange`
+:Full name: `pylith.problems.SolnDispLagrange`
+:Journal name: `solndisplagrange`
 
 Container for solution subfields with displacement and fault Lagrange multiplier subfields.
 

@@ -1,7 +1,8 @@
 # InitialCondition
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.problems.InitialCondition`
+:Full name: `pylith.problems.InitialCondition`
+:Journal name: `initialconditions`
 
 Abstract base class for specifying initial conditions for the solution.
 

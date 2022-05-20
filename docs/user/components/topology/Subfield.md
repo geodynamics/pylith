@@ -1,7 +1,8 @@
 # Subfield
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.topology.Subfield`
+:Full name: `pylith.topology.Subfield`
+:Journal name: `subfield`
 
 Python object for defining discretization of a subfield.
 

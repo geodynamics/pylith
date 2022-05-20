@@ -1,7 +1,8 @@
 # DataWriterVTK
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.meshio.DataWriterVTK`
+:Full name: `pylith.meshio.DataWriterVTK`
+:Journal name: `datawritervtk`
 
 Writer of solution, auxiliary, and derived subfields to a VTK file.
 

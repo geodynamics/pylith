@@ -1,7 +1,8 @@
 # AuxSubfieldsTimeDependent
 
 % WARNING: Do not edit; this is a generated file!
-Full name: `pylith.bc.AuxSubfieldsTimeDependent`
+:Full name: `pylith.bc.AuxSubfieldsTimeDependent`
+:Journal name: `auxfieldstimedependent`
 
 Auxiliary subfields for time-dependent boundary conditions.
 
