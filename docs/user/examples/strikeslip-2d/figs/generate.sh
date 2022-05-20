@@ -5,6 +5,8 @@ pdfextract 3 3 diagrams.pdf geometry-cubit.pdf
 pdfextract 4 4 diagrams.pdf step01-diagram.pdf
 pdfextract 5 5 diagrams.pdf step02-diagram.pdf
 pdfextract 6 6 diagrams.pdf step03-diagram.pdf
+pdfextract 7 7 diagrams.pdf step04-diagram.pdf
+pdfextract 8 8 diagrams.pdf step05-diagram.pdf
 
 for fin in *.pdf; do
   fout1=`echo $fin | sed -e s/\.pdf/1\.svg/g`

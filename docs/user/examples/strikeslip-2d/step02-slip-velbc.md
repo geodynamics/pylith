@@ -87,6 +87,10 @@ caption: Set the simulation in the ParaView Python Shell.
 
 Finally, we run the `viz/plot_dispwarp.py` Python script as described in {ref}`sec-paraview-python-scripts`.
 
+:::{tip}
+You can use the "play" button to animate the solution in time.
+:::
+
 :::{figure-md} fig:example:strikeslip:2d:step02:solution
 <img src="figs/step02-solution.*" alt="Solution for Step 2 at t=100 yr. The colors indicate the magnitude of the displacement, and the deformation is exaggerated by a factor of 1000." width="100%"/>
 
