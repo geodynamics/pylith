@@ -34,7 +34,7 @@ class TestCase(FullTestCase):
         }
         self.checks = [
             Check(
-                mesh_entities=["domain", "bc_ypos"],
+                mesh_entities=["domain", "bc_ypos", "points"],
                 vertex_fields=["displacement"],
                 defaults=defaults,
             ),

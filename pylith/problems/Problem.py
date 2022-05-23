@@ -178,7 +178,7 @@ class Problem(PetscComponent, ModuleProblem):
         from pylith.mpi.Communicator import mpi_comm_world
         comm = mpi_comm_world()
         if 0 == comm.rank:
-            self._info.log("Initializing {} problem.".format(self.formulation))
+            self._info.log(f"Initializing {self.name} problem with {self.formulation} formulation.")
 
         ModuleProblem.initialize(self)
 

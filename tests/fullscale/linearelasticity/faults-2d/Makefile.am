@@ -37,6 +37,7 @@ dist_noinst_DATA = \
 	mesh_quad.jou \
 	mesh_quad.exo \
 	pylithapp.cfg \
+	output_points.txt \
 	twoblocks.cfg \
 	twoblocks_quad.cfg \
 	twoblocks_tri.cfg \
