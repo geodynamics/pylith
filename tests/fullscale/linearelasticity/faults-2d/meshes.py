@@ -22,6 +22,7 @@ class TriGmsh(object):
     """
     ENTITIES = {
         "domain": MeshEntity(ncells=190, ncorners=3, nvertices=81+9),
+        "points": MeshEntity(ncells=3, ncorners=1, nvertices=3),
 
         # Materials
         "mat_xneg": MeshEntity(ncells=32, ncorners=3, nvertices=27),
@@ -45,6 +46,7 @@ class QuadGmsh(object):
     """
     ENTITIES = {
         "domain": MeshEntity(ncells=100, ncorners=4, nvertices=121+11),
+        "points": MeshEntity(ncells=3, ncorners=1, nvertices=3),
 
         # Materials
         "mat_xneg": MeshEntity(ncells=30, ncorners=3, nvertices=44),
@@ -68,6 +70,7 @@ class TriCubit(object):
     """
     ENTITIES = {
         "domain": MeshEntity(ncells=124, ncorners=3, nvertices=88),
+        "points": MeshEntity(ncells=3, ncorners=1, nvertices=3),
 
         # Materials
         "mat_xneg": MeshEntity(ncells=30, ncorners=3, nvertices=26),
@@ -91,6 +94,7 @@ class QuadCubit(object):
     """
     ENTITIES = {
         "domain": MeshEntity(ncells=64, ncorners=4, nvertices=90),
+        "points": MeshEntity(ncells=3, ncorners=1, nvertices=3),
 
         # Materials
         "mat_xneg": MeshEntity(ncells=16, ncorners=3, nvertices=27),
