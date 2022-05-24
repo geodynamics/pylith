@@ -268,23 +268,33 @@ pylith::topology::MeshOps::isSimplexMesh(const Mesh& mesh) {
 
     bool isSimplex = false;
 
-    const PetscDM dm = mesh.getDM();
-    PetscInt closureSize, vStart, vEnd;
-    PetscInt* closure = NULL;
     PetscErrorCode err;
-    const int dim = mesh.getDimension();
+    const PetscDM dm = mesh.getDM();
+    PetscInt vStart = 0, vEnd = 0;
     err = DMPlexGetDepthStratum(dm, 0, &vStart, &vEnd);PYLITH_CHECK_ERROR(err);
-    err = DMPlexGetTransitiveClosure(dm, 0, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
-    PetscInt numVertices = 0;
-    for (PetscInt c = 0; c < closureSize*2; c += 2) {
-        if ((closure[c] >= vStart) && (closure[c] < vEnd)) {
-            ++numVertices;
+    if (vStart != vEnd) { // Test for simplex only works if we have points.
+        PetscInt closureSize = 0;
+        PetscInt* closure = NULL;
+        const int dim = mesh.getDimension();
+
+        err = DMPlexGetTransitiveClosure(dm, 0, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+        PetscInt numVertices = 0;
+        for (PetscInt c = 0; c < closureSize*2; c += 2) {
+            if ((closure[c] >= vStart) && (closure[c] < vEnd)) {
+                ++numVertices;
+            } // if
+        } // for
+        if (numVertices == dim+1) {
+            isSimplex = PETSC_TRUE;
         } // if
-    } // for
-    if (numVertices == dim+1) {
-        isSimplex = PETSC_TRUE;
+        err = DMPlexRestoreTransitiveClosure(dm, 0, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
     } // if
-    err = DMPlexRestoreTransitiveClosure(dm, 0, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+
+    // Communicate result of isSimplex to all processes.
+    int intSimplexLocal = isSimplex ? 1 : 0;
+    int intSimplexGlobal = 0;
+    MPI_Allreduce(&intSimplexLocal, &intSimplexGlobal, 1, MPI_INT, MPI_LOR, mesh.getComm());
+    isSimplex = intSimplexGlobal == 1;
 
     PYLITH_METHOD_RETURN(isSimplex);
 } // isSimplexMesh
