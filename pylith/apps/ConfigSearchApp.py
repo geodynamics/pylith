@@ -54,6 +54,7 @@ class ConfigSearchApp():
             **kwargs) if kwargs else self._parse_command_line()
         self._set_filters(args)
 
+        display_fn = self._display_metadata_markdown if args.output_format == "markdown" else self._display_metadata_text
         for filename in sorted(pathlib.Path(args.searchpath).glob("**/*.cfg")):
             metadata = fromFile(filename)
             if metadata:
@@ -63,7 +64,7 @@ class ConfigSearchApp():
                     continue
                 filter_fn = self._apply_filters_incompatible if args.incompatible else self._apply_filters
                 if filter_fn(metadata):
-                    self._display_metadata(filename, metadata, args.display)
+                    display_fn(filename, metadata, args.display)
                 elif args.verbose:
                     print(f"MISMATCH: File {filename} did not pass metadata filter.")
             elif args.verbose:
@@ -145,7 +146,7 @@ class ConfigSearchApp():
                     return True
         return False
 
-    def _display_metadata(self, filename, metadata, options):
+    def _display_metadata_text(self, filename, metadata, options):
         """Print metadata to stdout.
 
         Args:
@@ -203,6 +204,56 @@ class ConfigSearchApp():
         if len(lines):
             print(textwrap.indent("\n".join(lines), INDENT))
 
+    def _display_metadata_markdown(self, filename, metadata, options):
+        """Write metadata to markdown files.
+
+        Args:
+            filename (str)
+                Name of simulation .cfg file.
+            metadata (pylith.utils.SimulationMetadata)
+                Simulation metadata.
+            options (list of str)
+                List of metadata to display.
+        """
+        show_all = "all" in options
+        options = string_to_list(options)
+        lines = []
+        if "description" in options or show_all:
+            if metadata.description:
+                lines += [f":Description: {metadata.description}"]
+        if "authors" in options or show_all:
+            if metadata.authors:
+                lines += [":Authors: " + ", ".join(metadata.authors)]
+        if "version" in options or show_all:
+            if metadata.version:
+                lines += [f":Version: {metadata.version}"]
+        if "pylith_version" in options or show_all:
+            if metadata.pylith_version:
+                lines += [":Requires PyLith: " + " and ".join(metadata.pylith_version)]
+        if "keywords" in options or show_all:
+            if metadata.keywords:
+                lines += [":Keywords: " + ", ".join(metadata.keywords)]
+
+        if "features" in options or show_all:
+            if metadata.features:
+                lines += ["\n**Features**\n"]
+                for feature in metadata.features:
+                    lines += [f"* {feature}"]
+
+        if "arguments" in options or show_all:
+            if metadata.arguments:
+                lines += [
+                    "\n```{code-block} console",
+                    "$ pylith " + " ".join(metadata.arguments),
+                    "```",
+                    "",
+                ]
+        if len(lines):
+            filename_out = filename.stem + "-synopsis.md"
+            with open(filename_out, "w") as fout:
+                fout.write("\n".join(lines))
+                fout.write("\n")
+
     def _parse_command_line(self):
         """Parse command line arguments.
 
@@ -232,6 +283,8 @@ class ConfigSearchApp():
                             help="PyLith version for filtering search results.")
         parser.add_argument("--incompatible", action="store_true", dest="incompatible",
                             help="Filter search results to show incompatible parameter files.")
+        parser.add_argument("--output-format", action="store", dest="output_format", 
+                            help="Output format", default="txt", choices=["text", "markdown"])
 
         args = parser.parse_args()
 
