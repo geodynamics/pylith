@@ -168,7 +168,7 @@ pylith::bc::BoundaryCondition::verifyConfiguration(const pylith::topology::Field
 
     if (!solution.hasSubfield(_subfieldName.c_str())) {
         std::ostringstream msg;
-        msg << "Cannot apply Neumann boundary condition to field '"<< _subfieldName
+        msg << "Cannot apply boundary condition to field '"<< _subfieldName
             << "'; field is not in solution.";
         throw std::runtime_error(msg.str());
     } // if
