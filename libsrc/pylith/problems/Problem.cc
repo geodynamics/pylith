@@ -44,6 +44,25 @@
 #include <typeinfo> // USES typeid()
 
 // ------------------------------------------------------------------------------------------------
+namespace pylith {
+    namespace problems {
+        class _Problem {
+public:
+
+            /** Create null space for solution subfield.
+             *
+             * @param[inout] solution Solution field.
+             * @param[in] subfieldName Name of solution subfield with null space.
+             */
+            static
+            void createNullSpace(const pylith::topology::Field* solution,
+                                 const char* subfieldName);
+
+        };
+    }
+}
+
+// ------------------------------------------------------------------------------------------------
 // Constructor
 pylith::problems::Problem::Problem() :
     _integrationData(new pylith::problems::IntegrationData),
@@ -379,6 +398,8 @@ pylith::problems::Problem::initialize(void) {
     solution->createGlobalVector();
     solution->createOutputVector();
 
+    _Problem::createNullSpace(solution, "displacement");
+
     pythia::journal::debug_t debug(PyreComponent::getName());
     if (debug.state()) {
         PYLITH_COMPONENT_DEBUG("Displaying solution field layout");
@@ -543,6 +564,38 @@ pylith::problems::Problem::_setupSolution(void) {
 
     PYLITH_METHOD_END;
 } // _setupSolution
+
+
+// ------------------------------------------------------------------------------------------------
+// Create null space for solution subfield.
+void
+pylith::problems::_Problem::createNullSpace(const pylith::topology::Field* solution,
+                                            const char* subfieldName) {
+    PYLITH_METHOD_BEGIN;
+    assert(solution);
+
+    const int spaceDim = solution->getSpaceDim();
+    const PetscInt m = (spaceDim * (spaceDim + 1)) / 2;assert(m > 0 && m <= 6);
+
+    PetscErrorCode err = 0;
+    PetscInt numDofUnconstrained = 0;
+    err = PetscSectionGetConstrainedStorageSize(solution->getLocalSection(), &numDofUnconstrained);
+    if (m > numDofUnconstrained) {
+        PYLITH_METHOD_END;
+    } // if
+
+    const PetscDM dmSoln = solution->getDM();
+    const pylith::topology::Field::SubfieldInfo info = solution->getSubfieldInfo(subfieldName);
+    MatNullSpace nullSpace = NULL;
+    err = DMPlexCreateRigidBody(dmSoln, info.index, &nullSpace);PYLITH_CHECK_ERROR(err);
+
+    PetscObject field = NULL;
+    err = DMGetField(dmSoln, NULL, NULL, &field);PYLITH_CHECK_ERROR(err);
+    err = PetscObjectCompose(field, "nearnullspace", (PetscObject) nullSpace);PYLITH_CHECK_ERROR(err);
+    err = MatNullSpaceDestroy(&nullSpace);PYLITH_CHECK_ERROR(err);
+
+    PYLITH_METHOD_END;
+} // createNullSpace
 
 
 // End of file
