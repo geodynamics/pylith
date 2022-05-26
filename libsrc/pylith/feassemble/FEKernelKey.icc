@@ -64,11 +64,29 @@ pylith::feassemble::FEKernelKey::create(PetscWeakForm weakForm,
 
 
 // ------------------------------------------------------------------------------------------------
+// Get name of label.
+inline
+const char*
+pylith::feassemble::FEKernelKey::getName(void) const {
+    return _name.c_str();
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// Get value of label.
+inline
+int
+pylith::feassemble::FEKernelKey::getValue(void) const {
+    return _value;
+}
+
+
+// ------------------------------------------------------------------------------------------------
 // Get PETSc weak form key for Jacobian.
 inline
 PetscFormKey
 pylith::feassemble::FEKernelKey::getPetscKey(const pylith::topology::Field& solution,
-                                             pylith::feassemble::Integrator::EquationPart equationPart,
+                                             const PetscInt equationPart,
                                              const char* fieldTrial,
                                              const char* fieldBasis) const {
     PetscDM dmSoln = solution.getDM();
