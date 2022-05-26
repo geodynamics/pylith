@@ -316,7 +316,7 @@ pylith::problems::GreensFns::solve(void) {
 
         // Update impulse on fault
         const PetscReal impulseReal = i + tolerance;
-        _integratorImpulses->updateState(impulseReal);
+        _integratorImpulses->setState(impulseReal);
 
         PetscErrorCode err = SNESSolve(_snes, residual->getGlobalVector(), solution->getGlobalVector());PYLITH_CHECK_ERROR(err);
 
