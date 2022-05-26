@@ -189,7 +189,7 @@ public:
      * @param[in] integrationData Data needed to integrate governing equations.
      */
     void computeRHSResidual(pylith::topology::Field* residual,
-                            const pylith::problems::IntegrationData& integrationData);
+                            const pylith::feassemble::IntegrationData& integrationData);
 
     /** Compute LHS residual for F(t,s,\dot{s}).
      *
@@ -197,7 +197,7 @@ public:
      * @param[in] integrationData Data needed to integrate governing equations.
      */
     void computeLHSResidual(pylith::topology::Field* residual,
-                            const pylith::problems::IntegrationData& integrationData);
+                            const pylith::feassemble::IntegrationData& integrationData);
 
     /** Compute LHS Jacobian and preconditioner for F(t,s,\dot{s}) with implicit time-stepping.
      *
@@ -207,7 +207,7 @@ public:
      */
     void computeLHSJacobian(PetscMat jacobianMat,
                             PetscMat precondMat,
-                            const pylith::problems::IntegrationData& integrationData);
+                            const pylith::feassemble::IntegrationData& integrationData);
 
     /** Compute inverse of lumped LHS Jacobian for F(t,s,\dot{s}) with explicit time-stepping.
      *
@@ -215,7 +215,7 @@ public:
      * @param[in] integrationData Data needed to integrate governing equations.
      */
     void computeLHSJacobianLumpedInv(pylith::topology::Field* jacobianInv,
-                                     const pylith::problems::IntegrationData& integrationData);
+                                     const pylith::feassemble::IntegrationData& integrationData);
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
 private:

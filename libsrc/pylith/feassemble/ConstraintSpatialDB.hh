@@ -70,7 +70,7 @@ public:
      *
      * @param[inout] integrationData Data needed to integrate governing equation.
      */
-    void setSolution(pylith::problems::IntegrationData* integrationData);
+    void setSolution(pylith::feassemble::IntegrationData* integrationData);
 
     // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:

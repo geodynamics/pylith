@@ -175,7 +175,7 @@ public:
     // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
 
-    pylith::problems::IntegrationData* _integrationData; /// > Data needed to integrate PDE.
+    pylith::feassemble::IntegrationData* _integrationData; /// > Data needed to integrate PDE.
 
     spatialdata::units::Nondimensional* _normalizer; ///< Nondimensionalization of scales.
     spatialdata::spatialdb::GravityField* _gravityField; ///< Gravity field.

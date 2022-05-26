@@ -23,7 +23,7 @@
 #include "pylith/feassemble/InterfacePatches.hh" // USES InterfacePatches
 #include "pylith/feassemble/DSLabelAccess.hh" // USES DSLabelAccess
 #include "pylith/problems/Physics.hh" // USES Physics
-#include "pylith/problems/IntegrationData.hh" // USES IntegrationData
+#include "pylith/feassemble/IntegrationData.hh" // USES IntegrationData
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor::optimizeClosure()
@@ -77,7 +77,7 @@ public:
             void computeResidual(pylith::topology::Field* residual,
                                  const pylith::feassemble::IntegratorInterface* integrator,
                                  pylith::feassemble::Integrator::EquationPart equationPart,
-                                 const pylith::problems::IntegrationData& integrationData);
+                                 const pylith::feassemble::IntegrationData& integrationData);
 
             /** Compute Jacobian using current kernels.
              *
@@ -92,7 +92,7 @@ public:
                                  PetscMat precondMat,
                                  const pylith::feassemble::IntegratorInterface* integrator,
                                  pylith::feassemble::Integrator::EquationPart equationPart,
-                                 const pylith::problems::IntegrationData& integrationData);
+                                 const pylith::feassemble::IntegrationData& integrationData);
 
             static const char* genericComponent;
 
@@ -359,7 +359,7 @@ pylith::feassemble::IntegratorInterface::setState(const double t) {
 // Compute RHS residual for G(t,s).
 void
 pylith::feassemble::IntegratorInterface::computeRHSResidual(pylith::topology::Field* residual,
-                                                            const pylith::problems::IntegrationData& integrationData) {
+                                                            const pylith::feassemble::IntegrationData& integrationData) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("computeRHSResidual(residual="<<residual<<", integrationData="<<integrationData.str()<<")");
     if (!_hasRHSResidual) { PYLITH_METHOD_END;}
@@ -374,7 +374,7 @@ pylith::feassemble::IntegratorInterface::computeRHSResidual(pylith::topology::Fi
 // Compute LHS residual for F(t,s,\dot{s}).
 void
 pylith::feassemble::IntegratorInterface::computeLHSResidual(pylith::topology::Field* residual,
-                                                            const pylith::problems::IntegrationData& integrationData) {
+                                                            const pylith::feassemble::IntegrationData& integrationData) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("computeLHSResidual(residual="<<residual<<", integrationData="<<integrationData.str()<<")");
     if (!_hasLHSResidual) { PYLITH_METHOD_END;}
@@ -390,7 +390,7 @@ pylith::feassemble::IntegratorInterface::computeLHSResidual(pylith::topology::Fi
 void
 pylith::feassemble::IntegratorInterface::computeLHSJacobian(PetscMat jacobianMat,
                                                             PetscMat precondMat,
-                                                            const pylith::problems::IntegrationData& integrationData) {
+                                                            const pylith::feassemble::IntegrationData& integrationData) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("computeLHSJacobian(jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", integrationData="<<integrationData.str()<<")");
 
@@ -407,7 +407,7 @@ pylith::feassemble::IntegratorInterface::computeLHSJacobian(PetscMat jacobianMat
 // Compute LHS Jacobian for F(t,s,\dot{s}).
 void
 pylith::feassemble::IntegratorInterface::computeLHSJacobianLumpedInv(pylith::topology::Field* jacobianInv,
-                                                                     const pylith::problems::IntegrationData& integrationData) {
+                                                                     const pylith::feassemble::IntegrationData& integrationData) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("computeLHSJacobianLumpedInv(jacobianInv="<<jacobianInv<<", integrationData="<<integrationData.str()<<") empty method");
 
@@ -424,7 +424,7 @@ void
 pylith::feassemble::_IntegratorInterface::computeResidual(pylith::topology::Field* residual,
                                                           const pylith::feassemble::IntegratorInterface* integrator,
                                                           pylith::feassemble::Integrator::EquationPart equationPart,
-                                                          const pylith::problems::IntegrationData& integrationData) {
+                                                          const pylith::feassemble::IntegrationData& integrationData) {
     PYLITH_METHOD_BEGIN;
     typedef InterfacePatches::keysmap_t keysmap_t;
 
@@ -437,13 +437,13 @@ pylith::feassemble::_IntegratorInterface::computeResidual(pylith::topology::Fiel
     assert(integrator);
     assert(residual);
 
-    const pylith::topology::Field* solution = integrationData.getField(pylith::problems::IntegrationData::solution);
+    const pylith::topology::Field* solution = integrationData.getField(pylith::feassemble::IntegrationData::solution);
     assert(solution);
-    const PylithReal t = integrationData.getScalar(pylith::problems::IntegrationData::time);
-    const PylithReal dt = integrationData.getScalar(pylith::problems::IntegrationData::time_step);
+    const PylithReal t = integrationData.getScalar(pylith::feassemble::IntegrationData::time);
+    const PylithReal dt = integrationData.getScalar(pylith::feassemble::IntegrationData::time_step);
     PetscVec solutionDotVec = NULL;
     if (equationPart == pylith::feassemble::Integrator::LHS) {
-        const pylith::topology::Field* solutionDot = integrationData.getField(pylith::problems::IntegrationData::solution_dot);
+        const pylith::topology::Field* solutionDot = integrationData.getField(pylith::feassemble::IntegrationData::solution_dot);
         assert(solutionDot);
         solutionDotVec = solutionDot->getLocalVector();
     } // if
@@ -488,7 +488,7 @@ pylith::feassemble::_IntegratorInterface::computeJacobian(PetscMat jacobianMat,
                                                           PetscMat precondMat,
                                                           const pylith::feassemble::IntegratorInterface* integrator,
                                                           pylith::feassemble::Integrator::EquationPart equationPart,
-                                                          const pylith::problems::IntegrationData& integrationData) {
+                                                          const pylith::feassemble::IntegrationData& integrationData) {
     PYLITH_METHOD_BEGIN;
     typedef InterfacePatches::keysmap_t keysmap_t;
 
@@ -502,13 +502,13 @@ pylith::feassemble::_IntegratorInterface::computeJacobian(PetscMat jacobianMat,
     assert(precondMat);
     assert(integrator);
 
-    const pylith::topology::Field* solution = integrationData.getField(pylith::problems::IntegrationData::solution);
+    const pylith::topology::Field* solution = integrationData.getField(pylith::feassemble::IntegrationData::solution);
     assert(solution);
-    const pylith::topology::Field* solutionDot = integrationData.getField(pylith::problems::IntegrationData::solution_dot);
+    const pylith::topology::Field* solutionDot = integrationData.getField(pylith::feassemble::IntegrationData::solution_dot);
     assert(solutionDot);
-    const PylithReal t = integrationData.getScalar(pylith::problems::IntegrationData::time);
-    const PylithReal dt = integrationData.getScalar(pylith::problems::IntegrationData::time_step);
-    const PylithReal s_tshift = integrationData.getScalar(pylith::problems::IntegrationData::s_tshift);
+    const PylithReal t = integrationData.getScalar(pylith::feassemble::IntegrationData::time);
+    const PylithReal dt = integrationData.getScalar(pylith::feassemble::IntegrationData::time_step);
+    const PylithReal s_tshift = integrationData.getScalar(pylith::feassemble::IntegrationData::s_tshift);
 
     integrator->_setKernelConstants(*solution, dt);
 

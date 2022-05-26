@@ -20,7 +20,7 @@
 
 #include "Problem.hh" // implementation of class methods
 
-#include "pylith/problems/IntegrationData.hh" // HOLDSA IntegrationData
+#include "pylith/feassemble/IntegrationData.hh" // HOLDSA IntegrationData
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // HASA Field
 #include "pylith/topology/FieldOps.hh" // USES FieldOps
@@ -65,7 +65,7 @@ public:
 // ------------------------------------------------------------------------------------------------
 // Constructor
 pylith::problems::Problem::Problem() :
-    _integrationData(new pylith::problems::IntegrationData),
+    _integrationData(new pylith::feassemble::IntegrationData),
     _normalizer(NULL),
     _gravityField(NULL),
     _observers(new pylith::problems::ObserversSoln),
@@ -219,8 +219,8 @@ pylith::problems::Problem::getSolution(void) const {
 
     assert(_integrationData);
     pylith::topology::Field* solution = NULL;
-    if (_integrationData->hasField(IntegrationData::solution)) {
-        solution = _integrationData->getField(IntegrationData::solution);
+    if (_integrationData->hasField(pylith::feassemble::IntegrationData::solution)) {
+        solution = _integrationData->getField(pylith::feassemble::IntegrationData::solution);
     } // if
 
     PYLITH_METHOD_RETURN(solution);

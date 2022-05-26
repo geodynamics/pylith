@@ -22,7 +22,7 @@
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
-#include "pylith/problems/IntegrationData.hh" // USES IntegrationData
+#include "pylith/feassemble/IntegrationData.hh" // USES IntegrationData
 #include "pylith/problems/ObserversPhysics.hh" // USES ObserversPhysics
 #include "pylith/problems/Physics.hh" // USES Physics
 
@@ -120,7 +120,7 @@ pylith::feassemble::ConstraintSpatialDB::setState(const double t) {
 // ---------------------------------------------------------------------------------------------------------------------
 // Set constrained values in solution field.
 void
-pylith::feassemble::ConstraintSpatialDB::setSolution(pylith::problems::IntegrationData* integrationData) {
+pylith::feassemble::ConstraintSpatialDB::setSolution(pylith::feassemble::IntegrationData* integrationData) {
     assert(integrationData);
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" setSolution(integrationData="<<integrationData->str()<<")");
@@ -128,9 +128,9 @@ pylith::feassemble::ConstraintSpatialDB::setSolution(pylith::problems::Integrati
     assert(_auxiliaryField);
     assert(_physics);
 
-    const pylith::topology::Field* solution = integrationData->getField(pylith::problems::IntegrationData::solution);
+    const pylith::topology::Field* solution = integrationData->getField(pylith::feassemble::IntegrationData::solution);
     assert(solution);
-    const PylithReal t = integrationData->getScalar(pylith::problems::IntegrationData::time);
+    const PylithReal t = integrationData->getScalar(pylith::feassemble::IntegrationData::time);
 
     PetscErrorCode err = 0;
     PetscDM dmSoln = solution->getDM();

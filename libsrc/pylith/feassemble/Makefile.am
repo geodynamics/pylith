@@ -29,6 +29,7 @@ subpkginclude_HEADERS = \
 	IntegratorDomain.hh \
 	IntegratorBoundary.hh \
 	IntegratorInterface.hh \
+	IntegrationData.hh \
 	InterfacePatches.hh \
 	UpdateStateVars.hh \
 	Constraint.hh \
