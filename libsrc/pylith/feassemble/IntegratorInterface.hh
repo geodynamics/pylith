@@ -155,6 +155,12 @@ public:
      */
     void setIntegrationPatches(pylith::feassemble::InterfacePatches* patches);
 
+    /** Get integration patches.
+     *
+     * @returns Interface integration patches.
+     */
+    const pylith::feassemble::InterfacePatches* getIntegrationPatches(void) const;
+
     /** Set kernels for residual.
      *
      * @param kernels Array of kernels for computing the residual.
@@ -170,6 +176,17 @@ public:
      */
     void setKernelsJacobian(const std::vector<JacobianKernels>& kernels,
                             const pylith::topology::Field& solution);
+
+    /** Compute weak form key part for face.
+     *
+     * For integration with hybrid cells, we must distinguish among integration of the
+     * negative and positive faces for each fault, the fault face as well as the residual term.
+     *
+     * @param[in] eqnPart Term in the equation.
+     * @param[in] face Negative, positive, or fault face.
+     */
+    PetscInt getWeakFormPart(const PetscInt eqnPart,
+                             const PetscInt face) const;
 
     /** Initialize integration domain, auxiliary field, and derived field. Update observers.
      *

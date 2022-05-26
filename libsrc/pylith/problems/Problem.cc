@@ -29,6 +29,8 @@
 #include "pylith/faults/FaultCohesive.hh" // USES FaultCohesive
 #include "pylith/bc/BoundaryCondition.hh" // USES BoundaryCondition
 #include "pylith/feassemble/Integrator.hh" // USES Integrator
+#include "pylith/feassemble/IntegratorDomain.hh" // USES IntegratorDomain
+#include "pylith/feassemble/IntegratorInterface.hh" // USES IntegratorInterface
 #include "pylith/feassemble/Constraint.hh" // USES Constraint
 #include "pylith/problems/ObserversSoln.hh" // USES ObserversSoln
 #include "pylith/topology/MeshOps.hh" // USES MeshOps
@@ -57,6 +59,22 @@ public:
             static
             void createNullSpace(const pylith::topology::Field* solution,
                                  const char* subfieldName);
+
+            /** Set data needed to integrate domain faces on interior interface.
+             *
+             * @param[inout] solution Solution field.
+             * @param[in] integrators Array of integrators for problem.
+             */
+            static
+            void setInterfaceData(const pylith::topology::Field* solution,
+                                  std::vector<pylith::feassemble::Integrator*>& integrators);
+
+            /** Get subset of integrators matching template type T.
+             *
+             * @param[in] Array of integrators for problem
+             * @returns Array of integrators of type T.
+             */
+            template<class T> static std::vector<T*> subset(const std::vector<pylith::feassemble::Integrator*>& integrators);
 
         };
     }
@@ -399,6 +417,7 @@ pylith::problems::Problem::initialize(void) {
     solution->createOutputVector();
 
     _Problem::createNullSpace(solution, "displacement");
+    _Problem::setInterfaceData(solution, _integrators);
 
     pythia::journal::debug_t debug(PyreComponent::getName());
     if (debug.state()) {
@@ -590,12 +609,59 @@ pylith::problems::_Problem::createNullSpace(const pylith::topology::Field* solut
     err = DMPlexCreateRigidBody(dmSoln, info.index, &nullSpace);PYLITH_CHECK_ERROR(err);
 
     PetscObject field = NULL;
-    err = DMGetField(dmSoln, NULL, NULL, &field);PYLITH_CHECK_ERROR(err);
+    err = DMGetField(dmSoln, info.index, NULL, &field);PYLITH_CHECK_ERROR(err);
     err = PetscObjectCompose(field, "nearnullspace", (PetscObject) nullSpace);PYLITH_CHECK_ERROR(err);
     err = MatNullSpaceDestroy(&nullSpace);PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // createNullSpace
+
+
+// ------------------------------------------------------------------------------------------------
+// Set data needed to integrate domain faces on interior interface.
+void
+pylith::problems::_Problem::setInterfaceData(const pylith::topology::Field* solution,
+                                             std::vector<pylith::feassemble::Integrator*>& integrators) {
+    PYLITH_METHOD_BEGIN;
+
+    const std::vector<pylith::feassemble::IntegratorDomain*>& integratorsDomain =
+        subset<pylith::feassemble::IntegratorDomain>(integrators);
+    const std::vector<pylith::feassemble::IntegratorInterface*>& integratorsInterface =
+        subset<pylith::feassemble::IntegratorInterface>(integrators);
+
+    for (size_t i = 0; i < integratorsDomain.size(); ++i) {
+        integratorsDomain[i]->setInterfaceData(solution, integratorsInterface);
+    } // for
+
+    PYLITH_METHOD_END;
+} // setInterfaceData
+
+
+// ------------------------------------------------------------------------------------------------
+// Get subset of integrators matching template type T.
+template<class T>
+std::vector<T*>
+pylith::problems::_Problem::subset(const std::vector<pylith::feassemble::Integrator*>& integrators) {
+    // Count number of matches
+    size_t numFound = 0;
+    for (size_t i = 0; i < integrators.size(); ++i) {
+        if (dynamic_cast<T*>(integrators[i])) {
+            numFound++;
+        } // if/else
+    } // for
+
+    // Collect matches
+    std::vector<T*> matches(numFound);
+    size_t index = 0;
+    for (size_t i = 0; i < integrators.size(); ++i) {
+        T* integrator = dynamic_cast<T*>(integrators[i]);
+        if (integrator) {
+            matches[index++] = integrator;
+        } // if/else
+    } // for
+
+    return matches;
+} // subset
 
 
 // End of file
