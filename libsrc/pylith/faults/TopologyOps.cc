@@ -197,7 +197,7 @@ pylith::faults::TopologyOps::create(pylith::topology::Mesh* mesh,
         for (PetscInt cell = cStart; cell < cEnd; ++cell, ++cMax) {
             if (pylith::topology::MeshOps::isCohesiveCell(sdm, cell)) { break; }
         }
-        assert(cEnd > cMax + numCohesiveCellsOld);
+        assert(cStart == cEnd || cEnd > cMax + numCohesiveCellsOld);
         for (PetscInt cell = cMax; cell < cEnd - numCohesiveCellsOld; ++cell) {
             PetscInt onBd;
 

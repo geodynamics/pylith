@@ -242,8 +242,11 @@ pylith::meshio::MeshIO::_getCells(int_array* cells,
 void
 pylith::meshio::MeshIO::_setMaterials(const int_array& materialIds) {
     PYLITH_METHOD_BEGIN;
-
     assert(_mesh);
+
+    PetscDM dmMesh = _mesh->getDM();assert(dmMesh);
+    PetscErrorCode err = 0;
+    const char* const labelName = pylith::topology::Mesh::cells_label_name;
 
     if (!_mesh->getCommRank()) {
         PetscDM dmMesh = _mesh->getDM();assert(dmMesh);
@@ -257,12 +260,12 @@ pylith::meshio::MeshIO::_setMaterials(const int_array& materialIds) {
                 << materialIds.size() << ") and number of cells in mesh ("<< (cEnd - cStart) << ").";
             throw std::runtime_error(msg.str());
         } // if
-        PetscErrorCode err = 0;
-        const char* const labelName = pylith::topology::Mesh::cells_label_name;
         for (PetscInt c = cStart; c < cEnd; ++c) {
             err = DMSetLabelValue(dmMesh, labelName, c, materialIds[c-cStart]);PYLITH_CHECK_ERROR(err);
         } // for
-    } // if
+    } else {
+        err = DMCreateLabel(dmMesh, labelName);PYLITH_CHECK_ERROR(err);
+    } // if/else
 
     PYLITH_METHOD_END;
 } // _setMaterials

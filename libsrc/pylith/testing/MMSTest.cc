@@ -78,8 +78,13 @@ pylith::testing::MMSTest::testDiscretization(void) {
 
     _initialize();
 
+    pythia::journal::debug_t debug(GenericComponent::getName());
     CPPUNIT_ASSERT(_problem);
     const pylith::topology::Field* solution = _problem->getSolution();CPPUNIT_ASSERT(solution);
+    if (debug.state()) {
+        solution->view("Solution field layout", pylith::topology::Field::VIEW_LAYOUT);
+    } // if
+
     PetscErrorCode err = 0;
     const PylithReal tolerance = -1.0, t = 0.0;
     const pylith::string_vector subfieldNames = solution->getSubfieldNames();
@@ -88,6 +93,10 @@ pylith::testing::MMSTest::testDiscretization(void) {
     err = DMSNESCheckDiscretization(_problem->getPetscSNES(), _problem->getPetscDM(), t, _solutionExactVec,
                                     tolerance, &error[0]);
     CPPUNIT_ASSERT(!err);
+
+    if (debug.state()) {
+        solution->view("Solution field");
+    } // if
 
     bool fail = false;
     std::ostringstream msg;
@@ -125,27 +134,20 @@ pylith::testing::MMSTest::testResidual(void) {
     _initialize();
 
     CPPUNIT_ASSERT(_problem);
-    const pylith::topology::Field* solution = _problem->getSolution();CPPUNIT_ASSERT(solution);
-    if (debug.state()) {
-        solution->view("Solution field layout", pylith::topology::Field::VIEW_LAYOUT);
-    } // if
-
-    CPPUNIT_ASSERT(_problem);
     CPPUNIT_ASSERT(_solutionExactVec);
     CPPUNIT_ASSERT(_solutionDotExactVec);
-    const PylithReal tolerance = -1.0;
+    PylithReal tolerance = -1.0;
     PylithReal norm = 0.0;
     err = DMTSCheckResidual(_problem->getPetscTS(), _problem->getPetscDM(), _problem->getStartTime(), _solutionExactVec,
                             _solutionDotExactVec, tolerance, &norm);
-    if (debug.state()) {
-        solution->view("Solution field");
-    } // if
     if (!_allowZeroResidual) {
         CPPUNIT_ASSERT_MESSAGE("L2 normal of residual is exactly zero, which suggests suspicious case with all residual "
                                "entries exactly zero.",
                                norm > 0.0);
     } // if
-    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test of F(s) - G(s) == 0 failed.", 0.0, norm, 1.0e-10);
+
+    tolerance = 1.0e-10;
+    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test of F(s) - G(s) == 0 failed.", 0.0, norm, tolerance);
 
     PYLITH_METHOD_END;
 } // testResidual

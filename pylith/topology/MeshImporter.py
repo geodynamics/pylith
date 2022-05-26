@@ -101,7 +101,6 @@ class MeshImporter(MeshGenerator):
         if comm.size > 1:
             if 0 == comm.rank:
                 self._info.log("Distributing mesh.")
-            self.distributor.initialize()
             mesh = self.distributor.distribute(mesh, problem.normalizer)
             if self.debug:
                 mesh.view()
