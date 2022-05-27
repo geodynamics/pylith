@@ -131,7 +131,19 @@ class TimeDependent(Problem, ModuleTimeDependent):
         if 0 == comm.rank:
             self._info.log("Solving problem.")
 
-        ModuleTimeDependent.solve(self)
+        from pythia.pyre.units.time import second
+        finalTime = ModuleTimeDependent.solve(self)*second
+        return finalTime
+
+    def updateStartEndTimes(self, startTime, endTime):
+        self.startTime = startTime
+        self.endTime = endTime
+
+        ModuleTimeDependent.setStartTime(self, startTime.value)
+        ModuleTimeDependent.setEndTime(self, endTime.value)
+        ModuleTimeDependent.updateTimes(self)
+
+    # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
         """Set members based using inventory.

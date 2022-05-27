@@ -60,6 +60,16 @@ public:
              * @returns End time (seconds).
              */
             double getEndTime(void) const;
+            
+            /** Update start and end times in ts.
+             *
+             */
+            void updateTimes();
+
+            /** Update start and end times in ts.
+             *
+             */
+            void updateTimes();
 
             /** Set maximum number of time steps.
              *
@@ -112,7 +122,7 @@ public:
 
             /** Solve time dependent problem.
              */
-            void solve(void);
+            double solve(void);
 
             /** Perform Perform operations after advancing solution one time step.
              *

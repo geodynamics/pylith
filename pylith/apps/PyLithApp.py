@@ -24,6 +24,7 @@ def problemFactory(name):
     return facility(name, family="problem", factory=TimeDependent)
 
 
+
 class PyLithApp(PetscApplication):
     """Python PyLithApp application.
     """
@@ -55,6 +56,16 @@ class PyLithApp(PetscApplication):
         "problems", itemFactory=problemFactory, factory=SingleProblem)
     problems.meta['tip'] = "Computational problem(s) to solve."
     
+    maxNumIterations = pythia.pyre.inventory.int("max_num_iterations", default=1)
+    maxNumIterations.meta['tip'] = "Specifies number of times to cycle over all problems."
+
+    from pythia.pyre.units.time import year
+    startTime = pythia.pyre.inventory.dimensional("start_time", default=0.0 * year)
+    startTime.meta['tip'] = "Overarching start time for problem(s)."
+
+    endTime = pythia.pyre.inventory.dimensional("end_time", default=0.5 * year,
+                                         validator=pythia.pyre.inventory.greaterEqual(0.0 * year))
+    endTime.meta['tip'] = "Overarching end time for problem(s)."
 
     def __init__(self, name="pylithapp"):
         """Constructor.
@@ -107,16 +118,40 @@ class PyLithApp(PetscApplication):
         if self.initializeOnly:
             return
 
-        # Cycle over all problems
-        # TODO: load numIterations from input file
-        # TODO: add control over integration time (start and end times)
-        numIterations = 1 # number of earthquake cycles !!! later import this from an input file
-        count = 0
-        while count < numIterations:
+        # If only 1 problem, set problem start and end time to application start and end time
+        problemCount = len(self.problems.components())
+        if problemCount == 1:
+            problem = self.problems.components()[0]
+            problem.updateStartEndTimes(self.startTime,self.endTime)
+
+
+        # Cycle over all problems, stopping if either maxNumIterations or endTime is reached
+        prevEndTime = self.startTime
+        numIts = 0
+        while numIts < self.maxNumIterations and prevEndTime < self.endTime:
+            problemNum = 0
             for problem in self.problems.components():
-                problem.run()
+
+                problemTimeRange = problem.endTime - problem.startTime
+
+                # Update current problem's start/end times to reflect global start/end times
+                currStartTime = prevEndTime
+                currEndTime = min(currStartTime + problemTimeRange,self.endTime)
+                problem.updateStartEndTimes(currStartTime,currEndTime)
+
+                currEndTime = problem.run()
                 self._debug.log(resourceUsageString())
-            count += 1
+
+                prevEndTime = currEndTime
+
+                # If globalEndTime reached, exit rather than looping over full problem list
+                if currEndTime >= self.endTime:
+                    break
+                
+                problemNum += 1
+
+            numIts += 1
+
 
         # Cleanup
         self._eventLogger.stagePush("Finalize")
@@ -220,13 +255,13 @@ class PyLithApp(PetscApplication):
         msg = (
             "\nExamples using step01.cfg in directory examples/3d/hex8):\n"
             "1. List components and properties for a given component (--help)\n"
-            "  pylith step01.cfg --problem.bc.z_neg.help\n"
+            "  pylith step01.cfg --problems.problems.problem.bc.z_neg.help\n"
             "\n"
             "2. List components of a given component (--help-components)\n"
-            "  pylith step01.cfg --problem.bc.z_neg.help-components\n"
+            "  pylith step01.cfg --problems.problems.problem.bc.z_neg.help-components\n"
             "\n"
             "3. List properties of a given component (--help-properties)\n"
-            "  pylith step01.cfg --problem.bc.z_neg.help-properties\n"
+            "  pylith step01.cfg --problems.problems.problem.bc.z_neg.help-properties\n"
         )
         if self.inventory.usage:
             print(msg)

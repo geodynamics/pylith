@@ -46,9 +46,13 @@ p_vp = 5291.502622129181
 p_mu = p_density * p_vs**2
 p_lambda = p_density * p_vp**2 - 2 * p_mu
 
+# Induced Shear Strain
+gamma = 2/8000
+maxX = 4000
+
 # Uniform stress field (plane strain)
 sxx = 0.0
-sxy = 0.0
+sxy = p_mu * gamma
 syy = 0.0
 szz = p_lambda / (2 * p_lambda + 2 * p_mu) * (sxx + syy)
 
@@ -59,9 +63,8 @@ ezz = 1.0 / (2 * p_mu) * (szz - p_lambda / (3 * p_lambda + 2 * p_mu) * (sxx + sy
 exy = 1.0 / (2 * p_mu) * (sxy)
 
 # Time steps
-ts = 0.5  # year
-nts = 3
-tsteps = numpy.arange(0, ts * nts, ts) # yaer
+dt = 0.25  # (years) time step size
+tsteps = numpy.arange(dt, 1.0+dt, dt) # (year) list of time steps
 
 # ----------------------------------------------------------------------
 class AnalyticalSoln(object):
@@ -82,12 +85,12 @@ class AnalyticalSoln(object):
         }
         return
 
-    def getField(self, name, pts):
+    def getField(self, name, mesh_entity, pts):
         return self.fields[name](pts)
 
-    def getMask(self, name, pts):
+    def getMask(self, fieldName, mesh_entity, pts):
         mask = None
-        if name == "displacement":
+        if fieldName == "displacement":
             mask = pts[:, 0] == 0.0
         return mask
     
@@ -104,13 +107,15 @@ class AnalyticalSoln(object):
 
         maskN = locs[:, 0] < 0
         maskP = locs[:, 0] > 0
+        locs_ratio = numpy.absolute(locs[:, 0] / maxX)
 
         t_track = 0
         for t in tsteps:
             if t < 0.0:
                 disp[t_track, :, 1] = 0.0
             else:
-                disp[t_track, :, 1] = (+1.0 * maskN - 1.0 * maskP) * t_track/(ntpts-1)
+                #disp[t_track, :, 1] = (+1.0 * maskN - 1.0 * maskP) * locs_ratio * t_track/(ntpts-1)
+                disp[t_track, :, 1] = (+1.0 * maskN - 1.0 * maskP) * locs_ratio * t
 
             t_track += 1
 
@@ -142,11 +147,21 @@ class AnalyticalSoln(object):
         """
         (npts, dim) = locs.shape
         strain = numpy.zeros((ntpts, npts, self.TENSOR_SIZE), dtype=numpy.float64)
+    
+        t_track = 0
+        for t in tsteps:
+            if t < 0.0:
+                strain[:,:, 0] = 0.0
+                strain[:,:, 1] = 0.0
+                strain[:,:, 2] = 0.0
+                strain[:,:, 3] = 0.0
+            else:
+                strain[:,:, 0] = exx * t_track/(ntpts-1)
+                strain[:,:, 1] = eyy * t_track/(ntpts-1)
+                strain[:,:, 2] = ezz * t_track/(ntpts-1)
+                strain[:,:, 3] = exy * t_track/(ntpts-1)
 
-        strain[:,:, 0] = exx
-        strain[:,:, 1] = eyy
-        strain[:,:, 2] = ezz
-        strain[:,:, 3] = exy
+            t_track += 1
 
         return strain
 
@@ -156,10 +171,20 @@ class AnalyticalSoln(object):
         (npts, dim) = locs.shape
         stress = numpy.zeros((ntpts, npts, self.TENSOR_SIZE), dtype=numpy.float64)
     
-        stress[:,:, 0] = sxx
-        stress[:,:, 1] = syy
-        stress[:,:, 2] = szz
-        stress[:,:, 3] = sxy
+        t_track = 0
+        for t in tsteps:
+            if t < 0.0:
+                stress[:,:, 0] = 0.0
+                stress[:,:, 1] = 0.0
+                stress[:,:, 2] = 0.0
+                stress[:,:, 3] = 0.0
+            else:
+                stress[:,:, 0] = sxx * t_track/(ntpts-1)
+                stress[:,:, 1] = syy * t_track/(ntpts-1)
+                stress[:,:, 2] = szz * t_track/(ntpts-1)
+                stress[:,:, 3] = sxy * t_track/(ntpts-1)
+
+            t_track += 1
 
         return stress
 

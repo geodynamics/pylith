@@ -24,8 +24,8 @@ dist_check_SCRIPTS = test_pylith.py
 dist_noinst_PYTHON = \
 	meshes.py \
 	TestIndependent.py \
-	simple_shear_soln.py \
-	rigid_sliding_soln.py
+	simpleshear_soln.py \
+	rigidsliding_soln.py
 
 dist_noinst_DATA = \
 	geometry.jou \

@@ -68,6 +68,11 @@ public:
      */
     double getEndTime(void) const;
 
+    /** Update start and end times in ts.
+     *
+     */
+    void updateTimes(void);
+
     /** Set maximum number of time steps.
      *
      * @param[in] value Maximum number of time steps.
@@ -140,7 +145,7 @@ public:
 
     /** Solve time dependent problem.
      */
-    void solve(void);
+    double solve(void);
 
     /** Perform Perform operations after advancing solution one time step.
      *

@@ -213,11 +213,7 @@ class Problem(PetscComponent, ModuleProblem):
         comm = mpi_comm_world()
         if 0 == comm.rank:
             self._info.log("Finalizing problem.")
-<<<<<<< HEAD
-=======
         del self.mesh
-        return
->>>>>>> e37954541... Update tests/fullscale/linearelasticity/nofaults-2d/axialdisp for problems facility array.
 
     def checkpoint(self):
         """Save problem state for restart.

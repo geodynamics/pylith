@@ -24,7 +24,6 @@ import unittest
 from pylith.testing.FullTestApp import (FullTestCase, Check, check_data)
 
 import meshes
-import simpleshear_soln
 import rigidsliding_soln
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -33,69 +32,32 @@ class TestCase(FullTestCase):
     def setUp(self):
         defaults = {
             "filename": "output/{name}-{mesh_entity}.h5",
-            "exact_soln": simpleshear_soln.AnalyticalSoln(),
+            "exact_soln": rigidsliding_soln.AnalyticalSoln(),
             "mesh": self.mesh,
         }
         self.checks = [
-            # #check simpleshear
             Check(
                 mesh_entities=["domain", "bc_ypos"],
                 vertex_fields=["displacement"],
-                filename="output/simpleshear_{name}-{mesh_entity}.h5",
-                exact_soln=simpleshear_soln.AnalyticalSoln(),
                 defaults=defaults,
             ),
             Check(
                 mesh_entities=["elastic_xpos", "elastic_xneg"],
-                filename="output/simpleshear_{name}-{mesh_entity}_info.h5",
+                filename="output/{name}-{mesh_entity}_info.h5",
                 cell_fields = ["density", "bulk_modulus", "shear_modulus"],
-                exact_soln=simpleshear_soln.AnalyticalSoln(),
                 defaults=defaults,
             ),
             Check(
                 mesh_entities=["bc_xneg", "bc_xpos"],
-                filename="output/simpleshear_{name}-{mesh_entity}_info.h5",
+                filename="output/{name}-{mesh_entity}_info.h5",
                 vertex_fields=["initial_amplitude"],
-                exact_soln=simpleshear_soln.AnalyticalSoln(),
                 defaults=defaults,
             ),
             Check(
                 mesh_entities=["bc_xneg", "bc_xpos"],
-                filename="output/simpleshear_{name}-{mesh_entity}.h5",
                 vertex_fields=["displacement"],
-                exact_soln=simpleshear_soln.AnalyticalSoln(),
                 defaults=defaults,
-            ),
-                        
-            #check rigidsliding
-            Check(
-                mesh_entities=["domain", "bc_ypos"],
-                vertex_fields=["displacement"],
-                filename="output/rigidsliding_{name}-{mesh_entity}.h5",
-                exact_soln=rigidsliding_soln.AnalyticalSoln(),
-                defaults=defaults,
-            ),
-            Check(
-                mesh_entities=["elastic_xpos", "elastic_xneg"],
-                filename="output/rigidsliding_{name}-{mesh_entity}_info.h5",
-                cell_fields = ["density", "bulk_modulus", "shear_modulus"],
-                exact_soln=rigidsliding_soln.AnalyticalSoln(),
-                defaults=defaults,
-            ),
-            Check(
-                mesh_entities=["bc_xneg", "bc_xpos"],
-                filename="output/rigidsliding_{name}-{mesh_entity}_info.h5",
-                vertex_fields=["initial_amplitude"],
-                exact_soln=rigidsliding_soln.AnalyticalSoln(),
-                defaults=defaults,
-            ),
-            Check(
-                mesh_entities=["bc_xneg", "bc_xpos"],
-                filename="output/rigidsliding_{name}-{mesh_entity}.h5",
-                vertex_fields=["displacement"],
-                exact_soln=rigidsliding_soln.AnalyticalSoln(),
-                defaults=defaults,
-            ),
+            )
         ]
 
     def run_pylith(self, testName, args):
@@ -105,11 +67,11 @@ class TestCase(FullTestCase):
 class TestQuad(TestCase):
 
     def setUp(self):
-        self.name = "quad"
-        self.mesh = meshes.Quad
+        self.name = "rigidsliding_quad"
+        self.mesh = meshes.Quad()
         super().setUp()
 
-        TestCase.run_pylith(self, self.name, ["independent.cfg", "independent_quad.cfg"])
+        TestCase.run_pylith(self, self.name, ["rigidsliding.cfg", "rigidsliding_quad.cfg"])
         return
 
 
@@ -117,11 +79,12 @@ class TestQuad(TestCase):
 class TestTri(TestCase):
 
     def setUp(self):
-        self.name = "tri"
-        self.mesh = meshes.Tri
+        #self.name = "{problem}_tri"
+        self.name = "rigidsliding_tri"
+        self.mesh = meshes.Tri()
         super().setUp()
 
-        TestCase.run_pylith(self, self.name, ["independent.cfg", "independent_tri.cfg"])
+        TestCase.run_pylith(self, self.name, ["rigidsliding.cfg", "rigidsliding_tri.cfg"])
         return
 
 

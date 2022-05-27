@@ -137,6 +137,23 @@ pylith::problems::TimeDependent::getEndTime(void) const {
     return _endTime;
 } // getEndTime
 
+// ---------------------------------------------------------------------------------------------------------------------
+// Update start and end time in TS
+void
+pylith::problems::TimeDependent::updateTimes(void)
+{
+    PYLITH_METHOD_BEGIN;
+
+    assert(_ts);
+    assert(_normalizer);
+    const PylithReal timeScale = _normalizer->getTimeScale();
+    PetscErrorCode err = TSSetTime(_ts, _startTime / timeScale);PYLITH_CHECK_ERROR(err);
+    err = TSSetMaxTime(_ts, _endTime / timeScale);PYLITH_CHECK_ERROR(err);
+    err = TSSetFromOptions(_ts);PYLITH_CHECK_ERROR(err);
+    err = TSSetUp(_ts);PYLITH_CHECK_ERROR(err);
+
+    PYLITH_METHOD_END;
+} // updateTimes
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Set maximum number of time steps.
@@ -419,14 +436,25 @@ pylith::problems::TimeDependent::initialize(void) {
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Solve time-dependent problem.
-void
+double
 pylith::problems::TimeDependent::solve(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("solve()");
 
+    if (_shouldNotifyIC) {
+        _notifyObserversInitialSoln();
+    } // if
+
     PetscErrorCode err = TSSolve(_ts, NULL);PYLITH_CHECK_ERROR(err);
 
-    PYLITH_METHOD_END;
+    double finalTime = 0.;
+    err = TSGetSolveTime(_ts, &finalTime);
+    PYLITH_CHECK_ERROR(err);
+    assert(_normalizer);
+    const PylithReal timeScale = _normalizer->getTimeScale();
+    finalTime = finalTime * timeScale;
+
+    PYLITH_METHOD_RETURN(finalTime);
 } // solve
 
 
