@@ -65,7 +65,7 @@ protected:
     // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
 
-    pylith::faults::FaultCohesiveKin* _fault; ///< Fault test subject.
+    std::vector<pylith::faults::FaultCohesive*> _faults; ///< Faults.
     std::vector<pylith::materials::Material*> _materials; ///< Elastic materials.
     std::vector<pylith::bc::BoundaryCondition*> _bcs; ///< Boundary conditions.
     TestFaultKin_Data* _data; ///< Test parameters.

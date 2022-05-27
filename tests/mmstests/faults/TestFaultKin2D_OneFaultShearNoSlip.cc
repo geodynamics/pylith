@@ -16,11 +16,10 @@
 // ----------------------------------------------------------------------
 //
 
-/** @file tests/mmstests/faults/TestFaultKin2D_RigidBlocksStatic.cc
+/** @file tests/mmstests/faults/TestFaultKin2D_OneFaultShearNoSlip.cc
  *
- * Square domain of sides 8.0 km with a through-going fault running
- * through the center in the y-direction. The two opposing sides each
- * move as rigid blocks with 3.0 m of right-lateral slip.
+ * Square domain of sides 12.0 km with a single through-going fault at y=+2 km.
+ * Simple shear with no slip.
  */
 
 #include <portinfo>
@@ -33,6 +32,7 @@
 #include "pylith/materials/Elasticity.hh" // USES Elasticity
 #include "pylith/materials/IsotropicLinearElasticity.hh" // USES IsotropicLinearElasticity
 #include "pylith/bc/DirichletUserFn.hh" // USES DirichletUserFn
+#include "pylith/bc/NeumannUserFn.hh" // USES NeumannUserFn
 
 #include "pylith/topology/Mesh.hh" // USES pylith::topology::Mesh::cells_label_name
 #include "pylith/topology/Field.hh" // USES pylith::topology::Field::Discretization
@@ -44,22 +44,22 @@
 
 namespace pylith {
     namespace mmstests {
-        class TestFaultKin2D_RigidBlocksStatic;
+        class TestFaultKin2D_OneFaultShearNoSlip;
 
-        class TestFaultKin2D_RigidBlocksStatic_TriP1;
-        class TestFaultKin2D_RigidBlocksStatic_TriP2;
-        class TestFaultKin2D_RigidBlocksStatic_TriP3;
-        class TestFaultKin2D_RigidBlocksStatic_TriP4;
+        class TestFaultKin2D_OneFaultShearNoSlip_TriP1;
+        class TestFaultKin2D_OneFaultShearNoSlip_TriP2;
+        class TestFaultKin2D_OneFaultShearNoSlip_TriP3;
+        class TestFaultKin2D_OneFaultShearNoSlip_TriP4;
 
-        class TestFaultKin2D_RigidBlocksStatic_QuadQ1;
-        class TestFaultKin2D_RigidBlocksStatic_QuadQ2;
-        class TestFaultKin2D_RigidBlocksStatic_QuadQ3;
-        class TestFaultKin2D_RigidBlocksStatic_QuadQ4;
+        class TestFaultKin2D_OneFaultShearNoSlip_QuadQ1;
+        class TestFaultKin2D_OneFaultShearNoSlip_QuadQ2;
+        class TestFaultKin2D_OneFaultShearNoSlip_QuadQ3;
+        class TestFaultKin2D_OneFaultShearNoSlip_QuadQ4;
     } // tests/mmstests
 } // pylith
 
 // ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::TestFaultKin2D_RigidBlocksStatic :
+class pylith::mmstests::TestFaultKin2D_OneFaultShearNoSlip :
     public pylith::mmstests::TestFaultKin {
     // Spatial database user functions for auxiiliary subfields (includes derived fields).
 
@@ -113,7 +113,7 @@ class pylith::mmstests::TestFaultKin2D_RigidBlocksStatic :
 
     static double finalslip_leftlateral(const double x,
                                         const double y) {
-        return -1.5;
+        return 0.0;
     } // slip_leftlateral
 
     static const char* slip_units(void) {
@@ -121,23 +121,32 @@ class pylith::mmstests::TestFaultKin2D_RigidBlocksStatic :
     } // slip_units
 
     // Solution subfields.
+    static double strain_xx(void) {
+        return 0.0;
+    } // strain_xx
+
+    static double strain_yy(void) {
+        return 0.0;
+    } // strain_yy
+
+    static double strain_xy(void) {
+        return 0.3;
+    } // strain_xy
 
     // Displacement
     static double disp_x(const double x,
                          const double y) {
-        return 0.0;
+        return strain_xx()*x + strain_xy()*y;
     } // disp_x
 
     static double disp_y(const double x,
-                         const double y,
-                         PetscInt flag) {
-        const double disp = 0.75e-3;
-        if (!flag) {
-            return x < 0.0 ? +disp : -disp;
-        } else {
-            return flag < 0 ? +disp : -disp;
-        } // if/else
+                         const double y) {
+        return strain_xy()*x + strain_yy()*y;
     } // disp_y
+
+    static const char* disp_units(void) {
+        return "m";
+    } // disp_units
 
     static double faulttraction_x(const double x,
                                   const double y) {
@@ -146,8 +155,40 @@ class pylith::mmstests::TestFaultKin2D_RigidBlocksStatic :
 
     static double faulttraction_y(const double x,
                                   const double y) {
-        return 0.0;
+        const double mu = density(x, y) * vs(x, y) * vs(x, y);
+
+        return -strain_xy() * 2.0 * mu / 2.25e+10;
     } // faulttraction_y
+
+    static
+    void boundary_tractions(const PylithInt dim,
+                            const PylithInt numS,
+                            const PylithInt numA,
+                            const PylithInt sOff[],
+                            const PylithInt sOff_x[],
+                            const PylithScalar s[],
+                            const PylithScalar s_t[],
+                            const PylithScalar s_x[],
+                            const PylithInt aOff[],
+                            const PylithInt aOff_x[],
+                            const PylithScalar a[],
+                            const PylithScalar a_t[],
+                            const PylithScalar a_x[],
+                            const PylithReal t,
+                            const PylithReal x[],
+                            const PylithReal n[],
+                            const PylithInt numConstants,
+                            const PylithScalar constants[],
+                            PylithScalar r0[]) {
+        assert(r0);
+        const double mu = density(x[0], x[1]) * vs(x[0], x[1]) * vs(x[0], x[1]);
+
+        const PylithScalar tanDir[2] = {-n[1], n[0] };
+        const PylithScalar tractionShear = -strain_xy() * 2.0 * mu / 2.25e+10;
+        const PylithScalar tractionNormal = 0.0;
+        r0[0] += tractionShear*tanDir[0] + tractionNormal*n[0];
+        r0[0] += tractionShear*tanDir[1] + tractionNormal*n[1];
+    } // boundary_tractions
 
     static PetscErrorCode solnkernel_disp(PetscInt spaceDim,
                                           PetscReal t,
@@ -161,26 +202,7 @@ class pylith::mmstests::TestFaultKin2D_RigidBlocksStatic :
         CPPUNIT_ASSERT(s);
 
         s[0] = disp_x(x[0], x[1]);
-        PetscInt flag = 0;
-        if (context) {
-            PetscInt cell = 0;
-            DMPolytopeType cellType = DM_POLYTOPE_UNKNOWN;
-            DMPlexGetActivePoint((PetscDM) context, &cell);
-            DMPlexGetCellType((PetscDM) context, cell, &cellType);
-            PetscInt numCellsLeftFault = 0;
-            switch (cellType) {
-            case DM_POLYTOPE_TRIANGLE:
-                numCellsLeftFault = 4;
-                break;
-            case DM_POLYTOPE_QUADRILATERAL:
-                numCellsLeftFault = 2;
-                break;
-            default:
-                CPPUNIT_FAIL("Unknown cell type in solution displacement kernel.");
-            }
-            flag = cell < numCellsLeftFault ? -1 : +1;
-        } // if
-        s[1] = disp_y(x[0], x[1], flag);
+        s[1] = disp_y(x[0], x[1]);
 
         return 0;
     } // solnkernel_disp
@@ -208,7 +230,7 @@ protected:
         TestFaultKin::setUp();
 
         // Overwrite component name for control of journals at test level.
-        GenericComponent::setName("TestFaultKin2D_RigidBlocksStatic");
+        GenericComponent::setName("TestFaultKin2D_OneFaultShearNoSlip");
 
         CPPUNIT_ASSERT(!_data);
         _data = new TestFaultKin_Data();CPPUNIT_ASSERT(_data);
@@ -269,7 +291,7 @@ protected:
         _data->faultAuxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_faultAuxDiscretizations);
 
         // Materials
-        _materials.resize(2);
+        _materials.resize(3);
         { // xneg
             pylith::materials::Elasticity* material = new pylith::materials::Elasticity();assert(material);
             material->setFormulation(pylith::problems::Physics::QUASISTATIC);
@@ -279,7 +301,7 @@ protected:
             material->setBulkRheology(_data->rheology);
             _materials[0] = material;
         } // xneg
-        { // xpos
+        { // mid
             pylith::materials::Elasticity* material = new pylith::materials::Elasticity();assert(material);
             material->setFormulation(pylith::problems::Physics::QUASISTATIC);
             material->useBodyForce(false);
@@ -287,20 +309,21 @@ protected:
             material->setLabelValue(20);
             material->setBulkRheology(_data->rheology);
             _materials[1] = material;
+        } // mid
+        { // xpos
+            pylith::materials::Elasticity* material = new pylith::materials::Elasticity();assert(material);
+            material->setFormulation(pylith::problems::Physics::QUASISTATIC);
+            material->useBodyForce(false);
+            material->setDescription("Isotropic Linear Elascitity Plane Strain");
+            material->setLabelValue(15);
+            material->setBulkRheology(_data->rheology);
+            _materials[2] = material;
         } // xpos
 
+        // Boundary conditions
         static const PylithInt constrainedDOF[2] = {0, 1};
         static const PylithInt numConstrained = 2;
-        _bcs.resize(2);
-        { // boundary_xpos
-            pylith::bc::DirichletUserFn* bc = new pylith::bc::DirichletUserFn();
-            bc->setSubfieldName("displacement");
-            bc->setLabelName("boundary_xpos");
-            bc->setLabelValue(1);
-            bc->setConstrainedDOF(constrainedDOF, numConstrained);
-            bc->setUserFn(solnkernel_disp);
-            _bcs[0] = bc;
-        } // boundary_xpos
+        _bcs.resize(4);
         { // boundary_xneg
             pylith::bc::DirichletUserFn* bc = new pylith::bc::DirichletUserFn();
             bc->setSubfieldName("displacement");
@@ -308,11 +331,47 @@ protected:
             bc->setLabelValue(1);
             bc->setConstrainedDOF(constrainedDOF, numConstrained);
             bc->setUserFn(solnkernel_disp);
+            _bcs[0] = bc;
+        } // boundary_xneg
+        { // boundary_xpos
+            pylith::bc::DirichletUserFn* bc = new pylith::bc::DirichletUserFn();
+            bc->setSubfieldName("displacement");
+            bc->setLabelName("boundary_xpos");
+            bc->setLabelValue(1);
+            bc->setConstrainedDOF(constrainedDOF, numConstrained);
+            bc->setUserFn(solnkernel_disp);
             _bcs[1] = bc;
-        } // boundary_zneg
+        } // boundary_xpos
+        { // boundary_yneg
+            pylith::bc::NeumannUserFn* bc = new pylith::bc::NeumannUserFn();
+            bc->setSubfieldName("displacement");
+            bc->setLabelName("boundary_yneg");
+            bc->setLabelValue(1);
+            bc->setUserFn(boundary_tractions);
+            _bcs[2] = bc;
+        } // boundary_yneg
+        { // boundary_ypos
+            pylith::bc::NeumannUserFn* bc = new pylith::bc::NeumannUserFn();
+            bc->setSubfieldName("displacement");
+            bc->setLabelName("boundary_ypos");
+            bc->setLabelValue(1);
+            bc->setUserFn(boundary_tractions);
+            _bcs[3] = bc;
+        } // boundary_ypos
 
-        _fault->setCohesiveLabelValue(100);
-        _fault->setSurfaceLabelName("fault");
+        // Faults
+        _faults.resize(1);
+        { // xpos
+            pylith::faults::FaultCohesiveKin* fault = new pylith::faults::FaultCohesiveKin();
+            fault->setCohesiveLabelValue(100);
+            fault->setSurfaceLabelName("fault_xpos");
+
+            const int numRuptures = 1;
+            const char* ruptureNames[1] = { "rupture" };
+            pylith::faults::KinSrc* ruptures[1] = { _data->kinsrc };
+            fault->setEqRuptures(ruptureNames, numRuptures, ruptures, numRuptures);
+            _faults[0] = fault;
+        } // xpos
 
     } // setUp
 
@@ -330,7 +389,7 @@ protected:
         err = DMGetDS(dm, &prob);CPPUNIT_ASSERT(!err);
         err = PetscDSSetExactSolution(prob, 0, solnkernel_disp, dm);CPPUNIT_ASSERT(!err);
         err = DMGetLabel(dm, pylith::topology::Mesh::cells_label_name, &label);CPPUNIT_ASSERT(!err);
-        err = DMLabelGetStratumIS(label, _fault->getCohesiveLabelValue(), &is);CPPUNIT_ASSERT(!err);
+        err = DMLabelGetStratumIS(label, _faults[0]->getCohesiveLabelValue(), &is);CPPUNIT_ASSERT(!err);
         err = ISGetMinMax(is, &cohesiveCell, NULL);CPPUNIT_ASSERT(!err);
         err = ISDestroy(&is);CPPUNIT_ASSERT(!err);
         err = DMGetCellDS(dm, cohesiveCell, &prob);CPPUNIT_ASSERT(!err);
@@ -338,17 +397,17 @@ protected:
         err = PetscDSSetExactSolution(prob, 1, solnkernel_lagrangemultiplier, NULL);CPPUNIT_ASSERT(!err);
     } // _setExactSolution
 
-}; // TestFaultKin2D_RigidBlocksStatic
+}; // TestFaultKin2D_OneFaultShearNoSlip
 
 // ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::TestFaultKin2D_RigidBlocksStatic_TriP1 :
-    public pylith::mmstests::TestFaultKin2D_RigidBlocksStatic {
-    CPPUNIT_TEST_SUB_SUITE(TestFaultKin2D_RigidBlocksStatic_TriP1,
+class pylith::mmstests::TestFaultKin2D_OneFaultShearNoSlip_TriP1 :
+    public pylith::mmstests::TestFaultKin2D_OneFaultShearNoSlip {
+    CPPUNIT_TEST_SUB_SUITE(TestFaultKin2D_OneFaultShearNoSlip_TriP1,
                            TestFaultKin);
     CPPUNIT_TEST_SUITE_END();
 
     void setUp(void) {
-        TestFaultKin2D_RigidBlocksStatic::setUp();
+        TestFaultKin2D_OneFaultShearNoSlip::setUp();
         CPPUNIT_ASSERT(_data);
         _allowZeroResidual = true;
 
@@ -363,18 +422,18 @@ class pylith::mmstests::TestFaultKin2D_RigidBlocksStatic_TriP1 :
 
     } // setUp
 
-}; // TestFaultKin2D_RigidBlocksStatic_TriP1
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestFaultKin2D_RigidBlocksStatic_TriP1);
+}; // TestFaultKin2D_OneFaultShearNoSlip_TriP1
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestFaultKin2D_OneFaultShearNoSlip_TriP1);
 
 // ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::TestFaultKin2D_RigidBlocksStatic_TriP2 :
-    public pylith::mmstests::TestFaultKin2D_RigidBlocksStatic {
-    CPPUNIT_TEST_SUB_SUITE(TestFaultKin2D_RigidBlocksStatic_TriP2,
+class pylith::mmstests::TestFaultKin2D_OneFaultShearNoSlip_TriP2 :
+    public pylith::mmstests::TestFaultKin2D_OneFaultShearNoSlip {
+    CPPUNIT_TEST_SUB_SUITE(TestFaultKin2D_OneFaultShearNoSlip_TriP2,
                            TestFaultKin);
     CPPUNIT_TEST_SUITE_END();
 
     void setUp(void) {
-        TestFaultKin2D_RigidBlocksStatic::setUp();
+        TestFaultKin2D_OneFaultShearNoSlip::setUp();
         CPPUNIT_ASSERT(_data);
 
         _data->meshFilename = "data/tri.mesh";
@@ -400,18 +459,18 @@ class pylith::mmstests::TestFaultKin2D_RigidBlocksStatic_TriP2 :
 
     } // setUp
 
-}; // TestFaultKin2D_RigidBlocksStatic_TriP2
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestFaultKin2D_RigidBlocksStatic_TriP2);
+}; // TestFaultKin2D_OneFaultShearNoSlip_TriP2
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestFaultKin2D_OneFaultShearNoSlip_TriP2);
 
 // ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::TestFaultKin2D_RigidBlocksStatic_TriP3 :
-    public pylith::mmstests::TestFaultKin2D_RigidBlocksStatic {
-    CPPUNIT_TEST_SUB_SUITE(TestFaultKin2D_RigidBlocksStatic_TriP3,
+class pylith::mmstests::TestFaultKin2D_OneFaultShearNoSlip_TriP3 :
+    public pylith::mmstests::TestFaultKin2D_OneFaultShearNoSlip {
+    CPPUNIT_TEST_SUB_SUITE(TestFaultKin2D_OneFaultShearNoSlip_TriP3,
                            TestFaultKin);
     CPPUNIT_TEST_SUITE_END();
 
     void setUp(void) {
-        TestFaultKin2D_RigidBlocksStatic::setUp();
+        TestFaultKin2D_OneFaultShearNoSlip::setUp();
         CPPUNIT_ASSERT(_data);
 
         _data->meshFilename = "data/tri.mesh";
@@ -437,18 +496,18 @@ class pylith::mmstests::TestFaultKin2D_RigidBlocksStatic_TriP3 :
 
     } // setUp
 
-}; // TestFaultKin2D_RigidBlocksStatic_TriP3
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestFaultKin2D_RigidBlocksStatic_TriP3);
+}; // TestFaultKin2D_OneFaultShearNoSlip_TriP3
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestFaultKin2D_OneFaultShearNoSlip_TriP3);
 
 // ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::TestFaultKin2D_RigidBlocksStatic_TriP4 :
-    public pylith::mmstests::TestFaultKin2D_RigidBlocksStatic {
-    CPPUNIT_TEST_SUB_SUITE(TestFaultKin2D_RigidBlocksStatic_TriP4,
+class pylith::mmstests::TestFaultKin2D_OneFaultShearNoSlip_TriP4 :
+    public pylith::mmstests::TestFaultKin2D_OneFaultShearNoSlip {
+    CPPUNIT_TEST_SUB_SUITE(TestFaultKin2D_OneFaultShearNoSlip_TriP4,
                            TestFaultKin);
     CPPUNIT_TEST_SUITE_END();
 
     void setUp(void) {
-        TestFaultKin2D_RigidBlocksStatic::setUp();
+        TestFaultKin2D_OneFaultShearNoSlip::setUp();
         CPPUNIT_ASSERT(_data);
 
         _data->meshFilename = "data/tri.mesh";
@@ -474,18 +533,18 @@ class pylith::mmstests::TestFaultKin2D_RigidBlocksStatic_TriP4 :
 
     } // setUp
 
-}; // TestFaultKin2D_RigidBlocksStatic_TriP4
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestFaultKin2D_RigidBlocksStatic_TriP4);
+}; // TestFaultKin2D_OneFaultShearNoSlip_TriP4
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestFaultKin2D_OneFaultShearNoSlip_TriP4);
 
 // ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::TestFaultKin2D_RigidBlocksStatic_QuadQ1 :
-    public pylith::mmstests::TestFaultKin2D_RigidBlocksStatic {
-    CPPUNIT_TEST_SUB_SUITE(TestFaultKin2D_RigidBlocksStatic_QuadQ1,
+class pylith::mmstests::TestFaultKin2D_OneFaultShearNoSlip_QuadQ1 :
+    public pylith::mmstests::TestFaultKin2D_OneFaultShearNoSlip {
+    CPPUNIT_TEST_SUB_SUITE(TestFaultKin2D_OneFaultShearNoSlip_QuadQ1,
                            TestFaultKin);
     CPPUNIT_TEST_SUITE_END();
 
     void setUp(void) {
-        TestFaultKin2D_RigidBlocksStatic::setUp();
+        TestFaultKin2D_OneFaultShearNoSlip::setUp();
         CPPUNIT_ASSERT(_data);
 
         _data->meshFilename = "data/quad.mesh";
@@ -499,18 +558,18 @@ class pylith::mmstests::TestFaultKin2D_RigidBlocksStatic_QuadQ1 :
 
     } // setUp
 
-}; // TestFaultKin2D_RigidBlocksStatic_QuadQ1
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestFaultKin2D_RigidBlocksStatic_QuadQ1);
+}; // TestFaultKin2D_OneFaultShearNoSlip_QuadQ1
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestFaultKin2D_OneFaultShearNoSlip_QuadQ1);
 
 // ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::TestFaultKin2D_RigidBlocksStatic_QuadQ2 :
-    public pylith::mmstests::TestFaultKin2D_RigidBlocksStatic {
-    CPPUNIT_TEST_SUB_SUITE(TestFaultKin2D_RigidBlocksStatic_QuadQ2,
+class pylith::mmstests::TestFaultKin2D_OneFaultShearNoSlip_QuadQ2 :
+    public pylith::mmstests::TestFaultKin2D_OneFaultShearNoSlip {
+    CPPUNIT_TEST_SUB_SUITE(TestFaultKin2D_OneFaultShearNoSlip_QuadQ2,
                            TestFaultKin);
     CPPUNIT_TEST_SUITE_END();
 
     void setUp(void) {
-        TestFaultKin2D_RigidBlocksStatic::setUp();
+        TestFaultKin2D_OneFaultShearNoSlip::setUp();
         CPPUNIT_ASSERT(_data);
 
         _data->meshFilename = "data/quad.mesh";
@@ -536,18 +595,18 @@ class pylith::mmstests::TestFaultKin2D_RigidBlocksStatic_QuadQ2 :
 
     } // setUp
 
-}; // TestFaultKin2D_RigidBlocksStatic_QuadQ2
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestFaultKin2D_RigidBlocksStatic_QuadQ2);
+}; // TestFaultKin2D_OneFaultShearNoSlip_QuadQ2
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestFaultKin2D_OneFaultShearNoSlip_QuadQ2);
 
 // ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::TestFaultKin2D_RigidBlocksStatic_QuadQ3 :
-    public pylith::mmstests::TestFaultKin2D_RigidBlocksStatic {
-    CPPUNIT_TEST_SUB_SUITE(TestFaultKin2D_RigidBlocksStatic_QuadQ3,
+class pylith::mmstests::TestFaultKin2D_OneFaultShearNoSlip_QuadQ3 :
+    public pylith::mmstests::TestFaultKin2D_OneFaultShearNoSlip {
+    CPPUNIT_TEST_SUB_SUITE(TestFaultKin2D_OneFaultShearNoSlip_QuadQ3,
                            TestFaultKin);
     CPPUNIT_TEST_SUITE_END();
 
     void setUp(void) {
-        TestFaultKin2D_RigidBlocksStatic::setUp();
+        TestFaultKin2D_OneFaultShearNoSlip::setUp();
         CPPUNIT_ASSERT(_data);
 
         _data->meshFilename = "data/quad.mesh";
@@ -573,18 +632,18 @@ class pylith::mmstests::TestFaultKin2D_RigidBlocksStatic_QuadQ3 :
 
     } // setUp
 
-}; // TestFaultKin2D_RigidBlocksStatic_QuadQ3
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestFaultKin2D_RigidBlocksStatic_QuadQ3);
+}; // TestFaultKin2D_OneFaultShearNoSlip_QuadQ3
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestFaultKin2D_OneFaultShearNoSlip_QuadQ3);
 
 // ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::TestFaultKin2D_RigidBlocksStatic_QuadQ4 :
-    public pylith::mmstests::TestFaultKin2D_RigidBlocksStatic {
-    CPPUNIT_TEST_SUB_SUITE(TestFaultKin2D_RigidBlocksStatic_QuadQ4,
+class pylith::mmstests::TestFaultKin2D_OneFaultShearNoSlip_QuadQ4 :
+    public pylith::mmstests::TestFaultKin2D_OneFaultShearNoSlip {
+    CPPUNIT_TEST_SUB_SUITE(TestFaultKin2D_OneFaultShearNoSlip_QuadQ4,
                            TestFaultKin);
     CPPUNIT_TEST_SUITE_END();
 
     void setUp(void) {
-        TestFaultKin2D_RigidBlocksStatic::setUp();
+        TestFaultKin2D_OneFaultShearNoSlip::setUp();
         CPPUNIT_ASSERT(_data);
 
         _data->meshFilename = "data/quad.mesh";
@@ -610,7 +669,7 @@ class pylith::mmstests::TestFaultKin2D_RigidBlocksStatic_QuadQ4 :
 
     } // setUp
 
-}; // TestFaultKin2D_RigidBlocksStatic_QuadQ4
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestFaultKin2D_RigidBlocksStatic_QuadQ4);
+}; // TestFaultKin2D_OneFaultShearNoSlip_QuadQ4
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestFaultKin2D_OneFaultShearNoSlip_QuadQ4);
 
 // End of file
