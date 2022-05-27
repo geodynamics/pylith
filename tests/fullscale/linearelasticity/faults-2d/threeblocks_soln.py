@@ -13,28 +13,26 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file tests/fullscale/linearelasticity/faults/axialdisp_soln.py
-#
-# @brief Analytical solution to two rigid blocks displacement problem.
+# @brief Analytical solution to three rigid blocks displacement problem.
 #
 # 2-D rigid motion of blocks using Dirichlet BC and fault slip.
 #
-#  -----
-#  |   |-----
-#  |   ||   |
-#  |   ||   |
-#  -----|   |
 #       -----
+#  -----|   |-----
+#  |   ||   ||   |
+#  |   ||   ||   |
+#  |   |-----|   |
+#  -----     -----
 #
-# Uy(x,y) = +1.0 if x < 0
-#           -1.0 if x > 0
+# Uy(x,y) = 0.0 if x < 2 or x > 0
+#          +2.0 if x > 2 and x < 0
 #
 # Dirichlet boundary conditions
 #   Ux(-4000,y) =  0.0
-#   Uy(-4000,y) = +1.0
+#   Uy(-4000,y) =  0.0
 #
 #   Ux(+4000,y) = 0.0
-#   Uy(+4000,y) = -1.0
+#   Uy(+4000,y) = 0.0
 
 import numpy
 
@@ -84,7 +82,7 @@ class AnalyticalSoln(object):
     def getMask(self, name, mesh_entity, pts):
         mask = None
         if name == "displacement":
-            mask = pts[:, 0] == 0.0
+            mask = numpy.logical_or(pts[:, 0] == 0.0, pts[:,0] == -2.0e+3)
         return mask
     
     def displacement(self, locs):
@@ -92,9 +90,8 @@ class AnalyticalSoln(object):
         """
         (npts, dim) = locs.shape
         disp = numpy.zeros((1, npts, 2), dtype=numpy.float64)
-        maskN = locs[:, 0] < 0
-        maskP = locs[:, 0] > 0
-        disp[0,:, 1] = +1.0 * maskN - 1.0 * maskP
+        mask = numpy.logical_and(locs[:, 0] > -2.0e+3, locs[:,0] < 0.0)
+        disp[0,:, 1] = +2.0 * mask
         return disp
 
     def density(self, locs):

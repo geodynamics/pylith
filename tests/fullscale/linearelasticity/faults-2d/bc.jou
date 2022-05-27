@@ -16,9 +16,13 @@ block 4 name "mat_xposyneg"
 # ----------------------------------------------------------------------
 # Create nodeset for faults
 # ----------------------------------------------------------------------
-group "fault" add node in curve 11 13
-nodeset 10 group fault
-nodeset 10 name "fault"
+group "fault_xmid" add node in curve 11 13
+nodeset 10 group fault_xmid
+nodeset 10 name "fault_xmid"
+
+group "fault_xneg" add node in curve 15
+nodeset 11 group fault_xneg
+nodeset 11 name "fault_xneg"
 
 # ----------------------------------------------------------------------
 # Create nodeset for +x edge
