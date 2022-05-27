@@ -163,17 +163,15 @@ pylith::feassemble::Integrator::initialize(const pylith::topology::Field& soluti
 } // initialize
 
 
-#include <iostream>
-
 // ---------------------------------------------------------------------------------------------------------------------
-// Update auxiliary field values to current time.
+// Set auxiliary field values for current time.
 void
-pylith::feassemble::Integrator::updateState(const PylithReal t) {
+pylith::feassemble::Integrator::setState(const PylithReal t) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("updateState(t="<<t<<") empty method");
+    PYLITH_JOURNAL_DEBUG("setState(t="<<t<<") empty method");
 
     PYLITH_METHOD_END;
-} // updateState
+} // setState
 
 
 // ---------------------------------------------------------------------------------------------------------------------

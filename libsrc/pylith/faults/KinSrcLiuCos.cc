@@ -38,7 +38,7 @@ namespace pylith {
             PylithReal Cn;
 
             LiuCosConstants(const PylithReal riseTime) :
-                tau(riseTime * 1.525),
+                tau(riseTime),
                 tau1(0.13 * tau),
                 tau2(tau - tau1),
                 Cn(M_PI /  (1.4 * M_PI * tau1 + 1.2 * tau1 + 0.3 * M_PI * tau2)) {}

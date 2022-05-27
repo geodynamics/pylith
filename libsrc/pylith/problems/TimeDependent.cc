@@ -20,7 +20,7 @@
 
 #include "TimeDependent.hh" // implementation of class methods
 
-#include "pylith/problems/IntegrationData.hh" // HOLDSA IntegrationData
+#include "pylith/feassemble/IntegrationData.hh" // HOLDSA IntegrationData
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
 
@@ -67,7 +67,7 @@ pylith::problems::TimeDependent::TimeDependent(void) :
 
     _integrationData->setScalar("dt_jacobian", -1.0);
     _integrationData->setScalar("dt_lhs_jacobian", -1.0);
-    _integrationData->setScalar(IntegrationData::t_state, -HUGE_VAL);
+    _integrationData->setScalar(pylith::feassemble::IntegrationData::t_state, -HUGE_VAL);
 } // constructor
 
 
@@ -272,7 +272,7 @@ pylith::problems::TimeDependent::verifyConfiguration(void) const {
     Problem::verifyConfiguration();
 
     assert(_integrationData);
-    const pylith::topology::Field* solution = _integrationData->getField(IntegrationData::solution);
+    const pylith::topology::Field* solution = _integrationData->getField(pylith::feassemble::IntegrationData::solution);
     assert(solution);
 
     // Check to make sure initial conditions are compatible with the solution.
@@ -296,7 +296,7 @@ pylith::problems::TimeDependent::initialize(void) {
     Problem::initialize();
 
     assert(_integrationData);
-    pylith::topology::Field* solution = _integrationData->getField(IntegrationData::solution);
+    pylith::topology::Field* solution = _integrationData->getField(pylith::feassemble::IntegrationData::solution);
     assert(solution);
 
     PetscErrorCode err = TSDestroy(&_ts);PYLITH_CHECK_ERROR(err);assert(!_ts);
@@ -449,7 +449,7 @@ pylith::problems::TimeDependent::poststep(void) {
 
     // Update PyLith view of the solution.
     assert(_integrationData);
-    pylith::topology::Field* solution = _integrationData->getField(IntegrationData::solution);assert(solution);
+    pylith::topology::Field* solution = _integrationData->getField(pylith::feassemble::IntegrationData::solution);assert(solution);
     solution->scatterVectorToLocal(solutionVec);
     solution->scatterLocalToOutput();
 
@@ -490,18 +490,18 @@ pylith::problems::TimeDependent::setSolutionLocal(const PylithReal t,
 
     // Update PyLith view of the solution.
     assert(_integrationData);
-    pylith::topology::Field* solution = _integrationData->getField(IntegrationData::solution);assert(solution);
+    pylith::topology::Field* solution = _integrationData->getField(pylith::feassemble::IntegrationData::solution);assert(solution);
     solution->scatterVectorToLocal(solutionVec);
-    _integrationData->setScalar(IntegrationData::time, t);
+    _integrationData->setScalar(pylith::feassemble::IntegrationData::time, t);
 
     if (solutionDotVec) {
         pylith::topology::Field* solutionDot = NULL;
-        if (!_integrationData->hasField(IntegrationData::solution_dot)) {
+        if (!_integrationData->hasField(pylith::feassemble::IntegrationData::solution_dot)) {
             solutionDot = new pylith::topology::Field(*solution);assert(solutionDot);
             solutionDot->setLabel("solutionDot");
-            _integrationData->setField(IntegrationData::solution_dot, solutionDot);
+            _integrationData->setField(pylith::feassemble::IntegrationData::solution_dot, solutionDot);
         } else {
-            solutionDot = _integrationData->getField(IntegrationData::solution_dot);
+            solutionDot = _integrationData->getField(pylith::feassemble::IntegrationData::solution_dot);
         } // if/else
         solutionDot->scatterVectorToLocal(solutionDotVec);
     } // if
@@ -536,16 +536,16 @@ pylith::problems::TimeDependent::computeRHSResidual(PetscVec residualVec,
     assert(solutionVec);
     assert(_integrationData);
 
-    if (t != _integrationData->getScalar(IntegrationData::t_state)) { _updateStateTime(t); }
+    if (t != _integrationData->getScalar(pylith::feassemble::IntegrationData::t_state)) { _setState(t); }
 
     // Update PyLith view of the solution.
     const PetscVec solutionDotVec = NULL;
     setSolutionLocal(t, solutionVec, solutionDotVec);
-    _integrationData->setScalar(IntegrationData::time, t);
-    _integrationData->setScalar(IntegrationData::time_step, dt);
+    _integrationData->setScalar(pylith::feassemble::IntegrationData::time, t);
+    _integrationData->setScalar(pylith::feassemble::IntegrationData::time_step, dt);
 
     // Sum residual contributions across integrators.
-    pylith::topology::Field* residual = _integrationData->getField(IntegrationData::residual);assert(residual);
+    pylith::topology::Field* residual = _integrationData->getField(pylith::feassemble::IntegrationData::residual);assert(residual);
     residual->zeroLocal();
     const size_t numIntegrators = _integrators.size();
     assert(numIntegrators > 0); // must have at least 1 integrator
@@ -557,7 +557,7 @@ pylith::problems::TimeDependent::computeRHSResidual(PetscVec residualVec,
     PetscErrorCode err = VecSet(residualVec, 0.0);PYLITH_CHECK_ERROR(err);
     residual->scatterLocalToVector(residualVec, ADD_VALUES);
 
-    _integrationData->setScalar(IntegrationData::t_state, t);
+    _integrationData->setScalar(pylith::feassemble::IntegrationData::t_state, t);
 
     PYLITH_METHOD_END;
 } // computeRHSResidual
@@ -579,15 +579,15 @@ pylith::problems::TimeDependent::computeLHSResidual(PetscVec residualVec,
     assert(solutionDotVec);
     assert(_integrationData);
 
-    if (t != _integrationData->getScalar(IntegrationData::t_state)) { _updateStateTime(t); }
+    if (t != _integrationData->getScalar(pylith::feassemble::IntegrationData::t_state)) { _setState(t); }
 
     // Update PyLith view of the solution.
     setSolutionLocal(t, solutionVec, solutionDotVec);
-    _integrationData->setScalar(IntegrationData::time, t);
-    _integrationData->setScalar(IntegrationData::time_step, dt);
+    _integrationData->setScalar(pylith::feassemble::IntegrationData::time, t);
+    _integrationData->setScalar(pylith::feassemble::IntegrationData::time_step, dt);
 
     // Sum residual across integrators.
-    pylith::topology::Field* residual = _integrationData->getField(IntegrationData::residual);assert(residual);
+    pylith::topology::Field* residual = _integrationData->getField(pylith::feassemble::IntegrationData::residual);assert(residual);
     residual->zeroLocal();
     const int numIntegrators = _integrators.size();
     assert(numIntegrators > 0); // must have at least 1 integrator
@@ -599,7 +599,7 @@ pylith::problems::TimeDependent::computeLHSResidual(PetscVec residualVec,
     PetscErrorCode err = VecSet(residualVec, 0.0);PYLITH_CHECK_ERROR(err);
     residual->scatterLocalToVector(residualVec, ADD_VALUES);
 
-    _integrationData->setScalar(IntegrationData::t_state, t);
+    _integrationData->setScalar(pylith::feassemble::IntegrationData::t_state, t);
 
     PYLITH_METHOD_END;
 } // computeLHSResidual
@@ -632,10 +632,10 @@ pylith::problems::TimeDependent::computeLHSJacobian(PetscMat jacobianMat,
     PYLITH_COMPONENT_DEBUG("NEW LHS Jacobian; t=" << t << ", dt=" << dt);
 
     assert(_integrationData);
-    const pylith::topology::Field* solution = _integrationData->getField(IntegrationData::solution);assert(solution);
-    _integrationData->setScalar(IntegrationData::time, t);
-    _integrationData->setScalar(IntegrationData::time_step, dt);
-    _integrationData->setScalar(IntegrationData::s_tshift, s_tshift);
+    const pylith::topology::Field* solution = _integrationData->getField(pylith::feassemble::IntegrationData::solution);assert(solution);
+    _integrationData->setScalar(pylith::feassemble::IntegrationData::time, t);
+    _integrationData->setScalar(pylith::feassemble::IntegrationData::time_step, dt);
+    _integrationData->setScalar(pylith::feassemble::IntegrationData::s_tshift, s_tshift);
 
     // Zero LHS Jacobian
     PetscErrorCode err = 0;
@@ -658,7 +658,7 @@ pylith::problems::TimeDependent::computeLHSJacobian(PetscMat jacobianMat,
     _needNewLHSJacobian = false;
     _haveNewLHSJacobian = true;
 
-    _integrationData->setScalar(IntegrationData::dt_jacobian, dt);
+    _integrationData->setScalar(pylith::feassemble::IntegrationData::dt_jacobian, dt);
 
     // Solver handles assembly.
 
@@ -684,7 +684,7 @@ pylith::problems::TimeDependent::computeLHSJacobianLumpedInv(const PylithReal t,
 
     // Check to see if we need to compute LHS Jacobian.
     bool needNewLHSJacobianLumped = false;
-    const bool dtChanged = dt != _integrationData->getScalar(IntegrationData::dt_lumped_jacobian_inverse);
+    const bool dtChanged = dt != _integrationData->getScalar(pylith::feassemble::IntegrationData::dt_lumped_jacobian_inverse);
     for (size_t i = 0; i < numIntegrators; ++i) {
         if (_integrators[i]->needNewLHSJacobianLumped(dtChanged)) {
             needNewLHSJacobianLumped = true;
@@ -694,15 +694,15 @@ pylith::problems::TimeDependent::computeLHSJacobianLumpedInv(const PylithReal t,
     if (!needNewLHSJacobianLumped) { PYLITH_METHOD_END; }
 
     // Set jacobian to zero.
-    pylith::topology::Field* jacobianLumpedInv = _integrationData->getField(IntegrationData::lumped_jacobian_inverse);
+    pylith::topology::Field* jacobianLumpedInv = _integrationData->getField(pylith::feassemble::IntegrationData::lumped_jacobian_inverse);
     jacobianLumpedInv->zeroLocal();
 
     // Update PyLith view of the solution.
     const PetscVec solutionDotVec = NULL;
     setSolutionLocal(t, solutionVec, solutionDotVec);
-    _integrationData->setScalar(IntegrationData::time, t);
-    _integrationData->setScalar(IntegrationData::time_step, dt);
-    _integrationData->setScalar(IntegrationData::s_tshift, s_tshift);
+    _integrationData->setScalar(pylith::feassemble::IntegrationData::time, t);
+    _integrationData->setScalar(pylith::feassemble::IntegrationData::time_step, dt);
+    _integrationData->setScalar(pylith::feassemble::IntegrationData::s_tshift, s_tshift);
 
     // Sum Jacobian contributions across integrators.
     for (size_t i = 0; i < numIntegrators; ++i) {
@@ -712,7 +712,7 @@ pylith::problems::TimeDependent::computeLHSJacobianLumpedInv(const PylithReal t,
     // Insert values into global vector.
     jacobianLumpedInv->scatterLocalToVector(jacobianLumpedInv->getGlobalVector());
 
-    _integrationData->setScalar(IntegrationData::dt_lumped_jacobian_inverse, dt);
+    _integrationData->setScalar(pylith::feassemble::IntegrationData::dt_lumped_jacobian_inverse, dt);
 
     PYLITH_METHOD_END;
 } // computeLHSJacobianLumpedInv
@@ -737,7 +737,7 @@ pylith::problems::TimeDependent::computeRHSResidual(PetscTS ts,
 
     pylith::problems::TimeDependent* problem = (pylith::problems::TimeDependent*)context;assert(problem);
     assert(problem->_integrationData);
-    const bool hasLumpedJacobianInverse = problem->_integrationData->hasField(IntegrationData::lumped_jacobian_inverse);
+    const bool hasLumpedJacobianInverse = problem->_integrationData->hasField(pylith::feassemble::IntegrationData::lumped_jacobian_inverse);
     if (hasLumpedJacobianInverse) {
         const PylithReal s_tshift = 1.0; // Keep shift terms on LHS, so use 1.0 for terms moved to RHS.
         problem->computeLHSJacobianLumpedInv(t, dt, s_tshift, solutionVec);
@@ -748,7 +748,7 @@ pylith::problems::TimeDependent::computeRHSResidual(PetscTS ts,
     if (hasLumpedJacobianInverse) {
         // Multiply RHS, G(t,s), by M^{-1}
         const pylith::topology::Field* jacobianLumpedInv =
-            problem->_integrationData->getField(IntegrationData::lumped_jacobian_inverse);assert(jacobianLumpedInv);
+            problem->_integrationData->getField(pylith::feassemble::IntegrationData::lumped_jacobian_inverse);assert(jacobianLumpedInv);
         err = VecPointwiseMult(residualVec, jacobianLumpedInv->getGlobalVector(), residualVec);PYLITH_CHECK_ERROR(err);
     } // if
 
@@ -836,7 +836,7 @@ pylith::problems::TimeDependent::_needNewJacobian(const PylithReal dt) {
     if (_needNewLHSJacobian) { PYLITH_METHOD_RETURN(true); }
 
     assert(_integrationData);
-    const bool dtChanged = dt != _integrationData->getScalar(IntegrationData::dt_jacobian);
+    const bool dtChanged = dt != _integrationData->getScalar(pylith::feassemble::IntegrationData::dt_jacobian);
     const size_t numIntegrators = _integrators.size();
 
     for (size_t i = 0; i < numIntegrators; ++i) {
@@ -853,24 +853,24 @@ pylith::problems::TimeDependent::_needNewJacobian(const PylithReal dt) {
 // ---------------------------------------------------------------------------------------------------------------------
 // Set state (auxiliary field values) of system for time t.
 void
-pylith::problems::TimeDependent::_updateStateTime(const PylithReal t) {
+pylith::problems::TimeDependent::_setState(const PylithReal t) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_updateStateTime(t="<<t<<")");
+    PYLITH_COMPONENT_DEBUG("_setState(t="<<t<<")");
 
     // Update constraint values to current time, t.
     const size_t numConstraints = _constraints.size();
     for (size_t i = 0; i < numConstraints; ++i) {
-        _constraints[i]->updateState(t);
+        _constraints[i]->setState(t);
     } // for
 
     // Prepare integrators for a new time step.
     const size_t numIntegrators = _integrators.size();
     for (size_t i = 0; i < numIntegrators; ++i) {
-        _integrators[i]->updateState(t);
+        _integrators[i]->setState(t);
     } // for
 
     PYLITH_METHOD_END;
-} // _updateStateTime
+} // _setState
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -886,7 +886,7 @@ pylith::problems::TimeDependent::_notifyObserversInitialSoln(void) {
     const PylithInt tindex = 0;
 
     assert(_integrationData);
-    const pylith::topology::Field* solution = _integrationData->getField(IntegrationData::solution);assert(solution);
+    const pylith::topology::Field* solution = _integrationData->getField(pylith::feassemble::IntegrationData::solution);assert(solution);
     _observers->notifyObservers(tStartNondim, tindex, *solution);
 
     const size_t numIntegrators = _integrators.size();

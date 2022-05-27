@@ -20,7 +20,7 @@ import unittest
 from pylith.testing.FullTestApp import (FullTestCase, Check)
 
 import meshes
-import twoblocks_soln
+import threeblocks_soln
 
 
 # -------------------------------------------------------------------------------------------------
@@ -29,7 +29,7 @@ class TestCase(FullTestCase):
     def setUp(self):
         defaults = {
             "filename": "output/{name}-{mesh_entity}.h5",
-            "exact_soln": twoblocks_soln.AnalyticalSoln(),
+            "exact_soln": threeblocks_soln.AnalyticalSoln(),
             "mesh": self.mesh,
         }
         self.checks = [
@@ -71,11 +71,11 @@ class TestCase(FullTestCase):
 class TestQuadGmsh(TestCase):
 
     def setUp(self):
-        self.name = "twoblocks_quad"
+        self.name = "threeblocks_quad"
         self.mesh = meshes.QuadGmsh()
         super().setUp()
 
-        TestCase.run_pylith(self, self.name, ["twoblocks.cfg", "twoblocks_quad.cfg"])
+        TestCase.run_pylith(self, self.name, ["threeblocks.cfg", "threeblocks_quad.cfg"])
         return
 
 
@@ -83,11 +83,11 @@ class TestQuadGmsh(TestCase):
 class TestTriGmsh(TestCase):
 
     def setUp(self):
-        self.name = "twoblocks_tri"
+        self.name = "threeblocks_tri"
         self.mesh = meshes.TriGmsh()
         super().setUp()
 
-        TestCase.run_pylith(self, self.name, ["twoblocks.cfg", "twoblocks_tri.cfg"])
+        TestCase.run_pylith(self, self.name, ["threeblocks.cfg", "threeblocks_tri.cfg"])
         return
 
 
@@ -95,11 +95,11 @@ class TestTriGmsh(TestCase):
 class TestQuadCubit(TestCase):
 
     def setUp(self):
-        self.name = "twoblocks_cubit_quad"
+        self.name = "threeblocks_cubit_quad"
         self.mesh = meshes.QuadCubit()
         super().setUp()
 
-        TestCase.run_pylith(self, self.name, ["twoblocks.cfg", "twoblocks_cubit_quad.cfg"])
+        TestCase.run_pylith(self, self.name, ["threeblocks.cfg", "threeblocks_cubit_quad.cfg"])
         return
 
 
@@ -107,11 +107,11 @@ class TestQuadCubit(TestCase):
 class TestTriCubit(TestCase):
 
     def setUp(self):
-        self.name = "twoblocks_cubit_tri"
+        self.name = "threeblocks_cubit_tri"
         self.mesh = meshes.TriCubit()
         super().setUp()
 
-        TestCase.run_pylith(self, self.name, ["twoblocks.cfg", "twoblocks_cubit_tri.cfg"])
+        TestCase.run_pylith(self, self.name, ["threeblocks.cfg", "threeblocks_cubit_tri.cfg"])
         return
 
 

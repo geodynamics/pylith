@@ -282,9 +282,9 @@ private:
 
     /** Set state (auxiliary field values) of system for time t.
      *
-     * * @param[in] t Current time.
+     * @param[in] t Current time.
      */
-    void _updateStateTime(const PylithReal t);
+    void _setState(const PylithReal t);
 
     /// Notify observers with solution corresponding to initial conditions.
     void _notifyObserversInitialSoln(void);

@@ -23,6 +23,7 @@ class App(GenerateMesh):
             "required": True,
             "choices": ["tri", "quad"],
             }
+        self.filename = "mesh.msh"
 
     def create_geometry(self):
         """Create geometry.
@@ -90,7 +91,8 @@ class App(GenerateMesh):
             VertexGroup(name="boundary_xpos", tag=11, dim=1, entities=[self.l_xpos0, self.l_xpos1]),
             VertexGroup(name="boundary_yneg", tag=12, dim=1, entities=[self.l_yneg0, self.l_yneg1, self.l_yneg2]),
             VertexGroup(name="boundary_ypos", tag=13, dim=1, entities=[self.l_ypos0, self.l_ypos1, self.l_ypos2]),
-            VertexGroup(name="fault", tag=20, dim=1, entities=[self.l_fault0, self.l_fault1]),
+            VertexGroup(name="fault_xmid", tag=20, dim=1, entities=[self.l_fault0, self.l_fault1]),
+            VertexGroup(name="fault_xneg", tag=21, dim=1, entities=[self.l_split0]),
         )
         for group in vertex_groups:
             group.create_physical_group()
@@ -107,8 +109,6 @@ class App(GenerateMesh):
             gmsh.model.mesh.set_transfinite_curve(self.l_split0, nnodes)
             gmsh.model.mesh.set_transfinite_surface(self.s_xmid, cornerTags=self.xmid_corners)
             gmsh.model.mesh.set_recombine(2, self.s_xmid)
-        else:
-            gmsh.option.setNumber("Mesh.Algorithm", 8)
 
         gmsh.model.mesh.generate(2)
         gmsh.model.mesh.optimize("Laplace2D")

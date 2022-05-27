@@ -139,7 +139,7 @@ public:
 
     /** Set kernels for residual.
      *
-     * @param[in] kernels Array of kernerls for computing the residual.
+     * @param[in] kernels Array of kernels for computing the residual.
      * @param[in] solution Solution field.
      */
     void setKernelsResidual(const std::vector<ResidualKernels>& kernels,
@@ -147,7 +147,7 @@ public:
 
     /** Set kernels for Jacobian.
      *
-     * @param[in] kernels Array of kernerls for computing the Jacobian.
+     * @param[in] kernels Array of kernels for computing the Jacobian.
      * @param[in] solution Solution field.
      */
     void setKernelsJacobian(const std::vector<JacobianKernels>& kernels,
@@ -171,13 +171,27 @@ public:
      */
     void initialize(const pylith::topology::Field& solution);
 
+    /** Set data needed for integrating faces on interior interfaces.
+     *
+     * @param[in] solution Solution field.
+     * @param[in] interfaceIntegrators Array of integrators for interfaces.
+     */
+    void setInterfaceData(const pylith::topology::Field* solution,
+                          const std::vector<pylith::feassemble::IntegratorInterface*> interfaceIntegrators) const;
+
+    /** Set auxiliary field values for current time.
+     *
+     * @param[in] t Current time.
+     */
+    void setState(const PylithReal t);
+
     /** Compute RHS residual for G(t,s).
      *
      * @param[out] residual Field for residual.
      * @param[in] integrationData Data needed to integrate governing equations.
      */
     void computeRHSResidual(pylith::topology::Field* residual,
-                            const pylith::problems::IntegrationData& integrationData);
+                            const pylith::feassemble::IntegrationData& integrationData);
 
     /** Compute LHS residual for F(t,s,\dot{s}).
      *
@@ -185,7 +199,7 @@ public:
      * @param[in] integrationData Data needed to integrate governing equations.
      */
     void computeLHSResidual(pylith::topology::Field* residual,
-                            const pylith::problems::IntegrationData& integrationData);
+                            const pylith::feassemble::IntegrationData& integrationData);
 
     /** Compute LHS Jacobian and preconditioner for F(t,s,\dot{s}) with implicit time-stepping.
      *
@@ -195,7 +209,7 @@ public:
      */
     void computeLHSJacobian(PetscMat jacobianMat,
                             PetscMat precondMat,
-                            const pylith::problems::IntegrationData& integrationData);
+                            const pylith::feassemble::IntegrationData& integrationData);
 
     /** Compute inverse of lumped LHS Jacobian for F(t,s,\dot{s}) with explicit time-stepping.
      *
@@ -203,7 +217,7 @@ public:
      * @param[in] integrationData Data needed to integrate governing equations.
      */
     void computeLHSJacobianLumpedInv(pylith::topology::Field* jacobianInv,
-                                     const pylith::problems::IntegrationData& integrationData);
+                                     const pylith::feassemble::IntegrationData& integrationData);
 
     // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:

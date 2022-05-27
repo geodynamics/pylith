@@ -19,7 +19,7 @@
 
 #include "GreensFns.hh" // implementation of class methods
 
-#include "pylith/problems/IntegrationData.hh" // HOLDSA IntegrationData
+#include "pylith/feassemble/IntegrationData.hh" // HOLDSA IntegrationData
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
 
@@ -63,7 +63,7 @@ pylith::problems::GreensFns::GreensFns(void) :
 
     _integrationData->setScalar("dt_jacobian", -1.0);
     _integrationData->setScalar("dt_lhs_jacobian", -1.0);
-    _integrationData->setScalar(IntegrationData::t_state, -HUGE_VAL);
+    _integrationData->setScalar(pylith::feassemble::IntegrationData::t_state, -HUGE_VAL);
 } // constructor
 
 
@@ -213,7 +213,7 @@ pylith::problems::GreensFns::initialize(void) {
 
     PetscErrorCode err = SNESDestroy(&_snes);PYLITH_CHECK_ERROR(err);assert(!_snes);
     assert(_integrationData);
-    pylith::topology::Field* solution = _integrationData->getField(IntegrationData::solution);
+    pylith::topology::Field* solution = _integrationData->getField(pylith::feassemble::IntegrationData::solution);
     assert(solution);
 
     err = SNESCreate(solution->getMesh().getComm(), &_snes);PYLITH_CHECK_ERROR(err);assert(_snes);
@@ -227,16 +227,16 @@ pylith::problems::GreensFns::initialize(void) {
     // Initialize solution_dot.
     pylith::topology::Field* solutionDot = new pylith::topology::Field(*solution);assert(solutionDot);
     solutionDot->setLabel("solution_dot");
-    _integrationData->setField(pylith::problems::IntegrationData::solution_dot, solutionDot);
+    _integrationData->setField(pylith::feassemble::IntegrationData::solution_dot, solutionDot);
 
     // Initialize residual.
     pylith::topology::Field* residual = new pylith::topology::Field(*solution);assert(residual);
     residual->setLabel("residual");
-    _integrationData->setField(pylith::problems::IntegrationData::residual, residual);
+    _integrationData->setField(pylith::feassemble::IntegrationData::residual, residual);
 
-    _integrationData->setScalar(IntegrationData::time, 0.0);
-    _integrationData->setScalar(IntegrationData::time_step, 1.0);
-    _integrationData->setScalar(IntegrationData::s_tshift, 0.0);
+    _integrationData->setScalar(pylith::feassemble::IntegrationData::time, 0.0);
+    _integrationData->setScalar(pylith::feassemble::IntegrationData::time_step, 1.0);
+    _integrationData->setScalar(pylith::feassemble::IntegrationData::s_tshift, 0.0);
 
     switch (_formulation) {
     case pylith::problems::Physics::QUASISTATIC:
@@ -299,9 +299,9 @@ pylith::problems::GreensFns::solve(void) {
     PYLITH_COMPONENT_DEBUG("solve()");
 
     assert(_integrationData);
-    pylith::topology::Field* solution = _integrationData->getField(IntegrationData::solution);
+    pylith::topology::Field* solution = _integrationData->getField(pylith::feassemble::IntegrationData::solution);
     assert(solution);
-    pylith::topology::Field* residual = _integrationData->getField(IntegrationData::residual);assert(residual);
+    pylith::topology::Field* residual = _integrationData->getField(pylith::feassemble::IntegrationData::residual);assert(residual);
 
     const size_t numImpulses = _faultImpulses->getNumImpulses();
     PYLITH_COMPONENT_DEBUG("Using " << numImpulses << " impulses for Green's functions.");
@@ -316,7 +316,7 @@ pylith::problems::GreensFns::solve(void) {
 
         // Update impulse on fault
         const PetscReal impulseReal = i + tolerance;
-        _integratorImpulses->updateState(impulseReal);
+        _integratorImpulses->setState(impulseReal);
 
         PetscErrorCode err = SNESSolve(_snes, residual->getGlobalVector(), solution->getGlobalVector());PYLITH_CHECK_ERROR(err);
 
@@ -341,7 +341,7 @@ pylith::problems::GreensFns::poststep(const size_t impulse) {
     const PetscReal dt = 1.0;
 
     assert(_integrationData);
-    pylith::topology::Field* solution = _integrationData->getField(IntegrationData::solution);
+    pylith::topology::Field* solution = _integrationData->getField(pylith::feassemble::IntegrationData::solution);
     assert(solution);
 
     // Update integrators.
@@ -380,7 +380,7 @@ pylith::problems::GreensFns::setSolutionLocal(PetscVec solutionVec) {
 
     // Update PyLith view of the solution.
     assert(_integrationData);
-    pylith::topology::Field* solution = _integrationData->getField(IntegrationData::solution);assert(solution);
+    pylith::topology::Field* solution = _integrationData->getField(pylith::feassemble::IntegrationData::solution);assert(solution);
     solution->scatterVectorToLocal(solutionVec);
 
     const size_t numConstraints = _constraints.size();
@@ -405,7 +405,7 @@ pylith::problems::GreensFns::computeResidual(PetscVec residualVec,
     assert(residualVec);
     assert(solutionVec);
     assert(_integrationData);
-    pylith::topology::Field* residual = _integrationData->getField(IntegrationData::residual);
+    pylith::topology::Field* residual = _integrationData->getField(pylith::feassemble::IntegrationData::residual);
     assert(residual);
 
     // Update PyLith view of the solution.
@@ -440,7 +440,7 @@ pylith::problems::GreensFns::computeJacobian(PetscMat jacobianMat,
     assert(solutionVec);
 
     assert(_integrationData);
-    pylith::topology::Field* solution = _integrationData->getField(IntegrationData::solution);
+    pylith::topology::Field* solution = _integrationData->getField(pylith::feassemble::IntegrationData::solution);
     assert(solution);
 
     // Zero Jacobian

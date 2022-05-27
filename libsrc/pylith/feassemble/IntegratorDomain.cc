@@ -22,7 +22,10 @@
 
 #include "pylith/feassemble/UpdateStateVars.hh" // HOLDSA UpdateStateVars
 #include "pylith/feassemble/DSLabelAccess.hh" // USES DSLabelAccess
-#include "pylith/problems/IntegrationData.hh" // IntegrattionData
+#include "pylith/problems/Physics.hh" // USES Physics
+#include "pylith/feassemble/IntegrationData.hh" // USES IntegrationData
+#include "pylith/feassemble/IntegratorInterface.hh" // USES IntegratorInterface::FaceEnum
+#include "pylith/feassemble/InterfacePatches.hh" // USES InterfacePatches
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES createSubdomainMesh()
 #include "pylith/topology/Field.hh" // USES Field
@@ -150,7 +153,7 @@ void
 pylith::feassemble::IntegratorDomain::setKernelsJacobian(const std::vector<JacobianKernels>& kernels,
                                                          const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" setKernelsLHSJacobian(# kernels="<<kernels.size()<<")");
+    PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" setKernelsJacobian(# kernels="<<kernels.size()<<")");
 
     PetscErrorCode err;
     DSLabelAccess dsLabel(solution.getDM(), _labelName.c_str(), _labelValue);
@@ -245,19 +248,121 @@ pylith::feassemble::IntegratorDomain::initialize(const pylith::topology::Field& 
 
 
 // ------------------------------------------------------------------------------------------------
+// Set data needed for integrating faces on interior interfaces.
+void
+pylith::feassemble::IntegratorDomain::setInterfaceData(const pylith::topology::Field* solution,
+                                                       const std::vector<pylith::feassemble::IntegratorInterface*> interfaceIntegrators) const {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" setInterfaceData(# interfaceIntegrators="<<interfaceIntegrators.size()<<")");
+    typedef pylith::feassemble::InterfacePatches::keysmap_t keysmap_t;
+
+    assert(solution);
+    PetscErrorCode err;
+    PetscDM dmSoln = solution->getDM();assert(dmSoln);
+    PetscDMLabel dmLabel = NULL;
+    err = DMGetLabel(dmSoln, _labelName.c_str(), &dmLabel);PYLITH_CHECK_ERROR(err);assert(dmLabel);
+
+    const PetscInt numParts = 2;
+    const PetscInt parts[numParts] = {
+        LHS,
+        RHS,
+    };
+    PetscInt faultFaces[2];
+
+    const size_t numIntegrators = interfaceIntegrators.size();
+    for (size_t i = 0; i < numIntegrators; ++i) {
+        const pylith::feassemble::IntegratorInterface* integrator = interfaceIntegrators[i];
+        const pylith::feassemble::InterfacePatches* patches = integrator->getIntegrationPatches();assert(patches);
+        const keysmap_t patchKeys = patches->getKeys();
+        for (keysmap_t::const_iterator iter = patchKeys.begin(); iter != patchKeys.end(); ++iter) {
+            size_t faceCount = 0;
+
+            // Check negative face
+            const char* negativeLabelName = iter->second.negative.getName();
+            const PetscInt negativeLabelValue = iter->second.negative.getValue();
+            if ((std::string(negativeLabelName) == _labelName) && (negativeLabelValue == _labelValue)) {
+                faultFaces[faceCount++] = pylith::feassemble::IntegratorInterface::NEGATIVE_FACE;
+            } // if
+
+            // Check positive face
+            const char* positiveLabelName = iter->second.positive.getName();
+            const PetscInt positiveLabelValue = iter->second.positive.getValue();
+            if ((std::string(positiveLabelName) == _labelName) && (positiveLabelValue == _labelValue)) {
+                faultFaces[faceCount++] = pylith::feassemble::IntegratorInterface::POSITIVE_FACE;
+            } // if
+
+            if (faceCount > 0) { // JOURNAL DEBUGGING
+                pythia::journal::debug_t debug(GenericComponent::getName());
+                debug << pythia::journal::at(__HERE__) \
+                      << "    Found matching interface patch "
+                      << patches->getLabelName() << "=" << iter->first << ":";
+                for (size_t i = 0; i < faceCount; ++i) {
+                    if (faultFaces[i] == pylith::feassemble::IntegratorInterface::NEGATIVE_FACE) {
+                        debug << " negative face";
+                    } else {
+                        if (faultFaces[i] == pylith::feassemble::IntegratorInterface::POSITIVE_FACE) {
+                            debug << " positive face";
+                        } // if
+                    } // if/else
+                } // for
+                debug << "." << pythia::journal::endl;
+            } // JOURNAL DEBUGGING
+
+            for (PetscInt iFace = 0; iFace < faceCount; ++iFace) {
+                for (PetscInt iPart = 0; iPart < numParts; ++iPart) {
+                    const PetscInt part = integrator->getWeakFormPart(parts[iPart], faultFaces[iFace]);
+
+                    assert(_auxiliaryField);
+                    err = DMSetAuxiliaryVec(dmSoln, dmLabel, _labelValue, part,
+                                            _auxiliaryField->getLocalVector());PYLITH_CHECK_ERROR(err);
+                } // for
+            } // for
+        } // for
+    } // for
+
+    PYLITH_METHOD_END;
+} // setInterfaceData
+
+
+// ------------------------------------------------------------------------------------------------
+// Set auxiliary field values for current time.
+void
+pylith::feassemble::IntegratorDomain::setState(const PylithReal t) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("setState(t="<<t<<")");
+
+    Integrator::setState(t);
+
+    assert(_physics);
+    _physics->updateAuxiliaryField(_auxiliaryField, t);
+
+    pythia::journal::debug_t debug(GenericComponent::getName());
+    if (debug.state()) {
+        assert(_auxiliaryField);
+        PYLITH_JOURNAL_DEBUG("IntegratorInterface component '" << GenericComponent::getName() << "' for '"
+                                                               <<_physics->getIdentifier()
+                                                               << "': viewing auxiliary field.");
+        _auxiliaryField->view("IntegratorInterface auxiliary field", pylith::topology::Field::VIEW_ALL);
+    } // if
+
+    PYLITH_METHOD_END;
+} // setState
+
+
+// ------------------------------------------------------------------------------------------------
 // Compute RHS residual for G(t,s).
 void
 pylith::feassemble::IntegratorDomain::computeRHSResidual(pylith::topology::Field* residual,
-                                                         const pylith::problems::IntegrationData& integrationData) {
+                                                         const pylith::feassemble::IntegrationData& integrationData) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" computeRHSResidual(residual="<<residual<<", integrationData="<<integrationData.str()<<")");
     if (!_hasRHSResidual) { PYLITH_METHOD_END;}
     assert(residual);
 
-    const pylith::topology::Field* solution = integrationData.getField(pylith::problems::IntegrationData::solution);
+    const pylith::topology::Field* solution = integrationData.getField(pylith::feassemble::IntegrationData::solution);
     assert(solution);
-    const PylithReal t = integrationData.getScalar(pylith::problems::IntegrationData::time);
-    const PylithReal dt = integrationData.getScalar(pylith::problems::IntegrationData::time_step);
+    const PylithReal t = integrationData.getScalar(pylith::feassemble::IntegrationData::time);
+    const PylithReal dt = integrationData.getScalar(pylith::feassemble::IntegrationData::time_step);
 
     DSLabelAccess dsLabel(solution->getDM(), _labelName.c_str(), _labelValue);
     _setKernelConstants(*solution, dt);
@@ -282,17 +387,17 @@ pylith::feassemble::IntegratorDomain::computeRHSResidual(pylith::topology::Field
 // Compute LHS residual for F(t,s,\dot{s}).
 void
 pylith::feassemble::IntegratorDomain::computeLHSResidual(pylith::topology::Field* residual,
-                                                         const pylith::problems::IntegrationData& integrationData) {
+                                                         const pylith::feassemble::IntegrationData& integrationData) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" computeLHSResidual(residual="<<residual<<", integrationData="<<integrationData.str()<<")");
     if (!_hasLHSResidual) { PYLITH_METHOD_END; }
 
-    const pylith::topology::Field* solution = integrationData.getField(pylith::problems::IntegrationData::solution);
+    const pylith::topology::Field* solution = integrationData.getField(pylith::feassemble::IntegrationData::solution);
     assert(solution);
-    const pylith::topology::Field* solutionDot = integrationData.getField(pylith::problems::IntegrationData::solution_dot);
+    const pylith::topology::Field* solutionDot = integrationData.getField(pylith::feassemble::IntegrationData::solution_dot);
     assert(solutionDot);
-    const PylithReal t = integrationData.getScalar(pylith::problems::IntegrationData::time);
-    const PylithReal dt = integrationData.getScalar(pylith::problems::IntegrationData::time_step);
+    const PylithReal t = integrationData.getScalar(pylith::feassemble::IntegrationData::time);
+    const PylithReal dt = integrationData.getScalar(pylith::feassemble::IntegrationData::time_step);
 
     DSLabelAccess dsLabel(solution->getDM(), _labelName.c_str(), _labelValue);
     _setKernelConstants(*solution, dt);
@@ -318,20 +423,20 @@ pylith::feassemble::IntegratorDomain::computeLHSResidual(pylith::topology::Field
 void
 pylith::feassemble::IntegratorDomain::computeLHSJacobian(PetscMat jacobianMat,
                                                          PetscMat precondMat,
-                                                         const pylith::problems::IntegrationData& integrationData) {
+                                                         const pylith::feassemble::IntegrationData& integrationData) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" computeLHSJacobian(jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", integrationData="<<integrationData.str()<<")");
 
     _needNewLHSJacobian = false;
     if (!_hasLHSJacobian) { PYLITH_METHOD_END;}
 
-    const pylith::topology::Field* solution = integrationData.getField(pylith::problems::IntegrationData::solution);
+    const pylith::topology::Field* solution = integrationData.getField(pylith::feassemble::IntegrationData::solution);
     assert(solution);
-    const pylith::topology::Field* solutionDot = integrationData.getField(pylith::problems::IntegrationData::solution_dot);
+    const pylith::topology::Field* solutionDot = integrationData.getField(pylith::feassemble::IntegrationData::solution_dot);
     assert(solutionDot);
-    const PylithReal t = integrationData.getScalar(pylith::problems::IntegrationData::time);
-    const PylithReal dt = integrationData.getScalar(pylith::problems::IntegrationData::time_step);
-    const PylithReal s_tshift = integrationData.getScalar(pylith::problems::IntegrationData::s_tshift);
+    const PylithReal t = integrationData.getScalar(pylith::feassemble::IntegrationData::time);
+    const PylithReal dt = integrationData.getScalar(pylith::feassemble::IntegrationData::time_step);
+    const PylithReal s_tshift = integrationData.getScalar(pylith::feassemble::IntegrationData::s_tshift);
 
     DSLabelAccess dsLabel(solution->getDM(), _labelName.c_str(), _labelValue);
     _setKernelConstants(*solution, dt);
@@ -357,18 +462,18 @@ pylith::feassemble::IntegratorDomain::computeLHSJacobian(PetscMat jacobianMat,
 // Compute inverse of lumped LHS Jacobian for F(t,s,\dot{s}).
 void
 pylith::feassemble::IntegratorDomain::computeLHSJacobianLumpedInv(pylith::topology::Field* jacobianInv,
-                                                                  const pylith::problems::IntegrationData& integrationData) {
+                                                                  const pylith::feassemble::IntegrationData& integrationData) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" computeLHSJacobianLumpedInv(jacobianInv="<<jacobianInv<<", integrationData="<<integrationData.str()<<")");
 
     _needNewLHSJacobianLumped = false;
     if (!_hasLHSJacobianLumped) { PYLITH_METHOD_END;}
 
-    const pylith::topology::Field* solution = integrationData.getField(pylith::problems::IntegrationData::solution);
+    const pylith::topology::Field* solution = integrationData.getField(pylith::feassemble::IntegrationData::solution);
     assert(solution);
-    const PylithReal t = integrationData.getScalar(pylith::problems::IntegrationData::time);
-    const PylithReal dt = integrationData.getScalar(pylith::problems::IntegrationData::time_step);
-    const PylithReal s_tshift = integrationData.getScalar(pylith::problems::IntegrationData::s_tshift);
+    const PylithReal t = integrationData.getScalar(pylith::feassemble::IntegrationData::time);
+    const PylithReal dt = integrationData.getScalar(pylith::feassemble::IntegrationData::time_step);
+    const PylithReal s_tshift = integrationData.getScalar(pylith::feassemble::IntegrationData::s_tshift);
 
     DSLabelAccess dsLabel(solution->getDM(), _labelName.c_str(), _labelValue);
     _setKernelConstants(*solution, dt);

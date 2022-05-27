@@ -23,7 +23,7 @@
 #include "pylith/feassemble/InterfacePatches.hh" // USES InterfacePatches
 #include "pylith/feassemble/DSLabelAccess.hh" // USES DSLabelAccess
 #include "pylith/problems/Physics.hh" // USES Physics
-#include "pylith/problems/IntegrationData.hh" // USES IntegrationData
+#include "pylith/feassemble/IntegrationData.hh" // USES IntegrationData
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor::optimizeClosure()
@@ -77,7 +77,7 @@ public:
             void computeResidual(pylith::topology::Field* residual,
                                  const pylith::feassemble::IntegratorInterface* integrator,
                                  pylith::feassemble::Integrator::EquationPart equationPart,
-                                 const pylith::problems::IntegrationData& integrationData);
+                                 const pylith::feassemble::IntegrationData& integrationData);
 
             /** Compute Jacobian using current kernels.
              *
@@ -92,12 +92,19 @@ public:
                                  PetscMat precondMat,
                                  const pylith::feassemble::IntegratorInterface* integrator,
                                  pylith::feassemble::Integrator::EquationPart equationPart,
-                                 const pylith::problems::IntegrationData& integrationData);
+                                 const pylith::feassemble::IntegrationData& integrationData);
+
+            static const PetscInt max_face_enums; ///< Maximum number of fault faces (negative, positive, fault).
+            static const PetscInt num_face_enums; ///< Number of fault faces (negative, positive, fault).
+            static const PetscInt max_parts; ///< Maximum number of equation parts.
 
             static const char* genericComponent;
 
         }; // _IntegratorInterface
         const char* _IntegratorInterface::genericComponent = "integratorinterface";
+        const PetscInt _IntegratorInterface::max_face_enums = 10;
+        const PetscInt _IntegratorInterface::num_face_enums = 3;
+        const PetscInt _IntegratorInterface::max_parts = 10;
 
     } // feassemble
 } // pylith
@@ -182,6 +189,14 @@ pylith::feassemble::IntegratorInterface::setIntegrationPatches(pylith::feassembl
 
 
 // ------------------------------------------------------------------------------------------------
+// Get integration patches.
+const pylith::feassemble::InterfacePatches*
+pylith::feassemble::IntegratorInterface::getIntegrationPatches(void) const {
+    return _integrationPatches;
+} // getIntegrationPatches
+
+
+// ------------------------------------------------------------------------------------------------
 // Set kernels for residual.
 void
 pylith::feassemble::IntegratorInterface::setKernelsResidual(const std::vector<ResidualKernels>& kernels,
@@ -194,26 +209,30 @@ pylith::feassemble::IntegratorInterface::setKernelsResidual(const std::vector<Re
     const keysmap_t& keysmap = _integrationPatches->getKeys();
     for (keysmap_t::const_iterator iter = keysmap.begin(); iter != keysmap.end(); ++iter) {
         const PetscWeakForm weakForm = iter->second.cohesive.getWeakForm();
+        std::vector<ResidualKernels> kernelsPatch(kernels);
 
-        for (size_t i = 0; i < kernels.size(); ++i) {
+        for (size_t i = 0; i < kernelsPatch.size(); ++i) {
             PetscFormKey key;
+
+            const PetscInt interfacePart = getWeakFormPart(kernelsPatch[i].part, kernelsPatch[i].face);
+
             switch (kernels[i].face) {
             case IntegratorInterface::NEGATIVE_FACE:
-                key = iter->second.negative.getPetscKey(solution, kernels[i].part, kernels[i].subfield.c_str());
+                key = iter->second.negative.getPetscKey(solution, interfacePart, kernelsPatch[i].subfield.c_str());
                 break;
             case IntegratorInterface::POSITIVE_FACE:
-                key = iter->second.positive.getPetscKey(solution, kernels[i].part, kernels[i].subfield.c_str());
+                key = iter->second.positive.getPetscKey(solution, interfacePart, kernelsPatch[i].subfield.c_str());
                 break;
             case IntegratorInterface::FAULT_FACE:
-                key = iter->second.cohesive.getPetscKey(solution, kernels[i].part, kernels[i].subfield.c_str());
+                key = iter->second.cohesive.getPetscKey(solution, interfacePart, kernelsPatch[i].subfield.c_str());
                 break;
             default:
-                PYLITH_JOURNAL_LOGICERROR("Unknown integration face.");
+                PYLITH_JOURNAL_LOGICERROR("Unknown integration face ("<<kernelsPatch[i].face<<").");
             } // switch
             err = PetscWeakFormAddBdResidual(weakForm, key.label, key.value, key.field, key.part,
-                                             kernels[i].r0, kernels[i].r1);PYLITH_CHECK_ERROR(err);
+                                             kernelsPatch[i].r0, kernelsPatch[i].r1);PYLITH_CHECK_ERROR(err);
 
-            switch (kernels[i].part) {
+            switch (kernelsPatch[i].part) {
             case LHS:
                 _hasLHSResidual = true;
                 break;
@@ -249,24 +268,27 @@ pylith::feassemble::IntegratorInterface::setKernelsJacobian(const std::vector<Ja
     const keysmap_t& keysmap = _integrationPatches->getKeys();
     for (keysmap_t::const_iterator iter = keysmap.begin(); iter != keysmap.end(); ++iter) {
         const PetscWeakForm weakForm = iter->second.cohesive.getWeakForm();
+        std::vector<JacobianKernels> kernelsPatch(kernels);
 
         PetscInt numFields = 0;
         err = PetscWeakFormGetNumFields(weakForm, &numFields);PYLITH_CHECK_ERROR(err);
 
-        for (size_t i = 0; i < kernels.size(); ++i) {
+        for (size_t i = 0; i < kernelsPatch.size(); ++i) {
             PetscFormKey key;
-            switch (kernels[i].face) {
+            const PetscInt interfacePart = getWeakFormPart(kernelsPatch[i].part, kernelsPatch[i].face);
+
+            switch (kernelsPatch[i].face) {
             case IntegratorInterface::NEGATIVE_FACE:
-                key = iter->second.negative.getPetscKey(solution, kernels[i].part, kernels[i].subfieldTrial.c_str(),
-                                                        kernels[i].subfieldBasis.c_str());
+                key = iter->second.negative.getPetscKey(solution, interfacePart, kernelsPatch[i].subfieldTrial.c_str(),
+                                                        kernelsPatch[i].subfieldBasis.c_str());
                 break;
             case IntegratorInterface::POSITIVE_FACE:
-                key = iter->second.positive.getPetscKey(solution, kernels[i].part, kernels[i].subfieldTrial.c_str(),
-                                                        kernels[i].subfieldBasis.c_str());
+                key = iter->second.positive.getPetscKey(solution, interfacePart, kernelsPatch[i].subfieldTrial.c_str(),
+                                                        kernelsPatch[i].subfieldBasis.c_str());
                 break;
             case IntegratorInterface::FAULT_FACE:
-                key = iter->second.cohesive.getPetscKey(solution, kernels[i].part, kernels[i].subfieldTrial.c_str(),
-                                                        kernels[i].subfieldBasis.c_str());
+                key = iter->second.cohesive.getPetscKey(solution, interfacePart, kernelsPatch[i].subfieldTrial.c_str(),
+                                                        kernelsPatch[i].subfieldBasis.c_str());
                 break;
             default:
                 PYLITH_JOURNAL_LOGICERROR("Unknown integration face.");
@@ -274,9 +296,9 @@ pylith::feassemble::IntegratorInterface::setKernelsJacobian(const std::vector<Ja
             const PetscInt i_trial = key.field / numFields;
             const PetscInt i_basis = key.field % numFields;
             err = PetscWeakFormAddBdJacobian(weakForm, key.label, key.value, i_trial, i_basis, key.part,
-                                             kernels[i].j0, kernels[i].j1, kernels[i].j2, kernels[i].j3);PYLITH_CHECK_ERROR(err);
+                                             kernelsPatch[i].j0, kernelsPatch[i].j1, kernelsPatch[i].j2, kernelsPatch[i].j3);PYLITH_CHECK_ERROR(err);
 
-            switch (kernels[i].part) {
+            switch (kernelsPatch[i].part) {
             case LHS:
                 _hasLHSJacobian = true;
                 break;
@@ -284,7 +306,7 @@ pylith::feassemble::IntegratorInterface::setKernelsJacobian(const std::vector<Ja
                 _hasLHSJacobianLumped = true;
                 break;
             default:
-                PYLITH_JOURNAL_LOGICERROR("Unknown Jacobian part " << kernels[i].part <<".");
+                PYLITH_JOURNAL_LOGICERROR("Unknown Jacobian part " << kernelsPatch[i].part <<".");
             } // switch
         } // for
     } // for
@@ -300,11 +322,23 @@ pylith::feassemble::IntegratorInterface::setKernelsJacobian(const std::vector<Ja
 
 
 // ------------------------------------------------------------------------------------------------
+// Compute weak form key part for face.
+PetscInt
+pylith::feassemble::IntegratorInterface::getWeakFormPart(const PetscInt part,
+                                                         const PetscInt face) const {
+    const PetscInt max_face_enums = _IntegratorInterface::max_face_enums;
+    const PetscInt num_face_enums = _IntegratorInterface::num_face_enums;
+    const PetscInt max_parts = _IntegratorInterface::max_parts;
+    return _labelValue*(max_parts*max_face_enums) + part*num_face_enums + face;
+} // getWeakFormPart
+
+
+// ------------------------------------------------------------------------------------------------
 // Initialize integration domain, auxiliary field, and derived field. Update observers.
 void
 pylith::feassemble::IntegratorInterface::initialize(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("intialize(solution="<<solution.getLabel()<<")");
+    PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" intialize(solution="<<solution.getLabel()<<")");
 
     const bool isSubmesh = true;
     delete _interfaceMesh;_interfaceMesh = new pylith::topology::Mesh(isSubmesh);assert(_interfaceMesh);
@@ -321,9 +355,17 @@ pylith::feassemble::IntegratorInterface::initialize(const pylith::topology::Fiel
     const keysmap_t& keysmap = _integrationPatches->getKeys();
     const pylith::topology::Field* auxiliaryField = getAuxiliaryField();assert(auxiliaryField);
     for (keysmap_t::const_iterator iter = keysmap.begin(); iter != keysmap.end(); ++iter) {
-        const pylith::feassemble::Integrator::EquationPart part = pylith::feassemble::Integrator::LHS;
-        PetscFormKey key = iter->second.cohesive.getPetscKey(solution, part);
-        err = DMSetAuxiliaryVec(dmSoln, key.label, key.value, key.part, auxiliaryField->getLocalVector());PYLITH_CHECK_ERROR(err);
+        const size_t numParts = 2;
+        const EquationPart equationParts[numParts] = {
+            pylith::feassemble::Integrator::RHS,
+            pylith::feassemble::Integrator::LHS,
+        };
+        for (size_t i = 0; i < numParts; ++i) {
+            PetscFormKey key = iter->second.cohesive.getPetscKey(solution, equationParts[i]);
+            PetscInt part = getWeakFormPart(key.part, IntegratorInterface::FAULT_FACE);
+            err = DMSetAuxiliaryVec(dmSoln, key.label, key.value, part,
+                                    auxiliaryField->getLocalVector());PYLITH_CHECK_ERROR(err);
+        } // for
     } // for
 
     PYLITH_METHOD_END;
@@ -331,13 +373,13 @@ pylith::feassemble::IntegratorInterface::initialize(const pylith::topology::Fiel
 
 
 // ------------------------------------------------------------------------------------------------
-// Update auxiliary field values to current time.
+// Set auxiliary field values for current time.
 void
-pylith::feassemble::IntegratorInterface::updateState(const double t) {
+pylith::feassemble::IntegratorInterface::setState(const double t) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("updateState(t="<<t<<")");
+    PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" setState(t="<<t<<")");
 
-    Integrator::updateState(t);
+    Integrator::setState(t);
 
     assert(_physics);
     _physics->updateAuxiliaryField(_auxiliaryField, t);
@@ -352,16 +394,16 @@ pylith::feassemble::IntegratorInterface::updateState(const double t) {
     } // if
 
     PYLITH_METHOD_END;
-} // updateState
+} // setState
 
 
 // ------------------------------------------------------------------------------------------------
 // Compute RHS residual for G(t,s).
 void
 pylith::feassemble::IntegratorInterface::computeRHSResidual(pylith::topology::Field* residual,
-                                                            const pylith::problems::IntegrationData& integrationData) {
+                                                            const pylith::feassemble::IntegrationData& integrationData) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("computeRHSResidual(residual="<<residual<<", integrationData="<<integrationData.str()<<")");
+    PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" computeRHSResidual(residual="<<residual<<", integrationData="<<integrationData.str()<<")");
     if (!_hasRHSResidual) { PYLITH_METHOD_END;}
 
     _IntegratorInterface::computeResidual(residual, this, pylith::feassemble::Integrator::RHS, integrationData);
@@ -374,9 +416,9 @@ pylith::feassemble::IntegratorInterface::computeRHSResidual(pylith::topology::Fi
 // Compute LHS residual for F(t,s,\dot{s}).
 void
 pylith::feassemble::IntegratorInterface::computeLHSResidual(pylith::topology::Field* residual,
-                                                            const pylith::problems::IntegrationData& integrationData) {
+                                                            const pylith::feassemble::IntegrationData& integrationData) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("computeLHSResidual(residual="<<residual<<", integrationData="<<integrationData.str()<<")");
+    PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" computeLHSResidual(residual="<<residual<<", integrationData="<<integrationData.str()<<")");
     if (!_hasLHSResidual) { PYLITH_METHOD_END;}
 
     _IntegratorInterface::computeResidual(residual, this, pylith::feassemble::Integrator::LHS, integrationData);
@@ -390,9 +432,9 @@ pylith::feassemble::IntegratorInterface::computeLHSResidual(pylith::topology::Fi
 void
 pylith::feassemble::IntegratorInterface::computeLHSJacobian(PetscMat jacobianMat,
                                                             PetscMat precondMat,
-                                                            const pylith::problems::IntegrationData& integrationData) {
+                                                            const pylith::feassemble::IntegrationData& integrationData) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("computeLHSJacobian(jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", integrationData="<<integrationData.str()<<")");
+    PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" computeLHSJacobian(jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", integrationData="<<integrationData.str()<<")");
 
     _needNewLHSJacobian = false;
     if (!_hasLHSJacobian) { PYLITH_METHOD_END;}
@@ -407,9 +449,9 @@ pylith::feassemble::IntegratorInterface::computeLHSJacobian(PetscMat jacobianMat
 // Compute LHS Jacobian for F(t,s,\dot{s}).
 void
 pylith::feassemble::IntegratorInterface::computeLHSJacobianLumpedInv(pylith::topology::Field* jacobianInv,
-                                                                     const pylith::problems::IntegrationData& integrationData) {
+                                                                     const pylith::feassemble::IntegrationData& integrationData) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("computeLHSJacobianLumpedInv(jacobianInv="<<jacobianInv<<", integrationData="<<integrationData.str()<<") empty method");
+    PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" computeLHSJacobianLumpedInv(jacobianInv="<<jacobianInv<<", integrationData="<<integrationData.str()<<") empty method");
 
     _needNewLHSJacobianLumped = false;
     // No implementation needed for interface.
@@ -424,7 +466,7 @@ void
 pylith::feassemble::_IntegratorInterface::computeResidual(pylith::topology::Field* residual,
                                                           const pylith::feassemble::IntegratorInterface* integrator,
                                                           pylith::feassemble::Integrator::EquationPart equationPart,
-                                                          const pylith::problems::IntegrationData& integrationData) {
+                                                          const pylith::feassemble::IntegrationData& integrationData) {
     PYLITH_METHOD_BEGIN;
     typedef InterfacePatches::keysmap_t keysmap_t;
 
@@ -437,13 +479,13 @@ pylith::feassemble::_IntegratorInterface::computeResidual(pylith::topology::Fiel
     assert(integrator);
     assert(residual);
 
-    const pylith::topology::Field* solution = integrationData.getField(pylith::problems::IntegrationData::solution);
+    const pylith::topology::Field* solution = integrationData.getField(pylith::feassemble::IntegrationData::solution);
     assert(solution);
-    const PylithReal t = integrationData.getScalar(pylith::problems::IntegrationData::time);
-    const PylithReal dt = integrationData.getScalar(pylith::problems::IntegrationData::time_step);
+    const PylithReal t = integrationData.getScalar(pylith::feassemble::IntegrationData::time);
+    const PylithReal dt = integrationData.getScalar(pylith::feassemble::IntegrationData::time_step);
     PetscVec solutionDotVec = NULL;
     if (equationPart == pylith::feassemble::Integrator::LHS) {
-        const pylith::topology::Field* solutionDot = integrationData.getField(pylith::problems::IntegrationData::solution_dot);
+        const pylith::topology::Field* solutionDot = integrationData.getField(pylith::feassemble::IntegrationData::solution_dot);
         assert(solutionDot);
         solutionDotVec = solutionDot->getLocalVector();
     } // if
@@ -458,8 +500,13 @@ pylith::feassemble::_IntegratorInterface::computeResidual(pylith::topology::Fiel
     for (keysmap_t::const_iterator iter = keysmap.begin(); iter != keysmap.end(); ++iter) {
         PetscFormKey weakFormKeys[3];
         weakFormKeys[0] = iter->second.negative.getPetscKey(*solution, equationPart);
+        weakFormKeys[0].part = integrator->getWeakFormPart(equationPart, IntegratorInterface::NEGATIVE_FACE);
+
         weakFormKeys[1] = iter->second.positive.getPetscKey(*solution, equationPart);
+        weakFormKeys[1].part = integrator->getWeakFormPart(equationPart, IntegratorInterface::POSITIVE_FACE);
+
         weakFormKeys[2] = iter->second.cohesive.getPetscKey(*solution, equationPart);
+        weakFormKeys[2].part = integrator->getWeakFormPart(equationPart, IntegratorInterface::FAULT_FACE);
 
         PetscIS patchCellsIS = NULL;
         PetscInt numPatchCells = 0;
@@ -488,7 +535,7 @@ pylith::feassemble::_IntegratorInterface::computeJacobian(PetscMat jacobianMat,
                                                           PetscMat precondMat,
                                                           const pylith::feassemble::IntegratorInterface* integrator,
                                                           pylith::feassemble::Integrator::EquationPart equationPart,
-                                                          const pylith::problems::IntegrationData& integrationData) {
+                                                          const pylith::feassemble::IntegrationData& integrationData) {
     PYLITH_METHOD_BEGIN;
     typedef InterfacePatches::keysmap_t keysmap_t;
 
@@ -502,13 +549,13 @@ pylith::feassemble::_IntegratorInterface::computeJacobian(PetscMat jacobianMat,
     assert(precondMat);
     assert(integrator);
 
-    const pylith::topology::Field* solution = integrationData.getField(pylith::problems::IntegrationData::solution);
+    const pylith::topology::Field* solution = integrationData.getField(pylith::feassemble::IntegrationData::solution);
     assert(solution);
-    const pylith::topology::Field* solutionDot = integrationData.getField(pylith::problems::IntegrationData::solution_dot);
+    const pylith::topology::Field* solutionDot = integrationData.getField(pylith::feassemble::IntegrationData::solution_dot);
     assert(solutionDot);
-    const PylithReal t = integrationData.getScalar(pylith::problems::IntegrationData::time);
-    const PylithReal dt = integrationData.getScalar(pylith::problems::IntegrationData::time_step);
-    const PylithReal s_tshift = integrationData.getScalar(pylith::problems::IntegrationData::s_tshift);
+    const PylithReal t = integrationData.getScalar(pylith::feassemble::IntegrationData::time);
+    const PylithReal dt = integrationData.getScalar(pylith::feassemble::IntegrationData::time_step);
+    const PylithReal s_tshift = integrationData.getScalar(pylith::feassemble::IntegrationData::s_tshift);
 
     integrator->_setKernelConstants(*solution, dt);
 
@@ -519,8 +566,13 @@ pylith::feassemble::_IntegratorInterface::computeJacobian(PetscMat jacobianMat,
     for (keysmap_t::const_iterator iter = keysmap.begin(); iter != keysmap.end(); ++iter) {
         PetscFormKey weakFormKeys[3];
         weakFormKeys[0] = iter->second.negative.getPetscKey(*solution, equationPart);
+        weakFormKeys[0].part = integrator->getWeakFormPart(equationPart, IntegratorInterface::NEGATIVE_FACE);
+
         weakFormKeys[1] = iter->second.positive.getPetscKey(*solution, equationPart);
+        weakFormKeys[1].part = integrator->getWeakFormPart(equationPart, IntegratorInterface::POSITIVE_FACE);
+
         weakFormKeys[2] = iter->second.cohesive.getPetscKey(*solution, equationPart);
+        weakFormKeys[2].part = integrator->getWeakFormPart(equationPart, IntegratorInterface::FAULT_FACE);
 
         PetscIS patchCellsIS = NULL;
         PetscInt numPatchCells = 0;

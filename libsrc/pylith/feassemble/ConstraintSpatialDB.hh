@@ -60,17 +60,17 @@ public:
      */
     void initialize(const pylith::topology::Field& solution);
 
-    /** Update auxiliary field values to current time.
+    /** Set auxiliary field values for current time.
      *
      * @param[in] t Current time.
      */
-    void updateState(const PylithReal t);
+    void setState(const PylithReal t);
 
     /** Set constrained values in solution field.
      *
      * @param[inout] integrationData Data needed to integrate governing equation.
      */
-    void setSolution(pylith::problems::IntegrationData* integrationData);
+    void setSolution(pylith::feassemble::IntegrationData* integrationData);
 
     // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:

@@ -131,19 +131,19 @@ public:
                   const PylithReal dt,
                   const pylith::topology::Field& solution);
 
-    /** Update auxiliary field values to current time.
+    /** Set auxiliary field values for current time.
      *
      * @param[in] t Current time.
      */
     virtual
-    void updateState(const PylithReal t);
+    void setState(const PylithReal t);
 
     /** Set constrained values in solution field.
      *
      * @param[inout] integrationData Data needed to integrate governing equation.
      */
     virtual
-    void setSolution(pylith::problems::IntegrationData* integrationData) = 0;
+    void setSolution(pylith::feassemble::IntegrationData* integrationData) = 0;
 
     // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:

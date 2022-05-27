@@ -134,12 +134,12 @@ public:
                   const PylithReal dt,
                   const pylith::topology::Field& solution);
 
-    /** Update auxiliary field values to current time.
+    /** Set auxiliary field values for current time.
      *
      * @param[in] t Current time.
      */
     virtual
-    void updateState(const PylithReal t);
+    void setState(const PylithReal t);
 
     /** Compute RHS residual for G(t,s).
      *
@@ -148,7 +148,7 @@ public:
      */
     virtual
     void computeRHSResidual(pylith::topology::Field* residual,
-                            const pylith::problems::IntegrationData& integrationData) = 0;
+                            const pylith::feassemble::IntegrationData& integrationData) = 0;
 
     /** Compute LHS residual for F(t,s,\dot{s}).
      *
@@ -157,7 +157,7 @@ public:
      */
     virtual
     void computeLHSResidual(pylith::topology::Field* residual,
-                            const pylith::problems::IntegrationData& integrationData) = 0;
+                            const pylith::feassemble::IntegrationData& integrationData) = 0;
 
     /** Compute LHS Jacobian and preconditioner for F(t,s,\dot{s}) with implicit time-stepping.
      *
@@ -168,7 +168,7 @@ public:
     virtual
     void computeLHSJacobian(PetscMat jacobianMat,
                             PetscMat precondMat,
-                            const pylith::problems::IntegrationData& integrationData) = 0;
+                            const pylith::feassemble::IntegrationData& integrationData) = 0;
 
     /** Compute inverse of lumped LHS Jacobian for F(t,s,\dot{s}) with explicit time-stepping.
      *
@@ -177,7 +177,7 @@ public:
      */
     virtual
     void computeLHSJacobianLumpedInv(pylith::topology::Field* jacobianInv,
-                                     const pylith::problems::IntegrationData& integrationData) = 0;
+                                     const pylith::feassemble::IntegrationData& integrationData) = 0;
 
     // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
 protected:
