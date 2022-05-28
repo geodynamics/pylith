@@ -53,7 +53,7 @@ class TimeDependent(Problem, ModuleTimeDependent):
             # Output the solution for the domain and ground surface
             solution_observers = [domain, ground_surface]
 
-            # Use the quasistatic formulation and linear solver
+            # Use the quasistatic formulation, linear solver, and set appropriate default solver settings.
             formulation = quasistatic
             solver = linear
 
@@ -63,6 +63,10 @@ class TimeDependent(Problem, ModuleTimeDependent):
             end_time = 2.0*year
             initial_dt = 0.5*year
             max_timesteps = 20
+
+            [pylithapp.greensfns.petsc_defaults]
+            solver = True
+            monitors = True
         """
     }
 

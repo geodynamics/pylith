@@ -23,7 +23,7 @@
 
 namespace pylith {
     namespace materials {
-        class Elasticity : public pylith::materials::Material {
+        class Elasticity: public pylith::materials::Material {
             // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////
 public:
 
@@ -93,6 +93,15 @@ public:
              */
             pylith::topology::Field* createDerivedField(const pylith::topology::Field& solution,
                                                         const pylith::topology::Mesh& domainMesh);
+
+            /** Get default PETSc solver options appropriate for material.
+             *
+             * @param[in] isParallel True if running in parallel, False if running in serial.
+             * @param[in] hasFault True if problem has fault, False otherwise.
+             * @returns PETSc solver options.
+             */
+            pylith::utils::PetscOptions* getSolverDefaults(const bool isParallel,
+                                                           const bool hasFault) const;
 
             // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////
 protected:

@@ -29,6 +29,7 @@
 #include "pylith/problems/ObserversSoln.hh" // USES ObserversSoln
 #include "pylith/problems/InitialCondition.hh" // USES InitialCondition
 #include "pylith/problems/ProgressMonitorTime.hh" // USES ProgressMonitorTime
+#include "pylith/utils/PetscOptions.hh" // USES SolverDefaults
 
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
@@ -383,6 +384,7 @@ pylith::problems::TimeDependent::initialize(void) {
     } // default
     } // switch
 
+    pylith::utils::PetscDefaults::set(*solution, _materials[0], _petscDefaults);
     err = TSSetFromOptions(_ts);PYLITH_CHECK_ERROR(err);
     err = TSSetUp(_ts);PYLITH_CHECK_ERROR(err);
 

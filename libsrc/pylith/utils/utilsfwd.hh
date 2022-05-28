@@ -29,10 +29,13 @@
 
 namespace pylith {
     namespace utils {
+        class PetscOptions;
+        class PetscDefaults;
 
         class EventLogger;
         class GenericComponent;
         class PyreComponent;
+
         class PylithVersion;
         class PetscVersion;
         class DependenciesVersion;
@@ -42,8 +45,6 @@ namespace pylith {
     } // utils
 } // pylith
 
-
 #endif // pylith_utils_utilsfwd_hh
-
 
 // End of file

@@ -139,6 +139,15 @@ public:
     pylith::topology::Field* createDerivedField(const pylith::topology::Field& solution,
                                                 const pylith::topology::Mesh& domainMesh);
 
+    /** Get default PETSc solver options appropriate for material.
+     *
+     * @param[in] isParallel True if running in parallel, False if running in serial.
+     * @param[in] hasFault True if problem has fault, False otherwise.
+     * @returns PETSc solver options.
+     */
+    pylith::utils::PetscOptions* getSolverDefaults(const bool isParallel,
+                                                   const bool hasFault) const;
+
     // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
 
@@ -201,7 +210,7 @@ private:
     bool _useBodyForce; ///< Flag to include body force term.
     bool _useReferenceState; ///< Flag to use reference stress and strain.
     bool _useSourceDensity; ///< Flag to use source density.
-    bool _useStateVars;                                           ///< Flag to update auxiliary fields.    
+    bool _useStateVars; ///< Flag to update auxiliary fields.
     pylith::materials::RheologyPoroelasticity* _rheology; ///< Bulk rheology for elasticity.
     pylith::materials::DerivedFactoryElasticity* _derivedFactory; ///< Factory for creating derived fields.
 

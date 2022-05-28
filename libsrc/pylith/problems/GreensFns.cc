@@ -28,6 +28,7 @@
 #include "pylith/feassemble/Constraint.hh" // USES Constraint
 #include "pylith/problems/ObserversSoln.hh" // USES ObserversSoln
 #include "pylith/problems/ProgressMonitorStep.hh" // USES ProgressMonitorStep
+#include "pylith/utils/PetscOptions.hh" // USES SolverDefaults
 
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
@@ -256,6 +257,7 @@ pylith::problems::GreensFns::initialize(void) {
     } // default
     } // switch
 
+    pylith::utils::PetscDefaults::set(*solution, _materials[0], _petscDefaults);
     err = SNESSetFromOptions(_snes);PYLITH_CHECK_ERROR(err);
     err = SNESSetUp(_snes);PYLITH_CHECK_ERROR(err);
 

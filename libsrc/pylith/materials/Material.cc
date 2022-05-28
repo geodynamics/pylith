@@ -131,4 +131,13 @@ pylith::materials::Material::createConstraints(const pylith::topology::Field& so
 } // createConstraints
 
 
+// ------------------------------------------------------------------------------------------------
+// Get default PETSc solver options appropriate for material.
+pylith::utils::PetscOptions*
+pylith::materials::Material::getSolverDefaults(const bool isParallel,
+                                               const bool hasFault) const {
+    return NULL;
+}
+
+
 // End of file

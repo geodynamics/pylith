@@ -95,6 +95,12 @@ public:
      */
     SolverTypeEnum getSolverType(void) const;
 
+    /** Specify which default PETSc options to use.
+     *
+     * @param[in] flags Flags indicating which default PETSc options to set.
+     */
+    void setPetscDefaults(const int flags);
+
     /** Set manager of scales used to nondimensionalize problem.
      *
      * @param[in] dim Nondimensionalizer.
@@ -190,6 +196,7 @@ protected:
 
     pylith::problems::Physics::FormulationEnum _formulation; ///< Formulation for equations.
     SolverTypeEnum _solverType; ///< Problem (solver) type.
+    int _petscDefaults; ///< Flags for PETSc default options for problem.
 
     // PRIVATE METHODS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
