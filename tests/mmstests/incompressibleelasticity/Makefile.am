@@ -20,12 +20,12 @@ subpackage = incompressibleelasticity
 include $(top_srcdir)/subpackage.am
 include $(top_srcdir)/check.am
 
-TESTS = test_isotropiclinearelasticity
+TESTS = test_isotropiclinearincompelasticity
 
 check_PROGRAMS = $(TESTS)
 
 
-test_isotropiclinearelasticity_SOURCES = \
+test_isotropiclinearincompelasticity_SOURCES = \
 	TestIncompressibleElasticity.cc \
 	TestIsotropicLinearIncompElasticity.cc \
 	TestIsotropicLinearIncompElasticity2D_UniformPressure.cc \

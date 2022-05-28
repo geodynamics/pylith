@@ -254,6 +254,7 @@ class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformShear_TriP1
         };
         _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
+        _disableFiniteDifferenceCheck = true; // Zero pivot
     } // setUp
 
 }; // TestIsotropicLinearIncompElasticity2D_UniformShear_TriP1
@@ -375,6 +376,7 @@ class pylith::mmstests::TestIsotropicLinearIncompElasticity2D_UniformShear_QuadQ
         };
         _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
+        _disableFiniteDifferenceCheck = true; // Zero pivot
     } // setUp
 
 }; // TestIsotropicLinearIncompElasticity2D_UniformShear_QuadQ1
