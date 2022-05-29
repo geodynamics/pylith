@@ -31,6 +31,9 @@ Implements `Problem`.
 * `normalizer`: Nondimensionalizer for problem.
   - **current value**: 'nondimelasticquasistatic', from {default}
   - **configurable as**: nondimelasticquasistatic, normalizer
+* `petsc_defaults`: Flags controlling which default PETSc options to use.
+  - **current value**: 'petscdefaults', from {default}
+  - **configurable as**: petscdefaults, petsc_defaults
 * `progress_monitor`: Simple progress monitor via text file.
   - **current value**: 'progressmonitortime', from {default}
   - **configurable as**: progressmonitortime, progress_monitor
@@ -95,7 +98,7 @@ solution = = pylith.problems.SolnDispLagrange
 # Output the solution for the domain and ground surface
 solution_observers = [domain, ground_surface]
 
-# Use the quasistatic formulation and linear solver
+# Use the quasistatic formulation, linear solver, and set appropriate default solver settings.
 formulation = quasistatic
 solver = linear
 
@@ -105,5 +108,9 @@ start_time = -0.5*year
 end_time = 2.0*year
 initial_dt = 0.5*year
 max_timesteps = 20
+
+[pylithapp.greensfns.petsc_defaults]
+solver = True
+monitors = True
 :::
 
