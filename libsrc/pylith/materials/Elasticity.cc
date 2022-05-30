@@ -28,6 +28,8 @@
 #include "pylith/topology/Field.hh" // USES Field::SubfieldInfo
 #include "pylith/topology/FieldOps.hh" // USES FieldOps
 
+#include "pylith/utils/PetscOptions.hh" // USES PetscOptions
+
 #include "pylith/fekernels/Elasticity.hh" // USES Elasticity kernels
 #include "pylith/fekernels/DispVel.hh" // USES DispVel kernels
 
@@ -233,6 +235,65 @@ pylith::materials::Elasticity::createDerivedField(const pylith::topology::Field&
 
     PYLITH_METHOD_RETURN(derivedField);
 } // createDerivedField
+
+
+// ------------------------------------------------------------------------------------------------
+// Get default PETSc solver options appropriate for material.
+pylith::utils::PetscOptions*
+pylith::materials::Elasticity::getSolverDefaults(const bool isParallel,
+                                                 const bool hasFault) const {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("getSolverDefaults(isParallel="<<isParallel<<", hasFault="<<hasFault<<")");
+
+    pylith::utils::PetscOptions* options = new pylith::utils::PetscOptions();assert(options);
+
+    switch (_formulation) {
+    case pylith::problems::Physics::QUASISTATIC:
+        options->add("-ts_type", "beuler");
+
+        if (!hasFault) {
+            if (!isParallel) {
+                options->add("-pc_type", "lu");
+            } else {
+                options->add("-pc_type", "gamg");
+                options->add("-mg_levels_pc_type", "sor");
+                options->add("-mg_levels_ksp_type", "richardson");
+            } // if/else
+        } else {
+            options->add("-pc_type", "fieldsplit");
+            options->add("-pc_use_amat");
+            options->add("-pc_fieldsplit_type", "schur");
+
+            options->add("-pc_fieldsplit_schur_factorization_type", "lower");
+            options->add("-pc_fieldsplit_schur_precondition", "selfp");
+            options->add("-pc_fieldsplit_schur_scale", "1.0");
+
+            options->add("-fieldsplit_displacement_ksp_type", "preonly");
+            options->add("-fieldsplit_lagrange_multiplier_fault_ksp_type", "preonly");
+
+            if (!isParallel) {
+                options->add("-fieldsplit_displacement_pc_type", "ilu");
+                options->add("-fieldsplit_lagrange_multiplier_fault_pc_type", "lu");
+            } else {
+                options->add("-fieldsplit_displacement_pc_type", "gamg");
+                options->add("-fieldsplit_displacement_mg_levels_pc_type", "sor");
+                options->add("-fieldsplit_displacement_mg_levels_ksp_type", "richardson");
+                options->add("-fieldsplit_lagrange_multiplier_fault_pc_type", "gamg");
+                options->add("-fieldsplit_lagrange_multiplier_fault_mg_levels_pc_type", "sor");
+                options->add("-fieldsplit_lagrange_multiplier_fault_mg_levels_ksp_type", "richardson");
+            } // if/else
+        } // if/else
+        break;
+    case pylith::problems::Physics::DYNAMIC:
+        break;
+    case pylith::problems::Physics::DYNAMIC_IMEX:
+        break;
+    default:
+        PYLITH_COMPONENT_LOGICERROR("Unknown formulation '" << _formulation << "'.");
+    } // switch
+
+    PYLITH_METHOD_RETURN(options);
+} // getSolverDefaults
 
 
 // ------------------------------------------------------------------------------------------------

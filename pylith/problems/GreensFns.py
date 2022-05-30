@@ -38,6 +38,9 @@ class GreensFns(Problem, ModuleGreensFns):
             label = fault
             label_value = 1
 
+            # Set appropriate default solver settings.
+            set_solver_defaults = True
+
             interfaces = [fault]
             interfaces.fault = pylith.faults.FaultCohesiveImpulses
 
@@ -58,6 +61,10 @@ class GreensFns(Problem, ModuleGreensFns):
 
             # Represent the impulse as a linear variation in slip centered on each point.
             auxiliary_subfields.slip.basis_order = 1
+
+            [pylithapp.greensfns.petsc_defaults]
+            solver = True
+            monitors = True
         """
     }
 

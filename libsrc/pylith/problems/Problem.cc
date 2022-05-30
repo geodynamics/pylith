@@ -88,7 +88,8 @@ pylith::problems::Problem::Problem() :
     _gravityField(NULL),
     _observers(new pylith::problems::ObserversSoln),
     _formulation(pylith::problems::Physics::QUASISTATIC),
-    _solverType(LINEAR) {}
+    _solverType(LINEAR),
+    _petscDefaults(pylith::utils::PetscDefaults::SOLVER | pylith::utils::PetscDefaults::TESTING) {}
 
 
 // ------------------------------------------------------------------------------------------------
@@ -162,6 +163,14 @@ pylith::problems::Problem::SolverTypeEnum
 pylith::problems::Problem::getSolverType(void) const {
     return _solverType;
 } // getSolverType
+
+
+// ------------------------------------------------------------------------------------------------
+// Specify whether to set defaults for PETSc solver appropriate for problem.
+void
+pylith::problems::Problem::setPetscDefaults(const int flags) {
+    _petscDefaults = flags;
+} // setPetscDefaults
 
 
 // ------------------------------------------------------------------------------------------------

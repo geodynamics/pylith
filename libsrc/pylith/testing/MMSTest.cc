@@ -21,6 +21,7 @@
 #include "MMSTest.hh" // implementation of class methods
 
 #include "pylith/problems/TimeDependent.hh" // USES TimeDependent
+#include "pylith/utils/PetscOptions.hh" // USES PetscOptions
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
@@ -47,6 +48,8 @@ pylith::testing::MMSTest::setUp(void) {
     _isJacobianLinear = false;
     _disableFiniteDifferenceCheck = false;
     _allowZeroResidual = false;
+
+    _problem->setPetscDefaults(pylith::utils::PetscDefaults::TESTING | pylith::utils::PetscDefaults::SOLVER);
 } // setUp
 
 

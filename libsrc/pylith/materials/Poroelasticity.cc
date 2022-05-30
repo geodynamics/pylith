@@ -287,6 +287,42 @@ pylith::materials::Poroelasticity::createDerivedField(const pylith::topology::Fi
 } // createDerivedField
 
 
+// ------------------------------------------------------------------------------------------------
+// Get default PETSc solver options appropriate for material.
+pylith::utils::PetscOptions*
+pylith::materials::Poroelasticity::getSolverDefaults(const bool isParallel,
+                                                     const bool hasFault) const {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("getSolverDefaults(isParallel="<<isParallel<<", hasFault="<<hasFault<<")");
+
+    pylith::utils::PetscOptions* options = new pylith::utils::PetscOptions();assert(options);
+
+    switch (_formulation) {
+    case pylith::problems::Physics::QUASISTATIC:
+        options->add("-ts_type", "beuler");
+
+        if (!hasFault) {
+            if (!isParallel) {
+                options->add("-pc_type", "ilu");
+            } else {
+                options->add("-pc_type", "gamg");
+                options->add("-mg_levels_pc_type", "sor");
+                options->add("-mg_levels_ksp_type", "richardson");
+            } // if/else
+        } // if
+        break;
+    case pylith::problems::Physics::DYNAMIC:
+        break;
+    case pylith::problems::Physics::DYNAMIC_IMEX:
+        break;
+    default:
+        PYLITH_COMPONENT_LOGICERROR("Unknown formulation '" << _formulation << "'.");
+    } // switch
+
+    PYLITH_METHOD_RETURN(options);
+} // getSolverDefaults
+
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Get auxiliary factory associated with physics.
 pylith::feassemble::AuxiliaryFactory*

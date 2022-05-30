@@ -24,7 +24,7 @@
 
 namespace pylith {
     namespace problems {
-        class Problem : public pylith::utils::PyreComponent {
+        class Problem: public pylith::utils::PyreComponent {
             // PUBLIC ENUM /////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
@@ -68,6 +68,12 @@ public:
              * @returns Solver type.
              */
             SolverTypeEnum getSolverType(void) const;
+
+            /** Specify which default PETSc options to use.
+             *
+             * @param[in] flags Flags indicating which default PETSc options to set.
+             */
+            void setPetscDefaults(const int flags);
 
             /** Set manager of scales used to nondimensionalize problem.
              *

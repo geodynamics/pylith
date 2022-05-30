@@ -28,6 +28,8 @@
 
 #include "pylith/problems/Physics.hh" // ISA Physics
 
+#include "pylith/utils/PetscOptions.hh" // USES PetscOptions
+
 #include <string> // HASA std::string
 
 // Material -------------------------------------------------------------
@@ -114,6 +116,16 @@ public:
      */
     virtual
     std::vector<pylith::feassemble::Constraint*> createConstraints(const pylith::topology::Field& solution);
+
+    /** Get default PETSc solver options appropriate for material.
+     *
+     * @param[in] isParallel True if running in parallel, False if running in serial.
+     * @param[in] hasFault True if problem has fault, False otherwise.
+     * @returns PETSc solver options.
+     */
+    virtual
+    pylith::utils::PetscOptions* getSolverDefaults(const bool isParallel,
+                                                   const bool hasFault) const;
 
     // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:

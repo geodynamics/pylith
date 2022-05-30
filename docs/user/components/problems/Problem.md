@@ -26,6 +26,9 @@ Abstract base class for a problem.
 * `normalizer`: Nondimensionalizer for problem.
   - **current value**: 'nondimelasticquasistatic', from {default}
   - **configurable as**: nondimelasticquasistatic, normalizer
+* `petsc_defaults`: Flags controlling which default PETSc options to use.
+  - **current value**: 'petscdefaults', from {default}
+  - **configurable as**: petscdefaults, petsc_defaults
 * `solution`: Solution field for problem.
   - **current value**: 'solution', from {default}
   - **configurable as**: solution

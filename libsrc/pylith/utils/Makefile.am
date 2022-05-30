@@ -25,6 +25,7 @@ subpkginclude_HEADERS = \
 	PyreComponent.hh \
 	GenericComponent.hh \
 	journals.hh \
+	PetscOptions.hh \
 	PylithVersion.hh \
 	PetscVersion.hh \
 	DependenciesVersion.hh \
