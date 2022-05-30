@@ -19,4 +19,4 @@ In this case we have only one material and the material properties are uniform, 
 When we have a spatial variation in the material properties, we specify them in a spatial database file.
 
 In the PETSc parameters we specify settings that are robust for small problems.
-See {ref}`sec-user-run-pylith-petsc-settings` for more information.
+See {ref}`sec-user-run-pylith-petsc-options` for more information.

@@ -22,4 +22,4 @@ We use the material properties in all of the simulations in this directory, so w
 Similarly, we set the fault parameters and boundary condition information common to all simulations in the directory.
 
 In the PETSc parameters, we specify preconditioner settings that scale well with problem size and minimize the runtime.
-See {ref}`sec-user-run-pylith-petsc-settings` for more information.
+See {ref}`sec-user-run-pylith-petsc-options` for more information.

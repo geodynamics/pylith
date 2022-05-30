@@ -55,7 +55,7 @@ see http://www.mcs.anl.gov/petsc/petsc-as/documentation/faq.html\#ZeroPivot!
 ```
 
 This usually occurs when the null space of the system Jacobian is nonzero, such as the case of a problem without Dirichlet boundary conditions on any boundary.
-If this arises when using the split fields and algebraic multigrid preconditioning, and no additional Dirichlet boundary conditions are desired, then the workaround is to revert to using the Additive Schwarz preconditioning without split fields as discussed in {ref}`sec-user-run-pylith-petsc-settings`.
+If this arises when using the split fields and algebraic multigrid preconditioning, and no additional Dirichlet boundary conditions are desired, then the workaround is to revert to using the Additive Schwarz preconditioning without split fields as discussed in {ref}`sec-user-run-pylith-petsc-options`.
 
 ### Bus Error
 

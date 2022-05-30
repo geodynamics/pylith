@@ -375,7 +375,7 @@ dist_noinst_DATA = \
     user/run-pylith/mesh.md \
     user/run-pylith/overview.md \
     user/run-pylith/parameter-gui.md \
-    user/run-pylith/petsc-settings.md \
+    user/run-pylith/petsc-options.md \
     user/run-pylith/pylithapp.md \
     user/run-pylith/troubleshooting.md \
     user/run-pylith/utilities.md

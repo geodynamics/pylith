@@ -1,38 +1,256 @@
-(sec-user-run-pylith-petsc-settings)=
-# PETSc Settings
+(sec-user-run-pylith-petsc-options)=
+# PETSc Options
 
-PyLith relies on PETSc for the finite-element data structures, linear and nonlinear solvers, and time-stepping algorithms.
+PyLith relies on PETSc for finite-element data structures, linear and nonlinear solvers, and time-stepping algorithms.
 PETSc has its own object-oriented interface for specifying runtime options.
-Instead of trying to maintain a Pyre interface to all of the PETSc options, we use a single `petsc` facility to collect all of the PETSc options and pass them to PETSc.
+PyLith provides two mechanisms for passing options to PETSc:
 
-PETSc time-stepping options are discussed in {ref}`sec-user-problems-time-dependent`.
+1. Default values that are controlled by a few flags in the PyLith `Problem` `petsc_defaults` facility, and
+2. PyLith `petsc` facility which passes options directly to PETSc.
 
-## Monitor and Logging Settings
+When using the default values, PyLith selects solver and preconditioner options based on the governing equations.
+In most cases these default values will give good performance and you do not need to specify any PETSc options.
+The user-specified values always take precedence over the default values.
 
-{numref}`tab-petsc-options-monitor` shows the main monitoring options offered by PETSc.
-When optimizing and troubleshooting solver settings, we usually turn on all the monitoring.
-Our recommended settings for all simulations include:
+## Default PETSc Settings
+
+:::{note}
+New in v3.0.0
+:::
+
+We separate the defaults into a few categories to make it easy to select desired options.
+
+:solver: Options for the preconditioner and solver;
+:parallel: Options used when running in parallel (can be used in serial as well);
+:monitors: Options for basic monitoring of the solver; and
+:testing: Options used in testing.
+
+:::{tip}
+You can see which options PyLith sets using the `petscoptions` Pyre Journal.
+Either use the `--journal.info.petscoptions` command line argument or in your `.cfg` file include
+
+```{code-blocK} cfg
+[journal.info]
+petscoptions = 1
+```
+
+:::
+
+:::{seealso}
+See [`PetscDefaults` Component](../components/utils/PetscDefaults.md) for more information about the the Pyre interface for specifying default PETSc options.
+:::
+
+### Solver Settings
+
+The solver options are enabled by default.
+PyLith selects options based on the governing equation, formulation, presence of a fault, and whether the simulation is running in parallel.
+In most cases the settings used when running in parallel give comparable or better performance than those used when running serial; consequently, you may want to use them when solving moderate to larger problems in serial.
+Additionally, PyLith specifies general options related to the solver tolerances and triggering errors if the linear or nonlinear solver fails to converge.
+The different sets of defaults are detailed in the following code blocks.
+
+:::{warning}
+The split fields and algebraic multigrid preconditioning currently fails in problems with a nonzero null space.
+This most often occurs when a problem contains multiple faults that extend through the entire domain and create subdomains without any Dirichlet boundary conditions.
+The workaround is to use the `ilu` preconditioner.
+However, it only works in serial.
+An alternative is to use the `asm` preconditioner (Additive Schwarz) which works in parallel and serial.
+:::
+
 
 ```{code-block} cfg
 ---
-caption: Recommended PETSc monitoring settings as set in a `cfg` file.
+caption: PETSc options set whenever the solver defaults are enabled.
 ---
 [pylithapp.petsc]
-# Trigger errors if linear or nonlinear solver fails to converge.
+ksp_rtol = 1.0e-12
+ksp_atol = 1.0e-12
 ksp_error_if_not_converged = true
+
+snes_rtol = 1.0e-12
+snes_atol = 1.0e-9
 snes_error_if_not_converged = true
-
-# Monitor converged reasons
-ksp_converged_reason = true
-snes_converged_reason = true
-
-# Monitor time-stepping and nonlinear solver
-ts_monitor = true
-snes_monitor = true
-snes_linesearch_monitor = true
 ```
 
-```{table} Description of PETSc monitoring settings
+#### Quasistatic Elasticity
+
+```{code-block} cfg
+---
+caption: PETSc options used for quasistatic elasticity in serial without a fault.
+---
+[pylithapp.petsc]
+ts_type = beuler
+pc_type = lu
+```
+
+```{code-block} cfg
+---
+caption: PETSc options used for quasistatic elasticity in parallel without a fault.
+---
+[pylithapp.petsc]
+ts_type = beuler
+pc_type = gamg
+mg_levels_pc_type = sor
+mg_levels_ksp_type = richardson
+```
+
+The Lagrange multiplier corresponding to the tractions on the fault introduces a saddle point in the system of equations, so we use a Schur complement approach.
+
+```{code-block} cfg
+---
+caption: PETSc options used for quasistatic elasticity in serial with a fault.
+---
+[pylithapp.petsc]
+ts_type = beuler
+pc_type = fieldsplit
+pc_use_amat = true
+pc_fieldsplit_type = schur
+
+pc_fieldsplit_schur_factorization_type = lower
+pc_fieldsplit_schur_precondition = selfp
+pc_fieldsplit_schur_scale = 1.0
+
+fieldsplit_displacement_ksp_type = preonly
+fieldsplit_displacement_pc_type = ilu
+
+fieldsplit_lagrange_multiplier_fault_ksp_type = preonly
+fieldsplit_lagrange_multiplier_fault_pc_type = lu
+```
+
+```{code-block} cfg
+---
+caption: PETSc options used for quasistatic elasticity in parallel with a fault.
+---
+[pylithapp.petsc]
+ts_type = beuler
+pc_type = fieldsplit
+pc_use_amat = true
+pc_fieldsplit_type = schur
+
+pc_fieldsplit_schur_factorization_type = lower
+pc_fieldsplit_schur_precondition = selfp
+pc_fieldsplit_schur_scale = 1.0
+
+fieldsplit_displacement_ksp_type = preonly
+fieldsplit_displacement_pc_type = gamg
+fieldsplit_displacement_mg_levels_pc_type = sor
+fieldsplit_displacement_mg_levels_ksp_type = richardson
+
+fieldsplit_lagrange_multiplier_fault_ksp_type = preonly
+fieldsplit_lagrange_multiplier_fault_pc_type = gamg
+fieldsplit_lagrange_multiplier_fault_mg_levels_pc_type = sor
+fieldsplit_lagrange_multiplier_fault_mg_levels_ksp_type = richardson
+```
+
+#### Quasistatic Incompressible Elasticity
+
+The pressure field introduces a saddle point in the system of equations, so we use a Schur complement approach.
+
+```{code-block} cfg
+---
+caption: PETSc options used for quasistatic incompressible elasticity in serial.
+---
+[pylithapp.petsc]
+ts_type = beuler
+pc_type = fieldsplit
+pc_fieldsplit_type = schur
+
+pc_fieldsplit_schur_factorization_type = full
+pc_fieldsplit_schur_precondition = full
+
+fieldsplit_displacement_pc_type = lu
+fieldsplit_pressure_pc_type = lu
+```
+
+```{code-block} cfg
+---
+caption: PETSc options used for quasistatic incompressible elasticity in parallel.
+---
+[pylithapp.petsc]
+ts_type = beuler
+pc_type = fieldsplit
+pc_fieldsplit_type = schur
+
+pc_fieldsplit_schur_factorization_type = full
+pc_fieldsplit_schur_precondition = full
+
+fieldsplit_displacement_pc_type = gamg
+fieldsplit_displacement_mg_levels_pc_type = sor
+fieldsplit_displacement_mg_levels_ksp_type = richardson
+fieldsplit_pressure_pc_type = gamg
+fieldsplit_pressure_mg_levels_pc_type = sor
+fieldsplit_pressure_mg_levels_ksp_type = richardson
+```
+
+#### Quasistatic Poroelasticity
+
+```{code-block} cfg
+---
+caption: PETSc options used for quasistatic poroelasticity in serial.
+---
+[pylithapp.petsc]
+ts_type = beuler
+pc_type = ilu
+```
+
+```{code-block} cfg
+---
+caption: PETSc options used for quasistatic poroelasticity in parallel.
+---
+[pylithapp.petsc]
+ts_type = beuler
+pc_type = gamg
+mg_levels_pc_type = sor
+mg_levels_ksp_type = richardson
+```
+
+### Monitoring
+
+The monitoring options are enabled by default and provide a few lines of output per time step summarizing the operation of the linear and nonlinear solvers and time stepping.
+Additional monitoring can be turned on using the user-specified options.
+
+```{code-block} cfg
+---
+caption: Default PETSc options for monitoring.
+---
+# Turn off monitoring options (enabled by default).
+[pylithapp.problem.petsc_defaults]
+monitoring = False
+
+# Corresponding PETSc options
+[pylithapp.petsc]
+ksp_converged_reason = true
+
+snes_converged_reason = true
+snes_monitor = true
+
+ts_monitor = tru
+ts_error_if_step_fails = true
+```
+
+### Testing
+
+The options in the testing category are intended for use in internal testing.
+These options help identify memory leaks in PETSc data structures and inconsistent back traces.
+
+```{code-block} cfg
+---
+caption: Default PETSc options for testing.
+---
+# Turn on testing options (turned off by default).
+[pylithapp.problem.petsc_defaults]
+testing = True
+
+# Corresponding PETSc options
+[pylithapp.petsc]
+malloc_dump = true
+```
+
+## User-Specified PETSc Settings
+
+{numref}`tab-petsc-options-monitor` shows the main monitoring options offered by PETSc.
+When optimizing and troubleshooting solver options, we usually turn on all the monitoring.
+
+```{table} Description of PETSc monitoring options
 :name: tab-petsc-options-monitor
 | Option | Description |
 | :------| :-----------|
@@ -49,11 +267,9 @@ snes_linesearch_monitor = true
 | `snes_linesearch_monitor` | Show line search information in nonlinear solve. |
 ```
 
-## Solver Settings
+## Solver Options
 
-For most problems we use the GMRES method from Saad and Schultz for the linear solver with solver tolerances around 1.0e-10.
-When running large problems, we often raise the solver tolerances by one or two orders of magnitude to reduce runtime while still achieving suitable accuracy.
-
+For most problems we use the GMRES method from Saad and Schultz for the linear solver; this is the linear solver PETSc uses as the default.
 See [PETSc linear solver table](https://petsc.org/release/docs/manual/ksp/#tab-kspdefaults) for a list of PETSc options for linear solvers and preconditioners.
 
 :::{tip}
@@ -61,106 +277,14 @@ It is important to keep in mind the resolution of the model and observations whe
 For example, matching observations with an accuracy of 1.0 mm does not require solving the equations to an accuracy of 0.0001 mm.
 :::
 
-```{table} Recommended starting point for PETSc solver tolerances.
+```{table} Summary of PETSc solver tolerances.
 :name: tab-petsc-options-solver
-| Property   | Value | Description            |
-| :--------- | :--------: | :--------------------- |
-| `ksp_rtol` | 1.0e-10 &nbsp;| Stop iterating when the preconditioned KSP residual norm has this amount relative to its starting value. |
-| `ksp_atol` | 1.0e-12 | Stop iterating when the preconditioned KSP residual normal is smaller than this value. |
-| `snes_rtol` | 1.0e-10 | Stop iterating when the SNES residual norm has this amount relative to its starting value. |
-| `snes_atol` | 1.0e-10 | Stop iterating when the SNES residual normal is smaller than this value. |
-```
-
-### Small elasticity problems
-
-When running small test problems (about 1k or less unknowns) it is very handy to use a robust preconditioner so that issues related to the boundary conditions, material parameters, etc. are more obvious.
-We recommend using Incomplete (ILU) factorization.
-
-```{code-block} cfg
----
-caption: Recommended PETSc solver settings for small problems.
----
-[pylithapp.petsc]
-pc_type = ilu
-ksp_type = gmres
-```
-
-### Medium elasticity problems
-
-When running slightly larger problems (about 10k or less unknowns), the Additive Schwarz Method (ASM) using Incomplete LU (ILU) factorization preconditioner is usually more efficient.
-
-```{code-block} cfg
----
-caption: Recommended PETSc solver settings for medium problems
----
-[pylithapp.petsc]
-pc_type = asm
-ksp_type = gmres
-```
-
-### Large elasticity problems without a fault}
-
-Algebraic multigrid preconditioner usually works very well on elasticity problems.
-
-```{code-block} cfg
----
-caption: Recommended PETSc solver settings for solving elasticity problems without a fault
----
-[pylithapp.petsc]
-pc_type = ml
-ksp_type = gmres
-```
-
-:::{important}
-The ML algebraic multigrid preconditioner is only available if you build PETSc with the ML package. These features are included in the PyLith binary packages.
-:::
-
-### Large elasticity problems with a fault
-
-The Lagrange multiplier solution subfield introduces a saddle point in the system of equations, so we use a Schur complement approach. These settings are available in `$PYLITH_DIR/share/settings/solver_fault_exact.cfg`.
-
-```{code-block} cfg
----
-caption: Recommended PETSc solver settings for solving elasticity problems with a fault.
----
-[pylithapp.petsc]
-pc_type = fieldsplit
-pc_use_amat = true
-pc_fieldsplit_type = schur
-pc_fieldsplit_schur_factorization_type = full
-pc_fieldsplit_dm_splits = true
-fieldsplit_displacement_ksp_type = preonly
-fieldsplit_displacement_pc_type = lu
-fieldsplit_lagrange_multiplier_fault_pc_type = jacobi
-fieldsplit_lagrange_multiplier_fault_ksp_type = gmres
-fieldsplit_lagrange_multiplier_fault_ksp_rtol = 1.0e-11
-fieldsplit_lagrange_multiplier_fault_ksp_converged_reason = true
-```
-
-:::{warning}
-The split fields and algebraic multigrid preconditioning currently fails in problems with a nonzero null space.
-This most often occurs when a problem contains multiple faults that extend through the entire domain and create subdomains without any Dirichlet boundary conditions.
-The current workaround is to use the Additive Schwarz preconditioner without split fields.
-See Section \vref{sec:Troubleshooting} for the error message encountered in this situation.
-:::
-
-### Incompressibility elasticity problems
-
-The pressure solution subfield introduces a saddle point in the system of equations, so we again use a Schur complement approach.
-This time we can use algebraic multigrid preconditioning on each block.
-These settings are available in `$PYLITH_DIR/share/settings/solver_incompressible_elasticity.cfg`.
-
-```{code-block} cfg
----
-caption: Recommended PETSc solver settings for solving incompressible elasticity problems without a fault
----
-[pylithapp.petsc]
-pc_type = fieldsplit
-pc_fieldsplit_type = schur
-pc_fieldsplit_schur_fact_type = full
-pc_fieldsplit_schur_precondition = full
-fieldsplit_displacement_pc_type = lu
-fieldsplit_pressure_pc_type = lu
+| Option   | Description            |
+| :--------- | :--------------------- |
+| `ksp_rtol` | Stop iterating when the preconditioned KSP residual norm has this amount relative to its starting value. |
+| `ksp_atol` | Stop iterating when the preconditioned KSP residual normal is smaller than this value. |
+| `snes_rtol` | Stop iterating when the SNES residual norm has this amount relative to its starting value. |
+| `snes_atol` | Stop iterating when the SNES residual normal is smaller than this value. |
 ```
 
 % End of file
