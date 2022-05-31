@@ -12,9 +12,8 @@ Boundary conditions for axial extension in the x-direction.
 We constrain the x displacement on the +x and -x boundaries and set the y displacement to zero on the -y boundary.
 :::
 
-## Features
-
-```{include} step01-axialdisp-features.md
+% Meatadata extracted from parameter files
+```{include} step01_axialdisp-synopsis.md
 ```
 
 ## Simulation parameters
@@ -42,25 +41,65 @@ $ pylith step01_axialdisp.cfg
  -- Component 'reader': Domain bounding box:
     (-6000, 6000)
     (-16000, -0)
+ >> /Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:116:preinitialize
+ -- timedependent(info)
+ -- Performing minimal initialization before verifying configuration.
+ >> /Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Solution.py:44:preinitialize
+ -- solution(info)
+ -- Performing minimal initialization of solution.
+ >> /Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:175:verifyConfiguration
+ -- timedependent(info)
+ -- Verifying compatibility of problem configuration.
+ >> /Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:221:_printInfo
+ -- timedependent(info)
+ -- Scales for nondimensionalization:
+    Length scale: 1000*m
+    Time scale: 3.15576e+09*s
+    Pressure scale: 3e+10*m**-1*kg*s**-2
+    Density scale: 2.98765e+23*m**-3*kg
+    Temperature scale: 1*K
+ >> /Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:186:initialize
+ -- timedependent(info)
+ -- Initializing timedependent problem with quasistatic formulation.
+ >> /Users/baagaard/src/cig/pylith/libsrc/pylith/utils/PetscOptions.cc:235:static void pylith::utils::_PetscOptions::write(pythia::journal::info_t &, const char *, const pylith::utils::PetscOptions &)
+ -- petscoptions(info)
+ -- Setting PETSc options:
+ksp_atol = 1.0e-12
+ksp_converged_reason = true
+ksp_error_if_not_converged = true
+ksp_rtol = 1.0e-12
+pc_type = lu
+snes_atol = 1.0e-9
+snes_converged_reason = true
+snes_error_if_not_converged = true
+snes_monitor = true
+snes_rtol = 1.0e-12
+ts_error_if_step_fails = true
+ts_monitor = true
+ts_type = beuler
 
-# -- many lines omitted --
-
+ >> /Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/TimeDependent.py:139:run
+ -- timedependent(info)
  -- Solving problem.
 0 TS dt 0.01 time 0.
     0 SNES Function norm 1.245882095312e-02 
-    Linear solve converged due to CONVERGED_RTOL iterations 9
-        Line search: Using full step: fnorm 1.245882095312e-02 gnorm 8.314914085077e-12
-    1 SNES Function norm 8.314914085077e-12 
+    Linear solve converged due to CONVERGED_ATOL iterations 1
+    1 SNES Function norm 6.738354969624e-18 
   Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
 1 TS dt 0.01 time 0.01
- >> /Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:196:finalize
+ >> /Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:201:finalize
  -- timedependent(info)
  -- Finalizing problem.
 ```
 
 At the beginning of the output written to the terminal, we see that PyLith is reading the mesh using the `MeshIOAscii` reader and that it found the domain to extend from -6000 m to +6000 m in the x direction and from -16000 m to 0 m in the y direction.
-At the end of the output written to the termial, we see that the solver advanced the solution one time step (static simulation).
-The linear solve converged after 9 iterations and the convergence criterion met was a relative reduction in the norm of the residual (`ksp_rtol`) .
+We also see the scales used to nondimensionalize the problem.
+The density scale is very large for quasistatic problems.
+
+Near the end of the output written to the terminal, we see the PETSc options PyLith selected based on the governing equations and formulation as discussed in {ref}`sec-user-run-pylith-petsc-options`.
+The solver advanced the solution one time step (static simulation).
+The linear solve converged in 1 iteration, consistent with the LU preconditioner.
+The norm of the residual met the absolute tolerance convergence criterion (`ksp_atol`).
 The nonlinear solve converged in 1 iteration, which we expect because this is a linear problem, and the residual met the absolute convergence tolerance (`snes_atol`).
 
 ## Visualizing the results

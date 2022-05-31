@@ -29,7 +29,7 @@ example, set OUTPUT_DIR to the absolute path if not starting
 ParaView from the terminal shell where you ran PyLith:
 
 import os
-OUTPUT_DIR = os.path.join(os.environ["HOME"], "src", "pylith", "examples", "2d", "box", "output")
+OUTPUT_DIR = os.path.join(os.environ["HOME"], "src", "pylith", "examples", "strikeslip-2d", "output")
 """
 
 DEFAULTS = {

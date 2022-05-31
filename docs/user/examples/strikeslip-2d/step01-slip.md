@@ -11,9 +11,8 @@ Boundary conditions for static coseismic slip.
 We set the x and y displacement to zero on the +x and -x boundaries and prescribe 2 meters of right-lateral slip.
 :::
 
-## Features
-
-```{include} step01-slip-features.md
+% Metadata extracted from parameter files.
+```{include} step01_slip-synopsis.md
 ```
 
 ## Simulation parameters
@@ -40,23 +39,92 @@ $ pylith step01_slip.cfg
  -- Component 'reader': Domain bounding box:
     (-50000, 50000)
     (-75000, 75000)
+ >> /Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/faults/FaultCohesiveKin.py:93:preinitialize
+ -- faultcohesivekin(info)
+ -- Pre-initializing fault 'fault'.
+ >> /Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:116:preinitialize
+ -- timedependent(info)
+ -- Performing minimal initialization before verifying configuration.
+ >> /Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Solution.py:44:preinitialize
+ -- solution(info)
+ -- Performing minimal initialization of solution.
+ >> /Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/materials/RheologyElasticity.py:41:preinitialize
+ -- isotropiclinearelasticity(info)
+ -- Performing minimal initialization of elasticity rheology 'bulk_rheology'.
+ >> /Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/materials/RheologyElasticity.py:41:preinitialize
+ -- isotropiclinearelasticity(info)
+ -- Performing minimal initialization of elasticity rheology 'bulk_rheology'.
+ >> /Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/bc/DirichletTimeDependent.py:92:preinitialize
+ -- dirichlettimedependent(info)
+ -- Performing minimal initialization of time-dependent Dirichlet boundary condition 'bc_xneg'.
+ >> /Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/bc/DirichletTimeDependent.py:92:preinitialize
+ -- dirichlettimedependent(info)
+ -- Performing minimal initialization of time-dependent Dirichlet boundary condition 'bc_xpos'.
+ >> /Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/faults/FaultCohesiveKin.py:93:preinitialize
+ -- faultcohesivekin(info)
+ -- Pre-initializing fault 'fault'.
+ >> /Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:175:verifyConfiguration
+ -- timedependent(info)
+ -- Verifying compatibility of problem configuration.
+ >> /Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:221:_printInfo
+ -- timedependent(info)
+ -- Scales for nondimensionalization:
+    Length scale: 1000*m
+    Time scale: 3.15576e+09*s
+    Pressure scale: 3e+10*m**-1*kg*s**-2
+    Density scale: 2.98765e+23*m**-3*kg
+    Temperature scale: 1*K
+ >> /Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:186:initialize
+ -- timedependent(info)
+ -- Initializing timedependent problem with quasistatic formulation.
+ >> /Users/baagaard/src/cig/pylith/libsrc/pylith/utils/PetscOptions.cc:235:static void pylith::utils::_PetscOptions::write(pythia::journal::info_t &, const char *, const pylith::utils::PetscOptions &)
+ -- petscoptions(info)
+ -- Setting PETSc options:
+fieldsplit_displacement_ksp_type = preonly
+fieldsplit_displacement_mg_levels_ksp_type = richardson
+fieldsplit_displacement_mg_levels_pc_type = sor
+fieldsplit_displacement_pc_type = gamg
+fieldsplit_lagrange_multiplier_fault_ksp_type = preonly
+fieldsplit_lagrange_multiplier_fault_mg_levels_ksp_type = richardson
+fieldsplit_lagrange_multiplier_fault_mg_levels_pc_type = sor
+fieldsplit_lagrange_multiplier_fault_pc_type = gamg
+ksp_atol = 1.0e-12
+ksp_converged_reason = true
+ksp_error_if_not_converged = true
+ksp_rtol = 1.0e-12
+pc_fieldsplit_schur_factorization_type = lower
+pc_fieldsplit_schur_precondition = selfp
+pc_fieldsplit_schur_scale = 1.0
+pc_fieldsplit_type = schur
+pc_type = fieldsplit
+pc_use_amat = true
+snes_atol = 1.0e-9
+snes_converged_reason = true
+snes_error_if_not_converged = true
+snes_monitor = true
+snes_rtol = 1.0e-12
+ts_error_if_step_fails = true
+ts_monitor = true
+ts_type = beuler
 
-# -- many lines omitted --
-
+ >> /Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/TimeDependent.py:139:run
+ -- timedependent(info)
  -- Solving problem.
 0 TS dt 0.01 time 0.
     0 SNES Function norm 4.895713226482e-02 
-    Linear solve converged due to CONVERGED_ATOL iterations 36
-        Line search: Using full step: fnorm 4.895713226482e-02 gnorm 1.198850635632e-12
-    1 SNES Function norm 1.198850635632e-12 
+    Linear solve converged due to CONVERGED_ATOL iterations 38
+    1 SNES Function norm 2.111685046607e-12 
   Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
 1 TS dt 0.01 time 0.01
- >> /Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:196:finalize
+ >> /Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:201:finalize
  -- timedependent(info)
  -- Finalizing problem.
- ```
+```
 
 At the beginning of the output written to the terminal, we see that PyLith is reading the mesh using the `MeshIOPetsc` reader and that it found the domain to extend from -50,000 m to +50,000 m in the x direction and from -75,000 m to +75,000 m in the y direction.
+The scales for nondimensionalization remain the default values for a quasistatic problem.
+PyLith detects the presence of a fault based on the Lagrange multiplier for the fault in the solution field and selects appropriate preconditioning options as discussed in {ref}`sec-user-run-pylith-petsc-options`.
+
 At the end of the output written to the termial, we see that the solver advanced the solution one time step (static simulation).
 The linear solve converged after 36 iterations and the norm of the residual met the absolute convergence tolerance (`ksp_atol`) .
 The nonlinear solve converged in 1 iteration, which we expect because this is a linear problem, and the residual met the absolute convergence tolerance (`snes_atol`).
@@ -146,15 +214,16 @@ $ pylith step01_slip_cubit.cfg
 
 # -- many lines omitted --
 
+ >> /Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/TimeDependent.py:139:run
+ -- timedependent(info)
  -- Solving problem.
 0 TS dt 0.01 time 0.
     0 SNES Function norm 4.834519229177e-02 
-    Linear solve converged due to CONVERGED_ATOL iterations 37
-        Line search: Using full step: fnorm 4.834519229177e-02 gnorm 1.046009457852e-12
-    1 SNES Function norm 1.046009457852e-12 
+    Linear solve converged due to CONVERGED_ATOL iterations 39
+    1 SNES Function norm 1.470567368938e-12 
   Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
 1 TS dt 0.01 time 0.01
- >> /Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:196:finalize
+ >> /Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:201:finalize
  -- timedependent(info)
  -- Finalizing problem.
 ```

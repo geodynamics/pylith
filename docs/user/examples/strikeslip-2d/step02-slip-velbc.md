@@ -13,9 +13,8 @@ We set the y velocity to -1 cm/yr on the +x boundary and +1 cm/yr on the -x boun
 We prescribe 2 meters of right-lateral slip to occur at 100 years to release the accumulated strain energy.
 :::
 
-## Features
-
-```{include} step02-slip-features.md
+% Metadata extracted from parameter files.
+```{include} step02_slip_velbc-synopsis.md
 ```
 
 ## Simulation parameters
@@ -48,16 +47,15 @@ $ pylith step02_slip_velbc.cfg
 # -- many lines omitted --
 
 24 TS dt 0.05 time 1.15
-    0 SNES Function norm 5.390420821298e-04 
+    0 SNES Function norm 5.390420823600e-04 
     Linear solve converged due to CONVERGED_ATOL iterations 32
-        Line search: Using full step: fnorm 5.390420821298e-04 gnorm 1.637828742677e-12
-    1 SNES Function norm 1.637828742677e-12 
+    1 SNES Function norm 1.481819020131e-12 
   Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
 25 TS dt 0.05 time 1.2
- >> /Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:196:finalize
+ >> /Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:201:finalize
  -- timedependent(info)
  -- Finalizing problem.
- ```
+```
 
 The beginning of the output written to the terminal is identical to that from Step 1.
 At the end of the output, we see that the simulation advanced the solution 25 time steps.
@@ -88,6 +86,10 @@ caption: Set the simulation in the ParaView Python Shell.
 ```
 
 Finally, we run the `viz/plot_dispwarp.py` Python script as described in {ref}`sec-paraview-python-scripts`.
+
+:::{tip}
+You can use the "play" button to animate the solution in time.
+:::
 
 :::{figure-md} fig:example:strikeslip:2d:step02:solution
 <img src="figs/step02-solution.*" alt="Solution for Step 2 at t=100 yr. The colors indicate the magnitude of the displacement, and the deformation is exaggerated by a factor of 1000." width="100%"/>

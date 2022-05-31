@@ -12,11 +12,7 @@ The settings contained in `pylithapp.cfg` for this problem consist of:
 * `pylithapp.mesh_generator` Parameters for importing the finite-element mesh.
 * `pylithapp.problem` Parameters that define the boundary value problem and it solution, such as the type of solver, solution fields.
 * `pylithapp.problem.materials` Paramters that specify the governing equation and bulk rheologies.
-* `pylithapp.petsc` Parameters passed directly to PETSc associated with the solver.
 
 The physical properties for each material are specified in a spatial database.
 In this case we have only one material and the material properties are uniform, so we use a single `UniformDB` to specify the material properties in `pylithapp.cfg`.
 When we have a spatial variation in the material properties, we specify them in a spatial database file.
-
-In the PETSc parameters we specify settings that are robust for small problems.
-See {ref}`sec-user-run-pylith-petsc-options` for more information.

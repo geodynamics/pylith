@@ -26,14 +26,11 @@
 # shell where you ran PyLith:
 #
 # import os
-# EXODUS_FILE = os.path.join(os.environ["HOME"], "src", "pylith", "examples", "3d", "subduction", "mesh", "mesh_tet.exo")
+# EXODUS_FILE = os.path.join(os.environ["HOME"], "src", "pylith", "examples", "reverse-2d", "mesh", "mesh_tri.exo")
 
 DEFAULTS = {
     "EXODUS_FILE": "mesh_tri.exo",
     "SHOW_NODESETS": True,
-    "SHOW_QUALITY": True,
-    "QUALITY_METRIC": "Condition",
-    "QUALITY_THRESHOLD": 2.0,
     }
 
 # ----------------------------------------------------------------------
@@ -84,31 +81,6 @@ def tick(self):
     
     return
 
-def plot_quality(dataDomain, parameters):
-    """Plot the mesh quality. Only cells with a quality greater (poorer
-    quality) than the threshold are displayed.
-    """
-
-    quality = MeshQuality(Input=dataDomain)
-    quality.TriangleQualityMeasure = parameters.quality_metric
-    quality.QuadQualityMeasure = parameters.quality_metric
-    quality.TetQualityMeasure = parameters.quality_metric
-
-
-    view = GetActiveViewOrCreate('RenderView')
-
-    # Threshold
-    threshold = Threshold(Input=quality)
-    threshold.Scalars = ['CELLS', 'Quality']
-    threshold.ThresholdRange = [parameters.quality_threshold, 1.0e+3]
-
-    thresholdDisplay = Show(threshold, view)
-    thresholdDisplay.Representation = 'Surface'
-    thresholdDisplay.ColorArrayName = ['CELLS', 'Quality']
-    thresholdDisplay.SetScalarBarVisibility(view, True)
-
-    return
-
 
 def visualize(parameters):
 
@@ -128,13 +100,13 @@ def visualize(parameters):
     ColorBy(domainDisplay, ("FIELD", "vtkBlockColors"))
     domainDisplay.RescaleTransferFunctionToDataRange(True, False)
     domainDisplay.SetScalarBarVisibility(view, False)
-    domainDisplay.SetRepresentationType("Surface")
+    domainDisplay.SetRepresentationType("Surface With Edges")
     domainDisplay.PointSize = 6.0
     domainDisplay.Opacity = 0.5
 
     # Add coordinate axes
     axes = Axes()
-    axes.ScaleFactor = 1.0e+5
+    axes.ScaleFactor = 1.0e+4
 
     axesDisplay = Show(axes, view)
     axesDisplay.SetRepresentationType('Wireframe')
@@ -145,9 +117,6 @@ def visualize(parameters):
     if parameters.show_nodesets:
         plot_nodesets(dataDomain)
     
-    if parameters.show_quality:
-        plot_quality(dataDomain, parameters)
-    
     view.ResetCamera()
     Render()
 
@@ -155,7 +124,7 @@ class Parameters(object):
     """Object for managing default values and overriding them from the
     current Python shell.
     """
-    keys = ("EXODUS_FILE", "SHOW_NODESETS", "SHOW_QUALITY", "QUALITY_METRIC", "QUALITY_THRESHOLD",)
+    keys = ("EXODUS_FILE", "SHOW_NODESETS")
     
     def __init__(self):
         globalVars = globals()
@@ -175,18 +144,15 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--filename", action="store", dest="exodus_file", default=DEFAULTS["EXODUS_FILE"])
     parser.add_argument("--hide-nodesets", action="store_false", dest="show_nodesets", default=DEFAULTS["SHOW_NODESETS"])
-    parser.add_argument("--hide-quality", action="store_false", dest="show_quality", default=DEFAULTS["SHOW_QUALITY"])
-    parser.add_argument("--quality-metric", action="store", dest="quality_metric", default=DEFAULTS["QUALITY_METRIC"])
-    parser.add_argument("--quality-threshold", action="store", type=float, dest="quality_threshold", default=DEFAULTS["QUALITY_THRESHOLD"])
     parser.add_argument("--screenshot", action="store", dest="screenshot")
     args = parser.parse_args()
 
     visualize(args)
 
     view = GetRenderView()
-    view.CameraPosition = [78002.89373974672, -1531813.1739094853, 595774.2094961794]
-    view.CameraFocalPoint = [-45014.6313325238, 149523.68421156122, -335271.271063906]
-    view.CameraViewUp = [0.0, 0.0, 1.0]
+    view.CameraPosition = [-25000, -50000, 499695]
+    view.CameraFocalPoint = [-25000, -50000, 5000]
+    view.CameraViewUp = [0.0, 1.0, 0.0]
     view.ViewSize = [960, 540]
     view.Update()
 

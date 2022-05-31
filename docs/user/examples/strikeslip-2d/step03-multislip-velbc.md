@@ -14,9 +14,8 @@ We set the y velocity to -1 cm/yr on the +x boundary and +1 cm/yr on the -x boun
 We prescribe 1 meter of right-lateral slip to occur at 100 years and 3 meters of right-lateral slip to occur at 200 years.
 :::
 
-## Features
-
-```{include} step03-slip-features.md
+% Metadata extracted from parameter files.
+```{include} step03_multislip_velbc-synopsis.md
 ```
 
 ## Simulation parameters
@@ -37,11 +36,30 @@ caption: Run Step 3 simulation
 $ pylith step03_multislip_velbc.cfg
 
 # The output should look something like the following.
+ >> /Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/meshio/MeshIOObj.py:44:read
+ -- meshiopetsc(info)
+ -- Reading finite-element mesh
+ >> /Users/baagaard/src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:94:void pylith::meshio::MeshIO::read(topology::Mesh *)
+ -- meshiopetsc(info)
+ -- Component 'reader': Domain bounding box:
+    (-50000, 50000)
+    (-75000, 75000)
 
+# -- many lines omitted --
+
+25 TS dt 0.1 time 2.4
+    0 SNES Function norm 1.078084164693e-03 
+    Linear solve converged due to CONVERGED_ATOL iterations 34
+    1 SNES Function norm 1.061858933468e-12 
+  Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
+26 TS dt 0.1 time 2.5
+ >> /Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:201:finalize
+ -- timedependent(info)
+ -- Finalizing problem.
 ```
 
 The beginning of the output written to the terminal is identical to that from Step 1.
-At the end of the output, we see that the simulation advanced the solution 25 time steps.
+At the end of the output, we see that the simulation advanced the solution 26 time steps.
 Remember that the PETSc TS monitor shows the nondimensionalized time and time step values.
 
 ## Visualizing the results
@@ -57,6 +75,10 @@ caption: Set the simulation in the ParaView Python Shell.
 ```
 
 Next we run the `viz/plot_dispwarp.py` Python script as described in {ref}`sec-paraview-python-scripts`.
+
+:::{tip}
+You can use the "play" button to animate the solution in time.
+:::
 
 :::{figure-md} fig:example:strikeslip:2d:step03:solution
 <img src="figs/step03-solution.*" alt="Solution for Step 3 at t=190 yr. The colors indicate the magnitude of the displacement, and the deformation is exaggerated by a factor of 1000." width="100%"/>

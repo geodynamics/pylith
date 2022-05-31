@@ -12,7 +12,7 @@ When using the default values, PyLith selects solver and preconditioner options 
 In most cases these default values will give good performance and you do not need to specify any PETSc options.
 The user-specified values always take precedence over the default values.
 
-## Default PETSc Settings
+## Default PETSc Options
 
 :::{note}
 New in v3.0.0
@@ -40,11 +40,11 @@ petscoptions = 1
 See [`PetscDefaults` Component](../components/utils/PetscDefaults.md) for more information about the the Pyre interface for specifying default PETSc options.
 :::
 
-### Solver Settings
+### Solver Options
 
 The solver options are enabled by default.
 PyLith selects options based on the governing equation, formulation, presence of a fault, and whether the simulation is running in parallel.
-In most cases the settings used when running in parallel give comparable or better performance than those used when running serial; consequently, you may want to use them when solving moderate to larger problems in serial.
+In most cases the options used when running in parallel give comparable or better performance than those used when running serial; consequently, you may want to use them when solving moderate to larger problems in serial.
 Additionally, PyLith specifies general options related to the solver tolerances and triggering errors if the linear or nonlinear solver fails to converge.
 The different sets of defaults are detailed in the following code blocks.
 
@@ -55,7 +55,6 @@ The workaround is to use the `ilu` preconditioner.
 However, it only works in serial.
 An alternative is to use the `asm` preconditioner (Additive Schwarz) which works in parallel and serial.
 :::
-
 
 ```{code-block} cfg
 ---
@@ -127,6 +126,31 @@ pc_use_amat = true
 pc_fieldsplit_type = schur
 
 pc_fieldsplit_schur_factorization_type = lower
+pc_fieldsplit_schur_precondition = selfp
+pc_fieldsplit_schur_scale = 1.0
+
+fieldsplit_displacement_ksp_type = preonly
+fieldsplit_displacement_pc_type = gamg
+fieldsplit_displacement_mg_levels_pc_type = sor
+fieldsplit_displacement_mg_levels_ksp_type = richardson
+
+fieldsplit_lagrange_multiplier_fault_ksp_type = preonly
+fieldsplit_lagrange_multiplier_fault_pc_type = gamg
+fieldsplit_lagrange_multiplier_fault_mg_levels_pc_type = sor
+fieldsplit_lagrange_multiplier_fault_mg_levels_ksp_type = richardson
+```
+
+```{code-block} cfg
+---
+caption: Alternative options for quasistatic elasticity with a fault that often provide similar performance.
+---
+[pylithapp.petsc]
+ts_type = beuler
+pc_type = fieldsplit
+pc_use_amat = true
+pc_fieldsplit_type = schur
+
+pc_fieldsplit_schur_factorization_type = full
 pc_fieldsplit_schur_precondition = selfp
 pc_fieldsplit_schur_scale = 1.0
 
@@ -245,7 +269,7 @@ testing = True
 malloc_dump = true
 ```
 
-## User-Specified PETSc Settings
+## User-Specified PETSc Options
 
 {numref}`tab-petsc-options-monitor` shows the main monitoring options offered by PETSc.
 When optimizing and troubleshooting solver options, we usually turn on all the monitoring.
@@ -267,7 +291,7 @@ When optimizing and troubleshooting solver options, we usually turn on all the m
 | `snes_linesearch_monitor` | Show line search information in nonlinear solve. |
 ```
 
-## Solver Options
+### Solver Options
 
 For most problems we use the GMRES method from Saad and Schultz for the linear solver; this is the linear solver PETSc uses as the default.
 See [PETSc linear solver table](https://petsc.org/release/docs/manual/ksp/#tab-kspdefaults) for a list of PETSc options for linear solvers and preconditioners.

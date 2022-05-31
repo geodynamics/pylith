@@ -9,23 +9,34 @@ and classes for marking materials and boundaries compatible with PyLith. We also
 finalizing the mesh.
 
 Run `generate_gmsh.py --help` to see the command line options.
-"""
-import math
-from re import S
 
+Run `generate_gmsh.py --write` to generate the mesh.
+"""
+
+# Import the math module for trigonometric functions
+import math
+
+# Import Gmsh Python interface
 import gmsh
+
+# Import the gmsh_utils Python module supplied with PyLith.
 from pylith.meshio.gmsh_utils import (VertexGroup, MaterialGroup, GenerateMesh)
 
 class App(GenerateMesh):
     """
-    Block is 200km by 100km.
+    Application used to generate the mesh using Gmsh.
+
+    App uses `GenerateMesh` from `gmsh_utils` for common functionality that we avoid
+    duplicating in each of our examples.
+
+    Domain is 200km by 100km.
 
     -100.0 km <= x <= 100.0 km
     -100.0 km <= y <= 0.0 km
 
     We create a reverse fault and a splay fault.
-
     """
+    # Define some constants that determine the geometry of the domain.
     DOMAIN_X = 200.0e+3
     DOMAIN_Y = 100.0e+3
     FAULT_WIDTH = 60.0e+3
@@ -46,6 +57,9 @@ class App(GenerateMesh):
 
     def create_geometry(self):
         """Create geometry.
+
+        This method is abstract in the base class and must be implemented
+        in our local App class.
         """
         # Set local variables for domain size and corner of the domain.
         lx = self.DOMAIN_X
@@ -59,7 +73,7 @@ class App(GenerateMesh):
         p3 = gmsh.model.geo.add_point(x1+lx, y1+ly, 0.0)
         p4 = gmsh.model.geo.add_point(x1, y1+ly, 0.0)
 
-        # Create points for fault
+        # Create points for main fault
         w = self.FAULT_WIDTH
         fault_dip = self.FAULT_DIP / 180.0 * math.pi
         x6 = -0.5 * w * math.cos(fault_dip)
@@ -71,7 +85,7 @@ class App(GenerateMesh):
         p7 = gmsh.model.geo.add_point(x7, 0.0, 0.0)
         self.p_fault_end = p6
 
-        # Create points for splay
+        # Create points for splay fault
         splay_dip = self.SPLAY_DIP / 180.0 * math.pi
         w = self.SPLAY_OFFSET * math.sin(fault_dip) / (math.sin(splay_dip)*math.cos(fault_dip) - math.sin(fault_dip)*math.cos(splay_dip))
         x9 = x7 - self.SPLAY_OFFSET
@@ -83,25 +97,27 @@ class App(GenerateMesh):
 
         # Create curves. We store the curve tag as a data member
         # so that we can refer to them later.
-        self.l_yneg = gmsh.model.geo.add_line(p1, p2)
-        self.l_xpos = gmsh.model.geo.add_line(p2, p3)
-        self.l_ypos0 = gmsh.model.geo.add_line(p3, p7)
-        self.l_ypos1 = gmsh.model.geo.add_line(p7, p9)
-        self.l_ypos2 = gmsh.model.geo.add_line(p9, p4)
-        self.l_xneg0 = gmsh.model.geo.add_line(p4, p5)
-        self.l_xneg1 = gmsh.model.geo.add_line(p5, p1)
+        # We traverse the curves in a counter clock-wise direction.
+        # If the curve is in the opporite direction, we use the negative tag.
+        self.c_yneg = gmsh.model.geo.add_line(p1, p2)
+        self.c_xpos = gmsh.model.geo.add_line(p2, p3)
+        self.c_ypos_fw = gmsh.model.geo.add_line(p3, p7)
+        self.c_ypos_w = gmsh.model.geo.add_line(p7, p9)
+        self.c_ypos_hw = gmsh.model.geo.add_line(p9, p4)
+        self.c_xneg_hw = gmsh.model.geo.add_line(p4, p5)
+        self.c_xneg_fw = gmsh.model.geo.add_line(p5, p1)
 
-        self.l_moho = gmsh.model.geo.add_line(p5, p6)
-        self.l_fault0 = gmsh.model.geo.add_line(p6, p8)
-        self.l_fault1 = gmsh.model.geo.add_line(p8, p7)
+        self.c_fault_ext = gmsh.model.geo.add_line(p5, p6)
+        self.c_fault_l = gmsh.model.geo.add_line(p6, p8)
+        self.c_fault_u = gmsh.model.geo.add_line(p8, p7)
 
-        self.l_splay = gmsh.model.geo.add_line(p8, p9)
+        self.c_splay = gmsh.model.geo.add_line(p8, p9)
 
-        c0 = gmsh.model.geo.add_curve_loop([self.l_yneg, self.l_xpos, self.l_ypos0, -self.l_fault1, -self.l_fault0, -self.l_moho, self.l_xneg1])
+        c0 = gmsh.model.geo.add_curve_loop([self.c_yneg, self.c_xpos, self.c_ypos_fw, -self.c_fault_u, -self.c_fault_l, -self.c_fault_ext, self.c_xneg_fw])
         self.s_slab = gmsh.model.geo.add_plane_surface([c0])
-        c0 = gmsh.model.geo.add_curve_loop([self.l_moho, self.l_fault0, self.l_splay, self.l_ypos2, self.l_xneg0])
+        c0 = gmsh.model.geo.add_curve_loop([self.c_fault_ext, self.c_fault_l, self.c_splay, self.c_ypos_hw, self.c_xneg_hw])
         self.s_plate = gmsh.model.geo.add_plane_surface([c0])
-        c0 = gmsh.model.geo.add_curve_loop([self.l_fault1, self.l_ypos1, -self.l_splay])
+        c0 = gmsh.model.geo.add_curve_loop([self.c_fault_u, self.c_ypos_w, -self.c_splay])
         self.s_wedge = gmsh.model.geo.add_plane_surface([c0])
 
         gmsh.model.geo.synchronize()
@@ -110,9 +126,13 @@ class App(GenerateMesh):
     def mark(self):
         """Mark geometry for materials, boundary conditions, faults, etc.
 
-        This method is abstract in the base class and must be implemented.
+        This method is abstract in the base class and must be implemented
+        in our local App class.
         """
-        # Create two materials, one for each side of the fault.
+        # Create three materials (slab, plate, and wedge).
+        # We use the `MaterialGroup` data class defined in `gmsh_utils.`
+        # The tag argument specifies the integer tag for the physical group.
+        # The entities argument specifies the array of surfaces for the material.
         materials = (
             MaterialGroup(tag=1, entities=[self.s_slab]),
             MaterialGroup(tag=2, entities=[self.s_plate]),
@@ -121,15 +141,19 @@ class App(GenerateMesh):
         for material in materials:
             material.create_physical_group()
 
-        # Create physical groups for the boundaries and the fault.
+        # Create physical groups for the boundaries and the faults.
+        # We use the `VertexGroup` data class defined in `gmsh_utils`.
+        # The name and tag specify the name and tag assigned to the physical group.
+        # The dimension and entities specify the geometric entities to include in the physical
+        # group.
         vertex_groups = (
-            VertexGroup(name="boundary_xneg", tag=10, dim=1, entities=[self.l_xneg0, self.l_xneg1]),
-            VertexGroup(name="boundary_xpos", tag=11, dim=1, entities=[self.l_xpos]),
-            VertexGroup(name="boundary_yneg", tag=12, dim=1, entities=[self.l_yneg]),
-            VertexGroup(name="boundary_ypos", tag=13, dim=1, entities=[self.l_ypos0, self.l_ypos1, self.l_ypos2]),
-            VertexGroup(name="fault", tag=20, dim=1, entities=[self.l_fault0, self.l_fault1]),
+            VertexGroup(name="boundary_xneg", tag=10, dim=1, entities=[self.c_xneg_hw, self.c_xneg_fw]),
+            VertexGroup(name="boundary_xpos", tag=11, dim=1, entities=[self.c_xpos]),
+            VertexGroup(name="boundary_yneg", tag=12, dim=1, entities=[self.c_yneg]),
+            VertexGroup(name="boundary_ypos", tag=13, dim=1, entities=[self.c_ypos_fw, self.c_ypos_w, self.c_ypos_hw]),
+            VertexGroup(name="fault", tag=20, dim=1, entities=[self.c_fault_l, self.c_fault_u]),
             VertexGroup(name="fault_end", tag=21, dim=0, entities=[self.p_fault_end]),
-            VertexGroup(name="splay", tag=22, dim=1, entities=[self.l_splay]),
+            VertexGroup(name="splay", tag=22, dim=1, entities=[self.c_splay]),
             VertexGroup(name="splay_end", tag=23, dim=0, entities=[self.p_splay_end]),
         )
         for group in vertex_groups:
@@ -137,8 +161,12 @@ class App(GenerateMesh):
 
     def generate_mesh(self, cell):
         """Generate the mesh.
+
+        This method is abstract in the base class and must be implemented
+        in our local App class.
         """
         # Set discretization size with geometric progression from distance to the fault.
+
         # We turn off the default sizing methods.
         gmsh.option.set_number("Mesh.MeshSizeFromPoints", 0)
         gmsh.option.set_number("Mesh.MeshSizeFromCurvature", 0)
@@ -146,7 +174,7 @@ class App(GenerateMesh):
 
         # First, we setup a field `field_distance` with the distance from the fault.
         fault_distance = gmsh.model.mesh.field.add("Distance")
-        gmsh.model.mesh.field.setNumbers(fault_distance, "CurvesList", [self.l_fault0, self.l_fault1])
+        gmsh.model.mesh.field.setNumbers(fault_distance, "CurvesList", [self.c_fault_l, self.c_fault_u])
 
         # Second, we setup a field `field_size`, which is the mathematical expression
         # for the cell size as a function of the cell size on the fault, the distance from
@@ -160,13 +188,18 @@ class App(GenerateMesh):
         ## Finally, we use the field `field_size` for the cell size of the mesh.
         gmsh.model.mesh.field.setAsBackgroundMesh(field_size)
 
-        gmsh.option.setNumber("Mesh.Algorithm", 8)
-        gmsh.model.mesh.generate(2)
         if cell == "quad":
+            # Generate a tri mesh and then recombine cells to form quadrilaterals.
+            # We use the Frontal-Delaunay for Quads algorithm.
+            gmsh.option.setNumber("Mesh.Algorithm", 8)
             gmsh.model.mesh.recombine()
+            gmsh.model.mesh.generate(2)
+        else:
+            gmsh.model.mesh.generate(2)
         gmsh.model.mesh.optimize("Laplace2D")
 
 
+# If script is called from the command line, run the application.
 if __name__ == "__main__":
     App().main()
 

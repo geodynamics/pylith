@@ -10,7 +10,7 @@
 \input{../../../../tikz-styles/example-style}
 
 
-\foreach \figpart in {1,...,6}{
+\foreach \figpart in {1,...,8}{
 
 % -------------------------------------------------------------------------------------------------
 \begin{tikzpicture}[scale=0.05]
@@ -273,6 +273,48 @@
     \draw[bc,arrow] ($(x)+(+4,+0.5*\bndryshift)$) -- ++(0,-\bndryshift);
     \draw[bc,arrow] ($(x)+(-4,-0.5*\bndryshift)$) -- ++(0,\bndryshift);
     \node[bc-label, right, xshift=5] at (x) {$\begin{array}{l}d=-1.0 \textrm{m} \\ t\ge100 \textrm{yr} \\[3mm] d=-3.0 \textrm{m} \\ t\ge200 \textrm{yr}\end{array}$};
+
+}{} % if/else
+
+
+% -------------------------------------------------------------------------------------------------
+% Step 4
+% -------------------------------------------------------------------------------------------------
+\ifthenelse{\figpart=7}{
+
+    % Dirichlet BC on +x and -x boundaries
+    \node[ground, rotate=-90, minimum width=75mm] (ground) at ($(p1)+(0,0.5*\domainy)$) {};
+    \node[bc-label, left] at (ground.south) {$\begin{array}{l} u_x=0 \\ u_y=0 \end{array}$};
+
+    \node[ground, rotate=90, minimum width=75mm] (ground) at ($(p2)+(0,0.5*\domainy)$) {};
+    \node[bc-label, right] at (ground.south) {$\begin{array}{l} u_x=0 \\ u_y=0 \end{array}$};
+
+    % Fault slip
+    \coordinate (x) at ($(p5)+(0,0.5*\domainy)$);
+    \draw[bc,arrow] ($(x)+(+4,-0.5*\bndryshift)$) -- ++(0,+\bndryshift);
+    \draw[bc,arrow] ($(x)+(-4,+0.5*\bndryshift)$) -- ++(0,-\bndryshift);
+    \node[bc-label, right, xshift=5] at (x) {$d=d(y)$};
+
+}{} % if/else
+
+
+% -------------------------------------------------------------------------------------------------
+% Step 5
+% -------------------------------------------------------------------------------------------------
+\ifthenelse{\figpart=8}{
+
+    % Dirichlet BC on +x and -x boundaries
+    \node[ground, rotate=-90, minimum width=75mm] (ground) at ($(p1)+(0,0.5*\domainy)$) {};
+    \node[bc-label, left] at (ground.south) {$\begin{array}{l} u_x=0 \\ u_y=0 \end{array}$};
+
+    \node[ground, rotate=90, minimum width=75mm] (ground) at ($(p2)+(0,0.5*\domainy)$) {};
+    \node[bc-label, right] at (ground.south) {$\begin{array}{l} u_x=0 \\ u_y=0 \end{array}$};
+
+    % Fault slip
+    \coordinate (x) at ($(p5)+(0,0.5*\domainy)$);
+    \draw[bc,arrow] ($(x)+(+4,-0.5*\bndryshift)$) -- ++(0,+\bndryshift);
+    \draw[bc,arrow] ($(x)+(-4,+0.5*\bndryshift)$) -- ++(0,-\bndryshift);
+    \node[bc-label, right, xshift=5] at (x) {$d=\delta(y)$};
 
 }{} % if/else
 

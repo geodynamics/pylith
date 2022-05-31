@@ -24,6 +24,10 @@ In some cases, a later step may make use of output from an earlier step; these c
 The `subduction-3d` example suite is the most advanced.
 Users wanting to use PyLith in their research should work through relevant beginner examples and then the `subduction-3d` examples.
 
+:::{tip}
+You can use the `pylith_cfgsearch` utility (see {ref}`sec-user-run-pylith-utilities`) to search for examples based on keywords and features.
+:::
+
 ### Prerequisites
 
 Before you begin any of the examples, you will need to install PyLith following the instructions in {ref}`sec-install`.
