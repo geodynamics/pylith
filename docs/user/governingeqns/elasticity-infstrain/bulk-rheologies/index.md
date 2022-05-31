@@ -27,7 +27,7 @@ For the viscoelastic rheologies, we assume the viscous deformation is incompress
 :::{toctree}
 linear-elastic.md
 linear-maxwell.md
-linear-genmax.md
+linear-genmaxwell.md
 effective-stress.md
 powerlaw.md
 alt-formulations
