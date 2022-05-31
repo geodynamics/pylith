@@ -193,10 +193,15 @@ dist_noinst_DATA = \
     user/examples/box-2d/common-information.md \
     user/examples/box-2d/exercises.md \
     user/examples/box-2d/step01-axialdisp.md \
+    user/examples/box-2d/step01_axialdisp-synopsis.md \
     user/examples/box-2d/step02-sheardisp.md \
+    user/examples/box-2d/step02_sheardisp-synopsis.md \
     user/examples/box-2d/step03-sheardisptract.md \
+    user/examples/box-2d/step03_sheardisptract-synopsis.md \
     user/examples/box-2d/step04-sheardispic.md \
+    user/examples/box-2d/step04_sheardispic-synopsis.md \
     user/examples/box-2d/step05-sheardisptractrate.md \
+    user/examples/box-2d/step05_sheardisptractrate-synopsis.md \
     user/examples/box-2d/figs/diagrams.tex \
     user/examples/box-2d/figs/generate.sh \
     user/examples/box-2d/figs/geometry.pdf \
@@ -222,13 +227,21 @@ dist_noinst_DATA = \
     user/examples/reverse-2d/meshing-cubit.md \
     user/examples/reverse-2d/meshing-gmsh.md \
     user/examples/reverse-2d/step01-gravity.md \
+    user/examples/reverse-2d/step01_gravity-synopsis.md \
     user/examples/reverse-2d/step02-gravity-refstate.md \
+    user/examples/reverse-2d/step02_gravity_refstate-synopsis.md \
     user/examples/reverse-2d/step03-gravity-incompressible.md \
+    user/examples/reverse-2d/step03_gravity_incompressible-synopsis.md \
     user/examples/reverse-2d/step04-surfload.md \
+    user/examples/reverse-2d/step04_surfload-synopsis.md \
     user/examples/reverse-2d/step05-onefault.md \
+    user/examples/reverse-2d/step05_onefault-synopsis.md \
     user/examples/reverse-2d/step06-twofaults-elastic.md \
+    user/examples/reverse-2d/step06_twofaults_elastic-synopsis.md \
     user/examples/reverse-2d/step07-twofaults-maxwell.md \
+    user/examples/reverse-2d/step07_twofaults_maxwell-synopsis.md \
     user/examples/reverse-2d/step08-twofaults-powerlaw.md \
+    user/examples/reverse-2d/step08_twofaults_powerlaw-synopsis.md \
     user/examples/reverse-2d/figs/cubit-quad.png \
     user/examples/reverse-2d/figs/cubit-tri.png \
     user/examples/reverse-2d/figs/diagrams.tex \
@@ -253,14 +266,24 @@ dist_noinst_DATA = \
     user/examples/reverse-2d/figs/step05-solution.jpg \
     user/examples/reverse-2d/figs/step06-diagram.pdf \
     user/examples/reverse-2d/figs/step06-diagram.svg \
+    user/examples/reverse-2d/figs/step06-solution.jpg \
+    user/examples/reverse-2d/figs/step07-solution.jpg \
     user/examples/strikeslip-2d/index.md \
     user/examples/strikeslip-2d/common-information.md \
     user/examples/strikeslip-2d/exercises.md \
     user/examples/strikeslip-2d/meshing-cubit.md \
     user/examples/strikeslip-2d/meshing-gmsh.md \
     user/examples/strikeslip-2d/step01-slip.md \
+    user/examples/strikeslip-2d/step01_slip-synopsis.md \
     user/examples/strikeslip-2d/step02-slip-velbc.md \
+    user/examples/strikeslip-2d/step02_slip_velbc-synopsis.md \
     user/examples/strikeslip-2d/step03-multislip-velbc.md \
+    user/examples/strikeslip-2d/step03_multislip_velbc-synopsis.md \
+    user/examples/strikeslip-2d/step04-varslip.md \
+    user/examples/strikeslip-2d/step04_varslip-synopsis.md \
+    user/examples/strikeslip-2d/step05-greensfns.md \
+    user/examples/strikeslip-2d/step05_greensfns-synopsis.md \
+    user/examples/strikeslip-2d/step06-inversion.md \
     user/examples/strikeslip-2d/figs/cubit-quad.png \
     user/examples/strikeslip-2d/figs/cubit-tri.png \
     user/examples/strikeslip-2d/figs/diagrams.tex \
@@ -281,6 +304,16 @@ dist_noinst_DATA = \
     user/examples/strikeslip-2d/figs/step03-diagram.pdf \
     user/examples/strikeslip-2d/figs/step03-diagram.svg \
     user/examples/strikeslip-2d/figs/step03-solution.jpg \
+    user/examples/strikeslip-2d/figs/step04-diagram.pdf \
+    user/examples/strikeslip-2d/figs/step04-diagram.svg \
+    user/examples/strikeslip-2d/figs/step04-slip.pdf \
+    user/examples/strikeslip-2d/figs/step04-slip.svg \
+    user/examples/strikeslip-2d/figs/step04-solution.jpg \
+    user/examples/strikeslip-2d/figs/step05-diagram.pdf \
+    user/examples/strikeslip-2d/figs/step05-diagram.svg \
+    user/examples/strikeslip-2d/figs/step05-solution.jpg \
+    user/examples/strikeslip-2d/figs/step06-solution.pdf \
+    user/examples/strikeslip-2d/figs/step06-solution.svg \
     user/examples/subduction-2d/common-information.md \
     user/examples/subduction-2d/figs/cartoon_general.pdf \
     user/examples/subduction-2d/figs/cartoon_general.svg \
