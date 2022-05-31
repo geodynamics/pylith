@@ -4,7 +4,7 @@
 :::{toctree}
 overview.md
 pylithapp.md
-petsc-settings.md
+petsc-options.md
 mesh.md
 utilities.md
 parameter-gui.md
