@@ -29,7 +29,7 @@ We create a class `App` that implements the functionality missing in `gmsh_utils
 We must implement the `create_geometry()`, `mark()`, and `generate_mesh()` methods that are abstract in the `GenerateMesh` base class.
 The main difference is that the geometry is slightly more complex, and we calculate the location of the points on the fault using trigonometry.
 
-We use the Gmsh MeshSize options to define a discretization size the grows slowly at a geometric rate with distance from the main fault.
+We use the Gmsh MeshSize options to define a discretization size that grows slowly at a geometric rate with distance from the main fault.
 
 ```{code-block} console
 ---

@@ -1,4 +1,4 @@
-# Examples: 2D box
+# Axial and Shear Deformation in a 2D Box
 
 This suite of examples demonstrates some basic concepts of using PyLith to solve the static and quasistatic boundary elasticity equation in a 2D box with uniform material properties.
 This example incrementally adds complexity through a series of steps:
