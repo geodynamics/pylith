@@ -356,7 +356,6 @@ dist_noinst_DATA = \
     user/file-formats/meshio-ascii.md \
     user/file-formats/points-list.md \
     user/glossary/index.md \
-    user/governingeqns/alt-formulations.md \
     user/governingeqns/elasticity-derivation.md \
     user/governingeqns/elasticity-infstrain-prescribedslip/dynamic.md \
     user/governingeqns/elasticity-infstrain-prescribedslip/index.md \
@@ -364,6 +363,14 @@ dist_noinst_DATA = \
     user/governingeqns/elasticity-infstrain/dynamic.md \
     user/governingeqns/elasticity-infstrain/index.md \
     user/governingeqns/elasticity-infstrain/quasistatic.md \
+    user/governingeqns/elasticity-infstrain/bulk-rheologies/index.md \
+    user/governingeqns/elasticity-infstrain/bulk-rheologies/alt-formulations.md \
+    user/governingeqns/elasticity-infstrain/bulk-rheologies/effective-stress.md \
+    user/governingeqns/elasticity-infstrain/bulk-rheologies/linear-genmaxwell.md \
+    user/governingeqns/elasticity-infstrain/bulk-rheologies/linear-maxwell.md \
+    user/governingeqns/elasticity-infstrain/bulk-rheologies/powerlaw.md \
+    user/governingeqns/elasticity-infstrain/bulk-rheologies/figs/viscoelastic-schematic.pdf \
+    user/governingeqns/elasticity-infstrain/bulk-rheologies/figs/viscoelastic-schematic.svg \
     user/governingeqns/incompressible-elasticity.md \
     user/governingeqns/index.md \
     user/governingeqns/petsc-formulation.md \
