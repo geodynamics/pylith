@@ -28,10 +28,6 @@ When PyLith inserts cohesive cells into a mesh with buried edges (in this case a
 For properly topology of the cohesive cells, the main fault _must_ be listed first in the array of faults so that it will be created before the splay fault.
 :::
 
-:::{danger}
-This example does not yet work due to a bug in the PowerLaw bulk rheology.
-:::
-
 ```{code-block} console
 ---
 caption: Run Step 8 simulation
@@ -50,11 +46,21 @@ $ pylith step08_twofaults_powerlaw.cfg
 
 # -- many lines omitted --
 
-:TODO: STUFF GOES HERE
- ```
+25 TS dt 0.2 time 4.8
+    0 SNES Function norm 5.602869611772e-06 
+    Linear solve converged due to CONVERGED_ATOL iterations 262
+    1 SNES Function norm 6.656502817834e-08 
+    Linear solve converged due to CONVERGED_ATOL iterations 117
+    2 SNES Function norm 9.645013365143e-10 
+  Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 2
+26 TS dt 0.2 time 5.
+ >> /software/baagaard/py38-venv/pylith-debug/lib/python3.8/site-packages/pylith/problems/Problem.py:201:finalize
+ -- timedependent(info)
+ -- Finalizing problem.
+```
 
-From the end of the output written to the terminal window, we see that the linear solver converged in XXX iterations and met the absolute convergence tolerance (`ksp_atol`).
-As we expect for this linear problem, the nonlinear solver converged in 1 iteration.
+As in Step 7, the simulation advances 26 time steps.
+With a nonlinear bulk rheology, the nonlinear solver now requires several iterations to converge at each time step.
 
 ## Visualizing the results
 
@@ -79,7 +85,8 @@ caption: Set the simulation and exaggeration in the ParaView Python Shell.
 :::{figure-md} fig:example:reverse:2d:step08:solution
 <img src="figs/step08-solution.*" alt="Solution for Step 8. The colors indicate the magnitude of the x displacement, and the deformation is exaggerated by a factor of 1000." width="100%"/>
 
-Solution for Step 8.
+Solution for Step 8 at t=100 years.
 The colors of the shaded surface indicate the magnitude of the x displacement, and the deformation is exaggerated by a factor of 1000.
 The undeformed configuration is show by the gray wireframe.
+Our parameters for the power-law bulk rheology result in much less viscoelastic relaxation in this case compared to Step 7.
 :::
