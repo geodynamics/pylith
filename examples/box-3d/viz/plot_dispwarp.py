@@ -29,7 +29,7 @@ example, set OUTPUT_DIR to the absolute path if not starting
 ParaView from the terminal shell where you ran PyLith:
 
 import os
-OUTPUT_DIR = os.path.join(os.environ["HOME"], "src", "pylith", "examples", "2d", "box", "output")
+OUTPUT_DIR = os.path.join(os.environ["HOME"], "src", "pylith", "examples", "box-3d", "output")
 """
 
 DEFAULTS = {
@@ -91,7 +91,7 @@ def visualize(parameters):
 
     # Annotate time
     tstamp = AnnotateTimeFilter(warp)
-    tstamp.Format = 'Time: %5.1f yr'
+    tstamp.Format = 'Time: {time:5.1f} yr'
     tstamp.Scale = 3.168808781402895e-08  # seconds to years
 
     tstampDisplay = Show(tstamp, view)
@@ -136,8 +136,9 @@ if __name__ == "__main__":
 
     view = GetRenderView()
     view.ViewSize = [1024, 540]
-    view.CameraPosition = [68527.89880980579, -152111.39463431376, 1405120.1034155919]
-    view.CameraFocalPoint = [68527.89880980579, -152111.39463431376, -1004573.5784798338]
+    view.CameraPosition = [-16779.421060308836, -23776.77378548845, 3600.100329762266]
+    view.CameraFocalPoint = [6617.515496227893, 8846.762033095823, -9942.599139089707]
+    view.CameraViewUp = [0, 0, 1]
     view.Update()
 
     if args.screenshot:

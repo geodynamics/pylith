@@ -24,5 +24,9 @@ SimpleDB {
 // (4) initial x displacement (m)
 // (5) initial y displacement (m)
 // (6) initial z displacement (m)
+// (7) x velocity (m/yr)
+// (8) y velocity (m/yr)
+// (9) z velocity (m/yr)
+// (10) rate start time (yr)
 -6.0  -6.0  0.0   -1.2 -1.2  0.0    -0.3  -0.3  0.0   1.0
 -6.0  +6.0  0.0   +1.2 -1.2  0.0    +0.3  -0.3  0.0   1.0

@@ -1,0 +1,233 @@
+\documentclass[crop,tikz]{standalone}
+\usepackage{tikz}
+\usepackage{ifthen}
+\usepackage[scaled]{helvet}
+\renewcommand*\familydefault{\sfdefault}
+
+
+\begin{document}
+
+\input{../../../../tikz-styles/figcolors}
+\input{../../../../tikz-styles/example-style}
+
+\usetikzlibrary{3d}
+
+\foreach \figpart in {1,...,5}{
+
+% -------------------------------------------------------------------------------------------------
+\begin{tikzpicture}[%
+    scale=0.5,
+    x={({cos(20)},{+sin(20)})},z={(0,{sin(90)})},y={({-sin(60)},{+cos(60)})}]
+
+\def\domainx{12}
+\def\domainy{12}
+\def\domainz{9}
+\def\axesshift{0.05*\domainx}
+\def\bndryshift{4*\axesshift}
+\def\ticksize{0.5*\axesshift}
+\pgfmathsetmacro\halfheight{0.5*\domainy}
+\def\xangle{20}
+\def\yangle{60}
+\def\dx{4.0}
+
+% Reference points
+\coordinate (p0) at (-0.5*\domainx,-0.5*\domainy,-\domainz);
+\coordinate (p1) at (+0.5*\domainx,-0.5*\domainy,-\domainz);
+\coordinate (p2) at (+0.5*\domainx,+0.5*\domainy,-\domainz);
+\coordinate (p3) at (-0.5*\domainx,+0.5*\domainy,-\domainz);
+\coordinate (p4) at (-0.5*\domainx,-0.5*\domainy,0.0);
+\coordinate (p5) at (+0.5*\domainx,-0.5*\domainy,0.0);
+\coordinate (p6) at (+0.5*\domainx,+0.5*\domainy,0.0);
+\coordinate (p7) at (-0.5*\domainx,+0.5*\domainy,0.0);
+
+% Domain
+\draw[curve,gdomain] (p0) -- (p1) -- (p5) -- (p4) -- cycle;
+\draw[curve,gdomain] (p3) -- (p0) -- (p4) -- (p7) -- cycle;
+\draw[curve,gdomain] (p4) -- (p5) -- (p6) -- (p7) -- cycle;
+\draw[curve,dashed] (p1) -- (p2) -- (p3);
+\draw[curve,dashed] (p2) -- (p6);
+
+% -------------------------------------------------------------------------------------------------
+% Geometry
+% -------------------------------------------------------------------------------------------------
+\ifthenelse{\figpart=1}{
+
+% Axes
+\draw[axes,arrow] ($(p0)+(0,-\axesshift,0)$) to ($(p1)+(2*\axesshift,-\axesshift,0)$);
+\node[axes-label,right] at ($(p1)+(2*\axesshift,-\axesshift)$) {x};
+\foreach \ix in {0,1}{%
+    \pgfmathsetmacro{\x}{-0.5*\domainx+\ix*\domainx}
+    \draw[axes] ($(p0)+(\ix*\domainx,-\axesshift,0)$) -- ++(0,-\ticksize,0) node[below, anchor=west, rotate=-\xangle]{\x\,km};
+}
+
+\draw[axes,arrow] ($(p0)+(-\axesshift,0,0)$) to ($(p3)+(-\axesshift,+2*\axesshift,0)$);
+\node[axes-label,above] at ($(p3)+(-\axesshift,2*\axesshift)$) {y};
+\foreach \iy in {0,1}{%
+    \pgfmathsetmacro{\y}{-0.5*\domainy+\iy*\domainy}
+    \draw[axes] ($(p0)+(-\axesshift,\iy*\domainy,0)$) -- ++(-\ticksize,0,0) node[below,anchor=east,rotate=\xangle]{\y\,km};
+}
+
+\draw[axes,arrow] ($(p3)+(-\axesshift,0,0)$) to ($(p7)+(-\axesshift,0,+2*\axesshift)$);
+\node[axes-label,above] at ($(p7)+(-\axesshift,0,2*\axesshift)$) {z};
+\foreach \iz in {0,1}{%
+    \pgfmathsetmacro{\z}{-\domainz+\iz*\domainz}
+    \draw[axes] ($(p3)+(-\axesshift,0,\iz*\domainz)$) -- ++(-\ticksize,0) node[left, anchor=east]{\z\,km};
+}
+
+% Boundaries
+\node[bc-label, rotate=-15] (xneg-label) at ($0.5*(p0)+0.5*(p7)$) {boundary\_xneg};
+\node[bc-label, rotate=-15] (xpos-label) at ($0.5*(p1)+0.5*(p6)$) {boundary\_xpos};
+
+\node[bc-label, rotate=\xangle] (yneg-label) at ($0.5*(p0)+0.5*(p5)$) {boundary\_yneg};
+\node[bc-label, rotate=\xangle] (ypos-label) at ($0.5*(p3)+0.5*(p6)$) {boundary\_ypos};
+
+\node[bc-label, rotate=\xangle] (zneg-label) at ($0.5*(p0)+0.5*(p2)$) {boundary\_zneg};
+\node[bc-label, rotate=\xangle] (zpos-label) at ($0.5*(p4)+0.5*(p6)$) {boundary\_zpos};
+
+}{}
+
+
+% -------------------------------------------------------------------------------------------------
+% Step 1
+% -------------------------------------------------------------------------------------------------
+\ifthenelse{\figpart=2}{
+
+    % Dirichlet BC on +x and -x boundaries
+    \draw[bc,arrow] ($0.5*(p0)+0.5*(p7)$) -- ++(-\bndryshift,0,0) node[left,bc-label,anchor=east,rotate=\xangle] {$u_x=-u_0$};
+    \draw[bc,arrow] ($0.5*(p1)+0.5*(p6)$) -- ++(\bndryshift,0) node[right,bc-label,anchor=west,rotate=\xangle] {$u_x=+u_0$};
+    
+    % Dirichlet BC on +y and -y boundaries
+    \draw[bc,rarrow] ($0.5*(p0)+0.5*(p5)$) -- ++(0,-\bndryshift,0,0) node[right,bc-label,anchor=west,rotate=-15] {$u_y=+u_1$};
+    \draw[bc,rarrow] ($0.5*(p3)+0.5*(p6)$) -- ++(0,\bndryshift,0) node[left,bc-label,anchor=east,rotate=-15] {$u_y=-u_1$};
+    
+    % Dirichlet roller BC on -z boundary
+    \def\radius{0.15*\bndryshift}%
+    \foreach \ix in {0,...,2}{%
+        \draw[roller,canvas is xz plane at y=0] ($(p0)+(\ix*\dx+0.5*\dx,-\radius)$) circle (\radius);
+        \node[ground,canvas is xz plane at y=0] at ($(p0)+(\ix*\dx+0.5*\dx,0,-2*\radius)$) {};
+    }
+    \def\radius{0.15*\bndryshift}%
+    \foreach \iy in {0,...,2}{%
+        \draw[roller,canvas is yz plane at x=0] ($(p0)+(\iy*\dx+0.5*\dx,-\radius)$) circle (\radius);
+        \node[ground,canvas is yz plane at x=0] at ($(p0)+(0,\iy*\dx+0.5*\dx,-2*\radius)$) {};
+    }
+    \node[bc-label] at ($(p0)+(0.5*\domainx,0,-\bndryshift)$) {$u_z=0$};
+
+
+}{} % if/else
+
+
+% -------------------------------------------------------------------------------------------------
+% Step 2
+% -------------------------------------------------------------------------------------------------
+\ifthenelse{\figpart=3}{
+
+    % Dirichlet BC on +x and -x boundaries
+    \coordinate (x) at ($0.5*(p0)+0.5*(p7)$);
+    \draw[bc,arrow] ($(x)+(0,+0.5*\bndryshift,0)$) -- ++(0,-\bndryshift,0) node[midway,bc-label,anchor=north,rotate=-15] {$u_y=ax$};
+
+    \coordinate (x) at ($0.5*(p1)+0.5*(p6)$);
+    \draw[bc,arrow] ($(x)+(0,-0.5*\bndryshift,0)$) -- ++(0,+\bndryshift,0) node[midway,bc-label,anchor=north,rotate=-15] {$u_y=ax$};
+
+    % Dirichlet BC on +y and -y boundaries
+    \coordinate (x) at ($0.5*(p0)+0.5*(p5)$);
+    \draw[bc,arrow] ($(x)+(+0.5*\bndryshift,0,0)$) -- ++(-\bndryshift,0,0) node[midway,bc-label,anchor=north,rotate=\xangle] {$u_x=ay$};
+
+    \coordinate (x) at ($0.5*(p3)+0.5*(p6)$);
+    \draw[bc,arrow] ($(x)+(-0.5*\bndryshift,0,0)$) -- ++(+\bndryshift,0,0) node[midway,bc-label,anchor=north,rotate=\xangle] {$u_x=ay$};
+
+    
+    % Dirichlet roller BC on -z boundary
+    \def\radius{0.15*\bndryshift}%
+    \foreach \ix in {0,...,2}{%
+        \draw[roller,canvas is xz plane at y=0] ($(p0)+(\ix*\dx+0.5*\dx,-\radius)$) circle (\radius);
+        \node[ground,canvas is xz plane at y=0] at ($(p0)+(\ix*\dx+0.5*\dx,0,-2*\radius)$) {};
+    }
+    \def\radius{0.15*\bndryshift}%
+    \foreach \iy in {0,...,2}{%
+        \draw[roller,canvas is yz plane at x=0] ($(p0)+(\iy*\dx+0.5*\dx,-\radius)$) circle (\radius);
+        \node[ground,canvas is yz plane at x=0] at ($(p0)+(0,\iy*\dx+0.5*\dx,-2*\radius)$) {};
+    }
+    \node[bc-label] at ($(p0)+(0.5*\domainx,0,-\bndryshift)$) {$u_z=0$};
+
+
+}{} % if/else
+
+
+% -------------------------------------------------------------------------------------------------
+% Step 3
+% -------------------------------------------------------------------------------------------------
+\ifthenelse{\figpart=4}{
+
+    % Dirichlet BC on +x and -x boundaries
+    \coordinate (x) at ($0.5*(p0)+0.5*(p7)$);
+    \draw[bc,arrow] ($(x)+(0,+0.5*\bndryshift,0)$) -- ++(0,-\bndryshift,0) node[midway,bc-label,anchor=north,rotate=-15] {$\begin{array}{cc} u_x=ay \\ u_y=ax \end{array}$};
+
+    \coordinate (x) at ($0.5*(p1)+0.5*(p6)$);
+    \draw[bc,arrow] ($(x)+(0,-0.5*\bndryshift,0)$) -- ++(0,+\bndryshift,0) node[midway,bc-label,anchor=north,rotate=-15] {$\begin{array}{cc} u_x=ay \\ u_y=ax \end{array}$};
+
+    % Neumann BC on -y
+    \coordinate (x) at ($0.5*(p0)+0.5*(p5)$);
+    \draw[bc,arrow] ($(x)+(+0.5*\bndryshift,0,0)$) -- ++(-\bndryshift,0,0) node[midway,bc-label,anchor=north,rotate=\xangle] {$\tau_t=-2\mu a$};
+
+    % Neumann BC on +y
+    \coordinate (x) at ($0.5*(p3)+0.5*(p6)$);
+   \draw[bc,arrow] ($(x)+(-0.5*\bndryshift,0,0)$) -- ++(+\bndryshift,0,0) node[midway,bc-label,anchor=north,rotate=\xangle] {$\tau_t=-2\mu a$};
+    
+    % Dirichlet roller BC on -z boundary
+    \def\radius{0.15*\bndryshift}%
+    \foreach \ix in {0,...,2}{%
+        \draw[roller,canvas is xz plane at y=0] ($(p0)+(\ix*\dx+0.5*\dx,-\radius)$) circle (\radius);
+        \node[ground,canvas is xz plane at y=0] at ($(p0)+(\ix*\dx+0.5*\dx,0,-2*\radius)$) {};
+    }
+    \def\radius{0.15*\bndryshift}%
+    \foreach \iy in {0,...,2}{%
+        \draw[roller,canvas is yz plane at x=0] ($(p0)+(\iy*\dx+0.5*\dx,-\radius)$) circle (\radius);
+        \node[ground,canvas is yz plane at x=0] at ($(p0)+(0,\iy*\dx+0.5*\dx,-2*\radius)$) {};
+    }
+    \node[bc-label] at ($(p0)+(0.5*\domainx,0,-\bndryshift)$) {$u_z=0$};
+
+
+}{} % if/else
+
+
+% -------------------------------------------------------------------------------------------------
+% Step 5
+% -------------------------------------------------------------------------------------------------
+\ifthenelse{\figpart=5}{
+
+    % Dirichlet BC on +x and -x boundaries
+    \coordinate (x) at ($0.5*(p0)+0.5*(p7)$);
+    \draw[bc,arrow] ($(x)+(0,+0.5*\bndryshift,0)$) -- ++(0,-\bndryshift,0) node[midway,bc-label,anchor=north,rotate=-15] {$\begin{array}{cc} u_x=ay+btyH(t-1 yr)\\ u_y=ax+btxH(t-1 yr)\end{array}$};
+
+    \coordinate (x) at ($0.5*(p1)+0.5*(p6)$);
+    \draw[bc,arrow] ($(x)+(0,-0.5*\bndryshift,0)$) -- ++(0,+\bndryshift,0) node[midway,bc-label,anchor=north,rotate=-15] {$\begin{array}{cc} u_x=ay+btyH(t-1 yr) \\ u_y=ax+btxH(t-1 yr)\end{array}$};
+
+    % Neumann BC on -y
+    \coordinate (x) at ($0.5*(p0)+0.5*(p5)$);
+    \draw[bc,arrow] ($(x)+(+0.5*\bndryshift,0,0)$) -- ++(-\bndryshift,0,0) node[midway,bc-label,anchor=north,rotate=\xangle] {$\tau_t=-2\mu (a + btH(t-1 yr))$};
+
+    % Neumann BC on +y
+    \coordinate (x) at ($0.5*(p3)+0.5*(p6)$);
+   \draw[bc,arrow] ($(x)+(-0.5*\bndryshift,0,0)$) -- ++(+\bndryshift,0,0) node[midway,bc-label,anchor=north,rotate=\xangle] {$\tau_t=-2\mu (a + btH(t-1 yr))$};
+    
+    % Dirichlet roller BC on -z boundary
+    \def\radius{0.15*\bndryshift}%
+    \foreach \ix in {0,...,2}{%
+        \draw[roller,canvas is xz plane at y=0] ($(p0)+(\ix*\dx+0.5*\dx,-\radius)$) circle (\radius);
+        \node[ground,canvas is xz plane at y=0] at ($(p0)+(\ix*\dx+0.5*\dx,0,-2*\radius)$) {};
+    }
+    \def\radius{0.15*\bndryshift}%
+    \foreach \iy in {0,...,2}{%
+        \draw[roller,canvas is yz plane at x=0] ($(p0)+(\iy*\dx+0.5*\dx,-\radius)$) circle (\radius);
+        \node[ground,canvas is yz plane at x=0] at ($(p0)+(0,\iy*\dx+0.5*\dx,-2*\radius)$) {};
+    }
+    \node[bc-label] at ($(p0)+(0.5*\domainx,0,-\bndryshift)$) {$u_z=0$};
+
+
+}{} % if/else
+
+
+\end{tikzpicture}}
+
+\end{document}
