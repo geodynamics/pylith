@@ -13,7 +13,7 @@ Implements `FaultCohesiveKin`.
 ## Pyre Facilities
 
 * `auxiliary_subfields`: Discretization information for auxiliary subfields.
-  - **current value**: 'auxiliary_subfields', from {file='/Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pythia/pyre/inventory/ConfigurableClass.py', line=26, function='__set__'}
+  - **current value**: 'auxiliary_subfields', from {file='/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pythia/pyre/inventory/ConfigurableClass.py', line=26, function='__set__'}
   - **configurable as**: auxiliary_subfields
 * `db_auxiliary_field`: (no documentation available)
   - **current value**: 'nullcomponent', from {default}

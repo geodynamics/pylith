@@ -13,7 +13,7 @@ Python PyLithApp application.
   - **current value**: 'job', from {default}
   - **configurable as**: job
 * `launcher`=\<component name\>: (no documentation available)
-  - **current value**: 'mpich', from {file='/Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pythia/mpi/launchers/mpich.odb'} via {default}
+  - **current value**: 'mpich', from {file='/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pythia/mpi/launchers/mpich.odb'} via {default}
   - **configurable as**: mpich, launcher
 * `mesh_generator`=\<component name\>: Generates or imports the computational mesh.
   - **current value**: 'meshimporter', from {default}
@@ -28,7 +28,7 @@ Python PyLithApp application.
   - **current value**: 'timedependent', from {default}
   - **configurable as**: timedependent, problem
 * `scheduler`=\<component name\>: (no documentation available)
-  - **current value**: 'scheduler-none', from {file='/Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pythia/pyre/schedulers/none.odb'} via {default}
+  - **current value**: 'scheduler-none', from {file='/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pythia/pyre/schedulers/none.odb'} via {default}
   - **configurable as**: scheduler-none, scheduler
 * `weaver`=\<component name\>: the pretty printer of my configuration as an XML document
   - **current value**: 'weaver', from {default}
