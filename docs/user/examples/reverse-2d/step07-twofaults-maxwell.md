@@ -39,7 +39,7 @@ $ pylith step07_twofaults_maxwell.cfg
  >> /software/baagaard/py38-venv/pylith-debug/lib/python3.8/site-packages/pylith/meshio/MeshIOObj.py:44:read
  -- meshiopetsc(info)
  -- Reading finite-element mesh
- >> /home/baagaard/src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:94:void pylith::meshio::MeshIO::read(pylith::topology::Mesh*)
+ >> /src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:94:void pylith::meshio::MeshIO::read(pylith::topology::Mesh*)
  -- meshiopetsc(info)
  -- Component 'reader': Domain bounding box:
     (-100000, 100000)
@@ -53,7 +53,7 @@ $ pylith step07_twofaults_maxwell.cfg
     1 SNES Function norm 6.643244443329e-13 
   Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
 26 TS dt 0.2 time 5.
- >> /Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:201:finalize
+ >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:201:finalize
  -- timedependent(info)
  -- Finalizing problem.
 ```

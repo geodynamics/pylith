@@ -49,10 +49,10 @@ caption: Run Step 5 simulation
 $  pylith step05_greensfns.cfg
 
 # The output should look something like the following.
- >> /Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/meshio/MeshIOObj.py:44:read
+ >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/meshio/MeshIOObj.py:44:read
  -- meshiopetsc(info)
  -- Reading finite-element mesh
- >> /Users/baagaard/src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:94:void pylith::meshio::MeshIO::read(topology::Mesh *)
+ >> /src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:94:void pylith::meshio::MeshIO::read(topology::Mesh *)
  -- meshiopetsc(inf
  -- Component 'reader': Domain bounding box:
     (-50000, 50000)
@@ -65,7 +65,7 @@ $  pylith step05_greensfns.cfg
   Linear solve converged due to CONVERGED_ATOL iterations 40
   1 SNES Function norm 2.344239113383e-12 
 Nonlinear solve converged due to CONVERGED_ITS iterations 1
- >> /Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:201:finalize
+ >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:201:finalize
  -- greensfns(info)
  -- Finalizing problem.
 WARNING! There are options you set that were not used!
