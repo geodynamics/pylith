@@ -28,7 +28,7 @@ The script makes use of the `gmsh_utils.GenerateMesh` class (discussed in {ref}`
 In our `generate_gmsh.py` Python script, we create a class `App` that implements the functionality missing in `gmsh_utils.GenerateMesh`.
 We must implement the `create_geometry()`, `mark()`, and `generate_mesh()` methods that are abstract in the `GenerateMesh` base class.
 
-We use the Gmsh MeshSize options to define a discretization size the grows slowly at a geometric rate with distance from the fault.
+We use the Gmsh MeshSize options to define a discretization size that grows slowly at a geometric rate with distance from the fault.
 See [6.3.1 Specifying mesh element sizes in the Gmsh documentation](https://gmsh.info/doc/texinfo/gmsh.html#Specifying-mesh-element-sizes) for more information.
 
 ```{code-block} console

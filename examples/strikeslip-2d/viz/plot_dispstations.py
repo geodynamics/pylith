@@ -75,7 +75,7 @@ def visualize(parameters):
 
     # Annotate time
     tstamp = AnnotateTimeFilter(glyph)
-    tstamp.Format = 'Time: %5.1f yr'
+    tstamp.Format = 'Time: {time:5.1f} yr'
     tstamp.Scale = 3.168808781402895e-08  # seconds to years
 
     tstampDisplay = Show(tstamp, view)

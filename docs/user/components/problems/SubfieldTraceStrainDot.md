@@ -12,7 +12,7 @@ Implements `SolutionSubfield`.
 
 * `alias`=\<str\>: Name for subfield.
   - **default value**: ''
-  - **current value**: 'trace_strain_t', from {file='/Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pythia/pyre/inventory/ConfigurableClass.py', line=26, function='__set__'}
+  - **current value**: 'trace_strain_t', from {file='/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pythia/pyre/inventory/ConfigurableClass.py', line=26, function='__set__'}
   - **validator**: <function validateAlias at 0x124c314c0>
 * `basis_order`=\<int\>: Order of basis functions.
   - **default value**: 1

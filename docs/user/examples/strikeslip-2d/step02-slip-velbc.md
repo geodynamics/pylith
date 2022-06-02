@@ -35,10 +35,10 @@ caption: Run Step 2 simulation
 $ pylith step02_slip_velbc.cfg
 
 # The output should look something like the following.
- >> /Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/meshio/MeshIOObj.py:44:read
+ >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/meshio/MeshIOObj.py:44:read
  -- meshiopetsc(info)
  -- Reading finite-element mesh
- >> /Users/baagaard/src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:94:void pylith::meshio::MeshIO::read(topology::Mesh *)
+ >> /src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:94:void pylith::meshio::MeshIO::read(topology::Mesh *)
  -- meshiopetsc(info)
  -- Component 'reader': Domain bounding box:
     (-50000, 50000)
@@ -52,7 +52,7 @@ $ pylith step02_slip_velbc.cfg
     1 SNES Function norm 1.481819020131e-12 
   Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
 25 TS dt 0.05 time 1.2
- >> /Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:201:finalize
+ >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:201:finalize
  -- timedependent(info)
  -- Finalizing problem.
 ```
@@ -73,7 +73,7 @@ caption: Open ParaView using the command line.
 $ PATH_TO_PARAVIEW/paraview
 
 # For macOS, it will be something like
-$ /Applications/ParaView-5.9.1.app/Contents/MacOS/paraview
+$ /Applications/ParaView-5.10.1.app/Contents/MacOS/paraview
 ```
 
 Next, we override the default name of the simulation file with the name of the current simulation.

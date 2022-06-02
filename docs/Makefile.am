@@ -221,6 +221,41 @@ dist_noinst_DATA = \
     user/examples/box-2d/figs/step05-diagram.pdf \
     user/examples/box-2d/figs/step05-diagram.svg \
     user/examples/box-2d/figs/step05-solution.png \
+    user/examples/box-3d/index.md \
+    user/examples/box-3d/common-information.md \
+    user/examples/box-3d/exercises.md \
+    user/examples/box-3d/meshing-cubit.md \
+    user/examples/box-3d/meshing-gmsh.md \
+    user/examples/box-3d/step01-axialdisp.md \
+    user/examples/box-3d/step01_axialdisp-synopsis.md \
+    user/examples/box-3d/step02-sheardisp.md \
+    user/examples/box-3d/step02_sheardisp-synopsis.md \
+    user/examples/box-3d/step03-sheardisptract.md \
+    user/examples/box-3d/step03_sheardisptract-synopsis.md \
+    user/examples/box-3d/step04-sheardispic.md \
+    user/examples/box-3d/step04_sheardispic-synopsis.md \
+    user/examples/box-3d/step05-sheardisptractrate.md \
+    user/examples/box-3d/step05_sheardisptractrate-synopsis.md \
+    user/examples/box-3d/figs/cubit-hex.jpg \
+    user/examples/box-3d/figs/cubit-hex.jpg \
+    user/examples/box-3d/figs/diagrams.tex \
+    user/examples/box-3d/figs/generate.sh \
+    user/examples/box-3d/figs/geometry.pdf \
+    user/examples/box-3d/figs/geometry.svg \
+    user/examples/box-3d/figs/gmsh-hex.png \
+    user/examples/box-3d/figs/step01-diagram.pdf \
+    user/examples/box-3d/figs/step01-diagram.svg \
+    user/examples/box-3d/figs/step01-solution.jpg \
+    user/examples/box-3d/figs/step02-diagram.pdf \
+    user/examples/box-3d/figs/step02-diagram.svg \
+    user/examples/box-3d/figs/step02-solution.jpg \
+    user/examples/box-3d/figs/step03-diagram.pdf \
+    user/examples/box-3d/figs/step03-diagram.svg \
+    user/examples/box-3d/figs/step03-solution.jpg \
+    user/examples/box-3d/figs/step04-solution.jpg \
+    user/examples/box-3d/figs/step05-diagram.pdf \
+    user/examples/box-3d/figs/step05-diagram.svg \
+    user/examples/box-3d/figs/step05-solution.jpg \
     user/examples/reverse-2d/index.md \
     user/examples/reverse-2d/common-information.md \
     user/examples/reverse-2d/exercises.md \

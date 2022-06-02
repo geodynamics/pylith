@@ -50,10 +50,10 @@ caption: Run Step 4 simulation
 $ pylith step04_varslip.cfg
 
 # The output should look something like the following.
- >> /Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/meshio/MeshIOObj.py:44:read
+ >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/meshio/MeshIOObj.py:44:read
  -- meshiopetsc(info)
  -- Reading finite-element mesh
- >> /Users/baagaard/src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:94:void pylith::meshio::MeshIO::read(topology::Mesh *)
+ >> /src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:94:void pylith::meshio::MeshIO::read(topology::Mesh *)
  -- meshiopetsc(info)
  -- Component 'reader': Domain bounding box:
     (-50000, 50000)
@@ -61,7 +61,7 @@ $ pylith step04_varslip.cfg
 
 # -- many lines omitted --
 
- >> /Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/TimeDependent.py:139:run
+ >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/TimeDependent.py:139:run
  -- timedependent(info)
  -- Solving problem.
 0 TS dt 0.01 time 0.
@@ -70,7 +70,7 @@ $ pylith step04_varslip.cfg
     1 SNES Function norm 1.312610978380e-12 
   Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
 1 TS dt 0.01 time 0.01
- >> /Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:201:finalize
+ >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:201:finalize
  -- timedependent(info)
  -- Finalizing problem.
 ```

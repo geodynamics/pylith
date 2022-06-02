@@ -37,6 +37,7 @@ class App(GenerateMesh):
             "default": "hex",
             "choices": ["tet", "hex"],
             }
+        self.filename = "mesh_hex.msh"
 
     def create_geometry(self):
         """Create geometry.

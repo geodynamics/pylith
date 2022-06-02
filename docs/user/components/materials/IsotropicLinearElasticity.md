@@ -11,7 +11,7 @@ Implements `RheologyElasticity`.
 ## Pyre Facilities
 
 * `auxiliary_subfields`: Discretization information for physical properties and state variables.
-  - **current value**: 'auxiliary_subfields', from {file='/Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pythia/pyre/inventory/ConfigurableClass.py', line=26, function='__set__'}
+  - **current value**: 'auxiliary_subfields', from {file='/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pythia/pyre/inventory/ConfigurableClass.py', line=26, function='__set__'}
   - **configurable as**: auxiliary_subfields
 
 ## Pyre Properties

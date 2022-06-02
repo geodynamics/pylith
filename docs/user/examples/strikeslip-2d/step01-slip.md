@@ -31,42 +31,42 @@ caption: Run Step 1 simulation
 $ pylith step01_slip.cfg
 
 # The output should look something like the following.
- >> /Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/meshio/MeshIOObj.py:44:read
+ >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/meshio/MeshIOObj.py:44:read
  -- meshiopetsc(info)
  -- Reading finite-element mesh
- >> /Users/baagaard/src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:94:void pylith::meshio::MeshIO::read(topology::Mesh *)
+ >> /src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:94:void pylith::meshio::MeshIO::read(topology::Mesh *)
  -- meshiopetsc(info)
  -- Component 'reader': Domain bounding box:
     (-50000, 50000)
     (-75000, 75000)
- >> /Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/faults/FaultCohesiveKin.py:93:preinitialize
+ >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/faults/FaultCohesiveKin.py:93:preinitialize
  -- faultcohesivekin(info)
  -- Pre-initializing fault 'fault'.
- >> /Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:116:preinitialize
+ >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:116:preinitialize
  -- timedependent(info)
  -- Performing minimal initialization before verifying configuration.
- >> /Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Solution.py:44:preinitialize
+ >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Solution.py:44:preinitialize
  -- solution(info)
  -- Performing minimal initialization of solution.
- >> /Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/materials/RheologyElasticity.py:41:preinitialize
+ >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/materials/RheologyElasticity.py:41:preinitialize
  -- isotropiclinearelasticity(info)
  -- Performing minimal initialization of elasticity rheology 'bulk_rheology'.
- >> /Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/materials/RheologyElasticity.py:41:preinitialize
+ >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/materials/RheologyElasticity.py:41:preinitialize
  -- isotropiclinearelasticity(info)
  -- Performing minimal initialization of elasticity rheology 'bulk_rheology'.
- >> /Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/bc/DirichletTimeDependent.py:92:preinitialize
+ >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/bc/DirichletTimeDependent.py:92:preinitialize
  -- dirichlettimedependent(info)
  -- Performing minimal initialization of time-dependent Dirichlet boundary condition 'bc_xneg'.
- >> /Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/bc/DirichletTimeDependent.py:92:preinitialize
+ >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/bc/DirichletTimeDependent.py:92:preinitialize
  -- dirichlettimedependent(info)
  -- Performing minimal initialization of time-dependent Dirichlet boundary condition 'bc_xpos'.
- >> /Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/faults/FaultCohesiveKin.py:93:preinitialize
+ >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/faults/FaultCohesiveKin.py:93:preinitialize
  -- faultcohesivekin(info)
  -- Pre-initializing fault 'fault'.
- >> /Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:175:verifyConfiguration
+ >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:175:verifyConfiguration
  -- timedependent(info)
  -- Verifying compatibility of problem configuration.
- >> /Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:221:_printInfo
+ >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:221:_printInfo
  -- timedependent(info)
  -- Scales for nondimensionalization:
     Length scale: 1000*m
@@ -74,10 +74,10 @@ $ pylith step01_slip.cfg
     Pressure scale: 3e+10*m**-1*kg*s**-2
     Density scale: 2.98765e+23*m**-3*kg
     Temperature scale: 1*K
- >> /Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:186:initialize
+ >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:186:initialize
  -- timedependent(info)
  -- Initializing timedependent problem with quasistatic formulation.
- >> /Users/baagaard/src/cig/pylith/libsrc/pylith/utils/PetscOptions.cc:235:static void pylith::utils::_PetscOptions::write(pythia::journal::info_t &, const char *, const pylith::utils::PetscOptions &)
+ >> /src/cig/pylith/libsrc/pylith/utils/PetscOptions.cc:235:static void pylith::utils::_PetscOptions::write(pythia::journal::info_t &, const char *, const pylith::utils::PetscOptions &)
  -- petscoptions(info)
  -- Setting PETSc options:
 fieldsplit_displacement_ksp_type = preonly
@@ -107,7 +107,7 @@ ts_error_if_step_fails = true
 ts_monitor = true
 ts_type = beuler
 
- >> /Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/TimeDependent.py:139:run
+ >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/TimeDependent.py:139:run
  -- timedependent(info)
  -- Solving problem.
 0 TS dt 0.01 time 0.
@@ -116,7 +116,7 @@ ts_type = beuler
     1 SNES Function norm 2.111685046607e-12 
   Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
 1 TS dt 0.01 time 0.01
- >> /Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:201:finalize
+ >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:201:finalize
  -- timedependent(info)
  -- Finalizing problem.
 ```
@@ -147,7 +147,7 @@ caption: Open ParaView using the command line.
 $ PATH_TO_PARAVIEW/paraview
 
 # For macOS, it will be something like
-$ /Applications/ParaView-5.9.1.app/Contents/MacOS/paraview
+$ /Applications/ParaView-5.10.1.app/Contents/MacOS/paraview
 ```
 
 Next we run the `viz/plot_dispwarp.py` Python script as described in {ref}`sec-paraview-python-scripts`.
@@ -179,34 +179,34 @@ caption: Run Step 1 simulation with the Cubit mesh
 $ pylith step01_slip_cubit.cfg
 
 # The output should look something like the following.
- >> /Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/meshio/MeshIOObj.py:44:read
+ >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/meshio/MeshIOObj.py:44:read
  -- meshiocubit(info)
  -- Reading finite-element mesh
- >> /Users/baagaard/src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:157:void pylith::meshio::MeshIOCubit::_readVertices(pylith::meshio::ExodusII &, pylith::scalar_array *, int *, int *) const
+ >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:157:void pylith::meshio::MeshIOCubit::_readVertices(pylith::meshio::ExodusII &, pylith::scalar_array *, int *, int *) const
  -- meshiocubit(info)
  -- Component 'reader': Reading 682 vertices.
- >> /Users/baagaard/src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:217:void pylith::meshio::MeshIOCubit::_readCells(pylith::meshio::ExodusII &, pylith::int_array *, pylith::int_array *, int *, int *) const
+ >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:217:void pylith::meshio::MeshIOCubit::_readCells(pylith::meshio::ExodusII &, pylith::int_array *, pylith::int_array *, int *, int *) const
  -- meshiocubit(info)
  -- Component 'reader': Reading 1276 cells in 2 blocks.
- >> /Users/baagaard/src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:279:void pylith::meshio::MeshIOCubit::_readGroups(pylith::meshio::ExodusII &)
+ >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:279:void pylith::meshio::MeshIOCubit::_readGroups(pylith::meshio::ExodusII &)
  -- meshiocubit(info)
  -- Component 'reader': Found 5 node sets.
- >> /Users/baagaard/src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:305:void pylith::meshio::MeshIOCubit::_readGroups(pylith::meshio::ExodusII &)
+ >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:305:void pylith::meshio::MeshIOCubit::_readGroups(pylith::meshio::ExodusII &)
  -- meshiocubit(info)
  -- Component 'reader': Reading node set 'fault' with id 10 containing 39 nodes.
- >> /Users/baagaard/src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:305:void pylith::meshio::MeshIOCubit::_readGroups(pylith::meshio::ExodusII &)
+ >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:305:void pylith::meshio::MeshIOCubit::_readGroups(pylith::meshio::ExodusII &)
  -- meshiocubit(info)
  -- Component 'reader': Reading node set 'boundary_xpos' with id 21 containing 24 nodes.
- >> /Users/baagaard/src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:305:void pylith::meshio::MeshIOCubit::_readGroups(pylith::meshio::ExodusII &)
+ >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:305:void pylith::meshio::MeshIOCubit::_readGroups(pylith::meshio::ExodusII &)
  -- meshiocubit(info)
  -- Component 'reader': Reading node set 'boundary_xneg' with id 22 containing 24 nodes.
- >> /Users/baagaard/src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:305:void pylith::meshio::MeshIOCubit::_readGroups(pylith::meshio::ExodusII &)
+ >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:305:void pylith::meshio::MeshIOCubit::_readGroups(pylith::meshio::ExodusII &)
  -- meshiocubit(info)
  -- Component 'reader': Reading node set 'boundary_ypos' with id 23 containing 21 nodes.
- >> /Users/baagaard/src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:305:void pylith::meshio::MeshIOCubit::_readGroups(pylith::meshio::ExodusII &)
+ >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:305:void pylith::meshio::MeshIOCubit::_readGroups(pylith::meshio::ExodusII &)
  -- meshiocubit(info)
  -- Component 'reader': Reading node set 'boundary_yneg' with id 24 containing 21 nodes.
- >> /Users/baagaard/src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:94:void pylith::meshio::MeshIO::read(topology::Mesh *)
+ >> /src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:94:void pylith::meshio::MeshIO::read(topology::Mesh *)
  -- meshiocubit(info)
  -- Component 'reader': Domain bounding box:
     (-50000, 50000)
@@ -214,7 +214,7 @@ $ pylith step01_slip_cubit.cfg
 
 # -- many lines omitted --
 
- >> /Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/TimeDependent.py:139:run
+ >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/TimeDependent.py:139:run
  -- timedependent(info)
  -- Solving problem.
 0 TS dt 0.01 time 0.
@@ -223,7 +223,7 @@ $ pylith step01_slip_cubit.cfg
     1 SNES Function norm 1.470567368938e-12 
   Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
 1 TS dt 0.01 time 0.01
- >> /Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:201:finalize
+ >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:201:finalize
  -- timedependent(info)
  -- Finalizing problem.
 ```

@@ -34,10 +34,10 @@ caption: Run Step 5 simulation
 $ pylith step05_sheardisptractrate.cfg
 
 # The output should look something like the following.
- >> /Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/meshio/MeshIOObj.py:44:read
+ >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/meshio/MeshIOObj.py:44:read
  -- meshioascii(info)
  -- Reading finite-element mesh
- >> /Users/baagaard/src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:94:void pylith::meshio::MeshIO::read(topology::Mesh *)
+ >> /src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:94:void pylith::meshio::MeshIO::read(topology::Mesh *)
  -- meshioascii(info)
  -- Component 'reader': Domain bounding box:
     (-6000, 6000)
@@ -51,7 +51,7 @@ $ pylith step05_sheardisptractrate.cfg
     1 SNES Function norm 7.893110957891e-19 
   Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
 6 TS dt 0.1 time 0.5
- >> /Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:201:finalize
+ >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:201:finalize
  -- timedependent(info)
  -- Finalizing problem.
 ```

@@ -1,4 +1,4 @@
-(sec-examples-2d-box)=
+(sec-examples-box-2d)=
 # Axial and Shear Deformation (2D Box)
 
 The files are in the directory `examples/box-2d`.

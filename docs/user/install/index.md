@@ -131,7 +131,7 @@ Point `sec:example:3dhex8-static` reference to correct example
 The easiest way to verify that PyLith has been installed correctly is to run one or more of the examples supplied with the binary and source code.
 In the binary distribution, the examples are located in `src/pylith-3.0.0/examples` while in the source distribution, they are located in `pylith-3.0.0/examples`.
 {ref}`sec-examples` discusses how to run and visualize the results for the examples.
-To run the example discussed in Section {ref}`sec-examples-2d-box`:
+To run the example discussed in Section {ref}`sec-examples-box-2d`:
 
 ```{code-block} bash
 $ cd examples/2d/box
