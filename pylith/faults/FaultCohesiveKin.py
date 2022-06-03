@@ -95,7 +95,7 @@ class FaultCohesiveKin(FaultCohesive, ModuleFaultCohesiveKin):
         FaultCohesive.preinitialize(self, problem)
 
         for eqsrc in self.eqRuptures.components():
-            eqsrc.preinitialize()
+            eqsrc.preinitialize(problem)
         ModuleFaultCohesiveKin.setEqRuptures(
             self, self.eqRuptures.inventory.facilityNames(), self.eqRuptures.components())
 
