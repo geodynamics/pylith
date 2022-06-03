@@ -15,20 +15,16 @@
 #
 # ----------------------------------------------------------------------
 
+
 dist_noinst_DATA = \
-	README.md
-
-SUBDIRS = \
-	barwaves-2d \
-	box-2d \
-	box-3d \
-	meshing-cubit \
-	magma-2d \
-	reverse-2d \
-	strikeslip-2d \
-	subduction-2d \
-	subduction-3d \
-	troubleshooting-2d
-
-
-# End of file 
+	README.md \
+	geometry.jou \
+	mesh_tri.jou \
+	mesh_quad.jou \
+	bc.jou \
+	mesh_quad.exo \
+    mesh_tri.exo \
+    pylithapp.cfg \
+    step01_inflation.cfg \
+	viz/plot_mesh.py \
+	viz/plot_dispwarp.py

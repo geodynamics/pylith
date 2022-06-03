@@ -19,6 +19,7 @@ In some cases, a later step may make use of output from an earlier step; these c
 | [`reverse-2d`](reverse-2d/index.md)       | beginner     | Gravity, surface loads, and prescribed coseismic slip on multiple reverse faults in 2D with a mesh from Gmsh or Cubit.
 | [`subduction-2d`](subduction-2d/index.md) | intermediate | Coseismic, postseismic, and creep deformation using a 2D subduction zone cross-section with a mesh from Gmsh or Cubit.
 | [`subduction-3d`](subduction-3d/index.md) | intermediate | Close to research-complexity for a 3D subduction zone with a mesh from Cubit.
+| [`magma-2d`](magma-2d/index.md) | intermediate | Magma reservoir using poroelasticity.
 ```
 
 The `subduction-3d` example suite is the most advanced.
@@ -58,5 +59,6 @@ strikeslip-2d/index.md
 reverse-2d/index.md
 subduction-2d/index.md
 subduction-3d/index.md
+magma-2d/index.md
 examples-other.md
 :::

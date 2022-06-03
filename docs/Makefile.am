@@ -256,6 +256,18 @@ dist_noinst_DATA = \
     user/examples/box-3d/figs/step05-diagram.pdf \
     user/examples/box-3d/figs/step05-diagram.svg \
     user/examples/box-3d/figs/step05-solution.jpg \
+    user/examples/magma-2d/index.md \
+    user/examples/magma-2d/common-information.md \
+    user/examples/magma-2d/exercises.md \
+    user/examples/magma-2d/meshing-cubit.md \
+    user/examples/magma-2d/step01-inflation.md \
+    user/examples/magma-2d/step01_inflation-synopsis.md \
+    user/examples/magma-2d/figs/diagrams.tex \
+    user/examples/magma-2d/figs/generate.sh \
+    user/examples/magma-2d/figs/geometry.svg \
+    user/examples/magma-2d/figs/geometry.pdf \
+    user/examples/magma-2d/figs/step01-diagram.pdf \
+    user/examples/magma-2d/figs/step01-diagram.svg \
     user/examples/reverse-2d/index.md \
     user/examples/reverse-2d/common-information.md \
     user/examples/reverse-2d/exercises.md \
@@ -378,7 +390,6 @@ dist_noinst_DATA = \
     user/examples/subduction-2d/figs/step03-diagram.pdf \
     user/examples/subduction-2d/figs/step03-diagram.svg \
     user/examples/subduction-2d/figs/step03-solution.jpg \
-    user/examples/box-3d/index.md \
     user/examples/subduction-3d/index.md \
     user/examples/examples-other.md \
     user/examples/index.md \

@@ -1,0 +1,144 @@
+\documentclass[crop,tikz]{standalone}
+\usepackage{tikz}
+\usepackage{ifthen}
+\usepackage[scaled]{helvet}
+\renewcommand*\familydefault{\sfdefault}
+
+\begin{document}
+
+\input{../../../../tikz-styles/figcolors}
+\input{../../../../tikz-styles/example-style}
+
+
+\foreach \figpart in {1,...,2}{
+
+% -------------------------------------------------------------------------------------------------
+\begin{tikzpicture}[scale=0.3]
+
+\def\domainx{20}
+\def\domainy{20}
+\def\axesshift{0.05*\domainx}
+\def\bndryshift{2.5*\axesshift}
+\def\ticksize{0.5*\axesshift}
+\def\dirsize{0.15*\domainx}
+
+% Reference points
+\coordinate (p1) at  (-0.5*\domainx,-0.5*\domainy);
+\coordinate (p2) at  (+0.5*\domainx,-0.5*\domainy);
+\coordinate (p3) at  (+0.5*\domainx,+0.5*\domainy);
+\coordinate (p4) at  (-0.5*\domainx,+0.5*\domainy);
+\coordinate (p5) at  (0.0mm,-0.5*\domainy);
+\coordinate (p6) at  (0.0mm,+0.5*\domainy);
+\coordinate (p7) at  (0.0, -2*\domainy/3 + \domainy/2); % Intrusion center
+\coordinate (p8) at  (0.0, -0.25*\domainy); % Conduit center
+\coordinate (p9) at  (-0.025*\domainx, -0.5*\domainy); % Conduit path
+\coordinate (p10) at (-0.025*\domainx, -2*\domainy/3 + \domainy/2 - 0.05*\domainy); % Conduit path
+\coordinate (p11) at (-0.25*\domainx, -2*\domainy/3 + \domainy/2); % Intrusion xmin
+\coordinate (p12) at (0.0, -2*\domainy/3 + \domainy/2 + 0.05*\domainy); % Intrusion ymax
+\coordinate (p13) at (+0.25*\domainx, -2*\domainy/3 + \domainy/2); % Intrusion xmax
+\coordinate (p14) at (+0.025*\domainx, -2*\domainy/3 + \domainy/2 - 0.05*\domainy); % Conduit path
+\coordinate (p15) at (+0.025*\domainx, -0.5*\domainy); % Conduit path
+\coordinate (p16) at (0.0, -0.5*\domainy); % inflow BC center
+
+
+% Domain
+\draw[curve,gdomain] (p1) -- (p2) -- (p3) -- (p4) -- cycle;
+
+% Intrusion
+\path[fill,draw, color=ltred] (p7) ellipse (\domainx/4 and \domainy/20);
+\path[fill,draw,color=ltred] (p9) -- (p10)
+                     [rounded corners] -- (p11) -- (p12) -- (p13) 
+                     [sharp corners] -- (p14) -- (p15) -- cycle; % Intrusion plus conduit
+
+% inflow BC
+\draw[curve, bc] (p9) -- (p15);
+
+% -------------------------------------------------------------------------------------------------
+% Domain
+% -------------------------------------------------------------------------------------------------
+\ifthenelse{\figpart=1}{
+
+% Axes
+\draw[axes,arrow] ($(p1)+(0,-\axesshift)$) to ($(p2)+(1.0*\axesshift,-\axesshift)$);
+\node[axes-label,right] at ($(p2)+(1.0*\axesshift,-\axesshift)$) {x};
+\foreach \ix in {0,1}{%
+    \pgfmathsetmacro{\x}{\ix*\domainx}
+    \draw[axes] ($(p1)+(\ix*\domainx,-\axesshift)$) -- ++(0,-\ticksize) node[below]{\x\,km};
+}
+
+\draw[axes,arrow] ($(p1)+(-\axesshift,0)$) to ($(p4)+(-\axesshift,+1.0*\axesshift)$);
+\node[axes-label,above] at ($(p4)+(-\axesshift,1.0*\axesshift)$) {y};
+\foreach \iy in {0,1}{%
+    \pgfmathsetmacro{\y}{-\domainy + \iy*\domainy}
+    \draw[axes] ($(p1)+(-\axesshift,\iy*\domainy)$) -- ++(-\ticksize,0) node[left]{\y\,km};
+}
+
+% Materials
+\node[bc-label] at ($(p1)+(0.5*\domainx,0.75*\domainy)$) {crust};
+\node[bc-label, text=white] at ($(p7)+(0.0,0.0)$) {magma reservoir};
+
+% Boundaries
+\node[bc-label, anchor=east] (xneg-label) at ($(p1)+(-\bndryshift,0.5*\domainy)$) {boundary\_xneg};
+\draw[bc,arrow] (xneg-label) to[out=10,in=-170,looseness=2] ($(p1)+(0,0.5*\domainy)$);
+
+\node[bc-label, anchor=west] (xpos-label) at ($(p2)+(+\bndryshift,0.5*\domainy)$) {boundary\_xpos};
+\draw[bc,arrow] (xpos-label) to[out=-170,in=+10,looseness=2] ($(p2)+(0,0.5*\domainy)$);
+
+\node[bc-label, anchor=north] (yneg-label) at ($(p1)+(0.25*\domainx,-\bndryshift)$) {boundary\_yneg};
+\draw[bc,arrow] (yneg-label) to[out=100,in=-80,looseness=2] ($(p1)+(0.25*\domainx,0)$);
+
+\node[bc-label, anchor=south] (ypos-label) at ($(p4)+(0.5*\domainx,\bndryshift)$) {boundary\_ypos};
+\draw[bc,arrow] (ypos-label) to[out=-80,in=100,looseness=2] ($(p4)+(0.5*\domainx,0)$);
+
+\node[bc-label, anchor=north] (inflow-label) at ($(p16)+(0.1*\domainx,-\bndryshift)$) {inflow};
+\draw[bc,arrow] (inflow-label) to[out=110,in=-70,looseness=2] (p16);
+
+}{}
+
+
+% -------------------------------------------------------------------------------------------------
+% Step 1 - Confined
+% -------------------------------------------------------------------------------------------------
+\ifthenelse{\figpart=2}{
+\def\radius{0.15*\bndryshift}%
+\def\rspacing{0.5*\domainy}%
+    
+
+% Roller boundary condition on -x
+\foreach \iy in {0,...,1}{%
+\draw[roller] ($(p1)+(-\radius,\iy*\rspacing+0.5*\rspacing)$) circle (\radius);
+\node[ground, anchor=north, rotate=-90] at ($(p1)+(-2*\radius,\iy*\rspacing+0.5*\rspacing)$) {};
+}
+\node[bc-label] at ($(p1)+(-\bndryshift,0.5*\domainy)$) {$u_x=0$};
+
+% Roller boundary condition on +x
+\foreach \iy in {0,...,1}{%
+\draw[roller] ($(p2)+(+\radius,\iy*\rspacing+0.5*\rspacing)$) circle (\radius);
+\node[ground, anchor=north, rotate=+90] at ($(p2)+(+2*\radius,\iy*\rspacing+0.5*\rspacing)$) {};
+}
+\node[bc-label] at ($(p2)+(+\bndryshift,0.5*\domainy)$) {$u_x=0$};
+
+% Roller boundary condition on -y
+\foreach \ix in {0,...,1}{%
+\draw[roller] ($(p1)+(\ix*\rspacing+0.5*\rspacing,-\radius)$) circle (\radius);
+\node[ground] at ($(p1)+(\ix*\rspacing+0.5*\rspacing,-2*\radius)$) {};
+}
+\node[bc-label] at ($(p1)+(0.25*\domainx,-\bndryshift)$) {$u_y=0$};
+
+% Pressure boundary condition on +y
+\node[bc-label, anchor=south] (ypos-label) at ($(p4)+(0.5*\domainx,\bndryshift)$) {$p=0$};
+\draw[bc,arrow] (ypos-label) to[out=-80,in=100,looseness=2] ($(p4)+(0.5*\domainx,0)$);
+
+% Inflow
+\draw[bc,rarrow] (p16) -- ++(0,-\bndryshift);
+\node[bc-label, anchor=north] at ($(p16)+(0,-\bndryshift)$) {$p=10$\,MPa};
+
+% Domain Initial Pressure
+\node[bc-label] at ($(p6)+(0,-0.4*\domainy)$) {$p(t=0) = 5$\,MPa};
+
+}{} % if/else
+
+
+\end{tikzpicture}}
+
+\end{document}
