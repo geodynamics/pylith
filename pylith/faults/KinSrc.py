@@ -39,14 +39,16 @@ class KinSrc(PetscComponent, ModuleKinSrc):
         PetscComponent.__init__(self, name, facility="eq_kinematic_src")
         return
 
-    def preinitialize(self):
+    def preinitialize(self, problem):
         """Do pre-initialization setup.
         """
         self._createModuleObj()
 
         ModuleKinSrc.setIdentifier(self, self.aliases[-1])
         ModuleKinSrc.auxFieldDB(self, self.auxFieldDB)
-        ModuleKinSrc.originTime(self, self.originTime.value)
+
+        originTimeN = self.originTime / problem.normalizer.getTimeScale()
+        ModuleKinSrc.originTime(self, originTimeN)
         return
 
     def verifyConfiguration(self):
