@@ -96,14 +96,22 @@ We use this file format extensively in small tests.
 :::
 
 (sec-user-run-pylith-meshiocubit)=
-## CUBIT (Exodus II) Mesh Files - `MeshIOCubit`
+## Cubit (Exodus II) Mesh Files - `MeshIOCubit`
 
-The `MeshIOCubit` object reads the NetCDF Exodus II files output from CUBIT/Trelis.
-Beginning with CUBIT 11.0, the names of the nodesets are included in the Exodus II files and PyLith can use these nodeset names or revert to using the nodeset ids.
+The `MeshIOCubit` object reads the NetCDF Exodus II files output from Cubit.
+Beginning with Cubit 11.0, the names of the nodesets are included in the Exodus II files and PyLith can use these nodeset names or revert to using the nodeset ids.
 
 :::{admonition} Pyre User Interface
 :class: seealso
 [`MeshIOCubit` Component](../components/meshio/MeshIOCubit.md)
+:::
+
+:::{warning}
+There are two versions of Cubit: Sandia National Laboratory provides a version to U.S. government agencies, and Coreform provides another version to all other users.
+The two verisions used to be essentially the same, but the differences have started to grow.
+We strive to provide Cubit Journal scripts that work with both versions without modification, but this is becoming more difficult.
+
+**Please be aware that we cannot guarantee that all Cubit Journal files will work with all versions of Cubit.** You may need to make small adjustments (usually updating geometry ids) to get them to work with the version of Cubit you are using.
 :::
 
 (sec-user-run-pylith-meshiopetsc)=

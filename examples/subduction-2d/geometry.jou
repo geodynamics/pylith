@@ -62,7 +62,7 @@ undo off
 # to select multiple vertices.
 #
 create vertex x { -600.0*km} y {-2000.0*m}
-${idPtTopoW=Id("vertex")}
+${p_topo_west=Id("vertex")}
 create vertex x { -439.1*km} y { -300.0*m}
 create vertex x { -351.2*km} y { -800.0*m}
 create vertex x { -263.4*km} y {    0.0*m}
@@ -71,70 +71,76 @@ create vertex x {  -87.7*km} y {    0.0*m}
 create vertex x {    0.0*km} y { -400.0*m}
 create vertex x {   87.7*km} y {-3000.0*m}
 create vertex x {  165.6*km} y {-6000.0*m}
-${idPtTrench=Id("vertex")}
+${p_topo_trench=Id("vertex")}
 create vertex x {  263.4*km} y {-5400.0*m}
 create vertex x {  351.2*km} y {-5400.0*m}
 create vertex x {  439.1*km} y {-5400.0*m}
 create vertex x {  600.0*km} y {-5700.0*m}
-${idPtTopoE=Id("vertex")}
+${p_topo_east=Id("vertex")}
 
-create curve spline vertex {idPtTopoW} to {idPtTopoE}
-curve {Id("curve")} name "topobathy"
+create curve spline vertex {p_topo_west} to {p_topo_east}
+curve {Id("curve")} name "c_topo"
 
 # Top of slab
 # Hayes and Wald, 2009
 # http://earthquake.usgs.gov/research/data/slab
-create vertex x { -600.0*km} y {-340.00*km}
-${idPtSlabBot=Id("vertex")}
 create vertex x { -422.4*km} y {-240.00*km}
+${p_slabtop_west=Id("vertex")}
 create vertex x { -331.0*km} y {-180.00*km}
 create vertex x { -261.6*km} y {-140.00*km}
 create vertex x { -223.9*km} y {-120.00*km}
 create vertex x { -182.6*km} y {-100.00*km}
 create vertex x { -134.3*km} y {-80.00*km}
 create vertex x {  -74.6*km} y {-60.00*km}
-${idPtSlabMoho=Id("vertex")}
+${p_slabtop_coseismic=Id("vertex")}
 create vertex x {   -7.9*km} y {-40.00*km}
-${idPtSlabTopMoho=Id("vertex")}
+${p_slabtop_moho=Id("vertex")}
 create vertex x {   71.1*km} y {-20.00*km}
 create vertex x {  160.5*km} y {-7.50*km}
-${idPtSlabTop=Id("vertex")}
+${p_slabtop_u=Id("vertex")}
 
-create curve spline vertex {idPtSlabBot} to {idPtSlabTop} {idPtTrench}
-curve {Id("curve")} name "slabtop"
+create curve spline vertex {p_slabtop_west} to {p_slabtop_u} {p_topo_trench}
+curve {Id("curve")} name "c_slabtop"
 
 # Bottom of slab (translate top of slab to the east)
 #
 # Better approach would be to move points normal to slab to preserve
 # uniform thickness.
-vertex {idPtSlabBot} to {idPtSlabMoho} copy move X {120.0*km}
-${idPtSlabBotW=idPtSlabTop+1}
+vertex {p_slabtop_west} to {p_slabtop_coseismic} copy move X {120.0*km}
+${p_slabbot_west=p_slabtop_u+1}
 create vertex x {  175.6*km} y {-40.0*km}
 create vertex x {  600.0*km} y {-40.0*km}
-${idPtMohoE=Id("vertex")}
+${p_slabbot_east=Id("vertex")}
 
-create curve spline vertex {idPtSlabBotW} to {idPtMohoE}
-curve {Id("curve")} name "slabbot"
+create curve spline vertex {p_slabbot_west} to {p_slabbot_east}
+curve {Id("curve")} name "c_slabbot"
+
+# Bottom edge of slab
+create curve spline vertex {p_slabtop_west} {p_slabbot_west}
+curve {Id("curve")} name "c_slab_end"
 
 # Top of mantle (uniform depth of 40 km)
 create vertex x { -600.0*km} y {-40.00*km}
-${idPtMohoW=Id("vertex")}
+${p_moho_west=Id("vertex")}
 
-create curve spline vertex {idPtMohoW} {idPtSlabTopMoho}
-curve {Id("curve")} name "conmoho"
+create curve spline vertex {p_moho_west} {p_slabtop_moho}
+curve {Id("curve")} name "c_conmoho"
 
 # Lateral edges and bottom boundary
-create vertex x { 600.0*km} y {-340.00*km}
-${idPtBotE=Id("vertex")}
+create vertex x { -600.0*km} y {-600.00*km}
+${p_bot_west=Id("vertex")}
 
-create curve spline vertex {idPtTopoW} {idPtMohoW} {idPtSlabBot}
-curve {Id("curve")} name "edgewest"
+create vertex x { 600.0*km} y {-600.00*km}
+${p_bot_east=Id("vertex")}
 
-create curve spline vertex {idPtSlabBot} {idPtSlabBotW} {idPtBotE}
-curve {Id("curve")} name "edgebot"
+create curve spline vertex {p_topo_west} {p_moho_west} {p_bot_west}
+curve {Id("curve")} name "c_west"
 
-create curve spline vertex {idPtTopoE} {idPtMohoE} {idPtBotE}
-curve {Id("curve")} name "edgeeast"
+create curve spline vertex {p_bot_west} {p_bot_east}
+curve {Id("curve")} name "c_bot"
+
+create curve spline vertex {p_topo_east} {p_slabbot_east} {p_bot_east}
+curve {Id("curve")} name "c_east"
 
 # ----------------------------------------------------------------------
 # Split curves to form bounding curves for each material
@@ -142,30 +148,25 @@ curve {Id("curve")} name "edgeeast"
 # Constructing the entire boundary curves as splines and then breaking
 # them into pieces bounding the surfaces preserves continuity in slip.
 # ----------------------------------------------------------------------
-split curve topobathy crossing curve slabtop
-split curve slabtop crossing curve conmoho
-split curve edgewest crossing curve conmoho
-split curve edgebot crossing curve slabbot
-split curve edgeeast crossing curve slabbot
+split curve c_topo crossing curve c_slabtop
+split curve c_slabtop crossing curve c_conmoho
+split curve c_west crossing curve c_conmoho
+split curve c_east crossing curve c_slabbot
 
 # ----------------------------------------------------------------------
 # Create surfaces using bounding curves
 # ----------------------------------------------------------------------
 # Continental crust
-create surface curve topobathy edgewest conmoho slabtop@A
+create surface curve c_topo c_west c_conmoho c_slabtop@A
 surface {Id("surface")} name "concrust"
 
-# Continental mantle
-create surface curve conmoho edgewest@A slabtop
-surface {Id("surface")} name "conmantle"
-
 # Oceanic crust (slab)
-create surface curve topobathy@A slabtop@A slabtop edgebot slabbot edgeeast
+create surface curve c_topo@A c_slabtop@A c_slabtop c_slab_end c_slabbot c_east
 surface {Id("surface")} name "oceancrust"
 
-# Oceanic mantle
-create surface curve slabbot edgebot@A edgeeast@A
-surface {Id("surface")} name "oceanmantle"
+# mantle
+create surface curve c_west@A c_bot c_east@A c_slabbot c_slab_end c_slabtop c_conmoho
+surface {Id("surface")} name "mantle"
 
 # ----------------------------------------------------------------------
 # Imprint/merge
@@ -180,15 +181,17 @@ merge all
 stitch volume all
 
 # Split top of slab for fault surface
-split curve slabtop distance {80.0*km} from end
+split curve c_slabtop distance {80.0*km} from end
 
 # Split topography/bathymetry to mimic same region as fault surface
 # (used in setting discretization size)
-split curve topobathy distance {190.0*km} from end
+split curve c_topo distance {190.0*km} from end
 
 # Split bottom of slab to mimic same region as fault surface
 # (used in setting discretization size)
-split curve slabbot distance {420.0*km} from end
-split curve slabbot distance {250.0*km} from end
+split curve c_slabbot distance {420.0*km} from end
+split curve c_slabbot distance {250.0*km} from end
 
 # End of file
+
+

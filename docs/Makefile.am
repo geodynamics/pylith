@@ -349,37 +349,35 @@ dist_noinst_DATA = \
     user/examples/strikeslip-2d/figs/step05-solution.jpg \
     user/examples/strikeslip-2d/figs/step06-solution.pdf \
     user/examples/strikeslip-2d/figs/step06-solution.svg \
-    user/examples/subduction-2d/common-information.md \
-    user/examples/subduction-2d/figs/cartoon_general.pdf \
-    user/examples/subduction-2d/figs/cartoon_general.svg \
-    user/examples/subduction-2d/figs/step01_soln.pdf \
-    user/examples/subduction-2d/figs/step01_soln.png \
-    user/examples/subduction-2d/figs/step02_soln.pdf \
-    user/examples/subduction-2d/figs/step02_soln.png \
-    user/examples/subduction-2d/figs/step03_soln.pdf \
-    user/examples/subduction-2d/figs/step03_soln.png \
-    user/examples/subduction-2d/figs/step04_soln.pdf \
-    user/examples/subduction-2d/figs/step04_soln.png \
-    user/examples/subduction-2d/figs/step05_slip.pdf \
-    user/examples/subduction-2d/figs/step05_slip.png \
-    user/examples/subduction-2d/figs/step05_soln.jpg \
-    user/examples/subduction-2d/figs/step05_soln.pdf \
-    user/examples/subduction-2d/figs/step06_slip.pdf \
-    user/examples/subduction-2d/figs/step06_slip.png \
-    user/examples/subduction-2d/figs/step06_soln.jpg \
-    user/examples/subduction-2d/figs/step06_soln.pdf \
-    user/examples/subduction-2d/figs/steps.pdf \
-    user/examples/subduction-2d/figs/steps.png \
-    user/examples/subduction-2d/figs/tri3.pdf \
-    user/examples/subduction-2d/figs/tri3.png \
     user/examples/subduction-2d/index.md \
-    user/examples/subduction-2d/meshing.md \
-    user/examples/subduction-2d/step01-coseismic-slip.md \
-    user/examples/subduction-2d/step02-interseismic-deformation.md \
-    user/examples/subduction-2d/step03-psuedo-earthquake-cycle-model.md \
-    user/examples/subduction-2d/step04-frictional-afterslip.md \
-    user/examples/subduction-2d/step05-spontaneous-slip-weakening.md \
-    user/examples/subduction-2d/step06-spontaneous-rate-state.md \
+    user/examples/subduction-2d/common-information.md \
+    user/examples/subduction-2d/exercises.md \
+    user/examples/subduction-2d/meshing-cubit.md \
+    user/examples/subduction-2d/meshing-gmsh.md \
+    user/examples/subduction-2d/step01-coseismic.md \
+    user/examples/subduction-2d/step02-interseismic.md \
+    user/examples/subduction-2d/step03-eqcycle.md \
+    user/examples/subduction-2d/figs/cartoon.pdf \
+    user/examples/subduction-2d/figs/cartoon.svg \
+    user/examples/subduction-2d/figs/cubit-tri.jpg \
+    user/examples/subduction-2d/figs/diagrams.tex \
+    user/examples/subduction-2d/figs/generate.sh \
+    user/examples/subduction-2d/figs/geometry-cubit.pdf \
+    user/examples/subduction-2d/figs/geometry-cubit.svg \
+    user/examples/subduction-2d/figs/geometry-gmsh.pdf \
+    user/examples/subduction-2d/figs/geometry-gmsh.svg \
+    user/examples/subduction-2d/figs/geometry.pdf \
+    user/examples/subduction-2d/figs/geometry.svg \
+    user/examples/subduction-2d/figs/gmsh-tri.png \
+    user/examples/subduction-2d/figs/step01-diagram.pdf \
+    user/examples/subduction-2d/figs/step01-diagram.svg \
+    user/examples/subduction-2d/figs/step01-solution.jpg \
+    user/examples/subduction-2d/figs/step02-diagram.pdf \
+    user/examples/subduction-2d/figs/step02-diagram.svg \
+    user/examples/subduction-2d/figs/step02-solution.jpg \
+    user/examples/subduction-2d/figs/step03-diagram.pdf \
+    user/examples/subduction-2d/figs/step03-diagram.svg \
+    user/examples/subduction-2d/figs/step03-solution.jpg \
     user/examples/box-3d/index.md \
     user/examples/subduction-3d/index.md \
     user/examples/examples-other.md \

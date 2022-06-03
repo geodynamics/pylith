@@ -36,17 +36,17 @@ ${dx=5.0*km}
 ${bias_factor=1.07}
 
 # Set size on faults (and bottom of slab corresponding to fault section)
-curve slabtop@A slabtop@D size {dx}
-curve topobathy size {dx}
-curve slabbot@C size {1.0*dx}
+curve c_slabtop@A c_slabtop size {dx}
+curve c_topo size {dx}
+curve c_slabbot@D size {1.0*dx}
 
 # Set bias on curves extending from faults
-curve topobathy@B scheme bias fine size {dx} factor {bias_factor} start vertex 75
-curve topobathy@A scheme bias fine size {dx} factor {bias_factor} start vertex 68
-curve conmoho scheme bias fine size {dx} factor {bias_factor} start vertex 67
-curve slabtop scheme bias fine size {dx} factor {bias_factor} start vertex 74
-curve slabbot@B scheme bias fine size {1.0*dx} factor {bias_factor} start vertex 76
-curve slabbot scheme bias fine size {1.0*dx} factor {bias_factor} start vertex 77
+curve c_topo@B scheme bias fine size {dx} factor {bias_factor} start vertex 66
+curve c_topo@A scheme bias fine size {dx} factor {bias_factor} start vertex 43
+curve c_conmoho scheme bias fine size {dx} factor {bias_factor} start vertex 21
+curve c_slabtop@D scheme bias fine size {dx} factor {bias_factor} start vertex 65
+curve c_slabbot@B scheme bias fine size {1.0*dx} factor {bias_factor} start vertex 67
+curve c_slabbot scheme bias fine size {1.0*dx} factor {bias_factor} start vertex 68
 
 # ----------------------------------------------------------------------
 # Generate the mesh
@@ -73,7 +73,4 @@ playback 'createbc.jou'
 export mesh "mesh_tri.exo" dimension 2 overwrite
 
 # End of file
-
-
-
 
