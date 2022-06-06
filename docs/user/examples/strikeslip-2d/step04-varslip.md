@@ -65,9 +65,9 @@ $ pylith step04_varslip.cfg
  -- timedependent(info)
  -- Solving problem.
 0 TS dt 0.01 time 0.
-    0 SNES Function norm 3.840123479624e-03 
-    Linear solve converged due to CONVERGED_ATOL iterations 113
-    1 SNES Function norm 1.312610978380e-12 
+    0 SNES Function norm 3.840123479624e-03
+    Linear solve converged due to CONVERGED_ATOL iterations 73
+    1 SNES Function norm 2.286140232631e-12
   Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
 1 TS dt 0.01 time 0.01
  >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:201:finalize
@@ -77,7 +77,7 @@ $ pylith step04_varslip.cfg
 
 The beginning of the output written to the terminal matches that in our previous simulations.
 At the end of the output written to the termial, we see that the solver advanced the solution one time step (static simulation).
-The linear solve converged after 69 iterations and the norm of the residual met the absolute convergence tolerance (`ksp_atol`).
+The linear solve converged after 73 iterations and the norm of the residual met the absolute convergence tolerance (`ksp_atol`).
 The nonlinear solve converged in 1 iteration, which we expect because this is a linear problem, and the residual met the absolute convergence tolerance (`snes_atol`).
 
 ## Visualizing the results

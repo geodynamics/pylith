@@ -61,9 +61,9 @@ $  pylith step05_greensfns.cfg
 # -- many lines omitted --
 
  -- Component 'problem': Computing Green's function 12 of 12.
-  0 SNES Function norm 3.027654014360e-03 
-  Linear solve converged due to CONVERGED_ATOL iterations 40
-  1 SNES Function norm 2.344239113383e-12 
+  0 SNES Function norm 3.027654014252e-03
+  Linear solve converged due to CONVERGED_ATOL iterations 46
+  1 SNES Function norm 2.204080482014e-12
 Nonlinear solve converged due to CONVERGED_ITS iterations 1
  >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:201:finalize
  -- greensfns(info)

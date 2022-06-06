@@ -81,13 +81,9 @@ $ pylith step01_slip.cfg
  -- petscoptions(info)
  -- Setting PETSc options:
 fieldsplit_displacement_ksp_type = preonly
-fieldsplit_displacement_mg_levels_ksp_type = richardson
-fieldsplit_displacement_mg_levels_pc_type = sor
-fieldsplit_displacement_pc_type = gamg
+fieldsplit_displacement_pc_type = lu
 fieldsplit_lagrange_multiplier_fault_ksp_type = preonly
-fieldsplit_lagrange_multiplier_fault_mg_levels_ksp_type = richardson
-fieldsplit_lagrange_multiplier_fault_mg_levels_pc_type = sor
-fieldsplit_lagrange_multiplier_fault_pc_type = gamg
+fieldsplit_lagrange_multiplier_fault_pc_type = lu
 ksp_atol = 1.0e-12
 ksp_converged_reason = true
 ksp_error_if_not_converged = true
@@ -111,9 +107,9 @@ ts_type = beuler
  -- timedependent(info)
  -- Solving problem.
 0 TS dt 0.01 time 0.
-    0 SNES Function norm 4.895713226482e-02 
-    Linear solve converged due to CONVERGED_ATOL iterations 38
-    1 SNES Function norm 2.111685046607e-12 
+    0 SNES Function norm 4.895713226482e-02
+    Linear solve converged due to CONVERGED_ATOL iterations 35
+    1 SNES Function norm 2.540698951426e-12
   Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
 1 TS dt 0.01 time 0.01
  >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:201:finalize
@@ -126,7 +122,7 @@ The scales for nondimensionalization remain the default values for a quasistatic
 PyLith detects the presence of a fault based on the Lagrange multiplier for the fault in the solution field and selects appropriate preconditioning options as discussed in {ref}`sec-user-run-pylith-petsc-options`.
 
 At the end of the output written to the termial, we see that the solver advanced the solution one time step (static simulation).
-The linear solve converged after 36 iterations and the norm of the residual met the absolute convergence tolerance (`ksp_atol`) .
+The linear solve converged after 35 iterations and the norm of the residual met the absolute convergence tolerance (`ksp_atol`) .
 The nonlinear solve converged in 1 iteration, which we expect because this is a linear problem, and the residual met the absolute convergence tolerance (`snes_atol`).
 
 ## Visualizing the results
@@ -218,9 +214,9 @@ $ pylith step01_slip_cubit.cfg
  -- timedependent(info)
  -- Solving problem.
 0 TS dt 0.01 time 0.
-    0 SNES Function norm 4.834519229177e-02 
-    Linear solve converged due to CONVERGED_ATOL iterations 39
-    1 SNES Function norm 1.470567368938e-12 
+    0 SNES Function norm 4.834519229177e-02
+    Linear solve converged due to CONVERGED_ATOL iterations 35
+    1 SNES Function norm 2.664525811959e-12
   Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
 1 TS dt 0.01 time 0.01
  >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:201:finalize
