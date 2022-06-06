@@ -1,3 +1,4 @@
+(sec-user-mesh)=
 # Finite-Element Mesh
 
 The finite-element mesh specifies the geometry and topology of the discretization.

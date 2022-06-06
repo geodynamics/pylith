@@ -7,14 +7,14 @@ Gravitational body forces are included if the `gravity_field` is set in the `Pro
 {numref}`tab:poroelasticity:rheologies` lists the poroelastic bulk rheology implemented for the poroelaticity equation.
 
 ```{table} Elasticity bulk rheologies.
-:name: tab:elasticity:rheologies
+:name: tab:poroelasticity:rheologies
 | Bulk Rheology                   |  Description                                   |
 |:--------------------------------|:-----------------------------------------------|
 | `IsotropicLinearPoroelasticity` | Isotropic, linear poroelasticity               |
 ```
 
 ```{table} Properties defining elasticity bulk rheologies.
-:name: tab:elasticity:auxiliary:subfields
+:name: tab:poroelasticity:auxiliary:subfields
 |       Subfield               |  L  |    Components           |
 |:-----------------------------|:---:|:------------------------|
 | `solid_density`              |  X  |                         |

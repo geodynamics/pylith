@@ -4,7 +4,7 @@ PyLith produces four kinds of output:
 
 * Information written to stdout (default) or other devices that is controlled by the Pyre journal settings;
 * Information written to stdout that is controlled by PETSc options;
-* Information about the progress of the simulation written to a text file that is controlled by progress monitors (see {ref}`sec-user-progress-monitors`;
+* Information about the progress of the simulation written to a text file that is controlled by progress monitors (see {ref}`sec-user-progress-monitors`);
 * Output of the solution over the domain, external boundary, or at discrete points (see {ref}`sec-user-solution-observers`); and
 * Output of the solution or state variables over a material, interface, or external boundary (see {ref}`sec-user-physics-observers`).
 

@@ -11,8 +11,6 @@
 * Use the `--petsc.log_summary`, `--petsc.ksp_monitor`, `--petsc.ksp_view`, `--petsc.ksp_converged_reason`, and `--petsc.snes_converged_reason` command-line arguments (or set them in a parameter file) to view PyLith performance and monitor the convergence.
 * Turn on the journals (see the examples) to monitor the progress of the code.
 
-## Troubleshooting
-
 Consult the PyLith category in the [CIG community forum](https://community.geodynamics.org) to see if someone else encountered a similar issue.
 
 ## Common Error Messages
@@ -44,7 +42,7 @@ If you are building PyLith from source, please consult the instructions for buil
 Verify that the `mpirun` command included in the PyLith package is the first one on your `PATH` by running the command `which mpirun`.
 If it is not, adjust your `PATH` environment variable accordingly.
 
-### Detected zero pivor in LU factorization
+### Detected zero pivot in LU factorization
 
 ```{code-block} bash
 -- Solving equations.
@@ -54,8 +52,9 @@ Error Message -------------------------------
 see http://www.mcs.anl.gov/petsc/petsc-as/documentation/faq.html\#ZeroPivot!
 ```
 
-This usually occurs when the null space of the system Jacobian is nonzero, such as the case of a problem without Dirichlet boundary conditions on any boundary.
-If this arises when using the split fields and algebraic multigrid preconditioning, and no additional Dirichlet boundary conditions are desired, then the workaround is to revert to using the Additive Schwarz preconditioning without split fields as discussed in {ref}`sec-user-run-pylith-petsc-options`.
+This usually occurs when the null space of the system Jacobian is nonzero, such as the case of a problem without Dirichlet boundary conditions on any boundary or a portion of a domain disconnected from boundary conditions by faults.
+If this arises and no additional Dirichlet boundary conditions are desired, then the workaround is to change the preconditioner from LU to ILU.
+See {ref}`sec-user-run-pylith-petsc-options` for additional information.
 
 ### Bus Error
 

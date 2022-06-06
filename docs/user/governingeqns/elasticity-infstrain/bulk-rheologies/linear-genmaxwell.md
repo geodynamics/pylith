@@ -6,13 +6,19 @@ With this model it is possible to represent a number of simpler viscoelastic mod
 For example, a simple Maxwell model corresponds to setting the elastic constants of all springs to zero, with the exception of the spring contained in the first Maxwell model ($\mathit{\mu}_{1}$).
 Similarly, the Kelvin-Voigt model corresponds to setting the elastic constants $\mathit{\mu}_{2} = \mathit{\mu}_{3} = 0$, and setting $\mathit{\mu}_{1} = \infty$ (or a very large number).
 
+:::{admonition} TODO
+:class: error
+
+Add more information about using the generalized Maxwell model to implement various viscoelastic models (Burgers material).
+:::
+
 We follow formulations similar to those used by {cite}`Zienkiewicz:Taylor:2000` and {cite}`Taylor:2003`.
 In this formulation, we specify the total shear modulus of the model ($\mu_{tot}$) and the bulk modulus ($K$).
 We then provide the fractional shear modulus for each Maxwell element spring in the model.
 It is not necessary to specify the fractional modulus for $\mu_{0}$, because we can find it by subtracting the sum of the other ratios from 1.
 Note that the sum of all these fractions must equal 1.
 We use a similar formulation for our linear Maxwell viscoelastic model, but in that case $\mu_{0}$ is always zero and we only use a single Maxwell model.
-The parameters defining the both materials are listed in {ref}`tab:elasticity:auxiliary:subfields`.
+The parameters defining the both materials are listed in {numref}`tab:elasticity:auxiliary:subfields`.
 
 As for all our viscoelastic models, the volumetric strain is completely elastic, and the viscoelastic deformation may be expressed purely in terms of the deviatoric components:
 %

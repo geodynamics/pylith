@@ -4,7 +4,7 @@
 :Full name: `pylith.faults.KinSrcLiuCos`
 :Journal name: `kinsrcliucos`
 
-Liu, Archuleta, and Hartzell, BSSA, 2006 cosine-sine slip time function.
+{cite:t}`Liu:etal:2006` cosine-sine slip time function.
 
 Implements `KinSrc`.
 

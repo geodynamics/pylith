@@ -4,7 +4,7 @@
 :Full name: `pylith.materials.AuxSubfieldsIsotropicPowerLaw`
 :Journal name: `auxfieldsisotropicpowerlaw`
 
-Auxiliary subfields associated with the isotropic linear power law viscoelastic bulk rheology.
+Auxiliary subfields associated with the isotropic power-law viscoelastic bulk rheology.
 
 ## Pyre Facilities
 
@@ -48,7 +48,7 @@ power_law_reference_strain_rate = 1
 power_law_reference_stress = 1
 power_law_exponent.basis_order = 1
 viscous_strain.basis_order = 1
-stress.basis_order = 1
+deviatoric_stress.basis_order = 1
 reference_stress.basis_order = 0
 reference_strain.basis_order = 0
 :::

@@ -25,7 +25,7 @@ from .faults import KinSrcLiuCos as ModuleKinSrc
 
 class KinSrcLiuCos(KinSrc, ModuleKinSrc):
     """
-    Liu, Archuleta, and Hartzell, BSSA, 2006 cosine-sine slip time function.
+    {cite:t}`Liu:etal:2006` cosine-sine slip time function.
 
     Implements `KinSrc`.
     """

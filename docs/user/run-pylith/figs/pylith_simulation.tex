@@ -8,7 +8,7 @@
 \pgfsetlayers{background,main}
 
 \usetikzlibrary{arrows,shapes,positioning}
-\input{../../tikz-styles/figcolors}
+\input{../../../tikz-styles/figcolors}
 \tikzstyle{maincomps} = [rectangle, text centered, very thick, font=\bf\large]
 \tikzstyle{mesh} = [maincomps, draw=green!0!white, fill=ltgreen!50!white]
 \tikzstyle{params} = [maincomps, draw=dkyellow!0!white, fill=yellow!50!white]
@@ -54,7 +54,7 @@
     
     \node (pylith) [pylith] {PyLith};
 
-    \node (mesh) [mesh, above left=of pylith, text depth=11em, minimum width=26em, xshift=0em] {Mesh Generator};
+    \node (mesh) [mesh, above left=of pylith, text depth=11em, minimum width=36em, xshift=8em] {Mesh Generator};
     \node (params) [params, above right=of pylith, text depth=11em, minimum width=18em, xshift=0em] {Simulation Parameters};
     \node (viz) [visualize, below= of pylith, text height=15em, minimum width=18em] {Visualization};
     \node (postprocess) [postprocess, right=of viz, text height=8em, xshift=5em] {Post-processing};
@@ -62,10 +62,13 @@
   \end{pgfonlayer}
   
   % Mesh
-  \node (cubit) [app, xshift=-9em, yshift=+3em] at (mesh) {CUBIT / Trelis};
+  \node (cubit) [app, xshift=-13em, yshift=+3em] at (mesh) {Cubit};
   \node (exodus) [input, below=of cubit, yshift=1em] {Exodus file [.exo]};
 
-  \node (lagrit) [app, right=of cubit] {LaGriT};
+  \node (gmsh) [app, right=of cubit] {Gmsh};
+  \node (msh) [input, below=of gmsh, yshift=1em] {Gmsh file [.msh]};
+
+  \node (lagrit) [app, right=of gmsh] {LaGriT};
   \node (gmvpset) [input, below=of lagrit, yshift=+1em] {GMV File [.gmv] \par Pset File [.pset]};
 
   \node (textedit) [app, right=of lagrit] {Text Editor};
@@ -90,6 +93,7 @@
 
   % Main workflow
   \draw[connect_opt] (exodus.south) |- (mesh.south);
+  \draw[connect_opt] (msh.south) |- (mesh.south);
   \draw[connect_opt] (gmvpset.south) |- (mesh.south);
   \draw[connect_opt] (asciimesh.south) |- (mesh.south);
   \draw[arrowto] (mesh.south) |- (pylith.west);
@@ -103,6 +107,7 @@
 
   % Annotation
   \path (cubit) edge[arrowto_minor] (exodus);
+  \path (gmsh) edge[arrowto_minor] (msh);
   \path (lagrit) edge[arrowto_minor] (gmvpset);
   \path (textedit) edge[arrowto_minor] (asciimesh);
 

@@ -293,7 +293,7 @@ When optimizing and troubleshooting solver options, we usually turn on all the m
 
 ### Solver Options
 
-For most problems we use the GMRES method from Saad and Schultz for the linear solver; this is the linear solver PETSc uses as the default.
+For most problems we use the GMRES method from {cite:t}`Saad:Schultz:1986` for the linear solver; this is the linear solver PETSc uses as the default.
 See [PETSc linear solver table](https://petsc.org/release/docs/manual/ksp/#tab-kspdefaults) for a list of PETSc options for linear solvers and preconditioners.
 
 :::{tip}

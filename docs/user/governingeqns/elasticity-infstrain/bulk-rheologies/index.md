@@ -30,5 +30,4 @@ linear-maxwell.md
 linear-genmaxwell.md
 effective-stress.md
 powerlaw.md
-alt-formulations
 :::
