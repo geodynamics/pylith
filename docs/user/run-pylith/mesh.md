@@ -91,6 +91,14 @@ The `MeshIOAscii` object is intended for reading small, simple ASCII files conta
 We use this file format extensively in small tests.
 {ref}`sec-user-file-formats-meshio-ascii` describes the format of the files.
 
+```{table} Translation of ASCII mesh "tags" to PyLith mesh 'label' and 'label_value'.
+:name: tab:mesh:tags:translation
+| MeshIOAscii entity |  `label`      | `label_value`   |
+|:-------------------|:--------------|:---------------:|
+| `material-ids`     | `material-id` (hardwired) | value           |
+| Group name         | name          | 1 (default)     |
+```
+
 :::{admonition} Pyre User Interface
 :class: seealso
 [`MeshIOAscii` Component](../components/meshio/MeshIOAscii.md)
@@ -101,6 +109,14 @@ We use this file format extensively in small tests.
 
 The `MeshIOCubit` object reads the NetCDF Exodus II files output from Cubit.
 Beginning with Cubit 11.0, the names of the nodesets are included in the Exodus II files and PyLith can use these nodeset names or revert to using the nodeset ids.
+
+```{table} Translation of Cubit mesh "tags" to PyLith mesh 'label' and 'label_value'.
+:name: tab:mesh:tags:translation
+| Cubit entity   |  `label`      | `label_value`   |
+|:---------------|:--------------|:---------------:|
+| Material block | `material-id` (hardwired) | Block value |
+| Nodeset        | Nodeset name  | 1 (default)     |
+```
 
 :::{admonition} Pyre User Interface
 :class: seealso
@@ -120,6 +136,14 @@ We strive to provide Cubit Journal scripts that work with both versions without 
 
 The `MeshIOPetsc` object supports reading a variety of mesh formats.
 We have only thoroughly tested this interface using Gmsh files.
+
+```{table} Translation of Gmsh mesh "tags" to PyLith mesh 'label' and 'label_value'.
+:name: tab:mesh:tags:translation
+| Gmsh entity   |  `label`      | `label_value`   |
+|:---------------|:--------------|:---------------:|
+| Material physical groups | `material-id` (hardwired)     | tag |
+| Boundary condition physical groups | Physical group name | tag |
+```
 
 :::{important}
 The Gmsh file must end in `.msh` for the reader to recognize that it is a Gmsh file.
