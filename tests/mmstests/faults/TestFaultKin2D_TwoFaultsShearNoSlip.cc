@@ -384,6 +384,9 @@ protected:
             _faults[1] = fault;
         } // xpos
 
+        pylith::utils::PetscOptions options;
+        options.add("-fieldsplit_displacement_pc_type", "ilu");
+        options.override ();
     } // setUp
 
     // Set exact solution in domain.

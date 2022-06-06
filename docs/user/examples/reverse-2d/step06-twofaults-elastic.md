@@ -24,6 +24,7 @@ The parameters specific to this example are in `step06_twofaults-elastic.cfg` an
 * `pylithapp` Parameters defining where to write the output.
 * `pylithapp.problem` Parameters for the solution field with displacement and Lagrange multiplier subfields.
 * `pylithapp.problem.fault` Parameters for prescribed slip on the two faults.
+* `pylithapp.petsc` Adjustment to the default PETSc solver options.
 
 :::{important}
 In 2D simulations slip is specified in terms of opening and left-lateral components.
@@ -38,7 +39,6 @@ When PyLith inserts cohesive cells into a mesh with buried edges (in this case a
 
 For properly topology of the cohesive cells, the main fault _must_ be listed first in the array of faults so that it will be created before the splay fault.
 :::
-
 
 ```{code-block} console
 ---

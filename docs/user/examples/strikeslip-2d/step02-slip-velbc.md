@@ -47,9 +47,9 @@ $ pylith step02_slip_velbc.cfg
 # -- many lines omitted --
 
 24 TS dt 0.05 time 1.15
-    0 SNES Function norm 5.390420823600e-04 
-    Linear solve converged due to CONVERGED_ATOL iterations 32
-    1 SNES Function norm 1.481819020131e-12 
+    0 SNES Function norm 5.390420823432e-04
+    Linear solve converged due to CONVERGED_ATOL iterations 29
+    1 SNES Function norm 1.250412952119e-12
   Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
 25 TS dt 0.05 time 1.2
  >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:201:finalize

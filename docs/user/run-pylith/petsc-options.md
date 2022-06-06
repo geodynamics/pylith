@@ -109,7 +109,7 @@ pc_fieldsplit_schur_precondition = selfp
 pc_fieldsplit_schur_scale = 1.0
 
 fieldsplit_displacement_ksp_type = preonly
-fieldsplit_displacement_pc_type = ilu
+fieldsplit_displacement_pc_type = lu
 
 fieldsplit_lagrange_multiplier_fault_ksp_type = preonly
 fieldsplit_lagrange_multiplier_fault_pc_type = lu

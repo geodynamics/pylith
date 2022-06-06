@@ -303,7 +303,7 @@ pylith::materials::Poroelasticity::getSolverDefaults(const bool isParallel,
 
         if (!hasFault) {
             if (!isParallel) {
-                options->add("-pc_type", "ilu");
+                options->add("-pc_type", "lu");
             } else {
                 options->add("-pc_type", "gamg");
                 options->add("-mg_levels_pc_type", "sor");
