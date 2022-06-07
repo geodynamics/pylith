@@ -22,7 +22,7 @@ We use the Cubit graphical user interface to play the Journal files.
 We create a brick, extracting a midsurface from it, and then splitting the remaining surface with an extended fault and a splay surface.
 We then assign names to the surfaces, curves, and important vertices that we use when we specify the mesh sizing information and defining blocks and nodesets.
 
-:::{warniing}
+:::{warning}
 In this example we do not use IDless journaling in Cubit.
 The ids of some of the geometric entities _might_ be depend on which version of Cubit you are using.
 The differences are most likely to occur when we split curves.

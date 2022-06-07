@@ -50,8 +50,11 @@ With $G=0$ it is clear that we have a formulation that will use implicit time st
 
 We only have a Jacobian for the LHS:
 %
+```{math}
+:label: eqn:elasticity:quasistatic:jacobian:pointwise
 \begin{equation}
 \begin{aligned}
 J_F^{uu} &= \frac{\partial F^u}{\partial u} = \int_\Omega \nabla {\vec{\psi}_\mathit{trial}^{u}} : \frac{\partial}{\partial u}(-\boldsymbol{\sigma}) \, d\Omega  = \int_\Omega \nabla {\vec{\psi}_\mathit{trial}^{u}} : -\boldsymbol{C} : \frac{1}{2}(\nabla + \nabla^T){\vec{\psi}_\mathit{basis}^{u}}\, d\Omega  = \int_\Omega {\psi_\mathit{trial}^{u}}_{i,k} \, {\color{blue} \underbrace{\color{black}\left( -C_{ikjl} \right)}_{\color{blue}{J_{f3}^{uu}}}} \, {\psi_\mathit{basis}^{u}}_{j,l}\, d\Omega.
 \end{aligned}
 \end{equation}
+```

@@ -92,7 +92,7 @@ We use this file format extensively in small tests.
 {ref}`sec-user-file-formats-meshio-ascii` describes the format of the files.
 
 ```{table} Translation of ASCII mesh "tags" to PyLith mesh 'label' and 'label_value'.
-:name: tab:mesh:tags:translation
+:name: tab:mesh:tags:translation:ascii
 | MeshIOAscii entity |  `label`      | `label_value`   |
 |:-------------------|:--------------|:---------------:|
 | `material-ids`     | `material-id` (hardwired) | value           |
@@ -111,7 +111,7 @@ The `MeshIOCubit` object reads the NetCDF Exodus II files output from Cubit.
 Beginning with Cubit 11.0, the names of the nodesets are included in the Exodus II files and PyLith can use these nodeset names or revert to using the nodeset ids.
 
 ```{table} Translation of Cubit mesh "tags" to PyLith mesh 'label' and 'label_value'.
-:name: tab:mesh:tags:translation
+:name: tab:mesh:tags:translation:cubit
 | Cubit entity   |  `label`      | `label_value`   |
 |:---------------|:--------------|:---------------:|
 | Material block | `material-id` (hardwired) | Block value |
@@ -138,7 +138,7 @@ The `MeshIOPetsc` object supports reading a variety of mesh formats.
 We have only thoroughly tested this interface using Gmsh files.
 
 ```{table} Translation of Gmsh mesh "tags" to PyLith mesh 'label' and 'label_value'.
-:name: tab:mesh:tags:translation
+:name: tab:mesh:tags:translation:gmsh
 | Gmsh entity   |  `label`      | `label_value`   |
 |:---------------|:--------------|:---------------:|
 | Material physical groups | `material-id` (hardwired)     | tag |
