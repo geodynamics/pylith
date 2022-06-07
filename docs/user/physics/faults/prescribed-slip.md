@@ -197,7 +197,7 @@ See [`KinSrcRamp` Component](../components/faults/../../../components/faults/Kin
 
 ### Brune Slip Time Function (`KinSrcBrune`)
 
-This slip function corresponds to the integral of Brune's far-field time function \cite{Brune:1970}and prescribes a rapid rise in slip rate followed by a very gradual slowdown:
+This slip function corresponds to the integral of Brune's far-field time function {cite}`Brune:1970` and prescribes a rapid rise in slip rate followed by a very gradual slowdown:
 %
 \begin{gather}
   D(t) = \left\{ \begin{array}{cc}
@@ -230,7 +230,7 @@ See [`KinSrcBrune` Component](../components/faults/../../../components/faults/Ki
 
 ### Liu-Cosine Slip Time Function (`KinSrcLiuCosine`)
 
-This slip time function, proposed by Liu, Archuleta, and Hartzell for use in ground-motion modeling\cite{Liu:etal:2006}, combines several cosine and sine functions together to create a slip time history with a sharp rise and gradual termination with a finite duration of slip.
+This slip time function, proposed by Liu, Archuleta, and Hartzell for use in ground-motion modeling {cite}`Liu:etal:2006`, combines several cosine and sine functions together to create a slip time history with a sharp rise and gradual termination with a finite duration of slip.
 The evolution of slip at a point follows:
 %
 \begin{gather}

@@ -11,8 +11,8 @@ To apply Neumann boundary conditions for multiple solution subfields on a bounda
 
 :::{important}
 The components are specified in the local normal-tangential coordinate system for the boundary. Ambiguities in specifying the shear (tangential) tractions in 3D problems are resolved using the `ref_dir_1` and `ref_dir_2` properties.
-The first tangential direction is $ec{z} 	imes ec{r}_1$ unless these are colinear, then $ec{r}_2$ (`ref_dir_2`) is used.
-The second tangential direction is $ec{n} 	imes ec{t}_1$.
+The first tangential direction is $\vec{z} \times \vec{r}_1$ unless these are colinear, then $\vec{r}_2$ (`ref_dir_2`) is used.
+The second tangential direction is $\vec{n} \times \vec{t}_1$.
 :::
 
 :::{seealso}
@@ -22,7 +22,7 @@ See [`AuxSubfieldsTimeDependent` Component](AuxSubfieldsTimeDependent.md) for th
 ## Pyre Facilities
 
 * `auxiliary_subfields`: Discretization information for auxiliary subfields.
-  - **current value**: 'auxiliary_subfields', from {file='/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pythia/pyre/inventory/ConfigurableClass.py', line=26, function='__set__'}
+  - **current value**: 'auxiliary_subfields', from {file='/Users/baagaard/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pythia/pyre/inventory/ConfigurableClass.py', line=26, function='__set__'}
   - **configurable as**: auxiliary_subfields
 * `db_auxiliary_field`: Database for physical property parameters.
   - **current value**: 'simpledb', from {default}
@@ -45,18 +45,18 @@ See [`AuxSubfieldsTimeDependent` Component](AuxSubfieldsTimeDependent.md) for th
 * `label`=\<str\>: Name of label identifying boundary.
   - **default value**: ''
   - **current value**: '', from {default}
-  - **validator**: <function validateLabel at 0x124bbc4c0>
+  - **validator**: <function validateLabel at 0x11c4858b0>
 * `label_value`=\<int\>: Value of label identifying boundary (tag of physical group in Gmsh files).
   - **default value**: 1
   - **current value**: 1, from {default}
 * `ref_dir_1`=\<list\>: First choice for reference direction to discriminate among tangential directions in 3D.
   - **default value**: [0.0, 0.0, 1.0]
   - **current value**: [0.0, 0.0, 1.0], from {default}
-  - **validator**: <function validateDir at 0x124bbc9d0>
+  - **validator**: <function validateDir at 0x11c485dc0>
 * `ref_dir_2`=\<list\>: Second choice for reference direction to discriminate among tangential directions in 3D.
   - **default value**: [0.0, 1.0, 0.0]
   - **current value**: [0.0, 1.0, 0.0], from {default}
-  - **validator**: <function validateDir at 0x124bbc9d0>
+  - **validator**: <function validateDir at 0x11c485dc0>
 * `scale_name`=\<str\>: Type of scale for nondimensionalizing Neumann boundary condition ('pressure' for elasticity).
   - **default value**: 'pressure'
   - **current value**: 'pressure', from {default}

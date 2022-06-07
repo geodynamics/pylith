@@ -19,7 +19,7 @@ from .faults import KinSrcBrune as ModuleKinSrc
 
 class KinSrcBrune(KinSrc, ModuleKinSrc):
     """
-    Brune's (1970) far-field slip time function.
+    {cite:t}`Brune:1970` far-field slip time function.
 
     Implements `KinSrc`.
     """

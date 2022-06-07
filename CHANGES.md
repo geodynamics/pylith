@@ -72,6 +72,16 @@ material.label_value = 2
 * Kali Allison
 * Lorraine Hwang
 
+## Version 2.2.2
+
+* Bug fixes
+  * Fix several typos in the manual.
+  * Fix order of deallocation of data members in ElasticMaterial to prevent a segmentation fault, thereby allowing error messages to be shown when throwing an exception.
+  * Fix tests for MPI and PETSc version info for more use cases.
+  * Ensure all Python script are executable and use nemesis is used instead of python for correct paths to modules on Darwin.
+* Added ability to write residual to an HDF5 file during solves. This is intended for debugging and is enabled at runtime using `--journal.debug.formulation=1`. The residual will be written to `residual.h5`. To generate the associated `.xdmf` file run `pylith_genxdmd -f residual.h5`.
+* Updated to PETSc 3.10.2
+
 ## Version 2.2.1
 
 * Added new examples.

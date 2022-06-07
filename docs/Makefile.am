@@ -408,7 +408,6 @@ dist_noinst_DATA = \
     user/governingeqns/elasticity-infstrain/index.md \
     user/governingeqns/elasticity-infstrain/quasistatic.md \
     user/governingeqns/elasticity-infstrain/bulk-rheologies/index.md \
-    user/governingeqns/elasticity-infstrain/bulk-rheologies/alt-formulations.md \
     user/governingeqns/elasticity-infstrain/bulk-rheologies/effective-stress.md \
     user/governingeqns/elasticity-infstrain/bulk-rheologies/linear-genmaxwell.md \
     user/governingeqns/elasticity-infstrain/bulk-rheologies/linear-maxwell.md \

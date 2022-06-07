@@ -2,7 +2,7 @@
 # Utilities
 
 The PyLith distribution contains several utilities for working with PyLith simulations and processing output.
-These Python scripts are all installed into the same \filename{bin} directory as the `pylith` application with the exception of the \filename{pyre\_doc.py} script which is installed as part of Pythia/Pyre.
+These Python scripts are all installed into the same `bin` directory as the `pylith` application with the exception of the `pyre_doc.py` script which is installed as part of Pythia/Pyre.
 
 pyre_doc
 : Display the Pyre properties and facilities available for a given component.
@@ -21,6 +21,13 @@ pylith_eqinfo
 
 pylith_genxdmf
 : Generate Xdmf files from HDF5 files written by PyLith.
+
+:::{admonition} TODO
+:class: error
+
+Update `powerlaw_gendb.py` and add documentation.
+% Add cross reference from `powerlaw.md`.
+:::
 
 ## pyre_doc.py
 

@@ -35,7 +35,7 @@ We place all terms for the elasticity and pressure equations on the left-hand-si
 | Category                       |               Symbol               | Description                                               |
 | :----------------------------- | :--------------------------------: | :-------------------------------------------------------- |
 | Unknowns                       |             $\vec{u}$              | Displacement field                                        |
-|                                |                $p$                 | Pressure field ($p>0$ corresponds to negative mean stress |
+|                                |                $p$                 | Pressure field ($p>0$ corresponds to negative mean stress) |
 | Derived quantities             |       $\boldsymbol{\sigma}$        | Cauchy stress tensor                                      |
 |                                | $\boldsymbol{\sigma}^\mathit{dev}$ | Cauchy deviatoric stress tensor                           |
 |                                |      $\boldsymbol{\epsilon}$       | Cauchy strain tensor                                      |
@@ -101,7 +101,7 @@ J_F^{pp} &= \frac{\partial F^p}{\partial p}  + s_\mathit{tshift} \frac{\partial 
 For isotropic, linear incompressible elasticity, the deviatoric elastic constants are:
 %
 \begin{align}
-  C_{1111} &= C_{2222} = C_{3333} = +\frac{4}{3} \mu \\
-  C_{1122} &= C_{1133} = C_{2233} = -\frac{2}{3} \mu \\
-  C_{1212} &= C_{1313} = C_{2323} = \mu
+  C^\mathit{dev}_{1111} &= C^\mathit{dev}_{2222} = C^\mathit{dev}_{3333} = +\frac{4}{3} \mu \\
+  C^\mathit{dev}_{1122} &= C^\mathit{dev}_{1133} = C^\mathit{dev}_{2233} = -\frac{2}{3} \mu \\
+  C^\mathit{dev}_{1212} &= C^\mathit{dev}_{1313} = C^\mathit{dev}_{2323} = \mu
 \end{align}

@@ -6,15 +6,16 @@ Future implementation of features is guided by several target applications, incl
 * Inversion of geodetic data for slow slip events, fault creep, and long-term fault slip rates.
 * Quasistatic and dynamic modeling of fluids and faulting.
 
-## Version 3.1.0 (June 2021)
+## Version 3.0.1 (June 2022)
+
+Finish updating examples and documentation.
+
+## Version 3.1.0 (October 2022)
 
 * Parallel mesh loading ![expert](images/expert.png) [15%]
 * Diagonal Jacobian for explicit part of IMEX formulation ![expert](images/expert.png)[0%]
 * Improve robustness of HDF5 output by opening/closing at each time step ![easy](images/easy.png)[0%]
-
-## Version 3.1.X (October 2022)
-
-Additional minor cleanup of code internals to improve maintainability.
+* Additional minor cleanup of code internals to improve maintainability.
 
 ## Version 3.2 (December 2022)
 
