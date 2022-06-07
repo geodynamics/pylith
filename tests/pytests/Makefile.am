@@ -31,8 +31,10 @@ dist_noinst_PYTHON = \
 	bc/TestAbsorbingDampers.py \
 	bc/TestAuxiliarySubfields.py \
 	bc/TestZeroDB.py \
+	faults/__init__.py \
 	faults/TestFaultCohesive.py \
 	faults/TestFaultCohesiveKin.py \
+	faults/TestFaultCohesiveImpulses.py \
 	faults/TestKinSrc.py \
 	faults/TestKinSrcConstRate.py \
 	faults/TestKinSrcStep.py \
@@ -40,12 +42,16 @@ dist_noinst_PYTHON = \
 	faults/TestKinSrcBrune.py \
 	faults/TestKinSrcLiuCos.py \
 	faults/TestKinSrcTimeHistory.py \
+	faults/TestSingleRupture.py \
 	materials/__init__.py \
+	materials/TestAuxiliarySubfields.py \
+	materials/TestDerivedSubfields.py \
 	materials/TestElasticity.py \
 	materials/TestHomogeneous.py \
 	materials/TestIncompressibleElasticity.py \
 	materials/TestMaterial.py \
 	materials/TestPoroelasticity.py \
+	materials/TestRheologies.py \
 	materials/TestRheologyLinearElasticity.py \
 	materials/TestRheologyPoroelasticity.py \
 	materials/TestRheologyViscoelasticity.py \
@@ -54,8 +60,78 @@ dist_noinst_PYTHON = \
 	meshio/TestDataWriterHDF5.py \
 	meshio/TestDataWriterHDF5Ext.py \
 	meshio/TestDataWriterVTK.py \
-	meshio/TestXdmf.py
-
+	meshio/TestMeshIOAscii.py \
+	meshio/TestMeshIOCubit.py \
+	meshio/TestMeshIOLagrit.py \
+	meshio/TestOutputManagerMesh.py \
+	meshio/TestOutputManagerSubmesh.py \
+	meshio/TestOutputObserver.py \
+	meshio/TestOutputPhysics.py \
+	meshio/TestOutputSoln.py \
+	meshio/TestOutputSolnBoundary.py \
+	meshio/TestOutputSolnDomain.py \
+	meshio/TestOutputSolnPoints.py \
+	meshio/TestOutputSolnSubset.py \
+	meshio/TestOutputTrigger.py \
+	meshio/TestOutputTriggerStep.py \
+	meshio/TestOutputTriggerTime.py \
+	meshio/TestPointsList.py \
+	meshio/TestSingleOutput.py \
+	meshio/TestXdmf.py \
+	mpi/__init__.py \
+	mpi/TestCommunicator.py \
+	mpi/TestReduce.py \
+	problems/__init__.py \	
+	problems/TestInitialCondition.py \
+	problems/TestInitialConditionDomain.py \
+	problems/TestInitialConditionPatch.py \
+	problems/TestPhysics.py \
+	problems/TestProblem.py \
+	problems/TestProblemDefaults.py \
+	problems/TestProgressMonitor.py \
+	problems/TestProgressMonitorTime.py \
+	problems/TestSingleObserver.py \
+	problems/TestSolnDisp.py \
+	problems/TestSolnDispLagrange.py \
+	problems/TestSolnDispPres.py \
+	problems/TestSolnDispPresLagrange.py \
+	problems/TestSolnDispTracStrain.py \
+	problems/TestSolnDispVel.py \
+	problems/TestSolnDispVelLagrange.py \
+	problems/TestSolution.py \
+	problems/TestSolutionSubfield.py \
+	problems/TestSolutionSubfields.py \
+	problems/TestSubfieldDisplacement.py \
+	problems/TestSubfieldLagrangeFault.py \
+	problems/TestSubfieldPressure.py \
+	problems/TestSubfieldTemperature.py \
+	problems/TestSubfieldTraceStrain.py \
+	problems/TestSubfieldVelocity.py \
+	problems/TestTimeDependent.py \
+	topology/__init__.py \
+	topology/TestDistributor.py \
+	topology/TestField.py \
+	topology/TestMesh.py \
+	topology/TestMeshGenerator.py \
+	topology/TestMeshImporter.py \
+	topology/TestMeshRefiner.py \
+	topology/TestRefineUniform.py \
+	topology/TestReverseCuthillMcKee.py \
+	topology/TestSubfield.py \
+	utils/__init__.py \
+	utils/TestCollectVersionInfo.py \
+	utils/TestConstants.py \
+	utils/TestDependenciesVersion.py \
+	utils/TestDumpParameters.py \
+	utils/TestDumpParametersAscii.py \
+	utils/TestDumpParametersJson.py \
+	utils/TestEmptyBin.py \
+	utils/TestEventLogger.py \
+	utils/TestNullComponent.py \
+	utils/TestPetscManager.py \
+	utils/TestPetscVersion.py \
+	utils/TestProfiling.py \
+	utils/TestPylithVersion.py
 
 dist_noinst_DATA = \
 	meshio/data/tri3.h5 \

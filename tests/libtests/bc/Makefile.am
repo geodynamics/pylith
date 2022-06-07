@@ -40,7 +40,7 @@ test_bc_SOURCES = \
 #	TestAbsorbingDampers_Cases.cc
 
 
-noinst_HEADERS = \
+dist_noinst_HEADERS = \
 	TestBoundaryMesh.hh \
 	TestDirichletTimeDependent.hh \
 	TestNeumannTimeDependent.hh \

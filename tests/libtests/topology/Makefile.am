@@ -47,7 +47,7 @@ test_topology_SOURCES = \
 
 
 
-noinst_HEADERS = \
+dist_noinst_HEADERS = \
 	TestMesh.hh \
 	TestSubmesh.hh \
 	TestMeshOps.hh \

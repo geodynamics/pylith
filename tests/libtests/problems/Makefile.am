@@ -39,7 +39,7 @@ test_problems_SOURCES = \
 
 
 
-noinst_HEADERS = \
+dist_noinst_HEADERS = \
 	TestPhysics.hh \
 	TestObserversSoln.hh \
 	TestObserversPhysics.hh \

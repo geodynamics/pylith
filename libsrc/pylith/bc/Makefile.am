@@ -30,7 +30,7 @@ subpkginclude_HEADERS = \
 	AbsorbingDampersAuxiliaryFactory.hh \
 	bcfwd.hh
 
-noinst_HEADERS =
+dist_noinst_HEADERS =
 
 
 # End of file

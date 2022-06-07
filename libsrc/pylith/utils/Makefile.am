@@ -37,10 +37,11 @@ subpkginclude_HEADERS = \
 	macrodefs.h \
 	petscfwd.h \
 	error.h \
+	error.hh \
 	types.hh \
 	utilsfwd.hh
 
-noinst_HEADERS =
+dist_noinst_HEADERS =
 
 
 # End of file

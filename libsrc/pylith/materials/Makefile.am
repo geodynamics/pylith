@@ -43,7 +43,7 @@ subpkginclude_HEADERS = \
 	materialsfwd.hh
 
 
-noinst_HEADERS =
+dist_noinst_HEADERS =
 
 
 # End of file

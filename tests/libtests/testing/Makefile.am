@@ -29,7 +29,7 @@ test_utils_SOURCES = \
 	TestStubMethodTracker.cc \
 	test_driver.cc
 
-noinst_HEADERS = \
+dist_noinst_HEADERS = \
 	TestStubMethodTracker.hh
 
 AM_CPPFLAGS += $(PETSC_CC_INCLUDES)

@@ -34,7 +34,7 @@ subpkginclude_HEADERS = \
 	KinSrcAuxiliaryFactory.hh \
 	faultsfwd.hh
 
-noinst_HEADERS = \
+dist_noinst_HEADERS = \
 	TopologyOps.hh
 
 

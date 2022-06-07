@@ -35,7 +35,7 @@ test_materials_SOURCES = \
 	test_driver.cc
 
 
-noinst_HEADERS = \
+dist_noinst_HEADERS = \
 	TestAuxiliaryFactoryElasticity.hh \
 	TestAuxiliaryFactoryElastic.hh
 

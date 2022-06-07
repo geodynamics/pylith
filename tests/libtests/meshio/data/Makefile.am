@@ -16,6 +16,31 @@
 # ----------------------------------------------------------------------
 #
 
+dist_noinst_HEADERS = \
+	DataWriterData.hh \
+	DataWriterDataPoints.hh \
+	DataWriterHDF5DataFaultMeshHex8.hh \
+	DataWriterHDF5DataFaultMeshQuad4.hh \
+	DataWriterHDF5DataFaultMeshTet4.hh \
+	DataWriterHDF5DataFaultMeshTri3.hh \
+	DataWriterVTKDataFaultMeshHex8.hh \
+	DataWriterVTKDataFaultMeshQuad4.hh \
+	DataWriterVTKDataFaultMeshTet4.hh \
+	DataWriterVTKDataFaultMeshTri3.hh \
+	MeshData.hh \
+	MeshData1D.hh \
+	MeshData1Din2D.hh \
+	MeshData1Din3D.hh \
+	MeshData2D.hh \
+	MeshData2Din3D.hh \
+	MeshData3D.hh \
+	MeshData3DIndexOne.hh \
+	OutputSolnPointsData.hh \
+	OutputSolnPointsDataHex8.hh \
+	OutputSolnPointsDataQuad4.hh \
+	OutputSolnPointsDataTet4.hh \
+	OutputSolnPointsDataTri3.hh
+
 dist_noinst_DATA = \
 	mesh2D_comments.txt \
 	mesh3D_index1.txt \

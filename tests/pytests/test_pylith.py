@@ -31,7 +31,6 @@ DIRS = [
     "apps",
     "bc",
     "faults",
-    "friction",
     "materials",
     "meshio",
     "mpi",

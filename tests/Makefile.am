@@ -20,7 +20,8 @@ SUBDIRS = \
 	libtests \
 	pytests \
 	mmstests \
-	fullscale
+	fullscale \
+	manual
 
 
 # End of file

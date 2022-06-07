@@ -33,10 +33,8 @@ test_faultkin_SOURCES = \
 	TestFaultKin2D_TwoFaultsShearNoSlip.cc \
 	test_driver.cc
 
-
-
-noinst_HEADERS =
-
+dist_noinst_HEADERS = \
+	TestFaultKin.hh
 
 AM_CPPFLAGS += \
 	$(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR) \

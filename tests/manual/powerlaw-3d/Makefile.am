@@ -17,11 +17,21 @@
 #
 
 dist_noinst_DATA = \
-	README \
-	onequad4.mesh \
-	output_hdf5.cfg \
-	output_vtk.cfg \
-	pylithapp.cfg
+	README.md \
+	axialtraction_powerlaw.cfg \
+	axialtraction_powerlaw_n1.cfg \
+	pylithapp.cfg \
+	sheartraction_powerlaw.cfg \
+	onecell_hex.mesh \
+	axialtraction_maxwell_soln.py \
+	axialtraction_powerlaw_n1_gendb.py \
+	plot_axialtraction_powerlaw.py \
+	plot_axialtraction_powerlaw_n1.py \
+	plot_sheartraction_powerlaw.py \
+	run_tests.py \
+	jacobian_common.py \
+	jacobian_powerlaw.py \
+	mat_powerlaw.spatialdb
 
 
 # End of file 

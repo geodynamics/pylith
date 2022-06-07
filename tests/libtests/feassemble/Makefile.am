@@ -34,7 +34,7 @@ test_feassemble_SOURCES = \
 	test_driver.cc
 
 
-noinst_HEADERS =
+dist_noinst_HEADERS = \
 	TestAuxiliaryFactory.hh \
 	TestInterfacePatches.hh
 

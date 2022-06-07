@@ -34,7 +34,7 @@ test_utils_SOURCES = \
 	TestDependenciesVersion.cc \
 	test_driver.cc
 
-noinst_HEADERS = \
+dist_noinst_HEADERS = \
 	TestEventLogger.hh \
 	TestPyreComponent.hh \
 	TestGenericComponent.hh \

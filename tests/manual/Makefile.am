@@ -17,7 +17,7 @@
 #
 
 SUBDIRS = \
-	2d \
-	3d
+	powerlaw-2d \
+	powerlaw-3d
 
 # End of file 

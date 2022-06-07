@@ -41,7 +41,7 @@ subpkginclude_HEADERS = \
 	topologyfwd.hh
 
 
-noinst_HEADERS =
+dist_noinst_HEADERS =
 
 
 

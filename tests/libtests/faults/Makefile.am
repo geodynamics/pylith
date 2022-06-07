@@ -37,7 +37,7 @@ test_faults_SOURCES = \
 	test_driver.cc
 
 
-noinst_HEADERS = \
+dist_noinst_HEADERS = \
 	TestAdjustTopology.hh
 
 AM_CPPFLAGS += \

@@ -34,11 +34,9 @@ test_isotropiclinearincompelasticity_SOURCES = \
 	TestIsotropicLinearIncompElasticity2D_BodyForce.cc \
 	test_driver.cc
 
-
-
-
-noinst_HEADERS =
-
+dist_noinst_HEADERS = \
+	TestIncompressibleElasticity.hh \
+	TestIsotropicLinearIncompElasticity.hh
 
 AM_CPPFLAGS += \
 	$(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR) \

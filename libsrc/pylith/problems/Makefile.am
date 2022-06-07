@@ -37,7 +37,7 @@ subpkginclude_HEADERS = \
 	ProgressMonitorStep.hh \
 	problemsfwd.hh
 
-noinst_HEADERS =
+dist_noinst_HEADERS =
 
 
 # End of file

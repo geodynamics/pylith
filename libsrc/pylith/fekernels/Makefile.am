@@ -39,7 +39,7 @@ subpkginclude_HEADERS = \
 	IsotropicLinearPoroelasticity.hh \
 	Poroelasticity.hh
 
-noinst_HEADERS =
+dist_noinst_HEADERS =
 
 dist_noinst_DATA =
 

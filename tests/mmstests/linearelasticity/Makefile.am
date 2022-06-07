@@ -61,7 +61,9 @@ test_isotropiclinearelasticity3d_bodyforce_SOURCES = \
 		test_driver.cc
 
 
-noinst_HEADERS =
+dist_noinst_HEADERS = \
+	TestElasticity.hh \
+	TestIsotropicLinearElasticity.hh	
 
 
 AM_CPPFLAGS += \

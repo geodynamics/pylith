@@ -17,23 +17,21 @@
 #
 
 dist_noinst_DATA = \
-	README \
-	runtests.sh \
-	plot_invars.py \
-	mesh.jou \
-	mesh_hex8.exo \
+	README.md \
+	axialtraction_powerlaw.cfg \
+	axialtraction_powerlaw_n1.cfg \
 	pylithapp.cfg \
-	elastic.cfg \
-	elastic_dt01.cfg \
-	elastic_dt02.cfg \
-	elastic_dt05.cfg \
-	elastic_dt10.cfg \
-	plastic.cfg \
-	plastic_dt01.cfg \
-	plastic_dt02.cfg \
-	plastic_dt05.cfg \
-	plastic_dt10.cfg \
-	simpleshear_velbc.spatialdb
+	sheartraction_powerlaw.cfg \
+	onecell_quad.mesh \
+	axialtraction_maxwell_soln.py \
+	axialtraction_powerlaw_n1_gendb.py \
+	plot_axialtraction_powerlaw.py \
+	plot_axialtraction_powerlaw_n1.py \
+	plot_sheartraction_powerlaw.py \
+	run_tests.py \
+	jacobian_common.py \
+	jacobian_powerlaw.py \
+	mat_powerlaw.spatialdb
 
 
 # End of file 

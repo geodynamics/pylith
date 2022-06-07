@@ -102,7 +102,7 @@ test_hdf5_SOURCES = \
 # TestDataWriterHDF5ExtFaultMeshCases.cc
 
 
-noinst_HEADERS = \
+dist_noinst_HEADERS = \
 	TestMeshIO.hh \
 	TestMeshIOAscii.hh \
 	TestMeshIOLagrit.hh \
@@ -183,7 +183,7 @@ if ENABLE_CUBIT
 	TestExodusII.cc \
 	TestMeshIOCubit.cc \
 	TestMeshIOCubit_Cases.cc
-  noinst_HEADERS += \
+  dist_noinst_HEADERS += \
 	TestExodusII.hh \
 	TestMeshIOCubit.hh
   test_meshio_LDADD += -lnetcdf

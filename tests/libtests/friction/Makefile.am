@@ -31,7 +31,7 @@ test_friction_SOURCES = \
 	test_driver.cc
 
 
-noinst_HEADERS =
+dist_noinst_HEADERS =
 
 AM_CPPFLAGS += \
 	$(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR) \

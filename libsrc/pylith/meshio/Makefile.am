@@ -57,7 +57,7 @@ if ENABLE_CUBIT
 	MeshIOCubit.icc
 endif
 
-noinst_HEADERS = \
+dist_noinst_HEADERS = \
 	BinaryIO.hh \
 	GMVFile.hh \
 	GMVFileAscii.hh \

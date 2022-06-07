@@ -39,7 +39,7 @@ subpkginclude_HEADERS = \
 	AuxiliaryFactory.hh \
 	feassemblefwd.hh
 
-noinst_HEADERS =
+dist_noinst_HEADERS =
 
 dist_noinst_DATA = \
 	jacobian2d_lgdeform.wxm \

@@ -18,7 +18,6 @@
 
 dist_noinst_DATA = \
 	README.md \
-	generate_gmsh.py \
 	pylithapp.cfg \
 	step01_coseismic.cfg \
 	step02_interseismic.cfg \
@@ -28,6 +27,7 @@ dist_noinst_DATA = \
 	step06_eqcycleratestate.cfg \
 	geometry.jou \
 	generate_gmsh.py \
+	mesh_tri.msh \
 	createbc.jou \
 	mesh_tri.jou \
 	mesh_tri.exo \
