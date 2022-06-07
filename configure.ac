@@ -9,7 +9,7 @@ dnl
 dnl This code was developed as part of the Computational Infrastructure
 dnl for Geodynamics (http://geodynamics.org).
 dnl
-dnl Copyright (c) 2010-2021 University of California, Davis
+dnl Copyright (c) 2010-2022 University of California, Davis
 dnl
 dnl See LICENSE.md for license information.
 dnl
@@ -17,7 +17,7 @@ dnl ----------------------------------------------------------------------
 dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT([PyLith], [3.0.0beta3], [cig-short@geodynamics.org])
+AC_INIT([PyLith], [3.0.0rc1], [cig-short@geodynamics.org])
 AC_CONFIG_AUX_DIR([./aux-config])
 AC_CONFIG_HEADER([portinfo])
 AC_CONFIG_MACRO_DIR([m4])
