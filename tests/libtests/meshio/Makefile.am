@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2021 University of California, Davis
+# Copyright (c) 2010-2022 University of California, Davis
 #
 # See LICENSE.md for license information.
 #
@@ -102,7 +102,7 @@ test_hdf5_SOURCES = \
 # TestDataWriterHDF5ExtFaultMeshCases.cc
 
 
-noinst_HEADERS = \
+dist_noinst_HEADERS = \
 	TestMeshIO.hh \
 	TestMeshIOAscii.hh \
 	TestMeshIOLagrit.hh \
@@ -183,7 +183,7 @@ if ENABLE_CUBIT
 	TestExodusII.cc \
 	TestMeshIOCubit.cc \
 	TestMeshIOCubit_Cases.cc
-  noinst_HEADERS += \
+  dist_noinst_HEADERS += \
 	TestExodusII.hh \
 	TestMeshIOCubit.hh
   test_meshio_LDADD += -lnetcdf

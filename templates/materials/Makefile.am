@@ -29,7 +29,7 @@ lib_LTLIBRARIES = libmaterialscontrib.la
 libmaterialscontrib_la_SOURCES = \
 	PlaneStrainState.cc
 
-noinst_HEADERS = \
+dist_noinst_HEADERS = \
 	PlaneStrainState.hh
 
 libmaterialscontrib_la_LDFLAGS = $(AM_LDFLAGS)

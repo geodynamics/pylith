@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2021 University of California, Davis
+# Copyright (c) 2010-2022 University of California, Davis
 #
 # See LICENSE.md for license information.
 #
@@ -31,7 +31,7 @@ test_friction_SOURCES = \
 	test_driver.cc
 
 
-noinst_HEADERS =
+dist_noinst_HEADERS =
 
 AM_CPPFLAGS += \
 	$(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR) \

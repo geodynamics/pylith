@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2021 University of California, Davis
+# Copyright (c) 2010-2022 University of California, Davis
 #
 # See LICENSE.md for license information.
 #
@@ -30,7 +30,7 @@ subpkginclude_HEADERS = \
 	AbsorbingDampersAuxiliaryFactory.hh \
 	bcfwd.hh
 
-noinst_HEADERS =
+dist_noinst_HEADERS =
 
 
 # End of file

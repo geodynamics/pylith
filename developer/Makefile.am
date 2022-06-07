@@ -9,16 +9,19 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2021 University of California, Davis
+# Copyright (c) 2010-2022 University of California, Davis
 #
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
 
-EXTRA_DIST = \
+dist_noinst_PYTHON = \
 	downloads.py \
-	autopep8.cfg \
-	uncrustify.cfg \
+	format_pydocs.py \
 	format_source.py
+
+EXTRA_DIST = \
+	autopep8.cfg \
+	uncrustify.cfg
 
 # End of file 

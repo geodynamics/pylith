@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2021 University of California, Davis
+# Copyright (c) 2010-2022 University of California, Davis
 #
 # See LICENSE.md for license information.
 #
@@ -29,15 +29,33 @@ endif
 
 DIST_SUBDIRS = $(SUBDIRS) \
 	examples \
+	developer \
 	doc-latex \
 	docs \
 	release-notes \
 	templates \
 	share
 
+dist_noinst_PYTHON = \
+	applications/pylith \
+	applications/pylith_cfgsearch \
+	applications/pylith_dumpparameters \
+	applications/pylith_eqinfo \
+	applications/pylith_genxdmf \
+	applications/pylith_runner \
+	applications/powerlaw_gendb
+
+
 EXTRA_DIST = \
+	AUTHORS \
 	CHANGES.md \
 	DEPENDENCIES \
+	INSTALL \
+	LICENSE.md \
+	NEWS \
+	README.md \
+	setup.cfg \
+	setup.py \
 	docker/pylith-testenv \
 	docker/pylith-docenv
 

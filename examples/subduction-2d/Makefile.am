@@ -9,7 +9,7 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2021 University of California, Davis
+# Copyright (c) 2010-2022 University of California, Davis
 #
 # See LICENSE.md for license information.
 #
@@ -18,7 +18,6 @@
 
 dist_noinst_DATA = \
 	README.md \
-	generate_gmsh.py \
 	pylithapp.cfg \
 	step01_coseismic.cfg \
 	step02_interseismic.cfg \
@@ -28,6 +27,7 @@ dist_noinst_DATA = \
 	step06_eqcycleratestate.cfg \
 	geometry.jou \
 	generate_gmsh.py \
+	mesh_tri.msh \
 	createbc.jou \
 	mesh_tri.jou \
 	mesh_tri.exo \

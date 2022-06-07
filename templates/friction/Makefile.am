@@ -29,7 +29,7 @@ lib_LTLIBRARIES = libfrictioncontrib.la
 libfrictioncontrib_la_SOURCES = \
 	ViscousFriction.cc
 
-noinst_HEADERS = \
+dist_noinst_HEADERS = \
 	ViscousFriction.hh
 
 libfrictioncontrib_la_LDFLAGS = $(AM_LDFLAGS)
