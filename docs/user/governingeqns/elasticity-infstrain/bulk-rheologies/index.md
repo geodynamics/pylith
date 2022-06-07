@@ -25,6 +25,7 @@ For the viscoelastic rheologies, we assume the viscous deformation is incompress
 ```
 
 :::{toctree}
+elasticity-constitutive.md
 linear-elastic.md
 linear-maxwell.md
 linear-genmaxwell.md
