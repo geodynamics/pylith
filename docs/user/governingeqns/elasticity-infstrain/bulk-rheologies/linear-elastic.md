@@ -1,18 +1,18 @@
 (sec-user-governingeqns-elasticity-isolinearelasticity)=
 # Linear Isotropic Elastic Models
 
-We implement isotropic linear elasticity both with and without a reference stress-strain state.
-With a linear elastic material it is often convenient to compute the deformation relative to an unknown initial stress-strain state.
-Furthermore, when we use an initial undeformed configuration with zero stress and strain, the reference stress and strain are zero, so this presents a simplification of the more general case of the stress-strain state relative to the reference stress-strain state.
+We implement isotropic linear elasticity both with and without a reference stress and strain state.
+With a linear elastic material we often compute the deformation relative to an unknown initial stress and strain state.
+An initial undeformed configuration with zero stress and strain corresponds to reference stress and strain of zero.
 
-Without a reference stress-strain state, we have
+Without a reference stress and strain state, we have
 %
 ```{math}
 :label: eqn:elasticity:hookeslaw:noref
 \sigma_{ij} = \lambda \epsilon_{kk} \delta{ij} + 2 \mu \epsilon_{ij}
 ```
 %
-and with a reference stress-strain state, we have
+and with a reference stress and strain state, we have
 %
 ```{math}
 :label: eqn:elasticity:hookeslaw:ref
@@ -40,7 +40,6 @@ If the reference stress and reference strain are both zero, then this reduces to
 The deviatoric stress is
 %
 ```{math}
-:label: eqn:elasticity:devstress
 \begin{gather}
 \sigma_{ij}^{dev} = \sigma_{ij} - \sigma^{mean} \delta_{ij}, \\
 \sigma_{ij}^{dev} = \sigma_{ij}^{ref} + \lambda \left(\epsilon_{kk} -
@@ -73,4 +72,3 @@ C_{1122}^{dev} = C_{1133}^{dev} = C_{2233}^{dev} = -\frac{2}{3} \mu, \\
 C_{1212}^{dev} = C_{2323}^{dev} = C_{1313}^{dev} = \mu. \\
 \end{gather}
 ```
-%
