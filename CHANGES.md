@@ -60,7 +60,7 @@ material.label_value = 2
 ### Contributors
 
 * Brad Aagaard
-* Matthew Kneply
+* Matthew Knepley
 * Charles Williams
 * Robert Walker
 * Chris Mills

@@ -17,7 +17,7 @@ dnl ----------------------------------------------------------------------
 dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT([PyLith], [3.0.0rc1], [cig-short@geodynamics.org])
+AC_INIT([PyLith], [3.0.0], [https://geodynamics.org/resources/pylith])
 AC_CONFIG_AUX_DIR([./aux-config])
 AC_CONFIG_HEADER([portinfo])
 AC_CONFIG_MACRO_DIR([m4])
@@ -179,7 +179,7 @@ CIT_FUNCTIONSTRING
 dnl VERSION
 CIG_PKG_GIT(PYLITH)
 AC_DEFINE_UNQUOTED([PYLITH_VERSION], ["$PACKAGE_VERSION"], [Define PyLith version])
-AC_DEFINE_UNQUOTED([PYLITH_DOI], ["10.5281/zenodo.886600"], [Define PyLith doi])
+AC_DEFINE_UNQUOTED([PYLITH_DOI], ["10.5281/zenodo.6622161"], [Define PyLith doi])
 
 dnl ENDIANNESS
 AC_C_BIGENDIAN
