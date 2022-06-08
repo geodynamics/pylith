@@ -164,7 +164,7 @@ class PyLithApp(PetscApplication):
                   "  organization = {Computational Infrastructure for Geodynamics (CIG)},\n"
                   "  address      = {University of California, Davis},\n"
                   "  year         = {%d},\n"
-                  "  note         = {http://www.geodynamics.org/cig/software/pylith/pylith\_manual-%s.pdf}\n"
+                  "  note         = {https://pylith.readthedocs.io/en/v%s}\n"
                   "}\n" % (verNum, verYear, verNum)
                   )
 
