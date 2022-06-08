@@ -145,7 +145,7 @@ class PyLithApp(PetscApplication):
         import pylith.utils.utils as utils
         v = utils.PylithVersion()
         verNum = v.version()
-        verYear = 2017
+        verYear = 2022
         verDOI = v.doi()
 
         software = ("@Manual{PyLith:software,\n"
@@ -195,17 +195,13 @@ class PyLithApp(PetscApplication):
             "    Running pylithinfo --verbose [-o pylith_parameters.txt] [PyLith args]\n"
             "    will dump all parameters with descriptions to pylith_parameters.txt.\n"
             "\n"
-            "Add $PYLITH_DIR/share/settings/petsc_monitor.cfg to your command line arguments\n"
-            "to turn on several PETSc monitors:"
-            "  pylith YOUR_FILE.cfg PATH_TO_PYITH_SHARE/share/settings/petsc_monitor.cfg\n"
-            "\n"
             "If you still need help, visit the PyLith category on the CIG community forum:\n"
             "https://community.geodynamics.org.\n"
             "When submitting a question about running a simulation, be sure to include the info:\n"
             "\n"
             "1. Describe what you are trying to do\n"
             "  a. Overview of the problem and boundary conditions (diagrams are very helpful)\n"
-            "  b. 2-D or 3-D\n"
+            "  b. 2D or 3D\n"
             "  c. Cell type (tri, quad, hex, or tet)\n"
             "  d. Type of fault: prescribed slip or spontaneous rupture\n"
             "2. Attach the PyLith parameters .json file\n"
