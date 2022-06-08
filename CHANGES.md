@@ -26,7 +26,7 @@ Some features present in v2.2.2, such as spontaneous rupture and finite strain, 
 * Automatically assign label value for fault cohesive cells (`id` setting is obsolete).
 * Use `description` for descriptive labels and `label` and `label_value` for tagging entities. PyLith's use of`label` and `label_value` now corresponds to PETSc labels and label values.
 
-### Deprecated fetures
+### Deprecated features
 
 * We plan to discontinue support for reading LaGriT mesh files in version 3.2. \
   Gmsh provides an open-source alternative with a graphical user interface.
