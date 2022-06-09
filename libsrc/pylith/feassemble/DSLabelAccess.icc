@@ -52,14 +52,15 @@ pylith::feassemble::DSLabelAccess::DSLabelAccess(const PetscDM dm,
     err = DMGetLabel(_dm, labelName, &_label);PYLITH_CHECK_ERROR(err);assert(_label);
 
     const PetscInt* cellIndices = NULL;
-    err = DMGetStratumIS(dm, labelName, labelValue, &_cellsIS);PYLITH_CHECK_ERROR(err);assert(_cellsIS);
-    err = ISGetSize(_cellsIS, &_numCells);PYLITH_CHECK_ERROR(err);assert(_numCells > 0);
-    err = ISGetIndices(_cellsIS, &cellIndices);PYLITH_CHECK_ERROR(err);assert(cellIndices);
+    err = DMGetStratumIS(dm, labelName, labelValue, &_cellsIS);PYLITH_CHECK_ERROR(err);
+    if (_cellsIS) {
+        err = ISGetSize(_cellsIS, &_numCells);PYLITH_CHECK_ERROR(err);
+        err = ISGetIndices(_cellsIS, &cellIndices);PYLITH_CHECK_ERROR(err);
+        err = DMGetCellDS(dm, cellIndices[0], &_ds);PYLITH_CHECK_ERROR(err);assert(_ds);
+        err = PetscDSGetWeakForm(_ds, &_weakForm);PYLITH_CHECK_ERROR(err);assert(_weakForm);
+        err = ISRestoreIndices(_cellsIS, &cellIndices);PYLITH_CHECK_ERROR(err);
+    } // if
 
-    err = DMGetCellDS(dm, cellIndices[0], &_ds);PYLITH_CHECK_ERROR(err);assert(_ds);
-    err = PetscDSGetWeakForm(_ds, &_weakForm);PYLITH_CHECK_ERROR(err);assert(_weakForm);
-
-    err = ISRestoreIndices(_cellsIS, &cellIndices);PYLITH_CHECK_ERROR(err);
     PYLITH_METHOD_END;
 }
 
