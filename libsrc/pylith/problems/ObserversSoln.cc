@@ -58,6 +58,7 @@ pylith::problems::ObserversSoln::registerObserver(pylith::problems::ObserverSoln
     PYLITH_JOURNAL_DEBUG("registerObserver(observer="<<typeid(observer).name()<<")");
 
     if (observer) {
+        observer->index = _observers.size();
         _observers.insert(observer);
     } // if
 
@@ -112,7 +113,7 @@ pylith::problems::ObserversSoln::verifyObservers(const pylith::topology::Field& 
 } // verifyObservers
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Notify observers.
 void
 pylith::problems::ObserversSoln::notifyObservers(const PylithReal t,
@@ -128,6 +129,17 @@ pylith::problems::ObserversSoln::notifyObservers(const PylithReal t,
 
     PYLITH_METHOD_END;
 } // notifyObservers
+
+
+// ------------------------------------------------------------------------------------------------
+// Comparison function for keeping set of observers in order.
+bool
+pylith::problems::ObserversSoln::_compare::operator()(const ObserverSoln* const a,
+                                                      const ObserverSoln* const b) const {
+    assert(a);
+    assert(b);
+    return a->index < b->index;
+} // _compare
 
 
 // End of file

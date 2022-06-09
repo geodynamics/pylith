@@ -31,6 +31,7 @@
 #include "pylith/utils/types.hh" // USES PylithReal, PylithInt
 
 class pylith::problems::ObserverSoln {
+    friend ObserversSoln; ///< Access to ordering index.
     friend class TestObserverSoln; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -72,7 +73,12 @@ public:
                 const PylithInt tindex,
                 const pylith::topology::Field& solution) = 0;
 
-    // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
+    // PRIVATE ////////////////////////////////////////////////////////////////////////////////////
+private:
+
+    size_t index; ///< Index for keeing set of observers ordered. 
+
+    // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
 private:
 
     ObserverSoln(const ObserverSoln&); ///< Not implemented.
