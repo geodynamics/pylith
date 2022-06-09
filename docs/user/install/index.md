@@ -25,13 +25,14 @@ The binaries are intended for users running on laptops or desktop computers (as 
 The binaries contain the compilers and header files, so users wishing to extend the code can still use the binary and do not need to build PyLith and its dependencies from source.
 See {ref}`sec-developer-contributing` for more information on extending PyLith.
 
-Binary executables are available for Linux (glibc 2.12 and later) and Mac OS X (Intel 10.13 and later) from the PyLith web page <https://geodynamics.org/resources/pylith/>.
+Binary executables are available for Linux (glibc 2.12 and later) and macOS (Intel 11.0 and later) from the PyLith web page <https://geodynamics.org/resources/pylith/>.
+Users running macOS on MX based computers can use the Intel version.
 Users running Windows 10 build 14316 and later can install a Linux bash environment and use the PyLith binary for Linux (see Section {ref}`sec:install:windows` for more information).
 
 :::{tip}
 On Linux systems you can check which version of glibc you have by running `ldd-version`
 
-On macOS systems running OS X, you can check the operating system version by clicking on the Apple icon and *About This Mac*.
+On macOS systems you can check the operating system version by clicking on the Apple icon and *About This Mac*.
 :::
 
 ### Linux and macOS
@@ -48,15 +49,17 @@ On macOS systems running OS X, you can check the operating system version by cli
 3.  Unpack the tarball.
     ```{code-block} bash
       # Linux 64-bit
-      $ tar -xzf pylith-3.0.0beta-linux-x86_64.tgz
+      $ tar -xzf pylith-3.0.0-linux-x86_64.tar.gz
+
       # macOS
-      $ tar -xzf pylith-3.0.0beta-macOS-10.11.6.tgz
+      $ tar -xzf pylith-3.0.0-macOS-11.6.6-x86_64.tar.gz
       ```
 4. Set environment variables.
 The provided `setup.sh` script only works if you are using bash shell.
 If you are using a different shell, you will need to alter how the environment variables are set in `setup.sh`.
 ```{code-block} bash
 $ source setup.sh
+Ready to run PyLith.
 ```
 
 :::{warning}
@@ -64,10 +67,6 @@ The binary distribution contains PyLith and all of its dependencies.
 If you have any of this software already installed on your system, you need to be careful in setting up your environment so that preexisting software does not conflict with the PyLith binary.
 By default the `setup.sh` script will prepend to the PATH and PYTHONPATH (for macOS and Linux) and LD_LIBRARY_PATH (for Linux) environment variables.
 This will prevent most conflicts.
-:::
-
-:::{warning}
-The PyLith binary distribution for **macOS** systems is built using the system clang compiler suite and system Python. **This means the system Python must be in your path to use the PyLith binary executable**; ensure `/bin` and `/usr/bin` are at the beginning of the PATH environment variable, which is done automatically if you use the `setup.sh` script. **This condition is often violated if you have Python installed from Anaconda, HomeBrew, MacPorts, etc. and set the PATH variable in your bash configuration file.**
 :::
 
 (sec:install:windows)=
@@ -122,22 +121,16 @@ For each package this utility downloads the source code, configures it, builds i
 
 ## Verifying PyLith is Installed Correctly
 
-:::{admonition} TODO
-:class: error
-
-Point `sec:example:3dhex8-static` reference to correct example
-:::
-
 The easiest way to verify that PyLith has been installed correctly is to run one or more of the examples supplied with the binary and source code.
 In the binary distribution, the examples are located in `src/pylith-3.0.0/examples` while in the source distribution, they are located in `pylith-3.0.0/examples`.
 {ref}`sec-examples` discusses how to run and visualize the results for the examples.
 To run the example discussed in Section {ref}`sec-examples-box-2d`:
 
 ```{code-block} bash
-$ cd examples/2d/box
+$ cd examples/box-2d
 $ pylilth step01_axialdisp.cfg
 # A bunch of stuff will be written to stdout. The last few lines should be:
- >> ... lib/python2.7/site-packages/pylith/problems/Problem.py:218:finalize
+ >> .../lib/python3.9/site-packages/pylith/problems/Problem.py:201:finalize
  -- timedependent(info)
  -- Finalizing problem.
 ```
@@ -149,13 +142,28 @@ message:
 $ pylith
  >> {default}::
  -- pyre.inventory(error)
+ -- metadata.description <- ''
+ -- Nonempty string required.
+ >> {default}::
+ -- pyre.inventory(error)
+ -- metadata.arguments <- '[]'
+ -- List of command line arguments required.
+ >> {default}::
+ -- pyre.inventory(error)
+ -- metadata.pylith_version <- '[]'
+ -- List of PyLith version constraints required.
+ >> {default}::
+ -- pyre.inventory(error)
  -- meshimporter.meshioascii.filename <- ''
- -- Filename for ASCII input mesh not specified. To test PyLith, run an example as discussed in the manual.
+ -- Filename for ASCII input mesh not specified.  To test PyLith, run an example as discussed in the manual.
+ >> {default}::
+ -- pyre.inventory(error)
+ -- timedependent.problem_defaults.name <- ''
+ -- Missing required property 'name' in default options for problem.
 pylithapp: configuration error(s)
 ```
 
-This indicates that at a very minimum the finite-element mesh file must be specified in order to run PyLith.
-
+This indicates that at a very minimum metadata and the finite-element mesh file must be specified in order to run PyLith.
 
 ## Configuration on a Cluster
 
@@ -169,7 +177,6 @@ On some systems, `mpirun` is invoked directly from the batch script.
 On others, a special wrapper is used instead.
 
 Properly configured, Pyre can handle job submissions automatically, insulating users from the details of the batch system and the site configuration.
-This feature has the most value when the system administrator installs a global Pyre configuration file on the cluster (under `/etc/pythia-0.8`), for the benefit of all users and all Pyre-based applications.
 
 (sec:launchers:schedulers)=
 ### Launchers and Schedulers
@@ -178,7 +185,6 @@ If you have used one of the batch systems, you will know that the batch system r
 Fortunately, launching a parallel PyLith job is simplified by Pyre's **launcher** and **scheduler** facilities.
 Many properties associated with **launcher** and **scheduler** are pertinent to the cluster you are on, and are best customized in a configuration file.
 Your personal PyLith configuration file (`$HOME/.pyre/pylithapp/pylithapp.cfg`) is suitable for this purpose.
-On a cluster, the ideal setup is to install a system-wide configuration file under `/etc/pythia-0.8`, for the benefit of all users.
 
 Pyre's **scheduler** facility is used to specify the type of batch system you are using (if any):
 
