@@ -16,8 +16,9 @@
 # ----------------------------------------------------------------------
 
 dist_noinst_PYTHON = \
-	generate_gmsh.py
-
+	generate_gmsh.py \
+	generate_gpsstations.py \
+	invert_slip.py
 
 dist_noinst_DATA = \
 	README.md \
@@ -33,9 +34,17 @@ dist_noinst_DATA = \
 	step01_slip.cfg \
 	step02_slip_velbc.cfg \
 	step03_multislip_velbc.cfg \
+	step04_varslip.cfg \
+	step05_greensfns.cfg \
 	disprate_bc_xneg.spatialdb \
 	disprate_bc_xpos.spatialdb \
-	viz/plot_dispwarp.py
+	gps_stations.txt \
+	slip_impulses.spatialdb \
+	slip_variable.spatialdb \
+	viz/plot_dispwarp.py \
+	viz/plot_dispstations.py \
+	viz/plot_inversion_results.py \
+	viz/plot_mesh.py
 
 
 # End of file
