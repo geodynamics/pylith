@@ -57,7 +57,14 @@ material.description = Elastic material
 material.label_value = 2
 ```
 
-### Contributors
+## Known issues
+
+* Running in parallel has a few minor bugs due to communication mismatches and over-aggressive error checking. We will be fixing these in the next week.
+* We will be updating the 3D subduction zone example (examples/subduction-3d) to v3.0.0 in the next week, including providing the input mesh file; in the meantime do not attempt to run this example.
+* We have included Gmsh in the binary packages.
+For Linux there are additional libraries that must be installed for Gmsh to run; these are associated with the graphical user interface and included in most default installations.
+
+## Contributors
 
 * Brad Aagaard
 * Matthew Knepley
