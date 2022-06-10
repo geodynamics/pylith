@@ -1,13 +1,5 @@
 # PyLith
 
-```{admonition} Under construction
-:class: warning
-
-We are in the process of migrating the documentation from LaTeX producing a PDF file to Markedly Structured Text (MyST) and Sphinx producing this online documentation, a PDF file, and epub.
-
-Most of the user guide has been migrated, but there are still some examples that are missing documentation.
-```
-
 ## Description
 
 PyLith is a finite-element code with a primary focus on modeling interseismic and coseismic deformation of Earth's crust and upper mantle.
@@ -24,10 +16,10 @@ We leverage [PETSc](https://petsc.org) for finite-element data structures and op
 
 ## Other sources of documentation
 
-* PyLith v3.0.0rc1 manual [PDF](https://github.com/geodynamics/pylith/releases/download/v3.0.0beta1/pylith-3.0.0b1_manual.pdf)
-* [PyLith tutorials](https://wiki.geodynamics.org/software:pylith:start)
+* PyLith manual [epub](https://pylith.readthedocs.io/_/downloads/en/latest/epub/)
+* [PyLith tutorials](https://geodynamics.org/courses/PyLith)
 * [PyLith installer documentation](https://pylith_installer.readthedocs.io)
-* [Spatial Data documentation](https://spatialdata.readthedocs.io)
+* [SpatialData documentation](https://spatialdata.readthedocs.io)
 
 ## PyLith development team
 
