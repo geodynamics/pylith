@@ -75,6 +75,7 @@ pylith::topology::Distributor::distribute(topology::Mesh* const newMesh,
     PetscDM dmNew = NULL;
     const PetscInt overlap = 1;
     err = DMPlexDistribute(origMesh.getDM(), overlap, NULL, &dmNew);PYLITH_CHECK_ERROR(err);
+    err = DMPlexDistributeSetDefault(dmNew, PETSC_FALSE);PYLITH_CHECK_ERROR(err);
     newMesh->setDM(dmNew);
 
     PYLITH_METHOD_END;
