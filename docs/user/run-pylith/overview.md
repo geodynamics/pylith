@@ -78,7 +78,7 @@ See [Solution component](../components/problems/Solution.md) for details of the 
 
 #### Auxiliary Field
 
-We specify parameters for materials, boundary conditions, and fault interfaces using fields we refer to as the ``auxiliary'' fields.
+We specify parameters for materials, boundary conditions, and fault interfaces using fields we refer to as the "auxiliary" field.
 Each parameter (scalar, vector, tensor, or other) is held in a separate subfield.
 We also store state variables in the auxiliary field, with each state variable as a different subfield.
 This provides a single container for the collection of spatially varying parameters while maintaining the flexibility to specify the discretization of each parameter separately.

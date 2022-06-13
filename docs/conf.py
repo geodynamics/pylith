@@ -22,7 +22,7 @@ copyright = '2021-2022, University of California, Davis'
 author = 'Brad T. Aagaard, Matthew Knepley, Charles A. Williams'
 
 # The full version, including alpha/beta/rc tags
-release = '3.0.0dev'
+release = '3.0.0'
 
 
 # -- General configuration ---------------------------------------------------
@@ -71,12 +71,14 @@ html_theme_options = {
             "icon": "fab fa-github-square",
         },
     ],
+    "left_sidebar_end": ["sidebar-cig"],
     "navbar_start": ["navbar-logo"],
     "footer_items": ["last-updated"],
 }
 html_sidebars = {
-    "**": ["search-field", "sidebar-nav-bs", "sidebar-cig"]
+    "**": ["search-field", "sidebar-nav-bs"]
 }
+
 bibtex_bibfiles = ["references.bib"]
 bibtex_default_style = "alpha"
 bibtex_reference_style = "author_year"
