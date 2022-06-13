@@ -1,71 +1,74 @@
-\documentclass[crop,tikz]{standalone}
+\documentclass[tikz, border=2pt]{standalone}
+\usepackage[none]{hyphenat}
+\usepackage{helvet}
+\renewcommand{\familydefault}{phv}
+
+\makeatletter
+\renewcommand{\normalsize}{\@setfontsize\normalsize{6}{6.5}}
+\makeatother
+
 \usepackage{tikz}
-\usetikzlibrary{external}
 
 \begin{document}
+\pagestyle{empty}
+
+\input{../../../tikz-styles/figcolors}
+
 \usetikzlibrary{arrows,shapes,positioning}
-\input{../../tikz-styles/figcolors}
-\tikzstyle{level0} = [rectangle, 
-                      minimum width=5em, 
-                      text centered,
-                      rounded corners=0.75em,
-                      minimum height=1.5em,
-                      very thick,
-                      draw=blue!80!black,
+\usetikzlibrary{shadows.blur}
+
+\tikzstyle{generic} = [
+  rectangle,
+  text centered,
+  rounded corners=0.75em,
+  minimum width=5em, 
+  minimum height=2.0em,
+  blur shadow={shadow blur steps=5}]
+
+\tikzstyle{level0} = [generic, 
+                      draw=ltblue!80!black,
                       top color=ltblue!50!white,
-                      bottom color=blue]
-\tikzstyle{level1} = [rectangle, 
-                      minimum width=5em, 
-                      text centered,
-                      rounded corners=0.75em,
-                      minimum height=1.5em,
-                      very thick,
-                      draw=green!80!black,
+                      bottom color=ltblue,]
+\tikzstyle{level1} = [generic, 
+                      draw=ltgreen!80!black,
                       top color=ltgreen!50!white,
-                      bottom color=green]
-\tikzstyle{level2} = [rectangle, 
-                      minimum width=5em, 
-                      text centered,
-                      rounded corners=0.75em,
-                      minimum height=1.5em,
-                      very thick,
+                      bottom color=ltgreen]
+\tikzstyle{level2} = [generic, 
                       draw=orange!80!black,
                       top color=ltorange!50!white,
                       bottom color=orange]
-\tikzstyle{level3} = [rectangle, 
-                      minimum width=5em, 
-                      text centered,
-                      rounded corners=0.75em,
-                      minimum height=1.5em,
-                      very thick,
-                      draw=red!80!black,
+\tikzstyle{level3} = [generic, 
+                      draw=ltred!80!black,
                       top color=ltred!50!white,
-                      bottom color=red]
+                      bottom color=ltred]
 
-\tikzstyle{arrowto} = [->, thick]
-\tikzstyle{arrow01} = [arrowto, color=green]
+\tikzstyle{arrowto} = [-latex, thick]
+\tikzstyle{arrow01} = [arrowto, color=green!90!black]
 
-\tikzstyle{arrow02} = [arrowto, color=orange]
-\tikzstyle{arrow12} = [arrowto, color=orange]
+\tikzstyle{arrow02} = [arrowto, color=orange!90!black]
+\tikzstyle{arrow12} = [arrowto, color=orange!90!black]
 
-\tikzstyle{arrow13} = [arrowto, color=red]
-\tikzstyle{arrow23} = [arrowto, color=red]
+\tikzstyle{arrow13} = [arrowto, color=red!90!black]
+\tikzstyle{arrow23} = [arrowto, color=red!90!black]
 
-\begin{tikzpicture}[node distance=4.0em]
+\begin{tikzpicture}[
+  node distance=4.0em and 2.5em,
+  thick]
+
   % Level 0
   \node (pylith) [level0] {PyLith};
 
   % Level 1
-  \node (spatialdata) [level1, below right=of pylith, yshift=+0em] {spatialdata};
-  \node (petsc) [level1, below left=of pylith, yshift=+0em] {PETSc};
+  \node (spatialdata) [level1, below=of pylith, xshift=+4em, yshift=+1em] {SpatialData};
+  \node (petsc) [level1, left=of spatialdata, xshift=-2em] {PETSc};
 
   \path (pylith) edge[arrow01] (petsc);
   \path (pylith) edge[arrow01] (spatialdata);
 
   % Level 2
-  \node (proj4) [level2, below left=of spatialdata, yshift=+0em] {Proj.4};
+  \node (proj4) [level2, below=of spatialdata, xshift=-2em, yshift=+1em] {Proj};
   \node (hdf5) [level2, left=of proj4, xshift=0em] {HDF5};
-  \node (netcdf) [level2, left=of hdf5, xshift=0em] {NetCDF};
+  \node (netcdf) [level2, left=of hdf5, xshift=-1em] {NetCDF};
   \node (pyre) [level2, right=of proj4, xshift=0em] {Pyre};
   \node (numpy) [level2, right=of pyre, xshift=0em] {numpy};
 
@@ -75,9 +78,9 @@
   \path (spatialdata) edge[arrow12] (numpy);
   \path (netcdf) edge[arrow12] (hdf5);
 
-  \path (pylith) edge[arrow02] (hdf5);
+  \path (pylith) edge[arrow02, bend left=15] (hdf5);
   \path (pylith) edge[arrow02, bend right=30] (netcdf);
-  \path (pylith) edge[arrow02] (pyre);
+  \path (pylith) edge[arrow02, bend left=40] (pyre);
 
   % Level 3
   \node (mpi) [level3, below=of proj4, yshift=+1em] {MPI};
@@ -87,7 +90,7 @@
   \path (hdf5) edge[arrow23] (mpi);
 
   \path (petsc) edge[arrow13] (mpi);
-  \path (petsc) edge[arrow13, bend right=25] (blas);
+  \path (petsc) edge[arrow13, bend right=20] (blas);
 
 
 \end{tikzpicture}
