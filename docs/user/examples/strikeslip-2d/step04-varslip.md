@@ -43,6 +43,12 @@ We increase the basis order of the solution subfields to 2 to better resolve the
 We also add output of the solution at fake GPS stations given in the file `gps_stations.txt`.
 You can use the Python script `generate_gpsstations.py` to generate a different random set of stations; the default parameters will generate the provided `gps_stations.txt` file.
 
+:::{figure-md} fig:example:strikeslip:2d:step04:gpsstations
+<img src="figs/step04-gpsstations.*" alt="" scale="75%">
+
+Location of randomly distributed fake GPS stations in `gps_stations.txt`.
+:::
+
 ```{code-block} console
 ---
 caption: Run Step 4 simulation
