@@ -27,7 +27,7 @@ caption: Run Step 3 simulation
 $ pylith step03_gravity_incompressible.cfg
 
 # The output should look something like the following.
- >> /software/baagaard/py38-venv/pylith-debug/lib/python3.8/site-packages/pylith/meshio/MeshIOObj.py:44:read
+ >> /software/unix/py38-venv/pylith-debug/lib/python3.8/site-packages/pylith/meshio/MeshIOObj.py:44:read
  -- meshiopetsc(info)
  -- Reading finite-element mesh
  >> /src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:94:void pylith::meshio::MeshIO::read(pylith::topology::Mesh*)
@@ -64,7 +64,7 @@ pc_fieldsplit_schur_precondition = full
 pc_fieldsplit_type = schur
 pc_type = fieldsplit
 
- >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/TimeDependent.py:139:run
+ >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/meshio/MeshIOObj.py:44:read
  -- timedependent(info)
  -- Solving problem.
 0 TS dt 0.01 time 0.
