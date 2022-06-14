@@ -229,8 +229,10 @@ pylith::feassemble::IntegratorInterface::setKernelsResidual(const std::vector<Re
             default:
                 PYLITH_JOURNAL_LOGICERROR("Unknown integration face ("<<kernelsPatch[i].face<<").");
             } // switch
-            err = PetscWeakFormAddBdResidual(weakForm, key.label, key.value, key.field, key.part,
-                                             kernelsPatch[i].r0, kernelsPatch[i].r1);PYLITH_CHECK_ERROR(err);
+            if (weakForm) {
+                err = PetscWeakFormAddBdResidual(weakForm, key.label, key.value, key.field, key.part,
+                                                 kernelsPatch[i].r0, kernelsPatch[i].r1);PYLITH_CHECK_ERROR(err);
+            } // if
 
             switch (kernelsPatch[i].part) {
             case LHS:
@@ -295,8 +297,10 @@ pylith::feassemble::IntegratorInterface::setKernelsJacobian(const std::vector<Ja
             } // switch
             const PetscInt i_trial = key.field / numFields;
             const PetscInt i_basis = key.field % numFields;
-            err = PetscWeakFormAddBdJacobian(weakForm, key.label, key.value, i_trial, i_basis, key.part,
-                                             kernelsPatch[i].j0, kernelsPatch[i].j1, kernelsPatch[i].j2, kernelsPatch[i].j3);PYLITH_CHECK_ERROR(err);
+            if (weakForm) {
+                err = PetscWeakFormAddBdJacobian(weakForm, key.label, key.value, i_trial, i_basis, key.part,
+                                                 kernelsPatch[i].j0, kernelsPatch[i].j1, kernelsPatch[i].j2, kernelsPatch[i].j3);PYLITH_CHECK_ERROR(err);
+            } // if
 
             switch (kernelsPatch[i].part) {
             case LHS:
