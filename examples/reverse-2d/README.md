@@ -49,7 +49,7 @@ includes earthquake rupture of the main thrust fault.
 
 To run the example:
 ```
-pylith step05_onefault.cfg solver_fault.cfg
+pylith step05_onefault.cfg
 ```
 
 ## Step 6: Earthquake rupture on two faults and linear isotropic linear elasticity
@@ -59,7 +59,7 @@ the main thrust fault and a splay fault.
 
 To run the example:
 ```
-pylith step06_twofaults_elastic.cfg solver_fault.cfg
+pylith step06_twofaults_elastic.cfg
 ```
 
 ## Step 7: Earthquake rupture on two faults and linear isotropic Maxwell viscoelastic rheology
@@ -68,7 +68,7 @@ We replace the linear, isotropic elastic bulk rheology for the slab in Step 6 wi
 
 To run the example:
 ```
-pylith step07_twofaults_maxwell.cfg solver_fault.cfg
+pylith step07_twofaults_maxwell.cfg
 ```
 
 ## Step 8: Earthquake rupture on two faults and linear isotropic powerlaw viscoelastic rheology
@@ -77,5 +77,5 @@ We replace the linear, isotropic Maxwell viscoelastic bulk rheology for the slab
 
 To run the example:
 ```
-pylith step08_twofaults_powerlaw.cfg solver_fault.cfg
+pylith step08_twofaults_powerlaw.cfg
 ```

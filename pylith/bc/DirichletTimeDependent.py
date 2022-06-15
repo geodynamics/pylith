@@ -115,12 +115,10 @@ class DirichletTimeDependent(BoundaryCondition, ModuleDirichletTimeDependent):
                                  (d, self.aliases[-1], spaceDim))
         return
 
-    def _configure(self):
-        """Setup members using inventory.
-        """
+    def _validate(self, context):
         if 0 == len(self.constrainedDOF):
-            raise ValueError("'constrained_dof' must be a zero based integer array of indices corresponding to the "
-                             "constrained degrees of freedom.")
+            raise ValueError(f"No constrained degrees of freedom found for time-dependent Dirichlet boundary condition '{self.aliases[-1]}'. "
+                "'constrained_dof' must be a zero-based integer array (0=x, 1=y, 2=z).")
         if self.inventory.useTimeHistory and isinstance(self.inventory.dbTimeHistory, NullComponent):
             raise ValueError(
                 "Missing time history database for time-dependent Dirichlet boundary condition '%s'." % self.aliases[-1])
@@ -128,6 +126,9 @@ class DirichletTimeDependent(BoundaryCondition, ModuleDirichletTimeDependent):
             self._warning.log(
                 "Ignoring time history database setting for time-dependent Dirichlet boundary condition '%s'." % self.aliases[-1])
 
+    def _configure(self):
+        """Setup members using inventory.
+        """
         BoundaryCondition._configure(self)
         return
 

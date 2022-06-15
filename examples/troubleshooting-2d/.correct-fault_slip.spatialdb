@@ -1,0 +1,31 @@
+// -*- C++ -*- (syntax highlighting)
+//
+// This spatial database specifies the distribution of slip on the
+// main fault surface for Step 6.
+//
+// Slip = 2m reverse if -20km <= y < 0
+// Slip increases linearly from 0 at y=-30km to 2m reverse at y=-20 km
+//
+#SPATIAL.ascii 1
+SimpleDB {
+  num-values = 3
+  value-names = final_slip_left_lateral  final_slip_opening  initiation_time
+  value-units =  m  m  year
+  num-locs = 4
+  data-dim = 1
+  space-dim = 2
+  cs-data = cartesian {
+    to-meters = 1.0e+3
+    space-dim = 2
+  } // cs-data
+} // SimpleDB
+// Columns are
+// (1) x coordinate (km)
+// (2) y coordinate (km)
+// (3) left-lateral slip (m)
+// (4) fault opening (m)
+// (5) slip time relative to origin time (year)
+0.0   99.0     -2.0       0.0   0.0
+0.0  -20.0     -2.0       0.0   0.0
+0.0  -30.0      0.0       0.0   0.0
+0.0  -99.0      0.0       0.0   0.0

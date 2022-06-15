@@ -491,7 +491,7 @@ pylith::materials::_Query::dbToGravityField(PylithScalar valueSubfield[],
         for (size_t i = 0; i < spaceDim; ++i) {
             msg << "  " << valueSubfield[i];
         } // for
-        msg << ".";
+        msg << ").";
     } // if
 
     PYLITH_METHOD_RETURN(msg.str());

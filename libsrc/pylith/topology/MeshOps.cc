@@ -419,8 +419,8 @@ pylith::topology::MeshOps::checkMaterialLabels(const pylith::topology::Mesh& mes
         const int *result = std::find(matBegin, matEnd, matId);
         if (result == matEnd) {
             std::ostringstream msg;
-            msg << "Material id '" << matId << "' for cell '" << c
-                << "' does not match the id of any available materials or interfaces.";
+            msg << "Material label_value '" << matId << "' for cell '" << c
+                << "' does not match the label_value of any materials or interfaces.";
             throw std::runtime_error(msg.str());
         } // if
 
