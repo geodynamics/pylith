@@ -42,6 +42,59 @@ pylith::topology::Distributor::Distributor(void) {}
 // Destructor
 pylith::topology::Distributor::~Distributor(void) {}
 
+// This is a copy of DMPlexDistributeOverlap()
+static PetscErrorCode DMPlexDistributeOverlap_PyLith(DM dm, DM *dmOverlap)
+{
+  MPI_Comm     comm;
+  PetscMPIInt  size, rank;
+  PetscSection rootSection, leafSection;
+  IS           rootrank, leafrank;
+  DM           dmCoord;
+  DMLabel      lblOverlap;
+  PetscSF      sfOverlap, sfStratified, sfPoint;
+  DMLabel      ovLabels[1], ovExLabel;
+  PetscInt     ovValues[1] = {20}, ovExValue = 100;
+
+  PetscCall(PetscObjectGetComm((PetscObject)dm,&comm));
+  PetscCallMPI(MPI_Comm_size(comm, &size));
+  PetscCallMPI(MPI_Comm_rank(comm, &rank));
+  /* Compute point overlap with neighbouring processes on the distributed DM */
+  PetscCall(PetscSectionCreate(comm, &rootSection));
+  PetscCall(PetscSectionCreate(comm, &leafSection));
+  PetscCall(DMPlexDistributeOwnership(dm, rootSection, &rootrank, leafSection, &leafrank));
+  PetscCall(DMGetLabel(dm, "fault", &ovLabels[0]));
+  PetscCall(DMGetLabel(dm, "material-id", &ovExLabel));
+  PetscCall(DMPlexCreateOverlapLabelFromLabels(dm, 1, ovLabels, ovValues, ovExLabel, ovExValue, rootSection, rootrank, leafSection, leafrank, &lblOverlap));
+  /* Convert overlap label to stratified migration SF */
+  PetscCall(DMPlexPartitionLabelCreateSF(dm, lblOverlap, &sfOverlap));
+  PetscCall(DMPlexStratifyMigrationSF(dm, sfOverlap, &sfStratified));
+  PetscCall(PetscSFDestroy(&sfOverlap));
+  sfOverlap = sfStratified;
+  PetscCall(PetscObjectSetName((PetscObject) sfOverlap, "Overlap SF"));
+  PetscCall(PetscSFSetFromOptions(sfOverlap));
+
+  PetscCall(PetscSectionDestroy(&rootSection));
+  PetscCall(PetscSectionDestroy(&leafSection));
+  PetscCall(ISDestroy(&rootrank));
+  PetscCall(ISDestroy(&leafrank));
+
+  /* Build the overlapping DM */
+  PetscCall(DMPlexCreate(comm, dmOverlap));
+  PetscCall(PetscObjectSetName((PetscObject) *dmOverlap, "Parallel Mesh"));
+  PetscCall(DMPlexMigrate(dm, sfOverlap, *dmOverlap));
+  /* Store the overlap in the new DM */
+  PetscCall(DMPlexSetOverlap(*dmOverlap, dm, 1));
+  /* Build the new point SF */
+  PetscCall(DMPlexCreatePointSF(*dmOverlap, sfOverlap, PETSC_FALSE, &sfPoint));
+  PetscCall(DMSetPointSF(*dmOverlap, sfPoint));
+  PetscCall(DMGetCoordinateDM(*dmOverlap, &dmCoord));
+  if (dmCoord) PetscCall(DMSetPointSF(dmCoord, sfPoint));
+  PetscCall(PetscSFDestroy(&sfPoint));
+  /* Cleanup overlap partition */
+  PetscCall(DMLabelDestroy(&lblOverlap));
+  PetscCall(PetscSFDestroy(&sfOverlap));
+  return(0);
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Distribute mesh among processors.
@@ -72,9 +125,11 @@ pylith::topology::Distributor::distribute(topology::Mesh* const newMesh,
              << "Distributing partitioned mesh." << pythia::journal::endl;
     } // if
 
-    PetscDM dmNew = NULL;
-    const PetscInt overlap = 1;
-    err = DMPlexDistribute(origMesh.getDM(), overlap, NULL, &dmNew);PYLITH_CHECK_ERROR(err);
+    PetscDM dmTmp = NULL, dmNew = NULL;
+    const PetscInt overlap = 0;
+    err = DMPlexDistribute(origMesh.getDM(), overlap, NULL, &dmTmp);PYLITH_CHECK_ERROR(err);
+    err = DMPlexDistributeOverlap_PyLith(dmTmp, &dmNew);PYLITH_CHECK_ERROR(err);
+    err = DMDestroy(&dmTmp);PYLITH_CHECK_ERROR(err);
     err = DMPlexDistributeSetDefault(dmNew, PETSC_FALSE);PYLITH_CHECK_ERROR(err);
     newMesh->setDM(dmNew);
 
