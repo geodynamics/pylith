@@ -215,15 +215,15 @@ class PyLithApp(PetscApplication):
         PetscApplication.showHelp(self)
 
         msg = (
-            "\nExamples using step01.cfg in directory examples/3d/hex8):\n"
+            "\nExamples using step01_axialdisp.cfg in directory examples/box-2d):\n"
             "1. List components and properties for a given component (--help)\n"
-            "  pylith step01.cfg --problem.bc.z_neg.help\n"
+            "  pylith step01_axialdisp.cfg --problem.bc.bc_xpos.help\n"
             "\n"
             "2. List components of a given component (--help-components)\n"
-            "  pylith step01.cfg --problem.bc.z_neg.help-components\n"
+            "  pylith step01_axialdisp.cfg --problem.bc.bc_xpos.help-components\n"
             "\n"
             "3. List properties of a given component (--help-properties)\n"
-            "  pylith step01.cfg --problem.bc.z_neg.help-properties\n"
+            "  pylith step01_axialdisp.cfg --problem.bc.bc_xpos.help-properties\n"
         )
         if self.inventory.usage:
             print(msg)
