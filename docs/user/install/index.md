@@ -62,6 +62,27 @@ $ source setup.sh
 Ready to run PyLith.
 ```
 
+:::{tip}
+To bypass macOS quarantine restrictions, simply use command line program `curl` to download the tarball from within a terminal rather than using a web browser.
+
+```
+curl -L -O https://github.com/geodynamics/pylith/releases/download/v3.0.0/pylith-3.0.0-macOS-11.6.6-x86_64.tar.gz
+```
+
+Alternatively, if you do download the tarball using a web browser, after you unpack the tarball you can remove the macOS quarantine flags using the following commands (requires Administrator access):
+
+```
+# Show extended attributes
+xattr ./pylith-3.0.0-macOS-11.6.6-x86_64
+
+# Output should be
+com.apple.quarantine
+
+# Remove quarantine attributes
+sudo xattr -r -d com.apple.quarantine ./pylith-3.0.0-macOS-11.6.6-x86_64
+```
+:::
+
 :::{warning}
 The binary distribution contains PyLith and all of its dependencies.
 If you have any of this software already installed on your system, you need to be careful in setting up your environment so that preexisting software does not conflict with the PyLith binary.
