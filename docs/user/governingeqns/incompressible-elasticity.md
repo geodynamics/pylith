@@ -60,20 +60,20 @@ Using trial functions ${\vec{\psi}_\mathit{trial}^{u}}$ and ${\psi_\mathit{trial
 Identifying $F(t,s,\dot{s})$, we have
 ```{math}
 :label: eqn:incompressible:elasticity:displacement
-\begin{gather}
+\begin{gathered}
 F^u(t,s,\dot{s}) = \int_\Omega {\vec{\psi}_\mathit{trial}^{u}} \cdot{\color{blue}
 \underbrace{\color{black}\vec{f}(t)}_{\color{blue}{f_0^u}}} + \nabla {\vec{\psi}_\mathit{trial}^{u}} :{\color{blue}
 \underbrace{\color{black}\left(-\boldsymbol{\sigma}^\mathit{dev}(\vec{u}) + p\boldsymbol{I}\right)}_{\color{blue}{f_1^u}}}  \, d\Omega
 + \int_{\Gamma_\tau} {\vec{\psi}_\mathit{trial}^{u}} \cdot {\color{blue}\underbrace{\color{black}\vec{\tau}(t)}_{\color{blue}{f_0^u}}} \, d\Gamma, \\
 %
-\end{gather}
+\end{gathered}
 ```
 ```{math}
 :label: eqn:incompressible:elasticity:pressure
-\begin{gather}
+\begin{gathered}
 F^p(t,s,\dot{s}) = \int_\Omega {\psi_\mathit{trial}^{p}} \cdot {\color{blue}\underbrace{\color{black}\left(\vec{\nabla} \cdot \vec{u} +
 \frac{p}{K} \right)}_{\color{blue}{f_0^p}}} \, d\Omega.
-\end{gather}
+\end{gathered}
 ```
 ## Jacobians Pointwise Functions
 

@@ -11,10 +11,10 @@ We start with the equilibrium equation for static elasticity in Cartesian coordi
 %
 ```{math}
 :label: eqn:stress:fn:equilibrium
-\begin{gather}
+\begin{gathered}
 \frac{\partial\sigma_{xx}}{\partial x} + \frac{\partial\sigma_{xy}}{\partial y} + f_x = 0 \\
 \frac{\partial\sigma_{yy}}{\partial y} + \frac{\partial\sigma_{xy}}{\partial x} + f_y = 0,
-\end{gather}
+\end{gathered}
 ```
 %
 where $f_x$ and $f_y$ are the body force components in the $x$ and $y$ directions, respectively.
@@ -28,11 +28,11 @@ We choose an Airy stress function $\phi(x,y)$ to trivially satisfy the equilibri
 %
 ```{math}
 :label: eqn:stress:function:components
-\begin{align}
+\begin{aligned}
 \sigma_{xx} &= \frac{\partial^{2}\phi}{\partial y^{2}} + \psi,\\
 \sigma_{yy} &= \frac{\partial^{2}\phi}{\partial x^{2}} + \psi,\\
 \sigma_{xy} &= -\frac{\partial^{2}\phi}{\partial x\partial y}.
-\end{align}
+\end{aligned}
 ```
 
 We must also satisfy the compatibility equations.

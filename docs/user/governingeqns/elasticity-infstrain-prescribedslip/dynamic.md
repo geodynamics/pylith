@@ -49,7 +49,7 @@ We first focus on the explicit part and select numerical quadrature that yields 
 
 ```{math}
 :label: eqn:dynamic:prescribed:slip:weak:form
-\begin{gather}
+\begin{gathered}
   % Displacement-velocity
   \frac{\partial \vec{u}}{\partial t} = M_u^{-1} \int_{\Omega} \vec{\psi}_\mathit{trial}^u \cdot \vec{v} \, d\Omega, \\
   % Elasticity
@@ -57,7 +57,7 @@ We first focus on the explicit part and select numerical quadrature that yields 
   \qquad\qquad+ M_{v^+}^{-1} \int_{\Gamma_{f}} \vec{\psi}_\mathit{trial}^{v^+} \cdot \left(-\vec{\lambda}(\vec{x},t)\right) \, d\Gamma + M_{v^-}^{-1} \int_{\Gamma_{f}}\vec{\psi}_\mathit{trial}^{v^-} \cdot \left(+\vec{\lambda}(\vec{x},t)\right) \, d\Gamma, \\
   M_u = \mathit{Lump}\left( \int_\Omega \psi_{\mathit{trial}_i}^u \delta_{ij} \psi_{\mathit{basis}_j}^u \, d\Omega \right), \\
   M_v = \mathit{Lump}\left( \int_\Omega \psi_{\mathit{trial}_i}^v \rho(\vec{x}) \delta_{ij} \psi_{\mathit{basis}_j}^v \, d\Omega \right).
-\end{gather}
+\end{gathered}
 ```
 
 For the implicit part, we can separate the integration of the weak form for negative and positive sides of the fault interface, which yields
@@ -69,9 +69,7 @@ Using these equations to substitute in the expressions for the time derivative o
 
 ```{math}
 :label: eqn:elasticity:prescribed:slip:dynamic:DAE:weak:form
-\begin{equation}
   M_{v^+}^{-1} \int_{\Gamma_f^+} \vec{\psi}_\mathit{trial}^\lambda \cdot \left(\boldsymbol{\sigma} \cdot \vec{n} + \vec{\lambda}\right) \, d\Gamma + M_{v^-}^{-1} \int_{\Gamma_f^-} \vec{\psi}_\mathit{trial}^\lambda \cdot \left( -\boldsymbol{\sigma} \cdot \vec{n} + \vec{\lambda} \right) \, d\Gamma + \int_{\Gamma_f} \vec{\psi}_\mathit{trial}^\lambda \cdot \left(-\frac{\partial^2 \vec{d}}{\partial t^2} \right) \, d\Gamma = \vec{0}.
-\end{equation}
 ```
 
 ## Residual Pointwise Functions

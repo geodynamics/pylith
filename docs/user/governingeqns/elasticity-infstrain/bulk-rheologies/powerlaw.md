@@ -32,11 +32,11 @@ In a triaxial experiment with confining pressure $P_{c}$, we have
 %
 ```{math}
 :label: eqn:powerlaw:triax2
-\begin{gather}
+\begin{gathered}
 \sigma_{2} = \sigma_{3} = P_{c} \\
 \sigma_{1} = \sigma_{1}^{app} \\
 P = \frac{\sigma_{1} + 2P_{c}}{3}, \\
-\end{gather}
+\end{gathered}
 ```
 %
 where $\sigma_{1}^{app}$ is the applied load.
@@ -44,20 +44,20 @@ The deviatoric stresses are then:
 %
 ```{math}
 :label: eqn:powerlaw:triax:devstress
-\begin{gather}
+\begin{gathered}
 \sigma_{1}^{dev} = \frac{2}{3} \left(\sigma_{1} - P_{c}\right) \\
 \sigma_{2}^{dev} = \sigma_{3}^{dev} = -\frac{1}{3} \left(\sigma_{1} - P_{c}\right). \\
-\end{gather}
+\end{gathered}
 ```
 %
 This gives
 %
 ```{math}
 :label: eqn:powerlaw:triax:devstress2
-\begin{gather}
+\begin{gathered}
 \sigma_{1}^{dev} = \frac{2}{3} \left(\sigma_{1} - \sigma_{3}\right) = \frac{2}{3} \sigma_{d} \\
 \sigma_{2}^{dev} = \sigma_{3}^{dev} = -\frac{1}{3} \left(\sigma_{1} - \sigma_{3}\right) = -\frac{1}{3} \sigma_{d}. \\
-\end{gather}
+\end{gathered}
 ```
 %
 In terms of the second deviatoric stress invariant, we then have
@@ -71,10 +71,10 @@ Under the assumption that the creep measured in the laboratory experiments is in
 %
 ```{math}
 :label: eqn:powerlaw:triax:strainrate
-\begin{gather}
+\begin{gathered}
 \dot{\epsilon}_{11}^{creepdev} = \dot{\epsilon}_{11} \\
 \dot{\epsilon}_{22}^{creepdev} = \dot{\epsilon}_{33} = -\frac{1}{2}\dot{\epsilon}_{11}. \\
-\end{gather}
+\end{gathered}
 ```
 %
 In terms of the second deviatoric strain rate invariant we then have
@@ -192,12 +192,12 @@ where
 %
 ```{math}
 :label: eqn:powerlaw:effstressfn:variables
-\begin{gather}
+\begin{gathered}
 a = a_{E} + \alpha \Delta t \gamma(\tau), \\
 b = \frac{1}{2} \boldsymbol{\epsilon}^{\prime dev}(t + \Delta t) : \boldsymbol{\epsilon}^{\prime dev}(t + \Delta t) + a_{E} \boldsymbol{\epsilon}^{\prime dev}(t + \Delta t) : \boldsymbol{\sigma}^{refdev} + a_{E}^{2} J_{2}^{\prime ref}, \\
 c = \Delta t(1 - \alpha) \boldsymbol{\epsilon}^{\prime dev}(t + \Delta t) : \boldsymbol{\sigma}^{dev}(t) + \Delta t(1 - \alpha) a_{E} \boldsymbol{\sigma}^{dev}(t) : \boldsymbol{\sigma}^{refdev}, \\
 d = \Delta t (1 - \alpha) \sqrt{J_{2}^{\prime}(t)}. \\
-\end{gather}
+\end{gathered}
 ```
 
 Equation {math:numref}`eqn:powerlaw:effstressfn` is a function of a single unknown -- the square root of the second deviatoric stress invariant at time $t + \Delta t$ -- which we can solve by bisection or by Newton’s method.
@@ -208,10 +208,10 @@ To compute the tangent stress-strain relation, we first rewrite {math:numref}`eq
 %
 ```{math}
 :label: eqn:powerlaw:stress-alpha:function
-\begin{gather}
+\begin{gathered}
 \sigma_{ij}^{dev}(t + \Delta t) \left[a_{E} + \alpha \Delta t \gamma(\tau)\right] - \epsilon_{ij}^{\prime dev}(t + \Delta t) + \sigma_{ij}^{dev}(t)\Delta t \gamma(\tau)(1-\alpha) - a_{E} \sigma_{ij}^{refdev} = 0, \\
 \sigma_{ij}^{dev}(t + \Delta t)G  - \epsilon_{ij}^{\prime dev}(t + \Delta t) + \sigma_{ij}^{dev}(t)H - a_{E} \sigma_{ij}^{refdev} = 0. \\
-\end{gather}
+\end{gathered}
 ```
 %
 Taking derivatives with respect to $\epsilon_{kl}$, we obtain

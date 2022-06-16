@@ -4,9 +4,9 @@ For each fault, which is an internal interface, we add a boundary condition to t
 %
 ```{math}
 :label: eqn:bc:prescribed:slip
-\begin{gather}
+\begin{gathered}
   \vec{u}^+ - \vec{u}^- - \vec{d}(\vec{x},t) = \vec{0} \text{ on }\Gamma_f,
-\end{gather}
+\end{gathered}
 ```
 %
 where $\vec{u}^+$ is the displacement vector on the "positive" side of the fault, $\vec{u}^-$ is the displacement vector on the "negative" side of the fault, $\vec{d}$ is the slip vector on the fault, and $\vec{n}$ is the fault normal which points from the negative side of the fault to the positive side of the fault.

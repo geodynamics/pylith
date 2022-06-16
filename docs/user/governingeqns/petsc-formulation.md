@@ -26,11 +26,11 @@ The LHS Jacobian $J_F = \frac{\partial F}{\partial s} + s_\mathit{tshift} \frac{
 
 ```{math}
 :label: eqn:jacobian:form
-\begin{align}
+\begin{aligned}
   J_F &= \int_\Omega {\vec{\psi}_\mathit{trial}^{}}\cdot \boldsymbol{J}_{f0}(t,s,\dot{s}) \cdot {\vec{\psi}_\mathit{basis}^{}} + {\vec{\psi}_\mathit{trial}^{}}\cdot \boldsymbol{J}_{f1}(t,s,\dot{s}) : \nabla {\vec{\psi}_\mathit{basis}^{}} + \nabla {\vec{\psi}_\mathit{trial}^{}}: \boldsymbol{J}_{f2}(t,s,\dot{s}) \cdot {\vec{\psi}_\mathit{basis}^{}} + \nabla {\vec{\psi}_\mathit{trial}^{}}: \boldsymbol{J}_{f3}(t,s,\dot{s}) : \nabla {\vec{\psi}_\mathit{basis}^{}}\, d\Omega \\
 %
   J_G &= \int_\Omega {\vec{\psi}_\mathit{trial}^{}}\cdot \boldsymbol{J}_{g0}(t,s) \cdot {\vec{\psi}_\mathit{basis}^{}} + {\vec{\psi}_\mathit{trial}^{}}\cdot \boldsymbol{J}_{g1}(t,s) : \nabla {\vec{\psi}_\mathit{basis}^{}} + \nabla {\vec{\psi}_\mathit{trial}^{}}: \boldsymbol{J}_{g2}(t,s) \cdot {\vec{\psi}_\mathit{basis}^{}} + \nabla {\vec{\psi}_\mathit{trial}^{}}: \boldsymbol{J}_{g3}(t,s) : \nabla {\vec{\psi}_\mathit{basis}^{}}\, d\Omega,
-\end{align}
+\end{aligned}
 ```
 
 where ${\vec{\psi}_\mathit{basis}^{}}$ is a basis function.

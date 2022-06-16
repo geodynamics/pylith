@@ -7,11 +7,11 @@ As for our linear viscoelastic models, the viscous volumetric strains are zero (
 %
 ```{math}
 :label: eqn:effstress:stress-strain
-\begin{gather}
+\begin{gathered}
 \boldsymbol{\sigma}^{dev}(t + \Delta t) = 2\mu \left[\boldsymbol{\epsilon}^{dev}(t + \Delta t) - \boldsymbol{\epsilon}^{creepdev}(t + \Delta t) - \boldsymbol{\epsilon}^{refdev}\right] + \boldsymbol{\sigma}^{refdev} \\
 \boldsymbol{\sigma}^{dev}(t + \Delta t) = \frac{1}{a_{E}} \left[\boldsymbol{\epsilon}^{dev}(t + \Delta t) - \boldsymbol{\epsilon}^{creepdev}(t + \Delta t) - \boldsymbol{\epsilon}^{refdev}\right] + \boldsymbol{\sigma}^{refdev} \\
 P(t + \Delta t) = 3K\left[\theta(t + \Delta t) - \theta^{ref}\right] + P^{ref} = \frac{1}{a_{m}}\left[\theta(t + \Delta t) - \theta^{ref}\right] + P^{ref}, \\
-\end{gather}
+\end{gathered}
 ```
 %
 where $\boldsymbol{\epsilon}^{dev}(t + \Delta t)$ is the total deviatoric strain, $\boldsymbol{\epsilon}^{creepdev}(t + \Delta t)$ is the total viscous strain, $\boldsymbol{\epsilon}^{refdev}$ is the reference deviatoric strain, $P(t + \Delta t)$ is the total pressure, $\theta (t + \Delta t)$ is the mean strain evaluated at time $t + \Delta t$ and $\theta^{ref}$ is the reference mean strain.
@@ -27,10 +27,10 @@ where
 %
 ```{math}
 :label: eqn:effstress:devstrain-prime
-\begin{gather}
+\begin{gathered}
 \boldsymbol{\epsilon}^{\prime dev}(t + \Delta t) = \boldsymbol{\epsilon}^{dev}(t + \Delta t) - \boldsymbol{\epsilon}^{creepdev}(t) - \boldsymbol{\epsilon}^{refdev}, \\
 \boldsymbol{\Delta \epsilon}^{creepdev} = \boldsymbol{\epsilon}^{creepdev}(t + \Delta t) - \boldsymbol{\epsilon}^{creepdev}(t). \\
-\end{gather}
+\end{gathered}
 ```
 %
 The creep strain increment is approximated using

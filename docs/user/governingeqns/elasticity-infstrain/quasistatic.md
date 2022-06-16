@@ -5,13 +5,13 @@ Our solution vector is the displacement vector and the elasticity equation reduc
 %
 ```{math}
 :label: eqn:elasticity:strong:form:quasistatic
-\begin{gather}
+\begin{gathered}
 \vec{f}(\vec{x},t) + \boldsymbol{\nabla} \cdot \boldsymbol{\sigma}(\vec{u}) = \vec{0} \text{ in }\Omega, \\
 %
 \boldsymbol{\sigma} \cdot \vec{n} = \vec{\tau}(\vec{x},t) \text{ on }\Gamma_\tau, \\
 %
 \vec{u} = \vec{u}_0(\vec{x},t) \text{ on }\Gamma_u.
-\end{gather}
+\end{gathered}
 ```
 %
 Because we will use implicit time stepping, we place all of the terms in the elasticity equation on the LHS.
@@ -31,14 +31,12 @@ Using the divergence theorem and incorporating the Neumann boundary conditions, 
 
 Identifying $F(t,s,\dot{s})$ and $G(t,s)$, we have
 %
-\begin{equation}
-\begin{aligned}
+\begin{align}
 % Fu
 F^u(t,s,\dot{s}) &=  \int_\Omega {\vec{\psi}_\mathit{trial}^{u}} \cdot{\color{blue}\underbrace{\color{black}\vec{f}(\vec{x},t)}_{\color{blue}{\vec{f}^u_0}}} + \nabla {\vec{\psi}_\mathit{trial}^{u}} :{\color{blue} \underbrace{\color{black}-\boldsymbol{\sigma}(\vec{u})}_{\color{blue}{\boldsymbol{f^u_1}}}} \, d\Omega  + \int_{\Gamma_\tau} {\vec{\psi}_\mathit{trial}^{u}} \cdot {\color{blue}  \underbrace{\color{black}\vec{\tau}(\vec{x},t)}_{\color{blue}{\vec{f}^u_0}}} \, d\Gamma, \\
 % Gu
 G^u(t,s) &= 0
-\end{aligned}
-\end{equation}
+\end{align}
 %
 Note that we have multiple $\vec{f}_0$ functions, each associated with a trial function and an integral over a different domain or boundary.
 Each material and boundary condition (except Dirichlet) contribute pointwise functions.
@@ -52,9 +50,7 @@ We only have a Jacobian for the LHS:
 %
 ```{math}
 :label: eqn:elasticity:quasistatic:jacobian:pointwise
-\begin{equation}
 \begin{aligned}
 J_F^{uu} &= \frac{\partial F^u}{\partial u} = \int_\Omega \nabla {\vec{\psi}_\mathit{trial}^{u}} : \frac{\partial}{\partial u}(-\boldsymbol{\sigma}) \, d\Omega  = \int_\Omega \nabla {\vec{\psi}_\mathit{trial}^{u}} : -\boldsymbol{C} : \frac{1}{2}(\nabla + \nabla^T){\vec{\psi}_\mathit{basis}^{u}}\, d\Omega  = \int_\Omega {\psi_\mathit{trial}^{u}}_{i,k} \, {\color{blue} \underbrace{\color{black}\left( -C_{ikjl} \right)}_{\color{blue}{J_{f3}^{uu}}}} \, {\psi_\mathit{basis}^{u}}_{j,l}\, d\Omega.
 \end{aligned}
-\end{equation}
 ```

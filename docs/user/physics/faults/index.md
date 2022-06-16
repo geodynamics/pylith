@@ -22,7 +22,7 @@ Instead, the user specifies fault parameters in terms of lateral motion, reverse
 :::{figure-md} fig:fault:orientation
 <img src="figs/fault-orientation.*" alt="Orientation of a fault surface in 3D, where $\phi$ denotes the angle of the fault strike, $\delta$ denotes the angle of the fault dip, and $\lambda$ the rake angle." width="600px"/>
 
-Orientation of a fault surface in 3D, where <span class="math inline"><em>&#x3D5;</em></span> denotes the angle of the fault strike, <span class="math inline"><em>&#x3B4;</em></span> denotes the angle of the fault dip, and <span class="math inline"><em>&#x3BB;</em></span> the rake angle.
+Orientation of a fault surface in 3D, where $\phi$ denotes the angle of the fault strike, $\delta$ denotes the angle of the fault dip, and $\lambda$ the rake angle.
 :::
 
 :::{figure-md} fig:fault:slip:motions
