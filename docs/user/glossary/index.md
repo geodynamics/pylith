@@ -40,8 +40,8 @@ dimension
 It can also mean the dimension of the space in which the mesh is embedded, but this is properly called the embedding dimension.
 
 dual space
-: For any vector space $V$ over a field $F$, the dual space $V^*$ is the set of all linear functions $\phi : V \rightarrow F$.
-If $V$ is finite dimensional, then $V^∗$ has the same dimension as $V$.
+: For any vector space $V$ over a field $F$, the dual space $V^{*}$ is the set of all linear functions $\phi : V \rightarrow F$.
+If $V$ is finite dimensional, then $V^{*}$ has the same dimension as $V$.
 See <https://en.wikipedia.org/wiki/Dual_space> and <https://https://finite-element.github.io/L2_fespaces.html>.
 
 face

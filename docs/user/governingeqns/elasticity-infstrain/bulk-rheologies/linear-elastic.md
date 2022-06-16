@@ -23,10 +23,10 @@ The mean stress is
 %
 ```{math}
 :label: eqn:elasticity:meanstress
-\begin{gather}
+\begin{gathered}
 \sigma^{mean} = \frac{1}{3} \sigma_{kk}, \\
 \sigma^{mean} = \frac{1}{3} \sigma_{kk}^{ref} + K\left(\epsilon_{kk} - \epsilon_{kk}^{ref}\right), \\
-\end{gather}
+\end{gathered}
 ```
 %
 where $K = \lambda + 2 \mu/3$ is the bulk modulus.
@@ -40,7 +40,7 @@ If the reference stress and reference strain are both zero, then this reduces to
 The deviatoric stress is
 %
 ```{math}
-\begin{gather}
+\begin{gathered}
 \sigma_{ij}^{dev} = \sigma_{ij} - \sigma^{mean} \delta_{ij}, \\
 \sigma_{ij}^{dev} = \sigma_{ij}^{ref} + \lambda \left(\epsilon_{kk} -
 \epsilon_{kk}^{ref}\right) \delta_{ij} + 2 \mu \left(\epsilon_{ij} -
@@ -48,27 +48,27 @@ The deviatoric stress is
 \left(\lambda + \frac{2}{3}\mu\right)\left(\epsilon_{kk}-
 \epsilon_{kk}^{ref}\right)\right] \delta_{ij}, \\
 \sigma_{ij}^{dev} = \sigma_{ij}^{ref} - \frac{1}{3}\sigma_{kk}^{ref}\delta_{ij} + 2 \mu \left(\epsilon_{ij} - \epsilon_{ij}^{ref}\right) - \frac{2}{3} \mu\left(\epsilon_{kk}- \epsilon_{kk}^{ref}\right) \delta_{ij}. \\
-\end{gather}
+\end{gathered}
 ```
 %
 For isotropic linear elasticity, all components of $C_{ikjl}$ are zero except for:
 %
 ```{math}
 :label: eqn:elasticity:nonzero:cikjl
-\begin{gather}
+\begin{gathered}
 C_{1111} = C_{2222} = C_{3333} = \lambda + 2 \mu, \\
 C_{1122} = C_{1133} = C_{2233} = \lambda, \\
 C_{1212} = C_{2323} = C_{1313} = \mu. \\
-\end{gather}
+\end{gathered}
 ```
 %
 The deviatoric elastic constants are:
 %
 ```{math}
 :label: eqn:elasticity:nonzero:cikjl:deviatoric
-\begin{gather}
+\begin{gathered}
 C_{1111}^{dev} = C_{2222}^{dev} = C_{3333}^{dev} = \frac{4}{3} \mu, \\
 C_{1122}^{dev} = C_{1133}^{dev} = C_{2233}^{dev} = -\frac{2}{3} \mu, \\
 C_{1212}^{dev} = C_{2323}^{dev} = C_{1313}^{dev} = \mu. \\
-\end{gather}
+\end{gathered}
 ```

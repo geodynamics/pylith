@@ -39,10 +39,24 @@ This makes it very easy to create the Python script. Note that we have omitted s
 ## Overriding Default Parameters
 
 We setup the ParaView Python scripts, so that when they are run from the command line in the main directory for a given example, e.g., `examples/3d/subduction`, the script will produce the output discussed in the manual.
-If you start ParaView from the macOS Dock or a similar method, like a shortcut, then you will need to override at least the default values for the output directory.
+
+:::{warning}
+If you start ParaView from the macOS Dock or a similar method, like a shortcut, then you will need to override at least the default value for the output directory.
+:::
 
 In order to override the default values from within the ParaView GUI, simply set the values within the Python shell.
-For example, to set the value of the variable `EXODUS_FILE` to the absolute path of the input file,
+For example, to set the value of the variable `OUTPUT_DIR` to the absolute path of the output files from a simulation,
+
+```{code-block} python
+---
+caption: ParaView Python shell
+---
+# Set OUTPUT_DIR to $HOME/pylith/examples/box-2d/output
+>>> import os
+>>> OUTPUT_DIR = os.path.join(os.environ["HOME", "pylith", "examples", "box-2d", "output"])
+```
+
+To set the value of the variable `EXODUS_FILE` to the absolute path of the input file,
 
 ```{code-block} python
 ---
@@ -52,8 +66,8 @@ caption: ParaView Python shell
 >>> EXODUS_FILE = os.path.join(os.environ["HOME", "pylith", "examples", "subduction-3d", "mesh", "mesh_tet.exo"])
 ```
 
-In this case we use the Python `os` module to get the absolute path of the home directory and append the path to the Exodus file with the appropriate separators for the operating system.
+In these two examples we use the Python `os` module to get the absolute path of the home directory and append the path to the Exodus file with the appropriate separators for the operating system.
 
 :::{important}
-In each of the ParaView Python scripts, the names of the variables and their default values are given by the DEFAULTS dictionary near the top of the file.
+In each of the ParaView Python scripts, the names of the variables and their default values are given by the `DEFAULTS` dictionary near the top of the file.
 :::

@@ -253,9 +253,9 @@ pylith::materials::IncompressibleElasticity::getSolverDefaults(const bool isPara
                 options->add("-fieldsplit_displacement_pc_type", "gamg");
                 options->add("-fieldsplit_displacement_mg_levels_pc_type", "sor");
                 options->add("-fieldsplit_displacement_mg_levels_ksp_type", "richardson");
-                options->add("-fieldsplit_pressure_pc_type", "gamg");
-                options->add("-fieldsplit_pressure_mg_levels_pc_type", "sor");
-                options->add("-fieldsplit_pressure_mg_levels_ksp_type", "richardson");
+                options->add("-fieldsplit_pressure_pc_type", "bjacobi");
+                //options->add("-fieldsplit_pressure_mg_levels_pc_type", "sor");
+                //options->add("-fieldsplit_pressure_mg_levels_ksp_type", "richardson");
             } // if/else
         } // if/else
         break;

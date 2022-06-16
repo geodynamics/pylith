@@ -162,7 +162,7 @@ Figure labels cannot contain more than one dash, so we use colons instead.
 This is likely a bug.
 
 :::{figure-md} fig:quickref:example
-<img src="_static/images/cig_short_nolabel.*" alt="Screenshot"  width="100px"/>
+<img src="../../../_static/images/cig_short_nolabel.*" alt="Screenshot"  width="100px"/>
 
 This is the figure caption. Vector graphics should be provided in **both** PDF (latex output) and SVG (html output) formats.
 Raster graphics should be provided in either PNG or JPG formats (whichever is more compact).
