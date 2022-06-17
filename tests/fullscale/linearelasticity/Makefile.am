@@ -19,6 +19,7 @@ SUBDIRS = \
 	nofaults-2d \
 	nofaults-3d \
 	faults-2d \
+	faults-3d \
 	greensfns-2d
 
 
