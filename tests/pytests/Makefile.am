@@ -81,7 +81,7 @@ dist_noinst_PYTHON = \
 	mpi/__init__.py \
 	mpi/TestCommunicator.py \
 	mpi/TestReduce.py \
-	problems/__init__.py \	
+	problems/__init__.py \
 	problems/TestInitialCondition.py \
 	problems/TestInitialConditionDomain.py \
 	problems/TestInitialConditionPatch.py \
