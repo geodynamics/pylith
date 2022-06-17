@@ -16,10 +16,10 @@ We leverage [PETSc](https://petsc.org) for finite-element data structures and op
 
 ## Other sources of documentation
 
-* PyLith manual [epub](https://pylith.readthedocs.io/_/downloads/en/latest/epub/)
+* This manual in other formats [epub](https://pylith.readthedocs.io/_/downloads/en/latest/epub/) [pdf](https://pylith.readthedocs.io/_/downloads/en/latest/pdf/)
 * [PyLith tutorials](https://geodynamics.org/courses/PyLith)
-* [PyLith installer documentation](https://pylith_installer.readthedocs.io)
 * [SpatialData documentation](https://spatialdata.readthedocs.io)
+* [PyLith installer documentation](https://pylith_installer.readthedocs.io) (for installing from source)
 
 ## PyLith development team
 
