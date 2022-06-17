@@ -23,44 +23,45 @@
  */
 
 namespace pylith {
-  namespace topology {
+    namespace topology {
+        class Distributor
+        { // Distributor
+          // PUBLIC MEMBERS /////////////////////////////////////////////////
+public:
 
-    class Distributor
-    { // Distributor
+            /// Constructor
+            Distributor(void);
 
-      // PUBLIC MEMBERS /////////////////////////////////////////////////
-    public :
+            /// Destructor
+            ~Distributor(void);
 
-      /// Constructor
-      Distributor(void);
-      
-      /// Destructor
-      ~Distributor(void);
-      
-      /** Distribute mesh among processors.
-       *
-       * @param newMesh Distributed mesh (result).
-       * @param origMesh Mesh to distribute.
-   * @param partitionerName Name of PETSc partitioner to use in distributing mesh.
-       */
-      static
-      void distribute(pylith::topology::Mesh* const newMesh,
-		      const pylith::topology::Mesh& origMesh,
-		      const char* partitionerName);
+            /** Distribute mesh among processors.
+             *
+             * @param[out newMesh Distributed mesh (result).
+             * @param[in] origMesh Mesh to distribute.
+             * @param[in] faults Array of fault interfaces.
+             * @param[in] numFaults Number of fault interfaces.
+             * @param[in] partitionerName Name of PETSc partitioner to use in distributing mesh.
+             */
+            static
+            void distribute(pylith::topology::Mesh* const newMesh,
+                            const pylith::topology::Mesh& origMesh,
+                            pylith::faults::FaultCohesive* faults[],
+                            const int numFaults,
+                            const char* partitionerName);
 
-      /** Write partitioning info for distributed mesh.
-       *
-       * @param writer Data writer for partition information.
-       * @param mesh Distributed mesh.
-       */
-      static
-      void write(pylith::meshio::DataWriter* const writer,
-		 const pylith::topology::Mesh& mesh);
+            /** Write partitioning info for distributed mesh.
+             *
+             * @param writer Data writer for partition information.
+             * @param mesh Distributed mesh.
+             */
+            static
+            void write(pylith::meshio::DataWriter* const writer,
+                       const pylith::topology::Mesh& mesh);
 
-    }; // Distributor
+        }; // Distributor
 
-  } // topology
+    } // topology
 } // pylith
 
-
-// End of file 
+// End of file

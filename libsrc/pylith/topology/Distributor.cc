@@ -24,6 +24,7 @@
 #include "pylith/topology/Field.hh" // USES Field<Mesh>
 #include "pylith/topology/Stratum.hh" // USES Stratum
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
+#include "pylith/faults/FaultCohesive.hh" // USES FaultCohesive
 #include "pylith/meshio/DataWriter.hh" // USES DataWriter
 #include "pylith/utils/journals.hh" // pythia::journal
 
@@ -33,74 +34,51 @@
 #include <sstream> // USES std::ostringstream
 #include <cassert> // USES assert()
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
+namespace pylith {
+    namespace topology {
+        class _Distributor {
+public:
+
+            /** Distribute custom overlap based on PETSc labels.
+             *
+             * The overlap excludes cohesive cells but includes cells adjacent to faults.
+             * This is a custom version of DMPlexDistributeOverlap()
+             *
+             * @param[out] dmOverlap PETSc DM for the overlap.
+             * @param[in] dmMesh PETSc DM for the current mesh.
+             * @param[in] faults Array of fault interfaces.
+             * @param[in] numFaults Number of fault interfaces.
+             *
+             * @returns PETSc error code (0==success).
+             */
+            static
+            PetscErrorCode distributeOverlap(PetscDM* dmOverlap,
+                                             PetscDM dmMesh,
+                                             pylith::faults::FaultCohesive* faults[],
+                                             const int numFaults);
+
+        }; // _Distributor
+    } // topology
+} // pylith
+
+// ------------------------------------------------------------------------------------------------
 // Constructor
 pylith::topology::Distributor::Distributor(void) {}
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Destructor
 pylith::topology::Distributor::~Distributor(void) {}
 
-// This is a copy of DMPlexDistributeOverlap()
-static PetscErrorCode DMPlexDistributeOverlap_PyLith(DM dm, DM *dmOverlap)
-{
-  MPI_Comm     comm;
-  PetscMPIInt  size, rank;
-  PetscSection rootSection, leafSection;
-  IS           rootrank, leafrank;
-  DM           dmCoord;
-  DMLabel      lblOverlap;
-  PetscSF      sfOverlap, sfStratified, sfPoint;
-  DMLabel      ovLabels[1], ovExLabel;
-  PetscInt     ovValues[1] = {20}, ovExValue = 100;
 
-  PetscCall(PetscObjectGetComm((PetscObject)dm,&comm));
-  PetscCallMPI(MPI_Comm_size(comm, &size));
-  PetscCallMPI(MPI_Comm_rank(comm, &rank));
-  /* Compute point overlap with neighbouring processes on the distributed DM */
-  PetscCall(PetscSectionCreate(comm, &rootSection));
-  PetscCall(PetscSectionCreate(comm, &leafSection));
-  PetscCall(DMPlexDistributeOwnership(dm, rootSection, &rootrank, leafSection, &leafrank));
-  PetscCall(DMGetLabel(dm, "fault", &ovLabels[0]));
-  PetscCall(DMGetLabel(dm, "material-id", &ovExLabel));
-  PetscCall(DMPlexCreateOverlapLabelFromLabels(dm, 1, ovLabels, ovValues, ovExLabel, ovExValue, rootSection, rootrank, leafSection, leafrank, &lblOverlap));
-  /* Convert overlap label to stratified migration SF */
-  PetscCall(DMPlexPartitionLabelCreateSF(dm, lblOverlap, &sfOverlap));
-  PetscCall(DMPlexStratifyMigrationSF(dm, sfOverlap, &sfStratified));
-  PetscCall(PetscSFDestroy(&sfOverlap));
-  sfOverlap = sfStratified;
-  PetscCall(PetscObjectSetName((PetscObject) sfOverlap, "Overlap SF"));
-  PetscCall(PetscSFSetFromOptions(sfOverlap));
-
-  PetscCall(PetscSectionDestroy(&rootSection));
-  PetscCall(PetscSectionDestroy(&leafSection));
-  PetscCall(ISDestroy(&rootrank));
-  PetscCall(ISDestroy(&leafrank));
-
-  /* Build the overlapping DM */
-  PetscCall(DMPlexCreate(comm, dmOverlap));
-  PetscCall(PetscObjectSetName((PetscObject) *dmOverlap, "Parallel Mesh"));
-  PetscCall(DMPlexMigrate(dm, sfOverlap, *dmOverlap));
-  /* Store the overlap in the new DM */
-  PetscCall(DMPlexSetOverlap(*dmOverlap, dm, 1));
-  /* Build the new point SF */
-  PetscCall(DMPlexCreatePointSF(*dmOverlap, sfOverlap, PETSC_FALSE, &sfPoint));
-  PetscCall(DMSetPointSF(*dmOverlap, sfPoint));
-  PetscCall(DMGetCoordinateDM(*dmOverlap, &dmCoord));
-  if (dmCoord) PetscCall(DMSetPointSF(dmCoord, sfPoint));
-  PetscCall(PetscSFDestroy(&sfPoint));
-  /* Cleanup overlap partition */
-  PetscCall(DMLabelDestroy(&lblOverlap));
-  PetscCall(PetscSFDestroy(&sfOverlap));
-  return(0);
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Distribute mesh among processors.
 void
-pylith::topology::Distributor::distribute(topology::Mesh* const newMesh,
-                                          const topology::Mesh& origMesh,
+pylith::topology::Distributor::distribute(pylith::topology::Mesh* const newMesh,
+                                          const pylith::topology::Mesh& origMesh,
+                                          pylith::faults::FaultCohesive* faults[],
+                                          const int numFaults,
                                           const char* partitionerName) {
     PYLITH_METHOD_BEGIN;
     pythia::journal::info_t info("mesh_distributor");
@@ -128,7 +106,7 @@ pylith::topology::Distributor::distribute(topology::Mesh* const newMesh,
     PetscDM dmTmp = NULL, dmNew = NULL;
     const PetscInt overlap = 0;
     err = DMPlexDistribute(origMesh.getDM(), overlap, NULL, &dmTmp);PYLITH_CHECK_ERROR(err);
-    err = DMPlexDistributeOverlap_PyLith(dmTmp, &dmNew);PYLITH_CHECK_ERROR(err);
+    err = _Distributor::distributeOverlap(&dmNew, dmTmp, faults, numFaults);PYLITH_CHECK_ERROR(err);
     err = DMDestroy(&dmTmp);PYLITH_CHECK_ERROR(err);
     err = DMPlexDistributeSetDefault(dmNew, PETSC_FALSE);PYLITH_CHECK_ERROR(err);
     newMesh->setDM(dmNew);
@@ -137,7 +115,7 @@ pylith::topology::Distributor::distribute(topology::Mesh* const newMesh,
 } // distribute
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Write partitioning info for distributed mesh.
 void
 pylith::topology::Distributor::write(meshio::DataWriter* const writer,
@@ -181,6 +159,94 @@ pylith::topology::Distributor::write(meshio::DataWriter* const writer,
 
     PYLITH_METHOD_END;
 } // write
+
+
+// ------------------------------------------------------------------------------------------------
+// This is a copy of DMPlexDistributeOverlap()
+PetscErrorCode
+pylith::topology::_Distributor::distributeOverlap(PetscDM* dmOverlap,
+                                                  PetscDM dmMesh,
+                                                  pylith::faults::FaultCohesive* faults[],
+                                                  const int numFaults) {
+    PYLITH_METHOD_BEGIN;
+    assert(dmOverlap);
+
+    MPI_Comm comm;
+    PetscMPIInt size, rank;
+    PetscSection rootSection, leafSection;
+    PetscIS rootrank, leafrank;
+    PetscDM dmCoord;
+    PetscDMLabel lblOverlap;
+    PetscSF sfOverlap, sfStratified, sfPoint;
+    PetscErrorCode err;
+
+    if (0 == numFaults) {
+        err = PetscObjectReference((PetscObject)dmMesh);PYLITH_CHECK_ERROR(err);
+        *dmOverlap = dmMesh;
+        PYLITH_METHOD_RETURN(0);
+    } // if
+
+    PetscDMLabel* ovIncludeLabels = (numFaults > 0) ? new PetscDMLabel[numFaults] : NULL;
+    PetscInt* ovIncludeLabelValues = (numFaults > 0) ? new PetscInt[numFaults] : NULL;
+    PetscDMLabel* ovExcludeLabels = (numFaults > 0) ? new PetscDMLabel[numFaults] : NULL;
+    PetscInt* ovExcludeLabelValues = (numFaults > 0) ? new PetscInt[numFaults] : NULL;
+
+    for (int i = 0; i < numFaults; ++i) {
+        const char* surfaceLabelName = faults[i]->getSurfaceLabelName();
+        err = DMGetLabel(dmMesh, surfaceLabelName, &ovIncludeLabels[i]);PYLITH_CHECK_ERROR(err);
+        ovIncludeLabelValues[i] = faults[i]->getSurfaceLabelValue();
+
+        const char* cohesiveLabelName = faults[i]->getCohesiveLabelName();
+        err = DMGetLabel(dmMesh, cohesiveLabelName, &ovExcludeLabels[i]);PYLITH_CHECK_ERROR(err);
+        ovExcludeLabelValues[i] = faults[i]->getCohesiveLabelValue();
+    } // for
+
+    PetscCall(PetscObjectGetComm((PetscObject)dmMesh,&comm));
+    PetscCallMPI(MPI_Comm_size(comm, &size));
+    PetscCallMPI(MPI_Comm_rank(comm, &rank));
+    /* Compute point overlap with neighbouring processes on the distributed DM */
+    PetscCall(PetscSectionCreate(comm, &rootSection));
+    PetscCall(PetscSectionCreate(comm, &leafSection));
+    PetscCall(DMPlexDistributeOwnership(dmMesh, rootSection, &rootrank, leafSection, &leafrank));
+    PetscCall(DMPlexCreateOverlapLabelFromLabels(dmMesh, numFaults, ovIncludeLabels, ovIncludeLabelValues,
+                                                 numFaults, ovExcludeLabels, ovExcludeLabelValues, rootSection, rootrank, leafSection, leafrank, &lblOverlap));
+
+    delete[] ovIncludeLabels;ovIncludeLabels = NULL;
+    delete[] ovIncludeLabelValues;ovIncludeLabelValues = NULL;
+    delete[] ovExcludeLabels;ovExcludeLabels = NULL;
+    delete[] ovExcludeLabelValues;ovExcludeLabelValues = NULL;
+
+    /* Convert overlap label to stratified migration SF */
+    PetscCall(DMPlexPartitionLabelCreateSF(dmMesh, lblOverlap, &sfOverlap));
+    PetscCall(DMPlexStratifyMigrationSF(dmMesh, sfOverlap, &sfStratified));
+    PetscCall(PetscSFDestroy(&sfOverlap));
+    sfOverlap = sfStratified;
+    PetscCall(PetscObjectSetName((PetscObject) sfOverlap, "Overlap SF"));
+    PetscCall(PetscSFSetFromOptions(sfOverlap));
+
+    PetscCall(PetscSectionDestroy(&rootSection));
+    PetscCall(PetscSectionDestroy(&leafSection));
+    PetscCall(ISDestroy(&rootrank));
+    PetscCall(ISDestroy(&leafrank));
+
+    /* Build the overlapping DM */
+    PetscCall(DMPlexCreate(comm, dmOverlap));
+    PetscCall(PetscObjectSetName((PetscObject) *dmOverlap, "Parallel Mesh"));
+    PetscCall(DMPlexMigrate(dmMesh, sfOverlap, *dmOverlap));
+    /* Store the overlap in the new DM */
+    PetscCall(DMPlexSetOverlap(*dmOverlap, dmMesh, 1));
+    /* Build the new point SF */
+    PetscCall(DMPlexCreatePointSF(*dmOverlap, sfOverlap, PETSC_FALSE, &sfPoint));
+    PetscCall(DMSetPointSF(*dmOverlap, sfPoint));
+    PetscCall(DMGetCoordinateDM(*dmOverlap, &dmCoord));
+    if (dmCoord) { PetscCall(DMSetPointSF(dmCoord, sfPoint));}
+    PetscCall(PetscSFDestroy(&sfPoint));
+    /* Cleanup overlap partition */
+    PetscCall(DMLabelDestroy(&lblOverlap));
+    PetscCall(PetscSFDestroy(&sfOverlap));
+
+    PYLITH_METHOD_RETURN(0);
+} // distributeOverlap
 
 
 // End of file

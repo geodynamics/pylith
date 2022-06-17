@@ -50,7 +50,7 @@ class Distributor(PetscComponent, ModuleDistributor):
         """Do minimal initialization."""
         ModuleDistributor.__init__(self)
 
-    def distribute(self, mesh, normalizer):
+    def distribute(self, mesh, problem):
         """Distribute a Mesh
         """
         self._setupLogging()
@@ -63,12 +63,12 @@ class Distributor(PetscComponent, ModuleDistributor):
             partitionerName = "parmetis"
         else:
             partitionerName = self.partitioner
-        ModuleDistributor.distribute(newMesh, mesh, partitionerName)
+        ModuleDistributor.distribute(newMesh, mesh, problem.interfaces.components(), partitionerName)
 
         mesh.cleanup()
 
         if self.writePartition:
-            self.dataWriter.initialize(normalizer)
+            self.dataWriter.initialize(problem.normalizer)
             ModuleDistributor.write(self.dataWriter, newMesh)
 
         self._eventLogger.eventEnd(logEvent)
