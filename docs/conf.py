@@ -19,7 +19,7 @@
 
 project = 'PyLith'
 copyright = '2021-2022, University of California, Davis'
-author = 'Brad T. Aagaard, Matthew Knepley, Charles A. Williams'
+author = 'Brad T. Aagaard, Matthew G. Knepley, Charles A. Williams'
 
 # The full version, including alpha/beta/rc tags
 release = '3.0.0'
@@ -60,6 +60,9 @@ exclude_patterns = [
 #
 html_logo = "_static/images/cig_short_pylith.png"
 html_theme = 'pydata_sphinx_theme'
+html_context = {
+    "default_mode": "light",
+}
 html_theme_options = {
     "collapse_navigation": True,
     "navigation_depth": 3,
@@ -73,6 +76,7 @@ html_theme_options = {
     ],
     "left_sidebar_end": ["sidebar-cig"],
     "navbar_start": ["navbar-logo"],
+    "navbar_end": ["navbar-icon-links"],
     "footer_items": ["last-updated"],
 }
 html_sidebars = {
