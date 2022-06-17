@@ -81,6 +81,9 @@ pylith::feassemble::ConstraintSimple::initialize(const pylith::topology::Field& 
     PetscInt point, cStart, cEnd, clSize;
     err = DMGetLabel(dm, _labelName.c_str(), &label);PYLITH_CHECK_ERROR(err);
     err = DMLabelGetStratumIS(label, _labelValue, &pointIS);PYLITH_CHECK_ERROR(err);
+    if (!pointIS) {
+        PYLITH_METHOD_END;
+    } // if
     err = ISGetIndices(pointIS, &points);PYLITH_CHECK_ERROR(err);
     point = points[0];
     err = ISRestoreIndices(pointIS, &points);PYLITH_CHECK_ERROR(err);

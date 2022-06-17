@@ -336,7 +336,7 @@ pylith::faults::FaultCohesive::createConstraints(const pylith::topology::Field& 
     PetscDMLabel buriedCohesiveLabel = NULL;
     PetscIS pointIS = NULL;
     const PetscInt *points = NULL;
-    PetscInt n;
+    PetscInt numPoints = 0;
     std::ostringstream labelstream;
     labelstream << getBuriedEdgesLabelName() << "_cohesive";
     std::string buriedLabelName = labelstream.str();
@@ -346,9 +346,11 @@ pylith::faults::FaultCohesive::createConstraints(const pylith::topology::Field& 
     err = DMGetLabel(dm, getBuriedEdgesLabelName(), &buriedLabel);PYLITH_CHECK_ERROR(err);
     err = DMGetLabel(dm, buriedLabelName.c_str(), &buriedCohesiveLabel);PYLITH_CHECK_ERROR(err);
     err = DMLabelGetStratumIS(buriedLabel, getBuriedEdgesLabelValue(), &pointIS);PYLITH_CHECK_ERROR(err);
-    err = ISGetLocalSize(pointIS, &n);PYLITH_CHECK_ERROR(err);
-    err = ISGetIndices(pointIS, &points);PYLITH_CHECK_ERROR(err);
-    for (int p = 0; p < n; ++p) {
+    if (pointIS) {
+        err = ISGetLocalSize(pointIS, &numPoints);PYLITH_CHECK_ERROR(err);
+        err = ISGetIndices(pointIS, &points);PYLITH_CHECK_ERROR(err);
+    } // if
+    for (int p = 0; p < numPoints; ++p) {
         const PetscInt *support = NULL;
         PetscInt supportSize;
 
