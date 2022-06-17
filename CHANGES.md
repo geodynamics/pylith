@@ -1,5 +1,19 @@
 See <https://github.com/geodynamics/pylith/commits/main> for the complete log of changes made to PyLith.
 
+## Version 3.0.1
+
+This is a bug fix release with no new features or changes to the user interface.
+
+* Bug fixes
+  * Fix lots of small bugs related to running in parallel
+  * Fix several discrepancies among the code, examples, and manual
+* Examples
+  * Added `examples/troubleshooting-2d` (included in the PyLith v3.0 tutorials but not yet added to the manual)
+* Documentation
+  * Added instructions for how to remove Apple quarantine attributes
+  * Fix LaTeX build of documentation (now available at https://pylith.readthedocs.io)
+  * Improved instructions on how to run ParaView Python scripts when starting ParaView from a shortcut
+
 ## Version 3.0.0
 
 Version 3.0.0 includes major changes to the underlying finite-element formulation and implementation in order to support a more flexible specification of the governing equations and higher order basis functions.
