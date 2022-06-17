@@ -6,9 +6,9 @@ Future implementation of features is guided by several target applications, incl
 * Inversion of geodetic data for slow slip events, fault creep, and long-term fault slip rates.
 * Quasistatic and dynamic modeling of fluids and faulting.
 
-## Version 3.0.1 (June 2022)
+## Version 3.0.2 (July 2022)
 
-Finish updating examples and documentation.
+Updates for examples and documentation along with bugfixes.
 
 ## Version 3.1.0 (October 2022)
 
