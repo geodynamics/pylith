@@ -14,24 +14,23 @@
 # See LICENSE.md.md for license information.
 #
 # ----------------------------------------------------------------------
+"""
+Plot the undeformed domain as a gray wireframe and then the fault
+surfaces, colored by the magnitude of fault slip.
+This Python script runs using pvpython or within the ParaView Python
+shell.
 
-# Plot the undeformed domain as a gray wireframe and then the fault
-# surfaces, colored by the magnitude of fault slip.
-#
-# This Python script runs using pvpython or within the ParaView Python
-# shell.
+User-specified parameters.
+These are used if running from within the ParaView GUI via the
+Python shell or as defaults if running outside the ParaView GUI via
+pvpython.
 
-# User-specified parameters.
-#
-# These are used if running from within the ParaView GUI via the
-# Python shell or as defaults if running outside the ParaView GUI via
-# pvpython.
+Root name for simulation.
+SIM_NAME = "step05_XXXX"
 
-# Root name for simulation.
-SIM_NAME = "step05"
-
-# Names of faults (with spontaneous rupture) for output files.
-FAULTS = ["fault-slabtop"]
+Names of faults (with spontaneous rupture) for output files.
+FAULTS = ["fault_slabtop"]
+"""
 
 # ----------------------------------------------------------------------
 from paraview.simple import *
@@ -103,7 +102,7 @@ def visualize(sim, faults):
 
     # Annotate time
     tstamp = AnnotateTimeFilter(dataDomain)
-    tstamp.Format = 'Time: %2.0f yr'
+    tstamp.Format = 'Time: {time:5.1f} yr'
     tstamp.Scale = 3.168808781402895e-08 # seconds to years
 
     tstampDisplay = Show(tstamp, view)

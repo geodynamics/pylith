@@ -18,13 +18,24 @@
 
 dist_noinst_DATA = \
 	README.md \
-	pylithapp.cfg \
-	greensfns.cfg \
+	cubit_bc.jou \
+	cubit_geometry.jou \
+	cubit_hex.jou \
+	cubit_tet.jou \
+	fault_slabtop_coseismic.spatialdb \
+	fault_slabtop_creep.spatialdb \
+	fault_slabtop_slipweakening.spatialdb \
+	fault_slabtop_tractions.spatialdb \
 	mat_elastic.cfg \
-	mat_elastic_incompressible.cfg \
+	mat_crust_elastic.spatialdb \
+	mat_mantle_elastic.spatialdb \
+	mat_slab_elastic.spatialdb \
+	mat_wedge_elastic.spatialdb \
 	mat_viscoelastic.cfg \
-	solver_algebraicmultigrid.cfg \
-	solver_fieldsplit.cfg \
+	mat_viscosity.spatialdb \
+	mat_elastic_incompressible.cfg \
+	mat_initial_stress_grav.spatialdb \
+	pylithapp.cfg \
 	step01_axialdisp.cfg \
 	step02_coseismic.cfg \
 	step03_interseismic.cfg \
@@ -35,32 +46,13 @@ dist_noinst_DATA = \
 	step08a_gravity_refstate.cfg \
 	step08b_gravity_incompressible.cfg \
 	step08c_gravity_viscoelastic.cfg \
-	cgps_sites.txt \
-	make_synthetic_gpsdisp.cfg \
-	make_synthetic_gpsdisp.py \
-	slip_invert.cfg \
-	slip_invert.py \
-	mesh/bc.jou \
-	mesh/cas_contours_dep.in.txt.gz \
-	mesh/coordsys.py \
-	mesh/generate_surfjou.py \
-	mesh/geometry.jou \
-	mesh/__init__.py \
-	mesh/mesh_hex.jou \
-	mesh/mesh_tet.jou \
-	spatialdb/mat_crust_elastic.spatialdb \
-	spatialdb/mat_mantle_elastic.spatialdb \
-	spatialdb/mat_slab_elastic.spatialdb \
-	spatialdb/mat_wedge_elastic.spatialdb \
-	spatialdb/mat_viscosity.spatialdb \
-	spatialdb/mat_initial_stress_grav.spatialdb \
-	spatialdb/fault_slabtop_coseismic.spatialdb \
-	spatialdb/fault_slabtop_creep.spatialdb \
-	spatialdb/fault_slabtop_slipweakening.spatialdb \
-	spatialdb/fault_slabtop_tractions.spatialdb \
-	spatialdb/generate_initial_stress.py \
-	spatialdb/generate_slowslip.cfg \
-	spatialdb/generate_slowslip.py \
+	cas_contours_dep.in.txt.gz \
+	utils/coordsys.py \
+	utils/generate_initial_stress.py \
+	utils/generate_slowslip.py \
+	utils/generate_surfjou.py \
+	utils/make_synthetic_gpsdisp.py \
+	utils/slip_invert.py \
 	viz/plot_dispvec.py \
 	viz/plot_dispwarp.py \
 	viz/plot_faultdir.py \
@@ -71,7 +63,9 @@ dist_noinst_DATA = \
 	viz/plot_inversion_misfit.py \
 	viz/get_coast.sh \
 	viz/seg2vtk.py \
-	viz/cascadia_tm.vtk
+	viz/cascadia_tm.vtk \
+	input/README.md \
+	scratch/README.md
 
 
 # End of file 

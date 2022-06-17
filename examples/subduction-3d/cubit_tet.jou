@@ -19,7 +19,7 @@
 # ----------------------------------------------------------------------
 # Generate geometry
 # ----------------------------------------------------------------------
-playback 'geometry.jou'
+playback 'cubit_geometry.jou'
 
 # Uniform resolution tetmesh.
 volume all scheme tetmesh
@@ -29,14 +29,15 @@ mesh volume all
 # ----------------------------------------------------------------------
 # Create blocks and nodesets for materials and boundary conditions.
 # ----------------------------------------------------------------------
-playback 'bc.jou'
+playback 'cubit_bc.jou'
 
 
 # ----------------------------------------------------------------------
 # Export exodus file
 # ----------------------------------------------------------------------
-export mesh "mesh_tet.exo" dimension 3 overwrite
+export mesh "input/mesh_tet.exo" dimension 3 overwrite
 
 
 # End of file
+
 

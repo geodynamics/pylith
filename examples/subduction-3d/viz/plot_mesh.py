@@ -14,22 +14,23 @@
 # See LICENSE.md.md for license information.
 #
 # ----------------------------------------------------------------------
+"""
+Plot the domain, colored by materials. Optionally, plot nodesets and
+mesh quality.
 
-# Plot the domain, colored by materials. Optionally, plot nodesets and
-# mesh quality.
-#
-# User-specified parameters.
-#
-# To use different values, overwrite them in the ParaView Python shell
-# or on the command line. For example, set EXODUS_FILE to the absolute
-# path for the Exodus file if not starting ParaView from the terminal
-# shell where you ran PyLith:
-#
-# import os
-# EXODUS_FILE = os.path.join(os.environ["HOME"], "src", "pylith", "examples", "3d", "subduction", "mesh", "mesh_tet.exo")
+User-specified parameters.
+
+To use different values, overwrite them in the ParaView Python shell
+or on the command line. For example, set EXODUS_FILE to the absolute
+path for the Exodus file if not starting ParaView from the terminal
+shell where you ran PyLith:
+
+import os
+EXODUS_FILE = os.path.join(os.environ["HOME"], "src", "pylith", "examples", "subduction-3d", "input", "mesh_tet.exo")
+"""
 
 DEFAULTS = {
-    "EXODUS_FILE": "mesh/mesh_tet.exo",
+    "EXODUS_FILE": "input/mesh_tet.exo",
     "SHOW_NODESETS": True,
     "SHOW_QUALITY": True,
     "QUALITY_METRIC": "Condition",

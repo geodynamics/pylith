@@ -14,28 +14,29 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
+"""
+Plot the undeformed domain as a gray wireframe and then the fault
+surfaces, colored by the magnitude of fault slip.
 
-# Plot the undeformed domain as a gray wireframe and then the fault
-# surfaces, colored by the magnitude of fault slip.
-#
-# This Python script runs using pvpython or within the ParaView Python
-# shell.
+This Python script runs using pvpython or within the ParaView Python
+shell.
 
-# User-specified parameters.
-#
-# Default values for parameters. To use different values, overwrite
-# them in the ParaView Python shell or on the command line. For
-# example, set OUTPUT_DIR to the absolute path if not starting
-# ParaView from the terminal shell where you ran PyLith:
-#
-# import os
-# OUTPUT_DIR = os.path.join(os.environ["HOME"], "src", "pylith", "examples", "2d", "subduction", "output")
+User-specified parameters.
+
+Default values for parameters. To use different values, overwrite
+them in the ParaView Python shell or on the command line. For
+example, set OUTPUT_DIR to the absolute path if not starting
+ParaView from the terminal shell where you ran PyLith:
+
+import os
+OUTPUT_DIR = os.path.join(os.environ["HOME"], "src", "pylith", "examples", "subduction-3d", "output")
+"""
 
 DEFAULTS = {
     "OUTPUT_DIR": "output",
-    "SIM": "step02",
+    "SIM": "step02_coseismic",
     "FIELD": "normal_dir",
-    "FAULTS": ["fault-slab"],
+    "FAULTS": ["fault_slabtop"],
     }
 
 # ----------------------------------------------------------------------

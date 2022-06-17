@@ -40,7 +40,7 @@ reset
 # Import slab surfaces and construct slab.
 # ----------------------------------------------------------------------
 # We name the surface, volume, and body for future reference.
-import Acis "surf_slabtop.sat"
+import Acis "scratch/cubit_surf_slabtop.sat"
 ${idSurf=Id("surface")}
 surface {idSurf} name "s_slabtop"
 ${idVol=Id("volume")}
@@ -48,7 +48,7 @@ volume {idVol} name "v_slabtop"
 ${idBody=Id("body")}
 body {idBody} name "b_slabtop"
 
-import Acis "surf_slabbot.sat"
+import Acis "scratch/cubit_surf_slabbot.sat"
 ${idSurf=Id("surface")}
 surface {idSurf} name "s_slabbot"
 ${idVol=Id("volume")}
@@ -98,7 +98,7 @@ delete surface s_moho
 # ----------------------------------------------------------------------
 # Import splay fault surface and cut the crust volume.
 # ----------------------------------------------------------------------
-import Acis "surf_splay.sat"
+import Acis "scratch/cubit_surf_splay.sat"
 ${idSurf=Id("surface")}
 surface {idSurf} name "s_splay"
 ${idVol=Id("volume")}
