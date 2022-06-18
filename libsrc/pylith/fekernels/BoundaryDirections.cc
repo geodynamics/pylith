@@ -54,7 +54,7 @@ pylith::fekernels::BoundaryDirections::tangential_directions(PylithScalar tanDir
 
     // Choose reference direction 1 unless it nearly coincides with normal direction.
     PylithScalar refDir[dim] = { refDir1[0], refDir1[1], refDir1[2] };
-    if (fabs(refDir[0]*normalDir[0] + refDir[1]*normalDir[1] + refDir[2]*normalDir[2]) > 0.98) {
+    if (fabs(refDir[0]*normalDir[0] + refDir[1]*normalDir[1] + refDir[2]*normalDir[2]) > 0.999) {
         for (int i = 0; i < dim; ++i) {
             refDir[i] = refDir2[i];
         } // for
