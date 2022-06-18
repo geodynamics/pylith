@@ -662,7 +662,13 @@ pylith::problems::TimeDependent::computeLHSJacobian(PetscMat jacobianMat,
 
     _integrationData->setScalar(pylith::feassemble::IntegrationData::dt_jacobian, dt);
 
-    // Solver handles assembly.
+    // Assemble matrices
+    if (jacobianMat != precondMat) {
+        err = MatAssemblyBegin(jacobianMat, MAT_FINAL_ASSEMBLY);
+        err = MatAssemblyEnd(jacobianMat, MAT_FINAL_ASSEMBLY);
+    }
+    err = MatAssemblyBegin(precondMat, MAT_FINAL_ASSEMBLY);
+    err = MatAssemblyEnd(precondMat, MAT_FINAL_ASSEMBLY);
 
     PYLITH_METHOD_END;
 } // computeLHSJacobian
