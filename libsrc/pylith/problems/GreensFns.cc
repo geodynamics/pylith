@@ -467,7 +467,13 @@ pylith::problems::GreensFns::computeJacobian(PetscMat jacobianMat,
         _integrators[i]->computeLHSJacobian(jacobianMat, precondMat, *_integrationData);
     } // for
 
-    // Solver handles assembly.
+    // Assemble matrices
+    if (jacobianMat != precondMat) {
+        err = MatAssemblyBegin(jacobianMat, MAT_FINAL_ASSEMBLY);
+        err = MatAssemblyEnd(jacobianMat, MAT_FINAL_ASSEMBLY);
+    }
+    err = MatAssemblyBegin(precondMat, MAT_FINAL_ASSEMBLY);
+    err = MatAssemblyEnd(precondMat, MAT_FINAL_ASSEMBLY);
 
     PYLITH_METHOD_END;
 } // computeJacobian
