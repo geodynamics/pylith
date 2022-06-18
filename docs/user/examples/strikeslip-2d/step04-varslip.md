@@ -82,7 +82,7 @@ $ pylith step04_varslip.cfg
 ```
 
 The beginning of the output written to the terminal matches that in our previous simulations.
-At the end of the output written to the termial, we see that the solver advanced the solution one time step (static simulation).
+At the end of the output written to the terminal, we see that the solver advanced the solution one time step (static simulation).
 The linear solve converged after 73 iterations and the norm of the residual met the absolute convergence tolerance (`ksp_atol`).
 The nonlinear solve converged in 1 iteration, which we expect because this is a linear problem, and the residual met the absolute convergence tolerance (`snes_atol`).
 

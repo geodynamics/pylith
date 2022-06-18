@@ -108,7 +108,7 @@ ts_type = beuler
 At the beginning of the output written to the terminal, we see that PyLith is reading the mesh using the `MeshIOPetsc` reader and that it found the domain to extend from -600 km to +600 km in the x direction and from -600 km to 0 in the y direction.
 The output also includes the scales used for nondimensionalization and the default PETSc options.
 
-At the end of the output written to the termial, we see that the solver advanced the solution one time step (static simulation).
+At the end of the output written to the terminal, we see that the solver advanced the solution one time step (static simulation).
 The linear solve converged after 85 iterations and the norm of the residual met the absolute convergence tolerance (`ksp_atol`) .
 The nonlinear solve converged in 1 iteration, which we expect because this is a linear problem, and the residual met the absolute convergence tolerance (`snes_atol`).
 

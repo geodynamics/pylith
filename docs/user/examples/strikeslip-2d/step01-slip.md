@@ -121,7 +121,7 @@ At the beginning of the output written to the terminal, we see that PyLith is re
 The scales for nondimensionalization remain the default values for a quasistatic problem.
 PyLith detects the presence of a fault based on the Lagrange multiplier for the fault in the solution field and selects appropriate preconditioning options as discussed in {ref}`sec-user-run-pylith-petsc-options`.
 
-At the end of the output written to the termial, we see that the solver advanced the solution one time step (static simulation).
+At the end of the output written to the terminal, we see that the solver advanced the solution one time step (static simulation).
 The linear solve converged after 35 iterations and the norm of the residual met the absolute convergence tolerance (`ksp_atol`) .
 The nonlinear solve converged in 1 iteration, which we expect because this is a linear problem, and the residual met the absolute convergence tolerance (`snes_atol`).
 
