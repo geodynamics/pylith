@@ -23,6 +23,10 @@ We build on the previous examples and add complexity through a series of steps:
 :Step 2: Quasistatic interseismic deformation with creep on the top and bottom of the slab, except in the zone of coseismic slip.
 :Step 3: Quasistatic earthquake cycle with prescribed coseismic slip and creep.
 
+:::{warning}
+Steps 4-6 have not yet been updated for PyLith v3.
+:::
+
 :::{figure-md} fig:example:subduction:2d:cartoon
 <img src="figs/cartoon.*" alt="Cartoon of subduction zone example." width="75%"/>
 
