@@ -11,7 +11,7 @@ The primary advantage of the ParaView Python scripts is that they make it easy t
 
 There are several different ways to run the ParaView Python scripts:
 
-* Within the ParaView GUI, select `View`&#8594;`Python Shell`.
+* Within the ParaView GUI, select `View`$\rightarrow$`Python Shell`.
 Override the default parameters as desired (which we will discuss later in this section).
 Click on the `Run Script` button, and navigate to the select the script you want to run.
 * From a shell (terminal window) start ParaView from the command line with the `--script=FILENAME` where `FILENAME` is the relative or absolute path to the ParaView Python script.
