@@ -40,6 +40,7 @@
  } // exception
 
 %include "typemaps.i"
+%include "../include/physicsarray.i"
 %include "../include/chararray.i"
 %include "../include/scalartypemaps.i"
 

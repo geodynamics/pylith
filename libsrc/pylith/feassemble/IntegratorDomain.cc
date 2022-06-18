@@ -124,8 +124,10 @@ pylith::feassemble::IntegratorDomain::setKernelsResidual(const std::vector<Resid
     for (size_t i = 0; i < kernels.size(); ++i) {
         const PetscInt i_field = solution.getSubfieldInfo(kernels[i].subfield.c_str()).index;
         const PetscInt i_part = kernels[i].part;
-        err = PetscWeakFormAddResidual(dsLabel.weakForm(), dsLabel.label(), dsLabel.value(), i_field, i_part,
+        if (dsLabel.weakForm()) {
+            err = PetscWeakFormAddResidual(dsLabel.weakForm(), dsLabel.label(), dsLabel.value(), i_field, i_part,
                                        kernels[i].r0, kernels[i].r1);PYLITH_CHECK_ERROR(err);
+        } // if
 
         switch (kernels[i].part) {
         case LHS:
@@ -161,9 +163,10 @@ pylith::feassemble::IntegratorDomain::setKernelsJacobian(const std::vector<Jacob
         const PetscInt i_fieldTrial = solution.getSubfieldInfo(kernels[i].subfieldTrial.c_str()).index;
         const PetscInt i_fieldBasis = solution.getSubfieldInfo(kernels[i].subfieldBasis.c_str()).index;
         const PetscInt i_part = kernels[i].part;
-        err = PetscWeakFormAddJacobian(dsLabel.weakForm(), dsLabel.label(), dsLabel.value(), i_fieldTrial, i_fieldBasis,
-                                       i_part, kernels[i].j0, kernels[i].j1, kernels[i].j2, kernels[i].j3);
-        PYLITH_CHECK_ERROR(err);
+        if (dsLabel.weakForm()) {
+            err = PetscWeakFormAddJacobian(dsLabel.weakForm(), dsLabel.label(), dsLabel.value(), i_fieldTrial, i_fieldBasis,
+                                           i_part, kernels[i].j0, kernels[i].j1, kernels[i].j2, kernels[i].j3);PYLITH_CHECK_ERROR(err);
+        } // if
 
         switch (kernels[i].part) {
         case LHS:
@@ -308,7 +311,7 @@ pylith::feassemble::IntegratorDomain::setInterfaceData(const pylith::topology::F
                 debug << "." << pythia::journal::endl;
             } // JOURNAL DEBUGGING
 
-            for (PetscInt iFace = 0; iFace < faceCount; ++iFace) {
+            for (size_t iFace = 0; iFace < faceCount; ++iFace) {
                 for (PetscInt iPart = 0; iPart < numParts; ++iPart) {
                     const PetscInt part = integrator->getWeakFormPart(parts[iPart], faultFaces[iFace]);
 

@@ -86,11 +86,26 @@ public:
                          const PylithInt tindex,
                          const pylith::topology::Field& solution);
 
+    // PRIVATE METHODS /////////////////////////////////////////////////////////////////////////////////////////////////
+private:
+
+    /** Comparison function for keeping set of observers in order.
+     *
+     * @param[in] a Solution observer a.
+     * @param[in] b Solution observer b.
+     * @returns True if a->index < b->index, False otherwise.
+     */
+    struct _compare {
+        bool operator()(const ObserverSoln* a,
+                        const ObserverSoln* b) const;
+
+    };
+
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
     typedef std::set<pylith::problems::ObserverSoln*>::iterator iterator; ///< Iterator.
-    std::set<pylith::problems::ObserverSoln*> _observers; ///< Subscribers of updates.
+    std::set<pylith::problems::ObserverSoln*, _compare> _observers; ///< Subscribers of updates.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:

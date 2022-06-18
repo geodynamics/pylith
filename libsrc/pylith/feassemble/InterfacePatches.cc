@@ -102,6 +102,7 @@ pylith::feassemble::InterfacePatches::createMaterialPairs(const pylith::faults::
     PylithInt numCohesiveCells = 0;
     const PylithInt* cohesiveCells = NULL;
     err = DMGetStratumIS(dmSoln, cellsLabelName, fault->getCohesiveLabelValue(), &cohesiveCellsIS);PYLITH_CHECK_ERROR(err);
+    if (!cohesiveCellsIS) PYLITH_METHOD_RETURN(patches);
     err = ISGetSize(cohesiveCellsIS, &numCohesiveCells);PYLITH_CHECK_ERROR(err);assert(numCohesiveCells > 0);
     err = ISGetIndices(cohesiveCellsIS, &cohesiveCells);PYLITH_CHECK_ERROR(err);assert(cohesiveCells);
 

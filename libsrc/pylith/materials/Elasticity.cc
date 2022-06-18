@@ -256,8 +256,6 @@ pylith::materials::Elasticity::getSolverDefaults(const bool isParallel,
                 options->add("-pc_type", "lu");
             } else {
                 options->add("-pc_type", "gamg");
-                options->add("-mg_levels_pc_type", "sor");
-                options->add("-mg_levels_ksp_type", "richardson");
             } // if/else
         } else {
             options->add("-pc_type", "fieldsplit");

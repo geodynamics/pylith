@@ -127,8 +127,10 @@ pylith::feassemble::IntegratorBoundary::setKernelsResidual(const std::vector<Res
     for (size_t i = 0; i < kernels.size(); ++i) {
         const PetscInt i_field = solution.getSubfieldInfo(kernels[i].subfield.c_str()).index;
         const PetscInt i_part = kernels[i].part;
-        err = PetscWeakFormAddBdResidual(dsLabel.weakForm(), dsLabel.label(), dsLabel.value(), i_field, i_part,
-                                         kernels[i].r0, kernels[i].r1);PYLITH_CHECK_ERROR(err);
+        if (dsLabel.weakForm()) {
+            err = PetscWeakFormAddBdResidual(dsLabel.weakForm(), dsLabel.label(), dsLabel.value(), i_field, i_part,
+                                             kernels[i].r0, kernels[i].r1);PYLITH_CHECK_ERROR(err);
+        } // if
 
         switch (kernels[i].part) {
         case LHS:
