@@ -157,7 +157,7 @@ step02_slip_velbc.cfg v1.0.0; requires PyLith >=3.0 and <4.0
         Triangular cells, pylith.meshio.MeshIOCubit, pylith.problems.TimeDependent, pylith.materials.Elasticity,
         pylith.materials.IsotropicLinearElasticity, pylith.faults.FaultCohesiveKin, pylith.faults.KinSrcStep, field split
         preconditioner, Schur complement preconditioner, pylith.bc.DirichletTimeDependent, spatialdata.spatialdb.UniformDB,
-        pylith.meshio.OutputSolnBoundary, pylith.meshio.DataWriterHDF5, Quasistatic simulation, spatialdata.spatialdb.SimpleDB
+        pylith.meshio.OutputSolnBoundary, pylith.meshio.DataWriterHDF5, Quasi-static simulation, spatialdata.spatialdb.SimpleDB
     pylith step02_slip_velbc.cfg
 step03_multislip_velbc.cfg v1.0.0; requires PyLith >=3.0 and <4.0
     Coseismic prescribed slip with multiple ruptures and velocity Dirichlet boundary conditions.
@@ -167,7 +167,7 @@ step03_multislip_velbc.cfg v1.0.0; requires PyLith >=3.0 and <4.0
         Triangular cells, pylith.meshio.MeshIOCubit, pylith.problems.TimeDependent, pylith.materials.Elasticity,
         pylith.materials.IsotropicLinearElasticity, pylith.faults.FaultCohesiveKin, pylith.faults.KinSrcStep, field split
         preconditioner, Schur complement preconditioner, pylith.bc.DirichletTimeDependent, spatialdata.spatialdb.UniformDB,
-        pylith.meshio.OutputSolnBoundary, pylith.meshio.DataWriterHDF5, Quasistatic simulation, spatialdata.spatialdb.SimpleDB
+        pylith.meshio.OutputSolnBoundary, pylith.meshio.DataWriterHDF5, Quasi-static simulation, spatialdata.spatialdb.SimpleDB
     pylith step03_multislip_velbc.cfg
 ```
 
@@ -191,7 +191,7 @@ step03_multislip_velbc.cfg
 ---
 caption: Example of running `pylith_cfgsearch` in `examples/strikeslip-2d`, filtering search results to quasistatic simulations.
 ---
-$ pylith_cfgsearch --features="Quasistatic simulation"
+$ pylith_cfgsearch --features="Quasi-static simulation"
 step02_slip_velbc.cfg v1.0.0; requires PyLith >=3.0 and <4.0
     Coseismic prescribed slip with velocity Dirichlet boundary conditions.
     Authors: Brad Aagaard
@@ -200,7 +200,7 @@ step02_slip_velbc.cfg v1.0.0; requires PyLith >=3.0 and <4.0
         Triangular cells, pylith.meshio.MeshIOCubit, pylith.problems.TimeDependent, pylith.materials.Elasticity,
         pylith.materials.IsotropicLinearElasticity, pylith.faults.FaultCohesiveKin, pylith.faults.KinSrcStep, field split
         preconditioner, Schur complement preconditioner, pylith.bc.DirichletTimeDependent, spatialdata.spatialdb.UniformDB,
-        pylith.meshio.OutputSolnBoundary, pylith.meshio.DataWriterHDF5, Quasistatic simulation, spatialdata.spatialdb.SimpleDB
+        pylith.meshio.OutputSolnBoundary, pylith.meshio.DataWriterHDF5, Quasi-static simulation, spatialdata.spatialdb.SimpleDB
     pylith step02_slip_velbc.cfg
 step03_multislip_velbc.cfg v1.0.0; requires PyLith >=3.0 and <4.0
     Coseismic prescribed slip with multiple ruptures and velocity Dirichlet boundary conditions.
@@ -210,7 +210,7 @@ step03_multislip_velbc.cfg v1.0.0; requires PyLith >=3.0 and <4.0
         Triangular cells, pylith.meshio.MeshIOCubit, pylith.problems.TimeDependent, pylith.materials.Elasticity,
         pylith.materials.IsotropicLinearElasticity, pylith.faults.FaultCohesiveKin, pylith.faults.KinSrcStep, field split
         preconditioner, Schur complement preconditioner, pylith.bc.DirichletTimeDependent, spatialdata.spatialdb.UniformDB,
-        pylith.meshio.OutputSolnBoundary, pylith.meshio.DataWriterHDF5, Quasistatic simulation, spatialdata.spatialdb.SimpleDB
+        pylith.meshio.OutputSolnBoundary, pylith.meshio.DataWriterHDF5, Quasi-static simulation, spatialdata.spatialdb.SimpleDB
     pylith step03_multislip_velbc.cfg
 ```
 

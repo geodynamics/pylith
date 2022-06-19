@@ -2,7 +2,7 @@
 
 Future implementation of features is guided by several target applications, including
 
-* Earthquake cycle modeling with quasistatic simulation of interseismic deformation and dynamic simulation of coseismic deformation.
+* Earthquake cycle modeling with quasi-static simulation of interseismic deformation and dynamic simulation of coseismic deformation.
 * Inversion of geodetic data for slow slip events, fault creep, and long-term fault slip rates.
 * Quasistatic and dynamic modeling of fluids and faulting.
 

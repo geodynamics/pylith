@@ -73,7 +73,7 @@ Similar to Step03 but with time-dependent boundary conditions
 consisting of an initial value and a rate of change that is added
 starting at 1.0 year.  Features used in this simulation include:
 
-* Quasistatic simulation
+* Quasi-static simulation
 * Time-dependent Dirichlet boundary conditions
 * Time-dependent Neumann boundary conditions
 * UniformDB and SimpleDB spatial database for specifying values for
