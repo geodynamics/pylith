@@ -14,23 +14,23 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
+"""
+Plot the domain, colored by material properties.
 
-# Plot the domain, colored by material properties.
+User-specified parameters.
 
+Default values for parameters. To use different values, overwrite
+them in the ParaView Python shell or on the command line. For
+example, set OUTPUT_DIR to the absolute path if not starting
+ParaView from the terminal shell where you ran PyLith:
 
-# User-specified parameters.
-#
-# Default values for parameters. To use different values, overwrite
-# them in the ParaView Python shell or on the command line. For
-# example, set OUTPUT_DIR to the absolute path if not starting
-# ParaView from the terminal shell where you ran PyLith:
-#
-# import os
-# OUTPUT_DIR = os.path.join(os.environ["HOME"], "src", "pylith", "examples", "2d", "subduction", "output")
+import os
+OUTPUT_DIR = os.path.join(os.environ["HOME"], "src", "pylith", "examples", "subduction-3d", "output")
+"""
 
 DEFAULTS = {
     "OUTPUT_DIR": "output",
-    "SIM": "step02",
+    "SIM": "step01_axialdisp",
     "FIELD": "mu",
     "MATERIALS": ["crust", "mantle", "wedge", "slab"],
     }

@@ -14,27 +14,27 @@
 # See LICENSE.md.md for license information.
 #
 # ----------------------------------------------------------------------
+"""
+Plot the domain, colored by the magnitude of the displacement
+vector, with white arrows showing the displacement vectors.
 
-# Plot the domain, colored by the magnitude of the displacement
-# vector, with white arrows showing the displacement vectors.
-#
-# This Python script runs using pvpython or within the ParaView Python
-# shell.
+This Python script runs using pvpython or within the ParaView Python
+shell.
 
+User-specified parameters
 
-# User-specified parameters
-#
-# Default values for parameters. To use different values, overwrite
-# them in the ParaView Python shell or on the command line. For
-# example, set OUTPUT_DIR to the absolute path if not starting
-# ParaView from the terminal shell where you ran PyLith:
-#
-# import os
-# OUTPUT_DIR = os.path.join(os.environ["HOME"], "src", "pylith", "examples", "2d", "subduction", "output")
+Default values for parameters. To use different values, overwrite
+them in the ParaView Python shell or on the command line. For
+example, set OUTPUT_DIR to the absolute path if not starting
+ParaView from the terminal shell where you ran PyLith:
+
+import os
+OUTPUT_DIR = os.path.join(os.environ["HOME"], "src", "pylith", "examples", "subduction-3d", "output")
+"""
 
 DEFAULTS = {
     "OUTPUT_DIR": "output",
-    "SIM": "step02",
+    "SIM": "step02_coseismic",
     "VECTOR_SCALE": 10.0e+3,
     "FIELD": "displacement",
     "FIELD_COMPONENT": "Magnitude",
@@ -78,7 +78,7 @@ def visualize(parameters):
     if parameters.field_component.lower() == "magnitude":
         colorbar.Title = "Displacement Mag. (m)"
     else:
-        colorbar.Title = "%s-displacement (m)" % parameters.field_component.lower()
+        colorbar.Title = "%s displacement (m)" % parameters.field_component.lower()
     colorbar.ComponentTitle = ""
 
     # Add arrows to show vectors.
@@ -95,7 +95,7 @@ def visualize(parameters):
 
     # Annotate time
     tstamp = AnnotateTimeFilter(dataDomain)
-    tstamp.Format = 'Time: %2.0f yr'
+    tstamp.Format = 'Time: {time:5.1f} yr'
     tstamp.Scale = 3.168808781402895e-08 # seconds to years
 
     tstampDisplay = Show(tstamp, view)
@@ -150,7 +150,6 @@ if __name__ == "__main__":
 
 else:
     # Running inside the ParaView GUI
-
     visualize(Parameters())
 
     

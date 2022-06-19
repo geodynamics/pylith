@@ -14,27 +14,27 @@
 # See LICENSE.md.md for license information.
 #
 # ----------------------------------------------------------------------
+"""
+Plot the undeformed domain as a gray wireframe and then the deformed
+domain, colored by the value of the x-displacemenet.
 
-# Plot the undeformed domain as a gray wireframe and then the deformed
-# domain, colored by the value of the x-displacemenet.
+User-specified parameters.
 
+Default values for parameters. To use different values, overwrite
+them in the ParaView Python shell or on the command line. For
+example, set OUTPUT_DIR to the absolute path if not starting
+ParaView from the terminal shell where you ran PyLith:
 
-# User-specified parameters.
-#
-# Default values for parameters. To use different values, overwrite
-# them in the ParaView Python shell or on the command line. For
-# example, set OUTPUT_DIR to the absolute path if not starting
-# ParaView from the terminal shell where you ran PyLith:
-#
-# import os
-# OUTPUT_DIR = os.path.join(os.environ["HOME"], "src", "pylith", "examples", "2d", "subduction", "output")
+import os
+OUTPUT_DIR = os.path.join(os.environ["HOME"], "src", "pylith", "examples", "subduction-3d", "output")
+"""
 
 DEFAULTS = {
     "OUTPUT_DIR": "output",
-    "SIM": "step02",
+    "SIM": "step01_axialdisp",
     "WARP_SCALE": 10.0e+3,
     "FIELD": "displacement",
-    "FIELD_COMPONENT": "Magnitude",
+    "FIELD_COMPONENT": "X",
     "TIMESTEP": 0, # Use 0 for first, -1 for last.
     }
 
@@ -85,12 +85,12 @@ def visualize(parameters):
     if parameters.field_component.lower() == "magnitude":
         colorbar.Title = "Displacement Mag. (m)"
     else:
-        colorbar.Title = "%s-displacement (m)" % parameters.field_component.lower()
+        colorbar.Title = "%s displacement (m)" % parameters.field_component.lower()
     colorbar.ComponentTitle = ""
 
     # Annotate time
     tstamp = AnnotateTimeFilter(warp)
-    tstamp.Format = 'Time: %2.0f yr'
+    tstamp.Format = 'Time: {time:5.1f} yr'
     tstamp.Scale = 3.168808781402895e-08 # seconds to years
 
     tstampDisplay = Show(tstamp, view)

@@ -119,7 +119,7 @@ At the beginning of the output written to the terminal, we see that PyLith is re
 The scales for nondimensionalization .
 PyLith detects the use of poroelasticity without a fault and selects appropriate preconditioning options as discussed in {ref}`sec-user-run-pylith-petsc-options`.
 
-At the end of the output written to the termial, we see that the solver advanced the solution 51 time steps.
+At the end of the output written to the terminal, we see that the solver advanced the solution 51 time steps.
 At each time step, the linear converges in 1 iteration and the norm of the residual met the absolute convergence tolerance (`ksp_atol`) .
 The nonlinear solve converged in 1 iteration, which we expect because this is a linear problem, and the residual met the absolute convergence tolerance (`snes_atol`).
 

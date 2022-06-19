@@ -110,7 +110,7 @@ At the beginning of the output written to the terminal, we see that PyLith is re
 The output also shows the scales for nondimensionalization and the PETSc options selected by PyLith.
 This simulation did not use a fault, so PyLith used the LU preconditioner.
 
-At the end of the output written to the termial, we see that the solver advanced the solution one time step (static simulation).
+At the end of the output written to the terminal, we see that the solver advanced the solution one time step (static simulation).
 The linear solve converged after 1 iterations and the norm of the residual met the relative convergence tolerance (`ksp_rtol`) .
 The nonlinear solve converged in 1 iteration, which we expect because this is a linear problem, and the residual met the absolute convergence tolerance (`snes_atol`).
 

@@ -9,9 +9,9 @@
 * spatialdata.spatialdb.UniformDB
 * pylith.meshio.OutputSolnBoundary
 * pylith.meshio.DataWriterHDF5
-* Quasistatic simulation
+* Quasi-static simulation
 * backward Euler time stepping
-* ILU preconditioner
+* LU preconditioner
 * pylith.bc.DirichletTimeDependent
 * pylith.bc.NeumannTimeDependent
 * spatialdata.spatialdb.SimpleDB

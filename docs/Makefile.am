@@ -392,6 +392,34 @@ dist_noinst_DATA = \
     user/examples/subduction-2d/figs/step03-diagram.svg \
     user/examples/subduction-2d/figs/step03-solution.jpg \
     user/examples/subduction-3d/index.md \
+    user/examples/subduction-3d/common-information.md \
+    user/examples/subduction-3d/exercises.md \
+    user/examples/subduction-3d/meshing-cubit.md \
+    user/examples/subduction-3d/step01-axialdisp.md \
+    user/examples/subduction-3d/step02-coseismic.md \
+    user/examples/subduction-3d/step03-interseismic.md \
+    user/examples/subduction-3d/step04-eqcycle.md \
+    user/examples/subduction-3d/figs/cascadia.png \
+    user/examples/subduction-3d/figs/conceptualmodel.png \
+    user/examples/subduction-3d/figs/cubit-geometry-patch.png \
+    user/examples/subduction-3d/figs/cubit-geometry.png \
+    user/examples/subduction-3d/figs/cubit-mesh.jpg \
+    user/examples/subduction-3d/figs/diagrams.tex \
+    user/examples/subduction-3d/figs/generate.sh \
+    user/examples/subduction-3d/figs/step01-diagram.pdf \
+    user/examples/subduction-3d/figs/step01-diagram.svg \
+    user/examples/subduction-3d/figs/step01-solution.jpg \
+    user/examples/subduction-3d/figs/step02-diagram.pdf \
+    user/examples/subduction-3d/figs/step02-diagram.svg \
+    user/examples/subduction-3d/figs/step02-solution.jpg \
+    user/examples/subduction-3d/figs/step03-diagram.pdf \
+    user/examples/subduction-3d/figs/step03-diagram.svg \
+    user/examples/subduction-3d/figs/step03-solution.jpg \
+    user/examples/subduction-3d/figs/step04-diagram.pdf \
+    user/examples/subduction-3d/figs/step04-diagram.svg \
+    user/examples/subduction-3d/figs/step04-solution.jpg \
+    user/examples/subduction-3d/figs/step06-diagram.pdf \
+    user/examples/subduction-3d/figs/step06-diagram.svg \
     user/examples/examples-other.md \
     user/examples/index.md \
     user/examples/paraview-python.md \

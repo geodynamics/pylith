@@ -14,7 +14,7 @@ SimpleDB {
   data-dim = 1 // points on a (vertical) line
   space-dim = 3
   cs-data = geographic {
-    crs-string = +proj=tmerc +datum=WGS84 +lon_0=-122.6765 +lat_0=45.5231 +k=0.9996 +units=km
+    crs-string = +proj=tmerc +datum=WGS84 +lon_0=-122.6765 +lat_0=45.5231 +k=0.9996 +units=km +vunits=km
   } // cs-data
 }
 // Columns are

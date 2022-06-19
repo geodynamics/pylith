@@ -19,7 +19,7 @@
 # ----------------------------------------------------------------------
 # Generate geometry
 # ----------------------------------------------------------------------
-playback 'geometry.jou'
+playback 'cubit_geometry.jou'
 
 # Set paving scheme on +y boundary.
 surface 45 48 39 18 scheme pave
@@ -40,7 +40,7 @@ mesh volume all
 # ----------------------------------------------------------------------
 # Create blocks and nodesets for materials and boundary conditions.
 # ----------------------------------------------------------------------
-playback 'bc.jou'
+playback 'cubit_bc.jou'
 
 
 # ----------------------------------------------------------------------

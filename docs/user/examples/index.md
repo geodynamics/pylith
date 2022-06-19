@@ -13,7 +13,7 @@ In some cases, a later step may make use of output from an earlier step; these c
 
 | **Example Suite**                         | **Difficulty** | **Description** |
 |:------------------------------------------|:------------:|:---------------------------------------------------------------------------------------------|
-| [`box-2d`](box-2d/index.md)               | novice       | Simple axial and shear deformation in static and quasistatic simulations in 2D box with a mesh in an ASCII text file.
+| [`box-2d`](box-2d/index.md)               | novice       | Simple axial and shear deformation in static and quasi-static simulations in 2D box with a mesh in an ASCII text file.
 | [`box-3d`](box-3d/index.md)               | novice       | Same as `2d/box` but with a 3D box and a mesh from Gmsh or Cubit.
 | [`strikeslip-2d`](strikeslip-2d/index.md) | beginner     | Prescribed coseismic slip and multiple earthquake ruptures in 2D with a mesh from Gmsh or Cubit.
 | [`reverse-2d`](reverse-2d/index.md)       | beginner     | Gravity, surface loads, and prescribed coseismic slip on multiple reverse faults in 2D with a mesh from Gmsh or Cubit.

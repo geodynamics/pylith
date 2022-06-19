@@ -14,5 +14,5 @@
 * spatialdata.spatialdb.UniformDB
 * pylith.meshio.OutputSolnBoundary
 * pylith.meshio.DataWriterHDF5
-* Quasistatic simulation
+* Quasi-static simulation
 * spatialdata.spatialdb.SimpleDB

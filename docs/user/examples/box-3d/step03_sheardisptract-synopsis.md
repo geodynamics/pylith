@@ -10,7 +10,7 @@
 * pylith.meshio.OutputSolnBoundary
 * pylith.meshio.DataWriterHDF5
 * Static simulation
-* ILU preconditioner
+* LU preconditioner
 * pylith.bc.DirichletTimeDependent
 * pylith.bc.NeumannTimeDependent
 * spatialdata.spatialdb.SimpleDB

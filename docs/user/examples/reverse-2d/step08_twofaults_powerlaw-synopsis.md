@@ -9,7 +9,7 @@
 * spatialdata.spatialdb.ZeroDB
 * pylith.meshio.OutputSolnBoundary
 * pylith.meshio.DataWriterHDF5
-* Quasistatic simulation
+* Quasi-static simulation
 * pylith.materials.Elasticity
 * pylith.materials.IsotropicPowerLaw
 * pylith.faults.FaultCohesiveKin

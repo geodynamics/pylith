@@ -12,7 +12,7 @@ The settings contained in `pylithapp.cfg` for this problem consist of:
 * `pylithapp.problem` Parameters that define the boundary value problem and it solution, such as the type of solver, solution fields.
 * `pylithapp.problem.materials` Paramters that specify the governing equation and bulk rheologies.
 
-These quasistatic simulations solve the poroelasticity equation, so we have a solution field with  displacement, pressure, and volumetric strain subfields.
+These quasi-static simulations solve the poroelasticity equation, so we have a solution field with  displacement, pressure, and volumetric strain subfields.
 We specify a basis order of 2 for the displacement subfield, and 1 for each of the remaining subfields.
 
 We use the material properties in all of the simulations in this directory, so we specify them in `pylithapp.cfg` to avoid repeating the information in the file with parameters for each simulation.

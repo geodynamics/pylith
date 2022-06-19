@@ -12,7 +12,7 @@ The settings contained in `pylithapp.cfg` for this problem consist of:
 * `pylithapp.problem.materials` Paramters that specify the governing equation and bulk rheologies.
 * `pylithapp.problem.bc` Boundary condition parameters common aomong the simulations in this directory.
 
-These static and quasistatic simulations solve the elasticity equation.
+These static and quasi-static simulations solve the elasticity equation.
 We use the default solution field (displacement); we will override this for the simulations with a fault.
 
 We use the same material properties for several simulations in this directory, so we specify them in `pylithapp.cfg` to avoid repeating the information in the file with parameters for each simulation.
