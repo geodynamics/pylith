@@ -45,7 +45,8 @@ EXTRA_DIST = \
 	announce_v2.1.4.txt \
 	announce_v2.2.0.txt \
 	announce_v2.2.1.txt \
-	announce_v3.0.0.txt
+	announce_v3.0.0.txt \
+	announce_v3.0.1.txt
 
 
 # End of file 
