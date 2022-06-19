@@ -6,6 +6,7 @@ Follow the instructions below the download the necessary files.
 ## Cubit Mesh
 
 ```
-curl -L -O https://github.com/geodynamics/pylith/releases/download/v3.0.1/mesh_tet.exo.gz 
+curl -L -O https://github.com/geodynamics/pylith/releases/download/v3.0.1/examples-subduction-3d-mesh_tet.exo.gz
+mv examples-subduction-3d-mesh_tet.exo.gz mesh_tet.exo.gz 
 gunzip mesh_tet.exo.gz 
 ```
