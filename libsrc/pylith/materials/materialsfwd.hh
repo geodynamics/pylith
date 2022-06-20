@@ -27,8 +27,10 @@
 #if !defined(pylith_materials_materialsfwd_hh)
 #define pylith_materials_materialsfwd_hh
 
-namespace pylith {
-    namespace materials {
+namespace pylith
+{
+    namespace materials
+    {
         // New stuff
         class Material;
 
