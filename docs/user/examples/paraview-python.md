@@ -53,7 +53,7 @@ caption: ParaView Python shell
 ---
 # Set OUTPUT_DIR to $HOME/pylith/examples/box-2d/output
 >>> import os
->>> OUTPUT_DIR = os.path.join(os.environ["HOME", "pylith", "examples", "box-2d", "output"])
+>>> OUTPUT_DIR = os.path.join(os.environ["HOME"], "pylith", "examples", "box-2d", "output")
 ```
 
 To set the value of the variable `EXODUS_FILE` to the absolute path of the input file,
@@ -63,7 +63,7 @@ To set the value of the variable `EXODUS_FILE` to the absolute path of the input
 caption: ParaView Python shell
 ---
 >>> import os
->>> EXODUS_FILE = os.path.join(os.environ["HOME", "pylith", "examples", "subduction-3d", "mesh", "mesh_tet.exo"])
+>>> EXODUS_FILE = os.path.join(os.environ["HOME"], "pylith", "examples", "subduction-3d", "mesh", "mesh_tet.exo")
 ```
 
 In these two examples we use the Python `os` module to get the absolute path of the home directory and append the path to the Exodus file with the appropriate separators for the operating system.
