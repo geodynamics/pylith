@@ -111,6 +111,11 @@ Create a user account and password for the bash environment.
 7. Install the PyLith Linux x86 binary within the bash environment following the instructions for installing the PyLith binary for Linux.
 You will run PyLith within the bash environment just like you would for a Linux operating system.
 
+:::{tip}
+To be able to use Gmsh within the Windows Subsystem for Linux, you can install `libglu1-mesa-dev`.
+This provides the graphics libraries needed by Gmsh.
+:::
+
 ### Extending PyLith or Integrating Other Software Into PyLith
 
 :::{note}
