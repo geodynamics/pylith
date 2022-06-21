@@ -149,6 +149,13 @@ We have only thoroughly tested this interface using Gmsh files.
 The Gmsh file must end in `.msh` for the reader to recognize that it is a Gmsh file.
 :::
 
+:::{tip}
+You can view the mesh quality in Gmsh using `Tools`&#8594;`Statistics`.
+We prefer the condition number quality metric, which Gmsh provides as SICN (signed inverse of the condition number).
+Click on `3D` next to `SICN` to color the cells by mesh quality.
+Click on `Plot` to view the cumulative distribution of the metric over the cells.
+:::
+
 :::{admonition} Pyre User Interface
 :class: seealso
 [`MeshIOPetsc` Component](../components/meshio/MeshIOPetsc.md)
