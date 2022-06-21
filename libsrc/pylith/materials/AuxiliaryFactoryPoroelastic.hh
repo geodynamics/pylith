@@ -24,15 +24,15 @@
 #if !defined(pylith_materials_auxiliaryfactoryporoelastic_hh)
 #define pylith_materials_auxiliaryfactoryporoelastic_hh
 
-#include "materialsfwd.hh" // forward declarations
+#include "materialsfwd.hh"                                    // forward declarations
 #include "pylith/materials/AuxiliaryFactoryPoroelasticity.hh" // ISA AuxiliaryFactoryPoroelasticity
 
-class pylith::materials::AuxiliaryFactoryPoroelastic : public pylith::materials::AuxiliaryFactoryPoroelasticity {
+class pylith::materials::AuxiliaryFactoryPoroelastic : public pylith::materials::AuxiliaryFactoryPoroelasticity
+{
     friend class TestAuxiliaryFactoryPoroelastic; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
-
     /// Default constructor.
     AuxiliaryFactoryPoroelastic(void);
 
@@ -65,9 +65,8 @@ public:
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
-
-    AuxiliaryFactoryPoroelastic(const AuxiliaryFactoryPoroelastic &); ///< Not implemented.
-    const AuxiliaryFactoryPoroelastic& operator=(const AuxiliaryFactoryPoroelastic&); ///< Not implemented
+    AuxiliaryFactoryPoroelastic(const AuxiliaryFactoryPoroelastic &);                  ///< Not implemented.
+    const AuxiliaryFactoryPoroelastic &operator=(const AuxiliaryFactoryPoroelastic &); ///< Not implemented
 
 }; // class AuxiliaryFactoryPoroelastic
 

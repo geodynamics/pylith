@@ -24,16 +24,16 @@
 #if !defined(pylith_materials_auxiliaryfactoryviscoelastic_hh)
 #define pylith_materials_auxiliaryfactoryviscoelastic_hh
 
-#include "materialsfwd.hh" // forward declarations
+#include "materialsfwd.hh"                             // forward declarations
 #include "pylith/materials/AuxiliaryFactoryElastic.hh" // ISA AuxiliaryFactoryElastic
 
 /// @brief C++ helper class for setting up auxiliary fields for materials.
-class pylith::materials::AuxiliaryFactoryViscoelastic : public pylith::materials::AuxiliaryFactoryElastic {
+class pylith::materials::AuxiliaryFactoryViscoelastic : public pylith::materials::AuxiliaryFactoryElastic
+{
     friend class TestAuxiliaryFactoryViscoelastic; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
-
     /// Default constructor.
     AuxiliaryFactoryViscoelastic(void);
 
@@ -72,9 +72,8 @@ public:
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private:
-
-    AuxiliaryFactoryViscoelastic(const AuxiliaryFactoryViscoelastic &); ///< Not implemented.
-    const AuxiliaryFactoryViscoelastic& operator=(const AuxiliaryFactoryViscoelastic&); ///< Not implemented
+    AuxiliaryFactoryViscoelastic(const AuxiliaryFactoryViscoelastic &);                  ///< Not implemented.
+    const AuxiliaryFactoryViscoelastic &operator=(const AuxiliaryFactoryViscoelastic &); ///< Not implemented
 
 }; // class AuxiliaryFactoryViscoelastic
 
