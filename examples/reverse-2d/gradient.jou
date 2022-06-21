@@ -44,7 +44,7 @@ curve c_fault_ext scheme bias fine size {dx} factor {bias_factor} start vertex v
 curve c_yneg size {dxD}
 
 # A to D
-curve c_xpos scheme bias fine size {dxA} coarse size {dxD} start vertex v_top_xpos
+curve c_xpos scheme bias fine size {dxA} coarse size {dxD} start vertex v_ypos_xpos
 
 # C to B
 curve c_xneg_hw scheme bias fine size {dxC} coarse size {dxB} start vertex v_fault_xneg
@@ -60,4 +60,5 @@ surface all sizing function type bias start curve c_fault_upper c_fault_lower c_
 
 
 # End of file
+
 
