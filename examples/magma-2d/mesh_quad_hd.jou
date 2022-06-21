@@ -1,0 +1,35 @@
+# Cubit Journal file for generating mesh with quadrilateral cells.
+#
+# ----------------------------------------------------------------------
+# Generate geometry
+# ----------------------------------------------------------------------
+playback 'geometry.jou'
+
+# ----------------------------------------------------------------------
+# Set discretization size and  scheme,  and then mesh
+# ----------------------------------------------------------------------
+surface all scheme pave
+
+surface reservoir size 100
+mesh surface reservoir
+
+surface domain size 500
+mesh surface domain
+
+# ----------------------------------------------------------------------
+# Smooth mesh to improve quality
+# ----------------------------------------------------------------------
+surface all smooth scheme condition number beta 1.4 cpu 10
+smooth surface all
+
+# ----------------------------------------------------------------------
+# Mark entities for boundary conditions, etc.
+# ----------------------------------------------------------------------
+playback 'bc.jou'
+
+# ----------------------------------------------------------------------
+# Export exodus file
+# ----------------------------------------------------------------------
+export mesh "mesh_quad_hd.exo" dimension 2 overwrite
+
+

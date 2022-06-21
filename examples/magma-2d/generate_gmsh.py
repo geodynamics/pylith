@@ -34,8 +34,8 @@ class App(GenerateMesh):
 
     p4----------------p3
     |                  |
-    |     ________     |
-    |    (__    __)    |
+    |     _p11_p12     |
+    |  p7(__p8 p9_)p10 |
     |       |  |       |
     |       |  |       |
     p1-----p5--p6 ----p2
@@ -43,7 +43,9 @@ class App(GenerateMesh):
     DOMAIN_X = 20.0e+3
     DOMAIN_Y = 20.0e+3
     CONDUIT_WIDTH = 1.0e+3
-    RESERVOIR_HEIGHT = 5.0e+3
+    RESERVOIR_HEIGHT = 5.0e+3  # midpoint of reservoir
+    RESERVOIR_INTERVAL = 1.0e+3
+    RESERVOIR_HALF_LENGTH = 5.0e+3
 
     def __init__(self):
         """Constructor.
@@ -69,6 +71,9 @@ class App(GenerateMesh):
         x1 = -0.5 * lx
         y1 = -0.5 * ly
         cw = self.CONDUIT_WIDTH
+        ri = self.RESERVOIR_INTERVAL
+        rh = self.RESERVOIR_HEIGHT
+        rl2 = self.RESERVOIR_HALF_LENGTH
 
         # Create points.
         p1 = gmsh.model.geo.add_point(x1, y1, 0.0)
@@ -79,6 +84,18 @@ class App(GenerateMesh):
         p5 = gmsh.model.geo.add_point(x1+0.5*lx - cw/2, y1, 0.0)
         p6 = gmsh.model.geo.add_point(x1+0.5*lx + cw/2, y1, 0.0)
 
+        p7 = gmsh.model.geo.add_point(x1+0.5*lx - cw/2, y1 + rh - ri/2, 0.0)
+        p8 = gmsh.model.geo.add_point(x1+0.5*lx + cw/2, y1 + rh - ri/2, 0.0)
+
+        p9 = gmsh.model.geo.add_point(x1+0.5*lx - rl2, y1, 0.0)
+        p10 = gmsh.model.geo.add_point(x1+0.5*lx + rl2, y1, 0.0)        
+
+        p11 = gmsh.model.geo.add_point(x1+0.5*lx - cw/2, y1 + rh + ri/2, 0.0)
+        p12 = gmsh.model.geo.add_point(x1+0.5*lx + cw/2, y1 + rh + ri/2, 0.0)
+
+        # Center of intrusion ellipse
+        p13 = gmsh.model.geo.add_point(x1+0.5*lx, y1 + rh, 0.0)
+
         # Create curves. We store the curve tag as a data member
         # so that we can refer to them later.
         self.c_yneg1 = gmsh.model.geo.add_line(p1, p5)
@@ -88,11 +105,19 @@ class App(GenerateMesh):
         self.c_ypos = gmsh.model.geo.add_line(p3, p4)
         self.c_xneg = gmsh.model.geo.add_line(p4, p1)
 
+        self.c_conduit_left = gmsh.model.geo.add_line(p5,p8)
+        self.c_conduit_right = gmsh.model.geo.add_line(p6,p9)
+        self.c_intrusion_left = gmsh.model.geo.add_ellipse_arc(p8, p13, p7, p11)
+        self.c_intrusion_right = gmsh.model.geo.add_ellipse_arc(p12, p13, p10, p9)
+        self.c_intrusion_top = gmsh.model.add_line(p11,p12)
+
         # Create curve loops and surfaces from the curves.
         # We traverse the curves in a counter clock-wise direction.
         # If the curve is in the opporite direction, we use the negative tag.
-        c0 = gmsh.model.geo.add_curve_loop([self.c_yneg1, self.c_inflow, self.c_yneg2, self.c_xpos, self.c_ypos, self.c_xneg])
+        c0 = gmsh.model.geo.add_curve_loop([self.c_yneg1, self.c_conduit_left, self.c_intrusion_left, self.c_intrusion_top, self.c_intrusion_right, self.c_conduit_right, self.c_yneg2, self.c_xpos, self.c_ypos, self.c_xneg])
         self.s_domain = gmsh.model.geo.add_plane_surface([c0])
+        c1 = gmsh.model.geo.add_curve_loop([self.c_inflow, self.c_conduit_right, self.c_intrusion_right, self.c_intrusion_top, self.c_intrusion_left, self.c_conduit_left])
+        self.s_intrusion = gmsh.model.geo.add_plane_surface([c1])
 
         gmsh.model.geo.synchronize()
 
@@ -142,7 +167,7 @@ class App(GenerateMesh):
 
         # First, we setup a field `field_distance` with the distance from the fault.
         field_distance = gmsh.model.mesh.field.add("Distance")
-        gmsh.model.mesh.field.setNumbers(field_distance, "CurvesList", [self.c_fault])
+        gmsh.model.mesh.field.setNumbers(field_distance, "CurvesList", [self.c1])
 
         # Second, we setup a field `field_size`, which is the mathematical expression
         # for the cell size as a function of the cell size on the fault, the distance from
