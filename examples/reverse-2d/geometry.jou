@@ -82,8 +82,8 @@ split surface  ( at -62990.4 -36367.5 0 ordinal 1 ordered )  across location pos
 surface  ( at -25980.8 -50000 0 ordinal 1 ordered )  name "surface_slab"
 
 # Material on the hanging wall.
-# surface 10 name "surface_plate"
-surface  ( at -72990.4 -36367.5 0 ordinal 1 ordered )  name "surface_plate"
+# surface 10 name "surface_crust"
+surface  ( at -72990.4 -36367.5 0 ordinal 1 ordered )  name "surface_crust"
 
 # Material between faul and splay.
 # surface 11 name "surface_wedge"

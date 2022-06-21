@@ -116,7 +116,7 @@ class App(GenerateMesh):
         c0 = gmsh.model.geo.add_curve_loop([self.c_yneg, self.c_xpos, self.c_ypos_fw, -self.c_fault_u, -self.c_fault_l, -self.c_fault_ext, self.c_xneg_fw])
         self.s_slab = gmsh.model.geo.add_plane_surface([c0])
         c0 = gmsh.model.geo.add_curve_loop([self.c_fault_ext, self.c_fault_l, self.c_splay, self.c_ypos_hw, self.c_xneg_hw])
-        self.s_plate = gmsh.model.geo.add_plane_surface([c0])
+        self.s_crust = gmsh.model.geo.add_plane_surface([c0])
         c0 = gmsh.model.geo.add_curve_loop([self.c_fault_u, self.c_ypos_w, -self.c_splay])
         self.s_wedge = gmsh.model.geo.add_plane_surface([c0])
 
@@ -129,13 +129,13 @@ class App(GenerateMesh):
         This method is abstract in the base class and must be implemented
         in our local App class.
         """
-        # Create three materials (slab, plate, and wedge).
+        # Create three materials (slab, crust, and wedge).
         # We use the `MaterialGroup` data class defined in `gmsh_utils.`
         # The tag argument specifies the integer tag for the physical group.
         # The entities argument specifies the array of surfaces for the material.
         materials = (
             MaterialGroup(tag=1, entities=[self.s_slab]),
-            MaterialGroup(tag=2, entities=[self.s_plate]),
+            MaterialGroup(tag=2, entities=[self.s_crust]),
             MaterialGroup(tag=3, entities=[self.s_wedge]),
         )
         for material in materials:
