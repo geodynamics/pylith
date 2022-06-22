@@ -50,7 +50,7 @@ libpylith_la_SOURCES = \
 	sources/WellboreSource.cc \
 	sources/PointForce.cc \
 	sources/RickerWavelet.cc \
-	sources/GaussianWavelet.cc \	
+	sources/GaussianWavelet.cc \
 	sources/SourceTimeFunctionPointForce.cc \
 	faults/FaultCohesive.cc \
 	faults/FaultCohesiveKin.cc \
@@ -97,7 +97,7 @@ libpylith_la_SOURCES = \
 	fekernels/FaultCohesiveKin.cc \
 	fekernels/WellboreSource.cc \
 	fekernels/RickerWavelet.cc \
-	fekernels/GaussianWavelet.cc \	
+	fekernels/GaussianWavelet.cc \
 	materials/Material.cc \
 	materials/Elasticity.cc \
 	materials/RheologyElasticity.cc \
