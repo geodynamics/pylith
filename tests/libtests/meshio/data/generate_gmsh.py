@@ -43,13 +43,16 @@ def get_material_ids(cells):
     cell_indices = []
     min_tag = numpy.uint64(-1)
     for dim, tag in physical_groups:
-        entities = gmsh.model.mesh.get_elements(dim, tag)
-        cell_indices.append(entities[1][0])
-        min_tag = min(numpy.min(entities[1][0]), min_tag)
-    for indices in cell_indices:
-        indices -= min_tag
+        group_entities = gmsh.model.get_entities_for_physical_group(dim, tag)
+        indices_tag = []
+        for group_entity in group_entities:
+            entities = gmsh.model.mesh.get_elements(dim, group_entity)
+            indices_tag += entities[1][0].tolist()
+            min_tag = min(numpy.min(entities[1][0]), min_tag)
+        cell_indices.append(indices_tag)
     material_ids = numpy.zeros(cells.shape[0], dtype=numpy.uint64)
     for (dim, tag), indices in zip(physical_groups, cell_indices):
+        indices -= min_tag
         material_ids[indices] = tag
     return material_ids
 
@@ -163,10 +166,10 @@ class GenerateApp(ABC):
 
     def write(self):
         gmsh.option.setNumber("Mesh.Binary", 0)
-        gmsh.write(f"{self.cell}_ascii.msh")
+        gmsh.write(f"{self.geometry}_{self.cell}_ascii.msh")
 
         gmsh.option.setNumber("Mesh.Binary", 1)
-        gmsh.write(f"{self.cell}_binary.msh")
+        gmsh.write(f"{self.geometry}_{self.cell}_binary.msh")
 
     def print_mesh(self):
         write_mesh(writer=WriterCxx())
@@ -177,7 +180,7 @@ class GenerateApp(ABC):
         gmsh.finalize()
 
 
-class Generate2D(GenerateApp):
+class GenerateBox2D(GenerateApp):
     """
     v5----v4----v3
     |      |     |
@@ -191,6 +194,7 @@ class Generate2D(GenerateApp):
 
     def __init__(self, cell="tri", dump_mesh=False, gui=False):
         super().__init__(cell, dump_mesh, gui)
+        self.geometry = "box"
 
     def create_geometry(self):
 
@@ -224,8 +228,8 @@ class Generate2D(GenerateApp):
 
     def mark(self):
         materials = (
-            MaterialGroup(tag=1, entities=[self.s_xneg]),
-            MaterialGroup(tag=2, entities=[self.s_xpos]),
+            MaterialGroup(tag=1, entities=[self.s_xpos]),
+            MaterialGroup(tag=2, entities=[self.s_xneg]),
         )
         for material in materials:
             material.create_physical_group()
@@ -235,6 +239,7 @@ class Generate2D(GenerateApp):
             VertexGroup(name="boundary_xpos", tag=11, dim=1, entities=[self.l_xpos]),
             VertexGroup(name="boundary_yneg", tag=12, dim=1, entities=[self.l_yneg0, self.l_yneg1]),
             VertexGroup(name="boundary_ypos", tag=13, dim=1, entities=[self.l_ypos0, self.l_ypos1]),
+            VertexGroup(name="boundary_xneg2", tag=15, dim=1, entities=[self.l_xneg]),
             VertexGroup(name="fault", tag=20, dim=1, entities=[self.l_fault]),
             VertexGroup(name="fault_end", tag=21, dim=0, entities=[self.p_fault_end]),
         )
@@ -253,13 +258,14 @@ class Generate2D(GenerateApp):
         gmsh.model.mesh.generate(2)
 
 
-class Generate3D(GenerateApp):
+class GenerateBox3D(GenerateApp):
 
     DOMAIN_X = DOMAIN_Y = DOMAIN_Z = 8.0e+3
     DX = 4.0e+3
 
     def __init__(self, cell="tet", dump_mesh=False, gui=False):
         super().__init__(cell, dump_mesh, gui)
+        self.geometry = "box"
 
     def create_geometry(self):
 
@@ -326,13 +332,16 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser()
+    parser.add_argument("--geometry", action="store", dest="geometry", required=True, choices=["box-2d","layer-2d","box-3d"])
     parser.add_argument("--cell", action="store", dest="cell", required=True, choices=["tri","quad","hex","tet"])
     parser.add_argument("--dump-mesh", action="store_true", dest="dump_mesh")
     parser.add_argument("--gui", action="store_true", dest="gui")
     args = parser.parse_args()
 
-    if args.cell in ["tri", "quad"]:
-        app = Generate2D
-    elif args.cell in ["tet", "hex"]:
-        app = Generate3D
+    if args.geometry == "box-2d":
+        app = GenerateBox2D
+    elif args.geometry == "layer-2d":
+        app = GenerateLayer2D
+    elif args.geometry == "box-3d":
+        app = GenerateBox3D
     app(args.cell, args.dump_mesh, args.gui).main()
