@@ -90,6 +90,19 @@ class SimulationMetadata(Component):
             trait = self.inventory.getTrait("pylith_version")
             self._validationError(context, trait, "List of PyLith version constraints required.")
 
+        from pylith.utils.utils import PylithVersion
+        version = PylithVersion.version()
+        major, minor, patch = version.split(".")
+        ok = True
+        for constraint in self.pylith_version:
+            if not eval(f"{major}.{minor} {constraint}"):
+                ok = False
+                break
+        if not ok:
+            trait = self.inventory.getTrait("pylith_version")
+            self._validationError(context, trait, f"Installed PyLith version {version} does not meet"
+            f" version constraints {self.pylith_version}.")
+
     def _validationError(self, context, trait, msg):
         from pythia.pyre.inventory.Item import Item
         error = ValueError(msg)
