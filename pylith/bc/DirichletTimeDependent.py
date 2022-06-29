@@ -117,14 +117,22 @@ class DirichletTimeDependent(BoundaryCondition, ModuleDirichletTimeDependent):
 
     def _validate(self, context):
         if 0 == len(self.constrainedDOF):
-            raise ValueError(f"No constrained degrees of freedom found for time-dependent Dirichlet boundary condition '{self.aliases[-1]}'. "
+            trait = self.inventory.getTrait("constrained_dof")
+            self._validationError(context, trait, f"No constrained degrees of freedom found for time-dependent Dirichlet boundary condition '{self.aliases[-1]}'. "
                 "'constrained_dof' must be a zero-based integer array (0=x, 1=y, 2=z).")
         if self.inventory.useTimeHistory and isinstance(self.inventory.dbTimeHistory, NullComponent):
-            raise ValueError(
-                "Missing time history database for time-dependent Dirichlet boundary condition '%s'." % self.aliases[-1])
+            trait = self.inventory.getTrait("time_history")
+            self._validationError(context, trait,
+                f"Missing time history database for time-dependent Dirichlet boundary condition '{self.aliases[-1]}'.")
         if not self.inventory.useTimeHistory and not isinstance(self.inventory.dbTimeHistory, NullComponent):
             self._warning.log(
-                "Ignoring time history database setting for time-dependent Dirichlet boundary condition '%s'." % self.aliases[-1])
+                f"Time history for time-dependent Dirichlet boundary condition '{self.aliases[-1]}' not enabled. Ignoring provided time history database.")
+
+    def _validationError(self, context, trait, msg):
+        from pythia.pyre.inventory.Item import Item
+        error = ValueError(msg)
+        descriptor = self.getTraitDescriptor(trait.name)
+        context.error(error, items=[Item(trait, descriptor)])
 
     def _configure(self):
         """Setup members using inventory.

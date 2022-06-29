@@ -125,7 +125,7 @@ class PowerLawApp(Application):
 
         if self.refSelection == "stress":
             refStress[:] = self.refStress.value
-            refStrainRate = self.refStress.value**n / At
+            refStrainRate = self.refStress.value**n * At
         elif self.refSelection == "strain_rate":
             refStrainRate[:] = self.refStrainRate.value
             refStress = (self.refStrainRate.value / At)**(1.0 / n)
