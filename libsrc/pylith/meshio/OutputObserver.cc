@@ -41,8 +41,7 @@ pylith::meshio::OutputObserver::OutputObserver(void) :
     _timeScale(1.0),
     _writer(NULL),
     _trigger(NULL),
-    _outputBasisOrder(1)
-{}
+    _outputBasisOrder(1) {}
 
 
 // ------------------------------------------------------------------------------------------------
@@ -145,7 +144,7 @@ pylith::meshio::OutputObserver::_getSubfield(const pylith::topology::Field& fiel
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_getSubfield(field="<<field.getLabel()<<", name="<<name<<", submesh="<<typeid(submesh).name()<<")");
 
-    if (_subfields.count(name) == 0) {
+    if (0 == _subfields.count(name) ) {
         _subfields[name] = OutputSubfield::create(field, submesh, name, _outputBasisOrder);
     } // if
 

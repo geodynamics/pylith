@@ -58,30 +58,6 @@ public:
      */
     const char* getSubfieldName(void) const;
 
-    /** Set name of label marking boundary associated with boundary condition surface.
-     *
-     * @param[in] value Name of label for surface (from mesh generator).
-     */
-    void setLabelName(const char* value);
-
-    /** Get name of label marking boundary associated with boundary condition surface.
-     *
-     * @returns Name of label for surface (from mesh generator).
-     */
-    const char* getLabelName(void) const;
-
-    /** Set value of label marking boundary associated with boundary condition surface.
-     *
-     * @param[in] value Value of label for surface (from mesh generator).
-     */
-    void setLabelValue(const int value);
-
-    /** Get value of label marking boundary associated with boundary condition surface.
-     *
-     * @returns Value of label for surface (from mesh generator).
-     */
-    int getLabelValue(void) const;
-
     /** Set first choice for reference direction to discriminate among tangential directions in 3-D.
      *
      * @param vec Reference direction unit vector.
@@ -107,8 +83,6 @@ protected:
     PylithReal _refDir1[3]; ///< First choice reference direction used to compute boundary tangential directions.
     PylithReal _refDir2[3]; ///< Second choice reference direction used to compute boundary tangential directions.
     std::string _subfieldName; ///< Name of solution subfield for boundary condition.
-    std::string _labelName; ///< Name of label to identify boundary condition points in mesh.
-    int _labelValue; ///< Value of label to identify boundary condition points in mesh.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:

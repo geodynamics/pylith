@@ -39,8 +39,7 @@ pylith::feassemble::PhysicsImplementation::PhysicsImplementation(pylith::problem
     _auxiliaryField(NULL),
     _derivedField(NULL),
     _observers(NULL),
-    _logger(NULL)
-{}
+    _logger(NULL) {}
 
 
 // ------------------------------------------------------------------------------------------------
@@ -63,6 +62,24 @@ pylith::feassemble::PhysicsImplementation::deallocate(void) {
 
     PYLITH_METHOD_END;
 } // deallocate
+
+
+// ------------------------------------------------------------------------------------------------
+// Get name of label marking material.
+const char*
+pylith::feassemble::PhysicsImplementation::getPhysicsLabelName(void) const {
+    assert(_physics);
+    return _physics->getLabelName();
+} // getPhysicaLabelName
+
+
+// ------------------------------------------------------------------------------------------------
+// Get value of label marking material.
+int
+pylith::feassemble::PhysicsImplementation::getPhysicsLabelValue(void) const {
+    assert(_physics);
+    return _physics->getLabelValue();
+} // getPhysicsLabelValue
 
 
 // ------------------------------------------------------------------------------------------------

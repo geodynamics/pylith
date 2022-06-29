@@ -229,10 +229,8 @@ private:
     // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
 private:
 
-    std::string _cohesiveLabelName; ///< Name of label for cohesive cells.
     std::string _surfaceLabelName; ///< Name of label identifying points associated with fault.
     std::string _buriedEdgesLabelName; ///< Name of label identifying buried edges of fault.
-    int _cohesiveLabelValue; ///< Value of label for cohesive cells.
     int _surfaceLabelValue; ///< Value of label identifying points associated with fault.
     int _buriedEdgesLabelValue; ///< Value of label identifying buried edges of fault.
 

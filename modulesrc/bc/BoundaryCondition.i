@@ -49,30 +49,6 @@ public:
              */
             const char* getSubfieldName(void) const;
 
-            /** Set name of label marking boundary associated with boundary condition surface.
-             *
-             * @param[in] value Name of label for surface (from mesh generator).
-             */
-            void setLabelName(const char* value);
-
-            /** Get name of label marking boundary associated with boundary condition surface.
-             *
-             * @returns Name of label for surface (from mesh generator).
-             */
-            const char* getLabelName(void) const;
-
-            /** Set value of label marking boundary associated with boundary condition surface.
-             *
-             * @param[in] value Value of label for surface (from mesh generator).
-             */
-            void setLabelValue(const int value);
-
-            /** Get value of label marking boundary associated with boundary condition surface.
-             *
-             * @returns Value of label for surface (from mesh generator).
-             */
-            int getLabelValue(void) const;
-
             /** Set first choice for reference direction to discriminate among tangential directions in 3-D.
              *
              * @param vec Reference direction unit vector.

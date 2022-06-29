@@ -41,12 +41,12 @@
 // ------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::faults::FaultCohesive::FaultCohesive(void) :
-    _cohesiveLabelName(pylith::topology::Mesh::cells_label_name),
     _surfaceLabelName(""),
     _buriedEdgesLabelName(""),
-    _cohesiveLabelValue(100),
     _surfaceLabelValue(1),
     _buriedEdgesLabelValue(1) {
+    setLabelValue(100);
+
     _refDir1[0] = 0.0;
     _refDir1[1] = 0.0;
     _refDir1[2] = 1.0;
@@ -82,11 +82,7 @@ void
 pylith::faults::FaultCohesive::setCohesiveLabelName(const char* value) {
     PYLITH_COMPONENT_DEBUG("setCohesiveLabelName(value="<<value<<")");
 
-    if (strlen(value) == 0) {
-        throw std::runtime_error("Empty string given for name of label for cohesive cells.");
-    } // if
-
-    _cohesiveLabelName = value;
+    setLabelName(value);
 }
 
 
@@ -94,7 +90,7 @@ pylith::faults::FaultCohesive::setCohesiveLabelName(const char* value) {
 // Get name of label identifying cohesive cells.
 const char*
 pylith::faults::FaultCohesive::getCohesiveLabelName(void) const {
-    return _cohesiveLabelName.c_str();
+    return getLabelName();
 }
 
 
@@ -102,7 +98,7 @@ pylith::faults::FaultCohesive::getCohesiveLabelName(void) const {
 // Set value of label identifying cohesive cells.
 void
 pylith::faults::FaultCohesive::setCohesiveLabelValue(const int value) {
-    _cohesiveLabelValue = value;
+    setLabelValue(value);
 }
 
 
@@ -110,7 +106,7 @@ pylith::faults::FaultCohesive::setCohesiveLabelValue(const int value) {
 // Get value of label identifying cohesive cells.
 int
 pylith::faults::FaultCohesive::getCohesiveLabelValue(void) const {
-    return _cohesiveLabelValue;
+    return getLabelValue();
 }
 
 
@@ -265,7 +261,7 @@ pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh) {
                 throw std::runtime_error(msg.str());
             } // if
         } // if
-        TopologyOps::create(mesh, faultMesh, buriedEdgesLabel, _buriedEdgesLabelValue, _cohesiveLabelValue);
+        TopologyOps::create(mesh, faultMesh, buriedEdgesLabel, _buriedEdgesLabelValue, getCohesiveLabelValue());
 
         // Check consistency of mesh.
         pylith::topology::MeshOps::checkTopology(*mesh);

@@ -60,6 +60,18 @@ public:
     virtual
     const pylith::topology::Mesh& getPhysicsDomainMesh(void) const = 0;
 
+    /** Get name of label marking material.
+     *
+     * @returns Name of label for material (from mesh generator).
+     */
+    const char* getPhysicsLabelName(void) const;
+
+    /** Get value of label marking material.
+     *
+     * @returns Value of label for material (from mesh generator).
+     */
+    int getPhysicsLabelValue(void) const;
+
     /** Get auxiliary field.
      *
      * @returns field Field over boundary.

@@ -29,9 +29,7 @@
 // Default constructor.
 pylith::materials::Material::Material(void) :
     _gravityField(NULL),
-    _description(""),
-    _labelName("material-id"),
-    _labelValue(1) {}
+    _description("") {}
 
 
 // ------------------------------------------------------------------------------------------------
@@ -71,44 +69,6 @@ const char*
 pylith::materials::Material::getDescription(void) const {
     return _description.c_str();
 } // getDescription
-
-
-// ------------------------------------------------------------------------------------------------
-// Set name of label marking material.
-void
-pylith::materials::Material::setLabelName(const char* value) {
-    PYLITH_COMPONENT_DEBUG("setLabelName(value="<<value<<")");
-
-    if (strlen(value) == 0) {
-        throw std::runtime_error("Empty string given for material label.");
-    } // if
-
-    _labelName = value;
-} // setLabelName
-
-
-// ------------------------------------------------------------------------------------------------
-// Get name of label marking material.
-const char*
-pylith::materials::Material::getLabelName(void) const {
-    return _labelName.c_str();
-} // getLabelName
-
-
-// ------------------------------------------------------------------------------------------------
-// Set value of label marking material.
-void
-pylith::materials::Material::setLabelValue(const int value) {
-    _labelValue = value;
-} // setLabelValue
-
-
-// ------------------------------------------------------------------------------------------------
-// Get value of label marking material.
-int
-pylith::materials::Material::getLabelValue(void) const {
-    return _labelValue;
-} // getLabelValue
 
 
 // ------------------------------------------------------------------------------------------------

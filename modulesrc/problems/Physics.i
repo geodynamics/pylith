@@ -23,7 +23,7 @@
 
 namespace pylith {
     namespace problems {
-        class Physics : public pylith::utils::PyreComponent {
+        class Physics: public pylith::utils::PyreComponent {
             // PUBLIC ENUM
             // /////////////////////////////////////////////////////////////////////////////////////////////////////
 public:
@@ -46,6 +46,30 @@ public:
             /// Deallocate PETSc and local data structures.
             virtual
             void deallocate(void);
+
+            /** Set name of label marking material.
+             *
+             * @param[in] value Name of label for material (from mesh generator).
+             */
+            void setLabelName(const char* value);
+
+            /** Get name of label marking material.
+             *
+             * @returns Name of label for material (from mesh generator).
+             */
+            const char* getLabelName(void) const;
+
+            /** Set value of label marking material.
+             *
+             * @param[in] value Value of label for material (from mesh generator).
+             */
+            void setLabelValue(const int value);
+
+            /** Get value of label marking material.
+             *
+             * @returns Value of label for material (from mesh generator).
+             */
+            int getLabelValue(void) const;
 
             /** Set manager of scales used to nondimensionalize problem.
              *
@@ -157,7 +181,7 @@ public:
              * @returns Constraint if applicable, otherwise NULL.
              */
             virtual
-            std::vector<pylith::feassemble::Constraint*> createConstraints(const pylith::topology::Field& solution) = 0;
+            std::vector < pylith::feassemble::Constraint* > createConstraints(const pylith::topology::Field& solution) = 0;
 
             /** Create auxiliary field.
              *

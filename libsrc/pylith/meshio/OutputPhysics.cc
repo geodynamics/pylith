@@ -334,17 +334,22 @@ pylith::meshio::OutputPhysics::_writeDataStep(const PylithReal t,
 
     PetscVec solutionVector = solution.getOutputVector();assert(solutionVector);
 
+    const char* labelName = _physics->getPhysicsLabelName();
+    const int labelValue = _physics->getPhysicsLabelValue();
+
     const size_t numDataFields = dataNames.size();
     for (size_t i = 0; i < numDataFields; i++) {
         OutputSubfield* subfield = NULL;
         if (solution.hasSubfield(dataNames[i].c_str())) {
             subfield = OutputObserver::_getSubfield(solution, domainMesh, dataNames[i].c_str());assert(subfield);
-            subfield->project(solutionVector);
+            subfield->setLabel(labelName, labelValue);
+            subfield->projectWithLabel(solutionVector);
         } else if (auxiliaryField && auxiliaryField->hasSubfield(dataNames[i].c_str())) {
             subfield = OutputObserver::_getSubfield(*auxiliaryField, domainMesh, dataNames[i].c_str());assert(subfield);
             subfield->project(auxiliaryVector);
         } else if (derivedField && derivedField->hasSubfield(dataNames[i].c_str())) {
             subfield = OutputObserver::_getSubfield(*derivedField, domainMesh, dataNames[i].c_str());assert(subfield);
+            subfield->setLabel(labelName, labelValue);
             subfield->project(derivedVector);
         } else {
             std::ostringstream msg;
