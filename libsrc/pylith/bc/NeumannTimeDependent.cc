@@ -192,7 +192,7 @@ pylith::bc::NeumannTimeDependent::setScaleName(const char* value) {
         _scaleName = value;
     } else {
         std::ostringstream msg;
-        msg << "Unknown name of scale ("<<value<<") for Neumann boundary condition '" << _labelName << "'.";
+        msg << "Unknown name of scale ("<<value<<") for Neumann boundary condition '" << getLabelName() << "'.";
         throw std::runtime_error(msg.str());
     } // if
 } // setScaleName
@@ -254,7 +254,7 @@ pylith::bc::NeumannTimeDependent::createAuxiliaryField(const pylith::topology::F
         description.scale = _normalizer->getDensityScale();
     } else {
         std::ostringstream msg;
-        msg << "Unknown name of scale ("<<_scaleName<<") for Neumann boundary condition for '" << _labelName << "'.";
+        msg << "Unknown name of scale ("<<_scaleName<<") for Neumann boundary condition for '" << getLabelName() << "'.";
         PYLITH_COMPONENT_ERROR(msg.str());
         throw std::logic_error(msg.str());
     } // if/else

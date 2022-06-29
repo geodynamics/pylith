@@ -52,30 +52,6 @@ public:
              */
             const char* getDescription(void) const;
 
-            /** Set name of label marking material.
-             *
-             * @param[in] value Name of label for material (from mesh generator).
-             */
-            void setLabelName(const char* value);
-
-            /** Get name of label marking material.
-             *
-             * @returns Name of label for material (from mesh generator).
-             */
-            const char* getLabelName(void) const;
-
-            /** Set value of label marking material.
-             *
-             * @param[in] value Value of label for material (from mesh generator).
-             */
-            void setLabelValue(const int value);
-
-            /** Get value of label marking material.
-             *
-             * @returns Value of label for material (from mesh generator).
-             */
-            int getLabelValue(void) const;
-
             /** Set gravity field.
              *
              * @param g Gravity field.

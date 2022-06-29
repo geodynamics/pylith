@@ -38,7 +38,7 @@
 class pylith::problems::Physics : public pylith::utils::PyreComponent {
     friend class TestPhysics; // unit testing
 
-    // PUBLIC ENUM /////////////////////////////////////////////////////////////////////////////////////////////////////
+    // PUBLIC ENUM ////////////////////////////////////////////////////////////////////////////////
 public:
 
     enum FormulationEnum {
@@ -47,7 +47,7 @@ public:
         DYNAMIC_IMEX, // With inertia; implicit+explicit time stepping).
     }; // FormulationEnum
 
-    // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
+    // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Constructor
@@ -59,6 +59,30 @@ public:
     /// Deallocate PETSc and local data structures.
     virtual
     void deallocate(void);
+
+    /** Set name of label marking material.
+     *
+     * @param[in] value Name of label for material (from mesh generator).
+     */
+    void setLabelName(const char* value);
+
+    /** Get name of label marking material.
+     *
+     * @returns Name of label for material (from mesh generator).
+     */
+    const char* getLabelName(void) const;
+
+    /** Set value of label marking material.
+     *
+     * @param[in] value Value of label for material (from mesh generator).
+     */
+    void setLabelValue(const int value);
+
+    /** Get value of label marking material.
+     *
+     * @returns Value of label for material (from mesh generator).
+     */
+    int getLabelValue(void) const;
 
     /** Set manager of scales used to nondimensionalize problem.
      *
@@ -203,7 +227,7 @@ public:
     void updateAuxiliaryField(pylith::topology::Field* auxiliaryField,
                               const double t);
 
-    // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
+    // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
 protected:
 
     /** Get auxiliary factory associated with physics.
@@ -227,19 +251,21 @@ protected:
     virtual
     void _updateKernelConstants(const PylithReal dt);
 
-    // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
+    // PROTECTED MEMBERS //////////////////////////////////////////////////////////////////////////
 protected:
 
     spatialdata::units::Nondimensional* _normalizer; ///< Nondimensionalizer.
     FormulationEnum _formulation; ///< Formulation for equations.
     pylith::real_array _kernelConstants; ///< Constants used in finite-element kernels (point-wise functions).
 
-    // PRIVATE MEMBERS //////////////////////////////////////////////////////
+    // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
 private:
 
+    std::string _labelName; ///< Name of label in mesh for material.
+    int _labelValue; ///< Value of label in mesh for material.
     pylith::problems::ObserversPhysics* _observers; ///< Subscribers of updates.
 
-    // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
+    // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
 private:
 
     Physics(const Physics&); ///< Not implemented.
