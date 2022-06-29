@@ -215,6 +215,8 @@ pylith::meshio::OutputPhysics::_writeInfo(void) {
 
     const bool isInfo = true;
     const pylith::topology::Mesh& domainMesh = _physics->getPhysicsDomainMesh();
+    const char* labelName = _physics->getPhysicsLabelName();
+    const int labelValue = _physics->getPhysicsLabelValue();
     _open(domainMesh, isInfo);
     _openDataStep(0.0, domainMesh);
 
@@ -225,7 +227,7 @@ pylith::meshio::OutputPhysics::_writeInfo(void) {
     for (size_t i = 0; i < numInfoFields; i++) {
         if (auxiliaryField->hasSubfield(infoNames[i].c_str())) {
             OutputSubfield* subfield = _getSubfield(*auxiliaryField, domainMesh, infoNames[i].c_str());
-            subfield->project(auxiliaryVector);
+            subfield->project(auxiliaryVector, labelName, labelValue);
             _appendField(0.0, *subfield);
         } else {
             std::ostringstream msg;
@@ -334,18 +336,21 @@ pylith::meshio::OutputPhysics::_writeDataStep(const PylithReal t,
 
     PetscVec solutionVector = solution.getOutputVector();assert(solutionVector);
 
+    const char* labelName = _physics->getPhysicsLabelName();
+    const int labelValue = _physics->getPhysicsLabelValue();
+
     const size_t numDataFields = dataNames.size();
     for (size_t i = 0; i < numDataFields; i++) {
         OutputSubfield* subfield = NULL;
         if (solution.hasSubfield(dataNames[i].c_str())) {
             subfield = OutputObserver::_getSubfield(solution, domainMesh, dataNames[i].c_str());assert(subfield);
-            subfield->project(solutionVector);
+            subfield->project(solutionVector, labelName, labelValue);
         } else if (auxiliaryField && auxiliaryField->hasSubfield(dataNames[i].c_str())) {
             subfield = OutputObserver::_getSubfield(*auxiliaryField, domainMesh, dataNames[i].c_str());assert(subfield);
-            subfield->project(auxiliaryVector);
+            subfield->project(auxiliaryVector, labelName, labelValue);
         } else if (derivedField && derivedField->hasSubfield(dataNames[i].c_str())) {
             subfield = OutputObserver::_getSubfield(*derivedField, domainMesh, dataNames[i].c_str());assert(subfield);
-            subfield->project(derivedVector);
+            subfield->project(derivedVector, labelName, labelValue);
         } else {
             std::ostringstream msg;
             msg << "Internal Error: Could not find subfield '" << dataNames[i] << "' for data output.";

@@ -102,6 +102,16 @@ public:
      */
     void project(const PetscVec& fieldVector);
 
+    /** Project PETSc vector to subfield.
+     *
+     * @param[in] fieldVector PETSc vector with subfields.
+     * @param[in] labelName Name of PETSc label associated with output domain.
+     * @param[in] labelValue Value of PETSc label associated with output domain.
+     */
+    void project(const PetscVec& fieldVector,
+                 const char* labelName,
+                 const int labelValue);
+
     /** Extract subfield from field.
      *
      * @pre DM must match for field and subfield.
