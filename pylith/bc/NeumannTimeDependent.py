@@ -133,16 +133,24 @@ class NeumannTimeDependent(BoundaryCondition, ModuleNeumannTimeDependent):
             ModuleNeumannTimeDependent.setTimeHistoryDB(self, self.dbTimeHistory)
         return
 
+    def _validate(self, context):
+        if self.inventory.useTimeHistory and isinstance(self.inventory.dbTimeHistory, NullComponent):
+            trait = self.inventory.getTrait("time_history")
+            self._validationError(context, trait,
+                f"Missing time history database for time-dependent Neumann boundary condition '{self.aliases[-1]}'.")
+        if not self.inventory.useTimeHistory and not isinstance(self.inventory.dbTimeHistory, NullComponent):
+            self._warning.log(
+                f"Time history for time-dependent Neumann boundary condition '{self.aliases[-1]}' not enabled. Ignoring provided time history database.")
+
+    def _validationError(self, context, trait, msg):
+        from pythia.pyre.inventory.Item import Item
+        error = ValueError(msg)
+        descriptor = self.getTraitDescriptor(trait.name)
+        context.error(error, items=[Item(trait, descriptor)])
+
     def _configure(self):
         """Setup members using inventory.
         """
-        if self.inventory.useTimeHistory and isinstance(self.inventory.dbTimeHistory, NullComponent):
-            raise ValueError(
-                "Missing time history database for time-dependent Neumann boundary condition '%s'." % self.aliases[-1])
-        if not self.inventory.useTimeHistory and not isinstance(self.inventory.dbTimeHistory, NullComponent):
-            self._warning.log(
-                "Ignoring time history database setting for time-dependent Neumann boundary condition '%s'." % self.aliases[-1])
-
         BoundaryCondition._configure(self)
         return
 
