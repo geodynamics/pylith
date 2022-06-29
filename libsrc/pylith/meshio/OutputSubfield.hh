@@ -72,6 +72,14 @@ public:
     /// Deallocate PETSc and local data structures.
     void deallocate(void);
 
+    /** Set label name and value.
+     *
+     * @param[in] name Name of PETSc label associated with subfield.
+     * @param[in] value Value of PETSc label associated with subfield.
+     */
+    void setLabel(const char* name,
+                  const int value);
+
     /** Get description of subfield.
      *
      * @returns Description of subfield.
@@ -102,15 +110,11 @@ public:
      */
     void project(const PetscVec& fieldVector);
 
-    /** Project PETSc vector to subfield.
+    /** Project PETSc vector to subfield using label.
      *
      * @param[in] fieldVector PETSc vector with subfields.
-     * @param[in] labelName Name of PETSc label associated with output domain.
-     * @param[in] labelValue Value of PETSc label associated with output domain.
      */
-    void project(const PetscVec& fieldVector,
-                 const char* labelName,
-                 const int labelValue);
+    void projectWithLabel(const PetscVec& fieldVector);
 
     /** Extract subfield from field.
      *
@@ -137,6 +141,9 @@ protected:
     PetscVec _vector; ///< PETSc global vector for subfield.
     PetscPointFunc _fn; ///< PETSc point function for projection.
     PetscInt _subfieldIndex; ///< Index of subfield in fields.
+
+    PetscDMLabel _label; ///< PETSc label associated with subfield.
+    PetscInt _labelValue; ///< Value of PETSc label associated with subfield.
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
 private:

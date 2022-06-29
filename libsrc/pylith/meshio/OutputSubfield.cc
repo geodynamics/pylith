@@ -35,7 +35,9 @@
 pylith::meshio::OutputSubfield::OutputSubfield(void) :
     _dm(NULL),
     _vector(NULL),
-    _fn(pylith::fekernels::Solution::passThruSubfield) {}
+    _fn(pylith::fekernels::Solution::passThruSubfield),
+    _label(NULL),
+    _labelValue(0) {}
 
 
 // ------------------------------------------------------------------------------------------------
@@ -52,6 +54,8 @@ pylith::meshio::OutputSubfield::deallocate(void) {
     PetscErrorCode err;
     err = DMDestroy(&_dm);PYLITH_CHECK_ERROR(err);
     err = VecDestroy(&_vector);PYLITH_CHECK_ERROR(err);
+
+    _label = NULL; // Destroyed by DMDestroy()
 } // deallocate
 
 
@@ -133,6 +137,26 @@ pylith::meshio::OutputSubfield::create(const pylith::topology::Field& field,
 
 
 // ------------------------------------------------------------------------------------------------
+// Set label name and value.
+void
+pylith::meshio::OutputSubfield::setLabel(const char* name,
+                                         const int value) {
+    PYLITH_METHOD_BEGIN;
+
+    if (_label) {
+        PYLITH_METHOD_END;
+    } // if
+    PetscErrorCode err;
+    err = DMGetLabel(_dm, name, &_label);PYLITH_CHECK_ERROR(err);
+    err = DMPlexLabelComplete(_dm, _label);
+
+    _labelValue = value;
+
+    PYLITH_METHOD_END;
+}
+
+
+// ------------------------------------------------------------------------------------------------
 // Get description of subfield.
 const pylith::topology::FieldBase::Description&
 pylith::meshio::OutputSubfield::getDescription(void) const {
@@ -174,6 +198,7 @@ pylith::meshio::OutputSubfield::project(const PetscVec& fieldVector) {
 
     PetscErrorCode err;
     const PetscReal t = PetscReal(_subfieldIndex) + 0.01; // :KLUDGE: Easiest way to get subfield to extract into fn.
+
     err = DMProjectField(_dm, t, fieldVector, &_fn, INSERT_VALUES, _vector);PYLITH_CHECK_ERROR(err);
     err = VecScale(_vector, _description.scale);PYLITH_CHECK_ERROR(err);
 
@@ -184,18 +209,16 @@ pylith::meshio::OutputSubfield::project(const PetscVec& fieldVector) {
 // ------------------------------------------------------------------------------------------------
 // Extract subfield data from global PETSc vector with subfields.
 void
-pylith::meshio::OutputSubfield::project(const PetscVec& fieldVector,
-                                        const char* labelName,
-                                        const int labelValue) {
+pylith::meshio::OutputSubfield::projectWithLabel(const PetscVec& fieldVector) {
     PYLITH_METHOD_BEGIN;
     assert(fieldVector);
     assert(_vector);
+    assert(_label);
 
     PetscErrorCode err;
     const PetscReal t = PetscReal(_subfieldIndex) + 0.01; // :KLUDGE: Easiest way to get subfield to extract into fn.
-    PetscDMLabel label = NULL;
-    err = DMGetLabel(_dm, labelName, &label);PYLITH_CHECK_ERROR(err);
-    err = DMProjectFieldLabelLocal(_dm, t, label, 1, &labelValue, PETSC_DETERMINE, NULL, fieldVector, &_fn, INSERT_VALUES, _vector);PYLITH_CHECK_ERROR(err);
+
+    err = DMProjectFieldLabelLocal(_dm, t, _label, 1, &_labelValue, PETSC_DETERMINE, NULL, fieldVector, &_fn, INSERT_VALUES, _vector);PYLITH_CHECK_ERROR(err);
     err = VecScale(_vector, _description.scale);PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
