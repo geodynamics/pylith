@@ -64,14 +64,14 @@ dist_noinst_DATA = \
 	mesh_quad4.exo \
 	mesh_tet4.exo \
 	mesh_hex8.exo \
-	tri_ascii.msh \
-	tri_binary.msh \
-	quad_ascii.msh \
-	quad_binary.msh \
-	tet_ascii.msh \
-	tet_binary.msh \
-	hex_ascii.msh \
-	hex_binary.msh \
+	box_tri_ascii.msh \
+	box_tri_binary.msh \
+	box_quad_ascii.msh \
+	box_quad_binary.msh \
+	box_tet_ascii.msh \
+	box_tet_binary.msh \
+	box_hex_ascii.msh \
+	box_hex_binary.msh \
 	tri3.mesh \
 	tri3_vertex_t10.vtk \
 	tri3_cell_t10.vtk \

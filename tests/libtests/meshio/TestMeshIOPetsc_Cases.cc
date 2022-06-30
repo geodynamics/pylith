@@ -23,7 +23,7 @@
 namespace pylith {
     namespace meshio {
         // ----------------------------------------------------------------------------------------
-        class TestMeshIOPetsc_GmshTri : public TestMeshIOPetsc {
+        class TestMeshIOPetsc_GmshBoxTri : public TestMeshIOPetsc {
 public:
 
             void setUp(void) {
@@ -61,38 +61,42 @@ public:
                 _data->cells = const_cast<PylithInt*>(cells);
 
                 static const PylithInt materialIds[8] = {
-                    1, 1, 1, 1, 2, 2, 2, 2,
+                    2, 2, 2, 2,
+                    1, 1, 1, 1,
                 };
                 _data->materialIds = const_cast<PylithInt*>(materialIds);
 
-                _data->numGroups = 7;
-                static const PylithInt groupSizes[7] = {3, 3, 3, 3, 3, 1, 2};
+                _data->numGroups = 8;
+                static const PylithInt groupSizes[8] = {3, 3, 3, 3, 3, 3, 1, 2};
                 _data->groupSizes = const_cast<PylithInt*>(groupSizes);
-                static const PylithInt groups[18] = {
+                static const PylithInt groups[21] = {
                     0, 5, 7,
                     2, 3, 6,
                     0, 1, 2,
                     3, 4, 5,
+                    0, 5, 7,
                     1, 4, 8,
                     1,
                     3, 5,
                 };
                 _data->groups = const_cast<PylithInt*>(groups);
-                static const char* groupNames[7] = {
+                static const char* groupNames[8] = {
                     "boundary_xneg",
                     "boundary_xpos",
                     "boundary_yneg",
                     "boundary_ypos",
+                    "boundary_xneg2",
                     "fault",
                     "fault_end",
                     "boundary_ypos_nofault",
                 };
                 _data->groupNames = const_cast<char**>(groupNames);
-                static const PylithInt groupTags[7] = {
-                    10, 11, 12, 13, 20, 21, 14,
+                static const PylithInt groupTags[8] = {
+                    10, 11, 12, 13, 15, 20, 21, 14,
                 };
                 _data->groupTags = const_cast<PylithInt*>(groupTags);
-                static const char* groupTypes[7] = {
+                static const char* groupTypes[8] = {
+                    "vertex",
                     "vertex",
                     "vertex",
                     "vertex",
@@ -107,35 +111,35 @@ public:
         }; // class TestMeshIOPetsc_GmshTri
 
         // ----------------------------------------------------------------------------------------
-        class TestMeshIOPetsc_GmshTri_Ascii : public TestMeshIOPetsc_GmshTri {
-            CPPUNIT_TEST_SUB_SUITE(TestMeshIOPetsc_GmshTri_Ascii, TestMeshIOPetsc_GmshTri);
+        class TestMeshIOPetsc_GmshBoxTri_Ascii : public TestMeshIOPetsc_GmshBoxTri {
+            CPPUNIT_TEST_SUB_SUITE(TestMeshIOPetsc_GmshBoxTri_Ascii, TestMeshIOPetsc_GmshBoxTri);
             CPPUNIT_TEST_SUITE_END();
 
             void setUp(void) {
-                TestMeshIOPetsc_GmshTri::setUp();
+                TestMeshIOPetsc_GmshBoxTri::setUp();
                 CPPUNIT_ASSERT(_data);
-                _data->filename = "data/tri_ascii.msh";
+                _data->filename = "data/box_tri_ascii.msh";
             } // setUp
 
-        }; // class TestMeshIOPetsc_GmshTri_Ascii
-        CPPUNIT_TEST_SUITE_REGISTRATION(TestMeshIOPetsc_GmshTri_Ascii);
+        }; // class TestMeshIOPetsc_GmshBoxTri_Ascii
+        CPPUNIT_TEST_SUITE_REGISTRATION(TestMeshIOPetsc_GmshBoxTri_Ascii);
 
         // ----------------------------------------------------------------------------------------
-        class TestMeshIOPetsc_GmshTri_Binary : public TestMeshIOPetsc_GmshTri {
-            CPPUNIT_TEST_SUB_SUITE(TestMeshIOPetsc_GmshTri_Binary, TestMeshIOPetsc_GmshTri);
+        class TestMeshIOPetsc_GmshBoxTri_Binary : public TestMeshIOPetsc_GmshBoxTri {
+            CPPUNIT_TEST_SUB_SUITE(TestMeshIOPetsc_GmshBoxTri_Binary, TestMeshIOPetsc_GmshBoxTri);
             CPPUNIT_TEST_SUITE_END();
 
             void setUp(void) {
-                TestMeshIOPetsc_GmshTri::setUp();
+                TestMeshIOPetsc_GmshBoxTri::setUp();
                 CPPUNIT_ASSERT(_data);
-                _data->filename = "data/tri_binary.msh";
+                _data->filename = "data/box_tri_binary.msh";
             } // setUp
 
-        }; // class TestMeshIOPetsc_GmshTri_Binary
-        CPPUNIT_TEST_SUITE_REGISTRATION(TestMeshIOPetsc_GmshTri_Binary);
+        }; // class TestMeshIOPetsc_GmshBoxTri_Binary
+        CPPUNIT_TEST_SUITE_REGISTRATION(TestMeshIOPetsc_GmshBoxTri_Binary);
 
         // ----------------------------------------------------------------------------------------
-        class TestMeshIOPetsc_GmshQuad : public TestMeshIOPetsc {
+        class TestMeshIOPetsc_GmshBoxQuad : public TestMeshIOPetsc {
 public:
 
             void setUp(void) {
@@ -174,43 +178,42 @@ public:
                 _data->cells = const_cast<PylithInt*>(cells);
 
                 static const PylithInt materialIds[6] = {
-                    1,
-                    1,
-                    1,
-                    2,
-                    2,
-                    2,
+                    2, 2, 2,
+                    1, 1, 1,
                 };
                 _data->materialIds = const_cast<PylithInt*>(materialIds);
 
-                _data->numGroups = 7;
-                static const PylithInt groupSizes[7] = {4, 4, 3, 3, 4, 1, 2};
+                _data->numGroups = 8;
+                static const PylithInt groupSizes[8] = {4, 4, 3, 3, 4, 4, 1, 2};
                 _data->groupSizes = const_cast<PylithInt*>(groupSizes);
-                static const PylithInt groups[21] = {
+                static const PylithInt groups[25] = {
                     0, 5, 8, 9,
                     2, 3, 6, 7,
                     0, 1, 2,
                     3, 4, 5,
+                    0, 5, 8, 9,
                     1, 4, 10, 11,
                     1,
                     3, 5,
                 };
                 _data->groups = const_cast<PylithInt*>(groups);
-                static const char* groupNames[7] = {
+                static const char* groupNames[8] = {
                     "boundary_xneg",
                     "boundary_xpos",
                     "boundary_yneg",
                     "boundary_ypos",
+                    "boundary_xneg2",
                     "fault",
                     "fault_end",
                     "boundary_ypos_nofault",
                 };
                 _data->groupNames = const_cast<char**>(groupNames);
-                static const PylithInt groupTags[7] = {
-                    10, 11, 12, 13, 20, 21, 14,
+                static const PylithInt groupTags[8] = {
+                    10, 11, 12, 13, 15, 20, 21, 14,
                 };
                 _data->groupTags = const_cast<PylithInt*>(groupTags);
-                static const char* groupTypes[7] = {
+                static const char* groupTypes[8] = {
+                    "vertex",
                     "vertex",
                     "vertex",
                     "vertex",
@@ -222,38 +225,38 @@ public:
                 _data->groupTypes = const_cast<char**>(groupTypes);
             } // setUp
 
-        }; // class TestMeshIOPetsc_GmshQuad
+        }; // class TestMeshIOPetsc_GmshBoxQuad
 
         // ----------------------------------------------------------------------------------------
-        class TestMeshIOPetsc_GmshQuad_Ascii : public TestMeshIOPetsc_GmshQuad {
-            CPPUNIT_TEST_SUB_SUITE(TestMeshIOPetsc_GmshQuad_Ascii, TestMeshIOPetsc_GmshQuad);
+        class TestMeshIOPetsc_GmshBoxQuad_Ascii : public TestMeshIOPetsc_GmshBoxQuad {
+            CPPUNIT_TEST_SUB_SUITE(TestMeshIOPetsc_GmshBoxQuad_Ascii, TestMeshIOPetsc_GmshBoxQuad);
             CPPUNIT_TEST_SUITE_END();
 
             void setUp(void) {
-                TestMeshIOPetsc_GmshQuad::setUp();
+                TestMeshIOPetsc_GmshBoxQuad::setUp();
                 CPPUNIT_ASSERT(_data);
-                _data->filename = "data/quad_ascii.msh";
+                _data->filename = "data/box_quad_ascii.msh";
             } // setUp
 
-        }; // class TestMeshIOPetsc_GmshQuad_Ascii
-        CPPUNIT_TEST_SUITE_REGISTRATION(TestMeshIOPetsc_GmshQuad_Ascii);
+        }; // class TestMeshIOPetsc_GmshBoxQuad_Ascii
+        CPPUNIT_TEST_SUITE_REGISTRATION(TestMeshIOPetsc_GmshBoxQuad_Ascii);
 
         // ----------------------------------------------------------------------------------------
-        class TestMeshIOPetsc_GmshQuad_Binary : public TestMeshIOPetsc_GmshQuad {
-            CPPUNIT_TEST_SUB_SUITE(TestMeshIOPetsc_GmshQuad_Binary, TestMeshIOPetsc_GmshQuad);
+        class TestMeshIOPetsc_GmshBoxQuad_Binary : public TestMeshIOPetsc_GmshBoxQuad {
+            CPPUNIT_TEST_SUB_SUITE(TestMeshIOPetsc_GmshBoxQuad_Binary, TestMeshIOPetsc_GmshBoxQuad);
             CPPUNIT_TEST_SUITE_END();
 
             void setUp(void) {
-                TestMeshIOPetsc_GmshQuad::setUp();
+                TestMeshIOPetsc_GmshBoxQuad::setUp();
                 CPPUNIT_ASSERT(_data);
-                _data->filename = "data/quad_binary.msh";
+                _data->filename = "data/box_quad_binary.msh";
             } // setUp
 
-        }; // class TestMeshIOPetsc_GmshQuad_Binary
-        CPPUNIT_TEST_SUITE_REGISTRATION(TestMeshIOPetsc_GmshQuad_Binary);
+        }; // class TestMeshIOPetsc_GmshBoxQuad_Binary
+        CPPUNIT_TEST_SUITE_REGISTRATION(TestMeshIOPetsc_GmshBoxQuad_Binary);
 
         // ----------------------------------------------------------------------------------------
-        class TestMeshIOPetsc_GmshTet : public TestMeshIOPetsc {
+        class TestMeshIOPetsc_GmshBoxTet : public TestMeshIOPetsc {
 public:
 
             void setUp(void) {
@@ -423,38 +426,38 @@ public:
                 _data->groupTypes = const_cast<char**>(groupTypes);
             } // setUp
 
-        }; // class TestMeshIOPetsc_GmshTet
+        }; // class TestMeshIOPetsc_GmshBoxTet
 
         // ----------------------------------------------------------------------------------------
-        class TestMeshIOPetsc_GmshTet_Ascii : public TestMeshIOPetsc_GmshTet {
-            CPPUNIT_TEST_SUB_SUITE(TestMeshIOPetsc_GmshTet_Ascii, TestMeshIOPetsc_GmshTet);
+        class TestMeshIOPetsc_GmshBoxTet_Ascii : public TestMeshIOPetsc_GmshBoxTet {
+            CPPUNIT_TEST_SUB_SUITE(TestMeshIOPetsc_GmshBoxTet_Ascii, TestMeshIOPetsc_GmshBoxTet);
             CPPUNIT_TEST_SUITE_END();
 
             void setUp(void) {
-                TestMeshIOPetsc_GmshTet::setUp();
+                TestMeshIOPetsc_GmshBoxTet::setUp();
                 CPPUNIT_ASSERT(_data);
-                _data->filename = "data/tet_ascii.msh";
+                _data->filename = "data/box_tet_ascii.msh";
             } // setUp
 
-        }; // class TestMeshIOPetsc_GmshTet_Ascii
-        CPPUNIT_TEST_SUITE_REGISTRATION(TestMeshIOPetsc_GmshTet_Ascii);
+        }; // class TestMeshIOPetsc_GmshBoxTet_Ascii
+        CPPUNIT_TEST_SUITE_REGISTRATION(TestMeshIOPetsc_GmshBoxTet_Ascii);
 
         // ----------------------------------------------------------------------------------------
-        class TestMeshIOPetsc_GmshTet_Binary : public TestMeshIOPetsc_GmshTet {
-            CPPUNIT_TEST_SUB_SUITE(TestMeshIOPetsc_GmshTet_Binary, TestMeshIOPetsc_GmshTet);
+        class TestMeshIOPetsc_GmshBoxTet_Binary : public TestMeshIOPetsc_GmshBoxTet {
+            CPPUNIT_TEST_SUB_SUITE(TestMeshIOPetsc_GmshBoxTet_Binary, TestMeshIOPetsc_GmshBoxTet);
             CPPUNIT_TEST_SUITE_END();
 
             void setUp(void) {
-                TestMeshIOPetsc_GmshTet::setUp();
+                TestMeshIOPetsc_GmshBoxTet::setUp();
                 CPPUNIT_ASSERT(_data);
-                _data->filename = "data/tet_binary.msh";
+                _data->filename = "data/box_tet_binary.msh";
             } // setUp
 
-        }; // class TestMeshIOPetsc_GmshTet_Binary
-        CPPUNIT_TEST_SUITE_REGISTRATION(TestMeshIOPetsc_GmshTet_Binary);
+        }; // class TestMeshIOPetsc_GmshBoxTet_Binary
+        CPPUNIT_TEST_SUITE_REGISTRATION(TestMeshIOPetsc_GmshBoxTet_Binary);
 
         // --------------------------------------------------------------
-        class TestMeshIOPetsc_GmshHex : public TestMeshIOPetsc {
+        class TestMeshIOPetsc_GmshBoxHex : public TestMeshIOPetsc {
 public:
 
             void setUp(void) {
@@ -591,35 +594,35 @@ public:
                 _data->groupTypes = const_cast<char**>(groupTypes);
             } // setUp
 
-        }; // class TestMeshIOPetsc_GmshHex
+        }; // class TestMeshIOPetsc_GmshBoxHex
 
         // ----------------------------------------------------------------------------------------
-        class TestMeshIOPetsc_GmshHex_Ascii : public TestMeshIOPetsc_GmshHex {
-            CPPUNIT_TEST_SUB_SUITE(TestMeshIOPetsc_GmshHex_Ascii, TestMeshIOPetsc_GmshHex);
+        class TestMeshIOPetsc_GmshBoxHex_Ascii : public TestMeshIOPetsc_GmshBoxHex {
+            CPPUNIT_TEST_SUB_SUITE(TestMeshIOPetsc_GmshBoxHex_Ascii, TestMeshIOPetsc_GmshBoxHex);
             CPPUNIT_TEST_SUITE_END();
 
             void setUp(void) {
-                TestMeshIOPetsc_GmshHex::setUp();
+                TestMeshIOPetsc_GmshBoxHex::setUp();
                 CPPUNIT_ASSERT(_data);
-                _data->filename = "data/hex_ascii.msh";
+                _data->filename = "data/box_hex_ascii.msh";
             } // setUp
 
-        }; // class TestMeshIOPetsc_GmshHex_Ascii
-        CPPUNIT_TEST_SUITE_REGISTRATION(TestMeshIOPetsc_GmshHex_Ascii);
+        }; // class TestMeshIOPetsc_GmshBoxHex_Ascii
+        CPPUNIT_TEST_SUITE_REGISTRATION(TestMeshIOPetsc_GmshBoxHex_Ascii);
 
         // ----------------------------------------------------------------------------------------
-        class TestMeshIOPetsc_GmshHex_Binary : public TestMeshIOPetsc_GmshHex {
-            CPPUNIT_TEST_SUB_SUITE(TestMeshIOPetsc_GmshHex_Binary, TestMeshIOPetsc_GmshHex);
+        class TestMeshIOPetsc_GmshBoxHex_Binary : public TestMeshIOPetsc_GmshBoxHex {
+            CPPUNIT_TEST_SUB_SUITE(TestMeshIOPetsc_GmshBoxHex_Binary, TestMeshIOPetsc_GmshBoxHex);
             CPPUNIT_TEST_SUITE_END();
 
             void setUp(void) {
-                TestMeshIOPetsc_GmshHex::setUp();
+                TestMeshIOPetsc_GmshBoxHex::setUp();
                 CPPUNIT_ASSERT(_data);
-                _data->filename = "data/hex_binary.msh";
+                _data->filename = "data/box_hex_binary.msh";
             } // setUp
 
-        }; // class TestMeshIOPetsc_GmshHex_Binary
-        CPPUNIT_TEST_SUITE_REGISTRATION(TestMeshIOPetsc_GmshHex_Binary);
+        }; // class TestMeshIOPetsc_GmshBoxHex_Binary
+        CPPUNIT_TEST_SUITE_REGISTRATION(TestMeshIOPetsc_GmshBoxHex_Binary);
 
     } // meshio
 } // pylith
