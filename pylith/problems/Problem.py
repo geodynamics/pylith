@@ -56,6 +56,12 @@ def observerFactory(name):
 class Problem(PetscComponent, ModuleProblem):
     """
     Abstract base class for a problem.
+
+    The default formulation, solution field, and scales for nondimensionalization are appropriate for solving the quasi-static elasticity equation.
+
+    By default, we use the nonlinear solver.
+    This facilitates verifying that the residual and Jacobian are consistent.
+    If the nonlinear (SNES) solver requires multiple iterations to converge for these linear problems, then we know there is an error in the problem setup.
     """
 
     import pythia.pyre.inventory
@@ -68,7 +74,7 @@ class Problem(PetscComponent, ModuleProblem):
                                      validator=pythia.pyre.inventory.choice(["quasistatic", "dynamic", "dynamic_imex"]))
     formulation.meta['tip'] = "Formulation for equations."
 
-    solverChoice = pythia.pyre.inventory.str("solver", default="linear",
+    solverChoice = pythia.pyre.inventory.str("solver", default="nonlinear",
                                       validator=pythia.pyre.inventory.choice(["linear", "nonlinear"]))
     solverChoice.meta['tip'] = "Type of solver to use ['linear', 'nonlinear']."
 
