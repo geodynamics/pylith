@@ -14,7 +14,7 @@
 # ----------------------------------------------------------------------
 #
 
-# @file pylith/problems/SolnDispPresTracStrainVelPdotTdot.py
+# @file pylith/problems/SolnDispPresTracStrainVelPdotTdotLagrange.py
 #
 # @brief Python subfields container with displacement, pore pressure, and trace strain subfields, along with their time derivatives.
 
@@ -22,14 +22,14 @@ from pylith.utils.PetscComponent import PetscComponent
 from .Solution import Solution as SolutionBase
 
 
-class SolnDispPresTracStrainVelPdotTdot(PetscComponent):
+class SolnDispPresTracStrainVelPdotTdotLagrange(PetscComponent):
     """
-        Python solution field with displacement, pressure, and trace strain subfields, along with their time derivatives.
+        Python solution field with displacement, pressure, and trace strain subfields, along with their time derivatives, and a lagrange fault.
     """
     DOC_CONFIG = {
         "cfg": """
             [pylithapp.problem]
-            solution = pylith.problems.SolnDispPresTracStrainVelPdotTdot
+            solution = pylith.problems.SolnDispPresTracStrainVelPdotTdotLagrange
         """
     }
 
@@ -65,7 +65,11 @@ class SolnDispPresTracStrainVelPdotTdot(PetscComponent):
         "trace_strain_t", family="soln_subfield", factory=SubfieldTraceStrainDot)
     traceStrainT.meta['tip'] = "TraceStrainT subfield."
 
-    def __init__(self, name="solndispprestracstrainvelpdottdot"):
+    from .SubfieldLagrangeFault import SubfieldLagrangeFault
+    lagrangeFault = pythia.pyre.inventory.facility("lagrange_fault", family="soln_subfield", factory=SubfieldLagrangeFault)
+    lagrangeFault.meta['tip'] = "Fault Lagrange multiplier subfield."
+
+    def __init__(self, name="solndispprestracstrainvelpdottdotlagrange"):
         """Constructor.
         """
         PetscComponent.__init__(self, name, facility="soln_subfields")
@@ -75,21 +79,21 @@ class SolnDispPresTracStrainVelPdotTdot(PetscComponent):
 
     def components(self):
         """Order of facilities in Inventory is ambiguous, so overwrite
-        components() to insure order is [displacement, pressure, trace_strain, velocity, pressure_t, trace_strain_t].
+        components() to insure order is [displacement, pressure, trace_strain, velocity, pressure_t, trace_strain_t, lagrange_fault].
 
         """
-        return [self.displacement, self.pressure, self.trace_strain, self.velocity, self.pressureT, self.traceStrainT]
+        return [self.displacement, self.pressure, self.trace_strain, self.velocity, self.pressureT, self.traceStrainT, self.lagrangeFault]
 
 
 class Solution(SolutionBase):
-    """Python solution field with displacement, pressure, and trace strain subfields, along with their time derivatives.
+    """Python solution field with displacement, pressure, and trace strain subfields, along with their time derivatives, and a lagrange fault.
     """
 
     import pythia.pyre.inventory
 
     from .SolutionSubfield import subfieldFactory
     subfields = pythia.pyre.inventory.facilityArray(
-        "subfields", family="soln_subfields", itemFactory=subfieldFactory, factory=SolnDispPresTracStrainVelPdotTdot)
+        "subfields", family="soln_subfields", itemFactory=subfieldFactory, factory=SolnDispPresTracStrainVelPdotTdotLagrange)
     subfields.meta['tip'] = "Subfields in solution."
 
 
