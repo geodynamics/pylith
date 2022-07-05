@@ -1,8 +1,15 @@
 # Step 2: Shear Displacement
 
+% Meatadata extracted from parameter files
+```{include} step02_sheardisp-synopsis.md
+```
+
+## Simulation parameters
+
 This example corresponds to shear deformation due to Dirichlet (displacement) boundary conditions.
 We apply Dirichlet (displacement) boundary conditions for the y displacement on the +x (`boundary_xpos`) and -x (`boundary_xneg`) boundaries and for the x displacement on the +y (`boundary_ypos`) and -y (`boundary_yneg`) boundaries.
 {numref}`fig:example:box:3d:step01:diagram` shows the boundary conditions on the domain.
+The parameters specific to this example are in `step02_sheardisp.cfg`.
 
 :::{figure-md} fig:example:box:3d:step02:diagram
 <img src="figs/step02-diagram.*" alt="" scale="75%">
@@ -11,19 +18,32 @@ Boundary conditions for shear deformation.
 We constrain the y displacement on the +x and -x boundaries and the x displacement on the +y and -y boundaries.
 :::
 
-% Meatadata extracted from parameter files
-```{include} step02_sheardisp-synopsis.md
+We create an array of 5 Dirichlet boundary conditions.
+On the -x, +x, -y, and +y boundaries we impose shear displacement.
+
+```{code-block} cfg
+---
+caption: Boundary conditions for Step 2. We only show the details for the -x boundary.
+---
+bc = [bc_xneg, bc_xpos, bc_yneg, bc_ypos, bc_zneg]
+bc.bc_xneg = pylith.bc.DirichletTimeDependent
+bc.bc_xpos = pylith.bc.DirichletTimeDependent
+bc.bc_yneg = pylith.bc.DirichletTimeDependent
+bc.bc_ypos = pylith.bc.DirichletTimeDependent
+bc.bc_zneg = pylith.bc.DirichletTimeDependent
+
+[pylithapp.problem.bc.bc_xneg]
+label = boundary_xneg
+label_value = 10
+constrained_dof = [1]
+
+db_auxiliary_field = spatialdata.spatialdb.SimpleDB
+db_auxiliary_field.description = Dirichlet BC -x boundary
+db_auxiliary_field.iohandler.filename = sheardisp_bc_xneg.spatialdb
+db_auxiliary_field.query_type = linear
 ```
 
-## Simulation parameters
-
-The parameters specific to this example are in `step02_sheardisp.cfg`.
-These include:
-
-* `pylithapp.metadata` Metadata for this simulation. Even when the author and version are the same for all simulations in a directory, we prefer to keep that metadata in each simulation file as a reminder to keep it up-to-date for each simulation.
-* `pylithapp` Parameters defining where to write the output.
-* `pylithapp.problem.solution` Specify the basis order for the solution fields, in this case the `displacement` field.
-* `pylithapp.problem.bc` Parameters for the boundary conditions. The displacement field varies  along the boundary, so we use a `SimpleDB` spatial database and the `linear` query type.
+## Running the simulation
 
 ```{code-block} console
 ---
