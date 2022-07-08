@@ -48,7 +48,8 @@ class TestCase(FullTestCase):
             ),
             Check(
                 mesh_entities=["elastic_xpos", "elastic_xneg"],
-                vertex_fields = ["displacement", "cauchy_strain", "cauchy_stress"],
+                vertex_fields = ["displacement"],
+                cell_fields = ["cauchy_strain", "cauchy_stress"],
                 defaults=defaults,
             ),
             Check(

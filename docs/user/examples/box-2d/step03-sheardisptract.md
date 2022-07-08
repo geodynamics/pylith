@@ -1,9 +1,16 @@
 # Step 3: Shear Displacement and Tractions
 
+% Meatadata extracted from parameter files
+```{include} step03_sheardisptract-synopsis.md
+```
+
+## Simulation parameters
+
 In Step 3 we replace the Dirichlet (displacement) boundary conditions on the +y and -y boundaries with equivalent Neumann (traction) boundary conditions.
 In order to maintain symmetry and prevent rigid body motion, we constrain both the x and y displacements on the +x and -x boundaries.
 The solution matches that in Step 2.
 {numref}`fig:example:box:2d:step03:diagram` shows the boundary conditions on the domain.
+The parameters specific to this example are in `step03_sheardisptract.cfg`.
 
 :::{figure-md} fig:example:box:2d:step03:diagram
 <img src="figs/step03-diagram.*" alt="" scale="75%">
@@ -13,19 +20,40 @@ We constrain the x and y displacements on the +x and -x boundaries.
 We apply tangential (shear) tractions on the +y and -y boundaries.
 :::
 
-% Meatadata extracted from parameter files
-```{include} step03_sheardisptract-synopsis.md
-```
-
-## Simulation parameters
-
-The parameters specific to this example are in `step03_sheardisptract.cfg`.
-
-The primary change from Step 2 is the use of Neumann (traction) boundary conditions in `pylith.problem.bc`.
 The tractions are uniform on each of the two boundaries, so we use a `UniformDB`.
 In PyLith the direction of the tangential tractions in 2D is defined by the cross product of the +z direction and the outward normal on the boundary.
 On the +y boundary a positive tangential traction is in the -x direction, and on the -y boundary a positive tangential traction is in the +x direction.
 We want tractions in the opposite direction as shown by the arrows in {numref}`fig:example:box:2d:step03:diagram`, so we apply negative tangential tractions.
+
+```{code-block} cfg
+---
+caption: Specifying the boundary conditions for Step 3. We only show the detailed settings for the -x and -y boundaries.
+---
+[pylithapp.problem]
+bc = [bc_xneg, bc_yneg, bc_xpos, bc_ypos]
+bc.bc_xneg = pylith.bc.DirichletTimeDependent
+bc.bc_xpos = pylith.bc.DirichletTimeDependent
+bc.bc_yneg = pylith.bc.NeumannTimeDependent
+bc.bc_ypos = pylith.bc.NeumannTimeDependent
+
+[pylithapp.problem.bc.bc_xneg]
+# Degrees of freedom (dof) 0 and 1 correspond to the x and y displacements. 
+constrained_dof = [0, 1]
+label = boundary_xneg
+db_auxiliary_field = spatialdata.spatialdb.SimpleDB
+db_auxiliary_field.description = Dirichlet BC -x boundary
+db_auxiliary_field.iohandler.filename = sheardisp_bc_xneg.spatialdb
+db_auxiliary_field.query_type = linear
+
+[pylithapp.problem.bc.bc_yneg]
+label = boundary_yneg
+db_auxiliary_field = spatialdata.spatialdb.UniformDB
+db_auxiliary_field.description = Neumann BC -y boundary
+db_auxiliary_field.values = [initial_amplitude_tangential, initial_amplitude_normal]
+db_auxiliary_field.data = [-4.5*MPa, 0*MPa]
+```
+
+## Running the simulation
 
 ```{code-block} console
 ---

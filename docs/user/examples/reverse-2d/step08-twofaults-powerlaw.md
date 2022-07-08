@@ -1,32 +1,33 @@
 # Step 8: Slip on Two Faults and Power-law Viscoelastic Materials
 
-In this example we replace the linear, isotropic Maxwell viscoelastic bulk rheology in the slab in Step 7 with an isotropic powerlaw viscoelastic rheology.
-The other parameters remain the same as those in Step 6.
-
 % Metadata extracted from parameter files.
 ```{include} step08_twofaults_powerlaw-synopsis.md
 ```
 
 ## Simulation parameters
 
-The parameters specific to this example are in `step08_twofaults_powerlaw.cfg` and include:
+In this example we replace the linear, isotropic Maxwell viscoelastic bulk rheology in the slab in Step 7 with an isotropic powerlaw viscoelastic rheology.
+The other parameters remain the same as those in Step 6.
+The parameters specific to this example are in `step08_twofaults_powerlaw.cfg`.
 
-* `pylithapp.metadata` Metadata for this simulation. Even when the author and version are the same for all simulations in a directory, we prefer to keep that metadata in each simulation file as a reminder to keep it up-to-date for each simulation.
-* `pylithapp` Parameters defining where to write the output.
-* `pylithapp.problem` Parameters for the time stepping and solution field with displacement and Lagrange multiplier subfields.
-* `pylithapp.problem.material` Parameters for the linear powerlaw viscoelastic bulk rheology for the slab.
-* `pylithapp.problem.fault` Parameters for prescribed slip on the two faults.
+```{code-block} cfg
+---
+caption: Power-law viscoelastic bulk rheology parameters for Step 8.
+---
+[pylithapp.problem.materials]
+slab.bulk_rheology = pylith.materials.IsotropicPowerLaw
 
-We set the nondimensional time scale (`normalizer.relaxation_time`) to 5 yearsuse a very short relaxation time of 20 years, so we run the simulation for 100 years with a time step of 4 years.
-We use a starting time of -4 years so that the first time step will advance the solution time to 0 years.
+[pylithapp.problem.materials.slab]
+db_auxiliary_field = spatialdata.spatialdb.SimpleDB
+db_auxiliary_field.description = Maxwell viscoelastic properties
+db_auxiliary_field.iohandler.filename = mat_powerlaw.spatialdb
 
-:::{important}
-Both faults contain one end that is buried within the domain.
-The splay fault ends where it meets the main fault.
-When PyLith inserts cohesive cells into a mesh with buried edges (in this case a point), we must identify these buried edges so that PyLith properly adjusts the topology along these edges.
+bulk_rheology.auxiliary_subfields.power_law_reference_strain_rate.basis_order = 0
+bulk_rheology.auxiliary_subfields.power_law_reference_stress.basis_order = 0
+bulk_rheology.auxiliary_subfields.power_law_exponent.basis_order = 0
+```
 
-For properly topology of the cohesive cells, the main fault _must_ be listed first in the array of faults so that it will be created before the splay fault.
-:::
+## Running the simulation
 
 ```{code-block} console
 ---

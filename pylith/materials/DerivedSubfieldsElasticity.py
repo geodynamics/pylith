@@ -46,6 +46,10 @@ class DerivedSubfieldsElasticity(PetscComponent):
         """
         PetscComponent.__init__(self, name, facility="derived_subfields")
 
+    def _defaults(self):
+        self.cauchyStress.basisOrder = 0
+        self.cauchyStrain.basisOrder = 0
+
 
 # FACTORIES ////////////////////////////////////////////////////////////
 

@@ -1,8 +1,14 @@
 # Step 1: Static Coseismic Slip
 
+% Metadata extracted from parameter files.
+```{include} step01_slip-synopsis.md
+```
+
+## Simulation parameters
+
 This example involves a static simulation that solves for the deformation from prescribed coseismic slip on the fault.
-We specify 2 meters of right-lateral slip.
 {numref}`fig:example:strikeslip:2d:step01:diagram` shows the boundary conditions on the domain.
+The parameters specific to this example are in `step01_slip.cfg`.
 
 :::{figure-md} fig:example:strikeslip:2d:step01:diagram
 <img src="figs/step01-diagram.*" alt="" scale="75%">
@@ -11,18 +17,18 @@ Boundary conditions for static coseismic slip.
 We set the x and y displacement to zero on the +x and -x boundaries and prescribe 2 meters of right-lateral slip.
 :::
 
-% Metadata extracted from parameter files.
-```{include} step01_slip-synopsis.md
+```{code-block} cfg
+---
+caption: Prescribed slip parameters for Step 1.
+---
+[pylithapp.problem.interfaces.fault.eq_ruptures.rupture]
+db_auxiliary_field = spatialdata.spatialdb.UniformDB
+db_auxiliary_field.description = Fault rupture auxiliary field spatial database
+db_auxiliary_field.values = [initiation_time, final_slip_left_lateral, final_slip_opening]
+db_auxiliary_field.data = [0.0*s, -2.0*m, 0.0*m]
 ```
 
-## Simulation parameters
-
-The parameters specific to this example are in `step01_slip.cfg`.
-These include:
-
-* `pylithapp.metadata` Metadata for this simulation. Even when the author and version are the same for all simulations in a directory, we prefer to keep that metadata in each simulation file as a reminder to keep it up-to-date for each simulation.
-* `pylithapp` Parameters defining where to write the output.
-* `pylithapp.problem.fault` Parameters for prescribed slip on the fault.
+## Running the simulation
 
 ```{code-block} console
 ---

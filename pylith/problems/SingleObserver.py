@@ -24,8 +24,8 @@ class SingleSolnObserver(PetscComponent):
     import pythia.pyre.inventory
 
     from pylith.meshio.OutputSolnDomain import OutputSolnDomain
-    output = pythia.pyre.inventory.facility("observer", family="observer", factory=OutputSolnDomain)
-    output.meta['tip'] = "Observer of subject."
+    output = pythia.pyre.inventory.facility("domain", family="observer", factory=OutputSolnDomain)
+    output.meta['tip'] = "Observer of solution."
 
     def __init__(self, name="singlesolnobserver"):
         """Constructor.

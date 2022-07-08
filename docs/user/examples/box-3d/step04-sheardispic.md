@@ -1,19 +1,36 @@
 # Step 4: Shear Displacement and Initial Conditions
 
-In this example we demonstrate the use of initial conditions for the boundary value problem in Step 2.
-We set the displacement field over the domain to the analytical solutin as an initial condition.
-
 % Meatadata extracted from parameter files
 ```{include} step04_sheardispic-synopsis.md
 ```
 
 ## Simulation parameters
 
+In this example we demonstrate the use of initial conditions for the boundary value problem in Step 2.
+We set the displacement field over the domain to the analytical solutin as an initial condition.
+
 The parameters specific to this example are in `step04_sheardispic.cfg`.
 The only difference with respect to Step 2 is the addition of the initial condition.
-From our boundary conditions we can see that the analytical solution to our boundary value problem is $\vec{u}(x,y)=(ay,ax)$.
+From our boundary conditions we can see that the analytical solution to our boundary value problem is $\vec{u}(x,y,z)=(ay,ax,0)$.
 Because we are specifying the displacement field over the domain, we use the `SimpleGridDB`, which specifies the values on a logically rectangular grid aligned with the coordinate axes.
 The grid layout of the values allows queries for values at points to be much more efficient than a `SimpleDB` which can have points at arbitrary locations.
+
+```{code-block} cfg
+---
+caption: Initial conditions for Step 4.
+---
+[pylithapp.problem]
+ic = [domain]
+ic.domain = pylith.problems.InitialConditionDomain
+
+[pylithapp.problem.ic.domain]
+db = spatialdata.spatialdb.SimpleGridDB
+db.description = Initial conditions over domain
+db.filename = sheardisp_ic.spatialdb
+db.query_type = linear
+```
+
+## Running the simulation
 
 ```{code-block} console
 ---

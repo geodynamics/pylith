@@ -46,7 +46,8 @@ class TestCase(FullTestCase):
             ),
             Check(
                 mesh_entities=["mat_xneg", "mat_xmid", "mat_xposypos", "mat_xposyneg"],
-                vertex_fields = ["displacement", "cauchy_strain", "cauchy_stress"],
+                vertex_fields = ["displacement"],
+                cell_fields = ["cauchy_strain", "cauchy_stress"],
                 tolerance = 1.0e-4,
                 defaults=defaults,
             ),
