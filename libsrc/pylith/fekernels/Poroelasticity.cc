@@ -173,7 +173,6 @@ pylith::fekernels::Poroelasticity::f0e(const PylithInt dim,
 
     // Incoming auxiliary fields.
 
-    const PylithScalar* displacement = &s[sOff[i_displacement]];
     const PylithScalar* displacement_x = &s_x[sOff_x[i_displacement]];
     const PylithScalar trace_strain = s[sOff[i_trace_strain]];
 
@@ -774,8 +773,6 @@ pylith::fekernels::Poroelasticity::Jf0vv_explicit(const PylithInt dim,
                                                   const PylithInt numConstants,
                                                   const PylithScalar constants[],
                                                   PylithScalar Jf0[]) {
-    const PylithInt _numA = 1;
-
     // Incoming auxiliary fields.
     const PylithInt i_solid_density = 0;
     const PylithInt i_fluid_density = 1;
