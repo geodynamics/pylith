@@ -390,12 +390,12 @@ pylith::problems::TimeDependent::initialize(void) {
 
 #if 0
     // Set solve type for solution fields defined over the domain (not Lagrange multipliers).
-    PetscDS prob = NULL;
-    err = DMGetDS(solution->getDM(), &prob);PYLITH_CHECK_ERROR(err);
+    PetscDS dsSoln = NULL;
+    err = DMGetDS(solution->getDM(), &dsSoln);PYLITH_CHECK_ERROR(err);
     PetscInt numFields = 0;
-    err = PetscDSGetNumFields(prob, &numFields);PYLITH_CHECK_ERROR(err);
+    err = PetscDSGetNumFields(dsSoln, &numFields);PYLITH_CHECK_ERROR(err);
     for (PetscInt iField = 0; iField < numFields; ++iField) {
-        err = PetscDSSetImplicit(prob, iField, (_formulationType == IMPLICIT) ? PETSC_TRUE : PETSC_FALSE);
+        err = PetscDSSetImplicit(dsSoln, iField, (_formulation == pylith::problems::Physics::QUASISTATIC) ? PETSC_TRUE : PETSC_FALSE);
     } // for
 #endif
     pythia::journal::debug_t debug(pylith::utils::PyreComponent::getName());
