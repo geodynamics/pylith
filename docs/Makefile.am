@@ -420,6 +420,30 @@ dist_noinst_DATA = \
     user/examples/subduction-3d/figs/step04-solution.jpg \
     user/examples/subduction-3d/figs/step06-diagram.pdf \
     user/examples/subduction-3d/figs/step06-diagram.svg \
+    user/examples/troubleshooting-2d/index.md \
+    user/examples/troubleshooting-2d/error-messages.md \
+    user/examples/troubleshooting-2d/step01-gravity.md \
+    user/examples/troubleshooting-2d/step01-error01.md \
+    user/examples/troubleshooting-2d/step01-error02.md \
+    user/examples/troubleshooting-2d/step01-error03.md \
+    user/examples/troubleshooting-2d/step01-error04.md \
+    user/examples/troubleshooting-2d/step01-error05.md \
+    user/examples/troubleshooting-2d/step06-twofaults.md \
+    user/examples/troubleshooting-2d/step06-error01.md \
+    user/examples/troubleshooting-2d/step06-error02.md \
+    user/examples/troubleshooting-2d/step06-error03.md \
+    user/examples/troubleshooting-2d/step06-error04.md \
+    user/examples/troubleshooting-2d/step06-error05.md \
+    user/examples/troubleshooting-2d/step06-error06.md \
+    user/examples/troubleshooting-2d/step06-error07.md \
+    user/examples/troubleshooting-2d/step06-error08.md \
+    user/examples/troubleshooting-2d/step06-error09.md \
+    user/examples/troubleshooting-2d/figs/step01-diagram.pdf \
+    user/examples/troubleshooting-2d/figs/step01-diagram.svg \
+    user/examples/troubleshooting-2d/figs/step06-diagram.pdf \
+    user/examples/troubleshooting-2d/figs/step06-diagram.svg \
+    user/examples/troubleshooting-2d/figs/step06-faults-wrong2.jpg \
+    user/examples/troubleshooting-2d/figs/step06-faults-wrong1.jpg \
     user/examples/examples-other.md \
     user/examples/index.md \
     user/examples/paraview-python.md \
