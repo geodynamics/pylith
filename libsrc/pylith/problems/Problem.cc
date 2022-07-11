@@ -425,7 +425,16 @@ pylith::problems::Problem::initialize(void) {
     solution->createGlobalVector();
     solution->createOutputVector();
 
-    _Problem::createNullSpace(solution, "displacement");
+    switch (_formulation) {
+    case pylith::problems::Physics::DYNAMIC:
+    case pylith::problems::Physics::DYNAMIC_IMEX:
+        break;
+    case pylith::problems::Physics::QUASISTATIC:
+        _Problem::createNullSpace(solution, "displacement");
+        break;
+    default:
+        PYLITH_COMPONENT_LOGICERROR("Unknown formulation '"<<_formulation<<".");
+    } // switch
     _Problem::setInterfaceData(solution, _integrators);
 
     pythia::journal::debug_t debug(PyreComponent::getName());
@@ -584,7 +593,7 @@ pylith::problems::Problem::_setupSolution(void) {
             bool found = false;
             for (; cell < cEnd; ++cell) {
                 if (pylith::topology::MeshOps::isCohesiveCell(dmSoln, cell)) {
-                    found=true;
+                    found = true;
                     break;
                 } // if
             } // for
