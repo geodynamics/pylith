@@ -262,9 +262,7 @@ AC_CONFIG_FILES([Makefile
 		tests/manual/Makefile
 		tests/manual/powerlaw-2d/Makefile
 		tests/manual/powerlaw-3d/Makefile
-        developer/Makefile
-		doc-latex/Makefile
-		doc-latex/userguide/Makefile
+		developer/Makefile
 		docs/Makefile
 		release-notes/Makefile
 		examples/Makefile
