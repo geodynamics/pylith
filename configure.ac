@@ -267,11 +267,6 @@ AC_CONFIG_FILES([Makefile
         developer/Makefile
 		docs/Makefile
 		release-notes/Makefile
-		developer/Makefile
-		doc/Makefile
-		doc/install/Makefile
-		doc/releasenotes/Makefile
-		doc/userguide/Makefile
 		examples/Makefile
 		examples/barwaves-2d/Makefile
 		examples/box-2d/Makefile
