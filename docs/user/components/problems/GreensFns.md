@@ -54,8 +54,8 @@ Implements `Problem`.
   - **default value**: 1
   - **current value**: 1, from {default}
 * `solver`=\<str\>: Type of solver to use ['linear', 'nonlinear'].
-  - **default value**: 'linear'
-  - **current value**: 'linear', from {default}
+  - **default value**: 'nonlinear'
+  - **current value**: 'nonlinear', from {default}
   - **validator**: (in ['linear', 'nonlinear'])
 
 ## Example
