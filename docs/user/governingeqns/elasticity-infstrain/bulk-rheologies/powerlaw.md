@@ -134,8 +134,8 @@ The simplest method is probably to assume a reasonable value for the reference s
 \sigma_{0}^{dev} = \left(\frac{\dot{\epsilon}_{0}^{dev}}{A_{T}}\right)^{\frac{1}{n}}.
 ```
 
-We provide (`powerlaw_gendb.py`) to convert laboratory results to the properties used by PyLith.
-To use the code, you must specify the spatial variation of $A_{E}$, $Q$, $n$, and $T$.
+We provide `pylith_powerlaw_gendb` (see {ref}`sec-user-run-pylith-pylith-powerlaw-gendb`) to convert laboratory results to the properties used by PyLith.
+To use the code you must specify the spatial variation of $A_{E}$, $Q$, $n$, and $T$.
 An additional parameter is given to define the units of $A_{E}$.
 You must also specify either a reference stress or a reference strain rate.
 

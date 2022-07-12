@@ -6,6 +6,12 @@
 
 Abstract base class for a problem.
 
+The default formulation, solution field, and scales for nondimensionalization are appropriate for solving the quasi-static elasticity equation.
+
+By default, we use the nonlinear solver.
+This facilitates verifying that the residual and Jacobian are consistent.
+If the nonlinear (SNES) solver requires multiple iterations to converge for these linear problems, then we know there is an error in the problem setup.
+
 ## Pyre Facilities
 
 * `bc`: Boundary conditions.
@@ -43,7 +49,7 @@ Abstract base class for a problem.
   - **current value**: 'quasistatic', from {default}
   - **validator**: (in ['quasistatic', 'dynamic', 'dynamic_imex'])
 * `solver`=\<str\>: Type of solver to use ['linear', 'nonlinear'].
-  - **default value**: 'linear'
-  - **current value**: 'linear', from {default}
+  - **default value**: 'nonlinear'
+  - **current value**: 'nonlinear', from {default}
   - **validator**: (in ['linear', 'nonlinear'])
 

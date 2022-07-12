@@ -1,56 +1,33 @@
 #!/usr/bin/env nemesis
-#
 # ----------------------------------------------------------------------
 #
 # Brad T. Aagaard, U.S. Geological Survey
 # Charles A. Williams, GNS Science
-# Matthew G. Knepley, University of Chicago
+# Matthew G. Knepley, University at Buffalo
 #
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2017 University of California, Davis
+# Copyright (c) 2010-2022 University of California, Davis
 #
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
-
-# @file playpen/powerlaw/powerlaw_gendb.py
-
-# @brief Python application to compute power-law parameters used by
-# PyLith, given a spatial database describing the temperature and
-# another spatial database describing the laboratory-derived
-# properties for the various materials. The output is another spatial
-# database containing the power-law parameters for PyLith.
+"""
+Pyre application to compute power-law parameters used by PyLith, given
+spatial databases describing the temperature and laboratory-derived
+properties for the various materials. The output is a `SimpleDB` spatial
+database containing the power-law parameters for PyLith.
+"""
 
 import numpy
-import math
 
 from pythia.pyre.applications.Script import Script as Application
 
 
 class PowerLawApp(Application):
+    """Pyre application to generate a spatial database with power-law parameters for PyLith.
     """
-    Python application to compute power-law parameters used by PyLith,
-    given input spatial databases describing the temperature and the
-    laboratory-derived properties for the various materials. The output is
-    another spatial database containing the power-law parameters for PyLith.
-    """
-
-    # \b Properties
-    # @li \b reference_value Indicates whether reference stress or
-    # reference strain rate is provided as input.
-    # @li \b reference_stress Value for reference stress.
-    # @li \b reference_strain_rate Value for reference strain rate.
-    ##
-    # \b Facilities
-    # @li \b db_exponent Spatial db for power-law exponent, n.
-    # @li \b db_activation_energy Spatial db for activation energy, Q.
-    # @li \b db_temperature Spatial db for temperature, T.
-    # @li \b db_powerlaw_coefficient Spatial db for power-law coefficient, Ae.
-    # @li \b geometry Geometry for output database.
-    # @li \b database_filename Object for writing database.
 
     import pythia.pyre.inventory
     from pythia.pyre.units.pressure import MPa
@@ -72,16 +49,16 @@ class PowerLawApp(Application):
     from spatialdata.spatialdb.SimpleDB import SimpleDB
 
     dbExponent = pythia.pyre.inventory.facility("db_exponent", family="spatial_database", factory=SimpleDB)
-    dbExponent.meta['tip'] = "Spatial db for power-law exponent, n."
+    dbExponent.meta['tip'] = "Spatial database for power-law exponent, n."
 
     dbActivationE = pythia.pyre.inventory.facility("db_activation_energy", family="spatial_database", factory=SimpleDB)
-    dbActivationE.meta['tip'] = "Spatial db for activation energy, Q."
+    dbActivationE.meta['tip'] = "Spatial database for activation energy, Q."
 
     dbTemperature = pythia.pyre.inventory.facility("db_temperature", family="spatial_database", factory=SimpleDB)
-    dbTemperature.meta['tip'] = "Spatial db for temperature, T."
+    dbTemperature.meta['tip'] = "Spatial database for temperature, T."
 
     dbAe = pythia.pyre.inventory.facility("db_powerlaw_coefficient", family="spatial_database", factory=SimpleDB)
-    dbAe.meta['tip'] = "Spatial db for power-law coefficient, Ae."
+    dbAe.meta['tip'] = "Spatial database for power-law coefficient, Ae."
 
     from spatialdata.spatialdb.generator.Geometry import Geometry
     geometry = pythia.pyre.inventory.facility("geometry", family="geometry", factory=Geometry)
@@ -89,8 +66,6 @@ class PowerLawApp(Application):
 
     dbFilename = pythia.pyre.inventory.str("database_filename", default="powerlaw.spatialdb")
     dbFilename.meta['tip'] = "Filename for generated spatial database."
-
-    # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="powerlaw_gendb"):
         Application.__init__(self, name)
@@ -130,7 +105,7 @@ class PowerLawApp(Application):
             refStrainRate[:] = self.refStrainRate.value
             refStress = (self.refStrainRate.value / At)**(1.0 / n)
         else:
-            raise ValueError("Invalid value (%s) for reference value." % self.refSelection)
+            raise ValueError(f"Invalid value (self.refSelection) for reference value.")
 
         refStressInfo = {
             'name': "reference-stress",
@@ -159,7 +134,6 @@ class PowerLawApp(Application):
         from spatialdata.spatialdb.SimpleIOAscii import createWriter
         writer = createWriter(self.dbFilename)
         writer.write(data)
-        return
 
     def _queryDB(self, db, valueName, points, cs):
         """

@@ -66,8 +66,8 @@ Implements `Problem`.
   - **default value**: False
   - **current value**: False, from {default}
 * `solver`=\<str\>: Type of solver to use ['linear', 'nonlinear'].
-  - **default value**: 'linear'
-  - **current value**: 'linear', from {default}
+  - **default value**: 'nonlinear'
+  - **current value**: 'nonlinear', from {default}
   - **validator**: (in ['linear', 'nonlinear'])
 * `start_time`=\<dimensional\>: Start time for problem.
   - **default value**: 0*s
