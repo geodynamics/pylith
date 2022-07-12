@@ -1,5 +1,5 @@
 /**
- * Quasistatic simulation with spontaneous rupture.
+ * Quasi-static simulation with spontaneous rupture.
  *
  * Fully implicit solve: F(t,s) = 0.
  *
@@ -36,18 +36,18 @@ QuasistaticSpontaneousRupture::QuasistaticSpontaneousRupture(const char* frictio
     _hasLHSJacobian = true;
 
     if (0 == strcasecmp(friction, "static")) {
-	_friction = new StaticFriction();
+        _friction = new StaticFriction();
     } else if (0 == strcasecmp(friction, "slip_weakening")) {
-      _friction = new SlipWeakeningFriction(true);
+        _friction = new SlipWeakeningFriction(true);
     } else if (0 == strcasecmp(friction, "viscous")) {
-      _friction = new ViscousFriction();
+        _friction = new ViscousFriction();
     } else if (0 == strcasecmp(friction, "rate_state_stable")) {
-      _friction = new RateStateFriction("stable");
+        _friction = new RateStateFriction("stable");
     } else if (0 == strcasecmp(friction, "rate_state_unstable")) {
-      _friction = new RateStateFriction("unstable");
+        _friction = new RateStateFriction("unstable");
     } else {
-      std::cerr << "Unknown friction model '" << friction << "'. Using default (slip_weakening)." << std::endl;
-      _friction = new SlipWeakeningFriction(true);      
+        std::cerr << "Unknown friction model '" << friction << "'. Using default (slip_weakening)." << std::endl;
+        _friction = new SlipWeakeningFriction(true);
     }
 }
 
@@ -90,12 +90,12 @@ QuasistaticSpontaneousRupture::_setSolutionBounds(PetscTS ts) {
 // --------------------------------------------------------------------------------------------------
 void
 QuasistaticSpontaneousRupture::_computeLHSResidual(const PetscReal t,
-						   const PetscReal dt,
+                                                   const PetscReal dt,
                                                    const PetscVec solution,
                                                    const PetscVec solutionDot,
                                                    PetscVec residual) {
-  const PetscScalar zeroTolerance = 1.0e-12;
-  
+    const PetscScalar zeroTolerance = 1.0e-12;
+
     PetscErrorCode err = 0;
     const PetscScalar* solutionArray = NULL;
     const PetscScalar* solutionDotArray = NULL;
@@ -141,7 +141,7 @@ QuasistaticSpontaneousRupture::_computeLHSResidual(const PetscReal t,
     residualArray[5] = uDot[1] - v[1];
     residualArray[6] = uDot[2] - v[2];
     residualArray[7] = uDot[3] - v[3];
-    
+
     residualArray[8] = lambda * (u[2] - u[1] - d);
 
     err = VecRestoreArrayRead(solution, &solutionArray);CHECK_ERROR(err);
@@ -153,7 +153,7 @@ QuasistaticSpontaneousRupture::_computeLHSResidual(const PetscReal t,
 // --------------------------------------------------------------------------------------------------
 void
 QuasistaticSpontaneousRupture::_computeLHSJacobian(const PetscReal t,
-						   const PetscReal dt,
+                                                   const PetscReal dt,
                                                    const PetscVec solution,
                                                    const PetscVec solutionDot,
                                                    const PetscReal stshift,
@@ -214,11 +214,11 @@ QuasistaticSpontaneousRupture::_computeLHSJacobian(const PetscReal t,
     jacobianArray[6][6] = -1.0;
     jacobianArray[7][3] = stshift;
     jacobianArray[7][7] = -1.0;
-    
+
     jacobianArray[8][1] = -lambda;
     jacobianArray[8][2] = +lambda;
     jacobianArray[8][8] = lambda > 0 ? u[2] - u[1] - d : 1.0;
-    
+
     err = VecRestoreArrayRead(solution, &solutionArray);CHECK_ERROR(err);
     err = VecRestoreArrayRead(solutionDot, &solutionDotArray);CHECK_ERROR(err);
 
@@ -246,8 +246,9 @@ QuasistaticSpontaneousRupture::_updateState(const double dt) {
 
     // Set lambda to 1.0 as initial guess for next time step.
     err = VecSetValue(_solution, _numDOFAll-1, 1.0, INSERT_VALUES);
-    
+
     err = VecRestoreArrayRead(_solution, &solutionArray);CHECK_ERROR(err);
 }
+
 
 // End of file

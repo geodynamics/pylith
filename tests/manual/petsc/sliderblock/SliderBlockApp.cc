@@ -20,8 +20,7 @@ SliderBlockApp::SliderBlockApp() :
     _optRupture("prescribed_slip"),
     _optFriction("slip_weakening"),
     _outputFilename("sliderblock.h5"),
-    _formulation(NULL)
-{}
+    _formulation(NULL) {}
 
 
 // --------------------------------------------------------------------------------------------------
@@ -120,8 +119,8 @@ SliderBlockApp::_initialize(void) {
     } else {
         std::ostringstream msg;
         msg << "Cannot parse simulation options.\n"
-            << "  --equations=" << _optEquations << ". Choices: quasistatic, dynamic\n"
-            << "  --rupture=" << _optRupture << ". Choices: prescribed_slip, spontaneous_rupture\n";
+            << "  -equations " << _optEquations << ". Choices: quasistatic, dynamic\n"
+            << "  -rupture " << _optRupture << ". Choices: prescribed_slip, spontaneous_rupture\n";
         throw std::runtime_error(msg.str().c_str());
     } // if/else
 

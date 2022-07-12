@@ -7,8 +7,8 @@
 
 #include <cassert> // USES assert()
 
-//const double Formulation::_duration = 50.0;
-//const double Formulation::_dtInitial = 0.01;
+// const double Formulation::_duration = 50.0;
+// const double Formulation::_dtInitial = 0.01;
 const double Formulation::_duration = 20.0;
 const double Formulation::_dtInitial = 0.02;
 
@@ -34,8 +34,7 @@ Formulation::Formulation(void) :
     _viewer(NULL),
     _solution(NULL),
     _jacobianLHS(NULL),
-    _jacobianRHS(NULL)
-{}
+    _jacobianRHS(NULL) {}
 
 
 // --------------------------------------------------------------------------------------------------
@@ -135,9 +134,9 @@ Formulation::_poststep(void) {
     err = TSGetTime(_ts, &t);CHECK_ERROR(err);
     err = TSGetTimeStep(_ts, &dt);CHECK_ERROR(err);
     err = TSGetStepNumber(_ts, &tindex);CHECK_ERROR(err);
- 
+
     this->_updateState(dt);
-    
+
     // Set time stamp
     err = VecSetValue(_tstamp, 0, t, INSERT_VALUES);CHECK_ERROR(err);
     err = VecAssemblyBegin(_tstamp);CHECK_ERROR(err);
@@ -168,7 +167,7 @@ Formulation::computeLHSResidual(PetscTS ts,
 
     PetscReal dt;
     PetscErrorCode err = TSGetTimeStep(ts, &dt);CHECK_ERROR(err);
-    
+
     Formulation* formulation = (Formulation*)context;assert(formulation);
     assert(formulation->_hasLHSResidual);
     formulation->_computeLHSResidual(t, dt, solution, solutionDot, residual);
@@ -188,7 +187,7 @@ Formulation::computeRHSResidual(PetscTS ts,
 
     PetscReal dt;
     PetscErrorCode err = TSGetTimeStep(ts, &dt);CHECK_ERROR(err);
-    
+
     Formulation* formulation = (Formulation*)context;assert(formulation);
     assert(formulation->_hasRHSResidual);
     formulation->_computeRHSResidual(t, dt, solution, residual);
@@ -211,7 +210,7 @@ Formulation::computeLHSJacobian(PetscTS ts,
 
     PetscReal dt;
     PetscErrorCode err = TSGetTimeStep(ts, &dt);CHECK_ERROR(err);
-    
+
     Formulation* formulation = (Formulation*)context;assert(formulation);
     assert(formulation->_hasLHSJacobian);
     formulation->_computeLHSJacobian(t, dt, solution, solutionDot, shift, jacobian, preconditioner);
@@ -239,7 +238,7 @@ Formulation::computeRHSJacobian(PetscTS ts,
 
     PetscReal dt;
     PetscErrorCode err = TSGetTimeStep(ts, &dt);CHECK_ERROR(err);
-    
+
     Formulation* formulation = (Formulation*)context;assert(formulation);
     assert(formulation->_hasRHSJacobian);
     formulation->_computeRHSJacobian(t, dt, solution, jacobian, preconditioner);
@@ -271,7 +270,7 @@ Formulation::poststep(PetscTS ts) {
 // --------------------------------------------------------------------------------------------------
 void
 Formulation::_computeLHSResidual(const PetscReal,
-				 const PetscReal,
+                                 const PetscReal,
                                  const PetscVec,
                                  const PetscVec,
                                  PetscVec) {
@@ -282,7 +281,7 @@ Formulation::_computeLHSResidual(const PetscReal,
 // --------------------------------------------------------------------------------------------------
 void
 Formulation::_computeLHSJacobian(const PetscReal,
-				 const PetscReal,
+                                 const PetscReal,
                                  const PetscVec,
                                  const PetscVec,
                                  const PetscReal,
@@ -295,7 +294,7 @@ Formulation::_computeLHSJacobian(const PetscReal,
 // --------------------------------------------------------------------------------------------------
 void
 Formulation::_computeRHSResidual(const PetscReal,
-				 const PetscReal,
+                                 const PetscReal,
                                  const PetscVec,
                                  PetscVec) {
     throw std::logic_error("_computeRHSResidual() not implemented.");
@@ -305,7 +304,7 @@ Formulation::_computeRHSResidual(const PetscReal,
 // --------------------------------------------------------------------------------------------------
 void
 Formulation::_computeRHSJacobian(const PetscReal,
-				 const PetscReal,
+                                 const PetscReal,
                                  const PetscVec,
                                  PetscMat,
                                  PetscMat) {
@@ -316,6 +315,7 @@ Formulation::_computeRHSJacobian(const PetscReal,
 // --------------------------------------------------------------------------------------------------
 void
 Formulation::_updateState(const double dt) {}
+
 
 // --------------------------------------------------------------------------------------------------
 void
