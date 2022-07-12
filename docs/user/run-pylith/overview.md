@@ -48,6 +48,13 @@ PyLith requires a finite-element mesh (three different mechanisms for generating
 PyLith writes the solution output to either VTK or HDF5/Xdmf files, which can be visualized with ParaView or Visit. Post-processing is generally done using the HDF5 files with Python or Matlab scripts.
 :::
 
+## Nondimensionalization
+
+PyLith scales all parameters provided by the user so that the simulation solves the equations using nondimensional quantities.
+This permits application of PyLith to problems across a vast range of spatial and temporal scales.
+The scales used to nondimensionalize the problem are length, pressure, density, and time. SpatialData provides two normalizer objects to make it easy to provide reasonable scales for quasi-static and dynamic elasticity boundary value problems.
+See <https://spatialdata.readthedocs.io/en/latest/user/nondimensionalization.html> for details.
+
 ## Finite-Element Implementation User Interface
 
 In specifying simulation parameters, some details of the finite-element implementation using the PETSc `DMPlex` is exposed to the user.
