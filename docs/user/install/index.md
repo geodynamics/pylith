@@ -126,19 +126,13 @@ We strongly recommend using the [PyLith development environment Docker container
 
 ## Installation from Source
 
-:::{admonition} TODO
-:class: error
-
-Update `fig:pylith:dependencies`
-:::
-
 PyLith depends on a number of other packages (see {numref}`fig:pylith:dependencies`).
 This complicates building the software from the source code.
 In many cases some of the packages required by PyLith are available as binary packages.
 On the one hand, using the binary packages for the dependencies removes the burden of configuring, building, and installing these dependencies, but that can come with its own host of complications if consistent compiler and configuration settings are not used across all of the packages on which PyLith depends.
 This is usually not an issue with Linux distributions, such as Fedora, Ubuntu, and Debian that have good quality control; it can be an issue with macOS package managers, such as Fink, MacPorts, and Homebrew, where there is limited enforcement of consistency across packages.
 Nevertheless, PyLith can be built on most systems provided the instructions are followed carefully.
-PyLith is developed and tested on Linux and Mac OS X.
+PyLith is developed and tested on Linux and macOS.
 
 A small utility, PyLith Installer, removes most of the obstacles in building PyLith and its dependencies from source.
 For each package this utility downloads the source code, configures it, builds it, and installs it.
