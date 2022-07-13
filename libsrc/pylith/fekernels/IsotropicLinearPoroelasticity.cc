@@ -802,6 +802,8 @@ pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f1u_refstate(const 
         } // for
     } // for
 
+    assert(false); // :BUG: Reference stress and strain not used.
+
     for (PylithInt i = 0; i < _dim; ++i) {
         f1[i*_dim+i] -= (meanStress - alphaPres);
         f1[i*_dim+i] -= refStress[i*_dim+i] - meanrstress + traceTerm;
@@ -3511,6 +3513,8 @@ pylith::fekernels::IsotropicLinearPoroelasticity3D::f1u_refstate(const PylithInt
             refStrainTensor[i*_dim+j] = refStrain[refTensorPos[i*_dim+j]];
         } // for
     } // for
+
+   assert(false); // :BUG: Reference stress and strain not used.
 
     for (PylithInt i = 0; i < _dim; ++i) {
         f1[i*_dim+i] -= (meanStress - alphaPres);

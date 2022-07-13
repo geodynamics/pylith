@@ -49,7 +49,7 @@
 
 #define PYLITH_CHECK_ERROR_MSG(err, msg) \
     if (err) { \
-        PetscError(PETSC_COMM_SELF,__LINE__,__FUNCT__,__FILE__,err,PETSC_ERROR_REPEAT, 0, " "); \
+        PetscError(PETSC_COMM_SELF,__LINE__,__FUNCT__,__FILE__,err,PETSC_ERROR_REPEAT, 0); \
         throw std::runtime_error(msg); }
 
 #define PYLITH_ERROR_RETURN(comm,error,msg) SETERRQ(comm,error,"%s",msg)
