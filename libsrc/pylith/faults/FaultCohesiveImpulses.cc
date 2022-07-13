@@ -116,7 +116,7 @@ pylith::faults::FaultCohesiveImpulses::setImpulseDOF(const int* flags,
     } // if
 
     _impulseDOF.resize(size);
-    for (int i = 0; i < size; ++i) {
+    for (size_t i = 0; i < size; ++i) {
         _impulseDOF[i] = flags[i];
     } // for
 } // setImpulseDOF
@@ -298,7 +298,7 @@ pylith::faults::FaultCohesiveImpulses::_updateSlip(pylith::topology::Field* auxi
     PylithScalar* auxiliaryArray = auxiliaryVisitor.localArray();
     const PetscInt pImpulse = _impulsePoints[iImpulse];
     const PetscInt dof = _impulseDOF[iComponent];
-    const PetscInt slipDof = auxiliaryVisitor.sectionDof(pImpulse);assert(iComponent < slipDof);
+    const PetscInt slipDof = auxiliaryVisitor.sectionDof(pImpulse);assert(iComponent < size_t(slipDof));
     const PetscInt slipOff = auxiliaryVisitor.sectionOffset(pImpulse);
     auxiliaryArray[slipOff+dof] = 1.0 / _normalizer->getLengthScale();
 

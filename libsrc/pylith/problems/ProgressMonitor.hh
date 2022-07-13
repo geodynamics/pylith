@@ -105,7 +105,7 @@ protected:
     double _updatePercent; ///< Percentage of completion between status reports.
     std::string _filename; ///< Name of output file.
     time_t _startTime;
-    size_t _iUpdate; /// Current update step.
+    long _iUpdate; /// Current update step.
     bool _isMaster; ///< Is master process.
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
