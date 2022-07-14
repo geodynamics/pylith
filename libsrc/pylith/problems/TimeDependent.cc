@@ -441,6 +441,13 @@ pylith::problems::TimeDependent::solve(void) {
     PYLITH_METHOD_END;
 } // solve
 
+static void move(PetscInt dim, PetscInt Nf, PetscInt NfAux,
+                 const PetscInt uOff[], const PetscInt uOff_x[], const PetscScalar u[], const PetscScalar u_t[], const PetscScalar u_x[],
+                 const PetscInt aOff[], const PetscInt aOff_x[], const PetscScalar a[], const PetscScalar a_t[], const PetscScalar a_x[],
+                 PetscReal t, const PetscReal x[], PetscInt numConstants, const PetscScalar constants[], PetscScalar f0[])
+{
+  for (PetscInt d = 0; d < dim; ++d) f0[d] = u[d] + a[d];
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Perform operations after advancing solution one time step.
@@ -476,6 +483,24 @@ pylith::problems::TimeDependent::poststep(void) {
     for (size_t i = 0; i < numConstraints; ++i) {
         _constraints[i]->poststep(t, tindex, dt, *solution);
     } // for
+
+    // Update coordinates
+    if (1) {
+      PetscDM        dm, cdm;
+      PetscVec       coordinates, coordinatesNew;
+      PetscPointFunc funcs[1] = {move};
+
+      err = TSGetDM(_ts, &dm);PYLITH_CHECK_ERROR(err);
+      err = DMGetCoordinateDM(dm, &cdm);PYLITH_CHECK_ERROR(err);
+      err = DMGetCoordinatesLocal(dm, &coordinates);PYLITH_CHECK_ERROR(err);
+      err = DMGetLocalVector(cdm, &coordinatesNew);PYLITH_CHECK_ERROR(err);
+      err = DMSetAuxiliaryVec(cdm, NULL, 0, 0, solution->getLocalVector());PYLITH_CHECK_ERROR(err);
+      err = DMProjectFieldLocal(cdm, t, coordinates, funcs, INSERT_VALUES, coordinatesNew);PYLITH_CHECK_ERROR(err);
+      err = DMSetAuxiliaryVec(cdm, NULL, 0, 0, NULL);PYLITH_CHECK_ERROR(err);
+      err = VecCopy(coordinatesNew, coordinates);PYLITH_CHECK_ERROR(err);
+      err = DMSetCoordinatesLocal(dm, coordinates);PYLITH_CHECK_ERROR(err); // Invalidates global coordinates
+      err = DMRestoreLocalVector(cdm, &coordinatesNew);PYLITH_CHECK_ERROR(err);
+    }
 
     // Notify problem observers of updated solution.
     assert(_observers);
