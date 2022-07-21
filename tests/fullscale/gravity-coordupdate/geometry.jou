@@ -1,0 +1,52 @@
+# -*- Python -*- (syntax highlighting)
+# ----------------------------------------------------------------------
+#
+# Brad T. Aagaard, U.S. Geological Survey
+# Charles A. Williams, GNS Science
+# Matthew G. Knepley, University at Buffalo
+#
+# This code was developed as part of the Computational Infrastructure
+# for Geodynamics (http://geodynamics.org).
+#
+# Copyright (c) 2010-2022 University of California, Davis
+#
+# See LICENSE.md for license information.
+#
+# ----------------------------------------------------------------------
+# Set units to SI.
+# ----------------------------------------------------------------------
+${Units('si')}
+
+# ----------------------------------------------------------------------
+# Define dimensions for problem.
+# ----------------------------------------------------------------------
+
+# Outer block is 200 km x 200 km.
+# -100 km <= x <= 100 km 
+# -200 km <= y <= 0 m
+# Inner block is 20 km x 20 km.
+# -100 km <= x <= -80 km.
+# -20 km <= y <= 0 km.
+reset
+${outerBlockX=200.0*km}
+${outerBlockY=200.0*km}
+${innerBlockX=20.0*km}
+${innerBlockY=20.0*km}
+${outerMoveY=-0.5*outerBlockY}
+${innerMoveX=-0.5*outerBlockX+0.5*innerBlockX}
+${innerMoveY=-0.5*innerBlockY}
+
+# ----------------------------------------------------------------------
+# Create inner and outer boxes and move them.
+# ----------------------------------------------------------------------
+create surface rectangle width {outerBlockX} height {outerBlockY}
+volume 1 move x 0.0 y {outerMoveY}
+create surface rectangle width {innerBlockX} height {innerBlockY}
+volume 2 move x {innerMoveX} y {innerMoveY}
+
+# ----------------------------------------------------------------------
+# Chop outer box with inner box, imprint and merge.
+# ----------------------------------------------------------------------
+chop volume 1 with volume 2
+imprint all
+merge all
