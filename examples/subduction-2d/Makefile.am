@@ -40,7 +40,11 @@ dist_noinst_DATA = \
 	mat_oceancrust.spatialdb \
 	mat_mantle.spatialdb \
 	afterslip_tractions.spatialdb \
-	afterslip_tractions.py
+	afterslip_tractions.py \
+	viz/plot_dispwarp.py \
+	viz/plot_mesh.py \
+	viz/plot_shearratio.py \
+	viz/plot_slipprofile.py
 
 
 # End of file 

@@ -218,7 +218,7 @@ pylith::meshio::OutputSubfield::projectWithLabel(const PetscVec& fieldVector) {
     PetscErrorCode err;
     const PetscReal t = PetscReal(_subfieldIndex) + 0.01; // :KLUDGE: Easiest way to get subfield to extract into fn.
 
-    err = DMProjectFieldLabelLocal(_dm, t, _label, 1, &_labelValue, PETSC_DETERMINE, NULL, fieldVector, &_fn, INSERT_VALUES, _vector);PYLITH_CHECK_ERROR(err);
+    err = DMProjectFieldLabel(_dm, t, _label, 1, &_labelValue, PETSC_DETERMINE, NULL, fieldVector, &_fn, INSERT_VALUES, _vector);PYLITH_CHECK_ERROR(err);
     err = VecScale(_vector, _description.scale);PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
