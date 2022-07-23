@@ -54,14 +54,12 @@ public:
              * @param[in] argv Array of input arguments.
              * @param[in] petscOptions Array of PETSc options to set.
              * @param[in] mallocDump Set malloc debug dump.
-             * @param[in] checkStack Set checkstack.
              */
             static
             int initializePetsc(int argc,
                                 char* argv[],
                                 const std::vector<std::string>& petscOptions,
-                                const bool mallocDump,
-				const bool checkStack);
+                                const bool mallocDump);
 
             /** Add journal.
              *
@@ -107,8 +105,7 @@ public:
 pylith::testing::TestDriver::TestDriver() :
     _showHelp(false),
     _listTests(false),
-    _mallocDump(true),
-    _checkStack(true) {}
+    _mallocDump(true) {}
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -131,7 +128,7 @@ pylith::testing::TestDriver::run(int argc,
     CppUnit::TestResultCollector result;
     try {
         // Initialize PETSc
-      int err = _TestDriver::initializePetsc(argc, argv, _petscOptions, _mallocDump, _checkStack);CHKERRQ(err);
+        int err = _TestDriver::initializePetsc(argc, argv, _petscOptions, _mallocDump);CHKERRQ(err);
 
         // Initialize Python (to eliminate need to initialize when
         // parsing units in spatial databases).
@@ -182,9 +179,6 @@ pylith::testing::TestDriver::run(int argc,
     if (!_mallocDump) {
         std::cout << "WARNING PETSc option -malloc dump is OFF\n" << std::endl;
     } // if
-    if (!_checkStack) {
-        std::cout << "WARNING PETSc option -checkstack is OFF\n" << std::endl;
-    } // if
 
     return (result.wasSuccessful() ? 0 : 1);
 } // run
@@ -221,7 +215,6 @@ pylith::testing::TestDriver::_parseArgs(int argc,
             break;
         case 'q':
             _mallocDump = false;
-	    _checkStack = false;
             break;
         case 't': {
             _tests.clear();
@@ -282,14 +275,10 @@ int
 pylith::testing::_TestDriver::initializePetsc(int argc,
                                               char* argv[],
                                               const std::vector<std::string>& petscOptions,
-                                              const bool mallocDump,
-					      const bool checkStack) {
-    int argcP = (checkStack) ? 2 : 1;
+                                              const bool mallocDump) {
+    int argcP = 1;
     char** argvP = new char*[argcP+1];
     argvP[0] = argv[0];
-    if (checkStack) {
-      argvP[1] = (char*)"-checkstack";
-    } // if
     argvP[argcP] = NULL; // C standard is argv[argc] == NULL.
     PetscErrorCode err = PetscInitialize(&argcP, &argvP, NULL, NULL);CHKERRQ(err);
     delete[] argvP;argvP = NULL;
