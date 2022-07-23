@@ -305,9 +305,13 @@ pylith::materials::Poroelasticity::getSolverDefaults(const bool isParallel,
             if (!isParallel) {
                 options->add("-pc_type", "lu");
             } else {
+#if 1
+                options->add("-pc_type", "ml");
+#else
                 options->add("-pc_type", "gamg");
                 options->add("-mg_levels_pc_type", "sor");
                 options->add("-mg_levels_ksp_type", "richardson");
+#endif
             } // if/else
         } // if
         break;

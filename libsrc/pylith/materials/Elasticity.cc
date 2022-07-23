@@ -273,12 +273,17 @@ pylith::materials::Elasticity::getSolverDefaults(const bool isParallel,
                 options->add("-fieldsplit_displacement_pc_type", "lu");
                 options->add("-fieldsplit_lagrange_multiplier_fault_pc_type", "lu");
             } else {
+#if 1
+                options->add("-fieldsplit_displacement_pc_type", "ml");
+                options->add("-fieldsplit_lagrange_multiplier_fault_pc_type", "ml");
+#else
                 options->add("-fieldsplit_displacement_pc_type", "gamg");
                 options->add("-fieldsplit_displacement_mg_levels_pc_type", "sor");
                 options->add("-fieldsplit_displacement_mg_levels_ksp_type", "richardson");
                 options->add("-fieldsplit_lagrange_multiplier_fault_pc_type", "gamg");
                 options->add("-fieldsplit_lagrange_multiplier_fault_mg_levels_pc_type", "sor");
                 options->add("-fieldsplit_lagrange_multiplier_fault_mg_levels_ksp_type", "richardson");
+#endif
             } // if/else
         } // if/else
         break;
