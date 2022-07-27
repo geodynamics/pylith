@@ -108,10 +108,8 @@ pylith::feassemble::ConstraintSimple::initialize(const pylith::topology::Field& 
         }
     }
     if (!ds) {
-        std::ostringstream msg;
-
-        msg << "INTERNAL ERROR in ConstraintSimple::initialize()\nCould not find a DS with a field named ''" << _subfieldName << "' in solution";
-        throw std::logic_error(msg.str());
+        err = DMPlexRestoreTransitiveClosure(solution.getDM(), point, PETSC_FALSE, &clSize, &closure);PYLITH_CHECK_ERROR(err);
+        PYLITH_JOURNAL_LOGICERROR("INTERNAL ERROR in ConstraintSimple::initialize()\nCould not find a DS with a field named ''" << _subfieldName << "' in solution.");
     }
     err = DMPlexRestoreTransitiveClosure(solution.getDM(), point, PETSC_FALSE, &clSize, &closure);PYLITH_CHECK_ERROR(err);
     err = DMGetLabel(solution.getDM(), _labelName.c_str(), &label);PYLITH_CHECK_ERROR(err);
@@ -120,9 +118,9 @@ pylith::feassemble::ConstraintSimple::initialize(const pylith::topology::Field& 
     PYLITH_CHECK_ERROR(err);
     err = DMViewFromOptions(dm, NULL, "-constraint_simple_dm_view");PYLITH_CHECK_ERROR(err);
     {
-        PetscInt Nds;
-        err = DMGetNumDS(dm, &Nds);PYLITH_CHECK_ERROR(err);
-        for (int s = 0; s < Nds; ++s) {
+        PetscInt numDS;
+        err = DMGetNumDS(dm, &numDS);PYLITH_CHECK_ERROR(err);
+        for (int s = 0; s < numDS; ++s) {
             err = DMGetRegionNumDS(dm, s, NULL, NULL, &ds);PYLITH_CHECK_ERROR(err);
             err = PetscObjectViewFromOptions((PetscObject) ds, NULL, "-constraint_simple_ds_view");PYLITH_CHECK_ERROR(err);
         }
