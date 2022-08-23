@@ -73,9 +73,9 @@ TAG
 
 RELEASE
 
-  * Create release from tag on GitHub.
+  * Reserve DOI at zenodo and update DOI in README.md, configure.ac, and preface.md.
 
-  * Get DOI at zenodo and update DOI in README.md, configure.ac, and userguide.tex.
+  * Create release from tag on GitHub.
 
   * Upload source tarballs to GitHub. 
 
