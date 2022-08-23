@@ -22,6 +22,7 @@ class App(GenerateMesh):
             "required": True,
             "choices": ["tri", "quad"],
             }
+        self.filename = "tri.msh"
 
     def create_geometry(self):
         """Create geometry.

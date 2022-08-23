@@ -8,13 +8,14 @@ class App(GenerateMesh):
     Block is DOMAIN_X by DOMAIN_Y by DOMAIN_Z with discretization size DX.
     """
     DOMAIN_X = DOMAIN_Y = DOMAIN_Z = 8.0e+3
-    DX = 4.0e+3
+    DX = 2.0e+3
 
     def __init__(self):
         self.cell_choices = {
             "required": True,
             "choices": ["tet", "hex"],
             }
+        self.filename = "tet.msh"
 
     def create_geometry(self):
         """Create geometry.
