@@ -354,14 +354,20 @@ pylith::topology::Field::view(const char* label,
         } // for
     } // if
 
-    PetscSection section = NULL;
     PetscMPIInt numProcs, rank;
     PetscErrorCode err;
 
     const PetscDM dm = _mesh->getDM();assert(dm);
-    err = DMGetSection(dm, &section);PYLITH_CHECK_ERROR(err);
     if ((VIEW_LAYOUT == options) || (VIEW_ALL == options)) {
         err = DMView(dm, PETSC_VIEWER_STDOUT_WORLD);PYLITH_CHECK_ERROR(err);
+
+        PetscSection section = NULL;
+        err = DMGetLocalSection(dm, &section);PYLITH_CHECK_ERROR(err);
+        std::cout << "Local section" << std::endl;
+        err = PetscSectionView(section, PETSC_VIEWER_STDOUT_WORLD);PYLITH_CHECK_ERROR(err);
+
+        err = DMGetGlobalSection(dm, &section);PYLITH_CHECK_ERROR(err);
+        std::cout << "Global section" << std::endl;
         err = PetscSectionView(section, PETSC_VIEWER_STDOUT_WORLD);PYLITH_CHECK_ERROR(err);
     } // if
     if ((VIEW_VALUES == options) || (VIEW_ALL == options)) {

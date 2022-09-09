@@ -108,9 +108,12 @@ pylith::feassemble::ConstraintSimple::initialize(const pylith::topology::Field& 
         }
     }
     if (!ds) {
-        err = DMPlexRestoreTransitiveClosure(solution.getDM(), point, PETSC_FALSE, &clSize, &closure);PYLITH_CHECK_ERROR(err);
-        PYLITH_JOURNAL_LOGICERROR("INTERNAL ERROR in ConstraintSimple::initialize()\nCould not find a DS with a field named ''" << _subfieldName << "' in solution.");
-    }
+        // :KLUDGE: It is possible for a process to have a DOF that we need to constrain, but the process
+        // may not have any cells with that DOF. The underlying code doesn't actually care if the point is
+        // in the DS, so just get any DS and use it for the constraint.
+        err = DMGetDS(dm, &ds);PYLITH_CHECK_ERROR(err);
+        i_field = solution.getSubfieldInfo(_subfieldName.c_str()).index;
+    } // if
     err = DMPlexRestoreTransitiveClosure(solution.getDM(), point, PETSC_FALSE, &clSize, &closure);PYLITH_CHECK_ERROR(err);
     err = DMGetLabel(solution.getDM(), _labelName.c_str(), &label);PYLITH_CHECK_ERROR(err);
     err = PetscDSAddBoundary(ds, DM_BC_ESSENTIAL, _labelName.c_str(), label, 1, &_labelValue, i_field,
