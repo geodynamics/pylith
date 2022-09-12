@@ -187,6 +187,11 @@ pylith::topology::MeshOps::createFromPoints(const PylithReal* points,
     err = DMSetCoordinateDim(dmPoints, spaceDim);PYLITH_CHECK_ERROR(err);
     err = DMPlexCreateFromDAG(dmPoints, depth, dmNumPoints, &dmConeSizes[0], &dmCones[0],
                               &dmConeOrientations[0], points);PYLITH_CHECK_ERROR(err);
+
+    PetscSF sf = NULL;
+    err = DMGetPointSF(dmPoints, &sf);PYLITH_CHECK_ERROR(err);
+    err = PetscSFSetGraph(sf, numPoints, 0, NULL, PETSC_COPY_VALUES, NULL, PETSC_COPY_VALUES);
+
     mesh->setDM(dmPoints, "points");
 
     mesh->setCoordSys(cs);
