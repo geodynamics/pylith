@@ -1,7 +1,7 @@
 ---
 name: Documentation Feedback
 about: Report errors in the documentation or offer suggestions for improvement
-title: "[DOCUMENTATION]"
+title: "[INSERT DOCUMENTATION TITLE]"
 labels: 'docs: deficiency'
 assignees: ''
 
