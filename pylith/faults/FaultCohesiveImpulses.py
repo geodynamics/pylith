@@ -97,10 +97,8 @@ class FaultCohesiveImpulses(FaultCohesive, ModuleFaultCohesiveImpulses):
     def preinitialize(self, problem):
         """Do pre-initialization setup.
         """
-        from pylith.mpi.Communicator import mpi_comm_world
-        comm = mpi_comm_world()
-
-        if 0 == comm.rank:
+        from pylith.mpi.Communicator import mpi_is_root
+        if mpi_is_root():
             self._info.log(f"Pre-initializing fault '{self.labelName}={self.labelValue}'.")
         FaultCohesive.preinitialize(self, problem)
         ModuleFaultCohesiveImpulses.setThreshold(self, self.threshold.value)

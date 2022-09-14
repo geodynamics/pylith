@@ -31,6 +31,7 @@ subpkginclude_HEADERS = \
 	DependenciesVersion.hh \
 	TestArray.hh \
 	array.hh \
+	mpi.hh \
 	arrayfwd.hh \
 	constdefs.h \
 	lapack.h \

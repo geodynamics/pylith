@@ -104,6 +104,13 @@ def mpi_comm_self():
 
 
 # ----------------------------------------------------------------------
+def mpi_is_root():
+    """Returns True if root process, otherwise False.
+    """
+    return mpi_comm_world().rank == 0
+
+
+# ----------------------------------------------------------------------
 # Singletons
 _petsc_world = None
 _petsc_self = None

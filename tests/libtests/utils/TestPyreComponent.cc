@@ -74,6 +74,7 @@ public:
             void test(void) {
                 PYLITH_COMPONENT_DEBUG("CORRECT: This is a debug message.");
                 PYLITH_COMPONENT_INFO("CORRECT: This is an info mesasge.");
+                PYLITH_COMPONENT_INFO_ROOT("CORRECT: This is an info mesasge.");
                 PYLITH_COMPONENT_WARNING("CORRECT: This is a warning mesasge.");
                 PYLITH_COMPONENT_ERROR("CORRECT: This is an error mesage.");
             } // testJournals

@@ -106,10 +106,8 @@ class GreensFns(Problem, ModuleGreensFns):
     def run(self, app):
         """Solve time dependent problem.
         """
-        from pylith.mpi.Communicator import mpi_comm_world
-        comm = mpi_comm_world()
-
-        if 0 == comm.rank:
+        from pylith.mpi.Communicator import mpi_is_root
+        if mpi_is_root():
             self._info.log("Solving problem.")
 
         ModuleGreensFns.solve(self)

@@ -327,7 +327,7 @@ pylith::problems::GreensFns::solve(void) {
     for (int iProc = 0, iImpulseGlobal = 0; iProc < mpiNumProcs; ++iProc) {
         for (int iImpulseLocal = 0; iImpulseLocal < numImpulses[iProc]; ++iImpulseLocal, ++iImpulseGlobal) {
             if (0 == mpiRank) {
-                PYLITH_COMPONENT_INFO("Computing Green's function " << iImpulseGlobal+1 << " of " << numImpulsesGlobal << ".");
+                PYLITH_COMPONENT_INFO_ROOT("Computing Green's function " << iImpulseGlobal+1 << " of " << numImpulsesGlobal << ".");
             } // if
 
             // Update impulse on fault

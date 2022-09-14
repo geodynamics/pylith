@@ -91,7 +91,7 @@ pylith::meshio::MeshIO::read(topology::Mesh* mesh) {
     for (int i = 0; i < dim; ++i) {
         msg << "\n    (" << cmin[i] << ", " << cmax[i] << ")";
     } // for
-    PYLITH_COMPONENT_INFO(msg.str());
+    PYLITH_COMPONENT_INFO_ROOT(msg.str());
     const PetscReal tolerance = 1.0e-8;
     if (volume < tolerance) {
         msg.clear();

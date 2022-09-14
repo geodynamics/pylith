@@ -87,9 +87,8 @@ class FaultCohesiveKin(FaultCohesive, ModuleFaultCohesiveKin):
     def preinitialize(self, problem):
         """Do pre-initialization setup.
         """
-        from pylith.mpi.Communicator import mpi_comm_world
-        comm = mpi_comm_world()
-        if 0 == comm.rank:
+        from pylith.mpi.Communicator import mpi_is_root
+        if mpi_is_root():
             self._info.log("Pre-initializing fault '%s'." % self.labelName)
 
         FaultCohesive.preinitialize(self, problem)

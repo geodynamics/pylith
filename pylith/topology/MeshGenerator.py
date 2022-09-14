@@ -62,8 +62,7 @@ class MeshGenerator(PetscComponent):
         logEvent = "%sadjTopo" % self._loggingPrefix
         self._eventLogger.eventBegin(logEvent)
 
-        from pylith.mpi.Communicator import mpi_comm_world
-        comm = mpi_comm_world()
+        from pylith.mpi.Communicator import mpi_is_root
 
         if not interfaces is None:
             cohesiveLabelValue = 100
@@ -71,7 +70,7 @@ class MeshGenerator(PetscComponent):
                 labelValue = material.labelValue
                 cohesiveLabelValue = max(cohesiveLabelValue, labelValue+1)
             for interface in interfaces:
-                if 0 == comm.rank:
+                if mpi_is_root():
                     self._info.log("Adjusting topology for fault '%s'." % interface.labelName)
                 interface.preinitialize(problem)
                 interface.setCohesiveLabelValue(cohesiveLabelValue)
