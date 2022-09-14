@@ -24,7 +24,7 @@
 
 namespace pylith {
     namespace problems {
-        class pylith::problems::GreensFns: public pylith::problems::Problem {
+        class pylith::problems::GreensFns : public pylith::problems::Problem {
             // PUBLIC MEMBERS
             // //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
@@ -86,9 +86,11 @@ public:
 
             /** Perform operations after advancing solution of one impulse
              *
-             * @param[in] impulseReal
+             * @param[in] impulse Index of current impulse.
+             * @param[in] numImpulses Total number of impulses.
              */
-            void poststep(const double impulseReal);
+            void poststep(const size_t impulse,
+                          const size_t numImpulses);
 
             /** Set solution values according to constraints (Dirichlet BC).
              *

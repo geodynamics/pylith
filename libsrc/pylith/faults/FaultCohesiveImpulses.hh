@@ -57,11 +57,11 @@ public:
      */
     void setThreshold(const double value);
 
-    /** Get the total number of impulses that will be applied.
+    /** Get the total number of impulses that will be applied on this process.
      *
      * @returns Number of impulses.
      */
-    size_t getNumImpulses(void);
+    size_t getNumImpulsesLocal(void);
 
     /** Verify configuration is acceptable.
      *
@@ -99,10 +99,10 @@ protected:
     /** Update slip subfield in auxiliary field at beginning of time step.
      *
      * @param[out] auxiliaryField Auxiliary field.
-     * @param[in] impulseIndex Index of impulse.
+     * @param[in] impulseIndex Index of impulse (-1 indicates no impulse is applied on this process).
      */
     void _updateSlip(pylith::topology::Field* auxiliaryField,
-                     const size_t impulseIndex);
+                     const long impulseIndex);
 
     /** Set kernels for residual.
      *

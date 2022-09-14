@@ -97,8 +97,10 @@ public:
     /** Perform operations after advancing solution of one impulse
      *
      * @param[in] impulse Index of current impulse.
+     * @param[in] numImpulses Total number of impulses.
      */
-    void poststep(const size_t impulse);
+    void poststep(const size_t impulse,
+                  const size_t numImpulses);
 
     /** Set solution values according to constraints (Dirichlet BC).
      *
