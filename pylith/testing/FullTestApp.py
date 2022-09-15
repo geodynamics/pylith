@@ -109,11 +109,11 @@ class FullTestCase(unittest.TestCase):
                 with self.subTest(filename=filename):
                     check_data(self, filename, check, mesh_entity, check.mesh.ENTITIES[mesh_entity])
 
-    def run_pylith(self, testName, args, generatedb=None):
+    def run_pylith(self, testName, args, generatedb=None, nprocs=1):
         if self.RUN_PYLITH:
             if self.VERBOSITY > 0:
                 print("Running Pylith with args '{}' ...".format(" ".join(args)))
-            run_pylith(testName, args, generatedb)
+            run_pylith(testName, args, generatedb, nprocs)
         return
 
     @staticmethod

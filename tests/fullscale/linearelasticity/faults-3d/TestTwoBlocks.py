@@ -64,8 +64,8 @@ class TestCase(FullTestCase):
             ),
         ]
 
-    def run_pylith(self, testName, args):
-        FullTestCase.run_pylith(self, testName, args)
+    def run_pylith(self, testName, args, nprocs=1):
+        FullTestCase.run_pylith(self, testName, args, nprocs=nprocs)
 
 
 # -------------------------------------------------------------------------------------------------
@@ -76,7 +76,7 @@ class TestHexGmsh(TestCase):
         self.mesh = meshes.HexGmsh()
         super().setUp()
 
-        TestCase.run_pylith(self, self.name, ["twoblocks.cfg", "twoblocks_hex.cfg"])
+        TestCase.run_pylith(self, self.name, ["twoblocks.cfg", "twoblocks_hex.cfg"], nprocs=2)
         return
 
 
@@ -88,7 +88,7 @@ class TestTetGmsh(TestCase):
         self.mesh = meshes.TetGmsh()
         super().setUp()
 
-        TestCase.run_pylith(self, self.name, ["twoblocks.cfg", "twoblocks_tet.cfg"])
+        TestCase.run_pylith(self, self.name, ["twoblocks.cfg", "twoblocks_tet.cfg"], nprocs=3)
         return
 
 
