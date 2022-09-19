@@ -403,7 +403,7 @@ pylith::problems::TimeDependent::initialize(void) {
         PetscDS prob = NULL;
         err = DMGetDS(solution->getDM(), &prob);PYLITH_CHECK_ERROR(err);
         debug << pythia::journal::at(__HERE__)
-              << "Solution Discretization" << pythia::journal::endl;
+              << "Solution discretization" << pythia::journal::endl;
         PetscDSView(prob, PETSC_VIEWER_STDOUT_SELF);
     } // if
 

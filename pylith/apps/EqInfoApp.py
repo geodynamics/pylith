@@ -155,7 +155,7 @@ class EqInfoApp(Application):
 
             h5 = h5py.File(filenameIn, "r", driver='sec2')
             vertices = h5['geometry/vertices'][:]
-            cells = numpy.array(h5['topology/cells'][:], dtype=numpy.int32)
+            cells = numpy.array(h5['viz/topology/cells'][:], dtype=numpy.int32)
             timestamps = h5['time'][:]
             cellsArea = self._calcCellArea(cells, vertices)
             cellsShearMod = self._getShearModulus(cells, vertices)

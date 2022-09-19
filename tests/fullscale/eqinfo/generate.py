@@ -25,7 +25,8 @@ import numpy
 
 class TestData(object):
     """Abstract base class for test data.
-    """def __init__(self):
+    """
+    def __init__(self):
         self.vertices = None
         self.cells = None
         self.slip = None
@@ -36,7 +37,7 @@ class TestData(object):
     def write(self):
         h5 = h5py.File(self.filename, "w", driver='sec2')
         h5.create_dataset('geometry/vertices', data=self.vertices)
-        h5.create_dataset('topology/cells', data=self.cells)
+        h5.create_dataset('viz/topology/cells', data=self.cells)
         h5.create_dataset('time', data=self.time)
         slip = h5.create_dataset('vertex_fields/slip', data=self.slip)
         slip.attrs['vector_field_type'] = 'vector'

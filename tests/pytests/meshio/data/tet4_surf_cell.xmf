@@ -6,7 +6,7 @@
 <Xdmf>
   <Domain Name="domain">
     <DataItem Name="cells" ItemType="Uniform" Format="HDF" NumberType="Float" Precision="8" Dimensions="2 3">
-      &HeavyData;:/topology/cells
+      &HeavyData;:/viz/topology/cells
     </DataItem>
     <DataItem Name="vertices" ItemType="Uniform" Format="HDF" Dimensions="4 3">
       &HeavyData;:/geometry/vertices

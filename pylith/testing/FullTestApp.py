@@ -182,9 +182,9 @@ class HDF5Checker(object):
         """
         if self.cellCentroids is None:
             vertices = self._getVertices()
-            self.testcase.assertTrue("topology" in self.h5.keys())
-            self.testcase.assertTrue("cells" in self.h5["topology"].keys())
-            cells = self.h5["topology/cells"][:].astype(numpy.int)
+            self.testcase.assertTrue("topology" in self.h5["viz"].keys())
+            self.testcase.assertTrue("cells" in self.h5["viz/topology"].keys())
+            cells = self.h5["viz/topology/cells"][:].astype(numpy.int)
             ncells, ncorners = cells.shape
             (nvertices, spaceDim) = vertices.shape
             centroids = numpy.zeros((ncells, spaceDim), dtype=numpy.float64)

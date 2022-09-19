@@ -6,7 +6,7 @@
 <Xdmf>
   <Domain Name="domain">
     <DataItem Name="cells" ItemType="Uniform" Format="HDF" NumberType="Float" Precision="8" Dimensions="2 4">
-      &HeavyData;:/topology/cells
+      &HeavyData;:/viz/topology/cells
     </DataItem>
     <DataItem Name="vertices" ItemType="Function" Dimensions="6 3" Function="JOIN($0, $1, $2)">
       <DataItem Name="verticesX" ItemType="Hyperslab" Type="HyperSlab" Dimensions="6 1">
