@@ -71,7 +71,9 @@ pylith::topology::MeshOps::createSubdomainMesh(const pylith::topology::Mesh& mes
     if (maxConeSize <= 0) {
         err = DMDestroy(&dmSubdomain);PYLITH_CHECK_ERROR(err);
         std::ostringstream msg;
-        msg << "Error while creating mesh of subdomain. Subdomain mesh '" << labelName << "' does not contain any cells.\n";
+        msg << "Error while creating mesh of subdomain. Subdomain mesh '" << labelName
+            << "' with label value " << labelValue << " does not contain any cells.\n"
+            << "Check that you are using the correct label name and value.\n";
         throw std::runtime_error(msg.str());
     } // if
 
@@ -132,7 +134,9 @@ pylith::topology::MeshOps::createLowerDimMesh(const pylith::topology::Mesh& mesh
     if (maxConeSize <= 0) {
         err = DMDestroy(&dmSubmesh);PYLITH_CHECK_ERROR(err);
         std::ostringstream msg;
-        msg << "Error while creating lower dimension mesh. Submesh '" << labelName << "' does not contain any cells.\n";
+        msg << "Error while creating lower dimension mesh. Submesh '" << labelName
+            << "' with label value " << labelValue << " does not contain any cells.\n"
+            << "Check that you are using the correct label name and value.\n";
         throw std::runtime_error(msg.str());
     } // if
 
