@@ -275,9 +275,6 @@ pylith::feassemble::IntegratorDomain::initialize(const pylith::topology::Field& 
 
 
 // ------------------------------------------------------------------------------------------------
-// Create PETSc IS for cells in label but without cells in overlap.
-
-// ------------------------------------------------------------------------------------------------
 // Set data needed for integrating faces on interior interfaces.
 void
 pylith::feassemble::IntegratorDomain::setInterfaceData(const pylith::topology::Field* solution,
@@ -338,9 +335,10 @@ pylith::feassemble::IntegratorDomain::setInterfaceData(const pylith::topology::F
                 debug << "." << pythia::journal::endl;
             } // JOURNAL DEBUGGING
 
+            const PetscInt patchValue = iter->second.cohesive.getValue();
             for (size_t iFace = 0; iFace < faceCount; ++iFace) {
                 for (PetscInt iPart = 0; iPart < numParts; ++iPart) {
-                    const PetscInt part = integrator->getWeakFormPart(parts[iPart], faultFaces[iFace]);
+                    const PetscInt part = integrator->getWeakFormPart(parts[iPart], faultFaces[iFace], patchValue);
 
                     assert(_auxiliaryField);
                     err = DMSetAuxiliaryVec(dmSoln, dmLabel, _labelValue, part,

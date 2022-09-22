@@ -184,9 +184,11 @@ public:
      *
      * @param[in] eqnPart Term in the equation.
      * @param[in] face Negative, positive, or fault face.
+     * @param[in] patch Interface patch label value.
      */
     PetscInt getWeakFormPart(const PetscInt eqnPart,
-                             const PetscInt face) const;
+                             const PetscInt face,
+                             const PetscInt patch) const;
 
     /** Initialize integration domain, auxiliary field, and derived field. Update observers.
      *
