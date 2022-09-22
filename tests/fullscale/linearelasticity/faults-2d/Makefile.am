@@ -25,7 +25,10 @@ dist_noinst_PYTHON = \
 	generate_gmsh.py \
 	meshes.py \
 	TestThreeBlocks.py \
-	threeblocks_soln.py
+	threeblocks_soln.py \
+	TestShearNoSlip.py \
+	shearnoslip_soln.py \
+	shearnoslip_gendb.py
 
 dist_noinst_DATA = \
 	mesh_tri.msh \
@@ -42,7 +45,13 @@ dist_noinst_DATA = \
 	threeblocks_quad.cfg \
 	threeblocks_tri.cfg \
 	threeblocks_cubit_quad.cfg \
-	threeblocks_cubit_tri.cfg
+	threeblocks_cubit_tri.cfg \
+	threeblocks_ic.cfg \
+	threeblocks_ic_quad.cfg \
+	threeblocks_ic_tri.cfg \
+	shearnoslip.cfg \
+	shearnoslip_quad.cfg \
+	shearnoslip_tri.cfg
 
 
 noinst_TMP =

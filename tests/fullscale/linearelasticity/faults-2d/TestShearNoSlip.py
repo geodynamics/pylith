@@ -20,7 +20,8 @@ import unittest
 from pylith.testing.FullTestApp import (FullTestCase, Check)
 
 import meshes
-import threeblocks_soln
+import shearnoslip_soln
+import shearnoslip_gendb
 
 
 # -------------------------------------------------------------------------------------------------
@@ -29,7 +30,7 @@ class TestCase(FullTestCase):
     def setUp(self):
         defaults = {
             "filename": "output/{name}-{mesh_entity}.h5",
-            "exact_soln": threeblocks_soln.AnalyticalSoln(),
+            "exact_soln": shearnoslip_soln.AnalyticalSoln(),
             "mesh": self.mesh,
         }
         self.checks = [
@@ -58,25 +59,25 @@ class TestCase(FullTestCase):
                 defaults=defaults,
             ),
             Check(
-                mesh_entities=["bc_xneg", "bc_xpos"],
+                mesh_entities=["bc_xneg", "bc_xpos", "bc_yneg", "bc_ypos"],
                 vertex_fields=["displacement"],
                 defaults=defaults,
             ),
         ]
 
     def run_pylith(self, testName, args):
-        FullTestCase.run_pylith(self, testName, args)
+        FullTestCase.run_pylith(self, testName, args, shearnoslip_gendb.GenerateDB)
 
 
 # -------------------------------------------------------------------------------------------------
 class TestQuadGmsh(TestCase):
 
     def setUp(self):
-        self.name = "threeblocks_quad"
+        self.name = "shearnoslip_quad"
         self.mesh = meshes.QuadGmsh()
         super().setUp()
 
-        TestCase.run_pylith(self, self.name, ["threeblocks.cfg", "threeblocks_quad.cfg"])
+        TestCase.run_pylith(self, self.name, ["shearnoslip.cfg", "shearnoslip_quad.cfg"])
         return
 
 
@@ -84,59 +85,11 @@ class TestQuadGmsh(TestCase):
 class TestTriGmsh(TestCase):
 
     def setUp(self):
-        self.name = "threeblocks_tri"
+        self.name = "shearnoslip_tri"
         self.mesh = meshes.TriGmsh()
         super().setUp()
 
-        TestCase.run_pylith(self, self.name, ["threeblocks.cfg", "threeblocks_tri.cfg"])
-        return
-
-
-# -------------------------------------------------------------------------------------------------
-class TestQuadCubit(TestCase):
-
-    def setUp(self):
-        self.name = "threeblocks_cubit_quad"
-        self.mesh = meshes.QuadCubit()
-        super().setUp()
-
-        TestCase.run_pylith(self, self.name, ["threeblocks.cfg", "threeblocks_cubit_quad.cfg"])
-        return
-
-
-# -------------------------------------------------------------------------------------------------
-class TestTriCubit(TestCase):
-
-    def setUp(self):
-        self.name = "threeblocks_cubit_tri"
-        self.mesh = meshes.TriCubit()
-        super().setUp()
-
-        TestCase.run_pylith(self, self.name, ["threeblocks.cfg", "threeblocks_cubit_tri.cfg"])
-        return
-
-
-# -------------------------------------------------------------------------------------------------
-class TestQuadGmshIC(TestCase):
-
-    def setUp(self):
-        self.name = "threeblocks_ic_quad"
-        self.mesh = meshes.QuadGmsh()
-        super().setUp()
-
-        TestCase.run_pylith(self, self.name, ["threeblocks_ic.cfg", "threeblocks_ic_quad.cfg"])
-        return
-
-
-# -------------------------------------------------------------------------------------------------
-class TestTriGmshIC(TestCase):
-
-    def setUp(self):
-        self.name = "threeblocks_ic_tri"
-        self.mesh = meshes.TriGmsh()
-        super().setUp()
-
-        TestCase.run_pylith(self, self.name, ["threeblocks_ic.cfg", "threeblocks_ic_tri.cfg"])
+        TestCase.run_pylith(self, self.name, ["shearnoslip.cfg", "shearnoslip_tri.cfg"])
         return
 
 
@@ -145,10 +98,6 @@ def test_cases():
     return [
         TestQuadGmsh,
         TestTriGmsh,
-        TestQuadCubit,
-        TestTriCubit,
-        TestQuadGmshIC,
-        TestTriGmshIC,
     ]
 
 

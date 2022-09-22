@@ -39,6 +39,7 @@ class TriGmsh(object):
         "bc_xpos": MeshEntity(ncells=8, ncorners=2, nvertices=9),
         "bc_yneg": MeshEntity(ncells=8, ncorners=2, nvertices=9+2),
         "bc_ypos": MeshEntity(ncells=8, ncorners=2, nvertices=9+2),
+        "boundary_ypos": MeshEntity(ncells=8, ncorners=2, nvertices=9+2),
     }
 
 
@@ -64,6 +65,7 @@ class QuadGmsh(object):
         "bc_xpos": MeshEntity(ncells=10, ncorners=2, nvertices=11),
         "bc_yneg": MeshEntity(ncells=11, ncorners=2, nvertices=11+2),
         "bc_ypos": MeshEntity(ncells=11, ncorners=2, nvertices=11+2),
+        "boundary_ypos": MeshEntity(ncells=11, ncorners=2, nvertices=11+2),
     }
 
 
@@ -89,6 +91,7 @@ class TriCubit(object):
         "bc_xpos": MeshEntity(ncells=8, ncorners=2, nvertices=9),
         "bc_yneg": MeshEntity(ncells=8, ncorners=2, nvertices=9+2),
         "bc_ypos": MeshEntity(ncells=8, ncorners=2, nvertices=9+2),
+        "boundary_ypos": MeshEntity(ncells=8, ncorners=2, nvertices=9+2),
     }
 
 
@@ -114,6 +117,7 @@ class QuadCubit(object):
         "bc_xpos": MeshEntity(ncells=8, ncorners=2, nvertices=9),
         "bc_yneg": MeshEntity(ncells=8, ncorners=2, nvertices=9+2),
         "bc_ypos": MeshEntity(ncells=8, ncorners=2, nvertices=9+2),
+        "boundary_ypos": MeshEntity(ncells=8, ncorners=2, nvertices=9+2),
     }
 
 
