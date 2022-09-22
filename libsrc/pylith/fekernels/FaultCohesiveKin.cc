@@ -105,7 +105,7 @@ pylith::fekernels::FaultCohesiveKin::f0u_neg(const PylithInt dim,
     const PylithScalar* lagrange = &s[sOffLagrange];
 
     for (PylithInt i = 0; i < spaceDim; ++i) {
-        f0[fOffN+i] += -lagrange[i];
+        f0[fOffN+i] += +lagrange[i];
     } // for
 } // f0u_neg
 
@@ -145,7 +145,7 @@ pylith::fekernels::FaultCohesiveKin::f0u_pos(const PylithInt dim,
     const PylithScalar* lagrange = &s[sOffLagrange];
 
     for (PylithInt i = 0; i < spaceDim; ++i) {
-        f0[fOffP+i] += +lagrange[i];
+        f0[fOffP+i] += -lagrange[i];
     } // for
 } // f0u_pos
 
@@ -200,7 +200,7 @@ pylith::fekernels::FaultCohesiveKin::f0l_u(const PylithInt dim,
         const PylithScalar tanDir[2] = {-n[1], n[0] };
         for (PylithInt i = 0; i < _spaceDim; ++i) {
             const PylithScalar slipXY = n[i]*slip[0] + tanDir[i]*slip[1];
-            f0[fOffLagrange+i] += dispP[i] - dispN[i] - slipXY;
+            f0[fOffLagrange+i] += -dispP[i] + dispN[i] + slipXY;
         } // for
         break;
     } // case 2
@@ -213,7 +213,7 @@ pylith::fekernels::FaultCohesiveKin::f0l_u(const PylithInt dim,
 
         for (PylithInt i = 0; i < _spaceDim; ++i) {
             const PylithScalar slipXYZ = n[i]*slip[0] + tanDir1[i]*slip[1] + tanDir2[i]*slip[2];
-            f0[fOffLagrange+i] += dispP[i] - dispN[i] - slipXYZ;
+            f0[fOffLagrange+i] += -dispP[i] + dispN[i] + slipXYZ;
         } // for
         break;
     } // case 3
@@ -272,7 +272,7 @@ pylith::fekernels::FaultCohesiveKin::f0l_v(const PylithInt dim,
         const PylithScalar tanDir[2] = {-n[1], n[0] };
         for (PylithInt i = 0; i < _spaceDim; ++i) {
             const PylithScalar slipRateXY = n[i]*slipRate[0] + tanDir[i]*slipRate[1];
-            f0[fOffLagrange+i] += velP[i] - velN[i] - slipRateXY;
+            f0[fOffLagrange+i] += -velP[i] + velN[i] + slipRateXY;
         } // for
         break;
     } // case 2
@@ -285,7 +285,7 @@ pylith::fekernels::FaultCohesiveKin::f0l_v(const PylithInt dim,
 
         for (PylithInt i = 0; i < _spaceDim; ++i) {
             const PylithScalar slipRateXYZ = n[i]*slipRate[0] + tanDir1[i]*slipRate[1] + tanDir2[i]*slipRate[2];
-            f0[fOffLagrange+i] += velP[i] - velN[i] - slipRateXYZ;
+            f0[fOffLagrange+i] += -velP[i] + velN[i] + slipRateXYZ;
         } // for
         break;
     } // case 3
@@ -344,7 +344,7 @@ pylith::fekernels::FaultCohesiveKin::f0l_a(const PylithInt dim,
         const PylithScalar tanDir[2] = {-n[1], n[0] };
         for (PylithInt i = 0; i < _spaceDim; ++i) {
             const PylithScalar slipAccXY = n[i]*slipAcc[0] + tanDir[i]*slipAcc[1];
-            f0[fOffLagrange+i] += accP[i] - accN[i] - slipAccXY;
+            f0[fOffLagrange+i] += -accP[i] + accN[i] + slipAccXY;
         } // for
         break;
     } // case 2
@@ -357,7 +357,7 @@ pylith::fekernels::FaultCohesiveKin::f0l_a(const PylithInt dim,
 
         for (PylithInt i = 0; i < _spaceDim; ++i) {
             const PylithScalar slipAccXYZ = n[i]*slipAcc[0] + tanDir1[i]*slipAcc[1] + tanDir2[i]*slipAcc[2];
-            f0[fOffLagrange+i] += accP[i] - accN[i] - slipAccXYZ;
+            f0[fOffLagrange+i] += -accP[i] + accN[i] + slipAccXYZ;
         } // for
         break;
     } // case 3
@@ -405,7 +405,7 @@ pylith::fekernels::FaultCohesiveKin::Jf0ul_neg(const PylithInt dim,
     const PylithInt ncols = spaceDim;
 
     for (PylithInt i = 0; i < spaceDim; ++i) {
-        Jf0[(gOffN+i)*ncols+i] += -1.0;
+        Jf0[(gOffN+i)*ncols+i] += +1.0;
     } // for
 } // Jg0ul_neg
 
@@ -447,7 +447,7 @@ pylith::fekernels::FaultCohesiveKin::Jf0ul_pos(const PylithInt dim,
     const PylithInt ncols = spaceDim;
 
     for (PylithInt i = 0; i < spaceDim; ++i) {
-        Jf0[i*ncols+i] += +1.0;
+        Jf0[i*ncols+i] += -1.0;
     } // for
 } // Jg0ul_pos
 
@@ -491,8 +491,8 @@ pylith::fekernels::FaultCohesiveKin::Jf0lu(const PylithInt dim,
     const PylithInt ncols = spaceDim;
 
     for (PylithInt i = 0; i < spaceDim; ++i) {
-        Jf0[gOffN+i*ncols+i] += -1.0;
-        Jf0[gOffP+i*ncols+i] += +1.0;
+        Jf0[gOffN+i*ncols+i] += +1.0;
+        Jf0[gOffP+i*ncols+i] += -1.0;
     } // for
 } // Jg0lu
 

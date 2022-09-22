@@ -157,7 +157,7 @@ class pylith::mmstests::TestFaultKin2D_TwoFaultsShearNoSlip :
                                   const double y) {
         const double mu = density(x, y) * vs(x, y) * vs(x, y);
 
-        return -strain_xy() * 2.0 * mu / 2.25e+10;
+        return strain_xy() * 2.0 * mu / 2.25e+10;
     } // faulttraction_y
 
     static
