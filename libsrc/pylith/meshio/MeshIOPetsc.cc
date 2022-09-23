@@ -188,9 +188,14 @@ pylith::meshio::_MeshIOPetsc::fixBoundaryLabels(PetscDM* dmMesh) {
     labelsIgnore.insert("celltype");
     labelsIgnore.insert("depth");
 
-    const PetscInt vertexDepth = 0;
     PetscInt vStart = -1, vEnd = -1;
-    err = DMPlexGetDepthStratum(*dmMesh, vertexDepth, &vStart, &vEnd);PYLITH_CHECK_ERROR(err);
+    PetscInt eStart = -1, eEnd = -1;
+    PetscInt fStart = -1, fEnd = -1;
+    PetscInt cStart = -1, cEnd = -1;
+    err = DMPlexGetDepthStratum(*dmMesh, 0, &vStart, &vEnd);PYLITH_CHECK_ERROR(err);
+    err = DMPlexGetDepthStratum(*dmMesh, 1, &eStart, &eEnd);PYLITH_CHECK_ERROR(err);
+    err = DMPlexGetDepthStratum(*dmMesh, 2, &fStart, &fEnd);PYLITH_CHECK_ERROR(err);
+    err = DMPlexGetDepthStratum(*dmMesh, 3, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
 
     PetscInt numLabels = 0;
     err = DMGetNumLabels(*dmMesh, &numLabels);PYLITH_CHECK_ERROR(err);
@@ -204,8 +209,23 @@ pylith::meshio::_MeshIOPetsc::fixBoundaryLabels(PetscDM* dmMesh) {
         PetscInt pStart = -1, pEnd = -1;
         err = DMLabelGetBounds(dmLabel, &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
 
+        bool hasEdges = false;
+        bool hasFaces = false;
+        bool hasCells = false;
+
         for (PetscInt point = pStart; point < pEnd; ++point) {
-            if ((point >= vStart) && (point < vEnd)) { continue; }
+            if ((point >= vStart) && (point < vEnd)) {
+                continue; // always keep vertices in label
+            } // if
+            if ((point >= eStart) && (point < eEnd)) {
+                hasEdges = true;
+            } // if
+            if ((point >= fStart) && (point < fEnd)) {
+                hasFaces = true;
+            } // if
+            if ((point >= cStart) && (point < cEnd)) {
+                hasCells = true;
+            } // if
             PetscBool hasLabel = PETSC_FALSE;
             err = DMLabelHasPoint(dmLabel, point, &hasLabel);PYLITH_CHECK_ERROR(err);
             if (hasLabel) {
@@ -216,11 +236,7 @@ pylith::meshio::_MeshIOPetsc::fixBoundaryLabels(PetscDM* dmMesh) {
         } // for
         err = DMLabelDestroyIndex(dmLabel);PYLITH_CHECK_ERROR(err);
 
-        // Readd edges and faces based upon vertices.
-        // Add any non-cells which have all vertices in label.
-        PetscInt cStart = -1, cEnd = -1;
-        err = DMPlexGetHeightStratum(*dmMesh, 0, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
-
+        // Re-add edges, faces, and cells based upon vertices if present in original label.
         err = DMLabelComputeIndex(dmLabel);PYLITH_CHECK_ERROR(err);
         err = DMLabelGetBounds(dmLabel, &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
         err = DMLabelDestroyIndex(dmLabel);PYLITH_CHECK_ERROR(err);
@@ -234,7 +250,10 @@ pylith::meshio::_MeshIOPetsc::fixBoundaryLabels(PetscDM* dmMesh) {
             for (PetscInt s = 0; s < starSize*2; s += 2) {
                 const PetscInt point = star[s];
 
-                if ((point >= cStart) && (point < cEnd)) { continue;}
+                // Ignore depths not in original label.
+                if (!hasEdges && ((point >= eStart) && (point < eEnd))) { continue; }
+                if (!hasFaces && ((point >= fStart) && (point < fEnd))) { continue; }
+                if (!hasCells && ((point >= cStart) && (point < cEnd))) { continue; }
 
                 // All vertices in closure must be in label to add point to label.
                 PetscInt *closure = NULL, closureSize, value;
