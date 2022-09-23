@@ -34,7 +34,7 @@ class TestCase(FullTestCase):
         }
         self.checks = [
             Check(
-                mesh_entities=["domain", "bc_ypos", "points"],
+                mesh_entities=["domain", "boundary_ypos", "points"],
                 vertex_fields=["displacement"],
                 defaults=defaults,
             ),
@@ -117,12 +117,38 @@ class TestTriCubit(TestCase):
 
 
 # -------------------------------------------------------------------------------------------------
+class TestQuadGmshIC(TestCase):
+
+    def setUp(self):
+        self.name = "threeblocks_ic_quad"
+        self.mesh = meshes.QuadGmsh()
+        super().setUp()
+
+        TestCase.run_pylith(self, self.name, ["threeblocks_ic.cfg", "threeblocks_ic_quad.cfg"])
+        return
+
+
+# -------------------------------------------------------------------------------------------------
+class TestTriGmshIC(TestCase):
+
+    def setUp(self):
+        self.name = "threeblocks_ic_tri"
+        self.mesh = meshes.TriGmsh()
+        super().setUp()
+
+        TestCase.run_pylith(self, self.name, ["threeblocks_ic.cfg", "threeblocks_ic_tri.cfg"])
+        return
+
+
+# -------------------------------------------------------------------------------------------------
 def test_cases():
     return [
         TestQuadGmsh,
         TestTriGmsh,
         TestQuadCubit,
         TestTriCubit,
+        TestQuadGmshIC,
+        TestTriGmshIC,
     ]
 
 

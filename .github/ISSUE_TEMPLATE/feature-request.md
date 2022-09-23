@@ -1,7 +1,7 @@
 ---
 name: Feature Request
 about: Request a new feature
-title: '[FEATURE REQUEST]'
+title: '[INSET FEATURE REQUEST TITLE]'
 labels: feature request
 assignees: ''
 

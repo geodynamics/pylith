@@ -38,9 +38,9 @@ class Solution(PetscComponent):
     def preinitialize(self, problem, mesh):
         """Do minimal initialization of solution.
         """
-        from pylith.mpi.Communicator import mpi_comm_world
-        comm = mpi_comm_world()
-        if 0 == comm.rank:
+        from pylith.mpi.Communicator import mpi_is_root
+        isRoot = mpi_is_root()
+        if isRoot:
             self._info.log("Performing minimal initialization of solution.")
 
         from pylith.topology.Field import Field
@@ -49,7 +49,7 @@ class Solution(PetscComponent):
         spaceDim = mesh.getCoordSys().getSpaceDim()
         for subfield in self.subfields.components():
             subfield.initialize(problem.normalizer, spaceDim)
-            if 0 == comm.rank:
+            if isRoot:
                 self._debug.log("Adding subfield '%s' as '%s' with components %s to solution." %
                                 (subfield.fieldName, subfield.userAlias, subfield.componentNames))
             descriptor = subfield.getTraitDescriptor("quadrature_order")

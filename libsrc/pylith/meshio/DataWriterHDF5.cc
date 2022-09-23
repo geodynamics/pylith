@@ -123,95 +123,11 @@ pylith::meshio::DataWriterHDF5::open(const pylith::topology::Mesh& mesh,
         err = PetscObjectSetName((PetscObject) _tstamp, "time");PYLITH_CHECK_ERROR(err);
 
         err = PetscViewerHDF5Open(mesh.getComm(), filename.c_str(), FILE_MODE_WRITE, &_viewer);PYLITH_CHECK_ERROR(err);
+        err = PetscViewerPushFormat(_viewer, PETSC_VIEWER_HDF5_VIZ);PYLITH_CHECK_ERROR(err);
         err = PetscViewerHDF5SetBaseDimension2(_viewer, PETSC_TRUE);PYLITH_CHECK_ERROR(err);
 
-        err = PetscViewerHDF5PushGroup(_viewer, "/geometry");PYLITH_CHECK_ERROR(err);
-        PetscVec coordsGlobalVec = NULL;
-        DataWriter::getCoordsGlobalVec(&coordsGlobalVec, mesh);
-        PetscBool isseq;
-        err = PetscObjectTypeCompare((PetscObject) coordsGlobalVec, VECSEQ, &isseq);PYLITH_CHECK_ERROR(err);
-        if (isseq) {
-            err = VecView_Seq(coordsGlobalVec, _viewer);PYLITH_CHECK_ERROR(err);
-        } else {
-            err = VecView_MPI(coordsGlobalVec, _viewer);PYLITH_CHECK_ERROR(err);
-        } // if/else
-        err = VecDestroy(&coordsGlobalVec);PYLITH_CHECK_ERROR(err);
-        err = PetscViewerHDF5PopGroup(_viewer);PYLITH_CHECK_ERROR(err);
+        err = DMView(mesh.getDM(), _viewer);PYLITH_CHECK_ERROR(err);
 
-        PetscInt vStart, vEnd, cellHeight, cStart, cEnd, conesSize = 0, numCorners, numCornersLocal = -1;
-
-        PetscDM dmMesh = mesh.getDM();assert(dmMesh);
-        err = DMPlexGetVTKCellHeight(dmMesh, &cellHeight);PYLITH_CHECK_ERROR(err);
-        err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);PYLITH_CHECK_ERROR(err);
-        err = DMPlexGetHeightStratum(dmMesh, cellHeight, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
-        for (PetscInt cell = cStart; cell < cEnd; ++cell) {
-            PetscInt *closure = NULL;
-            PetscInt closureSize, v;
-
-            if (pylith::topology::MeshOps::isCohesiveCell(dmMesh, cell)) { continue; }
-            err = DMPlexGetTransitiveClosure(dmMesh, cell, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
-            PetscInt numCornersCell = 0;
-            for (v = 0; v < closureSize*2; v += 2) {
-                if ((closure[v] >= vStart) && (closure[v] < vEnd)) {
-                    ++numCornersCell;
-                } // if
-            } // for
-            if (-1 == numCornersLocal) {
-                numCornersLocal = numCornersCell;
-            } else {
-                assert(numCornersCell == numCornersLocal); // All cells in output must have the same number of corners.
-            } // if/else
-            conesSize += numCornersCell;
-            err = DMPlexRestoreTransitiveClosure(dmMesh, cell, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
-        } // for
-        err = MPI_Allreduce(&numCornersLocal, &numCorners, 1, MPIU_INT, MPI_MAX, mesh.getComm());PYLITH_CHECK_ERROR(err);
-
-        PetscIS globalVertexNumbers = NULL;
-        const PetscInt *gvertex = NULL;
-        PetscVec cellVec = NULL;
-        PetscScalar *vertices = NULL;
-
-        err = DMPlexGetVertexNumbering(dmMesh, &globalVertexNumbers);PYLITH_CHECK_ERROR(err);
-        err = ISGetIndices(globalVertexNumbers, &gvertex);PYLITH_CHECK_ERROR(err);
-        err = VecCreate(mesh.getComm(), &cellVec);PYLITH_CHECK_ERROR(err);
-        err = VecSetSizes(cellVec, conesSize, PETSC_DETERMINE);PYLITH_CHECK_ERROR(err);
-        err = VecSetBlockSize(cellVec, numCorners);PYLITH_CHECK_ERROR(err);
-        err = VecSetFromOptions(cellVec);PYLITH_CHECK_ERROR(err);
-        err = PetscObjectSetName((PetscObject) cellVec, "cells");PYLITH_CHECK_ERROR(err);
-        err = VecGetArray(cellVec, &vertices);PYLITH_CHECK_ERROR(err);
-        for (PetscInt cell = cStart, v = 0; cell < cEnd; ++cell) {
-            PetscInt *closure = NULL;
-            PetscInt closureSize, nC = 0, p;
-
-            if (pylith::topology::MeshOps::isCohesiveCell(dmMesh, cell)) { continue; }
-            err = DMPlexGetTransitiveClosure(dmMesh, cell, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
-            for (p = 0; p < closureSize*2; p += 2) {
-                if ((closure[p] >= vStart) && (closure[p] < vEnd)) {
-                    closure[nC++] = closure[p];
-                } // if
-            } // for
-            DMPolytopeType ct;
-            err = DMPlexGetCellType(dmMesh, cell, &ct);PYLITH_CHECK_ERROR(err);
-            err = DMPlexInvertCell(ct, closure);PYLITH_CHECK_ERROR(err);
-            for (p = 0; p < nC; ++p) {
-                const PetscInt gv = gvertex[closure[p] - vStart];
-                vertices[v++] = gv < 0 ? -(gv+1) : gv;
-            }
-            err = DMPlexRestoreTransitiveClosure(dmMesh, cell, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
-            // assert(v == (cell-cStart+1)*numCorners); Would be true without the label check
-        } // for
-        err = VecRestoreArray(cellVec, &vertices);PYLITH_CHECK_ERROR(err);
-        err = PetscViewerHDF5PushGroup(_viewer, "/topology");PYLITH_CHECK_ERROR(err);
-        err = VecView(cellVec, _viewer);PYLITH_CHECK_ERROR(err);
-        err = PetscViewerHDF5PopGroup(_viewer);PYLITH_CHECK_ERROR(err);
-        err = VecDestroy(&cellVec);PYLITH_CHECK_ERROR(err);
-        err = ISRestoreIndices(globalVertexNumbers, &gvertex);PYLITH_CHECK_ERROR(err);
-
-        hid_t h5 = -1;
-        err = PetscViewerHDF5GetFileId(_viewer, &h5);PYLITH_CHECK_ERROR(err);
-        assert(h5 >= 0);
-        const int cellDim = mesh.getDimension();
-        HDF5::writeAttribute(h5, "/topology/cells", "cell_dim", (void*)&cellDim, H5T_NATIVE_INT);
     } catch (const std::exception& err) {
         std::ostringstream msg;
         msg << "Error while opening HDF5 file " << hdf5Filename() << ".\n" << err.what();

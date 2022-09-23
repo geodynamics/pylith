@@ -22,7 +22,7 @@ copyright = '2021-2022, University of California, Davis'
 author = 'Brad T. Aagaard, Matthew G. Knepley, Charles A. Williams'
 
 # The full version, including alpha/beta/rc tags
-release = '3.0.2'
+release = '3.0.3'
 
 
 # -- General configuration ---------------------------------------------------

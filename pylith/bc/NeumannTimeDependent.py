@@ -115,9 +115,8 @@ class NeumannTimeDependent(BoundaryCondition, ModuleNeumannTimeDependent):
     def preinitialize(self, problem):
         """Do pre-initialization setup.
         """
-        from pylith.mpi.Communicator import mpi_comm_world
-        comm = mpi_comm_world()
-        if 0 == comm.rank:
+        from pylith.mpi.Communicator import mpi_is_root
+        if mpi_is_root():
             self._info.log(
                 "Performing minimal initialization of time-dependent Neumann boundary condition '%s'." % self.aliases[-1])
 

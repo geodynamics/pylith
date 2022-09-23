@@ -39,8 +39,17 @@ See [`InitialConditionDomain` Component](../components/problems/InitialCondition
 #### `InitialConditionPatch`
 
 We use this object when we want to specify the initial values of solution subfields across patches of the domain defined by materials.
-Each patch specifies the initial values for a single material.
-Not all materials need to have initial values.
+
+:::{important}
+Initial conditions over a patch currently only work for Gmsh input files.
+Exodus II files from Cubit do not contain the information needed by the current PyLith implementation.
+
+In creating the physical group in Gmsh, you must include the cells and all lower dimension entities (faces, edges, and vertices).
+The easiest way to do this is to use the `VertexGroup` provided in the `pylith.meshio.gmsh_utils` Python module.
+By default, the lower dimension entities will be included in the physical group.
+:::
+
+
 
 :::{admonition} Pyre User Interface
 :class: seealso

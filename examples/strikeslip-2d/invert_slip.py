@@ -5,6 +5,10 @@ there are no data uncertainties, and we use the minimum moment for a penalty fun
 
 For the provided simulation in input files, simply run the script with no arguments.
 The inversion results will be written to `output/step05_greensfns-inversion_results.txt`.
+
+The order of the impulses and stations in the output depends on the parititioning among processes.
+Consequently, we reorder the impulses and stations by the y coordinate to insure we maintain
+consistent ordering.
 """
 
 # Import argparse Python module (standard Python)
@@ -43,15 +47,15 @@ class InvertSlipApp:
         :param filename: Name of HDF5 file with fault data from PyLith Green's function simulation (Step 5).
         """
         h5 = h5py.File(filename, "r")
-        impulse_y = h5['geometry/vertices'][:,1]
-        impulse_slip = h5['vertex_fields/slip'][:,:,1]
+        y = h5['geometry/vertices'][:,1]
+        slip = h5['vertex_fields/slip'][:,:,1]
         h5.close()
 
         # Sort fault points by y coordinate.
-        reorder = numpy.argsort(impulse_y)
+        reorder = numpy.argsort(y)
 
-        self.impulse_y = impulse_y[reorder]
-        self.impulse_slip = impulse_slip[:,reorder]
+        self.impulse_y = y[reorder]
+        self.impulse_slip = slip[:,reorder]
 
     def get_station_responses(self, filename):
         """
@@ -60,8 +64,13 @@ class InvertSlipApp:
         :param filename: Name of HDF5 file with point data from PyLith Green's function simulation (Step 5_).
         """
         h5 = h5py.File(filename, "r")
-        self.station_responses = h5['vertex_fields/displacement'][:]
+        xy = h5['geometry/vertices'][:,0:2]
+        displacement = h5['vertex_fields/displacement'][:]
         h5.close()
+
+        # Sort stations by y coordinate.
+        reorder = numpy.argsort(xy[:,1])
+        self.station_responses = displacement[:,reorder,:]
 
     def get_station_observed(self, filename):
         """
@@ -70,8 +79,13 @@ class InvertSlipApp:
         :param filename: Name of HDF5 file with point data from PyLith forward simulation (Step 4).
         """
         h5 = h5py.File(filename, "r")
-        self.station_observed = h5['vertex_fields/displacement'][:]
+        xy = h5['geometry/vertices'][:,0:2]
+        displacement = h5['vertex_fields/displacement'][:]
         h5.close()
+
+        # Sort stations by y coordinate.
+        reorder = numpy.argsort(xy[:,1])
+        self.station_observed = displacement[:,reorder,:]
 
     def invert(self):
         """Invert observations for amplitude of impulses and fault slip.

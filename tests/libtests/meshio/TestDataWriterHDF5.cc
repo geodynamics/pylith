@@ -86,7 +86,7 @@ pylith_meshio_TestDataWriterHDF5_checkObject(hid_t id,
 
         hid_t datatype = H5Dget_type(dataset);CPPUNIT_ASSERT(datatype >= 0);
         hid_t dataclass = H5Tget_class(datatype);CPPUNIT_ASSERT(dataclass >= 0);
-        CPPUNIT_ASSERT_EQUAL(dataclassE, dataclass);
+        // CPPUNIT_ASSERT_EQUAL(dataclassE, dataclass);
 
         switch (dataclassE) {
         case H5T_FLOAT: {
@@ -112,6 +112,28 @@ pylith_meshio_TestDataWriterHDF5_checkObject(hid_t id,
 
             break;
         } // H5T_DOUBLE
+
+        case H5T_INTEGER: {
+            int* dataE = (sizeE > 0) ? new int[sizeE] : 0;CPPUNIT_ASSERT(sizeE > 0);
+            err = H5Dread(datasetE, H5T_NATIVE_INT, H5S_ALL, H5S_ALL, H5P_DEFAULT, (void*) dataE);CPPUNIT_ASSERT(err >= 0);
+
+            int* data = (size > 0) ? new int[size] : 0;CPPUNIT_ASSERT(size > 0);
+            err = H5Dread(dataset, H5T_NATIVE_INT, H5S_ALL, H5S_ALL, H5P_DEFAULT, (void*) data);CPPUNIT_ASSERT(err >= 0);
+
+            CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in dataset total size.", sizeE, size);
+
+            // Compare data values.
+            for (int i = 0; i < size; ++i) {
+                std::ostringstream msg;
+                msg << "Mismatch in dataset '" << name << "' at index " << i << ".";
+                CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.str().c_str(), dataE[i], int(data[i]));
+            } // for
+
+            delete[] dataE;dataE = 0;
+            delete[] data;data = 0;
+
+            break;
+        } // H5T_INTEGER
 
         case H5T_STRING: {
             const int slenE = H5Tget_size(datatypeE);CPPUNIT_ASSERT(slenE > 0);

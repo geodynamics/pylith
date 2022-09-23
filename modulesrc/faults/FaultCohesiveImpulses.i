@@ -62,7 +62,7 @@ public:
              *
              * @returns Number of impulses.
              */
-            size_t getNumImpulses(void);
+            size_t getNumImpulsesLocal(void);
 
             /** Verify configuration is acceptable.
              *
@@ -89,7 +89,7 @@ protected:
              * @param[in] impulseIndex Index of impulse.
              */
             void _updateSlip(pylith::topology::Field* auxiliaryField,
-                             const size_t impulseIndex);
+                             const long impulseIndex);
 
             /** Set kernels for residual.
              *

@@ -154,7 +154,7 @@ pylith::meshio::MeshIOCubit::_readVertices(ExodusII& exofile,
     // Number of vertices
     *numVertices = exofile.getDim("num_nodes");
 
-    PYLITH_COMPONENT_INFO("Reading " << *numVertices << " vertices.");
+    PYLITH_COMPONENT_INFO_ROOT("Reading " << *numVertices << " vertices.");
 
     if (exofile.hasVar("coord", NULL)) {
         const int ndims = 2;
@@ -214,7 +214,7 @@ pylith::meshio::MeshIOCubit::_readCells(ExodusII& exofile,
     *numCells = exofile.getDim("num_elem");
     const int numMaterials = exofile.getDim("num_el_blk");
 
-    PYLITH_COMPONENT_INFO("Reading " << *numCells << " cells in " << numMaterials << " blocks.");
+    PYLITH_COMPONENT_INFO_ROOT("Reading " << *numCells << " cells in " << numMaterials << " blocks.");
 
     int_array blockIds(numMaterials);
     int ndims = 1;
@@ -276,7 +276,7 @@ pylith::meshio::MeshIOCubit::_readGroups(ExodusII& exofile) {
 
     const int numGroups = exofile.getDim("num_node_sets");
 
-    PYLITH_COMPONENT_INFO("Found " << numGroups << " node sets.");
+    PYLITH_COMPONENT_INFO_ROOT("Found " << numGroups << " node sets.");
 
     int_array ids(numGroups);
     int ndims = 1;
@@ -302,7 +302,7 @@ pylith::meshio::MeshIOCubit::_readGroups(ExodusII& exofile) {
         ndims = 1;
         dims[0] = nodesetSize;
 
-        PYLITH_COMPONENT_INFO("Reading node set '" << groupNames[iGroup] << "' with id " << ids[iGroup] << " containing " << nodesetSize << " nodes.");
+        PYLITH_COMPONENT_INFO_ROOT("Reading node set '" << groupNames[iGroup] << "' with id " << ids[iGroup] << " containing " << nodesetSize << " nodes.");
         exofile.getVar(&points[0], dims, ndims, varname.str().c_str());
 
         std::sort(&points[0], &points[0]+nodesetSize);

@@ -26,6 +26,7 @@
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD*
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL*
+#include "pylith/utils/mpi.hh" // USES isRoot()
 
 #include <cassert>
 
@@ -191,7 +192,7 @@ pylith::utils::PetscOptions::set(void) {
     } // for
 
     pythia::journal::info_t info(GenericComponent::getName());
-    if (info.state()) {
+    if (info.state() && pylith::utils::MPI::isRoot()) {
         _PetscOptions::write(info, "Setting PETSc options:", optionsUsed);
         if (optionsIgnored._options.size() > 0) {
             _PetscOptions::write(info, "Ignoring PETSc options (already set):", optionsIgnored);

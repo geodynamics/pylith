@@ -251,6 +251,7 @@ private:
     pylith::topology::Mesh* _materialMesh; ///< Mesh associated with material.
 
     pylith::feassemble::UpdateStateVars* _updateState; ///< Data structure for layout needed to update state vars.
+    pylith::feassemble::DSLabelAccess* _dsLabel; ///< Information about integration (PETSc DS, Label, label value, etc).
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:

@@ -157,7 +157,7 @@ class pylith::mmstests::TestFaultKin2D_OneFaultShearNoSlip :
                                   const double y) {
         const double mu = density(x, y) * vs(x, y) * vs(x, y);
 
-        return -strain_xy() * 2.0 * mu / 2.25e+10;
+        return strain_xy() * 2.0 * mu / 2.25e+10;
     } // faulttraction_y
 
     static
@@ -187,7 +187,7 @@ class pylith::mmstests::TestFaultKin2D_OneFaultShearNoSlip :
         const PylithScalar tractionShear = -strain_xy() * 2.0 * mu / 2.25e+10;
         const PylithScalar tractionNormal = 0.0;
         r0[0] += tractionShear*tanDir[0] + tractionNormal*n[0];
-        r0[0] += tractionShear*tanDir[1] + tractionNormal*n[1];
+        r0[1] += tractionShear*tanDir[1] + tractionNormal*n[1];
     } // boundary_tractions
 
     static PetscErrorCode solnkernel_disp(PetscInt spaceDim,
@@ -296,7 +296,7 @@ protected:
             pylith::materials::Elasticity* material = new pylith::materials::Elasticity();assert(material);
             material->setFormulation(pylith::problems::Physics::QUASISTATIC);
             material->useBodyForce(false);
-            material->setDescription("Isotropic Linear Elascitity Plane Strain");
+            material->setDescription("Isotropic Linear Elasticity Plane Strain");
             material->setLabelValue(10);
             material->setBulkRheology(_data->rheology);
             _materials[0] = material;
@@ -305,7 +305,7 @@ protected:
             pylith::materials::Elasticity* material = new pylith::materials::Elasticity();assert(material);
             material->setFormulation(pylith::problems::Physics::QUASISTATIC);
             material->useBodyForce(false);
-            material->setDescription("Isotropic Linear Elascitity Plane Strain");
+            material->setDescription("Isotropic Linear Elasticity Plane Strain");
             material->setLabelValue(20);
             material->setBulkRheology(_data->rheology);
             _materials[1] = material;
@@ -314,7 +314,7 @@ protected:
             pylith::materials::Elasticity* material = new pylith::materials::Elasticity();assert(material);
             material->setFormulation(pylith::problems::Physics::QUASISTATIC);
             material->useBodyForce(false);
-            material->setDescription("Isotropic Linear Elascitity Plane Strain");
+            material->setDescription("Isotropic Linear Elasticity Plane Strain");
             material->setLabelValue(15);
             material->setBulkRheology(_data->rheology);
             _materials[2] = material;

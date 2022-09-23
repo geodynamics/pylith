@@ -39,6 +39,10 @@ class TestApp(TestDriver):
         for test in TestThreeBlocks.test_cases():
             suite.addTest(unittest.makeSuite(test))
 
+        import TestShearNoSlip
+        for test in TestShearNoSlip.test_cases():
+            suite.addTest(unittest.makeSuite(test))
+
         return suite
 
 

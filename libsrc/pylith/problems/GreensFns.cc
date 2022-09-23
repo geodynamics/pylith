@@ -305,26 +305,40 @@ pylith::problems::GreensFns::solve(void) {
     assert(solution);
     pylith::topology::Field* residual = _integrationData->getField(pylith::feassemble::IntegrationData::residual);assert(residual);
 
-    const size_t numImpulses = _faultImpulses->getNumImpulses();
-    PYLITH_COMPONENT_DEBUG("Using " << numImpulses << " impulses for Green's functions.");
-
+    PetscErrorCode err;
     int mpiRank = 0;
-    MPI_Comm_rank(PETSC_COMM_WORLD, &mpiRank);
+    int mpiNumProcs = 0;
+    PetscDM dm = getPetscDM();
+    MPI_Comm comm = PetscObjectComm((PetscObject)dm);
+    err = MPI_Comm_rank(comm, &mpiRank);
+    err = MPI_Comm_size(comm, &mpiNumProcs);PYLITH_CHECK_ERROR(err);
+
+    PetscInt numImpulsesLocal = _faultImpulses->getNumImpulsesLocal();
+    PYLITH_COMPONENT_DEBUG("[" << mpiRank << "] Contributing " << numImpulsesLocal << " impulses for Green's functions.");
+    int_array numImpulses(mpiNumProcs);
+    err = MPI_Allgather(&numImpulsesLocal, 1, MPI_INT, &numImpulses[0], 1, MPI_INT, comm);PYLITH_CHECK_ERROR(err);
+
+    size_t numImpulsesGlobal = 0;
+    for (int iProc = 0; iProc < mpiNumProcs; ++iProc) {
+        numImpulsesGlobal += numImpulses[iProc];
+    } // for
+
     const PylithReal tolerance = 1.0e-4;
-    for (size_t i = 0; i < numImpulses; ++i) {
-        if (0 == mpiRank) {
-            PYLITH_COMPONENT_INFO("Computing Green's function " << i+1 << " of " << numImpulses << ".");
-        } // if
+    for (int iProc = 0, iImpulseGlobal = 0; iProc < mpiNumProcs; ++iProc) {
+        for (int iImpulseLocal = 0; iImpulseLocal < numImpulses[iProc]; ++iImpulseLocal, ++iImpulseGlobal) {
+            if (0 == mpiRank) {
+                PYLITH_COMPONENT_INFO_ROOT("Computing Green's function " << iImpulseGlobal+1 << " of " << numImpulsesGlobal << ".");
+            } // if
 
-        // Update impulse on fault
-        const PetscReal impulseReal = i + tolerance;
-        _integratorImpulses->setState(impulseReal);
+            // Update impulse on fault
+            const PetscReal impulseReal = (mpiRank == iProc) ? iImpulseLocal + tolerance : -1.0;
+            _integratorImpulses->setState(impulseReal);
 
-        PetscErrorCode err = SNESSolve(_snes, residual->getGlobalVector(), solution->getGlobalVector());PYLITH_CHECK_ERROR(err);
-
-        solution->scatterVectorToLocal(solution->getGlobalVector());
-        solution->scatterLocalToOutput();
-        poststep(size_t(impulseReal));
+            err = SNESSolve(_snes, residual->getGlobalVector(), solution->getGlobalVector());PYLITH_CHECK_ERROR(err);
+            solution->scatterVectorToLocal(solution->getGlobalVector());
+            solution->scatterLocalToOutput();
+            poststep(size_t(iImpulseGlobal), numImpulsesGlobal);
+        } // for
     } // for
 
     PYLITH_METHOD_END;
@@ -334,7 +348,8 @@ pylith::problems::GreensFns::solve(void) {
 // ------------------------------------------------------------------------------------------------
 // Perform operations after advancing solution of one impulse.
 void
-pylith::problems::GreensFns::poststep(const size_t impulse) {
+pylith::problems::GreensFns::poststep(const size_t impulse,
+                                      const size_t numImpulses) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("poststep(impulse"<<impulse<<")");
 
@@ -362,8 +377,7 @@ pylith::problems::GreensFns::poststep(const size_t impulse) {
     assert(_observers);
     _observers->notifyObservers(t, impulse, *solution);
 
-    // Get number of impulses for monitor
-    const size_t numImpulses = _faultImpulses->getNumImpulses();
+    // Update number of impulses for monitor
     if (_monitor) {
         assert(_normalizer);
         _monitor->update(impulse, 0, numImpulses);

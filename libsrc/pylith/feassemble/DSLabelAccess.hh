@@ -94,7 +94,10 @@ public:
      */
     PetscInt numCells(void) const;
 
-    // PRIVATE MEMBERS //////////////////////////////////////////////////////
+    /// Remove overlap from list of cells in label.
+    void removeOverlap(void);
+
+    // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
 private:
 
     PetscDM _dm; ///< Cached PETSc dm for mesh.
@@ -106,10 +109,11 @@ private:
     PetscInt _value; ///< Label value.
     std::string _name; ///< Name of label;
 
-    // NOT IMPLEMENTED //////////////////////////////////////////////////////
+    // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
 private:
 
-    DSLabelAccess(const DSLabelAccess&); ///< Not implemented
+    DSLabelAccess(void); ///< Not implemented.
+    DSLabelAccess(const DSLabelAccess&); ///< Not implemented.
     const DSLabelAccess& operator=(const DSLabelAccess&); ///< Not implemented
 
 };

@@ -35,9 +35,8 @@ class RheologyElasticity(PetscComponent, ModuleRheology):
         PetscComponent.__init__(self, name, facility="rheologyelasticity")
 
     def preinitialize(self, problem):
-        from pylith.mpi.Communicator import mpi_comm_world
-        comm = mpi_comm_world()
-        if 0 == comm.rank:
+        from pylith.mpi.Communicator import mpi_is_root
+        if mpi_is_root():
             self._info.log(
                 "Performing minimal initialization of elasticity rheology '%s'." % self.aliases[-1])
 

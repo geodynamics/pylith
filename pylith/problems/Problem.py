@@ -116,9 +116,8 @@ class Problem(PetscComponent, ModuleProblem):
     def preinitialize(self, mesh):
         """Do minimal initialization.
         """
-        from pylith.mpi.Communicator import mpi_comm_world
-        comm = mpi_comm_world()
-        if 0 == comm.rank:
+        from pylith.mpi.Communicator import mpi_is_root
+        if mpi_is_root():
             self._info.log("Performing minimal initialization before verifying configuration.")
 
         self._createModuleObj()
@@ -175,20 +174,19 @@ class Problem(PetscComponent, ModuleProblem):
     def verifyConfiguration(self):
         """Verify compatibility of configuration.
         """
-        from pylith.mpi.Communicator import mpi_comm_world
-        comm = mpi_comm_world()
-        if 0 == comm.rank:
+        from pylith.mpi.Communicator import mpi_is_root
+        if mpi_is_root():
             self._info.log("Verifying compatibility of problem configuration.")
 
         ModuleProblem.verifyConfiguration(self)
-        self._printInfo()
+        if mpi_is_root():
+            self._printInfo()
 
     def initialize(self):
         """Initialize integrators and constraints.
         """
-        from pylith.mpi.Communicator import mpi_comm_world
-        comm = mpi_comm_world()
-        if 0 == comm.rank:
+        from pylith.mpi.Communicator import mpi_is_root
+        if mpi_is_root():
             self._info.log(f"Initializing {self.name} problem with {self.formulation} formulation.")
 
         ModuleProblem.initialize(self)
@@ -201,9 +199,8 @@ class Problem(PetscComponent, ModuleProblem):
     def finalize(self):
         """Cleanup after running problem.
         """
-        from pylith.mpi.Communicator import mpi_comm_world
-        comm = mpi_comm_world()
-        if 0 == comm.rank:
+        from pylith.mpi.Communicator import mpi_is_root
+        if mpi_is_root():
             self._info.log("Finalizing problem.")
 
     def checkpoint(self):

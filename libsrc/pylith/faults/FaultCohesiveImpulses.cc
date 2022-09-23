@@ -139,9 +139,9 @@ pylith::faults::FaultCohesiveImpulses::setThreshold(const double value) {
 
 
 // ------------------------------------------------------------------------------------------------
-// Return the number of impulses.
+// Return the number of impulses on this process.
 size_t
-pylith::faults::FaultCohesiveImpulses::getNumImpulses(void) {
+pylith::faults::FaultCohesiveImpulses::getNumImpulsesLocal(void) {
     return _impulsePoints.size()*_impulseDOF.size();
 } // getNumImpulses
 
@@ -226,6 +226,7 @@ pylith::faults::FaultCohesiveImpulses::createAuxiliaryField(const pylith::topolo
     pylith::topology::FieldOps::checkDiscretization(solution, *auxiliaryField);
     auxiliaryField->allocate();
     auxiliaryField->createOutputVector();
+    auxiliaryField->createGlobalVector();
 
     assert(_auxiliaryFactory);
     _auxiliaryFactory->setValuesFromDB();
@@ -254,7 +255,7 @@ pylith::faults::FaultCohesiveImpulses::updateAuxiliaryField(pylith::topology::Fi
 
     switch (_formulation) {
     case QUASISTATIC:
-        this->_updateSlip(auxiliaryField, size_t(impulseReal));
+        this->_updateSlip(auxiliaryField, long(impulseReal));
         break;
     case DYNAMIC_IMEX:
     case DYNAMIC:
@@ -280,7 +281,7 @@ pylith::faults::FaultCohesiveImpulses::_getAuxiliaryFactory(void) {
 // Update slip subfield in auxiliary field at beginning of time step.
 void
 pylith::faults::FaultCohesiveImpulses::_updateSlip(pylith::topology::Field* auxiliaryField,
-                                                   const size_t impulseStep) {
+                                                   const long impulseStep) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_updateSlip(auxiliaryField="<<auxiliaryField<<", impulseStep="<<impulseStep<<")");
 
@@ -294,18 +295,24 @@ pylith::faults::FaultCohesiveImpulses::_updateSlip(pylith::topology::Field* auxi
     PetscErrorCode err;
     err = VecSet(auxiliaryField->getLocalVector(), 0.0);PYLITH_CHECK_ERROR(err);
 
-    pylith::topology::VecVisitorMesh auxiliaryVisitor(*auxiliaryField, "slip");
-    PylithScalar* auxiliaryArray = auxiliaryVisitor.localArray();
-    const PetscInt pImpulse = _impulsePoints[iImpulse];
-    const PetscInt dof = _impulseDOF[iComponent];
-    const PetscInt slipDof = auxiliaryVisitor.sectionDof(pImpulse);assert(iComponent < size_t(slipDof));
-    const PetscInt slipOff = auxiliaryVisitor.sectionOffset(pImpulse);
-    auxiliaryArray[slipOff+dof] = 1.0 / _normalizer->getLengthScale();
+    if ((impulseStep >= 0) && (_impulsePoints.size() > 0)) {
+        pylith::topology::VecVisitorMesh auxiliaryVisitor(*auxiliaryField, "slip");
+        PylithScalar* auxiliaryArray = auxiliaryVisitor.localArray();
+        const PetscInt pImpulse = _impulsePoints[iImpulse];
+        const PetscInt dof = _impulseDOF[iComponent];
+        const PetscInt slipDof = auxiliaryVisitor.sectionDof(pImpulse);assert(iComponent < size_t(slipDof));
+        const PetscInt slipOff = auxiliaryVisitor.sectionOffset(pImpulse);
+        auxiliaryArray[slipOff+dof] = 1.0 / _normalizer->getLengthScale();
+    } // if
 
     pythia::journal::debug_t debug(pylith::utils::PyreComponent::getName());
     if (debug.state()) {
         auxiliaryField->view("Fault auxiliary field after setting impulse.");
     } // if
+
+    err = VecSet(auxiliaryField->getGlobalVector(), 0.0);PYLITH_CHECK_ERROR(err);
+    auxiliaryField->scatterLocalToVector(auxiliaryField->getGlobalVector(), ADD_VALUES);
+    auxiliaryField->scatterVectorToLocal(auxiliaryField->getGlobalVector(), INSERT_VALUES);
 
     PYLITH_METHOD_END;
 } // _updateSlip
@@ -422,16 +429,28 @@ pylith::faults::_FaultCohesiveImpulses::findImpulsePoints(int_array* impulsePoin
 
     PetscErrorCode err = 0;
 
-    PetscSection auxiliaryFieldSection = auxiliaryField.getLocalSection();assert(auxiliaryFieldSection);
+    PetscSection auxiliaryFieldSection = auxiliaryField.getGlobalSection();assert(auxiliaryFieldSection);
     PetscInt pStart = 0, pEnd = 0;
     err = PetscSectionGetChart(auxiliaryFieldSection, &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
     pylith::topology::VecVisitorMesh auxiliaryVisitor(auxiliaryField, "slip");
+    if (pStart == pEnd) {
+        PYLITH_METHOD_END;
+    } // if
+
     PylithScalar* auxiliaryArray = auxiliaryVisitor.localArray();assert(auxiliaryArray);
+
+    // Use global section to get number of degrees of freedom so that we don't double count.
+    PetscSection slipSectionGlobal = NULL;
+    const int slipIndex = auxiliaryField.getSubfieldInfo("slip").index;
+    err = PetscSectionGetField(auxiliaryFieldSection, slipIndex, &slipSectionGlobal);PYLITH_CHECK_ERROR(err);
 
     size_t count = 0;
     for (PetscInt point = pStart; point < pEnd; ++point) {
+        PetscInt slipDof = 0;
+        err = PetscSectionGetDof(slipSectionGlobal, point, &slipDof);PYLITH_CHECK_ERROR(err);
+
         const PetscInt slipOff = auxiliaryVisitor.sectionOffset(point);
-        const PetscInt slipDof = auxiliaryVisitor.sectionDof(point);
+        assert(auxiliaryVisitor.sectionDof(point) >= slipDof);
         for (PetscInt iDOF = 0; iDOF < slipDof; ++iDOF) {
             if (auxiliaryArray[slipOff+iDOF] > threshold) {
                 ++count;
@@ -443,8 +462,10 @@ pylith::faults::_FaultCohesiveImpulses::findImpulsePoints(int_array* impulsePoin
     impulsePoints->resize(count);
     size_t index = 0;
     for (PetscInt point = pStart; point < pEnd; ++point) {
+        PetscInt slipDof = 0;
+        err = PetscSectionGetDof(slipSectionGlobal, point, &slipDof);PYLITH_CHECK_ERROR(err);
+
         const PetscInt slipOff = auxiliaryVisitor.sectionOffset(point);
-        const PetscInt slipDof = auxiliaryVisitor.sectionDof(point);
         for (PetscInt iDOF = 0; iDOF < slipDof; ++iDOF) {
             if (auxiliaryArray[slipOff+iDOF] > threshold) {
                 (*impulsePoints)[index++] = point;
