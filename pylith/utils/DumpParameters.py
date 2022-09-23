@@ -129,11 +129,7 @@ class DumpParameters(Component):
         relpath = os.path.dirname(filename)
 
         if len(relpath) > 0 and not os.path.exists(relpath):
-            # Only create directory on proc 0
-            from pylith.mpi.Communicator import mpi_comm_world
-            comm = mpi_comm_world()
-            if 0 == comm.rank:
-                os.makedirs(relpath)
+            os.makedirs(relpath)
 
 
 # End of file

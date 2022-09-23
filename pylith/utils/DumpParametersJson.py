@@ -53,6 +53,10 @@ class DumpParametersJson(DumpParameters):
     def write(self, app):
         """Write parameters to JSON file.
         """
+        from pylith.mpi.Communicator import mpi_is_root
+        if not mpi_is_root():
+            return
+
         if self.info is None:
             self.collect(app)
 
