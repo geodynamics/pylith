@@ -18,7 +18,7 @@ This is a bug fix release with no new features or changes to the user interface.
   * Green's function problems did not manage fault impulses on multiple processes.
   * Creating a point mesh for `OutputSolnPoints` failed when running in parallel.
   * PetscSF inconsistencies generated errors at various times when running in parallel.
-* Update to PETSc 3.17.4.
+* Update to PETSc 3.18.0.
 
 **Note**: We now use PETSc routines to write the HDF5 files.
 As a result, there is one change to the layout: `topology/cells` is now `viz/topology/cells`.
