@@ -105,19 +105,23 @@ pylith::feassemble::ConstraintSimple::initialize(const pylith::topology::Field& 
             err = PetscDSGetDiscretization(cds, f, &disc);PYLITH_CHECK_ERROR(err);
             err = PetscObjectGetName(disc, &name);PYLITH_CHECK_ERROR(err);
             if (_subfieldName == std::string(name)) {ds = cds;i_field = f;break;}
-        }
-    }
+        } // for
+    } // for
+    PetscInt numConstrainedDOF = _constrainedDOF.size();
+    PetscInt* constrainedDOF = &_constrainedDOF[0];
     if (!ds) {
         // :KLUDGE: It is possible for a process to have a DOF that we need to constrain, but the process
         // may not have any cells with that DOF. The underlying code doesn't actually care if the point is
         // in the DS, so just get any DS and use it for the constraint.
         err = DMGetDS(dm, &ds);PYLITH_CHECK_ERROR(err);
         i_field = solution.getSubfieldInfo(_subfieldName.c_str()).index;
+        numConstrainedDOF = 0;
+        constrainedDOF = NULL;
     } // if
     err = DMPlexRestoreTransitiveClosure(solution.getDM(), point, PETSC_FALSE, &clSize, &closure);PYLITH_CHECK_ERROR(err);
     err = DMGetLabel(solution.getDM(), _labelName.c_str(), &label);PYLITH_CHECK_ERROR(err);
     err = PetscDSAddBoundary(ds, DM_BC_ESSENTIAL, _labelName.c_str(), label, 1, &_labelValue, i_field,
-                             _constrainedDOF.size(), &_constrainedDOF[0], (void (*)(void)) _fn, NULL, context, NULL);
+                             numConstrainedDOF, constrainedDOF, (void (*)(void)) _fn, NULL, context, NULL);
     PYLITH_CHECK_ERROR(err);
     err = DMViewFromOptions(dm, NULL, "-constraint_simple_dm_view");PYLITH_CHECK_ERROR(err);
     {
