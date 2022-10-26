@@ -195,7 +195,7 @@ pylith::utils::PetscOptions::set(void) {
     if (info.state() && pylith::utils::MPI::isRoot()) {
         _PetscOptions::write(info, "Setting PETSc options:", optionsUsed);
         if (optionsIgnored._options.size() > 0) {
-            _PetscOptions::write(info, "Ignoring PETSc options (already set):", optionsIgnored);
+            _PetscOptions::write(info, "Using user values rather then the following default PETSc options:", optionsIgnored);
         } // if
     } // if
 
