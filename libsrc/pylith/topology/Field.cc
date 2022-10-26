@@ -651,9 +651,14 @@ pylith::topology::Field::createOutputVector(void) {
 
     PetscDM dmOutput = NULL;
     err = DMGetOutputDM(_mesh->getDM(), &dmOutput);PYLITH_CHECK_ERROR(err);
+
     PetscDS dsOutput = NULL;
-    err = DMGetDS(dmOutput, &dsOutput);PYLITH_CHECK_ERROR(err);
-    err = PetscDSSetUp(dsOutput);PYLITH_CHECK_ERROR(err);
+    PetscInt numRegions = 0;
+    err = DMGetNumDS(dmOutput, &numRegions);PYLITH_CHECK_ERROR(err);
+    for (PetscInt i = 0; i < numRegions; ++i) {
+        err = DMGetRegionNumDS(dmOutput, i, NULL, NULL, &dsOutput);PYLITH_CHECK_ERROR(err);
+        err = PetscDSSetUp(dsOutput);PYLITH_CHECK_ERROR(err);
+    } // for
 
     err = DMCreateGlobalVector(dmOutput, &_outputVec);PYLITH_CHECK_ERROR(err);assert(_outputVec);
     err = PetscObjectSetName((PetscObject) _outputVec, getLabel());PYLITH_CHECK_ERROR(err);
