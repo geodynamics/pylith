@@ -492,6 +492,27 @@ pylith::problems::TimeDependent::poststep(void) {
 
       err = TSGetDM(_ts, &dm);PYLITH_CHECK_ERROR(err);
       err = DMGetCoordinateDM(dm, &cdm);PYLITH_CHECK_ERROR(err);
+      {
+        PetscDS      ds;
+        PetscObject  obj;
+        PetscClassId id;
+
+        err = DMGetDS(cdm, &ds);PYLITH_CHECK_ERROR(err);
+        err = PetscDSGetDiscretization(ds, 0, &obj);PYLITH_CHECK_ERROR(err);
+        if (obj) {
+          err = PetscObjectGetClassId(obj, &id);PYLITH_CHECK_ERROR(err);
+          if (id != PETSCFE_CLASSID) {
+            DMField field;
+
+            err = DMPlexCreateCoordinateSpace(dm, 1, NULL);PYLITH_CHECK_ERROR(err);
+            err = DMGetCoordinateDM(dm, &cdm);PYLITH_CHECK_ERROR(err);
+            err = DMGetCoordinatesLocal(dm, &coordinates);PYLITH_CHECK_ERROR(err);
+            err = DMSetCoordinatesLocal(cdm, coordinates);PYLITH_CHECK_ERROR(err);
+            err = DMGetCoordinateField(dm, &field);PYLITH_CHECK_ERROR(err);
+            err = DMSetCoordinateField(cdm, field);PYLITH_CHECK_ERROR(err);
+          }
+        }
+      }
       err = DMGetCoordinatesLocal(dm, &coordinates);PYLITH_CHECK_ERROR(err);
       err = DMGetLocalVector(cdm, &coordinatesNew);PYLITH_CHECK_ERROR(err);
       err = DMSetAuxiliaryVec(cdm, NULL, 0, 0, solution->getLocalVector());PYLITH_CHECK_ERROR(err);
