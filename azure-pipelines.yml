@@ -53,10 +53,10 @@ stages:
               BASE_IMAGE: "testenv-ubuntu-18.04"
             ubuntu_20.04:
               BASE_IMAGE: "testenv-ubuntu-20.04"
-            ubuntu_21.10:
-              BASE_IMAGE: "testenv-ubuntu-21.10"
             ubuntu_22.04:
               BASE_IMAGE: "testenv-ubuntu-22.04"
+            ubuntu_22.10:
+              BASE_IMAGE: "testenv-ubuntu-22.10"
             fedora_35:
               BASE_IMAGE: "testenv-fedora-35"
             fedora_36:
