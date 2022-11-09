@@ -80,6 +80,14 @@ pylith::materials::Material::setGravityField(spatialdata::spatialdb::GravityFiel
 
 
 // ------------------------------------------------------------------------------------------------
+// Set body force kernels (intended for use in MMS tests).
+void
+pylith::materials::Material::setMMSBodyForceKernels(const std::vector<pylith::feassemble::IntegratorDomain::ResidualKernels>& kernels) {
+    _mmsBodyForceKernels = kernels;
+}
+
+
+// ------------------------------------------------------------------------------------------------
 // Create constraint and set kernels.
 std::vector<pylith::feassemble::Constraint*>
 pylith::materials::Material::createConstraints(const pylith::topology::Field& solution) {

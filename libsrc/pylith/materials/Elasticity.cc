@@ -392,6 +392,9 @@ pylith::materials::Elasticity::_setKernelsResidual(pylith::feassemble::Integrato
         PYLITH_COMPONENT_LOGICERROR("Unknown formulation for equations (" << _formulation << ").");
     } // switch
 
+    // Add any MMS body force kernels.
+    kernels.insert(kernels.end(), _mmsBodyForceKernels.begin(), _mmsBodyForceKernels.end());
+
     assert(integrator);
     integrator->setKernelsResidual(kernels, solution);
 

@@ -27,6 +27,7 @@
 #include "materialsfwd.hh" // forward declarations
 
 #include "pylith/problems/Physics.hh" // ISA Physics
+#include "pylith/feassemble/IntegratorDomain.hh" // HOLDSA IntegratorDomain::ResidualKenels
 
 #include "pylith/utils/PetscOptions.hh" // USES PetscOptions
 
@@ -85,6 +86,12 @@ public:
      */
     void setGravityField(spatialdata::spatialdb::GravityField* const g);
 
+    /** Set body force kernels (intended for use in MMS tests).
+     *
+     * @param[in] kernels Array of body force kernels.
+     */
+    void setMMSBodyForceKernels(const std::vector<pylith::feassemble::IntegratorDomain::ResidualKernels>& kernels);
+
     /** Create constraint and set kernels.
      *
      * @param[in] solution Solution field.
@@ -107,6 +114,7 @@ public:
 protected:
 
     spatialdata::spatialdb::GravityField* _gravityField; ///< Gravity field for gravitational body forces.
+    std::vector<pylith::feassemble::IntegratorDomain::ResidualKernels> _mmsBodyForceKernels;
 
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:

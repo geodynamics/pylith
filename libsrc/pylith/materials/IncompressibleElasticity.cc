@@ -342,6 +342,9 @@ pylith::materials::IncompressibleElasticity::_setKernelsResidual(pylith::feassem
     kernels[0] = ResidualKernels("displacement", pylith::feassemble::Integrator::LHS, f0u, f1u);
     kernels[1] = ResidualKernels("pressure", pylith::feassemble::Integrator::LHS, f0p, f1p);
 
+    // Add any MMS body force kernels.
+    kernels.insert(kernels.end(), _mmsBodyForceKernels.begin(), _mmsBodyForceKernels.end());
+
     assert(integrator);
     integrator->setKernelsResidual(kernels, solution);
 
