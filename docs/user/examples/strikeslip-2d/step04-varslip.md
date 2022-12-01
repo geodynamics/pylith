@@ -14,7 +14,6 @@ We prescribe left-lateral slip that varies along the strike of the fault with fi
 The slip is nonzero over the region -20 km $\le$ y $\le$ +20 km with a peak slip of 80 cm at y=-0.5 km ({numref}`fig:example:strikeslip:2d:step04:slip`).
 
 This example involves a static simulation that solves for the deformation from prescribed coseismic slip on the fault.
-We specify 2 meters of right-lateral slip.
 {numref}`fig:example:strikeslip:2d:step04:diagram` shows the boundary conditions on the domain.
 The parameters specific to this example are in `step04_varslip.cfg`.
 

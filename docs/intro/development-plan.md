@@ -6,29 +6,46 @@ Future implementation of features is guided by several target applications, incl
 * Inversion of geodetic data for slow slip events, fault creep, and long-term fault slip rates.
 * Quasistatic and dynamic modeling of fluids and faulting.
 
-## Version 3.0.4 (October 2022)
+## Version 3.0.4 (February 2023)
 
 Updates for examples and documentation along with bugfixes.
 
-## Version 3.1.0 (November 2022)
+* Finish updating `examples/subduction-3d` ![intermediate](images/intermediate.png) [20%]
+* Add `examples/barwaves-2d` ![expert](images/expert.png) [10%]
+* Output of fault tractions ![expert](images/expert.png) [25%]
+* Better preconditioners ![expert](images/expert.png) [25%]
+  * elasticity with fault
+  * incompressible elasticity
+  * poroelasticity
+* Use `pod` initial guess to improve convergence ![easy](images/easy.png) [25%]
+* Update coordinates with solution ![intermediate](images/intermediate.png) [50%]
+
+## Version 3.1.0 (April 2023)
 
 * Parallel mesh loading ![expert](images/expert.png) [15%]
-* Diagonal Jacobian for explicit part of IMEX formulation ![expert](images/expert.png)[0%]
+* Dynamic prescribed slip with diagonal Jacobian for explicit part of IMEX formulation ![expert](images/expert.png)[0%]
 * Improve robustness of HDF5 output by opening/closing at each time step ![easy](images/easy.png)[0%]
+* Dirichlet boundary conditions with constraints on normal and tangential components. ![difficult](images/difficult.png) [0%]
+* Analytical function spatial database ![easy](images/easy.png)[50%]
 * Additional minor cleanup of code internals to improve maintainability.
+  * Refactor auxiliary field and derived field output (initial/timestep/final)
+  * Output of fault rupture auxiliary fields
+  * VTK output (vtk -> vtu)
 
-## Version 3.2 (February 2022)
+## Version 3.2 (July 2023)
 
 * Spontaneous rupture for quasistatic and dynamic simulations ![expert](images/expert.png) [20%]
 * Reimplementation of small strain formulation for elasticity ![difficult](images/difficult.png) [20%]
 * Reimplementation of Drucker-Prager elastoplastic bulk rheology ![intermediate](images/intermediate.png) [0%]
-* Add support for GeoModelGrids implementation of spatial databases for 3D seismic velocity models.
+* Add support for GeoModelGrids implementation of spatial databases for 3D seismic velocity models. ![intermediate](images/intermediate.png) [0%]
+* More flexible specification of time-dependent boundary conditions. ![difficult](images/difficult.png) [0%]
 * Line/point fluid sources in poroelasticity ![expert](images/expert.png) [20%]
 * Integration with libCEED for fast high order residual evaluation ![expert](images/expert.png)\
   Contribution led by Jed Brown.
 * Add ability to output residual field during nonlinear solve for debugging ![easy](images/easy.png) [0%]
+* Convert Python/C++ interface from SWIG to pybind11. ![intermediate](images/intermediate.png) [0%]
 
-## Version 3.3 (June 2023)
+## Version 4.0 (Spring 2024)
 
 * Coupling of problems with compatible meshes ![difficult](images/difficult.png) [10%]\
     Implement "injectors" for solution and state variables.
