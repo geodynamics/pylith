@@ -75,20 +75,6 @@ pylith::meshio::TestMeshIOLagrit::testConstructor(void) {
 
 
 // ----------------------------------------------------------------------
-// Test debug()
-void
-pylith::meshio::TestMeshIOLagrit::testDebug(void) {
-    PYLITH_METHOD_BEGIN;
-
-    CPPUNIT_ASSERT(_io);
-
-    _testDebug(*_io);
-
-    PYLITH_METHOD_END;
-} // testDebug
-
-
-// ----------------------------------------------------------------------
 // Test filename()
 void
 pylith::meshio::TestMeshIOLagrit::testFilename(void) {

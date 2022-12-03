@@ -21,21 +21,10 @@ class MeshGenerator(PetscComponent):
     Abstract base class for mesh generator.
     """
 
-    import pythia.pyre.inventory
-
-    debug = pythia.pyre.inventory.bool("debug", default=False)
-    debug.meta['tip'] = "Debugging flag for mesh."
-
-    interpolate = pythia.pyre.inventory.bool("interpolate", default=True)
-    interpolate.meta['tip'] = "Build intermediate mesh topology elements"
-
     def __init__(self, name="meshgenerator"):
         """Constructor.
         """
         PetscComponent.__init__(self, name, facility="meshgenerator")
-        self.debug = False
-        self.interpolate = True
-        return
 
     def preinitialize(self, problem):
         """Do minimal initialization.
@@ -48,8 +37,6 @@ class MeshGenerator(PetscComponent):
         # Need to nondimensionalize coordinates.
 
         raise NotImplementedError("MeshGenerator.create() not implemented.")    
-
-    # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
         """Set members based using inventory.

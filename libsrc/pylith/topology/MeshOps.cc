@@ -264,9 +264,17 @@ pylith::topology::MeshOps::checkTopology(const Mesh& mesh) {
 
     PetscErrorCode err;
     err = DMViewFromOptions(dmMesh, NULL, "-pylith_checktopo_dm_view");PYLITH_CHECK_ERROR(err);
+    err = DMPlexCheckGeometry(dmMesh);PYLITH_CHECK_ERROR_MSG(err, "Error in topology of the mesh.");
     err = DMPlexCheckSymmetry(dmMesh);PYLITH_CHECK_ERROR_MSG(err, "Error in topology of mesh associated with symmetry of adjacency information.");
 
     err = DMPlexCheckSkeleton(dmMesh, cellHeight);PYLITH_CHECK_ERROR_MSG(err, "Error in topology of mesh cells.");
+
+    /* Other check functions that we are not using:
+     *
+     * DMPlexCheckFaces() - not compatible with cohesive cells.
+     *
+     * DMPlexCheckInterfaceCones() - very slow
+     */
 } // checkTopology
 
 

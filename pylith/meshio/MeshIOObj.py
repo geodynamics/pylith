@@ -42,9 +42,6 @@ class MeshIOObj(PetscComponent, ModuleMeshIO):
         if mpi_is_root():
             self._info.log("Reading finite-element mesh")
 
-        # Set flags
-        self.debug(debug)
-
         # Initialize coordinate system
         if self.coordsys is None:
             raise ValueError("Coordinate system for mesh is unknown.")
@@ -55,7 +52,7 @@ class MeshIOObj(PetscComponent, ModuleMeshIO):
         mesh.setCoordSys(self.coordsys)
 
         # Read mesh
-        ModuleMeshIO.read(self, mesh)
+        ModuleMeshIO.read(self, mesh, debug)
         return mesh
 
     def write(self, mesh):

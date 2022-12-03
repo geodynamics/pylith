@@ -69,19 +69,6 @@ pylith::meshio::TestMeshIOPetsc::testConstructor(void) {
 
 
 // ----------------------------------------------------------------------
-// Test debug()
-void
-pylith::meshio::TestMeshIOPetsc::testDebug(void) {
-    PYLITH_METHOD_BEGIN;
-
-    CPPUNIT_ASSERT(_io);
-    _testDebug(*_io);
-
-    PYLITH_METHOD_END;
-} // testDebug
-
-
-// ----------------------------------------------------------------------
 // Test filename()
 void
 pylith::meshio::TestMeshIOPetsc::testFilename(void) {
