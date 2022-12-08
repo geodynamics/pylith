@@ -72,7 +72,7 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
 
     /* DMPlex */
     PetscDM dmMesh = NULL;
-    PetscBool interpolate = PETSC_TRUE; /* interpolate = interpolate ? PETSC_TRUE : PETSC_FALSE; */
+    PetscBool interpolate = PETSC_TRUE;
 
     err = MPI_Bcast(&dim, 1, MPIU_INT, 0, comm);PYLITH_CHECK_ERROR(err);
     err = MPI_Bcast(&spaceDim, 1, MPIU_INT, 0, comm);PYLITH_CHECK_ERROR(err);

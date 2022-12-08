@@ -26,6 +26,7 @@ class MeshImporter(MeshGenerator):
         "cfg": """
             [pylithapp.meshimporter]
             reorder_mesh = True
+            check_topology = True
             reader = pylith.meshio.MeshIOCubit
             refiner = pylith.topology.RefineUniform
         """
@@ -35,6 +36,9 @@ class MeshImporter(MeshGenerator):
 
     reorderMesh = pythia.pyre.inventory.bool("reorder_mesh", default=True)
     reorderMesh.meta['tip'] = "Reorder mesh using reverse Cuthill-McKee."
+
+    checkTopology = pythia.pyre.inventory.bool("check_topology", default=True)
+    checkTopology.meta['tip'] = "Check topology of imported mesh."
 
     from pylith.meshio.MeshIOAscii import MeshIOAscii
     reader = pythia.pyre.inventory.facility("reader", family="mesh_io", factory=MeshIOAscii)
@@ -75,9 +79,7 @@ class MeshImporter(MeshGenerator):
         self._eventLogger.eventBegin(logEvent)
 
         # Read mesh
-        mesh = self.reader.read(self.debug)
-        if self.debug:
-            mesh.view()
+        mesh = self.reader.read(self.checkTopology)
 
         # Reorder mesh
         if self.reorderMesh:
@@ -104,8 +106,6 @@ class MeshImporter(MeshGenerator):
             if isRoot:
                 self._info.log("Distributing mesh.")
             mesh = self.distributor.distribute(mesh, problem)
-            if self.debug:
-                mesh.view()
             mesh.memLoggingStage = "DistributedMesh"
 
         # Refine mesh (if necessary)

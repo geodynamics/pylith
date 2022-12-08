@@ -296,24 +296,6 @@ pylith::meshio::TestMeshIO::_checkVals(void) {
 
 
 // ----------------------------------------------------------------------
-// Test debug()
-void
-pylith::meshio::TestMeshIO::_testDebug(MeshIO& iohandler) {
-    PYLITH_METHOD_BEGIN;
-
-    bool debug = false;
-    iohandler.debug(debug);
-    CPPUNIT_ASSERT_EQUAL(debug, iohandler.debug());
-
-    debug = true;
-    iohandler.debug(debug);
-    CPPUNIT_ASSERT_EQUAL(debug, iohandler.debug());
-
-    PYLITH_METHOD_END;
-} // _testDebug
-
-
-// ----------------------------------------------------------------------
 // Constructor
 pylith::meshio::TestMeshIO_Data::TestMeshIO_Data(void) :
     numVertices(0),

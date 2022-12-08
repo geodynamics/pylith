@@ -31,7 +31,6 @@ subpkginclude_HEADERS = \
 	DataWriterVTK.icc \
 	MeshBuilder.hh \
 	MeshIO.hh \
-	MeshIO.icc \
 	MeshIOAscii.hh \
 	MeshIOAscii.icc \
 	MeshIOPetsc.hh \

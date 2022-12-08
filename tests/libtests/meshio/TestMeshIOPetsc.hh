@@ -45,7 +45,6 @@ class pylith::meshio::TestMeshIOPetsc : public TestMeshIO { // class TestMeshIOP
     CPPUNIT_TEST_SUITE(TestMeshIOPetsc);
 
     CPPUNIT_TEST(testConstructor);
-    CPPUNIT_TEST(testDebug);
     CPPUNIT_TEST(testFilename);
     CPPUNIT_TEST(testRead);
 
@@ -62,9 +61,6 @@ public:
 
     /// Test constructor
     void testConstructor(void);
-
-    /// Test debug()
-    void testDebug(void);
 
     /// Test filename()
     void testFilename(void);
