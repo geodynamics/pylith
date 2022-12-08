@@ -22,12 +22,9 @@ Implements `MeshGenerator`.
 
 ## Pyre Properties
 
-* `debug`=\<bool\>: Debugging flag for mesh.
-  - **default value**: False
-  - **current value**: False, from {file='/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pythia/pyre/inventory/ConfigurableClass.py', line=26, function='__set__'}
-* `interpolate`=\<bool\>: Build intermediate mesh topology elements
+* `check_topology`=\<bool\>: Check topology of imported mesh.
   - **default value**: True
-  - **current value**: True, from {file='/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pythia/pyre/inventory/ConfigurableClass.py', line=26, function='__set__'}
+  - **current value**: True, from {default}
 * `reorder_mesh`=\<bool\>: Reorder mesh using reverse Cuthill-McKee.
   - **default value**: True
   - **current value**: True, from {default}
@@ -39,6 +36,7 @@ Example of setting `MeshImporter` Pyre properties and facilities in a parameter 
 :::{code-block} cfg
 [pylithapp.meshimporter]
 reorder_mesh = True
+check_topology = True
 reader = pylith.meshio.MeshIOCubit
 refiner = pylith.topology.RefineUniform
 :::
