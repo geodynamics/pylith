@@ -1,0 +1,107 @@
+// Mesh with DMPlex numbering
+//
+//v12 --e23--v13  e34  v17 --e29--v14
+//  |          |    |    |          |
+//  |          |    |    |          |
+//e24   c1   e22   c5  e31    c3  e28
+//  |          |    |    |          |
+//  |          |    |    |          |
+// v9 --e20--v10  e33  v16 --e27--v11
+//  |          |    |    |          |
+//  |          |    |    |          |
+//e21   c0   e19   c4  e30    c2  e26
+//  |          |    |    |          |
+//  |          |    |    |          |
+// v6 --e18---v7  e32  v15 --e25---v8
+//
+// Mesh with input numbering
+//
+// v2 --------v5 --------v8
+//  |          |          |
+//  |          |          |
+//  |   c1     |    c3    |
+//  |          |          |
+//  |          |          |
+// v1 --------v4 --------v7
+//  |          |          |
+//  |          |          |
+//  |   c0     |    c2    |
+//  |          |          |
+//  |          |          |
+// v0 --e18---v3 --------v6
+//
+mesh = {
+  dimension = 2
+  use-index-zero = true
+  vertices = {
+    dimension = 2
+    count = 9
+    coordinates = {
+             0     -4.0e+3  -4.0e+3
+             1     -4.0e+3   0.0
+             2     -4.0e+3  +4.0e+3
+             3      0.0     -4.0e+3
+             4      0.0      0.0
+             5      0.0     +4.0e+3
+             6     +4.0e+3  -4.0e+3
+             7     +4.0e+3   0.0
+             8     +4.0e+3  +4.0e+3
+    }
+  }
+  cells = {
+    count = 4
+    num-corners = 4
+    simplices = {
+             0       0  3  4  1
+             1       1  4  5  2
+             2       3  6  7  4
+             3       4  7  8  5
+    }
+    material-ids = {
+             0   10
+             1   10
+             2   10
+             3   10
+    }
+  }
+  group = {
+    type = vertices
+    name = boundary_xpos
+    count = 3
+    indices = {
+      6 7 8
+    }
+  }
+  group = {
+    type = vertices
+    name = boundary_xneg
+    count = 3
+    indices = {
+      0  1  2
+    }
+  }
+  group = {
+    type = vertices
+    name = boundary_ypos
+    count = 3
+    indices = {
+      2  5  8
+    }
+  }
+  group = {
+    type = vertices
+    name = boundary_yneg
+    count = 3
+    indices = {
+      0  3  6
+    }
+  }
+  group = {
+    type = vertices
+    name = fault
+    count = 3
+    indices = {
+      3  4  5
+    }
+  }  
+}
