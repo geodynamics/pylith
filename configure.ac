@@ -144,7 +144,7 @@ if test "$enable_hdf5" = "yes" ; then
   CIT_HDF5_LIB
   CIT_HDF5_LIB_PARALLEL
 
-  CIT_PYTHON_MODULE([h5py],[2.0.0])
+  CIT_PYTHON_MODULE([h5py],[3.0.0])
 fi
 
 dnl PROJ
@@ -241,6 +241,7 @@ AC_CONFIG_FILES([Makefile
 		tests/fullscale/cornercases/Makefile
 		tests/fullscale/cornercases/nofaults-2d/Makefile
 		tests/fullscale/cornercases/nofaults-3d/Makefile
+		tests/fullscale/cornercases/faults-2d/Makefile
 		tests/fullscale/linearelasticity/Makefile
 		tests/fullscale/linearelasticity/nofaults-2d/Makefile
 		tests/fullscale/linearelasticity/nofaults-3d/Makefile
