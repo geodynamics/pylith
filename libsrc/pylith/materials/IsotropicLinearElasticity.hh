@@ -75,7 +75,7 @@ public:
      *
      * @return LHS residual kernel for stress.
      */
-    PetscPointFunc getKernelResidualStress(const spatialdata::geocoords::CoordSys* coordsys) const;
+    PetscPointFunc getKernelf1v(const spatialdata::geocoords::CoordSys* coordsys) const;
 
     /** Get elastic constants kernel for LHS Jacobian F(t,s,\dot{s}).
      *
@@ -83,15 +83,15 @@ public:
      *
      * @return LHS Jacobian kernel for elastic constants.
      */
-    PetscPointJac getKernelJacobianElasticConstants(const spatialdata::geocoords::CoordSys* coordsys) const;
+    PetscPointJac getKernelJf3vu(const spatialdata::geocoords::CoordSys* coordsys) const;
 
-    /** Get stress kernel for derived field.
+    /** Get Cauchy stress kernel for derived field.
      *
      * @param[in] coordsys Coordinate system.
      *
      * @return Project kernel for computing stress subfield in derived field.
      */
-    PetscPointFunc getKernelDerivedCauchyStress(const spatialdata::geocoords::CoordSys* coordsys) const;
+    PetscPointFunc getKernelCauchyStressVector(const spatialdata::geocoords::CoordSys* coordsys) const;
 
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
