@@ -29,6 +29,8 @@
 
 #include "pylith/utils/types.hh"
 
+#include <cassert> // USES assert()
+
 class pylith::fekernels::Solution {
     // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public:
@@ -59,7 +61,7 @@ public:
      *
      * We pass through the solution to the resulting field. The auxiliary field is ignored.
      */
-    static
+    static inline
     void passThruSubfield(const PylithInt dim,
                           const PylithInt numS,
                           const PylithInt numA,
@@ -77,7 +79,17 @@ public:
                           const PylithScalar x[],
                           const PylithInt numConstants,
                           const PylithScalar constants[],
-                          PylithScalar field[]);
+                          PylithScalar field[]) {
+        assert(s);
+        assert(sOff);
+        assert(field);
+        const PetscInt subfieldIndex = PetscInt(t); // :KLUDGE: Easiest way to get subfield to extract into fn.
+
+        const PylithInt sEnd = sOff[subfieldIndex+1];
+        for (PylithInt iS = sOff[subfieldIndex], iF = 0; iS < sEnd; ++iS, ++iF) {
+            field[iF] = s[iS];
+        } // for
+    } // passThruSubfield
 
 }; // Solution
 

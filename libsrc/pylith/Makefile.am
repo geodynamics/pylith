@@ -67,12 +67,6 @@ libpylith_la_SOURCES = \
 	feassemble/ConstraintUserFn.cc \
 	feassemble/ConstraintSimple.cc \
 	feassemble/AuxiliaryFactory.cc \
-	fekernels/BoundaryDirections.cc \
-	fekernels/Solution.cc \
-	fekernels/DispVel.cc \
-	fekernels/TimeDependentFn.cc \
-	fekernels/NeumannTimeDependent.cc \
-	fekernels/AbsorbingDampers.cc \
 	fekernels/FaultCohesiveKin.cc \
 	materials/Material.cc \
 	materials/Elasticity.cc \
