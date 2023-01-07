@@ -667,9 +667,7 @@ public:
         } // for
     } // f1v
 
-};
-
-// Elasticity3D
+}; // Elasticity3D
 
 #endif // pylith_fekernels_elasticity3d_hh
 

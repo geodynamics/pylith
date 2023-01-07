@@ -917,24 +917,11 @@ public:
                           PylithScalar stress[]) {
         const PylithInt _dim = 3;
 
-            << << <<< HEAD
-            // Incoming solution field.
-            const PylithInt i_disp = 0;
-
         // Incoming auxiliary field.
         const PylithInt i_shearModulus = 0;
 
         assert(_dim == dim);
-        assert(1 == numS);
-        assert(1 == numA);
-        assert(sOff_x);
-        assert(sOff_x[i_disp] >= 0);
-        assert(aOff);
-        assert(aOff[i_shearModulus] >= 0);
-        == == == =
-            assert(_dim == dim);
         assert(shearModulus > 0.0);
-        >> >> >>> 4d 311233e (Update linear elasticity.)
         assert(stress);
 
         const PylithReal strainTrace = strain[0*_dim+0] + strain[1*_dim+1] + strain[2*_dim+2];

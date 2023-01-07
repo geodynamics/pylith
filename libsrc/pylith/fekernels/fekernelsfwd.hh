@@ -55,6 +55,8 @@ namespace pylith {
         class IsotropicPowerLawEffectiveStress;
 
         class IncompressibleElasticity;
+        class IncompressibleElasticityPlaneStrain;
+        class IncompressibleElasticity3D;
         class IsotropicLinearIncompElasticity;
         class IsotropicLinearIncompElasticityPlaneStrain;
         class IsotropicLinearIncompElasticity3D;
