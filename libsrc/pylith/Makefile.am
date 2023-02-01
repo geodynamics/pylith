@@ -80,6 +80,7 @@ libpylith_la_SOURCES = \
 	materials/AuxiliaryFactoryElasticity.cc \
 	materials/DerivedFactoryElasticity.cc \
 	materials/IsotropicLinearElasticity.cc \
+    materials/IsotropicLinearMaxwell.cc \
 	materials/AuxiliaryFactoryElastic.cc \
 	materials/AuxiliaryFactoryViscoelastic.cc \
 	materials/AuxiliaryFactoryPoroelasticity.cc \
@@ -151,7 +152,6 @@ libpylith_la_SOURCES = \
 #	fekernels/IsotropicLinearIncompElasticity.cc \
 #	fekernels/Poroelasticity.cc \
 #	fekernels/IsotropicLinearPoroelasticity.cc \
-#	materials/IsotropicLinearMaxwell.cc \
 #	materials/IsotropicLinearGenMaxwell.cc \
 #	materials/IsotropicPowerLaw.cc \
 #	materials/IncompressibleElasticity.cc \

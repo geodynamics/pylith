@@ -61,43 +61,53 @@ public:
      *
      * @returns Viscous strain coefficient.
      */
-    static
+    static inline
     PylithScalar maxwellViscousStrainCoeff(const PylithScalar dt,
-                                           const PylithScalar maxwellTime);
+                                           const PylithScalar maxwellTime) {
+        return maxwellTime*(1.0-exp(-dt/maxwellTime))/dt;
+    }
 
-	/** 2D scalar inner product of two tensors represented as vectors.
-	 *
-	 *  @param[in] tensor1 First tensor (tens1_xx, tens1_yy, tens1_xy)
-	 *  @param[in] tensor2 Second tensor (tens2_xx, tens2_yy, tens2_xy)
-	 *
-	 * @returns scalar inner product of the two tensors.
-	 */
-	static
-	PylithScalar scalarProduct2D(const PylithScalar* tensor1,
-								 const PylithScalar* tensor2);
+    /** 2D scalar inner product of two tensors represented as vectors.
+     *
+     *  @param[in] tensor1 First tensor (tens1_xx, tens1_yy, tens1_xy)
+     *  @param[in] tensor2 Second tensor (tens2_xx, tens2_yy, tens2_xy)
+     *
+     * @returns scalar inner product of the two tensors.
+     */
+    static inline
+    PylithScalar scalarProduct2D(const PylithScalar* tensor1,
+                                 const PylithScalar* tensor2) {
+        return tensor1[0] * tensor2[0] + tensor1[1] * tensor2[1] + 2.0 * tensor1[2] * tensor2[2];
+    }
 
-	/** 2DPS scalar inner product of two tensors represented as vectors.
-	 * In this case all 3 normal components are present, but only one shear component.
-	 *
-	 *  @param[in] tensor1 First tensor (tens1_xx, tens1_yy, tens1_zz, tens1_xy)
-	 *  @param[in] tensor2 Second tensor (tens2_xx, tens2_yy, tens2_zz, tens2_xy)
-	 *
-	 * @returns scalar inner product of the two tensors.
-	 */
-	static
-	PylithScalar scalarProduct2DPS(const PylithScalar* tensor1,
-								   const PylithScalar* tensor2);
+    /** 2DPS scalar inner product of two tensors represented as vectors.
+     * In this case all 3 normal components are present, but only one shear component.
+     *
+     *  @param[in] tensor1 First tensor (tens1_xx, tens1_yy, tens1_zz, tens1_xy)
+     *  @param[in] tensor2 Second tensor (tens2_xx, tens2_yy, tens2_zz, tens2_xy)
+     *
+     * @returns scalar inner product of the two tensors.
+     */
+    static inline
+    PylithScalar scalarProduct2DPS(const PylithScalar* tensor1,
+                                   const PylithScalar* tensor2) {
+        return tensor1[0] * tensor2[0] + tensor1[1] * tensor2[1] + tensor1[2] * tensor2[2] +
+               2.0 * tensor1[3] * tensor2[3];
+    }
 
-	/** 3D scalar inner product of two tensors represented as vectors.
-	 *
-	 *  @param[in] tensor1 First tensor (tens1_xx, tens1_yy, tens1_zz, tens1_xy, tens1_yz, tens1_xz)
-	 *  @param[in] tensor2 Second tensor (tens2_xx, tens2_yy, tens2_zz, tens2_xy, tens2_yz, tens2_xz)
-	 *
-	 * @returns scalar inner product of the two tensors.
-	 */
-	static
-	PylithScalar scalarProduct3D(const PylithScalar* tensor1,
-								 const PylithScalar* tensor2);
+    /** 3D scalar inner product of two tensors represented as vectors.
+     *
+     *  @param[in] tensor1 First tensor (tens1_xx, tens1_yy, tens1_zz, tens1_xy, tens1_yz, tens1_xz)
+     *  @param[in] tensor2 Second tensor (tens2_xx, tens2_yy, tens2_zz, tens2_xy, tens2_yz, tens2_xz)
+     *
+     * @returns scalar inner product of the two tensors.
+     */
+    static
+    PylithScalar scalarProduct3D(const PylithScalar* tensor1,
+                                 const PylithScalar* tensor2) {
+        return tensor1[0] * tensor2[0] + tensor1[1] * tensor2[1] + tensor1[2] * tensor2[2] +
+               2.0 * (tensor1[3] * tensor2[3] + tensor1[4] * tensor2[4] + tensor1[5] * tensor2[5]);
+    }
 
 }; // Viscoelasticity
 

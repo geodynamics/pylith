@@ -23,8 +23,9 @@
 #include "pylith/materials/Elasticity.hh"
 #include "pylith/materials/RheologyElasticity.hh"
 #include "pylith/materials/IsotropicLinearElasticity.hh"
-#if 0
 #include "pylith/materials/IsotropicLinearMaxwell.hh"
+
+#if 0
 #include "pylith/materials/IsotropicLinearGenMaxwell.hh"
 #include "pylith/materials/IsotropicPowerLaw.hh"
 #include "pylith/materials/IncompressibleElasticity.hh"
@@ -67,8 +68,9 @@ import_array();
 %include "Elasticity.i"
 %include "RheologyElasticity.i"
 %include "IsotropicLinearElasticity.i"
-/*
 %include "IsotropicLinearMaxwell.i"
+
+/*
 %include "IsotropicLinearGenMaxwell.i"
 %include "IsotropicPowerLaw.i"
 %include "IncompressibleElasticity.i"
