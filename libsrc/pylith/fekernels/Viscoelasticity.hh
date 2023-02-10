@@ -62,8 +62,8 @@ public:
      * @returns Viscous strain coefficient.
      */
     static inline
-    PylithScalar maxwellViscousStrainCoeff(const PylithScalar dt,
-                                           const PylithScalar maxwellTime) {
+    PylithReal maxwellViscousStrainCoeff(const PylithReal dt,
+                                         const PylithReal maxwellTime) {
         return maxwellTime*(1.0-exp(-dt/maxwellTime))/dt;
     }
 

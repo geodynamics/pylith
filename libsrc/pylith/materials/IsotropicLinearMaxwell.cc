@@ -123,8 +123,8 @@ pylith::materials::IsotropicLinearMaxwell::getKernelf1v(const spatialdata::geoco
     PetscPointFunc f1u =
         (!_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearMaxwell3D::f1v_infinitesimalStrain :
         (!_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::f1v_infinitesimalStrain :
-        (_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearMaxwell3D::f1v_infinitesimalStrain_refstate :
-        (_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::f1v_infinitesimalStrain_refstate :
+        (_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearMaxwell3D::f1v_infinitesimalStrain_refState :
+        (_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::f1v_infinitesimalStrain_refState :
         NULL;
 
     PYLITH_METHOD_RETURN(f1u);
@@ -159,8 +159,8 @@ pylith::materials::IsotropicLinearMaxwell::getKernelCauchyStressVector(const spa
     PetscPointFunc kernel =
         (!_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearMaxwell3D::cauchyStress_infinitesimalStrain_asVector :
         (!_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::cauchyStress_infinitesimalStrain_asVector :
-        (_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearMaxwell3D::cauchyStress_infinitesimalStrain_refstate_asVector :
-        (_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::cauchyStress_infinitesimalStrain_refstate_asVector :
+        (_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearMaxwell3D::cauchyStress_infinitesimalStrain_refState_asVector :
+        (_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::cauchyStress_infinitesimalStrain_refState_asVector :
         NULL;
 
     PYLITH_METHOD_RETURN(kernel);

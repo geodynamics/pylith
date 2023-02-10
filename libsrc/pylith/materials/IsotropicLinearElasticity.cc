@@ -115,8 +115,8 @@ pylith::materials::IsotropicLinearElasticity::getKernelf1v(const spatialdata::ge
     PetscPointFunc f1v =
         (!_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticity3D::f1v_infinitesimalStrain :
         (!_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticityPlaneStrain::f1v_infinitesimalStrain :
-        (_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticity3D::f1v_infinitesimalStrain_refstate :
-        (_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticityPlaneStrain::f1v_infinitesimalStrain_refstate :
+        (_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticity3D::f1v_infinitesimalStrain_refState :
+        (_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticityPlaneStrain::f1v_infinitesimalStrain_refState :
         NULL;
 
     PYLITH_METHOD_RETURN(f1v);
@@ -151,8 +151,8 @@ pylith::materials::IsotropicLinearElasticity::getKernelCauchyStressVector(const 
     PetscPointFunc kernel =
         (!_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticity3D::cauchyStress_infinitesimalStrain_asVector :
         (!_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticityPlaneStrain::cauchyStress_infinitesimalStrain_asVector :
-        (_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticity3D::cauchyStress_infinitesimalStrain_refstate_asVector :
-        (_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticityPlaneStrain::cauchyStress_infinitesimalStrain_refstate_asVector :
+        (_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticity3D::cauchyStress_infinitesimalStrain_refState_asVector :
+        (_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticityPlaneStrain::cauchyStress_infinitesimalStrain_refState_asVector :
         NULL;
 
     PYLITH_METHOD_RETURN(kernel);

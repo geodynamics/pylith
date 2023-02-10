@@ -67,6 +67,7 @@ libpylith_la_SOURCES = \
 	feassemble/ConstraintUserFn.cc \
 	feassemble/ConstraintSimple.cc \
 	feassemble/AuxiliaryFactory.cc \
+	fekernels/Tensor.cc \
 	fekernels/FaultCohesiveKin.cc \
 	materials/Material.cc \
 	materials/Elasticity.cc \

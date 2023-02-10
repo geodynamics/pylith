@@ -59,6 +59,7 @@
 class pylith::fekernels::IncompressibleElasticity {
 public:
 
+    // Function interface for computing incompressible term.
     typedef void (*incompressiblefn_type) (const PylithInt,
                                            const PylithInt,
                                            const PylithInt,
@@ -76,14 +77,51 @@ public:
                                            const PylithScalar[],
                                            const PylithInt,
                                            const PylithScalar[],
-                                           const PylithScalar[],
+                                           const pylith::fekernels::Tensor&,
+                                           const pylith::fekernels::TensorOps&,
                                            PylithScalar*);
 
     // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
     // --------------------------------------------------------------------------------------------
-    /** Jf1pu function for pressure equation for incompressible elasticity.
+    // f0p helper function.
+    static inline
+    void f0p(const PylithInt dim,
+             const PylithInt numS,
+             const PylithInt numA,
+             const PylithInt sOff[],
+             const PylithInt sOff_x[],
+             const PylithScalar s[],
+             const PylithScalar s_t[],
+             const PylithScalar s_x[],
+             const PylithInt aOff[],
+             const PylithInt aOff_x[],
+             const PylithScalar a[],
+             const PylithScalar a_t[],
+             const PylithScalar a_x[],
+             const PylithReal t,
+             const PylithScalar x[],
+             const PylithInt numConstants,
+             const PylithScalar constants[],
+             pylith::fekernels::Elasticity::strainfn_type strainFn,
+             pylith::fekernels::IncompressibleElasticity::incompressiblefn_type incompressibleFn,
+             const pylith::fekernels::TensorOps& tensorOps,
+             PylithScalar f0[]) {
+        assert(f0);
+
+        pylith::fekernels::Tensor strain;
+        strainFn(dim, numS, sOff, sOff, s, s_t, s_x, x, &strain);
+
+        PylithScalar value = 0.0;
+        incompressibleFn(dim, numS, numA, sOff, sOff, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x,
+                         numConstants, constants, strain, tensorOps, &value);
+
+        f0[0] += value;
+    } // f0p
+
+    // --------------------------------------------------------------------------------------------
+    /** Jf1pu entry function for pressure equation for incompressible elasticity.
      *
      * Solution fields: [disp(dim), pressure(1)]
      */
@@ -131,7 +169,7 @@ public:
     } // Jf1pu
 
     // --------------------------------------------------------------------------------------------
-    /** Jf2up function for elasticity equation for incompressible elasticity.
+    /** Jf2up entry function for elasticity equation for incompressible elasticity.
      *
      * Solution fields: [disp(dim), pressure(1)]
      */
@@ -183,14 +221,13 @@ public:
      * and strain.
      */
     static inline
-    void meanStress(const PylithInt dim,
-                    const PylithReal pressure,
-                    PylithScalar stressTensor[]) {
-        assert(stressTensor);
+    void meanStress(const PylithReal pressure,
+                    pylith::fekernels::Tensor* stress) {
+        assert(stress);
 
-        for (PylithInt i = 0; i < dim; ++i) {
-            stressTensor[i*dim+i] -= pressure;
-        } // for
+        stress->xx -= pressure;
+        stress->yy -= pressure;
+        stress->zz -= pressure;
     } // meanStress
 
     // --------------------------------------------------------------------------------------------
@@ -198,108 +235,20 @@ public:
      * and strain.
      */
     static inline
-    void meanStress_refstate(const PylithInt dim,
-                             const PylithReal pressure,
-                             const PylithReal refStress[],
-                             PylithScalar stressTensor[]) {
-        assert(refStress);
-        assert(stressTensor);
+    void meanStress_refState(const PylithReal pressure,
+                             const pylith::fekernels::Tensor& refStress,
+                             pylith::fekernels::Tensor* stress) {
+        assert(stress);
 
-        const PylithScalar meanRefStress = (refStress[0] + refStress[1] + refStress[3]) / 3.0;
+        const PylithReal meanRefStress = (refStress.xx + refStress.yy + refStress.zz) / 3.0;
         const PylithScalar meanStress = meanRefStress - pressure;
 
-        for (PylithInt i = 0; i < dim; ++i) {
-            stressTensor[i*dim+i] += meanStress;
-        } // for
-    } // meanStress_refstate
+        stress->xx += meanStress;
+        stress->yy += meanStress;
+        stress->zz += meanStress;
+    } // meanStress_refState
 
 }; // IncompressibleElasticity
-
-// ------------------------------------------------------------------------------------------------
-/// Kernels specific to incompressible elasticity plane strain.
-class pylith::fekernels::IncompressibleElasticityPlaneStrain {
-    // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
-public:
-
-    // --------------------------------------------------------------------------------------------
-    // f0p function for plane strain elasticity.
-    static inline
-    void f0p(const PylithInt dim,
-             const PylithInt numS,
-             const PylithInt numA,
-             const PylithInt sOff[],
-             const PylithInt sOff_x[],
-             const PylithScalar s[],
-             const PylithScalar s_t[],
-             const PylithScalar s_x[],
-             const PylithInt aOff[],
-             const PylithInt aOff_x[],
-             const PylithScalar a[],
-             const PylithScalar a_t[],
-             const PylithScalar a_x[],
-             const PylithReal t,
-             const PylithScalar x[],
-             const PylithInt numConstants,
-             const PylithScalar constants[],
-             Elasticity::strainfn_type strainFn,
-             IncompressibleElasticity::incompressiblefn_type incompressibleFn,
-             PylithScalar f0[]) {
-        const PylithInt _dim = 2;
-
-        PylithScalar strainTensor[4] = { 0.0, 0.0, 0.0, 0.0 };
-        strainFn(_dim, numS, sOff, sOff, s, s_t, s_x, x, strainTensor);
-
-        PylithScalar value = 0.0;
-        incompressibleFn(_dim, numS, numA, sOff, sOff, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x,
-                         numConstants, constants, strainTensor, &value);
-
-        f0[0] += value;
-    } // f0p
-
-}; // IncompressibleElasticityPlaneStrain
-
-// ------------------------------------------------------------------------------------------------
-/// Kernels specific to elasticity in 3D.
-class pylith::fekernels::IncompressibleElasticity3D {
-    // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
-public:
-
-    // --------------------------------------------------------------------------------------------
-    // f0p function for plane strain elasticity.
-    static inline
-    void f0p(const PylithInt dim,
-             const PylithInt numS,
-             const PylithInt numA,
-             const PylithInt sOff[],
-             const PylithInt sOff_x[],
-             const PylithScalar s[],
-             const PylithScalar s_t[],
-             const PylithScalar s_x[],
-             const PylithInt aOff[],
-             const PylithInt aOff_x[],
-             const PylithScalar a[],
-             const PylithScalar a_t[],
-             const PylithScalar a_x[],
-             const PylithReal t,
-             const PylithScalar x[],
-             const PylithInt numConstants,
-             const PylithScalar constants[],
-             Elasticity::strainfn_type strainFn,
-             IncompressibleElasticity::incompressiblefn_type incompressibleFn,
-             PylithScalar f0[]) {
-        const PylithInt _dim = 3;
-
-        PylithScalar strainTensor[9] = { 0.0, 0.0, 0.0,  0.0, 0.0, 0.0,  0.0, 0.0, 0.0 };
-        strainFn(_dim, numS, sOff, sOff, s, s_t, s_x, x, strainTensor);
-
-        PylithScalar value = 0.0;
-        incompressibleFn(_dim, numS, numA, sOff, sOff, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x,
-                         numConstants, constants, strainTensor, &value);
-
-        f0[0] += value;
-    } // f0p
-
-}; // IncompressibleElasticity3D
 
 #endif // pylith_fekernels_incompressibleelasticity_hh
 

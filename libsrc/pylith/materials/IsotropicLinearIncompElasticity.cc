@@ -117,8 +117,8 @@ pylith::materials::IsotropicLinearIncompElasticity::getKernelf0p(const spatialda
     PetscPointFunc f0p =
         (!_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearIncompElasticity3D::f0p_infinitesimalStrain :
         (!_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearIncompElasticityPlaneStrain::f0p_infinitesimalStrain :
-        (_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearIncompElasticity3D::f0p_infinitesimalStrain_refstate :
-        (_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearIncompElasticityPlaneStrain::f0p_infinitesimalStrain_refstate :
+        (_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearIncompElasticity3D::f0p_infinitesimalStrain_refState :
+        (_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearIncompElasticityPlaneStrain::f0p_infinitesimalStrain_refState :
         NULL;
 
     PYLITH_METHOD_RETURN(f0p);
@@ -136,8 +136,8 @@ pylith::materials::IsotropicLinearIncompElasticity::getKernelf1u(const spatialda
     PetscPointFunc f1u =
         (!_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearIncompElasticity3D::f1u_infinitesimalStrain :
         (!_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearIncompElasticityPlaneStrain::f1u_infinitesimalStrain :
-        (_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearIncompElasticity3D::f1u_infinitesimalStrain_refstate :
-        (_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearIncompElasticityPlaneStrain::f1u_infinitesimalStrain_refstate :
+        (_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearIncompElasticity3D::f1u_infinitesimalStrain_refState :
+        (_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearIncompElasticityPlaneStrain::f1u_infinitesimalStrain_refState :
         NULL;
 
     PYLITH_METHOD_RETURN(f1u);
@@ -185,8 +185,8 @@ pylith::materials::IsotropicLinearIncompElasticity::getKernelCauchyStressVector(
     PetscPointFunc kernel =
         (!_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearIncompElasticity3D::cauchyStress_infinitesimalStrain_asVector :
         (!_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearIncompElasticityPlaneStrain::cauchyStress_infinitesimalStrain_asVector :
-        (_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearIncompElasticity3D::cauchyStress_infinitesimalStrain_refstate_asVector :
-        (_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearIncompElasticityPlaneStrain::cauchyStress_infinitesimalStrain_refstate_asVector :
+        (_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearIncompElasticity3D::cauchyStress_infinitesimalStrain_refState_asVector :
+        (_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearIncompElasticityPlaneStrain::cauchyStress_infinitesimalStrain_refState_asVector :
         NULL;
 
     PYLITH_METHOD_RETURN(kernel);

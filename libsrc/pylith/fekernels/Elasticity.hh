@@ -51,6 +51,8 @@
 
 #include "fekernelsfwd.hh" // forward declarations
 
+#include "pylith/fekernels/Tensor.hh"
+
 #include "pylith/utils/types.hh"
 
 #include <cassert> // USES assert()
@@ -58,6 +60,7 @@
 class pylith::fekernels::Elasticity {
 public:
 
+    // Interface for functions computing strain.
     typedef void (*strainfn_type) (const PylithInt,
                                    const PylithInt,
                                    const PylithInt[],
@@ -66,7 +69,9 @@ public:
                                    const PylithScalar[],
                                    const PylithScalar[],
                                    const PylithScalar[],
-                                   PylithScalar[]);
+                                   pylith::fekernels::Tensor*);
+
+    // Interface for functions computing stress.
     typedef void (*stressfn_type) (const PylithInt,
                                    const PylithInt,
                                    const PylithInt,
@@ -84,14 +89,15 @@ public:
                                    const PylithScalar[],
                                    const PylithInt,
                                    const PylithScalar[],
-                                   const PylithScalar[],
-                                   PylithScalar[]);
+                                   const pylith::fekernels::Tensor&,
+                                   const pylith::fekernels::TensorOps&,
+                                   pylith::fekernels::Tensor*);
 
     // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
 public:
 
     // --------------------------------------------------------------------------------------------
-    /** f0 function for elasticity equation.
+    /** f0 function for elasticity equation for velocity field.
      *
      * Solution fields: [disp(dim), vel(dim)]
      * Auxiliary fields: [density(1), ...]
@@ -142,7 +148,46 @@ public:
     } // f0v
 
     // --------------------------------------------------------------------------------------------
-    /** Jf0 function for elasticity.
+    // f1 function for elasticity for velocity field (dynamic) and displacement field (quasi-static).
+    static inline
+    void f1v(const PylithInt dim,
+             const PylithInt numS,
+             const PylithInt numA,
+             const PylithInt sOff[],
+             const PylithInt sOff_x[],
+             const PylithScalar s[],
+             const PylithScalar s_t[],
+             const PylithScalar s_x[],
+             const PylithInt aOff[],
+             const PylithInt aOff_x[],
+             const PylithScalar a[],
+             const PylithScalar a_t[],
+             const PylithScalar a_x[],
+             const PylithReal t,
+             const PylithScalar x[],
+             const PylithInt numConstants,
+             const PylithScalar constants[],
+             Elasticity::strainfn_type strainFn,
+             Elasticity::stressfn_type stressFn,
+             const TensorOps& tensorOps,
+             PylithScalar f1[]) {
+        Tensor strain;
+        strainFn(dim, numS, sOff, sOff, s, s_t, s_x, x, &strain);
+
+        Tensor stress;
+        stressFn(dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
+                 t, x, numConstants, constants, strain, tensorOps, &stress);
+
+        PylithScalar stressTensor[9] = {0.0, 0.0, 0.0,  0.0, 0.0, 0.0,  0.0, 0.0, 0.0 };
+        tensorOps.toTensor(stress, stressTensor);
+
+        for (PylithInt i = 0; i < dim*dim; ++i) {
+            f1[i] -= stressTensor[i];
+        } // for
+    } // f1v
+
+    // --------------------------------------------------------------------------------------------
+    /** Jf0 function for elasticity for the velocity/velocity block.
      *
      * Solution fields: [...]
      * Auxiliary fields: [density(1), ...]
@@ -234,7 +279,8 @@ public:
     } // g0v_grav
 
     // --------------------------------------------------------------------------------------------
-    /** g0 function for elasticity equation with body force.
+    /** g0 function for elasticity equation with body force for the velocity field (dynamic)
+     * and the f0 function for the displacement field (quasi-static).
      *
      * \vec{g0} = \vec{f}(t)
      *
@@ -278,7 +324,8 @@ public:
     } // g0v_bodyforce
 
     // --------------------------------------------------------------------------------------------
-    /** g0 function for elasticity with both gravitational and body forces.
+    /** g0 function for elasticity with both gravitational and body forces for the velocity field (dynamic)
+     * and the f0 function for the displacement field (quasi-static).
      *
      * Solution fields: [...]
      * Auxiliary fields: [density(1), body_force(dim), gravity_field(dim), ...]
@@ -325,6 +372,100 @@ public:
                       t, x, numConstants, constants, g0);
     } // g0v_gravbodyforce
 
+    // --------------------------------------------------------------------------------------------
+    /** Calculate deviatoric strain or stress.
+     *
+     * Order of output components.
+     *   2D: xx, yy, zz, xy
+     *   3D: xx, yy, zz, xy, yz, xz
+     *
+     * Solution fields: [disp(dim)]
+     */
+    static inline
+    void deviatoric(const pylith::fekernels::Tensor& tensor,
+                    pylith::fekernels::Tensor* deviatoricTensor) {
+        assert(deviatoricTensor);
+
+        const PylithReal mean = (tensor.xx + tensor.yy + tensor.zz) / 3.0;
+        deviatoricTensor->xx = tensor.xx - mean;
+        deviatoricTensor->yy = tensor.yy - mean;
+        deviatoricTensor->zz = tensor.zz - mean;
+        deviatoricTensor->xy = tensor.xy;
+        deviatoricTensor->yz = tensor.yz;
+        deviatoricTensor->xz = tensor.xz;
+    } // deviatoricStain
+
+    // --------------------------------------------------------------------------------------------
+    /** Calculate strain as a vector.
+     *
+     * Order of output components.
+     *   2D: xx, yy, zz, xy
+     *   3D: xx, yy, zz, xy, yz, xz
+     *
+     * Solution fields: [disp(dim)]
+     */
+    static inline
+    void strain_asVector(const PylithInt dim,
+                         const PylithInt numS,
+                         const PylithInt sOff[],
+                         const PylithInt sOff_x[],
+                         const PylithScalar s[],
+                         const PylithScalar s_t[],
+                         const PylithScalar s_x[],
+                         const PylithScalar x[],
+                         strainfn_type strainFn,
+                         const TensorOps& tensorOps,
+                         PylithScalar strainVector[]) {
+        assert(strainVector);
+
+        Tensor strain;
+        strainFn(dim, numS, sOff, sOff_x, s, s_t, s_x, x, &strain);
+        tensorOps.toVector(strain, strainVector);
+    } // infinitesimalStrain_asVector
+
+    // --------------------------------------------------------------------------------------------
+    /** Calculate stress as a vector.
+     *
+     * Order of output components.
+     *   2D: xx, yy, zz, xy
+     *   3D: xx, yy, zz, xy, yz, xz
+     *
+     * Solution fields: [disp(dim)]
+     */
+    static inline
+    void stress_asVector(const PylithInt dim,
+                         const PylithInt numS,
+                         const PylithInt numA,
+                         const PylithInt sOff[],
+                         const PylithInt sOff_x[],
+                         const PylithScalar s[],
+                         const PylithScalar s_t[],
+                         const PylithScalar s_x[],
+                         const PylithInt aOff[],
+                         const PylithInt aOff_x[],
+                         const PylithScalar a[],
+                         const PylithScalar a_t[],
+                         const PylithScalar a_x[],
+                         const PylithReal t,
+                         const PylithScalar x[],
+                         const PylithInt numConstants,
+                         const PylithScalar constants[],
+                         strainfn_type strainFn,
+                         stressfn_type stressFn,
+                         const TensorOps& tensorOps,
+                         PylithScalar stressVector[]) {
+        assert(stressVector);
+
+        Tensor strain;
+        strainFn(dim, numS, sOff, sOff_x, s, s_t, s_x, x, &strain);
+
+        Tensor stress;
+        stressFn(dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
+                 t, x, numConstants, constants, strain, tensorOps, &stress);
+
+        tensorOps.toVector(stress, stressVector);
+    } // cauchyStress_asVector
+
 }; // Elasticity
 
 // ------------------------------------------------------------------------------------------------
@@ -349,7 +490,7 @@ public:
                              const PylithScalar s_t[],
                              const PylithScalar s_x[],
                              const PylithScalar x[],
-                             PylithScalar strain[]) {
+                             pylith::fekernels::Tensor* strain) {
         const PylithInt _dim = 2;
 
         assert(_dim == dim);
@@ -362,15 +503,13 @@ public:
         const PylithInt i_disp = 0;
         const PylithScalar* disp_x = &s_x[sOff_x[i_disp]];
 
-        const PylithScalar strain_xx = disp_x[0*_dim+0];
-        const PylithScalar strain_yy = disp_x[1*_dim+1];
-        const PylithScalar strain_xy = 0.5*(disp_x[0*_dim+1] + disp_x[1*_dim+0]);
-
-        strain[0] = strain_xx;
-        strain[1] = strain_xy;
-        strain[2] = strain_xy;
-        strain[3] = strain_yy;
-    } // infinitesimalStrain
+        strain->xx = disp_x[0*_dim+0];
+        strain->yy = disp_x[1*_dim+1];
+        strain->zz = 0.0;
+        strain->xy = 0.5*(disp_x[0*_dim+1] + disp_x[1*_dim+0]);
+        strain->yz = 0.0;
+        strain->xz = 0.0;
+    } // infinitesimalStrain_asVector3D
 
     // --------------------------------------------------------------------------------------------
     /** Calculate vector with infinitesimal strain for 2D plane strain elasticity.
@@ -398,97 +537,12 @@ public:
                                       const PylithInt numConstants,
                                       const PylithScalar constants[],
                                       PylithScalar strainVector[]) {
-        assert(strainVector);
-
-        PylithScalar strainTensor[4] = { 0.0, 0.0, 0.0, 0.0 };
-        infinitesimalStrain(dim, numS, sOff, sOff_x, s, s_t, s_x, x, strainTensor);
-
-        strainVector[0] = strainTensor[0]; // xx
-        strainVector[1] = strainTensor[3]; // yy
-        strainVector[2] = 0.0; // zz
-        strainVector[3] = strainTensor[1]; // xy
-    } // infinitesimalStrain_asVector
-
-    // --------------------------------------------------------------------------------------------
-    /** Calculate vector with stress for 2D plane strain elasticity.
-     *
-     * Order of output components is xx, yy, zz, xy.
-     *
-     * Solution fields: [disp(dim)]
-     */
-    static inline
-    void stress_asVector(const PylithInt dim,
-                         const PylithInt numS,
-                         const PylithInt numA,
-                         const PylithInt sOff[],
-                         const PylithInt sOff_x[],
-                         const PylithScalar s[],
-                         const PylithScalar s_t[],
-                         const PylithScalar s_x[],
-                         const PylithInt aOff[],
-                         const PylithInt aOff_x[],
-                         const PylithScalar a[],
-                         const PylithScalar a_t[],
-                         const PylithScalar a_x[],
-                         const PylithReal t,
-                         const PylithScalar x[],
-                         const PylithInt numConstants,
-                         const PylithScalar constants[],
-                         Elasticity::strainfn_type strainFn,
-                         Elasticity::stressfn_type stressFn,
-                         PylithScalar stressVector[]) {
         const PylithInt _dim = 2;
-        assert(stressVector);
+        assert(_dim == dim);
 
-        PylithScalar strainTensor[4] = { 0.0, 0.0, 0.0, 0.0 };
-        strainFn(dim, numS, sOff, sOff_x, s, s_t, s_x, x, strainTensor);
-
-        PylithScalar stressTensor[4] = { 0.0, 0.0, 0.0, 0.0 };
-        stressFn(_dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
-                 t, x, numConstants, constants, strainTensor, stressTensor);
-
-        stressVector[0] = stressTensor[0]; // xx
-        stressVector[1] = stressTensor[3]; // yy
-        stressVector[2] = 0.0; // zz
-        stressVector[3] = stressTensor[1]; // xy
-    } // cauchyStress_asVector
-
-    // --------------------------------------------------------------------------------------------
-    // f1 function for plane strain elasticity.
-    static inline
-    void f1v(const PylithInt dim,
-             const PylithInt numS,
-             const PylithInt numA,
-             const PylithInt sOff[],
-             const PylithInt sOff_x[],
-             const PylithScalar s[],
-             const PylithScalar s_t[],
-             const PylithScalar s_x[],
-             const PylithInt aOff[],
-             const PylithInt aOff_x[],
-             const PylithScalar a[],
-             const PylithScalar a_t[],
-             const PylithScalar a_x[],
-             const PylithReal t,
-             const PylithScalar x[],
-             const PylithInt numConstants,
-             const PylithScalar constants[],
-             Elasticity::strainfn_type strainFn,
-             Elasticity::stressfn_type stressFn,
-             PylithScalar f1[]) {
-        const PylithInt _dim = 2;
-
-        PylithScalar strainTensor[4] = { 0.0, 0.0, 0.0, 0.0 };
-        strainFn(_dim, numS, sOff, sOff, s, s_t, s_x, x, strainTensor);
-
-        PylithScalar stressTensor[4] = { 0.0, 0.0, 0.0, 0.0 };
-        stressFn(_dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
-                 t, x, numConstants, constants, strainTensor, stressTensor);
-
-        for (PylithInt i = 0; i < _dim*_dim; ++i) {
-            f1[i] -= stressTensor[i];
-        } // for
-    } // f1v
+        Elasticity::strain_asVector(_dim, numS, sOff, sOff_x, s, s_t, s_x, x,
+                                    infinitesimalStrain, Tensor::ops2D, strainVector);
+    } // infinitesimalStrain_asVector3D
 
 }; // ElasticityPlaneStrain
 
@@ -514,7 +568,7 @@ public:
                              const PylithScalar s_t[],
                              const PylithScalar s_x[],
                              const PylithScalar x[],
-                             PylithScalar strain[]) {
+                             pylith::fekernels::Tensor* strain) {
         const PylithInt _dim = 3;
 
         assert(_dim == dim);
@@ -527,22 +581,12 @@ public:
         const PylithInt i_disp = 0;
         const PylithScalar* disp_x = &s_x[sOff_x[i_disp]];
 
-        const PylithScalar strain_xx = disp_x[0*_dim+0];
-        const PylithScalar strain_yy = disp_x[1*_dim+1];
-        const PylithScalar strain_zz = disp_x[2*_dim+2];
-        const PylithScalar strain_xy = 0.5*(disp_x[0*_dim+1] + disp_x[1*_dim+0]);
-        const PylithScalar strain_yz = 0.5*(disp_x[1*_dim+2] + disp_x[2*_dim+1]);
-        const PylithScalar strain_xz = 0.5*(disp_x[0*_dim+2] + disp_x[2*_dim+0]);
-
-        strain[0] = strain_xx;
-        strain[1] = strain_xy;
-        strain[2] = strain_xz;
-        strain[3] = strain_xy;
-        strain[4] = strain_yy;
-        strain[5] = strain_yz;
-        strain[6] = strain_xz;
-        strain[7] = strain_yz;
-        strain[8] = strain_zz;
+        strain->xx = disp_x[0*_dim+0];
+        strain->yy = disp_x[1*_dim+1];
+        strain->zz = disp_x[2*_dim+2];
+        strain->xy = 0.5*(disp_x[0*_dim+1] + disp_x[1*_dim+0]);
+        strain->yz = 0.5*(disp_x[1*_dim+2] + disp_x[2*_dim+1]);
+        strain->xz = 0.5*(disp_x[0*_dim+2] + disp_x[2*_dim+0]);
     } // infinitesimalStrain
 
     // --------------------------------------------------------------------------------------------
@@ -571,101 +615,12 @@ public:
                                       const PylithInt numConstants,
                                       const PylithScalar constants[],
                                       PylithScalar strainVector[]) {
-        assert(strainVector);
+        const PylithInt _dim = 3;
+        assert(_dim == dim);
 
-        PylithScalar strainTensor[9] = { 0.0, 0.0, 0.0,  0.0, 0.0, 0.0,  0.0, 0.0, 0.0 };
-        infinitesimalStrain(dim, numS, sOff, sOff_x, s, s_t, s_x, x, strainTensor);
-
-        strainVector[0] = strainTensor[0]; // xx
-        strainVector[1] = strainTensor[4]; // yy
-        strainVector[2] = strainTensor[8]; // zz
-        strainVector[3] = strainTensor[1]; // xy
-        strainVector[4] = strainTensor[5]; // yz
-        strainVector[5] = strainTensor[2]; // xz
+        Elasticity::strain_asVector(_dim, numS, sOff, sOff_x, s, s_t, s_x, x,
+                                    infinitesimalStrain, Tensor::ops3D, strainVector);
     } // infinitesimalStrain_asVector
-
-    // --------------------------------------------------------------------------------------------
-    /** Calculate vector with stress for 3D elasticity.
-     *
-     * Order of output components is xx, yy, zz, xy, yz, xz.
-     *
-     * Solution fields: [disp(dim)]
-     */
-    static inline
-    void stress_asVector(const PylithInt dim,
-                         const PylithInt numS,
-                         const PylithInt numA,
-                         const PylithInt sOff[],
-                         const PylithInt sOff_x[],
-                         const PylithScalar s[],
-                         const PylithScalar s_t[],
-                         const PylithScalar s_x[],
-                         const PylithInt aOff[],
-                         const PylithInt aOff_x[],
-                         const PylithScalar a[],
-                         const PylithScalar a_t[],
-                         const PylithScalar a_x[],
-                         const PylithReal t,
-                         const PylithScalar x[],
-                         const PylithInt numConstants,
-                         const PylithScalar constants[],
-                         Elasticity::strainfn_type strainFn,
-                         Elasticity::stressfn_type stressFn,
-                         PylithScalar stressVector[]) {
-        const PylithInt _dim = 3;
-        assert(stressVector);
-
-        PylithScalar strainTensor[9] = { 0.0, 0.0, 0.0,  0.0, 0.0, 0.0,  0.0, 0.0, 0.0 };
-        strainFn(dim, numS, sOff, sOff_x, s, s_t, s_x, x, strainTensor);
-
-        PylithScalar stressTensor[9] = { 0.0, 0.0, 0.0,  0.0, 0.0, 0.0,  0.0, 0.0, 0.0 };
-        stressFn(_dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
-                 t, x, numConstants, constants, strainTensor, stressTensor);
-
-        stressVector[0] = stressTensor[0]; // xx
-        stressVector[1] = stressTensor[4]; // yy
-        stressVector[2] = stressTensor[8]; // zz
-        stressVector[3] = stressTensor[1]; // xy
-        stressVector[4] = stressTensor[5]; // yz
-        stressVector[5] = stressTensor[2]; // xz
-    } // stress_asVector
-
-    // --------------------------------------------------------------------------------------------
-    // f1 function for 3D elasticity.
-    static inline
-    void f1v(const PylithInt dim,
-             const PylithInt numS,
-             const PylithInt numA,
-             const PylithInt sOff[],
-             const PylithInt sOff_x[],
-             const PylithScalar s[],
-             const PylithScalar s_t[],
-             const PylithScalar s_x[],
-             const PylithInt aOff[],
-             const PylithInt aOff_x[],
-             const PylithScalar a[],
-             const PylithScalar a_t[],
-             const PylithScalar a_x[],
-             const PylithReal t,
-             const PylithScalar x[],
-             const PylithInt numConstants,
-             const PylithScalar constants[],
-             Elasticity::strainfn_type strainFn,
-             Elasticity::stressfn_type stressFn,
-             PylithScalar f1[]) {
-        const PylithInt _dim = 3;
-
-        PylithScalar strainTensor[9] = { 0.0, 0.0, 0.0,  0.0, 0.0, 0.0,  0.0, 0.0, 0.0 };
-        strainFn(dim, numS, sOff, sOff_x, s, s_t, s_x, x, strainTensor);
-
-        PylithScalar stressTensor[9] = { 0.0, 0.0, 0.0,  0.0, 0.0, 0.0,  0.0, 0.0, 0.0 };
-        stressFn(_dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
-                 t, x, numConstants, constants, strainTensor, stressTensor);
-
-        for (PylithInt i = 0; i < _dim*_dim; ++i) {
-            f1[i] -= stressTensor[i];
-        } // for
-    } // f1v
 
 }; // Elasticity3D
 
