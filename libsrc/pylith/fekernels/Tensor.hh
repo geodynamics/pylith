@@ -72,12 +72,15 @@ public:
     tofn_type toVector;
     tofn_type toTensor;
 
+    const int vectorSize;
+
     static inline
     TensorOps _create2D(void) {
         return TensorOps(_fromVector2D,
                          _fromTensor2D,
                          _toVector2D,
-                         _toTensor2D);
+                         _toTensor2D,
+                         4);
     }
 
     static inline
@@ -85,7 +88,8 @@ public:
         return TensorOps(_fromVector3D,
                          _fromTensor3D,
                          _toVector3D,
-                         _toTensor3D);
+                         _toTensor3D,
+                         6);
     }
 
     static inline
@@ -106,11 +110,13 @@ private:
     TensorOps(fromfn_type fromV,
               fromfn_type fromT,
               tofn_type toV,
-              tofn_type toT) :
+              tofn_type toT,
+              const int vSize) :
         fromVector(fromV),
         fromTensor(fromT),
         toVector(toV),
-        toTensor(toT) {}
+        toTensor(toT),
+        vectorSize(vSize) {}
 
 
     static inline
