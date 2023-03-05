@@ -25,13 +25,13 @@
 #include "pylith/materials/IsotropicLinearElasticity.hh"
 #include "pylith/materials/IsotropicLinearMaxwell.hh"
 #include "pylith/materials/IsotropicLinearGenMaxwell.hh"
+#include "pylith/materials/IsotropicPowerLaw.hh"
 
 #include "pylith/materials/IncompressibleElasticity.hh"
 #include "pylith/materials/RheologyIncompressibleElasticity.hh"
 #include "pylith/materials/IsotropicLinearIncompElasticity.hh"
 
 #if 0
-#include "pylith/materials/IsotropicPowerLaw.hh"
 #include "pylith/materials/Poroelasticity.hh"
 #include "pylith/materials/RheologyPoroelasticity.hh"
 #include "pylith/materials/IsotropicLinearPoroelasticity.hh"
@@ -71,13 +71,13 @@ import_array();
 %include "IsotropicLinearElasticity.i"
 %include "IsotropicLinearMaxwell.i"
 %include "IsotropicLinearGenMaxwell.i"
+%include "IsotropicPowerLaw.i"
 
 %include "IncompressibleElasticity.i"
 %include "RheologyIncompressibleElasticity.i"
 %include "IsotropicLinearIncompElasticity.i"
 
 /*
-%include "IsotropicPowerLaw.i"
 %include "Poroelasticity.i"
 %include "RheologyPoroelasticity.i"
 %include "IsotropicLinearPoroelasticity.i"

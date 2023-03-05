@@ -69,6 +69,7 @@ libpylith_la_SOURCES = \
 	feassemble/AuxiliaryFactory.cc \
 	fekernels/Tensor.cc \
 	fekernels/IsotropicLinearGenMaxwell.cc \
+	fekernels/IsotropicPowerLaw.cc \
 	fekernels/FaultCohesiveKin.cc \
 	materials/Material.cc \
 	materials/Elasticity.cc \
@@ -78,6 +79,7 @@ libpylith_la_SOURCES = \
 	materials/IsotropicLinearElasticity.cc \
     materials/IsotropicLinearMaxwell.cc \
     materials/IsotropicLinearGenMaxwell.cc \
+	materials/IsotropicPowerLaw.cc \
 	materials/IncompressibleElasticity.cc \
 	materials/RheologyIncompressibleElasticity.cc \
 	materials/IsotropicLinearIncompElasticity.cc \
@@ -148,7 +150,6 @@ libpylith_la_SOURCES = \
 	utils/DependenciesVersion.cc \
 	utils/TestArray.cc
 
-#	materials/IsotropicPowerLaw.cc \
 #	materials/Poroelasticity.cc \
 #	materials/RheologyPoroelasticity.cc \
 #	materials/IsotropicLinearPoroelasticity.cc

@@ -93,6 +93,12 @@ public:
     }
 
     static inline
+    PylithReal scalarProduct(const Tensor& a,
+                             const Tensor& b) {
+        return a.xx * b.xx + a.yy * b.yy + a.zz * b.zz + 2.0 * (a.xy * b.xy + a.yz * b.yz + a.xz * b.xz);
+    }
+
+    static inline
     void print(const char* name,
                const Tensor& tensor) {
         std::cout << name << ": "
