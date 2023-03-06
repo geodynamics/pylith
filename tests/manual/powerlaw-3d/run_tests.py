@@ -67,7 +67,7 @@ class RunnerApp():
 
                 args_sim = [
                     f"--problem.defaults.name={sim_fullname}",
-                    f"--metadata.arguments=[{sims[sim]}]",
+                    f"--metadata.arguments={sims[sim]}",
                     f"--dump_parameters.filename=output/{sim_fullname}-parameters.json",
                     f"--problem.progress_monitor.filename=output/{sim_fullname}-progress.txt",
                     f"--problem.initial_dt={dt:04.2f}*year",
@@ -75,6 +75,7 @@ class RunnerApp():
                 pylith_args = pylith_run + sims[sim] + args_sim + args_jacobian
                 # Note that the previous method using contextlib will only work with pure Python code,
                 # and will not work with C stdout.
+                print(f"Running pylith {' '.join(pylith_args)}...")
                 with open(log_filename, "w") as log:
                     subprocess.run(pylith_args, stdout=log, stderr=log, check=True)
 
