@@ -84,7 +84,6 @@
 #include "pylith/fekernels/Elasticity.hh" // USES Elasticity kernels
 #include "pylith/fekernels/IsotropicLinearElasticity.hh" // USES IsotropicLinearElasticity kernels
 #include "pylith/fekernels/IsotropicLinearMaxwell.hh" // USES IsotropicLinearMaxwell kernels
-#include "pylith/fekernels/Viscoelasticity.hh" // USES Viscoelasticity kernels
 
 #include "pylith/utils/types.hh"
 
@@ -650,7 +649,7 @@ public:
         PylithReal shearFactor = shearModulus * shearModulusRatio_0;
         for (PylithInt i = 0; i < numParallel; ++i) {
             const PylithReal maxwellTime = context.maxwellTime[i];
-            const PylithReal dq = pylith::fekernels::Viscoelasticity::maxwellViscousStrainCoeff(dt, maxwellTime);
+            const PylithReal dq = pylith::fekernels::IsotropicLinearMaxwell::viscousStrainCoeff(dt, maxwellTime);
             shearFactor += shearModulus * dq * shearModulusRatio[i];
         } // for
 
@@ -983,7 +982,7 @@ public:
         PylithReal shearFactor = shearModulus * shearModulusRatio_0;
         for (PylithInt i = 0; i < numParallel; ++i) {
             const PylithReal maxwellTime = context.maxwellTime[i];
-            const PylithReal dq = pylith::fekernels::Viscoelasticity::maxwellViscousStrainCoeff(dt, maxwellTime);
+            const PylithReal dq = pylith::fekernels::IsotropicLinearMaxwell::viscousStrainCoeff(dt, maxwellTime);
             shearFactor += shearModulus * dq * shearModulusRatio[i];
         } // for
 

@@ -82,7 +82,6 @@
 #include "fekernelsfwd.hh" // forward declarations
 #include "pylith/fekernels/Elasticity.hh" // USES Elasticity kernels
 #include "pylith/fekernels/IsotropicLinearElasticity.hh" // USES IsotropicLinearElasticity* kernels
-#include "pylith/fekernels/Viscoelasticity.hh" // USES Viscoelasticity kernels
 
 #include "pylith/utils/types.hh"
 
@@ -208,6 +207,20 @@ public:
     } // createContext
 
     // --------------------------------------------------------------------------------------------
+    /** Viscous strain coefficient function for Maxwell viscoelastic materials.
+     *
+     * @param[in] dt Time step size.
+     * @param[in] maxwellTime Relaxation time for material.
+     *
+     * @returns Viscous strain coefficient.
+     */
+    static inline
+    PylithReal viscousStrainCoeff(const PylithReal dt,
+                                  const PylithReal maxwellTime) {
+        return maxwellTime*(1.0-exp(-dt/maxwellTime))/dt;
+    }
+
+    // --------------------------------------------------------------------------------------------
     /** Calculate viscous strain as a vector.
      *
      * Used to output of viscous strain.
@@ -252,7 +265,7 @@ public:
         pylith::fekernels::Tensor devTotalStrain;
         pylith::fekernels::Elasticity::deviatoric(totalStrain, &devTotalStrain);
 
-        const PylithScalar dq = pylith::fekernels::Viscoelasticity::maxwellViscousStrainCoeff(dt, maxwellTime);
+        const PylithScalar dq = pylith::fekernels::IsotropicLinearMaxwell::viscousStrainCoeff(dt, maxwellTime);
         const PylithScalar expFac = exp(-dt/maxwellTime);
         viscousStrain->xx = expFac * viscousStrainPrev.xx + dq * (devStrain.xx - devTotalStrain.xx);
         viscousStrain->yy = expFac * viscousStrainPrev.yy + dq * (devStrain.yy - devTotalStrain.yy);
@@ -553,7 +566,7 @@ public:
         const PylithScalar maxwellTime = context.maxwellTime;
         const PylithScalar dt = context.dt;
 
-        const PylithScalar dq = pylith::fekernels::Viscoelasticity::maxwellViscousStrainCoeff(dt, maxwellTime);
+        const PylithScalar dq = pylith::fekernels::IsotropicLinearMaxwell::viscousStrainCoeff(dt, maxwellTime);
 
         // Unique components of Jacobian.
         const PylithReal C1111 = bulkModulus + 4.0/3.0 * shearModulus * dq;
@@ -879,7 +892,7 @@ public:
         const PylithScalar maxwellTime = context.maxwellTime;
         const PylithScalar dt = context.dt;
 
-        const PylithScalar dq = pylith::fekernels::Viscoelasticity::maxwellViscousStrainCoeff(dt, maxwellTime);
+        const PylithScalar dq = pylith::fekernels::IsotropicLinearMaxwell::viscousStrainCoeff(dt, maxwellTime);
 
         /* Unique components of Jacobian. */
         const PylithReal C1111 = bulkModulus + 4.0*dq*shearModulus/3.0;

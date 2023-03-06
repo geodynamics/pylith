@@ -82,7 +82,6 @@
 #include "fekernelsfwd.hh" // forward declarations
 #include "pylith/fekernels/Elasticity.hh" // USES Elasticity kernels
 #include "pylith/fekernels/IsotropicLinearElasticity.hh" // USES IsotropicLinearElasticity* kernels
-#include "pylith/fekernels/Viscoelasticity.hh" // USES Viscoelasticity kernels
 
 #include "pylith/utils/types.hh"
 
