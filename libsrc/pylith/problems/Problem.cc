@@ -234,7 +234,7 @@ pylith::problems::Problem::setSolution(pylith::topology::Field* field) {
     PYLITH_COMPONENT_DEBUG("Problem::setSolution(field="<<typeid(*field).name()<<")");
 
     assert(_integrationData);
-    _integrationData->setField("solution", field);
+    _integrationData->setField(pylith::feassemble::IntegrationData::solution, field);
 } // setSolution
 
 

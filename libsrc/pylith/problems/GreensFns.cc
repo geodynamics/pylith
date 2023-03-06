@@ -62,8 +62,7 @@ pylith::problems::GreensFns::GreensFns(void) :
     _monitor(NULL) {
     PyreComponent::setName(_GreensFns::pyreComponent);
 
-    _integrationData->setScalar("dt_jacobian", -1.0);
-    _integrationData->setScalar("dt_lhs_jacobian", -1.0);
+    _integrationData->setScalar(pylith::feassemble::IntegrationData::dt_jacobian, -1.0);
     _integrationData->setScalar(pylith::feassemble::IntegrationData::t_state, -HUGE_VAL);
 } // constructor
 
