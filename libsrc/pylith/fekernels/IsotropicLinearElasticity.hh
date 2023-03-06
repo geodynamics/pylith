@@ -82,48 +82,140 @@ class pylith::fekernels::IsotropicLinearElasticity {
     // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
 public:
 
+    struct Context {
+        PylithReal shearModulus;
+        PylithReal bulkModulus;
+        pylith::fekernels::Tensor refStress;
+        pylith::fekernels::Tensor refStrain;
+    };
+
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
+public:
+
     // --------------------------------------------------------------------------------------------
-    /** Helper function for calculating Cauchy stress for WITHOUT a reference stress and strain.
-     *
-     * Solution fields: [disp(dim)]
-     * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1)]
-     */
     static inline
-    void cauchyStress(const PylithInt dim,
-                      const PylithInt numS,
-                      const PylithInt numA,
-                      const PylithInt sOff[],
-                      const PylithInt sOff_x[],
-                      const PylithScalar s[],
-                      const PylithScalar s_t[],
-                      const PylithScalar s_x[],
-                      const PylithInt aOff[],
-                      const PylithInt aOff_x[],
-                      const PylithScalar a[],
-                      const PylithScalar a_t[],
-                      const PylithScalar a_x[],
-                      const PylithReal t,
-                      const PylithScalar x[],
-                      const PylithInt numConstants,
-                      const PylithScalar constants[],
-                      const pylith::fekernels::Tensor& strain,
-                      const pylith::fekernels::TensorOps& tensorOps,
-                      pylith::fekernels::Tensor* stress) {
-        // Incoming auxiliary fields.
+    void setContext(Context* context,
+                    const PylithInt dim,
+                    const PylithInt numS,
+                    const PylithInt numA,
+                    const PylithInt sOff[],
+                    const PylithInt sOff_x[],
+                    const PylithScalar s[],
+                    const PylithScalar s_t[],
+                    const PylithScalar s_x[],
+                    const PylithInt aOff[],
+                    const PylithInt aOff_x[],
+                    const PylithScalar a[],
+                    const PylithScalar a_t[],
+                    const PylithScalar a_x[],
+                    const PylithReal t,
+                    const PylithScalar x[],
+                    const PylithInt numConstants,
+                    const PylithScalar constants[],
+                    const pylith::fekernels::TensorOps& tensorOps) {
+        assert(context);
+
         const PylithInt i_shearModulus = numA-2;
         const PylithInt i_bulkModulus = numA-1;
 
-        assert(numA >= 3);
+        assert(numA >= 3); // also have density
+        assert(a);
         assert(aOff);
         assert(aOff[i_shearModulus] >= 0);
         assert(aOff[i_bulkModulus] >= 0);
 
-        const PylithReal bulkModulus = a[aOff[i_bulkModulus]];
-        meanStress(bulkModulus, strain, stress);
+        context->shearModulus = a[aOff[i_shearModulus]];assert(context->shearModulus > 0.0);
+        context->bulkModulus = a[aOff[i_bulkModulus]];assert(context->bulkModulus > 0.0);
+    } // setContext
 
-        const PylithReal shearModulus = a[aOff[i_shearModulus]];
-        deviatoricStress(shearModulus, strain, stress);
+    // --------------------------------------------------------------------------------------------
+    static inline
+    void setContext_refState(Context* context,
+                             const PylithInt dim,
+                             const PylithInt numS,
+                             const PylithInt numA,
+                             const PylithInt sOff[],
+                             const PylithInt sOff_x[],
+                             const PylithScalar s[],
+                             const PylithScalar s_t[],
+                             const PylithScalar s_x[],
+                             const PylithInt aOff[],
+                             const PylithInt aOff_x[],
+                             const PylithScalar a[],
+                             const PylithScalar a_t[],
+                             const PylithScalar a_x[],
+                             const PylithReal t,
+                             const PylithScalar x[],
+                             const PylithInt numConstants,
+                             const PylithScalar constants[],
+                             const pylith::fekernels::TensorOps& tensorOps) {
+        assert(context);
+
+        const PylithInt i_refStress = numA-4;
+        const PylithInt i_refStrain = numA-3;
+        const PylithInt i_shearModulus = numA-2;
+        const PylithInt i_bulkModulus = numA-1;
+
+        assert(numA >= 5); // also have density
+        assert(a);
+        assert(aOff);
+        assert(aOff[i_refStress] >= 0);
+        assert(aOff[i_refStrain] >= 0);
+        assert(aOff[i_shearModulus] >= 0);
+        assert(aOff[i_bulkModulus] >= 0);
+
+        context->shearModulus = a[aOff[i_shearModulus]];assert(context->shearModulus > 0.0);
+        context->bulkModulus = a[aOff[i_bulkModulus]];assert(context->bulkModulus > 0.0);
+
+        tensorOps.fromVector(&a[aOff[i_refStress]], &context->refStress);
+        tensorOps.fromVector(&a[aOff[i_refStrain]], &context->refStrain);
+    } // createContext
+
+    // --------------------------------------------------------------------------------------------
+    /** Helper function for calculating Cauchy stress for WITHOUT a reference stress and strain.
+     *
+     * ISA Elasticity::stressFn
+     *
+     * @param[in] rheologyContext IsotropicLinearElasticity context.
+     * @param[in] strain Strain tensor.
+     * @param[in] tensorOps Tensor operations.
+     * @param[out] stress Stress tensor.
+     */
+    static inline
+    void cauchyStress(void* rheologyContext,
+                      const pylith::fekernels::Tensor& strain,
+                      const pylith::fekernels::TensorOps& tensorOps,
+                      pylith::fekernels::Tensor* stress) {
+        Context* context = (Context*)(rheologyContext);
+        assert(context);
+        assert(stress);
+
+        meanStress(context->bulkModulus, strain, stress);
+        deviatoricStress(context->shearModulus, strain, stress);
     } // cauchyStress
+
+    // --------------------------------------------------------------------------------------------
+    /** Helper function for calculating Cauchy stress WITH reference stress/strain.
+     *
+     * @param[in] rheologyContext IsotropicLinearElastcity context.
+     * @param[in] strain Strain tensor.
+     * @param[in] tensorOps Tensor operations.
+     * @param[out] stress Stress tensor.
+     */
+    static inline
+    void cauchyStress_refState(void* rheologyContext,
+                               const pylith::fekernels::Tensor& strain,
+                               const pylith::fekernels::TensorOps& tensorOps,
+                               pylith::fekernels::Tensor* stress) {
+        Context* context = (Context*)(rheologyContext);
+        assert(context);
+        assert(stress);
+
+        const pylith::fekernels::Tensor& refStress = context->refStress;
+        const pylith::fekernels::Tensor& refStrain = context->refStrain;
+        meanStress_refState(context->bulkModulus, refStress, refStrain, strain, stress);
+        deviatoricStress_refState(context->shearModulus, refStress, refStrain, strain, stress);
+    } // cauchyStress_refState
 
     // --------------------------------------------------------------------------------------------
     /** Calculate mean stress WITHOUT reference stress and reference strain.
@@ -163,59 +255,6 @@ public:
         stress->yz += 2.0*shearModulus*strain.yz;
         stress->xz += 2.0*shearModulus*strain.xz;
     } // deviatoricStress
-
-    // --------------------------------------------------------------------------------------------
-    /** Helper function for calculating Cauchy stress WITH reference stress/strain.
-     *
-     * Solution fields: [disp(dim)]
-     * Auxiliary fields: [..., refstress(6), refstrain(6), shear_modulus(1), bulk_modulus(1)]
-     */
-    static inline
-    void cauchyStress_refState(const PylithInt dim,
-                               const PylithInt numS,
-                               const PylithInt numA,
-                               const PylithInt sOff[],
-                               const PylithInt sOff_x[],
-                               const PylithScalar s[],
-                               const PylithScalar s_t[],
-                               const PylithScalar s_x[],
-                               const PylithInt aOff[],
-                               const PylithInt aOff_x[],
-                               const PylithScalar a[],
-                               const PylithScalar a_t[],
-                               const PylithScalar a_x[],
-                               const PylithReal t,
-                               const PylithScalar x[],
-                               const PylithInt numConstants,
-                               const PylithScalar constants[],
-                               const pylith::fekernels::Tensor& strain,
-                               const pylith::fekernels::TensorOps& tensorOps,
-                               pylith::fekernels::Tensor* stress) {
-        // Incoming auxiliary fields.
-        const PylithInt i_rstress = numA-4;
-        const PylithInt i_rstrain = numA-3;
-        const PylithInt i_shearModulus = numA-2;
-        const PylithInt i_bulkModulus = numA-1;
-
-        assert(numA >= 5);
-        assert(aOff);
-        assert(aOff[i_shearModulus] >= 0);
-        assert(aOff[i_bulkModulus] >= 0);
-        assert(aOff[i_rstress] >= 0);
-        assert(aOff[i_rstrain] >= 0);
-
-        pylith::fekernels::Tensor refStress;
-        tensorOps.fromVector(&a[aOff[i_rstress]], &refStress);
-
-        pylith::fekernels::Tensor refStrain;
-        tensorOps.fromVector(&a[aOff[i_rstrain]], &refStrain);
-
-        const PylithReal bulkModulus = a[aOff[i_bulkModulus]];
-        meanStress_refState(bulkModulus, refStress, refStrain, strain, stress);
-
-        const PylithReal shearModulus = a[aOff[i_shearModulus]];
-        deviatoricStress_refState(shearModulus, refStress, refStrain, strain, stress);
-    } // cauchyStress_refState
 
     // --------------------------------------------------------------------------------------------
     /** Calculate mean stress WITH reference stress and reference strain.
@@ -274,6 +313,10 @@ class pylith::fekernels::IsotropicLinearElasticityPlaneStrain {
     // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
 public:
 
+    // ===========================================================================================
+    // Kernels for elasticity equation
+    // ===========================================================================================
+
     // --------------------------------------------------------------------------------------------
     /** f1 entry function for isotropic linear elasticity plane strain with infinitesimal strain
      * WITHOUT reference stress and reference strain.
@@ -302,9 +345,16 @@ public:
                                  PylithScalar f1[]) {
         const PylithInt _dim = 2;assert(_dim == dim);
 
+        pylith::fekernels::Elasticity::StrainContext strainContext;
+        pylith::fekernels::Elasticity::setStrainContext(&strainContext, _dim, numS, sOff, sOff_x, s, s_t, s_x, x);
+
+        pylith::fekernels::IsotropicLinearElasticity::Context rheologyContext;
+        pylith::fekernels::IsotropicLinearElasticity::setContext(
+            &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
+            t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
+
         pylith::fekernels::Elasticity::f1v(
-            _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x,
-            numConstants, constants,
+            strainContext, &rheologyContext,
             pylith::fekernels::ElasticityPlaneStrain::infinitesimalStrain,
             pylith::fekernels::IsotropicLinearElasticity::cauchyStress,
             pylith::fekernels::Tensor::ops2D,
@@ -339,92 +389,21 @@ public:
                                           PylithScalar f1[]) {
         const PylithInt _dim = 2;assert(_dim == dim);
 
+        pylith::fekernels::Elasticity::StrainContext strainContext;
+        pylith::fekernels::Elasticity::setStrainContext(&strainContext, _dim, numS, sOff, sOff_x, s, s_t, s_x, x);
+
+        pylith::fekernels::IsotropicLinearElasticity::Context rheologyContext;
+        pylith::fekernels::IsotropicLinearElasticity::setContext_refState(
+            &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
+            t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
+
         pylith::fekernels::Elasticity::f1v(
-            _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x,
-            numConstants, constants,
+            strainContext, &rheologyContext,
             pylith::fekernels::ElasticityPlaneStrain::infinitesimalStrain,
             pylith::fekernels::IsotropicLinearElasticity::cauchyStress_refState,
             pylith::fekernels::Tensor::ops2D,
             f1);
     }
-
-    // --------------------------------------------------------------------------------------------
-    /** Entry function for calculating Cauchy stress for 2D plane strain isotropic linear
-     * elasticity WITHOUT a reference stress and strain.
-     *
-     * Used to output of Cauchy stress.
-     *
-     * Solution fields: [disp(dim)]
-     * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1)]
-     */
-    static inline
-    void cauchyStress_infinitesimalStrain_asVector(const PylithInt dim,
-                                                   const PylithInt numS,
-                                                   const PylithInt numA,
-                                                   const PylithInt sOff[],
-                                                   const PylithInt sOff_x[],
-                                                   const PylithScalar s[],
-                                                   const PylithScalar s_t[],
-                                                   const PylithScalar s_x[],
-                                                   const PylithInt aOff[],
-                                                   const PylithInt aOff_x[],
-                                                   const PylithScalar a[],
-                                                   const PylithScalar a_t[],
-                                                   const PylithScalar a_x[],
-                                                   const PylithReal t,
-                                                   const PylithScalar x[],
-                                                   const PylithInt numConstants,
-                                                   const PylithScalar constants[],
-                                                   PylithScalar stressVector[]) {
-        const PylithInt _dim = 2;assert(_dim == dim);
-
-        pylith::fekernels::Elasticity::stress_asVector(
-            _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x,
-            numConstants, constants,
-            pylith::fekernels::ElasticityPlaneStrain::infinitesimalStrain,
-            pylith::fekernels::IsotropicLinearElasticity::cauchyStress,
-            pylith::fekernels::Tensor::ops2D,
-            stressVector);
-    }
-
-    // --------------------------------------------------------------------------------------------
-    /** Entry function for calculating Cauchy stress for 2D plane strain isotropic linear
-     * elasticity with infinitesimal strain WITH a reference stress and strain.
-     *
-     * Used to output of Cauchy stress.
-     *
-     * Solution fields: [disp(dim)]
-     * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1)]
-     */
-    static inline
-    void cauchyStress_infinitesimalStrain_refState_asVector(const PylithInt dim,
-                                                            const PylithInt numS,
-                                                            const PylithInt numA,
-                                                            const PylithInt sOff[],
-                                                            const PylithInt sOff_x[],
-                                                            const PylithScalar s[],
-                                                            const PylithScalar s_t[],
-                                                            const PylithScalar s_x[],
-                                                            const PylithInt aOff[],
-                                                            const PylithInt aOff_x[],
-                                                            const PylithScalar a[],
-                                                            const PylithScalar a_t[],
-                                                            const PylithScalar a_x[],
-                                                            const PylithReal t,
-                                                            const PylithScalar x[],
-                                                            const PylithInt numConstants,
-                                                            const PylithScalar constants[],
-                                                            PylithScalar stressVector[]) {
-        const PylithInt _dim = 2;assert(_dim == dim);
-
-        pylith::fekernels::Elasticity::stress_asVector(
-            _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x,
-            numConstants, constants,
-            pylith::fekernels::ElasticityPlaneStrain::infinitesimalStrain,
-            pylith::fekernels::IsotropicLinearElasticity::cauchyStress_refState,
-            pylith::fekernels::Tensor::ops2D,
-            stressVector);
-    } // cauchyStress_infinitesimalStrain_refState_asVector
 
     // --------------------------------------------------------------------------------------------
     /** Jf3_vu entry function for 2D plane strain isotropic linear elasticity.
@@ -465,21 +444,15 @@ public:
                                    const PylithScalar constants[],
                                    PylithScalar Jf3[]) {
         const PylithInt _dim = 2;assert(_dim == dim);
+        pylith::fekernels::IsotropicLinearElasticity::Context context;
+        pylith::fekernels::IsotropicLinearElasticity::setContext(
+            &context, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
+            t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
 
-        // Incoming auxiliary fields.
-        const PylithInt i_shearModulus = numA-2;
-        const PylithInt i_bulkModulus = numA-1;
-
-        assert(numS >= 1);
-        assert(numA >= 2);
-        assert(aOff);
-        assert(aOff[i_shearModulus] >= 0);
-        assert(aOff[i_bulkModulus] >= 0);
-        assert(a);
         assert(Jf3);
 
-        const PylithScalar shearModulus = a[aOff[i_shearModulus]];
-        const PylithScalar bulkModulus = a[aOff[i_bulkModulus]];
+        const PylithScalar shearModulus = context.shearModulus;
+        const PylithScalar bulkModulus = context.bulkModulus;
 
         const PylithScalar lambda = bulkModulus - 2.0/3.0*shearModulus;
         const PylithScalar lambda2mu = lambda + 2.0*shearModulus;
@@ -522,6 +495,102 @@ public:
         Jf3[15] -= C2222; // j1111
     } // Jf3vu
 
+    // ===========================================================================================
+    // Kernels for output
+    // ===========================================================================================
+
+    // --------------------------------------------------------------------------------------------
+    /** Entry function for calculating Cauchy stress for 2D plane strain isotropic linear
+     * elasticity WITHOUT a reference stress and strain.
+     *
+     * Used to output of Cauchy stress.
+     *
+     * Solution fields: [disp(dim)]
+     * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1)]
+     */
+    static inline
+    void cauchyStress_infinitesimalStrain_asVector(const PylithInt dim,
+                                                   const PylithInt numS,
+                                                   const PylithInt numA,
+                                                   const PylithInt sOff[],
+                                                   const PylithInt sOff_x[],
+                                                   const PylithScalar s[],
+                                                   const PylithScalar s_t[],
+                                                   const PylithScalar s_x[],
+                                                   const PylithInt aOff[],
+                                                   const PylithInt aOff_x[],
+                                                   const PylithScalar a[],
+                                                   const PylithScalar a_t[],
+                                                   const PylithScalar a_x[],
+                                                   const PylithReal t,
+                                                   const PylithScalar x[],
+                                                   const PylithInt numConstants,
+                                                   const PylithScalar constants[],
+                                                   PylithScalar stressVector[]) {
+        const PylithInt _dim = 2;assert(_dim == dim);
+
+        pylith::fekernels::Elasticity::StrainContext strainContext;
+        pylith::fekernels::Elasticity::setStrainContext(&strainContext, _dim, numS, sOff, sOff_x, s, s_t, s_x, x);
+
+        pylith::fekernels::IsotropicLinearElasticity::Context rheologyContext;
+        pylith::fekernels::IsotropicLinearElasticity::setContext(
+            &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
+            t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
+
+        pylith::fekernels::Elasticity::stress_asVector(
+            strainContext, &rheologyContext,
+            pylith::fekernels::ElasticityPlaneStrain::infinitesimalStrain,
+            pylith::fekernels::IsotropicLinearElasticity::cauchyStress,
+            pylith::fekernels::Tensor::ops2D,
+            stressVector);
+    }
+
+    // --------------------------------------------------------------------------------------------
+    /** Entry function for calculating Cauchy stress for 2D plane strain isotropic linear
+     * elasticity with infinitesimal strain WITH a reference stress and strain.
+     *
+     * Used to output of Cauchy stress.
+     *
+     * Solution fields: [disp(dim)]
+     * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1)]
+     */
+    static inline
+    void cauchyStress_infinitesimalStrain_refState_asVector(const PylithInt dim,
+                                                            const PylithInt numS,
+                                                            const PylithInt numA,
+                                                            const PylithInt sOff[],
+                                                            const PylithInt sOff_x[],
+                                                            const PylithScalar s[],
+                                                            const PylithScalar s_t[],
+                                                            const PylithScalar s_x[],
+                                                            const PylithInt aOff[],
+                                                            const PylithInt aOff_x[],
+                                                            const PylithScalar a[],
+                                                            const PylithScalar a_t[],
+                                                            const PylithScalar a_x[],
+                                                            const PylithReal t,
+                                                            const PylithScalar x[],
+                                                            const PylithInt numConstants,
+                                                            const PylithScalar constants[],
+                                                            PylithScalar stressVector[]) {
+        const PylithInt _dim = 2;assert(_dim == dim);
+
+        pylith::fekernels::Elasticity::StrainContext strainContext;
+        pylith::fekernels::Elasticity::setStrainContext(&strainContext, _dim, numS, sOff, sOff_x, s, s_t, s_x, x);
+
+        pylith::fekernels::IsotropicLinearElasticity::Context rheologyContext;
+        pylith::fekernels::IsotropicLinearElasticity::setContext_refState(
+            &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
+            t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
+
+        pylith::fekernels::Elasticity::stress_asVector(
+            strainContext, &rheologyContext,
+            pylith::fekernels::ElasticityPlaneStrain::infinitesimalStrain,
+            pylith::fekernels::IsotropicLinearElasticity::cauchyStress_refState,
+            pylith::fekernels::Tensor::ops2D,
+            stressVector);
+    } // cauchyStress_infinitesimalStrain_refState_asVector
+
 }; // IsotropicLinearElasticityPlaneStrain
 
 // ------------------------------------------------------------------------------------------------
@@ -529,6 +598,10 @@ public:
 class pylith::fekernels::IsotropicLinearElasticity3D {
     // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
 public:
+
+    // ===========================================================================================
+    // Kernels for elasticity equation
+    // ===========================================================================================
 
     // --------------------------------------------------------------------------------------------
     /** f1 entry function for 3D isotropic linear elasticity with infinitesimal strain WITHOUT
@@ -558,9 +631,16 @@ public:
                                  PylithScalar f1[]) {
         const PylithInt _dim = 3;assert(_dim == dim);
 
+        pylith::fekernels::Elasticity::StrainContext strainContext;
+        pylith::fekernels::Elasticity::setStrainContext(&strainContext, _dim, numS, sOff, sOff_x, s, s_t, s_x, x);
+
+        pylith::fekernels::IsotropicLinearElasticity::Context rheologyContext;
+        pylith::fekernels::IsotropicLinearElasticity::setContext(
+            &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
+            t, x, numConstants, constants, pylith::fekernels::Tensor::ops3D);
+
         pylith::fekernels::Elasticity::f1v(
-            _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x,
-            numConstants, constants,
+            strainContext, &rheologyContext,
             pylith::fekernels::Elasticity3D::infinitesimalStrain,
             pylith::fekernels::IsotropicLinearElasticity::cauchyStress,
             pylith::fekernels::Tensor::ops3D,
@@ -595,90 +675,20 @@ public:
                                           PylithScalar f1[]) {
         const PylithInt _dim = 3;assert(_dim == dim);
 
+        pylith::fekernels::Elasticity::StrainContext strainContext;
+        pylith::fekernels::Elasticity::setStrainContext(&strainContext, _dim, numS, sOff, sOff_x, s, s_t, s_x, x);
+
+        pylith::fekernels::IsotropicLinearElasticity::Context rheologyContext;
+        pylith::fekernels::IsotropicLinearElasticity::setContext_refState(
+            &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
+            t, x, numConstants, constants, pylith::fekernels::Tensor::ops3D);
+
         pylith::fekernels::Elasticity::f1v(
-            _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x,
-            numConstants, constants,
+            strainContext, &rheologyContext,
             pylith::fekernels::Elasticity3D::infinitesimalStrain,
             pylith::fekernels::IsotropicLinearElasticity::cauchyStress_refState,
             pylith::fekernels::Tensor::ops3D,
             f1);
-    }
-
-    // --------------------------------------------------------------------------------------------
-    /** Entry function for calculating Cauchy stress for 3D isotropic linear elasticity with
-     * ininitesimal strain WITHOUT reference stress and strain.
-     *
-     * Used to output of Cauchy stress.
-     *
-     * Solution fields: [disp(dim)]
-     * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1)]
-     */
-    static inline
-    void cauchyStress_infinitesimalStrain_asVector(const PylithInt dim,
-                                                   const PylithInt numS,
-                                                   const PylithInt numA,
-                                                   const PylithInt sOff[],
-                                                   const PylithInt sOff_x[],
-                                                   const PylithScalar s[],
-                                                   const PylithScalar s_t[],
-                                                   const PylithScalar s_x[],
-                                                   const PylithInt aOff[],
-                                                   const PylithInt aOff_x[],
-                                                   const PylithScalar a[],
-                                                   const PylithScalar a_t[],
-                                                   const PylithScalar a_x[],
-                                                   const PylithReal t,
-                                                   const PylithScalar x[],
-                                                   const PylithInt numConstants,
-                                                   const PylithScalar constants[],
-                                                   PylithScalar stressVector[]) {
-        const PylithInt _dim = 3;assert(_dim == dim);
-
-        pylith::fekernels::Elasticity::stress_asVector(
-            _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x,
-            numConstants, constants,
-            pylith::fekernels::Elasticity3D::infinitesimalStrain,
-            pylith::fekernels::IsotropicLinearElasticity::cauchyStress,
-            pylith::fekernels::Tensor::ops3D,
-            stressVector);
-    }
-
-    // --------------------------------------------------------------------------------------------
-    /** Entry function for calculating Cauchy stress for 3D isotropic linear elasticity with
-     * infinitesimal strain WITH a reference stress and strain.
-     *
-     * Used to output of Cauchy stress.
-     *
-     * Solution fields: [disp(dim)]
-     * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1)]
-     */
-    static inline
-    void cauchyStress_infinitesimalStrain_refState_asVector(const PylithInt dim,
-                                                            const PylithInt numS,
-                                                            const PylithInt numA,
-                                                            const PylithInt sOff[],
-                                                            const PylithInt sOff_x[],
-                                                            const PylithScalar s[],
-                                                            const PylithScalar s_t[],
-                                                            const PylithScalar s_x[],
-                                                            const PylithInt aOff[],
-                                                            const PylithInt aOff_x[],
-                                                            const PylithScalar a[],
-                                                            const PylithScalar a_t[],
-                                                            const PylithScalar a_x[],
-                                                            const PylithReal t,
-                                                            const PylithScalar x[],
-                                                            const PylithInt numConstants,
-                                                            const PylithScalar constants[],
-                                                            PylithScalar stressVector[]) {
-        const PylithInt _dim = 3;assert(_dim == dim);
-
-        pylith::fekernels::Elasticity::stress_asVector(
-            _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x,
-            numConstants, constants,
-            pylith::fekernels::Elasticity3D::infinitesimalStrain,
-            pylith::fekernels::IsotropicLinearElasticity::cauchyStress_refState,
-            pylith::fekernels::Tensor::ops3D, stressVector);
     }
 
     // --------------------------------------------------------------------------------------------
@@ -708,20 +718,15 @@ public:
                                    const PylithScalar constants[],
                                    PylithScalar Jf3[]) {
         const PylithInt _dim = 3;assert(_dim == dim);
+        pylith::fekernels::IsotropicLinearElasticity::Context context;
+        pylith::fekernels::IsotropicLinearElasticity::setContext(
+            &context, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
+            t, x, numConstants, constants, pylith::fekernels::Tensor::ops3D);
 
-        // Incoming auxiliary fields.
-        const PylithInt i_shearModulus = numA-2;
-        const PylithInt i_bulkModulus = numA-1;
-
-        assert(numA >= 2);
-        assert(aOff);
-        assert(aOff[i_shearModulus] >= 0);
-        assert(aOff[i_bulkModulus] >= 0);
-        assert(a);
         assert(Jf3);
 
-        const PylithScalar shearModulus = a[aOff[i_shearModulus]];
-        const PylithScalar bulkModulus = a[aOff[i_bulkModulus]];
+        const PylithScalar shearModulus = context.shearModulus;
+        const PylithScalar bulkModulus = context.bulkModulus;
 
         const PylithScalar lambda = bulkModulus - 2.0/3.0*shearModulus;
         const PylithScalar lambda2mu = lambda + 2.0*shearModulus;
@@ -838,6 +843,101 @@ public:
         Jf3[76] -= C1212; // j2211
         Jf3[80] -= C1111; // j2222
     } // Jf3vu_infinitesimalStrain
+
+    // ===========================================================================================
+    // Kernels for output
+    // ===========================================================================================
+
+    // --------------------------------------------------------------------------------------------
+    /** Entry function for calculating Cauchy stress for 3D isotropic linear elasticity with
+     * infinitesimal strain WITHOUT reference stress and strain.
+     *
+     * Used to output of Cauchy stress.
+     *
+     * Solution fields: [disp(dim)]
+     * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1)]
+     */
+    static inline
+    void cauchyStress_infinitesimalStrain_asVector(const PylithInt dim,
+                                                   const PylithInt numS,
+                                                   const PylithInt numA,
+                                                   const PylithInt sOff[],
+                                                   const PylithInt sOff_x[],
+                                                   const PylithScalar s[],
+                                                   const PylithScalar s_t[],
+                                                   const PylithScalar s_x[],
+                                                   const PylithInt aOff[],
+                                                   const PylithInt aOff_x[],
+                                                   const PylithScalar a[],
+                                                   const PylithScalar a_t[],
+                                                   const PylithScalar a_x[],
+                                                   const PylithReal t,
+                                                   const PylithScalar x[],
+                                                   const PylithInt numConstants,
+                                                   const PylithScalar constants[],
+                                                   PylithScalar stressVector[]) {
+        const PylithInt _dim = 3;assert(_dim == dim);
+
+        pylith::fekernels::Elasticity::StrainContext strainContext;
+        pylith::fekernels::Elasticity::setStrainContext(&strainContext, _dim, numS, sOff, sOff_x, s, s_t, s_x, x);
+
+        pylith::fekernels::IsotropicLinearElasticity::Context rheologyContext;
+        pylith::fekernels::IsotropicLinearElasticity::setContext(
+            &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
+            t, x, numConstants, constants, pylith::fekernels::Tensor::ops3D);
+
+        pylith::fekernels::Elasticity::stress_asVector(
+            strainContext, &rheologyContext,
+            pylith::fekernels::Elasticity3D::infinitesimalStrain,
+            pylith::fekernels::IsotropicLinearElasticity::cauchyStress,
+            pylith::fekernels::Tensor::ops3D,
+            stressVector);
+    }
+
+    // --------------------------------------------------------------------------------------------
+    /** Entry function for calculating Cauchy stress for 3D isotropic linear elasticity with
+     * infinitesimal strain WITH a reference stress and strain.
+     *
+     * Used to output of Cauchy stress.
+     *
+     * Solution fields: [disp(dim)]
+     * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1)]
+     */
+    static inline
+    void cauchyStress_infinitesimalStrain_refState_asVector(const PylithInt dim,
+                                                            const PylithInt numS,
+                                                            const PylithInt numA,
+                                                            const PylithInt sOff[],
+                                                            const PylithInt sOff_x[],
+                                                            const PylithScalar s[],
+                                                            const PylithScalar s_t[],
+                                                            const PylithScalar s_x[],
+                                                            const PylithInt aOff[],
+                                                            const PylithInt aOff_x[],
+                                                            const PylithScalar a[],
+                                                            const PylithScalar a_t[],
+                                                            const PylithScalar a_x[],
+                                                            const PylithReal t,
+                                                            const PylithScalar x[],
+                                                            const PylithInt numConstants,
+                                                            const PylithScalar constants[],
+                                                            PylithScalar stressVector[]) {
+        const PylithInt _dim = 3;assert(_dim == dim);
+
+        pylith::fekernels::Elasticity::StrainContext strainContext;
+        pylith::fekernels::Elasticity::setStrainContext(&strainContext, _dim, numS, sOff, sOff_x, s, s_t, s_x, x);
+
+        pylith::fekernels::IsotropicLinearElasticity::Context rheologyContext;
+        pylith::fekernels::IsotropicLinearElasticity::setContext_refState(
+            &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
+            t, x, numConstants, constants, pylith::fekernels::Tensor::ops3D);
+
+        pylith::fekernels::Elasticity::stress_asVector(
+            strainContext, &rheologyContext,
+            pylith::fekernels::Elasticity3D::infinitesimalStrain,
+            pylith::fekernels::IsotropicLinearElasticity::cauchyStress_refState,
+            pylith::fekernels::Tensor::ops3D, stressVector);
+    }
 
 }; // IsotropicLinearElasticity3D
 

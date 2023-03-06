@@ -60,23 +60,7 @@ class pylith::fekernels::IncompressibleElasticity {
 public:
 
     // Function interface for computing incompressible term.
-    typedef void (*incompressiblefn_type) (const PylithInt,
-                                           const PylithInt,
-                                           const PylithInt,
-                                           const PylithInt[],
-                                           const PylithInt[],
-                                           const PylithScalar[],
-                                           const PylithScalar[],
-                                           const PylithScalar[],
-                                           const PylithInt[],
-                                           const PylithInt[],
-                                           const PylithScalar[],
-                                           const PylithScalar[],
-                                           const PylithScalar[],
-                                           const PylithReal t,
-                                           const PylithScalar[],
-                                           const PylithInt,
-                                           const PylithScalar[],
+    typedef void (*incompressiblefn_type) (void*,
                                            const pylith::fekernels::Tensor&,
                                            const pylith::fekernels::TensorOps&,
                                            PylithScalar*);
@@ -84,26 +68,15 @@ public:
     // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
+    // ===========================================================================================
+    // Kernels for elasticity equation
+    // ===========================================================================================
+
     // --------------------------------------------------------------------------------------------
     // f0p helper function.
     static inline
-    void f0p(const PylithInt dim,
-             const PylithInt numS,
-             const PylithInt numA,
-             const PylithInt sOff[],
-             const PylithInt sOff_x[],
-             const PylithScalar s[],
-             const PylithScalar s_t[],
-             const PylithScalar s_x[],
-             const PylithInt aOff[],
-             const PylithInt aOff_x[],
-             const PylithScalar a[],
-             const PylithScalar a_t[],
-             const PylithScalar a_x[],
-             const PylithReal t,
-             const PylithScalar x[],
-             const PylithInt numConstants,
-             const PylithScalar constants[],
+    void f0p(pylith::fekernels::Elasticity::StrainContext& strainContext,
+             void* rheologyContext,
              pylith::fekernels::Elasticity::strainfn_type strainFn,
              pylith::fekernels::IncompressibleElasticity::incompressiblefn_type incompressibleFn,
              const pylith::fekernels::TensorOps& tensorOps,
@@ -111,11 +84,10 @@ public:
         assert(f0);
 
         pylith::fekernels::Tensor strain;
-        strainFn(dim, numS, sOff, sOff, s, s_t, s_x, x, &strain);
+        strainFn(strainContext, &strain);
 
         PylithScalar value = 0.0;
-        incompressibleFn(dim, numS, numA, sOff, sOff, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x,
-                         numConstants, constants, strain, tensorOps, &value);
+        incompressibleFn(rheologyContext, strain, tensorOps, &value);
 
         f0[0] += value;
     } // f0p
@@ -215,6 +187,10 @@ public:
             Jf2[i*dim+i] += 1.0;
         } // for
     } // Jf2up
+
+    // ===========================================================================================
+    // Helper functions
+    // ===========================================================================================
 
     // --------------------------------------------------------------------------------------------
     /** Calculate mean stress for isotropic linear incompressible elasticity WITHOUT reference stress

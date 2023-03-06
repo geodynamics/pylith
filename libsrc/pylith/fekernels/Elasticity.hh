@@ -60,35 +60,20 @@
 class pylith::fekernels::Elasticity {
 public:
 
+    struct StrainContext {
+        PylithInt dim;
+        const PylithReal* disp;
+        const PylithReal* disp_t;
+        const PylithReal* disp_x;
+        const PylithReal* x;
+    };
+
     // Interface for functions computing strain.
-    typedef void (*strainfn_type) (const PylithInt,
-                                   const PylithInt,
-                                   const PylithInt[],
-                                   const PylithInt[],
-                                   const PylithScalar[],
-                                   const PylithScalar[],
-                                   const PylithScalar[],
-                                   const PylithScalar[],
+    typedef void (*strainfn_type) (const StrainContext& context,
                                    pylith::fekernels::Tensor*);
 
     // Interface for functions computing stress.
-    typedef void (*stressfn_type) (const PylithInt,
-                                   const PylithInt,
-                                   const PylithInt,
-                                   const PylithInt[],
-                                   const PylithInt[],
-                                   const PylithScalar[],
-                                   const PylithScalar[],
-                                   const PylithScalar[],
-                                   const PylithInt[],
-                                   const PylithInt[],
-                                   const PylithScalar[],
-                                   const PylithScalar[],
-                                   const PylithScalar[],
-                                   const PylithReal t,
-                                   const PylithScalar[],
-                                   const PylithInt,
-                                   const PylithScalar[],
+    typedef void (*stressfn_type) (void*,
                                    const pylith::fekernels::Tensor&,
                                    const pylith::fekernels::TensorOps&,
                                    pylith::fekernels::Tensor*);
@@ -97,7 +82,36 @@ public:
 public:
 
     // --------------------------------------------------------------------------------------------
+    /** Set strain context.
+     */
+    static inline
+    void setStrainContext(StrainContext* context,
+                          const PylithInt dim,
+                          const PylithInt numS,
+                          const PylithInt sOff[],
+                          const PylithInt sOff_x[],
+                          const PylithScalar s[],
+                          const PylithScalar s_t[],
+                          const PylithScalar s_x[],
+                          const PylithScalar x[]) {
+        assert(context);
+        assert(numS >= 1);
+
+        const PylithInt i_disp = 0;
+
+        assert(sOff[i_disp] >= 0);
+
+        context->dim = dim;
+        context->disp = &s[sOff[i_disp]];
+        context->disp_t = &s_t[sOff[i_disp]];
+        context->disp_x = &s_x[sOff_x[i_disp]];
+        context->x = x;
+    }
+
+    // --------------------------------------------------------------------------------------------
     /** f0 function for elasticity equation for velocity field.
+     *
+     * ISA PetscPointFunc
      *
      * Solution fields: [disp(dim), vel(dim)]
      * Auxiliary fields: [density(1), ...]
@@ -150,37 +164,22 @@ public:
     // --------------------------------------------------------------------------------------------
     // f1 function for elasticity for velocity field (dynamic) and displacement field (quasi-static).
     static inline
-    void f1v(const PylithInt dim,
-             const PylithInt numS,
-             const PylithInt numA,
-             const PylithInt sOff[],
-             const PylithInt sOff_x[],
-             const PylithScalar s[],
-             const PylithScalar s_t[],
-             const PylithScalar s_x[],
-             const PylithInt aOff[],
-             const PylithInt aOff_x[],
-             const PylithScalar a[],
-             const PylithScalar a_t[],
-             const PylithScalar a_x[],
-             const PylithReal t,
-             const PylithScalar x[],
-             const PylithInt numConstants,
-             const PylithScalar constants[],
+    void f1v(const StrainContext& strainContext,
+             void* rheologyContext,
              Elasticity::strainfn_type strainFn,
              Elasticity::stressfn_type stressFn,
              const TensorOps& tensorOps,
              PylithScalar f1[]) {
         Tensor strain;
-        strainFn(dim, numS, sOff, sOff, s, s_t, s_x, x, &strain);
+        strainFn(strainContext, &strain);
 
         Tensor stress;
-        stressFn(dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
-                 t, x, numConstants, constants, strain, tensorOps, &stress);
+        stressFn(rheologyContext, strain, tensorOps, &stress);
 
         PylithScalar stressTensor[9] = {0.0, 0.0, 0.0,  0.0, 0.0, 0.0,  0.0, 0.0, 0.0 };
         tensorOps.toTensor(stress, stressTensor);
 
+        const PylithInt dim = strainContext.dim;
         for (PylithInt i = 0; i < dim*dim; ++i) {
             f1[i] -= stressTensor[i];
         } // for
@@ -188,6 +187,8 @@ public:
 
     // --------------------------------------------------------------------------------------------
     /** Jf0 function for elasticity for the velocity/velocity block.
+     *
+     * ISA PetscJacobianFunc
      *
      * Solution fields: [...]
      * Auxiliary fields: [density(1), ...]
@@ -231,6 +232,8 @@ public:
 
     // --------------------------------------------------------------------------------------------
     /** g0 function for elasticity equation with gravitational body force.
+     *
+     * ISA PetscPointFunc
      *
      * \vec{g0} = \vec{f}(t)
      *
@@ -282,6 +285,8 @@ public:
     /** g0 function for elasticity equation with body force for the velocity field (dynamic)
      * and the f0 function for the displacement field (quasi-static).
      *
+     * ISA PetscPointFunc
+     *
      * \vec{g0} = \vec{f}(t)
      *
      * Auxiliary fields: [body_force(dim)]
@@ -326,6 +331,8 @@ public:
     // --------------------------------------------------------------------------------------------
     /** g0 function for elasticity with both gravitational and body forces for the velocity field (dynamic)
      * and the f0 function for the displacement field (quasi-static).
+     *
+     * ISA PetscPointFunc
      *
      * Solution fields: [...]
      * Auxiliary fields: [density(1), body_force(dim), gravity_field(dim), ...]
@@ -405,21 +412,14 @@ public:
      * Solution fields: [disp(dim)]
      */
     static inline
-    void strain_asVector(const PylithInt dim,
-                         const PylithInt numS,
-                         const PylithInt sOff[],
-                         const PylithInt sOff_x[],
-                         const PylithScalar s[],
-                         const PylithScalar s_t[],
-                         const PylithScalar s_x[],
-                         const PylithScalar x[],
+    void strain_asVector(const StrainContext& context,
                          strainfn_type strainFn,
                          const TensorOps& tensorOps,
                          PylithScalar strainVector[]) {
         assert(strainVector);
 
         Tensor strain;
-        strainFn(dim, numS, sOff, sOff_x, s, s_t, s_x, x, &strain);
+        strainFn(context, &strain);
         tensorOps.toVector(strain, strainVector);
     } // infinitesimalStrain_asVector
 
@@ -433,23 +433,8 @@ public:
      * Solution fields: [disp(dim)]
      */
     static inline
-    void stress_asVector(const PylithInt dim,
-                         const PylithInt numS,
-                         const PylithInt numA,
-                         const PylithInt sOff[],
-                         const PylithInt sOff_x[],
-                         const PylithScalar s[],
-                         const PylithScalar s_t[],
-                         const PylithScalar s_x[],
-                         const PylithInt aOff[],
-                         const PylithInt aOff_x[],
-                         const PylithScalar a[],
-                         const PylithScalar a_t[],
-                         const PylithScalar a_x[],
-                         const PylithReal t,
-                         const PylithScalar x[],
-                         const PylithInt numConstants,
-                         const PylithScalar constants[],
+    void stress_asVector(const StrainContext& strainContext,
+                         void* rheologyContext,
                          strainfn_type strainFn,
                          stressfn_type stressFn,
                          const TensorOps& tensorOps,
@@ -457,11 +442,10 @@ public:
         assert(stressVector);
 
         Tensor strain;
-        strainFn(dim, numS, sOff, sOff_x, s, s_t, s_x, x, &strain);
+        strainFn(strainContext, &strain);
 
         Tensor stress;
-        stressFn(dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
-                 t, x, numConstants, constants, strain, tensorOps, &stress);
+        stressFn(rheologyContext, strain, tensorOps, &stress);
 
         tensorOps.toVector(stress, stressVector);
     } // cauchyStress_asVector
@@ -482,26 +466,15 @@ public:
      * Solution fields: [disp(dim)]
      */
     static inline
-    void infinitesimalStrain(const PylithInt dim,
-                             const PylithInt numS,
-                             const PylithInt sOff[],
-                             const PylithInt sOff_x[],
-                             const PylithScalar s[],
-                             const PylithScalar s_t[],
-                             const PylithScalar s_x[],
-                             const PylithScalar x[],
+    void infinitesimalStrain(const pylith::fekernels::Elasticity::StrainContext& context,
                              pylith::fekernels::Tensor* strain) {
         const PylithInt _dim = 2;
 
-        assert(_dim == dim);
-        assert(numS >= 1);
-        assert(sOff_x);
-        assert(s_x);
+        assert(_dim == context.dim);
         assert(strain);
 
         // Incoming solution field.
-        const PylithInt i_disp = 0;
-        const PylithScalar* disp_x = &s_x[sOff_x[i_disp]];
+        const PylithScalar* disp_x = context.disp_x;
 
         strain->xx = disp_x[0*_dim+0];
         strain->yy = disp_x[1*_dim+1];
@@ -509,10 +482,12 @@ public:
         strain->xy = 0.5*(disp_x[0*_dim+1] + disp_x[1*_dim+0]);
         strain->yz = 0.0;
         strain->xz = 0.0;
-    } // infinitesimalStrain_asVector3D
+    } // infinitesimalStrain
 
     // --------------------------------------------------------------------------------------------
     /** Calculate vector with infinitesimal strain for 2D plane strain elasticity.
+     *
+     * ISA PetscPointFunc
      *
      * Order of output components is xx, yy, zz, xy.
      *
@@ -540,8 +515,10 @@ public:
         const PylithInt _dim = 2;
         assert(_dim == dim);
 
-        Elasticity::strain_asVector(_dim, numS, sOff, sOff_x, s, s_t, s_x, x,
-                                    infinitesimalStrain, Tensor::ops2D, strainVector);
+        pylith::fekernels::Elasticity::StrainContext context;
+        pylith::fekernels::Elasticity::setStrainContext(&context, _dim, numS, sOff, sOff_x, s, s_t, s_x, x);
+
+        Elasticity::strain_asVector(context, infinitesimalStrain, Tensor::ops2D, strainVector);
     } // infinitesimalStrain_asVector3D
 
 }; // ElasticityPlaneStrain
@@ -555,31 +532,17 @@ public:
     // --------------------------------------------------------------------------------------------
     /** Calculate infinitesimal strain for 3D elasticity.
      *
-     * Order of output components is xx, xy, xz, yx, yy, yz, zx, zy, zz.
-     *
-     * Solution fields: [disp(dim)]
+     * Order of output components is xx, yy, zz, xy, yz, xz.
      */
     static inline
-    void infinitesimalStrain(const PylithInt dim,
-                             const PylithInt numS,
-                             const PylithInt sOff[],
-                             const PylithInt sOff_x[],
-                             const PylithScalar s[],
-                             const PylithScalar s_t[],
-                             const PylithScalar s_x[],
-                             const PylithScalar x[],
+    void infinitesimalStrain(const pylith::fekernels::Elasticity::StrainContext& context,
                              pylith::fekernels::Tensor* strain) {
         const PylithInt _dim = 3;
 
-        assert(_dim == dim);
-        assert(numS >= 1);
-        assert(sOff_x);
-        assert(s_x);
+        assert(_dim == context.dim);
         assert(strain);
 
-        // Incoming solution field.
-        const PylithInt i_disp = 0;
-        const PylithScalar* disp_x = &s_x[sOff_x[i_disp]];
+        const PylithScalar* disp_x = context.disp_x;
 
         strain->xx = disp_x[0*_dim+0];
         strain->yy = disp_x[1*_dim+1];
@@ -591,6 +554,8 @@ public:
 
     // --------------------------------------------------------------------------------------------
     /** Calculate vector with infinitesimal strain for 3D elasticity.
+     *
+     * ISA PetscPointFunc
      *
      * Order of output components is xx, yy, zz, xy, yz, xz.
      *
@@ -618,8 +583,10 @@ public:
         const PylithInt _dim = 3;
         assert(_dim == dim);
 
-        Elasticity::strain_asVector(_dim, numS, sOff, sOff_x, s, s_t, s_x, x,
-                                    infinitesimalStrain, Tensor::ops3D, strainVector);
+        pylith::fekernels::Elasticity::StrainContext context;
+        pylith::fekernels::Elasticity::setStrainContext(&context, _dim, numS, sOff, sOff_x, s, s_t, s_x, x);
+
+        Elasticity::strain_asVector(context, infinitesimalStrain, Tensor::ops3D, strainVector);
     } // infinitesimalStrain_asVector
 
 }; // Elasticity3D
