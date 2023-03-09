@@ -71,6 +71,8 @@ libpylith_la_SOURCES = \
 	fekernels/IsotropicLinearGenMaxwell.cc \
 	fekernels/IsotropicPowerLaw.cc \
 	fekernels/FaultCohesiveKin.cc \
+	fekernels/Poroelasticity.cc \
+	fekernels/IsotropicLinearPoroelasticity.cc \
 	materials/Material.cc \
 	materials/Elasticity.cc \
 	materials/RheologyElasticity.cc \
@@ -85,6 +87,9 @@ libpylith_la_SOURCES = \
 	materials/IsotropicLinearIncompElasticity.cc \
 	materials/AuxiliaryFactoryElastic.cc \
 	materials/AuxiliaryFactoryViscoelastic.cc \
+	materials/Poroelasticity.cc \
+	materials/RheologyPoroelasticity.cc \
+	materials/IsotropicLinearPoroelasticity.cc \
 	materials/AuxiliaryFactoryPoroelasticity.cc \
 	materials/AuxiliaryFactoryPoroelastic.cc \
 	materials/Query.cc \
@@ -150,9 +155,6 @@ libpylith_la_SOURCES = \
 	utils/DependenciesVersion.cc \
 	utils/TestArray.cc
 
-#	materials/Poroelasticity.cc \
-#	materials/RheologyPoroelasticity.cc \
-#	materials/IsotropicLinearPoroelasticity.cc
 
 
 libpylith_la_LDFLAGS = $(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
