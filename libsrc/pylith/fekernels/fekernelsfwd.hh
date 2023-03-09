@@ -29,6 +29,9 @@
 
 namespace pylith {
     namespace fekernels {
+        class Tensor;
+        class TensorOps;
+
         class Solution;
         class DispVel;
 
@@ -40,7 +43,6 @@ namespace pylith {
         class IsotropicLinearElasticityPlaneStrain;
         class IsotropicLinearElasticity3D;
 
-        class Viscoelasticity;
         class IsotropicLinearMaxwell;
         class IsotropicLinearMaxwellPlaneStrain;
         class IsotropicLinearMaxwell3D;
@@ -52,7 +54,6 @@ namespace pylith {
         class IsotropicPowerLaw;
         class IsotropicPowerLawPlaneStrain;
         class IsotropicPowerLaw3D;
-        class IsotropicPowerLawEffectiveStress;
 
         class IncompressibleElasticity;
         class IsotropicLinearIncompElasticity;

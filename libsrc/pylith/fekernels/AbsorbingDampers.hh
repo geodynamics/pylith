@@ -41,8 +41,9 @@
 
 #include "pylith/utils/types.hh"
 
-class pylith::fekernels::AbsorbingDampers {
+#include <cassert> // USES assert()
 
+class pylith::fekernels::AbsorbingDampers {
 public:
 
     /** Kernel interface.
@@ -72,7 +73,7 @@ public:
      *
      * g_0(x)
      */
-    static
+    static inline
     void g0(const PylithInt dim,
             const PylithInt numS,
             const PylithInt numA,
@@ -91,11 +92,47 @@ public:
             const PylithReal n[],
             const PylithInt numConstants,
             const PylithScalar constants[],
-            PylithScalar g0[]);
+            PylithScalar g0[]) {
+        assert(2 == dim || 3 == dim);
+
+        const PylithInt _numA = 3;
+        assert(_numA == numA);
+        assert(aOff);
+        assert(a);
+        const PylithInt i_density = aOff[0];
+        const PylithInt i_vp = aOff[1];
+        const PylithInt i_vs = aOff[2];
+
+        const PylithInt _numS = 2;
+        assert(sOff);
+        assert(s);
+        assert(numS >= _numS);
+        const PylithInt i_vel = sOff[1];
+
+        const PylithScalar density = a[i_density];
+        const PylithScalar vp = a[i_vp];
+        const PylithScalar vs = a[i_vs];
+
+        PylithScalar velN[3];
+        PylithScalar velT[3];
+        PylithScalar velNMag = 0;
+        for (PylithInt i = 0; i < dim; ++i) {
+            velNMag += s[i_vel+i] * n[i];
+        } // for
+        for (PylithInt i = 0; i < dim; ++i) {
+            velN[i] = velNMag * n[i];
+        } // for
+        for (PylithInt i = 0; i < dim; ++i) {
+            velT[i] = s[i_vel+i] - velN[i];
+        } // for
+
+        for (PylithInt i = 0; i < dim; ++i) {
+            g0[i] -= density * (vs * velT[i] + vp * velN[i]);
+        } // for
+    } // g0
 
 }; // AbsorbingDampers
 
 #endif // pylith_fekernels_absorbingdampers_hh
-
 
 // End of file

@@ -355,7 +355,7 @@ pylith::materials::Elasticity::_setKernelsResidual(pylith::feassemble::Integrato
     default:
         PYLITH_COMPONENT_LOGICERROR("Unknown case (bitUse=" << bitUse << ") for residual kernels.");
     } // switch
-    const PetscPointFunc r1 = _rheology->getKernelResidualStress(coordsys);
+    const PetscPointFunc r1 = _rheology->getKernelf1v(coordsys);
 
     std::vector<ResidualKernels> kernels;
     switch (_formulation) {
@@ -420,7 +420,7 @@ pylith::materials::Elasticity::_setKernelsJacobian(pylith::feassemble::Integrato
         const PetscPointJac Jf0uu = NULL;
         const PetscPointJac Jf1uu = NULL;
         const PetscPointJac Jf2uu = NULL;
-        const PetscPointJac Jf3uu = _rheology->getKernelJacobianElasticConstants(coordsys);
+        const PetscPointJac Jf3uu = _rheology->getKernelJf3vu(coordsys);
 
         integrator->setLHSJacobianTriggers(_rheology->getLHSJacobianTriggers());
 
@@ -503,12 +503,12 @@ pylith::materials::Elasticity::_setKernelsDerivedField(pylith::feassemble::Integ
     assert(coordsys);
 
     std::vector<ProjectKernels> kernels(2);
-    kernels[0] = ProjectKernels("cauchy_stress", _rheology->getKernelDerivedCauchyStress(coordsys));
+    kernels[0] = ProjectKernels("cauchy_stress", _rheology->getKernelCauchyStressVector(coordsys));
 
     const int spaceDim = coordsys->getSpaceDim();
     const PetscPointFunc strainKernel =
-        (3 == spaceDim) ? pylith::fekernels::Elasticity3D::cauchyStrain :
-        (2 == spaceDim) ? pylith::fekernels::ElasticityPlaneStrain::cauchyStrain :
+        (3 == spaceDim) ? pylith::fekernels::Elasticity3D::infinitesimalStrain_asVector :
+        (2 == spaceDim) ? pylith::fekernels::ElasticityPlaneStrain::infinitesimalStrain_asVector :
         NULL;
     kernels[1] = ProjectKernels("cauchy_strain", strainKernel);
 

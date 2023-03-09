@@ -49,17 +49,55 @@
 
 #include "fekernelsfwd.hh" // forward declarations
 
+#include "pylith/fekernels/Elasticity.hh" // USES Elasticity kernels
+
 #include "pylith/utils/types.hh"
 
+#include <cassert> // USES assert()
+
+// ------------------------------------------------------------------------------------------------
 class pylith::fekernels::IncompressibleElasticity {
+public:
+
+    // Function interface for computing incompressible term.
+    typedef void (*incompressiblefn_type) (void*,
+                                           const pylith::fekernels::Tensor&,
+                                           const pylith::fekernels::TensorOps&,
+                                           PylithScalar*);
+
     // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
-    /** Jf1pu function for pressure equation for incompressible elasticity.
+    // ===========================================================================================
+    // Kernels for elasticity equation
+    // ===========================================================================================
+
+    // --------------------------------------------------------------------------------------------
+    // f0p helper function.
+    static inline
+    void f0p(pylith::fekernels::Elasticity::StrainContext& strainContext,
+             void* rheologyContext,
+             pylith::fekernels::Elasticity::strainfn_type strainFn,
+             pylith::fekernels::IncompressibleElasticity::incompressiblefn_type incompressibleFn,
+             const pylith::fekernels::TensorOps& tensorOps,
+             PylithScalar f0[]) {
+        assert(f0);
+
+        pylith::fekernels::Tensor strain;
+        strainFn(strainContext, &strain);
+
+        PylithScalar value = 0.0;
+        incompressibleFn(rheologyContext, strain, tensorOps, &value);
+
+        f0[0] += value;
+    } // f0p
+
+    // --------------------------------------------------------------------------------------------
+    /** Jf1pu entry function for pressure equation for incompressible elasticity.
      *
      * Solution fields: [disp(dim), pressure(1)]
      */
-    static
+    static inline
     void Jf1pu(const PylithInt dim,
                const PylithInt numS,
                const PylithInt numA,
@@ -78,13 +116,36 @@ public:
                const PylithScalar x[],
                const PylithInt numConstants,
                const PylithScalar constants[],
-               PylithScalar Jf1[]);
+               PylithScalar Jf1[]) {
+        assert(Jf1);
 
-    /** Jf2up function for elasticity equation for incompressible elasticity.
+        /* j(f,g,dg), f=0, g=0..dim, dg=0..dim
+         *
+         * j == 1 if g==dg, otherwise 0.
+         *
+         * 3-D
+         * 0: j000 = 1
+         * 1: j001 = 0
+         * 2: j002 = 0
+         * 3: j010 = 0
+         * 4: j011 = 1
+         * 5: j012 = 0
+         * 6: j020 = 0
+         * 7: j021 = 0
+         * 8: j022 = 1
+         */
+
+        for (PylithInt i = 0; i < dim; ++i) {
+            Jf1[i*dim+i] += 1.0;
+        } // for
+    } // Jf1pu
+
+    // --------------------------------------------------------------------------------------------
+    /** Jf2up entry function for elasticity equation for incompressible elasticity.
      *
      * Solution fields: [disp(dim), pressure(1)]
      */
-    static
+    static inline
     void Jf2up(const PylithInt dim,
                const PylithInt numS,
                const PylithInt numA,
@@ -103,11 +164,67 @@ public:
                const PylithScalar x[],
                const PylithInt numConstants,
                const PylithScalar constants[],
-               PylithScalar Jf2[]);
+               PylithScalar Jf2[]) {
+        assert(Jf2);
 
-};
+        /* j(f,g,df), f=0..dim, df=0..dim, g=0
+         *
+         * j == 1 if f==df, otherwise 0.
+         *
+         * 3-D
+         * 0: j000 = 1
+         * 1: j001 = 0
+         * 2: j002 = 0
+         * 3: j100 = 0
+         * 4: j101 = 1
+         * 5: j102 = 0
+         * 6: j200 = 0
+         * 7: j201 = 0
+         * 8: j202 = 1
+         */
 
-// IncompressibleElasticity
+        for (PylithInt i = 0; i < dim; ++i) {
+            Jf2[i*dim+i] += 1.0;
+        } // for
+    } // Jf2up
+
+    // ===========================================================================================
+    // Helper functions
+    // ===========================================================================================
+
+    // --------------------------------------------------------------------------------------------
+    /** Calculate mean stress for isotropic linear incompressible elasticity WITHOUT reference stress
+     * and strain.
+     */
+    static inline
+    void meanStress(const PylithReal pressure,
+                    pylith::fekernels::Tensor* stress) {
+        assert(stress);
+
+        stress->xx -= pressure;
+        stress->yy -= pressure;
+        stress->zz -= pressure;
+    } // meanStress
+
+    // --------------------------------------------------------------------------------------------
+    /** Calculate mean stress for isotropic linear incompressible elasticity WITH reference stress
+     * and strain.
+     */
+    static inline
+    void meanStress_refState(const PylithReal pressure,
+                             const pylith::fekernels::Tensor& refStress,
+                             pylith::fekernels::Tensor* stress) {
+        assert(stress);
+
+        const PylithReal meanRefStress = (refStress.xx + refStress.yy + refStress.zz) / 3.0;
+        const PylithScalar meanStress = meanRefStress - pressure;
+
+        stress->xx += meanStress;
+        stress->yy += meanStress;
+        stress->zz += meanStress;
+    } // meanStress_refState
+
+}; // IncompressibleElasticity
 
 #endif // pylith_fekernels_incompressibleelasticity_hh
 

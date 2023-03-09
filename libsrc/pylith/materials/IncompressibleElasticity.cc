@@ -332,10 +332,10 @@ pylith::materials::IncompressibleElasticity::_setKernelsResidual(pylith::feassem
 
     // Displacement
     const PetscPointFunc f0u = r0;
-    const PetscPointFunc f1u = _rheology->getKernelResidualStress(coordsys);
+    const PetscPointFunc f1u = _rheology->getKernelf1u(coordsys);
 
     // Pressure
-    const PetscPointFunc f0p = _rheology->getKernelResidualPressure(coordsys);
+    const PetscPointFunc f0p = _rheology->getKernelf0p(coordsys);
     const PetscPointFunc f1p = NULL;
 
     std::vector<ResidualKernels> kernels(2);
@@ -367,7 +367,7 @@ pylith::materials::IncompressibleElasticity::_setKernelsJacobian(pylith::feassem
     const PetscPointJac Jf0uu = NULL;
     const PetscPointJac Jf1uu = NULL;
     const PetscPointJac Jf2uu = NULL;
-    const PetscPointJac Jf3uu = _rheology->getKernelJacobianElasticConstants(coordsys);
+    const PetscPointJac Jf3uu = _rheology->getKernelJf3uu(coordsys);
 
     const PetscPointJac Jf0up = NULL;
     const PetscPointJac Jf1up = NULL;
@@ -379,7 +379,7 @@ pylith::materials::IncompressibleElasticity::_setKernelsJacobian(pylith::feassem
     const PetscPointJac Jf2pu = NULL;
     const PetscPointJac Jf3pu = NULL;
 
-    const PetscPointJac Jf0pp = _rheology->getKernelJacobianInverseBulkModulus(coordsys);
+    const PetscPointJac Jf0pp = _rheology->getKernelJf0pp(coordsys);
     const PetscPointJac Jf1pp = NULL;
     const PetscPointJac Jf2pp = NULL;
     const PetscPointJac Jf3pp = NULL;
@@ -429,12 +429,12 @@ pylith::materials::IncompressibleElasticity::_setKernelsDerivedField(pylith::fea
     assert(coordsys);
 
     std::vector<ProjectKernels> kernels(2);
-    kernels[0] = ProjectKernels("cauchy_stress", _rheology->getKernelDerivedCauchyStress(coordsys));
+    kernels[0] = ProjectKernels("cauchy_stress", _rheology->getKernelCauchyStressVector(coordsys));
 
     const int spaceDim = coordsys->getSpaceDim();
     const PetscPointFunc strainKernel =
-        (3 == spaceDim) ? pylith::fekernels::Elasticity3D::cauchyStrain :
-        (2 == spaceDim) ? pylith::fekernels::ElasticityPlaneStrain::cauchyStrain :
+        (3 == spaceDim) ? pylith::fekernels::Elasticity3D::infinitesimalStrain_asVector :
+        (2 == spaceDim) ? pylith::fekernels::ElasticityPlaneStrain::infinitesimalStrain_asVector :
         NULL;
     kernels[1] = ProjectKernels("cauchy_strain", strainKernel);
 

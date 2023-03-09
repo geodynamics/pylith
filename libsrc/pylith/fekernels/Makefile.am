@@ -21,10 +21,10 @@ include $(top_srcdir)/subpackage.am
 
 subpkginclude_HEADERS = \
 	fekernelsfwd.hh \
+	Tensor.hh \
 	BoundaryDirections.hh \
 	Elasticity.hh \
 	IsotropicLinearElasticity.hh \
-	Viscoelasticity.hh \
 	IsotropicLinearMaxwell.hh \
 	IsotropicLinearGenMaxwell.hh \
 	IsotropicPowerLaw.hh \

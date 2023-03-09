@@ -67,42 +67,31 @@ libpylith_la_SOURCES = \
 	feassemble/ConstraintUserFn.cc \
 	feassemble/ConstraintSimple.cc \
 	feassemble/AuxiliaryFactory.cc \
-	fekernels/BoundaryDirections.cc \
-	fekernels/Elasticity.cc \
-	fekernels/IsotropicLinearElasticity.cc \
-	fekernels/Viscoelasticity.cc \
-	fekernels/IsotropicLinearMaxwell.cc \
+	fekernels/Tensor.cc \
 	fekernels/IsotropicLinearGenMaxwell.cc \
 	fekernels/IsotropicPowerLaw.cc \
-	fekernels/IncompressibleElasticity.cc \
-	fekernels/IsotropicLinearIncompElasticity.cc \
+	fekernels/FaultCohesiveKin.cc \
 	fekernels/Poroelasticity.cc \
 	fekernels/IsotropicLinearPoroelasticity.cc \
-	fekernels/Solution.cc \
-	fekernels/DispVel.cc \
-	fekernels/TimeDependentFn.cc \
-	fekernels/NeumannTimeDependent.cc \
-	fekernels/AbsorbingDampers.cc \
-	fekernels/FaultCohesiveKin.cc \
 	materials/Material.cc \
 	materials/Elasticity.cc \
 	materials/RheologyElasticity.cc \
 	materials/AuxiliaryFactoryElasticity.cc \
 	materials/DerivedFactoryElasticity.cc \
 	materials/IsotropicLinearElasticity.cc \
-	materials/IsotropicLinearMaxwell.cc \
-	materials/IsotropicLinearGenMaxwell.cc \
+    materials/IsotropicLinearMaxwell.cc \
+    materials/IsotropicLinearGenMaxwell.cc \
 	materials/IsotropicPowerLaw.cc \
-	materials/AuxiliaryFactoryElastic.cc \
-	materials/AuxiliaryFactoryViscoelastic.cc \
-	materials/AuxiliaryFactoryPoroelasticity.cc \
-	materials/AuxiliaryFactoryPoroelastic.cc \
 	materials/IncompressibleElasticity.cc \
 	materials/RheologyIncompressibleElasticity.cc \
 	materials/IsotropicLinearIncompElasticity.cc \
+	materials/AuxiliaryFactoryElastic.cc \
+	materials/AuxiliaryFactoryViscoelastic.cc \
 	materials/Poroelasticity.cc \
 	materials/RheologyPoroelasticity.cc \
 	materials/IsotropicLinearPoroelasticity.cc \
+	materials/AuxiliaryFactoryPoroelasticity.cc \
+	materials/AuxiliaryFactoryPoroelastic.cc \
 	materials/Query.cc \
 	meshio/BinaryIO.cc \
 	meshio/GMVFile.cc \
@@ -165,6 +154,7 @@ libpylith_la_SOURCES = \
 	utils/PetscVersion.cc \
 	utils/DependenciesVersion.cc \
 	utils/TestArray.cc
+
 
 
 libpylith_la_LDFLAGS = $(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)

@@ -18,8 +18,12 @@
 
 #include <portinfo>
 
-#include "pylith/fekernels/IsotropicPowerLaw.hh" // Implementation of object methods.
+#include "pylith/fekernels/Tensor.hh"
 
-const PylithReal pylith::fekernels::IsotropicPowerLaw::powerLawAlpha = 0.5;
+const pylith::fekernels::TensorOps pylith::fekernels::Tensor::ops2D =
+    pylith::fekernels::TensorOps::_create2D();
+
+const pylith::fekernels::TensorOps pylith::fekernels::Tensor::ops3D =
+    pylith::fekernels::TensorOps::_create3D();
 
 // End of file

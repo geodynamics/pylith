@@ -57,8 +57,9 @@
 
 #include "pylith/utils/types.hh"
 
-class pylith::fekernels::DispVel {
+#include <cassert> // USES assert()
 
+class pylith::fekernels::DispVel {
     // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public:
 
@@ -84,12 +85,11 @@ public:
      * @param[out] f0 [dim].
      */
 
-
     /** f0 function for displacement equation: f0u = \dot{u}.
      *
      * Solution fields: [disp(dim), vel(dim)]
      */
-    static
+    static inline
     void f0u(const PylithInt dim,
              const PylithInt numS,
              const PylithInt numA,
@@ -107,14 +107,28 @@ public:
              const PylithScalar x[],
              const PylithInt numConstants,
              const PylithScalar constants[],
-             PylithScalar f0[]);
+             PylithScalar f0[]) {
+        assert(sOff);
+        assert(s);
+        assert(s_t);
+        assert(f0);
 
+        const PylithInt _numS = 2;
+        assert(_numS == numS);
+
+        const PylithInt i_disp = 0;
+        const PylithScalar* disp_t = &s_t[sOff[i_disp]];
+
+        for (PylithInt i = 0; i < dim; ++i) {
+            f0[i] += disp_t[i];
+        } // for
+    } // f0u
 
     /** f0 function for velocity equation: f0u = \dot{v}.
      *
      * Solution fields: [disp(dim), vel(dim)]
      */
-    static
+    static inline
     void f0v(const PylithInt dim,
              const PylithInt numS,
              const PylithInt numA,
@@ -132,14 +146,28 @@ public:
              const PylithScalar x[],
              const PylithInt numConstants,
              const PylithScalar constants[],
-             PylithScalar f0[]);
+             PylithScalar f0[]) {
+        assert(sOff);
+        assert(s);
+        assert(s_t);
+        assert(f0);
 
+        const PylithInt _numS = 2;
+        assert(_numS == numS);
+
+        const PylithInt i_vel = 1;
+        const PylithScalar* vel_t = &s_t[sOff[i_vel]];
+
+        for (PylithInt i = 0; i < dim; ++i) {
+            f0[i] += vel_t[i];
+        } // for
+    } // f0v
 
     /** g0 function for displacement equation: g0u = v.
      *
      * Solution fields: [disp(dim), vel(dim)]
      */
-    static
+    static inline
     void g0u(const PylithInt dim,
              const PylithInt numS,
              const PylithInt numA,
@@ -157,8 +185,21 @@ public:
              const PylithScalar x[],
              const PylithInt numConstants,
              const PylithScalar constants[],
-             PylithScalar g0[]);
+             PylithScalar g0[]) {
+        assert(sOff);
+        assert(s);
+        assert(g0);
 
+        const PylithInt _numS = 2;
+        assert(_numS == numS);
+
+        const PylithInt i_vel = 1;
+        const PylithScalar* vel = &s[sOff[i_vel]];
+
+        for (PylithInt i = 0; i < dim; ++i) {
+            g0[i] += vel[i];
+        } // for
+    } // g0u
 
     /** Jf0 function for displacement equation with zero values on diagonal.
      *
@@ -166,7 +207,7 @@ public:
      *
      * Solution fields: [...]
      */
-    static
+    static inline
     void Jf0uu_zero(const PylithInt dim,
                     const PylithInt numS,
                     const PylithInt numA,
@@ -185,13 +226,15 @@ public:
                     const PylithScalar x[],
                     const PylithInt numConstants,
                     const PylithScalar constants[],
-                    PylithScalar Jf0[]);
+                    PylithScalar Jf0[]) {
+        // No work to do for zero values.
+    } // Jf0uu_zero
 
     /** Jf0 function for displacement equation: Jf0uu = s_tshift.
      *
      * Solution fields: [disp(dim), vel(dim)]
      */
-    static
+    static inline
     void Jf0uu_stshift(const PylithInt dim,
                        const PylithInt numS,
                        const PylithInt numA,
@@ -210,13 +253,21 @@ public:
                        const PylithScalar x[],
                        const PylithInt numConstants,
                        const PylithScalar constants[],
-                       PylithScalar Jf0[]);
+                       PylithScalar Jf0[]) {
+        const PylithInt _numS = 2;
+        assert(_numS == numS);
+        assert(s_tshift > 0);
+
+        for (PylithInt i = 0; i < dim; ++i) {
+            Jf0[i*dim+i] += s_tshift;
+        } // for
+    } // Jf0uu_stshift
 
     /** Jg0 function for displacement equation: 1.0.
      *
      * Solution fields: [disp(dim), vel(dim)]
      */
-    static
+    static inline
     void Jg0uv(const PylithInt dim,
                const PylithInt numS,
                const PylithInt numA,
@@ -235,12 +286,17 @@ public:
                const PylithScalar x[],
                const PylithInt numConstants,
                const PylithScalar constants[],
-               PylithScalar Jg0[]);
+               PylithScalar Jg0[]) {
+        const PylithInt _numS = 2;
+        assert(_numS == numS);
 
+        for (PylithInt i = 0; i < dim; ++i) {
+            Jg0[i*dim+i] += 1.0;
+        } // for
+    } // Jg0uv
 
 }; // DispVel
 
 #endif /* pylith_fekernels_DispVel_hh */
-
 
 /* End of file */
