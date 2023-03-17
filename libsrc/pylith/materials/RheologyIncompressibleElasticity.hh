@@ -38,7 +38,7 @@
 class pylith::materials::RheologyIncompressibleElasticity : public pylith::utils::PyreComponent {
     friend class TestIsotropicLinearElasticity; // unit testing
 
-    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Default constructor.
@@ -124,7 +124,7 @@ public:
     void updateKernelConstants(pylith::real_array* kernelConstants,
                                const PylithReal dt) const;
 
-    // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
+    // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
 private:
 
     RheologyIncompressibleElasticity(const RheologyIncompressibleElasticity&); ///< Not implemented.

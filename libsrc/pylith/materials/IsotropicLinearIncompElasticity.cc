@@ -30,10 +30,9 @@
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 
-#include <typeinfo> \
-    // USES typeid()
+#include <typeinfo> // USES typeid()
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::materials::IsotropicLinearIncompElasticity::IsotropicLinearIncompElasticity(void) :
     _auxiliaryFactory(new pylith::materials::AuxiliaryFactoryElastic),
@@ -42,14 +41,14 @@ pylith::materials::IsotropicLinearIncompElasticity::IsotropicLinearIncompElastic
 } // constructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Destructor.
 pylith::materials::IsotropicLinearIncompElasticity::~IsotropicLinearIncompElasticity(void) {
     deallocate();
 } // destructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
 pylith::materials::IsotropicLinearIncompElasticity::deallocate(void) {
@@ -59,7 +58,7 @@ pylith::materials::IsotropicLinearIncompElasticity::deallocate(void) {
 } // deallocate
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Use reference stress and strain in computation of stress and strain?
 void
 pylith::materials::IsotropicLinearIncompElasticity::useReferenceState(const bool value) {
@@ -69,7 +68,7 @@ pylith::materials::IsotropicLinearIncompElasticity::useReferenceState(const bool
 } // useReferenceState
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Use reference stress and strain in computation of stress and strain?
 bool
 pylith::materials::IsotropicLinearIncompElasticity::useReferenceState(void) const {
@@ -77,7 +76,7 @@ pylith::materials::IsotropicLinearIncompElasticity::useReferenceState(void) cons
 } // useReferenceState
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get auxiliary factory associated with physics.
 pylith::materials::AuxiliaryFactoryElasticity*
 pylith::materials::IsotropicLinearIncompElasticity::getAuxiliaryFactory(void) {
@@ -85,7 +84,7 @@ pylith::materials::IsotropicLinearIncompElasticity::getAuxiliaryFactory(void) {
 } // getAuxiliaryFactory
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Add rheology subfields to auxiliary field.
 void
 pylith::materials::IsotropicLinearIncompElasticity::addAuxiliarySubfields(void) {
@@ -106,7 +105,7 @@ pylith::materials::IsotropicLinearIncompElasticity::addAuxiliarySubfields(void) 
 } // addAuxiliarySubfields
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get f0p kernel for LHS residual, F(t,s,\dot{s}).
 PetscPointFunc
 pylith::materials::IsotropicLinearIncompElasticity::getKernelf0p(const spatialdata::geocoords::CoordSys* coordsys) const {
@@ -125,7 +124,7 @@ pylith::materials::IsotropicLinearIncompElasticity::getKernelf0p(const spatialda
 } // getKernelResidualPressure
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get f1u kernel for LHS residual, F(t,s,\dot{s}).
 PetscPointFunc
 pylith::materials::IsotropicLinearIncompElasticity::getKernelf1u(const spatialdata::geocoords::CoordSys* coordsys) const {
@@ -144,7 +143,7 @@ pylith::materials::IsotropicLinearIncompElasticity::getKernelf1u(const spatialda
 } // getKernelRHSResidualStress
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get elastic constants kernel for RHS Jacobian G(t,s).
 PetscPointJac
 pylith::materials::IsotropicLinearIncompElasticity::getKernelJf3uu(const spatialdata::geocoords::CoordSys* coordsys) const {
@@ -161,7 +160,7 @@ pylith::materials::IsotropicLinearIncompElasticity::getKernelJf3uu(const spatial
 } // getKernelJacobianElasticConstants
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get inverse of the bulk modulus kernel for LHS Jacobian F(t,s,\dot{s}).
 PetscPointJac
 pylith::materials::IsotropicLinearIncompElasticity::getKernelJf0pp(const spatialdata::geocoords::CoordSys* coordsys) const {
@@ -174,7 +173,7 @@ pylith::materials::IsotropicLinearIncompElasticity::getKernelJf0pp(const spatial
 } // getKernelJacobianInverseBulkModulus
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get stress kernel for derived field.
 PetscPointFunc
 pylith::materials::IsotropicLinearIncompElasticity::getKernelCauchyStressVector(const spatialdata::geocoords::CoordSys* coordsys) const {

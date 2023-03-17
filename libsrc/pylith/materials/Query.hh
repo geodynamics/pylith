@@ -33,7 +33,7 @@
 class pylith::materials::Query {
     friend class TestQuery; // unit testing
 
-    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
     /** Setup subfield query in auxiliary factory for shear modulus from density and Vs.
@@ -101,10 +101,9 @@ public:
      */
     static
     void biotModulusFromInput(const char* subfieldName,
-                            pylith::feassemble::AuxiliaryFactory* factory);
+                              pylith::feassemble::AuxiliaryFactory* factory);
 
-
-    // NOT IMPLEMENTED //////////////////////////////////////////////////////
+    // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
 private:
 
     Query(void); ///< Not implemented

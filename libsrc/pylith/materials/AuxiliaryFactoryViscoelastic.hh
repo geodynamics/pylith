@@ -31,7 +31,7 @@
 class pylith::materials::AuxiliaryFactoryViscoelastic : public pylith::materials::AuxiliaryFactoryElastic {
     friend class TestAuxiliaryFactoryViscoelastic; // unit testing
 
-    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Default constructor.
@@ -70,7 +70,7 @@ public:
     /// Add viscous strain subfield for Generalized Maxwell to auxiliary subfields.
     void addViscousStrainGeneralizedMaxwell(void);
 
-    // NOT IMPLEMENTED ////////////////////////////////////////////////////
+    // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
 private:
 
     AuxiliaryFactoryViscoelastic(const AuxiliaryFactoryViscoelastic &); ///< Not implemented.

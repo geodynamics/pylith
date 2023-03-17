@@ -27,25 +27,25 @@
 
 #include <typeinfo> // USES typeid()
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::materials::RheologyIncompressibleElasticity::RheologyIncompressibleElasticity(void) {}
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Destructor.
 pylith::materials::RheologyIncompressibleElasticity::~RheologyIncompressibleElasticity(void) {
     deallocate();
 } // destructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
 pylith::materials::RheologyIncompressibleElasticity::deallocate(void) {}
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Update kernel constants.
 void
 pylith::materials::RheologyIncompressibleElasticity::updateKernelConstants(pylith::real_array* kernelConstants,
@@ -59,7 +59,7 @@ pylith::materials::RheologyIncompressibleElasticity::updateKernelConstants(pylit
 } // updateKernelConstants
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Add kernels for updating state variables.
 void
 pylith::materials::RheologyIncompressibleElasticity::addKernelsUpdateStateVars(std::vector<pylith::feassemble::IntegratorDomain::ProjectKernels>* kernels,

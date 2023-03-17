@@ -41,13 +41,13 @@
 
 #include <typeinfo> // USES typeid()
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 typedef pylith::feassemble::IntegratorDomain::ResidualKernels ResidualKernels;
 typedef pylith::feassemble::IntegratorDomain::JacobianKernels JacobianKernels;
 typedef pylith::feassemble::IntegratorDomain::ProjectKernels ProjectKernels;
 typedef pylith::feassemble::Integrator::EquationPart EquationPart;
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::materials::IncompressibleElasticity::IncompressibleElasticity(void) :
     _useBodyForce(false),
@@ -57,14 +57,14 @@ pylith::materials::IncompressibleElasticity::IncompressibleElasticity(void) :
 } // constructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Destructor.
 pylith::materials::IncompressibleElasticity::~IncompressibleElasticity(void) {
     deallocate();
 } // destructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
 pylith::materials::IncompressibleElasticity::deallocate(void) {
@@ -75,7 +75,7 @@ pylith::materials::IncompressibleElasticity::deallocate(void) {
 } // deallocate
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Include body force?
 void
 pylith::materials::IncompressibleElasticity::useBodyForce(const bool value) {
@@ -85,7 +85,7 @@ pylith::materials::IncompressibleElasticity::useBodyForce(const bool value) {
 } // useBodyForce
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Include body force?
 bool
 pylith::materials::IncompressibleElasticity::useBodyForce(void) const {
@@ -93,7 +93,7 @@ pylith::materials::IncompressibleElasticity::useBodyForce(void) const {
 } // useBodyForce
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Set bulk rheology.
 void
 pylith::materials::IncompressibleElasticity::setBulkRheology(pylith::materials::RheologyIncompressibleElasticity* const rheology) {
@@ -103,7 +103,7 @@ pylith::materials::IncompressibleElasticity::setBulkRheology(pylith::materials::
 } // setBulkRheology
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get bulk rheology.
 pylith::materials::RheologyIncompressibleElasticity*
 pylith::materials::IncompressibleElasticity::getBulkRheology(void) const {
@@ -111,7 +111,7 @@ pylith::materials::IncompressibleElasticity::getBulkRheology(void) const {
 } // getBulkRheology
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Verify configuration is acceptable.
 void
 pylith::materials::IncompressibleElasticity::verifyConfiguration(const pylith::topology::Field& solution) const {
@@ -130,7 +130,7 @@ pylith::materials::IncompressibleElasticity::verifyConfiguration(const pylith::t
 } // verifyConfiguration
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Create integrator and set kernels.
 pylith::feassemble::Integrator*
 pylith::materials::IncompressibleElasticity::createIntegrator(const pylith::topology::Field& solution) {
@@ -150,7 +150,7 @@ pylith::materials::IncompressibleElasticity::createIntegrator(const pylith::topo
 } // createIntegrator
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Create auxiliary field.
 pylith::topology::Field*
 pylith::materials::IncompressibleElasticity::createAuxiliaryField(const pylith::topology::Field& solution,
@@ -197,7 +197,7 @@ pylith::materials::IncompressibleElasticity::createAuxiliaryField(const pylith::
 } // createAuxiliaryField
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Create derived field.
 pylith::topology::Field*
 pylith::materials::IncompressibleElasticity::createDerivedField(const pylith::topology::Field& solution,
@@ -273,7 +273,7 @@ pylith::materials::IncompressibleElasticity::getSolverDefaults(const bool isPara
 } // getSolverDefaults
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get auxiliary factory associated with physics.
 pylith::feassemble::AuxiliaryFactory*
 pylith::materials::IncompressibleElasticity::_getAuxiliaryFactory(void) {
@@ -282,7 +282,7 @@ pylith::materials::IncompressibleElasticity::_getAuxiliaryFactory(void) {
 } // _getAuxiliaryFactory
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Update kernel constants.
 void
 pylith::materials::IncompressibleElasticity::_updateKernelConstants(const PylithReal dt) {
@@ -291,7 +291,7 @@ pylith::materials::IncompressibleElasticity::_updateKernelConstants(const Pylith
 } // _updateKernelConstants
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get derived factory associated with physics.
 pylith::topology::FieldFactory*
 pylith::materials::IncompressibleElasticity::_getDerivedFactory(void) {
@@ -299,7 +299,7 @@ pylith::materials::IncompressibleElasticity::_getDerivedFactory(void) {
 } // _getDerivedFactory
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Set kernels for residual.
 void
 pylith::materials::IncompressibleElasticity::_setKernelsResidual(pylith::feassemble::IntegratorDomain* integrator,
@@ -352,7 +352,7 @@ pylith::materials::IncompressibleElasticity::_setKernelsResidual(pylith::feassem
 } // _setKernelsResidual
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Set kernels for Jacobian.
 void
 pylith::materials::IncompressibleElasticity::_setKernelsJacobian(pylith::feassemble::IntegratorDomain* integrator,
@@ -397,7 +397,7 @@ pylith::materials::IncompressibleElasticity::_setKernelsJacobian(pylith::feassem
 } // setKernelsJacobian
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Set kernels for computing updated state variables in auxiliary field.
 void
 pylith::materials::IncompressibleElasticity::_setKernelsUpdateStateVars(pylith::feassemble::IntegratorDomain* integrator,
@@ -417,7 +417,7 @@ pylith::materials::IncompressibleElasticity::_setKernelsUpdateStateVars(pylith::
 } // _setKernelsUpdateStateVars
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Set kernels for computing derived field.
 void
 pylith::materials::IncompressibleElasticity::_setKernelsDerivedField(pylith::feassemble::IntegratorDomain* integrator,
