@@ -24,15 +24,12 @@
 #if !defined(pylith_faults_kinsrctimehistory_hh)
 #define pylith_faults_kinsrctimehistory_hh
 
-// Include directives ---------------------------------------------------
 #include "KinSrc.hh"
 
-// KinSrcTimeHistory ------------------------------------------------------
-/// @brief Slip function time history from a user-supplied text file.
 class pylith::faults::KinSrcTimeHistory : public KinSrc {
     friend class TestKinSrcTimeHistory; // unit testing
 
-    // PUBLIC METHODS ///////////////////////////////////////////////////////
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Default constructor.
@@ -53,17 +50,19 @@ public:
      */
     const spatialdata::spatialdb::TimeHistory* getTimeHistoryDB(void);
 
-    /** Set slip values at time t.
+    /** Get requested slip subfields at time t.
      *
-     * @param[inout] slipLocalVec Local PETSc vector for slip values.
+     * @param[inout] slipLocalVec Local PETSc vector for slip, slip rate, or slip acceleration values.
      * @param[in] faultAuxiliaryField Auxiliary field for fault.
      * @param[in] t Time t.
      * @param[in] timeScale Time scale for nondimensionalization.
+     * @param[in] bitSlipSubfields Slip subfields to compute.
      */
-    void updateSlip(PetscVec slipLocalVec,
-                    pylith::topology::Field* faultAuxiliaryField,
-                    const PylithScalar t,
-                    const PylithScalar timeScale);
+    void getSlipSubfields(PetscVec slipLocalVec,
+                          pylith::topology::Field* faultAuxiliaryField,
+                          const PylithScalar t,
+                          const PylithScalar timeScale,
+                          const int bitSlipSubfields);
 
     /** Slip time function kernel.
      *
@@ -194,7 +193,7 @@ public:
                    const PylithScalar constants[],
                    PylithScalar slipAcc[]);
 
-    // PROTECTED METHODS //////////////////////////////////////////////////
+    // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
 protected:
 
     /** Setup auxiliary subfields (discretization and query fns).
@@ -205,12 +204,12 @@ protected:
     void _auxiliaryFieldSetup(const spatialdata::units::Nondimensional& normalizer,
                               const spatialdata::geocoords::CoordSys* cs);
 
-    // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
+    // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
 private:
 
     spatialdata::spatialdb::TimeHistory* _dbTimeHistory; ///< Time history database.
 
-    // NOT IMPLEMENTED //////////////////////////////////////////////////////
+    // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
 private:
 
     KinSrcTimeHistory(const KinSrcTimeHistory&); ///< Not implemented
