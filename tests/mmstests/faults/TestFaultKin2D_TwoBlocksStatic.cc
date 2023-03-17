@@ -253,7 +253,7 @@ protected:
 
         CPPUNIT_ASSERT(!_data->kinsrc);
         _data->kinsrc = new pylith::faults::KinSrcStep();CPPUNIT_ASSERT(_data->kinsrc);
-        _data->kinsrc->originTime(0.0);
+        _data->kinsrc->setOriginTime(0.0);
         CPPUNIT_ASSERT(_data->faultAuxDB);
         _data->faultAuxDB->addValue("initiation_time", initiation_time, time_units());
         _data->faultAuxDB->addValue("final_slip_opening", finalslip_opening, slip_units());

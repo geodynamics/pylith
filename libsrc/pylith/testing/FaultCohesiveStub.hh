@@ -57,7 +57,16 @@ public:
     pylith::topology::Field* createAuxiliaryField(const pylith::topology::Field& solution,
                                                   const pylith::topology::Mesh& physicsMesh);
 
-    // PROTECTED METHODS //////////////////////////////////////////////////
+    /** Create integrator and set kernels.
+     *
+     * @param[in] solution Solution field.
+     * @param[in] materials Materials in problem.
+     * @returns Integrator if applicable, otherwise NULL.
+     */
+    pylith::feassemble::Integrator* createIntegrator(const pylith::topology::Field& solution,
+                                                     const std::vector<pylith::materials::Material*>& materials);
+
+    // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
 protected:
 
     /** Get auxiliary factory associated with physics.
@@ -86,7 +95,7 @@ protected:
                              const pylith::topology::Field& solution,
                              const std::vector<pylith::materials::Material*>& materials) const;
 
-    // NOT IMPLEMENTED ////////////////////////////////////////////////////
+    // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
 private:
 
     FaultCohesiveStub(const FaultCohesiveStub&); ///< Not implemented.

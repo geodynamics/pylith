@@ -270,7 +270,7 @@ protected:
 
         CPPUNIT_ASSERT(!_data->kinsrc);
         _data->kinsrc = new pylith::faults::KinSrcStep();CPPUNIT_ASSERT(_data->kinsrc);
-        _data->kinsrc->originTime(0.0);
+        _data->kinsrc->setOriginTime(0.0);
         CPPUNIT_ASSERT(_data->faultAuxDB);
         _data->faultAuxDB->addValue("initiation_time", initiation_time, time_units());
         _data->faultAuxDB->addValue("final_slip_opening", finalslip_opening, slip_units());
@@ -291,7 +291,7 @@ protected:
             pylith::materials::Elasticity* material = new pylith::materials::Elasticity();assert(material);
             material->setFormulation(pylith::problems::Physics::QUASISTATIC);
             material->useBodyForce(false);
-            material->setDescription("Isotropic Linear Elascitity Plane Strain");
+            material->setDescription("Isotropic Linear Elasticity Plane Strain");
             material->setLabelValue(10);
             material->setBulkRheology(_data->rheology);
             _materials[0] = material;
@@ -300,7 +300,7 @@ protected:
             pylith::materials::Elasticity* material = new pylith::materials::Elasticity();assert(material);
             material->setFormulation(pylith::problems::Physics::QUASISTATIC);
             material->useBodyForce(false);
-            material->setDescription("Isotropic Linear Elascitity Plane Strain");
+            material->setDescription("Isotropic Linear Elasticity Plane Strain");
             material->setLabelValue(20);
             material->setBulkRheology(_data->rheology);
             _materials[1] = material;
@@ -309,7 +309,7 @@ protected:
             pylith::materials::Elasticity* material = new pylith::materials::Elasticity();assert(material);
             material->setFormulation(pylith::problems::Physics::QUASISTATIC);
             material->useBodyForce(false);
-            material->setDescription("Isotropic Linear Elascitity Plane Strain");
+            material->setDescription("Isotropic Linear Elasticity Plane Strain");
             material->setLabelValue(15);
             material->setBulkRheology(_data->rheology);
             _materials[2] = material;

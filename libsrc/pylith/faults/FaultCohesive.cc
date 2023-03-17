@@ -419,4 +419,9 @@ pylith::faults::FaultCohesive::_updateKernelConstants(const PylithReal dt) {
 } // _updateKernelConstants
 
 
+// ------------------------------------------------------------------------------------------------
+pylith::feassemble::Integrator*
+pylith::faults::FaultCohesive::createIntegrator(const pylith::topology::Field& solution) {} // Empty method
+
+
 // End of file
