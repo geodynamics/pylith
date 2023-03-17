@@ -29,27 +29,26 @@
 
 #include <typeinfo> // USES typeid()
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::materials::RheologyElasticity::RheologyElasticity(void) :
-    _lhsJacobianTriggers(pylith::feassemble::Integrator::NEW_JACOBIAN_NEVER)
-{}
+    _lhsJacobianTriggers(pylith::feassemble::Integrator::NEW_JACOBIAN_NEVER) {}
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Destructor.
 pylith::materials::RheologyElasticity::~RheologyElasticity(void) {
     deallocate();
 } // destructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
 pylith::materials::RheologyElasticity::deallocate(void) {}
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get triggers for needing to compute the elastic constants for the RHS Jacobian.
 int
 pylith::materials::RheologyElasticity::getLHSJacobianTriggers(void) const {
@@ -57,7 +56,7 @@ pylith::materials::RheologyElasticity::getLHSJacobianTriggers(void) const {
 } // getLHSJacobianTriggers
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Update kernel constants.
 void
 pylith::materials::RheologyElasticity::updateKernelConstants(pylith::real_array* kernelConstants,
@@ -71,7 +70,7 @@ pylith::materials::RheologyElasticity::updateKernelConstants(pylith::real_array*
 } // updateKernelConstants
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Add kernels for updating state variables.
 void
 pylith::materials::RheologyElasticity::addKernelsUpdateStateVars(std::vector<pylith::feassemble::IntegratorDomain::ProjectKernels>* kernels,

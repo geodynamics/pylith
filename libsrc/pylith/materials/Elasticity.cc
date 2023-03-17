@@ -24,6 +24,7 @@
 #include "pylith/materials/AuxiliaryFactoryElasticity.hh" // USES AuxiliaryFactoryElasticity
 #include "pylith/materials/DerivedFactoryElasticity.hh" // USES DerivedFactoryElasticity
 #include "pylith/feassemble/IntegratorDomain.hh" // USES IntegratorDomain
+#include "pylith/feassemble/JacobianValues.hh" // USES JacobianValues
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field::SubfieldInfo
 #include "pylith/topology/FieldOps.hh" // USES FieldOps
@@ -32,6 +33,7 @@
 
 #include "pylith/fekernels/Elasticity.hh" // USES Elasticity kernels
 #include "pylith/fekernels/DispVel.hh" // USES DispVel kernels
+#include "pylith/fekernels/FaultCohesiveKin.hh" // USES FaultCohesiveKin kernels
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
@@ -300,6 +302,93 @@ pylith::materials::Elasticity::getSolverDefaults(const bool isParallel,
 
 
 // ------------------------------------------------------------------------------------------------
+// Get residual kernels for an interior interface bounding material.
+std::vector<pylith::materials::Material::InterfaceResidualKernels>
+pylith::materials::Elasticity::getInterfaceKernelsResidual(const pylith::topology::Field& solution,
+                                                           const pylith::feassemble::IntegratorInterface::FaceEnum face) const {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("getInterfaceKernelsResidual(solution="<<solution.getLabel()<<", face="<<face<<")");
+
+    const spatialdata::geocoords::CoordSys* coordsys = solution.getMesh().getCoordSys();
+
+    std::vector<InterfaceResidualKernels> kernels;
+    switch (_formulation) {
+    case QUASISTATIC:
+    case DYNAMIC:
+        break;
+    case DYNAMIC_IMEX: {
+        PetscBdPointFunc f0l = NULL;
+        PetscBdPointFunc f1l = NULL;
+
+        switch (face) {
+        case pylith::feassemble::IntegratorInterface::NEGATIVE_FACE:
+            f0l = _rheology->getKernelf0Neg(coordsys);
+            break;
+        case pylith::feassemble::IntegratorInterface::POSITIVE_FACE:
+            f0l = _rheology->getKernelf0Pos(coordsys);
+            break;
+        default:
+            PYLITH_COMPONENT_LOGICERROR("Unknown interface face ("<<face<<").");
+        } // switch
+
+        kernels.resize(1);
+        const EquationPart eqnPart = pylith::feassemble::Integrator::LHS_WEIGHTED;
+        kernels[0] = InterfaceResidualKernels("lagrange_multiplier_fault", eqnPart, face, f0l, f1l);
+        break;
+    } // DYNAMIC_IMEX
+    default:
+        PYLITH_COMPONENT_LOGICERROR("Unknown formulation for equations (" << _formulation << ").");
+    } // switch
+
+    PYLITH_METHOD_RETURN(kernels);
+} // getInterfaceKernelsResidual
+
+
+// ------------------------------------------------------------------------------------------------
+// Get Jacobian kernels for an interior interface bounding material.
+std::vector<pylith::materials::Material::InterfaceJacobianKernels>
+pylith::materials::Elasticity::getInterfaceKernelsJacobian(const pylith::topology::Field& solution,
+                                                           const pylith::feassemble::IntegratorInterface::FaceEnum face) const {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("getInterfaceKernelsJacobian(solution="<<solution.getLabel()<<", face="<<face<<")");
+
+    std::vector<InterfaceJacobianKernels> kernels;
+    switch (_formulation) {
+    case QUASISTATIC:
+    case DYNAMIC:
+        break;
+    case DYNAMIC_IMEX: {
+        PetscBdPointJac Jf0ll = NULL;
+        PetscBdPointJac Jf1ll = NULL;
+        PetscBdPointJac Jf2ll = NULL;
+        PetscBdPointJac Jf3ll = NULL;
+
+        switch (face) {
+        case pylith::feassemble::IntegratorInterface::NEGATIVE_FACE:
+            Jf0ll = pylith::fekernels::FaultCohesiveKin::Jf0ll_neg;
+            break;
+        case pylith::feassemble::IntegratorInterface::POSITIVE_FACE:
+            Jf0ll = pylith::fekernels::FaultCohesiveKin::Jf0ll_pos;
+            break;
+        default:
+            PYLITH_COMPONENT_LOGICERROR("Unknown interface face ("<<face<<").");
+        } // switch
+
+        kernels.resize(1);
+        EquationPart eqnPart = pylith::feassemble::Integrator::LHS;
+        kernels[0] = InterfaceJacobianKernels("lagrange_multiplier_fault", "lagrange_multiplier_fault", eqnPart, face,
+                                              Jf0ll, Jf1ll, Jf2ll, Jf3ll);
+        break;
+    } // DYNAMIC_IMEX
+    default:
+        PYLITH_COMPONENT_LOGICERROR("Unknown formulation for equations (" << _formulation << ").");
+    } // switch
+
+    PYLITH_METHOD_RETURN(kernels);
+} // getInterfaceKernelsJacobian
+
+
+// ------------------------------------------------------------------------------------------------
 // Get auxiliary factory associated with physics.
 pylith::feassemble::AuxiliaryFactory*
 pylith::materials::Elasticity::_getAuxiliaryFactory(void) {
@@ -429,22 +518,19 @@ pylith::materials::Elasticity::_setKernelsJacobian(pylith::feassemble::Integrato
         kernels[0] = JacobianKernels("displacement", "displacement", equationPart, Jf0uu, Jf1uu, Jf2uu, Jf3uu);
         break;
     } // QUASISTATIC
-    case DYNAMIC:
     case DYNAMIC_IMEX: {
+        typedef pylith::feassemble::JacobianValues::JacobianKernel ValueKernel;
+        std::vector<ValueKernel> valueKernelsJacobian(2);
+        std::vector<ValueKernel> valueKernelsPrecond;
+        valueKernelsJacobian[0] = ValueKernel("displacement", "displacement", pylith::feassemble::JacobianValues::blockDiag_tshift);
+        valueKernelsJacobian[1] = ValueKernel("velocity", "velocity", pylith::feassemble::JacobianValues::blockDiag_tshift);
+        integrator->setKernelsJacobian(valueKernelsJacobian, valueKernelsPrecond);
+    } // DYNAMIC_IMEX (continue with DYNAMIC)
+    case DYNAMIC: {
         const PetscPointJac Jf0uu = pylith::fekernels::DispVel::Jf0uu_stshift;
         const PetscPointJac Jf1uu = NULL;
         const PetscPointJac Jf2uu = NULL;
         const PetscPointJac Jf3uu = NULL;
-
-        const PetscPointJac Jf0uv = NULL;
-        const PetscPointJac Jf1uv = NULL;
-        const PetscPointJac Jf2uv = NULL;
-        const PetscPointJac Jf3uv = NULL;
-
-        const PetscPointJac Jf0vu = NULL;
-        const PetscPointJac Jf1vu = NULL;
-        const PetscPointJac Jf2vu = NULL;
-        const PetscPointJac Jf3vu = NULL;
 
         const PetscPointJac Jf0vv = pylith::fekernels::Elasticity::Jf0vv;
         const PetscPointJac Jf1vv = NULL;
@@ -453,14 +539,12 @@ pylith::materials::Elasticity::_setKernelsJacobian(pylith::feassemble::Integrato
 
         integrator->setLHSJacobianTriggers(pylith::feassemble::Integrator::NEW_JACOBIAN_TIME_STEP_CHANGE);
 
-        kernels.resize(4);
+        kernels.resize(2);
         const EquationPart equationPart = pylith::feassemble::Integrator::LHS_LUMPED_INV;
         kernels[0] = JacobianKernels("displacement", "displacement", equationPart, Jf0uu, Jf1uu, Jf2uu, Jf3uu);
-        kernels[1] = JacobianKernels("displacement", "velocity", equationPart, Jf0uv, Jf1uv, Jf2uv, Jf3uv);
-        kernels[2] = JacobianKernels("velocity", "displacement", equationPart, Jf0vu, Jf1vu, Jf2vu, Jf3vu);
         kernels[3] = JacobianKernels("velocity", "velocity", equationPart, Jf0vv, Jf1vv, Jf2vv, Jf3vv);
         break;
-    } // DYNAMIC_IMEX
+    } // DYNAMIC
     default:
         PYLITH_COMPONENT_LOGICERROR("Unknown formulation for equations (" << _formulation << ").");
     } // switch

@@ -29,7 +29,7 @@
 
 #include <typeinfo> // USES typeid()
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::materials::IsotropicLinearElasticity::IsotropicLinearElasticity(void) :
     _auxiliaryFactory(new pylith::materials::AuxiliaryFactoryElastic),
@@ -38,14 +38,14 @@ pylith::materials::IsotropicLinearElasticity::IsotropicLinearElasticity(void) :
 } // constructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Destructor.
 pylith::materials::IsotropicLinearElasticity::~IsotropicLinearElasticity(void) {
     deallocate();
 } // destructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
 pylith::materials::IsotropicLinearElasticity::deallocate(void) {
@@ -55,7 +55,7 @@ pylith::materials::IsotropicLinearElasticity::deallocate(void) {
 } // deallocate
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Use reference stress and strain in computation of stress and
 // strain?
 void
@@ -66,7 +66,7 @@ pylith::materials::IsotropicLinearElasticity::useReferenceState(const bool value
 } // useReferenceState
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Use reference stress and strain in computation of stress and
 // strain?
 bool
@@ -75,7 +75,7 @@ pylith::materials::IsotropicLinearElasticity::useReferenceState(void) const {
 } // useReferenceState
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get auxiliary factory associated with physics.
 pylith::materials::AuxiliaryFactoryElasticity*
 pylith::materials::IsotropicLinearElasticity::getAuxiliaryFactory(void) {
@@ -83,7 +83,7 @@ pylith::materials::IsotropicLinearElasticity::getAuxiliaryFactory(void) {
 } // getAuxiliaryFactory
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Add rheology subfields to auxiliary field.
 void
 pylith::materials::IsotropicLinearElasticity::addAuxiliarySubfields(void) {
@@ -104,7 +104,7 @@ pylith::materials::IsotropicLinearElasticity::addAuxiliarySubfields(void) {
 } // addAuxiliarySubfields
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get stress kernel for LHS residual, F(t,s,\dot{s}).
 PetscPointFunc
 pylith::materials::IsotropicLinearElasticity::getKernelf1v(const spatialdata::geocoords::CoordSys* coordsys) const {
@@ -123,7 +123,7 @@ pylith::materials::IsotropicLinearElasticity::getKernelf1v(const spatialdata::ge
 } // getKernelf1v
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get elastic constants kernel for LHS Jacobian F(t,s,\dot{s}).
 PetscPointJac
 pylith::materials::IsotropicLinearElasticity::getKernelJf3vu(const spatialdata::geocoords::CoordSys* coordsys) const {
@@ -140,7 +140,45 @@ pylith::materials::IsotropicLinearElasticity::getKernelJf3vu(const spatialdata::
 } // getKernelJacobianElasticConstants
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
+// Get f0 kernel for LHS interface residual, F(t,s), for negative fault face.
+PetscBdPointFunc
+pylith::materials::IsotropicLinearElasticity::getKernelf0Neg(const spatialdata::geocoords::CoordSys* coordsys) const {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("getKernelf0Neg(coordsys="<<typeid(coordsys).name()<<")");
+
+    const int spaceDim = coordsys->getSpaceDim();
+    PetscBdPointFunc kernel =
+        (!_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticity3D::f0l_neg_infinitesimalStrain :
+        (!_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticityPlaneStrain::f0l_neg_infinitesimalStrain :
+        (_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticity3D::f0l_neg_infinitesimalStrain_refState :
+        (_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticityPlaneStrain::f0l_neg_infinitesimalStrain_refState :
+        NULL;
+
+    PYLITH_METHOD_RETURN(kernel);
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// Get f0 kernel for LHS interface residual, F(t,s), for positive fault face.
+PetscBdPointFunc
+pylith::materials::IsotropicLinearElasticity::getKernelf0Pos(const spatialdata::geocoords::CoordSys* coordsys) const {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("getKernelf0Pos(coordsys="<<typeid(coordsys).name()<<")");
+
+    const int spaceDim = coordsys->getSpaceDim();
+    PetscBdPointFunc kernel =
+        (!_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticity3D::f0l_pos_infinitesimalStrain :
+        (!_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticityPlaneStrain::f0l_pos_infinitesimalStrain :
+        (_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticity3D::f0l_pos_infinitesimalStrain_refState :
+        (_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearElasticityPlaneStrain::f0l_pos_infinitesimalStrain_refState :
+        NULL;
+
+    PYLITH_METHOD_RETURN(kernel);
+}
+
+
+// ------------------------------------------------------------------------------------------------
 // Get stress kernel for derived field.
 PetscPointFunc
 pylith::materials::IsotropicLinearElasticity::getKernelCauchyStressVector(const spatialdata::geocoords::CoordSys* coordsys) const {
