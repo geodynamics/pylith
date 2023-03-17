@@ -63,6 +63,7 @@ libpylith_la_SOURCES = \
 	feassemble/IntegrationData.cc \
 	feassemble/InterfacePatches.cc \
 	feassemble/UpdateStateVars.cc \
+	feassemble/JacobianValues.cc \
 	feassemble/Constraint.cc \
 	feassemble/ConstraintSpatialDB.cc \
 	feassemble/ConstraintUserFn.cc \
@@ -71,7 +72,6 @@ libpylith_la_SOURCES = \
 	fekernels/Tensor.cc \
 	fekernels/IsotropicLinearGenMaxwell.cc \
 	fekernels/IsotropicPowerLaw.cc \
-	fekernels/FaultCohesiveKin.cc \
 	fekernels/Poroelasticity.cc \
 	fekernels/IsotropicLinearPoroelasticity.cc \
 	materials/Material.cc \
