@@ -23,7 +23,7 @@
 #include "pylith/feassemble/IntegrationData.hh" // HOLDSA IntegrationData
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
-
+#include "pylith/faults/FaultOps.hh" // USES FaultOps
 #include "pylith/feassemble/Integrator.hh" // USES Integrator
 #include "pylith/feassemble/Constraint.hh" // USES Constraint
 #include "pylith/problems/ObserversSoln.hh" // USES ObserversSoln
@@ -67,9 +67,10 @@ pylith::problems::TimeDependent::TimeDependent(void) :
     _shouldNotifyIC(false) {
     PyreComponent::setName(_TimeDependent::pyreComponent);
 
+    _integrationData->setScalar(pylith::feassemble::IntegrationData::t_state, -HUGE_VAL);
+    _integrationData->setScalar(pylith::feassemble::IntegrationData::dt_residual, -1.0);
     _integrationData->setScalar(pylith::feassemble::IntegrationData::dt_jacobian, -1.0);
     _integrationData->setScalar(pylith::feassemble::IntegrationData::dt_lumped_jacobian_inverse, -1.0);
-    _integrationData->setScalar(pylith::feassemble::IntegrationData::t_state, -HUGE_VAL);
 } // constructor
 
 
@@ -370,6 +371,7 @@ pylith::problems::TimeDependent::initialize(void) {
         err = TSSetIFunction(_ts, NULL, computeLHSResidual, (void*)this);PYLITH_CHECK_ERROR(err);
         err = TSSetIJacobian(_ts, NULL, NULL, computeLHSJacobian, (void*)this);PYLITH_CHECK_ERROR(err);
         err = TSSetEquationType(_ts, TS_EQ_EXPLICIT);PYLITH_CHECK_ERROR(err);
+        pylith::faults::FaultOps::createDAEMassWeighting(_integrationData);
     case pylith::problems::Physics::DYNAMIC: {
         PYLITH_COMPONENT_DEBUG("Setting PetscTS callback for computeRHSFunction().");
         err = TSSetRHSFunction(_ts, NULL, computeRHSResidual, (void*)this);PYLITH_CHECK_ERROR(err);
@@ -735,8 +737,11 @@ pylith::problems::TimeDependent::computeLHSJacobianLumpedInv(const PylithReal t,
     // Insert values into global vector.
     jacobianLumpedInv->scatterLocalToVector(jacobianLumpedInv->getGlobalVector());
 
-    _integrationData->setScalar(pylith::feassemble::IntegrationData::dt_lumped_jacobian_inverse, dt);
+    if (_integrationData->hasField(pylith::feassemble::IntegrationData::dae_mass_weighting)) {
+        pylith::faults::FaultOps::updateDAEMassWeighting(_integrationData);
+    } // if
 
+    _integrationData->setScalar(pylith::feassemble::IntegrationData::dt_lumped_jacobian_inverse, dt);
     PYLITH_METHOD_END;
 } // computeLHSJacobianLumpedInv
 
@@ -796,8 +801,15 @@ pylith::problems::TimeDependent::computeLHSResidual(PetscTS ts,
     // Get current time step.
     PylithReal dt;
     PetscErrorCode err = TSGetTimeStep(ts, &dt);PYLITH_CHECK_ERROR(err);
-
     pylith::problems::TimeDependent* problem = (pylith::problems::TimeDependent*)context;
+
+    assert(problem->_integrationData);
+    const bool hasLumpedJacobianInverse = problem->_integrationData->hasField(pylith::feassemble::IntegrationData::lumped_jacobian_inverse);
+    if (hasLumpedJacobianInverse) {
+        const PylithReal s_tshift = 1.0; // Keep shift terms on LHS, so use 1.0 for terms moved to RHS.
+        problem->computeLHSJacobianLumpedInv(t, dt, s_tshift, solutionVec);
+    } // if
+
     problem->computeLHSResidual(residualVec, t, dt, solutionVec, solutionDotVec);
 
     PYLITH_METHOD_RETURN(0);
