@@ -31,6 +31,7 @@ test_faultkin_SOURCES = \
 	TestFaultKin2D_ThreeBlocksStatic.cc \
 	TestFaultKin2D_OneFaultShearNoSlip.cc \
 	TestFaultKin2D_TwoFaultsShearNoSlip.cc \
+	TestFaultKin2D_ConstRateDynamic.cc \
 	test_driver.cc
 
 dist_noinst_HEADERS = \
