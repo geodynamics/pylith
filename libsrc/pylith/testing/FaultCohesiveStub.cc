@@ -66,14 +66,16 @@ pylith::faults::FaultCohesiveStub::_getAuxiliaryFactory(void) {
 // Set kernels for residual.
 void
 pylith::faults::FaultCohesiveStub::_setKernelsResidual(pylith::feassemble::IntegratorInterface* integrator,
-                                                       const pylith::topology::Field& solution) const {}
+                                                       const pylith::topology::Field& solution,
+                                                       const std::vector<pylith::materials::Material*>& materials) const {}
 
 
 // ------------------------------------------------------------------------------------------------
 // Set kernels for Jacobian.
 void
 pylith::faults::FaultCohesiveStub::_setKernelsJacobian(pylith::feassemble::IntegratorInterface* integrator,
-                                                       const pylith::topology::Field& solution) const {}
+                                                       const pylith::topology::Field& solution,
+                                                       const std::vector<pylith::materials::Material*>& materials) const {}
 
 
 // End of file

@@ -322,7 +322,8 @@ pylith::faults::FaultCohesiveImpulses::_updateSlip(pylith::topology::Field* auxi
 // Set kernels for residual.
 void
 pylith::faults::FaultCohesiveImpulses::_setKernelsResidual(pylith::feassemble::IntegratorInterface* integrator,
-                                                           const pylith::topology::Field& solution) const {
+                                                           const pylith::topology::Field& solution,
+                                                           const std::vector<pylith::materials::Material*>& materials) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_setKernelsResidual(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
     typedef pylith::feassemble::IntegratorInterface integrator_t;
@@ -339,7 +340,7 @@ pylith::faults::FaultCohesiveImpulses::_setKernelsResidual(pylith::feassemble::I
         const PetscBdPointFunc f1u_pos = NULL;
 
         // Fault slip constraint equation.
-        const PetscBdPointFunc f0l = pylith::fekernels::FaultCohesiveKin::f0l_u;
+        const PetscBdPointFunc f0l = pylith::fekernels::FaultCohesiveKin::f0l_slip;
         const PetscBdPointFunc f1l = NULL;
 
         kernels.resize(3);
@@ -360,7 +361,7 @@ pylith::faults::FaultCohesiveImpulses::_setKernelsResidual(pylith::feassemble::I
     } // switch
 
     assert(integrator);
-    integrator->setKernelsResidual(kernels, solution);
+    integrator->setKernels(kernels, solution, materials);
 
     PYLITH_METHOD_END;
 } // _setKernelsResidual
@@ -370,7 +371,8 @@ pylith::faults::FaultCohesiveImpulses::_setKernelsResidual(pylith::feassemble::I
 // Set kernels for Jacobian.
 void
 pylith::faults::FaultCohesiveImpulses::_setKernelsJacobian(pylith::feassemble::IntegratorInterface* integrator,
-                                                           const pylith::topology::Field& solution) const {
+                                                           const pylith::topology::Field& solution,
+                                                           const std::vector<pylith::materials::Material*>& materials) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_setKernelsJacobian(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
     typedef pylith::feassemble::IntegratorInterface integrator_t;
@@ -412,7 +414,7 @@ pylith::faults::FaultCohesiveImpulses::_setKernelsJacobian(pylith::feassemble::I
     } // switch
 
     assert(integrator);
-    integrator->setKernelsJacobian(kernels, solution);
+    integrator->setKernels(kernels, solution, materials);
 
     PYLITH_METHOD_END;
 } // _setKernelsJacobian

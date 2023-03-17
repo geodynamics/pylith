@@ -26,6 +26,7 @@
 #define pylith_faults_faultcohesivekin_hh
 
 #include "FaultCohesive.hh" // ISA FaultCohesive
+#include "pylith/materials/Material.hh" // USES Material
 
 #include <string> // HASA std::string
 #include <map> // HASA std::map
@@ -63,6 +64,15 @@ public:
      */
     void verifyConfiguration(const pylith::topology::Field& solution) const;
 
+    /** Create integrator and set kernels.
+     *
+     * @param[in] solution Solution field.
+     * @param[in] materials Materials in problem.
+     * @returns Integrator if applicable, otherwise NULL.
+     */
+    pylith::feassemble::Integrator* createIntegrator(const pylith::topology::Field& solution,
+                                                     const std::vector<pylith::materials::Material*>& materials);
+
     /** Create auxiliary field.
      *
      * @param[in] solution Solution field.
@@ -90,45 +100,35 @@ protected:
      */
     pylith::feassemble::AuxiliaryFactory* _getAuxiliaryFactory(void);
 
-    /** Update slip subfield in auxiliary field at beginning of time step.
+    /** Update slip related subfields in auxiliary field at beginning of time step.
      *
      * @param[out] auxiliaryField Auxiliary field.
      * @param[in] t Current time.
+     * @param[in] bitSlipSubfields Slip subfields to update.
      */
     void _updateSlip(pylith::topology::Field* auxiliaryField,
-                     const double t);
-
-    /** Update slip rate subfield in auxiliary field at beginning of time step.
-     *
-     * @param[out] auxiliaryField Auxiliary field.
-     * @param[in] t Current time.
-     */
-    void _updateSlipRate(pylith::topology::Field* auxiliaryField,
-                         const double t);
-
-    /** Update slip acceleration subfield in auxiliary field at beginning of time step.
-     *
-     * @param[out] auxiliaryField Auxiliary field.
-     * @param[in] t Current time.
-     */
-    void _updateSlipAcceleration(pylith::topology::Field* auxiliaryField,
-                                 const double t);
+                     const double t,
+                     const int bitSlipSubfields);
 
     /** Set kernels for residual.
      *
      * @param[out] integrator Integrator for material.
      * @param[in] solution Solution field.
+     * @param[in] materials Materials in problem.
      */
     void _setKernelsResidual(pylith::feassemble::IntegratorInterface* integrator,
-                             const pylith::topology::Field& solution) const;
+                             const pylith::topology::Field& solution,
+                             const std::vector<pylith::materials::Material*>& materials) const;
 
     /** Set kernels for Jacobian.
      *
      * @param[out] integrator Integrator for material.
      * @param[in] solution Solution field.
+     * @param[in] materials Materials in problem.
      */
     void _setKernelsJacobian(pylith::feassemble::IntegratorInterface* integrator,
-                             const pylith::topology::Field& solution) const;
+                             const pylith::topology::Field& solution,
+                             const std::vector<pylith::materials::Material*>& materials) const;
 
     // PROTECTED TYPEDEFS /////////////////////////////////////////////////////////////////////////
 protected:

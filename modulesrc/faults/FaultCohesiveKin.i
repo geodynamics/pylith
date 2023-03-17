@@ -91,17 +91,21 @@ protected:
              *
              * @param[out] integrator Integrator for material.
              * @param[in] solution Solution field.
+             * @param[in] materials Materials in problem.
              */
             void _setKernelsResidual(pylith::feassemble::IntegratorInterface* integrator,
-                                     const pylith::topology::Field& solution) const;
+                                     const pylith::topology::Field& solution,
+                                     const std::vector<pylith::materials::Material*>& materials) const;
 
             /** Set kernels for Jacobian.
              *
              * @param[out] integrator Integrator for material.
              * @param[in] solution Solution field.
+             * @param[in] materials Materials in problem.
              */
             void _setKernelsJacobian(pylith::feassemble::IntegratorInterface* integrator,
-                                     const pylith::topology::Field& solution) const;
+                                     const pylith::topology::Field& solution,
+                                     const std::vector<pylith::materials::Material*>& materials) const;
 
         }; // class FaultCohesiveKin
 

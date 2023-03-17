@@ -23,7 +23,7 @@
 
 namespace pylith {
     namespace faults {
-        class FaultCohesive: public pylith::problems::Physics {
+        class FaultCohesive : public pylith::problems::Physics {
             // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////
 public:
 
@@ -130,9 +130,12 @@ public:
             /** Create integrator and set kernels.
              *
              * @param[in] solution Solution field.
+             * @param[in] materials Materials in problem.
              * @returns Integrator if applicable, otherwise NULL.
              */
-            pylith::feassemble::Integrator* createIntegrator(const pylith::topology::Field& solution);
+            virtual
+            pylith::feassemble::Integrator* createIntegrator(const pylith::topology::Field& solution,
+                                                             const std::vector<pylith::materials::Material*>& materials) = 0;
 
             /** Create constraint and set kernels.
              *
@@ -158,19 +161,23 @@ protected:
              *
              * @param[out] integrator Integrator for material.
              * @param[in] solution Solution field.
+             * @param[in] materials Materials in problem.
              */
             virtual
             void _setKernelsResidual(pylith::feassemble::IntegratorInterface* integrator,
-                                     const pylith::topology::Field& solution) const = 0;
+                                     const pylith::topology::Field& solution,
+                                     const std::vector<pylith::materials::Material*>& materials) const = 0;
 
             /** Set kernels for Jacobian.
              *
              * @param[out] integrator Integrator for material.
              * @param[in] solution Solution field.
+             * @param[in] materials Materials in problem.
              */
             virtual
             void _setKernelsJacobian(pylith::feassemble::IntegratorInterface* integrator,
-                                     const pylith::topology::Field& solution) const = 0;
+                                     const pylith::topology::Field& solution,
+                                     const std::vector<pylith::materials::Material*>& materials) const = 0;
 
         }; // class FaultCohesive
 

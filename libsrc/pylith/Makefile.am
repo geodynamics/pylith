@@ -54,6 +54,7 @@ libpylith_la_SOURCES = \
 	faults/KinSrcTimeHistory.cc \
 	faults/KinSrcAuxiliaryFactory.cc \
 	faults/TopologyOps.cc \
+	faults/FaultOps.cc \
 	feassemble/PhysicsImplementation.cc \
 	feassemble/Integrator.cc \
 	feassemble/IntegratorDomain.cc \
