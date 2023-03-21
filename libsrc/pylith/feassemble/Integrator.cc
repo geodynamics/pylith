@@ -210,12 +210,12 @@ pylith::feassemble::Integrator::_setKernelConstants(const pylith::topology::Fiel
     for (PetscInt i = 0; i < numDS; ++i) {
         PetscDMLabel* label = NULL;
         PetscIS* fields = NULL;
-        PetscDS prob = NULL;
-        err = DMGetRegionNumDS(dmSoln, i, label, fields, &prob);PYLITH_CHECK_ERROR(err);
+        PetscDS ds = NULL;
+        err = DMGetRegionNumDS(dmSoln, i, label, fields, &ds, NULL);PYLITH_CHECK_ERROR(err);
         if (constants.size() > 0) {
-            err = PetscDSSetConstants(prob, constants.size(), const_cast<double*>(&constants[0]));PYLITH_CHECK_ERROR(err);
+            err = PetscDSSetConstants(ds, constants.size(), const_cast<double*>(&constants[0]));PYLITH_CHECK_ERROR(err);
         } else {
-            err = PetscDSSetConstants(prob, 0, NULL);PYLITH_CHECK_ERROR(err);
+            err = PetscDSSetConstants(ds, 0, NULL);PYLITH_CHECK_ERROR(err);
         } // if/else
     } // for
 

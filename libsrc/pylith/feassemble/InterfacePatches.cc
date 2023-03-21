@@ -41,10 +41,10 @@ namespace pylith {
             getCellWeakForm(PetscDM dm,
                             const PetscInt cell) {
                 PetscErrorCode err = 0;
-                PetscDS prob = NULL;
-                err = DMGetCellDS(dm, cell, &prob);PYLITH_CHECK_ERROR(err);
+                PetscDS ds = NULL;
+                err = DMGetCellDS(dm, cell, &ds, NULL);PYLITH_CHECK_ERROR(err);
                 PetscWeakForm weakForm = NULL;
-                err = PetscDSGetWeakForm(prob, &weakForm);PYLITH_CHECK_ERROR(err);
+                err = PetscDSGetWeakForm(ds, &weakForm);PYLITH_CHECK_ERROR(err);
                 return weakForm;
             } // getCellWeakForm
 

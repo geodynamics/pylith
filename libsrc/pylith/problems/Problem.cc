@@ -600,7 +600,7 @@ pylith::problems::Problem::_setupSolution(void) {
             if (!found) {
                 continue;
             } // if
-            err = DMGetCellDS(dmSoln, cell, &ds);PYLITH_CHECK_ERROR(err);
+            err = DMGetCellDS(dmSoln, cell, &ds, NULL);PYLITH_CHECK_ERROR(err);
             assert(ds);
             err = PetscDSSetImplicit(ds, subfieldInfo.index, PETSC_TRUE);PYLITH_CHECK_ERROR(err);
         } // if
