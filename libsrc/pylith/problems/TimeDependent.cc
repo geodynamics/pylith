@@ -484,6 +484,16 @@ pylith::problems::TimeDependent::poststep(void) {
         _constraints[i]->poststep(t, tindex, dt, *solution);
     } // for
 
+    // Notify problem observers of updated solution.
+    assert(_observers);
+    _observers->notifyObservers(t, tindex, *solution);
+
+    if (_monitor) {
+        assert(_normalizer);
+        const PylithReal timeScale = _normalizer->getTimeScale();
+        _monitor->update(t*timeScale, _startTime, _endTime);
+    } // if
+
     // Update coordinates
     if (1) {
       PetscDM        dm, cdm;
@@ -522,16 +532,6 @@ pylith::problems::TimeDependent::poststep(void) {
       err = DMSetCoordinatesLocal(dm, coordinates);PYLITH_CHECK_ERROR(err); // Invalidates global coordinates
       err = DMRestoreLocalVector(cdm, &coordinatesNew);PYLITH_CHECK_ERROR(err);
     }
-
-    // Notify problem observers of updated solution.
-    assert(_observers);
-    _observers->notifyObservers(t, tindex, *solution);
-
-    if (_monitor) {
-        assert(_normalizer);
-        const PylithReal timeScale = _normalizer->getTimeScale();
-        _monitor->update(t*timeScale, _startTime, _endTime);
-    } // if
 
     PYLITH_METHOD_END;
 } // poststep
