@@ -110,6 +110,7 @@ pylith::topology::Distributor::distribute(pylith::topology::Mesh* const newMesh,
     err = _Distributor::distributeOverlap(&dmNew, dmTmp, faults, numFaults);PYLITH_CHECK_ERROR(err);
     err = DMDestroy(&dmTmp);PYLITH_CHECK_ERROR(err);
     err = DMPlexDistributeSetDefault(dmNew, PETSC_FALSE);PYLITH_CHECK_ERROR(err);
+    err = DMPlexReorderCohesiveSupports(dmNew);PYLITH_CHECK_ERROR(err);
     newMesh->setDM(dmNew);
 
     PYLITH_METHOD_END;
