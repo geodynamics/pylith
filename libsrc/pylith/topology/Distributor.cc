@@ -111,6 +111,7 @@ pylith::topology::Distributor::distribute(pylith::topology::Mesh* const newMesh,
     err = DMDestroy(&dmTmp);PYLITH_CHECK_ERROR(err);
     err = DMPlexDistributeSetDefault(dmNew, PETSC_FALSE);PYLITH_CHECK_ERROR(err);
     err = DMPlexReorderCohesiveSupports(dmNew);PYLITH_CHECK_ERROR(err);
+    err = DMViewFromOptions(dmNew, NULL, "-pylith_dist_dm_view");PYLITH_CHECK_ERROR(err);
     newMesh->setDM(dmNew);
 
     PYLITH_METHOD_END;
