@@ -179,7 +179,7 @@ class MakeSyntheticGpsdisp(Application):
     numConnect = 2 * self.numStations
     connectHead = "VERTICES %d %d\n" % (self.numStations, numConnect)
     v.write(connectHead)
-    verts = numpy.arange(self.numStations, dtype=numpy.int)
+    verts = numpy.arange(self.numStations, dtype=numpy.int64)
     sizes = numpy.ones_like(verts)
     outConnect = numpy.column_stack((sizes, verts))
     numpy.savetxt(v, outConnect, fmt="%d")

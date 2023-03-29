@@ -184,7 +184,7 @@ class HDF5Checker(object):
             vertices = self._getVertices()
             self.testcase.assertTrue("topology" in self.h5["viz"].keys())
             self.testcase.assertTrue("cells" in self.h5["viz/topology"].keys())
-            cells = self.h5["viz/topology/cells"][:].astype(numpy.int)
+            cells = self.h5["viz/topology/cells"][:].astype(numpy.int64)
             ncells, ncorners = cells.shape
             (nvertices, spaceDim) = vertices.shape
             centroids = numpy.zeros((ncells, spaceDim), dtype=numpy.float64)

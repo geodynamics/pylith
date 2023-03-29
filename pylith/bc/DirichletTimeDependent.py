@@ -94,7 +94,7 @@ class DirichletTimeDependent(BoundaryCondition, ModuleDirichletTimeDependent):
         BoundaryCondition.preinitialize(self, problem)
 
         ModuleDirichletTimeDependent.setConstrainedDOF(
-            self, numpy.array(self.constrainedDOF, dtype=numpy.int32))
+            self, numpy.array(self.constrainedDOF, dtype=numpy.intc))
         ModuleDirichletTimeDependent.useInitial(self, self.useInitial)
         ModuleDirichletTimeDependent.useRate(self, self.useRate)
         ModuleDirichletTimeDependent.useTimeHistory(self, self.useTimeHistory)
