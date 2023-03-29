@@ -119,6 +119,7 @@ AC_SYS_LARGEFILE
 dnl NUMPY
 CIT_NUMPY_PYTHON_MODULE
 CIT_NUMPY_INCDIR
+CIT_PYTHON_MODULE([numpy],[1.20.0])
 
 dnl SWIG
 if test "$enable_swig" = "yes" ; then
