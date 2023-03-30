@@ -58,7 +58,7 @@ class DataLinea(TestData):
                                     dtype=numpy.float64)
         self.cells = numpy.array([[0, 1],
                                   [1, 2]],
-                                 dtype=numpy.int32)
+                                 dtype=numpy.int64)
         self.slip = numpy.array([
             # t=0
             [[0.4, 0.0],
@@ -86,7 +86,7 @@ class DataLineb(TestData):
                                     dtype=numpy.float64)
         self.cells = numpy.array([[1, 2],
                                   [0, 1]],
-                                 dtype=numpy.int32)
+                                 dtype=numpy.int64)
         self.slip = numpy.array([
             # t=0
             [[0.6, 0.0],
@@ -115,7 +115,7 @@ class DataTri3a(TestData):
                                     dtype=numpy.float64)
         self.cells = numpy.array([[0, 1, 3],
                                   [1, 2, 3]],
-                                 dtype=numpy.int32)
+                                 dtype=numpy.int64)
         self.slip = numpy.array([
             # t=0
             [[0.0, 0.5, 0.0],
@@ -146,7 +146,7 @@ class DataTri3b(TestData):
                                     dtype=numpy.float64)
         self.cells = numpy.array([[0, 1, 3],
                                   [1, 2, 3]],
-                                 dtype=numpy.int32)
+                                 dtype=numpy.int64)
         self.slip = numpy.array([
             # t=0
             [[0.3, 0.0, 0.0],
@@ -179,7 +179,7 @@ class DataQuad4a(TestData):
                                     dtype=numpy.float64)
         self.cells = numpy.array([[0, 1, 4, 3],
                                   [1, 2, 5, 4]],
-                                 dtype=numpy.int32)
+                                 dtype=numpy.int64)
         self.slip = numpy.array([
             # t=0
             [[0.1, 1.3, 0.0],
@@ -216,7 +216,7 @@ class DataQuad4b(TestData):
                                     dtype=numpy.float64)
         self.cells = numpy.array([[0, 1, 4, 3],
                                   [1, 2, 5, 4]],
-                                 dtype=numpy.int32)
+                                 dtype=numpy.int64)
         self.slip = numpy.array([
             # t=0
             [[0.1, 1.3, 0.0],

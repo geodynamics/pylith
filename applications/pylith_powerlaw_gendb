@@ -142,7 +142,7 @@ class PowerLawApp(Application):
 
         (npoints, spaceDim) = points.shape
         data = numpy.zeros((npoints, 1), dtype=numpy.float64)
-        err = numpy.zeros((npoints,), dtype=numpy.int32)
+        err = numpy.zeros((npoints,), dtype=numpy.int64)
 
         db.open()
         db.setQueryValues([valueName])

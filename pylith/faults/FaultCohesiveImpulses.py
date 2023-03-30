@@ -102,7 +102,7 @@ class FaultCohesiveImpulses(FaultCohesive, ModuleFaultCohesiveImpulses):
             self._info.log(f"Pre-initializing fault '{self.labelName}={self.labelValue}'.")
         FaultCohesive.preinitialize(self, problem)
         ModuleFaultCohesiveImpulses.setThreshold(self, self.threshold.value)
-        impulseDOF = numpy.array(self.impulseDOF, dtype=numpy.int32)
+        impulseDOF = numpy.array(self.impulseDOF, dtype=numpy.intc)
         ModuleFaultCohesiveImpulses.setImpulseDOF(self, impulseDOF)
   
 

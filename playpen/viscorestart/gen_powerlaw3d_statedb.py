@@ -21,7 +21,7 @@ filenameDB = "grav_statevars-%s.spatialdb" % material
 # Open HDF5 file and get coordinates, cells, and stress.
 h5 = h5py.File(filenameH5, "r")
 vertices = h5['geometry/vertices'][:]
-cells = numpy.array(h5['topology/cells'][:], dtype=numpy.int)
+cells = numpy.array(h5['topology/cells'][:], dtype=c)
 stress = h5['cell_fields/stress'][0,:,:]
 strain = h5['cell_fields/total_strain'][0,:,:]
 strainViscous = h5['cell_fields/viscous_strain'][0,:,:]

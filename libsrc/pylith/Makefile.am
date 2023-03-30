@@ -79,8 +79,8 @@ libpylith_la_SOURCES = \
 	materials/AuxiliaryFactoryElasticity.cc \
 	materials/DerivedFactoryElasticity.cc \
 	materials/IsotropicLinearElasticity.cc \
-    materials/IsotropicLinearMaxwell.cc \
-    materials/IsotropicLinearGenMaxwell.cc \
+	materials/IsotropicLinearMaxwell.cc \
+	materials/IsotropicLinearGenMaxwell.cc \
 	materials/IsotropicPowerLaw.cc \
 	materials/IncompressibleElasticity.cc \
 	materials/RheologyIncompressibleElasticity.cc \
@@ -157,7 +157,7 @@ libpylith_la_SOURCES = \
 
 
 
-libpylith_la_LDFLAGS = $(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
+libpylith_la_LDFLAGS = $(AM_LDFLAGS) $(PYTHON_LDFLAGS) $(PYTHON_LA_LDFLAGS)
 libpylith_la_LIBADD = \
 	-lspatialdata \
 	-lhdf5 \
