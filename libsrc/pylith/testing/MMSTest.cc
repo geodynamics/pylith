@@ -32,7 +32,6 @@
 #include "pylith/utils/array.hh" // USES real_array, string_vector
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 #include <cassert> // USES assert()
-#include <iostream> // USES std::out
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Setup testing data.
@@ -251,6 +250,8 @@ pylith::testing::MMSTest::_initialize(void) {
     if (debug.state()) {
         const pylith::topology::Mesh& mesh = solution->getMesh();
         mesh.view();
+        std::string options = std::string(":") + std::string(GenericComponent::getName()) + std::string("_mesh.tex:ascii_latex");
+        mesh.view(options.c_str());
     } // if
 
     PYLITH_METHOD_END;

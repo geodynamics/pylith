@@ -38,6 +38,7 @@
 #include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 #include <cassert> // USES assert()
+#include <iostream> // USES std::cout in debugging
 
 // ---------------------------------------------------------------------------------------------------------------------
 namespace pylith {
@@ -561,6 +562,13 @@ pylith::problems::TimeDependent::computeRHSResidual(PetscVec residualVec,
 
     _integrationData->setScalar(pylith::feassemble::IntegrationData::t_state, t);
 
+    pythia::journal::debug_t debug("problem.view_residual");
+    if (debug.state()) {
+        residual->view("RHS RESIDUAL");
+        std::cout << "RHS RESIDUAL GLOBAL VEC" << std::endl;
+        VecView(residualVec, PETSC_VIEWER_STDOUT_SELF);
+    } // if
+
     PYLITH_METHOD_END;
 } // computeRHSResidual
 
@@ -602,6 +610,13 @@ pylith::problems::TimeDependent::computeLHSResidual(PetscVec residualVec,
     residual->scatterLocalToVector(residualVec, ADD_VALUES);
 
     _integrationData->setScalar(pylith::feassemble::IntegrationData::t_state, t);
+
+    pythia::journal::debug_t debug("problem.view_residual");
+    if (debug.state()) {
+        residual->view("LHS RESIDUAL");
+        std::cout << "LHS RESIDUAL GLOBAL VEC" << std::endl;
+        VecView(residualVec, PETSC_VIEWER_STDOUT_SELF);
+    } // if
 
     PYLITH_METHOD_END;
 } // computeLHSResidual

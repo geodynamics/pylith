@@ -104,30 +104,25 @@ pylith::topology::FieldOps::createFE(const FieldBase::Discretization& feinfo,
 
         // Create quadrature
         PetscQuadrature quadrature = NULL;
-        const int basisNumComponents = 1;
-        const int numPoints = quadOrder + 1;
-        const PylithReal xRefMin = -1.0;
-        const PylithReal xRefMax = +1.0;
-        if (useTensor) {
-            err = PetscDTGaussTensorQuadrature(dim, basisNumComponents, numPoints, xRefMin, xRefMax, &quadrature);PYLITH_CHECK_ERROR(err);
-        } else {
-            err = PetscDTStroudConicalQuadrature(dim, basisNumComponents, numPoints, xRefMin, xRefMax, &quadrature);PYLITH_CHECK_ERROR(err);
+        PetscQuadrature faceQuadrature = NULL;
+        DMPolytopeType ct;
+        switch (dim) {
+          case 0: ct = DM_POLYTOPE_POINT;break;
+          case 1: ct = DM_POLYTOPE_SEGMENT;break;
+          case 2: ct = useTensor ? DM_POLYTOPE_QUADRILATERAL : DM_POLYTOPE_TRIANGLE;break;
+          case 3: ct = useTensor ? DM_POLYTOPE_HEXAHEDRON : DM_POLYTOPE_TETRAHEDRON;break;
+          default: throw std::logic_error("Cannot handle dimension");
         }
+        err = PetscDTCreateDefaultQuadrature(ct, quadOrder, &quadrature, &faceQuadrature);PYLITH_CHECK_ERROR(err);
         err = PetscFESetQuadrature(fe, quadrature);PYLITH_CHECK_ERROR(err);
         err = PetscQuadratureDestroy(&quadrature);PYLITH_CHECK_ERROR(err);
-        assert(feKey.feSpace == FieldBase::POLYNOMIAL_SPACE);
-        PetscQuadrature faceQuadrature = NULL;
-        if (useTensor) {
-            err = PetscDTGaussTensorQuadrature(dim-1, basisNumComponents, numPoints, xRefMin, xRefMax, &faceQuadrature);PYLITH_CHECK_ERROR(err);
-        } else {
-            err = PetscDTStroudConicalQuadrature(dim-1, basisNumComponents, numPoints, xRefMin, xRefMax, &faceQuadrature);PYLITH_CHECK_ERROR(err);
-        } // if/else
         err = PetscFESetFaceQuadrature(fe, faceQuadrature);PYLITH_CHECK_ERROR(err);
         err = PetscQuadratureDestroy(&faceQuadrature);PYLITH_CHECK_ERROR(err);
 
+        assert(feKey.feSpace == FieldBase::POLYNOMIAL_SPACE);
         pylith::topology::FieldOps::feStore.insert(std::pair<FieldBase::Discretization, pylith::topology::FE>(feKey, fe));
     } else {
-        throw std::logic_error("FielfOps::createFE() :TODO: Can't reuse PetscFE due to naming of fields, so make a deep copy of fe.");
+        throw std::logic_error("FieldOps::createFE() :TODO: Can't reuse PetscFE due to naming of fields, so make a deep copy of fe.");
         fe = hasFE->second._fe;
         err = PetscObjectReference((PetscObject) fe);PYLITH_CHECK_ERROR(err);
     }

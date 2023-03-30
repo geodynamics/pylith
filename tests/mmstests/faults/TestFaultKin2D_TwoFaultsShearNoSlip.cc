@@ -399,16 +399,16 @@ protected:
         PetscIS is;
         PetscInt cohesiveCell;
         PetscErrorCode err = 0;
-        PetscDS prob = NULL;
-        err = DMGetDS(dm, &prob);CPPUNIT_ASSERT(!err);
-        err = PetscDSSetExactSolution(prob, 0, solnkernel_disp, dm);CPPUNIT_ASSERT(!err);
+        PetscDS ds = NULL;
+        err = DMGetDS(dm, &ds);CPPUNIT_ASSERT(!err);
+        err = PetscDSSetExactSolution(ds, 0, solnkernel_disp, dm);CPPUNIT_ASSERT(!err);
         err = DMGetLabel(dm, pylith::topology::Mesh::cells_label_name, &label);CPPUNIT_ASSERT(!err);
         err = DMLabelGetStratumIS(label, _faults[0]->getCohesiveLabelValue(), &is);CPPUNIT_ASSERT(!err);
         err = ISGetMinMax(is, &cohesiveCell, NULL);CPPUNIT_ASSERT(!err);
         err = ISDestroy(&is);CPPUNIT_ASSERT(!err);
-        err = DMGetCellDS(dm, cohesiveCell, &prob);CPPUNIT_ASSERT(!err);
-        err = PetscDSSetExactSolution(prob, 0, solnkernel_disp, NULL);CPPUNIT_ASSERT(!err);
-        err = PetscDSSetExactSolution(prob, 1, solnkernel_lagrangemultiplier, NULL);CPPUNIT_ASSERT(!err);
+        err = DMGetCellDS(dm, cohesiveCell, &ds, NULL);CPPUNIT_ASSERT(!err);
+        err = PetscDSSetExactSolution(ds, 0, solnkernel_disp, NULL);CPPUNIT_ASSERT(!err);
+        err = PetscDSSetExactSolution(ds, 1, solnkernel_lagrangemultiplier, NULL);CPPUNIT_ASSERT(!err);
     } // _setExactSolution
 
 }; // TestFaultKin2D_TwoFaultsShearNoSlip
