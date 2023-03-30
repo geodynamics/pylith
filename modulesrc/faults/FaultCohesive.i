@@ -179,6 +179,11 @@ protected:
                                      const pylith::topology::Field& solution,
                                      const std::vector<pylith::materials::Material*>& materials) const = 0;
 
+            // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
+private:
+
+            pylith::feassemble::Integrator* createIntegrator(const pylith::topology::Field& solution); // Empty method
+
         }; // class FaultCohesive
 
     } // faults
