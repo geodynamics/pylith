@@ -30,6 +30,7 @@
 #include "pylith/materials/materialsfwd.hh" // forward declarations
 #include "pylith/bc/bcfwd.hh" // forward declarations
 #include "pylith/topology/topologyfwd.hh" // forward declarations
+#include "pylith/problems/Physics.hh" // USES FormulationEnum
 #include "pylith/topology/Field.hh" // HASA FieldBase::Discretization
 
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // HOLDSA UserFunctionDB
@@ -95,9 +96,8 @@ public:
     spatialdata::spatialdb::GravityField* gravityField; ///< Gravity field.
     spatialdata::units::Nondimensional* normalizer; ///< Scales for nondimensionalization.
 
-    PylithReal startTime; ///< Start time for simulation.
-    PylithReal endTime; ///< End time for simulation.
-    PylithReal timeStep; ///< Time step in simulation.
+    PylithReal t; ///< Time for MMS solution.
+    PylithReal dt; ///< Time step in simulation.
 
     int numSolnSubfields; ///< Number of solution fields.
     pylith::topology::Field::Discretization* solnDiscretizations; ///< Discretizations for solution fields.
@@ -107,7 +107,7 @@ public:
     pylith::topology::Field::Discretization* auxDiscretizations; ///< Discretizations for auxiliary subfields.
     spatialdata::spatialdb::UserFunctionDB* auxDB; ///< Spatial database with auxiliary field.
 
-    bool isExplicit; ///< True for explicit time stepping.
+    pylith::problems::Physics::FormulationEnum formulation; ///< Time stepping formulation
 }; // TestElasticity_Data
 
 #endif // pylith_mmstests_testelasticity_hh

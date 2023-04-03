@@ -129,23 +129,24 @@ pylith::mmstests::TestElasticity::_initialize(void) {
     _problem->setMaterials(materials, 1);
     pylith::bc::BoundaryCondition* bcs[1] = { _bc };
     _problem->setBoundaryConditions(bcs, 1);
-    _problem->setStartTime(_data->startTime);
-    _problem->setEndTime(_data->endTime);
-    _problem->setInitialTimeStep(_data->timeStep);
+    _problem->setStartTime(_data->t);
+    _problem->setEndTime(_data->t+_data->dt);
+    _problem->setInitialTimeStep(_data->dt);
+    _problem->setFormulation(_data->formulation);
 
     // Set up solution field.
-    CPPUNIT_ASSERT( (!_data->isExplicit && 1 == _data->numSolnSubfields) ||
-                    (_data->isExplicit && 2 == _data->numSolnSubfields) );
-    CPPUNIT_ASSERT(_data->solnDiscretizations);
-
     CPPUNIT_ASSERT(!_solution);
     _solution = new pylith::topology::Field(*_mesh);CPPUNIT_ASSERT(_solution);
     _solution->setLabel("solution");
     pylith::problems::SolutionFactory factory(*_solution, *_data->normalizer);
     factory.addDisplacement(_data->solnDiscretizations[0]);
-    if (_data->isExplicit) {
+    if (pylith::problems::Physics::QUASISTATIC == _data->formulation) {
+        CPPUNIT_ASSERT_EQUAL(1, _data->numSolnSubfields);
+    } else {
+        CPPUNIT_ASSERT_EQUAL(pylith::problems::Physics::DYNAMIC, _data->formulation);
+        CPPUNIT_ASSERT_EQUAL(2, _data->numSolnSubfields);
         factory.addVelocity(_data->solnDiscretizations[1]);
-    } // if
+    } // if/else
     _problem->setSolution(_solution);
 
     pylith::testing::MMSTest::_initialize();
@@ -165,9 +166,8 @@ pylith::mmstests::TestElasticity_Data::TestElasticity_Data(void) :
     gravityField(NULL),
     normalizer(new spatialdata::units::Nondimensional),
 
-    startTime(0.0),
-    endTime(0.0),
-    timeStep(0.0),
+    t(0.0),
+    dt(0.05),
 
     numSolnSubfields(0),
     solnDiscretizations(NULL),
@@ -177,7 +177,7 @@ pylith::mmstests::TestElasticity_Data::TestElasticity_Data(void) :
     auxDiscretizations(NULL),
     auxDB(new spatialdata::spatialdb::UserFunctionDB),
 
-    isExplicit(false) {
+    formulation(pylith::problems::Physics::QUASISTATIC) {
     CPPUNIT_ASSERT(normalizer);
 
     CPPUNIT_ASSERT(auxDB);
