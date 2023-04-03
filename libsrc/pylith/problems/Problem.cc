@@ -251,7 +251,21 @@ pylith::problems::Problem::getSolution(void) const {
     } // if
 
     PYLITH_METHOD_RETURN(solution);
-}
+} // getSolution
+
+
+// ------------------------------------------------------------------------------------------------
+// Get time derivative solution field.
+const pylith::topology::Field*
+pylith::problems::Problem::getSolutionDot(void) const {
+    assert(_integrationData);
+    pylith::topology::Field* solutionDot = NULL;
+    if (_integrationData->hasField(pylith::feassemble::IntegrationData::solution_dot)) {
+        solutionDot = _integrationData->getField(pylith::feassemble::IntegrationData::solution_dot);
+    } // if
+
+    PYLITH_METHOD_RETURN(solutionDot);
+} // getSolutionDot
 
 
 // ------------------------------------------------------------------------------------------------

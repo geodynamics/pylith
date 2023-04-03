@@ -375,6 +375,12 @@ pylith::problems::TimeDependent::initialize(void) {
     case pylith::problems::Physics::DYNAMIC: {
         PYLITH_COMPONENT_DEBUG("Setting PetscTS callback for computeRHSFunction().");
         err = TSSetRHSFunction(_ts, NULL, computeRHSResidual, (void*)this);PYLITH_CHECK_ERROR(err);
+
+        PYLITH_COMPONENT_DEBUG("Setting up field for time derivative of solution.");
+        pylith::topology::Field* solutionDot = new pylith::topology::Field(*solution);assert(solutionDot);
+        solutionDot->setLabel("solutionDot");
+        _integrationData->setField(pylith::feassemble::IntegrationData::solution_dot, solutionDot);
+
         PYLITH_COMPONENT_DEBUG("Setting up field for inverse of lumped LHS Jacobian.");
         pylith::topology::Field* jacobianLHSLumpedInv = new pylith::topology::Field(*solution);assert(jacobianLHSLumpedInv);
         jacobianLHSLumpedInv->setLabel("JacobianLHS_lumped_inverse");
@@ -500,14 +506,8 @@ pylith::problems::TimeDependent::setSolutionLocal(const PylithReal t,
     _integrationData->setScalar(pylith::feassemble::IntegrationData::time, t);
 
     if (solutionDotVec) {
-        pylith::topology::Field* solutionDot = NULL;
-        if (!_integrationData->hasField(pylith::feassemble::IntegrationData::solution_dot)) {
-            solutionDot = new pylith::topology::Field(*solution);assert(solutionDot);
-            solutionDot->setLabel("solutionDot");
-            _integrationData->setField(pylith::feassemble::IntegrationData::solution_dot, solutionDot);
-        } else {
-            solutionDot = _integrationData->getField(pylith::feassemble::IntegrationData::solution_dot);
-        } // if/else
+        assert(_integrationData->hasField(pylith::feassemble::IntegrationData::solution_dot));
+        pylith::topology::Field* solutionDot = _integrationData->getField(pylith::feassemble::IntegrationData::solution_dot);
         solutionDot->scatterVectorToLocal(solutionDotVec);
     } // if
 

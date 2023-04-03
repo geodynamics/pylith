@@ -139,6 +139,12 @@ public:
      */
     const pylith::topology::Field* getSolution(void) const;
 
+    /** Get time derivative solution field.
+     *
+     * @returns Time derivative of solution field.
+     */
+    const pylith::topology::Field* getSolutionDot(void) const;
+
     /** Set materials.
      *
      * @param[in] materials Array of materials.

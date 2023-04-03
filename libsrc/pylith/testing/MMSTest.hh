@@ -83,6 +83,12 @@ protected:
     /// Set exact solution in domain.
     virtual void _setExactSolution(void) = 0;
 
+    /** Set time derivative of exact solution in domain.
+     *
+     * The default is an empty method. Override in MMS test implementation for time-dependent problems.
+     */
+    virtual void _setExactSolutionDot(void);
+
     // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
 

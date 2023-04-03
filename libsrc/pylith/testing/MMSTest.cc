@@ -240,6 +240,7 @@ pylith::testing::MMSTest::_initialize(void) {
     _problem->initialize();
     TSSetUp(_problem->getPetscTS());
     _setExactSolution();
+    _setExactSolutionDot();
 
     // Global vectors to use for analytical solution in MMS tests.
     const pylith::topology::Field* solution = _problem->getSolution();CPPUNIT_ASSERT(solution);
@@ -256,6 +257,12 @@ pylith::testing::MMSTest::_initialize(void) {
 
     PYLITH_METHOD_END;
 } // _initialize
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Set time derivative of exact solution in domain.
+void
+pylith::testing::MMSTest::_setExactSolutionDot(void) {} // empty method
 
 
 // End of file
