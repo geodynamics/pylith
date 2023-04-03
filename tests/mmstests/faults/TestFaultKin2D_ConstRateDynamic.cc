@@ -121,6 +121,8 @@ class pylith::mmstests::TestFaultKin2D_ConstRateDynamic :
 
     static double sliprate_leftlateral(const double x,
                                        const double y) {
+        std::cout << "slip rate="<<SLIPRATE * LENGTH_SCALE/TIME_SCALE<<std::endl;
+
         return SLIPRATE * LENGTH_SCALE/TIME_SCALE;
     } // sliprate_leftlateral
 
@@ -187,6 +189,7 @@ class pylith::mmstests::TestFaultKin2D_ConstRateDynamic :
 
         s[0] = 0.0;
         s[1] = disp_y(x[0], x[1], 0);
+        std::cout << "BOUNDARY x=("<<x[0]<<", "<<x[1]<<"), s=("<<s[0]<<", "<<s[1]<<")" << std::endl;
 
         return 0;
     } // bckernel_disp
@@ -212,10 +215,10 @@ class pylith::mmstests::TestFaultKin2D_ConstRateDynamic :
             PetscInt numCellsLeftFault = 0;
             switch (cellType) {
             case DM_POLYTOPE_TRIANGLE:
-                numCellsLeftFault = 4;
+                numCellsLeftFault = 12;
                 break;
             case DM_POLYTOPE_QUADRILATERAL:
-                numCellsLeftFault = 2;
+                numCellsLeftFault = 6;
                 break;
             default:
                 CPPUNIT_FAIL("Unknown cell type in solution displacement kernel.");
@@ -223,6 +226,7 @@ class pylith::mmstests::TestFaultKin2D_ConstRateDynamic :
             flag = cell < numCellsLeftFault ? -1 : +1;
         } // if
         s[1] = disp_y(x[0], x[1], flag);
+        std::cout << "SOLUTION x=("<<x[0]<<", "<<x[1]<<"), s=("<<s[0]<<", "<<s[1]<<")" << std::endl;
 
         return 0;
     } // solnkernel_disp
@@ -237,6 +241,7 @@ class pylith::mmstests::TestFaultKin2D_ConstRateDynamic :
         CPPUNIT_ASSERT(x);
         CPPUNIT_ASSERT(2 == numComponents);
         CPPUNIT_ASSERT(s);
+        std::cout << "x=("<<x[0]<<", "<<x[1]<<"), traction=("<<faulttraction_x(x[0], x[1])<<", "<<faulttraction_y(x[0], x[1])<<")" << std::endl;
 
         s[0] = faulttraction_x(x[0], x[1]);
         s[1] = faulttraction_y(x[0], x[1]);
@@ -401,6 +406,7 @@ protected:
     } // _setExactSolution
 
 }; // TestFaultKin2D_ConstRateDynamic
+#if 0
 const double pylith::mmstests::TestFaultKin2D_ConstRateDynamic::SLIPRATE = 1.5;
 const double pylith::mmstests::TestFaultKin2D_ConstRateDynamic::VELOCITY = 4.0;
 const double pylith::mmstests::TestFaultKin2D_ConstRateDynamic::TIMESTAMP = 10.0;
@@ -408,6 +414,16 @@ const double pylith::mmstests::TestFaultKin2D_ConstRateDynamic::LENGTH_SCALE = 1
 const double pylith::mmstests::TestFaultKin2D_ConstRateDynamic::PRESSURE_SCALE = 2.5e+10;
 const double pylith::mmstests::TestFaultKin2D_ConstRateDynamic::TIME_SCALE = 2.0;
 const double pylith::mmstests::TestFaultKin2D_ConstRateDynamic::DOMAIN_X = 8000.0;
+#else
+const double pylith::mmstests::TestFaultKin2D_ConstRateDynamic::SLIPRATE = 3.0;
+const double pylith::mmstests::TestFaultKin2D_ConstRateDynamic::VELOCITY = 1.5;
+const double pylith::mmstests::TestFaultKin2D_ConstRateDynamic::TIMESTAMP = 10.0;
+const double pylith::mmstests::TestFaultKin2D_ConstRateDynamic::LENGTH_SCALE = 1000.0;
+const double pylith::mmstests::TestFaultKin2D_ConstRateDynamic::PRESSURE_SCALE = 2.5e+10;
+const double pylith::mmstests::TestFaultKin2D_ConstRateDynamic::TIME_SCALE = 2.0;
+const double pylith::mmstests::TestFaultKin2D_ConstRateDynamic::DOMAIN_X = 8000.0;
+
+#endif
 
 // ---------------------------------------------------------------------------------------------------------------------
 class pylith::mmstests::TestFaultKin2D_ConstRateDynamic_TriP1 :
