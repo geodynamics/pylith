@@ -542,7 +542,7 @@ pylith::materials::Elasticity::_setKernelsJacobian(pylith::feassemble::Integrato
         kernels.resize(2);
         const EquationPart equationPart = pylith::feassemble::Integrator::LHS_LUMPED_INV;
         kernels[0] = JacobianKernels("displacement", "displacement", equationPart, Jf0uu, Jf1uu, Jf2uu, Jf3uu);
-        kernels[3] = JacobianKernels("velocity", "velocity", equationPart, Jf0vv, Jf1vv, Jf2vv, Jf3vv);
+        kernels[1] = JacobianKernels("velocity", "velocity", equationPart, Jf0vv, Jf1vv, Jf2vv, Jf3vv);
         break;
     } // DYNAMIC
     default:
