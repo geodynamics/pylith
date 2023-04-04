@@ -166,6 +166,11 @@ pylith::testing::MMSTest::testJacobianTaylorSeries(void) {
     _initialize();
 
     CPPUNIT_ASSERT(_problem);
+    if (_problem->getFormulation() == pylith::problems::Physics::DYNAMIC) {
+        PYLITH_JOURNAL_WARNING("Skipping Jacobian Taylor series check. No Jacobian for dynamic formulation.");
+        PYLITH_METHOD_END;
+    } // if
+
     CPPUNIT_ASSERT(_solutionExactVec);
     CPPUNIT_ASSERT(_solutionDotExactVec);
     PetscErrorCode err = 0;
@@ -195,7 +200,7 @@ pylith::testing::MMSTest::testJacobianFiniteDiff(void) {
     PYLITH_METHOD_BEGIN;
 
     if (_disableFiniteDifferenceCheck) {
-        PYLITH_JOURNAL_ERROR("Skipping Jacobian finite-difference check. Test disabled.");
+        PYLITH_JOURNAL_WARNING("Skipping Jacobian finite-difference check. Test disabled.");
         PYLITH_METHOD_END;
     } // if
 
@@ -204,6 +209,12 @@ pylith::testing::MMSTest::testJacobianFiniteDiff(void) {
     err = PetscOptionsSetValue(NULL, "-ts_error_if_step_fails", "false");CPPUNIT_ASSERT(!err);
     _initialize();
 
+    CPPUNIT_ASSERT(_problem);
+    if (_problem->getFormulation() == pylith::problems::Physics::DYNAMIC) {
+        PYLITH_JOURNAL_WARNING("Skipping Jacobian finite-difference check. No Jacobian for dynamic formulation.");
+        PYLITH_METHOD_END;
+    } // if
+
     pythia::journal::debug_t debug(GenericComponent::getName());
     if (debug.state()) {
         err = PetscOptionsSetValue(NULL, "-snes_test_jacobian_view", "");CPPUNIT_ASSERT(!err);
@@ -211,8 +222,6 @@ pylith::testing::MMSTest::testJacobianFiniteDiff(void) {
     err = PetscOptionsSetValue(NULL, "-snes_test_jacobian", "1.0e-6");CPPUNIT_ASSERT(!err);
     err = PetscOptionsSetValue(NULL, "-snes_error_if_not_converged", "false");CPPUNIT_ASSERT(!err);
     err = SNESSetFromOptions(_problem->getPetscSNES());CPPUNIT_ASSERT(!err);
-
-    CPPUNIT_ASSERT(_problem);
 
     _problem->solve();
     std::cout << "IMPORTANT: You must check the Jacobian values printed here manually!\n"
