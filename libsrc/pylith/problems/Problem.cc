@@ -415,9 +415,7 @@ pylith::problems::Problem::initialize(void) {
     // Initialize solution field.
     PetscErrorCode err = DMSetFromOptions(solution->getDM());PYLITH_CHECK_ERROR(err);
     _setupSolution();
-
-    const pylith::topology::Mesh& mesh = solution->getMesh();
-    pylith::topology::CoordsVisitor::optimizeClosure(mesh.getDM());
+    pylith::topology::CoordsVisitor::optimizeClosure(solution->getDM());
 
     // Initialize integrators.
     _createIntegrators();
