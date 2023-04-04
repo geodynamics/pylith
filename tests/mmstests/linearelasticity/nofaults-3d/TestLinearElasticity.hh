@@ -17,36 +17,37 @@
 //
 
 /**
- * @file mmstets/elasticity/TestElasticity.hh
+ * @file mmstets/elasticity/TestLinearElasticity.hh
  *
  * @brief C++ abstract base class for testing Elasticity for various rheologies.
  */
 
-#if !defined(pylith_mmstests_testelasticity_hh)
-#define pylith_mmstests_testelasticity_hh
+#if !defined(pylith_mmstests_testlinearelasticity_hh)
+#define pylith_mmstests_testlinearelasticity_hh
 
 #include "pylith/testing/MMSTest.hh" // ISA MMSTEST
 
-#include "pylith/materials/materialsfwd.hh" // forward declarations
-#include "pylith/bc/bcfwd.hh" // forward declarations
-#include "pylith/topology/topologyfwd.hh" // forward declarations
+#include "pylith/materials/Elasticity.hh" // USES Elasticity
+#include "pylith/materials/IsotropicLinearElasticity.hh" // USES IsotropicLinearElasticity
+#include "pylith/bc/DirichletUserFn.hh" // USES DirichletUserFn
+
+#include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
+#include "spatialdata/geocoords/CSCart.hh" // USES CSCart
+#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+
 #include "pylith/problems/Physics.hh" // USES FormulationEnum
 #include "pylith/topology/Field.hh" // HASA FieldBase::Discretization
 
-#include "spatialdata/spatialdb/spatialdbfwd.hh" // HOLDSA UserFunctionDB
-#include "spatialdata/geocoords/geocoordsfwd.hh" // HOLDSA CoordSys
-#include "spatialdata/units/unitsfwd.hh" // HOLDSA Nondimensional
-
 namespace pylith {
     namespace mmstests {
-        class TestElasticity;
+        class TestLinearElasticity;
 
-        class TestElasticity_Data; // test data
+        class TestLinearElasticity_Data; // test data
     } // mmstets
 } // pylith
 
 /// C++ abstract base class for testing Elasticity with various rheologies.
-class pylith::mmstests::TestElasticity : public pylith::testing::MMSTest {
+class pylith::mmstests::TestLinearElasticity : public pylith::testing::MMSTest {
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
@@ -67,22 +68,20 @@ protected:
     // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
 
-    pylith::materials::Elasticity* _material; ///< Material for testing.
-    pylith::bc::DirichletUserFn* _bc; ///< Dirichlet boundary condition.
-    TestElasticity_Data* _data; ///< Test parameters.
+    TestLinearElasticity_Data* _data; ///< Test parameters.
 
-}; // class TestElasticity
+}; // class TestLinearElasticity
 
 // =====================================================================================================================
-class pylith::mmstests::TestElasticity_Data {
+class pylith::mmstests::TestLinearElasticity_Data {
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Constructor
-    TestElasticity_Data(void);
+    TestLinearElasticity_Data(void);
 
     /// Destructor
-    ~TestElasticity_Data(void);
+    ~TestLinearElasticity_Data(void);
 
     // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
@@ -91,25 +90,31 @@ public:
     const char* meshFilename; ///< Name of file with ASCII mesh.
     const char* meshOptions; ///< Command line options for mesh.
     const char* boundaryLabel; ///< Group defining domain boundary.
-
-    spatialdata::geocoords::CoordSys* cs; ///< Coordinate system.
-    spatialdata::spatialdb::GravityField* gravityField; ///< Gravity field.
-    spatialdata::units::Nondimensional* normalizer; ///< Scales for nondimensionalization.
+    bool useAsciiMesh; ///< Use MeshIOAscii to read mesh, otherwise use PETSc.
 
     PylithReal t; ///< Time for MMS solution.
     PylithReal dt; ///< Time step in simulation.
-
-    int numSolnSubfields; ///< Number of solution fields.
-    pylith::topology::Field::Discretization* solnDiscretizations; ///< Discretizations for solution fields.
-
-    int numAuxSubfields; ///< Number of auxiliary subfields.
-    const char** auxSubfields; ///< Names of auxiliary subfields.
-    pylith::topology::Field::Discretization* auxDiscretizations; ///< Discretizations for auxiliary subfields.
-    spatialdata::spatialdb::UserFunctionDB* auxDB; ///< Spatial database with auxiliary field.
-
+    spatialdata::geocoords::CSCart cs; ///< Coordinate system.
+    spatialdata::units::Nondimensional normalizer; ///< Scales for nondimensionalization.
     pylith::problems::Physics::FormulationEnum formulation; ///< Time stepping formulation
-}; // TestElasticity_Data
 
-#endif // pylith_mmstests_testelasticity_hh
+    pylith::materials::Elasticity material; ///< Materials.
+    pylith::materials::IsotropicLinearElasticity rheology; ///< Bulk rheology for materials.
+    spatialdata::spatialdb::GravityField* gravityField; ///< Gravity field.
+    pylith::bc::DirichletUserFn bc; ///< Dirichlet boundary condition.
+
+    // Solution field.
+    int numSolnSubfields; ///< Number of solution fields.
+    pylith::topology::Field::Discretization const* solnDiscretizations; ///< Discretizations for solution fields.
+
+    // Material auxiliary fields.
+    int numAuxSubfields; ///< Number of auxiliary subfields for materials.
+    const char** auxSubfields; ///< Names of auxiliary subfields for materials.
+    pylith::topology::Field::Discretization const* auxDiscretizations; ///< Discretizations for auxiliary subfields.
+    spatialdata::spatialdb::UserFunctionDB auxDB; ///< Spatial database for auxiliary field.
+
+}; // TestLinearElasticity_Data
+
+#endif // pylith_mmstests_testlinearelasticity_hh
 
 // End of file

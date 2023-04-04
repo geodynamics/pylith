@@ -18,39 +18,31 @@
 
 #include <portinfo>
 
-#include "TestIsotropicLinearElasticity.hh" // ISA TestIsotropicLinearElasticity3D
+#include "TestLinearElasticity.hh" // ISA TestLinearElasticity3D
 
 #include "pylith/problems/TimeDependent.hh" // USES TimeDependent
-#include "pylith/materials/Elasticity.hh" // USES Elasticity
-#include "pylith/materials/IsotropicLinearElasticity.hh" // USES IsotropicLinearElasticity
-#include "pylith/bc/DirichletUserFn.hh" // USES DirichletUserFn
-
 #include "pylith/topology/Field.hh" // USES pylith::topology::Field::Discretization
 #include "pylith/utils/journals.hh" // USES pythia::journal::debug_t
 
-#include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
-#include "spatialdata/geocoords/CSCart.hh" // USES CSCart
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
-
 namespace pylith {
     namespace mmstests {
-        class TestIsotropicLinearElasticity3D_UniformStrain;
+        class UniformStrain3D;
 
-        class TestIsotropicLinearElasticity3D_UniformStrain_TetP1;
-        class TestIsotropicLinearElasticity3D_UniformStrain_TetP2;
-        class TestIsotropicLinearElasticity3D_UniformStrain_TetP3;
-        class TestIsotropicLinearElasticity3D_UniformStrain_TetP4;
+        class UniformStrain3D_TetP1;
+        class UniformStrain3D_TetP2;
+        class UniformStrain3D_TetP3;
+        class UniformStrain3D_TetP4;
 
-        class TestIsotropicLinearElasticity3D_UniformStrain_HexQ1;
-        class TestIsotropicLinearElasticity3D_UniformStrain_HexQ2;
-        class TestIsotropicLinearElasticity3D_UniformStrain_HexQ3;
-        class TestIsotropicLinearElasticity3D_UniformStrain_HexQ4;
+        class UniformStrain3D_HexQ1;
+        class UniformStrain3D_HexQ2;
+        class UniformStrain3D_HexQ3;
+        class UniformStrain3D_HexQ4;
     } // tests/mmstests
 } // pylith
 
 // ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::TestIsotropicLinearElasticity3D_UniformStrain :
-    public pylith::mmstests::TestIsotropicLinearElasticity {
+class pylith::mmstests::UniformStrain3D :
+    public pylith::mmstests::TestLinearElasticity {
     // Spatial database user functions for auxiiliary subfields (includes derived fields).
 
     // Density
@@ -156,31 +148,25 @@ class pylith::mmstests::TestIsotropicLinearElasticity3D_UniformStrain :
 protected:
 
     void setUp(void) {
-        TestIsotropicLinearElasticity::setUp();
+        TestLinearElasticity::setUp();
 
         // Overwrite component names for control of journals at test level.
-        GenericComponent::setName("TestIsotropicLinearElasticity3D_UniformStrain");
+        GenericComponent::setName("UniformStrain3D");
 
-        CPPUNIT_ASSERT(!_data);
-        _data = new TestElasticity_Data();CPPUNIT_ASSERT(_data);
+        CPPUNIT_ASSERT(_data);
         _isJacobianLinear = true;
 
-        _data->spaceDim = 3;
         _data->meshFilename = ":UNKNOWN:"; // Set in child class.
         _data->boundaryLabel = "boundary";
 
-        CPPUNIT_ASSERT(!_data->cs);
-        _data->cs = new spatialdata::geocoords::CSCart;CPPUNIT_ASSERT(_data->cs);
-        _data->cs->setSpaceDim(_data->spaceDim);
-
-        CPPUNIT_ASSERT(_data->normalizer);
-        _data->normalizer->setLengthScale(1.0e+03);
-        _data->normalizer->setTimeScale(2.0);
-        _data->normalizer->setPressureScale(2.25e+10);
-        _data->normalizer->computeDensityScale();
+        _data->normalizer.setLengthScale(1.0e+03);
+        _data->normalizer.setTimeScale(2.0);
+        _data->normalizer.setPressureScale(2.25e+10);
+        _data->normalizer.computeDensityScale();
 
         // solnDiscretizations set in derived class.
 
+        // Material information
         _data->numAuxSubfields = 3;
         static const char* _auxSubfields[3] = {"density", "shear_modulus", "bulk_modulus"};
         _data->auxSubfields = _auxSubfields;
@@ -191,27 +177,25 @@ protected:
         };
         _data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
 
-        CPPUNIT_ASSERT(_data->auxDB);
-        _data->auxDB->addValue("density", density, density_units());
-        _data->auxDB->addValue("vp", vp, vp_units());
-        _data->auxDB->addValue("vs", vs, vs_units());
-        _data->auxDB->setCoordSys(*_data->cs);
+        _data->auxDB.addValue("density", density, density_units());
+        _data->auxDB.addValue("vp", vp, vp_units());
+        _data->auxDB.addValue("vs", vs, vs_units());
+        _data->auxDB.setCoordSys(_data->cs);
 
-        CPPUNIT_ASSERT(_material);
-        _material->setFormulation(pylith::problems::Physics::QUASISTATIC);
-        _material->useBodyForce(false);
-        _rheology->useReferenceState(false);
+        _data->material.setFormulation(pylith::problems::Physics::QUASISTATIC);
+        _data->material.useBodyForce(false);
+        _data->rheology.useReferenceState(false);
 
-        _material->setDescription("Isotropic Linear Elascitity");
-        _material->setLabelValue(24);
+        _data->material.setDescription("Isotropic Linear Elascitity");
+        _data->material.setLabelValue(24);
 
         static const PylithInt constrainedDOF[3] = { 0, 1, 2 };
         static const PylithInt numConstrained = 3;
-        _bc->setSubfieldName("displacement");
-        _bc->setLabelName("boundary");
-        _bc->setLabelValue(1);
-        _bc->setConstrainedDOF(constrainedDOF, numConstrained);
-        _bc->setUserFn(solnkernel_disp);
+        _data->bc.setSubfieldName("displacement");
+        _data->bc.setLabelName("boundary");
+        _data->bc.setLabelValue(1);
+        _data->bc.setConstrainedDOF(constrainedDOF, numConstrained);
+        _data->bc.setUserFn(solnkernel_disp);
 
     } // setUp
 
@@ -226,17 +210,17 @@ protected:
         err = PetscDSSetExactSolution(prob, 0, solnkernel_disp, NULL);CPPUNIT_ASSERT(!err);
     } // _setExactSolution
 
-}; // TestIsotropicLinearElasticity3D_UniformStrain
+}; // UniformStrain3D
 
 // ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::TestIsotropicLinearElasticity3D_UniformStrain_TetP1 :
-    public pylith::mmstests::TestIsotropicLinearElasticity3D_UniformStrain {
-    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearElasticity3D_UniformStrain_TetP1,
-                           TestIsotropicLinearElasticity);
+class pylith::mmstests::UniformStrain3D_TetP1 :
+    public pylith::mmstests::UniformStrain3D {
+    CPPUNIT_TEST_SUB_SUITE(UniformStrain3D_TetP1,
+                           TestLinearElasticity);
     CPPUNIT_TEST_SUITE_END();
 
     void setUp(void) {
-        TestIsotropicLinearElasticity3D_UniformStrain::setUp();
+        UniformStrain3D::setUp();
         CPPUNIT_ASSERT(_data);
 
         _data->meshFilename = "data/tet.mesh";
@@ -249,21 +233,22 @@ class pylith::mmstests::TestIsotropicLinearElasticity3D_UniformStrain_TetP1 :
 
     } // setUp
 
-}; // TestIsotropicLinearElasticity3D_UniformStrain_TetP1
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearElasticity3D_UniformStrain_TetP1);
+}; // UniformStrain3D_TetP1
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::UniformStrain3D_TetP1);
 
 // ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::TestIsotropicLinearElasticity3D_UniformStrain_TetP2 :
-    public pylith::mmstests::TestIsotropicLinearElasticity3D_UniformStrain {
-    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearElasticity3D_UniformStrain_TetP2,
-                           TestIsotropicLinearElasticity);
+class pylith::mmstests::UniformStrain3D_TetP2 :
+    public pylith::mmstests::UniformStrain3D {
+    CPPUNIT_TEST_SUB_SUITE(UniformStrain3D_TetP2,
+                           TestLinearElasticity);
     CPPUNIT_TEST_SUITE_END();
 
     void setUp(void) {
-        TestIsotropicLinearElasticity3D_UniformStrain::setUp();
+        UniformStrain3D::setUp();
         CPPUNIT_ASSERT(_data);
 
         _data->meshFilename = "data/tet.msh";
+        _data->useAsciiMesh = false;
 
         static const pylith::topology::Field::Discretization _auxDiscretizations[3] = {
             pylith::topology::Field::Discretization(0, 2), // density
@@ -280,18 +265,18 @@ class pylith::mmstests::TestIsotropicLinearElasticity3D_UniformStrain_TetP2 :
 
     } // setUp
 
-}; // TestIsotropicLinearElasticity3D_UniformStrain_TetP2
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearElasticity3D_UniformStrain_TetP2);
+}; // UniformStrain3D_TetP2
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::UniformStrain3D_TetP2);
 
 // ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::TestIsotropicLinearElasticity3D_UniformStrain_TetP3 :
-    public pylith::mmstests::TestIsotropicLinearElasticity3D_UniformStrain {
-    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearElasticity3D_UniformStrain_TetP3,
-                           TestIsotropicLinearElasticity);
+class pylith::mmstests::UniformStrain3D_TetP3 :
+    public pylith::mmstests::UniformStrain3D {
+    CPPUNIT_TEST_SUB_SUITE(UniformStrain3D_TetP3,
+                           TestLinearElasticity);
     CPPUNIT_TEST_SUITE_END();
 
     void setUp(void) {
-        TestIsotropicLinearElasticity3D_UniformStrain::setUp();
+        UniformStrain3D::setUp();
         CPPUNIT_ASSERT(_data);
 
         _data->meshFilename = "data/tet.mesh";
@@ -311,18 +296,18 @@ class pylith::mmstests::TestIsotropicLinearElasticity3D_UniformStrain_TetP3 :
 
     } // setUp
 
-}; // TestIsotropicLinearElasticity3D_UniformStrain_TetP3
-// CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearElasticity3D_UniformStrain_TetP3);
+}; // UniformStrain3D_TetP3
+// CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::UniformStrain3D_TetP3);
 
 // ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::TestIsotropicLinearElasticity3D_UniformStrain_TetP4 :
-    public pylith::mmstests::TestIsotropicLinearElasticity3D_UniformStrain {
-    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearElasticity3D_UniformStrain_TetP4,
-                           TestIsotropicLinearElasticity);
+class pylith::mmstests::UniformStrain3D_TetP4 :
+    public pylith::mmstests::UniformStrain3D {
+    CPPUNIT_TEST_SUB_SUITE(UniformStrain3D_TetP4,
+                           TestLinearElasticity);
     CPPUNIT_TEST_SUITE_END();
 
     void setUp(void) {
-        TestIsotropicLinearElasticity3D_UniformStrain::setUp();
+        UniformStrain3D::setUp();
         CPPUNIT_ASSERT(_data);
 
         _data->meshFilename = "data/tet.mesh";
@@ -342,21 +327,22 @@ class pylith::mmstests::TestIsotropicLinearElasticity3D_UniformStrain_TetP4 :
 
     } // setUp
 
-}; // TestIsotropicLinearElasticity3D_UniformStrain_TetP4
-// CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearElasticity3D_UniformStrain_TetP4);
+}; // UniformStrain3D_TetP4
+// CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::UniformStrain3D_TetP4);
 
 // ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::TestIsotropicLinearElasticity3D_UniformStrain_HexQ1 :
-    public pylith::mmstests::TestIsotropicLinearElasticity3D_UniformStrain {
-    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearElasticity3D_UniformStrain_HexQ1,
-                           TestIsotropicLinearElasticity);
+class pylith::mmstests::UniformStrain3D_HexQ1 :
+    public pylith::mmstests::UniformStrain3D {
+    CPPUNIT_TEST_SUB_SUITE(UniformStrain3D_HexQ1,
+                           TestLinearElasticity);
     CPPUNIT_TEST_SUITE_END();
 
     void setUp(void) {
-        TestIsotropicLinearElasticity3D_UniformStrain::setUp();
+        UniformStrain3D::setUp();
         CPPUNIT_ASSERT(_data);
 
         _data->meshFilename = "data/hex.msh";
+        _data->useAsciiMesh = false;
 
         _data->numSolnSubfields = 1;
         static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
@@ -366,18 +352,18 @@ class pylith::mmstests::TestIsotropicLinearElasticity3D_UniformStrain_HexQ1 :
 
     } // setUp
 
-}; // TestIsotropicLinearElasticity3D_UniformStrain_HexQ1
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearElasticity3D_UniformStrain_HexQ1);
+}; // UniformStrain3D_HexQ1
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::UniformStrain3D_HexQ1);
 
 // ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::TestIsotropicLinearElasticity3D_UniformStrain_HexQ2 :
-    public pylith::mmstests::TestIsotropicLinearElasticity3D_UniformStrain {
-    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearElasticity3D_UniformStrain_HexQ2,
-                           TestIsotropicLinearElasticity);
+class pylith::mmstests::UniformStrain3D_HexQ2 :
+    public pylith::mmstests::UniformStrain3D {
+    CPPUNIT_TEST_SUB_SUITE(UniformStrain3D_HexQ2,
+                           TestLinearElasticity);
     CPPUNIT_TEST_SUITE_END();
 
     void setUp(void) {
-        TestIsotropicLinearElasticity3D_UniformStrain::setUp();
+        UniformStrain3D::setUp();
         CPPUNIT_ASSERT(_data);
 
         _data->meshFilename = "data/hex.mesh";
@@ -397,21 +383,22 @@ class pylith::mmstests::TestIsotropicLinearElasticity3D_UniformStrain_HexQ2 :
 
     } // setUp
 
-}; // TestIsotropicLinearElasticity3D_UniformStrain_HexQ2
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearElasticity3D_UniformStrain_HexQ2);
+}; // UniformStrain3D_HexQ2
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::UniformStrain3D_HexQ2);
 
 // ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::TestIsotropicLinearElasticity3D_UniformStrain_HexQ3 :
-    public pylith::mmstests::TestIsotropicLinearElasticity3D_UniformStrain {
-    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearElasticity3D_UniformStrain_HexQ3,
-                           TestIsotropicLinearElasticity);
+class pylith::mmstests::UniformStrain3D_HexQ3 :
+    public pylith::mmstests::UniformStrain3D {
+    CPPUNIT_TEST_SUB_SUITE(UniformStrain3D_HexQ3,
+                           TestLinearElasticity);
     CPPUNIT_TEST_SUITE_END();
 
     void setUp(void) {
-        TestIsotropicLinearElasticity3D_UniformStrain::setUp();
+        UniformStrain3D::setUp();
         CPPUNIT_ASSERT(_data);
 
         _data->meshFilename = "data/hex.msh";
+        _data->useAsciiMesh = false;
 
         static const pylith::topology::Field::Discretization _auxDiscretizations[3] = {
             pylith::topology::Field::Discretization(0, 3), // density
@@ -428,18 +415,18 @@ class pylith::mmstests::TestIsotropicLinearElasticity3D_UniformStrain_HexQ3 :
 
     } // setUp
 
-}; // TestIsotropicLinearElasticity3D_UniformStrain_HexQ3
-// CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearElasticity3D_UniformStrain_HexQ3);
+}; // UniformStrain3D_HexQ3
+// CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::UniformStrain3D_HexQ3);
 
 // ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::TestIsotropicLinearElasticity3D_UniformStrain_HexQ4 :
-    public pylith::mmstests::TestIsotropicLinearElasticity3D_UniformStrain {
-    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearElasticity3D_UniformStrain_HexQ4,
-                           TestIsotropicLinearElasticity);
+class pylith::mmstests::UniformStrain3D_HexQ4 :
+    public pylith::mmstests::UniformStrain3D {
+    CPPUNIT_TEST_SUB_SUITE(UniformStrain3D_HexQ4,
+                           TestLinearElasticity);
     CPPUNIT_TEST_SUITE_END();
 
     void setUp(void) {
-        TestIsotropicLinearElasticity3D_UniformStrain::setUp();
+        UniformStrain3D::setUp();
         CPPUNIT_ASSERT(_data);
 
         _data->meshFilename = "data/hex.mesh";
@@ -459,7 +446,7 @@ class pylith::mmstests::TestIsotropicLinearElasticity3D_UniformStrain_HexQ4 :
 
     } // setUp
 
-}; // TestIsotropicLinearElasticity3D_UniformStrain_HexQ4
-// CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearElasticity3D_UniformStrain_HexQ4);
+}; // UniformStrain3D_HexQ4
+// CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::UniformStrain3D_HexQ4);
 
 // End of file

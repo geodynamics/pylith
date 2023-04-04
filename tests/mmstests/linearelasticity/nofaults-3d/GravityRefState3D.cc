@@ -18,41 +18,34 @@
 
 #include <portinfo>
 
-#include "TestIsotropicLinearElasticity.hh" // Implementation of cases
+#include "TestLinearElasticity.hh" // Implementation of cases
 
 #include "pylith/problems/TimeDependent.hh" // USES TimeDependent
-#include "pylith/materials/Elasticity.hh" // USES Elasticity
-#include "pylith/materials/IsotropicLinearElasticity.hh" // USES IsotropicLinearElasticity
-#include "pylith/bc/DirichletUserFn.hh" // USES DirichletUserFn
-
 #include "pylith/topology/Field.hh" // USES pylith::topology::Field::Discretization
 #include "pylith/utils/journals.hh" // USES pythia::journal::debug_t
 
-#include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
-#include "spatialdata/geocoords/CSCart.hh" // USES CSCart
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 namespace pylith {
     namespace mmstests {
-        class TestIsotropicLinearElasticity3D_GravityRefState;
+        class GravityRefState3D;
 
-        class TestIsotropicLinearElasticity3D_GravityRefState_TetP1;
-        class TestIsotropicLinearElasticity3D_GravityRefState_TetP2;
-        class TestIsotropicLinearElasticity3D_GravityRefState_TetP3;
-        class TestIsotropicLinearElasticity3D_GravityRefState_TetP4;
+        class GravityRefState3D_TetP1;
+        class GravityRefState3D_TetP2;
+        class GravityRefState3D_TetP3;
+        class GravityRefState3D_TetP4;
 
-        class TestIsotropicLinearElasticity3D_GravityRefState_HexQ1;
-        class TestIsotropicLinearElasticity3D_GravityRefState_HexQ2;
-        class TestIsotropicLinearElasticity3D_GravityRefState_HexQ3;
-        class TestIsotropicLinearElasticity3D_GravityRefState_HexQ4;
+        class GravityRefState3D_HexQ1;
+        class GravityRefState3D_HexQ2;
+        class GravityRefState3D_HexQ3;
+        class GravityRefState3D_HexQ4;
 
     } // materials
 } // pylith
 
 // ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::TestIsotropicLinearElasticity3D_GravityRefState :
-    public pylith::mmstests::TestIsotropicLinearElasticity {
+class pylith::mmstests::GravityRefState3D :
+    public pylith::mmstests::TestLinearElasticity {
     /// Spatial database user functions for auxiiliary subfields (includes derived fields).
     static const double GACC;
     static const double ZMAX;
@@ -158,29 +151,22 @@ class pylith::mmstests::TestIsotropicLinearElasticity3D_GravityRefState :
 protected:
 
     void setUp(void) {
-        TestIsotropicLinearElasticity::setUp();
+        TestLinearElasticity::setUp();
 
         // Overwrite component names for control of journals at test level.
-        GenericComponent::setName("TestIsotropicLinearElasticity3D_GravityRefState");
-        _disableFiniteDifferenceCheck = true;
+        GenericComponent::setName("GravityRefState3D");
+        _disableFiniteDifferenceCheck = true; // Reference state matches, so no Jacobian is formed.
 
-        CPPUNIT_ASSERT(!_data);
-        _data = new TestElasticity_Data();CPPUNIT_ASSERT(_data);
+        CPPUNIT_ASSERT(_data);
         _isJacobianLinear = true;
 
-        _data->spaceDim = 3;
         _data->meshFilename = ":UNKNOWN:"; // Set in child class.
         _data->boundaryLabel = "boundary";
 
-        CPPUNIT_ASSERT(!_data->cs);
-        _data->cs = new spatialdata::geocoords::CSCart;CPPUNIT_ASSERT(_data->cs);
-        _data->cs->setSpaceDim(_data->spaceDim);
-
-        CPPUNIT_ASSERT(_data->normalizer);
-        _data->normalizer->setLengthScale(1.0e+03);
-        _data->normalizer->setTimeScale(2.0);
-        _data->normalizer->setPressureScale(2.25e+10);
-        _data->normalizer->computeDensityScale();
+        _data->normalizer.setLengthScale(1.0e+03);
+        _data->normalizer.setTimeScale(2.0);
+        _data->normalizer.setPressureScale(2.25e+10);
+        _data->normalizer.computeDensityScale();
 
         delete _data->gravityField;_data->gravityField = new spatialdata::spatialdb::GravityField();
         _data->gravityField->setGravityDir(0.0, 0.0, -1.0);
@@ -188,6 +174,7 @@ protected:
 
         // solnDiscretizations set in derived class.
 
+        // Material information
         _data->numAuxSubfields = 6;
         static const char* _auxSubfields[6] = { // order must match order of subfields in auxiliary field
             "density",
@@ -208,39 +195,37 @@ protected:
         };
         _data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
 
-        CPPUNIT_ASSERT(_data->auxDB);
-        _data->auxDB->addValue("density", density, density_units());
-        _data->auxDB->addValue("vp", vp, vp_units());
-        _data->auxDB->addValue("vs", vs, vs_units());
-        _data->auxDB->addValue("reference_stress_xx", referenceMeanStress, stress_units());
-        _data->auxDB->addValue("reference_stress_yy", referenceMeanStress, stress_units());
-        _data->auxDB->addValue("reference_stress_zz", referenceMeanStress, stress_units());
-        _data->auxDB->addValue("reference_stress_xy", referenceShearStress, stress_units());
-        _data->auxDB->addValue("reference_stress_yz", referenceShearStress, stress_units());
-        _data->auxDB->addValue("reference_stress_xz", referenceShearStress, stress_units());
-        _data->auxDB->addValue("reference_strain_xx", referenceStrain, strain_units());
-        _data->auxDB->addValue("reference_strain_yy", referenceStrain, strain_units());
-        _data->auxDB->addValue("reference_strain_zz", referenceStrain, strain_units());
-        _data->auxDB->addValue("reference_strain_xy", referenceStrain, strain_units());
-        _data->auxDB->addValue("reference_strain_yz", referenceStrain, strain_units());
-        _data->auxDB->addValue("reference_strain_xz", referenceStrain, strain_units());
-        _data->auxDB->setCoordSys(*_data->cs);
+        _data->auxDB.addValue("density", density, density_units());
+        _data->auxDB.addValue("vp", vp, vp_units());
+        _data->auxDB.addValue("vs", vs, vs_units());
+        _data->auxDB.addValue("reference_stress_xx", referenceMeanStress, stress_units());
+        _data->auxDB.addValue("reference_stress_yy", referenceMeanStress, stress_units());
+        _data->auxDB.addValue("reference_stress_zz", referenceMeanStress, stress_units());
+        _data->auxDB.addValue("reference_stress_xy", referenceShearStress, stress_units());
+        _data->auxDB.addValue("reference_stress_yz", referenceShearStress, stress_units());
+        _data->auxDB.addValue("reference_stress_xz", referenceShearStress, stress_units());
+        _data->auxDB.addValue("reference_strain_xx", referenceStrain, strain_units());
+        _data->auxDB.addValue("reference_strain_yy", referenceStrain, strain_units());
+        _data->auxDB.addValue("reference_strain_zz", referenceStrain, strain_units());
+        _data->auxDB.addValue("reference_strain_xy", referenceStrain, strain_units());
+        _data->auxDB.addValue("reference_strain_yz", referenceStrain, strain_units());
+        _data->auxDB.addValue("reference_strain_xz", referenceStrain, strain_units());
+        _data->auxDB.setCoordSys(_data->cs);
 
-        CPPUNIT_ASSERT(_material);
-        _material->setFormulation(pylith::problems::Physics::QUASISTATIC);
-        _material->useBodyForce(false);
-        _rheology->useReferenceState(true);
+        _data->material.setFormulation(pylith::problems::Physics::QUASISTATIC);
+        _data->material.useBodyForce(false);
+        _data->rheology.useReferenceState(true);
 
-        _material->setDescription("Isotropic Linear Elascitity");
-        _material->setLabelValue(24);
+        _data->material.setDescription("Isotropic Linear Elascitity");
+        _data->material.setLabelValue(24);
 
         static const PylithInt constrainedDOF[3] = { 0, 1, 2 };
         static const PylithInt numConstrained = 3;
-        _bc->setSubfieldName("displacement");
-        _bc->setLabelName("boundary");
-        _bc->setLabelValue(1);
-        _bc->setConstrainedDOF(constrainedDOF, numConstrained);
-        _bc->setUserFn(solnkernel_disp);
+        _data->bc.setSubfieldName("displacement");
+        _data->bc.setLabelName("boundary");
+        _data->bc.setLabelValue(1);
+        _data->bc.setConstrainedDOF(constrainedDOF, numConstrained);
+        _data->bc.setUserFn(solnkernel_disp);
 
     } // setUp
 
@@ -255,19 +240,19 @@ protected:
         err = PetscDSSetExactSolution(prob, 0, solnkernel_disp, NULL);CPPUNIT_ASSERT(!err);
     } // _setExactSolution
 
-}; // TestIsotropicLinearElasticity3D_GravityRefState
-const double pylith::mmstests::TestIsotropicLinearElasticity3D_GravityRefState::GACC = 9.80665;
-const double pylith::mmstests::TestIsotropicLinearElasticity3D_GravityRefState::ZMAX = +4.0e+3;
+}; // GravityRefState3D
+const double pylith::mmstests::GravityRefState3D::GACC = 9.80665;
+const double pylith::mmstests::GravityRefState3D::ZMAX = +4.0e+3;
 
 // ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::TestIsotropicLinearElasticity3D_GravityRefState_TetP1 :
-    public pylith::mmstests::TestIsotropicLinearElasticity3D_GravityRefState {
-    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearElasticity3D_GravityRefState_TetP1,
-                           TestIsotropicLinearElasticity);
+class pylith::mmstests::GravityRefState3D_TetP1 :
+    public pylith::mmstests::GravityRefState3D {
+    CPPUNIT_TEST_SUB_SUITE(GravityRefState3D_TetP1,
+                           TestLinearElasticity);
     CPPUNIT_TEST_SUITE_END();
 
     void setUp(void) {
-        TestIsotropicLinearElasticity3D_GravityRefState::setUp();
+        GravityRefState3D::setUp();
         CPPUNIT_ASSERT(_data);
 
         _data->meshFilename = "data/tet.mesh";
@@ -290,21 +275,22 @@ class pylith::mmstests::TestIsotropicLinearElasticity3D_GravityRefState_TetP1 :
 
     } // setUp
 
-}; // TestIsotropicLinearElasticity3D_GravityRefState_TetP1
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearElasticity3D_GravityRefState_TetP1);
+}; // GravityRefState3D_TetP1
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::GravityRefState3D_TetP1);
 
 // ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::TestIsotropicLinearElasticity3D_GravityRefState_TetP2 :
-    public pylith::mmstests::TestIsotropicLinearElasticity3D_GravityRefState {
-    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearElasticity3D_GravityRefState_TetP2,
-                           TestIsotropicLinearElasticity);
+class pylith::mmstests::GravityRefState3D_TetP2 :
+    public pylith::mmstests::GravityRefState3D {
+    CPPUNIT_TEST_SUB_SUITE(GravityRefState3D_TetP2,
+                           TestLinearElasticity);
     CPPUNIT_TEST_SUITE_END();
 
     void setUp(void) {
-        TestIsotropicLinearElasticity3D_GravityRefState::setUp();
+        GravityRefState3D::setUp();
         CPPUNIT_ASSERT(_data);
 
         _data->meshFilename = "data/tet.msh";
+        _data->useAsciiMesh = false;
 
         _data->numSolnSubfields = 1;
         static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
@@ -324,18 +310,18 @@ class pylith::mmstests::TestIsotropicLinearElasticity3D_GravityRefState_TetP2 :
 
     } // setUp
 
-}; // TestIsotropicLinearElasticity3D_GravityRefState_TetP2
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearElasticity3D_GravityRefState_TetP2);
+}; // GravityRefState3D_TetP2
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::GravityRefState3D_TetP2);
 
 // ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::TestIsotropicLinearElasticity3D_GravityRefState_TetP3 :
-    public pylith::mmstests::TestIsotropicLinearElasticity3D_GravityRefState {
-    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearElasticity3D_GravityRefState_TetP3,
-                           TestIsotropicLinearElasticity);
+class pylith::mmstests::GravityRefState3D_TetP3 :
+    public pylith::mmstests::GravityRefState3D {
+    CPPUNIT_TEST_SUB_SUITE(GravityRefState3D_TetP3,
+                           TestLinearElasticity);
     CPPUNIT_TEST_SUITE_END();
 
     void setUp(void) {
-        TestIsotropicLinearElasticity3D_GravityRefState::setUp();
+        GravityRefState3D::setUp();
         CPPUNIT_ASSERT(_data);
 
         _data->meshFilename = "data/tet.mesh";
@@ -358,20 +344,21 @@ class pylith::mmstests::TestIsotropicLinearElasticity3D_GravityRefState_TetP3 :
 
     } // setUp
 
-}; // TestIsotropicLinearElasticity3D_GravityRefState_TetP3
-// CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearElasticity3D_GravityRefState_TetP3);
+}; // GravityRefState3D_TetP3
+// CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::GravityRefState3D_TetP3);
 
 // ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::TestIsotropicLinearElasticity3D_GravityRefState_HexQ1 :
-    public pylith::mmstests::TestIsotropicLinearElasticity3D_GravityRefState {
-    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearElasticity3D_GravityRefState_HexQ1,  TestIsotropicLinearElasticity);
+class pylith::mmstests::GravityRefState3D_HexQ1 :
+    public pylith::mmstests::GravityRefState3D {
+    CPPUNIT_TEST_SUB_SUITE(GravityRefState3D_HexQ1,  TestLinearElasticity);
     CPPUNIT_TEST_SUITE_END();
 
     void setUp(void) {
-        TestIsotropicLinearElasticity3D_GravityRefState::setUp();
+        GravityRefState3D::setUp();
         CPPUNIT_ASSERT(_data);
 
         _data->meshFilename = "data/hex.msh";
+        _data->useAsciiMesh = false;
 
         _data->numSolnSubfields = 1;
         static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
@@ -391,17 +378,17 @@ class pylith::mmstests::TestIsotropicLinearElasticity3D_GravityRefState_HexQ1 :
 
     } // setUp
 
-}; // TestIsotropicLinearElasticity3D_GravityRefState_HexQ1
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearElasticity3D_GravityRefState_HexQ1);
+}; // GravityRefState3D_HexQ1
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::GravityRefState3D_HexQ1);
 
 // ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::TestIsotropicLinearElasticity3D_GravityRefState_HexQ2 :
-    public pylith::mmstests::TestIsotropicLinearElasticity3D_GravityRefState {
-    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearElasticity3D_GravityRefState_HexQ2,  TestIsotropicLinearElasticity);
+class pylith::mmstests::GravityRefState3D_HexQ2 :
+    public pylith::mmstests::GravityRefState3D {
+    CPPUNIT_TEST_SUB_SUITE(GravityRefState3D_HexQ2,  TestLinearElasticity);
     CPPUNIT_TEST_SUITE_END();
 
     void setUp(void) {
-        TestIsotropicLinearElasticity3D_GravityRefState::setUp();
+        GravityRefState3D::setUp();
         CPPUNIT_ASSERT(_data);
 
         _data->meshFilename = "data/hex.mesh";
@@ -424,17 +411,17 @@ class pylith::mmstests::TestIsotropicLinearElasticity3D_GravityRefState_HexQ2 :
 
     } // setUp
 
-}; // TestIsotropicLinearElasticity3D_GravityRefState_HexQ2
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearElasticity3D_GravityRefState_HexQ2);
+}; // GravityRefState3D_HexQ2
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::GravityRefState3D_HexQ2);
 
 // ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::TestIsotropicLinearElasticity3D_GravityRefState_HexQ3 :
-    public pylith::mmstests::TestIsotropicLinearElasticity3D_GravityRefState {
-    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearElasticity3D_GravityRefState_HexQ3,  TestIsotropicLinearElasticity);
+class pylith::mmstests::GravityRefState3D_HexQ3 :
+    public pylith::mmstests::GravityRefState3D {
+    CPPUNIT_TEST_SUB_SUITE(GravityRefState3D_HexQ3,  TestLinearElasticity);
     CPPUNIT_TEST_SUITE_END();
 
     void setUp(void) {
-        TestIsotropicLinearElasticity3D_GravityRefState::setUp();
+        GravityRefState3D::setUp();
         CPPUNIT_ASSERT(_data);
 
         _data->meshFilename = "data/hex.mesh";
@@ -457,7 +444,7 @@ class pylith::mmstests::TestIsotropicLinearElasticity3D_GravityRefState_HexQ3 :
 
     } // setUp
 
-}; // TestIsotropicLinearElasticity3D_GravityRefState_HexQ3
-// CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearElasticity3D_GravityRefState_HexQ3);
+}; // GravityRefState3D_HexQ3
+// CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::GravityRefState3D_HexQ3);
 
 // End of file

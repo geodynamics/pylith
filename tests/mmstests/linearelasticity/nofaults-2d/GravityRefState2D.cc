@@ -18,41 +18,34 @@
 
 #include <portinfo>
 
-#include "TestIsotropicLinearElasticity.hh" // Implementation of cases
+#include "TestLinearElasticity.hh" // Implementation of cases
 
 #include "pylith/problems/TimeDependent.hh" // USES TimeDependent
-#include "pylith/materials/Elasticity.hh" // USES Elasticity
-#include "pylith/materials/IsotropicLinearElasticity.hh" // USES IsotropicLinearElasticity
-#include "pylith/bc/DirichletUserFn.hh" // USES DirichletUserFn
-
 #include "pylith/topology/Field.hh" // USES pylith::topology::Field::Discretization
 #include "pylith/utils/journals.hh" // USES pythia::journal::debug_t
 
-#include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
-#include "spatialdata/geocoords/CSCart.hh" // USES CSCart
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 namespace pylith {
     namespace mmstests {
-        class TestIsotropicLinearElasticity2D_GravityRefState;
+        class GravityRefState2D;
 
-        class TestIsotropicLinearElasticity2D_GravityRefState_TriP1;
-        class TestIsotropicLinearElasticity2D_GravityRefState_TriP2;
-        class TestIsotropicLinearElasticity2D_GravityRefState_TriP3;
-        class TestIsotropicLinearElasticity2D_GravityRefState_TriP4;
+        class GravityRefState2D_TriP1;
+        class GravityRefState2D_TriP2;
+        class GravityRefState2D_TriP3;
+        class GravityRefState2D_TriP4;
 
-        class TestIsotropicLinearElasticity2D_GravityRefState_QuadQ1;
-        class TestIsotropicLinearElasticity2D_GravityRefState_QuadQ2;
-        class TestIsotropicLinearElasticity2D_GravityRefState_QuadQ3;
-        class TestIsotropicLinearElasticity2D_GravityRefState_QuadQ4;
+        class GravityRefState2D_QuadQ1;
+        class GravityRefState2D_QuadQ2;
+        class GravityRefState2D_QuadQ3;
+        class GravityRefState2D_QuadQ4;
 
     } // materials
 } // pylith
 
 // ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState :
-    public pylith::mmstests::TestIsotropicLinearElasticity {
+class pylith::mmstests::GravityRefState2D :
+    public pylith::mmstests::TestLinearElasticity {
     /// Spatial database user functions for auxiiliary subfields (includes derived fields).
     static const double GACC;
     static const double YMAX;
@@ -157,29 +150,22 @@ class pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState :
 protected:
 
     void setUp(void) {
-        TestIsotropicLinearElasticity::setUp();
+        TestLinearElasticity::setUp();
 
         // Overwrite component names for control of journals at test level.
-        GenericComponent::setName("TestIsotropicLinearElasticity2D_GravityRefState");
-        _disableFiniteDifferenceCheck = true;
+        GenericComponent::setName("GravityRefState2D");
+        _disableFiniteDifferenceCheck = true; // Reference state matches, so no Jacobian is formed.
 
-        CPPUNIT_ASSERT(!_data);
-        _data = new TestElasticity_Data();CPPUNIT_ASSERT(_data);
+        CPPUNIT_ASSERT(_data);
         _isJacobianLinear = true;
 
-        _data->spaceDim = 2;
         _data->meshFilename = ":UNKNOWN:"; // Set in child class.
         _data->boundaryLabel = "boundary";
 
-        CPPUNIT_ASSERT(!_data->cs);
-        _data->cs = new spatialdata::geocoords::CSCart;CPPUNIT_ASSERT(_data->cs);
-        _data->cs->setSpaceDim(_data->spaceDim);
-
-        CPPUNIT_ASSERT(_data->normalizer);
-        _data->normalizer->setLengthScale(1.0e+03);
-        _data->normalizer->setTimeScale(2.0);
-        _data->normalizer->setPressureScale(2.25e+10);
-        _data->normalizer->computeDensityScale();
+        _data->normalizer.setLengthScale(1.0e+03);
+        _data->normalizer.setTimeScale(2.0);
+        _data->normalizer.setPressureScale(2.25e+10);
+        _data->normalizer.computeDensityScale();
 
         delete _data->gravityField;_data->gravityField = new spatialdata::spatialdb::GravityField();
         _data->gravityField->setGravityDir(0.0, -1.0, 0.0);
@@ -187,6 +173,7 @@ protected:
 
         // solnDiscretizations set in derived class.
 
+        // Material information
         _data->numAuxSubfields = 6;
         static const char* _auxSubfields[6] = { // order must match order of subfields in auxiliary field
             "density",
@@ -207,35 +194,33 @@ protected:
         };
         _data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
 
-        CPPUNIT_ASSERT(_data->auxDB);
-        _data->auxDB->addValue("density", density, density_units());
-        _data->auxDB->addValue("vp", vp, vp_units());
-        _data->auxDB->addValue("vs", vs, vs_units());
-        _data->auxDB->addValue("reference_stress_xx", referenceMeanStress, stress_units());
-        _data->auxDB->addValue("reference_stress_yy", referenceMeanStress, stress_units());
-        _data->auxDB->addValue("reference_stress_zz", referenceMeanStress, stress_units());
-        _data->auxDB->addValue("reference_stress_xy", referenceShearStress, stress_units());
-        _data->auxDB->addValue("reference_strain_xx", referenceStrain, strain_units());
-        _data->auxDB->addValue("reference_strain_yy", referenceStrain, strain_units());
-        _data->auxDB->addValue("reference_strain_zz", referenceStrain, strain_units());
-        _data->auxDB->addValue("reference_strain_xy", referenceStrain, strain_units());
-        _data->auxDB->setCoordSys(*_data->cs);
+        _data->auxDB.addValue("density", density, density_units());
+        _data->auxDB.addValue("vp", vp, vp_units());
+        _data->auxDB.addValue("vs", vs, vs_units());
+        _data->auxDB.addValue("reference_stress_xx", referenceMeanStress, stress_units());
+        _data->auxDB.addValue("reference_stress_yy", referenceMeanStress, stress_units());
+        _data->auxDB.addValue("reference_stress_zz", referenceMeanStress, stress_units());
+        _data->auxDB.addValue("reference_stress_xy", referenceShearStress, stress_units());
+        _data->auxDB.addValue("reference_strain_xx", referenceStrain, strain_units());
+        _data->auxDB.addValue("reference_strain_yy", referenceStrain, strain_units());
+        _data->auxDB.addValue("reference_strain_zz", referenceStrain, strain_units());
+        _data->auxDB.addValue("reference_strain_xy", referenceStrain, strain_units());
+        _data->auxDB.setCoordSys(_data->cs);
 
-        CPPUNIT_ASSERT(_material);
-        _material->setFormulation(pylith::problems::Physics::QUASISTATIC);
-        _material->useBodyForce(false);
-        _rheology->useReferenceState(true);
+        _data->material.setFormulation(pylith::problems::Physics::QUASISTATIC);
+        _data->material.useBodyForce(false);
+        _data->rheology.useReferenceState(true);
 
-        _material->setDescription("Isotropic Linear Elascitity Plane Strain");
-        _material->setLabelValue(24);
+        _data->material.setDescription("Isotropic Linear Elascitity Plane Strain");
+        _data->material.setLabelValue(24);
 
         static const PylithInt constrainedDOF[2] = {0, 1};
         static const PylithInt numConstrained = 2;
-        _bc->setSubfieldName("displacement");
-        _bc->setLabelName("boundary");
-        _bc->setLabelValue(1);
-        _bc->setConstrainedDOF(constrainedDOF, numConstrained);
-        _bc->setUserFn(solnkernel_disp);
+        _data->bc.setSubfieldName("displacement");
+        _data->bc.setLabelName("boundary");
+        _data->bc.setLabelValue(1);
+        _data->bc.setConstrainedDOF(constrainedDOF, numConstrained);
+        _data->bc.setUserFn(solnkernel_disp);
 
     } // setUp
 
@@ -250,19 +235,19 @@ protected:
         err = PetscDSSetExactSolution(prob, 0, solnkernel_disp, NULL);CPPUNIT_ASSERT(!err);
     } // _setExactSolution
 
-}; // TestIsotropicLinearElasticity2D_GravityRefState
-const double pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState::GACC = 9.80665;
-const double pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState::YMAX = +4.0e+3;
+}; // GravityRefState2D
+const double pylith::mmstests::GravityRefState2D::GACC = 9.80665;
+const double pylith::mmstests::GravityRefState2D::YMAX = +4.0e+3;
 
 // ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState_TriP1 :
-    public pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState {
-    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearElasticity2D_GravityRefState_TriP1,
-                           TestIsotropicLinearElasticity);
+class pylith::mmstests::GravityRefState2D_TriP1 :
+    public pylith::mmstests::GravityRefState2D {
+    CPPUNIT_TEST_SUB_SUITE(GravityRefState2D_TriP1,
+                           TestLinearElasticity);
     CPPUNIT_TEST_SUITE_END();
 
     void setUp(void) {
-        TestIsotropicLinearElasticity2D_GravityRefState::setUp();
+        GravityRefState2D::setUp();
         CPPUNIT_ASSERT(_data);
 
         _data->meshFilename = "data/tri.mesh";
@@ -285,18 +270,18 @@ class pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState_TriP1 :
 
     } // setUp
 
-}; // TestIsotropicLinearElasticity2D_GravityRefState_TriP1
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState_TriP1);
+}; // GravityRefState2D_TriP1
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::GravityRefState2D_TriP1);
 
 // ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState_TriP2 :
-    public pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState {
-    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearElasticity2D_GravityRefState_TriP2,
-                           TestIsotropicLinearElasticity);
+class pylith::mmstests::GravityRefState2D_TriP2 :
+    public pylith::mmstests::GravityRefState2D {
+    CPPUNIT_TEST_SUB_SUITE(GravityRefState2D_TriP2,
+                           TestLinearElasticity);
     CPPUNIT_TEST_SUITE_END();
 
     void setUp(void) {
-        TestIsotropicLinearElasticity2D_GravityRefState::setUp();
+        GravityRefState2D::setUp();
         CPPUNIT_ASSERT(_data);
 
         _data->meshFilename = "data/tri.mesh";
@@ -319,18 +304,18 @@ class pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState_TriP2 :
 
     } // setUp
 
-}; // TestIsotropicLinearElasticity2D_GravityRefState_TriP2
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState_TriP2);
+}; // GravityRefState2D_TriP2
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::GravityRefState2D_TriP2);
 
 // ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState_TriP3 :
-    public pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState {
-    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearElasticity2D_GravityRefState_TriP3,
-                           TestIsotropicLinearElasticity);
+class pylith::mmstests::GravityRefState2D_TriP3 :
+    public pylith::mmstests::GravityRefState2D {
+    CPPUNIT_TEST_SUB_SUITE(GravityRefState2D_TriP3,
+                           TestLinearElasticity);
     CPPUNIT_TEST_SUITE_END();
 
     void setUp(void) {
-        TestIsotropicLinearElasticity2D_GravityRefState::setUp();
+        GravityRefState2D::setUp();
         CPPUNIT_ASSERT(_data);
 
         _data->meshFilename = "data/tri.mesh";
@@ -353,17 +338,17 @@ class pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState_TriP3 :
 
     } // setUp
 
-}; // TestIsotropicLinearElasticity2D_GravityRefState_TriP3
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState_TriP3);
+}; // GravityRefState2D_TriP3
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::GravityRefState2D_TriP3);
 
 // ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState_QuadQ1 :
-    public pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState {
-    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearElasticity2D_GravityRefState_QuadQ1,  TestIsotropicLinearElasticity);
+class pylith::mmstests::GravityRefState2D_QuadQ1 :
+    public pylith::mmstests::GravityRefState2D {
+    CPPUNIT_TEST_SUB_SUITE(GravityRefState2D_QuadQ1,  TestLinearElasticity);
     CPPUNIT_TEST_SUITE_END();
 
     void setUp(void) {
-        TestIsotropicLinearElasticity2D_GravityRefState::setUp();
+        GravityRefState2D::setUp();
         CPPUNIT_ASSERT(_data);
 
         _data->meshFilename = "data/quad.mesh";
@@ -386,17 +371,17 @@ class pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState_QuadQ1 :
 
     } // setUp
 
-}; // TestIsotropicLinearElasticity2D_GravityRefState_QuadQ1
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState_QuadQ1);
+}; // GravityRefState2D_QuadQ1
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::GravityRefState2D_QuadQ1);
 
 // ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState_QuadQ2 :
-    public pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState {
-    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearElasticity2D_GravityRefState_QuadQ2,  TestIsotropicLinearElasticity);
+class pylith::mmstests::GravityRefState2D_QuadQ2 :
+    public pylith::mmstests::GravityRefState2D {
+    CPPUNIT_TEST_SUB_SUITE(GravityRefState2D_QuadQ2,  TestLinearElasticity);
     CPPUNIT_TEST_SUITE_END();
 
     void setUp(void) {
-        TestIsotropicLinearElasticity2D_GravityRefState::setUp();
+        GravityRefState2D::setUp();
         CPPUNIT_ASSERT(_data);
 
         _data->meshFilename = "data/quad.mesh";
@@ -419,17 +404,17 @@ class pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState_QuadQ2 :
 
     } // setUp
 
-}; // TestIsotropicLinearElasticity2D_GravityRefState_QuadQ2
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState_QuadQ2);
+}; // GravityRefState2D_QuadQ2
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::GravityRefState2D_QuadQ2);
 
 // ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState_QuadQ3 :
-    public pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState {
-    CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearElasticity2D_GravityRefState_QuadQ3,  TestIsotropicLinearElasticity);
+class pylith::mmstests::GravityRefState2D_QuadQ3 :
+    public pylith::mmstests::GravityRefState2D {
+    CPPUNIT_TEST_SUB_SUITE(GravityRefState2D_QuadQ3,  TestLinearElasticity);
     CPPUNIT_TEST_SUITE_END();
 
     void setUp(void) {
-        TestIsotropicLinearElasticity2D_GravityRefState::setUp();
+        GravityRefState2D::setUp();
         CPPUNIT_ASSERT(_data);
 
         _data->meshFilename = "data/quad.mesh";
@@ -452,7 +437,7 @@ class pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState_QuadQ3 :
 
     } // setUp
 
-}; // TestIsotropicLinearElasticity2D_GravityRefState_QuadQ3
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::TestIsotropicLinearElasticity2D_GravityRefState_QuadQ3);
+}; // GravityRefState2D_QuadQ3
+CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::GravityRefState2D_QuadQ3);
 
 // End of file

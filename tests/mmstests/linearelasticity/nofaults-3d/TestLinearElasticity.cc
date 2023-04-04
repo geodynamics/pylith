@@ -18,10 +18,9 @@
 
 #include <portinfo>
 
-#include "TestElasticity.hh" // Implementation of class methods
+#include "TestLinearElasticity.hh" // Implementation of class methods
 
 #include "pylith/problems/TimeDependent.hh" // USES TimeDependent
-#include "pylith/materials/Elasticity.hh" // USES Elasticity
 
 #include "pylith/materials/Query.hh" // USES Query
 
@@ -34,69 +33,51 @@
 #include "pylith/problems/SolutionFactory.hh" // USES SolutionFactory
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 #include "pylith/meshio/MeshIOPetsc.hh" // USES MeshIOPetsc
-#include "pylith/bc/DirichletUserFn.hh" // USES DirichletUserFn
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 #include "pylith/utils/journals.hh" // pythia::journal
 
-#include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
-#include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Setup testing data.
 void
-pylith::mmstests::TestElasticity::setUp(void) {
+pylith::mmstests::TestLinearElasticity::setUp(void) {
     MMSTest::setUp();
 
-    _material = new pylith::materials::Elasticity;CPPUNIT_ASSERT(_material);
-    _bc = new pylith::bc::DirichletUserFn;CPPUNIT_ASSERT(_bc);
-    _data = NULL;
+    _data = new TestLinearElasticity_Data();CPPUNIT_ASSERT(_data);
 } // setUp
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Deallocate testing data.
 void
-pylith::mmstests::TestElasticity::tearDown(void) {
-    delete _material;_material = NULL;
-    delete _bc;_bc = NULL;
+pylith::mmstests::TestLinearElasticity::tearDown(void) {
     delete _data;_data = NULL;
 
     MMSTest::tearDown();
 } // tearDown
 
 
-static bool
-endsWith(const std::string& str,
-         const std::string& suffix) {
-    return str.size() >= suffix.size() && 0 == str.compare(str.size()-suffix.size(), suffix.size(), suffix);
-}
-
-
 // ---------------------------------------------------------------------------------------------------------------------
 // Initialize objects for test.
 void
-pylith::mmstests::TestElasticity::_initialize(void) {
+pylith::mmstests::TestLinearElasticity::_initialize(void) {
     PYLITH_METHOD_BEGIN;
     CPPUNIT_ASSERT(_mesh);
 
     PetscErrorCode err = 0;
 
-    if (_data->meshFilename) {
-        std::string name(_data->meshFilename);
-        if (endsWith(name, ".mesh")) {
-            pylith::meshio::MeshIOAscii iohandler;
-            iohandler.setFilename(_data->meshFilename);
-            iohandler.read(_mesh);CPPUNIT_ASSERT(_mesh);
-        } else {
-            if (_data->meshOptions) {
-                err = PetscOptionsInsertString(NULL, _data->meshOptions);PYLITH_CHECK_ERROR(err);
-            } // if
-            pylith::meshio::MeshIOPetsc iohandler;
-            iohandler.setFilename(_data->meshFilename);
-            iohandler.read(_mesh);CPPUNIT_ASSERT(_mesh);
-        } // if/else
+    if (_data->useAsciiMesh) {
+        pylith::meshio::MeshIOAscii iohandler;
+        iohandler.setFilename(_data->meshFilename);
+        iohandler.read(_mesh);CPPUNIT_ASSERT(_mesh);
+    } else {
+        if (_data->meshOptions) {
+            err = PetscOptionsInsertString(NULL, _data->meshOptions);PYLITH_CHECK_ERROR(err);
+        } // if
+        pylith::meshio::MeshIOPetsc iohandler;
+        iohandler.setFilename(_data->meshFilename);
+        iohandler.read(_mesh);CPPUNIT_ASSERT(_mesh);
     } // if/else
 
     CPPUNIT_ASSERT_MESSAGE("Test mesh does not contain any cells.",
@@ -105,29 +86,27 @@ pylith::mmstests::TestElasticity::_initialize(void) {
                            pylith::topology::MeshOps::getNumVertices(*_mesh) > 0);
 
     // Set up coordinates.
-    _mesh->setCoordSys(_data->cs);
-    CPPUNIT_ASSERT(_data->normalizer);
-    pylith::topology::MeshOps::nondimensionalize(_mesh, *_data->normalizer);
+    _mesh->setCoordSys(&_data->cs);
+    pylith::topology::MeshOps::nondimensionalize(_mesh, _data->normalizer);
 
     // Set up material
-    CPPUNIT_ASSERT(_material);
-    _material->setAuxiliaryFieldDB(_data->auxDB);
+    _data->material.setBulkRheology(&_data->rheology);
+    _data->material.setAuxiliaryFieldDB(&_data->auxDB);
 
     for (int i = 0; i < _data->numAuxSubfields; ++i) {
         const pylith::topology::FieldBase::Discretization& info = _data->auxDiscretizations[i];
-        _material->setAuxiliarySubfieldDiscretization(_data->auxSubfields[i], info.basisOrder, info.quadOrder,
-                                                      _data->spaceDim, pylith::topology::FieldBase::DEFAULT_BASIS,
-                                                      info.feSpace, info.isBasisContinuous);
+        _data->material.setAuxiliarySubfieldDiscretization(_data->auxSubfields[i], info.basisOrder, info.quadOrder,
+                                                           _data->spaceDim, pylith::topology::FieldBase::DEFAULT_BASIS,
+                                                           info.feSpace, info.isBasisContinuous);
     } // for
 
     // Set up problem.
     CPPUNIT_ASSERT(_problem);
-    CPPUNIT_ASSERT(_data->normalizer);
-    _problem->setNormalizer(*_data->normalizer);
+    _problem->setNormalizer(_data->normalizer);
     _problem->setGravityField(_data->gravityField);
-    pylith::materials::Material* materials[1] = { _material };
+    pylith::materials::Material* materials[1] = { &_data->material };
     _problem->setMaterials(materials, 1);
-    pylith::bc::BoundaryCondition* bcs[1] = { _bc };
+    pylith::bc::BoundaryCondition* bcs[1] = { &_data->bc };
     _problem->setBoundaryConditions(bcs, 1);
     _problem->setStartTime(_data->t);
     _problem->setEndTime(_data->t+_data->dt);
@@ -138,7 +117,7 @@ pylith::mmstests::TestElasticity::_initialize(void) {
     CPPUNIT_ASSERT(!_solution);
     _solution = new pylith::topology::Field(*_mesh);CPPUNIT_ASSERT(_solution);
     _solution->setLabel("solution");
-    pylith::problems::SolutionFactory factory(*_solution, *_data->normalizer);
+    pylith::problems::SolutionFactory factory(*_solution, _data->normalizer);
     factory.addDisplacement(_data->solnDiscretizations[0]);
     if (pylith::problems::Physics::QUASISTATIC == _data->formulation) {
         CPPUNIT_ASSERT_EQUAL(1, _data->numSolnSubfields);
@@ -157,41 +136,34 @@ pylith::mmstests::TestElasticity::_initialize(void) {
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Constructor
-pylith::mmstests::TestElasticity_Data::TestElasticity_Data(void) :
-    spaceDim(0),
+pylith::mmstests::TestLinearElasticity_Data::TestLinearElasticity_Data(void) :
+    spaceDim(3),
     meshFilename(NULL),
     meshOptions(NULL),
     boundaryLabel(NULL),
-    cs(NULL),
-    gravityField(NULL),
-    normalizer(new spatialdata::units::Nondimensional),
+    useAsciiMesh(true),
 
     t(0.0),
     dt(0.05),
+    formulation(pylith::problems::Physics::QUASISTATIC),
+
+    gravityField(NULL),
 
     numSolnSubfields(0),
     solnDiscretizations(NULL),
 
     numAuxSubfields(0),
     auxSubfields(NULL),
-    auxDiscretizations(NULL),
-    auxDB(new spatialdata::spatialdb::UserFunctionDB),
-
-    formulation(pylith::problems::Physics::QUASISTATIC) {
-    CPPUNIT_ASSERT(normalizer);
-
-    CPPUNIT_ASSERT(auxDB);
-    auxDB->setDescription("auxiliary field spatial database");
+    auxDiscretizations(NULL) {
+    auxDB.setDescription("material auxiliary field spatial database");
+    cs.setSpaceDim(spaceDim);
 } // constructor
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Destructor
-pylith::mmstests::TestElasticity_Data::~TestElasticity_Data(void) {
-    delete cs;cs = NULL;
+pylith::mmstests::TestLinearElasticity_Data::~TestLinearElasticity_Data(void) {
     delete gravityField;gravityField = NULL;
-    delete normalizer;normalizer = NULL;
-    delete auxDB;auxDB = NULL;
 } // destructor
 
 

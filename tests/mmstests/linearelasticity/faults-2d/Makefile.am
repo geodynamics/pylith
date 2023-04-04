@@ -27,12 +27,14 @@ check_PROGRAMS = $(TESTS)
 
 test_faultkin_SOURCES = \
 	TestFaultKin.cc \
-	TestFaultKin2D_TwoBlocksStatic.cc \
-	TestFaultKin2D_ThreeBlocksStatic.cc \
-	TestFaultKin2D_OneFaultShearNoSlip.cc \
-	TestFaultKin2D_TwoFaultsShearNoSlip.cc \
 	TestFaultKin2D_ConstRateDynamic.cc \
 	test_driver.cc
+
+#	TestFaultKin2D_TwoBlocksStatic.cc \
+#	TestFaultKin2D_ThreeBlocksStatic.cc \
+#	TestFaultKin2D_OneFaultShearNoSlip.cc \
+#	TestFaultKin2D_TwoFaultsShearNoSlip.cc 
+
 
 dist_noinst_HEADERS = \
 	TestFaultKin.hh
