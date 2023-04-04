@@ -20,6 +20,7 @@ TESTS = \
 	test_gravity2d \
 	test_gravityrefstate2d \
 	test_bodyforce2d \
+	test_rigidbodyacc2d \
 	test_planewave2d
 
 check_PROGRAMS = $(TESTS)
@@ -43,6 +44,11 @@ test_gravityrefstate2d_SOURCES = \
 test_bodyforce2d_SOURCES = \
 		TestLinearElasticity.cc \
 		BodyForce2D.cc \
+		test_driver.cc
+
+test_rigidbodyacc2d_SOURCES = \
+		TestLinearElasticity.cc \
+		RigidBodyAcc2D.cc \
 		test_driver.cc
 
 test_planewave2d_SOURCES = \
