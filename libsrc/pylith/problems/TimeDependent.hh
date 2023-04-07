@@ -152,9 +152,11 @@ public:
      *
      * @param[in] t Current time.
      * @param[in] solutionVec PETSc Vec with current global view of solution.
+     * @param[in] solutionDotVec PETSc Vec with current global view of time derivative of the solution.
      */
     void setSolutionLocal(const PylithReal t,
-                          PetscVec solutionVec);
+                          PetscVec solutionVec,
+                          PetscVec solutionDotVec);
 
     /** Compute RHS residual, G(t,s) and assemble into global vector.
      *
