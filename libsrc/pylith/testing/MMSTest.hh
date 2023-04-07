@@ -80,14 +80,8 @@ protected:
     /// Initialize objects for test.
     virtual void _initialize(void);
 
-    /// Set exact solution in domain.
+    /// Set exact solution and time derivative of solution in domain.
     virtual void _setExactSolution(void) = 0;
-
-    /** Set time derivative of exact solution in domain.
-     *
-     * The default is an empty method. Override in MMS test implementation for time-dependent problems.
-     */
-    virtual void _setExactSolutionDot(void);
 
     // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
@@ -98,6 +92,7 @@ protected:
     PetscVec _solutionExactVec; ///< Global vector to use for exact solution.
     PetscVec _solutionDotExactVec; ///< Global vector to use for time derivative of exact solution.
     PylithReal _jacobianConvergenceRate; ///< Expected convergence rate for Jacobiab (when not linear).
+    PylithReal _tolerance; ///< Tolerance for discretization and residual test.
     bool _isJacobianLinear; ///< Jacobian is should be linear.
     bool _disableFiniteDifferenceCheck; ///< Flag to indicate not to perform finite-difference check of Jacobian.
     bool _allowZeroResidual; ///< Allow residual to be exactly zero.

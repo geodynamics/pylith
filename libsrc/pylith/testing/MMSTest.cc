@@ -21,6 +21,7 @@
 #include "MMSTest.hh" // implementation of class methods
 
 #include "pylith/problems/TimeDependent.hh" // USES TimeDependent
+#include "pylith/feassemble/IntegrationData.hh" // USES IntegrationData
 #include "pylith/utils/PetscOptions.hh" // USES PetscOptions
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
@@ -44,6 +45,7 @@ pylith::testing::MMSTest::setUp(void) {
     _solutionExactVec = NULL;
     _solutionDotExactVec = NULL;
     _jacobianConvergenceRate = 0.0;
+    _tolerance = 1.0e-9;
     _isJacobianLinear = false;
     _disableFiniteDifferenceCheck = false;
     _allowZeroResidual = false;
@@ -60,13 +62,13 @@ pylith::testing::MMSTest::tearDown(void) {
 
     pythia::journal::debug_t debug(GenericComponent::getName());
 
-    delete _problem;_problem = NULL;
-    delete _mesh;_mesh = NULL;
-    delete _solution;_solution = NULL;
-
     PetscErrorCode err;
     err = VecDestroy(&_solutionExactVec);PYLITH_CHECK_ERROR(err);
     err = VecDestroy(&_solutionDotExactVec);PYLITH_CHECK_ERROR(err);
+
+    delete _problem;_problem = NULL;
+    delete _mesh;_mesh = NULL;
+    delete _solution;_solution = NULL;
 
     PYLITH_METHOD_END;
 } // tearDown
@@ -92,8 +94,8 @@ pylith::testing::MMSTest::testDiscretization(void) {
     const pylith::string_vector subfieldNames = solution->getSubfieldNames();
     const size_t numSubfields = subfieldNames.size();
     pylith::real_array error(numSubfields);
-    err = DMSNESCheckDiscretization(_problem->getPetscSNES(), _problem->getPetscDM(), t, _solutionExactVec,
-                                    tolerance, &error[0]);
+    err = DMSNESCheckDiscretization(_problem->getPetscSNES(), _problem->getPetscDM(), _problem->getStartTime(),
+                                    _solutionExactVec, tolerance, &error[0]);
     CPPUNIT_ASSERT(!err);
 
     if (debug.state()) {
@@ -104,7 +106,7 @@ pylith::testing::MMSTest::testDiscretization(void) {
     std::ostringstream msg;
     for (size_t i_field = 0; i_field < numSubfields; ++i_field) {
         msg << "Discretization test failed for subfield(s): ";
-        if (error[i_field] > 1.0e-10) {
+        if (error[i_field] > _tolerance) {
             fail = true;
             msg << " " << subfieldNames[i_field] << " (" << error[i_field] << ")";
         } // if
@@ -134,22 +136,25 @@ pylith::testing::MMSTest::testResidual(void) {
     } // if
 
     _initialize();
+    CPPUNIT_ASSERT(_problem);
+    if (_problem->getFormulation() == pylith::problems::Physics::DYNAMIC) {
+        _problem->_integrationData->removeField(pylith::feassemble::IntegrationData::lumped_jacobian_inverse);
+    } // if
 
     CPPUNIT_ASSERT(_problem);
     CPPUNIT_ASSERT(_solutionExactVec);
     CPPUNIT_ASSERT(_solutionDotExactVec);
-    PylithReal tolerance = -1.0;
+    PylithReal ignoreTolerance = -1.0;
     PylithReal norm = 0.0;
     err = DMTSCheckResidual(_problem->getPetscTS(), _problem->getPetscDM(), _problem->getStartTime(), _solutionExactVec,
-                            _solutionDotExactVec, tolerance, &norm);
+                            _solutionDotExactVec, ignoreTolerance, &norm);
     if (!_allowZeroResidual) {
         CPPUNIT_ASSERT_MESSAGE("L2 normal of residual is exactly zero, which suggests suspicious case with all residual "
                                "entries exactly zero.",
                                norm > 0.0);
     } // if
 
-    tolerance = 1.0e-10;
-    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test of F(s) - G(s) == 0 failed.", 0.0, norm, tolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test of F(s) - G(s) == 0 failed.", 0.0, norm, _tolerance);
 
     PYLITH_METHOD_END;
 } // testResidual
@@ -249,7 +254,12 @@ pylith::testing::MMSTest::_initialize(void) {
     _problem->initialize();
     TSSetUp(_problem->getPetscTS());
     _setExactSolution();
-    _setExactSolutionDot();
+
+    if (_problem->getFormulation() == pylith::problems::Physics::DYNAMIC) {
+        PetscErrorCode err = PETSC_SUCCESS;
+        err = TSSetIFunction(_problem->getPetscTS(), NULL, pylith::problems::TimeDependent::computeLHSResidual,
+                             (void*)_problem);PYLITH_CHECK_ERROR(err);
+    } // if
 
     // Global vectors to use for analytical solution in MMS tests.
     const pylith::topology::Field* solution = _problem->getSolution();CPPUNIT_ASSERT(solution);
@@ -266,12 +276,6 @@ pylith::testing::MMSTest::_initialize(void) {
 
     PYLITH_METHOD_END;
 } // _initialize
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Set time derivative of exact solution in domain.
-void
-pylith::testing::MMSTest::_setExactSolutionDot(void) {} // empty method
 
 
 // End of file
