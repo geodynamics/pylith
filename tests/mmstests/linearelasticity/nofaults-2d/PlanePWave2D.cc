@@ -49,7 +49,9 @@ class pylith::mmstests::PlanePWave2D : public pylith::mmstests::TestLinearElasti
     static const double LENGTH_SCALE;
     static const double TIME_SCALE;
     static const double WAVELENGTH; // (in terms of LENGTH_SCALE)
+    static const double PRESSURE_SCALE;
     static const double TIME_SNAPSHOT; // nondimensional
+    static const double AMPLITUDE;
 
     // Density
     static double density(const double x,
@@ -91,8 +93,7 @@ class pylith::mmstests::PlanePWave2D : public pylith::mmstests::TestLinearElasti
         const double l = WAVELENGTH;
         const double velocityScale = LENGTH_SCALE / TIME_SCALE;
         const double c = vp(x,y) / velocityScale;
-        return 2.5;
-        // return cos(2.0*pi*(x-c*t)/l);
+        return AMPLITUDE*sin(2.0*pi*(x-c*t)/l);
     } // disp_x
 
     static double disp_y(const double x,
@@ -113,8 +114,7 @@ class pylith::mmstests::PlanePWave2D : public pylith::mmstests::TestLinearElasti
         const double l = WAVELENGTH;
         const double velocityScale = LENGTH_SCALE / TIME_SCALE;
         const double c = vp(x,y) / velocityScale;
-        return 3.5;
-        // return 2.0*pi*c/l * sin(2.0*pi*(x-c*t)/l);
+        return -AMPLITUDE*2.0*pi*c/l * cos(2.0*pi*(x-c*t)/l);
     } // vel_x
 
     static double vel_y(const double x,
@@ -135,8 +135,7 @@ class pylith::mmstests::PlanePWave2D : public pylith::mmstests::TestLinearElasti
         const double l = WAVELENGTH;
         const double velocityScale = LENGTH_SCALE / TIME_SCALE;
         const double c = vp(x,y) / velocityScale;
-        // return -pow(2.0*pi*c/l, 2) * cos(2.0*pi*(x-c*t)/l);
-        return 0.0;
+        return -AMPLITUDE*pow(2.0*pi*c/l, 2) * sin(2.0*pi*(x-c*t)/l);
     } // vel_x
 
     static double acc_y(const double x,
@@ -210,14 +209,13 @@ protected:
 
         CPPUNIT_ASSERT(_data);
         _isJacobianLinear = true;
-        _allowZeroResidual = true;
 
         _data->meshFilename = ":UNKNOWN:"; // Set in child class.
         _data->boundaryLabel = "boundary";
 
-        _data->normalizer.setLengthScale(1.0e+03);
-        _data->normalizer.setTimeScale(2.0);
-        _data->normalizer.setPressureScale(2.25e+10);
+        _data->normalizer.setLengthScale(LENGTH_SCALE);
+        _data->normalizer.setTimeScale(TIME_SCALE);
+        _data->normalizer.setPressureScale(PRESSURE_SCALE);
         _data->normalizer.computeDensityScale();
         _data->formulation = pylith::problems::Physics::DYNAMIC;
 
@@ -252,12 +250,25 @@ protected:
         // Boundary conditions
         static const PylithInt constrainedDOF[2] = {0, 1};
         static const PylithInt numConstrained = 2;
-        _data->bc.setSubfieldName("displacement");
-        _data->bc.setLabelName("boundary");
-        _data->bc.setLabelValue(1);
-        _data->bc.setConstrainedDOF(constrainedDOF, numConstrained);
-        _data->bc.setUserFn(solnkernel_disp);
+        pylith::bc::DirichletUserFn* bc = NULL;
+        _data->bcs.resize(2);
+        bc = new pylith::bc::DirichletUserFn();CPPUNIT_ASSERT(bc);
+        bc->setSubfieldName("displacement");
+        bc->setLabelName("boundary");
+        bc->setLabelValue(1);
+        bc->setConstrainedDOF(constrainedDOF, numConstrained);
+        bc->setUserFn(solnkernel_disp);
+        bc->setUserFnDot(solnkernel_vel);
+        _data->bcs[0] = bc;
 
+        bc = new pylith::bc::DirichletUserFn();CPPUNIT_ASSERT(bc);
+        bc->setSubfieldName("velocity");
+        bc->setLabelName("boundary");
+        bc->setLabelValue(1);
+        bc->setConstrainedDOF(constrainedDOF, numConstrained);
+        bc->setUserFn(solnkernel_vel);
+        bc->setUserFnDot(solnkernel_acc);
+        _data->bcs[1] = bc;
     } // setUp
 
     // Set exact solution in domain.
@@ -270,17 +281,7 @@ protected:
         err = DMGetDS(solution->getDM(), &ds);CPPUNIT_ASSERT(!err);
         err = PetscDSSetExactSolution(ds, 0, solnkernel_disp, NULL);CPPUNIT_ASSERT(!err);
         err = PetscDSSetExactSolution(ds, 1, solnkernel_vel, NULL);CPPUNIT_ASSERT(!err);
-    } // _setExactSolution
 
-    // Set exact solution in domain.
-    void _setExactSolutionDot(void) {
-        // Solution has the correct PetscDS.
-        const pylith::topology::Field* solution = _problem->getSolution();
-        CPPUNIT_ASSERT(solution);
-
-        PetscErrorCode err = 0;
-        PetscDS ds = NULL;
-        err = DMGetDS(solution->getDM(), &ds);CPPUNIT_ASSERT(!err);
         err = PetscDSSetExactSolutionTimeDerivative(ds, 0, solnkernel_vel, NULL);CPPUNIT_ASSERT(!err);
         err = PetscDSSetExactSolutionTimeDerivative(ds, 1, solnkernel_acc, NULL);CPPUNIT_ASSERT(!err);
     } // _setExactSolution
@@ -288,9 +289,11 @@ protected:
 }; // PlanePWave2D
 
 const double pylith::mmstests::PlanePWave2D::LENGTH_SCALE = 1.0e+3;
-const double pylith::mmstests::PlanePWave2D::TIME_SCALE = 15.0;
-const double pylith::mmstests::PlanePWave2D::WAVELENGTH = 40.0;
-const double pylith::mmstests::PlanePWave2D::TIME_SNAPSHOT = 1.2;
+const double pylith::mmstests::PlanePWave2D::TIME_SCALE = 10.0;
+const double pylith::mmstests::PlanePWave2D::PRESSURE_SCALE = 3.0e+10;
+const double pylith::mmstests::PlanePWave2D::WAVELENGTH = 1.0e+4;
+const double pylith::mmstests::PlanePWave2D::TIME_SNAPSHOT = 7.657345769747113;
+const double pylith::mmstests::PlanePWave2D::AMPLITUDE = 1.0e+2;
 
 // ---------------------------------------------------------------------------------------------------------------------
 class pylith::mmstests::PlanePWave2D_TriP1 :
@@ -305,6 +308,7 @@ class pylith::mmstests::PlanePWave2D_TriP1 :
 
         _data->meshFilename = "data/tri.msh";
         _data->useAsciiMesh = false;
+        _tolerance = 1.0e-4;
 
         _data->numSolnSubfields = 2;
         static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
@@ -330,6 +334,7 @@ class pylith::mmstests::PlanePWave2D_TriP2 :
         CPPUNIT_ASSERT(_data);
 
         _data->meshFilename = "data/tri.mesh";
+        _tolerance = 5.0e-7;
 
         static const pylith::topology::Field::Discretization _auxDiscretizations[3] = {
             pylith::topology::Field::Discretization(0, 2), // density
@@ -338,9 +343,10 @@ class pylith::mmstests::PlanePWave2D_TriP2 :
         };
         _data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
 
-        _data->numSolnSubfields = 1;
-        static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
+        _data->numSolnSubfields = 2;
+        static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
             pylith::topology::Field::Discretization(2, 2), // disp
+            pylith::topology::Field::Discretization(2, 2), // vel
         };
         _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
@@ -362,6 +368,7 @@ class pylith::mmstests::PlanePWave2D_TriP3 :
 
         _data->meshFilename = "data/tri.msh";
         _data->useAsciiMesh = false;
+        _tolerance = 1.0e-9;
 
         static const pylith::topology::Field::Discretization _auxDiscretizations[3] = {
             pylith::topology::Field::Discretization(0, 3), // density
@@ -370,9 +377,10 @@ class pylith::mmstests::PlanePWave2D_TriP3 :
         };
         _data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
 
-        _data->numSolnSubfields = 1;
-        static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
+        _data->numSolnSubfields = 2;
+        static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
             pylith::topology::Field::Discretization(3, 3), // disp
+            pylith::topology::Field::Discretization(3, 3), // vel
         };
         _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
@@ -393,6 +401,7 @@ class pylith::mmstests::PlanePWave2D_TriP4 :
         CPPUNIT_ASSERT(_data);
 
         _data->meshFilename = "data/tri.mesh";
+        _tolerance = 1.0e-9;
 
         static const pylith::topology::Field::Discretization _auxDiscretizations[3] = {
             pylith::topology::Field::Discretization(0, 4), // density
@@ -401,9 +410,10 @@ class pylith::mmstests::PlanePWave2D_TriP4 :
         };
         _data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
 
-        _data->numSolnSubfields = 1;
-        static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
+        _data->numSolnSubfields = 2;
+        static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
             pylith::topology::Field::Discretization(4, 4), // disp
+            pylith::topology::Field::Discretization(4, 4), // vel
         };
         _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
@@ -424,10 +434,12 @@ class pylith::mmstests::PlanePWave2D_QuadQ1 :
         CPPUNIT_ASSERT(_data);
 
         _data->meshFilename = "data/quad.mesh";
+        _tolerance = 1.0e-8;
 
-        _data->numSolnSubfields = 1;
-        static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
+        _data->numSolnSubfields = 2;
+        static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
             pylith::topology::Field::Discretization(1, 1), // disp
+            pylith::topology::Field::Discretization(1, 1), // vel
         };
         _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
@@ -448,10 +460,12 @@ class pylith::mmstests::PlanePWave2D_QuadQ1Distorted :
         CPPUNIT_ASSERT(_data);
 
         _data->meshFilename = "data/quad_distorted.mesh";
+        _tolerance = 1.0e-5;
 
-        _data->numSolnSubfields = 1;
-        static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
+        _data->numSolnSubfields = 2;
+        static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
             pylith::topology::Field::Discretization(1, 1), // disp
+            pylith::topology::Field::Discretization(1, 1), // vel
         };
         _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
@@ -473,6 +487,7 @@ class pylith::mmstests::PlanePWave2D_QuadQ2 :
 
         _data->meshFilename = "data/quad.msh";
         _data->useAsciiMesh = false;
+        _tolerance = 1.0e-9;
 
         static const pylith::topology::Field::Discretization _auxDiscretizations[3] = {
             pylith::topology::Field::Discretization(0, 2), // density
@@ -481,9 +496,10 @@ class pylith::mmstests::PlanePWave2D_QuadQ2 :
         };
         _data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
 
-        _data->numSolnSubfields = 1;
-        static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
+        _data->numSolnSubfields = 2;
+        static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
             pylith::topology::Field::Discretization(2, 2), // disp
+            pylith::topology::Field::Discretization(2, 2), // vel
         };
         _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
@@ -504,6 +520,7 @@ class pylith::mmstests::PlanePWave2D_QuadQ3 :
         CPPUNIT_ASSERT(_data);
 
         _data->meshFilename = "data/quad.mesh";
+        _tolerance = 1.0e-9;
 
         static const pylith::topology::Field::Discretization _auxDiscretizations[3] = {
             pylith::topology::Field::Discretization(0, 3), // density
@@ -512,9 +529,10 @@ class pylith::mmstests::PlanePWave2D_QuadQ3 :
         };
         _data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
 
-        _data->numSolnSubfields = 1;
-        static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
+        _data->numSolnSubfields = 2;
+        static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
             pylith::topology::Field::Discretization(3, 3), // disp
+            pylith::topology::Field::Discretization(3, 3), // vel
         };
         _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
@@ -543,9 +561,10 @@ class pylith::mmstests::PlanePWave2D_QuadQ4 :
         };
         _data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
 
-        _data->numSolnSubfields = 1;
-        static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
+        _data->numSolnSubfields = 2;
+        static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
             pylith::topology::Field::Discretization(4, 4), // disp
+            pylith::topology::Field::Discretization(4, 4), // vel
         };
         _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 

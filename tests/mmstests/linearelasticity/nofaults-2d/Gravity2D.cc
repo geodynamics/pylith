@@ -190,11 +190,14 @@ protected:
 
         static const PylithInt constrainedDOF[2] = {0, 1};
         static const PylithInt numConstrained = 2;
-        _data->bc.setSubfieldName("displacement");
-        _data->bc.setLabelName("boundary");
-        _data->bc.setLabelValue(1);
-        _data->bc.setConstrainedDOF(constrainedDOF, numConstrained);
-        _data->bc.setUserFn(solnkernel_disp);
+        _data->bcs.resize(1);
+        pylith::bc::DirichletUserFn*bc = new pylith::bc::DirichletUserFn();CPPUNIT_ASSERT(bc);
+        bc->setSubfieldName("displacement");
+        bc->setLabelName("boundary");
+        bc->setLabelValue(1);
+        bc->setConstrainedDOF(constrainedDOF, numConstrained);
+        bc->setUserFn(solnkernel_disp);
+        _data->bcs[0] = bc;
 
     } // setUp
 

@@ -223,6 +223,7 @@ protected:
 
         CPPUNIT_ASSERT(_data);
         _isJacobianLinear = true;
+        _allowZeroResidual = true;
 
         _data->meshFilename = ":UNKNOWN:"; // Set in child class.
         _data->boundaryLabel = "boundary";
@@ -265,11 +266,25 @@ protected:
         // Boundary conditions
         static const PylithInt constrainedDOF[2] = {0, 1};
         static const PylithInt numConstrained = 2;
-        _data->bc.setSubfieldName("displacement");
-        _data->bc.setLabelName("boundary");
-        _data->bc.setLabelValue(1);
-        _data->bc.setConstrainedDOF(constrainedDOF, numConstrained);
-        _data->bc.setUserFn(solnkernel_disp);
+        _data->bcs.resize(2);
+        pylith::bc::DirichletUserFn* bc = NULL;
+        bc = new pylith::bc::DirichletUserFn();CPPUNIT_ASSERT(bc);
+        bc->setSubfieldName("displacement");
+        bc->setLabelName("boundary");
+        bc->setLabelValue(1);
+        bc->setConstrainedDOF(constrainedDOF, numConstrained);
+        bc->setUserFn(solnkernel_disp);
+        bc->setUserFnDot(solnkernel_vel);
+        _data->bcs[0] = bc;
+
+        bc = new pylith::bc::DirichletUserFn();CPPUNIT_ASSERT(bc);
+        bc->setSubfieldName("velocity");
+        bc->setLabelName("boundary");
+        bc->setLabelValue(1);
+        bc->setConstrainedDOF(constrainedDOF, numConstrained);
+        bc->setUserFn(solnkernel_vel);
+        bc->setUserFnDot(solnkernel_acc);
+        _data->bcs[1] = bc;
 
     } // setUp
 
@@ -283,17 +298,7 @@ protected:
         err = DMGetDS(solution->getDM(), &ds);CPPUNIT_ASSERT(!err);
         err = PetscDSSetExactSolution(ds, 0, solnkernel_disp, NULL);CPPUNIT_ASSERT(!err);
         err = PetscDSSetExactSolution(ds, 1, solnkernel_vel, NULL);CPPUNIT_ASSERT(!err);
-    } // _setExactSolution
 
-    // Set exact solution in domain.
-    void _setExactSolutionDot(void) {
-        // Solution has the correct PetscDS.
-        const pylith::topology::Field* solution = _problem->getSolution();
-        CPPUNIT_ASSERT(solution);
-
-        PetscErrorCode err = 0;
-        PetscDS ds = NULL;
-        err = DMGetDS(solution->getDM(), &ds);CPPUNIT_ASSERT(!err);
         err = PetscDSSetExactSolutionTimeDerivative(ds, 0, solnkernel_vel, NULL);CPPUNIT_ASSERT(!err);
         err = PetscDSSetExactSolutionTimeDerivative(ds, 1, solnkernel_acc, NULL);CPPUNIT_ASSERT(!err);
     } // _setExactSolution

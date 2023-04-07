@@ -106,8 +106,7 @@ pylith::mmstests::TestLinearElasticity::_initialize(void) {
     _problem->setGravityField(_data->gravityField);
     pylith::materials::Material* materials[1] = { &_data->material };
     _problem->setMaterials(materials, 1);
-    pylith::bc::BoundaryCondition* bcs[1] = { &_data->bc };
-    _problem->setBoundaryConditions(bcs, 1);
+    _problem->setBoundaryConditions(_data->bcs.data(), _data->bcs.size());
     _problem->setStartTime(_data->t);
     _problem->setEndTime(_data->t+_data->dt);
     _problem->setInitialTimeStep(_data->dt);
@@ -163,7 +162,11 @@ pylith::mmstests::TestLinearElasticity_Data::TestLinearElasticity_Data(void) :
 // ---------------------------------------------------------------------------------------------------------------------
 // Destructor
 pylith::mmstests::TestLinearElasticity_Data::~TestLinearElasticity_Data(void) {
+    for (size_t i = 0; i < bcs.size(); ++i) {
+        delete bcs[i];bcs[i] = NULL;
+    } // for
     delete gravityField;gravityField = NULL;
+
 } // destructor
 
 

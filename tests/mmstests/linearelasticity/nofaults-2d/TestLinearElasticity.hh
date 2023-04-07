@@ -101,7 +101,7 @@ public:
     pylith::materials::Elasticity material; ///< Materials.
     pylith::materials::IsotropicLinearElasticity rheology; ///< Bulk rheology for materials.
     spatialdata::spatialdb::GravityField* gravityField; ///< Gravity field.
-    pylith::bc::DirichletUserFn bc; ///< Dirichlet boundary condition.
+    std::vector<pylith::bc::BoundaryCondition*> bcs; ///< Dirichlet boundary condition.
 
     // Solution field.
     int numSolnSubfields; ///< Number of solution fields.
