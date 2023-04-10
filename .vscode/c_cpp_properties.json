@@ -12,6 +12,7 @@
                 "${env:HDF5_INCDIR}",
                 "${env:PROJ_INCDIR}",
                 "${env:CPPUNIT_INCDIR}",
+                "${env:CATCH2_INCDIR}",
                 "${env:PETSC_DIR}/include",
                 "${env:PETSC_DIR}/${env:PETSC_ARCH}/include"
             ],
@@ -35,6 +36,7 @@
                 "${env:HDF5_INCDIR}",
                 "${env:PROJ_INCDIR}",
                 "${env:CPPUNIT_INCDIR}",
+                "${env:CATCH2_INCDIR}",
                 "${env:PETSC_DIR}/include",
                 "${env:PETSC_DIR}/${env:PETSC_ARCH}/include"
             ],

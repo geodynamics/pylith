@@ -38,7 +38,7 @@ AM_CONDITIONAL([ENABLE_SWIG], [test "$enable_swig" = yes])
 
 dnl TESTING w/cppunit and Python unittest
 AC_ARG_ENABLE([testing],
-	[  --enable-testing        Enable unit testing with cppunit (requires cppunit) [[default=no]]],
+	[  --enable-testing        Enable unit testing with CppUnit (requires CppUnit) [[default=no]]],
 	[if test "$enableval" = yes ; then enable_testing=yes; else enable_testing=no; fi],
 	[enable_testing=no])
 AM_CONDITIONAL([ENABLE_TESTING], [test "$enable_testing" = yes])
@@ -92,7 +92,7 @@ AC_DISABLE_STATIC
 AC_PROG_LIBTOOL
 AC_PROG_INSTALL
 
-AX_CXX_COMPILE_STDCXX(11)
+AX_CXX_COMPILE_STDCXX(14)
 
 dnl PYTHON/PYTHIA (nemesis must be set before python)
 CIT_PATH_NEMESIS
@@ -130,6 +130,8 @@ dnl CPPUNIT
 if test "$enable_testing" = "yes" ; then
   CIT_CPPUNIT_HEADER
   CIT_CPPUNIT_LIB
+  CIT_CATCH2_HEADER
+  CIT_CATCH2_LIB
 fi
 
 dnl CUBIT (netcdf)
