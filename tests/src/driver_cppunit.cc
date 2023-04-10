@@ -18,16 +18,15 @@
 
 #include <portinfo>
 
-#include "TestDriver.hh" // implementation of class methods
-
+#include "testingfwd.hh"
 #include "pylith/topology/FieldOps.hh" // USES FieldOps::deallocate()
-#include "pylith/utils/journals.hh" // USES journals.
+#include "pylith/utils/journals.hh" // USES journals
 
 #include "petsc.h"
 #include <Python.h>
 
 #include <cppunit/extensions/TestFactoryRegistry.h>
-
+#include <cppunit/Test.h>
 #include <cppunit/BriefTestProgressListener.h>
 #include <cppunit/extensions/TestFactoryRegistry.h>
 #include <cppunit/TestResult.h>
@@ -35,82 +34,117 @@
 #include <cppunit/TestRunner.h>
 #include <cppunit/TextOutputter.h>
 
-#include <stdlib.h> // USES abort()
 #include <getopt.h> // USES getopt_long()
+#include <cstdlib> // USES abort()
 #include <sstream> // USES std::ostringstream, std::istringstream
+#include <vector> // USES std::vector
+#include <utility> // USES std::pair
+#include <string> // USES std::string
 
-namespace pylith {
-    namespace testing {
-        class _TestDriver {
+// ------------------------------------------------------------------------------------------------
+class pylith::testing::TestDriver {
 public:
 
-            /// Print help information.
-            static
-            void printHelp(void);
+    enum JournalEnum {
+        JOURNAL_INFO=0,
+        JOURNAL_DEBUG=1,
+        JOURNAL_WARNING=2,
+    };
 
-            /** Initialize PETSc.
-             *
-             * @param[in] argc Number of arguments passed.
-             * @param[in] argv Array of input arguments.
-             * @param[in] petscOptions Array of PETSc options to set.
-             * @param[in] mallocDump Set malloc debug dump.
-             */
-            static
-            int initializePetsc(int argc,
-                                char* argv[],
-                                const std::vector<std::string>& petscOptions,
-                                const bool mallocDump);
+    typedef std::vector< std::pair<JournalEnum,std::string> > journals_t;
 
-            /** Add journal.
-             *
-             * @param[in] journals Array of journals.
-             * @param[in] category Journal category.
-             * @param[in] name Name of journal.
-             */
-            static
-            void addJournal(TestDriver::journals_t& journals,
-                            TestDriver::JournalEnum category,
-                            const char* const name);
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
+public:
 
-            /** Activate journals.
-             *
-             * @param[in] journals Journals to activate.
-             */
-            static
-            void activateJournals(const TestDriver::journals_t& journals);
+    /// Constructor.
+    TestDriver(void);
 
-            /** List test hierarchy.
-             *
-             * @param[in] test Test to list.
-             */
-            static
-            void printTests(const CppUnit::Test* const test);
+    /** Run test application.
+     * @param argc[in] Number of arguments passed.
+     * @param argv[in] Array of input arguments.
+     *
+     * @returns 1 if errors were detected, 0 otherwise.
+     */
+    int run(int argc,
+            char* argv[]);
 
-            /** Find test matching name in test hierarchy.
-             *
-             * @param[in] test Test hierarchy.
-             * @param[in] name Name of test to find.
-             * @returns Test matching name or NULL if not found.
-             */
-            static
-            const CppUnit::Test* findTest(const CppUnit::Test* const test,
-                                          const std::string& name);
+    // PRIVATE METHODS ////////////////////////////////////////////////////////////////////////////
+private:
 
-        };
-    }
-}
+    /** Parse command line arguments.
+     *
+     * @param[in] argc Number of arguments passed.
+     * @param[in] argv Array of input arguments.
+     */
+    void _parseArgs(int argc,
+                    char* argv[]);
 
-// ----------------------------------------------------------------------
+    /// Print help information.
+    void _printHelp(void);
+
+    /** List test hierarchy.
+     *
+     * @param[in] test Test to list.
+     */
+    void _printTests(const CppUnit::Test* const test);
+
+    /** Initialize PETSc.
+     *
+     * @param[in] argc Number of arguments passed.
+     * @param[in] argv Array of input arguments.
+     * @param[in] petscOptions Array of PETSc options to set.
+     * @param[in] mallocDump Set malloc debug dump.
+     */
+    int _initializePetsc(int argc,
+                         char* argv[],
+                         const std::vector<std::string>& petscOptions,
+                         const bool mallocDump);
+
+    /** Add journal.
+     *
+     * @param[in] category Journal category.
+     * @param[in] name Name of journal.
+     */
+    void _addJournal(JournalEnum category,
+                     const char* const name);
+
+    /// Activate journals.
+    void _activateJournals(void);
+
+    /** Find test matching name in test hierarchy.
+     *
+     * @param[in] test Test hierarchy.
+     * @param[in] name Name of test to find.
+     * @returns Test matching name or NULL if not found.
+     */
+    const CppUnit::Test* _findTest(const CppUnit::Test* const test,
+                                   const std::string& name);
+
+    // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
+private:
+
+    std::vector<std::string> _tests;
+    std::vector<std::string> _petscOptions;
+    journals_t _journals;
+    bool _showHelp;
+    bool _listTests;
+    bool _mallocDump;
+
+    // NOT IMPLEMENTED
+    // ////////////////////////////////////////////////////////////////////////////////////////////
+private:
+
+    TestDriver(const TestDriver&); ///< Not implemented
+    const TestDriver& operator=(const TestDriver&); ///< Not implemented
+
+};
+
+// ------------------------------------------------------------------------------------------------
 // Constructor
-pylith::testing::TestDriver::TestDriver() :
+pylith::testing::TestDriver::TestDriver(void) :
     _showHelp(false),
     _listTests(false),
     _mallocDump(true) {}
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Destructor
-pylith::testing::TestDriver::~TestDriver(void) {}
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -121,26 +155,26 @@ pylith::testing::TestDriver::run(int argc,
     _parseArgs(argc, argv);
 
     if (_showHelp) {
-        _TestDriver::printHelp();
+        _printHelp();
         return 0;
     } // if
 
     CppUnit::TestResultCollector result;
     try {
         // Initialize PETSc
-        int err = _TestDriver::initializePetsc(argc, argv, _petscOptions, _mallocDump);CHKERRQ(err);
+        int err = _initializePetsc(argc, argv, _petscOptions, _mallocDump);CHKERRQ(err);
 
         // Initialize Python (to eliminate need to initialize when
         // parsing units in spatial databases).
         Py_Initialize();
 
-        _TestDriver::activateJournals(_journals);
-
         CppUnit::Test* test = CppUnit::TestFactoryRegistry::getRegistry().makeTest();
         if (_listTests) {
-            _TestDriver::printTests(test);
+            _printTests(test);
             return 0;
         } // if
+
+        _activateJournals();
 
         CppUnit::TestResult controller;
         CppUnit::BriefTestProgressListener progress;
@@ -152,7 +186,7 @@ pylith::testing::TestDriver::run(int argc,
             runner.addTest(test);
         } else {
             for (size_t i = 0; i < _tests.size(); ++i) {
-                const CppUnit::Test* testCase = _TestDriver::findTest(test, _tests[i]);
+                const CppUnit::Test* testCase = _findTest(test, _tests[i]);
                 if (testCase) {
                     runner.addTest(const_cast<CppUnit::Test*>(testCase));
                 } else {
@@ -233,15 +267,15 @@ pylith::testing::TestDriver::_parseArgs(int argc,
             break;
         } // 'p'
         case 'i': {
-            _TestDriver::addJournal(_journals, TestDriver::JOURNAL_INFO, optarg);
+            _addJournal(JOURNAL_INFO, optarg);
             break;
         } // 'p'
         case 'd': {
-            _TestDriver::addJournal(_journals, TestDriver::JOURNAL_DEBUG, optarg);
+            _addJournal(JOURNAL_DEBUG, optarg);
             break;
         } // 'p'
         case 'w': {
-            _TestDriver::addJournal(_journals, TestDriver::JOURNAL_WARNING, optarg);
+            _addJournal(JOURNAL_WARNING, optarg);
             break;
         } // 'p'
         case '?':
@@ -256,7 +290,7 @@ pylith::testing::TestDriver::_parseArgs(int argc,
 // ---------------------------------------------------------------------------------------------------------------------
 // Print help information.
 void
-pylith::testing::_TestDriver::printHelp(void) {
+pylith::testing::TestDriver::_printHelp(void) {
     std::cout << "Command line arguments:\n"
               << "[--help] [--list] [--quiet] [--tests=TEST_0,...,TEST_N\n\n"
               << "    --help            Print help information to stdout and exit.\n"
@@ -266,13 +300,13 @@ pylith::testing::_TestDriver::printHelp(void) {
               << "    --petsc ARG=VALUE Arguments to pass to PETSc. May be repeated for multiple arguments.\n"
               << "    --journal.TYPE=COMPONENT Activate journal (TYPE=[info,debug,warning,error]) for COMPONENT. May be repeated with different components.\n"
               << std::endl;
-} // printHelp
+} // _printHelp
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Initialize PETSc.
 int
-pylith::testing::_TestDriver::initializePetsc(int argc,
+pylith::testing::TestDriver::_initializePetsc(int argc,
                                               char* argv[],
                                               const std::vector<std::string>& petscOptions,
                                               const bool mallocDump) {
@@ -299,41 +333,40 @@ pylith::testing::_TestDriver::initializePetsc(int argc,
     } // for
 
     return 0;
-} // initializePetsc
+} // _initializePetsc
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Add journal.
 void
-pylith::testing::_TestDriver::addJournal(TestDriver::journals_t& journals,
-                                         TestDriver::JournalEnum category,
+pylith::testing::TestDriver::_addJournal(JournalEnum category,
                                          const char* const name) {
-    if (journals.size()+1 > journals.capacity()) {
-        journals.reserve(journals.capacity()+4);
+    if (_journals.size()+1 > _journals.capacity()) {
+        _journals.reserve(_journals.capacity()+4);
     } // if
-    journals.push_back(std::pair<TestDriver::JournalEnum, std::string>(category, name));
+    _journals.push_back(std::pair<JournalEnum, std::string>(category, name));
 } // addJournal
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Activate journal.
 void
-pylith::testing::_TestDriver::activateJournals(const TestDriver::journals_t& journals) {
-    for (size_t i = 0; i < journals.size(); ++i) {
-        TestDriver::JournalEnum category = journals[i].first;
-        const char* const name = journals[i].second.c_str();
+pylith::testing::TestDriver::_activateJournals(void) {
+    for (size_t i = 0; i < _journals.size(); ++i) {
+        JournalEnum category = _journals[i].first;
+        const char* const name = _journals[i].second.c_str();
         switch (category) {
-        case TestDriver::JOURNAL_INFO: {
+        case JOURNAL_INFO: {
             pythia::journal::info_t journal(name);
             journal.activate();
             break;
         } // INFO
-        case TestDriver::JOURNAL_DEBUG: {
+        case JOURNAL_DEBUG: {
             pythia::journal::debug_t journal(name);
             journal.activate();
             break;
         } // DEBUG
-        case TestDriver::JOURNAL_WARNING: {
+        case JOURNAL_WARNING: {
             pythia::journal::warning_t journal(name);
             journal.activate();
             break;
@@ -342,7 +375,7 @@ pylith::testing::_TestDriver::activateJournals(const TestDriver::journals_t& jou
             PYLITH_JOURNAL_LOGICERROR("Unknown journal category '"<<category<<"'.");
         } // switch
     } // for
-} // activateJournal
+} // _activateJournal
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -351,32 +384,41 @@ pylith::testing::_TestDriver::activateJournals(const TestDriver::journals_t& jou
  * @param[in] test Test to list.
  */
 void
-pylith::testing::_TestDriver::printTests(const CppUnit::Test* const test) {
+pylith::testing::TestDriver::_printTests(const CppUnit::Test* const test) {
     if (!test) { return; }
     std::cout << test->getName() << std::endl;
     if (!test->getChildTestCount()) { return; }
     for (int i = 0; i < test->getChildTestCount(); ++i) {
-        _TestDriver::printTests(test->getChildTestAt(i));
+        _printTests(test->getChildTestAt(i));
     } // for
-} // printTests
+} // _printTests
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Find test matching name in test hierarchy.
 const CppUnit::Test*
-pylith::testing::_TestDriver::findTest(const CppUnit::Test* test,
+pylith::testing::TestDriver::_findTest(const CppUnit::Test* test,
                                        const std::string& name) {
     if (!test) { return NULL;}
     if (test->getName() == name) { return test; }
     if (!test->getChildTestCount()) { return NULL; }
 
     for (int i = 0; i < test->getChildTestCount(); ++i) {
-        const CppUnit::Test* testCase = _TestDriver::findTest(test->getChildTestAt(i), name);
+        const CppUnit::Test* testCase = _findTest(test->getChildTestAt(i), name);
         if (testCase) { return testCase; }
     } // for
 
     return NULL;
-} // findTest
+} // _findTest
+
+
+// ------------------------------------------------------------------------------------------------
+int
+main(int argc,
+     char* argv[]) {
+    pylith::testing::TestDriver driver;
+    return driver.run(argc, argv);
+} // main
 
 
 // End of file

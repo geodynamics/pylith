@@ -26,7 +26,6 @@
 #define pylith_testing_mmstest_hh
 
 #include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
-#include <cppunit/extensions/HelperMacros.h> /// ISA Cppunit::TestFixture
 
 #include "pylith/testing/testingfwd.hh" // forward declaration
 
@@ -35,26 +34,25 @@
 
 #include "pylith/utils/petscfwd.h" // HASA PetscVec
 
-class pylith::testing::MMSTest : public pylith::utils::GenericComponent,
-    public CppUnit::TestFixture {
-    // CPPUNIT TEST SUITE //////////////////////////////////////////////////////////////////////////////////////////////
-    CPPUNIT_TEST_SUITE(MMSTest);
-
-    CPPUNIT_TEST(testDiscretization);
-    CPPUNIT_TEST(testResidual);
-    CPPUNIT_TEST(testJacobianTaylorSeries);
-    CPPUNIT_TEST(testJacobianFiniteDiff);
-
-    CPPUNIT_TEST_SUITE_END_ABSTRACT();
-
-    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
+class pylith::testing::MMSTest : public pylith::utils::GenericComponent {
+    // PUBLIC TYPEDEFS ////////////////////////////////////////////////////////////////////////////
 public:
 
-    /// Setup testing data.
-    virtual void setUp(void);
+    typedef PetscErrorCode (*solution_fn)(PetscInt /* dim */,
+                                          PetscReal /* t */,
+                                          const PetscReal /* x */[],
+                                          PetscInt /* Nc */,
+                                          PetscScalar /* u */[],
+                                          void* /* ctx */);
 
-    /// Tear down testing data.
-    virtual void tearDown(void);
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
+public:
+
+    /// Default constructor.
+    MMSTest(void);
+
+    /// Default destructor.
+    ~MMSTest(void);
 
     /// Verify discretization can represent solution field.
     void testDiscretization(void);
@@ -74,7 +72,7 @@ public:
      */
     void testJacobianFiniteDiff(void);
 
-    // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
+    // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
 protected:
 
     /// Initialize objects for test.
@@ -83,7 +81,7 @@ protected:
     /// Set exact solution and time derivative of solution in domain.
     virtual void _setExactSolution(void) = 0;
 
-    // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
+    // PROTECTED MEMBERS //////////////////////////////////////////////////////////////////////////
 protected:
 
     pylith::problems::TimeDependent* _problem; ///< Time-dependent problem.
@@ -94,7 +92,6 @@ protected:
     PylithReal _jacobianConvergenceRate; ///< Expected convergence rate for Jacobiab (when not linear).
     PylithReal _tolerance; ///< Tolerance for discretization and residual test.
     bool _isJacobianLinear; ///< Jacobian is should be linear.
-    bool _disableFiniteDifferenceCheck; ///< Flag to indicate not to perform finite-difference check of Jacobian.
     bool _allowZeroResidual; ///< Allow residual to be exactly zero.
 
 }; // MMSTest

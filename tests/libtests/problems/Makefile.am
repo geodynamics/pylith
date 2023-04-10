@@ -16,9 +16,7 @@
 # ----------------------------------------------------------------------
 #
 
-subpackage = problems
-include $(top_srcdir)/subpackage.am
-include $(top_srcdir)/check.am
+include $(top_srcdir)/tests/check_cppunit.am
 
 SUBDIRS = data
 
@@ -35,7 +33,7 @@ test_problems_SOURCES = \
 	TestProgressMonitor.cc \
 	TestProgressMonitorTime.cc \
 	TestProgressMonitorStep.cc \
-	test_driver.cc
+	$(top_srcdir)/tests/src/driver_cppunit.cc
 
 
 
@@ -50,24 +48,7 @@ noinst_TMP = \
 	progress_time.txt \
 	progress_step.txt
 
-AM_CPPFLAGS += \
-	$(PETSC_CC_INCLUDES) \
-	-I$(PYTHON_INCDIR) $(PYTHON_EGG_CPPFLAGS)
-
-test_problems_LDFLAGS = \
-	$(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
-
-test_problems_LDADD = \
-	-lcppunit -ldl \
-	$(top_builddir)/libsrc/pylith/libpylith.la \
-	-lspatialdata \
-	$(PETSC_LIB) $(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
-
-if ENABLE_CUBIT
-  test_problems_LDADD += -lnetcdf
-endif
-
-#CLEANFILES = $(noinst_tmp)
+export_datadir = $(abs_builddir)
 
 
 # End of file

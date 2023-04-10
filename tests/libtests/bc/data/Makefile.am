@@ -16,6 +16,7 @@
 # ----------------------------------------------------------------------
 #
 
+
 dist_noinst_DATA = \
 	tri_small.mesh \
 	tri_fourcells.mesh \
@@ -54,16 +55,8 @@ dist_noinst_DATA = \
 	hex8b_traction.spatialdb
 
 
-# 'export' the input files by performing a mock install
-export_datadir = $(abs_top_builddir)/tests/libtests/bc/data
-export-data: $(dist_noinst_DATA)
-	if [ "X$(abs_top_srcdir)" != "X$(abs_top_builddir)" ]; then for f in $(dist_noinst_DATA); do $(install_sh_DATA) $(srcdir)/$$f $(export_datadir); done; fi
-
-clean-data:
-	if [ "X$(abs_top_srcdir)" != "X$(abs_top_builddir)" ]; then for f in $(dist_noinst_DATA); do $(RM) $(RM_FLAGS) $(export_datadir)/$$f; done; fi
-
-BUILT_SOURCES = export-data
-clean-local: clean-data
+export_datadir = $(abs_builddir)
+include $(top_srcdir)/tests/data.am
 
 
 # End of file

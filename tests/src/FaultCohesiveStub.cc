@@ -82,7 +82,9 @@ pylith::faults::FaultCohesiveStub::_setKernelsJacobian(pylith::feassemble::Integ
 // Create integrator and set kernels.
 pylith::feassemble::Integrator*
 pylith::faults::FaultCohesiveStub::createIntegrator(const pylith::topology::Field& solution,
-                                                    const std::vector<pylith::materials::Material*>& materials) {}
+                                                    const std::vector<pylith::materials::Material*>& materials) {
+    return NULL;
+}
 
 
 // End of file

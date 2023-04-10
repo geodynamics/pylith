@@ -13,7 +13,7 @@
 #
 # ----------------------------------------------------------------------
 
-include $(top_srcdir)/check.am
+include $(top_srcdir)/tests/check_cppunit.am
 
 TESTS = test_pylith.py
 
@@ -50,21 +50,13 @@ noinst_TMP = \
 
 
 
-# 'export' the input files by performing a mock install
-export_datadir = $(abs_top_builddir)/tests/fullscale/poroelasticity/mandel
-export-data: $(dist_noinst_PYTHON) $(dist_noinst_DATA)
-	for f in $(dist_noinst_PYTHON) $(dist_noinst_DATA); do $(install_sh_DATA) $(srcdir)/$$f $(export_datadir); done
+export_datadir = $(abs_builddir)
 
-clean-data:
-	if [ "X$(abs_top_srcdir)" != "X$(abs_top_builddir)" ]; then for f in $(dist_noinst_PYTHON) $(dist_noinst_DATA) $(noinst_TMP); do $(RM) $(RM_FLAGS) $(export_datadir)/$$f; done; fi
-
-
-BUILT_SOURCES = export-data
 
 clean-local: clean-local-tmp clean-data
 .PHONY: clean-local-tmp
 clean-local-tmp:
-	-rm *.pyc output/*
+	$(RM) $(RM_FLAGS) -r output __pycache__
 
 
 # End of file

@@ -19,7 +19,6 @@
 #include <portinfo>
 
 #include "MMSTest.hh" // implementation of class methods
-
 #include "pylith/problems/TimeDependent.hh" // USES TimeDependent
 #include "pylith/feassemble/IntegrationData.hh" // USES IntegrationData
 #include "pylith/utils/PetscOptions.hh" // USES PetscOptions
@@ -32,45 +31,40 @@
 #include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
 #include "pylith/utils/array.hh" // USES real_array, string_vector
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
-#include <cassert> // USES assert()
 
-// ---------------------------------------------------------------------------------------------------------------------
-// Setup testing data.
-void
-pylith::testing::MMSTest::setUp(void) {
+#include "catch2/catch_test_macros.hpp"
+#include <catch2/matchers/catch_matchers_floating_point.hpp>
+
+// ------------------------------------------------------------------------------------------------
+// Constructor.
+pylith::testing::MMSTest::MMSTest(void) :
+    _problem(new pylith::problems::TimeDependent),
+    _mesh(new pylith::topology::Mesh()),
+    _solution(NULL),
+    _solutionExactVec(NULL),
+    _solutionDotExactVec(NULL),
+    _jacobianConvergenceRate(0.0),
+    _tolerance(1.0e-9),
+    _isJacobianLinear(false),
+    _allowZeroResidual(false) {
     GenericComponent::setName("mmstest"); // Override in child class for finer control of journal output.
-    _problem = new pylith::problems::TimeDependent;CPPUNIT_ASSERT(_problem);
-    _mesh = new pylith::topology::Mesh();CPPUNIT_ASSERT(_mesh);
-    _solution = NULL;
-    _solutionExactVec = NULL;
-    _solutionDotExactVec = NULL;
-    _jacobianConvergenceRate = 0.0;
-    _tolerance = 1.0e-9;
-    _isJacobianLinear = false;
-    _disableFiniteDifferenceCheck = false;
-    _allowZeroResidual = false;
+
+    assert(_problem);
+    assert(_mesh);
 
     _problem->setPetscDefaults(pylith::utils::PetscDefaults::TESTING | pylith::utils::PetscDefaults::SOLVER);
 } // setUp
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Tear down testing data.
-void
-pylith::testing::MMSTest::tearDown(void) {
-    PYLITH_METHOD_BEGIN;
-
-    pythia::journal::debug_t debug(GenericComponent::getName());
-
-    PetscErrorCode err;
-    err = VecDestroy(&_solutionExactVec);PYLITH_CHECK_ERROR(err);
-    err = VecDestroy(&_solutionDotExactVec);PYLITH_CHECK_ERROR(err);
+pylith::testing::MMSTest::~MMSTest(void) {
+    VecDestroy(&_solutionExactVec);
+    VecDestroy(&_solutionDotExactVec);
 
     delete _problem;_problem = NULL;
     delete _mesh;_mesh = NULL;
     delete _solution;_solution = NULL;
-
-    PYLITH_METHOD_END;
 } // tearDown
 
 
@@ -79,24 +73,23 @@ pylith::testing::MMSTest::tearDown(void) {
 void
 pylith::testing::MMSTest::testDiscretization(void) {
     PYLITH_METHOD_BEGIN;
+    assert(_problem);
 
     _initialize();
 
     pythia::journal::debug_t debug(GenericComponent::getName());
-    CPPUNIT_ASSERT(_problem);
-    const pylith::topology::Field* solution = _problem->getSolution();CPPUNIT_ASSERT(solution);
+    const pylith::topology::Field* solution = _problem->getSolution();assert(solution);
     if (debug.state()) {
         solution->view("Solution field layout", pylith::topology::Field::VIEW_LAYOUT);
     } // if
 
     PetscErrorCode err = 0;
-    const PylithReal tolerance = -1.0, t = 0.0;
+    const PylithReal tolerance = -1.0;
     const pylith::string_vector subfieldNames = solution->getSubfieldNames();
     const size_t numSubfields = subfieldNames.size();
     pylith::real_array error(numSubfields);
     err = DMSNESCheckDiscretization(_problem->getPetscSNES(), _problem->getPetscDM(), _problem->getStartTime(),
-                                    _solutionExactVec, tolerance, &error[0]);
-    CPPUNIT_ASSERT(!err);
+                                    _solutionExactVec, tolerance, &error[0]);PYLITH_CHECK_ERROR(err);
 
     if (debug.state()) {
         solution->view("Solution field");
@@ -112,7 +105,7 @@ pylith::testing::MMSTest::testDiscretization(void) {
         } // if
     } // for
     if (fail) {
-        CPPUNIT_ASSERT_MESSAGE(msg.str(), fail);
+        FAIL(msg.str());
     } // if
 
     PYLITH_METHOD_END;
@@ -124,37 +117,33 @@ pylith::testing::MMSTest::testDiscretization(void) {
 void
 pylith::testing::MMSTest::testResidual(void) {
     PYLITH_METHOD_BEGIN;
+    assert(_problem);
 
     PetscErrorCode err = 0;
-
     pythia::journal::debug_t debug(GenericComponent::getName());
     if (debug.state()) {
-        err = PetscOptionsSetValue(NULL, "-dm_plex_print_fem", "2");
-        CPPUNIT_ASSERT(!err);
-        err = PetscOptionsSetValue(NULL, "-dm_plex_print_l2", "2");
-        CPPUNIT_ASSERT(!err);
+        err = PetscOptionsSetValue(NULL, "-dm_plex_print_fem", "2");PYLITH_CHECK_ERROR(err);
+        err = PetscOptionsSetValue(NULL, "-dm_plex_print_l2", "2");PYLITH_CHECK_ERROR(err);
     } // if
 
     _initialize();
-    CPPUNIT_ASSERT(_problem);
     if (_problem->getFormulation() == pylith::problems::Physics::DYNAMIC) {
         _problem->_integrationData->removeField(pylith::feassemble::IntegrationData::lumped_jacobian_inverse);
     } // if
 
-    CPPUNIT_ASSERT(_problem);
-    CPPUNIT_ASSERT(_solutionExactVec);
-    CPPUNIT_ASSERT(_solutionDotExactVec);
+    assert(_solutionExactVec);
+    assert(_solutionDotExactVec);
     PylithReal ignoreTolerance = -1.0;
     PylithReal norm = 0.0;
     err = DMTSCheckResidual(_problem->getPetscTS(), _problem->getPetscDM(), _problem->getStartTime(), _solutionExactVec,
-                            _solutionDotExactVec, ignoreTolerance, &norm);
-    if (!_allowZeroResidual) {
-        CPPUNIT_ASSERT_MESSAGE("L2 normal of residual is exactly zero, which suggests suspicious case with all residual "
-                               "entries exactly zero.",
-                               norm > 0.0);
+                            _solutionDotExactVec, ignoreTolerance, &norm);PYLITH_CHECK_ERROR(err);
+    if (!_allowZeroResidual && (0.0 == norm)) {
+        FAIL("L2 normal of residual is exactly zero, which suggests suspicious case with all residual "
+             "entries exactly zero.");
     } // if
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test of F(s) - G(s) == 0 failed.", 0.0, norm, _tolerance);
+    INFO("|G(s) - F(s)| == " << norm);
+    REQUIRE_THAT(norm, Catch::Matchers::WithinAbs(0.0, _tolerance));
 
     PYLITH_METHOD_END;
 } // testResidual
@@ -167,31 +156,23 @@ pylith::testing::MMSTest::testResidual(void) {
 void
 pylith::testing::MMSTest::testJacobianTaylorSeries(void) {
     PYLITH_METHOD_BEGIN;
-
+    assert(_problem);
     _initialize();
 
-    CPPUNIT_ASSERT(_problem);
-    if (_problem->getFormulation() == pylith::problems::Physics::DYNAMIC) {
-        PYLITH_JOURNAL_WARNING("Skipping Jacobian Taylor series check. No Jacobian for dynamic formulation.");
-        PYLITH_METHOD_END;
-    } // if
-
-    CPPUNIT_ASSERT(_solutionExactVec);
-    CPPUNIT_ASSERT(_solutionDotExactVec);
+    assert(_solutionExactVec);
+    assert(_solutionDotExactVec);
     PetscErrorCode err = 0;
     const PylithReal tolerance = -1.0;
     PetscBool isLinear = PETSC_FALSE;
     PylithReal convergenceRate = 0.0;
     err = DMTSCheckJacobian(_problem->getPetscTS(), _problem->getPetscDM(), _problem->getStartTime(), _solutionExactVec,
-                            _solutionDotExactVec, tolerance, &isLinear, &convergenceRate);
-    CPPUNIT_ASSERT(!err);
+                            _solutionDotExactVec, tolerance, &isLinear, &convergenceRate);PYLITH_CHECK_ERROR(err);
 
     if (_isJacobianLinear) {
-        CPPUNIT_ASSERT_EQUAL_MESSAGE("Expected linear Jacobian.", PETSC_TRUE, isLinear);
+        REQUIRE(isLinear == PETSC_TRUE);
     } else {
-        const PylithReal tolerance = 1.0e-3;
-        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Error in convergence rate for Jacobian.",
-                                             _jacobianConvergenceRate, convergenceRate, tolerance);
+        INFO("Convergence rate for Jacobian is " << convergenceRate);
+        REQUIRE_THAT(convergenceRate, Catch::Matchers::WithinAbs(_jacobianConvergenceRate, 1.0e-3));
     } // if/else
 
     PYLITH_METHOD_END;
@@ -203,36 +184,26 @@ pylith::testing::MMSTest::testJacobianTaylorSeries(void) {
 void
 pylith::testing::MMSTest::testJacobianFiniteDiff(void) {
     PYLITH_METHOD_BEGIN;
-
-    if (_disableFiniteDifferenceCheck) {
-        PYLITH_JOURNAL_WARNING("Skipping Jacobian finite-difference check. Test disabled.");
-        PYLITH_METHOD_END;
-    } // if
+    assert(_problem);
 
     PetscErrorCode err = 0;
-    err = PetscOptionsSetValue(NULL, "-ts_max_snes_failures", "1");CPPUNIT_ASSERT(!err);
-    err = PetscOptionsSetValue(NULL, "-ts_error_if_step_fails", "false");CPPUNIT_ASSERT(!err);
+    err = PetscOptionsSetValue(NULL, "-ts_max_snes_failures", "1");PYLITH_CHECK_ERROR(err);
+    err = PetscOptionsSetValue(NULL, "-ts_error_if_step_fails", "false");PYLITH_CHECK_ERROR(err);
     _initialize();
-
-    CPPUNIT_ASSERT(_problem);
-    if (_problem->getFormulation() == pylith::problems::Physics::DYNAMIC) {
-        PYLITH_JOURNAL_WARNING("Skipping Jacobian finite-difference check. No Jacobian for dynamic formulation.");
-        PYLITH_METHOD_END;
-    } // if
 
     pythia::journal::debug_t debug(GenericComponent::getName());
     if (debug.state()) {
-        err = PetscOptionsSetValue(NULL, "-snes_test_jacobian_view", "");CPPUNIT_ASSERT(!err);
+        err = PetscOptionsSetValue(NULL, "-snes_test_jacobian_view", "");PYLITH_CHECK_ERROR(err);
     } // if
-    err = PetscOptionsSetValue(NULL, "-snes_test_jacobian", "1.0e-6");CPPUNIT_ASSERT(!err);
-    err = PetscOptionsSetValue(NULL, "-snes_error_if_not_converged", "false");CPPUNIT_ASSERT(!err);
-    err = SNESSetFromOptions(_problem->getPetscSNES());CPPUNIT_ASSERT(!err);
+    err = PetscOptionsSetValue(NULL, "-snes_test_jacobian", "1.0e-6");PYLITH_CHECK_ERROR(err);
+    err = PetscOptionsSetValue(NULL, "-snes_error_if_not_converged", "false");PYLITH_CHECK_ERROR(err);
+    err = SNESSetFromOptions(_problem->getPetscSNES());PYLITH_CHECK_ERROR(err);
 
     _problem->solve();
-    std::cout << "IMPORTANT: You must check the Jacobian values printed here manually!\n"
-              << "           They should be O(1.0e-6) or smaller." << std::endl;
-    err = PetscOptionsClearValue(NULL, "-snes_test_jacobian");CPPUNIT_ASSERT(!err);
-    err = PetscOptionsClearValue(NULL, "-snes_test_jacobian_view");CPPUNIT_ASSERT(!err);
+    INFO("IMPORTANT: You must check the Jacobian values printed here manually!\n"
+         << "           They should be O(1.0e-6) or smaller.\n");
+    err = PetscOptionsClearValue(NULL, "-snes_test_jacobian");PYLITH_CHECK_ERROR(err);
+    err = PetscOptionsClearValue(NULL, "-snes_test_jacobian_view");PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // testJacobianFiniteDiff
@@ -243,8 +214,7 @@ pylith::testing::MMSTest::testJacobianFiniteDiff(void) {
 void
 pylith::testing::MMSTest::_initialize(void) {
     PYLITH_METHOD_BEGIN;
-
-    CPPUNIT_ASSERT(_problem);
+    assert(_problem);
 
     _problem->setSolverType(pylith::problems::Problem::NONLINEAR);
     _problem->setMaxTimeSteps(1);
@@ -255,16 +225,16 @@ pylith::testing::MMSTest::_initialize(void) {
     TSSetUp(_problem->getPetscTS());
     _setExactSolution();
 
+    PetscErrorCode err = PETSC_SUCCESS;
     if (_problem->getFormulation() == pylith::problems::Physics::DYNAMIC) {
-        PetscErrorCode err = PETSC_SUCCESS;
         err = TSSetIFunction(_problem->getPetscTS(), NULL, pylith::problems::TimeDependent::computeLHSResidual,
                              (void*)_problem);PYLITH_CHECK_ERROR(err);
     } // if
 
     // Global vectors to use for analytical solution in MMS tests.
-    const pylith::topology::Field* solution = _problem->getSolution();CPPUNIT_ASSERT(solution);
-    PetscErrorCode err = VecDuplicate(solution->getGlobalVector(), &_solutionExactVec);CPPUNIT_ASSERT(!err);
-    err = VecDuplicate(_solutionExactVec, &_solutionDotExactVec);CPPUNIT_ASSERT(!err);
+    const pylith::topology::Field* solution = _problem->getSolution();assert(solution);
+    err = VecDuplicate(solution->getGlobalVector(), &_solutionExactVec);PYLITH_CHECK_ERROR(err);
+    err = VecDuplicate(_solutionExactVec, &_solutionDotExactVec);PYLITH_CHECK_ERROR(err);
 
     pythia::journal::debug_t debug(GenericComponent::getName());
     if (debug.state()) {

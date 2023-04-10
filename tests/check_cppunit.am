@@ -16,7 +16,25 @@
 # ----------------------------------------------------------------------
 #
 
-AM_CPPFLAGS = -I$(top_srcdir)/libsrc
+AM_CPPFLAGS = \
+	-I$(top_srcdir)/libsrc \
+	-I$(top_srcdir)/tests/src \
+	$(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR) \
+	$(PETSC_CC_INCLUDES)
+
+LDFLAGS = \
+	$(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
+
+LDADD = \
+	-lcppunit \
+	$(top_builddir)/libsrc/pylith/libpylith.la \
+	-lspatialdata \
+	$(PETSC_LIB) $(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
+
+if ENABLE_CUBIT
+  LDADD += -lnetcdf
+endif
+
 
 
 check-local: check-TESTS
@@ -42,5 +60,7 @@ mmstest-coverage:
 clean-coverage:
 	$(RM) $(RM_FLAGS) *.gcda *.gcno data/*.gcda data/*.gcno coverage.info
 	$(RM) $(RM_FLAGS) -r coverage
+
+
 
 # End of file

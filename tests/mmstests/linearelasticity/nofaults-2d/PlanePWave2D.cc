@@ -18,34 +18,18 @@
 
 #include <portinfo>
 
-#include "TestLinearElasticity.hh" // ISA TestLinearElasticity2D
+#include "PlanePWave2D.hh" // Implementation of test data
 
 #include "pylith/problems/TimeDependent.hh" // USES TimeDependent
-
 #include "pylith/topology/Field.hh" // USES pylith::topology::Field::Discretization
 #include "pylith/utils/journals.hh" // USES pythia::journal::debug_t
 
+// ---------------------------------------------------------------------------------------------------------------------
 namespace pylith {
-    namespace mmstests {
-        class PlanePWave2D;
-
-        class PlanePWave2D_TriP1;
-        class PlanePWave2D_TriP2;
-        class PlanePWave2D_TriP3;
-        class PlanePWave2D_TriP4;
-
-        class PlanePWave2D_QuadQ1;
-        class PlanePWave2D_QuadQ1Distorted;
-        class PlanePWave2D_QuadQ2;
-        class PlanePWave2D_QuadQ3;
-        class PlanePWave2D_QuadQ4;
-    } // tests/mmstests
+    class _PlanePWave2D;
 } // pylith
 
-// ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::PlanePWave2D : public pylith::mmstests::TestLinearElasticity {
-    // Spatial database user functions for auxiiliary subfields (includes derived fields).
-
+class pylith::_PlanePWave2D {
     static const double LENGTH_SCALE;
     static const double TIME_SCALE;
     static const double WAVELENGTH; // (in terms of LENGTH_SCALE)
@@ -154,10 +138,10 @@ class pylith::mmstests::PlanePWave2D : public pylith::mmstests::TestLinearElasti
                                           PetscInt numComponents,
                                           PetscScalar* s,
                                           void* context) {
-        CPPUNIT_ASSERT(2 == spaceDim);
-        CPPUNIT_ASSERT(x);
-        CPPUNIT_ASSERT(2 == numComponents);
-        CPPUNIT_ASSERT(s);
+        assert(2 == spaceDim);
+        assert(x);
+        assert(2 == numComponents);
+        assert(s);
 
         s[0] = disp_x(x[0], x[1], t);
         s[1] = disp_y(x[0], x[1], t);
@@ -171,10 +155,10 @@ class pylith::mmstests::PlanePWave2D : public pylith::mmstests::TestLinearElasti
                                          PetscInt numComponents,
                                          PetscScalar* s,
                                          void* context) {
-        CPPUNIT_ASSERT(2 == spaceDim);
-        CPPUNIT_ASSERT(x);
-        CPPUNIT_ASSERT(2 == numComponents);
-        CPPUNIT_ASSERT(s);
+        assert(2 == spaceDim);
+        assert(x);
+        assert(2 == numComponents);
+        assert(s);
 
         s[0] = vel_x(x[0], x[1], t);
         s[1] = vel_y(x[0], x[1], t);
@@ -188,10 +172,10 @@ class pylith::mmstests::PlanePWave2D : public pylith::mmstests::TestLinearElasti
                                          PetscInt numComponents,
                                          PetscScalar* s,
                                          void* context) {
-        CPPUNIT_ASSERT(2 == spaceDim);
-        CPPUNIT_ASSERT(x);
-        CPPUNIT_ASSERT(2 == numComponents);
-        CPPUNIT_ASSERT(s);
+        assert(2 == spaceDim);
+        assert(x);
+        assert(2 == numComponents);
+        assert(s);
 
         s[0] = acc_x(x[0], x[1], t);
         s[1] = acc_y(x[0], x[1], t);
@@ -199,378 +183,311 @@ class pylith::mmstests::PlanePWave2D : public pylith::mmstests::TestLinearElasti
         return 0;
     } // solnkernel_acc
 
-protected:
+public:
 
-    void setUp(void) {
-        TestLinearElasticity::setUp();
+    static
+    TestLinearElasticity_Data* createData(void) {
+        TestLinearElasticity_Data* data = new TestLinearElasticity_Data();assert(data);
 
-        // Overwrite component names for control of journals at test level.
-        GenericComponent::setName("PlanePWave2D");
+        data->journalName = "PlanePWave2D";
+        data->isJacobianLinear = true;
 
-        CPPUNIT_ASSERT(_data);
-        _isJacobianLinear = true;
+        data->meshFilename = ":UNKNOWN:"; // Set in child class.
+        data->boundaryLabel = "boundary";
 
-        _data->meshFilename = ":UNKNOWN:"; // Set in child class.
-        _data->boundaryLabel = "boundary";
+        data->normalizer.setLengthScale(LENGTH_SCALE);
+        data->normalizer.setTimeScale(TIME_SCALE);
+        data->normalizer.setPressureScale(PRESSURE_SCALE);
+        data->normalizer.computeDensityScale();
+        data->formulation = pylith::problems::Physics::DYNAMIC;
 
-        _data->normalizer.setLengthScale(LENGTH_SCALE);
-        _data->normalizer.setTimeScale(TIME_SCALE);
-        _data->normalizer.setPressureScale(PRESSURE_SCALE);
-        _data->normalizer.computeDensityScale();
-        _data->formulation = pylith::problems::Physics::DYNAMIC;
-
-        _data->t = TIME_SNAPSHOT;
-        _data->dt = 0.05;
+        data->t = TIME_SNAPSHOT;
+        data->dt = 0.05;
 
         // solnDiscretizations set in derived class.
 
         // Material information
-        _data->numAuxSubfields = 3;
+        data->numAuxSubfields = 3;
         static const char* _auxSubfields[3] = {"density", "shear_modulus", "bulk_modulus"};
-        _data->auxSubfields = _auxSubfields;
+        data->auxSubfields = _auxSubfields;
         static const pylith::topology::Field::Discretization _auxDiscretizations[3] = {
             pylith::topology::Field::Discretization(0, 1), // density
             pylith::topology::Field::Discretization(0, 1), // shear_modulus
             pylith::topology::Field::Discretization(0, 1), // bulk_modulus
         };
-        _data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization const*>(_auxDiscretizations);
+        data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization const*>(_auxDiscretizations);
 
-        _data->auxDB.addValue("density", density, density_units());
-        _data->auxDB.addValue("vp", vp, vp_units());
-        _data->auxDB.addValue("vs", vs, vs_units());
-        _data->auxDB.setCoordSys(_data->cs);
+        data->auxDB.addValue("density", density, density_units());
+        data->auxDB.addValue("vp", vp, vp_units());
+        data->auxDB.addValue("vs", vs, vs_units());
+        data->auxDB.setCoordSys(data->cs);
 
-        _data->material.setFormulation(_data->formulation);
-        _data->material.useBodyForce(false);
-        _data->rheology.useReferenceState(false);
+        data->material.setFormulation(data->formulation);
+        data->material.useBodyForce(false);
+        data->rheology.useReferenceState(false);
 
-        _data->material.setDescription("Isotropic Linear Elasticity Plane Strain");
-        _data->material.setLabelValue(24);
+        data->material.setDescription("Isotropic Linear Elasticity Plane Strain");
+        data->material.setLabelValue(24);
 
         // Boundary conditions
         static const PylithInt constrainedDOF[2] = {0, 1};
         static const PylithInt numConstrained = 2;
         pylith::bc::DirichletUserFn* bc = NULL;
-        _data->bcs.resize(2);
-        bc = new pylith::bc::DirichletUserFn();CPPUNIT_ASSERT(bc);
+        data->bcs.resize(2);
+        bc = new pylith::bc::DirichletUserFn();assert(bc);
         bc->setSubfieldName("displacement");
         bc->setLabelName("boundary");
         bc->setLabelValue(1);
         bc->setConstrainedDOF(constrainedDOF, numConstrained);
         bc->setUserFn(solnkernel_disp);
         bc->setUserFnDot(solnkernel_vel);
-        _data->bcs[0] = bc;
+        data->bcs[0] = bc;
 
-        bc = new pylith::bc::DirichletUserFn();CPPUNIT_ASSERT(bc);
+        bc = new pylith::bc::DirichletUserFn();assert(bc);
         bc->setSubfieldName("velocity");
         bc->setLabelName("boundary");
         bc->setLabelValue(1);
         bc->setConstrainedDOF(constrainedDOF, numConstrained);
         bc->setUserFn(solnkernel_vel);
         bc->setUserFnDot(solnkernel_acc);
-        _data->bcs[1] = bc;
-    } // setUp
+        data->bcs[1] = bc;
 
-    // Set exact solution in domain.
-    void _setExactSolution(void) {
-        const pylith::topology::Field* solution = _problem->getSolution();
-        CPPUNIT_ASSERT(solution);
+        static const pylith::testing::MMSTest::solution_fn _exactSolnFns[2] = {
+            solnkernel_disp,
+            solnkernel_vel,
+        };
+        data->exactSolnFns = const_cast<pylith::testing::MMSTest::solution_fn*>(_exactSolnFns);
+        static const pylith::testing::MMSTest::solution_fn _exactSolnDotFns[2] = {
+            solnkernel_vel,
+            solnkernel_acc,
+        };
+        data->exactSolnDotFns = const_cast<pylith::testing::MMSTest::solution_fn*>(_exactSolnDotFns);
 
-        PetscErrorCode err = 0;
-        PetscDS ds = NULL;
-        err = DMGetDS(solution->getDM(), &ds);CPPUNIT_ASSERT(!err);
-        err = PetscDSSetExactSolution(ds, 0, solnkernel_disp, NULL);CPPUNIT_ASSERT(!err);
-        err = PetscDSSetExactSolution(ds, 1, solnkernel_vel, NULL);CPPUNIT_ASSERT(!err);
-
-        err = PetscDSSetExactSolutionTimeDerivative(ds, 0, solnkernel_vel, NULL);CPPUNIT_ASSERT(!err);
-        err = PetscDSSetExactSolutionTimeDerivative(ds, 1, solnkernel_acc, NULL);CPPUNIT_ASSERT(!err);
-    } // _setExactSolution
+        return data;
+    } // createData
 
 }; // PlanePWave2D
 
-const double pylith::mmstests::PlanePWave2D::LENGTH_SCALE = 1.0e+3;
-const double pylith::mmstests::PlanePWave2D::TIME_SCALE = 10.0;
-const double pylith::mmstests::PlanePWave2D::PRESSURE_SCALE = 3.0e+10;
-const double pylith::mmstests::PlanePWave2D::WAVELENGTH = 1.0e+4;
-const double pylith::mmstests::PlanePWave2D::TIME_SNAPSHOT = 7.657345769747113;
-const double pylith::mmstests::PlanePWave2D::AMPLITUDE = 1.0e+2;
+const double pylith::_PlanePWave2D::LENGTH_SCALE = 1.0e+3;
+const double pylith::_PlanePWave2D::TIME_SCALE = 10.0;
+const double pylith::_PlanePWave2D::PRESSURE_SCALE = 3.0e+10;
+const double pylith::_PlanePWave2D::WAVELENGTH = 1.0e+4;
+const double pylith::_PlanePWave2D::TIME_SNAPSHOT = 7.657345769747113;
+const double pylith::_PlanePWave2D::AMPLITUDE = 1.0e+2;
 
-// ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::PlanePWave2D_TriP1 :
-    public pylith::mmstests::PlanePWave2D {
-    CPPUNIT_TEST_SUB_SUITE(PlanePWave2D_TriP1,
-                           TestLinearElasticity);
-    CPPUNIT_TEST_SUITE_END();
+// ------------------------------------------------------------------------------------------------
+pylith::TestLinearElasticity_Data*
+pylith::PlanePWave2D::TriP1(void) {
+    TestLinearElasticity_Data* data = pylith::_PlanePWave2D::createData();assert(data);
 
-    void setUp(void) {
-        PlanePWave2D::setUp();
-        CPPUNIT_ASSERT(_data);
+    data->meshFilename = "data/tri.msh";
+    data->useAsciiMesh = false;
+    data->tolerance = 2.0e-4;
 
-        _data->meshFilename = "data/tri.msh";
-        _data->useAsciiMesh = false;
-        _tolerance = 1.0e-4;
+    data->numSolnSubfields = 2;
+    static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
+        pylith::topology::Field::Discretization(1, 1), // disp
+        pylith::topology::Field::Discretization(1, 1), // vel
+    };
+    data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
-        _data->numSolnSubfields = 2;
-        static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
-            pylith::topology::Field::Discretization(1, 1), // disp
-            pylith::topology::Field::Discretization(1, 1), // vel
-        };
-        _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
+    return data;
+} // TriP1
 
-    } // setUp
 
-}; // PlanePWave2D_TriP1
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::PlanePWave2D_TriP1);
+// ------------------------------------------------------------------------------------------------
+pylith::TestLinearElasticity_Data*
+pylith::PlanePWave2D::TriP2(void) {
+    TestLinearElasticity_Data* data = pylith::_PlanePWave2D::createData();assert(data);
 
-// ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::PlanePWave2D_TriP2 :
-    public pylith::mmstests::PlanePWave2D {
-    CPPUNIT_TEST_SUB_SUITE(PlanePWave2D_TriP2,
-                           TestLinearElasticity);
-    CPPUNIT_TEST_SUITE_END();
+    data->meshFilename = "data/tri.mesh";
+    data->tolerance = 5.0e-7;
 
-    void setUp(void) {
-        PlanePWave2D::setUp();
-        CPPUNIT_ASSERT(_data);
+    static const pylith::topology::Field::Discretization _auxDiscretizations[3] = {
+        pylith::topology::Field::Discretization(0, 2), // density
+        pylith::topology::Field::Discretization(0, 2), // shear_modulus
+        pylith::topology::Field::Discretization(0, 2), // bulk_modulus
+    };
+    data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
 
-        _data->meshFilename = "data/tri.mesh";
-        _tolerance = 5.0e-7;
+    data->numSolnSubfields = 2;
+    static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
+        pylith::topology::Field::Discretization(2, 2), // disp
+        pylith::topology::Field::Discretization(2, 2), // vel
+    };
+    data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
-        static const pylith::topology::Field::Discretization _auxDiscretizations[3] = {
-            pylith::topology::Field::Discretization(0, 2), // density
-            pylith::topology::Field::Discretization(0, 2), // shear_modulus
-            pylith::topology::Field::Discretization(0, 2), // bulk_modulus
-        };
-        _data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
+    return data;
+} // TriP2
 
-        _data->numSolnSubfields = 2;
-        static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
-            pylith::topology::Field::Discretization(2, 2), // disp
-            pylith::topology::Field::Discretization(2, 2), // vel
-        };
-        _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
-    } // setUp
+// ------------------------------------------------------------------------------------------------
+pylith::TestLinearElasticity_Data*
+pylith::PlanePWave2D::TriP3(void) {
+    TestLinearElasticity_Data* data = pylith::_PlanePWave2D::createData();assert(data);
 
-}; // PlanePWave2D_TriP2
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::PlanePWave2D_TriP2);
+    data->meshFilename = "data/tri.msh";
+    data->useAsciiMesh = false;
+    data->tolerance = 1.0e-9;
 
-// ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::PlanePWave2D_TriP3 :
-    public pylith::mmstests::PlanePWave2D {
-    CPPUNIT_TEST_SUB_SUITE(PlanePWave2D_TriP3,
-                           TestLinearElasticity);
-    CPPUNIT_TEST_SUITE_END();
+    static const pylith::topology::Field::Discretization _auxDiscretizations[3] = {
+        pylith::topology::Field::Discretization(0, 3), // density
+        pylith::topology::Field::Discretization(0, 3), // shear_modulus
+        pylith::topology::Field::Discretization(0, 3), // bulk_modulus
+    };
+    data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
 
-    void setUp(void) {
-        PlanePWave2D::setUp();
-        CPPUNIT_ASSERT(_data);
+    data->numSolnSubfields = 2;
+    static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
+        pylith::topology::Field::Discretization(3, 3), // disp
+        pylith::topology::Field::Discretization(3, 3), // vel
+    };
+    data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
-        _data->meshFilename = "data/tri.msh";
-        _data->useAsciiMesh = false;
-        _tolerance = 1.0e-9;
+    return data;
+} // TriP3
 
-        static const pylith::topology::Field::Discretization _auxDiscretizations[3] = {
-            pylith::topology::Field::Discretization(0, 3), // density
-            pylith::topology::Field::Discretization(0, 3), // shear_modulus
-            pylith::topology::Field::Discretization(0, 3), // bulk_modulus
-        };
-        _data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
 
-        _data->numSolnSubfields = 2;
-        static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
-            pylith::topology::Field::Discretization(3, 3), // disp
-            pylith::topology::Field::Discretization(3, 3), // vel
-        };
-        _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
+// ------------------------------------------------------------------------------------------------
+pylith::TestLinearElasticity_Data*
+pylith::PlanePWave2D::TriP4(void) {
+    TestLinearElasticity_Data* data = pylith::_PlanePWave2D::createData();assert(data);
 
-    } // setUp
+    data->meshFilename = "data/tri.mesh";
+    data->tolerance = 1.0e-9;
 
-}; // PlanePWave2D_TriP3
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::PlanePWave2D_TriP3);
+    static const pylith::topology::Field::Discretization _auxDiscretizations[3] = {
+        pylith::topology::Field::Discretization(0, 4), // density
+        pylith::topology::Field::Discretization(0, 4), // shear_modulus
+        pylith::topology::Field::Discretization(0, 4), // bulk_modulus
+    };
+    data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
 
-// ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::PlanePWave2D_TriP4 :
-    public pylith::mmstests::PlanePWave2D {
-    CPPUNIT_TEST_SUB_SUITE(PlanePWave2D_TriP4,
-                           TestLinearElasticity);
-    CPPUNIT_TEST_SUITE_END();
+    data->numSolnSubfields = 2;
+    static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
+        pylith::topology::Field::Discretization(4, 4), // disp
+        pylith::topology::Field::Discretization(4, 4), // vel
+    };
+    data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
-    void setUp(void) {
-        PlanePWave2D::setUp();
-        CPPUNIT_ASSERT(_data);
+    return data;
+} // TriP4
 
-        _data->meshFilename = "data/tri.mesh";
-        _tolerance = 1.0e-9;
 
-        static const pylith::topology::Field::Discretization _auxDiscretizations[3] = {
-            pylith::topology::Field::Discretization(0, 4), // density
-            pylith::topology::Field::Discretization(0, 4), // shear_modulus
-            pylith::topology::Field::Discretization(0, 4), // bulk_modulus
-        };
-        _data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
+// ------------------------------------------------------------------------------------------------
+pylith::TestLinearElasticity_Data*
+pylith::PlanePWave2D::QuadQ1(void) {
+    TestLinearElasticity_Data* data = pylith::_PlanePWave2D::createData();assert(data);
 
-        _data->numSolnSubfields = 2;
-        static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
-            pylith::topology::Field::Discretization(4, 4), // disp
-            pylith::topology::Field::Discretization(4, 4), // vel
-        };
-        _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
+    data->meshFilename = "data/quad.mesh";
+    data->tolerance = 1.0e-4;
 
-    } // setUp
+    data->numSolnSubfields = 2;
+    static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
+        pylith::topology::Field::Discretization(1, 1), // disp
+        pylith::topology::Field::Discretization(1, 1), // vel
+    };
+    data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
-}; // PlanePWave2D_TriP4
-// CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::PlanePWave2D_TriP4);
+    return data;
+} // QuadQ1
 
-// ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::PlanePWave2D_QuadQ1 :
-    public pylith::mmstests::PlanePWave2D {
-    CPPUNIT_TEST_SUB_SUITE(PlanePWave2D_QuadQ1,
-                           TestLinearElasticity);
-    CPPUNIT_TEST_SUITE_END();
 
-    void setUp(void) {
-        PlanePWave2D::setUp();
-        CPPUNIT_ASSERT(_data);
+// ------------------------------------------------------------------------------------------------
+pylith::TestLinearElasticity_Data*
+pylith::PlanePWave2D::QuadQ1Distorted(void) {
+    TestLinearElasticity_Data* data = pylith::_PlanePWave2D::createData();assert(data);
 
-        _data->meshFilename = "data/quad.mesh";
-        _tolerance = 1.0e-8;
+    data->meshFilename = "data/quad_distorted.mesh";
+    data->tolerance = 1.0e-5;
 
-        _data->numSolnSubfields = 2;
-        static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
-            pylith::topology::Field::Discretization(1, 1), // disp
-            pylith::topology::Field::Discretization(1, 1), // vel
-        };
-        _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
+    data->numSolnSubfields = 2;
+    static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
+        pylith::topology::Field::Discretization(1, 1), // disp
+        pylith::topology::Field::Discretization(1, 1), // vel
+    };
+    data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
-    } // setUp
+    return data;
+} // QuadQ1Distorted
 
-}; // PlanePWave2D_QuadQ1
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::PlanePWave2D_QuadQ1);
 
-// ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::PlanePWave2D_QuadQ1Distorted :
-    public pylith::mmstests::PlanePWave2D {
-    CPPUNIT_TEST_SUB_SUITE(PlanePWave2D_QuadQ1Distorted,
-                           TestLinearElasticity);
-    CPPUNIT_TEST_SUITE_END();
+// ------------------------------------------------------------------------------------------------
+pylith::TestLinearElasticity_Data*
+pylith::PlanePWave2D::QuadQ2(void) {
+    TestLinearElasticity_Data* data = pylith::_PlanePWave2D::createData();assert(data);
 
-    void setUp(void) {
-        PlanePWave2D::setUp();
-        CPPUNIT_ASSERT(_data);
+    data->meshFilename = "data/quad.msh";
+    data->useAsciiMesh = false;
+    data->tolerance = 2.0e-8;
 
-        _data->meshFilename = "data/quad_distorted.mesh";
-        _tolerance = 1.0e-5;
+    static const pylith::topology::Field::Discretization _auxDiscretizations[3] = {
+        pylith::topology::Field::Discretization(0, 2), // density
+        pylith::topology::Field::Discretization(0, 2), // shear_modulus
+        pylith::topology::Field::Discretization(0, 2), // bulk_modulus
+    };
+    data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
 
-        _data->numSolnSubfields = 2;
-        static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
-            pylith::topology::Field::Discretization(1, 1), // disp
-            pylith::topology::Field::Discretization(1, 1), // vel
-        };
-        _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
+    data->numSolnSubfields = 2;
+    static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
+        pylith::topology::Field::Discretization(2, 2), // disp
+        pylith::topology::Field::Discretization(2, 2), // vel
+    };
+    data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
-    } // setUp
+    return data;
+} // QuadQ2
 
-}; // PlanePWave2D_QuadQ1Distorted
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::PlanePWave2D_QuadQ1Distorted);
 
-// ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::PlanePWave2D_QuadQ2 :
-    public pylith::mmstests::PlanePWave2D {
-    CPPUNIT_TEST_SUB_SUITE(PlanePWave2D_QuadQ2,
-                           TestLinearElasticity);
-    CPPUNIT_TEST_SUITE_END();
+// ------------------------------------------------------------------------------------------------
+pylith::TestLinearElasticity_Data*
+pylith::PlanePWave2D::QuadQ3(void) {
+    TestLinearElasticity_Data* data = pylith::_PlanePWave2D::createData();assert(data);
 
-    void setUp(void) {
-        PlanePWave2D::setUp();
-        CPPUNIT_ASSERT(_data);
+    data->meshFilename = "data/quad.mesh";
+    data->tolerance = 1.0e-9;
 
-        _data->meshFilename = "data/quad.msh";
-        _data->useAsciiMesh = false;
-        _tolerance = 1.0e-9;
+    static const pylith::topology::Field::Discretization _auxDiscretizations[3] = {
+        pylith::topology::Field::Discretization(0, 3), // density
+        pylith::topology::Field::Discretization(0, 3), // shear_modulus
+        pylith::topology::Field::Discretization(0, 3), // bulk_modulus
+    };
+    data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
 
-        static const pylith::topology::Field::Discretization _auxDiscretizations[3] = {
-            pylith::topology::Field::Discretization(0, 2), // density
-            pylith::topology::Field::Discretization(0, 2), // shear_modulus
-            pylith::topology::Field::Discretization(0, 2), // bulk_modulus
-        };
-        _data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
+    data->numSolnSubfields = 2;
+    static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
+        pylith::topology::Field::Discretization(3, 3), // disp
+        pylith::topology::Field::Discretization(3, 3), // vel
+    };
+    data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
-        _data->numSolnSubfields = 2;
-        static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
-            pylith::topology::Field::Discretization(2, 2), // disp
-            pylith::topology::Field::Discretization(2, 2), // vel
-        };
-        _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
+    return data;
+} // QuadQ3
 
-    } // setUp
 
-}; // PlanePWave2D_QuadQ2
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::PlanePWave2D_QuadQ2);
+// ------------------------------------------------------------------------------------------------
+pylith::TestLinearElasticity_Data*
+pylith::PlanePWave2D::QuadQ4(void) {
+    TestLinearElasticity_Data* data = pylith::_PlanePWave2D::createData();assert(data);
 
-// ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::PlanePWave2D_QuadQ3 :
-    public pylith::mmstests::PlanePWave2D {
-    CPPUNIT_TEST_SUB_SUITE(PlanePWave2D_QuadQ3,
-                           TestLinearElasticity);
-    CPPUNIT_TEST_SUITE_END();
+    data->meshFilename = "data/quad.mesh";
 
-    void setUp(void) {
-        PlanePWave2D::setUp();
-        CPPUNIT_ASSERT(_data);
+    static const pylith::topology::Field::Discretization _auxDiscretizations[3] = {
+        pylith::topology::Field::Discretization(0, 4), // density
+        pylith::topology::Field::Discretization(0, 4), // shear_modulus
+        pylith::topology::Field::Discretization(0, 4), // bulk_modulus
+    };
+    data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
 
-        _data->meshFilename = "data/quad.mesh";
-        _tolerance = 1.0e-9;
+    data->numSolnSubfields = 2;
+    static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
+        pylith::topology::Field::Discretization(4, 4), // disp
+        pylith::topology::Field::Discretization(4, 4), // vel
+    };
+    data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
-        static const pylith::topology::Field::Discretization _auxDiscretizations[3] = {
-            pylith::topology::Field::Discretization(0, 3), // density
-            pylith::topology::Field::Discretization(0, 3), // shear_modulus
-            pylith::topology::Field::Discretization(0, 3), // bulk_modulus
-        };
-        _data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
+    return data;
+} // QuadQ4
 
-        _data->numSolnSubfields = 2;
-        static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
-            pylith::topology::Field::Discretization(3, 3), // disp
-            pylith::topology::Field::Discretization(3, 3), // vel
-        };
-        _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
-
-    } // setUp
-
-}; // PlanePWave2D_QuadQ3
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::PlanePWave2D_QuadQ3);
-
-// ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::PlanePWave2D_QuadQ4 :
-    public pylith::mmstests::PlanePWave2D {
-    CPPUNIT_TEST_SUB_SUITE(PlanePWave2D_QuadQ4,
-                           TestLinearElasticity);
-    CPPUNIT_TEST_SUITE_END();
-
-    void setUp(void) {
-        PlanePWave2D::setUp();
-        CPPUNIT_ASSERT(_data);
-
-        _data->meshFilename = "data/quad.mesh";
-
-        static const pylith::topology::Field::Discretization _auxDiscretizations[3] = {
-            pylith::topology::Field::Discretization(0, 4), // density
-            pylith::topology::Field::Discretization(0, 4), // shear_modulus
-            pylith::topology::Field::Discretization(0, 4), // bulk_modulus
-        };
-        _data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
-
-        _data->numSolnSubfields = 2;
-        static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
-            pylith::topology::Field::Discretization(4, 4), // disp
-            pylith::topology::Field::Discretization(4, 4), // vel
-        };
-        _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
-
-    } // setUp
-
-}; // PlanePWave2D_QuadQ4
-// CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::PlanePWave2D_QuadQ4);
 
 // End of file

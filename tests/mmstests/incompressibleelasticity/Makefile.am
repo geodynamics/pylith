@@ -16,9 +16,7 @@
 # ----------------------------------------------------------------------
 #
 
-subpackage = incompressibleelasticity
-include $(top_srcdir)/subpackage.am
-include $(top_srcdir)/check.am
+include $(top_srcdir)/tests/check_cppunit.am
 
 TESTS = test_isotropiclinearincompelasticity
 
@@ -32,28 +30,11 @@ test_isotropiclinearincompelasticity_SOURCES = \
 	TestIsotropicLinearIncompElasticity2D_UniformShear.cc \
 	TestIsotropicLinearIncompElasticity2D_Gravity.cc \
 	TestIsotropicLinearIncompElasticity2D_BodyForce.cc \
-	test_driver.cc
+	$(top_srcdir)/tests/src/driver_cppunit.cc
 
 dist_noinst_HEADERS = \
 	TestIncompressibleElasticity.hh \
 	TestIsotropicLinearIncompElasticity.hh
-
-AM_CPPFLAGS += \
-	$(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR) \
-	$(PETSC_CC_INCLUDES)
-
-AM_LDFLAGS = $(PYTHON_LA_LDFLAGS)
-
-LDADD = \
-	-lcppunit -ldl \
-	$(top_builddir)/libsrc/pylith/libpylith.la \
-	-lspatialdata \
-	$(PETSC_LIB) $(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
-
-if ENABLE_CUBIT
-  LDADD += -lnetcdf
-endif
-
 
 dist_noinst_DATA = \
 	data/tri.mesh \
@@ -63,16 +44,7 @@ dist_noinst_DATA = \
 
 noinst_TMP =
 
-# 'export' the input files by performing a mock install
-export_datadir = $(abs_top_builddir)/tests/mmstests/incompressibleelasticity/data
-export-data: $(dist_noinst_DATA)
-	if [ "X$(abs_top_srcdir)" != "X$(abs_top_builddir)" ]; then $(MKDIR_P) $(export_datadir);  for f in $(dist_noinst_DATA); do $(install_sh_DATA) $(srcdir)/$$f $(export_datadir); done; fi
-
-clean-data:
-	if [ "X$(abs_top_srcdir)" != "X$(abs_top_builddir)" ]; then for f in $(dist_noinst_DATA) $(noinst_TMP); do $(RM) $(RM_FLAGS) $(export_datadir)/$$f; done; fi
-
-BUILT_SOURCES = export-data
-clean-local: clean-data
+export_datadir = $(abs_builddir)
 
 
 # End of file

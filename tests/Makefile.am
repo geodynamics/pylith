@@ -17,6 +17,7 @@
 #
 
 SUBDIRS = \
+	src \
 	libtests \
 	pytests \
 	mmstests \

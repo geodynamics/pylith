@@ -15,7 +15,7 @@
 
 #include <portinfo>
 
-#include "TestLinearElasticity.hh" // Implementation of cases
+#include "Gravity2D.hh" // Implementation of cases
 
 #include "pylith/problems/TimeDependent.hh" // USES TimeDependent
 #include "pylith/topology/Field.hh" // USES pylith::topology::Field::Discretization
@@ -23,24 +23,13 @@
 
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 
+// ------------------------------------------------------------------------------------------------
 namespace pylith {
-    namespace mmstests {
-        class Gravity2D;
+    class _Gravity2D;
+}
+class pylith::_Gravity2D {
+private:
 
-        class Gravity2D_TriP2;
-        class Gravity2D_TriP3;
-        class Gravity2D_TriP4;
-
-        class Gravity2D_QuadQ2;
-        class Gravity2D_QuadQ3;
-        class Gravity2D_QuadQ4;
-
-    } // materials
-} // pylith
-
-// ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::Gravity2D :
-    public pylith::mmstests::TestLinearElasticity {
     static const double LENGTHSCALE;
     static const double TIMESCALE;
     static const double PRESSURESCALE;
@@ -48,8 +37,6 @@ class pylith::mmstests::Gravity2D :
     static const double GACC;
     static const double YMIN;
     static const double YMAX;
-
-    /// Spatial database user functions for auxiiliary subfields (includes derived fields).
 
     // Density
     static double density(const double x,
@@ -123,10 +110,10 @@ class pylith::mmstests::Gravity2D :
                                           PetscInt numComponents,
                                           PetscScalar* s,
                                           void* context) {
-        CPPUNIT_ASSERT(2 == spaceDim);
-        CPPUNIT_ASSERT(2 == numComponents);
-        CPPUNIT_ASSERT(s);
-        CPPUNIT_ASSERT(x);
+        assert(2 == spaceDim);
+        assert(2 == numComponents);
+        assert(s);
+        assert(x);
 
         s[0] = disp_x(x[0], x[1]);
         s[1] = disp_y(x[0], x[1]);
@@ -134,217 +121,185 @@ class pylith::mmstests::Gravity2D :
         return 0;
     } // solnkernel_disp
 
-protected:
+public:
 
-    void setUp(void) {
-        TestLinearElasticity::setUp();
+    static
+    TestLinearElasticity_Data* createData(void) {
+        TestLinearElasticity_Data* data = new TestLinearElasticity_Data();assert(data);
 
-        // Overwrite component names for control of journals at test level.
-        GenericComponent::setName("Gravity2D");
+        data->journalName = "Gravity2D";
+        data->isJacobianLinear = true;
 
-        CPPUNIT_ASSERT(_data);
-        _isJacobianLinear = true;
+        data->meshFilename = ":UNKNOWN:"; // Set in child class.
+        data->boundaryLabel = "boundary";
 
-        _data->meshFilename = ":UNKNOWN:"; // Set in child class.
-        _data->boundaryLabel = "boundary";
+        data->normalizer.setLengthScale(1.0e+03);
+        data->normalizer.setTimeScale(2.0);
+        data->normalizer.setPressureScale(2.25e+10);
+        data->normalizer.computeDensityScale();
 
-        _data->normalizer.setLengthScale(1.0e+03);
-        _data->normalizer.setTimeScale(2.0);
-        _data->normalizer.setPressureScale(2.25e+10);
-        _data->normalizer.computeDensityScale();
-
-        delete _data->gravityField;_data->gravityField = new spatialdata::spatialdb::GravityField();
-        _data->gravityField->setGravityDir(0.0, -1.0, 0.0);
-        _data->gravityField->setGravityAcc(GACC);
+        delete data->gravityField;data->gravityField = new spatialdata::spatialdb::GravityField();
+        data->gravityField->setGravityDir(0.0, -1.0, 0.0);
+        data->gravityField->setGravityAcc(GACC);
 
         // solnDiscretizations set in derived class.
 
         // Material information
-        _data->numAuxSubfields = 4;
+        data->numAuxSubfields = 4;
         static const char* _auxSubfields[4] = { // order must match order of subfields in auxiliary field
             "density",
             "gravitational_acceleration",
             "shear_modulus",
             "bulk_modulus",
         };
-        _data->auxSubfields = _auxSubfields;
+        data->auxSubfields = _auxSubfields;
         static const pylith::topology::Field::Discretization _auxDiscretizations[4] = {
             pylith::topology::Field::Discretization(0, 1), // density
             pylith::topology::Field::Discretization(0, 1), // gravitational_acceleration
             pylith::topology::Field::Discretization(0, 1), // shear_modulus
             pylith::topology::Field::Discretization(0, 1), // bulk_modulus
         };
-        _data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
+        data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
 
-        _data->auxDB.addValue("density", density, density_units());
-        _data->auxDB.addValue("vp", vp, vp_units());
-        _data->auxDB.addValue("vs", vs, vs_units());
-        _data->auxDB.setCoordSys(_data->cs);
+        data->auxDB.addValue("density", density, density_units());
+        data->auxDB.addValue("vp", vp, vp_units());
+        data->auxDB.addValue("vs", vs, vs_units());
+        data->auxDB.setCoordSys(data->cs);
 
-        _data->material.setFormulation(pylith::problems::Physics::QUASISTATIC);
-        _data->material.useBodyForce(false);
-        _data->rheology.useReferenceState(false);
+        data->material.setFormulation(pylith::problems::Physics::QUASISTATIC);
+        data->material.useBodyForce(false);
+        data->rheology.useReferenceState(false);
 
-        _data->material.setDescription("Isotropic Linear Elasticity Plane Strain");
-        _data->material.setLabelValue(24);
+        data->material.setDescription("Isotropic Linear Elasticity Plane Strain");
+        data->material.setLabelValue(24);
 
         static const PylithInt constrainedDOF[2] = {0, 1};
         static const PylithInt numConstrained = 2;
-        _data->bcs.resize(1);
-        pylith::bc::DirichletUserFn*bc = new pylith::bc::DirichletUserFn();CPPUNIT_ASSERT(bc);
+        data->bcs.resize(1);
+        pylith::bc::DirichletUserFn*bc = new pylith::bc::DirichletUserFn();assert(bc);
         bc->setSubfieldName("displacement");
         bc->setLabelName("boundary");
         bc->setLabelValue(1);
         bc->setConstrainedDOF(constrainedDOF, numConstrained);
         bc->setUserFn(solnkernel_disp);
-        _data->bcs[0] = bc;
+        data->bcs[0] = bc;
 
-    } // setUp
-
-    // Set exact solution in domain.
-    void _setExactSolution(void) {
-        const pylith::topology::Field* solution = _problem->getSolution();
-        CPPUNIT_ASSERT(solution);
-
-        PetscErrorCode err = 0;
-        PetscDS prob = NULL;
-        err = DMGetDS(solution->getDM(), &prob);CPPUNIT_ASSERT(!err);
-        err = PetscDSSetExactSolution(prob, 0, solnkernel_disp, NULL);CPPUNIT_ASSERT(!err);
-    } // _setExactSolution
-
-}; // Gravity2D
-const double pylith::mmstests::Gravity2D::LENGTHSCALE = 1.0e+3;
-const double pylith::mmstests::Gravity2D::TIMESCALE = 2.0;
-const double pylith::mmstests::Gravity2D::PRESSURESCALE = 2.25e+10;
-const double pylith::mmstests::Gravity2D::GACC = 9.80665;
-const double pylith::mmstests::Gravity2D::YMIN = -4.0e+3;
-const double pylith::mmstests::Gravity2D::YMAX = +4.0e+3;
-
-// ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::Gravity2D_TriP2 :
-    public pylith::mmstests::Gravity2D {
-    CPPUNIT_TEST_SUB_SUITE(Gravity2D_TriP2,
-                           TestLinearElasticity);
-    CPPUNIT_TEST_SUITE_END();
-
-    void setUp(void) {
-        Gravity2D::setUp();
-        CPPUNIT_ASSERT(_data);
-
-        _data->meshFilename = "data/tri.mesh";
-
-        _data->numSolnSubfields = 1;
-        static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
-            pylith::topology::Field::Discretization(2, 2), // disp
+        static const pylith::testing::MMSTest::solution_fn _exactSolnFns[1] = {
+            solnkernel_disp,
         };
-        _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
+        data->exactSolnFns = const_cast<pylith::testing::MMSTest::solution_fn*>(_exactSolnFns);
+        data->exactSolnDotFns = nullptr;
 
-        static const pylith::topology::Field::Discretization _auxDiscretizations[4] = {
-            pylith::topology::Field::Discretization(0, 2), // density
-            pylith::topology::Field::Discretization(0, 2), // gravitational_acceleration
-            pylith::topology::Field::Discretization(0, 2), // shear_modulus
-            pylith::topology::Field::Discretization(0, 2), // bulk_modulus
-        };
-        _data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
+        return data;
+    } // createData
 
-    } // setUp
+}; // _Gravity2D
+const double pylith::_Gravity2D::LENGTHSCALE = 1.0e+3;
+const double pylith::_Gravity2D::TIMESCALE = 2.0;
+const double pylith::_Gravity2D::PRESSURESCALE = 2.25e+10;
+const double pylith::_Gravity2D::GACC = 9.80665;
+const double pylith::_Gravity2D::YMIN = -4.0e+3;
+const double pylith::_Gravity2D::YMAX = +4.0e+3;
 
-}; // Gravity2D_TriP2
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::Gravity2D_TriP2);
+// ------------------------------------------------------------------------------------------------
+pylith::TestLinearElasticity_Data*
+pylith::Gravity2D::TriP2(void) {
+    TestLinearElasticity_Data* data = pylith::_Gravity2D::createData();assert(data);
 
-// ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::Gravity2D_TriP3 :
-    public pylith::mmstests::Gravity2D {
-    CPPUNIT_TEST_SUB_SUITE(Gravity2D_TriP3,
-                           TestLinearElasticity);
-    CPPUNIT_TEST_SUITE_END();
+    data->meshFilename = "data/tri.mesh";
 
-    void setUp(void) {
-        Gravity2D::setUp();
-        CPPUNIT_ASSERT(_data);
+    data->numSolnSubfields = 1;
+    static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
+        pylith::topology::Field::Discretization(2, 2), // disp
+    };
+    data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
-        _data->meshFilename = "data/tri.mesh";
+    static const pylith::topology::Field::Discretization _auxDiscretizations[4] = {
+        pylith::topology::Field::Discretization(0, 2), // density
+        pylith::topology::Field::Discretization(0, 2), // gravitational_acceleration
+        pylith::topology::Field::Discretization(0, 2), // shear_modulus
+        pylith::topology::Field::Discretization(0, 2), // bulk_modulus
+    };
+    data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
 
-        _data->numSolnSubfields = 1;
-        static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
-            pylith::topology::Field::Discretization(3, 3), // disp
-        };
-        _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
+    return data;
+} // TriP2
 
-        static const pylith::topology::Field::Discretization _auxDiscretizations[4] = {
-            pylith::topology::Field::Discretization(0, 3), // density
-            pylith::topology::Field::Discretization(0, 3), // gravitational_acceleration
-            pylith::topology::Field::Discretization(0, 3), // shear_modulus
-            pylith::topology::Field::Discretization(0, 3), // bulk_modulus
-        };
-        _data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
 
-    } // setUp
+// ------------------------------------------------------------------------------------------------
+pylith::TestLinearElasticity_Data*
+pylith::Gravity2D::TriP3(void) {
+    TestLinearElasticity_Data* data = pylith::_Gravity2D::createData();assert(data);
 
-}; // Gravity2D_TriP3
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::Gravity2D_TriP3);
+    data->meshFilename = "data/tri.mesh";
 
-// ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::Gravity2D_QuadQ2 :
-    public pylith::mmstests::Gravity2D {
-    CPPUNIT_TEST_SUB_SUITE(Gravity2D_QuadQ2,  TestLinearElasticity);
-    CPPUNIT_TEST_SUITE_END();
+    data->numSolnSubfields = 1;
+    static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
+        pylith::topology::Field::Discretization(3, 3), // disp
+    };
+    data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
-    void setUp(void) {
-        Gravity2D::setUp();
-        CPPUNIT_ASSERT(_data);
+    static const pylith::topology::Field::Discretization _auxDiscretizations[4] = {
+        pylith::topology::Field::Discretization(0, 3), // density
+        pylith::topology::Field::Discretization(0, 3), // gravitational_acceleration
+        pylith::topology::Field::Discretization(0, 3), // shear_modulus
+        pylith::topology::Field::Discretization(0, 3), // bulk_modulus
+    };
+    data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
 
-        _data->meshFilename = "data/quad.msh";
-        _data->useAsciiMesh = false;
+    return data;
+} // TriP3
 
-        _data->numSolnSubfields = 1;
-        static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
-            pylith::topology::Field::Discretization(2, 2), // disp
-        };
-        _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
-        static const pylith::topology::Field::Discretization _auxDiscretizations[4] = {
-            pylith::topology::Field::Discretization(0, 2), // density
-            pylith::topology::Field::Discretization(0, 2), // gravitational_acceleration
-            pylith::topology::Field::Discretization(0, 2), // shear_modulus
-            pylith::topology::Field::Discretization(0, 2), // bulk_modulus
-        };
-        _data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
+// ------------------------------------------------------------------------------------------------
+pylith::TestLinearElasticity_Data*
+pylith::Gravity2D::QuadQ2(void) {
+    TestLinearElasticity_Data* data = pylith::_Gravity2D::createData();assert(data);
 
-    } // setUp
+    data->meshFilename = "data/quad.msh";
+    data->useAsciiMesh = false;
 
-}; // Gravity2D_QuadQ2
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::Gravity2D_QuadQ2);
+    data->numSolnSubfields = 1;
+    static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
+        pylith::topology::Field::Discretization(2, 2), // disp
+    };
+    data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
-// ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::Gravity2D_QuadQ3 :
-    public pylith::mmstests::Gravity2D {
-    CPPUNIT_TEST_SUB_SUITE(Gravity2D_QuadQ3,  TestLinearElasticity);
-    CPPUNIT_TEST_SUITE_END();
+    static const pylith::topology::Field::Discretization _auxDiscretizations[4] = {
+        pylith::topology::Field::Discretization(0, 2), // density
+        pylith::topology::Field::Discretization(0, 2), // gravitational_acceleration
+        pylith::topology::Field::Discretization(0, 2), // shear_modulus
+        pylith::topology::Field::Discretization(0, 2), // bulk_modulus
+    };
+    data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
 
-    void setUp(void) {
-        Gravity2D::setUp();
-        CPPUNIT_ASSERT(_data);
+    return data;
+} // QuadQ2
 
-        _data->meshFilename = "data/quad.mesh";
 
-        _data->numSolnSubfields = 1;
-        static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
-            pylith::topology::Field::Discretization(3, 3), // disp
-        };
-        _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
+// ------------------------------------------------------------------------------------------------
+pylith::TestLinearElasticity_Data*
+pylith::Gravity2D::QuadQ3(void) {
+    TestLinearElasticity_Data* data = pylith::_Gravity2D::createData();assert(data);
 
-        static const pylith::topology::Field::Discretization _auxDiscretizations[4] = {
-            pylith::topology::Field::Discretization(0, 3), // density
-            pylith::topology::Field::Discretization(0, 3), // gravitational_acceleration
-            pylith::topology::Field::Discretization(0, 3), // shear_modulus
-            pylith::topology::Field::Discretization(0, 3), // bulk_modulus
-        };
-        _data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
+    data->meshFilename = "data/quad.mesh";
 
-    } // setUp
+    data->numSolnSubfields = 1;
+    static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
+        pylith::topology::Field::Discretization(3, 3), // disp
+    };
+    data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
-}; // Gravity2D_QuadQ3
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::Gravity2D_QuadQ3);
+    static const pylith::topology::Field::Discretization _auxDiscretizations[4] = {
+        pylith::topology::Field::Discretization(0, 3), // density
+        pylith::topology::Field::Discretization(0, 3), // gravitational_acceleration
+        pylith::topology::Field::Discretization(0, 3), // shear_modulus
+        pylith::topology::Field::Discretization(0, 3), // bulk_modulus
+    };
+    data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
+
+    return data;
+} // QuadQ3
+
 
 // End of file

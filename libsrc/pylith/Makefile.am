@@ -26,8 +26,7 @@ SUBDIRS = \
 	bc \
 	faults \
 	friction \
-	fekernels \
-	testing
+	fekernels
 
 
 lib_LTLIBRARIES = libpylith.la
@@ -176,23 +175,6 @@ if ENABLE_CUBIT
 	meshio/MeshIOCubit.cc
   libpylith_la_LIBADD += -lnetcdf
 endif
-
-if ENABLE_TESTING
-libpylith_la_SOURCES += \
-	testing/StubMethodTracker.cc \
-	testing/FieldTester.cc \
-	testing/PhysicsStub.cc \
-	testing/PhysicsImplementationStub.cc \
-	testing/ProgressMonitorStub.cc \
-	testing/ObserverPhysicsStub.cc \
-	testing/ObserverSolnStub.cc \
-	testing/FaultCohesiveStub.cc \
-	testing/MMSTest.cc \
-	testing/TestDriver.cc
-
-libpylith_la_LIBADD += -lcppunit
-endif
-
 
 
 # End of file

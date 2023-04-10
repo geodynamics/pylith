@@ -9,14 +9,20 @@
         "editor.wordWrapColumn": 100,
     },
     "files.associations": {
-        "string": "cpp",
         "*.icc": "cpp",
-        "vector": "cpp",
-        "stdexcept": "cpp"
     },
     "python.formatting.autopep8Args": [
         "-max-line-length",
         "120"
+    ],
+    "testMate.cpp.log.logpanel": true,
+    "testMate.cpp.log.logfile": "/Users/baagaard/src/cig/pylith/test.log",
+    "testMate.cpp.test.advancedExecutables": [
+        {
+            "name": "${filename}",
+            "pattern": "${os_env:PYLITH_BUILDDIR}/tests/mmstests/**/mmstest_*",
+            "cwd": "${absDirpath}"
+        }
     ],
     "cSpell.words": [
         "aprepro",

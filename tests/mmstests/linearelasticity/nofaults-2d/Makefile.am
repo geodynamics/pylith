@@ -13,69 +13,35 @@
 #
 # ----------------------------------------------------------------------
 
-include $(top_srcdir)/check.am
+include $(top_srcdir)/tests/check_catch2.am
 
-TESTS = \
-	test_uniformstrain2d \
-	test_gravity2d \
-	test_gravityrefstate2d \
-	test_bodyforce2d \
-	test_rigidbodyacc2d \
-	test_planewave2d
+TESTS = mmstest_linearelasticity_nofaults2d 
 
 check_PROGRAMS = $(TESTS)
 
 
-test_uniformstrain2d_SOURCES = \
+mmstest_linearelasticity_nofaults2d_SOURCES = \
+		$(top_srcdir)/tests/src/MMSTest.cc \
+		$(top_srcdir)/tests/src/driver_catch2.cc \
 		TestLinearElasticity.cc \
+		TestCases.cc \
 		UniformStrain2D.cc \
-		test_driver.cc
-
-test_gravity2d_SOURCES = \
-		TestLinearElasticity.cc \
 		Gravity2D.cc \
-		test_driver.cc
-
-test_gravityrefstate2d_SOURCES = \
-		TestLinearElasticity.cc \
 		GravityRefState2D.cc \
-		test_driver.cc
-
-test_bodyforce2d_SOURCES = \
-		TestLinearElasticity.cc \
 		BodyForce2D.cc \
-		test_driver.cc
-
-test_rigidbodyacc2d_SOURCES = \
-		TestLinearElasticity.cc \
 		RigidBodyAcc2D.cc \
-		test_driver.cc
+		PlanePWave2D.cc 
 
-test_planewave2d_SOURCES = \
-		TestLinearElasticity.cc \
-		PlanePWave2D.cc \
-		test_driver.cc
 
 
 dist_noinst_HEADERS = \
-	TestLinearElasticity.hh	
-
-
-AM_CPPFLAGS += \
-	$(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR) \
-	$(PETSC_CC_INCLUDES)
-
-AM_LDFLAGS = $(PYTHON_LA_LDFLAGS)
-
-LDADD = \
-	-lcppunit -ldl \
-	$(top_builddir)/libsrc/pylith/libpylith.la \
-	-lspatialdata \
-	$(PETSC_LIB) $(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
-
-if ENABLE_CUBIT
-  LDADD += -lnetcdf
-endif
+	TestLinearElasticity.hh	\
+	UniformStrain2D.hh \
+		Gravity2D.hh \
+		GravityRefState2D.hh \
+		BodyForce2D.hh \
+		RigidBodyAcc2D.hh \
+		PlanePWave2D.hh
 
 
 dist_noinst_DATA = \
@@ -88,18 +54,9 @@ dist_noinst_DATA = \
 	data/quad_distorted.mesh \
 	data/quad_fourcells.mesh
 
-noinst_TMP =
 
 # 'export' the input files by performing a mock install
 export_datadir = $(abs_builddir)/data
-export-data: $(dist_noinst_DATA)
-	if [ "X$(abs_top_srcdir)" != "X$(abs_top_builddir)" ]; then $(MKDIR_P) $(export_datadir);  for f in $(dist_noinst_DATA); do $(install_sh_DATA) $(srcdir)/$$f $(export_datadir); done; fi
-
-clean-data:
-	if [ "X$(abs_top_srcdir)" != "X$(abs_top_builddir)" ]; then for f in $(dist_noinst_DATA) $(noinst_TMP); do $(RM) $(RM_FLAGS) $(export_datadir)/$$f; done; fi
-
-BUILT_SOURCES = export-data
-clean-local: clean-data
 
 
 # End of file

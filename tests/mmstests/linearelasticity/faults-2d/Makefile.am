@@ -16,9 +16,7 @@
 # ----------------------------------------------------------------------
 #
 
-subpackage = faults
-include $(top_srcdir)/subpackage.am
-include $(top_srcdir)/check.am
+include $(top_srcdir)/tests/check_cppunit.am
 
 TESTS = test_faultkin
 
@@ -28,7 +26,7 @@ check_PROGRAMS = $(TESTS)
 test_faultkin_SOURCES = \
 	TestFaultKin.cc \
 	TestFaultKin2D_ConstRateDynamic.cc \
-	test_driver.cc
+	$(top_srcdir)/tests/src/driver_cppunit.cc
 
 #	TestFaultKin2D_TwoBlocksStatic.cc \
 #	TestFaultKin2D_ThreeBlocksStatic.cc \
@@ -39,22 +37,6 @@ test_faultkin_SOURCES = \
 dist_noinst_HEADERS = \
 	TestFaultKin.hh
 
-AM_CPPFLAGS += \
-	$(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR) \
-	$(PETSC_CC_INCLUDES)
-
-AM_LDFLAGS = $(PYTHON_LA_LDFLAGS)
-
-LDADD = \
-	-lcppunit -ldl \
-	$(top_builddir)/libsrc/pylith/libpylith.la \
-	-lspatialdata \
-	$(PETSC_LIB) $(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
-
-if ENABLE_CUBIT
-  LDADD += -lnetcdf
-endif
-
 
 dist_noinst_DATA = \
 	data/tri.mesh \
@@ -64,16 +46,7 @@ dist_noinst_DATA = \
 
 noinst_TMP =
 
-# 'export' the input files by performing a mock install
-export_datadir = $(abs_top_builddir)/tests/mmstests/faults/data
-export-data: $(dist_noinst_DATA)
-	if [ "X$(abs_top_srcdir)" != "X$(abs_top_builddir)" ]; then $(MKDIR_P) $(export_datadir);  for f in $(dist_noinst_DATA); do $(install_sh_DATA) $(srcdir)/$$f $(export_datadir); done; fi
-
-clean-data:
-	if [ "X$(abs_top_srcdir)" != "X$(abs_top_builddir)" ]; then for f in $(dist_noinst_DATA) $(noinst_TMP); do $(RM) $(RM_FLAGS) $(export_datadir)/$$f; done; fi
-
-BUILT_SOURCES = export-data
-clean-local: clean-data
+export_datadir = $(abs_builddir)
 
 
 # End of file

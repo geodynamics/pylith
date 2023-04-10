@@ -200,7 +200,6 @@ AC_CONFIG_FILES([Makefile
 		libsrc/pylith/materials/Makefile
 		libsrc/pylith/meshio/Makefile
 		libsrc/pylith/problems/Makefile
-		libsrc/pylith/testing/Makefile
 		libsrc/pylith/topology/Makefile
 		libsrc/pylith/utils/Makefile
 		modulesrc/Makefile
@@ -216,6 +215,7 @@ AC_CONFIG_FILES([Makefile
 		modulesrc/topology/Makefile
 		modulesrc/utils/Makefile
 		tests/Makefile
+		tests/src/Makefile
 		tests/libtests/Makefile
 		tests/libtests/bc/Makefile
 		tests/libtests/bc/data/Makefile

@@ -16,29 +16,14 @@
 # ----------------------------------------------------------------------
 #
 
-include $(top_srcdir)/tests/check_cppunit.am
+export-data: $(dist_noinst_DATA)
+	if [ "X$(abs_srcdir)" != "X$(abs_builddir)" ]; then for f in $(dist_noinst_DATA); do $(install_sh_DATA) $(srcdir)/$$f $(export_datadir); done; fi
 
-SUBDIRS = data
+clean-data:
+	if [ "X$(abs_srcdir)" != "X$(abs_builddir)" ]; then for f in $(dist_noinst_DATA) $(noinst_TMP); do $(RM) $(RM_FLAGS) $(export_datadir)/$$f; done; fi
 
-TESTS = test_faults
-
-check_PROGRAMS = test_faults
-
-# Primary source files
-test_faults_SOURCES = \
-	TestAdjustTopology.cc \
-	TestAdjustTopology_tri.cc \
-	TestAdjustTopology_quad.cc \
-	TestAdjustTopology_tet.cc \
-	TestAdjustTopology_hex.cc \
-	TestFaultCohesive.cc \
-	$(top_srcdir)/tests/src/FaultCohesiveStub.cc \
-	$(top_srcdir)/tests/src/StubMethodTracker.cc \
-	$(top_srcdir)/tests/src/driver_cppunit.cc
-
-
-dist_noinst_HEADERS = \
-	TestAdjustTopology.hh
+BUILT_SOURCES = export-data
+clean-local: clean-data
 
 
 # End of file

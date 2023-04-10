@@ -16,11 +16,7 @@
 # ----------------------------------------------------------------------
 #
 
-subpackage = testing
-include $(top_srcdir)/subpackage.am
-
-if ENABLE_TESTING
-subpkginclude_HEADERS = \
+dist_noinst_HEADERS = 
 	StubMethodTracker.hh \
 	FaultCohesiveStub.hh \
 	FieldTester.hh \
@@ -32,8 +28,6 @@ subpkginclude_HEADERS = \
 	MMSTest.hh \
 	TestDriver.hh \
 	testingfwd.hh
-
-endif
 
 
 # End of file

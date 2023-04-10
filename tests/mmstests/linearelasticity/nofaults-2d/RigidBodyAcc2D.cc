@@ -18,35 +18,19 @@
 
 #include <portinfo>
 
-#include "TestLinearElasticity.hh" // ISA TestLinearElasticity2D
+#include "RigidBodyAcc2D.hh" // Implementation of test data
 
 #include "pylith/problems/TimeDependent.hh" // USES TimeDependent
 #include "pylith/feassemble/IntegratorDomain.hh" // USES IntegratorDomain
-
 #include "pylith/topology/Field.hh" // USES pylith::topology::Field::Discretization
 #include "pylith/utils/journals.hh" // USES pythia::journal::debug_t
 
+// ---------------------------------------------------------------------------------------------------------------------
 namespace pylith {
-    namespace mmstests {
-        class RigidBodyAcc2D;
-
-        class RigidBodyAcc2D_TriP1;
-        class RigidBodyAcc2D_TriP2;
-        class RigidBodyAcc2D_TriP3;
-        class RigidBodyAcc2D_TriP4;
-
-        class RigidBodyAcc2D_QuadQ1;
-        class RigidBodyAcc2D_QuadQ1Distorted;
-        class RigidBodyAcc2D_QuadQ2;
-        class RigidBodyAcc2D_QuadQ3;
-        class RigidBodyAcc2D_QuadQ4;
-    } // tests/mmstests
+    class _RigidBodyAcc2D;
 } // pylith
 
-// ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::RigidBodyAcc2D : public pylith::mmstests::TestLinearElasticity {
-    // Spatial database user functions for auxiiliary subfields (includes derived fields).
-
+class pylith::_RigidBodyAcc2D {
     static const double LENGTH_SCALE;
     static const double TIME_SCALE;
     static const double PRESSURE_SCALE;
@@ -141,10 +125,10 @@ class pylith::mmstests::RigidBodyAcc2D : public pylith::mmstests::TestLinearElas
                                           PetscInt numComponents,
                                           PetscScalar* s,
                                           void* context) {
-        CPPUNIT_ASSERT(2 == spaceDim);
-        CPPUNIT_ASSERT(x);
-        CPPUNIT_ASSERT(2 == numComponents);
-        CPPUNIT_ASSERT(s);
+        assert(2 == spaceDim);
+        assert(x);
+        assert(2 == numComponents);
+        assert(s);
 
         s[0] = disp_x(x[0], x[1], t);
         s[1] = disp_y(x[0], x[1], t);
@@ -158,10 +142,10 @@ class pylith::mmstests::RigidBodyAcc2D : public pylith::mmstests::TestLinearElas
                                          PetscInt numComponents,
                                          PetscScalar* s,
                                          void* context) {
-        CPPUNIT_ASSERT(2 == spaceDim);
-        CPPUNIT_ASSERT(x);
-        CPPUNIT_ASSERT(2 == numComponents);
-        CPPUNIT_ASSERT(s);
+        assert(2 == spaceDim);
+        assert(x);
+        assert(2 == numComponents);
+        assert(s);
 
         s[0] = vel_x(x[0], x[1], t);
         s[1] = vel_y(x[0], x[1], t);
@@ -175,10 +159,10 @@ class pylith::mmstests::RigidBodyAcc2D : public pylith::mmstests::TestLinearElas
                                          PetscInt numComponents,
                                          PetscScalar* s,
                                          void* context) {
-        CPPUNIT_ASSERT(2 == spaceDim);
-        CPPUNIT_ASSERT(x);
-        CPPUNIT_ASSERT(2 == numComponents);
-        CPPUNIT_ASSERT(s);
+        assert(2 == spaceDim);
+        assert(x);
+        assert(2 == numComponents);
+        assert(s);
 
         s[0] = acc_x(x[0], x[1], t);
         s[1] = acc_y(x[0], x[1], t);
@@ -213,370 +197,302 @@ class pylith::mmstests::RigidBodyAcc2D : public pylith::mmstests::TestLinearElas
         f0[1] += density(x[0], x[1]) / densityScale * acc_y(x[0], x[1], t);
     } // mmsBodyForceKernel
 
-protected:
+public:
 
-    void setUp(void) {
-        TestLinearElasticity::setUp();
+    static
+    TestLinearElasticity_Data* createData(void) {
+        TestLinearElasticity_Data* data = new TestLinearElasticity_Data();assert(data);
 
-        // Overwrite component names for control of journals at test level.
-        GenericComponent::setName("RigidBodyAcc2D");
+        data->journalName = "RigidBodyAcc2D";
+        data->isJacobianLinear = true;
+        data->allowZeroResidual = true;
 
-        CPPUNIT_ASSERT(_data);
-        _isJacobianLinear = true;
-        _allowZeroResidual = true;
+        data->meshFilename = ":UNKNOWN:"; // Set in child class.
+        data->boundaryLabel = "boundary";
 
-        _data->meshFilename = ":UNKNOWN:"; // Set in child class.
-        _data->boundaryLabel = "boundary";
-
-        _data->normalizer.setLengthScale(LENGTH_SCALE);
-        _data->normalizer.setTimeScale(TIME_SCALE);
-        _data->normalizer.setPressureScale(PRESSURE_SCALE);
-        _data->normalizer.computeDensityScale();
-        _data->formulation = pylith::problems::Physics::DYNAMIC;
+        data->normalizer.setLengthScale(LENGTH_SCALE);
+        data->normalizer.setTimeScale(TIME_SCALE);
+        data->normalizer.setPressureScale(PRESSURE_SCALE);
+        data->normalizer.computeDensityScale();
+        data->formulation = pylith::problems::Physics::DYNAMIC;
 
         // solnDiscretizations set in derived class.
 
         // Material information
-        _data->numAuxSubfields = 3;
+        data->numAuxSubfields = 3;
         static const char* _auxSubfields[3] = {"density", "shear_modulus", "bulk_modulus"};
-        _data->auxSubfields = _auxSubfields;
+        data->auxSubfields = _auxSubfields;
         static const pylith::topology::Field::Discretization _auxDiscretizations[3] = {
             pylith::topology::Field::Discretization(0, 1), // density
             pylith::topology::Field::Discretization(0, 1), // shear_modulus
             pylith::topology::Field::Discretization(0, 1), // bulk_modulus
         };
-        _data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization const*>(_auxDiscretizations);
+        data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization const*>(_auxDiscretizations);
 
-        _data->auxDB.addValue("density", density, density_units());
-        _data->auxDB.addValue("vp", vp, vp_units());
-        _data->auxDB.addValue("vs", vs, vs_units());
-        _data->auxDB.setCoordSys(_data->cs);
+        data->auxDB.addValue("density", density, density_units());
+        data->auxDB.addValue("vp", vp, vp_units());
+        data->auxDB.addValue("vs", vs, vs_units());
+        data->auxDB.setCoordSys(data->cs);
 
-        _data->material.setFormulation(_data->formulation);
-        _data->material.useBodyForce(false);
-        _data->rheology.useReferenceState(false);
+        data->material.setFormulation(data->formulation);
+        data->material.useBodyForce(false);
+        data->rheology.useReferenceState(false);
 
-        _data->material.setDescription("Isotropic Linear Elasticity Plane Strain");
-        _data->material.setLabelValue(24);
+        data->material.setDescription("Isotropic Linear Elasticity Plane Strain");
+        data->material.setLabelValue(24);
 
         std::vector<pylith::feassemble::IntegratorDomain::ResidualKernels> mmsKernels(1);
         mmsKernels[0] = pylith::feassemble::IntegratorDomain::ResidualKernels("velocity", pylith::feassemble::Integrator::RHS, mmsBodyForceKernel, NULL);
-        _data->material.setMMSBodyForceKernels(mmsKernels);
+        data->material.setMMSBodyForceKernels(mmsKernels);
 
         // Boundary conditions
         static const PylithInt constrainedDOF[2] = {0, 1};
         static const PylithInt numConstrained = 2;
-        _data->bcs.resize(2);
+        data->bcs.resize(2);
         pylith::bc::DirichletUserFn* bc = NULL;
-        bc = new pylith::bc::DirichletUserFn();CPPUNIT_ASSERT(bc);
+        bc = new pylith::bc::DirichletUserFn();assert(bc);
         bc->setSubfieldName("displacement");
         bc->setLabelName("boundary");
         bc->setLabelValue(1);
         bc->setConstrainedDOF(constrainedDOF, numConstrained);
         bc->setUserFn(solnkernel_disp);
         bc->setUserFnDot(solnkernel_vel);
-        _data->bcs[0] = bc;
+        data->bcs[0] = bc;
 
-        bc = new pylith::bc::DirichletUserFn();CPPUNIT_ASSERT(bc);
+        bc = new pylith::bc::DirichletUserFn();assert(bc);
         bc->setSubfieldName("velocity");
         bc->setLabelName("boundary");
         bc->setLabelValue(1);
         bc->setConstrainedDOF(constrainedDOF, numConstrained);
         bc->setUserFn(solnkernel_vel);
         bc->setUserFnDot(solnkernel_acc);
-        _data->bcs[1] = bc;
+        data->bcs[1] = bc;
 
-    } // setUp
-
-    // Set exact solution in domain.
-    void _setExactSolution(void) {
-        const pylith::topology::Field* solution = _problem->getSolution();
-        CPPUNIT_ASSERT(solution);
-
-        PetscErrorCode err = 0;
-        PetscDS ds = NULL;
-        err = DMGetDS(solution->getDM(), &ds);CPPUNIT_ASSERT(!err);
-        err = PetscDSSetExactSolution(ds, 0, solnkernel_disp, NULL);CPPUNIT_ASSERT(!err);
-        err = PetscDSSetExactSolution(ds, 1, solnkernel_vel, NULL);CPPUNIT_ASSERT(!err);
-
-        err = PetscDSSetExactSolutionTimeDerivative(ds, 0, solnkernel_vel, NULL);CPPUNIT_ASSERT(!err);
-        err = PetscDSSetExactSolutionTimeDerivative(ds, 1, solnkernel_acc, NULL);CPPUNIT_ASSERT(!err);
-    } // _setExactSolution
-
-}; // RigidBodyAcc2D
-
-const double pylith::mmstests::RigidBodyAcc2D::LENGTH_SCALE = 1.0e+3;
-const double pylith::mmstests::RigidBodyAcc2D::TIME_SCALE = 15.0;
-const double pylith::mmstests::RigidBodyAcc2D::PRESSURE_SCALE = 2.0e+10;
-
-// ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::RigidBodyAcc2D_TriP1 :
-    public pylith::mmstests::RigidBodyAcc2D {
-    CPPUNIT_TEST_SUB_SUITE(RigidBodyAcc2D_TriP1,
-                           TestLinearElasticity);
-    CPPUNIT_TEST_SUITE_END();
-
-    void setUp(void) {
-        RigidBodyAcc2D::setUp();
-        CPPUNIT_ASSERT(_data);
-
-        _data->meshFilename = "data/tri.msh";
-        _data->useAsciiMesh = false;
-
-        _data->numSolnSubfields = 2;
-        static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
-            pylith::topology::Field::Discretization(1, 1), // disp
-            pylith::topology::Field::Discretization(1, 1), // vel
+        static const pylith::testing::MMSTest::solution_fn _exactSolnFns[2] = {
+            solnkernel_disp,
+            solnkernel_vel,
         };
-        _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
-
-    } // setUp
-
-}; // RigidBodyAcc2D_TriP1
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::RigidBodyAcc2D_TriP1);
-
-// ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::RigidBodyAcc2D_TriP2 :
-    public pylith::mmstests::RigidBodyAcc2D {
-    CPPUNIT_TEST_SUB_SUITE(RigidBodyAcc2D_TriP2,
-                           TestLinearElasticity);
-    CPPUNIT_TEST_SUITE_END();
-
-    void setUp(void) {
-        RigidBodyAcc2D::setUp();
-        CPPUNIT_ASSERT(_data);
-
-        _data->meshFilename = "data/tri.mesh";
-
-        static const pylith::topology::Field::Discretization _auxDiscretizations[3] = {
-            pylith::topology::Field::Discretization(0, 2), // density
-            pylith::topology::Field::Discretization(0, 2), // shear_modulus
-            pylith::topology::Field::Discretization(0, 2), // bulk_modulus
+        data->exactSolnFns = const_cast<pylith::testing::MMSTest::solution_fn*>(_exactSolnFns);
+        static const pylith::testing::MMSTest::solution_fn _exactSolnDotFns[2] = {
+            solnkernel_vel,
+            solnkernel_acc,
         };
-        _data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
+        data->exactSolnDotFns = const_cast<pylith::testing::MMSTest::solution_fn*>(_exactSolnDotFns);
 
-        _data->numSolnSubfields = 2;
-        static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
-            pylith::topology::Field::Discretization(2, 2), // disp
-            pylith::topology::Field::Discretization(2, 2), // vel
-        };
-        _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
+        return data;
+    } // createData
 
-    } // setUp
+}; // _RigidBodyAcc2D
 
-}; // RigidBodyAcc2D_TriP2
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::RigidBodyAcc2D_TriP2);
+const double pylith::_RigidBodyAcc2D::LENGTH_SCALE = 1.0e+3;
+const double pylith::_RigidBodyAcc2D::TIME_SCALE = 15.0;
+const double pylith::_RigidBodyAcc2D::PRESSURE_SCALE = 2.0e+10;
 
-// ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::RigidBodyAcc2D_TriP3 :
-    public pylith::mmstests::RigidBodyAcc2D {
-    CPPUNIT_TEST_SUB_SUITE(RigidBodyAcc2D_TriP3,
-                           TestLinearElasticity);
-    CPPUNIT_TEST_SUITE_END();
+// ------------------------------------------------------------------------------------------------
+pylith::TestLinearElasticity_Data*
+pylith::RigidBodyAcc2D::TriP1(void) {
+    TestLinearElasticity_Data* data = pylith::_RigidBodyAcc2D::createData();assert(data);
 
-    void setUp(void) {
-        RigidBodyAcc2D::setUp();
-        CPPUNIT_ASSERT(_data);
+    data->meshFilename = "data/tri.msh";
+    data->useAsciiMesh = false;
 
-        _data->meshFilename = "data/tri.msh";
-        _data->useAsciiMesh = false;
+    data->numSolnSubfields = 2;
+    static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
+        pylith::topology::Field::Discretization(1, 1), // disp
+        pylith::topology::Field::Discretization(1, 1), // vel
+    };
+    data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
-        static const pylith::topology::Field::Discretization _auxDiscretizations[3] = {
-            pylith::topology::Field::Discretization(0, 3), // density
-            pylith::topology::Field::Discretization(0, 3), // shear_modulus
-            pylith::topology::Field::Discretization(0, 3), // bulk_modulus
-        };
-        _data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
+    return data;
+} // TriP1
 
-        _data->numSolnSubfields = 2;
-        static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
-            pylith::topology::Field::Discretization(3, 3), // disp
-            pylith::topology::Field::Discretization(3, 3), // vel
-        };
-        _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
-    } // setUp
+// ------------------------------------------------------------------------------------------------
+pylith::TestLinearElasticity_Data*
+pylith::RigidBodyAcc2D::TriP2(void) {
+    TestLinearElasticity_Data* data = pylith::_RigidBodyAcc2D::createData();assert(data);
 
-}; // RigidBodyAcc2D_TriP3
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::RigidBodyAcc2D_TriP3);
+    data->meshFilename = "data/tri.mesh";
 
-// ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::RigidBodyAcc2D_TriP4 :
-    public pylith::mmstests::RigidBodyAcc2D {
-    CPPUNIT_TEST_SUB_SUITE(RigidBodyAcc2D_TriP4,
-                           TestLinearElasticity);
-    CPPUNIT_TEST_SUITE_END();
+    static const pylith::topology::Field::Discretization _auxDiscretizations[3] = {
+        pylith::topology::Field::Discretization(0, 2), // density
+        pylith::topology::Field::Discretization(0, 2), // shear_modulus
+        pylith::topology::Field::Discretization(0, 2), // bulk_modulus
+    };
+    data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
 
-    void setUp(void) {
-        RigidBodyAcc2D::setUp();
-        CPPUNIT_ASSERT(_data);
+    data->numSolnSubfields = 2;
+    static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
+        pylith::topology::Field::Discretization(2, 2), // disp
+        pylith::topology::Field::Discretization(2, 2), // vel
+    };
+    data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
-        _data->meshFilename = "data/tri.mesh";
+    return data;
+} // TriP2
 
-        static const pylith::topology::Field::Discretization _auxDiscretizations[3] = {
-            pylith::topology::Field::Discretization(0, 4), // density
-            pylith::topology::Field::Discretization(0, 4), // shear_modulus
-            pylith::topology::Field::Discretization(0, 4), // bulk_modulus
-        };
-        _data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
 
-        _data->numSolnSubfields = 2;
-        static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
-            pylith::topology::Field::Discretization(4, 4), // disp
-            pylith::topology::Field::Discretization(4, 4), // vel
-        };
-        _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
+// ------------------------------------------------------------------------------------------------
+pylith::TestLinearElasticity_Data*
+pylith::RigidBodyAcc2D::TriP3(void) {
+    TestLinearElasticity_Data* data = pylith::_RigidBodyAcc2D::createData();assert(data);
 
-    } // setUp
+    data->meshFilename = "data/tri.msh";
+    data->useAsciiMesh = false;
 
-}; // RigidBodyAcc2D_TriP4
-// CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::RigidBodyAcc2D_TriP4);
+    static const pylith::topology::Field::Discretization _auxDiscretizations[3] = {
+        pylith::topology::Field::Discretization(0, 3), // density
+        pylith::topology::Field::Discretization(0, 3), // shear_modulus
+        pylith::topology::Field::Discretization(0, 3), // bulk_modulus
+    };
+    data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
 
-// ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::RigidBodyAcc2D_QuadQ1 :
-    public pylith::mmstests::RigidBodyAcc2D {
-    CPPUNIT_TEST_SUB_SUITE(RigidBodyAcc2D_QuadQ1,
-                           TestLinearElasticity);
-    CPPUNIT_TEST_SUITE_END();
+    data->numSolnSubfields = 2;
+    static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
+        pylith::topology::Field::Discretization(3, 3), // disp
+        pylith::topology::Field::Discretization(3, 3), // vel
+    };
+    data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
-    void setUp(void) {
-        RigidBodyAcc2D::setUp();
-        CPPUNIT_ASSERT(_data);
+    return data;
+} // TriP3
 
-        _data->meshFilename = "data/quad.mesh";
 
-        _data->numSolnSubfields = 2;
-        static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
-            pylith::topology::Field::Discretization(1, 1), // disp
-            pylith::topology::Field::Discretization(1, 1), // vel
-        };
-        _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
+// ------------------------------------------------------------------------------------------------
+pylith::TestLinearElasticity_Data*
+pylith::RigidBodyAcc2D::TriP4(void) {
+    TestLinearElasticity_Data* data = pylith::_RigidBodyAcc2D::createData();assert(data);
 
-    } // setUp
+    data->meshFilename = "data/tri.mesh";
 
-}; // RigidBodyAcc2D_QuadQ1
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::RigidBodyAcc2D_QuadQ1);
+    static const pylith::topology::Field::Discretization _auxDiscretizations[3] = {
+        pylith::topology::Field::Discretization(0, 4), // density
+        pylith::topology::Field::Discretization(0, 4), // shear_modulus
+        pylith::topology::Field::Discretization(0, 4), // bulk_modulus
+    };
+    data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
 
-// ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::RigidBodyAcc2D_QuadQ1Distorted :
-    public pylith::mmstests::RigidBodyAcc2D {
-    CPPUNIT_TEST_SUB_SUITE(RigidBodyAcc2D_QuadQ1Distorted,
-                           TestLinearElasticity);
-    CPPUNIT_TEST_SUITE_END();
+    data->numSolnSubfields = 2;
+    static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
+        pylith::topology::Field::Discretization(4, 4), // disp
+        pylith::topology::Field::Discretization(4, 4), // vel
+    };
+    data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
-    void setUp(void) {
-        RigidBodyAcc2D::setUp();
-        CPPUNIT_ASSERT(_data);
+    return data;
+} // TriP4
 
-        _data->meshFilename = "data/quad_distorted.mesh";
 
-        _data->numSolnSubfields = 2;
-        static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
-            pylith::topology::Field::Discretization(1, 1), // disp
-            pylith::topology::Field::Discretization(1, 1), // vel
-        };
-        _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
+// ------------------------------------------------------------------------------------------------
+pylith::TestLinearElasticity_Data*
+pylith::RigidBodyAcc2D::QuadQ1(void) {
+    TestLinearElasticity_Data* data = pylith::_RigidBodyAcc2D::createData();assert(data);
 
-    } // setUp
+    data->meshFilename = "data/quad.mesh";
 
-}; // RigidBodyAcc2D_QuadQ1Distorted
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::RigidBodyAcc2D_QuadQ1Distorted);
+    data->numSolnSubfields = 2;
+    static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
+        pylith::topology::Field::Discretization(1, 1), // disp
+        pylith::topology::Field::Discretization(1, 1), // vel
+    };
+    data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
-// ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::RigidBodyAcc2D_QuadQ2 :
-    public pylith::mmstests::RigidBodyAcc2D {
-    CPPUNIT_TEST_SUB_SUITE(RigidBodyAcc2D_QuadQ2,
-                           TestLinearElasticity);
-    CPPUNIT_TEST_SUITE_END();
+    return data;
+} // QuadQ1
 
-    void setUp(void) {
-        RigidBodyAcc2D::setUp();
-        CPPUNIT_ASSERT(_data);
 
-        _data->meshFilename = "data/quad.msh";
-        _data->useAsciiMesh = false;
+// ------------------------------------------------------------------------------------------------
+pylith::TestLinearElasticity_Data*
+pylith::RigidBodyAcc2D::QuadQ1Distorted(void) {
+    TestLinearElasticity_Data* data = pylith::_RigidBodyAcc2D::createData();assert(data);
 
-        static const pylith::topology::Field::Discretization _auxDiscretizations[3] = {
-            pylith::topology::Field::Discretization(0, 2), // density
-            pylith::topology::Field::Discretization(0, 2), // shear_modulus
-            pylith::topology::Field::Discretization(0, 2), // bulk_modulus
-        };
-        _data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
+    data->meshFilename = "data/quad_distorted.mesh";
 
-        _data->numSolnSubfields = 2;
-        static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
-            pylith::topology::Field::Discretization(2, 2), // disp
-            pylith::topology::Field::Discretization(2, 2), // vel
-        };
-        _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
+    data->numSolnSubfields = 2;
+    static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
+        pylith::topology::Field::Discretization(1, 1), // disp
+        pylith::topology::Field::Discretization(1, 1), // vel
+    };
+    data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
-    } // setUp
+    return data;
+} // QuadQ1Distorted
 
-}; // RigidBodyAcc2D_QuadQ2
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::RigidBodyAcc2D_QuadQ2);
 
-// ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::RigidBodyAcc2D_QuadQ3 :
-    public pylith::mmstests::RigidBodyAcc2D {
-    CPPUNIT_TEST_SUB_SUITE(RigidBodyAcc2D_QuadQ3,
-                           TestLinearElasticity);
-    CPPUNIT_TEST_SUITE_END();
+// ------------------------------------------------------------------------------------------------
+pylith::TestLinearElasticity_Data*
+pylith::RigidBodyAcc2D::QuadQ2(void) {
+    TestLinearElasticity_Data* data = pylith::_RigidBodyAcc2D::createData();assert(data);
 
-    void setUp(void) {
-        RigidBodyAcc2D::setUp();
-        CPPUNIT_ASSERT(_data);
+    data->meshFilename = "data/quad.msh";
+    data->useAsciiMesh = false;
 
-        _data->meshFilename = "data/quad.mesh";
+    static const pylith::topology::Field::Discretization _auxDiscretizations[3] = {
+        pylith::topology::Field::Discretization(0, 2), // density
+        pylith::topology::Field::Discretization(0, 2), // shear_modulus
+        pylith::topology::Field::Discretization(0, 2), // bulk_modulus
+    };
+    data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
 
-        static const pylith::topology::Field::Discretization _auxDiscretizations[3] = {
-            pylith::topology::Field::Discretization(0, 3), // density
-            pylith::topology::Field::Discretization(0, 3), // shear_modulus
-            pylith::topology::Field::Discretization(0, 3), // bulk_modulus
-        };
-        _data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
+    data->numSolnSubfields = 2;
+    static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
+        pylith::topology::Field::Discretization(2, 2), // disp
+        pylith::topology::Field::Discretization(2, 2), // vel
+    };
+    data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
-        _data->numSolnSubfields = 2;
-        static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
-            pylith::topology::Field::Discretization(3, 3), // disp
-            pylith::topology::Field::Discretization(3, 3), // vel
-        };
-        _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
+    return data;
+} // QuadQ2
 
-    } // setUp
 
-}; // RigidBodyAcc2D_QuadQ3
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::RigidBodyAcc2D_QuadQ3);
+// ------------------------------------------------------------------------------------------------
+pylith::TestLinearElasticity_Data*
+pylith::RigidBodyAcc2D::QuadQ3(void) {
+    TestLinearElasticity_Data* data = pylith::_RigidBodyAcc2D::createData();assert(data);
 
-// ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::RigidBodyAcc2D_QuadQ4 :
-    public pylith::mmstests::RigidBodyAcc2D {
-    CPPUNIT_TEST_SUB_SUITE(RigidBodyAcc2D_QuadQ4,
-                           TestLinearElasticity);
-    CPPUNIT_TEST_SUITE_END();
+    data->meshFilename = "data/quad.mesh";
 
-    void setUp(void) {
-        RigidBodyAcc2D::setUp();
-        CPPUNIT_ASSERT(_data);
+    static const pylith::topology::Field::Discretization _auxDiscretizations[3] = {
+        pylith::topology::Field::Discretization(0, 3), // density
+        pylith::topology::Field::Discretization(0, 3), // shear_modulus
+        pylith::topology::Field::Discretization(0, 3), // bulk_modulus
+    };
+    data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
 
-        _data->meshFilename = "data/quad.mesh";
+    data->numSolnSubfields = 2;
+    static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
+        pylith::topology::Field::Discretization(3, 3), // disp
+        pylith::topology::Field::Discretization(3, 3), // vel
+    };
+    data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
-        static const pylith::topology::Field::Discretization _auxDiscretizations[3] = {
-            pylith::topology::Field::Discretization(0, 4), // density
-            pylith::topology::Field::Discretization(0, 4), // shear_modulus
-            pylith::topology::Field::Discretization(0, 4), // bulk_modulus
-        };
-        _data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
+    return data;
+} // QuadQ3
 
-        _data->numSolnSubfields = 2;
-        static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
-            pylith::topology::Field::Discretization(4, 4), // disp
-            pylith::topology::Field::Discretization(4, 4), // vel
-        };
-        _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
-    } // setUp
+// ------------------------------------------------------------------------------------------------
+pylith::TestLinearElasticity_Data*
+pylith::RigidBodyAcc2D::QuadQ4(void) {
+    TestLinearElasticity_Data* data = pylith::_RigidBodyAcc2D::createData();assert(data);
 
-}; // RigidBodyAcc2D_QuadQ4
-// CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::RigidBodyAcc2D_QuadQ4);
+    data->meshFilename = "data/quad.mesh";
+
+    static const pylith::topology::Field::Discretization _auxDiscretizations[3] = {
+        pylith::topology::Field::Discretization(0, 4), // density
+        pylith::topology::Field::Discretization(0, 4), // shear_modulus
+        pylith::topology::Field::Discretization(0, 4), // bulk_modulus
+    };
+    data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
+
+    data->numSolnSubfields = 2;
+    static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
+        pylith::topology::Field::Discretization(4, 4), // disp
+        pylith::topology::Field::Discretization(4, 4), // vel
+    };
+    data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
+
+    return data;
+} // QuadQ4
+
 
 // End of file

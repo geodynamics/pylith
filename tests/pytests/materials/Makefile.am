@@ -16,7 +16,7 @@
 # ----------------------------------------------------------------------
 #
 
-include $(top_srcdir)/check.am
+include $(top_srcdir)/tests/check_cppunit.am
 
 SUBDIRS = data
 
