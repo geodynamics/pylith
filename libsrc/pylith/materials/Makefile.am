@@ -35,8 +35,10 @@ subpkginclude_HEADERS = \
 	IsotropicPowerLaw.hh \
 	IsotropicLinearIncompElasticity.hh \
 	IsotropicLinearPoroelasticity.hh \
+	IsotropicDruckerPragerElastoplastic.hh \
 	AuxiliaryFactoryElastic.hh \
 	AuxiliaryFactoryViscoelastic.hh \
+	AuxiliaryFactoryElastoplastic.hh \
 	IncompressibleElasticity.hh \
 	RheologyIncompressibleElasticity.hh \
 	Query.hh \

@@ -42,8 +42,10 @@ namespace pylith {
         class IsotropicLinearGenMaxwell;
         class IsotropicPowerLaw;
         class IsotropicLinearIncompElasticity;
+        class IsotropicDruckerPragerElastoplastic;
         class AuxiliaryFactoryElastic;
         class AuxiliaryFactoryViscoelastic;
+        class AuxiliaryFactoryElastoplastic;
 
         class IncompressibleElasticity;
 

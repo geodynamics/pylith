@@ -20,18 +20,21 @@
 
 #include "pylith/materials/Query.hh"
 
-#include "pylith/topology/FieldQuery.hh" // USES DBQueryContext
+#include "pylith/topology/FieldQuery.hh"         // USES DBQueryContext
 #include "pylith/feassemble/AuxiliaryFactory.hh" // USES AuxiliaryFactory
-#include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END, PYLITH_ERROR_RETURN
-#include "pylith/utils/array.hh" // USES scalar_array, int_array
-#include "pylith/utils/types.hh" // USES PylithScalar
-#include "pylith/utils/constdefs.h" // USES PYLITH_MAXSCALAR
+#include "pylith/utils/error.hh"                 // USES PYLITH_METHOD_BEGIN/END, PYLITH_ERROR_RETURN
+#include "pylith/utils/array.hh"                 // USES scalar_array, int_array
+#include "pylith/utils/types.hh"                 // USES PylithScalar
+#include "pylith/utils/constdefs.h"              // USES PYLITH_MAXSCALAR
 
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 
-namespace pylith {
-    namespace materials {
-        class _Query {
+namespace pylith
+{
+    namespace materials
+    {
+        class _Query
+        {
             /** Conversion functions to convert from spatial database values to auxiliary subfield components.
              *
              * Order of spatial database values must match the order given in the Query factory functions.
@@ -44,100 +47,134 @@ namespace pylith {
              * @param[in] dbIndices Indices of values from spatial database to use for computing subfield values.
              * @returns PETSc error code (0 for success).
              */
-public:
+        public:
+            static std::string vmToShearModulus(PylithScalar valueSubfield[],
+                                                const PylithInt numComponents,
+                                                const pylith::scalar_array dbValues,
+                                                const pylith::int_array dbIndices);
 
-            static
-            std::string vmToShearModulus(PylithScalar valueSubfield[],
-                                         const PylithInt numComponents,
-                                         const pylith::scalar_array dbValues,
-                                         const pylith::int_array dbIndices);
+            static std::string vmToBulkModulus(PylithScalar valueSubfield[],
+                                               const PylithInt numComponents,
+                                               const pylith::scalar_array dbValues,
+                                               const pylith::int_array dbIndices);
 
-            static
-            std::string vmToBulkModulus(PylithScalar valueSubfield[],
-                                        const PylithInt numComponents,
-                                        const pylith::scalar_array dbValues,
-                                        const pylith::int_array dbIndices);
+            static std::string vmToMaxwellTime(PylithScalar valueSubfield[],
+                                               const PylithInt numComponents,
+                                               const pylith::scalar_array dbValues,
+                                               const pylith::int_array dbIndices);
 
-            static
-            std::string vmToMaxwellTime(PylithScalar valueSubfield[],
-                                        const PylithInt numComponents,
-                                        const pylith::scalar_array dbValues,
-                                        const pylith::int_array dbIndices);
+            static std::string vmToGeneralizedMaxwellTimes(PylithScalar valueSubfield[],
+                                                           const PylithInt numComponents,
+                                                           const pylith::scalar_array dbValues,
+                                                           const pylith::int_array dbIndices);
 
-            static
-            std::string vmToGeneralizedMaxwellTimes(PylithScalar valueSubfield[],
-                                                    const PylithInt numComponents,
-                                                    const pylith::scalar_array dbValues,
-                                                    const pylith::int_array dbIndices);
+            static std::string vmToGeneralizedMaxwellShearModulusRatios(PylithScalar valueSubfield[],
+                                                                        const PylithInt numComponents,
+                                                                        const pylith::scalar_array dbValues,
+                                                                        const pylith::int_array dbIndices);
 
-            static
-            std::string vmToGeneralizedMaxwellShearModulusRatios(PylithScalar valueSubfield[],
+            static std::string vmToDruckerPragerAlphaYieldInscribed(PylithScalar valueSubfield[],
+                                                                    const PylithInt numComponents,
+                                                                    const pylith::scalar_array dbValues,
+                                                                    const pylith::int_array dbIndices);
+
+            static std::string vmToDruckerPragerAlphaFlowInscribed(PylithScalar valueSubfield[],
+                                                                   const PylithInt numComponents,
+                                                                   const pylith::scalar_array dbValues,
+                                                                   const pylith::int_array dbIndices);
+
+            static std::string vmToDruckerPragerBetaInscribed(PylithScalar valueSubfield[],
+                                                              const PylithInt numComponents,
+                                                              const pylith::scalar_array dbValues,
+                                                              const pylith::int_array dbIndices);
+
+            static std::string vmToDruckerPragerAlphaYieldMiddle(PylithScalar valueSubfield[],
                                                                  const PylithInt numComponents,
                                                                  const pylith::scalar_array dbValues,
                                                                  const pylith::int_array dbIndices);
 
-            static
-            std::string dbToGravityField(PylithScalar valueSubfield[],
-                                         const PylithInt numComponents,
-                                         const pylith::scalar_array dbValues,
-                                         const pylith::int_array dbIndices);
+            static std::string vmToDruckerPragerAlphaFlowMiddle(PylithScalar valueSubfield[],
+                                                                const PylithInt numComponents,
+                                                                const pylith::scalar_array dbValues,
+                                                                const pylith::int_array dbIndices);
 
-            static
-            std::string inputToBiotModulus(PylithScalar valueSubfield[],
-                                           const PylithInt numComponents,
-                                           const pylith::scalar_array dbValues,
-                                           const pylith::int_array dbIndices);
+            static std::string vmToDruckerPragerBetaMiddle(PylithScalar valueSubfield[],
+                                                           const PylithInt numComponents,
+                                                           const pylith::scalar_array dbValues,
+                                                           const pylith::int_array dbIndices);
+
+            static std::string vmToDruckerPragerAlphaYieldCircumscribed(PylithScalar valueSubfield[],
+                                                                        const PylithInt numComponents,
+                                                                        const pylith::scalar_array dbValues,
+                                                                        const pylith::int_array dbIndices);
+
+            static std::string vmToDruckerPragerAlphaFlowCircumscribed(PylithScalar valueSubfield[],
+                                                                       const PylithInt numComponents,
+                                                                       const pylith::scalar_array dbValues,
+                                                                       const pylith::int_array dbIndices);
+
+            static std::string vmToDruckerPragerBetaCircumscribed(PylithScalar valueSubfield[],
+                                                                  const PylithInt numComponents,
+                                                                  const pylith::scalar_array dbValues,
+                                                                  const pylith::int_array dbIndices);
+
+            static std::string dbToGravityField(PylithScalar valueSubfield[],
+                                                const PylithInt numComponents,
+                                                const pylith::scalar_array dbValues,
+                                                const pylith::int_array dbIndices);
+
+            static std::string inputToBiotModulus(PylithScalar valueSubfield[],
+                                                  const PylithInt numComponents,
+                                                  const pylith::scalar_array dbValues,
+                                                  const pylith::int_array dbIndices);
 
         }; // _Query
-    } // materials
+    }      // materials
 } // pylith
 
 // ------------------------------------------------------------------------------------------------
 // Setup subfield query in auxiliary factory for shear modulus from density and Vs.
-void
-pylith::materials::Query::shearModulusFromVM(const char* subfieldName,
-                                             pylith::feassemble::AuxiliaryFactory* factory) {
+void pylith::materials::Query::shearModulusFromVM(const char *subfieldName,
+                                                  pylith::feassemble::AuxiliaryFactory *factory)
+{
     const size_t numDBValues = 2;
-    const char* dbValues[numDBValues] = { "density", "vs" };
+    const char *dbValues[numDBValues] = {"density", "vs"};
 
     assert(factory);
     factory->setSubfieldQuery(subfieldName, dbValues, numDBValues, _Query::vmToShearModulus);
 } // shearModulusFromVM
 
-
 // ------------------------------------------------------------------------------------------------
 // Setup subfield query in auxiliary factory for bulk modulus from density, Vs, and Vp.
-void
-pylith::materials::Query::bulkModulusFromVM(const char* subfieldName,
-                                            pylith::feassemble::AuxiliaryFactory* factory) {
+void pylith::materials::Query::bulkModulusFromVM(const char *subfieldName,
+                                                 pylith::feassemble::AuxiliaryFactory *factory)
+{
     const size_t numDBValues = 3;
-    const char* dbValues[numDBValues] = { "density", "vs", "vp" };
+    const char *dbValues[numDBValues] = {"density", "vs", "vp"};
 
     assert(factory);
     factory->setSubfieldQuery(subfieldName, dbValues, numDBValues, _Query::vmToBulkModulus);
 } // bulkModulusFromVM
 
-
 // ------------------------------------------------------------------------------------------------
 // Setup subfield query in auxiliary factory for Maxwell time from density, Vs, and viscosity.
-void
-pylith::materials::Query::maxwellTimeFromVM(const char* subfieldName,
-                                            pylith::feassemble::AuxiliaryFactory* factory) {
+void pylith::materials::Query::maxwellTimeFromVM(const char *subfieldName,
+                                                 pylith::feassemble::AuxiliaryFactory *factory)
+{
     const size_t numDBValues = 3;
-    const char* dbValues[numDBValues] = { "density", "vs", "viscosity" };
+    const char *dbValues[numDBValues] = {"density", "vs", "viscosity"};
 
     assert(factory);
     factory->setSubfieldQuery(subfieldName, dbValues, numDBValues, _Query::vmToMaxwellTime);
 } // maxwellTimeFromVM
 
-
 // ------------------------------------------------------------------------------------------------
 // Setup subfield query in auxiliary factory for generalized Maxwell times from density, Vs, and viscosities.
-void
-pylith::materials::Query::generalizedMaxwellTimesFromVM(const char* subfieldName,
-                                                        pylith::feassemble::AuxiliaryFactory* factory) {
+void pylith::materials::Query::generalizedMaxwellTimesFromVM(const char *subfieldName,
+                                                             pylith::feassemble::AuxiliaryFactory *factory)
+{
     const size_t numDBValues = 8;
-    const char* dbValues[numDBValues] = {
+    const char *dbValues[numDBValues] = {
         "density",
         "vs",
         "viscosity_1",
@@ -152,14 +189,13 @@ pylith::materials::Query::generalizedMaxwellTimesFromVM(const char* subfieldName
     factory->setSubfieldQuery(subfieldName, dbValues, numDBValues, _Query::vmToGeneralizedMaxwellTimes);
 } // generalizedMaxwellTimesFromVM
 
-
 // ------------------------------------------------------------------------------------------------
 // Setup subfield query in auxiliary factory for generalized Maxwell shear modulus ratios.
-void
-pylith::materials::Query::generalizedMaxwellShearModulusRatiosFromVM(const char* subfieldName,
-                                                                     pylith::feassemble::AuxiliaryFactory* factory) {
+void pylith::materials::Query::generalizedMaxwellShearModulusRatiosFromVM(const char *subfieldName,
+                                                                          pylith::feassemble::AuxiliaryFactory *factory)
+{
     const size_t numDBValues = 3;
-    const char* dbValues[numDBValues] = {
+    const char *dbValues[numDBValues] = {
         "shear_modulus_ratio_1",
         "shear_modulus_ratio_2",
         "shear_modulus_ratio_3",
@@ -169,20 +205,135 @@ pylith::materials::Query::generalizedMaxwellShearModulusRatiosFromVM(const char*
     factory->setSubfieldQuery(subfieldName, dbValues, numDBValues, _Query::vmToGeneralizedMaxwellShearModulusRatios);
 } // generalizedMaxwellShearModulusRatiosFromVM
 
+// ----------------------------------------------------------------------
+// Setup subfield query in auxiliary factory for alpha_yield from friction_angle, dilatation_angle, and cohesion.
+// This is for the case of an inscribed surface.
+void pylith::materials::Query::alphaYieldDruckerPragerInscribedFromVM(const char *subfieldName,
+                                                                      pylith::feassemble::AuxiliaryFactory *factory)
+{
+    const size_t numDBValues = 3;
+    const char *dbValues[numDBValues] = {"friction_angle", "dilatation_angle", "cohesion"};
+
+    assert(factory);
+    factory->setSubfieldQuery(subfieldName, dbValues, numDBValues, _Query::vmToDruckerPragerAlphaYieldInscribed);
+} // alphaYieldDruckerPragerInscribedFromVM
+
+// ----------------------------------------------------------------------
+// Setup subfield query in auxiliary factory for alpha_flow from friction_angle, dilatation_angle, and cohesion.
+// This is for the case of an inscribed surface.
+void pylith::materials::Query::alphaFlowDruckerPragerInscribedFromVM(const char *subfieldName,
+                                                                     pylith::feassemble::AuxiliaryFactory *factory)
+{
+    const size_t numDBValues = 3;
+    const char *dbValues[numDBValues] = {"friction_angle", "dilatation_angle", "cohesion"};
+
+    assert(factory);
+    factory->setSubfieldQuery(subfieldName, dbValues, numDBValues, _Query::vmToDruckerPragerAlphaFlowInscribed);
+} // alphaFlowDruckerPragerInscribedFromVM
+
+// ----------------------------------------------------------------------
+// Setup subfield query in auxiliary factory for beta from friction_angle, dilatation_angle, and cohesion.
+// This is for the case of an inscribed surface.
+void pylith::materials::Query::betaDruckerPragerInscribedFromVM(const char *subfieldName,
+                                                                pylith::feassemble::AuxiliaryFactory *factory)
+{
+    const size_t numDBValues = 3;
+    const char *dbValues[numDBValues] = {"friction_angle", "dilatation_angle", "cohesion"};
+
+    assert(factory);
+    factory->setSubfieldQuery(subfieldName, dbValues, numDBValues, _Query::vmToDruckerPragerBetaInscribed);
+} // betaDruckerPragerInscribedFromVM
+
+// ----------------------------------------------------------------------
+// Setup subfield query in auxiliary factory for alpha_yield from friction_angle, dilatation_angle, and cohesion.
+// This is for the case of a middle surface.
+void pylith::materials::Query::alphaYieldDruckerPragerMiddleFromVM(const char *subfieldName,
+                                                                   pylith::feassemble::AuxiliaryFactory *factory)
+{
+    const size_t numDBValues = 3;
+    const char *dbValues[numDBValues] = {"friction_angle", "dilatation_angle", "cohesion"};
+
+    assert(factory);
+    factory->setSubfieldQuery(subfieldName, dbValues, numDBValues, _Query::vmToDruckerPragerAlphaYieldMiddle);
+} // alphaYieldDruckerPragerMiddleFromVM
+
+// ----------------------------------------------------------------------
+// Setup subfield query in auxiliary factory for alpha_flow from friction_angle, dilatation_angle, and cohesion.
+// This is for the case of a middle surface.
+void pylith::materials::Query::alphaFlowDruckerPragerMiddleFromVM(const char *subfieldName,
+                                                                  pylith::feassemble::AuxiliaryFactory *factory)
+{
+    const size_t numDBValues = 3;
+    const char *dbValues[numDBValues] = {"friction_angle", "dilatation_angle", "cohesion"};
+
+    assert(factory);
+    factory->setSubfieldQuery(subfieldName, dbValues, numDBValues, _Query::vmToDruckerPragerAlphaFlowMiddle);
+} // alphaFlowDruckerPragerMiddleFromVM
+
+// ----------------------------------------------------------------------
+// Setup subfield query in auxiliary factory for beta from friction_angle, dilatation_angle, and cohesion.
+// This is for the case of a middle surface.
+void pylith::materials::Query::betaDruckerPragerMiddleFromVM(const char *subfieldName,
+                                                             pylith::feassemble::AuxiliaryFactory *factory)
+{
+    const size_t numDBValues = 3;
+    const char *dbValues[numDBValues] = {"friction_angle", "dilatation_angle", "cohesion"};
+
+    assert(factory);
+    factory->setSubfieldQuery(subfieldName, dbValues, numDBValues, _Query::vmToDruckerPragerBetaMiddle);
+} // betaDruckerPragerMiddleFromVM
+
+// ----------------------------------------------------------------------
+// Setup subfield query in auxiliary factory for alpha_yield from friction_angle, dilatation_angle, and cohesion.
+// This is for the case of a circumscribed surface.
+void pylith::materials::Query::alphaYieldDruckerPragerCircumscribedFromVM(const char *subfieldName,
+                                                                          pylith::feassemble::AuxiliaryFactory *factory)
+{
+    const size_t numDBValues = 3;
+    const char *dbValues[numDBValues] = {"friction_angle", "dilatation_angle", "cohesion"};
+
+    assert(factory);
+    factory->setSubfieldQuery(subfieldName, dbValues, numDBValues, _Query::vmToDruckerPragerAlphaYieldCircumscribed);
+} // alphaYieldDruckerPragerCircumscribedFromVM
+
+// ----------------------------------------------------------------------
+// Setup subfield query in auxiliary factory for alpha_flow from friction_angle, dilatation_angle, and cohesion.
+// This is for the case of a circumscribed surface.
+void pylith::materials::Query::alphaFlowDruckerPragerCircumscribedFromVM(const char *subfieldName,
+                                                                         pylith::feassemble::AuxiliaryFactory *factory)
+{
+    const size_t numDBValues = 3;
+    const char *dbValues[numDBValues] = {"friction_angle", "dilatation_angle", "cohesion"};
+
+    assert(factory);
+    factory->setSubfieldQuery(subfieldName, dbValues, numDBValues, _Query::vmToDruckerPragerAlphaFlowCircumscribed);
+} // alphaFlowDruckerPragerCircumscribedFromVM
+
+// ----------------------------------------------------------------------
+// Setup subfield query in auxiliary factory for beta from friction_angle, dilatation_angle, and cohesion.
+// This is for the case of a circumscribed surface.
+void pylith::materials::Query::betaDruckerPragerCircumscribedFromVM(const char *subfieldName,
+                                                                    pylith::feassemble::AuxiliaryFactory *factory)
+{
+    const size_t numDBValues = 3;
+    const char *dbValues[numDBValues] = {"friction_angle", "dilatation_angle", "cohesion"};
+
+    assert(factory);
+    factory->setSubfieldQuery(subfieldName, dbValues, numDBValues, _Query::vmToDruckerPragerBetaCircumscribed);
+} // betaDruckerPragerCircumscribedFromVM
 
 // ------------------------------------------------------------------------------------------------
 // Setup subfield query in auxiliary factory for gravity field from GravityField spatial database.
-void
-pylith::materials::Query::gravityFieldFromDB(const char* subfieldName,
-                                             pylith::feassemble::AuxiliaryFactory* factory,
-                                             spatialdata::spatialdb::GravityField* gravityField,
-                                             const size_t spaceDim) {
+void pylith::materials::Query::gravityFieldFromDB(const char *subfieldName,
+                                                  pylith::feassemble::AuxiliaryFactory *factory,
+                                                  spatialdata::spatialdb::GravityField *gravityField,
+                                                  const size_t spaceDim)
+{
     const size_t numDBValues = 3;
-    const char* dbValues[numDBValues] = {
+    const char *dbValues[numDBValues] = {
         "gravity_field_x",
         "gravity_field_y",
-        "gravity_field_z"
-    };
+        "gravity_field_z"};
 
     assert(factory);
     factory->setSubfieldQuery(subfieldName, dbValues, spaceDim, _Query::dbToGravityField, gravityField);
@@ -195,12 +346,11 @@ void
 pylith::materials::Query::biotModulusFromInput(const char* subfieldName,
                                                pylith::feassemble::AuxiliaryFactory* factory) {
     const size_t numDBValues = 4;
-    const char* dbValues[numDBValues] = {
+    const char *dbValues[numDBValues] = {
         "fluid_bulk_modulus",
         "solid_bulk_modulus",
         "biot_coefficient",
-        "porosity"
-    };
+        "porosity"};
 
     assert(factory);
     factory->setSubfieldQuery(subfieldName, dbValues, numDBValues, _Query::inputToBiotModulus);
@@ -213,7 +363,8 @@ std::string
 pylith::materials::_Query::vmToShearModulus(PylithScalar valueSubfield[],
                                             const PylithInt numComponents,
                                             const pylith::scalar_array dbValues,
-                                            const pylith::int_array dbIndices) {
+                                            const pylith::int_array dbIndices)
+{
     PYLITH_METHOD_BEGIN;
 
     const size_t _numComponents = 1;
@@ -222,17 +373,21 @@ pylith::materials::_Query::vmToShearModulus(PylithScalar valueSubfield[],
     assert(_numComponents == size_t(numComponents));
     assert(2 == dbIndices.size());
 
-    const size_t i_density = 0;assert(size_t(dbIndices[i_density]) < dbValues.size());
-    const size_t i_vs = 1;assert(size_t(dbIndices[i_vs]) < dbValues.size());
+    const size_t i_density = 0;
+    assert(size_t(dbIndices[i_density]) < dbValues.size());
+    const size_t i_vs = 1;
+    assert(size_t(dbIndices[i_vs]) < dbValues.size());
     const PylithScalar density = dbValues[dbIndices[i_density]];
     const PylithScalar vs = dbValues[dbIndices[i_vs]];
     valueSubfield[0] = density * vs * vs;
 
     std::ostringstream msg;
-    if (density <= 0) {
+    if (density <= 0)
+    {
         msg << "Found negative density (" << density << ").";
     } // if
-    if (vs <= 0) {
+    if (vs <= 0)
+    {
         msg << "Found negative shear wave speed (" << vs << ").";
     } // if
 
@@ -246,7 +401,8 @@ std::string
 pylith::materials::_Query::vmToBulkModulus(PylithScalar valueSubfield[],
                                            const PylithInt numComponents,
                                            const pylith::scalar_array dbValues,
-                                           const pylith::int_array dbIndices) {
+                                           const pylith::int_array dbIndices)
+{
     PYLITH_METHOD_BEGIN;
 
     const size_t _numComponents = 1;
@@ -255,22 +411,28 @@ pylith::materials::_Query::vmToBulkModulus(PylithScalar valueSubfield[],
     assert(_numComponents == size_t(numComponents));
     assert(3 == dbIndices.size());
 
-    const size_t i_density = 0;assert(size_t(dbIndices[i_density]) < dbValues.size());
-    const size_t i_vs = 1;assert(size_t(dbIndices[i_vs]) < dbValues.size());
-    const size_t i_vp = 2;assert(size_t(dbIndices[i_vp]) < dbValues.size());
+    const size_t i_density = 0;
+    assert(size_t(dbIndices[i_density]) < dbValues.size());
+    const size_t i_vs = 1;
+    assert(size_t(dbIndices[i_vs]) < dbValues.size());
+    const size_t i_vp = 2;
+    assert(size_t(dbIndices[i_vp]) < dbValues.size());
     const PylithScalar density = dbValues[dbIndices[i_density]];
     const PylithScalar vs = dbValues[dbIndices[i_vs]];
     const PylithScalar vp = dbValues[dbIndices[i_vp]];
-    valueSubfield[0] = density * (vp*vp - 4.0/3.0*vs*vs);
+    valueSubfield[0] = density * (vp * vp - 4.0 / 3.0 * vs * vs);
 
     std::ostringstream msg;
-    if (density <= 0) {
+    if (density <= 0)
+    {
         msg << "Found nonpositive density (" << density << ").";
     } // if
-    if (vs < 0) {
+    if (vs < 0)
+    {
         msg << "Found negative shear wave speed (" << vs << ").";
     } // if
-    if (vp <= 0) {
+    if (vp <= 0)
+    {
         msg << "Found nonpositive dilatational wave speed (" << vp << ").";
     } // if
 
@@ -284,7 +446,8 @@ std::string
 pylith::materials::_Query::vmToMaxwellTime(PylithScalar valueSubfield[],
                                            const PylithInt numComponents,
                                            const pylith::scalar_array dbValues,
-                                           const pylith::int_array dbIndices) {
+                                           const pylith::int_array dbIndices)
+{
     PYLITH_METHOD_BEGIN;
 
     const size_t _numComponents = 1;
@@ -293,9 +456,12 @@ pylith::materials::_Query::vmToMaxwellTime(PylithScalar valueSubfield[],
     assert(_numComponents == size_t(numComponents));
     assert(3 == dbIndices.size());
 
-    const size_t i_density = 0;assert(size_t(dbIndices[i_density]) < dbValues.size());
-    const size_t i_vs = 1;assert(size_t(dbIndices[i_vs]) < dbValues.size());
-    const size_t i_viscosity = 2;assert(size_t(dbIndices[i_viscosity]) < dbValues.size());
+    const size_t i_density = 0;
+    assert(size_t(dbIndices[i_density]) < dbValues.size());
+    const size_t i_vs = 1;
+    assert(size_t(dbIndices[i_vs]) < dbValues.size());
+    const size_t i_viscosity = 2;
+    assert(size_t(dbIndices[i_viscosity]) < dbValues.size());
     const PylithScalar density = dbValues[dbIndices[i_density]];
     const PylithScalar vs = dbValues[dbIndices[i_vs]];
     const PylithScalar viscosity = dbValues[dbIndices[i_viscosity]];
@@ -303,13 +469,16 @@ pylith::materials::_Query::vmToMaxwellTime(PylithScalar valueSubfield[],
     valueSubfield[0] = viscosity / shearModulus;
 
     std::ostringstream msg;
-    if (density <= 0) {
+    if (density <= 0)
+    {
         msg << "Found negative density (" << density << ").";
     } // if
-    if (vs <= 0) {
+    if (vs <= 0)
+    {
         msg << "Found negative shear wave speed (" << vs << ").";
     } // if
-    if (viscosity <= 0) {
+    if (viscosity <= 0)
+    {
         msg << "Found nonpositive viscosity (" << viscosity << ").";
     } // if
 
@@ -323,7 +492,8 @@ std::string
 pylith::materials::_Query::vmToGeneralizedMaxwellTimes(PylithScalar valueSubfield[],
                                                        const PylithInt numComponents,
                                                        const pylith::scalar_array dbValues,
-                                                       const pylith::int_array dbIndices) {
+                                                       const pylith::int_array dbIndices)
+{
     PYLITH_METHOD_BEGIN;
 
     const size_t _numComponents = 3;
@@ -332,19 +502,23 @@ pylith::materials::_Query::vmToGeneralizedMaxwellTimes(PylithScalar valueSubfiel
     assert(_numComponents == size_t(numComponents));
     assert(8 == dbIndices.size());
 
-    const size_t i_density = 0;assert(size_t(dbIndices[i_density]) < dbValues.size());
-    const size_t i_vs = 1;assert(size_t(dbIndices[i_vs]) < dbValues.size());
-    const size_t i_viscosity = 2;assert(size_t(dbIndices[i_viscosity]+2) < dbValues.size());
-    const size_t i_shearModulusRatio = 5;assert(size_t(dbIndices[i_shearModulusRatio]+2) < dbValues.size());
+    const size_t i_density = 0;
+    assert(size_t(dbIndices[i_density]) < dbValues.size());
+    const size_t i_vs = 1;
+    assert(size_t(dbIndices[i_vs]) < dbValues.size());
+    const size_t i_viscosity = 2;
+    assert(size_t(dbIndices[i_viscosity] + 2) < dbValues.size());
+    const size_t i_shearModulusRatio = 5;
+    assert(size_t(dbIndices[i_shearModulusRatio] + 2) < dbValues.size());
 
     const PylithScalar density = dbValues[dbIndices[i_density]];
     const PylithScalar vs = dbValues[dbIndices[i_vs]];
-    const PylithScalar viscosity1 = dbValues[dbIndices[i_viscosity+0]];
-    const PylithScalar viscosity2 = dbValues[dbIndices[i_viscosity+1]];
-    const PylithScalar viscosity3 = dbValues[dbIndices[i_viscosity+2]];
-    const PylithScalar shearModulusRatio1 = dbValues[dbIndices[i_shearModulusRatio+0]];
-    const PylithScalar shearModulusRatio2 = dbValues[dbIndices[i_shearModulusRatio+1]];
-    const PylithScalar shearModulusRatio3 = dbValues[dbIndices[i_shearModulusRatio+2]];
+    const PylithScalar viscosity1 = dbValues[dbIndices[i_viscosity + 0]];
+    const PylithScalar viscosity2 = dbValues[dbIndices[i_viscosity + 1]];
+    const PylithScalar viscosity3 = dbValues[dbIndices[i_viscosity + 2]];
+    const PylithScalar shearModulusRatio1 = dbValues[dbIndices[i_shearModulusRatio + 0]];
+    const PylithScalar shearModulusRatio2 = dbValues[dbIndices[i_shearModulusRatio + 1]];
+    const PylithScalar shearModulusRatio3 = dbValues[dbIndices[i_shearModulusRatio + 2]];
 
     const PylithScalar shearModulus = density * vs * vs;
 
@@ -358,33 +532,42 @@ pylith::materials::_Query::vmToGeneralizedMaxwellTimes(PylithScalar valueSubfiel
     valueSubfield[2] = (shearModulus3 > 0.0) ? viscosity3 / shearModulus3 : PYLITH_MAXSCALAR;
 
     std::ostringstream msg;
-    if (density <= 0) {
+    if (density <= 0)
+    {
         msg << "Found negative density (" << density << ").";
     } // if
-    if (vs <= 0) {
+    if (vs <= 0)
+    {
         msg << "Found negative shear wave speed (" << vs << ").";
     } // if
-    if (viscosity1 <= 0) {
+    if (viscosity1 <= 0)
+    {
         msg << "Found nonpositive viscosity 1 (" << viscosity1 << ").";
     } // if
-    if (viscosity2 <= 0) {
+    if (viscosity2 <= 0)
+    {
         msg << "Found nonpositive viscosity 2 (" << viscosity2 << ").";
     } // if
-    if (viscosity3 <= 0) {
+    if (viscosity3 <= 0)
+    {
         msg << "Found nonpositive viscosity 3 (" << viscosity3 << ").";
     } // if
-    if (shearModulusRatio1 <= 0) {
+    if (shearModulusRatio1 <= 0)
+    {
         msg << "Found negative shear modulus ratio 1 (" << shearModulusRatio1 << ").";
     } // if
-    if (shearModulusRatio2 <= 0) {
+    if (shearModulusRatio2 <= 0)
+    {
         msg << "Found negative shear modulus ratio 2 (" << shearModulusRatio2 << ").";
     } // if
-    if (shearModulusRatio3 <= 0) {
+    if (shearModulusRatio3 <= 0)
+    {
         msg << "Found negative shear modulus ratio 3 (" << shearModulusRatio3 << ").";
     } // if
 
     const double ratioSum = shearModulusRatio1 + shearModulusRatio2 + shearModulusRatio3;
-    if (ratioSum > 1) {
+    if (ratioSum > 1)
+    {
         msg << "Shear ratio sum greater than one (" << ratioSum << ").";
         msg << " Shear ratios are " << shearModulusRatio1 << ", " << shearModulusRatio2 << ", " << shearModulusRatio3
             << ".";
@@ -400,7 +583,8 @@ std::string
 pylith::materials::_Query::vmToGeneralizedMaxwellShearModulusRatios(PylithScalar valueSubfield[],
                                                                     const PylithInt numComponents,
                                                                     const pylith::scalar_array dbValues,
-                                                                    const pylith::int_array dbIndices) {
+                                                                    const pylith::int_array dbIndices)
+{
     PYLITH_METHOD_BEGIN;
 
     const size_t _numComponents = 3;
@@ -409,24 +593,29 @@ pylith::materials::_Query::vmToGeneralizedMaxwellShearModulusRatios(PylithScalar
     assert(_numComponents == size_t(numComponents));
     assert(3 == dbIndices.size());
 
-    const size_t i_shearModulusRatio = 0;assert(size_t(dbIndices[i_shearModulusRatio+2]) < dbValues.size());
+    const size_t i_shearModulusRatio = 0;
+    assert(size_t(dbIndices[i_shearModulusRatio + 2]) < dbValues.size());
 
-    const PylithScalar shearModulusRatio1 = valueSubfield[0] = dbValues[dbIndices[i_shearModulusRatio+0]];
-    const PylithScalar shearModulusRatio2 = valueSubfield[1] = dbValues[dbIndices[i_shearModulusRatio+1]];
-    const PylithScalar shearModulusRatio3 = valueSubfield[2] = dbValues[dbIndices[i_shearModulusRatio+2]];
+    const PylithScalar shearModulusRatio1 = valueSubfield[0] = dbValues[dbIndices[i_shearModulusRatio + 0]];
+    const PylithScalar shearModulusRatio2 = valueSubfield[1] = dbValues[dbIndices[i_shearModulusRatio + 1]];
+    const PylithScalar shearModulusRatio3 = valueSubfield[2] = dbValues[dbIndices[i_shearModulusRatio + 2]];
 
     std::ostringstream msg;
-    if (shearModulusRatio1 <= 0) {
+    if (shearModulusRatio1 <= 0)
+    {
         msg << "Found negative shear modulus ratio 1 (" << shearModulusRatio1 << ").";
     } // if
-    if (shearModulusRatio2 <= 0) {
+    if (shearModulusRatio2 <= 0)
+    {
         msg << "Found negative shear modulus ratio 2 (" << shearModulusRatio2 << ").";
     } // if
-    if (shearModulusRatio3 <= 0) {
+    if (shearModulusRatio3 <= 0)
+    {
         msg << "Found negative shear modulus ratio 3 (" << shearModulusRatio3 << ").";
     } // if
     const double ratioSum = shearModulusRatio1 + shearModulusRatio2 + shearModulusRatio3;
-    if (ratioSum > 1) {
+    if (ratioSum > 1)
+    {
         msg << "Shear ratio sum greater than one (" << ratioSum << ").";
         msg << " Shear ratios are " << shearModulusRatio1 << ", " << shearModulusRatio2 << ", " << shearModulusRatio3
             << ".";
@@ -435,6 +624,490 @@ pylith::materials::_Query::vmToGeneralizedMaxwellShearModulusRatios(PylithScalar
     PYLITH_METHOD_RETURN(msg.str());
 } // vmToGeneralizedMaxwellShearModulusRatios
 
+// ----------------------------------------------------------------------
+// Compute alpha_yield from friction_angle, dilatation_angle, and cohesion for inscribed surface.
+std::string
+pylith::materials::_Query::vmToDruckerPragerAlphaYieldInscribed(PylithScalar valueSubfield[],
+                                                                const PylithInt numComponents,
+                                                                const pylith::scalar_array dbValues,
+                                                                const pylith::int_array dbIndices)
+{
+    PYLITH_METHOD_BEGIN;
+
+    const size_t _numComponents = 1;
+
+    assert(valueSubfield);
+    assert(_numComponents == size_t(numComponents));
+    assert(3 == dbIndices.size());
+
+    const size_t i_friction_angle = 0;
+    assert(size_t(dbIndices[i_friction_angle]) < dbValues.size());
+    const size_t i_dilatation_angle = 1;
+    assert(size_t(dbIndices[i_dilatation_angle]) < dbValues.size());
+    const size_t i_cohesion = 2;
+    assert(size_t(dbIndices[i_cohesion]) < dbValues.size());
+    const PylithScalar frictionAngle = dbValues[dbIndices[i_friction_angle]];
+    const PylithScalar dilatationAngle = dbValues[dbIndices[i_dilatation_angle]];
+    const PylithScalar cohesion = dbValues[dbIndices[i_cohesion]];
+    const PylithScalar denomFriction = sqrt(3.0) * (3.0 - sin(frictionAngle));
+    valueSubfield[0] = 2.0 * sin(frictionAngle) / denomFriction;
+
+    std::ostringstream msg;
+    const PylithScalar pi = M_PI;
+    if (frictionAngle < 0)
+    {
+        msg << "Found negative friction angle (" << frictionAngle << ").";
+    } // if
+    if (frictionAngle > pi / 2)
+    {
+        msg << "Found friction angle greater than pi/2 (" << frictionAngle << ").";
+    } // if
+    if (dilatationAngle < 0)
+    {
+        msg << "Found negative dilatation angle (" << dilatationAngle << ").";
+    } // if
+    if (dilatationAngle > pi / 2)
+    {
+        msg << "Found dilatation angle greater than pi/2 (" << dilatationAngle << ").";
+    } // if
+    if (cohesion < 0)
+    {
+        msg << "Found negative cohesion (" << cohesion << ").";
+    } // if
+
+    PYLITH_METHOD_RETURN(msg.str());
+} // vmToDruckerPragerAlphaYieldInscribed
+
+// ----------------------------------------------------------------------
+// Compute alpha_flow from friction_angle, dilatation_angle, and cohesion for inscribed surface.
+std::string
+pylith::materials::_Query::vmToDruckerPragerAlphaFlowInscribed(PylithScalar valueSubfield[],
+                                                               const PylithInt numComponents,
+                                                               const pylith::scalar_array dbValues,
+                                                               const pylith::int_array dbIndices)
+{
+    PYLITH_METHOD_BEGIN;
+
+    const size_t _numComponents = 1;
+
+    assert(valueSubfield);
+    assert(_numComponents == size_t(numComponents));
+    assert(3 == dbIndices.size());
+
+    const size_t i_friction_angle = 0;
+    assert(size_t(dbIndices[i_friction_angle]) < dbValues.size());
+    const size_t i_dilatation_angle = 1;
+    assert(size_t(dbIndices[i_dilatation_angle]) < dbValues.size());
+    const size_t i_cohesion = 2;
+    assert(size_t(dbIndices[i_cohesion]) < dbValues.size());
+    const PylithScalar frictionAngle = dbValues[dbIndices[i_friction_angle]];
+    const PylithScalar dilatationAngle = dbValues[dbIndices[i_dilatation_angle]];
+    const PylithScalar cohesion = dbValues[dbIndices[i_cohesion]];
+    const PylithScalar denomDilatation = sqrt(3.0) * (3.0 - sin(dilatationAngle));
+    valueSubfield[0] = 2.0 * sin(dilatationAngle) / denomDilatation;
+
+    std::ostringstream msg;
+    const PylithScalar pi = M_PI;
+    if (frictionAngle < 0)
+    {
+        msg << "Found negative friction angle (" << frictionAngle << ").";
+    } // if
+    if (frictionAngle > pi / 2)
+    {
+        msg << "Found friction angle greater than pi/2 (" << frictionAngle << ").";
+    } // if
+    if (dilatationAngle < 0)
+    {
+        msg << "Found negative dilatation angle (" << dilatationAngle << ").";
+    } // if
+    if (dilatationAngle > pi / 2)
+    {
+        msg << "Found dilatation angle greater than pi/2 (" << dilatationAngle << ").";
+    } // if
+    if (cohesion < 0)
+    {
+        msg << "Found negative cohesion (" << cohesion << ").";
+    } // if
+
+    PYLITH_METHOD_RETURN(msg.str());
+} // vmToDruckerPragerAlphaFlowInscribed
+
+// ----------------------------------------------------------------------
+// Compute beta from friction_angle, dilatation_angle, and cohesion for inscribed surface.
+std::string
+pylith::materials::_Query::vmToDruckerPragerBetaInscribed(PylithScalar valueSubfield[],
+                                                          const PylithInt numComponents,
+                                                          const pylith::scalar_array dbValues,
+                                                          const pylith::int_array dbIndices)
+{
+    PYLITH_METHOD_BEGIN;
+
+    const size_t _numComponents = 1;
+
+    assert(valueSubfield);
+    assert(_numComponents == size_t(numComponents));
+    assert(3 == dbIndices.size());
+
+    const size_t i_friction_angle = 0;
+    assert(size_t(dbIndices[i_friction_angle]) < dbValues.size());
+    const size_t i_dilatation_angle = 1;
+    assert(size_t(dbIndices[i_dilatation_angle]) < dbValues.size());
+    const size_t i_cohesion = 2;
+    assert(size_t(dbIndices[i_cohesion]) < dbValues.size());
+    const PylithScalar frictionAngle = dbValues[dbIndices[i_friction_angle]];
+    const PylithScalar dilatationAngle = dbValues[dbIndices[i_dilatation_angle]];
+    const PylithScalar cohesion = dbValues[dbIndices[i_cohesion]];
+    const PylithScalar denomFriction = sqrt(3.0) * (3.0 - sin(frictionAngle));
+    valueSubfield[0] = 6.0 * cohesion * cos(frictionAngle) / denomFriction;
+
+    std::ostringstream msg;
+    const PylithScalar pi = M_PI;
+    if (frictionAngle < 0)
+    {
+        msg << "Found negative friction angle (" << frictionAngle << ").";
+    } // if
+    if (frictionAngle > pi / 2)
+    {
+        msg << "Found friction angle greater than pi/2 (" << frictionAngle << ").";
+    } // if
+    if (dilatationAngle < 0)
+    {
+        msg << "Found negative dilatation angle (" << dilatationAngle << ").";
+    } // if
+    if (dilatationAngle > pi / 2)
+    {
+        msg << "Found dilatation angle greater than pi/2 (" << dilatationAngle << ").";
+    } // if
+    if (cohesion < 0)
+    {
+        msg << "Found negative cohesion (" << cohesion << ").";
+    } // if
+
+    PYLITH_METHOD_RETURN(msg.str());
+} // vmToDruckerPragerBetaInscribed
+
+// ----------------------------------------------------------------------
+// Compute alpha_yield from friction_angle, dilatation_angle, and cohesion for middle surface.
+std::string
+pylith::materials::_Query::vmToDruckerPragerAlphaYieldMiddle(PylithScalar valueSubfield[],
+                                                             const PylithInt numComponents,
+                                                             const pylith::scalar_array dbValues,
+                                                             const pylith::int_array dbIndices)
+{
+    PYLITH_METHOD_BEGIN;
+
+    const size_t _numComponents = 1;
+
+    assert(valueSubfield);
+    assert(_numComponents == size_t(numComponents));
+    assert(3 == dbIndices.size());
+
+    const size_t i_friction_angle = 0;
+    assert(size_t(dbIndices[i_friction_angle]) < dbValues.size());
+    const size_t i_dilatation_angle = 1;
+    assert(size_t(dbIndices[i_dilatation_angle]) < dbValues.size());
+    const size_t i_cohesion = 2;
+    assert(size_t(dbIndices[i_cohesion]) < dbValues.size());
+    const PylithScalar frictionAngle = dbValues[dbIndices[i_friction_angle]];
+    const PylithScalar dilatationAngle = dbValues[dbIndices[i_dilatation_angle]];
+    const PylithScalar cohesion = dbValues[dbIndices[i_cohesion]];
+    const PylithScalar denomFriction = 3.0;
+    valueSubfield[0] = 2.0 * sin(frictionAngle) / denomFriction;
+
+    std::ostringstream msg;
+    const PylithScalar pi = M_PI;
+    if (frictionAngle < 0)
+    {
+        msg << "Found negative friction angle (" << frictionAngle << ").";
+    } // if
+    if (frictionAngle > pi / 2)
+    {
+        msg << "Found friction angle greater than pi/2 (" << frictionAngle << ").";
+    } // if
+    if (dilatationAngle < 0)
+    {
+        msg << "Found negative dilatation angle (" << dilatationAngle << ").";
+    } // if
+    if (dilatationAngle > pi / 2)
+    {
+        msg << "Found dilatation angle greater than pi/2 (" << dilatationAngle << ").";
+    } // if
+    if (cohesion < 0)
+    {
+        msg << "Found negative cohesion (" << cohesion << ").";
+    } // if
+
+    PYLITH_METHOD_RETURN(msg.str());
+} // vmToDruckerPragerAlphaYieldMiddle
+
+// ----------------------------------------------------------------------
+// Compute alpha_flow from friction_angle, dilatation_angle, and cohesion for middle surface.
+std::string
+pylith::materials::_Query::vmToDruckerPragerAlphaFlowMiddle(PylithScalar valueSubfield[],
+                                                            const PylithInt numComponents,
+                                                            const pylith::scalar_array dbValues,
+                                                            const pylith::int_array dbIndices)
+{
+    PYLITH_METHOD_BEGIN;
+
+    const size_t _numComponents = 1;
+
+    assert(valueSubfield);
+    assert(_numComponents == size_t(numComponents));
+    assert(3 == dbIndices.size());
+
+    const size_t i_friction_angle = 0;
+    assert(size_t(dbIndices[i_friction_angle]) < dbValues.size());
+    const size_t i_dilatation_angle = 1;
+    assert(size_t(dbIndices[i_dilatation_angle]) < dbValues.size());
+    const size_t i_cohesion = 2;
+    assert(size_t(dbIndices[i_cohesion]) < dbValues.size());
+    const PylithScalar frictionAngle = dbValues[dbIndices[i_friction_angle]];
+    const PylithScalar dilatationAngle = dbValues[dbIndices[i_dilatation_angle]];
+    const PylithScalar cohesion = dbValues[dbIndices[i_cohesion]];
+    const PylithScalar denomDilatation = 3.0;
+    valueSubfield[0] = 2.0 * sin(dilatationAngle) / denomDilatation;
+
+    std::ostringstream msg;
+    const PylithScalar pi = M_PI;
+    if (frictionAngle < 0)
+    {
+        msg << "Found negative friction angle (" << frictionAngle << ").";
+    } // if
+    if (frictionAngle > pi / 2)
+    {
+        msg << "Found friction angle greater than pi/2 (" << frictionAngle << ").";
+    } // if
+    if (dilatationAngle < 0)
+    {
+        msg << "Found negative dilatation angle (" << dilatationAngle << ").";
+    } // if
+    if (dilatationAngle > pi / 2)
+    {
+        msg << "Found dilatation angle greater than pi/2 (" << dilatationAngle << ").";
+    } // if
+    if (cohesion < 0)
+    {
+        msg << "Found negative cohesion (" << cohesion << ").";
+    } // if
+
+    PYLITH_METHOD_RETURN(msg.str());
+} // vmToDruckerPragerAlphaFlowMiddle
+
+// ----------------------------------------------------------------------
+// Compute beta from friction_angle, dilatation_angle, and cohesion for circumscribed surface.
+std::string
+pylith::materials::_Query::vmToDruckerPragerBetaMiddle(PylithScalar valueSubfield[],
+                                                       const PylithInt numComponents,
+                                                       const pylith::scalar_array dbValues,
+                                                       const pylith::int_array dbIndices)
+{
+    PYLITH_METHOD_BEGIN;
+
+    const size_t _numComponents = 1;
+
+    assert(valueSubfield);
+    assert(_numComponents == size_t(numComponents));
+    assert(3 == dbIndices.size());
+
+    const size_t i_friction_angle = 0;
+    assert(size_t(dbIndices[i_friction_angle]) < dbValues.size());
+    const size_t i_dilatation_angle = 1;
+    assert(size_t(dbIndices[i_dilatation_angle]) < dbValues.size());
+    const size_t i_cohesion = 2;
+    assert(size_t(dbIndices[i_cohesion]) < dbValues.size());
+    const PylithScalar frictionAngle = dbValues[dbIndices[i_friction_angle]];
+    const PylithScalar dilatationAngle = dbValues[dbIndices[i_dilatation_angle]];
+    const PylithScalar cohesion = dbValues[dbIndices[i_cohesion]];
+    valueSubfield[0] = cohesion * cos(frictionAngle);
+
+    std::ostringstream msg;
+    const PylithScalar pi = M_PI;
+    if (frictionAngle < 0)
+    {
+        msg << "Found negative friction angle (" << frictionAngle << ").";
+    } // if
+    if (frictionAngle > pi / 2)
+    {
+        msg << "Found friction angle greater than pi/2 (" << frictionAngle << ").";
+    } // if
+    if (dilatationAngle < 0)
+    {
+        msg << "Found negative dilatation angle (" << dilatationAngle << ").";
+    } // if
+    if (dilatationAngle > pi / 2)
+    {
+        msg << "Found dilatation angle greater than pi/2 (" << dilatationAngle << ").";
+    } // if
+    if (cohesion < 0)
+    {
+        msg << "Found negative cohesion (" << cohesion << ").";
+    } // if
+
+    PYLITH_METHOD_RETURN(msg.str());
+} // vmToDruckerPragerBetaMiddle
+
+// ----------------------------------------------------------------------
+// Compute alpha_yield from friction_angle, dilatation_angle, and cohesion for circumscribed surface.
+std::string
+pylith::materials::_Query::vmToDruckerPragerAlphaYieldCircumscribed(PylithScalar valueSubfield[],
+                                                                    const PylithInt numComponents,
+                                                                    const pylith::scalar_array dbValues,
+                                                                    const pylith::int_array dbIndices)
+{
+    PYLITH_METHOD_BEGIN;
+
+    const size_t _numComponents = 1;
+
+    assert(valueSubfield);
+    assert(_numComponents == size_t(numComponents));
+    assert(3 == dbIndices.size());
+
+    const size_t i_friction_angle = 0;
+    assert(size_t(dbIndices[i_friction_angle]) < dbValues.size());
+    const size_t i_dilatation_angle = 1;
+    assert(size_t(dbIndices[i_dilatation_angle]) < dbValues.size());
+    const size_t i_cohesion = 2;
+    assert(size_t(dbIndices[i_cohesion]) < dbValues.size());
+    const PylithScalar frictionAngle = dbValues[dbIndices[i_friction_angle]];
+    const PylithScalar dilatationAngle = dbValues[dbIndices[i_dilatation_angle]];
+    const PylithScalar cohesion = dbValues[dbIndices[i_cohesion]];
+    const PylithScalar denomFriction = sqrt(3.0) * (3.0 + sin(frictionAngle));
+    valueSubfield[0] = 2.0 * sin(frictionAngle) / denomFriction;
+
+    std::ostringstream msg;
+    const PylithScalar pi = M_PI;
+    if (frictionAngle < 0)
+    {
+        msg << "Found negative friction angle (" << frictionAngle << ").";
+    } // if
+    if (frictionAngle > pi / 2)
+    {
+        msg << "Found friction angle greater than pi/2 (" << frictionAngle << ").";
+    } // if
+    if (dilatationAngle < 0)
+    {
+        msg << "Found negative dilatation angle (" << dilatationAngle << ").";
+    } // if
+    if (dilatationAngle > pi / 2)
+    {
+        msg << "Found dilatation angle greater than pi/2 (" << dilatationAngle << ").";
+    } // if
+    if (cohesion < 0)
+    {
+        msg << "Found negative cohesion (" << cohesion << ").";
+    } // if
+
+    PYLITH_METHOD_RETURN(msg.str());
+} // vmToDruckerPragerAlphaYieldCircumscribed
+
+// ----------------------------------------------------------------------
+// Compute alpha_flow from friction_angle, dilatation_angle, and cohesion for circumscribed surface.
+std::string
+pylith::materials::_Query::vmToDruckerPragerAlphaFlowCircumscribed(PylithScalar valueSubfield[],
+                                                                   const PylithInt numComponents,
+                                                                   const pylith::scalar_array dbValues,
+                                                                   const pylith::int_array dbIndices)
+{
+    PYLITH_METHOD_BEGIN;
+
+    const size_t _numComponents = 1;
+
+    assert(valueSubfield);
+    assert(_numComponents == size_t(numComponents));
+    assert(3 == dbIndices.size());
+
+    const size_t i_friction_angle = 0;
+    assert(size_t(dbIndices[i_friction_angle]) < dbValues.size());
+    const size_t i_dilatation_angle = 1;
+    assert(size_t(dbIndices[i_dilatation_angle]) < dbValues.size());
+    const size_t i_cohesion = 2;
+    assert(size_t(dbIndices[i_cohesion]) < dbValues.size());
+    const PylithScalar frictionAngle = dbValues[dbIndices[i_friction_angle]];
+    const PylithScalar dilatationAngle = dbValues[dbIndices[i_dilatation_angle]];
+    const PylithScalar cohesion = dbValues[dbIndices[i_cohesion]];
+    const PylithScalar denomDilatation = sqrt(3.0) * (3.0 + sin(dilatationAngle));
+    valueSubfield[0] = 2.0 * sin(dilatationAngle) / denomDilatation;
+
+    std::ostringstream msg;
+    const PylithScalar pi = M_PI;
+    if (frictionAngle < 0)
+    {
+        msg << "Found negative friction angle (" << frictionAngle << ").";
+    } // if
+    if (frictionAngle > pi / 2)
+    {
+        msg << "Found friction angle greater than pi/2 (" << frictionAngle << ").";
+    } // if
+    if (dilatationAngle < 0)
+    {
+        msg << "Found negative dilatation angle (" << dilatationAngle << ").";
+    } // if
+    if (dilatationAngle > pi / 2)
+    {
+        msg << "Found dilatation angle greater than pi/2 (" << dilatationAngle << ").";
+    } // if
+    if (cohesion < 0)
+    {
+        msg << "Found negative cohesion (" << cohesion << ").";
+    } // if
+
+    PYLITH_METHOD_RETURN(msg.str());
+} // vmToDruckerPragerAlphaFlowCircumscribed
+
+// ----------------------------------------------------------------------
+// Compute beta from friction_angle, dilatation_angle, and cohesion for circumscribed surface.
+std::string
+pylith::materials::_Query::vmToDruckerPragerBetaCircumscribed(PylithScalar valueSubfield[],
+                                                              const PylithInt numComponents,
+                                                              const pylith::scalar_array dbValues,
+                                                              const pylith::int_array dbIndices)
+{
+    PYLITH_METHOD_BEGIN;
+
+    const size_t _numComponents = 1;
+
+    assert(valueSubfield);
+    assert(_numComponents == size_t(numComponents));
+    assert(3 == dbIndices.size());
+
+    const size_t i_friction_angle = 0;
+    assert(size_t(dbIndices[i_friction_angle]) < dbValues.size());
+    const size_t i_dilatation_angle = 1;
+    assert(size_t(dbIndices[i_dilatation_angle]) < dbValues.size());
+    const size_t i_cohesion = 2;
+    assert(size_t(dbIndices[i_cohesion]) < dbValues.size());
+    const PylithScalar frictionAngle = dbValues[dbIndices[i_friction_angle]];
+    const PylithScalar dilatationAngle = dbValues[dbIndices[i_dilatation_angle]];
+    const PylithScalar cohesion = dbValues[dbIndices[i_cohesion]];
+    const PylithScalar denomFriction = sqrt(3.0) * (3.0 + sin(frictionAngle));
+    valueSubfield[0] = 6.0 * cohesion * cos(frictionAngle) / denomFriction;
+
+    std::ostringstream msg;
+    const PylithScalar pi = M_PI;
+    if (frictionAngle < 0)
+    {
+        msg << "Found negative friction angle (" << frictionAngle << ").";
+    } // if
+    if (frictionAngle > pi / 2)
+    {
+        msg << "Found friction angle greater than pi/2 (" << frictionAngle << ").";
+    } // if
+    if (dilatationAngle < 0)
+    {
+        msg << "Found negative dilatation angle (" << dilatationAngle << ").";
+    } // if
+    if (dilatationAngle > pi / 2)
+    {
+        msg << "Found dilatation angle greater than pi/2 (" << dilatationAngle << ").";
+    } // if
+    if (cohesion < 0)
+    {
+        msg << "Found negative cohesion (" << cohesion << ").";
+    } // if
+
+    PYLITH_METHOD_RETURN(msg.str());
+} // vmToDruckerPragerBetaCircumscribed
 
 // ------------------------------------------------------------------------------------------------
 // Compute Maxwell time for generalized Maxwell model (3 elements).
@@ -442,7 +1115,8 @@ std::string
 pylith::materials::_Query::dbToGravityField(PylithScalar valueSubfield[],
                                             const PylithInt numComponents,
                                             const pylith::scalar_array dbValues,
-                                            const pylith::int_array dbIndices) {
+                                            const pylith::int_array dbIndices)
+{
     PYLITH_METHOD_BEGIN;
 
     const size_t spaceDim = dbIndices.size();
@@ -450,20 +1124,24 @@ pylith::materials::_Query::dbToGravityField(PylithScalar valueSubfield[],
     assert(valueSubfield);
     assert(spaceDim == size_t(numComponents));
 
-    for (size_t i = 0; i < spaceDim; ++i) {
+    for (size_t i = 0; i < spaceDim; ++i)
+    {
         assert(size_t(dbIndices[i]) < dbValues.size());
         valueSubfield[i] = dbValues[dbIndices[i]];
     } // for
 
     PylithScalar mag = 0.0;
-    for (size_t i = 0; i < spaceDim; ++i) {
+    for (size_t i = 0; i < spaceDim; ++i)
+    {
         mag += valueSubfield[i] * valueSubfield[i];
     } // for
     const PylithReal tolerance = 1.0e-6;
     std::ostringstream msg;
-    if (mag < tolerance) {
+    if (mag < tolerance)
+    {
         msg << "Found near zero magnitude (" << mag << ") for gravity field vector (";
-        for (size_t i = 0; i < spaceDim; ++i) {
+        for (size_t i = 0; i < spaceDim; ++i)
+        {
             msg << "  " << valueSubfield[i];
         } // for
         msg << ").";
@@ -489,29 +1167,36 @@ pylith::materials::_Query::inputToBiotModulus(PylithScalar valueSubfield[],
     assert(_numComponents == size_t(numComponents));
     assert(4 == dbIndices.size());
 
-    const size_t i_fluid_bulk_modulus = 0;assert(size_t(dbIndices[i_fluid_bulk_modulus]) < dbValues.size());
-    const size_t i_solid_bulk_modulus = 1;assert(size_t(dbIndices[i_solid_bulk_modulus]) < dbValues.size());
-    const size_t i_biot_coefficient = 2;assert(size_t(dbIndices[i_biot_coefficient]) < dbValues.size());
-    const size_t i_porosity = 3;assert(size_t(dbIndices[i_porosity]) < dbValues.size());
+    const size_t i_fluid_bulk_modulus = 0;
+    assert(size_t(dbIndices[i_fluid_bulk_modulus]) < dbValues.size());
+    const size_t i_solid_bulk_modulus = 1;
+    assert(size_t(dbIndices[i_solid_bulk_modulus]) < dbValues.size());
+    const size_t i_biot_coefficient = 2;
+    assert(size_t(dbIndices[i_biot_coefficient]) < dbValues.size());
+    const size_t i_porosity = 3;
+    assert(size_t(dbIndices[i_porosity]) < dbValues.size());
 
     const PylithScalar fluid_bulk_modulus = dbValues[dbIndices[i_fluid_bulk_modulus]];
     const PylithScalar solid_bulk_modulus = dbValues[dbIndices[i_solid_bulk_modulus]];
     const PylithScalar biot_coefficient = dbValues[dbIndices[i_biot_coefficient]];
     const PylithScalar porosity = dbValues[dbIndices[i_porosity]];
 
-    valueSubfield[0] = 1.0 / ( porosity / fluid_bulk_modulus + (biot_coefficient - porosity) / solid_bulk_modulus );
+    valueSubfield[0] = 1.0 / (porosity / fluid_bulk_modulus + (biot_coefficient - porosity) / solid_bulk_modulus);
 
     std::ostringstream msg;
-    if (porosity < 0) {
+    if (porosity < 0)
+    {
         msg << "Found negative porosity (" << porosity << ").";
     } // if
-    if (biot_coefficient <= 0) {
+    if (biot_coefficient <= 0)
+    {
         msg << "Found negative biot coefficient (" << biot_coefficient << ").";
     } // if
 
     // Debug
-    PylithScalar biot_modulus = 1.0 / ( porosity / fluid_bulk_modulus + (biot_coefficient - porosity) / solid_bulk_modulus );
-    if (biot_modulus <= 0) {
+    PylithScalar biot_modulus = 1.0 / (porosity / fluid_bulk_modulus + (biot_coefficient - porosity) / solid_bulk_modulus);
+    if (biot_modulus <= 0)
+    {
         msg << "biot modulus (" << biot_modulus << ") wrong. Kfl: " << fluid_bulk_modulus << " Ksg: " << solid_bulk_modulus << " phi: " << porosity << " alpha: " << biot_coefficient;
     } // if
 

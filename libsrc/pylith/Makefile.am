@@ -85,6 +85,8 @@ libpylith_la_SOURCES = \
 	materials/IsotropicLinearIncompElasticity.cc \
 	materials/AuxiliaryFactoryElastic.cc \
 	materials/AuxiliaryFactoryViscoelastic.cc \
+	materials/AuxiliaryFactoryElastoplastic.cc \
+	materials/IsotropicDruckerPragerElastoplastic.cc \
 	materials/Poroelasticity.cc \
 	materials/RheologyPoroelasticity.cc \
 	materials/IsotropicLinearPoroelasticity.cc \

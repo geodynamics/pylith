@@ -25,61 +25,128 @@
 
 #include "pylith/materials/materialsfwd.hh" // forward declarations
 
-#include "pylith/feassemble/feassemblefwd.hh" // USES AuxiliaryFactory
+#include "pylith/feassemble/feassemblefwd.hh"    // USES AuxiliaryFactory
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // USES SpatialDB
 
 #include <cstddef> // USES size_t
 
-class pylith::materials::Query {
+class pylith::materials::Query
+{
     friend class TestQuery; // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
-
     /** Setup subfield query in auxiliary factory for shear modulus from density and Vs.
      *
      * @param[in] subfieldName Name for shear modulus subfield.
      * @param[inout] factory Auxiliary factory associated with shear modulus subfield.
      */
-    static
-    void shearModulusFromVM(const char* subfieldName,
-                            pylith::feassemble::AuxiliaryFactory* factory);
+    static void shearModulusFromVM(const char *subfieldName,
+                                   pylith::feassemble::AuxiliaryFactory *factory);
 
     /** Setup subfield query in auxiliary factory for bulk modulus from density, Vs, and Vp.
      *
      * @param[in] subfieldName Name for bulk modulus subfield.
      * @param[inout] factory Auxiliary factory associated with shear modulus subfield.
      */
-    static
-    void bulkModulusFromVM(const char* subfieldName,
-                           pylith::feassemble::AuxiliaryFactory* factory);
+    static void bulkModulusFromVM(const char *subfieldName,
+                                  pylith::feassemble::AuxiliaryFactory *factory);
 
     /** Setup subfield query in auxiliary factory for Maxwell time from density, Vs, and viscosity.
      *
      * @param[in] subfieldName Name for Maxwell time subfield.
      * @param[inout] factory Auxiliary factory associated with shear modulus subfield.
      */
-    static
-    void maxwellTimeFromVM(const char* subfieldName,
-                           pylith::feassemble::AuxiliaryFactory* factory);
+    static void maxwellTimeFromVM(const char *subfieldName,
+                                  pylith::feassemble::AuxiliaryFactory *factory);
 
     /** Setup subfield query in auxiliary factory for generalized Maxwell times from density, Vs, and viscosities.
      *
      * @param[in] subfieldName Name for generalized Maxwelltime subfield.
      * @param[inout] factory Auxiliary factory associated with shear modulus subfield.
      */
-    static
-    void generalizedMaxwellTimesFromVM(const char* subfieldName,
-                                       pylith::feassemble::AuxiliaryFactory* factory);
+    static void generalizedMaxwellTimesFromVM(const char *subfieldName,
+                                              pylith::feassemble::AuxiliaryFactory *factory);
 
     /** Setup subfield query in auxiliary factory for generalized Maxwell shear modulus ratios.
      *
      * @param[in] subfieldName Name for generalized Maxwelltime subfield.
      * @param[inout] factory Auxiliary factory associated with shear modulus subfield.
      */
-    static
-    void generalizedMaxwellShearModulusRatiosFromVM(const char* subfieldName,
-                                                    pylith::feassemble::AuxiliaryFactory* factory);
+    static void generalizedMaxwellShearModulusRatiosFromVM(const char *subfieldName,
+                                                           pylith::feassemble::AuxiliaryFactory *factory);
+
+    /** Setup subfield query in auxiliary factory for Drucker-Prager alpha_yield with inscribed surface.
+     *
+     * @param[in] subfieldName Name for Drucker-Prager subfield.
+     * @param[inout] factory Auxiliary factory associated with alpha_yield subfield.
+     */
+    static void alphaYieldDruckerPragerInscribedFromVM(const char *subfieldName,
+                                                       pylith::feassemble::AuxiliaryFactory *factory);
+
+    /** Setup subfield query in auxiliary factory for Drucker-Prager alpha_flow with inscribed surface.
+     *
+     * @param[in] subfieldName Name for Drucker-Prager subfield.
+     * @param[inout] factory Auxiliary factory associated with alpha_flow subfield.
+     */
+    static void alphaFlowDruckerPragerInscribedFromVM(const char *subfieldName,
+                                                      pylith::feassemble::AuxiliaryFactory *factory);
+
+    /** Setup subfield query in auxiliary factory for Drucker-Prager beta with inscribed surface.
+     *
+     * @param[in] subfieldName Name for Drucker-Prager subfield.
+     * @param[inout] factory Auxiliary factory associated with beta subfield.
+     */
+    static void betaDruckerPragerInscribedFromVM(const char *subfieldName,
+                                                 pylith::feassemble::AuxiliaryFactory *factory);
+
+    /** Setup subfield query in auxiliary factory for Drucker-Prager alpha_yield with middle surface.
+     *
+     * @param[in] subfieldName Name for Drucker-Prager subfield.
+     * @param[inout] factory Auxiliary factory associated with alpha_yield subfield.
+     */
+    static void alphaYieldDruckerPragerMiddleFromVM(const char *subfieldName,
+                                                    pylith::feassemble::AuxiliaryFactory *factory);
+
+    /** Setup subfield query in auxiliary factory for Drucker-Prager alpha_flow with middle surface.
+     *
+     * @param[in] subfieldName Name for Drucker-Prager subfield.
+     * @param[inout] factory Auxiliary factory associated with alpha_flow subfield.
+     */
+    static void alphaFlowDruckerPragerMiddleFromVM(const char *subfieldName,
+                                                   pylith::feassemble::AuxiliaryFactory *factory);
+
+    /** Setup subfield query in auxiliary factory for Drucker-Prager beta with middle surface.
+     *
+     * @param[in] subfieldName Name for Drucker-Prager subfield.
+     * @param[inout] factory Auxiliary factory associated with beta subfield.
+     */
+    static void betaDruckerPragerMiddleFromVM(const char *subfieldName,
+                                              pylith::feassemble::AuxiliaryFactory *factory);
+
+    /** Setup subfield query in auxiliary factory for Drucker-Prager alpha_yield with circumscribed surface.
+     *
+     * @param[in] subfieldName Name for Drucker-Prager subfield.
+     * @param[inout] factory Auxiliary factory associated with alpha_yield subfield.
+     */
+    static void alphaYieldDruckerPragerCircumscribedFromVM(const char *subfieldName,
+                                                           pylith::feassemble::AuxiliaryFactory *factory);
+
+    /** Setup subfield query in auxiliary factory for Drucker-Prager alpha_flow with circumscribed surface.
+     *
+     * @param[in] subfieldName Name for Drucker-Prager subfield.
+     * @param[inout] factory Auxiliary factory associated with alpha_flow subfield.
+     */
+    static void alphaFlowDruckerPragerCircumscribedFromVM(const char *subfieldName,
+                                                          pylith::feassemble::AuxiliaryFactory *factory);
+
+    /** Setup subfield query in auxiliary factory for Drucker-Prager beta with circumscribed surface.
+     *
+     * @param[in] subfieldName Name for Drucker-Prager subfield.
+     * @param[inout] factory Auxiliary factory associated with beta subfield.
+     */
+    static void betaDruckerPragerCircumscribedFromVM(const char *subfieldName,
+                                                     pylith::feassemble::AuxiliaryFactory *factory);
 
     /** Setup subfield query in auxiliary factory for gravity field from GravityField spatial database.
      *
@@ -88,11 +155,10 @@ public:
      * @param[in] gravityField Spatial database for gravity field.
      * @param[in] Spatial dimension of problem.
      */
-    static
-    void gravityFieldFromDB(const char* subfieldName,
-                            pylith::feassemble::AuxiliaryFactory* factory,
-                            spatialdata::spatialdb::GravityField* gravityField,
-                            const size_t spaceDim);
+    static void gravityFieldFromDB(const char *subfieldName,
+                                   pylith::feassemble::AuxiliaryFactory *factory,
+                                   spatialdata::spatialdb::GravityField *gravityField,
+                                   const size_t spaceDim);
 
     /** Setup subfield query in auxiliary factory for bulk modulus from  gravity field from input parameters.
      *
@@ -105,11 +171,10 @@ public:
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
 private:
-
-    Query(void); ///< Not implemented
-    ~Query(void); ///< Not implemented
-    Query(const Query&); ///< Not implemented
-    const Query& operator=(const Query&); ///< Not implemented
+    Query(void);                           ///< Not implemented
+    ~Query(void);                          ///< Not implemented
+    Query(const Query &);                  ///< Not implemented
+    const Query &operator=(const Query &); ///< Not implemented
 
 }; // Query
 
