@@ -812,7 +812,7 @@ pylith::materials::_Query::vmToDruckerPragerAlphaYieldMiddle(PylithScalar valueS
     const PylithScalar dilatationAngle = dbValues[dbIndices[i_dilatation_angle]];
     const PylithScalar cohesion = dbValues[dbIndices[i_cohesion]];
     const PylithScalar denomFriction = 3.0;
-    valueSubfield[0] = 2.0 * sin(frictionAngle) / denomFriction;
+    valueSubfield[0] = sin(frictionAngle) / denomFriction;
 
     std::ostringstream msg;
     const PylithScalar pi = M_PI;
@@ -866,7 +866,7 @@ pylith::materials::_Query::vmToDruckerPragerAlphaFlowMiddle(PylithScalar valueSu
     const PylithScalar dilatationAngle = dbValues[dbIndices[i_dilatation_angle]];
     const PylithScalar cohesion = dbValues[dbIndices[i_cohesion]];
     const PylithScalar denomDilatation = 3.0;
-    valueSubfield[0] = 2.0 * sin(dilatationAngle) / denomDilatation;
+    valueSubfield[0] = sin(dilatationAngle) / denomDilatation;
 
     std::ostringstream msg;
     const PylithScalar pi = M_PI;
