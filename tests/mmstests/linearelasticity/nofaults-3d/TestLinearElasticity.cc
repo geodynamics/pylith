@@ -38,52 +38,51 @@
 
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 
-// ---------------------------------------------------------------------------------------------------------------------
-// Setup testing data.
-void
-pylith::mmstests::TestLinearElasticity::setUp(void) {
-    MMSTest::setUp();
+// ------------------------------------------------------------------------------------------------
+// Constuctor.
+pylith::TestLinearElasticity::TestLinearElasticity(TestLinearElasticity_Data* data) :
+    _data(data) {
+    assert(_data);
 
-    _data = new TestLinearElasticity_Data();CPPUNIT_ASSERT(_data);
-} // setUp
+    GenericComponent::setName(_data->journalName);
+    _jacobianConvergenceRate = _data->jacobianConvergenceRate;
+    _tolerance = _data->tolerance;
+    _isJacobianLinear = _data->isJacobianLinear;
+    _allowZeroResidual = _data->allowZeroResidual;
+} // constructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
-// Deallocate testing data.
-void
-pylith::mmstests::TestLinearElasticity::tearDown(void) {
+// ------------------------------------------------------------------------------------------------
+// Destructor.
+pylith::TestLinearElasticity::~TestLinearElasticity(void) {
     delete _data;_data = NULL;
-
-    MMSTest::tearDown();
-} // tearDown
+} // destructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Initialize objects for test.
 void
-pylith::mmstests::TestLinearElasticity::_initialize(void) {
+pylith::TestLinearElasticity::_initialize(void) {
     PYLITH_METHOD_BEGIN;
-    CPPUNIT_ASSERT(_mesh);
+    assert(_mesh);
 
     PetscErrorCode err = 0;
 
     if (_data->useAsciiMesh) {
         pylith::meshio::MeshIOAscii iohandler;
         iohandler.setFilename(_data->meshFilename);
-        iohandler.read(_mesh);CPPUNIT_ASSERT(_mesh);
+        iohandler.read(_mesh);assert(_mesh);
     } else {
         if (_data->meshOptions) {
             err = PetscOptionsInsertString(NULL, _data->meshOptions);PYLITH_CHECK_ERROR(err);
         } // if
         pylith::meshio::MeshIOPetsc iohandler;
         iohandler.setFilename(_data->meshFilename);
-        iohandler.read(_mesh);CPPUNIT_ASSERT(_mesh);
+        iohandler.read(_mesh);assert(_mesh);
     } // if/else
 
-    CPPUNIT_ASSERT_MESSAGE("Test mesh does not contain any cells.",
-                           pylith::topology::MeshOps::getNumCells(*_mesh) > 0);
-    CPPUNIT_ASSERT_MESSAGE("Test mesh does not contain any vertices.",
-                           pylith::topology::MeshOps::getNumVertices(*_mesh) > 0);
+    assert(pylith::topology::MeshOps::getNumCells(*_mesh) > 0);
+    assert(pylith::topology::MeshOps::getNumVertices(*_mesh) > 0);
 
     // Set up coordinates.
     _mesh->setCoordSys(&_data->cs);
@@ -101,29 +100,28 @@ pylith::mmstests::TestLinearElasticity::_initialize(void) {
     } // for
 
     // Set up problem.
-    CPPUNIT_ASSERT(_problem);
+    assert(_problem);
     _problem->setNormalizer(_data->normalizer);
     _problem->setGravityField(_data->gravityField);
     pylith::materials::Material* materials[1] = { &_data->material };
     _problem->setMaterials(materials, 1);
-    pylith::bc::BoundaryCondition* bcs[1] = { &_data->bc };
-    _problem->setBoundaryConditions(bcs, 1);
+    _problem->setBoundaryConditions(_data->bcs.data(), _data->bcs.size());
     _problem->setStartTime(_data->t);
     _problem->setEndTime(_data->t+_data->dt);
     _problem->setInitialTimeStep(_data->dt);
     _problem->setFormulation(_data->formulation);
 
     // Set up solution field.
-    CPPUNIT_ASSERT(!_solution);
-    _solution = new pylith::topology::Field(*_mesh);CPPUNIT_ASSERT(_solution);
+    assert(!_solution);
+    _solution = new pylith::topology::Field(*_mesh);assert(_solution);
     _solution->setLabel("solution");
     pylith::problems::SolutionFactory factory(*_solution, _data->normalizer);
     factory.addDisplacement(_data->solnDiscretizations[0]);
     if (pylith::problems::Physics::QUASISTATIC == _data->formulation) {
-        CPPUNIT_ASSERT_EQUAL(1, _data->numSolnSubfields);
+        assert(1 == _data->numSolnSubfields);
     } else {
-        CPPUNIT_ASSERT_EQUAL(pylith::problems::Physics::DYNAMIC, _data->formulation);
-        CPPUNIT_ASSERT_EQUAL(2, _data->numSolnSubfields);
+        assert(pylith::problems::Physics::DYNAMIC == _data->formulation);
+        assert(2 == _data->numSolnSubfields);
         factory.addVelocity(_data->solnDiscretizations[1]);
     } // if/else
     _problem->setSolution(_solution);
@@ -134,14 +132,39 @@ pylith::mmstests::TestLinearElasticity::_initialize(void) {
 } // _initialize
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
+// Set functions for computing the exact solution and its time derivative.
+void
+pylith::TestLinearElasticity::_setExactSolution(void) {
+    assert(_data->exactSolnFns);
+
+    const pylith::topology::Field* solution = _problem->getSolution();assert(solution);
+
+    PetscErrorCode err = 0;
+    PetscDS ds = NULL;
+    err = DMGetDS(solution->getDM(), &ds);PYLITH_CHECK_ERROR(err);
+    for (size_t i = 0; i < _data->numSolnSubfields; ++i) {
+        err = PetscDSSetExactSolution(ds, i, _data->exactSolnFns[i], NULL);PYLITH_CHECK_ERROR(err);
+        if (_data->exactSolnDotFns) {
+            err = PetscDSSetExactSolutionTimeDerivative(ds, i, _data->exactSolnDotFns[i], NULL);PYLITH_CHECK_ERROR(err);
+        } // if
+    } // for
+} // _setExactSolution
+
+
+// ------------------------------------------------------------------------------------------------
 // Constructor
-pylith::mmstests::TestLinearElasticity_Data::TestLinearElasticity_Data(void) :
+pylith::TestLinearElasticity_Data::TestLinearElasticity_Data(void) :
     spaceDim(3),
     meshFilename(NULL),
     meshOptions(NULL),
     boundaryLabel(NULL),
     useAsciiMesh(true),
+
+    jacobianConvergenceRate(1.0),
+    tolerance(1.0e-9),
+    isJacobianLinear(true),
+    allowZeroResidual(false),
 
     t(0.0),
     dt(0.05),
@@ -160,10 +183,14 @@ pylith::mmstests::TestLinearElasticity_Data::TestLinearElasticity_Data(void) :
 } // constructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Destructor
-pylith::mmstests::TestLinearElasticity_Data::~TestLinearElasticity_Data(void) {
+pylith::TestLinearElasticity_Data::~TestLinearElasticity_Data(void) {
+    for (size_t i = 0; i < bcs.size(); ++i) {
+        delete bcs[i];bcs[i] = NULL;
+    } // for
     delete gravityField;gravityField = NULL;
+
 } // destructor
 
 

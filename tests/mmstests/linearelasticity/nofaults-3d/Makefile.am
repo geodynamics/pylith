@@ -13,40 +13,30 @@
 #
 # ----------------------------------------------------------------------
 
-include $(top_srcdir)/tests/check_cppunit.am
+include $(top_srcdir)/tests/check_catch2.am
 
-TESTS = \
-	test_uniformstrain3d \
-	test_gravity3d \
-	test_gravityrefstate3d \
-	test_bodyforce3d
+TESTS = mmstest_linearelasticity_nofaults3d
 
 check_PROGRAMS = $(TESTS)
 
 
-test_uniformstrain3d_SOURCES = \
-		TestLinearElasticity.cc \
-		UniformStrain3D.cc \
-		$(top_srcdir)/tests/src/driver_cppunit.cc
-
-test_gravity3d_SOURCES = \
-		TestLinearElasticity.cc \
-		Gravity3D.cc \
-		$(top_srcdir)/tests/src/driver_cppunit.cc
-
-test_gravityrefstate3d_SOURCES = \
-		TestLinearElasticity.cc \
-		GravityRefState3D.cc \
-		$(top_srcdir)/tests/src/driver_cppunit.cc
-
-test_bodyforce3d_SOURCES = \
-		TestLinearElasticity.cc \
-		BodyForce3D.cc \
-		$(top_srcdir)/tests/src/driver_cppunit.cc
+mmstest_linearelasticity_nofaults3d_SOURCES = \
+	$(top_srcdir)/tests/src/MMSTest.cc \
+	$(top_srcdir)/tests/src/driver_catch2.cc \
+	TestLinearElasticity.cc \
+	TestCases.cc \
+	UniformStrain3D.cc \
+	Gravity3D.cc \
+	GravityRefState3D.cc \
+	BodyForce3D.cc 
 
 
 dist_noinst_HEADERS = \
-	TestLinearElasticity.hh	
+	TestLinearElasticity.hh	 \
+	UniformStrain3D.hh \
+	Gravity3D.hh \
+	GravityRefState3D.hh
+	BodyForce3D.hh
 
 
 dist_noinst_DATA = \

@@ -38,7 +38,7 @@
 
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Constuctor.
 pylith::TestLinearElasticity::TestLinearElasticity(TestLinearElasticity_Data* data) :
     _data(data) {
@@ -52,14 +52,14 @@ pylith::TestLinearElasticity::TestLinearElasticity(TestLinearElasticity_Data* da
 } // constructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Destructor.
 pylith::TestLinearElasticity::~TestLinearElasticity(void) {
     delete _data;_data = NULL;
 } // destructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Initialize objects for test.
 void
 pylith::TestLinearElasticity::_initialize(void) {
@@ -132,7 +132,7 @@ pylith::TestLinearElasticity::_initialize(void) {
 } // _initialize
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Set functions for computing the exact solution and its time derivative.
 void
 pylith::TestLinearElasticity::_setExactSolution(void) {
@@ -152,7 +152,7 @@ pylith::TestLinearElasticity::_setExactSolution(void) {
 } // _setExactSolution
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Constructor
 pylith::TestLinearElasticity_Data::TestLinearElasticity_Data(void) :
     spaceDim(2),
@@ -183,7 +183,7 @@ pylith::TestLinearElasticity_Data::TestLinearElasticity_Data(void) :
 } // constructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Destructor
 pylith::TestLinearElasticity_Data::~TestLinearElasticity_Data(void) {
     for (size_t i = 0; i < bcs.size(); ++i) {

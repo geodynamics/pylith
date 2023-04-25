@@ -39,42 +39,43 @@
 #include "pylith/topology/Field.hh" // HASA FieldBase::Discretization
 
 namespace pylith {
-    namespace mmstests {
-        class TestLinearElasticity;
-
-        class TestLinearElasticity_Data; // test data
-    } // mmstets
+    class TestLinearElasticity;
+    class TestLinearElasticity_Data; // test data
 } // pylith
 
-/// C++ abstract base class for testing Elasticity with various rheologies.
-class pylith::mmstests::TestLinearElasticity : public pylith::testing::MMSTest {
-    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
+/// C++ class for testing Elasticity with various rheologies.
+class pylith::TestLinearElasticity : public pylith::testing::MMSTest {
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
-    /// Setup testing data.
-    virtual
-    void setUp(void);
+    /** Constructor
+     *
+     * @param[in] data Data for MMS test.
+     */
+    TestLinearElasticity(TestLinearElasticity_Data* data);
 
-    /// Deallocate testing data.
-    virtual
-    void tearDown(void);
+    /// Destructor.
+    ~TestLinearElasticity(void);
 
-    // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
+    // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
 protected:
 
     /// Initialize objects for test.
     void _initialize(void);
 
-    // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
+    /// Set exact solution and time derivative of solution in domain.
+    void _setExactSolution(void);
+
+    // PROTECTED MEMBERS //////////////////////////////////////////////////////////////////////////
 protected:
 
     TestLinearElasticity_Data* _data; ///< Test parameters.
 
 }; // class TestLinearElasticity
 
-// =====================================================================================================================
-class pylith::mmstests::TestLinearElasticity_Data {
-    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
+// ================================================================================================
+class pylith::TestLinearElasticity_Data {
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Constructor
@@ -83,14 +84,20 @@ public:
     /// Destructor
     ~TestLinearElasticity_Data(void);
 
-    // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
+    // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
 public:
 
+    const char* journalName; ///< Name for MMSTest journals.
     int spaceDim; ///< Spatial dimension of domain.
     const char* meshFilename; ///< Name of file with ASCII mesh.
     const char* meshOptions; ///< Command line options for mesh.
     const char* boundaryLabel; ///< Group defining domain boundary.
     bool useAsciiMesh; ///< Use MeshIOAscii to read mesh, otherwise use PETSc.
+
+    PylithReal jacobianConvergenceRate; ///< Expected convergence rate for Jacobiab (when not linear).
+    PylithReal tolerance; ///< Tolerance for discretization and residual test.
+    bool isJacobianLinear; ///< Jacobian is should be linear.
+    bool allowZeroResidual; ///< Allow residual to be exactly zero.
 
     PylithReal t; ///< Time for MMS solution.
     PylithReal dt; ///< Time step in simulation.
@@ -101,11 +108,17 @@ public:
     pylith::materials::Elasticity material; ///< Materials.
     pylith::materials::IsotropicLinearElasticity rheology; ///< Bulk rheology for materials.
     spatialdata::spatialdb::GravityField* gravityField; ///< Gravity field.
-    pylith::bc::DirichletUserFn bc; ///< Dirichlet boundary condition.
+    std::vector<pylith::bc::BoundaryCondition*> bcs; ///< Dirichlet boundary condition.
 
     // Solution field.
     int numSolnSubfields; ///< Number of solution fields.
     pylith::topology::Field::Discretization const* solnDiscretizations; ///< Discretizations for solution fields.
+
+    /// Array of functions providing exact solution.
+    pylith::testing::MMSTest::solution_fn* exactSolnFns;
+
+    /// Array of functions providing exact solution time derivative.
+    pylith::testing::MMSTest::solution_fn* exactSolnDotFns;
 
     // Material auxiliary fields.
     int numAuxSubfields; ///< Number of auxiliary subfields for materials.

@@ -18,30 +18,18 @@
 
 #include <portinfo>
 
-#include "TestLinearElasticity.hh" // Implementation of cases
+#include "BodyForce3D.hh" // Implementation of cases
 
 #include "pylith/problems/TimeDependent.hh" // USES TimeDependent
 #include "pylith/topology/Field.hh" // USES pylith::topology::Field::Discretization
 #include "pylith/utils/journals.hh" // USES pythia::journal::debug_t
 
 namespace pylith {
-    namespace mmstests {
-        class BodyForce3D;
-
-        class BodyForce3D_TetP2;
-        class BodyForce3D_TetP3;
-        class BodyForce3D_TetP4;
-
-        class BodyForce3D_HexQ2;
-        class BodyForce3D_HexQ3;
-        class BodyForce3D_HexQ4;
-
-    } // materials
+    class _BodyForce3D;
 } // pylith
 
-// ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::BodyForce3D :
-    public pylith::mmstests::TestLinearElasticity {
+// ------------------------------------------------------------------------------------------------
+class pylith::_BodyForce3D {
     static const double LENGTHSCALE;
     static const double TIMESCALE;
     static const double PRESSURESCALE;
@@ -140,9 +128,9 @@ class pylith::mmstests::BodyForce3D :
                                           PetscInt numComponents,
                                           PetscScalar* s,
                                           void* context) {
-        CPPUNIT_ASSERT(3 == spaceDim);
-        CPPUNIT_ASSERT(3 == numComponents);
-        CPPUNIT_ASSERT(s);
+        assert(3 == spaceDim);
+        assert(3 == numComponents);
+        assert(s);
 
         s[0] = disp_x(x[0], x[1], x[2]);
         s[1] = disp_y(x[0], x[1], x[2]);
@@ -151,211 +139,183 @@ class pylith::mmstests::BodyForce3D :
         return 0;
     } // solnkernel_disp
 
-protected:
+public:
 
-    void setUp(void) {
-        TestLinearElasticity::setUp();
+    static
+    TestLinearElasticity_Data* createData(void) {
+        TestLinearElasticity_Data* data = new TestLinearElasticity_Data();assert(data);
 
-        // Overwrite component names for control of journals at test level.
-        GenericComponent::setName("BodyForce3D");
+        data->journalName = "BodyForce3D";
 
-        CPPUNIT_ASSERT(_data);
-        _isJacobianLinear = true;
+        data->isJacobianLinear = true;
 
-        _data->meshFilename = ":UNKNOWN:"; // Set in child class.
-        _data->boundaryLabel = "boundary";
+        data->meshFilename = ":UNKNOWN:"; // Set in child class.
+        data->boundaryLabel = "boundary";
 
-        _data->normalizer.setLengthScale(LENGTHSCALE);
-        _data->normalizer.setTimeScale(TIMESCALE);
-        _data->normalizer.setPressureScale(PRESSURESCALE);
-        _data->normalizer.computeDensityScale();
+        data->normalizer.setLengthScale(LENGTHSCALE);
+        data->normalizer.setTimeScale(TIMESCALE);
+        data->normalizer.setPressureScale(PRESSURESCALE);
+        data->normalizer.computeDensityScale();
 
         // solnDiscretizations set in derived class.
 
         // Material information
-        _data->numAuxSubfields = 4;
+        data->numAuxSubfields = 4;
         static const char* _auxSubfields[4] = { // order must match order of subfields in auxiliary field
             "density",
             "body_force",
             "shear_modulus",
             "bulk_modulus",
         };
-        _data->auxSubfields = _auxSubfields;
+        data->auxSubfields = _auxSubfields;
         static const pylith::topology::Field::Discretization _auxDiscretizations[4] = {
             pylith::topology::Field::Discretization(0, 1), // density
             pylith::topology::Field::Discretization(0, 1), // body_force
             pylith::topology::Field::Discretization(0, 1), // shear_modulus
             pylith::topology::Field::Discretization(0, 1), // bulk_modulus
         };
-        _data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
+        data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
 
-        _data->auxDB.addValue("density", density, density_units());
-        _data->auxDB.addValue("vp", vp, vp_units());
-        _data->auxDB.addValue("vs", vs, vs_units());
-        _data->auxDB.addValue("body_force_x", bodyforce_x, bodyforce_units());
-        _data->auxDB.addValue("body_force_y", bodyforce_y, bodyforce_units());
-        _data->auxDB.addValue("body_force_z", bodyforce_z, bodyforce_units());
-        _data->auxDB.setCoordSys(_data->cs);
+        data->auxDB.addValue("density", density, density_units());
+        data->auxDB.addValue("vp", vp, vp_units());
+        data->auxDB.addValue("vs", vs, vs_units());
+        data->auxDB.addValue("body_force_x", bodyforce_x, bodyforce_units());
+        data->auxDB.addValue("body_force_y", bodyforce_y, bodyforce_units());
+        data->auxDB.addValue("body_force_z", bodyforce_z, bodyforce_units());
+        data->auxDB.setCoordSys(data->cs);
 
-        _data->material.setFormulation(pylith::problems::Physics::QUASISTATIC);
-        _data->material.useBodyForce(true);
-        _data->rheology.useReferenceState(false);
+        data->material.setFormulation(pylith::problems::Physics::QUASISTATIC);
+        data->material.useBodyForce(true);
+        data->rheology.useReferenceState(false);
 
-        _data->material.setDescription("Isotropic Linear Elascitity Plane Strain");
-        _data->material.setLabelValue(24);
+        data->material.setDescription("Isotropic Linear Elascitity Plane Strain");
+        data->material.setLabelValue(24);
 
         static const PylithInt constrainedDOF[3] = { 0, 1, 2 };
         static const PylithInt numConstrained = 3;
-        _data->bc.setSubfieldName("displacement");
-        _data->bc.setLabelName("boundary");
-        _data->bc.setLabelValue(1);
-        _data->bc.setConstrainedDOF(constrainedDOF, numConstrained);
-        _data->bc.setUserFn(solnkernel_disp);
+        data->bcs.resize(1);
+        pylith::bc::DirichletUserFn*bc = new pylith::bc::DirichletUserFn();assert(bc);
+        bc->setSubfieldName("displacement");
+        bc->setLabelName("boundary");
+        bc->setLabelValue(1);
+        bc->setConstrainedDOF(constrainedDOF, numConstrained);
+        bc->setUserFn(solnkernel_disp);
+        data->bcs[0] = bc;
 
-    } // setUp
+        static const pylith::testing::MMSTest::solution_fn _exactSolnFns[1] = {
+            solnkernel_disp,
+        };
+        data->exactSolnFns = const_cast<pylith::testing::MMSTest::solution_fn*>(_exactSolnFns);
+        data->exactSolnDotFns = nullptr;
 
-    // Set exact solution in domain.
-    void _setExactSolution(void) {
-        const pylith::topology::Field* solution = _problem->getSolution();
-        CPPUNIT_ASSERT(solution);
-
-        PetscErrorCode err = 0;
-        PetscDS prob = NULL;
-        err = DMGetDS(solution->getDM(), &prob);CPPUNIT_ASSERT(!err);
-        err = PetscDSSetExactSolution(prob, 0, solnkernel_disp, NULL);CPPUNIT_ASSERT(!err);
-    } // _setExactSolution
+        return data;
+    } // createData
 
 }; // BodyForce3D
-const double pylith::mmstests::BodyForce3D::LENGTHSCALE = 1.0e+3;
-const double pylith::mmstests::BodyForce3D::TIMESCALE = 2.0;
-const double pylith::mmstests::BodyForce3D::PRESSURESCALE = 2.25e+10;
-const double pylith::mmstests::BodyForce3D::BODYFORCE = 5.0e+3;
-const double pylith::mmstests::BodyForce3D::XMAX = 4.0e+3;
+const double pylith::_BodyForce3D::LENGTHSCALE = 1.0e+3;
+const double pylith::_BodyForce3D::TIMESCALE = 2.0;
+const double pylith::_BodyForce3D::PRESSURESCALE = 2.25e+10;
+const double pylith::_BodyForce3D::BODYFORCE = 5.0e+3;
+const double pylith::_BodyForce3D::XMAX = 4.0e+3;
 
-// ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::BodyForce3D_TetP2 :
-    public pylith::mmstests::BodyForce3D {
-    CPPUNIT_TEST_SUB_SUITE(BodyForce3D_TetP2,
-                           TestLinearElasticity);
-    CPPUNIT_TEST_SUITE_END();
+// ------------------------------------------------------------------------------------------------
+pylith::TestLinearElasticity_Data*
+pylith::BodyForce3D::TetP2(void) {
+    TestLinearElasticity_Data* data = pylith::_BodyForce3D::createData();assert(data);
 
-    void setUp(void) {
-        BodyForce3D::setUp();
-        CPPUNIT_ASSERT(_data);
+    data->meshFilename = "data/tet.mesh";
 
-        _data->meshFilename = "data/tet.mesh";
+    data->numSolnSubfields = 1;
+    static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
+        pylith::topology::Field::Discretization(2, 2), // disp
+    };
+    data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
-        _data->numSolnSubfields = 1;
-        static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
-            pylith::topology::Field::Discretization(2, 2), // disp
-        };
-        _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
+    static const pylith::topology::Field::Discretization _auxDiscretizations[4] = {
+        pylith::topology::Field::Discretization(0, 2), // density
+        pylith::topology::Field::Discretization(0, 2), // body_force
+        pylith::topology::Field::Discretization(0, 2), // shear_modulus
+        pylith::topology::Field::Discretization(0, 2), // bulk_modulus
+    };
+    data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
 
-        static const pylith::topology::Field::Discretization _auxDiscretizations[4] = {
-            pylith::topology::Field::Discretization(0, 2), // density
-            pylith::topology::Field::Discretization(0, 2), // body_force
-            pylith::topology::Field::Discretization(0, 2), // shear_modulus
-            pylith::topology::Field::Discretization(0, 2), // bulk_modulus
-        };
-        _data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
+    return data;
+} // TetP2
 
-    } // setUp
 
-}; // BodyForce3D_TetP2
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::BodyForce3D_TetP2);
+// ------------------------------------------------------------------------------------------------
+pylith::TestLinearElasticity_Data*
+pylith::BodyForce3D::TetP3(void) {
+    TestLinearElasticity_Data* data = pylith::_BodyForce3D::createData();assert(data);
 
-// ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::BodyForce3D_TetP3 :
-    public pylith::mmstests::BodyForce3D {
-    CPPUNIT_TEST_SUB_SUITE(BodyForce3D_TetP3,
-                           TestLinearElasticity);
-    CPPUNIT_TEST_SUITE_END();
+    data->meshFilename = "data/tet.mesh";
 
-    void setUp(void) {
-        BodyForce3D::setUp();
-        CPPUNIT_ASSERT(_data);
+    data->numSolnSubfields = 1;
+    static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
+        pylith::topology::Field::Discretization(3, 3), // disp
+    };
+    data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
-        _data->meshFilename = "data/tet.mesh";
+    static const pylith::topology::Field::Discretization _auxDiscretizations[4] = {
+        pylith::topology::Field::Discretization(0, 3), // density
+        pylith::topology::Field::Discretization(0, 3), // body_force
+        pylith::topology::Field::Discretization(0, 3), // shear_modulus
+        pylith::topology::Field::Discretization(0, 3), // bulk_modulus
+    };
+    data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
 
-        _data->numSolnSubfields = 1;
-        static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
-            pylith::topology::Field::Discretization(3, 3), // disp
-        };
-        _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
+    return data;
+} // TetP3
 
-        static const pylith::topology::Field::Discretization _auxDiscretizations[4] = {
-            pylith::topology::Field::Discretization(0, 3), // density
-            pylith::topology::Field::Discretization(0, 3), // body_force
-            pylith::topology::Field::Discretization(0, 3), // shear_modulus
-            pylith::topology::Field::Discretization(0, 3), // bulk_modulus
-        };
-        _data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
 
-    } // setUp
+// ------------------------------------------------------------------------------------------------
+pylith::TestLinearElasticity_Data*
+pylith::BodyForce3D::HexQ2(void) {
+    TestLinearElasticity_Data* data = pylith::_BodyForce3D::createData();assert(data);
 
-}; // BodyForce3D_TetP3
-// CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::BodyForce3D_TetP3);
+    data->meshFilename = "data/hex.mesh";
 
-// ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::BodyForce3D_HexQ2 :
-    public pylith::mmstests::BodyForce3D {
-    CPPUNIT_TEST_SUB_SUITE(BodyForce3D_HexQ2,  TestLinearElasticity);
-    CPPUNIT_TEST_SUITE_END();
+    data->numSolnSubfields = 1;
+    static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
+        pylith::topology::Field::Discretization(2, 2), // disp
+    };
+    data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
-    void setUp(void) {
-        BodyForce3D::setUp();
-        CPPUNIT_ASSERT(_data);
+    static const pylith::topology::Field::Discretization _auxDiscretizations[4] = {
+        pylith::topology::Field::Discretization(0, 2), // density
+        pylith::topology::Field::Discretization(0, 2), // body_force
+        pylith::topology::Field::Discretization(0, 2), // shear_modulus
+        pylith::topology::Field::Discretization(0, 2), // bulk_modulus
+    };
+    data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
 
-        _data->meshFilename = "data/hex.mesh";
+    return data;
+} // HexQ2
 
-        _data->numSolnSubfields = 1;
-        static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
-            pylith::topology::Field::Discretization(2, 2), // disp
-        };
-        _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
-        static const pylith::topology::Field::Discretization _auxDiscretizations[4] = {
-            pylith::topology::Field::Discretization(0, 2), // density
-            pylith::topology::Field::Discretization(0, 2), // body_force
-            pylith::topology::Field::Discretization(0, 2), // shear_modulus
-            pylith::topology::Field::Discretization(0, 2), // bulk_modulus
-        };
-        _data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
+// ------------------------------------------------------------------------------------------------
+pylith::TestLinearElasticity_Data*
+pylith::BodyForce3D::HexQ3(void) {
+    TestLinearElasticity_Data* data = pylith::_BodyForce3D::createData();assert(data);
 
-    } // setUp
+    data->meshFilename = "data/hex.mesh";
 
-}; // BodyForce3D_HexQ2
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::BodyForce3D_HexQ2);
+    data->numSolnSubfields = 1;
+    static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
+        pylith::topology::Field::Discretization(3, 3), // disp
+    };
+    data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
-// ---------------------------------------------------------------------------------------------------------------------
-class pylith::mmstests::BodyForce3D_HexQ3 :
-    public pylith::mmstests::BodyForce3D {
-    CPPUNIT_TEST_SUB_SUITE(BodyForce3D_HexQ3,  TestLinearElasticity);
-    CPPUNIT_TEST_SUITE_END();
+    static const pylith::topology::Field::Discretization _auxDiscretizations[4] = {
+        pylith::topology::Field::Discretization(0, 3), // density
+        pylith::topology::Field::Discretization(0, 3), // body_force
+        pylith::topology::Field::Discretization(0, 3), // shear_modulus
+        pylith::topology::Field::Discretization(0, 3), // bulk_modulus
+    };
+    data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
 
-    void setUp(void) {
-        BodyForce3D::setUp();
-        CPPUNIT_ASSERT(_data);
+    return data;
+} // HexQ3
 
-        _data->meshFilename = "data/hex.mesh";
-
-        _data->numSolnSubfields = 1;
-        static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
-            pylith::topology::Field::Discretization(3, 3), // disp
-        };
-        _data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
-
-        static const pylith::topology::Field::Discretization _auxDiscretizations[4] = {
-            pylith::topology::Field::Discretization(0, 3), // density
-            pylith::topology::Field::Discretization(0, 3), // body_force
-            pylith::topology::Field::Discretization(0, 3), // shear_modulus
-            pylith::topology::Field::Discretization(0, 3), // bulk_modulus
-        };
-        _data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
-
-    } // setUp
-
-}; // BodyForce3D_HexQ3
-// CPPUNIT_TEST_SUITE_REGISTRATION(pylith::mmstests::BodyForce3D_HexQ3);
 
 // End of file

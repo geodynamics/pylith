@@ -22,8 +22,8 @@
  * @brief C++ abstract base class for testing Elasticity for various rheologies.
  */
 
-#if !defined(pylith_mmstests_testLinearelasticity_hh)
-#define pylith_mmstests_testLinearelasticity_hh
+#if !defined(pylith_mmstests_testlinearelasticity_hh)
+#define pylith_mmstests_testlinearelasticity_hh
 
 #include "pylith/testing/MMSTest.hh" // ISA MMSTEST
 
@@ -43,7 +43,7 @@ namespace pylith {
     class TestLinearElasticity_Data;
 }
 
-/// C++ abstract base class for testing Elasticity using a variety of MMS tests.
+/// C++ class for testing Elasticity using a variety of MMS tests.
 class pylith::TestLinearElasticity : public pylith::testing::MMSTest {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:

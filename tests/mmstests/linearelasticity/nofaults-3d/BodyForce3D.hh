@@ -16,14 +16,30 @@
 // ----------------------------------------------------------------------
 //
 
-#include "pylith/testing/TestDriver.cc"
+#include <portinfo>
 
-int
-main(int argc,
-     char* argv[]) {
-    pylith::testing::TestDriver driver;
-    return driver.run(argc, argv);
-} // main
+#include "TestLinearElasticity.hh" // USES TestLinearElasticity_Data
 
+namespace pylith {
+    class BodyForce3D;
+}
+
+class pylith::BodyForce3D {
+public:
+
+    // Data factory methods
+
+    static TestLinearElasticity_Data* TetP2(void);
+
+    static TestLinearElasticity_Data* TetP3(void);
+
+    static TestLinearElasticity_Data* HexQ2(void);
+
+    static TestLinearElasticity_Data* HexQ3(void);
+
+private:
+
+    BodyForce3D(void); ///< Not implemented
+}; // BodyForce3D
 
 // End of file

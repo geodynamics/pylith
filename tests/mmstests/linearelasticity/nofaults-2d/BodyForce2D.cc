@@ -28,7 +28,7 @@ namespace pylith {
     class _BodyForce2D;
 } // pylith
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 class pylith::_BodyForce2D {
     static const double LENGTHSCALE;
     static const double TIMESCALE;
