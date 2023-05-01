@@ -49,22 +49,22 @@ stages:
           matrix:
             debian_testing:
               BASE_IMAGE: "testenv-debian-testing"
-            ubuntu_18.04:
-              BASE_IMAGE: "testenv-ubuntu-18.04"
             ubuntu_20.04:
               BASE_IMAGE: "testenv-ubuntu-20.04"
             ubuntu_22.04:
               BASE_IMAGE: "testenv-ubuntu-22.04"
-            ubuntu_22.10:
-              BASE_IMAGE: "testenv-ubuntu-22.10"
-            fedora_35:
-              BASE_IMAGE: "testenv-fedora-35"
-            fedora_36:
-              BASE_IMAGE: "testenv-fedora-36"
+            ubuntu_23.04:
+              BASE_IMAGE: "testenv-ubuntu-23.04"
+            fedora_37:
+              BASE_IMAGE: "testenv-fedora-37"
+            fedora_38:
+              BASE_IMAGE: "testenv-fedora-38"
             centos_7:
               BASE_IMAGE: "testenv-centos-7"
             rockylinux_8:
               BASE_IMAGE: "testenv-rockylinux-8"
+            rockylinux_9:
+              BASE_IMAGE: "testenv-rockylinux-9"
         steps:
           - checkout: self
             submodules: "true"
