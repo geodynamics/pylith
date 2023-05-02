@@ -204,7 +204,7 @@ pylith::testing::TestDriver::_parseArgs(int argc,
     _petscOptions.reserve(4);
     while (true) {
         // extern char* optarg;
-        const char c = getopt_long(argc, argv, "hlqt:p:i:d:w:", options, NULL);
+        const int c = getopt_long(argc, argv, "hlqt:p:i:d:w:", options, NULL);
         if (-1 == c) { break; }
         switch (c) {
         case 'h':
