@@ -18,7 +18,7 @@
 # -- Project information -----------------------------------------------------
 
 project = 'PyLith'
-copyright = '2021-2022, University of California, Davis'
+copyright = '2021-2023, University of California, Davis'
 author = 'Brad T. Aagaard, Matthew G. Knepley, Charles A. Williams'
 
 # The full version, including alpha/beta/rc tags
@@ -32,6 +32,7 @@ release = '3.0.3'
 # ones.
 extensions = [
     "myst_parser",
+    "sphinx_copybutton",
     "sphinxcontrib.bibtex",
 ]
 myst_enable_extensions = [

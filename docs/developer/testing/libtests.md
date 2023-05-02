@@ -4,6 +4,11 @@ The C++ unit tests target verification at the scale of individual C++ class meth
 This isolates bugs very close to their origin, so they are highly effective at catching simple errors, especially memory errors such as invalid reads, writes, and leaks.
 We use the [CppUnit](https://www.freedesktop.org/wiki/Software/cppunit/) testing framework for constructing and running tests.
 
+:::{note}
+We will be transitioning from CppUnit to [Catch2](https://github.com/catchorg/Catch2) in the near future.
+Catch2 provides seamless integration with VS Code and more control over running small batches of tests.
+:::
+
 For a given C++ class in `libsrc/pylith`, we create a separate test class in `tests/libtests`.
 For example, we create `pylith::problems::TestPhysics` in `tests/libtsts/problems/TestPhysics.*` to test the `pylith::problems::Physics` class in `libsrc/pylith/problems/Physics.*`.
 For simple classes that can be fully tested with a single test case, we put the class declaration and implementation in a single `.cc` file.

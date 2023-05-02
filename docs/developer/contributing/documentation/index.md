@@ -1,7 +1,7 @@
 # Documentation
 
 We write the PyLith documentation in Markedly Structured Text (a Markdown version of reStructured Text) and generate the manual using Sphinx.
-The manual is automatically for the `main` branch and posted at <https://pylith.readthedocs.io>.
+The manual is automatically built for the `main` branch and posted at <https://pylith.readthedocs.io>.
 
 :::{toctree}
 ---

@@ -30,11 +30,12 @@ Once a development task is completed, a developer is encouraged to contribute th
 <img src="figs/gitworkflow_branch.*" alt="" width="100%" />
 
 Overview of repositories and branches for the Git forking workflow used in PyLith development.
+You keep the `main` branch on your local machine in sync with the `main` branch in the community repository; we never use the `main` branch in your GitHub repository.
 From the `main` branch on your local machine, you create a feature branch, e.g., `feature-powerlaw`, to complete a single task such as adding a feature, fixing a bug, or making an improvement to the documentation.
 You should break up the changes into several steps, which are saved locally as commits.
-The commits may be pushed to your repository on GitHub for backup or syncing across multiple computers.
-Once the task is completed, you submit a pull request to have the changes merged to the `main` branch on the community repository.
-Once the pull request is merged, you update your own `main` branch on your local computer from the community repository and then push the changes to your repository on GitHub.
+The commits are pushed to your repository on GitHub for backup or syncing across multiple computers.
+Once the task is completed, you submit a pull request to have the changes merged to the `main` branch in the community repository.
+Once the pull request is merged, you update your local `main` branch from the community repository and then push the changes to your repository on GitHub.
 :::
 
 There are two steps to setting up a copy of the PyLith repository that you can use for development under the Forking Workflow:
@@ -42,17 +43,19 @@ There are two steps to setting up a copy of the PyLith repository that you can u
 1. Create a GitHub account.
 2. Fork the `geodynamics/pylith` repository.
 
-    This will create a copy of the PyLith repository in your GitHub account. You can make changes to this copy and, when you are ready to contribute changes back to the `geodynamics/pylith` repository, you will create a pull request.
+    This will create a copy of the PyLith repository in your GitHub account.
+    You can make changes to this copy and, when you are ready to contribute changes back to the `geodynamics/pylith` repository, you will create a pull request.
 
-:::{tip}
-We recommend adding your SSH public key to your GitHub account and/or creating a personal access token.
-See [GitHub Docs: Connecting To GitHub with SSH](https://help.github.com/articles/connecting-to-github-with-ssh/) and [GitHub Docs: Creating a personal access token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token) for more information.
+:::{important}
+Create a personal access token for your GitHub account.
+See [GitHub Docs: Creating a personal access token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token) for more information.
 This provides additional security and eliminates the need for you to enter your username and password whenever you push to your repository.
 
-For additional security, consider setting up your GitHub account to use two-factor authentication.
+We strongly recommend that you setup your GitHub account to use two-factor authentication.
 See [GitHub Docs: Securing your account with two-factor authentication](https://help.github.com/articles/securing-your-account-with-two-factor-authentication-2fa/).
 
-We also recommend signing your commits using GPG or S/MIME. See [GitHub Docs: Managing commit signature verification](https://docs.github.com/en/github/authenticating-to-github/managing-commit-signature-verification) for more information.
+You should also sign your commits using GPG or S/MIME.
+See [GitHub Docs: Managing commit signature verification](https://docs.github.com/en/github/authenticating-to-github/managing-commit-signature-verification) for more information.
 :::
 
 (sec-developer-workflow-sync-fork)=
@@ -64,6 +67,7 @@ See [git-branch](fig-developer-git-branch) for the diagram of the workflow assoc
 
 For each clone of your fork (each computer with a local copy of your fork), you need to create a link to the "upstream" `geodynamics/pylith` repository.
 This allows you to keep your repository in sync with the community repository.
+If you are using the PyLith Docker development container and followed all of the installation instructions, then you already completed this step; you can list the current remotes for your fork to verify.
 
 ```{code-block} bash
 ---
@@ -91,28 +95,19 @@ upstream https://github.com/geodynamics/pylith.git (push)
 ### Updating Your Local Branch To Match The Upstream Repository
 
 Make sure all of your local changes have been committed or [stashed](https://git-scm.com/docs/git-stash).
-If you are updating the `main` branch or another branch that you know has *not* been rebased, then you can merge the updates from the upstream (`geodynamics/pylith`) repository using the following procedure.
-
-:::{danger}
-If you do not know whether or not the branch you are updating has been rebased, then do not follow this procedure.
-Instead, follow the procedure for updating a rebased branch.
-:::
 
 ```{code-block} bash
 ---
-caption: Updating your `main` branch or another branch that has *not* been rebased (forced push).
+caption: Updating the local `main` branch to match the upstream `main` branch..
 ---
-# Update your local version of the upstream repository
-get fetch upstream
-
 # Check out the 'main' branch
 git checkout main
 
-# Merge 'main' from upstream to your local clone.
-git merge upstream/main
+# Update your local version of the upstream repository, pruning any branches that no longer exist.
+get fetch upstream -p
 
-# If there are no conflicts, push the changes to your fork on GitHub.
-git push
+# Update your local `main` branch to match the upstream `main`.
+git pull
 ```
 
 :::{important}
@@ -121,7 +116,6 @@ You should never merge your local branches to your `main` branch or commit local
 This ensures that your `main` branch stays in sync with the `geodynamics/pylith` `main` branch.
 If you need to test integration of multiple feature branches, it is best to create a new branch for that purpose.
 :::
-
 
 ```{code-block} bash
 ---
@@ -135,23 +129,21 @@ git branch -D hackathon/project
 get fetch upstream
 
 # Checkout the branch again, tracking the upstream repository.
-git checkout --track upstream/hackathon/project
-
-# Push the changes to your GitHub repository and have the branch track that repository.
-git push --force -u origin hackathon/project
+git checkout -b hackathon/project --track upstream/hackathon/project
 ```
 
 :::{tip}
-If you are creating feature branches off of a branch in the `geodynamics/pylith` repository, then we recommend not pushing that branch to your local repository.
-Just have your local branch track the upstream branch using `git branch --track upstream/hackathon/project`.
-You still need to delete this local branch and then check it out again if it is rebased in the upstream repository, but it eliminates the need to push to your GitHub repository.
+You should only make commits on your local feature branches.
+These are also the only branches that you should push to your GitHub repository.
+
+We strongly recommend never pushing branches from the upstream repository to your GitHub repository.
 :::
 
 
 (sec-developer-feature-branch)=
 ## Creating a New Feature Branch
 
-Before creating a new feature branch, you should merge updates from the upstream repository as described in {ref}`sec-developer-merge-upstream`.
+Before creating a new feature branch, you should update your local `main` branch (or `hackathon/project` branch to match the upsteram corresponding upstream branch as described in {ref}`sec-developer-merge-upstream`.
 
 ```{code-block} bash
 ---
@@ -182,20 +174,19 @@ Feature branches are a great way to experiment with an implementation.
 You can create a feature branch and if you decide the implementation is headed in the wrong direction, you can simply create a new feature branch from your original starting point and delete the bad feature branch.
 :::
 
-
 ## Staging, Committing, and Pushing Changes
 
 The Git `add` and `commit` commands are used to stage and commit changes to a branch.
-Staging refers to just assembling the list of files to include in a commit.
+Staging refers to assembling the list of files to include in a commit.
 A commit adds code changes to the current branch along with a message describing the changes.
 A commit changes only the current branch on your local machine.
-In order to update your GitHub fork you need to `push` your changes.
+In order to update your GitHub repository you need to `push` your changes.
 See the Git documentation for details about these commands.
 There are Git interfaces built into a number of editors and integrated development environments (IDEs), as well as standalone graphical user interfaces to Git.
 
 :::{tip}
 Commit messages should explain changes.
-Keep the first line under 80 characters if possible and include an empty line between the first line and any additional lines that provide more detailed explanations.
+Keep the first line under 80 characters, if possible, and include an empty line between the first line and any additional lines that provide more detailed explanations.
 
 The commit messages provide important documentation on why code is changed.
 Your future self and your fellow developers will appreciate good explanations of all changes.
@@ -208,17 +199,18 @@ If you have multiple branches, make sure you are on the correct branch before ma
 ## Keeping a feature branch in sync with branch `main`
 
 The PyLith `main` branch may change while you are working on a feature branch.
-In some cases it might be a new feature that you do not need and does not affect your work, in which case it does not matter whether you incorporate those changes into your feature branch.
-However, in other cases, there might be an important bugfix or feature that you want to integrate into your feature branch while you are working on it.
+In some cases it might have a new feature that you do not need and does not affect your work, in which case it does not matter whether you incorporate those changes into your feature branch.
+However, in other cases, there might be an important bugfix or feature that you want to use in your feature branch while you are working on it.
 The recommended way to incorporate these changes is to rebase your feature branch relative to the PyLith `main` branch.
 
-Rebasing essentially replays your commits on top of the commits in the other branch. With interactive rebasing, you can also rewrite the commit history of a feature branch by reordering, dropping, and/pr combining (squashing) commits. See [Git: Rewriting History](https://git-scm.com/book/en/v2/Git-Tools-Rewriting-History) for more information.
+Rebasing essentially replays your commits on top of the commits in the other branch.
+With interactive rebasing you can also rewrite the commit history of a feature branch by reordering, dropping, and/pr combining (squashing) commits.
+See [Git: Rewriting History](https://git-scm.com/book/en/v2/Git-Tools-Rewriting-History) for more information.
 
 :::{danger}
-Rebasing and force pushing can irreversible damage to your repository.
+Rebasing and force pushing can cause irreversible damage to your repository.
 We recommend practicing rebasing using a toy repository before attempting to rebase with real code.
 :::
-
 
 The primary steps to rebasing with respect to the PyLith `main` branch are:
 
@@ -230,7 +222,7 @@ The primary steps to rebasing with respect to the PyLith `main` branch are:
 6. Force push the branch using `git push --force`.
 
 :::{danger}
-After you have rebased, running `git status` will report something like:
+After you have rebased but before doing a forced push, running `git status` will report something like:
 
 ```bash
 On branch saradeveloper/my-great-new-feature
@@ -239,7 +231,7 @@ and have 56 and 16 different commits each, respectively.
   (use "git pull" to merge the remote branch into yours)
 ```
 
-Do not run `git pull`!
+Do not run `git pull`!!!!!
 This is one of the few times that you should *not* do what git suggests.
 Doing so will try to merge your original history into your new one.
 Instead, you should verify that the new commit history is correct and then do a force push by running `git push --force`.
@@ -250,11 +242,10 @@ If anytime *during* the rebasing process, you make a mistake or decide you want 
 This will return the repository to the state immediately before the rebasing process.
 :::
 
-
 (sec-developer-pull-request)=
 ## Making Pull Requests
 
-Once you have completed implementing, testing, and documenting a new feature on a branch in your fork and wish to contribute it back to the geodynamics/pylith repository, you open a pull request.
+Once you have completed implementing, testing, and documenting a new feature on a branch in your fork and wish to contribute it back to the `geodynamics/pylith` repository, you open a pull request.
 See [GitHub Docs: About pull requests](https://help.github.com/articles/about-pull-requests/) for more information.
 
 :::{tip}
@@ -268,13 +259,12 @@ Create a feature branch for the change, push it to your repository, and then mak
 When collaborating with other people working on PyLith, it is helpful to be able to checkout branches from their forks.
 You can add their fork as an additional "remote" repository.
 
-
 ```{code-block} bash
 ---
 caption: Adding an additional remote repository to track branches in other forked repositories.
 ---
 # Add remote
-git remote add NAME https://github.com/GITHUB_USERNAME/pylith.git
+git remote add FORK-NAME https://github.com/GITHUB_USERNAME/pylith.git
 # Example:
 git remote add saradeveloper https://github.com/saradeveloper/pylith.git
 
@@ -282,7 +272,7 @@ git remote add saradeveloper https://github.com/saradeveloper/pylith.git
 git remote -v
 
 # Fetch the information for the remote
-git fetch NAME
+git fetch FORK-NAME
 # Example:
 git fetch saradeveloper
 
@@ -290,7 +280,7 @@ git fetch saradeveloper
 git checkout -b saradeveloper/feature-powerlaw-rheology
 
 # Push to remote branch (requires write access)
-git push NAME BRANCH
+git push FORK-NAME BRANCH
 # Example:
 git push saradeveloper feature-powerlaw-rheology
 ```
