@@ -27,7 +27,7 @@
 
 #include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
-#include "pylith/testing/testingfwd.hh" // forward declaration
+#include "testingfwd.hh" // forward declaration
 
 #include "pylith/problems/problemsfwd.hh" // HOLDSA TimeDependent
 #include "pylith/topology/topologyfwd.hh" // HOLDSA Mesh

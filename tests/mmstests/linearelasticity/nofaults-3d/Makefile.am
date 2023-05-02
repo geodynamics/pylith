@@ -48,6 +48,7 @@ dist_noinst_DATA = \
 noinst_TMP =
 
 export_datadir = $(abs_builddir)/data
+include $(top_srcdir)/tests/data.am
 
 
 # End of file

@@ -19,7 +19,7 @@
 /**
  * @file mmstets/elasticity/TestLinearElasticity.hh
  *
- * @brief C++ abstract base class for testing Elasticity for various rheologies.
+ * @brief C++ class for testing Elasticity for various rheologies.
  */
 
 #if !defined(pylith_mmstests_testlinearelasticity_hh)

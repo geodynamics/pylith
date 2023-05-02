@@ -65,6 +65,7 @@ void
 pylith::TestLinearElasticity::_initialize(void) {
     PYLITH_METHOD_BEGIN;
     assert(_mesh);
+    assert(_data);
 
     PetscErrorCode err = 0;
 

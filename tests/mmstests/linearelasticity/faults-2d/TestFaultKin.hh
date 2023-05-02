@@ -17,64 +17,65 @@
 //
 
 /**
- * @file mmstets/elasticity/TestFaultKin.hh
+ * @file mmstets/linearelasticity/faults-2d/TestFaultKin.hh
  *
- * @brief C++ abstract base class for testing faults with prescribed slip.
+ * @brief C++ class for testing faults with prescribed slip.
  */
 
 #if !defined(pylith_mmstests_testfaultkin_hh)
 #define pylith_mmstests_testfaultkin_hh
 
-#include "pylith/testing/MMSTest.hh" // ISA MMSTEST
+#include "MMSTest.hh" // ISA MMSTEST
 
 #include "pylith/faults/faultsfwd.hh" // HOLDSA FaultCohesiveKin
-#include "pylith/materials/materialsfwd.hh" // HOLDSA Material
-#include "pylith/bc/bcfwd.hh" // USES DirichletUserFn
+#include "pylith/materials/Elasticity.hh" // USES Elasticity
+#include "pylith/materials/IsotropicLinearElasticity.hh" // USES IsotropicLinearElasticity
+#include "pylith/bc/DirichletUserFn.hh" // USES DirichletUserFn
+
+#include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
+#include "spatialdata/geocoords/CSCart.hh" // USES CSCart
+#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+
+#include "pylith/problems/Physics.hh" // USES FormulationEnum
 #include "pylith/topology/Field.hh" // HASA FieldBase::Discretization
 
-#include "spatialdata/spatialdb/spatialdbfwd.hh" // HOLDSA UserFunctionDB
-#include "spatialdata/geocoords/geocoordsfwd.hh" // HOLDSA CoordSys
-#include "spatialdata/units/unitsfwd.hh" // HOLDSA Nondimensional
-
 namespace pylith {
-    namespace mmstests {
-        class TestFaultKin;
-
-        class TestFaultKin_Data; // test data
-    } // mmstets
+    class TestFaultKin;
+    class TestFaultKin_Data;
 } // pylith
 
-class pylith::mmstests::TestFaultKin : public pylith::testing::MMSTest {
-    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
+class pylith::TestFaultKin : public pylith::testing::MMSTest {
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
-    /// Setup testing data.
-    virtual
-    void setUp(void);
+    /** Constructor
+     *
+     * @param[in] data Data for MMS test.
+     */
+    TestFaultKin(TestFaultKin_Data* data);
 
-    /// Deallocate testing data.
-    virtual
-    void tearDown(void);
+    /// Destructor.
+    ~TestFaultKin(void);
 
-    // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
+    // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
 protected:
 
     /// Initialize objects for test.
     void _initialize(void);
 
-    // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
+    /// Set exact solution and time derivative of solution in domain.
+    void _setExactSolution(void);
+
+    // PROTECTED MEMBERS //////////////////////////////////////////////////////////////////////////
 protected:
 
-    std::vector<pylith::faults::FaultCohesive*> _faults; ///< Faults.
-    std::vector<pylith::materials::Material*> _materials; ///< Elastic materials.
-    std::vector<pylith::bc::BoundaryCondition*> _bcs; ///< Boundary conditions.
     TestFaultKin_Data* _data; ///< Test parameters.
 
 }; // class TestFaultKin
 
-// =====================================================================================================================
-class pylith::mmstests::TestFaultKin_Data {
-    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
+// ================================================================================================
+class pylith::TestFaultKin_Data {
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Constructor
@@ -83,35 +84,57 @@ public:
     /// Destructor
     ~TestFaultKin_Data(void);
 
-    // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
+    // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
 public:
 
+    const char* journalName; ///< Name for MMSTest journals.
     int spaceDim; ///< Spatial dimension of domain.
     const char* meshFilename; ///< Name of file with ASCII mesh.
+    const char* meshOptions; ///< Command line options for mesh.
+    const char* boundaryLabel; ///< Group defining domain boundary.
+    bool useAsciiMesh; ///< Use MeshIOAscii to read mesh, otherwise use PETSc.
 
-    spatialdata::geocoords::CoordSys* cs; ///< Coordinate system.
+    PylithReal jacobianConvergenceRate; ///< Expected convergence rate for Jacobiab (when not linear).
+    PylithReal tolerance; ///< Tolerance for discretization and residual test.
+    bool isJacobianLinear; ///< Jacobian is should be linear.
+    bool allowZeroResidual; ///< Allow residual to be exactly zero.
+
+    PylithReal t; ///< Time for MMS solution.
+    PylithReal dt; ///< Time step in simulation.
+    spatialdata::geocoords::CSCart cs; ///< Coordinate system.
+    spatialdata::units::Nondimensional normalizer; ///< Scales for nondimensionalization.
+    pylith::problems::Physics::FormulationEnum formulation; ///< Time stepping formulation
+
+    std::vector<pylith::materials::Material*> materials; ///< Materials.
+    pylith::materials::IsotropicLinearElasticity rheology; ///< Bulk rheology for materials.
+    std::vector<pylith::bc::BoundaryCondition*> bcs; ///< Dirichlet boundary condition.
+    std::vector<pylith::faults::FaultCohesive*> faults; ///< Fault interface conditions.
     spatialdata::spatialdb::GravityField* gravityField; ///< Gravity field.
-    spatialdata::units::Nondimensional* normalizer; ///< Scales for nondimensionalization.
 
-    PylithReal startTime; ///< Start time for simulation.
-    PylithReal endTime; ///< Total time in simulation.
-    PylithReal timeStep; ///< Time step in simulation.
-    bool isExplicit; ///< True for explicit time stepping.
+    // Solution field.
+    int numSolnSubfieldsDomain; ///< Number of solution fields for domain.
+    int numSolnSubfieldsFault; ///< Number of solution fields for fault.
+    pylith::topology::Field::Discretization const* solnDiscretizations; ///< Discretizations for solution fields.
 
-    int numSolnSubfields; ///< Number of solution fields.
-    pylith::topology::Field::Discretization* solnDiscretizations; ///< Discretizations for solution fields.
+    /// Array of functions providing exact solution.
+    pylith::testing::MMSTest::solution_fn* exactSolnFns;
 
-    pylith::materials::RheologyElasticity* rheology; ///< Elastic rheology for material.
-    int matNumAuxSubfields; ///< Number of material auxiliary subfields.
-    const char** matAuxSubfields; ///< Names of material auxiliary subfields.
-    pylith::topology::Field::Discretization* matAuxDiscretizations; ///< Discretizations for material aux subfields.
-    spatialdata::spatialdb::UserFunctionDB* matAuxDB; ///< Spatial database for material auxiliary field.
+    /// Array of functions providing exact solution time derivative.
+    pylith::testing::MMSTest::solution_fn* exactSolnDotFns;
 
-    pylith::faults::KinSrc* kinsrc; ///< Kinematic description of fault rupture.
-    int faultNumAuxSubfields; ///< Number of fault auxiliary subfields.
-    const char** faultAuxSubfields; ///< Names of fault auxiliary subfields.
-    pylith::topology::Field::Discretization* faultAuxDiscretizations; ///< Discretizations for fault aux subfields.
-    spatialdata::spatialdb::UserFunctionDB* faultAuxDB; ///< Spatial database for fault auxiliary field.
+    // Material auxiliary fields.
+    int matNumAuxSubfields;
+    const char** matAuxSubfields;
+    pylith::topology::Field::Discretization const* matAuxDiscretizations;
+    spatialdata::spatialdb::UserFunctionDB matAuxDB;
+
+    // Fault auxiliary fields.
+    int faultNumAuxSubfields;
+    const char** faultAuxSubfields;
+    pylith::topology::Field::Discretization const* faultAuxDiscretizations;
+    spatialdata::spatialdb::UserFunctionDB faultAuxDB;
+
+    pylith::faults::KinSrc* kinSrc;
 
 }; // TestFaultKin_Data
 

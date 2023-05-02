@@ -16,26 +16,30 @@
 # ----------------------------------------------------------------------
 #
 
-include $(top_srcdir)/tests/check_cppunit.am
+include $(top_srcdir)/tests/check_catch2.am
 
-TESTS = test_faultkin
+TESTS = mmstest_linearelasticity_faults2d
 
 check_PROGRAMS = $(TESTS)
 
 
-test_faultkin_SOURCES = \
+mmstest_linearelasticity_faults2d_SOURCES = \
+	$(top_srcdir)/tests/src/MMSTest.cc \
+	$(top_srcdir)/tests/src/driver_catch2.cc \
 	TestFaultKin.cc \
-	TestFaultKin2D_ConstRateDynamic.cc \
-	$(top_srcdir)/tests/src/driver_cppunit.cc
-
-#	TestFaultKin2D_TwoBlocksStatic.cc \
-#	TestFaultKin2D_ThreeBlocksStatic.cc \
-#	TestFaultKin2D_OneFaultShearNoSlip.cc \
-#	TestFaultKin2D_TwoFaultsShearNoSlip.cc 
+	TestCases.cc \
+	TwoBlocksStatic.cc \
+	ThreeBlocksStatic.cc \
+	OneFaultShearNoSlip.cc \
+	TwoFaultsShearNoSlip.cc
 
 
 dist_noinst_HEADERS = \
-	TestFaultKin.hh
+	TestFaultKin.hh \
+	TwoBlocksStatic.hh \
+	ThreeBlocksStatic.hh \
+	OneFaultShearNoSlip.hh \
+	TwoFaultsShearNoSlip.hh
 
 
 dist_noinst_DATA = \
@@ -44,9 +48,9 @@ dist_noinst_DATA = \
 	data/tet.mesh \
 	data/hex.mesh
 
-noinst_TMP =
 
-export_datadir = $(abs_builddir)
+export_datadir = $(abs_builddir)/data
+include $(top_srcdir)/tests/data.am
 
 
 # End of file

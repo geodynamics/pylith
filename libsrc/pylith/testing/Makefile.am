@@ -16,14 +16,13 @@
 # ----------------------------------------------------------------------
 #
 
-export-data: $(dist_noinst_DATA)
-	if [ "X$(abs_srcdir)" != "X$(abs_builddir)" ]; then $(MKDIR_P) $(export_datadir) && cd $(abs_srcdir); $(install_sh_DATA) $(dist_noinst_DATA) $(export_datadir); cd $(abs_builddir); fi
+subpackage = testing
+include $(top_srcdir)/subpackage.am
 
-clean-data:
-	if [ "X$(abs_srcdir)" != "X$(abs_builddir)" ]; then for f in $(dist_noinst_DATA) $(noinst_TMP); do $(RM) $(RM_FLAGS) $(abs_builddir)/$$f; done; fi
+subpkginclude_HEADERS = \
+	testingfwd.hh
 
-BUILT_SOURCES = export-data
-clean-local: clean-data
+dist_noinst_HEADERS =
 
 
 # End of file

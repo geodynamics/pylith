@@ -55,8 +55,8 @@ dist_noinst_DATA = \
 	data/quad_fourcells.mesh
 
 
-# 'export' the input files by performing a mock install
 export_datadir = $(abs_builddir)/data
+include $(top_srcdir)/tests/data.am
 
 
 # End of file
