@@ -37,7 +37,7 @@ RUN autoreconf --install --verbose && \
     mkdir -p ${build_dir}
 
 WORKDIR ${build_dir}
-RUN ${src_dir}/configure --enable-testing --enable-swig --prefix=${INSTALL_DIR} CPPFLAGS="-I${INSTALL_DIR}/dependencies/include -I${INSTALL_DIR}/include" LDFLAGS="-L${INSTALL_DIR}/dependencies/lib -L${INSTALL_DIR}/dependencies/lib64 -L${INSTALL_DIR}/lib -L${INSTALL_DIR}/lib64" CXXFLAGS="-std=c++11 -g -O" && make -j$(nproc) && make install && make check VERBOSE=1
+RUN ${src_dir}/configure --enable-testing --enable-swig --prefix=${INSTALL_DIR} CPPFLAGS="-I${INSTALL_DIR}/dependencies/include -I${INSTALL_DIR}/include" LDFLAGS="-L${INSTALL_DIR}/dependencies/lib -L${INSTALL_DIR}/dependencies/lib64 -L${INSTALL_DIR}/lib -L${INSTALL_DIR}/lib64" CXXFLAGS="-g -O" && make -j$(nproc) && make install && make check VERBOSE=1
 
 
 # ------------------------------------------------------------------------------
@@ -64,7 +64,7 @@ RUN autoreconf --install --verbose --force && \
     mkdir -p ${build_dir}
 
 WORKDIR ${build_dir}
-RUN ${src_dir}/configure --prefix=${INSTALL_DIR} --enable-hdf5 --enable-cubit --enable-testing --enable-swig --enable-test-coverage=${TEST_COVERAGE} --with-python-coverage=${PYTHON_COVERAGE} CPPFLAGS="-I${INSTALL_DIR}/dependencies/include -I${INSTALL_DIR}/include -I${HDF5_INCDIR}" LDFLAGS="-L${INSTALL_DIR}/dependencies/lib -L${INSTALL_DIR}/dependencies/lib64 -L${INSTALL_DIR}/lib -L${INSTALL_DIR}/lib64 -L${HDF5_LIBDIR} --coverage" CXXFLAGS="-std=c++11 -g -O --coverage" CC=mpicc CXX=mpicxx
+RUN ${src_dir}/configure --prefix=${INSTALL_DIR} --enable-hdf5 --enable-cubit --enable-testing --enable-swig --enable-test-coverage=${TEST_COVERAGE} --with-python-coverage=${PYTHON_COVERAGE} CPPFLAGS="-I${INSTALL_DIR}/dependencies/include -I${INSTALL_DIR}/include -I${HDF5_INCDIR}" LDFLAGS="-L${INSTALL_DIR}/dependencies/lib -L${INSTALL_DIR}/dependencies/lib64 -L${INSTALL_DIR}/lib -L${INSTALL_DIR}/lib64 -L${HDF5_LIBDIR} --coverage" CXXFLAGS="-g -O --coverage" CC=mpicc CXX=mpicxx
 
 # ----------------------------------------
 from src as build
