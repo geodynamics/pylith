@@ -13,8 +13,7 @@ pylith/
 ├── ci-config # continuous integration testing configuration
 ├── docker # Dockerfiles for creating Docker images
 ├── developer # Utilities for developers
-├── doc # User manual in LaTeX
-├── docs-sphinx # Developer documentation in Sphinx+MyST
+├── docs # Documentation source code
 ├── libsrc # C++ source for library
 ├── modulesrc # SWIG interfaces files for C++ Python bindings.
 ├── pylith # Python source code for PyLith modules.
@@ -174,7 +173,7 @@ Starting with the complete initialization of the problem, the flow is controlled
 ### Time-Dependent Problem
 
 In a time-dependent problem the PETSc `TS` object (relabeled `PetscTS` within PyLith) controls the time stepping.
-Within each time step, the `PetscTS` object calls the PETSc linear and nonlinear solvers as needed, which call the following methods of the C++ `pylith::problems::TimeDependent` object as needed: `computeRHSResidual()`, `computeRHSJacobian()`, `computeLHSResidual()`, and `computeLHSJacobian()`.
+Within each time step, the `PetscTS` object calls the PETSc linear and nonlinear solvers as needed, which call the following methods of the C++ `pylith::problems::TimeDependent` object as needed: `computeRHSResidual()`, `computeLHSResidual()`, and `computeLHSJacobian()`.
 The `pylith::problems::TimeDependent` object calls the corresponding methods in the boundary conditions, constraints, and materials objects.
 At the end of each time step, it calls `problems::TimeDependent::poststep()`.  
 
@@ -193,7 +192,7 @@ The source code that follows shows the essential ingredients for Python and C++ 
 :::{warning}
 The examples below show skeleton Python and C++ objects to illustrate the essential ingredients.
 We have omitted documentation and comments that we would normally include, and simplified the object hierarchy.
-See [Coding Style]{codingstyle.md} for details about the coding style we use in PyLith.
+See [Coding Style](codingstyle.md) for details about the coding style we use in PyLith.
 :::
 
 :::{important}
