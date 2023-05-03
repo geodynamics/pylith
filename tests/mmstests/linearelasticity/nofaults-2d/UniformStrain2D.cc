@@ -105,7 +105,7 @@ private:
         s[0] = disp_x(x[0], x[1]);
         s[1] = disp_y(x[0], x[1]);
 
-        return 0;
+        return PETSC_SUCCESS;
     } // solnkernel_disp
 
 public:
@@ -154,7 +154,7 @@ public:
         static const PylithInt constrainedDOF[2] = {0, 1};
         static const PylithInt numConstrained = 2;
         data->bcs.resize(1);
-        pylith::bc::DirichletUserFn*bc = new pylith::bc::DirichletUserFn();assert(bc);
+        pylith::bc::DirichletUserFn* bc = new pylith::bc::DirichletUserFn();assert(bc);
         bc->setSubfieldName("displacement");
         bc->setLabelName("boundary");
         bc->setLabelValue(1);

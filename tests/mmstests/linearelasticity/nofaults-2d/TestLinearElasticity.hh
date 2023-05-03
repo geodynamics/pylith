@@ -17,7 +17,7 @@
 //
 
 /**
- * @file mmstets/elasticity/TestLinearElasticity.hh
+ * @file mmstets/linearelasticity/nofaults-2d/TestLinearElasticity.hh
  *
  * @brief C++ class for testing Elasticity for various rheologies.
  */
@@ -25,7 +25,7 @@
 #if !defined(pylith_mmstests_testlinearelasticity_hh)
 #define pylith_mmstests_testlinearelasticity_hh
 
-#include "pylith/testing/MMSTest.hh" // ISA MMSTEST
+#include "MMSTest.hh" // ISA MMSTEST
 
 #include "pylith/materials/Elasticity.hh" // USES Elasticity
 #include "pylith/materials/IsotropicLinearElasticity.hh" // USES IsotropicLinearElasticity
@@ -128,6 +128,6 @@ public:
 
 }; // TestLinearElasticity_Data
 
-#endif // pylith_mmstests_testlinearelasticity_hh
+#endif // pylith_testlinearelasticity_hh
 
 // End of file
