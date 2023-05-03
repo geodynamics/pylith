@@ -14,37 +14,9 @@
 # See LICENSE.md for license information.
 #
 # ----------------------------------------------------------------------
-#
 
-include $(top_srcdir)/tests/check_cppunit.am
-
-TESTS = test_isotropiclinearincompelasticity
-
-check_PROGRAMS = $(TESTS)
+SUBDIRS = \
+	nofaults-2d
 
 
-test_isotropiclinearincompelasticity_SOURCES = \
-	TestIncompressibleElasticity.cc \
-	TestIsotropicLinearIncompElasticity.cc \
-	TestIsotropicLinearIncompElasticity2D_UniformPressure.cc \
-	TestIsotropicLinearIncompElasticity2D_UniformShear.cc \
-	TestIsotropicLinearIncompElasticity2D_Gravity.cc \
-	TestIsotropicLinearIncompElasticity2D_BodyForce.cc \
-	$(top_srcdir)/tests/src/driver_cppunit.cc
-
-dist_noinst_HEADERS = \
-	TestIncompressibleElasticity.hh \
-	TestIsotropicLinearIncompElasticity.hh
-
-dist_noinst_DATA = \
-	data/tri.mesh \
-	data/quad.mesh \
-	data/tet.mesh \
-	data/hex.mesh
-
-noinst_TMP =
-
-export_datadir = $(abs_builddir)
-
-
-# End of file
+# End of file 
