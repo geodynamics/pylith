@@ -51,5 +51,7 @@
         "trelis",
         "viscoelastic",
         "xdmf"
-    ]
+    ],
+    "C_Cpp.default.cppStandard": "c++14",
+    "C_Cpp.default.cStandard": "c11"
 }
