@@ -20,7 +20,7 @@
 
 #include "ProgressMonitorStub.hh" // Implementation of class methods
 
-#include "pylith/testing/StubMethodTracker.hh" // USES StubMethodTracker
+#include "tests/src/StubMethodTracker.hh" // USES StubMethodTracker
 
 // ------------------------------------------------------------------------------------------------
 // Constructor.

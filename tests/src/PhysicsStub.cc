@@ -21,7 +21,7 @@
 #include "PhysicsStub.hh" // Implementation of class methods
 
 #include "pylith/feassemble/AuxiliaryFactory.hh" // USES AuxiliaryFactory
-#include "pylith/testing/StubMethodTracker.hh" // USES StubMethodTracker
+#include "tests/src/StubMethodTracker.hh" // USES StubMethodTracker
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -74,9 +74,10 @@ std::vector<pylith::feassemble::Constraint*>
 pylith::problems::PhysicsStub::createConstraints(const pylith::topology::Field& solution) {
     pylith::testing::StubMethodTracker tracker("pylith::problems::PhysicsStub::createConstraints");
     std::vector<pylith::feassemble::Constraint*> constraintArray;
-    
+
     PYLITH_METHOD_RETURN(constraintArray);
 } // createConstraints
+
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Create auxiliary field.

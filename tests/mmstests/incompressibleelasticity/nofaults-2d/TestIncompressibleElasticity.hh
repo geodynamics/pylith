@@ -25,7 +25,7 @@
 #if !defined(pylith_mmstests_testincompressibleelasticity_hh)
 #define pylith_mmstests_testincompressibleelasticity_hh
 
-#include "MMSTest.hh" // ISA MMSTEST
+#include "tests/src/MMSTest.hh" // ISA MMSTEST
 
 #include "pylith/materials/IncompressibleElasticity.hh" // USES IncompressibleElasticity
 #include "pylith/materials/IsotropicLinearIncompElasticity.hh" // USES IsotropicLinearIncompElasticity

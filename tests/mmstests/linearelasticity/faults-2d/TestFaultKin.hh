@@ -25,7 +25,7 @@
 #if !defined(pylith_mmstests_testfaultkin_hh)
 #define pylith_mmstests_testfaultkin_hh
 
-#include "MMSTest.hh" // ISA MMSTEST
+#include "tests/src/MMSTest.hh" // ISA MMSTEST
 
 #include "pylith/faults/faultsfwd.hh" // HOLDSA FaultCohesiveKin
 #include "pylith/materials/Elasticity.hh" // USES Elasticity

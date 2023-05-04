@@ -20,13 +20,12 @@
 
 #include "ObserverPhysicsStub.hh" // Implementation of class methods
 
-#include "pylith/testing/StubMethodTracker.hh" // USES StubMethodTracker
+#include "tests/src/StubMethodTracker.hh" // USES StubMethodTracker
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Constructor.
 pylith::problems::ObserverPhysicsStub::ObserverPhysicsStub(void) :
-    _timeScale(1.0)
-{}
+    _timeScale(1.0) {}
 
 
 // ---------------------------------------------------------------------------------------------------------------------

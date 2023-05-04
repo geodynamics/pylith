@@ -20,12 +20,11 @@
 
 #include "TestObserversSoln.hh" // Implementation of class methods
 
+#include "tests/src/ObserverSolnStub.hh" // USES ObserverSolnStub
+#include "tests/src/StubMethodTracker.hh" // USES StubMethodTracker
 #include "pylith/problems/ObserversSoln.hh" // USES ObserversSoln
-#include "pylith/testing/ObserverSolnStub.hh" // USES ObserverSolnStub
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
-
-#include "pylith/testing/StubMethodTracker.hh" // USES StubMethodTracker
 
 namespace pylith {
     namespace problems {

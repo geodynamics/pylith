@@ -20,20 +20,19 @@
 
 #include "TestPhysics.hh" // Implementation of class methods
 
-#include "pylith/testing/PhysicsStub.hh" // USES PhysicsStub
+#include "tests/src/PhysicsStub.hh" // USES PhysicsStub
+#include "tests/src/ObserverPhysicsStub.hh" // USES ObserversPhysicsStub
+#include "tests/src/StubMethodTracker.hh" // USES StubMethodTracker
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/feassemble/AuxiliaryFactory.hh" // USES AuxiliaryFactory
 #include "pylith/utils/types.hh" // USES PylithReal
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
 
-#include "pylith/testing/ObserverPhysicsStub.hh" // USES ObserversPhysicsStub
 #include "pylith/problems/ObserversPhysics.hh" // USES ObserversPhysics
 
 #include "spatialdata/spatialdb/UniformDB.hh" // USES UniformDB
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
-
-#include "pylith/testing/StubMethodTracker.hh" // USES StubMethodTracker
 
 // ---------------------------------------------------------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION(pylith::problems::TestPhysics);

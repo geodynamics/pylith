@@ -21,11 +21,11 @@
 #include "TestAuxiliaryFactoryElastic.hh" // Implementation of class methods
 
 #include "pylith/materials/AuxiliaryFactoryElastic.hh" // Test subject
+#include "tests/src/FieldTester.hh" // USES FieldTester
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES MeshOps
 #include "pylith/topology/Field.hh" // USES Field
-#include "pylith/testing/FieldTester.hh" // USES FieldTester
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD*

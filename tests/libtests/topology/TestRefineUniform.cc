@@ -21,12 +21,12 @@
 #include "TestRefineUniform.hh" // Implementation of class methods
 
 #include "pylith/topology/RefineUniform.hh" // USES RefineUniform
+#include "tests/src/FaultCohesiveStub.hh" // USES FaultCohesiveStub
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Stratum.hh" // USES Stratum
 #include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
-#include "pylith/testing/FaultCohesiveStub.hh" // USES FaultCohesiveStub
 
 #include "pylith/utils/array.hh" // USES int_array
 

@@ -20,8 +20,8 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 
+#include "tests/src/FaultCohesiveStub.hh" // USES FaultCohesiveStub
 #include "pylith/topology/Mesh.hh" // USES Mesh::cells_label_name
-#include "pylith/testing/FaultCohesiveStub.hh" // USES FaultCohesiveStub
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
 
 namespace pylith {

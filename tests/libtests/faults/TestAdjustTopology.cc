@@ -20,7 +20,7 @@
 
 #include "TestAdjustTopology.hh"
 
-#include "FaultCohesiveStub.hh" // USES FaultsCohesiveStub
+#include "tests/src/FaultCohesiveStub.hh" // USES FaultsCohesiveStub
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES MeshOps::nondimensionalize()

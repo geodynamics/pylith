@@ -4,7 +4,7 @@
             "name": "macos-clang",
             "includePath": [
                 "${workspaceFolder}/libsrc",
-                "${workspaceFolder}/tests/src",
+                "${workspaceFolder}",
                 "${env:PYLITH_BUILDDIR}",
                 "${env:PYLITH_DIR}/include",
                 "${env:PYLITHDEPS_DIR}/include",
@@ -21,7 +21,7 @@
             "macFrameworkPath": [
                 "/Library/Developer/CommandLineTools/SDKs/MacOSX11.sdk/System/Library/Frameworks"
             ],
-            "cStandard": "c14",
+            "cStandard": "c11",
             "cppStandard": "c++14",
             "intelliSenseMode": "macos-clang-x64"
         },
@@ -29,6 +29,7 @@
             "name": "linux-gcc",
             "includePath": [
                 "${workspaceFolder}/libsrc",
+                "${workspaceFolder}",
                 "${env:PYLITH_BUILDDIR}",
                 "${env:PYLITH_DIR}/include",
                 "${env:PYLITHDEPS_DIR}/include",
@@ -42,7 +43,7 @@
                 "${env:PETSC_DIR}/${env:PETSC_ARCH}/include"
             ],
             "defines": [],
-            "cStandard": "c14",
+            "cStandard": "c11",
             "cppStandard": "c++14",
             "intelliSenseMode": "gcc-x64"
         }

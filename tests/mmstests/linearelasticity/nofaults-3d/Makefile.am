@@ -15,10 +15,18 @@
 
 include $(top_srcdir)/tests/check_catch2.am
 
-TESTS = mmstest_linearelasticity_nofaults3d
 
-check_PROGRAMS = $(TESTS)
+TESTS = \
+	run_uniformstrain3d.sh \
+	run_gravity3d.sh \
+	run_gravityrefstate3d.sh \
+	run_bodyforce3d.sh
 
+check_SCRIPTS = $(TESTS)
+
+check_PROGRAMS = mmstest_linearelasticity_nofaults3d
+
+run_uniformstrain3d.sh: mmstest_linearelasticity_nofaults3d
 
 mmstest_linearelasticity_nofaults3d_SOURCES = \
 	$(top_srcdir)/tests/src/MMSTest.cc \
@@ -35,7 +43,7 @@ dist_noinst_HEADERS = \
 	TestLinearElasticity.hh	 \
 	UniformStrain3D.hh \
 	Gravity3D.hh \
-	GravityRefState3D.hh
+	GravityRefState3D.hh \
 	BodyForce3D.hh
 
 

@@ -21,8 +21,7 @@
 #include "TestInterfacePatches.hh" // Implementation of class methods
 
 #include "pylith/feassemble/InterfacePatches.hh" // Test subject
-
-#include "pylith/testing/FaultCohesiveStub.hh" // USES FaultCohesiveStub
+#include "tests/src/FaultCohesiveStub.hh" // USES FaultCohesiveStub
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES MeshOps

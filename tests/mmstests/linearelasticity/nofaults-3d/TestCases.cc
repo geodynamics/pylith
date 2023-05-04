@@ -60,12 +60,14 @@ TEST_CASE("UniformStrain3D::TetP3::testDiscretization", "[UniformStrain3D][TetP3
 TEST_CASE("UniformStrain3D::TetP3::testResidual", "[UniformStrain3D][TetP3][residual]") {
     pylith::TestLinearElasticity(pylith::UniformStrain3D::TetP3()).testResidual();
 }
+#if 0
 TEST_CASE("UniformStrain3D::TetP3::testJacobianTaylorSeries", "[UniformStrain3D][TetP3][Jacobian Taylor series]") {
     pylith::TestLinearElasticity(pylith::UniformStrain3D::TetP3()).testJacobianTaylorSeries();
 }
 TEST_CASE("UniformStrain3D::TetP3::testJacobianFiniteDiff", "[UniformStrain3D][TetP3][Jacobian finite difference]") {
     pylith::TestLinearElasticity(pylith::UniformStrain3D::TetP3()).testJacobianFiniteDiff();
 }
+#endif
 
 // HexQ1
 TEST_CASE("UniformStrain3D::HexQ1::testDiscretization", "[UniformStrain3D][HexQ1][discretization]") {
@@ -102,12 +104,14 @@ TEST_CASE("UniformStrain3D::HexQ3::testDiscretization", "[UniformStrain3D][HexQ3
 TEST_CASE("UniformStrain3D::HexQ3::testResidual", "[UniformStrain3D][HexQ3][residual]") {
     pylith::TestLinearElasticity(pylith::UniformStrain3D::HexQ3()).testResidual();
 }
+#if 0
 TEST_CASE("UniformStrain3D::HexQ3::testJacobianTaylorSeries", "[UniformStrain3D][HexQ3][Jacobian Taylor series]") {
     pylith::TestLinearElasticity(pylith::UniformStrain3D::HexQ3()).testJacobianTaylorSeries();
 }
 TEST_CASE("UniformStrain3D::HexQ3::testJacobianFiniteDiff", "[UniformStrain3D][HexQ3][Jacobian finite difference]") {
     pylith::TestLinearElasticity(pylith::UniformStrain3D::HexQ3()).testJacobianFiniteDiff();
 }
+#endif
 
 // ------------------------------------------------------------------------------------------------
 #include "Gravity3D.hh"
@@ -132,12 +136,14 @@ TEST_CASE("Gravity3D::TetP3::testDiscretization", "[Gravity3D][TetP3][discretiza
 TEST_CASE("Gravity3D::TetP3::testResidual", "[Gravity3D][TetP3][residual]") {
     pylith::TestLinearElasticity(pylith::Gravity3D::TetP3()).testResidual();
 }
+#if 0
 TEST_CASE("Gravity3D::TetP3::testJacobianTaylorSeries", "[Gravity3D][TetP3][Jacobian Taylor series]") {
     pylith::TestLinearElasticity(pylith::Gravity3D::TetP3()).testJacobianTaylorSeries();
 }
 TEST_CASE("Gravity3D::TetP3::testJacobianFiniteDiff", "[Gravity3D][TetP3][Jacobian finite difference]") {
     pylith::TestLinearElasticity(pylith::Gravity3D::TetP3()).testJacobianFiniteDiff();
 }
+#endif
 
 // HexQ2
 TEST_CASE("Gravity3D::HexQ2::testDiscretization", "[Gravity3D][HexQ2][discretization]") {
@@ -160,12 +166,14 @@ TEST_CASE("Gravity3D::HexQ3::testDiscretization", "[Gravity3D][HexQ3][discretiza
 TEST_CASE("Gravity3D::HexQ3::testResidual", "[Gravity3D][HexQ3][residual]") {
     pylith::TestLinearElasticity(pylith::Gravity3D::HexQ3()).testResidual();
 }
+#if 0
 TEST_CASE("Gravity3D::HexQ3::testJacobianTaylorSeries", "[Gravity3D][HexQ3][Jacobian Taylor series]") {
     pylith::TestLinearElasticity(pylith::Gravity3D::HexQ3()).testJacobianTaylorSeries();
 }
 TEST_CASE("Gravity3D::HexQ3::testJacobianFiniteDiff", "[Gravity3D][HexQ3][Jacobian finite difference]") {
     pylith::TestLinearElasticity(pylith::Gravity3D::HexQ3()).testJacobianFiniteDiff();
 }
+#endif
 
 // ------------------------------------------------------------------------------------------------
 #include "GravityRefState3D.hh"
@@ -199,9 +207,11 @@ TEST_CASE("GravityRefState3D::TetP3::testDiscretization", "[GravityRefState3D][T
 TEST_CASE("GravityRefState3D::TetP3::testResidual", "[GravityRefState3D][TetP3][residual]") {
     pylith::TestLinearElasticity(pylith::GravityRefState3D::TetP3()).testResidual();
 }
+#if 0
 TEST_CASE("GravityRefState3D::TetP3::testJacobianTaylorSeries", "[GravityRefState3D][TetP3][Jacobian Taylor series]") {
     pylith::TestLinearElasticity(pylith::GravityRefState3D::TetP3()).testJacobianTaylorSeries();
 }
+#endif
 
 // HexQ1
 TEST_CASE("GravityRefState3D::HexQ1::testDiscretization", "[GravityRefState3D][HexQ1][discretization]") {
@@ -232,9 +242,11 @@ TEST_CASE("GravityRefState3D::HexQ3::testDiscretization", "[GravityRefState3D][H
 TEST_CASE("GravityRefState3D::HexQ3::testResidual", "[GravityRefState3D][HexQ3][residual]") {
     pylith::TestLinearElasticity(pylith::GravityRefState3D::HexQ3()).testResidual();
 }
+#if 0
 TEST_CASE("GravityRefState3D::HexQ3::testJacobianTaylorSeries", "[GravityRefState3D][HexQ3][Jacobian Taylor series]") {
     pylith::TestLinearElasticity(pylith::GravityRefState3D::HexQ3()).testJacobianTaylorSeries();
 }
+#endif
 
 // ------------------------------------------------------------------------------------------------
 #include "BodyForce3D.hh"

@@ -235,6 +235,7 @@ noinst_TMP = \
 
 
 export_datadir = $(abs_builddir)
+include $(top_srcdir)/tests/data.am
 
 
 # End of file 

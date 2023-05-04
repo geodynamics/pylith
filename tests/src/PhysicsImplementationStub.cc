@@ -21,7 +21,7 @@
 #include "PhysicsImplementationStub.hh" // Implementation of class methods
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
-#include "pylith/testing/StubMethodTracker.hh" // USES StubMethodTracker
+#include "tests/src/StubMethodTracker.hh" // USES StubMethodTracker
 
 #include <cassert>
 

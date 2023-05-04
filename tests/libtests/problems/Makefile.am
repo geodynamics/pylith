@@ -33,6 +33,12 @@ test_problems_SOURCES = \
 	TestProgressMonitor.cc \
 	TestProgressMonitorTime.cc \
 	TestProgressMonitorStep.cc \
+	$(top_srcdir)/tests/src/ProgressMonitorStub.cc \
+	$(top_srcdir)/tests/src/ObserverSolnStub.cc \
+	$(top_srcdir)/tests/src/ObserverPhysicsStub.cc \
+	$(top_srcdir)/tests/src/PhysicsImplementationStub.cc \
+	$(top_srcdir)/tests/src/StubMethodTracker.cc \
+	$(top_srcdir)/tests/src/FieldTester.cc \
 	$(top_srcdir)/tests/src/driver_cppunit.cc
 
 

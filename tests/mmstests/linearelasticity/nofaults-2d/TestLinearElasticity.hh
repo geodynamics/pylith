@@ -25,7 +25,7 @@
 #if !defined(pylith_mmstests_testlinearelasticity_hh)
 #define pylith_mmstests_testlinearelasticity_hh
 
-#include "MMSTest.hh" // ISA MMSTEST
+#include "tests/src/MMSTest.hh" // ISA MMSTEST
 
 #include "pylith/materials/Elasticity.hh" // USES Elasticity
 #include "pylith/materials/IsotropicLinearElasticity.hh" // USES IsotropicLinearElasticity
