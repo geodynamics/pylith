@@ -22,8 +22,7 @@ AM_CPPFLAGS = \
 	$(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR) \
 	$(PETSC_CC_INCLUDES)
 
-LDFLAGS = \
-	$(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
+LDFLAGS += $(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
 
 LDADD = \
 	$(top_builddir)/libsrc/pylith/libpylith.la \
