@@ -112,8 +112,8 @@ public:
     spatialdata::spatialdb::GravityField* gravityField; ///< Gravity field.
 
     // Solution field.
-    int numSolnSubfieldsDomain; ///< Number of solution fields for domain.
-    int numSolnSubfieldsFault; ///< Number of solution fields for fault.
+    size_t numSolnSubfieldsDomain; ///< Number of solution fields for domain.
+    size_t numSolnSubfieldsFault; ///< Number of solution fields for fault.
     pylith::topology::Field::Discretization const* solnDiscretizations; ///< Discretizations for solution fields.
 
     /// Array of functions providing exact solution.
@@ -123,13 +123,13 @@ public:
     pylith::testing::MMSTest::solution_fn* exactSolnDotFns;
 
     // Material auxiliary fields.
-    int matNumAuxSubfields;
+    size_t matNumAuxSubfields;
     const char** matAuxSubfields;
     pylith::topology::Field::Discretization const* matAuxDiscretizations;
     spatialdata::spatialdb::UserFunctionDB matAuxDB;
 
     // Fault auxiliary fields.
-    int faultNumAuxSubfields;
+    size_t faultNumAuxSubfields;
     const char** faultAuxSubfields;
     pylith::topology::Field::Discretization const* faultAuxDiscretizations;
     spatialdata::spatialdb::UserFunctionDB faultAuxDB;

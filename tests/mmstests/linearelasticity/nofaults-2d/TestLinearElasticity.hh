@@ -111,7 +111,7 @@ public:
     std::vector<pylith::bc::BoundaryCondition*> bcs; ///< Dirichlet boundary condition.
 
     // Solution field.
-    int numSolnSubfields; ///< Number of solution fields.
+    size_t numSolnSubfields; ///< Number of solution fields.
     pylith::topology::Field::Discretization const* solnDiscretizations; ///< Discretizations for solution fields.
 
     /// Array of functions providing exact solution.
@@ -121,7 +121,7 @@ public:
     pylith::testing::MMSTest::solution_fn* exactSolnDotFns;
 
     // Material auxiliary fields.
-    int numAuxSubfields; ///< Number of auxiliary subfields for materials.
+    size_t numAuxSubfields; ///< Number of auxiliary subfields for materials.
     const char** auxSubfields; ///< Names of auxiliary subfields for materials.
     pylith::topology::Field::Discretization const* auxDiscretizations; ///< Discretizations for auxiliary subfields.
     spatialdata::spatialdb::UserFunctionDB auxDB; ///< Spatial database for auxiliary field.

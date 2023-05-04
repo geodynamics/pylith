@@ -93,7 +93,7 @@ pylith::TestLinearElasticity::_initialize(void) {
     _data->material.setBulkRheology(&_data->rheology);
     _data->material.setAuxiliaryFieldDB(&_data->auxDB);
 
-    for (int i = 0; i < _data->numAuxSubfields; ++i) {
+    for (size_t i = 0; i < _data->numAuxSubfields; ++i) {
         const pylith::topology::FieldBase::Discretization& info = _data->auxDiscretizations[i];
         _data->material.setAuxiliarySubfieldDiscretization(_data->auxSubfields[i], info.basisOrder, info.quadOrder,
                                                            _data->spaceDim, pylith::topology::FieldBase::DEFAULT_BASIS,

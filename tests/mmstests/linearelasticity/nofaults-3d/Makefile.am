@@ -26,7 +26,7 @@ check_SCRIPTS = $(TESTS)
 
 check_PROGRAMS = mmstest_linearelasticity_nofaults3d
 
-run_uniformstrain3d.sh: mmstest_linearelasticity_nofaults3d
+run_%3d.sh: mmstest_linearelasticity_nofaults3d
 
 mmstest_linearelasticity_nofaults3d_SOURCES = \
 	$(top_srcdir)/tests/src/MMSTest.cc \
@@ -55,7 +55,7 @@ dist_noinst_DATA = \
 
 noinst_TMP =
 
-export_datadir = $(abs_builddir)/data
+export_datadir = $(abs_builddir)
 include $(top_srcdir)/tests/data.am
 
 

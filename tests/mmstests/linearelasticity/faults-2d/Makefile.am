@@ -18,9 +18,15 @@
 
 include $(top_srcdir)/tests/check_catch2.am
 
-TESTS = mmstest_linearelasticity_faults2d
+TESTS = \
+	run_twoblocksstatic2d.sh \
+	run_threeblocksstatic2d.sh \
+	run_onefaultshearnoslip2d.sh \
+	run_twofaultsshearnoslip2d.sh
 
-check_PROGRAMS = $(TESTS)
+check_SCRIPTS = $(TESTS)
+
+check_PROGRAMS = mmstest_linearelasticity_faults2d 
 
 
 mmstest_linearelasticity_faults2d_SOURCES = \
@@ -49,7 +55,7 @@ dist_noinst_DATA = \
 	data/hex.mesh
 
 
-export_datadir = $(abs_builddir)/data
+export_datadir = $(abs_builddir)
 include $(top_srcdir)/tests/data.am
 
 

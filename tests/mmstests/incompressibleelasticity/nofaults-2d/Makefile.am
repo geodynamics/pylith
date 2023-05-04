@@ -18,12 +18,18 @@
 
 include $(top_srcdir)/tests/check_catch2.am
 
-TESTS = mmstest_isotropicincompelasticity_nofaults2d
+TESTS = \
+	run_uniformpressure2d.sh \
+	run_uniformshear2d.sh \
+	run_gravity2d.sh \
+	run_bodyforce2d.sh
 
-check_PROGRAMS = $(TESTS)
+check_SCRIPTS = $(TESTS)
+
+check_PROGRAMS = mmstest_incompressibleelasticity_nofaults2d 
 
 
-mmstest_isotropicincompelasticity_nofaults2d_SOURCES = \
+mmstest_incompressibleelasticity_nofaults2d_SOURCES = \
 	$(top_srcdir)/tests/src/MMSTest.cc \
 	$(top_srcdir)/tests/src/driver_catch2.cc \
 	TestIncompressibleElasticity.cc \
@@ -49,7 +55,7 @@ dist_noinst_DATA = \
 
 noinst_TMP =
 
-export_datadir = $(abs_builddir)/data
+export_datadir = $(abs_builddir)
 include $(top_srcdir)/tests/data.am
 
 

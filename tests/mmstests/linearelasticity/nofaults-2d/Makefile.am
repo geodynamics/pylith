@@ -15,9 +15,17 @@
 
 include $(top_srcdir)/tests/check_catch2.am
 
-TESTS = mmstest_linearelasticity_nofaults2d 
+TESTS = \
+	run_uniformstrain2d.sh \
+	run_gravity2d.sh \
+	run_gravityrefstate2d.sh \
+	run_bodyforce2d.sh \
+	run_rigidbodyacc2d.sh \
+	run_planepwave2d.sh
 
-check_PROGRAMS = $(TESTS)
+check_SCRIPTS = $(TESTS)
+
+check_PROGRAMS = mmstest_linearelasticity_nofaults2d 
 
 
 mmstest_linearelasticity_nofaults2d_SOURCES = \
@@ -55,7 +63,7 @@ dist_noinst_DATA = \
 	data/quad_fourcells.mesh
 
 
-export_datadir = $(abs_builddir)/data
+export_datadir = $(abs_builddir)
 include $(top_srcdir)/tests/data.am
 
 

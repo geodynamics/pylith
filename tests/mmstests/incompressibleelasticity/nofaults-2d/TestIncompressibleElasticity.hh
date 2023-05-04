@@ -109,7 +109,7 @@ public:
     spatialdata::spatialdb::GravityField* gravityField; ///< Gravity field.
     std::vector<pylith::bc::BoundaryCondition*> bcs; ///< Boundary conditions.
 
-    int numSolnSubfields; ///< Number of solution fields.
+    size_t numSolnSubfields; ///< Number of solution fields.
     pylith::topology::Field::Discretization* solnDiscretizations; ///< Discretizations for solution fields.
 
     /// Array of functions providing exact solution.

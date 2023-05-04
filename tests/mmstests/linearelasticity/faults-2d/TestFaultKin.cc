@@ -100,7 +100,7 @@ pylith::TestFaultKin::_initialize(void) {
         assert(_data->materials[iMat]);
         _data->materials[iMat]->setAuxiliaryFieldDB(&_data->matAuxDB);
 
-        for (int iSubfield = 0; iSubfield < _data->matNumAuxSubfields; ++iSubfield) {
+        for (size_t iSubfield = 0; iSubfield < _data->matNumAuxSubfields; ++iSubfield) {
             const pylith::topology::FieldBase::Discretization& info = _data->matAuxDiscretizations[iSubfield];
             _data->materials[iMat]->setAuxiliarySubfieldDiscretization(_data->matAuxSubfields[iSubfield], info.basisOrder, info.quadOrder,
                                                                        _data->spaceDim, info.cellBasis, info.feSpace, info.isBasisContinuous);
@@ -114,7 +114,7 @@ pylith::TestFaultKin::_initialize(void) {
 
         assert(_data->kinSrc);
         _data->kinSrc->auxFieldDB(&_data->faultAuxDB);
-        for (int i = 0; i < _data->faultNumAuxSubfields; ++i) {
+        for (size_t i = 0; i < _data->faultNumAuxSubfields; ++i) {
             const pylith::topology::FieldBase::Discretization& info = _data->faultAuxDiscretizations[i];
             _data->faults[iFault]->setAuxiliarySubfieldDiscretization(_data->faultAuxSubfields[i], info.basisOrder, info.quadOrder,
                                                                       _data->spaceDim-1, info.cellBasis, info.feSpace, info.isBasisContinuous);
