@@ -46,6 +46,7 @@ noinst_TMP = \
 TESTS_ENVIRONMENT = PYTHONPATH='$(PYTHONPATH):$(abs_builddir)'
 
 export_datadir = $(abs_builddir)
+include $(top_srcdir)/tests/data.am
 
 
 # End of file

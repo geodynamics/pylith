@@ -39,6 +39,7 @@ noinst_TMP =
 
 
 export_datadir = $(abs_builddir)
+include $(top_srcdir)/tests/data.am
 
 clean-local: clean-local-tmp clean-data
 .PHONY: clean-local-tmp
