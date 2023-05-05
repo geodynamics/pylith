@@ -18,15 +18,17 @@
 
 include $(top_srcdir)/tests/check_catch2.am
 
+MMS_DRIVER = mmstest_linearelasticity_faults2d
+
 TESTS = \
-	run_twoblocksstatic2d.sh \
-	run_threeblocksstatic2d.sh \
-	run_onefaultshearnoslip2d.sh \
-	run_twofaultsshearnoslip2d.sh
+	run_TwoBlocksStatic.sh \
+	run_ThreeBlocksStatic.sh \
+	run_OneFaultShearNoSlip.sh \
+	run_TwoFaultsShearNoSlip.sh
 
 check_SCRIPTS = $(TESTS)
 
-check_PROGRAMS = mmstest_linearelasticity_faults2d 
+check_PROGRAMS =  $(MMS_DRIVER)
 
 
 mmstest_linearelasticity_faults2d_SOURCES = \
@@ -39,6 +41,10 @@ mmstest_linearelasticity_faults2d_SOURCES = \
 	OneFaultShearNoSlip.cc \
 	TwoFaultsShearNoSlip.cc
 
+run_%.sh:
+	echo "#!/bin/bash" > $@
+	echo "$(abs_builddir)/$(MMS_DRIVER) [$*]" >> $@
+	chmod +x $@
 
 dist_noinst_HEADERS = \
 	TestFaultKin.hh \

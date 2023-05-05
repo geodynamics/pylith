@@ -15,18 +15,19 @@
 
 include $(top_srcdir)/tests/check_catch2.am
 
+MMS_DRIVER = mmstest_linearelasticity_nofaults2d
+
 TESTS = \
-	run_uniformstrain2d.sh \
-	run_gravity2d.sh \
-	run_gravityrefstate2d.sh \
-	run_bodyforce2d.sh \
-	run_rigidbodyacc2d.sh \
-	run_planepwave2d.sh
+	run_UniformStrain2D.sh \
+	run_Gravity2D.sh \
+	run_GravityRefState2D.sh \
+	run_BodyForce2D.sh \
+	run_RigidBodyAcc2D.sh \
+	run_PlanePWave2D.sh
 
 check_SCRIPTS = $(TESTS)
 
-check_PROGRAMS = mmstest_linearelasticity_nofaults2d 
-
+check_PROGRAMS = $(MMS_DRIVER)
 
 mmstest_linearelasticity_nofaults2d_SOURCES = \
 	$(top_srcdir)/tests/src/MMSTest.cc \
@@ -40,7 +41,10 @@ mmstest_linearelasticity_nofaults2d_SOURCES = \
 	RigidBodyAcc2D.cc \
 	PlanePWave2D.cc 
 
-
+run_%.sh:
+	echo "#!/bin/bash" > $@
+	echo "$(abs_builddir)/$(MMS_DRIVER) [$*]" >> $@
+	chmod +x $@
 
 dist_noinst_HEADERS = \
 	TestLinearElasticity.hh	\

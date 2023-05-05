@@ -15,18 +15,17 @@
 
 include $(top_srcdir)/tests/check_catch2.am
 
+MMS_DRIVER = mmstest_linearelasticity_nofaults3d
 
 TESTS = \
-	run_uniformstrain3d.sh \
-	run_gravity3d.sh \
-	run_gravityrefstate3d.sh \
-	run_bodyforce3d.sh
+	run_UniformStrain3D.sh \
+	run_Gravity3D.sh \
+	run_GravityRefState3D.sh \
+	run_BodyForce3D.sh
 
 check_SCRIPTS = $(TESTS)
 
-check_PROGRAMS = mmstest_linearelasticity_nofaults3d
-
-run_%3d.sh: mmstest_linearelasticity_nofaults3d
+check_PROGRAMS = $(MMS_DRIVER)
 
 mmstest_linearelasticity_nofaults3d_SOURCES = \
 	$(top_srcdir)/tests/src/MMSTest.cc \
@@ -38,6 +37,10 @@ mmstest_linearelasticity_nofaults3d_SOURCES = \
 	GravityRefState3D.cc \
 	BodyForce3D.cc 
 
+run_%.sh:
+	echo "#!/bin/bash" > $@
+	echo "$(abs_builddir)/$(MMS_DRIVER) [$*]" >> $@
+	chmod +x $@
 
 dist_noinst_HEADERS = \
 	TestLinearElasticity.hh	 \

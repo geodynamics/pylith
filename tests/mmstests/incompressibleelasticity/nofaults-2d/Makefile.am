@@ -18,15 +18,17 @@
 
 include $(top_srcdir)/tests/check_catch2.am
 
+MMS_DRIVER = mmstest_incompressibleelasticity_nofaults2d
+
 TESTS = \
-	run_uniformpressure2d.sh \
-	run_uniformshear2d.sh \
-	run_gravity2d.sh \
-	run_bodyforce2d.sh
+	run_UniformPressure2D.sh \
+	run_UniformShear2D.sh \
+	run_Gravity2D.sh \
+	run_BodyForce2D.sh
 
 check_SCRIPTS = $(TESTS)
 
-check_PROGRAMS = mmstest_incompressibleelasticity_nofaults2d 
+check_PROGRAMS = $(MMS_DRIVER)
 
 
 mmstest_incompressibleelasticity_nofaults2d_SOURCES = \
@@ -39,6 +41,10 @@ mmstest_incompressibleelasticity_nofaults2d_SOURCES = \
 	Gravity2D.cc \
 	BodyForce2D.cc 
 
+run_%.sh:
+	echo "#!/bin/bash" > $@
+	echo "$(abs_builddir)/$(MMS_DRIVER) [$*]" >> $@
+	chmod +x $@
 
 dist_noinst_HEADERS = \
 	TestIncompressibleElasticity.hh \

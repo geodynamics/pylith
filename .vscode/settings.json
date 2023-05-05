@@ -20,8 +20,8 @@
     "testMate.cpp.test.advancedExecutables": [
         {
             "name": "${filename}",
-            "pattern": "${os_env:PYLITH_BUILDDIR}/tests/mmstests/**/mmstest_*",
-            "cwd": "${absDirpath}"
+            "pattern": "${os_env:PYLITH_BUILDDIR}/tests/mmstests/**/.libs/mmstest_*",
+            "cwd": "${absDirpath}/.."
         }
     ],
     "cSpell.words": [
