@@ -18,7 +18,7 @@
 # -- Project information -----------------------------------------------------
 
 project = 'PyLith'
-copyright = '2021-2023, University of California, Davis'
+copyright = '2010-2023, University of California, Davis'
 author = 'Brad T. Aagaard, Matthew G. Knepley, Charles A. Williams'
 
 # The full version, including alpha/beta/rc tags
@@ -63,6 +63,10 @@ html_logo = "_static/images/cig_short_pylith.png"
 html_theme = 'pydata_sphinx_theme'
 html_context = {
     "default_mode": "light",
+    "github_user": "geodynamics",
+    "github_repo": "pylith",
+    "github_version": "main",
+    "doc_path": "docs",
 }
 html_theme_options = {
     "collapse_navigation": True,
@@ -75,13 +79,10 @@ html_theme_options = {
             "icon": "fab fa-github-square",
         },
     ],
-    "left_sidebar_end": ["sidebar-cig"],
+    "use_edit_page_button": True,
     "navbar_start": ["navbar-logo"],
-    "navbar_end": ["navbar-icon-links"],
-    "footer_items": ["last-updated"],
-}
-html_sidebars = {
-    "**": ["search-field", "sidebar-nav-bs"]
+    "footer_end": ["last-updated"],
+    "primary_sidebar_end": ["sidebar-cig"],
 }
 
 bibtex_bibfiles = ["references.bib"]

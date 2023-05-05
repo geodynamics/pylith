@@ -45,8 +45,7 @@ We highly recommend using an integrated development environment, such as Visual 
 
 ```{code-block} bash
 ---
-caption: Formatting Python and C++ source code using `format\_source.py`.
-`autopep8` and `uncrustify` must be in the current path.
+caption: Formatting Python and C++ source code using `format\_source.py`. `autopep8` and `uncrustify` must be in the current path.
 ---
 # Format a C++ file.
 developer/format_source.py --cplusplus=libsrc/pylith/materials/Material.cc
