@@ -30,8 +30,6 @@
 #include "pylith/faults/faultsfwd.hh" // HOLDSA FaultCohesiveImpulses
 #include "pylith/feassemble/feassemblefwd.hh" // HOLDSA Integrator
 
-#include "pylith/testing/FaultCohesiveStub.hh" // TEMPORARY
-
 class pylith::problems::GreensFns : public pylith::problems::Problem {
     friend class TestGreensFns; // unit testing
     friend class pylith::testing::MMSTest; // Testing with Method of Manufactured Solutions

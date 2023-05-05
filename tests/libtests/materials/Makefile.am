@@ -16,9 +16,7 @@
 # ----------------------------------------------------------------------
 #
 
-subpackage = materials
-include $(top_srcdir)/subpackage.am
-include $(top_srcdir)/check.am
+include $(top_srcdir)/tests/check_cppunit.am
 
 SUBDIRS = data
 
@@ -32,28 +30,13 @@ test_materials_SOURCES = \
 	TestAuxiliaryFactoryElasticity_Cases.cc \
 	TestAuxiliaryFactoryElastic.cc \
 	TestAuxiliaryFactoryElastic_Cases.cc \
-	test_driver.cc
+	$(top_srcdir)/tests/src/FieldTester.cc \
+	$(top_srcdir)/tests/src/driver_cppunit.cc
 
 
 dist_noinst_HEADERS = \
 	TestAuxiliaryFactoryElasticity.hh \
 	TestAuxiliaryFactoryElastic.hh
-
-AM_CPPFLAGS += \
-	$(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR) \
-	$(PETSC_SIEVE_FLAGS) $(PETSC_CC_INCLUDES)
-
-AM_LDFLAGS = $(PYTHON_LA_LDFLAGS)
-
-LDADD = \
-	-lcppunit -ldl \
-	$(top_builddir)/libsrc/pylith/libpylith.la \
-	-lspatialdata \
-	$(PETSC_LIB) $(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
-
-if ENABLE_CUBIT
-  LDADD += -lnetcdf
-endif
 
 
 # End of file

@@ -26,8 +26,7 @@ SUBDIRS = \
 	bc \
 	faults \
 	friction \
-	fekernels \
-	testing
+	fekernels
 
 
 lib_LTLIBRARIES = libpylith.la
@@ -54,6 +53,7 @@ libpylith_la_SOURCES = \
 	faults/KinSrcTimeHistory.cc \
 	faults/KinSrcAuxiliaryFactory.cc \
 	faults/TopologyOps.cc \
+	faults/FaultOps.cc \
 	feassemble/PhysicsImplementation.cc \
 	feassemble/Integrator.cc \
 	feassemble/IntegratorDomain.cc \
@@ -62,6 +62,7 @@ libpylith_la_SOURCES = \
 	feassemble/IntegrationData.cc \
 	feassemble/InterfacePatches.cc \
 	feassemble/UpdateStateVars.cc \
+	feassemble/JacobianValues.cc \
 	feassemble/Constraint.cc \
 	feassemble/ConstraintSpatialDB.cc \
 	feassemble/ConstraintUserFn.cc \
@@ -70,7 +71,6 @@ libpylith_la_SOURCES = \
 	fekernels/Tensor.cc \
 	fekernels/IsotropicLinearGenMaxwell.cc \
 	fekernels/IsotropicPowerLaw.cc \
-	fekernels/FaultCohesiveKin.cc \
 	fekernels/Poroelasticity.cc \
 	fekernels/IsotropicLinearPoroelasticity.cc \
 	materials/Material.cc \
@@ -175,23 +175,6 @@ if ENABLE_CUBIT
 	meshio/MeshIOCubit.cc
   libpylith_la_LIBADD += -lnetcdf
 endif
-
-if ENABLE_TESTING
-libpylith_la_SOURCES += \
-	testing/StubMethodTracker.cc \
-	testing/FieldTester.cc \
-	testing/PhysicsStub.cc \
-	testing/PhysicsImplementationStub.cc \
-	testing/ProgressMonitorStub.cc \
-	testing/ObserverPhysicsStub.cc \
-	testing/ObserverSolnStub.cc \
-	testing/FaultCohesiveStub.cc \
-	testing/MMSTest.cc \
-	testing/TestDriver.cc
-
-libpylith_la_LIBADD += -lcppunit
-endif
-
 
 
 # End of file

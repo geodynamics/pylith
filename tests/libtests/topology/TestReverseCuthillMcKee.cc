@@ -27,7 +27,7 @@
 #include "pylith/topology/Stratum.hh" // USES Stratum
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
-#include "pylith/testing/FaultCohesiveStub.hh" // USES FaultCohesiveStub
+#include "tests/src/FaultCohesiveStub.hh" // USES FaultCohesiveStub
 #include "pylith/topology/Stratum.hh" // USES Stratum
 #include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
 

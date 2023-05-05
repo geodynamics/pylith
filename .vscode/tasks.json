@@ -1,0 +1,79 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build lib",
+            "type": "shell",
+            "command": "make install -j -l8.0",
+            "group": "build",
+            "options": {
+                "cwd": "${env:PYLITH_BUILDDIR}/libsrc"
+            }
+        },
+        {
+            "label": "Build modules",
+            "type": "shell",
+            "command": "make install -j -l8.0",
+            "group": "build",
+            "options": {
+                "cwd": "${env:PYLITH_BUILDDIR}/modulesrc"
+            }
+        },
+        {
+            "label": "Build Python modules",
+            "type": "shell",
+            "command": "make install -j -l8.0",
+            "group": "build",
+            "options": {
+                "cwd": "${env:PYLITH_BUILDDIR}/pylith"
+            }
+        },
+        {
+            "label": "Build all",
+            "type": "shell",
+            "command": "make install -j -l8.0",
+            "group": "build",
+            "options": {
+                "cwd": "${env:PYLITH_BUILDDIR}"
+            }
+        },
+        {
+            "label": "Run libtests",
+            "type": "shell",
+            "command": "make check -j -l8.0",
+            "group": "test",
+            "options": {
+                "cwd": "${env:PYLITH_BUILDDIR}/tests/libtests"
+            }
+        },
+        {
+            "label": "Run mmstests",
+            "type": "shell",
+            "command": "make check -j -l8.0",
+            "group": "test",
+            "options": {
+                "cwd": "${env:PYLITH_BUILDDIR}/tests/mmstests"
+            }
+        },
+        {
+            "label": "Run fullscale tests",
+            "type": "shell",
+            "command": "make check -j -l8.0",
+            "group": "test",
+            "options": {
+                "cwd": "${env:PYLITH_BUILDDIR}/tests/fullscale"
+            }
+        },
+        {
+            "label": "Run all tests",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "Run libtests",
+                "Run mmstests",
+                "Run fulllscale tests"
+            ]
+        }
+    ]
+}

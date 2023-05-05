@@ -251,7 +251,21 @@ pylith::problems::Problem::getSolution(void) const {
     } // if
 
     PYLITH_METHOD_RETURN(solution);
-}
+} // getSolution
+
+
+// ------------------------------------------------------------------------------------------------
+// Get time derivative solution field.
+const pylith::topology::Field*
+pylith::problems::Problem::getSolutionDot(void) const {
+    assert(_integrationData);
+    pylith::topology::Field* solutionDot = NULL;
+    if (_integrationData->hasField(pylith::feassemble::IntegrationData::solution_dot)) {
+        solutionDot = _integrationData->getField(pylith::feassemble::IntegrationData::solution_dot);
+    } // if
+
+    PYLITH_METHOD_RETURN(solutionDot);
+} // getSolutionDot
 
 
 // ------------------------------------------------------------------------------------------------
@@ -401,9 +415,7 @@ pylith::problems::Problem::initialize(void) {
     // Initialize solution field.
     PetscErrorCode err = DMSetFromOptions(solution->getDM());PYLITH_CHECK_ERROR(err);
     _setupSolution();
-
-    const pylith::topology::Mesh& mesh = solution->getMesh();
-    pylith::topology::CoordsVisitor::optimizeClosure(mesh.getDM());
+    pylith::topology::CoordsVisitor::optimizeClosure(solution->getDM());
 
     // Initialize integrators.
     _createIntegrators();
@@ -505,7 +517,7 @@ pylith::problems::Problem::_createIntegrators(void) {
 
     for (size_t i = 0; i < numInterfaces; ++i) {
         assert(_interfaces[i]);
-        pylith::feassemble::Integrator* integrator = _interfaces[i]->createIntegrator(*solution);
+        pylith::feassemble::Integrator* integrator = _interfaces[i]->createIntegrator(*solution, _materials);
         assert(count < maxSize);
         if (integrator) { _integrators[count++] = integrator;}
     } // for

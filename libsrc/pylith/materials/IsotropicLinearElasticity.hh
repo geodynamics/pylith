@@ -31,7 +31,7 @@
 class pylith::materials::IsotropicLinearElasticity : public pylith::materials::RheologyElasticity {
     friend class TestIsotropicLinearElasticity; // unit testing
 
-    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Default constructor.
@@ -85,6 +85,22 @@ public:
      */
     PetscPointJac getKernelJf3vu(const spatialdata::geocoords::CoordSys* coordsys) const;
 
+    /** Get f0 kernel for LHS interface residual, F(t,s,dot{s}), for negative fault face.
+     *
+     * @param[in] coordsys Coordinate system.
+     *
+     * @return LHS residual f0 kernel.
+     */
+    PetscBdPointFunc getKernelf0Neg(const spatialdata::geocoords::CoordSys* coordsys) const;
+
+    /** Get f0 kernel for LHS interface residual, F(t,s,dot{s}), for positive fault face.
+     *
+     * @param[in] coordsys Coordinate system.
+     *
+     * @return LHS residual f0 kernel.
+     */
+    PetscBdPointFunc getKernelf0Pos(const spatialdata::geocoords::CoordSys* coordsys) const;
+
     /** Get Cauchy stress kernel for derived field.
      *
      * @param[in] coordsys Coordinate system.
@@ -93,13 +109,13 @@ public:
      */
     PetscPointFunc getKernelCauchyStressVector(const spatialdata::geocoords::CoordSys* coordsys) const;
 
-    // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
+    // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
 private:
 
     pylith::materials::AuxiliaryFactoryElastic* _auxiliaryFactory; ///< Factory for creating auxiliary subfields.
     bool _useReferenceState; ///< Flag to use reference stress and strain.
 
-    // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
+    // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
 private:
 
     IsotropicLinearElasticity(const IsotropicLinearElasticity&); ///< Not implemented.

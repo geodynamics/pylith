@@ -22,8 +22,8 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 
-#include "pylith/testing/ProgressMonitorStub.hh" // USES ProgressMonitorStub
-#include "pylith/testing/StubMethodTracker.hh" // USES StubMethodTracker
+#include "tests/src/ProgressMonitorStub.hh" // USES ProgressMonitorStub
+#include "tests/src/StubMethodTracker.hh" // USES StubMethodTracker
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 

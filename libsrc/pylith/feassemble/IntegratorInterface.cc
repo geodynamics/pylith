@@ -29,11 +29,13 @@
 #include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor::optimizeClosure()
 #include "pylith/faults/TopologyOps.hh" // USES TopologyOps
 #include "pylith/topology/MeshOps.hh" // USES MeshOps
+#include "pylith/materials/Material.hh" // USES Material
 
 #include "spatialdata/spatialdb/GravityField.hh" // HASA GravityField
 #include "petscds.h" // USES PetscDS
 
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
+
 #include <cassert> // USES assert()
 #include <typeinfo> // USES typeid()
 #include <stdexcept> // USES std::runtime_error
@@ -64,6 +66,9 @@ extern "C" PetscErrorCode DMPlexComputeJacobian_Hybrid_Internal(PetscDM dm,
 namespace pylith {
     namespace feassemble {
         class _IntegratorInterface {
+            typedef pylith::feassemble::IntegratorInterface::ResidualKernels ResidualKernels;
+            typedef pylith::feassemble::IntegratorInterface::JacobianKernels JacobianKernels;
+
 public:
 
             /** Compute residual using current kernels.
@@ -94,6 +99,48 @@ public:
                                  pylith::feassemble::Integrator::EquationPart equationPart,
                                  const pylith::feassemble::IntegrationData& integrationData);
 
+            /** Add bounding material kernels to array of residual kernels.
+             *
+             * @param[inout] kernels Array of residual kernels.
+             * @param[in] face Side of interior interface for integration.
+             * @param[in] key Key associated with integration patch for bounding material.
+             * @param[in] solution Field with current trial solution.
+             * @param[in] materials Materials in model.
+             */
+            static
+            void addMaterialKernels(std::vector<ResidualKernels>* kernels,
+                                    const pylith::feassemble::IntegratorInterface::FaceEnum face,
+                                    const pylith::feassemble::FEKernelKey key,
+                                    const pylith::topology::Field& solution,
+                                    const std::vector<pylith::materials::Material*>& materials);
+
+            /** Add bounding material kernels to array of Jacobian kernels.
+             *
+             * @param[inout] kernels Array of Jacobian kernels.
+             * @param[in] face Side of interior interface for integration.
+             * @param[in] key Key associated with integration patch for bounding material.
+             * @param[in] solution Field with current trial solution.
+             * @param[in] materials Materials in model.
+             */
+            static
+            void addMaterialKernels(std::vector<JacobianKernels>* kernels,
+                                    const pylith::feassemble::IntegratorInterface::FaceEnum face,
+                                    const pylith::feassemble::FEKernelKey key,
+                                    const pylith::topology::Field& solution,
+                                    const std::vector<pylith::materials::Material*>& materials);
+
+            /** Get material corresponding to label name and value.
+             *
+             * @param[in] materials Materials in model.
+             * @param[in] labelName Name of label.
+             * @param[in] labelValue Label value.
+             * @returns Material with label name and value.
+             */
+            static
+            pylith::materials::Material* getMaterial(const std::vector<pylith::materials::Material*> materials,
+                                                     const char* labelName,
+                                                     const int labelValue);
+
             static const PetscInt max_face_enums; ///< Maximum number of fault faces (negative, positive, fault).
             static const PetscInt num_face_enums; ///< Number of fault faces (negative, positive, fault).
             static const PetscInt max_parts; ///< Maximum number of equation parts.
@@ -117,7 +164,11 @@ pylith::feassemble::IntegratorInterface::IntegratorInterface(pylith::problems::P
     Integrator(physics),
     _interfaceMesh(NULL),
     _surfaceLabelName(""),
-    _integrationPatches(NULL) {
+    _integrationPatches(NULL),
+    _weightingDM(NULL),
+    _weightingVec(NULL),
+    _hasLHSResidualWeighted(false),
+    _hasLHSJacobianWeighted(false) {
     GenericComponent::setName(_IntegratorInterface::genericComponent);
     _labelValue = 100;
     _labelName = pylith::topology::Mesh::cells_label_name;
@@ -141,6 +192,8 @@ pylith::feassemble::IntegratorInterface::deallocate(void) {
 
     delete _interfaceMesh;_interfaceMesh = NULL;
     delete _integrationPatches;_integrationPatches = NULL;
+    DMDestroy(&_weightingDM);
+    VecDestroy(&_weightingVec);
 
     PYLITH_METHOD_END;
 } // deallocate
@@ -215,10 +268,11 @@ pylith::feassemble::IntegratorInterface::getIntegrationPatches(void) const {
 // ------------------------------------------------------------------------------------------------
 // Set kernels for residual.
 void
-pylith::feassemble::IntegratorInterface::setKernelsResidual(const std::vector<ResidualKernels>& kernels,
-                                                            const pylith::topology::Field& solution) {
+pylith::feassemble::IntegratorInterface::setKernels(const std::vector<ResidualKernels>& kernels,
+                                                    const pylith::topology::Field& solution,
+                                                    const std::vector<pylith::materials::Material*>& materials) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" setKernelsResidual(# kernels="<<kernels.size()<<")");
+    PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" setKernels(# kernels="<<kernels.size()<<")");
     typedef InterfacePatches::keysmap_t keysmap_t;
 
     PetscErrorCode err;
@@ -227,6 +281,11 @@ pylith::feassemble::IntegratorInterface::setKernelsResidual(const std::vector<Re
         const PetscWeakForm weakForm = iter->second.cohesive.getWeakForm();
         const PetscInt patchValue = iter->second.cohesive.getValue();
         std::vector<ResidualKernels> patchKernels(kernels);
+
+        _IntegratorInterface::addMaterialKernels(&patchKernels, pylith::feassemble::IntegratorInterface::NEGATIVE_FACE,
+                                                 iter->second.negative, solution, materials);
+        _IntegratorInterface::addMaterialKernels(&patchKernels, pylith::feassemble::IntegratorInterface::POSITIVE_FACE,
+                                                 iter->second.positive, solution, materials);
 
         for (size_t i = 0; i < patchKernels.size(); ++i) {
             PetscFormKey key;
@@ -255,6 +314,9 @@ pylith::feassemble::IntegratorInterface::setKernelsResidual(const std::vector<Re
             case LHS:
                 _hasLHSResidual = true;
                 break;
+            case LHS_WEIGHTED:
+                _hasLHSResidualWeighted = true;
+                break;
             case RHS:
                 _hasRHSResidual = true;
                 break;
@@ -271,16 +333,17 @@ pylith::feassemble::IntegratorInterface::setKernelsResidual(const std::vector<Re
     } // if
 
     PYLITH_METHOD_END;
-} // setKernelsRHSResidual
+} // setKernels
 
 
 // ------------------------------------------------------------------------------------------------
 // Set kernels for Jacobian.
 void
-pylith::feassemble::IntegratorInterface::setKernelsJacobian(const std::vector<JacobianKernels>& kernels,
-                                                            const pylith::topology::Field& solution) {
+pylith::feassemble::IntegratorInterface::setKernels(const std::vector<JacobianKernels>& kernels,
+                                                    const pylith::topology::Field& solution,
+                                                    const std::vector<pylith::materials::Material*>& materials) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" setKernelsJacobian(# kernels="<<kernels.size()<<")");
+    PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" setKernels(# kernels="<<kernels.size()<<")");
     typedef InterfacePatches::keysmap_t keysmap_t;
 
     PetscErrorCode err = 0;
@@ -289,6 +352,11 @@ pylith::feassemble::IntegratorInterface::setKernelsJacobian(const std::vector<Ja
         const PetscWeakForm weakForm = iter->second.cohesive.getWeakForm();
         const PetscInt patchValue = iter->second.cohesive.getValue();
         std::vector<JacobianKernels> patchKernels(kernels);
+
+        _IntegratorInterface::addMaterialKernels(&patchKernels, pylith::feassemble::IntegratorInterface::NEGATIVE_FACE,
+                                                 iter->second.negative, solution, materials);
+        _IntegratorInterface::addMaterialKernels(&patchKernels, pylith::feassemble::IntegratorInterface::POSITIVE_FACE,
+                                                 iter->second.positive, solution, materials);
 
         PetscInt numFields = 0;
         err = PetscWeakFormGetNumFields(weakForm, &numFields);PYLITH_CHECK_ERROR(err);
@@ -324,6 +392,9 @@ pylith::feassemble::IntegratorInterface::setKernelsJacobian(const std::vector<Ja
             case LHS:
                 _hasLHSJacobian = true;
                 break;
+            case LHS_WEIGHTED:
+                _hasLHSJacobianWeighted = true;
+                break;
             case LHS_LUMPED_INV:
                 _hasLHSJacobianLumped = true;
                 break;
@@ -340,7 +411,7 @@ pylith::feassemble::IntegratorInterface::setKernelsJacobian(const std::vector<Ja
     } // if
 
     PYLITH_METHOD_END;
-} // setKernelsJacobian
+} // setKernels
 
 
 // ------------------------------------------------------------------------------------------------
@@ -380,10 +451,11 @@ pylith::feassemble::IntegratorInterface::initialize(const pylith::topology::Fiel
     const pylith::topology::Field* auxiliaryField = getAuxiliaryField();assert(auxiliaryField);
     for (keysmap_t::const_iterator iter = keysmap.begin(); iter != keysmap.end(); ++iter) {
         const PetscInt patchValue = iter->second.cohesive.getValue();
-        const size_t numParts = 2;
+        const size_t numParts = 3;
         const EquationPart equationParts[numParts] = {
             pylith::feassemble::Integrator::RHS,
             pylith::feassemble::Integrator::LHS,
+            pylith::feassemble::Integrator::LHS_WEIGHTED,
         };
         for (size_t i = 0; i < numParts; ++i) {
             PetscFormKey key = iter->second.cohesive.getPetscKey(solution, equationParts[i]);
@@ -446,7 +518,39 @@ pylith::feassemble::IntegratorInterface::computeLHSResidual(pylith::topology::Fi
     PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" computeLHSResidual(residual="<<residual<<", integrationData="<<integrationData.str()<<")");
     if (!_hasLHSResidual) { PYLITH_METHOD_END;}
 
-    _IntegratorInterface::computeResidual(residual, this, pylith::feassemble::Integrator::LHS, integrationData);
+    if (_hasLHSResidual) {
+        const pylith::feassemble::Integrator::EquationPart equationPart = pylith::feassemble::Integrator::LHS;
+        _IntegratorInterface::computeResidual(residual, this, equationPart, integrationData);
+    } // if
+
+    if (_hasLHSResidualWeighted) {
+        { // KLUDGE
+            PetscErrorCode err = 0;
+            const pylith::topology::Field* daeWeighting =
+                integrationData.getField(pylith::feassemble::IntegrationData::dae_mass_weighting);
+            const pylith::topology::Field* solution =
+                integrationData.getField(pylith::feassemble::IntegrationData::solution);
+            PetscDM dmSoln = solution->getDM();
+            typedef InterfacePatches::keysmap_t keysmap_t;
+            const keysmap_t& keysmap = _integrationPatches->getKeys();
+
+            for (keysmap_t::const_iterator iter = keysmap.begin(); iter != keysmap.end(); ++iter) {
+                const PetscInt patchValue = iter->second.cohesive.getValue();
+                const PetscFormKey key = iter->second.cohesive.getPetscKey(*solution, LHS_WEIGHTED);
+                PetscInt part = getWeakFormPart(key.part, IntegratorInterface::FAULT_FACE, patchValue);
+                err = DMSetAuxiliaryVec(dmSoln, key.label, -key.value, part, daeWeighting->getLocalVector());PYLITH_CHECK_ERROR(err);
+
+                part = getWeakFormPart(key.part, IntegratorInterface::NEGATIVE_FACE, patchValue);
+                err = DMSetAuxiliaryVec(dmSoln, key.label, -key.value, part, daeWeighting->getLocalVector());PYLITH_CHECK_ERROR(err);
+
+                part = getWeakFormPart(key.part, IntegratorInterface::POSITIVE_FACE, patchValue);
+                err = DMSetAuxiliaryVec(dmSoln, key.label, -key.value, part, daeWeighting->getLocalVector());PYLITH_CHECK_ERROR(err);
+            } // for
+        } // KLUDGE
+
+        const pylith::feassemble::Integrator::EquationPart equationPart = pylith::feassemble::Integrator::LHS_WEIGHTED;
+        _IntegratorInterface::computeResidual(residual, this, equationPart, integrationData);
+    } // if
 
     PYLITH_METHOD_END;
 } // computeLHSResidual
@@ -462,9 +566,16 @@ pylith::feassemble::IntegratorInterface::computeLHSJacobian(PetscMat jacobianMat
     PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" computeLHSJacobian(jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", integrationData="<<integrationData.str()<<")");
 
     _needNewLHSJacobian = false;
-    if (!_hasLHSJacobian) { PYLITH_METHOD_END;}
 
-    _IntegratorInterface::computeJacobian(jacobianMat, precondMat, this, pylith::feassemble::Integrator::LHS, integrationData);
+    if (_hasLHSJacobian) {
+        pylith::feassemble::Integrator::EquationPart equationPart = pylith::feassemble::Integrator::LHS;
+        _IntegratorInterface::computeJacobian(jacobianMat, precondMat, this, equationPart, integrationData);
+    } // if
+
+    if (_hasLHSJacobianWeighted) {
+        pylith::feassemble::Integrator::EquationPart equationPart = pylith::feassemble::Integrator::LHS_WEIGHTED;
+        _IntegratorInterface::computeJacobian(jacobianMat, precondMat, this, equationPart, integrationData);
+    } // if
 
     PYLITH_METHOD_END;
 } // computeLHSJacobian
@@ -509,7 +620,8 @@ pylith::feassemble::_IntegratorInterface::computeResidual(pylith::topology::Fiel
     const PylithReal t = integrationData.getScalar(pylith::feassemble::IntegrationData::time);
     const PylithReal dt = integrationData.getScalar(pylith::feassemble::IntegrationData::time_step);
     PetscVec solutionDotVec = NULL;
-    if (equationPart == pylith::feassemble::Integrator::LHS) {
+    if ((equationPart == pylith::feassemble::Integrator::LHS) ||
+        (equationPart == pylith::feassemble::Integrator::LHS_WEIGHTED) ) {
         const pylith::topology::Field* solutionDot = integrationData.getField(pylith::feassemble::IntegrationData::solution_dot);
         assert(solutionDot);
         solutionDotVec = solutionDot->getLocalVector();
@@ -620,6 +732,62 @@ pylith::feassemble::_IntegratorInterface::computeJacobian(PetscMat jacobianMat,
     }
     PYLITH_METHOD_END;
 } // computeJacobian
+
+
+// ------------------------------------------------------------------------------------------------
+void
+pylith::feassemble::_IntegratorInterface::addMaterialKernels(std::vector<ResidualKernels>* kernels,
+                                                             const pylith::feassemble::IntegratorInterface::FaceEnum face,
+                                                             const pylith::feassemble::FEKernelKey key,
+                                                             const pylith::topology::Field& solution,
+                                                             const std::vector<pylith::materials::Material*>& materials) {
+    PYLITH_METHOD_BEGIN;
+
+    const pylith::materials::Material* material =
+        _IntegratorInterface::getMaterial(materials, key.getName(), key.getValue());assert(material);
+    const std::vector<ResidualKernels>& kernelsMaterial = material->getInterfaceKernelsResidual(solution, face);
+    kernels->insert(kernels->end(), kernelsMaterial.begin(), kernelsMaterial.end() );
+
+    PYLITH_METHOD_END;
+} // addMaterialKernels(Residual)
+
+
+// ------------------------------------------------------------------------------------------------
+void
+pylith::feassemble::_IntegratorInterface::addMaterialKernels(std::vector<JacobianKernels>* kernels,
+                                                             const pylith::feassemble::IntegratorInterface::FaceEnum face,
+                                                             const pylith::feassemble::FEKernelKey key,
+                                                             const pylith::topology::Field& solution,
+                                                             const std::vector<pylith::materials::Material*>& materials) {
+    PYLITH_METHOD_BEGIN;
+
+    const pylith::materials::Material* material =
+        _IntegratorInterface::getMaterial(materials, key.getName(), key.getValue());assert(material);
+    const std::vector<JacobianKernels>& kernelsMaterial = material->getInterfaceKernelsJacobian(solution, face);
+    kernels->insert(kernels->end(), kernelsMaterial.begin(), kernelsMaterial.end() );
+
+    PYLITH_METHOD_END;
+} // getMaterialKernels(Jacobian)
+
+
+// ------------------------------------------------------------------------------------------------
+pylith::materials::Material*
+pylith::feassemble::_IntegratorInterface::getMaterial(const std::vector<pylith::materials::Material*> materials,
+                                                      const char* labelName,
+                                                      const int labelValue) {
+    PYLITH_METHOD_BEGIN;
+
+    pylith::materials::Material* material = NULL;
+    for (size_t i = 0; i < materials.size(); ++i) {
+        assert(materials[i]);
+        if ((std::string(labelName) == std::string(materials[i]->getLabelName())) && (labelValue == materials[i]->getLabelValue())) {
+            material = materials[i];
+            break;
+        } // if
+    } // for
+
+    PYLITH_METHOD_RETURN(material);
+} // getMaterial
 
 
 // End of file

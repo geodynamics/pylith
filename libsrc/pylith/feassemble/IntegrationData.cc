@@ -168,6 +168,23 @@ pylith::feassemble::IntegrationData::getField(const std::string& name) const {
 
 
 // ------------------------------------------------------------------------------------------------
+// Remove field.
+void
+pylith::feassemble::IntegrationData::removeField(const std::string& name) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("removeField(name="<<name<<")");
+
+    if (_fields.count(name)) {
+        fields_map_t::iterator iter = _fields.find(name);
+        delete iter->second;iter->second = NULL;
+        _fields.erase(name);
+    } // if
+
+    PYLITH_METHOD_END;
+}
+
+
+// ------------------------------------------------------------------------------------------------
 // Set mesh.
 void
 pylith::feassemble::IntegrationData::setMesh(const std::string& name,

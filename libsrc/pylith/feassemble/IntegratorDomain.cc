@@ -96,6 +96,7 @@ pylith::feassemble::IntegratorDomain::IntegratorDomain(pylith::problems::Physics
     Integrator(physics),
     _materialMesh(NULL),
     _updateState(NULL),
+    _jacobianValues(NULL),
     _dsLabel(NULL) {
     GenericComponent::setName("integratordomain");
 } // constructor
@@ -118,6 +119,7 @@ pylith::feassemble::IntegratorDomain::deallocate(void) {
 
     delete _materialMesh;_materialMesh = NULL;
     delete _updateState;_updateState = NULL;
+    delete _jacobianValues;_jacobianValues = NULL;
     delete _dsLabel;_dsLabel = NULL;
 
     PYLITH_METHOD_END;
@@ -207,7 +209,18 @@ pylith::feassemble::IntegratorDomain::setKernelsJacobian(const std::vector<Jacob
     } // if
 
     PYLITH_METHOD_END;
-} // setKernelsLHSJacobian
+} // setKernelsJacobian
+
+
+// ------------------------------------------------------------------------------------------------
+// Set kernels for Jacobian without finite-element integration.
+void
+pylith::feassemble::IntegratorDomain::setKernelsJacobian(const std::vector<pylith::feassemble::JacobianValues::JacobianKernel>& kernelsJacobian,
+                                                         const std::vector<pylith::feassemble::JacobianValues::JacobianKernel>& kernelsPrecond) {
+    delete _jacobianValues;_jacobianValues = new pylith::feassemble::JacobianValues();assert(_jacobianValues);
+    _jacobianValues->setKernels(kernelsJacobian, kernelsPrecond);
+    _hasLHSJacobian = true;
+} // setKernelsJacobian
 
 
 // ------------------------------------------------------------------------------------------------
@@ -289,10 +302,11 @@ pylith::feassemble::IntegratorDomain::setInterfaceData(const pylith::topology::F
     PetscDMLabel dmLabel = NULL;
     err = DMGetLabel(dmSoln, _labelName.c_str(), &dmLabel);PYLITH_CHECK_ERROR(err);assert(dmLabel);
 
-    const PetscInt numParts = 2;
+    const PetscInt numParts = 3;
     const PetscInt parts[numParts] = {
         LHS,
         RHS,
+        LHS_WEIGHTED,
     };
     PetscInt faultFaces[2];
 
@@ -482,6 +496,16 @@ pylith::feassemble::IntegratorDomain::computeLHSJacobian(PetscMat jacobianMat,
     err = DMPlexComputeJacobian_Internal(_dsLabel->dm(), key, _dsLabel->cellsIS(), t, s_tshift, solution->getLocalVector(),
                                          solutionDot->getLocalVector(), jacobianMat, precondMat, NULL);PYLITH_CHECK_ERROR(err);
 
+    if (_jacobianValues) {
+        _jacobianValues->computeLHSJacobian(jacobianMat, precondMat, t, dt, s_tshift, *solution, *_dsLabel);
+        err = MatAssemblyBegin(jacobianMat, MAT_FINAL_ASSEMBLY);PYLITH_CHECK_ERROR(err);
+        err = MatAssemblyEnd(jacobianMat, MAT_FINAL_ASSEMBLY);PYLITH_CHECK_ERROR(err);
+        if (precondMat && ( precondMat != jacobianMat) ) {
+            err = MatAssemblyBegin(precondMat, MAT_FINAL_ASSEMBLY);PYLITH_CHECK_ERROR(err);
+            err = MatAssemblyEnd(precondMat, MAT_FINAL_ASSEMBLY);PYLITH_CHECK_ERROR(err);
+        } // if
+    } // if
+
     PYLITH_METHOD_END;
 } // computeLHSJacobian
 
@@ -521,6 +545,7 @@ pylith::feassemble::IntegratorDomain::computeLHSJacobianLumpedInv(pylith::topolo
     err = DMPlexComputeJacobian_Action_Internal(_dsLabel->dm(), key, _dsLabel->cellsIS(), t, s_tshift, vecRowSum, NULL,
                                                 vecRowSum, jacobianInv->getLocalVector(), NULL);PYLITH_CHECK_ERROR(err);
 
+    err = DMRestoreLocalVector(_dsLabel->dm(), &vecRowSum);PYLITH_CHECK_ERROR(err);
     // Compute the Jacobian inverse.
     err = VecReciprocal(jacobianInv->getLocalVector());PYLITH_CHECK_ERROR(err);
 

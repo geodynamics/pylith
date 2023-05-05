@@ -31,7 +31,7 @@
 class pylith::materials::IsotropicLinearGenMaxwell : public pylith::materials::RheologyElasticity {
     friend class TestIsotropicLinearGenMaxwell; // unit testing
 
-    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Default constructor.
@@ -77,6 +77,22 @@ public:
      */
     PetscPointFunc getKernelf1v(const spatialdata::geocoords::CoordSys* coordsys) const;
 
+    /** Get f0 kernel for LHS interface residual, F(t,s,dot{s}), for negative fault face.
+     *
+     * @param[in] coordsys Coordinate system.
+     *
+     * @return LHS residual f0 kernel.
+     */
+    PetscBdPointFunc getKernelf0Neg(const spatialdata::geocoords::CoordSys* coordsys) const;
+
+    /** Get f0 kernel for LHS interface residual, F(t,s,dot{s}), for positive fault face.
+     *
+     * @param[in] coordsys Coordinate system.
+     *
+     * @return LHS residual f0 kernel.
+     */
+    PetscBdPointFunc getKernelf0Pos(const spatialdata::geocoords::CoordSys* coordsys) const;
+
     /** Get elastic constants kernel for LHS Jacobian F(t,s,\dot{s}).
      *
      * @param[in] coordsys Coordinate system.
@@ -109,13 +125,13 @@ public:
     void updateKernelConstants(pylith::real_array* kernelConstants,
                                const PylithReal dt) const;
 
-    // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
+    // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
 private:
 
     pylith::materials::AuxiliaryFactoryViscoelastic* _auxiliaryFactory; ///< Factory for creating auxiliary subfields.
     bool _useReferenceState; ///< Flag to use reference stress and strain.
 
-    // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
+    // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
 private:
 
     IsotropicLinearGenMaxwell(const IsotropicLinearGenMaxwell&); ///< Not implemented.

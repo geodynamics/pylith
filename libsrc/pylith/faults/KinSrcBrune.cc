@@ -43,19 +43,19 @@ namespace pylith {
     } // faults
 } // pylith
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::faults::KinSrcBrune::KinSrcBrune(void) {
     pylith::utils::PyreComponent::setName("kinsrcbrune");
 } // constructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Destructor.
 pylith::faults::KinSrcBrune::~KinSrcBrune(void) {}
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Slip time function kernel.
 void
 pylith::faults::KinSrcBrune::slipFn(const PylithInt dim,
@@ -107,7 +107,7 @@ pylith::faults::KinSrcBrune::slipFn(const PylithInt dim,
 } // slipFn
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Slip rate time function kernel.
 void
 pylith::faults::KinSrcBrune::slipRateFn(const PylithInt dim,
@@ -159,7 +159,7 @@ pylith::faults::KinSrcBrune::slipRateFn(const PylithInt dim,
 } // slipRateFn
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Slip acceleration time function kernel.
 void
 pylith::faults::KinSrcBrune::slipAccFn(const PylithInt dim,
@@ -211,7 +211,7 @@ pylith::faults::KinSrcBrune::slipAccFn(const PylithInt dim,
 } // slipAccFn
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Preinitialize earthquake source. Set names/sizes of auxiliary subfields.
 void
 pylith::faults::KinSrcBrune::_auxiliaryFieldSetup(const spatialdata::units::Nondimensional& normalizer,

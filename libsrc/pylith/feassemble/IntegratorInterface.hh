@@ -29,6 +29,7 @@
 
 #include "pylith/feassemble/Integrator.hh" // ISA Integrator
 #include "pylith/feassemble/FEKernelKey.hh" // HASA FEKernelKey
+#include "pylith/materials/materialsfwd.hh" // USES Material
 #include "pylith/utils/arrayfwd.hh" // HASA std::vector
 
 class pylith::feassemble::IntegratorInterface : public pylith::feassemble::Integrator {
@@ -165,17 +166,21 @@ public:
      *
      * @param kernels Array of kernels for computing the residual.
      * @param[in] solution Field with current trial solution.
+     * @param[in] materials Materials in problem.
      */
-    void setKernelsResidual(const std::vector<ResidualKernels>& kernels,
-                            const pylith::topology::Field& solution);
+    void setKernels(const std::vector<ResidualKernels>& kernels,
+                    const pylith::topology::Field& solution,
+                    const std::vector<pylith::materials::Material*>& materials);
 
     /** Set kernels for Jacobian.
      *
      * @param kernels Array of kernels for computing the Jacobian.
      * @param[in] solution Field with current trial solution.
+     * @param[in] materials Materials in problem.
      */
-    void setKernelsJacobian(const std::vector<JacobianKernels>& kernels,
-                            const pylith::topology::Field& solution);
+    void setKernels(const std::vector<JacobianKernels>& kernels,
+                    const pylith::topology::Field& solution,
+                    const std::vector<pylith::materials::Material*>& materials);
 
     /** Compute weak form key part for face.
      *
@@ -243,6 +248,12 @@ private:
     std::string _surfaceLabelName; ///< Name of label identifying interface surface.
 
     pylith::feassemble::InterfacePatches* _integrationPatches; ///< Face patches.
+
+    PetscDM _weightingDM; ///< PETSc DM for weighting.
+    PetscVec _weightingVec; ///< PETSc Vec for weighting values.
+
+    bool _hasLHSResidualWeighted; ///< Has LHS Residual with weighted terms.
+    bool _hasLHSJacobianWeighted; ///< Has LHS Jacobian with weighted terms.
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
 private:

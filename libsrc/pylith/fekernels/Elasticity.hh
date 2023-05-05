@@ -78,6 +78,11 @@ public:
                                    const pylith::fekernels::TensorOps&,
                                    pylith::fekernels::Tensor*);
 
+    // Interface for computing traction from stress.
+    typedef void (*tractionfn_type) (const pylith::fekernels::Tensor& stress,
+                                     const PylithReal n[],
+                                     PylithReal traction[]);
+
     // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
 public:
 
@@ -166,8 +171,8 @@ public:
     static inline
     void f1v(const StrainContext& strainContext,
              void* rheologyContext,
-             Elasticity::strainfn_type strainFn,
-             Elasticity::stressfn_type stressFn,
+             strainfn_type strainFn,
+             stressfn_type stressFn,
              const TensorOps& tensorOps,
              PylithScalar f1[]) {
         Tensor strain;
@@ -521,6 +526,23 @@ public:
         Elasticity::strain_asVector(context, infinitesimalStrain, Tensor::ops2D, strainVector);
     } // infinitesimalStrain_asVector3D
 
+    // --------------------------------------------------------------------------------------------
+    /** Calculate traction vector from stress for 2D plane strain elasticity.
+     *
+     * @param[in] stress Stress tensor.
+     * @param[in] n Normal vector.
+     * @param[out] traction Traction vector.
+     */
+    static inline
+    void traction(const pylith::fekernels::Tensor& stress,
+                  const PylithReal n[],
+                  PylithReal traction[]) {
+        assert(traction);
+
+        traction[0] = n[0]*stress.xx + n[1]*stress.xy;
+        traction[1] = n[0]*stress.xy + n[1]*stress.yy;
+    } // traction
+
 }; // ElasticityPlaneStrain
 
 // ------------------------------------------------------------------------------------------------
@@ -588,6 +610,24 @@ public:
 
         Elasticity::strain_asVector(context, infinitesimalStrain, Tensor::ops3D, strainVector);
     } // infinitesimalStrain_asVector
+
+    // --------------------------------------------------------------------------------------------
+    /** Calculate traction vector from stress for 3D elasticity.
+     *
+     * @param[in] stress Stress tensor.
+     * @param[in] n Normal vector.
+     * @param[out] traction Traction vector.
+     */
+    static inline
+    void traction(const pylith::fekernels::Tensor& stress,
+                  const PylithReal n[],
+                  PylithReal traction[]) {
+        assert(traction);
+
+        traction[0] = n[0]*stress.xx + n[1]*stress.xy + n[2]*stress.xz;
+        traction[1] = n[0]*stress.xy + n[1]*stress.yy + n[2]*stress.yz;
+        traction[2] = n[0]*stress.xz + n[1]*stress.yz + n[2]*stress.zz;
+    } // traction
 
 }; // Elasticity3D
 

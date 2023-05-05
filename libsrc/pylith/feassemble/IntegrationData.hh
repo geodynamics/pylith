@@ -108,6 +108,12 @@ public:
      */
     pylith::topology::Field* getField(const std::string& name) const;
 
+    /** Remove field.
+     *
+     * @param[in] name Name of field.
+     */
+    void removeField(const std::string& name);
+
     /** Set mesh.
      *
      * @param[in] name Name of mesh.

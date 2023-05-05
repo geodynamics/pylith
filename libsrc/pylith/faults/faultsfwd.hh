@@ -44,6 +44,7 @@ namespace pylith {
         class KinSrcAuxiliaryFactory;
 
         class TopologyOps;
+        class FaultOps;
     } // faults
 } // pylith
 

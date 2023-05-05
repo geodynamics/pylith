@@ -15,10 +15,7 @@
 #
 # ----------------------------------------------------------------------
 #
-
-subpackage = topology
-include $(top_srcdir)/subpackage.am
-include $(top_srcdir)/check.am
+include $(top_srcdir)/tests/check_cppunit.am
 
 SUBDIRS = data
 
@@ -41,7 +38,9 @@ test_topology_SOURCES = \
 	TestRefineUniform_Cases.cc \
 	TestReverseCuthillMcKee.cc \
 	TestReverseCuthillMcKee_Cases.cc \
-	test_driver.cc
+	$(top_srcdir)/tests/src/FaultCohesiveStub.cc \
+	$(top_srcdir)/tests/src/StubMethodTracker.cc \
+	$(top_srcdir)/tests/src/driver_cppunit.cc
 
 #	TestFieldSubmesh.cc
 
@@ -59,25 +58,21 @@ dist_noinst_HEADERS = \
 	TestReverseCuthillMcKee.hh
 
 
-AM_CPPFLAGS += \
-	$(PETSC_SIEVE_FLAGS) $(PETSC_CC_INCLUDES) \
-	-I$(PYTHON_INCDIR) $(PYTHON_EGG_CPPFLAGS)
 
-test_topology_LDADD = \
-	-lcppunit -ldl \
-	$(top_builddir)/libsrc/pylith/libpylith.la \
-	-lspatialdata \
-	$(PETSC_LIB) $(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
-
-if ENABLE_CUBIT
-  test_topology_LDADD += -lnetcdf
-endif
-
-noinst_tmp = \
+noinst_TMP = \
 	jacobian.mat \
-	jacobian.mat.info
+	jacobian.mat.info \
+	mesh.tex \
+	mesh.txt \
+	mesh.vtk \
+	mesh.vtu \
+	mesh_petsc.h5 \
+	mesh_xdmf.h5
 
-#CLEANFILES = $(noinst_tmp)
+
+export_datadir = $(abs_builddir)
+include $(top_srcdir)/tests/data.am
+
 
 
 # End of file

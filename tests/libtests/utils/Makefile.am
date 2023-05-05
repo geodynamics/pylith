@@ -16,9 +16,7 @@
 # ----------------------------------------------------------------------
 #
 
-subpackage = utils
-include $(top_srcdir)/subpackage.am
-include $(top_srcdir)/check.am
+include $(top_srcdir)/tests/check_cppunit.am
 
 TESTS = test_utils
 
@@ -32,7 +30,7 @@ test_utils_SOURCES = \
 	TestPylithVersion.cc \
 	TestPetscVersion.cc \
 	TestDependenciesVersion.cc \
-	test_driver.cc
+	$(top_srcdir)/tests/src/driver_cppunit.cc
 
 dist_noinst_HEADERS = \
 	TestEventLogger.hh \
@@ -41,20 +39,6 @@ dist_noinst_HEADERS = \
 	TestPylithVersion.hh \
 	TestPetscVersion.hh \
 	TestDependenciesVersion.hh
-
-AM_CPPFLAGS += $(PETSC_CC_INCLUDES)
-AM_CPPFLAGS += $(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR)
-
-test_utils_LDFLAGS = $(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
-test_utils_LDADD = \
-	-lcppunit -ldl \
-	$(top_builddir)/libsrc/pylith/libpylith.la \
-	-lspatialdata \
-	$(PETSC_LIB) $(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
-
-if ENABLE_CUBIT
-  test_utils_LDADD += -lnetcdf
-endif
 
 
 # End of file

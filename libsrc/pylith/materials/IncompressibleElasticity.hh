@@ -31,7 +31,7 @@
 class pylith::materials::IncompressibleElasticity : public pylith::materials::Material {
     friend class TestIncompressibleElasticity; // unit testing
 
-    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Default constructor.
@@ -110,7 +110,7 @@ public:
     pylith::utils::PetscOptions* getSolverDefaults(const bool isParallel,
                                                    const bool hasFault) const;
 
-    // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
+    // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
 protected:
 
     /** Get auxiliary factory associated with physics.
@@ -131,7 +131,7 @@ protected:
      */
     pylith::topology::FieldFactory* _getDerivedFactory(void);
 
-    // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
+    // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
 private:
 
     /** Set kernels for residual.
@@ -166,14 +166,14 @@ private:
     void _setKernelsDerivedField(pylith::feassemble::IntegratorDomain* integrator,
                                  const pylith::topology::Field& solution) const;
 
-    // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
+    // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
 private:
 
     bool _useBodyForce; ///< Flag to include body force term.
     pylith::materials::RheologyIncompressibleElasticity* _rheology; ///< Bulk rheology for incompressible elasticity.
     pylith::materials::DerivedFactoryElasticity* _derivedFactory; ///< Factory for creating derived fields.
 
-    // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
+    // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
 private:
 
     IncompressibleElasticity(const IncompressibleElasticity&); ///< Not implemented.

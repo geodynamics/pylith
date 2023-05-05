@@ -16,7 +16,7 @@
 # ----------------------------------------------------------------------
 #
 
-include $(top_srcdir)/check.am
+include $(top_srcdir)/tests/check_cppunit.am
 
 TESTS = testmpi.py
 dist_check_SCRIPTS = testmpi.py

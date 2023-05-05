@@ -32,19 +32,19 @@
 
 #include <cassert>
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::materials::AuxiliaryFactoryElastic::AuxiliaryFactoryElastic(void) {
     GenericComponent::setName("auxiliaryfactoryelastic");
 } // constructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Destructor.
 pylith::materials::AuxiliaryFactoryElastic::~AuxiliaryFactoryElastic(void) {}
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Add shear modulus subfield to auxiliary fields.
 void
 pylith::materials::AuxiliaryFactoryElastic::addShearModulus(void) {
@@ -71,7 +71,7 @@ pylith::materials::AuxiliaryFactoryElastic::addShearModulus(void) {
 } // addShearModulus
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Add bulk modulus subfield to auxiliary fields.
 void
 pylith::materials::AuxiliaryFactoryElastic::addBulkModulus(void) {
@@ -98,7 +98,7 @@ pylith::materials::AuxiliaryFactoryElastic::addBulkModulus(void) {
 } // addBulkModulus
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Add reference stress subfield to auxiliary fields.
 void
 pylith::materials::AuxiliaryFactoryElastic::addReferenceStress(void) {
@@ -135,7 +135,7 @@ pylith::materials::AuxiliaryFactoryElastic::addReferenceStress(void) {
 } // addReferenceStress
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Add reference strain subfield to auxiliary fields.
 void
 pylith::materials::AuxiliaryFactoryElastic::addReferenceStrain(void) {

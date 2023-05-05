@@ -688,6 +688,202 @@ public:
     }
 
     // ===========================================================================================
+    // Kernels for fault interfaces and elasticity
+    // ===========================================================================================
+
+    // --------------------------------------------------------------------------------------------
+    /** f0 entry function for negative fault face for isotropic linear generalized Maxwell
+     * viscoelasticity plane strain with infinitesimal strain WITHOUT reference stress and
+     * reference strain.
+     *
+     * Solution fields: [disp(dim), vel(dim), lagrange(dim)]
+     * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1)]
+     */
+    static inline
+    void f0l_neg_infinitesimalStrain(const PylithInt dim,
+                                     const PylithInt numS,
+                                     const PylithInt numA,
+                                     const PylithInt sOff[],
+                                     const PylithInt sOff_x[],
+                                     const PylithScalar s[],
+                                     const PylithScalar s_t[],
+                                     const PylithScalar s_x[],
+                                     const PylithInt aOff[],
+                                     const PylithInt aOff_x[],
+                                     const PylithScalar a[],
+                                     const PylithScalar a_t[],
+                                     const PylithScalar a_x[],
+                                     const PylithReal t,
+                                     const PylithScalar x[],
+                                     const PylithReal n[],
+                                     const PylithInt numConstants,
+                                     const PylithScalar constants[],
+                                     PylithScalar f0[]) {
+        const PylithInt _dim = 2;assert(_dim == dim);
+
+        pylith::fekernels::Elasticity::StrainContext strainContext;
+        pylith::fekernels::Elasticity::setStrainContext(&strainContext, _dim, numS, sOff, sOff_x, s, s_t, s_x, x);
+
+        pylith::fekernels::IsotropicLinearGenMaxwell::Context rheologyContext;
+        pylith::fekernels::IsotropicLinearGenMaxwell::setContext(
+            &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
+            t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
+
+        pylith::fekernels::FaultCohesiveKin::f0l_neg(
+            dim, numS, sOff, s, n,
+            strainContext, &rheologyContext,
+            pylith::fekernels::ElasticityPlaneStrain::infinitesimalStrain,
+            pylith::fekernels::IsotropicLinearGenMaxwell::cauchyStress,
+            pylith::fekernels::ElasticityPlaneStrain::traction,
+            pylith::fekernels::Tensor::ops2D,
+            f0);
+    }
+
+    // --------------------------------------------------------------------------------------------
+    /** f0 entry function for positive fault face for isotropic linear generalized Maxwell
+     * viscoelasticity plane strain with infinitesimal strain WITHOUT reference stress and
+     * reference strain.
+     *
+     * Solution fields: [disp(dim), vel(dim), lagrange(dim)]
+     * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1)]
+     */
+    static inline
+    void f0l_pos_infinitesimalStrain(const PylithInt dim,
+                                     const PylithInt numS,
+                                     const PylithInt numA,
+                                     const PylithInt sOff[],
+                                     const PylithInt sOff_x[],
+                                     const PylithScalar s[],
+                                     const PylithScalar s_t[],
+                                     const PylithScalar s_x[],
+                                     const PylithInt aOff[],
+                                     const PylithInt aOff_x[],
+                                     const PylithScalar a[],
+                                     const PylithScalar a_t[],
+                                     const PylithScalar a_x[],
+                                     const PylithReal t,
+                                     const PylithScalar x[],
+                                     const PylithReal n[],
+                                     const PylithInt numConstants,
+                                     const PylithScalar constants[],
+                                     PylithScalar f0[]) {
+        const PylithInt _dim = 2;assert(_dim == dim);
+
+        pylith::fekernels::Elasticity::StrainContext strainContext;
+        pylith::fekernels::Elasticity::setStrainContext(&strainContext, _dim, numS, sOff, sOff_x, s, s_t, s_x, x);
+
+        pylith::fekernels::IsotropicLinearGenMaxwell::Context rheologyContext;
+        pylith::fekernels::IsotropicLinearGenMaxwell::setContext(
+            &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
+            t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
+
+        pylith::fekernels::FaultCohesiveKin::f0l_pos(
+            dim, numS, sOff, s, n,
+            strainContext, &rheologyContext,
+            pylith::fekernels::ElasticityPlaneStrain::infinitesimalStrain,
+            pylith::fekernels::IsotropicLinearGenMaxwell::cauchyStress,
+            pylith::fekernels::ElasticityPlaneStrain::traction,
+            pylith::fekernels::Tensor::ops2D,
+            f0);
+    }
+
+    // --------------------------------------------------------------------------------------------
+    /** f0 entry function for negative fault face for isotropic linear generalized Maxwell
+     * viscoelasticity plane strain with infinitesimal strain WITH reference stress and
+     * reference strain.
+     *
+     * Solution fields: [disp(dim), vel(dim), lagrange(dim)]
+     * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1)]
+     */
+    static inline
+    void f0l_neg_infinitesimalStrain_refState(const PylithInt dim,
+                                              const PylithInt numS,
+                                              const PylithInt numA,
+                                              const PylithInt sOff[],
+                                              const PylithInt sOff_x[],
+                                              const PylithScalar s[],
+                                              const PylithScalar s_t[],
+                                              const PylithScalar s_x[],
+                                              const PylithInt aOff[],
+                                              const PylithInt aOff_x[],
+                                              const PylithScalar a[],
+                                              const PylithScalar a_t[],
+                                              const PylithScalar a_x[],
+                                              const PylithReal t,
+                                              const PylithScalar x[],
+                                              const PylithReal n[],
+                                              const PylithInt numConstants,
+                                              const PylithScalar constants[],
+                                              PylithScalar f0[]) {
+        const PylithInt _dim = 2;assert(_dim == dim);
+
+        pylith::fekernels::Elasticity::StrainContext strainContext;
+        pylith::fekernels::Elasticity::setStrainContext(&strainContext, _dim, numS, sOff, sOff_x, s, s_t, s_x, x);
+
+        pylith::fekernels::IsotropicLinearGenMaxwell::Context rheologyContext;
+        pylith::fekernels::IsotropicLinearGenMaxwell::setContext_refState(
+            &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
+            t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
+
+        pylith::fekernels::FaultCohesiveKin::f0l_neg(
+            dim, numS, sOff, s, n,
+            strainContext, &rheologyContext,
+            pylith::fekernels::ElasticityPlaneStrain::infinitesimalStrain,
+            pylith::fekernels::IsotropicLinearGenMaxwell::cauchyStress_refState,
+            pylith::fekernels::ElasticityPlaneStrain::traction,
+            pylith::fekernels::Tensor::ops2D,
+            f0);
+    }
+
+    // --------------------------------------------------------------------------------------------
+    /** f0 entry function for positive fault face for isotropic linear generalized Maxwell
+     * viscoelasticity plane strain with infinitesimal strain WITH reference stress and
+     * reference strain.
+     *
+     * Solution fields: [disp(dim), vel(dim), lagrange(dim)]
+     * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1)]
+     */
+    static inline
+    void f0l_pos_infinitesimalStrain_refState(const PylithInt dim,
+                                              const PylithInt numS,
+                                              const PylithInt numA,
+                                              const PylithInt sOff[],
+                                              const PylithInt sOff_x[],
+                                              const PylithScalar s[],
+                                              const PylithScalar s_t[],
+                                              const PylithScalar s_x[],
+                                              const PylithInt aOff[],
+                                              const PylithInt aOff_x[],
+                                              const PylithScalar a[],
+                                              const PylithScalar a_t[],
+                                              const PylithScalar a_x[],
+                                              const PylithReal t,
+                                              const PylithScalar x[],
+                                              const PylithReal n[],
+                                              const PylithInt numConstants,
+                                              const PylithScalar constants[],
+                                              PylithScalar f0[]) {
+        const PylithInt _dim = 2;assert(_dim == dim);
+
+        pylith::fekernels::Elasticity::StrainContext strainContext;
+        pylith::fekernels::Elasticity::setStrainContext(&strainContext, _dim, numS, sOff, sOff_x, s, s_t, s_x, x);
+
+        pylith::fekernels::IsotropicLinearGenMaxwell::Context rheologyContext;
+        pylith::fekernels::IsotropicLinearGenMaxwell::setContext_refState(
+            &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
+            t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
+
+        pylith::fekernels::FaultCohesiveKin::f0l_pos(
+            dim, numS, sOff, s, n,
+            strainContext, &rheologyContext,
+            pylith::fekernels::ElasticityPlaneStrain::infinitesimalStrain,
+            pylith::fekernels::IsotropicLinearGenMaxwell::cauchyStress_refState,
+            pylith::fekernels::ElasticityPlaneStrain::traction,
+            pylith::fekernels::Tensor::ops2D,
+            f0);
+    }
+
+    // ===========================================================================================
     // Kernels for updating state variables
     // ===========================================================================================
 
@@ -1097,6 +1293,202 @@ public:
         Jf3[72] -= C1212; /* j2200 */
         Jf3[76] -= C1212; /* j2211 */
         Jf3[80] -= C1111; /* j2222 */
+    }
+
+    // ===========================================================================================
+    // Kernels for fault interfaces and elasticity
+    // ===========================================================================================
+
+    // --------------------------------------------------------------------------------------------
+    /** f0 entry function for negative fault face for 3D isotropic linear generalized Maxwell
+     * viscoelasticity with infinitesimal strain WITHOUT reference stress and
+     * reference strain.
+     *
+     * Solution fields: [disp(dim), vel(dim), lagrange(dim)]
+     * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1)]
+     */
+    static inline
+    void f0l_neg_infinitesimalStrain(const PylithInt dim,
+                                     const PylithInt numS,
+                                     const PylithInt numA,
+                                     const PylithInt sOff[],
+                                     const PylithInt sOff_x[],
+                                     const PylithScalar s[],
+                                     const PylithScalar s_t[],
+                                     const PylithScalar s_x[],
+                                     const PylithInt aOff[],
+                                     const PylithInt aOff_x[],
+                                     const PylithScalar a[],
+                                     const PylithScalar a_t[],
+                                     const PylithScalar a_x[],
+                                     const PylithReal t,
+                                     const PylithScalar x[],
+                                     const PylithReal n[],
+                                     const PylithInt numConstants,
+                                     const PylithScalar constants[],
+                                     PylithScalar f0[]) {
+        const PylithInt _dim = 3;assert(_dim == dim);
+
+        pylith::fekernels::Elasticity::StrainContext strainContext;
+        pylith::fekernels::Elasticity::setStrainContext(&strainContext, _dim, numS, sOff, sOff_x, s, s_t, s_x, x);
+
+        pylith::fekernels::IsotropicLinearGenMaxwell::Context rheologyContext;
+        pylith::fekernels::IsotropicLinearGenMaxwell::setContext(
+            &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
+            t, x, numConstants, constants, pylith::fekernels::Tensor::ops3D);
+
+        pylith::fekernels::FaultCohesiveKin::f0l_neg(
+            dim, numS, sOff, s, n,
+            strainContext, &rheologyContext,
+            pylith::fekernels::Elasticity3D::infinitesimalStrain,
+            pylith::fekernels::IsotropicLinearGenMaxwell::cauchyStress,
+            pylith::fekernels::Elasticity3D::traction,
+            pylith::fekernels::Tensor::ops3D,
+            f0);
+    }
+
+    // --------------------------------------------------------------------------------------------
+    /** f0 entry function for positive fault face for 3D isotropic linear generalized Maxwell
+     * viscoelasticity with infinitesimal strain WITHOUT reference stress and
+     * reference strain.
+     *
+     * Solution fields: [disp(dim), vel(dim), lagrange(dim)]
+     * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1)]
+     */
+    static inline
+    void f0l_pos_infinitesimalStrain(const PylithInt dim,
+                                     const PylithInt numS,
+                                     const PylithInt numA,
+                                     const PylithInt sOff[],
+                                     const PylithInt sOff_x[],
+                                     const PylithScalar s[],
+                                     const PylithScalar s_t[],
+                                     const PylithScalar s_x[],
+                                     const PylithInt aOff[],
+                                     const PylithInt aOff_x[],
+                                     const PylithScalar a[],
+                                     const PylithScalar a_t[],
+                                     const PylithScalar a_x[],
+                                     const PylithReal t,
+                                     const PylithScalar x[],
+                                     const PylithReal n[],
+                                     const PylithInt numConstants,
+                                     const PylithScalar constants[],
+                                     PylithScalar f0[]) {
+        const PylithInt _dim = 3;assert(_dim == dim);
+
+        pylith::fekernels::Elasticity::StrainContext strainContext;
+        pylith::fekernels::Elasticity::setStrainContext(&strainContext, _dim, numS, sOff, sOff_x, s, s_t, s_x, x);
+
+        pylith::fekernels::IsotropicLinearGenMaxwell::Context rheologyContext;
+        pylith::fekernels::IsotropicLinearGenMaxwell::setContext(
+            &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
+            t, x, numConstants, constants, pylith::fekernels::Tensor::ops3D);
+
+        pylith::fekernels::FaultCohesiveKin::f0l_pos(
+            dim, numS, sOff, s, n,
+            strainContext, &rheologyContext,
+            pylith::fekernels::Elasticity3D::infinitesimalStrain,
+            pylith::fekernels::IsotropicLinearGenMaxwell::cauchyStress,
+            pylith::fekernels::Elasticity3D::traction,
+            pylith::fekernels::Tensor::ops3D,
+            f0);
+    }
+
+    // --------------------------------------------------------------------------------------------
+    /** f0 entry function for negative fault face for 3D isotropic linear generalized Maxwell
+     * viscoelasticity with infinitesimal strain WITH reference stress and
+     * reference strain.
+     *
+     * Solution fields: [disp(dim), vel(dim), lagrange(dim)]
+     * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1)]
+     */
+    static inline
+    void f0l_neg_infinitesimalStrain_refState(const PylithInt dim,
+                                              const PylithInt numS,
+                                              const PylithInt numA,
+                                              const PylithInt sOff[],
+                                              const PylithInt sOff_x[],
+                                              const PylithScalar s[],
+                                              const PylithScalar s_t[],
+                                              const PylithScalar s_x[],
+                                              const PylithInt aOff[],
+                                              const PylithInt aOff_x[],
+                                              const PylithScalar a[],
+                                              const PylithScalar a_t[],
+                                              const PylithScalar a_x[],
+                                              const PylithReal t,
+                                              const PylithScalar x[],
+                                              const PylithReal n[],
+                                              const PylithInt numConstants,
+                                              const PylithScalar constants[],
+                                              PylithScalar f0[]) {
+        const PylithInt _dim = 3;assert(_dim == dim);
+
+        pylith::fekernels::Elasticity::StrainContext strainContext;
+        pylith::fekernels::Elasticity::setStrainContext(&strainContext, _dim, numS, sOff, sOff_x, s, s_t, s_x, x);
+
+        pylith::fekernels::IsotropicLinearGenMaxwell::Context rheologyContext;
+        pylith::fekernels::IsotropicLinearGenMaxwell::setContext_refState(
+            &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
+            t, x, numConstants, constants, pylith::fekernels::Tensor::ops3D);
+
+        pylith::fekernels::FaultCohesiveKin::f0l_neg(
+            dim, numS, sOff, s, n,
+            strainContext, &rheologyContext,
+            pylith::fekernels::Elasticity3D::infinitesimalStrain,
+            pylith::fekernels::IsotropicLinearGenMaxwell::cauchyStress_refState,
+            pylith::fekernels::Elasticity3D::traction,
+            pylith::fekernels::Tensor::ops3D,
+            f0);
+    }
+
+    // --------------------------------------------------------------------------------------------
+    /** f0 entry function for positive fault face for 3D isotropic linear generalized Maxwell
+     * viscoelasticity with infinitesimal strain WITH reference stress and
+     * reference strain.
+     *
+     * Solution fields: [disp(dim), vel(dim), lagrange(dim)]
+     * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1)]
+     */
+    static inline
+    void f0l_pos_infinitesimalStrain_refState(const PylithInt dim,
+                                              const PylithInt numS,
+                                              const PylithInt numA,
+                                              const PylithInt sOff[],
+                                              const PylithInt sOff_x[],
+                                              const PylithScalar s[],
+                                              const PylithScalar s_t[],
+                                              const PylithScalar s_x[],
+                                              const PylithInt aOff[],
+                                              const PylithInt aOff_x[],
+                                              const PylithScalar a[],
+                                              const PylithScalar a_t[],
+                                              const PylithScalar a_x[],
+                                              const PylithReal t,
+                                              const PylithScalar x[],
+                                              const PylithReal n[],
+                                              const PylithInt numConstants,
+                                              const PylithScalar constants[],
+                                              PylithScalar f0[]) {
+        const PylithInt _dim = 3;assert(_dim == dim);
+
+        pylith::fekernels::Elasticity::StrainContext strainContext;
+        pylith::fekernels::Elasticity::setStrainContext(&strainContext, _dim, numS, sOff, sOff_x, s, s_t, s_x, x);
+
+        pylith::fekernels::IsotropicLinearGenMaxwell::Context rheologyContext;
+        pylith::fekernels::IsotropicLinearGenMaxwell::setContext_refState(
+            &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
+            t, x, numConstants, constants, pylith::fekernels::Tensor::ops3D);
+
+        pylith::fekernels::FaultCohesiveKin::f0l_pos(
+            dim, numS, sOff, s, n,
+            strainContext, &rheologyContext,
+            pylith::fekernels::Elasticity3D::infinitesimalStrain,
+            pylith::fekernels::IsotropicLinearGenMaxwell::cauchyStress_refState,
+            pylith::fekernels::Elasticity3D::traction,
+            pylith::fekernels::Tensor::ops3D,
+            f0);
     }
 
     // ===========================================================================================

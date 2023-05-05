@@ -15,9 +15,7 @@
 #
 # ----------------------------------------------------------------------
 
-subpackage = meshio
-include $(top_srcdir)/subpackage.am
-include $(top_srcdir)/check.am
+include $(top_srcdir)/tests/check_cppunit.am
 
 SUBDIRS = data
 
@@ -27,7 +25,6 @@ check_PROGRAMS = $(TESTS)
 
 # general meshio
 test_meshio_SOURCES = \
-	test_driver.cc \
 	TestMeshIO.cc \
 	TestMeshIOAscii.cc \
 	TestMeshIOAscii_Cases.cc \
@@ -36,11 +33,14 @@ test_meshio_SOURCES = \
 	TestMeshIOLagrit.cc \
 	TestMeshIOLagrit_Cases.cc \
 	TestOutputTriggerStep.cc \
-	TestOutputTriggerTime.cc
+	TestOutputTriggerTime.cc \
+	$(top_srcdir)/tests/src/FaultCohesiveStub.cc \
+	$(top_srcdir)/tests/src/StubMethodTracker.cc \
+	$(top_srcdir)/tests/src/driver_cppunit.cc
+	
 
 # VTK data writer
 test_vtk_SOURCES = \
-	test_driver.cc \
 	FieldFactory.cc \
 	TestDataWriter.cc \
 	TestDataWriterMesh.cc \
@@ -55,7 +55,10 @@ test_vtk_SOURCES = \
 	TestDataWriterVTKSubmesh.cc \
 	TestDataWriterVTKSubmesh_Cases.cc \
 	TestDataWriterVTKPoints.cc \
-	TestDataWriterVTKPoints_Cases.cc
+	TestDataWriterVTKPoints_Cases.cc \
+	$(top_srcdir)/tests/src/FaultCohesiveStub.cc \
+	$(top_srcdir)/tests/src/StubMethodTracker.cc \
+	$(top_srcdir)/tests/src/driver_cppunit.cc
 
 
 # :TODO: @brad
@@ -69,7 +72,6 @@ test_vtk_SOURCES = \
 
 
 test_hdf5_SOURCES = \
-	test_driver.cc \
 	FieldFactory.cc \
 	TestDataWriter.cc \
 	TestDataWriterMesh.cc \
@@ -93,7 +95,10 @@ test_hdf5_SOURCES = \
 	TestDataWriterHDF5ExtSubmesh.cc \
 	TestDataWriterHDF5ExtSubmesh_Cases.cc \
 	TestDataWriterHDF5ExtPoints.cc \
-	TestDataWriterHDF5ExtPoints_Cases.cc
+	TestDataWriterHDF5ExtPoints_Cases.cc \
+	$(top_srcdir)/tests/src/FaultCohesiveStub.cc \
+	$(top_srcdir)/tests/src/StubMethodTracker.cc \
+	$(top_srcdir)/tests/src/driver_cppunit.cc
 
 
 # TestDataWriterHDF5FaultMesh.cc \
@@ -142,42 +147,6 @@ dist_noinst_HEADERS = \
 # TestDataWriterHDF5ExtFaultMesh.hh
 
 
-AM_CPPFLAGS += \
-	$(PETSC_SIEVE_FLAGS) $(PETSC_CC_INCLUDES) \
-	-I$(PYTHON_INCDIR) $(PYTHON_EGG_CPPFLAGS)
-
-# test_meshio
-test_meshio_LDFLAGS = \
-	$(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
-
-test_meshio_LDADD = \
-	-lcppunit -ldl \
-	$(top_builddir)/libsrc/pylith/libpylith.la \
-	-lspatialdata \
-	$(PETSC_LIB) $(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
-
-# test_vtk
-test_vtk_LDFLAGS = \
-	$(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
-
-test_vtk_LDADD = \
-	-lcppunit -ldl \
-	$(top_builddir)/libsrc/pylith/libpylith.la \
-	-lspatialdata \
-	$(PETSC_LIB) $(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
-
-# test_hdf5
-test_hdf5_LDFLAGS = \
-	$(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
-
-test_hdf5_LDADD = \
-	-lcppunit -ldl \
-	$(top_builddir)/libsrc/pylith/libpylith.la \
-	-lspatialdata \
-	$(PETSC_LIB) $(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS) \
-	-lhdf5
-
-
 if ENABLE_CUBIT
   test_meshio_SOURCES += \
 	TestExodusII.cc \
@@ -186,30 +155,15 @@ if ENABLE_CUBIT
   dist_noinst_HEADERS += \
 	TestExodusII.hh \
 	TestMeshIOCubit.hh
-  test_meshio_LDADD += -lnetcdf
-  test_vtk_LDADD += -lnetcdf
-
-	if ENABLE_CUBIT
-	  test_hdf5_LDADD += -lnetcdf
-	endif
 endif
 
 
-noinst_tmp = \
-	mesh1D.txt \
-	mesh1Din2D.txt \
-	mesh1Din3D.txt \
-	mesh2D.txt \
-	mesh2Din3D.txt \
-	mesh3D.txt
+noinst_TMP = 
 
+#include $(top_srcdir)/tests/data.am
 
-CLEANFILES = $(noinst_tmp)
-
-clean-local: clean-local-tmp
-.PHONY: clean-local-tmp
-clean-local-tmp:
-	-rm *.vtk *.dat *.dat.info *.h5 *.xmf
+clean-local:
+	$(RM) $(RM_FLAGS) mesh*.txt *.h5 *.xmf *.dat *.dat.info *.vtk
 
 
 # End of file

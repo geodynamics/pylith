@@ -16,9 +16,7 @@
 # ----------------------------------------------------------------------
 #
 
-subpackage = bc
-include $(top_srcdir)/subpackage.am
-include $(top_srcdir)/check.am
+include $(top_srcdir)/tests/check_cppunit.am
 
 SUBDIRS = data
 
@@ -28,7 +26,7 @@ check_PROGRAMS = test_bc
 
 # Primary source files
 test_bc_SOURCES = \
-	test_driver.cc
+	$(top_srcdir)/tests/src/driver_cppunit.cc
 
 #	TestBoundaryMesh.cc \
 #	TestBoundaryMesh_Cases.cc \
@@ -45,24 +43,6 @@ dist_noinst_HEADERS = \
 	TestDirichletTimeDependent.hh \
 	TestNeumannTimeDependent.hh \
 	TestAbsorbingDampers.hh
-
-
-AM_CPPFLAGS += \
-	$(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR) \
-	$(PETSC_SIEVE_FLAGS) $(PETSC_CC_INCLUDES)
-
-test_bc_LDFLAGS = \
-	$(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
-
-test_bc_LDADD = \
-	-lcppunit \
-	$(top_builddir)/libsrc/pylith/libpylith.la \
-	-lspatialdata \
-	$(PETSC_LIB) $(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
-
-if ENABLE_CUBIT
-  test_bc_LDADD += -lnetcdf
-endif
 
 
 # End of file

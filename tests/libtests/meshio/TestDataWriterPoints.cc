@@ -21,13 +21,13 @@
 #include "TestDataWriterPoints.hh" // Implementation of class methods
 
 #include "FieldFactory.hh" // USES FieldFactory
+#include "tests/src/FaultCohesiveStub.hh" // USES FaultCohesiveStub
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES MeshOps::nondimensionalize()
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/meshio/DataWriter.hh" // USES DataWriter
 #include "pylith/meshio/MeshBuilder.hh" // USES MeshBuilder
-#include "pylith/testing/FaultCohesiveStub.hh" // USES FaultCohesiveStub
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD*
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
@@ -276,8 +276,7 @@ pylith::meshio::TestDataWriterPoints::_setDataHex(void) {
 // Constructor
 pylith::meshio::TestDataWriterPoints_Data::TestDataWriterPoints_Data(void) :
     numPoints(0),
-    points(NULL)
-{}
+    points(NULL) {}
 
 
 // ------------------------------------------------------------------------------------------------

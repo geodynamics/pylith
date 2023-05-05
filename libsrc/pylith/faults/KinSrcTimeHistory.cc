@@ -9,7 +9,7 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2022 University of California, Davis
+// Copyright (c) 2010-2021 University of California, Davis
 //
 // See LICENSE.md for license information.
 //
@@ -28,7 +28,7 @@
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::faults::KinSrcTimeHistory::KinSrcTimeHistory(void) :
     _dbTimeHistory(NULL) {
@@ -36,14 +36,14 @@ pylith::faults::KinSrcTimeHistory::KinSrcTimeHistory(void) :
 } // constructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Destructor.
 pylith::faults::KinSrcTimeHistory::~KinSrcTimeHistory(void) {
     _dbTimeHistory = NULL; // :KLUDGE: Use shared pointer.
 } // destructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Set time history database.
 void
 pylith::faults::KinSrcTimeHistory::setTimeHistoryDB(spatialdata::spatialdb::TimeHistory* th) {
@@ -53,7 +53,7 @@ pylith::faults::KinSrcTimeHistory::setTimeHistoryDB(spatialdata::spatialdb::Time
 } // setTimeHistoryDB
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get time history database.
 const spatialdata::spatialdb::TimeHistory*
 pylith::faults::KinSrcTimeHistory::getTimeHistoryDB(void) {
@@ -61,25 +61,26 @@ pylith::faults::KinSrcTimeHistory::getTimeHistoryDB(void) {
 } // getTimeHistoryDB
 
 
-// ---------------------------------------------------------------------------------------------------------------------
-// Update slip subfield to current time.
+// ------------------------------------------------------------------------------------------------
+// Get requested slip subfields at time t.
 void
-pylith::faults::KinSrcTimeHistory::updateSlip(PetscVec slipLocalVec,
-                                              pylith::topology::Field* faultAuxiliaryField,
-                                              const double t,
-                                              const double timeScale) {
+pylith::faults::KinSrcTimeHistory::getSlipSubfields(PetscVec slipLocalVec,
+                                                    pylith::topology::Field* faultAuxiliaryField,
+                                                    const PylithScalar t,
+                                                    const PylithScalar timeScale,
+                                                    const int bitSlipSubfields) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("updateSlip(slipLocalVec="<<slipLocalVec<<", faultAuxiliaryField="<<faultAuxiliaryField
-                                                     <<", t="<<t<<", timeScale="<<timeScale<<")");
-
+    PYLITH_COMPONENT_DEBUG("getSlipSubfields="<<slipLocalVec<<", faultAuxiliaryField="<<faultAuxiliaryField
+                                              <<", t="<<t<<", timeScale="<<timeScale
+                                              <<", bitSlipSubfields="<<bitSlipSubfields<<")");
     KinSrcAuxiliaryFactory::updateTimeHistoryValue(_auxiliaryField, t, timeScale, _dbTimeHistory);
-    KinSrc::updateSlip(slipLocalVec, faultAuxiliaryField, t, timeScale);
+    KinSrc::getSlipSubfields(slipLocalVec, faultAuxiliaryField, t, timeScale, bitSlipSubfields);
 
     PYLITH_METHOD_END;
-} // updateSlip
+} // getSlipSubfields
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Slip time function kernel.
 void
 pylith::faults::KinSrcTimeHistory::slipFn(const PylithInt dim,
@@ -131,7 +132,7 @@ pylith::faults::KinSrcTimeHistory::slipFn(const PylithInt dim,
 } // slipFn
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Slip rate time function kernel.
 void
 pylith::faults::KinSrcTimeHistory::slipRateFn(const PylithInt dim,
@@ -183,7 +184,7 @@ pylith::faults::KinSrcTimeHistory::slipRateFn(const PylithInt dim,
 } // slipRateFn
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Slip acceleration time function kernel.
 void
 pylith::faults::KinSrcTimeHistory::slipAccFn(const PylithInt dim,
@@ -235,7 +236,7 @@ pylith::faults::KinSrcTimeHistory::slipAccFn(const PylithInt dim,
 } // slipAccFn
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Preinitialize earthquake source. Set names/sizes of auxiliary subfields.
 void
 pylith::faults::KinSrcTimeHistory::_auxiliaryFieldSetup(const spatialdata::units::Nondimensional& normalizer,

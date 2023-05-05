@@ -19,6 +19,7 @@
 #include <portinfo>
 
 #include "TestIntegratorDomain.hh" // Implementation of class methods
+#include "tests/src/FieldTester.hh" // USES FieldTester
 
 #include "pylith/feassemble/IntegratorDomain.hh" // USES IntegratorDomain
 
@@ -30,7 +31,6 @@
 #include "pylith/feassemble/AuxiliaryFactory.hh" // USES AuxiliaryFactory
 #include "pylith/problems/SolutionFactory.hh" // USES SolutionFactory
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
-#include "pylith/testing/FieldTester.hh" // USES FieldTester
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 #include "pylith/utils/journals.hh" // pythia::journal
 
