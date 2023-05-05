@@ -40,6 +40,7 @@ public:
     static const int MONITORS;
     static const int SOLVER;
     static const int PARALLEL;
+    static const int INITIAL_GUESS;
     static const int TESTING;
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
