@@ -48,7 +48,7 @@ class MeshEntity(object):
 # -------------------------------------------------------------------------------------------------
 class Check(object):
 
-    def __init__(self, mesh_entities, filename=None, mesh=None, vertex_fields=[], cell_fields=[], exact_soln=None, tolerance=None, defaults={}):
+    def __init__(self, mesh_entities, filename=None, mesh=None, vertex_fields=[], cell_fields=[], exact_soln=None, tolerance=None, scale=1.0, defaults={}):
         """Set parameters for checking PyLith output.
 
         Args
@@ -64,11 +64,16 @@ class Check(object):
                 List of cell fields to check.
             exact_soln (object):
                 Object with functions returning expected values for fields.
+            tolerance (float):
+                Tolerance for use in tests.
+            scale (float):
+                Scale for nondimensionalizing results.
             defaults (dict):
                 Dictionary with default values.
         """
         self.tolerance = 1.0e-5
         self.zero_tolerance = 1.0e-10
+        self.scale = scale
         self.vertex_fields = []
         self.cell_fields = []
 
@@ -291,17 +296,16 @@ def check_data(testcase, filename, check, mesh_entity, mesh):
 
     checker = HDF5Checker(filename, testcase, mesh)
 
+    tolerance = check.tolerance * check.scale
+    zero_tolerance = check.zero_tolerance * check.scale
+
     for field in check.vertex_fields:
-        field_tolerance = check.tolerance[field] if isinstance(check.tolerance, dict) else check.tolerance
-        field_zero_tolerance = check.zero_tolerance[field] if isinstance(check.zero_tolerance, dict) else check.zero_tolerance
         with testcase.subTest(vertex_field=field):
-            checker.checkVertexField(field, mesh_entity, check.exact_soln, field_tolerance, field_zero_tolerance)
+            checker.checkVertexField(field, mesh_entity, check.exact_soln, tolerance, zero_tolerance)
 
     for field in check.cell_fields:
-        field_tolerance = check.tolerance[field] if isinstance(check.tolerance, dict) else check.tolerance
-        field_zero_tolerance = check.zero_tolerance[field] if isinstance(check.zero_tolerance, dict) else check.zero_tolerance
         with testcase.subTest(cell_field=field):
-            checker.checkCellField(field, mesh_entity, check.exact_soln, field_tolerance, field_zero_tolerance)
+            checker.checkCellField(field, mesh_entity, check.exact_soln, tolerance, zero_tolerance)
     return
 
 

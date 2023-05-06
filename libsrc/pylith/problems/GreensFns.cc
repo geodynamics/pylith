@@ -244,6 +244,7 @@ pylith::problems::GreensFns::initialize(void) {
         err = SNESSetFunction(_snes, NULL, computeResidual, (void*)this);PYLITH_CHECK_ERROR(err);
         err = SNESSetJacobian(_snes, NULL, NULL, computeJacobian, (void*)this);PYLITH_CHECK_ERROR(err);
         err = SNESSetType(_snes, SNESKSPONLY);PYLITH_CHECK_ERROR(err);
+        err = SNESSetLagJacobian(_snes, -2);PYLITH_CHECK_ERROR(err);
         break;
     case pylith::problems::Physics::DYNAMIC_IMEX:
         PYLITH_COMPONENT_LOGICERROR("Dynamic Green's functions problems not yet supported.");

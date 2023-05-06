@@ -27,6 +27,7 @@ class PetscDefaults(Component):
             solver = True
             monitors = True
             parallel = False
+            initial_guess = True
             testing = False
         """
     }
@@ -42,8 +43,11 @@ class PetscDefaults(Component):
     monitors = pythia.pyre.inventory.bool("monitors", default=True)
     monitors.meta["tip"] = "Use default solver monitors."
 
+    initialGuess = pythia.pyre.inventory.bool("initial_guess", default=True)
+    initialGuess.meta["tip"] = "Use initial guess options."
+
     testing = pythia.pyre.inventory.bool("testing", default=False)
-    testing.meta["tip"] = "Use default PETSc testingging options."
+    testing.meta["tip"] = "Use default PETSc testing options."
 
     def __init__(self, name="petscdefaults"):
         """Constructor.
@@ -59,6 +63,8 @@ class PetscDefaults(Component):
             value |= ModuleDefaults.PARALLEL
         if self.monitors:
             value |= ModuleDefaults.MONITORS
+        if self.initialGuess:
+            value |= ModuleDefaults.INITIAL_GUESS
         if self.testing:
             value |= ModuleDefaults.TESTING
         return value

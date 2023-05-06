@@ -46,9 +46,14 @@ class TestCase(FullTestCase):
             ),
             Check(
                 mesh_entities=["mat_elastic"],
-                cell_fields = ["cauchy_strain", "cauchy_stress"],
                 vertex_fields = ["displacement"],
-                tolerance = 1.0e-4,
+                cell_fields = ["cauchy_strain"],
+                defaults=defaults,
+            ),
+            Check(
+                mesh_entities=["mat_elastic"],
+                cell_fields = ["cauchy_stress"],
+                scale = 1.0e+6,
                 defaults=defaults,
             ),
             Check(
