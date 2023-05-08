@@ -87,7 +87,6 @@ pylith::faults::KinSrc::auxField(void) const {
     PYLITH_METHOD_BEGIN;
 
     assert(_auxiliaryField);
-
     PYLITH_METHOD_RETURN(*_auxiliaryField);
 } // auxField
 

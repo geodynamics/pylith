@@ -29,19 +29,19 @@
 
 #include <cassert> // USES assert()
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::faults::KinSrcConstRate::KinSrcConstRate(void) {
     pylith::utils::PyreComponent::setName("kinsrcconstrate");
 } // constructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Destructor.
 pylith::faults::KinSrcConstRate::~KinSrcConstRate(void) {}
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Slip time function kernel.
 void
 pylith::faults::KinSrcConstRate::slipFn(const PylithInt dim,
@@ -91,7 +91,7 @@ pylith::faults::KinSrcConstRate::slipFn(const PylithInt dim,
 } // slipFn
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Slip rate time function kernel.
 void
 pylith::faults::KinSrcConstRate::slipRateFn(const PylithInt dim,
@@ -141,7 +141,7 @@ pylith::faults::KinSrcConstRate::slipRateFn(const PylithInt dim,
 } // slipRateFn
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Slip acceleration time function kernel.
 void
 pylith::faults::KinSrcConstRate::slipAccFn(const PylithInt dim,
@@ -174,7 +174,7 @@ pylith::faults::KinSrcConstRate::slipAccFn(const PylithInt dim,
 } // slipRateFn
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Preinitialize earthquake source. Set names/sizes of auxiliary subfields.
 void
 pylith::faults::KinSrcConstRate::_auxiliaryFieldSetup(const spatialdata::units::Nondimensional& normalizer,

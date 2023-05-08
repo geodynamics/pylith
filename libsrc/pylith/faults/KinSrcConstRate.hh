@@ -24,10 +24,9 @@
 #if !defined(pylith_faults_kinsrcconstrate_hh)
 #define pylith_faults_kinsrcconstrate_hh
 
-// Include directives ---------------------------------------------------
 #include "KinSrc.hh"
 
-// KinSrcConstRate ------------------------------------------------------
+// KinSrcConstRate --------------------------------------------------------------------------------
 /** @brief Constant slip rate slip-time function.
  *
  * Slip time function follows the integral of constant slip rate slip
@@ -42,7 +41,7 @@
 class pylith::faults::KinSrcConstRate : public KinSrc {
     friend class TestKinSrcConstRate; // unit testing
 
-    // PUBLIC METHODS ///////////////////////////////////////////////////////
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Default constructor.
@@ -180,7 +179,7 @@ public:
                    const PylithScalar constants[],
                    PylithScalar slipAcc[]);
 
-    // PROTECTED METHODS //////////////////////////////////////////////////
+    // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
 protected:
 
     /** Setup auxiliary subfields (discretization and query fns).
@@ -191,7 +190,7 @@ protected:
     void _auxiliaryFieldSetup(const spatialdata::units::Nondimensional& normalizer,
                               const spatialdata::geocoords::CoordSys* cs);
 
-    // NOT IMPLEMENTED //////////////////////////////////////////////////////
+    // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
 private:
 
     KinSrcConstRate(const KinSrcConstRate&); ///< Not implemented
