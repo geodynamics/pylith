@@ -44,6 +44,7 @@ libpylith_la_SOURCES = \
 	faults/FaultCohesiveKin.cc \
 	faults/FaultCohesiveImpulses.cc \
 	faults/AuxiliaryFactoryKinematic.cc \
+	faults/AuxiliaryFactoryDynamic.cc \
 	faults/KinSrc.cc \
 	faults/KinSrcStep.cc \
 	faults/KinSrcRamp.cc \
@@ -52,6 +53,7 @@ libpylith_la_SOURCES = \
 	faults/KinSrcLiuCos.cc \
 	faults/KinSrcTimeHistory.cc \
 	faults/KinSrcAuxiliaryFactory.cc \
+	faults/TractionPerturbation.cc \
 	faults/TopologyOps.cc \
 	faults/FaultOps.cc \
 	feassemble/PhysicsImplementation.cc \
