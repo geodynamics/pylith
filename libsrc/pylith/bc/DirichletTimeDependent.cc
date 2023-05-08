@@ -374,32 +374,32 @@ pylith::bc::_DirichletTimeDependent::setKernelConstraint(pylith::feassemble::Con
     const int bitUse = bitInitial | bitRate | bitTimeHistory;
     switch (bitUse) {
     case 0x1:
-        bcKernel = (isScalarField) ? pylith::fekernels::TimeDependentFn::initial_scalar :
-                   pylith::fekernels::TimeDependentFn::initial_vector;
+        bcKernel = (isScalarField) ? pylith::fekernels::TimeDependentFn::initial_scalar_boundary :
+                   pylith::fekernels::TimeDependentFn::initial_vector_boundary;
         break;
     case 0x2:
-        bcKernel = (isScalarField) ? pylith::fekernels::TimeDependentFn::rate_scalar :
-                   pylith::fekernels::TimeDependentFn::rate_vector;
+        bcKernel = (isScalarField) ? pylith::fekernels::TimeDependentFn::rate_scalar_boundary :
+                   pylith::fekernels::TimeDependentFn::rate_vector_boundary;
         break;
     case 0x4:
-        bcKernel = (isScalarField) ? pylith::fekernels::TimeDependentFn::timeHistory_scalar :
-                   pylith::fekernels::TimeDependentFn::timeHistory_vector;
+        bcKernel = (isScalarField) ? pylith::fekernels::TimeDependentFn::timeHistory_scalar_boundary :
+                   pylith::fekernels::TimeDependentFn::timeHistory_vector_boundary;
         break;
     case 0x3:
-        bcKernel = (isScalarField) ? pylith::fekernels::TimeDependentFn::initialRate_scalar :
-                   pylith::fekernels::TimeDependentFn::initialRate_vector;
+        bcKernel = (isScalarField) ? pylith::fekernels::TimeDependentFn::initialRate_scalar_boundary :
+                   pylith::fekernels::TimeDependentFn::initialRate_vector_boundary;
         break;
     case 0x5:
-        bcKernel = (isScalarField) ? pylith::fekernels::TimeDependentFn::initialTimeHistory_scalar :
-                   pylith::fekernels::TimeDependentFn::initialTimeHistory_vector;
+        bcKernel = (isScalarField) ? pylith::fekernels::TimeDependentFn::initialTimeHistory_scalar_boundary :
+                   pylith::fekernels::TimeDependentFn::initialTimeHistory_vector_boundary;
         break;
     case 0x6:
-        bcKernel = (isScalarField) ? pylith::fekernels::TimeDependentFn::rateTimeHistory_scalar :
-                   pylith::fekernels::TimeDependentFn::rateTimeHistory_vector;
+        bcKernel = (isScalarField) ? pylith::fekernels::TimeDependentFn::rateTimeHistory_scalar_boundary :
+                   pylith::fekernels::TimeDependentFn::rateTimeHistory_vector_boundary;
         break;
     case 0x7:
-        bcKernel = (isScalarField) ? pylith::fekernels::TimeDependentFn::initialRateTimeHistory_scalar :
-                   pylith::fekernels::TimeDependentFn::initialRateTimeHistory_vector;
+        bcKernel = (isScalarField) ? pylith::fekernels::TimeDependentFn::initialRateTimeHistory_scalar_boundary :
+                   pylith::fekernels::TimeDependentFn::initialRateTimeHistory_vector_boundary;
         break;
     case 0x0: {
         pythia::journal::warning_t warning(_DirichletTimeDependent::pyreComponent);

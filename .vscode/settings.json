@@ -10,6 +10,7 @@
     },
     "files.associations": {
         "*.icc": "cpp",
+        "iosfwd": "cpp"
     },
     "python.formatting.autopep8Args": [
         "-max-line-length",
@@ -25,6 +26,7 @@
         }
     ],
     "cSpell.words": [
+        "Aagaard",
         "aprepro",
         "automake",
         "autotools",
@@ -34,6 +36,7 @@
         "dm",
         "drucker",
         "elastoplastic",
+        "Knepley",
         "neumann",
         "nodeset",
         "partitioner",
@@ -44,10 +47,12 @@
         "preconditioner",
         "prestep",
         "pset",
+        "pylith",
         "raphson",
         "scec",
         "snes",
         "spatialdata",
+        "spatialdb",
         "trelis",
         "viscoelastic",
         "xdmf"

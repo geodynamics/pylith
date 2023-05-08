@@ -34,7 +34,49 @@ class pylith::fekernels::BoundaryDirections {
     // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
 public:
 
-    /* Compute tangential directions for boundary in 3-D.
+    /** Transform values from (tangential, normal) to (x, y).
+     *
+     * @param[out] valueXY Values in xy coordinate system.
+     * @param[in] valuesTN Values in tagential-normal coordinate system.
+     * @param[in] normalDir Normal direction unit vector.
+     */
+    static inline
+    void toXY(PylithReal valuesXY[],
+              const PylithReal valuesTN[],
+              const PylithReal normalDir[]) {
+        const PylithInt _dim = 2;
+        const PylithReal tanDir[2] = {-normalDir[1], normalDir[0] };
+
+        for (PylithInt i = 0; i < _dim; ++i) {
+            valuesXY[i] += valuesTN[0]*tanDir[i] + valuesTN[1]*normalDir[i];
+        } // for
+    } // toXY
+
+    /** Transform values from (tangential 1, tangential 2, normal) to (x, y, z).
+     *
+     * @param[out] valueXYZ Values in xyz coordinate system.
+     * @param[in] valuesTN Values in tagential-normal coordinate system.
+     * @param[in] refDir1 Reference direction 1.
+     * @param[in] refDir2 Reference direction 2.
+     * @param[in] normalDir Normal direction unit vector.
+     */
+    static inline
+    void toXYZ(PylithReal valuesXYZ[],
+               const PylithReal valuesTN[],
+               const PylithReal refDir1[],
+               const PylithReal refDir2[],
+               const PylithReal normalDir[]) {
+        const PylithInt _dim = 3;
+
+        PylithScalar tanDir1[3], tanDir2[3];
+        BoundaryDirections::tangential_directions(tanDir1, tanDir2, refDir1, refDir2, normalDir);
+
+        for (PylithInt i = 0; i < _dim; ++i) {
+            valuesXYZ[i] += valuesTN[0]*tanDir1[i] + valuesTN[1]*tanDir2[i] + valuesTN[2]*normalDir[i];
+        } // for
+    } // toXYZ
+
+    /** Compute tangential directions for boundary in 3D.
      *
      * @param[out] tanDir1 First tangential direction.
      * @param[out] tanDIr2 Second tangential direction.
