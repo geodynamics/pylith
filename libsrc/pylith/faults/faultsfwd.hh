@@ -46,8 +46,9 @@ namespace pylith {
         class KinSrcAuxiliaryFactory;
 
         class FaultRheology;
-        class FaultFriction;
-
+        class FrictionStatic;
+        class FrictionSlipWeakening;
+        class AuxiliaryFactoryRheology;
         class TractionPerturbation;
 
         class TopologyOps;

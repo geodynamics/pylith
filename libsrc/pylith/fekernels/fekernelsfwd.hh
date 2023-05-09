@@ -73,6 +73,11 @@ namespace pylith {
         class AbsorbingDampers;
 
         class FaultCohesiveKin;
+        class FaultCohesiveDyn;
+
+        class FaultRheology;
+        class FrictionStatic;
+        class FrictionSlipWeakening;
 
         class BoundaryDirections;
     } // fekernels
