@@ -24,7 +24,7 @@
 #include "pylith/topology/Field.hh" // USES pylith::topology::Field::Discretization
 #include "pylith/utils/journals.hh" // USES pythia::journal::debug_t
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 namespace pylith {
     class _PlanePWave2D;
 } // pylith
@@ -163,7 +163,7 @@ class pylith::_PlanePWave2D {
         s[0] = vel_x(x[0], x[1], t);
         s[1] = vel_y(x[0], x[1], t);
 
-        return 0;
+        return PETSC_SUCCESS;
     } // solnkernel_vel
 
     static PetscErrorCode solnkernel_acc(PetscInt spaceDim,
@@ -180,7 +180,7 @@ class pylith::_PlanePWave2D {
         s[0] = acc_x(x[0], x[1], t);
         s[1] = acc_y(x[0], x[1], t);
 
-        return 0;
+        return PETSC_SUCCESS;
     } // solnkernel_acc
 
 public:
@@ -199,8 +199,8 @@ public:
         data->normalizer.setTimeScale(TIME_SCALE);
         data->normalizer.setPressureScale(PRESSURE_SCALE);
         data->normalizer.computeDensityScale();
-        data->formulation = pylith::problems::Physics::DYNAMIC;
 
+        data->formulation = pylith::problems::Physics::DYNAMIC;
         data->t = TIME_SNAPSHOT;
         data->dt = 0.05;
 
