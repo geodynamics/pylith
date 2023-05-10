@@ -54,10 +54,12 @@ pylith::faults::FaultOps::createDAEMassWeighting(pylith::feassemble::Integration
     integrationData->setMesh(dae_mass_weighting, wtMesh);
     integrationData->setField(dae_mass_weighting, wtField);
 
+#if 0
     { // TEMPORARY DEBUGGING
         solution->view("SOLUTION", pylith::topology::Field::VIEW_LAYOUT);
         wtField->view("DAE WEIGHTING", pylith::topology::Field::VIEW_LAYOUT);
     } // TEMPORARY DEBUGGING
+#endif
 
     PYLITH_METHOD_END;
 } // createDAEMassWeighting
