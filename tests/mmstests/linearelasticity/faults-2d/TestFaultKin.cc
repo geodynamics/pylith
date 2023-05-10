@@ -143,9 +143,9 @@ pylith::TestFaultKin::_initialize(void) {
     if (pylith::problems::Physics::QUASISTATIC == _data->formulation) {
         assert(1 == _data->numSolnSubfieldsDomain);
     } else {
-        assert(pylith::problems::Physics::DYNAMIC == _data->formulation);
+        assert(pylith::problems::Physics::DYNAMIC_IMEX == _data->formulation);
         assert(2 == _data->numSolnSubfieldsDomain);
-        factory.addVelocity(_data->solnDiscretizations[1]);
+        factory.addVelocity(_data->solnDiscretizations[iField++]);
     } // if/else
     factory.addLagrangeMultiplierFault(_data->solnDiscretizations[iField++]);
     _problem->setSolution(_solution);
