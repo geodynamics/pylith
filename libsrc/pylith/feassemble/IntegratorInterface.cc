@@ -292,7 +292,7 @@ pylith::feassemble::IntegratorInterface::setKernels(const std::vector<ResidualKe
 
             const PetscInt interfacePart = getWeakFormPart(patchKernels[i].part, patchKernels[i].face, patchValue);
 
-            switch (kernels[i].face) {
+            switch (patchKernels[i].face) {
             case IntegratorInterface::NEGATIVE_FACE:
                 key = iter->second.negative.getPetscKey(solution, interfacePart, patchKernels[i].subfield.c_str());
                 break;
