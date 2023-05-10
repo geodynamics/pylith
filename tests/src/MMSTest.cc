@@ -75,25 +75,26 @@ pylith::testing::MMSTest::testDiscretization(void) {
     PYLITH_METHOD_BEGIN;
     assert(_problem);
 
+    PetscErrorCode err = PETSC_SUCCESS;
+    pythia::journal::debug_t debug(GenericComponent::getName());
+    if (debug.state()) {
+        err = PetscOptionsSetValue(NULL, "-dm_plex_print_fem", "2");PYLITH_CHECK_ERROR(err);
+        err = PetscOptionsSetValue(NULL, "-dm_plex_print_l2", "2");PYLITH_CHECK_ERROR(err);
+    } // if
+
     _initialize();
 
-    pythia::journal::debug_t debug(GenericComponent::getName());
     const pylith::topology::Field* solution = _problem->getSolution();assert(solution);
     if (debug.state()) {
         solution->view("Solution field layout", pylith::topology::Field::VIEW_LAYOUT);
     } // if
 
-    PetscErrorCode err = 0;
     const PylithReal tolerance = -1.0;
     const pylith::string_vector subfieldNames = solution->getSubfieldNames();
     const size_t numSubfields = subfieldNames.size();
     pylith::real_array error(numSubfields);
     err = DMSNESCheckDiscretization(_problem->getPetscSNES(), _problem->getPetscDM(), _problem->getStartTime(),
                                     _solutionExactVec, tolerance, &error[0]);PYLITH_CHECK_ERROR(err);
-
-    if (debug.state()) {
-        solution->view("Solution field");
-    } // if
 
     bool fail = false;
     std::ostringstream msg;
@@ -119,7 +120,7 @@ pylith::testing::MMSTest::testResidual(void) {
     PYLITH_METHOD_BEGIN;
     assert(_problem);
 
-    PetscErrorCode err = 0;
+    PetscErrorCode err = PETSC_SUCCESS;
     pythia::journal::debug_t debug(GenericComponent::getName());
     if (debug.state()) {
         err = PetscOptionsSetValue(NULL, "-dm_plex_print_fem", "2");PYLITH_CHECK_ERROR(err);
@@ -161,7 +162,7 @@ pylith::testing::MMSTest::testJacobianTaylorSeries(void) {
 
     assert(_solutionExactVec);
     assert(_solutionDotExactVec);
-    PetscErrorCode err = 0;
+    PetscErrorCode err = PETSC_SUCCESS;
     const PylithReal tolerance = -1.0;
     PetscBool isLinear = PETSC_FALSE;
     PylithReal convergenceRate = 0.0;
@@ -186,7 +187,7 @@ pylith::testing::MMSTest::testJacobianFiniteDiff(void) {
     PYLITH_METHOD_BEGIN;
     assert(_problem);
 
-    PetscErrorCode err = 0;
+    PetscErrorCode err = PETSC_SUCCESS;
     err = PetscOptionsSetValue(NULL, "-ts_max_snes_failures", "1");PYLITH_CHECK_ERROR(err);
     err = PetscOptionsSetValue(NULL, "-ts_error_if_step_fails", "false");PYLITH_CHECK_ERROR(err);
     _initialize();
