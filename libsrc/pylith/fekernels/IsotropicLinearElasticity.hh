@@ -533,7 +533,7 @@ public:
                                      const PylithInt numConstants,
                                      const PylithScalar constants[],
                                      PylithScalar f0[]) {
-        const PylithInt _dim = 2;assert(_dim == dim);
+        const PylithInt _dim = 2;assert(_dim == dim+1);
 
         pylith::fekernels::Elasticity::StrainContext strainContext;
         pylith::fekernels::Elasticity::setStrainContext(&strainContext, _dim, numS, sOff, sOff_x, s, s_t, s_x, x);
@@ -580,7 +580,7 @@ public:
                                      const PylithInt numConstants,
                                      const PylithScalar constants[],
                                      PylithScalar f0[]) {
-        const PylithInt _dim = 2;assert(_dim == dim);
+        const PylithInt _dim = 2;assert(_dim == dim+1);
 
         pylith::fekernels::Elasticity::StrainContext strainContext;
         pylith::fekernels::Elasticity::setStrainContext(&strainContext, _dim, numS, sOff, sOff_x, s, s_t, s_x, x);
@@ -627,7 +627,7 @@ public:
                                               const PylithInt numConstants,
                                               const PylithScalar constants[],
                                               PylithScalar f0[]) {
-        const PylithInt _dim = 2;assert(_dim == dim);
+        const PylithInt _dim = 2;assert(_dim == dim+1);
 
         pylith::fekernels::Elasticity::StrainContext strainContext;
         pylith::fekernels::Elasticity::setStrainContext(&strainContext, _dim, numS, sOff, sOff_x, s, s_t, s_x, x);
@@ -674,7 +674,7 @@ public:
                                               const PylithInt numConstants,
                                               const PylithScalar constants[],
                                               PylithScalar f0[]) {
-        const PylithInt _dim = 2;assert(_dim == dim);
+        const PylithInt _dim = 2;assert(_dim == dim+1);
 
         pylith::fekernels::Elasticity::StrainContext strainContext;
         pylith::fekernels::Elasticity::setStrainContext(&strainContext, _dim, numS, sOff, sOff_x, s, s_t, s_x, x);
@@ -1074,7 +1074,7 @@ public:
                                      const PylithInt numConstants,
                                      const PylithScalar constants[],
                                      PylithScalar f0[]) {
-        const PylithInt _dim = 3;assert(_dim == dim);
+        const PylithInt _dim = 3;assert(_dim == dim+1);
 
         pylith::fekernels::Elasticity::StrainContext strainContext;
         pylith::fekernels::Elasticity::setStrainContext(&strainContext, _dim, numS, sOff, sOff_x, s, s_t, s_x, x);
@@ -1121,7 +1121,7 @@ public:
                                      const PylithInt numConstants,
                                      const PylithScalar constants[],
                                      PylithScalar f0[]) {
-        const PylithInt _dim = 3;assert(_dim == dim);
+        const PylithInt _dim = 3;assert(_dim == dim+1);
 
         pylith::fekernels::Elasticity::StrainContext strainContext;
         pylith::fekernels::Elasticity::setStrainContext(&strainContext, _dim, numS, sOff, sOff_x, s, s_t, s_x, x);
@@ -1168,7 +1168,7 @@ public:
                                               const PylithInt numConstants,
                                               const PylithScalar constants[],
                                               PylithScalar f0[]) {
-        const PylithInt _dim = 3;assert(_dim == dim);
+        const PylithInt _dim = 3;assert(_dim == dim+1);
 
         pylith::fekernels::Elasticity::StrainContext strainContext;
         pylith::fekernels::Elasticity::setStrainContext(&strainContext, _dim, numS, sOff, sOff_x, s, s_t, s_x, x);
@@ -1215,7 +1215,7 @@ public:
                                               const PylithInt numConstants,
                                               const PylithScalar constants[],
                                               PylithScalar f0[]) {
-        const PylithInt _dim = 3;assert(_dim == dim);
+        const PylithInt _dim = 3;assert(_dim == dim+1);
 
         pylith::fekernels::Elasticity::StrainContext strainContext;
         pylith::fekernels::Elasticity::setStrainContext(&strainContext, _dim, numS, sOff, sOff_x, s, s_t, s_x, x);
