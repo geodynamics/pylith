@@ -108,7 +108,7 @@ public:
 
         assert(numS >= 2);
 
-        const PylithInt spaceDim = dim + 1; // :KLUDGE: dim passed in is spaceDim-1
+        const PylithInt spaceDim = dim + 1; // dim passed in is spaceDim-1
 
         const PylithInt fOffN = 0;
         const PylithInt sOffLagrange = sOff[numS-1];
@@ -150,7 +150,7 @@ public:
 
         assert(numS >= 2);
 
-        const PylithInt spaceDim = dim + 1; // :KLUDGE: dim passed in is spaceDim-1
+        const PylithInt spaceDim = dim + 1; // dim passed in is spaceDim-1
 
         const PylithInt fOffP = 0;
         const PylithInt sOffLagrange = sOff[numS-1];
@@ -195,7 +195,7 @@ public:
         assert(numS >= 2);
         assert(numA >= 1);
 
-        const PylithInt spaceDim = dim + 1; // :KLUDGE: dim passed in is spaceDim-1
+        const PylithInt spaceDim = dim + 1; // dim passed in is spaceDim-1
         const PylithInt i_slip = 0;
         const PylithInt i_disp = 0;
 
@@ -270,7 +270,7 @@ public:
         assert(numS >= 3);
         assert(numA >= 1);
 
-        const PylithInt spaceDim = dim + 1; // :KLUDGE: dim passed in is spaceDim-1
+        const PylithInt spaceDim = dim + 1; // dim passed in is spaceDim-1
         const PylithInt i_slipAcc = numA-1;
 
         const PylithScalar* slipAcc = &a[aOff[i_slipAcc]];
@@ -332,7 +332,7 @@ public:
         assert(sOff);
         assert(n);
 
-        const PylithInt spaceDim = dim + 1; // :KLUDGE: dim passed in is spaceDim-1
+        const PylithInt spaceDim = dim + 1; // dim passed in is spaceDim-1
 
         const PylithInt gOffN = 0;
         const PylithInt ncols = spaceDim;
@@ -371,7 +371,7 @@ public:
         assert(sOff);
         assert(n);
 
-        const PylithInt spaceDim = dim + 1; // :KLUDGE: dim passed in is spaceDim-1
+        const PylithInt spaceDim = dim + 1; // dim passed in is spaceDim-1
 
         const PylithInt ncols = spaceDim;
 
@@ -411,7 +411,7 @@ public:
         assert(sOff);
         assert(n);
 
-        const PylithInt spaceDim = dim+1; // :KLUDGE: dim passed in is spaceDim-1
+        const PylithInt spaceDim = dim+1; // dim passed in is spaceDim-1
 
         const PylithInt gOffN = 0;
         const PylithInt gOffP = gOffN+spaceDim*spaceDim;
@@ -441,6 +441,8 @@ public:
                  pylith::fekernels::Elasticity::tractionfn_type tractionFn,
                  const pylith::fekernels::TensorOps& tensorOps,
                  PylithScalar f0[]) {
+        const PylithInt spaceDim = dim+1; // dim passed in is spaceDim-1
+
         // Incoming solution fields.
         const PylithInt i_lagrange = 2;
 
@@ -459,7 +461,7 @@ public:
         tractionFn(stress, n, traction);
 
         const PylithScalar* lagrange = &s[sOff[i_lagrange]];
-        for (PylithInt i = 0; i < dim; ++i) {
+        for (PylithInt i = 0; i < spaceDim; ++i) {
             f0[i] += lagrange[i] - traction[i];
         } // for
     } // f0l_neg
@@ -482,6 +484,8 @@ public:
                  pylith::fekernels::Elasticity::tractionfn_type tractionFn,
                  const pylith::fekernels::TensorOps& tensorOps,
                  PylithScalar f0[]) {
+        const PylithInt spaceDim = dim+1; // dim passed in is spaceDim-1
+
         // Incoming solution fields.
         const PylithInt i_lagrange = 2;
 
@@ -500,7 +504,7 @@ public:
         tractionFn(stress, n, traction);
 
         const PylithScalar* lagrange = &s[sOff[i_lagrange]];
-        for (PylithInt i = 0; i < dim; ++i) {
+        for (PylithInt i = 0; i < spaceDim; ++i) {
             f0[i] += lagrange[i] + traction[i];
         } // for
     } // f0l_pos
@@ -535,7 +539,7 @@ public:
         assert(Jf0);
         assert(sOff);
 
-        const PylithInt spaceDim = dim+1; // :KLUDGE: dim passed in is spaceDim-1
+        const PylithInt spaceDim = dim+1; // dim passed in is spaceDim-1
 
         for (PylithInt i = 0; i < spaceDim; ++i) {
             Jf0[i*spaceDim+i] += +1.0;
@@ -572,7 +576,7 @@ public:
         assert(Jf0);
         assert(sOff);
 
-        const PylithInt spaceDim = dim+1; // :KLUDGE: dim passed in is spaceDim-1
+        const PylithInt spaceDim = dim+1; // dim passed in is spaceDim-1
 
         for (PylithInt i = 0; i < spaceDim; ++i) {
             Jf0[i*spaceDim+i] += +1.0;

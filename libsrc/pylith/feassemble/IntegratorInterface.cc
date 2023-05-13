@@ -540,6 +540,7 @@ pylith::feassemble::IntegratorInterface::computeLHSResidual(pylith::topology::Fi
                 PetscInt part = getWeakFormPart(key.part, IntegratorInterface::FAULT_FACE, patchValue);
                 err = DMSetAuxiliaryVec(dmSoln, key.label, -key.value, part, daeWeighting->getLocalVector());PYLITH_CHECK_ERROR(err);
 
+                // :TODO: Matt says setting the auxiliary vector the faces is not necessary.
                 part = getWeakFormPart(key.part, IntegratorInterface::NEGATIVE_FACE, patchValue);
                 err = DMSetAuxiliaryVec(dmSoln, key.label, -key.value, part, daeWeighting->getLocalVector());PYLITH_CHECK_ERROR(err);
 
