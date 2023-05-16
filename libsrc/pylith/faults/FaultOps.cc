@@ -100,9 +100,11 @@ pylith::faults::FaultOps::updateDAEMassWeighting(pylith::feassemble::Integration
         } // if
     } // for
 
+#if 0
     { // TEMPORARY DEBUGGING
         weighting->view("DAE WEIGHTING", pylith::topology::Field::VIEW_ALL);
     } // TEMPORARY DEBUGGING
+#endif
 
     PYLITH_METHOD_END;
 } // updateDAEMassWeighting
