@@ -656,7 +656,7 @@ pylith::topology::Field::createOutputVector(void) {
     PetscInt numRegions = 0;
     err = DMGetNumDS(dmOutput, &numRegions);PYLITH_CHECK_ERROR(err);
     for (PetscInt i = 0; i < numRegions; ++i) {
-        err = DMGetRegionNumDS(dmOutput, i, NULL, NULL, &dsOutput);PYLITH_CHECK_ERROR(err);
+        err = DMGetRegionNumDS(dmOutput, i, NULL, NULL, &dsOutput, NULL);PYLITH_CHECK_ERROR(err);
         err = PetscDSSetUp(dsOutput);PYLITH_CHECK_ERROR(err);
     } // for
 
