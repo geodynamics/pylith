@@ -67,6 +67,17 @@ class TestCase(FullTestCase):
                 vertex_fields=["displacement"],
                 defaults=defaults,
             ),
+            Check(
+                mesh_entities=["fault"],
+                vertex_fields=["slip"],
+                defaults=defaults,
+            ),
+            Check(
+                mesh_entities=["fault"],
+                vertex_fields=["lagrange_multiplier_fault"],
+                scale = 1.0e+6,
+                defaults=defaults,
+            ),
         ]
 
     def run_pylith(self, testName, args, nprocs=1):

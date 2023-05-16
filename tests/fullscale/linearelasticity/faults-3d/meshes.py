@@ -51,7 +51,7 @@ class HexGmsh(object):
         "mat_elastic": MeshEntity(ncells=150, ncorners=8, nvertices=252+36),
 
         # Faults
-        "fault": MeshEntity(ncells=10, ncorners=4, nvertices=11),
+        "fault": MeshEntity(ncells=25, ncorners=4, nvertices=36),
 
         # Boundaries
         "bc_xneg": MeshEntity(ncells=25, ncorners=4, nvertices=36),

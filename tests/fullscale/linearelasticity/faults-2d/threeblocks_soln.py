@@ -73,11 +73,21 @@ class AnalyticalSoln(object):
             "cauchy_strain": self.strain,
             "cauchy_stress": self.stress,
             "initial_amplitude": self.displacement,
+            "slip": {
+                "fault_xmid": self.slip_xmid,
+                "fault_xneg": self.slip_xneg,
+            },
+            "lagrange_multiplier_fault": self.lagrange_multiplier_fault,
         }
         return
 
     def getField(self, name, mesh_entity, pts):
-        return self.fields[name](pts)
+        if name == "slip":
+            field = self.fields[name][mesh_entity](pts)
+        else:
+            field = self.fields[name](pts)
+
+        return field
 
     def getMask(self, name, mesh_entity, pts):
         mask = None
@@ -136,6 +146,30 @@ class AnalyticalSoln(object):
         stress[0,:, 2] = szz
         stress[0,:, 3] = sxy
         return stress
+
+    def slip_xmid(self, locs):
+        """Compute slip field on fault xmid.
+        """
+        (npts, dim) = locs.shape
+        slip = numpy.zeros((1, npts, 2), dtype=numpy.float64)
+        slip[0,:, 1] = -2.0
+        return slip
+
+    def slip_xneg(self, locs):
+        """Compute slip field on fault xneg.
+        """
+        (npts, dim) = locs.shape
+        slip = numpy.zeros((1, npts, 2), dtype=numpy.float64)
+        slip[0,:, 1] = +2.0
+        return slip
+
+    def lagrange_multiplier_fault(self, locs):
+        """Compute Lagrange multiplier on faults.
+        """
+        (npts, dim) = locs.shape
+        traction = numpy.zeros((1, npts, 2), dtype=numpy.float64)
+        return traction
+
 
 
 # End of file

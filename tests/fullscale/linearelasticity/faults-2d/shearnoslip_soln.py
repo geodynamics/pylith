@@ -83,7 +83,9 @@ class AnalyticalSoln(object):
                 "bc_xpos": self.displacement,
                 "bc_yneg": self.bc_traction,
                 "bc_ypos": self.bc_traction,
-            }
+            },
+            "slip": self.slip,
+            "lagrange_multiplier_fault": self.lagrange_multiplier_fault,
         }
         return
 
@@ -153,6 +155,21 @@ class AnalyticalSoln(object):
         traction = numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
         traction[0,:, 0] = -sxy
         traction[0,:, 1] = 0.0
+        return traction
+
+    def slip(self, locs):
+        """Compute slip field.
+        """
+        (npts, dim) = locs.shape
+        slip = numpy.zeros((1, npts, 2), dtype=numpy.float64)
+        return slip
+
+    def lagrange_multiplier_fault(self, locs):
+        """Compute Lagrange multiplier on faults.
+        """
+        (npts, dim) = locs.shape
+        traction = numpy.zeros((1, npts, 2), dtype=numpy.float64)
+        traction[:,:,1] = sxy
         return traction
 
 
