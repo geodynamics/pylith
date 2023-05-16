@@ -32,7 +32,6 @@
 #include "pylith/materials/Elasticity.hh" // USES Elasticity
 #include "pylith/materials/IsotropicLinearElasticity.hh" // USES IsotropicLinearElasticity
 #include "pylith/bc/DirichletUserFn.hh" // USES DirichletUserFn
-#include "pylith/bc/NeumannUserFn.hh" // USES NeumannUserFn
 
 #include "pylith/topology/Mesh.hh" // USES pylith::topology::Mesh::cells_label_name
 #include "pylith/topology/Field.hh" // USES pylith::topology::Field::Discretization
@@ -90,7 +89,7 @@ class pylith::_ConstRateDynamic {
     // Initiation time
     static double initiation_time(const double x,
                                   const double y) {
-        return 0.0;
+        return 0.0 * TIME_SCALE;
     } // initiation_time
 
     static const char* time_units(void) {
@@ -105,7 +104,7 @@ class pylith::_ConstRateDynamic {
 
     static double finalslip_leftlateral(const double x,
                                         const double y) {
-        return SLIPRATE * TIME_SNAPSHOT;
+        return SLIPRATE * TIME_SNAPSHOT * LENGTH_SCALE;
     } // finalslip_leftlateral
 
     static const char* slip_units(void) {
@@ -173,23 +172,6 @@ class pylith::_ConstRateDynamic {
                                   const double y) {
         return 0.0;
     } // faulttraction_y
-
-    static PetscErrorCode bckernel_disp(PetscInt spaceDim,
-                                        PetscReal t,
-                                        const PetscReal x[],
-                                        PetscInt numComponents,
-                                        PetscScalar* s,
-                                        void* context) {
-        assert(2 == spaceDim);
-        assert(x);
-        assert(2 == numComponents);
-        assert(s);
-
-        s[0] = 0.0;
-        s[1] = disp_y(x[0], x[1], 0);
-
-        return 0;
-    } // bckernel_disp
 
     static PetscErrorCode solnkernel_disp(PetscInt spaceDim,
                                           PetscReal t,
@@ -304,9 +286,10 @@ public:
         TestFaultKin_Data* data = new TestFaultKin_Data();assert(data);
 
         data->journalName = "ConstRateDynamic";
+        data->allowZeroResidual = true;
+        data->isJacobianLinear = true;
 
         data->meshFilename = ":UNKNOWN:"; // Set in child class.
-        data->boundaryLabel = "boundary";
 
         data->normalizer.setLengthScale(LENGTH_SCALE);
         data->normalizer.setTimeScale(TIME_SCALE);
@@ -391,6 +374,7 @@ public:
             bc->setLabelValue(1);
             bc->setConstrainedDOF(constrainedDOF, numConstrained);
             bc->setUserFn(solnkernel_disp);
+            bc->setUserFnDot(solnkernel_vel);
             data->bcs[0] = bc;
         } // boundary_xneg displacement
         { // boundary_xneg velocity
@@ -400,6 +384,7 @@ public:
             bc->setLabelValue(1);
             bc->setConstrainedDOF(constrainedDOF, numConstrained);
             bc->setUserFn(solnkernel_vel);
+            bc->setUserFnDot(solnkernel_acc);
             data->bcs[1] = bc;
         } // boundary_xneg velocity
         { // boundary_xpos displacement
@@ -409,6 +394,7 @@ public:
             bc->setLabelValue(1);
             bc->setConstrainedDOF(constrainedDOF, numConstrained);
             bc->setUserFn(solnkernel_disp);
+            bc->setUserFnDot(solnkernel_vel);
             data->bcs[2] = bc;
         } // boundary_xpos displacement
         { // boundary_xpos velocity
@@ -418,6 +404,7 @@ public:
             bc->setLabelValue(1);
             bc->setConstrainedDOF(constrainedDOF, numConstrained);
             bc->setUserFn(solnkernel_vel);
+            bc->setUserFnDot(solnkernel_acc);
             data->bcs[3] = bc;
         } // boundary_xpos velocity
 
