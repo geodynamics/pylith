@@ -243,7 +243,7 @@ public:
         data->materials.resize(3);
         { // xneg
             pylith::materials::Elasticity* material = new pylith::materials::Elasticity();assert(material);
-            material->setFormulation(pylith::problems::Physics::QUASISTATIC);
+            material->setFormulation(data->formulation);
             material->useBodyForce(false);
             material->setDescription("Isotropic Linear Elasticity Plane Strain");
             material->setLabelValue(10);
@@ -252,7 +252,7 @@ public:
         } // xneg
         { // mid
             pylith::materials::Elasticity* material = new pylith::materials::Elasticity();assert(material);
-            material->setFormulation(pylith::problems::Physics::QUASISTATIC);
+            material->setFormulation(data->formulation);
             material->useBodyForce(false);
             material->setDescription("Isotropic Linear Elasticity Plane Strain");
             material->setLabelValue(20);
@@ -261,7 +261,7 @@ public:
         } // mid
         { // xpos
             pylith::materials::Elasticity* material = new pylith::materials::Elasticity();assert(material);
-            material->setFormulation(pylith::problems::Physics::QUASISTATIC);
+            material->setFormulation(data->formulation);
             material->useBodyForce(false);
             material->setDescription("Isotropic Linear Elasticity Plane Strain");
             material->setLabelValue(15);

@@ -202,7 +202,6 @@ pylith::TestFaultKin_Data::TestFaultKin_Data(void) :
     spaceDim(2),
     meshFilename(nullptr),
     meshOptions(nullptr),
-    boundaryLabel(nullptr),
     useAsciiMesh(true),
 
     jacobianConvergenceRate(1.0),
