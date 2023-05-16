@@ -123,14 +123,11 @@ pylith::testing::MMSTest::testResidual(void) {
     PetscErrorCode err = PETSC_SUCCESS;
     pythia::journal::debug_t debug(GenericComponent::getName());
     if (debug.state()) {
-        err = PetscOptionsSetValue(NULL, "-dm_plex_print_fem", "2");PYLITH_CHECK_ERROR(err);
+        err = PetscOptionsSetValue(NULL, "-dm_plex_print_fem", "");PYLITH_CHECK_ERROR(err);
         err = PetscOptionsSetValue(NULL, "-dm_plex_print_l2", "2");PYLITH_CHECK_ERROR(err);
     } // if
 
     _initialize();
-    if (_problem->getFormulation() == pylith::problems::Physics::DYNAMIC) {
-        _problem->_integrationData->removeField(pylith::feassemble::IntegrationData::lumped_jacobian_inverse);
-    } // if
 
     assert(_solutionExactVec);
     assert(_solutionDotExactVec);
@@ -221,6 +218,7 @@ pylith::testing::MMSTest::_initialize(void) {
     _problem->setMaxTimeSteps(1);
     _problem->preinitialize(*_mesh);
     _problem->verifyConfiguration();
+    _problem->_integrationData->isMMSTest(true);
 
     _problem->initialize();
     TSSetUp(_problem->getPetscTS());

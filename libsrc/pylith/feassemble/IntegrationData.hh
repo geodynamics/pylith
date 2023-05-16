@@ -129,6 +129,18 @@ public:
      */
     pylith::topology::Mesh* getMesh(const std::string& name) const;
 
+    /** Set MMS test flag.
+     *
+     * @param[in] flag True if MMS test, false otherwise.
+     */
+    void isMMSTest(const bool flag);
+
+    /** Get MMS test flag.
+     *
+     * returns True if MMS test, false otherwise.
+     */
+    bool isMMSTest(void) const;
+
     /** Dump integration data to std::string.
      *
      * @returns Integration data information as string.
@@ -145,6 +157,7 @@ private:
     scalars_map_t _scalars;
     fields_map_t _fields;
     meshes_map_t _meshes;
+    bool _isMMSTest;
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
 private:

@@ -562,7 +562,8 @@ pylith::problems::TimeDependent::computeRHSResidual(PetscVec residualVec,
     PetscErrorCode err = VecSet(residualVec, 0.0);PYLITH_CHECK_ERROR(err);
     residual->scatterLocalToVector(residualVec, ADD_VALUES);
 
-    if (hasLumpedJacobianInverse) {
+    const bool isMMSTest = _integrationData->isMMSTest();
+    if (hasLumpedJacobianInverse && !isMMSTest) {
         // Multiply RHS, G(t,s), by M^{-1}
         const pylith::topology::Field* jacobianLumpedInv =
             _integrationData->getField(pylith::feassemble::IntegrationData::lumped_jacobian_inverse);assert(jacobianLumpedInv);

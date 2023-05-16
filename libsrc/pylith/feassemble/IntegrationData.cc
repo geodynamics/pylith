@@ -220,6 +220,22 @@ pylith::feassemble::IntegrationData::getMesh(const std::string& name) const {
 
 
 // ------------------------------------------------------------------------------------------------
+// Set MMS test flag.
+void
+pylith::feassemble::IntegrationData::isMMSTest(const bool flag) {
+    _isMMSTest = flag;
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// Get MMS test flag.
+bool
+pylith::feassemble::IntegrationData::isMMSTest(void) const {
+    return _isMMSTest;
+}
+
+
+// ------------------------------------------------------------------------------------------------
 // Dump integration data to std::ostream.
 std::string
 pylith::feassemble::IntegrationData::str(void) const {
