@@ -296,6 +296,15 @@ public:
     /// Create global vector with no constrained degrees of freedom for output.
     void createOutputVector(void);
 
+    // PRIVATE METHODS ////////////////////////////////////////////////////////////////////////////
+private:
+
+    /// View field layout.
+    void _viewLayout(void) const;
+
+    /// View values in local vector of field.
+    void _viewValues(void) const;
+
     // PRIVATE TYPEDEFS ///////////////////////////////////////////////////////////////////////////
 private:
 
