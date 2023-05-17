@@ -241,6 +241,7 @@ pylith::testing::MMSTest::_initialize(void) {
         mesh.view();
         std::string options = std::string(":") + std::string(GenericComponent::getName()) + std::string("_mesh.tex:ascii_latex");
         mesh.view(options.c_str());
+        solution->view("SOLUTION LAYOUT", pylith::topology::Field::VIEW_LAYOUT);
     } // if
 
     PYLITH_METHOD_END;

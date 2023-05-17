@@ -16,7 +16,7 @@
 // ----------------------------------------------------------------------
 //
 
-/** @file tests/mmstests/faults/TestFaultKin2D_OneFaultShearNoSlip.cc
+/** @file tests/mmstests/linearelasticity/faults-2d/OneFaultShearNoSlip.cc
  *
  * Square domain of sides 12.0 km with a single through-going fault at y=+2 km.
  * Simple shear with no slip.

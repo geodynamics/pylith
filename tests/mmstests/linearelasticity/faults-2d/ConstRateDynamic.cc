@@ -9,14 +9,14 @@
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
 //
-// Copyright (c) 2010-2021 University of California, Davis
+// Copyright (c) 2010-2023 University of California, Davis
 //
 // See LICENSE.md for license information.
 //
 // ----------------------------------------------------------------------
 //
 
-/** @file tests/mmstests/faults/TestFaultKin2D_ConstRateDynamic.cc
+/** @file tests/mmstests/linearelasticity/faults-2d/ConstRateDynamic.cc
  *
  * The domain is two cells, one on each side of a fault. The solution corresponds to a constant
  * left-lateral slip rate of 1.5 m/s with fixed boundaries.
