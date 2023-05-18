@@ -66,6 +66,15 @@ public:
         const PylithReal* disp_t;
         const PylithReal* disp_x;
         const PylithReal* x;
+
+        StrainContext(void) :
+            dim(0),
+            disp(nullptr),
+            disp_t(nullptr),
+            disp_x(nullptr),
+            x(nullptr) {}
+
+
     };
 
     // Interface for functions computing strain.

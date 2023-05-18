@@ -86,6 +86,13 @@ public:
         PylithReal bulkModulus;
         pylith::fekernels::Tensor refStress;
         pylith::fekernels::Tensor refStrain;
+
+        Context(void) :
+            pressure(0.0),
+            shearModulus(0.0),
+            bulkModulus(0.0) {}
+
+
     };
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////

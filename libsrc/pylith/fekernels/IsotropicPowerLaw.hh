@@ -103,6 +103,16 @@ public:
         pylith::fekernels::Tensor refStrain;
         pylith::fekernels::Tensor viscousStrain;
         pylith::fekernels::Tensor devStress;
+
+        Context(void) :
+            bulkModulus(0.0),
+            shearModulus(0.0),
+            powerLawRefStress(0.0),
+            powerLawRefStrainRate(0.0),
+            powerLawExponent(0.0),
+            dt(0.0) {}
+
+
     };
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
