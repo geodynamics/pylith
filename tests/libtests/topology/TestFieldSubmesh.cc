@@ -90,7 +90,7 @@ pylith::topology::TestFieldSubmesh::testSection(void) { // testSection
     Mesh submesh(mesh, _TestFieldSubmesh::label);
     Field field(submesh);
 
-    PetscSection section = field.localSection();
+    PetscSection section = field.selectedSection();
     CPPUNIT_ASSERT(section);
 
     PYLITH_METHOD_END;
@@ -256,7 +256,7 @@ pylith::topology::TestFieldSubmesh::testCloneSection(void) { // testCloneSection
     Field fieldSrc(submesh);
     { // Setup source field
         fieldSrc.newSection(Field::VERTICES_FIELD, fiberDim);
-        PetscSection section = fieldSrc.localSection();CPPUNIT_ASSERT(section);
+        PetscSection section = fieldSrc.selectedSection();CPPUNIT_ASSERT(section);
         int iV = 0;
         for (PetscInt v = vStart; v < vEnd; ++v) {
             err = PetscSectionAddConstraintDof(section, v, nconstraints[iV++]);PYLITH_CHECK_ERROR(err);
@@ -273,7 +273,7 @@ pylith::topology::TestFieldSubmesh::testCloneSection(void) { // testCloneSection
 
     Field field(submesh);
     field.cloneSection(fieldSrc);
-    PetscSection section = field.localSection();CPPUNIT_ASSERT(section);
+    PetscSection section = field.selectedSection();CPPUNIT_ASSERT(section);
     PetscVec vec = field.localVector();CPPUNIT_ASSERT(vec);
 
     int iV = 0;

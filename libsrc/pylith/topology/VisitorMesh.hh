@@ -39,7 +39,15 @@
 class pylith::topology::VecVisitorMesh { // VecVisitorMesh
     friend class TestVecVisitorMesh; // unit testing
 
-    // PUBLIC METHODS ///////////////////////////////////////////////////////
+    // PUBLIC ENUMS ///////////////////////////////////////////////////////////////////////////////
+public:
+
+    enum SectionEnum {
+        LOCAL_SECTION=0,
+        GLOBAL_SECTION=1,
+    };
+
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
     /** Constructor with field over a mesh.
@@ -72,17 +80,23 @@ public:
     /// Clear cached data.
     void clear(void);
 
+    /** Set selection (local or global) of section.
+     *
+     * @param[in] value
+     */
+    void selectSection(pylith::topology::VecVisitorMesh::SectionEnum value);
+
+    /** Get the PETSc current section.
+     *
+     * @returns PETSc current section.
+     */
+    PetscSection selectedSection(void) const;
+
     /** Get the array of values associated with the local PETSc Vec.
      *
      * @returns Array of values.
      */
     PetscScalar* localArray(void) const;
-
-    /** Get the PETSc section.
-     *
-     * @returns PETSc section.
-     */
-    PetscSection localSection(void) const;
 
     /** Get the local PETSc Vec.
      *
@@ -96,13 +110,6 @@ public:
      * @returns Fiber dimension.
      */
     PetscInt sectionDof(const PetscInt point) const;
-
-    /** Get fiber dimension for constraints at point.
-     *
-     * @param point Point in mesh.
-     * @returns Fiber dimension.
-     */
-    PetscInt sectionConstraintDof(const PetscInt point) const;
 
     /** Get fiber dimension for values of subfield at point.
      *
@@ -191,8 +198,10 @@ private:
 
     PetscDM _dm; ///< Cached PETSc dm for mesh.
     PetscVec _localVec; ///< Cached local PETSc Vec.
-    PetscSection _section; ///< Cached PETSc section.
+    PetscSection _localSection; ///< Cached PETSc local section.
+    PetscSection _globalSection; ///< Cached PETSc global section.
     PetscScalar* _localArray; ///< Cached local array
+    SectionEnum _selectedSection; ///< Current selected section.
 
     // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private:
@@ -248,7 +257,7 @@ private:
 
     const PetscMat _mat; ///< Cached PETSc matrix.
     PetscDM _dm; ///< Cached PETSc dm for mesh.
-    PetscSection _section; ///< Cached PETSc section.
+    PetscSection _localSection; ///< Cached PETSc local section.
     PetscSection _globalSection; ///< Cached PETSc global section.
 
     // NOT IMPLEMENTED //////////////////////////////////////////////////////

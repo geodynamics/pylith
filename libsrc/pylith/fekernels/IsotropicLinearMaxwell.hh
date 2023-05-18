@@ -100,6 +100,14 @@ public:
         pylith::fekernels::Tensor totalStrain;
         pylith::fekernels::Tensor refStress;
         pylith::fekernels::Tensor refStrain;
+
+        Context(void) :
+            shearModulus(0.0),
+            bulkModulus(0.0),
+            maxwellTime(0.0),
+            dt(0.0) {}
+
+
     };
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////

@@ -84,7 +84,7 @@ pylith::faults::FaultOps::updateDAEMassWeighting(pylith::feassemble::Integration
     err = VecSet(weighting->getLocalVector(), 1.0);PYLITH_CHECK_ERROR(err);
     PetscInt pStart = 0;
     PetscInt pEnd = 0;
-    err = PetscSectionGetChart(faultsVisitor.localSection(), &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionGetChart(faultsVisitor.selectedSection(), &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
     for (PetscInt point = pStart; point < pEnd; ++point) {
         PetscInt numDof = faultsVisitor.sectionDof(point);
         if (numDof > 0) {
