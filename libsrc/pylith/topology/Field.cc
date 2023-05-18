@@ -38,6 +38,31 @@
 #include <iostream> // USES std::cout
 #include <iomanip> // USES std::setw()
 
+namespace pylith {
+    namespace topology {
+        class _Field {
+public:
+
+            /// View field layout.
+            static
+            void viewLayout(const pylith::topology::Field& field);
+
+            /// View values in local vector of field.
+            static
+            void viewValues(const pylith::topology::Field& field);
+
+            /// View local section.
+            static
+            void viewLocalSection(const Field& field);
+
+            /// View global section.
+            static
+            void viewGlobalSection(const Field& field);
+
+        }; // _Field
+    }
+}
+
 // ------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::topology::Field::Field(const pylith::topology::Mesh& mesh) :
@@ -358,13 +383,13 @@ pylith::topology::Field::view(const char* label,
     } // if
 
     if ((VIEW_LAYOUT == options) || (VIEW_ALL == options)) {
-        _viewLayout();
+        _Field::viewLayout(*this);
     } // if
     const PetscDM dm = _mesh->getDM();assert(dm);
     PetscErrorCode err = PetscBarrier((PetscObject) dm);PYLITH_CHECK_ERROR(err);
 
     if ((VIEW_VALUES == options) || (VIEW_ALL == options)) {
-        _viewValues();
+        _Field::viewValues(*this);
     } // if
 
     PYLITH_METHOD_END;
@@ -640,18 +665,17 @@ pylith::topology::Field::createOutputVector(void) {
 // ------------------------------------------------------------------------------------------------
 // View field layout.
 void
-pylith::topology::Field::_viewLayout(void) const {
+pylith::topology::_Field::viewLayout(const Field& field) {
     PYLITH_METHOD_BEGIN;
-    assert(_mesh);
 
     PetscErrorCode err = PETSC_SUCCESS;
-    const PetscDM dm = _mesh->getDM();assert(dm);
+    const PetscDM dm = field.getDM();assert(dm);
 
     PetscMPIInt numProcs, rank;
     err = MPI_Comm_size(PetscObjectComm((PetscObject) dm), &numProcs);PYLITH_CHECK_ERROR(err);
     err = MPI_Comm_rank(PetscObjectComm((PetscObject) dm), &rank);PYLITH_CHECK_ERROR(err);
 
-    const pylith::string_vector& subfieldNames = getSubfieldNames();
+    const pylith::string_vector& subfieldNames = field.getSubfieldNames();
     const size_t numSubfields = subfieldNames.size();
     if (!rank) {
         std::cout << "      ";
@@ -660,71 +684,41 @@ pylith::topology::Field::_viewLayout(void) const {
         } // for`
         std::cout << "\n";
     } // if
-    pylith::int_array numComponents(numSubfields);
-    for (size_t i = 0; i < numSubfields; ++i) {
-        numComponents[i] = getSubfieldInfo(subfieldNames[i].c_str()).description.numComponents;
-    } // for
 
-    const size_t pwidth = 6;
-    const char* none = "--";
-    VecVisitorMesh fieldVisitor(*this);
-    PetscInt pStart, pEnd;
-    err = PetscSectionGetChart(fieldVisitor.localSection(), &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
-    for (PetscInt iProc = 0; iProc < numProcs; ++iProc) {
-        std::cout << "Processor " << iProc << "\n";
-        for (PetscInt point = pStart; point < pEnd; ++point) {
-            std::cout << std::setw(pwidth) << point;
-            for (size_t iField = 0; iField < numSubfields; ++iField) {
-                const PetscInt numDof = fieldVisitor.sectionSubfieldDof(iField, point);
-                if (numDof > 0) {
-                    const PetscInt off = fieldVisitor.sectionSubfieldOffset(iField, point);
-                    for (PetscInt iDof = 0; iDof < numDof; ++iDof) {
-                        std::cout << std::setw(pwidth) << off+iDof;
-                    } // for
-                } else {
-                    for (PetscInt iDof = 0; iDof < numComponents[iField]; ++iDof) {
-                        std::cout << std::setw(pwidth) << none;
-                    } // for
-                } // if/else
-                std::cout << "  ";
-            } // for
-            std::cout << "\n";
-        } // for
-        err = PetscBarrier((PetscObject) dm);PYLITH_CHECK_ERROR(err);
-    } // for
+    _Field::viewLocalSection(field);
+    _Field::viewGlobalSection(field);
 
     PYLITH_METHOD_END;
-} // _viewLayout
+} // viewLayout
 
 
 // ------------------------------------------------------------------------------------------------
 // View values in local vector of field.
 void
-pylith::topology::Field::_viewValues(void) const {
+pylith::topology::_Field::viewValues(const Field& field) {
     PYLITH_METHOD_BEGIN;
-    assert(_mesh);
 
     PetscErrorCode err = PETSC_SUCCESS;
-    const PetscDM dm = _mesh->getDM();assert(dm);
+    const PetscDM dm = field.getDM();assert(dm);
 
     PetscMPIInt numProcs, rank;
     err = MPI_Comm_size(PetscObjectComm((PetscObject) dm), &numProcs);PYLITH_CHECK_ERROR(err);
     err = MPI_Comm_rank(PetscObjectComm((PetscObject) dm), &rank);PYLITH_CHECK_ERROR(err);
 
-    const pylith::string_vector& subfieldNames = getSubfieldNames();
+    const pylith::string_vector& subfieldNames = field.getSubfieldNames();
     const size_t numSubfields = subfieldNames.size();
     pylith::int_array numComponents(numSubfields);
     for (size_t i = 0; i < numSubfields; ++i) {
-        numComponents[i] = getSubfieldInfo(subfieldNames[i].c_str()).description.numComponents;
+        numComponents[i] = field.getSubfieldInfo(subfieldNames[i].c_str()).description.numComponents;
     } // for
 
     const size_t pwidth = 6;
     const size_t fwidth = 12;
     std::cout << std::scientific << std::setprecision(4);
     const char* none = "--";
-    VecVisitorMesh fieldVisitor(*this);
+    VecVisitorMesh fieldVisitor(field);
     PetscInt pStart, pEnd;
-    err = PetscSectionGetChart(fieldVisitor.localSection(), &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionGetChart(fieldVisitor.selectedSection(), &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
     const PetscScalar* localArray = fieldVisitor.localArray();
     for (PetscInt iProc = 0; iProc < numProcs; ++iProc) {
         std::cout << "Processor " << iProc << "\n";
@@ -751,8 +745,153 @@ pylith::topology::Field::_viewValues(void) const {
     } // for
 
     PYLITH_METHOD_END;
-
 }
+
+
+// ------------------------------------------------------------------------------------------------
+// View local section layout.
+void
+pylith::topology::_Field::viewLocalSection(const Field& field) {
+    PYLITH_METHOD_BEGIN;
+    const size_t pwidth = 6;
+    const char* none = "--";
+
+    PetscErrorCode err = PETSC_SUCCESS;
+    const PetscDM dm = field.getDM();assert(dm);
+    PetscMPIInt numProcs, rank;
+    err = MPI_Comm_size(PetscObjectComm((PetscObject) dm), &numProcs);PYLITH_CHECK_ERROR(err);
+    err = MPI_Comm_rank(PetscObjectComm((PetscObject) dm), &rank);PYLITH_CHECK_ERROR(err);
+
+    const pylith::string_vector& subfieldNames = field.getSubfieldNames();
+    const size_t numSubfields = subfieldNames.size();
+    pylith::int_array numComponents(numSubfields);
+    for (size_t i = 0; i < numSubfields; ++i) {
+        numComponents[i] = field.getSubfieldInfo(subfieldNames[i].c_str()).description.numComponents;
+    } // for
+
+    PetscInt pStart, pEnd;
+    pylith::topology::VecVisitorMesh fieldVisitor(field);
+    fieldVisitor.selectSection(pylith::topology::VecVisitorMesh::LOCAL_SECTION);
+    const PetscSection section = fieldVisitor.selectedSection();
+    err = PetscSectionGetChart(section, &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
+
+    if (!rank) {
+        std::cout << "Local Section" << "\n";
+    } // if
+
+    for (PetscInt iProc = 0; iProc < numProcs; ++iProc) {
+        std::cout << "Processor " << iProc << "\n";
+        for (PetscInt point = pStart; point < pEnd; ++point) {
+            std::cout << std::setw(pwidth) << point;
+            for (size_t iField = 0; iField < numSubfields; ++iField) {
+                const PetscInt numDof = fieldVisitor.sectionSubfieldDof(iField, point);
+                if (numDof > 0) {
+                    const PetscInt off = fieldVisitor.sectionSubfieldOffset(iField, point);
+                    for (PetscInt iDof = 0; iDof < numDof; ++iDof) {
+                        std::cout << std::setw(pwidth) << off+iDof;
+                    } // for
+                } else {
+                    for (PetscInt iDof = 0; iDof < numComponents[iField]; ++iDof) {
+                        std::cout << std::setw(pwidth) << none;
+                    } // for
+                } // if/else
+                std::cout << "  ";
+            } // for
+            PetscInt numConstraintDof;
+            err = PetscSectionGetConstraintDof(section, point, &numConstraintDof);PYLITH_CHECK_ERROR(err);
+            if (numConstraintDof > 0) {
+                const PetscInt off = fieldVisitor.sectionOffset(point);
+                std::cout << "  (constrained:";
+                const PetscInt* constraintIndices = NULL;
+                err = PetscSectionGetConstraintIndices(section, point, &constraintIndices);PYLITH_CHECK_ERROR(err);
+                for (PetscInt iDof = 0; iDof < numConstraintDof; ++iDof) {
+                    std::cout << " " << off+constraintIndices[iDof];
+                } // for
+                std::cout << ")";
+            }
+            std::cout << "\n";
+        } // for
+        err = PetscBarrier((PetscObject) dm);PYLITH_CHECK_ERROR(err);
+    } // for
+
+    PYLITH_METHOD_END;
+} // _viewLocalLayout
+
+
+// ------------------------------------------------------------------------------------------------
+// View global section layout.
+void
+pylith::topology::_Field::viewGlobalSection(const Field& field) {
+    PYLITH_METHOD_BEGIN;
+    const size_t pwidth = 6;
+    const char* none = "--";
+
+    PetscErrorCode err = PETSC_SUCCESS;
+    const PetscDM dm = field.getDM();assert(dm);
+    PetscMPIInt numProcs, rank;
+    err = MPI_Comm_size(PetscObjectComm((PetscObject) dm), &numProcs);PYLITH_CHECK_ERROR(err);
+    err = MPI_Comm_rank(PetscObjectComm((PetscObject) dm), &rank);PYLITH_CHECK_ERROR(err);
+
+    const pylith::string_vector& subfieldNames = field.getSubfieldNames();
+    const size_t numSubfields = subfieldNames.size();
+    pylith::int_array numComponents(numSubfields);
+    for (size_t i = 0; i < numSubfields; ++i) {
+        numComponents[i] = field.getSubfieldInfo(subfieldNames[i].c_str()).description.numComponents;
+    } // for
+
+    PetscInt pStart, pEnd;
+    pylith::topology::VecVisitorMesh fieldVisitor(field);
+    fieldVisitor.selectSection(pylith::topology::VecVisitorMesh::GLOBAL_SECTION);
+    const PetscSection section = fieldVisitor.selectedSection();
+    err = PetscSectionGetChart(section, &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
+
+    if (!rank) {
+        std::cout << "Global Section" << "\n";
+    } // if
+
+    for (PetscInt iProc = 0; iProc < numProcs; ++iProc) {
+        std::cout << "Processor " << iProc << "\n";
+        for (PetscInt point = pStart; point < pEnd; ++point) {
+            std::cout << std::setw(pwidth) << point;
+            for (size_t iField = 0; iField < numSubfields; ++iField) {
+                const PetscInt numDof = fieldVisitor.sectionSubfieldDof(iField, point);
+                if (numDof > 0) {
+                    PetscInt numConstraintDof;
+                    err = PetscSectionGetFieldConstraintDof(section, point, iField, &numConstraintDof);PYLITH_CHECK_ERROR(err);
+                    if (numConstraintDof > 0) {
+                        assert(numConstraintDof <= numDof);
+                        PetscInt iConstraint = 0;
+                        const PetscInt* constraintIndices = NULL;
+                        err = PetscSectionGetFieldConstraintIndices(section, point, iField, &constraintIndices);PYLITH_CHECK_ERROR(err);
+                        const PetscInt off = fieldVisitor.sectionSubfieldOffset(iField, point);
+                        for (PetscInt iDof = 0; iDof < numDof; ++iDof) {
+                            if ((iConstraint < numConstraintDof) && (constraintIndices[iConstraint] == iDof)) {
+                                std::cout << std::setw(pwidth) << none;
+                                ++iConstraint;
+                            } else {
+                                std::cout << std::setw(pwidth) << off+iDof-iConstraint;
+                            } // if/else
+                        } // for
+                    } else {
+                        const PetscInt off = fieldVisitor.sectionSubfieldOffset(iField, point);
+                        for (PetscInt iDof = 0; iDof < numDof; ++iDof) {
+                            std::cout << std::setw(pwidth) << off+iDof;
+                        } // for
+                    } // if/else
+                } else {
+                    for (PetscInt iDof = 0; iDof < numComponents[iField]; ++iDof) {
+                        std::cout << std::setw(pwidth) << none;
+                    } // for
+                } // if/else
+                std::cout << "  ";
+            } // for
+            std::cout << "\n";
+        } // for
+        err = PetscBarrier((PetscObject) dm);PYLITH_CHECK_ERROR(err);
+    } // for
+
+    PYLITH_METHOD_END;
+} // _viewGlobalLayout
 
 
 // End of file
