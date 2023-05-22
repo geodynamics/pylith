@@ -540,7 +540,7 @@ pylith::feassemble::IntegratorInterface::computeLHSResidual(pylith::topology::Fi
                 PetscInt part = getWeakFormPart(key.part, IntegratorInterface::FAULT_FACE, patchValue);
                 err = DMSetAuxiliaryVec(dmSoln, key.label, -key.value, part, daeWeighting->getLocalVector());PYLITH_CHECK_ERROR(err);
 
-                // :TODO: Matt says setting the auxiliary vector the faces is not necessary.
+                // :TODO: Matt says setting the auxiliary vector for the faces is not necessary.
                 part = getWeakFormPart(key.part, IntegratorInterface::NEGATIVE_FACE, patchValue);
                 err = DMSetAuxiliaryVec(dmSoln, key.label, -key.value, part, daeWeighting->getLocalVector());PYLITH_CHECK_ERROR(err);
 
@@ -574,6 +574,31 @@ pylith::feassemble::IntegratorInterface::computeLHSJacobian(PetscMat jacobianMat
     } // if
 
     if (_hasLHSJacobianWeighted) {
+        { // KLUDGE
+            PetscErrorCode err = 0;
+            const pylith::topology::Field* daeWeighting =
+                integrationData.getField(pylith::feassemble::IntegrationData::dae_mass_weighting);
+            const pylith::topology::Field* solution =
+                integrationData.getField(pylith::feassemble::IntegrationData::solution);
+            PetscDM dmSoln = solution->getDM();
+            typedef InterfacePatches::keysmap_t keysmap_t;
+            const keysmap_t& keysmap = _integrationPatches->getKeys();
+
+            for (keysmap_t::const_iterator iter = keysmap.begin(); iter != keysmap.end(); ++iter) {
+                const PetscInt patchValue = iter->second.cohesive.getValue();
+                const PetscFormKey key = iter->second.cohesive.getPetscKey(*solution, LHS_WEIGHTED);
+                PetscInt part = getWeakFormPart(key.part, IntegratorInterface::FAULT_FACE, patchValue);
+                err = DMSetAuxiliaryVec(dmSoln, key.label, -key.value, part, daeWeighting->getLocalVector());PYLITH_CHECK_ERROR(err);
+
+                // :TODO: Matt says setting the auxiliary vector for the faces is not necessary.
+                part = getWeakFormPart(key.part, IntegratorInterface::NEGATIVE_FACE, patchValue);
+                err = DMSetAuxiliaryVec(dmSoln, key.label, -key.value, part, daeWeighting->getLocalVector());PYLITH_CHECK_ERROR(err);
+
+                part = getWeakFormPart(key.part, IntegratorInterface::POSITIVE_FACE, patchValue);
+                err = DMSetAuxiliaryVec(dmSoln, key.label, -key.value, part, daeWeighting->getLocalVector());PYLITH_CHECK_ERROR(err);
+            } // for
+        } // KLUDGE
+
         pylith::feassemble::Integrator::EquationPart equationPart = pylith::feassemble::Integrator::LHS_WEIGHTED;
         _IntegratorInterface::computeJacobian(jacobianMat, precondMat, this, equationPart, integrationData);
     } // if
