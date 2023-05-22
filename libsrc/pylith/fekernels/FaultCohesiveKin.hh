@@ -110,12 +110,11 @@ public:
 
         const PylithInt spaceDim = dim + 1; // dim passed in is spaceDim-1
 
-        const PylithInt fOffN = 0;
         const PylithInt sOffLagrange = sOff[numS-1];
         const PylithScalar* lagrange = &s[sOffLagrange];
 
         for (PylithInt i = 0; i < spaceDim; ++i) {
-            f0[fOffN+i] += +lagrange[i];
+            f0[i] += +lagrange[i];
         } // for
     }
 
@@ -152,12 +151,11 @@ public:
 
         const PylithInt spaceDim = dim + 1; // dim passed in is spaceDim-1
 
-        const PylithInt fOffP = 0;
         const PylithInt sOffLagrange = sOff[numS-1];
         const PylithScalar* lagrange = &s[sOffLagrange];
 
         for (PylithInt i = 0; i < spaceDim; ++i) {
-            f0[fOffP+i] += -lagrange[i];
+            f0[i] += -lagrange[i];
         } // for
     }
 
@@ -334,11 +332,10 @@ public:
 
         const PylithInt spaceDim = dim + 1; // dim passed in is spaceDim-1
 
-        const PylithInt gOffN = 0;
         const PylithInt ncols = spaceDim;
 
         for (PylithInt i = 0; i < spaceDim; ++i) {
-            Jf0[(gOffN+i)*ncols+i] += +1.0;
+            Jf0[i*ncols+i] += +1.0;
         } // for
     }
 
