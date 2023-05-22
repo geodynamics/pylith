@@ -123,7 +123,7 @@ pylith::testing::MMSTest::testResidual(void) {
     PetscErrorCode err = PETSC_SUCCESS;
     pythia::journal::debug_t debug(GenericComponent::getName());
     if (debug.state()) {
-        err = PetscOptionsSetValue(NULL, "-dm_plex_print_fem", "");PYLITH_CHECK_ERROR(err);
+        err = PetscOptionsSetValue(NULL, "-dm_plex_print_fem", "2");PYLITH_CHECK_ERROR(err);
         err = PetscOptionsSetValue(NULL, "-dm_plex_print_l2", "2");PYLITH_CHECK_ERROR(err);
     } // if
 
