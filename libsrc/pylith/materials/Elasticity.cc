@@ -322,10 +322,10 @@ pylith::materials::Elasticity::getInterfaceKernelsResidual(const pylith::topolog
 
         switch (face) {
         case pylith::feassemble::IntegratorInterface::NEGATIVE_FACE:
-            f0l = _rheology->getKernelf0Neg(coordsys);
+            f0l = _rheology->getKernelF0lNeg(coordsys);
             break;
         case pylith::feassemble::IntegratorInterface::POSITIVE_FACE:
-            f0l = _rheology->getKernelf0Pos(coordsys);
+            f0l = _rheology->getKernelF0lPos(coordsys);
             break;
         default:
             PYLITH_COMPONENT_LOGICERROR("Unknown interface face ("<<face<<").");
@@ -352,12 +352,18 @@ pylith::materials::Elasticity::getInterfaceKernelsJacobian(const pylith::topolog
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("getInterfaceKernelsJacobian(solution="<<solution.getLabel()<<", face="<<face<<")");
 
+    const spatialdata::geocoords::CoordSys* coordsys = solution.getMesh().getCoordSys();
+
     std::vector<InterfaceJacobianKernels> kernels;
     switch (_formulation) {
     case QUASISTATIC:
     case DYNAMIC:
         break;
     case DYNAMIC_IMEX: {
+        PetscBdPointJac Jf0lu = NULL;
+        PetscBdPointJac Jf1lu = NULL;
+        PetscBdPointJac Jf2lu = NULL;
+        PetscBdPointJac Jf3lu = NULL;
         PetscBdPointJac Jf0ll = NULL;
         PetscBdPointJac Jf1ll = NULL;
         PetscBdPointJac Jf2ll = NULL;
@@ -365,18 +371,22 @@ pylith::materials::Elasticity::getInterfaceKernelsJacobian(const pylith::topolog
 
         switch (face) {
         case pylith::feassemble::IntegratorInterface::NEGATIVE_FACE:
+            Jf1lu = _rheology->getKernelJf1luNeg(coordsys);
             Jf0ll = pylith::fekernels::FaultCohesiveKin::Jf0ll_neg;
             break;
         case pylith::feassemble::IntegratorInterface::POSITIVE_FACE:
+            Jf1lu = _rheology->getKernelJf1luPos(coordsys);
             Jf0ll = pylith::fekernels::FaultCohesiveKin::Jf0ll_pos;
             break;
         default:
             PYLITH_COMPONENT_LOGICERROR("Unknown interface face ("<<face<<").");
         } // switch
 
-        kernels.resize(1);
+        kernels.resize(2);
         EquationPart eqnPart = pylith::feassemble::Integrator::LHS;
-        kernels[0] = InterfaceJacobianKernels("lagrange_multiplier_fault", "lagrange_multiplier_fault", eqnPart, face,
+        kernels[0] = InterfaceJacobianKernels("lagrange_multiplier_fault", "displacement", eqnPart, face,
+                                              Jf0lu, Jf1lu, Jf2lu, Jf3lu);
+        kernels[1] = InterfaceJacobianKernels("lagrange_multiplier_fault", "lagrange_multiplier_fault", eqnPart, face,
                                               Jf0ll, Jf1ll, Jf2ll, Jf3ll);
         break;
     } // DYNAMIC_IMEX

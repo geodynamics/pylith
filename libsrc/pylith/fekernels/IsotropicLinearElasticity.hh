@@ -694,6 +694,170 @@ public:
             f0);
     }
 
+    // --------------------------------------------------------------------------------------------
+    /** Jf1lu entry function for negative fault face for isotropic linear elasticity plane strain with
+     * infinitesimal strain WITHOUT reference stress and reference strain.
+     *
+     * Solution fields: [disp(dim), vel(dim), lagrange(dim)]
+     * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1)]
+     */
+    static inline
+    void Jf1lu_neg_infinitesimalStrain(const PylithInt dim,
+                                       const PylithInt numS,
+                                       const PylithInt numA,
+                                       const PylithInt sOff[],
+                                       const PylithInt sOff_x[],
+                                       const PylithScalar s[],
+                                       const PylithScalar s_t[],
+                                       const PylithScalar s_x[],
+                                       const PylithInt aOff[],
+                                       const PylithInt aOff_x[],
+                                       const PylithScalar a[],
+                                       const PylithScalar a_t[],
+                                       const PylithScalar a_x[],
+                                       const PylithReal t,
+                                       const PylithReal s_tshift,
+                                       const PylithScalar x[],
+                                       const PylithReal n[],
+                                       const PylithInt numConstants,
+                                       const PylithScalar constants[],
+                                       PylithScalar Jf1[]) {
+        const PylithInt _dim = 2;assert(_dim == dim+1);
+        assert(Jf1);
+
+        pylith::fekernels::IsotropicLinearElasticity::Context rheologyContext;
+        pylith::fekernels::IsotropicLinearElasticity::setContext(
+            &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
+            t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
+
+        const PylithInt spaceDim = dim+1; // dim passed in is spaceDim-1
+        const PylithInt numCols = spaceDim * spaceDim;
+        const PylithInt numRows = spaceDim;
+        const PylithInt gOffN = 0;
+
+        const PylithInt jSize = numRows * numCols;
+        PylithScalar Jf1lu[jSize];
+        for (PylithInt i = 0; i < jSize; ++i) {
+            Jf1lu[i] = 0.0;
+        } // for
+        Jf1lu_infinitesimalStrain(_dim, n, rheologyContext, Jf1lu);
+        for (PylithInt i = 0; i < numRows; ++i) {
+            for (PylithInt j = 0; j < numCols; ++j) {
+                Jf1[gOffN+i*numCols+j] += -Jf1lu[i*numCols+j];
+            } // for
+        } // for
+    }
+
+    // --------------------------------------------------------------------------------------------
+    /** Jf1lu entry function for positive fault face for isotropic linear elasticity plane strain with
+     * infinitesimal strain WITHOUT reference stress and reference strain.
+     *
+     * Solution fields: [disp(dim), vel(dim), lagrange(dim)]
+     * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1)]
+     */
+    static inline
+    void Jf1lu_pos_infinitesimalStrain(const PylithInt dim,
+                                       const PylithInt numS,
+                                       const PylithInt numA,
+                                       const PylithInt sOff[],
+                                       const PylithInt sOff_x[],
+                                       const PylithScalar s[],
+                                       const PylithScalar s_t[],
+                                       const PylithScalar s_x[],
+                                       const PylithInt aOff[],
+                                       const PylithInt aOff_x[],
+                                       const PylithScalar a[],
+                                       const PylithScalar a_t[],
+                                       const PylithScalar a_x[],
+                                       const PylithReal t,
+                                       const PylithReal s_tshift,
+                                       const PylithScalar x[],
+                                       const PylithReal n[],
+                                       const PylithInt numConstants,
+                                       const PylithScalar constants[],
+                                       PylithScalar Jf1[]) {
+        const PylithInt _dim = 2;assert(_dim == dim+1);
+        assert(Jf1);
+
+        pylith::fekernels::IsotropicLinearElasticity::Context rheologyContext;
+        pylith::fekernels::IsotropicLinearElasticity::setContext(
+            &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
+            t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
+
+        const PylithInt spaceDim = dim+1; // dim passed in is spaceDim-1
+        const PylithInt numCols = spaceDim * spaceDim;
+        const PylithInt numRows = spaceDim;
+        const PylithInt gOffP = numRows * numCols;
+
+        const PylithInt jSize = numRows * numCols;
+        PylithScalar Jf1lu[jSize];
+        for (PylithInt i = 0; i < jSize; ++i) {
+            Jf1lu[i] = 0.0;
+        } // for
+        Jf1lu_infinitesimalStrain(_dim, n, rheologyContext, Jf1lu);
+        for (PylithInt i = 0; i < numRows; ++i) {
+            for (PylithInt j = 0; j < numCols; ++j) {
+                Jf1[gOffP+i*numCols+j] += +Jf1lu[i*numCols+j];
+            } // for
+        } // for
+    }
+
+    // --------------------------------------------------------------------------------------------
+    /** Jf1_lu function for 2D plane strain isotropic linear elasticity.
+     *
+     * Solution fields: [...]
+     * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1)]
+     *
+     * stress_ij = C_ijkl strain_kl
+     *
+     * For reference:
+     *
+     * Isotropic:
+     *  C_ijkl = bulkModulus * delta_ij * delta_kl
+     *   + shearModulus * (delta_ik*delta_jl + delta_il*delta*jk - 2/3*delta_ij*delta_kl)
+     */
+    static inline
+    void Jf1lu_infinitesimalStrain(const PylithInt dim,
+                                   const PylithReal* n,
+                                   const pylith::fekernels::IsotropicLinearElasticity::Context& context,
+                                   PylithScalar Jf1[]) {
+        const PylithInt _dim = 2;assert(_dim == dim);
+        assert(n);
+        assert(Jf1);
+
+        const PylithScalar shearModulus = context.shearModulus;
+        const PylithScalar bulkModulus = context.bulkModulus;
+
+        const PylithScalar lambda = bulkModulus - 2.0/3.0*shearModulus;
+        const PylithScalar lambda2mu = lambda + 2.0*shearModulus;
+
+        const PylithReal C1111 = lambda2mu;
+        const PylithReal C2222 = lambda2mu;
+        const PylithReal C1122 = lambda;
+        const PylithReal C1212 = shearModulus;
+
+        /* j(f,g,dg) = C(f,df,g,dg)*n[df]
+         *
+         * 0: j000 = C1111*n[0] + C1211*n[1] = C1111*n[0] + 0
+         * 1: j001 = C1112*n[0] + C1212*n[1] = 0 + C1212*n[1]
+         * 2: j010 = C1121*n[0] + C1221*n[1] = 0 + C1212*n[1]
+         * 3: j011 = C1122*n[0] + C1222*n[1] = C1122*n[0] + 0
+         * 4: j100 = C2111*n[0] + C2211*n[1] = 0 + C1122*n[1]
+         * 5: j101 = C2112*n[0] + C2212*n[1] = C1212*n[0] + 0
+         * 6: j110 = C2121*n[0] + C2221*n[1] = C1212*n[0] + 0
+         * 7: j111 = C2122*n[0] + C2222*n[1] = 0 + C2222*n[1]
+         */
+
+        Jf1[0] = C1111*n[0]; // j000
+        Jf1[1] = C1212*n[1]; // j001
+        Jf1[2] = C1212*n[1]; // j010
+        Jf1[3] = C1122*n[0]; // j011
+        Jf1[4] = C1122*n[1]; // j100
+        Jf1[5] = C1212*n[0]; // j101
+        Jf1[6] = C1212*n[0]; // j110
+        Jf1[7] = C2222*n[1]; // j111
+    } // Jf1lu
+
     // ===========================================================================================
     // Kernels for output
     // ===========================================================================================
@@ -1234,6 +1398,200 @@ public:
             pylith::fekernels::Tensor::ops3D,
             f0);
     }
+
+    // --------------------------------------------------------------------------------------------
+    /** Jf1lu entry function for negative fault face for isotropic linear elasticity plane strain with
+     * infinitesimal strain WITHOUT reference stress and reference strain.
+     *
+     * Solution fields: [disp(dim), vel(dim), lagrange(dim)]
+     * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1)]
+     */
+    static inline
+    void Jf1lu_neg_infinitesimalStrain(const PylithInt dim,
+                                       const PylithInt numS,
+                                       const PylithInt numA,
+                                       const PylithInt sOff[],
+                                       const PylithInt sOff_x[],
+                                       const PylithScalar s[],
+                                       const PylithScalar s_t[],
+                                       const PylithScalar s_x[],
+                                       const PylithInt aOff[],
+                                       const PylithInt aOff_x[],
+                                       const PylithScalar a[],
+                                       const PylithScalar a_t[],
+                                       const PylithScalar a_x[],
+                                       const PylithReal t,
+                                       const PylithReal s_tshift,
+                                       const PylithScalar x[],
+                                       const PylithReal n[],
+                                       const PylithInt numConstants,
+                                       const PylithScalar constants[],
+                                       PylithScalar Jf1[]) {
+        const PylithInt _dim = 2;assert(_dim == dim+1);
+        assert(Jf1);
+
+        pylith::fekernels::IsotropicLinearElasticity::Context rheologyContext;
+        pylith::fekernels::IsotropicLinearElasticity::setContext(
+            &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
+            t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
+
+        const size_t jSize = 27;
+        PylithScalar Jf1lu[jSize];
+        for (size_t i = 0; i < jSize; ++i) {
+            Jf1lu[i] = 0.0;
+        } // for
+        Jf1lu_infinitesimalStrain(_dim, n, rheologyContext, Jf1lu);
+        for (size_t i = 0; i < jSize; ++i) {
+            Jf1[i] += +Jf1lu[i];
+        } // for
+    }
+
+    // --------------------------------------------------------------------------------------------
+    /** Jf1lu entry function for positive fault face for isotropic linear elasticity plane strain with
+     * infinitesimal strain WITHOUT reference stress and reference strain.
+     *
+     * Solution fields: [disp(dim), vel(dim), lagrange(dim)]
+     * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1)]
+     */
+    static inline
+    void Jf1lu_pos_infinitesimalStrain(const PylithInt dim,
+                                       const PylithInt numS,
+                                       const PylithInt numA,
+                                       const PylithInt sOff[],
+                                       const PylithInt sOff_x[],
+                                       const PylithScalar s[],
+                                       const PylithScalar s_t[],
+                                       const PylithScalar s_x[],
+                                       const PylithInt aOff[],
+                                       const PylithInt aOff_x[],
+                                       const PylithScalar a[],
+                                       const PylithScalar a_t[],
+                                       const PylithScalar a_x[],
+                                       const PylithReal t,
+                                       const PylithReal s_tshift,
+                                       const PylithScalar x[],
+                                       const PylithReal n[],
+                                       const PylithInt numConstants,
+                                       const PylithScalar constants[],
+                                       PylithScalar Jf1[]) {
+        const PylithInt _dim = 2;assert(_dim == dim+1);
+        assert(Jf1);
+
+        pylith::fekernels::IsotropicLinearElasticity::Context rheologyContext;
+        pylith::fekernels::IsotropicLinearElasticity::setContext(
+            &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
+            t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
+
+        const size_t jSize = 27;
+        PylithScalar Jf1lu[jSize];
+        for (size_t i = 0; i < jSize; ++i) {
+            Jf1lu[i] = 0.0;
+        } // for
+        Jf1lu_infinitesimalStrain(_dim, n, rheologyContext, Jf1lu);
+        for (size_t i = 0; i < jSize; ++i) {
+            Jf1[i] += -Jf1lu[i];
+        } // for
+    }
+
+    // --------------------------------------------------------------------------------------------
+    /** Jf1_lu function for 2D plane strain isotropic linear elasticity.
+     *
+     * Solution fields: [...]
+     * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1)]
+     *
+     * stress_ij = C_ijkl strain_kl
+     *
+     * For reference:
+     *
+     * Isotropic:
+     *  C_ijkl = bulkModulus * delta_ij * delta_kl
+     *   + shearModulus * (delta_ik*delta_jl + delta_il*delta*jk - 2/3*delta_ij*delta_kl)
+     */
+    static inline
+    void Jf1lu_infinitesimalStrain(const PylithInt dim,
+                                   const PylithReal* n,
+                                   const pylith::fekernels::IsotropicLinearElasticity::Context& context,
+                                   PylithScalar Jf1[]) {
+        const PylithInt _dim = 2;assert(_dim == dim);
+        assert(n);
+        assert(Jf1);
+
+        const PylithScalar shearModulus = context.shearModulus;
+        const PylithScalar bulkModulus = context.bulkModulus;
+
+        const PylithScalar lambda = bulkModulus - 2.0/3.0*shearModulus;
+        const PylithScalar lambda2mu = lambda + 2.0*shearModulus;
+
+        const PylithReal C1111 = lambda2mu;
+        const PylithReal C2222 = lambda2mu;
+        const PylithReal C3333 = lambda2mu;
+        const PylithReal C1122 = lambda;
+        const PylithReal C1133 = lambda;
+        const PylithReal C2233 = lambda;
+        const PylithReal C1212 = shearModulus;
+        const PylithReal C1313 = shearModulus;
+        const PylithReal C2323 = shearModulus;
+
+        /* j(f,g,dg) = C(f,df,g,dg)*n[df]
+         *
+         *  0:  j000 = C1111*n[0] + C1211*n[1] + C1311*n[2] = C1111*n[0] + 0 + 0
+         *  1:  j001 = C1112*n[0] + C1212*n[1] + C1312*n[2] = 0 + C1212*n[1] + 0
+         *  2:  j002 = C1113*n[0] + C1213*n[1] + C1313*n[2] = 0 + 0 + C1313*n[2]
+         *  3:  j010 = C1121*n[0] + C1221*n[1] + C1321*n[2] = 0 + C1221*n[1] + 0
+         *  4:  j011 = C1122*n[0] + C1222*n[1] + C1322*n[2] = C1122*n[0] + 0 + 0
+         *  5:  j012 = C1123*n[0] + C1223*n[1] + C1323*n[2] =          0 + 0 + 0
+         *  6:  j020 = C1131*n[0] + C1231*n[1] + C1331*n[2] = 0 + 0 + C1331*n[2]
+         *  7:  j021 = C1132*n[0] + C1232*n[1] + C1332*n[2] =          0 + 0 + 0
+         *  8:  j022 = C1133*n[0] + C1233*n[1] + C1333*n[2] = C1133*n[0] + 0 + 0
+         *  9:  j100 = C2111*n[0] + C2211*n[1] + C2311*n[2] = 0 + C2211*n[1] + 0
+         * 10:  j101 = C2112*n[0] + C2212*n[1] + C2312*n[2] = C2112*n[0] + 0 + 0
+         * 11:  j102 = C2113*n[0] + C2213*n[1] + C2313*n[2] =          0 + 0 + 0
+         * 12:  j110 = C2121*n[0] + C2221*n[1] + C2321*n[2] = C2121*n[0] + 0 + 0
+         * 13:  j111 = C2122*n[0] + C2222*n[1] + C2322*n[2] = 0 + C2222*n[1] + 0
+         * 14:  j112 = C2123*n[0] + C2223*n[1] + C2323*n[2] = 0 + 0 + C2323*n[2]
+         * 15:  j120 = C2131*n[0] + C2231*n[1] + C2331*n[2] =          0 + 0 + 0
+         * 16:  j121 = C2132*n[0] + C2232*n[1] + C2332*n[2] = 0 + 0 + C2332*n[2]
+         * 17:  j122 = C2133*n[0] + C2233*n[1] + C2333*n[2] = 0 + C2233*n[1] + 0
+         * 18:  j200 = C3111*n[0] + C3211*n[1] + C3311*n[2] = 0 + 0 + C3311*n[2]
+         * 19:  j201 = C3112*n[0] + C3212*n[1] + C3312*n[2] =          0 + 0 + 0
+         * 20:  j202 = C3113*n[0] + C3213*n[1] + C3313*n[2] = C3113*n[0] + 0 + 0
+         * 21:  j210 = C3121*n[0] + C3221*n[1] + C3321*n[2] =          0 + 0 + 0
+         * 22:  j211 = C3122*n[0] + C3222*n[1] + C3322*n[2] = 0 + 0 + C3322*n[2]
+         * 23:  j212 = C3123*n[0] + C3223*n[1] + C3323*n[2] = 0 + C3223*n[1] + 0
+         * 24:  j220 = C3131*n[0] + C3231*n[1] + C3331*n[2] = C3131*n[0] + 0 + 0
+         * 25:  j221 = C3132*n[0] + C3232*n[1] + C3332*n[2] = 0 + C3232*n[1] + 0
+         * 26:  j222 = C3133*n[0] + C3233*n[1] + C3333*n[2] = 0 + 0 + C3333*n[2]
+         */
+
+        // Nonzero Jacobian entries.
+        Jf1[ 0] = C1111*n[0]; // j000
+        Jf1[ 1] = C1212*n[1]; // j001
+        Jf1[ 2] = C1313*n[2]; // j002
+        Jf1[ 3] = C1212*n[1]; // j010
+        Jf1[ 4] = C1122*n[0]; // j011
+        Jf1[ 5] = 0;          // j012
+        Jf1[ 6] = C1313*n[2]; // j020
+        Jf1[ 7] = 0;          // j021
+        Jf1[ 8] = C1133*n[0]; // j022
+        Jf1[ 9] = C1122*n[1]; // j100
+        Jf1[10] = C1212*n[0]; // j101
+        Jf1[11] = 0;          // j102
+        Jf1[12] = C1212*n[0]; // j110
+        Jf1[13] = C2222*n[1]; // j111
+        Jf1[14] = C2323*n[2]; // j112
+        Jf1[15] = 0;          // j120
+        Jf1[16] = C2323*n[2]; // j121
+        Jf1[17] = C2233*n[1]; // j122
+        Jf1[18] = C1133*n[2]; // j200
+        Jf1[19] = 0;          // j201
+        Jf1[20] = C1313*n[0]; // j202
+        Jf1[21] = 0;          // j210
+        Jf1[22] = C2233*n[2]; // j211
+        Jf1[23] = C2323*n[1]; // j212
+        Jf1[24] = C1313*n[0]; // j220
+        Jf1[25] = C2323*n[1]; // j221
+        Jf1[26] = C3333*n[2]; // j222
+    } //
 
     // ===========================================================================================
     // Kernels for output

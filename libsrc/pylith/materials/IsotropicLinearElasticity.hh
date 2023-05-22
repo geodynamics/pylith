@@ -85,21 +85,37 @@ public:
      */
     PetscPointJac getKernelJf3vu(const spatialdata::geocoords::CoordSys* coordsys) const;
 
-    /** Get f0 kernel for LHS interface residual, F(t,s,dot{s}), for negative fault face.
+    /** Get f0l kernel for LHS interface residual, F(t,s,dot{s}), for negative fault face.
      *
      * @param[in] coordsys Coordinate system.
      *
      * @return LHS residual f0 kernel.
      */
-    PetscBdPointFunc getKernelf0Neg(const spatialdata::geocoords::CoordSys* coordsys) const;
+    PetscBdPointFunc getKernelF0lNeg(const spatialdata::geocoords::CoordSys* coordsys) const;
 
-    /** Get f0 kernel for LHS interface residual, F(t,s,dot{s}), for positive fault face.
+    /** Get f0l kernel for LHS interface residual, F(t,s,dot{s}), for positive fault face.
      *
      * @param[in] coordsys Coordinate system.
      *
      * @return LHS residual f0 kernel.
      */
-    PetscBdPointFunc getKernelf0Pos(const spatialdata::geocoords::CoordSys* coordsys) const;
+    PetscBdPointFunc getKernelF0lPos(const spatialdata::geocoords::CoordSys* coordsys) const;
+
+    /** Get Jf1lu kernel for LHS interface residual, F(t,s,dot{s}), for negative fault face.
+     *
+     * @param[in] coordsys Coordinate system.
+     *
+     * @return LHS Jacobian f1 kernel.
+     */
+    PetscBdPointJac getKernelJf1luNeg(const spatialdata::geocoords::CoordSys* coordsys) const;
+
+    /** Get Jf1lu kernel for LHS interface residual, F(t,s,dot{s}), for positive fault face.
+     *
+     * @param[in] coordsys Coordinate system.
+     *
+     * @return LHS Jacobian f1 kernel.
+     */
+    PetscBdPointJac getKernelJf1luPos(const spatialdata::geocoords::CoordSys* coordsys) const;
 
     /** Get Cauchy stress kernel for derived field.
      *
