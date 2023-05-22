@@ -39,7 +39,7 @@ Expressed in index notation the Jacobian coupling solution field components $s_i
 ```{math}
 :label: (eqn:jacobian:index:form)
 J^{s_is_j} = \int_\Omega {\psi_\mathit{trial}^{}}_i J_0^{s_is_j} {\psi_\mathit{basis}^{}}_j + {\psi_\mathit{trial}^{}}_i
-J_1^{s_js_jl}
+J_1^{s_is_jl}
 {\psi_\mathit{basis}^{}}_{j,l} + {\psi_\mathit{trial}^{}}_{i,k} J_2^{s_is_jk} {\psi_\mathit{basis}^{}}_j + {\psi_\mathit{trial}^{}}_{i,k}
 J_3^{s_is_jkl}
 {\psi_\mathit{basis}^{}}_{j,l} \, d\Omega,
