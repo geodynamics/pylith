@@ -76,6 +76,8 @@ class AnalyticalSoln(object):
             "cauchy_strain": self.strain,
             "cauchy_stress": self.stress,
             "initial_amplitude": self.displacement,
+            "slip": self.slip,
+            "lagrange_multiplier_fault": self.lagrange_multiplier_fault,
         }
         return
 
@@ -148,6 +150,22 @@ class AnalyticalSoln(object):
         stress[0,:, 2] = szz
         stress[0,:, 3] = sxy
         return stress
+
+    def slip(self, locs):
+        """Compute slip field at locations.
+        """
+        (npts, dim) = locs.shape
+        slip = numpy.zeros((1, npts, 3), dtype=numpy.float64)
+        slip[:,:,1] = -2.0
+        slip[:,:,2] = +1.0
+        return slip
+
+    def lagrange_multiplier_fault(self, locs):
+        """Compute change in fault traction field at locations.
+        """
+        (npts, dim) = locs.shape
+        traction_change = numpy.zeros((1, npts, 3), dtype=numpy.float64)
+        return traction_change
 
 
 # End of file
