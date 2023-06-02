@@ -456,16 +456,22 @@ pylith::faults::FaultCohesiveKin::_setKernelsJacobian(pylith::feassemble::Integr
         break;
     } // QUASISTATIC
     case pylith::problems::Physics::DYNAMIC_IMEX: {
-        const PetscBdPointJac Jf0lu = pylith::fekernels::FaultCohesiveKin::Jf0lu;
-        const PetscBdPointJac Jf1lu = NULL;
-        const PetscBdPointJac Jf2lu = NULL;
-        const PetscBdPointJac Jf3lu = NULL;
+        const PetscBdPointJac Jf0ll_neg = pylith::fekernels::FaultCohesiveKin::Jf0ll_neg;
+        const PetscBdPointJac Jf1ll_neg = NULL;
+        const PetscBdPointJac Jf2ll_neg = NULL;
+        const PetscBdPointJac Jf3ll_neg = NULL;
 
-        kernels.resize(1);
-        const char* nameDisplacement = "displacement";
+        const PetscBdPointJac Jf0ll_pos = pylith::fekernels::FaultCohesiveKin::Jf0ll_pos;
+        const PetscBdPointJac Jf1ll_pos = NULL;
+        const PetscBdPointJac Jf2ll_pos = NULL;
+        const PetscBdPointJac Jf3ll_pos = NULL;
+
+        kernels.resize(2);
         const char* nameLagrangeMultiplier = "lagrange_multiplier_fault";
-        kernels[0] = JacobianKernels(nameLagrangeMultiplier, nameDisplacement, integrator_t::LHS,
-                                     integrator_t::FAULT_FACE, Jf0lu, Jf1lu, Jf2lu, Jf3lu);
+        kernels[0] = JacobianKernels(nameLagrangeMultiplier, nameLagrangeMultiplier, integrator_t::LHS_WEIGHTED,
+                                     integrator_t::NEGATIVE_FACE, Jf0ll_neg, Jf1ll_neg, Jf2ll_neg, Jf3ll_neg);
+        kernels[1] = JacobianKernels(nameLagrangeMultiplier, nameLagrangeMultiplier, integrator_t::LHS_WEIGHTED,
+                                     integrator_t::POSITIVE_FACE, Jf0ll_pos, Jf1ll_pos, Jf2ll_pos, Jf3ll_pos);
         break;
     } // DYNAMIC_IMEX
     case pylith::problems::Physics::DYNAMIC:
