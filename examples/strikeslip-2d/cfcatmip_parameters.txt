@@ -1,0 +1,20 @@
+# Sample parameter file for pylith_catmip model.
+
+# Data files
+filename_observations = output/step04_varslip-gps_stations.h5
+filename_greens_fns = output/step05_greensfns-gps_stations.h5
+
+# Model parameters
+rake_parallel_prior = logistic
+rake_parallel_prior_k = 25.0
+rake_parallel_prior_min_sample_value = 0.01
+rake_parallel_prior_max_sample_value = 2.0
+
+rake_perpendicular_prior = gaussian
+
+conjugate_posterior = gaussian
+conjugate_posterior_median = 0.5
+conjugate_posterior_stddev = 0.2
+
+nominal_rake_angle = 0.0
+num_impulse_components = 1
