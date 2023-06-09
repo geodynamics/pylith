@@ -12,5 +12,4 @@ rake_parallel_prior_max_sample_value = 2.0
 
 rake_perpendicular_prior = gaussian
 
-nominal_rake_angle = 0.0
 num_impulse_components = 1

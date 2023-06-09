@@ -16,5 +16,4 @@ conjugate_posterior = gaussian
 conjugate_posterior_median = 0.5
 conjugate_posterior_stddev = 0.2
 
-nominal_rake_angle = 0.0
 num_impulse_components = 1
