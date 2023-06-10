@@ -1,0 +1,5 @@
+N                100
+Nsteps           50
+data_directory   .
+output_directory ./output
+output_prefix    step07b_cfcatmip-

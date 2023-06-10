@@ -330,7 +330,8 @@ dist_noinst_DATA = \
     user/examples/strikeslip-2d/step04_varslip-synopsis.md \
     user/examples/strikeslip-2d/step05-greensfns.md \
     user/examples/strikeslip-2d/step05_greensfns-synopsis.md \
-    user/examples/strikeslip-2d/step06-inversion.md \
+    user/examples/strikeslip-2d/step06-inversion-leastsquares.md \
+    user/examples/strikeslip-2d/step07-inversion-catmip.md \
     user/examples/strikeslip-2d/figs/cubit-quad.png \
     user/examples/strikeslip-2d/figs/cubit-tri.png \
     user/examples/strikeslip-2d/figs/diagrams.tex \
@@ -362,6 +363,10 @@ dist_noinst_DATA = \
     user/examples/strikeslip-2d/figs/step05-solution.jpg \
     user/examples/strikeslip-2d/figs/step06-solution.pdf \
     user/examples/strikeslip-2d/figs/step06-solution.svg \
+    user/examples/strikeslip-2d/figs/step07a-solution.pdf \
+    user/examples/strikeslip-2d/figs/step07a-solution.svg \
+    user/examples/strikeslip-2d/figs/step07b-solution.pdf \
+    user/examples/strikeslip-2d/figs/step07b-solution.svg \
     user/examples/subduction-2d/index.md \
     user/examples/subduction-2d/common-information.md \
     user/examples/subduction-2d/exercises.md \
