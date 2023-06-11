@@ -71,8 +71,6 @@ libpylith_la_SOURCES = \
 	fekernels/Tensor.cc \
 	fekernels/IsotropicLinearGenMaxwell.cc \
 	fekernels/IsotropicPowerLaw.cc \
-	fekernels/Poroelasticity.cc \
-	fekernels/IsotropicLinearPoroelasticity.cc \
 	materials/Material.cc \
 	materials/Elasticity.cc \
 	materials/RheologyElasticity.cc \

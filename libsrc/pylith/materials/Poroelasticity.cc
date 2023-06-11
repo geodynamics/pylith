@@ -902,12 +902,12 @@ pylith::materials::Poroelasticity::_setKernelsDerivedField(pylith::feassemble::I
     assert(coordsys);
 
     std::vector<ProjectKernels> kernels(2);
-    kernels[0] = ProjectKernels("cauchy_stress", _rheology->getKernelDerivedCauchyStress(coordsys));
+    kernels[0] = ProjectKernels("cauchy_stress", _rheology->getKernelCauchyStressVector(coordsys));
 
     const int spaceDim = coordsys->getSpaceDim();
     const PetscPointFunc strainKernel =
-        (3 == spaceDim) ? pylith::fekernels::Poroelasticity3D::cauchyStrain :
-        (2 == spaceDim) ? pylith::fekernels::PoroelasticityPlaneStrain::cauchyStrain :
+        (3 == spaceDim) ? pylith::fekernels::Elasticity3D::infinitesimalStrain_asVector :
+        (2 == spaceDim) ? pylith::fekernels::ElasticityPlaneStrain::infinitesimalStrain_asVector :
         NULL;
     kernels[1] = ProjectKernels("cauchy_strain", strainKernel);
 
