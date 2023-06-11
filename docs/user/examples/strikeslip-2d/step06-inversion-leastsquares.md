@@ -36,3 +36,8 @@ Results of slip inversion in Step 6.
 The thick black line shows the prescribed slip in Step 4.
 The thin colored lines show the slip from the inversion with different penalty factors.
 :::
+
+::{tip}
+You can pass`--no-gui` as a command line argument to the plotting script turn off displaying the plot window.
+This is useful if you do not have a matplotlib GUI backend.
+:::

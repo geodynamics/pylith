@@ -31,7 +31,7 @@ class PlotApp:
 
         self.inversion_coefs = None
     
-    def main(self, filename_theta: str, filename_observed: str=None, filename_impulses: str=None):
+    def main(self, filename_theta: str, filename_observed: str=None, filename_impulses: str=None, show_plot: bool=False):
         filename_observed = filename_observed or self.FILENAME_OBSERVED
         filename_impulses = filename_impulses or self.FILENAME_IMPULSES
         
@@ -45,7 +45,7 @@ class PlotApp:
         slip_median = self._calc_median()
         slip_stddev = self._calc_stddev()
         slip_minmax = self._calc_minmax()
-        self.plot(slip_median, slip_stddev, slip_minmax, filename_plot)
+        self.plot(slip_median, slip_stddev, slip_minmax, filename_plot, show_plot)
 
     def _load_observed(self, filename):
         h5 = h5py.File(filename, "r")
@@ -102,7 +102,7 @@ class PlotApp:
         slip = numpy.dot(slip_coefs.reshape((1,-1)), self.impulse_slip.reshape((nimpulses,-1)))
         return slip.reshape((nlocs,-1))
 
-    def plot(self, median, stddev, minmax, filename):
+    def plot(self, median, stddev, minmax, filename, show_plot):
         figure = pyplot.figure(figsize=(7.0, 4.0), dpi=150, layout="tight")
         axes = self._setup_axes(figure)
         self._plot_observed(axes)
@@ -112,7 +112,8 @@ class PlotApp:
 
         axes.legend(loc="upper right")
 
-        pyplot.show()
+        if show_plot:
+            pyplot.show()
         figure.savefig(filename)
 
     def _setup_axes(self, figure):
@@ -144,12 +145,14 @@ def cli():
     parser.add_argument("--catmip-theta", action="store", dest="filename_theta", type=str, required=True, help="Filename of output from CATMIP inversion.")
     parser.add_argument("--pylith-impulses", action="store", dest="filename_impulses", type=str, default=PlotApp.FILENAME_IMPULSES, help="Name of HDF5 file with fault slip inpulses from Green's functions simulation.")
     parser.add_argument("--observed", action="store", dest="filename_observed", type=str, default=PlotApp.FILENAME_OBSERVED, help="Name of HDF5 file with station output with fake observations.")
+    parser.add_argument("--no-gui", action="store_false", dest="show_plot", default=True, help="Do not display plot.")
 
     args = parser.parse_args()
     kwargs = {
         "filename_observed": args.filename_observed,
         "filename_impulses": args.filename_impulses,
         "filename_theta": args.filename_theta,
+        "show_plot": args.show_plot,
         }
     PlotApp().main(**kwargs)
 
