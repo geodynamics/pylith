@@ -82,6 +82,11 @@ The solid orange line shows the median slip, the shaded orange regions shows the
 The median values are almost identical to the results with minimal smoothing in Step 6.
 :::
 
+::{tip}
+You can pass`--no-gui` as a command line argument to the plotting script turn off displaying the plot window.
+This is useful if you do not have a matplotlib GUI backend.
+:::
+
 ## Inversion using CF-CATMIP algorithm
 
 The `cfcatmip_pylith_staticslip` executable uses the CF-CATMIP algorithm and must be run using at least 2 processes (1 manager process and at least 1 worker process).
