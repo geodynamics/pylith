@@ -9,5 +9,6 @@ codelayout.md
 petscfem.md
 newmaterial.md
 documentation/index.md
+git-quickref.md
 :::
 %adding-materials.md
