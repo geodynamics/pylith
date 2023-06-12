@@ -638,9 +638,6 @@ public:
         PylithScalar pressure_t = (poroelasticContext.pressure_t ? poroelasticContext.pressure_t : 0.0);
         PylithScalar trace_strain_t = (poroelasticContext.trace_strain_t ? poroelasticContext.trace_strain_t : 0.0);
 
-        // const PylithReal pressure_t = poroelasticContext.pressure_t;
-        // const PylithReal trace_strain_t = poroelasticContext.trace_strain_t;
-
         // Rheological Auxiliaries
         const PylithReal biotCoefficient = rheologyContext.biotCoefficient;
         const PylithReal biotModulus = rheologyContext.biotModulus;
