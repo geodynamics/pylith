@@ -104,7 +104,7 @@ caption: Updating the local `main` branch to match the upstream `main` branch..
 git checkout main
 
 # Update your local version of the upstream repository, pruning any branches that no longer exist.
-get fetch upstream -p
+git fetch upstream -p
 
 # Update your local `main` branch to match the upstream `main`.
 git pull
@@ -126,7 +126,7 @@ git checkout main
 git branch -D hackathon/project
 
 # Update your local version of the upstream repository
-get fetch upstream
+git fetch upstream
 
 # Checkout the branch again, tracking the upstream repository.
 git checkout -b hackathon/project --track upstream/hackathon/project

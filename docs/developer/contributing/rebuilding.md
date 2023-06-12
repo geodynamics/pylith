@@ -14,7 +14,7 @@ Instead, you need to delete the old `knepley/pylith` branch and then check it ou
 
 ```{code-block} bash
 # Change to PETSc source Directory
-cd PETSC_DIR
+cd $PETSC_DIR
 
 # Switch to the main branch and fetch the updates, pruning deleted branches.
 git checkout main
@@ -90,7 +90,7 @@ After modifying code, the C++ library, SWIG modules, and Python code need to be 
 caption: Rebuilding Pylith C++ library, SWIG modules, and Python modules
 ---
 # Change to top-level PyLith build directory.
-cd $PYLITH_DIR/build/pylith-debug
+cd $PYLITH_BUILDDIR
 
 # Reinstall everything using 8 threads to build library.
 make install -j8
