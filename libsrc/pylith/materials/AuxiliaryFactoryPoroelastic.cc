@@ -76,7 +76,7 @@ pylith::materials::AuxiliaryFactoryPoroelastic::addIsotropicPermeability(void) {
 // ----------------------------------------------------------------------------
 // Add isotropic permeability subfield to auxiliary fields.
 void
-pylith::materials::AuxiliaryFactoryPoroelastic::addTensorPermeability(void) { // isotropicPermeablity
+pylith::materials::AuxiliaryFactoryPoroelastic::addTensorPermeability(void) { // tensorPermeablity
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("addTensorPermeability(void)");
 
@@ -137,6 +137,7 @@ pylith::materials::AuxiliaryFactoryPoroelastic::addDrainedBulkModulus(void) { //
 
     PYLITH_METHOD_END;
 } // addDrainedBulkModulus
+
 
 // ---------------------------------------------------------------------
 // Add biot coefficient subfield to auxiliary fields.

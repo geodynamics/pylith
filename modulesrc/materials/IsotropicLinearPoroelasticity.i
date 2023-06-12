@@ -163,7 +163,7 @@ public:
      *
      * @return Project kernel for computing stress subfield in derived field.
      */
-    PetscPointFunc getKernelDerivedCauchyStress(const spatialdata::geocoords::CoordSys* coordsys) const;
+    PetscPointFunc getKernelCauchyStressVector(const spatialdata::geocoords::CoordSys* coordsys) const;
 
     /** Update kernel constants.
      *

@@ -78,7 +78,7 @@
 #include <cassert> // USES assert()
 
 // ------------------------------------------------------------------------------------------------
-/// Kernels specific to isotropic, linearly elasticity.
+/// Kernels specific to isotropic, linear elasticity.
 class pylith::fekernels::IsotropicLinearElasticity {
     // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
 public:

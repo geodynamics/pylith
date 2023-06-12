@@ -132,6 +132,7 @@ pylith::materials::IsotropicLinearPoroelasticity::addAuxiliarySubfields(void) {
     PYLITH_METHOD_END;
 } // addAuxiliarySubfields
 
+
 // ================================ RHS ========================================
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -409,7 +410,7 @@ pylith::materials::IsotropicLinearPoroelasticity::getKernelf1p_implicit(const sp
 
     const int spaceDim = coordsys->getSpaceDim();
     const int bitTensorPermeability = _useTensorPermeability ? 0x1 : 0x0;
-    const int bitBodyForce = _useBodyForce ? 0x2 : 0x0;    
+    const int bitBodyForce = _useBodyForce ? 0x2 : 0x0;
     const int bitGravityField = _gravityField ? 0x4 : 0x0;
     const int bitUse = bitTensorPermeability | bitBodyForce | bitGravityField;
 
@@ -569,6 +570,7 @@ pylith::materials::IsotropicLinearPoroelasticity::getKernelJf0pe(const spatialda
     PYLITH_METHOD_RETURN(Jf0pe);
 } // getKernelJf0pe
 
+
 // ---------------------------------------------------------------------------------------------------------------------
 PetscPointJac
 pylith::materials::IsotropicLinearPoroelasticity::getKernelJf0ppdot(const spatialdata::geocoords::CoordSys* coordsys) const {
@@ -583,6 +585,7 @@ pylith::materials::IsotropicLinearPoroelasticity::getKernelJf0ppdot(const spatia
 
     PYLITH_METHOD_RETURN(Jf0ppdot);
 } // getKernelJf0ppdot
+
 
 // ---------------------------------------------------------------------------------------------------------------------
 PetscPointJac
@@ -599,25 +602,27 @@ pylith::materials::IsotropicLinearPoroelasticity::getKernelJf0pedot(const spatia
     PYLITH_METHOD_RETURN(Jf0pedot);
 } // getKernelJf0pedot
 
+
 // =========================== DERIVED FIELDS ==================================
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Get stress kernel for derived field.
 PetscPointFunc
-pylith::materials::IsotropicLinearPoroelasticity::getKernelDerivedCauchyStress(const spatialdata::geocoords::CoordSys* coordsys) const {
+pylith::materials::IsotropicLinearPoroelasticity::getKernelCauchyStressVector(const spatialdata::geocoords::CoordSys* coordsys) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("getKernelDerivedCauchyStress(coordsys="<<typeid(coordsys).name()<<")");
+    PYLITH_COMPONENT_DEBUG("getKernelCauchyStressVector(coordsys="<<typeid(coordsys).name()<<")");
 
     const int spaceDim = coordsys->getSpaceDim();
     PetscPointFunc kernel =
-        (!_useReferenceState && 3 == spaceDim) ?  pylith::fekernels::IsotropicLinearPoroelasticity3D::cauchyStress :
-        (!_useReferenceState && 2 == spaceDim) ?  pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::cauchyStress :
-        (_useReferenceState && 3 == spaceDim) ?  pylith::fekernels::IsotropicLinearPoroelasticity3D::cauchyStress_refstate :
-        (_useReferenceState && 2 == spaceDim) ?  pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::cauchyStress_refstate :
+        (!_useReferenceState && 3 == spaceDim) ?  pylith::fekernels::IsotropicLinearPoroelasticity3D::cauchyStress_infinitesimalStrain_asVector :
+        (!_useReferenceState && 2 == spaceDim) ?  pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::cauchyStress_infinitesimalStrain_asVector :
+        (_useReferenceState && 3 == spaceDim) ?  pylith::fekernels::IsotropicLinearPoroelasticity3D::cauchyStress_infinitesimalStrain_refState_asVector :
+        (_useReferenceState && 2 == spaceDim) ?  pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::cauchyStress_infinitesimalStrain_refState_asVector :
         NULL;
 
     PYLITH_METHOD_RETURN(kernel);
-} // getKernelDerivedCauchyStress
+} // getKernelCauchyStressVector
+
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Update kernel constants.
@@ -640,17 +645,17 @@ pylith::materials::IsotropicLinearPoroelasticity::updateKernelConstants(pylith::
 // Add kernels for updating state variables, implicit.
 void
 pylith::materials::IsotropicLinearPoroelasticity::addKernelsUpdateStateVarsImplicit(std::vector<ProjectKernels>* kernels,
-                                                                            const spatialdata::geocoords::CoordSys* coordsys,
-                                                                            const bool _useStateVars) const {
+                                                                                    const spatialdata::geocoords::CoordSys* coordsys,
+                                                                                    const bool _useStateVars) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("addKernelsUpdateStateVarsImplicit(kernels="<<kernels<<", coordsys="<<coordsys<<")");
     if (_useStateVars) {
         const int spaceDim = coordsys->getSpaceDim();
 
-            const PetscPointFunc funcPorosity =
-                (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::updatePorosityImplicit :
-                (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::updatePorosityImplicit :
-                NULL;
+        const PetscPointFunc funcPorosity =
+            (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::updatePorosityImplicit :
+            (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::updatePorosityImplicit :
+            NULL;
 
         assert(kernels);
         size_t prevNumKernels = kernels->size();
@@ -661,21 +666,22 @@ pylith::materials::IsotropicLinearPoroelasticity::addKernelsUpdateStateVarsImpli
     PYLITH_METHOD_END;
 } // addKernelsUpdateStateVarsImplicit
 
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Add kernels for updating state variables, explicit.
 void
 pylith::materials::IsotropicLinearPoroelasticity::addKernelsUpdateStateVarsExplicit(std::vector<ProjectKernels>* kernels,
-                                                                            const spatialdata::geocoords::CoordSys* coordsys,
-                                                                            const bool _useStateVars) const {
+                                                                                    const spatialdata::geocoords::CoordSys* coordsys,
+                                                                                    const bool _useStateVars) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("addKernelsUpdateStateVarsExplicit(kernels="<<kernels<<", coordsys="<<coordsys<<")");
     if (_useStateVars) {
         const int spaceDim = coordsys->getSpaceDim();
 
-            const PetscPointFunc funcPorosity =
-                (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::updatePorosityExplicit :
-                (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::updatePorosityExplicit :
-                NULL;
+        const PetscPointFunc funcPorosity =
+            (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::updatePorosityExplicit :
+            (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::updatePorosityExplicit :
+            NULL;
 
         assert(kernels);
         size_t prevNumKernels = kernels->size();
@@ -685,5 +691,6 @@ pylith::materials::IsotropicLinearPoroelasticity::addKernelsUpdateStateVarsExpli
 
     PYLITH_METHOD_END;
 } // addKernelsUpdateStateVarsExplicit
+
 
 // End of file

@@ -169,7 +169,7 @@ public:
      *
      * @return Project kernel for computing stress subfield in derived field.
      */
-    PetscPointFunc getKernelDerivedCauchyStress(const spatialdata::geocoords::CoordSys* coordsys) const;
+    PetscPointFunc getKernelCauchyStressVector(const spatialdata::geocoords::CoordSys* coordsys) const;
 
     /** Update kernel constants.
      *
@@ -186,8 +186,8 @@ public:
      * @param[in] _useStateVars Update kernels?
      */
     void addKernelsUpdateStateVarsImplicit(std::vector<pylith::feassemble::IntegratorDomain::ProjectKernels>* kernels,
-                                   const spatialdata::geocoords::CoordSys* coordsys,
-                                   const bool _useStateVars) const;
+                                           const spatialdata::geocoords::CoordSys* coordsys,
+                                           const bool _useStateVars) const;
 
     /** Add kernels for updating state variables, explicit.
      *
@@ -196,8 +196,8 @@ public:
      * @param[in] _useStateVars Update kernels?
      */
     void addKernelsUpdateStateVarsExplicit(std::vector<pylith::feassemble::IntegratorDomain::ProjectKernels>* kernels,
-                                   const spatialdata::geocoords::CoordSys* coordsys,
-                                   const bool _useStateVars) const;
+                                           const spatialdata::geocoords::CoordSys* coordsys,
+                                           const bool _useStateVars) const;
 
     // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:

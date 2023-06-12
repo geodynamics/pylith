@@ -62,11 +62,14 @@ class pylith::fekernels::TensorOps {
     friend class Tensor;
 public:
 
+    typedef void (*fromfn_type_scalar)(const PylithReal,
+                                Tensor*);
     typedef void (*fromfn_type)(const PylithReal[],
                                 Tensor*);
     typedef void (*tofn_type)(const Tensor&,
                               PylithReal[]);
 
+    fromfn_type_scalar fromScalar;
     fromfn_type fromVector;
     fromfn_type fromTensor;
     tofn_type toVector;
@@ -76,7 +79,8 @@ public:
 
     static inline
     TensorOps _create2D(void) {
-        return TensorOps(_fromVector2D,
+        return TensorOps(_fromScalar2D,
+                         _fromVector2D,
                          _fromTensor2D,
                          _toVector2D,
                          _toTensor2D,
@@ -85,7 +89,8 @@ public:
 
     static inline
     TensorOps _create3D(void) {
-        return TensorOps(_fromVector3D,
+        return TensorOps(_fromScalar3D,
+                         _fromVector3D,
                          _fromTensor3D,
                          _toVector3D,
                          _toTensor3D,
@@ -104,7 +109,7 @@ public:
         std::cout << name << ": "
                   << "xx=" << tensor.xx << ", "
                   << "yy=" << tensor.yy << ", "
-                  << "zz="  << tensor.zz << ", "
+                  << "zz=" << tensor.zz << ", "
                   << "xy=" << tensor.xy << ", "
                   << "yz=" << tensor.yz << ", "
                   << "xz=" << tensor.xz << std::endl;
@@ -113,17 +118,32 @@ public:
 private:
 
     inline
-    TensorOps(fromfn_type fromV,
+    TensorOps(fromfn_type_scalar fromS,
+              fromfn_type fromV,
               fromfn_type fromT,
               tofn_type toV,
               tofn_type toT,
               const int vSize) :
+        fromScalar(fromS),   
         fromVector(fromV),
         fromTensor(fromT),
         toVector(toV),
         toTensor(toT),
         vectorSize(vSize) {}
 
+
+    static inline
+    void _fromScalar2D(const PylithReal scalar,
+                       Tensor* tensor) {
+        assert(scalar);
+        assert(tensor);
+        tensor->xx = scalar;
+        tensor->yy = scalar;
+        tensor->zz = 0.0;
+        tensor->xy = 0.0;
+        tensor->yz = 0.0;
+        tensor->xz = 0.0;
+    }
 
     static inline
     void _fromVector2D(const PylithReal vector2D[],
@@ -169,6 +189,19 @@ private:
         tensor2D[1] = tensor.xy;
         tensor2D[2] = tensor.xy;
         tensor2D[3] = tensor.yy;
+    }
+
+    static inline
+    void _fromScalar3D(const PylithReal scalar,
+                       Tensor* tensor) {
+        assert(scalar);
+        assert(tensor);
+        tensor->xx = scalar;
+        tensor->yy = scalar;
+        tensor->zz = scalar;
+        tensor->xy = 0.0;
+        tensor->yz = 0.0;
+        tensor->xz = 0.0;
     }
 
     static inline
