@@ -1,0 +1,88 @@
+## Cubit file for branch faults strike-slip example for hackathon 2023##
+## Evan Marschall and Zechao Zhuo ##
+#############################
+## CUBITCOREFORM 2023.4 ######
+
+## Clear Space##
+reset
+
+
+## Import SI units
+#{Units('si')}
+
+
+### 2D model ###
+# Block is 150.0 km x 100.0 km
+# -50.0 km <= x <= 50.0 km
+# -75.0 km <= y <= 75.0 km
+
+#{blockWidth=100*km}
+#{blockLength=150*km}
+
+
+### Branch Angle ##
+#{branchAngle=30.0}
+### Make the surface ###
+create surface rectangle width {blockWidth} height {blockLength} zplane
+create vertex on curve 1  midpoint 
+create vertex on curve 3  midpoint 
+
+
+### Split Surface to make main fault ###
+split surface 1  through vertex  5 6 
+
+### Make the branch segment ###
+create vertex on curve 5  midpoint 
+
+#Make a curve and rotate to make branch
+Curve 5  copy 
+move Vertex 10 location vertex 9  include_merged 
+
+#rotate curve
+rotate Curve 10  angle {branchAngle}  about Z include_merged 
+
+split surface 3  through vertex 9 11 
+delete curve 10
+
+#### condense ###
+
+merge all
+
+### Properly name everything ###
+
+## Faults
+curve 14 name "main_fault_ypos" #main fault in y+ of branch fault
+curve 12 name "main_fault_yneg" #main fault in y- of branch fault
+curve 11 name "branch_fault" # branch fault
+
+## name surfaces
+
+surface 2 name "surface_xneg" #Surface -x of main 
+surface 5 name "surface_xpos"  #Surface +x of main
+surface 4 name "surface_branch_wedge" #surface between main and branch
+
+## name of vertices
+vertex 5 name "v_main_ypos"
+vertex 6 name "v_main_yneg"
+vertex 9 name "v_intersection"
+vertex 13 name "v_branch_end"
+vertex 2 name "v_ypos_xneg"
+vertex 3 name "v_yneg_xneg"
+vertex 4 name "v_yneg_xpos"
+vertex 1 name "v_ypos_xpos"
+
+## name of side curves
+curve 6 name "c_ypos_xneg"
+curve 2 name "c_xneg"
+curve 7 name "c_yneg_xneg"
+curve 13 name "c_yneg_branch_end"
+curve 15 name "c_branch_end_xpos"
+curve 4 name "c_xpos"
+curve 9 name "c_ypos_xpos"
+
+
+#### End File #####
+
+
+
+
