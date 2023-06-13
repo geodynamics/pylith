@@ -14,6 +14,7 @@ triangular cells using Gmsh and Journal files for generating the
 finite-element mesh with triangular or quadrilateral cell using Cubit.
 
 ## Step 4: create displacements
+We start by imposing a synthetic slip distribution and forward-model the displacements of GPS stations at the surface. 
 
 ## Step 5: greens functions
 
