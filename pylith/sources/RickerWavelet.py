@@ -59,7 +59,7 @@ class RickerWavelet(SourceTimeFunctionMomentTensorForce, ModuleRickerWavelet):
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
-def pointforce_sourcetimefunction():
+def momenttensorforce_sourcetimefunction():
     """Factory associated with RickerWavelet.
     """
     return RickerWavelet()
