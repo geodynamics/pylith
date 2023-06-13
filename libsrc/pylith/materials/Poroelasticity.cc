@@ -22,7 +22,7 @@
 
 #include "pylith/materials/RheologyPoroelasticity.hh" // HASA RheologyPoroelasticity
 #include "pylith/materials/AuxiliaryFactoryPoroelastic.hh" // USES AuxiliaryFactory
-#include "pylith/materials/DerivedFactoryElasticity.hh" // USES DerivedFactoryElasticity
+#include "pylith/materials/DerivedFactoryPoroelasticity.hh" // USES DerivedFactoryPoroelasticity
 #include "pylith/feassemble/IntegratorDomain.hh" // USES IntegratorDomain
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field::SubfieldInfo
@@ -55,7 +55,7 @@ pylith::materials::Poroelasticity::Poroelasticity(void) :
     _useSourceDensity(false),
     _useStateVars(false),
     _rheology(NULL),
-    _derivedFactory(new pylith::materials::DerivedFactoryElasticity) {
+    _derivedFactory(new pylith::materials::DerivedFactoryPoroelasticity) {
     pylith::utils::PyreComponent::setName("poroelasticity");
 } // constructor
 
@@ -901,7 +901,7 @@ pylith::materials::Poroelasticity::_setKernelsDerivedField(pylith::feassemble::I
     const spatialdata::geocoords::CoordSys* coordsys = solution.getMesh().getCoordSys();
     assert(coordsys);
 
-    std::vector<ProjectKernels> kernels(2);
+    std::vector<ProjectKernels> kernels(3);
     kernels[0] = ProjectKernels("cauchy_stress", _rheology->getKernelCauchyStressVector(coordsys));
 
     const int spaceDim = coordsys->getSpaceDim();
@@ -910,6 +910,10 @@ pylith::materials::Poroelasticity::_setKernelsDerivedField(pylith::feassemble::I
         (2 == spaceDim) ? pylith::fekernels::ElasticityPlaneStrain::infinitesimalStrain_asVector :
         NULL;
     kernels[1] = ProjectKernels("cauchy_strain", strainKernel);
+
+    const PetscPointFunc bulkDensity = pylith::fekernels::Poroelasticity::bulkDensity_asScalar;
+    
+    kernels[2] = ProjectKernels("bulk_density", bulkDensity);
 
     assert(integrator);
     integrator->setKernelsDerivedField(kernels);

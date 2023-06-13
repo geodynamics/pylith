@@ -212,7 +212,7 @@ private:
     bool _useSourceDensity; ///< Flag to use source density.
     bool _useStateVars; ///< Flag to update auxiliary fields.
     pylith::materials::RheologyPoroelasticity* _rheology; ///< Bulk rheology for elasticity.
-    pylith::materials::DerivedFactoryElasticity* _derivedFactory; ///< Factory for creating derived fields.
+    pylith::materials::DerivedFactoryPoroelasticity* _derivedFactory; ///< Factory for creating derived fields.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:

@@ -76,6 +76,7 @@ libpylith_la_SOURCES = \
 	materials/RheologyElasticity.cc \
 	materials/AuxiliaryFactoryElasticity.cc \
 	materials/DerivedFactoryElasticity.cc \
+	materials/DerivedFactoryPoroelasticity.cc \
 	materials/IsotropicLinearElasticity.cc \
 	materials/IsotropicLinearMaxwell.cc \
 	materials/IsotropicLinearGenMaxwell.cc \

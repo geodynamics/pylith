@@ -60,6 +60,9 @@ class IsotropicLinearPoroelasticity(RheologyPoroelasticity, ModuleLinearPoroelas
         from .AuxSubfieldsIsotropicLinearPoroelasticity import AuxSubfieldsIsotropicLinearPoroelasticity
         self.auxiliarySubfields = AuxSubfieldsIsotropicLinearPoroelasticity("auxiliary_subfields")
 
+        from .DerivedSubfieldsPoroelasticity import DerivedSubfieldsPoroelasticity
+        self.derivedSubfields = DerivedSubfieldsPoroelasticity("derived_subfields")
+
     def preinitialize(self, mesh):
         RheologyPoroelasticity.preinitialize(self, mesh)
 

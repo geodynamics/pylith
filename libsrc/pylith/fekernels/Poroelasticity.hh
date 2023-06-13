@@ -618,6 +618,36 @@ public:
 
 #endif
 
+    //Calculate bulk density
+    static inline
+    void bulkDensity_asScalar(const PylithInt dim,
+                            const PylithInt numS,
+                            const PylithInt numA,
+                            const PylithInt sOff[],
+                            const PylithInt sOff_x[],
+                            const PylithScalar s[],
+                            const PylithScalar s_t[],
+                            const PylithScalar s_x[],
+                            const PylithInt aOff[],
+                            const PylithInt aOff_x[],
+                            const PylithScalar a[],
+                            const PylithScalar a_t[],
+                            const PylithScalar a_x[],
+                            const PylithReal t,
+                            const PylithScalar x[],
+                            const PylithInt numConstants,
+                            const PylithScalar constants[],
+                            PylithReal* bulkDensity) {
+
+        // Poroelastic Context
+        pylith::fekernels::Poroelasticity::PoroelasticContext poroelasticContext;
+        pylith::fekernels::Poroelasticity::setPoroelasticContextQS(
+            &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
+
+        bulkDensity = &(poroelasticContext.bulkDensity);
+
+    } //bulkDensity_asScalar
+
     // =============================================================================
     // Velocity
     // =============================================================================
