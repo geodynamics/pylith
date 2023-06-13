@@ -16,29 +16,29 @@
 // ----------------------------------------------------------------------
 //
 
-/** @file libsrc/materials/IsotropicLinearIncompElasticity.hh
+/** @file libsrc/materials/IsotropicSelfGravElasticity.hh
  *
- * @brief C++ class for isotropic linear incompressible elasticity.
+ * @brief C++ class for isotropic linear self gravitating elasticity.
  */
 
-#if !defined(pylith_materials_isotropiclinearincompelasticity_hh)
-#define pylith_materials_isotropiclinearincompelasticity_hh
+#if !defined(pylith_materials_isotropicselfgravelasticity_hh)
+#define pylith_materials_isotropicselfgravelasticity_hh
 
 #include "materialsfwd.hh" // forward declarations
 
-#include "pylith/materials/RheologyIncompressibleElasticity.hh" // ISA RheologyIncompressibleElasticity
+#include "pylith/materials/RheologySelfGravitatingElasticity.hh" // ISA RheologySelfGravitatingElasticity
 
-class pylith::materials::IsotropicLinearIncompElasticity : public pylith::materials::RheologyIncompressibleElasticity {
-    friend class TestIsotropicLinearIncompElasticity; // unit testing
+class pylith::materials::IsotropicSelfGravElasticity : public pylith::materials::RheologySelfGravitatingElasticity {
+    friend class TestIsotropicSelfGravElasticity; // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Default constructor.
-    IsotropicLinearIncompElasticity(void);
+    IsotropicSelfGravElasticity(void);
 
     /// Destructor.
-    ~IsotropicLinearIncompElasticity(void);
+    ~IsotropicSelfGravElasticity(void);
 
     /// Deallocate PETSc and local data structures.
     void deallocate(void);
@@ -72,7 +72,7 @@ public:
      *
      * @param[in] coordsys Coordinate system.
      *
-     * @return RHS residual kernel for pressure.
+     * @return RHS residual kernel for potential.
      */
     PetscPointFunc getKernelf0p(const spatialdata::geocoords::CoordSys* coordsys) const;
 
@@ -125,11 +125,11 @@ private:
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
 private:
 
-    IsotropicLinearIncompElasticity(const IsotropicLinearIncompElasticity&); ///< Not implemented.
-    const IsotropicLinearIncompElasticity& operator=(const IsotropicLinearIncompElasticity&); ///< Not implemented
+    IsotropicSelfGravElasticity(const IsotropicSelfGravElasticity&); ///< Not implemented.
+    const IsotropicSelfGravElasticity& operator=(const IsotropicSelfGravElasticity&); ///< Not implemented
 
-}; // class IsotropicLinearIncompElasticity
+}; // class IsotropicSelfGravElasticity
 
-#endif // pylith_materials_isotropiclinearincompelasticity_hh
+#endif // pylith_materials_isotropicSelfGravelasticity_hh
 
 // End of file

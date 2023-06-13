@@ -18,7 +18,7 @@
 
 #include <portinfo>
 
-#include "pylith/materials/RheologyIncompressibleElasticity.hh" // implementation of object methods
+#include "pylith/materials/RheologySelfGravitatingElasticity.hh" // implementation of object methods
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_DEBUG
@@ -29,12 +29,12 @@
 
 // ------------------------------------------------------------------------------------------------
 // Default constructor.
-pylith::materials::RheologyIncompressibleElasticity::RheologyIncompressibleElasticity(void) {}
+pylith::materials::RheologySelfGravitatingElasticity::RheologySelfGravitatingElasticity(void) {}
 
 
 // ------------------------------------------------------------------------------------------------
 // Destructor.
-pylith::materials::RheologyIncompressibleElasticity::~RheologyIncompressibleElasticity(void) {
+pylith::materials::RheologySelfGravitatingElasticity::~RheologySelfGravitatingElasticity(void) {
     deallocate();
 } // destructor
 
@@ -42,13 +42,13 @@ pylith::materials::RheologyIncompressibleElasticity::~RheologyIncompressibleElas
 // ------------------------------------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
-pylith::materials::RheologyIncompressibleElasticity::deallocate(void) {}
+pylith::materials::RheologySelfGravitatingElasticity::deallocate(void) {}
 
 
 // ------------------------------------------------------------------------------------------------
 // Update kernel constants.
 void
-pylith::materials::RheologyIncompressibleElasticity::updateKernelConstants(pylith::real_array* kernelConstants,
+pylith::materials::RheologySelfGravitatingElasticity::updateKernelConstants(pylith::real_array* kernelConstants,
                                                                            const PylithReal dt) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("updateKernelConstants(kernelConstants"<<kernelConstants<<", dt="<<dt<<") empty method");
@@ -62,7 +62,7 @@ pylith::materials::RheologyIncompressibleElasticity::updateKernelConstants(pylit
 // ------------------------------------------------------------------------------------------------
 // Add kernels for updating state variables.
 void
-pylith::materials::RheologyIncompressibleElasticity::addKernelsUpdateStateVars(std::vector<pylith::feassemble::IntegratorDomain::ProjectKernels>* kernels,
+pylith::materials::RheologySelfGravitatingElasticity::addKernelsUpdateStateVars(std::vector<pylith::feassemble::IntegratorDomain::ProjectKernels>* kernels,
                                                                                const spatialdata::geocoords::CoordSys* coordsys) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("addKernelsUpdateStateVars(kernels="<<kernels<<", coordsys="<<typeid(coordsys).name()<<") empty method");

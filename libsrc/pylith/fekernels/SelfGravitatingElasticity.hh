@@ -18,9 +18,9 @@
 
 /** @file libsrc/fekernels/IncompressibleElasticity.hh
  *
- * Kernels for incompressible elasticity independent of rheology.
+ * Kernels for self gravitating elasticity independent of rheology.
  *
- * Solution fields: [disp(dim), pressure(1)]
+ * Solution fields: [disp(dim), gravitational potential(1)]
  *
  * Kernel interface.
  *
@@ -44,12 +44,12 @@
  * @param[out] f0 [dim].
  */
 
-#if !defined(pylith_fekernels_incompressibleelasticity_hh)
-#define pylith_fekernels_incompressibleelasticity_hh
+#if !defined(pylith_fekernels_selfgravitatingelasticity_hh)
+#define pylith_fekernels_selfgravitatingelasticity_hh
 
 #include "fekernelsfwd.hh" // forward declarations
 
-#include "pylith/fekernels/Elasticity.hh" // USES Elasticity kernels
+#include "pylith/fekernels/ElasticitySelfGrav.hh" // USES Elasticity kernels
 
 #include "pylith/utils/types.hh"
 
