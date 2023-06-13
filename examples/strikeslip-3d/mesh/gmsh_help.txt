@@ -1,0 +1,19 @@
+# instructions for installing and running gmsh to create the mesh
+
+1. Create python virtual environment in your current folder
+    python 3 -m venv . (or specify a folder other than here, e.g. $HOME/gmsh)
+2. Activate virtual environment
+    source bin/activate
+3. Install gmsh and numpy in the virtual environment
+	pip install gmsh
+    pip install numpy
+4. Clone pylith (skip if you already have pylith installed somewhere)
+    git clone --recursive https://github.com/geodynamics/pylith.git
+5. "install" just the necessary component for gmsh in this virtualenv
+    mkdir -p lib/python3.10/site-packages/pylith/meshio
+    touch lib/python3.10/site-packages/pylith/meshio/__init.py__
+    touch lib/python3.10/site-packages/pylith/__init.py__
+    cp pylith/pylith/meshio/gmsh_utils.py lib/python3.10/site-packages/pylith/meshio
+
+5. You should be ready to run gmsh. To run this example, do:
+    ./generate_gmsh.py --cell=hex --write --gui
