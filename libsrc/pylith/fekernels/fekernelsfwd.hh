@@ -75,6 +75,19 @@ namespace pylith {
         class FaultCohesive;
         class FaultCohesiveKin;
 
+        class SquarePulseSource;
+        class WellboreSource;
+
+        class RickerWavelet;
+        class RickerWaveletPlaneStrain;
+        class RickerWavelet3D;
+
+        class GaussianWavelet;
+        class GaussianWaveletPlaneStrain;
+        class GaussianWavelet3D;
+
+        class PointForce;
+
         class BoundaryDirections;
     } // fekernels
 } // pylith

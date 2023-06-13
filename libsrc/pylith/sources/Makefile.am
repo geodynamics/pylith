@@ -4,8 +4,8 @@
 #
 # Brad T. Aagaard, U.S. Geological Survey
 # Charles A. Williams, GNS Science
-# Matthew G. Knepley, University at Buffalo
-
+# Matthew G. Knepley, University of Chicago
+#
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
@@ -21,13 +21,20 @@ include $(top_srcdir)/subpackage.am
 
 subpkginclude_HEADERS = \
 	Source.hh \
+	MomentTensorForce.hh \
 	WellboreSource.hh \
-	PointForce.hh \
+	SquarePulseSource.hh \
+	AuxiliaryFactorySquarePulseSource.hh \
+	AuxiliaryFactoryMomentTensorForce.hh \
 	AuxiliaryFactoryWellboreSource.hh \
-	AuxiliaryFactoryPointForce.hh \
-	DerivedFactoryPointForce.hh \
 	AuxiliaryFactorySourceTime.hh \
+	DerivedFactoryMomentTensorForce.hh \
 	RickerWavelet.hh \
+	GaussianWavelet.hh \
+	PointForce.hh \
+	AuxiliaryFactoryPointForce.hh \
+	SourceTimeFunctionMomentTensorForce.hh \
+	SourceTimeFunctionPointForce.hh \
 	sourcesfwd.hh
 
 

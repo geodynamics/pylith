@@ -43,23 +43,35 @@ public:
     /// Deallocate PETSc and local data structures.
     void deallocate(void);
 
-    /** Set source time function.
+    /** Set time history database.
      *
-     * @param[in] sourceTimeFunction Source time function for point force.
+     * @param[in] db Time history database.
      */
-    void setSourceTimeFunction(pylith::sources::SourceTimeFunctionPointForce* const sourceTimeFunction);
+    void setTimeHistoryDB(spatialdata::spatialdb::TimeHistory *th);
 
-    /** Get source time function.
+    /** Get time history database.
      *
-     * @returns Source time function for point force.
+     * @preturns Time history database.
      */
-    pylith::sources::SourceTimeFunctionPointForce* getSourceTimeFunction(void) const;
+    const spatialdata::spatialdb::TimeHistory *getTimeHistoryDB(void);
+
+    /** Use time history term in time history expression.
+     *
+     * @param[in] value True if using time history term in expression.
+     */
+    void useTimeHistory(const bool value);
+
+    /** Get flag associated with using time history term in time history expression.
+     *
+     * @returns True if using time history term in expression, false otherwise.
+     */
+    bool useTimeHistory(void) const;
 
     /** Verify configuration is acceptable.
      *
      * @param[in] solution Solution field.
      */
-    void verifyConfiguration(const pylith::topology::Field& solution) const;
+    void verifyConfiguration(const pylith::topology::Field &solution) const;
 
     /** Create integrator and set kernels.
      *
@@ -67,7 +79,7 @@ public:
      *
      *  @returns Integrator if applicable, otherwise NULL.
      */
-    pylith::feassemble::Integrator* createIntegrator(const pylith::topology::Field& solution);
+    pylith::feassemble::Integrator *createIntegrator(const pylith::topology::Field &solution);
 
     /** Create auxiliary field.
      *
@@ -76,8 +88,8 @@ public:
      *
      * @returns Auxiliary field if applicable, otherwise NULL.
      */
-    pylith::topology::Field* createAuxiliaryField(const pylith::topology::Field& solution,
-                                                  const pylith::topology::Mesh& domainMesh);
+    pylith::topology::Field *createAuxiliaryField(const pylith::topology::Field &solution,
+                                                  const pylith::topology::Mesh &domainMesh);
 
     /** Create derived field.
      *
@@ -86,8 +98,8 @@ public:
      *
      * @returns Derived field if applicable, otherwise NULL.
      */
-    pylith::topology::Field* createDerivedField(const pylith::topology::Field& solution,
-                                                const pylith::topology::Mesh& domainMesh);
+    pylith::topology::Field *createDerivedField(const pylith::topology::Field &solution,
+                                                const pylith::topology::Mesh &domainMesh);
 
     // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
@@ -96,19 +108,7 @@ protected:
      *
      * @return Auxiliary factory for physics object.
      */
-    pylith::feassemble::AuxiliaryFactory* _getAuxiliaryFactory(void);
-
-    /** Update kernel constants.
-     *
-     * @param[in] dt Current time step.
-     */
-    void _updateKernelConstants(const PylithReal dt);
-
-    /** Get derived factory associated with physics.
-     *
-     * @return Derived factory for physics object.
-     */
-    pylith::topology::FieldFactory* _getDerivedFactory(void);
+    pylith::feassemble::AuxiliaryFactory *_getAuxiliaryFactory(void);
 
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
@@ -118,44 +118,31 @@ private:
      * @param[out] integrator Integrator for source.
      * @param[in] solution Solution field.
      */
-    void _setKernelsResidual(pylith::feassemble::IntegratorDomain* integrator,
-                             const pylith::topology::Field& solution) const;
+    void _setKernelsResidual(pylith::feassemble::IntegratorDomain *integrator,
+                             const pylith::topology::Field &solution) const;
 
     /** Set kernels for Jacobian.
      *
      * @param[out] integrator Integrator for source.
      * @param[in] solution Solution field.
      */
-    void _setKernelsJacobian(pylith::feassemble::IntegratorDomain* integrator,
-                             const pylith::topology::Field& solution) const;
-
-    /** Set kernels for computing updated state variables in auxiliary field.
-     *
-     * @param[out] integrator Integrator for material.
-     * @param[in] solution Solution field.
-     */
-    void _setKernelsUpdateStateVars(pylith::feassemble::IntegratorDomain* integrator,
-                                    const pylith::topology::Field& solution) const;
-
-    /** Set kernels for computing derived field.
-     *
-     * @param[out] integrator Integrator for material.
-     * @param[in] solution Solution field.
-     */
-    void _setKernelsDerivedField(pylith::feassemble::IntegratorDomain* integrator,
-                                 const pylith::topology::Field& solution) const;
+    void _setKernelsJacobian(pylith::feassemble::IntegratorDomain *integrator,
+                             const pylith::topology::Field &solution) const;
 
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    pylith::sources::SourceTimeFunctionPointForce* _sourceTimeFunction; ///< Source time function for point force.
-    pylith::sources::DerivedFactoryPointForce* _derivedFactory; ///< Factory for creating derived fields.
+    bool _useInertia; ///< Flag to include inertial term.
+    spatialdata::spatialdb::TimeHistory *_dbTimeHistory; ///< Time history database.
+    pylith::sources::AuxiliaryFactoryPointForce *_auxiliaryFactory; ///< Factory for auxiliary subfields.
+
+    bool _useTimeHistory; ///< Use time history term.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    PointForce(const PointForce&); ///< Not implemented.
-    const PointForce& operator=(const PointForce&); /// Not implemented.
+    PointForce(const PointForce &); ///< Not implemented.
+    const PointForce &operator=(const PointForce &); /// Not implemented.
 
 };
 

@@ -1,0 +1,115 @@
+// -*- C++ -*-
+//
+// ----------------------------------------------------------------------
+//
+// Brad T. Aagaard, U.S. Geological Survey
+// Charles A. Williams, GNS Science
+// Matthew G. Knepley, University of Chicago
+//
+// This code was developed as part of the Computational Infrastructure
+// for Geodynamics (http://geodynamics.org).
+//
+// Copyright (c) 2010-2016 University of California, Davis
+//
+// See COPYING for license information.
+//
+// ----------------------------------------------------------------------
+//
+
+/** @file modulesrc/sources/Source.i
+ *
+ * Python interface to C++ abstract base class Source.
+ */
+
+namespace pylith {
+    namespace sources {
+        class Source : public pylith::problems::Physics {
+            // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////
+public:
+
+            /** Default constructor.
+             *
+             * @param dimension Spatial dimension associated with source.
+             */
+            Source(const int dimension);
+
+            /// Destructor.
+            virtual ~Source(void);
+
+            /// Deallocate PETSc and local data structures.
+            virtual
+            void deallocate(void);
+
+            /** Set descriptive label for source.
+             *
+             * @param value Label of source.
+             */
+            void setDescription(const char* value);
+
+            /** Get descruptive label of source.
+             *
+             * @returns Label of source
+             */
+            const char* getDescription(void) const;
+
+            /** Set name of label marking source.
+             *
+             * @param[in] value Name of label for source (from mesh generator).
+             */
+            void setLabelName(const char* value);
+
+            /** Get name of label marking boundary associated with boundary condition surface.
+             *
+             * @returns Name of label for source (from mesh generator).
+             */
+            const char* getLabelName(void) const;
+
+            /** Set value of label marking source.
+             *
+             * @param[in] value Value of label for source (from mesh generator).
+             */
+            void setLabelValue(const int value);
+
+            /** Get value of label marking source.
+             *
+             * @returns Value of label for source (from mesh generator).
+             */
+            int getLabelValue(void) const;
+
+	    /** Create constraint and set kernels.
+	     *
+	     * @param[in] solution Solution field.
+	     * @returns Constraint if applicable, otherwise NULL.
+	     */
+	    virtual
+	    std::vector<pylith::feassemble::Constraint*> createConstraints(const pylith::topology::Field& solution);
+
+            /** Set coordinates and names of points.
+             *
+             * @param[in] points Array of coordinates [numPoints * spaceDim].
+             * @param[in] numPoints Number of points.
+             * @param[in] spaceDim Spatial dimension for coordinates.
+             * @param[in] pointNames Array with point names.
+             * @param[in] numPointNames Number of point names.
+             */
+            %apply(double* IN_ARRAY2, int DIM1, int DIM2) {
+	            (const PylithReal* pointCoords,
+	            const int numPoints,
+	            const int spaceDim)
+	        };
+            %apply(const char* const* string_list, const int list_len){
+	            (const char* const* pointNames, const int numPointNames)
+	        };
+            void setPoints(const PylithReal* pointCoords,
+                           const int numPoints,
+                           const int spaceDim,
+                           const char* const* pointNames,
+                           const int numPointNames);
+            %clear(const PylithReal* pointCoords, const int numPoints, const int spaceDim);
+            %clear(const char* const* pointNames, const int numPointNames);
+        }; // class Source
+
+    } // sources
+} // pylith
+
+// End of file

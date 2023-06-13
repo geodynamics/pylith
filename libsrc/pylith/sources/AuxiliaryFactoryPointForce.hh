@@ -18,7 +18,7 @@
 
 /** @file libsrc/sources/AuxiliaryFactoryPointForce.hh
  *
- * @brief C++ helper class for setting up auxiliary subfields for the wellbore source equation.
+ * @brief C++ helper class for setting up auxiliary subfields for the squarepulse source equation.
  */
 
 #if !defined(pylith_sources_auxiliaryfactorypointforce_hh)
@@ -41,17 +41,14 @@ public:
     /// Destructor.
     virtual ~AuxiliaryFactoryPointForce(void);
 
-    /// Add fluid density subfield to auxiliary subfields.
-    void addMomentTensor(void);
-
-    /// Add fluid viscosity subfield to auxiliary subfields.
-    void addTimeDelay(void);
+    /// Add point force subfield to auxiliary subfields.
+    void addPointForce(void);
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
     AuxiliaryFactoryPointForce(const AuxiliaryFactoryPointForce &); ///< Not implemented.
-    const AuxiliaryFactoryPointForce& operator=(const AuxiliaryFactoryPointForce&); ///< Not implemented
+    const AuxiliaryFactoryPointForce &operator=(const AuxiliaryFactoryPointForce &); ///< Not implemented
 
 }; // class AuxiliaryFactoryPointForce
 

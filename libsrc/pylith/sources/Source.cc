@@ -4,7 +4,7 @@
 //
 // Brad T. Aagaard, U.S. Geological Survey
 // Charles A. Williams, GNS Science
-// Matthew G. Knepley, University at Buffalo
+// Matthew G. Knepley, University of Chicago
 //
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
@@ -53,7 +53,6 @@ pylith::sources::Source::deallocate(void) {
 
     PYLITH_METHOD_END;
 } // deallocate
-
 
 // ------------------------------------------------------------------------------------------------
 // Set descriptive label of source.
@@ -151,3 +150,6 @@ pylith::sources::Source::setPoints(const PylithReal* pointCoords,
 
     PYLITH_METHOD_END;
 } // setPoints
+
+
+// End of file

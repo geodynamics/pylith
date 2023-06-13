@@ -4,7 +4,7 @@
 //
 // Brad T. Aagaard, U.S. Geological Survey
 // Charles A. Williams, GNS Science
-// Matthew G. Knepley, University at Buffalo
+// Matthew G. Knepley, University of Chicago
 //
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
@@ -92,7 +92,7 @@ public:
     /** Set first choice for reference direction to discriminate among tangential directions in 3-D.
      *
      * @param vec Reference direction unit vector.
-     * /** Create constraint and set kernels.
+    /** Create constraint and set kernels.
      *
      * @param[in] solution Solution field.
      * @returns Constraint if applicable, otherwise NULL.
@@ -122,7 +122,7 @@ protected:
     std::string _description; ///< Descriptive label for source.
     std::string _labelName; ///< Name of label to identify source points in mesh.
     int _labelValue; ///< Value of label to identify source points in mesh.
-
+    
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 

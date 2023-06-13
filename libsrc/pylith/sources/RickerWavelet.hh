@@ -26,9 +26,9 @@
 
 #include "sourcesfwd.hh" // forward declarations
 
-#include "pylith/sources/SourceTimeFunctionPointForce.hh" // ISA SourceTimeFunctionPointForce
+#include "pylith/sources/SourceTimeFunctionMomentTensorForce.hh" // ISA SourceTimeFunctionMomentTensorForce
 
-class pylith::sources::RickerWavelet : public pylith::sources::SourceTimeFunctionPointForce {
+class pylith::sources::RickerWavelet : public pylith::sources::SourceTimeFunctionMomentTensorForce {
     friend class TestRickerWavelet; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -47,7 +47,7 @@ public:
      *
      * @return Auxiliary factory for physics object.
      */
-    pylith::sources::AuxiliaryFactoryPointForce* getAuxiliaryFactory(void);
+    pylith::sources::AuxiliaryFactoryMomentTensorForce* getAuxiliaryFactory(void);
 
     /** Add source time subfields to auxiliary field.
      *
