@@ -501,14 +501,13 @@ public:
 
     // ================================ Kernels ====================================
     // --------------------------------------------------------------------------------------------
-    /** Helper function for calculating Cauchy stress for WITHOUT a reference stress and strain.
+    /** Helper function for calculating darcy flux
      *
      * ISA Poroelasticity::fluxrateFn
      *
      * @param[in] rheologyContext IsotropicLinearElasticity context.
-     * @param[in] strain Strain tensor.
      * @param[in] tensorOps Tensor operations.
-     * @param[out] stress Stress tensor.
+     * @param[out] fluxRate darcy flux vector
      */
     static inline
     void darcyFluxRate(const pylith::fekernels::Poroelasticity::PoroelasticContext& poroelasticContext,
@@ -548,6 +547,56 @@ public:
         fluxRate->yz = 0.0;
         fluxRate->xz = 0.0;
     } // darcyFluxRate
+
+    // ================================ Kernels ====================================
+    // --------------------------------------------------------------------------------------------
+    /** Helper function for calculating darcy flux for poroelastodynamics
+     *
+     * ISA Poroelasticity::fluxrateFn
+     *
+     * @param[in] rheologyContext IsotropicLinearElasticity context.
+     * @param[in] tensorOps Tensor operations.
+     * @param[out] fluxRateDynamic darcy flux vector
+     */
+    static inline
+    void darcyFluxRateDynamic(const pylith::fekernels::Poroelasticity::PoroelasticContext& poroelasticContext,
+                       void* rheologyContext,
+                       const pylith::fekernels::TensorOps& tensorOps,
+                       pylith::fekernels::Tensor* fluxRateDynamic) {
+        Context* context = (Context*)(rheologyContext);
+        assert(context);
+        assert(fluxRateDynamic);
+
+        const PylithInt dim = poroelasticContext.dim;
+        // Solution Variables
+        const PylithScalar *pressure_x = poroelasticContext.pressure_x;
+        const PylithScalar *velocity_t = poroelasticContext.velocity_t;
+
+        // Poroelastic Auxiliaries
+        const PylithScalar fluidDensity = poroelasticContext.fluidDensity;
+        const PylithScalar fluidViscosity = poroelasticContext.fluidViscosity;
+        const PylithScalar *bodyForce = poroelasticContext.bodyForce;
+        const PylithScalar *gravityField = poroelasticContext.gravityField;
+
+        // Rheological Auxiliaries
+
+        PylithScalar tensorPermeability[9] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+        PylithScalar fluxRateVectorDynamic[3] = {0.0, 0.0, 0.0};
+        tensorOps.toTensor(context->permeability, tensorPermeability);
+
+        for (PylithInt i = 0; i < dim; ++i) {
+            for (PylithInt j = 0; j < dim; j++) {
+                fluxRateVectorDynamic[i] += (tensorPermeability[i * dim + j] / fluidViscosity) * (pressure_x[j] + fluidDensity * velocity_t[j] - bodyForce[j] - fluidDensity * gravityField[j]);
+            } // for
+        } // for
+
+        fluxRateDynamic->xx = fluxRateVectorDynamic[0];
+        fluxRateDynamic->yy = fluxRateVectorDynamic[1];
+        fluxRateDynamic->zz = fluxRateVectorDynamic[2];
+        fluxRateDynamic->xy = 0.0;
+        fluxRateDynamic->yz = 0.0;
+        fluxRateDynamic->xz = 0.0;
+    } // darcyFluxRateDynamic
 
 }; // IsotropicLinearPoroelasticity
 
@@ -4084,7 +4133,7 @@ public:
         // Use f1p / fluxrate / darcy function
         pylith::fekernels::Poroelasticity::f1p(
             poroelasticContext, &rheologyContext,
-            pylith::fekernels::IsotropicLinearPoroelasticity::darcyFluxRate,
+            pylith::fekernels::IsotropicLinearPoroelasticity::darcyFluxRateDynamic,
             pylith::fekernels::Tensor::ops3D,
             g1);
 
@@ -4134,7 +4183,7 @@ public:
         // Use f1p / fluxrate / darcy function
         pylith::fekernels::Poroelasticity::f1p(
             poroelasticContext, &rheologyContext,
-            pylith::fekernels::IsotropicLinearPoroelasticity::darcyFluxRate,
+            pylith::fekernels::IsotropicLinearPoroelasticity::darcyFluxRateDynamic,
             pylith::fekernels::Tensor::ops3D,
             g1);
 
@@ -4186,7 +4235,7 @@ public:
         // Use f1p / fluxrate / darcy function
         pylith::fekernels::Poroelasticity::f1p(
             poroelasticContext, &rheologyContext,
-            pylith::fekernels::IsotropicLinearPoroelasticity::darcyFluxRate,
+            pylith::fekernels::IsotropicLinearPoroelasticity::darcyFluxRateDynamic,
             pylith::fekernels::Tensor::ops3D,
             g1);
 
@@ -4237,7 +4286,7 @@ public:
         // Use f1p / fluxrate / darcy function
         pylith::fekernels::Poroelasticity::f1p(
             poroelasticContext, &rheologyContext,
-            pylith::fekernels::IsotropicLinearPoroelasticity::darcyFluxRate,
+            pylith::fekernels::IsotropicLinearPoroelasticity::darcyFluxRateDynamic,
             pylith::fekernels::Tensor::ops3D,
             g1);
 
