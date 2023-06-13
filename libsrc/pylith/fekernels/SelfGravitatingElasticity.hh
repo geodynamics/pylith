@@ -136,7 +136,7 @@ public:
          */
 
         for (PylithInt i = 0; i < dim; ++i) {
-            Jf1[i*dim+i] += 1.0;
+            Jf1[i*dim+i] = 0.0; // Necessary change to ensure no cross-talk between displacement and potential
         } // for
     } // Jf1pu
 
@@ -184,7 +184,7 @@ public:
          */
 
         for (PylithInt i = 0; i < dim; ++i) {
-            Jf2[i*dim+i] += 1.0;
+            Jf2[i*dim+i] = 0.0; // Necessary change to ensure no cross-talk between displacement and potential
         } // for
     } // Jf2up
 
