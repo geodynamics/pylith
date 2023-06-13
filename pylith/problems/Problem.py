@@ -39,6 +39,12 @@ def faultFactory(name):
     from pylith.faults.FaultCohesiveKin import FaultCohesiveKin
     return facility(name, family="fault", factory=FaultCohesiveKin)
 
+def sourceFactory(name):
+    """Factory for source items.
+    """
+    from pythia.pyre.inventory import facility
+    from pylith.sources.WellboreSource import WellboreSource
+    return facility(name, family="source", factory=WellboreSource)
 
 def observerFactory(name):
     """Factory for output items.
@@ -93,6 +99,9 @@ class Problem(PetscComponent, ModuleProblem):
 
     interfaces = pythia.pyre.inventory.facilityArray("interfaces", itemFactory=faultFactory, factory=EmptyBin)
     interfaces.meta['tip'] = "Interior surfaces with constraints or constitutive models."
+
+    sources = pythia.pyre.inventory.facilityArray("sources", itemFactory=sourceFactory, factory=EmptyBin)
+    sources.meta['tip'] = "Point sources."
 
     from pylith.problems.SingleObserver import SingleSolnObserver
     observers = pythia.pyre.inventory.facilityArray(
@@ -158,6 +167,11 @@ class Problem(PetscComponent, ModuleProblem):
         for interface in self.interfaces.components():
             interface.preinitialize(self)
         ModuleProblem.setInterfaces(self, self.interfaces.components())
+
+        # Preinitialize Sources
+        for source in self.sources.components():
+            source.preinitialize(self)
+        ModuleProblem.setSources(self, self.sources.components())
 
         # Preinitialize observers.
         for observer in self.observers.components():

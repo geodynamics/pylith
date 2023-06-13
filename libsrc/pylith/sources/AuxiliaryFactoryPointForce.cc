@@ -42,69 +42,38 @@ pylith::sources::AuxiliaryFactoryPointForce::AuxiliaryFactoryPointForce(void) {
 pylith::sources::AuxiliaryFactoryPointForce::~AuxiliaryFactoryPointForce(void) {}
 
 
-// ----------------------------------------------------------------------------
-// Add isotropic permeability subfield to auxiliary fields.
+// ----------------------------------------------------------------------
+// Add fluid density subfield to auxiliary fields.
 void
-pylith::sources::AuxiliaryFactoryPointForce::addMomentTensor(void) { // momentTensor
+pylith::sources::AuxiliaryFactoryPointForce::addPointForce(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addTensorPermeability(void)");
+    PYLITH_JOURNAL_DEBUG("addPointForce(void)");
 
-    const char* subfieldName = "moment_tensor";
-    const char* componentNames[6] = {
-        "moment_tensor_xx",
-        "moment_tensor_yy",
-        "moment_tensor_zz",
-        "moment_tensor_xy",
-        "moment_tensor_yz",
-        "moment_tensor_xz"
+    const char *subfieldName = "point_force";
+    const char* componentNames[3] = {
+        "point_force_x",
+        "point_force_y",
+        "point_force_z",
     };
-    const int tensorSize = (3 == _spaceDim) ? 6 : (2 == _spaceDim) ? 4 : 1;
     const PylithReal pressureScale = _normalizer->getPressureScale();
 
     pylith::topology::Field::Description description;
     description.label = subfieldName;
     description.alias = subfieldName;
-    description.vectorFieldType = pylith::topology::Field::OTHER;
-    description.numComponents = tensorSize;
-    description.componentNames.resize(tensorSize);
-    for (int i = 0; i < tensorSize; ++i) {
+    description.vectorFieldType = pylith::topology::Field::VECTOR;
+    description.numComponents = _spaceDim;
+    description.componentNames.resize(_spaceDim);
+    for (int i = 0; i < _spaceDim; ++i) {
         description.componentNames[i] = componentNames[i];
     } // for
     description.scale = pressureScale;
-    description.validator = NULL;
+    description.validator = pylith::topology::FieldQuery::validatorPositive;
 
     _field->subfieldAdd(description, getSubfieldDiscretization(subfieldName));
     this->setSubfieldQuery(subfieldName);
 
     PYLITH_METHOD_END;
-} // addMomentTensor
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Add time delay of source time function to auxiliary fields.
-void
-pylith::sources::AuxiliaryFactoryPointForce::addTimeDelay(void) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addTimeDelay(void)");
-
-    const char* subfieldName = "time_delay";
-
-    pylith::topology::Field::Description description;
-    const PylithReal timeScale = _normalizer->getTimeScale();
-    description.label = subfieldName;
-    description.alias = subfieldName;
-    description.vectorFieldType = pylith::topology::Field::SCALAR;
-    description.numComponents = 1;
-    description.componentNames.resize(1);
-    description.componentNames[0] = subfieldName;
-    description.scale = timeScale;
-    description.validator = pylith::topology::FieldQuery::validatorNonnegative;
-
-    _field->subfieldAdd(description, getSubfieldDiscretization(subfieldName));
-    this->setSubfieldQuery(subfieldName);
-
-    PYLITH_METHOD_END;
-} // addTimeDelay
+} // addFluidDensity
 
 
 // End of file

@@ -4,7 +4,7 @@
 //
 // Brad T. Aagaard, U.S. Geological Survey
 // Charles A. Williams, GNS Science
-// Matthew G. Knepley, University at Buffalo
+// Matthew G. Knepley, University of Chicago
 //
 // This code was developed as part of the Computational Infrastructure
 // for Geodynamics (http://geodynamics.org).
@@ -32,17 +32,24 @@ namespace pylith {
         // New stuff
         class Source;
 
-        class PointForce;
-        class AuxiliaryFactoryPointForce;
-        class DerivedFactoryPointForce;
+        class MomentTensorForce;
+        class AuxiliaryFactoryMomentTensorForce;
+        class DerivedFactoryMomentTensorForce;
 
-        class SourceTimeFunctionPointForce;
+        class SourceTimeFunctionMomentTensorForce;
         class AuxiliaryFactorySourceTime;
         class RickerWavelet;
-        // class GaussianWavelet;
+        class GaussianWavelet;
 
-        // class WellboreSource;
-        // class AuxiliaryFactoryWellboreSource;
+        class PointForce;
+        class SourceTimeFunctionPointForce;
+        class AuxiliaryFactoryPointForce;
+
+        class SquarePulseSource;
+        class AuxiliaryFactorySquarePulseSource;
+
+        class WellboreSource;
+        class AuxiliaryFactoryWellboreSource;
 
     } // sources
 } // pylith
