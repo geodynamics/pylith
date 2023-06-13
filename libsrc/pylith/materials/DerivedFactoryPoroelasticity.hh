@@ -21,41 +21,38 @@
  * @brief C++ helper class for setting up derived subfields for elastic materials.
  */
 
-#if !defined(pylith_materials_derivedfactoryelasticity_hh)
-#define pylith_materials_derivedfactoryelasticity_hh
+#if !defined(pylith_materials_derivedfactoryporoelasticity_hh)
+#define pylith_materials_derivedfactoryporoelasticity_hh
 
 #include "materialsfwd.hh" // forward declarations
-#include "pylith/topology/FieldFactory.hh" // ISA AuxiliaryFactory
+#include "pylith/materials/DerivedFactoryElasticity.hh" // ISA DerivedFactoryElasticity
 
-class pylith::materials::DerivedFactoryElasticity : public pylith::topology::FieldFactory {
+class pylith::materials::DerivedFactoryPoroelasticity : public pylith::materials::DerivedFactoryElasticity {
     friend class TestDerivedFactoryElasticity; // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Default constructor.
-    DerivedFactoryElasticity(void);
+    DerivedFactoryPoroelasticity(void);
 
     /// Destructor.
-    virtual ~DerivedFactoryElasticity(void);
+    virtual ~DerivedFactoryPoroelasticity(void);
 
-    /// Add Cauchy stress subfield to derived field.
-    void addCauchyStress(void);
-
-    /// Add Cauchy (infinitesimal) strain subfield to derived field.
-    void addCauchyStrain(void);
+    /// Add bulk density subfield to derived field
+    void addBulkDensity(void);
 
     /// Add subfields using discretizations provided.
-    virtual void addSubfields(void);
+    void addSubfields(void);
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
 private:
 
-    DerivedFactoryElasticity(const DerivedFactoryElasticity &); ///< Not implemented.
-    const DerivedFactoryElasticity& operator=(const DerivedFactoryElasticity&); ///< Not implemented
+    DerivedFactoryPoroelasticity(const DerivedFactoryPoroelasticity &); ///< Not implemented.
+    const DerivedFactoryPoroelasticity& operator=(const DerivedFactoryPoroelasticity&); ///< Not implemented
 
-}; // class DerivedFactoryElasticity
+}; // class DerivedFactoryPoroelasticity
 
-#endif // pylith_materials_derivedfactoryelasticity_hh
+#endif // pylith_materials_derivedfactoryporoelasticity_hh
 
 // End of file
