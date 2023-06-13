@@ -16,13 +16,13 @@
 // ----------------------------------------------------------------------
 //
 
-/** @file libsrc/materials/RheologyIncompressibleElasticity.hh
+/** @file libsrc/materials/RheologySelfGravitatingElasticity.hh
  *
- * @brief C++ abstract base class for bulk rheologies associated with the incompressible elasticity equation.
+ * @brief C++ abstract base class for bulk rheologies associated with the self gravitating elasticity equation.
  */
 
-#if !defined(pylith_materials_rheologyincompressibleelasticity_hh)
-#define pylith_materials_rheologyincompressibleelasticity_hh
+#if !defined(pylith_materials_rheologyselfgravitatingelasticity_hh)
+#define pylith_materials_rheologyselfgravitatingelasticity_hh
 
 #include "materialsfwd.hh" // forward declarations
 #include "pylith/utils/PyreComponent.hh" // ISA PyreComponent
@@ -35,17 +35,17 @@
 
 #include "petscds.h" // USES PetscPointFunc, PetscPointJac
 
-class pylith::materials::RheologyIncompressibleElasticity : public pylith::utils::PyreComponent {
+class pylith::materials::RheologySelfGravitatingElasticity : public pylith::utils::PyreComponent {
     friend class TestIsotropicLinearElasticity; // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Default constructor.
-    RheologyIncompressibleElasticity(void);
+    RheologySelfGravitatingElasticity(void);
 
     /// Destructor.
-    virtual ~RheologyIncompressibleElasticity(void);
+    virtual ~RheologySelfGravitatingElasticity(void);
 
     /// Deallocate PETSc and local data structures.
     void deallocate(void);
@@ -65,7 +65,7 @@ public:
      *
      * @param[in] coordsys Coordinate system.
      *
-     * @return RHS residual kernel for pressure.
+     * @return RHS residual kernel for potential.
      */
     virtual
     PetscPointFunc getKernelf0p(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
@@ -127,13 +127,13 @@ public:
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
 private:
 
-    RheologyIncompressibleElasticity(const RheologyIncompressibleElasticity&); ///< Not implemented.
-    const RheologyIncompressibleElasticity& operator=(const RheologyIncompressibleElasticity&); /// Not implemented.
+    RheologySelfGravitatingElasticity(const RheologySelfGravitatingElasticity&); ///< Not implemented.
+    const RheologySelfGravitatingElasticity& operator=(const RheologySelfGravitatingElasticity&); /// Not implemented.
 
 };
 
-// class RheologyIncompressibleElasticity
+// class RheologySelfGravitatingElasticity
 
-#endif // pylith_materials_rheologyincompressibleelasticity_hh
+#endif // pylith_materials_rheologyselfgravitatingelasticity_hh
 
 // End of file

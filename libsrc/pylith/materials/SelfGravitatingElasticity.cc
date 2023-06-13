@@ -18,9 +18,9 @@
 
 #include <portinfo>
 
-#include "pylith/materials/IncompressibleElasticity.hh" // implementation of object methods
+#include "pylith/materials/SelfGravitatingElasticity.hh" // implementation of object methods
 
-#include "pylith/materials/RheologyIncompressibleElasticity.hh" // HASA RheologyIncompressibleElasticity
+#include "pylith/materials/RheologySelfGravitatingElasticity.hh" // HASA RheologySelfGravitatingElasticity
 #include "pylith/materials/AuxiliaryFactoryElasticity.hh" // USES AuxiliaryFactoryElasticity
 #include "pylith/materials/DerivedFactoryElasticity.hh" // USES DerivedFactoryElasticity
 #include "pylith/feassemble/IntegratorDomain.hh" // USES IntegratorDomain
@@ -28,7 +28,7 @@
 #include "pylith/topology/Field.hh" // USES Field::SubfieldInfo
 #include "pylith/topology/FieldOps.hh" // USES FieldOps
 
-#include "pylith/fekernels/IncompressibleElasticity.hh" // USES IncompressibleElasticity kernels
+#include "pylith/fekernels/SelfGravitatingElasticity.hh" // USES SelfGravitatingElasticity kernels
 #include "pylith/fekernels/Elasticity.hh" // USES Elasticity kernels
 #include "pylith/fekernels/DispVel.hh" // USES DispVel kernels
 
@@ -49,17 +49,17 @@ typedef pylith::feassemble::Integrator::EquationPart EquationPart;
 
 // ------------------------------------------------------------------------------------------------
 // Default constructor.
-pylith::materials::IncompressibleElasticity::IncompressibleElasticity(void) :
+pylith::materials::SelfGravitatingElasticity::SelfGravitatingElasticity(void) :
     _useBodyForce(false),
     _rheology(NULL),
     _derivedFactory(new pylith::materials::DerivedFactoryElasticity) {
-    pylith::utils::PyreComponent::setName("incompressibleelasticity");
+    pylith::utils::PyreComponent::setName("selfgravitatingelasticity");
 } // constructor
 
 
 // ------------------------------------------------------------------------------------------------
 // Destructor.
-pylith::materials::IncompressibleElasticity::~IncompressibleElasticity(void) {
+pylith::materials::SelfGravitatingElasticity::~SelfGravitatingElasticity(void) {
     deallocate();
 } // destructor
 
@@ -67,7 +67,7 @@ pylith::materials::IncompressibleElasticity::~IncompressibleElasticity(void) {
 // ------------------------------------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
-pylith::materials::IncompressibleElasticity::deallocate(void) {
+pylith::materials::SelfGravitatingElasticity::deallocate(void) {
     Material::deallocate();
 
     delete _derivedFactory;_derivedFactory = NULL;
@@ -78,7 +78,7 @@ pylith::materials::IncompressibleElasticity::deallocate(void) {
 // ------------------------------------------------------------------------------------------------
 // Include body force?
 void
-pylith::materials::IncompressibleElasticity::useBodyForce(const bool value) {
+pylith::materials::SelfGravitatingElasticity::useBodyForce(const bool value) {
     PYLITH_COMPONENT_DEBUG("useBodyForce(value="<<value<<")");
 
     _useBodyForce = value;
@@ -88,7 +88,7 @@ pylith::materials::IncompressibleElasticity::useBodyForce(const bool value) {
 // ------------------------------------------------------------------------------------------------
 // Include body force?
 bool
-pylith::materials::IncompressibleElasticity::useBodyForce(void) const {
+pylith::materials::SelfGravitatingElasticity::useBodyForce(void) const {
     return _useBodyForce;
 } // useBodyForce
 
@@ -96,7 +96,7 @@ pylith::materials::IncompressibleElasticity::useBodyForce(void) const {
 // ------------------------------------------------------------------------------------------------
 // Set bulk rheology.
 void
-pylith::materials::IncompressibleElasticity::setBulkRheology(pylith::materials::RheologyIncompressibleElasticity* const rheology) {
+pylith::materials::SelfGravitatingElasticity::setBulkRheology(pylith::materials::RheologySelfGravitatingElasticity* const rheology) {
     PYLITH_COMPONENT_DEBUG("setBulkRheology(rheology="<<rheology<<")");
 
     _rheology = rheology;
@@ -105,8 +105,8 @@ pylith::materials::IncompressibleElasticity::setBulkRheology(pylith::materials::
 
 // ------------------------------------------------------------------------------------------------
 // Get bulk rheology.
-pylith::materials::RheologyIncompressibleElasticity*
-pylith::materials::IncompressibleElasticity::getBulkRheology(void) const {
+pylith::materials::RheologySelfGravitatingElasticity*
+pylith::materials::SelfGravitatingElasticity::getBulkRheology(void) const {
     return _rheology;
 } // getBulkRheology
 
@@ -114,16 +114,16 @@ pylith::materials::IncompressibleElasticity::getBulkRheology(void) const {
 // ------------------------------------------------------------------------------------------------
 // Verify configuration is acceptable.
 void
-pylith::materials::IncompressibleElasticity::verifyConfiguration(const pylith::topology::Field& solution) const {
+pylith::materials::SelfGravitatingElasticity::verifyConfiguration(const pylith::topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("verifyConfiguration(solution="<<solution.getLabel()<<")");
 
     // Verify solution contains expected fields.
     if (!solution.hasSubfield("displacement")) {
-        throw std::runtime_error("Cannot find 'displacement' field in solution; required for material 'IncompressibleElasticity'.");
+        throw std::runtime_error("Cannot find 'displacement' field in solution; required for material 'SelfGravitatingElasticity'.");
     } // if
-    if (!solution.hasSubfield("pressure")) {
-        throw std::runtime_error("Cannot find 'pressure' field in solution; required for material 'IncompressibleElasticity'.");
+    if (!solution.hasSubfield("potential")) {
+        throw std::runtime_error("Cannot find 'potential' field in solution; required for material 'SelfGravitatingElasticity'.");
     } // if
 
     PYLITH_METHOD_END;
@@ -133,7 +133,7 @@ pylith::materials::IncompressibleElasticity::verifyConfiguration(const pylith::t
 // ------------------------------------------------------------------------------------------------
 // Create integrator and set kernels.
 pylith::feassemble::Integrator*
-pylith::materials::IncompressibleElasticity::createIntegrator(const pylith::topology::Field& solution) {
+pylith::materials::SelfGravitatingElasticity::createIntegrator(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("createIntegrator(solution="<<solution.getLabel()<<")");
 
@@ -153,13 +153,13 @@ pylith::materials::IncompressibleElasticity::createIntegrator(const pylith::topo
 // ------------------------------------------------------------------------------------------------
 // Create auxiliary field.
 pylith::topology::Field*
-pylith::materials::IncompressibleElasticity::createAuxiliaryField(const pylith::topology::Field& solution,
+pylith::materials::SelfGravitatingElasticity::createAuxiliaryField(const pylith::topology::Field& solution,
                                                                   const pylith::topology::Mesh& domainMesh) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("createAuxiliaryField(solution="<<solution.getLabel()<<", domainMesh=)"<<typeid(domainMesh).name()<<")");
 
     pylith::topology::Field* auxiliaryField = new pylith::topology::Field(domainMesh);assert(auxiliaryField);
-    auxiliaryField->setLabel("IncompressibleElasticity auxiliary field");
+    auxiliaryField->setLabel("SelfGravitatingElasticity auxiliary field");
 
     assert(_rheology);
     pylith::materials::AuxiliaryFactoryElasticity* auxiliaryFactory = _rheology->getAuxiliaryFactory();assert(auxiliaryFactory);
@@ -172,7 +172,7 @@ pylith::materials::IncompressibleElasticity::createAuxiliaryField(const pylith::
     // :ATTENTION: In quasi-static problems, the time scale is usually quite large
     // (order of tens to hundreds of years), which means that the density scale is very large,
     // and the acceleration scale is very small. Nevertheless, density times gravitational
-    // acceleration will have a scale of pressure divided by length and should be within a few orders
+    // acceleration will have a scale of potential divided by length and should be within a few orders
     // of magnitude of 1.
 
     auxiliaryFactory->addDensity(); // 0
@@ -200,7 +200,7 @@ pylith::materials::IncompressibleElasticity::createAuxiliaryField(const pylith::
 // ------------------------------------------------------------------------------------------------
 // Create derived field.
 pylith::topology::Field*
-pylith::materials::IncompressibleElasticity::createDerivedField(const pylith::topology::Field& solution,
+pylith::materials::SelfGravitatingElasticity::createDerivedField(const pylith::topology::Field& solution,
                                                                 const pylith::topology::Mesh& domainMesh) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("createIntegrator(solution="<<solution.getLabel()<<", domainMesh=)"<<typeid(domainMesh).name()<<")");
@@ -230,7 +230,7 @@ pylith::materials::IncompressibleElasticity::createDerivedField(const pylith::to
 // ------------------------------------------------------------------------------------------------
 // Get default PETSc solver options appropriate for material.
 pylith::utils::PetscOptions*
-pylith::materials::IncompressibleElasticity::getSolverDefaults(const bool isParallel,
+pylith::materials::SelfGravitatingElasticity::getSolverDefaults(const bool isParallel,
                                                                const bool hasFault) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("getSolverDefaults(isParallel="<<isParallel<<", hasFault="<<hasFault<<")");
@@ -248,7 +248,7 @@ pylith::materials::IncompressibleElasticity::getSolverDefaults(const bool isPara
             options->add("-pc_fieldsplit_schur_precondition", "full");
             if (!isParallel) {
                 options->add("-fieldsplit_displacement_pc_type", "lu");
-                options->add("-fieldsplit_pressure_pc_type", "lu");
+                options->add("-fieldsplit_potential_pc_type", "lu");
             } else {
 #if 1
                 options->add("-fieldsplit_displacement_pc_type", "ml");
@@ -257,7 +257,7 @@ pylith::materials::IncompressibleElasticity::getSolverDefaults(const bool isPara
                 options->add("-fieldsplit_displacement_mg_levels_pc_type", "sor");
                 options->add("-fieldsplit_displacement_mg_levels_ksp_type", "richardson");
 #endif
-                options->add("-fieldsplit_pressure_pc_type", "bjacobi");
+                options->add("-fieldsplit_potential_pc_type", "bjacobi");
             } // if/else
         } // if/else
         break;
@@ -276,7 +276,7 @@ pylith::materials::IncompressibleElasticity::getSolverDefaults(const bool isPara
 // ------------------------------------------------------------------------------------------------
 // Get auxiliary factory associated with physics.
 pylith::feassemble::AuxiliaryFactory*
-pylith::materials::IncompressibleElasticity::_getAuxiliaryFactory(void) {
+pylith::materials::SelfGravitatingElasticity::_getAuxiliaryFactory(void) {
     assert(_rheology);
     return _rheology->getAuxiliaryFactory();
 } // _getAuxiliaryFactory
@@ -285,7 +285,7 @@ pylith::materials::IncompressibleElasticity::_getAuxiliaryFactory(void) {
 // ------------------------------------------------------------------------------------------------
 // Update kernel constants.
 void
-pylith::materials::IncompressibleElasticity::_updateKernelConstants(const PylithReal dt) {
+pylith::materials::SelfGravitatingElasticity::_updateKernelConstants(const PylithReal dt) {
     assert(_rheology);
     _rheology->updateKernelConstants(&_kernelConstants, dt);
 } // _updateKernelConstants
@@ -294,7 +294,7 @@ pylith::materials::IncompressibleElasticity::_updateKernelConstants(const Pylith
 // ------------------------------------------------------------------------------------------------
 // Get derived factory associated with physics.
 pylith::topology::FieldFactory*
-pylith::materials::IncompressibleElasticity::_getDerivedFactory(void) {
+pylith::materials::SelfGravitatingElasticity::_getDerivedFactory(void) {
     return _derivedFactory;
 } // _getDerivedFactory
 
@@ -302,7 +302,7 @@ pylith::materials::IncompressibleElasticity::_getDerivedFactory(void) {
 // ------------------------------------------------------------------------------------------------
 // Set kernels for residual.
 void
-pylith::materials::IncompressibleElasticity::_setKernelsResidual(pylith::feassemble::IntegratorDomain* integrator,
+pylith::materials::SelfGravitatingElasticity::_setKernelsResidual(pylith::feassemble::IntegratorDomain* integrator,
                                                                  const pylith::topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_setFEKernelsResidual(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
@@ -334,13 +334,13 @@ pylith::materials::IncompressibleElasticity::_setKernelsResidual(pylith::feassem
     const PetscPointFunc f0u = r0;
     const PetscPointFunc f1u = _rheology->getKernelf1u(coordsys);
 
-    // Pressure
+    // potential
     const PetscPointFunc f0p = _rheology->getKernelf0p(coordsys);
     const PetscPointFunc f1p = NULL;
 
     std::vector<ResidualKernels> kernels(2);
     kernels[0] = ResidualKernels("displacement", pylith::feassemble::Integrator::LHS, f0u, f1u);
-    kernels[1] = ResidualKernels("pressure", pylith::feassemble::Integrator::LHS, f0p, f1p);
+    kernels[1] = ResidualKernels("potential", pylith::feassemble::Integrator::LHS, f0p, f1p);
 
     // Add any MMS body force kernels.
     kernels.insert(kernels.end(), _mmsBodyForceKernels.begin(), _mmsBodyForceKernels.end());
@@ -355,7 +355,7 @@ pylith::materials::IncompressibleElasticity::_setKernelsResidual(pylith::feassem
 // ------------------------------------------------------------------------------------------------
 // Set kernels for Jacobian.
 void
-pylith::materials::IncompressibleElasticity::_setKernelsJacobian(pylith::feassemble::IntegratorDomain* integrator,
+pylith::materials::SelfGravitatingElasticity::_setKernelsJacobian(pylith::feassemble::IntegratorDomain* integrator,
                                                                  const topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_setFEKernelsJacobian(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
@@ -371,11 +371,11 @@ pylith::materials::IncompressibleElasticity::_setKernelsJacobian(pylith::feassem
 
     const PetscPointJac Jf0up = NULL;
     const PetscPointJac Jf1up = NULL;
-    const PetscPointJac Jf2up = pylith::fekernels::IncompressibleElasticity::Jf2up;
+    const PetscPointJac Jf2up = pylith::fekernels::SelfGravitatingElasticity::Jf2up;
     const PetscPointJac Jf3up = NULL;
 
     const PetscPointJac Jf0pu = NULL;
-    const PetscPointJac Jf1pu = pylith::fekernels::IncompressibleElasticity::Jf1pu;
+    const PetscPointJac Jf1pu = pylith::fekernels::SelfGravitatingElasticity::Jf1pu;
     const PetscPointJac Jf2pu = NULL;
     const PetscPointJac Jf3pu = NULL;
 
@@ -386,9 +386,9 @@ pylith::materials::IncompressibleElasticity::_setKernelsJacobian(pylith::feassem
 
     const EquationPart equationPart = pylith::feassemble::Integrator::LHS;
     kernels[0] = JacobianKernels("displacement", "displacement", equationPart, Jf0uu, Jf1uu, Jf2uu, Jf3uu);
-    kernels[1] = JacobianKernels("displacement", "pressure", equationPart, Jf0up, Jf1up, Jf2up, Jf3up);
-    kernels[2] = JacobianKernels("pressure", "displacement", equationPart, Jf0pu, Jf1pu, Jf2pu, Jf3pu);
-    kernels[3] = JacobianKernels("pressure", "pressure", equationPart, Jf0pp, Jf1pp, Jf2pp, Jf3pp);
+    kernels[1] = JacobianKernels("displacement", "potential", equationPart, Jf0up, Jf1up, Jf2up, Jf3up);
+    kernels[2] = JacobianKernels("potential", "displacement", equationPart, Jf0pu, Jf1pu, Jf2pu, Jf3pu);
+    kernels[3] = JacobianKernels("potential", "potential", equationPart, Jf0pp, Jf1pp, Jf2pp, Jf3pp);
 
     assert(integrator);
     integrator->setKernelsJacobian(kernels, solution);
@@ -400,7 +400,7 @@ pylith::materials::IncompressibleElasticity::_setKernelsJacobian(pylith::feassem
 // ------------------------------------------------------------------------------------------------
 // Set kernels for computing updated state variables in auxiliary field.
 void
-pylith::materials::IncompressibleElasticity::_setKernelsUpdateStateVars(pylith::feassemble::IntegratorDomain* integrator,
+pylith::materials::SelfGravitatingElasticity::_setKernelsUpdateStateVars(pylith::feassemble::IntegratorDomain* integrator,
                                                                         const topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_setKernelsUpdateStateVars(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
@@ -420,7 +420,7 @@ pylith::materials::IncompressibleElasticity::_setKernelsUpdateStateVars(pylith::
 // ------------------------------------------------------------------------------------------------
 // Set kernels for computing derived field.
 void
-pylith::materials::IncompressibleElasticity::_setKernelsDerivedField(pylith::feassemble::IntegratorDomain* integrator,
+pylith::materials::SelfGravitatingElasticity::_setKernelsDerivedField(pylith::feassemble::IntegratorDomain* integrator,
                                                                      const topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_setKernelsDerivedField(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");

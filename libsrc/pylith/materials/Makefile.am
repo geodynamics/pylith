@@ -39,6 +39,9 @@ subpkginclude_HEADERS = \
 	AuxiliaryFactoryViscoelastic.hh \
 	IncompressibleElasticity.hh \
 	RheologyIncompressibleElasticity.hh \
+	IsotropicSelfGravElasticity.hh \
+	SelfGravitatingElasticity.hh \
+	RheologySelfGravitatingElasticity.hh \
 	Query.hh \
 	materialsfwd.hh
 
