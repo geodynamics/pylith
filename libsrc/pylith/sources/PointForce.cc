@@ -145,8 +145,9 @@ pylith::sources::PointForce::createIntegrator(const pylith::topology::Field &sol
 
     err = DMGetCoordinateDim(dmSoln, &dim);
     PYLITH_CHECK_ERROR(err);
-    err = VecCreateMPIWithArray(PetscObjectComm((PetscObject)dmSoln), dim, _pointCoords.size(), PETSC_DECIDE,
-                                &_pointCoords[0], &vecPoints);
+    err = VecCreateSeqWithArray(PETSC_COMM_SELF, dim, _pointCoords.size(),
+                                &_pointCoords[0], &vecPoints);PYLITH_CHECK_ERROR(err);
+
     PYLITH_CHECK_ERROR(err);
 
     // Debug

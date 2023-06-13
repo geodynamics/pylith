@@ -124,7 +124,7 @@ pylith::sources::MomentTensorForce::createIntegrator(const pylith::topology::Fie
     PetscScalar       *a;
 
     err = DMGetCoordinateDim(dmSoln, &dim);PYLITH_CHECK_ERROR(err);
-    err = VecCreateMPIWithArray(PetscObjectComm((PetscObject) dmSoln), dim, _pointCoords.size(), PETSC_DECIDE,
+    err = VecCreateSeqWithArray(PETSC_COMM_SELF, dim, _pointCoords.size(),
                                 &_pointCoords[0], &vecPoints);PYLITH_CHECK_ERROR(err);
 
     // Debug
@@ -141,6 +141,7 @@ pylith::sources::MomentTensorForce::createIntegrator(const pylith::topology::Fie
     // err = VecRestoreArray(vecPoints, &a);PYLITH_CHECK_ERROR(err);
 
     err = DMLocatePoints(dmSoln, vecPoints, DM_POINTLOCATION_NONE, &sfPoints);PYLITH_CHECK_ERROR(err);
+    err = PetscSFView(sfPoints, NULL);PYLITH_CHECK_ERROR(err);
     err = VecDestroy(&vecPoints);PYLITH_CHECK_ERROR(err);
     err = DMCreateLabel(dmSoln,getLabelName());PYLITH_CHECK_ERROR(err);
     err = DMGetLabel(dmSoln,getLabelName(), &label);PYLITH_CHECK_ERROR(err);
