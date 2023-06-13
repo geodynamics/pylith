@@ -48,7 +48,7 @@ pylith::sources::RickerWavelet::~RickerWavelet(void) {
 // Deallocate PETSc and local data structures.
 void
 pylith::sources::RickerWavelet::deallocate(void) {
-    SourceTimeFunctionPointForce::deallocate();
+    SourceTimeFunctionMomentTensorForce::deallocate();
 
     delete _auxiliaryFactory;_auxiliaryFactory = NULL;
 } // deallocate
@@ -56,7 +56,7 @@ pylith::sources::RickerWavelet::deallocate(void) {
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Get auxiliary factory associated with physics.
-pylith::sources::AuxiliaryFactoryPointForce*
+pylith::sources::AuxiliaryFactoryMomentTensorForce*
 pylith::sources::RickerWavelet::getAuxiliaryFactory(void) {
     return _auxiliaryFactory;
 } // getAuxiliaryFactory

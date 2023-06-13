@@ -30,7 +30,14 @@ subpkginclude_HEADERS = \
 	TimeDependentFn.hh \
 	NeumannTimeDependent.hh \
 	AbsorbingDampers.hh \
-	FaultCohesiveKin.hh
+	FaultCohesiveKin.hh \
+	IsotropicLinearPoroelasticity.hh \
+	Poroelasticity.hh \
+	WellboreSource.hh \
+	SquarePulseSource.hh \
+	RickerWavelet.hh \
+	GaussianWavelet.hh \
+	PointForce.hh	
 	
 dist_noinst_HEADERS =
 

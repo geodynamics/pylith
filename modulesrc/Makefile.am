@@ -19,6 +19,7 @@ SUBDIRS = \
 	mpi \
 	problems \
 	scales \
+	sources \
 	topology \
 	utils
 
