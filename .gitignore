@@ -41,3 +41,6 @@ examples/subduction-3d/input/*.exo
 /doc-latex/userguide/userguide.log
 /doc-latex/userguide/userguide.lot
 /doc-latex/userguide/userguide.out
+examples/strikeslip-2d/catmip_pylith_staticslip*.btr
+examples/strikeslip-2d/cfcatmip_pylith_staticslip*.btr
+examples/strikeslip-2d/step*.pdf
