@@ -69,6 +69,11 @@ libpylith_la_SOURCES = \
 	fekernels/Tensor.cc \
 	fekernels/IsotropicLinearGenMaxwell.cc \
 	fekernels/IsotropicPowerLaw.cc \
+	fekernels/GaussianWavelet.cc \
+	fekernels/PointForce.cc \
+	fekernels/RickerWavelet.cc \
+	fekernels/SquarePulseSource.cc \
+	fekernels/WellboreSource.cc \
 	materials/Material.cc \
 	materials/Elasticity.cc \
 	materials/RheologyElasticity.cc \
