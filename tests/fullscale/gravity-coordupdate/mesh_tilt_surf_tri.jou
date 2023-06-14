@@ -1,0 +1,54 @@
+# -*- Python -*- (syntax highlighting)
+# ----------------------------------------------------------------------
+#
+# Brad T. Aagaard, U.S. Geological Survey
+# Charles A. Williams, GNS Science
+# Matthew G. Knepley, University at Buffalo
+#
+# This code was developed as part of the Computational Infrastructure
+# for Geodynamics (http://geodynamics.org).
+#
+# Copyright (c) 2010-2022 University of California, Davis
+#
+# See LICENSE.md for license information.
+#
+# ----------------------------------------------------------------------
+# Generate geometry
+# ----------------------------------------------------------------------
+playback 'geom_tilt_surf.jou'
+
+# ----------------------------------------------------------------------
+# Mesh at constant resolution.
+# ----------------------------------------------------------------------
+${dx=5.0*km}
+surface all scheme trimesh
+surface all size {dx}
+mesh surface all
+
+# ----------------------------------------------------------------------
+# Define blocks and nodesets.
+# ----------------------------------------------------------------------
+block 1 surface all
+block 1 name "visco_mat"
+
+group "boundary_xneg" add node in curve 4
+nodeset 20 group boundary_xneg
+nodeset 20 name "boundary_xneg"
+
+group "boundary_xpos" add node in curve 2
+nodeset 21 group boundary_xpos
+nodeset 21 name "boundary_xpos"
+
+group "boundary_yneg" add node in curve 1
+nodeset 22 group boundary_yneg
+nodeset 22 name "boundary_yneg"
+
+group "boundary_ypos" add node in curve 3
+nodeset 23 group boundary_ypos
+nodeset 23 name "boundary_ypos"
+
+# ----------------------------------------------------------------------
+# Export exodus file
+# ----------------------------------------------------------------------
+export mesh "mesh_tilt_surf_tri.exo" dimension 2 overwrite
+

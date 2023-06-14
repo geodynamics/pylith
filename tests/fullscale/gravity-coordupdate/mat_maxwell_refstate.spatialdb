@@ -4,7 +4,7 @@ SimpleDB {
   num-values =     20
   value-names =  density  vs  vp viscosity viscous_strain_xx viscous_strain_yy viscous_strain_zz viscous_strain_xy total_strain_xx total_strain_yy total_strain_zz total_strain_xy reference_stress_xx reference_stress_yy reference_stress_zz reference_stress_xy reference_strain_xx reference_strain_yy reference_strain_zz reference_strain_xy
   value-units =  kg/m**3  m/s  m/s Pa*s None None None None None None None None Pa Pa Pa Pa None None None None
-  num-locs =      2
+  num-locs =      3
   data-dim =    1
   space-dim =    2
   cs-data = cartesian {
@@ -35,5 +35,6 @@ SimpleDB {
 // (20) reference_strain_yy (None)
 // (21) reference_strain_zz (None)
 // (22) reference_strain_xy (None)
-  0.000000e+00  -2.000000e+02  2.400000e+03  3061.8621784789725 5400.617634336006  1.420092e+18  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  -4903325000.0 -4903325000.0 -4903325000.0 0.000000e+00  0.000000e+00  0.000000e+00  0.000000e+00  0.000000e+00
-  0.000000e+00  0.000000e+00  2.400000e+03  3061.8621784789725 5400.617634336006  1.420092e+18  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0 0.0 0.0 0.000000e+00  0.000000e+00  0.000000e+00  0.000000e+00  0.000000e+00
+  0.000000e+00  -2.000000e+02  2.500000e+03  3061.8621784789725 5400.617634336006  1.420092e+18  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  -4903325000.0 -4903325000.0 -4903325000.0 0.000000e+00  0.000000e+00  0.000000e+00  0.000000e+00  0.000000e+00
+  0.000000e+00  0.000000e+00  2.500000e+03  3061.8621784789725 5400.617634336006  1.420092e+18  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0 0.0 0.0 0.000000e+00  0.000000e+00  0.000000e+00  0.000000e+00  0.000000e+00
+  0.000000e+00  1.000000e+00  2.500000e+03  3061.8621784789725 5400.617634336006  1.420092e+18  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0 0.0 0.0 0.000000e+00  0.000000e+00  0.000000e+00  0.000000e+00  0.000000e+00

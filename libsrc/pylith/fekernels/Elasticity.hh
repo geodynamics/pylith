@@ -56,6 +56,7 @@
 #include "pylith/utils/types.hh"
 
 #include <cassert> // USES assert()
+#include <iostream> // USES std::cout
 
 class pylith::fekernels::Elasticity {
 public:
@@ -286,6 +287,11 @@ public:
         assert(aOff[i_density] >= 0);
         assert(aOff[i_gravityField] >= 0);
         assert(a);
+#if 1 // :DEBUG:
+        const PylithInt i_disp = 0;
+        const PylithScalar* disp = &s[sOff[i_disp]];
+        std::cout << x[0] << " " << x[1] << " " << disp[0] << " " << disp[1] << std::endl;
+#endif
 
         const PylithScalar density = a[aOff[i_density]];
         const PylithScalar* gravityField = &a[aOff[i_gravityField]];
