@@ -478,7 +478,7 @@ pylith::faults::_FaultCohesiveImpulses::findImpulsePoints(int_array* impulsePoin
         const PetscInt slipOff = auxiliaryVisitor.sectionOffset(point);
         assert(auxiliaryVisitor.sectionDof(point) >= slipDof);
         for (PetscInt iDOF = 0; iDOF < slipDof; ++iDOF) {
-            if (auxiliaryArray[slipOff+iDOF] > threshold) {
+            if (auxiliaryArray[slipOff+iDOF] >= threshold) {
                 ++count;
                 break;
             } // if
@@ -493,8 +493,9 @@ pylith::faults::_FaultCohesiveImpulses::findImpulsePoints(int_array* impulsePoin
 
         const PetscInt slipOff = auxiliaryVisitor.sectionOffset(point);
         for (PetscInt iDOF = 0; iDOF < slipDof; ++iDOF) {
-            if (auxiliaryArray[slipOff+iDOF] > threshold) {
+            if (auxiliaryArray[slipOff+iDOF] >= threshold) {
                 (*impulsePoints)[index++] = point;
+                break;
             } // if
         } // for
     } // for
