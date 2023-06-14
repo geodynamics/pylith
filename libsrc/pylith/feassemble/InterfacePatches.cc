@@ -122,7 +122,6 @@ pylith::feassemble::InterfacePatches::createMaterialPairs(const pylith::faults::
         if (0 == integrationPatches.count(matPair)) {
             integrationPatches[matPair] = ++patchLabelValue;
             pythia::journal::debug_t debug("interfacepatches");
-            // debug.activate();
             debug << pythia::journal::at(__HERE__)
                   << "Creating integration patch on fault '" << fault->getSurfaceLabelName()
                   << "' for material pair ("<< matPair.first << "," << matPair.second<< ") "
