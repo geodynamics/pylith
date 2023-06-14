@@ -648,7 +648,7 @@ public:
 
         bulkDensity = &(poroelasticContext.bulkDensity);
 
-    } //bulkDensity_scalar
+    } //bulkDensity_asScalar
 
     // =============================================================================
     // Velocity

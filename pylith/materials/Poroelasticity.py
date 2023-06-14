@@ -63,8 +63,8 @@ class Poroelasticity(Material, ModulePoroelasticity):
         from .AuxSubfieldsPoroelasticity import AuxSubfieldsPoroelasticity
         self.auxiliarySubfields = AuxSubfieldsPoroelasticity("auxiliary_subfields")
 
-        from .DerivedSubfieldsElasticity import DerivedSubfieldsElasticity
-        self.derivedSubfields = DerivedSubfieldsElasticity("derived_subfields")
+        from .DerivedSubfieldsPoroelasticity import DerivedSubfieldsPoroelasticity
+        self.derivedSubfields = DerivedSubfieldsPoroelasticity("derived_subfields")
 
     def preinitialize(self, problem):
         """Setup material.
