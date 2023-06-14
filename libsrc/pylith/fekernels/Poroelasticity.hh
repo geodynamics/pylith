@@ -643,8 +643,6 @@ public:
         pylith::fekernels::Poroelasticity::PoroelasticContext poroelasticContext;
         pylith::fekernels::Poroelasticity::setPoroelasticContextQS(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
-        pylith::fekernels::Poroelasticity::addPoroelasticContextQS_sixField(
-            &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
         bulkDensity = &(poroelasticContext.bulkDensity);
 

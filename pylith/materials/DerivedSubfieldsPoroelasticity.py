@@ -15,7 +15,7 @@
 
 from pylith.materials.DerivedSubfieldsElasticity import DerivedSubfieldsElasticity
 
-class DerivedSubfieldPoroelasticity(DerivedSubfieldsElasticity):
+class DerivedSubfieldsPoroelasticity(DerivedSubfieldsElasticity):
 
     """
     Derived subfields associated with the poroelasticity equation.
@@ -43,7 +43,7 @@ class DerivedSubfieldPoroelasticity(DerivedSubfieldsElasticity):
     def __init__(self, name="derivedsubfieldsporoelasticity"):
         """Constructor.
         """
-        PetscComponent.__init__(self, name, facility="derived_subfields")
+        DerivedSubfieldsElasticity.__init__(self, name)
 
     def _defaults(self):
         self.bulkDensity.basis_order = 1
