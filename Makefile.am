@@ -47,6 +47,7 @@ dist_noinst_PYTHON = \
 
 EXTRA_DIST = \
 	AUTHORS \
+	CITATION.cff \
 	CHANGES.md \
 	DEPENDENCIES \
 	INSTALL \
