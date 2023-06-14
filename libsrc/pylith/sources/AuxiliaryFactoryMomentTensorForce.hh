@@ -18,7 +18,7 @@
 
 /** @file libsrc/sources/AuxiliaryFactoryMomentTensorForce.hh
  *
- * @brief C++ helper class for setting up auxiliary subfields for the wellbore source equation.
+ * @brief C++ helper class for setting up auxiliary subfields for the moment tensor force equation.
  */
 
 #if !defined(pylith_sources_auxiliaryfactorymomenttensorforce_hh)
@@ -41,10 +41,10 @@ public:
     /// Destructor.
     virtual ~AuxiliaryFactoryMomentTensorForce(void);
 
-    /// Add fluid density subfield to auxiliary subfields.
+    /// Add moment tensor subfield to auxiliary subfields.
     void addMomentTensor(void);
 
-    /// Add fluid viscosity subfield to auxiliary subfields.
+    /// Add time delay subfield to auxiliary subfields.
     void addTimeDelay(void);
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////

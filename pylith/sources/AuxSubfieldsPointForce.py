@@ -33,6 +33,10 @@ class AuxSubfieldsPointForce(PetscComponent):
     pointForce = pythia.pyre.inventory.facility("point_force", family="auxiliary_subfield", factory=Subfield)
     pointForce.meta['tip'] = "Point Force subfield."
 
+    TimeDelay = pythia.pyre.inventory.facility("time_delay", family="auxiliary_subfield", factory=Subfield)
+    TimeDelay.meta['tip'] = "time delay subfield."
+
+
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="auxsubfieldspointforce"):

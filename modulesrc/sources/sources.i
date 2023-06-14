@@ -23,6 +23,7 @@
 #include "pylith/sources/SquarePulseSource.hh"
 #include "pylith/sources/PointForce.hh"
 #include "pylith/sources/MomentTensorForce.hh"
+#include "pylith/sources/SquareWavelet.hh"
 #include "pylith/sources/RickerWavelet.hh"
 #include "pylith/sources/GaussianWavelet.hh"
 #include "pylith/sources/SourceTimeFunctionMomentTensorForce.hh"
@@ -62,6 +63,7 @@ import_array();
 %include "PointForce.i"
 %include "MomentTensorForce.i"
 %include "SourceTimeFunctionMomentTensorForce.i"
+%include "SquareWavelet.i"
 %include "RickerWavelet.i"
 %include "GaussianWavelet.i"
 

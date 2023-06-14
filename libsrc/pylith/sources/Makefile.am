@@ -29,6 +29,7 @@ subpkginclude_HEADERS = \
 	AuxiliaryFactoryWellboreSource.hh \
 	AuxiliaryFactorySourceTime.hh \
 	DerivedFactoryMomentTensorForce.hh \
+	SquareWavelet.hh \
 	RickerWavelet.hh \
 	GaussianWavelet.hh \
 	PointForce.hh \

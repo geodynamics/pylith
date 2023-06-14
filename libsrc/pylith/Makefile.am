@@ -142,6 +142,7 @@ libpylith_la_SOURCES = \
 	sources/GaussianWavelet.cc \
 	sources/MomentTensorForce.cc \
 	sources/PointForce.cc \
+	sources/SquareWavelet.cc \
 	sources/RickerWavelet.cc \
 	sources/Source.cc \
 	sources/SourceTimeFunctionMomentTensorForce.cc \
