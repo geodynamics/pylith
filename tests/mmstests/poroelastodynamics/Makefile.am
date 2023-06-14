@@ -16,9 +16,7 @@
 # ----------------------------------------------------------------------
 
 SUBDIRS = \
-	linearelasticity \
-	incompressibleelasticity \
-	poroelastodynamics
+	nofaults-2d
 
 
 # End of file 
