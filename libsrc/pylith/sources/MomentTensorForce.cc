@@ -27,6 +27,7 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field::SubfieldInfo
 #include "pylith/topology/FieldOps.hh" // USES FieldOps
+#include "pylith/fekernels/DispVel.hh" // USES DispVel kernels
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
@@ -104,7 +105,7 @@ pylith::sources::MomentTensorForce::verifyConfiguration(const pylith::topology::
 // ---------------------------------------------------------------------------------------------------------------------
 // Create integrator and set kernels.
 pylith::feassemble::Integrator*
-pylith::sources::MomentTensorForce::createIntegrator(const pylith::topology::Field& solution) {
+pylith::sources::MomentTensorForce::createIntegrator(const pylith::topology::Field &solution) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("createIntegrator(solution="<<solution.getLabel()<<")");
 
@@ -259,8 +260,7 @@ pylith::sources::MomentTensorForce::_setKernelsResidual(pylith::feassemble::Inte
 
     const spatialdata::geocoords::CoordSys* coordsys = solution.getMesh().getCoordSys();
 
-    std::vector<ResidualKernels> kernels;
-
+    std::vector<ResidualKernels> kernels(1);
     switch (_formulation) {
     case QUASISTATIC: {
         break;
@@ -271,7 +271,6 @@ pylith::sources::MomentTensorForce::_setKernelsResidual(pylith::feassemble::Inte
         const PetscPointFunc g0v = NULL;
         const PetscPointFunc g1v = _sourceTimeFunction->getKernelg1v_explicit(coordsys);
 
-        kernels.resize(1);
         kernels[0] = ResidualKernels("velocity",  pylith::feassemble::Integrator::RHS, g0v, g1v);
         break;
     } // DYNAMIC
@@ -293,10 +292,51 @@ pylith::sources::MomentTensorForce::_setKernelsJacobian(pylith::feassemble::Inte
                                                         const topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_setKernelsJacobian(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
+    assert(integrator);
 
-    // Default is to do nothing.
+    const spatialdata::geocoords::CoordSys* coordsys = solution.getMesh().getCoordSys();
+
+    std::vector<JacobianKernels> kernels;
+
+    switch (_formulation) {
+    case QUASISTATIC: {
+        break;
+    } // QUASISTATIC
+    case DYNAMIC_IMEX:
+    case DYNAMIC: {
+        typedef pylith::feassemble::JacobianValues::JacobianKernel ValueKernel;
+        std::vector<ValueKernel> valueKernelsJacobian(2);
+        std::vector<ValueKernel> valueKernelsPrecond;
+        valueKernelsJacobian[0] = ValueKernel("displacement", "displacement", pylith::feassemble::JacobianValues::blockDiag_tshift);
+        valueKernelsJacobian[1] = ValueKernel("velocity", "velocity", pylith::feassemble::JacobianValues::blockDiag_tshift);
+        integrator->setKernelsJacobian(valueKernelsJacobian, valueKernelsPrecond);
+
+        const PetscPointJac Jf0uu = pylith::fekernels::DispVel::Jg0uv;
+        const PetscPointJac Jf1uu = NULL;
+        const PetscPointJac Jf2uu = NULL;
+        const PetscPointJac Jf3uu = NULL;
+
+        const PetscPointJac Jf0vv = pylith::fekernels::DispVel::Jg0uv;
+        const PetscPointJac Jf1vv = NULL;
+        const PetscPointJac Jf2vv = NULL;
+        const PetscPointJac Jf3vv = NULL;
+
+        integrator->setLHSJacobianTriggers(pylith::feassemble::Integrator::NEW_JACOBIAN_TIME_STEP_CHANGE);
+
+        kernels.resize(2);
+        const EquationPart equationPart = pylith::feassemble::Integrator::LHS_LUMPED_INV;
+        kernels[0] = JacobianKernels("displacement", "displacement", equationPart, Jf0uu, Jf1uu, Jf2uu, Jf3uu);
+        kernels[1] = JacobianKernels("velocity", "velocity", equationPart, Jf0vv, Jf1vv, Jf2vv, Jf3vv);
+        break;
+    } // DYNAMIC
+    default:
+        PYLITH_COMPONENT_LOGICERROR("Unknown formulation for equations (" << _formulation << ").");
+    } // switch
+
+    integrator->setKernelsJacobian(kernels, solution);
 
     PYLITH_METHOD_END;
+
 } // _setKernelsJacobian
 
 

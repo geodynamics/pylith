@@ -21,17 +21,17 @@
 #include "pylith/sources/WellboreSource.hh" // implementation of object methods
 
 #include "pylith/sources/AuxiliaryFactoryWellboreSource.hh" // USES AuxiliaryFactoryWellboreSource
-#include "pylith/feassemble/IntegratorDomain.hh"            // USES IntegratorDomain
-#include "pylith/topology/Mesh.hh"                          // USES Mesh
-#include "pylith/topology/Field.hh"                         // USES Field::SubfieldInfo
-#include "pylith/topology/FieldOps.hh"                      // USES FieldOps
+#include "pylith/feassemble/IntegratorDomain.hh" // USES IntegratorDomain
+#include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/Field.hh" // USES Field::SubfieldInfo
+#include "pylith/topology/FieldOps.hh" // USES FieldOps
 
 #include "pylith/fekernels/WellboreSource.hh" // USES WellboreSource kernels
 
-#include "pylith/utils/error.hh"    // USES PYLITH_METHOD_*
+#include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
-#include "spatialdata/geocoords/CoordSys.hh"   // USES CoordSys
+#include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 #include <typeinfo> // USES typeid()
@@ -45,82 +45,85 @@ typedef pylith::feassemble::Integrator::EquationPart EquationPart;
 // ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::sources::WellboreSource::WellboreSource(void) : _useInertia(false),
-                                                        _auxiliaryFactory(new pylith::sources::AuxiliaryFactoryWellboreSource)
-{
+    _auxiliaryFactory(new pylith::sources::AuxiliaryFactoryWellboreSource) {
     pylith::utils::PyreComponent::setName("wellboresource");
 } // constructor
 
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Destructor.
-pylith::sources::WellboreSource::~WellboreSource(void)
-{
+pylith::sources::WellboreSource::~WellboreSource(void) {
     deallocate();
 } // destructor
 
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
-void pylith::sources::WellboreSource::deallocate(void)
-{
+void
+pylith::sources::WellboreSource::deallocate(void) {
     Source::deallocate();
 
     delete _auxiliaryFactory;
     _auxiliaryFactory = NULL;
 } // deallocate
 
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Set time history database.
-void pylith::sources::WellboreSource::setTimeHistoryDB(spatialdata::spatialdb::TimeHistory *th)
-{
+void
+pylith::sources::WellboreSource::setTimeHistoryDB(spatialdata::spatialdb::TimeHistory *th) {
     PYLITH_COMPONENT_DEBUG("setTimeHistoryDB(th" << th << ")");
 
     _dbTimeHistory = th;
 } // setTimeHistoryDB
 
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Get time history database.
 const spatialdata::spatialdb::TimeHistory *
-pylith::sources::WellboreSource::getTimeHistoryDB(void)
-{
+pylith::sources::WellboreSource::getTimeHistoryDB(void) {
     return _dbTimeHistory;
 } // getTimeHistoryDB
 
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Use time history term in time history expression.
-void pylith::sources::WellboreSource::useTimeHistory(const bool value)
-{
+void
+pylith::sources::WellboreSource::useTimeHistory(const bool value) {
     PYLITH_COMPONENT_DEBUG("useTimeHistory(value=" << value << ")");
 
     _useTimeHistory = value;
 } // useTimeHistory
 
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Get flag associated with using time history term in time history expression.
-bool pylith::sources::WellboreSource::useTimeHistory(void) const
-{
+bool
+pylith::sources::WellboreSource::useTimeHistory(void) const {
     return _useTimeHistory;
 } // useTimeHistory
 
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Verify configuration is acceptable.
-void pylith::sources::WellboreSource::verifyConfiguration(const pylith::topology::Field &solution) const
-{
+void
+pylith::sources::WellboreSource::verifyConfiguration(const pylith::topology::Field &solution) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("verifyConfiguration(solution=" << solution.getLabel() << ")");
 
     // Verify solution contains expected fields.
-    if (!solution.hasSubfield("pressure"))
-    {
+    if (!solution.hasSubfield("pressure")) {
         throw std::runtime_error("Cannot find 'pressure' field in solution; required for 'WellboreSource'.");
     } // if
 
     PYLITH_METHOD_END;
 } // verifyConfiguration
 
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Create integrator and set kernels.
 pylith::feassemble::Integrator *
-pylith::sources::WellboreSource::createIntegrator(const pylith::topology::Field &solution)
-{
+pylith::sources::WellboreSource::createIntegrator(const pylith::topology::Field &solution) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("createIntegrator(solution=" << solution.getLabel() << ")");
 
@@ -140,11 +143,10 @@ pylith::sources::WellboreSource::createIntegrator(const pylith::topology::Field 
     PetscMPIInt rank;
     PetscScalar *a;
 
-    err = DMGetCoordinateDim(dmSoln, &dim);
-    PYLITH_CHECK_ERROR(err);
-    err = VecCreateMPIWithArray(PetscObjectComm((PetscObject)dmSoln), dim, _pointCoords.size(), PETSC_DECIDE,
-                                &_pointCoords[0], &vecPoints);
-    PYLITH_CHECK_ERROR(err);
+    err = DMGetCoordinateDim(dmSoln, &dim);PYLITH_CHECK_ERROR(err);
+
+    err = VecCreateSeqWithArray(PETSC_COMM_SELF, dim, _pointCoords.size(),
+                                &_pointCoords[0], &vecPoints);PYLITH_CHECK_ERROR(err);
 
     // Debug
     // PetscPrintf(PetscObjectComm((PetscObject) dmSoln), "_pointCoords\n");
@@ -173,10 +175,8 @@ pylith::sources::WellboreSource::createIntegrator(const pylith::topology::Field 
     PYLITH_CHECK_ERROR(err);
     // Debug
     // PetscPrintf(PetscObjectComm((PetscObject) dmSoln), "localPoints: %D\n", numLeaves);
-    for (PetscInt p = 0; p < numLeaves; ++p)
-    {
-        if (remotePoints[p].rank == rank)
-        {
+    for (PetscInt p = 0; p < numLeaves; ++p) {
+        if (remotePoints[p].rank == rank) {
             err = DMLabelSetValue(label, remotePoints[p].index, 2);
             PYLITH_CHECK_ERROR(err);
         }
@@ -197,12 +197,12 @@ pylith::sources::WellboreSource::createIntegrator(const pylith::topology::Field 
     PYLITH_METHOD_RETURN(integrator);
 } // createIntegrator
 
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Create auxiliary field.
 pylith::topology::Field *
 pylith::sources::WellboreSource::createAuxiliaryField(const pylith::topology::Field &solution,
-                                                      const pylith::topology::Mesh &domainMesh)
-{
+                                                      const pylith::topology::Mesh &domainMesh) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("createAuxiliaryField(solution=" << solution.getLabel() << ", domainMesh=" << typeid(domainMesh).name() << ")");
 
@@ -222,14 +222,14 @@ pylith::sources::WellboreSource::createAuxiliaryField(const pylith::topology::Fi
     // of magnitude of 1.
 
     // add in aux specific to peaceman
-    _auxiliaryFactory->addFluidDensity();          // 0
-    _auxiliaryFactory->addFluidViscosity();        // 1
+    _auxiliaryFactory->addFluidDensity(); // 0
+    _auxiliaryFactory->addFluidViscosity(); // 1
     _auxiliaryFactory->addIsotropicPermeability(); // 2
-    _auxiliaryFactory->addWellboreRadius();        // 3
-    _auxiliaryFactory->addWellboreLength();        // 4
-    _auxiliaryFactory->addWellborePressure();      // 5
-    _auxiliaryFactory->addWellboreCharacter();     // 6
-    _auxiliaryFactory->addElementDimensions();     // 7
+    _auxiliaryFactory->addWellboreRadius(); // 3
+    _auxiliaryFactory->addWellboreLength(); // 4
+    _auxiliaryFactory->addWellborePressure(); // 5
+    _auxiliaryFactory->addWellboreCharacter(); // 6
+    _auxiliaryFactory->addElementDimensions(); // 7
 
     auxiliaryField->subfieldsSetup();
     auxiliaryField->createDiscretization();
@@ -246,31 +246,32 @@ pylith::sources::WellboreSource::createAuxiliaryField(const pylith::topology::Fi
     PYLITH_METHOD_RETURN(auxiliaryField);
 } // createAuxiliaryField
 
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Create derived field.
 pylith::topology::Field *
 pylith::sources::WellboreSource::createDerivedField(const pylith::topology::Field &solution,
-                                                    const pylith::topology::Mesh &domainMesh)
-{
+                                                    const pylith::topology::Mesh &domainMesh) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("createDerivedField(solution=" << solution.getLabel() << ", domainMesh=)" << typeid(domainMesh).name() << ") empty method");
 
     PYLITH_METHOD_RETURN(NULL);
 } // createDerivedField
 
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Get auxiliary factory associated with physics.
 pylith::feassemble::AuxiliaryFactory *
-pylith::sources::WellboreSource::_getAuxiliaryFactory(void)
-{
+pylith::sources::WellboreSource::_getAuxiliaryFactory(void) {
     return _auxiliaryFactory;
 } // _getAuxiliaryFactory
 
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Set kernels for LHS residual F(t,s,\dot{s}).
-void pylith::sources::WellboreSource::_setKernelsResidual(pylith::feassemble::IntegratorDomain *integrator,
-                                                          const topology::Field &solution) const
-{
+void
+pylith::sources::WellboreSource::_setKernelsResidual(pylith::feassemble::IntegratorDomain *integrator,
+                                                     const topology::Field &solution) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_setKernelsResidual(integrator=" << integrator << ", solution=" << solution.getLabel() << ")");
 
@@ -278,8 +279,7 @@ void pylith::sources::WellboreSource::_setKernelsResidual(pylith::feassemble::In
 
     std::vector<ResidualKernels> kernels;
 
-    switch (_formulation)
-    {
+    switch (_formulation) {
     case QUASISTATIC:
     {
         // Pressure
@@ -308,11 +308,12 @@ void pylith::sources::WellboreSource::_setKernelsResidual(pylith::feassemble::In
     PYLITH_METHOD_END;
 } // _setKernelsResidual
 
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Set kernels for LHS Jacobian F(t,s,\dot{s}).
-void pylith::sources::WellboreSource::_setKernelsJacobian(pylith::feassemble::IntegratorDomain *integrator,
-                                                          const topology::Field &solution) const
-{
+void
+pylith::sources::WellboreSource::_setKernelsJacobian(pylith::feassemble::IntegratorDomain *integrator,
+                                                     const topology::Field &solution) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_setKernelsJacobian(integrator=" << integrator << ", solution=" << solution.getLabel() << ")");
 
@@ -320,8 +321,7 @@ void pylith::sources::WellboreSource::_setKernelsJacobian(pylith::feassemble::In
 
     std::vector<JacobianKernels> kernels;
 
-    switch (_formulation)
-    {
+    switch (_formulation) {
     case QUASISTATIC:
     {
         const PetscPointJac Jf0pp = pylith::fekernels::WellboreSource::Jf0pp;
@@ -348,5 +348,6 @@ void pylith::sources::WellboreSource::_setKernelsJacobian(pylith::feassemble::In
 
     PYLITH_METHOD_END;
 } // _setKernelsJacobian
+
 
 // End of file
