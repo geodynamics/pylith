@@ -38,13 +38,13 @@ public:
 
             /** Set source time function.
                 *
-                * @param[in] sourceTimeFunction Source time function for point force.
+                * @param[in] sourceTimeFunction Source time function for moment tensor force.
                 */
             void setSourceTimeFunction(pylith::sources::SourceTimeFunctionMomentTensorForce* const sourceTimeFunction);
 
             /** Get source time function.
                 *
-                * @returns Source time function for point force.
+                * @returns Source time function for moment tensor force.
                 */
             pylith::sources::SourceTimeFunctionMomentTensorForce* getSourceTimeFunction(void) const;
 

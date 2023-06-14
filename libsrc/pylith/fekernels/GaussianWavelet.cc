@@ -24,7 +24,7 @@
 #include <iostream> // debugging.
 
 // =====================================================================================================================
-// Kernels for the Ricker Source Time Function in 2D.
+// Kernels for the Gaussian Source Time Function in 2D.
 // =====================================================================================================================
 
 // ----------------------------------------------------------------------
@@ -69,7 +69,9 @@ pylith::fekernels::GaussianWaveletPlaneStrain::g1v(const PylithInt dim,
 
     PylithScalar rt = t - timeDelay;
     PylithScalar gaussianwavelet = PetscExpReal( (PETSC_PI*PETSC_PI * f0*f0) * rt*rt) / (2.0 * (PETSC_PI*PETSC_PI * f0*f0) );
-
+    // PetscPrintf(PETSC_COMM_WORLD, "timeDelay %d\n", (double)timeDelay);
+    // PetscPrintf(PETSC_COMM_WORLD, "t %d\n", (double)t);
+    // PetscPrintf(PETSC_COMM_WORLD, "gaussianWavelet %d\n", (double)gaussianwavelet);
     for (PylithInt i = 0; i < dim*dim; ++i) {
         g1[i] -= momentTensor[i] * gaussianwavelet;
     } // for
@@ -77,7 +79,7 @@ pylith::fekernels::GaussianWaveletPlaneStrain::g1v(const PylithInt dim,
 
 
 // =====================================================================================================================
-// Kernels for the Ricker Source Time Function in 3D.
+// Kernels for the Gaussian Source Time Function in 3D.
 // =====================================================================================================================
 
 // ----------------------------------------------------------------------

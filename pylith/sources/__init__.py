@@ -29,6 +29,7 @@ __all__ = [
     "AuxSubfieldsMomentTensorForce",
     "SourceTimeFunctionMomentTensorForce",
     "AuxSubfieldsSourceTime",
+    "SquareWavelet",
     "RickerWavelet",
     "GaussianWavelet"
 ]

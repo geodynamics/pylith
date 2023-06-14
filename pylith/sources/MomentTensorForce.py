@@ -33,7 +33,7 @@ class MomentTensorForce(Source, ModuleMomentTensorForce):
     import pythia.pyre.inventory
 
     source_time_function = pythia.pyre.inventory.facility("source_time_function", family="momenttensorforce_sourcetimefunction", factory=RickerWavelet)
-    source_time_function.meta['tip'] = "Source time function for momenttensor force."
+    source_time_function.meta['tip'] = "Source time function for moment tensor force."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 

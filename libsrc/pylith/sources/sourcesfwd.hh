@@ -38,6 +38,7 @@ namespace pylith {
 
         class SourceTimeFunctionMomentTensorForce;
         class AuxiliaryFactorySourceTime;
+        class SquareWavelet;
         class RickerWavelet;
         class GaussianWavelet;
 
