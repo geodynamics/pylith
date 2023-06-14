@@ -42,6 +42,7 @@ subpkginclude_HEADERS = \
 	Poroelasticity.hh \
 	WellboreSource.hh \
 	SquarePulseSource.hh \
+	SquareWavelet.hh \
 	RickerWavelet.hh \
 	GaussianWavelet.hh \
 	PointForce.hh	

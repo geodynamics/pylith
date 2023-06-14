@@ -78,6 +78,10 @@ namespace pylith {
         class SquarePulseSource;
         class WellboreSource;
 
+        class SquareWavelet;
+        class SquareWaveletPlaneStrain;
+        class SquareWavelet3D;
+
         class RickerWavelet;
         class RickerWaveletPlaneStrain;
         class RickerWavelet3D;
