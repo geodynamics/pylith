@@ -12,7 +12,7 @@ quasi-static simulations of crustal deformation, primarily earthquakes
 and volcanoes.
 
 * Main page: [https://geodynamics.org/resources/pylith](https://geodynamics.org/resources/pylith)
-  * User Manual
+  * [User Guide](https://pylith.readthedocs.io/en/latest/user/index.html)
   * Binary packages
   * Utility to build PyLith and all of its dependencies from source
 *
@@ -49,6 +49,13 @@ See [CHANGES](CHANGES.md) for a complete list of changes for each release.
 
 ## Authors
 
+PyLith is continually being improved by a growing, collaborative, and inclusive community. It is primarily developed and maintained by:
+
 * Brad Aagaard, Geologic Hazards Science Center, U.S. Geological Survey, USA
 * Matthew Knepley, Computer Science and Engineering, University at Buffalo, USA
 * Charles Williams, Tectonophysics, GNS Science, New Zealand
+
+A complete and growing list of the authors that have contributed over the years can be found at [GitHub contributors](https://github.com/geodynamics/pylith/graphs/contributors).
+
+Please see the User Guide for complete and [acknowledgement and citation](https://pylith.readthedocs.io/en/latest/intro/preface.html#citation) information.
+
