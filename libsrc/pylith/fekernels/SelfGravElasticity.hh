@@ -75,23 +75,7 @@ public:
 
     // --------------------------------------------------------------------------------------------
     // f0p helper function.
-    static inline
-    void f0p(pylith::fekernels::Elasticity::StrainContext& strainContext,
-             void* rheologyContext,
-             pylith::fekernels::Elasticity::strainfn_type strainFn,
-             pylith::fekernels::SelfGravElasticity::poissonfn_type poissonfn,
-             const pylith::fekernels::TensorOps& tensorOps,
-             PylithScalar f0[]) {
-        assert(f0);
 
-        pylith::fekernels::Tensor strain;
-        strainFn(strainContext, &strain);
-
-        PylithScalar value = 0.0;
-        poissonfn(rheologyContext, strain, tensorOps, &value);
-
-        f0[0] = -1;
-    } // f0p
 
     // --------------------------------------------------------------------------------------------
     /** Jf1pu entry function for pressure equation for incompressible elasticity.
