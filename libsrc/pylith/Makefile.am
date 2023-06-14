@@ -69,6 +69,7 @@ libpylith_la_SOURCES = \
 	fekernels/Tensor.cc \
 	fekernels/IsotropicLinearGenMaxwell.cc \
 	fekernels/IsotropicPowerLaw.cc \
+	fekernels/SquareWavelet.cc \
 	fekernels/GaussianWavelet.cc \
 	fekernels/PointForce.cc \
 	fekernels/RickerWavelet.cc \
