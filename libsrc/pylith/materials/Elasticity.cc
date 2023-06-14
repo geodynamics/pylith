@@ -260,32 +260,49 @@ pylith::materials::Elasticity::getSolverDefaults(const bool isParallel,
                 options->add("-pc_type", "gamg");
             } // if/else
         } else {
-            options->add("-pc_type", "fieldsplit");
-            options->add("-pc_use_amat");
-            options->add("-pc_fieldsplit_type", "schur");
+            bool nonscalable = false;
+            
+            if (nonscalable) {
+                options->add("-pc_type", "fieldsplit");
+                options->add("-pc_use_amat");
+                options->add("-pc_fieldsplit_type", "schur");
 
-            options->add("-pc_fieldsplit_schur_factorization_type", "lower");
-            options->add("-pc_fieldsplit_schur_precondition", "selfp");
-            options->add("-pc_fieldsplit_schur_scale", "1.0");
+                options->add("-pc_fieldsplit_schur_factorization_type", "full");
+                options->add("-pc_fieldsplit_schur_precondition", "full");
+                options->add("-pc_fieldsplit_schur_scale", "1.0");
 
-            options->add("-fieldsplit_displacement_ksp_type", "preonly");
-            options->add("-fieldsplit_lagrange_multiplier_fault_ksp_type", "preonly");
-
-            if (!isParallel) {
+                options->add("-fieldsplit_displacement_ksp_type", "preonly");
+                options->add("-fieldsplit_lagrange_multiplier_fault_ksp_type", "preonly");
                 options->add("-fieldsplit_displacement_pc_type", "lu");
                 options->add("-fieldsplit_lagrange_multiplier_fault_pc_type", "lu");
             } else {
-#if 1
-                options->add("-fieldsplit_displacement_pc_type", "ml");
-                options->add("-fieldsplit_lagrange_multiplier_fault_pc_type", "ml");
-#else
-                options->add("-fieldsplit_displacement_pc_type", "gamg");
-                options->add("-fieldsplit_displacement_mg_levels_pc_type", "sor");
-                options->add("-fieldsplit_displacement_mg_levels_ksp_type", "richardson");
-                options->add("-fieldsplit_lagrange_multiplier_fault_pc_type", "gamg");
-                options->add("-fieldsplit_lagrange_multiplier_fault_mg_levels_pc_type", "sor");
-                options->add("-fieldsplit_lagrange_multiplier_fault_mg_levels_ksp_type", "richardson");
-#endif
+                options->add("-pc_type", "fieldsplit");
+                options->add("-pc_use_amat");
+                options->add("-pc_fieldsplit_type", "schur");
+
+                options->add("-pc_fieldsplit_schur_factorization_type", "lower");
+                options->add("-pc_fieldsplit_schur_precondition", "selfp");
+                options->add("-pc_fieldsplit_schur_scale", "1.0");
+
+                options->add("-fieldsplit_displacement_ksp_type", "preonly");
+                options->add("-fieldsplit_lagrange_multiplier_fault_ksp_type", "preonly");
+
+                if (!isParallel) {
+                    options->add("-fieldsplit_displacement_pc_type", "lu");
+                    options->add("-fieldsplit_lagrange_multiplier_fault_pc_type", "lu");
+                } else {
+  #if 1
+                    options->add("-fieldsplit_displacement_pc_type", "ml");
+                    options->add("-fieldsplit_lagrange_multiplier_fault_pc_type", "ml");
+  #else
+                    options->add("-fieldsplit_displacement_pc_type", "gamg");
+                    options->add("-fieldsplit_displacement_mg_levels_pc_type", "sor");
+                    options->add("-fieldsplit_displacement_mg_levels_ksp_type", "richardson");
+                    options->add("-fieldsplit_lagrange_multiplier_fault_pc_type", "gamg");
+                    options->add("-fieldsplit_lagrange_multiplier_fault_mg_levels_pc_type", "sor");
+                    options->add("-fieldsplit_lagrange_multiplier_fault_mg_levels_ksp_type", "richardson");
+  #endif
+                }
             } // if/else
         } // if/else
         break;
