@@ -64,6 +64,7 @@ public:
                                            const pylith::fekernels::Tensor&,
                                            const pylith::fekernels::TensorOps&,
                                            PylithScalar*);
+                                           
 
     // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
@@ -89,7 +90,7 @@ public:
         PylithScalar value = 0.0;
         poissonfn(rheologyContext, strain, tensorOps, &value);
 
-        f0[0] += value;
+        f0[0] = -1;
     } // f0p
 
     // --------------------------------------------------------------------------------------------

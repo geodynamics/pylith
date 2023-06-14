@@ -230,6 +230,15 @@ public:
 
         Jf3[0] += 1/ (4*3.14159*6.67*pow(10,-11)*density);
         Jf3[4] += 1/ (4*3.14159*6.67*pow(10,-11)*density);
+        Jf3[8] += 1/ (4*3.14159*6.67*pow(10,-11)*density);
+        Jf3[36] += 1/ (4*3.14159*6.67*pow(10,-11)*density);
+        Jf3[40] += 1/ (4*3.14159*6.67*pow(10,-11)*density);
+        Jf3[44] += 1/ (4*3.14159*6.67*pow(10,-11)*density);
+        Jf3[72] += 1/ (4*3.14159*6.67*pow(10,-11)*density);
+        Jf3[76] += 1/ (4*3.14159*6.67*pow(10,-11)*density);
+        Jf3[80] += 1/ (4*3.14159*6.67*pow(10,-11)*density); ///Fix
+
+
     } // Jf3pp
 
     // ===========================================================================================
@@ -252,8 +261,20 @@ public:
 
         const PylithScalar potential= context->potential;
         const PylithScalar density = context->density;
-        *value = 1 - potential / (4*3.14159*6.67*pow(10,-11)*density);
+        *value = -1;
     } // poissonterm
+
+    void poissonterm_2(void* rheologyContext,
+                            const pylith::fekernels::Tensor& strain,
+                            const pylith::fekernels::TensorOps& tensorOps,
+                            PylithScalar* value) {
+        assert(value);
+        Context* context = (Context*)(rheologyContext);assert(context);
+
+        const PylithScalar potential= context->potential;
+        const PylithScalar density = context->density;
+        *value = potential / (4*3.14159*6.67*pow(10,-11)*density) ;
+    } // poissonterm_2
 
     // --------------------------------------------------------------------------------------------
     /** f0p helper function for isotropic linear incompressible elasticity WITH reference stress
@@ -277,7 +298,7 @@ public:
         const PylithReal meanRefStress = (refStress.xx + refStress.yy + refStress.zz) / 3.0;
         const PylithReal refStrainTrace = refStrain.xx + refStrain.yy + refStrain.zz;
         const PylithReal strainTrace = strain.xx + strain.yy + strain.zz;
-        *value = (1 - potential / (4*3.14159*6.67*pow(10,-11)*density));
+        *value = -1;
     } // poissonterm_refState
 
     // --------------------------------------------------------------------------------------------
@@ -753,6 +774,43 @@ public:
             f0);
     } // f0p_infinitesimalStrain
 
+
+    
+
+    void f1p_potential(const PylithInt dim,
+                                const PylithInt numS,
+                                const PylithInt numA,
+                                const PylithInt sOff[],
+                                const PylithInt sOff_x[],
+                                const PylithScalar s[],
+                                const PylithScalar s_t[],
+                                const PylithScalar s_x[],
+                                const PylithInt aOff[],
+                                const PylithInt aOff_x[],
+                                const PylithScalar a[],
+                                const PylithScalar a_t[],
+                                const PylithScalar a_x[],
+                                const PylithReal t,
+                                const PylithScalar x[],
+                                const PylithInt numConstants,
+                                const PylithScalar constants[],
+                                PylithScalar f1[]) {
+    const PylithInt _dim = 3;assert(_dim == dim);
+
+    pylith::fekernels::IsotropicSelfGravElasticity::Context rheologyContext;
+    pylith::fekernels::IsotropicSelfGravElasticity::setContext(
+        &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
+        t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
+
+    pylith::fekernels::SelfGravlasticity::f1p(
+            strainContext, &rheologyContext,
+            pylith::fekernels::ElasticityPlaneStrain::infinitesimalStrain,
+            pylith::fekernels::IsotropicSelfGravElasticity::poissonterm_2,
+            pylith::fekernels::Tensor::ops2D,
+            f1);
+    } // f1p_potential
+
+
     // --------------------------------------------------------------------------------------------
     /** f0p entry function for 3D isotropic linear incompressible elasticity with infinitesimal strain
      * WITH reference stress and reference strain.
@@ -840,6 +898,10 @@ public:
             pylith::fekernels::Tensor::ops3D,
             f1);
     } // f1u_infinitesimalStrain
+
+
+
+ 
 
     // --------------------------------------------------------------------------------------------
     /** f1 entry function for 3D isotropic linear incompressible elasticity with infinitesimal
