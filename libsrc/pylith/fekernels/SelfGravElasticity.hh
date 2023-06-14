@@ -16,7 +16,7 @@
  * ----------------------------------------------------------------------
  */
 
-/** @file libsrc/fekernels/IncompressibleElasticity.hh
+/** @file libsrc/fekernels/SelfGravElasticity.hh
  *
  * Kernels for self gravitating elasticity independent of rheology.
  *
@@ -56,11 +56,11 @@
 #include <cassert> // USES assert()
 
 // ------------------------------------------------------------------------------------------------
-class pylith::fekernels::IncompressibleElasticity {
+class pylith::fekernels::SelfGravElasticity {
 public:
 
     // Function interface for computing incompressible term.
-    typedef void (*incompressiblefn_type) (void*,
+    typedef void (*poissonfn_type) (void*,
                                            const pylith::fekernels::Tensor&,
                                            const pylith::fekernels::TensorOps&,
                                            PylithScalar*);
@@ -78,7 +78,7 @@ public:
     void f0p(pylith::fekernels::Elasticity::StrainContext& strainContext,
              void* rheologyContext,
              pylith::fekernels::Elasticity::strainfn_type strainFn,
-             pylith::fekernels::IncompressibleElasticity::incompressiblefn_type incompressibleFn,
+             pylith::fekernels::SelfGravElasticity::poissonfn_type poissonfn,
              const pylith::fekernels::TensorOps& tensorOps,
              PylithScalar f0[]) {
         assert(f0);
@@ -87,7 +87,7 @@ public:
         strainFn(strainContext, &strain);
 
         PylithScalar value = 0.0;
-        incompressibleFn(rheologyContext, strain, tensorOps, &value);
+        poissonfn(rheologyContext, strain, tensorOps, &value);
 
         f0[0] += value;
     } // f0p
@@ -195,7 +195,7 @@ public:
     // --------------------------------------------------------------------------------------------
     /** Calculate mean stress for isotropic linear incompressible elasticity WITHOUT reference stress
      * and strain.
-     */
+     
     static inline
     void meanStress(const PylithReal pressure,
                     pylith::fekernels::Tensor* stress) {
@@ -205,11 +205,11 @@ public:
         stress->yy -= pressure;
         stress->zz -= pressure;
     } // meanStress
-
+    */
     // --------------------------------------------------------------------------------------------
     /** Calculate mean stress for isotropic linear incompressible elasticity WITH reference stress
      * and strain.
-     */
+     
     static inline
     void meanStress_refState(const PylithReal pressure,
                              const pylith::fekernels::Tensor& refStress,
@@ -223,9 +223,9 @@ public:
         stress->yy += meanStress;
         stress->zz += meanStress;
     } // meanStress_refState
+    */
+}; // SelfGravElasticity
 
-}; // IncompressibleElasticity
-
-#endif // pylith_fekernels_incompressibleelasticity_hh
+#endif // pylith_fekernels_SelfGravElasticity_hh
 
 // End of file

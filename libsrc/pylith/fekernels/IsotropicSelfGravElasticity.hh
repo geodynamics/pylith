@@ -20,7 +20,7 @@
  *
  * Kernels for linear incompressible elasticity WITHOUT inertia.
  *
- * Solution fields: [disp(dim), pressure(1)]
+ * Solution fields: [disp(dim), potential(1)]
  *
  * Auxiliary fields:
  * - 0: density(1)
@@ -67,9 +67,9 @@
 
 #include "fekernelsfwd.hh" // forward declarations
 
-#include "pylith/fekernels/SelfGravitatingElasticity.hh" // USES SelfGravitatingElasticity kernels
+#include "pylith/fekernels/SelfGravElasticity.hh" // USES SelfGravElasticity kernels
 #include "pylith/fekernels/IsotropicSelfGravElasticity.hh" // USES IsotropicSelfGravElasticity kernels
-#include "pylith/fekernels/Elasticityselfgrav.hh" // USES Elasticityselfgrav kernels
+#include "pylith/fekernels/Elasticity.hh" // USES Elasticity kernels
 
 #include "pylith/utils/types.hh"
 
@@ -81,17 +81,16 @@ class pylith::fekernels::IsotropicSelfGravElasticity {
 public:
 
     struct Context {
-        PylithReal pressure;
+        PylithReal potential;
         PylithReal shearModulus;
-        PylithReal bulkModulus;
-        PylithReal density; //Added
+        PylithReal density;
         pylith::fekernels::Tensor refStress;
         pylith::fekernels::Tensor refStrain;
 
         Context(void) :
-            pressure(0.0),
+            potential(0.0),
             shearModulus(0.0),
-            bulkModulus(0.0) {}
+            density(0.0) {}
 
 
     };
@@ -122,25 +121,22 @@ public:
                     const pylith::fekernels::TensorOps& tensorOps) {
         assert(context);
 
-        const PylithInt i_pressure = numS-1;
+        const PylithInt i_potential = numS-1;
         const PylithInt i_shearModulus = numA-2;
-        const PylithInt i_bulkModulus = numA-1;
-        const PylithInt i_density = 0;  //Density Index     
+        const PylithInt i_density = 0;
 
         assert(numS >= 2);
         assert(s);
-        assert(sOff[i_pressure] >= 0);
+        assert(sOff[i_potential] >= 0);
         assert(numA >= 3); // also have density
         assert(a);
         assert(aOff);
         assert(aOff[i_shearModulus] >= 0);
-        assert(aOff[i_bulkModulus] >= 0);
         assert(aOff[i_density] >= 0);
 
-        context->pressure = s[sOff[i_pressure]];
+        context->potential= s[sOff[i_potential]];
         context->shearModulus = a[aOff[i_shearModulus]];assert(context->shearModulus > 0.0);
-        context->bulkModulus = a[aOff[i_bulkModulus]];assert(context->bulkModulus > 0.0);
-        context->density= a[aOff[i_density]];assert(context->density > 0.0);
+        context->density = a[aOff[i_density]];assert(context->density> 0.0);
     } // setContext
 
     // --------------------------------------------------------------------------------------------
@@ -166,36 +162,26 @@ public:
                              const pylith::fekernels::TensorOps& tensorOps) {
         assert(context);
 
-        const PylithInt i_pressure = numS-1;
+        const PylithInt i_potential = numS-1;
         const PylithInt i_refStress = numA-4;
         const PylithInt i_refStrain = numA-3;
         const PylithInt i_shearModulus = numA-2;
-        const PylithInt i_bulkModulus = numA-1;
-        const PylithInt i_density = 0;
-
-
-
-
-
-
-        //
+        const PylithInt i_density= 0;
 
         assert(numS >= 2);
         assert(s);
-        assert(sOff[i_pressure] >= 0);
-        assert(sOff[i_density] >= 0);
+        assert(sOff[i_potential] >= 0);
         assert(numA >= 5); // also have density
         assert(a);
         assert(aOff);
         assert(aOff[i_refStress] >= 0);
         assert(aOff[i_refStrain] >= 0);
         assert(aOff[i_shearModulus] >= 0);
-        assert(aOff[i_bulkModulus] >= 0);
+        assert(aOff[i_density] >= 0);
 
-        context->density= a[aOff[i_density]];assert(context->density > 0.0);
-        context->pressure = s[sOff[i_pressure]];  // Redefine density here
+        context->potential = s[sOff[i_potential]];
         context->shearModulus = a[aOff[i_shearModulus]];assert(context->shearModulus > 0.0);
-        context->bulkModulus = a[aOff[i_bulkModulus]];assert(context->bulkModulus > 0.0);
+        context->density = a[aOff[i_density]];assert(context->density > 0.0);
 
         tensorOps.fromVector(&a[aOff[i_refStress]], &context->refStress);
         tensorOps.fromVector(&a[aOff[i_refStrain]], &context->refStrain);
@@ -208,10 +194,10 @@ public:
     // --------------------------------------------------------------------------------------------
     /** Jf0_pp entry function for isotropic linear incompressible elasticity .
      *
-     * Solution fields: [disp(dim), pressure(1)]
+     * Solution fields: [disp(dim), potential(1)]
      * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1)]
      */
-    static inline //re-register as J3
+    static inline
     void Jf3pp(const PylithInt dim,
                const PylithInt numS,
                const PylithInt numA,
@@ -230,20 +216,20 @@ public:
                const PylithScalar x[],
                const PylithInt numConstants,
                const PylithScalar constants[],
-               PylithScalar Jf0[]) {
+               PylithScalar Jf3[]) {
         // Incoming auxiliary subfields
-        const PylithInt i_bulkModulus = numA-1;
+        const PylithInt i_density = 0;
 
         assert(numA >= 1);
         assert(aOff);
         assert(aOff[i_density] >= 0);
         assert(a);
-        assert(Jf0);
+        assert(Jf3);
 
         const PylithScalar density = a[aOff[i_density]];
 
-        Jf3[0] += 1.0 / (4*PETSC_PI*density*6.67*pow(10,-11)); //j0000
-        Jf3[15] += 1.0 / (4*PETSC_PI*density*6.67*pow(10,-11)); //j1111.
+        Jf3[0] += 1/ (4*3.14159*6.67*pow(10,-11)*density);
+        Jf3[4] += 1/ (4*3.14159*6.67*pow(10,-11)*density);
     } // Jf3pp
 
     // ===========================================================================================
@@ -254,42 +240,45 @@ public:
     /** f0p helper function for isotropic linear incompressible elasticity WITH reference stress
      * and reference strain.
      *
-     * ISA pylith::fekernels::SelfGravitatingElasticity::incompressiblefn_type
+     * ISA pylith::fekernels::SelfGravElasticity::incompressiblefn_type
      */
     static inline
-    void incompressibleTerm(void* rheologyContext,
+    void poissonterm(void* rheologyContext,
                             const pylith::fekernels::Tensor& strain,
                             const pylith::fekernels::TensorOps& tensorOps,
                             PylithScalar* value) {
         assert(value);
         Context* context = (Context*)(rheologyContext);assert(context);
 
-        const PylithScalar potential = context->potential;
+        const PylithScalar potential= context->potential;
         const PylithScalar density = context->density;
-        *value = 1 - potential / (4*PETSC_PI*density*6.67*pow(10,-11));
-    } // incompressibleTerm
+        *value = 1 - potential / (4*3.14159*6.67*pow(10,-11)*density);
+    } // poissonterm
 
     // --------------------------------------------------------------------------------------------
     /** f0p helper function for isotropic linear incompressible elasticity WITH reference stress
      * and reference strain.
      *
-     * ISA pylith::fekernels::SelfGravitatingElasticity::incompressiblefn_type
+     * ISA pylith::fekernels::SelfGravElasticity::incompressiblefn_type
      */
     static inline
-    void incompressibleTerm_refState(void* rheologyContext,
+    void poissonterm_refState(void* rheologyContext,
                                      const pylith::fekernels::Tensor& strain,
                                      const pylith::fekernels::TensorOps& tensorOps,
                                      PylithScalar* value) {
         assert(value);
         Context* context = (Context*)(rheologyContext);assert(context);
 
-        const PylithScalar pressure = context->pressure;
-        const PylithScalar bulkModulus = context->bulkModulus;
+        const PylithScalar potential = context->potential;
+        const PylithScalar density = context->density;
         const pylith::fekernels::Tensor& refStress = context->refStress;
         const pylith::fekernels::Tensor& refStrain = context->refStrain;
 
-        *value = 1 - potential / (4*PETSC_PI*density*6.67*pow(10,-11));
-    } // incompressibleTerm_refState
+        const PylithReal meanRefStress = (refStress.xx + refStress.yy + refStress.zz) / 3.0;
+        const PylithReal refStrainTrace = refStrain.xx + refStrain.yy + refStrain.zz;
+        const PylithReal strainTrace = strain.xx + strain.yy + strain.zz;
+        *value = (1 - potential / (4*3.14159*6.67*pow(10,-11)*density));
+    } // poissonterm_refState
 
     // --------------------------------------------------------------------------------------------
     /** Calculate stress for 2D plane strain isotropic linear elasticity WITHOUT a reference
@@ -311,8 +300,8 @@ public:
         assert(context);
         assert(stress);
 
-        const PylithReal potential = context->pressure;
-        pylith::fekernels::SelfGravitatingElasticity::meanStress(pressure, stress);
+        //const PylithReal pressure = context->pressure;
+        //pylith::fekernels::SelfGravElasticity::meanStress(pressure, stress); //don't remove pressure from stress tensor
 
         const PylithReal shearModulus = context->shearModulus;
         pylith::fekernels::IsotropicSelfGravElasticity::deviatoricStress(shearModulus, strain, stress);
@@ -341,11 +330,11 @@ public:
         const pylith::fekernels::Tensor& refStress = context->refStress;
         const pylith::fekernels::Tensor& refStrain = context->refStrain;
 
-        const PylithReal pressure = context->pressure;
-        pylith::fekernels::SelfGravitatingElasticity::meanStress_refState(pressure, refStress, stress);
+        // const PylithReal pressure = context->pressure; 
+        // pylith::fekernels::SelfGravElasticity::meanStress_refState(pressure, refStress, stress); dont remove pressure
 
         const PylithReal shearModulus = context->shearModulus;
-        pylith::fekernels::SelfGravitatingElasticity::deviatoricStress_refState(shearModulus, refStress, refStrain, strain, stress);
+        pylith::fekernels::IsotropicSelfGravElasticity::deviatoricStress_refState(shearModulus, refStress, refStrain, strain, stress);
     } // cauchyStress_refState
 
 }; // IsotropicSelfGravElasticity
@@ -395,10 +384,10 @@ public:
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
 
-        pylith::fekernels::SelfGravitatingElasticity::f0p(
+        pylith::fekernels::SelfGravElasticity::f0p(
             strainContext, &rheologyContext,
             pylith::fekernels::ElasticityPlaneStrain::infinitesimalStrain,
-            pylith::fekernels::IsotropicSelfGravElasticity::incompressibleTerm,
+            pylith::fekernels::IsotropicSelfGravElasticity::poissonterm,
             pylith::fekernels::Tensor::ops2D,
             f0);
     }
@@ -439,16 +428,16 @@ public:
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
 
-        pylith::fekernels::SelfGravitatingElasticity::f0p(
+        pylith::fekernels::SelfGravElasticity::f0p(
             strainContext, &rheologyContext,
             ElasticityPlaneStrain::infinitesimalStrain,
-            IsotropicSelfGravElasticity::incompressibleTerm_refState,
+            IsotropicSelfGravElasticity::poissonterm_refState,
             pylith::fekernels::Tensor::ops2D,
             f0);
     }
 
     // --------------------------------------------------------------------------------------------
-    /** f1 entry function for 2D plane strain isotropic self gravitating elasticity with
+    /** f1 entry function for 2D plane strain isotropic linear incompressible elasticity with
      * infinitesimal strain WITHOUT reference stress and reference strain.
      *
      * Solution fields: [disp(dim), pressure(1)]
@@ -562,17 +551,22 @@ public:
                                    const PylithScalar constants[],
                                    PylithScalar Jf3[]) {
         const PylithInt _dim = 2;assert(_dim == dim);
-
-        pylith::fekernels::IsotropicSelfGravElasticity::Context context;
-        pylith::fekernels::IsotropicSelfGravElasticity::setContext(
+        pylith::fekernels::IsotropicLinearElasticity::Context context;
+        pylith::fekernels::IsotropicLinearElasticity::setContext(
             &context, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
 
-        const PylithScalar shearModulus = context.shearModulus;
+        assert(Jf3);
 
-        const PylithReal C1111 = 4.0 / 3.0 * shearModulus;
-        const PylithReal C2222 = C1111;
-        const PylithReal C1122 = -2.0 / 3.0 * shearModulus;
+        const PylithScalar shearModulus = context.shearModulus;
+        const PylithScalar bulkModulus = context.bulkModulus;
+
+        const PylithScalar lambda = bulkModulus - 2.0/3.0*shearModulus;
+        const PylithScalar lambda2mu = lambda + 2.0*shearModulus;
+
+        const PylithReal C1111 = lambda2mu;
+        const PylithReal C2222 = lambda2mu;
+        const PylithReal C1122 = lambda;
         const PylithReal C1212 = shearModulus;
 
         /* j(f,g,df,dg) = C(f,df,g,dg)
@@ -751,10 +745,10 @@ public:
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops3D);
 
-        pylith::fekernels::SelfGravitatingElasticity::f0p(
+        pylith::fekernels::SelfGravElasticity::f0p(
             strainContext, &rheologyContext,
             pylith::fekernels::Elasticity3D::infinitesimalStrain,
-            pylith::fekernels::IsotropicSelfGravElasticity::incompressibleTerm,
+            pylith::fekernels::IsotropicSelfGravElasticity::poissonterm,
             pylith::fekernels::Tensor::ops3D,
             f0);
     } // f0p_infinitesimalStrain
@@ -795,10 +789,10 @@ public:
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops3D);
 
-        pylith::fekernels::SelfGravitatingElasticity::f0p(
+        pylith::fekernels::SelfGravElasticity::f0p(
             strainContext, &rheologyContext,
             pylith::fekernels::Elasticity3D::infinitesimalStrain,
-            pylith::fekernels::IsotropicSelfGravElasticity::incompressibleTerm_refState,
+            pylith::fekernels::IsotropicSelfGravElasticity::poissonterm_refState,
             pylith::fekernels::Tensor::ops3D,
             f0);
     } // f0p_infinitesimalStrain_refState
