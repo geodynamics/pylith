@@ -43,7 +43,7 @@ public:
     void addBulkDensity(void);
 
     /// Add subfields using discretizations provided.
-    void addSubfields(void);
+    virtual void addSubfields(void);
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
 private:
