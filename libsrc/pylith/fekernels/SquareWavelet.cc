@@ -18,19 +18,19 @@
 
 #include <portinfo>
 
-#include "pylith/fekernels/RickerWavelet.hh"
+#include "pylith/fekernels/SquareWavelet.hh"
 
 #include <cassert> // USES assert()
 #include <iostream> // debugging.
 
 // =====================================================================================================================
-// Kernels for the Ricker Source Time Function in 2D.
+// Kernels for the Square Source Time Function in 2D.
 // =====================================================================================================================
 
 // ----------------------------------------------------------------------
 // g1 entry function for velocity equation
 void
-pylith::fekernels::RickerWaveletPlaneStrain::g1v(const PylithInt dim,
+pylith::fekernels::SquareWaveletPlaneStrain::g1v(const PylithInt dim,
                                                  const PylithInt numS,
                                                  const PylithInt numA,
                                                  const PylithInt sOff[],
@@ -59,38 +59,37 @@ pylith::fekernels::RickerWaveletPlaneStrain::g1v(const PylithInt dim,
     // Incoming re-packed auxiliary field.
     const PylithInt i_momentTensor = 0;
     const PylithInt i_timeDelay = 1;
-    const PylithInt i_rickerwaveletCenterFrequency = numA - 1;
+    const PylithInt i_squarewaveletCenterFrequency = numA - 1;
 
     const PylithScalar* momentTensor = &a[aOff[i_momentTensor]];
     const PylithScalar timeDelay = a[aOff[i_timeDelay]];
-    const PylithScalar rickerwaveletCenterFrequency = a[aOff[i_rickerwaveletCenterFrequency]];
+    const PylithScalar squarewaveletCenterFrequency = a[aOff[i_squarewaveletCenterFrequency]];
 
-    // RickerWavelet source time function (time domain)
+    // SquareWavelet source time function (time domain)
 
     PylithScalar rt = t - timeDelay;
-    PylithScalar rickerwavelet = (1.0 - 2.0*PETSC_PI*PETSC_PI*rickerwaveletCenterFrequency*rickerwaveletCenterFrequency*rt*rt) *
-                                 PetscExpReal(-PETSC_PI*PETSC_PI*rickerwaveletCenterFrequency*rickerwaveletCenterFrequency*rt*rt);
+    PylithScalar squarewavelet = (rt >= 0.0) ? 1.0 : 0.0;
 
     // PetscPrintf(PETSC_COMM_WORLD, "timeDelay %f\n", (double)timeDelay);
     // PetscPrintf(PETSC_COMM_WORLD, "t %f\n", (double)t);
-    // PetscPrintf(PETSC_COMM_WORLD, "Center Freq %f\n", (double)rickerwaveletCenterFrequency);
-    // PetscPrintf(PETSC_COMM_WORLD, "rickerWavelet %f\n", (double)rickerwavelet);
+    // PetscPrintf(PETSC_COMM_WORLD, "Center Freq %f\n", (double)squarewaveletCenterFrequency);
+    // PetscPrintf(PETSC_COMM_WORLD, "squareWavelet %f\n", (double)squarewavelet);
 
     for (PylithInt i = 0; i < dim*dim; ++i) {
-        g1[i] -= momentTensor[i] * rickerwavelet;
-        // PetscPrintf(PETSC_COMM_WORLD, "g1[%i]: %f - ricker\n", (int)i, (double)g1[i]);
+        g1[i] -= momentTensor[i] * squarewavelet;
+        // PetscPrintf(PETSC_COMM_WORLD, "g1[%i]: %f - square\n", (int)i, (double)g1[i]);
     } // for
 } // g1v
 
 
 // =====================================================================================================================
-// Kernels for the Ricker Source Time Function in 3D.
+// Kernels for the Square Source Time Function in 3D.
 // =====================================================================================================================
 
 // ----------------------------------------------------------------------
 // g1 entry function for velocity equation
 void
-pylith::fekernels::RickerWavelet3D::g1v(const PylithInt dim,
+pylith::fekernels::SquareWavelet3D::g1v(const PylithInt dim,
                                         const PylithInt numS,
                                         const PylithInt numA,
                                         const PylithInt sOff[],
@@ -119,20 +118,19 @@ pylith::fekernels::RickerWavelet3D::g1v(const PylithInt dim,
     // Incoming re-packed auxiliary field.
     const PylithInt i_momentTensor = 0;
     const PylithInt i_timeDelay = 1;
-    const PylithInt i_rickerwaveletCenterFrequency = numA - 1;
+    const PylithInt i_squarewaveletCenterFrequency = numA - 1;
 
     const PylithScalar* momentTensor = &a[aOff[i_momentTensor]];
     const PylithScalar timeDelay = a[aOff[i_timeDelay]];
-    const PylithScalar rickerwaveletCenterFrequency = a[aOff[i_rickerwaveletCenterFrequency]];
+    const PylithScalar squarewaveletCenterFrequency = a[aOff[i_squarewaveletCenterFrequency]];
 
-    // RickerWavelet source time function (time domain)
+    // SquareWavelet source time function (time domain)
 
     PylithScalar rt = t - timeDelay;
-    PylithScalar rickerwavelet = (1.0 - 2.0*PETSC_PI*PETSC_PI*rickerwaveletCenterFrequency*rickerwaveletCenterFrequency*rt*rt) *
-                                 PetscExpReal(-PETSC_PI*PETSC_PI*rickerwaveletCenterFrequency*rickerwaveletCenterFrequency*rt*rt);
+    PylithScalar squarewavelet = (rt >= 0.0) ? 1.0 : 0.0;
 
     for (PylithInt i = 0; i < dim*dim; ++i) {
-        g1[i] -= momentTensor[i] * rickerwavelet;
+        g1[i] -= momentTensor[i] * squarewavelet;
     } // for
 } // g1v
 

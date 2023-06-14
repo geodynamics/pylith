@@ -141,6 +141,7 @@ EXTRA_DIST = \
 	sources/SquarePulseSource.py \
 	sources/SourceTimeFunctionMomentTensorForce.py \
 	sources/Source.py \
+	sources/SquareWavelet.py \
 	sources/RickerWavelet.py \
 	sources/PointForce.py \
 	sources/MomentTensorForce.py \
