@@ -26,9 +26,9 @@
 
 #include "materialsfwd.hh" // forward declarations
 
-#include "pylith/materials/RheologySelfGravitatingElasticity.hh" // ISA RheologySelfGravitatingElasticity
+#include "pylith/materials/RheologySelfGravElasticity.hh" // ISA RheologySelfGravElasticity
 
-class pylith::materials::IsotropicSelfGravElasticity : public pylith::materials::RheologySelfGravitatingElasticity {
+class pylith::materials::IsotropicSelfGravElasticity : public pylith::materials::RheologySelfGravElasticity {
     friend class TestIsotropicSelfGravElasticity; // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////

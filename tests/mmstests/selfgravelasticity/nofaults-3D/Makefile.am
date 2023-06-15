@@ -18,10 +18,9 @@
 
 include $(top_srcdir)/tests/check_catch2.am
 
-MMS_DRIVER = mmstest_incompressibleelasticity_nofaults3d
+MMS_DRIVER = mmstest_selfgravelasticity_nofaults3d
 
 TESTS = \
-
 	run_selfgrav3d.sh
 
 check_SCRIPTS = $(TESTS)
@@ -29,15 +28,12 @@ check_SCRIPTS = $(TESTS)
 check_PROGRAMS = $(MMS_DRIVER)
 
 
-mmstest_incompressibleelasticity_nofaults2d_SOURCES = \
+mmstest_selfgravelasticity_nofaults3d_SOURCES = \
 	$(top_srcdir)/tests/src/MMSTest.cc \
 	$(top_srcdir)/tests/src/driver_catch2.cc \
-	TestIncompressibleElasticity.cc \
+	Testselfgravelasticity.cc \
 	TestCases.cc \
-	UniformPressure2D.cc \
-	UniformShear2D.cc \
-	Gravity2D.cc \
-	BodyForce2D.cc 
+	SelfGrav3D.cc 
 
 run_%.sh:
 	echo "#!/bin/bash" > $@
@@ -45,11 +41,8 @@ run_%.sh:
 	chmod +x $@
 
 dist_noinst_HEADERS = \
-	TestIncompressibleElasticity.hh \
-	UniformPressure2D.hh \
-	UniformShear2D.hh \
-	Gravity2D.hh \
-	BodyForce2D.hh
+	Testselfgravelasticity.hh \
+	SelfGrav3D.cc 
 
 dist_noinst_DATA = \
 	data/tri.mesh \
