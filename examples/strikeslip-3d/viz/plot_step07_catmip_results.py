@@ -13,7 +13,8 @@ import plotFaultFunctions
 
 FILENAME_impulses = "output/step05_greensfns-fault.h5"
 FILENAME_observed = "output/step04_varslip-gps_stations.h5"
-CATMIP_results = "output/step07a_catmip-theta59.bin"
+CATMIP_results = "output/step07a_catmip-theta45.bin"
+show_plot=True # change to False if running without graphics
 
 ## Read the appropriate files
 
@@ -59,6 +60,11 @@ plotFaultFunctions.plot_fault_surface(vertices,cells,node_median_coefs[:,1],ax[0
 plotFaultFunctions.plot_fault_surface(vertices,cells,node_median_coefs[:,2],ax[0,1],'Slip component 2')
 plotFaultFunctions.plot_fault_surface(vertices,cells,node_conf_interval_coefs[:,1],ax[1,0],'$95\%$ CI Slip component 1')
 plotFaultFunctions.plot_fault_surface(vertices,cells,node_conf_interval_coefs[:,2],ax[1,1],'$95\%$ CI Slip component 2')
-plt.show()
+
+figureFilename = "output/step07-catmip-results.pdf"
+fig.savefig(figureFilename)
+
+if show_plot:
+    plt.show()
 
 # End of file
