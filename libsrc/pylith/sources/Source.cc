@@ -73,20 +73,6 @@ pylith::sources::Source::getDescription(void) const {
 } // getDescription
 
 
-// ------------------------------------------------------------------------------------------------
-// Set name of label marking material.
-void
-pylith::sources::Source::setLabelName(const char* value) {
-    PYLITH_COMPONENT_DEBUG("setLabelName(value="<<value<<")");
-
-    if (strlen(value) == 0) {
-        throw std::runtime_error("Empty string given for material label.");
-    } // if
-
-    _labelName = value;
-} // setLabelName
-
-
 // ---------------------------------------------------------------------------------------------------------------------
 // Create constraint and set kernels.
 std::vector<pylith::feassemble::Constraint*>
