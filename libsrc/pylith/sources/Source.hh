@@ -65,34 +65,10 @@ public:
      */
     const char* getDescription(void) const;
 
-    /** Set name of label marking boundary associated with boundary condition surface.
-     *
-     * @param[in] value Name of label for surface (from mesh generator).
-     */
-    void setLabelName(const char* value);
-
-    /** Get name of label marking boundary associated with source location.
-     *
-     * @returns Name of label for surface (from mesh generator).
-     */
-    const char* getLabelName(void) const;
-
-    /** Set value of label marking boundary associated with source location.
-     *
-     * @param[in] value Value of label for surface (from mesh generator).
-     */
-    void setLabelValue(const int value);
-
-    /** Get value of label marking boundary associated with source location.
-     *
-     * @returns Value of label for surface (from mesh generator).
-     */
-    int getLabelValue(void) const;
-
     /** Set first choice for reference direction to discriminate among tangential directions in 3-D.
      *
      * @param vec Reference direction unit vector.
-    /** Create constraint and set kernels.
+     * /** Create constraint and set kernels.
      *
      * @param[in] solution Solution field.
      * @returns Constraint if applicable, otherwise NULL.
@@ -122,7 +98,7 @@ protected:
     std::string _description; ///< Descriptive label for source.
     std::string _labelName; ///< Name of label to identify source points in mesh.
     int _labelValue; ///< Value of label to identify source points in mesh.
-    
+
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
