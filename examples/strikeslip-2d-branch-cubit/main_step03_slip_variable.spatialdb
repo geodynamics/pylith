@@ -1,0 +1,38 @@
+// -*- C++ -*- (syntax highlighting)
+//
+// This spatial database specifies the distribution of slip on the
+// fault surface for Step 4 (forward simulation to generate fake observations).
+// The slip extends from -20 <= y <= 20 km.
+//
+#SPATIAL.ascii 1
+SimpleDB {
+  num-values = 3
+  value-names =  final_slip_left_lateral  final_slip_opening   initiation_time
+  value-units =  cm  cm  year
+  num-locs = 13
+  data-dim = 1 // Data is specified along a line.
+  space-dim = 2
+  cs-data = cartesian {
+    to-meters = 1.0e+3 // Specify coordinates in km for convenience.
+    space-dim = 2
+  } // cs-data
+} // SimpleDB
+// Columns are
+// (1) x coordinate (km)
+// (2) y coordinate (km)
+// (3) left-lateral slip (cm)
+// (4) fault opening (cm)
+// (5) slip time relative to origin time (year)
+0.0   99.0      0.0       0.0   0.0
+0.0   40.0      0.0       0.0   0.0
+0.0   20.0     30.0       0.0   0.0
+0.0   15.0     60.0       0.0   6.3e-8
+0.0   10.0     90.0       0.0   12.6e-8
+0.0    5.0     120.0      0.0   18.9e-8
+0.0    0.0     150.0      0.0   25.2e-8
+0.0   -5.0     120.0      0.0   31.5e-8
+0.0  -10.0     90.0       0.0   37.8e-8
+0.0  -15.0     60.0       0.0   44.1e-8
+0.0  -20.0     30.0       0.0   50.4e-8
+0.0  -40.0      0.0       0.0   0.0
+0.0  -99.0      0.0       0.0   0.0
