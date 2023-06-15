@@ -189,6 +189,7 @@ pylith::sources::Source::locateSource(const pylith::topology::Field& solution) {
             err = DMLabelSetValue(label, remotePoints[p].index, 2);PYLITH_CHECK_ERROR(err);
         }
     } // for
+    DMLabelView(label, NULL);
     err = PetscSFDestroy(&sfPoints);PYLITH_CHECK_ERROR(err);
     printf("In MomentTensorForce end\n");
     DMView(dmSoln, NULL);

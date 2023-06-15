@@ -165,6 +165,7 @@ pylith::sources::MomentTensorForce::createIntegrator(const pylith::topology::Fie
 
     _setKernelsResidual(integrator, solution);
     _setKernelsJacobian(integrator, solution);
+
     _setKernelsUpdateStateVars(integrator, solution);
     _setKernelsDerivedField(integrator, solution);
 
