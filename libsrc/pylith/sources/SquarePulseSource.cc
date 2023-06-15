@@ -219,7 +219,7 @@ pylith::sources::SquarePulseSource::_setKernelsResidual(pylith::feassemble::Inte
         const PetscPointFunc f1p = NULL;
 
         kernels.resize(1);
-        kernels[0] = ResidualKernels("pressure", pylith::feassemble::Integrator::LHS, f0p, f1p);
+        kernels[0] = ResidualKernels(getSubfieldName(), pylith::feassemble::Integrator::LHS, f0p, f1p);
         break;
     } // QUASISTATIC
     case DYNAMIC_IMEX:
@@ -263,7 +263,7 @@ pylith::sources::SquarePulseSource::_setKernelsJacobian(pylith::feassemble::Inte
 
         kernels.resize(1);
         const EquationPart equationPart = pylith::feassemble::Integrator::LHS;
-        kernels[0] = JacobianKernels("pressure", "pressure", equationPart, Jf0pp, Jf1pp, Jf2pp, Jf3pp);
+        kernels[0] = JacobianKernels(getSubfieldName(), getSubfieldName(), equationPart, Jf0pp, Jf1pp, Jf2pp, Jf3pp);
         break;
     } // QUASISTATIC
     case DYNAMIC:
