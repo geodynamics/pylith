@@ -43,7 +43,6 @@ namespace pylith {
         class GaussianWavelet;
 
         class PointForce;
-        class SourceTimeFunctionPointForce;
         class AuxiliaryFactoryPointForce;
 
         class SquarePulseSource;

@@ -127,7 +127,7 @@ pylith::sources::SquarePulseSource::createIntegrator(const pylith::topology::Fie
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("createIntegrator(solution=" << solution.getLabel() << ")");
 
-    pylith::sources::Source::locateSource(solution);
+    pylith::sources::Source::locateSource(solution, getLabelName(), getLabelValue());
 
     pylith::feassemble::IntegratorDomain *integrator = new pylith::feassemble::IntegratorDomain(this);
     assert(integrator);

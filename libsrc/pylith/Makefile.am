@@ -147,7 +147,6 @@ libpylith_la_SOURCES = \
 	sources/RickerWavelet.cc \
 	sources/Source.cc \
 	sources/SourceTimeFunctionMomentTensorForce.cc \
-	sources/SourceTimeFunctionPointForce.cc \
 	sources/SquarePulseSource.cc \
 	sources/WellboreSource.cc \
 	topology/Mesh.cc \
