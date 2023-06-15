@@ -1,0 +1,23 @@
+#SPATIAL.ascii 1
+SimpleDB {
+  // Specify x and y components of the constant velocity along with the starting time. 
+  num-values =      3
+  value-names =  rate_amplitude_x rate_amplitude_y rate_start_time
+  value-units =  cm/year  cm/year  year
+  // For uniform velocities, we specify the values at 1 location, which corresponds to
+  // a data dimension of 0.
+  num-locs =     1
+  data-dim =    0
+  space-dim =    2
+  cs-data = cartesian {
+  to-meters = 1
+  space-dim = 2
+}
+}
+// Columns are
+// (1) x coordinate (m)
+// (2) y coordinate (m)
+// (3) rate_amplitude_x (cm/year)
+// (4) rate_amplitude_y (cm/year)
+// (5) rate_start_time (year)
+0.0  0.0    0.0  -1.0  0.0
