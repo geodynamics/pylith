@@ -18,13 +18,11 @@
 
 include $(top_srcdir)/tests/check_catch2.am
 
-MMS_DRIVER = mmstest_incompressibleelasticity_nofaults2d
+MMS_DRIVER = mmstest_incompressibleelasticity_nofaults3d
 
 TESTS = \
-	run_UniformPressure2D.sh \
-	run_UniformShear2D.sh \
-	run_Gravity2D.sh \
-	run_BodyForce2D.sh
+
+	run_selfgrav3d.sh
 
 check_SCRIPTS = $(TESTS)
 

@@ -17,7 +17,8 @@
 
 SUBDIRS = \
 	linearelasticity \
-	incompressibleelasticity
+	incompressibleelasticity \
+	selfgravelasticity
 
 
 # End of file 
