@@ -121,13 +121,13 @@ private:
     void _setKernelsResidual(pylith::feassemble::IntegratorDomain* integrator,
                              const pylith::topology::Field& solution) const;
 
-    /** Set kernels for Jacobian.
-     *
-     * @param[out] integrator Integrator for source.
-     * @param[in] solution Solution field.
-     */
-    void _setKernelsJacobian(pylith::feassemble::IntegratorDomain* integrator,
-                             const pylith::topology::Field& solution) const;
+    // /** Set kernels for Jacobian.
+    //  *
+    //  * @param[out] integrator Integrator for source.
+    //  * @param[in] solution Solution field.
+    //  */
+    // void _setKernelsJacobian(pylith::feassemble::IntegratorDomain* integrator,
+    //                          const pylith::topology::Field& solution) const;
 
     /** Set kernels for computing updated state variables in auxiliary field.
      *
