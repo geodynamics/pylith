@@ -273,6 +273,19 @@
             "osx": {
                 "MIMode": "lldb"
             }
+        },
+        {
+            "name": "Attach to process",
+            "type": "cppdbg",
+            "request": "attach",
+            "processId": "${command:pickProcess}",
+            "program": "/bin/bash", // Any program that exists
+            "linux": {
+                "MIMode": "gdb"
+            },
+            "osx": {
+                "MIMode": "lldb"
+            }
         }
     ]
 }
