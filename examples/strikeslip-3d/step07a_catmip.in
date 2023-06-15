@@ -1,0 +1,8 @@
+# Use 100 samples and Markov chains with a length of 50
+N                100
+Nsteps           50
+
+# Use the current directory for user input and write output files as output/step07a-catmip-
+data_directory   .
+output_directory ./output
+output_prefix    step07a_catmip-
