@@ -29,6 +29,7 @@
 // ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::sources::Source::Source(void) :
+    _subfieldName(""),
     _description(""),
     _labelName(""),
     _labelValue(1) {
