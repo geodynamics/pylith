@@ -1,5 +1,39 @@
 (developer-debugging-tools)=
 # Debugging tools
+
+## VS Code integration
+
+You can use the VS Code debugger with C++ unit tests (libtests), MMS Tests, and PyLith simulations.
+
+### C++ unit test
+
+1. Click on `Run and Debug` in the left sidebar of the VS Code window.
+2. At the top of the panel, select the test suite to run.
+3. Click on the green triangle next to the name of the selected test suite.
+
+### MMS test
+
+1. Click on `Testing` in the left sidebar of the VS Code window.
+2. Click on the `Debug Test` icon that pops up when you mouse over the name of the test you want to run.
+
+:::{note}
+Once we migrate the C++ unit tests to Catch2, they will also show up in list of tests under `Testing`.
+:::
+
+### PyLith simulation
+
+We provide a configuration in `launch.json` to attach the VS Code debugger to a running process, such as a PyLith simulation.
+
+1. To attach the debugger, start the PyLith simulation while adding the command line arguments `--petsc.stop_for_debugger --petsc.pause_debugger=10` (10 corresponds to the number of seconds the program will wait for you to attach the debugger before continuing).
+2. Note the process id that is printed to stdout.
+3. Select `Run and Debug` in the left sidebar of the VS Code window.
+4. Select `Attach to process` at the top of the panel.
+5. Select the `mpinemesis` process with the process id that matches the one printed to stdout.
+
+:::{tip}
+These PETSc command line arguments used to attach the debugger are provided in `$PREFIX/share/settings/attach_debugger.cfg` where `$PREFIX` is the directory where PyLith is installed.
+:::
+
 ## Debugger quick reference
 
 Please see the `gdb` and `lldb` documentation for detailed instructions.
