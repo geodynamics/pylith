@@ -143,9 +143,11 @@ pylith::sources::Source::setPoints(const PylithReal* pointCoords,
 // ------------------------------------------------------------------------------------------------
 // Convert cartesian positions to a labeled source
 void
-pylith::sources::Source::locateSource(const pylith::topology::Field& solution) {
-    printf("In MomentTensorForce begin\n");
-    DMView(solution.getDM(), NULL);
+pylith::sources::Source::locateSource(const pylith::topology::Field& solution,
+                                      const char labelName[],
+                                      const int labelValue) {
+    // printf("In MomentTensorForce begin\n");
+    // DMView(solution.getDM(), NULL);
     PetscErrorCode err;
     PetscDM dmSoln = solution.getDM();assert(dmSoln);
     // transform points of source to mesh coordinates in python
@@ -177,23 +179,27 @@ pylith::sources::Source::locateSource(const pylith::topology::Field& solution) {
     // err = VecRestoreArray(vecPoints, &a);PYLITH_CHECK_ERROR(err);
 
     err = DMLocatePoints(dmSoln, vecPoints, DM_POINTLOCATION_NONE, &sfPoints);PYLITH_CHECK_ERROR(err);
-    err = PetscSFView(sfPoints, NULL);PYLITH_CHECK_ERROR(err);
+    // err = PetscSFView(sfPoints, NULL);PYLITH_CHECK_ERROR(err);
     err = VecDestroy(&vecPoints);PYLITH_CHECK_ERROR(err);
-    err = DMCreateLabel(dmSoln,getLabelName());PYLITH_CHECK_ERROR(err);
-    err = DMGetLabel(dmSoln,getLabelName(), &label);PYLITH_CHECK_ERROR(err);
+    err = DMCreateLabel(dmSoln,labelName);PYLITH_CHECK_ERROR(err);
+    err = DMGetLabel(dmSoln,labelName, &label);PYLITH_CHECK_ERROR(err);
     err = PetscSFGetGraph(sfPoints, &numRoots, &numLeaves, &localPoints, &remotePoints);PYLITH_CHECK_ERROR(err);
     err = MPI_Comm_rank(PetscObjectComm((PetscObject) dmSoln), &rank);PYLITH_CHECK_ERROR(err);
     // Debug
-    // PetscPrintf(PetscObjectComm((PetscObject) dmSoln), "localPoints: %D\n", numLeaves);
-    for (PetscInt p = 0; p < numLeaves; ++p) {
-        if (remotePoints[p].rank == rank) {
-            err = DMLabelSetValue(label, remotePoints[p].index, 2);PYLITH_CHECK_ERROR(err);
+    // PetscPrintf(PetscObjectComm((PetscObject) dmSoln), "localPoints: %D\n",Thread 1 "mpinemesis" hit Breakpoint 1,
+    // pylith::sources::Source numLeaves);
+    // PetscMPIInt rank;
+    err = MPI_Comm_rank(PetscObjectComm((PetscObject)dmSoln), &rank);
+    for (PetscInt p = 0; p < _pointCoords.size() / dim; ++p) {
+        PetscPrintf(PETSC_COMM_SELF, "[%i] OUTPUT rank: %i, index: %i, label: %s, labelValue: %i \n", (int)rank, (PetscInt)remotePoints[p].rank, (PetscInt)remotePoints[p].index, labelName, (int) labelValue);
+        if ((remotePoints[p].index >= 0)) {
+            err = DMLabelSetValue(label, remotePoints[p].index, labelValue);PYLITH_CHECK_ERROR(err);
         }
     } // for
     DMLabelView(label, NULL);
     err = PetscSFDestroy(&sfPoints);PYLITH_CHECK_ERROR(err);
-    printf("In MomentTensorForce end\n");
-    DMView(dmSoln, NULL);
+    // printf("In MomentTensorForce end\n");
+    // // DMView(dmSoln, NULL);
 }
 
 

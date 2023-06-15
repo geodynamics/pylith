@@ -47,7 +47,7 @@ pylith::sources::AuxiliaryFactoryMomentTensorForce::~AuxiliaryFactoryMomentTenso
 void
 pylith::sources::AuxiliaryFactoryMomentTensorForce::addMomentTensor(void) { // momentTensor
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addTensorPermeability(void)");
+    PYLITH_JOURNAL_DEBUG("addMomentTensor(void)");
 
     const char* subfieldName = "moment_tensor";
     const char* componentNames[6] = {
@@ -83,7 +83,7 @@ pylith::sources::AuxiliaryFactoryMomentTensorForce::addMomentTensor(void) { // m
 // ---------------------------------------------------------------------------------------------------------------------
 // Add time delay of source time function to auxiliary fields.
 void
-pylith::sources::AuxiliaryFactoryMomentTensorForce::addTimeDelay(void) {
+pylith::sources::AuxiliaryFactoryMomentTensorForce::addTimeDelay(void) { // timeDelay
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("addTimeDelay(void)");
 

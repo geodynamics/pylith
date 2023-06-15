@@ -35,7 +35,6 @@ subpkginclude_HEADERS = \
 	PointForce.hh \
 	AuxiliaryFactoryPointForce.hh \
 	SourceTimeFunctionMomentTensorForce.hh \
-	SourceTimeFunctionPointForce.hh \
 	sourcesfwd.hh
 
 

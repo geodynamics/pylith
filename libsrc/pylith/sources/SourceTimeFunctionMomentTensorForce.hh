@@ -36,7 +36,7 @@
 #include "petscds.h" // USES PetscPointFunc, PetscPointJac
 
 class pylith::sources::SourceTimeFunctionMomentTensorForce : public pylith::utils::PyreComponent {
-    friend class TestRickerFunction; // unit testing
+    friend class TestSourceTimeFunctionMomentTensorForce; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
@@ -103,7 +103,8 @@ private:
 
     SourceTimeFunctionMomentTensorForce(const SourceTimeFunctionMomentTensorForce&); ///< Not implemented.
     const SourceTimeFunctionMomentTensorForce& operator=(const SourceTimeFunctionMomentTensorForce&); /// Not
-                                                                                                      /// implemented.
+
+    /// implemented.
 
 }; // class SourceTimeFunctionMomentTensorForce
 

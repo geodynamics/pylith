@@ -36,6 +36,7 @@ pylith::sources::AuxiliaryFactorySourceTime::AuxiliaryFactorySourceTime(void) {
     GenericComponent::setName("auxiliaryfactorysourcetime");
 } // constructor
 
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Destructor.
 pylith::sources::AuxiliaryFactorySourceTime::~AuxiliaryFactorySourceTime(void) {}
@@ -44,7 +45,7 @@ pylith::sources::AuxiliaryFactorySourceTime::~AuxiliaryFactorySourceTime(void) {
 // ---------------------------------------------------------------------------------------------------------------------
 // Add center frequency of source time function to auxiliary fields.
 void
-pylith::sources::AuxiliaryFactorySourceTime::addCenterFrequency(void) {
+pylith::sources::AuxiliaryFactorySourceTime::addCenterFrequency(void) { // centerFrequency
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("addCenterFrequency(void)");
 
@@ -62,8 +63,9 @@ pylith::sources::AuxiliaryFactorySourceTime::addCenterFrequency(void) {
 
     _field->subfieldAdd(description, getSubfieldDiscretization(subfieldName));
     this->setSubfieldQuery(subfieldName);
-    
+
     PYLITH_METHOD_END;
-} // addRickerCenterFrequency
+} // addCenterFrequency
+
 
 // End of file

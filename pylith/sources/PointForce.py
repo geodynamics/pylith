@@ -57,7 +57,6 @@ class PointForce(Source, ModulePointForce):
         """Create handle to C++ PointForce.
         """
         ModulePointForce.__init__(self)
-        ModuleMomentTensorForce.setSourceTimeFunction(self, self.source_time_function)  # Material sets auxiliary db in source_time_function.
         return
 
 

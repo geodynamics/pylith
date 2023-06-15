@@ -105,7 +105,9 @@ public:
 
     /** Assign source label from coordinates.
      */
-    void locateSource(const pylith::topology::Field& solution);
+    void locateSource(const pylith::topology::Field& solution,
+                      const char labelName[],
+                      const int labelValue);
 
     // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
