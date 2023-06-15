@@ -79,8 +79,13 @@ pylith::feassemble::DSLabelAccess::DSLabelAccess(const PetscDM dm,
             _numPoints = numPointsNew;
         } else {
             err = ISDestroy(&_pointsIS);PYLITH_CHECK_ERROR(err);
+            err = ISRestoreIndices(_cellsIS, &cellIndices);PYLITH_CHECK_ERROR(err);
+            // } else {
+            // err = ISDestroy(&_cellsIS);PYLITH_CHECK_ERROR(err);
         } // if/else
-    } // if
+    } else {
+        err = ISCreateGeneral(PETSC_COMM_SELF,0,NULL,PETSC_OWN_POINTER,&_cellsIS);
+    }
 
     PYLITH_METHOD_END;
 }
