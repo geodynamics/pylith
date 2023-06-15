@@ -90,6 +90,10 @@ public:
                    const char* const* pointNames,
                    const int numPointNames);
 
+    /** Assign source label from coordinates.
+     */
+    void locateSource(const pylith::topology::Field& solution);
+
     // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
 

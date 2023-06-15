@@ -21,17 +21,17 @@
 #include "pylith/sources/SquarePulseSource.hh" // implementation of object methods
 
 #include "pylith/sources/AuxiliaryFactorySquarePulseSource.hh" // USES AuxiliaryFactorySquarePulseSource
-#include "pylith/feassemble/IntegratorDomain.hh"               // USES IntegratorDomain
-#include "pylith/topology/Mesh.hh"                             // USES Mesh
-#include "pylith/topology/Field.hh"                            // USES Field::SubfieldInfo
-#include "pylith/topology/FieldOps.hh"                         // USES FieldOps
+#include "pylith/feassemble/IntegratorDomain.hh" // USES IntegratorDomain
+#include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/Field.hh" // USES Field::SubfieldInfo
+#include "pylith/topology/FieldOps.hh" // USES FieldOps
 
 #include "pylith/fekernels/SquarePulseSource.hh" // USES SquarePulseSource kernels
 
-#include "pylith/utils/error.hh"    // USES PYLITH_METHOD_*
+#include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
-#include "spatialdata/geocoords/CoordSys.hh"   // USES CoordSys
+#include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 #include <typeinfo> // USES typeid()
@@ -45,151 +45,156 @@ typedef pylith::feassemble::Integrator::EquationPart EquationPart;
 // ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::sources::SquarePulseSource::SquarePulseSource(void) : _useInertia(false),
-                                                              _auxiliaryFactory(new pylith::sources::AuxiliaryFactorySquarePulseSource)
-{
+    _auxiliaryFactory(new pylith::sources::AuxiliaryFactorySquarePulseSource) {
     pylith::utils::PyreComponent::setName("squarepulsesource");
 } // constructor
 
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Destructor.
-pylith::sources::SquarePulseSource::~SquarePulseSource(void)
-{
+pylith::sources::SquarePulseSource::~SquarePulseSource(void) {
     deallocate();
 } // destructor
 
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
-void pylith::sources::SquarePulseSource::deallocate(void)
-{
+void
+pylith::sources::SquarePulseSource::deallocate(void) {
     Source::deallocate();
 
     delete _auxiliaryFactory;
     _auxiliaryFactory = NULL;
 } // deallocate
 
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Set time history database.
-void pylith::sources::SquarePulseSource::setTimeHistoryDB(spatialdata::spatialdb::TimeHistory *th)
-{
+void
+pylith::sources::SquarePulseSource::setTimeHistoryDB(spatialdata::spatialdb::TimeHistory *th) {
     PYLITH_COMPONENT_DEBUG("setTimeHistoryDB(th" << th << ")");
 
     _dbTimeHistory = th;
 } // setTimeHistoryDB
 
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Get time history database.
 const spatialdata::spatialdb::TimeHistory *
-pylith::sources::SquarePulseSource::getTimeHistoryDB(void)
-{
+pylith::sources::SquarePulseSource::getTimeHistoryDB(void) {
     return _dbTimeHistory;
 } // getTimeHistoryDB
 
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Use time history term in time history expression.
-void pylith::sources::SquarePulseSource::useTimeHistory(const bool value)
-{
+void
+pylith::sources::SquarePulseSource::useTimeHistory(const bool value) {
     PYLITH_COMPONENT_DEBUG("useTimeHistory(value=" << value << ")");
 
     _useTimeHistory = value;
 } // useTimeHistory
 
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Get flag associated with using time history term in time history expression.
-bool pylith::sources::SquarePulseSource::useTimeHistory(void) const
-{
+bool
+pylith::sources::SquarePulseSource::useTimeHistory(void) const {
     return _useTimeHistory;
 } // useTimeHistory
 
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Verify configuration is acceptable.
-void pylith::sources::SquarePulseSource::verifyConfiguration(const pylith::topology::Field &solution) const
-{
+void
+pylith::sources::SquarePulseSource::verifyConfiguration(const pylith::topology::Field &solution) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("verifyConfiguration(solution=" << solution.getLabel() << ")");
 
     // Verify solution contains expected fields.
-    if (!solution.hasSubfield("pressure"))
-    {
+    if (!solution.hasSubfield("pressure")) {
         throw std::runtime_error("Cannot find 'pressure' field in solution; required for 'SquarePulseSource'.");
     } // if
 
     PYLITH_METHOD_END;
 } // verifyConfiguration
 
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Create integrator and set kernels.
 pylith::feassemble::Integrator *
-pylith::sources::SquarePulseSource::createIntegrator(const pylith::topology::Field &solution)
-{
+pylith::sources::SquarePulseSource::createIntegrator(const pylith::topology::Field &solution) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("createIntegrator(solution=" << solution.getLabel() << ")");
 
-    printf("In SquarePulseSource begin\n");
-    DMView(solution.getDM(), NULL);
-    PetscErrorCode err;
-    PetscDM dmSoln = solution.getDM();
-    assert(dmSoln);
-    // transform points of source to mesh coordinates in python
-    // DM from solution
-    Vec vecPoints;
-    DMLabel label;
-    PetscSF sfPoints = NULL;
-    const PetscInt *localPoints;
-    const PetscSFNode *remotePoints;
-    PetscInt numRoots = -1, numLeaves, dim, d;
-    PetscMPIInt rank;
-    PetscScalar *a;
+    // printf("In SquarePulseSource begin\n");
+    // DMView(solution.getDM(), NULL);
+    // PetscErrorCode err;
+    // PetscDM dmSoln = solution.getDM();
+    // assert(dmSoln);
+    // // transform points of source to mesh coordinates in python
+    // // DM from solution
+    // Vec vecPoints;
+    // DMLabel label;
+    // PetscSF sfPoints = NULL;
+    // const PetscInt *localPoints;
+    // const PetscSFNode *remotePoints;
+    // PetscInt numRoots = -1, numLeaves, dim, d;
+    // PetscMPIInt rank;
+    // PetscScalar *a;
 
-    err = DMGetCoordinateDim(dmSoln, &dim);
-    PYLITH_CHECK_ERROR(err);
-    err = VecCreateMPIWithArray(PetscObjectComm((PetscObject)dmSoln), dim, _pointCoords.size(), PETSC_DECIDE,
-                                &_pointCoords[0], &vecPoints);
-    PYLITH_CHECK_ERROR(err);
+    // err = DMGetCoordinateDim(dmSoln, &dim);
+    // PYLITH_CHECK_ERROR(err);
+    // err = VecCreateMPIWithArray(PetscObjectComm((PetscObject)dmSoln), dim, _pointCoords.size(), PETSC_DECIDE,
+    //                             &_pointCoords[0], &vecPoints);
+    // PYLITH_CHECK_ERROR(err);
 
-    // Debug
-    // PetscPrintf(PetscObjectComm((PetscObject) dmSoln), "_pointCoords\n");
-    // PetscPrintf(PetscObjectComm((PetscObject) dmSoln), " x = %g\n", _pointCoords[0]);
-    // PetscPrintf(PetscObjectComm((PetscObject) dmSoln), " y = %g\n", _pointCoords[1]);
-    // Erzatz from ex17
-    // err = VecCreateSeq(PETSC_COMM_SELF, dim, &vecPoints);PYLITH_CHECK_ERROR(err);
-    // err = VecSetBlockSize(vecPoints, _pointCoords.size());PYLITH_CHECK_ERROR(err);
-    // err = VecGetArray(vecPoints, &a);PYLITH_CHECK_ERROR(err);
-    // for (d = 0; d < _pointCoords.size(); ++d) {
-    //     a[d] = _pointCoords[d];
-    // }
-    // err = VecRestoreArray(vecPoints, &a);PYLITH_CHECK_ERROR(err);
+    // // Debug
+    // // PetscPrintf(PetscObjectComm((PetscObject) dmSoln), "_pointCoords\n");
+    // // PetscPrintf(PetscObjectComm((PetscObject) dmSoln), " x = %g\n", _pointCoords[0]);
+    // // PetscPrintf(PetscObjectComm((PetscObject) dmSoln), " y = %g\n", _pointCoords[1]);
+    // // Erzatz from ex17
+    // // err = VecCreateSeq(PETSC_COMM_SELF, dim, &vecPoints);PYLITH_CHECK_ERROR(err);
+    // // err = VecSetBlockSize(vecPoints, _pointCoords.size());PYLITH_CHECK_ERROR(err);
+    // // err = VecGetArray(vecPoints, &a);PYLITH_CHECK_ERROR(err);
+    // // for (d = 0; d < _pointCoords.size(); ++d) {
+    // //     a[d] = _pointCoords[d];
+    // // }
+    // // err = VecRestoreArray(vecPoints, &a);PYLITH_CHECK_ERROR(err);
 
-    err = DMLocatePoints(dmSoln, vecPoints, DM_POINTLOCATION_NONE, &sfPoints);
-    PYLITH_CHECK_ERROR(err);
-    err = VecDestroy(&vecPoints);
-    PYLITH_CHECK_ERROR(err);
-    err = DMCreateLabel(dmSoln, getLabelName());
-    PYLITH_CHECK_ERROR(err);
-    err = DMGetLabel(dmSoln, getLabelName(), &label);
-    PYLITH_CHECK_ERROR(err);
-    err = PetscSFGetGraph(sfPoints, &numRoots, &numLeaves, &localPoints, &remotePoints);
-    PYLITH_CHECK_ERROR(err);
-    err = MPI_Comm_rank(PetscObjectComm((PetscObject)dmSoln), &rank);
-    PYLITH_CHECK_ERROR(err);
-    // Debug
-    // PetscPrintf(PetscObjectComm((PetscObject) dmSoln), "localPoints: %D\n", numLeaves);
-    for (PetscInt p = 0; p < numLeaves; ++p)
-    {
-        if (remotePoints[p].rank == rank)
-        {
-            err = DMLabelSetValue(label, remotePoints[p].index, 2);
-            PYLITH_CHECK_ERROR(err);
-        }
-    } // for
-    err = PetscSFDestroy(&sfPoints);
-    PYLITH_CHECK_ERROR(err);
+    // err = DMLocatePoints(dmSoln, vecPoints, DM_POINTLOCATION_NONE, &sfPoints);
+    // PYLITH_CHECK_ERROR(err);
+    // err = VecDestroy(&vecPoints);
+    // PYLITH_CHECK_ERROR(err);
+    // err = DMCreateLabel(dmSoln, getLabelName());
+    // PYLITH_CHECK_ERROR(err);
+    // err = DMGetLabel(dmSoln, getLabelName(), &label);
+    // PYLITH_CHECK_ERROR(err);
+    // err = PetscSFGetGraph(sfPoints, &numRoots, &numLeaves, &localPoints, &remotePoints);
+    // PYLITH_CHECK_ERROR(err);
+    // err = MPI_Comm_rank(PetscObjectComm((PetscObject)dmSoln), &rank);
+    // PYLITH_CHECK_ERROR(err);
+    // // Debug
+    // // PetscPrintf(PetscObjectComm((PetscObject) dmSoln), "localPoints: %D\n", numLeaves);
+    // for (PetscInt p = 0; p < numLeaves; ++p)
+    // {
+    //     if (remotePoints[p].rank == rank)
+    //     {
+    //         err = DMLabelSetValue(label, remotePoints[p].index, 2);
+    //         PYLITH_CHECK_ERROR(err);
+    //     }
+    // } // for
+    // err = PetscSFDestroy(&sfPoints);
+    // PYLITH_CHECK_ERROR(err);
+
+    pylith::sources::Source::locateSource(solution);
 
     pylith::feassemble::IntegratorDomain *integrator = new pylith::feassemble::IntegratorDomain(this);
     assert(integrator);
     integrator->setLabelName(getLabelName());
     integrator->setLabelValue(getLabelValue());
-    printf("In SquarePulseSource end\n");
-    DMView(dmSoln, NULL);
+    // printf("In SquarePulseSource end\n");
+    // DMView(dmSoln, NULL);
 
     _setKernelsResidual(integrator, solution);
     _setKernelsJacobian(integrator, solution);
@@ -197,12 +202,12 @@ pylith::sources::SquarePulseSource::createIntegrator(const pylith::topology::Fie
     PYLITH_METHOD_RETURN(integrator);
 } // createIntegrator
 
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Create auxiliary field.
 pylith::topology::Field *
 pylith::sources::SquarePulseSource::createAuxiliaryField(const pylith::topology::Field &solution,
-                                                         const pylith::topology::Mesh &domainMesh)
-{
+                                                         const pylith::topology::Mesh &domainMesh) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("createAuxiliaryField(solution=" << solution.getLabel() << ", domainMesh=" << typeid(domainMesh).name() << ")");
 
@@ -233,31 +238,32 @@ pylith::sources::SquarePulseSource::createAuxiliaryField(const pylith::topology:
     PYLITH_METHOD_RETURN(auxiliaryField);
 } // createAuxiliaryField
 
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Create derived field.
 pylith::topology::Field *
 pylith::sources::SquarePulseSource::createDerivedField(const pylith::topology::Field &solution,
-                                                       const pylith::topology::Mesh &domainMesh)
-{
+                                                       const pylith::topology::Mesh &domainMesh) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("createDerivedField(solution=" << solution.getLabel() << ", domainMesh=)" << typeid(domainMesh).name() << ") empty method");
 
     PYLITH_METHOD_RETURN(NULL);
 } // createDerivedField
 
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Get auxiliary factory associated with physics.
 pylith::feassemble::AuxiliaryFactory *
-pylith::sources::SquarePulseSource::_getAuxiliaryFactory(void)
-{
+pylith::sources::SquarePulseSource::_getAuxiliaryFactory(void) {
     return _auxiliaryFactory;
 } // _getAuxiliaryFactory
 
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Set kernels for LHS residual F(t,s,\dot{s}).
-void pylith::sources::SquarePulseSource::_setKernelsResidual(pylith::feassemble::IntegratorDomain *integrator,
-                                                             const topology::Field &solution) const
-{
+void
+pylith::sources::SquarePulseSource::_setKernelsResidual(pylith::feassemble::IntegratorDomain *integrator,
+                                                        const topology::Field &solution) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_setKernelsResidual(integrator=" << integrator << ", solution=" << solution.getLabel() << ")");
 
@@ -265,8 +271,7 @@ void pylith::sources::SquarePulseSource::_setKernelsResidual(pylith::feassemble:
 
     std::vector<ResidualKernels> kernels;
 
-    switch (_formulation)
-    {
+    switch (_formulation) {
     case QUASISTATIC:
     {
         // Pressure
@@ -295,11 +300,12 @@ void pylith::sources::SquarePulseSource::_setKernelsResidual(pylith::feassemble:
     PYLITH_METHOD_END;
 } // _setKernelsResidual
 
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Set kernels for LHS Jacobian F(t,s,\dot{s}).
-void pylith::sources::SquarePulseSource::_setKernelsJacobian(pylith::feassemble::IntegratorDomain *integrator,
-                                                             const topology::Field &solution) const
-{
+void
+pylith::sources::SquarePulseSource::_setKernelsJacobian(pylith::feassemble::IntegratorDomain *integrator,
+                                                        const topology::Field &solution) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_setKernelsJacobian(integrator=" << integrator << ", solution=" << solution.getLabel() << ")");
 
@@ -307,8 +313,7 @@ void pylith::sources::SquarePulseSource::_setKernelsJacobian(pylith::feassemble:
 
     std::vector<JacobianKernels> kernels;
 
-    switch (_formulation)
-    {
+    switch (_formulation) {
     case QUASISTATIC:
     {
         const PetscPointJac Jf0pp = NULL;
@@ -335,5 +340,6 @@ void pylith::sources::SquarePulseSource::_setKernelsJacobian(pylith::feassemble:
 
     PYLITH_METHOD_END;
 } // _setKernelsJacobian
+
 
 // End of file
