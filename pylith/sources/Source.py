@@ -40,6 +40,9 @@ class Source(Physics, ModuleSource):
 
     import pythia.pyre.inventory
 
+    field = pythia.pyre.inventory.str("field", default="displacement")
+    field.meta['tip'] = "Solution subfield associated with boundary condition."
+
     description = pythia.pyre.inventory.str("description", default="", validator=validateDescription)
     description.meta['tip'] = "Descriptive label for material."
 
@@ -63,6 +66,7 @@ class Source(Physics, ModuleSource):
         """Setup source.
         """
         Physics.preinitialize(self, problem)
+        ModuleSource.setSubfieldName(self, self.field)
         ModuleSource.setDescription(self, self.description)
         ModuleSource.setLabelName(self, self.labelName)
         ModuleSource.setLabelValue(self, self.labelValue)
