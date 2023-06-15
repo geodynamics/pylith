@@ -21,6 +21,7 @@ EXTRA_DIST = \
 	valgrind-openmpi.supp \
 	generateetags.py \
 	settings/debug_malloc.cfg \
+	settings/attach_debugger.cfg \
 	settings/solver_fault_additive.cfg \
 	settings/solver_fault_exact.cfg \
 	settings/solver_fault_fieldsplit.cfg \
