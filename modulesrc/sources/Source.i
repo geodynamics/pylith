@@ -52,29 +52,17 @@ public:
              */
             const char* getDescription(void) const;
 
-            /** Set name of label marking source.
+            /** Set name of solution subfield associated with source.
              *
-             * @param[in] value Name of label for source (from mesh generator).
+             * @param[in] value Name of solution subfield.
              */
-            void setLabelName(const char* value);
+            void setSubfieldName(const char* value);
 
-            /** Get name of label marking boundary associated with boundary condition surface.
+            /** Get name of solution subfield associated with source.
              *
-             * @returns Name of label for source (from mesh generator).
+             * @preturn Name of solution subfield.
              */
-            const char* getLabelName(void) const;
-
-            /** Set value of label marking source.
-             *
-             * @param[in] value Value of label for source (from mesh generator).
-             */
-            void setLabelValue(const int value);
-
-            /** Get value of label marking source.
-             *
-             * @returns Value of label for source (from mesh generator).
-             */
-            int getLabelValue(void) const;
+            const char* getSubfieldName(void) const;
 
 	    /** Create constraint and set kernels.
 	     *
