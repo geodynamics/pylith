@@ -60,10 +60,12 @@ pylith::feassemble::DSLabelAccess::DSLabelAccess(const PetscDM dm,
             err = DMGetCellDS(dm, cellIndices[0], &_ds, NULL);PYLITH_CHECK_ERROR(err);assert(_ds);
             err = PetscDSGetWeakForm(_ds, &_weakForm);PYLITH_CHECK_ERROR(err);assert(_weakForm);
             err = ISRestoreIndices(_cellsIS, &cellIndices);PYLITH_CHECK_ERROR(err);
-        } else {
-            err = ISDestroy(&_cellsIS);PYLITH_CHECK_ERROR(err);
+            // } else {
+            // err = ISDestroy(&_cellsIS);PYLITH_CHECK_ERROR(err);
         } // if/else
-    } // if
+    } else {
+        err = ISCreateGeneral(PETSC_COMM_SELF,0,NULL,PETSC_OWN_POINTER,&_cellsIS);
+    }
 
     PYLITH_METHOD_END;
 }
