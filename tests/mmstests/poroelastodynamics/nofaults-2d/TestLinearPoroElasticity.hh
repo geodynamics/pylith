@@ -105,7 +105,7 @@ public:
     spatialdata::units::Nondimensional normalizer; ///< Scales for nondimensionalization.
     pylith::problems::Physics::FormulationEnum formulation; ///< Time stepping formulation
 
-    pylith::materials::Elasticity material; ///< Materials.
+    pylith::materials::Poroelasticity material; ///< Materials.
     pylith::materials::IsotropicLinearPoroelasticity rheology; ///< Bulk rheology for materials.
     spatialdata::spatialdb::GravityField* gravityField; ///< Gravity field.
     std::vector<pylith::bc::BoundaryCondition*> bcs; ///< Dirichlet boundary condition.
