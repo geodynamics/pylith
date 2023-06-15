@@ -127,63 +127,6 @@ pylith::sources::WellboreSource::createIntegrator(const pylith::topology::Field 
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("createIntegrator(solution=" << solution.getLabel() << ")");
 
-    // printf("In WellboreSource begin\n");
-    // DMView(solution.getDM(), NULL);
-    // PetscErrorCode err;
-    // PetscDM dmSoln = solution.getDM();
-    // assert(dmSoln);
-    // // transform points of source to mesh coordinates in python
-    // // DM from solution
-    // Vec vecPoints;
-    // DMLabel label;
-    // PetscSF sfPoints = NULL;
-    // const PetscInt *localPoints;
-    // const PetscSFNode *remotePoints;
-    // PetscInt numRoots = -1, numLeaves, dim, d;
-    // PetscMPIInt rank;
-    // PetscScalar *a;
-
-    // err = DMGetCoordinateDim(dmSoln, &dim);PYLITH_CHECK_ERROR(err);
-
-    // err = VecCreateSeqWithArray(PETSC_COMM_SELF, dim, _pointCoords.size(),
-    //                             &_pointCoords[0], &vecPoints);PYLITH_CHECK_ERROR(err);
-
-    // // Debug
-    // // PetscPrintf(PetscObjectComm((PetscObject) dmSoln), "_pointCoords\n");
-    // // PetscPrintf(PetscObjectComm((PetscObject) dmSoln), " x = %g\n", _pointCoords[0]);
-    // // PetscPrintf(PetscObjectComm((PetscObject) dmSoln), " y = %g\n", _pointCoords[1]);
-    // // Erzatz from ex17
-    // // err = VecCreateSeq(PETSC_COMM_SELF, dim, &vecPoints);PYLITH_CHECK_ERROR(err);
-    // // err = VecSetBlockSize(vecPoints, _pointCoords.size());PYLITH_CHECK_ERROR(err);
-    // // err = VecGetArray(vecPoints, &a);PYLITH_CHECK_ERROR(err);
-    // // for (d = 0; d < _pointCoords.size(); ++d) {
-    // //     a[d] = _pointCoords[d];
-    // // }
-    // // err = VecRestoreArray(vecPoints, &a);PYLITH_CHECK_ERROR(err);
-
-    // err = DMLocatePoints(dmSoln, vecPoints, DM_POINTLOCATION_NONE, &sfPoints);
-    // PYLITH_CHECK_ERROR(err);
-    // err = VecDestroy(&vecPoints);
-    // PYLITH_CHECK_ERROR(err);
-    // err = DMCreateLabel(dmSoln, getLabelName());
-    // PYLITH_CHECK_ERROR(err);
-    // err = DMGetLabel(dmSoln, getLabelName(), &label);
-    // PYLITH_CHECK_ERROR(err);
-    // err = PetscSFGetGraph(sfPoints, &numRoots, &numLeaves, &localPoints, &remotePoints);
-    // PYLITH_CHECK_ERROR(err);
-    // err = MPI_Comm_rank(PetscObjectComm((PetscObject)dmSoln), &rank);
-    // PYLITH_CHECK_ERROR(err);
-    // // Debug
-    // // PetscPrintf(PetscObjectComm((PetscObject) dmSoln), "localPoints: %D\n", numLeaves);
-    // for (PetscInt p = 0; p < numLeaves; ++p) {
-    //     if (remotePoints[p].rank == rank) {
-    //         err = DMLabelSetValue(label, remotePoints[p].index, 2);
-    //         PYLITH_CHECK_ERROR(err);
-    //     }
-    // } // for
-    // err = PetscSFDestroy(&sfPoints);
-    // PYLITH_CHECK_ERROR(err);
-
     pylith::sources::Source::locateSource(solution);
 
     pylith::feassemble::IntegratorDomain *integrator = new pylith::feassemble::IntegratorDomain(this);
