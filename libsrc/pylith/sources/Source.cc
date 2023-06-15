@@ -73,6 +73,30 @@ pylith::sources::Source::getDescription(void) const {
 } // getDescription
 
 
+// ------------------------------------------------------------------------------------------------
+// Set name of solution subfield associated with boundary condition.
+void
+pylith::sources::Source::setSubfieldName(const char* value) {
+    PYLITH_COMPONENT_DEBUG("setSubfieldName(value="<<value<<")");
+
+    if (!value || (0 == strlen(value))) {
+        std::ostringstream msg;
+        msg << "Empty string given for name of solution subfield for source '"
+            << getLabelName() <<"'.";
+        throw std::runtime_error(msg.str());
+    } // if
+    _subfieldName = value;
+} // setSubfieldName
+
+
+// ------------------------------------------------------------------------------------------------
+// Get name of solution subfield associated with boundary condition.
+const char*
+pylith::sources::Source::getSubfieldName(void) const {
+    return _subfieldName.c_str();
+} // getSubfieldName
+
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Create constraint and set kernels.
 std::vector<pylith::feassemble::Constraint*>

@@ -73,6 +73,19 @@ public:
      * @param[in] solution Solution field.
      * @returns Constraint if applicable, otherwise NULL.
      */
+
+    /** Set name of solution subfield associated with boundary condition.
+     *
+     * @param[in] value Name of solution subfield.
+     */
+    void setSubfieldName(const char* value);
+
+    /** Get name of solution subfield associated with boundary condition.
+     *
+     * @preturn Name of solution subfield.
+     */
+    const char* getSubfieldName(void) const;
+
     virtual
     std::vector<pylith::feassemble::Constraint*> createConstraints(const pylith::topology::Field& solution);
 
