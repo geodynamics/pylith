@@ -54,6 +54,7 @@ pylith::sources::Source::deallocate(void) {
     PYLITH_METHOD_END;
 } // deallocate
 
+
 // ------------------------------------------------------------------------------------------------
 // Set descriptive label of source.
 void
@@ -84,30 +85,6 @@ pylith::sources::Source::setLabelName(const char* value) {
 
     _labelName = value;
 } // setLabelName
-
-
-// ------------------------------------------------------------------------------------------------
-// Get name of label marking material.
-const char*
-pylith::sources::Source::getLabelName(void) const {
-    return _labelName.c_str();
-} // getLabelName
-
-
-// ------------------------------------------------------------------------------------------------
-// Set value of label marking material.
-void
-pylith::sources::Source::setLabelValue(const int value) {
-    _labelValue = value;
-} // setLabelValue
-
-
-// ------------------------------------------------------------------------------------------------
-// Get value of label marking material.
-int
-pylith::sources::Source::getLabelValue(void) const {
-    return _labelValue;
-} // getLabelValue
 
 
 // ---------------------------------------------------------------------------------------------------------------------
