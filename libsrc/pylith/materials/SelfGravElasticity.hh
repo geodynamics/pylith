@@ -16,29 +16,29 @@
 // ----------------------------------------------------------------------
 //
 
-/** @file libsrc/materials/SelfGravitatingElasticity.hh
+/** @file libsrc/materials/SelfGravElasticity.hh
  *
  * @brief C++ class for solving the elasticity equation with self gravitating materials.
  */
 
-#if !defined(pylith_materials_selfgravitatingelasticity_hh)
-#define pylith_materials_selfgravitatingelasticity_hh
+#if !defined(pylith_materials_SelfGravElasticity_hh)
+#define pylith_materials_SelfGravElasticity_hh
 
 #include "materialsfwd.hh" // forward declarations
 
 #include "pylith/materials/Material.hh" // ISA Material
 
-class pylith::materials::SelfGravitatingElasticity : public pylith::materials::Material {
-    friend class TestSelfGravitatingElasticity; // unit testing
+class pylith::materials::SelfGravElasticity : public pylith::materials::Material {
+    friend class TestSelfGravElasticity; // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Default constructor.
-    SelfGravitatingElasticity(void);
+    SelfGravElasticity(void);
 
     /// Destructor.
-    ~SelfGravitatingElasticity(void);
+    ~SelfGravElasticity(void);
 
     /// Deallocate PETSc and local data structures.
     void deallocate(void);
@@ -59,13 +59,13 @@ public:
      *
      * @param[in] rheology Bulk rheology for elasticity.
      */
-    void setBulkRheology(pylith::materials::RheologySelfGravitatingElasticity* const rheology);
+    void setBulkRheology(pylith::materials::RheologySelfGravElasticity* const rheology);
 
     /** Get bulk rheology.
      *
      * @returns Bulk rheology for elasticity.
      */
-    pylith::materials::RheologySelfGravitatingElasticity* getBulkRheology(void) const;
+    pylith::materials::RheologySelfGravElasticity* getBulkRheology(void) const;
 
     /** Verify configuration is acceptable.
      *
@@ -170,19 +170,19 @@ private:
 private:
 
     bool _useBodyForce; ///< Flag to include body force term.
-    pylith::materials::RheologySelfGravitatingElasticity* _rheology; ///< Bulk rheology for self gravitating elasticity.
+    pylith::materials::RheologySelfGravElasticity* _rheology; ///< Bulk rheology for self gravitating elasticity.
     pylith::materials::DerivedFactoryElasticity* _derivedFactory; ///< Factory for creating derived fields.
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
 private:
 
-    SelfGravitatingElasticity(const SelfGravitatingElasticity&); ///< Not implemented.
-    const SelfGravitatingElasticity& operator=(const SelfGravitatingElasticity&); /// Not implemented.
+    SelfGravElasticity(const SelfGravElasticity&); ///< Not implemented.
+    const SelfGravElasticity& operator=(const SelfGravElasticity&); /// Not implemented.
 
 };
 
 // class Elasticity
 
-#endif // pylith_materials_selfgravitatingelasticity_hh
+#endif // pylith_materials_SelfGravElasticity_hh
 
 // End of file
