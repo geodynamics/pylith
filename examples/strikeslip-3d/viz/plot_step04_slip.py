@@ -20,7 +20,7 @@ def do_main(filename):
     # using triangles to help improve the color interpolation
 
     # Create the plot
-    fig, ax1, ax2 = plt.subplots(1, 2,figsize=(12,5))
+    fig, (ax1, ax2) = plt.subplots(1, 2,figsize=(12,5))
     plotFaultFunctions.plot_fault_surface(vertices,cells,strike_slip,ax1,'Strike Slip')
     plotFaultFunctions.plot_fault_surface(vertices,cells,reverse_slip,ax2,'Reverse slip')
     plt.show()
