@@ -16,13 +16,13 @@
 // ----------------------------------------------------------------------
 //
 
-/** @file libsrc/materials/RheologySelfGravitatingElasticity.hh
+/** @file libsrc/materials/RheologySelfGravElasticity.hh
  *
  * @brief C++ abstract base class for bulk rheologies associated with the self gravitating elasticity equation.
  */
 
-#if !defined(pylith_materials_rheologyselfgravitatingelasticity_hh)
-#define pylith_materials_rheologyselfgravitatingelasticity_hh
+#if !defined(pylith_materials_rheologySelfGravelasticity_hh)
+#define pylith_materials_rheologySelfGravelasticity_hh
 
 #include "materialsfwd.hh" // forward declarations
 #include "pylith/utils/PyreComponent.hh" // ISA PyreComponent
@@ -35,17 +35,17 @@
 
 #include "petscds.h" // USES PetscPointFunc, PetscPointJac
 
-class pylith::materials::RheologySelfGravitatingElasticity : public pylith::utils::PyreComponent {
+class pylith::materials::RheologySelfGravElasticity : public pylith::utils::PyreComponent {
     friend class TestIsotropicLinearElasticity; // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Default constructor.
-    RheologySelfGravitatingElasticity(void);
+    RheologySelfGravElasticity(void);
 
     /// Destructor.
-    virtual ~RheologySelfGravitatingElasticity(void);
+    virtual ~RheologySelfGravElasticity(void);
 
     /// Deallocate PETSc and local data structures.
     void deallocate(void);
@@ -127,13 +127,13 @@ public:
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
 private:
 
-    RheologySelfGravitatingElasticity(const RheologySelfGravitatingElasticity&); ///< Not implemented.
-    const RheologySelfGravitatingElasticity& operator=(const RheologySelfGravitatingElasticity&); /// Not implemented.
+    RheologySelfGravElasticity(const RheologySelfGravElasticity&); ///< Not implemented.
+    const RheologySelfGravElasticity& operator=(const RheologySelfGravElasticity&); /// Not implemented.
 
 };
 
-// class RheologySelfGravitatingElasticity
+// class RheologySelfGravElasticity
 
-#endif // pylith_materials_rheologyselfgravitatingelasticity_hh
+#endif // pylith_materials_rheologySelfGravelasticity_hh
 
 // End of file
