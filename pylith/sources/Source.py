@@ -46,7 +46,8 @@ class Source(Physics, ModuleSource):
     description = pythia.pyre.inventory.str("description", default="", validator=validateDescription)
     description.meta['tip'] = "Descriptive label for material."
 
-    labelName = pythia.pyre.inventory.str("label", default="source-id", validator=pythia.pyre.inventory.choice(["source-id"]))
+    # labelName = pythia.pyre.inventory.str("label", default="source-id", validator=pythia.pyre.inventory.choice(["source-id"]))
+    labelName = pythia.pyre.inventory.str("label", default="source-id")
     labelName.meta['tip'] = "Name of label for source. Currently only 'source-id' is allowed."
 
     labelValue = pythia.pyre.inventory.int("label_value", default=1)

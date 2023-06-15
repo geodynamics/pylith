@@ -16,17 +16,14 @@
 # ----------------------------------------------------------------------
 #
 
-SUBDIRS = \
-	bc \
-	faults \
-	feassemble \
-	materials \
-	meshio \
-	problems \
-	sources \
-	topology \
-	testing \
-	utils
+dist_noinst_DATA = \
+	tri_onecell.mesh \
+	hex_onecell.mesh
+
+noinst_TMP =
+
+export_datadir = $(abs_builddir)
+include $(top_srcdir)/tests/data.am
 
 
-# End of file 
+# End of file

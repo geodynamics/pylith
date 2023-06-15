@@ -47,9 +47,12 @@ def faultFactory(name):
 def sourceFactory(name):
     """Factory for source items.
     """
+    # from pythia.pyre.inventory import facility
+    # from pylith.sources.WellboreSource import WellboreSource
+    # return facility(name, family="source", factory=WellboreSource)
     from pythia.pyre.inventory import facility
-    from pylith.sources.WellboreSource import WellboreSource
-    return facility(name, family="source", factory=WellboreSource)
+    from pylith.sources.MomentTensorForce import MomentTensorForce
+    return facility(name, family="source", factory=MomentTensorForce)
 
 def observerFactory(name):
     """Factory for output items.
