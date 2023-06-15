@@ -115,6 +115,7 @@ protected:
     std::string _description; ///< Descriptive label for source.
     std::string _labelName; ///< Name of label to identify source points in mesh.
     int _labelValue; ///< Value of label to identify source points in mesh.
+    std::string _subfieldName; ///< Name of solution subfield for boundary condition.
 
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
