@@ -7,8 +7,8 @@
 #SPATIAL.ascii 1
 SimpleDB {
   num-values = 4
-  value-names =  final_slip_left_lateral  final_slip_reverse  final_slip_opening  initiation_time
-  value-units =  m  m  m  year
+  value-names =  final_slip_reverse  final_slip_left_lateral  final_slip_opening  initiation_time
+  value-units =  cm  cm  cm  year
   num-locs = 28
   data-dim = 2 // Data is specified in a volume.
   space-dim = 3
