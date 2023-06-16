@@ -417,6 +417,11 @@ public:
         data->material.setDescription("Linear PoroElastodynamics");
         data->material.setLabelValue(24);
 
+        std::vector<pylith::feassemble::IntegratorDomain::ResidualKernels> mmsForceKernels(2);
+        mmsForceKernels[0] = pylith::feassemble::IntegratorDomain::ResidualKernels("displacement", pylith::feassemble::Integrator::RHS, fu_body_force, NULL);
+        mmsForceKernels[1] = pylith::feassemble::IntegratorDomain::ResidualKernels("pressure", pylith::feassemble::Integrator::RHS, fp_source_force, NULL);
+        data->material.setMMSBodyForceKernels(mmsForceKernels);
+
         // Boundary conditions
         pylith::bc::DirichletUserFn* bc = NULL;
         data->bcs.resize(3);
