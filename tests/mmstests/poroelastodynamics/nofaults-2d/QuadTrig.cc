@@ -459,9 +459,9 @@ pylith::TestLinearPoroElasticity_Data*
 pylith::QuadTrig::TriP2(void) {
     TestLinearPoroElasticity_Data* data = pylith::_QuadTrig::createData();assert(data);
 
-    data->meshFilename = "data/tri.msh";
-    data->useAsciiMesh = false;
-    data->tolerance = 2.0e-4;
+    data->meshFilename = "data/tri.mesh";
+    // data->useAsciiMesh = false;
+    // data->tolerance = 2.0e-4;
 
     data->numSolnSubfields = 3;
     static const pylith::topology::Field::Discretization _solnDiscretizations[3] = {
@@ -481,7 +481,7 @@ pylith::QuadTrig::TriP3(void) {
     TestLinearPoroElasticity_Data* data = pylith::_QuadTrig::createData();assert(data);
 
     data->meshFilename = "data/tri.mesh";
-    data->tolerance = 5.0e-7;
+    // data->tolerance = 5.0e-7;
 
     static const pylith::topology::Field::Discretization _auxDiscretizations[4] = {
         pylith::topology::Field::Discretization(0, 3), // solid_density
@@ -508,9 +508,9 @@ pylith::TestLinearPoroElasticity_Data*
 pylith::QuadTrig::TriP4(void) {
     TestLinearPoroElasticity_Data* data = pylith::_QuadTrig::createData();assert(data);
 
-    data->meshFilename = "data/tri.msh";
-    data->useAsciiMesh = false;
-    data->tolerance = 1.0e-9;
+    data->meshFilename = "data/tri.mesh";
+    // data->useAsciiMesh = false;
+    // data->tolerance = 1.0e-9;
 
     static const pylith::topology::Field::Discretization _auxDiscretizations[4] = {
         pylith::topology::Field::Discretization(0, 4), // solid_density
@@ -538,7 +538,7 @@ pylith::QuadTrig::TriP5(void) {
     TestLinearPoroElasticity_Data* data = pylith::_QuadTrig::createData();assert(data);
 
     data->meshFilename = "data/tri.mesh";
-    data->tolerance = 1.0e-9;
+    // data->tolerance = 1.0e-9;
 
     static const pylith::topology::Field::Discretization _auxDiscretizations[4] = {
         pylith::topology::Field::Discretization(0, 5), // solid_density
@@ -566,7 +566,7 @@ pylith::QuadTrig::QuadQ2(void) {
     TestLinearPoroElasticity_Data* data = pylith::_QuadTrig::createData();assert(data);
 
     data->meshFilename = "data/quad.mesh";
-    data->tolerance = 1.0e-4;
+    // data->tolerance = 1.0e-4;
 
     data->numSolnSubfields = 3;
     static const pylith::topology::Field::Discretization _solnDiscretizations[3] = {
@@ -586,7 +586,7 @@ pylith::QuadTrig::QuadQ2Distorted(void) {
     TestLinearPoroElasticity_Data* data = pylith::_QuadTrig::createData();assert(data);
 
     data->meshFilename = "data/quad_distorted.mesh";
-    data->tolerance = 1.0e-5;
+    // data->tolerance = 1.0e-5;
 
     data->numSolnSubfields = 3;
     static const pylith::topology::Field::Discretization _solnDiscretizations[3] = {
@@ -605,9 +605,9 @@ pylith::TestLinearPoroElasticity_Data*
 pylith::QuadTrig::QuadQ3(void) {
     TestLinearPoroElasticity_Data* data = pylith::_QuadTrig::createData();assert(data);
 
-    data->meshFilename = "data/quad.msh";
-    data->useAsciiMesh = false;
-    data->tolerance = 2.0e-8;
+    data->meshFilename = "data/quad.mesh";
+    // data->useAsciiMesh = false;
+    // data->tolerance = 2.0e-8;
 
     static const pylith::topology::Field::Discretization _auxDiscretizations[4] = {
         pylith::topology::Field::Discretization(0, 3), // solid_density
@@ -635,7 +635,7 @@ pylith::QuadTrig::QuadQ4(void) {
     TestLinearPoroElasticity_Data* data = pylith::_QuadTrig::createData();assert(data);
 
     data->meshFilename = "data/quad.mesh";
-    data->tolerance = 1.0e-9;
+    // data->tolerance = 1.0e-9;
 
     static const pylith::topology::Field::Discretization _auxDiscretizations[4] = {
         pylith::topology::Field::Discretization(0, 4), // solid_density
