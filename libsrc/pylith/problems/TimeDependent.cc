@@ -497,6 +497,7 @@ pylith::problems::TimeDependent::poststep(void) {
     // Update coordinates
     if (1) {
       PetscDM        dm, cdm;
+      DMField        field;
       PetscVec       coordinates, coordinatesNew;
       PetscPointFunc funcs[1] = {move};
 
@@ -512,8 +513,6 @@ pylith::problems::TimeDependent::poststep(void) {
         if (obj) {
           err = PetscObjectGetClassId(obj, &id);PYLITH_CHECK_ERROR(err);
           if (id != PETSCFE_CLASSID) {
-            DMField field;
-
             err = DMPlexCreateCoordinateSpace(dm, 1, NULL);PYLITH_CHECK_ERROR(err);
             err = DMGetCoordinateDM(dm, &cdm);PYLITH_CHECK_ERROR(err);
             err = DMGetCoordinatesLocal(dm, &coordinates);PYLITH_CHECK_ERROR(err);
@@ -531,6 +530,8 @@ pylith::problems::TimeDependent::poststep(void) {
       err = VecCopy(coordinatesNew, coordinates);PYLITH_CHECK_ERROR(err);
       err = DMSetCoordinatesLocal(dm, coordinates);PYLITH_CHECK_ERROR(err); // Invalidates global coordinates
       err = DMRestoreLocalVector(cdm, &coordinatesNew);PYLITH_CHECK_ERROR(err);
+      err = DMGetCoordinateField(dm, &field);PYLITH_CHECK_ERROR(err);
+      // err = DMFieldMarkCoordinateCacheInvalid(field);PYLITH_CHECK_ERROR(err);
     }
 
     PYLITH_METHOD_END;

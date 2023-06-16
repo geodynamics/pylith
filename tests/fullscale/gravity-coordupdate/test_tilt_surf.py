@@ -42,12 +42,9 @@ import matplotlib.pyplot as plt
 from matplotlib.pyplot import cm
 import numpy
 import h5py
-import pylab
-import pdb
-pdb.set_trace()
 
 # FE input file.
-pylithInput = 'output/gravity_tilt_surf_quad-boundary.h5'
+pylithInput = 'output/grav_tilt_surf_norefstate_quad-boundary.h5'
 
 # Properties.
 year = 60.0*60.0*24.0*365.25
@@ -55,42 +52,59 @@ year = 60.0*60.0*24.0*365.25
 # Finite element results.
 h5 = h5py.File(pylithInput, 'r')
 coords = h5['geometry/vertices'][:]
-cellH5 = h5['topology/cells']
+cellH5 = h5['viz/topology/cells']
 cellDim = cellH5.attrs['cell_dim']
 cells = numpy.array(cellH5[:], dtype=numpy.int64)
 time = h5['time'][:].flatten()
 timeYears = time/year
 numSteps = time.shape[0]
-disp = h5['vertex_fields/displacement'][:]
+dispDiff = h5['vertex_fields/displacement'][:]
 h5.close()
 
 # Velocity field.
-dispDiff = numpy.diff(disp, axis=0)
-timeDiff = numpy.diff(time)
-velocity = dispDiff/timeDiff.reshape(numSteps - 1,1,1)
+# dispDiff = numpy.diff(disp, axis=0)
+dt0 = time[1] - time[0]
+timeDiff = numpy.diff(time, prepend=-dt0)
+velocity = dispDiff/timeDiff.reshape(numSteps,1,1)
+velocityScaled = velocity*year
 
 # Undeformed coordinates and sorted arrays.
-coordsOrig = coords - disp[0,:,:]
-sortInds = numpy.argsort(coordsOrig[:,0])
-coordsOrigSort = coordsOrig[sortInds,:]
-dispSort = disp[:,sortInds,:]
+# coordsOrig = coords - disp[0,:,:]
+sortInds = numpy.argsort(coords[:,0])
+coordsSort = coords[sortInds,:]
+dispSort = dispDiff[:,sortInds,:]
 velocitySort = velocity[:,sortInds,:]
+velocityScaledSort = velocityScaled[:,sortInds,:]
 
-# Level surface plot.
-xLevel = coordsOrigSort[:,0]
+# Plots.
+fig, (ax1, ax2, ax3) = plt.subplots(1,3, figsize=(12,4))
+xLevel = coordsSort[:,0]
 yLevel = numpy.zeros_like(xLevel)
-yMean = numpy.mean(coordsOrigSort[:,1]) + numpy.mean(dispSort[0,:,1])
+yMean = numpy.mean(coordsSort[:,1])
+
+# Deformed coordinates plot.
+color = cm.rainbow(numpy.linspace(0, 1, numSteps))
+coordsDeformed = coordsSort.copy()
+for stepNum in range(numSteps):
+    coordsDeformed += dispSort[stepNum,:,:]
+    ax1.plot(coordsDeformed[:,0], coordsDeformed[:,1], c=color[stepNum,:])
+
+ax1.plot(coordsSort[:,0], yMean*numpy.ones_like(xLevel), 'k-')
+ax1.set_title('Upper surface position')
+ax1.set(xlabel='X position (m)', ylabel='Y position (m)')
 
 # Displacement plot.
-color = cm.rainbow(numpy.linspace(0, 1, numSteps))
 for stepNum in range(numSteps):
-    pylab.plot(coordsOrigSort[:,0], dispSort[stepNum,:,1], c=color[stepNum,:])
-pylab.plot(xLevel, yMean*numpy.ones_like(xLevel), 'k-')
-pylab.show()
+    ax2.plot(coordsSort[:,0], dispSort[stepNum,:,1], c=color[stepNum,:])
+ax2.set_title('Upper surface displacement increment')
+ax2.set(xlabel='X position (m)', ylabel='Y displacement (m)')
 
 # Velocity plot.
 for stepNum in range(numSteps - 1):
-    pylab.plot(coordsOrigSort[:,0], velocitySort[stepNum,:,1], c=color[stepNum,:])
-pylab.show()
+    ax3.plot(coordsSort[:,0], velocitySort[stepNum,:,1], c=color[stepNum,:])
+ax3.set_title('Upper surface velocity')
+ax3.set(xlabel='X position (m)', ylabel='Y velocity (m/year)')
+
+plt.show()
 
 # End of file

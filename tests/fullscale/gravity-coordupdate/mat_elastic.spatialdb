@@ -6,13 +6,12 @@ SimpleDB {
   value-units =  kg/m**3  m/s  m/s  Pa  Pa  Pa  Pa  none  none  none  none
   
   // The reference stress varies linearly with depth, so we use 2 control points, which corresponds to a data dimension of 1.
-  num-locs =      2
-  data-dim =    1
+  num-locs =      1
+  data-dim =    0
   space-dim =    2
   cs-data = cartesian {
   to-meters = 1000.0 // Use km
   space-dim = 2
 }
 }
-  0.000000e+00 -2.000000e+02  2.400000e+03  3.000000e+03  5.291503e+03 -4903325000.0 -4903325000.0 -4903325000.0 0.000000e+00  0.000000e+00  0.000000e+00  0.000000e+00  0.000000e+00
   0.000000e+00  0.000000e+00  2.400000e+03  3.000000e+03  5.291503e+03    0.000000e+00    0.000000e+00    0.000000e+00 0.000000e+00  0.000000e+00  0.000000e+00  0.000000e+00  0.000000e+00
