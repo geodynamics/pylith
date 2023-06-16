@@ -1,8 +1,7 @@
 // -*- C++ -*- (syntax highlighting)
 //
 // This spatial database specifies the patch over which we will compute
-// slip impulses for static Green's functions. We impose impulses over a
-// region.
+// slip impulses for static Green's functions. We impose impulses over the whole fault.
 //
 #SPATIAL.ascii 1
 SimpleDB {
@@ -25,4 +24,4 @@ SimpleDB {
 // (5) reverse slip (m)
 // (6) tensile slip (m)
 0.0   0.0  -1.0  1.0  1.0  0.0
-0.0   0.0 -10.0 1.0 1.0  0.0
+0.0   0.0 -10.0  1.0  1.0  0.0
