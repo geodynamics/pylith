@@ -5,6 +5,14 @@ import matplotlib.pyplot as plt
 
 
 def plot_fault_surface(vertices,cells,slipvec,ax,title):
+    # INPUTS are 
+    # vertices - Nx3 matrix of elements on the fault (x,y,z)
+    # cells    - index array describing the connection of vertices to form fault polygons
+    #            (can be Mx3 for triangles or Mx4 for quadrilaterals)
+    # slipvec  - Nx1 vector of slip to use for coloring the fault
+    # ax       - matplotlib fault axes object
+    # title    - title to use for the axes
+
     x = vertices[:, 0]
     y = vertices[:, 1]
     z = vertices[:, 2]
