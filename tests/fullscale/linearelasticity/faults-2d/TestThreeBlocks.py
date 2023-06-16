@@ -34,7 +34,7 @@ class TestCase(FullTestCase):
         }
         self.checks = [
             Check(
-                mesh_entities=["domain", "bc_ypos", "points"],
+                mesh_entities=["domain", "boundary_ypos", "points"],
                 vertex_fields=["displacement"],
                 defaults=defaults,
             ),
@@ -46,8 +46,14 @@ class TestCase(FullTestCase):
             ),
             Check(
                 mesh_entities=["mat_xneg", "mat_xmid", "mat_xposypos", "mat_xposyneg"],
-                vertex_fields = ["displacement", "cauchy_strain", "cauchy_stress"],
-                tolerance = 1.0e-4,
+                vertex_fields = ["displacement"],
+                cell_fields = ["cauchy_strain"],
+                defaults=defaults,
+            ),
+            Check(
+                mesh_entities=["mat_xneg", "mat_xmid", "mat_xposypos", "mat_xposyneg"],
+                cell_fields = ["cauchy_stress"],
+                scale = 1.0e+6,
                 defaults=defaults,
             ),
             Check(
@@ -59,6 +65,16 @@ class TestCase(FullTestCase):
             Check(
                 mesh_entities=["bc_xneg", "bc_xpos"],
                 vertex_fields=["displacement"],
+                defaults=defaults,
+            ),
+            Check(
+                mesh_entities=["fault_xmid"],
+                vertex_fields=["slip", "lagrange_multiplier_fault"],
+                defaults=defaults,
+            ),
+            Check(
+                mesh_entities=["fault_xneg"],
+                vertex_fields=["slip", "lagrange_multiplier_fault"],
                 defaults=defaults,
             ),
         ]
@@ -116,12 +132,38 @@ class TestTriCubit(TestCase):
 
 
 # -------------------------------------------------------------------------------------------------
+class TestQuadGmshIC(TestCase):
+
+    def setUp(self):
+        self.name = "threeblocks_ic_quad"
+        self.mesh = meshes.QuadGmsh()
+        super().setUp()
+
+        TestCase.run_pylith(self, self.name, ["threeblocks_ic.cfg", "threeblocks_ic_quad.cfg"])
+        return
+
+
+# -------------------------------------------------------------------------------------------------
+class TestTriGmshIC(TestCase):
+
+    def setUp(self):
+        self.name = "threeblocks_ic_tri"
+        self.mesh = meshes.TriGmsh()
+        super().setUp()
+
+        TestCase.run_pylith(self, self.name, ["threeblocks_ic.cfg", "threeblocks_ic_tri.cfg"])
+        return
+
+
+# -------------------------------------------------------------------------------------------------
 def test_cases():
     return [
         TestQuadGmsh,
         TestTriGmsh,
         TestQuadCubit,
         TestTriCubit,
+        TestQuadGmshIC,
+        TestTriGmshIC,
     ]
 
 

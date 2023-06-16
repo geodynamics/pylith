@@ -1,9 +1,16 @@
 # Step 5: Green's Functions
 
+% Metadata extracted from parameter files.
+```{include} step05_greensfns-synopsis.md
+```
+
+## Simulation parameters
+
 In this example we compute static Green's functions for fault slip and use then in Step 6 to invert for fault slip.
 We generated the "observations" for the slip inversion in Step 4.
 
 We impose fault slip impulses over the central portion of the strike-slip fault (-25 km $\le$ y $\le$ +25km), which is slightly larger than where we specified coseismic in Step 4. {numref}`fig:example:strikeslip:2d:step05:diagram` summarizes the boundary conditions and fault slip.
+The parameters specific to this example are in `step05_greensfns.cfg`.
 
 :::{figure-md} fig:example:strikeslip:2d:step05:diagram
 <img src="figs/step05-diagram.*" alt="" scale="75%">
@@ -11,20 +18,6 @@ We impose fault slip impulses over the central portion of the strike-slip fault 
 Boundary conditions for static Green's functions.
 We set the x and y displacement to zero on the +x and -x boundaries and prescribe left-lateral slip impulses.
 :::
-
-% Metadata extracted from parameter files.
-```{include} step05_greensfns-synopsis.md
-```
-
-## Simulation parameters
-
-The parameters specific to this example are in `step05_greensfns.cfg`.
-These include:
-
-* `pylithapp.metadata` Metadata for this simulation. Even when the author and version are the same for all simulations in a directory, we prefer to keep that metadata in each simulation file as a reminder to keep it up-to-date for each simulation.
-* `pylithapp` Parameters defining where to write the output.
-* `pylithapp.problem` Parameters for the Green's function problem, solution information, and output.
-* `pylithapp.problem.fault` Parameters for Green's functions slip impulses on the fault.
 
 We use the `GreensFns` problem and specify the fault on which to impose fault slip impulses.
 As in Step 4, we include output at the fake GPS stations using `OutputSolnPoints`.
@@ -41,6 +34,37 @@ As a result, you should not use a basis order of 0 for the slip auxiliary field.
 A basis order of 2 will impose slip at vertices as well as edge degrees of freedom in the cell.
 Because PyLith output decimates the basis order to 0 or 1, you should avoid this choice of basis order as well until we provide better ways to output fields discretized with higher order basis functions.
 :::
+
+```{code-block} cfg
+---
+caption: Parameters for computing static Green's functions for fault slip impulses. We change the problem type and specify the fault on which we apply the slip impulses.
+---
+[pylithapp]
+problem = pylith.problems.GreensFns
+
+[pylithapp.greensfns]
+label = fault
+label_value = 20
+```
+
+```{code-block} cfg
+---
+caption: Parameters for the slip impulses. We change the fault type and limit the impulses to the lateral slip component.
+---
+[pylithapp.problem.interfaces]
+fault = pylith.faults.FaultCohesiveImpulses
+
+[pylithapp.problem.interfaces.fault]
+impulse_dof = [1]
+
+db_auxiliary_field = spatialdata.spatialdb.SimpleDB
+db_auxiliary_field.description = Fault rupture auxiliary field spatial database
+db_auxiliary_field.iohandler.filename = slip_impulses.spatialdb
+
+auxiliary_subfields.slip.basis_order = 1
+```
+
+## Running the simulation
 
 ```{code-block} console
 ---

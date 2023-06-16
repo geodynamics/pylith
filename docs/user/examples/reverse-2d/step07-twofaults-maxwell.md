@@ -1,33 +1,47 @@
 # Step 7: Slip on Two Faults and Maxwell Viscoelastic Materials
 
-In this example we replace the linear, isotropic elastic bulk rheology in the slab with a linear, isotropic Maxwell viscoelastic rheology.
-We also switch from a static simulation to a quasistatic simulation to compute the time-dependent relaxation in the slab.
-We use the same boundary conditions as in Step 6.
-
 % Metadata extracted from parameter files.
 ```{include} step07_twofaults_maxwell-synopsis.md
 ```
 
 ## Simulation parameters
 
-The parameters specific to this example are in `step07_twofaults_maxwell.cfg` and include:
-
-* `pylithapp.metadata` Metadata for this simulation. Even when the author and version are the same for all simulations in a directory, we prefer to keep that metadata in each simulation file as a reminder to keep it up-to-date for each simulation.
-* `pylithapp` Parameters defining where to write the output.
-* `pylithapp.problem` Parameters for the time stepping and solution field with displacement and Lagrange multiplier subfields.
-* `pylithapp.problem.material` Parameters for the linear Maxwell viscoelastic bulk rheology for the slab.
-* `pylithapp.problem.fault` Parameters for prescribed slip on the two faults.
+In this example we replace the linear, isotropic elastic bulk rheology in the slab with a linear, isotropic Maxwell viscoelastic rheology.
+We also switch from a static simulation to a quasistatic simulation to compute the time-dependent relaxation in the slab.
+We use the same boundary conditions as in Step 6.
+The parameters specific to this example are in `step07_twofaults_maxwell.cfg`.
 
 We use a very short relaxation time of 20 years, so we run the simulation for 100 years with a time step of 4 years.
 We use a starting time of -4 years so that the first time step will advance the solution time to 0 years.
 
-:::{important}
-Both faults contain one end that is buried within the domain.
-The splay fault ends where it meets the main fault.
-When PyLith inserts cohesive cells into a mesh with buried edges (in this case a point), we must identify these buried edges so that PyLith properly adjusts the topology along these edges.
+```{code-block} cfg
+---
+caption: Time stepping parameters for Step 7.
+---
+[pylithapp.problem]
+initial_dt = 4.0*year
+start_time = -4.0*year
+end_time = 100.0*year
 
-For properly topology of the cohesive cells, the main fault _must_ be listed first in the array of faults so that it will be created before the splay fault.
-:::
+normalizer.relaxation_time = 20.0*year
+```
+
+```{code-block} cfg
+---
+caption: Maxwell viscoelastic bulk rheology parameters for the slab in Step 7.
+---
+[pylithapp.problem.materials]
+slab.bulk_rheology = pylith.materials.IsotropicLinearMaxwell
+
+[pylithapp.problem.materials.slab]
+db_auxiliary_field = spatialdata.spatialdb.SimpleDB
+db_auxiliary_field.description = Maxwell viscoelastic properties
+db_auxiliary_field.iohandler.filename = mat_maxwell.spatialdb
+
+bulk_rheology.auxiliary_subfields.maxwell_time.basis_order = 0
+```
+
+## Running the simulation
 
 ```{code-block} console
 ---

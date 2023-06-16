@@ -10,7 +10,7 @@ In constructing the simulation, we create Python scripts that generate the spati
 This makes it easy to synchronize any changes between the problem specification and the known solution.
 
 Once we have a PyLith simulation that appears to run correctly, we construct a Python object that inherits from `pylith.testing.FullTestApp`.
-See `tests/fullscale/linearelasticity/TestAxialDisp.py` for an example.
+See `tests/fullscale/linearelasticity/nofaults-2d/TestAxialDisp.py` for an example.
 This Python object sets up the a PyLith simulation, runs the simulation, and defines methods that check fields in the output files.
 In most cases we solve the boundary value problems in 2D with both quadrilateral and triangular meshes and in 3D with both tetrahedral and hexahedral meshes.
 
@@ -22,7 +22,6 @@ The `pylith.testing.FullTestApp` Python application has two optional command lin
 
 * **`--verbose` (int)** Set verbosity level. Level > 0 will display which fields are being checked.
 * **`--skip-pylith-run` (bool)** Skip running the PyLith simulation and only check the existing output files against the expected results. This argument is useful when debugging the checks.
-
 
 ## Using the debugger
 

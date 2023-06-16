@@ -31,7 +31,7 @@
 class pylith::materials::IsotropicLinearIncompElasticity : public pylith::materials::RheologyIncompressibleElasticity {
     friend class TestIsotropicLinearIncompElasticity; // unit testing
 
-    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Default constructor.
@@ -68,37 +68,37 @@ public:
      */
     void addAuxiliarySubfields(void);
 
-    /** Get stress kernel for RHS residual, G(t,s).
-     *
-     * @param[in] coordsys Coordinate system.
-     *
-     * @return RHS residual kernel for stress.
-     */
-    PetscPointFunc getKernelResidualStress(const spatialdata::geocoords::CoordSys* coordsys) const;
-
-    /** Get pressure kernel for RHS residual, G(t,s).
+    /** Get f0p kernel for LHS residual, F(t,s,\dot{s}).
      *
      * @param[in] coordsys Coordinate system.
      *
      * @return RHS residual kernel for pressure.
      */
-    PetscPointFunc getKernelResidualPressure(const spatialdata::geocoords::CoordSys* coordsys) const;
+    PetscPointFunc getKernelf0p(const spatialdata::geocoords::CoordSys* coordsys) const;
 
-    /** Get elastic constants kernel for RHS Jacobian G(t,s).
+    /** Get f1u kernel for LHS residual, F(t,s,\dot{s}).
      *
      * @param[in] coordsys Coordinate system.
      *
-     * @return RHS Jacobian kernel for elastic constants.
+     * @return LHS residual kernel for stress.
      */
-    PetscPointJac getKernelJacobianElasticConstants(const spatialdata::geocoords::CoordSys* coordsys) const;
+    PetscPointFunc getKernelf1u(const spatialdata::geocoords::CoordSys* coordsys) const;
 
-    /** Get inverse of the bulk modulus kernel for RHS Jacobian G(t,s).
+    /** Get Jf0pp kernel for LHS Jacobian F(t,s,\dot{s}).
      *
      * @param[in] coordsys Coordinate system.
      *
-     * @return RHS Jacobian kernel for inverse of bulk modulus.
+     * @return LHS Jf0pp kernel.
      */
-    PetscPointJac getKernelJacobianInverseBulkModulus(const spatialdata::geocoords::CoordSys* coordsys) const;
+    PetscPointJac getKernelJf0pp(const spatialdata::geocoords::CoordSys* coordsys) const;
+
+    /** Get Jf3uu kernel for LHS Jacobian F(t,s,\dot{s}).
+     *
+     * @param[in] coordsys Coordinate system.
+     *
+     * @return LHS Jacobian kernel for elastic constants.
+     */
+    PetscPointJac getKernelJf3uu(const spatialdata::geocoords::CoordSys* coordsys) const;
 
     /** Get stress kernel for derived field.
      *
@@ -106,9 +106,9 @@ public:
      *
      * @return Project kernel for computing stress subfield in derived field.
      */
-    PetscPointFunc getKernelDerivedCauchyStress(const spatialdata::geocoords::CoordSys* coordsys) const;
+    PetscPointFunc getKernelCauchyStressVector(const spatialdata::geocoords::CoordSys* coordsys) const;
 
-    // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
+    // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
 protected:
 
     /** Get auxiliary factory associated with physics.
@@ -116,21 +116,19 @@ protected:
      */
     pylith::feassemble::AuxiliaryFactory* _getAuxiliaryFactory(void);
 
-    // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
+    // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
 private:
 
     pylith::materials::AuxiliaryFactoryElastic* _auxiliaryFactory; ///< Factory for auxiliary subfields.
     bool _useReferenceState; ///< Flag to use reference stress and strain.
 
-    // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
+    // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
 private:
 
     IsotropicLinearIncompElasticity(const IsotropicLinearIncompElasticity&); ///< Not implemented.
     const IsotropicLinearIncompElasticity& operator=(const IsotropicLinearIncompElasticity&); ///< Not implemented
 
-};
-
-// class IsotropicLinearIncompElasticity
+}; // class IsotropicLinearIncompElasticity
 
 #endif // pylith_materials_isotropiclinearincompelasticity_hh
 

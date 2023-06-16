@@ -169,8 +169,8 @@ class SlipInvert(Application):
         timesF = self.penaltyWeights.reshape(self.numPenaltyWeights, 1, 1)
         vertsF = s.create_dataset('geometry/vertices', data=self.faultVertCoords)
         timesF = s.create_dataset('time', data=timesF, maxshape=(None, 1, 1))
-        topoF = s.create_dataset('topology/cells', data=self.faultCells, dtype='d')
-        topoF.attrs['cell_dim'] = numpy.int32(cellDimF)
+        topoF = s.create_dataset('viz/topology/cells', data=self.faultCells, dtype='d')
+        topoF.attrs['cell_dim'] = numpy.int64(cellDimF)
         slipVec = numpy.zeros((self.numPenaltyWeights, self.numFaultVerts, 3),
                               dtype=numpy.float64)
         slipAlongRake = numpy.zeros((self.numPenaltyWeights, self.numFaultVerts, 1),
@@ -182,8 +182,8 @@ class SlipInvert(Application):
         timesD = self.penaltyWeights.reshape(self.numPenaltyWeights, 1, 1)
         vertsD = d.create_dataset('geometry/vertices', data=self.dataCoords)
         timesD = d.create_dataset('time', data=timesD, maxshape=(None, 1, 1))
-        topoD = d.create_dataset('topology/cells', data=topolD, dtype='d')
-        topoD.attrs['cell_dim'] = numpy.int32(cellDimD)
+        topoD = d.create_dataset('viz/topology/cells', data=topolD, dtype='d')
+        topoD.attrs['cell_dim'] = numpy.int64(cellDimD)
 
         predictedDisp = numpy.zeros((self.numPenaltyWeights, self.numDataPoints, 3), dtype=numpy.float64)
 
@@ -282,8 +282,8 @@ class SlipInvert(Application):
         impulsesLl = h5py.File(self.gfImpulsesLlFile, 'r')
         self.faultVertCoords = impulsesLl['geometry/vertices'][:]
         self.numFaultVerts = self.faultVertCoords.shape[0]
-        self.faultCells = numpy.array(impulsesLl['topology/cells'][:],
-                                      dtype=numpy.int)
+        self.faultCells = numpy.array(impulsesLl['viz/topology/cells'][:],
+                                      dtype=numpy.int64)
         self.numFaultCells = self.faultCells.shape[0]
         llSlip = impulsesLl['vertex_fields/slip'][:,:, 0]
         llImpInds = numpy.nonzero(llSlip != 0.0)

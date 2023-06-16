@@ -155,7 +155,7 @@ class EqInfoApp(Application):
 
             h5 = h5py.File(filenameIn, "r", driver='sec2')
             vertices = h5['geometry/vertices'][:]
-            cells = numpy.array(h5['topology/cells'][:], dtype=numpy.int32)
+            cells = numpy.array(h5['viz/topology/cells'][:], dtype=numpy.int64)
             timestamps = h5['time'][:]
             cellsArea = self._calcCellArea(cells, vertices)
             cellsShearMod = self._getShearModulus(cells, vertices)
@@ -252,7 +252,7 @@ class EqInfoApp(Application):
         db.setQueryValues(["density", "vs"])
         (ncells, ndims) = coords.shape
         data = numpy.zeros((ncells, 2), dtype=numpy.float64)
-        err = numpy.zeros((ncells,), dtype=numpy.int32)
+        err = numpy.zeros((ncells,), dtype=numpy.intc)
         db.multiquery(data, err, coords, self.cs)
         db.close()
         shearMod = data[:, 0] * data[:, 1]**2

@@ -11,7 +11,8 @@
 * Use the `--petsc.log_summary`, `--petsc.ksp_monitor`, `--petsc.ksp_view`, `--petsc.ksp_converged_reason`, and `--petsc.snes_converged_reason` command-line arguments (or set them in a parameter file) to view PyLith performance and monitor the convergence.
 * Turn on the journals (see the examples) to monitor the progress of the code.
 
-Consult the PyLith category in the [CIG community forum](https://community.geodynamics.org) to see if someone else encountered a similar issue.
+See {ref}`sec-user-examples-troubleshooting-2d` for examples of how to troubleshoot running PyLith simulations.
+Also consult the PyLith category in the [CIG community forum](https://community.geodynamics.org) to see if someone else encountered a similar issue.
 
 ## Common Error Messages
 

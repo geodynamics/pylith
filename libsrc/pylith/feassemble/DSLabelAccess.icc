@@ -55,10 +55,14 @@ pylith::feassemble::DSLabelAccess::DSLabelAccess(const PetscDM dm,
     err = DMGetStratumIS(dm, labelName, labelValue, &_cellsIS);PYLITH_CHECK_ERROR(err);
     if (_cellsIS) {
         err = ISGetSize(_cellsIS, &_numCells);PYLITH_CHECK_ERROR(err);
-        err = ISGetIndices(_cellsIS, &cellIndices);PYLITH_CHECK_ERROR(err);
-        err = DMGetCellDS(dm, cellIndices[0], &_ds);PYLITH_CHECK_ERROR(err);assert(_ds);
-        err = PetscDSGetWeakForm(_ds, &_weakForm);PYLITH_CHECK_ERROR(err);assert(_weakForm);
-        err = ISRestoreIndices(_cellsIS, &cellIndices);PYLITH_CHECK_ERROR(err);
+        if (_numCells > 0) {
+            err = ISGetIndices(_cellsIS, &cellIndices);PYLITH_CHECK_ERROR(err);
+            err = DMGetCellDS(dm, cellIndices[0], &_ds, NULL);PYLITH_CHECK_ERROR(err);assert(_ds);
+            err = PetscDSGetWeakForm(_ds, &_weakForm);PYLITH_CHECK_ERROR(err);assert(_weakForm);
+            err = ISRestoreIndices(_cellsIS, &cellIndices);PYLITH_CHECK_ERROR(err);
+        } else {
+            err = ISDestroy(&_cellsIS);PYLITH_CHECK_ERROR(err);
+        } // if/else
     } // if
 
     PYLITH_METHOD_END;
@@ -133,6 +137,63 @@ inline
 PetscInt
 pylith::feassemble::DSLabelAccess::numCells(void) const {
     return _numCells;
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// Remove overlap from cells index set.
+inline
+void
+pylith::feassemble::DSLabelAccess::removeOverlap(void) {
+    PYLITH_METHOD_BEGIN;
+
+    PetscErrorCode err;
+
+    PetscSF sf = NULL;
+    err = DMGetPointSF(_dm, &sf);PYLITH_CHECK_ERROR(err);
+    const PetscInt *leaves = NULL;
+    PetscInt numLeaves = 0, loc = -1;
+    err = PetscSFGetGraph(sf, NULL, &numLeaves, &leaves, NULL);PYLITH_CHECK_ERROR(err);
+    if ((_numCells <= 0) || (numLeaves <= 0)) {
+        PYLITH_METHOD_END;
+    } // if
+
+    assert(_cellsIS);
+    assert(_numCells > 0);
+
+    const PetscInt* cellIndicesOrig = NULL;
+    const PetscInt numCellsOrig = _numCells;
+    err = ISGetIndices(_cellsIS, &cellIndicesOrig);PYLITH_CHECK_ERROR(err);
+
+    // Count number of cells over which to integrate.
+    PetscInt numCellsNew = 0;
+    for (PetscInt c = 0; c < numCellsOrig; ++c) {
+        const PetscInt cell = cellIndicesOrig[c];
+
+        err = PetscFindInt(cell, numLeaves, leaves, &loc);PYLITH_CHECK_ERROR(err);
+        if (loc < 0) { // not in PetscSF
+            ++numCellsNew;
+        } // if
+    } // for
+
+    // Create array with cells over which to integrate.
+    PetscInt* cellIndicesNew = NULL;
+    err = PetscMalloc1(numCellsNew*sizeof(PetscInt), &cellIndicesNew);PYLITH_CHECK_ERROR(err);
+    for (PetscInt c = 0, index = 0; c < numCellsOrig; ++c) {
+        const PetscInt cell = cellIndicesOrig[c];
+
+        err = PetscFindInt(cell, numLeaves, leaves, &loc);PYLITH_CHECK_ERROR(err);
+        if (loc < 0) { // not in PetscSF
+            cellIndicesNew[index++] = cell;
+        } // if
+    } // for
+
+    err = ISRestoreIndices(_cellsIS, &cellIndicesOrig);PYLITH_CHECK_ERROR(err);
+    err = ISDestroy(&_cellsIS);PYLITH_CHECK_ERROR(err);
+    err = ISCreateGeneral(PETSC_COMM_SELF, numCellsNew, cellIndicesNew, PETSC_OWN_POINTER, &_cellsIS);
+    _numCells = numCellsNew;
+
+    PYLITH_METHOD_END;
 }
 
 

@@ -1,31 +1,41 @@
 # Step 2: Gravitational Body Forces with Reference Stress
 
-This example involves using a reference stress state to minimize the deformation when we apply the gravitational body forces.
-The solution will be the perturbation from the reference state with zero displacements.
-This is one method for obtaining an initial stress state associated with gravitational body forces.
-We use the same roller boundary conditions that we used in Step 1.
-
 % Metadata extracted from parameter files.
 ```{include} step02_gravity_refstate-synopsis.md
 ```
 
 ## Simulation parameters
 
+This example involves using a reference stress state to minimize the deformation when we apply the gravitational body forces.
+The solution will be the perturbation from the reference state with zero displacements.
+This is one method for obtaining an initial stress state associated with gravitational body forces.
+We use the same roller boundary conditions that we used in Step 1.
 The parameters specific to this example are in `step02_gravity_refstate.cfg`.
-These include:
-
-* `pylithapp.metadata` Metadata for this simulation. Even when the author and version are the same for all simulations in a directory, we prefer to keep that metadata in each simulation file as a reminder to keep it up-to-date for each simulation.
-* `pylithapp` Parameters defining where to write the output.
-* `pylithapp.problem` Parameters for specifying the gravitational body forces and adjusting the basis order.
-* `pylithapp.problem.materials` Parameters for setting the reference stress state.
 
 We use a reference stress state that matches the overburden (lithostatic) pressure.
-We have uniform material properties, so the overbudern is
+We have uniform material properties, so the overburden is
 %
 \begin{equation}
 \sigma_{xx} = \sigma_{yy} = \sigma_{zz} = \int_0^z \rho g \, dz = \rho g z,
 \end{equation}
 where compressive stress is negative.
+
+```{code-block} cfg
+---
+caption: Parameters for reference stresses for Step 2. We only show the details for the slab material.
+---
+[pylithapp.problem.materials.slab]
+db_auxiliary_field.iohandler.filename = mat_gravity_refstate.spatialdb
+db_auxiliary_field.query_type = linear
+
+[pylithapp.problem.materials.slab.bulk_rheology]
+use_reference_state = True
+
+auxiliary_subfields.reference_stress.basis_order = 1
+auxiliary_subfields.reference_strain.basis_order = 0
+```
+
+## Running the simulation
 
 ```{code-block} console
 ---

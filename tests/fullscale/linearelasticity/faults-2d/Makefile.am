@@ -15,7 +15,7 @@
 #
 # ----------------------------------------------------------------------
 
-include $(top_srcdir)/check.am
+include $(top_srcdir)/tests/check_cppunit.am
 
 TESTS = test_pylith.py
 
@@ -25,7 +25,10 @@ dist_noinst_PYTHON = \
 	generate_gmsh.py \
 	meshes.py \
 	TestThreeBlocks.py \
-	threeblocks_soln.py
+	threeblocks_soln.py \
+	TestShearNoSlip.py \
+	shearnoslip_soln.py \
+	shearnoslip_gendb.py
 
 dist_noinst_DATA = \
 	mesh_tri.msh \
@@ -42,27 +45,25 @@ dist_noinst_DATA = \
 	threeblocks_quad.cfg \
 	threeblocks_tri.cfg \
 	threeblocks_cubit_quad.cfg \
-	threeblocks_cubit_tri.cfg
+	threeblocks_cubit_tri.cfg \
+	threeblocks_ic.cfg \
+	threeblocks_ic_quad.cfg \
+	threeblocks_ic_tri.cfg \
+	shearnoslip.cfg \
+	shearnoslip_quad.cfg \
+	shearnoslip_tri.cfg
 
 
 noinst_TMP =
 
 
-# 'export' the input files by performing a mock install
-export_datadir = $(abs_top_builddir)/tests/fullscale/linearelasticity/faults-2d
-export-data: $(dist_noinst_PYTHON) $(dist_noinst_DATA)
-	for f in $(dist_noinst_PYTHON) $(dist_noinst_DATA); do $(install_sh_DATA) $(srcdir)/$$f $(export_datadir); done
-
-clean-data:
-	if [ "X$(abs_top_srcdir)" != "X$(abs_top_builddir)" ]; then for f in $(dist_noinst_PYTHON) $(dist_noinst_DATA) $(noinst_TMP); do $(RM) $(RM_FLAGS) $(export_datadir)/$$f; done; fi
-
-
-BUILT_SOURCES = export-data
+export_datadir = $(abs_builddir)
+include $(top_srcdir)/tests/data.am
 
 clean-local: clean-local-tmp clean-data
 .PHONY: clean-local-tmp
 clean-local-tmp:
-	-rm *.h5 *.xmf *.pyc
+	$(RM) $(RM_FLAGS) -r output __pycache__
 
 
 # End of file

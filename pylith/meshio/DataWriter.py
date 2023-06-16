@@ -43,15 +43,14 @@ class DataWriter(PetscComponent):
     def mkpath(self, filename):
         """Create path for output file.
         """
-        self._info.log("Creating path for output file '{}'".format(filename))
+        from pylith.mpi.Communicator import mpi_is_root
+        isRoot = mpi_is_root()
+        if isRoot:
+            self._info.log("Creating path for output file '{}'".format(filename))
         relpath = os.path.dirname(filename)
 
-        if relpath and not os.path.exists(relpath):
-            # Only create directory on proc 0
-            from pylith.mpi.Communicator import mpi_comm_world
-            comm = mpi_comm_world()
-            if not comm.rank:
-                os.makedirs(relpath)
+        if relpath and not os.path.exists(relpath) and isRoot:
+            os.makedirs(relpath)
 
     def verifyConfiguration(self):
         """Verify compatibility of configuration.

@@ -60,6 +60,7 @@ public:
             void test(void) {
                 PYLITH_JOURNAL_DEBUG("CORRECT: This is a debug message.");
                 PYLITH_JOURNAL_INFO("CORRECT: This is an info mesasge.");
+                PYLITH_JOURNAL_INFO_ROOT("CORRECT: This is an info mesasge.");
                 PYLITH_JOURNAL_WARNING("CORRECT: This is a warning mesasge.");
                 PYLITH_JOURNAL_ERROR("CORRECT: This is an error mesage.");
             } // testJournals

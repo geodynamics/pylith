@@ -86,16 +86,15 @@ class DirichletTimeDependent(BoundaryCondition, ModuleDirichletTimeDependent):
         """
         import numpy
 
-        from pylith.mpi.Communicator import mpi_comm_world
-        comm = mpi_comm_world()
-        if 0 == comm.rank:
+        from pylith.mpi.Communicator import mpi_is_root
+        if mpi_is_root():
             self._info.log(
                 "Performing minimal initialization of time-dependent Dirichlet boundary condition '%s'." % self.aliases[-1])
 
         BoundaryCondition.preinitialize(self, problem)
 
         ModuleDirichletTimeDependent.setConstrainedDOF(
-            self, numpy.array(self.constrainedDOF, dtype=numpy.int32))
+            self, numpy.array(self.constrainedDOF, dtype=numpy.intc))
         ModuleDirichletTimeDependent.useInitial(self, self.useInitial)
         ModuleDirichletTimeDependent.useRate(self, self.useRate)
         ModuleDirichletTimeDependent.useTimeHistory(self, self.useTimeHistory)

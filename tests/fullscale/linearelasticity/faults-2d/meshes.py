@@ -31,14 +31,15 @@ class TriGmsh(object):
         "mat_xposyneg": MeshEntity(ncells=44, ncorners=3, nvertices=31),
 
         # Faults
-        "fault": MeshEntity(ncells=8, ncorners=2, nvertices=9),
-        "fault2": MeshEntity(ncells=8, ncorners=2, nvertices=9),
+        "fault_xmid": MeshEntity(ncells=8, ncorners=2, nvertices=9),
+        "fault_xneg": MeshEntity(ncells=8, ncorners=2, nvertices=9),
 
         # Boundaries
         "bc_xneg": MeshEntity(ncells=8, ncorners=2, nvertices=9),
         "bc_xpos": MeshEntity(ncells=8, ncorners=2, nvertices=9),
         "bc_yneg": MeshEntity(ncells=8, ncorners=2, nvertices=9+2),
         "bc_ypos": MeshEntity(ncells=8, ncorners=2, nvertices=9+2),
+        "boundary_ypos": MeshEntity(ncells=8, ncorners=2, nvertices=9+2),
     }
 
 
@@ -56,14 +57,15 @@ class QuadGmsh(object):
         "mat_xposyneg": MeshEntity(ncells=25, ncorners=3, nvertices=36),
 
         # Faults
-        "fault": MeshEntity(ncells=10, ncorners=2, nvertices=11),
-        "fault2": MeshEntity(ncells=10, ncorners=2, nvertices=11),
+        "fault_xmid": MeshEntity(ncells=10, ncorners=2, nvertices=11),
+        "fault_xneg": MeshEntity(ncells=10, ncorners=2, nvertices=11),
 
         # Boundaries
         "bc_xneg": MeshEntity(ncells=10, ncorners=2, nvertices=11),
         "bc_xpos": MeshEntity(ncells=10, ncorners=2, nvertices=11),
         "bc_yneg": MeshEntity(ncells=11, ncorners=2, nvertices=11+2),
         "bc_ypos": MeshEntity(ncells=11, ncorners=2, nvertices=11+2),
+        "boundary_ypos": MeshEntity(ncells=11, ncorners=2, nvertices=11+2),
     }
 
 
@@ -81,14 +83,15 @@ class TriCubit(object):
         "mat_xposyneg": MeshEntity(ncells=32, ncorners=3, nvertices=25),
 
         # Faults
-        "fault": MeshEntity(ncells=8, ncorners=2, nvertices=9),
-        "fault2": MeshEntity(ncells=8, ncorners=2, nvertices=9),
+        "fault_xmid": MeshEntity(ncells=8, ncorners=2, nvertices=9),
+        "fault_xneg": MeshEntity(ncells=8, ncorners=2, nvertices=9),
 
         # Boundaries
         "bc_xneg": MeshEntity(ncells=8, ncorners=2, nvertices=9),
         "bc_xpos": MeshEntity(ncells=8, ncorners=2, nvertices=9),
         "bc_yneg": MeshEntity(ncells=8, ncorners=2, nvertices=9+2),
         "bc_ypos": MeshEntity(ncells=8, ncorners=2, nvertices=9+2),
+        "boundary_ypos": MeshEntity(ncells=8, ncorners=2, nvertices=9+2),
     }
 
 
@@ -106,14 +109,15 @@ class QuadCubit(object):
         "mat_xposyneg": MeshEntity(ncells=16, ncorners=3, nvertices=25),
 
         # Faults
-        "fault": MeshEntity(ncells=8, ncorners=2, nvertices=9),
-        "fault2": MeshEntity(ncells=8, ncorners=2, nvertices=9),
+        "fault_xmid": MeshEntity(ncells=8, ncorners=2, nvertices=9),
+        "fault_xneg": MeshEntity(ncells=8, ncorners=2, nvertices=9),
 
         # Boundaries
         "bc_xneg": MeshEntity(ncells=8, ncorners=2, nvertices=9),
         "bc_xpos": MeshEntity(ncells=8, ncorners=2, nvertices=9),
         "bc_yneg": MeshEntity(ncells=8, ncorners=2, nvertices=9+2),
         "bc_ypos": MeshEntity(ncells=8, ncorners=2, nvertices=9+2),
+        "boundary_ypos": MeshEntity(ncells=8, ncorners=2, nvertices=9+2),
     }
 
 

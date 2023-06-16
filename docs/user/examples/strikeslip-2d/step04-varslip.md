@@ -1,5 +1,11 @@
 # Step 4: Variable Coseismic Slip
 
+% Metadata extracted from parameter files.
+```{include} step04_varslip-synopsis.md
+```
+
+## Simulation parameters
+
 We use this example to illustrate prescribing slip that varies along the strike of the fault.
 This example also serves as a means to generate coseismic displacements at fake GPS stations.
 In Step 6 we will use the displacements at these stations along with static Green's functions computed in Step 5 to invert for the slip on the fault.
@@ -8,8 +14,8 @@ We prescribe left-lateral slip that varies along the strike of the fault with fi
 The slip is nonzero over the region -20 km $\le$ y $\le$ +20 km with a peak slip of 80 cm at y=-0.5 km ({numref}`fig:example:strikeslip:2d:step04:slip`).
 
 This example involves a static simulation that solves for the deformation from prescribed coseismic slip on the fault.
-We specify 2 meters of right-lateral slip.
 {numref}`fig:example:strikeslip:2d:step04:diagram` shows the boundary conditions on the domain.
+The parameters specific to this example are in `step04_varslip.cfg`.
 
 :::{figure-md} fig:example:strikeslip:2d:step04:diagram
 <img src="figs/step04-diagram.*" alt="" scale="75%">
@@ -17,27 +23,6 @@ We specify 2 meters of right-lateral slip.
 Boundary conditions for static coseismic slip.
 We set the x and y displacement to zero on the +x and -x boundaries and prescribe left-lateral slip that varies along strike.
 :::
-
-:::{figure-md} fig:example:strikeslip:2d:step04:slip
-<img src="figs/step04-slip.*" alt="" scale="75%">
-
-Prescribed left-lateral slip that varies along the strike of the fault.
-A strike of 0 corresponds to y=9.
-:::
-
-% Metadata extracted from parameter files.
-```{include} step04_varslip-synopsis.md
-```
-
-## Simulation parameters
-
-The parameters specific to this example are in `step04_varslip.cfg`.
-These include:
-
-* `pylithapp.metadata` Metadata for this simulation. Even when the author and version are the same for all simulations in a directory, we prefer to keep that metadata in each simulation file as a reminder to keep it up-to-date for each simulation.
-* `pylithapp` Parameters defining where to write the output.
-* `pylithapp.problem` Parameters for the solution field and output.
-* `pylithapp.problem.fault` Parameters for prescribed slip on the fault.
 
 We increase the basis order of the solution subfields to 2 to better resolve the spatial variation in slip.
 We also add output of the solution at fake GPS stations given in the file `gps_stations.txt`.
@@ -48,6 +33,51 @@ You can use the Python script `generate_gpsstations.py` to generate a different 
 
 Location of randomly distributed fake GPS stations in `gps_stations.txt`.
 :::
+
+```{code-block} cfg
+---
+caption: Solution and output parameters for Step 4. We use a basis order of 2 for the solution fields and add output of the solution at fake GPS stations.
+---
+[pylithapp.problem]
+defaults.quadrature_order = 2
+
+[pylithapp.problem.solution.subfields]
+displacement.basis_order = 2
+lagrange_fault.basis_order = 2
+
+[pylithapp.problem]
+solution_observers = [domain, top_boundary, bot_boundary, gps_stations]
+solution_observers.gps_stations = pylith.meshio.OutputSolnPoints
+
+[pylithapp.problem.solution_observers.gps_stations]
+label = gps_stations
+reader.filename = gps_stations.txt
+reader.coordsys.space_dim = 2
+```
+
+The earthquake rupture occurs along the central portion of the fault with spatially variable slip.
+
+:::{figure-md} fig:example:strikeslip:2d:step04:slip
+<img src="figs/step04-slip.*" alt="" scale="75%">
+
+Prescribed left-lateral slip that varies along the strike of the fault.
+A strike of 0 corresponds to y=0.
+:::
+
+We use a `SimpleDB` to define the spatial variation in slip.
+
+```{code-block} cfg
+---
+caption: Prescribed slip parameters for Step 4.
+---
+[pylithapp.problem.interfaces.fault.eq_ruptures.rupture]
+db_auxiliary_field = spatialdata.spatialdb.SimpleDB
+db_auxiliary_field.description = Fault rupture auxiliary field spatial database
+db_auxiliary_field.iohandler.filename = slip_variable.spatialdb
+db_auxiliary_field.query_type = linear
+```
+
+## Running the simulation
 
 ```{code-block} console
 ---

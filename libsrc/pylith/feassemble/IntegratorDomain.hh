@@ -28,6 +28,7 @@
 #include "feassemblefwd.hh" // forward declarations
 
 #include "pylith/feassemble/Integrator.hh" // ISA Integrator
+#include "pylith/feassemble/JacobianValues.hh" // USES JacobianValues::JacobianKernels
 #include "pylith/utils/arrayfwd.hh" // HASA std::vector
 
 class pylith::feassemble::IntegratorDomain : public pylith::feassemble::Integrator {
@@ -153,6 +154,15 @@ public:
     void setKernelsJacobian(const std::vector<JacobianKernels>& kernels,
                             const pylith::topology::Field& solution);
 
+    /** Set kernels for Jacobian without finite-element integration.
+     *
+     * @param[in] kernelsJacobian Array of kernels for computing the Jacobian values without integration.
+     * @param[in] kernelsPrecond Array of kernels for computing the preconditioner values without integration.
+     * @param[in] solution Solution field.
+     */
+    void setKernelsJacobian(const std::vector<pylith::feassemble::JacobianValues::JacobianKernel>& kernelsJacobian,
+                            const std::vector<pylith::feassemble::JacobianValues::JacobianKernel>& kernelsPrecond);
+
     /** Set kernels for updating state variables.
      *
      * @param kernels Array of kernels for updating state variables.
@@ -251,6 +261,8 @@ private:
     pylith::topology::Mesh* _materialMesh; ///< Mesh associated with material.
 
     pylith::feassemble::UpdateStateVars* _updateState; ///< Data structure for layout needed to update state vars.
+    pylith::feassemble::JacobianValues* _jacobianValues; ///< Jacobian values without finite-element integration.
+    pylith::feassemble::DSLabelAccess* _dsLabel; ///< Information about integration (PETSc DS, Label, label value, etc).
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:

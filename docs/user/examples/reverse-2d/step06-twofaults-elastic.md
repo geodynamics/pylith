@@ -1,8 +1,15 @@
 # Step 6: Slip on Two Faults and Elastic Materials
 
+% Metadata extracted from parameter files.
+```{include} step06_twofaults_elastic-synopsis.md
+```
+
+## Simulation parameters
+
 In this example we add coseismic slip on the splay fault.
 We specify 2 meters of reverse slip on the main fault and 1 meter of reverse slip on the splay fault.
 {numref}`fig:example:reverse:2d:step06:diagram` shows the boundary conditions on the domain.
+The parameters specific to this example are in `step06_twofaults-elastic.cfg`.
 
 :::{figure-md} fig:example:reverse:2d:step06:diagram
 <img src="figs/step06-diagram.*" alt="" scale="75%">
@@ -11,20 +18,6 @@ Boundary conditions for static coseismic slip on both the main and splay faults.
 We prescribe 2 meters of reverse slip on the main fault with 1 meter of reverse slip on the splay fauult.
 We use roller boundary conditions on the lateral sides and bottom of the domain.
 :::
-
-% Metadata extracted from parameter files.
-```{include} step06_twofaults_elastic-synopsis.md
-```
-
-## Simulation parameters
-
-The parameters specific to this example are in `step06_twofaults-elastic.cfg` and include:
-
-* `pylithapp.metadata` Metadata for this simulation. Even when the author and version are the same for all simulations in a directory, we prefer to keep that metadata in each simulation file as a reminder to keep it up-to-date for each simulation.
-* `pylithapp` Parameters defining where to write the output.
-* `pylithapp.problem` Parameters for the solution field with displacement and Lagrange multiplier subfields.
-* `pylithapp.problem.fault` Parameters for prescribed slip on the two faults.
-* `pylithapp.petsc` Adjustment to the default PETSc solver options.
 
 :::{important}
 In 2D simulations slip is specified in terms of opening and left-lateral components.
@@ -39,6 +32,52 @@ When PyLith inserts cohesive cells into a mesh with buried edges (in this case a
 
 For properly topology of the cohesive cells, the main fault _must_ be listed first in the array of faults so that it will be created before the splay fault.
 :::
+
+We create an array of 2 faults, which are `FaultCohesiveKin` by default, and use `UniformDB` objects to specify uniform reverse slip on each fault.
+Because the wedge is not constrained by any Dirichlet boundary conditions,
+we change the preconditioner for the displacement field to `ilu` to avoid a zero pivot.
+
+```{code-block} cfg
+---
+caption: Parameters for prescribed earthquake rupture on the main and splay faults for Step 6.
+---
+[pylithapp.problem]
+interfaces = [fault, splay]
+
+[pylithapp.problem.interfaces.fault]
+label = fault
+label_value = 20
+edge = fault_end
+edge_value = 21
+
+observers.observer.data_fields = [slip]
+
+[pylithapp.problem.interfaces.fault.eq_ruptures.rupture]
+db_auxiliary_field = spatialdata.spatialdb.UniformDB
+db_auxiliary_field.description = Fault rupture for main fault
+db_auxiliary_field.values = [initiation_time, final_slip_left_lateral, final_slip_opening]
+db_auxiliary_field.data = [0.0*s, -2.0*m, 0.0*m]
+
+[pylithapp.problem.interfaces.splay]
+label = splay
+label_value = 22
+edge = splay_end
+edge_value = 23
+
+observers.observer.data_fields = [slip]
+
+[pylithapp.problem.interfaces.splay.eq_ruptures.rupture]
+db_auxiliary_field = spatialdata.spatialdb.UniformDB
+db_auxiliary_field.description = Fault rupture for splay fault
+db_auxiliary_field.values = [initiation_time, final_slip_left_lateral, final_slip_opening]
+db_auxiliary_field.data = [0.0*s, -1.0*m, 0.0*m]
+
+
+[pylithapp.petsc]
+fieldsplit_displacement_pc_type = ilu
+```
+
+## Running the simulation
 
 ```{code-block} console
 ---

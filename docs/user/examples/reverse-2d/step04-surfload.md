@@ -1,8 +1,15 @@
 # Step 4: Surface Tractions
 
-This example focuses on loading via surface tractions on the +y bondary.
+% Metadata extracted from parameter files.
+```{include} step04_surfload-synopsis.md
+```
+
+## Simulation parameters
+
+This example focuses on loading via surface tractions on the +y boundary.
 We apply tractions normal to the boundary with a trapezoidal distribution as shown in {numref}`fig:example:reverse:2d:step04:diagram`
 We use the same roller boundary conditions that we used in Steps 1-3.
+The parameters specific to this example are in `step04_surfload.cfg`.
 
 :::{figure-md} fig:example:reverse:2d:step04:diagram
 <img src="figs/step04-diagram.*" alt="" scale="75%">
@@ -10,19 +17,28 @@ We use the same roller boundary conditions that we used in Steps 1-3.
 We add a Neumann (traction) boundary condition on the +y boundary with roller boundary conditions on the lateral sides and bottom of the domain.
 :::
 
-% Metadata extracted from parameter files.
-```{include} step04_surfload-synopsis.md
+```{code-block} cfg
+---
+caption: Surface load parameters for Step 4.
+---
+[pylithapp.problem]
+bc = [bc_xneg, bc_xpos, bc_yneg, bc_ypos]
+bc.bc_ypos = pylith.bc.NeumannTimeDependent
+
+[pylithapp.problem.bc.bc_ypos]
+label = boundary_ypos
+label_value = 13
+
+db_auxiliary_field = spatialdata.spatialdb.SimpleDB
+db_auxiliary_field.description = Neumann BC +y edge
+db_auxiliary_field.iohandler.filename = traction_surfload.spatialdb
+
+db_auxiliary_field.query_type = linear
+
+auxiliary_subfields.initial_amplitude.basis_order = 1
 ```
 
-## Simulation parameters
-
-The parameters specific to this example are in `step04_surfload.cfg`.
-These include:
-
-* `pylithapp.metadata` Metadata for this simulation. Even when the author and version are the same for all simulations in a directory, we prefer to keep that metadata in each simulation file as a reminder to keep it up-to-date for each simulation.
-* `pylithapp` Parameters defining where to write the output.
-* `pylithapp.problem` Parameters for specifying the basis order.
-* `pylithapp.problem.bc` Add a Neumann (traction) boundary condition on the +y boundary.
+## Running the simulation
 
 ```{code-block} console
 ---

@@ -70,12 +70,6 @@ protected:
     /// Check values in mesh against data.
     void _checkVals(void);
 
-    /** Test debug().
-     *
-     * @param iohandler MeshIO object.
-     */
-    void _testDebug(MeshIO& iohandler);
-
     // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected:
 

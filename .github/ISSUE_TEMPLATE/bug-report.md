@@ -1,7 +1,7 @@
 ---
 name: Bug Report
 about: Report a suspected bug
-title: '[BUG REPORT]'
+title: '[REPLACE THIS WITH AN APPROPRIATE TITLE FOR YOUR BUG REPORT]'
 labels: bug
 assignees: ''
 

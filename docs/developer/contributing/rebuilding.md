@@ -8,27 +8,27 @@ Updating and rebuilding PETSc is quite simple once it has been configured and bu
 
 :::{warning}
 Updating the PETSc `knepley/pylith` branch that PyLith uses almost always involves rebasing and forced pushes.
-As a result, you cannot simply do a `git pull` to update the `knepley/pylith` branch.
+As a result, you cannot simply use `git pull` to update the `knepley/pylith` branch.
 Instead, you need to delete the old `knepley/pylith` branch and then check it out again to get the current version.
 :::
 
-```{code-block} console
+```{code-block} bash
 # Change to PETSc source Directory
-$ cd PETSC_DIR
+cd $PETSC_DIR
 
 # Switch to the main branch and fetch the updates, pruning deleted branches.
-$ git checkout main
-$ git fetch -p
+git checkout main
+git fetch -p
 
 # Remove your old knepley/pylith branch and then get the current knepley/pylith branch.
-$ git branch -D knepley/pylith
-$ git checkout knepley/pylith
+git branch -D knepley/pylith
+git checkout knepley/pylith
 
 # Reconfigure
-$ arch-pylith-debug/lib/petsc/conf/reconfigure-arch-pylith-debug.py
+arch-pylith-debug/lib/petsc/conf/reconfigure-arch-pylith-debug.py
 
 # Rebuild
-$ make
+make
 ```
 
 :::{important}
@@ -85,55 +85,55 @@ We usually set the number of threads equal to twice the number of physical cores
 
 After modifying code, the C++ library, SWIG modules, and Python code need to be rebuilt and reinstalled before running a PyLith simulation.
 
-```{code-block} console
+```{code-block} bash
 ---
 caption: Rebuilding Pylith C++ library, SWIG modules, and Python modules
 ---
 # Change to top-level PyLith build directory.
-$ cd $PYLITH_DIR/build/debug/pylith
+cd $PYLITH_BUILDDIR
 
 # Reinstall everything using 8 threads to build library.
-$ make install -j8
+make install -j8
 
 # Rebuild and reinstall only the library using 8 threads.
-$ make install -j8 -C libsrc
+make install -j8 -C libsrc
 
 # Rebuild and reinstall only the SWIG modules
-$ make install -C modulesrc
+make install -C modulesrc
 
 # Reinstall only the Python modules
-$ make install -C pylith
+make install -C pylith
 ```
 
 After modifying the C++ code, only the C++ library needs to be rebuilt before running C++ unit tests or MMS tests.
 
-```{code-block} console
+```{code-block} bash
 ---
 caption: Rebuilding Pylith C++ library and rerunning the C++ unit tests
 ---
 # Change to top-level PyLith build directory.
-$ cd $PYLITH_DIR/build/debug/pylith
+cd $PYLITH_BUILDDIR/build/pylith-debug
 
 # Rebuild the library using 8 threads.
-$ make -j8 -C libsrc
+make -j8 -C libsrc
 
 # Rerun the C++ unit tests.
-$ make check -C tests/libtests
+make check -C tests/libtests
 ```
 
 Similarly, after changing the Python code, only the Python modules need to be reinstalled before running a Python unit test.
 However, if changes are also made to the C++ code, then the C++ library and modules must be rebuilt and reinstalled before running a Python unit test.
 
-```{code-block} console
+```{code-block} bash
 ---
 caption: Rebuilding Pylith Python modules and rerunning Python unit tests
 ---
 # Change to top-level PyLith build directory.
-$ cd $PYLITH_DIR/build/debug/pylith
+cd $PYLITH_BUILDDIR/build/pylith-debug
 
 # Reinstall PyLith Python modules.
-$ make install -C pylith
+make install -C pylith
 
 # Rerun Python unit tests.
-$ make check -C tests/pytests
+make check -C tests/pytests
 ```

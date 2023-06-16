@@ -21,7 +21,8 @@
 #include "Distributor.hh" // implementation of class methods
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
-#include "pylith/topology/Field.hh" // USES Field<Mesh>
+#include "pylith/topology/Field.hh" // USES Field
+#include "pylith/meshio/OutputSubfield.hh" // USES OutputSubfield
 #include "pylith/topology/Stratum.hh" // USES Stratum
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 #include "pylith/faults/FaultCohesive.hh" // USES FaultCohesive
@@ -109,6 +110,8 @@ pylith::topology::Distributor::distribute(pylith::topology::Mesh* const newMesh,
     err = _Distributor::distributeOverlap(&dmNew, dmTmp, faults, numFaults);PYLITH_CHECK_ERROR(err);
     err = DMDestroy(&dmTmp);PYLITH_CHECK_ERROR(err);
     err = DMPlexDistributeSetDefault(dmNew, PETSC_FALSE);PYLITH_CHECK_ERROR(err);
+    err = DMPlexReorderCohesiveSupports(dmNew);PYLITH_CHECK_ERROR(err);
+    err = DMViewFromOptions(dmNew, NULL, "-pylith_dist_dm_view");PYLITH_CHECK_ERROR(err);
     newMesh->setDM(dmNew);
 
     PYLITH_METHOD_END;
@@ -122,40 +125,68 @@ pylith::topology::Distributor::write(meshio::DataWriter* const writer,
                                      const topology::Mesh& mesh) {
     PYLITH_METHOD_BEGIN;
 
-    const int commRank = mesh.getCommRank();
-    if (0 == commRank) {
+    if (pylith::utils::MPI::isRoot()) {
         pythia::journal::info_t info("mesh_distributor");
         info << pythia::journal::at(__HERE__)
              << "Writing partition." << pythia::journal::endl;
     } // if
 
     // Setup and allocate PETSc vector
+    const int commRank = mesh.getCommRank();
     PylithScalar rankReal = PylithReal(commRank);
 
+    pylith::topology::Field partitionField(mesh);
+    partitionField.setLabel("partition");
+
+    pylith::topology::Field::Description description;
+    description.label = "partition";
+    description.alias = "partition";
+    description.vectorFieldType = pylith::topology::Field::SCALAR;
+    description.numComponents = 1;
+    description.componentNames.resize(1);
+    description.componentNames[0] = "rank";
+    description.scale = 1.0;
+    description.validator = NULL;
+
+    pylith::topology::Field::Discretization discretization(0, 1);
+
+    partitionField.subfieldAdd(description, discretization);
+    partitionField.subfieldsSetup();
+    partitionField.createDiscretization();
+    partitionField.allocate();
+    partitionField.zeroLocal();
+    partitionField.createOutputVector();
+
     PetscDM dmMesh = mesh.getDM();assert(dmMesh);
-    topology::Stratum cellsStratum(dmMesh, topology::Stratum::HEIGHT, 0);
+    topology::Stratum cellsStratum(dmMesh, pylith::topology::Stratum::HEIGHT, 0);
     const PetscInt cStart = cellsStratum.begin();
     const PetscInt cEnd = cellsStratum.end();
 
-    PetscVec partitionVec = NULL;
-    PylithScalar* partitionArray = NULL;
-    PetscErrorCode err;
-    err = VecCreate(mesh.getComm(), &partitionVec);PYLITH_CHECK_ERROR(err);
-    err = VecSetSizes(partitionVec, cEnd-cStart, PETSC_DECIDE);PYLITH_CHECK_ERROR(err);
-    err = VecGetArray(partitionVec, &partitionArray);PYLITH_CHECK_ERROR(err);
-    for (PetscInt c = cStart; c < cEnd; ++c) {
-        partitionArray[c] = rankReal;
+    VecVisitorMesh partitionVisitor(partitionField);
+    PetscScalar* partitionArray = partitionVisitor.localArray();
+    for (PetscInt point = cStart; point < cEnd; ++point) {
+        const PetscInt off = partitionVisitor.sectionOffset(point);
+        if (partitionVisitor.sectionDof(point) > 0) {
+            partitionArray[off] = rankReal;
+        } // if
     } // for
-    err = VecRestoreArray(partitionVec, &partitionArray);PYLITH_CHECK_ERROR(err);
+    partitionVisitor.clear();
+    partitionField.scatterLocalToOutput();
+
+    const int basisOrder = 0;
+    pylith::meshio::OutputSubfield* outputField =
+        pylith::meshio::OutputSubfield::create(partitionField, mesh, "partition", basisOrder);
+    outputField->project(partitionField.getOutputVector());
 
     const PylithScalar t = 0.0;
-    const int numTimeSteps = 0;
-    writer->open(mesh, numTimeSteps);
+    const bool isInfo = true;
+    writer->open(mesh, isInfo);
     writer->openTimeStep(t, mesh);
-    assert(0); // :TODO: Fix this
-    // writer->writeCellField(t, partitionVec);
+    writer->writeCellField(t, *outputField);
     writer->closeTimeStep();
     writer->close();
+
+    delete outputField;outputField = NULL;
 
     PYLITH_METHOD_END;
 } // write

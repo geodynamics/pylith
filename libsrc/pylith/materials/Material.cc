@@ -80,6 +80,14 @@ pylith::materials::Material::setGravityField(spatialdata::spatialdb::GravityFiel
 
 
 // ------------------------------------------------------------------------------------------------
+// Set body force kernels (intended for use in MMS tests).
+void
+pylith::materials::Material::setMMSBodyForceKernels(const std::vector<pylith::feassemble::IntegratorDomain::ResidualKernels>& kernels) {
+    _mmsBodyForceKernels = kernels;
+}
+
+
+// ------------------------------------------------------------------------------------------------
 // Create constraint and set kernels.
 std::vector<pylith::feassemble::Constraint*>
 pylith::materials::Material::createConstraints(const pylith::topology::Field& solution) {
@@ -98,6 +106,32 @@ pylith::materials::Material::getSolverDefaults(const bool isParallel,
                                                const bool hasFault) const {
     return NULL;
 }
+
+
+// ------------------------------------------------------------------------------------------------
+// Get residual kernels for an interior interface bounding material.
+std::vector<pylith::materials::Material::InterfaceResidualKernels>
+pylith::materials::Material::getInterfaceKernelsResidual(const pylith::topology::Field& solution,
+                                                         pylith::feassemble::IntegratorInterface::FaceEnum face) const {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("getInterfaceResidualKernels(solution="<<solution.getLabel()<<", face="<<face<<") empty method");
+    std::vector<InterfaceResidualKernels> kernels;
+
+    PYLITH_METHOD_RETURN(kernels);
+} // getInterfaceKernelsResidual
+
+
+// ------------------------------------------------------------------------------------------------
+// Get Jacobian kernels for an interior interface bounding material.
+std::vector<pylith::materials::Material::InterfaceJacobianKernels>
+pylith::materials::Material::getInterfaceKernelsJacobian(const pylith::topology::Field& solution,
+                                                         pylith::feassemble::IntegratorInterface::FaceEnum face) const {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("getInterfaceJacobianKernels(solution="<<solution.getLabel()<<", face="<<face<<") empty method");
+    std::vector<InterfaceJacobianKernels> kernels;
+
+    PYLITH_METHOD_RETURN(kernels);
+} // getInterfaceKernelsJacobian
 
 
 // End of file

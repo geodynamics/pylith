@@ -1,0 +1,99 @@
+// Mesh with input numbering
+//
+// v2 --------v5 --------v8
+//  |         /| \        |
+//  | c3    /  |   \  c7  |
+//  |     /    |     \    |
+//  |   /  c2  | c6    \  |
+//  | /        |         \|
+// v1 --------v4 --------v7
+//  |         /|         /|
+//  | c1    /  | c5    /  |
+//  |     /    |     /    |
+//  |   /   c0 |   /   c4 |
+//  | /        | /        |
+// v0 --e18---v3 --------v6
+//
+mesh = {
+  dimension = 2
+  use-index-zero = true
+  vertices = {
+    dimension = 2
+    count = 9
+    coordinates = {
+             0     -4.0e+3  -4.0e+3
+             1     -4.0e+3   0.0
+             2     -4.0e+3  +4.0e+3
+             3      0.0     -4.0e+3
+             4      0.0      0.0
+             5      0.0     +4.0e+3
+             6     +4.0e+3  -4.0e+3
+             7     +4.0e+3   0.0
+             8     +4.0e+3  +4.0e+3
+    }
+  }
+  cells = {
+    count = 8
+    num-corners = 3
+    simplices = {
+             0       0  3  4
+             1       0  4  1
+             2       1  4  5
+             3       2  1  5
+             4       3  6  7
+             5       3  7  4
+             6       5  4  7
+             7       7  8  5
+    }
+    material-ids = {
+             0   10
+             1   10
+             2   10
+             3   10
+             4   10
+             5   10
+             6   10
+             7   10
+    }
+  }
+  group = {
+    type = vertices
+    name = boundary_xpos
+    count = 3
+    indices = {
+      6 7 8
+    }
+  }
+  group = {
+    type = vertices
+    name = boundary_xneg
+    count = 3
+    indices = {
+      0  1  2
+    }
+  }
+  group = {
+    type = vertices
+    name = boundary_ypos
+    count = 3
+    indices = {
+      2  5  8
+    }
+  }
+  group = {
+    type = vertices
+    name = boundary_yneg
+    count = 3
+    indices = {
+      0  3  6
+    }
+  }
+  group = {
+    type = vertices
+    name = fault
+    count = 3
+    indices = {
+      3  4  5
+    }
+  }  
+}

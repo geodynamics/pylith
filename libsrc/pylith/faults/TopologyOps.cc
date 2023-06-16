@@ -49,6 +49,21 @@ pylith::faults::TopologyOps::createFault(pylith::topology::Mesh* faultMesh,
         err = PetscObjectGetName((PetscObject)surfaceLabel, &groupName);PYLITH_CHECK_ERROR(err);
     }
     err = DMPlexCreateSubmesh(dmMesh, surfaceLabel, surfaceLabelValue, PETSC_FALSE, &subdm);PYLITH_CHECK_ERROR(err);
+
+    PetscInt maxConeSizeLocal = 0, maxConeSize = 0;
+    err = DMPlexGetMaxSizes(subdm, &maxConeSizeLocal, NULL);PYLITH_CHECK_ERROR(err);
+    err = MPI_Allreduce(&maxConeSizeLocal, &maxConeSize, 1, MPI_INT, MPI_MAX,
+                        PetscObjectComm((PetscObject) subdm));PYLITH_CHECK_ERROR(err);
+
+    if (maxConeSize <= 0) {
+        err = DMDestroy(&subdm);PYLITH_CHECK_ERROR(err);
+        std::ostringstream msg;
+        msg << "Error while creating fault. Fault " << groupName << " with label value "
+            << surfaceLabelValue << " does not contain any cells.\n"
+            << "Check that you are using the correct label value.\n";
+        throw std::runtime_error(msg.str());
+    } // if
+
     // Check that no cells have all vertices on the fault
     if (surfaceLabel) {
         IS subpointIS;
@@ -213,6 +228,7 @@ pylith::faults::TopologyOps::create(pylith::topology::Mesh* mesh,
     PetscReal lengthScale = 1.0;
     err = DMPlexGetScale(dm, PETSC_UNIT_LENGTH, &lengthScale);PYLITH_CHECK_ERROR(err);
     err = DMPlexSetScale(sdm, PETSC_UNIT_LENGTH, lengthScale);PYLITH_CHECK_ERROR(err);
+    err = DMViewFromOptions(sdm, NULL, "-pylith_cohesive_dm_view");PYLITH_CHECK_ERROR(err);
     mesh->setDM(sdm);
 } // create
 

@@ -18,11 +18,11 @@
 # -- Project information -----------------------------------------------------
 
 project = 'PyLith'
-copyright = '2021-2022, University of California, Davis'
+copyright = '2010-2023, University of California, Davis'
 author = 'Brad T. Aagaard, Matthew G. Knepley, Charles A. Williams'
 
 # The full version, including alpha/beta/rc tags
-release = '3.0.1'
+release = '3.0.3'
 
 
 # -- General configuration ---------------------------------------------------
@@ -32,6 +32,7 @@ release = '3.0.1'
 # ones.
 extensions = [
     "myst_parser",
+    "sphinx_copybutton",
     "sphinxcontrib.bibtex",
 ]
 myst_enable_extensions = [
@@ -62,6 +63,10 @@ html_logo = "_static/images/cig_short_pylith.png"
 html_theme = 'pydata_sphinx_theme'
 html_context = {
     "default_mode": "light",
+    "github_user": "geodynamics",
+    "github_repo": "pylith",
+    "github_version": "main",
+    "doc_path": "docs",
 }
 html_theme_options = {
     "collapse_navigation": True,
@@ -74,13 +79,10 @@ html_theme_options = {
             "icon": "fab fa-github-square",
         },
     ],
-    "left_sidebar_end": ["sidebar-cig"],
+    "use_edit_page_button": True,
     "navbar_start": ["navbar-logo"],
-    "navbar_end": ["navbar-icon-links"],
-    "footer_items": ["last-updated"],
-}
-html_sidebars = {
-    "**": ["search-field", "sidebar-nav-bs"]
+    "footer_end": ["last-updated"],
+    "primary_sidebar_end": ["sidebar-cig"],
 }
 
 bibtex_bibfiles = ["references.bib"]
@@ -92,4 +94,7 @@ numfig = True
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+html_css_files = [
+    'css/custom.css',
+]
 html_last_updated_fmt = ""

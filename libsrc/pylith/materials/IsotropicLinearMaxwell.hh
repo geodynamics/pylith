@@ -31,7 +31,7 @@
 class pylith::materials::IsotropicLinearMaxwell : public pylith::materials::RheologyElasticity {
     friend class TestIsotropicLinearMaxwell; // unit testing
 
-    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Default constructor.
@@ -75,7 +75,7 @@ public:
      *
      * @return LHS residual kernel for stress.
      */
-    PetscPointFunc getKernelResidualStress(const spatialdata::geocoords::CoordSys* coordsys) const;
+    PetscPointFunc getKernelf1v(const spatialdata::geocoords::CoordSys* coordsys) const;
 
     /** Get elastic constants kernel for LHS Jacobian F(t,s,\dot{s}).
      *
@@ -83,15 +83,31 @@ public:
      *
      * @return LHS Jacobian kernel for elastic constants.
      */
-    PetscPointJac getKernelJacobianElasticConstants(const spatialdata::geocoords::CoordSys* coordsys) const;
+    PetscPointJac getKernelJf3vu(const spatialdata::geocoords::CoordSys* coordsys) const;
 
-    /** Get stress kernel for derived field.
+    /** Get f0 kernel for LHS interface residual, F(t,s,dot{s}), for negative fault face.
+     *
+     * @param[in] coordsys Coordinate system.
+     *
+     * @return LHS residual f0 kernel.
+     */
+    PetscBdPointFunc getKernelf0Neg(const spatialdata::geocoords::CoordSys* coordsys) const;
+
+    /** Get f0 kernel for LHS interface residual, F(t,s,dot{s}), for positive fault face.
+     *
+     * @param[in] coordsys Coordinate system.
+     *
+     * @return LHS residual f0 kernel.
+     */
+    PetscBdPointFunc getKernelf0Pos(const spatialdata::geocoords::CoordSys* coordsys) const;
+
+    /** Get Cauchy stress kernel for derived field.
      *
      * @param[in] coordsys Coordinate system.
      *
      * @return Project kernel for computing stress subfield in derived field.
      */
-    PetscPointFunc getKernelDerivedCauchyStress(const spatialdata::geocoords::CoordSys* coordsys) const;
+    PetscPointFunc getKernelCauchyStressVector(const spatialdata::geocoords::CoordSys* coordsys) const;
 
     /** Add kernels for updating state variables.
      *
@@ -109,13 +125,13 @@ public:
     void updateKernelConstants(pylith::real_array* kernelConstants,
                                const PylithReal dt) const;
 
-    // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
+    // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
 private:
 
     pylith::materials::AuxiliaryFactoryViscoelastic* _auxiliaryFactory; ///< Factory for creating auxiliary subfields.
     bool _useReferenceState; ///< Flag to use reference stress and strain.
 
-    // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
+    // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
 private:
 
     IsotropicLinearMaxwell(const IsotropicLinearMaxwell&); ///< Not implemented.

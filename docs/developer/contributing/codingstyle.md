@@ -10,7 +10,7 @@ We use 4 spaces for indentation. Configure your editor to use spaces instead of 
 
 * Naming conventions
   * Use self-documenting names.
-  * Avoid single letter variables. Choose names that are readily found via searches across single or multiple files (e.g., grep).
+  * Avoid single letter variables. Choose meaningful names that will be found via searches across single or multiple files (e.g., grep).
   * Class names are generally nouns and methods are verbs.
   * Class names use upper camel case, e.g., `TimeDependent`.
   * Public method names use camel case, e.g., `computeRHSResidual()`.
@@ -35,10 +35,12 @@ We use 4 spaces for indentation. Configure your editor to use spaces instead of 
 
 ## Formatting source files
 
-We use `autopep8` and `uncrustify` to format Python and C//C++ source files, respectively. The corresponding configuration files are `autopep8.cfg` and `uncrustify.cfg` in the `developer` directory. The Python script `developer/format_source.py` is a handy utility for calling `autopep8` and `uncrustify` with the appropriate arguments and formatting multiple files.
+We use `autopep8` and `uncrustify` to format Python and C/C++ source files, respectively.
+The corresponding configuration files are `autopep8.cfg` and `uncrustify.cfg` in the `developer` directory.
+The Python script `developer/format_source.py` is a handy utility for calling `autopep8` and `uncrustify` with the appropriate arguments and formatting multiple files.
 
 :::{tip}
-We highly recommend using an integrated development environment with `uncrustify` and `autopep8` to automatically format all C/C++ and Python source files.
+We highly recommend using an integrated development environment, such as Visual Studio Code, that allow `uncrustify` and `autopep8` to automatically format all C/C++ and Python source files.
 :::
 
 ```{code-block} bash
@@ -58,10 +60,12 @@ developer/format_source.py --python=pylith/materials/Material.py
 developer/format_source.py --python=pylith/materials/*.py
 ```
 
-
 ## Error Checking
 
-Our philosophy is that PyLith should never crash without an error message. If it encounters a fatal error, then it should generate an appropriate error message and abort. In C++ we throw `std::runtime_error` exceptions for errors resulting from user input and `std::logic_error` exceptions for internal inconsistencies or logic errors. In Python we use standard exception objects.
+Our philosophy is that PyLith should never crash without an error message.
+If it encounters a fatal error, then it should generate an appropriate error message and abort.
+In C++ we throw `std::runtime_error` exceptions for errors resulting from user input and `std::logic_error` exceptions for internal inconsistencies or logic errors.
+In Python we use standard exception objects.
 
 Additional protections against crashing include: using asserts to verify pointers are non-null before using them and using the `PYLITH_CHECK_ERROR` macro to check the return value after *every* call to a PETSc function.
 
@@ -89,10 +93,12 @@ When we build the code for production runs, we usually configure with `CPPFLAGS=
 ---
 caption: Example of using `PYLITH_CHECK_ERROR` macro.
 ---
-PetscErrorCode err = TSGetTimeStep(ts, &dt); PYLITH_CHECK_ERROR(err);
+PetscErrorCode err = TSGetTimeStep(ts, &dt);PYLITH_CHECK_ERROR(err);
 ```
 
-In combination with the above procedures, we also make use of the Pyre journals to display warnings and errors to facilitate debugging. The journals provide the file name and line number along with the message. By default, Pyre journals for errors are turned on and those for warnings and debugging are turned off.
+In combination with the above procedures, we also make use of the Pyre journals to display warnings and errors to facilitate debugging.
+The journals provide the file name and line number along with the message.
+By default, Pyre journals for errors are turned on and those for warnings and debugging are turned off.
 
 ```{code-block} c++
 ---
@@ -119,7 +125,9 @@ default:
 
 ### Object Declaration Files
 
-Object declaration (header) files use the `.hh` suffix. C header files use the `.h` suffix. The following code excerpt demonstrates the conventions we use in formatting header files and including comments.
+C++ object declaration (header) files use the `.hh` suffix.
+C header files use the `.h` suffix.
+The following code excerpt demonstrates the conventions we use in formatting header files and including comments.
 
 :::{important}
 *All* declarations of class methods should include a description of what the method does and a description of each argument and the return value if it is not void.
@@ -364,7 +372,9 @@ private:
 
 ### Object Implementation Files
 
-Object implementation files use the `.cc` suffix. Inline implementation files use the `.icc` suffix and are included from the definition files. C implementation files use the `.c` suffix.
+C++ object implementation files use the `.cc` suffix.
+Inline implementation files use the `.icc` suffix and are included from the definition (header) files.
+C implementation files use the `.c` suffix.
 
 To facilitate debugging and error messages, we use the following
 macros:
@@ -385,7 +395,9 @@ macros:
 : Use this macro immediately after `PYLITH_METHOD_BEGIN` in methods of all objects that inherit from `GenericComponent`.
 
 `PYLITH_COMPONENT_DEBUG`
-: Use this macro immediately after `PYLITH_METHOD_BEGIN` in methods of all objects that inherit from `PyreComponent`.  Non-abstract classes should call `PyreComponent::setName()` in the constructor. We recommend using a static data member for the name with the lowercase name matching the Pyre component, e.g., "timedependent" for the C++ `TimeDependent` object.
+: Use this macro immediately after `PYLITH_METHOD_BEGIN` in methods of all objects that inherit from `PyreComponent`.
+Non-abstract classes should call `PyreComponent::setName()` in the constructor.
+We recommend using a static data member for the name with the lowercase name matching the Pyre component, e.g., "timedependent" for the C++ `TimeDependent` object.
 
 ```{code-block} c++
 ---

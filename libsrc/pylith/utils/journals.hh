@@ -26,6 +26,7 @@
 #define pylith_utils_journals_hh
 
 #include "pythia/journal/diagnostics.h"
+#include "pylith/utils/mpi.hh"
 
 #define PYLITH_COMPONENT_DEBUG(msg) \
     do { \
@@ -33,6 +34,15 @@
         debug << pythia::journal::at(__HERE__) \
               << "Component '"<<PyreComponent::getIdentifier()<<"': " \
               << msg << pythia::journal::endl; \
+    } while (0)
+
+#define PYLITH_COMPONENT_INFO_ROOT(msg) \
+    do { \
+        if (pylith::utils::MPI::isRoot()) { \
+            pythia::journal::info_t info(PyreComponent::getName()); \
+            info << pythia::journal::at(__HERE__) \
+                 << "Component '"<<PyreComponent::getIdentifier()<<"': " \
+                 << msg << pythia::journal::endl; } \
     } while (0)
 
 #define PYLITH_COMPONENT_INFO(msg) \
@@ -73,6 +83,14 @@
         pythia::journal::debug_t debug(GenericComponent::getName()); \
         debug << pythia::journal::at(__HERE__) \
               << msg << pythia::journal::endl; \
+    } while (0)
+
+#define PYLITH_JOURNAL_INFO_ROOT(msg) \
+    do { \
+        if (pylith::utils::MPI::isRoot()) { \
+            pythia::journal::info_t info(GenericComponent::getName()); \
+            info << pythia::journal::at(__HERE__) \
+                 << msg << pythia::journal::endl; } \
     } while (0)
 
 #define PYLITH_JOURNAL_INFO(msg) \

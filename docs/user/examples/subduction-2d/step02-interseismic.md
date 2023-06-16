@@ -1,8 +1,14 @@
 # Step 2: Quasistatic Interseismic Deformation
 
+% Features extracted from simulation parameter files.
+```{include} step02_interseismic-synopsis.md
+```
+
+## Simulation parameters
+
 In this example we simulate the interseismic deformation associated with the oceanic crust subducting beneath the continental crust and into the mantle.
 We prescribe steady aseismic slip of 8 cm/yr along the interfaces between the oceanic crust and mantle with the interface between the oceanic crust and continental crust locked as shown in {numref}`fig:example:subduction:2d:step02:diagram`.
-We adjust the Dirichlet (displacement) boundary conditions on the lateral edges and bottom of the domain by pinning only the portions of the boundaries that are mantle and continental crust and not oceanic crust.
+The parameters specific to this example are in `step02_interseismic.cfg`.
 
 :::{figure-md} fig:example:subduction:2d:step02:diagram
 <img src="figs/step02-diagram.*" alt="" width="100%">
@@ -12,20 +18,75 @@ We prescribe constant creep on the top and bottom of the subduction slab, except
 We lock (zero creep) that part of the interface.
 :::
 
-% Features extracted from simulation parameter files.
-```{include} step02_interseismic-synopsis.md
+The simulation spans 150 years with an initial time step of 5 years.
+
+```{code-block} cfg
+---
+caption: Time stepping parameters for Step 2.
+---
+[pylithapp.timedependent]
+initial_dt = 5.0*year
+start_time = -5.0*year
+end_time = 150.0*year
 ```
 
-## Simulation parameters
+We create an array with 2 faults, one for the top of the slab and one for the bottom of the slab.
+We use the constant slip rate kinematic source model with a uniform slip rate on the bottom of the slab and a slip rate that varies with depth on the top of the slab.
 
-The parameters specific to this example are in `step02_interseismic.cfg`.
-These include:
+```{code-block} cfg
+---
+caption: Prescribed slip parameters for Step 2.
+---
+[pylithapp.problem]
+interfaces = [fault_slabtop, fault_slabbot]
 
-* `pylithapp.metadata` Metadata for this simulation. Even when the author and version are the same for all simulations in a directory, we prefer to keep that metadata in each simulation file as a reminder to keep it up-to-date for each simulation.
-* `pylithapp` Parameters defining where to write the output.
-* `pylithapp.problem` Parameters defining the start time and end time for the quasistatic simulation.
-* `pylithapp.problem.fault` Parameters for prescribed slip on the fault.
-* `pylithapp.problem.bc` Parameters for velocity boundary conditions.
+[pylithapp.problem.interfaces.fault_slabtop]
+label = fault_slabtop
+label_value = 21
+edge = fault_slabtop_edge
+edge_value = 31
+
+observers.observer.data_fields = [slip]
+
+[pylithapp.problem.interfaces.fault_slabtop.eq_ruptures]
+rupture = pylith.faults.KinSrcConstRate
+
+[pylithapp.problem.interfaces.fault_slabtop.eq_ruptures.rupture]
+db_auxiliary_field = spatialdata.spatialdb.SimpleDB
+db_auxiliary_field.description = Fault rupture auxiliary field spatial database
+db_auxiliary_field.iohandler.filename = fault_slabtop_creep.spatialdb
+db_auxiliary_field.query_type = linear
+
+
+[pylithapp.problem.interfaces.fault_slabbot]
+label = fault_slabbot
+label_value = 22
+edge = fault_slabbot_edge
+edge_value = 32
+
+observers.observer.data_fields = [slip]
+
+[pylithapp.problem.interfaces.fault_slabbot.eq_ruptures]
+rupture = pylith.faults.KinSrcConstRate
+
+[pylithapp.problem.interfaces.fault_slabbot.eq_ruptures.rupture]
+db_auxiliary_field = spatialdata.spatialdb.UniformDB
+db_auxiliary_field.description = Fault rupture auxiliary field spatial database
+db_auxiliary_field.values = [initiation_time, slip_rate_left_lateral, slip_rate_opening]
+db_auxiliary_field.data = [0.0*year, 8.0*cm/year, 0.0*cm/year]
+```
+
+We adjust the Dirichlet (displacement) boundary conditions on the lateral edges and bottom of the domain by pinning only the portions of the boundaries that are mantle and continental crust and not oceanic crust.
+
+```{code-block} cfg
+---
+caption: We use only 3 Dirichlet boundary conditions to allow the slab to move freely on the boundaries.
+---
+[pylithapp.problem]
+bc = [bc_east_mantle, bc_west, bc_bottom]
+```
+
+## Running the simulation
 
 ```{code-block} console
 ---

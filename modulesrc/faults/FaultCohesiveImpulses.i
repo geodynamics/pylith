@@ -23,7 +23,7 @@
 
 namespace pylith {
     namespace faults {
-        class pylith::faults::FaultCohesiveImpulses: public pylith::faults::FaultCohesiveKin {
+        class pylith::faults::FaultCohesiveImpulses : public pylith::faults::FaultCohesiveKin {
             friend class TestFaultCohesiveImpulses; // unit testing
 
             // PUBLIC METHODS /////////////////////////////////////////////////////////////////////
@@ -45,11 +45,12 @@ public:
              * @param size Size of array
              */
             %apply(int* INPLACE_ARRAY1, int DIM1) {
-         	(const int* flags, 
-	         const size_t size)
-	    };
+                (const int* flags,
+                 const size_t size)
+            };
             void setImpulseDOF(const int* flags,
                                const size_t size);
+
             %clear(const int* flags, const size_t size);
 
             /** Set threshold for nonzero impulse amplitude.
@@ -62,7 +63,7 @@ public:
              *
              * @returns Number of impulses.
              */
-            size_t getNumImpulses(void);
+            size_t getNumImpulsesLocal(void);
 
             /** Verify configuration is acceptable.
              *
@@ -89,23 +90,27 @@ protected:
              * @param[in] impulseIndex Index of impulse.
              */
             void _updateSlip(pylith::topology::Field* auxiliaryField,
-                             const size_t impulseIndex);
+                             const long impulseIndex);
 
             /** Set kernels for residual.
              *
              * @param[out] integrator Integrator for material.
              * @param[in] solution Solution field.
+             * @param[in] materials Materials in problem.
              */
             void _setKernelsResidual(pylith::feassemble::IntegratorInterface* integrator,
-                                     const pylith::topology::Field& solution) const;
+                                     const pylith::topology::Field& solution,
+                                     const std::vector<pylith::materials::Material*>& materials) const;
 
             /** Set kernels for Jacobian.
              *
              * @param[out] integrator Integrator for material.
              * @param[in] solution Solution field.
+             * @param[in] materials Materials in problem.
              */
             void _setKernelsJacobian(pylith::feassemble::IntegratorInterface* integrator,
-                                     const pylith::topology::Field& solution) const;
+                                     const pylith::topology::Field& solution,
+                                     const std::vector<pylith::materials::Material*>& materials) const;
 
         }; // class FaultCohesiveImpulses
 

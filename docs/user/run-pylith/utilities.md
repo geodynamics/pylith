@@ -22,12 +22,8 @@ pylith_eqinfo
 pylith_genxdmf
 : Generate Xdmf files from HDF5 files written by PyLith.
 
-:::{admonition} TODO
-:class: error
-
-Update `powerlaw_gendb.py` and add documentation.
-% Add cross reference from `powerlaw.md`.
-:::
+pylith_powerlaw_gendb
+: Generate a spatial database with power-law bulk rheology parameters for PyLith.
 
 ## pyre_doc.py
 
@@ -292,6 +288,20 @@ The default value for `FILE_OR_FILE_PATTERN` is `*.h5`.
 If the HDF5 files contain external datasets, then this utility should be run from the same relative path to the HDF5 files as when they were created.
 For example, if a PyLith simulation was run from directory `work` and HDF5 files were generated in `output/work`, then the utility should be run from the directory `work`.
 Furthermore, a visualization tool, such as ParaView, should also be started from the working directory `work`.
+:::
+
+(sec-user-run-pylith-pylith-powerlaw-gendb)=
+## pylith_powerlaw_gendb
+
+This Pyre application generates a `SimpleDB` spatial database file with power-law viscoelastic material properties for use with PyLith.
+The inputs are spatial databases with values often available from laboratory experiments, such as activation energy, temperature, power-law coefficient, and the power-law exponent.
+An additional parameter defines the units of the activation energy.
+You must also specify either a reference stress or a reference strain rate.
+
+You place all of the application parameters in `powerlaw_gendb.cfg`, which the application will read by default.
+
+:::{admonition} TODO
+Add cross reference to example using `pylith_powerlaw_gendb`.
 :::
 
 % End of file

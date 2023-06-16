@@ -1,7 +1,14 @@
 # Step 1: Gravitational Body Forces
 
+% Metadata extracted from parameter files.
+```{include} step01_gravity-synopsis.md
+```
+
+## Simulation parameters
+
 This example involves a static simulation that solves for the deformation from loading by gravitational body forces.
 {numref}`fig:example:reverse:2d:step01:diagram` shows the boundary conditions on the domain.
+The parameters specific to this example are in `step01_gravity.cfg`.
 
 :::{figure-md} fig:example:reverse:2d:step01:diagram
 <img src="figs/step01-diagram.*" alt="" scale="75%">
@@ -9,18 +16,44 @@ This example involves a static simulation that solves for the deformation from l
 We apply roller boundary conditions on the lateral sides and bottom of the domain.
 :::
 
-% Metadata extracted from parameter files.
-```{include} step01_gravity-synopsis.md
+We solve the static elasticity equation with gravitational body forces,
+%
+\begin{gather}
+\vec{s} = \left(\begin{array}{c} \vec{u} \end{array}\right)^T \\
+\rho(\vec{x}) \vec{g} + \boldsymbol{\nabla} \cdot \boldsymbol{\sigma}(\vec{u}) = \vec{0}.
+\end{gather}
+
+In 2D with gravitational body forces acting in the -y direction, we need to set the direction.
+We also increase the basis order of the displacement solution field to 2 to resolve the linear increase in stress and strain with depth.
+We also set the basis order of the Cauchy stress and strain derived fields for each material to 1.
+
+```{code-block} cfg
+---
+caption: Parameters for gravitational body forces for Step 1.
+---
+[pylithapp.problem]
+gravity_field = spatialdata.spatialdb.GravityField
+gravity_field.gravity_dir = [0.0, -1.0, 0.0]
+
+defaults.quadrature_order = 2
+
+[pylithapp.problem.solution.subfields.displacement]
+basis_order = 2
+
+[pylithapp.problem.materials.slab]
+derived_subfields.cauchy_strain.basis_order = 1
+derived_subfields.cauchy_stress.basis_order = 1
+
+[pylithapp.problem.materials.crust]
+derived_subfields.cauchy_strain.basis_order = 1
+derived_subfields.cauchy_stress.basis_order = 1
+
+[pylithapp.problem.materials.wedge]
+derived_subfields.cauchy_strain.basis_order = 1
+derived_subfields.cauchy_stress.basis_order = 1
 ```
 
-## Simulation parameters
-
-The parameters specific to this example are in `step01_gravity.cfg`.
-These include:
-
-* `pylithapp.metadata` Metadata for this simulation. Even when the author and version are the same for all simulations in a directory, we prefer to keep that metadata in each simulation file as a reminder to keep it up-to-date for each simulation.
-* `pylithapp` Parameters defining where to write the output.
-* `pylithapp.problem` Parameters for specifying the gravitational body forces and adjusting the basis order.
+## Running the simulation
 
 ```{code-block} console
 ---

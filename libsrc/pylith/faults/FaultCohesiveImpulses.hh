@@ -57,17 +57,26 @@ public:
      */
     void setThreshold(const double value);
 
-    /** Get the total number of impulses that will be applied.
+    /** Get the total number of impulses that will be applied on this process.
      *
      * @returns Number of impulses.
      */
-    size_t getNumImpulses(void);
+    size_t getNumImpulsesLocal(void);
 
     /** Verify configuration is acceptable.
      *
      * @param[in] solution Solution field.
      */
     void verifyConfiguration(const pylith::topology::Field& solution) const;
+
+    /** Create integrator and set kernels.
+     *
+     * @param[in] solution Solution field.
+     * @param[in] materials Materials in problem.
+     * @returns Integrator if applicable, otherwise NULL.
+     */
+    pylith::feassemble::Integrator* createIntegrator(const pylith::topology::Field& solution,
+                                                     const std::vector<pylith::materials::Material*>& materials);
 
     /** Create auxiliary field.
      *
@@ -99,26 +108,30 @@ protected:
     /** Update slip subfield in auxiliary field at beginning of time step.
      *
      * @param[out] auxiliaryField Auxiliary field.
-     * @param[in] impulseIndex Index of impulse.
+     * @param[in] impulseIndex Index of impulse (-1 indicates no impulse is applied on this process).
      */
     void _updateSlip(pylith::topology::Field* auxiliaryField,
-                     const size_t impulseIndex);
+                     const long impulseIndex);
 
     /** Set kernels for residual.
      *
      * @param[out] integrator Integrator for material.
      * @param[in] solution Solution field.
+     * @param[in] materials Materials in problem.
      */
     void _setKernelsResidual(pylith::feassemble::IntegratorInterface* integrator,
-                             const pylith::topology::Field& solution) const;
+                             const pylith::topology::Field& solution,
+                             const std::vector<pylith::materials::Material*>& materials) const;
 
     /** Set kernels for Jacobian.
      *
      * @param[out] integrator Integrator for material.
      * @param[in] solution Solution field.
+     * @param[in] materials Materials in problem.
      */
     void _setKernelsJacobian(pylith::feassemble::IntegratorInterface* integrator,
-                             const pylith::topology::Field& solution) const;
+                             const pylith::topology::Field& solution,
+                             const std::vector<pylith::materials::Material*>& materials) const;
 
     // PRIVATE METHODS ////////////////////////////////////////////////////////////////////////////
 private:

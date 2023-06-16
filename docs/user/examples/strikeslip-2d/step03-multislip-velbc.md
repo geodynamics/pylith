@@ -1,33 +1,47 @@
 # Step 3: Multiple Earthquake Ruptures and Velocity Boundary Conditions
 
-This example involves a quasistatic simulation that solves for the deformation from velocity boundary conditions and multiple earthquake ruptures on the fault.
-The velocity boundary conditions match those in Step 2.
-We prescribe the first earthquake rupture to occur at 100 years with 1 meter of right-lateral slip and the second earthquake rupture to occur at 200 years with 3 meters of right-lateral slip.
-{numref}`fig:example:strikeslip:2d:step03:diagram` shows the boundary conditions on the domain.
-
-:::{figure-md} fig:example:strikeslip:2d:step03:diagram
-<img src="figs/step03-diagram.*" alt="" scale="75%">
-
-Boundary conditions for quasistatic simulation with velocity boundary conditions and coseismic slip.
-We set the x displacement to zero on the +x and -x boundaries.
-We set the y velocity to -1 cm/yr on the +x boundary and +1 cm/yr on the -x boundary.
-We prescribe 1 meter of right-lateral slip to occur at 100 years and 3 meters of right-lateral slip to occur at 200 years.
-:::
-
 % Metadata extracted from parameter files.
 ```{include} step03_multislip_velbc-synopsis.md
 ```
 
 ## Simulation parameters
 
+This example involves a quasistatic simulation that solves for the deformation from velocity boundary conditions and multiple earthquake ruptures on the fault.
+The velocity boundary conditions match those in Step 2.
+We prescribe the first earthquake rupture to occur at 100 years with 1 meter of right-lateral slip and the second earthquake rupture to occur at 200 years with 3 meters of right-lateral slip.
+{numref}`fig:example:strikeslip:2d:step03:diagram` shows the boundary conditions on the domain.
 The parameters specific to this example are in `step03_multislip_velbc.cfg`.
-These include:
 
-* `pylithapp.metadata` Metadata for this simulation. Even when the author and version are the same for all simulations in a directory, we prefer to keep that metadata in each simulation file as a reminder to keep it up-to-date for each simulation.
-* `pylithapp` Parameters defining where to write the output.
-* `pylithapp.problem` Parameters defining the start time and end time for the quasistatic simulation.
-* `pylithapp.problem.fault` Parameters for prescribed slip on the fault.
-* `pylithapp.problem.bc` Parameters for velocity boundary conditions.
+:::{figure-md} fig:example:strikeslip:2d:step03:diagram
+<img src="figs/step03-diagram.*" alt="" scale="75%">
+
+Boundary conditions for quasi-static simulation with velocity boundary conditions and coseismic slip.
+We set the x displacement to zero on the +x and -x boundaries.
+We set the y velocity to -1 cm/yr on the +x boundary and +1 cm/yr on the -x boundary.
+We prescribe 1 meter of right-lateral slip to occur at 100 years and 3 meters of right-lateral slip to occur at 200 years.
+:::
+
+```{code-block} cfg
+---
+caption: Prescribed slip rupture parameters for Step 3 with two earthquake ruptures on the strike-slip fault.
+---
+[pylithapp.problem.interfaces.fault]
+eq_ruptures = [one, two]
+
+[pylithapp.problem.interfaces.fault.eq_ruptures.one]
+db_auxiliary_field = spatialdata.spatialdb.UniformDB
+db_auxiliary_field.description = Fault rupture one
+db_auxiliary_field.values = [initiation_time, final_slip_left_lateral, final_slip_opening]
+db_auxiliary_field.data = [100.0*year, -1.0*m, 0.0*m]
+
+[pylithapp.problem.interfaces.fault.eq_ruptures.two]
+db_auxiliary_field = spatialdata.spatialdb.UniformDB
+db_auxiliary_field.description = Fault rupture two
+db_auxiliary_field.values = [initiation_time, final_slip_left_lateral, final_slip_opening]
+db_auxiliary_field.data = [200.0*year, -3.0*m, 0.0*m]
+```
+
+## Running the simulation
 
 ```{code-block} console
 ---

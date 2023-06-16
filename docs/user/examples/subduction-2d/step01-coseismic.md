@@ -1,8 +1,15 @@
 # Step 1: Static Coseismic Slip
 
+% Features extracted from simulation parameter files.
+```{include} step01_coseismic-synopsis.md
+```
+
+## Simulation parameters
+
 This example involves a static simulation that solves for the deformation from prescribed coseismic slip on the subduction interface.
 The depth variation in the prescribed slip is based on the 2011 Tohoku-oki earthquake.
 {numref}`fig:example:subduction:2d:step01:diagram` shows the boundary conditions on the domain.
+The parameters specific to this example are in `step01_coseismic.cfg`.
 
 :::{figure-md} fig:example:subduction:2d:step01:diagram
 <img src="figs/step01-diagram.*" alt="" width="100%">
@@ -11,24 +18,47 @@ Boundary conditions for static coseismic slip on the subduction interface.
 We prescribe reverse slip that varies with depth and roller boundary conditions on the lateral sides and bottom of the domain.
 :::
 
-% Features extracted from simulation parameter files.
-```{include} step01_coseismic-synopsis.md
+We only presceibe slip on the subduction interface, so we create an array with 1 fault.
+We specify slip as a function of depth, so we use a `SimpleDB` with linear interpolation.
+
+```{code-block} cfg
+---
+caption: Fault parameters for Step 1.
+---
+[pylithapp.problem]
+interfaces = [fault]
+
+[pylithapp.problem.interfaces.fault]
+label = fault_slabtop
+label_value = 21
+edge = fault_slabtop_edge
+edge_value = 31
+
+observers.observer.data_fields = [slip]
+
+[pylithapp.problem.interfaces.fault.eq_ruptures.rupture]
+db_auxiliary_field = spatialdata.spatialdb.SimpleDB
+db_auxiliary_field.description = Fault rupture auxiliary field spatial database
+db_auxiliary_field.iohandler.filename = fault_coseismic.spatialdb
+db_auxiliary_field.query_type = linear
 ```
 
-## Simulation parameters
+```{code-block} cfg
+---
+caption: Dirichlet boundary condition parameters for Step 1. We only show the details for the east east boundary of the crust.
+---
+[pylithapp.problem]
+bc = [bc_east_crust, bc_east_mantle, bc_west, bc_bottom]
 
-The parameters specific to this example are in `step01_coseismic.cfg` and include:
+[pylithapp.problem.bc.bc_east_crust]
+label = bndry_east_crust
+label_value = 12
+constrained_dof = [0]
+db_auxiliary_field = pylith.bc.ZeroDB
+db_auxiliary_field.description = Dirichlet BC on east boundary (crust)
+```
 
-* `pylithapp.metadata` Metadata for this simulation. Even when the author and version are the same for all simulations in a directory, we prefer to keep that metadata in each simulation file as a reminder to keep it up-to-date for each simulation.
-* `pylithapp` Parameters defining where to write the output.
-* `pylithapp.problem` Parameters for the solution field with displacement and Lagrange multiplier subfields.
-* `pylithapp.problem.fault` Parameters for prescribed slip on the fault.
-
-:::{important}
-In 2D simulations slip is specified in terms of opening and left-lateral components.
-This provides a consistent, unique sense of slip that is independent of the fault orientation.
-For our geometry in this example, right-lateral slip corresponds to reverse slip on the subduction interface.
-:::
+## Running the simulation
 
 ```{code-block} console
 ---

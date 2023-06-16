@@ -22,7 +22,7 @@
 
 #include "pylith/materials/RheologyPoroelasticity.hh" // HASA RheologyPoroelasticity
 #include "pylith/materials/AuxiliaryFactoryPoroelastic.hh" // USES AuxiliaryFactory
-#include "pylith/materials/DerivedFactoryElasticity.hh" // USES DerivedFactoryElasticity
+#include "pylith/materials/DerivedFactoryPoroelasticity.hh" // USES DerivedFactoryPoroelasticity
 #include "pylith/feassemble/IntegratorDomain.hh" // USES IntegratorDomain
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field::SubfieldInfo
@@ -55,7 +55,7 @@ pylith::materials::Poroelasticity::Poroelasticity(void) :
     _useSourceDensity(false),
     _useStateVars(false),
     _rheology(NULL),
-    _derivedFactory(new pylith::materials::DerivedFactoryElasticity) {
+    _derivedFactory(new pylith::materials::DerivedFactoryPoroelasticity) {
     pylith::utils::PyreComponent::setName("poroelasticity");
 } // constructor
 
@@ -305,9 +305,13 @@ pylith::materials::Poroelasticity::getSolverDefaults(const bool isParallel,
             if (!isParallel) {
                 options->add("-pc_type", "lu");
             } else {
+#if 1
+                options->add("-pc_type", "ml");
+#else
                 options->add("-pc_type", "gamg");
                 options->add("-mg_levels_pc_type", "sor");
                 options->add("-mg_levels_ksp_type", "richardson");
+#endif
             } // if/else
         } // if
         break;
@@ -479,6 +483,9 @@ pylith::materials::Poroelasticity::_setKernelsResidual(pylith::feassemble::Integ
     default:
         PYLITH_COMPONENT_LOGICERROR("Unknown formulation for equations (" << _formulation << ").");
     } // switch
+
+    // Add any MMS body force kernels.
+    kernels.insert(kernels.end(), _mmsBodyForceKernels.begin(), _mmsBodyForceKernels.end());
 
     assert(integrator);
     integrator->setKernelsResidual(kernels, solution);
@@ -894,15 +901,19 @@ pylith::materials::Poroelasticity::_setKernelsDerivedField(pylith::feassemble::I
     const spatialdata::geocoords::CoordSys* coordsys = solution.getMesh().getCoordSys();
     assert(coordsys);
 
-    std::vector<ProjectKernels> kernels(2);
-    kernels[0] = ProjectKernels("cauchy_stress", _rheology->getKernelDerivedCauchyStress(coordsys));
+    std::vector<ProjectKernels> kernels(3);
+    kernels[0] = ProjectKernels("cauchy_stress", _rheology->getKernelCauchyStressVector(coordsys));
 
     const int spaceDim = coordsys->getSpaceDim();
     const PetscPointFunc strainKernel =
-        (3 == spaceDim) ? pylith::fekernels::Poroelasticity3D::cauchyStrain :
-        (2 == spaceDim) ? pylith::fekernels::PoroelasticityPlaneStrain::cauchyStrain :
+        (3 == spaceDim) ? pylith::fekernels::Elasticity3D::infinitesimalStrain_asVector :
+        (2 == spaceDim) ? pylith::fekernels::ElasticityPlaneStrain::infinitesimalStrain_asVector :
         NULL;
     kernels[1] = ProjectKernels("cauchy_strain", strainKernel);
+
+    const PetscPointFunc bulkDensity = pylith::fekernels::Poroelasticity::bulkDensity_asScalar;
+    
+    kernels[2] = ProjectKernels("bulk_density", bulkDensity);
 
     assert(integrator);
     integrator->setKernelsDerivedField(kernels);

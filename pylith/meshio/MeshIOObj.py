@@ -38,13 +38,9 @@ class MeshIOObj(PetscComponent, ModuleMeshIO):
 
         @returns PETSc DMPlex mesh object containing finite-element mesh
         """
-        from pylith.mpi.Communicator import mpi_comm_world
-        comm = mpi_comm_world()
-        if 0 == comm.rank:
+        from pylith.mpi.Communicator import mpi_is_root
+        if mpi_is_root():
             self._info.log("Reading finite-element mesh")
-
-        # Set flags
-        self.debug(debug)
 
         # Initialize coordinate system
         if self.coordsys is None:
@@ -56,7 +52,7 @@ class MeshIOObj(PetscComponent, ModuleMeshIO):
         mesh.setCoordSys(self.coordsys)
 
         # Read mesh
-        ModuleMeshIO.read(self, mesh)
+        ModuleMeshIO.read(self, mesh, debug)
         return mesh
 
     def write(self, mesh):
@@ -64,9 +60,8 @@ class MeshIOObj(PetscComponent, ModuleMeshIO):
 
         @param mesh PETSc mesh object containing finite-element mesh
         """
-        from pylith.mpi.Communicator import mpi_comm_world
-        comm = mpi_comm_world()
-        if 0 == comm.rank:
+        from pylith.mpi.Communicator import mpi_is_root
+        if mpi_is_root():
             self._info.log("Writing finite-element mesh")
         ModuleMeshIO.write(self, mesh)
 

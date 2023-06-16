@@ -1,0 +1,291 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "libtests bc",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${env:PYLITH_BUILDDIR}/tests/libtests/bc/.libs/test_bc",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${env:PYLITH_BUILDDIR}/tests/libtests/bc/",
+            "environment": [],
+            "externalConsole": false,
+            "linux": {
+                "MIMode": "gdb"
+            },
+            "osx": {
+                "MIMode": "lldb"
+            }
+        },
+        {
+            "name": "libtests faults",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${env:PYLITH_BUILDDIR}/tests/libtests/faults/.libs/test_faults",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${env:PYLITH_BUILDDIR}/tests/libtests/faults/",
+            "environment": [],
+            "externalConsole": false,
+            "linux": {
+                "MIMode": "gdb"
+            },
+            "osx": {
+                "MIMode": "lldb"
+            }
+        },
+        {
+            "name": "libtests feassemble",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${env:PYLITH_BUILDDIR}/tests/libtests/feassemble/.libs/test_feassemble",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${env:PYLITH_BUILDDIR}/tests/libtests/feassemble/",
+            "environment": [],
+            "externalConsole": false,
+            "linux": {
+                "MIMode": "gdb"
+            },
+            "osx": {
+                "MIMode": "lldb"
+            }
+        },
+        {
+            "name": "libtests friction",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${env:PYLITH_BUILDDIR}/tests/libtests/friction/.libs/test_friction",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${env:PYLITH_BUILDDIR}/tests/libtests/friction/",
+            "environment": [],
+            "externalConsole": false,
+            "linux": {
+                "MIMode": "gdb"
+            },
+            "osx": {
+                "MIMode": "lldb"
+            }
+        },
+        {
+            "name": "libtests materials",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${env:PYLITH_BUILDDIR}/tests/libtests/materials/.libs/test_materials",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${env:PYLITH_BUILDDIR}/tests/libtests/materials/",
+            "environment": [],
+            "externalConsole": false,
+            "linux": {
+                "MIMode": "gdb"
+            },
+            "osx": {
+                "MIMode": "lldb"
+            }
+        },
+        {
+            "name": "libtests meshio",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${env:PYLITH_BUILDDIR}/tests/libtests/meshio/.libs/test_meshio",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${env:PYLITH_BUILDDIR}/tests/libtests/meshio",
+            "environment": [],
+            "externalConsole": false,
+            "linux": {
+                "MIMode": "gdb"
+            },
+            "osx": {
+                "MIMode": "lldb"
+            }
+        },
+        {
+            "name": "libtests meshio-hdf5",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${env:PYLITH_BUILDDIR}/tests/libtests/meshio/.libs/test_hdf5",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${env:PYLITH_BUILDDIR}/tests/libtests/meshio",
+            "environment": [],
+            "externalConsole": false,
+            "linux": {
+                "MIMode": "gdb"
+            },
+            "osx": {
+                "MIMode": "lldb"
+            }
+        },
+        {
+            "name": "libtests meshio-vtk",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${env:PYLITH_BUILDDIR}/tests/libtests/meshio/.libs/test_vtk",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${env:PYLITH_BUILDDIR}/tests/libtests/meshio",
+            "environment": [],
+            "externalConsole": false,
+            "linux": {
+                "MIMode": "gdb"
+            },
+            "osx": {
+                "MIMode": "lldb"
+            }
+        },
+        {
+            "name": "libtests problems",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${env:PYLITH_BUILDDIR}/tests/libtests/problems/.libs/test_problems",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${env:PYLITH_BUILDDIR}/tests/libtests/problems/",
+            "environment": [],
+            "externalConsole": false,
+            "linux": {
+                "MIMode": "gdb"
+            },
+            "osx": {
+                "MIMode": "lldb"
+            }
+        },
+        {
+            "name": "libtests testing-utils",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${env:PYLITH_BUILDDIR}/tests/libtests/testing/.libs/test_utils",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${env:PYLITH_BUILDDIR}/tests/libtests/testing/",
+            "environment": [],
+            "externalConsole": false,
+            "linux": {
+                "MIMode": "gdb"
+            },
+            "osx": {
+                "MIMode": "lldb"
+            }
+        },
+        {
+            "name": "libtests topology",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${env:PYLITH_BUILDDIR}/tests/libtests/topology/.libs/test_topology",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${env:PYLITH_BUILDDIR}/tests/libtests/topology/",
+            "environment": [],
+            "externalConsole": false,
+            "linux": {
+                "MIMode": "gdb"
+            },
+            "osx": {
+                "MIMode": "lldb"
+            }
+        },
+        {
+            "name": "libtests utils",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${env:PYLITH_BUILDDIR}/tests/libtests/utils/.libs/test_utils",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${env:PYLITH_BUILDDIR}/tests/libtests/utils/",
+            "environment": [],
+            "externalConsole": false,
+            "linux": {
+                "MIMode": "gdb"
+            },
+            "osx": {
+                "MIMode": "lldb"
+            }
+        },
+        {
+            "name": "mmstests linearelasticity/nofaults-2d",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${env:PYLITH_BUILDDIR}/tests/mmstests/linearelasticity/nofaults-2d/.libs/mmstest_linearelasticity_nofaults2d",
+            "stopAtEntry": false,
+            "cwd": "${env:PYLITH_BUILDDIR}/tests/mmstests/linearelasticity/nofaults-2d",
+            "environment": [],
+            "externalConsole": false,
+            "linux": {
+                "MIMode": "gdb"
+            },
+            "osx": {
+                "MIMode": "lldb"
+            }
+        },
+        {
+            "name": "mmstests linearelasticity/nofaults-3d",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${env:PYLITH_BUILDDIR}/tests/mmstests/linearelasticity/nofaults-3d/.libs/mmstest_linearelasticity_nofaults3d",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${env:PYLITH_BUILDDIR}/tests/mmstests/linearelasticity/nofaults-3d",
+            "environment": [],
+            "externalConsole": false,
+            "linux": {
+                "MIMode": "gdb"
+            },
+            "osx": {
+                "MIMode": "lldb"
+            }
+        },
+        {
+            "name": "mmstests linearelasticity/faults-2d",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${env:PYLITH_BUILDDIR}/tests/mmstests/linearelasticity/faults-2d/.libs/mmstest_linearelasticity_faults2d",
+            "stopAtEntry": false,
+            "cwd": "${env:PYLITH_BUILDDIR}/tests/mmstests/linearelasticity/faults-2d",
+            "environment": [],
+            "externalConsole": false,
+            "linux": {
+                "MIMode": "gdb"
+            },
+            "osx": {
+                "MIMode": "lldb"
+            }
+        },
+        {
+            "name": "mmstests incompressibleelasticity/nofaults-2d",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${env:PYLITH_BUILDDIR}/tests/mmstests/incompressibleelasticity/nofaults-2d/.libs/mmstest_incompressibleelasticity_nofaults2d",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${env:PYLITH_BUILDDIR}/tests/mmstests/incompressibleelasticity/nofaults-2d",
+            "environment": [],
+            "externalConsole": false,
+            "linux": {
+                "MIMode": "gdb"
+            },
+            "osx": {
+                "MIMode": "lldb"
+            }
+        },
+        {
+            "name": "Attach to process",
+            "type": "cppdbg",
+            "request": "attach",
+            "processId": "${command:pickProcess}",
+            "program": "/bin/bash", // Any program that exists
+            "linux": {
+                "MIMode": "gdb"
+            },
+            "osx": {
+                "MIMode": "lldb"
+            }
+        }
+    ]
+}

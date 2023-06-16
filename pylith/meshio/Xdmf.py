@@ -70,7 +70,7 @@ class Xdmf(object):
         self._openXdmf()
 
         # Domain
-        cells = self.h5["/topology/cells"]
+        cells = self.h5["/viz/topology/cells"]
         vertices = self.h5["/geometry/vertices"]
         self._openDomain(cells, vertices)
 
@@ -239,7 +239,7 @@ class Xdmf(object):
         numCells, numCorners = cells.shape
         self.file.write(
             "    <DataItem Name=\"cells\" ItemType=\"Uniform\" Format=\"HDF\" NumberType=\"Float\" Precision=\"8\" Dimensions=\"%d %d\">\n"
-            "      &HeavyData;:/topology/cells\n"
+            "      &HeavyData;:/viz/topology/cells\n"
             "    </DataItem>\n"
             % (numCells, numCorners,)
         )

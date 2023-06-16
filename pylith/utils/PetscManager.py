@@ -48,17 +48,15 @@ class PetscManager(PropertyList):
             for arg in options:
                 args.append(arg)
         petsc.initialize(args)
-        from pylith.mpi.Communicator import petsc_comm_world
-        comm = petsc_comm_world()
-        if 0 == comm.rank:
+        from pylith.mpi.Communicator import mpi_is_root
+        if mpi_is_root():
             self._info.log("Initialized PETSc.")
 
     def finalize(self):
         """Finalize PETSc.
         """
-        from pylith.mpi.Communicator import petsc_comm_world
-        comm = petsc_comm_world()
-        if 0 == comm.rank:
+        from pylith.mpi.Communicator import mpi_is_root
+        if mpi_is_root():
             self._info.log("Finalizing PETSc.")
         petsc.finalize()
 

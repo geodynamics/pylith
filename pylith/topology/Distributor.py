@@ -37,8 +37,8 @@ class Distributor(PetscComponent, ModuleDistributor):
     writePartition = pythia.pyre.inventory.bool("write_partition", default=False)
     writePartition.meta['tip'] = "Write partition information to file."
 
-    from pylith.meshio.DataWriterVTK import DataWriterVTK
-    dataWriter = pythia.pyre.inventory.facility("data_writer", factory=DataWriterVTK, family="data_writer")
+    from pylith.meshio.DataWriterHDF5 import DataWriterHDF5
+    dataWriter = pythia.pyre.inventory.facility("data_writer", factory=DataWriterHDF5, family="data_writer")
     dataWriter.meta['tip'] = "Data writer for partition information."
 
     def __init__(self, name="mesh_distributor"):
@@ -68,7 +68,7 @@ class Distributor(PetscComponent, ModuleDistributor):
         mesh.cleanup()
 
         if self.writePartition:
-            self.dataWriter.initialize(problem.normalizer)
+            self.dataWriter.setFilename(problem.defaults.outputDir, problem.defaults.simName, "partition")
             ModuleDistributor.write(self.dataWriter, newMesh)
 
         self._eventLogger.eventEnd(logEvent)

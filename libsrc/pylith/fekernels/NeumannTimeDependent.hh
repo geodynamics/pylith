@@ -29,10 +29,14 @@
 // Include directives ---------------------------------------------------
 #include "fekernelsfwd.hh" // forward declarations
 
+#include "pylith/fekernels/BoundaryDirections.hh" // USES tangential_directions()
+#include "pylith/fekernels/TimeDependentFn.hh" // USES TimeDependentFn
+
 #include "pylith/utils/types.hh"
 
-class pylith::fekernels::NeumannTimeDependent {
+#include <cassert> // USES assert()
 
+class pylith::fekernels::NeumannTimeDependent {
 public:
 
     /** Kernel interface.
@@ -55,15 +59,16 @@ public:
      * @param[in] n Unit vector normal to boundary.
      * @param[in] numConstants Number of registered constants.
      * @param[in] constants Array of registered constants.
-     * @param[out] g0 [dim].
+     * @param[out] f0 [dim].
      */
 
+    // --------------------------------------------------------------------------------------------
     /** Scalar initial value term for time-dependent boundary condition.
      *
      * f_0(x)
      */
-    static
-    void g0_initial_scalar(const PylithInt dim,
+    static inline
+    void f0_initial_scalar(const PylithInt dim,
                            const PylithInt numS,
                            const PylithInt numA,
                            const PylithInt sOff[],
@@ -81,14 +86,19 @@ public:
                            const PylithReal n[],
                            const PylithInt numConstants,
                            const PylithScalar constants[],
-                           PylithScalar g0[]);
+                           PylithScalar f0[]) {
+        pylith::fekernels::TimeDependentFn::initial_scalar_boundary(
+            dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
+            t, x, n, numConstants, constants, f0);
+    } // f0_initial_scalar
 
+    // --------------------------------------------------------------------------------------------
     /** Vector initial value term for time-dependent boundary condition.
      *
      * f_0(x)
      */
-    static
-    void g0_initial_vector(const PylithInt dim,
+    static inline
+    void f0_initial_vector(const PylithInt dim,
                            const PylithInt numS,
                            const PylithInt numA,
                            const PylithInt sOff[],
@@ -106,14 +116,34 @@ public:
                            const PylithReal n[],
                            const PylithInt numConstants,
                            const PylithScalar constants[],
-                           PylithScalar g0[]);
+                           PylithScalar f0[]) {
+        PylithScalar values[3] = { 0.0, 0.0, 0.0 };
+        pylith::fekernels::TimeDependentFn::initial_vector_boundary(
+            dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
+            t, x, n, numConstants, constants, values);
 
+        switch (dim) {
+        case 2:
+            pylith::fekernels::BoundaryDirections::toXY(f0, values, n);
+            break;
+        case 3: {
+            const PylithScalar* refDir1 = &constants[0];
+            const PylithScalar* refDir2 = &constants[3];
+            pylith::fekernels::BoundaryDirections::toXYZ(f0, values, refDir1, refDir2, n);
+            break;
+        }
+        default:
+            assert(0);
+        } // switch
+    } // f0_initial_vector
+
+    // --------------------------------------------------------------------------------------------
     /** Scalar rate term for time-dependent boundary condition.
      *
      * \dot{f}_1(x) * (t-t_1(x)) for t >= t_1(x).
      */
-    static
-    void g0_rate_scalar(const PylithInt dim,
+    static inline
+    void f0_rate_scalar(const PylithInt dim,
                         const PylithInt numS,
                         const PylithInt numA,
                         const PylithInt sOff[],
@@ -131,14 +161,19 @@ public:
                         const PylithReal n[],
                         const PylithInt numConstants,
                         const PylithScalar constants[],
-                        PylithScalar g0[]);
+                        PylithScalar f0[]) {
+        pylith::fekernels::TimeDependentFn::rate_scalar_boundary(
+            dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
+            t, x, n, numConstants, constants, f0);
+    } // f0_rate_scalar
 
+    // --------------------------------------------------------------------------------------------
     /** Vector rate term for time-dependent boundary condition.
      *
      * \dot{f}_1(x) * (t-t_1(x)) for t >= t_1(x).
      */
-    static
-    void g0_rate_vector(const PylithInt dim,
+    static inline
+    void f0_rate_vector(const PylithInt dim,
                         const PylithInt numS,
                         const PylithInt numA,
                         const PylithInt sOff[],
@@ -156,14 +191,34 @@ public:
                         const PylithReal n[],
                         const PylithInt numConstants,
                         const PylithScalar constants[],
-                        PylithScalar g0[]);
+                        PylithScalar f0[]) {
+        PylithScalar values[3] = { 0.0, 0.0, 0.0 };
+        pylith::fekernels::TimeDependentFn::rate_vector_boundary(
+            dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
+            t, x, n, numConstants, constants, values);
 
+        switch (dim) {
+        case 2:
+            pylith::fekernels::BoundaryDirections::toXY(f0, values, n);
+            break;
+        case 3: {
+            const PylithScalar* refDir1 = &constants[0];
+            const PylithScalar* refDir2 = &constants[3];
+            pylith::fekernels::BoundaryDirections::toXYZ(f0, values, refDir1, refDir2, n);
+            break;
+        }
+        default:
+            assert(0);
+        } // switch
+    } // f0_rate_vector
+
+    // --------------------------------------------------------------------------------------------
     /** Scalar time history term for time-dependent boundary condition.
      *
      * f_2(x) * a(t-t_2(x)) for t >= t_2(x).
      */
-    static
-    void g0_timeHistory_scalar(const PylithInt dim,
+    static inline
+    void f0_timeHistory_scalar(const PylithInt dim,
                                const PylithInt numS,
                                const PylithInt numA,
                                const PylithInt sOff[],
@@ -181,14 +236,19 @@ public:
                                const PylithReal n[],
                                const PylithInt numConstants,
                                const PylithScalar constants[],
-                               PylithScalar g0[]);
+                               PylithScalar f0[]) {
+        pylith::fekernels::TimeDependentFn::timeHistory_scalar_boundary(
+            dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
+            t, x, n, numConstants, constants, f0);
+    } // f0_timeHistory_scalar
 
+    // --------------------------------------------------------------------------------------------
     /** Vector time history term for time-dependent boundary condition.
      *
      * f_2(x) * a(t-t_2(x)) for t >= t_2(x).
      */
-    static
-    void g0_timeHistory_vector(const PylithInt dim,
+    static inline
+    void f0_timeHistory_vector(const PylithInt dim,
                                const PylithInt numS,
                                const PylithInt numA,
                                const PylithInt sOff[],
@@ -206,15 +266,35 @@ public:
                                const PylithReal n[],
                                const PylithInt numConstants,
                                const PylithScalar constants[],
-                               PylithScalar g0[]);
+                               PylithScalar f0[]) {
+        PylithScalar values[3] = { 0.0, 0.0, 0.0 };
+        pylith::fekernels::TimeDependentFn::timeHistory_vector_boundary(
+            dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
+            t, x, n, numConstants, constants, values);
 
+        switch (dim) {
+        case 2:
+            pylith::fekernels::BoundaryDirections::toXY(f0, values, n);
+            break;
+        case 3: {
+            const PylithScalar* refDir1 = &constants[0];
+            const PylithScalar* refDir2 = &constants[3];
+            pylith::fekernels::BoundaryDirections::toXYZ(f0, values, refDir1, refDir2, n);
+            break;
+        }
+        default:
+            assert(0);
+        } // switch
+    } // f0_timeHistory_vector
+
+    // --------------------------------------------------------------------------------------------
     /** Compute boundary condition scalar value using initial and rate terms.
      *
      * f_0(x) +
      * \dot{f}_1(x) * H(t-t_1(x)) +
      */
-    static
-    void g0_initialRate_scalar(const PylithInt dim,
+    static inline
+    void f0_initialRate_scalar(const PylithInt dim,
                                const PylithInt numS,
                                const PylithInt numA,
                                const PylithInt sOff[],
@@ -232,15 +312,20 @@ public:
                                const PylithReal n[],
                                const PylithInt numConstants,
                                const PylithScalar constants[],
-                               PylithScalar g0[]);
+                               PylithScalar f0[]) {
+        pylith::fekernels::TimeDependentFn::initialRate_scalar_boundary(
+            dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
+            t, x, n, numConstants, constants, f0);
+    } // f0_initialRate_scalar
 
+    // --------------------------------------------------------------------------------------------
     /** Compute boundary condition vector value using initial and rate terms.
      *
      * f_0(x) +
      * \dot{f}_1(x) * H(t-t_1(x)) +
      */
-    static
-    void g0_initialRate_vector(const PylithInt dim,
+    static inline
+    void f0_initialRate_vector(const PylithInt dim,
                                const PylithInt numS,
                                const PylithInt numA,
                                const PylithInt sOff[],
@@ -258,16 +343,36 @@ public:
                                const PylithReal n[],
                                const PylithInt numConstants,
                                const PylithScalar constants[],
-                               PylithScalar g0[]);
+                               PylithScalar f0[]) {
+        PylithScalar values[3] = { 0.0, 0.0, 0.0 };
+        pylith::fekernels::TimeDependentFn::initialRate_vector_boundary(
+            dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
+            t, x, n, numConstants, constants, values);
 
+        switch (dim) {
+        case 2:
+            pylith::fekernels::BoundaryDirections::toXY(f0, values, n);
+            break;
+        case 3: {
+            const PylithScalar* refDir1 = &constants[0];
+            const PylithScalar* refDir2 = &constants[3];
+            pylith::fekernels::BoundaryDirections::toXYZ(f0, values, refDir1, refDir2, n);
+            break;
+        }
+        default:
+            assert(0);
+        } // switch
+    } // f0_initialRate_vector
+
+    // --------------------------------------------------------------------------------------------
     /** Compute boundary condition scalar value using initial and time history terms.
      *
      * f_0(x) +
      * \dot{f}_1(x) * H(t-t_1(x)) +
      * f_2(x) * a(t-t_2(x)) * H(t-t_2(s).
      */
-    static
-    void g0_initialTimeHistory_scalar(const PylithInt dim,
+    static inline
+    void f0_initialTimeHistory_scalar(const PylithInt dim,
                                       const PylithInt numS,
                                       const PylithInt numA,
                                       const PylithInt sOff[],
@@ -285,16 +390,21 @@ public:
                                       const PylithReal n[],
                                       const PylithInt numConstants,
                                       const PylithScalar constants[],
-                                      PylithScalar g0[]);
+                                      PylithScalar f0[]) {
+        pylith::fekernels::TimeDependentFn::initialTimeHistory_scalar_boundary(
+            dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
+            t, x, n, numConstants, constants, f0);
+    } // f0_initialTimeHistory_scalar
 
+    // --------------------------------------------------------------------------------------------
     /** Compute boundary condition vector value using initial and time history terms.
      *
      * f_0(x) +
      * \dot{f}_1(x) * H(t-t_1(x)) +
      * f_2(x) * a(t-t_2(x)) * H(t-t_2(s).
      */
-    static
-    void g0_initialTimeHistory_vector(const PylithInt dim,
+    static inline
+    void f0_initialTimeHistory_vector(const PylithInt dim,
                                       const PylithInt numS,
                                       const PylithInt numA,
                                       const PylithInt sOff[],
@@ -312,15 +422,35 @@ public:
                                       const PylithReal n[],
                                       const PylithInt numConstants,
                                       const PylithScalar constants[],
-                                      PylithScalar g0[]);
+                                      PylithScalar f0[]) {
+        PylithScalar values[3] = { 0.0, 0.0, 0.0 };
+        pylith::fekernels::TimeDependentFn::initialTimeHistory_vector_boundary(
+            dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
+            t, x, n, numConstants, constants, values);
 
+        switch (dim) {
+        case 2:
+            pylith::fekernels::BoundaryDirections::toXY(f0, values, n);
+            break;
+        case 3: {
+            const PylithScalar* refDir1 = &constants[0];
+            const PylithScalar* refDir2 = &constants[3];
+            pylith::fekernels::BoundaryDirections::toXYZ(f0, values, refDir1, refDir2, n);
+            break;
+        }
+        default:
+            assert(0);
+        } // switch
+    } // f0_initialTimeHistory_vector
+
+    // --------------------------------------------------------------------------------------------
     /** Compute boundary condition scalar value using rate and time history terms.
      *
      * \dot{f}_1(x) * H(t-t_1(x)) +
      * f_2(x) * a(t-t_2(x)) * H(t-t_2(s).
      */
-    static
-    void g0_rateTimeHistory_scalar(const PylithInt dim,
+    static inline
+    void f0_rateTimeHistory_scalar(const PylithInt dim,
                                    const PylithInt numS,
                                    const PylithInt numA,
                                    const PylithInt sOff[],
@@ -338,15 +468,20 @@ public:
                                    const PylithReal n[],
                                    const PylithInt numConstants,
                                    const PylithScalar constants[],
-                                   PylithScalar g0[]);
+                                   PylithScalar f0[]) {
+        pylith::fekernels::TimeDependentFn::rateTimeHistory_scalar_boundary(
+            dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
+            t, x, n, numConstants, constants, f0);
+    } // f0_rateTimeHistory_scalar
 
+    // --------------------------------------------------------------------------------------------
     /** Compute boundary condition vector value using rate and time history terms.
      *
      * \dot{f}_1(x) * H(t-t_1(x)) +
      * f_2(x) * a(t-t_2(x)) * H(t-t_2(s).
      */
-    static
-    void g0_rateTimeHistory_vector(const PylithInt dim,
+    static inline
+    void f0_rateTimeHistory_vector(const PylithInt dim,
                                    const PylithInt numS,
                                    const PylithInt numA,
                                    const PylithInt sOff[],
@@ -364,16 +499,36 @@ public:
                                    const PylithReal n[],
                                    const PylithInt numConstants,
                                    const PylithScalar constants[],
-                                   PylithScalar g0[]);
+                                   PylithScalar f0[]) {
+        PylithScalar values[3] = { 0.0, 0.0, 0.0 };
+        pylith::fekernels::TimeDependentFn::rateTimeHistory_vector_boundary(
+            dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
+            t, x, n, numConstants, constants, values);
 
+        switch (dim) {
+        case 2:
+            pylith::fekernels::BoundaryDirections::toXY(f0, values, n);
+            break;
+        case 3: {
+            const PylithScalar* refDir1 = &constants[0];
+            const PylithScalar* refDir2 = &constants[3];
+            pylith::fekernels::BoundaryDirections::toXYZ(f0, values, refDir1, refDir2, n);
+            break;
+        }
+        default:
+            assert(0);
+        } // switch
+    } // f0_rateTimeHistory_vector
+
+    // --------------------------------------------------------------------------------------------
     /** Compute boundary condition scalar value using initial, rate ,and time history terms.
      *
      * f_0(x) +
      * \dot{f}_1(x) * H(t-t_1(x)) +
      * f_2(x) * a(t-t_2(x)) * H(t-t_2(s).
      */
-    static
-    void g0_initialRateTimeHistory_scalar(const PylithInt dim,
+    static inline
+    void f0_initialRateTimeHistory_scalar(const PylithInt dim,
                                           const PylithInt numS,
                                           const PylithInt numA,
                                           const PylithInt sOff[],
@@ -391,16 +546,21 @@ public:
                                           const PylithReal n[],
                                           const PylithInt numConstants,
                                           const PylithScalar constants[],
-                                          PylithScalar g0[]);
+                                          PylithScalar f0[]) {
+        pylith::fekernels::TimeDependentFn::initialRateTimeHistory_scalar_boundary(
+            dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
+            t, x, n, numConstants, constants, f0);
+    } // f0_initialRateTimeHistory_scalar
 
+    // --------------------------------------------------------------------------------------------
     /** Compute boundary condition vector value using initial, rate, and time history terms.
      *
      * f_0(x) +
      * \dot{f}_1(x) * H(t-t_1(x)) +
      * f_2(x) * a(t-t_2(x)) * H(t-t_2(s).
      */
-    static
-    void g0_initialRateTimeHistory_vector(const PylithInt dim,
+    static inline
+    void f0_initialRateTimeHistory_vector(const PylithInt dim,
                                           const PylithInt numS,
                                           const PylithInt numA,
                                           const PylithInt sOff[],
@@ -418,38 +578,29 @@ public:
                                           const PylithReal n[],
                                           const PylithInt numConstants,
                                           const PylithScalar constants[],
-                                          PylithScalar g0[]);
+                                          PylithScalar f0[]) {
+        PylithScalar values[3] = { 0.0, 0.0, 0.0 };
+        pylith::fekernels::TimeDependentFn::initialRateTimeHistory_vector_boundary(
+            dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
+            t, x, n, numConstants, constants, values);
 
-private:
-    // PRIVATE MEMBERS ///////////////////////////////////////////////////////
+        switch (dim) {
+        case 2:
+            pylith::fekernels::BoundaryDirections::toXY(f0, values, n);
+            break;
+        case 3: {
+            const PylithScalar* refDir1 = &constants[0];
+            const PylithScalar* refDir2 = &constants[3];
+            pylith::fekernels::BoundaryDirections::toXYZ(f0, values, refDir1, refDir2, n);
+            break;
+        }
+        default:
+            assert(0);
+        } // switch
+    } // f0_initialRateTimeHistory_vector
 
-    /** Compute tangential directions from reference direction (first and second choice) and normal direction in 3-D.
-     *
-     * We use the first reference direction if it is not colinear with the normal direction; otherwise, we use the second
-     * reference direction.
-     *
-     * + tangential direction 1 is refDir x normal.
-     * + tangential direction 2 is normal x tangential direction 1.
-     *
-     * @param[in] dim Dimension (must be 3)
-     * @param[in] refDir1 Reference direction (first choice) [3].
-     * @param[in] refDir2 Reference direction (second choice) [3].
-     * @param[in] normDir Normal direction [3].
-     * @param[out] tanDir1 First tangential direction [3].
-     * @param[out] tanDir2 Second tangential direction [3].
-     */
-    static
-    void _tangential_directions(const PylithInt dim,
-                                const PylithScalar refDir1[],
-                                const PylithScalar refDir2[],
-                                const PylithScalar normDir[],
-                                PylithScalar tanDir1[],
-                                PylithScalar tanDir2[]);
-
-    // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 }; // NeumannTimeDependent
 
 #endif // pylith_fekernels_neumanntimedependent_hh
-
 
 // End of file

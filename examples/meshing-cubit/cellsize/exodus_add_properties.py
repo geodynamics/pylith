@@ -55,7 +55,7 @@ def getCellSizeDB(points):
     db.open()
     db.setQueryValues(["vs"])
     data = numpy.zeros((npoints, 1), dtype=numpy.float64)
-    err = numpy.zeros((npoints,), dtype=numpy.int32)
+    err = numpy.zeros((npoints,), dtype=numpy.int64)
     db.multiquery(data, err, points, cs)
     db.close()
 

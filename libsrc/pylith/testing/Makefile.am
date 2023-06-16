@@ -19,21 +19,10 @@
 subpackage = testing
 include $(top_srcdir)/subpackage.am
 
-if ENABLE_TESTING
 subpkginclude_HEADERS = \
-	StubMethodTracker.hh \
-	FaultCohesiveStub.hh \
-	FieldTester.hh \
-	PhysicsStub.hh \
-	PhysicsImplementationStub.hh \
-	ProgressMonitorStub.hh \
-	ObserverPhysicsStub.hh \
-	ObserverSolnStub.hh \
-	MMSTest.hh \
-	TestDriver.hh \
 	testingfwd.hh
 
-endif
+dist_noinst_HEADERS =
 
 
 # End of file

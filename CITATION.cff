@@ -1,0 +1,52 @@
+cff-version: 1.2.0
+title: PyLith
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Brad T
+    family-names: Aagaard
+    email: baagaard@usgs.gov
+    affiliation: U.S. Geological Survey
+    orcid: "https://orcid.org/0000-0002-8795-9833"
+  - given-names: Matthew G
+    family-names: Knepley
+    email: knepley@buffalo.edu
+    affiliation: University at Buffalo
+    orcid: "https://orcid.org/0000-0002-2292-0735"
+  - given-names: Charles A
+    family-names: Williams
+    email: c.williams@gns.cri.nz
+    affiliation: GNS Science
+    orcid: "https://orcid.org/0000-0001-7435-9196"
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.7072811
+repository-code: "https://github.com/geodynamics/pylith"
+url: "https://geodynamics.org/resources/pylith"
+keywords:
+  - crustal deformation
+  - fault
+  - earthquake
+  - finite element
+license: MIT
+version: 3.0.3
+date-released: "2022-10-14"
+preferred-citation:
+  type: article
+  authors:
+    - given-names: Brad T
+      family-names: Aagaard
+      orcid: "https://orcid.org/0000-0002-8795-9833"
+    - given-names: Matthew
+      family-names: Knepley G
+      orcid: "https://orcid.org/0000-0002-2292-0735"
+    - given-names: Charles A
+      family-names: Williams
+      orcid: "https://orcid.org/0000-0001-7435-9196"
+  doi: "10.1002/jgrb.50217"
+  journal: "Journal of Geophysical Research: Solid Earth"
+  title: "A domain decomposition approach to implementing fault slip in finite-element models of quasistatic and dynamic crustal deformation"
+  volume: 118
+  year: 2013

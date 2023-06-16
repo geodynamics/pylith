@@ -1,5 +1,56 @@
 See <https://github.com/geodynamics/pylith/commits/main> for the complete log of changes made to PyLith.
 
+## Version 3.0.3
+
+This is a bug fix release with no new features or changes to the user interface.
+
+* Fixed duplicate integration of fault terms if a fault had one material on one side and multiple materials on the other side.
+* Fixed bugs related to running in parallel.
+  * Creating constraints on buried fault edges failed for some mesh distribution cases.
+  * Green's function problems did not manage fault impulses on multiple processes.
+  * Creating a point mesh for `OutputSolnPoints` failed when running in parallel.
+  * PetscSF inconsistencies generated errors at various times when running in parallel.
+* Update to PETSc 3.18.0.
+
+**Note**: We now use PETSc routines to write the HDF5 files. As a result, there is one change to the layout: `topology/cells` is now `viz/topology/cells`.
+The corresponding Xdmf files reflect this change.
+
+### Binary packages
+
+* Update to Python 3.10.6.
+* Use `gmforker` process manager with MPICH to avoid localhost name issues.
+
+## Version 3.0.2
+
+This is a bug fix release with no new features or changes to the user interface.
+
+* Add check of PyLith version against version requirements specified in metadata of parameter files.
+* Update defaults to better match most use cases.
+  * Use nonlinear solver.
+  * Basis order is 1 for solution fields.
+  * Basis order is 0 for Cauchy stress and strain.
+  * Use ML algebraic multigrid preconditioner (from Trilinos) instead of GAMG preconditioner for more robust solves. This is a temporary change until we find better GAMG settings.
+* Update PETSc to v3.17.3.
+* Remove obsolete LaTeX documentation.
+* Bug fixes
+  * Add `viz` directory missing from `examples/subduction-2d` in source distribution.
+  * Project output fields using correct PETSc routine (`DMProjectFieldLabel()`). Fixes memory access bugs in both serial and parallel.
+  * Fix build warnings.
+  * Fix reordering that causes errors when importing Gmsh files.
+* Documentation
+  * Add discussion of translating boundary value problem information to parameter settings. Add more code blocks to manual.
+  * Add discussion of `examples/troubleshooting-2d` to manual.
+
+### Binary packages
+
+* Added PyQT5 Python module for interactive plotting with matplotlib.
+* Update PyLith Parameter Viewer to v2.0.1 (fix errors in packaging).
+
+### Known issues
+
+* The default PETSc options provide a computationally expensive preconditioner when solving incompressible elasticity problems in parallel. We expect to have a more optimal preconditioner in the next release.
+* You may still encounter a few bugs when running in parallel; they appear to cases with specific partitioning of the mesh in relation to one or more faults.
+
 ## Version 3.0.1
 
 This is a bug fix release with no new features or changes to the user interface.

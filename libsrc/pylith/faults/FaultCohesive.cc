@@ -286,7 +286,8 @@ pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh) {
 // ------------------------------------------------------------------------------------------------
 // Create integrator and set kernels.
 pylith::feassemble::Integrator*
-pylith::faults::FaultCohesive::createIntegrator(const pylith::topology::Field& solution) {
+pylith::faults::FaultCohesive::createIntegrator(const pylith::topology::Field& solution,
+                                                const std::vector<pylith::materials::Material*>& materials) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("createIntegrator(solution="<<solution.getLabel()<<")");
 
@@ -299,8 +300,8 @@ pylith::faults::FaultCohesive::createIntegrator(const pylith::topology::Field& s
         pylith::feassemble::InterfacePatches::createMaterialPairs(this, solution.getDM());
     integrator->setIntegrationPatches(patches);
 
-    _setKernelsResidual(integrator, solution);
-    _setKernelsJacobian(integrator, solution);
+    _setKernelsResidual(integrator, solution, materials);
+    _setKernelsJacobian(integrator, solution, materials);
 
     PYLITH_METHOD_RETURN(integrator);
 } // createIntegrator
@@ -416,6 +417,13 @@ pylith::faults::FaultCohesive::_updateKernelConstants(const PylithReal dt) {
 
     PYLITH_METHOD_END;
 } // _updateKernelConstants
+
+
+// ------------------------------------------------------------------------------------------------
+pylith::feassemble::Integrator*
+pylith::faults::FaultCohesive::createIntegrator(const pylith::topology::Field& solution) {
+    return NULL;
+} // Empty method
 
 
 // End of file

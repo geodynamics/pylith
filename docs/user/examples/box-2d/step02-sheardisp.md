@@ -1,8 +1,15 @@
 # Step 2: Shear Displacement
 
+% Meatadata extracted from parameter files
+```{include} step02_sheardisp-synopsis.md
+```
+
+## Simulation parameters
+
 This example corresponds to shear deformation due to Dirichlet (displacement) boundary conditions.
 We apply Dirichlet (displacement) boundary conditions for the y displacement on the +x (`boundary_xpos`) and -x (`boundary_xneg`) boundaries and for the x displacement on the +y (`boundary_ypos`) and -y (`boundary_yneg`) boundaries.
 {numref}`fig:example:box:2d:step01:diagram` shows the boundary conditions on the domain.
+The parameters specific to this example are in `step02_sheardisp.cfg`.
 
 :::{figure-md} fig:example:box:2d:step02:diagram
 <img src="figs/step02-diagram.*" alt="" scale="75%">
@@ -11,19 +18,31 @@ Boundary conditions for shear deformation.
 We constrain the y displacement on the +x and -x boundaries and the x displacement on the +y and -y boundaries.
 :::
 
-% Meatadata extracted from parameter files
-```{include} step02_sheardisp-synopsis.md
+We create an array of 4 `DirichletTimeDependent` boundary conditions.
+For each of these boundary conditions we must specify which degrees of freedom are constrained, the name of the label marking the boundary (name of the group of vertices in the finite-element mesh file), and the values for the Dirichlet boundary condition.
+The displacement field varies along each boundary, so we use a `SimpleDB` spatial database and the `linear` query type.
+
+```{code-block} cfg
+---
+caption: Specifying the boundary conditions for Step 2. We only show the detailed settings for the -x boundary.
+---
+[pylithapp.problem]
+bc = [bc_xneg, bc_yneg, bc_xpos, bc_ypos]
+bc.bc_xneg = pylith.bc.DirichletTimeDependent
+bc.bc_yneg = pylith.bc.DirichletTimeDependent
+bc.bc_xpos = pylith.bc.DirichletTimeDependent
+bc.bc_ypos = pylith.bc.DirichletTimeDependent
+        
+# Degree of freedom (dof) 1 corresponds to y displacement. 
+constrained_dof = [1]
+label = boundary_xneg
+db_auxiliary_field = spatialdata.spatialdb.SimpleDB
+db_auxiliary_field.description = Dirichlet BC -x edge
+db_auxiliary_field.iohandler.filename = sheardisp_bc_xneg.spatialdb
+db_auxiliary_field.query_type = linear
 ```
 
-## Simulation parameters
-
-The parameters specific to this example are in `step02_sheardisp.cfg`.
-These include:
-
-* `pylithapp.metadata` Metadata for this simulation. Even when the author and version are the same for all simulations in a directory, we prefer to keep that metadata in each simulation file as a reminder to keep it up-to-date for each simulation.
-* `pylithapp` Parameters defining where to write the output.
-* `pylithapp.problem.solution` Specify the basis order for the solution fields, in this case the `displacement` field.
-* `pylithapp.problem.bc` Parameters for the boundary conditions. The displacement field varies  along the boundary, so we use a `SimpleDB` spatial database and the `linear` query type.
+## Running the simulation
 
 ```{code-block} console
 ---

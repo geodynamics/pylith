@@ -148,11 +148,11 @@
 
     % Dirichlet BC on -y
     \coordinate (x) at ($(p0)+(0.5*\domainx,0)$);
-    \draw[bc,arrow] ($(x)+(+0.5*\bndryshift,0)$) -- ++(-\bndryshift,0) node[midway,anchor=north,bc-label] {$u_x=a(y+\pgfmathprintnumber{\halfheight}\,km)$};
+    \draw[bc,arrow] ($(x)+(+0.5*\bndryshift,0)$) -- ++(-\bndryshift,0) node[midway,anchor=north,bc-label] {$u_x=ay$};
 
     % Dirichlet BC on +y
     \coordinate (x) at ($(p3)+(0.5*\domainx,0)$);
-    \draw[bc,arrow] ($(x)+(-0.5*\bndryshift,0)$) -- ++(+\bndryshift,0) node[midway,anchor=south,bc-label] {$u_x=a(y+\pgfmathprintnumber{\halfheight}\,km)$};
+    \draw[bc,arrow] ($(x)+(-0.5*\bndryshift,0)$) -- ++(+\bndryshift,0) node[midway,anchor=south,bc-label] {$u_x=ay$};
 
 }{} % if/else
 
@@ -164,11 +164,11 @@
 
     % Dirichlet BC on -x
     \coordinate (x) at ($(p0)+(0,0.5*\domainy)$);
-    \draw[bc,arrow] ($(x)+(0,+0.5*\bndryshift)$) -- ++(0,-\bndryshift) node[midway,anchor=east,bc-label] {$\begin{array}{l} u_x = a(y+\halfheight\,km) \\ u_y = ax\end{array}$};
+    \draw[bc,arrow] ($(x)+(0,+0.5*\bndryshift)$) -- ++(0,-\bndryshift) node[midway,anchor=east,bc-label] {$\begin{array}{l} u_x = ay \\ u_y = ax \end{array}$};
 
     % Dirichlet BC on +x
     \coordinate (x) at ($(p1)+(0,0.5*\domainy)$);
-    \draw[bc,arrow] ($(x)+(0,-0.5*\bndryshift)$) -- ++(0,+\bndryshift) node[midway,anchor=west,bc-label] {$\begin{array}{l} u_x = a(y+\halfheight\,km) \\ u_y = ax\end{array}$};
+    \draw[bc,arrow] ($(x)+(0,-0.5*\bndryshift)$) -- ++(0,+\bndryshift) node[midway,anchor=west,bc-label] {$\begin{array}{l} u_x = ay \\ u_y = ax \end{array}$};
 
     % Neumann BC on -y
     \coordinate (x) at ($(p0)+(0.5*\domainx,0)$);
@@ -189,24 +189,24 @@
     % Dirichlet BC on -x
     \coordinate (x) at ($(p0)+(0,0.5*\domainy)$);
     \draw[bc,arrow] ($(x)+(0,+0.5*\bndryshift)$) -- ++(0,-\bndryshift) node[midway,anchor=east,bc-label] {$\begin{array}{l}
-         u_x = a(y+\halfheight\,km) + bt(y+\halfheight\,km)H(t-1 yr) \\
-         u_y = ax + btxH(t-1 yr)
+         u_x = ay + bty H(t-1 yr) \\
+         u_y = ax + btx H(t-1 yr)
         \end{array}$};
 
     % Dirichlet BC on +x
     \coordinate (x) at ($(p1)+(0,0.5*\domainy)$);
     \draw[bc,arrow] ($(x)+(0,-0.5*\bndryshift)$) -- ++(0,+\bndryshift) node[midway,anchor=west,bc-label] {$\begin{array}{l}
-        u_x = a(y+\halfheight\,km) + bt(y+\halfheight\,km)H(t-1 yr) \\
-        u_y = ax + btxH(t-1 yr)
+        u_x = ay + bty H(t-1 yr) \\
+        u_y = ax + btx H(t-1 yr)
        \end{array}$};
 
     % Neumann BC on -y
     \coordinate (x) at ($(p0)+(0.5*\domainx,0)$);
-    \draw[bc,arrow] ($(x)+(+0.5*\bndryshift,0)$) -- ++(-\bndryshift,0) node[midway,anchor=north,bc-label] {$\tau_t=-2\mu (a + btH(t-1 yr))$};
+    \draw[bc,arrow] ($(x)+(+0.5*\bndryshift,0)$) -- ++(-\bndryshift,0) node[midway,anchor=north,bc-label] {$\tau_t=-2\mu (a + bt H(t-1 yr))$};
 
     % Neumann BC on +y
     \coordinate (x) at ($(p3)+(0.5*\domainx,0)$);
-    \draw[bc,arrow] ($(x)+(-0.5*\bndryshift,0)$) -- ++(+\bndryshift,0) node[midway,anchor=south,bc-label] {$\tau_t=-2\mu (a + btH(t-1 yr))$};
+    \draw[bc,arrow] ($(x)+(-0.5*\bndryshift,0)$) -- ++(+\bndryshift,0) node[midway,anchor=south,bc-label] {$\tau_t=-2\mu (a + bt H(t-1 yr))$};
 
 
 }{} % if/else

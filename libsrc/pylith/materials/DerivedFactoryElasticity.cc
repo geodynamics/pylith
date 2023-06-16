@@ -29,19 +29,19 @@
 
 #include <cassert>
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::materials::DerivedFactoryElasticity::DerivedFactoryElasticity(void) {
     GenericComponent::setName("derivedfactoryelasticity");
 } // constructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Destructor.
 pylith::materials::DerivedFactoryElasticity::~DerivedFactoryElasticity(void) {}
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Add Cauchy stress subfield to derived field.
 void
 pylith::materials::DerivedFactoryElasticity::addCauchyStress(void) {
@@ -71,7 +71,7 @@ pylith::materials::DerivedFactoryElasticity::addCauchyStress(void) {
 } // addCauchyStress
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Add Cauchy (infinitesimal) strain subfield to derived fields.
 void
 pylith::materials::DerivedFactoryElasticity::addCauchyStrain(void) {
@@ -100,7 +100,7 @@ pylith::materials::DerivedFactoryElasticity::addCauchyStrain(void) {
 } // addCauchyStrain
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Add subfields using discretizations provided.
 void
 pylith::materials::DerivedFactoryElasticity::addSubfields(void) {

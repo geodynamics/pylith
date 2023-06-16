@@ -82,7 +82,7 @@ public:
     /// Test getLabel(), vectorFieldType(), scale(), addDimensionOkay(), getSpaceDim().
     void testGeneralAccessors(void);
 
-    /// Test chartSize(), getStorageSize(), localSection(), globalSection().
+    /// Test chartSize(), getStorageSize(), selectedSection(), globalSection().
     void testSectionAccessors(void);
 
     /// Test localVector(), globalVector().

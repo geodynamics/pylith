@@ -234,7 +234,7 @@ pylith::problems::Problem::setSolution(pylith::topology::Field* field) {
     PYLITH_COMPONENT_DEBUG("Problem::setSolution(field="<<typeid(*field).name()<<")");
 
     assert(_integrationData);
-    _integrationData->setField("solution", field);
+    _integrationData->setField(pylith::feassemble::IntegrationData::solution, field);
 } // setSolution
 
 
@@ -251,7 +251,21 @@ pylith::problems::Problem::getSolution(void) const {
     } // if
 
     PYLITH_METHOD_RETURN(solution);
-}
+} // getSolution
+
+
+// ------------------------------------------------------------------------------------------------
+// Get time derivative solution field.
+const pylith::topology::Field*
+pylith::problems::Problem::getSolutionDot(void) const {
+    assert(_integrationData);
+    pylith::topology::Field* solutionDot = NULL;
+    if (_integrationData->hasField(pylith::feassemble::IntegrationData::solution_dot)) {
+        solutionDot = _integrationData->getField(pylith::feassemble::IntegrationData::solution_dot);
+    } // if
+
+    PYLITH_METHOD_RETURN(solutionDot);
+} // getSolutionDot
 
 
 // ------------------------------------------------------------------------------------------------
@@ -401,9 +415,7 @@ pylith::problems::Problem::initialize(void) {
     // Initialize solution field.
     PetscErrorCode err = DMSetFromOptions(solution->getDM());PYLITH_CHECK_ERROR(err);
     _setupSolution();
-
-    const pylith::topology::Mesh& mesh = solution->getMesh();
-    pylith::topology::CoordsVisitor::optimizeClosure(mesh.getDM());
+    pylith::topology::CoordsVisitor::optimizeClosure(solution->getDM());
 
     // Initialize integrators.
     _createIntegrators();
@@ -425,7 +437,16 @@ pylith::problems::Problem::initialize(void) {
     solution->createGlobalVector();
     solution->createOutputVector();
 
-    _Problem::createNullSpace(solution, "displacement");
+    switch (_formulation) {
+    case pylith::problems::Physics::DYNAMIC:
+    case pylith::problems::Physics::DYNAMIC_IMEX:
+        break;
+    case pylith::problems::Physics::QUASISTATIC:
+        _Problem::createNullSpace(solution, "displacement");
+        break;
+    default:
+        PYLITH_COMPONENT_LOGICERROR("Unknown formulation '"<<_formulation<<".");
+    } // switch
     _Problem::setInterfaceData(solution, _integrators);
 
     pythia::journal::debug_t debug(PyreComponent::getName());
@@ -496,7 +517,7 @@ pylith::problems::Problem::_createIntegrators(void) {
 
     for (size_t i = 0; i < numInterfaces; ++i) {
         assert(_interfaces[i]);
-        pylith::feassemble::Integrator* integrator = _interfaces[i]->createIntegrator(*solution);
+        pylith::feassemble::Integrator* integrator = _interfaces[i]->createIntegrator(*solution, _materials);
         assert(count < maxSize);
         if (integrator) { _integrators[count++] = integrator;}
     } // for
@@ -584,14 +605,14 @@ pylith::problems::Problem::_setupSolution(void) {
             bool found = false;
             for (; cell < cEnd; ++cell) {
                 if (pylith::topology::MeshOps::isCohesiveCell(dmSoln, cell)) {
-                    found=true;
+                    found = true;
                     break;
                 } // if
             } // for
             if (!found) {
                 continue;
             } // if
-            err = DMGetCellDS(dmSoln, cell, &ds);PYLITH_CHECK_ERROR(err);
+            err = DMGetCellDS(dmSoln, cell, &ds, NULL);PYLITH_CHECK_ERROR(err);
             assert(ds);
             err = PetscDSSetImplicit(ds, subfieldInfo.index, PETSC_TRUE);PYLITH_CHECK_ERROR(err);
         } // if

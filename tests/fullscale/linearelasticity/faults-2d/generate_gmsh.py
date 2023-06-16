@@ -68,9 +68,9 @@ class App(GenerateMesh):
         c2 = gmsh.model.geo.add_curve_loop([self.l_yneg1, self.l_fault0, self.l_fault1, self.l_ypos1, -self.l_split0])
         self.s_xmid = gmsh.model.geo.add_plane_surface([c2])
         c3 = gmsh.model.geo.add_curve_loop([self.l_yneg2, self.l_xpos0, -self.l_split1, -self.l_fault0])
-        self.s_xposypos = gmsh.model.geo.add_plane_surface([c3])
+        self.s_xposyneg = gmsh.model.geo.add_plane_surface([c3])
         c4 = gmsh.model.geo.add_curve_loop([self.l_split1, self.l_xpos1, self.l_ypos2, -self.l_fault1])
-        self.s_xposyneg = gmsh.model.geo.add_plane_surface([c4])
+        self.s_xposypos = gmsh.model.geo.add_plane_surface([c4])
 
         gmsh.model.geo.synchronize()
 
@@ -93,6 +93,7 @@ class App(GenerateMesh):
             VertexGroup(name="boundary_ypos", tag=13, dim=1, entities=[self.l_ypos0, self.l_ypos1, self.l_ypos2]),
             VertexGroup(name="fault_xmid", tag=20, dim=1, entities=[self.l_fault0, self.l_fault1]),
             VertexGroup(name="fault_xneg", tag=21, dim=1, entities=[self.l_split0]),
+            VertexGroup(name="patch_xmid", tag=30, dim=2, entities=[self.s_xmid]),
         )
         for group in vertex_groups:
             group.create_physical_group()

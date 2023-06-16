@@ -46,9 +46,14 @@ class TestCase(FullTestCase):
             ),
             Check(
                 mesh_entities=["mat_elastic"],
-                cell_fields = ["cauchy_strain", "cauchy_stress"],
                 vertex_fields = ["displacement"],
-                tolerance = 1.0e-4,
+                cell_fields = ["cauchy_strain"],
+                defaults=defaults,
+            ),
+            Check(
+                mesh_entities=["mat_elastic"],
+                cell_fields = ["cauchy_stress"],
+                scale = 1.0e+6,
                 defaults=defaults,
             ),
             Check(
@@ -62,10 +67,21 @@ class TestCase(FullTestCase):
                 vertex_fields=["displacement"],
                 defaults=defaults,
             ),
+            Check(
+                mesh_entities=["fault"],
+                vertex_fields=["slip"],
+                defaults=defaults,
+            ),
+            Check(
+                mesh_entities=["fault"],
+                vertex_fields=["lagrange_multiplier_fault"],
+                scale = 1.0e+6,
+                defaults=defaults,
+            ),
         ]
 
-    def run_pylith(self, testName, args):
-        FullTestCase.run_pylith(self, testName, args)
+    def run_pylith(self, testName, args, nprocs=1):
+        FullTestCase.run_pylith(self, testName, args, nprocs=nprocs)
 
 
 # -------------------------------------------------------------------------------------------------
@@ -76,7 +92,7 @@ class TestHexGmsh(TestCase):
         self.mesh = meshes.HexGmsh()
         super().setUp()
 
-        TestCase.run_pylith(self, self.name, ["twoblocks.cfg", "twoblocks_hex.cfg"])
+        TestCase.run_pylith(self, self.name, ["twoblocks.cfg", "twoblocks_hex.cfg"], nprocs=2)
         return
 
 
@@ -88,7 +104,7 @@ class TestTetGmsh(TestCase):
         self.mesh = meshes.TetGmsh()
         super().setUp()
 
-        TestCase.run_pylith(self, self.name, ["twoblocks.cfg", "twoblocks_tet.cfg"])
+        TestCase.run_pylith(self, self.name, ["twoblocks.cfg", "twoblocks_tet.cfg"], nprocs=3)
         return
 
 

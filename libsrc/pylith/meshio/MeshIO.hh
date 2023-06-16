@@ -59,23 +59,13 @@ public:
     virtual
     void deallocate(void);
 
-    /** Set debug flag for mesh.
-     *
-     * @param flag True to print debugging information.
-     */
-    void debug(const bool flag);
-
-    /** Get debug flag for mesh.
-     *
-     * @returns True if debugging is on.
-     */
-    bool debug(void) const;
-
     /** Read mesh from file.
      *
-     * @param mesh PyLith finite-element mesh.
+     * @param[in] mesh PyLith finite-element mesh.
+     * @param[in] check Check topology of mesh.
      */
-    void read(pylith::topology::Mesh* mesh);
+  void read(pylith::topology::Mesh* mesh,
+	    const bool check =true);
 
     /** Write mesh to file.
      *
@@ -181,13 +171,11 @@ protected:
     // PROTECTED MEMBERS ////////////////////////////////////////////////////
 protected:
 
-    topology::Mesh* _mesh; ///< Pointer to finite-element mesh.
-
-    bool _debug; ///< True to turn of mesh debugging output.
+  pylith::topology::Mesh* _mesh; ///< Pointer to finite-element mesh.
 
 }; // MeshIO
 
-#include "MeshIO.icc" // inline methods
+
 
 #endif // pylith_meshio_meshio_hh
 

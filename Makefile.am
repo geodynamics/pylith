@@ -30,7 +30,6 @@ endif
 DIST_SUBDIRS = $(SUBDIRS) \
 	examples \
 	developer \
-	doc-latex \
 	docs \
 	release-notes \
 	templates \
@@ -43,11 +42,12 @@ dist_noinst_PYTHON = \
 	applications/pylith_eqinfo \
 	applications/pylith_genxdmf \
 	applications/pylith_runner \
-	applications/powerlaw_gendb
+	applications/pylith_powerlaw_gendb
 
 
 EXTRA_DIST = \
 	AUTHORS \
+	CITATION.cff \
 	CHANGES.md \
 	DEPENDENCIES \
 	INSTALL \

@@ -20,7 +20,7 @@
 
 #include "TestStubMethodTracker.hh" // Implementation of class methods
 
-#include "pylith/testing/StubMethodTracker.hh" // USES StubMethodTracker
+#include "tests/src/StubMethodTracker.hh" // USES StubMethodTracker
 
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION(pylith::testing::TestStubMethodTracker);

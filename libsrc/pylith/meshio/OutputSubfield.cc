@@ -119,8 +119,8 @@ pylith::meshio::OutputSubfield::create(const pylith::topology::Field& field,
 
     PetscSection subfieldSection = NULL;
     PetscInt pStart = 0, pEnd = 0;
-    err = PetscSectionClone(fieldVisitor.localSection(), &subfieldSection);PYLITH_CHECK_ERROR(err);
-    err = PetscSectionGetChart(fieldVisitor.localSection(), &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionClone(fieldVisitor.selectedSection(), &subfieldSection);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionGetChart(fieldVisitor.selectedSection(), &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
     for (PetscInt point = pStart, offset = 0; point < pEnd; ++point) {
         const PetscInt numDof = fieldVisitor.sectionDof(point);
         err = PetscSectionSetOffset(subfieldSection, point, offset);PYLITH_CHECK_ERROR(err);
@@ -218,7 +218,7 @@ pylith::meshio::OutputSubfield::projectWithLabel(const PetscVec& fieldVector) {
     PetscErrorCode err;
     const PetscReal t = PetscReal(_subfieldIndex) + 0.01; // :KLUDGE: Easiest way to get subfield to extract into fn.
 
-    err = DMProjectFieldLabelLocal(_dm, t, _label, 1, &_labelValue, PETSC_DETERMINE, NULL, fieldVector, &_fn, INSERT_VALUES, _vector);PYLITH_CHECK_ERROR(err);
+    err = DMProjectFieldLabel(_dm, t, _label, 1, &_labelValue, PETSC_DETERMINE, NULL, fieldVector, &_fn, INSERT_VALUES, _vector);PYLITH_CHECK_ERROR(err);
     err = VecScale(_vector, _description.scale);PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;

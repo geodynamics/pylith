@@ -4,23 +4,24 @@ If one or more of the CI test runners report an error or someone reports an erro
 
 * debian-stable
 * debian-testing
-* ubuntu-18.04
 * ubuntu-20.04
-* ubuntu-20.10
-* fedora-32
-* fedora-33
+* ubuntu-22.04
+* ubuntu-23.04
+* fedora-37
+* fedora-38
 * centos-7
-* centos-8
+* rockylinux-8
+* rockylinux-9
   
 You need to checkout the PyLith branch that you want to test and be in the top-level PyLith source directory.
 
-```{code-block} console
+```{code-block} bash
 # Change to the top-level PyLith source directory.
-cd PYLITH_TOP_SRC_DIR
+cd $TOP_SRCDIR/pylith
 
 # Set the name of the Linux distribution to use to the BASE_IMAGE environment
 # variable.
-$ BASE_IMAGE=debian-stable
+BASE_IMAGE=debian-stable
 
 # Build a new Docker image with the PyLith source code. The base image will
 # be downloaded as necessary. The "--target build" command line argument
@@ -28,7 +29,7 @@ $ BASE_IMAGE=debian-stable
 # use "--target src".
 $ docker build \
   -t pylith-debug \
-  --build-arg BASE_IMAGE=registry.gitlab.com/cig-pylith/pylith_installer/test-env/$BASE_IMAGE \
+  --build-arg BASE_IMAGE=registry.gitlab.com/cig-pylith/pylith_installer/testenv-$BASE_IMAGE \
   --target build \
   -f docker/pylith-testenv .
 

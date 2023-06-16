@@ -37,6 +37,7 @@
 #include "pylith/materials/materialsfwd.hh" // HOLDSA Material
 #include "pylith/bc/bcfwd.hh" // HOLDSA BoundaryCondition
 #include "pylith/faults/faultsfwd.hh" // HOLDSA FaultCohesive
+#include "pylith/testing/testingfwd.hh" // MMSTest ISA friend
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // HASA GravityField
 
 #include "pylith/topology/topologyfwd.hh" // USES Mesh, Field
@@ -50,6 +51,7 @@
 
 class pylith::problems::Problem : public pylith::utils::PyreComponent {
     friend class TestProblem; // unit testing
+    friend class pylith::testing::MMSTest; // MMS testing
 
     // PUBLIC ENUM /////////////////////////////////////////////////////////////////////////////////////////////////////
 public:
@@ -138,6 +140,12 @@ public:
      * @returns Solution field.
      */
     const pylith::topology::Field* getSolution(void) const;
+
+    /** Get time derivative solution field.
+     *
+     * @returns Time derivative of solution field.
+     */
+    const pylith::topology::Field* getSolutionDot(void) const;
 
     /** Set materials.
      *

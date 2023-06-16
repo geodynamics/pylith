@@ -1,9 +1,16 @@
 # Step 1: Axial Extension
 
+% Meatadata extracted from parameter files
+```{include} step01_axialdisp-synopsis.md
+```
+
+## Simulation parameters
+
 This example corresponds to axial extension in the x direction.
 We apply Dirichlet (displacement) boundary conditions for the x displacement on the +x (`boundary_xpos`) and -x (`boundary_xneg`) boundaries.
 We apply roller Dirichlet boundary conditions on the -y (`boundary_yneg`) boundary.
 {numref}`fig:example:box:2d:step01:diagram` shows the boundary conditions on the domain.
+The parameters specific to this example are in `step01_axialdisp.cfg`.
 
 :::{figure-md} fig:example:box:2d:step01:diagram
 <img src="figs/step01-diagram.*" alt="" scale="75%">
@@ -12,19 +19,34 @@ Boundary conditions for axial extension in the x-direction.
 We constrain the x displacement on the +x and -x boundaries and set the y displacement to zero on the -y boundary.
 :::
 
-% Meatadata extracted from parameter files
-```{include} step01_axialdisp-synopsis.md
+We create an array of 3 `DirichletTimeDependent` boundary conditions.
+For each of these boundary conditions we must specify which degrees of freedom are constrained, the name of the label marking the boundary (name of the group of vertices in the finite-element mesh file), and the values for the Dirichlet boundary condition.
+
+```{code-block} cfg
+---
+caption: Specifying the boundary conditions for Step 1. We only show the detailed settings for the +x boundary.
+---
+[pylithapp.problem]
+bc = [bc_xneg, bc_xpos, bc_yneg]
+bc.bc_xneg = pylith.bc.DirichletTimeDependent
+bc.bc_xpos = pylith.bc.DirichletTimeDependent
+bc.bc_yneg = pylith.bc.DirichletTimeDependent
+        
+[pylithapp.problem.bc.bc_xpos]
+# Set Ux=+2.0*m on the +x boundary.
+# Degree of freedom (dof) 0 corresponds to x displacement. 
+constrained_dof = [0]
+label = boundary_xpos
+
+# The spatial database must contain both components even though we do
+# not constrain the y component.
+db_auxiliary_field = spatialdata.spatialdb.UniformDB
+db_auxiliary_field.description = Dirichlet BC on +x boundary
+db_auxiliary_field.values = [initial_amplitude_x, initial_amplitude_y]
+db_auxiliary_field.data = [+2.0*m, 0*m]
 ```
 
-## Simulation parameters
-
-The parameters specific to this example are in `step01_axialdisp.cfg`.
-These include:
-
-* `pylithapp.metadata` Metadata for this simulation. Even when the author and version are the same for all simulations in a directory, we prefer to keep that metadata in each simulation file as a reminder to keep it up-to-date for each simulation.
-* `pylithapp` Parameters defining where to write the output.
-* `pylithapp.problem.solution` Specify the basis order for the solution fields, in this case the `displacement` field.
-* `pylithapp.problem.bc` Parameters for the boundary conditions.
+## Running the simulation
 
 ```{code-block} console
 ---

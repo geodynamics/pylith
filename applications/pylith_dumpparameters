@@ -1,6 +1,4 @@
 #!/usr/bin/env nemesis
-# -*- Python -*-
-#
 # ======================================================================
 #
 # Brad T. Aagaard, U.S. Geological Survey
@@ -10,20 +8,20 @@
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2017 University of California, Davis
+# Copyright (c) 2010-2022 University of California, Davis
 #
 # See LICENSE.md for license information.
 #
 # ======================================================================
-#
+"""
+This script dumps all PyLith parameters (defaults plus those
+specified by the user to a text file. The default name of the output
+file is 'pylith_parameters.txt'. Verbose output includes a
+description of the parameter along with where it's current value was
+set.
 
-# This script dumps all PyLith parameters (defaults plus those
-# specified by the user to a text file. The default name of the output
-# file is 'pylith_parameters.txt'. Verbose output includes a
-# description of the parameter along with where it's current value was
-# set.
-#
-# Usage: pylith_dumpparameters [--quiet] [--fileout=FILE] [PyLith args]
+Usage: pylith_dumpparameters [--quiet] [--fileout=FILE] [PyLith args]
+"""
 
 
 # ======================================================================

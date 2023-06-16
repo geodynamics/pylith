@@ -20,13 +20,12 @@
 
 #include "TestObserversPhysics.hh" // Implementation of class methods
 
+#include "tests/src/ObserverPhysicsStub.hh" // USES ObserverPhysicsStub
+#include "tests/src/PhysicsImplementationStub.hh" // USES PhysicsImplementationStub
+#include "tests/src/StubMethodTracker.hh" // USES StubMethodTracker
 #include "pylith/problems/ObserversPhysics.hh" // USES ObserversPhysics
-#include "pylith/testing/ObserverPhysicsStub.hh" // USES ObserverPhysicsStub
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
-
-#include "pylith/testing/PhysicsImplementationStub.hh" // USES PhysicsImplementationStub
-#include "pylith/testing/StubMethodTracker.hh" // USES StubMethodTracker
 
 namespace pylith {
     namespace problems {

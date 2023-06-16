@@ -14,7 +14,7 @@
 # ----------------------------------------------------------------------
 #
 
-# @file pylith/problems/SolnDispPresTracStrainVelPdotTdot.py
+# @file pylith/problems/SolnDispPresTracStrainVelTdotPdot.py
 #
 # @brief Python subfields container with displacement, pore pressure, and trace strain subfields, along with their time derivatives.
 
@@ -24,7 +24,7 @@ from .Solution import Solution as SolutionBase
 
 class SolnDispPresTracStrainVelPdotTdot(PetscComponent):
     """
-        Python solution field with displacement, pressure, and trace strain subfields, along with their time derivatives.
+    Container for solution subfields with displacement, pore pressure, and trace strain subfields, along with their time derivatives.
     """
     DOC_CONFIG = {
         "cfg": """
@@ -46,9 +46,9 @@ class SolnDispPresTracStrainVelPdotTdot(PetscComponent):
     pressure.meta['tip'] = "Pressure subfield."
 
     from .SubfieldTraceStrain import SubfieldTraceStrain
-    traceStrain = pythia.pyre.inventory.facility(
+    trace_strain = pythia.pyre.inventory.facility(
         "trace_strain", family="soln_subfield", factory=SubfieldTraceStrain)
-    traceStrain.meta['tip'] = "Trace strain subfield."
+    trace_strain.meta['tip'] = "Trace strain subfield."
 
     from .SubfieldVelocity import SubfieldVelocity
     velocity = pythia.pyre.inventory.facility(
@@ -56,16 +56,16 @@ class SolnDispPresTracStrainVelPdotTdot(PetscComponent):
     velocity.meta['tip'] = "Velocity subfield."
 
     from .SubfieldPressureDot import SubfieldPressureDot
-    pressureT = pythia.pyre.inventory.facility(
+    pressure_t = pythia.pyre.inventory.facility(
         "pressure_t", family="soln_subfield", factory=SubfieldPressureDot)
-    pressureT.meta['tip'] = "PressureT subfield."
+    pressure_t.meta['tip'] = "Pressure_t subfield."
 
     from .SubfieldTraceStrainDot import SubfieldTraceStrainDot
-    traceStrainT = pythia.pyre.inventory.facility(
+    trace_strain_t = pythia.pyre.inventory.facility(
         "trace_strain_t", family="soln_subfield", factory=SubfieldTraceStrainDot)
-    traceStrainT.meta['tip'] = "TraceStrainT subfield."
+    trace_strain_t.meta['tip'] = "Trace strain_t subfield."
 
-    def __init__(self, name="solndispprestracstrainvelpdottdot"):
+    def __init__(self, name="solndispprestracstrainveltdotpdot"):
         """Constructor.
         """
         PetscComponent.__init__(self, name, facility="soln_subfields")
@@ -75,14 +75,14 @@ class SolnDispPresTracStrainVelPdotTdot(PetscComponent):
 
     def components(self):
         """Order of facilities in Inventory is ambiguous, so overwrite
-        components() to insure order is [displacement, pressure, trace_strain, velocity, pressure_t, trace_strain_t].
+        components() to insure order is [displacement, pressure, trace_strain].
 
         """
-        return [self.displacement, self.pressure, self.trace_strain, self.velocity, self.pressureT, self.traceStrainT]
+        return [self.displacement, self.pressure, self.trace_strain, self.velocity, self.pressure_t, self.trace_strain_t]
 
 
 class Solution(SolutionBase):
-    """Python solution field with displacement, pressure, and trace strain subfields, along with their time derivatives.
+    """Python solution field with displacement, pressure, and trace strain subfields.
     """
 
     import pythia.pyre.inventory

@@ -16,9 +16,7 @@
 # ----------------------------------------------------------------------
 #
 
-subpackage = feassemble
-include $(top_srcdir)/subpackage.am
-include $(top_srcdir)/check.am
+include $(top_srcdir)/tests/check_cppunit.am
 
 SUBDIRS = data
 
@@ -31,29 +29,14 @@ test_feassemble_SOURCES = \
 	TestAuxiliaryFactory.cc \
 	TestInterfacePatches.cc \
 	TestInterfacePatches_Cases.cc \
-	test_driver.cc
+	$(top_srcdir)/tests/src/FaultCohesiveStub.cc \
+	$(top_srcdir)/tests/src/StubMethodTracker.cc \
+	$(top_srcdir)/tests/src/driver_cppunit.cc
 
 
 dist_noinst_HEADERS = \
 	TestAuxiliaryFactory.hh \
 	TestInterfacePatches.hh
-
-AM_CPPFLAGS += \
-	$(PETSC_CC_INCLUDES) \
-	-I$(PYTHON_INCDIR) $(PYTHON_EGG_CPPFLAGS)
-
-test_feassemble_LDFLAGS = \
-	$(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
-
-test_feassemble_LDADD = \
-	-lcppunit -ldl \
-	$(top_builddir)/libsrc/pylith/libpylith.la \
-	-lspatialdata \
-	$(PETSC_LIB) $(PYTHON_BLDLIBRARY) $(PYTHON_LIBS) $(PYTHON_SYSLIBS)
-
-if ENABLE_CUBIT
-  test_feassemble_LDADD += -lnetcdf
-endif
 
 
 # End of file

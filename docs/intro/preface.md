@@ -17,9 +17,9 @@ The following peer-reviewed paper discussed the development of PyLith:
 
 To cite the software and manual, use:
 
-- Aagaard, B., M. Knepley, C. Williams (2022), *PyLith v3.0.1.* Davis, CA: Computational Infrastructure of Geodynamics. DOI: 10.5281/zenodo.6667614.
+- Aagaard, B., M. Knepley, C. Williams (2022), *PyLith v3.0.3.* Davis, CA: Computational Infrastructure of Geodynamics. DOI: 10.5281/zenodo.7072811.
 
-- Aagaard, B., M. Knepley, C. Williams (2022), *PyLith Manual, Version 3.0.1.* Davis, CA: Computational Infrastructure of Geodynamics. https://pylith.readthedocs.io/en/v3.0.1
+- Aagaard, B., M. Knepley, C. Williams (2022), *PyLith Manual, Version 3.0.3.* Davis, CA: Computational Infrastructure of Geodynamics. https://pylith.readthedocs.io/en/v3.0.3
 
 ## Support
 

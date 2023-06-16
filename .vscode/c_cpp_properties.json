@@ -4,6 +4,7 @@
             "name": "macos-clang",
             "includePath": [
                 "${workspaceFolder}/libsrc",
+                "${workspaceFolder}",
                 "${env:PYLITH_BUILDDIR}",
                 "${env:PYLITH_DIR}/include",
                 "${env:PYLITHDEPS_DIR}/include",
@@ -12,6 +13,7 @@
                 "${env:HDF5_INCDIR}",
                 "${env:PROJ_INCDIR}",
                 "${env:CPPUNIT_INCDIR}",
+                "${env:CATCH2_INCDIR}",
                 "${env:PETSC_DIR}/include",
                 "${env:PETSC_DIR}/${env:PETSC_ARCH}/include"
             ],
@@ -20,13 +22,14 @@
                 "/Library/Developer/CommandLineTools/SDKs/MacOSX11.sdk/System/Library/Frameworks"
             ],
             "cStandard": "c11",
-            "cppStandard": "c++11",
+            "cppStandard": "c++14",
             "intelliSenseMode": "macos-clang-x64"
         },
         {
             "name": "linux-gcc",
             "includePath": [
                 "${workspaceFolder}/libsrc",
+                "${workspaceFolder}",
                 "${env:PYLITH_BUILDDIR}",
                 "${env:PYLITH_DIR}/include",
                 "${env:PYLITHDEPS_DIR}/include",
@@ -35,12 +38,13 @@
                 "${env:HDF5_INCDIR}",
                 "${env:PROJ_INCDIR}",
                 "${env:CPPUNIT_INCDIR}",
+                "${env:CATCH2_INCDIR}",
                 "${env:PETSC_DIR}/include",
                 "${env:PETSC_DIR}/${env:PETSC_ARCH}/include"
             ],
             "defines": [],
             "cStandard": "c11",
-            "cppStandard": "c++11",
+            "cppStandard": "c++14",
             "intelliSenseMode": "gcc-x64"
         }
     ],

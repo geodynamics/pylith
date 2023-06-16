@@ -73,16 +73,16 @@ We can write the trace of the strain tensor as the dot product of the gradient a
 |                                |    $\vec{v}$    | Velocity field                                                                                                |
 |                                |       $p$       | Pressure field (corresponds to pore fluid pressure)                                                           |
 |                                | $\epsilon_{v}$  | Volumetric (trace) strain                                                                                     |
-| Derived quantities             |  $\boldsymbol{\sigma}$  | Cauchy stress tensor                                                                                          |
-|                                | $\boldsymbol{\epsilon}$ | Cauchy strain tensor                                                                                          |
+| Derived quantities             |  $\boldsymbol{\sigma}$  | Cauchy stress tensor                                                                                  |
+|                                | $\boldsymbol{\epsilon}$ | Cauchy strain tensor                                                                                  |
 |                                |     $\zeta$     | Variation of fluid content (variation of fluid vol. per unit vol. of PM), $\alpha \epsilon_{v} + \frac{p}{M}$ |
 |                                |   $\rho_{b}$    | Bulk density, $\left(1 - \phi\right) \rho_{s} + \phi \rho_{f}$                                                |
-|                                |    $\vec{q}$    | Darcy flux, $-\frac{\boldsymbol{k}}{\mu_{f}} \cdot \left(\nabla p - \vec{f}_{f}\right)$                               |
-|                                |       $M$       | Biot Modulus, $\frac{K_{f}}{\phi} + \frac{K_{s}}{\alpha - \phi}$                                              |
+|                                |    $\vec{q}$    | Darcy flux, $-\frac{\boldsymbol{k}}{\mu_{f}} \cdot \left(\nabla p - \vec{f}_{f}\right)$                       |
+|                                |       $M$       | Biot modulus                                                                                                  |
 | Common constitutive parameters |   $\rho_{f}$    | Fluid density                                                                                                 |
 |                                |   $\rho_{s}$    | Solid (matrix) density                                                                                        |
 |                                |     $\phi$      | Porosity                                                                                                      |
-|                                |    $\boldsymbol{k}$     | Permeability                                                                                                  |
+|                                |    $\boldsymbol{k}$     | Permeability                                                                                          |
 |                                |    $\mu_{f}$    | Fluid viscosity                                                                                               |
 |                                |     $K_{s}$     | Solid grain bulk modulus                                                                                      |
 |                                |     $K_{f}$     | Fluid bulk modulus                                                                                            |

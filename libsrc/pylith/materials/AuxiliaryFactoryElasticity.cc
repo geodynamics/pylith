@@ -33,19 +33,19 @@
 
 #include <cassert>
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::materials::AuxiliaryFactoryElasticity::AuxiliaryFactoryElasticity(void) {
     GenericComponent::setName("auxiliaryfactoryelasticity");
 } // constructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Destructor.
 pylith::materials::AuxiliaryFactoryElasticity::~AuxiliaryFactoryElasticity(void) {}
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Add density subfield to auxiliary fields.
 void
 pylith::materials::AuxiliaryFactoryElasticity::addDensity(void) {
@@ -72,7 +72,7 @@ pylith::materials::AuxiliaryFactoryElasticity::addDensity(void) {
 } // addDensity
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Add body force subfield to auxiliary fields.
 void
 pylith::materials::AuxiliaryFactoryElasticity::addBodyForce(void) {
@@ -103,7 +103,7 @@ pylith::materials::AuxiliaryFactoryElasticity::addBodyForce(void) {
 } // addBodyForce
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Add gravity subfield to auxiliary fields.
 void
 pylith::materials::AuxiliaryFactoryElasticity::addGravityField(spatialdata::spatialdb::GravityField* gf) {

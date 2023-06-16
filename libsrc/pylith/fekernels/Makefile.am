@@ -21,10 +21,10 @@ include $(top_srcdir)/subpackage.am
 
 subpkginclude_HEADERS = \
 	fekernelsfwd.hh \
+	Tensor.hh \
 	BoundaryDirections.hh \
 	Elasticity.hh \
 	IsotropicLinearElasticity.hh \
-	Viscoelasticity.hh \
 	IsotropicLinearMaxwell.hh \
 	IsotropicLinearGenMaxwell.hh \
 	IsotropicPowerLaw.hh \
@@ -37,8 +37,8 @@ subpkginclude_HEADERS = \
 	AbsorbingDampers.hh \
 	FaultCohesiveKin.hh \
 	IsotropicLinearPoroelasticity.hh \
-	Poroelasticity.hh
-
+	Poroelasticity.hh 
+	
 dist_noinst_HEADERS =
 
 dist_noinst_DATA =

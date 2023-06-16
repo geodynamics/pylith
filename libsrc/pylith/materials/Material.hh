@@ -27,6 +27,8 @@
 #include "materialsfwd.hh" // forward declarations
 
 #include "pylith/problems/Physics.hh" // ISA Physics
+#include "pylith/feassemble/IntegratorDomain.hh" // HOLDSA IntegratorDomain::ResidualKenels
+#include "pylith/feassemble/IntegratorInterface.hh" // USES IntegratorInterface::ResidualKernels
 
 #include "pylith/utils/PetscOptions.hh" // USES PetscOptions
 
@@ -54,7 +56,13 @@
 class pylith::materials::Material : public pylith::problems::Physics {
     friend class TestMaterial; // unit testing
 
-    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
+    // PUBLIC TYPEDEFS ////////////////////////////////////////////////////////////////////////////
+public:
+
+    typedef pylith::feassemble::IntegratorInterface::ResidualKernels InterfaceResidualKernels;
+    typedef pylith::feassemble::IntegratorInterface::JacobianKernels InterfaceJacobianKernels;
+
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Default constructor.
@@ -85,6 +93,12 @@ public:
      */
     void setGravityField(spatialdata::spatialdb::GravityField* const g);
 
+    /** Set body force kernels (intended for use in MMS tests).
+     *
+     * @param[in] kernels Array of body force kernels.
+     */
+    void setMMSBodyForceKernels(const std::vector<pylith::feassemble::IntegratorDomain::ResidualKernels>& kernels);
+
     /** Create constraint and set kernels.
      *
      * @param[in] solution Solution field.
@@ -103,17 +117,38 @@ public:
     pylith::utils::PetscOptions* getSolverDefaults(const bool isParallel,
                                                    const bool hasFault) const;
 
-    // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
+    /** Get residual kernels for an interior interface bounding material.
+     *
+     * @param[in] solution Solution field.
+     * @param[in] face Side of interior interface for kernels.
+     * @returns Array of residual kernels for interior interface.
+     */
+    virtual
+    std::vector<InterfaceResidualKernels> getInterfaceKernelsResidual(const pylith::topology::Field& solution,
+                                                                      pylith::feassemble::IntegratorInterface::FaceEnum face) const;
+
+    /** Get Jacobian kernels for an interior interface bounding material.
+     *
+     * @param[in] solution Solution field.
+     * @param[in] face Side of interior interface for kernels.
+     * @returns Array of Jacobian kernels for interior interface.
+     */
+    virtual
+    std::vector<InterfaceJacobianKernels> getInterfaceKernelsJacobian(const pylith::topology::Field& solution,
+                                                                      pylith::feassemble::IntegratorInterface::FaceEnum face) const;
+
+    // PROTECTED MEMBERS //////////////////////////////////////////////////////////////////////////
 protected:
 
     spatialdata::spatialdb::GravityField* _gravityField; ///< Gravity field for gravitational body forces.
+    std::vector<pylith::feassemble::IntegratorDomain::ResidualKernels> _mmsBodyForceKernels;
 
-    // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
+    // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
 private:
 
     std::string _description; ///< Descriptive label for material.
 
-    // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
+    // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
 private:
 
     Material(const Material&); ///< Not implemented.

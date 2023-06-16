@@ -19,7 +19,14 @@ from .meshio import MeshIOPetsc as ModuleMeshIOPetsc
 
 class MeshIOPetsc(MeshIOObj, ModuleMeshIOPetsc):
     """
-    Python object for reading/writing finite-element mesh from simple PETSc file.
+    Python object for a variety of reading/writing finite-element meshes using PETSc.
+    Currently, the primary use of this object is to import meshes from Gmsh.
+
+    :::{warning}
+    The coordinate system associated with the mesh must be a Cartesian coordinate system, such as a generic Cartesian coordinate system or a geographic projection.
+    :::
+
+    Implements `MeshIOObj`.
     """
 
     import pythia.pyre.inventory

@@ -18,6 +18,9 @@
 # @file tests/fullscale/poroelasticity/cryer/TestCryer.py
 #
 # @brief Test suite for testing pylith with Cryer's problem.
+#
+# We do not include trace_strain in the test of the solution fields, because of the
+# poor convergence of the series solution.
 
 import unittest
 
@@ -26,10 +29,6 @@ from pylith.testing.FullTestApp import (FullTestCase, Check, check_data)
 import meshes
 import cryer_soln
 
-# We do not include trace_strain in the test of the solution fields, because of the
-# poor convergence of the series solution.
-SOLUTION_FIELDS = ["displacement", "pressure"]
-SOLUTION_TOLERANCE = 0.5
 
 # -------------------------------------------------------------------------------------------------
 class TestCase(FullTestCase):
@@ -43,9 +42,15 @@ class TestCase(FullTestCase):
         self.checks = [
             Check(
                 mesh_entities=["domain"],
-                vertex_fields=SOLUTION_FIELDS,
+                vertex_fields=["displacement"],
                 defaults=defaults,
-                tolerance=SOLUTION_TOLERANCE,
+                tolerance=0.5,
+            ),
+            Check(
+                mesh_entities=["domain"],
+                vertex_fields=["pressure"],
+                defaults=defaults,
+                scale=1.0e+6,
             ),
             Check(
                 mesh_entities=["poroelastic"],
@@ -65,9 +70,15 @@ class TestCase(FullTestCase):
             ),
             Check(
                 mesh_entities=["poroelastic"],
-                vertex_fields = SOLUTION_FIELDS,
+                vertex_fields = ["displacement"],
                 defaults=defaults,
-                tolerance=SOLUTION_TOLERANCE,
+                tolerance=0.5,
+            ),
+            Check(
+                mesh_entities=["poroelastic"],
+                vertex_fields = ["pressure"],
+                defaults=defaults,
+                scale=1.0e+6,
             ),
             Check(
                 mesh_entities=["x_neg", "y_neg", "z_neg", "surface_pressure"],
@@ -77,9 +88,15 @@ class TestCase(FullTestCase):
             ),
             Check(
                 mesh_entities=["x_neg", "y_neg", "z_neg", "surface_pressure"],
-                vertex_fields=SOLUTION_FIELDS,
+                vertex_fields=["displacement"],
                 defaults=defaults,
-                tolerance=SOLUTION_TOLERANCE,
+                tolerance=0.5,
+            ),
+            Check(
+                mesh_entities=["x_neg", "y_neg", "z_neg", "surface_pressure"],
+                vertex_fields=["pressure"],
+                defaults=defaults,
+                scale=1.0e+6,
             ),
         ]
 

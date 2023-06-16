@@ -30,7 +30,7 @@
 class pylith::materials::DerivedFactoryElasticity : public pylith::topology::FieldFactory {
     friend class TestDerivedFactoryElasticity; // unit testing
 
-    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Default constructor.
@@ -46,9 +46,9 @@ public:
     void addCauchyStrain(void);
 
     /// Add subfields using discretizations provided.
-    void addSubfields(void);
+    virtual void addSubfields(void);
 
-    // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
+    // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
 private:
 
     DerivedFactoryElasticity(const DerivedFactoryElasticity &); ///< Not implemented.

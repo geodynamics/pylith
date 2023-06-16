@@ -1,8 +1,15 @@
 # Step 5: Static Coseismic Slip
 
+% Metadata extracted from parameter files.
+```{include} step05_onefault-synopsis.md
+```
+
+## Simulation parameters
+
 This example involves a static simulation that solves for the deformation from prescribed coseismic slip on the main fault.
 We specify 2 meters of reverse slip.
 {numref}`fig:example:reverse:2d:step05:diagram` shows the boundary conditions on the domain.
+The parameters specific to this example are in `step05_onefault.cfg`.
 
 :::{figure-md} fig:example:reverse:2d:step05:diagram
 <img src="figs/step05-diagram.*" alt="" scale="75%">
@@ -10,19 +17,6 @@ We specify 2 meters of reverse slip.
 Boundary conditions for static coseismic slip on the main fault.
 We prescribe 2 meters of reverse slip with roller boundary conditions on the lateral sides and bottom of the domain.
 :::
-
-% Metadata extracted from parameter files.
-```{include} step05_onefault-synopsis.md
-```
-
-## Simulation parameters
-
-The parameters specific to this example are in `step05_onefault.cfg` and include:
-
-* `pylithapp.metadata` Metadata for this simulation. Even when the author and version are the same for all simulations in a directory, we prefer to keep that metadata in each simulation file as a reminder to keep it up-to-date for each simulation.
-* `pylithapp` Parameters defining where to write the output.
-* `pylithapp.problem` Parameters for the solution field with displacement and Lagrange multiplier subfields.
-* `pylithapp.problem.fault` Parameters for prescribed slip on the fault.
 
 :::{important}
 In 2D simulations slip is specified in terms of opening and left-lateral components.
@@ -34,6 +28,32 @@ For our geometry in this example, right lateral slip corresponds to reverse slip
 The main fault contains one end that is buried within the domain.
 When PyLith inserts cohesive cells into a mesh with buried edges (in this case a point), we must identify these buried edges so that PyLith properly adjusts the topology along these edges.
 :::
+
+We adjust the solution field to include both displacement and the Lagrange multiplier associated with the fault.
+For uniform prescribed slip we use a `UniformDB`.
+
+```{code-block} cfg
+---
+caption: Parameters for earthquake rupture on the main reverse fault in Step 5.
+---
+[pylithapp.problem]
+solution = pylith.problems.SolnDispLagrange
+
+[pylithapp.problem.interfaces.fault]
+label = fault
+label_value = 20
+edge = fault_end
+edge_value = 21
+observers.observer.data_fields = [slip]
+
+[pylithapp.problem.interfaces.fault.eq_ruptures.rupture]
+db_auxiliary_field = spatialdata.spatialdb.UniformDB
+db_auxiliary_field.description = Fault rupture auxiliary field spatial database
+db_auxiliary_field.values = [initiation_time, final_slip_left_lateral, final_slip_opening]
+db_auxiliary_field.data = [0.0*s, -2.0*m, 0.0*m]
+```
+
+## Running the simulation
 
 ```{code-block} console
 ---

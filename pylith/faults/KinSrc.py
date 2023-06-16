@@ -48,7 +48,7 @@ class KinSrc(PetscComponent, ModuleKinSrc):
         ModuleKinSrc.auxFieldDB(self, self.auxFieldDB)
 
         originTimeN = self.originTime / problem.normalizer.getTimeScale()
-        ModuleKinSrc.originTime(self, originTimeN)
+        ModuleKinSrc.setOriginTime(self, originTimeN)
         return
 
     def verifyConfiguration(self):

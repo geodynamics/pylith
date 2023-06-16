@@ -1,0 +1,166 @@
+#!/usr/bin/env nemesis
+# ----------------------------------------------------------------------
+#
+# Brad T. Aagaard, U.S. Geological Survey
+# Charles A. Williams, GNS Science
+# Matthew G. Knepley, University at Buffalo
+#
+# This code was developed as part of the Computational Infrastructure
+# for Geodynamics (http://geodynamics.org).
+#
+# Copyright (c) 2010-2022 University of California, Davis
+#
+# See LICENSE.md for license information.
+#
+# ----------------------------------------------------------------------
+"""
+Pyre application to compute power-law parameters used by PyLith, given
+spatial databases describing the temperature and laboratory-derived
+properties for the various materials. The output is a `SimpleDB` spatial
+database containing the power-law parameters for PyLith.
+"""
+
+import numpy
+
+from pythia.pyre.applications.Script import Script as Application
+
+
+class PowerLawApp(Application):
+    """Pyre application to generate a spatial database with power-law parameters for PyLith.
+    """
+
+    import pythia.pyre.inventory
+    from pythia.pyre.units.pressure import MPa
+    from pythia.pyre.units.time import s
+
+    refSelection = pythia.pyre.inventory.str("reference_value",
+                                             default="strain_rate",
+                                             validator=pythia.pyre.inventory.choice(['stress',
+                                                                                     'strain_rate']))
+    refSelection.meta['tip'] = "Indicates whether reference stress or " \
+        "reference strain rate is provided as input."
+
+    refStress = pythia.pyre.inventory.dimensional("reference_stress", default=1.0 * MPa)
+    refStress.meta['tip'] = "Reference stress value."
+
+    refStrainRate = pythia.pyre.inventory.dimensional("reference_strain_rate", default=1.0e-6 / s)
+    refStrainRate.meta['tip'] = "Reference strain rate value."
+
+    from spatialdata.spatialdb.SimpleDB import SimpleDB
+
+    dbExponent = pythia.pyre.inventory.facility("db_exponent", family="spatial_database", factory=SimpleDB)
+    dbExponent.meta['tip'] = "Spatial database for power-law exponent, n."
+
+    dbActivationE = pythia.pyre.inventory.facility("db_activation_energy", family="spatial_database", factory=SimpleDB)
+    dbActivationE.meta['tip'] = "Spatial database for activation energy, Q."
+
+    dbTemperature = pythia.pyre.inventory.facility("db_temperature", family="spatial_database", factory=SimpleDB)
+    dbTemperature.meta['tip'] = "Spatial database for temperature, T."
+
+    dbAe = pythia.pyre.inventory.facility("db_powerlaw_coefficient", family="spatial_database", factory=SimpleDB)
+    dbAe.meta['tip'] = "Spatial database for power-law coefficient, Ae."
+
+    from spatialdata.spatialdb.generator.Geometry import Geometry
+    geometry = pythia.pyre.inventory.facility("geometry", family="geometry", factory=Geometry)
+    geometry.meta['tip'] = "Geometry for output database."
+
+    dbFilename = pythia.pyre.inventory.str("database_filename", default="powerlaw.spatialdb")
+    dbFilename.meta['tip'] = "Filename for generated spatial database."
+
+    def __init__(self, name="powerlaw_gendb"):
+        Application.__init__(self, name)
+
+    def main(self, *args, **kwds):
+        """
+        Application driver.
+        """
+        # Get output points
+        self._info.log("Reading geometry.")
+        self.geometry.read()
+        points = self.geometry.vertices
+        coordsys = self.geometry.coordsys
+
+        (npoints, spaceDim) = points.shape
+        refStrainRate = numpy.zeros((npoints,), dtype=numpy.float64)
+        refStress = numpy.zeros((npoints,), dtype=numpy.float64)
+
+        # Query databases to get inputs at output points
+        self._info.log("Querying for parameters at output points.")
+        n = self._queryDB(self.dbExponent, "power-law-exponent", points, coordsys)
+        Q = self._queryDB(self.dbActivationE, "activation-energy", points, coordsys)
+        logAe = self._queryDB(self.dbAe, "log-flow-constant", points, coordsys)
+        scaleAe = self._queryDB(self.dbAe, "flow-constant-scale", points, coordsys)
+        T = self._queryDB(self.dbTemperature, "temperature", points, coordsys)
+
+        # Compute power-law parameters
+        self._info.log("Computing parameters at output points.")
+        from pythia.pyre.handbook.constants.fundamental import R
+        Ae = 10**(logAe - scaleAe * n)
+        At = 3**(0.5 * (n + 1)) / 2.0 * Ae * numpy.exp(-Q / (R.value * T))
+
+        if self.refSelection == "stress":
+            refStress[:] = self.refStress.value
+            refStrainRate = self.refStress.value**n * At
+        elif self.refSelection == "strain_rate":
+            refStrainRate[:] = self.refStrainRate.value
+            refStress = (self.refStrainRate.value / At)**(1.0 / n)
+        else:
+            raise ValueError(f"Invalid value (self.refSelection) for reference value.")
+
+        refStressInfo = {
+            'name': "reference-stress",
+            'units': "Pa",
+            'data': refStress.flatten()
+        }
+        refStrainRateInfo = {
+            'name': "reference-strain-rate",
+            'units': "1/s",
+            'data': refStrainRate.flatten()
+        }
+        exponentInfo = {
+            'name': "power-law-exponent",
+            'units': "none",
+            'data': n.flatten()
+        }
+
+        # Write database
+        self._info.log("Writing database.")
+        data = {
+            'points': points,
+            'coordsys': coordsys,
+            'data_dim': self.geometry.dataDim,
+            'values': [refStressInfo, refStrainRateInfo, exponentInfo]
+        }
+        from spatialdata.spatialdb.SimpleIOAscii import createWriter
+        writer = createWriter(self.dbFilename)
+        writer.write(data)
+
+    def _queryDB(self, db, valueName, points, cs):
+        """
+        Query spatial database
+        """
+
+        (npoints, spaceDim) = points.shape
+        data = numpy.zeros((npoints, 1), dtype=numpy.float64)
+        err = numpy.zeros((npoints,), dtype=numpy.int64)
+
+        db.open()
+        db.setQueryValues([valueName])
+        db.multiquery(data, err, points, cs)
+        db.close()
+        errSum = numpy.sum(err)
+        if errSum > 0:
+            msg = "Query for %s failed at %d points.\n" \
+                "Coordinates of points:\n" % (valueName, errSum)
+            msg += "%s" % points[err, :]
+            raise ValueError(msg)
+
+        return data
+
+
+# ----------------------------------------------------------------------
+if __name__ == '__main__':
+    PowerLawApp().run()
+
+
+# End of file

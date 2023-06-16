@@ -41,10 +41,10 @@ namespace pylith {
             getCellWeakForm(PetscDM dm,
                             const PetscInt cell) {
                 PetscErrorCode err = 0;
-                PetscDS prob = NULL;
-                err = DMGetCellDS(dm, cell, &prob);PYLITH_CHECK_ERROR(err);
+                PetscDS ds = NULL;
+                err = DMGetCellDS(dm, cell, &ds, NULL);PYLITH_CHECK_ERROR(err);
                 PetscWeakForm weakForm = NULL;
-                err = PetscDSGetWeakForm(prob, &weakForm);PYLITH_CHECK_ERROR(err);
+                err = PetscDSGetWeakForm(ds, &weakForm);PYLITH_CHECK_ERROR(err);
                 return weakForm;
             } // getCellWeakForm
 
@@ -122,7 +122,6 @@ pylith::feassemble::InterfacePatches::createMaterialPairs(const pylith::faults::
         if (0 == integrationPatches.count(matPair)) {
             integrationPatches[matPair] = ++patchLabelValue;
             pythia::journal::debug_t debug("interfacepatches");
-            // debug.activate();
             debug << pythia::journal::at(__HERE__)
                   << "Creating integration patch on fault '" << fault->getSurfaceLabelName()
                   << "' for material pair ("<< matPair.first << "," << matPair.second<< ") "

@@ -297,7 +297,7 @@ pylith::bc::TimeDependentAuxiliaryFactory::addTimeHistoryValue(void) {
     subfieldDescription.validator = NULL;
 
     _field->subfieldAdd(subfieldDescription, getSubfieldDiscretization("time_history_amplitude"));
-    // No subfield query; populated by integrator or constraint at begining of time step.
+    // No subfield query; populated by integrator or constraint at beginning of time step.
 
     PYLITH_METHOD_END;
 } // addTimeHistoryValue
@@ -359,7 +359,7 @@ pylith::bc::TimeDependentAuxiliaryFactory::updateAuxiliaryField(pylith::topology
     } // for
 
     PYLITH_METHOD_END;
-} // updateAuilixaryField
+} // updateAuxiliaryField
 
 
 // End of file

@@ -26,6 +26,7 @@ class MeshImporter(MeshGenerator):
         "cfg": """
             [pylithapp.meshimporter]
             reorder_mesh = True
+            check_topology = True
             reader = pylith.meshio.MeshIOCubit
             refiner = pylith.topology.RefineUniform
         """
@@ -35,6 +36,9 @@ class MeshImporter(MeshGenerator):
 
     reorderMesh = pythia.pyre.inventory.bool("reorder_mesh", default=True)
     reorderMesh.meta['tip'] = "Reorder mesh using reverse Cuthill-McKee."
+
+    checkTopology = pythia.pyre.inventory.bool("check_topology", default=True)
+    checkTopology.meta['tip'] = "Check topology of imported mesh."
 
     from pylith.meshio.MeshIOAscii import MeshIOAscii
     reader = pythia.pyre.inventory.facility("reader", family="mesh_io", factory=MeshIOAscii)
@@ -67,24 +71,22 @@ class MeshImporter(MeshGenerator):
         """Hook for creating mesh.
         """
         from pylith.utils.profiling import resourceUsageString
-        from pylith.mpi.Communicator import petsc_comm_world
-        comm = petsc_comm_world()
+        from pylith.mpi.Communicator import mpi_is_root
+        isRoot = mpi_is_root()
 
         self._setupLogging()
         logEvent = "%screate" % self._loggingPrefix
         self._eventLogger.eventBegin(logEvent)
 
         # Read mesh
-        mesh = self.reader.read(self.debug)
-        if self.debug:
-            mesh.view()
+        mesh = self.reader.read(self.checkTopology)
 
         # Reorder mesh
         if self.reorderMesh:
             logEvent2 = "%sreorder" % self._loggingPrefix
             self._eventLogger.eventBegin(logEvent2)
             self._debug.log(resourceUsageString())
-            if 0 == comm.rank:
+            if isRoot:
                 self._info.log("Reordering cells and vertices.")
             from pylith.topology.ReverseCuthillMcKee import ReverseCuthillMcKee
             ordering = ReverseCuthillMcKee()
@@ -93,17 +95,17 @@ class MeshImporter(MeshGenerator):
 
         # Adjust topology
         self._debug.log(resourceUsageString())
-        if 0 == comm.rank:
+        if isRoot:
             self._info.log("Adjusting topology.")
         self._adjustTopology(mesh, faults, problem)
 
         # Distribute mesh
+        from pylith.mpi.Communicator import mpi_comm_world
+        comm = mpi_comm_world()
         if comm.size > 1:
-            if 0 == comm.rank:
+            if isRoot:
                 self._info.log("Distributing mesh.")
             mesh = self.distributor.distribute(mesh, problem)
-            if self.debug:
-                mesh.view()
             mesh.memLoggingStage = "DistributedMesh"
 
         # Refine mesh (if necessary)

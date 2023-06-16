@@ -47,7 +47,8 @@ class TestCase(FullTestCase):
             ),
             Check(
                 mesh_entities=["elastic_xpos", "elastic_xneg"],
-                vertex_fields = ["displacement", "cauchy_strain", "cauchy_stress"],
+                vertex_fields = ["displacement"],
+                cell_fields = ["cauchy_strain", "cauchy_stress"],
                 defaults=defaults,
             ),
             Check(
@@ -63,8 +64,8 @@ class TestCase(FullTestCase):
             ),
         ]
 
-    def run_pylith(self, testName, args):
-        FullTestCase.run_pylith(self, testName, args, axialdisp_gendb.GenerateDB)
+    def run_pylith(self, testName, args, nprocs=1):
+        FullTestCase.run_pylith(self, testName, args, axialdisp_gendb.GenerateDB, nprocs)
 
 
 # -------------------------------------------------------------------------------------------------
@@ -75,7 +76,7 @@ class TestQuadGmsh(TestCase):
         self.mesh = meshes.QuadGmsh()
         super().setUp()
 
-        TestCase.run_pylith(self, self.name, ["axialdisp.cfg", "axialdisp_quad.cfg"])
+        TestCase.run_pylith(self, self.name, ["axialdisp.cfg", "axialdisp_quad.cfg"], nprocs=3)
         return
 
 
@@ -87,7 +88,7 @@ class TestTriGmsh(TestCase):
         self.mesh = meshes.TriGmsh()
         super().setUp()
 
-        TestCase.run_pylith(self, self.name, ["axialdisp.cfg", "axialdisp_tri.cfg"])
+        TestCase.run_pylith(self, self.name, ["axialdisp.cfg", "axialdisp_tri.cfg"], nprocs=4)
         return
 
 

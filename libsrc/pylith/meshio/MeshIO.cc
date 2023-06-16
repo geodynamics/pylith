@@ -36,8 +36,7 @@
 // ----------------------------------------------------------------------
 // Constructor
 pylith::meshio::MeshIO::MeshIO(void) :
-    _mesh(0),
-    _debug(false) { // constructor
+    _mesh(0) {
 } // constructor
 
 
@@ -66,7 +65,8 @@ pylith::meshio::MeshIO::getMeshDim(void) const { // getMeshDim
 // ----------------------------------------------------------------------
 // Read mesh from file.
 void
-pylith::meshio::MeshIO::read(topology::Mesh* mesh) {
+pylith::meshio::MeshIO::read(pylith::topology::Mesh* mesh,
+			     const bool checkTopology) {
     PYLITH_METHOD_BEGIN;
 
     assert(mesh);
@@ -91,7 +91,7 @@ pylith::meshio::MeshIO::read(topology::Mesh* mesh) {
     for (int i = 0; i < dim; ++i) {
         msg << "\n    (" << cmin[i] << ", " << cmax[i] << ")";
     } // for
-    PYLITH_COMPONENT_INFO(msg.str());
+    PYLITH_COMPONENT_INFO_ROOT(msg.str());
     const PetscReal tolerance = 1.0e-8;
     if (volume < tolerance) {
         msg.clear();
@@ -103,7 +103,9 @@ pylith::meshio::MeshIO::read(topology::Mesh* mesh) {
     } // if
 
     // Check mesh consistency
-    topology::MeshOps::checkTopology(*_mesh);
+    if (checkTopology) {
+      pylith::topology::MeshOps::checkTopology(*_mesh);
+    } // if
 
     pythia::journal::debug_t debug(PyreComponent::getName());
     if (debug.state()) {
@@ -121,7 +123,7 @@ pylith::meshio::MeshIO::read(topology::Mesh* mesh) {
 // ----------------------------------------------------------------------
 // Write mesh to file.
 void
-pylith::meshio::MeshIO::write(topology::Mesh* const mesh) { // write
+pylith::meshio::MeshIO::write(pylith::topology::Mesh* const mesh) { // write
     PYLITH_METHOD_BEGIN;
 
     assert(mesh);

@@ -1,24 +1,69 @@
 # Step 3: Gravitational Body Forces with Incompressible Elasticity
 
-In this example we use incompressible elasticity (see {ref}`sec-user-governing-eqns-incompressible-elasticity` for the governing equations and finite-element formulation) to obtain the stress field associated with gravitational body forces.
-Because the material is incompressible and the material is confined on the lateral boundaries and bottom, we do not expect any deformation.
-In general, this is a more robust way to determine an initial stress state for gravitational body forces compared to using a reference stress state, especially when the material properties are not uniform.
-We use the same roller boundary conditions that we used in Steps 1 and 2.
-
 % Metadata extracted from parameter files.
 ```{include} step03_gravity_incompressible-synopsis.md
 ```
 
 ## Simulation parameters
 
-The parameters specific to this example are in `step03_gravity_incompressible.cfg`.
-These include:
+In this example we use incompressible elasticity (see {ref}`sec-user-governing-eqns-incompressible-elasticity` for the finite-element formulation) to obtain the stress field associated with gravitational body forces,
+%
+\begin{gather}
+\vec{s} = \left( \vec{u} \quad \ p \right)^T, \\
+\rho(\vec{x})\vec{g} + \boldsymbol{\nabla} \cdot \left(\boldsymbol{\sigma}^\mathit{dev}(\vec{u}) - p\boldsymbol{I}\right) = \vec{0}, \\
+\vec{\nabla} \cdot \vec{u} + \frac{p}{K} = 0.
+\end{gather}
 
-* `pylithapp.metadata` Metadata for this simulation. Even when the author and version are the same for all simulations in a directory, we prefer to keep that metadata in each simulation file as a reminder to keep it up-to-date for each simulation.
-* `pylithapp` Parameters defining where to write the output.
-* `pylithapp.problem` Parameters for specifying the gravitational body forces and using displacement and pressure in the solution field for incompressible elasticity.
-* `pylithapp.problem.materials` Use linear, isotropic incompressible elasticity.
-* `pylithapp.problem.bc` Add a Dirichlet boundary condition to specify zero pressure on the top surface (+y boundary).
+Because the material is incompressible and the material is confined on the lateral boundaries and bottom, we do not expect any deformation.
+In general, this is a more robust way to determine an initial stress state for gravitational body forces compared to using a reference stress state, especially when the material properties are not uniform.
+We use the same roller boundary conditions that we used in Steps 1 and 2.
+The parameters specific to this example are in `step03_gravity_incompressible.cfg`.
+
+```{code-block} cfg
+---
+caption: Parameters for incompressible elasticity in Step 3.
+---
+solution = pylith.problems.SolnDispPres
+
+[pylithapp.problem.materials]
+slab = pylith.materials.IncompressibleElasticity
+crust = pylith.materials.IncompressibleElasticity
+wedge = pylith.materials.IncompressibleElasticity
+
+[pylithapp.problem.materials.slab]
+db_auxiliary_field.iohandler.filename = mat_elastic_incompressible.spatialdb
+
+[pylithapp.problem.materials.crust]
+db_auxiliary_field.iohandler.filename = mat_elastic_incompressible.spatialdb
+
+[pylithapp.problem.materials.wedge]
+db_auxiliary_field.iohandler.filename = mat_elastic_incompressible.spatialdb
+```
+
+With pressure as a solution subfield, we add a Dirichlet boundary condition to set the confining pressure to 0 on the ground surface (+y boundary).
+
+```{code-block} cfg
+---
+caption: Adjustments to the Dirichlet boundary condition parameters for Step 3.
+---
+[pylithapp.problem]
+bc = [bc_xneg, bc_xpos, bc_yneg, bc_ypos]
+bc.bc_ypos = pylith.bc.DirichletTimeDependent
+
+[pylithapp.problem.bc.bc_ypos]
+label = boundary_ypos
+label_value = 13
+constrained_dof = [0]
+field = pressure
+db_auxiliary_field = pylith.bc.ZeroDB
+db_auxiliary_field.description = Dirichlet BC for pressure on +y edge
+
+auxiliary_subfields.initial_amplitude.basis_order = 0
+
+observers.observer.data_fields = [pressure]
+```
+
+## Running the simulation
 
 ```{code-block} console
 ---

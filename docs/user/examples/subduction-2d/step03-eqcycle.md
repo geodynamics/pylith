@@ -1,7 +1,14 @@
 # Step 3: Quasistatic Earthquake Cycle
 
+% Features extracted from simulation parameter files.
+```{include} step03_eqcycle-synopsis.md
+```
+
+## Simulation parameters
+
 This simulation combines 300 years of interseismic deformation from Step 2 with the coseismic deformation from Step 1 applied at 150 years to create a simple model of an earthquake cycle.
 {numref}`fig:example:subduction:2d:step03:diagram` shows the schematic of the boundary conditions.
+The parameters specific to this example are in `step03_eqcycle.cfg`.
 
 :::{figure-md} fig:example:subduction:2d:step03:diagram
 <img src="figs/step03-diagram.*" alt="" width="100%">
@@ -10,24 +17,50 @@ Boundary conditions for a simple earthquake cycle with presribed coseismic slip 
 We combine the coseismic slip from Step 1 with the interseismic slip from Step 2.
 :::
 
-% Features extracted from simulation parameter files.
-```{include} step03_eqcycle-synopsis.md
-```
-
-## Simulation parameters
-
-The parameters specific to this example are in `step03_eqcycle.cfg`.
-These include:
-
-* `pylithapp.metadata` Metadata for this simulation. Even when the author and version are the same for all simulations in a directory, we prefer to keep that metadata in each simulation file as a reminder to keep it up-to-date for each simulation.
-* `pylithapp` Parameters defining where to write the output.
-* `pylithapp.problem` Parameters defining the start time and end time for the quasistatic simulation.
-* `pylithapp.problem.fault` Parameters for prescribed slip on the fault.
-* `pylithapp.problem.bc` Parameters for velocity boundary conditions.
-
 On the interface along the top of the subducting oceanic crust and the continental crust and mantle we create two earthquake ruptures.
 The first rupture applies the coseismic slip from Step 1 at 150 years, while the second rupture prescribes the same steady, aseismic slip as in Step 2.
 On the interface between the bottom of the subducting oceanic crust and the mantle, we prescribe the same steady, aseismic slip as that in Step 2.
+
+```{code-block} cfg
+---
+caption: Prescribed slip parameters for Step 3. We only show the details for the top of the slab.
+---
+[pylithapp.problem]
+interfaces = [fault_slabtop, fault_slabbot]
+
+[pylithapp.problem.interfaces.fault_slabtop]
+label = fault_slabtop
+label_value = 21
+edge = fault_slabtop_edge
+edge_value = 31
+
+observers.observer.data_fields = [slip]
+
+eq_ruptures = [creep, earthquake]
+
+# Creep
+eq_ruptures.creep = pylith.faults.KinSrcConstRate
+eq_ruptures.creep.origin_time = 0.0*year
+
+
+# Earthquake
+eq_ruptures.earthquake = pylith.faults.KinSrcStep
+eq_ruptures.earthquake.origin_time = 150.0*year
+
+[pylithapp.timedependent.interfaces.fault_slabtop.eq_ruptures.earthquake]
+db_auxiliary_field = spatialdata.spatialdb.SimpleDB
+db_auxiliary_field.description = Fault rupture auxiliary field spatial database
+db_auxiliary_field.iohandler.filename = fault_coseismic.spatialdb
+db_auxiliary_field.query_type = linear
+
+[pylithapp.timedependent.interfaces.fault_slabtop.eq_ruptures.creep]
+db_auxiliary_field = spatialdata.spatialdb.SimpleDB
+db_auxiliary_field.description = Fault rupture auxiliary field spatial database
+db_auxiliary_field.iohandler.filename = fault_slabtop_creep.spatialdb
+db_auxiliary_field.query_type = linear
+```
+
+## Running the simulation
 
 ```{code-block} console
 ---

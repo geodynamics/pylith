@@ -35,14 +35,16 @@ class RunnerApp():
             searchpath (str), default: "."
                 Search path for .cfg files.
         """
-        args = argparse.Namespace(
-            **kwargs) if kwargs else self._parse_command_line()
+        args = argparse.Namespace(**kwargs) if kwargs else self._parse_command_line()
 
         for filename in sorted(pathlib.Path(args.searchpath).glob("**/*.cfg")):
             metadata = fromFile(filename)
             if metadata:
                 if metadata.arguments:
-                    self._run_pylith(filename, metadata.arguments)
+                    pylith_arguments = metadata.arguments
+                    if args.nodes > 1:
+                        pylith_arguments += [f"--nodes={args.nodes}"]
+                    self._run_pylith(filename, pylith_arguments)
                 elif args.verbose:
                     print(f"WARNING: File {filename} missing PyLith arguments.")
             elif args.verbose:
@@ -87,9 +89,10 @@ class RunnerApp():
                             dest="searchpath", default=".", help="Search path for .cfg files.")
         parser.add_argument("--verbose", action="store_true",
                             dest="verbose", help="Report missing metadata.")
+        parser.add_argument("--nodes", action="store", default=1, type=int,
+                            dest="nodes", help="Number of processes to use when running PyLith.")
 
         args = parser.parse_args()
-
         return args
 
 

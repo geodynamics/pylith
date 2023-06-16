@@ -26,8 +26,7 @@ SUBDIRS = \
 	bc \
 	faults \
 	friction \
-	fekernels \
-	testing
+	fekernels
 
 
 lib_LTLIBRARIES = libpylith.la
@@ -54,6 +53,7 @@ libpylith_la_SOURCES = \
 	faults/KinSrcTimeHistory.cc \
 	faults/KinSrcAuxiliaryFactory.cc \
 	faults/TopologyOps.cc \
+	faults/FaultOps.cc \
 	feassemble/PhysicsImplementation.cc \
 	feassemble/Integrator.cc \
 	feassemble/IntegratorDomain.cc \
@@ -62,47 +62,35 @@ libpylith_la_SOURCES = \
 	feassemble/IntegrationData.cc \
 	feassemble/InterfacePatches.cc \
 	feassemble/UpdateStateVars.cc \
+	feassemble/JacobianValues.cc \
 	feassemble/Constraint.cc \
 	feassemble/ConstraintSpatialDB.cc \
 	feassemble/ConstraintUserFn.cc \
 	feassemble/ConstraintSimple.cc \
 	feassemble/AuxiliaryFactory.cc \
-	fekernels/BoundaryDirections.cc \
-	fekernels/Elasticity.cc \
-	fekernels/IsotropicLinearElasticity.cc \
-	fekernels/Viscoelasticity.cc \
-	fekernels/IsotropicLinearMaxwell.cc \
+	fekernels/Tensor.cc \
 	fekernels/IsotropicLinearGenMaxwell.cc \
 	fekernels/IsotropicPowerLaw.cc \
-	fekernels/IncompressibleElasticity.cc \
-	fekernels/IsotropicLinearIncompElasticity.cc \
-	fekernels/Poroelasticity.cc \
-	fekernels/IsotropicLinearPoroelasticity.cc \
-	fekernels/Solution.cc \
-	fekernels/DispVel.cc \
-	fekernels/TimeDependentFn.cc \
-	fekernels/NeumannTimeDependent.cc \
-	fekernels/AbsorbingDampers.cc \
-	fekernels/FaultCohesiveKin.cc \
 	materials/Material.cc \
 	materials/Elasticity.cc \
 	materials/RheologyElasticity.cc \
 	materials/AuxiliaryFactoryElasticity.cc \
 	materials/DerivedFactoryElasticity.cc \
+	materials/DerivedFactoryPoroelasticity.cc \
 	materials/IsotropicLinearElasticity.cc \
 	materials/IsotropicLinearMaxwell.cc \
 	materials/IsotropicLinearGenMaxwell.cc \
 	materials/IsotropicPowerLaw.cc \
-	materials/AuxiliaryFactoryElastic.cc \
-	materials/AuxiliaryFactoryViscoelastic.cc \
-	materials/AuxiliaryFactoryPoroelasticity.cc \
-	materials/AuxiliaryFactoryPoroelastic.cc \
 	materials/IncompressibleElasticity.cc \
 	materials/RheologyIncompressibleElasticity.cc \
 	materials/IsotropicLinearIncompElasticity.cc \
+	materials/AuxiliaryFactoryElastic.cc \
+	materials/AuxiliaryFactoryViscoelastic.cc \
 	materials/Poroelasticity.cc \
 	materials/RheologyPoroelasticity.cc \
 	materials/IsotropicLinearPoroelasticity.cc \
+	materials/AuxiliaryFactoryPoroelasticity.cc \
+	materials/AuxiliaryFactoryPoroelastic.cc \
 	materials/Query.cc \
 	meshio/BinaryIO.cc \
 	meshio/GMVFile.cc \
@@ -167,7 +155,8 @@ libpylith_la_SOURCES = \
 	utils/TestArray.cc
 
 
-libpylith_la_LDFLAGS = $(AM_LDFLAGS) $(PYTHON_LA_LDFLAGS)
+
+libpylith_la_LDFLAGS = $(AM_LDFLAGS) $(PYTHON_LDFLAGS) $(PYTHON_LA_LDFLAGS)
 libpylith_la_LIBADD = \
 	-lspatialdata \
 	-lhdf5 \
@@ -185,23 +174,6 @@ if ENABLE_CUBIT
 	meshio/MeshIOCubit.cc
   libpylith_la_LIBADD += -lnetcdf
 endif
-
-if ENABLE_TESTING
-libpylith_la_SOURCES += \
-	testing/StubMethodTracker.cc \
-	testing/FieldTester.cc \
-	testing/PhysicsStub.cc \
-	testing/PhysicsImplementationStub.cc \
-	testing/ProgressMonitorStub.cc \
-	testing/ObserverPhysicsStub.cc \
-	testing/ObserverSolnStub.cc \
-	testing/FaultCohesiveStub.cc \
-	testing/MMSTest.cc \
-	testing/TestDriver.cc
-
-libpylith_la_LIBADD += -lcppunit
-endif
-
 
 
 # End of file

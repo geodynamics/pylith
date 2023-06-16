@@ -71,7 +71,9 @@ pylith::topology::MeshOps::createSubdomainMesh(const pylith::topology::Mesh& mes
     if (maxConeSize <= 0) {
         err = DMDestroy(&dmSubdomain);PYLITH_CHECK_ERROR(err);
         std::ostringstream msg;
-        msg << "Error while creating mesh of subdomain. Subdomain mesh '" << labelName << "' does not contain any cells.\n";
+        msg << "Error while creating mesh of subdomain. Subdomain mesh '" << labelName
+            << "' with label value " << labelValue << " does not contain any cells.\n"
+            << "Check that you are using the correct label name and value.\n";
         throw std::runtime_error(msg.str());
     } // if
 
@@ -132,7 +134,9 @@ pylith::topology::MeshOps::createLowerDimMesh(const pylith::topology::Mesh& mesh
     if (maxConeSize <= 0) {
         err = DMDestroy(&dmSubmesh);PYLITH_CHECK_ERROR(err);
         std::ostringstream msg;
-        msg << "Error while creating lower dimension mesh. Submesh '" << labelName << "' does not contain any cells.\n";
+        msg << "Error while creating lower dimension mesh. Submesh '" << labelName
+            << "' with label value " << labelValue << " does not contain any cells.\n"
+            << "Check that you are using the correct label name and value.\n";
         throw std::runtime_error(msg.str());
     } // if
 
@@ -187,6 +191,11 @@ pylith::topology::MeshOps::createFromPoints(const PylithReal* points,
     err = DMSetCoordinateDim(dmPoints, spaceDim);PYLITH_CHECK_ERROR(err);
     err = DMPlexCreateFromDAG(dmPoints, depth, dmNumPoints, &dmConeSizes[0], &dmCones[0],
                               &dmConeOrientations[0], points);PYLITH_CHECK_ERROR(err);
+
+    PetscSF sf = NULL;
+    err = DMGetPointSF(dmPoints, &sf);PYLITH_CHECK_ERROR(err);
+    err = PetscSFSetGraph(sf, numPoints, 0, NULL, PETSC_COPY_VALUES, NULL, PETSC_COPY_VALUES);
+
     mesh->setDM(dmPoints, "points");
 
     mesh->setCoordSys(cs);
@@ -255,9 +264,17 @@ pylith::topology::MeshOps::checkTopology(const Mesh& mesh) {
 
     PetscErrorCode err;
     err = DMViewFromOptions(dmMesh, NULL, "-pylith_checktopo_dm_view");PYLITH_CHECK_ERROR(err);
+    err = DMPlexCheckGeometry(dmMesh);PYLITH_CHECK_ERROR_MSG(err, "Error in topology of the mesh.");
     err = DMPlexCheckSymmetry(dmMesh);PYLITH_CHECK_ERROR_MSG(err, "Error in topology of mesh associated with symmetry of adjacency information.");
 
     err = DMPlexCheckSkeleton(dmMesh, cellHeight);PYLITH_CHECK_ERROR_MSG(err, "Error in topology of mesh cells.");
+
+    /* Other check functions that we are not using:
+     *
+     * DMPlexCheckFaces() - not compatible with cohesive cells.
+     *
+     * DMPlexCheckInterfaceCones() - very slow
+     */
 } // checkTopology
 
 

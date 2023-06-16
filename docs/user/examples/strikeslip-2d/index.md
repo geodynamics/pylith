@@ -25,7 +25,8 @@ This example builds on the previous examples and adds complexity through a serie
 :Step 3: Quasistatic slip with two ruptures and time-dependent Dirichlet (displacement) boundary conditions.
 :Step 4: Variable slip and Dirichlet (displacement) boundary conditions.
 :Step 5: Static Green's functions with Dirichlet (displacement) boundary conditions.
-:Step 6: Invert for slip in Step 4 using Green's functions from Step 5.
+:Step 6: Invert for slip in Step 4 using Green's functions from Step 5 and least squares.
+:Step 7: Invert for slip in Step 4 using Green's functions from Step 5 and the CATMIP Bayesian framework.
 
 :::{figure-md} fig:example:strikeslip:2d:overview
 <img src="figs/geometry.*" alt="Diagram of geometry for strike-slip fault." scale="75%"/>
@@ -52,6 +53,7 @@ step02-slip-velbc.md
 step03-multislip-velbc.md
 step04-varslip.md
 step05-greensfns.md
-step06-inversion.md
+step06-inversion-leastsquares.md
+step07-inversion-catmip.md
 exercises.md
 :::

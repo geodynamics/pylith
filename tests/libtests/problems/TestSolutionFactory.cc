@@ -21,12 +21,12 @@
 #include "TestSolutionFactory.hh" // Implementation of class methods
 
 #include "pylith/problems/SolutionFactory.hh" // Test subject
+#include "tests/src/FieldTester.hh" // USES FieldTester
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES MeshOps
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
-#include "pylith/testing/FieldTester.hh" // USES FieldTester
 #include "pylith/utils/error.hh" // USES PyLITH_METHOD*
 
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB

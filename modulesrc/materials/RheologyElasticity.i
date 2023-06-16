@@ -54,7 +54,7 @@ public:
              * @return RHS residual kernel for stress.
              */
             virtual
-            PetscPointFunc getKernelResidualStress(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
+            PetscPointFunc getKernelf1v(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
 
             /** Get elastic constants kernel for RHS Jacobian G(t,s).
              *
@@ -63,7 +63,25 @@ public:
              * @return RHS Jacobian kernel for elastic constants.
              */
             virtual
-            PetscPointJac getKernelJacobianElasticConstants(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
+            PetscPointJac getKernelJf3vu(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
+
+            /** Get f0 kernel for LHS interface residual, F(t,s,dot{s}), for negative fault face.
+             *
+             * @param[in] coordsys Coordinate system.
+             *
+             * @return LHS residual f0 kernel.
+             */
+            virtual
+            PetscBdPointFunc getKernelf0Neg(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
+
+            /** Get f0 kernel for LHS interface residual, F(t,s,dot{s}), for positive fault face.
+             *
+             * @param[in] coordsys Coordinate system.
+             *
+             * @return LHS residual f0 kernel.
+             */
+            virtual
+            PetscBdPointFunc getKernelf0Pos(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
 
             /** Get stress kernel for derived field.
              *
@@ -72,7 +90,7 @@ public:
              * @return Project kernel for computing stress subfield in derived field.
              */
             virtual
-            PetscPointFunc getKernelDerivedCauchyStress(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
+            PetscPointFunc getKernelCauchyStressVector(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
 
             /** Add kernels for updating state variables.
              *

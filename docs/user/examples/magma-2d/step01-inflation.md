@@ -1,9 +1,15 @@
 # Step 1: Magma inflation
 
+```{include} step01_inflation-synopsis.md
+```
+
+## Simulation parameter
+
 This example uses poroelasticity to model flow of magma up through a conduit and into a magma reservoir.
 The magma reseroir and conduit have a higher permeability than the surrounding crust.
 We generate flow by imposing a pressure on the external boundary of the conduit that is higher than the uniform initial pressure in the domain.
 {numref}`fig:example:magma:2d:step01:diagram` shows the boundary conditions on the domain.
+The parameters specific to this example are in `step01_inflation.cfg`.
 
 :::{figure-md} fig:example:magma:2d:step01:diagram
 <img src="figs/step01-diagram.*" alt="" scale="100%">
@@ -13,18 +19,86 @@ We apply roller boundary conditions on the +x, -x, and -y boundaries.
 We impose zero pressure (undrained conditions) on the +y boundary and a pressure on the external boundary of the conduit to generate fluid flow.
 :::
 
-```{include} step01_inflation-synopsis.md
+```{code-block} cfg
+---
+caption: Time stepping parameters for Step 1.
+---
+[pylithapp.timedependent]
+start_time = -0.2*year
+initial_dt = 0.2*year
+end_time = 10.0*year
 ```
 
-## Simulation parameter
+```{code-block} cfg
+---
+caption: Initial condition parameters for Step 1. We impose an initial fluid pressure of 5 MPa over the entire domain.
+---
+[pylithapp.problem]
+ic = [domain]
+ic.domain = pylith.problems.InitialConditionDomain
 
-The parameters specific to this example are in `step01_inflation.cfg` and include:
+[pylithapp.problem.ic.domain]
+db = spatialdata.spatialdb.UniformDB
+db.description = Initial conditions for domain
+db.values = [displacement_x, displacement_y, pressure, trace_strain]
+db.data = [0.0*m, 0.0*m, 5.0*MPa, 0.0]
+```
 
-* `pylithapp.metadata` Metadata for this simulation. Even when the author and version are the same for all simulations in a directory, we prefer to keep that metadata in each simulation file as a reminder to keep it up-to-date for each simulation.
-* `pylithapp` Parameters defining where to write the output.
-* `pylithapp.timedependent` Parameters defining the time dependent parameters of the run, including the total elapsed time, the time step length, and the start time. Also defined here are the parameter relating to the normalization of the problem.
-* `pylithapp.problem.bc` Parameters for boundary conditions of the problem.
-* `pylithapp.problem.ic` Parameters for initial conditions of the problem.
+We create an array of 5 Dirichlet boundary conditions: 3 for displacement and 2 for fluid pressure.
+We have zero displacement perpendicular to the -x, +x, and -y boundaries, zero pressure on the +y boundary, and 10 MPa of fluid pressure on the external boundary of the conduit.
+
+```{code-block} cfg
+---
+caption: Dirichlet boundary conditions for Step 1.
+---
+[pylithapp.problem]
+bc = [bc_xneg, bc_xpos, bc_yneg, bc_ypos, bc_flow]
+
+bc.bc_xneg = pylith.bc.DirichletTimeDependent
+bc.bc_xpos = pylith.bc.DirichletTimeDependent
+bc.bc_yneg = pylith.bc.DirichletTimeDependent
+bc.bc_ypos = pylith.bc.DirichletTimeDependent
+bc.bc_flow = pylith.bc.DirichletTimeDependent
+
+[pylithapp.problem.bc.bc_xneg]
+constrained_dof = [0]
+label = boundary_xneg
+field = displacement
+db_auxiliary_field = pylith.bc.ZeroDB
+db_auxiliary_field.description = Dirichlet BC -x
+
+[pylithapp.problem.bc.bc_xpos]
+constrained_dof = [0]
+label = boundary_xpos
+field = displacement
+db_auxiliary_field = pylith.bc.ZeroDB
+db_auxiliary_field.description = Dirichlet BC +x
+
+[pylithapp.problem.bc.bc_yneg]
+constrained_dof = [1]
+label = boundary_yneg
+field = displacement
+db_auxiliary_field = pylith.bc.ZeroDB
+db_auxiliary_field.description = Dirichlet BC -y
+
+[pylithapp.problem.bc.bc_ypos]
+constrained_dof = [0]
+label = boundary_ypos
+field = pressure
+db_auxiliary_field = pylith.bc.ZeroDB
+db_auxiliary_field.description = Dirichlet BC +z
+
+[pylithapp.problem.bc.bc_flow]
+constrained_dof = [0]
+label = boundary_flow
+field = pressure
+db_auxiliary_field = spatialdata.spatialdb.UniformDB
+db_auxiliary_field.description = Flow into external boundary of conduit
+db_auxiliary_field.values = [initial_amplitude]
+db_auxiliary_field.data = [10.0*MPa]
+```
+
+## Running the simulation
 
 ```{code-block} console
 ---

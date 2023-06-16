@@ -1,7 +1,7 @@
 #!/usr/bin/env nemesis
 """
 This script generates a plot comparing the predicted solutions to
-the true solution.
+the true solution for Step 6.
 """
 
 # Import argparse and re (regular expressions) Python modules(standard Python)
@@ -15,21 +15,21 @@ import matplotlib.pyplot as pyplot
 
 class PlotApp:
 
+    FILENAME_MODELS = "output/step06_inversion-results.txt"
+    FILENAME_OBSERVED = "output/step04_varslip-fault.h5"
+
+    
     COLOR_OBSERVED = "black"
     COLORS_MODEL = ["blue", "orange", "purple", "red", "cyan"]
     XLIM = (-25.0, 25.0)
 
-    def __init__(self):
-        self.filename_models = "output/step06_inversion-results.txt"
-        self.filename_observed = "output/step04_varslip-fault.h5"
-    
-    def main(self):
-        args = self._parse_command_line()
+    def main(self, filename_models: str=None, filename_observed: str=None, observed_only: bool=False, show_plot: bool=False):
+        filename_models = filename_models or self.FILENAME_MODELS
+        filename_observed = filename_observed or self.FILENAME_OBSERVED
 
-        self.load_observed(args.filename_observed)
-        self.load_models(args.filename_models)
-        self.plot(args.observed_only)
-        return
+        self.load_observed(filename_observed)
+        self.load_models(filename_models)
+        self.plot(observed_only, show_plot)
 
     def load_observed(self, filename):
         h5 = h5py.File(filename, "r")
@@ -51,7 +51,7 @@ class PlotApp:
             header = fin.readline()
         self.models_penalty = list(map(float, re.findall(r"penalty=(\d+\.\d+)", header)))
 
-    def plot(self, observed_only=False):
+    def plot(self, observed_only=False, show_plot=False):
         figure = pyplot.figure(figsize=(7.0, 3.5), dpi=150, layout="tight")
         axes = self._setup_axes(figure)
         self._plot_observed(axes)
@@ -59,7 +59,8 @@ class PlotApp:
             self._plot_models(axes)
             axes.legend(loc="upper right")
 
-        pyplot.show()
+        if show_plot:
+            pyplot.show()
         filename = "step04-slip.pdf" if observed_only else "step06_inversion-results.pdf" 
         figure.savefig(filename)
 
@@ -79,16 +80,26 @@ class PlotApp:
         for imodel in range(nmodels):
             axes.plot(coords, self.models_slip[:,imodel], color=self.COLORS_MODEL[imodel], label=f"Model penalty={self.models_penalty[imodel]}")
 
-    def _parse_command_line(self):
-        parser = argparse.ArgumentParser()
-        parser.add_argument("--models", action="store", dest="filename_models", type=str, default=self.filename_models, help="Filename of output from inversion.")
-        parser.add_argument("--observed", action="store", dest="filename_observed", type=str, default=self.filename_observed, help="Name of HDF5 file with station output from forward model.")
-        parser.add_argument("--observed-only", action="store_true", dest="observed_only", default=False, help="Show only observed slip.")
-        return parser.parse_args()
 
+def cli():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--models", action="store", dest="filename_models", type=str, default=PlotApp.FILENAME_MODELS, help="Filename of output from inversion.")
+    parser.add_argument("--observed", action="store", dest="filename_observed", type=str, default=PlotApp.FILENAME_OBSERVED, help="Name of HDF5 file with station output with fake observations.")
+    parser.add_argument("--observed-only", action="store_true", dest="observed_only", default=False, help="Show only observed slip.")
+    parser.add_argument("--no-gui", action="store_false", dest="show_plot", default=True, help="Do not display plot.")
 
+    args = parser.parse_args()
+    kwargs = {
+        "filename_models": args.filename_models,
+        "filename_observed": args.filename_observed,
+        "observed_only": args.observed_only,
+        "show_plot": args.show_plot,
+        }
+    PlotApp().main(**kwargs)
+    
+    
 if __name__ == "__main__":
-    PlotApp().main()
+    cli()
 
 
 # End of file

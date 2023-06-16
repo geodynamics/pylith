@@ -78,9 +78,9 @@ class PyLithApp(PetscApplication):
         self.parameters.preinitialize()
         self.parameters.write(self)
 
-        from pylith.mpi.Communicator import mpi_comm_world
-        comm = mpi_comm_world()
-        if 0 == comm.rank:
+        from pylith.mpi.Communicator import mpi_is_root, mpi_comm_world
+        if mpi_is_root():
+            comm = mpi_comm_world()
             self._info.log("Running on %d process(es)." % comm.size)
 
         from pylith.utils.profiling import resourceUsageString

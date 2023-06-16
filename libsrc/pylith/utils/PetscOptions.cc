@@ -26,6 +26,7 @@
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD*
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL*
+#include "pylith/utils/mpi.hh" // USES isRoot()
 
 #include <cassert>
 
@@ -77,6 +78,13 @@ public:
             static
             void addSolverTolerances(PetscOptions* options);
 
+            /** Add initial guess options.
+             *
+             * @param[in] options PETSc options.
+             */
+            static
+            void addInitialGuess(PetscOptions* options);
+
         };
     }
 }
@@ -86,7 +94,8 @@ const int pylith::utils::PetscDefaults::NONE = 0x0;
 const int pylith::utils::PetscDefaults::MONITORS = 0x1;
 const int pylith::utils::PetscDefaults::SOLVER = 0x2;
 const int pylith::utils::PetscDefaults::PARALLEL = 0x4;
-const int pylith::utils::PetscDefaults::TESTING = 0x8;
+const int pylith::utils::PetscDefaults::INITIAL_GUESS = 0x8;
+const int pylith::utils::PetscDefaults::TESTING = 0x10;
 
 // ------------------------------------------------------------------------------------------------
 // Set default PETSc solver options based on solution field and material.
@@ -113,6 +122,9 @@ pylith::utils::PetscDefaults::set(const pylith::topology::Field& solution,
     assert(options);
 
     _PetscOptions::addSolverTolerances(options);
+    if (flags & INITIAL_GUESS) {
+        _PetscOptions::addInitialGuess(options);
+    } // if
     if (flags & TESTING) {
         _PetscOptions::addTesting(options);
     } // if
@@ -191,10 +203,10 @@ pylith::utils::PetscOptions::set(void) {
     } // for
 
     pythia::journal::info_t info(GenericComponent::getName());
-    if (info.state()) {
+    if (info.state() && pylith::utils::MPI::isRoot()) {
         _PetscOptions::write(info, "Setting PETSc options:", optionsUsed);
         if (optionsIgnored._options.size() > 0) {
-            _PetscOptions::write(info, "Ignoring PETSc options (already set):", optionsIgnored);
+            _PetscOptions::write(info, "Using user values rather then the following default PETSc options:", optionsIgnored);
         } // if
     } // if
 
@@ -316,6 +328,18 @@ pylith::utils::_PetscOptions::addSolverTolerances(PetscOptions* options) {
     options->add("-snes_error_if_not_converged");
 
 } // addSolverTolerances
+
+
+// ------------------------------------------------------------------------------------------------
+// Add initial guess defaults.
+void
+pylith::utils::_PetscOptions::addInitialGuess(PetscOptions* options) {
+    assert(options);
+
+    options->add("-ksp_guess_type", "pod");
+    options->add("-ksp_guess_pod_size", "8");
+
+} // addInitialGuess
 
 
 // End of file

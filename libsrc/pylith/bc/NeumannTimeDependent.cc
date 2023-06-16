@@ -380,32 +380,32 @@ pylith::bc::_NeumannTimeDependent::setKernelsResidual(pylith::feassemble::Integr
     PetscBdPointFunc r1 = NULL;
     switch (bitUse) {
     case 0x1:
-        r0 = (isScalarField) ? pylith::fekernels::NeumannTimeDependent::g0_initial_scalar :
-             pylith::fekernels::NeumannTimeDependent::g0_initial_vector;
+        r0 = (isScalarField) ? pylith::fekernels::NeumannTimeDependent::f0_initial_scalar :
+             pylith::fekernels::NeumannTimeDependent::f0_initial_vector;
         break;
     case 0x2:
-        r0 = (isScalarField) ? pylith::fekernels::NeumannTimeDependent::g0_rate_scalar :
-             pylith::fekernels::NeumannTimeDependent::g0_rate_vector;
+        r0 = (isScalarField) ? pylith::fekernels::NeumannTimeDependent::f0_rate_scalar :
+             pylith::fekernels::NeumannTimeDependent::f0_rate_vector;
         break;
     case 0x4:
-        r0 = (isScalarField) ? pylith::fekernels::NeumannTimeDependent::g0_timeHistory_scalar :
-             pylith::fekernels::NeumannTimeDependent::g0_timeHistory_vector;
+        r0 = (isScalarField) ? pylith::fekernels::NeumannTimeDependent::f0_timeHistory_scalar :
+             pylith::fekernels::NeumannTimeDependent::f0_timeHistory_vector;
         break;
     case 0x3:
-        r0 = (isScalarField) ? pylith::fekernels::NeumannTimeDependent::g0_initialRate_scalar :
-             pylith::fekernels::NeumannTimeDependent::g0_initialRate_vector;
+        r0 = (isScalarField) ? pylith::fekernels::NeumannTimeDependent::f0_initialRate_scalar :
+             pylith::fekernels::NeumannTimeDependent::f0_initialRate_vector;
         break;
     case 0x5:
-        r0 = (isScalarField) ? pylith::fekernels::NeumannTimeDependent::g0_initialTimeHistory_scalar :
-             pylith::fekernels::NeumannTimeDependent::g0_initialTimeHistory_vector;
+        r0 = (isScalarField) ? pylith::fekernels::NeumannTimeDependent::f0_initialTimeHistory_scalar :
+             pylith::fekernels::NeumannTimeDependent::f0_initialTimeHistory_vector;
         break;
     case 0x6:
-        r0 = (isScalarField) ? pylith::fekernels::NeumannTimeDependent::g0_rateTimeHistory_scalar :
-             pylith::fekernels::NeumannTimeDependent::g0_rateTimeHistory_vector;
+        r0 = (isScalarField) ? pylith::fekernels::NeumannTimeDependent::f0_rateTimeHistory_scalar :
+             pylith::fekernels::NeumannTimeDependent::f0_rateTimeHistory_vector;
         break;
     case 0x7:
-        r0 = (isScalarField) ? pylith::fekernels::NeumannTimeDependent::g0_initialRateTimeHistory_scalar :
-             pylith::fekernels::NeumannTimeDependent::g0_initialRateTimeHistory_vector;
+        r0 = (isScalarField) ? pylith::fekernels::NeumannTimeDependent::f0_initialRateTimeHistory_scalar :
+             pylith::fekernels::NeumannTimeDependent::f0_initialRateTimeHistory_vector;
         break;
     case 0x0: {
         pythia::journal::warning_t warning(_NeumannTimeDependent::pyreComponent);
