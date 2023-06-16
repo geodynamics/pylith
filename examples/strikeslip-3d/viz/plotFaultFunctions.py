@@ -43,4 +43,53 @@ def plot_fault_surface(vertices,cells,slipvec,ax,title):
     ax.set_title(title)
     # plot lines showing the triangles, if desired
     ax.triplot(x,y,triangles,'w-',linewidth=0.1)
-    
+
+def computeUnitVectors(vertices,cells):
+    # INPUTS are 
+    # vertices - Nx3 matrix of elements on the fault (x,y,z)
+    # cells - index array describing the connection of vertices to form fault polygons
+    #         (can be Mx3 for triangles or Mx4 for quadrilaterals)
+
+    # number of vertices and polygons
+    nVertices=vertices.shape[0]
+    nPatch=cells.shape[0]
+
+    # vertex positions
+    x = vertices[:, 0]
+    y = vertices[:, 1]
+    z = vertices[:, 2]
+
+    # Go through the cells and create triangles
+    i = 0
+    nv = np.zeros((nPatch,3))
+    sv = np.zeros((nPatch,3))
+    dv = np.zeros((nPatch,3))
+    xc = np.zeros((nPatch,3))
+
+    for cell in cells:
+        idx0, idx1, idx2 = cell[0:3]
+        # vertices
+        A = np.array((x[idx0],y[idx0],z[idx0]))
+        B = np.array((x[idx1],y[idx1],z[idx1]))
+        C = np.array((x[idx2],y[idx2],z[idx2]))
+
+        # center points of each polygon
+        xc[i,:]=np.array((np.mean(x[cell]),np.mean(y[cell]),np.mean(z[cell])))
+
+        # normal vector (B-A) x (C-A)
+        nv[i,:]=np.cross(B-A,C-A)
+        area=np.sqrt(nv[i,0]**2+nv[i,1]**2+nv[i,2]**2)
+        nv[i,:]=nv[i,:]/area
+
+        # strike-direction vector
+        sv[i,:]=np.array((-np.sin(np.arctan2(nv[i,1],nv[i,0])),
+                        np.cos(np.arctan2(nv[i,1],nv[i,0])),
+                        0))
+        
+        # dip-direction vector
+        dv[i,:]=np.array((nv[i,1]*sv[i,2]-nv[i,2]*sv[i,1],
+                        nv[i,2]*sv[i,0]-nv[i,0]*sv[i,2],
+                        nv[i,0]*sv[i,1]-nv[i,1]*sv[i,0]))
+
+        i+=1
+    return xc,nv,sv,dv 
