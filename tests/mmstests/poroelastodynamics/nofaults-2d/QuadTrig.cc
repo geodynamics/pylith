@@ -471,7 +471,7 @@ pylith::QuadTrig::TriP2(void) {
     data->numSolnSubfields = 3;
     static const pylith::topology::Field::Discretization _solnDiscretizations[3] = {
         pylith::topology::Field::Discretization(2, 2), // disp
-        pylith::topology::Field::Discretization(1, 1), // pressure
+        pylith::topology::Field::Discretization(1, 2), // pressure
         pylith::topology::Field::Discretization(2, 2), // vel
     };
     data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
@@ -499,7 +499,7 @@ pylith::QuadTrig::TriP3(void) {
     data->numSolnSubfields = 3;
     static const pylith::topology::Field::Discretization _solnDiscretizations[3] = {
         pylith::topology::Field::Discretization(3, 3), // disp
-        pylith::topology::Field::Discretization(2, 2), // pressure
+        pylith::topology::Field::Discretization(2, 3), // pressure
         pylith::topology::Field::Discretization(3, 3), // vel
     };
     data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
@@ -528,7 +528,7 @@ pylith::QuadTrig::TriP4(void) {
     data->numSolnSubfields = 3;
     static const pylith::topology::Field::Discretization _solnDiscretizations[3] = {
         pylith::topology::Field::Discretization(4, 4), // disp
-        pylith::topology::Field::Discretization(3, 3), // pressure
+        pylith::topology::Field::Discretization(3, 4), // pressure
         pylith::topology::Field::Discretization(4, 4), // vel
     };
     data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
@@ -556,7 +556,7 @@ pylith::QuadTrig::TriP5(void) {
     data->numSolnSubfields = 3;
     static const pylith::topology::Field::Discretization _solnDiscretizations[3] = {
         pylith::topology::Field::Discretization(5, 5), // disp
-        pylith::topology::Field::Discretization(4, 4), // pressure
+        pylith::topology::Field::Discretization(4, 5), // pressure
         pylith::topology::Field::Discretization(5, 5), // vel
     };
     data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
@@ -576,7 +576,7 @@ pylith::QuadTrig::QuadQ2(void) {
     data->numSolnSubfields = 3;
     static const pylith::topology::Field::Discretization _solnDiscretizations[3] = {
         pylith::topology::Field::Discretization(2, 2), // disp
-        pylith::topology::Field::Discretization(1, 1), // pressure
+        pylith::topology::Field::Discretization(1, 2), // pressure
         pylith::topology::Field::Discretization(2, 2), // vel
     };
     data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
@@ -596,7 +596,7 @@ pylith::QuadTrig::QuadQ2Distorted(void) {
     data->numSolnSubfields = 3;
     static const pylith::topology::Field::Discretization _solnDiscretizations[3] = {
         pylith::topology::Field::Discretization(2, 2), // disp
-        pylith::topology::Field::Discretization(1, 1), // pressure
+        pylith::topology::Field::Discretization(1, 2), // pressure
         pylith::topology::Field::Discretization(2, 2), // vel
     };
     data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
@@ -625,7 +625,7 @@ pylith::QuadTrig::QuadQ3(void) {
     data->numSolnSubfields = 3;
     static const pylith::topology::Field::Discretization _solnDiscretizations[3] = {
         pylith::topology::Field::Discretization(3, 3), // disp
-        pylith::topology::Field::Discretization(2, 2), // pressure
+        pylith::topology::Field::Discretization(2, 3), // pressure
         pylith::topology::Field::Discretization(3, 3), // vel
     };
     data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
@@ -653,7 +653,7 @@ pylith::QuadTrig::QuadQ4(void) {
     data->numSolnSubfields = 3;
     static const pylith::topology::Field::Discretization _solnDiscretizations[3] = {
         pylith::topology::Field::Discretization(4, 4), // disp
-        pylith::topology::Field::Discretization(3, 3), // pressure
+        pylith::topology::Field::Discretization(3, 4), // pressure
         pylith::topology::Field::Discretization(4, 4), // vel
     };
     data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
@@ -680,7 +680,7 @@ pylith::QuadTrig::QuadQ5(void) {
     data->numSolnSubfields = 3;
     static const pylith::topology::Field::Discretization _solnDiscretizations[3] = {
         pylith::topology::Field::Discretization(5, 5), // disp
-        pylith::topology::Field::Discretization(4, 4), // disp
+        pylith::topology::Field::Discretization(4, 5), // disp
         pylith::topology::Field::Discretization(5, 5), // vel
     };
     data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
