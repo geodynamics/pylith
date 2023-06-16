@@ -686,23 +686,23 @@ public:
      */
 
     void f1p(const PylithInt dim,
-             const PylithInt numS,
-             const PylithInt numA,
-             const PylithInt sOff[],
-             const PylithInt sOff_x[],
-             const PylithScalar s[],
-             const PylithScalar s_t[],
-             const PylithScalar s_x[],
-             const PylithInt aOff[],
-             const PylithInt aOff_x[],
-             const PylithScalar a[],
-             const PylithScalar a_t[],
-             const PylithScalar a_x[],
-             const PylithReal t,
-             const PylithScalar x[],
-             const PylithInt numConstants,
-             const PylithScalar constants[],
-             PylithScalar f1[])
+                       const PylithInt numS,
+                       const PylithInt numA,
+                       const PylithInt sOff[],
+                       const PylithInt sOff_x[],
+                       const PylithScalar s[],
+                       const PylithScalar s_t[],
+                       const PylithScalar s_x[],
+                       const PylithInt aOff[],
+                       const PylithInt aOff_x[],
+                       const PylithScalar a[],
+                       const PylithScalar a_t[],
+                       const PylithScalar a_x[],
+                       const PylithReal t,
+                       const PylithScalar x[],
+                       const PylithInt numConstants,
+                       const PylithScalar constants[],
+                       PylithScalar f1[])
     {
 
         const PylithInt i_density = 0;
@@ -716,7 +716,7 @@ public:
         for (PetscInt d = 0; d < dim; ++d)
             f1[d] = s_x[sOff_x[1] + d] * 1 / (4 * 3.14159 * 6.67 * pow(10, -11) * density);
 
-    } // f1p_potential
+    } // f1p
 
     // --------------------------------------------------------------------------------------------
     /** f0p entry function for 3D isotropic linear incompressible elasticity with infinitesimal strain
