@@ -387,13 +387,13 @@ public:
 
         // Material information
         data->numAuxSubfields = 4;
-        static const char* _auxSubfields[4] = {"solid_density", "fluid_density", "fluid_viscosity", "porocity"};
+        static const char* _auxSubfields[4] = {"solid_density", "fluid_density", "fluid_viscosity", "porosity"};
         data->auxSubfields = _auxSubfields;
         static const pylith::topology::Field::Discretization _auxDiscretizations[4] = {
             pylith::topology::Field::Discretization(0, 1), // solid_density
             pylith::topology::Field::Discretization(0, 1), // fluid_density
             pylith::topology::Field::Discretization(0, 1), // fluid_viscosity
-            pylith::topology::Field::Discretization(0, 1), // porocity
+            pylith::topology::Field::Discretization(0, 1), // porosity
         };
         data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization const*>(_auxDiscretizations);
 
@@ -516,7 +516,7 @@ pylith::QuadTrig::TriP3(void) {
         pylith::topology::Field::Discretization(0, 3), // solid_density
         pylith::topology::Field::Discretization(0, 3), // fluid_density
         pylith::topology::Field::Discretization(0, 3), // fluid_viscosity
-        pylith::topology::Field::Discretization(0, 3), // porocity
+        pylith::topology::Field::Discretization(0, 3), // porosity
     };
     data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
 
@@ -545,7 +545,7 @@ pylith::QuadTrig::TriP4(void) {
         pylith::topology::Field::Discretization(0, 4), // solid_density
         pylith::topology::Field::Discretization(0, 4), // fluid_density
         pylith::topology::Field::Discretization(0, 4), // fluid_viscosity
-        pylith::topology::Field::Discretization(0, 4), // porocity
+        pylith::topology::Field::Discretization(0, 4), // porosity
     };
     data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
 
@@ -573,7 +573,7 @@ pylith::QuadTrig::TriP5(void) {
         pylith::topology::Field::Discretization(0, 5), // solid_density
         pylith::topology::Field::Discretization(0, 5), // fluid_density
         pylith::topology::Field::Discretization(0, 5), // fluid_viscosity
-        pylith::topology::Field::Discretization(0, 5), // porocity
+        pylith::topology::Field::Discretization(0, 5), // porosity
     };
     data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
 
@@ -642,7 +642,7 @@ pylith::QuadTrig::QuadQ3(void) {
         pylith::topology::Field::Discretization(0, 3), // solid_density
         pylith::topology::Field::Discretization(0, 3), // fluid_density
         pylith::topology::Field::Discretization(0, 3), // fluid_viscosity
-        pylith::topology::Field::Discretization(0, 3), // porocity
+        pylith::topology::Field::Discretization(0, 3), // porosity
     };
     data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
 
@@ -670,7 +670,7 @@ pylith::QuadTrig::QuadQ4(void) {
         pylith::topology::Field::Discretization(0, 4), // solid_density
         pylith::topology::Field::Discretization(0, 4), // fluid_density
         pylith::topology::Field::Discretization(0, 4), // fluid_viscosity
-        pylith::topology::Field::Discretization(0, 4), // porocity
+        pylith::topology::Field::Discretization(0, 4), // porosity
     };
     data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
 
@@ -697,7 +697,7 @@ pylith::QuadTrig::QuadQ5(void) {
         pylith::topology::Field::Discretization(0, 5), // solid_density
         pylith::topology::Field::Discretization(0, 5), // fluid_density
         pylith::topology::Field::Discretization(0, 5), // fluid_viscosity
-        pylith::topology::Field::Discretization(0, 5), // porocity
+        pylith::topology::Field::Discretization(0, 5), // porosity
     };
     data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
 

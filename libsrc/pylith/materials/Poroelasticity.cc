@@ -479,6 +479,7 @@ pylith::materials::Poroelasticity::_setKernelsResidual(pylith::feassemble::Integ
         kernels[3] = ResidualKernels("pressure", pylith::feassemble::Integrator::RHS, g0p, g1p);
         kernels[4] = ResidualKernels("velocity", pylith::feassemble::Integrator::LHS, f0v, f1v);
         kernels[5] = ResidualKernels("velocity", pylith::feassemble::Integrator::RHS, g0v, g1v);
+        break;
     } // DYNAMIC
     default:
         PYLITH_COMPONENT_LOGICERROR("Unknown formulation for equations (" << _formulation << ").");
