@@ -1,0 +1,31 @@
+Simple tests for coordinate update.
+
+Simple (small) test that just has a tilted upper boundary.
+We would expect the boundary to become flat with time.
+Note that we are currently printing coordinates and displacements from
+fekernels/Elasticity.hh:g0v_grav.
+
+1.  Test with no reference state. This currently runs, but takes many SNES
+    iterations (unlike what happened with the initial version). Coordinates
+    do change at each time step.
+    pylith grav_tilt_surf_norefstate_quad.cfg
+2.  Test with reference state. This currently bombs during the first SNES
+    iteration due to Inf or Nan.
+    pylith grav_tilt_surf_refstate_quad.cfg
+
+
+Much larger problem with an elastic low density box floating in a higher
+density Maxwell viscoelastic material.
+
+1.  Test with no reference state.
+    pylith grav_float_box_norefstate_quad.cfg
+
+2.  Test with reference state.
+    pylith grav_float_box_refstate_quad.cfg
+
+Right now, the assumption is that the solution should represent displacement
+increments. This means that I can't use it directly to update the coordinates
+when viewing in Paraview. To do this properly, I use the Python calculator
+in Paraview and define a variable called cumulative_displacement, which is
+equal to:  numpy.cumsum(displacement, axis=0). I then update the coordinates
+using this variable.
