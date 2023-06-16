@@ -42,6 +42,10 @@ class pylith::_QuadTrig {
         return 0.1;
     }
 
+    static const char* porosity_units(void) {
+        return " ";
+    }
+
     // Solid density
     static double solid_density(const double x,
                           const double y) {
@@ -75,18 +79,18 @@ class pylith::_QuadTrig {
     }
 
     // Fluid viscosity units
-    static const char* viscosity_units(void) {
+    static const char* fluid_viscosity_units(void) {
         return "Pa*s";
     }
 
-    // Permeability: k
-    static double permeability(const double x,
+    // isotropic_permeability: k
+    static double isotropic_permeability(const double x,
                      const double y) {
         return 1.5;
     }
 
-    // Permeability units
-    static const char* permeability_units(void) {
+    // isotropic_permeability units
+    static const char* isotropic_permeability_units(void) {
         return "m**2";
     }
 
@@ -95,6 +99,11 @@ class pylith::_QuadTrig {
                      const double y) {
         return 0.6;
     }
+
+    static const char* biot_coefficient_units(void) {
+        return " ";
+    }
+
 
     // Shear Modulus: mu
     static double shear_modulus(const double x,
@@ -344,7 +353,7 @@ class pylith::_QuadTrig {
 
         const double alpha = biot_coefficient(x[0], x[1]);
         const double mu_f = fluid_viscosity(x[0], x[1]);
-        const double k = permeability(x[0], x[1]);
+        const double k = isotropic_permeability(x[0], x[1]);
         const double M = biot_modulus(x[0], x[1]);
         const double rho_f = fluid_density(x[0], x[1]);
 
@@ -388,7 +397,14 @@ public:
         };
         data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization const*>(_auxDiscretizations);
 
-        data->auxDB.addValue("bulk_density", bulk_density, density_units());
+        data->auxDB.addValue("biot_coefficient", biot_coefficient, biot_coefficient_units());
+        data->auxDB.addValue("biot_modulus", biot_modulus, modulus_units());
+        data->auxDB.addValue("drained_bulk_modulus", drained_bulk_modulus, modulus_units());
+        data->auxDB.addValue("fluid_density", fluid_density, density_units());
+        data->auxDB.addValue("solid_density", solid_density, density_units());
+        data->auxDB.addValue("isotropic_permeability", isotropic_permeability, isotropic_permeability_units());
+        data->auxDB.addValue("porosity", porosity, porosity_units());
+        data->auxDB.addValue("shear_modulus", shear_modulus, modulus_units());
 
         data->auxDB.setCoordSys(data->cs);
 
@@ -400,35 +416,46 @@ public:
         data->material.setLabelValue(24);
 
         // Boundary conditions
-        static const PylithInt constrainedDOF[2] = {0, 1};
-        static const PylithInt numConstrained = 2;
         pylith::bc::DirichletUserFn* bc = NULL;
         data->bcs.resize(3);
-        bc = new pylith::bc::DirichletUserFn();assert(bc);
-        bc->setSubfieldName("displacement");
-        bc->setLabelName("boundary");
-        bc->setLabelValue(1);
-        bc->setConstrainedDOF(constrainedDOF, numConstrained);
-        bc->setUserFn(solnkernel_disp);
-        bc->setUserFnDot(solnkernel_vel);
-        data->bcs[0] = bc;
+        {
+            static const PylithInt constrainedDOF[2] = {0, 1};
+            static const PylithInt numConstrained = 2;
+            bc = new pylith::bc::DirichletUserFn();assert(bc);
+            bc->setSubfieldName("displacement");
+            bc->setLabelName("boundary");
+            bc->setLabelValue(1);
+            bc->setConstrainedDOF(constrainedDOF, numConstrained);
+            bc->setUserFn(solnkernel_disp);
+            bc->setUserFnDot(solnkernel_vel);
+            data->bcs[0] = bc;
+        }
 
-        bc->setSubfieldName("pressure");
-        bc->setLabelName("boundary");
-        bc->setLabelValue(1);
-        bc->setConstrainedDOF(constrainedDOF, numConstrained);
-        bc->setUserFn(solnkernel_pressure);
-        bc->setUserFnDot(solnkernel_pressure_dot);
-        data->bcs[1] = bc;
+        {
+            static const PylithInt constrainedDOF[1] = {0};
+            static const PylithInt numConstrained = 1;
+            bc = new pylith::bc::DirichletUserFn();assert(bc);
+            bc->setSubfieldName("pressure");
+            bc->setLabelName("boundary");
+            bc->setLabelValue(1);
+            bc->setConstrainedDOF(constrainedDOF, numConstrained);
+            bc->setUserFn(solnkernel_pressure);
+            bc->setUserFnDot(solnkernel_pressure_dot);
+            data->bcs[1] = bc;
+        }
 
-        bc = new pylith::bc::DirichletUserFn();assert(bc);
-        bc->setSubfieldName("velocity");
-        bc->setLabelName("boundary");
-        bc->setLabelValue(1);
-        bc->setConstrainedDOF(constrainedDOF, numConstrained);
-        bc->setUserFn(solnkernel_vel);
-        bc->setUserFnDot(solnkernel_acc);
-        data->bcs[2] = bc;
+        {
+            static const PylithInt constrainedDOF[2] = {0, 1};
+            static const PylithInt numConstrained = 2;
+            bc = new pylith::bc::DirichletUserFn();assert(bc);
+            bc->setSubfieldName("velocity");
+            bc->setLabelName("boundary");
+            bc->setLabelValue(1);
+            bc->setConstrainedDOF(constrainedDOF, numConstrained);
+            bc->setUserFn(solnkernel_vel);
+            bc->setUserFnDot(solnkernel_acc);
+            data->bcs[2] = bc;
+        }
 
         static const pylith::testing::MMSTest::solution_fn _exactSolnFns[3] = {
             solnkernel_disp,
