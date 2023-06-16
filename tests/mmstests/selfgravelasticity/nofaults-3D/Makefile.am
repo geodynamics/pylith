@@ -31,7 +31,7 @@ check_PROGRAMS = $(MMS_DRIVER)
 mmstest_selfgravelasticity_nofaults3d_SOURCES = \
 	$(top_srcdir)/tests/src/MMSTest.cc \
 	$(top_srcdir)/tests/src/driver_catch2.cc \
-	Testselfgravelasticity.cc \
+	TestSelfGrav.cc \
 	TestCases.cc \
 	SelfGrav3D.cc 
 
@@ -41,7 +41,7 @@ run_%.sh:
 	chmod +x $@
 
 dist_noinst_HEADERS = \
-	Testselfgravelasticity.hh \
+	TestSelfGrav.hh \
 	SelfGrav3D.cc 
 
 dist_noinst_DATA = \

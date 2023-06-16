@@ -37,7 +37,7 @@
 pylith::materials::IsotropicSelfGravElasticity::IsotropicSelfGravElasticity(void) : _auxiliaryFactory(new pylith::materials::AuxiliaryFactoryElastic),
                                                                                     _useReferenceState(false)
 {
-    pylith::utils::PyreComponent::setName("isotropicselfgravlinearelasticity");
+    pylith::utils::PyreComponent::setName("isotropicselfgravelasticity");
 } // constructor
 
 // ------------------------------------------------------------------------------------------------
