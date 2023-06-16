@@ -43,7 +43,7 @@ class pylith::_QuadTrig {
     }
 
     static const char* porosity_units(void) {
-        return " ";
+        return "none";
     }
 
     // Solid density
@@ -101,7 +101,7 @@ class pylith::_QuadTrig {
     }
 
     static const char* biot_coefficient_units(void) {
-        return " ";
+        return "none";
     }
 
 
@@ -386,14 +386,33 @@ public:
         // solnDiscretizations set in derived class.
 
         // Material information
-        data->numAuxSubfields = 4;
-        static const char* _auxSubfields[4] = {"solid_density", "fluid_density", "fluid_viscosity", "porosity"};
+        data->numAuxSubfields = 11;
+        static const char* _auxSubfields[11] = { // order must match order of subfields in auxiliary field
+            "solid_density",
+            "fluid_density",
+            "fluid_viscosity",
+            "porosity",
+            "shear_modulus",
+            "drained_bulk_modulus",
+            "biot_modulus",
+            "biot_coefficient",
+            "fluid_bulk_modulus",
+            "solid_bulk_modulus",
+            "isotropic_permeability",
+        };
         data->auxSubfields = _auxSubfields;
-        static const pylith::topology::Field::Discretization _auxDiscretizations[4] = {
+        static const pylith::topology::Field::Discretization _auxDiscretizations[11] = {
             pylith::topology::Field::Discretization(0, 2), // solid_density
             pylith::topology::Field::Discretization(0, 2), // fluid_density
             pylith::topology::Field::Discretization(0, 2), // fluid_viscosity
             pylith::topology::Field::Discretization(0, 2), // porosity
+            pylith::topology::Field::Discretization(0, 2), // shear_modulus
+            pylith::topology::Field::Discretization(0, 2), // drained_bulk_modulus
+            pylith::topology::Field::Discretization(0, 2), // biot_modulus
+            pylith::topology::Field::Discretization(0, 2), // biot_coefficient
+            pylith::topology::Field::Discretization(0, 2), // fluid_bulk_modulus
+            pylith::topology::Field::Discretization(0, 2), // solid_bulk_modulus
+            pylith::topology::Field::Discretization(0, 2), // isotropic_permeability
         };
         data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization const*>(_auxDiscretizations);
 
@@ -401,12 +420,13 @@ public:
         data->auxDB.addValue("fluid_density", fluid_density, density_units());
         data->auxDB.addValue("fluid_viscosity", fluid_viscosity, fluid_viscosity_units());
         data->auxDB.addValue("porosity", porosity, porosity_units());
-        // data->auxDB.addValue("shear_modulus", shear_modulus, modulus_units());
-        // data->auxDB.addValue("drained_bulk_modulus", drained_bulk_modulus, modulus_units());
-        // data->auxDB.addValue("biot_coefficient", biot_coefficient, biot_coefficient_units());
-        // data->auxDB.addValue("fluid_bulk_modulus", fluid_bulk_modulus, modulus_units());
-        // data->auxDB.addValue("solid_bulk_modulus", solid_bulk_modulus, modulus_units());
-        // data->auxDB.addValue("isotropic_permeability", isotropic_permeability, isotropic_permeability_units());
+        data->auxDB.addValue("shear_modulus", shear_modulus, modulus_units());
+        data->auxDB.addValue("drained_bulk_modulus", drained_bulk_modulus, modulus_units());
+        data->auxDB.addValue("biot_modulus", biot_modulus, modulus_units());
+        data->auxDB.addValue("biot_coefficient", biot_coefficient, biot_coefficient_units());
+        data->auxDB.addValue("fluid_bulk_modulus", fluid_bulk_modulus, modulus_units());
+        data->auxDB.addValue("solid_bulk_modulus", solid_bulk_modulus, modulus_units());
+        data->auxDB.addValue("isotropic_permeability", isotropic_permeability, isotropic_permeability_units());
 
         data->auxDB.setCoordSys(data->cs);
 
@@ -517,11 +537,18 @@ pylith::QuadTrig::TriP3(void) {
     data->meshFilename = "data/tri.mesh";
     // data->tolerance = 5.0e-7;
 
-    static const pylith::topology::Field::Discretization _auxDiscretizations[4] = {
+    static const pylith::topology::Field::Discretization _auxDiscretizations[11] = {
         pylith::topology::Field::Discretization(0, 3), // solid_density
         pylith::topology::Field::Discretization(0, 3), // fluid_density
         pylith::topology::Field::Discretization(0, 3), // fluid_viscosity
         pylith::topology::Field::Discretization(0, 3), // porosity
+        pylith::topology::Field::Discretization(0, 3), // shear_modulus
+        pylith::topology::Field::Discretization(0, 3), // drained_bulk_modulus
+        pylith::topology::Field::Discretization(0, 3), // biot_modulus
+        pylith::topology::Field::Discretization(0, 3), // biot_coefficient
+        pylith::topology::Field::Discretization(0, 3), // fluid_bulk_modulus
+        pylith::topology::Field::Discretization(0, 3), // solid_bulk_modulus
+        pylith::topology::Field::Discretization(0, 3), // isotropic_permeability
     };
     data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
 
@@ -546,11 +573,18 @@ pylith::QuadTrig::TriP4(void) {
     // data->useAsciiMesh = false;
     // data->tolerance = 1.0e-9;
 
-    static const pylith::topology::Field::Discretization _auxDiscretizations[4] = {
+    static const pylith::topology::Field::Discretization _auxDiscretizations[11] = {
         pylith::topology::Field::Discretization(0, 4), // solid_density
         pylith::topology::Field::Discretization(0, 4), // fluid_density
         pylith::topology::Field::Discretization(0, 4), // fluid_viscosity
         pylith::topology::Field::Discretization(0, 4), // porosity
+        pylith::topology::Field::Discretization(0, 4), // shear_modulus
+        pylith::topology::Field::Discretization(0, 4), // drained_bulk_modulus
+        pylith::topology::Field::Discretization(0, 4), // biot_modulus
+        pylith::topology::Field::Discretization(0, 4), // biot_coefficient
+        pylith::topology::Field::Discretization(0, 4), // fluid_bulk_modulus
+        pylith::topology::Field::Discretization(0, 4), // solid_bulk_modulus
+        pylith::topology::Field::Discretization(0, 4), // isotropic_permeability
     };
     data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
 
@@ -574,11 +608,18 @@ pylith::QuadTrig::TriP5(void) {
     data->meshFilename = "data/tri.mesh";
     // data->tolerance = 1.0e-9;
 
-    static const pylith::topology::Field::Discretization _auxDiscretizations[4] = {
+    static const pylith::topology::Field::Discretization _auxDiscretizations[11] = {
         pylith::topology::Field::Discretization(0, 5), // solid_density
         pylith::topology::Field::Discretization(0, 5), // fluid_density
         pylith::topology::Field::Discretization(0, 5), // fluid_viscosity
         pylith::topology::Field::Discretization(0, 5), // porosity
+        pylith::topology::Field::Discretization(0, 5), // shear_modulus
+        pylith::topology::Field::Discretization(0, 5), // drained_bulk_modulus
+        pylith::topology::Field::Discretization(0, 5), // biot_modulus
+        pylith::topology::Field::Discretization(0, 5), // biot_coefficient
+        pylith::topology::Field::Discretization(0, 5), // fluid_bulk_modulus
+        pylith::topology::Field::Discretization(0, 5), // solid_bulk_modulus
+        pylith::topology::Field::Discretization(0, 5), // isotropic_permeability
     };
     data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
 
@@ -643,11 +684,18 @@ pylith::QuadTrig::QuadQ3(void) {
     // data->useAsciiMesh = false;
     // data->tolerance = 2.0e-8;
 
-    static const pylith::topology::Field::Discretization _auxDiscretizations[4] = {
+    static const pylith::topology::Field::Discretization _auxDiscretizations[11] = {
         pylith::topology::Field::Discretization(0, 3), // solid_density
         pylith::topology::Field::Discretization(0, 3), // fluid_density
         pylith::topology::Field::Discretization(0, 3), // fluid_viscosity
         pylith::topology::Field::Discretization(0, 3), // porosity
+        pylith::topology::Field::Discretization(0, 3), // shear_modulus
+        pylith::topology::Field::Discretization(0, 3), // drained_bulk_modulus
+        pylith::topology::Field::Discretization(0, 3), // biot_modulus
+        pylith::topology::Field::Discretization(0, 3), // biot_coefficient
+        pylith::topology::Field::Discretization(0, 3), // fluid_bulk_modulus
+        pylith::topology::Field::Discretization(0, 3), // solid_bulk_modulus
+        pylith::topology::Field::Discretization(0, 3), // isotropic_permeability
     };
     data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
 
@@ -671,11 +719,18 @@ pylith::QuadTrig::QuadQ4(void) {
     data->meshFilename = "data/quad.mesh";
     // data->tolerance = 1.0e-9;
 
-    static const pylith::topology::Field::Discretization _auxDiscretizations[4] = {
+    static const pylith::topology::Field::Discretization _auxDiscretizations[11] = {
         pylith::topology::Field::Discretization(0, 4), // solid_density
         pylith::topology::Field::Discretization(0, 4), // fluid_density
         pylith::topology::Field::Discretization(0, 4), // fluid_viscosity
         pylith::topology::Field::Discretization(0, 4), // porosity
+        pylith::topology::Field::Discretization(0, 4), // shear_modulus
+        pylith::topology::Field::Discretization(0, 4), // drained_bulk_modulus
+        pylith::topology::Field::Discretization(0, 4), // biot_modulus
+        pylith::topology::Field::Discretization(0, 4), // biot_coefficient
+        pylith::topology::Field::Discretization(0, 4), // fluid_bulk_modulus
+        pylith::topology::Field::Discretization(0, 4), // solid_bulk_modulus
+        pylith::topology::Field::Discretization(0, 4), // isotropic_permeability
     };
     data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
 
@@ -698,11 +753,18 @@ pylith::QuadTrig::QuadQ5(void) {
 
     data->meshFilename = "data/quad.mesh";
 
-    static const pylith::topology::Field::Discretization _auxDiscretizations[4] = {
+    static const pylith::topology::Field::Discretization _auxDiscretizations[11] = {
         pylith::topology::Field::Discretization(0, 5), // solid_density
         pylith::topology::Field::Discretization(0, 5), // fluid_density
         pylith::topology::Field::Discretization(0, 5), // fluid_viscosity
         pylith::topology::Field::Discretization(0, 5), // porosity
+        pylith::topology::Field::Discretization(0, 5), // shear_modulus
+        pylith::topology::Field::Discretization(0, 5), // drained_bulk_modulus
+        pylith::topology::Field::Discretization(0, 5), // biot_modulus
+        pylith::topology::Field::Discretization(0, 5), // biot_coefficient
+        pylith::topology::Field::Discretization(0, 5), // fluid_bulk_modulus
+        pylith::topology::Field::Discretization(0, 5), // solid_bulk_modulus
+        pylith::topology::Field::Discretization(0, 5), // isotropic_permeability
     };
     data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
 
