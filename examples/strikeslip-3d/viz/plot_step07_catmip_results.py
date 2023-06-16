@@ -77,10 +77,16 @@ else:
 # compute the predicted displacements
 median_pred_disp = np.tensordot(median_coefs, greens_fns_reordered, 1)
 
+# get slip magnitude for plotting
+slip_mag = np.sqrt(node_median_coefs[:,1]**2 + node_median_coefs[:,2]**2)
+
 # plot the gps data
 ptsize1=120
 ptsize2=40
 # scatter plot - observed z values
+fig,ax=plt.subplots()
+plotFaultFunctions.plot_fault_surface(vertices,cells,slip_mag,ax,'Slip magnitude')
+
 zscatter = plt.scatter(observed_coords[:,0], observed_coords[:,1], ptsize1, observed_displacement[:,2], cmap = 'RdBu_r',edgecolors='k')
 # scatter plot - predicted z values
 zscatter = plt.scatter(observed_coords[:,0], observed_coords[:,1], ptsize2, median_pred_disp[:,2], cmap = 'RdBu_r',edgecolors='k')
@@ -92,6 +98,12 @@ plt.quiver(observed_coords[:,0], observed_coords[:,1], observed_displacement[:,0
 # quiver plot - predicted displacements
 plt.quiver(observed_coords[:,0], observed_coords[:,1], median_pred_disp[:,0], median_pred_disp[:,1],color='r')
 
-plt.show()
+figureFilename = "output/step07-catmip-gps_vectors.pdf"
+fig.savefig(figureFilename)
+
+if show_plot:
+    plt.show()
+else:
+    plt.close()
 
 # End of file
