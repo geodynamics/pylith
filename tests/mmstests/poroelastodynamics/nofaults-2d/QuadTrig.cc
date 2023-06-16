@@ -390,10 +390,10 @@ public:
         static const char* _auxSubfields[4] = {"solid_density", "fluid_density", "fluid_viscosity", "porosity"};
         data->auxSubfields = _auxSubfields;
         static const pylith::topology::Field::Discretization _auxDiscretizations[4] = {
-            pylith::topology::Field::Discretization(0, 1), // solid_density
-            pylith::topology::Field::Discretization(0, 1), // fluid_density
-            pylith::topology::Field::Discretization(0, 1), // fluid_viscosity
-            pylith::topology::Field::Discretization(0, 1), // porosity
+            pylith::topology::Field::Discretization(0, 2), // solid_density
+            pylith::topology::Field::Discretization(0, 2), // fluid_density
+            pylith::topology::Field::Discretization(0, 2), // fluid_viscosity
+            pylith::topology::Field::Discretization(0, 2), // porosity
         };
         data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization const*>(_auxDiscretizations);
 
@@ -401,12 +401,12 @@ public:
         data->auxDB.addValue("fluid_density", fluid_density, density_units());
         data->auxDB.addValue("fluid_viscosity", fluid_viscosity, fluid_viscosity_units());
         data->auxDB.addValue("porosity", porosity, porosity_units());
-        data->auxDB.addValue("shear_modulus", shear_modulus, modulus_units());
-        data->auxDB.addValue("drained_bulk_modulus", drained_bulk_modulus, modulus_units());
-        data->auxDB.addValue("biot_coefficient", biot_coefficient, biot_coefficient_units());
-        data->auxDB.addValue("fluid_bulk_modulus", fluid_bulk_modulus, modulus_units());
-        data->auxDB.addValue("solid_bulk_modulus", solid_bulk_modulus, modulus_units());
-        data->auxDB.addValue("isotropic_permeability", isotropic_permeability, isotropic_permeability_units());
+        // data->auxDB.addValue("shear_modulus", shear_modulus, modulus_units());
+        // data->auxDB.addValue("drained_bulk_modulus", drained_bulk_modulus, modulus_units());
+        // data->auxDB.addValue("biot_coefficient", biot_coefficient, biot_coefficient_units());
+        // data->auxDB.addValue("fluid_bulk_modulus", fluid_bulk_modulus, modulus_units());
+        // data->auxDB.addValue("solid_bulk_modulus", solid_bulk_modulus, modulus_units());
+        // data->auxDB.addValue("isotropic_permeability", isotropic_permeability, isotropic_permeability_units());
 
         data->auxDB.setCoordSys(data->cs);
 
