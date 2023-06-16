@@ -289,7 +289,7 @@ public:
         context->displacement_t = &s_t[sOff[i_displacement]];
         context->displacement_x = &s_x[sOff_x[i_displacement]];
         context->pressure = s[sOff[i_pressure]];
-        context->pressure_t = s_t[sOff[i_pressure]];
+        context->pressure_t = s_t ? s_t[sOff[i_pressure]] : 0.0;
         context->pressure_x = &s_x[sOff_x[i_pressure]];
         context->velocity = &s[sOff[i_velocity]];
         context->velocity_t = &s_t[sOff[i_velocity]];
@@ -1224,6 +1224,35 @@ public:
             Jf0[i*dim+i] += s_tshift * bulkDensity;
         } // for
     } // Jf0vv_explicit
+
+    static inline
+    void Jf0uu_stshift(const PylithInt dim,
+                       const PylithInt numS,
+                       const PylithInt numA,
+                       const PylithInt sOff[],
+                       const PylithInt sOff_x[],
+                       const PylithScalar s[],
+                       const PylithScalar s_t[],
+                       const PylithScalar s_x[],
+                       const PylithInt aOff[],
+                       const PylithInt aOff_x[],
+                       const PylithScalar a[],
+                       const PylithScalar a_t[],
+                       const PylithScalar a_x[],
+                       const PylithReal t,
+                       const PylithReal s_tshift,
+                       const PylithScalar x[],
+                       const PylithInt numConstants,
+                       const PylithScalar constants[],
+                       PylithScalar Jf0[]) {
+        const PylithInt _numS = 3;
+        assert(_numS == numS);
+        assert(s_tshift > 0);
+
+        for (PylithInt i = 0; i < dim; ++i) {
+            Jf0[i*dim+i] += s_tshift;
+        } // for
+    } // Jf0uu_stshift
 
     // ---------------------------------------------------------------------------------------------------------------------
     /*
