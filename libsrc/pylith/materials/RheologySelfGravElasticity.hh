@@ -65,7 +65,7 @@ public:
      *
      * @return RHS residual kernel for potential.
      */
-    virtual PetscPointFunc getKernelf0p(const spatialdata::geocoords::CoordSys *coordsys) const;
+    virtual PetscPointFunc getKernelf0p(const spatialdata::geocoords::CoordSys *coordsys) const = 0;
 
     /** Get f1p kernel for LHS residual, F(t,s,\dot{s}).
      *

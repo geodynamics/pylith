@@ -38,6 +38,9 @@ swig_sources = \
 	RheologyIncompressibleElasticity.i \
 	IsotropicLinearIncompElasticity.i \
 	IsotropicLinearPoroelasticity.i \
+
+	IsotropicLinearPoroelasticity.i \
+
 	RheologyPoroelasticity.i \
 	Poroelasticity.i \
 	../utils/PyreComponent.i
