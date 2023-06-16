@@ -28,12 +28,12 @@
 
 #include "pylith/materials/RheologySelfGravElasticity.hh" // ISA RheologySelfGravElasticity
 
-class pylith::materials::IsotropicSelfGravElasticity : public pylith::materials::RheologySelfGravElasticity {
+class pylith::materials::IsotropicSelfGravElasticity : public pylith::materials::RheologySelfGravElasticity
+{
     friend class TestIsotropicSelfGravElasticity; // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
-
     /// Default constructor.
     IsotropicSelfGravElasticity(void);
 
@@ -60,7 +60,7 @@ public:
      *
      * @return Auxiliary factory for physics object.
      */
-    pylith::materials::AuxiliaryFactoryElasticity* getAuxiliaryFactory(void);
+    pylith::materials::AuxiliaryFactoryElasticity *getAuxiliaryFactory(void);
 
     /** Add rheology subfields to auxiliary field.
      *
@@ -74,7 +74,7 @@ public:
      *
      * @return RHS residual kernel for potential.
      */
-    PetscPointFunc getKernelf0p(const spatialdata::geocoords::CoordSys* coordsys) const;
+    PetscPointFunc getKernelf0p(const spatialdata::geocoords::CoordSys *coordsys) const;
 
     /** Get f1u kernel for LHS residual, F(t,s,\dot{s}).
      *
@@ -82,7 +82,15 @@ public:
      *
      * @return LHS residual kernel for stress.
      */
-    PetscPointFunc getKernelf1u(const spatialdata::geocoords::CoordSys* coordsys) const;
+    PetscPointFunc getKernelf1u(const spatialdata::geocoords::CoordSys *coordsys) const;
+
+    /** Get f1p kernel for LHS residual, F(t,s,\dot{s}).
+     *
+     * @param[in] coordsys Coordinate system.
+     *
+     * @return LHS residual kernel for stress.
+     */
+    PetscPointFunc getKernelf1p(const spatialdata::geocoords::CoordSys *coordsys) const;
 
     /** Get Jf0pp kernel for LHS Jacobian F(t,s,\dot{s}).
      *
@@ -90,7 +98,7 @@ public:
      *
      * @return LHS Jf0pp kernel.
      */
-    PetscPointJac getKernelJf0pp(const spatialdata::geocoords::CoordSys* coordsys) const;
+    PetscPointJac getKernelJf3pp(const spatialdata::geocoords::CoordSys *coordsys) const;
 
     /** Get Jf3uu kernel for LHS Jacobian F(t,s,\dot{s}).
      *
@@ -98,7 +106,7 @@ public:
      *
      * @return LHS Jacobian kernel for elastic constants.
      */
-    PetscPointJac getKernelJf3uu(const spatialdata::geocoords::CoordSys* coordsys) const;
+    PetscPointJac getKernelJf3uu(const spatialdata::geocoords::CoordSys *coordsys) const;
 
     /** Get stress kernel for derived field.
      *
@@ -106,27 +114,24 @@ public:
      *
      * @return Project kernel for computing stress subfield in derived field.
      */
-    PetscPointFunc getKernelCauchyStressVector(const spatialdata::geocoords::CoordSys* coordsys) const;
+    PetscPointFunc getKernelCauchyStressVector(const spatialdata::geocoords::CoordSys *coordsys) const;
 
     // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
 protected:
-
     /** Get auxiliary factory associated with physics.
      * @return Auxiliary factory for physics object.
      */
-    pylith::feassemble::AuxiliaryFactory* _getAuxiliaryFactory(void);
+    pylith::feassemble::AuxiliaryFactory *_getAuxiliaryFactory(void);
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
 private:
-
-    pylith::materials::AuxiliaryFactoryElastic* _auxiliaryFactory; ///< Factory for auxiliary subfields.
-    bool _useReferenceState; ///< Flag to use reference stress and strain.
+    pylith::materials::AuxiliaryFactoryElastic *_auxiliaryFactory; ///< Factory for auxiliary subfields.
+    bool _useReferenceState;                                       ///< Flag to use reference stress and strain.
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
 private:
-
-    IsotropicSelfGravElasticity(const IsotropicSelfGravElasticity&); ///< Not implemented.
-    const IsotropicSelfGravElasticity& operator=(const IsotropicSelfGravElasticity&); ///< Not implemented
+    IsotropicSelfGravElasticity(const IsotropicSelfGravElasticity &);                  ///< Not implemented.
+    const IsotropicSelfGravElasticity &operator=(const IsotropicSelfGravElasticity &); ///< Not implemented
 
 }; // class IsotropicSelfGravElasticity
 

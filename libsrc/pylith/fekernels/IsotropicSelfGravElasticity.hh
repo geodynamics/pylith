@@ -67,62 +67,60 @@
 
 #include "fekernelsfwd.hh" // forward declarations
 
-#include "pylith/fekernels/SelfGravElasticity.hh" // USES SelfGravElasticity kernels
+#include "pylith/fekernels/SelfGravElasticity.hh"          // USES SelfGravElasticity kernels
 #include "pylith/fekernels/IsotropicSelfGravElasticity.hh" // USES IsotropicSelfGravElasticity kernels
-#include "pylith/fekernels/Elasticity.hh" // USES Elasticity kernels
+#include "pylith/fekernels/Elasticity.hh"                  // USES Elasticity kernels
+#include "pylith/fekernels/IsotropicLinearElasticity.hh"   // USES IsotropicSelfGravElasticity kernels
 
 #include "pylith/utils/types.hh"
 
 #include <cassert> // USES assert()
 
 // ------------------------------------------------------------------------------------------------
-class pylith::fekernels::IsotropicSelfGravElasticity {
+class pylith::fekernels::IsotropicSelfGravElasticity
+{
     // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
 public:
-
-    struct Context {
+    struct Context
+    {
         PylithReal potential;
         PylithReal shearModulus;
         PylithReal density;
         pylith::fekernels::Tensor refStress;
         pylith::fekernels::Tensor refStrain;
 
-        Context(void) :
-            potential(0.0),
-            shearModulus(0.0),
-            density(0.0) {}
-
-
+        Context(void) : potential(0.0),
+                        shearModulus(0.0),
+                        density(0.0) {}
     };
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
-
     // --------------------------------------------------------------------------------------------
-    static inline
-    void setContext(Context* context,
-                    const PylithInt dim,
-                    const PylithInt numS,
-                    const PylithInt numA,
-                    const PylithInt sOff[],
-                    const PylithInt sOff_x[],
-                    const PylithScalar s[],
-                    const PylithScalar s_t[],
-                    const PylithScalar s_x[],
-                    const PylithInt aOff[],
-                    const PylithInt aOff_x[],
-                    const PylithScalar a[],
-                    const PylithScalar a_t[],
-                    const PylithScalar a_x[],
-                    const PylithReal t,
-                    const PylithScalar x[],
-                    const PylithInt numConstants,
-                    const PylithScalar constants[],
-                    const pylith::fekernels::TensorOps& tensorOps) {
+    static inline void setContext(Context *context,
+                                  const PylithInt dim,
+                                  const PylithInt numS,
+                                  const PylithInt numA,
+                                  const PylithInt sOff[],
+                                  const PylithInt sOff_x[],
+                                  const PylithScalar s[],
+                                  const PylithScalar s_t[],
+                                  const PylithScalar s_x[],
+                                  const PylithInt aOff[],
+                                  const PylithInt aOff_x[],
+                                  const PylithScalar a[],
+                                  const PylithScalar a_t[],
+                                  const PylithScalar a_x[],
+                                  const PylithReal t,
+                                  const PylithScalar x[],
+                                  const PylithInt numConstants,
+                                  const PylithScalar constants[],
+                                  const pylith::fekernels::TensorOps &tensorOps)
+    {
         assert(context);
 
-        const PylithInt i_potential = numS-1;
-        const PylithInt i_shearModulus = numA-2;
+        const PylithInt i_potential = numS - 1;
+        const PylithInt i_shearModulus = numA - 2;
         const PylithInt i_density = 0;
 
         assert(numS >= 2);
@@ -134,39 +132,41 @@ public:
         assert(aOff[i_shearModulus] >= 0);
         assert(aOff[i_density] >= 0);
 
-        context->potential= s[sOff[i_potential]];
-        context->shearModulus = a[aOff[i_shearModulus]];assert(context->shearModulus > 0.0);
-        context->density = a[aOff[i_density]];assert(context->density> 0.0);
+        context->potential = s[sOff[i_potential]];
+        context->shearModulus = a[aOff[i_shearModulus]];
+        assert(context->shearModulus > 0.0);
+        context->density = a[aOff[i_density]];
+        assert(context->density > 0.0);
     } // setContext
 
     // --------------------------------------------------------------------------------------------
-    static inline
-    void setContext_refState(Context* context,
-                             const PylithInt dim,
-                             const PylithInt numS,
-                             const PylithInt numA,
-                             const PylithInt sOff[],
-                             const PylithInt sOff_x[],
-                             const PylithScalar s[],
-                             const PylithScalar s_t[],
-                             const PylithScalar s_x[],
-                             const PylithInt aOff[],
-                             const PylithInt aOff_x[],
-                             const PylithScalar a[],
-                             const PylithScalar a_t[],
-                             const PylithScalar a_x[],
-                             const PylithReal t,
-                             const PylithScalar x[],
-                             const PylithInt numConstants,
-                             const PylithScalar constants[],
-                             const pylith::fekernels::TensorOps& tensorOps) {
+    static inline void setContext_refState(Context *context,
+                                           const PylithInt dim,
+                                           const PylithInt numS,
+                                           const PylithInt numA,
+                                           const PylithInt sOff[],
+                                           const PylithInt sOff_x[],
+                                           const PylithScalar s[],
+                                           const PylithScalar s_t[],
+                                           const PylithScalar s_x[],
+                                           const PylithInt aOff[],
+                                           const PylithInt aOff_x[],
+                                           const PylithScalar a[],
+                                           const PylithScalar a_t[],
+                                           const PylithScalar a_x[],
+                                           const PylithReal t,
+                                           const PylithScalar x[],
+                                           const PylithInt numConstants,
+                                           const PylithScalar constants[],
+                                           const pylith::fekernels::TensorOps &tensorOps)
+    {
         assert(context);
 
-        const PylithInt i_potential = numS-1;
-        const PylithInt i_refStress = numA-4;
-        const PylithInt i_refStrain = numA-3;
-        const PylithInt i_shearModulus = numA-2;
-        const PylithInt i_density= 0;
+        const PylithInt i_potential = numS - 1;
+        const PylithInt i_refStress = numA - 4;
+        const PylithInt i_refStrain = numA - 3;
+        const PylithInt i_shearModulus = numA - 2;
+        const PylithInt i_density = 0;
 
         assert(numS >= 2);
         assert(s);
@@ -180,8 +180,10 @@ public:
         assert(aOff[i_density] >= 0);
 
         context->potential = s[sOff[i_potential]];
-        context->shearModulus = a[aOff[i_shearModulus]];assert(context->shearModulus > 0.0);
-        context->density = a[aOff[i_density]];assert(context->density > 0.0);
+        context->shearModulus = a[aOff[i_shearModulus]];
+        assert(context->shearModulus > 0.0);
+        context->density = a[aOff[i_density]];
+        assert(context->density > 0.0);
 
         tensorOps.fromVector(&a[aOff[i_refStress]], &context->refStress);
         tensorOps.fromVector(&a[aOff[i_refStrain]], &context->refStrain);
@@ -197,26 +199,26 @@ public:
      * Solution fields: [disp(dim), potential(1)]
      * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1)]
      */
-    static inline
-    void Jf3pp(const PylithInt dim,
-               const PylithInt numS,
-               const PylithInt numA,
-               const PylithInt sOff[],
-               const PylithInt sOff_x[],
-               const PylithScalar s[],
-               const PylithScalar s_t[],
-               const PylithScalar s_x[],
-               const PylithInt aOff[],
-               const PylithInt aOff_x[],
-               const PylithScalar a[],
-               const PylithScalar a_t[],
-               const PylithScalar a_x[],
-               const PylithReal t,
-               const PylithReal s_tshift,
-               const PylithScalar x[],
-               const PylithInt numConstants,
-               const PylithScalar constants[],
-               PylithScalar Jf3[]) {
+    static inline void Jf3pp(const PylithInt dim,
+                             const PylithInt numS,
+                             const PylithInt numA,
+                             const PylithInt sOff[],
+                             const PylithInt sOff_x[],
+                             const PylithScalar s[],
+                             const PylithScalar s_t[],
+                             const PylithScalar s_x[],
+                             const PylithInt aOff[],
+                             const PylithInt aOff_x[],
+                             const PylithScalar a[],
+                             const PylithScalar a_t[],
+                             const PylithScalar a_x[],
+                             const PylithReal t,
+                             const PylithReal s_tshift,
+                             const PylithScalar x[],
+                             const PylithInt numConstants,
+                             const PylithScalar constants[],
+                             PylithScalar Jf3[])
+    {
         // Incoming auxiliary subfields
         const PylithInt i_density = 0;
 
@@ -228,16 +230,15 @@ public:
 
         const PylithScalar density = a[aOff[i_density]];
 
-        Jf3[0] += 1/ (4*3.14159*6.67*pow(10,-11)*density);
-        Jf3[4] += 1/ (4*3.14159*6.67*pow(10,-11)*density);
-        Jf3[8] += 1/ (4*3.14159*6.67*pow(10,-11)*density);
-        Jf3[36] += 1/ (4*3.14159*6.67*pow(10,-11)*density);
-        Jf3[40] += 1/ (4*3.14159*6.67*pow(10,-11)*density);
-        Jf3[44] += 1/ (4*3.14159*6.67*pow(10,-11)*density);
-        Jf3[72] += 1/ (4*3.14159*6.67*pow(10,-11)*density);
-        Jf3[76] += 1/ (4*3.14159*6.67*pow(10,-11)*density);
-        Jf3[80] += 1/ (4*3.14159*6.67*pow(10,-11)*density); ///Fix
-
+        Jf3[0] += 1 / (4 * 3.14159 * 6.67 * pow(10, -11) * density);
+        Jf3[4] += 1 / (4 * 3.14159 * 6.67 * pow(10, -11) * density);
+        Jf3[8] += 1 / (4 * 3.14159 * 6.67 * pow(10, -11) * density);
+        Jf3[36] += 1 / (4 * 3.14159 * 6.67 * pow(10, -11) * density);
+        Jf3[40] += 1 / (4 * 3.14159 * 6.67 * pow(10, -11) * density);
+        Jf3[44] += 1 / (4 * 3.14159 * 6.67 * pow(10, -11) * density);
+        Jf3[72] += 1 / (4 * 3.14159 * 6.67 * pow(10, -11) * density);
+        Jf3[76] += 1 / (4 * 3.14159 * 6.67 * pow(10, -11) * density);
+        Jf3[80] += 1 / (4 * 3.14159 * 6.67 * pow(10, -11) * density); /// Fix
 
     } // Jf3pp
 
@@ -251,29 +252,30 @@ public:
      *
      * ISA pylith::fekernels::SelfGravElasticity::incompressiblefn_type
      */
-    static inline
-    void poissonterm(void* rheologyContext,
-                            const pylith::fekernels::Tensor& strain,
-                            const pylith::fekernels::TensorOps& tensorOps,
-                            PylithScalar* value) {
+    static inline void poissonterm(void *rheologyContext,
+                                   const pylith::fekernels::Tensor &strain,
+                                   const pylith::fekernels::TensorOps &tensorOps,
+                                   PylithScalar *value)
+    {
         assert(value);
-        Context* context = (Context*)(rheologyContext);assert(context);
+        Context *context = (Context *)(rheologyContext);
+        assert(context);
 
-        const PylithScalar potential= context->potential;
-        const PylithScalar density = context->density;
         *value = -1;
     } // poissonterm
 
-    void poissonterm_2(void* rheologyContext,
-                            const pylith::fekernels::Tensor& strain,
-                            const pylith::fekernels::TensorOps& tensorOps,
-                            PylithScalar* value) {
+    void poissonterm_2(void *rheologyContext,
+                       const pylith::fekernels::Tensor &strain,
+                       const pylith::fekernels::TensorOps &tensorOps,
+                       PylithScalar *value)
+    {
         assert(value);
-        Context* context = (Context*)(rheologyContext);assert(context);
+        Context *context = (Context *)(rheologyContext);
+        assert(context);
 
-        const PylithScalar potential= context->potential;
+        const PylithScalar potential = context->potential;
         const PylithScalar density = context->density;
-        *value = potential / (4*3.14159*6.67*pow(10,-11)*density) ;
+        *value = potential / (4 * 3.14159 * 6.67 * pow(10, -11) * density);
     } // poissonterm_2
 
     // --------------------------------------------------------------------------------------------
@@ -282,34 +284,35 @@ public:
      *
      * ISA pylith::fekernels::SelfGravElasticity::incompressiblefn_type
      */
-    static inline
-    void poissonterm_refState(void* rheologyContext,
-                                     const pylith::fekernels::Tensor& strain,
-                                     const pylith::fekernels::TensorOps& tensorOps,
-                                     PylithScalar* value) {
+    static inline void poissonterm_refState(void *rheologyContext,
+                                            const pylith::fekernels::Tensor &strain,
+                                            const pylith::fekernels::TensorOps &tensorOps,
+                                            PylithScalar *value)
+    {
         assert(value);
-        Context* context = (Context*)(rheologyContext);assert(context);
 
-        const PylithScalar potential = context->potential;
-        const PylithScalar density = context->density;
-        const pylith::fekernels::Tensor& refStress = context->refStress;
-        const pylith::fekernels::Tensor& refStrain = context->refStrain;
-
-        const PylithReal meanRefStress = (refStress.xx + refStress.yy + refStress.zz) / 3.0;
-        const PylithReal refStrainTrace = refStrain.xx + refStrain.yy + refStrain.zz;
-        const PylithReal strainTrace = strain.xx + strain.yy + strain.zz;
         *value = -1;
     } // poissonterm_refState
 
-
-
-    static inline
-    void f0p(pylith::fekernels::Elasticity::StrainContext& strainContext,
-             void* rheologyContext,
-             pylith::fekernels::Elasticity::strainfn_type strainFn,
-             pylith::fekernels::SelfGravElasticity::poissonfn_type poissonfn,
-             const pylith::fekernels::TensorOps& tensorOps,
-             PylithScalar f0[]) {
+    static inline void f0p(const PylithInt dim,
+                           const PylithInt numS,
+                           const PylithInt numA,
+                           const PylithInt sOff[],
+                           const PylithInt sOff_x[],
+                           const PylithScalar s[],
+                           const PylithScalar s_t[],
+                           const PylithScalar s_x[],
+                           const PylithInt aOff[],
+                           const PylithInt aOff_x[],
+                           const PylithScalar a[],
+                           const PylithScalar a_t[],
+                           const PylithScalar a_x[],
+                           const PylithReal t,
+                           const PylithScalar x[],
+                           const PylithInt numConstants,
+                           const PylithScalar constants[],
+                           PylithScalar f0[])
+    {
         f0[0] = -1;
     } // f0p
 
@@ -324,20 +327,20 @@ public:
      * @param[in] tensorOps Tensor operations.
      * @param[out] stress Stress tensor.
      */
-    static inline
-    void cauchyStress(void* rheologyContext,
-                      const pylith::fekernels::Tensor& strain,
-                      const pylith::fekernels::TensorOps& tensorOps,
-                      Tensor* stress) {
-        Context* context = (Context*)(rheologyContext);
+    static inline void cauchyStress(void *rheologyContext,
+                                    const pylith::fekernels::Tensor &strain,
+                                    const pylith::fekernels::TensorOps &tensorOps,
+                                    Tensor *stress)
+    {
+        Context *context = (Context *)(rheologyContext);
         assert(context);
         assert(stress);
 
-        //const PylithReal pressure = context->pressure;
-        //pylith::fekernels::SelfGravElasticity::meanStress(pressure, stress); //don't remove pressure from stress tensor
+        // const PylithReal pressure = context->pressure;
+        // pylith::fekernels::SelfGravElasticity::meanStress(pressure, stress); //don't remove pressure from stress tensor
 
         const PylithReal shearModulus = context->shearModulus;
-        pylith::fekernels::IsotropicSelfGravElasticity::deviatoricStress(shearModulus, strain, stress);
+        pylith::fekernels::IsotropicLinearElasticity::deviatoricStress(shearModulus, strain, stress);
     } // cauchyStress
 
     // --------------------------------------------------------------------------------------------
@@ -351,32 +354,32 @@ public:
      * @param[in] tensorOps Tensor operations.
      * @param[out] stress Stress tensor.
      */
-    static inline
-    void cauchyStress_refState(void* rheologyContext,
-                               const pylith::fekernels::Tensor& strain,
-                               const pylith::fekernels::TensorOps& tensorOps,
-                               Tensor* stress) {
-        Context* context = (Context*)(rheologyContext);
+    static inline void cauchyStress_refState(void *rheologyContext,
+                                             const pylith::fekernels::Tensor &strain,
+                                             const pylith::fekernels::TensorOps &tensorOps,
+                                             Tensor *stress)
+    {
+        Context *context = (Context *)(rheologyContext);
         assert(context);
         assert(stress);
 
-        const pylith::fekernels::Tensor& refStress = context->refStress;
-        const pylith::fekernels::Tensor& refStrain = context->refStrain;
+        const pylith::fekernels::Tensor &refStress = context->refStress;
+        const pylith::fekernels::Tensor &refStrain = context->refStrain;
 
-        // const PylithReal pressure = context->pressure; 
+        // const PylithReal pressure = context->pressure;
         // pylith::fekernels::SelfGravElasticity::meanStress_refState(pressure, refStress, stress); dont remove pressure
 
         const PylithReal shearModulus = context->shearModulus;
-        pylith::fekernels::IsotropicSelfGravElasticity::deviatoricStress_refState(shearModulus, refStress, refStrain, strain, stress);
+        pylith::fekernels::IsotropicLinearElasticity::deviatoricStress_refState(shearModulus, refStress, refStrain, strain, stress);
     } // cauchyStress_refState
 
 }; // IsotropicSelfGravElasticity
 
 // ------------------------------------------------------------------------------------------------
-class pylith::fekernels::IsotropicSelfGravElasticityPlaneStrain {
+class pylith::fekernels::IsotropicSelfGravElasticityPlaneStrain
+{
     // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
 public:
-
     // ===========================================================================================
     // Kernels for elasticity equation
     // ===========================================================================================
@@ -403,26 +406,27 @@ public:
      * Solution fields: [disp(dim), pressure(1)]
      * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1)]
      */
-    static inline
-    void f1u_infinitesimalStrain(const PylithInt dim,
-                                 const PylithInt numS,
-                                 const PylithInt numA,
-                                 const PylithInt sOff[],
-                                 const PylithInt sOff_x[],
-                                 const PylithScalar s[],
-                                 const PylithScalar s_t[],
-                                 const PylithScalar s_x[],
-                                 const PylithInt aOff[],
-                                 const PylithInt aOff_x[],
-                                 const PylithScalar a[],
-                                 const PylithScalar a_t[],
-                                 const PylithScalar a_x[],
-                                 const PylithReal t,
-                                 const PylithScalar x[],
-                                 const PylithInt numConstants,
-                                 const PylithScalar constants[],
-                                 PylithScalar f1[]) {
-        const PylithInt _dim = 2;assert(_dim == dim);
+    static inline void f1u_infinitesimalStrain(const PylithInt dim,
+                                               const PylithInt numS,
+                                               const PylithInt numA,
+                                               const PylithInt sOff[],
+                                               const PylithInt sOff_x[],
+                                               const PylithScalar s[],
+                                               const PylithScalar s_t[],
+                                               const PylithScalar s_x[],
+                                               const PylithInt aOff[],
+                                               const PylithInt aOff_x[],
+                                               const PylithScalar a[],
+                                               const PylithScalar a_t[],
+                                               const PylithScalar a_x[],
+                                               const PylithReal t,
+                                               const PylithScalar x[],
+                                               const PylithInt numConstants,
+                                               const PylithScalar constants[],
+                                               PylithScalar f1[])
+    {
+        const PylithInt _dim = 2;
+        assert(_dim == dim);
 
         pylith::fekernels::Elasticity::StrainContext strainContext;
         pylith::fekernels::Elasticity::setStrainContext(&strainContext, _dim, numS, sOff, sOff_x, s, s_t, s_x, x);
@@ -447,26 +451,27 @@ public:
      * Solution fields: [disp(dim), pressure(1)]
      * Auxiliary fields: [..., refstress(4), refstrain(4), shear_modulus(1), bulk_modulus(1)]
      */
-    static inline
-    void f1u_infinitesimalStrain_refState(const PylithInt dim,
-                                          const PylithInt numS,
-                                          const PylithInt numA,
-                                          const PylithInt sOff[],
-                                          const PylithInt sOff_x[],
-                                          const PylithScalar s[],
-                                          const PylithScalar s_t[],
-                                          const PylithScalar s_x[],
-                                          const PylithInt aOff[],
-                                          const PylithInt aOff_x[],
-                                          const PylithScalar a[],
-                                          const PylithScalar a_t[],
-                                          const PylithScalar a_x[],
-                                          const PylithReal t,
-                                          const PylithScalar x[],
-                                          const PylithInt numConstants,
-                                          const PylithScalar constants[],
-                                          PylithScalar f1[]) {
-        const PylithInt _dim = 2;assert(_dim == dim);
+    static inline void f1u_infinitesimalStrain_refState(const PylithInt dim,
+                                                        const PylithInt numS,
+                                                        const PylithInt numA,
+                                                        const PylithInt sOff[],
+                                                        const PylithInt sOff_x[],
+                                                        const PylithScalar s[],
+                                                        const PylithScalar s_t[],
+                                                        const PylithScalar s_x[],
+                                                        const PylithInt aOff[],
+                                                        const PylithInt aOff_x[],
+                                                        const PylithScalar a[],
+                                                        const PylithScalar a_t[],
+                                                        const PylithScalar a_x[],
+                                                        const PylithReal t,
+                                                        const PylithScalar x[],
+                                                        const PylithInt numConstants,
+                                                        const PylithScalar constants[],
+                                                        PylithScalar f1[])
+    {
+        const PylithInt _dim = 2;
+        assert(_dim == dim);
 
         pylith::fekernels::Elasticity::StrainContext strainContext;
         pylith::fekernels::Elasticity::setStrainContext(&strainContext, _dim, numS, sOff, sOff_x, s, s_t, s_x, x);
@@ -490,27 +495,28 @@ public:
      * Solution fields: [...]
      * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1)]
      */
-    static inline
-    void Jf3uu_infinitesimalStrain(const PylithInt dim,
-                                   const PylithInt numS,
-                                   const PylithInt numA,
-                                   const PylithInt sOff[],
-                                   const PylithInt sOff_x[],
-                                   const PylithScalar s[],
-                                   const PylithScalar s_t[],
-                                   const PylithScalar s_x[],
-                                   const PylithInt aOff[],
-                                   const PylithInt aOff_x[],
-                                   const PylithScalar a[],
-                                   const PylithScalar a_t[],
-                                   const PylithScalar a_x[],
-                                   const PylithReal t,
-                                   const PylithReal s_tshift,
-                                   const PylithScalar x[],
-                                   const PylithInt numConstants,
-                                   const PylithScalar constants[],
-                                   PylithScalar Jf3[]) {
-        const PylithInt _dim = 2;assert(_dim == dim);
+    static inline void Jf3uu_infinitesimalStrain(const PylithInt dim,
+                                                 const PylithInt numS,
+                                                 const PylithInt numA,
+                                                 const PylithInt sOff[],
+                                                 const PylithInt sOff_x[],
+                                                 const PylithScalar s[],
+                                                 const PylithScalar s_t[],
+                                                 const PylithScalar s_x[],
+                                                 const PylithInt aOff[],
+                                                 const PylithInt aOff_x[],
+                                                 const PylithScalar a[],
+                                                 const PylithScalar a_t[],
+                                                 const PylithScalar a_x[],
+                                                 const PylithReal t,
+                                                 const PylithReal s_tshift,
+                                                 const PylithScalar x[],
+                                                 const PylithInt numConstants,
+                                                 const PylithScalar constants[],
+                                                 PylithScalar Jf3[])
+    {
+        const PylithInt _dim = 2;
+        assert(_dim == dim);
         pylith::fekernels::IsotropicLinearElasticity::Context context;
         pylith::fekernels::IsotropicLinearElasticity::setContext(
             &context, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
@@ -521,8 +527,8 @@ public:
         const PylithScalar shearModulus = context.shearModulus;
         const PylithScalar bulkModulus = context.bulkModulus;
 
-        const PylithScalar lambda = bulkModulus - 2.0/3.0*shearModulus;
-        const PylithScalar lambda2mu = lambda + 2.0*shearModulus;
+        const PylithScalar lambda = bulkModulus - 2.0 / 3.0 * shearModulus;
+        const PylithScalar lambda2mu = lambda + 2.0 * shearModulus;
 
         const PylithReal C1111 = lambda2mu;
         const PylithReal C2222 = lambda2mu;
@@ -552,15 +558,15 @@ public:
          * 15: j1111 = C2222
          */
 
-        Jf3[ 0] -= C1111; // j0000
-        Jf3[ 3] -= C1212; // j0011
-        Jf3[ 5] -= C1122; // j0101
-        Jf3[ 6] -= C1212; // j0110, C1221
-        Jf3[ 9] -= C1212; // j1001, C2112
+        Jf3[0] -= C1111;  // j0000
+        Jf3[3] -= C1212;  // j0011
+        Jf3[5] -= C1122;  // j0101
+        Jf3[6] -= C1212;  // j0110, C1221
+        Jf3[9] -= C1212;  // j1001, C2112
         Jf3[10] -= C1122; // j1010, C2211
         Jf3[12] -= C1212; // j1100, C2121
         Jf3[15] -= C2222; // j1111
-    } // Jf3uu
+    }                     // Jf3uu
 
     // ===========================================================================================
     // Kernels for output
@@ -575,26 +581,27 @@ public:
      * Solution fields: [disp(dim)]
      * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1)]
      */
-    static inline
-    void cauchyStress_infinitesimalStrain_asVector(const PylithInt dim,
-                                                   const PylithInt numS,
-                                                   const PylithInt numA,
-                                                   const PylithInt sOff[],
-                                                   const PylithInt sOff_x[],
-                                                   const PylithScalar s[],
-                                                   const PylithScalar s_t[],
-                                                   const PylithScalar s_x[],
-                                                   const PylithInt aOff[],
-                                                   const PylithInt aOff_x[],
-                                                   const PylithScalar a[],
-                                                   const PylithScalar a_t[],
-                                                   const PylithScalar a_x[],
-                                                   const PylithReal t,
-                                                   const PylithScalar x[],
-                                                   const PylithInt numConstants,
-                                                   const PylithScalar constants[],
-                                                   PylithScalar stressVector[]) {
-        const PylithInt _dim = 2;assert(_dim == dim);
+    static inline void cauchyStress_infinitesimalStrain_asVector(const PylithInt dim,
+                                                                 const PylithInt numS,
+                                                                 const PylithInt numA,
+                                                                 const PylithInt sOff[],
+                                                                 const PylithInt sOff_x[],
+                                                                 const PylithScalar s[],
+                                                                 const PylithScalar s_t[],
+                                                                 const PylithScalar s_x[],
+                                                                 const PylithInt aOff[],
+                                                                 const PylithInt aOff_x[],
+                                                                 const PylithScalar a[],
+                                                                 const PylithScalar a_t[],
+                                                                 const PylithScalar a_x[],
+                                                                 const PylithReal t,
+                                                                 const PylithScalar x[],
+                                                                 const PylithInt numConstants,
+                                                                 const PylithScalar constants[],
+                                                                 PylithScalar stressVector[])
+    {
+        const PylithInt _dim = 2;
+        assert(_dim == dim);
 
         pylith::fekernels::Elasticity::StrainContext strainContext;
         pylith::fekernels::Elasticity::setStrainContext(&strainContext, _dim, numS, sOff, sOff_x, s, s_t, s_x, x);
@@ -621,26 +628,27 @@ public:
      * Solution fields: [disp(dim)]
      * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1)]
      */
-    static inline
-    void cauchyStress_infinitesimalStrain_refState_asVector(const PylithInt dim,
-                                                            const PylithInt numS,
-                                                            const PylithInt numA,
-                                                            const PylithInt sOff[],
-                                                            const PylithInt sOff_x[],
-                                                            const PylithScalar s[],
-                                                            const PylithScalar s_t[],
-                                                            const PylithScalar s_x[],
-                                                            const PylithInt aOff[],
-                                                            const PylithInt aOff_x[],
-                                                            const PylithScalar a[],
-                                                            const PylithScalar a_t[],
-                                                            const PylithScalar a_x[],
-                                                            const PylithReal t,
-                                                            const PylithScalar x[],
-                                                            const PylithInt numConstants,
-                                                            const PylithScalar constants[],
-                                                            PylithScalar stressVector[]) {
-        const PylithInt _dim = 2;assert(_dim == dim);
+    static inline void cauchyStress_infinitesimalStrain_refState_asVector(const PylithInt dim,
+                                                                          const PylithInt numS,
+                                                                          const PylithInt numA,
+                                                                          const PylithInt sOff[],
+                                                                          const PylithInt sOff_x[],
+                                                                          const PylithScalar s[],
+                                                                          const PylithScalar s_t[],
+                                                                          const PylithScalar s_x[],
+                                                                          const PylithInt aOff[],
+                                                                          const PylithInt aOff_x[],
+                                                                          const PylithScalar a[],
+                                                                          const PylithScalar a_t[],
+                                                                          const PylithScalar a_x[],
+                                                                          const PylithReal t,
+                                                                          const PylithScalar x[],
+                                                                          const PylithInt numConstants,
+                                                                          const PylithScalar constants[],
+                                                                          PylithScalar stressVector[])
+    {
+        const PylithInt _dim = 2;
+        assert(_dim == dim);
 
         pylith::fekernels::Elasticity::StrainContext strainContext;
         pylith::fekernels::Elasticity::setStrainContext(&strainContext, _dim, numS, sOff, sOff_x, s, s_t, s_x, x);
@@ -661,10 +669,10 @@ public:
 }; // IsotropicSelfGravElasticityPlaneStrain
 
 // ------------------------------------------------------------------------------------------------
-class pylith::fekernels::IsotropicSelfGravElasticity3D {
+class pylith::fekernels::IsotropicSelfGravElasticity3D
+{
     // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
 public:
-
     // ===========================================================================================
     // Kernels for elasticity equation
     // ===========================================================================================
@@ -675,26 +683,27 @@ public:
      *
      * Solution fields: [disp(dim), pressure(1)]
      * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1)]
-     */ 
+     */
 
     void f1p_potential(const PylithInt dim,
-                                const PylithInt numS,
-                                const PylithInt numA,
-                                const PylithInt sOff[],
-                                const PylithInt sOff_x[],
-                                const PylithScalar s[],
-                                const PylithScalar s_t[],
-                                const PylithScalar s_x[],
-                                const PylithInt aOff[],
-                                const PylithInt aOff_x[],
-                                const PylithScalar a[],
-                                const PylithScalar a_t[],
-                                const PylithScalar a_x[],
-                                const PylithReal t,
-                                const PylithScalar x[],
-                                const PylithInt numConstants,
-                                const PylithScalar constants[],
-                                PylithScalar f1[]) {
+                       const PylithInt numS,
+                       const PylithInt numA,
+                       const PylithInt sOff[],
+                       const PylithInt sOff_x[],
+                       const PylithScalar s[],
+                       const PylithScalar s_t[],
+                       const PylithScalar s_x[],
+                       const PylithInt aOff[],
+                       const PylithInt aOff_x[],
+                       const PylithScalar a[],
+                       const PylithScalar a_t[],
+                       const PylithScalar a_x[],
+                       const PylithReal t,
+                       const PylithScalar x[],
+                       const PylithInt numConstants,
+                       const PylithScalar constants[],
+                       PylithScalar f1[])
+    {
 
         const PylithInt i_density = 0;
 
@@ -704,11 +713,10 @@ public:
 
         const PylithScalar density = a[aOff[i_density]];
 
-        for (PetscInt d = 0 ; d < dim ; ++d)
-                f1[d] = s_x[sOff_x[1]+d] *1/ (4*3.14159*6.67*pow(10,-11)*density);
+        for (PetscInt d = 0; d < dim; ++d)
+            f1[d] = s_x[sOff_x[1] + d] * 1 / (4 * 3.14159 * 6.67 * pow(10, -11) * density);
 
     } // f1p_potential
-
 
     // --------------------------------------------------------------------------------------------
     /** f0p entry function for 3D isotropic linear incompressible elasticity with infinitesimal strain
@@ -724,26 +732,27 @@ public:
      * Solution fields: [disp(dim), pressure(1)]
      * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1)]
      */
-    static inline
-    void f1u_infinitesimalStrain(const PylithInt dim,
-                                 const PylithInt numS,
-                                 const PylithInt numA,
-                                 const PylithInt sOff[],
-                                 const PylithInt sOff_x[],
-                                 const PylithScalar s[],
-                                 const PylithScalar s_t[],
-                                 const PylithScalar s_x[],
-                                 const PylithInt aOff[],
-                                 const PylithInt aOff_x[],
-                                 const PylithScalar a[],
-                                 const PylithScalar a_t[],
-                                 const PylithScalar a_x[],
-                                 const PylithReal t,
-                                 const PylithScalar x[],
-                                 const PylithInt numConstants,
-                                 const PylithScalar constants[],
-                                 PylithScalar f1[]) {
-        const PylithInt _dim = 3;assert(_dim == dim);
+    static inline void f1u_infinitesimalStrain(const PylithInt dim,
+                                               const PylithInt numS,
+                                               const PylithInt numA,
+                                               const PylithInt sOff[],
+                                               const PylithInt sOff_x[],
+                                               const PylithScalar s[],
+                                               const PylithScalar s_t[],
+                                               const PylithScalar s_x[],
+                                               const PylithInt aOff[],
+                                               const PylithInt aOff_x[],
+                                               const PylithScalar a[],
+                                               const PylithScalar a_t[],
+                                               const PylithScalar a_x[],
+                                               const PylithReal t,
+                                               const PylithScalar x[],
+                                               const PylithInt numConstants,
+                                               const PylithScalar constants[],
+                                               PylithScalar f1[])
+    {
+        const PylithInt _dim = 3;
+        assert(_dim == dim);
 
         pylith::fekernels::Elasticity::StrainContext strainContext;
         pylith::fekernels::Elasticity::setStrainContext(&strainContext, _dim, numS, sOff, sOff_x, s, s_t, s_x, x);
@@ -761,10 +770,6 @@ public:
             f1);
     } // f1u_infinitesimalStrain
 
-
-
- 
-
     // --------------------------------------------------------------------------------------------
     /** f1 entry function for 3D isotropic linear incompressible elasticity with infinitesimal
      * strain WITH reference stress and reference strain.
@@ -772,26 +777,27 @@ public:
      * Solution fields: [disp(dim), pressure(1)]
      * Auxiliary fields: [..., refstress(4), refstrain(4), shear_modulus(1), bulk_modulus(1)]
      */
-    static inline
-    void f1u_infinitesimalStrain_refState(const PylithInt dim,
-                                          const PylithInt numS,
-                                          const PylithInt numA,
-                                          const PylithInt sOff[],
-                                          const PylithInt sOff_x[],
-                                          const PylithScalar s[],
-                                          const PylithScalar s_t[],
-                                          const PylithScalar s_x[],
-                                          const PylithInt aOff[],
-                                          const PylithInt aOff_x[],
-                                          const PylithScalar a[],
-                                          const PylithScalar a_t[],
-                                          const PylithScalar a_x[],
-                                          const PylithReal t,
-                                          const PylithScalar x[],
-                                          const PylithInt numConstants,
-                                          const PylithScalar constants[],
-                                          PylithScalar f1[]) {
-        const PylithInt _dim = 3;assert(_dim == dim);
+    static inline void f1u_infinitesimalStrain_refState(const PylithInt dim,
+                                                        const PylithInt numS,
+                                                        const PylithInt numA,
+                                                        const PylithInt sOff[],
+                                                        const PylithInt sOff_x[],
+                                                        const PylithScalar s[],
+                                                        const PylithScalar s_t[],
+                                                        const PylithScalar s_x[],
+                                                        const PylithInt aOff[],
+                                                        const PylithInt aOff_x[],
+                                                        const PylithScalar a[],
+                                                        const PylithScalar a_t[],
+                                                        const PylithScalar a_x[],
+                                                        const PylithReal t,
+                                                        const PylithScalar x[],
+                                                        const PylithInt numConstants,
+                                                        const PylithScalar constants[],
+                                                        PylithScalar f1[])
+    {
+        const PylithInt _dim = 3;
+        assert(_dim == dim);
 
         pylith::fekernels::Elasticity::StrainContext strainContext;
         pylith::fekernels::Elasticity::setStrainContext(&strainContext, _dim, numS, sOff, sOff_x, s, s_t, s_x, x);
@@ -815,27 +821,28 @@ public:
      * Solution fields: [...]
      * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1)]
      */
-    static inline
-    void Jf3uu_infinitesimalStrain(const PylithInt dim,
-                                   const PylithInt numS,
-                                   const PylithInt numA,
-                                   const PylithInt sOff[],
-                                   const PylithInt sOff_x[],
-                                   const PylithScalar s[],
-                                   const PylithScalar s_t[],
-                                   const PylithScalar s_x[],
-                                   const PylithInt aOff[],
-                                   const PylithInt aOff_x[],
-                                   const PylithScalar a[],
-                                   const PylithScalar a_t[],
-                                   const PylithScalar a_x[],
-                                   const PylithReal t,
-                                   const PylithReal s_tshift,
-                                   const PylithScalar x[],
-                                   const PylithInt numConstants,
-                                   const PylithScalar constants[],
-                                   PylithScalar Jf3[]) {
-        const PylithInt _dim = 3;assert(_dim == dim);
+    static inline void Jf3uu_infinitesimalStrain(const PylithInt dim,
+                                                 const PylithInt numS,
+                                                 const PylithInt numA,
+                                                 const PylithInt sOff[],
+                                                 const PylithInt sOff_x[],
+                                                 const PylithScalar s[],
+                                                 const PylithScalar s_t[],
+                                                 const PylithScalar s_x[],
+                                                 const PylithInt aOff[],
+                                                 const PylithInt aOff_x[],
+                                                 const PylithScalar a[],
+                                                 const PylithScalar a_t[],
+                                                 const PylithScalar a_x[],
+                                                 const PylithReal t,
+                                                 const PylithReal s_tshift,
+                                                 const PylithScalar x[],
+                                                 const PylithInt numConstants,
+                                                 const PylithScalar constants[],
+                                                 PylithScalar Jf3[])
+    {
+        const PylithInt _dim = 3;
+        assert(_dim == dim);
         pylith::fekernels::IsotropicLinearElasticity::Context context;
         pylith::fekernels::IsotropicLinearElasticity::setContext(
             &context, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
@@ -846,8 +853,8 @@ public:
         const PylithScalar shearModulus = context.shearModulus;
         const PylithScalar bulkModulus = context.bulkModulus;
 
-        const PylithScalar lambda = bulkModulus - 2.0/3.0*shearModulus;
-        const PylithScalar lambda2mu = lambda + 2.0*shearModulus;
+        const PylithScalar lambda = bulkModulus - 2.0 / 3.0 * shearModulus;
+        const PylithScalar lambda2mu = lambda + 2.0 * shearModulus;
 
         // All other values are either zero or equal to one of these.
         const PylithReal C1111 = lambda2mu;
@@ -939,9 +946,9 @@ public:
          */
 
         // Nonzero Jacobian entries.
-        Jf3[ 0] -= C1111; // j0000
-        Jf3[ 4] -= C1212; // j0011
-        Jf3[ 8] -= C1212; // j0022
+        Jf3[0] -= C1111;  // j0000
+        Jf3[4] -= C1212;  // j0011
+        Jf3[8] -= C1212;  // j0022
         Jf3[10] -= C1122; // j0101
         Jf3[12] -= C1212; // j0110
         Jf3[20] -= C1122; // j0202
@@ -960,7 +967,7 @@ public:
         Jf3[72] -= C1212; // j2200
         Jf3[76] -= C1212; // j2211
         Jf3[80] -= C1111; // j2222
-    } // Jf3uu
+    }                     // Jf3uu
 
     // ===========================================================================================
     // Kernels for output
@@ -975,26 +982,27 @@ public:
      * Solution fields: [disp(dim)]
      * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1)]
      */
-    static inline
-    void cauchyStress_infinitesimalStrain_asVector(const PylithInt dim,
-                                                   const PylithInt numS,
-                                                   const PylithInt numA,
-                                                   const PylithInt sOff[],
-                                                   const PylithInt sOff_x[],
-                                                   const PylithScalar s[],
-                                                   const PylithScalar s_t[],
-                                                   const PylithScalar s_x[],
-                                                   const PylithInt aOff[],
-                                                   const PylithInt aOff_x[],
-                                                   const PylithScalar a[],
-                                                   const PylithScalar a_t[],
-                                                   const PylithScalar a_x[],
-                                                   const PylithReal t,
-                                                   const PylithScalar x[],
-                                                   const PylithInt numConstants,
-                                                   const PylithScalar constants[],
-                                                   PylithScalar stressVector[]) {
-        const PylithInt _dim = 3;assert(_dim == dim);
+    static inline void cauchyStress_infinitesimalStrain_asVector(const PylithInt dim,
+                                                                 const PylithInt numS,
+                                                                 const PylithInt numA,
+                                                                 const PylithInt sOff[],
+                                                                 const PylithInt sOff_x[],
+                                                                 const PylithScalar s[],
+                                                                 const PylithScalar s_t[],
+                                                                 const PylithScalar s_x[],
+                                                                 const PylithInt aOff[],
+                                                                 const PylithInt aOff_x[],
+                                                                 const PylithScalar a[],
+                                                                 const PylithScalar a_t[],
+                                                                 const PylithScalar a_x[],
+                                                                 const PylithReal t,
+                                                                 const PylithScalar x[],
+                                                                 const PylithInt numConstants,
+                                                                 const PylithScalar constants[],
+                                                                 PylithScalar stressVector[])
+    {
+        const PylithInt _dim = 3;
+        assert(_dim == dim);
 
         pylith::fekernels::Elasticity::StrainContext strainContext;
         pylith::fekernels::Elasticity::setStrainContext(&strainContext, _dim, numS, sOff, sOff_x, s, s_t, s_x, x);
@@ -1021,26 +1029,27 @@ public:
      * Solution fields: [disp(dim)]
      * Auxiliary fields: [..., shear_modulus(1), bulk_modulus(1)]
      */
-    static inline
-    void cauchyStress_infinitesimalStrain_refState_asVector(const PylithInt dim,
-                                                            const PylithInt numS,
-                                                            const PylithInt numA,
-                                                            const PylithInt sOff[],
-                                                            const PylithInt sOff_x[],
-                                                            const PylithScalar s[],
-                                                            const PylithScalar s_t[],
-                                                            const PylithScalar s_x[],
-                                                            const PylithInt aOff[],
-                                                            const PylithInt aOff_x[],
-                                                            const PylithScalar a[],
-                                                            const PylithScalar a_t[],
-                                                            const PylithScalar a_x[],
-                                                            const PylithReal t,
-                                                            const PylithScalar x[],
-                                                            const PylithInt numConstants,
-                                                            const PylithScalar constants[],
-                                                            PylithScalar stressVector[]) {
-        const PylithInt _dim = 3;assert(_dim == dim);
+    static inline void cauchyStress_infinitesimalStrain_refState_asVector(const PylithInt dim,
+                                                                          const PylithInt numS,
+                                                                          const PylithInt numA,
+                                                                          const PylithInt sOff[],
+                                                                          const PylithInt sOff_x[],
+                                                                          const PylithScalar s[],
+                                                                          const PylithScalar s_t[],
+                                                                          const PylithScalar s_x[],
+                                                                          const PylithInt aOff[],
+                                                                          const PylithInt aOff_x[],
+                                                                          const PylithScalar a[],
+                                                                          const PylithScalar a_t[],
+                                                                          const PylithScalar a_x[],
+                                                                          const PylithReal t,
+                                                                          const PylithScalar x[],
+                                                                          const PylithInt numConstants,
+                                                                          const PylithScalar constants[],
+                                                                          PylithScalar stressVector[])
+    {
+        const PylithInt _dim = 3;
+        assert(_dim == dim);
 
         pylith::fekernels::Elasticity::StrainContext strainContext;
         pylith::fekernels::Elasticity::setStrainContext(&strainContext, _dim, numS, sOff, sOff_x, s, s_t, s_x, x);
