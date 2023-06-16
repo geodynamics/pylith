@@ -3,8 +3,8 @@
 
 ##### Generate geometry #######
 reset
-
-playback '2d_ridgecrest.jou'
+## Plays journal file which makes geometry ##
+playback '2D_ridgecrest.jou'
 
 #### Set discretization size and scheme ###
 
@@ -18,10 +18,13 @@ mesh surface all
 surface all smooth scheme condition number beta 1.1 cpu 2
 smooth surface all
 
-## set boundary consitions
+## set boundary consitions ##
+## Plays journal file to set conditions ##
 playback 'bc_2d_ridgecrest.jou'
 
+## Export Mesh ##
 export mesh "2D_Ridgecrest_mesh_tri.exo" dimension 2 overwrite
 
 
 # End of file
+
