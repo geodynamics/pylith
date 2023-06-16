@@ -67,18 +67,18 @@ TEST_CASE("QuadTrig::TriP4::testJacobianFiniteDiff", "[QuadTrig][TriP4][Jacobian
     pylith::TestLinearPoroElasticity(pylith::QuadTrig::TriP4()).testJacobianFiniteDiff();
 }
 
-// QuadQ3
-TEST_CASE("QuadTrig::QuadQ3::testDiscretization", "[QuadTrig][QuadQ3][discretization]") {
-    pylith::TestLinearPoroElasticity(pylith::QuadTrig::QuadQ3()).testDiscretization();
+// QuadQ2
+TEST_CASE("QuadTrig::QuadQ2::testDiscretization", "[QuadTrig][QuadQ2][discretization]") {
+    pylith::TestLinearPoroElasticity(pylith::QuadTrig::QuadQ2()).testDiscretization();
 }
-TEST_CASE("QuadTrig::QuadQ3::testResidual", "[QuadTrig][QuadQ3][residual]") {
-    pylith::TestLinearPoroElasticity(pylith::QuadTrig::QuadQ3()).testResidual();
+TEST_CASE("QuadTrig::QuadQ2::testResidual", "[QuadTrig][QuadQ2][residual]") {
+    pylith::TestLinearPoroElasticity(pylith::QuadTrig::QuadQ2()).testResidual();
 }
-TEST_CASE("QuadTrig::QuadQ3::testJacobianTaylorSeries", "[QuadTrig][QuadQ3][Jacobian Taylor series]") {
-    pylith::TestLinearPoroElasticity(pylith::QuadTrig::QuadQ3()).testJacobianTaylorSeries();
+TEST_CASE("QuadTrig::QuadQ2::testJacobianTaylorSeries", "[QuadTrig][QuadQ2][Jacobian Taylor series]") {
+    pylith::TestLinearPoroElasticity(pylith::QuadTrig::QuadQ2()).testJacobianTaylorSeries();
 }
-TEST_CASE("QuadTrig::QuadQ3::testJacobianFiniteDiff", "[QuadTrig][QuadQ3][Jacobian finite difference]") {
-    pylith::TestLinearPoroElasticity(pylith::QuadTrig::QuadQ3()).testJacobianFiniteDiff();
+TEST_CASE("QuadTrig::QuadQ2::testJacobianFiniteDiff", "[QuadTrig][QuadQ2][Jacobian finite difference]") {
+    pylith::TestLinearPoroElasticity(pylith::QuadTrig::QuadQ2()).testJacobianFiniteDiff();
 }
 
 // QuadQ3
