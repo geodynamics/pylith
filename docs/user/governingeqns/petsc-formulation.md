@@ -3,7 +3,7 @@
 
 Within the PETSc solver framework, we want to solve a system of partial differential equations in which the weak form can be expressed as $F(t,s,\dot{s}) = G(t,s)$, $s(t_0) = s_0$, where $F$ and $G$ are vector functions, $t$ is time, and $s$ is the solution vector.
 
-Using the finite-element method we manipulate the weak form of the system of equations involving a vector field $\vec{u}$ into integrals over the domain $\Omega$ matching the form,
+Using the finite-element method[^1] we manipulate the weak form of the system of equations involving a vector field $\vec{u}$ into integrals over the domain $\Omega$ matching the form,
 
 ```{math}
 :label: eqn:problem:form
@@ -87,3 +87,5 @@ If no RHS function is given, then the PETSc TS assumes $G(t,s) = 0$, so we only 
 ### Implicit-Explicit Time Stepping
 
 For implicit-explicit time stepping algorithms, the equations integrated with explicit time stepping have $\dot{s}$ as the LHS function, and the equations integrated with implicit time stepping have 0 as the RHS function.
+
+[^1]: Some resources for learning about the finite-element method include {cite:t}`Zienkiewicz:Taylor:2000`, {cite:t}`Taylor:2003`,  {cite:t}`Farrell:FEM:2021`, and {cite:t}`Cotter:Ham:FEM:2023`.
