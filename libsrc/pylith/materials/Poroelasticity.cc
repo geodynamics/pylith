@@ -455,7 +455,7 @@ pylith::materials::Poroelasticity::_setKernelsResidual(pylith::feassemble::Integ
     case DYNAMIC_IMEX:
     case DYNAMIC: {
         // Displacement
-        const PetscPointFunc f0u = pylith::fekernels::DispVel::f0u;
+        const PetscPointFunc f0u = pylith::fekernels::Poroelasticity::f0u_explicit;
         const PetscPointFunc f1u = NULL;
         const PetscPointFunc g0u = pylith::fekernels::Poroelasticity::g0u;
         const PetscPointFunc g1u = NULL;

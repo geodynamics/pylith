@@ -582,6 +582,45 @@ public:
 
     } // addPoroelasticContextBodyForceSourceDensity
 
+/** f0 function for displacement equation: f0u = \dot{u}.
+     *
+     * Solution fields: [disp(dim), vel(dim)]
+     */
+    static inline
+    void f0u_explicit(const PylithInt dim,
+             const PylithInt numS,
+             const PylithInt numA,
+             const PylithInt sOff[],
+             const PylithInt sOff_x[],
+             const PylithScalar s[],
+             const PylithScalar s_t[],
+             const PylithScalar s_x[],
+             const PylithInt aOff[],
+             const PylithInt aOff_x[],
+             const PylithScalar a[],
+             const PylithScalar a_t[],
+             const PylithScalar a_x[],
+             const PylithReal t,
+             const PylithScalar x[],
+             const PylithInt numConstants,
+             const PylithScalar constants[],
+             PylithScalar f0[]) {
+        assert(sOff);
+        assert(s);
+        assert(s_t);
+        assert(f0);
+
+        const PylithInt _numS = 3;
+        assert(_numS == numS);
+
+        const PylithInt i_disp = 0;
+        const PylithScalar* disp_t = &s_t[sOff[i_disp]];
+
+        for (PylithInt i = 0; i < dim; ++i) {
+            f0[i] += disp_t[i];
+        } // for
+    } // f0u_explicit
+
 #if 0
     // =============================================================================
     // Displacement
