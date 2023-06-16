@@ -378,9 +378,9 @@ public:
 
         // Material information
         data->numAuxSubfields = 4;
-        static const char* _auxSubfields[3] = {"solid_density", "fluid_density", "fluid_viscosity", "porocity"};
+        static const char* _auxSubfields[4] = {"solid_density", "fluid_density", "fluid_viscosity", "porocity"};
         data->auxSubfields = _auxSubfields;
-        static const pylith::topology::Field::Discretization _auxDiscretizations[3] = {
+        static const pylith::topology::Field::Discretization _auxDiscretizations[4] = {
             pylith::topology::Field::Discretization(0, 1), // solid_density
             pylith::topology::Field::Discretization(0, 1), // fluid_density
             pylith::topology::Field::Discretization(0, 1), // fluid_viscosity
@@ -388,12 +388,7 @@ public:
         };
         data->auxDiscretizations = const_cast<pylith::topology::Field::Discretization const*>(_auxDiscretizations);
 
-        data->auxDB.addValue("density", density, density_units());
-        data->auxDB.addValue("density", density, density_units());
-        data->auxDB.addValue("density", density, density_units());
-        data->auxDB.addValue("density", density, density_units());
-        data->auxDB.addValue("density", density, density_units());
-        data->auxDB.addValue("density", density, density_units());
+        data->auxDB.addValue("bulk_density", bulk_density, density_units());
 
         data->auxDB.setCoordSys(data->cs);
 
