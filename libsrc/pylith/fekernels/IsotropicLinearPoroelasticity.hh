@@ -562,9 +562,9 @@ public:
      */
     static inline
     void darcyFluxRateDynamic(const pylith::fekernels::Poroelasticity::PoroelasticContext& poroelasticContext,
-                       void* rheologyContext,
-                       const pylith::fekernels::TensorOps& tensorOps,
-                       pylith::fekernels::Tensor* fluxRateDynamic) {
+                              void* rheologyContext,
+                              const pylith::fekernels::TensorOps& tensorOps,
+                              pylith::fekernels::Tensor* fluxRateDynamic) {
         Context* context = (Context*)(rheologyContext);
         assert(context);
         assert(fluxRateDynamic);
@@ -2106,7 +2106,7 @@ public:
         // Use f1p / fluxrate / darcy function
         pylith::fekernels::Poroelasticity::f1p(
             poroelasticContext, &rheologyContext,
-            pylith::fekernels::IsotropicLinearPoroelasticity::darcyFluxRate,
+            pylith::fekernels::IsotropicLinearPoroelasticity::darcyFluxRateDynamic,
             pylith::fekernels::Tensor::ops2D,
             g1);
 
