@@ -27,8 +27,10 @@
 #if !defined(pylith_materials_materialsfwd_hh)
 #define pylith_materials_materialsfwd_hh
 
-namespace pylith {
-    namespace materials {
+namespace pylith
+{
+    namespace materials
+    {
         // New stuff
         class Material;
 
@@ -46,6 +48,10 @@ namespace pylith {
         class AuxiliaryFactoryViscoelastic;
 
         class IncompressibleElasticity;
+
+        class SelfGravElasticity;
+        class RheologySelfGravElasticity;
+        class IsotropicSelfGravElasticity;
 
         class RheologyIncompressibleElasticity;
         class IsotropicLinearIncompElasticity;

@@ -10,7 +10,8 @@
     },
     "files.associations": {
         "*.icc": "cpp",
-        "iosfwd": "cpp"
+        "iosfwd": "cpp",
+        "numbers": "cpp"
     },
     "python.formatting.autopep8Args": [
         "-max-line-length",

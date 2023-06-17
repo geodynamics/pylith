@@ -27,8 +27,10 @@
 #if !defined(pylith_fekernels_fekernelsfwd_hh)
 #define pylith_fekernels_fekernelsfwd_hh
 
-namespace pylith {
-    namespace fekernels {
+namespace pylith
+{
+    namespace fekernels
+    {
         class Tensor;
         class TensorOps;
 
@@ -59,6 +61,11 @@ namespace pylith {
         class IsotropicLinearIncompElasticity;
         class IsotropicLinearIncompElasticityPlaneStrain;
         class IsotropicLinearIncompElasticity3D;
+
+        class SelfGravElasticity;
+        class IsotropicSelfGravElasticity;
+        class IsotropicSelfGravElasticityPlaneStrain;
+        class IsotropicSelfGravElasticity3D;
 
         class Poroelasticity;
         class PoroelasticityPlaneStrain;

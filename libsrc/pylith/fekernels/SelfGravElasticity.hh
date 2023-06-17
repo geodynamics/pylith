@@ -16,7 +16,7 @@
  * ----------------------------------------------------------------------
  */
 
-/** @file libsrc/fekernels/IncompressibleElasticity.hh
+/** @file libsrc/fekernels/SelfGravElasticity.hh
  *
  * Kernels for self gravitating elasticity independent of rheology.
  *
@@ -56,14 +56,15 @@
 #include <cassert> // USES assert()
 
 // ------------------------------------------------------------------------------------------------
-class pylith::fekernels::IncompressibleElasticity {
+class pylith::fekernels::SelfGravElasticity {
 public:
 
     // Function interface for computing incompressible term.
-    typedef void (*incompressiblefn_type) (void*,
+    typedef void (*poissonfn_type) (void*,
                                            const pylith::fekernels::Tensor&,
                                            const pylith::fekernels::TensorOps&,
                                            PylithScalar*);
+                                           
 
     // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
@@ -74,23 +75,7 @@ public:
 
     // --------------------------------------------------------------------------------------------
     // f0p helper function.
-    static inline
-    void f0p(pylith::fekernels::Elasticity::StrainContext& strainContext,
-             void* rheologyContext,
-             pylith::fekernels::Elasticity::strainfn_type strainFn,
-             pylith::fekernels::IncompressibleElasticity::incompressiblefn_type incompressibleFn,
-             const pylith::fekernels::TensorOps& tensorOps,
-             PylithScalar f0[]) {
-        assert(f0);
 
-        pylith::fekernels::Tensor strain;
-        strainFn(strainContext, &strain);
-
-        PylithScalar value = 0.0;
-        incompressibleFn(rheologyContext, strain, tensorOps, &value);
-
-        f0[0] += value;
-    } // f0p
 
     // --------------------------------------------------------------------------------------------
     /** Jf1pu entry function for pressure equation for incompressible elasticity.
@@ -136,7 +121,7 @@ public:
          */
 
         for (PylithInt i = 0; i < dim; ++i) {
-            Jf1[i*dim+i] += 1.0;
+            Jf1[i*dim+i] = 0.0; // Necessary change to ensure no cross-talk between displacement and potential
         } // for
     } // Jf1pu
 
@@ -184,7 +169,7 @@ public:
          */
 
         for (PylithInt i = 0; i < dim; ++i) {
-            Jf2[i*dim+i] += 1.0;
+            Jf2[i*dim+i] = 0.0; // Necessary change to ensure no cross-talk between displacement and potential
         } // for
     } // Jf2up
 
@@ -195,7 +180,7 @@ public:
     // --------------------------------------------------------------------------------------------
     /** Calculate mean stress for isotropic linear incompressible elasticity WITHOUT reference stress
      * and strain.
-     */
+     
     static inline
     void meanStress(const PylithReal pressure,
                     pylith::fekernels::Tensor* stress) {
@@ -205,11 +190,11 @@ public:
         stress->yy -= pressure;
         stress->zz -= pressure;
     } // meanStress
-
+    */
     // --------------------------------------------------------------------------------------------
     /** Calculate mean stress for isotropic linear incompressible elasticity WITH reference stress
      * and strain.
-     */
+     
     static inline
     void meanStress_refState(const PylithReal pressure,
                              const pylith::fekernels::Tensor& refStress,
@@ -223,9 +208,9 @@ public:
         stress->yy += meanStress;
         stress->zz += meanStress;
     } // meanStress_refState
+    */
+}; // SelfGravElasticity
 
-}; // IncompressibleElasticity
-
-#endif // pylith_fekernels_incompressibleelasticity_hh
+#endif // pylith_fekernels_SelfGravElasticity_hh
 
 // End of file

@@ -40,8 +40,8 @@ subpkginclude_HEADERS = \
 	IncompressibleElasticity.hh \
 	RheologyIncompressibleElasticity.hh \
 	IsotropicSelfGravElasticity.hh \
-	SelfGravitatingElasticity.hh \
-	RheologySelfGravitatingElasticity.hh \
+	SelfGravElasticity.hh \
+	RheologySelfGravElasticity.hh \
 	Query.hh \
 	materialsfwd.hh
 

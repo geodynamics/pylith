@@ -16,9 +16,7 @@
 # ----------------------------------------------------------------------
 
 SUBDIRS = \
-	linearelasticity \
-	incompressibleelasticity \
-	selfgravelasticity
+	nofaults-3D
 
 
 # End of file 
