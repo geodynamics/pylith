@@ -5,6 +5,7 @@ This script generates a plot showing a PDF of the posterior samples from catmip.
 PDFs near zero can be rendered with variable transparency for visualizing purposes.
 """
 
+import argparse
 import numpy as np
 import h5py
 import matplotlib.pyplot as plt
@@ -44,8 +45,16 @@ def draw_plot(FILENAME_impulses, CATMIP_results, show_plot, peak_slip, output_fi
 
 
 if __name__ == "__main__":
+
+    parser = argparse.ArgumentParser()
+
+    #required
+    parser.add_argument("catmip_mstop", action="store", type=int, help="Catmip mstop value (which output file to plot)")
+    args = parser.parse_args()
+    CATMIP_results = "output/step07a_catmip-theta%d.bin"%args.catmip_mstop
+    
     FILENAME_impulses = "output/step05_greensfns-fault.h5"
-    CATMIP_results = "output/step07a_catmip-theta88.bin"
+    
     show_plot = True  # change to False if running without graphics
     peak_slip = 1.8;  # expected peak slip for setting transparency scale
     output_file = "output/step07-pdfs.pdf"
