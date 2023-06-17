@@ -122,8 +122,8 @@ class App(GenerateMesh):
         # The entities argument specifies the array of surfaces for the material.
         materials = (
             MaterialGroup(tag=1, entities=[self.s_xneg]),
-            MaterialGroup(tag=2, entities=[self.s_xpos1]),
-            MaterialGroup(tag=3, entities=[self.s_xpos2]),
+            MaterialGroup(tag=3, entities=[self.s_xpos1]),
+            MaterialGroup(tag=2, entities=[self.s_xpos2]),
         )
         for material in materials:
             material.create_physical_group()
@@ -134,13 +134,13 @@ class App(GenerateMesh):
         # The dimension and entities specify the geometric entities to include in the physical
         # group.
         vertex_groups = (
-            VertexGroup(name="boundary_xneg", tag=10, dim=1, entities=[self.c_xneg]),
-            VertexGroup(name="boundary_xpos", tag=11, dim=1, entities=[self.c_xpos]),
-            VertexGroup(name="boundary_yneg", tag=12, dim=1, entities=[self.c_yneg1, self.c_yneg2, self.c_yneg3]),
-            VertexGroup(name="boundary_ypos", tag=13, dim=1, entities=[self.c_ypos1, self.c_ypos2]),
-            VertexGroup(name="fault1", tag=20, dim=1, entities=[self.c_xcenter1,self.c_xcenter2]),
-            VertexGroup(name="fault2", tag=21, dim=1, entities=[self.c_fault2]),
-            VertexGroup(name="fault2edge", tag=22, dim=0, entities=[self.p_inter])
+            VertexGroup(name="bc_xneg", tag=22, dim=1, entities=[self.c_xneg]),
+            VertexGroup(name="bc_xpos", tag=21, dim=1, entities=[self.c_xpos]),
+            VertexGroup(name="boundary_yneg", tag=24, dim=1, entities=[self.c_yneg1, self.c_yneg2, self.c_yneg3]),
+            VertexGroup(name="boundary_ypos", tag=23, dim=1, entities=[self.c_ypos1, self.c_ypos2]),
+            VertexGroup(name="main_fault", tag=30, dim=1, entities=[self.c_xcenter1,self.c_xcenter2]),
+            VertexGroup(name="branch", tag=31, dim=1, entities=[self.c_fault2]),
+            VertexGroup(name="buried_edge", tag=32, dim=0, entities=[self.p_inter])
         )
         for group in vertex_groups:
             group.create_physical_group()
@@ -191,4 +191,5 @@ if __name__ == "__main__":
 
 
 # End of file
+
 
