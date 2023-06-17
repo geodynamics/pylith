@@ -275,6 +275,23 @@
             }
         },
         {
+            "name": "mmstests selfgravitation/nofaults-3D",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${env:PYLITH_BUILDDIR}/tests/mmstests/selfgravelasticity/nofaults-3D/.libs/mmstest_selfgravelasticity_nofaults3d",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${env:PYLITH_BUILDDIR}/tests/mmstests/selfgravelasticity/nofaults-3D",
+            "environment": [],
+            "externalConsole": false,
+            "linux": {
+                "MIMode": "gdb"
+            },
+            "osx": {
+                "MIMode": "lldb"
+            }
+        },
+        {
             "name": "Attach to process",
             "type": "cppdbg",
             "request": "attach",
