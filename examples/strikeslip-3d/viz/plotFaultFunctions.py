@@ -41,7 +41,13 @@ def plot_fault_surface(vertices,cells,slipvec,ax,title):
         triangles=cells
     
     # create the image
-    surf = ax.tricontourf(x,y,triangles,slipvec,20,extend='both')
+    vmax = np.ceil(np.max(np.abs(slipvec))+1e-5)
+    vmin = -vmax
+
+    levels = np.linspace(vmin, vmax, 201)
+
+    surf = ax.tricontourf(x,y,triangles,slipvec,levels=levels,extend='both',cmap='RdBu_r')
+
     # Add a color bar which maps values to colors
     cbar = plt.colorbar(surf, ax=ax)
     # Add labels
