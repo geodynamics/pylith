@@ -71,6 +71,12 @@ public:
      */
     void addPressure(const pylith::topology::FieldBase::Discretization& discretization);
 
+    /** Add potential subfield to solution field.
+     *
+     * @param[in] discretization Discretization for potential subfield.
+     */
+    void addPotential(const pylith::topology::FieldBase::Discretization& discretization);
+
     /** Add trace strain subfield to solution field.
      *
      * @param[in] discretization Discretization for trace strain subfield.

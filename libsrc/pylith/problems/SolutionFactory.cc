@@ -108,7 +108,7 @@ pylith::problems::SolutionFactory::addVelocity(const pylith::topology::Field::Di
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Add time derivative of pressure subfield to solution field.
+// Add pressure subfield to solution field.
 void
 pylith::problems::SolutionFactory::addPressure(const pylith::topology::Field::Discretization& discretization) {
     PYLITH_METHOD_BEGIN;
@@ -131,6 +131,34 @@ pylith::problems::SolutionFactory::addPressure(const pylith::topology::Field::Di
 
     PYLITH_METHOD_END;
 } // addPressure
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Add potential subfield to solution field.
+void
+pylith::problems::SolutionFactory::addPotential(const pylith::topology::Field::Discretization& discretization) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("potential(discretization=typeid(discretization).name())");
+
+    const char* fieldName = "potential";
+    const char* componentNames[1] = { "potential" };
+
+    const double potentialScale = pow(_normalizer.getLengthScale() / _normalizer.getTimeScale(), 2);
+
+    pylith::topology::Field::Description description;
+    description.label = fieldName;
+    description.alias = fieldName;
+    description.vectorFieldType = pylith::topology::Field::SCALAR;
+    description.numComponents = 1;
+    description.componentNames.resize(1);
+    description.componentNames[0] = componentNames[0];
+    description.scale = potentialScale;
+    description.validator = NULL;
+
+    _solution.subfieldAdd(description, discretization);
+
+    PYLITH_METHOD_END;
+} // addPotential
 
 
 // ---------------------------------------------------------------------------------------------------------------------
