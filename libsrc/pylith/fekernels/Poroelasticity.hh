@@ -609,7 +609,7 @@ public:
         assert(s);
         assert(s_t);
         assert(f0);
-
+        printf("f0u_explicit \n");
         const PylithInt _numS = 3;
         assert(_numS == numS);
 
@@ -763,6 +763,7 @@ public:
         const PylithScalar bulkDensity = poroelasticContext.bulkDensity; // Bulk Density
         const PylithScalar* velocity_t = poroelasticContext.velocity_t; // acceleration
 
+        printf("f0v_explicit\n");
         for (PylithInt i = 0; i < dim; ++i) {
             f0[i] += velocity_t[i] * bulkDensity;
         } // for
@@ -946,6 +947,7 @@ public:
 
         const PylithScalar *velocity = poroelasticContext.velocity;
 
+        printf("g0u \n");
         for (PylithInt i = 0; i < dim; ++i) {
             g0[i] += velocity[i];
         } // for

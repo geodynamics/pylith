@@ -540,6 +540,8 @@ public:
             } // for
         } // for
 
+        printf("darcyFluxRate\n");
+
         fluxRate->xx = fluxRateVector[0];
         fluxRate->yy = fluxRateVector[1];
         fluxRate->zz = fluxRateVector[2];
@@ -589,6 +591,8 @@ public:
                 fluxRateVectorDynamic[i] += (tensorPermeability[i * dim + j] / fluidViscosity) * (pressure_x[j] + fluidDensity * velocity_t[j] - bodyForce[j] - fluidDensity * gravityField[j]);
             } // for
         } // for
+
+        printf("darcyFluxRateDynamic\n");
 
         fluxRateDynamic->xx = fluxRateVectorDynamic[0];
         fluxRateDynamic->yy = fluxRateVectorDynamic[1];
@@ -2098,6 +2102,7 @@ public:
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
 
+        printf("g1p\n");
         // Use f1p / fluxrate / darcy function
         pylith::fekernels::Poroelasticity::f1p(
             poroelasticContext, &rheologyContext,

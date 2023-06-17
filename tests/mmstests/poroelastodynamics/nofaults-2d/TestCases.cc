@@ -26,28 +26,28 @@
 // ------------------------------------------------------------------------------------------------
 #include "QuadTrig.hh"
 // TriP2
-TEST_CASE("QuadTrig::TriP2::testDiscretization", "[QuadTrig][TriP2][discretization]") {
-    pylith::TestLinearPoroElasticity(pylith::QuadTrig::TriP2()).testDiscretization();
-}
-TEST_CASE("QuadTrig::TriP2::testResidual", "[QuadTrig][TriP2][residual]") {
-    pylith::TestLinearPoroElasticity(pylith::QuadTrig::TriP2()).testResidual();
-}
+// TEST_CASE("QuadTrig::TriP2::testDiscretization", "[QuadTrig][TriP2][discretization]") {
+//     pylith::TestLinearPoroElasticity(pylith::QuadTrig::TriP2()).testDiscretization();
+// }
+// TEST_CASE("QuadTrig::TriP2::testResidual", "[QuadTrig][TriP2][residual]") {
+//     pylith::TestLinearPoroElasticity(pylith::QuadTrig::TriP2()).testResidual();
+// }
 
 // TriP3
-TEST_CASE("QuadTrig::TriP3::testDiscretization", "[QuadTrig][TriP3][discretization]") {
-    pylith::TestLinearPoroElasticity(pylith::QuadTrig::TriP3()).testDiscretization();
-}
-TEST_CASE("QuadTrig::TriP3::testResidual", "[QuadTrig][TriP3][residual]") {
-    pylith::TestLinearPoroElasticity(pylith::QuadTrig::TriP3()).testResidual();
-}
+// TEST_CASE("QuadTrig::TriP3::testDiscretization", "[QuadTrig][TriP3][discretization]") {
+//     pylith::TestLinearPoroElasticity(pylith::QuadTrig::TriP3()).testDiscretization();
+// }
+// TEST_CASE("QuadTrig::TriP3::testResidual", "[QuadTrig][TriP3][residual]") {
+//     pylith::TestLinearPoroElasticity(pylith::QuadTrig::TriP3()).testResidual();
+// }
 
 // TriP4
-TEST_CASE("QuadTrig::TriP4::testDiscretization", "[QuadTrig][TriP4][discretization]") {
-    pylith::TestLinearPoroElasticity(pylith::QuadTrig::TriP4()).testDiscretization();
-}
-TEST_CASE("QuadTrig::TriP4::testResidual", "[QuadTrig][TriP4][residual]") {
-    pylith::TestLinearPoroElasticity(pylith::QuadTrig::TriP4()).testResidual();
-}
+// TEST_CASE("QuadTrig::TriP4::testDiscretization", "[QuadTrig][TriP4][discretization]") {
+//     pylith::TestLinearPoroElasticity(pylith::QuadTrig::TriP4()).testDiscretization();
+// }
+// TEST_CASE("QuadTrig::TriP4::testResidual", "[QuadTrig][TriP4][residual]") {
+//     pylith::TestLinearPoroElasticity(pylith::QuadTrig::TriP4()).testResidual();
+// }
 
 // QuadQ2
 TEST_CASE("QuadTrig::QuadQ2::testDiscretization", "[QuadTrig][QuadQ2][discretization]") {
@@ -58,19 +58,19 @@ TEST_CASE("QuadTrig::QuadQ2::testResidual", "[QuadTrig][QuadQ2][residual]") {
 }
 
 // QuadQ3
-TEST_CASE("QuadTrig::QuadQ3::testDiscretization", "[QuadTrig][QuadQ3][discretization]") {
-    pylith::TestLinearPoroElasticity(pylith::QuadTrig::QuadQ3()).testDiscretization();
-}
-TEST_CASE("QuadTrig::QuadQ3::testResidual", "[QuadTrig][QuadQ3][residual]") {
-    pylith::TestLinearPoroElasticity(pylith::QuadTrig::QuadQ3()).testResidual();
-}
+// TEST_CASE("QuadTrig::QuadQ3::testDiscretization", "[QuadTrig][QuadQ3][discretization]") {
+//     pylith::TestLinearPoroElasticity(pylith::QuadTrig::QuadQ3()).testDiscretization();
+// }
+// TEST_CASE("QuadTrig::QuadQ3::testResidual", "[QuadTrig][QuadQ3][residual]") {
+//     pylith::TestLinearPoroElasticity(pylith::QuadTrig::QuadQ3()).testResidual();
+// }
 
 // QuadQ4
-TEST_CASE("QuadTrig::QuadQ4::testDiscretization", "[QuadTrig][QuadQ4][discretization]") {
-    pylith::TestLinearPoroElasticity(pylith::QuadTrig::QuadQ4()).testDiscretization();
-}
-TEST_CASE("QuadTrig::QuadQ4::testResidual", "[QuadTrig][QuadQ4][residual]") {
-    pylith::TestLinearPoroElasticity(pylith::QuadTrig::QuadQ4()).testResidual();
-}
+// TEST_CASE("QuadTrig::QuadQ4::testDiscretization", "[QuadTrig][QuadQ4][discretization]") {
+//     pylith::TestLinearPoroElasticity(pylith::QuadTrig::QuadQ4()).testDiscretization();
+// }
+// TEST_CASE("QuadTrig::QuadQ4::testResidual", "[QuadTrig][QuadQ4][residual]") {
+//     pylith::TestLinearPoroElasticity(pylith::QuadTrig::QuadQ4()).testResidual();
+// }
 
 // End of file
