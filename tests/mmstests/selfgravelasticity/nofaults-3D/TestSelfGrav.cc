@@ -119,7 +119,7 @@ pylith::TestSelfGrav::_initialize(void) {
     pylith::problems::SolutionFactory factory(*_solution, _data->normalizer);
     int iField = 0;
     factory.addDisplacement(_data->solnDiscretizations[iField++]);
-    factory.addPressure(_data->solnDiscretizations[iField++]);
+    factory.addPotential(_data->solnDiscretizations[iField++]);
     if (pylith::problems::Physics::QUASISTATIC == _data->formulation) {
         assert(2 == _data->numSolnSubfields);
     } else {
@@ -158,7 +158,7 @@ pylith::TestSelfGrav::_setExactSolution(void) {
 // ------------------------------------------------------------------------------------------------
 // Constructor
 pylith::TestSelfGrav_Data::TestSelfGrav_Data(void) :
-    spaceDim(2),
+    spaceDim(3),
     meshFilename(NULL),
     meshOptions(NULL),
     boundaryLabel(NULL),

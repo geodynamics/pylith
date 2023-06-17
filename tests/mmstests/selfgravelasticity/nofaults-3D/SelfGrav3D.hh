@@ -20,19 +20,19 @@
 
 #include "TestSelfGrav.hh" // USES TestSelfGrav_Data
 
-namespace pylith
-{
+namespace pylith {
     class SelfGrav3D;
 }
 
-class pylith::SelfGrav3D
-{
+class pylith::SelfGrav3D {
 public:
+
     // Data factory methods
 
-    static TestSelfGrav_Data *TetP3(void);
+    static TestSelfGrav_Data *TetP2(void);
 
 private:
+
     SelfGrav3D(void); ///< Not implemented
 };                    // SelfGrav3D
 

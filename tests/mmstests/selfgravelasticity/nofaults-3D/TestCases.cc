@@ -25,22 +25,22 @@
 
 // ------------------------------------------------------------------------------------------------
 #include "SelfGrav3D.hh"
-// TetP3
-TEST_CASE("SelfGrav3D::TetP3::testDiscretization", "[SelfGrav3D][TetP3][discretization]")
+// TetP2
+TEST_CASE("SelfGrav3D::TetP2::testDiscretization", "[SelfGrav3D][TetP2][discretization]")
 {
-    pylith::TestSelfGrav(pylith::SelfGrav3D::TetP3()).testDiscretization();
+    pylith::TestSelfGrav(pylith::SelfGrav3D::TetP2()).testDiscretization();
 }
-TEST_CASE("SelfGrav3D::TetP3::testResidual", "[SelfGrav3D][TetP3][residual]")
+TEST_CASE("SelfGrav3D::TetP2::testResidual", "[SelfGrav3D][TetP2][residual]")
 {
-    pylith::TestSelfGrav(pylith::SelfGrav3D::TetP3()).testResidual();
+    pylith::TestSelfGrav(pylith::SelfGrav3D::TetP2()).testResidual();
 }
-TEST_CASE("SelfGrav3D::TetP3::testJacobianTaylorSeries", "[SelfGrav3D][TetP3][Jacobian Taylor series]")
+TEST_CASE("SelfGrav3D::TetP2::testJacobianTaylorSeries", "[SelfGrav3D][TetP2][Jacobian Taylor series]")
 {
-    pylith::TestSelfGrav(pylith::SelfGrav3D::TetP3()).testJacobianTaylorSeries();
+    pylith::TestSelfGrav(pylith::SelfGrav3D::TetP2()).testJacobianTaylorSeries();
 }
-TEST_CASE("SelfGrav3D::TetP3::testJacobianFiniteDiff", "[SelfGrav3D][TetP3][Jacobian finite difference]")
+TEST_CASE("SelfGrav3D::TetP2::testJacobianFiniteDiff", "[SelfGrav3D][TetP2][Jacobian finite difference]")
 {
-    pylith::TestSelfGrav(pylith::SelfGrav3D::TetP3()).testJacobianFiniteDiff();
+    pylith::TestSelfGrav(pylith::SelfGrav3D::TetP2()).testJacobianFiniteDiff();
 }
 
 // End of file
