@@ -45,7 +45,7 @@ class App(GenerateMesh):
     |       |      |
     p1-----p5-----p2
     """
-    #xy = pd.read_csv('xy.txt', sep = ' ', names = ['x','y'])
+    #xy = pd.read_csv('xy_2.txt', sep = ' ', names = ['x','y'])
     
 
     def __init__(self):
@@ -71,11 +71,21 @@ class App(GenerateMesh):
 
         # Create points.
         #p1 = gmsh.model.geo.add_point(xy, y1, 0.0)
-        xy = pd.read_csv('xy.txt', sep = ' ', names = ['x','y'])
+        xy = pd.read_csv('xy_2.txt', sep = ' ', names = ['x','y'])
         points = []
         for i in range(len(xy.x)):
             points.append(gmsh.model.geo.add_point(xy.x[i],xy.y[i],0))
-        self.p_inter = gmsh.model.geo.add_point(xy.x[7],xy.y[7],0)
+        #self.p_inter = gmsh.model.geo.add_point(xy.x[7],xy.y[7],0)
+        #self.p_1 = gmsh.model.geo.add_point(xy.x[11],xy.y[11],0)
+        #self.p_2 = gmsh.model.geo.add_point(xy.x[10],xy.y[10],0)
+        #self.p_3 = gmsh.model.geo.add_point(xy.x[17],xy.y[17],0)
+        #self.p_4 = gmsh.model.geo.add_point(xy.x[4],xy.y[4],0)
+        self.p_inter = points[7]
+        self.p_1 = points[11]
+        self.p_2 = points[10]
+        self.p_3 = points[17]
+        self.p_4 = points[4]
+
 
         # Create curves. We store the curve tag as a data member
         # so that we can refer to them later.
@@ -150,8 +160,11 @@ class App(GenerateMesh):
             VertexGroup(name="boundary_yneg", tag=12, dim=1, entities=[self.c_yneg]),
             VertexGroup(name="boundary_ypos", tag=13, dim=1, entities=[self.c_ypos]),
             VertexGroup(name="fault1", tag=20, dim=1, entities=[self.c_fault1sge1,self.c_fault1sge2,self.c_fault1sge3,self.c_fault1sge4,self.c_fault1sge5,self.c_fault1sge6]),
-            VertexGroup(name="fault2", tag=21, dim=1, entities=[self.c_fault2sge1,self.c_fault2sge2,self.c_fault2sge3,self.c_fault2sge4,self.c_fault2sge5,self.c_fault2sge6,self.c_fault2sge7]),
-            VertexGroup(name="fault2edge", tag=22, dim=0, entities=[self.p_inter])
+            VertexGroup(name="fault2", tag=21, dim=1, entities=[self.c_fault2sge1,self.c_fault2sge2,self.c_fault2sge3,self.c_fault2sge4]),
+            VertexGroup(name="fault3", tag=22, dim=1, entities=[self.c_fault2sge5,self.c_fault2sge6,self.c_fault2sge7]),
+            VertexGroup(name="fault2edge", tag=23, dim=0, entities=[self.p_1,self.p_inter]),
+            VertexGroup(name="fault1edge", tag=24, dim=0, entities=[self.p_4,self.p_2]),
+            VertexGroup(name="fault3edge", tag=25, dim=0, entities=[self.p_inter,self.p_3])
         )
         for group in vertex_groups:
             group.create_physical_group()
@@ -182,7 +195,8 @@ class App(GenerateMesh):
         # The `GenerateMesh` class includes a special function `get_math_progression` 
         # for creating the string with the mathematical function.
         field_size = gmsh.model.mesh.field.add("MathEval")
-        math_exp = GenerateMesh.get_math_progression(field_distance, min_dx=4.0e+3, bias=1.05)
+        #math_exp = GenerateMesh.get_math_progression(field_distance, min_dx=4.0e+3, bias=1.05)
+        math_exp = GenerateMesh.get_math_progression(field_distance, min_dx=4.0e+2, bias=1.05)
         gmsh.model.mesh.field.setString(field_size, "F", math_exp)
 
         # Finally, we use the field `field_size` for the cell size of the mesh.
