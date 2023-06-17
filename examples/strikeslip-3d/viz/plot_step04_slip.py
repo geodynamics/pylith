@@ -22,8 +22,6 @@ def do_main(slipfname, gpsfname, slip_outfilename, gps_outfilename, show_plot):
         gps_coords = np.array(h5['geometry/vertices']) # Nstations x Ncomponents
         gps_disp = np.array(h5['vertex_fields/displacement']).squeeze() # Nstations x Ncomponents
 
-    print(np.shape(gps_coords))
-    print(np.shape(gps_disp))
     # plot the slip model in 2D, looking from above, 
     # using triangles to help improve the color interpolation
 
@@ -42,7 +40,7 @@ def do_main(slipfname, gpsfname, slip_outfilename, gps_outfilename, show_plot):
     plotFaultFunctions.plot_fault_surface(vertices,cells,slip_mag,ax,'Slip Magnitude')
     ptsize=40
     # scatter plot for z values
-    zscatter = ax.scatter(gps_coords[:,0], gps_coords[:,1], ptsize, gps_disp[:,2], cmap = 'RdBu_r',edgecolors='k')
+    zscatter = ax.scatter(gps_coords[:,0], gps_coords[:,1], ptsize, gps_disp[:,2], cmap = 'PuOr_r',edgecolors='k')
     cbar = plt.colorbar(zscatter,ax=ax,extend='both')
     cbar.ax.set_title('Z (m)')
     # quiver for x and y values

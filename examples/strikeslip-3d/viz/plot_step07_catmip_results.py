@@ -83,9 +83,9 @@ def plot_catmip(catmip_filename, filename_impulses, filename_greensfns, filename
     fig,ax=plt.subplots()
     plotFaultFunctions.plot_fault_surface(vertices,cells,slip_mag,ax,'Slip magnitude')
 
-    zscatter = plt.scatter(observed_coords[:,0], observed_coords[:,1], ptsize1, observed_displacement[:,2], cmap = 'RdBu_r',edgecolors='k')
+    zscatter = plt.scatter(observed_coords[:,0], observed_coords[:,1], ptsize1, observed_displacement[:,2], cmap = 'PuOr_r',edgecolors='k')
     # scatter plot - predicted z values
-    zscatter = plt.scatter(observed_coords[:,0], observed_coords[:,1], ptsize2, median_pred_disp[:,2], cmap = 'RdBu_r',edgecolors='k')
+    zscatter = plt.scatter(observed_coords[:,0], observed_coords[:,1], ptsize2, median_pred_disp[:,2], cmap = 'PuOr_r',edgecolors='k')
     # colorbar for scatter plot
     cbar = plt.colorbar(zscatter,extend='both')
     cbar.ax.set_title('Z (m)')
