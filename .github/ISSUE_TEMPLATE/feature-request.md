@@ -9,7 +9,7 @@ assignees: ''
 
 ## Description
 
-A clear and concise description of what the problem is.
+A clear and concise description of how the current code lacks the desired feature.
 For example, I am always frustrated when ...
 
 ## Desired Solution
