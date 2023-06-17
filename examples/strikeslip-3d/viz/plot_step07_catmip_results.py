@@ -102,6 +102,25 @@ def plot_catmip(catmip_filename, filename_impulses, filename_greensfns, filename
     else:
         plt.close()
 
+    # plot histograms
+    # index nhists number of the slip values (sort by largest)
+    nhists = 4
+    indices = np.argpartition(median_coefs, -nhists)[-nhists:]
+    fig, axs = plt.subplots(1, nhists, figsize=(15,4))
+    for i, ax in enumerate(axs):
+        ax.hist(inversion_coefs[indices[i], :], bins=20)
+        ax.set_xlabel(f'Variable {indices[i]}')
+        ax.set_ylabel('Frequency')
+    
+    figureFilename = figureFilename = output_prefix + "-histograms.pdf"
+    fig.savefig(figureFilename)
+
+    if show_plot:
+        plt.show()
+    else:
+        plt.close()
+
+
 def _parse_command_line():
     """Parse command line arguments.
 
