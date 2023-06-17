@@ -13,6 +13,8 @@ Run `generate_gmsh.py --help` to see the command line options.
 Run `generate_gmsh.py --write` to generate the mesh.
 """
 
+
+# You should run this scripts outside of the docker container
 # Import Gmsh Python interface
 import gmsh
 import numpy as np
@@ -27,25 +29,26 @@ class App(GenerateMesh):
     App uses `GenerateMesh` from `gmsh_utils` for common functionality that we avoid
     duplicating in each of our examples.
 
-    Domain is 100km by 150km.
-    -50.0 km <= x <= 50.0 km
-    -75.0 km <= y <= 75.0 km
 
-    The fault surface runs along the y-axis through the entire domain.
-
-    p4-----p6-----p3
-    |       |      |
-    |       |      |
-    |       |      |
-    |       |      |
-    |       |      |
-    |       |      |
-    |       |      |
-    |       |      |
-    |       |      |
-    p1-----p5-----p2
+    p4----------------------------------p3
+    | \                               / |
+    |   P5                          P18 |
+    |     \                      /      |
+    |      P6                   P17     |
+    |        \                /         |
+    |         P7         P16            |
+    |           \      /                |
+    |              P8                   |
+    |             /   \                 |
+    |           P15       P9            |
+    |          /          \             |
+    |       P14            P10          |
+    |      /               \            |
+    |    P13                   \P11     |
+    |    /                       \      |
+    |  / P12                         \  |
+    p1---------------------------------p2
     """
-    #xy = pd.read_csv('xy_2.txt', sep = ' ', names = ['x','y'])
     
 
     def __init__(self):
@@ -72,14 +75,15 @@ class App(GenerateMesh):
         # Create points.
         #p1 = gmsh.model.geo.add_point(xy, y1, 0.0)
         xy = pd.read_csv('xy_2.txt', sep = ' ', names = ['x','y'])
+
+        #the xy_2.txt is translated from geographic lon,lat of the points of the fault,
+        # using the proj library (https://proj.org/en/9.2/operations/index.html)
+        # with the command below: 
+        # cat lon_lat.txt | proj +proj=utm +zone=11 > xy_2.txt
+
         points = []
         for i in range(len(xy.x)):
             points.append(gmsh.model.geo.add_point(xy.x[i],xy.y[i],0))
-        #self.p_inter = gmsh.model.geo.add_point(xy.x[7],xy.y[7],0)
-        #self.p_1 = gmsh.model.geo.add_point(xy.x[11],xy.y[11],0)
-        #self.p_2 = gmsh.model.geo.add_point(xy.x[10],xy.y[10],0)
-        #self.p_3 = gmsh.model.geo.add_point(xy.x[17],xy.y[17],0)
-        #self.p_4 = gmsh.model.geo.add_point(xy.x[4],xy.y[4],0)
         self.p_inter = points[7]
         self.p_1 = points[11]
         self.p_2 = points[10]
@@ -89,16 +93,20 @@ class App(GenerateMesh):
 
         # Create curves. We store the curve tag as a data member
         # so that we can refer to them later.
+
+        #boundary
         self.c_yneg = gmsh.model.geo.add_line(points[0], points[1])
         self.c_xpos = gmsh.model.geo.add_line(points[1], points[2])
         self.c_ypos = gmsh.model.geo.add_line(points[3], points[2])
         self.c_xneg = gmsh.model.geo.add_line(points[0], points[3])
 
+        #lines link the 4 edge with the fault
         self.c_link1 = gmsh.model.geo.add_line(points[0], points[11])
         self.c_link2 = gmsh.model.geo.add_line(points[1], points[10])
         self.c_link3 = gmsh.model.geo.add_line(points[17], points[2])
         self.c_link4 = gmsh.model.geo.add_line(points[4], points[3])
 
+        #main_fault
         self.c_fault1sge1 = gmsh.model.geo.add_line(points[10], points[9])
         self.c_fault1sge2 = gmsh.model.geo.add_line(points[9], points[8])
         self.c_fault1sge3 = gmsh.model.geo.add_line(points[8], points[7])
@@ -106,10 +114,12 @@ class App(GenerateMesh):
         self.c_fault1sge5 = gmsh.model.geo.add_line(points[6], points[5])
         self.c_fault1sge6 = gmsh.model.geo.add_line(points[5], points[4])
         
+        #branch 1
         self.c_fault2sge1 = gmsh.model.geo.add_line(points[11], points[12])
         self.c_fault2sge2 = gmsh.model.geo.add_line(points[12], points[13])
         self.c_fault2sge3 = gmsh.model.geo.add_line(points[13], points[14])
         self.c_fault2sge4 = gmsh.model.geo.add_line(points[14], points[7])
+        #branch 2
         self.c_fault2sge5 = gmsh.model.geo.add_line(points[7], points[15])
         self.c_fault2sge6 = gmsh.model.geo.add_line(points[15], points[16])
         self.c_fault2sge7 = gmsh.model.geo.add_line(points[16], points[17])
@@ -142,9 +152,9 @@ class App(GenerateMesh):
         # The entities argument specifies the array of surfaces for the material.
         materials = (
             MaterialGroup(tag=1, entities=[self.s_1]),
-            MaterialGroup(tag=2, entities=[self.s_2]),
-            MaterialGroup(tag=3, entities=[self.s_3]),
-            MaterialGroup(tag=4, entities=[self.s_4])
+            MaterialGroup(tag=4, entities=[self.s_2]),
+            MaterialGroup(tag=2, entities=[self.s_3]),
+            MaterialGroup(tag=3, entities=[self.s_4])
         )
         for material in materials:
             material.create_physical_group()
@@ -155,16 +165,16 @@ class App(GenerateMesh):
         # The dimension and entities specify the geometric entities to include in the physical
         # group.
         vertex_groups = (
-            VertexGroup(name="boundary_xneg", tag=10, dim=1, entities=[self.c_xneg]),
-            VertexGroup(name="boundary_xpos", tag=11, dim=1, entities=[self.c_xpos]),
-            VertexGroup(name="boundary_yneg", tag=12, dim=1, entities=[self.c_yneg]),
-            VertexGroup(name="boundary_ypos", tag=13, dim=1, entities=[self.c_ypos]),
-            VertexGroup(name="fault1", tag=20, dim=1, entities=[self.c_fault1sge1,self.c_fault1sge2,self.c_fault1sge3,self.c_fault1sge4,self.c_fault1sge5,self.c_fault1sge6]),
-            VertexGroup(name="fault2", tag=21, dim=1, entities=[self.c_fault2sge1,self.c_fault2sge2,self.c_fault2sge3,self.c_fault2sge4]),
-            VertexGroup(name="fault3", tag=22, dim=1, entities=[self.c_fault2sge5,self.c_fault2sge6,self.c_fault2sge7]),
-            VertexGroup(name="fault2edge", tag=23, dim=0, entities=[self.p_1,self.p_inter]),
-            VertexGroup(name="fault1edge", tag=24, dim=0, entities=[self.p_4,self.p_2]),
-            VertexGroup(name="fault3edge", tag=25, dim=0, entities=[self.p_inter,self.p_3])
+            VertexGroup(name="bc_xneg", tag=22, dim=1, entities=[self.c_xneg]),
+            VertexGroup(name="bc_xpos", tag=21, dim=1, entities=[self.c_xpos]),
+            VertexGroup(name="boundary_yneg", tag=24, dim=1, entities=[self.c_yneg]),
+            VertexGroup(name="boundary_ypos", tag=23, dim=1, entities=[self.c_ypos]),
+            VertexGroup(name="main_fault", tag=30, dim=1, entities=[self.c_fault1sge1,self.c_fault1sge2,self.c_fault1sge3,self.c_fault1sge4,self.c_fault1sge5,self.c_fault1sge6]),
+            VertexGroup(name="branch1", tag=31, dim=1, entities=[self.c_fault2sge1,self.c_fault2sge2,self.c_fault2sge3,self.c_fault2sge4]),
+            VertexGroup(name="branch2", tag=32, dim=1, entities=[self.c_fault2sge5,self.c_fault2sge6,self.c_fault2sge7]),
+            VertexGroup(name="buried_branch1", tag=34, dim=0, entities=[self.p_1,self.p_inter]),
+            VertexGroup(name="buried_main", tag=33, dim=0, entities=[self.p_4,self.p_2]),
+            VertexGroup(name="buried_branch2", tag=35, dim=0, entities=[self.p_inter,self.p_3])
         )
         for group in vertex_groups:
             group.create_physical_group()
