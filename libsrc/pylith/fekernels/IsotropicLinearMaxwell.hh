@@ -203,10 +203,13 @@ public:
         assert(aOff[i_maxwellTime] >= 0);
         assert(aOff[i_viscousStrain] >= 0);
         assert(aOff[i_totalStrain] >= 0);
+        assert(1 == numConstants);
+        assert(constants);
 
         context->shearModulus = a[aOff[i_shearModulus]];assert(context->shearModulus > 0.0);
         context->bulkModulus = a[aOff[i_bulkModulus]];assert(context->bulkModulus > 0.0);
         context->maxwellTime = a[aOff[i_maxwellTime]];assert(context->maxwellTime > 0.0);
+        context->dt = constants[0];
 
         tensorOps.fromVector(&a[aOff[i_viscousStrain]], &context->viscousStrain);
         tensorOps.fromVector(&a[aOff[i_totalStrain]], &context->totalStrain);
@@ -300,7 +303,7 @@ public:
         const PylithReal bulkModulus = context->bulkModulus;
         pylith::fekernels::IsotropicLinearElasticity::meanStress(bulkModulus, strain, stress);
 
-        const PylithReal dt = context->dt;
+        const PylithReal dt = context->dt;assert(dt > 0.0);
         const PylithReal maxwellTime = context->maxwellTime;
         const pylith::fekernels::Tensor& totalStrain = context->totalStrain;
         const pylith::fekernels::Tensor& viscousStrainPrev = context->viscousStrain;
@@ -332,7 +335,7 @@ public:
         const PylithReal bulkModulus = context->bulkModulus;
         pylith::fekernels::IsotropicLinearElasticity::meanStress_refState(bulkModulus, refStress, refStrain, strain, stress);
 
-        const PylithReal dt = context->dt;
+        const PylithReal dt = context->dt;assert(dt > 0.0);
         const PylithReal maxwellTime = context->maxwellTime;
         const pylith::fekernels::Tensor& totalStrain = context->totalStrain;
         const pylith::fekernels::Tensor& viscousStrainPrev = context->viscousStrain;
