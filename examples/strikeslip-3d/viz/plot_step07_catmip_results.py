@@ -14,7 +14,7 @@ import plotFaultFunctions
 FILENAME_impulses = "output/step05_greensfns-fault.h5"
 FILENAME_greensfns = "output/step05_greensfns-gps_stations.h5"
 FILENAME_observed = "output/step04_varslip-gps_stations.h5"
-CATMIP_results = "output/step07a_catmip-theta45.bin"
+CATMIP_results = "output/step07a_catmip-theta90.bin"
 show_plot=True # change to False if running without graphics
 
 ## Read the appropriate files
