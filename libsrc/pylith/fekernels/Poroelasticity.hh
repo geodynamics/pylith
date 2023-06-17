@@ -582,42 +582,38 @@ public:
 
     } // addPoroelasticContextBodyForceSourceDensity
 
-/** f0 function for displacement equation: f0u = \dot{u}.
+    /** f0 function for displacement equation: f0u = \dot{u}.
      *
      * Solution fields: [disp(dim), vel(dim)]
      */
     static inline
     void f0u_explicit(const PylithInt dim,
-             const PylithInt numS,
-             const PylithInt numA,
-             const PylithInt sOff[],
-             const PylithInt sOff_x[],
-             const PylithScalar s[],
-             const PylithScalar s_t[],
-             const PylithScalar s_x[],
-             const PylithInt aOff[],
-             const PylithInt aOff_x[],
-             const PylithScalar a[],
-             const PylithScalar a_t[],
-             const PylithScalar a_x[],
-             const PylithReal t,
-             const PylithScalar x[],
-             const PylithInt numConstants,
-             const PylithScalar constants[],
-             PylithScalar f0[]) {
-        assert(sOff);
-        assert(s);
-        assert(s_t);
-        assert(f0);
-        printf("f0u_explicit \n");
-        const PylithInt _numS = 3;
-        assert(_numS == numS);
+                      const PylithInt numS,
+                      const PylithInt numA,
+                      const PylithInt sOff[],
+                      const PylithInt sOff_x[],
+                      const PylithScalar s[],
+                      const PylithScalar s_t[],
+                      const PylithScalar s_x[],
+                      const PylithInt aOff[],
+                      const PylithInt aOff_x[],
+                      const PylithScalar a[],
+                      const PylithScalar a_t[],
+                      const PylithScalar a_x[],
+                      const PylithReal t,
+                      const PylithScalar x[],
+                      const PylithInt numConstants,
+                      const PylithScalar constants[],
+                      PylithScalar f0[]) {
+        pylith::fekernels::Poroelasticity::PoroelasticContext poroelasticContext;
+        pylith::fekernels::Poroelasticity::setPoroelasticContextDynamic(
+            &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
-        const PylithInt i_disp = 0;
-        const PylithScalar* disp_t = &s_t[sOff[i_disp]];
+        const PylithScalar *displacement_t = poroelasticContext.displacement_t;
+        const PylithScalar *velocity = poroelasticContext.velocity;
 
         for (PylithInt i = 0; i < dim; ++i) {
-            f0[i] += disp_t[i];
+            f0[i] += displacement_t[i] - velocity[i];
         } // for
     } // f0u_explicit
 

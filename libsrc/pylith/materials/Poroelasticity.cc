@@ -457,7 +457,7 @@ pylith::materials::Poroelasticity::_setKernelsResidual(pylith::feassemble::Integ
         // Displacement
         const PetscPointFunc f0u = pylith::fekernels::Poroelasticity::f0u_explicit;
         const PetscPointFunc f1u = NULL;
-        const PetscPointFunc g0u = pylith::fekernels::Poroelasticity::g0u;
+        const PetscPointFunc g0u = NULL; // pylith::fekernels::Poroelasticity::g0u;
         const PetscPointFunc g1u = NULL;
 
         // Pressure
@@ -913,7 +913,7 @@ pylith::materials::Poroelasticity::_setKernelsDerivedField(pylith::feassemble::I
     kernels[1] = ProjectKernels("cauchy_strain", strainKernel);
 
     const PetscPointFunc bulkDensity = pylith::fekernels::Poroelasticity::bulkDensity_asScalar;
-    
+
     kernels[2] = ProjectKernels("bulk_density", bulkDensity);
 
     assert(integrator);
