@@ -13,6 +13,10 @@ A clear and concise description of what the bug is.
 
 ## To Reproduce
 
+**PETSc branch**: `[REPLACE WITH PETSC_BRANCH]`
+**PyLith fork**: `[REPLACE WITH URL OF YOUR PYLITH FORK]`
+**PyLith branch**: `[REPLACE WITH PYLITH BRANCH]`
+
 Steps to reproduce the behavior.
 
 ## Expected behavior
