@@ -37,7 +37,7 @@ def do_main(gpsfname,slipfname,chosen_idx):
     
     ptsize=40
     # scatter plot for z values
-    zscatter = plt.scatter(station_geo_x, station_geo_y, ptsize, w_disp, cmap = 'RdBu_r',edgecolors='k')
+    zscatter = plt.scatter(station_geo_x, station_geo_y, ptsize, w_disp, cmap = 'PuOr_r',edgecolors='k')
     cbar = plt.colorbar(zscatter,extend='both')
     cbar.ax.set_title('Z (m)')
     # quiver for x and y values

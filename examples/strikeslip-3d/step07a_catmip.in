@@ -1,4 +1,4 @@
-# Use 100 samples and Markov chains with a length of 50
+# Use N samples and Markov chains with a length of Nsteps
 N                100
 Nsteps           50
 
