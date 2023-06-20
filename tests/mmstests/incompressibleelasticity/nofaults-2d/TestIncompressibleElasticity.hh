@@ -118,7 +118,7 @@ public:
     /// Array of functions providing exact solution time derivative.
     pylith::testing::MMSTest::solution_fn* exactSolnDotFns;
 
-    int numAuxSubfields; ///< Number of auxiliary subfields.
+    size_t numAuxSubfields; ///< Number of auxiliary subfields.
     const char** auxSubfields; ///< Names of auxiliary subfields.
     pylith::topology::Field::Discretization* auxDiscretizations; ///< Discretizations for auxiliary subfields.
     spatialdata::spatialdb::UserFunctionDB auxDB; ///< Spatial database with auxiliary field.
