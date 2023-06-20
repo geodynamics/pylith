@@ -146,7 +146,7 @@ public:
      */
     virtual
     pylith::feassemble::Integrator* createIntegrator(const pylith::topology::Field& solution,
-                                                     const std::vector<pylith::materials::Material*>& materials) = 0;
+                                                     const std::vector<pylith::materials::Material*>& materials);
 
     /** Create constraint and set kernels.
      *

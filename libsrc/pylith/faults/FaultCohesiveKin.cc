@@ -170,30 +170,6 @@ pylith::faults::FaultCohesiveKin::verifyConfiguration(const pylith::topology::Fi
 
 
 // ------------------------------------------------------------------------------------------------
-// Create integrator and set kernels.
-pylith::feassemble::Integrator*
-pylith::faults::FaultCohesiveKin::createIntegrator(const pylith::topology::Field& solution,
-                                                   const std::vector<pylith::materials::Material*>& materials) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("createIntegrator(solution="<<solution.getLabel()<<")");
-
-    pylith::feassemble::IntegratorInterface* integrator = new pylith::feassemble::IntegratorInterface(this);assert(integrator);
-    integrator->setLabelName(getCohesiveLabelName());
-    integrator->setLabelValue(getCohesiveLabelValue());
-    integrator->setSurfaceLabelName(getSurfaceLabelName());
-
-    pylith::feassemble::InterfacePatches* patches =
-        pylith::feassemble::InterfacePatches::createMaterialPairs(this, solution.getDM());
-    integrator->setIntegrationPatches(patches);
-
-    _setKernelsResidual(integrator, solution, materials);
-    _setKernelsJacobian(integrator, solution, materials);
-
-    PYLITH_METHOD_RETURN(integrator);
-} // createIntegrator
-
-
-// ------------------------------------------------------------------------------------------------
 // Create auxiliary field.
 pylith::topology::Field*
 pylith::faults::FaultCohesiveKin::createAuxiliaryField(const pylith::topology::Field& solution,

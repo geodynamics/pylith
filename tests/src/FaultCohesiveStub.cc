@@ -44,6 +44,14 @@ pylith::faults::FaultCohesiveStub::verifyConfiguration(const pylith::topology::F
 
 
 // ------------------------------------------------------------------------------------------------
+// Create integrator and set kernels.
+pylith::feassemble::Integrator*
+pylith::faults::FaultCohesiveStub::createIntegrator(const pylith::topology::Field& solution,
+                                                    const std::vector<pylith::materials::Material*>& materials) {
+    return NULL;
+}
+
+// ------------------------------------------------------------------------------------------------
 // Create auxiliary field.
 pylith::topology::Field*
 pylith::faults::FaultCohesiveStub::createAuxiliaryField(const pylith::topology::Field& solution,
@@ -77,14 +85,6 @@ pylith::faults::FaultCohesiveStub::_setKernelsJacobian(pylith::feassemble::Integ
                                                        const pylith::topology::Field& solution,
                                                        const std::vector<pylith::materials::Material*>& materials) const {}
 
-
-// ------------------------------------------------------------------------------------------------
-// Create integrator and set kernels.
-pylith::feassemble::Integrator*
-pylith::faults::FaultCohesiveStub::createIntegrator(const pylith::topology::Field& solution,
-                                                    const std::vector<pylith::materials::Material*>& materials) {
-    return NULL;
-}
 
 
 // End of file
