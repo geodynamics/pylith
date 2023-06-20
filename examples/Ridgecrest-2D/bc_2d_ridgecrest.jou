@@ -1,0 +1,78 @@
+### set boundary conditions ###
+
+#Set surfaces 
+block 1 surface surface_xneg
+block 1 name "elastic_xneg"
+
+block 2 surface surface_xpos
+block 2 name "elastic_xpos"
+
+block 3 surface surface_ypos
+block 3 name "elastic_ypos"
+
+block 4 surface surface_yneg
+block 4 name "elastic_yneg"
+
+###### make groups for the fault nodes ######
+## and assign the nodesets to a label ##
+## main fault ##
+group "main_fault" add node in curve main_fault_ypos
+group "main_fault" add node in curve main_fault_yneg
+nodeset 10 group main_fault 
+nodeset 10 name "main_fault"
+
+## branch 1 (longer segment) ##
+group "branch1" add node in curve branch_fault1
+nodeset 20 group branch1
+nodeset 20 name "branch1"
+
+## branch 2 (short segment) ##
+group "branch2" add node in curve branch_fault2
+nodeset 40 group branch2
+nodeset 40 name "branch2"
+
+## buried nodes ##
+
+## buried for main ##
+group "buried_main" add node 9 
+group "buried_main" add node 5
+nodeset 80 group buried_main
+nodeset 80 name "buried_main"
+
+## buried for branch1 ##
+group "buried_branch1" add node 1
+group "buried_branch1" add node 2
+nodeset 81 group buried_branch1
+nodeset 81 name "buried_branch1"
+
+## buried for branch2 ##
+group "buried_branch2" add node 7
+group "buried_branch2" add node 1
+nodeset 82 group buried_branch2
+nodeset 82 name "buried_branch2"
+
+
+### create sets for sides (will be boundary conditions ###
+
+#x positive 
+group "bc_xpos" add node in curve c_xpos
+nodeset 21 group bc_xpos
+nodeset 21 name "bc_xpos"
+
+#x negative
+group "bc_xneg" add node in curve c_xneg
+nodeset 22 group bc_xneg
+nodeset 22 name "bc_xneg"
+
+#y positive
+group "boundary_ypos" add node in curve c_ypos
+nodeset 23 group boundary_ypos
+nodeset 23 name "boundary_ypos"
+
+#y negative
+group "boundary_yneg" add node in curve c_yneg
+nodeset 24 group boundary_yneg
+nodeset 24 name "boundary_yneg"
+
+
+

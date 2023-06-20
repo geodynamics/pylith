@@ -1,0 +1,38 @@
+### Make a gradient for the Tet size away from fault ###
+
+
+###### Set the Bias factor to increase size away from fault
+#{bias_factor=1.05}
+#{fun_dx='dxStart*bias_factor**ceil( ln(1-curveL/dxStart*(1-bias_factor))/ln(bias_factor))'}
+##### Start sizing mesh for curves #######
+
+# set schemes
+curve all scheme bias
+surface all sizing function none
+surface size all {dx}
+surface scheme all trimesh
+
+
+# Set size of fault curves
+
+curve branch_fault scheme equal size {dx} 
+curve main_fault_ypos scheme equal size {dx} 
+curve main_fault_yneg scheme equal size {dx} 
+
+# set size near branch
+curve c_yneg_branch_end scheme equal size {dx} 
+curve c_branch_end_xpos scheme equal size {dx}
+
+## Other sides
+curve c_xpos scheme bias fine size {dx} factor {bias_factor} start vertex v_yneg_xpos
+curve c_ypos_xpos scheme bias fine size {dx} factor {bias_factor} start vertex v_main_ypos
+curve c_ypos_xneg scheme bias fine size {dx} factor {bias_factor} start vertex v_main_ypos
+curve c_yneg_xneg scheme bias fine size {dx} factor {bias_factor} start vertex v_main_yneg
+
+# dxA - size at vertex top left corner 
+#{dxStart=dx}{curveL=Length(6)}{execute("dxA="//fun_dx)}
+curve c_xneg scheme equal size {dxA} 
+
+set trimesher surface gradation {bias_factor}
+
+#### end file
