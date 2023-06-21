@@ -20,21 +20,22 @@ TESTS = test_pylith.py
 dist_check_SCRIPTS = test_pylith.py
 
 dist_noinst_PYTHON = \
+	generate_gmsh.py \
 	meshes.py \
 	TestGravityIncompressible.py \
 	gravity_incompressible_soln.py
 
 dist_noinst_DATA = \
-	geometry.jou \
-	bc.jou \
-	mesh_tri.jou \
-	mesh_tri.exo \
-	mesh_quad.jou \
-	mesh_quad.exo \
+	mesh_tri.msh \
+	mesh_quad.msh \
 	pylithapp.cfg \
 	gravity_incompressible.cfg \
 	gravity_incompressible_quad.cfg \
 	gravity_incompressible_tri.cfg \
+	gravity_incompressible_ic.cfg \
+	gravity_incompressible_ic_quad.cfg \
+	gravity_incompressible_ic_tri.cfg \
+	initial_conditions.spatialdb \
 	output_points.txt
 
 noinst_TMP = 

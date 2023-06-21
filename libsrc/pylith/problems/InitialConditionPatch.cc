@@ -23,6 +23,7 @@
 #include "pylith/topology/FieldQuery.hh" // USES FieldQuery
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/Stratum.hh" // USES Stratum
 
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
@@ -141,7 +142,18 @@ pylith::problems::InitialConditionPatch::verifyConfiguration(const pylith::topol
         throw std::runtime_error(msg.str());
     } // if
 
-    // DMLabelView(dmLabel, PETSC_VIEWER_STDOUT_SELF); // :DEBUG:
+    PetscInt stratumStart = -1, stratumEnd = -1;
+    err = DMLabelGetStratumBounds(dmLabel, _labelValue, &stratumStart, &stratumEnd);PYLITH_CHECK_ERROR(err);
+    pylith::topology::Stratum cellsStratum(dmSoln, pylith::topology::Stratum::HEIGHT, 0);
+    if (stratumStart >= cellsStratum.begin() && stratumEnd <= cellsStratum.end()) {
+        std::ostringstream msg;
+        msg << "Label '" << _labelName << "' with value '" << _labelValue << "' for initial condition '"
+            << PyreComponent::getIdentifier() << "' contains only cells. Labels for initial conditions must "
+            "contain cells and lower dimension points (for example, vertices, edges, and faces). These are "
+            "not available for CUBIT meshes; the are available for physical groups created using VertexGroup "
+            "in Gmsh Python scripts.";
+        throw std::runtime_error(msg.str());
+    } // if
 
     PYLITH_METHOD_END;
 } // verifyConfiguration
