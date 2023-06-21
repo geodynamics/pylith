@@ -94,11 +94,37 @@ class TestTri(TestCase):
         return
 
 
+# -------------------------------------------------------------------------------------------------
+class TestQuadIC(TestCase):
+
+    def setUp(self):
+        self.name = "gravity_incompressible_ic_quad"
+        self.mesh = meshes.Quad()
+        super().setUp()
+
+        TestCase.run_pylith(self, self.name, ["gravity_incompressible_ic.cfg", "gravity_incompressible_ic_quad.cfg"])
+        return
+
+
+# -------------------------------------------------------------------------------------------------
+class TestTriIC(TestCase):
+
+    def setUp(self):
+        self.name = "gravity_incompressible_ic_tri"
+        self.mesh = meshes.Tri()
+        super().setUp()
+
+        TestCase.run_pylith(self, self.name, ["gravity_incompressible_ic.cfg", "gravity_incompressible_ic_tri.cfg"])
+        return
+
+
 # ------------------------------------------------------------------------------------------------------
 def test_cases():
     return [
         TestQuad,
         TestTri,
+        TestQuadIC,
+        TestTriIC,
     ]
 
 
