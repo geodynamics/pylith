@@ -224,8 +224,6 @@ AC_CONFIG_FILES([Makefile
 		tests/libtests/faults/data/Makefile
 		tests/libtests/feassemble/Makefile
 		tests/libtests/feassemble/data/Makefile
-		tests/libtests/friction/Makefile
-		tests/libtests/friction/data/Makefile
 		tests/libtests/materials/Makefile
 		tests/libtests/materials/data/Makefile
 		tests/libtests/meshio/Makefile

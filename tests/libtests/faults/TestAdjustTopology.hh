@@ -17,7 +17,7 @@
 //
 
 /**
- * @file tests/libtests/faults/TestAdjustTopologyt.hh
+ * @file tests/libtests/faults/TestAdjustTopology.hh
  *
  * C++ unit tests for FaultCohesive::adjustTopology().
  */
@@ -25,9 +25,9 @@
 #if !defined(pylith_faults_testadjusttopology_hh)
 #define pylith_faults_testadjusttopology_hh
 
-#include <cppunit/extensions/HelperMacros.h>
+#include "pylith/topology/topologyfwd.hh" // HOLDSA Mesh
 
-#include "pylith/topology/topologyfwd.hh" // USES PETSc Mesh
+#include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
 /// Namespace for pylith package
 namespace pylith {
@@ -37,26 +37,19 @@ namespace pylith {
     } // faults
 } // pylith
 
-/// C++ unit testing for Fault
-class pylith::faults::TestAdjustTopology : public CppUnit::TestFixture {
-    // CPPUNIT TEST SUITE /////////////////////////////////////////////////////////////////////////
-    CPPUNIT_TEST_SUITE(TestAdjustTopology);
-
-    CPPUNIT_TEST(testAdjustTopology);
-
-    CPPUNIT_TEST_SUITE_END();
-
+/// C++ unit testing of FaultCohesive::adjustTopology()
+class pylith::faults::TestAdjustTopology : public pylith::utils::GenericComponent {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
-    /// Setup testing data.
-    void setUp(void);
+    /// Constructor.
+    TestAdjustTopology(TestAdjustTopology_Data* data);
 
-    /// Deallocate testing data.
-    void tearDown(void);
+    /// Destructor.
+    ~TestAdjustTopology(void);
 
     /// Test adjustTopology().
-    void testAdjustTopology(void);
+    void run(void);
 
     // PROTECTED MEMBERS //////////////////////////////////////////////////////////////////////////
 protected:

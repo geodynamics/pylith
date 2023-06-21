@@ -16,20 +16,19 @@
 # ----------------------------------------------------------------------
 #
 
-include $(top_srcdir)/tests/check_cppunit.am
+include $(top_srcdir)/tests/check_catch2.am
 
 SUBDIRS = data
 
-TESTS = test_bc
+TESTS = libtest_bc
 
-check_PROGRAMS = test_bc
+check_PROGRAMS = libtest_bc
 
 # Primary source files
-test_bc_SOURCES = \
-	$(top_srcdir)/tests/src/driver_cppunit.cc
+libtest_bc_SOURCES = \
+	Placeholder.cc \
+	$(top_srcdir)/tests/src/driver_catch2.cc
 
-#	TestBoundaryMesh.cc \
-#	TestBoundaryMesh_Cases.cc \
 #	TestDirichletTimeDependent.cc \
 #	TestDirichletTimeDependent_Cases.cc \
 #	TestNeumannTimeDependent.cc \
@@ -39,7 +38,6 @@ test_bc_SOURCES = \
 
 
 dist_noinst_HEADERS = \
-	TestBoundaryMesh.hh \
 	TestDirichletTimeDependent.hh \
 	TestNeumannTimeDependent.hh \
 	TestAbsorbingDampers.hh
