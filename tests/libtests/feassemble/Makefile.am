@@ -16,26 +16,24 @@
 # ----------------------------------------------------------------------
 #
 
-include $(top_srcdir)/tests/check_cppunit.am
+include $(top_srcdir)/tests/check_catch2.am
 
 SUBDIRS = data
 
-TESTS = test_feassemble
+TESTS = libtest_feassemble
 
-check_PROGRAMS = test_feassemble
+check_PROGRAMS = libtest_feassemble
 
-# Primary source files
-test_feassemble_SOURCES = \
+libtest_feassemble_SOURCES = \
 	TestAuxiliaryFactory.cc \
 	TestInterfacePatches.cc \
-	TestInterfacePatches_Cases.cc \
+	TestInterfacePatches_Quad.cc \
 	$(top_srcdir)/tests/src/FaultCohesiveStub.cc \
 	$(top_srcdir)/tests/src/StubMethodTracker.cc \
-	$(top_srcdir)/tests/src/driver_cppunit.cc
+	$(top_srcdir)/tests/src/driver_catch2.cc
 
 
 dist_noinst_HEADERS = \
-	TestAuxiliaryFactory.hh \
 	TestInterfacePatches.hh
 
 

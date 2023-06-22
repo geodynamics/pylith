@@ -27,13 +27,15 @@
 #include "pylith/topology/MeshOps.hh" // USES MeshOps
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 
+#include "catch2/catch_test_macros.hpp"
+
 // ------------------------------------------------------------------------------------------------
-// Setup testing data.
-void
-pylith::feassemble::TestInterfacePatches::setUp(void) {
+// Constructor.
+pylith::feassemble::TestInterfacePatches::TestInterfacePatches(TestInterfacePatches_Data* data) :
+    _data(data) {
     PYLITH_METHOD_BEGIN;
 
-    _data = new TestInterfacePatches_Data;CPPUNIT_ASSERT(_data);
+    assert(_data);
     _mesh = NULL;
     _fault = NULL;
 
@@ -42,9 +44,8 @@ pylith::feassemble::TestInterfacePatches::setUp(void) {
 
 
 // ------------------------------------------------------------------------------------------------
-// Tear down testing data.
-void
-pylith::feassemble::TestInterfacePatches::tearDown(void) {
+// Destructor.
+pylith::feassemble::TestInterfacePatches::~TestInterfacePatches(void) {
     PYLITH_METHOD_BEGIN;
 
     delete _data;_data = NULL;
@@ -64,11 +65,11 @@ pylith::feassemble::TestInterfacePatches::testAccessors(void) {
     InterfacePatches patches;
 
     const std::string& defaultName = pylith::topology::Mesh::cells_label_name;
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in default label name.", defaultName, patches._labelName);
+    CHECK(defaultName == patches._labelName);
 
     const std::string& name = "fault patches";
     patches._labelName = name;
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in label name.", name, std::string(patches.getLabelName()));
+    CHECK(name == std::string(patches.getLabelName()));
 
     PYLITH_METHOD_END;
 } // testAccessors
@@ -79,24 +80,23 @@ pylith::feassemble::TestInterfacePatches::testAccessors(void) {
 void
 pylith::feassemble::TestInterfacePatches::testCreateMaterialPairs(void) {
     PYLITH_METHOD_BEGIN;
-    CPPUNIT_ASSERT(_data);
+    assert(_data);
 
     _initialize();
-    CPPUNIT_ASSERT(_fault);
+    assert(_fault);
     InterfacePatches* patches = InterfacePatches::createMaterialPairs(_fault, _mesh->getDM());
-    CPPUNIT_ASSERT(patches);
+    assert(patches);
 
     const std::string& labelName = std::string(_data->faultLabel) + std::string("-integration-patches");
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in label name.", labelName, std::string(patches->getLabelName()));
+    CHECK(labelName == std::string(patches->getLabelName()));
 
     const size_t numPatches = _data->numPatches;
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in number of integration patches",
-                                 numPatches, patches->_keys.size());
+    REQUIRE(numPatches == patches->_keys.size());
 
     const std::string& cellsLabelName = pylith::topology::Mesh::cells_label_name;
-    CPPUNIT_ASSERT(_data->patchKeys);
-    CPPUNIT_ASSERT(_data->patchNumCells);
-    CPPUNIT_ASSERT(_data->patchCells);
+    assert(_data->patchKeys);
+    assert(_data->patchNumCells);
+    assert(_data->patchCells);
     for (InterfacePatches::keysmap_t::iterator iter = patches->_keys.begin(); iter != patches->_keys.end(); ++iter) {
         const PetscInt labelValue = iter->first;
         const InterfacePatches::WeakFormKeys weakFormKeys = iter->second;
@@ -111,15 +111,15 @@ pylith::feassemble::TestInterfacePatches::testCreateMaterialPairs(void) {
                 break;
             } // if
         } // for
-        CPPUNIT_ASSERT_MESSAGE("Could not find patch.", patchIndex >= 0);
+        assert(patchIndex >= 0);
 
-        CPPUNIT_ASSERT_EQUAL(labelName, weakFormKeys.cohesive._name);
+        CHECK(labelName == weakFormKeys.cohesive._name);
 
-        CPPUNIT_ASSERT_EQUAL(cellsLabelName, weakFormKeys.negative._name);
-        CPPUNIT_ASSERT_EQUAL(_data->patchKeys[patchIndex].negative_value, matIdNegative);
+        CHECK(cellsLabelName == weakFormKeys.negative._name);
+        CHECK(_data->patchKeys[patchIndex].negative_value == matIdNegative);
 
-        CPPUNIT_ASSERT_EQUAL(cellsLabelName, weakFormKeys.positive._name);
-        CPPUNIT_ASSERT_EQUAL(_data->patchKeys[patchIndex].positive_value, matIdPositive);
+        CHECK(cellsLabelName == weakFormKeys.positive._name);
+        CHECK(_data->patchKeys[patchIndex].positive_value == matIdPositive);
 
         // Check labels
         PetscErrorCode err = 0;
@@ -127,19 +127,16 @@ pylith::feassemble::TestInterfacePatches::testCreateMaterialPairs(void) {
         PetscIS pointsIS = NULL;
         PetscInt numPoints = 0;
         const PetscInt* points = NULL;
-        err = DMGetLabel(_mesh->getDM(), labelName.c_str(), &label);CPPUNIT_ASSERT(!err);
-        err = DMLabelGetStratumIS(label, labelValue, &pointsIS);CPPUNIT_ASSERT(!err);
-        err = ISGetSize(pointsIS, &numPoints);CPPUNIT_ASSERT(!err);
-        std::ostringstream msg;
-        msg << "Mismatch in number of cells for integration patch for materials ("<<matIdNegative<<", "<<matIdPositive<<").";
-        CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.str().c_str(), _data->patchNumCells[patchIndex], numPoints);
+        err = DMGetLabel(_mesh->getDM(), labelName.c_str(), &label);assert(!err);
+        err = DMLabelGetStratumIS(label, labelValue, &pointsIS);assert(!err);
+        err = ISGetSize(pointsIS, &numPoints);assert(!err);
+        INFO("Checking integration patch for materials ("<<matIdNegative<<", "<<matIdPositive<<").");
+        REQUIRE(_data->patchNumCells[patchIndex] == numPoints);
 
-        err = ISGetIndices(pointsIS, &points);CPPUNIT_ASSERT(!err);
-        CPPUNIT_ASSERT(_data->patchCells[patchIndex]);
+        err = ISGetIndices(pointsIS, &points);assert(!err);
+        assert(_data->patchCells[patchIndex]);
         for (PetscInt iPoint = 0; iPoint < numPoints; ++iPoint) {
-            std::ostringstream msg;
-            msg << "Mismatch in cells in integration patch for materials ("<<matIdNegative<<", "<<matIdPositive<<").";
-            CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.str().c_str(), _data->patchCells[patchIndex][iPoint], points[iPoint]);
+            CHECK(_data->patchCells[patchIndex][iPoint] == points[iPoint]);
         } // for
         err = ISRestoreIndices(pointsIS, &points);PYLITH_CHECK_ERROR(err);
         err = ISDestroy(&pointsIS);PYLITH_CHECK_ERROR(err);
@@ -154,18 +151,18 @@ pylith::feassemble::TestInterfacePatches::testCreateMaterialPairs(void) {
 void
 pylith::feassemble::TestInterfacePatches::_initialize() {
     PYLITH_METHOD_BEGIN;
-    CPPUNIT_ASSERT(_data);
+    assert(_data);
 
-    delete _mesh;_mesh = new pylith::topology::Mesh;CPPUNIT_ASSERT(_mesh);
+    delete _mesh;_mesh = new pylith::topology::Mesh;assert(_mesh);
 
     pylith::meshio::MeshIOAscii iohandler;
     iohandler.setFilename(_data->filename);
     iohandler.read(_mesh);
-    CPPUNIT_ASSERT(pylith::topology::MeshOps::getNumCells(*_mesh) > 0);
-    CPPUNIT_ASSERT(pylith::topology::MeshOps::getNumVertices(*_mesh) > 0);
+    assert(pylith::topology::MeshOps::getNumCells(*_mesh) > 0);
+    assert(pylith::topology::MeshOps::getNumVertices(*_mesh) > 0);
 
-    CPPUNIT_ASSERT(_data->faultLabel);
-    _fault = new pylith::faults::FaultCohesiveStub();CPPUNIT_ASSERT(_fault);
+    assert(_data->faultLabel);
+    _fault = new pylith::faults::FaultCohesiveStub();assert(_fault);
     _fault->setCohesiveLabelName(pylith::topology::Mesh::cells_label_name);
     _fault->setCohesiveLabelValue(101);
     _fault->setSurfaceLabelName(_data->faultLabel);
