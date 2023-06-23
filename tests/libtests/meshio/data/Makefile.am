@@ -44,14 +44,6 @@ dist_noinst_HEADERS = \
 dist_noinst_DATA = \
 	mesh2D_comments.txt \
 	mesh3D_index1.txt \
-	cube2_ascii.gmv \
-	cube2_ascii.pset \
-	cube2_binary.gmv \
-	cube2_binary.pset \
-	cube2_binary_32on64.gmv \
-	cube2_binary_32on64.pset \
-	cube2_binary_64.gmv \
-	cube2_binary_64.pset \
 	twotri3_12.2.exo \
 	twotri3_13.0.exo \
 	twoquad4_12.2.exo \

@@ -110,7 +110,6 @@ test_hdf5_SOURCES = \
 dist_noinst_HEADERS = \
 	TestMeshIO.hh \
 	TestMeshIOAscii.hh \
-	TestMeshIOLagrit.hh \
 	TestMeshIOPetsc.hh \
 	TestOutputTriggerStep.hh \
 	TestOutputTriggerTime.hh \
