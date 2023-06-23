@@ -16,9 +16,12 @@
         "-max-line-length",
         "120"
     ],
-    "testMate.cpp.log.logpanel": true,
-    "testMate.cpp.log.logfile": "/Users/baagaard/src/cig/pylith/test.log",
     "testMate.cpp.test.advancedExecutables": [
+        {
+            "name": "${filename}",
+            "pattern": "${os_env:PYLITH_BUILDDIR}/tests/libtests/**/.libs/libtest_*",
+            "cwd": "${absDirpath}/.."
+        },
         {
             "name": "${filename}",
             "pattern": "${os_env:PYLITH_BUILDDIR}/tests/mmstests/**/.libs/mmstest_*",
