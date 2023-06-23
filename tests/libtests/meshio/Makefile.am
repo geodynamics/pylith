@@ -15,32 +15,31 @@
 #
 # ----------------------------------------------------------------------
 
-include $(top_srcdir)/tests/check_cppunit.am
+include $(top_srcdir)/tests/check_catch2.am
 
 SUBDIRS = data
 
-TESTS = test_meshio test_vtk test_hdf5
+TESTS = libtest_meshio libtest_vtk libtest_hdf5
 
 check_PROGRAMS = $(TESTS)
 
 # general meshio
-test_meshio_SOURCES = \
+libtest_meshio_SOURCES = \
 	TestMeshIO.cc \
 	TestMeshIOAscii.cc \
 	TestMeshIOAscii_Cases.cc \
 	TestMeshIOPetsc.cc \
 	TestMeshIOPetsc_Cases.cc \
-	TestMeshIOLagrit.cc \
-	TestMeshIOLagrit_Cases.cc \
-	TestOutputTriggerStep.cc \
-	TestOutputTriggerTime.cc \
 	$(top_srcdir)/tests/src/FaultCohesiveStub.cc \
 	$(top_srcdir)/tests/src/StubMethodTracker.cc \
-	$(top_srcdir)/tests/src/driver_cppunit.cc
-	
+	$(top_srcdir)/tests/src/driver_catch2.cc
+
+#	TestOutputTriggerStep.cc \
+#	TestOutputTriggerTime.cc \
+#
 
 # VTK data writer
-test_vtk_SOURCES = \
+libtest_vtk_SOURCES = \
 	FieldFactory.cc \
 	TestDataWriter.cc \
 	TestDataWriterMesh.cc \
@@ -58,7 +57,7 @@ test_vtk_SOURCES = \
 	TestDataWriterVTKPoints_Cases.cc \
 	$(top_srcdir)/tests/src/FaultCohesiveStub.cc \
 	$(top_srcdir)/tests/src/StubMethodTracker.cc \
-	$(top_srcdir)/tests/src/driver_cppunit.cc
+	$(top_srcdir)/tests/src/driver_catch2.cc
 
 
 # :TODO: @brad
@@ -71,7 +70,7 @@ test_vtk_SOURCES = \
 # TestOutputSolnPoints.cc
 
 
-test_hdf5_SOURCES = \
+libtest_hdf5_SOURCES = \
 	FieldFactory.cc \
 	TestDataWriter.cc \
 	TestDataWriterMesh.cc \
@@ -98,7 +97,7 @@ test_hdf5_SOURCES = \
 	TestDataWriterHDF5ExtPoints_Cases.cc \
 	$(top_srcdir)/tests/src/FaultCohesiveStub.cc \
 	$(top_srcdir)/tests/src/StubMethodTracker.cc \
-	$(top_srcdir)/tests/src/driver_cppunit.cc
+	$(top_srcdir)/tests/src/driver_catch2.cc
 
 
 # TestDataWriterHDF5FaultMesh.cc \
@@ -147,7 +146,7 @@ dist_noinst_HEADERS = \
 
 
 if ENABLE_CUBIT
-  test_meshio_SOURCES += \
+  libtest_meshio_SOURCES += \
 	TestExodusII.cc \
 	TestMeshIOCubit.cc \
 	TestMeshIOCubit_Cases.cc

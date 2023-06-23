@@ -27,40 +27,23 @@
 #if !defined(pylith_meshio_testmeshiopetsc_hh)
 #define pylith_meshio_testmeshiopetsc_hh
 
-// Include directives ---------------------------------------------------
 #include "TestMeshIO.hh"
 
-// Forward declarations -------------------------------------------------
 namespace pylith {
     namespace meshio {
         class TestMeshIOPetsc;
-
-        class TestMeshIOPetsc_Data; // test data
     } // meshio
 } // pylith
 
-// TestMeshIOPetsc ------------------------------------------------------
-class pylith::meshio::TestMeshIOPetsc : public TestMeshIO { // class TestMeshIOPetsc
-    // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-    CPPUNIT_TEST_SUITE(TestMeshIOPetsc);
-
-    CPPUNIT_TEST(testConstructor);
-    CPPUNIT_TEST(testFilename);
-    CPPUNIT_TEST(testRead);
-
-    CPPUNIT_TEST_SUITE_END();
-
+class pylith::meshio::TestMeshIOPetsc : public TestMeshIO {
     // PUBLIC METHODS /////////////////////////////////////////////////////
 public:
 
-    /// Setup testing data.
-    void setUp(void);
+    /// Constructor.
+    TestMeshIOPetsc(TestMeshIO_Data* data);
 
-    /// Deallocate testing data.
-    void tearDown(void);
-
-    /// Test constructor
-    void testConstructor(void);
+    /// Destructor.
+    ~TestMeshIOPetsc(void);
 
     /// Test filename()
     void testFilename(void);
@@ -68,37 +51,12 @@ public:
     /// Test read().
     void testRead(void);
 
-    /** Get test data.
-     *
-     * @returns Test data.
-     */
-    TestMeshIO_Data* _getData(void);
-
     // PROTECTED METHODS ////////////////////////////////////////////////
 protected:
 
     MeshIOPetsc* _io; ///< Test subject.
-    TestMeshIOPetsc_Data* _data; ///< Data for tests.
 
 }; // class TestMeshIOPetsc
-
-// ======================================================================
-class pylith::meshio::TestMeshIOPetsc_Data : public TestMeshIO_Data {
-    // PUBLIC METHODS ///////////////////////////////////////////////////
-public:
-
-    /// Constructor
-    TestMeshIOPetsc_Data(void);
-
-    /// Destructor
-    ~TestMeshIOPetsc_Data(void);
-
-    // PUBLIC MEMBERS ///////////////////////////////////////////////////
-public:
-
-    const char* filename;
-
-}; // class TestMeshIOPetsc_Data
 
 #endif // pylith_meshio_testmeshiopetsc_hh
 

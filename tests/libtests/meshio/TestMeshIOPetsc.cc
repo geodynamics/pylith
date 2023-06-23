@@ -21,82 +21,58 @@
 #include "TestMeshIOPetsc.hh" // Implementation of class methods
 
 #include "pylith/meshio/MeshIOPetsc.hh"
-
 #include "pylith/topology/Mesh.hh" // USES Mesh
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 #include "pylith/utils/journals.hh" // USES JournalingComponent
 
+#include "catch2/catch_test_macros.hpp"
+
 #include <strings.h> // USES strcasecmp()
+#include <cassert> // USES assert()
 
-// ----------------------------------------------------------------------
-// Setup testing data.
-void
-pylith::meshio::TestMeshIOPetsc::setUp(void) {
-    TestMeshIO::setUp();
-    _io = new MeshIOPetsc();CPPUNIT_ASSERT(_io);
-    _data = NULL;
-
+// ------------------------------------------------------------------------------------------------
+// Constructor.
+pylith::meshio::TestMeshIOPetsc::TestMeshIOPetsc(TestMeshIO_Data* data) :
+    TestMeshIO(data) {
+    _io = new MeshIOPetsc();assert(_io);
     _io->PyreComponent::setIdentifier("TestMeshIOPetsc");
-} // setUp
+} // constructor
 
 
-// ----------------------------------------------------------------------
-// Deallocate testing data.
-void
-pylith::meshio::TestMeshIOPetsc::tearDown(void) {
-    const char* journalName = _io->PyreComponent::getName();
-    pythia::journal::debug_t debug(journalName);
-    debug.deactivate(); // DEBUGGING
-
-    TestMeshIO::tearDown();
-
-    delete _io;_io = NULL;
-    delete _data;_data = NULL;
-} // tearDown
+// ------------------------------------------------------------------------------------------------
+// Destructor.
+pylith::meshio::TestMeshIOPetsc::~TestMeshIOPetsc(void) {
+    delete _io;_io = nullptr;
+} // destructor
 
 
-// ----------------------------------------------------------------------
-// Test constructor
-void
-pylith::meshio::TestMeshIOPetsc::testConstructor(void) {
-    PYLITH_METHOD_BEGIN;
-
-    MeshIOPetsc iohandler;
-
-    PYLITH_METHOD_END;
-} // testConstructor
-
-
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test filename()
 void
 pylith::meshio::TestMeshIOPetsc::testFilename(void) {
     PYLITH_METHOD_BEGIN;
-
-    CPPUNIT_ASSERT(_io);
+    assert(_io);
 
     const std::string& filename = "hi.txt";
     _io->setFilename(filename.c_str());
-    CPPUNIT_ASSERT_EQUAL(filename, std::string(_io->getFilename()));
+    CHECK(filename == std::string(_io->getFilename()));
 
     PYLITH_METHOD_END;
 } // testFilename
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test read().
 void
 pylith::meshio::TestMeshIOPetsc::testRead(void) {
     PYLITH_METHOD_BEGIN;
-
-    CPPUNIT_ASSERT(_io);
-    CPPUNIT_ASSERT(_data);
-
-    _io->setFilename(_data->filename);
+    assert(_io);
+    assert(_data);
 
     // Read mesh
-    delete _mesh;_mesh = new topology::Mesh;CPPUNIT_ASSERT(_mesh);
+    _io->setFilename(_data->filename.c_str());
+    delete _mesh;_mesh = new topology::Mesh;assert(_mesh);
     _io->read(_mesh);
 
     pythia::journal::debug_t debug("TestMeshIOPetsc");
@@ -109,25 +85,6 @@ pylith::meshio::TestMeshIOPetsc::testRead(void) {
 
     PYLITH_METHOD_END;
 } // testRead
-
-
-// ----------------------------------------------------------------------
-// Get test data.
-pylith::meshio::TestMeshIO_Data*
-pylith::meshio::TestMeshIOPetsc::_getData(void) {
-    return _data;
-} // _data
-
-
-// ----------------------------------------------------------------------
-// Constructor
-pylith::meshio::TestMeshIOPetsc_Data::TestMeshIOPetsc_Data(void) :
-    filename(NULL) {} // constructor
-
-
-// ----------------------------------------------------------------------
-// Destructor
-pylith::meshio::TestMeshIOPetsc_Data::~TestMeshIOPetsc_Data(void) {}
 
 
 // End of file
