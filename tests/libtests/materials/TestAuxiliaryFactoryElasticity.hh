@@ -27,7 +27,7 @@
 #if !defined(pylith_materials_testauxiliaryfactoryelasticity_hh)
 #define pylith_materials_testauxiliaryfactoryelasticity_hh
 
-#include <cppunit/extensions/HelperMacros.h>
+#include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
 #include "pylith/materials/materialsfwd.hh" // HOLDSA AuxiliaryFactoryElasticity
 #include "pylith/topology/Field.hh" // HOLDSA Field::SubfieldInfo
@@ -37,7 +37,6 @@
 
 #include <map> // USES std::map
 
-/// Namespace for pylith package
 namespace pylith {
     namespace materials {
         class TestAuxiliaryFactoryElasticity;
@@ -45,23 +44,16 @@ namespace pylith {
     } // materials
 } // pylith
 
-class pylith::materials::TestAuxiliaryFactoryElasticity : public CppUnit::TestFixture {
-    // CPPUNIT TEST SUITE //////////////////////////////////////////////////////////////////////////////////////////////
-    CPPUNIT_TEST_SUITE(TestAuxiliaryFactoryElasticity);
-
-    CPPUNIT_TEST(testAdd);
-    CPPUNIT_TEST(testSetValuesFromDB);
-
-    CPPUNIT_TEST_SUITE_END();
-
-    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
+// ------------------------------------------------------------------------------------------------
+class pylith::materials::TestAuxiliaryFactoryElasticity : public pylith::utils::GenericComponent {
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
-    /// Setup testing data.
-    void setUp(void);
+    /// Constructor.
+    TestAuxiliaryFactoryElasticity(TestAuxiliaryFactoryElasticity_Data* data);
 
-    /// Tear down testing data.
-    void tearDown(void);
+    /// Destructor.
+    ~TestAuxiliaryFactoryElasticity(void);
 
     /// Test adding density, body force, and gravity subfields.
     void testAdd(void);
@@ -69,13 +61,13 @@ public:
     /// Test setValuesFromDB().
     void testSetValuesFromDB(void);
 
-    // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
+    // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
 protected:
 
     /// Initialze mesh, coordinate system, auxiliary field, and factory.
     void _initialize(void);
 
-    // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
+    // PROTECTED MEMBERS //////////////////////////////////////////////////////////////////////////
 protected:
 
     AuxiliaryFactoryElasticity* _factory; ///< Test subject.
@@ -84,13 +76,11 @@ protected:
     pylith::topology::Mesh* _mesh; ///< Finite-element mesh.
     pylith::topology::Field* _auxiliaryField; ///< Auxiliary field for test subject.
 
-    size_t _auxDim; ///< Topological dimension of auxiliary field.
-  
 }; // class TestAuxiliaryFactoryElasticity
 
-// =====================================================================================================================
+// ------------------------------------------------------------------------------------------------
 class pylith::materials::TestAuxiliaryFactoryElasticity_Data {
-    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Constructor
@@ -99,10 +89,11 @@ public:
     /// Destructor
     ~TestAuxiliaryFactoryElasticity_Data(void);
 
-    // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
+    // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
 public:
 
     size_t dimension; ///< Spatial dimension.
+    size_t auxDim; ///< Topological dimension of auxiliary field.
     const char* meshFilename; ///< Name of file with ASCII mesh.
     spatialdata::geocoords::CoordSys* cs; ///< Coordinate system.
     spatialdata::units::Nondimensional* normalizer; ///< Scales for nondimensionalization.
