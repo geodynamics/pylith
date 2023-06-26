@@ -26,30 +26,28 @@
 #include "pylith/meshio/OutputSubfield.hh" // USES OutputSubfield
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
 
-// ------------------------------------------------------------------------------------------------
-// Setup testing data.
-void
-pylith::meshio::TestDataWriterVTKSubmesh::setUp(void) {
-    PYLITH_METHOD_BEGIN;
+#include "catch2/catch_test_macros.hpp"
+#include "catch2/matchers/catch_matchers_floating_point.hpp"
 
-    TestDataWriterSubmesh::setUp();
-    _data = NULL;
-
-    PYLITH_METHOD_END;
-} // setUp
-
+#include <cassert> // USES assert()
 
 // ------------------------------------------------------------------------------------------------
-// Tear down testing data.
-void
-pylith::meshio::TestDataWriterVTKSubmesh::tearDown(void) {
+// Constructor.
+pylith::meshio::TestDataWriterVTKSubmesh::TestDataWriterVTKSubmesh(TestDataWriterVTKSubmesh_Data* data) :
+    _data(data) {
+    TestDataWriterSubmesh::_initialize();
+} // constructor
+
+
+// ------------------------------------------------------------------------------------------------
+// Destructor.
+pylith::meshio::TestDataWriterVTKSubmesh::~TestDataWriterVTKSubmesh(void) {
     PYLITH_METHOD_BEGIN;
 
-    TestDataWriterSubmesh::tearDown();
-    delete _data;_data = NULL;
+    delete _data;_data = nullptr;
 
     PYLITH_METHOD_END;
-} // tearDown
+} // destructor.
 
 
 // ------------------------------------------------------------------------------------------------
@@ -57,29 +55,29 @@ pylith::meshio::TestDataWriterVTKSubmesh::tearDown(void) {
 void
 pylith::meshio::TestDataWriterVTKSubmesh::testTimeStep(void) {
     PYLITH_METHOD_BEGIN;
-    CPPUNIT_ASSERT(_submesh);
-    CPPUNIT_ASSERT(_data);
+    assert(_submesh);
+    assert(_data);
 
     DataWriterVTK writer;
     writer.filename(_data->timestepFilename);
     writer.timeFormat(_data->timeFormat);
 
-    CPPUNIT_ASSERT_EQUAL(false, writer._wroteVertexHeader);
-    CPPUNIT_ASSERT_EQUAL(false, writer._wroteCellHeader);
+    CHECK(false == writer._wroteVertexHeader);
+    CHECK(false == writer._wroteCellHeader);
 
     const PylithScalar t = _data->time;
     const bool isInfo = false;
     writer.open(*_submesh, isInfo);
     writer.openTimeStep(t, *_submesh);
 
-    CPPUNIT_ASSERT_EQUAL(false, writer._wroteVertexHeader);
-    CPPUNIT_ASSERT_EQUAL(false, writer._wroteCellHeader);
+    CHECK(false == writer._wroteVertexHeader);
+    CHECK(false == writer._wroteCellHeader);
 
     writer.closeTimeStep();
     writer.close();
 
-    CPPUNIT_ASSERT_EQUAL(false, writer._wroteVertexHeader);
-    CPPUNIT_ASSERT_EQUAL(false, writer._wroteCellHeader);
+    CHECK(false == writer._wroteVertexHeader);
+    CHECK(false == writer._wroteCellHeader);
 
     // Nothing to check. We do not create VTK files without fields anymore.
 
@@ -92,9 +90,9 @@ pylith::meshio::TestDataWriterVTKSubmesh::testTimeStep(void) {
 void
 pylith::meshio::TestDataWriterVTKSubmesh::testWriteVertexField(void) {
     PYLITH_METHOD_BEGIN;
-    CPPUNIT_ASSERT(_mesh);
-    CPPUNIT_ASSERT(_submesh);
-    CPPUNIT_ASSERT(_data);
+    assert(_mesh);
+    assert(_submesh);
+    assert(_data);
 
     pylith::topology::Field vertexField(*_mesh);
     _createVertexField(&vertexField);
@@ -112,20 +110,20 @@ pylith::meshio::TestDataWriterVTKSubmesh::testWriteVertexField(void) {
     const size_t numFields = subfieldNames.size();
     for (size_t i = 0; i < numFields; ++i) {
         OutputSubfield* subfield = OutputSubfield::create(vertexField, *_submesh, subfieldNames[i].c_str(), 1);
-        CPPUNIT_ASSERT(subfield);
+        assert(subfield);
         subfield->project(vertexField.getOutputVector());
         writer.writeVertexField(t, *subfield);
-        CPPUNIT_ASSERT(writer._wroteVertexHeader);
-        CPPUNIT_ASSERT_EQUAL(false, writer._wroteCellHeader);
+        assert(writer._wroteVertexHeader);
+        CHECK(false == writer._wroteCellHeader);
         delete subfield;subfield = NULL;
     } // for
     writer.closeTimeStep();
     writer.close();
 
-    CPPUNIT_ASSERT_EQUAL(false, writer._wroteVertexHeader);
-    CPPUNIT_ASSERT_EQUAL(false, writer._wroteCellHeader);
+    CHECK(false == writer._wroteVertexHeader);
+    CHECK(false == writer._wroteCellHeader);
 
-    checkFile(_data->vertexFilename, t, _data->timeFormat);
+    TestDataWriterVTK::checkFile(_data->vertexFilename, t, _data->timeFormat);
 
     PYLITH_METHOD_END;
 } // testWriteVertexField
@@ -137,8 +135,8 @@ void
 pylith::meshio::TestDataWriterVTKSubmesh::testWriteCellField(void) {
     PYLITH_METHOD_BEGIN;
 
-    CPPUNIT_ASSERT(_submesh);
-    CPPUNIT_ASSERT(_data);
+    assert(_submesh);
+    assert(_data);
 
     DataWriterVTK writer;
 
@@ -157,20 +155,20 @@ pylith::meshio::TestDataWriterVTKSubmesh::testWriteCellField(void) {
     const size_t numFields = subfieldNames.size();
     for (size_t i = 0; i < numFields; ++i) {
         OutputSubfield* subfield = OutputSubfield::create(cellField, *_submesh, subfieldNames[i].c_str(), 0);
-        CPPUNIT_ASSERT(subfield);
+        assert(subfield);
         subfield->project(cellField.getOutputVector());
         writer.writeCellField(t, *subfield);
-        CPPUNIT_ASSERT_EQUAL(false, writer._wroteVertexHeader);
-        CPPUNIT_ASSERT(writer._wroteCellHeader);
+        CHECK(false == writer._wroteVertexHeader);
+        assert(writer._wroteCellHeader);
         delete subfield;subfield = NULL;
     } // for
     writer.closeTimeStep();
     writer.close();
 
-    CPPUNIT_ASSERT_EQUAL(false, writer._wroteCellHeader);
-    CPPUNIT_ASSERT_EQUAL(false, writer._wroteCellHeader);
+    CHECK(false == writer._wroteCellHeader);
+    CHECK(false == writer._wroteCellHeader);
 
-    checkFile(_data->cellFilename, t, _data->timeFormat);
+    TestDataWriterVTK::checkFile(_data->cellFilename, t, _data->timeFormat);
 
     PYLITH_METHOD_END;
 } // testWriteCellField

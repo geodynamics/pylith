@@ -21,8 +21,8 @@
  * @brief C++ helper class for setting up solution fields for testing.
  */
 
-#if !defined(pylith_problems_fieldfactory_hh)
-#define pylith_problems_fieldfactory_hh
+#if !defined(pylith_meshio_fieldfactory_hh)
+#define pylith_meshio_fieldfactory_hh
 
 /// Namespace for pylith package
 namespace pylith {
@@ -31,12 +31,9 @@ namespace pylith {
     } // meshio
 } // pylith
 
-// Include directives ---------------------------------------------------
 #include "pylith/topology/topologyfwd.hh" // HOLDSA Field
 #include "pylith/topology/FieldBase.hh" // USES FieldBase::Descretization
 
-// FieldFactory-----------------------------------------------
-/// @brief C++ helper class for setting up auxiliary fields for materials.
 class pylith::meshio::FieldFactory {
     friend class TestFieldFactory; // unit testing
 
@@ -99,6 +96,6 @@ private:
 
 }; // class FieldFactory
 
-#endif // pylith_problems_fieldfactory_hh
+#endif // pylith_meshio_fieldfactory_hh
 
 // End of file

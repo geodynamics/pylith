@@ -34,130 +34,29 @@
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
-#include <cppunit/extensions/HelperMacros.h>
-
 // ------------------------------------------------------------------------------------------------
-// Setup testing data.
-void
-pylith::meshio::TestDataWriterMaterial::setUp(void) {
-    PYLITH_METHOD_BEGIN;
-
-    _domainMesh = NULL;
-    _materialMesh = NULL;
-
-    PYLITH_METHOD_END;
-} // setUp
+// Constructor.
+pylith::meshio::TestDataWriterMaterial::TestDataWriterMaterial(void) :
+    _domainMesh(nullptr),
+    _materialMesh(nullptr) {}
 
 
 // ------------------------------------------------------------------------------------------------
-// Tear down testing data.
-void
-pylith::meshio::TestDataWriterMaterial::tearDown(void) {
+// Destructor.
+pylith::meshio::TestDataWriterMaterial::~TestDataWriterMaterial(void) {
     PYLITH_METHOD_BEGIN;
 
-    delete _domainMesh;_domainMesh = NULL;
-    delete _materialMesh;_materialMesh = NULL;
+    delete _domainMesh;_domainMesh = nullptr;
+    delete _materialMesh;_materialMesh = nullptr;
 
     PYLITH_METHOD_END;
-} // tearDown
+} // destructor
 
 
 // ------------------------------------------------------------------------------------------------
-// Initialize mesh.
 void
-pylith::meshio::TestDataWriterMaterial::_initialize(void) {
-    PYLITH_METHOD_BEGIN;
-
-    const TestDataWriterMaterial_Data* data = _getData();CPPUNIT_ASSERT(data);
-
-    delete _domainMesh;_domainMesh = new topology::Mesh;CPPUNIT_ASSERT(_domainMesh);
-    MeshIOAscii iohandler;
-    iohandler.setFilename(data->meshFilename);
-    iohandler.read(_domainMesh);
-
-    spatialdata::geocoords::CSCart cs;
-    cs.setSpaceDim(_domainMesh->getDimension());
-    _domainMesh->setCoordSys(&cs);
-
-    spatialdata::units::Nondimensional normalizer;
-    normalizer.setLengthScale(data->lengthScale);
-    pylith::topology::MeshOps::nondimensionalize(_domainMesh, normalizer);
-
-    if (data->faultLabel) {
-        pylith::faults::FaultCohesiveStub fault;
-        fault.setSurfaceLabelName(data->faultLabel);
-        fault.setCohesiveLabelValue(data->faultId);
-        fault.adjustTopology(_domainMesh);
-    } // if
-
-    delete _materialMesh;
-    _materialMesh = pylith::topology::MeshOps::createSubdomainMesh(*_domainMesh, pylith::topology::Mesh::cells_label_name, data->materialId, ":UNKNOWN:");
-    CPPUNIT_ASSERT(_materialMesh);
-
-    PYLITH_METHOD_END;
-} // _initialize
-
-
-// ------------------------------------------------------------------------------------------------
-// Create vertex fields.
-void
-pylith::meshio::TestDataWriterMaterial::_createVertexField(pylith::topology::Field* field) {
-    PYLITH_METHOD_BEGIN;
-    CPPUNIT_ASSERT(field);
-
-    const TestDataWriterMaterial_Data* data = _getData();CPPUNIT_ASSERT(data);
-
-    FieldFactory factory(*field);
-    factory.addScalar(data->vertexDiscretization);
-    factory.addVector(data->vertexDiscretization);
-    factory.addTensor(data->vertexDiscretization);
-    factory.addOther(data->vertexDiscretization);
-
-    field->subfieldsSetup();
-    field->createDiscretization();
-    field->allocate();
-
-    factory.setValues(data->vertexValues, data->vertexNumPoints, data->vertexNumDOF);
-
-    field->createOutputVector();
-    field->scatterLocalToOutput();
-
-    PYLITH_METHOD_END;
-} // _createVertexFields
-
-
-// ------------------------------------------------------------------------------------------------
-// Create cell fields.
-void
-pylith::meshio::TestDataWriterMaterial::_createCellField(pylith::topology::Field* field) {
-    PYLITH_METHOD_BEGIN;
-    CPPUNIT_ASSERT(field);
-
-    const TestDataWriterMaterial_Data* data = _getData();CPPUNIT_ASSERT(data);
-
-    FieldFactory factory(*field);
-    factory.addScalar(data->cellDiscretization);
-    factory.addVector(data->cellDiscretization);
-    factory.addTensor(data->cellDiscretization);
-    factory.addOther(data->cellDiscretization);
-
-    field->subfieldsSetup();
-    field->createDiscretization();
-    field->allocate();
-
-    factory.setValues(data->cellValues, data->cellNumPoints, data->cellNumDOF);
-
-    field->createOutputVector();
-    field->scatterLocalToOutput();
-
-    PYLITH_METHOD_END;
-} // _createCellFields
-
-
-// ================================================================================================
-void
-pylith::meshio::TestDataWriterMaterial::_setDataTri(void) {
-    TestDataWriterMaterial_Data* data = this->_getData();CPPUNIT_ASSERT(data);
+pylith::meshio::TestDataWriterMaterial::setDataTri(TestDataWriterMaterial_Data* data) {
+    assert(data);
 
     data->meshFilename = "data/tri3.mesh";
     data->materialId = 0;
@@ -200,10 +99,10 @@ pylith::meshio::TestDataWriterMaterial::_setDataTri(void) {
 } // setDataTri
 
 
-// ================================================================================================
+// ------------------------------------------------------------------------------------------------
 void
-pylith::meshio::TestDataWriterMaterial::_setDataQuad(void) {
-    TestDataWriterMaterial_Data* data = this->_getData();CPPUNIT_ASSERT(data);
+pylith::meshio::TestDataWriterMaterial::setDataQuad(TestDataWriterMaterial_Data* data) {
+    assert(data);
 
     // We do not use a fault in this test case.
     data->meshFilename = "data/quad4.mesh";
@@ -245,10 +144,10 @@ pylith::meshio::TestDataWriterMaterial::_setDataQuad(void) {
 } // setDataQuad
 
 
-// ================================================================================================
+// ------------------------------------------------------------------------------------------------
 void
-pylith::meshio::TestDataWriterMaterial::_setDataTet(void) {
-    TestDataWriterMaterial_Data* data = this->_getData();CPPUNIT_ASSERT(data);
+pylith::meshio::TestDataWriterMaterial::setDataTet(TestDataWriterMaterial_Data* data) {
+    assert(data);
 
     data->meshFilename = "data/tet4.mesh";
     data->materialId = 1;
@@ -294,10 +193,10 @@ pylith::meshio::TestDataWriterMaterial::_setDataTet(void) {
 } // setDataTet
 
 
-// ================================================================================================
+// ------------------------------------------------------------------------------------------------
 void
-pylith::meshio::TestDataWriterMaterial::_setDataHex(void) {
-    TestDataWriterMaterial_Data* data = this->_getData();CPPUNIT_ASSERT(data);
+pylith::meshio::TestDataWriterMaterial::setDataHex(TestDataWriterMaterial_Data* data) {
+    assert(data);
 
     data->meshFilename = "data/hex8.mesh";
     data->materialId = 0;
@@ -348,6 +247,98 @@ pylith::meshio::TestDataWriterMaterial::_setDataHex(void) {
     };
     data->cellValues = const_cast<PylithScalar*>(cellValues);
 } // setDataHex
+
+
+// ------------------------------------------------------------------------------------------------
+// Initialize mesh.
+void
+pylith::meshio::TestDataWriterMaterial::_initialize(void) {
+    PYLITH_METHOD_BEGIN;
+
+    const TestDataWriterMaterial_Data* data = _getData();assert(data);
+
+    delete _domainMesh;_domainMesh = new topology::Mesh;assert(_domainMesh);
+    MeshIOAscii iohandler;
+    iohandler.setFilename(data->meshFilename);
+    iohandler.read(_domainMesh);
+
+    spatialdata::geocoords::CSCart cs;
+    cs.setSpaceDim(_domainMesh->getDimension());
+    _domainMesh->setCoordSys(&cs);
+
+    spatialdata::units::Nondimensional normalizer;
+    normalizer.setLengthScale(data->lengthScale);
+    pylith::topology::MeshOps::nondimensionalize(_domainMesh, normalizer);
+
+    if (data->faultLabel) {
+        pylith::faults::FaultCohesiveStub fault;
+        fault.setSurfaceLabelName(data->faultLabel);
+        fault.setCohesiveLabelValue(data->faultId);
+        fault.adjustTopology(_domainMesh);
+    } // if
+
+    delete _materialMesh;
+    _materialMesh = pylith::topology::MeshOps::createSubdomainMesh(*_domainMesh, pylith::topology::Mesh::cells_label_name, data->materialId, ":UNKNOWN:");
+    assert(_materialMesh);
+
+    PYLITH_METHOD_END;
+} // _initialize
+
+
+// ------------------------------------------------------------------------------------------------
+// Create vertex fields.
+void
+pylith::meshio::TestDataWriterMaterial::_createVertexField(pylith::topology::Field* field) {
+    PYLITH_METHOD_BEGIN;
+    assert(field);
+
+    const TestDataWriterMaterial_Data* data = _getData();assert(data);
+
+    FieldFactory factory(*field);
+    factory.addScalar(data->vertexDiscretization);
+    factory.addVector(data->vertexDiscretization);
+    factory.addTensor(data->vertexDiscretization);
+    factory.addOther(data->vertexDiscretization);
+
+    field->subfieldsSetup();
+    field->createDiscretization();
+    field->allocate();
+
+    factory.setValues(data->vertexValues, data->vertexNumPoints, data->vertexNumDOF);
+
+    field->createOutputVector();
+    field->scatterLocalToOutput();
+
+    PYLITH_METHOD_END;
+} // _createVertexFields
+
+
+// ------------------------------------------------------------------------------------------------
+// Create cell fields.
+void
+pylith::meshio::TestDataWriterMaterial::_createCellField(pylith::topology::Field* field) {
+    PYLITH_METHOD_BEGIN;
+    assert(field);
+
+    const TestDataWriterMaterial_Data* data = _getData();assert(data);
+
+    FieldFactory factory(*field);
+    factory.addScalar(data->cellDiscretization);
+    factory.addVector(data->cellDiscretization);
+    factory.addTensor(data->cellDiscretization);
+    factory.addOther(data->cellDiscretization);
+
+    field->subfieldsSetup();
+    field->createDiscretization();
+    field->allocate();
+
+    factory.setValues(data->cellValues, data->cellNumPoints, data->cellNumDOF);
+
+    field->createOutputVector();
+    field->scatterLocalToOutput();
+
+    PYLITH_METHOD_END;
+} // _createCellFields
 
 
 // ------------------------------------------------------------------------------------------------

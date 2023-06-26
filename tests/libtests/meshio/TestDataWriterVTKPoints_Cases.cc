@@ -22,101 +22,116 @@
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 
+#include "catch2/catch_test_macros.hpp"
+
 namespace pylith {
     namespace meshio {
-        // --------------------------------------------------------------
-        class TestDataWriterVTKPoints_Tri : public TestDataWriterVTKPoints {
-            CPPUNIT_TEST_SUB_SUITE(TestDataWriterVTKPoints_Tri, TestDataWriterVTKPoints);
-            CPPUNIT_TEST_SUITE_END();
+        class TestDataWriterVTKPoints_Cases;
+    }
+}
 
-            void setUp(void) {
-                PYLITH_METHOD_BEGIN;
+// ------------------------------------------------------------------------------------------------
+class pylith::meshio::TestDataWriterVTKPoints_Cases {
+public:
 
-                TestDataWriterVTKPoints::setUp();
-                _data = new TestDataWriterVTKPoints_Data();CPPUNIT_ASSERT(_data);
+    // Data factory methods
+    static TestDataWriterVTKPoints_Data* Tri(void);
 
-                _data->timestepFilename = "tri3_points.vtk";
-                _data->vertexFilename = "tri3_points_vertex.vtk";
+    static TestDataWriterVTKPoints_Data* Quad(void);
 
-                TestDataWriterPoints::_setDataTri();
-                TestDataWriterPoints::_initialize();
+    static TestDataWriterVTKPoints_Data* Tet(void);
 
-                PYLITH_METHOD_END;
-            } // setUp
+    static TestDataWriterVTKPoints_Data* Hex(void);
 
-        }; // class TestDataWriterVTKPoints_Tri
-        CPPUNIT_TEST_SUITE_REGISTRATION(TestDataWriterVTKPoints_Tri);
+};
 
-        // --------------------------------------------------------------
-        class TestDataWriterVTKPoints_Quad : public TestDataWriterVTKPoints {
-            CPPUNIT_TEST_SUB_SUITE(TestDataWriterVTKPoints_Quad, TestDataWriterVTKPoints);
-            CPPUNIT_TEST_SUITE_END();
+// ------------------------------------------------------------------------------------------------
+TEST_CASE("TestDataWriterVTKMesh::Tri::testTimeStep", "[DataWriter][VTK][Points][Tri][testTimeStep]") {
+    pylith::meshio::TestDataWriterVTKPoints(pylith::meshio::TestDataWriterVTKPoints_Cases::Tri()).testTimeStep();
+}
+TEST_CASE("TestDataWriterVTKPoints::Tri::testWriteVertexField", "[DataWriter][VTK][Points][Tri][testWriteVertexField]") {
+    pylith::meshio::TestDataWriterVTKPoints(pylith::meshio::TestDataWriterVTKPoints_Cases::Tri()).testWriteVertexField();
+}
 
-            void setUp(void) {
-                PYLITH_METHOD_BEGIN;
+TEST_CASE("TestDataWriterVTKPoints::Quad::testTimeStep", "[DataWriter][VTK][Points][Quad][testTimeStep]") {
+    pylith::meshio::TestDataWriterVTKPoints(pylith::meshio::TestDataWriterVTKPoints_Cases::Quad()).testTimeStep();
+}
+TEST_CASE("TestDataWriterVTKPoints::Quad::testWriteVertexField", "[DataWriter][VTK][Points][Quad][testWriteVertexField]") {
+    pylith::meshio::TestDataWriterVTKPoints(pylith::meshio::TestDataWriterVTKPoints_Cases::Quad()).testWriteVertexField();
+}
 
-                TestDataWriterVTKPoints::setUp();
-                _data = new TestDataWriterVTKPoints_Data();CPPUNIT_ASSERT(_data);
+TEST_CASE("TestDataWriterVTKPoints::Tet::testTimeStep", "[DataWriter][VTK][Points][Tet][testTimeStep]") {
+    pylith::meshio::TestDataWriterVTKPoints(pylith::meshio::TestDataWriterVTKPoints_Cases::Tet()).testTimeStep();
+}
+TEST_CASE("TestDataWriterVTKPoints::Tet::testWriteVertexField", "[DataWriter][VTK][Points][Tet][testWriteVertexField]") {
+    pylith::meshio::TestDataWriterVTKPoints(pylith::meshio::TestDataWriterVTKPoints_Cases::Tet()).testWriteVertexField();
+}
 
-                _data->timestepFilename = "quad4_points.vtk";
-                _data->vertexFilename = "quad4_points_vertex.vtk";
+TEST_CASE("TestDataWriterVTKPoints::Hex::testTimeStep", "[DataWriter][VTK][Points][Hex][testTimeStep]") {
+    pylith::meshio::TestDataWriterVTKPoints(pylith::meshio::TestDataWriterVTKPoints_Cases::Hex()).testTimeStep();
+}
+TEST_CASE("TestDataWriterVTKPoints::Hex::testWriteVertexField", "[DataWriter][VTK][Points][Hex][testWriteVertexField]") {
+    pylith::meshio::TestDataWriterVTKPoints(pylith::meshio::TestDataWriterVTKPoints_Cases::Hex()).testWriteVertexField();
+}
 
-                TestDataWriterPoints::_setDataQuad();
-                TestDataWriterPoints::_initialize();
+// ------------------------------------------------------------------------------------------------
+pylith::meshio::TestDataWriterVTKPoints_Data*
+pylith::meshio::TestDataWriterVTKPoints_Cases::Tri(void) {
+    PYLITH_METHOD_BEGIN;
+    TestDataWriterVTKPoints_Data* data = new TestDataWriterVTKPoints_Data();assert(data);
 
-                PYLITH_METHOD_END;
-            } // setUp
+    data->timestepFilename = "tri3_points.vtk";
+    data->vertexFilename = "tri3_points_vertex.vtk";
 
-        }; // class TestDataWriterVTKPoints_Quad
-        CPPUNIT_TEST_SUITE_REGISTRATION(TestDataWriterVTKPoints_Quad);
+    TestDataWriterPoints::setDataTri(data);
 
-        // --------------------------------------------------------------
-        class TestDataWriterVTKPoints_Tet : public TestDataWriterVTKPoints {
-            CPPUNIT_TEST_SUB_SUITE(TestDataWriterVTKPoints_Tet, TestDataWriterVTKPoints);
-            CPPUNIT_TEST_SUITE_END();
+    PYLITH_METHOD_RETURN(data);
+} // Tri
 
-            void setUp(void) {
-                PYLITH_METHOD_BEGIN;
 
-                TestDataWriterVTKPoints::setUp();
-                _data = new TestDataWriterVTKPoints_Data();CPPUNIT_ASSERT(_data);
+// ------------------------------------------------------------------------------------------------
+pylith::meshio::TestDataWriterVTKPoints_Data*
+pylith::meshio::TestDataWriterVTKPoints_Cases::Quad(void) {
+    PYLITH_METHOD_BEGIN;
+    TestDataWriterVTKPoints_Data* data = new TestDataWriterVTKPoints_Data();assert(data);
 
-                _data->timestepFilename = "tet4_points.vtk";
-                _data->vertexFilename = "tet4_points_vertex.vtk";
+    data->timestepFilename = "quad4_points.vtk";
+    data->vertexFilename = "quad4_points_vertex.vtk";
 
-                TestDataWriterPoints::_setDataTet();
-                TestDataWriterPoints::_initialize();
+    TestDataWriterPoints::setDataQuad(data);
 
-                PYLITH_METHOD_END;
-            } // setUp
+    PYLITH_METHOD_RETURN(data);
+} // Quad
 
-        }; // class TestDataWriterVTKPoints_Tet
-        CPPUNIT_TEST_SUITE_REGISTRATION(TestDataWriterVTKPoints_Tet);
 
-        // --------------------------------------------------------------
-        class TestDataWriterVTKPoints_Hex : public TestDataWriterVTKPoints {
-            CPPUNIT_TEST_SUB_SUITE(TestDataWriterVTKPoints_Hex, TestDataWriterVTKPoints);
-            CPPUNIT_TEST_SUITE_END();
+// ------------------------------------------------------------------------------------------------
+pylith::meshio::TestDataWriterVTKPoints_Data*
+pylith::meshio::TestDataWriterVTKPoints_Cases::Tet(void) {
+    PYLITH_METHOD_BEGIN;
+    TestDataWriterVTKPoints_Data* data = new TestDataWriterVTKPoints_Data();assert(data);
 
-            void setUp(void) {
-                PYLITH_METHOD_BEGIN;
+    data->timestepFilename = "tet4_points.vtk";
+    data->vertexFilename = "tet4_points_vertex.vtk";
 
-                TestDataWriterVTKPoints::setUp();
-                _data = new TestDataWriterVTKPoints_Data();CPPUNIT_ASSERT(_data);
+    TestDataWriterPoints::setDataTet(data);
 
-                _data->timestepFilename = "hex8_points.vtk";
-                _data->vertexFilename = "hex8_points_vertex.vtk";
+    PYLITH_METHOD_RETURN(data);
+} // Tet
 
-                TestDataWriterPoints::_setDataHex();
-                TestDataWriterPoints::_initialize();
 
-                PYLITH_METHOD_END;
-            } // setUp
+// ------------------------------------------------------------------------------------------------
+pylith::meshio::TestDataWriterVTKPoints_Data*
+pylith::meshio::TestDataWriterVTKPoints_Cases::Hex(void) {
+    PYLITH_METHOD_BEGIN;
+    TestDataWriterVTKPoints_Data* data = new TestDataWriterVTKPoints_Data();assert(data);
 
-        }; // class TestDataWriterVTKPoints_Hex
-        CPPUNIT_TEST_SUITE_REGISTRATION(TestDataWriterVTKPoints_Hex);
+    data->timestepFilename = "hex8_points.vtk";
+    data->vertexFilename = "hex8_points_vertex.vtk";
 
-    } // meshio
-} // pylith
+    TestDataWriterPoints::setDataHex(data);
+
+    PYLITH_METHOD_RETURN(data);
+} // Hex
+
 
 // End of file

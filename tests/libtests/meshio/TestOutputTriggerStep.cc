@@ -18,29 +18,58 @@
 
 #include <portinfo>
 
-#include "TestOutputTriggerStep.hh" // Implementation of class methods
+#include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
 #include "pylith/meshio/OutputTriggerStep.hh" // USES OutputTriggerStep
 
-// ---------------------------------------------------------------------------------------------------------------------
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::meshio::TestOutputTriggerStep);
+#include "catch2/catch_test_macros.hpp"
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
+namespace pylith {
+    namespace meshio {
+        class TestOutputTriggerStep;
+    } // meshio
+} // pylith
+
+// ------------------------------------------------------------------------------------------------
+class pylith::meshio::TestOutputTriggerStep : public pylith::utils::GenericComponent {
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
+public:
+
+    /// Test setNumStepsSkip() and getNumStepsSkip().
+    static
+    void testNumStepsSkip(void);
+
+    /// Test shouldWrite().
+    static
+    void testShouldWrite(void);
+
+}; // TestOutputTriggerStep
+
+// ------------------------------------------------------------------------------------------------
+TEST_CASE("TestOutputTriggerStep::testNumStepsSkip", "[TestOutputTriggerStep][testNumStepsSkip]") {
+    pylith::meshio::TestOutputTriggerStep::testNumStepsSkip();
+}
+TEST_CASE("TestOutputTriggerStep::testShouldWrite", "[TestOutputTriggerStep][testShouldWrite]") {
+    pylith::meshio::TestOutputTriggerStep::testShouldWrite();
+}
+
+// ------------------------------------------------------------------------------------------------
 // Test setNumStepsSkip() and getNumStepsSkip().
 void
 pylith::meshio::TestOutputTriggerStep::testNumStepsSkip(void) {
     OutputTriggerStep trigger;
 
     int numSkip = 0; // default
-    CPPUNIT_ASSERT_EQUAL(numSkip, trigger.getNumStepsSkip());
+    CHECK(numSkip == trigger.getNumStepsSkip());
 
     numSkip = 2;
     trigger.setNumStepsSkip(numSkip);
-    CPPUNIT_ASSERT_EQUAL(numSkip, trigger.getNumStepsSkip());
+    CHECK(numSkip == trigger.getNumStepsSkip());
 } // testNumStepsSkip
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test shouldWrite().
 void
 pylith::meshio::TestOutputTriggerStep::testShouldWrite(void) {
@@ -49,27 +78,27 @@ pylith::meshio::TestOutputTriggerStep::testShouldWrite(void) {
     const PylithReal dt = 0.1;
     PylithReal t = 0.0;
     PylithInt tindex = 0;
-    CPPUNIT_ASSERT(trigger.shouldWrite(t, tindex++));t += dt;
-    CPPUNIT_ASSERT(trigger.shouldWrite(t, tindex++));t += dt;
-    CPPUNIT_ASSERT(trigger.shouldWrite(t, tindex++));t += dt;
+    CHECK(true == trigger.shouldWrite(t, tindex++));t += dt;
+    CHECK(true == trigger.shouldWrite(t, tindex++));t += dt;
+    CHECK(true == trigger.shouldWrite(t, tindex++));t += dt;
 
     trigger.setNumStepsSkip(1);
-    CPPUNIT_ASSERT(!trigger.shouldWrite(t, tindex++));t += dt;
-    CPPUNIT_ASSERT(trigger.shouldWrite(t, tindex++));t += dt;
-    CPPUNIT_ASSERT(!trigger.shouldWrite(t, tindex++));t += dt;
-    CPPUNIT_ASSERT(trigger.shouldWrite(t, tindex++));t += dt;
-    CPPUNIT_ASSERT(!trigger.shouldWrite(t, tindex++));t += dt;
+    CHECK(false == trigger.shouldWrite(t, tindex++));t += dt;
+    CHECK(true == trigger.shouldWrite(t, tindex++));t += dt;
+    CHECK(false == trigger.shouldWrite(t, tindex++));t += dt;
+    CHECK(true == trigger.shouldWrite(t, tindex++));t += dt;
+    CHECK(false == trigger.shouldWrite(t, tindex++));t += dt;
 
     trigger.setNumStepsSkip(2);
-    CPPUNIT_ASSERT(!trigger.shouldWrite(t, tindex++));t += dt;
-    CPPUNIT_ASSERT(trigger.shouldWrite(t, tindex++));t += dt;
-    CPPUNIT_ASSERT(!trigger.shouldWrite(t, tindex++));t += dt;
-    CPPUNIT_ASSERT(!trigger.shouldWrite(t, tindex++));t += dt;
-    CPPUNIT_ASSERT(trigger.shouldWrite(t, tindex++));t += dt;
-    CPPUNIT_ASSERT(!trigger.shouldWrite(t, tindex++));t += dt;
-    CPPUNIT_ASSERT(!trigger.shouldWrite(t, tindex++));t += dt;
-    CPPUNIT_ASSERT(trigger.shouldWrite(t, tindex++));t += dt;
-    CPPUNIT_ASSERT(!trigger.shouldWrite(t, tindex++));t += dt;
+    CHECK(false == trigger.shouldWrite(t, tindex++));t += dt;
+    CHECK(true == trigger.shouldWrite(t, tindex++));t += dt;
+    CHECK(false == trigger.shouldWrite(t, tindex++));t += dt;
+    CHECK(false == trigger.shouldWrite(t, tindex++));t += dt;
+    CHECK(true == trigger.shouldWrite(t, tindex++));t += dt;
+    CHECK(false == trigger.shouldWrite(t, tindex++));t += dt;
+    CHECK(false == trigger.shouldWrite(t, tindex++));t += dt;
+    CHECK(true == trigger.shouldWrite(t, tindex++));t += dt;
+    CHECK(false == trigger.shouldWrite(t, tindex++));t += dt;
 } // testShouldWrite
 
 

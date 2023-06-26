@@ -32,39 +32,24 @@
 
 #include "pylith/topology/topologyfwd.hh" // USES Mesh, Field
 
-#include <cppunit/extensions/HelperMacros.h>
-
 /// Namespace for pylith package
 namespace pylith {
     namespace meshio {
         class TestDataWriterVTKSubmesh;
-
         class TestDataWriterVTKSubmesh_Data;
     } // meshio
 } // pylith
 
-/// C++ unit testing for DataWriterVTK
-class pylith::meshio::TestDataWriterVTKSubmesh :
-    public TestDataWriterVTK,
-    public TestDataWriterSubmesh,
-    public CppUnit::TestFixture {
-    // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-    CPPUNIT_TEST_SUITE(TestDataWriterVTKSubmesh);
-
-    CPPUNIT_TEST(testTimeStep);
-    CPPUNIT_TEST(testWriteVertexField);
-    CPPUNIT_TEST(testWriteCellField);
-
-    CPPUNIT_TEST_SUITE_END();
-
-    // PUBLIC METHODS /////////////////////////////////////////////////////
+// ------------------------------------------------------------------------------------------------
+class pylith::meshio::TestDataWriterVTKSubmesh : public TestDataWriterVTK, public TestDataWriterSubmesh {
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
-    /// Setup testing data.
-    void setUp(void);
+    /// Constructor.
+    TestDataWriterVTKSubmesh(TestDataWriterVTKSubmesh_Data* data);
 
-    /// Tear down testing data.
-    void tearDown(void);
+    /// Destructor.
+    ~TestDataWriterVTKSubmesh(void);
 
     /// Test openTimeStep() and closeTimeStep()
     void testTimeStep(void);

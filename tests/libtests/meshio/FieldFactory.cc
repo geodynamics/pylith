@@ -24,20 +24,18 @@
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 
-#include <cppunit/extensions/HelperMacros.h>
-
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::meshio::FieldFactory::FieldFactory(pylith::topology::Field& field) :
     _field(field) {}
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Destructor.
 pylith::meshio::FieldFactory::~FieldFactory(void) {}
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Add scalar field.
 void
 pylith::meshio::FieldFactory::addScalar(const pylith::topology::FieldBase::Discretization& discretization) {
@@ -60,7 +58,7 @@ pylith::meshio::FieldFactory::addScalar(const pylith::topology::FieldBase::Discr
 } // addScalar
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Add vector field.
 void
 pylith::meshio::FieldFactory::addVector(const pylith::topology::FieldBase::Discretization& discretization) {
@@ -88,7 +86,7 @@ pylith::meshio::FieldFactory::addVector(const pylith::topology::FieldBase::Discr
 } // addVector
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Add tensor field.
 void
 pylith::meshio::FieldFactory::addTensor(const pylith::topology::FieldBase::Discretization& discretization) {
@@ -96,7 +94,7 @@ pylith::meshio::FieldFactory::addTensor(const pylith::topology::FieldBase::Discr
     const char* fieldName = "tensor";
 
     const int spaceDim = _field.getSpaceDim();
-    CPPUNIT_ASSERT(2 == spaceDim || 3 == spaceDim);
+    assert(2 == spaceDim || 3 == spaceDim);
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
@@ -129,7 +127,7 @@ pylith::meshio::FieldFactory::addTensor(const pylith::topology::FieldBase::Discr
 } // addTensor
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Add other field.
 void
 pylith::meshio::FieldFactory::addOther(const pylith::topology::FieldBase::Discretization& discretization) {
@@ -155,7 +153,7 @@ pylith::meshio::FieldFactory::addOther(const pylith::topology::FieldBase::Discre
 } // addOther
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 void
 pylith::meshio::FieldFactory::setValues(const PylithScalar* values,
                                         const PylithInt numPoints,
@@ -163,9 +161,9 @@ pylith::meshio::FieldFactory::setValues(const PylithScalar* values,
     PYLITH_METHOD_BEGIN;
 
     pylith::topology::VecVisitorMesh fieldVisitor(_field);
-    PylithScalar* fieldArray = fieldVisitor.localArray();CPPUNIT_ASSERT(fieldArray);
+    PylithScalar* fieldArray = fieldVisitor.localArray();assert(fieldArray);
     const PylithInt fieldSize = numPoints * numDOF;
-    CPPUNIT_ASSERT_EQUAL(fieldSize, _field.getStorageSize());
+    assert(fieldSize == _field.getStorageSize());
     for (PylithInt i = 0; i < fieldSize; ++i) {
         fieldArray[i] = values[i];
     } // for

@@ -35,20 +35,39 @@
 namespace pylith {
     namespace meshio {
         class TestDataWriterSubmesh;
-
         class TestDataWriterSubmesh_Data;
     } // meshio
 } // pylith
 
+// ------------------------------------------------------------------------------------------------
 class pylith::meshio::TestDataWriterSubmesh {
-    // PROTECTED METHODS //////////////////////////////////////////////////
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
+public:
+
+    /// Constructor.
+    TestDataWriterSubmesh(void);
+
+    /// Destructor.
+    ~TestDataWriterSubmesh(void);
+
+    /// Set data for tri test case.
+    static
+    void setDataTri(TestDataWriterSubmesh_Data* data);
+
+    /// Set data for quad test case.
+    static
+    void setDataQuad(TestDataWriterSubmesh_Data* data);
+
+    /// Set data for tet test case.
+    static
+    void setDataTet(TestDataWriterSubmesh_Data* data);
+
+    /// Set data for hex test case.
+    static
+    void setDataHex(TestDataWriterSubmesh_Data* data);
+
+    // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
 protected:
-
-    /// Setup testing data.
-    void setUp(void);
-
-    /// Tear down testing data.
-    void tearDown(void);
 
     /// Initialize mesh.
     void _initialize(void);
@@ -65,18 +84,6 @@ protected:
      */
     void _createCellField(pylith::topology::Field* field);
 
-    /// Set data for tri test case.
-    void _setDataTri(void);
-
-    /// Set data for quad test case.
-    void _setDataQuad(void);
-
-    /// Set data for tet test case.
-    void _setDataTet(void);
-
-    /// Set data for hex test case.
-    void _setDataHex(void);
-
     /** Get test data.
      *
      * @returns Test data.
@@ -84,7 +91,7 @@ protected:
     virtual
     TestDataWriterSubmesh_Data* _getData(void) = 0;
 
-    // PROTECTED MEMBERS //////////////////////////////////////////////////
+    // PROTECTED MEMBERS //////////////////////////////////////////////////////////////////////////
 protected:
 
     pylith::topology::Mesh* _mesh; ///< Mesh for domain
@@ -92,9 +99,9 @@ protected:
 
 }; // class TestDataWriterSubmesh
 
-// ======================================================================
+// ------------------------------------------------------------------------------------------------
 class pylith::meshio::TestDataWriterSubmesh_Data : public TestDataWriter_Data {
-    // PUBLIC METHODS /////////////////////////////////////////////////////
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Constructor
@@ -103,7 +110,7 @@ public:
     /// Destructor
     ~TestDataWriterSubmesh_Data(void);
 
-    // PUBLIC MEMBERS ///////////////////////////////////////////////////
+    // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
 public:
 
     const char* bcLabel; ///< Label marking submesh.

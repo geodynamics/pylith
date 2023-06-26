@@ -31,37 +31,24 @@
 
 #include "pylith/topology/topologyfwd.hh" // USES Mesh, Field
 
-#include <cppunit/extensions/HelperMacros.h>
-
 /// Namespace for pylith package
 namespace pylith {
     namespace meshio {
         class TestDataWriterVTKMaterial;
-
         class TestDataWriterVTKMaterial_Data;
     } // meshio
 } // pylith
 
-// ======================================================================
-/// C++ unit testing for DataWriterVTK
-class pylith::meshio::TestDataWriterVTKMaterial : public TestDataWriterVTK, public TestDataWriterMaterial, public CppUnit::TestFixture {
-    // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-    CPPUNIT_TEST_SUITE(TestDataWriterVTKMaterial);
-
-    CPPUNIT_TEST(testTimeStep);
-    CPPUNIT_TEST(testWriteVertexField);
-    CPPUNIT_TEST(testWriteCellField);
-
-    CPPUNIT_TEST_SUITE_END();
-
-    // PUBLIC METHODS /////////////////////////////////////////////////////
+// ------------------------------------------------------------------------------------------------
+class pylith::meshio::TestDataWriterVTKMaterial : public TestDataWriterVTK, public TestDataWriterMaterial {
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
-    /// Setup testing data.
-    void setUp(void);
+    /// Constructor.
+    TestDataWriterVTKMaterial(TestDataWriterVTKMaterial_Data* data);
 
-    /// Tear down testing data.
-    void tearDown(void);
+    /// Destructor.
+    ~TestDataWriterVTKMaterial(void);
 
     /// Test openTimeStep() and closeTimeStep()
     void testTimeStep(void);
@@ -72,7 +59,7 @@ public:
     /// Test writeCellField.
     void testWriteCellField(void);
 
-    // PROTECTED METHODS //////////////////////////////////////////////////
+    // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
 protected:
 
     /** Get test data.
@@ -81,7 +68,7 @@ protected:
      */
     TestDataWriterMaterial_Data* _getData(void);
 
-    // PROTECTED MEMBDERS /////////////////////////////////////////////////
+    // PROTECTED MEMBDERS /////////////////////////////////////////////////////////////////////////
 protected:
 
     TestDataWriterVTKMaterial_Data* _data; ///< Data for testing.

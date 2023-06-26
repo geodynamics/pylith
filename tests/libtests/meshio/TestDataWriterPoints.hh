@@ -34,20 +34,39 @@
 namespace pylith {
     namespace meshio {
         class TestDataWriterPoints;
-
         class TestDataWriterPoints_Data;
     } // meshio
 } // pylith
 
+// ------------------------------------------------------------------------------------------------
 class pylith::meshio::TestDataWriterPoints {
-    // PROTECTED METHODS //////////////////////////////////////////////////
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
+public:
+
+    /// Constructor.
+    TestDataWriterPoints(void);
+
+    /// Destructor.
+    ~TestDataWriterPoints(void);
+
+    /// Set data for tri test case.
+    static
+    void setDataTri(TestDataWriterPoints_Data* data);
+
+    /// Set data for quad test case.
+    static
+    void setDataQuad(TestDataWriterPoints_Data* data);
+
+    /// Set data for tet test case.
+    static
+    void setDataTet(TestDataWriterPoints_Data* data);
+
+    /// Set data for hex test case.
+    static
+    void setDataHex(TestDataWriterPoints_Data* data);
+
+    // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
 protected:
-
-    /// Setup testing data.
-    void setUp(void);
-
-    /// Tear down testing data.
-    void tearDown(void);
 
     /// Initialize mesh.
     void _initialize(void);
@@ -57,18 +76,6 @@ protected:
      * @param fields Vertex fields.
      */
     void _createVertexField(pylith::topology::Field* field);
-
-    /// Set data for tri test case.
-    void _setDataTri(void);
-
-    /// Set data for quad test case.
-    void _setDataQuad(void);
-
-    /// Set data for tet test case.
-    void _setDataTet(void);
-
-    /// Set data for hex test case.
-    void _setDataHex(void);
 
     /** Get test data.
      *

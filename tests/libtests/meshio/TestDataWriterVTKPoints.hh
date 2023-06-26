@@ -32,37 +32,24 @@
 
 #include "pylith/topology/topologyfwd.hh" // USES Mesh, Field
 
-#include <cppunit/extensions/HelperMacros.h>
-
 /// Namespace for pylith package
 namespace pylith {
     namespace meshio {
         class TestDataWriterVTKPoints;
-
         class TestDataWriterVTKPoints_Data;
     } // meshio
 } // pylith
 
-class pylith::meshio::TestDataWriterVTKPoints :
-    public TestDataWriterVTK,
-    public TestDataWriterPoints,
-    public CppUnit::TestFixture {
-    // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-    CPPUNIT_TEST_SUITE(TestDataWriterVTKPoints);
-
-    CPPUNIT_TEST(testTimeStep);
-    CPPUNIT_TEST(testWriteVertexField);
-
-    CPPUNIT_TEST_SUITE_END();
-
-    // PUBLIC METHODS /////////////////////////////////////////////////////
+// ------------------------------------------------------------------------------------------------
+class pylith::meshio::TestDataWriterVTKPoints : public TestDataWriterVTK, public TestDataWriterPoints {
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
-    /// Setup testing data.
-    void setUp(void);
+    /// Constructor.
+    TestDataWriterVTKPoints(TestDataWriterVTKPoints_Data* data);
 
-    /// Tear down testing data.
-    void tearDown(void);
+    /// Destructor.
+    ~TestDataWriterVTKPoints(void);
 
     /// Test openTimeStep() and closeTimeStep()
     void testTimeStep(void);
@@ -70,7 +57,7 @@ public:
     /// Test writeVertexField.
     void testWriteVertexField(void);
 
-    // PROTECTED METHODS //////////////////////////////////////////////////
+    // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
 protected:
 
     /** Get test data.
@@ -86,7 +73,7 @@ protected:
 
 }; // class TestDataWriterVTKPoints
 
-// ======================================================================
+// ------------------------------------------------------------------------------------------------
 class pylith::meshio::TestDataWriterVTKPoints_Data : public TestDataWriterVTK_Data, public TestDataWriterPoints_Data {};
 
 #endif // pylith_meshio_testdatawritervtkpoints_hh
