@@ -99,6 +99,7 @@ libtest_hdf5_SOURCES = \
 	$(top_srcdir)/tests/src/driver_catch2.cc
 
 
+# :TODO: @brad
 # TestDataWriterHDF5FaultMesh.cc \
 # TestDataWriterHDF5FaultMeshCases.cc \
 # TestDataWriterHDF5ExtFaultMesh.cc \
@@ -124,7 +125,6 @@ dist_noinst_HEADERS = \
 	TestDataWriterVTKMaterial.hh \
 	TestDataWriterVTKSubmesh.hh \
 	TestDataWriterVTKPoints.hh \
-	TestHDF5.hh \
 	TestDataWriterHDF5.hh \
 	TestDataWriterHDF5Mesh.hh \
 	TestDataWriterHDF5Material.hh \

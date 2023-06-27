@@ -22,103 +22,132 @@
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 
+#include "catch2/catch_test_macros.hpp"
+
 namespace pylith {
     namespace meshio {
+        class TestDataWriterHDF5ExtMaterial_Cases;
+    }
+}
 
-        // --------------------------------------------------------------
-        class TestDataWriterHDF5ExtMaterial_Tri : public TestDataWriterHDF5ExtMaterial {
-            CPPUNIT_TEST_SUB_SUITE(TestDataWriterHDF5ExtMaterial_Tri, TestDataWriterHDF5ExtMaterial);
-            CPPUNIT_TEST_SUITE_END();
+// ------------------------------------------------------------------------------------------------
+class pylith::meshio::TestDataWriterHDF5ExtMaterial_Cases {
+public:
 
-            void setUp(void) {
-                PYLITH_METHOD_BEGIN;
+    // Data factory methods
+    static TestDataWriterHDF5ExtMaterial_Data* Tri(void);
 
-                TestDataWriterHDF5ExtMaterial::setUp();
-                _data = new TestDataWriterHDF5ExtMaterial_Data();CPPUNIT_ASSERT(_data);
+    static TestDataWriterHDF5ExtMaterial_Data* Quad(void);
 
-                _data->opencloseFilename = "tri3_mat.h5";
-                _data->vertexFilename = "tri3_mat_vertex.h5";
-                _data->cellFilename = "tri3_mat_cell.h5";
+    static TestDataWriterHDF5ExtMaterial_Data* Tet(void);
 
-                TestDataWriterMaterial::_setDataTri();
-                TestDataWriterMaterial::_initialize();
+    static TestDataWriterHDF5ExtMaterial_Data* Hex(void);
 
-                PYLITH_METHOD_END;
-            } // setUp
-        }; // class TestDataWriterHDF5ExtMaterial_Tri
-        CPPUNIT_TEST_SUITE_REGISTRATION(TestDataWriterHDF5ExtMaterial_Tri);
+};
 
-        // --------------------------------------------------------------
-        class TestDataWriterHDF5ExtMaterial_Quad : public TestDataWriterHDF5ExtMaterial {
-            CPPUNIT_TEST_SUB_SUITE(TestDataWriterHDF5ExtMaterial_Quad, TestDataWriterHDF5ExtMaterial);
-            CPPUNIT_TEST_SUITE_END();
+// ------------------------------------------------------------------------------------------------
+TEST_CASE("TestDataWriterHDF5ExtMaterial::Tri::testOpenClose", "[DataWriter][HDF5Ext][Material][Tri][testOpenClose]") {
+    pylith::meshio::TestDataWriterHDF5ExtMaterial(pylith::meshio::TestDataWriterHDF5ExtMaterial_Cases::Tri()).testOpenClose();
+}
+TEST_CASE("TestDataWriterHDF5ExtMaterial::Tri::testWriteVertexField", "[DataWriter][HDF5Ext][Material][Tri][testWriteVertexField]") {
+    pylith::meshio::TestDataWriterHDF5ExtMaterial(pylith::meshio::TestDataWriterHDF5ExtMaterial_Cases::Tri()).testWriteVertexField();
+}
+TEST_CASE("TestDataWriterHDF5ExtMaterial::Tri::testWriteCellField", "[DataWriter][HDF5Ext][Material][Tri][testWriteCellField]") {
+    pylith::meshio::TestDataWriterHDF5ExtMaterial(pylith::meshio::TestDataWriterHDF5ExtMaterial_Cases::Tri()).testWriteCellField();
+}
 
-            void setUp(void) {
-                PYLITH_METHOD_BEGIN;
+TEST_CASE("TestDataWriterHDF5ExtMaterial::Quad::testOpenClose", "[DataWriter][HDF5Ext][Material][Quad][testOpenClose]") {
+    pylith::meshio::TestDataWriterHDF5ExtMaterial(pylith::meshio::TestDataWriterHDF5ExtMaterial_Cases::Quad()).testOpenClose();
+}
+TEST_CASE("TestDataWriterHDF5ExtMaterial::Quad::testWriteVertexField", "[DataWriter][HDF5Ext][Material][Quad][testWriteVertexField]") {
+    pylith::meshio::TestDataWriterHDF5ExtMaterial(pylith::meshio::TestDataWriterHDF5ExtMaterial_Cases::Quad()).testWriteVertexField();
+}
+TEST_CASE("TestDataWriterHDF5ExtMaterial::Quad::testWriteCellField", "[DataWriter][HDF5Ext][Material][Quad][testWriteCellField]") {
+    pylith::meshio::TestDataWriterHDF5ExtMaterial(pylith::meshio::TestDataWriterHDF5ExtMaterial_Cases::Quad()).testWriteCellField();
+}
 
-                TestDataWriterHDF5ExtMaterial::setUp();
-                _data = new TestDataWriterHDF5ExtMaterial_Data();CPPUNIT_ASSERT(_data);
+TEST_CASE("TestDataWriterHDF5ExtMaterial::Tet::testOpenClose", "[DataWriter][HDF5Ext][Material][Tet][testOpenClose]") {
+    pylith::meshio::TestDataWriterHDF5ExtMaterial(pylith::meshio::TestDataWriterHDF5ExtMaterial_Cases::Tet()).testOpenClose();
+}
+TEST_CASE("TestDataWriterHDF5ExtMaterial::Tet::testWriteVertexField", "[DataWriter][HDF5Ext][Material][Tet][testWriteVertexField]") {
+    pylith::meshio::TestDataWriterHDF5ExtMaterial(pylith::meshio::TestDataWriterHDF5ExtMaterial_Cases::Tet()).testWriteVertexField();
+}
+TEST_CASE("TestDataWriterHDF5ExtMaterial::Tet::testWriteCellField", "[DataWriter][HDF5Ext][Material][Tet][testWriteCellField]") {
+    pylith::meshio::TestDataWriterHDF5ExtMaterial(pylith::meshio::TestDataWriterHDF5ExtMaterial_Cases::Tet()).testWriteCellField();
+}
 
-                _data->opencloseFilename = "quad4_mat.h5";
-                _data->vertexFilename = "quad4_mat_vertex.h5";
-                _data->cellFilename = "quad4_mat_cell.h5";
+TEST_CASE("TestDataWriterHDF5ExtMaterial::Hex::testOpenClose", "[DataWriter][HDF5Ext][Material][Hex][testOpenClose]") {
+    pylith::meshio::TestDataWriterHDF5ExtMaterial(pylith::meshio::TestDataWriterHDF5ExtMaterial_Cases::Hex()).testOpenClose();
+}
+TEST_CASE("TestDataWriterHDF5ExtMaterial::Hex::testWriteVertexField", "[DataWriter][HDF5Ext][Material][Hex][testWriteVertexField]") {
+    pylith::meshio::TestDataWriterHDF5ExtMaterial(pylith::meshio::TestDataWriterHDF5ExtMaterial_Cases::Hex()).testWriteVertexField();
+}
+TEST_CASE("TestDataWriterHDF5ExtMaterial::Hex::testWriteCellField", "[DataWriter][HDF5Ext][Material][Hex][testWriteCellField]") {
+    pylith::meshio::TestDataWriterHDF5ExtMaterial(pylith::meshio::TestDataWriterHDF5ExtMaterial_Cases::Hex()).testWriteCellField();
+}
 
-                TestDataWriterMaterial::_setDataQuad();
-                TestDataWriterMaterial::_initialize();
+// ------------------------------------------------------------------------------------------------
+pylith::meshio::TestDataWriterHDF5ExtMaterial_Data*
+pylith::meshio::TestDataWriterHDF5ExtMaterial_Cases::Tri(void) {
+    PYLITH_METHOD_BEGIN;
+    TestDataWriterHDF5ExtMaterial_Data* data = new TestDataWriterHDF5ExtMaterial_Data();assert(data);
 
-                PYLITH_METHOD_END;
-            } // setUp
-        }; // class TestDataWriterHDF5ExtMaterial_Quad
-        CPPUNIT_TEST_SUITE_REGISTRATION(TestDataWriterHDF5ExtMaterial_Quad);
+    data->opencloseFilename = "tri3_mat.h5";
+    data->vertexFilename = "tri3_mat_vertex.h5";
+    data->cellFilename = "tri3_mat_cell.h5";
 
-        // --------------------------------------------------------------
-        class TestDataWriterHDF5ExtMaterial_Tet : public TestDataWriterHDF5ExtMaterial {
-            CPPUNIT_TEST_SUB_SUITE(TestDataWriterHDF5ExtMaterial_Tet, TestDataWriterHDF5ExtMaterial);
-            CPPUNIT_TEST_SUITE_END();
+    TestDataWriterMaterial::setDataTri(data);
 
-            void setUp(void) {
-                PYLITH_METHOD_BEGIN;
+    PYLITH_METHOD_RETURN(data);
+} // Tri
 
-                TestDataWriterHDF5ExtMaterial::setUp();
-                _data = new TestDataWriterHDF5ExtMaterial_Data();CPPUNIT_ASSERT(_data);
 
-                _data->opencloseFilename = "tet4_mat.h5";
-                _data->vertexFilename = "tet4_mat_vertex.h5";
-                _data->cellFilename = "tet4_mat_cell.h5";
+// ------------------------------------------------------------------------------------------------
+pylith::meshio::TestDataWriterHDF5ExtMaterial_Data*
+pylith::meshio::TestDataWriterHDF5ExtMaterial_Cases::Quad(void) {
+    PYLITH_METHOD_BEGIN;
+    TestDataWriterHDF5ExtMaterial_Data* data = new TestDataWriterHDF5ExtMaterial_Data();assert(data);
 
-                TestDataWriterMaterial::_setDataTet();
-                TestDataWriterMaterial::_initialize();
+    data->opencloseFilename = "quad4_mat.h5";
+    data->vertexFilename = "quad4_mat_vertex.h5";
+    data->cellFilename = "quad4_mat_cell.h5";
 
-                PYLITH_METHOD_END;
-            } // setUp
-        }; // class TestDataWriterHDF5ExtMaterial_Tet
-        CPPUNIT_TEST_SUITE_REGISTRATION(TestDataWriterHDF5ExtMaterial_Tet);
+    TestDataWriterMaterial::setDataQuad(data);
 
-        // --------------------------------------------------------------
-        class TestDataWriterHDF5ExtMaterial_Hex : public TestDataWriterHDF5ExtMaterial {
-            CPPUNIT_TEST_SUB_SUITE(TestDataWriterHDF5ExtMaterial_Hex, TestDataWriterHDF5ExtMaterial);
-            CPPUNIT_TEST_SUITE_END();
+    PYLITH_METHOD_RETURN(data);
+} // Quad
 
-            void setUp(void) {
-                PYLITH_METHOD_BEGIN;
 
-                TestDataWriterHDF5ExtMaterial::setUp();
-                _data = new TestDataWriterHDF5ExtMaterial_Data();CPPUNIT_ASSERT(_data);
+// ------------------------------------------------------------------------------------------------
+pylith::meshio::TestDataWriterHDF5ExtMaterial_Data*
+pylith::meshio::TestDataWriterHDF5ExtMaterial_Cases::Tet(void) {
+    PYLITH_METHOD_BEGIN;
+    TestDataWriterHDF5ExtMaterial_Data* data = new TestDataWriterHDF5ExtMaterial_Data();assert(data);
 
-                _data->opencloseFilename = "hex8_mat.h5";
-                _data->vertexFilename = "hex8_mat_vertex.h5";
-                _data->cellFilename = "hex8_mat_cell.h5";
+    data->opencloseFilename = "tet4_mat.h5";
+    data->vertexFilename = "tet4_mat_vertex.h5";
+    data->cellFilename = "tet4_mat_cell.h5";
 
-                TestDataWriterMaterial::_setDataHex();
-                TestDataWriterMaterial::_initialize();
+    TestDataWriterMaterial::setDataTet(data);
 
-                PYLITH_METHOD_END;
-            } // setUp
-        }; // class TestDataWriterHDF5ExtMaterial_Hex
-        CPPUNIT_TEST_SUITE_REGISTRATION(TestDataWriterHDF5ExtMaterial_Hex);
+    PYLITH_METHOD_RETURN(data);
+} // Tet
 
-    } // meshio
-} // pylith
+
+// ------------------------------------------------------------------------------------------------
+pylith::meshio::TestDataWriterHDF5ExtMaterial_Data*
+pylith::meshio::TestDataWriterHDF5ExtMaterial_Cases::Hex(void) {
+    PYLITH_METHOD_BEGIN;
+    TestDataWriterHDF5ExtMaterial_Data* data = new TestDataWriterHDF5ExtMaterial_Data();assert(data);
+
+    data->opencloseFilename = "hex8_mat.h5";
+    data->vertexFilename = "hex8_mat_vertex.h5";
+    data->cellFilename = "hex8_mat_cell.h5";
+
+    TestDataWriterMaterial::setDataHex(data);
+
+    PYLITH_METHOD_RETURN(data);
+} // Hex
 
 
 // End of file

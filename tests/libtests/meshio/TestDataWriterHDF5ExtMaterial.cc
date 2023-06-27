@@ -28,25 +28,18 @@
 
 // ------------------------------------------------------------------------------------------------
 // Setup testing data.
-void
-pylith::meshio::TestDataWriterHDF5ExtMaterial::setUp(void) {
-    PYLITH_METHOD_BEGIN;
-
-    TestDataWriterMaterial::setUp();
-    _data = NULL;
-
-    PYLITH_METHOD_END;
-} // setUp
+pylith::meshio::TestDataWriterHDF5ExtMaterial::TestDataWriterHDF5ExtMaterial(TestDataWriterHDF5ExtMaterial_Data* data) :
+    _data(data) {
+    TestDataWriterMaterial::_initialize();
+}
 
 
 // ------------------------------------------------------------------------------------------------
 // Tear down testing data.
-void
-pylith::meshio::TestDataWriterHDF5ExtMaterial::tearDown(void) {
+pylith::meshio::TestDataWriterHDF5ExtMaterial::~TestDataWriterHDF5ExtMaterial(void) {
     PYLITH_METHOD_BEGIN;
 
-    TestDataWriterMaterial::tearDown();
-    delete _data;_data = NULL;
+    delete _data;_data = nullptr;
 
     PYLITH_METHOD_END;
 } // tearDown
@@ -57,9 +50,8 @@ pylith::meshio::TestDataWriterHDF5ExtMaterial::tearDown(void) {
 void
 pylith::meshio::TestDataWriterHDF5ExtMaterial::testOpenClose(void) {
     PYLITH_METHOD_BEGIN;
-
-    CPPUNIT_ASSERT(_materialMesh);
-    CPPUNIT_ASSERT(_data);
+    assert(_materialMesh);
+    assert(_data);
 
     DataWriterHDF5Ext writer;
 
@@ -80,10 +72,9 @@ pylith::meshio::TestDataWriterHDF5ExtMaterial::testOpenClose(void) {
 void
 pylith::meshio::TestDataWriterHDF5ExtMaterial::testWriteVertexField(void) {
     PYLITH_METHOD_BEGIN;
-
-    CPPUNIT_ASSERT(_domainMesh);
-    CPPUNIT_ASSERT(_materialMesh);
-    CPPUNIT_ASSERT(_data);
+    assert(_domainMesh);
+    assert(_materialMesh);
+    assert(_data);
 
     DataWriterHDF5Ext writer;
 
@@ -104,7 +95,7 @@ pylith::meshio::TestDataWriterHDF5ExtMaterial::testWriteVertexField(void) {
     const size_t numFields = subfieldNames.size();
     for (size_t i = 0; i < numFields; ++i) {
         OutputSubfield* subfield = OutputSubfield::create(vertexField, *_materialMesh, subfieldNames[i].c_str(), 1);
-        CPPUNIT_ASSERT(subfield);
+        assert(subfield);
         subfield->project(vertexField.getOutputVector());
         writer.writeVertexField(t, *subfield);
         delete subfield;subfield = NULL;
@@ -123,9 +114,8 @@ pylith::meshio::TestDataWriterHDF5ExtMaterial::testWriteVertexField(void) {
 void
 pylith::meshio::TestDataWriterHDF5ExtMaterial::testWriteCellField(void) {
     PYLITH_METHOD_BEGIN;
-
-    CPPUNIT_ASSERT(_materialMesh);
-    CPPUNIT_ASSERT(_data);
+    assert(_materialMesh);
+    assert(_data);
 
     DataWriterHDF5Ext writer;
 
@@ -146,7 +136,7 @@ pylith::meshio::TestDataWriterHDF5ExtMaterial::testWriteCellField(void) {
     const size_t numFields = subfieldNames.size();
     for (size_t i = 0; i < numFields; ++i) {
         OutputSubfield* subfield = OutputSubfield::create(cellField, *_materialMesh, subfieldNames[i].c_str(), 0);
-        CPPUNIT_ASSERT(subfield);
+        assert(subfield);
         subfield->project(cellField.getOutputVector());
         writer.writeCellField(t, *subfield);
         delete subfield;subfield = NULL;

@@ -28,29 +28,22 @@
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
 
 // ------------------------------------------------------------------------------------------------
-// Setup testing data.
-void
-pylith::meshio::TestDataWriterHDF5Submesh::setUp(void) {
-    PYLITH_METHOD_BEGIN;
-
-    TestDataWriterSubmesh::setUp();
-    _data = NULL;
-
-    PYLITH_METHOD_END;
-} // setUp
+// Constructor.
+pylith::meshio::TestDataWriterHDF5Submesh::TestDataWriterHDF5Submesh(TestDataWriterHDF5Submesh_Data* data) :
+    _data(data) {
+    TestDataWriterSubmesh::_initialize();
+} // constructor
 
 
 // ------------------------------------------------------------------------------------------------
-// Tear down testing data.
-void
-pylith::meshio::TestDataWriterHDF5Submesh::tearDown(void) {
+// Destructor.
+pylith::meshio::TestDataWriterHDF5Submesh::~TestDataWriterHDF5Submesh(void) {
     PYLITH_METHOD_BEGIN;
 
-    TestDataWriterSubmesh::tearDown();
-    delete _data;_data = NULL;
+    delete _data;_data = nullptr;
 
     PYLITH_METHOD_END;
-} // tearDown
+} // destructor
 
 
 // ------------------------------------------------------------------------------------------------
@@ -58,9 +51,8 @@ pylith::meshio::TestDataWriterHDF5Submesh::tearDown(void) {
 void
 pylith::meshio::TestDataWriterHDF5Submesh::testOpenClose(void) {
     PYLITH_METHOD_BEGIN;
-
-    CPPUNIT_ASSERT(_submesh);
-    CPPUNIT_ASSERT(_data);
+    assert(_submesh);
+    assert(_data);
 
     DataWriterHDF5 writer;
 
@@ -81,10 +73,9 @@ pylith::meshio::TestDataWriterHDF5Submesh::testOpenClose(void) {
 void
 pylith::meshio::TestDataWriterHDF5Submesh::testWriteVertexField(void) {
     PYLITH_METHOD_BEGIN;
-
-    CPPUNIT_ASSERT(_mesh);
-    CPPUNIT_ASSERT(_submesh);
-    CPPUNIT_ASSERT(_data);
+    assert(_mesh);
+    assert(_submesh);
+    assert(_data);
 
     DataWriterHDF5 writer;
 
@@ -105,7 +96,7 @@ pylith::meshio::TestDataWriterHDF5Submesh::testWriteVertexField(void) {
     const size_t numFields = subfieldNames.size();
     for (size_t i = 0; i < numFields; ++i) {
         OutputSubfield* subfield = OutputSubfield::create(vertexField, *_submesh, subfieldNames[i].c_str(), 1);
-        CPPUNIT_ASSERT(subfield);
+        assert(subfield);
         subfield->project(vertexField.getOutputVector());
         writer.writeVertexField(t, *subfield);
         delete subfield;subfield = NULL;
@@ -124,9 +115,8 @@ pylith::meshio::TestDataWriterHDF5Submesh::testWriteVertexField(void) {
 void
 pylith::meshio::TestDataWriterHDF5Submesh::testWriteCellField(void) {
     PYLITH_METHOD_BEGIN;
-
-    CPPUNIT_ASSERT(_submesh);
-    CPPUNIT_ASSERT(_data);
+    assert(_submesh);
+    assert(_data);
 
     DataWriterHDF5 writer;
 
@@ -147,7 +137,7 @@ pylith::meshio::TestDataWriterHDF5Submesh::testWriteCellField(void) {
     const size_t numFields = subfieldNames.size();
     for (size_t i = 0; i < numFields; ++i) {
         OutputSubfield* subfield = OutputSubfield::create(cellField, *_submesh, subfieldNames[i].c_str(), 0);
-        CPPUNIT_ASSERT(subfield);
+        assert(subfield);
         subfield->project(cellField.getOutputVector());
         writer.writeCellField(t, *subfield);
         delete subfield;subfield = NULL;

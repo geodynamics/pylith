@@ -32,46 +32,31 @@
 
 #include "pylith/topology/topologyfwd.hh" // USES Mesh, Field
 
-#include <cppunit/extensions/HelperMacros.h>
-
-/// Namespace for pylith package
 namespace pylith {
     namespace meshio {
         class TestDataWriterHDF5ExtPoints;
-
         class TestDataWriterHDF5ExtPoints_Data;
     } // meshio
 } // pylith
 
-/// C++ unit testing for DataWriterHDF5Ext
-class pylith::meshio::TestDataWriterHDF5ExtPoints :
-    public TestDataWriterHDF5,
-    public TestDataWriterPoints,
-    public CppUnit::TestFixture {
-    // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-    CPPUNIT_TEST_SUITE(TestDataWriterHDF5ExtPoints);
-
-    CPPUNIT_TEST(testTimeStep);
-    CPPUNIT_TEST(testWriteVertexField);
-
-    CPPUNIT_TEST_SUITE_END();
-
-    // PUBLIC METHODS /////////////////////////////////////////////////////
+// ------------------------------------------------------------------------------------------------
+class pylith::meshio::TestDataWriterHDF5ExtPoints : public TestDataWriterHDF5, public TestDataWriterPoints {
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
-    /// Setup testing data.
-    void setUp(void);
+    /// Constructor.
+    TestDataWriterHDF5ExtPoints(TestDataWriterHDF5ExtPoints_Data* data);
 
-    /// Tear down testing data.
-    void tearDown(void);
+    /// Destructor.
+    ~TestDataWriterHDF5ExtPoints(void);
 
     /// Test openTimeStep() and closeTimeStep()
-    void testTimeStep(void);
+    void testOpenClose(void);
 
     /// Test writeVertexField.
     void testWriteVertexField(void);
 
-    // PROTECTED METHODS //////////////////////////////////////////////////
+    // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
 protected:
 
     /** Get test data.
@@ -80,7 +65,7 @@ protected:
      */
     TestDataWriterPoints_Data* _getData(void);
 
-    // PROTECTED MEMBDERS /////////////////////////////////////////////////
+    // PROTECTED MEMBDERS /////////////////////////////////////////////////////////////////////////
 protected:
 
     TestDataWriterHDF5ExtPoints_Data* _data; ///< Data for testing.

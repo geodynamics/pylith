@@ -30,47 +30,38 @@
 #include "TestDataWriterHDF5.hh" // ISA TestDataWriterHDF5
 #include "TestDataWriterMesh.hh" // ISA TestDataWriterMesh
 
-#include <cppunit/extensions/HelperMacros.h>
+#include "pylith/topology/topologyfwd.hh" // USES Mesh, Field
 
-/// Namespace for pylith package
 namespace pylith {
     namespace meshio {
         class TestDataWriterHDF5ExtMesh;
-
         class TestDataWriterHDF5ExtMesh_Data;
     } // meshio
 } // pylith
 
-/// C++ unit testing for DataWriterHDF5
-class pylith::meshio::TestDataWriterHDF5ExtMesh : public TestDataWriterHDF5, public TestDataWriterMesh, public CppUnit::TestFixture {
+// ------------------------------------------------------------------------------------------------
+class pylith::meshio::TestDataWriterHDF5ExtMesh : public TestDataWriterHDF5, public TestDataWriterMesh {
 
-    // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-    CPPUNIT_TEST_SUITE(TestDataWriterHDF5ExtMesh);
-
-    CPPUNIT_TEST(testConstructor);
-    CPPUNIT_TEST(testFilename);
-    CPPUNIT_TEST(testOpenClose);
-    CPPUNIT_TEST(testWriteVertexField);
-    CPPUNIT_TEST(testWriteCellField);
-    CPPUNIT_TEST(testHdf5Filename);
-    CPPUNIT_TEST(testDatasetFilename);
-
-    CPPUNIT_TEST_SUITE_END();
-
-    // PUBLIC METHODS /////////////////////////////////////////////////////
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
-    /// Setup testing data.
-    void setUp(void);
+    /// Constructor.
+    TestDataWriterHDF5ExtMesh(TestDataWriterHDF5ExtMesh_Data* data);
 
-    /// Tear down testing data.
-    void tearDown(void);
-
-    /// Test constructor
-    void testConstructor(void);
+    /// Destructor.
+    ~TestDataWriterHDF5ExtMesh(void);
 
     /// Test filename()
-    void testFilename(void);
+    static
+    void testAccessors(void);
+
+    /// Test hdf5Filename.
+    static
+    void testHdf5Filename(void);
+
+    /// Test datasetFilename.
+    static
+    void testDatasetFilename(void);
 
     /// Test open() and close()
     void testOpenClose(void);
@@ -81,13 +72,7 @@ public:
     /// Test writeCellField.
     void testWriteCellField(void);
 
-    /// Test hdf5Filename.
-    void testHdf5Filename(void);
-
-    /// Test datasetFilename.
-    void testDatasetFilename(void);
-
-    // PROTECTED METHODS //////////////////////////////////////////////////
+    // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
 protected:
 
     /** Get test data.
@@ -96,7 +81,7 @@ protected:
      */
     TestDataWriter_Data* _getData(void);
 
-    // PROTECTED MEMBDERS /////////////////////////////////////////////////
+    // PROTECTED MEMBDERS /////////////////////////////////////////////////////////////////////////
 protected:
 
     TestDataWriterHDF5ExtMesh_Data* _data; ///< Data for testing.
@@ -104,7 +89,7 @@ protected:
 }; // class TestDataWriterHDF5ExtMesh
 
 
-// ======================================================================
+// ------------------------------------------------------------------------------------------------
 class pylith::meshio::TestDataWriterHDF5ExtMesh_Data : public TestDataWriterHDF5_Data, public TestDataWriter_Data {};
 
 
