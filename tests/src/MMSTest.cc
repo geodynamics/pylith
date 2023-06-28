@@ -187,12 +187,15 @@ pylith::testing::MMSTest::testJacobianFiniteDiff(void) {
     PetscErrorCode err = PETSC_SUCCESS;
     err = PetscOptionsSetValue(NULL, "-ts_max_snes_failures", "1");PYLITH_CHECK_ERROR(err);
     err = PetscOptionsSetValue(NULL, "-ts_error_if_step_fails", "false");PYLITH_CHECK_ERROR(err);
-    _initialize();
-
     pythia::journal::debug_t debug(GenericComponent::getName());
     if (debug.state()) {
+        // err = PetscOptionsSetValue(NULL, "-dm_plex_print_fem", "2");PYLITH_CHECK_ERROR(err);
+        // err = PetscOptionsSetValue(NULL, "-dm_plex_print_l2", "2");PYLITH_CHECK_ERROR(err);
         err = PetscOptionsSetValue(NULL, "-snes_test_jacobian_view", "");PYLITH_CHECK_ERROR(err);
     } // if
+
+    _initialize();
+
     err = PetscOptionsSetValue(NULL, "-snes_test_jacobian", "1.0e-6");PYLITH_CHECK_ERROR(err);
     err = PetscOptionsSetValue(NULL, "-snes_error_if_not_converged", "false");PYLITH_CHECK_ERROR(err);
     err = SNESSetFromOptions(_problem->getPetscSNES());PYLITH_CHECK_ERROR(err);

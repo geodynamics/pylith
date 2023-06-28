@@ -51,7 +51,7 @@ class pylith::_ConstRateDynamic {
     static const double LENGTH_SCALE;
     static const double TIME_SCALE;
     static const double PRESSURE_SCALE;
-    static const double SLIPRATE;
+    static const double SLIP_RATE;
     static const double TIME_SNAPSHOT; // nondimensional
 
     // Density
@@ -104,7 +104,7 @@ class pylith::_ConstRateDynamic {
 
     static double finalslip_leftlateral(const double x,
                                         const double y) {
-        return SLIPRATE * TIME_SNAPSHOT * LENGTH_SCALE;
+        return SLIP_RATE * TIME_SNAPSHOT * LENGTH_SCALE;
     } // finalslip_leftlateral
 
     static const char* slip_units(void) {
@@ -139,9 +139,9 @@ class pylith::_ConstRateDynamic {
                         PetscInt flag) {
         double amplitude = 0.0;
         if (!flag) {
-            amplitude = x < +2.0 ? -0.5*SLIPRATE : +0.5*SLIPRATE;
+            amplitude = x < +2.0 ? -0.5*SLIP_RATE : +0.5*SLIP_RATE;
         } else {
-            amplitude = flag < 0 ? -0.5*SLIPRATE : +0.5*SLIPRATE;
+            amplitude = flag < 0 ? -0.5*SLIP_RATE : +0.5*SLIP_RATE;
         } // if/else
         return amplitude;
     } // vel_y
@@ -448,7 +448,7 @@ public:
 const double pylith::_ConstRateDynamic::LENGTH_SCALE = 1000.0;
 const double pylith::_ConstRateDynamic::PRESSURE_SCALE = 2.5e+10;
 const double pylith::_ConstRateDynamic::TIME_SCALE = 2.0;
-const double pylith::_ConstRateDynamic::SLIPRATE = 3.0;
+const double pylith::_ConstRateDynamic::SLIP_RATE = 3.0e-3;
 const double pylith::_ConstRateDynamic::TIME_SNAPSHOT = 5.0;
 
 // ------------------------------------------------------------------------------------------------
