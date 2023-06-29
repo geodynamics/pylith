@@ -731,7 +731,7 @@ public:
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
 
         const PylithInt spaceDim = dim+1; // dim passed in is spaceDim-1
-        const PylithInt numCols = spaceDim * spaceDim;
+        const PylithInt numCols = spaceDim;
         const PylithInt numRows = spaceDim;
         const PylithInt gOffN = 0;
 
@@ -785,7 +785,7 @@ public:
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
 
         const PylithInt spaceDim = dim+1; // dim passed in is spaceDim-1
-        const PylithInt numCols = spaceDim * spaceDim;
+        const PylithInt numCols = spaceDim;
         const PylithInt numRows = spaceDim;
         const PylithInt gOffP = numRows * numCols;
 
@@ -838,24 +838,16 @@ public:
 
         /* j(f,g,dg) = C(f,df,g,dg)*n[df]
          *
-         * 0: j000 = C1111*n[0] + C1211*n[1] = C1111*n[0] + 0
-         * 1: j001 = C1112*n[0] + C1212*n[1] = 0 + C1212*n[1]
-         * 2: j010 = C1121*n[0] + C1221*n[1] = 0 + C1212*n[1]
-         * 3: j011 = C1122*n[0] + C1222*n[1] = C1122*n[0] + 0
-         * 4: j100 = C2111*n[0] + C2211*n[1] = 0 + C1122*n[1]
-         * 5: j101 = C2112*n[0] + C2212*n[1] = C1212*n[0] + 0
-         * 6: j110 = C2121*n[0] + C2221*n[1] = C1212*n[0] + 0
-         * 7: j111 = C2122*n[0] + C2222*n[1] = 0 + C2222*n[1]
+         * 0: j00 = -C1111*n[0]*n[1] + C1112*n[0]*n[0] - C1211*n[1]*n[1] + C1212*n[1]*n[0]
+         * 1: j01 = -C1112*n[0]*n[1] + C1122*n[0]*n[0] - C1212*n[1]*n[1] + C1222*n[1]*n[0]
+         * 2: j10 = -C2111*n[0]*n[1] + C2112*n[0]*n[0] - C2211*n[1]*n[1] + C2212*n[1]*n[0]
+         * 3: j11 = -C2112*n[0]*n[1] + C2122*n[0]*n[0] - C2212*n[1]*n[1] + C2222*n[1]*n[0]
          */
 
-        Jf1[0] = C1111*n[0]; // j000
-        Jf1[1] = C1212*n[1]; // j001
-        Jf1[2] = C1212*n[1]; // j010
-        Jf1[3] = C1122*n[0]; // j011
-        Jf1[4] = C1122*n[1]; // j100
-        Jf1[5] = C1212*n[0]; // j101
-        Jf1[6] = C1212*n[0]; // j110
-        Jf1[7] = C2222*n[1]; // j111
+        Jf1[0] = -C1111*n[0]*n[1] + C1212*n[1]*n[0]; // j00
+        Jf1[1] = +C1122*n[0]*n[0] - C1212*n[1]*n[1]; // j01
+        Jf1[2] = +C1212*n[0]*n[0] - C1122*n[1]*n[1]; // j10
+        Jf1[3] = -C1212*n[0]*n[1] + C2222*n[1]*n[0]; // j11
     } // Jf1lu
 
     // ===========================================================================================
@@ -1569,23 +1561,23 @@ public:
         Jf1[ 2] = C1313*n[2]; // j002
         Jf1[ 3] = C1212*n[1]; // j010
         Jf1[ 4] = C1122*n[0]; // j011
-        Jf1[ 5] = 0;          // j012
+        Jf1[ 5] = 0; // j012
         Jf1[ 6] = C1313*n[2]; // j020
-        Jf1[ 7] = 0;          // j021
+        Jf1[ 7] = 0; // j021
         Jf1[ 8] = C1133*n[0]; // j022
         Jf1[ 9] = C1122*n[1]; // j100
         Jf1[10] = C1212*n[0]; // j101
-        Jf1[11] = 0;          // j102
+        Jf1[11] = 0; // j102
         Jf1[12] = C1212*n[0]; // j110
         Jf1[13] = C2222*n[1]; // j111
         Jf1[14] = C2323*n[2]; // j112
-        Jf1[15] = 0;          // j120
+        Jf1[15] = 0; // j120
         Jf1[16] = C2323*n[2]; // j121
         Jf1[17] = C2233*n[1]; // j122
         Jf1[18] = C1133*n[2]; // j200
-        Jf1[19] = 0;          // j201
+        Jf1[19] = 0; // j201
         Jf1[20] = C1313*n[0]; // j202
-        Jf1[21] = 0;          // j210
+        Jf1[21] = 0; // j210
         Jf1[22] = C2233*n[2]; // j211
         Jf1[23] = C2323*n[1]; // j212
         Jf1[24] = C1313*n[0]; // j220
