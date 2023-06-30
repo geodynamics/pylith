@@ -112,4 +112,110 @@ For the implicit part, we have pointwise functions for the LHS Jacobians associa
   J_F^{\lambda \lambda} = \frac{\partial F^\lambda}{\partial \lambda} + s_\mathit{tshift} \frac{\partial F^\lambda}{\partial \dot{\lambda}} = {\color{blue}\underbrace{\color{black}M_{v^+}^{-1}}_{\color{blue}{c^+}}} \int_{\Gamma_{f^+}} \psi_{\mathit{trial}_i}^\lambda {\color{blue}\underbrace{\color{black} \delta_{ij}}_{\color{blue}{J^{\lambda\lambda}_{f0}}}} \psi_{\mathit{basis}_j}^\lambda \, d\Gamma + {\color{blue}\underbrace{\color{black}M_{v^-}^{-1}}_{\color{blue}{c^-}}} \int_{\Gamma_{f^-}} \psi_{\mathit{trial}_i}^\lambda {\color{blue}\underbrace{\color{black} \delta_{ij}}_{\color{blue}{J^{\lambda\lambda}_{f0}}}} \psi_{\mathit{basis}_j}^\lambda \, d\Gamma
 \end{gather}
 
+### Derivation of Jf1 term
+
+We want to compute the Jacobian, $\frac{\partial F}{\partial u}$, for the residual term with $\boldsymbol{\sigma} \cdot \vec{n}$.
+Using index notation we can write $\vec{\tau} = \boldsymbol{\sigma} \cdot \vec{n}$ as,
+
+\begin{equation}
+\tau_i = \sigma_{ij} n_j.
+\end{equation}
+
+In computing the Jacobian, we use the linear approximation for stress,
+
+\begin{equation}
+\sigma_{ij} = C_{ijkl} \epsilon_{kl},
+\end{equation}
+
+with infinitesimal strain, $\epsilon_{kl} = \frac{1}{2} (u_{k,l} + u_{l,k})$, which leads to
+
+\begin{equation}
+\tau_i = C_{ijkl} n_j \frac{1}{2} (u_{k,l} + u_{l,k}).
+\end{equation}
+
+We swap indices $j$ and $k$ to conform to PETSc DMPlex indexing,
+
+\begin{equation}
+\tau_i = C_{ikjl} n_k \frac{1}{2} (u_{j,l} + u_{l,j}).
+\end{equation}
+
+Expanding the terms, we have
+
+\begin{equation}
+\begin{aligned}
+\tau_1 &= C_{1111} n_1 u_{1,1} + C_{1112} n_1 \frac{1}{2}(u_{1,2} + u_{2,1}) + C_{1121} n_1 \frac{1}{2} (u_{2,1} + u_{1,2}) + C_{1122} n_1 u_{2,2} \\
+  &+ C_{1211} n_2 u_{1,1} + C_{1212} n_2 \frac{1}{2}(u_{1,2} + u_{2,1}) + C_{1221} n_2 \frac{1}{2} (u_{2,1} + u_{1,2}) + C_{1222} n_2 u_{2,2}.
+\end{aligned}
+\end{equation}
+
+Making use of the symmetry of $C$ ($C_{ijkl} = C_{jikl} = C_{Ciklk} = C_{klij}$), we can simplify this to
+
+\begin{equation}
+\begin{aligned}
+\tau_1 &= C_{1111} n_1 u_{1,1} + C_{1112} n_1 (u_{1,2} + C_{1122} n_1 u_{2,2} \\
+  &+ C_{1211} n_2 u_{1,1} + C_{1212} n_2 (u_{1,2} + u_{2,1}) + C_{1222} n_2 u_{2,2}.
+\end{aligned}
+\end{equation}
+
+Similarly, we have
+
+\begin{equation}
+\begin{aligned}
+\tau_2 &= C_{2111} n_1 u_{1,1} + C_{2112} n_1 \frac{1}{2}(u_{1,2} + u_{2,1}) + C_{2121} n_1 \frac{1}{2} (u_{2,1} + u_{1,2}) + C_{2122} n_1 u_{2,2} \\
+  &+ C_{2211} n_2 u_{1,1} + C_{2212} n_2 \frac{1}{2}(u_{1,2} + u_{2,1}) + C_{2221} n_2 \frac{1}{2} (u_{2,1} + u_{1,2}) + C_{2222} n_2 u_{2,2}.
+\end{aligned}
+\end{equation}
+
+and
+
+\begin{equation}
+\begin{aligned}
+\tau_2 &= C_{2111} n_1 u_{1,1} + C_{2112} n_1 (u_{1,2} + u_{2,1}) + C_{2122} n_1 u_{2,2} \\
+  &+ C_{2211} n_2 u_{1,1} + C_{2212} n_2 (u_{1,2} + u_{2,1}) + C_{2222} n_2 u_{2,2}.
+\end{aligned}
+\end{equation}
+
+The gradient in the displacement field normal to the fault is zero ($u_{1,n} = u_{2,n} = 0$), so we have
+
+\begin{equation}
+\begin{aligned}
+u_{1,1} &= -n_2 u_{1,s} \quad\quad u_{1,2} = n_1 u_{1,s} \\
+u_{2,1} &= -n_2 u_{2,s} \quad\quad u_{2,2} = n_1 u_{2,s}.
+\end{aligned}
+\end{equation}
+
+Substituting into our expressions for the traction, we have
+
+\begin{equation}
+\begin{aligned}
+\tau_1 &= -C_{1111} n_1 n_2 u_{1,s} + C_{1112} n_1 (n_1 u_{1,s} - n_2 u_{2,s}) + C_{1122} n_1 n_1 u_{2,s} \\
+  &- C_{1211} n_2 n_2 u_{1,s} + C_{1212} n_2 (n_1 u_{1,s} - n_2 u_{2,s}) + C_{1222} n_2 n_1 u_{2,s}, \\
+%
+\tau_2 &= -C_{2111} n_1 n_2 u_{1,s} + C_{2112} n_1 (n_1 u_{1,s} - n_2 u_{2,s}) + C_{2122} n_1 n_1 u_{2,s} \\
+  &- C_{2211} n_2 n_2 u_{1,s} + C_{2212} n_2 (n_1 u_{1,s} - n_2 u_{2,s}) + C_{2222} n_2 n_1 u_{2,s}.
+\end{aligned}
+\end{equation}
+
+Grouping terms we have
+
+\begin{equation}
+\begin{aligned}
+\tau_1 = &\left(-C_{1111} n_1 n_2 + C_{1112} n_1 n_1  - C_{1211} n_2 n_2 + C_{1212} n_2 n_1 \right) u_{1,s} \\
+&\left( -C_{1112} n_1 n_2 + C_{1122} n_1 n_1 - C_{1212} n_2 n_2 + C_{1222} n_2 n_1 \right) u_{2,s}, \\
+%
+\tau_2 = &\left(-C_{2111} n_1 n_2 + C_{2112} n_1 n_1 - C_{2211} n_2 n_2 + C_{2212} n_2 n_1 \right) u_{1,s} \\
+&\left(-C_{2112} n_1 n_2 + C_{2122} n_1 n_1  - C_{2212} n_2 n_2 + C_{2222} n_2 n_1 \right) u_{2,s}.
+\end{aligned}
+\end{equation}
+
+Using zero-based indices for the normal components and entries for Jacobian J_{f1}, we have
+\begin{equation}
+\begin{aligned}
+J_{f1}^{00} &= -C_{1111} n_0 n_1 + C_{1112} n_0 n_0  - C_{1211} n_1 n_1 + C_{1212} n_1 n_0 \\
+J_{f1}^{01} &= -C_{1112} n_0 n_1 + C_{1122} n_0 n_0 - C_{1212} n_1 n_1 + C_{1222} n_1 n_0 \\
+J_{f1}^{10} &= -C_{2111} n_0 n_1 + C_{2112} n_0 n_0 - C_{2211} n_1 n_1 + C_{2212} n_1 n_0 \\
+J_{f1}^{11} &= -C_{2112} n_0 n_1 + C_{2122} n_0 n_0  - C_{2212} n_1 n_1 + C_{2222} n_1 n_0.
+\end{aligned}
+\end{equation}
+
 % End of file
