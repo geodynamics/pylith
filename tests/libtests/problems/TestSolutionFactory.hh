@@ -27,7 +27,7 @@
 #if !defined(pylith_problems_testsolutionfactory_hh)
 #define pylith_problems_testsolutionfactory_hh
 
-#include <cppunit/extensions/HelperMacros.h>
+#include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
 #include "pylith/problems/problemsfwd.hh" // HOLDSA SolutionFactory
 #include "pylith/topology/Field.hh" // HOLDSA Field::SubfieldInfo
@@ -45,26 +45,16 @@ namespace pylith {
     } // problems
 } // pylith
 
-class pylith::problems::TestSolutionFactory : public CppUnit::TestFixture {
-    // CPPUNIT TEST SUITE //////////////////////////////////////////////////////////////////////////////////////////////
-    CPPUNIT_TEST_SUITE(TestSolutionFactory);
-
-    CPPUNIT_TEST(testDispVel);
-    CPPUNIT_TEST(testDispLagrangeFault);
-    CPPUNIT_TEST(testPressure);
-    CPPUNIT_TEST(testDispTemp);
-    CPPUNIT_TEST(testSetValues);
-
-    CPPUNIT_TEST_SUITE_END();
-
-    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
+// ------------------------------------------------------------------------------------------------
+class pylith::problems::TestSolutionFactory : public pylith::utils::GenericComponent {
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
-    /// Setup testing data.
-    void setUp(void);
+    /// Constructor.
+    TestSolutionFactory(TestSolutionFactory_Data* data);
 
-    /// Tear down testing data.
-    void tearDown(void);
+    /// Destructor.
+    ~TestSolutionFactory(void);
 
     /// Test adding displacement and velocity subfields.
     void testDispVel(void);
@@ -81,13 +71,13 @@ public:
     /// Test setValues().
     void testSetValues(void);
 
-    // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
+    // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
 protected:
 
     /// Initialze mesh, coordinate system, solution, and factory.
     void _initialize(void);
 
-    // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
+    // PROTECTED MEMBERS //////////////////////////////////////////////////////////////////////////
 protected:
 
     SolutionFactory* _factory; ///< Test subject.
@@ -98,9 +88,9 @@ protected:
 
 }; // class TestSolutionFactory
 
-// =====================================================================================================================
+// ------------------------------------------------------------------------------------------------
 class pylith::problems::TestSolutionFactory_Data {
-    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Constructor
@@ -109,7 +99,7 @@ public:
     /// Destructor
     ~TestSolutionFactory_Data(void);
 
-    // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
+    // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
 public:
 
     size_t dimension; ///< Spatial dimension.

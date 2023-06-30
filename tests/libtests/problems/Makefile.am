@@ -16,16 +16,16 @@
 # ----------------------------------------------------------------------
 #
 
-include $(top_srcdir)/tests/check_cppunit.am
+include $(top_srcdir)/tests/check_catch2.am
 
 SUBDIRS = data
 
-TESTS = test_problems
+TESTS = libtest_problems
 
-check_PROGRAMS = test_problems
+check_PROGRAMS = libtest_problems
 
 # Primary source files
-test_problems_SOURCES = \
+libtest_problems_SOURCES = \
 	TestObserversSoln.cc \
 	TestObserversPhysics.cc \
 	TestSolutionFactory.cc \
@@ -39,14 +39,11 @@ test_problems_SOURCES = \
 	$(top_srcdir)/tests/src/PhysicsImplementationStub.cc \
 	$(top_srcdir)/tests/src/StubMethodTracker.cc \
 	$(top_srcdir)/tests/src/FieldTester.cc \
-	$(top_srcdir)/tests/src/driver_cppunit.cc
-
+	$(top_srcdir)/tests/src/driver_catch2.cc
 
 
 dist_noinst_HEADERS = \
 	TestPhysics.hh \
-	TestObserversSoln.hh \
-	TestObserversPhysics.hh \
 	TestSolutionFactory.hh
 
 noinst_TMP = \

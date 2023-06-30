@@ -18,7 +18,7 @@
 
 #include <portinfo>
 
-#include "TestObserversPhysics.hh" // Implementation of class methods
+#include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
 #include "tests/src/ObserverPhysicsStub.hh" // USES ObserverPhysicsStub
 #include "tests/src/PhysicsImplementationStub.hh" // USES PhysicsImplementationStub
@@ -27,48 +27,101 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
 
+#include "catch2/catch_test_macros.hpp"
+
 namespace pylith {
     namespace problems {
-        class _TestObserversPhysics {
-public:
-
-            static ObserverPhysicsStub observerA;
-            static ObserverPhysicsStub observerB;
-        }; // _TestObserversPhysics
-        ObserverPhysicsStub _TestObserversPhysics::observerA;
-        ObserverPhysicsStub _TestObserversPhysics::observerB;
+        class TestObserversPhysics;
     } // problems
 } // pylith
 
-// ---------------------------------------------------------------------------------------------------------------------
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::problems::TestObserversPhysics);
+// ------------------------------------------------------------------------------------------------
+class pylith::problems::TestObserversPhysics : public pylith::utils::GenericComponent {
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
+public:
+
+    /// Constructor.
+    TestObserversPhysics(void);
+
+    /// Destructor.
+    ~TestObserversPhysics(void);
+
+    /// Test registerObserver().
+    void testRegisterObserver(void);
+
+    /// Test removeObserver().
+    void testRemoveObserver(void);
+
+    /// Test setPhysicsImplemetation().
+    void testSetPhysicsImplementation(void);
+
+    /// Test setgetTimeScale().
+    void testTimeScale(void);
+
+    /// Test verifyObservers().
+    void testVerifyObservers(void);
+
+    /// Test notifyObservers().
+    void testNotifyObservers(void);
+
+    // PRIVATE METHODS /////////////////////////////////////////////////////////////////////////////////////////////////
+private:
+
+    pylith::problems::ObserversPhysics* _observers; ///< Test subject.
+
+    static ObserverPhysicsStub observerA;
+    static ObserverPhysicsStub observerB;
+
+}; // class TestObserversPhysics
+
+pylith::problems::ObserverPhysicsStub pylith::problems::TestObserversPhysics::observerA;
+pylith::problems::ObserverPhysicsStub pylith::problems::TestObserversPhysics::observerB;
+
+// ------------------------------------------------------------------------------------------------
+TEST_CASE("TestObservesPhysics::testRegisterObserver", "[TestObserversPhysics]") {
+    pylith::problems::TestObserversPhysics().testRegisterObserver();
+}
+TEST_CASE("TestObservesPhysics::testRemoveObserver", "[TestObserversPhysics]") {
+    pylith::problems::TestObserversPhysics().testRemoveObserver();
+}
+TEST_CASE("TestObservesPhysics::testSetPhysicsImplementation", "[TestObserversPhysics]") {
+    pylith::problems::TestObserversPhysics().testSetPhysicsImplementation();
+}
+TEST_CASE("TestObservesPhysics::testTimeScale", "[TestObserversPhysics]") {
+    pylith::problems::TestObserversPhysics().testTimeScale();
+}
+TEST_CASE("TestObservesPhysics::testVerifyObservers", "[TestObserversPhysics]") {
+    pylith::problems::TestObserversPhysics().testVerifyObservers();
+}
+TEST_CASE("TestObservesPhysics::testNotifyObservers", "[TestObserversPhysics]") {
+    pylith::problems::TestObserversPhysics().testNotifyObservers();
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Setup testing data.
-void
-pylith::problems::TestObserversPhysics::setUp(void) {
-    _observers = new ObserversPhysics();CPPUNIT_ASSERT(_observers);
-    _observers->registerObserver(&_TestObserversPhysics::observerA);
-    _observers->registerObserver(&_TestObserversPhysics::observerB);
-} // setUp
+// Constructor
+pylith::problems::TestObserversPhysics::TestObserversPhysics(void) :
+    _observers(new ObserversPhysics()) {
+    assert(_observers);
+    _observers->registerObserver(&observerA);
+    _observers->registerObserver(&observerB);
+} // constructor
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Tear down testing data.
-void
-pylith::problems::TestObserversPhysics::tearDown(void) {
+// Destructor.
+pylith::problems::TestObserversPhysics::~TestObserversPhysics(void) {
     delete _observers;_observers = NULL;
-} // tearDown
+} // destructor
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Test registerObserver().
 void
 pylith::problems::TestObserversPhysics::testRegisterObserver(void) {
-    CPPUNIT_ASSERT(_observers);
-    CPPUNIT_ASSERT_EQUAL(size_t(1), _observers->_observers.count(&_TestObserversPhysics::observerA));
-    CPPUNIT_ASSERT_EQUAL(size_t(1), _observers->_observers.count(&_TestObserversPhysics::observerB));
-    CPPUNIT_ASSERT_EQUAL(size_t(2), _observers->size());
+    assert(_observers);
+    CHECK(size_t(1) == _observers->_observers.count(&observerA));
+    CHECK(size_t(1) == _observers->_observers.count(&observerB));
+    CHECK(size_t(2) == _observers->size());
 } // testRegisterObserver
 
 
@@ -76,20 +129,20 @@ pylith::problems::TestObserversPhysics::testRegisterObserver(void) {
 // Test removeObserver().
 void
 pylith::problems::TestObserversPhysics::testRemoveObserver(void) {
-    CPPUNIT_ASSERT(_observers);
-    CPPUNIT_ASSERT_EQUAL(size_t(1), _observers->_observers.count(&_TestObserversPhysics::observerA));
-    CPPUNIT_ASSERT_EQUAL(size_t(1), _observers->_observers.count(&_TestObserversPhysics::observerB));
-    CPPUNIT_ASSERT_EQUAL(size_t(2), _observers->size());
+    assert(_observers);
+    CHECK(size_t(1) == _observers->_observers.count(&observerA));
+    CHECK(size_t(1) == _observers->_observers.count(&observerB));
+    CHECK(size_t(2) == _observers->size());
 
-    _observers->removeObserver(&_TestObserversPhysics::observerA);
-    CPPUNIT_ASSERT_EQUAL(size_t(0), _observers->_observers.count(&_TestObserversPhysics::observerA));
-    CPPUNIT_ASSERT_EQUAL(size_t(1), _observers->_observers.count(&_TestObserversPhysics::observerB));
-    CPPUNIT_ASSERT_EQUAL(size_t(1), _observers->size());
+    _observers->removeObserver(&observerA);
+    CHECK(size_t(0) == _observers->_observers.count(&observerA));
+    CHECK(size_t(1) == _observers->_observers.count(&observerB));
+    CHECK(size_t(1) == _observers->size());
 
-    _observers->removeObserver(&_TestObserversPhysics::observerB);
-    CPPUNIT_ASSERT_EQUAL(size_t(0), _observers->_observers.count(&_TestObserversPhysics::observerA));
-    CPPUNIT_ASSERT_EQUAL(size_t(0), _observers->_observers.count(&_TestObserversPhysics::observerB));
-    CPPUNIT_ASSERT_EQUAL(size_t(0), _observers->size());
+    _observers->removeObserver(&observerB);
+    CHECK(size_t(0) == _observers->_observers.count(&observerA));
+    CHECK(size_t(0) == _observers->_observers.count(&observerB));
+    CHECK(size_t(0) == _observers->size());
 } // testRegisterObserver
 
 
@@ -99,7 +152,7 @@ void
 pylith::problems::TestObserversPhysics::testSetPhysicsImplementation(void) {
     pylith::feassemble::PhysicsImplementationStub physics;
 
-    CPPUNIT_ASSERT(_observers);
+    assert(_observers);
     _observers->setPhysicsImplementation(&physics);
 } // testSetPhysicsImplementation
 
@@ -108,18 +161,18 @@ pylith::problems::TestObserversPhysics::testSetPhysicsImplementation(void) {
 // Test setgetTimeScale().
 void
 pylith::problems::TestObserversPhysics::testTimeScale(void) {
-    CPPUNIT_ASSERT(_observers);
+    assert(_observers);
 
     // Check default
     PylithReal value = 1.0;
-    CPPUNIT_ASSERT_EQUAL(value, _TestObserversPhysics::observerA.getTimeScale());
-    CPPUNIT_ASSERT_EQUAL(value, _TestObserversPhysics::observerB.getTimeScale());
+    CHECK(value == observerA.getTimeScale());
+    CHECK(value == observerB.getTimeScale());
 
     // Check set value
     value = 2.0;
     _observers->setTimeScale(value);
-    CPPUNIT_ASSERT_EQUAL(value, _TestObserversPhysics::observerA.getTimeScale());
-    CPPUNIT_ASSERT_EQUAL(value, _TestObserversPhysics::observerB.getTimeScale());
+    CHECK(value == observerA.getTimeScale());
+    CHECK(value == observerB.getTimeScale());
 } // testTimeScale
 
 
@@ -127,7 +180,7 @@ pylith::problems::TestObserversPhysics::testTimeScale(void) {
 // Test verifyObservers().
 void
 pylith::problems::TestObserversPhysics::testVerifyObservers(void) {
-    CPPUNIT_ASSERT(_observers);
+    assert(_observers);
 
     pylith::testing::StubMethodTracker tracker;
     tracker.clear();
@@ -136,7 +189,7 @@ pylith::problems::TestObserversPhysics::testVerifyObservers(void) {
     pylith::topology::Field solution(mesh);
     _observers->verifyObservers(solution);
 
-    CPPUNIT_ASSERT_EQUAL(size_t(2), tracker.getMethodCount("pylith::problems::ObserverPhysicsStub::verifyConfiguration"));
+    CHECK(size_t(2) == tracker.getMethodCount("pylith::problems::ObserverPhysicsStub::verifyConfiguration"));
 } // testVerifyObservers
 
 
@@ -144,7 +197,7 @@ pylith::problems::TestObserversPhysics::testVerifyObservers(void) {
 // Test notifyObservers().
 void
 pylith::problems::TestObserversPhysics::testNotifyObservers(void) {
-    CPPUNIT_ASSERT(_observers);
+    assert(_observers);
 
     pylith::testing::StubMethodTracker tracker;
     tracker.clear();
@@ -156,7 +209,7 @@ pylith::problems::TestObserversPhysics::testNotifyObservers(void) {
     _observers->notifyObservers(t, tindex, solution, true);
     _observers->notifyObservers(t, tindex, solution, false);
 
-    CPPUNIT_ASSERT_EQUAL(size_t(4), tracker.getMethodCount("pylith::problems::ObserverPhysicsStub::update"));
+    CHECK(size_t(4) == tracker.getMethodCount("pylith::problems::ObserverPhysicsStub::update"));
 } // testNotifyObservers
 
 

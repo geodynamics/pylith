@@ -18,11 +18,14 @@
 
 #include <portinfo>
 
-#include <cppunit/extensions/HelperMacros.h>
+#include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
 #include "pylith/problems/ProgressMonitorStep.hh" // USES ProgressMonitorStep
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
+
+#include "catch2/catch_test_macros.hpp"
+#include "catch2/matchers/catch_matchers_floating_point.hpp"
 
 // ------------------------------------------------------------------------------------------------
 /// Namespace for pylith package
@@ -32,21 +35,14 @@ namespace pylith {
     } // problems
 } // pylith
 
-class pylith::problems::TestProgressMonitorStep : public CppUnit::TestFixture {
-    CPPUNIT_TEST_SUITE(TestProgressMonitorStep);
-
-    CPPUNIT_TEST(testOpenClose);
-    CPPUNIT_TEST(testUpdate);
-
-    CPPUNIT_TEST_SUITE_END();
-
+class pylith::problems::TestProgressMonitorStep : public pylith::utils::GenericComponent {
 public:
 
-    /// Setup testing data.
-    void setUp(void);
+    /// Constructor.
+    TestProgressMonitorStep(void);
 
-    /// Tear down testing data.
-    void tearDown(void);
+    /// Destructor.
+    ~TestProgressMonitorStep(void);
 
     /// Test open() and close().
     void testOpenClose(void);
@@ -61,20 +57,23 @@ private:
 }; // class TestProgressMonitorStep
 
 // ------------------------------------------------------------------------------------------------
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::problems::TestProgressMonitorStep);
+TEST_CASE("TestProgressMonitorStep::testOpenClose", "[TestProgressMonitorStep]") {
+    pylith::problems::TestProgressMonitorStep().testOpenClose();
+}
+TEST_CASE("TestProgressMonitorStep::testUpdate", "[TestProgressMonitorStep]") {
+    pylith::problems::TestProgressMonitorStep().testUpdate();
+}
 
 // ------------------------------------------------------------------------------------------------
-// Setup testing data.
-void
-pylith::problems::TestProgressMonitorStep::setUp(void) {
-    _monitor = new ProgressMonitorStep();CPPUNIT_ASSERT(_monitor);
+// Constructor.
+pylith::problems::TestProgressMonitorStep::TestProgressMonitorStep(void) {
+    _monitor = new ProgressMonitorStep();assert(_monitor);
 } // setUp
 
 
 // ------------------------------------------------------------------------------------------------
-// Tear down testing data.
-void
-pylith::problems::TestProgressMonitorStep::tearDown(void) {
+// Destructor.
+pylith::problems::TestProgressMonitorStep::~TestProgressMonitorStep(void) {
     delete _monitor;_monitor = NULL;
 } // tearDown
 
@@ -84,8 +83,8 @@ pylith::problems::TestProgressMonitorStep::tearDown(void) {
 void
 pylith::problems::TestProgressMonitorStep::testOpenClose(void) {
     PYLITH_METHOD_BEGIN;
+    assert(_monitor);
 
-    CPPUNIT_ASSERT(_monitor);
     _monitor->open();
     _monitor->close();
     _monitor->close();
@@ -99,6 +98,7 @@ pylith::problems::TestProgressMonitorStep::testOpenClose(void) {
 void
 pylith::problems::TestProgressMonitorStep::testUpdate(void) {
     PYLITH_METHOD_BEGIN;
+    assert(_monitor);
 
     const size_t start = 2;
     const size_t stop = 52;
@@ -109,7 +109,6 @@ pylith::problems::TestProgressMonitorStep::testUpdate(void) {
     const double tolerance = 1.0e-6;
     const char* filename = "progress_step.txt";
 
-    CPPUNIT_ASSERT(_monitor);
     _monitor->setFilename(filename);
     _monitor->open();
     for (int i = 0; i < numUpdateCalls; ++i) {
@@ -119,7 +118,7 @@ pylith::problems::TestProgressMonitorStep::testUpdate(void) {
 
     // Check output
     std::ifstream fin(filename);
-    CPPUNIT_ASSERT_MESSAGE("Could not open progress monitor file.", fin.is_open());
+    REQUIRE(fin.is_open());
 
     int count = 0;
     const int maxlen = 1024;
@@ -128,11 +127,10 @@ pylith::problems::TestProgressMonitorStep::testUpdate(void) {
     fin.getline(buffer, maxlen);
     while (fin.good()) {
         const double percentCompleteValue = stof(std::string(buffer).substr(41, 12));
-        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Incorrect percent complete in progress monitor output.",
-                                             percentComplete[count++], percentCompleteValue, tolerance);
+        CHECK_THAT(percentCompleteValue, Catch::Matchers::WithinAbs(percentComplete[count++], tolerance));
         fin.getline(buffer, maxlen);
     } // while
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Incorrect number of updates in progress monitor output.", count, numUpdates);
+    CHECK(count == numUpdates);
     fin.close();
 
     PYLITH_METHOD_END;
