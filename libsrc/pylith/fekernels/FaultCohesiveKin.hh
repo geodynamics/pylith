@@ -459,7 +459,7 @@ public:
 
         const PylithScalar* lagrange = &s[sOff[i_lagrange]];
         for (PylithInt i = 0; i < spaceDim; ++i) {
-            f0[i] += lagrange[i];// - traction[i];
+            f0[i] += lagrange[i] - traction[i];
         } // for
     } // f0l_neg
 

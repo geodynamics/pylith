@@ -49,6 +49,8 @@
 #include <stdexcept> // USES std::runtime_error
 #include <typeinfo> // USES typeid()
 
+#define DEBUG_HYBRID 1
+
 // ------------------------------------------------------------------------------------------------
 typedef pylith::feassemble::IntegratorInterface::ResidualKernels ResidualKernels;
 typedef pylith::feassemble::IntegratorInterface::JacobianKernels JacobianKernels;
@@ -396,17 +398,17 @@ pylith::faults::FaultCohesiveKin::_setKernelsResidual(pylith::feassemble::Integr
         const PetscBdPointFunc f0l_dae = pylith::fekernels::FaultCohesiveKin::f0l_slipAcc;
         const PetscBdPointFunc f1l_dae = NULL;
 
-#if 0
+#if DEBUG_HYBRID
+        kernels.resize(3);
+        kernels[0] = ResidualKernels("velocity", integrator_t::LHS, integrator_t::NEGATIVE_FACE, g0v_neg, g1v_neg);
+        kernels[1] = ResidualKernels("velocity", integrator_t::LHS, integrator_t::POSITIVE_FACE, g0v_pos, g1v_pos);
+        kernels[2] = ResidualKernels("lagrange_multiplier_fault", integrator_t::LHS, integrator_t::FAULT_FACE, f0l_dae, f1l_dae);
+#else
         kernels.resize(4);
         kernels[0] = ResidualKernels("velocity", integrator_t::LHS, integrator_t::NEGATIVE_FACE, g0v_neg, g1v_neg);
         kernels[1] = ResidualKernels("velocity", integrator_t::LHS, integrator_t::POSITIVE_FACE, g0v_pos, g1v_pos);
         kernels[2] = ResidualKernels("lagrange_multiplier_fault", integrator_t::LHS, integrator_t::FAULT_FACE, f0l_slip, f1l_slip);
         kernels[3] = ResidualKernels("lagrange_multiplier_fault", integrator_t::LHS_WEIGHTED, integrator_t::FAULT_FACE, f0l_dae, f1l_dae);
-#else
-        kernels.resize(3);
-        kernels[0] = ResidualKernels("velocity", integrator_t::LHS, integrator_t::NEGATIVE_FACE, g0v_neg, g1v_neg);
-        kernels[1] = ResidualKernels("velocity", integrator_t::LHS, integrator_t::POSITIVE_FACE, g0v_pos, g1v_pos);
-        kernels[2] = ResidualKernels("lagrange_multiplier_fault", integrator_t::LHS, integrator_t::FAULT_FACE, f0l_dae, f1l_dae);
 #endif
         break;
     } // DYNAMIC_IMEX
@@ -475,16 +477,17 @@ pylith::faults::FaultCohesiveKin::_setKernelsJacobian(pylith::feassemble::Integr
 
         kernels.resize(2);
         const char* nameLagrangeMultiplier = "lagrange_multiplier_fault";
-#if 0
+#if DEBUG_HYBRID
+        kernels[0] = JacobianKernels(nameLagrangeMultiplier, nameLagrangeMultiplier, integrator_t::LHS,
+                                     integrator_t::NEGATIVE_FACE, Jf0ll_neg, Jf1ll_neg, Jf2ll_neg, Jf3ll_neg);
+        kernels[1] = JacobianKernels(nameLagrangeMultiplier, nameLagrangeMultiplier, integrator_t::LHS,
+                                     integrator_t::POSITIVE_FACE, Jf0ll_pos, Jf1ll_pos, Jf2ll_pos, Jf3ll_pos);
+#else
         kernels[0] = JacobianKernels(nameLagrangeMultiplier, nameLagrangeMultiplier, integrator_t::LHS_WEIGHTED,
                                      integrator_t::NEGATIVE_FACE, Jf0ll_neg, Jf1ll_neg, Jf2ll_neg, Jf3ll_neg);
         kernels[1] = JacobianKernels(nameLagrangeMultiplier, nameLagrangeMultiplier, integrator_t::LHS_WEIGHTED,
                                      integrator_t::POSITIVE_FACE, Jf0ll_pos, Jf1ll_pos, Jf2ll_pos, Jf3ll_pos);
 #endif
-        kernels[0] = JacobianKernels(nameLagrangeMultiplier, nameLagrangeMultiplier, integrator_t::LHS,
-                                     integrator_t::NEGATIVE_FACE, Jf0ll_neg, Jf1ll_neg, Jf2ll_neg, Jf3ll_neg);
-        kernels[1] = JacobianKernels(nameLagrangeMultiplier, nameLagrangeMultiplier, integrator_t::LHS,
-                                     integrator_t::POSITIVE_FACE, Jf0ll_pos, Jf1ll_pos, Jf2ll_pos, Jf3ll_pos);
         break;
     } // DYNAMIC_IMEX
     case pylith::problems::Physics::DYNAMIC:

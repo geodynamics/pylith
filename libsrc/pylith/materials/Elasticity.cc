@@ -44,6 +44,8 @@
 
 #include <typeinfo> // USES typeid()
 
+#define DEBUG_HYBRID 1
+
 // ------------------------------------------------------------------------------------------------
 typedef pylith::feassemble::IntegratorDomain::ResidualKernels ResidualKernels;
 typedef pylith::feassemble::IntegratorDomain::JacobianKernels JacobianKernels;
@@ -377,14 +379,15 @@ pylith::materials::Elasticity::getInterfaceKernelsJacobian(const pylith::topolog
             PYLITH_COMPONENT_LOGICERROR("Unknown interface face ("<<face<<").");
         } // switch
 
-#if 1
-        if (face == pylith::feassemble::IntegratorInterface::POSITIVE_FACE) {
-            kernels.resize(1);
-            // EquationPart eqnPart = pylith::feassemble::Integrator::LHS_WEIGHTED;
-            EquationPart eqnPart = pylith::feassemble::Integrator::LHS;
-            kernels[0] = InterfaceJacobianKernels("lagrange_multiplier_fault", "displacement", eqnPart, face,
-                                                  Jf0lu, Jf1lu, Jf2lu, Jf3lu);
-        }
+        kernels.resize(1);
+#if DEBUG_HYBRID
+        EquationPart eqnPart = pylith::feassemble::Integrator::LHS;
+        kernels[0] = InterfaceJacobianKernels("lagrange_multiplier_fault", "displacement", eqnPart, face,
+                                              Jf0lu, Jf1lu, Jf2lu, Jf3lu);
+#else
+        EquationPart eqnPart = pylith::feassemble::Integrator::LHS_WEIGHTED;
+        kernels[0] = InterfaceJacobianKernels("lagrange_multiplier_fault", "displacement", eqnPart, face,
+                                              Jf0lu, Jf1lu, Jf2lu, Jf3lu);
 #endif
         break;
     } // DYNAMIC_IMEX
