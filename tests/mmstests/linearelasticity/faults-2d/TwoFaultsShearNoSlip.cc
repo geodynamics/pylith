@@ -48,6 +48,10 @@ namespace pylith {
 
 // ---------------------------------------------------------------------------------------------------------------------
 class pylith::_TwoFaultsShearNoSlip {
+    static const double LENGTH_SCALE;
+    static const double PRESSURE_SCALE;
+    static const double TIME_SCALE;
+
     // Density
     static double density(const double x,
                           const double y) {
@@ -121,12 +125,12 @@ class pylith::_TwoFaultsShearNoSlip {
     // Displacement
     static double disp_x(const double x,
                          const double y) {
-        return strain_xx()*x + strain_xy()*y;
+        return strain_xx()*x;
     } // disp_x
 
     static double disp_y(const double x,
                          const double y) {
-        return strain_xy()*x + strain_yy()*y;
+        return 2.0*strain_xy()*x + strain_yy()*y;
     } // disp_y
 
     static const char* disp_units(void) {
@@ -142,7 +146,7 @@ class pylith::_TwoFaultsShearNoSlip {
                                   const double y) {
         const double mu = density(x, y) * vs(x, y) * vs(x, y);
 
-        return strain_xy() * 2.0 * mu / 2.25e+10;
+        return strain_xy() * 2.0 * mu / PRESSURE_SCALE;
     } // faulttraction_y
 
     static
@@ -169,7 +173,7 @@ class pylith::_TwoFaultsShearNoSlip {
         const double mu = density(x[0], x[1]) * vs(x[0], x[1]) * vs(x[0], x[1]);
 
         const PylithScalar tanDir[2] = {-n[1], n[0] };
-        const PylithScalar tractionShear = -strain_xy() * 2.0 * mu / 2.25e+10;
+        const PylithScalar tractionShear = -strain_xy() * 2.0 * mu / PRESSURE_SCALE;
         const PylithScalar tractionNormal = 0.0;
         r0[0] += tractionShear*tanDir[0] + tractionNormal*n[0];
         r0[0] += tractionShear*tanDir[1] + tractionNormal*n[1];
@@ -221,9 +225,9 @@ public:
 
         data->meshFilename = ":UNKNOWN:"; // Set in child class.
 
-        data->normalizer.setLengthScale(1.0e+03);
-        data->normalizer.setTimeScale(2.0);
-        data->normalizer.setPressureScale(2.25e+10);
+        data->normalizer.setLengthScale(LENGTH_SCALE);
+        data->normalizer.setPressureScale(PRESSURE_SCALE);
+        data->normalizer.setTimeScale(TIME_SCALE);
         data->normalizer.computeDensityScale();
 
         // solnDiscretizations set in derived class.
@@ -370,6 +374,9 @@ public:
     } // createData
 
 }; // _TwoFaultsShearNoSlip
+const double pylith::_TwoFaultsShearNoSlip::LENGTH_SCALE = 1.0e+3;
+const double pylith::_TwoFaultsShearNoSlip::PRESSURE_SCALE = 2.25e+10;
+const double pylith::_TwoFaultsShearNoSlip::TIME_SCALE = 2.0;
 
 // ------------------------------------------------------------------------------------------------
 pylith::TestFaultKin_Data*
