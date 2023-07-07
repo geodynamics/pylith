@@ -18,60 +18,71 @@
 
 #include <portinfo>
 
-#include "TestFieldBase.hh" // Implementation of class methods
+#include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
 #include "pylith/topology/FieldBase.hh" // USES Field
 
 #include <string> // USES std::string
 
-// ----------------------------------------------------------------------
-CPPUNIT_TEST_SUITE_REGISTRATION( pylith::topology::TestFieldBase );
+#include "catch2/catch_test_macros.hpp"
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
+namespace pylith {
+    namespace topology {
+        class TestFieldBase;
+    } // topology
+} // pylith
+
+class pylith::topology::TestFieldBase : public pylith::utils::GenericComponent {
+    // PUBLIC METHODS ///////////////////////////////////////////////////////////////////////////////
+public:
+
+    /// Test vectorFieldString().
+    static
+    void testVectorFieldString(void);
+
+    /// Test parseVectorFieldString().
+    static
+    void testParseVectorFieldString(void);
+
+}; // class TestFieldBase
+
+// ------------------------------------------------------------------------------------------------
+TEST_CASE("TestFieldBase::testVectorFieldString", "[TestFieldBase]") {
+    pylith::topology::TestFieldBase::testVectorFieldString();
+}
+TEST_CASE("TestFieldBase::testParVectorFieldString", "[TestFieldBase]") {
+    pylith::topology::TestFieldBase::testParseVectorFieldString();
+}
+
+// ------------------------------------------------------------------------------------------------
 // Test vectorFieldString()
 void
-pylith::topology::TestFieldBase::testVectorFieldString(void)
-{ // testVectorFieldString
-  CPPUNIT_ASSERT_EQUAL(std::string("scalar"),
-		       std::string(FieldBase::vectorFieldString(FieldBase::SCALAR)));
-  CPPUNIT_ASSERT_EQUAL(std::string("vector"),
-		       std::string(FieldBase::vectorFieldString(FieldBase::VECTOR)));
-  CPPUNIT_ASSERT_EQUAL(std::string("tensor"),
-		       std::string(FieldBase::vectorFieldString(FieldBase::TENSOR)));
-  CPPUNIT_ASSERT_EQUAL(std::string("other"),
-		       std::string(FieldBase::vectorFieldString(FieldBase::OTHER)));
-  CPPUNIT_ASSERT_EQUAL(std::string("multi_scalar"),
-		       std::string(FieldBase::vectorFieldString(FieldBase::MULTI_SCALAR)));
-  CPPUNIT_ASSERT_EQUAL(std::string("multi_vector"),
-		       std::string(FieldBase::vectorFieldString(FieldBase::MULTI_VECTOR)));
-  CPPUNIT_ASSERT_EQUAL(std::string("multi_tensor"),
-		       std::string(FieldBase::vectorFieldString(FieldBase::MULTI_TENSOR)));
-  CPPUNIT_ASSERT_EQUAL(std::string("multi_other"),
-		       std::string(FieldBase::vectorFieldString(FieldBase::MULTI_OTHER)));
+pylith::topology::TestFieldBase::testVectorFieldString(void) {
+    CHECK(std::string("scalar") == std::string(FieldBase::vectorFieldString(FieldBase::SCALAR)));
+    CHECK(std::string("vector") == std::string(FieldBase::vectorFieldString(FieldBase::VECTOR)));
+    CHECK(std::string("tensor") == std::string(FieldBase::vectorFieldString(FieldBase::TENSOR)));
+    CHECK(std::string("other") == std::string(FieldBase::vectorFieldString(FieldBase::OTHER)));
+    CHECK(std::string("multi_scalar") == std::string(FieldBase::vectorFieldString(FieldBase::MULTI_SCALAR)));
+    CHECK(std::string("multi_vector") == std::string(FieldBase::vectorFieldString(FieldBase::MULTI_VECTOR)));
+    CHECK(std::string("multi_tensor") == std::string(FieldBase::vectorFieldString(FieldBase::MULTI_TENSOR)));
+    CHECK(std::string("multi_other") == std::string(FieldBase::vectorFieldString(FieldBase::MULTI_OTHER)));
 } // testVectorFieldString
+
 
 // ----------------------------------------------------------------------
 // Test parseVectorFieldString()
 void
-pylith::topology::TestFieldBase::testParseVectorFieldString(void)
-{ // testParseVectorFieldString
-  CPPUNIT_ASSERT_EQUAL(FieldBase::SCALAR,
-		       FieldBase::parseVectorFieldString("scalar"));
-  CPPUNIT_ASSERT_EQUAL(FieldBase::VECTOR,
-		       FieldBase::parseVectorFieldString("vector"));
-  CPPUNIT_ASSERT_EQUAL(FieldBase::TENSOR,
-		       FieldBase::parseVectorFieldString("tensor"));
-  CPPUNIT_ASSERT_EQUAL(FieldBase::OTHER,
-		       FieldBase::parseVectorFieldString("other"));
-  CPPUNIT_ASSERT_EQUAL(FieldBase::MULTI_SCALAR,
-		       FieldBase::parseVectorFieldString("multi_scalar"));
-  CPPUNIT_ASSERT_EQUAL(FieldBase::MULTI_VECTOR,
-		       FieldBase::parseVectorFieldString("multi_vector"));
-  CPPUNIT_ASSERT_EQUAL(FieldBase::MULTI_TENSOR,
-		       FieldBase::parseVectorFieldString("multi_tensor"));
-  CPPUNIT_ASSERT_EQUAL(FieldBase::MULTI_OTHER,
-		       FieldBase::parseVectorFieldString("multi_other"));
+pylith::topology::TestFieldBase::testParseVectorFieldString(void) {
+    CHECK(FieldBase::SCALAR == FieldBase::parseVectorFieldString("scalar"));
+    CHECK(FieldBase::VECTOR == FieldBase::parseVectorFieldString("vector"));
+    CHECK(FieldBase::TENSOR == FieldBase::parseVectorFieldString("tensor"));
+    CHECK(FieldBase::OTHER == FieldBase::parseVectorFieldString("other"));
+    CHECK(FieldBase::MULTI_SCALAR == FieldBase::parseVectorFieldString("multi_scalar"));
+    CHECK(FieldBase::MULTI_VECTOR == FieldBase::parseVectorFieldString("multi_vector"));
+    CHECK(FieldBase::MULTI_TENSOR == FieldBase::parseVectorFieldString("multi_tensor"));
+    CHECK(FieldBase::MULTI_OTHER == FieldBase::parseVectorFieldString("multi_other"));
 } // testParseVectorFieldString
 
 
-// End of file 
+// End of file

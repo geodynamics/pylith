@@ -32,6 +32,10 @@
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
+#include "catch2/catch_test_macros.hpp"
+#include "catch2/matchers/catch_matchers_floating_point.hpp"
+#include "catch2/matchers/catch_matchers_exception.hpp"
+
 const double pylith::topology::TestFieldQuery::FILL_VALUE = -999.0;
 
 namespace pylith {
@@ -51,24 +55,25 @@ namespace pylith {
 } // pylith
 
 // ----------------------------------------------------------------------
-// Setup testing data.
-void
-pylith::topology::TestFieldQuery::setUp(void) {
+// Constructor.
+pylith::topology::TestFieldQuery::TestFieldQuery(TestFieldQuery_Data* data) :
+    _data(data) {
     PYLITH_METHOD_BEGIN;
+    assert(_data);
 
-    _data = new TestFieldQuery_Data;CPPUNIT_ASSERT(_data);
     _mesh = NULL;
     _field = NULL;
     _query = NULL;
 
+    _initialize();
+
     PYLITH_METHOD_END;
-} // setUp
+} // constructor
 
 
 // ----------------------------------------------------------------------
-// Tear down testing data.
-void
-pylith::topology::TestFieldQuery::tearDown(void) {
+// Destructor.
+pylith::topology::TestFieldQuery::~TestFieldQuery(void) {
     PYLITH_METHOD_BEGIN;
 
     delete _data;_data = NULL;
@@ -77,7 +82,7 @@ pylith::topology::TestFieldQuery::tearDown(void) {
     delete _query;_query = NULL;
 
     PYLITH_METHOD_END;
-} // tearDown
+} // destructor
 
 
 // ----------------------------------------------------------------------
@@ -89,9 +94,9 @@ pylith::topology::TestFieldQuery::testConstructor(void) {
     pylith::topology::Mesh mesh;
     pylith::topology::Field field(mesh);
     pylith::topology::FieldQuery query(field);
-    CPPUNIT_ASSERT(!query._functions);
-    CPPUNIT_ASSERT(!query._contexts);
-    CPPUNIT_ASSERT(!query._contextPtrs);
+    CHECK(!query._functions);
+    CHECK(!query._contexts);
+    CHECK(!query._contextPtrs);
 
     PYLITH_METHOD_END;
 } // testConstructor
@@ -102,9 +107,7 @@ pylith::topology::TestFieldQuery::testConstructor(void) {
 void
 pylith::topology::TestFieldQuery::testSetQuery(void) {
     PYLITH_METHOD_BEGIN;
-
-    _initialize();
-    CPPUNIT_ASSERT(_query);
+    assert(_query);
 
     { // Test with spatial database values, convert function, and database.
         const char* subfieldName = "ab";
@@ -114,16 +117,12 @@ pylith::topology::TestFieldQuery::testSetQuery(void) {
         _query->setQuery(subfieldName, dbValues, numDBValues, &_TestFieldQuery::converter, &dbUser);
 
         const pylith::topology::FieldQuery::SubfieldQuery& info = _query->_subfieldQueries[subfieldName];
-        CPPUNIT_ASSERT_EQUAL_MESSAGE("Subfield ab: Mismatch in number of database values.",
-                                     numDBValues, info.queryValues.size());
+        REQUIRE(numDBValues == info.queryValues.size());
         for (size_t i = 0; i < numDBValues; ++i) {
-            CPPUNIT_ASSERT_EQUAL_MESSAGE("Subfield ab: Mismatch in names of database values.",
-                                         std::string(dbValues[i]), info.queryValues[i]);
+            CHECK(std::string(dbValues[i]) == info.queryValues[i]);
         } // for
-        CPPUNIT_ASSERT_EQUAL_MESSAGE("Subfield ab: Mismatch in convert function.",
-                                     &_TestFieldQuery::converter, info.converter);
-        CPPUNIT_ASSERT_EQUAL_MESSAGE("Subfield ab: Mismatch in database.",
-                                     &dbUser, dynamic_cast<spatialdata::spatialdb::UserFunctionDB*>(info.db));
+        CHECK(&_TestFieldQuery::converter == info.converter);
+        CHECK(&dbUser == dynamic_cast<spatialdata::spatialdb::UserFunctionDB*>(info.db));
     }
 
     { // Test with spatial database values and database.
@@ -134,16 +133,12 @@ pylith::topology::TestFieldQuery::testSetQuery(void) {
         _query->setQuery(subfieldName, dbValues, numDBValues, NULL, &dbUser);
 
         const pylith::topology::FieldQuery::SubfieldQuery& info = _query->_subfieldQueries[subfieldName];
-        CPPUNIT_ASSERT_EQUAL_MESSAGE("Subfield cd: Mismatch in number of database values.",
-                                     numDBValues, info.queryValues.size());
+        REQUIRE(numDBValues == info.queryValues.size());
         for (size_t i = 0; i < numDBValues; ++i) {
-            CPPUNIT_ASSERT_EQUAL_MESSAGE("Subfield cd: Mismatch in names of database values.",
-                                         std::string(dbValues[i]), info.queryValues[i]);
+            CHECK(std::string(dbValues[i]) == info.queryValues[i]);
         } // for
-        CPPUNIT_ASSERT_EQUAL_MESSAGE("Subfield cd: Mismatch in convert function.",
-                                     pylith::topology::FieldQuery::convertfn_type(NULL), info.converter);
-        CPPUNIT_ASSERT_EQUAL_MESSAGE("Subfield cd: Mismatch in database.",
-                                     &dbUser, dynamic_cast<spatialdata::spatialdb::UserFunctionDB*>(info.db));
+        CHECK(pylith::topology::FieldQuery::convertfn_type(NULL) == info.converter);
+        CHECK(&dbUser == dynamic_cast<spatialdata::spatialdb::UserFunctionDB*>(info.db));
     }
 
     { // Test with spatial database values and convert function.
@@ -153,16 +148,12 @@ pylith::topology::TestFieldQuery::testSetQuery(void) {
         _query->setQuery(subfieldName, dbValues, numDBValues, &_TestFieldQuery::converter);
 
         const pylith::topology::FieldQuery::SubfieldQuery& info = _query->_subfieldQueries[subfieldName];
-        CPPUNIT_ASSERT_EQUAL_MESSAGE("Subfield ef: Mismatch in number of database values.",
-                                     numDBValues, info.queryValues.size());
+        REQUIRE(numDBValues == info.queryValues.size());
         for (size_t i = 0; i < numDBValues; ++i) {
-            CPPUNIT_ASSERT_EQUAL_MESSAGE("Subfield ef: Mismatch in names of database values.",
-                                         std::string(dbValues[i]), info.queryValues[i]);
+            CHECK(std::string(dbValues[i]) == info.queryValues[i]);
         } // for
-        CPPUNIT_ASSERT_EQUAL_MESSAGE("Subfield ef: Mismatch in convert function.",
-                                     &_TestFieldQuery::converter, info.converter);
-        CPPUNIT_ASSERT_EQUAL_MESSAGE("Subfield ef: Mismatch in database.",
-                                     (spatialdata::spatialdb::SpatialDB*)NULL, info.db);
+        CHECK(&_TestFieldQuery::converter == info.converter);
+        CHECK((spatialdata::spatialdb::SpatialDB*)NULL == info.db);
     }
 
     { // Test with spatial database values.
@@ -172,16 +163,12 @@ pylith::topology::TestFieldQuery::testSetQuery(void) {
         _query->setQuery(subfieldName, dbValues, numDBValues, &_TestFieldQuery::converter);
 
         const pylith::topology::FieldQuery::SubfieldQuery& info = _query->_subfieldQueries[subfieldName];
-        CPPUNIT_ASSERT_EQUAL_MESSAGE("Subfield gh: Mismatch in number of database values.",
-                                     numDBValues, info.queryValues.size());
+        REQUIRE(numDBValues == info.queryValues.size());
         for (size_t i = 0; i < numDBValues; ++i) {
-            CPPUNIT_ASSERT_EQUAL_MESSAGE("Subfield gh: Mismatch in names of database values.",
-                                         std::string(dbValues[i]), info.queryValues[i]);
+            CHECK(std::string(dbValues[i]) == info.queryValues[i]);
         } // for
-        CPPUNIT_ASSERT_EQUAL_MESSAGE("Subfield gh: Mismatch in convert function.",
-                                     &_TestFieldQuery::converter, info.converter);
-        CPPUNIT_ASSERT_EQUAL_MESSAGE("Subfield gh: Mismatch in database.",
-                                     (spatialdata::spatialdb::SpatialDB*)NULL, info.db);
+        CHECK(&_TestFieldQuery::converter == info.converter);
+        CHECK((spatialdata::spatialdb::SpatialDB*)NULL == info.db);
     }
 
     { // Test with defaults.
@@ -192,16 +179,12 @@ pylith::topology::TestFieldQuery::testSetQuery(void) {
         _query->setQuery(subfieldName);
 
         const pylith::topology::FieldQuery::SubfieldQuery& info = _query->_subfieldQueries[subfieldName];
-        CPPUNIT_ASSERT_EQUAL_MESSAGE("Subfield displacement: Mismatch in number of database values.",
-                                     size_t(2), info.queryValues.size());
+        REQUIRE(size_t(2) == info.queryValues.size());
         for (size_t i = 0; i < numDBValuesE; ++i) {
-            CPPUNIT_ASSERT_EQUAL_MESSAGE("Subfield displacement: Mismatch in names of database values.",
-                                         std::string(dbValuesE[i]), info.queryValues[i]);
+            CHECK(std::string(dbValuesE[i]) == info.queryValues[i]);
         } // for
-        CPPUNIT_ASSERT_EQUAL_MESSAGE("Subfield displacement: Mismatch in convert function.",
-                                     pylith::topology::FieldQuery::convertfn_type(NULL), info.converter);
-        CPPUNIT_ASSERT_EQUAL_MESSAGE("Subfield displacement: Mismatch in database.",
-                                     (spatialdata::spatialdb::SpatialDB*)NULL, info.db);
+        CHECK(pylith::topology::FieldQuery::convertfn_type(NULL) == info.converter);
+        CHECK((spatialdata::spatialdb::SpatialDB*)NULL == info.db);
     }
 
     PYLITH_METHOD_END;
@@ -213,9 +196,7 @@ pylith::topology::TestFieldQuery::testSetQuery(void) {
 void
 pylith::topology::TestFieldQuery::testOpenClose(void) {
     PYLITH_METHOD_BEGIN;
-
-    _initialize();
-    CPPUNIT_ASSERT(_query);
+    assert(_query);
 
     _query->initializeWithDefaultQueries();
 
@@ -238,15 +219,13 @@ pylith::topology::TestFieldQuery::testOpenClose(void) {
 void
 pylith::topology::TestFieldQuery::testQuery(void) {
     PYLITH_METHOD_BEGIN;
-
-    _initialize();
-    CPPUNIT_ASSERT(_query);
-    CPPUNIT_ASSERT(_field);
+    assert(_query);
+    assert(_field);
+    assert(_data);
+    assert(_data->normalizer);
 
     _query->initializeWithDefaultQueries();
 
-    CPPUNIT_ASSERT(_data);
-    CPPUNIT_ASSERT(_data->normalizer);
     _query->openDB(_data->auxDB, _data->normalizer->getLengthScale());
     _query->queryDB();
     _query->closeDB(_data->auxDB);
@@ -261,10 +240,10 @@ pylith::topology::TestFieldQuery::testQuery(void) {
     query.initializeWithDefaultQueries();
     query.openDB(_data->auxDB, _data->normalizer->getLengthScale());
     PetscErrorCode err = DMPlexComputeL2DiffLocal(_field->getDM(), t, query._functions, (void**)query._contextPtrs,
-                                                  _field->getLocalVector(), &norm);CPPUNIT_ASSERT(!err);
+                                                  _field->getLocalVector(), &norm);REQUIRE(!err);
     query.closeDB(_data->auxDB);
     const PylithReal tolerance = 1.0e-6;
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
+    CHECK_THAT(norm, Catch::Matchers::WithinAbs(0.0, tolerance));
 
     PYLITH_METHOD_END;
 } // testQuery
@@ -275,9 +254,7 @@ pylith::topology::TestFieldQuery::testQuery(void) {
 void
 pylith::topology::TestFieldQuery::testQueryNull(void) {
     PYLITH_METHOD_BEGIN;
-
-    _initialize();
-    CPPUNIT_ASSERT(_query);
+    assert(_query);
 
     _query->initializeWithDefaultQueries();
 
@@ -292,12 +269,12 @@ pylith::topology::TestFieldQuery::testQueryNull(void) {
     const PylithReal tolerance = 1.0e-6;
 
     PylithReal min = 0;
-    err = VecMin(_field->getLocalVector(), NULL, &min);CPPUNIT_ASSERT(!err);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Auxiliary field values don't match FILL_VALUE value.", FILL_VALUE, min, abs(FILL_VALUE*tolerance));
+    err = VecMin(_field->getLocalVector(), NULL, &min);REQUIRE(!err);
+    CHECK_THAT(min, Catch::Matchers::WithinAbs(FILL_VALUE, abs(FILL_VALUE*tolerance)));
 
     PylithReal max = 0.0;
-    err = VecMax(_field->getLocalVector(), NULL, &max);CPPUNIT_ASSERT(!err);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Auxiliary field values don't match FILL_VALUE value.", FILL_VALUE, max, abs(FILL_VALUE*tolerance));
+    err = VecMax(_field->getLocalVector(), NULL, &max);REQUIRE(!err);
+    CHECK_THAT(max, Catch::Matchers::WithinAbs(FILL_VALUE, abs(FILL_VALUE*tolerance)));
 
     PYLITH_METHOD_END;
 } // testQuery
@@ -309,9 +286,9 @@ void
 pylith::topology::TestFieldQuery::testValidatorPositive(void) {
     PYLITH_METHOD_BEGIN;
 
-    CPPUNIT_ASSERT(NULL != pylith::topology::FieldQuery::validatorPositive(-1.0));
-    CPPUNIT_ASSERT(NULL != pylith::topology::FieldQuery::validatorPositive(0.0));
-    CPPUNIT_ASSERT(NULL == pylith::topology::FieldQuery::validatorPositive(1.0));
+    CHECK(NULL != pylith::topology::FieldQuery::validatorPositive(-1.0));
+    CHECK(NULL != pylith::topology::FieldQuery::validatorPositive(0.0));
+    CHECK(NULL == pylith::topology::FieldQuery::validatorPositive(1.0));
 
     PYLITH_METHOD_END;
 } // testValidatorPositive
@@ -323,9 +300,9 @@ void
 pylith::topology::TestFieldQuery::testValidatorNonnegative(void) {
     PYLITH_METHOD_BEGIN;
 
-    CPPUNIT_ASSERT(NULL != pylith::topology::FieldQuery::validatorNonnegative(-1.0));
-    CPPUNIT_ASSERT(NULL == pylith::topology::FieldQuery::validatorNonnegative(0.0));
-    CPPUNIT_ASSERT(NULL == pylith::topology::FieldQuery::validatorNonnegative(1.0));
+    CHECK(NULL != pylith::topology::FieldQuery::validatorNonnegative(-1.0));
+    CHECK(NULL == pylith::topology::FieldQuery::validatorNonnegative(0.0));
+    CHECK(NULL == pylith::topology::FieldQuery::validatorNonnegative(1.0));
 
     PYLITH_METHOD_END;
 } // testValidatorPositive
@@ -335,7 +312,7 @@ pylith::topology::TestFieldQuery::testValidatorNonnegative(void) {
 void
 pylith::topology::TestFieldQuery::_initialize(void) {
     PYLITH_METHOD_BEGIN;
-    CPPUNIT_ASSERT(_data);
+    assert(_data);
 
     const int cellDim = _data->cellDim;
     const int numCells = _data->numCells;
@@ -355,27 +332,27 @@ pylith::topology::TestFieldQuery::_initialize(void) {
         cells[i] = _data->cells[i];
     } // for
 
-    delete _mesh;_mesh = new Mesh;CPPUNIT_ASSERT(_mesh);
+    delete _mesh;_mesh = new Mesh;assert(_mesh);
     pylith::meshio::MeshBuilder::buildMesh(_mesh, &coordinates, numVertices, spaceDim, cells, numCells, numCorners, cellDim);
 
-    CPPUNIT_ASSERT(_data->cs);
+    assert(_data->cs);
     _mesh->setCoordSys(_data->cs);
-    CPPUNIT_ASSERT(_data->normalizer);
+    assert(_data->normalizer);
     pylith::topology::MeshOps::nondimensionalize(_mesh, *_data->normalizer);
 
     // Setup field
-    delete _field;_field = new pylith::topology::Field(*_mesh);CPPUNIT_ASSERT(_field);
+    delete _field;_field = new pylith::topology::Field(*_mesh);assert(_field);
     _field->setLabel("auxiliary test field");
     for (int i = 0; i < _data->numAuxSubfields; ++i) {
-        CPPUNIT_ASSERT(_data->auxDescriptions);
-        CPPUNIT_ASSERT(_data->auxDiscretizations);
+        assert(_data->auxDescriptions);
+        assert(_data->auxDiscretizations);
         _field->subfieldAdd(_data->auxDescriptions[i], _data->auxDiscretizations[i]);
     } // for
     _field->subfieldsSetup();
     _field->createDiscretization();
     _field->allocate();
     PetscErrorCode err;
-    err = VecSet(_field->getLocalVector(), FILL_VALUE);CPPUNIT_ASSERT(!err);
+    err = VecSet(_field->getLocalVector(), FILL_VALUE);assert(!err);
 
     delete _query;_query = new pylith::topology::FieldQuery(*_field);
 

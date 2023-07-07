@@ -33,28 +33,29 @@
 #include <strings.h> // USES strcasecmp()
 #include <stdexcept> // USES std::logic_error
 
-// ----------------------------------------------------------------------
+#include "catch2/catch_test_macros.hpp"
+
+// ------------------------------------------------------------------------------------------------
 // Setup testing data.
-void
-pylith::topology::TestRefineUniform::setUp(void) {
-    _data = new TestRefineUniform_Data;CPPUNIT_ASSERT(_data);
-} // setUp
+pylith::topology::TestRefineUniform::TestRefineUniform(TestRefineUniform_Data* data) :
+    _data(data) {
+    assert(_data);
+} // constructor
 
 
-// ----------------------------------------------------------------------
-// Deallocate testing data.
-void
-pylith::topology::TestRefineUniform::tearDown(void) {
+// ------------------------------------------------------------------------------------------------
+// Destructor.
+pylith::topology::TestRefineUniform::~TestRefineUniform(void) {
     delete _data;_data = NULL;
-} // tearDown
+} // destructor
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test refine().
 void
 pylith::topology::TestRefineUniform::testRefine(void) {
     PYLITH_METHOD_BEGIN;
-    CPPUNIT_ASSERT(_data);
+    assert(_data);
 
     Mesh mesh(_data->cellDim);
     _initializeMesh(&mesh);
@@ -64,20 +65,20 @@ pylith::topology::TestRefineUniform::testRefine(void) {
     refiner.refine(&newMesh, mesh, _data->refineLevel);
 
     // Check mesh dimension
-    CPPUNIT_ASSERT_EQUAL(_data->cellDim, newMesh.getDimension());
+    REQUIRE(_data->cellDim == newMesh.getDimension());
 
-    const PetscDM& dmMesh = newMesh.getDM();CPPUNIT_ASSERT(dmMesh);
+    const PetscDM& dmMesh = newMesh.getDM();assert(dmMesh);
 
     // Check vertices
     pylith::topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
-    CPPUNIT_ASSERT_EQUAL(_data->numVertices, verticesStratum.size());
+    REQUIRE(_data->numVertices == verticesStratum.size());
     const PetscInt vStart = verticesStratum.begin();
     const PetscInt vEnd = verticesStratum.end();
 
     pylith::topology::CoordsVisitor coordsVisitor(dmMesh);
     const int spaceDim = _data->spaceDim;
     for (PetscInt v = vStart; v < vEnd; ++v) {
-        CPPUNIT_ASSERT_EQUAL(spaceDim, coordsVisitor.sectionDof(v));
+        CHECK(spaceDim == coordsVisitor.sectionDof(v));
     } // for
 
     // Check cells
@@ -86,7 +87,7 @@ pylith::topology::TestRefineUniform::testRefine(void) {
     const PetscInt cEnd = cellsStratum.end();
     const PetscInt numCells = cellsStratum.size();
 
-    CPPUNIT_ASSERT_EQUAL(_data->numCells+_data->numCellsCohesive, numCells);
+    REQUIRE(_data->numCells+_data->numCellsCohesive == numCells);
     PetscErrorCode err;
     // Normal cells
     for (PetscInt c = cStart; c < _data->numCells; ++c) {
@@ -94,17 +95,17 @@ pylith::topology::TestRefineUniform::testRefine(void) {
         PetscInt *closure = NULL;
         PetscInt closureSize, numCorners = 0;
 
-        err = DMPlexGetCellType(dmMesh, c, &ct);CPPUNIT_ASSERT(!err);
-        err = DMPlexGetTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);CPPUNIT_ASSERT(!err);
+        err = DMPlexGetCellType(dmMesh, c, &ct);assert(!err);
+        err = DMPlexGetTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);assert(!err);
         for (PetscInt p = 0; p < closureSize*2; p += 2) {
             const PetscInt point = closure[p];
             if ((point >= vStart) && (point < vEnd)) {
                 closure[numCorners++] = point;
             } // if
         } // for
-        err = DMPlexInvertCell(ct, closure);CPPUNIT_ASSERT(!err);
-        CPPUNIT_ASSERT_EQUAL(_data->numCorners, numCorners);
-        err = DMPlexRestoreTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);CPPUNIT_ASSERT(!err);
+        err = DMPlexInvertCell(ct, closure);assert(!err);
+        CHECK(_data->numCorners == numCorners);
+        err = DMPlexRestoreTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);assert(!err);
     } // for
 
     // Cohesive cells
@@ -113,32 +114,32 @@ pylith::topology::TestRefineUniform::testRefine(void) {
         PetscInt *closure = NULL;
         PetscInt closureSize, numCorners = 0;
 
-        err = DMPlexGetCellType(dmMesh, c, &ct);CPPUNIT_ASSERT(!err);
-        err = DMPlexGetTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);CPPUNIT_ASSERT(!err);
+        err = DMPlexGetCellType(dmMesh, c, &ct);assert(!err);
+        err = DMPlexGetTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);assert(!err);
         for (PetscInt p = 0; p < closureSize*2; p += 2) {
             const PetscInt point = closure[p];
             if ((point >= vStart) && (point < vEnd)) {
                 closure[numCorners++] = point;
             } // if
         } // for
-        err = DMPlexInvertCell(ct, closure);CPPUNIT_ASSERT(!err);
-        CPPUNIT_ASSERT_EQUAL(_data->numCornersCohesive, numCorners);
-        err = DMPlexRestoreTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);CPPUNIT_ASSERT(!err);
+        err = DMPlexInvertCell(ct, closure);assert(!err);
+        CHECK(_data->numCornersCohesive == numCorners);
+        err = DMPlexRestoreTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);assert(!err);
     } // for
 
     // check materials
     PetscInt matId = 0;
     PetscInt matIdSum = 0; // Use sum of material ids as simple checksum.
     for (PetscInt c = cStart; c < cEnd; ++c) {
-        err = DMGetLabelValue(dmMesh, pylith::topology::Mesh::cells_label_name, c, &matId);CPPUNIT_ASSERT(!err);
+        err = DMGetLabelValue(dmMesh, pylith::topology::Mesh::cells_label_name, c, &matId);assert(!err);
         matIdSum += matId;
     } // for
-    CPPUNIT_ASSERT_EQUAL(_data->matIdSum, matIdSum);
+    CHECK(_data->matIdSum == matIdSum);
 
     // Check groups
     PetscInt numGroups, pStart, pEnd;
-    err = DMPlexGetChart(dmMesh, &pStart, &pEnd);CPPUNIT_ASSERT(!err);
-    err = DMGetNumLabels(dmMesh, &numGroups);CPPUNIT_ASSERT(!err);
+    err = DMPlexGetChart(dmMesh, &pStart, &pEnd);assert(!err);
+    err = DMGetNumLabels(dmMesh, &numGroups);assert(!err);
     for (PetscInt iGroup = 0; iGroup < _data->numGroups; ++iGroup) {
         // Omit depth, vtk, ghost and material-id labels
         // Don't know order of labels, so do brute force linear search
@@ -148,7 +149,7 @@ pylith::topology::TestRefineUniform::testRefine(void) {
         PetscInt firstPoint = 0;
 
         while (iLabel < numGroups) {
-            err = DMGetLabelName(dmMesh, iLabel, &name);CPPUNIT_ASSERT(!err);
+            err = DMGetLabelName(dmMesh, iLabel, &name);assert(!err);
             if (0 == strcmp(_data->groupNames[iGroup], name)) {
                 foundLabel = true;
                 break;
@@ -156,48 +157,48 @@ pylith::topology::TestRefineUniform::testRefine(void) {
                 ++iLabel;
             } // if/else
         } // while
-        CPPUNIT_ASSERT(foundLabel);
+        assert(foundLabel);
 
         for (PetscInt p = pStart; p < pEnd; ++p) {
             PetscInt val;
-            err = DMGetLabelValue(dmMesh, name, p, &val);CPPUNIT_ASSERT(!err);
+            err = DMGetLabelValue(dmMesh, name, p, &val);assert(!err);
             if (val >= 0) {
                 firstPoint = p;
                 break;
             } // if
         } // for
         std::string groupType = (firstPoint >= cStart && firstPoint < cEnd) ? "cell" : "vertex";
-        CPPUNIT_ASSERT_EQUAL(std::string(_data->groupTypes[iGroup]), groupType);
+        CHECK(std::string(_data->groupTypes[iGroup]) == groupType);
         PetscInt numPoints;
-        err = DMGetStratumSize(dmMesh, name, 1, &numPoints);CPPUNIT_ASSERT(!err);
-        CPPUNIT_ASSERT_EQUAL(_data->groupSizes[iGroup], numPoints);
+        err = DMGetStratumSize(dmMesh, name, 1, &numPoints);assert(!err);
+        REQUIRE(_data->groupSizes[iGroup] == numPoints);
         PetscIS pointIS = NULL;
         const PetscInt *points = NULL;
-        err = DMGetStratumIS(dmMesh, name, 1, &pointIS);CPPUNIT_ASSERT(!err);
-        err = ISGetIndices(pointIS, &points);CPPUNIT_ASSERT(!err);
+        err = DMGetStratumIS(dmMesh, name, 1, &pointIS);assert(!err);
+        err = ISGetIndices(pointIS, &points);assert(!err);
         if (groupType == std::string("vertex")) {
             for (PetscInt p = 0; p < numPoints; ++p) {
-                CPPUNIT_ASSERT((points[p] >= 0 && points[p] < cStart) || (points[p] >= cEnd));
+                assert((points[p] >= 0 && points[p] < cStart) || (points[p] >= cEnd));
             } // for
         } else {
             for (PetscInt p = 0; p < numPoints; ++p) {
-                CPPUNIT_ASSERT(points[p] >= cStart && points[p] < cEnd);
+                assert(points[p] >= cStart && points[p] < cEnd);
             } // for
         } // if/else
-        err = ISRestoreIndices(pointIS, &points);CPPUNIT_ASSERT(!err);
-        err = ISDestroy(&pointIS);CPPUNIT_ASSERT(!err);
+        err = ISRestoreIndices(pointIS, &points);assert(!err);
+        err = ISDestroy(&pointIS);assert(!err);
     } // for
 
     PYLITH_METHOD_END;
 } // testRefine
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 void
 pylith::topology::TestRefineUniform::_initializeMesh(Mesh* const mesh) {
     PYLITH_METHOD_BEGIN;
-    CPPUNIT_ASSERT(_data);
-    CPPUNIT_ASSERT(mesh);
+    assert(_data);
+    assert(mesh);
 
     pylith::meshio::MeshIOAscii iohandler;
     iohandler.setFilename(_data->filename);
@@ -222,7 +223,7 @@ pylith::topology::TestRefineUniform::_initializeMesh(Mesh* const mesh) {
 } // _initializeMesh
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Constructor
 pylith::topology::TestRefineUniform_Data::TestRefineUniform_Data(void) :
     filename(NULL),
@@ -245,7 +246,7 @@ pylith::topology::TestRefineUniform_Data::TestRefineUniform_Data(void) :
 } // constructor
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Destructor
 pylith::topology::TestRefineUniform_Data::~TestRefineUniform_Data(void) {} // destructor
 

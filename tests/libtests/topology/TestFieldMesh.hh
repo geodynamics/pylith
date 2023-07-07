@@ -25,16 +25,13 @@
 #if !defined(pylith_topology_testfieldmesh_hh)
 #define pylith_topology_testfieldmesh_hh
 
-// Include directives ---------------------------------------------------
-#include <cppunit/extensions/HelperMacros.h>
+#include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
 #include "pylith/topology/topologyfwd.hh" // forward declarations
 #include "pylith/utils/petscfwd.h" // forward declarations
 
 #include "pylith/topology/FieldBase.hh" // USES FieldBase::Description
 
-// Forward declarations -------------------------------------------------
-/// Namespace for pylith package
 namespace pylith {
     namespace topology {
         class TestFieldMesh;
@@ -42,33 +39,16 @@ namespace pylith {
     } // topology
 } // pylith
 
-// TestFieldMesh -------------------------------------------------------------
-/// C++ unit testing for Field.
-class pylith::topology::TestFieldMesh : public CppUnit::TestFixture {
-    // CPPUNIT TEST SUITE //////////////////////////////////////////////////////
-    CPPUNIT_TEST_SUITE(TestFieldMesh);
-
-    CPPUNIT_TEST(testConstructor);
-    CPPUNIT_TEST(testCopyConstructor);
-    CPPUNIT_TEST(testMesh);
-    CPPUNIT_TEST(testGeneralAccessors);
-    CPPUNIT_TEST(testSectionAccessors);
-    CPPUNIT_TEST(testVectorAccessors);
-    CPPUNIT_TEST(testSubfieldAccessors);
-    CPPUNIT_TEST(testAllocate);
-    CPPUNIT_TEST(testZeroLocal);
-    CPPUNIT_TEST(testView);
-
-    CPPUNIT_TEST_SUITE_END();
-
-    // PUBLIC METHODS //////////////////////////////////////////////////////////
+// ------------------------------------------------------------------------------------------------
+class pylith::topology::TestFieldMesh : public pylith::utils::GenericComponent {
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
-    /// Setup testing data.
-    void setUp(void);
+    /// Constructor.
+    TestFieldMesh(TestFieldMesh_Data* data);
 
-    /// Deallocate testing data.
-    void tearDown(void);
+    /// Destructor.
+    ~TestFieldMesh(void);
 
     /// Test constructor.
     void testConstructor(void);
@@ -100,7 +80,7 @@ public:
     /// Test view().
     void testView(void);
 
-    // PRIVATE METHODS /////////////////////////////////////////////////////////
+    // PRIVATE METHODS ////////////////////////////////////////////////////////////////////////////
 private:
 
     /// Initialize mesh and test field.
@@ -131,7 +111,7 @@ protected:
 
 }; // class TestFieldMesh
 
-// TestFieldMesh_Data-----------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 class pylith::topology::TestFieldMesh_Data {
     // PUBLIC METHODS //////////////////////////////////////////////////////////
 public:

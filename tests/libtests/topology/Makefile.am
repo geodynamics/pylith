@@ -15,16 +15,16 @@
 #
 # ----------------------------------------------------------------------
 #
-include $(top_srcdir)/tests/check_cppunit.am
+include $(top_srcdir)/tests/check_catch2.am
 
 SUBDIRS = data
 
-TESTS = test_topology
+TESTS = libtest_topology
 
-check_PROGRAMS = test_topology
+check_PROGRAMS = libtest_topology
 
 # Primary source files
-test_topology_SOURCES = \
+libtest_topology_SOURCES = \
 	TestMesh.cc \
 	TestMeshOps.cc \
 	TestSubmesh.cc \
@@ -40,19 +40,16 @@ test_topology_SOURCES = \
 	TestReverseCuthillMcKee_Cases.cc \
 	$(top_srcdir)/tests/src/FaultCohesiveStub.cc \
 	$(top_srcdir)/tests/src/StubMethodTracker.cc \
-	$(top_srcdir)/tests/src/driver_cppunit.cc
+	$(top_srcdir)/tests/src/driver_catch2.cc
 
 #	TestFieldSubmesh.cc
+#	TestFieldSubmesh.hh
 
 
 
 dist_noinst_HEADERS = \
-	TestMesh.hh \
 	TestSubmesh.hh \
-	TestMeshOps.hh \
-	TestFieldBase.hh \
 	TestFieldMesh.hh \
-	TestFieldSubmesh.hh \
 	TestFieldQuery.hh \
 	TestRefineUniform.hh \
 	TestReverseCuthillMcKee.hh

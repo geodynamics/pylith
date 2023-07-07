@@ -27,13 +27,10 @@
 #if !defined(pylith_topology_testreversecuthillmckee_hh)
 #define pylith_topology_testreversecuthillmckee_hh
 
-// Include directives ---------------------------------------------------
-#include <cppunit/extensions/HelperMacros.h>
+#include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
 #include "pylith/topology/topologyfwd.hh" // USES Mesh
 
-// Forward declarations -------------------------------------------------
-/// Namespace for pylith package
 namespace pylith {
     namespace topology {
         class TestReverseCuthillMcKee;
@@ -41,36 +38,27 @@ namespace pylith {
     } // topology
 } // pylith
 
-// ReverseCuthillMcKee ---------------------------------------------------------------
-class pylith::topology::TestReverseCuthillMcKee : public CppUnit::TestFixture
-{ // class TestReverseCuthillMcKee
-
-    // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-    CPPUNIT_TEST_SUITE( TestReverseCuthillMcKee );
-
-    CPPUNIT_TEST( testReorder );
-
-    CPPUNIT_TEST_SUITE_END();
-
-    // PUBLIC METHODS /////////////////////////////////////////////////////
+// ------------------------------------------------------------------------------------------------
+class pylith::topology::TestReverseCuthillMcKee : public pylith::utils::GenericComponent {
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
-    /// Setup testing data.
-    void setUp(void);
+    /// Constructor.
+    TestReverseCuthillMcKee(TestReverseCuthillMcKee_Data* data);
 
-    /// Deallocate testing data.
-    void tearDown(void);
+    /// Destructor.
+    ~TestReverseCuthillMcKee(void);
 
     /// Test reorder().
     void testReorder(void);
 
-    // PROTECTED MEMBERS ///////////////////////////////////////////////////////
-protected:
+    // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
+private:
 
     TestReverseCuthillMcKee_Data* _data; ///< Data for testing.
     Mesh* _mesh; ///< Finite-element mesh.
 
-    // PRIVATE METHODS //////////////////////////////////////////////////////
+    // PRIVATE METHODS ////////////////////////////////////////////////////////////////////////////
 private:
 
     /// Setup mesh.
@@ -78,11 +66,9 @@ private:
 
 }; // class TestReverseCuthillMcKee
 
-
-// TestReverseCuthillMcKee_Data-----------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 class pylith::topology::TestReverseCuthillMcKee_Data {
-
-    // PUBLIC METHODS //////////////////////////////////////////////////////////
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Constructor
@@ -91,7 +77,7 @@ public:
     /// Destructor
     ~TestReverseCuthillMcKee_Data(void);
 
-    // PUBLIC MEMBERS //////////////////////////////////////////////////////////
+    // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
 public:
 
     const char* filename; ///< Name of mesh file.
@@ -99,8 +85,6 @@ public:
 
 };  // TestReverseCuthillMcKee_Data
 
-
 #endif // pylith_topology_testreversecuthillmckee_hh
-
 
 // End of file

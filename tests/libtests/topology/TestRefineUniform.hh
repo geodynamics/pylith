@@ -27,45 +27,33 @@
 #if !defined(pylith_topology_testrefineuniform_hh)
 #define pylith_topology_testrefineuniform_hh
 
-// Include directives ---------------------------------------------------
-#include <cppunit/extensions/HelperMacros.h>
+#include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
 #include "pylith/topology/topologyfwd.hh" // USES Mesh
 
-// Forward declarations -------------------------------------------------
-/// Namespace for pylith package
 namespace pylith {
     namespace topology {
         class TestRefineUniform;
-
         class TestRefineUniform_Data; // test data
     } // topology
 } // pylith
 
-// TestRefineUniform -----------------------------------------------------------
-class pylith::topology::TestRefineUniform : public CppUnit::TestFixture {
-
-    // CPPUNIT TEST SUITE //////////////////////////////////////////////////////
-    CPPUNIT_TEST_SUITE( TestRefineUniform );
-
-    CPPUNIT_TEST( testRefine );
-
-    CPPUNIT_TEST_SUITE_END();
-
-    // PUBLIC METHODS //////////////////////////////////////////////////////////
+// ------------------------------------------------------------------------------------------------
+class pylith::topology::TestRefineUniform : public pylith::utils::GenericComponent {
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
-    /// Setup testing data.
-    void setUp(void);
+    /// Constructor.
+    TestRefineUniform(TestRefineUniform_Data* data);
 
-    /// Deallocate testing data.
-    void tearDown(void);
+    /// Destructor.
+    ~TestRefineUniform(void);
 
     /// Test refine().
     void testRefine(void);
 
-    // PROTECTED METHODS /////////////////////////////////////////////////////////
-protected:
+    // PRIVATE METHODS ////////////////////////////////////////////////////////////////////////////
+private:
 
     /** Setup mesh.
      *
@@ -73,18 +61,13 @@ protected:
      */
     void _initializeMesh(Mesh* const mesh);
 
-    // PROTECTED MEMBERS ///////////////////////////////////////////////////////
-protected:
-
     TestRefineUniform_Data* _data; ///< Data for testing.
 
 }; // class TestRefineUniform
 
-
-// TestRefineUniform_Data ------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 class pylith::topology::TestRefineUniform_Data {
-
-    // PUBLIC METHODS //////////////////////////////////////////////////////////
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Constructor
@@ -93,7 +76,7 @@ public:
     /// Destructor
     ~TestRefineUniform_Data(void);
 
-    // PUBLIC MEMBERS //////////////////////////////////////////////////////////
+    // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
 public:
 
     /// @defgroup Input information
@@ -125,8 +108,6 @@ public:
 
 };
 
-
 #endif // pylith_topology_testrefineuniform_hh
-
 
 // End of file

@@ -20,148 +20,160 @@
 
 #include "TestReverseCuthillMcKee.hh" // Implementation of class methods
 
-// -----------------------------------------------------------------------------
+#include "catch2/catch_test_macros.hpp"
+
 namespace pylith {
     namespace topology {
+        class TestReverseCuthillMcKee_Cases;
+    }
+}
 
-        // ---------------------------------------------------------------------
-        class TestReverseCuthillMcKee_Tri_Nofault : public TestReverseCuthillMcKee {
+// ------------------------------------------------------------------------------------------------
+class pylith::topology::TestReverseCuthillMcKee_Cases {
+public:
 
-            CPPUNIT_TEST_SUB_SUITE( TestReverseCuthillMcKee_Tri_Nofault, TestReverseCuthillMcKee );
-            CPPUNIT_TEST_SUITE_END();
+    // Data factory methods
+    static TestReverseCuthillMcKee_Data* Tri_NoFault(void);
 
-            void setUp(void) {
-                TestReverseCuthillMcKee::setUp();
+    static TestReverseCuthillMcKee_Data* Tri_Fault(void);
 
-                _data->filename = "data/reorder_tri3.mesh";
-                _data->faultLabel = NULL;
-            }   // setUp
+    static TestReverseCuthillMcKee_Data* Quad_NoFault(void);
 
+    static TestReverseCuthillMcKee_Data* Quad_Fault(void);
 
-        };  // TestReverseCuthillMcKee_Tri_Nofault
-        CPPUNIT_TEST_SUITE_REGISTRATION( TestReverseCuthillMcKee_Tri_Nofault );
+    static TestReverseCuthillMcKee_Data* Tet_NoFault(void);
 
-        // ---------------------------------------------------------------------
-        class TestReverseCuthillMcKee_Tri_Fault : public TestReverseCuthillMcKee {
+    static TestReverseCuthillMcKee_Data* Tet_Fault(void);
 
-            CPPUNIT_TEST_SUB_SUITE( TestReverseCuthillMcKee_Tri_Fault, TestReverseCuthillMcKee );
-            CPPUNIT_TEST_SUITE_END();
+    static TestReverseCuthillMcKee_Data* Hex_NoFault(void);
 
-            void setUp(void) {
-                TestReverseCuthillMcKee::setUp();
+    static TestReverseCuthillMcKee_Data* Hex_Fault(void);
 
-                _data->filename = "data/reorder_tri3.mesh";
-                _data->faultLabel = "fault";
-            }   // setUp
+};
 
+// ------------------------------------------------------------------------------------------------
+TEST_CASE("TestReverseCuthillMcKee::Tri_NoFault::testReorder", "[TestReverseCuthillMcKee][Tri][NoFault][testReorder]") {
+    pylith::topology::TestReverseCuthillMcKee(pylith::topology::TestReverseCuthillMcKee_Cases::Tri_NoFault()).testReorder();
+}
+TEST_CASE("TestReverseCuthillMcKee::Tri_NoFault::testReorder", "[TestReverseCuthillMcKee][Tri][Fault][testReorder]") {
+    pylith::topology::TestReverseCuthillMcKee(pylith::topology::TestReverseCuthillMcKee_Cases::Tri_Fault()).testReorder();
+}
 
-        };  // TestReverseCuthillMcKee_Tri_Fault
-        CPPUNIT_TEST_SUITE_REGISTRATION( TestReverseCuthillMcKee_Tri_Fault );
+TEST_CASE("TestReverseCuthillMcKee::Quad_NoFault::testReorder", "[TestReverseCuthillMcKee][Quad][NoFault][testReorder]") {
+    pylith::topology::TestReverseCuthillMcKee(pylith::topology::TestReverseCuthillMcKee_Cases::Quad_NoFault()).testReorder();
+}
+TEST_CASE("TestReverseCuthillMcKee::Quad_NoFault::testReorder", "[TestReverseCuthillMcKee][Quad][Fault][testReorder]") {
+    pylith::topology::TestReverseCuthillMcKee(pylith::topology::TestReverseCuthillMcKee_Cases::Quad_Fault()).testReorder();
+}
 
-        // ---------------------------------------------------------------------
-        class TestReverseCuthillMcKee_Quad_Nofault : public TestReverseCuthillMcKee {
+TEST_CASE("TestReverseCuthillMcKee::Tet_NoFault::testReorder", "[TestReverseCuthillMcKee][Tet][NoFault][testReorder]") {
+    pylith::topology::TestReverseCuthillMcKee(pylith::topology::TestReverseCuthillMcKee_Cases::Tet_NoFault()).testReorder();
+}
+TEST_CASE("TestReverseCuthillMcKee::Tet_NoFault::testReorder", "[TestReverseCuthillMcKee][Tet][Fault][testReorder]") {
+    pylith::topology::TestReverseCuthillMcKee(pylith::topology::TestReverseCuthillMcKee_Cases::Tet_Fault()).testReorder();
+}
 
-            CPPUNIT_TEST_SUB_SUITE( TestReverseCuthillMcKee_Quad_Nofault, TestReverseCuthillMcKee );
-            CPPUNIT_TEST_SUITE_END();
+TEST_CASE("TestReverseCuthillMcKee::Hex_NoFault::testReorder", "[TestReverseCuthillMcKee][Hex][NoFault][testReorder]") {
+    pylith::topology::TestReverseCuthillMcKee(pylith::topology::TestReverseCuthillMcKee_Cases::Hex_NoFault()).testReorder();
+}
+TEST_CASE("TestReverseCuthillMcKee::Hex_NoFault::testReorder", "[TestReverseCuthillMcKee][Hex][Fault][testReorder]") {
+    pylith::topology::TestReverseCuthillMcKee(pylith::topology::TestReverseCuthillMcKee_Cases::Hex_Fault()).testReorder();
+}
 
-            void setUp(void) {
-                TestReverseCuthillMcKee::setUp();
+// ------------------------------------------------------------------------------------------------
+pylith::topology::TestReverseCuthillMcKee_Data*
+pylith::topology::TestReverseCuthillMcKee_Cases::Tri_NoFault(void) {
+    TestReverseCuthillMcKee_Data* data = new TestReverseCuthillMcKee_Data();assert(data);
 
-                _data->filename = "data/reorder_quad4.mesh";
-                _data->faultLabel = NULL;
-            }   // setUp
+    data->filename = "data/reorder_tri3.mesh";
+    data->faultLabel = NULL;
 
-
-        };  // TestReverseCuthillMcKee_Quad_Nofault
-        CPPUNIT_TEST_SUITE_REGISTRATION( TestReverseCuthillMcKee_Quad_Nofault );
-
-        // ---------------------------------------------------------------------
-        class TestReverseCuthillMcKee_Quad_Fault : public TestReverseCuthillMcKee {
-
-            CPPUNIT_TEST_SUB_SUITE( TestReverseCuthillMcKee_Quad_Fault, TestReverseCuthillMcKee );
-            CPPUNIT_TEST_SUITE_END();
-
-            void setUp(void) {
-                TestReverseCuthillMcKee::setUp();
-
-                _data->filename = "data/reorder_quad4.mesh";
-                _data->faultLabel = "fault";
-            }   // setUp
-
-
-        };  // TestReverseCuthillMcKee_Quad_Fault
-        CPPUNIT_TEST_SUITE_REGISTRATION( TestReverseCuthillMcKee_Quad_Fault );
-
-        // ---------------------------------------------------------------------
-        class TestReverseCuthillMcKee_Tet_Nofault : public TestReverseCuthillMcKee {
-
-            CPPUNIT_TEST_SUB_SUITE( TestReverseCuthillMcKee_Tet_Nofault, TestReverseCuthillMcKee );
-            CPPUNIT_TEST_SUITE_END();
-
-            void setUp(void) {
-                TestReverseCuthillMcKee::setUp();
-
-                _data->filename = "data/reorder_tet4.mesh";
-                _data->faultLabel = NULL;
-            }   // setUp
+    return data;
+}   // Tri_NoFault
 
 
-        };  // TestReverseCuthillMcKee_Tet_Nofault
-        CPPUNIT_TEST_SUITE_REGISTRATION( TestReverseCuthillMcKee_Tet_Nofault );
+// ------------------------------------------------------------------------------------------------
+pylith::topology::TestReverseCuthillMcKee_Data*
+pylith::topology::TestReverseCuthillMcKee_Cases::Tri_Fault(void) {
+    TestReverseCuthillMcKee_Data* data = new TestReverseCuthillMcKee_Data();assert(data);
 
-        // ---------------------------------------------------------------------
-        class TestReverseCuthillMcKee_Tet_Fault : public TestReverseCuthillMcKee {
+    data->filename = "data/reorder_tri3.mesh";
+    data->faultLabel = "fault";
 
-            CPPUNIT_TEST_SUB_SUITE( TestReverseCuthillMcKee_Tet_Fault, TestReverseCuthillMcKee );
-            CPPUNIT_TEST_SUITE_END();
-
-            void setUp(void) {
-                TestReverseCuthillMcKee::setUp();
-
-                _data->filename = "data/reorder_tet4.mesh";
-                _data->faultLabel = "fault";
-            }   // setUp
+    return data;
+}   // Tri_Fault
 
 
-        };  // TestReverseCuthillMcKee_Tet_Fault
-        CPPUNIT_TEST_SUITE_REGISTRATION( TestReverseCuthillMcKee_Tet_Fault );
+// ------------------------------------------------------------------------------------------------
+pylith::topology::TestReverseCuthillMcKee_Data*
+pylith::topology::TestReverseCuthillMcKee_Cases::Quad_NoFault(void) {
+    TestReverseCuthillMcKee_Data* data = new TestReverseCuthillMcKee_Data();assert(data);
 
-        // ---------------------------------------------------------------------
-        class TestReverseCuthillMcKee_Hex_Nofault : public TestReverseCuthillMcKee {
+    data->filename = "data/reorder_quad4.mesh";
+    data->faultLabel = NULL;
 
-            CPPUNIT_TEST_SUB_SUITE( TestReverseCuthillMcKee_Hex_Nofault, TestReverseCuthillMcKee );
-            CPPUNIT_TEST_SUITE_END();
-
-            void setUp(void) {
-                TestReverseCuthillMcKee::setUp();
-
-                _data->filename = "data/reorder_hex8.mesh";
-                _data->faultLabel = NULL;
-            }   // setUp
+    return data;
+}   // Quad_NoFault
 
 
-        };  // TestReverseCuthillMcKee_Hex_Nofault
-        CPPUNIT_TEST_SUITE_REGISTRATION( TestReverseCuthillMcKee_Hex_Nofault );
+// ------------------------------------------------------------------------------------------------
+pylith::topology::TestReverseCuthillMcKee_Data*
+pylith::topology::TestReverseCuthillMcKee_Cases::Quad_Fault(void) {
+    TestReverseCuthillMcKee_Data* data = new TestReverseCuthillMcKee_Data();assert(data);
 
-        // ---------------------------------------------------------------------
-        class TestReverseCuthillMcKee_Hex_Fault : public TestReverseCuthillMcKee {
+    data->filename = "data/reorder_quad4.mesh";
+    data->faultLabel = "fault";
 
-            CPPUNIT_TEST_SUB_SUITE( TestReverseCuthillMcKee_Hex_Fault, TestReverseCuthillMcKee );
-            CPPUNIT_TEST_SUITE_END();
-
-            void setUp(void) {
-                TestReverseCuthillMcKee::setUp();
-
-                _data->filename = "data/reorder_hex8.mesh";
-                _data->faultLabel = "fault";
-            }   // setUp
+    return data;
+}   // Quad_Fault
 
 
-        };  // TestReverseCuthillMcKee_Hex_Fault
-        CPPUNIT_TEST_SUITE_REGISTRATION( TestReverseCuthillMcKee_Hex_Fault );
+// ------------------------------------------------------------------------------------------------
+pylith::topology::TestReverseCuthillMcKee_Data*
+pylith::topology::TestReverseCuthillMcKee_Cases::Tet_NoFault(void) {
+    TestReverseCuthillMcKee_Data* data = new TestReverseCuthillMcKee_Data();assert(data);
 
-    }   // topology
-}   // pylith
+    data->filename = "data/reorder_tet4.mesh";
+    data->faultLabel = NULL;
+
+    return data;
+}   // Tet_NoFault
+
+
+// ------------------------------------------------------------------------------------------------
+pylith::topology::TestReverseCuthillMcKee_Data*
+pylith::topology::TestReverseCuthillMcKee_Cases::Tet_Fault(void) {
+    TestReverseCuthillMcKee_Data* data = new TestReverseCuthillMcKee_Data();assert(data);
+
+    data->filename = "data/reorder_tet4.mesh";
+    data->faultLabel = "fault";
+
+    return data;
+}   // Tet_Fault
+
+
+// ------------------------------------------------------------------------------------------------
+pylith::topology::TestReverseCuthillMcKee_Data*
+pylith::topology::TestReverseCuthillMcKee_Cases::Hex_NoFault(void) {
+    TestReverseCuthillMcKee_Data* data = new TestReverseCuthillMcKee_Data();assert(data);
+
+    data->filename = "data/reorder_hex8.mesh";
+    data->faultLabel = NULL;
+
+    return data;
+}   // Hex_NoFault
+
+
+// ------------------------------------------------------------------------------------------------
+pylith::topology::TestReverseCuthillMcKee_Data*
+pylith::topology::TestReverseCuthillMcKee_Cases::Hex_Fault(void) {
+    TestReverseCuthillMcKee_Data* data = new TestReverseCuthillMcKee_Data();assert(data);
+
+    data->filename = "data/reorder_hex8.mesh";
+    data->faultLabel = "fault";
+
+    return data;
+}   // Hex_fault
 
 
 // End of file
