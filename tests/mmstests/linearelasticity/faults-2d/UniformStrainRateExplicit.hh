@@ -21,10 +21,10 @@
 #include "TestFaultKin.hh" // USES TestFaultKin_Data
 
 namespace pylith {
-    class TwoBlocksExplicit;
+    class UniformStrainRateExplicit;
 }
 
-class pylith::TwoBlocksExplicit {
+class pylith::UniformStrainRateExplicit {
 public:
 
     // Data factory methods
@@ -46,7 +46,7 @@ public:
 
 private:
 
-    TwoBlocksExplicit(void); ///< Not implemented
-}; // TwoBlocksExplicit
+    UniformStrainRateExplicit(void); ///< Not implemented
+}; // UniformStrainRateExplicit
 
 // End of file

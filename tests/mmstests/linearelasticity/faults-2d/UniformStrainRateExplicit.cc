@@ -16,7 +16,7 @@
 // ----------------------------------------------------------------------
 //
 
-/** @file tests/mmstests/linearelasticity/faults-2d/TwoBlocksExplicit.cc
+/** @file tests/mmstests/linearelasticity/faults-2d/UniformStrainRateExplicit.cc
  *
  * The domain is two cells, one on each side of a fault. The solution corresponds to a constant
  * left-lateral slip rate of 1.5 m/s with fixed boundaries.
@@ -24,7 +24,7 @@
 
 #include <portinfo>
 
-#include "TwoBlocksExplicit.hh" // ISA TwoBlocksExplicit
+#include "UniformStrainRateExplicit.hh" // ISA UniformStrainRateExplicit
 
 #include "pylith/faults/FaultCohesiveKin.hh" // USES FaultCohesiveKin
 #include "pylith/faults/KinSrcStep.hh" // USES KinSrcStep
@@ -43,16 +43,25 @@
 
 // ------------------------------------------------------------------------------------------------
 namespace pylith {
-    class _TwoBlocksExplicit;
+    class _UniformStrainRateExplicit;
 } // pylith
 
-class pylith::_TwoBlocksExplicit {
+class pylith::_UniformStrainRateExplicit {
+    // Solution parameters
+    static const double Exx0;
+    static const double Eyy0;
+    static const double Exy0;
+    static const double Exx1;
+    static const double Eyy1;
+    static const double Exy1;
+    static const double SLIP_RATE_N; // nondimensional
+    static const double TIME_SNAPSHOT_N; // nondimensional
+    static const double X_FAULT_N; // nondimensional
+
     // Dimensionless
     static const double LENGTH_SCALE;
     static const double TIME_SCALE;
     static const double PRESSURE_SCALE;
-    static const double SLIP_RATE;
-    static const double TIME_SNAPSHOT; // nondimensional
 
     // Density
     static double density(const double x,
@@ -67,7 +76,8 @@ class pylith::_TwoBlocksExplicit {
     // Vs
     static double vs(const double x,
                      const double y) {
-        return 3000.0;
+        const double vs0 = 3000.0;
+        return (x < X_FAULT_N) ? vs0 : (fabs(Exy1) > 0.0) ? vs0 * sqrt(Exy0 / Exy1) : vs0;
     } // vs
 
     static const char* vs_units(void) {
@@ -77,7 +87,24 @@ class pylith::_TwoBlocksExplicit {
     // Vp
     static double vp(const double x,
                      const double y) {
-        return sqrt(3.0)*vs(x,y);
+        const double vp0 = sqrt(3.0) * vs(X_FAULT_N-1.0, y);
+        double value = vp0;
+        if (x > X_FAULT_N) {
+            const double density0 = density(X_FAULT_N-1.0, y);
+            const double density1 = density(X_FAULT_N+1.0, y);
+
+            const double vs0 = vs(X_FAULT_N-1.0, y);
+            const double mu0 = vs0*vs0 * density0;
+
+            const double vs1 = vs(X_FAULT_N+1.0, y);
+            const double mu1 = vs1*vs1 * density1;
+
+            const double lambda0 = vp0*vp0 * density0 - 2.0*mu0;
+            const double lambda1 = (fabs(Exx1 + Eyy1) > 0.0) ? (lambda0*(Exx0 + Eyy0) + 2.0*mu0*Exx0 - 2.0*mu1*Exx1) /  (Exx1 + Eyy1) : lambda0;
+            const double vp1 = sqrt((lambda1 + 2.0*mu1) / density1);
+            value = vp1;
+        } // if
+        return value;
     } // vp
 
     static const char* vp_units(void) {
@@ -104,7 +131,7 @@ class pylith::_TwoBlocksExplicit {
 
     static double finalslip_leftlateral(const double x,
                                         const double y) {
-        return SLIP_RATE * TIME_SNAPSHOT * LENGTH_SCALE;
+        return SLIP_RATE_N * TIME_SNAPSHOT_N * LENGTH_SCALE;
     } // finalslip_leftlateral
 
     static const char* slip_units(void) {
@@ -130,20 +157,28 @@ class pylith::_TwoBlocksExplicit {
 
     // Velocity
     static double vel_x(const double x,
-                        const double y) {
-        return 0.0;
+                        const double y,
+                        PetscInt flag) {
+        double vel = 0;
+        if ((flag < 0) || (x < X_FAULT_N)) {
+            vel = Exx0 * (x-X_FAULT_N) + 0*Exy0 * y;
+        } else {
+            vel = Exx1 * (x-X_FAULT_N) + 0*Exy1 * y;
+        }
+        return vel;
     } // vel_x
 
     static double vel_y(const double x,
                         const double y,
                         PetscInt flag) {
-        double amplitude = 0.0;
-        if (!flag) {
-            amplitude = x < +2.0 ? -0.5*SLIP_RATE : +0.5*SLIP_RATE;
+        double vel = 0.0;
+
+        if ((flag < 0) || (x < X_FAULT_N)) {
+            vel = 2.0*Exy0 * (x-X_FAULT_N) + Eyy0 * y + 0.5 * SLIP_RATE_N;
         } else {
-            amplitude = flag < 0 ? -0.5*SLIP_RATE : +0.5*SLIP_RATE;
+            vel = 2.0*Exy1 * (x-X_FAULT_N) + Eyy1 * y - 0.5 * SLIP_RATE_N;
         } // if/else
-        return amplitude;
+        return vel;
     } // vel_y
 
     static const char* vel_units(void) {
@@ -152,25 +187,38 @@ class pylith::_TwoBlocksExplicit {
 
     // Displacement
     static double disp_x(const double x,
-                         const double y) {
-        return 0.0;
+                         const double y,
+                         PetscInt flag) {
+        return vel_x(x, y, flag) * TIME_SNAPSHOT_N;
     } // disp_x
 
     static double disp_y(const double x,
                          const double y,
                          PetscInt flag) {
-        const double disp = vel_y(x, y, flag) * TIME_SNAPSHOT;
+        const double disp = vel_y(x, y, flag) * TIME_SNAPSHOT_N;
         return disp;
     } // disp_y
 
     static double faulttraction_x(const double x,
                                   const double y) {
-        return 0.0;
+        const double vs0 = vs(X_FAULT_N-1.0, y);
+        const double vp0 = vp(X_FAULT_N-1.0, y);
+        const double density0 = density(X_FAULT_N-1.0, y);
+        const double mu0 = vs0*vs0 * density0;
+        const double lambda0 = vp0*vp0 * density0 - 2.0*mu0;
+        const double stress_xx = (lambda0 * (Exx0 + Eyy0) + 2.0*mu0 + Exx0) * TIME_SNAPSHOT_N / PRESSURE_SCALE;
+        return stress_xx;
     } // faulttraction_x
 
     static double faulttraction_y(const double x,
                                   const double y) {
-        return 0.0;
+        const double vs0 = vs(X_FAULT_N-1.0, y);
+        const double vp0 = vp(X_FAULT_N-1.0, y);
+        const double density0 = density(X_FAULT_N-1.0, y);
+        const double mu0 = vs0*vs0 * density0;
+        const double lambda0 = vp0*vp0 * density0 - 2.0*mu0;
+        const double stress_xy = 2.0*mu0 * Exy0 / PRESSURE_SCALE;
+        return stress_xy;
     } // faulttraction_y
 
     static PetscErrorCode solnkernel_disp(PetscInt spaceDim,
@@ -184,7 +232,6 @@ class pylith::_TwoBlocksExplicit {
         assert(2 == numComponents);
         assert(s);
 
-        s[0] = disp_x(x[0], x[1]);
         PetscInt flag = 0;
         if (context) {
             PetscInt cell = 0;
@@ -204,6 +251,7 @@ class pylith::_TwoBlocksExplicit {
             }
             flag = cell < numCellsLeftFault ? -1 : +1;
         } // if
+        s[0] = disp_x(x[0], x[1], flag);
         s[1] = disp_y(x[0], x[1], flag);
 
         return PETSC_SUCCESS;
@@ -220,7 +268,6 @@ class pylith::_TwoBlocksExplicit {
         assert(2 == numComponents);
         assert(s);
 
-        s[0] = vel_x(x[0], x[1]);
         PetscInt flag = 0;
         if (context) {
             PetscInt cell = 0;
@@ -240,6 +287,7 @@ class pylith::_TwoBlocksExplicit {
             }
             flag = cell < numCellsLeftFault ? -1 : +1;
         } // if
+        s[0] = vel_x(x[0], x[1], flag);
         s[1] = vel_y(x[0], x[1], flag);
 
         return PETSC_SUCCESS;
@@ -285,7 +333,7 @@ public:
     TestFaultKin_Data* createData(void) {
         TestFaultKin_Data* data = new TestFaultKin_Data();assert(data);
 
-        data->journalName = "TwoBlocksExplicit";
+        data->journalName = "UniformStrainRateExplicit";
         data->allowZeroResidual = true;
         data->isJacobianLinear = true;
 
@@ -297,7 +345,7 @@ public:
         data->normalizer.computeDensityScale();
 
         data->formulation = pylith::problems::Physics::DYNAMIC_IMEX;
-        data->t = TIME_SNAPSHOT;
+        data->t = TIME_SNAPSHOT_N;
         data->dt = 0.05;
 
         // solnDiscretizations set in derived class.
@@ -444,17 +492,26 @@ public:
         return data;
     } // createData
 
-}; // TestFaultKin2D_TwoBlocksExplicit
-const double pylith::_TwoBlocksExplicit::LENGTH_SCALE = 1000.0;
-const double pylith::_TwoBlocksExplicit::PRESSURE_SCALE = 2.5e+10;
-const double pylith::_TwoBlocksExplicit::TIME_SCALE = 2.0;
-const double pylith::_TwoBlocksExplicit::SLIP_RATE = 3.0e-3;
-const double pylith::_TwoBlocksExplicit::TIME_SNAPSHOT = 5.0;
+}; // TestFaultKin2D_UniformStrainRateExplicit
+
+const double pylith::_UniformStrainRateExplicit::Exx0 = 0.0;
+const double pylith::_UniformStrainRateExplicit::Eyy0 = 0.0;
+const double pylith::_UniformStrainRateExplicit::Exy0 = -0.1;
+const double pylith::_UniformStrainRateExplicit::Exx1 = 0.0;
+const double pylith::_UniformStrainRateExplicit::Eyy1 = 0.0;
+const double pylith::_UniformStrainRateExplicit::Exy1 = -0.1;
+const double pylith::_UniformStrainRateExplicit::SLIP_RATE_N = 0.0;// 3.0e-3;
+const double pylith::_UniformStrainRateExplicit::TIME_SNAPSHOT_N = 5.0;
+const double pylith::_UniformStrainRateExplicit::X_FAULT_N = +2.0;
+
+const double pylith::_UniformStrainRateExplicit::LENGTH_SCALE = 1000.0;
+const double pylith::_UniformStrainRateExplicit::PRESSURE_SCALE = 2.5e+10;
+const double pylith::_UniformStrainRateExplicit::TIME_SCALE = 2.0;
 
 // ------------------------------------------------------------------------------------------------
 pylith::TestFaultKin_Data*
-pylith::TwoBlocksExplicit::TriP1(void) {
-    TestFaultKin_Data* data = pylith::_TwoBlocksExplicit::createData();assert(data);
+pylith::UniformStrainRateExplicit::TriP1(void) {
+    TestFaultKin_Data* data = pylith::_UniformStrainRateExplicit::createData();assert(data);
 
     data->meshFilename = "data/tri.mesh";
 
@@ -473,8 +530,8 @@ pylith::TwoBlocksExplicit::TriP1(void) {
 
 // ------------------------------------------------------------------------------------------------
 pylith::TestFaultKin_Data*
-pylith::TwoBlocksExplicit::TriP2(void) {
-    TestFaultKin_Data* data = pylith::_TwoBlocksExplicit::createData();assert(data);
+pylith::UniformStrainRateExplicit::TriP2(void) {
+    TestFaultKin_Data* data = pylith::_UniformStrainRateExplicit::createData();assert(data);
 
     data->meshFilename = "data/tri.mesh";
 
@@ -505,8 +562,8 @@ pylith::TwoBlocksExplicit::TriP2(void) {
 
 // ------------------------------------------------------------------------------------------------
 pylith::TestFaultKin_Data*
-pylith::TwoBlocksExplicit::TriP3(void) {
-    TestFaultKin_Data* data = pylith::_TwoBlocksExplicit::createData();assert(data);
+pylith::UniformStrainRateExplicit::TriP3(void) {
+    TestFaultKin_Data* data = pylith::_UniformStrainRateExplicit::createData();assert(data);
 
     data->meshFilename = "data/tri.mesh";
 
@@ -537,8 +594,8 @@ pylith::TwoBlocksExplicit::TriP3(void) {
 
 // ------------------------------------------------------------------------------------------------
 pylith::TestFaultKin_Data*
-pylith::TwoBlocksExplicit::TriP4(void) {
-    TestFaultKin_Data* data = pylith::_TwoBlocksExplicit::createData();assert(data);
+pylith::UniformStrainRateExplicit::TriP4(void) {
+    TestFaultKin_Data* data = pylith::_UniformStrainRateExplicit::createData();assert(data);
 
     data->meshFilename = "data/tri.mesh";
 
@@ -569,8 +626,8 @@ pylith::TwoBlocksExplicit::TriP4(void) {
 
 // ------------------------------------------------------------------------------------------------
 pylith::TestFaultKin_Data*
-pylith::TwoBlocksExplicit::QuadQ1(void) {
-    TestFaultKin_Data* data = pylith::_TwoBlocksExplicit::createData();assert(data);
+pylith::UniformStrainRateExplicit::QuadQ1(void) {
+    TestFaultKin_Data* data = pylith::_UniformStrainRateExplicit::createData();assert(data);
 
     data->meshFilename = "data/quad.mesh";
 
@@ -589,8 +646,8 @@ pylith::TwoBlocksExplicit::QuadQ1(void) {
 
 // ------------------------------------------------------------------------------------------------
 pylith::TestFaultKin_Data*
-pylith::TwoBlocksExplicit::QuadQ2(void) {
-    TestFaultKin_Data* data = pylith::_TwoBlocksExplicit::createData();assert(data);
+pylith::UniformStrainRateExplicit::QuadQ2(void) {
+    TestFaultKin_Data* data = pylith::_UniformStrainRateExplicit::createData();assert(data);
 
     data->meshFilename = "data/quad.mesh";
 
@@ -621,8 +678,8 @@ pylith::TwoBlocksExplicit::QuadQ2(void) {
 
 // ------------------------------------------------------------------------------------------------
 pylith::TestFaultKin_Data*
-pylith::TwoBlocksExplicit::QuadQ3(void) {
-    TestFaultKin_Data* data = pylith::_TwoBlocksExplicit::createData();assert(data);
+pylith::UniformStrainRateExplicit::QuadQ3(void) {
+    TestFaultKin_Data* data = pylith::_UniformStrainRateExplicit::createData();assert(data);
 
     data->meshFilename = "data/quad.mesh";
 
@@ -653,8 +710,8 @@ pylith::TwoBlocksExplicit::QuadQ3(void) {
 
 // ------------------------------------------------------------------------------------------------
 pylith::TestFaultKin_Data*
-pylith::TwoBlocksExplicit::QuadQ4(void) {
-    TestFaultKin_Data* data = pylith::_TwoBlocksExplicit::createData();assert(data);
+pylith::UniformStrainRateExplicit::QuadQ4(void) {
+    TestFaultKin_Data* data = pylith::_UniformStrainRateExplicit::createData();assert(data);
 
     data->meshFilename = "data/quad.mesh";
 

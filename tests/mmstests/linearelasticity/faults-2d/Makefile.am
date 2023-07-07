@@ -25,7 +25,8 @@ TESTS = \
 	run_ThreeBlocksStatic.sh \
 	run_OneFaultShearNoSlip.sh \
 	run_TwoFaultsShearNoSlip.sh \
-	run_ConstRateDynamic.sh
+	run_TwoBlocksExplicit.sh \
+	run_UniformStrainRateExplicit.sh
 
 check_SCRIPTS = $(TESTS)
 
@@ -41,7 +42,8 @@ mmstest_linearelasticity_faults2d_SOURCES = \
 	ThreeBlocksStatic.cc \
 	OneFaultShearNoSlip.cc \
 	TwoFaultsShearNoSlip.cc \
-	ConstRateDynamic.cc
+	TwoBlocksExplicit.cc \
+	UniformStrainRateExplicit.cc
 
 run_%.sh:
 	echo "#!/bin/bash" > $@
@@ -54,7 +56,8 @@ dist_noinst_HEADERS = \
 	ThreeBlocksStatic.hh \
 	OneFaultShearNoSlip.hh \
 	TwoFaultsShearNoSlip.hh \
-	ConstRateDynamic.hh
+	TwoBlocksExplicit.hh \
+	UniformStrainRateExplicit.hh
 
 
 dist_noinst_DATA = \

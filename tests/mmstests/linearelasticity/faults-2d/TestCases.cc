@@ -368,89 +368,175 @@ TEST_CASE("TwoFaultsShearNoSlip::QuadQ3::testJacobianFiniteDiff", "[TwoFaultsShe
 }
 
 // ------------------------------------------------------------------------------------------------
-#include "ConstRateDynamic.hh"
+#include "TwoBlocksExplicit.hh"
 // TriP1
-TEST_CASE("ConstRateDynamic::TriP1::testDiscretization", "[ConstRateDynamic][TriP1][discretization]") {
-    pylith::TestFaultKin(pylith::ConstRateDynamic::TriP1()).testDiscretization();
+TEST_CASE("TwoBlocksExplicit::TriP1::testDiscretization", "[TwoBlocksExplicit][TriP1][discretization]") {
+    pylith::TestFaultKin(pylith::TwoBlocksExplicit::TriP1()).testDiscretization();
 }
-TEST_CASE("ConstRateDynamic::TriP1::testResidual", "[ConstRateDynamic][TriP1][residual]") {
-    pylith::TestFaultKin(pylith::ConstRateDynamic::TriP1()).testResidual();
+TEST_CASE("TwoBlocksExplicit::TriP1::testResidual", "[TwoBlocksExplicit][TriP1][residual]") {
+    pylith::TestFaultKin(pylith::TwoBlocksExplicit::TriP1()).testResidual();
 }
-TEST_CASE("ConstRateDynamic::TriP1::testJacobianTaylorSeries", "[ConstRateDynamic][TriP1][Jacobian Taylor series]") {
-    pylith::TestFaultKin(pylith::ConstRateDynamic::TriP1()).testJacobianTaylorSeries();
+TEST_CASE("TwoBlocksExplicit::TriP1::testJacobianTaylorSeries", "[TwoBlocksExplicit][TriP1][Jacobian Taylor series]") {
+    pylith::TestFaultKin(pylith::TwoBlocksExplicit::TriP1()).testJacobianTaylorSeries();
 }
-TEST_CASE("ConstRateDynamic::TriP1::testJacobianFiniteDiff", "[ConstRateDynamic][TriP1][Jacobian finite difference]") {
-    pylith::TestFaultKin(pylith::ConstRateDynamic::TriP1()).testJacobianFiniteDiff();
+TEST_CASE("TwoBlocksExplicit::TriP1::testJacobianFiniteDiff", "[TwoBlocksExplicit][TriP1][Jacobian finite difference]") {
+    pylith::TestFaultKin(pylith::TwoBlocksExplicit::TriP1()).testJacobianFiniteDiff();
 }
 
 // TriP2
-TEST_CASE("ConstRateDynamic::TriP2::testDiscretization", "[ConstRateDynamic][TriP2][discretization]") {
-    pylith::TestFaultKin(pylith::ConstRateDynamic::TriP2()).testDiscretization();
+TEST_CASE("TwoBlocksExplicit::TriP2::testDiscretization", "[TwoBlocksExplicit][TriP2][discretization]") {
+    pylith::TestFaultKin(pylith::TwoBlocksExplicit::TriP2()).testDiscretization();
 }
-TEST_CASE("ConstRateDynamic::TriP2::testResidual", "[ConstRateDynamic][TriP2][residual]") {
-    pylith::TestFaultKin(pylith::ConstRateDynamic::TriP2()).testResidual();
+TEST_CASE("TwoBlocksExplicit::TriP2::testResidual", "[TwoBlocksExplicit][TriP2][residual]") {
+    pylith::TestFaultKin(pylith::TwoBlocksExplicit::TriP2()).testResidual();
 }
-TEST_CASE("ConstRateDynamic::TriP2::testJacobianTaylorSeries", "[ConstRateDynamic][TriP2][Jacobian Taylor series]") {
-    pylith::TestFaultKin(pylith::ConstRateDynamic::TriP2()).testJacobianTaylorSeries();
+TEST_CASE("TwoBlocksExplicit::TriP2::testJacobianTaylorSeries", "[TwoBlocksExplicit][TriP2][Jacobian Taylor series]") {
+    pylith::TestFaultKin(pylith::TwoBlocksExplicit::TriP2()).testJacobianTaylorSeries();
 }
-TEST_CASE("ConstRateDynamic::TriP2::testJacobianFiniteDiff", "[ConstRateDynamic][TriP2][Jacobian finite difference]") {
-    pylith::TestFaultKin(pylith::ConstRateDynamic::TriP2()).testJacobianFiniteDiff();
+TEST_CASE("TwoBlocksExplicit::TriP2::testJacobianFiniteDiff", "[TwoBlocksExplicit][TriP2][Jacobian finite difference]") {
+    pylith::TestFaultKin(pylith::TwoBlocksExplicit::TriP2()).testJacobianFiniteDiff();
 }
 
 // TriP3
-TEST_CASE("ConstRateDynamic::TriP3::testDiscretization", "[ConstRateDynamic][TriP3][discretization]") {
-    pylith::TestFaultKin(pylith::ConstRateDynamic::TriP3()).testDiscretization();
+TEST_CASE("TwoBlocksExplicit::TriP3::testDiscretization", "[TwoBlocksExplicit][TriP3][discretization]") {
+    pylith::TestFaultKin(pylith::TwoBlocksExplicit::TriP3()).testDiscretization();
 }
-TEST_CASE("ConstRateDynamic::TriP3::testResidual", "[ConstRateDynamic][TriP3][residual]") {
-    pylith::TestFaultKin(pylith::ConstRateDynamic::TriP3()).testResidual();
+TEST_CASE("TwoBlocksExplicit::TriP3::testResidual", "[TwoBlocksExplicit][TriP3][residual]") {
+    pylith::TestFaultKin(pylith::TwoBlocksExplicit::TriP3()).testResidual();
 }
-TEST_CASE("ConstRateDynamic::TriP3::testJacobianTaylorSeries", "[ConstRateDynamic][TriP3][Jacobian Taylor series]") {
-    pylith::TestFaultKin(pylith::ConstRateDynamic::TriP3()).testJacobianTaylorSeries();
+TEST_CASE("TwoBlocksExplicit::TriP3::testJacobianTaylorSeries", "[TwoBlocksExplicit][TriP3][Jacobian Taylor series]") {
+    pylith::TestFaultKin(pylith::TwoBlocksExplicit::TriP3()).testJacobianTaylorSeries();
 }
-TEST_CASE("ConstRateDynamic::TriP3::testJacobianFiniteDiff", "[ConstRateDynamic][TriP3][Jacobian finite difference]") {
-    pylith::TestFaultKin(pylith::ConstRateDynamic::TriP3()).testJacobianFiniteDiff();
+TEST_CASE("TwoBlocksExplicit::TriP3::testJacobianFiniteDiff", "[TwoBlocksExplicit][TriP3][Jacobian finite difference]") {
+    pylith::TestFaultKin(pylith::TwoBlocksExplicit::TriP3()).testJacobianFiniteDiff();
 }
 
 // QuadQ1
-TEST_CASE("ConstRateDynamic::QuadQ1::testDiscretization", "[ConstRateDynamic][QuadQ1][discretization]") {
-    pylith::TestFaultKin(pylith::ConstRateDynamic::QuadQ1()).testDiscretization();
+TEST_CASE("TwoBlocksExplicit::QuadQ1::testDiscretization", "[TwoBlocksExplicit][QuadQ1][discretization]") {
+    pylith::TestFaultKin(pylith::TwoBlocksExplicit::QuadQ1()).testDiscretization();
 }
-TEST_CASE("ConstRateDynamic::QuadQ1::testResidual", "[ConstRateDynamic][QuadQ1][residual]") {
-    pylith::TestFaultKin(pylith::ConstRateDynamic::QuadQ1()).testResidual();
+TEST_CASE("TwoBlocksExplicit::QuadQ1::testResidual", "[TwoBlocksExplicit][QuadQ1][residual]") {
+    pylith::TestFaultKin(pylith::TwoBlocksExplicit::QuadQ1()).testResidual();
 }
-TEST_CASE("ConstRateDynamic::QuadQ1::testJacobianTaylorSeries", "[ConstRateDynamic][QuadQ1][Jacobian Taylor series]") {
-    pylith::TestFaultKin(pylith::ConstRateDynamic::QuadQ1()).testJacobianTaylorSeries();
+TEST_CASE("TwoBlocksExplicit::QuadQ1::testJacobianTaylorSeries", "[TwoBlocksExplicit][QuadQ1][Jacobian Taylor series]") {
+    pylith::TestFaultKin(pylith::TwoBlocksExplicit::QuadQ1()).testJacobianTaylorSeries();
 }
-TEST_CASE("ConstRateDynamic::QuadQ1::testJacobianFiniteDiff", "[ConstRateDynamic][QuadQ1][Jacobian finite difference]") {
-    pylith::TestFaultKin(pylith::ConstRateDynamic::QuadQ1()).testJacobianFiniteDiff();
+TEST_CASE("TwoBlocksExplicit::QuadQ1::testJacobianFiniteDiff", "[TwoBlocksExplicit][QuadQ1][Jacobian finite difference]") {
+    pylith::TestFaultKin(pylith::TwoBlocksExplicit::QuadQ1()).testJacobianFiniteDiff();
 }
 
 // QuadQ2
-TEST_CASE("ConstRateDynamic::QuadQ2::testDiscretization", "[ConstRateDynamic][QuadQ2][discretization]") {
-    pylith::TestFaultKin(pylith::ConstRateDynamic::QuadQ2()).testDiscretization();
+TEST_CASE("TwoBlocksExplicit::QuadQ2::testDiscretization", "[TwoBlocksExplicit][QuadQ2][discretization]") {
+    pylith::TestFaultKin(pylith::TwoBlocksExplicit::QuadQ2()).testDiscretization();
 }
-TEST_CASE("ConstRateDynamic::QuadQ2::testResidual", "[ConstRateDynamic][QuadQ2][residual]") {
-    pylith::TestFaultKin(pylith::ConstRateDynamic::QuadQ2()).testResidual();
+TEST_CASE("TwoBlocksExplicit::QuadQ2::testResidual", "[TwoBlocksExplicit][QuadQ2][residual]") {
+    pylith::TestFaultKin(pylith::TwoBlocksExplicit::QuadQ2()).testResidual();
 }
-TEST_CASE("ConstRateDynamic::QuadQ2::testJacobianTaylorSeries", "[ConstRateDynamic][QuadQ2][Jacobian Taylor series]") {
-    pylith::TestFaultKin(pylith::ConstRateDynamic::QuadQ2()).testJacobianTaylorSeries();
+TEST_CASE("TwoBlocksExplicit::QuadQ2::testJacobianTaylorSeries", "[TwoBlocksExplicit][QuadQ2][Jacobian Taylor series]") {
+    pylith::TestFaultKin(pylith::TwoBlocksExplicit::QuadQ2()).testJacobianTaylorSeries();
 }
-TEST_CASE("ConstRateDynamic::QuadQ2::testJacobianFiniteDiff", "[ConstRateDynamic][QuadQ2][Jacobian finite difference]") {
-    pylith::TestFaultKin(pylith::ConstRateDynamic::QuadQ2()).testJacobianFiniteDiff();
+TEST_CASE("TwoBlocksExplicit::QuadQ2::testJacobianFiniteDiff", "[TwoBlocksExplicit][QuadQ2][Jacobian finite difference]") {
+    pylith::TestFaultKin(pylith::TwoBlocksExplicit::QuadQ2()).testJacobianFiniteDiff();
 }
 
 // QuadQ3
-TEST_CASE("ConstRateDynamic::QuadQ3::testDiscretization", "[ConstRateDynamic][QuadQ3][discretization]") {
-    pylith::TestFaultKin(pylith::ConstRateDynamic::QuadQ3()).testDiscretization();
+TEST_CASE("TwoBlocksExplicit::QuadQ3::testDiscretization", "[TwoBlocksExplicit][QuadQ3][discretization]") {
+    pylith::TestFaultKin(pylith::TwoBlocksExplicit::QuadQ3()).testDiscretization();
 }
-TEST_CASE("ConstRateDynamic::QuadQ3::testResidual", "[ConstRateDynamic][QuadQ3][residual]") {
-    pylith::TestFaultKin(pylith::ConstRateDynamic::QuadQ3()).testResidual();
+TEST_CASE("TwoBlocksExplicit::QuadQ3::testResidual", "[TwoBlocksExplicit][QuadQ3][residual]") {
+    pylith::TestFaultKin(pylith::TwoBlocksExplicit::QuadQ3()).testResidual();
 }
-TEST_CASE("ConstRateDynamic::QuadQ3::testJacobianTaylorSeries", "[ConstRateDynamic][QuadQ3][Jacobian Taylor series]") {
-    pylith::TestFaultKin(pylith::ConstRateDynamic::QuadQ3()).testJacobianTaylorSeries();
+TEST_CASE("TwoBlocksExplicit::QuadQ3::testJacobianTaylorSeries", "[TwoBlocksExplicit][QuadQ3][Jacobian Taylor series]") {
+    pylith::TestFaultKin(pylith::TwoBlocksExplicit::QuadQ3()).testJacobianTaylorSeries();
 }
-TEST_CASE("ConstRateDynamic::QuadQ3::testJacobianFiniteDiff", "[ConstRateDynamic][QuadQ3][Jacobian finite difference]") {
-    pylith::TestFaultKin(pylith::ConstRateDynamic::QuadQ3()).testJacobianFiniteDiff();
+TEST_CASE("TwoBlocksExplicit::QuadQ3::testJacobianFiniteDiff", "[TwoBlocksExplicit][QuadQ3][Jacobian finite difference]") {
+    pylith::TestFaultKin(pylith::TwoBlocksExplicit::QuadQ3()).testJacobianFiniteDiff();
+}
+
+// ------------------------------------------------------------------------------------------------
+#include "UniformStrainRateExplicit.hh"
+// TriP1
+TEST_CASE("UniformStrainRateExplicit::TriP1::testDiscretization", "[UniformStrainRateExplicit][TriP1][discretization]") {
+    pylith::TestFaultKin(pylith::UniformStrainRateExplicit::TriP1()).testDiscretization();
+}
+TEST_CASE("UniformStrainRateExplicit::TriP1::testResidual", "[UniformStrainRateExplicit][TriP1][residual]") {
+    pylith::TestFaultKin(pylith::UniformStrainRateExplicit::TriP1()).testResidual();
+}
+TEST_CASE("UniformStrainRateExplicit::TriP1::testJacobianTaylorSeries", "[UniformStrainRateExplicit][TriP1][Jacobian Taylor series]") {
+    pylith::TestFaultKin(pylith::UniformStrainRateExplicit::TriP1()).testJacobianTaylorSeries();
+}
+TEST_CASE("UniformStrainRateExplicit::TriP1::testJacobianFiniteDiff", "[UniformStrainRateExplicit][TriP1][Jacobian finite difference]") {
+    pylith::TestFaultKin(pylith::UniformStrainRateExplicit::TriP1()).testJacobianFiniteDiff();
+}
+
+// TriP2
+TEST_CASE("UniformStrainRateExplicit::TriP2::testDiscretization", "[UniformStrainRateExplicit][TriP2][discretization]") {
+    pylith::TestFaultKin(pylith::UniformStrainRateExplicit::TriP2()).testDiscretization();
+}
+TEST_CASE("UniformStrainRateExplicit::TriP2::testResidual", "[UniformStrainRateExplicit][TriP2][residual]") {
+    pylith::TestFaultKin(pylith::UniformStrainRateExplicit::TriP2()).testResidual();
+}
+TEST_CASE("UniformStrainRateExplicit::TriP2::testJacobianTaylorSeries", "[UniformStrainRateExplicit][TriP2][Jacobian Taylor series]") {
+    pylith::TestFaultKin(pylith::UniformStrainRateExplicit::TriP2()).testJacobianTaylorSeries();
+}
+TEST_CASE("UniformStrainRateExplicit::TriP2::testJacobianFiniteDiff", "[UniformStrainRateExplicit][TriP2][Jacobian finite difference]") {
+    pylith::TestFaultKin(pylith::UniformStrainRateExplicit::TriP2()).testJacobianFiniteDiff();
+}
+
+// TriP3
+TEST_CASE("UniformStrainRateExplicit::TriP3::testDiscretization", "[UniformStrainRateExplicit][TriP3][discretization]") {
+    pylith::TestFaultKin(pylith::UniformStrainRateExplicit::TriP3()).testDiscretization();
+}
+TEST_CASE("UniformStrainRateExplicit::TriP3::testResidual", "[UniformStrainRateExplicit][TriP3][residual]") {
+    pylith::TestFaultKin(pylith::UniformStrainRateExplicit::TriP3()).testResidual();
+}
+TEST_CASE("UniformStrainRateExplicit::TriP3::testJacobianTaylorSeries", "[UniformStrainRateExplicit][TriP3][Jacobian Taylor series]") {
+    pylith::TestFaultKin(pylith::UniformStrainRateExplicit::TriP3()).testJacobianTaylorSeries();
+}
+TEST_CASE("UniformStrainRateExplicit::TriP3::testJacobianFiniteDiff", "[UniformStrainRateExplicit][TriP3][Jacobian finite difference]") {
+    pylith::TestFaultKin(pylith::UniformStrainRateExplicit::TriP3()).testJacobianFiniteDiff();
+}
+
+// QuadQ1
+TEST_CASE("UniformStrainRateExplicit::QuadQ1::testDiscretization", "[UniformStrainRateExplicit][QuadQ1][discretization]") {
+    pylith::TestFaultKin(pylith::UniformStrainRateExplicit::QuadQ1()).testDiscretization();
+}
+TEST_CASE("UniformStrainRateExplicit::QuadQ1::testResidual", "[UniformStrainRateExplicit][QuadQ1][residual]") {
+    pylith::TestFaultKin(pylith::UniformStrainRateExplicit::QuadQ1()).testResidual();
+}
+TEST_CASE("UniformStrainRateExplicit::QuadQ1::testJacobianTaylorSeries", "[UniformStrainRateExplicit][QuadQ1][Jacobian Taylor series]") {
+    pylith::TestFaultKin(pylith::UniformStrainRateExplicit::QuadQ1()).testJacobianTaylorSeries();
+}
+TEST_CASE("UniformStrainRateExplicit::QuadQ1::testJacobianFiniteDiff", "[UniformStrainRateExplicit][QuadQ1][Jacobian finite difference]") {
+    pylith::TestFaultKin(pylith::UniformStrainRateExplicit::QuadQ1()).testJacobianFiniteDiff();
+}
+
+// QuadQ2
+TEST_CASE("UniformStrainRateExplicit::QuadQ2::testDiscretization", "[UniformStrainRateExplicit][QuadQ2][discretization]") {
+    pylith::TestFaultKin(pylith::UniformStrainRateExplicit::QuadQ2()).testDiscretization();
+}
+TEST_CASE("UniformStrainRateExplicit::QuadQ2::testResidual", "[UniformStrainRateExplicit][QuadQ2][residual]") {
+    pylith::TestFaultKin(pylith::UniformStrainRateExplicit::QuadQ2()).testResidual();
+}
+TEST_CASE("UniformStrainRateExplicit::QuadQ2::testJacobianTaylorSeries", "[UniformStrainRateExplicit][QuadQ2][Jacobian Taylor series]") {
+    pylith::TestFaultKin(pylith::UniformStrainRateExplicit::QuadQ2()).testJacobianTaylorSeries();
+}
+TEST_CASE("UniformStrainRateExplicit::QuadQ2::testJacobianFiniteDiff", "[UniformStrainRateExplicit][QuadQ2][Jacobian finite difference]") {
+    pylith::TestFaultKin(pylith::UniformStrainRateExplicit::QuadQ2()).testJacobianFiniteDiff();
+}
+
+// QuadQ3
+TEST_CASE("UniformStrainRateExplicit::QuadQ3::testDiscretization", "[UniformStrainRateExplicit][QuadQ3][discretization]") {
+    pylith::TestFaultKin(pylith::UniformStrainRateExplicit::QuadQ3()).testDiscretization();
+}
+TEST_CASE("UniformStrainRateExplicit::QuadQ3::testResidual", "[UniformStrainRateExplicit][QuadQ3][residual]") {
+    pylith::TestFaultKin(pylith::UniformStrainRateExplicit::QuadQ3()).testResidual();
+}
+TEST_CASE("UniformStrainRateExplicit::QuadQ3::testJacobianTaylorSeries", "[UniformStrainRateExplicit][QuadQ3][Jacobian Taylor series]") {
+    pylith::TestFaultKin(pylith::UniformStrainRateExplicit::QuadQ3()).testJacobianTaylorSeries();
+}
+TEST_CASE("UniformStrainRateExplicit::QuadQ3::testJacobianFiniteDiff", "[UniformStrainRateExplicit][QuadQ3][Jacobian finite difference]") {
+    pylith::TestFaultKin(pylith::UniformStrainRateExplicit::QuadQ3()).testJacobianFiniteDiff();
 }
 
 // End of file
