@@ -16,20 +16,18 @@
 # ----------------------------------------------------------------------
 #
 
-include $(top_srcdir)/tests/check_cppunit.am
+include $(top_srcdir)/tests/check_catch2.am
 
-TESTS = test_utils
+TESTS = libtest_testing
 
-check_PROGRAMS = test_utils
+check_PROGRAMS = libtest_testing
 
 # Primary source files
-test_utils_SOURCES = \
+libtest_testing_SOURCES = \
 	TestStubMethodTracker.cc \
 	$(top_srcdir)/tests/src/StubMethodTracker.cc \
-	$(top_srcdir)/tests/src/driver_cppunit.cc
+	$(top_srcdir)/tests/src/driver_catch2.cc
 
-dist_noinst_HEADERS = \
-	TestStubMethodTracker.hh
-
+dist_noinst_HEADERS = 
 
 # End of file
