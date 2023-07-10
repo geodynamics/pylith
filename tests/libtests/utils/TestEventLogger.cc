@@ -18,16 +18,93 @@
 
 #include <portinfo>
 
-#include "TestEventLogger.hh" // Implementation of class methods
+#include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
 
 #include "pylith/utils/error.h" // USES PYLITH_METHOD_BEGIN/END
 
-// ----------------------------------------------------------------------
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::utils::TestEventLogger);
+#include "catch2/catch_test_macros.hpp"
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
+namespace pylith {
+    namespace utils {
+        class TestEventLogger;
+    }
+}
+
+class pylith::utils::TestEventLogger : public pylith::utils::GenericComponent {
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
+public:
+
+    /// Test constructor.
+    static
+    void testConstructor(void);
+
+    /// Test get/setClassName().
+    static
+    void testClassName(void);
+
+    /// Test initialize().
+    static
+    void testInitialize(void);
+
+    /// Test registerEvent().
+    static
+    void testRegisterEvent(void);
+
+    /// Test getEventId().
+    static
+    void testGetEventId(void);
+
+    /// Test eventBegin() and eventEnd().
+    static
+    void testEventLogging(void);
+
+    /// Test registerStage().
+    static
+    void testRegisterStage(void);
+
+    /// Test getStageId().
+    static
+    void testGetStageId(void);
+
+    /// Test stagePush() and stagePop().
+    static
+    void testStageLogging(void);
+
+}; // class TestEventLogging
+
+// ------------------------------------------------------------------------------------------------
+TEST_CASE("TestEventLogger::testConstructor", "[TestEventLogger]") {
+    pylith::utils::TestEventLogger::testConstructor();
+}
+TEST_CASE("TestEventLogger::testClassName", "[TestEventLogger]") {
+    pylith::utils::TestEventLogger::testClassName();
+}
+TEST_CASE("TestEventLogger::testInitialize", "[TestEventLogger]") {
+    pylith::utils::TestEventLogger::testInitialize();
+}
+TEST_CASE("TestEventLogger::testRegisterEvent", "[TestEventLogger]") {
+    pylith::utils::TestEventLogger::testRegisterEvent();
+}
+TEST_CASE("TestEventLogger::testGetEventId", "[TestEventLogger]") {
+    pylith::utils::TestEventLogger::testGetEventId();
+}
+TEST_CASE("TestEventLogger::testEventLogging", "[TestEventLogger]") {
+    pylith::utils::TestEventLogger::testEventLogging();
+}
+TEST_CASE("TestEventLogger::testRegisterStage", "[TestEventLogger]") {
+    pylith::utils::TestEventLogger::testRegisterStage();
+}
+TEST_CASE("TestEventLogger::testGetStageId", "[TestEventLogger]") {
+    pylith::utils::TestEventLogger::testGetStageId();
+}
+TEST_CASE("TestEventLogger::testStageLogging", "[TestEventLogger]") {
+    pylith::utils::TestEventLogger::testStageLogging();
+}
+
+// ------------------------------------------------------------------------------------------------
 // Test constructor.
 void
 pylith::utils::TestEventLogger::testConstructor(void) {
@@ -39,24 +116,24 @@ pylith::utils::TestEventLogger::testConstructor(void) {
 } // testConstructor
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test get/setClassName().
 void
 pylith::utils::TestEventLogger::testClassName(void) {
     PYLITH_METHOD_BEGIN;
 
     EventLogger logger;
-    CPPUNIT_ASSERT_EQUAL(std::string(""), std::string(logger.getClassName()));
+    CHECK(std::string("") == std::string(logger.getClassName()));
 
     const std::string& name = "my name";
     logger.setClassName(name.c_str());
-    CPPUNIT_ASSERT_EQUAL(name, std::string(logger.getClassName()));
+    CHECK(name == std::string(logger.getClassName()));
 
     PYLITH_METHOD_END;
 } // testClassName
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test initialize().
 void
 pylith::utils::TestEventLogger::testInitialize(void) {
@@ -64,15 +141,15 @@ pylith::utils::TestEventLogger::testInitialize(void) {
 
     EventLogger logger;
     logger.setClassName("my class");
-    CPPUNIT_ASSERT_EQUAL(0, logger._classId);
+    CHECK(0 == logger._classId);
     logger.initialize();
-    CPPUNIT_ASSERT(logger._classId);
+    CHECK(logger._classId);
 
     PYLITH_METHOD_END;
 } // testInitialize
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test registerEvent().
 void
 pylith::utils::TestEventLogger::testRegisterEvent(void) {
@@ -92,15 +169,15 @@ pylith::utils::TestEventLogger::testRegisterEvent(void) {
 
     int i = 0;
     for (EventLogger::map_event_type::iterator e_iter = logger._events.begin(); e_iter != logger._events.end(); ++e_iter, ++i) {
-        CPPUNIT_ASSERT_EQUAL(std::string(events[i]), e_iter->first);
-        CPPUNIT_ASSERT_EQUAL(ids[i], e_iter->second);
+        CHECK(std::string(events[i]) == e_iter->first);
+        CHECK(ids[i] == e_iter->second);
     } // for
 
     PYLITH_METHOD_END;
 } // testRegisterEvent
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test getEventId().
 void
 pylith::utils::TestEventLogger::testGetEventId(void) {
@@ -125,14 +202,14 @@ pylith::utils::TestEventLogger::testGetEventId(void) {
 
     int i = 0;
     for (EventLogger::map_event_type::iterator e_iter = logger._events.begin(); e_iter != logger._events.end(); ++e_iter, ++i) {
-        CPPUNIT_ASSERT_EQUAL(e_iter->second, ids[i]);
+        CHECK(e_iter->second == ids[i]);
     }
 
     PYLITH_METHOD_END;
 } // testGetEventId
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test eventBegin() and eventEnd().
 void
 pylith::utils::TestEventLogger::testEventLogging(void) {
@@ -169,7 +246,7 @@ pylith::utils::TestEventLogger::testEventLogging(void) {
 } // testEventLogging
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test registerStage().
 void
 pylith::utils::TestEventLogger::testRegisterStage(void) {
@@ -189,15 +266,15 @@ pylith::utils::TestEventLogger::testRegisterStage(void) {
 
     int i = 0;
     for (EventLogger::map_event_type::iterator s_iter = logger._stages.begin(); s_iter != logger._stages.end(); ++s_iter, ++i) {
-        CPPUNIT_ASSERT_EQUAL(std::string(stages[i]), s_iter->first);
-        CPPUNIT_ASSERT_EQUAL(ids[i], s_iter->second);
+        CHECK(std::string(stages[i]) == s_iter->first);
+        CHECK(ids[i] == s_iter->second);
     } // for
 
     PYLITH_METHOD_END;
 } // testRegisterStage
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test stageId().
 void
 pylith::utils::TestEventLogger::testGetStageId(void) {
@@ -222,17 +299,17 @@ pylith::utils::TestEventLogger::testGetStageId(void) {
 
     int i = 0;
     for (EventLogger::map_event_type::iterator s_iter = logger._stages.begin(); s_iter != logger._stages.end(); ++s_iter, ++i) {
-        CPPUNIT_ASSERT_EQUAL(s_iter->second, ids[i]);
+        CHECK(s_iter->second == ids[i]);
     }
 
     const int idNew = logger.getStageId("stage D2");
-    CPPUNIT_ASSERT_EQUAL(idNew, logger.getStageId("stage D2"));
+    CHECK(idNew == logger.getStageId("stage D2"));
 
     PYLITH_METHOD_END;
 } // testStageId
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test statePush() and statePop().
 void
 pylith::utils::TestEventLogger::testStageLogging(void) {

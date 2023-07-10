@@ -18,39 +18,72 @@
 
 #include <portinfo>
 
-#include "TestGenericComponent.hh" // Implementation of class methods
-
-#include "pylith/utils/GenericComponent.hh" // USES GenericComponent
+#include "pylith/utils/GenericComponent.hh" // Test subject
 
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
 
-// ----------------------------------------------------------------------
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::utils::TestGenericComponent);
+#include "catch2/catch_test_macros.hpp"
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
+namespace pylith {
+    namespace utils {
+        class TestGenericComponent;
+    }
+}
+
+class pylith::utils::TestGenericComponent {
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
+public:
+
+    /// Test constructor.
+    static
+    void testConstructor(void);
+
+    /// Test name().
+    static
+    void testName(void);
+
+    /// Test PYLITH_JOURNAL_DEBUG(), PYLITH_JOURNAL_INFO(), PYLITH_JOURNAL_ERROR().
+    static
+    void testJournals(void);
+
+}; // class TestGenericComponent
+
+// ------------------------------------------------------------------------------------------------
+TEST_CASE("TestGenericComponent::testConstructor", "[TestGenericComponent]") {
+    pylith::utils::TestGenericComponent::testConstructor();
+}
+TEST_CASE("TestGenericComponent::testName", "[TestGenericComponent]") {
+    pylith::utils::TestGenericComponent::testName();
+}
+TEST_CASE("TestGenericComponent::testJournals", "[TestGenericComponent]") {
+    pylith::utils::TestGenericComponent::testJournals();
+}
+
+// ------------------------------------------------------------------------------------------------
 // Test constructor.
 void
 pylith::utils::TestGenericComponent::testConstructor(void) {
     GenericComponent component;
 
-    CPPUNIT_ASSERT_EQUAL(std::string(""), component._name);
+    CHECK(std::string("") == component._name);
 } // testConstructor
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test name().
 void
 pylith::utils::TestGenericComponent::testName(void) {
     GenericComponent component;
-    CPPUNIT_ASSERT_EQUAL(std::string(""), std::string(component.getName()));
+    CHECK(std::string("") == std::string(component.getName()));
 
     const std::string& name = "my name";
     component.setName(name.c_str());
-    CPPUNIT_ASSERT_EQUAL(name, std::string(component.getName()));
+    CHECK(name == std::string(component.getName()));
 } // testName
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test PYLITH_JOURNAL_*.
 namespace pylith {
     namespace utils {

@@ -18,53 +18,93 @@
 
 #include <portinfo>
 
-#include "TestPyreComponent.hh" // Implementation of class methods
-
-#include "pylith/utils/PyreComponent.hh" // USES PyreComponent
+#include "pylith/utils/PyreComponent.hh" // Test subject
 
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
-// ----------------------------------------------------------------------
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::utils::TestPyreComponent);
+#include "catch2/catch_test_macros.hpp"
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
+namespace pylith {
+    namespace utils {
+        class TestPyreComponent;
+    }
+}
+
+class pylith::utils::TestPyreComponent {
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
+public:
+
+    /// Test constructor.
+    static
+    void testConstructor(void);
+
+    /// Test name().
+    static
+    void testName(void);
+
+    /// Test identifier().
+    static
+    void testIdentifier(void);
+
+    /// Test PYLITH_JOURNAL_DEBUG(), PYLITH_JOURNAL_INFO(), PYLITH_JOURNAL_ERROR().
+    static
+    void testJournals(void);
+
+}; // TestPyreComponent
+
+// ------------------------------------------------------------------------------------------------
+TEST_CASE("TestPyreComponent::testConstructor", "[TestPyreComponent]") {
+    pylith::utils::TestPyreComponent::testConstructor();
+}
+TEST_CASE("TestPyreComponent::testName", "[TestPyreComponent]") {
+    pylith::utils::TestPyreComponent::testName();
+}
+TEST_CASE("TestPyreComponent::testIdentifier", "[TestPyreComponent]") {
+    pylith::utils::TestPyreComponent::testIdentifier();
+}
+TEST_CASE("TestPyreComponent::testJournals", "[TestPyreComponent]") {
+    pylith::utils::TestPyreComponent::testJournals();
+}
+
+// ------------------------------------------------------------------------------------------------
 // Test constructor.
 void
 pylith::utils::TestPyreComponent::testConstructor(void) {
     PyreComponent component;
 
-    CPPUNIT_ASSERT_EQUAL(std::string(""), component._name);
+    CHECK(std::string("") == component._name);
 } // testConstructor
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test name().
 void
 pylith::utils::TestPyreComponent::testName(void) {
     PyreComponent component;
-    CPPUNIT_ASSERT_EQUAL(std::string(""), std::string(component.getName()));
+    CHECK(std::string("") == std::string(component.getName()));
 
     const std::string& name = "my name";
     component.setName(name.c_str());
-    CPPUNIT_ASSERT_EQUAL(name, std::string(component.getName()));
+    CHECK(name == std::string(component.getName()));
 } // testName
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test identifier().
 void
 pylith::utils::TestPyreComponent::testIdentifier(void) {
     PyreComponent component;
     component.setName("my component");
-    CPPUNIT_ASSERT_EQUAL(std::string("unknown"), std::string(component._identifier));
+    CHECK(std::string("unknown") == std::string(component._identifier));
 
     const std::string& identifier = "my identifier";
     component.setIdentifier(identifier.c_str());
-    CPPUNIT_ASSERT_EQUAL(identifier, std::string(component.getIdentifier()));
+    CHECK(identifier == std::string(component.getIdentifier()));
 } // testIdentifier
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test PYLITH_JOURNAL_*.
 namespace pylith {
     namespace utils {
