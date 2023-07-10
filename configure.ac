@@ -126,10 +126,8 @@ if test "$enable_swig" = "yes" ; then
   AC_PROG_SWIG([4.0.0])
 fi
 
-dnl CPPUNIT
+dnl CATCH2
 if test "$enable_testing" = "yes" ; then
-  CIT_CPPUNIT_HEADER
-  CIT_CPPUNIT_LIB
   CIT_CATCH2_HEADER
   CIT_CATCH2_LIB
 fi
