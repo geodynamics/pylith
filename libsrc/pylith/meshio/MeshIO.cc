@@ -36,8 +36,7 @@
 // ----------------------------------------------------------------------
 // Constructor
 pylith::meshio::MeshIO::MeshIO(void) :
-    _mesh(0) {
-} // constructor
+    _mesh(0) {} // constructor
 
 
 // ----------------------------------------------------------------------
@@ -66,7 +65,7 @@ pylith::meshio::MeshIO::getMeshDim(void) const { // getMeshDim
 // Read mesh from file.
 void
 pylith::meshio::MeshIO::read(pylith::topology::Mesh* mesh,
-			     const bool checkTopology) {
+                             const bool checkTopology) {
     PYLITH_METHOD_BEGIN;
 
     assert(mesh);
@@ -104,7 +103,7 @@ pylith::meshio::MeshIO::read(pylith::topology::Mesh* mesh,
 
     // Check mesh consistency
     if (checkTopology) {
-      pylith::topology::MeshOps::checkTopology(*_mesh);
+        pylith::topology::MeshOps::checkTopology(*_mesh);
     } // if
 
     pythia::journal::debug_t debug(PyreComponent::getName());
@@ -301,79 +300,6 @@ pylith::meshio::MeshIO::_getMaterials(int_array* materialIds) const {
 
 
 // ----------------------------------------------------------------------
-// Build a point group as an int section.
-void
-pylith::meshio::MeshIO::_setGroup(const std::string& name,
-                                  const GroupPtType type,
-                                  const int_array& points) { // _setGroup
-    PYLITH_METHOD_BEGIN;
-
-    assert(_mesh);
-
-    PetscDM dmMesh = _mesh->getDM();assert(dmMesh);
-    const PetscInt numPoints = points.size();
-    DMLabel label;
-    PetscErrorCode err;
-
-    err = DMCreateLabel(dmMesh, name.c_str());PYLITH_CHECK_ERROR(err);
-    err = DMGetLabel(dmMesh, name.c_str(), &label);PYLITH_CHECK_ERROR(err);
-    if (CELL == type) {
-        for (PetscInt p = 0; p < numPoints; ++p) {
-            err = DMLabelSetValue(label, points[p], 1);PYLITH_CHECK_ERROR(err);
-        } // for
-    } else if (VERTEX == type) {
-        PetscInt cStart, cEnd, vStart, vEnd, numCells;
-
-        err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
-        err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);PYLITH_CHECK_ERROR(err);
-        numCells = cEnd - cStart;
-        for (PetscInt p = 0; p < numPoints; ++p) {
-            err = DMLabelSetValue(label, numCells+points[p], 1);PYLITH_CHECK_ERROR(err);
-        } // for
-          // Also add any non-cells which have all vertices marked
-        for (PetscInt p = 0; p < numPoints; ++p) {
-            const PetscInt vertex = numCells+points[p];
-            PetscInt      *star = NULL, starSize, s;
-
-            err = DMPlexGetTransitiveClosure(dmMesh, vertex, PETSC_FALSE, &starSize, &star);PYLITH_CHECK_ERROR(err);
-            for (s = 0; s < starSize*2; s += 2) {
-                const PetscInt point = star[s];
-                PetscInt      *closure = NULL, closureSize, c, value;
-                PetscBool marked = PETSC_TRUE;
-
-                if ((point >= cStart) && (point < cEnd)) { continue;}
-                err = DMPlexGetTransitiveClosure(dmMesh, point, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
-                for (c = 0; c < closureSize*2; c += 2) {
-                    if ((closure[c] >= vStart) && (closure[c] < vEnd)) {
-                        err = DMLabelGetValue(label, closure[c], &value);PYLITH_CHECK_ERROR(err);
-                        if (value != 1) {marked = PETSC_FALSE;break;}
-                    }
-                }
-                err = DMPlexRestoreTransitiveClosure(dmMesh, point, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
-                if (marked) {err = DMLabelSetValue(label, point, 1);PYLITH_CHECK_ERROR(err);}
-            }
-            err = DMPlexRestoreTransitiveClosure(dmMesh, vertex, PETSC_FALSE, &starSize, &star);PYLITH_CHECK_ERROR(err);
-        }
-    } // if/else
-
-    PYLITH_METHOD_END;
-} // _setGroup
-
-
-// ----------------------------------------------------------------------
-// Create empty groups on other processes
-void
-pylith::meshio::MeshIO::_distributeGroups() { // _distributeGroups
-    PYLITH_METHOD_BEGIN;
-
-    assert(_mesh);
-    // dmMesh does not need to broadcast the label names. They come from proc 0.
-
-    PYLITH_METHOD_END;
-} // _distributeGroups
-
-
-// ----------------------------------------------------------------------
 // Get names of all groups in mesh.
 void
 pylith::meshio::MeshIO::_getGroupNames(string_vector* names) const { // _getGroups
@@ -408,7 +334,7 @@ pylith::meshio::MeshIO::_getGroupNames(string_vector* names) const { // _getGrou
 // Get group entities
 void
 pylith::meshio::MeshIO::_getGroup(int_array* points,
-                                  GroupPtType* groupType,
+                                  pylith::meshio::MeshBuilder::GroupPtType* groupType,
                                   const char *name) const { // _getGroup
     PYLITH_METHOD_BEGIN;
 
@@ -435,15 +361,15 @@ pylith::meshio::MeshIO::_getGroup(int_array* points,
     PetscInt totalSize;
     err = DMGetStratumSize(dmMesh, name, 1, &totalSize);PYLITH_CHECK_ERROR(err);
 
-    *groupType = VERTEX;
+    *groupType = pylith::meshio::MeshBuilder::VERTEX;
     if (( totalSize > 0) && (( groupIndices[0] >= cStart) && ( groupIndices[0] < cEnd) )) {
-        *groupType = CELL;
+        *groupType = pylith::meshio::MeshBuilder::CELL;
     } // if
 
     PetscInt offset = 0;
     PetscInt pStart = cStart;
     PetscInt pEnd = cEnd;
-    if (VERTEX == *groupType) {
+    if (pylith::meshio::MeshBuilder::VERTEX == *groupType) {
         offset = numCells;
         pStart = vStart;
         pEnd = vEnd;

@@ -25,30 +25,21 @@
 #if !defined(pylith_meshio_meshio_hh)
 #define pylith_meshio_meshio_hh
 
-// Include directives ---------------------------------------------------
 #include "meshiofwd.hh" // forward declarations
 
 #include "pylith/utils/PyreComponent.hh" // ISA PyreComponent
+
+#include "pylith/meshio/MeshBuilder.hh" // USES MeshBuilder::GroupPtType
 
 #include "pylith/topology/topologyfwd.hh" // forward declarations
 #include "spatialdata/units/unitsfwd.hh" // forward declarations
 #include "pylith/utils/arrayfwd.hh" // USES scalar_array, int_array, string_vector
 
-// MeshIO ---------------------------------------------------------------
-/// C++ abstract base class for managing mesh input/output.
+// ------------------------------------------------------------------------------------------------
 class pylith::meshio::MeshIO : public pylith::utils::PyreComponent {
-
-    // PUBLIC ENUMS /////////////////////////////////////////////////////
+    // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
 public:
 
-    /// Type of points in a group.
-    enum GroupPtType {
-        VERTEX=0,
-        CELL=1,
-    }; // GroupPtType
-
-    // PUBLIC MEMBERS ///////////////////////////////////////////////////
-public:
     /// Constructor
     MeshIO(void);
 
@@ -64,8 +55,8 @@ public:
      * @param[in] mesh PyLith finite-element mesh.
      * @param[in] check Check topology of mesh.
      */
-  void read(pylith::topology::Mesh* mesh,
-	    const bool check =true);
+    void read(pylith::topology::Mesh* mesh,
+              const bool check=true);
 
     /** Write mesh to file.
      *
@@ -73,7 +64,7 @@ public:
      */
     void write(pylith::topology::Mesh* const mesh);
 
-    // PROTECTED MEMBERS ////////////////////////////////////////////////////
+    // PROTECTED MEMBERS //////////////////////////////////////////////////////////////////////////
 protected:
 
     /// Write mesh
@@ -132,19 +123,6 @@ protected:
      */
     void _getMaterials(int_array* pMaterialIds) const;
 
-    /** Build a point group
-     *
-     * The indices in the points array must use zero based indices. In
-     * other words, the lowest index MUST be 0 not 1.
-     *
-     * @param name The group name
-     * @param type The point type, e.g. VERTEX, CELL
-     * @param points An array of the points in the group.
-     */
-    void _setGroup(const std::string& name,
-                   const GroupPtType type,
-                   const int_array& points);
-
     /** Get names of all groups in mesh.
      *
      * @returns Array of group names.
@@ -162,22 +140,16 @@ protected:
      * @param name The group name
      */
     void _getGroup(int_array* points,
-                   GroupPtType* type,
+                   pylith::meshio::MeshBuilder::GroupPtType* type,
                    const char *name) const;
 
-    /// Create empty groups on other processes
-    void _distributeGroups();
-
-    // PROTECTED MEMBERS ////////////////////////////////////////////////////
+    // PROTECTED MEMBERS //////////////////////////////////////////////////////////////////////////
 protected:
 
-  pylith::topology::Mesh* _mesh; ///< Pointer to finite-element mesh.
+    pylith::topology::Mesh* _mesh; ///< Pointer to finite-element mesh.
 
 }; // MeshIO
 
-
-
 #endif // pylith_meshio_meshio_hh
-
 
 // End of file

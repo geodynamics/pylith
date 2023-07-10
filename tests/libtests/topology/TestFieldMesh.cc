@@ -367,15 +367,11 @@ pylith::topology::TestFieldMesh::_initialize(void) {
     _mesh->setCoordSys(&cs);
 
     // Setup labels for constraints.
-    PetscErrorCode err;
-    for (PylithInt i = 0; i < _data->bcANumVertices; ++i) {
-        err = DMSetLabelValue(_mesh->getDM(), _data->bcALabel, numCells+_data->bcAVertices[i], _data->bcALabelId);
-        assert(!err);
-    } // for
-    for (PylithInt i = 0; i < _data->bcBNumVertices; ++i) {
-        err = DMSetLabelValue(_mesh->getDM(), _data->bcBLabel, numCells+_data->bcBVertices[i], _data->bcBLabelId);
-        assert(!err);
-    } // for
+    int_array groupA(_data->bcAVertices, _data->bcANumVertices);
+    pylith::meshio::MeshBuilder::setGroup(_mesh, _data->bcALabel, pylith::meshio::MeshBuilder::VERTEX, groupA);
+
+    int_array groupB(_data->bcBVertices, _data->bcBNumVertices);
+    pylith::meshio::MeshBuilder::setGroup(_mesh, _data->bcBLabel, pylith::meshio::MeshBuilder::VERTEX, groupB);
 
     // Setup field
     delete _field;_field = new Field(*_mesh);
@@ -386,6 +382,7 @@ pylith::topology::TestFieldMesh::_initialize(void) {
     _field->createDiscretization();
     pylith::topology::CoordsVisitor::optimizeClosure(_field->getDM());
 
+    PetscErrorCode err = PETSC_SUCCESS;
     PetscDMLabel labelA = NULL, labelB = NULL;
     err = DMGetLabel(_field->getDM(), _data->bcALabel, &labelA);assert(!err);
     err = DMGetLabel(_field->getDM(), _data->bcBLabel, &labelB);assert(!err);

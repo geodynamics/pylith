@@ -152,7 +152,7 @@ pylith::meshio::MeshIOAscii::_read(void) { // _read
                     readCells = true;
                 } else if (0 == strcasecmp(token.c_str(), "group")) {
                     std::string name;
-                    GroupPtType type;
+                    pylith::meshio::MeshBuilder::GroupPtType type;
                     int_array points;
 
                     if (!builtMesh) {
@@ -160,7 +160,7 @@ pylith::meshio::MeshIOAscii::_read(void) { // _read
                                                  "precede any groups in mesh file.");
                     }
                     _readGroup(parser, &points, &type, &name);
-                    _setGroup(name, type, points);
+                    pylith::meshio::MeshBuilder::setGroup(_mesh, name.c_str(), type, points);
                 } else {
                     std::ostringstream msg;
                     msg << "Could not parse '" << token << "' into a mesh setting.";
@@ -198,7 +198,6 @@ pylith::meshio::MeshIOAscii::_read(void) { // _read
         MeshBuilder::buildMesh(_mesh, &coordinates, numVertices, spaceDim, cells, numCells, numCorners, meshDim);
         _setMaterials(materialIds);
     } // if/else
-    _distributeGroups();
 
     PYLITH_METHOD_END;
 } // read
@@ -486,7 +485,7 @@ pylith::meshio::MeshIOAscii::_writeCells(std::ostream& fileout) const { // _writ
 void
 pylith::meshio::MeshIOAscii::_readGroup(spatialdata::utils::LineParser& parser,
                                         int_array* points,
-                                        GroupPtType* type,
+                                        pylith::meshio::MeshBuilder::GroupPtType* type,
                                         std::string* name) const { // _readGroup
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_readGroup(parser="<<typeid(parser).name()<<", points="<<points<<", type="<<type<<", name="<<name<<")");
@@ -513,10 +512,10 @@ pylith::meshio::MeshIOAscii::_readGroup(spatialdata::utils::LineParser& parser,
             std::string typeName;
             buffer.ignore(maxIgnore, '=');
             buffer >> typeName;
-            if (typeName == _MeshIOAscii::groupTypeNames[VERTEX]) {
-                *type = VERTEX;
-            } else if (typeName == _MeshIOAscii::groupTypeNames[CELL]) {
-                *type = CELL;
+            if (typeName == _MeshIOAscii::groupTypeNames[pylith::meshio::MeshBuilder::VERTEX]) {
+                *type = pylith::meshio::MeshBuilder::VERTEX;
+            } else if (typeName == _MeshIOAscii::groupTypeNames[pylith::meshio::MeshBuilder::CELL]) {
+                *type = pylith::meshio::MeshBuilder::CELL;
             } else {
                 std::ostringstream msg;
                 msg << "Invalid point type " << typeName << ".";
@@ -576,7 +575,7 @@ pylith::meshio::MeshIOAscii::_writeGroup(std::ostream& fileout,
     PYLITH_COMPONENT_DEBUG("_writeGroup(fileout="<<typeid(fileout).name()<<", name="<<name<<")");
 
     int_array points;
-    GroupPtType type;
+    pylith::meshio::MeshBuilder::GroupPtType type;
     _getGroup(&points, &type, name);
 
     const int offset = _useIndexZero ? 0 : 1;

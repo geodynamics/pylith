@@ -119,7 +119,7 @@ private:
      */
     void _readGroup(spatialdata::utils::LineParser& parser,
                     int_array* points,
-                    GroupPtType* type,
+                    pylith::meshio::MeshBuilder::GroupPtType* type,
                     std::string* name) const;
 
     /** Write a point group.

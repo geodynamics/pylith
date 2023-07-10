@@ -111,7 +111,6 @@ pylith::meshio::MeshIOCubit::_read(void) {
         MeshBuilder::buildMesh(_mesh, &coordinates, numVertices, spaceDim, cells, numCells, numCorners, meshDim);
         _setMaterials(materialIds);
     }
-    _distributeGroups();
 
     PYLITH_METHOD_END;
 } // read
@@ -308,13 +307,13 @@ pylith::meshio::MeshIOCubit::_readGroups(ExodusII& exofile) {
         std::sort(&points[0], &points[0]+nodesetSize);
         points -= 1; // use zero index
 
-        GroupPtType type = VERTEX;
+        pylith::meshio::MeshBuilder::GroupPtType type = pylith::meshio::MeshBuilder::VERTEX;
         if (_useNodesetNames) {
-            _setGroup(groupNames[iGroup], type, points);
+            pylith::meshio::MeshBuilder::setGroup(_mesh, groupNames[iGroup].c_str(), type, points);
         } else {
             std::ostringstream name;
             name << ids[iGroup];
-            _setGroup(name.str().c_str(), type, points);
+            pylith::meshio::MeshBuilder::setGroup(_mesh, name.str().c_str(), type, points);
         } // if/else
     } // for
 

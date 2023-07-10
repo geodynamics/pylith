@@ -224,12 +224,8 @@ pylith::topology::TestSubmesh::_buildMesh(void) {
     _domainMesh->setCoordSys(&cs);
 
     PetscErrorCode err;
-    const int numPoints = _data->groupSize;
-    for (PetscInt i = 0; i < numPoints; ++i) {
-        const PylithInt groupLabelValue = 1;
-        err = DMSetLabelValue(_domainMesh->getDM(), _data->groupLabel, numCells+_data->groupVertices[i],
-                              groupLabelValue);PYLITH_CHECK_ERROR(err);
-    } // for
+    pylith::int_array groupPoints(_data->groupVertices, _data->groupSize);
+    pylith::meshio::MeshBuilder::setGroup(_domainMesh, _data->groupLabel, pylith::meshio::MeshBuilder::VERTEX, groupPoints);
 
     for (PetscInt c = 0; c < numCells; ++c) {
         err = DMSetLabelValue(_domainMesh->getDM(), _data->subdomainLabel, c,
