@@ -22,7 +22,6 @@ __all__ = [
     "MeshIOObj",
     "MeshIOAscii",
     "MeshIOCubit",
-    "MeshIOLagrit",
     "DataWriter",
     "DataWriterVTK",
     "DataWriterHDF5Ext",
