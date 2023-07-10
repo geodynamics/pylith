@@ -59,6 +59,18 @@ pylith::topology::MeshOps::createSubdomainMesh(const pylith::topology::Mesh& mes
     /* TODO: Add creation of pointSF for submesh */
     PetscDMLabel dmLabel = NULL;
     err = DMGetLabel(dmDomain, labelName, &dmLabel);PYLITH_CHECK_ERROR(err);assert(dmLabel);
+    PetscBool hasLabelValue = PETSC_FALSE;
+    err = DMLabelHasValue(dmLabel, labelValue, &hasLabelValue);PYLITH_CHECK_ERROR(err);
+    int hasLabelValueIntLocal = int(hasLabelValue);
+    int hasLabelValueInt = 0;
+    err = MPI_Allreduce(&hasLabelValueIntLocal, &hasLabelValueInt, 1, MPI_INT, MPI_MAX,
+                        PetscObjectComm((PetscObject) dmDomain));PYLITH_CHECK_ERROR(err);
+    if (!hasLabelValueInt) {
+        std::ostringstream msg;
+        msg << "Could not find group of points '" << labelName << "' with label value '"
+            << labelValue << "' in PETSc DM mesh.";
+        throw std::runtime_error(msg.str());
+    } // if
 
     PetscDM dmSubdomain = NULL;
     err = DMPlexFilter(dmDomain, dmLabel, labelValue, &dmSubdomain);PYLITH_CHECK_ERROR(err);
@@ -100,12 +112,16 @@ pylith::topology::MeshOps::createLowerDimMesh(const pylith::topology::Mesh& mesh
                                               const char* labelName,
                                               const int labelValue) {
     PYLITH_METHOD_BEGIN;
-
     assert(labelName);
 
-    PetscDM dmDomain = mesh.getDM();assert(dmDomain);
-    PetscErrorCode err = 0;
+    if (mesh.getDimension() < 1) {
+        throw std::logic_error("INTERNAL ERROR in MeshOps::createLowerDimMesh()\n"
+                               "Cannot create submesh for mesh with dimension < 1.");
+    } // if
 
+    PetscErrorCode err = PETSC_SUCCESS;
+
+    PetscDM dmDomain = mesh.getDM();assert(dmDomain);
     PetscBool hasLabel = PETSC_FALSE;
     err = DMHasLabel(dmDomain, labelName, &hasLabel);PYLITH_CHECK_ERROR(err);
     if (!hasLabel) {
@@ -114,16 +130,23 @@ pylith::topology::MeshOps::createLowerDimMesh(const pylith::topology::Mesh& mesh
         throw std::runtime_error(msg.str());
     } // if
 
-    if (mesh.getDimension() < 1) {
-        throw std::logic_error("INTERNAL ERROR in MeshOps::createLowerDimMesh()\n"
-                               "Cannot create submesh for mesh with dimension < 1.");
-    } // if
-
     /* TODO: Add creation of pointSF for submesh */
-    PetscDM dmSubmesh = NULL;
     PetscDMLabel dmLabel = NULL;
     err = DMGetLabel(dmDomain, labelName, &dmLabel);PYLITH_CHECK_ERROR(err);assert(dmLabel);
+    PetscBool hasLabelValue = PETSC_FALSE;
+    err = DMLabelHasValue(dmLabel, labelValue, &hasLabelValue);PYLITH_CHECK_ERROR(err);
+    int hasLabelValueIntLocal = int(hasLabelValue);
+    int hasLabelValueInt = 0;
+    err = MPI_Allreduce(&hasLabelValueIntLocal, &hasLabelValueInt, 1, MPI_INT, MPI_MAX,
+                        PetscObjectComm((PetscObject) dmDomain));PYLITH_CHECK_ERROR(err);
+    if (!hasLabelValueInt) {
+        std::ostringstream msg;
+        msg << "Could not find group of points '" << labelName << "' with label value '"
+            << labelValue << "' in PETSc DM mesh.";
+        throw std::runtime_error(msg.str());
+    } // if
 
+    PetscDM dmSubmesh = NULL;
     err = DMPlexCreateSubmesh(dmDomain, dmLabel, labelValue, PETSC_FALSE, &dmSubmesh);PYLITH_CHECK_ERROR(err);
 
     PetscInt maxConeSizeLocal = 0, maxConeSize = 0;
