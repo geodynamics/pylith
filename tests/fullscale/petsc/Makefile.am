@@ -16,8 +16,6 @@
 # ----------------------------------------------------------------------
 #
 
-include $(top_srcdir)/tests/check_cppunit.am
-
 TESTS = test_petsc.py
 
 dist_check_SCRIPTS = test_petsc.py

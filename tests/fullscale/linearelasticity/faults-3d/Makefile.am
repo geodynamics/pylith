@@ -15,8 +15,6 @@
 #
 # ----------------------------------------------------------------------
 
-include $(top_srcdir)/tests/check_cppunit.am
-
 TESTS = test_pylith.py
 
 dist_check_SCRIPTS = test_pylith.py
