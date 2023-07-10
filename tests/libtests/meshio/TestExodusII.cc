@@ -61,8 +61,6 @@ pylith::meshio::TestExodusII::testFilename(void) {
 // Test open() and close();
 void
 pylith::meshio::TestExodusII::testOpenClose(void) {
-    PYLITH_METHOD_BEGIN;
-
     ExodusII exofile("data/twotri3_13.0.exo");
     assert(exofile._file);
 
@@ -76,8 +74,6 @@ pylith::meshio::TestExodusII::testOpenClose(void) {
     // Attempt to close file with bad handle.
     exofile._file = 1;
     CHECK_THROWS_AS(exofile.close(), std::runtime_error);
-
-    PYLITH_METHOD_END;
 } // testOpenClose
 
 
@@ -139,8 +135,6 @@ pylith::meshio::TestExodusII::testHasVar(void) {
 // Test getVar(PylithScalar*).
 void
 pylith::meshio::TestExodusII::testGetVarDouble(void) {
-    PYLITH_METHOD_BEGIN;
-
     const PylithScalar coordsE[8] = { -1.0, 0.0, 0.0, 1.0,
                                       0.0, -1.0, 1.0, 0.0 };
 
@@ -168,8 +162,6 @@ pylith::meshio::TestExodusII::testGetVarDouble(void) {
     // Attempt to get variable with wrong dimension.
     dims[0] = 99;
     CHECK_THROWS_AS(exofile.getVar(&coords[0], dims, ndims, "coord"), std::runtime_error);
-
-    PYLITH_METHOD_END;
 } // testGetVarDouble
 
 
@@ -177,8 +169,6 @@ pylith::meshio::TestExodusII::testGetVarDouble(void) {
 // Test getVar(int*).
 void
 pylith::meshio::TestExodusII::testGetVarInt(void) {
-    PYLITH_METHOD_BEGIN;
-
     const int connectE[3] = { 3, 2, 4 };
 
     const int ndims = 2;
@@ -204,8 +194,6 @@ pylith::meshio::TestExodusII::testGetVarInt(void) {
     // Attempt to get variable with wrong dimension.
     dims[0] = 99;
     CHECK_THROWS_AS(exofile.getVar(&connect[0], dims, ndims, "connect2"), std::runtime_error);
-
-    PYLITH_METHOD_END;
 } // testGetVarDouble
 
 
@@ -213,8 +201,6 @@ pylith::meshio::TestExodusII::testGetVarInt(void) {
 // Test getVar(string_vector).
 void
 pylith::meshio::TestExodusII::testGetVarString(void) {
-    PYLITH_METHOD_BEGIN;
-
     const char* namesE[2] = { "x", "y" };
 
     const int dim = 2;
@@ -232,8 +218,6 @@ pylith::meshio::TestExodusII::testGetVarString(void) {
 
     // Attempt to get variable with wrong number of dimensions.
     CHECK_THROWS_AS(exofile.getVar(&names, dim+1, "coord_names"), std::runtime_error);
-
-    PYLITH_METHOD_END;
 } // testGetVarString
 
 

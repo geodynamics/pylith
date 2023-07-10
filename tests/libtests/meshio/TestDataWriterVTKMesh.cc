@@ -53,7 +53,6 @@ pylith::meshio::TestDataWriterVTKMesh::~TestDataWriterVTKMesh(void) {
 // Test accessors.
 void
 pylith::meshio::TestDataWriterVTKMesh::testAccessors(void) {
-    PYLITH_METHOD_BEGIN;
     const double tolerance = 1.0e-6;
 
     DataWriterVTK writer;
@@ -80,8 +79,6 @@ pylith::meshio::TestDataWriterVTKMesh::testAccessors(void) {
     // Verify error with nonpositive precision.
     CHECK_THROWS_AS(writer.precision(0), std::runtime_error);
     CHECK_THROWS_AS(writer.precision(-1), std::runtime_error);
-
-    PYLITH_METHOD_END;
 } // testFilename
 
 
