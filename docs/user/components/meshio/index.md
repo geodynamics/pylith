@@ -12,7 +12,6 @@ DataWriterHDF5Ext.md
 DataWriterVTK.md
 MeshIOAscii.md
 MeshIOCubit.md
-MeshIOLagrit.md
 MeshIOObj.md
 MeshIOPetsc.md
 OutputObserver.md

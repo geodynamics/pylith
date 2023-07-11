@@ -1,7 +1,6 @@
 from .TestDataWriter import TestDataWriter
 from .TestDataWriterVTK import TestDataWriterVTK
 from .TestMeshIOAscii import TestMeshIOAscii
-from .TestMeshIOLagrit import TestMeshIOLagrit
 from .TestOutputObserver import TestOutputObserver
 from .TestOutputPhysics import TestOutputPhysics
 from .TestOutputSoln import TestOutputSoln

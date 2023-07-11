@@ -1,5 +1,11 @@
 See <https://github.com/geodynamics/pylith/commits/main> for the complete log of changes made to PyLith.
 
+## Version 3.1.0
+
+* Removed support for importing meshes from LaGriT.
+* Switched from CppUnit to Catch2 as the C++ testing framework.
+* Bug fixes
+
 ## Version 3.0.3
 
 This is a bug fix release with no new features or changes to the user interface.

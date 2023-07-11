@@ -86,7 +86,6 @@ EXTRA_DIST = \
 	meshio/DataWriterVTK.py \
 	meshio/MeshIOAscii.py \
 	meshio/MeshIOCubit.py \
-	meshio/MeshIOLagrit.py \
 	meshio/MeshIOObj.py \
 	meshio/MeshIOPetsc.py \
 	meshio/OutputObserver.py \

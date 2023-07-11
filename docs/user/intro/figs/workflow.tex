@@ -49,12 +49,11 @@
   % Geologic structure
   \node (opencascade) [open, below=of structure] {OpenCascade};
   \node (gocad) [commercial, below=of opencascade] {Gocad};
-  \node (earthviz) [commercial, below=of gocad] {Earth Vision};
+  \node (earthviz) [commercial, below=of gocad] {EarthVision};
 
   % Mesh generation
   \node (gmsh) [open, below=of meshing] {Gmsh};
   \node (cubit) [commercial, below=of gmsh] {Cubit};
-  \node (lagrit) [free, below=of cubit] {LaGriT};
 
   % Physics code
   \node (pylith) [cig, below=of physics] {PyLith};
@@ -72,15 +71,12 @@
   \path (opencascade.east) edge[available] (gmsh.west);
   \path (opencascade.east) edge[available] (cubit.west);
   \path (gocad.east) edge[available] (cubit.west);
-  \path (gocad.east) edge[available] (lagrit.west);
   \path (earthviz.east) edge[available] (cubit.west);
-  \path (earthviz.east) edge[available] (lagrit.west);
 
   \path (gmsh.east) edge[available] (pylith.west);
   \path (gmsh.east) edge[available] (abaqus.west);
   \path (cubit.east) edge[available] (pylith.west);
   \path (cubit.east) edge[available] (abaqus.west);
-  \path (lagrit.east) edge[available] (pylith.west);
 
   \path (pylith.east) edge[available] (paraview.west);
   \path (pylith.east) edge[available] (visit.west);
