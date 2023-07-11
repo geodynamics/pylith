@@ -18,7 +18,7 @@
 
 #include <portinfo>
 
-#include "TestMeshOps.hh" // Implementation of class methods
+#include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
 #include "pylith/topology/MeshOps.hh" // USES MeshOps
 
@@ -32,10 +32,54 @@
 
 #include <stdexcept> // USES std::runtime_error
 
-// ---------------------------------------------------------------------------------------------------------------------
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::topology::TestMeshOps);
+#include "catch2/catch_test_macros.hpp"
+#include "catch2/matchers/catch_matchers_floating_point.hpp"
+#include "catch2/matchers/catch_matchers_exception.hpp"
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
+namespace pylith {
+    namespace topology {
+        class TestMeshOps;
+    } // topology
+} // pylith
+
+class pylith::topology::TestMeshOps : public pylith::utils::GenericComponent {
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
+public:
+
+    /// Test nondimensionalize().
+    static
+    void testNondimensionalize(void);
+
+    /// Test checkTopology().
+    static
+    void testCheckTopology(void);
+
+    /// Test isSimplexMesh().
+    static
+    void testIsSimplexMesh(void);
+
+    /// Test checkMaterialIds().
+    static
+    void testCheckMaterialIds(void);
+
+}; // class TestMeshOps
+
+// ------------------------------------------------------------------------------------------------
+TEST_CASE("TestMeshOps::testNondimensionalize", "[TestMeshOps]") {
+    pylith::topology::TestMeshOps().testNondimensionalize();
+}
+TEST_CASE("TestMeshOps::testCheckTopology", "[TestMeshOps]") {
+    pylith::topology::TestMeshOps().testCheckTopology();
+}
+TEST_CASE("TestMeshOps::testIsSimplexMesh", "[TestMeshOps]") {
+    pylith::topology::TestMeshOps().testIsSimplexMesh();
+}
+TEST_CASE("TestMeshOps::testCheckMaterialIds", "[TestMeshOps]") {
+    pylith::topology::TestMeshOps().testCheckMaterialIds();
+}
+
+// ------------------------------------------------------------------------------------------------
 // Test nondimensionalize().
 void
 pylith::topology::TestMeshOps::testNondimensionalize(void) {
@@ -64,26 +108,23 @@ pylith::topology::TestMeshOps::testNondimensionalize(void) {
     MeshOps::nondimensionalize(&mesh, normalizer);
 
     // Get vertices
-    PetscDM dmMesh = mesh.getDM();CPPUNIT_ASSERT(dmMesh);
+    PetscDM dmMesh = mesh.getDM();assert(dmMesh);
     Stratum depthStratum(dmMesh, Stratum::DEPTH, 0);
     const PetscInt vStart = depthStratum.begin();
     const PetscInt vEnd = depthStratum.end();
 
     // Check nondimensional coordinates
     CoordsVisitor coordsVisitor(dmMesh);
-    const PetscScalar* coordsArray = coordsVisitor.localArray();CPPUNIT_ASSERT(coordsArray);
+    const PetscScalar* coordsArray = coordsVisitor.localArray();assert(coordsArray);
 
     const PylithScalar tolerance = 1.0e-06;
     for (PetscInt v = vStart, i = 0; v < vEnd; ++v) {
-        CPPUNIT_ASSERT_EQUAL(spaceDim, coordsVisitor.sectionDof(v));
+        REQUIRE(spaceDim == coordsVisitor.sectionDof(v));
         const PetscInt off = coordsVisitor.sectionOffset(v);
         for (int iDim = 0; iDim < spaceDim; ++iDim, ++i) {
             const PylithScalar coordE = coordinates[i] / lengthScale;
-            if (fabs(coordE) < 1.0) {
-                CPPUNIT_ASSERT_DOUBLES_EQUAL(coordE, coordsArray[off+iDim], tolerance);
-            } else {
-                CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, coordsArray[off+iDim]/coordE, tolerance);
-            } // if/else
+            const double toleranceV = std::max(tolerance, tolerance*coordE);
+            CHECK_THAT(coordsArray[off+iDim], Catch::Matchers::WithinAbs(coordE, toleranceV));
         } // for
     } // for
 
@@ -91,7 +132,7 @@ pylith::topology::TestMeshOps::testNondimensionalize(void) {
 } // testNondimensionalize
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test checkTopology().
 void
 pylith::topology::TestMeshOps::testCheckTopology(void) {
@@ -118,7 +159,7 @@ pylith::topology::TestMeshOps::testCheckTopology(void) {
 } // testCheckTopology
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test isSimplexMesh().
 void
 pylith::topology::TestMeshOps::testIsSimplexMesh(void) {
@@ -145,19 +186,17 @@ pylith::topology::TestMeshOps::testIsSimplexMesh(void) {
         meshio::MeshIOAscii iohandler;
         iohandler.setFilename(filename);
         iohandler.read(&mesh);
-        CPPUNIT_ASSERT_EQUAL(isSimplex, MeshOps::isSimplexMesh(mesh));
+        CHECK(isSimplex == MeshOps::isSimplexMesh(mesh));
     } // for
 
     PYLITH_METHOD_END;
 } // testIsSimplexMesh
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test checkMaterialIds().
 void
 pylith::topology::TestMeshOps::testCheckMaterialIds(void) {
-    PYLITH_METHOD_BEGIN;
-
     Mesh mesh;
     meshio::MeshIOAscii iohandler;
     iohandler.setFilename("data/tri3.mesh");
@@ -170,9 +209,7 @@ pylith::topology::TestMeshOps::testCheckMaterialIds(void) {
     MeshOps::checkMaterialLabels(mesh, materialValues);
 
     materialValues[0] = 99;
-    CPPUNIT_ASSERT_THROW(MeshOps::checkMaterialLabels(mesh, materialValues), std::runtime_error);
-
-    PYLITH_METHOD_END;
+    REQUIRE_THROWS_AS(MeshOps::checkMaterialLabels(mesh, materialValues), std::runtime_error);
 } // testCheckMaterialIds
 
 

@@ -96,4 +96,64 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
 } // buildMesh
 
 
+// ----------------------------------------------------------------------
+// Build a point group as an int section.
+void
+pylith::meshio::MeshBuilder::setGroup(pylith::topology::Mesh* mesh,
+                                      const char* name,
+                                      const GroupPtType groupType,
+                                      const int_array& points) {
+    PYLITH_METHOD_BEGIN;
+    assert(mesh);
+
+    PetscDM dmMesh = mesh->getDM();assert(dmMesh);
+    const PetscInt numPoints = points.size();
+    DMLabel label;
+    PetscErrorCode err;
+
+    err = DMCreateLabel(dmMesh, name);PYLITH_CHECK_ERROR(err);
+    err = DMGetLabel(dmMesh, name, &label);PYLITH_CHECK_ERROR(err);
+    if (CELL == groupType) {
+        for (PetscInt p = 0; p < numPoints; ++p) {
+            err = DMLabelSetValue(label, points[p], 1);PYLITH_CHECK_ERROR(err);
+        } // for
+    } else if (VERTEX == groupType) {
+        PetscInt cStart, cEnd, vStart, vEnd, numCells;
+
+        err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
+        err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);PYLITH_CHECK_ERROR(err);
+        numCells = cEnd - cStart;
+        for (PetscInt p = 0; p < numPoints; ++p) {
+            err = DMLabelSetValue(label, numCells+points[p], 1);PYLITH_CHECK_ERROR(err);
+        } // for
+          // Also add any non-cells which have all vertices marked
+        for (PetscInt p = 0; p < numPoints; ++p) {
+            const PetscInt vertex = numCells+points[p];
+            PetscInt      *star = NULL, starSize, s;
+
+            err = DMPlexGetTransitiveClosure(dmMesh, vertex, PETSC_FALSE, &starSize, &star);PYLITH_CHECK_ERROR(err);
+            for (s = 0; s < starSize*2; s += 2) {
+                const PetscInt point = star[s];
+                PetscInt      *closure = NULL, closureSize, c, value;
+                PetscBool marked = PETSC_TRUE;
+
+                if ((point >= cStart) && (point < cEnd)) { continue;}
+                err = DMPlexGetTransitiveClosure(dmMesh, point, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+                for (c = 0; c < closureSize*2; c += 2) {
+                    if ((closure[c] >= vStart) && (closure[c] < vEnd)) {
+                        err = DMLabelGetValue(label, closure[c], &value);PYLITH_CHECK_ERROR(err);
+                        if (value != 1) {marked = PETSC_FALSE;break;}
+                    }
+                }
+                err = DMPlexRestoreTransitiveClosure(dmMesh, point, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+                if (marked) {err = DMLabelSetValue(label, point, 1);PYLITH_CHECK_ERROR(err);}
+            }
+            err = DMPlexRestoreTransitiveClosure(dmMesh, vertex, PETSC_FALSE, &starSize, &star);PYLITH_CHECK_ERROR(err);
+        }
+    } // if/else
+
+    PYLITH_METHOD_END;
+} // setGroup
+
+
 // End of file

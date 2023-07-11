@@ -33,21 +33,39 @@
 namespace pylith {
     namespace meshio {
         class TestDataWriterMaterial;
-
         class TestDataWriterMaterial_Data;
     } // meshio
 } // pylith
 
-// ================================================================================================
+// ------------------------------------------------------------------------------------------------
 class pylith::meshio::TestDataWriterMaterial {
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
+public:
+
+    /// Constructor.
+    TestDataWriterMaterial(void);
+
+    /// Destructor.
+    ~TestDataWriterMaterial(void);
+
+    /// Set data for tri test case.
+    static
+    void setDataTri(TestDataWriterMaterial_Data* data);
+
+    /// Set data for quad test case.
+    static
+    void setDataQuad(TestDataWriterMaterial_Data* data);
+
+    /// Set data for tet test case.
+    static
+    void setDataTet(TestDataWriterMaterial_Data* data);
+
+    /// Set data for hex test case.
+    static
+    void setDataHex(TestDataWriterMaterial_Data* data);
+
     // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
 protected:
-
-    /// Setup testing data.
-    void setUp(void);
-
-    /// Tear down testing data.
-    void tearDown(void);
 
     /// Initialize mesh.
     void _initialize(void);
@@ -64,18 +82,6 @@ protected:
      */
     void _createCellField(pylith::topology::Field* field);
 
-    /// Set data for tri test case.
-    void _setDataTri(void);
-
-    /// Set data for quad test case.
-    void _setDataQuad(void);
-
-    /// Set data for tet test case.
-    void _setDataTet(void);
-
-    /// Set data for hex test case.
-    void _setDataHex(void);
-
     /** Get test data.
      *
      * @returns Test data.
@@ -91,7 +97,7 @@ protected:
 
 }; // class TestDataWriterMaterial
 
-// ================================================================================================
+// ------------------------------------------------------------------------------------------------
 class pylith::meshio::TestDataWriterMaterial_Data : public TestDataWriter_Data {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:

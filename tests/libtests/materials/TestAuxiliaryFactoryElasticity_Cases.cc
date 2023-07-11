@@ -26,133 +26,76 @@
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
+#include "catch2/catch_test_macros.hpp"
+
 #include <cmath> // USES fabs()
 
 // forward declarations
 namespace pylith {
     namespace materials {
-        class TestAuxiliaryFactoryElasticity_Tri;
-        class TestAuxiliaryFactoryElasticity_Hex;
+        class TestAuxiliaryFactoryElasticity_Cases;
     } // materials
 } // pylith
 
-// ---------------------------------------------------------------------------------------------------------------------
-class pylith::materials::TestAuxiliaryFactoryElasticity_Tri : public pylith::materials::TestAuxiliaryFactoryElasticity {
-    CPPUNIT_TEST_SUB_SUITE(TestAuxiliaryFactoryElasticity_Tri, TestAuxiliaryFactoryElasticity);
-    CPPUNIT_TEST_SUITE_END();
+// ------------------------------------------------------------------------------------------------
+class pylith::materials::TestAuxiliaryFactoryElasticity_Cases {
+public:
+
+    // Data factory methods
+    static TestAuxiliaryFactoryElasticity_Data* Tri(void);
+
+    static TestAuxiliaryFactoryElasticity_Data* Hex(void);
+
+private:
 
     static
-    double density(const double x,
-                   const double y) {
-        return 3.4 + 3.0*fabs(x) + 2.0*fabs(y);
-    } // density
-
-    static
-    const char* density_units(void) {
-        return "kg/m**3";
-    } // density_units
-
-    static
-    double body_force_x(const double x,
-                        const double y) {
-        return -0.3*x*y + 0.2*y*y;
-    } // body_force_x
-
-    static
-    double body_force_y(const double x,
-                        const double y) {
-        return +0.3*x*x + 0.2*x*y;
-    } // body_force_y
-
-    static
-    const char* body_force_units(void) {
-        return "kg/(m**2*s**2)";
-    } // body_force_units
-
-    static
-    double gravity_field_x(const double x,
-                           const double y) {
-        return 0.0;
-    } // gravity_field_x
-
-    static
-    double gravity_field_y(const double x,
-                           const double y) {
-        return -9.80665;
-    } // gravity_field_y
-
-    static
-    const char* gravity_field_units(void) {
-        return "m/s**2";
-    } // gravity_field_units
-
-protected:
-
-    void setUp(void) {
-        _auxDim = 2;
-        TestAuxiliaryFactoryElasticity::setUp();
-
-        CPPUNIT_ASSERT(_data);
-        _data->dimension = 2;
-        _data->meshFilename = "data/tri.mesh";
-        _data->cs = new spatialdata::geocoords::CSCart();CPPUNIT_ASSERT(_data->cs);
-        _data->cs->setSpaceDim(_data->dimension);
-
-        _data->gravityField->setGravityDir(0.0, -1.0, 0.0);
-
-        CPPUNIT_ASSERT(_data->auxiliaryDB);
-        _data->auxiliaryDB->addValue("density", density, density_units());
-        _data->auxiliaryDB->addValue("body_force_x", body_force_x, body_force_units());
-        _data->auxiliaryDB->addValue("body_force_y", body_force_y, body_force_units());
-        _data->auxiliaryDB->addValue("gravitational_acceleration_x", gravity_field_x, gravity_field_units());
-        _data->auxiliaryDB->addValue("gravitational_acceleration_y", gravity_field_y, gravity_field_units());
-        _data->auxiliaryDB->setDescription("auxiliary");
-        _data->auxiliaryDB->setCoordSys(*_data->cs);
-
-        _data->subfields["body_force"].description.numComponents = 2;
-        _data->subfields["gravitational_acceleration"].description.numComponents = 2;
-
-        _initialize();
-    } // setUp
-
-}; // TestAuxiliaryFactoryElasticity_Tri
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestAuxiliaryFactoryElasticity_Tri);
-
-// ---------------------------------------------------------------------------------------------------------------------
-class pylith::materials::TestAuxiliaryFactoryElasticity_Hex : public pylith::materials::TestAuxiliaryFactoryElasticity {
-    CPPUNIT_TEST_SUB_SUITE(TestAuxiliaryFactoryElasticity_Hex, TestAuxiliaryFactoryElasticity);
-    CPPUNIT_TEST_SUITE_END();
-
-    static
-    double density(const double x,
-                   const double y,
-                   const double z) {
+    double density_2d(const double x,
+                      const double y) {
         return 6.4 + 3.0*fabs(x) + 2.0*fabs(y);
     } // density
 
     static
+    double density_3d(const double x,
+                      const double y,
+                      const double z) {
+        return 6.4 + 3.0*fabs(x) + 2.0*fabs(y) + 1.1*fabs(z);
+    } // density
+
+    static
     const char* density_units(void) {
         return "kg/m**3";
     } // density_units
 
     static
-    double body_force_x(const double x,
-                        const double y,
-                        const double z) {
+    double body_force_2d_x(const double x,
+                           const double y) {
         return -0.3*x*y + 0.2*y*y;
     } // body_force_x
 
     static
-    double body_force_y(const double x,
-                        const double y,
-                        const double z) {
+    double body_force_2d_y(const double x,
+                           const double y) {
         return +0.3*x*x + 0.2*x*y;
     } // body_force_y
 
     static
-    double body_force_z(const double x,
-                        const double y,
-                        const double z) {
+    double body_force_3d_x(const double x,
+                           const double y,
+                           const double z) {
+        return -0.3*x*y + 0.2*y*y;
+    } // body_force_x
+
+    static
+    double body_force_3d_y(const double x,
+                           const double y,
+                           const double z) {
+        return +0.3*x*x + 0.2*x*y;
+    } // body_force_y
+
+    static
+    double body_force_3d_z(const double x,
+                           const double y,
+                           const double z) {
         return +0.3*x*y + 0.2*x*z;
     } // body_force_z
 
@@ -162,23 +105,35 @@ class pylith::materials::TestAuxiliaryFactoryElasticity_Hex : public pylith::mat
     } // body_force_units
 
     static
-    double gravity_field_x(const double x,
-                           const double y,
-                           const double z) {
+    double gravity_field_2d_x(const double x,
+                              const double y) {
         return 0.0;
     } // gravity_field_x
 
     static
-    double gravity_field_y(const double x,
-                           const double y,
-                           const double z) {
-        return 0;
+    double gravity_field_2d_y(const double x,
+                              const double y) {
+        return -9.80665;
     } // gravity_field_y
 
     static
-    double gravity_field_z(const double x,
-                           const double y,
-                           const double z) {
+    double gravity_field_3d_x(const double x,
+                              const double y,
+                              const double z) {
+        return 0.0;
+    } // gravity_field_x
+
+    static
+    double gravity_field_3d_y(const double x,
+                              const double y,
+                              const double z) {
+        return 0.0;
+    } // gravity_field_y
+
+    static
+    double gravity_field_3d_z(const double x,
+                              const double y,
+                              const double z) {
         return -9.80665;
     } // gravity_field_z
 
@@ -187,38 +142,80 @@ class pylith::materials::TestAuxiliaryFactoryElasticity_Hex : public pylith::mat
         return "m/s**2";
     } // gravity_field_units
 
-protected:
+};
 
-    void setUp(void) {
-        _auxDim = 3;
-        TestAuxiliaryFactoryElasticity::setUp();
+// ------------------------------------------------------------------------------------------------
+TEST_CASE("TestAuxiliaryFactoryElasticity::Tri::testAdd", "[TestAuxiliaryFactoryElasticity][add]") {
+    pylith::materials::TestAuxiliaryFactoryElasticity(pylith::materials::TestAuxiliaryFactoryElasticity_Cases::Tri()).testAdd();
+}
+TEST_CASE("TestAuxiliaryFactoryElasticity::Tri::testSetValuesFromDB", "[TestAuxiliaryFactoryElasticity][testSetValuesFromDB]") {
+    pylith::materials::TestAuxiliaryFactoryElasticity(pylith::materials::TestAuxiliaryFactoryElasticity_Cases::Tri()).testSetValuesFromDB();
+}
 
-        CPPUNIT_ASSERT(_data);
-        _data->dimension = 3;
-        _data->meshFilename = "data/hex.mesh";
-        _data->cs = new spatialdata::geocoords::CSCart();CPPUNIT_ASSERT(_data->cs);
-        _data->cs->setSpaceDim(_data->dimension);
+TEST_CASE("TestAuxiliaryFactoryElasticity::Hex::testAdd", "[TestAuxiliaryFactoryElasticity][add]") {
+    pylith::materials::TestAuxiliaryFactoryElasticity(pylith::materials::TestAuxiliaryFactoryElasticity_Cases::Hex()).testAdd();
+}
+TEST_CASE("TestAuxiliaryFactoryElasticity::Hex::testSetValuesFromDB", "[TestAuxiliaryFactoryElasticity][testSetValuesFromDB]") {
+    pylith::materials::TestAuxiliaryFactoryElasticity(pylith::materials::TestAuxiliaryFactoryElasticity_Cases::Hex()).testSetValuesFromDB();
+}
 
-        CPPUNIT_ASSERT(_data->auxiliaryDB);
-        _data->auxiliaryDB->addValue("density", density, density_units());
-        _data->auxiliaryDB->addValue("body_force_x", body_force_x, body_force_units());
-        _data->auxiliaryDB->addValue("body_force_y", body_force_y, body_force_units());
-        _data->auxiliaryDB->addValue("body_force_z", body_force_z, body_force_units());
-        _data->auxiliaryDB->addValue("gravitational_acceleration_x", gravity_field_x, gravity_field_units());
-        _data->auxiliaryDB->addValue("gravitational_acceleration_y", gravity_field_y, gravity_field_units());
-        _data->auxiliaryDB->addValue("gravitational_acceleration_z", gravity_field_z, gravity_field_units());
-        _data->auxiliaryDB->setDescription("auxiliary");
-        _data->auxiliaryDB->setCoordSys(*_data->cs);
+// ------------------------------------------------------------------------------------------------
+pylith::materials::TestAuxiliaryFactoryElasticity_Data*
+pylith::materials::TestAuxiliaryFactoryElasticity_Cases::Tri(void) {
+    pylith::materials::TestAuxiliaryFactoryElasticity_Data* data = new pylith::materials::TestAuxiliaryFactoryElasticity_Data();
+    assert(data);
 
-        _data->gravityField->setGravityDir(0.0, 0.0, -1.0);
+    data->auxDim = 2;
+    data->dimension = 2;
+    data->meshFilename = "data/tri.mesh";
+    data->cs = new spatialdata::geocoords::CSCart();assert(data->cs);
+    data->cs->setSpaceDim(data->dimension);
 
-        _data->subfields["body_force"].description.numComponents = 3;
-        _data->subfields["gravitational_acceleration"].description.numComponents = 3;
+    data->gravityField->setGravityDir(0.0, -1.0, 0.0);
 
-        _initialize();
-    } // setUp
+    assert(data->auxiliaryDB);
+    data->auxiliaryDB->addValue("density", density_2d, density_units());
+    data->auxiliaryDB->addValue("body_force_x", body_force_2d_x, body_force_units());
+    data->auxiliaryDB->addValue("body_force_y", body_force_2d_y, body_force_units());
+    data->auxiliaryDB->addValue("gravitational_acceleration_x", gravity_field_2d_x, gravity_field_units());
+    data->auxiliaryDB->addValue("gravitational_acceleration_y", gravity_field_2d_y, gravity_field_units());
+    data->auxiliaryDB->setDescription("auxiliary");
+    data->auxiliaryDB->setCoordSys(*data->cs);
 
-}; // TestAuxiliaryFactoryElasticity_Hex
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestAuxiliaryFactoryElasticity_Hex);
+    return data;
+} // Tri
+
+
+// ------------------------------------------------------------------------------------------------
+pylith::materials::TestAuxiliaryFactoryElasticity_Data*
+pylith::materials::TestAuxiliaryFactoryElasticity_Cases::Hex(void) {
+    pylith::materials::TestAuxiliaryFactoryElasticity_Data* data = new pylith::materials::TestAuxiliaryFactoryElasticity_Data();
+    assert(data);
+
+    data->auxDim = 3;
+    data->dimension = 3;
+    data->meshFilename = "data/hex.mesh";
+    data->cs = new spatialdata::geocoords::CSCart();assert(data->cs);
+    data->cs->setSpaceDim(data->dimension);
+
+    assert(data->auxiliaryDB);
+    data->auxiliaryDB->addValue("density", density_3d, density_units());
+    data->auxiliaryDB->addValue("body_force_x", body_force_3d_x, body_force_units());
+    data->auxiliaryDB->addValue("body_force_y", body_force_3d_y, body_force_units());
+    data->auxiliaryDB->addValue("body_force_z", body_force_3d_z, body_force_units());
+    data->auxiliaryDB->addValue("gravitational_acceleration_x", gravity_field_3d_x, gravity_field_units());
+    data->auxiliaryDB->addValue("gravitational_acceleration_y", gravity_field_3d_y, gravity_field_units());
+    data->auxiliaryDB->addValue("gravitational_acceleration_z", gravity_field_3d_z, gravity_field_units());
+    data->auxiliaryDB->setDescription("auxiliary");
+    data->auxiliaryDB->setCoordSys(*data->cs);
+
+    data->gravityField->setGravityDir(0.0, 0.0, -1.0);
+
+    data->subfields["body_force"].description.numComponents = 3;
+    data->subfields["gravitational_acceleration"].description.numComponents = 3;
+
+    return data;
+} // Hex
+
 
 // End of file

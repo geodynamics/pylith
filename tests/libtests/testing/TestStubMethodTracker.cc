@@ -18,44 +18,63 @@
 
 #include <portinfo>
 
-#include "TestStubMethodTracker.hh" // Implementation of class methods
+#include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
 #include "tests/src/StubMethodTracker.hh" // USES StubMethodTracker
 
-// ----------------------------------------------------------------------
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::testing::TestStubMethodTracker);
+#include "catch2/catch_test_macros.hpp"
 
-// ----------------------------------------------------------------------
-// Test constructor.
+// ------------------------------------------------------------------------------------------------
+namespace pylith {
+    namespace testing {
+        class TestStubMethodTracker;
+    }
+}
+
+class pylith::testing::TestStubMethodTracker : public pylith::utils::GenericComponent {
+public:
+
+    /// Test methodCount().
+    static
+    void testMethodCount(void);
+
+}; // class TestStubMethodTracker
+
+// ------------------------------------------------------------------------------------------------
+TEST_CASE("TestStubMethodTracker::testMethodCount", "[TestStubMethodTracker]") {
+    pylith::testing::TestStubMethodTracker::testMethodCount();
+}
+
+// ------------------------------------------------------------------------------------------------
 void
 pylith::testing::TestStubMethodTracker::testMethodCount(void) {
     StubMethodTracker tracker;
 
     const char* methodA = "pylith::testing::A";
     const char* methodB = "pylith::testing::B";
-    CPPUNIT_ASSERT_EQUAL(size_t(0), tracker.getMethodCount(methodA));
-    CPPUNIT_ASSERT_EQUAL(size_t(0), tracker.getMethodCount(methodA));
-    CPPUNIT_ASSERT_EQUAL(size_t(0), tracker.getMethodCount(methodB));
+    CHECK(size_t(0) == tracker.getMethodCount(methodA));
+    CHECK(size_t(0) == tracker.getMethodCount(methodA));
+    CHECK(size_t(0) == tracker.getMethodCount(methodB));
 
     tracker.methodCalled(methodA);
-    CPPUNIT_ASSERT_EQUAL(size_t(1), tracker.getMethodCount(methodA));
-    CPPUNIT_ASSERT_EQUAL(size_t(0), tracker.getMethodCount(methodB));
+    CHECK(size_t(1) == tracker.getMethodCount(methodA));
+    CHECK(size_t(0) == tracker.getMethodCount(methodB));
 
     tracker.methodCalled(methodB);
-    CPPUNIT_ASSERT_EQUAL(size_t(1), tracker.getMethodCount(methodA));
-    CPPUNIT_ASSERT_EQUAL(size_t(1), tracker.getMethodCount(methodB));
+    CHECK(size_t(1) == tracker.getMethodCount(methodA));
+    CHECK(size_t(1) == tracker.getMethodCount(methodB));
 
     tracker.methodCalled(methodA);
-    CPPUNIT_ASSERT_EQUAL(size_t(2), tracker.getMethodCount(methodA));
-    CPPUNIT_ASSERT_EQUAL(size_t(1), tracker.getMethodCount(methodB));
+    CHECK(size_t(2) == tracker.getMethodCount(methodA));
+    CHECK(size_t(1) == tracker.getMethodCount(methodB));
 
     StubMethodTracker trackerB(methodB);
-    CPPUNIT_ASSERT_EQUAL(size_t(2), tracker.getMethodCount(methodA));
-    CPPUNIT_ASSERT_EQUAL(size_t(2), tracker.getMethodCount(methodB));
+    CHECK(size_t(2) == tracker.getMethodCount(methodA));
+    CHECK(size_t(2) == tracker.getMethodCount(methodB));
 
     tracker.clear();
-    CPPUNIT_ASSERT_EQUAL(size_t(0), tracker.getMethodCount(methodA));
-    CPPUNIT_ASSERT_EQUAL(size_t(0), tracker.getMethodCount(methodB));
+    CHECK(size_t(0) == tracker.getMethodCount(methodA));
+    CHECK(size_t(0) == tracker.getMethodCount(methodB));
 } // testMethodCount
 
 

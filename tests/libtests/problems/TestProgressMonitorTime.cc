@@ -20,11 +20,14 @@
 
 #include <portinfo>
 
-#include <cppunit/extensions/HelperMacros.h>
+#include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
 #include "pylith/problems/ProgressMonitorTime.hh" // USES ProgressMonitorTime
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
+
+#include "catch2/catch_test_macros.hpp"
+#include "catch2/matchers/catch_matchers_floating_point.hpp"
 
 /// Namespace for pylith package
 namespace pylith {
@@ -34,22 +37,14 @@ namespace pylith {
 } // pylith
 
 // ------------------------------------------------------------------------------------------------
-class pylith::problems::TestProgressMonitorTime : public CppUnit::TestFixture {
-    CPPUNIT_TEST_SUITE(TestProgressMonitorTime);
-
-    CPPUNIT_TEST(testAccessors);
-    CPPUNIT_TEST(testOpenClose);
-    CPPUNIT_TEST(testUpdate);
-
-    CPPUNIT_TEST_SUITE_END();
-
+class pylith::problems::TestProgressMonitorTime : public pylith::utils::GenericComponent {
 public:
 
-    /// Setup testing data.
-    void setUp(void);
+    /// Constructor
+    TestProgressMonitorTime(void);
 
-    /// Tear down testing data.
-    void tearDown(void);
+    /// Destructor.
+    ~TestProgressMonitorTime(void);
 
     /// Test get/setTimeUnit().
     void testAccessors(void);
@@ -67,20 +62,26 @@ private:
 }; // class TestProgressMonitorTime
 
 // ------------------------------------------------------------------------------------------------
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::problems::TestProgressMonitorTime);
+TEST_CASE("TestProgressMonitorTime::testAccessors", "[TestProgressMonitorTime]") {
+    pylith::problems::TestProgressMonitorTime().testAccessors();
+}
+TEST_CASE("TestProgressMonitorTime::testOpenClose", "[TestProgressMonitorTime]") {
+    pylith::problems::TestProgressMonitorTime().testOpenClose();
+}
+TEST_CASE("TestProgressMonitorTime::testUpdate", "[TestProgressMonitorTime]") {
+    pylith::problems::TestProgressMonitorTime().testUpdate();
+}
 
 // ------------------------------------------------------------------------------------------------
 // Setup testing data.
-void
-pylith::problems::TestProgressMonitorTime::setUp(void) {
-    _monitor = new ProgressMonitorTime();CPPUNIT_ASSERT(_monitor);
+pylith::problems::TestProgressMonitorTime::TestProgressMonitorTime(void) {
+    _monitor = new ProgressMonitorTime();assert(_monitor);
 } // setUp
 
 
 // ------------------------------------------------------------------------------------------------
 // Tear down testing data.
-void
-pylith::problems::TestProgressMonitorTime::tearDown(void) {
+pylith::problems::TestProgressMonitorTime::~TestProgressMonitorTime(void) {
     delete _monitor;_monitor = NULL;
 } // tearDown
 
@@ -90,15 +91,14 @@ pylith::problems::TestProgressMonitorTime::tearDown(void) {
 void
 pylith::problems::TestProgressMonitorTime::testAccessors(void) {
     PYLITH_METHOD_BEGIN;
-
-    CPPUNIT_ASSERT(_monitor);
+    assert(_monitor);
 
     std::string unit = "second";
-    CPPUNIT_ASSERT_EQUAL(unit, std::string(_monitor->getTimeUnit()));
+    CHECK(unit == std::string(_monitor->getTimeUnit()));
 
     unit = "year";
     _monitor->setTimeUnit(unit.c_str());
-    CPPUNIT_ASSERT_EQUAL(unit, std::string(_monitor->getTimeUnit()));
+    CHECK(unit == std::string(_monitor->getTimeUnit()));
 
     PYLITH_METHOD_END;
 } // testAccessors
@@ -109,8 +109,8 @@ pylith::problems::TestProgressMonitorTime::testAccessors(void) {
 void
 pylith::problems::TestProgressMonitorTime::testOpenClose(void) {
     PYLITH_METHOD_BEGIN;
+    assert(_monitor);
 
-    CPPUNIT_ASSERT(_monitor);
     _monitor->open();
     _monitor->close();
     _monitor->close();
@@ -124,6 +124,7 @@ pylith::problems::TestProgressMonitorTime::testOpenClose(void) {
 void
 pylith::problems::TestProgressMonitorTime::testUpdate(void) {
     PYLITH_METHOD_BEGIN;
+    assert(_monitor);
 
     const double start = 1.0;
     const double stop = 11.0;
@@ -134,7 +135,6 @@ pylith::problems::TestProgressMonitorTime::testUpdate(void) {
     const double tolerance = 1.0e-6;
     const char* filename = "progress_time.txt";
 
-    CPPUNIT_ASSERT(_monitor);
     _monitor->setFilename(filename);
     _monitor->open();
     for (int i = 0; i < numUpdateCalls; ++i) {
@@ -144,7 +144,7 @@ pylith::problems::TestProgressMonitorTime::testUpdate(void) {
 
     // Check output
     std::ifstream fin(filename);
-    CPPUNIT_ASSERT_MESSAGE("Could not open progress monitor file.", fin.is_open());
+    REQUIRE(fin.is_open());
 
     int count = 0;
     const int maxlen = 1024;
@@ -153,11 +153,10 @@ pylith::problems::TestProgressMonitorTime::testUpdate(void) {
     fin.getline(buffer, maxlen);
     while (fin.good()) {
         const double percentCompleteValue = stof(std::string(buffer).substr(43, 12));
-        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Incorrect percent complete in progress monitor output.",
-                                             percentComplete[count++], percentCompleteValue, tolerance);
+        CHECK_THAT(percentCompleteValue, Catch::Matchers::WithinAbs(percentComplete[count++], tolerance));
         fin.getline(buffer, maxlen);
     } // while
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Incorrect number of updates in progress monitor output.", count, numUpdates);
+    CHECK(count == numUpdates);
     fin.close();
 
     PYLITH_METHOD_END;

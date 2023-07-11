@@ -32,37 +32,24 @@
 
 #include "pylith/topology/topologyfwd.hh" // USES Mesh, Field
 
-#include <cppunit/extensions/HelperMacros.h>
-
-/// Namespace for pylith package
 namespace pylith {
     namespace meshio {
         class TestDataWriterHDF5Submesh;
-
         class TestDataWriterHDF5Submesh_Data;
     } // meshio
 } // pylith
 
-/// C++ unit testing for DataWriterHDF5
+// ------------------------------------------------------------------------------------------------
 class pylith::meshio::TestDataWriterHDF5Submesh :
-    public TestDataWriterHDF5, public TestDataWriterSubmesh, public CppUnit::TestFixture {
-    // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-    CPPUNIT_TEST_SUITE(TestDataWriterHDF5Submesh);
-
-    CPPUNIT_TEST(testOpenClose);
-    CPPUNIT_TEST(testWriteVertexField);
-    CPPUNIT_TEST(testWriteCellField);
-
-    CPPUNIT_TEST_SUITE_END();
-
-    // PUBLIC METHODS /////////////////////////////////////////////////////
+    public TestDataWriterHDF5, public TestDataWriterSubmesh {
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
-    /// Setup testing data.
-    void setUp(void);
+    /// Constructor.
+    TestDataWriterHDF5Submesh(TestDataWriterHDF5Submesh_Data* data);
 
-    /// Tear down testing data.
-    void tearDown(void);
+    /// Destructor.
+    ~TestDataWriterHDF5Submesh(void);
 
     /// Test open() and close()
     void testOpenClose(void);
@@ -73,7 +60,7 @@ public:
     /// Test writeCellField.
     void testWriteCellField(void);
 
-    // PROTECTED METHODS //////////////////////////////////////////////////
+    // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
 protected:
 
     /** Get test data.
@@ -82,7 +69,7 @@ protected:
      */
     TestDataWriterSubmesh_Data* _getData(void);
 
-    // PROTECTED MEMBDERS /////////////////////////////////////////////////
+    // PROTECTED MEMBDERS /////////////////////////////////////////////////////////////////////////
 protected:
 
     TestDataWriterHDF5Submesh_Data* _data; ///< Data for testing.

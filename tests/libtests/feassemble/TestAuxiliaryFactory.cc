@@ -18,7 +18,7 @@
 
 #include <portinfo>
 
-#include "TestAuxiliaryFactory.hh" // Implementation of class methods
+#include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
 #include "pylith/feassemble/AuxiliaryFactory.hh" // Test subject
 
@@ -32,56 +32,83 @@
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
-// ---------------------------------------------------------------------------------------------------------------------
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::feassemble::TestAuxiliaryFactory);
+#include "catch2/catch_test_macros.hpp"
+#include "catch2/matchers/catch_matchers_floating_point.hpp"
+#include "catch2/matchers/catch_matchers_exception.hpp"
 
-// ---------------------------------------------------------------------------------------------------------------------
+#include <stdexcept>
+
 namespace pylith {
     namespace feassemble {
-        class _TestAuxiliaryFactory {
+        class TestAuxiliaryFactory;
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+class pylith::feassemble::TestAuxiliaryFactory : public pylith::utils::GenericComponent {
 public:
 
-            static double density(const double x,
-                                  const double y) {
-                return x+y;
-            } // density
+    /// Setup testing data.
+    TestAuxiliaryFactory(void);
 
-            static const char* density_units(void) {
-                return "kg/m**3";
-            } // density_units
+    /// Tear down testing data.
+    ~TestAuxiliaryFactory(void);
 
-            static double velocity_x(const double x,
-                                     const double y) {
-                return 2.0*x - 0.5*y;
-            } // velocity_x
+    /// Test setQueryDB() and getQueryDB().
+    void testQueryDB(void);
 
-            static double velocity_y(const double x,
-                                     const double y) {
-                return 0.4*x + 0.1*y;
-            } // velocity_x
+    /// Test setSubfieldDiscretization() and getSubfieldDiscretization().
+    void testSubfieldDiscretization(void);
 
-            static const char* velocity_units(void) {
-                return "m/s";
-            } // velocity_units
+    /// Test initialize().
+    void testInitialize(void);
 
-        }; // class _TestAuxiliaryFactory
-    } // feassemble
-} // pylith
+    /// Test setValuesFromDB().
+    void testSetValuesFromDB(void);
+
+private:
+
+    pylith::feassemble::AuxiliaryFactory* _factory; ///< Test subject.
+
+public:
+
+    static double density(const double x,
+                          const double y) {
+        return x+y;
+    } // density
+
+    static const char* density_units(void) {
+        return "kg/m**3";
+    } // density_units
+
+    static double velocity_x(const double x,
+                             const double y) {
+        return 2.0*x - 0.5*y;
+    } // velocity_x
+
+    static double velocity_y(const double x,
+                             const double y) {
+        return 0.4*x + 0.1*y;
+    } // velocity_x
+
+    static const char* velocity_units(void) {
+        return "m/s";
+    } // velocity_units
+
+}; // class TestAuxiliaryFactory
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Setup testing data.
-void
-pylith::feassemble::TestAuxiliaryFactory::setUp(void) {
+pylith::feassemble::TestAuxiliaryFactory::TestAuxiliaryFactory(void) {
     _factory = new AuxiliaryFactory();
-} // setUp
+} // constructor
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Tear down testing data.
-void
-pylith::feassemble::TestAuxiliaryFactory::tearDown(void) {
+pylith::feassemble::TestAuxiliaryFactory::~TestAuxiliaryFactory(void) {
     delete _factory;_factory = NULL;
-} // tearDown
+} // destructor
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -92,13 +119,13 @@ pylith::feassemble::TestAuxiliaryFactory::testQueryDB(void) {
     const std::string& dbLabel = "test database";
     db.setDescription(dbLabel.c_str());
 
-    CPPUNIT_ASSERT(_factory);
-    CPPUNIT_ASSERT_MESSAGE("Default spatial database should be NULL.", !_factory->getQueryDB());
+    assert(_factory);
+    assert(!_factory->getQueryDB());
     _factory->setQueryDB(&db);
 
     const spatialdata::spatialdb::SpatialDB* dbTest = _factory->getQueryDB();
-    CPPUNIT_ASSERT(dbTest);
-    CPPUNIT_ASSERT_EQUAL(dbLabel, std::string(dbTest->getDescription()));
+    assert(dbTest);
+    REQUIRE(dbLabel == std::string(dbTest->getDescription()));
 } // testQueryDB
 
 
@@ -111,7 +138,7 @@ pylith::feassemble::TestAuxiliaryFactory::testSubfieldDiscretization(void) {
     pylith::topology::FieldBase::Discretization feVel(3, 2, 1, 2, true, pylith::topology::FieldBase::SIMPLEX_BASIS,
                                                       pylith::topology::FieldBase::POINT_SPACE, false);
 
-    CPPUNIT_ASSERT(_factory);
+    assert(_factory);
     _factory->setSubfieldDiscretization("displacement", feDisp.basisOrder, feDisp.quadOrder, feDisp.dimension,
                                         feDisp.isFaultOnly, feDisp.cellBasis, feDisp.feSpace, feDisp.isBasisContinuous);
     _factory->setSubfieldDiscretization("velocity", feVel.basisOrder, feVel.quadOrder, feVel.dimension,
@@ -119,35 +146,35 @@ pylith::feassemble::TestAuxiliaryFactory::testSubfieldDiscretization(void) {
 
     { // Check displacement discretization
         const pylith::topology::FieldBase::Discretization& feTest = _factory->getSubfieldDiscretization("displacement");
-        CPPUNIT_ASSERT_EQUAL(feDisp.basisOrder, feTest.basisOrder);
-        CPPUNIT_ASSERT_EQUAL(feDisp.quadOrder, feTest.quadOrder);
-        CPPUNIT_ASSERT_EQUAL(feDisp.dimension, feTest.dimension);
-        CPPUNIT_ASSERT_EQUAL(feDisp.isFaultOnly, feTest.isFaultOnly);
-        CPPUNIT_ASSERT_EQUAL(feDisp.cellBasis, feTest.cellBasis);
-        CPPUNIT_ASSERT_EQUAL(feDisp.feSpace, feTest.feSpace);
-        CPPUNIT_ASSERT_EQUAL(feDisp.isBasisContinuous, feTest.isBasisContinuous);
+        CHECK(feDisp.basisOrder == feTest.basisOrder);
+        CHECK(feDisp.quadOrder == feTest.quadOrder);
+        CHECK(feDisp.dimension == feTest.dimension);
+        CHECK(feDisp.isFaultOnly == feTest.isFaultOnly);
+        CHECK(feDisp.cellBasis == feTest.cellBasis);
+        CHECK(feDisp.feSpace == feTest.feSpace);
+        CHECK(feDisp.isBasisContinuous == feTest.isBasisContinuous);
     } // Check displacement discretization
 
     { // Check velocity discretization
         const pylith::topology::FieldBase::Discretization& feTest = _factory->getSubfieldDiscretization("velocity");
-        CPPUNIT_ASSERT_EQUAL(feVel.basisOrder, feTest.basisOrder);
-        CPPUNIT_ASSERT_EQUAL(feVel.quadOrder, feTest.quadOrder);
-        CPPUNIT_ASSERT_EQUAL(feVel.dimension, feTest.dimension);
-        CPPUNIT_ASSERT_EQUAL(feVel.isFaultOnly, feTest.isFaultOnly);
-        CPPUNIT_ASSERT_EQUAL(feVel.cellBasis, feTest.cellBasis);
-        CPPUNIT_ASSERT_EQUAL(feVel.feSpace, feTest.feSpace);
-        CPPUNIT_ASSERT_EQUAL(feVel.isBasisContinuous, feTest.isBasisContinuous);
+        CHECK(feVel.basisOrder == feTest.basisOrder);
+        CHECK(feVel.quadOrder == feTest.quadOrder);
+        CHECK(feVel.dimension == feTest.dimension);
+        CHECK(feVel.isFaultOnly == feTest.isFaultOnly);
+        CHECK(feVel.cellBasis == feTest.cellBasis);
+        CHECK(feVel.feSpace == feTest.feSpace);
+        CHECK(feVel.isBasisContinuous == feTest.isBasisContinuous);
     } // Check velocity discretization
 
     { // default for unknown discretization
         const pylith::topology::FieldBase::Discretization& feTest = _factory->getSubfieldDiscretization("xyz");
-        CPPUNIT_ASSERT_EQUAL(1, feTest.basisOrder);
-        CPPUNIT_ASSERT_EQUAL(1, feTest.quadOrder);
-        CPPUNIT_ASSERT_EQUAL(-1, feTest.dimension);
-        CPPUNIT_ASSERT_EQUAL(false, feTest.isFaultOnly);
-        CPPUNIT_ASSERT_EQUAL(pylith::topology::FieldBase::DEFAULT_BASIS, feTest.cellBasis);
-        CPPUNIT_ASSERT_EQUAL(pylith::topology::FieldBase::POLYNOMIAL_SPACE, feTest.feSpace);
-        CPPUNIT_ASSERT_EQUAL(true, feTest.isBasisContinuous);
+        CHECK(1 == feTest.basisOrder);
+        CHECK(1 == feTest.quadOrder);
+        CHECK(-1 == feTest.dimension);
+        CHECK(false == feTest.isFaultOnly);
+        CHECK(pylith::topology::FieldBase::DEFAULT_BASIS == feTest.cellBasis);
+        CHECK(pylith::topology::FieldBase::POLYNOMIAL_SPACE == feTest.feSpace);
+        CHECK(true == feTest.isBasisContinuous);
     }
 } // testSubfieldDiscretization
 
@@ -172,24 +199,24 @@ pylith::feassemble::TestAuxiliaryFactory::testInitialize(void) {
     description.componentNames[0] = "displacement_x";
     description.scale = normalizer.getLengthScale();
 
-    CPPUNIT_ASSERT(_factory);
+    assert(_factory);
     _factory->initialize(&field, normalizer, spaceDim, &description);
 
-    CPPUNIT_ASSERT_EQUAL(&field, _factory->_field);
-    CPPUNIT_ASSERT_EQUAL(spaceDim, _factory->_spaceDim);
-    CPPUNIT_ASSERT_EQUAL(normalizer.getLengthScale(), _factory->_normalizer->getLengthScale());
+    CHECK(&field == _factory->_field);
+    CHECK(spaceDim == _factory->_spaceDim);
+    CHECK(normalizer.getLengthScale() == _factory->_normalizer->getLengthScale());
 
     const pylith::topology::Field::Description* descriptionTest = _factory->_defaultDescription;
-    CPPUNIT_ASSERT_EQUAL(description.label, descriptionTest->label);
-    CPPUNIT_ASSERT_EQUAL(description.alias, descriptionTest->alias);
-    CPPUNIT_ASSERT_EQUAL(description.vectorFieldType, descriptionTest->vectorFieldType);
-    CPPUNIT_ASSERT_EQUAL(description.numComponents, descriptionTest->numComponents);
-    CPPUNIT_ASSERT_EQUAL(description.numComponents, descriptionTest->componentNames.size());
-    CPPUNIT_ASSERT_EQUAL(description.componentNames[0], descriptionTest->componentNames[0]);
-    CPPUNIT_ASSERT_EQUAL(description.scale, descriptionTest->scale);
-    CPPUNIT_ASSERT_EQUAL(description.validator, descriptionTest->validator);
+    CHECK(description.label == descriptionTest->label);
+    CHECK(description.alias == descriptionTest->alias);
+    CHECK(description.vectorFieldType == descriptionTest->vectorFieldType);
+    CHECK(description.numComponents == descriptionTest->numComponents);
+    CHECK(description.numComponents == descriptionTest->componentNames.size());
+    CHECK(description.componentNames[0] == descriptionTest->componentNames[0]);
+    CHECK(description.scale == descriptionTest->scale);
+    CHECK(description.validator == descriptionTest->validator);
 
-    CPPUNIT_ASSERT(_factory->_fieldQuery);
+    assert(_factory->_fieldQuery);
 } // testInitialize
 
 
@@ -236,9 +263,9 @@ pylith::feassemble::TestAuxiliaryFactory::testSetValuesFromDB(void) {
     subfieldDescriptions[1] = descriptionVelocity;
 
     spatialdata::spatialdb::UserFunctionDB auxiliaryDB;
-    auxiliaryDB.addValue("density", _TestAuxiliaryFactory::density, _TestAuxiliaryFactory::density_units());
-    auxiliaryDB.addValue("velocity_x", _TestAuxiliaryFactory::velocity_x, _TestAuxiliaryFactory::velocity_units());
-    auxiliaryDB.addValue("velocity_y", _TestAuxiliaryFactory::velocity_y, _TestAuxiliaryFactory::velocity_units());
+    auxiliaryDB.addValue("density", TestAuxiliaryFactory::density, TestAuxiliaryFactory::density_units());
+    auxiliaryDB.addValue("velocity_x", TestAuxiliaryFactory::velocity_x, TestAuxiliaryFactory::velocity_units());
+    auxiliaryDB.addValue("velocity_y", TestAuxiliaryFactory::velocity_y, TestAuxiliaryFactory::velocity_units());
     auxiliaryDB.setCoordSys(cs);
 
     pylith::topology::Mesh mesh;
@@ -248,12 +275,10 @@ pylith::feassemble::TestAuxiliaryFactory::testSetValuesFromDB(void) {
     mesh.setCoordSys(&cs);
     pylith::topology::MeshOps::nondimensionalize(&mesh, normalizer);
 
-    CPPUNIT_ASSERT_MESSAGE("Test mesh does not contain any cells.",
-                           pylith::topology::MeshOps::getNumCells(mesh) > 0);
-    CPPUNIT_ASSERT_MESSAGE("Test mesh does not contain any vertices.",
-                           pylith::topology::MeshOps::getNumVertices(mesh) > 0);
+    assert(pylith::topology::MeshOps::getNumCells(mesh) > 0);
+    assert(pylith::topology::MeshOps::getNumVertices(mesh) > 0);
 
-    CPPUNIT_ASSERT(_factory);
+    assert(_factory);
     _factory->setQueryDB(&auxiliaryDB);
 
     pylith::topology::Field auxiliaryField(mesh);
@@ -271,21 +296,35 @@ pylith::feassemble::TestAuxiliaryFactory::testSetValuesFromDB(void) {
     // Verify auxiliary field
     PylithReal norm = 0.0;
     PylithReal t = 0.0;
-    const PetscDM dmField = auxiliaryField.getDM();CPPUNIT_ASSERT(dmField);
+    const PetscDM dmField = auxiliaryField.getDM();assert(dmField);
     pylith::topology::FieldQuery query(auxiliaryField);
     query.initializeWithDefaultQueries();
     query.openDB(&auxiliaryDB, normalizer.getLengthScale());
     PetscErrorCode err = DMPlexComputeL2DiffLocal(dmField, t, query._functions, (void**)query._contextPtrs,
-                                                  auxiliaryField.getLocalVector(), &norm);CPPUNIT_ASSERT(!err);
+                                                  auxiliaryField.getLocalVector(), &norm);assert(!err);
     query.closeDB(&auxiliaryDB);
     const PylithReal tolerance = 1.0e-6;
-    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test of auxiliary field values failed.", 0.0, norm, tolerance);
+    CHECK_THAT(norm, Catch::Matchers::WithinAbs(0.0, tolerance));
 
     AuxiliaryFactory emptyFactory;
     pythia::journal::error_t error("auxiliaryfactory");
     error.deactivate();
-    CPPUNIT_ASSERT_THROW(emptyFactory.setValuesFromDB(), std::logic_error);
+    REQUIRE_THROWS_AS(emptyFactory.setValuesFromDB(), std::logic_error);
 } // testSetValuesFromDB
 
+
+// ------------------------------------------------------------------------------------------------
+TEST_CASE("TestAuxiliaryFactory::testQueryDB", "[TestAuxiliaryFactory]") {
+    pylith::feassemble::TestAuxiliaryFactory().testQueryDB();
+}
+TEST_CASE("TestAuxiliaryFactory::testSubfieldDiscretization", "[TestAuxiliaryFactory]") {
+    pylith::feassemble::TestAuxiliaryFactory().testSubfieldDiscretization();
+}
+TEST_CASE("TestAuxiliaryFactory::testInitialize", "[TestAuxiliaryFactory]") {
+    pylith::feassemble::TestAuxiliaryFactory().testInitialize();
+}
+TEST_CASE("TestAuxiliaryFactory::testSetValuesFromDB", "[TestAuxiliaryFactory]") {
+    pylith::feassemble::TestAuxiliaryFactory().testSetValuesFromDB();
+}
 
 // End of file

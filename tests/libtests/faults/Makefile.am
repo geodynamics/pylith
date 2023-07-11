@@ -16,25 +16,24 @@
 # ----------------------------------------------------------------------
 #
 
-include $(top_srcdir)/tests/check_cppunit.am
+include $(top_srcdir)/tests/check_catch2.am
 
 SUBDIRS = data
 
-TESTS = test_faults
+TESTS = libtest_faults
 
-check_PROGRAMS = test_faults
+check_PROGRAMS = libtest_faults
 
-# Primary source files
-test_faults_SOURCES = \
+libtest_faults_SOURCES = \
 	TestAdjustTopology.cc \
-	TestAdjustTopology_tri.cc \
-	TestAdjustTopology_quad.cc \
-	TestAdjustTopology_tet.cc \
-	TestAdjustTopology_hex.cc \
+	TestAdjustTopology_Tri.cc \
+	TestAdjustTopology_Quad.cc \
+	TestAdjustTopology_Tet.cc \
+	TestAdjustTopology_Hex.cc \
 	TestFaultCohesive.cc \
 	$(top_srcdir)/tests/src/FaultCohesiveStub.cc \
 	$(top_srcdir)/tests/src/StubMethodTracker.cc \
-	$(top_srcdir)/tests/src/driver_cppunit.cc
+	$(top_srcdir)/tests/src/driver_catch2.cc
 
 
 dist_noinst_HEADERS = \

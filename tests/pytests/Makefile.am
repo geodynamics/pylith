@@ -14,8 +14,6 @@
 # ----------------------------------------------------------------------
 #
 
-include $(top_srcdir)/tests/check_cppunit.am
-
 TESTS = test_pylith.py
 
 dist_check_SCRIPTS = test_pylith.py
@@ -62,7 +60,6 @@ dist_noinst_PYTHON = \
 	meshio/TestDataWriterVTK.py \
 	meshio/TestMeshIOAscii.py \
 	meshio/TestMeshIOCubit.py \
-	meshio/TestMeshIOLagrit.py \
 	meshio/TestOutputManagerMesh.py \
 	meshio/TestOutputManagerSubmesh.py \
 	meshio/TestOutputObserver.py \

@@ -22,7 +22,8 @@
 
 #include "pylith/utils/error.h" // USES PYLITH_METHOD_BEGIN/END
 
-#include <cppunit/extensions/HelperMacros.h>
+#include "catch2/catch_test_macros.hpp"
+#include "catch2/matchers/catch_matchers_floating_point.hpp"
 
 #include <string.h> // USES strcmp()
 #include <iostream> // USES std::cerr
@@ -43,7 +44,7 @@ pylith::meshio::TestDataWriterVTK::checkFile(const char* filenameRoot,
     const int indexExt = fileroot.find(".vtk");
     // Add time stamp to filename
     char sbuffer[256];
-    sprintf(sbuffer, timeFormat, t);
+    snprintf(sbuffer, 256, timeFormat, t);
     std::string timestamp(sbuffer);
     const unsigned int pos = timestamp.find(".");
     if (pos != timestamp.length()) {
@@ -58,13 +59,13 @@ pylith::meshio::TestDataWriterVTK::checkFile(const char* filenameRoot,
     if (!fileInE.is_open()) {
         std::cerr << "Could not open file '" << filenameE << "'." << std::endl;
     } // if
-    CPPUNIT_ASSERT(fileInE.is_open());
+    assert(fileInE.is_open());
 
     std::ifstream fileIn(filename.c_str());
     if (!fileIn.is_open()) {
         std::cerr << "Could not open file '" << filename << "'." << std::endl;
     } // if
-    CPPUNIT_ASSERT(fileIn.is_open());
+    assert(fileIn.is_open());
 
     const int maxLen = 256;
     char line[maxLen];
@@ -74,12 +75,13 @@ pylith::meshio::TestDataWriterVTK::checkFile(const char* filenameRoot,
     while (!fileInE.eof()) {
         fileInE.getline(lineE, maxLen);
         fileIn.getline(line, maxLen);
+        CHECK(std::string(lineE) == std::string(line));
         if (0 != strcmp(line, lineE)) {
             std::ostringstream msg;
             msg << "Mismatch in line " << i << " of file " << filename << ".\n"
                 << "Expected: '" << lineE << "'\n"
                 << "Actual: '" << line << "'";
-            CPPUNIT_ASSERT_MESSAGE(msg.str(), false);
+            FAIL(msg.str());
         } // if
         ++i;
     } // while
@@ -96,14 +98,12 @@ pylith::meshio::TestDataWriterVTK::checkFile(const char* filenameRoot,
 pylith::meshio::TestDataWriterVTK_Data::TestDataWriterVTK_Data(void) :
     timestepFilename(NULL),
     vertexFilename(NULL),
-    cellFilename(NULL) { // constructor
-} // constructor
+    cellFilename(NULL) {}
 
 
 // ------------------------------------------------------------------------------------------------
 // Destructor
-pylith::meshio::TestDataWriterVTK_Data::~TestDataWriterVTK_Data(void) { // destructor
-} // destructor
+pylith::meshio::TestDataWriterVTK_Data::~TestDataWriterVTK_Data(void) {}
 
 
 // End of file

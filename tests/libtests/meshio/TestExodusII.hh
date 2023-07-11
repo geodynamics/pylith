@@ -27,68 +27,48 @@
 #if !defined(pylith_meshio_testexodusii_hh)
 #define pylith_meshio_testexodusii_hh
 
-// Include directives ---------------------------------------------------
-#include <cppunit/extensions/HelperMacros.h>
+#include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
-// Forward declarations -------------------------------------------------
 namespace pylith {
-  namespace meshio {
-    class TestExodusII;
-  } // meshio
+    namespace meshio {
+        class TestExodusII;
+    } // meshio
 } // pylith
 
-// TestExodusII ------------------------------------------------------
-class pylith::meshio::TestExodusII : public CppUnit::TestFixture
-{ // class TestExodusII
+// ------------------------------------------------------------------------------------------------
+class pylith::meshio::TestExodusII : public pylith::utils::GenericComponent {
+    // PUBLIC METHODS /////////////////////////////////////////////////////
+public:
 
-  // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-  CPPUNIT_TEST_SUITE( TestExodusII );
+    /// Test constructor
+    void testConstructor(void);
 
-  CPPUNIT_TEST( testConstructor );
-  CPPUNIT_TEST( testFilename );
-  CPPUNIT_TEST( testOpenClose );
-  CPPUNIT_TEST( testHasDim );
-  CPPUNIT_TEST( testHasAtt );
-  CPPUNIT_TEST( testHasVar );
-  CPPUNIT_TEST( testGetVarDouble );
-  CPPUNIT_TEST( testGetVarInt );
-  CPPUNIT_TEST( testGetVarString );
+    /// Test filename()
+    void testFilename(void);
 
-  CPPUNIT_TEST_SUITE_END();
+    /// Test open() and close().
+    void testOpenClose(void);
 
-  // PUBLIC METHODS /////////////////////////////////////////////////////
-public :
+    /// Test hasDim()
+    void testHasDim(void);
 
-  /// Test constructor
-  void testConstructor(void);
+    /// Test hasAtt()
+    void testHasAtt(void);
 
-  /// Test filename()
-  void testFilename(void);
+    /// Test hasVar()
+    void testHasVar(void);
 
-  /// Test open() and close().
-  void testOpenClose(void);
+    /// Test getVar(PylithScalar*)
+    void testGetVarDouble(void);
 
-  /// Test hasDim()
-  void testHasDim(void);
+    /// Test getVar(int*)
+    void testGetVarInt(void);
 
-  /// Test hasAtt()
-  void testHasAtt(void);
-
-  /// Test hasVar()
-  void testHasVar(void);
-
-  /// Test getVar(PylithScalar*)
-  void testGetVarDouble(void);
-
-  /// Test getVar(int*)
-  void testGetVarInt(void);
-
-  /// Test getVar(string_vector)
-  void testGetVarString(void);
+    /// Test getVar(string_vector)
+    void testGetVarString(void);
 
 }; // class TestExodusII
 
 #endif // pylith_meshio_testexodusii_hh
 
-
-// End of file 
+// End of file

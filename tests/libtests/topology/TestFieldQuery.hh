@@ -17,16 +17,14 @@
 //
 
 /**
- * @file tests/libtests/topology/TestFieldMesh.hh
+ * @file tests/libtests/topology/TestFieldQuery.hh
  *
- * @brief C++ unit testing for Field.
+ * @brief C++ unit testing for FieldQuery.
  */
 
 #if !defined(pylith_topology_testfieldquery_hh)
 #define pylith_topology_testfieldquery_hh
 
-// Include directives ---------------------------------------------------
-#include <cppunit/extensions/HelperMacros.h>
 #include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
 #include "pylith/topology/topologyfwd.hh" // forward declarations
@@ -37,8 +35,6 @@
 #include "spatialdata/geocoords/geocoordsfwd.hh" // HOLDSA CoordSys
 #include "spatialdata/units/unitsfwd.hh" // HOLDSA Nondimensional
 
-// Forward declarations -------------------------------------------------
-/// Namespace for pylith package
 namespace pylith {
     namespace topology {
         class TestFieldQuery;
@@ -46,30 +42,16 @@ namespace pylith {
     } // topology
 } // pylith
 
-// TestFieldQuery -------------------------------------------------------------
-/// C++ unit testing for Field.
-class pylith::topology::TestFieldQuery : public CppUnit::TestFixture, public pylith::utils::GenericComponent {
-    // CPPUNIT TEST SUITE //////////////////////////////////////////////////////
-    CPPUNIT_TEST_SUITE(TestFieldQuery);
-
-    CPPUNIT_TEST(testConstructor);
-    CPPUNIT_TEST(testSetQuery);
-    CPPUNIT_TEST(testOpenClose);
-    CPPUNIT_TEST(testQuery);
-    CPPUNIT_TEST(testQueryNull);
-    CPPUNIT_TEST(testValidatorPositive);
-    CPPUNIT_TEST(testValidatorNonnegative);
-
-    CPPUNIT_TEST_SUITE_END();
-
-    // PUBLIC METHODS //////////////////////////////////////////////////////////
+// ------------------------------------------------------------------------------------------------
+class pylith::topology::TestFieldQuery : public pylith::utils::GenericComponent {
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
-    /// Setup testing data.
-    void setUp(void);
+    /// Constructor.
+    TestFieldQuery(TestFieldQuery_Data* data);
 
-    /// Deallocate testing data.
-    void tearDown(void);
+    /// Destructor.
+    ~TestFieldQuery(void);
 
     /// Test constructor.
     void testConstructor(void);
@@ -92,14 +74,14 @@ public:
     /// Test validatorNonnegative().
     void testValidatorNonnegative(void);
 
-    // PRIVATE METHODS /////////////////////////////////////////////////////////
+    // PRIVATE METHODS ////////////////////////////////////////////////////////////////////////////
 private:
 
     /// Initialize mesh and test field.
     void _initialize(void);
 
-    // PROTECTED MEMBERS ///////////////////////////////////////////////////////
-protected:
+    // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
+private:
 
     TestFieldQuery_Data* _data; ///< Data for testing.
     pylith::topology::Mesh* _mesh; ///< Finite-element mesh.
@@ -110,9 +92,9 @@ protected:
 
 }; // class TestFieldQuery
 
-// TestFieldQuery_Data-----------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 class pylith::topology::TestFieldQuery_Data {
-    // PUBLIC METHODS //////////////////////////////////////////////////////////
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Constructor
@@ -121,7 +103,7 @@ public:
     /// Destructor
     ~TestFieldQuery_Data(void);
 
-    // PUBLIC MEMBERS //////////////////////////////////////////////////////////
+    // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
 public:
 
     /// @defgroup Domain mesh information.

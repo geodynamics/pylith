@@ -124,7 +124,6 @@ dist_noinst_DATA = \
 	user/components/meshio/DataWriterVTK.md \
 	user/components/meshio/MeshIOAscii.md \
 	user/components/meshio/MeshIOCubit.md \
-	user/components/meshio/MeshIOLagrit.md \
 	user/components/meshio/MeshIOObj.md \
 	user/components/meshio/OutputObserver.md \
 	user/components/meshio/OutputPhysics.md \
@@ -587,7 +586,7 @@ dist_noinst_DATA = \
 	developer/contributing/figs/classdiagram_material.png \
 	developer/contributing/figs/classdiagram_material.tex \
 	developer/contributing/figs/classdiagram_mesher.pdf \
-	developer/contributing/figs/classdiagram_mesher.png \
+	developer/contributing/figs/classdiagram_mesher.svg \
 	developer/contributing/figs/classdiagram_mesher.tex \
 	developer/contributing/figs/classdiagram_output.pdf \
 	developer/contributing/figs/classdiagram_output.png \

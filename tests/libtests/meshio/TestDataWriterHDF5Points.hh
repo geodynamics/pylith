@@ -32,40 +32,26 @@
 
 #include "pylith/topology/topologyfwd.hh" // USES Mesh, Field
 
-#include <cppunit/extensions/HelperMacros.h>
-
-/// Namespace for pylith package
 namespace pylith {
     namespace meshio {
         class TestDataWriterHDF5Points;
-
         class TestDataWriterHDF5Points_Data;
     } // meshio
 } // pylith
 
-class pylith::meshio::TestDataWriterHDF5Points :
-    public TestDataWriterHDF5,
-    public TestDataWriterPoints,
-    public CppUnit::TestFixture {
-    // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-    CPPUNIT_TEST_SUITE(TestDataWriterHDF5Points);
-
-    CPPUNIT_TEST(testTimeStep);
-    CPPUNIT_TEST(testWriteVertexField);
-
-    CPPUNIT_TEST_SUITE_END();
-
-    // PUBLIC METHODS /////////////////////////////////////////////////////
+// ------------------------------------------------------------------------------------------------
+class pylith::meshio::TestDataWriterHDF5Points : public TestDataWriterHDF5, public TestDataWriterPoints {
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
-    /// Setup testing data.
-    void setUp(void);
+    /// Constructor.
+    TestDataWriterHDF5Points(TestDataWriterHDF5Points_Data* data);
 
-    /// Tear down testing data.
-    void tearDown(void);
+    /// Destructor.
+    ~TestDataWriterHDF5Points(void);
 
     /// Test openTimeStep() and closeTimeStep()
-    void testTimeStep(void);
+    void testOpenClose(void);
 
     /// Test writeVertexField.
     void testWriteVertexField(void);
@@ -86,7 +72,7 @@ protected:
 
 }; // class TestDataWriterHDF5Points
 
-// ======================================================================
+// ------------------------------------------------------------------------------------------------
 class pylith::meshio::TestDataWriterHDF5Points_Data : public TestDataWriterHDF5_Data, public TestDataWriterPoints_Data {};
 
 #endif // pylith_meshio_testdatawriterhdf5points_hh

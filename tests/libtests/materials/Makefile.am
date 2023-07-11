@@ -16,27 +16,27 @@
 # ----------------------------------------------------------------------
 #
 
-include $(top_srcdir)/tests/check_cppunit.am
+include $(top_srcdir)/tests/check_catch2.am
 
 SUBDIRS = data
 
-TESTS = test_materials
+TESTS = libtest_materials
 
 check_PROGRAMS = $(TESTS)
 
 
-test_materials_SOURCES = \
+libtest_materials_SOURCES = \
 	TestAuxiliaryFactoryElasticity.cc \
 	TestAuxiliaryFactoryElasticity_Cases.cc \
-	TestAuxiliaryFactoryElastic.cc \
-	TestAuxiliaryFactoryElastic_Cases.cc \
+	TestAuxiliaryFactoryLinearElastic.cc \
+	TestAuxiliaryFactoryLinearElastic_Cases.cc \
 	$(top_srcdir)/tests/src/FieldTester.cc \
-	$(top_srcdir)/tests/src/driver_cppunit.cc
+	$(top_srcdir)/tests/src/driver_catch2.cc
 
 
 dist_noinst_HEADERS = \
 	TestAuxiliaryFactoryElasticity.hh \
-	TestAuxiliaryFactoryElastic.hh
+	TestAuxiliaryFactoryLinearElastic.hh
 
 
 # End of file

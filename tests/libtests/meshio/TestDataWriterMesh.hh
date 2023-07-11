@@ -38,16 +38,35 @@ namespace pylith {
     } // meshio
 } // pylith
 
-// ======================================================================
+// ------------------------------------------------------------------------------------------------
 class pylith::meshio::TestDataWriterMesh {
-    // PROTECTED METHODS //////////////////////////////////////////////////
-protected:
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
+public:
 
-    /// Setup testing data.
-    void setUp(void);
+    /// Constructor
+    TestDataWriterMesh(void);
 
     /// Tear down testing data.
-    void tearDown(void);
+    ~TestDataWriterMesh(void);
+
+    /// Set data for tri test case.
+    static
+    void setDataTri(TestDataWriter_Data* data);
+
+    /// Set data for quad test case.
+    static
+    void setDataQuad(TestDataWriter_Data* data);
+
+    /// Set data for tet test case.
+    static
+    void setDataTet(TestDataWriter_Data* data);
+
+    /// Set data for hex test case.
+    static
+    void setDataHex(TestDataWriter_Data* data);
+
+    // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
+protected:
 
     /// Initialize mesh.
     void _initialize(void);
@@ -63,18 +82,6 @@ protected:
      * @param fields Cell fields.
      */
     void _createCellField(pylith::topology::Field* field);
-
-    /// Set data for tri test case.
-    void _setDataTri(void);
-
-    /// Set data for quad test case.
-    void _setDataQuad(void);
-
-    /// Set data for tet test case.
-    void _setDataTet(void);
-
-    /// Set data for hex test case.
-    void _setDataHex(void);
 
     /** Get test data.
      *

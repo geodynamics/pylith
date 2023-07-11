@@ -33,48 +33,44 @@
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 
-// ------------------------------------------------------------------------------------------------
-// Setup testing _data->
-void
-pylith::faults::TestAdjustTopology::setUp(void) {
-    PYLITH_METHOD_BEGIN;
+#include "catch2/catch_test_macros.hpp"
+#include "catch2/matchers/catch_matchers_exception.hpp"
 
-    _data = new TestAdjustTopology_Data;CPPUNIT_ASSERT(_data);
-    _mesh = NULL;
-
-    PYLITH_METHOD_END;
-} // setUp
-
+#include <set> // USES std::set
+#include <string> // USES std:;string
 
 // ------------------------------------------------------------------------------------------------
-// Tear down testing _data->
-void
-pylith::faults::TestAdjustTopology::tearDown(void) {
-    PYLITH_METHOD_BEGIN;
+// Constructor
+pylith::faults::TestAdjustTopology::TestAdjustTopology(TestAdjustTopology_Data* data) :
+    _data(data),
+    _mesh(nullptr) {
+    assert(_data);
+    GenericComponent::setName("TestAdjustTopology");
+} // constructor
 
-    delete _data;_data = NULL;
-    delete _mesh;_mesh = NULL;
 
-    PYLITH_METHOD_END;
+// ------------------------------------------------------------------------------------------------
+// Destructor
+pylith::faults::TestAdjustTopology::~TestAdjustTopology(void) {
+    delete _data;_data = nullptr;
+    delete _mesh;_mesh = nullptr;
 } // tearDown
 
 
 // ------------------------------------------------------------------------------------------------
-// Test reorder().
+// Run adjustTopology().
 void
-pylith::faults::TestAdjustTopology::testAdjustTopology(void) {
-    PYLITH_METHOD_BEGIN;
-
+pylith::faults::TestAdjustTopology::run(void) {
     _initialize();
-    CPPUNIT_ASSERT(_mesh);
-    CPPUNIT_ASSERT(_data);
+    assert(_mesh);
+    assert(_data);
 
     for (size_t i = 0; i < _data->numFaults; ++i) {
         FaultCohesiveStub fault;
 
-        CPPUNIT_ASSERT(_data->interfaceIds);
-        CPPUNIT_ASSERT(_data->faultSurfaceLabels);
-        CPPUNIT_ASSERT(_data->faultEdgeLabels);
+        assert(_data->interfaceIds);
+        assert(_data->faultSurfaceLabels);
+        assert(_data->faultEdgeLabels);
 
         fault.setCohesiveLabelName(pylith::topology::Mesh::cells_label_name);
         fault.setCohesiveLabelValue(_data->interfaceIds[i]);
@@ -87,7 +83,7 @@ pylith::faults::TestAdjustTopology::testAdjustTopology(void) {
         if (!_data->failureExpected) {
             fault.adjustTopology(_mesh);
         } else {
-            CPPUNIT_ASSERT_THROW(fault.adjustTopology(_mesh), std::runtime_error);
+            REQUIRE_THROWS_AS(fault.adjustTopology(_mesh), std::runtime_error);
             return;
         } // if/else
     } // for
@@ -98,41 +94,41 @@ pylith::faults::TestAdjustTopology::testAdjustTopology(void) {
     PetscViewerPopFormat(PETSC_VIEWER_STDOUT_WORLD);
 #endif
 
-    CPPUNIT_ASSERT_EQUAL(_data->cellDim, size_t(_mesh->getDimension()));
-    PetscDM dmMesh = _mesh->getDM();CPPUNIT_ASSERT(dmMesh);
+    REQUIRE(_data->cellDim == size_t(_mesh->getDimension()));
+    PetscDM dmMesh = _mesh->getDM();assert(dmMesh);
 
     // Check vertices
     topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
     const PetscInt vStart = verticesStratum.begin();
     const PetscInt vEnd = verticesStratum.end();
-    CPPUNIT_ASSERT_EQUAL(_data->numVertices, size_t(verticesStratum.size()));
+    REQUIRE(_data->numVertices == size_t(verticesStratum.size()));
 
     topology::CoordsVisitor coordsVisitor(dmMesh);
     const PetscInt spaceDim = _data->spaceDim;
 
     for (PetscInt v = vStart; v < vEnd; ++v) {
-        CPPUNIT_ASSERT_EQUAL(spaceDim, coordsVisitor.sectionDof(v));
+        REQUIRE(spaceDim == coordsVisitor.sectionDof(v));
     } // for
 
     // check cells
-    CPPUNIT_ASSERT(_data->numCorners);
+    assert(_data->numCorners);
     PetscErrorCode err = 0;
     pylith::topology::Stratum cellsStratum(dmMesh, pylith::topology::Stratum::HEIGHT, 0);
     const PetscInt cStart = cellsStratum.begin();
     const PetscInt cEnd = cellsStratum.end();
-    CPPUNIT_ASSERT_EQUAL(_data->numCells, size_t(cellsStratum.size()));
+    REQUIRE(_data->numCells == size_t(cellsStratum.size()));
     for (PetscInt c = cStart, cell = 0; c < cEnd; ++c, ++cell) {
         PetscInt coneSize = 0;
         err = DMPlexGetConeSize(dmMesh, c, &coneSize);PYLITH_CHECK_ERROR(err);
-        CPPUNIT_ASSERT_EQUAL(_data->numCorners[cell], coneSize);
+        REQUIRE(_data->numCorners[cell] == coneSize);
     } // for
 
     // check materials
-    CPPUNIT_ASSERT(_data->materialIds);
+    assert(_data->materialIds);
     PetscDMLabel labelMaterials = NULL;
     const char* const cellsLabelName = pylith::topology::Mesh::cells_label_name;
     err = DMGetLabel(dmMesh, cellsLabelName, &labelMaterials);PYLITH_CHECK_ERROR(err);
-    CPPUNIT_ASSERT(labelMaterials);
+    assert(labelMaterials);
     const PetscInt idDefault = -999;
     for (PetscInt c = cStart, cell = 0; c < cEnd; ++c, ++cell) {
         PetscInt value;
@@ -141,15 +137,13 @@ pylith::faults::TestAdjustTopology::testAdjustTopology(void) {
         if (value == -1) {
             value = idDefault;
         } // if
-        std::ostringstream msg;
-        msg << "Mismatch in '"<<cellsLabelName<<"' for cell "<<cell<<".";
-        CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.str().c_str(), _data->materialIds[cell], value);
+        REQUIRE(_data->materialIds[cell] == value);
     } // for
 
     // Check groups
-    CPPUNIT_ASSERT(_data->groupSizes);
-    CPPUNIT_ASSERT(_data->groupNames);
-    CPPUNIT_ASSERT(_data->groupTypes);
+    assert(_data->groupSizes);
+    assert(_data->groupNames);
+    assert(_data->groupTypes);
     PetscInt numLabels;
     err = DMGetNumLabels(dmMesh, &numLabels);PYLITH_CHECK_ERROR(err);
     for (PetscInt iLabel = 0; iLabel < numLabels; ++iLabel) {
@@ -168,7 +162,7 @@ pylith::faults::TestAdjustTopology::testAdjustTopology(void) {
 
         err = DMGetLabelName(dmMesh, iLabel, &labelName);PYLITH_CHECK_ERROR(err);
         if (ignoreLabels.count(labelName) > 0) { continue; }
-        err = DMGetLabel(dmMesh, labelName, &label);PYLITH_CHECK_ERROR(err);CPPUNIT_ASSERT(label);
+        err = DMGetLabel(dmMesh, labelName, &label);PYLITH_CHECK_ERROR(err);assert(label);
         err = DMLabelGetStratumIS(label, 1, &pointIS);PYLITH_CHECK_ERROR(err);
         err = ISGetLocalSize(pointIS, &numPoints);PYLITH_CHECK_ERROR(err);
         err = ISGetIndices(pointIS, &points);PYLITH_CHECK_ERROR(err);
@@ -179,36 +173,36 @@ pylith::faults::TestAdjustTopology::testAdjustTopology(void) {
         for (size_t i = 0; i < _data->numGroups; ++i) {
             if (std::string(_data->groupNames[i]) == std::string(labelName)) {
                 std::ostringstream msg;
-                msg << "Mismatch for group '" <<labelName<<"'.";
-                CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.str().c_str(), std::string(_data->groupTypes[i]), groupType);
-                CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.str().c_str(), _data->groupSizes[i], numPoints);
+                msg << "Checking group '" <<labelName<<"'.";
+                INFO(labelName);
+                CHECK(std::string(_data->groupTypes[i]) == groupType);
+                CHECK(_data->groupSizes[i] == numPoints);
                 foundGroup = true;
                 break;
             } // if
         } // for
         err = ISRestoreIndices(pointIS, &points);PYLITH_CHECK_ERROR(err);
         err = ISDestroy(&pointIS);PYLITH_CHECK_ERROR(err);
-        std::ostringstream msg;
-        msg << "Could not find group '" << labelName << "'.";
-        CPPUNIT_ASSERT_MESSAGE(msg.str().c_str(), foundGroup);
+        INFO("Could not find group '" << labelName << "'.");
+        assert(foundGroup);
     } // for
 
-} // testAdjustTopology
+} // run
 
 
 // ------------------------------------------------------------------------------------------------
 void
 pylith::faults::TestAdjustTopology::_initialize(void) {
     PYLITH_METHOD_BEGIN;
-    CPPUNIT_ASSERT(_data);
+    assert(_data);
 
-    delete _mesh;_mesh = new pylith::topology::Mesh;CPPUNIT_ASSERT(_mesh);
+    delete _mesh;_mesh = new pylith::topology::Mesh;assert(_mesh);
 
     pylith::meshio::MeshIOAscii iohandler;
     iohandler.setFilename(_data->filename);
     iohandler.read(_mesh);
-    CPPUNIT_ASSERT(pylith::topology::MeshOps::getNumCells(*_mesh) > 0);
-    CPPUNIT_ASSERT(pylith::topology::MeshOps::getNumVertices(*_mesh) > 0);
+    assert(pylith::topology::MeshOps::getNumCells(*_mesh) > 0);
+    assert(pylith::topology::MeshOps::getNumVertices(*_mesh) > 0);
 
     PYLITH_METHOD_END;
 } // _initialize

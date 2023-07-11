@@ -25,8 +25,7 @@
 #if !defined(pylith_feassemble_testinterfacepatches_hh)
 #define pylith_feassemble_testinterfacepatches_hh
 
-// Include directives ---------------------------------------------------
-#include <cppunit/extensions/HelperMacros.h>
+#include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
 #include "pylith/topology/topologyfwd.hh" // HASA Mesh
 #include "pylith/testing/testingfwd.hh" // HASA FaultCohesiveStub
@@ -38,25 +37,18 @@ namespace pylith {
     } // feassemble
 } // pylith
 
-class pylith::feassemble::TestInterfacePatches : public CppUnit::TestFixture {
-    // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-    CPPUNIT_TEST_SUITE(TestInterfacePatches);
-
-    CPPUNIT_TEST(testAccessors);
-    CPPUNIT_TEST(testCreateMaterialPairs);
-
-    CPPUNIT_TEST_SUITE_END();
-
+class pylith::feassemble::TestInterfacePatches : public pylith::utils::GenericComponent {
     // PUBLIC METHODS /////////////////////////////////////////////////////
 public:
 
-    /// Setup testing data.
-    void setUp(void);
+    /// Constructor.
+    TestInterfacePatches(TestInterfacePatches_Data* data);
 
-    /// Deallocate testing data.
-    void tearDown(void);
+    /// Destructor.
+    ~TestInterfacePatches(void);
 
     /// Test getLabelName().
+    static
     void testAccessors(void);
 
     // Test createMaterialPairs().
@@ -100,7 +92,7 @@ public:
         PetscInt positive_value;
     }; // KeyValues
 
-    PylithInt numPatches; ///< Number of integration patches.
+    size_t numPatches; ///< Number of integration patches.
     KeyValues* patchKeys; ///< Weak form keys for integration patches.
     PylithInt* patchNumCells; ///< Number of cohesive cells in each integration patch.
     PylithInt** patchCells; ///< List of cohesive cells in each integration patch.

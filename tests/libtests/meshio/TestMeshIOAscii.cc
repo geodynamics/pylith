@@ -21,51 +21,30 @@
 #include "TestMeshIOAscii.hh" // Implementation of class methods
 
 #include "pylith/meshio/MeshIOAscii.hh"
-
 #include "pylith/topology/Mesh.hh" // USES Mesh
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 #include "pylith/utils/journals.hh" // USES JournalingComponent
 
+#include "catch2/catch_test_macros.hpp"
+
 #include <strings.h> // USES strcasecmp()
+#include <cassert> // USES assert()
 
 // ----------------------------------------------------------------------
-// Setup testing data.
-void
-pylith::meshio::TestMeshIOAscii::setUp(void) {
-    TestMeshIO::setUp();
-    _io = new MeshIOAscii();CPPUNIT_ASSERT(_io);
-    _data = NULL;
-
+// Constructor.
+pylith::meshio::TestMeshIOAscii::TestMeshIOAscii(TestMeshIO_Data* data) :
+    TestMeshIO(data) {
+    _io = new MeshIOAscii();assert(_io);
     _io->PyreComponent::setIdentifier("TestMeshIOAscii");
-} // setUp
+} // constructor
 
 
 // ----------------------------------------------------------------------
-// Deallocate testing data.
-void
-pylith::meshio::TestMeshIOAscii::tearDown(void) {
-    const char* journalName = _io->PyreComponent::getName();
-    pythia::journal::debug_t debug(journalName);
-    debug.deactivate(); // DEBUGGING
-
-    TestMeshIO::tearDown();
-
-    delete _io;_io = NULL;
-    delete _data;_data = NULL;
-} // tearDown
-
-
-// ----------------------------------------------------------------------
-// Test constructor
-void
-pylith::meshio::TestMeshIOAscii::testConstructor(void) {
-    PYLITH_METHOD_BEGIN;
-
-    MeshIOAscii iohandler;
-
-    PYLITH_METHOD_END;
-} // testConstructor
+// Destructor.
+pylith::meshio::TestMeshIOAscii::~TestMeshIOAscii(void) {
+    delete _io;_io = nullptr;
+} // destructor
 
 
 // ----------------------------------------------------------------------
@@ -73,12 +52,11 @@ pylith::meshio::TestMeshIOAscii::testConstructor(void) {
 void
 pylith::meshio::TestMeshIOAscii::testFilename(void) {
     PYLITH_METHOD_BEGIN;
-
-    CPPUNIT_ASSERT(_io);
+    assert(_io);
 
     const std::string& filename = "hi.txt";
     _io->setFilename(filename.c_str());
-    CPPUNIT_ASSERT_EQUAL(filename, std::string(_io->getFilename()));
+    REQUIRE(filename == std::string(_io->getFilename()));
 
     PYLITH_METHOD_END;
 } // testFilename
@@ -89,15 +67,12 @@ pylith::meshio::TestMeshIOAscii::testFilename(void) {
 void
 pylith::meshio::TestMeshIOAscii::testWriteRead(void) {
     PYLITH_METHOD_BEGIN;
+    assert(_io);
 
-    CPPUNIT_ASSERT(_io);
-    CPPUNIT_ASSERT(_data);
-
-    TestMeshIO::_createMesh();CPPUNIT_ASSERT(_mesh);
+    TestMeshIO::_createMesh();assert(_mesh);
 
     // Write mesh
-    CPPUNIT_ASSERT(_data->filename);
-    _io->setFilename(_data->filename);
+    _io->setFilename(_data->filename.c_str());
     _io->write(_mesh);
 
     // Read mesh
@@ -108,7 +83,7 @@ pylith::meshio::TestMeshIOAscii::testWriteRead(void) {
     TestMeshIO::_checkVals();
 
     PYLITH_METHOD_END;
-} // testWriteRead1D
+} // testWriteRead
 
 
 // ----------------------------------------------------------------------
@@ -116,14 +91,11 @@ pylith::meshio::TestMeshIOAscii::testWriteRead(void) {
 void
 pylith::meshio::TestMeshIOAscii::testRead(void) {
     PYLITH_METHOD_BEGIN;
-
-    CPPUNIT_ASSERT(_io);
-    CPPUNIT_ASSERT(_data);
+    assert(_io);
 
     // Read mesh
     delete _mesh;_mesh = new pylith::topology::Mesh;
-    CPPUNIT_ASSERT(_data->filename);
-    _io->setFilename(_data->filename);
+    _io->setFilename(_data->filename.c_str());
     _io->read(_mesh);
 
     // Make sure mesh matches data
@@ -131,25 +103,6 @@ pylith::meshio::TestMeshIOAscii::testRead(void) {
 
     PYLITH_METHOD_END;
 } // testRead3DIndexOne
-
-
-// ----------------------------------------------------------------------
-// Get test data.
-pylith::meshio::TestMeshIO_Data*
-pylith::meshio::TestMeshIOAscii::_getData(void) {
-    return _data;
-} // _data
-
-
-// ----------------------------------------------------------------------
-// Constructor
-pylith::meshio::TestMeshIOAscii_Data::TestMeshIOAscii_Data(void) :
-    filename(NULL) {} // constructor
-
-
-// ----------------------------------------------------------------------
-// Destructor
-pylith::meshio::TestMeshIOAscii_Data::~TestMeshIOAscii_Data(void) {}
 
 
 // End of file

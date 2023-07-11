@@ -27,41 +27,24 @@
 #if !defined(pylith_meshio_testmeshiocubit_hh)
 #define pylith_meshio_testmeshiocubit_hh
 
-// Include directives ---------------------------------------------------
 #include "TestMeshIO.hh"
 
-// Forward declarations -------------------------------------------------
 namespace pylith {
     namespace meshio {
         class TestMeshIOCubit;
-
-        class TestMeshIOCubit_Data; // test data
     } // meshio
 } // pylith
 
-// TestMeshIOCubit ------------------------------------------------------
-class pylith::meshio::TestMeshIOCubit : public TestMeshIO { // class TestMeshIOCubit
-
-    // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-    CPPUNIT_TEST_SUITE(TestMeshIOCubit);
-
-    CPPUNIT_TEST(testConstructor);
-    CPPUNIT_TEST(testFilename);
-    CPPUNIT_TEST(testRead);
-
-    CPPUNIT_TEST_SUITE_END();
-
+// ------------------------------------------------------------------------------------------------
+class pylith::meshio::TestMeshIOCubit : public TestMeshIO {
     // PUBLIC METHODS /////////////////////////////////////////////////////
 public:
 
-    /// Setup testing data.
-    void setUp(void);
+    /// Constructor.
+    TestMeshIOCubit(TestMeshIO_Data* data);
 
-    /// Deallocate testing data.
-    void tearDown(void);
-
-    /// Test constructor
-    void testConstructor(void);
+    /// Destructor.
+    ~TestMeshIOCubit(void);
 
     /// Test filename()
     void testFilename(void);
@@ -69,41 +52,13 @@ public:
     /// Test read().
     void testRead(void);
 
-    /** Get test data.
-     *
-     * @returns Test data.
-     */
-    TestMeshIO_Data* _getData(void);
-
     // PROTECTED METHODS ////////////////////////////////////////////////
 protected:
 
     MeshIOCubit* _io; ///< Test subject.
-    TestMeshIOCubit_Data* _data; ///< Data for tests.
 
 }; // class TestMeshIOCubit
 
-// ======================================================================
-class pylith::meshio::TestMeshIOCubit_Data : public TestMeshIO_Data {
-
-    // PUBLIC METHODS ///////////////////////////////////////////////////
-public:
-
-    /// Constructor
-    TestMeshIOCubit_Data(void);
-
-    /// Destructor
-    ~TestMeshIOCubit_Data(void);
-
-    // PUBLIC MEMBERS ///////////////////////////////////////////////////
-public:
-
-    const char* filename;
-
-}; // class TestMeshIOCubit_Data
-
-
 #endif // pylith_meshio_testmeshiocubit_hh
-
 
 // End of file

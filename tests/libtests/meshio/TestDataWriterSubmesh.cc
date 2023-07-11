@@ -34,131 +34,31 @@
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
-#include <cppunit/extensions/HelperMacros.h>
+#include <cassert> // USES assert()
 
 // ------------------------------------------------------------------------------------------------
-// Setup testing data.
-void
-pylith::meshio::TestDataWriterSubmesh::setUp(void) {
-    PYLITH_METHOD_BEGIN;
-
-    _mesh = NULL;
-    _submesh = NULL;
-
-    PYLITH_METHOD_END;
-} // setUp
+// Constructor.
+pylith::meshio::TestDataWriterSubmesh::TestDataWriterSubmesh(void) :
+    _mesh(nullptr),
+    _submesh(nullptr) {}
 
 
 // ------------------------------------------------------------------------------------------------
-// Tear down testing data.
-void
-pylith::meshio::TestDataWriterSubmesh::tearDown(void) {
+// Destructor.
+pylith::meshio::TestDataWriterSubmesh::~TestDataWriterSubmesh(void) {
     PYLITH_METHOD_BEGIN;
 
-    delete _mesh;_mesh = NULL;
-    delete _submesh;_submesh = NULL;
+    delete _mesh;_mesh = nullptr;
+    delete _submesh;_submesh = nullptr;
 
     PYLITH_METHOD_END;
-} // tearDown
+} // destructor
 
 
 // ------------------------------------------------------------------------------------------------
-// Initialize mesh.
 void
-pylith::meshio::TestDataWriterSubmesh::_initialize(void) {
-    PYLITH_METHOD_BEGIN;
-
-    const TestDataWriterSubmesh_Data* data = _getData();CPPUNIT_ASSERT(data);
-
-    delete _mesh;_mesh = new pylith::topology::Mesh;CPPUNIT_ASSERT(_mesh);
-    MeshIOAscii iohandler;
-    iohandler.setFilename(data->meshFilename);
-    iohandler.read(_mesh);
-
-    spatialdata::geocoords::CSCart cs;
-    cs.setSpaceDim(_mesh->getDimension());
-    _mesh->setCoordSys(&cs);
-
-    spatialdata::units::Nondimensional normalizer;
-    normalizer.setLengthScale(data->lengthScale);
-    pylith::topology::MeshOps::nondimensionalize(_mesh, normalizer);
-
-    if (data->faultLabel) {
-        pylith::faults::FaultCohesiveStub fault;
-        fault.setSurfaceLabelName(data->faultLabel);
-        fault.setCohesiveLabelValue(data->faultId);
-        fault.adjustTopology(_mesh);
-    } // if
-
-    CPPUNIT_ASSERT(data->bcLabel);
-    const int labelValue = 1;
-    delete _submesh;_submesh = pylith::topology::MeshOps::createLowerDimMesh(*_mesh, data->bcLabel, labelValue);CPPUNIT_ASSERT(_submesh);
-
-    PYLITH_METHOD_END;
-} // _initialize
-
-
-// ------------------------------------------------------------------------------------------------
-// Create vertex fields.
-void
-pylith::meshio::TestDataWriterSubmesh::_createVertexField(pylith::topology::Field* field) {
-    PYLITH_METHOD_BEGIN;
-    CPPUNIT_ASSERT(field);
-    CPPUNIT_ASSERT(_mesh);
-
-    const TestDataWriterSubmesh_Data* data = _getData();CPPUNIT_ASSERT(data);
-
-    FieldFactory factory(*field);
-    factory.addScalar(data->vertexDiscretization);
-    factory.addVector(data->vertexDiscretization);
-    factory.addTensor(data->vertexDiscretization);
-    factory.addOther(data->vertexDiscretization);
-
-    field->subfieldsSetup();
-    field->createDiscretization();
-    field->allocate();
-
-    factory.setValues(data->vertexValues, data->vertexNumPoints, data->vertexNumDOF);
-
-    field->createOutputVector();
-    field->scatterLocalToOutput();
-
-    PYLITH_METHOD_END;
-} // _createVertexFields
-
-
-// ------------------------------------------------------------------------------------------------
-// Create cell fields.
-void
-pylith::meshio::TestDataWriterSubmesh::_createCellField(pylith::topology::Field* field) {
-    PYLITH_METHOD_BEGIN;
-    CPPUNIT_ASSERT(field);
-
-    const TestDataWriterSubmesh_Data* data = _getData();CPPUNIT_ASSERT(data);
-
-    FieldFactory factory(*field);
-    factory.addScalar(data->cellDiscretization);
-    factory.addVector(data->cellDiscretization);
-    factory.addTensor(data->cellDiscretization);
-    factory.addOther(data->cellDiscretization);
-
-    field->subfieldsSetup();
-    field->createDiscretization();
-    field->allocate();
-
-    factory.setValues(data->cellValues, data->cellNumPoints, data->cellNumDOF);
-
-    field->createOutputVector();
-    field->scatterLocalToOutput();
-
-    PYLITH_METHOD_END;
-} // _createCellFields
-
-
-// ================================================================================================
-void
-pylith::meshio::TestDataWriterSubmesh::_setDataTri(void) {
-    TestDataWriterSubmesh_Data* data = this->_getData();CPPUNIT_ASSERT(data);
+pylith::meshio::TestDataWriterSubmesh::setDataTri(TestDataWriterSubmesh_Data* data) {
+    assert(data);
 
     data->meshFilename = "data/tri3.mesh";
     data->bcLabel = "bc";
@@ -201,10 +101,10 @@ pylith::meshio::TestDataWriterSubmesh::_setDataTri(void) {
 } // setDataTri
 
 
-// ================================================================================================
+// ------------------------------------------------------------------------------------------------
 void
-pylith::meshio::TestDataWriterSubmesh::_setDataQuad(void) {
-    TestDataWriterSubmesh_Data* data = this->_getData();CPPUNIT_ASSERT(data);
+pylith::meshio::TestDataWriterSubmesh::setDataQuad(TestDataWriterSubmesh_Data* data) {
+    assert(data);
 
     // We do not use a fault in this test case.
     data->meshFilename = "data/quad4.mesh";
@@ -247,10 +147,10 @@ pylith::meshio::TestDataWriterSubmesh::_setDataQuad(void) {
 } // setDataQuad
 
 
-// ================================================================================================
+// ------------------------------------------------------------------------------------------------
 void
-pylith::meshio::TestDataWriterSubmesh::_setDataTet(void) {
-    TestDataWriterSubmesh_Data* data = this->_getData();CPPUNIT_ASSERT(data);
+pylith::meshio::TestDataWriterSubmesh::setDataTet(TestDataWriterSubmesh_Data* data) {
+    assert(data);
 
     data->meshFilename = "data/tet4.mesh";
     data->bcLabel = "boundary";
@@ -291,10 +191,10 @@ pylith::meshio::TestDataWriterSubmesh::_setDataTet(void) {
 } // setDataTet
 
 
-// ================================================================================================
+// ------------------------------------------------------------------------------------------------
 void
-pylith::meshio::TestDataWriterSubmesh::_setDataHex(void) {
-    TestDataWriterSubmesh_Data* data = this->_getData();CPPUNIT_ASSERT(data);
+pylith::meshio::TestDataWriterSubmesh::setDataHex(TestDataWriterSubmesh_Data* data) {
+    assert(data);
 
     data->meshFilename = "data/hex8.mesh";
     data->bcLabel = "top";
@@ -340,6 +240,99 @@ pylith::meshio::TestDataWriterSubmesh::_setDataHex(void) {
     };
     data->cellValues = const_cast<PylithScalar*>(cellValues);
 } // setDataHex
+
+
+// ------------------------------------------------------------------------------------------------
+// Initialize mesh.
+void
+pylith::meshio::TestDataWriterSubmesh::_initialize(void) {
+    PYLITH_METHOD_BEGIN;
+
+    const TestDataWriterSubmesh_Data* data = _getData();assert(data);
+
+    delete _mesh;_mesh = new pylith::topology::Mesh;assert(_mesh);
+    MeshIOAscii iohandler;
+    iohandler.setFilename(data->meshFilename);
+    iohandler.read(_mesh);
+
+    spatialdata::geocoords::CSCart cs;
+    cs.setSpaceDim(_mesh->getDimension());
+    _mesh->setCoordSys(&cs);
+
+    spatialdata::units::Nondimensional normalizer;
+    normalizer.setLengthScale(data->lengthScale);
+    pylith::topology::MeshOps::nondimensionalize(_mesh, normalizer);
+
+    if (data->faultLabel) {
+        pylith::faults::FaultCohesiveStub fault;
+        fault.setSurfaceLabelName(data->faultLabel);
+        fault.setCohesiveLabelValue(data->faultId);
+        fault.adjustTopology(_mesh);
+    } // if
+
+    assert(data->bcLabel);
+    const int labelValue = 1;
+    delete _submesh;_submesh = pylith::topology::MeshOps::createLowerDimMesh(*_mesh, data->bcLabel, labelValue);assert(_submesh);
+
+    PYLITH_METHOD_END;
+} // _initialize
+
+
+// ------------------------------------------------------------------------------------------------
+// Create vertex fields.
+void
+pylith::meshio::TestDataWriterSubmesh::_createVertexField(pylith::topology::Field* field) {
+    PYLITH_METHOD_BEGIN;
+    assert(field);
+    assert(_mesh);
+
+    const TestDataWriterSubmesh_Data* data = _getData();assert(data);
+
+    FieldFactory factory(*field);
+    factory.addScalar(data->vertexDiscretization);
+    factory.addVector(data->vertexDiscretization);
+    factory.addTensor(data->vertexDiscretization);
+    factory.addOther(data->vertexDiscretization);
+
+    field->subfieldsSetup();
+    field->createDiscretization();
+    field->allocate();
+
+    factory.setValues(data->vertexValues, data->vertexNumPoints, data->vertexNumDOF);
+
+    field->createOutputVector();
+    field->scatterLocalToOutput();
+
+    PYLITH_METHOD_END;
+} // _createVertexFields
+
+
+// ------------------------------------------------------------------------------------------------
+// Create cell fields.
+void
+pylith::meshio::TestDataWriterSubmesh::_createCellField(pylith::topology::Field* field) {
+    PYLITH_METHOD_BEGIN;
+    assert(field);
+
+    const TestDataWriterSubmesh_Data* data = _getData();assert(data);
+
+    FieldFactory factory(*field);
+    factory.addScalar(data->cellDiscretization);
+    factory.addVector(data->cellDiscretization);
+    factory.addTensor(data->cellDiscretization);
+    factory.addOther(data->cellDiscretization);
+
+    field->subfieldsSetup();
+    field->createDiscretization();
+    field->allocate();
+
+    factory.setValues(data->cellValues, data->cellNumPoints, data->cellNumDOF);
+
+    field->createOutputVector();
+    field->scatterLocalToOutput();
+
+    PYLITH_METHOD_END;
+} // _createCellFields
 
 
 // ------------------------------------------------------------------------------------------------

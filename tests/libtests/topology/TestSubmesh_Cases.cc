@@ -20,293 +20,348 @@
 
 #include "TestSubmesh.hh" // Implementation of class methods
 
+#include "catch2/catch_test_macros.hpp"
+
 namespace pylith {
     namespace topology {
-        class TestSubmesh_Tri;
-        class TestSubmesh_Quad;
-        class TestSubmesh_Tet;
-        class TestSubmesh_Hex;
-    } // topology
-} // pylith
+        class TestSubmesh_Cases;
+    }
+}
 
-// ---------------------------------------------------------------------------------------------------------------------
-class pylith::topology::TestSubmesh_Tri : public pylith::topology::TestSubmesh {
-    CPPUNIT_TEST_SUB_SUITE(TestSubmesh_Tri, TestSubmesh);
-    CPPUNIT_TEST_SUITE_END();
+// ------------------------------------------------------------------------------------------------
+class pylith::topology::TestSubmesh_Cases {
+public:
 
-    void setUp(void) {
-        TestSubmesh::setUp();
+    // Data factory methods
+    static TestSubmesh_Data* Tri(void);
 
-        _data->cellDim = 2;
-        _data->numVertices = 4;
-        _data->numCells = 2;
-        _data->numCorners = 3;
-        static const int _cells[2*3] = {
-            0, 1, 3,
-            0, 3, 2,
-        };
-        _data->cells = const_cast<int*>(_cells);
-        static const PylithScalar _coordinates[4*2] = {
-            0.0, 0.0,
-            1.0, 0.0,
-            0.0, 1.0,
-            1.0, 1.0,
-        };
-        _data->coordinates = const_cast<PylithScalar*>(_coordinates);
+    static TestSubmesh_Data* Quad(void);
 
-        // Submesh data
-        _data->groupLabel = "bc";
-        _data->groupSize = 3;
-        static const int _groupVertices[3] = {
-            1, 2, 3,
-        };
-        _data->groupVertices = const_cast<int*>(_groupVertices);
+    static TestSubmesh_Data* Tet(void);
 
-        _data->submeshNumCorners = 2;
-        _data->submeshNumVertices = 3;
-        static const int _submeshVertices[3] = {
-            2, 3, 4,
-        };
-        _data->submeshVertices = const_cast<int*>(_submeshVertices);
-        _data->submeshNumCells = 2;
-        static const int _submeshCells[2] = {
-            0, 1,
-        };
-        _data->submeshCells = const_cast<int*>(_submeshCells);
+    static TestSubmesh_Data* Hex(void);
 
-        // Subdomain data
-        _data->subdomainLabel = "material-id";
-        static const int _subdomainLabelValues[2] = {
-            10, 20,
-        };
-        _data->subdomainLabelValues = const_cast<int*>(_subdomainLabelValues);
-        _data->subdomainLabelValue = 10;
-        _data->subdomainNumCorners = 3;
-        _data->subdomainNumVertices = 3;
-        static const int _subdomainVertices[3] = {
-            1, 2, 3,
-        };
-        _data->subdomainVertices = const_cast<int*>(_subdomainVertices);
-        _data->subdomainNumCells = 1;
-        static const int _subdomainCells[1] = {
-            0,
-        };
-        _data->subdomainCells = const_cast<int*>(_subdomainCells);
-    } // setUp
+};
 
-}; // _TestSubmesh_Tri
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::topology::TestSubmesh_Tri);
+// ------------------------------------------------------------------------------------------------
+TEST_CASE("TestSubmesh::Tri::testAccessors", "[TestSubmesh][Tri][testAccessors]") {
+    pylith::topology::TestSubmesh(pylith::topology::TestSubmesh_Cases::Tri()).testAccessors();
+}
+TEST_CASE("TestSubmesh::Tri::testSizes", "[TestSubmesh][Tri][testSizes]") {
+    pylith::topology::TestSubmesh(pylith::topology::TestSubmesh_Cases::Tri()).testSizes();
+}
+TEST_CASE("TestSubmesh::Tri::testCreateLowerDimMesh", "[TestSubmesh][Tri][testCreateLowerDimMesh]") {
+    pylith::topology::TestSubmesh(pylith::topology::TestSubmesh_Cases::Tri()).testCreateLowerDimMesh();
+}
+TEST_CASE("TestSubmesh::Tri::testCreateSubdomainMesh", "[TestSubmesh][Tri][testCreateSubdomainMesh]") {
+    pylith::topology::TestSubmesh(pylith::topology::TestSubmesh_Cases::Tri()).testCreateSubdomainMesh();
+}
 
-// ---------------------------------------------------------------------------------------------------------------------
-class pylith::topology::TestSubmesh_Quad : public pylith::topology::TestSubmesh {
-    CPPUNIT_TEST_SUB_SUITE(TestSubmesh_Quad, TestSubmesh);
-    CPPUNIT_TEST_SUITE_END();
+TEST_CASE("TestSubmesh::Quad::testAccessors", "[TestSubmesh][Quad][testAccessors]") {
+    pylith::topology::TestSubmesh(pylith::topology::TestSubmesh_Cases::Quad()).testAccessors();
+}
+TEST_CASE("TestSubmesh::Quad::testSizes", "[TestSubmesh][Quad][testSizes]") {
+    pylith::topology::TestSubmesh(pylith::topology::TestSubmesh_Cases::Quad()).testSizes();
+}
+TEST_CASE("TestSubmesh::Quad::testCreateLowerDimMesh", "[TestSubmesh][Quad][testCreateLowerDimMesh]") {
+    pylith::topology::TestSubmesh(pylith::topology::TestSubmesh_Cases::Quad()).testCreateLowerDimMesh();
+}
+TEST_CASE("TestSubmesh::Quad::testCreateSubdomainMesh", "[TestSubmesh][Quad][testCreateSubdomainMesh]") {
+    pylith::topology::TestSubmesh(pylith::topology::TestSubmesh_Cases::Quad()).testCreateSubdomainMesh();
+}
 
-    void setUp(void) {
-        TestSubmesh::setUp();
+TEST_CASE("TestSubmesh::Tet::testAccessors", "[TestSubmesh][Tet][testAccessors]") {
+    pylith::topology::TestSubmesh(pylith::topology::TestSubmesh_Cases::Tet()).testAccessors();
+}
+TEST_CASE("TestSubmesh::Tet::testSizes", "[TestSubmesh][Tet][testSizes]") {
+    pylith::topology::TestSubmesh(pylith::topology::TestSubmesh_Cases::Tet()).testSizes();
+}
+TEST_CASE("TestSubmesh::Tet::testCreateLowerDimMesh", "[TestSubmesh][Tet][testCreateLowerDimMesh]") {
+    pylith::topology::TestSubmesh(pylith::topology::TestSubmesh_Cases::Tet()).testCreateLowerDimMesh();
+}
+TEST_CASE("TestSubmesh::Tet::testCreateSubdomainMesh", "[TestSubmesh][Tet][testCreateSubdomainMesh]") {
+    pylith::topology::TestSubmesh(pylith::topology::TestSubmesh_Cases::Tet()).testCreateSubdomainMesh();
+}
 
-        _data->cellDim = 2;
-        _data->numVertices = 6;
-        _data->numCells = 2;
-        _data->numCorners = 4;
-        static const int _cells[2*4] = {
-            0, 2, 3, 1,
-            2, 4, 5, 3,
-        };
-        _data->cells = const_cast<int*>(_cells);
-        static const PylithScalar _coordinates[6*2] = {
-            -1.0, -1.0,
-            -1.0, +1.0,
-            +0.0, -1.0,
-            +0.0, +1.0,
-            +1.0, -1.0,
-            +1.0, +1.0,
-        };
-        _data->coordinates = const_cast<PylithScalar*>(_coordinates);
+TEST_CASE("TestSubmesh::Hex::testAccessors", "[TestSubmesh][Hex][testAccessors]") {
+    pylith::topology::TestSubmesh(pylith::topology::TestSubmesh_Cases::Hex()).testAccessors();
+}
+TEST_CASE("TestSubmesh::Hex::testSizes", "[TestSubmesh][Hex][testSizes]") {
+    pylith::topology::TestSubmesh(pylith::topology::TestSubmesh_Cases::Hex()).testSizes();
+}
+TEST_CASE("TestSubmesh::Hex::testCreateLowerDimMesh", "[TestSubmesh][Hex][testCreateLowerDimMesh]") {
+    pylith::topology::TestSubmesh(pylith::topology::TestSubmesh_Cases::Hex()).testCreateLowerDimMesh();
+}
+TEST_CASE("TestSubmesh::Hex::testCreateSubdomainMesh", "[TestSubmesh][Hex][testCreateSubdomainMesh]") {
+    pylith::topology::TestSubmesh(pylith::topology::TestSubmesh_Cases::Hex()).testCreateSubdomainMesh();
+}
 
-        // Submesh data
-        _data->groupLabel = "bc";
-        _data->groupSize = 3;
-        static const int _groupVertices[3] = {
-            0, 2, 4,
-        };
-        _data->groupVertices = const_cast<int*>(_groupVertices);
-        _data->submeshNumCorners = 2;
-        _data->submeshNumVertices = 3;
-        static const int _submeshVertices[3] = {
-            2, 3, 4,
-        };
-        _data->submeshVertices = const_cast<int*>(_submeshVertices);
-        _data->submeshNumCells = 2;
-        static const int _submeshCells[2] = {
-            0, 1,
-        };
-        _data->submeshCells = const_cast<int*>(_submeshCells);
+// ------------------------------------------------------------------------------------------------
+pylith::topology::TestSubmesh_Data*
+pylith::topology::TestSubmesh_Cases::Tri(void) {
+    TestSubmesh_Data* data = new TestSubmesh_Data();assert(data);
 
-        // Subdomain data
-        _data->subdomainLabel = "material-id";
-        static const int _subdomainLabelValues[2] = {
-            10, 20,
-        };
-        _data->subdomainLabelValues = const_cast<int*>(_subdomainLabelValues);
-        _data->subdomainLabelValue = 10;
-        _data->subdomainNumCorners = 4;
-        _data->subdomainNumVertices = 4;
-        static const int _subdomainVertices[4] = {
-            1, 2, 3, 4,
-        };
-        _data->subdomainVertices = const_cast<int*>(_subdomainVertices);
-        _data->subdomainNumCells = 1;
-        static const int _subdomainCells[1] = {
-            0,
-        };
-        _data->subdomainCells = const_cast<int*>(_subdomainCells);
-    } // setUp
+    data->cellDim = 2;
+    data->numVertices = 4;
+    data->numCells = 2;
+    data->numCorners = 3;
+    static const int _cells[2*3] = {
+        0, 1, 3,
+        0, 3, 2,
+    };
+    data->cells = const_cast<int*>(_cells);
+    static const PylithScalar _coordinates[4*2] = {
+        0.0, 0.0,
+        1.0, 0.0,
+        0.0, 1.0,
+        1.0, 1.0,
+    };
+    data->coordinates = const_cast<PylithScalar*>(_coordinates);
 
-}; // _TestSubmesh_Quad
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::topology::TestSubmesh_Quad);
+    // Submesh data
+    data->groupLabel = "bc";
+    data->groupSize = 3;
+    static const int _groupVertices[3] = {
+        1, 2, 3,
+    };
+    data->groupVertices = const_cast<int*>(_groupVertices);
 
-// ---------------------------------------------------------------------------------------------------------------------
-class pylith::topology::TestSubmesh_Tet : public pylith::topology::TestSubmesh {
-    CPPUNIT_TEST_SUB_SUITE(TestSubmesh_Tet, TestSubmesh);
-    CPPUNIT_TEST_SUITE_END();
+    data->submeshNumCorners = 2;
+    data->submeshNumVertices = 3;
+    static const int _submeshVertices[3] = {
+        2, 3, 4,
+    };
+    data->submeshVertices = const_cast<int*>(_submeshVertices);
+    data->submeshNumCells = 2;
+    static const int _submeshCells[2] = {
+        0, 1,
+    };
+    data->submeshCells = const_cast<int*>(_submeshCells);
 
-    void setUp(void) {
-        TestSubmesh::setUp();
+    // Subdomain data
+    data->subdomainLabel = "material-id";
+    static const int _subdomainLabelValues[2] = {
+        10, 20,
+    };
+    data->subdomainLabelValues = const_cast<int*>(_subdomainLabelValues);
+    data->subdomainLabelValue = 10;
+    data->subdomainNumCorners = 3;
+    data->subdomainNumVertices = 3;
+    static const int _subdomainVertices[3] = {
+        1, 2, 3,
+    };
+    data->subdomainVertices = const_cast<int*>(_subdomainVertices);
+    data->subdomainNumCells = 1;
+    static const int _subdomainCells[1] = {
+        0,
+    };
+    data->subdomainCells = const_cast<int*>(_subdomainCells);
 
-        _data->cellDim = 3;
-        _data->numVertices = 5;
-        _data->numCells = 2;
-        _data->numCorners = 4;
-        static const int _cells[2*4] = {
-            1, 2, 3, 0,
-            1, 3, 2, 4,
-        };
-        _data->cells = const_cast<int*>(_cells);
-        static const PylithScalar _coordinates[5*3] = {
-            -1.0, +0.0, +0.0,
-            +0.0, -1.0, +0.0,
-            +0.0, +0.0, +1.0,
-            +0.0, +1.0, +0.0,
-            +1.0, +0.0, +0.0,
-        };
-        _data->coordinates = const_cast<PylithScalar*>(_coordinates);
+    return data;
+} // Tri
 
-        // Submesh data
-        _data->groupLabel = "bc";
-        _data->groupSize = 4;
-        static const int _groupVertices[4] = {
-            0, 1, 3, 4,
-        };
-        _data->groupVertices = const_cast<int*>(_groupVertices);
-        _data->submeshNumCorners = 3;
-        _data->submeshNumVertices = 4;
-        static const int _submeshVertices[4] = {
-            2, 3, 4, 5,
-        };
-        _data->submeshVertices = const_cast<int*>(_submeshVertices);
-        _data->submeshNumCells = 2;
-        static const int _submeshCells[2] = {
-            0, 1,
-        };
-        _data->submeshCells = const_cast<int*>(_submeshCells);
 
-        // Subdomain data
-        _data->subdomainLabel = "subdomain-id";
-        static const int _subdomainLabelValues[2] = {
-            20, 10,
-        };
-        _data->subdomainLabelValues = const_cast<int*>(_subdomainLabelValues);
-        _data->subdomainLabelValue = 10;
-        _data->subdomainNumCorners = 4;
-        _data->subdomainNumVertices = 4;
-        static const int _subdomainVertices[4] = {
-            1, 2, 3, 4,
-        };
-        _data->subdomainVertices = const_cast<int*>(_subdomainVertices);
-        _data->subdomainNumCells = 1;
-        static const int _subdomainCells[1] = {
-            0,
-        };
-        _data->subdomainCells = const_cast<int*>(_subdomainCells);
-    } // setUp
+// ------------------------------------------------------------------------------------------------
+pylith::topology::TestSubmesh_Data*
+pylith::topology::TestSubmesh_Cases::Quad(void) {
+    TestSubmesh_Data* data = new TestSubmesh_Data();assert(data);
 
-}; // _TestSubmesh_Tet
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::topology::TestSubmesh_Tet);
+    data->cellDim = 2;
+    data->numVertices = 6;
+    data->numCells = 2;
+    data->numCorners = 4;
+    static const int _cells[2*4] = {
+        0, 2, 3, 1,
+        2, 4, 5, 3,
+    };
+    data->cells = const_cast<int*>(_cells);
+    static const PylithScalar _coordinates[6*2] = {
+        -1.0, -1.0,
+        -1.0, +1.0,
+        +0.0, -1.0,
+        +0.0, +1.0,
+        +1.0, -1.0,
+        +1.0, +1.0,
+    };
+    data->coordinates = const_cast<PylithScalar*>(_coordinates);
 
-// ---------------------------------------------------------------------------------------------------------------------
-class pylith::topology::TestSubmesh_Hex : public pylith::topology::TestSubmesh {
-    CPPUNIT_TEST_SUB_SUITE(TestSubmesh_Hex, TestSubmesh);
-    CPPUNIT_TEST_SUITE_END();
+    // Submesh data
+    data->groupLabel = "bc";
+    data->groupSize = 3;
+    static const int _groupVertices[3] = {
+        0, 2, 4,
+    };
+    data->groupVertices = const_cast<int*>(_groupVertices);
+    data->submeshNumCorners = 2;
+    data->submeshNumVertices = 3;
+    static const int _submeshVertices[3] = {
+        2, 3, 4,
+    };
+    data->submeshVertices = const_cast<int*>(_submeshVertices);
+    data->submeshNumCells = 2;
+    static const int _submeshCells[2] = {
+        0, 1,
+    };
+    data->submeshCells = const_cast<int*>(_submeshCells);
 
-    void setUp(void) {
-        TestSubmesh::setUp();
+    // Subdomain data
+    data->subdomainLabel = "material-id";
+    static const int _subdomainLabelValues[2] = {
+        10, 20,
+    };
+    data->subdomainLabelValues = const_cast<int*>(_subdomainLabelValues);
+    data->subdomainLabelValue = 10;
+    data->subdomainNumCorners = 4;
+    data->subdomainNumVertices = 4;
+    static const int _subdomainVertices[4] = {
+        1, 2, 3, 4,
+    };
+    data->subdomainVertices = const_cast<int*>(_subdomainVertices);
+    data->subdomainNumCells = 1;
+    static const int _subdomainCells[1] = {
+        0,
+    };
+    data->subdomainCells = const_cast<int*>(_subdomainCells);
 
-        _data->cellDim = 3;
-        _data->numVertices = 12;
-        _data->numCells = 2;
-        _data->numCorners = 8;
-        static const int _cells[2*8] = {
-            0,  2,  3,  1,  6,  8,  9,  7,
-            2,  4,  5,  3,  8, 10, 11,  9,
-        };
-        _data->cells = const_cast<int*>(_cells);
-        static const PylithScalar _coordinates[12*3] = {
-            -1.0, -1.0, -1.0,
-            -1.0, +1.0, -1.0,
-            +0.0, -1.0, -1.0,
-            +0.0,  1.0, -1.0,
-            +1.0, -1.0, -1.0,
-            +1.0,  1.0, -1.0,
-            -1.0, -1.0, +1.0,
-            -1.0,  1.0, +1.0,
-            +0.0, -1.0, +1.0,
-            +0.0, +1.0, +1.0,
-            +1.0, -1.0, +1.0,
-            +1.0, +1.0, +1.0,
-        };
-        _data->coordinates = const_cast<PylithScalar*>(_coordinates);
+    return data;
+} // Quad
 
-        // Submesh data
-        _data->groupLabel = "bc";
-        _data->groupSize = 6;
-        static const int _groupVertices[6] = {
-            6, 7, 8, 9, 10, 11,
-        };
-        _data->groupVertices = const_cast<int*>(_groupVertices);
-        _data->submeshNumCorners = 4;
-        _data->submeshNumVertices = 6;
-        static const int _submeshVertices[6] = {
-            2, 3, 4, 5, 6, 7,
-        };
-        _data->submeshVertices = const_cast<int*>(_submeshVertices);
-        _data->submeshNumCells = 2;
-        static const int _submeshCells[2] = {
-            0, 1,
-        };
-        _data->submeshCells = const_cast<int*>(_submeshCells);
 
-        // Subdomain data
-        _data->subdomainLabel = "sub-id";
-        static const int _subdomainLabelValues[2] = {
-            20, 10,
-        };
-        _data->subdomainLabelValues = const_cast<int*>(_subdomainLabelValues);
-        _data->subdomainLabelValue = 10;
-        _data->subdomainNumCorners = 4;
-        _data->subdomainNumVertices = 8;
-        static const int _subdomainVertices[8] = {
-            1, 2, 3, 4, 5, 6, 7, 8,
-        };
-        _data->subdomainVertices = const_cast<int*>(_subdomainVertices);
-        _data->subdomainNumCells = 1;
-        static const int _subdomainCells[1] = {
-            0,
-        };
-        _data->subdomainCells = const_cast<int*>(_subdomainCells);
-    } // setUp
+// ------------------------------------------------------------------------------------------------
+pylith::topology::TestSubmesh_Data*
+pylith::topology::TestSubmesh_Cases::Tet(void) {
+    TestSubmesh_Data* data = new TestSubmesh_Data();assert(data);
 
-}; // _TestSubmesh_Hex
-CPPUNIT_TEST_SUITE_REGISTRATION(pylith::topology::TestSubmesh_Hex);
+    data->cellDim = 3;
+    data->numVertices = 5;
+    data->numCells = 2;
+    data->numCorners = 4;
+    static const int _cells[2*4] = {
+        1, 2, 3, 0,
+        1, 3, 2, 4,
+    };
+    data->cells = const_cast<int*>(_cells);
+    static const PylithScalar _coordinates[5*3] = {
+        -1.0, +0.0, +0.0,
+        +0.0, -1.0, +0.0,
+        +0.0, +0.0, +1.0,
+        +0.0, +1.0, +0.0,
+        +1.0, +0.0, +0.0,
+    };
+    data->coordinates = const_cast<PylithScalar*>(_coordinates);
+
+    // Submesh data
+    data->groupLabel = "bc";
+    data->groupSize = 4;
+    static const int _groupVertices[4] = {
+        0, 1, 3, 4,
+    };
+    data->groupVertices = const_cast<int*>(_groupVertices);
+    data->submeshNumCorners = 3;
+    data->submeshNumVertices = 4;
+    static const int _submeshVertices[4] = {
+        2, 3, 4, 5,
+    };
+    data->submeshVertices = const_cast<int*>(_submeshVertices);
+    data->submeshNumCells = 2;
+    static const int _submeshCells[2] = {
+        0, 1,
+    };
+    data->submeshCells = const_cast<int*>(_submeshCells);
+
+    // Subdomain data
+    data->subdomainLabel = "subdomain-id";
+    static const int _subdomainLabelValues[2] = {
+        20, 10,
+    };
+    data->subdomainLabelValues = const_cast<int*>(_subdomainLabelValues);
+    data->subdomainLabelValue = 10;
+    data->subdomainNumCorners = 4;
+    data->subdomainNumVertices = 4;
+    static const int _subdomainVertices[4] = {
+        1, 2, 3, 4,
+    };
+    data->subdomainVertices = const_cast<int*>(_subdomainVertices);
+    data->subdomainNumCells = 1;
+    static const int _subdomainCells[1] = {
+        0,
+    };
+    data->subdomainCells = const_cast<int*>(_subdomainCells);
+
+    return data;
+} // Tet
+
+
+// ------------------------------------------------------------------------------------------------
+pylith::topology::TestSubmesh_Data*
+pylith::topology::TestSubmesh_Cases::Hex(void) {
+    TestSubmesh_Data* data = new TestSubmesh_Data();assert(data);
+
+    data->cellDim = 3;
+    data->numVertices = 12;
+    data->numCells = 2;
+    data->numCorners = 8;
+    static const int _cells[2*8] = {
+        0,  2,  3,  1,  6,  8,  9,  7,
+        2,  4,  5,  3,  8, 10, 11,  9,
+    };
+    data->cells = const_cast<int*>(_cells);
+    static const PylithScalar _coordinates[12*3] = {
+        -1.0, -1.0, -1.0,
+        -1.0, +1.0, -1.0,
+        +0.0, -1.0, -1.0,
+        +0.0,  1.0, -1.0,
+        +1.0, -1.0, -1.0,
+        +1.0,  1.0, -1.0,
+        -1.0, -1.0, +1.0,
+        -1.0,  1.0, +1.0,
+        +0.0, -1.0, +1.0,
+        +0.0, +1.0, +1.0,
+        +1.0, -1.0, +1.0,
+        +1.0, +1.0, +1.0,
+    };
+    data->coordinates = const_cast<PylithScalar*>(_coordinates);
+
+    // Submesh data
+    data->groupLabel = "bc";
+    data->groupSize = 6;
+    static const int _groupVertices[6] = {
+        6, 7, 8, 9, 10, 11,
+    };
+    data->groupVertices = const_cast<int*>(_groupVertices);
+    data->submeshNumCorners = 4;
+    data->submeshNumVertices = 6;
+    static const int _submeshVertices[6] = {
+        2, 3, 4, 5, 6, 7,
+    };
+    data->submeshVertices = const_cast<int*>(_submeshVertices);
+    data->submeshNumCells = 2;
+    static const int _submeshCells[2] = {
+        0, 1,
+    };
+    data->submeshCells = const_cast<int*>(_submeshCells);
+
+    // Subdomain data
+    data->subdomainLabel = "sub-id";
+    static const int _subdomainLabelValues[2] = {
+        20, 10,
+    };
+    data->subdomainLabelValues = const_cast<int*>(_subdomainLabelValues);
+    data->subdomainLabelValue = 10;
+    data->subdomainNumCorners = 4;
+    data->subdomainNumVertices = 8;
+    static const int _subdomainVertices[8] = {
+        1, 2, 3, 4, 5, 6, 7, 8,
+    };
+    data->subdomainVertices = const_cast<int*>(_subdomainVertices);
+    data->subdomainNumCells = 1;
+    static const int _subdomainCells[1] = {
+        0,
+    };
+    data->subdomainCells = const_cast<int*>(_subdomainCells);
+
+    return data;
+} // Hex
+
 
 // End of file

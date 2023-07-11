@@ -33,86 +33,27 @@
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
-#include <cppunit/extensions/HelperMacros.h>
-
 // ------------------------------------------------------------------------------------------------
-// Setup testing data.
-void
-pylith::meshio::TestDataWriterPoints::setUp(void) {
-    PYLITH_METHOD_BEGIN;
-
-    _pointMesh = NULL;
-
-    PYLITH_METHOD_END;
-} // setUp
+// Constructor.
+pylith::meshio::TestDataWriterPoints::TestDataWriterPoints(void) :
+    _pointMesh(nullptr) {}
 
 
 // ------------------------------------------------------------------------------------------------
-// Tear down testing data.
-void
-pylith::meshio::TestDataWriterPoints::tearDown(void) {
+// Destructor.
+pylith::meshio::TestDataWriterPoints::~TestDataWriterPoints(void) {
     PYLITH_METHOD_BEGIN;
 
-    delete _pointMesh;_pointMesh = NULL;
+    delete _pointMesh;_pointMesh = nullptr;
 
     PYLITH_METHOD_END;
-} // tearDown
+} // destructor
 
 
 // ------------------------------------------------------------------------------------------------
-// Initialize mesh.
 void
-pylith::meshio::TestDataWriterPoints::_initialize(void) {
-    PYLITH_METHOD_BEGIN;
-
-    const TestDataWriterPoints_Data* data = _getData();CPPUNIT_ASSERT(data);
-
-    spatialdata::geocoords::CSCart cs;
-    cs.setSpaceDim(data->spaceDim);
-
-    delete _pointMesh;_pointMesh = pylith::topology::MeshOps::createFromPoints(
-        data->points, data->numPoints, &cs, data->lengthScale, PETSC_COMM_WORLD);
-
-    spatialdata::units::Nondimensional normalizer;
-    normalizer.setLengthScale(data->lengthScale);
-    pylith::topology::MeshOps::nondimensionalize(_pointMesh, normalizer);
-
-    PYLITH_METHOD_END;
-} // _initialize
-
-
-// ------------------------------------------------------------------------------------------------
-// Create vertex fields.
-void
-pylith::meshio::TestDataWriterPoints::_createVertexField(pylith::topology::Field* field) {
-    PYLITH_METHOD_BEGIN;
-    CPPUNIT_ASSERT(field);
-
-    const TestDataWriterPoints_Data* data = _getData();CPPUNIT_ASSERT(data);
-
-    FieldFactory factory(*field);
-    factory.addScalar(data->vertexDiscretization);
-    factory.addVector(data->vertexDiscretization);
-    factory.addTensor(data->vertexDiscretization);
-    factory.addOther(data->vertexDiscretization);
-
-    field->subfieldsSetup();
-    field->createDiscretization();
-    field->allocate();
-
-    factory.setValues(data->vertexValues, data->vertexNumPoints, data->vertexNumDOF);
-
-    field->createOutputVector();
-    field->scatterLocalToOutput();
-
-    PYLITH_METHOD_END;
-} // _createVertexField
-
-
-// ================================================================================================
-void
-pylith::meshio::TestDataWriterPoints::_setDataTri(void) {
-    TestDataWriterPoints_Data* data = this->_getData();CPPUNIT_ASSERT(data);
+pylith::meshio::TestDataWriterPoints::setDataTri(TestDataWriterPoints_Data* data) {
+    assert(data);
 
     data->meshFilename = "data/tri3.mesh";
     data->faultLabel = "fault";
@@ -150,10 +91,10 @@ pylith::meshio::TestDataWriterPoints::_setDataTri(void) {
 } // setDataTri
 
 
-// ================================================================================================
+// ------------------------------------------------------------------------------------------------
 void
-pylith::meshio::TestDataWriterPoints::_setDataQuad(void) {
-    TestDataWriterPoints_Data* data = this->_getData();CPPUNIT_ASSERT(data);
+pylith::meshio::TestDataWriterPoints::setDataQuad(TestDataWriterPoints_Data* data) {
+    assert(data);
 
     data->meshFilename = "data/quad4.mesh";
     data->faultId = 100;
@@ -189,10 +130,10 @@ pylith::meshio::TestDataWriterPoints::_setDataQuad(void) {
 } // setDataQuad
 
 
-// ================================================================================================
+// ------------------------------------------------------------------------------------------------
 void
-pylith::meshio::TestDataWriterPoints::_setDataTet(void) {
-    TestDataWriterPoints_Data* data = this->_getData();CPPUNIT_ASSERT(data);
+pylith::meshio::TestDataWriterPoints::setDataTet(TestDataWriterPoints_Data* data) {
+    assert(data);
 
     data->meshFilename = "data/tet4.mesh";
     data->faultId = 100;
@@ -230,10 +171,10 @@ pylith::meshio::TestDataWriterPoints::_setDataTet(void) {
 } // setDataTet
 
 
-// ================================================================================================
+// ------------------------------------------------------------------------------------------------
 void
-pylith::meshio::TestDataWriterPoints::_setDataHex(void) {
-    TestDataWriterPoints_Data* data = this->_getData();CPPUNIT_ASSERT(data);
+pylith::meshio::TestDataWriterPoints::setDataHex(TestDataWriterPoints_Data* data) {
+    assert(data);
 
     data->meshFilename = "data/hex8.mesh";
     data->faultId = 100;
@@ -270,6 +211,56 @@ pylith::meshio::TestDataWriterPoints::_setDataHex(void) {
     };
     data->vertexValues = const_cast<PylithScalar*>(vertexValues);
 } // setDataHex
+
+
+// ------------------------------------------------------------------------------------------------
+// Initialize mesh.
+void
+pylith::meshio::TestDataWriterPoints::_initialize(void) {
+    PYLITH_METHOD_BEGIN;
+
+    const TestDataWriterPoints_Data* data = _getData();assert(data);
+
+    spatialdata::geocoords::CSCart cs;
+    cs.setSpaceDim(data->spaceDim);
+
+    delete _pointMesh;_pointMesh = pylith::topology::MeshOps::createFromPoints(
+        data->points, data->numPoints, &cs, data->lengthScale, PETSC_COMM_WORLD);
+
+    spatialdata::units::Nondimensional normalizer;
+    normalizer.setLengthScale(data->lengthScale);
+    pylith::topology::MeshOps::nondimensionalize(_pointMesh, normalizer);
+
+    PYLITH_METHOD_END;
+} // _initialize
+
+
+// ------------------------------------------------------------------------------------------------
+// Create vertex fields.
+void
+pylith::meshio::TestDataWriterPoints::_createVertexField(pylith::topology::Field* field) {
+    PYLITH_METHOD_BEGIN;
+    assert(field);
+
+    const TestDataWriterPoints_Data* data = _getData();assert(data);
+
+    FieldFactory factory(*field);
+    factory.addScalar(data->vertexDiscretization);
+    factory.addVector(data->vertexDiscretization);
+    factory.addTensor(data->vertexDiscretization);
+    factory.addOther(data->vertexDiscretization);
+
+    field->subfieldsSetup();
+    field->createDiscretization();
+    field->allocate();
+
+    factory.setValues(data->vertexValues, data->vertexNumPoints, data->vertexNumDOF);
+
+    field->createOutputVector();
+    field->scatterLocalToOutput();
+
+    PYLITH_METHOD_END;
+} // _createVertexField
 
 
 // ------------------------------------------------------------------------------------------------

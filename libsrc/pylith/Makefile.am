@@ -93,17 +93,10 @@ libpylith_la_SOURCES = \
 	materials/AuxiliaryFactoryPoroelastic.cc \
 	materials/Query.cc \
 	meshio/BinaryIO.cc \
-	meshio/GMVFile.cc \
-	meshio/GMVFileAscii.cc \
-	meshio/GMVFileBinary.cc \
 	meshio/MeshBuilder.cc \
 	meshio/MeshIO.cc \
 	meshio/MeshIOAscii.cc \
 	meshio/MeshIOPetsc.cc \
-	meshio/MeshIOLagrit.cc \
-	meshio/PsetFile.cc \
-	meshio/PsetFileAscii.cc \
-	meshio/PsetFileBinary.cc \
 	meshio/DataWriter.cc \
 	meshio/HDF5.cc \
 	meshio/Xdmf.cc \

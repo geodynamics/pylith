@@ -16,29 +16,24 @@
 # ----------------------------------------------------------------------
 #
 
-include $(top_srcdir)/tests/check_cppunit.am
+include $(top_srcdir)/tests/check_catch2.am
 
-TESTS = test_utils
+TESTS = libtest_utils
 
-check_PROGRAMS = test_utils
+check_PROGRAMS = libtest_utils
 
 # Primary source files
-test_utils_SOURCES = \
+libtest_utils_SOURCES = \
 	TestEventLogger.cc \
 	TestPyreComponent.cc \
 	TestGenericComponent.cc \
 	TestPylithVersion.cc \
 	TestPetscVersion.cc \
 	TestDependenciesVersion.cc \
-	$(top_srcdir)/tests/src/driver_cppunit.cc
+	$(top_srcdir)/tests/src/driver_catch2.cc
 
-dist_noinst_HEADERS = \
-	TestEventLogger.hh \
-	TestPyreComponent.hh \
-	TestGenericComponent.hh \
-	TestPylithVersion.hh \
-	TestPetscVersion.hh \
-	TestDependenciesVersion.hh
+
+dist_noinst_HEADERS = 
 
 
 # End of file

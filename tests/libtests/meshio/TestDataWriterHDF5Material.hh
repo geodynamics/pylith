@@ -32,38 +32,24 @@
 
 #include "pylith/topology/topologyfwd.hh" // USES Mesh, Field
 
-#include <cppunit/extensions/HelperMacros.h>
-
 /// Namespace for pylith package
 namespace pylith {
     namespace meshio {
         class TestDataWriterHDF5Material;
-
         class TestDataWriterHDF5Material_Data;
     } // meshio
 } // pylith
 
-// ======================================================================
-/// C++ unit testing for DataWriterHDF5
-class pylith::meshio::TestDataWriterHDF5Material : public TestDataWriterHDF5, public TestDataWriterMaterial, public CppUnit::TestFixture {
-
-    // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-    CPPUNIT_TEST_SUITE(TestDataWriterHDF5Material);
-
-    CPPUNIT_TEST(testOpenClose);
-    CPPUNIT_TEST(testWriteVertexField);
-    CPPUNIT_TEST(testWriteCellField);
-
-    CPPUNIT_TEST_SUITE_END();
-
-    // PUBLIC METHODS /////////////////////////////////////////////////////
+// ------------------------------------------------------------------------------------------------
+class pylith::meshio::TestDataWriterHDF5Material : public TestDataWriterHDF5, public TestDataWriterMaterial {
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
-    /// Setup testing data.
-    void setUp(void);
+    /// Constructor.
+    TestDataWriterHDF5Material(TestDataWriterHDF5Material_Data* data);
 
-    /// Tear down testing data.
-    void tearDown(void);
+    /// Destructor.
+    ~TestDataWriterHDF5Material(void);
 
     /// Test open() and close()
     void testOpenClose(void);
@@ -74,7 +60,7 @@ public:
     /// Test writeCellField.
     void testWriteCellField(void);
 
-    // PROTECTED METHODS //////////////////////////////////////////////////
+    // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
 protected:
 
     /** Get test data.
@@ -83,19 +69,16 @@ protected:
      */
     TestDataWriterMaterial_Data* _getData(void);
 
-
-    // PROTECTED MEMBDERS /////////////////////////////////////////////////
+    // PROTECTED MEMBDERS /////////////////////////////////////////////////////////////////////////
 protected:
 
     TestDataWriterHDF5Material_Data* _data; ///< Data for testing.
 
 }; // class TestDataWriterHDF5Material
 
-
-// ======================================================================
+// ------------------------------------------------------------------------------------------------
 class pylith::meshio::TestDataWriterHDF5Material_Data : public TestDataWriterHDF5_Data, public TestDataWriterMaterial_Data {};
 
 #endif // pylith_meshio_testdatawriterhdf5material_hh
-
 
 // End of file

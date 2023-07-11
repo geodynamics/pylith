@@ -27,117 +27,88 @@
 #include "pylith/meshio/OutputSubfield.hh" // USES OutputSubfield
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD*
 
+#include "catch2/catch_test_macros.hpp"
+#include "catch2/matchers/catch_matchers_floating_point.hpp"
+
 // ------------------------------------------------------------------------------------------------
 // Setup testing data.
-void
-pylith::meshio::TestDataWriterVTKMesh::setUp(void) {
-    PYLITH_METHOD_BEGIN;
-
-    TestDataWriterMesh::setUp();
-    _data = NULL;
-
-    PYLITH_METHOD_END;
-} // setUp
+pylith::meshio::TestDataWriterVTKMesh::TestDataWriterVTKMesh(TestDataWriterVTKMesh_Data* data) :
+    _data(data) {
+    TestDataWriterMesh::_initialize();
+}
 
 
 // ------------------------------------------------------------------------------------------------
 // Tear down testing data.
-void
-pylith::meshio::TestDataWriterVTKMesh::tearDown(void) {
+pylith::meshio::TestDataWriterVTKMesh::~TestDataWriterVTKMesh(void) {
     PYLITH_METHOD_BEGIN;
 
-    TestDataWriterMesh::tearDown();
-    delete _data;_data = NULL;
+    delete _data;_data = nullptr;
 
     PYLITH_METHOD_END;
 } // tearDown
 
 
 // ------------------------------------------------------------------------------------------------
-// Test constructor
+// Test accessors.
 void
-pylith::meshio::TestDataWriterVTKMesh::testConstructor(void) {
-    PYLITH_METHOD_BEGIN;
+pylith::meshio::TestDataWriterVTKMesh::testAccessors(void) {
+    const double tolerance = 1.0e-6;
 
     DataWriterVTK writer;
 
-    CPPUNIT_ASSERT(!writer._viewer);
-    CPPUNIT_ASSERT_EQUAL(false, writer._wroteVertexHeader);
-    CPPUNIT_ASSERT_EQUAL(false, writer._wroteCellHeader);
+    const std::string& filename = "data.vtk";
+    writer.filename(filename.c_str());
+    CHECK(filename == writer._filename);
 
-    PYLITH_METHOD_END;
-} // testConstructor
+    const char* format = "%4.1f";
+    writer.timeFormat(format);
+    CHECK(std::string(format) == writer._timeFormat);
 
+    const PylithScalar value = 4.5;
+    writer.timeConstant(value);
+    CHECK_THAT(writer._timeConstant, Catch::Matchers::WithinAbs(value, tolerance));
 
-// ------------------------------------------------------------------------------------------------
-// Test filename()
-void
-pylith::meshio::TestDataWriterVTKMesh::testFilename(void) {
-    PYLITH_METHOD_BEGIN;
+    // Verify error with negative time constant.
+    CHECK_THROWS_AS(writer.timeConstant(-1.0), std::runtime_error);
 
-    DataWriterVTK writer;
+    const int ivalue = 4;
+    writer.precision(ivalue);
+    CHECK(ivalue == writer._precision);
 
-    const char* filename = "data.vtk";
-    writer.filename(filename);
-    CPPUNIT_ASSERT_EQUAL(std::string(filename), writer._filename);
-
-    PYLITH_METHOD_END;
+    // Verify error with nonpositive precision.
+    CHECK_THROWS_AS(writer.precision(0), std::runtime_error);
+    CHECK_THROWS_AS(writer.precision(-1), std::runtime_error);
 } // testFilename
 
 
 // ------------------------------------------------------------------------------------------------
-// Test timeFormat()
+// Test _vtkFilename.
 void
-pylith::meshio::TestDataWriterVTKMesh::testTimeFormat(void) {
+pylith::meshio::TestDataWriterVTKMesh::testVtkFilename(void) {
     PYLITH_METHOD_BEGIN;
 
     DataWriterVTK writer;
 
-    const char* format = "%4.1f";
-    writer.timeFormat(format);
-    CPPUNIT_ASSERT_EQUAL(std::string(format), writer._timeFormat);
+    writer._isInfo = true;
+    writer._filename = "output.vtk";
+    CHECK(std::string("output_info.vtk") == writer._vtkFilename(0.0));
+
+    // Use default normalization of 1.0, remove period from time stamp.
+    writer._isInfo = false;
+    writer._filename = "output.vtk";
+    writer.timeFormat("%05.2f");
+    CHECK(std::string("output_t0230.vtk") == writer._vtkFilename(2.3));
+
+    // Use normalization of 20.0, remove period from time stamp.
+    writer._isInfo = false;
+    writer._filename = "output.vtk";
+    writer.timeFormat("%05.2f");
+    writer.timeConstant(20.0);
+    CHECK(std::string("output_t0250.vtk") == writer._vtkFilename(50.0));
 
     PYLITH_METHOD_END;
-} // testTimeFormat
-
-
-// ------------------------------------------------------------------------------------------------
-// Test timeConstant()
-void
-pylith::meshio::TestDataWriterVTKMesh::testTimeConstant(void) {
-    PYLITH_METHOD_BEGIN;
-
-    DataWriterVTK writer;
-
-    const PylithScalar value = 4.5;
-    writer.timeConstant(value);
-    CPPUNIT_ASSERT_EQUAL(value, writer._timeConstant);
-
-    // Verify error with negative time constant.
-    CPPUNIT_ASSERT_THROW(writer.timeConstant(-1.0), std::runtime_error);
-
-    PYLITH_METHOD_END;
-} // testTimeConstant
-
-
-// ------------------------------------------------------------------------------------------------
-// Test precision()
-void
-pylith::meshio::TestDataWriterVTKMesh::testPrecision(void) {
-    PYLITH_METHOD_BEGIN;
-
-    DataWriterVTK writer;
-
-    const int value = 4;
-    writer.precision(value);
-    CPPUNIT_ASSERT_EQUAL(value, writer._precision);
-
-    // Verify error with nonpositive precision.
-    CPPUNIT_ASSERT_THROW(writer.precision(0), std::runtime_error);
-    CPPUNIT_ASSERT_THROW(writer.precision(-1), std::runtime_error);
-
-    PYLITH_METHOD_END;
-} // testPrecision
+} // testVtkFilename
 
 
 // ------------------------------------------------------------------------------------------------
@@ -146,30 +117,30 @@ void
 pylith::meshio::TestDataWriterVTKMesh::testTimeStep(void) {
     PYLITH_METHOD_BEGIN;
 
-    CPPUNIT_ASSERT(_mesh);
-    CPPUNIT_ASSERT(_data);
+    assert(_mesh);
+    assert(_data);
 
     DataWriterVTK writer;
 
     writer.filename(_data->timestepFilename);
     writer.timeFormat(_data->timeFormat);
 
-    CPPUNIT_ASSERT_EQUAL(false, writer._wroteVertexHeader);
-    CPPUNIT_ASSERT_EQUAL(false, writer._wroteCellHeader);
+    CHECK(false == writer._wroteVertexHeader);
+    CHECK(false == writer._wroteCellHeader);
 
     const PylithScalar t = _data->time;
     const bool isInfo = false;
     writer.open(*_mesh, isInfo);
     writer.openTimeStep(t, *_mesh);
 
-    CPPUNIT_ASSERT_EQUAL(false, writer._wroteVertexHeader);
-    CPPUNIT_ASSERT_EQUAL(false, writer._wroteCellHeader);
+    CHECK(false == writer._wroteVertexHeader);
+    CHECK(false == writer._wroteCellHeader);
 
     writer.closeTimeStep();
     writer.close();
 
-    CPPUNIT_ASSERT_EQUAL(false, writer._wroteVertexHeader);
-    CPPUNIT_ASSERT_EQUAL(false, writer._wroteCellHeader);
+    CHECK(false == writer._wroteVertexHeader);
+    CHECK(false == writer._wroteCellHeader);
 
     // Nothing to check. We do not create VTK files without fields anymore.
 
@@ -182,8 +153,8 @@ pylith::meshio::TestDataWriterVTKMesh::testTimeStep(void) {
 void
 pylith::meshio::TestDataWriterVTKMesh::testWriteVertexField(void) {
     PYLITH_METHOD_BEGIN;
-    CPPUNIT_ASSERT(_mesh);
-    CPPUNIT_ASSERT(_data);
+    assert(_mesh);
+    assert(_data);
 
     pylith::topology::Field vertexField(*_mesh);
     _createVertexField(&vertexField);
@@ -201,19 +172,19 @@ pylith::meshio::TestDataWriterVTKMesh::testWriteVertexField(void) {
     const size_t numFields = subfieldNames.size();
     for (size_t i = 0; i < numFields; ++i) {
         OutputSubfield* subfield = OutputSubfield::create(vertexField, *_mesh, subfieldNames[i].c_str(), 1);
-        CPPUNIT_ASSERT(subfield);
+        assert(subfield);
         subfield->project(vertexField.getOutputVector());
         writer.writeVertexField(t, *subfield);
-        CPPUNIT_ASSERT(writer._wroteVertexHeader);
-        CPPUNIT_ASSERT_EQUAL(false, writer._wroteCellHeader);
-        delete subfield;subfield = NULL;
+        assert(writer._wroteVertexHeader);
+        CHECK(false == writer._wroteCellHeader);
+        delete subfield;subfield = nullptr;
     } // for
     writer.closeTimeStep();
     writer.close();
-    CPPUNIT_ASSERT_EQUAL(false, writer._wroteVertexHeader);
-    CPPUNIT_ASSERT_EQUAL(false, writer._wroteCellHeader);
+    CHECK(false == writer._wroteVertexHeader);
+    CHECK(false == writer._wroteCellHeader);
 
-    checkFile(_data->vertexFilename, t, _data->timeFormat);
+    TestDataWriterVTK::checkFile(_data->vertexFilename, t, _data->timeFormat);
 
     PYLITH_METHOD_END;
 } // testWriteVertexField
@@ -225,8 +196,8 @@ void
 pylith::meshio::TestDataWriterVTKMesh::testWriteCellField(void) {
     PYLITH_METHOD_BEGIN;
 
-    CPPUNIT_ASSERT(_mesh);
-    CPPUNIT_ASSERT(_data);
+    assert(_mesh);
+    assert(_data);
 
     pylith::topology::Field cellField(*_mesh);
     _createCellField(&cellField);
@@ -244,51 +215,22 @@ pylith::meshio::TestDataWriterVTKMesh::testWriteCellField(void) {
     const size_t numFields = subfieldNames.size();
     for (size_t i = 0; i < numFields; ++i) {
         OutputSubfield* subfield = OutputSubfield::create(cellField, *_mesh, subfieldNames[i].c_str(), 0);
-        CPPUNIT_ASSERT(subfield);
+        assert(subfield);
         subfield->project(cellField.getOutputVector());
         writer.writeCellField(t, *subfield);
-        CPPUNIT_ASSERT_EQUAL(false, writer._wroteVertexHeader);
-        CPPUNIT_ASSERT(writer._wroteCellHeader);
-        delete subfield;subfield = NULL;
+        CHECK(false == writer._wroteVertexHeader);
+        assert(writer._wroteCellHeader);
+        delete subfield;subfield = nullptr;
     } // for
     writer.closeTimeStep();
     writer.close();
-    CPPUNIT_ASSERT_EQUAL(false, writer._wroteVertexHeader);
-    CPPUNIT_ASSERT_EQUAL(false, writer._wroteCellHeader);
+    CHECK(false == writer._wroteVertexHeader);
+    CHECK(false == writer._wroteCellHeader);
 
-    checkFile(_data->cellFilename, t, _data->timeFormat);
+    TestDataWriterVTK::checkFile(_data->cellFilename, t, _data->timeFormat);
 
     PYLITH_METHOD_END;
 } // testWriteCellField
-
-
-// ------------------------------------------------------------------------------------------------
-// Test _vtkFilename.
-void
-pylith::meshio::TestDataWriterVTKMesh::testVtkFilename(void) {
-    PYLITH_METHOD_BEGIN;
-
-    DataWriterVTK writer;
-
-    writer._isInfo = true;
-    writer._filename = "output.vtk";
-    CPPUNIT_ASSERT_EQUAL(std::string("output_info.vtk"), writer._vtkFilename(0.0));
-
-    // Use default normalization of 1.0, remove period from time stamp.
-    writer._isInfo = false;
-    writer._filename = "output.vtk";
-    writer.timeFormat("%05.2f");
-    CPPUNIT_ASSERT_EQUAL(std::string("output_t0230.vtk"), writer._vtkFilename(2.3));
-
-    // Use normalization of 20.0, remove period from time stamp.
-    writer._isInfo = false;
-    writer._filename = "output.vtk";
-    writer.timeFormat("%05.2f");
-    writer.timeConstant(20.0);
-    CPPUNIT_ASSERT_EQUAL(std::string("output_t0250.vtk"), writer._vtkFilename(50.0));
-
-    PYLITH_METHOD_END;
-} // testVtkFilename
 
 
 // ------------------------------------------------------------------------------------------------

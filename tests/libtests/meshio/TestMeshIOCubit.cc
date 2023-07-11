@@ -27,45 +27,25 @@
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 #include "pylith/utils/journals.hh" // USES JournalingComponent
 
+#include "catch2/catch_test_macros.hpp"
+
 #include <strings.h> // USES strcasecmp()
+#include <cassert> // USES assert()
 
 // ----------------------------------------------------------------------
-// Setup testing data.
-void
-pylith::meshio::TestMeshIOCubit::setUp(void) {
-    TestMeshIO::setUp();
-    _io = new MeshIOCubit();CPPUNIT_ASSERT(_io);
-    _data = NULL;
-
+// Constructor.
+pylith::meshio::TestMeshIOCubit::TestMeshIOCubit(TestMeshIO_Data* data) :
+    TestMeshIO(data) {
+    _io = new MeshIOCubit();assert(_io);
     _io->PyreComponent::setIdentifier("TestMeshIOCubit");
-} // setUp
+} // constructor
 
 
 // ----------------------------------------------------------------------
-// Deallocate testing data.
-void
-pylith::meshio::TestMeshIOCubit::tearDown(void) {
-    const char* journalName = _io->PyreComponent::getName();
-    pythia::journal::debug_t debug(journalName);
-    debug.deactivate(); // DEBUGGING
-
-    TestMeshIO::tearDown();
-
-    delete _io;_io = NULL;
-    delete _data;_data = NULL;
-} // tearDown
-
-
-// ----------------------------------------------------------------------
-// Test constructor
-void
-pylith::meshio::TestMeshIOCubit::testConstructor(void) {
-    PYLITH_METHOD_BEGIN;
-
-    MeshIOCubit iohandler;
-
-    PYLITH_METHOD_END;
-} // testConstructor
+// Destructor.
+pylith::meshio::TestMeshIOCubit::~TestMeshIOCubit(void) {
+    delete _io;_io = nullptr;
+} // destructor
 
 
 // ----------------------------------------------------------------------
@@ -73,12 +53,11 @@ pylith::meshio::TestMeshIOCubit::testConstructor(void) {
 void
 pylith::meshio::TestMeshIOCubit::testFilename(void) {
     PYLITH_METHOD_BEGIN;
-
-    CPPUNIT_ASSERT(_io);
+    assert(_io);
 
     const std::string& filename = "hi.txt";
     _io->setFilename(filename.c_str());
-    CPPUNIT_ASSERT_EQUAL(filename, std::string(_io->getFilename()));
+    CHECK(filename == std::string(_io->getFilename()));
 
     PYLITH_METHOD_END;
 } // testFilename
@@ -89,15 +68,14 @@ pylith::meshio::TestMeshIOCubit::testFilename(void) {
 void
 pylith::meshio::TestMeshIOCubit::testRead(void) {
     PYLITH_METHOD_BEGIN;
+    assert(_io);
+    assert(_data);
 
-    CPPUNIT_ASSERT(_io);
-    CPPUNIT_ASSERT(_data);
-
-    _io->setFilename(_data->filename);
+    _io->setFilename(_data->filename.c_str());
     _io->setUseNodesetNames(true);
 
     // Read mesh
-    delete _mesh;_mesh = new topology::Mesh;CPPUNIT_ASSERT(_mesh);
+    delete _mesh;_mesh = new topology::Mesh;assert(_mesh);
     _io->read(_mesh);
 
     pythia::journal::debug_t debug("TestMeshIOCubit");
@@ -110,25 +88,6 @@ pylith::meshio::TestMeshIOCubit::testRead(void) {
 
     PYLITH_METHOD_END;
 } // testRead
-
-
-// ----------------------------------------------------------------------
-// Get test data.
-pylith::meshio::TestMeshIO_Data*
-pylith::meshio::TestMeshIOCubit::_getData(void) {
-    return _data;
-} // _data
-
-
-// ----------------------------------------------------------------------
-// Constructor
-pylith::meshio::TestMeshIOCubit_Data::TestMeshIOCubit_Data(void) :
-    filename(NULL) {} // constructor
-
-
-// ----------------------------------------------------------------------
-// Destructor
-pylith::meshio::TestMeshIOCubit_Data::~TestMeshIOCubit_Data(void) {}
 
 
 // End of file

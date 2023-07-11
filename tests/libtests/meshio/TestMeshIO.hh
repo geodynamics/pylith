@@ -27,59 +27,46 @@
 #if !defined(pylith_meshio_testmeshio_hh)
 #define pylith_meshio_testmeshio_hh
 
-// Include directives ---------------------------------------------------
-#include <cppunit/extensions/HelperMacros.h>
+#include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
 #include "pylith/topology/topologyfwd.hh" // USES Mesh
 #include "pylith/meshio/meshiofwd.hh" // USES MeshIO
 
-// Forward declarations -------------------------------------------------
-/// Namespace for pylith package
 namespace pylith {
     namespace meshio {
         class TestMeshIO;
-
         class TestMeshIO_Data; // test data
     } // meshio
 } // pylith
 
-// ----------------------------------------------------------------------
-class pylith::meshio::TestMeshIO : public CppUnit::TestFixture {
-    // PUBLIC METHODS ///////////////////////////////////////////////////////
+// ------------------------------------------------------------------------------------------------
+class pylith::meshio::TestMeshIO : public pylith::utils::GenericComponent {
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
-    /// Setup testing data.
-    void setUp(void);
+    /// Constructor.
+    TestMeshIO(TestMeshIO_Data* data);
 
     /// Tear down testing data.
-    void tearDown(void);
+    ~TestMeshIO(void);
 
-    // PROTECTED METHODS ////////////////////////////////////////////////////
-protected:
-
-    /** Get test data.
-     *
-     * @returns Pointer to test data.
-     */
-    virtual
-    TestMeshIO_Data* _getData(void) = 0;
-
-    /// Get simple mesh for testing I/O.
+    /// Get simple mesh for testing output.
     void _createMesh(void);
 
     /// Check values in mesh against data.
     void _checkVals(void);
 
-    // PROTECTED MEMBERS ////////////////////////////////////////////////////
+    // PROTECTED MEMBERS //////////////////////////////////////////////////////////////////////////
 protected:
 
+    TestMeshIO_Data* _data; ///< Test data.
     pylith::topology::Mesh* _mesh; ///< Finite-element mesh.
 
 }; // class TestMeshIO
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 class pylith::meshio::TestMeshIO_Data {
-    // PUBLIC METHODS ///////////////////////////////////////////////////////
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Constructor
@@ -88,7 +75,7 @@ public:
     /// Destructor
     ~TestMeshIO_Data(void);
 
-    // PUBLIC MEMBERS ///////////////////////////////////////////////////////
+    // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
 public:
 
     PylithInt numVertices; ///< Number of vertices
@@ -110,6 +97,7 @@ public:
 
     bool useIndexZero; ///< Indices start with 0 if true, 1 if false
 
+    std::string filename;
 };
 
 #endif // pylith_meshio_testmeshio_hh

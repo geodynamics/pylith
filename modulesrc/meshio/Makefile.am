@@ -29,7 +29,6 @@ swig_sources = \
 	MeshIOObj.i \
 	MeshIOAscii.i \
 	MeshIOPetsc.i \
-	MeshIOLagrit.i \
 	MeshIOCubit.i \
 	OutputTrigger.i \
 	OutputTriggerStep.i \

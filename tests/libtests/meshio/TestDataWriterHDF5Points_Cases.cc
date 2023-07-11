@@ -22,101 +22,116 @@
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 
+#include "catch2/catch_test_macros.hpp"
+
 namespace pylith {
     namespace meshio {
-        // --------------------------------------------------------------
-        class TestDataWriterHDF5Points_Tri : public TestDataWriterHDF5Points {
-            CPPUNIT_TEST_SUB_SUITE(TestDataWriterHDF5Points_Tri, TestDataWriterHDF5Points);
-            CPPUNIT_TEST_SUITE_END();
+        class TestDataWriterHDF5Points_Cases;
+    }
+}
 
-            void setUp(void) {
-                PYLITH_METHOD_BEGIN;
+// ------------------------------------------------------------------------------------------------
+class pylith::meshio::TestDataWriterHDF5Points_Cases {
+public:
 
-                TestDataWriterHDF5Points::setUp();
-                _data = new TestDataWriterHDF5Points_Data();CPPUNIT_ASSERT(_data);
+    // Data factory methods
+    static TestDataWriterHDF5Points_Data* Tri(void);
 
-                _data->opencloseFilename = "tri3_points.h5";
-                _data->vertexFilename = "tri3_points_vertex.h5";
+    static TestDataWriterHDF5Points_Data* Quad(void);
 
-                TestDataWriterPoints::_setDataTri();
-                TestDataWriterPoints::_initialize();
+    static TestDataWriterHDF5Points_Data* Tet(void);
 
-                PYLITH_METHOD_END;
-            } // setUp
+    static TestDataWriterHDF5Points_Data* Hex(void);
 
-        }; // class TestDataWriterHDF5Points_Tri
-        CPPUNIT_TEST_SUITE_REGISTRATION(TestDataWriterHDF5Points_Tri);
+};
 
-        // --------------------------------------------------------------
-        class TestDataWriterHDF5Points_Quad : public TestDataWriterHDF5Points {
-            CPPUNIT_TEST_SUB_SUITE(TestDataWriterHDF5Points_Quad, TestDataWriterHDF5Points);
-            CPPUNIT_TEST_SUITE_END();
+// ------------------------------------------------------------------------------------------------
+TEST_CASE("TestDataWriterHDF5Points::Tri::testOpenClose", "[DataWriter][HDF5][Points][Tri][testOpenClose]") {
+    pylith::meshio::TestDataWriterHDF5Points(pylith::meshio::TestDataWriterHDF5Points_Cases::Tri()).testOpenClose();
+}
+TEST_CASE("TestDataWriterHDF5Points::Tri::testWriteVertexField", "[DataWriter][HDF5][Points][Tri][testWriteVertexField]") {
+    pylith::meshio::TestDataWriterHDF5Points(pylith::meshio::TestDataWriterHDF5Points_Cases::Tri()).testWriteVertexField();
+}
 
-            void setUp(void) {
-                PYLITH_METHOD_BEGIN;
+TEST_CASE("TestDataWriterHDF5Points::Quad::testOpenClose", "[DataWriter][HDF5][Points][Quad][testOpenClose]") {
+    pylith::meshio::TestDataWriterHDF5Points(pylith::meshio::TestDataWriterHDF5Points_Cases::Quad()).testOpenClose();
+}
+TEST_CASE("TestDataWriterHDF5Points::Quad::testWriteVertexField", "[DataWriter][HDF5][Points][Quad][testWriteVertexField]") {
+    pylith::meshio::TestDataWriterHDF5Points(pylith::meshio::TestDataWriterHDF5Points_Cases::Quad()).testWriteVertexField();
+}
 
-                TestDataWriterHDF5Points::setUp();
-                _data = new TestDataWriterHDF5Points_Data();CPPUNIT_ASSERT(_data);
+TEST_CASE("TestDataWriterHDF5Points::Tet::testOpenClose", "[DataWriter][HDF5][Points][Tet][testOpenClose]") {
+    pylith::meshio::TestDataWriterHDF5Points(pylith::meshio::TestDataWriterHDF5Points_Cases::Tet()).testOpenClose();
+}
+TEST_CASE("TestDataWriterHDF5Points::Tet::testWriteVertexField", "[DataWriter][HDF5][Points][Tet][testWriteVertexField]") {
+    pylith::meshio::TestDataWriterHDF5Points(pylith::meshio::TestDataWriterHDF5Points_Cases::Tet()).testWriteVertexField();
+}
 
-                _data->opencloseFilename = "quad4_points.h5";
-                _data->vertexFilename = "quad4_points_vertex.h5";
+TEST_CASE("TestDataWriterHDF5Points::Hex::testOpenClose", "[DataWriter][HDF5][Points][Hex][testOpenClose]") {
+    pylith::meshio::TestDataWriterHDF5Points(pylith::meshio::TestDataWriterHDF5Points_Cases::Hex()).testOpenClose();
+}
+TEST_CASE("TestDataWriterHDF5Points::Hex::testWriteVertexField", "[DataWriter][HDF5][Points][Hex][testWriteVertexField]") {
+    pylith::meshio::TestDataWriterHDF5Points(pylith::meshio::TestDataWriterHDF5Points_Cases::Hex()).testWriteVertexField();
+}
 
-                TestDataWriterPoints::_setDataQuad();
-                TestDataWriterPoints::_initialize();
+// ------------------------------------------------------------------------------------------------
+pylith::meshio::TestDataWriterHDF5Points_Data*
+pylith::meshio::TestDataWriterHDF5Points_Cases::Tri(void) {
+    PYLITH_METHOD_BEGIN;
+    TestDataWriterHDF5Points_Data* data = new TestDataWriterHDF5Points_Data();assert(data);
 
-                PYLITH_METHOD_END;
-            } // setUp
+    data->opencloseFilename = "tri3_points.h5";
+    data->vertexFilename = "tri3_points_vertex.h5";
 
-        }; // class TestDataWriterHDF5Points_Quad
-        CPPUNIT_TEST_SUITE_REGISTRATION(TestDataWriterHDF5Points_Quad);
+    TestDataWriterPoints::setDataTri(data);
 
-        // --------------------------------------------------------------
-        class TestDataWriterHDF5Points_Tet : public TestDataWriterHDF5Points {
-            CPPUNIT_TEST_SUB_SUITE(TestDataWriterHDF5Points_Tet, TestDataWriterHDF5Points);
-            CPPUNIT_TEST_SUITE_END();
+    PYLITH_METHOD_RETURN(data);
+} // Tri
 
-            void setUp(void) {
-                PYLITH_METHOD_BEGIN;
 
-                TestDataWriterHDF5Points::setUp();
-                _data = new TestDataWriterHDF5Points_Data();CPPUNIT_ASSERT(_data);
+// ------------------------------------------------------------------------------------------------
+pylith::meshio::TestDataWriterHDF5Points_Data*
+pylith::meshio::TestDataWriterHDF5Points_Cases::Quad(void) {
+    PYLITH_METHOD_BEGIN;
+    TestDataWriterHDF5Points_Data* data = new TestDataWriterHDF5Points_Data();assert(data);
 
-                _data->opencloseFilename = "tet4_points.h5";
-                _data->vertexFilename = "tet4_points_vertex.h5";
+    data->opencloseFilename = "quad4_points.h5";
+    data->vertexFilename = "quad4_points_vertex.h5";
 
-                TestDataWriterPoints::_setDataTet();
-                TestDataWriterPoints::_initialize();
+    TestDataWriterPoints::setDataQuad(data);
 
-                PYLITH_METHOD_END;
-            } // setUp
+    PYLITH_METHOD_RETURN(data);
+} // Quad
 
-        }; // class TestDataWriterHDF5Points_Tet
-        CPPUNIT_TEST_SUITE_REGISTRATION(TestDataWriterHDF5Points_Tet);
 
-        // --------------------------------------------------------------
-        class TestDataWriterHDF5Points_Hex : public TestDataWriterHDF5Points {
-            CPPUNIT_TEST_SUB_SUITE(TestDataWriterHDF5Points_Hex, TestDataWriterHDF5Points);
-            CPPUNIT_TEST_SUITE_END();
+// ------------------------------------------------------------------------------------------------
+pylith::meshio::TestDataWriterHDF5Points_Data*
+pylith::meshio::TestDataWriterHDF5Points_Cases::Tet(void) {
+    PYLITH_METHOD_BEGIN;
+    TestDataWriterHDF5Points_Data* data = new TestDataWriterHDF5Points_Data();assert(data);
 
-            void setUp(void) {
-                PYLITH_METHOD_BEGIN;
+    data->opencloseFilename = "tet4_points.h5";
+    data->vertexFilename = "tet4_points_vertex.h5";
 
-                TestDataWriterHDF5Points::setUp();
-                _data = new TestDataWriterHDF5Points_Data();CPPUNIT_ASSERT(_data);
+    TestDataWriterPoints::setDataTet(data);
 
-                _data->opencloseFilename = "hex8_points.h5";
-                _data->vertexFilename = "hex8_points_vertex.h5";
+    PYLITH_METHOD_RETURN(data);
+} // Tet
 
-                TestDataWriterPoints::_setDataHex();
-                TestDataWriterPoints::_initialize();
 
-                PYLITH_METHOD_END;
-            } // setUp
+// ------------------------------------------------------------------------------------------------
+pylith::meshio::TestDataWriterHDF5Points_Data*
+pylith::meshio::TestDataWriterHDF5Points_Cases::Hex(void) {
+    PYLITH_METHOD_BEGIN;
+    TestDataWriterHDF5Points_Data* data = new TestDataWriterHDF5Points_Data();assert(data);
 
-        }; // class TestDataWriterHDF5Points_Hex
-        CPPUNIT_TEST_SUITE_REGISTRATION(TestDataWriterHDF5Points_Hex);
+    data->opencloseFilename = "hex8_points.h5";
+    data->vertexFilename = "hex8_points_vertex.h5";
 
-    } // meshio
-} // pylith
+    TestDataWriterPoints::setDataHex(data);
+
+    PYLITH_METHOD_RETURN(data);
+} // Hex
+
 
 // End of file

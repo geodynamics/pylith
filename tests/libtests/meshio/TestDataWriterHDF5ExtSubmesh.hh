@@ -32,37 +32,23 @@
 
 #include "pylith/topology/topologyfwd.hh" // USES Mesh, Field
 
-#include <cppunit/extensions/HelperMacros.h>
-
-/// Namespace for pylith package
 namespace pylith {
     namespace meshio {
         class TestDataWriterHDF5ExtSubmesh;
-
         class TestDataWriterHDF5ExtSubmesh_Data;
     } // meshio
 } // pylith
 
-/// C++ unit testing for DataWriterHDF5
-class pylith::meshio::TestDataWriterHDF5ExtSubmesh :
-    public TestDataWriterHDF5, public TestDataWriterSubmesh, public CppUnit::TestFixture {
-    // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-    CPPUNIT_TEST_SUITE(TestDataWriterHDF5ExtSubmesh);
-
-    CPPUNIT_TEST(testOpenClose);
-    CPPUNIT_TEST(testWriteVertexField);
-    CPPUNIT_TEST(testWriteCellField);
-
-    CPPUNIT_TEST_SUITE_END();
-
-    // PUBLIC METHODS /////////////////////////////////////////////////////
+// ------------------------------------------------------------------------------------------------
+class pylith::meshio::TestDataWriterHDF5ExtSubmesh : public TestDataWriterHDF5, public TestDataWriterSubmesh {
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
-    /// Setup testing data.
-    void setUp(void);
+    /// Constructor.
+    TestDataWriterHDF5ExtSubmesh(TestDataWriterHDF5ExtSubmesh_Data* data);
 
-    /// Tear down testing data.
-    void tearDown(void);
+    /// Destructor.
+    ~TestDataWriterHDF5ExtSubmesh(void);
 
     /// Test open() and close()
     void testOpenClose(void);
@@ -73,7 +59,7 @@ public:
     /// Test writeCellField.
     void testWriteCellField(void);
 
-    // PROTECTED METHODS //////////////////////////////////////////////////
+    // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
 protected:
 
     /** Get test data.
@@ -82,7 +68,7 @@ protected:
      */
     TestDataWriterSubmesh_Data* _getData(void);
 
-    // PROTECTED MEMBDERS /////////////////////////////////////////////////
+    // PROTECTED MEMBDERS /////////////////////////////////////////////////////////////////////////
 protected:
 
     TestDataWriterHDF5ExtSubmesh_Data* _data; ///< Data for testing.

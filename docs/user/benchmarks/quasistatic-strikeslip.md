@@ -63,7 +63,7 @@ Geometry of strike-slip benchmark problem.
 
 ## Running the Benchmark
 
-Each benchmark uses three `.cfg` files in the parameters directory: `pylithapp.cfg`, a mesher related file (` strikeslip_cubit.cfg` or `strikeslip_lagrit.cfg`), and a resolution and cell related file (e.g., ` strikeslip_hex8_1000m.cfg`).
+Each benchmark uses three `.cfg` files in the parameters directory: `pylithapp.cfg`, a mesher related file (` strikeslip_cubit.cfg`), and a resolution and cell related file (e.g., ` strikeslip_hex8_1000m.cfg`).
 
 ```{code-block} console
 # Checkout the benchmark files from the CIG Git repository.

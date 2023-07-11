@@ -17,17 +17,17 @@
 //
 
 /**
- * @file tests/libtests/materials/TestAuxiliaryFactoryElastic.hh
+ * @file tests/libtests/materials/TestAuxiliaryFactoryLinearElastic.hh
  *
- * @brief C++ TestAuxiliaryFactoryElastic object.
+ * @brief C++ TestAuxiliaryFactoryLinearElastic object.
  *
  * C++ unit testing for AuxiliaryFactoryElastic.
  */
 
-#if !defined(pylith_materials_testauxiliaryfactoryelastic_hh)
-#define pylith_materials_testauxiliaryfactoryelastic_hh
+#if !defined(pylith_materials_testauxiliaryfactorylinearelastic_hh)
+#define pylith_materials_testauxiliaryfactorylinearelastic_hh
 
-#include <cppunit/extensions/HelperMacros.h>
+#include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
 #include "pylith/materials/materialsfwd.hh" // HOLDSA AuxiliaryFactoryElastic
 #include "pylith/topology/Field.hh" // HOLDSA Field::SubfieldInfo
@@ -37,31 +37,23 @@
 
 #include <map> // USES std::map
 
-/// Namespace for pylith package
 namespace pylith {
     namespace materials {
-        class TestAuxiliaryFactoryElastic;
-        class TestAuxiliaryFactoryElastic_Data;
+        class TestAuxiliaryFactoryLinearElastic;
+        class TestAuxiliaryFactoryLinearElastic_Data;
     } // materials
 } // pylith
 
-class pylith::materials::TestAuxiliaryFactoryElastic : public CppUnit::TestFixture {
-    // CPPUNIT TEST SUITE //////////////////////////////////////////////////////////////////////////////////////////////
-    CPPUNIT_TEST_SUITE(TestAuxiliaryFactoryElastic);
-
-    CPPUNIT_TEST(testAdd);
-    CPPUNIT_TEST(testSetValuesFromDB);
-
-    CPPUNIT_TEST_SUITE_END();
-
-    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
+// ------------------------------------------------------------------------------------------------
+class pylith::materials::TestAuxiliaryFactoryLinearElastic : public pylith::utils::GenericComponent {
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
-    /// Setup testing data.
-    void setUp(void);
+    /// Constructor.
+    TestAuxiliaryFactoryLinearElastic(TestAuxiliaryFactoryLinearElastic_Data* data);
 
-    /// Tear down testing data.
-    void tearDown(void);
+    /// Destructor.
+    ~TestAuxiliaryFactoryLinearElastic(void);
 
     /// Test adding shear modulus, bulk modulus, and reference stress/strain subfields.
     void testAdd(void);
@@ -69,38 +61,38 @@ public:
     /// Test setValuesFromDB().
     void testSetValuesFromDB(void);
 
-    // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
+    // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
 protected:
 
     /// Initialze mesh, coordinate system, auxiliary field, and factory.
     void _initialize(void);
 
-    // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
+    // PROTECTED MEMBERS //////////////////////////////////////////////////////////////////////////
 protected:
 
     AuxiliaryFactoryElastic* _factory; ///< Test subject.
-    TestAuxiliaryFactoryElastic_Data* _data; ///< Test data.
+    TestAuxiliaryFactoryLinearElastic_Data* _data; ///< Test data.
 
     pylith::topology::Mesh* _mesh; ///< Finite-element mesh.
     pylith::topology::Field* _auxiliaryField; ///< Auxiliary field for test subject.
 
-    size_t _auxDim; ///< Topological dimension of auxiliary field.
-  
-}; // class TestAuxiliaryFactoryElastic
+}; // class TestAuxiliaryFactoryLinearElastic
 
-// =====================================================================================================================
-class pylith::materials::TestAuxiliaryFactoryElastic_Data {
-    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
+// ------------------------------------------------------------------------------------------------
+class pylith::materials::TestAuxiliaryFactoryLinearElastic_Data {
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Constructor
-    TestAuxiliaryFactoryElastic_Data(void);
+    TestAuxiliaryFactoryLinearElastic_Data(void);
 
     /// Destructor
-    ~TestAuxiliaryFactoryElastic_Data(void);
+    ~TestAuxiliaryFactoryLinearElastic_Data(void);
 
-    // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
+    // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
 public:
+
+    size_t auxDim; ///< Topological dimension of auxiliary field.
 
     size_t dimension; ///< Spatial dimension.
     const char* meshFilename; ///< Name of file with ASCII mesh.
@@ -110,8 +102,8 @@ public:
     std::map<std::string, pylith::topology::Field::SubfieldInfo> subfields;
     spatialdata::spatialdb::UserFunctionDB* auxiliaryDB; ///< Spatial database with values for solution.
 
-}; // class TestAuxiliaryFactoryElastic_Data
+}; // class TestAuxiliaryFactoryLinearElastic_Data
 
-#endif // pylith_materials_testauxiliaryfactoryelastic_hh
+#endif // pylith_materials_testauxiliaryfactorylinearelastic_hh
 
 // End of file

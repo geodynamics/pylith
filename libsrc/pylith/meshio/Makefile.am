@@ -35,8 +35,6 @@ subpkginclude_HEADERS = \
 	MeshIOAscii.icc \
 	MeshIOPetsc.hh \
 	MeshIOPetsc.icc \
-	MeshIOLagrit.hh \
-	MeshIOLagrit.icc \
 	OutputObserver.hh \
 	OutputSubfield.hh \
 	OutputSoln.hh \
@@ -58,14 +56,6 @@ endif
 
 dist_noinst_HEADERS = \
 	BinaryIO.hh \
-	GMVFile.hh \
-	GMVFileAscii.hh \
-	GMVFileAscii.icc \
-	GMVFileBinary.hh \
-	PsetFile.hh \
-	PsetFileAscii.hh \
-	PsetFileAscii.icc \
-	PsetFileBinary.hh \
 	ExodusII.hh
 
 

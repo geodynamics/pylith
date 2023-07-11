@@ -29,39 +29,35 @@
 
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
+#include "catch2/catch_test_macros.hpp"
+#include "catch2/matchers/catch_matchers_floating_point.hpp"
+
 // ------------------------------------------------------------------------------------------------
-// Setup testing data.
-void
-pylith::meshio::TestDataWriterHDF5Points::setUp(void) {
-    PYLITH_METHOD_BEGIN;
-
-    TestDataWriterPoints::setUp();
-    _data = NULL;
-
-    PYLITH_METHOD_END;
-} // setUp
+// Constructor.
+pylith::meshio::TestDataWriterHDF5Points::TestDataWriterHDF5Points(TestDataWriterHDF5Points_Data* data) :
+    _data(data) {
+    TestDataWriterPoints::_initialize();
+} // constructor
 
 
 // ------------------------------------------------------------------------------------------------
-// Tear down testing data.
-void
-pylith::meshio::TestDataWriterHDF5Points::tearDown(void) {
+// Destructor.
+pylith::meshio::TestDataWriterHDF5Points::~TestDataWriterHDF5Points(void) {
     PYLITH_METHOD_BEGIN;
 
-    TestDataWriterPoints::tearDown();
-    delete _data;_data = NULL;
+    delete _data;_data = nullptr;
 
     PYLITH_METHOD_END;
-} // tearDown
+} // destructor
 
 
 // ------------------------------------------------------------------------------------------------
 // Test openTimeStep() and closeTimeStep()
 void
-pylith::meshio::TestDataWriterHDF5Points::testTimeStep(void) {
+pylith::meshio::TestDataWriterHDF5Points::testOpenClose(void) {
     PYLITH_METHOD_BEGIN;
-    CPPUNIT_ASSERT(_pointMesh);
-    CPPUNIT_ASSERT(_data);
+    assert(_pointMesh);
+    assert(_data);
 
     DataWriterHDF5 writer;
     writer.filename(_data->opencloseFilename);
@@ -85,8 +81,8 @@ pylith::meshio::TestDataWriterHDF5Points::testTimeStep(void) {
 void
 pylith::meshio::TestDataWriterHDF5Points::testWriteVertexField(void) {
     PYLITH_METHOD_BEGIN;
-    CPPUNIT_ASSERT(_pointMesh);
-    CPPUNIT_ASSERT(_data);
+    assert(_pointMesh);
+    assert(_data);
 
     pylith::topology::Field vertexField(*_pointMesh);
     _createVertexField(&vertexField);
@@ -104,7 +100,7 @@ pylith::meshio::TestDataWriterHDF5Points::testWriteVertexField(void) {
     const size_t numFields = subfieldNames.size();
     for (size_t i = 0; i < numFields; ++i) {
         OutputSubfield* subfield = OutputSubfield::create(vertexField, *_pointMesh, subfieldNames[i].c_str());
-        CPPUNIT_ASSERT(subfield);
+        assert(subfield);
 
         const pylith::topology::Field::SubfieldInfo& info = vertexField.getSubfieldInfo(subfieldNames[i].c_str());
         subfield->extractSubfield(vertexField, info.index);

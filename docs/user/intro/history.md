@@ -12,7 +12,7 @@ The PyLith 1.x series of releases allows the solution of both quasistatic and dy
 The code runs in either serial or parallel, and the design allows for relatively easy scripting using the Python programming language.
 Material properties and values for boundary and fault conditions are specified using spatial databases, which permit easy prescription of complex spatial variations of properties and parameters.
 Simulation parameters are generally specified through the use of simple ASCII files or the command line.
-At present, mesh information may be provided using a simple ASCII file (PyLith mesh ASCII format) or imported from CUBIT or LaGriT, two widely-used meshing packages.
+At present, mesh information may be provided using a simple ASCII file (PyLith mesh ASCII format) or imported from CUBIT or Gmsh.
 The elements currently available include a linear bar in 1D, linear triangles and quadrilaterals in 2D, and linear tetrahedra and hexahedra in 3D.
 Materials presently available include isotropic elastic, linear Maxwell viscoelastic, generalized Maxwell viscoelastic, power-law viscoelastic, and Drucker-Prager elastoplastic.
 Boundary conditions include Dirichlet (prescribed displacements and velocities), Neumann (traction), point forces, and absorbing boundaries. Cohesive elements are used to implement slip across interior surfaces (faults) with both kinematically-specified fault slip and slip governed by fault constitutive models.

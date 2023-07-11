@@ -27,22 +27,17 @@
 #if !defined(pylith_meshio_testdatawriterhdf5_hh)
 #define pylith_meshio_testdatawriterhdf5_hh
 
-#include <cppunit/extensions/HelperMacros.h>
-
 /// Namespace for pylith package
 namespace pylith {
     namespace meshio {
         class TestDataWriterHDF5;
-
         class TestDataWriterHDF5_Data;
     } // meshio
 } // pylith
 
-// ======================================================================
-/// C++ unit testing for DataWriterHDF5
-class pylith::meshio::TestDataWriterHDF5 { // class TestDataWriterHDF5
-
-    // PUBLIC METHODS /////////////////////////////////////////////////////
+// ------------------------------------------------------------------------------------------------
+class pylith::meshio::TestDataWriterHDF5 {
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
     /** Check HDF5 file against archived file.
@@ -54,11 +49,9 @@ public:
 
 }; // class TestDataWriterHDF5
 
-
-// ======================================================================
+// ------------------------------------------------------------------------------------------------
 class pylith::meshio::TestDataWriterHDF5_Data {
-
-    // PUBLIC METHODS ///////////////////////////////////////////////////////
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Constructor
@@ -67,7 +60,7 @@ public:
     /// Destructor
     ~TestDataWriterHDF5_Data(void);
 
-    // PUBLIC MEMBERS ///////////////////////////////////////////////////////
+    // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
 public:
 
     const char* opencloseFilename; ///< Name of file with no data fields.
@@ -76,8 +69,6 @@ public:
 
 };
 
-
 #endif // pylith_meshio_testdatawriterhdf5_hh
-
 
 // End of file

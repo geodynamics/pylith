@@ -19,20 +19,17 @@
 /**
  * @file tests/libtests/topology/TestSubmesh.hh
  *
- * @brief C++ unit testing for Mesh.
+ * @brief C++ unit testing for Submesh.
  */
 
 #if !defined(pylith_topology_testsubmesh_hh)
 #define pylith_topology_testsubmesh_hh
 
-// Include directives ----------------------------------------------------------
-#include <cppunit/extensions/HelperMacros.h>
+#include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
 #include "pylith/topology/topologyfwd.hh" // forward declarations
 #include "pylith/utils/types.hh" // USES PylithScalar
 
-// Forward declarations --------------------------------------------------------
-/// Namespace for pylith package
 namespace pylith {
     namespace topology {
         class TestSubmesh;
@@ -40,27 +37,16 @@ namespace pylith {
     } // topology
 } // pylith
 
-// TestSubmesh -----------------------------------------------------------------
-/// C++ unit testing for Mesh.
-class pylith::topology::TestSubmesh : public CppUnit::TestFixture {
-    // CPPUNIT TEST SUITE //////////////////////////////////////////////////////
-    CPPUNIT_TEST_SUITE(TestSubmesh);
-
-    CPPUNIT_TEST(testCreateLowerDimMesh);
-    CPPUNIT_TEST(testCreateSubdomainMesh);
-    CPPUNIT_TEST(testAccessors);
-    CPPUNIT_TEST(testSizes);
-
-    CPPUNIT_TEST_SUITE_END();
-
-    // PUBLIC METHODS //////////////////////////////////////////////////////////
+// ------------------------------------------------------------------------------------------------
+class pylith::topology::TestSubmesh : public pylith::utils::GenericComponent {
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
-    /// Setup testing data.
-    void setUp(void);
+    /// Constructor.
+    TestSubmesh(TestSubmesh_Data* data);
 
-    /// Deallocate testing data.
-    void tearDown(void);
+    /// Destructor.
+    ~TestSubmesh(void);
 
     /// Test MeshOps::createLowerDimMesh().
     void testCreateLowerDimMesh(void);
@@ -74,13 +60,13 @@ public:
     /// Test dimension(), numCorners(), numVertices(), numCells(),
     void testSizes(void);
 
-    // PROTECTED METHODS ///////////////////////////////////////////////////////
+    // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
 protected:
 
     // Build lower dimension mesh.
     void _buildMesh(void);
 
-    // PROTECTED MEMBERS ///////////////////////////////////////////////////////
+    // PROTECTED MEMBERS //////////////////////////////////////////////////////////////////////////
 protected:
 
     TestSubmesh_Data* _data; ///< Data for testing.
@@ -89,9 +75,9 @@ protected:
 
 }; // class TestSubmesh
 
-// TestSubmesh_Data-------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 class pylith::topology::TestSubmesh_Data {
-    // PUBLIC METHODS //////////////////////////////////////////////////////////
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Constructor
@@ -100,7 +86,7 @@ public:
     /// Destructor
     ~TestSubmesh_Data(void);
 
-    // PUBLIC MEMBERS //////////////////////////////////////////////////////////
+    // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
 public:
 
     // GENERAL, VALUES DEPEND ON TEST CASE

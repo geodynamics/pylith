@@ -55,24 +55,22 @@
     
     \node (pylith) [pylith] {PyLith};
 
-    \node (mesh) [mesh, above left=of pylith, text depth=11em, minimum width=36em, xshift=8em] {Mesh Generator};
+    \node (mesh) [mesh, above left=of pylith, text depth=11em, minimum width=26em, xshift=8em] {Mesh Generator};
     \node (params) [params, above right=of pylith, text depth=11em, minimum width=18em, xshift=0em] {Simulation Parameters};
-    \node (viz) [visualize, below= of pylith, text height=15em, minimum width=18em] {Visualization};
+    \node (viz) [visualize, below= of pylith, text height=15em, minimum width=20em] {Visualization};
     \node (postprocess) [postprocess, right=of viz, text height=8em, xshift=5em] {Post-processing};
     
   \end{pgfonlayer}
   
   % Mesh
-  \node (cubit) [app, xshift=-13em, yshift=+3em] at (mesh) {Cubit};
+  \node (cubit) [app, xshift=-9em, yshift=+3em] at (mesh) {Cubit};
   \node (exodus) [input, below=of cubit, yshift=1em] {Exodus file [.exo]};
 
   \node (gmsh) [app, right=of cubit] {Gmsh};
   \node (msh) [input, below=of gmsh, yshift=1em] {Gmsh file [.msh]};
 
-  \node (lagrit) [app, right=of gmsh] {LaGriT};
-  \node (gmvpset) [input, below=of lagrit, yshift=+1em] {GMV File [.gmv] \par Pset File [.pset]};
 
-  \node (textedit) [app, right=of lagrit] {Text Editor};
+  \node (textedit) [app, right=of gmsh] {Text Editor};
   \node (asciimesh) [input, below=of textedit, yshift=+1em] {ASCII File [.mesh]};
 
   % Simulation parameters
@@ -81,8 +79,8 @@
   \node (spatialdb) [input, right=of cfg] {Spatial Database(s) [.spatialdb]};
 
   % Visualization
-  \node (vtk) [output, xshift=-4.5em, yshift=+2em] at (viz) {VTK File(s) [.vtk]};
-  \node (hdf5) [output, right=of vtk] {HDF5 File(s) [.h5] \par Xdmf File(s) [.xmf]};
+  \node (vtk) [output, xshift=-5.5em, yshift=+2em] at (viz) {VTK File(s) [.vtk]};
+  \node (hdf5) [output, right=of vtk, text width=8em] {HDF5 File(s) [.h5] \par Xdmf File(s) [.xmf]};
 
   \node (paraview) [app, below=of vtk, yshift=-2em] {ParaView};
   \node (visit) [app, right=of paraview] {Visit};
@@ -95,7 +93,6 @@
   % Main workflow
   \draw[connect_opt] (exodus.south) |- (mesh.south);
   \draw[connect_opt] (msh.south) |- (mesh.south);
-  \draw[connect_opt] (gmvpset.south) |- (mesh.south);
   \draw[connect_opt] (asciimesh.south) |- (mesh.south);
   \draw[arrowto] (mesh.south) |- (pylith.west);
   \draw[arrowto] (cfg.south) |- (pylith.east);
@@ -109,7 +106,6 @@
   % Annotation
   \path (cubit) edge[arrowto_minor] (exodus);
   \path (gmsh) edge[arrowto_minor] (msh);
-  \path (lagrit) edge[arrowto_minor] (gmvpset);
   \path (textedit) edge[arrowto_minor] (asciimesh);
 
   \path (textedit2.south) edge[arrowto_minor] (cfg.north);

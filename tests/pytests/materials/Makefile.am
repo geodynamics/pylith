@@ -16,8 +16,6 @@
 # ----------------------------------------------------------------------
 #
 
-include $(top_srcdir)/tests/check_cppunit.am
-
 SUBDIRS = data
 
 TESTS = testmaterials.py

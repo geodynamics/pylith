@@ -36,7 +36,6 @@ namespace pylith {
         class MeshIOAscii;
         class MeshIOPetsc;
         class MeshIOCubit;
-        class MeshIOLagrit;
 
         class GMVFile;
         class GMVFileAscii;

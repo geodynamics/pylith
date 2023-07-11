@@ -33,14 +33,16 @@
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
-// ---------------------------------------------------------------------------------------------------------------------
-// Setup testing data.
-void
-pylith::problems::TestSolutionFactory::setUp(void) {
-    PYLITH_METHOD_BEGIN;
-    _data = new TestSolutionFactory_Data();CPPUNIT_ASSERT(_data);
+#include "catch2/catch_test_macros.hpp"
 
-    CPPUNIT_ASSERT(_data->normalizer);
+// ------------------------------------------------------------------------------------------------
+// Setup testing data.
+pylith::problems::TestSolutionFactory::TestSolutionFactory(TestSolutionFactory_Data* data) :
+    _data(data) {
+    PYLITH_METHOD_BEGIN;
+    assert(_data);
+
+    assert(_data->normalizer);
     _data->normalizer->setLengthScale(1.0e+03);
     _data->normalizer->setTimeScale(2.0);
     _data->normalizer->setDensityScale(3.0e+3);
@@ -67,6 +69,7 @@ pylith::problems::TestSolutionFactory::setUp(void) {
         );
     info.index = 0;
     _data->subfields["displacement"] = info;
+    _data->subfields["displacement"].description.numComponents = _data->dimension;
 
     // velocity
     componentNames.resize(3);
@@ -86,6 +89,7 @@ pylith::problems::TestSolutionFactory::setUp(void) {
         );
     info.index = 1;
     _data->subfields["velocity"] = info;
+    _data->subfields["velocity"].description.numComponents = _data->dimension;
 
     // pressure
     componentNames.resize(1);
@@ -139,6 +143,7 @@ pylith::problems::TestSolutionFactory::setUp(void) {
         );
     info.index = 1;
     _data->subfields["lagrange_multiplier_fault"] = info;
+    _data->subfields["lagrange_multiplier_fault"].description.numComponents = _data->dimension;
 
     // temperature
     componentNames.resize(1);
@@ -157,14 +162,15 @@ pylith::problems::TestSolutionFactory::setUp(void) {
     info.index = 1;
     _data->subfields["temperature"] = info;
 
+    _initialize();
+
     PYLITH_METHOD_END;
-} // setUp
+} // constructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
-// Tear down testing data.
-void
-pylith::problems::TestSolutionFactory::tearDown(void) {
+// ------------------------------------------------------------------------------------------------
+// Destructor.
+pylith::problems::TestSolutionFactory::~TestSolutionFactory(void) {
     PYLITH_METHOD_BEGIN;
 
     delete _factory;_factory = NULL;
@@ -173,25 +179,22 @@ pylith::problems::TestSolutionFactory::tearDown(void) {
     delete _solution;_solution = NULL;
 
     PYLITH_METHOD_END;
-} // tearDown
+} // destructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test adding displacement and velocity subfields.
 void
 pylith::problems::TestSolutionFactory::testDispVel(void) {
     PYLITH_METHOD_BEGIN;
+    assert(_factory);
+    assert(_data);
 
-    CPPUNIT_ASSERT(_factory);
-    CPPUNIT_ASSERT(_data);
-
-    CPPUNIT_ASSERT(!_solution->hasSubfield("displacement"));
-    CPPUNIT_ASSERT(!_solution->hasSubfield("velocity"));
+    CHECK(!_solution->hasSubfield("displacement"));
+    CHECK(!_solution->hasSubfield("velocity"));
 
     _factory->addDisplacement(_data->subfields["displacement"].fe);
     _factory->addVelocity(_data->subfields["velocity"].fe);
-
-    CPPUNIT_ASSERT(_data->normalizer);
 
     pylith::testing::FieldTester::checkSubfieldInfo(*_solution, _data->subfields["displacement"]);
     pylith::testing::FieldTester::checkSubfieldInfo(*_solution, _data->subfields["velocity"]);
@@ -200,22 +203,19 @@ pylith::problems::TestSolutionFactory::testDispVel(void) {
 } // testDispVel
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test adding displacement and fault Lagrange multiplier subfields.
 void
 pylith::problems::TestSolutionFactory::testDispLagrangeFault(void) {
     PYLITH_METHOD_BEGIN;
+    assert(_factory);
+    assert(_data);
 
-    CPPUNIT_ASSERT(_factory);
-    CPPUNIT_ASSERT(_data);
-
-    CPPUNIT_ASSERT(!_solution->hasSubfield("displacement"));
-    CPPUNIT_ASSERT(!_solution->hasSubfield("lagrange_multiplier_fault"));
+    CHECK(!_solution->hasSubfield("displacement"));
+    CHECK(!_solution->hasSubfield("lagrange_multiplier_fault"));
 
     _factory->addDisplacement(_data->subfields["displacement"].fe);
     _factory->addLagrangeMultiplierFault(_data->subfields["lagrange_multiplier_fault"].fe);
-
-    CPPUNIT_ASSERT(_data->normalizer);
 
     pylith::testing::FieldTester::checkSubfieldInfo(*_solution, _data->subfields["displacement"]);
     pylith::testing::FieldTester::checkSubfieldInfo(*_solution, _data->subfields["lagrange_multiplier_fault"]);
@@ -224,22 +224,19 @@ pylith::problems::TestSolutionFactory::testDispLagrangeFault(void) {
 } // testDispVel
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test adding pressure and trace strain subfields.
 void
 pylith::problems::TestSolutionFactory::testPressure(void) {
     PYLITH_METHOD_BEGIN;
+    assert(_factory);
+    assert(_data);
 
-    CPPUNIT_ASSERT(_factory);
-
-    CPPUNIT_ASSERT(!_solution->hasSubfield("pressure"));
-    CPPUNIT_ASSERT(!_solution->hasSubfield("trace_strain"));
+    CHECK(!_solution->hasSubfield("pressure"));
+    CHECK(!_solution->hasSubfield("trace_strain"));
 
     _factory->addPressure(_data->subfields["pressure"].fe);
     _factory->addTraceStrain(_data->subfields["trace_strain"].fe);
-
-    CPPUNIT_ASSERT(_data);
-    CPPUNIT_ASSERT(_data->normalizer);
 
     pylith::testing::FieldTester::checkSubfieldInfo(*_solution, _data->subfields["pressure"]);
     pylith::testing::FieldTester::checkSubfieldInfo(*_solution, _data->subfields["trace_strain"]);
@@ -248,22 +245,19 @@ pylith::problems::TestSolutionFactory::testPressure(void) {
 } // testPressure
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test adding temperature subfields.
 void
 pylith::problems::TestSolutionFactory::testDispTemp(void) {
     PYLITH_METHOD_BEGIN;
+    assert(_factory);
+    assert(_data);
 
-    CPPUNIT_ASSERT(_factory);
-
-    CPPUNIT_ASSERT(!_solution->hasSubfield("displacement"));
-    CPPUNIT_ASSERT(!_solution->hasSubfield("temperature"));
+    CHECK(!_solution->hasSubfield("displacement"));
+    CHECK(!_solution->hasSubfield("temperature"));
 
     _factory->addDisplacement(_data->subfields["displacement"].fe);
     _factory->addTemperature(_data->subfields["temperature"].fe);
-
-    CPPUNIT_ASSERT(_data);
-    CPPUNIT_ASSERT(_data->normalizer);
 
     pylith::testing::FieldTester::checkSubfieldInfo(*_solution, _data->subfields["displacement"]);
     pylith::testing::FieldTester::checkSubfieldInfo(*_solution, _data->subfields["temperature"]);
@@ -272,13 +266,13 @@ pylith::problems::TestSolutionFactory::testDispTemp(void) {
 } // testTemperature
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test setValues().
 void
 pylith::problems::TestSolutionFactory::testSetValues(void) {
     PYLITH_METHOD_BEGIN;
-
-    CPPUNIT_ASSERT(_factory);
+    assert(_factory);
+    assert(_data);
 
     _factory->addDisplacement(_data->subfields["displacement"].fe);
     _factory->addPressure(_data->subfields["pressure"].fe);
@@ -286,10 +280,7 @@ pylith::problems::TestSolutionFactory::testSetValues(void) {
     _solution->createDiscretization();
     _solution->allocate();
 
-    CPPUNIT_ASSERT(_data);
-    CPPUNIT_ASSERT(_data->normalizer);
-
-    CPPUNIT_ASSERT(_data->solutionDB);
+    assert(_data->solutionDB);
     _factory->setValues(_data->solutionDB);
     pylith::testing::FieldTester::checkFieldWithDB(*_solution, _data->solutionDB, _data->normalizer->getLengthScale());
 
@@ -297,31 +288,29 @@ pylith::problems::TestSolutionFactory::testSetValues(void) {
 } // testSetValues
 
 
-// ---------------------------------------------------------------------------------------------------------------------
-// Initialze mesh, coordinate system, solution, and factory.
+// ------------------------------------------------------------------------------------------------
+// Initialize mesh, coordinate system, solution, and factory.
 void
 pylith::problems::TestSolutionFactory::_initialize(void) {
     PYLITH_METHOD_BEGIN;
 
-    CPPUNIT_ASSERT(_data);
+    assert(_data);
 
     pylith::meshio::MeshIOAscii iohandler;
-    CPPUNIT_ASSERT(_data->meshFilename);
+    assert(_data->meshFilename);
     iohandler.setFilename(_data->meshFilename);
-    _mesh = new pylith::topology::Mesh();CPPUNIT_ASSERT(_mesh);
+    _mesh = new pylith::topology::Mesh();assert(_mesh);
     iohandler.read(_mesh);
 
-    CPPUNIT_ASSERT_MESSAGE("Test mesh does not contain any cells.",
-                           pylith::topology::MeshOps::getNumCells(*_mesh) > 0);
-    CPPUNIT_ASSERT_MESSAGE("Test mesh does not contain any vertices.",
-                           pylith::topology::MeshOps::getNumVertices(*_mesh) > 0);
+    assert(pylith::topology::MeshOps::getNumCells(*_mesh) > 0);
+    assert(pylith::topology::MeshOps::getNumVertices(*_mesh) > 0);
 
     // Setup coordinates.
     _mesh->setCoordSys(_data->cs);
-    CPPUNIT_ASSERT(_data->normalizer);
+    assert(_data->normalizer);
     pylith::topology::MeshOps::nondimensionalize(_mesh, *_data->normalizer);
 
-    _solution = new pylith::topology::Field(*_mesh);CPPUNIT_ASSERT(_solution);
+    _solution = new pylith::topology::Field(*_mesh);assert(_solution);
     _solution->setLabel("solution");
     _factory = new SolutionFactory(*_solution, *_data->normalizer);
 
@@ -329,7 +318,7 @@ pylith::problems::TestSolutionFactory::_initialize(void) {
 } // _initialize
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 pylith::problems::TestSolutionFactory_Data::TestSolutionFactory_Data(void) :
     meshFilename(NULL),
     cs(NULL),
@@ -337,7 +326,7 @@ pylith::problems::TestSolutionFactory_Data::TestSolutionFactory_Data(void) :
     solutionDB(new spatialdata::spatialdb::UserFunctionDB) {}
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 pylith::problems::TestSolutionFactory_Data::~TestSolutionFactory_Data(void) {
     delete cs;cs = NULL;
     delete normalizer;normalizer = NULL;

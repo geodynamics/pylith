@@ -28,7 +28,7 @@
 
 #include "petscdm.h" // USES PetscDM
 
-#include <cppunit/extensions/HelperMacros.h>
+#include "catch2/catch_test_macros.hpp"
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Check to make sure field matches spatial database.
@@ -45,7 +45,7 @@ pylith::testing::FieldTester::checkFieldWithDB(const pylith::topology::Field& fi
     fieldQuery.initializeWithDefaultQueries();
     fieldQuery.openDB(fieldDB, lengthScale);
     PetscErrorCode err = DMPlexComputeL2DiffLocal(dmField, t, fieldQuery._functions, (void**)fieldQuery._contextPtrs,
-                                                  field.getLocalVector(), &norm);CPPUNIT_ASSERT(!err);
+                                                  field.getLocalVector(), &norm);assert(!err);
     fieldQuery.closeDB(fieldDB);
 
     PYLITH_METHOD_RETURN(norm);
@@ -61,35 +61,34 @@ pylith::testing::FieldTester::checkSubfieldInfo(const pylith::topology::Field& f
 
     const pylith::topology::Field::SubfieldInfo& info = field.getSubfieldInfo(infoE.description.label.c_str());
 
-    CPPUNIT_ASSERT_EQUAL(infoE.index, info.index);
-
-    const std::string& msg = "Error checking subfield " + infoE.description.label;
+    CHECK(infoE.index == info.index);
+    INFO("Checking subfield " << infoE.description.label);
 
     // Description
     const pylith::topology::Field::Description& descriptionE = infoE.description;
     const pylith::topology::Field::Description& description = info.description;
-    CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.c_str(), descriptionE.label, description.label);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.c_str(), descriptionE.alias, description.alias);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.c_str(), descriptionE.vectorFieldType, description.vectorFieldType);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.c_str(), descriptionE.numComponents, description.numComponents);
+    CHECK(descriptionE.label == description.label);
+    CHECK(descriptionE.alias == description.alias);
+    CHECK(descriptionE.vectorFieldType == description.vectorFieldType);
+    CHECK(descriptionE.numComponents == description.numComponents);
     for (size_t i = 0; i < descriptionE.numComponents; ++i) {
-        CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.c_str(), descriptionE.componentNames[i], description.componentNames[i]);
+        CHECK(descriptionE.componentNames[i] == description.componentNames[i]);
     } // for
-    CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.c_str(), descriptionE.scale, description.scale);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.c_str(), descriptionE.validator, description.validator);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.c_str(), descriptionE.hasHistory, description.hasHistory);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.c_str(), descriptionE.historySize, description.historySize);
+    CHECK(descriptionE.scale == description.scale);
+    CHECK(descriptionE.validator == description.validator);
+    CHECK(descriptionE.hasHistory == description.hasHistory);
+    CHECK(descriptionE.historySize == description.historySize);
 
     // Discretization
     const pylith::topology::Field::Discretization& feE = infoE.fe;
     const pylith::topology::Field::Discretization& fe = info.fe;
-    CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.c_str(), feE.basisOrder, fe.basisOrder);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.c_str(), feE.quadOrder, fe.quadOrder);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.c_str(), feE.dimension, fe.dimension);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.c_str(), feE.isFaultOnly, fe.isFaultOnly);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.c_str(), feE.cellBasis, fe.cellBasis);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.c_str(), feE.feSpace, fe.feSpace);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.c_str(), feE.isBasisContinuous, fe.isBasisContinuous);
+    CHECK(feE.basisOrder == fe.basisOrder);
+    CHECK(feE.quadOrder == fe.quadOrder);
+    CHECK(feE.dimension == fe.dimension);
+    CHECK(feE.isFaultOnly == fe.isFaultOnly);
+    CHECK(feE.cellBasis == fe.cellBasis);
+    CHECK(feE.feSpace == fe.feSpace);
+    CHECK(feE.isBasisContinuous == fe.isBasisContinuous);
 
     PYLITH_METHOD_END;
 } // checkSubfieldInfo

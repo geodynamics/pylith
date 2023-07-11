@@ -14,7 +14,6 @@ There are three basic steps in assigning a specific boundary condition to a port
 The procedure for creating sets of vertices differs depending on the mesh generator.
 For meshes specified using the PyLith mesh ASCII format, the sets of vertices are specified using groups (see {ref}`sec-user-file-formats-meshio-ascii`).
 In CUBIT the groups of vertices are created using nodesets.
-Similarly, in LaGriT, psets are used.
 Note that we chose to associate boundary conditions with groups of vertices because nearly every mesh generation package supports associating a string or integer with groups of vertices.
 Note also that we currently associate boundary conditions with string identifiers.
 Finally, note that the boundary conditions must be associated with a simply-connected surface;
