@@ -7,7 +7,7 @@ pool:
   vmImage: "ubuntu-20.04"
 
 variables:
-  IMAGE_REGISTRY: "registry.gitlab.com/cig-pylith/pylith_installer"
+  IMAGE_REGISTRY: "ghcr.io/geodynamics/pylith_installer"
 
 stages:
   - stage: start
@@ -39,7 +39,7 @@ stages:
           - script: ci_env=`bash <(curl -s https://codecov.io/env)`; docker run $ci_env -e CI=true pylith-testenv ci-config/run_tests.sh
             displayName: Test
             env:
-                CODECOV_TOKEN: $(codecovToken)
+              CODECOV_TOKEN: $(codecovToken)
   - stage: build_others
     displayName: "Other Builds"
     dependsOn: build_basic
