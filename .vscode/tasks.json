@@ -58,6 +58,15 @@
             }
         },
         {
+            "label": "Run pytests",
+            "type": "shell",
+            "command": "make check",
+            "group": "test",
+            "options": {
+                "cwd": "${env:PYLITH_BUILDDIR}/tests/pytests"
+            }
+        },
+        {
             "label": "Run fullscale tests",
             "type": "shell",
             "command": "make check -j -l8.0",
@@ -72,6 +81,7 @@
             "dependsOn": [
                 "Run libtests",
                 "Run mmstests",
+                "Run pytests",
                 "Run fulllscale tests"
             ]
         }
