@@ -32,6 +32,7 @@
 #include "pylith/materials/Elasticity.hh" // USES Elasticity
 #include "pylith/materials/IsotropicLinearElasticity.hh" // USES IsotropicLinearElasticity
 #include "pylith/bc/DirichletUserFn.hh" // USES DirichletUserFn
+#include "pylith/bc/NeumannUserFn.hh" // USES NeumannUserFn
 
 #include "pylith/topology/Mesh.hh" // USES pylith::topology::Mesh::cells_label_name
 #include "pylith/topology/Field.hh" // USES pylith::topology::Field::Discretization
@@ -41,6 +42,8 @@
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
+#define USE_QUASISTATIC
+
 // ------------------------------------------------------------------------------------------------
 namespace pylith {
     class _UniformStrainRateExplicit;
@@ -48,12 +51,13 @@ namespace pylith {
 
 class pylith::_UniformStrainRateExplicit {
     // Solution parameters
-    static const double Exx0;
-    static const double Eyy0;
-    static const double Exy0;
-    static const double Exx1;
-    static const double Eyy1;
-    static const double Exy1;
+    // Strain rates
+    static const double ExxDotN;
+    static const double EyyDotN;
+    static const double ExyDotN;
+    static const double ExxDotP;
+    static const double EyyDotP;
+    static const double ExyDotP;
     static const double SLIP_RATE_N; // nondimensional
     static const double TIME_SNAPSHOT_N; // nondimensional
     static const double X_FAULT_N; // nondimensional
@@ -76,8 +80,8 @@ class pylith::_UniformStrainRateExplicit {
     // Vs
     static double vs(const double x,
                      const double y) {
-        const double vs0 = 3000.0;
-        return (x < X_FAULT_N) ? vs0 : (fabs(Exy1) > 0.0) ? vs0 * sqrt(Exy0 / Exy1) : vs0;
+        const double vsN = 3000.0;
+        return (x < X_FAULT_N) ? vsN : (fabs(ExyDotP) > 0.0) ? vsN * sqrt(ExyDotN / ExyDotP) : vsN;
     } // vs
 
     static const char* vs_units(void) {
@@ -87,22 +91,22 @@ class pylith::_UniformStrainRateExplicit {
     // Vp
     static double vp(const double x,
                      const double y) {
-        const double vp0 = sqrt(3.0) * vs(X_FAULT_N-1.0, y);
-        double value = vp0;
+        const double vpN = sqrt(3.0) * vs(X_FAULT_N-1.0, y);
+        double value = vpN;
         if (x > X_FAULT_N) {
-            const double density0 = density(X_FAULT_N-1.0, y);
-            const double density1 = density(X_FAULT_N+1.0, y);
+            const double densityN = density(X_FAULT_N-1.0, y);
+            const double densityP = density(X_FAULT_N+1.0, y);
 
-            const double vs0 = vs(X_FAULT_N-1.0, y);
-            const double mu0 = vs0*vs0 * density0;
+            const double vsN = vs(X_FAULT_N-1.0, y);
+            const double muN = vsN*vsN * densityN;
 
-            const double vs1 = vs(X_FAULT_N+1.0, y);
-            const double mu1 = vs1*vs1 * density1;
+            const double vsP = vs(X_FAULT_N+1.0, y);
+            const double muP = vsP*vsP * densityP;
 
-            const double lambda0 = vp0*vp0 * density0 - 2.0*mu0;
-            const double lambda1 = (fabs(Exx1 + Eyy1) > 0.0) ? (lambda0*(Exx0 + Eyy0) + 2.0*mu0*Exx0 - 2.0*mu1*Exx1) /  (Exx1 + Eyy1) : lambda0;
-            const double vp1 = sqrt((lambda1 + 2.0*mu1) / density1);
-            value = vp1;
+            const double lambdaN = vpN*vpN * densityN - 2.0*muN;
+            const double lambdaP = (fabs(ExxDotP + EyyDotP) > 0.0) ? (lambdaN*(ExxDotN + EyyDotN) + 2.0*muN*ExxDotN - 2.0*muP*ExxDotP) /  (ExxDotP + EyyDotP) : lambdaN;
+            const double vpP = sqrt((lambdaP + 2.0*muP) / densityP);
+            value = vpP;
         } // if
         return value;
     } // vp
@@ -161,9 +165,9 @@ class pylith::_UniformStrainRateExplicit {
                         PetscInt flag) {
         double vel = 0;
         if ((flag < 0) || (x < X_FAULT_N)) {
-            vel = Exx0 * (x-X_FAULT_N) + 0*Exy0 * y;
+            vel = ExxDotN * (x-X_FAULT_N) + 0*ExyDotN * y;
         } else {
-            vel = Exx1 * (x-X_FAULT_N) + 0*Exy1 * y;
+            vel = ExxDotP * (x-X_FAULT_N) + 0*ExyDotP * y;
         }
         return vel;
     } // vel_x
@@ -174,9 +178,9 @@ class pylith::_UniformStrainRateExplicit {
         double vel = 0.0;
 
         if ((flag < 0) || (x < X_FAULT_N)) {
-            vel = 2.0*Exy0 * (x-X_FAULT_N) + Eyy0 * y + 0.5 * SLIP_RATE_N;
+            vel = 2.0*ExyDotN * (x-X_FAULT_N) + EyyDotN * y + 0.5 * SLIP_RATE_N;
         } else {
-            vel = 2.0*Exy1 * (x-X_FAULT_N) + Eyy1 * y - 0.5 * SLIP_RATE_N;
+            vel = 2.0*ExyDotP * (x-X_FAULT_N) + EyyDotP * y - 0.5 * SLIP_RATE_N;
         } // if/else
         return vel;
     } // vel_y
@@ -201,25 +205,56 @@ class pylith::_UniformStrainRateExplicit {
 
     static double faulttraction_x(const double x,
                                   const double y) {
-        const double vs0 = vs(X_FAULT_N-1.0, y);
-        const double vp0 = vp(X_FAULT_N-1.0, y);
-        const double density0 = density(X_FAULT_N-1.0, y);
-        const double mu0 = vs0*vs0 * density0;
-        const double lambda0 = vp0*vp0 * density0 - 2.0*mu0;
-        const double stress_xx = (lambda0 * (Exx0 + Eyy0) + 2.0*mu0 + Exx0) * TIME_SNAPSHOT_N / PRESSURE_SCALE;
+        const double vsN = vs(X_FAULT_N-1.0, y);
+        const double vpN = vp(X_FAULT_N-1.0, y);
+        const double densityN = density(X_FAULT_N-1.0, y);
+        const double muN = vsN*vsN * densityN / PRESSURE_SCALE;
+        const double lambdaN = (vpN*vpN * densityN) / PRESSURE_SCALE - 2.0*muN;
+        const double stress_xx = (lambdaN * (ExxDotN + EyyDotN) + 2.0*muN * ExxDotN) * TIME_SNAPSHOT_N;
         return stress_xx;
     } // faulttraction_x
 
     static double faulttraction_y(const double x,
                                   const double y) {
-        const double vs0 = vs(X_FAULT_N-1.0, y);
-        const double vp0 = vp(X_FAULT_N-1.0, y);
-        const double density0 = density(X_FAULT_N-1.0, y);
-        const double mu0 = vs0*vs0 * density0;
-        const double lambda0 = vp0*vp0 * density0 - 2.0*mu0;
-        const double stress_xy = 2.0*mu0 * Exy0 / PRESSURE_SCALE;
+        const double vsN = vs(X_FAULT_N-1.0, y);
+        const double densityN = density(X_FAULT_N-1.0, y);
+        const double muN = (vsN*vsN * densityN) / PRESSURE_SCALE;
+        const double stress_xy = 2.0 * muN * ExyDotN * TIME_SNAPSHOT_N;
         return stress_xy;
     } // faulttraction_y
+
+    static
+    void boundary_tractions(const PylithInt dim,
+                            const PylithInt numS,
+                            const PylithInt numA,
+                            const PylithInt sOff[],
+                            const PylithInt sOff_x[],
+                            const PylithScalar s[],
+                            const PylithScalar s_t[],
+                            const PylithScalar s_x[],
+                            const PylithInt aOff[],
+                            const PylithInt aOff_x[],
+                            const PylithScalar a[],
+                            const PylithScalar a_t[],
+                            const PylithScalar a_x[],
+                            const PylithReal t,
+                            const PylithReal x[],
+                            const PylithReal n[],
+                            const PylithInt numConstants,
+                            const PylithScalar constants[],
+                            PylithScalar r0[]) {
+        assert(r0);
+        const double vsN = vs(X_FAULT_N-1.0, x[1]);
+        const double densityN = density(X_FAULT_N-1.0, x[1]);
+        const double muN = (vsN*vsN * densityN) / PRESSURE_SCALE;
+
+        const PylithScalar tanDir[2] = {-n[1], n[0] };
+        const double strain_xy = ExyDotN * TIME_SNAPSHOT_N;
+        const PylithScalar tractionShear = -strain_xy * 2.0 * muN;
+        const PylithScalar tractionNormal = 0.0;
+        r0[0] += tractionShear*tanDir[0] + tractionNormal*n[0];
+        r0[1] += tractionShear*tanDir[1] + tractionNormal*n[1];
+    } // boundary_tractions
 
     static PetscErrorCode solnkernel_disp(PetscInt spaceDim,
                                           PetscReal t,
@@ -344,7 +379,11 @@ public:
         data->normalizer.setPressureScale(2.25e+10);
         data->normalizer.computeDensityScale();
 
+#if !defined(USE_QUASISTATIC)
         data->formulation = pylith::problems::Physics::DYNAMIC_IMEX;
+#else
+        data->formulation = pylith::problems::Physics::QUASISTATIC;
+#endif
         data->t = TIME_SNAPSHOT_N;
         data->dt = 0.05;
 
@@ -414,7 +453,8 @@ public:
         // Boundary conditions
         static const PylithInt constrainedDOF[2] = {0, 1};
         static const PylithInt numConstrained = 2;
-        data->bcs.resize(4);
+#if !defined(USE_QUASISTATIC)
+        data->bcs.resize(6);
         { // boundary_xneg displacement
             pylith::bc::DirichletUserFn* bc = new pylith::bc::DirichletUserFn();
             bc->setSubfieldName("displacement");
@@ -455,7 +495,43 @@ public:
             bc->setUserFnDot(solnkernel_acc);
             data->bcs[3] = bc;
         } // boundary_xpos velocity
-
+#else
+        data->bcs.resize(4);
+        { // boundary_xneg displacement
+            pylith::bc::DirichletUserFn* bc = new pylith::bc::DirichletUserFn();
+            bc->setSubfieldName("displacement");
+            bc->setLabelName("boundary_xneg");
+            bc->setLabelValue(1);
+            bc->setConstrainedDOF(constrainedDOF, numConstrained);
+            bc->setUserFn(solnkernel_disp);
+            data->bcs[0] = bc;
+        } // boundary_xneg displacement
+        { // boundary_xpos displacement
+            pylith::bc::DirichletUserFn* bc = new pylith::bc::DirichletUserFn();
+            bc->setSubfieldName("displacement");
+            bc->setLabelName("boundary_xpos");
+            bc->setLabelValue(1);
+            bc->setConstrainedDOF(constrainedDOF, numConstrained);
+            bc->setUserFn(solnkernel_disp);
+            data->bcs[1] = bc;
+        } // boundary_xpos displacement
+        { // boundary_yneg traction
+            pylith::bc::NeumannUserFn* bc = new pylith::bc::NeumannUserFn();
+            bc->setSubfieldName("displacement");
+            bc->setLabelName("boundary_yneg");
+            bc->setLabelValue(1);
+            bc->setUserFn(boundary_tractions);
+            data->bcs[2] = bc;
+        } // boundary_yneg traction
+        { // boundary_ypos traction
+            pylith::bc::NeumannUserFn* bc = new pylith::bc::NeumannUserFn();
+            bc->setSubfieldName("displacement");
+            bc->setLabelName("boundary_ypos");
+            bc->setLabelValue(1);
+            bc->setUserFn(boundary_tractions);
+            data->bcs[3] = bc;
+        } // boundary_ypos traction
+#endif
         // Faults
         data->faults.resize(1);
         { // xpos
@@ -474,6 +550,7 @@ public:
         options.add("-fieldsplit_displacement_pc_type", "lu");
         options.override ();
 
+#if !defined(USE_QUASISTATIC)
         data->numSolnSubfieldsDomain = 2;
         data->numSolnSubfieldsFault = 1;
         static const pylith::testing::MMSTest::solution_fn _exactSolnFns[3] = {
@@ -488,18 +565,28 @@ public:
             solnkernel_lagrangemultiplier,
         };
         data->exactSolnDotFns = const_cast<pylith::testing::MMSTest::solution_fn*>(_exactSolnDotFns);
+#else
+        data->numSolnSubfieldsDomain = 1;
+        data->numSolnSubfieldsFault = 1;
+        static const pylith::testing::MMSTest::solution_fn _exactSolnFns[2] = {
+            solnkernel_disp,
+            solnkernel_lagrangemultiplier,
+        };
+        data->exactSolnFns = const_cast<pylith::testing::MMSTest::solution_fn*>(_exactSolnFns);
+        data->exactSolnDotFns = nullptr;
+#endif
 
         return data;
     } // createData
 
 }; // TestFaultKin2D_UniformStrainRateExplicit
 
-const double pylith::_UniformStrainRateExplicit::Exx0 = 0.0;
-const double pylith::_UniformStrainRateExplicit::Eyy0 = 0.0;
-const double pylith::_UniformStrainRateExplicit::Exy0 = -0.1;
-const double pylith::_UniformStrainRateExplicit::Exx1 = 0.0;
-const double pylith::_UniformStrainRateExplicit::Eyy1 = 0.0;
-const double pylith::_UniformStrainRateExplicit::Exy1 = -0.1;
+const double pylith::_UniformStrainRateExplicit::ExxDotN = 0.0;
+const double pylith::_UniformStrainRateExplicit::EyyDotN = 0.0;
+const double pylith::_UniformStrainRateExplicit::ExyDotN = -0.1;
+const double pylith::_UniformStrainRateExplicit::ExxDotP = 0.0;
+const double pylith::_UniformStrainRateExplicit::EyyDotP = 0.0;
+const double pylith::_UniformStrainRateExplicit::ExyDotP = -0.1;
 const double pylith::_UniformStrainRateExplicit::SLIP_RATE_N = 0.0;// 3.0e-3;
 const double pylith::_UniformStrainRateExplicit::TIME_SNAPSHOT_N = 5.0;
 const double pylith::_UniformStrainRateExplicit::X_FAULT_N = +2.0;
@@ -631,6 +718,7 @@ pylith::UniformStrainRateExplicit::QuadQ1(void) {
 
     data->meshFilename = "data/quad.mesh";
 
+#if !defined(USE_QUASISTATIC)
     assert(2 == data->numSolnSubfieldsDomain);
     assert(1 == data->numSolnSubfieldsFault);
     static const pylith::topology::Field::Discretization _solnDiscretizations[3] = {
@@ -638,6 +726,14 @@ pylith::UniformStrainRateExplicit::QuadQ1(void) {
         pylith::topology::Field::Discretization(1, 1), // vel
         pylith::topology::Field::Discretization(1, 1, 1, -1, true), // lagrange_multiplier_fault
     };
+#else
+    assert(1 == data->numSolnSubfieldsDomain);
+    assert(1 == data->numSolnSubfieldsFault);
+    static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
+        pylith::topology::Field::Discretization(1, 1), // disp
+        pylith::topology::Field::Discretization(1, 1, 1, -1, true), // lagrange_multiplier_fault
+    };
+#endif
     data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
     return data;
