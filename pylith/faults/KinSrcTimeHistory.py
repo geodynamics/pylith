@@ -61,10 +61,10 @@ class KinSrcTimeHistory(KinSrc, ModuleKinSrc):
         KinSrc.__init__(self, name)
         return
 
-    def preinitialize(self):
+    def preinitialize(self, problem):
         """Do pre-initialization setup.
         """
-        KinSrc.preinitialize(self)
+        KinSrc.preinitialize(self, problem)
 
         ModuleKinSrc.setTimeHistory(self, self.dbTimeHistory)
         return
