@@ -176,7 +176,7 @@ class pylith::_TwoFaultsShearNoSlip {
         const PylithScalar tractionShear = -strain_xy() * 2.0 * mu / PRESSURE_SCALE;
         const PylithScalar tractionNormal = 0.0;
         r0[0] += tractionShear*tanDir[0] + tractionNormal*n[0];
-        r0[0] += tractionShear*tanDir[1] + tractionNormal*n[1];
+        r0[1] += tractionShear*tanDir[1] + tractionNormal*n[1];
     } // boundary_tractions
 
     static PetscErrorCode solnkernel_disp(PetscInt spaceDim,
