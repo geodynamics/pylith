@@ -42,7 +42,7 @@
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
-#define USE_QUASISTATIC
+// #define USE_QUASISTATIC
 
 // ------------------------------------------------------------------------------------------------
 namespace pylith {
@@ -114,6 +114,23 @@ class pylith::_UniformStrainRateExplicit {
     static const char* vp_units(void) {
         return "m/s";
     } // vp_units
+
+    static double lameMuNondim(const double x,
+                               const double y) {
+        const double vsXY = vs(x, y);
+        const double densityXY = density(x, y);
+        const double mu = vsXY*vsXY * densityXY / PRESSURE_SCALE;
+        return mu;
+    }
+
+    static double lameLambdaNondim(const double x,
+                                   const double y) {
+        const double mu = lameMuNondim(x, y);
+        const double vpXY = vp(x, y);
+        const double densityXY = density(x, y);
+        const double lambda = (vpXY*vpXY * densityXY) / PRESSURE_SCALE - 2.0*mu;
+        return lambda;
+    }
 
     // Kinematic rupture auxiliary components.
 
@@ -205,20 +222,15 @@ class pylith::_UniformStrainRateExplicit {
 
     static double faulttraction_x(const double x,
                                   const double y) {
-        const double vsN = vs(X_FAULT_N-1.0, y);
-        const double vpN = vp(X_FAULT_N-1.0, y);
-        const double densityN = density(X_FAULT_N-1.0, y);
-        const double muN = vsN*vsN * densityN / PRESSURE_SCALE;
-        const double lambdaN = (vpN*vpN * densityN) / PRESSURE_SCALE - 2.0*muN;
+        const double muN = lameMuNondim(X_FAULT_N-1.0, y);
+        const double lambdaN = lameLambdaNondim(X_FAULT_N-1.0, y);
         const double stress_xx = (lambdaN * (ExxDotN + EyyDotN) + 2.0*muN * ExxDotN) * TIME_SNAPSHOT_N;
         return stress_xx;
     } // faulttraction_x
 
     static double faulttraction_y(const double x,
                                   const double y) {
-        const double vsN = vs(X_FAULT_N-1.0, y);
-        const double densityN = density(X_FAULT_N-1.0, y);
-        const double muN = (vsN*vsN * densityN) / PRESSURE_SCALE;
+        const double muN = lameMuNondim(X_FAULT_N-1.0, y);
         const double stress_xy = 2.0 * muN * ExyDotN * TIME_SNAPSHOT_N;
         return stress_xy;
     } // faulttraction_y
@@ -244,9 +256,8 @@ class pylith::_UniformStrainRateExplicit {
                             const PylithScalar constants[],
                             PylithScalar r0[]) {
         assert(r0);
-        const double vsN = vs(X_FAULT_N-1.0, x[1]);
-        const double densityN = density(X_FAULT_N-1.0, x[1]);
-        const double muN = (vsN*vsN * densityN) / PRESSURE_SCALE;
+
+        const double muN = lameMuNondim(X_FAULT_N-1.0, x[1]);
 
         const PylithScalar tanDir[2] = {-n[1], n[0] };
         const double strain_xy = ExyDotN * TIME_SNAPSHOT_N;
@@ -495,6 +506,22 @@ public:
             bc->setUserFnDot(solnkernel_acc);
             data->bcs[3] = bc;
         } // boundary_xpos velocity
+        { // boundary_yneg traction
+            pylith::bc::NeumannUserFn* bc = new pylith::bc::NeumannUserFn();
+            bc->setSubfieldName("velocity");
+            bc->setLabelName("boundary_yneg");
+            bc->setLabelValue(1);
+            bc->setUserFn(boundary_tractions);
+            data->bcs[4] = bc;
+        } // boundary_yneg traction
+        { // boundary_ypos traction
+            pylith::bc::NeumannUserFn* bc = new pylith::bc::NeumannUserFn();
+            bc->setSubfieldName("velocity");
+            bc->setLabelName("boundary_ypos");
+            bc->setLabelValue(1);
+            bc->setUserFn(boundary_tractions);
+            data->bcs[5] = bc;
+        } // boundary_ypos traction
 #else
         data->bcs.resize(4);
         { // boundary_xneg displacement
@@ -592,7 +619,7 @@ const double pylith::_UniformStrainRateExplicit::TIME_SNAPSHOT_N = 5.0;
 const double pylith::_UniformStrainRateExplicit::X_FAULT_N = +2.0;
 
 const double pylith::_UniformStrainRateExplicit::LENGTH_SCALE = 1000.0;
-const double pylith::_UniformStrainRateExplicit::PRESSURE_SCALE = 2.5e+10;
+const double pylith::_UniformStrainRateExplicit::PRESSURE_SCALE = 2.25e+10;
 const double pylith::_UniformStrainRateExplicit::TIME_SCALE = 2.0;
 
 // ------------------------------------------------------------------------------------------------
