@@ -49,7 +49,8 @@ dist_noinst_DATA = \
 	threeblocks_ic_tri.cfg \
 	shearnoslip.cfg \
 	shearnoslip_quad.cfg \
-	shearnoslip_tri.cfg
+	shearnoslip_tri.cfg \
+	zeroslipfn.timedb
 
 
 noinst_TMP =
