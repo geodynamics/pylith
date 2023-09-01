@@ -375,6 +375,10 @@ pylith::faults::FaultCohesive::createConstraints(const pylith::topology::Field& 
             } // if
         } // for
     } // for
+    if (pointIS) {
+        err = ISRestoreIndices(pointIS, &points);PYLITH_CHECK_ERROR(err);
+        err = ISDestroy(&pointIS);PYLITH_CHECK_ERROR(err);
+    } // if
 
     std::vector<pylith::feassemble::Constraint*> constraintArray;
     pylith::feassemble::ConstraintSimple *constraint = new pylith::feassemble::ConstraintSimple(this);assert(constraint);
