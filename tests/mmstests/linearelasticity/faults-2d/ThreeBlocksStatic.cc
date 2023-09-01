@@ -213,6 +213,7 @@ public:
         data->journalName = "ThreeBlocksStatic";
 
         data->isJacobianLinear = true;
+        data->allowZeroResidual = true;
 
         data->meshFilename = ":UNKNOWN:"; // Set in child class.
 
