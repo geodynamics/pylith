@@ -37,15 +37,6 @@
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
 
-extern "C" {
-    extern PetscErrorCode VecView_Seq(Vec,
-                                      PetscViewer);
-
-    extern PetscErrorCode VecView_MPI(Vec,
-                                      PetscViewer);
-
-}
-
 // ----------------------------------------------------------------------
 // Constructor
 pylith::meshio::DataWriterHDF5Ext::DataWriterHDF5Ext(void) :
@@ -195,13 +186,7 @@ pylith::meshio::DataWriterHDF5Ext::writeVertexField(const PylithScalar t,
         assert(binaryViewer);
 
         PetscVec vector = subfield.getVector();assert(vector);
-        PetscBool isseq;
-        err = PetscObjectTypeCompare((PetscObject) vector, VECSEQ, &isseq);PYLITH_CHECK_ERROR(err);
-        if (isseq) {
-            err = VecView_Seq(vector, binaryViewer);PYLITH_CHECK_ERROR(err);
-        } else {
-            err = VecView_MPI(vector, binaryViewer);PYLITH_CHECK_ERROR(err);
-        } // if/else
+        DataWriter::_writeVec(vector, binaryViewer);
 
         ExternalDataset& datasetInfo = _datasets[name];
         ++datasetInfo.numTimeSteps;
@@ -339,13 +324,7 @@ pylith::meshio::DataWriterHDF5Ext::writeCellField(const PylithScalar t,
         assert(binaryViewer);
 
         PetscVec vector = subfield.getVector();assert(vector);
-        PetscBool isseq;
-        err = PetscObjectTypeCompare((PetscObject) vector, VECSEQ, &isseq);PYLITH_CHECK_ERROR(err);
-        if (isseq) {
-            err = VecView_Seq(vector, binaryViewer);PYLITH_CHECK_ERROR(err);
-        } else {
-            err = VecView_MPI(vector, binaryViewer);PYLITH_CHECK_ERROR(err);
-        } // if/else
+        DataWriter::_writeVec(vector, binaryViewer);
 
         ExternalDataset& datasetInfo = _datasets[name];
         ++datasetInfo.numTimeSteps;

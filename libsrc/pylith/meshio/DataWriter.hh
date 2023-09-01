@@ -146,6 +146,18 @@ protected:
     void getCoordsGlobalVec(PetscVec* coordinatesVec,
                             const pylith::topology::Mesh& mesh);
 
+    /** Write PETSc Vec using viewer.
+     *
+     * This method allows us to circumvent the usual place a vector is written and write it to
+     * a desired location. See DMPlexGlobalVectorView_HDF5_Internal() in plexhdf5.c in PETSc.
+     *
+     * @param[in] vector PETSc Vec to write.
+     * @param[inout] viewer PETSc viewer to use to write vector.
+     */
+    static
+    void _writeVec(PetscVec vector,
+                   PetscViewer viewer);
+
     // NOT IMPLEMENTED //////////////////////////////////////////////////////
 private:
 

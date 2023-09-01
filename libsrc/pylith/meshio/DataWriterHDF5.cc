@@ -40,15 +40,6 @@
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
 
-extern "C" {
-    extern PetscErrorCode VecView_Seq(Vec,
-                                      PetscViewer);
-
-    extern PetscErrorCode VecView_MPI(Vec,
-                                      PetscViewer);
-
-}
-
 #if H5_VERS_MAJOR == 1 && H5_VERS_MINOR >= 8
 #define PYLITH_HDF5_USE_API_18
 #endif
@@ -207,13 +198,7 @@ pylith::meshio::DataWriterHDF5::writeVertexField(const PylithScalar t,
         err = PetscViewerHDF5SetTimestep(_viewer, istep);PYLITH_CHECK_ERROR(err);
 
         PetscVec vector = subfield.getVector();assert(vector);
-        PetscBool isseq;
-        err = PetscObjectTypeCompare((PetscObject) vector, VECSEQ, &isseq);PYLITH_CHECK_ERROR(err);
-        if (isseq) {
-            err = VecView_Seq(vector, _viewer);PYLITH_CHECK_ERROR(err);
-        } else {
-            err = VecView_MPI(vector, _viewer);PYLITH_CHECK_ERROR(err);
-        }
+        DataWriter::_writeVec(vector, _viewer);PYLITH_CHECK_ERROR(err);
         err = PetscViewerHDF5PopTimestepping(_viewer);PYLITH_CHECK_ERROR(err);
         err = PetscViewerHDF5PopGroup(_viewer);PYLITH_CHECK_ERROR(err);
 
@@ -276,13 +261,7 @@ pylith::meshio::DataWriterHDF5::writeCellField(const PylithScalar t,
         err = PetscViewerHDF5SetTimestep(_viewer, istep);PYLITH_CHECK_ERROR(err);
 
         PetscVec vector = subfield.getVector();assert(vector);
-        PetscBool isseq;
-        err = PetscObjectTypeCompare((PetscObject) vector, VECSEQ, &isseq);PYLITH_CHECK_ERROR(err);
-        if (isseq) {
-            err = VecView_Seq(vector, _viewer);PYLITH_CHECK_ERROR(err);
-        } else {
-            err = VecView_MPI(vector, _viewer);PYLITH_CHECK_ERROR(err);
-        } // if/else
+        DataWriter::_writeVec(vector, _viewer);
         err = PetscViewerHDF5PopTimestepping(_viewer);PYLITH_CHECK_ERROR(err);
         err = PetscViewerHDF5PopGroup(_viewer);PYLITH_CHECK_ERROR(err);
 
