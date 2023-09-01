@@ -248,4 +248,33 @@ pylith::meshio::DataWriter::getCoordsGlobalVec(PetscVec* coordsGlobalVec,
 } // getCoordsGlobalVec
 
 
+// ----------------------------------------------------------------------
+void
+pylith::meshio::DataWriter::_writeVec(PetscVec vector,
+                                      PetscViewer viewer) {
+    // From plexhdf5.c DMPlexGlobalVectorView_HDF5_Internal
+
+    /* To save vec in where we want, we create a new Vec (temp) with           */
+    /* VecCreate(), wrap the vec data in temp, and call VecView(temp, viewer). */
+    PetscVec temp;
+    const PetscScalar *array;
+    const char* vecName;
+    PetscLayout map;
+    PetscErrorCode err = PETSC_SUCCESS;
+
+    err = VecCreate(PetscObjectComm((PetscObject)vector), &temp);PYLITH_CHECK_ERROR(err);
+    err = PetscObjectGetName((PetscObject)vector, &vecName);PYLITH_CHECK_ERROR(err);
+    err = PetscObjectSetName((PetscObject)temp, vecName);PYLITH_CHECK_ERROR(err);
+    err = VecGetLayout(vector, &map);PYLITH_CHECK_ERROR(err);
+    err = VecSetLayout(temp, map);PYLITH_CHECK_ERROR(err);
+    err = VecSetUp(temp);PYLITH_CHECK_ERROR(err);
+    err = VecGetArrayRead(vector, &array);PYLITH_CHECK_ERROR(err);
+    err = VecPlaceArray(temp, array);PYLITH_CHECK_ERROR(err);
+    err = VecView(temp, viewer);PYLITH_CHECK_ERROR(err);
+    err = VecResetArray(temp);PYLITH_CHECK_ERROR(err);
+    err = VecRestoreArrayRead(vector, &array);PYLITH_CHECK_ERROR(err);
+    err = VecDestroy(&temp);PYLITH_CHECK_ERROR(err);
+} // _writeVec
+
+
 // End of file
