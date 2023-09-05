@@ -77,7 +77,7 @@ class AnalyticalSoln(object):
                 "fault_xmid": self.slip_xmid,
                 "fault_xneg": self.slip_xneg,
             },
-            "lagrange_multiplier_fault": self.lagrange_multiplier_fault,
+            "traction_change": self.traction_change,
         }
         return
 
@@ -163,8 +163,8 @@ class AnalyticalSoln(object):
         slip[0,:, 1] = +2.0
         return slip
 
-    def lagrange_multiplier_fault(self, locs):
-        """Compute Lagrange multiplier on faults.
+    def traction_change(self, locs):
+        """Compute change in traction on faults.
         """
         (npts, dim) = locs.shape
         traction = numpy.zeros((1, npts, 2), dtype=numpy.float64)

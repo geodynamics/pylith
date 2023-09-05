@@ -415,6 +415,30 @@ pylith::feassemble::IntegratorInterface::setKernels(const std::vector<JacobianKe
 
 
 // ------------------------------------------------------------------------------------------------
+void
+pylith::feassemble::IntegratorInterface::setKernelsUpdateStateVars(const std::vector<ProjectKernels>& kernels) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" setKernelsUpdateStateVars(# kernels="<<kernels.size()<<")");
+
+    _kernelsUpdateStateVars = kernels;
+
+    PYLITH_METHOD_END;
+} // setKernelsUpdateStateVars
+
+
+// ------------------------------------------------------------------------------------------------
+void
+pylith::feassemble::IntegratorInterface::setKernelsDerivedField(const std::vector<ProjectKernels>& kernels) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" setKernelsDerivedField(# kernels="<<kernels.size()<<")");
+
+    _kernelsDerivedField = kernels;
+
+    PYLITH_METHOD_END;
+} // setKernelsDerivedField
+
+
+// ------------------------------------------------------------------------------------------------
 // Compute weak form key part for face.
 PetscInt
 pylith::feassemble::IntegratorInterface::getWeakFormPart(const PetscInt part,
@@ -732,6 +756,73 @@ pylith::feassemble::_IntegratorInterface::computeJacobian(PetscMat jacobianMat,
     }
     PYLITH_METHOD_END;
 } // computeJacobian
+
+
+// ------------------------------------------------------------------------------------------------
+// Update state variables as needed.
+void
+pylith::feassemble::IntegratorInterface::_updateStateVars(const PylithReal t,
+                                                          const PylithReal dt,
+                                                          const pylith::topology::Field& solution) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("_updateStateVars(t="<<t<<", dt="<<dt<<", solution="<<solution.getLabel()<<")");
+
+    if (0 == _kernelsUpdateStateVars.size()) {
+        PYLITH_METHOD_END;
+    } // if
+
+    PYLITH_JOURNAL_LOGICERROR("_updateStateVars() not implemented.");
+
+    PYLITH_METHOD_END;
+} // _updateStateVars
+
+
+// ------------------------------------------------------------------------------------------------
+// Compute field derived from solution and auxiliary field.
+void
+pylith::feassemble::IntegratorInterface::_computeDerivedField(const PylithReal t,
+                                                              const PylithReal dt,
+                                                              const pylith::topology::Field& solution) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("_computeDerivedField(t="<<t<<", dt="<<dt<<", solution="<<solution.getLabel()<<")");
+
+    if (!_derivedField) {
+        PYLITH_METHOD_END;
+    } // if
+
+    assert(_derivedField);
+    _setKernelConstants(solution, dt);
+
+    const size_t numKernels = _kernelsDerivedField.size();
+    PetscBdPointFunc* kernelsArray = (numKernels > 0) ? new PetscBdPointFunc[numKernels] : NULL;
+    for (size_t iKernel = 0; iKernel < numKernels; ++iKernel) {
+        const pylith::topology::Field::SubfieldInfo& sinfo = _derivedField->getSubfieldInfo(_kernelsDerivedField[iKernel].subfield.c_str());
+        kernelsArray[sinfo.index] = _kernelsDerivedField[iKernel].f;
+    } // for
+
+    PetscErrorCode err = 0;
+
+    PetscDM derivedDM = _derivedField->getDM();
+    assert(_auxiliaryField);
+    PetscDMLabel dmLabel = NULL;
+    PetscInt labelValue = 0;
+    const PetscInt part = 0;
+    err = DMSetAuxiliaryVec(derivedDM, dmLabel, labelValue, part, _auxiliaryField->getLocalVector());PYLITH_CHECK_ERROR(err);
+
+    PetscDMLabel derivedFieldLabel = NULL;
+    err = DMGetLabel(derivedDM, "output", &derivedFieldLabel);PYLITH_CHECK_ERROR(err);
+    labelValue = 1;
+    err = DMProjectBdFieldLabelLocal(derivedDM, t, derivedFieldLabel, 1, &labelValue, PETSC_DETERMINE, NULL, solution.getLocalVector(), kernelsArray, INSERT_VALUES, _derivedField->getLocalVector());PYLITH_CHECK_ERROR(err);
+    delete[] kernelsArray;kernelsArray = NULL;
+
+    pythia::journal::debug_t debug(GenericComponent::getName());
+    if (debug.state()) {
+        PYLITH_JOURNAL_DEBUG("Viewing derived field.");
+        _derivedField->view("Derived field");
+    } // if
+
+    PYLITH_METHOD_END;
+} // _computeDerivedField
 
 
 // ------------------------------------------------------------------------------------------------

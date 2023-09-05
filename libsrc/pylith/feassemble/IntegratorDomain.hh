@@ -101,24 +101,6 @@ public:
 
     }; // JacobianKernels
 
-    /// Project kernels (pointwise functions) for updating state variables or computing derived fields.
-    struct ProjectKernels {
-        std::string subfield; ///< Name of subfield for function.
-        PetscPointFunc f; ///< Point-wise function.
-
-        ProjectKernels(void) :
-            subfield(""),
-            f(NULL) {}
-
-
-        ProjectKernels(const char* subfieldValue,
-                       PetscPointFunc fValue) :
-            subfield(subfieldValue),
-            f(fValue) {}
-
-
-    }; // ProjectKernels
-
     // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 

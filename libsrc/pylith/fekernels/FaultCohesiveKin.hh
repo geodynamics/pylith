@@ -69,11 +69,9 @@
 #include "pylith/fekernels/Elasticity.hh" // USES Elasticity
 
 #include "pylith/utils/types.hh"
+#include "pylith/utils/journals.hh"
 
 class pylith::fekernels::FaultCohesiveKin {
-    // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
-public:
-
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
@@ -578,6 +576,72 @@ public:
             Jf0[i*spaceDim+i] += +1.0;
         } // for
     } // Jf0ll_pos
+
+    // Kernels for derived subfields
+
+    // ------------------------------------------------------------------------------------------------
+    /** Traction change from Lagrange multiplier field.
+     *
+     *  Solution fields: [disp(dim), vel(dim), lagrange(dim)]
+     */
+    static inline
+    void tractionChange_asVector(const PylithInt dim,
+                                 const PylithInt numS,
+                                 const PylithInt numA,
+                                 const PylithInt sOff[],
+                                 const PylithInt sOff_x[],
+                                 const PylithScalar s[],
+                                 const PylithScalar s_t[],
+                                 const PylithScalar s_x[],
+                                 const PylithInt aOff[],
+                                 const PylithInt aOff_x[],
+                                 const PylithScalar a[],
+                                 const PylithScalar a_t[],
+                                 const PylithScalar a_x[],
+                                 const PylithReal t,
+                                 const PylithScalar x[],
+                                 const PylithScalar n[],
+                                 const PylithInt numConstants,
+                                 const PylithScalar constants[],
+                                 PylithScalar tractionChange[]) {
+        const PylithInt spaceDim = dim; // dim passed in is embedded dimension (spaceDim).
+
+        // Incoming solution fields.
+        const PylithInt i_lagrange = numS-1;
+
+        assert(numS >= 1);
+        assert(sOff);
+        assert(sOff[i_lagrange] >= 0);
+        assert(tractionChange);
+
+        const PylithScalar* lagrange = &s[sOff[i_lagrange]];
+
+        switch (spaceDim) {
+        case 2: {
+            const PylithScalar tanDir[2] = {-n[1], n[0] };
+
+            // 0=opening, 1=left-lateral
+            tractionChange[0] = n[0]*lagrange[0] + n[1]*lagrange[1];
+            tractionChange[1] = tanDir[0]*lagrange[0] + tanDir[1]*lagrange[1];
+            break;
+        } // case 2
+        case 3: {
+            const PylithScalar* refDir1 = &constants[0];
+            const PylithScalar* refDir2 = &constants[3];
+            PylithScalar tanDir1[3], tanDir2[3];
+            pylith::fekernels::BoundaryDirections::tangential_directions(tanDir1, tanDir2, refDir1, refDir2, n);
+
+            // 0=opening, 1=left-lateral, 2=reverse
+            tractionChange[0] = n[0]*lagrange[0] + n[1]*lagrange[1] + n[2]*lagrange[2];
+            tractionChange[1] = tanDir1[0]*lagrange[0] + tanDir1[1]*lagrange[1] + tanDir1[2]*lagrange[2];
+            tractionChange[2] = tanDir2[0]*lagrange[0] + tanDir2[1]*lagrange[1] + tanDir2[2]*lagrange[2];
+            break;
+        } // case 3
+        default:
+            assert(0);
+        } // switch
+
+    } // tractionChange_asVector
 
 }; // FaultCohesiveKin
 

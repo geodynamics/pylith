@@ -302,6 +302,7 @@ pylith::faults::FaultCohesive::createIntegrator(const pylith::topology::Field& s
 
     _setKernelsResidual(integrator, solution, materials);
     _setKernelsJacobian(integrator, solution, materials);
+    _setKernelsDerivedField(integrator, solution);
 
     PYLITH_METHOD_RETURN(integrator);
 } // createIntegrator
@@ -396,15 +397,6 @@ pylith::faults::FaultCohesive::createConstraints(const pylith::topology::Field& 
 
 
 // ------------------------------------------------------------------------------------------------
-// Create derived field.
-pylith::topology::Field*
-pylith::faults::FaultCohesive::createDerivedField(const pylith::topology::Field& solution,
-                                                  const pylith::topology::Mesh& domainMesh) {
-    return NULL;
-} // createDerivedField
-
-
-// ------------------------------------------------------------------------------------------------
 // Update kernel constants.
 void
 pylith::faults::FaultCohesive::_updateKernelConstants(const PylithReal dt) {
@@ -428,6 +420,13 @@ pylith::feassemble::Integrator*
 pylith::faults::FaultCohesive::createIntegrator(const pylith::topology::Field& solution) {
     return NULL;
 } // Empty method
+
+
+// ------------------------------------------------------------------------------------------------
+// Set kernels for computing derived field.
+void
+pylith::faults::FaultCohesive::_setKernelsDerivedField(pylith::feassemble::IntegratorInterface* integrator,
+                                                       const pylith::topology::Field& solution) const {}
 
 
 // End of file

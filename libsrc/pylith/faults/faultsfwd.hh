@@ -33,6 +33,7 @@ namespace pylith {
         class FaultCohesiveKin;
         class FaultCohesiveImpulses;
         class AuxiliaryFactoryKinematic;
+        class DerivedFactoryKinematic;
 
         class KinSrc;
         class KinSrcConstRate;

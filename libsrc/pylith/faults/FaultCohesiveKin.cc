@@ -22,6 +22,7 @@
 
 #include "pylith/faults/KinSrc.hh" // USES KinSrc
 #include "pylith/faults/AuxiliaryFactoryKinematic.hh" // USES AuxiliaryFactoryKinematic
+#include "pylith/faults/DerivedFactoryKinematic.hh" // USES DerivedFactoryKinematic
 #include "pylith/feassemble/IntegratorInterface.hh" // USES IntegratorInterface
 #include "pylith/feassemble/InterfacePatches.hh" // USES InterfacePatches
 #include "pylith/feassemble/ConstraintSimple.hh" // USES ConstraintSimple
@@ -30,7 +31,9 @@
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/FieldOps.hh" // USES FieldOps::checkDiscretization()
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
+#include "pylith/topology/Stratum.hh" // USES Stratum
 
+#include "pylith/fekernels/FaultCohesive.hh" // USES FaultCohesive
 #include "pylith/fekernels/FaultCohesiveKin.hh" // USES FaultCohesiveKin
 
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
@@ -52,6 +55,7 @@
 // ------------------------------------------------------------------------------------------------
 typedef pylith::feassemble::IntegratorInterface::ResidualKernels ResidualKernels;
 typedef pylith::feassemble::IntegratorInterface::JacobianKernels JacobianKernels;
+typedef pylith::feassemble::IntegratorInterface::ProjectKernels ProjectKernels;
 
 // ------------------------------------------------------------------------------------------------
 namespace pylith {
@@ -74,6 +78,7 @@ public:
 // Default constructor.
 pylith::faults::FaultCohesiveKin::FaultCohesiveKin(void) :
     _auxiliaryFactory(new pylith::faults::AuxiliaryFactoryKinematic),
+    _derivedFactory(new pylith::faults::DerivedFactoryKinematic),
     _slipVecRupture(NULL),
     _slipVecTotal(NULL) {
     pylith::utils::PyreComponent::setName(_FaultCohesiveKin::pyreComponent);
@@ -96,6 +101,7 @@ pylith::faults::FaultCohesiveKin::deallocate(void) {
     PetscErrorCode err = VecDestroy(&_slipVecRupture);PYLITH_CHECK_ERROR(err);
     err = VecDestroy(&_slipVecTotal);PYLITH_CHECK_ERROR(err);
     delete _auxiliaryFactory;_auxiliaryFactory = NULL;
+    delete _derivedFactory;_derivedFactory = NULL;
     _ruptures.clear(); // :TODO: Use shared pointers for earthquake ruptures
 } // deallocate
 
@@ -235,6 +241,65 @@ pylith::faults::FaultCohesiveKin::createAuxiliaryField(const pylith::topology::F
 
 
 // ------------------------------------------------------------------------------------------------
+// Create derived field.
+pylith::topology::Field*
+pylith::faults::FaultCohesiveKin::createDerivedField(const pylith::topology::Field& solution,
+                                                     const pylith::topology::Mesh& domainMesh) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("createDerivedField(solution="<<solution.getLabel()<<", domainMesh=)"<<typeid(domainMesh).name()<<")");
+
+    assert(_normalizer);
+
+    pylith::topology::Field* derivedField = new pylith::topology::Field(domainMesh);assert(derivedField);
+    derivedField->setLabel("FaultCohesiveKin derived field");
+
+    // Create label for output.
+    const char* outputLabelName = "output";
+    PetscDM derivedDM = derivedField->getDM();
+    PetscDMLabel outputLabel = NULL;
+    PetscErrorCode err = PETSC_SUCCESS;
+    err = DMCreateLabel(derivedDM, outputLabelName);PYLITH_CHECK_ERROR(err);
+    err = DMGetLabel(derivedDM, outputLabelName, &outputLabel);PYLITH_CHECK_ERROR(err);
+    pylith::topology::Stratum faultStratum(derivedDM, pylith::topology::Stratum::HEIGHT, 1);
+    for (PetscInt point = faultStratum.begin(); point != faultStratum.end(); ++point) {
+        err = DMLabelSetValue(outputLabel, point, 1);
+    } // for
+    err = DMPlexLabelComplete(derivedDM, outputLabel);PYLITH_CHECK_ERROR(err);
+
+    assert(_derivedFactory);
+    const pylith::topology::FieldBase::Discretization& discretization = solution.getSubfieldInfo("lagrange_multiplier_fault").fe;
+    const PylithInt cellDim = solution.getSpaceDim()-1;
+    const bool isFaultOnly = false;
+    _derivedFactory->setSubfieldDiscretization("default", discretization.basisOrder, discretization.quadOrder, cellDim,
+                                               isFaultOnly, discretization.cellBasis, discretization.feSpace,
+                                               discretization.isBasisContinuous);
+
+    assert(_derivedFactory);
+    assert(_normalizer);
+    _derivedFactory->initialize(derivedField, *_normalizer, solution.getSpaceDim());
+
+    // :ATTENTION: The order for adding subfields must match the order of the auxiliary fields in the FE kernels.
+
+    _derivedFactory->addTractionChange(); // 0
+#if 1
+    _derivedFactory->addNormalDir(); // 1
+    _derivedFactory->addStrikeDir(); // 2
+    if (solution.getSpaceDim() > 2) {
+        _derivedFactory->addUpDipDir(); // 3
+    } // if
+#endif
+
+    derivedField->subfieldsSetup();
+    derivedField->createDiscretization();
+    pylith::topology::FieldOps::checkDiscretization(solution, *derivedField);
+    derivedField->allocate();
+    derivedField->createOutputVector();
+
+    PYLITH_METHOD_RETURN(derivedField);
+} // createDerivedField
+
+
+// ------------------------------------------------------------------------------------------------
 // Update auxiliary fields at beginning of time step.
 void
 pylith::faults::FaultCohesiveKin::updateAuxiliaryField(pylith::topology::Field* auxiliaryField,
@@ -272,6 +337,14 @@ pylith::feassemble::AuxiliaryFactory*
 pylith::faults::FaultCohesiveKin::_getAuxiliaryFactory(void) {
     return _auxiliaryFactory;
 } // _getAuxiliaryFactory
+
+
+// ------------------------------------------------------------------------------------------------
+// Get derived factory associated with fault.
+pylith::topology::FieldFactory*
+pylith::faults::FaultCohesiveKin::_getDerivedFactory(void) {
+    return _derivedFactory;
+} // _getDerivedFactory
 
 
 // ------------------------------------------------------------------------------------------------
@@ -474,6 +547,38 @@ pylith::faults::FaultCohesiveKin::_setKernelsJacobian(pylith::feassemble::Integr
 
     PYLITH_METHOD_END;
 } // _setKernelsJacobian
+
+
+// ------------------------------------------------------------------------------------------------
+// Set kernels for computing derived field.
+void
+pylith::faults::FaultCohesiveKin::_setKernelsDerivedField(pylith::feassemble::IntegratorInterface* integrator,
+                                                          const topology::Field& solution) const {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("_setKernelsDerivedField(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
+
+    const spatialdata::geocoords::CoordSys* coordsys = solution.getMesh().getCoordSys();
+    assert(coordsys);
+
+#if 0
+    std::vector<ProjectKernels> kernels(1);
+    kernels[0] = ProjectKernels("traction_change", pylith::fekernels::FaultCohesiveKin::tractionChange_asVector);
+#else
+    const PylithInt spaceDim = solution.getSpaceDim();
+    std::vector<ProjectKernels> kernels(1+spaceDim);
+    kernels[0] = ProjectKernels("traction_change", pylith::fekernels::FaultCohesiveKin::tractionChange_asVector);
+    kernels[1] = ProjectKernels("normal_dir", pylith::fekernels::FaultCohesive::normalDir);
+    kernels[2] = ProjectKernels("strike_dir", pylith::fekernels::FaultCohesive::strikeDir);
+    if (spaceDim > 2) {
+        kernels[3] = ProjectKernels("up_dip_dir", pylith::fekernels::FaultCohesive::dipDir);
+    } // if
+#endif
+
+    assert(integrator);
+    integrator->setKernelsDerivedField(kernels);
+
+    PYLITH_METHOD_END;
+} // _setKernelsDerivedField
 
 
 // End of file

@@ -23,7 +23,7 @@
 
 namespace pylith {
     namespace faults {
-        class FaultCohesive : public pylith::problems::Physics {
+        class FaultCohesive: public pylith::problems::Physics {
             // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////
 public:
 
@@ -135,7 +135,7 @@ public:
              */
             virtual
             pylith::feassemble::Integrator* createIntegrator(const pylith::topology::Field& solution,
-                                                             const std::vector<pylith::materials::Material*>& materials) = 0;
+                                                             const std::vector < pylith::materials::Material* >& materials) = 0;
 
             /** Create constraint and set kernels.
              *
@@ -143,16 +143,6 @@ public:
              * @returns Constraint if applicable, otherwise NULL.
              */
             std::vector < pylith::feassemble::Constraint*> createConstraints(const pylith::topology::Field& solution);
-
-            /** Create derived field.
-             *
-             * @param[in] solution Solution field.
-             * @param[in\ domainMesh Finite-element mesh associated with integration domain.
-             *
-             * @returns Derived field if applicable, otherwise NULL.
-             */
-            pylith::topology::Field* createDerivedField(const pylith::topology::Field& solution,
-                                                        const pylith::topology::Mesh& domainMesh);
 
             // PROTECTED METHODS //////////////////////////////////////////////////////////////////
 protected:
@@ -166,7 +156,7 @@ protected:
             virtual
             void _setKernelsResidual(pylith::feassemble::IntegratorInterface* integrator,
                                      const pylith::topology::Field& solution,
-                                     const std::vector<pylith::materials::Material*>& materials) const = 0;
+                                     const std::vector < pylith::materials::Material* >& materials) const = 0;
 
             /** Set kernels for Jacobian.
              *
@@ -177,7 +167,16 @@ protected:
             virtual
             void _setKernelsJacobian(pylith::feassemble::IntegratorInterface* integrator,
                                      const pylith::topology::Field& solution,
-                                     const std::vector<pylith::materials::Material*>& materials) const = 0;
+                                     const std::vector < pylith::materials::Material* >& materials) const = 0;
+
+            /** Set kernels for computing derived field.
+             *
+             * @param[out] integrator Integrator for material.
+             * @param[in] solution Solution field.
+             */
+            virtual
+            void _setKernelsDerivedField(pylith::feassemble::IntegratorInterface* integrator,
+                                         const pylith::topology::Field& solution) const;
 
             // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
 private:

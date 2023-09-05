@@ -230,6 +230,15 @@ pylith::faults::FaultCohesiveImpulses::createAuxiliaryField(const pylith::topolo
 
 
 // ------------------------------------------------------------------------------------------------
+// Create derived field.
+pylith::topology::Field*
+pylith::faults::FaultCohesiveImpulses::createDerivedField(const pylith::topology::Field& solution,
+                                                          const pylith::topology::Mesh& domainMesh) {
+    return NULL;
+} // createDerivedField
+
+
+// ------------------------------------------------------------------------------------------------
 // Update auxiliary fields at beginning of time step.
 void
 pylith::faults::FaultCohesiveImpulses::updateAuxiliaryField(pylith::topology::Field* auxiliaryField,

@@ -79,6 +79,16 @@ public:
     pylith::topology::Field* createAuxiliaryField(const pylith::topology::Field& solution,
                                                   const pylith::topology::Mesh& domainMesh);
 
+    /** Create derived field.
+     *
+     * @param[in] solution Solution field.
+     * @param[in\ domainMesh Finite-element mesh associated with integration domain.
+     *
+     * @returns Derived field if applicable, otherwise NULL.
+     */
+    pylith::topology::Field* createDerivedField(const pylith::topology::Field& solution,
+                                                const pylith::topology::Mesh& domainMesh);
+
     /** Update auxiliary subfields at beginning of time step.
      *
      * @param[out] auxiliaryField Auxiliary field.

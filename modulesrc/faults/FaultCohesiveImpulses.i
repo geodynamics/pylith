@@ -23,7 +23,7 @@
 
 namespace pylith {
     namespace faults {
-        class pylith::faults::FaultCohesiveImpulses : public pylith::faults::FaultCohesiveKin {
+        class pylith::faults::FaultCohesiveImpulses: public pylith::faults::FaultCohesiveKin {
             friend class TestFaultCohesiveImpulses; // unit testing
 
             // PUBLIC METHODS /////////////////////////////////////////////////////////////////////
@@ -81,6 +81,16 @@ public:
             pylith::topology::Field* createAuxiliaryField(const pylith::topology::Field& solution,
                                                           const pylith::topology::Mesh& domainMesh);
 
+            /** Create derived field.
+             *
+             * @param[in] solution Solution field.
+             * @param[in\ domainMesh Finite-element mesh associated with integration domain.
+             *
+             * @returns Derived field if applicable, otherwise NULL.
+             */
+            pylith::topology::Field* createDerivedField(const pylith::topology::Field& solution,
+                                                        const pylith::topology::Mesh& domainMesh);
+
             // PROTECTED METHODS //////////////////////////////////////////////////////////////////
 protected:
 
@@ -100,7 +110,7 @@ protected:
              */
             void _setKernelsResidual(pylith::feassemble::IntegratorInterface* integrator,
                                      const pylith::topology::Field& solution,
-                                     const std::vector<pylith::materials::Material*>& materials) const;
+                                     const std::vector < pylith::materials::Material* >& materials) const;
 
             /** Set kernels for Jacobian.
              *
@@ -110,7 +120,7 @@ protected:
              */
             void _setKernelsJacobian(pylith::feassemble::IntegratorInterface* integrator,
                                      const pylith::topology::Field& solution,
-                                     const std::vector<pylith::materials::Material*>& materials) const;
+                                     const std::vector < pylith::materials::Material* >& materials) const;
 
         }; // class FaultCohesiveImpulses
 

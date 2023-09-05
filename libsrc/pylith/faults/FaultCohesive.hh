@@ -155,16 +155,6 @@ public:
      */
     std::vector<pylith::feassemble::Constraint*> createConstraints(const pylith::topology::Field& solution);
 
-    /** Create derived field.
-     *
-     * @param[in] solution Solution field.
-     * @param[in\ domainMesh Finite-element mesh associated with integration domain.
-     *
-     * @returns Derived field if applicable, otherwise NULL.
-     */
-    pylith::topology::Field* createDerivedField(const pylith::topology::Field& solution,
-                                                const pylith::topology::Mesh& domainMesh);
-
     // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
 protected:
 
@@ -210,6 +200,15 @@ protected:
     void _setKernelsJacobian(pylith::feassemble::IntegratorInterface* integrator,
                              const pylith::topology::Field& solution,
                              const std::vector<pylith::materials::Material*>& materials) const = 0;
+
+    /** Set kernels for computing derived field.
+     *
+     * @param[out] integrator Integrator for material.
+     * @param[in] solution Solution field.
+     */
+    virtual
+    void _setKernelsDerivedField(pylith::feassemble::IntegratorInterface* integrator,
+                                 const pylith::topology::Field& solution) const;
 
     // PROTECTED MEMBERS //////////////////////////////////////////////////////////////////////////
 protected:

@@ -53,6 +53,27 @@ public:
         NEW_JACOBIAN_UPDATE_STATE_VARS=0x4, // Needs new Jacobian after updating state variables.
     };
 
+    // PUBLIC STRUCTS /////////////////////////////////////////////////////////////////////////////
+public:
+
+    /// Project kernels (pointwise functions) for updating state variables or computing derived fields.
+    struct ProjectKernels {
+        std::string subfield; ///< Name of subfield for function.
+        PetscPointFunc f; ///< Point-wise function.
+
+        ProjectKernels(void) :
+            subfield(""),
+            f(NULL) {}
+
+
+        ProjectKernels(const char* subfieldValue,
+                       PetscPointFunc fValue) :
+            subfield(subfieldValue),
+            f(fValue) {}
+
+
+    }; // ProjectKernels
+
     // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
 public:
 
