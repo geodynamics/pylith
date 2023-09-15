@@ -299,9 +299,6 @@ An additional parameter defines the units of the activation energy.
 You must also specify either a reference stress or a reference strain rate.
 
 You place all of the application parameters in `powerlaw_gendb.cfg`, which the application will read by default.
-
-:::{admonition} TODO
-Add cross reference to example using `pylith_powerlaw_gendb`.
-:::
+See {ref}`sec-user-examples-reverse-2d-step08` for an example of how to use `pylith_powerlaw_gendb`.
 
 % End of file
