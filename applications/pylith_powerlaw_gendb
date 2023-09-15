@@ -28,7 +28,8 @@ from pythia.pyre.applications.Script import Script as Application
 class PowerLawApp(Application):
     """Pyre application to generate a spatial database with power-law parameters for PyLith.
     """
-
+    TENSOR_COMPONENTS = ["xx", "yy", "zz", "xy", "yz", "xz"]
+    
     import pythia.pyre.inventory
     from pythia.pyre.units.pressure import MPa
     from pythia.pyre.units.time import s
@@ -40,11 +41,11 @@ class PowerLawApp(Application):
     refSelection.meta['tip'] = "Indicates whether reference stress or " \
         "reference strain rate is provided as input."
 
-    refStress = pythia.pyre.inventory.dimensional("reference_stress", default=1.0 * MPa)
-    refStress.meta['tip'] = "Reference stress value."
+    powerlawRefStress = pythia.pyre.inventory.dimensional("reference_stress", default=1.0 * MPa)
+    powerlawRefStress.meta['tip'] = "Reference stress value."
 
-    refStrainRate = pythia.pyre.inventory.dimensional("reference_strain_rate", default=1.0e-6 / s)
-    refStrainRate.meta['tip'] = "Reference strain rate value."
+    pwerlawRefStrainRate = pythia.pyre.inventory.dimensional("reference_strain_rate", default=1.0e-6 / s)
+    pwerlawRefStrainRate.meta['tip'] = "Reference strain rate value."
 
     from spatialdata.spatialdb.SimpleDB import SimpleDB
 
@@ -59,6 +60,9 @@ class PowerLawApp(Application):
 
     dbAe = pythia.pyre.inventory.facility("db_powerlaw_coefficient", family="spatial_database", factory=SimpleDB)
     dbAe.meta['tip'] = "Spatial database for power-law coefficient, Ae."
+
+    dbStateVars = pythia.pyre.inventory.facility("db_state_variables", family="spatial_database", factory=SimpleDB)
+    dbStateVars.meta["tip"] = "Spatial database for power-law state variables, viscous_strain, reference_stress, reference_strain"
 
     from spatialdata.spatialdb.generator.Geometry import Geometry
     geometry = pythia.pyre.inventory.facility("geometry", family="geometry", factory=Geometry)
@@ -81,47 +85,169 @@ class PowerLawApp(Application):
         coordsys = self.geometry.coordsys
 
         (npoints, spaceDim) = points.shape
-        refStrainRate = numpy.zeros((npoints,), dtype=numpy.float64)
-        refStress = numpy.zeros((npoints,), dtype=numpy.float64)
-
+        pwerlawRefStrainRate = numpy.zeros((npoints,), dtype=numpy.float64)
+        powerlawRefStress = numpy.zeros((npoints,), dtype=numpy.float64)
+        
         # Query databases to get inputs at output points
         self._info.log("Querying for parameters at output points.")
-        n = self._queryDB(self.dbExponent, "power-law-exponent", points, coordsys)
-        Q = self._queryDB(self.dbActivationE, "activation-energy", points, coordsys)
-        logAe = self._queryDB(self.dbAe, "log-flow-constant", points, coordsys)
-        scaleAe = self._queryDB(self.dbAe, "flow-constant-scale", points, coordsys)
-        T = self._queryDB(self.dbTemperature, "temperature", points, coordsys)
+        n = self._queryDB(self.dbExponent, ["power_law_exponent"], points, coordsys)
+        Q = self._queryDB(self.dbActivationE, ["activation_energy"], points, coordsys)
+        logAe = self._queryDB(self.dbAe, ["log_flow_constant"], points, coordsys)
+        scaleAe = self._queryDB(self.dbAe, ["flow_constant_scale"], points, coordsys)
+        T = self._queryDB(self.dbTemperature, ["temperature"], points, coordsys)
 
         # Compute power-law parameters
-        self._info.log("Computing parameters at output points.")
+        self._info.log("Computing parameters at output points...")
         from pythia.pyre.handbook.constants.fundamental import R
         Ae = 10**(logAe - scaleAe * n)
         At = 3**(0.5 * (n + 1)) / 2.0 * Ae * numpy.exp(-Q / (R.value * T))
 
         if self.refSelection == "stress":
-            refStress[:] = self.refStress.value
-            refStrainRate = self.refStress.value**n * At
+            powerlawRefStress[:] = self.powerlawRefStress.value
+            pwerlawRefStrainRate = self.powerlawRefStress.value**n * At
         elif self.refSelection == "strain_rate":
-            refStrainRate[:] = self.refStrainRate.value
-            refStress = (self.refStrainRate.value / At)**(1.0 / n)
+            pwerlawRefStrainRate[:] = self.pwerlawRefStrainRate.value
+            powerlawRefStress = (self.pwerlawRefStrainRate.value / At)**(1.0 / n)
         else:
             raise ValueError(f"Invalid value (self.refSelection) for reference value.")
 
-        refStressInfo = {
-            'name': "reference-stress",
+        powerlawRefStressInfo = {
+            'name': "power_law_reference_stress",
             'units': "Pa",
-            'data': refStress.flatten()
+            'data': powerlawRefStress.flatten()
         }
-        refStrainRateInfo = {
-            'name': "reference-strain-rate",
+        pwerlawRefStrainRateInfo = {
+            'name': "power_law_reference_strain_rate",
             'units': "1/s",
-            'data': refStrainRate.flatten()
+            'data': pwerlawRefStrainRate.flatten()
         }
         exponentInfo = {
-            'name': "power-law-exponent",
+            'name': "power_law_exponent",
             'units': "none",
             'data': n.flatten()
         }
+
+        tensorComponents = self.TENSOR_COMPONETS if spaceDim == 3 else self.TENSOR_COMPONENTS[:4]
+            
+        valueNames = [f"viscous_strain_{component}" for component in tensorComponents]
+        viscousStrain = self._queryDB(self.dbStateVars, valueNames, points, coordsys)
+        viscousStrainInfo = [{
+            "name": "viscous_strain_xx",
+            "units": "none",
+            "data": viscousStrain[:,0].flatten(),
+            },{
+            "name": "viscous_strain_yy",
+            "units": "none",
+            "data": viscousStrain[:,1].flatten(),
+            },{
+            "name": "viscous_strain_zz",
+            "units": "none",
+            "data": viscousStrain[:,2].flatten(),
+            },{
+            "name": "viscous_strain_xy",
+            "units": "none",
+            "data": viscousStrain[:,3].flatten(),
+            }]
+        if spaceDim == 3:
+            viscousStrainInfo += [{
+                "name": "viscous_strain_yz",
+                "units": "none",
+                "data": viscousStrain[:,4].flatten(),
+                },{
+                "name": "viscous_strain_xz",
+                "units": "none",
+                "data": viscousStrain[:,5].flatten(),
+                }]
+                
+        valueNames = [f"deviatoric_stress_{component}" for component in tensorComponents]
+        devStress = self._queryDB(self.dbStateVars, valueNames, points, coordsys)
+        devStressInfo = [{
+            "name": "deviatoric_stress_xx",
+            "units": "none",
+            "data": viscousStrain[:,0].flatten(),
+            },{
+            "name": "deviatoric_stress_yy",
+            "units": "none",
+            "data": viscousStrain[:,1].flatten(),
+            },{
+            "name": "deviatoric_stress_zz",
+            "units": "none",
+            "data": viscousStrain[:,2].flatten(),
+            },{
+            "name": "deviatoric_stress_xy",
+            "units": "none",
+            "data": viscousStrain[:,3].flatten(),
+            }]
+        if spaceDim == 3:
+            viscousStrainInfo += [{
+                "name": "deviatoric_stress_yz",
+                "units": "none",
+                "data": viscousStrain[:,4].flatten(),
+                },{
+                "name": "deviatoric_stress_xz",
+                "units": "none",
+                "data": viscousStrain[:,5].flatten(),
+                }]
+                
+        valueNames = [f"reference_stress_{component}" for component in tensorComponents]
+        refStress = self._queryDB(self.dbStateVars, valueNames, points, coordsys)
+        refStressInfo = [{
+            "name": "reference_stress_xx",
+            "units": "Pa",
+            "data": refStress[:,0].flatten(),
+            },{
+            "name": "reference_stress_yy",
+            "units": "Pa",
+            "data": refStress[:,1].flatten(),
+            },{
+            "name": "reference_stress_zz",
+            "units": "Pa",
+            "data": refStress[:,2].flatten(),
+            },{
+            "name": "reference_stress_xy",
+            "units": "Pa",
+            "data": refStress[:,3].flatten(),
+            }]
+        if spaceDim == 3:
+            refStressInfo += [{
+                "name": "reference_stress_yz",
+                "units": "Pa",
+                "data": refStress[:,4].flatten(),
+                },{
+                "name": "reference_stress_xz",
+                "units": "Pa",
+                "data": refStress[:,5].flatten(),
+                }]
+
+        valueNames = [f"reference_strain_{component}" for component in tensorComponents]
+        refStrain = self._queryDB(self.dbStateVars, valueNames, points, coordsys)
+        refStrainInfo = [{
+            "name": "reference_strain_xx",
+            "units": "none",
+            "data": refStrain[:,0].flatten(),
+            },{
+            "name": "reference_strain_yy",
+            "units": "none",
+            "data": refStrain[:,1].flatten(),
+            },{
+            "name": "reference_strain_zz",
+            "units": "none",
+            "data": refStrain[:,2].flatten(),
+            },{
+            "name": "reference_strain_xy",
+            "units": "none",
+            "data": refStrain[:,3].flatten(),
+            }]
+        if spaceDim == 3:
+            refStrainInfo += [{
+                "name": "reference_strain_yz",
+                "units": "none",
+                "data": refStrain[:,4].flatten(),
+                },{
+                "name": "reference_strain_xz",
+                "units": "none",
+                "data": refStrain[:,5].flatten(),
+                }]
 
         # Write database
         self._info.log("Writing database.")
@@ -129,23 +255,27 @@ class PowerLawApp(Application):
             'points': points,
             'coordsys': coordsys,
             'data_dim': self.geometry.dataDim,
-            'values': [refStressInfo, refStrainRateInfo, exponentInfo]
+            'values': [powerlawRefStressInfo, pwerlawRefStrainRateInfo, exponentInfo]
         }
+        data["values"] += viscousStrainInfo
+        data["values"] += refStressInfo
+        data["values"] += refStrainInfo
+        data["values"] += devStressInfo
         from spatialdata.spatialdb.SimpleIOAscii import createWriter
         writer = createWriter(self.dbFilename)
         writer.write(data)
 
-    def _queryDB(self, db, valueName, points, cs):
+    def _queryDB(self, db, valueNames, points, cs):
         """
         Query spatial database
         """
 
         (npoints, spaceDim) = points.shape
-        data = numpy.zeros((npoints, 1), dtype=numpy.float64)
-        err = numpy.zeros((npoints,), dtype=numpy.int64)
+        data = numpy.zeros((npoints, len(valueNames)), dtype=numpy.float64)
+        err = numpy.zeros((npoints,), dtype=numpy.int32)
 
         db.open()
-        db.setQueryValues([valueName])
+        db.setQueryValues(valueNames)
         db.multiquery(data, err, points, cs)
         db.close()
         errSum = numpy.sum(err)

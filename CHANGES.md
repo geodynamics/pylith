@@ -3,8 +3,15 @@ See <https://github.com/geodynamics/pylith/commits/main> for the complete log of
 ## Version 3.1.0
 
 * Removed support for importing meshes from LaGriT.
+* Add output of change in fault tractions for prescribed slip.
+* By default use PETSc proper orthogonal decomposition (POD) methodology for initial guess of solutions to improve convergence.
+* Add demonstration of `pylith_powerlaw_gendb` in Step 8 of `examples/reverse-2d`.
 * Switched from CppUnit to Catch2 as the C++ testing framework.
+* Update to PETSc 3.19.5
+* Improve integration with VSCode for testing and debugging (see Developer Guide)
 * Bug fixes
+  * Fix errors in KinSrcTimeHistory.py
+  * Fix creation of PETSc label for edges when importing Gmsh files. This fixes creation of faults with buried edges for 3D meshes imported from Gmsh.
 
 ## Version 3.0.3
 

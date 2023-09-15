@@ -1,3 +1,4 @@
+(sec-user-examples-reverse-2d-step08)=
 # Step 8: Slip on Two Faults and Power-law Viscoelastic Materials
 
 % Metadata extracted from parameter files.
@@ -18,13 +19,44 @@ caption: Power-law viscoelastic bulk rheology parameters for Step 8.
 slab.bulk_rheology = pylith.materials.IsotropicPowerLaw
 
 [pylithapp.problem.materials.slab]
-db_auxiliary_field = spatialdata.spatialdb.SimpleDB
-db_auxiliary_field.description = Maxwell viscoelastic properties
-db_auxiliary_field.iohandler.filename = mat_powerlaw.spatialdb
+db_auxiliary_field = spatialdata.spatialdb.CompositeDB
+db_auxiliary_field.description = Power law material properties
 
 bulk_rheology.auxiliary_subfields.power_law_reference_strain_rate.basis_order = 0
 bulk_rheology.auxiliary_subfields.power_law_reference_stress.basis_order = 0
 bulk_rheology.auxiliary_subfields.power_law_exponent.basis_order = 0
+
+[pylithapp.problem.materials.slab.db_auxiliary_field]
+# Elastic properties
+values_A = [density, vs, vp]
+db_A = spatialdata.spatialdb.SimpleDB
+db_A.description = Elastic properties for slab
+db_A.iohandler.filename = mat_elastic.spatialdb
+
+# Power law properties
+values_B = [
+	 power_law_reference_stress,  power_law_reference_strain_rate,  power_law_exponent,
+	 viscous_strain_xx, viscous_strain_yy, viscous_strain_zz, viscous_strain_xy,
+	 reference_stress_xx, reference_stress_yy, reference_stress_zz, reference_stress_xy,
+	 reference_strain_xx, reference_strain_yy, reference_strain_zz, reference_strain_xy,
+	 deviatoric_stress_xx,  deviatoric_stress_yy,  deviatoric_stress_zz,  deviatoric_stress_xy
+	 ]
+db_B = spatialdata.spatialdb.SimpleDB
+db_B.description = Material properties specific to power law bulk rheology for the slab
+db_B.iohandler.filename = mat_powerlaw.spatialdb
+db_B.query_type = linear
+```
+
+## Power-law spatial database
+
+We use the utility script `pylith_powerlaw_gendb` (see {ref}`sec-user-run-pylith-pylith-powerlaw-gendb`) to generate the spatial database `mat_powerlaw.spatialdb` with the power-law bulk rheology parameters.
+We provide the parameters for `pylith_powerlaw_gendb` in `powerlaw_gendb.cfg`, which follows the same formatting conventions as the PyLith parameter files. 
+
+```{code-block} console
+---
+caption: Generate spatial database with power-law viscoelastic material properties.
+---
+$ pylith_powerlaw_gendb powerlaw_gendb.cfg
 ```
 
 ## Running the simulation
@@ -48,11 +80,11 @@ $ pylith step08_twofaults_powerlaw.cfg
 # -- many lines omitted --
 
 25 TS dt 0.2 time 4.8
-    0 SNES Function norm 5.602869611772e-06 
-    Linear solve converged due to CONVERGED_ATOL iterations 262
-    1 SNES Function norm 6.656502817834e-08 
-    Linear solve converged due to CONVERGED_ATOL iterations 117
-    2 SNES Function norm 9.645013365143e-10 
+    0 SNES Function norm 2.142894498538e-06
+    Linear solve converged due to CONVERGED_ATOL iterations 200
+    1 SNES Function norm 6.320401896875e-09
+    Linear solve converged due to CONVERGED_ATOL iterations 67
+    2 SNES Function norm 1.048498421861e-10
   Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 2
 26 TS dt 0.2 time 5.
  >> /software/baagaard/py38-venv/pylith-debug/lib/python3.8/site-packages/pylith/problems/Problem.py:201:finalize

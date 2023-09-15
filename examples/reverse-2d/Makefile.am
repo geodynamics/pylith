@@ -43,6 +43,10 @@ dist_noinst_DATA = \
 	mat_gravity_refstate.spatialdb \
 	mat_maxwell.spatialdb \
 	mat_powerlaw.spatialdb \
+	powerlaw_params.spatialdb \
+	powerlaw_temperature.spatialdb \
+	powerlaw_gendb.cfg \
+	powerlaw_points.txt \
 	traction_surfload.spatialdb \
 	viz/plot_dispwarp.py \
 	viz/plot_mesh.py

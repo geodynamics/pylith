@@ -1,0 +1,26 @@
+// -*- C++ -*- (tell Emacs to use C++ mode for syntax highlighting)
+//
+// This spatial database defines a simple picewise linear 1D temperature profile,
+// assuming a temperature of 100 degrees C (373 degrees K) at the surface,
+// increasing to 1,000 degrees C (1273 degrees K) at 10 km depth.
+//
+#SPATIAL.ascii 1
+SimpleDB {
+  num-values = 1 // number of material property values
+  value-names =  temperature // names of the material property values
+  value-units =  K // units
+  num-locs = 3 // number of locations
+  data-dim = 1
+  space-dim = 2
+  cs-data = cartesian {
+    to-meters = 1000.0
+    space-dim = 2
+  }
+}
+// Columns are
+// (1) x coordinate (m)
+// (2) y coordinate (m)
+// (3) temperature (K)
+0.0     0.0    373.0
+0.0   -10.0   1273.0
+0.0  -100.0   1273.0

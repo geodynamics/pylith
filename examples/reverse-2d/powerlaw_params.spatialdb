@@ -1,0 +1,37 @@
+// -*- C++ -*- (tell Emacs to use C++ mode for syntax highlighting)
+//
+// This spatial database defines the power-law parameters for two materials:
+// Wet granite and dry olivine. The properties are from Strehlau and
+// Meissner (1987). Wet granite is specified from zero to 2 km depth,
+// while dry olivine is specified from 2 to 100 km depth.
+// Note that the flow constant is expressed as log10(flow-constant), where
+// the units are GPa^(-n)/s. The activation energy (Q) is expressed in
+// kJ/mol.  To accommodate the strange units of the flow constant, the
+// given units of are 'None', and we specify a new parameter
+// (flow-constant-multiplier), with a value of 9, to indicate that the
+// underlying units are GPa.  A value of 6 would indicate MPa, etc.
+//
+#SPATIAL.ascii 1
+SimpleDB {
+  num-values = 4 // number of material property values
+  value-names =  log_flow_constant activation_energy power_law_exponent flow_constant_scale // names of the material property values
+  value-units =  None kJ/mol None None // units
+  num-locs = 4 // number of locations
+  data-dim = 1
+  space-dim = 2
+  cs-data = cartesian {
+    to-meters = 1000.0
+    space-dim = 2
+  }
+}
+// Columns are
+// (1) x coordinate (m)
+// (2) y coordinate (m)
+// (3) flow_constant (None)
+// (4) activation_energy (kJ/mol)
+// (5) power_law_exponent (None)
+// (6) activation_energy_multiplier (None)
+0.0     0.0     2.0 137.0 1.5 9.0
+0.0    -1.99    2.0 137.0 1.5 9.0
+0.0    -2.01   15.5 535.0 3.5 9.0
+0.0  -100.0    15.5 535.0 3.5 9.0
