@@ -53,6 +53,12 @@ class AuxSubfieldsIsotropicLinearPoroelasticity(PetscComponent):
     biotModulus = pythia.pyre.inventory.facility("biot_modulus", family="auxiliary_subfield", factory=Subfield)
     biotModulus.meta['tip'] = "Biot modulus subfield."
 
+    referenceStress = pythia.pyre.inventory.facility("reference_stress", family="auxiliary_subfield", factory=Subfield)
+    referenceStress.meta['tip'] = "Reference stress subfield."
+
+    referenceStrain = pythia.pyre.inventory.facility("reference_strain", family="auxiliary_subfield", factory=Subfield)
+    referenceStrain.meta['tip'] = "Reference strain subfield."
+
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="auxfieldsisotropiclinearporoelasticity"):
