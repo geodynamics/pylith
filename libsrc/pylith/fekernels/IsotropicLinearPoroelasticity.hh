@@ -143,13 +143,13 @@ public:
                     const pylith::fekernels::TensorOps& tensorOps) {
         assert(context);
 
-        // Incoming Solution Variables
+        // Incoming solution subfields
         const PylithInt i_pressure = 1;
 
-        // Incoming Poroelastic Auxiliary Fields
+        // Incoming poroelastic auxiliary subfields
         const PylithInt i_fluidViscosity = 2;
 
-        // Incoming auxiliary fields.
+        // Incoming rheology auxiliary subfields.
         const PylithInt i_shearModulus = numA - 5;
         const PylithInt i_drainedBulkModulus = numA - 4;
         const PylithInt i_biotCoefficient = numA - 3;
@@ -179,11 +179,11 @@ public:
         context->biotCoefficient = a[aOff[i_biotCoefficient]];assert(context->biotCoefficient > 0.0);
         context->biotModulus = a[aOff[i_biotModulus]];assert(context->biotModulus > 0.0);
 
-    } // setContextQS
+    } // setContext
 
     // --------------------------------------------------------------------------------------------
     static inline
-    void addContextIsotropicPerm(Context* context,
+    void setContextIsotropicPerm(Context* context,
                                  const PylithInt dim,
                                  const PylithInt numS,
                                  const PylithInt numA,
@@ -210,11 +210,11 @@ public:
         // Using isotropic permeability
         tensorOps.fromScalar(a[aOff[i_isotropicPermeability]], &context->permeability);
 
-    } // addContextTensorPerm
+    } // setContextTensorPerm
 
     // --------------------------------------------------------------------------------------------
     static inline
-    void addContextTensorPerm(Context* context,
+    void setContextTensorPerm(Context* context,
                               const PylithInt dim,
                               const PylithInt numS,
                               const PylithInt numA,
@@ -241,11 +241,11 @@ public:
         // Using tensor permeability
         tensorOps.fromVector(&a[aOff[i_tensorPermeability]], &context->permeability);
 
-    } // addContextTensorPerm
+    } // setContextTensorPerm
 
     // --------------------------------------------------------------------------------------------
     static inline
-    void addContextRefState(Context* context,
+    void setContextRefState(Context* context,
                             const PylithInt dim,
                             const PylithInt numS,
                             const PylithInt numA,
@@ -273,29 +273,29 @@ public:
         tensorOps.fromVector(&a[aOff[i_refStress]], &context->refStress);
         tensorOps.fromVector(&a[aOff[i_refStrain]], &context->refStrain);
 
-    } // addContextTensorPerm
+    } // setContextTensorPerm
 
     // --------------------------------------------------------------------------------------------
     static inline
-    void addContextTraceStrainQS(Context* context,
-                                 const PylithInt dim,
-                                 const PylithInt numS,
-                                 const PylithInt numA,
-                                 const PylithInt sOff[],
-                                 const PylithInt sOff_x[],
-                                 const PylithScalar s[],
-                                 const PylithScalar s_t[],
-                                 const PylithScalar s_x[],
-                                 const PylithInt aOff[],
-                                 const PylithInt aOff_x[],
-                                 const PylithScalar a[],
-                                 const PylithScalar a_t[],
-                                 const PylithScalar a_x[],
-                                 const PylithReal t,
-                                 const PylithScalar x[],
-                                 const PylithInt numConstants,
-                                 const PylithScalar constants[],
-                                 const pylith::fekernels::TensorOps& tensorOps) {
+    void setContextQuasistatic(Context* context,
+                               const PylithInt dim,
+                               const PylithInt numS,
+                               const PylithInt numA,
+                               const PylithInt sOff[],
+                               const PylithInt sOff_x[],
+                               const PylithScalar s[],
+                               const PylithScalar s_t[],
+                               const PylithScalar s_x[],
+                               const PylithInt aOff[],
+                               const PylithInt aOff_x[],
+                               const PylithScalar a[],
+                               const PylithScalar a_t[],
+                               const PylithScalar a_x[],
+                               const PylithReal t,
+                               const PylithScalar x[],
+                               const PylithInt numConstants,
+                               const PylithScalar constants[],
+                               const pylith::fekernels::TensorOps& tensorOps) {
         assert(context);
         // Incoming solution fields.
         const PylithInt i_trace_strain = 2;
@@ -304,29 +304,29 @@ public:
         // Variables &c
         context->trace_strain = s[sOff[i_trace_strain]];
 
-    } // addContextTraceStrainQS
+    } // setContextQuasistatic
 
     // --------------------------------------------------------------------------------------------
     static inline
-    void addContextTraceStrainDynamic(Context* context,
-                                      const PylithInt dim,
-                                      const PylithInt numS,
-                                      const PylithInt numA,
-                                      const PylithInt sOff[],
-                                      const PylithInt sOff_x[],
-                                      const PylithScalar s[],
-                                      const PylithScalar s_t[],
-                                      const PylithScalar s_x[],
-                                      const PylithInt aOff[],
-                                      const PylithInt aOff_x[],
-                                      const PylithScalar a[],
-                                      const PylithScalar a_t[],
-                                      const PylithScalar a_x[],
-                                      const PylithReal t,
-                                      const PylithScalar x[],
-                                      const PylithInt numConstants,
-                                      const PylithScalar constants[],
-                                      const pylith::fekernels::TensorOps& tensorOps) {
+    void setContextDynamic(Context* context,
+                           const PylithInt dim,
+                           const PylithInt numS,
+                           const PylithInt numA,
+                           const PylithInt sOff[],
+                           const PylithInt sOff_x[],
+                           const PylithScalar s[],
+                           const PylithScalar s_t[],
+                           const PylithScalar s_x[],
+                           const PylithInt aOff[],
+                           const PylithInt aOff_x[],
+                           const PylithScalar a[],
+                           const PylithScalar a_t[],
+                           const PylithScalar a_x[],
+                           const PylithReal t,
+                           const PylithScalar x[],
+                           const PylithInt numConstants,
+                           const PylithScalar constants[],
+                           const pylith::fekernels::TensorOps& tensorOps) {
         assert(context);
         // Incoming solution fields.
         const PylithInt i_displacement = 0;
@@ -351,11 +351,11 @@ public:
             trace_strain_t += velocity_x[d * dim + d];
         }
 
-        // Variables &c
+        // Variables
         context->trace_strain = trace_strain;
         context->trace_strain_t = trace_strain_t;
 
-    } // addContextTraceStrainDynamic
+    } // setContextDynamic
 
     // --------------------------------------------------------------------------------------------
     /** Helper function for calculating Cauchy stress for WITHOUT a reference stress and strain.
@@ -511,7 +511,7 @@ public:
      * @param[out] stress Stress tensor.
      */
     static inline
-    void darcyFluxRate(const pylith::fekernels::Poroelasticity::PoroelasticContext& poroelasticContext,
+    void darcyFluxRate(const pylith::fekernels::Poroelasticity::Context& poroelasticContext,
                        void* rheologyContext,
                        const pylith::fekernels::TensorOps& tensorOps,
                        pylith::fekernels::Tensor* fluxRate) {
@@ -582,8 +582,8 @@ public:
                       PylithScalar f0[]) {
         const PylithInt _dim = 2;assert(_dim == dim);
         // Poroelastic Context
-        pylith::fekernels::Poroelasticity::PoroelasticContext poroelasticContext;
-        pylith::fekernels::Poroelasticity::setPoroelasticContextDynamic(
+        pylith::fekernels::Poroelasticity::Context poroelasticContext;
+        pylith::fekernels::Poroelasticity::setContextDynamic(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
         // Rheological Context
@@ -624,8 +624,8 @@ public:
                       PylithScalar f0[]) {
         const PylithInt _dim = 2;assert(_dim == dim);
         // Poroelastic Context
-        pylith::fekernels::Poroelasticity::PoroelasticContext poroelasticContext;
-        pylith::fekernels::Poroelasticity::setPoroelasticContextQS(
+        pylith::fekernels::Poroelasticity::Context poroelasticContext;
+        pylith::fekernels::Poroelasticity::setContextQuasistatic(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
         // Rheological Context
@@ -670,11 +670,11 @@ public:
                              PylithScalar f0[]) {
         const PylithInt _dim = 2;assert(_dim == dim);
         // Poroelastic Context
-        pylith::fekernels::Poroelasticity::PoroelasticContext poroelasticContext;
-        pylith::fekernels::Poroelasticity::setPoroelasticContextQS(
+        pylith::fekernels::Poroelasticity::Context poroelasticContext;
+        pylith::fekernels::Poroelasticity::setContextQuasistatic(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
-        pylith::fekernels::Poroelasticity::addPoroelasticContextSourceDensity(
+        pylith::fekernels::Poroelasticity::setContextSourceDensity(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
         // Rheological Context
@@ -722,11 +722,11 @@ public:
                                   PylithScalar f0[]) {
         const PylithInt _dim = 2;assert(_dim == dim);
         // Poroelastic Context
-        pylith::fekernels::Poroelasticity::PoroelasticContext poroelasticContext;
-        pylith::fekernels::Poroelasticity::setPoroelasticContextQS(
+        pylith::fekernels::Poroelasticity::Context poroelasticContext;
+        pylith::fekernels::Poroelasticity::setContextQuasistatic(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
-        pylith::fekernels::Poroelasticity::addPoroelasticContextBodyForceSourceDensity(
+        pylith::fekernels::Poroelasticity::setContextBodyForceSourceDensity(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
         // Rheological Context
@@ -774,11 +774,11 @@ public:
                                   PylithScalar f0[]) {
         const PylithInt _dim = 2;assert(_dim == dim);
         // Poroelastic Context
-        pylith::fekernels::Poroelasticity::PoroelasticContext poroelasticContext;
-        pylith::fekernels::Poroelasticity::setPoroelasticContextQS(
+        pylith::fekernels::Poroelasticity::Context poroelasticContext;
+        pylith::fekernels::Poroelasticity::setContextQuasistatic(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
-        pylith::fekernels::Poroelasticity::addPoroelasticContextGravitySourceDensity(
+        pylith::fekernels::Poroelasticity::setContextGravitySourceDensity(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
         // Rheological Context
@@ -826,11 +826,11 @@ public:
                                        PylithScalar f0[]) {
         const PylithInt _dim = 2;assert(_dim == dim);
         // Poroelastic Context
-        pylith::fekernels::Poroelasticity::PoroelasticContext poroelasticContext;
-        pylith::fekernels::Poroelasticity::setPoroelasticContextQS(
+        pylith::fekernels::Poroelasticity::Context poroelasticContext;
+        pylith::fekernels::Poroelasticity::setContextQuasistatic(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
-        pylith::fekernels::Poroelasticity::addPoroelasticContextGravityBodyForceSourceDensity(
+        pylith::fekernels::Poroelasticity::setContextGravityBodyForceSourceDensity(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
         // Rheological Context
@@ -891,7 +891,7 @@ public:
         pylith::fekernels::IsotropicLinearPoroelasticity::setContext(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
-        pylith::fekernels::IsotropicLinearPoroelasticity::addContextTraceStrainQS(
+        pylith::fekernels::IsotropicLinearPoroelasticity::setContextQuasistatic(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
 
@@ -940,10 +940,10 @@ public:
         pylith::fekernels::IsotropicLinearPoroelasticity::setContext(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
-        pylith::fekernels::IsotropicLinearPoroelasticity::addContextRefState(
+        pylith::fekernels::IsotropicLinearPoroelasticity::setContextQuasistatic(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
-        pylith::fekernels::IsotropicLinearPoroelasticity::addContextTraceStrainQS(
+        pylith::fekernels::IsotropicLinearPoroelasticity::setContextRefState(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
 
@@ -981,8 +981,8 @@ public:
              PylithScalar f1[]) {
         const PylithInt _dim = 2;assert(_dim == dim);
         // Poroelastic Context
-        pylith::fekernels::Poroelasticity::PoroelasticContext poroelasticContext;
-        pylith::fekernels::Poroelasticity::setPoroelasticContextQS(
+        pylith::fekernels::Poroelasticity::Context poroelasticContext;
+        pylith::fekernels::Poroelasticity::setContextQuasistatic(
             &poroelasticContext, _dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
         // Rheological Context
@@ -991,7 +991,7 @@ public:
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
 
-        pylith::fekernels::IsotropicLinearPoroelasticity::addContextIsotropicPerm(
+        pylith::fekernels::IsotropicLinearPoroelasticity::setContextIsotropicPerm(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
 
@@ -1031,8 +1031,8 @@ public:
                                  PylithScalar f1[]) {
         const PylithInt _dim = 2;assert(_dim == dim);
         // Poroelastic Context
-        pylith::fekernels::Poroelasticity::PoroelasticContext poroelasticContext;
-        pylith::fekernels::Poroelasticity::setPoroelasticContextQS(
+        pylith::fekernels::Poroelasticity::Context poroelasticContext;
+        pylith::fekernels::Poroelasticity::setContextQuasistatic(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
         // Rheological Context
@@ -1041,7 +1041,7 @@ public:
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
 
-        pylith::fekernels::IsotropicLinearPoroelasticity::addContextTensorPerm(
+        pylith::fekernels::IsotropicLinearPoroelasticity::setContextTensorPerm(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
 
@@ -1081,11 +1081,11 @@ public:
                   PylithScalar f1[]) {
         const PylithInt _dim = 2;assert(_dim == dim);
         // Poroelastic Context
-        pylith::fekernels::Poroelasticity::PoroelasticContext poroelasticContext;
-        pylith::fekernels::Poroelasticity::setPoroelasticContextQS(
+        pylith::fekernels::Poroelasticity::Context poroelasticContext;
+        pylith::fekernels::Poroelasticity::setContextQuasistatic(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
-        pylith::fekernels::Poroelasticity::addPoroelasticContextBodyForce(
+        pylith::fekernels::Poroelasticity::setContextBodyForce(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
         // Rheology Context
@@ -1094,7 +1094,7 @@ public:
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
 
-        pylith::fekernels::IsotropicLinearPoroelasticity::addContextIsotropicPerm(
+        pylith::fekernels::IsotropicLinearPoroelasticity::setContextIsotropicPerm(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
 
@@ -1134,11 +1134,11 @@ public:
                                       PylithScalar f1[]) {
         const PylithInt _dim = 2;assert(_dim == dim);
         // Poroelastic Context
-        pylith::fekernels::Poroelasticity::PoroelasticContext poroelasticContext;
-        pylith::fekernels::Poroelasticity::setPoroelasticContextQS(
+        pylith::fekernels::Poroelasticity::Context poroelasticContext;
+        pylith::fekernels::Poroelasticity::setContextQuasistatic(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
-        pylith::fekernels::Poroelasticity::addPoroelasticContextBodyForce(
+        pylith::fekernels::Poroelasticity::setContextBodyForce(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
         // Rheology Context
@@ -1147,7 +1147,7 @@ public:
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
 
-        pylith::fekernels::IsotropicLinearPoroelasticity::addContextTensorPerm(
+        pylith::fekernels::IsotropicLinearPoroelasticity::setContextTensorPerm(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
 
@@ -1187,10 +1187,10 @@ public:
                      PylithScalar f1[]) {
         const PylithInt _dim = 2;assert(_dim == dim);
         // Poroelastic Context
-        pylith::fekernels::Poroelasticity::PoroelasticContext poroelasticContext;
-        pylith::fekernels::Poroelasticity::setPoroelasticContextQS(
+        pylith::fekernels::Poroelasticity::Context poroelasticContext;
+        pylith::fekernels::Poroelasticity::setContextQuasistatic(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
-        pylith::fekernels::Poroelasticity::addPoroelasticContextBodyForce(
+        pylith::fekernels::Poroelasticity::setContextBodyForce(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
         // Rheology Context
@@ -1198,7 +1198,7 @@ public:
         pylith::fekernels::IsotropicLinearPoroelasticity::setContext(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
-        pylith::fekernels::IsotropicLinearPoroelasticity::addContextIsotropicPerm(
+        pylith::fekernels::IsotropicLinearPoroelasticity::setContextIsotropicPerm(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
 
@@ -1239,10 +1239,10 @@ public:
         const PylithInt _dim = 2;assert(_dim == dim);
 
         // Poroelastic Context
-        pylith::fekernels::Poroelasticity::PoroelasticContext poroelasticContext;
-        pylith::fekernels::Poroelasticity::setPoroelasticContextQS(
+        pylith::fekernels::Poroelasticity::Context poroelasticContext;
+        pylith::fekernels::Poroelasticity::setContextQuasistatic(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
-        pylith::fekernels::Poroelasticity::addPoroelasticContextBodyForce(
+        pylith::fekernels::Poroelasticity::setContextBodyForce(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
         // Rheology Context
@@ -1250,7 +1250,7 @@ public:
         pylith::fekernels::IsotropicLinearPoroelasticity::setContext(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
-        pylith::fekernels::IsotropicLinearPoroelasticity::addContextTensorPerm(
+        pylith::fekernels::IsotropicLinearPoroelasticity::setContextTensorPerm(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
 
@@ -1291,10 +1291,10 @@ public:
         const PylithInt _dim = 2;assert(_dim == dim);
 
         // Poroelastic Context
-        pylith::fekernels::Poroelasticity::PoroelasticContext poroelasticContext;
-        pylith::fekernels::Poroelasticity::setPoroelasticContextQS(
+        pylith::fekernels::Poroelasticity::Context poroelasticContext;
+        pylith::fekernels::Poroelasticity::setContextQuasistatic(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
-        pylith::fekernels::Poroelasticity::addPoroelasticContextGravityBodyForce(
+        pylith::fekernels::Poroelasticity::setContextGravityBodyForce(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
         // Rheology Context
@@ -1302,7 +1302,7 @@ public:
         pylith::fekernels::IsotropicLinearPoroelasticity::setContext(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
-        pylith::fekernels::IsotropicLinearPoroelasticity::addContextIsotropicPerm(
+        pylith::fekernels::IsotropicLinearPoroelasticity::setContextIsotropicPerm(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
 
@@ -1343,10 +1343,10 @@ public:
         const PylithInt _dim = 2;assert(_dim == dim);
 
         // Poroelastic Context
-        pylith::fekernels::Poroelasticity::PoroelasticContext poroelasticContext;
-        pylith::fekernels::Poroelasticity::setPoroelasticContextQS(
+        pylith::fekernels::Poroelasticity::Context poroelasticContext;
+        pylith::fekernels::Poroelasticity::setContextQuasistatic(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
-        pylith::fekernels::Poroelasticity::addPoroelasticContextGravityBodyForce(
+        pylith::fekernels::Poroelasticity::setContextGravityBodyForce(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
         // Rheology Context
@@ -1355,7 +1355,7 @@ public:
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
 
-        pylith::fekernels::IsotropicLinearPoroelasticity::addContextTensorPerm(
+        pylith::fekernels::IsotropicLinearPoroelasticity::setContextTensorPerm(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
 
@@ -1525,7 +1525,7 @@ public:
         pylith::fekernels::IsotropicLinearPoroelasticity::setContext(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
-        pylith::fekernels::IsotropicLinearPoroelasticity::addContextIsotropicPerm(
+        pylith::fekernels::IsotropicLinearPoroelasticity::setContextIsotropicPerm(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
 
@@ -1578,7 +1578,7 @@ public:
         pylith::fekernels::IsotropicLinearPoroelasticity::setContext(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
-        pylith::fekernels::IsotropicLinearPoroelasticity::addContextTensorPerm(
+        pylith::fekernels::IsotropicLinearPoroelasticity::setContextTensorPerm(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
 
@@ -1785,8 +1785,8 @@ public:
         const PylithInt _dim = 2;assert(_dim == dim);
 
         // Poroelastic Context
-        pylith::fekernels::Poroelasticity::PoroelasticContext poroelasticContext;
-        pylith::fekernels::Poroelasticity::setPoroelasticContextDynamic(
+        pylith::fekernels::Poroelasticity::Context poroelasticContext;
+        pylith::fekernels::Poroelasticity::setContextDynamic(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
         // Rheology Context
@@ -1830,10 +1830,10 @@ public:
         const PylithInt _dim = 2;assert(_dim == dim);
 
         // Poroelastic Context
-        pylith::fekernels::Poroelasticity::PoroelasticContext poroelasticContext;
-        pylith::fekernels::Poroelasticity::setPoroelasticContextDynamic(
+        pylith::fekernels::Poroelasticity::Context poroelasticContext;
+        pylith::fekernels::Poroelasticity::setContextDynamic(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
-        pylith::fekernels::Poroelasticity::addPoroelasticContextSourceDensity(
+        pylith::fekernels::Poroelasticity::setContextSourceDensity(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
         // Rheology Context
@@ -1881,10 +1881,10 @@ public:
         const PylithInt _dim = 2;assert(_dim == dim);
 
         // Poroelastic Context
-        pylith::fekernels::Poroelasticity::PoroelasticContext poroelasticContext;
-        pylith::fekernels::Poroelasticity::setPoroelasticContextDynamic(
+        pylith::fekernels::Poroelasticity::Context poroelasticContext;
+        pylith::fekernels::Poroelasticity::setContextDynamic(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
-        pylith::fekernels::Poroelasticity::addPoroelasticContextBodyForceSourceDensity(
+        pylith::fekernels::Poroelasticity::setContextBodyForceSourceDensity(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
         // Rheology Context
@@ -1932,10 +1932,10 @@ public:
         const PylithInt _dim = 2;assert(_dim == dim);
 
         // Poroelastic Context
-        pylith::fekernels::Poroelasticity::PoroelasticContext poroelasticContext;
-        pylith::fekernels::Poroelasticity::setPoroelasticContextDynamic(
+        pylith::fekernels::Poroelasticity::Context poroelasticContext;
+        pylith::fekernels::Poroelasticity::setContextDynamic(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
-        pylith::fekernels::Poroelasticity::addPoroelasticContextGravitySourceDensity(
+        pylith::fekernels::Poroelasticity::setContextGravitySourceDensity(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
         // Rheology Context
@@ -1983,10 +1983,10 @@ public:
         const PylithInt _dim = 2;assert(_dim == dim);
 
         // Poroelastic Context
-        pylith::fekernels::Poroelasticity::PoroelasticContext poroelasticContext;
-        pylith::fekernels::Poroelasticity::setPoroelasticContextDynamic(
+        pylith::fekernels::Poroelasticity::Context poroelasticContext;
+        pylith::fekernels::Poroelasticity::setContextDynamic(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
-        pylith::fekernels::Poroelasticity::addPoroelasticContextGravityBodyForceSourceDensity(
+        pylith::fekernels::Poroelasticity::setContextGravityBodyForceSourceDensity(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
         // Rheology Context
@@ -2036,8 +2036,8 @@ public:
         const PylithInt _dim = 2;assert(_dim == dim);
 
         // Poroelastic Context
-        pylith::fekernels::Poroelasticity::PoroelasticContext poroelasticContext;
-        pylith::fekernels::Poroelasticity::setPoroelasticContextDynamic(
+        pylith::fekernels::Poroelasticity::Context poroelasticContext;
+        pylith::fekernels::Poroelasticity::setContextDynamic(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
         // Rheology Context
@@ -2045,7 +2045,7 @@ public:
         pylith::fekernels::IsotropicLinearPoroelasticity::setContext(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
-        pylith::fekernels::IsotropicLinearPoroelasticity::addContextIsotropicPerm(
+        pylith::fekernels::IsotropicLinearPoroelasticity::setContextIsotropicPerm(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
 
@@ -2086,8 +2086,8 @@ public:
         const PylithInt _dim = 2;assert(_dim == dim);
 
         // Poroelastic Context
-        pylith::fekernels::Poroelasticity::PoroelasticContext poroelasticContext;
-        pylith::fekernels::Poroelasticity::setPoroelasticContextDynamic(
+        pylith::fekernels::Poroelasticity::Context poroelasticContext;
+        pylith::fekernels::Poroelasticity::setContextDynamic(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
         // Rheology Context
@@ -2095,7 +2095,7 @@ public:
         pylith::fekernels::IsotropicLinearPoroelasticity::setContext(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
-        pylith::fekernels::IsotropicLinearPoroelasticity::addContextTensorPerm(
+        pylith::fekernels::IsotropicLinearPoroelasticity::setContextTensorPerm(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
 
@@ -2136,10 +2136,10 @@ public:
         const PylithInt _dim = 2;assert(_dim == dim);
 
         // Poroelastic Context
-        pylith::fekernels::Poroelasticity::PoroelasticContext poroelasticContext;
-        pylith::fekernels::Poroelasticity::setPoroelasticContextDynamic(
+        pylith::fekernels::Poroelasticity::Context poroelasticContext;
+        pylith::fekernels::Poroelasticity::setContextDynamic(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
-        pylith::fekernels::Poroelasticity::addPoroelasticContextGravity(
+        pylith::fekernels::Poroelasticity::setContextGravity(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
         // Rheology Context
@@ -2147,7 +2147,7 @@ public:
         pylith::fekernels::IsotropicLinearPoroelasticity::setContext(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
-        pylith::fekernels::IsotropicLinearPoroelasticity::addContextIsotropicPerm(
+        pylith::fekernels::IsotropicLinearPoroelasticity::setContextIsotropicPerm(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
 
@@ -2188,10 +2188,10 @@ public:
         const PylithInt _dim = 2;assert(_dim == dim);
 
         // Poroelastic Context
-        pylith::fekernels::Poroelasticity::PoroelasticContext poroelasticContext;
-        pylith::fekernels::Poroelasticity::setPoroelasticContextDynamic(
+        pylith::fekernels::Poroelasticity::Context poroelasticContext;
+        pylith::fekernels::Poroelasticity::setContextDynamic(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
-        pylith::fekernels::Poroelasticity::addPoroelasticContextGravity(
+        pylith::fekernels::Poroelasticity::setContextGravity(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
         // Rheology Context
@@ -2199,7 +2199,7 @@ public:
         pylith::fekernels::IsotropicLinearPoroelasticity::setContext(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
-        pylith::fekernels::IsotropicLinearPoroelasticity::addContextTensorPerm(
+        pylith::fekernels::IsotropicLinearPoroelasticity::setContextTensorPerm(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
 
@@ -2248,7 +2248,7 @@ public:
         pylith::fekernels::IsotropicLinearPoroelasticity::setContext(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
-        pylith::fekernels::IsotropicLinearPoroelasticity::addContextTraceStrainDynamic(
+        pylith::fekernels::IsotropicLinearPoroelasticity::setContextDynamic(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
 
@@ -2297,10 +2297,10 @@ public:
         pylith::fekernels::IsotropicLinearPoroelasticity::setContext(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
-        pylith::fekernels::IsotropicLinearPoroelasticity::addContextRefState(
+        pylith::fekernels::IsotropicLinearPoroelasticity::setContextRefState(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
-        pylith::fekernels::IsotropicLinearPoroelasticity::addContextTraceStrainDynamic(
+        pylith::fekernels::IsotropicLinearPoroelasticity::setContextDynamic(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
 
@@ -2358,7 +2358,7 @@ public:
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
         // Using dynamic formulation for trace strain, assuming that it will be equal to the variable
         // for QS
-        pylith::fekernels::IsotropicLinearPoroelasticity::addContextTraceStrainDynamic(
+        pylith::fekernels::IsotropicLinearPoroelasticity::setContextDynamic(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
 
@@ -2410,12 +2410,12 @@ public:
         pylith::fekernels::IsotropicLinearPoroelasticity::setContext(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
-        pylith::fekernels::IsotropicLinearPoroelasticity::addContextRefState(
+        pylith::fekernels::IsotropicLinearPoroelasticity::setContextRefState(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
         // Using dynamic formulation for trace strain, assuming that it will be equal to the variable
         // for QS
-        pylith::fekernels::IsotropicLinearPoroelasticity::addContextTraceStrainDynamic(
+        pylith::fekernels::IsotropicLinearPoroelasticity::setContextDynamic(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
 
@@ -2453,8 +2453,8 @@ public:
         const PylithInt _dim = 2;assert(_dim == dim);
 
         // Incoming solution fields.
-        const PylithInt i_pressure_dot = 4;
-        const PylithInt i_trace_strain_dot = 5;
+        const PylithInt i_pressure_t = 4;
+        const PylithInt i_trace_strain_t = 5;
 
         // Incoming re-packed auxiliary field.
 
@@ -2477,25 +2477,25 @@ public:
         assert(porosity);
 
         // Do stuff
-        const PylithScalar pressure_dot = s ? s[sOff[i_pressure_dot]] : 0.0;
-        const PylithScalar trace_strain_dot = s ? s[sOff[i_trace_strain_dot]] : 0.0;
+        const PylithScalar pressure_t = s ? s[sOff[i_pressure_t]] : 0.0;
+        const PylithScalar trace_strain_t = s ? s[sOff[i_trace_strain_t]] : 0.0;
 
         const PylithScalar drainedBulkModulus = a[aOff[i_drainedBulkModulus]];
         const PylithScalar biotCoefficient = a[aOff[i_biotCoefficient]];
         const PylithScalar porosityPrev = a[aOff[i_porosityPrev]];
 
         // Update porosity
-        porosity[0] = porosityPrev + dt * ((biotCoefficient - porosityPrev) * trace_strain_dot +
+        porosity[0] = porosityPrev + dt * ((biotCoefficient - porosityPrev) * trace_strain_t +
                                            ((1.0 - biotCoefficient) * (biotCoefficient - porosityPrev)) /
-                                           drainedBulkModulus * pressure_dot);
+                                           drainedBulkModulus * pressure_t);
 
-        // setPoroelasticContextQS sets pressure_t - this throws a segfault / memory out of range error.
+        // setContextQuasistatic sets pressure_t - this throws a segfault / memory out of range error.
 
         // // Poroelastic Context
-        // pylith::fekernels::Poroelasticity::PoroelasticContext poroelasticContext;
-        // pylith::fekernels::Poroelasticity::setPoroelasticContextQS(
+        // pylith::fekernels::Poroelasticity::Context poroelasticContext;
+        // pylith::fekernels::Poroelasticity::setContextQuasistatic(
         //     &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
-        // pylith::fekernels::Poroelasticity::addPoroelasticContextQS_sixField(
+        // pylith::fekernels::Poroelasticity::setContextQS_sixField(
         //     &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
         // // Rheology Context
@@ -2505,8 +2505,8 @@ public:
         //     t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
 
         // // Solution Variables
-        // const PylithScalar pressure_dot = poroelasticContext.pressure_dot;
-        // const PylithScalar trace_strain_dot = poroelasticContext.trace_strain_dot;
+        // const PylithScalar pressure_t = poroelasticContext.pressure_t;
+        // const PylithScalar trace_strain_t = poroelasticContext.trace_strain_t;
 
         // // Poroelastic Auxiliaries
         // const PylithScalar porosityPrev = poroelasticContext.porosity;
@@ -2519,9 +2519,9 @@ public:
         // const PylithScalar dt = constants[0];
 
         // // Update porosity
-        // porosity[0] = porosityPrev + dt * ((biotCoefficient - porosityPrev) * trace_strain_dot +
+        // porosity[0] = porosityPrev + dt * ((biotCoefficient - porosityPrev) * trace_strain_t +
         //                                    ((1.0 - biotCoefficient) * (biotCoefficient - porosityPrev)) /
-        //                                    drainedBulkModulus * pressure_dot);
+        //                                    drainedBulkModulus * pressure_t);
 
     } // updatePorosityImplicit
 
@@ -2550,8 +2550,8 @@ public:
         const PylithInt _dim = 2;assert(_dim == dim);
 
         // Poroelastic Context
-        pylith::fekernels::Poroelasticity::PoroelasticContext poroelasticContext;
-        pylith::fekernels::Poroelasticity::setPoroelasticContextDynamic(
+        pylith::fekernels::Poroelasticity::Context poroelasticContext;
+        pylith::fekernels::Poroelasticity::setContextDynamic(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
         // Rheology Context
@@ -2615,8 +2615,8 @@ public:
         const PylithInt _dim = 3;assert(_dim == dim);
 
         // Poroelastic Context
-        pylith::fekernels::Poroelasticity::PoroelasticContext poroelasticContext;
-        pylith::fekernels::Poroelasticity::setPoroelasticContextDynamic(
+        pylith::fekernels::Poroelasticity::Context poroelasticContext;
+        pylith::fekernels::Poroelasticity::setContextDynamic(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
         // Rheology Context
@@ -2658,8 +2658,8 @@ public:
         const PylithInt _dim = 3;assert(_dim == dim);
 
         // Poroelastic Context
-        pylith::fekernels::Poroelasticity::PoroelasticContext poroelasticContext;
-        pylith::fekernels::Poroelasticity::setPoroelasticContextQS(
+        pylith::fekernels::Poroelasticity::Context poroelasticContext;
+        pylith::fekernels::Poroelasticity::setContextQuasistatic(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
         // Rheological Context
@@ -2705,10 +2705,10 @@ public:
         const PylithInt _dim = 3;assert(_dim == dim);
 
         // Poroelastic Context
-        pylith::fekernels::Poroelasticity::PoroelasticContext poroelasticContext;
-        pylith::fekernels::Poroelasticity::setPoroelasticContextQS(
+        pylith::fekernels::Poroelasticity::Context poroelasticContext;
+        pylith::fekernels::Poroelasticity::setContextQuasistatic(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
-        pylith::fekernels::Poroelasticity::addPoroelasticContextSourceDensity(
+        pylith::fekernels::Poroelasticity::setContextSourceDensity(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
         // Rheology Context
@@ -2757,10 +2757,10 @@ public:
         const PylithInt _dim = 3;assert(_dim == dim);
 
         // Poroelastic Context
-        pylith::fekernels::Poroelasticity::PoroelasticContext poroelasticContext;
-        pylith::fekernels::Poroelasticity::setPoroelasticContextQS(
+        pylith::fekernels::Poroelasticity::Context poroelasticContext;
+        pylith::fekernels::Poroelasticity::setContextQuasistatic(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
-        pylith::fekernels::Poroelasticity::addPoroelasticContextBodyForceSourceDensity(
+        pylith::fekernels::Poroelasticity::setContextBodyForceSourceDensity(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
         // Rheology Context
@@ -2809,10 +2809,10 @@ public:
         const PylithInt _dim = 3;assert(_dim == dim);
 
         // Poroelastic Context
-        pylith::fekernels::Poroelasticity::PoroelasticContext poroelasticContext;
-        pylith::fekernels::Poroelasticity::setPoroelasticContextQS(
+        pylith::fekernels::Poroelasticity::Context poroelasticContext;
+        pylith::fekernels::Poroelasticity::setContextQuasistatic(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
-        pylith::fekernels::Poroelasticity::addPoroelasticContextGravitySourceDensity(
+        pylith::fekernels::Poroelasticity::setContextGravitySourceDensity(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
         // Rheology Context
@@ -2861,10 +2861,10 @@ public:
         const PylithInt _dim = 3;assert(_dim == dim);
 
         // Poroelastic Context
-        pylith::fekernels::Poroelasticity::PoroelasticContext poroelasticContext;
-        pylith::fekernels::Poroelasticity::setPoroelasticContextQS(
+        pylith::fekernels::Poroelasticity::Context poroelasticContext;
+        pylith::fekernels::Poroelasticity::setContextQuasistatic(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
-        pylith::fekernels::Poroelasticity::addPoroelasticContextGravityBodyForceSourceDensity(
+        pylith::fekernels::Poroelasticity::setContextGravityBodyForceSourceDensity(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
         // Rheology Context
@@ -2925,7 +2925,7 @@ public:
         pylith::fekernels::IsotropicLinearPoroelasticity::setContext(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops3D);
-        pylith::fekernels::IsotropicLinearPoroelasticity::addContextTraceStrainQS(
+        pylith::fekernels::IsotropicLinearPoroelasticity::setContextQuasistatic(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops3D);
 
@@ -2975,10 +2975,10 @@ public:
         pylith::fekernels::IsotropicLinearPoroelasticity::setContext(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops3D);
-        pylith::fekernels::IsotropicLinearPoroelasticity::addContextRefState(
+        pylith::fekernels::IsotropicLinearPoroelasticity::setContextRefState(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops3D);
-        pylith::fekernels::IsotropicLinearPoroelasticity::addContextTraceStrainQS(
+        pylith::fekernels::IsotropicLinearPoroelasticity::setContextQuasistatic(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops3D);
 
@@ -3019,8 +3019,8 @@ public:
         const PylithInt _dim = 3;assert(_dim == dim);
 
         // Poroelastic Context
-        pylith::fekernels::Poroelasticity::PoroelasticContext poroelasticContext;
-        pylith::fekernels::Poroelasticity::setPoroelasticContextQS(
+        pylith::fekernels::Poroelasticity::Context poroelasticContext;
+        pylith::fekernels::Poroelasticity::setContextQuasistatic(
             &poroelasticContext, _dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
         // Rheological Context
@@ -3029,7 +3029,7 @@ public:
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops3D);
 
-        pylith::fekernels::IsotropicLinearPoroelasticity::addContextIsotropicPerm(
+        pylith::fekernels::IsotropicLinearPoroelasticity::setContextIsotropicPerm(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops3D);
 
@@ -3070,8 +3070,8 @@ public:
         const PylithInt _dim = 3;assert(_dim == dim);
 
         // Poroelastic Context
-        pylith::fekernels::Poroelasticity::PoroelasticContext poroelasticContext;
-        pylith::fekernels::Poroelasticity::setPoroelasticContextQS(
+        pylith::fekernels::Poroelasticity::Context poroelasticContext;
+        pylith::fekernels::Poroelasticity::setContextQuasistatic(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
         // Rheology Context
@@ -3079,7 +3079,7 @@ public:
         pylith::fekernels::IsotropicLinearPoroelasticity::setContext(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops3D);
-        pylith::fekernels::IsotropicLinearPoroelasticity::addContextTensorPerm(
+        pylith::fekernels::IsotropicLinearPoroelasticity::setContextTensorPerm(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops3D);
 
@@ -3120,10 +3120,10 @@ public:
         const PylithInt _dim = 3;assert(_dim == dim);
 
         // Poroelastic Context
-        pylith::fekernels::Poroelasticity::PoroelasticContext poroelasticContext;
-        pylith::fekernels::Poroelasticity::setPoroelasticContextQS(
+        pylith::fekernels::Poroelasticity::Context poroelasticContext;
+        pylith::fekernels::Poroelasticity::setContextQuasistatic(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
-        pylith::fekernels::Poroelasticity::addPoroelasticContextBodyForce(
+        pylith::fekernels::Poroelasticity::setContextBodyForce(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
         // Rheology Context
@@ -3131,7 +3131,7 @@ public:
         pylith::fekernels::IsotropicLinearPoroelasticity::setContext(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops3D);
-        pylith::fekernels::IsotropicLinearPoroelasticity::addContextIsotropicPerm(
+        pylith::fekernels::IsotropicLinearPoroelasticity::setContextIsotropicPerm(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops3D);
 
@@ -3172,10 +3172,10 @@ public:
         const PylithInt _dim = 3;assert(_dim == dim);
 
         // Poroelastic Context
-        pylith::fekernels::Poroelasticity::PoroelasticContext poroelasticContext;
-        pylith::fekernels::Poroelasticity::setPoroelasticContextQS(
+        pylith::fekernels::Poroelasticity::Context poroelasticContext;
+        pylith::fekernels::Poroelasticity::setContextQuasistatic(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
-        pylith::fekernels::Poroelasticity::addPoroelasticContextBodyForce(
+        pylith::fekernels::Poroelasticity::setContextBodyForce(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
         // Rheology Context
@@ -3183,7 +3183,7 @@ public:
         pylith::fekernels::IsotropicLinearPoroelasticity::setContext(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops3D);
-        pylith::fekernels::IsotropicLinearPoroelasticity::addContextTensorPerm(
+        pylith::fekernels::IsotropicLinearPoroelasticity::setContextTensorPerm(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops3D);
 
@@ -3224,10 +3224,10 @@ public:
         const PylithInt _dim = 3;assert(_dim == dim);
 
         // Poroelastic Context
-        pylith::fekernels::Poroelasticity::PoroelasticContext poroelasticContext;
-        pylith::fekernels::Poroelasticity::setPoroelasticContextQS(
+        pylith::fekernels::Poroelasticity::Context poroelasticContext;
+        pylith::fekernels::Poroelasticity::setContextQuasistatic(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
-        pylith::fekernels::Poroelasticity::addPoroelasticContextGravity(
+        pylith::fekernels::Poroelasticity::setContextGravity(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
         // Rheology Context
@@ -3235,7 +3235,7 @@ public:
         pylith::fekernels::IsotropicLinearPoroelasticity::setContext(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops3D);
-        pylith::fekernels::IsotropicLinearPoroelasticity::addContextIsotropicPerm(
+        pylith::fekernels::IsotropicLinearPoroelasticity::setContextIsotropicPerm(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops3D);
 
@@ -3276,10 +3276,10 @@ public:
         const PylithInt _dim = 3;assert(_dim == dim);
 
         // Poroelastic Context
-        pylith::fekernels::Poroelasticity::PoroelasticContext poroelasticContext;
-        pylith::fekernels::Poroelasticity::setPoroelasticContextQS(
+        pylith::fekernels::Poroelasticity::Context poroelasticContext;
+        pylith::fekernels::Poroelasticity::setContextQuasistatic(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
-        pylith::fekernels::Poroelasticity::addPoroelasticContextGravity(
+        pylith::fekernels::Poroelasticity::setContextGravity(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
         // Rheology Context
@@ -3288,7 +3288,7 @@ public:
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops3D);
 
-        pylith::fekernels::IsotropicLinearPoroelasticity::addContextTensorPerm(
+        pylith::fekernels::IsotropicLinearPoroelasticity::setContextTensorPerm(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops3D);
 
@@ -3329,10 +3329,10 @@ public:
         const PylithInt _dim = 3;assert(_dim == dim);
 
         // Poroelastic Context
-        pylith::fekernels::Poroelasticity::PoroelasticContext poroelasticContext;
-        pylith::fekernels::Poroelasticity::setPoroelasticContextQS(
+        pylith::fekernels::Poroelasticity::Context poroelasticContext;
+        pylith::fekernels::Poroelasticity::setContextQuasistatic(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
-        pylith::fekernels::Poroelasticity::addPoroelasticContextGravity(
+        pylith::fekernels::Poroelasticity::setContextGravity(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
         // Rheology Context
@@ -3340,7 +3340,7 @@ public:
         pylith::fekernels::IsotropicLinearPoroelasticity::setContext(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops3D);
-        pylith::fekernels::IsotropicLinearPoroelasticity::addContextIsotropicPerm(
+        pylith::fekernels::IsotropicLinearPoroelasticity::setContextIsotropicPerm(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops3D);
 
@@ -3379,10 +3379,10 @@ public:
         const PylithInt _dim = 3;assert(_dim == dim);
 
         // Poroelastic Context
-        pylith::fekernels::Poroelasticity::PoroelasticContext poroelasticContext;
-        pylith::fekernels::Poroelasticity::setPoroelasticContextQS(
+        pylith::fekernels::Poroelasticity::Context poroelasticContext;
+        pylith::fekernels::Poroelasticity::setContextQuasistatic(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
-        pylith::fekernels::Poroelasticity::addPoroelasticContextGravity(
+        pylith::fekernels::Poroelasticity::setContextGravity(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
         // Rheology Context
@@ -3390,7 +3390,7 @@ public:
         pylith::fekernels::IsotropicLinearPoroelasticity::setContext(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops3D);
-        pylith::fekernels::IsotropicLinearPoroelasticity::addContextTensorPerm(
+        pylith::fekernels::IsotropicLinearPoroelasticity::setContextTensorPerm(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops3D);
 
@@ -3564,7 +3564,7 @@ public:
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops3D);
 
-        pylith::fekernels::IsotropicLinearPoroelasticity::addContextIsotropicPerm(
+        pylith::fekernels::IsotropicLinearPoroelasticity::setContextIsotropicPerm(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops3D);
 
@@ -3617,7 +3617,7 @@ public:
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops3D);
 
-        pylith::fekernels::IsotropicLinearPoroelasticity::addContextTensorPerm(
+        pylith::fekernels::IsotropicLinearPoroelasticity::setContextTensorPerm(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops3D);
 
@@ -3825,8 +3825,8 @@ public:
         const PylithInt _dim = 3;
 
         // Poroelastic Context
-        pylith::fekernels::Poroelasticity::PoroelasticContext poroelasticContext;
-        pylith::fekernels::Poroelasticity::setPoroelasticContextDynamic(
+        pylith::fekernels::Poroelasticity::Context poroelasticContext;
+        pylith::fekernels::Poroelasticity::setContextDynamic(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
         // Rheology Context
@@ -3870,10 +3870,10 @@ public:
         const PylithInt _dim = 3;
 
         // Poroelastic Context
-        pylith::fekernels::Poroelasticity::PoroelasticContext poroelasticContext;
-        pylith::fekernels::Poroelasticity::setPoroelasticContextDynamic(
+        pylith::fekernels::Poroelasticity::Context poroelasticContext;
+        pylith::fekernels::Poroelasticity::setContextDynamic(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
-        pylith::fekernels::Poroelasticity::addPoroelasticContextSourceDensity(
+        pylith::fekernels::Poroelasticity::setContextSourceDensity(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
         // Rheology Context
@@ -3919,10 +3919,10 @@ public:
         const PylithInt _dim = 3;assert(_dim == dim);
 
         // Poroelastic Context
-        pylith::fekernels::Poroelasticity::PoroelasticContext poroelasticContext;
-        pylith::fekernels::Poroelasticity::setPoroelasticContextDynamic(
+        pylith::fekernels::Poroelasticity::Context poroelasticContext;
+        pylith::fekernels::Poroelasticity::setContextDynamic(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
-        pylith::fekernels::Poroelasticity::addPoroelasticContextBodyForceSourceDensity(
+        pylith::fekernels::Poroelasticity::setContextBodyForceSourceDensity(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
         // Rheology Context
@@ -3968,10 +3968,10 @@ public:
         const PylithInt _dim = 3;assert(_dim == dim);
 
         // Poroelastic Context
-        pylith::fekernels::Poroelasticity::PoroelasticContext poroelasticContext;
-        pylith::fekernels::Poroelasticity::setPoroelasticContextDynamic(
+        pylith::fekernels::Poroelasticity::Context poroelasticContext;
+        pylith::fekernels::Poroelasticity::setContextDynamic(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
-        pylith::fekernels::Poroelasticity::addPoroelasticContextGravitySourceDensity(
+        pylith::fekernels::Poroelasticity::setContextGravitySourceDensity(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
         // Rheology Context
@@ -4017,10 +4017,10 @@ public:
         const PylithInt _dim = 3;assert(_dim == dim);
 
         // Poroelastic Context
-        pylith::fekernels::Poroelasticity::PoroelasticContext poroelasticContext;
-        pylith::fekernels::Poroelasticity::setPoroelasticContextDynamic(
+        pylith::fekernels::Poroelasticity::Context poroelasticContext;
+        pylith::fekernels::Poroelasticity::setContextDynamic(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
-        pylith::fekernels::Poroelasticity::addPoroelasticContextGravitySourceDensity(
+        pylith::fekernels::Poroelasticity::setContextGravitySourceDensity(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
         // Rheology Context
@@ -4068,8 +4068,8 @@ public:
         const PylithInt _dim = 3;assert(_dim == dim);
 
         // Poroelastic Context
-        pylith::fekernels::Poroelasticity::PoroelasticContext poroelasticContext;
-        pylith::fekernels::Poroelasticity::setPoroelasticContextDynamic(
+        pylith::fekernels::Poroelasticity::Context poroelasticContext;
+        pylith::fekernels::Poroelasticity::setContextDynamic(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
         // Rheology Context
@@ -4077,7 +4077,7 @@ public:
         pylith::fekernels::IsotropicLinearPoroelasticity::setContext(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops3D);
-        pylith::fekernels::IsotropicLinearPoroelasticity::addContextIsotropicPerm(
+        pylith::fekernels::IsotropicLinearPoroelasticity::setContextIsotropicPerm(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops3D);
 
@@ -4118,8 +4118,8 @@ public:
         const PylithInt _dim = 3;assert(_dim == dim);
 
         // Poroelastic Context
-        pylith::fekernels::Poroelasticity::PoroelasticContext poroelasticContext;
-        pylith::fekernels::Poroelasticity::setPoroelasticContextDynamic(
+        pylith::fekernels::Poroelasticity::Context poroelasticContext;
+        pylith::fekernels::Poroelasticity::setContextDynamic(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
         // Rheology Context
@@ -4127,7 +4127,7 @@ public:
         pylith::fekernels::IsotropicLinearPoroelasticity::setContext(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops3D);
-        pylith::fekernels::IsotropicLinearPoroelasticity::addContextTensorPerm(
+        pylith::fekernels::IsotropicLinearPoroelasticity::setContextTensorPerm(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops3D);
 
@@ -4168,10 +4168,10 @@ public:
         const PylithInt _dim = 3;assert(_dim == dim);
 
         // Poroelastic Context
-        pylith::fekernels::Poroelasticity::PoroelasticContext poroelasticContext;
-        pylith::fekernels::Poroelasticity::setPoroelasticContextDynamic(
+        pylith::fekernels::Poroelasticity::Context poroelasticContext;
+        pylith::fekernels::Poroelasticity::setContextDynamic(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
-        pylith::fekernels::Poroelasticity::addPoroelasticContextGravity(
+        pylith::fekernels::Poroelasticity::setContextGravity(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
         // Rheology Context
@@ -4179,7 +4179,7 @@ public:
         pylith::fekernels::IsotropicLinearPoroelasticity::setContext(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops3D);
-        pylith::fekernels::IsotropicLinearPoroelasticity::addContextIsotropicPerm(
+        pylith::fekernels::IsotropicLinearPoroelasticity::setContextIsotropicPerm(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops3D);
 
@@ -4219,10 +4219,10 @@ public:
                                          PylithScalar g1[]) {
         const PylithInt _dim = 3;assert(_dim == dim);
         // Poroelastic Context
-        pylith::fekernels::Poroelasticity::PoroelasticContext poroelasticContext;
-        pylith::fekernels::Poroelasticity::setPoroelasticContextDynamic(
+        pylith::fekernels::Poroelasticity::Context poroelasticContext;
+        pylith::fekernels::Poroelasticity::setContextDynamic(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
-        pylith::fekernels::Poroelasticity::addPoroelasticContextGravity(
+        pylith::fekernels::Poroelasticity::setContextGravity(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
         // Rheology Context
@@ -4230,7 +4230,7 @@ public:
         pylith::fekernels::IsotropicLinearPoroelasticity::setContext(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops3D);
-        pylith::fekernels::IsotropicLinearPoroelasticity::addContextTensorPerm(
+        pylith::fekernels::IsotropicLinearPoroelasticity::setContextTensorPerm(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops3D);
 
@@ -4279,7 +4279,7 @@ public:
         pylith::fekernels::IsotropicLinearPoroelasticity::setContext(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops3D);
-        pylith::fekernels::IsotropicLinearPoroelasticity::addContextTraceStrainDynamic(
+        pylith::fekernels::IsotropicLinearPoroelasticity::setContextDynamic(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops3D);
 
@@ -4328,10 +4328,10 @@ public:
         pylith::fekernels::IsotropicLinearPoroelasticity::setContext(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops3D);
-        pylith::fekernels::IsotropicLinearPoroelasticity::addContextRefState(
+        pylith::fekernels::IsotropicLinearPoroelasticity::setContextRefState(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops3D);
-        pylith::fekernels::IsotropicLinearPoroelasticity::addContextTraceStrainDynamic(
+        pylith::fekernels::IsotropicLinearPoroelasticity::setContextDynamic(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops3D);
 
@@ -4389,7 +4389,7 @@ public:
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops3D);
         // Using dynamic formulation for trace strain, assuming that it will be equal to the variable
         // for QS
-        pylith::fekernels::IsotropicLinearPoroelasticity::addContextTraceStrainDynamic(
+        pylith::fekernels::IsotropicLinearPoroelasticity::setContextDynamic(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops3D);
 
@@ -4441,12 +4441,12 @@ public:
         pylith::fekernels::IsotropicLinearPoroelasticity::setContext(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops3D);
-        pylith::fekernels::IsotropicLinearPoroelasticity::addContextRefState(
+        pylith::fekernels::IsotropicLinearPoroelasticity::setContextRefState(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops3D);
         // Using dynamic formulation for trace strain, assuming that it will be equal to the variable
         // for QS
-        pylith::fekernels::IsotropicLinearPoroelasticity::addContextTraceStrainDynamic(
+        pylith::fekernels::IsotropicLinearPoroelasticity::setContextDynamic(
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops3D);
 
@@ -4484,8 +4484,8 @@ public:
         const PylithInt _dim = 3;assert(_dim == dim);
 
         // Incoming solution fields.
-        const PylithInt i_pressure_dot = 4;
-        const PylithInt i_trace_strain_dot = 5;
+        const PylithInt i_pressure_t = 4;
+        const PylithInt i_trace_strain_t = 5;
 
         // Incoming re-packed auxiliary field.
 
@@ -4508,25 +4508,25 @@ public:
         assert(porosity);
 
         // Do stuff
-        const PylithScalar pressure_dot = s ? s[sOff[i_pressure_dot]] : 0.0;
-        const PylithScalar trace_strain_dot = s ? s[sOff[i_trace_strain_dot]] : 0.0;
+        const PylithScalar pressure_t = s ? s[sOff[i_pressure_t]] : 0.0;
+        const PylithScalar trace_strain_t = s ? s[sOff[i_trace_strain_t]] : 0.0;
 
         const PylithScalar drainedBulkModulus = a[aOff[i_drainedBulkModulus]];
         const PylithScalar biotCoefficient = a[aOff[i_biotCoefficient]];
         const PylithScalar porosityPrev = a[aOff[i_porosityPrev]];
 
         // Update porosity
-        porosity[0] = porosityPrev + dt * ((biotCoefficient - porosityPrev) * trace_strain_dot +
+        porosity[0] = porosityPrev + dt * ((biotCoefficient - porosityPrev) * trace_strain_t +
                                            ((1.0 - biotCoefficient) * (biotCoefficient - porosityPrev)) /
-                                           drainedBulkModulus * pressure_dot);
+                                           drainedBulkModulus * pressure_t);
 
-        // setPoroelasticContextQS sets pressure_t - this throws a segfault / memory out of range error.
+        // setContextQuasistatic sets pressure_t - this throws a segfault / memory out of range error.
 
         // // Poroelastic Context
-        // pylith::fekernels::Poroelasticity::PoroelasticContext poroelasticContext;
-        // pylith::fekernels::Poroelasticity::setPoroelasticContextQS(
+        // pylith::fekernels::Poroelasticity::Context poroelasticContext;
+        // pylith::fekernels::Poroelasticity::setContextQuasistatic(
         //     &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
-        // pylith::fekernels::Poroelasticity::addPoroelasticContextQS_sixField(
+        // pylith::fekernels::Poroelasticity::setContextQS_sixField(
         //     &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
         // // Rheology Context
@@ -4536,8 +4536,8 @@ public:
         //     t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
 
         // // Solution Variables
-        // const PylithScalar pressure_dot = poroelasticContext.pressure_dot;
-        // const PylithScalar trace_strain_dot = poroelasticContext.trace_strain_dot;
+        // const PylithScalar pressure_t = poroelasticContext.pressure_t;
+        // const PylithScalar trace_strain_t = poroelasticContext.trace_strain_t;
 
         // // Poroelastic Auxiliaries
         // const PylithScalar porosityPrev = poroelasticContext.porosity;
@@ -4550,9 +4550,9 @@ public:
         // const PylithScalar dt = constants[0];
 
         // // Update porosity
-        // porosity[0] = porosityPrev + dt * ((biotCoefficient - porosityPrev) * trace_strain_dot +
+        // porosity[0] = porosityPrev + dt * ((biotCoefficient - porosityPrev) * trace_strain_t +
         //                                    ((1.0 - biotCoefficient) * (biotCoefficient - porosityPrev)) /
-        //                                    drainedBulkModulus * pressure_dot);
+        //                                    drainedBulkModulus * pressure_t);
     } // updatePorosityImplicit
 
     // ---------------------------------------------------------------------------------------------------------------------
@@ -4580,11 +4580,11 @@ public:
         const PylithInt _dim = 3;assert(_dim == dim);
 
         // Poroelastic Context
-        pylith::fekernels::Poroelasticity::PoroelasticContext poroelasticContext;
-        pylith::fekernels::Poroelasticity::setPoroelasticContextDynamic(
+        pylith::fekernels::Poroelasticity::Context poroelasticContext;
+        pylith::fekernels::Poroelasticity::setContextDynamic(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
-        pylith::fekernels::Poroelasticity::addPoroelasticContextSourceDensity(
+        pylith::fekernels::Poroelasticity::setContextSourceDensity(
             &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
         // Rheology Context
