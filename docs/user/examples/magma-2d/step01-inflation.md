@@ -3,10 +3,10 @@
 ```{include} step01_inflation-synopsis.md
 ```
 
-## Simulation parameter
+## Simulation parameters
 
 This example uses poroelasticity to model flow of magma up through a conduit and into a magma reservoir.
-The magma reseroir and conduit have a higher permeability than the surrounding crust.
+The magma reservoir and conduit have a higher permeability than the surrounding crust.
 We generate flow by imposing a pressure on the external boundary of the conduit that is higher than the uniform initial pressure in the domain.
 {numref}`fig:example:magma:2d:step01:diagram` shows the boundary conditions on the domain.
 The parameters specific to this example are in `step01_inflation.cfg`.
@@ -176,7 +176,7 @@ ts_error_if_step_fails = true
 ts_monitor = true
 ts_type = beuler
 
-# -- many lines ommitted --
+# -- many lines omitted --
 
 50 TS dt 1. time 49.
     0 SNES Function norm 3.049429649018e-03 

@@ -13,3 +13,5 @@
 * pylith.meshio.DataWriterHDF5
 * spatialdata.spatialdb.SimpleGridDB
 * spatialdata.spatialdb.UniformDB
+* Poroelasticity with porosity state variable
+* Isotropic linear poroelasticity with reference state

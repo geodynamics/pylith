@@ -16,6 +16,7 @@ The files and directories for this set of examples includes:
 This example demonstrates the use of poroelasticity to model magma flow in a conduit and reservoir in the crust.
 
 :Step 1: Magma influx with displacement and pressure boundary conditions.
+:Step 2: Same as Step 1 with evolution of porosity state variable.
 
 :::{figure-md} fig:example:magma:2d:overview
 <img src="figs/geometry.*" alt="Diagram of geometry for magma reservoir." scale="100%"/>
@@ -31,5 +32,6 @@ We refer to the domain boundaries using the names shown in the diagram.
 meshing-cubit.md
 common-information.md
 step01-inflation.md
+step02-inflation-statevars.md
 exercises.md
 :::
