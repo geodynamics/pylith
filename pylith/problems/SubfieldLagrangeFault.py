@@ -24,7 +24,7 @@ class SubfieldLagrangeFault(SolutionSubfield):
     """
     DOC_CONFIG = {
         "cfg": """
-        [pylithapp.problems.solution.subfields.lagrange_fault]
+        [pylithapp.problems.solution.subfields.lagrange_multiplier_fault]
         alias = lagrange_multiplier_fault
         basis_order = 1
         """

@@ -66,7 +66,7 @@ class SolnDispPresTracStrainVelPdotTdotLagrange(PetscComponent):
     traceStrainT.meta['tip'] = "TraceStrainT subfield."
 
     from .SubfieldLagrangeFault import SubfieldLagrangeFault
-    lagrangeFault = pythia.pyre.inventory.facility("lagrange_fault", family="soln_subfield", factory=SubfieldLagrangeFault)
+    lagrangeFault = pythia.pyre.inventory.facility("lagrange_multiplier_fault", family="soln_subfield", factory=SubfieldLagrangeFault)
     lagrangeFault.meta['tip'] = "Fault Lagrange multiplier subfield."
 
     def __init__(self, name="solndispprestracstrainvelpdottdotlagrange"):
@@ -79,10 +79,10 @@ class SolnDispPresTracStrainVelPdotTdotLagrange(PetscComponent):
 
     def components(self):
         """Order of facilities in Inventory is ambiguous, so overwrite
-        components() to insure order is [displacement, pressure, trace_strain, velocity, pressure_t, trace_strain_t, lagrange_fault].
+        components() to insure order is [displacement, pressure, trace_strain, velocity, pressure_t, trace_strain_t, lagrange_multiplier_fault].
 
         """
-        return [self.displacement, self.pressure, self.trace_strain, self.velocity, self.pressureT, self.traceStrainT, self.lagrangeFault]
+        return [self.displacement, self.pressure, self.traceStrain, self.velocity, self.pressureT, self.traceStrainT, self.lagrangeFault]
 
 
 class Solution(SolutionBase):
