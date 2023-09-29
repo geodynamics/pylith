@@ -4,6 +4,7 @@ See <https://github.com/geodynamics/pylith/commits/main> for the complete log of
 
 * Removed support for importing meshes from LaGriT.
 * Add output of change in fault tractions for prescribed slip.
+* State variables are now included in the default `data_fields` for simulation output.
 * By default use PETSc proper orthogonal decomposition (POD) methodology for initial guess of solutions to improve convergence.
 * Add demonstration of `pylith_powerlaw_gendb` in Step 8 of `examples/reverse-2d`.
 * Switched from CppUnit to Catch2 as the C++ testing framework.
