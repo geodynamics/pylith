@@ -2488,6 +2488,7 @@ public:
         porosity[0] = porosityPrev + dt * ((biotCoefficient - porosityPrev) * trace_strain_t +
                                            ((1.0 - biotCoefficient) * (biotCoefficient - porosityPrev)) /
                                            drainedBulkModulus * pressure_t);
+        porosity[0] = std::max(0.0, std::min(1.0, porosity[0]));
 
         // setContextQuasistatic sets pressure_t - this throws a segfault / memory out of range error.
 
@@ -2578,7 +2579,7 @@ public:
         porosity[0] = porosityPrev + dt * ((biotCoefficient - porosityPrev) * trace_strain_t +
                                            ((1.0 - biotCoefficient) * (biotCoefficient - porosityPrev)) /
                                            drainedBulkModulus * pressure_t);
-
+        porosity[0] = std::max(0.0, std::min(1.0, porosity[0]));
     } // updatePorosityExplicit
 
 }; // IsotropicLinearPoroelasticityPlaneStrain
@@ -4519,6 +4520,7 @@ public:
         porosity[0] = porosityPrev + dt * ((biotCoefficient - porosityPrev) * trace_strain_t +
                                            ((1.0 - biotCoefficient) * (biotCoefficient - porosityPrev)) /
                                            drainedBulkModulus * pressure_t);
+        porosity[0] = std::max(0.0, std::min(1.0, porosity[0]));
 
         // setContextQuasistatic sets pressure_t - this throws a segfault / memory out of range error.
 
@@ -4611,6 +4613,7 @@ public:
         porosity[0] = porosityPrev + dt * ((biotCoefficient - porosityPrev) * trace_strain_t +
                                            ((1.0 - biotCoefficient) * (biotCoefficient - porosityPrev)) /
                                            drainedBulkModulus * pressure_t);
+        porosity[0] = std::max(0.0, std::min(1.0, porosity[0]));
 
     } // updatePorosityExplicit
 
