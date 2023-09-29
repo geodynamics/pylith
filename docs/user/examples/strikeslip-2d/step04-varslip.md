@@ -43,7 +43,7 @@ defaults.quadrature_order = 2
 
 [pylithapp.problem.solution.subfields]
 displacement.basis_order = 2
-lagrange_fault.basis_order = 2
+lagrange_multiplier_fault.basis_order = 2
 
 [pylithapp.problem]
 solution_observers = [domain, top_boundary, bot_boundary, gps_stations]
