@@ -156,25 +156,33 @@ pylith::materials::Poroelasticity::verifyConfiguration(const pylith::topology::F
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("verifyConfiguration(solution="<<solution.getLabel()<<")");
 
-    // Verify solution contains expected fields.
-    if (!solution.hasSubfield("displacement")) {
-        throw std::runtime_error("Cannot find 'displacement' field in solution; required for material 'Poroelasticity'.");
-    } // if
-    if (!solution.hasSubfield("pressure")) {
-        throw std::runtime_error("Cannot find 'pressure' field in solution; required for material 'Poroelasticity'.");
-    } // if
+    // Verify solution contains required fields.
+    std::string reason = "material 'Poroelasticity'.";
+    size_t numRequired = 0;
+    const size_t maxRequired = 6;
+    pylith::string_vector requiredFields(maxRequired);
+    requiredFields[numRequired++] = "displacement";
+    requiredFields[numRequired++] = "pressure";
+
     switch (_formulation) {
     case QUASISTATIC:
-        if (!solution.hasSubfield("trace_strain")) {
-            throw std::runtime_error("Cannot find 'trace_strain' field in solution; required for material 'Poroelasticity'.");
+        requiredFields[numRequired++] = "trace_strain";
+        if (_useStateVars) {
+            reason = "material 'Poroelasticity' with state variables.";
+            requiredFields[numRequired++] = "velocity";
+            requiredFields[numRequired++] = "pressure_t";
+            requiredFields[numRequired++] = "trace_strain_t";
         } // if
         break;
     case DYNAMIC:
     case DYNAMIC_IMEX:
-        if (!solution.hasSubfield("velocity")) {
-            throw std::runtime_error("Cannot find 'velocity' field in solution; required for material 'Poroelasticity' with inertia.");
-        } // if
+        reason = "material 'Poroelasticity' with inertia.";
+        requiredFields[numRequired++] = "velocity";
     } // switch
+    requiredFields.resize(numRequired);
+
+    pylith::topology::FieldOps::checkSubfieldsExist(requiredFields, reason, solution);
+
     PYLITH_METHOD_END;
 } // verifyConfiguration
 
@@ -912,7 +920,7 @@ pylith::materials::Poroelasticity::_setKernelsDerivedField(pylith::feassemble::I
     kernels[1] = ProjectKernels("cauchy_strain", strainKernel);
 
     const PetscPointFunc bulkDensity = pylith::fekernels::Poroelasticity::bulkDensity_asScalar;
-    
+
     kernels[2] = ProjectKernels("bulk_density", bulkDensity);
 
     assert(integrator);

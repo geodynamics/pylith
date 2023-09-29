@@ -134,29 +134,21 @@ pylith::faults::FaultCohesiveKin::verifyConfiguration(const pylith::topology::Fi
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("verifyConfiguration(solution="<<solution.getLabel()<<")");
 
-    if (!solution.hasSubfield("lagrange_multiplier_fault")) {
-        std::ostringstream msg;
-        msg << "Cannot find 'lagrange_multiplier_fault' subfield in solution field for fault implementation in component '"
-            << PyreComponent::getIdentifier() << "'.";
-        throw std::runtime_error(msg.str());
-    } // if
+    // Verify solution contains required fields.
+    std::string reason = "interface 'FaultCohesiveImpulses'.";
+    size_t numRequired = 0;
+    const size_t maxRequired = 2;
+    pylith::string_vector requiredFields(maxRequired);
+    requiredFields[numRequired++] = "displacement";
+    requiredFields[numRequired++] = "lagrange_multiplier_fault";
+
+    pylith::topology::FieldOps::checkSubfieldsExist(requiredFields, reason, solution);
 
     switch (_formulation) {
     case QUASISTATIC:
-        if (!solution.hasSubfield("displacement")) {
-            std::ostringstream msg;
-            msg << "Cannot find 'displacement' subfield in solution field for fault implementation in component '"
-                << PyreComponent::getIdentifier() << "'.";
-            throw std::runtime_error(msg.str());
-        } // if
         break;
     case DYNAMIC_IMEX:
-        if (!solution.hasSubfield("velocity")) {
-            std::ostringstream msg;
-            msg << "Cannot find 'velocity' subfield in solution field for fault implementation in component '"
-                << PyreComponent::getIdentifier() << "'.";
-            throw std::runtime_error(msg.str());
-        } // if
+        requiredFields[numRequired++] = "velocity";
         break;
     case DYNAMIC:
         PYLITH_COMPONENT_LOGICERROR("Fault implementation is incompatible with 'dynamic' formulation. Use 'dynamic_imex'.");
@@ -164,6 +156,9 @@ pylith::faults::FaultCohesiveKin::verifyConfiguration(const pylith::topology::Fi
     default:
         PYLITH_COMPONENT_LOGICERROR("Unknown formulation for equations (" << _formulation << ").");
     } // switch
+    requiredFields.resize(numRequired);
+
+    pylith::topology::FieldOps::checkSubfieldsExist(requiredFields, reason, solution);
 
     PYLITH_METHOD_END;
 } // verifyConfiguration
