@@ -44,7 +44,7 @@ For this case, we will assume that the material properties are isotropic, result
 %
 \begin{equation}
   \boldsymbol{\sigma}(\vec{u},p) = \boldsymbol{C}:\boldsymbol{\epsilon} - \alpha p \boldsymbol{I}
-  = \lambda \boldsymbol{I} \epsilon_{v} + 2 \mu - \alpha \boldsymbol{I} p
+  = \lambda \boldsymbol{I} \epsilon_{v} + 2 \mu  \boldsymbol{\epsilon} - \alpha \boldsymbol{I} p
 \end{equation}
 %
 where $\lambda$ and $\mu$ are Lam&eacute;'s parameters, $\lambda = K_{d} - \frac{2 \mu}{3}$, $\mu$ is the shear modulus, and the volumetric strain is defined as $\epsilon_{v} = \nabla \cdot \vec{u}$.
