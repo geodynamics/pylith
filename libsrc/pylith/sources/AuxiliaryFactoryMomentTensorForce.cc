@@ -64,7 +64,7 @@ pylith::sources::AuxiliaryFactoryMomentTensorForce::addMomentTensor(void) { // m
     pylith::topology::Field::Description description;
     description.label = subfieldName;
     description.alias = subfieldName;
-    description.vectorFieldType = pylith::topology::Field::OTHER;
+    description.vectorFieldType = (3 == _spaceDim) ? pylith::topology::Field::TENSOR : pylith::topology::Field::OTHER;
     description.numComponents = tensorSize;
     description.componentNames.resize(tensorSize);
     for (int i = 0; i < tensorSize; ++i) {
