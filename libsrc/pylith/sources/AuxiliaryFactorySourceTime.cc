@@ -50,6 +50,7 @@ pylith::sources::AuxiliaryFactorySourceTime::addCenterFrequency(void) { // cente
     PYLITH_JOURNAL_DEBUG("addCenterFrequency(void)");
 
     const char* subfieldName = "center_frequency";
+    const PylithReal timeScale = _normalizer->getTimeScale();
 
     pylith::topology::Field::Description description;
     description.label = subfieldName;
@@ -58,7 +59,7 @@ pylith::sources::AuxiliaryFactorySourceTime::addCenterFrequency(void) { // cente
     description.numComponents = 1;
     description.componentNames.resize(1);
     description.componentNames[0] = subfieldName;
-    description.scale = 1.0;
+    description.scale = 1.0 / timeScale;
     description.validator = pylith::topology::FieldQuery::validatorNonnegative;
 
     _field->subfieldAdd(description, getSubfieldDiscretization(subfieldName));
