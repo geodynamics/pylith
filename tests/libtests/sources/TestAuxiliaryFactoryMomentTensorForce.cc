@@ -72,7 +72,7 @@ pylith::sources::TestAuxiliaryFactoryMomentTensorForce::TestAuxiliaryFactoryMome
     info.fe = pylith::topology::Field::Discretization(
         2, 2, _data->auxDim, _data->auxDim, false, pylith::topology::Field::DEFAULT_BASIS, pylith::topology::Field::POLYNOMIAL_SPACE, false
         );
-    info.index = 3;
+    info.index = 0;
     _data->subfields["moment_tensor"] = info;
     if (2 == _data->auxDim) {
         _data->subfields["moment_tensor"].description.numComponents = 4;
@@ -94,7 +94,7 @@ pylith::sources::TestAuxiliaryFactoryMomentTensorForce::TestAuxiliaryFactoryMome
     info.fe = pylith::topology::Field::Discretization(
         1, 2, _data->auxDim, 1, false, pylith::topology::Field::DEFAULT_BASIS, pylith::topology::Field::POLYNOMIAL_SPACE, true
         );
-    info.index = 0;
+    info.index = 1;
     _data->subfields["time_delay"] = info;
 
     _initialize();

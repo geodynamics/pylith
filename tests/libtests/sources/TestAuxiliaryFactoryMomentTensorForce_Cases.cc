@@ -72,9 +72,9 @@ private:
     }
 
     static
-    const char* pressure_units(void) {
+    const char* moment_tensor_units(void) {
         return "Pa";
-    } // pressure_units
+    } // moment_tensor_units
 
     static
     double time_delay_2d(const double x,
@@ -166,10 +166,10 @@ pylith::sources::TestAuxiliaryFactoryMomentTensorForce_Cases::Tri(void) {
     data->cs->setSpaceDim(data->dimension);
 
     assert(data->auxiliaryDB);
-    data->auxiliaryDB->addValue("moment_tensor_xx", moment_tensor_2d_xx, pressure_units());
-    data->auxiliaryDB->addValue("moment_tensor_yy", moment_tensor_2d_yy, pressure_units());
-    data->auxiliaryDB->addValue("moment_tensor_zz", moment_tensor_2d_zz, pressure_units());
-    data->auxiliaryDB->addValue("moment_tensor_xy", moment_tensor_2d_xy, pressure_units());
+    data->auxiliaryDB->addValue("moment_tensor_xx", moment_tensor_2d_xx, moment_tensor_units());
+    data->auxiliaryDB->addValue("moment_tensor_yy", moment_tensor_2d_yy, moment_tensor_units());
+    data->auxiliaryDB->addValue("moment_tensor_zz", moment_tensor_2d_zz, moment_tensor_units());
+    data->auxiliaryDB->addValue("moment_tensor_xy", moment_tensor_2d_xy, moment_tensor_units());
     data->auxiliaryDB->addValue("time_delay", time_delay_2d, time_units());
     data->auxiliaryDB->setDescription("auxiliary");
     data->auxiliaryDB->setCoordSys(*data->cs);
@@ -191,12 +191,12 @@ pylith::sources::TestAuxiliaryFactoryMomentTensorForce_Cases::Hex(void) {
     data->cs->setSpaceDim(data->dimension);
 
     assert(data->auxiliaryDB);
-    data->auxiliaryDB->addValue("moment_tensor_xx", moment_tensor_3d_xx, pressure_units());
-    data->auxiliaryDB->addValue("moment_tensor_yy", moment_tensor_3d_yy, pressure_units());
-    data->auxiliaryDB->addValue("moment_tensor_zz", moment_tensor_3d_zz, pressure_units());
-    data->auxiliaryDB->addValue("moment_tensor_xy", moment_tensor_3d_xy, pressure_units());
-    data->auxiliaryDB->addValue("moment_tensor_yz", moment_tensor_3d_yz, pressure_units());
-    data->auxiliaryDB->addValue("moment_tensor_xz", moment_tensor_3d_xz, pressure_units());
+    data->auxiliaryDB->addValue("moment_tensor_xx", moment_tensor_3d_xx, moment_tensor_units());
+    data->auxiliaryDB->addValue("moment_tensor_yy", moment_tensor_3d_yy, moment_tensor_units());
+    data->auxiliaryDB->addValue("moment_tensor_zz", moment_tensor_3d_zz, moment_tensor_units());
+    data->auxiliaryDB->addValue("moment_tensor_xy", moment_tensor_3d_xy, moment_tensor_units());
+    data->auxiliaryDB->addValue("moment_tensor_yz", moment_tensor_3d_yz, moment_tensor_units());
+    data->auxiliaryDB->addValue("moment_tensor_xz", moment_tensor_3d_xz, moment_tensor_units());
     data->auxiliaryDB->addValue("time_delay", time_delay_3d, time_units());
     data->auxiliaryDB->setDescription("auxiliary");
     data->auxiliaryDB->setCoordSys(*data->cs);
