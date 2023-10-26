@@ -37,7 +37,13 @@ We replace the variation of fluid content variable, $\zeta$, with its definition
 \end{gather}
 %
 We write the volumetric strain in terms of displacement, because this dynamic formulation does not include the volumetric strain as an unknown.
-
+Note that for poroelastodynamics we use the generalized Darcy's law {cite}`ding2013fundamental` as
+%
+\begin{equation}
+  \vec{q}(p) = -\frac{\boldsymbol{k}}{\mu_{f}}(\nabla p - \vec{f}_f + \rho_{f} \frac{\partial \vec{v}}{\partial t}),
+\end{equation}
+%
+where the generalized Darcy's law adds the term $\rho_{f} \frac{\partial \vec{v}}{\partial t}$.
 Using trial functions ${\vec{\psi}_\mathit{trial}^{u}}$, ${\psi_\mathit{trial}^{p}}$, and ${\vec{\psi}_\mathit{trial}^{v}}$, and incorporating the Neumann boundary conditions, the weak form may be written as:
 %
 \begin{align}
