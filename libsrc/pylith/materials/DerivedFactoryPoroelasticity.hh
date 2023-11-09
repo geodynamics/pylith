@@ -42,6 +42,9 @@ public:
     /// Add bulk density subfield to derived field
     void addBulkDensity(void);
 
+    /// Add water content subfield to derived field
+    void addWaterContent(void);
+
     /// Add subfields using discretizations provided.
     void addSubfields(void);
 

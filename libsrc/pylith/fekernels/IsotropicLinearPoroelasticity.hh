@@ -2426,6 +2426,49 @@ public:
             pylith::fekernels::Tensor::ops2D, stressVector);
     } // cauchyStress_infinitesimalStrain_refState_asVector
 
+    // Calculate water content
+    static inline
+    void waterContent_asScalar(const PylithInt dim,
+                               const PylithInt numS,
+                               const PylithInt numA,
+                               const PylithInt sOff[],
+                               const PylithInt sOff_x[],
+                               const PylithScalar s[],
+                               const PylithScalar s_t[],
+                               const PylithScalar s_x[],
+                               const PylithInt aOff[],
+                               const PylithInt aOff_x[],
+                               const PylithScalar a[],
+                               const PylithScalar a_t[],
+                               const PylithScalar a_x[],
+                               const PylithReal t,
+                               const PylithScalar x[],
+                               const PylithInt numConstants,
+                               const PylithScalar constants[],
+                               PylithReal* waterContent) {
+        // Poroelastic Context
+        pylith::fekernels::Poroelasticity::Context poroelasticContext;
+        pylith::fekernels::Poroelasticity::setContextQuasistatic(
+            &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
+
+        // Rheological Context
+        pylith::fekernels::IsotropicLinearPoroelasticity::Context rheologyContext;
+        pylith::fekernels::IsotropicLinearPoroelasticity::setContext(
+            &rheologyContext, dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
+            t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
+
+        // Solution Variables
+        PylithScalar pressure = poroelasticContext.pressure;
+        PylithScalar trace_strain = poroelasticContext.trace_strain;
+
+        // Rheological Auxiliaries
+        const PylithReal biotCoefficient = rheologyContext.biotCoefficient;
+        const PylithReal biotModulus = rheologyContext.biotModulus;
+
+        *waterContent = biotCoefficient * trace_strain + pressure / biotModulus;
+
+    } // waterContent_asScalar
+
     // ========================== Update Kernels ===================================
 
     // ---------------------------------------------------------------------------------------------------------------------
@@ -4404,10 +4447,10 @@ public:
     } // cauchyStress_infinitesimalStrain_asVector
 
     // --------------------------------------------------------------------------------------------
-    /** Entry function for calculating Cauchy stress for 3D isotropic linear poroelasticity with
-     * infinitesimal strain WITH a reference stress and strain.
+    /** Entry function for calculating water content for a 3D isotropic linear poroelasticity with
+     * infinitesimal strain.
      *
-     * Used to output of Cauchy stress.
+     * Used to output the water content.
      *
      * Solution fields: [disp(dim)]
      * Auxiliary fields: [..., biot_coefficient(1), shear_modulus(1), drained_bulk_modulus(1)]
@@ -4456,7 +4499,50 @@ public:
             pylith::fekernels::Elasticity3D::infinitesimalStrain,
             pylith::fekernels::IsotropicLinearPoroelasticity::cauchyStress_refState,
             pylith::fekernels::Tensor::ops3D, stressVector);
-    } // cauchyStress_infinitesimalStrain_refState_asVector
+    } // 
+    
+    // Calculate water content
+    static inline
+    void waterContent_asScalar(const PylithInt dim,
+                               const PylithInt numS,
+                               const PylithInt numA,
+                               const PylithInt sOff[],
+                               const PylithInt sOff_x[],
+                               const PylithScalar s[],
+                               const PylithScalar s_t[],
+                               const PylithScalar s_x[],
+                               const PylithInt aOff[],
+                               const PylithInt aOff_x[],
+                               const PylithScalar a[],
+                               const PylithScalar a_t[],
+                               const PylithScalar a_x[],
+                               const PylithReal t,
+                               const PylithScalar x[],
+                               const PylithInt numConstants,
+                               const PylithScalar constants[],
+                               PylithReal* waterContent) {
+        // Poroelastic Context
+        pylith::fekernels::Poroelasticity::Context poroelasticContext;
+        pylith::fekernels::Poroelasticity::setContextQuasistatic(
+            &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
+
+        // Rheological Context
+        pylith::fekernels::IsotropicLinearPoroelasticity::Context rheologyContext;
+        pylith::fekernels::IsotropicLinearPoroelasticity::setContext(
+            &rheologyContext, dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
+            t, x, numConstants, constants, pylith::fekernels::Tensor::ops3D);
+
+        // Solution Variables
+        PylithScalar pressure = (poroelasticContext.pressure ? poroelasticContext.pressure : 0.0);
+        PylithScalar trace_strain = (poroelasticContext.trace_strain ? poroelasticContext.trace_strain : 0.0);
+
+        // Rheological Auxiliaries
+        const PylithReal biotCoefficient = rheologyContext.biotCoefficient;
+        const PylithReal biotModulus = rheologyContext.biotModulus;
+
+        *waterContent = biotCoefficient * trace_strain + pressure / biotModulus;
+
+    } // waterContent_asScalar
 
     // ========================== Update Kernels ===================================
 

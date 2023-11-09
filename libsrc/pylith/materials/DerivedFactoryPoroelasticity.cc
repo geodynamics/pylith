@@ -70,6 +70,29 @@ pylith::materials::DerivedFactoryPoroelasticity::addBulkDensity(void) {
 } //addBulkDensity
 
 // ------------------------------------------------------------------------------------------------
+// Add water content subfield to derived fields
+void
+pylith::materials::DerivedFactoryPoroelasticity::addWaterContent(void) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("addWaterContent(void)");
+
+    const char* fieldName = "water_content";
+    
+    pylith::topology::Field::Description description;
+    description.label = fieldName;
+    description.alias = fieldName;
+    description.vectorFieldType = pylith::topology::Field::SCALAR;
+    description.numComponents = 1;
+    description.componentNames.resize(1);
+    description.componentNames[0] = fieldName;
+    description.scale = 1.0;
+
+    _field->subfieldAdd(description, getSubfieldDiscretization(fieldName));
+
+    PYLITH_METHOD_END;
+} //addWaterContent
+
+// ------------------------------------------------------------------------------------------------
 // Add subfields using discretizations provided.
 void
 pylith::materials::DerivedFactoryPoroelasticity::addSubfields(void) {
@@ -84,6 +107,9 @@ pylith::materials::DerivedFactoryPoroelasticity::addSubfields(void) {
     } // if
     if (_subfieldDiscretizations.find("bulk_density") != _subfieldDiscretizations.end()) {
         addBulkDensity();
+    } // if
+    if (_subfieldDiscretizations.find("water_content") != _subfieldDiscretizations.end()) {
+        addWaterContent();
     } // if
 
     PYLITH_METHOD_END;

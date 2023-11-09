@@ -909,7 +909,7 @@ pylith::materials::Poroelasticity::_setKernelsDerivedField(pylith::feassemble::I
     const spatialdata::geocoords::CoordSys* coordsys = solution.getMesh().getCoordSys();
     assert(coordsys);
 
-    std::vector<ProjectKernels> kernels(3);
+    std::vector<ProjectKernels> kernels(4);
     kernels[0] = ProjectKernels("cauchy_stress", _rheology->getKernelCauchyStressVector(coordsys));
 
     const int spaceDim = coordsys->getSpaceDim();
@@ -922,6 +922,8 @@ pylith::materials::Poroelasticity::_setKernelsDerivedField(pylith::feassemble::I
     const PetscPointFunc bulkDensity = pylith::fekernels::Poroelasticity::bulkDensity_asScalar;
 
     kernels[2] = ProjectKernels("bulk_density", bulkDensity);
+
+    kernels[3] = ProjectKernels("water_content", _rheology->getKernelWaterContent(coordsys));
 
     assert(integrator);
     integrator->setKernelsDerivedField(kernels);
