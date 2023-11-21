@@ -32,8 +32,9 @@ namespace pylith {
         class FaultCohesive;
         class FaultCohesiveKin;
         class FaultCohesiveImpulses;
-        class AuxiliaryFactoryKinematic;
-        class DerivedFactoryKinematic;
+        class AuxiliaryFieldFactory;
+        class DiagnosticFieldFactory;
+        class DerivedFieldFactory;
 
         class KinSrc;
         class KinSrcConstRate;
@@ -49,6 +50,6 @@ namespace pylith {
     } // faults
 } // pylith
 
-#endif // pylith_faults_bcfwd_hh
+#endif // pylith_faults_faultsfwd_hh
 
 // End of file

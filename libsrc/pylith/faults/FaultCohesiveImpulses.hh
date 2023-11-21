@@ -79,16 +79,6 @@ public:
     pylith::topology::Field* createAuxiliaryField(const pylith::topology::Field& solution,
                                                   const pylith::topology::Mesh& domainMesh);
 
-    /** Create derived field.
-     *
-     * @param[in] solution Solution field.
-     * @param[in\ domainMesh Finite-element mesh associated with integration domain.
-     *
-     * @returns Derived field if applicable, otherwise NULL.
-     */
-    pylith::topology::Field* createDerivedField(const pylith::topology::Field& solution,
-                                                const pylith::topology::Mesh& domainMesh);
-
     /** Update auxiliary subfields at beginning of time step.
      *
      * @param[out] auxiliaryField Auxiliary field.
@@ -137,7 +127,7 @@ protected:
     // PRIVATE METHODS ////////////////////////////////////////////////////////////////////////////
 private:
 
-    pylith::faults::AuxiliaryFactoryKinematic* _auxiliaryFactory; ///< Factory for auxiliary subfields.
+    pylith::faults::AuxiliaryFieldFactory* _auxiliaryFactory; ///< Factory for auxiliary subfields.
     PylithReal _threshold; ///< Threshold for nonzero impulse amplitude.
     int_array _impulseDOF; ///< Degrees of freedom with impulses.
     int_array _impulsePoints; ///< Points with nonzero threshold.

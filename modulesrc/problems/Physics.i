@@ -194,6 +194,17 @@ public:
             pylith::topology::Field* createAuxiliaryField(const pylith::topology::Field& solution,
                                                           const pylith::topology::Mesh& physicsMesh) = 0;
 
+            /** Create diagnostic field.
+             *
+             * @param[in] solution Solution field.
+             * @param[in] physicsMesh Finite-element mesh associated with physics.
+             *
+             * @returns Auxiliary field if applicable, otherwise NULL.
+             */
+            virtual
+            pylith::topology::Field* createDiagnosticField(const pylith::topology::Field& solution,
+                                                           const pylith::topology::Mesh& physicsMesh);
+
             /** Create derived field.
              *
              * @param[in] solution Solution field.

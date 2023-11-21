@@ -186,14 +186,21 @@ void
 pylith::meshio::OutputPhysics::update(const PylithReal t,
                                       const PylithInt tindex,
                                       const pylith::topology::Field& solution,
-                                      const bool infoOnly) {
-    if (infoOnly) {
+                                      const NotificationType notification) {
+    switch (notification) {
+    case DIAGNOSTIC: {
         _writeInfo();
-    } else {
+        break;
+    }
+    case SOLUTION: {
         assert(_trigger);
         if (_trigger->shouldWrite(t, tindex)) {
             _writeDataStep(t, tindex, solution);
         } // if
+        break;
+    }
+    default:
+        PYLITH_JOURNAL_LOGICERROR("Unknown notification for updating observers.");
     } // if/else
 } // update
 
@@ -209,17 +216,20 @@ pylith::meshio::OutputPhysics::_writeInfo(void) {
 
     assert(_physics);
     const pylith::topology::Field* auxiliaryField = _physics->getAuxiliaryField();
-    if (!auxiliaryField) { PYLITH_METHOD_END;}
+    const pylith::topology::Field* diagnosticField = _physics->getDiagnosticField();
 
-    const pylith::string_vector& infoNames = _expandInfoFieldNames(auxiliaryField);
+    const pylith::string_vector& infoNames = _expandInfoFieldNames(auxiliaryField, diagnosticField);
 
     const bool isInfo = true;
     const pylith::topology::Mesh& domainMesh = _physics->getPhysicsDomainMesh();
     _open(domainMesh, isInfo);
     _openDataStep(0.0, domainMesh);
 
-    PetscVec auxiliaryVector = auxiliaryField->getOutputVector();
-    auxiliaryField->scatterLocalToOutput();
+    if (auxiliaryField) { auxiliaryField->scatterLocalToOutput(); }
+    PetscVec auxiliaryVector = (auxiliaryField) ? auxiliaryField->getOutputVector() : NULL;
+
+    if (diagnosticField) { diagnosticField->scatterLocalToOutput(); }
+    PetscVec diagnosticVector = (diagnosticField) ? diagnosticField->getOutputVector() : NULL;
 
     const size_t numInfoFields = infoNames.size();
     for (size_t i = 0; i < numInfoFields; i++) {
@@ -227,9 +237,13 @@ pylith::meshio::OutputPhysics::_writeInfo(void) {
             OutputSubfield* subfield = _getSubfield(*auxiliaryField, domainMesh, infoNames[i].c_str());
             subfield->project(auxiliaryVector);
             _appendField(0.0, *subfield);
+        } else if (diagnosticField->hasSubfield(infoNames[i].c_str())) {
+            OutputSubfield* subfield = _getSubfield(*diagnosticField, domainMesh, infoNames[i].c_str());
+            subfield->project(diagnosticVector);
+            _appendField(0.0, *subfield);
         } else {
             std::ostringstream msg;
-            msg << "Internal Error: Could not find subfield '" << infoNames[i] << "' in auxiliary field for info output.";
+            msg << "Internal Error: Could not find subfield '" << infoNames[i] << "' for info output.";
             PYLITH_COMPONENT_ERROR(msg.str());
             throw std::runtime_error(msg.str());
         } // if/else
@@ -369,11 +383,32 @@ pylith::meshio::OutputPhysics::_writeDataStep(const PylithReal t,
 // ------------------------------------------------------------------------------------------------
 // Names of information fields for output.
 pylith::string_vector
-pylith::meshio::OutputPhysics::_expandInfoFieldNames(const pylith::topology::Field* auxField) const {
+pylith::meshio::OutputPhysics::_expandInfoFieldNames(const pylith::topology::Field* auxiliaryField,
+                                                     const pylith::topology::Field* diagnosticField) const {
     PYLITH_METHOD_BEGIN;
 
-    if (auxField && (1 == _infoFieldNames.size()) && (std::string("all") == _infoFieldNames[0])) {
-        PYLITH_METHOD_RETURN(auxField->getSubfieldNames());
+    if ((1 == _infoFieldNames.size()) && (std::string("all") == _infoFieldNames[0])) {
+        pylith::string_vector infoNames;
+
+        if (auxiliaryField) {
+            const pylith::string_vector& auxiliarySubfields = auxiliaryField->getSubfieldNames();
+            const size_t origSize = infoNames.size();
+            const size_t numAdd = auxiliarySubfields.size();
+            infoNames.resize(origSize + numAdd);
+            for (size_t iAdd = 0, iName = origSize; iAdd < numAdd; ++iAdd, ++iName) {
+                infoNames[iName] = auxiliarySubfields[iAdd];
+            } // for
+        } // if
+        if (diagnosticField) {
+            const pylith::string_vector& diagnosticSubfields = diagnosticField->getSubfieldNames();
+            const size_t origSize = infoNames.size();
+            const size_t numAdd = diagnosticSubfields.size();
+            infoNames.resize(origSize + numAdd);
+            for (size_t iAdd = 0, iName = origSize; iAdd < numAdd; ++iAdd, ++iName) {
+                infoNames[iName] = diagnosticSubfields[iAdd];
+            } // for
+        } // if
+        PYLITH_METHOD_RETURN(infoNames);
     } // if
 
     PYLITH_METHOD_RETURN(_infoFieldNames);
@@ -384,7 +419,7 @@ pylith::meshio::OutputPhysics::_expandInfoFieldNames(const pylith::topology::Fie
 // Names of data fields for output.
 pylith::string_vector
 pylith::meshio::OutputPhysics::_expandDataFieldNames(const pylith::topology::Field& solution,
-                                                     const pylith::topology::Field* auxField,
+                                                     const pylith::topology::Field* auxiliaryField,
                                                      const pylith::topology::Field* derivedField) const {
     PYLITH_METHOD_BEGIN;
 

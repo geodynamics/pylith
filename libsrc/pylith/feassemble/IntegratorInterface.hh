@@ -206,6 +206,12 @@ public:
      */
     void setKernelsUpdateStateVars(const std::vector<ProjectKernels>& kernels);
 
+    /** Set kernels for computing diagnostic field.
+     *
+     * @param kernels Array of kernels for computing diagnostic field.
+     */
+    void setKernelsDiagnosticField(const std::vector<ProjectKernels>& kernels);
+
     /** Set kernels for computing derived field.
      *
      * @param kernels Array of kernels for computing derived field.
@@ -284,6 +290,9 @@ protected:
                           const PylithReal dt,
                           const pylith::topology::Field& solution);
 
+    /// Compute diagnostic field from auxiliary field.
+    void _computeDiagnosticField(void);
+
     /** Compute field derived from solution and auxiliary field.
      *
      * @param[in] t Current time.
@@ -302,6 +311,7 @@ private:
 
     pylith::feassemble::InterfacePatches* _integrationPatches; ///< Face patches.
     std::vector<ProjectKernels> _kernelsUpdateStateVars; ///< kernels for updating state variables.
+    std::vector<ProjectKernels> _kernelsDiagnosticField; ///< kernels for computing diagnostic field.
     std::vector<ProjectKernels> _kernelsDerivedField; ///< kernels for computing derived field.
 
     PetscDM _weightingDM; ///< PETSc DM for weighting.

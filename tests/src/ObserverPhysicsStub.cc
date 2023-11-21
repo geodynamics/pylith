@@ -65,7 +65,7 @@ void
 pylith::problems::ObserverPhysicsStub::update(const PylithReal t,
                                               const PylithInt tindex,
                                               const pylith::topology::Field& solution,
-                                              const bool infoOnly) {
+                                              const NotificationType notification) {
     pylith::testing::StubMethodTracker tracker("pylith::problems::ObserverPhysicsStub::update");
 } // update
 

@@ -23,8 +23,9 @@ subpkginclude_HEADERS = \
 	FaultCohesive.hh \
 	FaultCohesiveKin.hh \
 	FaultCohesiveImpulses.hh \
-	AuxiliaryFactoryKinematic.hh \
-	DerivedFactoryKinematic.hh \
+	AuxiliaryFieldFactory.hh \
+	DiagnosticFieldFactory.hh \
+	DerivedFieldFactory.hh \
 	FaultOps.hh \
 	KinSrc.hh \
 	KinSrcStep.hh \

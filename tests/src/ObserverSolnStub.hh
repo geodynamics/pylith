@@ -64,10 +64,12 @@ public:
      * @param[in] t Current time.
      * @param[in] tindex Current time step.
      * @param[in] solution Solution at time t.
+     * @param[in] notification Type of notification.
      */
     void update(const PylithReal t,
                 const PylithInt tindex,
-                const pylith::topology::Field& solution);
+                const pylith::topology::Field& solution,
+                const NotificationType notification);
 
     // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:

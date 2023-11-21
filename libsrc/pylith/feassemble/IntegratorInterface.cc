@@ -439,6 +439,18 @@ pylith::feassemble::IntegratorInterface::setKernelsDerivedField(const std::vecto
 
 
 // ------------------------------------------------------------------------------------------------
+void
+pylith::feassemble::IntegratorInterface::setKernelsDiagnosticField(const std::vector<ProjectKernels>& kernels) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" setKernelsDiagnosticField(# kernels="<<kernels.size()<<")");
+
+    _kernelsDiagnosticField = kernels;
+
+    PYLITH_METHOD_END;
+} // setKernelsDiagnosticField
+
+
+// ------------------------------------------------------------------------------------------------
 // Compute weak form key part for face.
 PetscInt
 pylith::feassemble::IntegratorInterface::getWeakFormPart(const PetscInt part,
@@ -457,7 +469,7 @@ pylith::feassemble::IntegratorInterface::getWeakFormPart(const PetscInt part,
 void
 pylith::feassemble::IntegratorInterface::initialize(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" intialize(solution="<<solution.getLabel()<<")");
+    PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" initialize(solution="<<solution.getLabel()<<")");
 
     const bool isSubmesh = true;
     delete _interfaceMesh;_interfaceMesh = new pylith::topology::Mesh(isSubmesh);assert(_interfaceMesh);
@@ -775,6 +787,48 @@ pylith::feassemble::IntegratorInterface::_updateStateVars(const PylithReal t,
 
     PYLITH_METHOD_END;
 } // _updateStateVars
+
+
+// ------------------------------------------------------------------------------------------------
+// Compute diagnostic field from auxiliary field.
+void
+pylith::feassemble::IntegratorInterface::_computeDiagnosticField(void) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("_computeDiagnosticField()");
+
+    if (!_diagnosticField) {
+        PYLITH_METHOD_END;
+    } // if
+
+    assert(_auxiliaryField);
+    assert(_diagnosticField);
+    const PylithScalar t = 0.0;
+    const PylithScalar dt = 0.0;
+    _setKernelConstants(*_auxiliaryField, dt);
+
+    const size_t numKernels = _kernelsDiagnosticField.size();
+    PetscBdPointFunc* kernelsArray = (numKernels > 0) ? new PetscBdPointFunc[numKernels] : NULL;
+    for (size_t iKernel = 0; iKernel < numKernels; ++iKernel) {
+        const pylith::topology::Field::SubfieldInfo& sinfo = _diagnosticField->getSubfieldInfo(_kernelsDiagnosticField[iKernel].subfield.c_str());
+        kernelsArray[sinfo.index] = _kernelsDiagnosticField[iKernel].f;
+    } // for
+
+    PetscErrorCode err = 0;
+    PetscDM diagnosticDM = _diagnosticField->getDM();
+    PetscDMLabel diagnosticFieldLabel = NULL;
+    const PetscInt labelValue = 1;
+    err = DMGetLabel(diagnosticDM, "output", &diagnosticFieldLabel);PYLITH_CHECK_ERROR(err);
+    err = DMProjectBdFieldLabelLocal(diagnosticDM, t, diagnosticFieldLabel, 1, &labelValue, PETSC_DETERMINE, NULL, _auxiliaryField->getLocalVector(), kernelsArray, INSERT_VALUES, _diagnosticField->getLocalVector());PYLITH_CHECK_ERROR(err);
+    delete[] kernelsArray;kernelsArray = NULL;
+
+    pythia::journal::debug_t debug(GenericComponent::getName());
+    if (debug.state()) {
+        PYLITH_JOURNAL_DEBUG("Viewing diagnostic field.");
+        _diagnosticField->view("Diagnostic field");
+    } // if
+
+    PYLITH_METHOD_END;
+} // _computeDiagnosticField
 
 
 // ------------------------------------------------------------------------------------------------

@@ -48,7 +48,7 @@ public:
 
     /// Deallocate PETSc and local data structures.
     virtual
-    void deallocate(void);
+    void deallocate(void) override;
 
     /** Set names of solution subfields requested for output.
      *
@@ -68,25 +68,26 @@ public:
      *
      * @param[in] value Time scale for dimensionalizing time.
      */
-    void setTimeScale(const PylithReal value);
+    void setTimeScale(const PylithReal value) override;
 
     /** Verify observer is compatible with solution.
      *
      * @param[in] solution Solution field.
      */
     virtual
-    void verifyConfiguration(const pylith::topology::Field& solution) const;
+    void verifyConfiguration(const pylith::topology::Field& solution) const override;
 
     /** Receive update from subject.
      *
      * @param[in] t Current time.
      * @param[in] tindex Current time step.
      * @param[in] solution Solution at time t.
-     * @param[in] infoOnly Flag is true if this update is before solution is available (e.g., after initialization).
+     * @param[in] notification Type of notification.
      */
     void update(const PylithReal t,
                 const PylithInt tindex,
-                const pylith::topology::Field& solution);
+                const pylith::topology::Field& solution,
+                const NotificationType notification) override;
 
     // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:

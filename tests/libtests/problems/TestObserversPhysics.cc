@@ -206,8 +206,8 @@ pylith::problems::TestObserversPhysics::testNotifyObservers(void) {
     const PylithInt tindex = 1;
     pylith::topology::Mesh mesh;
     pylith::topology::Field solution(mesh);
-    _observers->notifyObservers(t, tindex, solution, true);
-    _observers->notifyObservers(t, tindex, solution, false);
+    _observers->notifyObservers(t, tindex, solution, pylith::problems::Observer::DIAGNOSTIC);
+    _observers->notifyObservers(t, tindex, solution, pylith::problems::Observer::SOLUTION);
 
     CHECK(size_t(4) == tracker.getMethodCount("pylith::problems::ObserverPhysicsStub::update"));
 } // testNotifyObservers

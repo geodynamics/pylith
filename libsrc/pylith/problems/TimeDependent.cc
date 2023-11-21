@@ -458,6 +458,7 @@ pylith::problems::TimeDependent::poststep(void) {
     err = TSGetTimeStep(_ts, &dt);PYLITH_CHECK_ERROR(err);
     err = TSGetStepNumber(_ts, &tindex);PYLITH_CHECK_ERROR(err);
     err = TSGetSolution(_ts, &solutionVec);PYLITH_CHECK_ERROR(err);
+    const pylith::problems::Observer::NotificationType notification = pylith::problems::Observer::SOLUTION;
 
     // Update PyLith view of the solution.
     assert(_integrationData);
@@ -468,18 +469,18 @@ pylith::problems::TimeDependent::poststep(void) {
     // Update integrators.
     const size_t numIntegrators = _integrators.size();
     for (size_t i = 0; i < numIntegrators; ++i) {
-        _integrators[i]->poststep(t, tindex, dt, *solution);
+        _integrators[i]->poststep(t, tindex, dt, *solution, notification);
     } // for
 
     // Update constraints.
     const size_t numConstraints = _constraints.size();
     for (size_t i = 0; i < numConstraints; ++i) {
-        _constraints[i]->poststep(t, tindex, dt, *solution);
+        _constraints[i]->poststep(t, tindex, dt, *solution, notification);
     } // for
 
     // Notify problem observers of updated solution.
     assert(_observers);
-    _observers->notifyObservers(t, tindex, *solution);
+    _observers->notifyObservers(t, tindex, *solution, notification);
 
     if (_monitor) {
         assert(_normalizer);
@@ -900,21 +901,22 @@ pylith::problems::TimeDependent::_notifyObserversInitialSoln(void) {
     const PylithReal timeScale = _normalizer->getTimeScale();
     const PylithReal tStartNondim = _startTime / timeScale;
     const PylithInt tindex = 0;
+    const pylith::problems::Observer::NotificationType notification = pylith::problems::Observer::SOLUTION;
 
     assert(_integrationData);
     const pylith::topology::Field* solution = _integrationData->getField(pylith::feassemble::IntegrationData::solution);assert(solution);
-    _observers->notifyObservers(tStartNondim, tindex, *solution);
+    _observers->notifyObservers(tStartNondim, tindex, *solution, notification);
 
     const size_t numIntegrators = _integrators.size();
     for (size_t i = 0; i < numIntegrators; ++i) {
         assert(_integrators[i]);
-        _integrators[i]->notifyObservers(tStartNondim, tindex, *solution);
+        _integrators[i]->notifyObservers(tStartNondim, tindex, *solution, notification);
     } // for
 
     const size_t numConstraints = _constraints.size();
     for (size_t i = 0; i < numConstraints; ++i) {
         assert(_constraints[i]);
-        _constraints[i]->notifyObservers(tStartNondim, tindex, *solution);
+        _constraints[i]->notifyObservers(tStartNondim, tindex, *solution, notification);
     } // for
 
     PYLITH_METHOD_END;

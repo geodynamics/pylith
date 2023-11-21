@@ -21,13 +21,18 @@
 #include "FaultCohesive.hh" // implementation of object methods
 
 #include "pylith/faults/TopologyOps.hh" // USES TopologyOps
+#include "pylith/faults/DiagnosticFieldFactory.hh" // USES DiagnosticFieldFactory
 #include "pylith/feassemble/IntegratorInterface.hh" // USES IntegratorInterface
 #include "pylith/feassemble/InterfacePatches.hh" // USES InterfacePatches
 #include "pylith/feassemble/ConstraintSimple.hh" // USES ConstraintSimple
 #include "pylith/feassemble/FEKernelKey.hh" // USES FEKernelKey
 #include "pylith/topology/Mesh.hh" // USES Mesh::cells_label_name
 #include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/FieldOps.hh" // USES FieldOps::checkDiscretization()
 #include "pylith/topology/MeshOps.hh" // USES MeshOps::checkTopology()
+#include "pylith/topology/Stratum.hh" // USES Stratum
+
+#include "pylith/fekernels/FaultCohesive.hh" // USES FaultCohesive
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
@@ -39,8 +44,12 @@
 #include <stdexcept> // USES std::runtime_error
 
 // ------------------------------------------------------------------------------------------------
+typedef pylith::feassemble::IntegratorInterface::ProjectKernels ProjectKernels;
+
+// ------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::faults::FaultCohesive::FaultCohesive(void) :
+    _diagnosticFactory(new pylith::faults::DiagnosticFieldFactory),
     _surfaceLabelName(""),
     _buriedEdgesLabelName(""),
     _surfaceLabelValue(1),
@@ -69,8 +78,9 @@ pylith::faults::FaultCohesive::~FaultCohesive(void) {
 void
 pylith::faults::FaultCohesive::deallocate(void) {
     PYLITH_METHOD_BEGIN;
-
     pylith::problems::Physics::deallocate();
+
+    delete _diagnosticFactory;_diagnosticFactory = NULL;
 
     PYLITH_METHOD_END;
 } // deallocate
@@ -284,6 +294,60 @@ pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh) {
 
 
 // ------------------------------------------------------------------------------------------------
+// Create diagnostic field.
+pylith::topology::Field*
+pylith::faults::FaultCohesive::createDiagnosticField(const pylith::topology::Field& solution,
+                                                     const pylith::topology::Mesh& domainMesh) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("createDiagnosticField(solution="<<solution.getLabel()<<", domainMesh=)"<<typeid(domainMesh).name()<<")");
+
+    assert(_normalizer);
+
+    pylith::topology::Field* diagnosticField = new pylith::topology::Field(domainMesh);assert(diagnosticField);
+    diagnosticField->setLabel("FaultCohesiveKin diagnostic field");
+
+    // Create label for output.
+    const char* outputLabelName = "output";
+    PetscDM derivedDM = diagnosticField->getDM();
+    PetscDMLabel outputLabel = NULL;
+    PetscErrorCode err = PETSC_SUCCESS;
+    err = DMCreateLabel(derivedDM, outputLabelName);PYLITH_CHECK_ERROR(err);
+    err = DMGetLabel(derivedDM, outputLabelName, &outputLabel);PYLITH_CHECK_ERROR(err);
+    pylith::topology::Stratum faultStratum(derivedDM, pylith::topology::Stratum::HEIGHT, 1);
+    for (PetscInt point = faultStratum.begin(); point != faultStratum.end(); ++point) {
+        err = DMLabelSetValue(outputLabel, point, 1);
+    } // for
+    err = DMPlexLabelComplete(derivedDM, outputLabel);PYLITH_CHECK_ERROR(err);
+
+    assert(_diagnosticFactory);
+    const pylith::topology::FieldBase::Discretization& discretization = solution.getSubfieldInfo("lagrange_multiplier_fault").fe;
+    const PylithInt cellDim = solution.getSpaceDim()-1;
+    const bool isFaultOnly = false;
+    _diagnosticFactory->setSubfieldDiscretization("default", discretization.basisOrder, discretization.quadOrder, cellDim,
+                                                  isFaultOnly, discretization.cellBasis, discretization.feSpace,
+                                                  discretization.isBasisContinuous);
+
+    assert(_diagnosticFactory);
+    assert(_normalizer);
+    _diagnosticFactory->initialize(diagnosticField, *_normalizer, solution.getSpaceDim());
+
+    _diagnosticFactory->addNormalDir(); // 0
+    _diagnosticFactory->addStrikeDir(); // 1
+    if (solution.getSpaceDim() > 2) {
+        _diagnosticFactory->addUpDipDir(); // 2
+    } // if
+
+    diagnosticField->subfieldsSetup();
+    diagnosticField->createDiscretization();
+    pylith::topology::FieldOps::checkDiscretization(solution, *diagnosticField);
+    diagnosticField->allocate();
+    diagnosticField->createOutputVector();
+
+    PYLITH_METHOD_RETURN(diagnosticField);
+} // createDiagnosticField
+
+
+// ------------------------------------------------------------------------------------------------
 // Create integrator and set kernels.
 pylith::feassemble::Integrator*
 pylith::faults::FaultCohesive::createIntegrator(const pylith::topology::Field& solution,
@@ -302,6 +366,7 @@ pylith::faults::FaultCohesive::createIntegrator(const pylith::topology::Field& s
 
     _setKernelsResidual(integrator, solution, materials);
     _setKernelsJacobian(integrator, solution, materials);
+    _setKernelsDiagnosticField(integrator, solution);
     _setKernelsDerivedField(integrator, solution);
 
     PYLITH_METHOD_RETURN(integrator);
@@ -423,10 +488,37 @@ pylith::faults::FaultCohesive::createIntegrator(const pylith::topology::Field& s
 
 
 // ------------------------------------------------------------------------------------------------
+// Set kernels for computing diagnostic field.
+void
+pylith::faults::FaultCohesive::_setKernelsDiagnosticField(pylith::feassemble::IntegratorInterface* integrator,
+                                                          const pylith::topology::Field& solution) const {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("_setKernelsDiagnosticField(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
+
+    const spatialdata::geocoords::CoordSys* coordsys = solution.getMesh().getCoordSys();
+    assert(coordsys);
+
+    const PylithInt spaceDim = solution.getSpaceDim();
+    std::vector<ProjectKernels> kernels(spaceDim);
+    kernels[0] = ProjectKernels("normal_dir", pylith::fekernels::FaultCohesive::normalDir);
+    kernels[1] = ProjectKernels("strike_dir", pylith::fekernels::FaultCohesive::strikeDir);
+    if (spaceDim > 2) {
+        kernels[2] = ProjectKernels("up_dip_dir", pylith::fekernels::FaultCohesive::dipDir);
+    } // if
+
+    assert(integrator);
+    integrator->setKernelsDiagnosticField(kernels);
+
+    PYLITH_METHOD_END;
+}
+
+
+// ------------------------------------------------------------------------------------------------
 // Set kernels for computing derived field.
 void
 pylith::faults::FaultCohesive::_setKernelsDerivedField(pylith::feassemble::IntegratorInterface* integrator,
-                                                       const pylith::topology::Field& solution) const {}
+                                                       const pylith::topology::Field& solution) const {
+}
 
 
 // End of file

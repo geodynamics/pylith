@@ -197,11 +197,12 @@ void
 pylith::feassemble::Constraint::poststep(const PylithReal t,
                                          const PylithInt tindex,
                                          const PylithReal dt,
-                                         const pylith::topology::Field& solution) {
+                                         const pylith::topology::Field& solution,
+                                         const pylith::problems::Observer::NotificationType notification) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("poststep(t="<<t<<", dt="<<dt<<")");
 
-    notifyObservers(t, tindex, solution);
+    notifyObservers(t, tindex, solution, notification);
 
     PYLITH_METHOD_END;
 } // poststep

@@ -29,6 +29,7 @@
 
 #include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
+#include "pylith/problems/ObserverPhysics.hh" // USES ObserverPhysics
 #include "pylith/feassemble/feassemblefwd.hh" // USES PhysicsImplementation
 #include "pylith/topology/topologyfwd.hh" // USES Field
 #include "pylith/utils/types.hh" // USES PylithReal, PylithInt
@@ -37,7 +38,7 @@
 
 class pylith::problems::ObserversPhysics : public pylith::utils::GenericComponent {
     friend class TestObserversPhysics; // unit testing
-    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Constructor.
@@ -93,12 +94,12 @@ public:
      * @param[in] t Current time.
      * @param[in] tindex Current time step.
      * @param[in] solution Solution at time t.
-     * @param[in] infoOnly Flag is true if this update is before solution is available (e.g., after initialization).
+     * @param[in] notification Type of notification.
      */
     void notifyObservers(const PylithReal t,
                          const PylithInt tindex,
                          const pylith::topology::Field& solution,
-                         const bool infoOnly);
+                         const pylith::problems::Observer::NotificationType notification);
 
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:

@@ -27,10 +27,12 @@
 
 #include "problemsfwd.hh" // forward declarations
 
+#include "pylith/problems/Observer.hh" // ISA Observer
+
 #include "pylith/topology/topologyfwd.hh" // USES Field
 #include "pylith/utils/types.hh" // USES PylithReal, PylithInt
 
-class pylith::problems::ObserverSoln {
+class pylith::problems::ObserverSoln : public pylith::problems::Observer {
     friend ObserversSoln; ///< Access to ordering index.
     friend class TestObserverSoln; // unit testing
 
@@ -66,17 +68,18 @@ public:
      * @param[in] t Current time.
      * @param[in] tindex Current time step.
      * @param[in] solution Solution at time t.
-     * @param[in] infoOnly Flag is true if this update is before solution is available (e.g., after initialization).
+     * @param[in] notification Type of notification.
      */
     virtual
     void update(const PylithReal t,
                 const PylithInt tindex,
-                const pylith::topology::Field& solution) = 0;
+                const pylith::topology::Field& solution,
+                const NotificationType notification) = 0;
 
     // PRIVATE ////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    size_t index; ///< Index for keeing set of observers ordered. 
+    size_t index; ///< Index for keeing set of observers ordered.
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
 private:

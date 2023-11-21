@@ -62,7 +62,7 @@ pylith::feassemble::ConstraintSpatialDB::setKernelConstraint(const PetscBdPointF
 void
 pylith::feassemble::ConstraintSpatialDB::initialize(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" intialize(solution="<<solution.getLabel()<<")");
+    PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" initialize(solution="<<solution.getLabel()<<")");
 
     assert(_physics);
 
@@ -71,10 +71,12 @@ pylith::feassemble::ConstraintSpatialDB::initialize(const pylith::topology::Fiel
     const pylith::topology::Mesh& physicsDomainMesh = getPhysicsDomainMesh();
 
     delete _auxiliaryField;_auxiliaryField = _physics->createAuxiliaryField(solution, physicsDomainMesh);
-    delete _derivedField;_derivedField = _physics->createDerivedField(solution, physicsDomainMesh);
+    delete _diagnosticField;_diagnosticField = _physics->createDiagnosticField(solution, physicsDomainMesh);
+    const pylith::problems::Observer::NotificationType notification = pylith::problems::ObserverPhysics::DIAGNOSTIC;
+    _observers->notifyObservers(0.0, 0, solution, notification);
+    delete _diagnosticField;_diagnosticField = NULL;
 
-    const bool infoOnly = true;
-    _observers->notifyObservers(0.0, 0, solution, infoOnly);
+    delete _derivedField;_derivedField = _physics->createDerivedField(solution, physicsDomainMesh);
 
     // :KLUDGE: Potentially we may have multiple PetscDS objects. This assumes that the first one (with a NULL label) is
     // the correct one.

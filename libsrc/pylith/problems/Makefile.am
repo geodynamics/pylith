@@ -27,6 +27,7 @@ subpkginclude_HEADERS = \
 	ObserverSoln.hh \
 	ObserversSoln.hh \
 	Physics.hh \
+	Observer.hh \
 	ObserverPhysics.hh \
 	ObserversPhysics.hh \
 	InitialCondition.hh \

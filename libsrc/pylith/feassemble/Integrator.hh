@@ -149,12 +149,14 @@ public:
      * @param[in] tindex Current time step.
      * @param[in] dt Current time step.
      * @param[in] solution Solution at time t.
+     * @param[in] notification Type of notification.
      */
     virtual
     void poststep(const PylithReal t,
                   const PylithInt tindex,
                   const PylithReal dt,
-                  const pylith::topology::Field& solution);
+                  const pylith::topology::Field& solution,
+                  const pylith::problems::Observer::NotificationType notification);
 
     /** Set auxiliary field values for current time.
      *
@@ -223,6 +225,10 @@ protected:
     void _updateStateVars(const PylithReal t,
                           const PylithReal dt,
                           const pylith::topology::Field& solution);
+
+    /// Compute diagnostic field from auxiliary field.
+    virtual
+    void _computeDiagnosticField(void);
 
     /** Compute fields derived from solution and auxiliary field.
      *

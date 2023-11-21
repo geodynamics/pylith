@@ -18,7 +18,7 @@
 
 #include <portinfo>
 
-#include "DerivedFactoryKinematic.hh" // implementation of object methods
+#include "DerivedFieldFactory.hh" // implementation of object methods
 
 #include "pylith/topology/Field.hh" // USES Field
 
@@ -31,20 +31,20 @@
 
 // ------------------------------------------------------------------------------------------------
 // Default constructor.
-pylith::faults::DerivedFactoryKinematic::DerivedFactoryKinematic(void) {
+pylith::faults::DerivedFieldFactory::DerivedFieldFactory(void) {
     GenericComponent::setName("derivedfactorykinematic");
 } // constructor
 
 
 // ------------------------------------------------------------------------------------------------
 // Destructor.
-pylith::faults::DerivedFactoryKinematic::~DerivedFactoryKinematic(void) {}
+pylith::faults::DerivedFieldFactory::~DerivedFieldFactory(void) {}
 
 
 // ------------------------------------------------------------------------------------------------
 // Add Cauchy stress subfield to derived field.
 void
-pylith::faults::DerivedFactoryKinematic::addTractionChange(void) {
+pylith::faults::DerivedFieldFactory::addTractionChange(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("addTractionChange(void)");
 
@@ -73,7 +73,7 @@ pylith::faults::DerivedFactoryKinematic::addTractionChange(void) {
 // ------------------------------------------------------------------------------------------------
 // Add subfields using discretizations provided.
 void
-pylith::faults::DerivedFactoryKinematic::addSubfields(void) {
+pylith::faults::DerivedFieldFactory::addSubfields(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("addSubfields(void)");
 

@@ -72,6 +72,7 @@ namespace pylith {
         class NeumannTimeDependent;
         class AbsorbingDampers;
 
+        class FaultCohesive;
         class FaultCohesiveKin;
 
         class BoundaryDirections;

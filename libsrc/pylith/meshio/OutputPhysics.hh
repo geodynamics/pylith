@@ -49,7 +49,7 @@ public:
 
     /// Deallocate PETSc and local data structures.
     virtual
-    void deallocate(void);
+    void deallocate(void) override;
 
     /** Set names of information fields requested for output.
      *
@@ -83,25 +83,25 @@ public:
      *
      * @param[in] value Time scale for dimensionalizing time.
      */
-    void setTimeScale(const PylithReal value);
+    void setTimeScale(const PylithReal value) override;
 
     /** Verify configuration.
      *
      * @param[in] solution Solution field.
      */
-    void verifyConfiguration(const pylith::topology::Field& solution) const;
+    void verifyConfiguration(const pylith::topology::Field& solution) const override;
 
     /** Receive update (subject of observer).
      *
      * @param[in] t Current time.
      * @param[in] tindex Current time step.
      * @param[in] solution Solution at time t.
-     * @param[in] infoOnly Flag is true if this update is before solution is available (e.g., after initialization).
+     * @param[in] notification Type of notification.
      */
     void update(const PylithReal t,
                 const PylithInt tindex,
                 const pylith::topology::Field& solution,
-                const bool infoOnly);
+                const NotificationType notification) override;
 
     // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
 protected:
@@ -145,9 +145,11 @@ protected:
      *
      * Expand "all" into list of actual fields.
      *
-     * @param[in] auxField Auxiliary field.
+     * @param[in] auxiliaryField Auxiliary field.
+     * @param[in] diagnosticField Auxiliary field.
      */
-    pylith::string_vector _expandInfoFieldNames(const pylith::topology::Field* auxField) const;
+    pylith::string_vector _expandInfoFieldNames(const pylith::topology::Field* auxiliaryField,
+                                                const pylith::topology::Field* diagnosticField) const;
 
     /** Names of data fields for output.
      *
@@ -155,11 +157,11 @@ protected:
      * the auxiliary field, because most are physical parameters that do not change.
      *
      * @param[in] solution Solution field.
-     * @param[in] auxField Auxiliary field.
+     * @param[in] auxiliaryField Auxiliary field.
      * @param[in] derivedField Derived field.
      */
     pylith::string_vector _expandDataFieldNames(const pylith::topology::Field& solution,
-                                                const pylith::topology::Field* auxField,
+                                                const pylith::topology::Field* auxiliaryField,
                                                 const pylith::topology::Field* derivedField) const;
 
     // PROTECTED MEMBERS //////////////////////////////////////////////////////////////////////////

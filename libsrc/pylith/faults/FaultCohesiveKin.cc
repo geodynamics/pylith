@@ -21,8 +21,8 @@
 #include "FaultCohesiveKin.hh" // implementation of object methods
 
 #include "pylith/faults/KinSrc.hh" // USES KinSrc
-#include "pylith/faults/AuxiliaryFactoryKinematic.hh" // USES AuxiliaryFactoryKinematic
-#include "pylith/faults/DerivedFactoryKinematic.hh" // USES DerivedFactoryKinematic
+#include "pylith/faults/AuxiliaryFieldFactory.hh" // USES AuxiliaryFieldFactory
+#include "pylith/faults/DerivedFieldFactory.hh" // USES DerivedFieldFactory
 #include "pylith/feassemble/IntegratorInterface.hh" // USES IntegratorInterface
 #include "pylith/feassemble/InterfacePatches.hh" // USES InterfacePatches
 #include "pylith/feassemble/ConstraintSimple.hh" // USES ConstraintSimple
@@ -77,8 +77,8 @@ public:
 // ------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::faults::FaultCohesiveKin::FaultCohesiveKin(void) :
-    _auxiliaryFactory(new pylith::faults::AuxiliaryFactoryKinematic),
-    _derivedFactory(new pylith::faults::DerivedFactoryKinematic),
+    _auxiliaryFactory(new pylith::faults::AuxiliaryFieldFactory),
+    _derivedFactory(new pylith::faults::DerivedFieldFactory),
     _slipVecRupture(NULL),
     _slipVecTotal(NULL) {
     pylith::utils::PyreComponent::setName(_FaultCohesiveKin::pyreComponent);
@@ -278,16 +278,7 @@ pylith::faults::FaultCohesiveKin::createDerivedField(const pylith::topology::Fie
     assert(_normalizer);
     _derivedFactory->initialize(derivedField, *_normalizer, solution.getSpaceDim());
 
-    // :ATTENTION: The order for adding subfields must match the order of the auxiliary fields in the FE kernels.
-
     _derivedFactory->addTractionChange(); // 0
-#if 1
-    _derivedFactory->addNormalDir(); // 1
-    _derivedFactory->addStrikeDir(); // 2
-    if (solution.getSpaceDim() > 2) {
-        _derivedFactory->addUpDipDir(); // 3
-    } // if
-#endif
 
     derivedField->subfieldsSetup();
     derivedField->createDiscretization();
@@ -560,19 +551,8 @@ pylith::faults::FaultCohesiveKin::_setKernelsDerivedField(pylith::feassemble::In
     const spatialdata::geocoords::CoordSys* coordsys = solution.getMesh().getCoordSys();
     assert(coordsys);
 
-#if 0
     std::vector<ProjectKernels> kernels(1);
     kernels[0] = ProjectKernels("traction_change", pylith::fekernels::FaultCohesiveKin::tractionChange_asVector);
-#else
-    const PylithInt spaceDim = solution.getSpaceDim();
-    std::vector<ProjectKernels> kernels(1+spaceDim);
-    kernels[0] = ProjectKernels("traction_change", pylith::fekernels::FaultCohesiveKin::tractionChange_asVector);
-    kernels[1] = ProjectKernels("normal_dir", pylith::fekernels::FaultCohesive::normalDir);
-    kernels[2] = ProjectKernels("strike_dir", pylith::fekernels::FaultCohesive::strikeDir);
-    if (spaceDim > 2) {
-        kernels[3] = ProjectKernels("up_dip_dir", pylith::fekernels::FaultCohesive::dipDir);
-    } // if
-#endif
 
     assert(integrator);
     integrator->setKernelsDerivedField(kernels);

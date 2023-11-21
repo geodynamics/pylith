@@ -16,31 +16,37 @@
 // ----------------------------------------------------------------------
 //
 
-/** @file libsrc/faults/DerivedFactoryKinematic.hh
+/** @file libsrc/faults/DiagnosticFieldFactory.hh
  *
- * @brief C++ helper class for setting up derived subfields for kinematic faults.
+ * @brief C++ helper class for setting up derived subfields for faults.
  */
 
-#if !defined(pylith_faults_derivedfactorykinematic_hh)
-#define pylith_faults_derivedfactorykinematic_hh
+#if !defined(pylith_faults_diagnosticfieldfactory_hh)
+#define pylith_faults_diagnosticfieldfactory_hh
 
 #include "faultsfwd.hh" // forward declarations
 #include "pylith/topology/FieldFactory.hh" // ISA AuxiliaryFactory
 
-class pylith::faults::DerivedFactoryKinematic : public pylith::topology::FieldFactory {
-    friend class TestDerivedFactoryKinematic; // unit testing
+class pylith::faults::DiagnosticFieldFactory : public pylith::topology::FieldFactory {
+    friend class TestDerivedFieldFactory; // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Default constructor.
-    DerivedFactoryKinematic(void);
+    DiagnosticFieldFactory(void);
 
     /// Destructor.
-    virtual ~DerivedFactoryKinematic(void);
+    virtual ~DiagnosticFieldFactory(void);
 
-    /// Add traction change subfield to derived field.
-    void addTractionChange(void);
+    /// Add fault normal direction subfield to auxiliary field.
+    void addNormalDir(void);
+
+    /// Add fault strike direction subfield to auxiliary field.
+    void addStrikeDir(void);
+
+    /// Add fault up-dip direction modulus subfield to auxiliary field.
+    void addUpDipDir(void);
 
     /// Add subfields using discretizations provided.
     virtual void addSubfields(void);
@@ -48,11 +54,11 @@ public:
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
 private:
 
-    DerivedFactoryKinematic(const DerivedFactoryKinematic &); ///< Not implemented.
-    const DerivedFactoryKinematic& operator=(const DerivedFactoryKinematic&); ///< Not implemented
+    DiagnosticFieldFactory(const DiagnosticFieldFactory &); ///< Not implemented.
+    const DiagnosticFieldFactory& operator=(const DiagnosticFieldFactory&); ///< Not implemented
 
-}; // class DerivedFactoryKinematic
+}; // class DiagnosticFieldFactory
 
-#endif // pylith_faults_derivedfactorykinematic_hh
+#endif // pylith_faults_diagnosticfieldfactory_hh
 
 // End of file

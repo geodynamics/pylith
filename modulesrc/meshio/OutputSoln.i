@@ -24,9 +24,9 @@
 
 namespace pylith {
     namespace meshio {
-        class pylith::meshio::OutputSoln :
-            public pylith::problems::ObserverSoln,
-            public pylith::meshio::OutputObserver {
+        class pylith::meshio::OutputSoln:
+        public pylith::problems::ObserverSoln,
+        public pylith::meshio::OutputObserver {
             // PUBLIC METHODS ///////////////////////////////////////////////
 public:
 
@@ -73,17 +73,17 @@ public:
             virtual
             void verifyConfiguration(const pylith::topology::Field& solution) const;
 
-            /** Receive update from subject.
+            /** Receive update (subject of observer).
              *
              * @param[in] t Current time.
              * @param[in] tindex Current time step.
              * @param[in] solution Solution at time t.
-             * @param[in] infoOnly Flag is true if this update is before solution is available (e.g., after
-             * initialization).
+             * @param[in] notification Type of notification.
              */
             void update(const PylithReal t,
                         const PylithInt tindex,
-                        const pylith::topology::Field& solution);
+                        const pylith::topology::Field& solution,
+                        const pylith::problems::Observer::NotificationType notification);
 
         }; // OutputSoln
 

@@ -155,6 +155,16 @@ public:
      */
     std::vector<pylith::feassemble::Constraint*> createConstraints(const pylith::topology::Field& solution);
 
+    /** Create diagnostic field.
+     *
+     * @param[in] solution Solution field.
+     * @param[in] physicsMesh Finite-element mesh associated with physics.
+     *
+     * @returns Diagnostic field if applicable, otherwise NULL.
+     */
+    pylith::topology::Field* createDiagnosticField(const pylith::topology::Field& solution,
+                                                   const pylith::topology::Mesh& physicsMesh);
+
     // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
 protected:
 
@@ -201,6 +211,15 @@ protected:
                              const pylith::topology::Field& solution,
                              const std::vector<pylith::materials::Material*>& materials) const = 0;
 
+    /** Set kernels for computing diagnostic field.
+     *
+     * @param[out] integrator Integrator for material.
+     * @param[in] solution Solution field.
+     */
+    virtual
+    void _setKernelsDiagnosticField(pylith::feassemble::IntegratorInterface* integrator,
+                                    const pylith::topology::Field& solution) const;
+
     /** Set kernels for computing derived field.
      *
      * @param[out] integrator Integrator for material.
@@ -236,6 +255,7 @@ private:
     // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
 private:
 
+    pylith::faults::DiagnosticFieldFactory* _diagnosticFactory; ///< Factory for auxiliary subfields.
     std::string _surfaceLabelName; ///< Name of label identifying points associated with fault.
     std::string _buriedEdgesLabelName; ///< Name of label identifying buried edges of fault.
     int _surfaceLabelValue; ///< Value of label identifying points associated with fault.

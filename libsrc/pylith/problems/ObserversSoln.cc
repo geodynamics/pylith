@@ -118,13 +118,14 @@ pylith::problems::ObserversSoln::verifyObservers(const pylith::topology::Field& 
 void
 pylith::problems::ObserversSoln::notifyObservers(const PylithReal t,
                                                  const PylithInt tindex,
-                                                 const pylith::topology::Field& solution) {
+                                                 const pylith::topology::Field& solution,
+                                                 const pylith::problems::Observer::NotificationType notification) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("notifyObservers(t="<<t<<", tindex="<<tindex<<", solution="<<solution.getLabel()<<")");
 
     for (iterator iter = _observers.begin(); iter != _observers.end(); ++iter) {
         assert(*iter);
-        (*iter)->update(t, tindex, solution);
+        (*iter)->update(t, tindex, solution, notification);
     } // for
 
     PYLITH_METHOD_END;

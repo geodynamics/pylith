@@ -356,6 +356,7 @@ pylith::problems::GreensFns::poststep(const size_t impulse,
     // Get current solution. ParaView needs valid times.
     const PetscReal t = impulse / _normalizer->getTimeScale();
     const PetscReal dt = 1.0;
+    const pylith::problems::Observer::NotificationType notification = pylith::problems::Observer::SOLUTION;
 
     assert(_integrationData);
     pylith::topology::Field* solution = _integrationData->getField(pylith::feassemble::IntegrationData::solution);
@@ -364,18 +365,18 @@ pylith::problems::GreensFns::poststep(const size_t impulse,
     // Update integrators.
     const size_t numIntegrators = _integrators.size();
     for (size_t i = 0; i < numIntegrators; ++i) {
-        _integrators[i]->poststep(t, impulse, dt, *solution);
+        _integrators[i]->poststep(t, impulse, dt, *solution, notification);
     } // for
 
     // Update constraints.
     const size_t numConstraints = _constraints.size();
     for (size_t i = 0; i < numConstraints; ++i) {
-        _constraints[i]->poststep(t, impulse, dt, *solution);
+        _constraints[i]->poststep(t, impulse, dt, *solution, notification);
     } // for
 
     // Notify problem observers of updated solution.
     assert(_observers);
-    _observers->notifyObservers(t, impulse, *solution);
+    _observers->notifyObservers(t, impulse, *solution, notification);
 
     // Update number of impulses for monitor
     if (_monitor) {
