@@ -265,8 +265,9 @@ pylith::sources::TestAuxiliaryFactoryWellboreSource::testAdd(void) {
     _factory->addIsotropicPermeability();
     _factory->addWellboreRadius();
     _factory->addWellboreLength();
+    _factory->addWellboreCharacter();
+    _factory->addElementDimensions();
     _factory->addTimeDelay();
-    _factory->addCenterFrequency();
 
     assert(_data->normalizer);
 
