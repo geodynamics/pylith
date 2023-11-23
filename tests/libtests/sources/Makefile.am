@@ -30,6 +30,8 @@ libtest_sources_SOURCES = \
 	TestAuxiliaryFactoryMomentTensorForce_Cases.cc \
 	TestAuxiliaryFactorySourceTime.cc \
 	TestAuxiliaryFactorySourceTime_Cases.cc \
+	TestAuxiliaryFactoryPointForce.cc \
+	TestAuxiliaryFactoryPointForce_Cases.cc \
 	$(top_srcdir)/tests/src/FieldTester.cc \
 	$(top_srcdir)/tests/src/driver_catch2.cc
 
