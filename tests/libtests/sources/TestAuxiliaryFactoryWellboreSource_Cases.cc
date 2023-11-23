@@ -18,9 +18,9 @@
 
 #include <portinfo>
 
-#include "TestAuxiliaryFactorySourceTime.hh" // Implementation of cases
+#include "TestAuxiliaryFactoryWellboreSource.hh" // Implementation of cases
 
-#include "pylith/sources/AuxiliaryFactorySourceTime.hh" // USES AuxiliaryFactorySourceTime
+#include "pylith/sources/AuxiliaryFactoryWellboreSource.hh" // USES AuxiliaryFactoryWellboreSource
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
@@ -32,18 +32,18 @@
 // forward declarations
 namespace pylith {
     namespace sources {
-        class TestAuxiliaryFactorySourceTime_Cases;
+        class TestAuxiliaryFactoryWellboreSource_Cases;
     } // sources
 } // pylith
 
 // ------------------------------------------------------------------------------------------------
-class pylith::sources::TestAuxiliaryFactorySourceTime_Cases {
+class pylith::sources::TestAuxiliaryFactoryWellboreSource_Cases {
 public:
 
     // Data factory methods
-    static TestAuxiliaryFactorySourceTime_Data* Tri(void);
+    static TestAuxiliaryFactoryWellboreSource_Data* Tri(void);
 
-    static TestAuxiliaryFactorySourceTime_Data* Hex(void);
+    static TestAuxiliaryFactoryWellboreSource_Data* Hex(void);
 
 private:
 
@@ -186,24 +186,24 @@ private:
 };
 
 // ------------------------------------------------------------------------------------------------
-TEST_CASE("TestAuxiliaryFactorySourceTime::Tri::testAdd", "[TestAuxiliaryFactorySourceTime][add]") {
-    pylith::sources::TestAuxiliaryFactorySourceTime(pylith::sources::TestAuxiliaryFactorySourceTime_Cases::Tri()).testAdd();
+TEST_CASE("TestAuxiliaryFactoryWellboreSource::Tri::testAdd", "[TestAuxiliaryFactoryWellboreSource][add]") {
+    pylith::sources::TestAuxiliaryFactoryWellboreSource(pylith::sources::TestAuxiliaryFactoryWellboreSource_Cases::Tri()).testAdd();
 }
-TEST_CASE("TestAuxiliaryFactorySourceTime::Tri::testSetValuesFromDB", "[TestAuxiliaryFactorySourceTime][testSetValuesFromDB]") {
-    pylith::sources::TestAuxiliaryFactorySourceTime(pylith::sources::TestAuxiliaryFactorySourceTime_Cases::Tri()).testSetValuesFromDB();
+TEST_CASE("TestAuxiliaryFactoryWellboreSource::Tri::testSetValuesFromDB", "[TestAuxiliaryFactoryWellboreSource][testSetValuesFromDB]") {
+    pylith::sources::TestAuxiliaryFactoryWellboreSource(pylith::sources::TestAuxiliaryFactoryWellboreSource_Cases::Tri()).testSetValuesFromDB();
 }
 
-TEST_CASE("TestAuxiliaryFactorySourceTime::Hex::testAdd", "[TestAuxiliaryFactorySourceTime][add]") {
-    pylith::sources::TestAuxiliaryFactorySourceTime(pylith::sources::TestAuxiliaryFactorySourceTime_Cases::Hex()).testAdd();
+TEST_CASE("TestAuxiliaryFactoryWellboreSource::Hex::testAdd", "[TestAuxiliaryFactoryWellboreSource][add]") {
+    pylith::sources::TestAuxiliaryFactoryWellboreSource(pylith::sources::TestAuxiliaryFactoryWellboreSource_Cases::Hex()).testAdd();
 }
-TEST_CASE("TestAuxiliaryFactorySourceTime::Hex::testSetValuesFromDB", "[TestAuxiliaryFactorySourceTime][testSetValuesFromDB]") {
-    pylith::sources::TestAuxiliaryFactorySourceTime(pylith::sources::TestAuxiliaryFactorySourceTime_Cases::Hex()).testSetValuesFromDB();
+TEST_CASE("TestAuxiliaryFactoryWellboreSource::Hex::testSetValuesFromDB", "[TestAuxiliaryFactoryWellboreSource][testSetValuesFromDB]") {
+    pylith::sources::TestAuxiliaryFactoryWellboreSource(pylith::sources::TestAuxiliaryFactoryWellboreSource_Cases::Hex()).testSetValuesFromDB();
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-pylith::sources::TestAuxiliaryFactorySourceTime_Data*
-pylith::sources::TestAuxiliaryFactorySourceTime_Cases::Tri(void) {
-    pylith::sources::TestAuxiliaryFactorySourceTime_Data* data = new pylith::sources::TestAuxiliaryFactorySourceTime_Data();
+pylith::sources::TestAuxiliaryFactoryWellboreSource_Data*
+pylith::sources::TestAuxiliaryFactoryWellboreSource_Cases::Tri(void) {
+    pylith::sources::TestAuxiliaryFactoryWellboreSource_Data* data = new pylith::sources::TestAuxiliaryFactoryWellboreSource_Data();
     assert(data);
 
     data->auxDim = 2;
@@ -227,9 +227,9 @@ pylith::sources::TestAuxiliaryFactorySourceTime_Cases::Tri(void) {
 
 
 // ------------------------------------------------------------------------------------------------
-pylith::sources::TestAuxiliaryFactorySourceTime_Data*
-pylith::sources::TestAuxiliaryFactorySourceTime_Cases::Hex(void) {
-    pylith::sources::TestAuxiliaryFactorySourceTime_Data* data = new pylith::sources::TestAuxiliaryFactorySourceTime_Data();
+pylith::sources::TestAuxiliaryFactoryWellboreSource_Data*
+pylith::sources::TestAuxiliaryFactoryWellboreSource_Cases::Hex(void) {
+    pylith::sources::TestAuxiliaryFactoryWellboreSource_Data* data = new pylith::sources::TestAuxiliaryFactoryWellboreSource_Data();
     assert(data);
 
     data->auxDim = 3;
