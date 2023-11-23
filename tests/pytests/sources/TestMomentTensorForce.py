@@ -15,26 +15,26 @@
 #
 # ======================================================================
 #
-# @file tests/pytests/sources/TestPointForce.py
+# @file tests/pytests/sources/TestMomentTensorForce.py
 #
-# @brief Unit testing of Python TestPointForce object.
+# @brief Unit testing of Python TestMomentTensorForce object.
 
 import unittest
 
 from pylith.testing.UnitTestApp import TestComponent
-from pylith.sources.Source import (PointForce, source)
+from pylith.sources.Source import (MomentTensorForce, source)
 
 
-class TestPointForce(TestComponent):
-    """Unit testing of PointForce object.
+class TestMomentTensorForce(TestComponent):
+    """Unit testing of MomentTensorForce object.
     """
-    _class = PointForce
+    _class = MomentTensorForce
     _factory = source
 
 
 if __name__ == "__main__":
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestPointForce))
+    suite.addTest(unittest.makeSuite(TestMomentTensorForce))
     unittest.TextTestRunner(verbosity=2).run(suite)
 
 

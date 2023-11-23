@@ -26,7 +26,7 @@ from pylith.sources.Source import (WellboreSource, source)
 
 
 class TestWellboreSource(TestComponent):
-    """Unit testing of Elasticity object.
+    """Unit testing of WellboreSource object.
     """
     _class = WellboreSource
     _factory = source
