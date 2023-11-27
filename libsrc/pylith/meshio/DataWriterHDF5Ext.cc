@@ -99,7 +99,6 @@ pylith::meshio::DataWriterHDF5Ext::open(const pylith::topology::Mesh& mesh,
 
         PetscDM dmMesh = mesh.getDM();assert(dmMesh);
         MPI_Comm comm;
-        PetscMPIInt commRank;
         PetscErrorCode err = PetscObjectGetComm((PetscObject) dmMesh, &comm);PYLITH_CHECK_ERROR(err);
 
         PetscViewer viewer;
