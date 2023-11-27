@@ -308,18 +308,6 @@ pylith::bc::DirichletTimeDependent::createAuxiliaryField(const pylith::topology:
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Create derived field.
-pylith::topology::Field*
-pylith::bc::DirichletTimeDependent::createDerivedField(const pylith::topology::Field& solution,
-                                                       const pylith::topology::Mesh& domainMesh) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("createDerivedField(solution="<<solution.getLabel()<<", domainMesh=)"<<typeid(domainMesh).name()<<") empty method");
-
-    PYLITH_METHOD_RETURN(NULL);
-} // createDerivedField
-
-
-// ---------------------------------------------------------------------------------------------------------------------
 // Update auxiliary fields at beginning of time step.
 void
 pylith::bc::DirichletTimeDependent::updateAuxiliaryField(pylith::topology::Field* auxiliaryField,
@@ -348,7 +336,8 @@ pylith::bc::DirichletTimeDependent::_getAuxiliaryFactory(void) {
 // ---------------------------------------------------------------------------------------------------------------------
 // Update kernel constants.
 void
-pylith::bc::DirichletTimeDependent::_updateKernelConstants(const PylithReal dt) {}
+pylith::bc::DirichletTimeDependent::_updateKernelConstants(const PylithReal dt) {
+}
 
 
 // ---------------------------------------------------------------------------------------------------------------------

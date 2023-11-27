@@ -165,18 +165,6 @@ pylith::bc::NeumannUserFn::createAuxiliaryField(const pylith::topology::Field& s
 
 
 // ------------------------------------------------------------------------------------------------
-// Create derived field.
-pylith::topology::Field*
-pylith::bc::NeumannUserFn::createDerivedField(const pylith::topology::Field& solution,
-                                              const pylith::topology::Mesh& domainMesh) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("createDerivedField(solution="<<solution.getLabel()<<", domainMesh=)"<<typeid(domainMesh).name()<<") empty method");
-
-    PYLITH_METHOD_RETURN(NULL);
-} // createDerivedField
-
-
-// ------------------------------------------------------------------------------------------------
 // Get auxiliary factory associated with physics.
 pylith::feassemble::AuxiliaryFactory*
 pylith::bc::NeumannUserFn::_getAuxiliaryFactory(void) {

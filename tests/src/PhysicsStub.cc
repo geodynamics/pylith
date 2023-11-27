@@ -91,17 +91,6 @@ pylith::problems::PhysicsStub::createAuxiliaryField(const pylith::topology::Fiel
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Create derived field.
-pylith::topology::Field*
-pylith::problems::PhysicsStub::createDerivedField(const pylith::topology::Field& solution,
-                                                  const pylith::topology::Mesh& physicsMesh) {
-    pylith::testing::StubMethodTracker tracker("pylith::problems::PhysicsStub::createDerivedField");
-
-    return NULL;
-} // createDerivedField
-
-
-// ---------------------------------------------------------------------------------------------------------------------
 // Get auxiliary factory associated with physics.
 pylith::feassemble::AuxiliaryFactory*
 pylith::problems::PhysicsStub::_getAuxiliaryFactory(void) {

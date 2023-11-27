@@ -23,7 +23,7 @@
 
 namespace pylith {
     namespace bc {
-        class DirichletTimeDependent : public pylith::bc::BoundaryCondition {
+        class DirichletTimeDependent: public pylith::bc::BoundaryCondition {
             // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////
 public:
 
@@ -44,13 +44,14 @@ public:
              * @param[in] dof Array of indices for constrained degrees of freedom.
              * @param[in] size Size of array
              */
-	    %apply(int* INPLACE_ARRAY1, int DIM1) {
-		(const int* flags, 
-		 const int size)
-		    };
+            %apply(int* INPLACE_ARRAY1, int DIM1) {
+                (const int* flags,
+                 const int size)
+            };
             void setConstrainedDOF(const int* flags,
                                    const int size);
-	    %clear(const int* flags, const int size);
+
+            %clear(const int* flags, const int size);
 
             /** Get indices of constrained degrees of freedom.
              *
@@ -124,7 +125,7 @@ public:
              * @param[in] solution Solution field.
              * @returns Constraint if applicable, otherwise NULL.
              */
-            std::vector<pylith::feassemble::Constraint*> createConstraints(const pylith::topology::Field& solution);
+            std::vector < pylith::feassemble::Constraint*> createConstraints(const pylith::topology::Field& solution);
 
             /** Create auxiliary field.
              *
@@ -136,23 +137,13 @@ public:
             pylith::topology::Field* createAuxiliaryField(const pylith::topology::Field& solution,
                                                           const pylith::topology::Mesh& domainMesh);
 
-            /** Create derived field.
-             *
-             * @param[in] solution Solution field.
-             * @param[in\ domainMesh Finite-element mesh associated with integration domain.
-             *
-             * @returns Derived field if applicable, otherwise NULL.
-             */
-            pylith::topology::Field* createDerivedField(const pylith::topology::Field& solution,
-                                                        const pylith::topology::Mesh& domainMesh);
-
             /** Update time-dependent auxiliary field.
              *
              * @param[out] auxiliaryField Auxiliary field.
              * @param[in] t Current time.
              */
             void updateAuxiliaryField(pylith::topology::Field* auxiliaryField,
-				      const double t);
+                                      const double t);
 
             // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////
 protected:

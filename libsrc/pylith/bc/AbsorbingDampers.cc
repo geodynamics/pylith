@@ -189,18 +189,6 @@ pylith::bc::AbsorbingDampers::createAuxiliaryField(const pylith::topology::Field
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Create derived field.
-pylith::topology::Field*
-pylith::bc::AbsorbingDampers::createDerivedField(const pylith::topology::Field& solution,
-                                                 const pylith::topology::Mesh& domainMesh) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("createDerivedField(solution="<<solution.getLabel()<<", domainMesh=)"<<typeid(domainMesh).name()<<") empty method");
-
-    PYLITH_METHOD_RETURN(NULL);
-} // createDerivedField
-
-
-// ---------------------------------------------------------------------------------------------------------------------
 // Get auxiliary field factory associated with physics.
 pylith::feassemble::AuxiliaryFactory*
 pylith::bc::AbsorbingDampers::_getAuxiliaryFactory(void) {

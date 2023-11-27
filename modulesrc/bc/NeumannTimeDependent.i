@@ -23,7 +23,7 @@
 
 namespace pylith {
     namespace bc {
-        class NeumannTimeDependent : public pylith::bc::BoundaryCondition {
+        class NeumannTimeDependent: public pylith::bc::BoundaryCondition {
             // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////
 public:
 
@@ -109,7 +109,7 @@ public:
              * @param[in] solution Solution field.
              * @returns Constraint if applicable, otherwise NULL.
              */
-            std::vector<pylith::feassemble::Constraint*> createConstraints(const pylith::topology::Field& solution);
+            std::vector < pylith::feassemble::Constraint*> createConstraints(const pylith::topology::Field& solution);
 
             /** Create auxiliary field.
              *
@@ -120,16 +120,6 @@ public:
              */
             pylith::topology::Field* createAuxiliaryField(const pylith::topology::Field& solution,
                                                           const pylith::topology::Mesh& domainMesh);
-
-            /** Create derived field.
-             *
-             * @param[in] solution Solution field.
-             * @param[in\ domainMesh Finite-element mesh associated with integration domain.
-             *
-             * @returns Derived field if applicable, otherwise NULL.
-             */
-            pylith::topology::Field* createDerivedField(const pylith::topology::Field& solution,
-                                                        const pylith::topology::Mesh& domainMesh);
 
             /** Update auxiliary subfields at beginning of time step.
              *

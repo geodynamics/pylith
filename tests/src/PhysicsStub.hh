@@ -75,16 +75,6 @@ public:
     pylith::topology::Field* createAuxiliaryField(const pylith::topology::Field& solution,
                                                   const pylith::topology::Mesh& physicsMesh);
 
-    /** Create derived field.
-     *
-     * @param[in] solution Solution field.
-     * @param[in\ physicsMesh Finite-element mesh associated with physics.
-     *
-     * @returns Derived field if applicable, otherwise NULL.
-     */
-    pylith::topology::Field* createDerivedField(const pylith::topology::Field& solution,
-                                                const pylith::topology::Mesh& physicsMesh);
-
     // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
 

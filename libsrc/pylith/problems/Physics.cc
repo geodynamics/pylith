@@ -238,6 +238,31 @@ pylith::problems::Physics::getKernelConstants(const PylithReal dt) {
 
 
 // ------------------------------------------------------------------------------------------------
+// Create diagnostic field.
+pylith::topology::Field*
+pylith::problems::Physics::createDiagnosticField(const pylith::topology::Field& solution,
+                                                 const pylith::topology::Mesh& physicsMesh) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("createDiagnosticField(solution="<<solution.getLabel()<<", physicsMesh=)"<<typeid(physicsMesh).name()<<") empty method");
+
+    PYLITH_METHOD_RETURN(NULL);
+
+}
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Create derived field.
+pylith::topology::Field*
+pylith::problems::Physics::createDerivedField(const pylith::topology::Field& solution,
+                                              const pylith::topology::Mesh& physicsMesh) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("createDerivedField(solution="<<solution.getLabel()<<", physicsMesh=)"<<typeid(physicsMesh).name()<<") empty method");
+
+    PYLITH_METHOD_RETURN(NULL);
+} // createDerivedField
+
+
+// ------------------------------------------------------------------------------------------------
 // Update auxiliary field for given time.
 void
 pylith::problems::Physics::updateAuxiliaryField(pylith::topology::Field* auxiliaryField,

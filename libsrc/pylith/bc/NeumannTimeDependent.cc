@@ -298,18 +298,6 @@ pylith::bc::NeumannTimeDependent::createAuxiliaryField(const pylith::topology::F
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Create derived field.
-pylith::topology::Field*
-pylith::bc::NeumannTimeDependent::createDerivedField(const pylith::topology::Field& solution,
-                                                     const pylith::topology::Mesh& domainMesh) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("createDerivedField(solution="<<solution.getLabel()<<", domainMesh=)"<<typeid(domainMesh).name()<<") empty method");
-
-    PYLITH_METHOD_RETURN(NULL);
-} // createDerivedField
-
-
-// ---------------------------------------------------------------------------------------------------------------------
 // Update auxiliary subfields at beginning of time step.
 void
 pylith::bc::NeumannTimeDependent::updateAuxiliaryField(pylith::topology::Field* auxiliaryField,

@@ -90,7 +90,6 @@ public:
              */
             pylith::topology::Field* createDerivedField(const pylith::topology::Field& solution,
                                                         const pylith::topology::Mesh& domainMesh);
-
             // PROTECTED METHODS //////////////////////////////////////////////////////////////////
 protected:
 
@@ -110,7 +109,7 @@ protected:
              */
             void _setKernelsResidual(pylith::feassemble::IntegratorInterface* integrator,
                                      const pylith::topology::Field& solution,
-                                     const std::vector < pylith::materials::Material* >& materials) const;
+                                     const std::vector < pylith::materials::Material* > &materials) const;
 
             /** Set kernels for Jacobian.
              *
@@ -120,7 +119,7 @@ protected:
              */
             void _setKernelsJacobian(pylith::feassemble::IntegratorInterface* integrator,
                                      const pylith::topology::Field& solution,
-                                     const std::vector < pylith::materials::Material* >& materials) const;
+                                     const std::vector < pylith::materials::Material* > &materials) const;
 
         }; // class FaultCohesiveImpulses
 
