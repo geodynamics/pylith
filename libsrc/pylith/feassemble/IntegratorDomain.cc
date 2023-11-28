@@ -252,7 +252,7 @@ pylith::feassemble::IntegratorDomain::setKernelsDerivedField(const std::vector<P
 void
 pylith::feassemble::IntegratorDomain::initialize(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" intialize(solution="<<solution.getLabel()<<")");
+    PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" initialize(solution="<<solution.getLabel()<<")");
 
     delete _materialMesh;
     _materialMesh = pylith::topology::MeshOps::createSubdomainMesh(solution.getMesh(), _labelName.c_str(), _labelValue, ":UNKOWN:");
