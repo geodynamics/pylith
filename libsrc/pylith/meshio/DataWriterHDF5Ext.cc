@@ -186,7 +186,7 @@ pylith::meshio::DataWriterHDF5Ext::writeVertexField(const PylithScalar t,
         assert(binaryViewer);
 
         PetscVec vector = subfield.getVector();assert(vector);
-        DataWriter::_writeVec(vector, binaryViewer);
+        err = VecViewNative(vector, binaryViewer);PYLITH_CHECK_ERROR(err);
 
         ExternalDataset& datasetInfo = _datasets[name];
         ++datasetInfo.numTimeSteps;
@@ -324,7 +324,7 @@ pylith::meshio::DataWriterHDF5Ext::writeCellField(const PylithScalar t,
         assert(binaryViewer);
 
         PetscVec vector = subfield.getVector();assert(vector);
-        DataWriter::_writeVec(vector, binaryViewer);
+        err = VecViewNative(vector, binaryViewer);PYLITH_CHECK_ERROR(err);
 
         ExternalDataset& datasetInfo = _datasets[name];
         ++datasetInfo.numTimeSteps;

@@ -198,7 +198,7 @@ pylith::meshio::DataWriterHDF5::writeVertexField(const PylithScalar t,
         err = PetscViewerHDF5SetTimestep(_viewer, istep);PYLITH_CHECK_ERROR(err);
 
         PetscVec vector = subfield.getVector();assert(vector);
-        DataWriter::_writeVec(vector, _viewer);PYLITH_CHECK_ERROR(err);
+        err = VecViewNative(vector, _viewer);PYLITH_CHECK_ERROR(err);
         err = PetscViewerHDF5PopTimestepping(_viewer);PYLITH_CHECK_ERROR(err);
         err = PetscViewerHDF5PopGroup(_viewer);PYLITH_CHECK_ERROR(err);
 
@@ -261,7 +261,7 @@ pylith::meshio::DataWriterHDF5::writeCellField(const PylithScalar t,
         err = PetscViewerHDF5SetTimestep(_viewer, istep);PYLITH_CHECK_ERROR(err);
 
         PetscVec vector = subfield.getVector();assert(vector);
-        DataWriter::_writeVec(vector, _viewer);
+        err = VecViewNative(vector, _viewer);PYLITH_CHECK_ERROR(err);
         err = PetscViewerHDF5PopTimestepping(_viewer);PYLITH_CHECK_ERROR(err);
         err = PetscViewerHDF5PopGroup(_viewer);PYLITH_CHECK_ERROR(err);
 
