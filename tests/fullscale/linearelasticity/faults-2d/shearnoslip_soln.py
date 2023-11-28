@@ -86,6 +86,8 @@ class AnalyticalSoln(object):
             },
             "slip": self.slip,
             "traction_change": self.traction_change,
+            "normal_dir": self.fault_normal_dir,
+            "strike_dir": self.fault_strike_dir,
         }
         return
 
@@ -171,6 +173,22 @@ class AnalyticalSoln(object):
         traction = numpy.zeros((1, npts, 2), dtype=numpy.float64)
         traction[:,:,1] = sxy
         return traction
+
+    def fault_normal_dir(self, locs):
+        """Compute fault normal direction.
+        """
+        (npts, dim) = locs.shape
+        normal_dir = numpy.zeros((1, npts, 2), dtype=numpy.float64)
+        normal_dir[:,:,0] = 1.0
+        return normal_dir
+
+    def fault_strike_dir(self, locs):
+        """Compute fault strike direction.
+        """
+        (npts, dim) = locs.shape
+        strike_dir = numpy.zeros((1, npts, 2), dtype=numpy.float64)
+        strike_dir[:,:,1] = 1.0
+        return strike_dir
 
 
 # End of file
