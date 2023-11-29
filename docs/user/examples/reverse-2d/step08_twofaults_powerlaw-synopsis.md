@@ -15,3 +15,4 @@
 * pylith.faults.FaultCohesiveKin
 * pylith.faults.KinSrcStep
 * spatialdata.spatialdb.UniformDB
+* spatialdata.spatialdb.CompositeDB

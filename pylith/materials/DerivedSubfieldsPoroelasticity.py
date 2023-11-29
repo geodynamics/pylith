@@ -29,6 +29,7 @@ class DerivedSubfieldsPoroelasticity(DerivedSubfieldsElasticity):
             cauchy_stress.basis_order = 0
             cauchy_strain.basis_order = 0
             bulk_density.basis_order = 1
+            water_content.basis_order = 1
         """
     }
 
@@ -39,6 +40,9 @@ class DerivedSubfieldsPoroelasticity(DerivedSubfieldsElasticity):
     bulkDensity = pythia.pyre.inventory.facility("bulk_density", family="subfield", factory=Subfield)
     bulkDensity.meta['tip'] = "bulk density subfield."
 
+    waterContent = pythia.pyre.inventory.facility("water_content", family="subfield", factory=Subfield)
+    waterContent.meta['tip'] = "water content subfield"
+
 
     def __init__(self, name="derivedsubfieldsporoelasticity"):
         """Constructor.
@@ -47,6 +51,7 @@ class DerivedSubfieldsPoroelasticity(DerivedSubfieldsElasticity):
 
     def _defaults(self):
         self.bulkDensity.basis_order = 1
+        self.waterContent.basis_order = 1
 
 # FACTORIES ////////////////////////////////////////////////////////////
 

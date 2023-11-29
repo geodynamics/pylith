@@ -119,24 +119,27 @@ pylith::materials::Elasticity::verifyConfiguration(const pylith::topology::Field
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("verifyConfiguration(solution="<<solution.getLabel()<<")");
 
-    // Verify solution contains expected fields.
-    if (!solution.hasSubfield("displacement")) {
-        throw std::runtime_error("Cannot find 'displacement' field in solution; required for 'Elasticity'.");
-    } // if
+    // Verify solution contains required fields.
+    std::string reason = "material 'Elasticity'.";
+    size_t numRequired = 0;
+    const size_t maxRequired = 2;
+    pylith::string_vector requiredFields(maxRequired);
+    requiredFields[numRequired++] = "displacement";
 
     switch (_formulation) {
     case QUASISTATIC:
         break;
     case DYNAMIC:
     case DYNAMIC_IMEX:
-        if (!solution.hasSubfield("velocity")) {
-            throw std::runtime_error("Cannot find 'velocity' field in solution; required for 'dynamic' and "
-                                     "'dynamic_imex' time stepping formulations of 'Elasticity'.");
-        } // if
+        reason = "material 'Elasticity' with inertia";
+        requiredFields[numRequired++] = "velocity";
         break;
     default:
         PYLITH_COMPONENT_LOGICERROR("Unknown formulation for equations (" << _formulation << ").");
     } // switch
+    requiredFields.resize(numRequired);
+
+    pylith::topology::FieldOps::checkSubfieldsExist(requiredFields, reason, solution);
 
     PYLITH_METHOD_END;
 } // verifyConfiguration

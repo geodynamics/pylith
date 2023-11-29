@@ -97,6 +97,19 @@ public:
     void checkDiscretization(const pylith::topology::Field& target,
                              const pylith::topology::Field& auxiliary);
 
+    /** Check that 'field' contains required fields for 'reason'.
+     *
+     * @throws std::runtime_error if field does not contain all required fields.
+     *
+     * @param[in] requiredFields Names of required fields.
+     * @param[in] reason Reason for required fields.
+     * @param[in] field Field needing required fields.
+     */
+    static
+    void checkSubfieldsExist(const pylith::string_vector& requiredFields,
+                             const std::string& reason,
+                             const pylith::topology::Field& field);
+
     /** Get names of subfields extending over the entire domain.
      *
      * Excludes subfields extending over only a subset of the domain, like the fault Lagrange multiplier subfield.

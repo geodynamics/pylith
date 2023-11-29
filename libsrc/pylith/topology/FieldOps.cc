@@ -107,11 +107,11 @@ pylith::topology::FieldOps::createFE(const FieldBase::Discretization& feinfo,
         PetscQuadrature faceQuadrature = NULL;
         DMPolytopeType ct;
         switch (dim) {
-          case 0: ct = DM_POLYTOPE_POINT;break;
-          case 1: ct = DM_POLYTOPE_SEGMENT;break;
-          case 2: ct = useTensor ? DM_POLYTOPE_QUADRILATERAL : DM_POLYTOPE_TRIANGLE;break;
-          case 3: ct = useTensor ? DM_POLYTOPE_HEXAHEDRON : DM_POLYTOPE_TETRAHEDRON;break;
-          default: throw std::logic_error("Cannot handle dimension");
+        case 0: ct = DM_POLYTOPE_POINT;break;
+        case 1: ct = DM_POLYTOPE_SEGMENT;break;
+        case 2: ct = useTensor ? DM_POLYTOPE_QUADRILATERAL : DM_POLYTOPE_TRIANGLE;break;
+        case 3: ct = useTensor ? DM_POLYTOPE_HEXAHEDRON : DM_POLYTOPE_TETRAHEDRON;break;
+        default: throw std::logic_error("Cannot handle dimension");
         }
         err = PetscDTCreateDefaultQuadrature(ct, quadOrder, &quadrature, &faceQuadrature);PYLITH_CHECK_ERROR(err);
         err = PetscFESetQuadrature(fe, quadrature);PYLITH_CHECK_ERROR(err);
@@ -189,6 +189,46 @@ pylith::topology::FieldOps::checkDiscretization(const pylith::topology::Field& t
 
     PYLITH_METHOD_END;
 } // checkDiscretization
+
+
+// ------------------------------------------------------------------------------------------------
+// Check that 'field' contains required fields for 'reason'.
+void
+pylith::topology::FieldOps::checkSubfieldsExist(const pylith::string_vector& requiredFields,
+                                                const std::string& reason,
+                                                const pylith::topology::Field& field) {
+    pylith::string_vector missingFields;
+    size_t numMissing = 0;
+    const size_t numRequired = requiredFields.size();
+    for (size_t i = 0; i < numRequired; ++i) {
+        if (!field.hasSubfield(requiredFields[i].c_str())) {
+            missingFields.resize(numMissing+1);
+            missingFields[numMissing++] = requiredFields[i];
+        } // if
+    } // for
+
+    if (numMissing) {
+        const std::vector<std::string>& subfieldNames = field.getSubfieldNames();
+        std::ostringstream msg;
+        msg << "Could not find";
+        for (size_t i = 0; i < numMissing; ++i) {
+            msg << " '" << missingFields[i] << "'";
+            if (i+1 < numMissing) {
+                msg << ",";
+            }
+        }
+        msg << " in " << field.getLabel() << " field. Field contains: ";
+        for (size_t i = 0; i < subfieldNames.size(); ++i) {
+            msg << "'" << subfieldNames[i] << "'";
+            if (i+1 < subfieldNames.size()) {
+                msg << ",";
+            }
+        } // for
+        msg << "; the missing fields are required for " << reason;
+        throw std::runtime_error(msg.str());
+    } // if
+
+} // checkSubfieldsExist
 
 
 // ------------------------------------------------------------------------------------------------

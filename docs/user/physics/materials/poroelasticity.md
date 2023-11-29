@@ -42,11 +42,15 @@ L: isotropic, linear poroelasticity
 
 ```{table} Derived subfields that are available for output for poroelasticity bulk rheologies.
 :name: tab:poroelasticity:derived:subfields
-|      Subfield | L   | LM  |  GM |  PL |  DP |  Components            |
-|:--------------|:---:|:---:|:---:|:---:|:---:|:-----------------------|
-| `cauchy_stress` |  ✓  |  ✓ |  ✓  |  ✓  |  ✓ | xx, yy, zz, xy, yz, xz |
-| `cauchy_strain` |  ✓  |  ✓ |  ✓  |  ✓  |  ✓ | xx, yy, zz, xy, yz, xz |
+|      Subfield | L   | Components            |
+|:--------------|:---:|:-----------------------|
+| `cauchy_stress` |  X  | xx, yy, zz, xy, yz, xz |
+| `cauchy_strain` |  X  | xx, yy, zz, xy, yz, xz |
+| `bulk_density`  |  X  |  |
+| `water_content` |  X  |  |
 ```
+
+When porosity is enabled as a state variable, it will be included in the output along with the derived subfields.
 
 :::{seealso}
 See [`Poroelasticity` Component](../../components/materials/Poroelasticity.md) for the Pyre properties and facilities and configuration examples.

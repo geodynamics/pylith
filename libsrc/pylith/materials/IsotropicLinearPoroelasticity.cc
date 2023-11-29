@@ -623,6 +623,21 @@ pylith::materials::IsotropicLinearPoroelasticity::getKernelCauchyStressVector(co
     PYLITH_METHOD_RETURN(kernel);
 } // getKernelCauchyStressVector
 
+// ---------------------------------------------------------------------------------------------------------------------
+// Get water content kernel for derived field.
+PetscPointFunc
+pylith::materials::IsotropicLinearPoroelasticity::getKernelWaterContent(const spatialdata::geocoords::CoordSys* coordsys) const {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("getKernelWaterContent(coordsys="<<typeid(coordsys).name()<<")");
+
+    const int spaceDim = coordsys->getSpaceDim();
+    PetscPointFunc kernel =
+        (3 == spaceDim) ?  pylith::fekernels::IsotropicLinearPoroelasticity3D::waterContent_asScalar :
+        (2 == spaceDim) ?  pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::waterContent_asScalar :
+        NULL;
+
+    PYLITH_METHOD_RETURN(kernel);
+} // getKernelWaterContent
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Update kernel constants.

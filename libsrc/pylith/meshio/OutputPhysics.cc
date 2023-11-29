@@ -391,6 +391,21 @@ pylith::meshio::OutputPhysics::_expandDataFieldNames(const pylith::topology::Fie
     if ((1 == _dataFieldNames.size()) && (std::string("all") == _dataFieldNames[0])) {
         pylith::string_vector dataNames = pylith::topology::FieldOps::getSubfieldNamesDomain(solution);
 
+        if (auxField) {
+            const pylith::string_vector& auxSubfields = auxField->getSubfieldNames();
+            const size_t origSize = dataNames.size();
+            dataNames.resize(origSize + auxSubfields.size());
+
+            size_t numAdd = 0;
+            for (size_t i = 0, iName = origSize; i < auxSubfields.size(); ++i) {
+                const pylith::topology::Field::SubfieldInfo& info = auxField->getSubfieldInfo(auxSubfields[i].c_str());
+                if (info.description.hasHistory) {
+                    dataNames[iName++] = auxSubfields[i];
+                    ++numAdd;
+                } // if
+            } // for
+            dataNames.resize(origSize + numAdd);
+        } // if
         if (derivedField) {
             const pylith::string_vector& derivedSubfields = derivedField->getSubfieldNames();
             const size_t origSize = dataNames.size();

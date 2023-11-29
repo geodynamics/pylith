@@ -26,5 +26,6 @@ dist_noinst_DATA = \
     mesh_tri.exo \
     pylithapp.cfg \
     step01_inflation.cfg \
+    step02_inflation_statevars.cfg \
 	viz/plot_mesh.py \
 	viz/plot_dispwarp.py

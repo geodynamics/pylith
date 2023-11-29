@@ -168,6 +168,15 @@ public:
     virtual
     PetscPointFunc getKernelCauchyStressVector(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
 
+    /** Get water content kernel for derived field.
+     *
+     * @param[in] coordsys Coordinate system.
+     *
+     * @return Project kernel for computing stress subfield in derived field.
+     */
+    virtual
+    PetscPointFunc getKernelWaterContent(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
+
     /** Update kernel constants.
      *
      * @param[inout] kernelConstants Array of constants used in integration kernels.
