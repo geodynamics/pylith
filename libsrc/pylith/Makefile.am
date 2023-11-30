@@ -33,6 +33,7 @@ lib_LTLIBRARIES = libpylith.la
 
 libpylith_la_SOURCES = \
 	bc/BoundaryCondition.cc \
+	bc/DiagnosticFieldFactory.cc \
 	bc/TimeDependentAuxiliaryFactory.cc \
 	bc/DirichletTimeDependent.cc \
 	bc/DirichletUserFn.cc \

@@ -149,7 +149,6 @@ pylith::feassemble::Integrator::initialize(const pylith::topology::Field& soluti
     PYLITH_JOURNAL_DEBUG("initialize(solution="<<solution.getLabel()<<")");
 
     const pylith::topology::Mesh& physicsDomainMesh = getPhysicsDomainMesh();
-
     delete _auxiliaryField;_auxiliaryField = _physics->createAuxiliaryField(solution, physicsDomainMesh);
     delete _diagnosticField;_diagnosticField = _physics->createDiagnosticField(solution, physicsDomainMesh);
     _computeDiagnosticField();

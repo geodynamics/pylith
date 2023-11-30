@@ -59,7 +59,7 @@ class TestCase(FullTestCase):
             Check(
                 mesh_entities=["bc_xneg", "bc_xpos"],
                 filename="output/{name}-{mesh_entity}_info.h5",
-                vertex_fields=["initial_amplitude"],
+                vertex_fields=["initial_amplitude", "normal_dir", "horizontal_tangential_dir", "vertical_tangential_dir"],
                 defaults=defaults,
             ),
             Check(
@@ -74,7 +74,7 @@ class TestCase(FullTestCase):
             ),
             Check(
                 mesh_entities=["fault"],
-                vertex_fields=["lagrange_multiplier_fault"],
+                vertex_fields=["traction_change"],
                 scale = 1.0e+6,
                 defaults=defaults,
             ),

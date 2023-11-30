@@ -30,6 +30,7 @@
 namespace pylith {
     namespace bc {
         class BoundaryCondition;
+        class DiagnosticFieldFactory;
         class TimeDependentAuxiliaryFactory;
 
         class ConstraintBoundary;

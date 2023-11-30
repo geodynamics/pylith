@@ -84,15 +84,27 @@ class AnalyticalSoln(object):
                 "bc_yneg": self.bc_traction,
                 "bc_ypos": self.bc_traction,
             },
+            "normal_dir": {
+                "bc_xneg": self.orientation_dir((-1, 0)),
+                "bc_xpos": self.orientation_dir((+1, 0)),
+                "bc_yneg": self.orientation_dir((0, -1)),
+                "bc_ypos": self.orientation_dir((0, +1)),
+                "fault_xmid": self.orientation_dir((+1, 0)),
+                "fault_xneg": self.orientation_dir((+1, 0)),
+            },
+            "tangential_dir": {
+                "bc_xneg": self.orientation_dir((0, -1)),
+                "bc_xpos": self.orientation_dir((0, +1)),
+                "bc_yneg": self.orientation_dir((+1, 0)),
+                "bc_ypos": self.orientation_dir((-1, 0)),
+            },
             "slip": self.slip,
             "traction_change": self.traction_change,
-            "normal_dir": self.fault_normal_dir,
-            "strike_dir": self.fault_strike_dir,
+            "strike_dir": self.orientation_dir((0, +1)),
         }
-        return
 
     def getField(self, name, mesh_entity, pts):
-        if name == "initial_amplitude":
+        if isinstance(self.fields[name], dict):
             field = self.fields[name][mesh_entity](pts)
         else:
             field = self.fields[name](pts)
@@ -163,32 +175,25 @@ class AnalyticalSoln(object):
         """Compute slip field.
         """
         (npts, dim) = locs.shape
-        slip = numpy.zeros((1, npts, 2), dtype=numpy.float64)
+        slip = numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
         return slip
 
     def traction_change(self, locs):
         """Compute change in traction on faults.
         """
         (npts, dim) = locs.shape
-        traction = numpy.zeros((1, npts, 2), dtype=numpy.float64)
+        traction = numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
         traction[:,:,1] = sxy
         return traction
 
-    def fault_normal_dir(self, locs):
-        """Compute fault normal direction.
-        """
-        (npts, dim) = locs.shape
-        normal_dir = numpy.zeros((1, npts, 2), dtype=numpy.float64)
-        normal_dir[:,:,0] = 1.0
-        return normal_dir
-
-    def fault_strike_dir(self, locs):
-        """Compute fault strike direction.
-        """
-        (npts, dim) = locs.shape
-        strike_dir = numpy.zeros((1, npts, 2), dtype=numpy.float64)
-        strike_dir[:,:,1] = 1.0
-        return strike_dir
+    def orientation_dir(self, vector):
+        def fn_dir(locs):
+            (npts, dim) = locs.shape
+            values = numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
+            for d in range(self.SPACE_DIM):
+                values[:,:,d] = vector[d]
+            return values
+        return fn_dir
 
 
 # End of file

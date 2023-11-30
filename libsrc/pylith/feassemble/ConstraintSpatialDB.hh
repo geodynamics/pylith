@@ -72,17 +72,6 @@ public:
      */
     void setSolution(pylith::feassemble::IntegrationData* integrationData);
 
-    // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
-protected:
-
-    /** Set constants used in finite-element kernels.
-     *
-     * @param[in] solution Solution field.
-     * @param[in] dt Current time step.
-     */
-    void _setKernelConstants(const pylith::topology::Field& solution,
-                             const PylithReal dt) const;
-
     // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
 

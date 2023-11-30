@@ -33,7 +33,7 @@
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 #include "pylith/topology/Stratum.hh" // USES Stratum
 
-#include "pylith/fekernels/FaultCohesive.hh" // USES FaultCohesive
+#include "pylith/fekernels/BoundaryDirections.hh" // USES BoundaryDirections
 #include "pylith/fekernels/FaultCohesiveKin.hh" // USES FaultCohesiveKin
 
 #include "pylith/utils/EventLogger.hh" // USES EventLogger

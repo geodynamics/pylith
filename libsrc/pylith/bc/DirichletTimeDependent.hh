@@ -170,12 +170,6 @@ protected:
      */
     pylith::feassemble::AuxiliaryFactory* _getAuxiliaryFactory(void);
 
-    /** Update kernel constants.
-     *
-     * @param[in] dt Current time step.
-     */
-    void _updateKernelConstants(const PylithReal dt);
-
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 

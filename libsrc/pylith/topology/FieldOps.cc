@@ -25,6 +25,7 @@
 #include "pylith/topology/MeshOps.hh" // USES MeshOps
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 #include "pylith/topology/VisitorSubmesh.hh" // USES VecVisitorSubmesh
+#include "pylith/topology/Stratum.hh" // USES Stratum
 #include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
 
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
@@ -300,6 +301,28 @@ pylith::topology::FieldOps::layoutsMatch(const pylith::topology::Field& fieldA,
     // PYLITH_JOURNAL_DEBUG("layoutsMatch return value="<<isMatch<<".");
     PYLITH_METHOD_RETURN(isMatch);
 } // layoutsMatch
+
+
+// ------------------------------------------------------------------------------------------------
+// Create label for output.
+void
+pylith::topology::FieldOps::createOutputLabel(const pylith::topology::Field* field) {
+    PYLITH_METHOD_BEGIN;
+
+    const char* outputLabelName = "output";
+    PetscDM fieldDM = field->getDM();
+    PetscDMLabel outputLabel = NULL;
+    PetscErrorCode err = PETSC_SUCCESS;
+    err = DMCreateLabel(fieldDM, outputLabelName);PYLITH_CHECK_ERROR(err);
+    err = DMGetLabel(fieldDM, outputLabelName, &outputLabel);PYLITH_CHECK_ERROR(err);
+    pylith::topology::Stratum faultStratum(fieldDM, pylith::topology::Stratum::HEIGHT, 1);
+    for (PetscInt point = faultStratum.begin(); point != faultStratum.end(); ++point) {
+        err = DMLabelSetValue(outputLabel, point, 1);
+    } // for
+    err = DMPlexLabelComplete(fieldDM, outputLabel);PYLITH_CHECK_ERROR(err);
+
+    PYLITH_METHOD_END;
+}
 
 
 // End of file

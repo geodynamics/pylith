@@ -131,6 +131,7 @@ pylith::bc::AbsorbingDampers::createIntegrator(const pylith::topology::Field& so
     integrator->setLabelValue(getLabelValue());
 
     _AbsorbingDampers::setKernelsResidual(integrator, *this, solution);
+    BoundaryCondition::_setKernelsDiagnosticField(integrator, solution);
 
     PYLITH_METHOD_RETURN(integrator);
 } // createIntegrator
@@ -194,25 +195,6 @@ pylith::feassemble::AuxiliaryFactory*
 pylith::bc::AbsorbingDampers::_getAuxiliaryFactory(void) {
     return _auxiliaryFactory;
 } // _getAuxiliaryFactory
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Update kernel constants.
-void
-pylith::bc::AbsorbingDampers::_updateKernelConstants(const PylithReal dt) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_setKernelConstants(dt="<<dt<<")");
-
-    if (6 != _kernelConstants.size()) { _kernelConstants.resize(6);}
-    _kernelConstants[0] = _refDir1[0];
-    _kernelConstants[1] = _refDir1[1];
-    _kernelConstants[2] = _refDir1[2];
-    _kernelConstants[3] = _refDir2[0];
-    _kernelConstants[4] = _refDir2[1];
-    _kernelConstants[5] = _refDir2[2];
-
-    PYLITH_METHOD_END;
-} // _updateKernelConstants
 
 
 // ---------------------------------------------------------------------------------------------------------------------

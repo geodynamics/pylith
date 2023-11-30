@@ -130,6 +130,13 @@ public:
     bool layoutsMatch(const pylith::topology::Field& fieldA,
                       const pylith::topology::Field& fieldB);
 
+    /** Create label for output.
+     *
+     * @param[in] field Field to which output label is added.
+     */
+    static
+    void createOutputLabel(const pylith::topology::Field* field);
+
     /** Free saved PetscFE objects.
      */
     static

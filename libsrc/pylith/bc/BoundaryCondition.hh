@@ -77,12 +77,51 @@ public:
     virtual
     void verifyConfiguration(const pylith::topology::Field& solution) const;
 
+    /** Create diagnostic field.
+     *
+     * @param[in] solution Solution field.
+     * @param[in] physicsMesh Finite-element mesh associated with physics.
+     *
+     * @returns Diagnostic field if applicable, otherwise NULL.
+     */
+    virtual
+    pylith::topology::Field* createDiagnosticField(const pylith::topology::Field& solution,
+                                                   const pylith::topology::Mesh& physicsMesh);
+
+    // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
+protected:
+
+    /** Update kernel constants.
+     *
+     * @param[in] dt Current time step.
+     */
+    void _updateKernelConstants(const PylithReal dt);
+
+    /** Set kernels for computing diagnostic field.
+     *
+     * @param[out] integrator Integrator for material.
+     * @param[in] solution Solution field.
+     */
+    virtual
+    void _setKernelsDiagnosticField(pylith::feassemble::IntegratorBoundary* integrator,
+                                    const pylith::topology::Field& solution) const;
+
+    /** Set kernels for computing diagnostic field.
+     *
+     * @param[out] constraint Integrator for material.
+     * @param[in] solution Solution field.
+     */
+    virtual
+    void _setKernelsDiagnosticField(pylith::feassemble::Constraint* constraint,
+                                    const pylith::topology::Field& solution) const;
+
     // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
 
     PylithReal _refDir1[3]; ///< First choice reference direction used to compute boundary tangential directions.
     PylithReal _refDir2[3]; ///< Second choice reference direction used to compute boundary tangential directions.
     std::string _subfieldName; ///< Name of solution subfield for boundary condition.
+    pylith::bc::DiagnosticFieldFactory* _diagnosticFactory; ///< Factory for auxiliary subfields.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:

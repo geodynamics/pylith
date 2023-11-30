@@ -154,14 +154,25 @@ pylith::feassemble::IntegratorBoundary::setKernelsResidual(const std::vector<Res
 
 
 // ------------------------------------------------------------------------------------------------
+void
+pylith::feassemble::IntegratorBoundary::setKernelsDiagnosticField(const std::vector<ProjectKernels>& kernels) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" setKernelsDiagnosticField(# kernels="<<kernels.size()<<")");
+
+    _kernelsDiagnosticField = kernels;
+
+    PYLITH_METHOD_END;
+} // setKernelsDiagnosticField
+
+
+// ------------------------------------------------------------------------------------------------
 // Initialize integration domain, auxiliary field, and derived field. Update observers.
 void
 pylith::feassemble::IntegratorBoundary::initialize(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" initialize(solution="<<solution.getLabel()<<")");
 
-    delete _boundaryMesh;
-    _boundaryMesh = pylith::topology::MeshOps::createLowerDimMesh(solution.getMesh(), _labelName.c_str(), _labelValue);
+    delete _boundaryMesh;_boundaryMesh = pylith::topology::MeshOps::createLowerDimMesh(solution.getMesh(), _labelName.c_str(), _labelValue);
     assert(_boundaryMesh);
     pylith::topology::CoordsVisitor::optimizeClosure(_boundaryMesh->getDM());
 
@@ -310,6 +321,51 @@ pylith::feassemble::IntegratorBoundary::computeLHSJacobianLumpedInv(pylith::topo
 
     PYLITH_METHOD_END;
 } // computeLHSJacobianLumpedInv
+
+
+// ------------------------------------------------------------------------------------------------
+// Compute diagnostic field from auxiliary field.
+void
+pylith::feassemble::IntegratorBoundary::_computeDiagnosticField(void) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("_computeDiagnosticField()");
+
+    // We create the diagnostic field for all BCs, but we don't set the kernel for
+    // BCs associated with analytical user functions.
+    if (!_diagnosticField || !_auxiliaryField || !_kernelsDiagnosticField.size()) {
+        PYLITH_METHOD_END;
+    } // if
+
+    assert(_auxiliaryField);
+    assert(_diagnosticField);
+    const PylithScalar t = 0.0;
+    const PylithScalar dt = 0.0;
+    _setKernelConstants(*_auxiliaryField, dt);
+
+    const size_t numKernels = _kernelsDiagnosticField.size();
+    assert(numKernels > 0);
+    PetscBdPointFunc* kernelsArray = (numKernels > 0) ? new PetscBdPointFunc[numKernels] : NULL;
+    for (size_t iKernel = 0; iKernel < numKernels; ++iKernel) {
+        const pylith::topology::Field::SubfieldInfo& sinfo = _diagnosticField->getSubfieldInfo(_kernelsDiagnosticField[iKernel].subfield.c_str());
+        kernelsArray[sinfo.index] = _kernelsDiagnosticField[iKernel].f;
+    } // for
+
+    PetscErrorCode err = 0;
+    PetscDM diagnosticDM = _diagnosticField->getDM();
+    PetscDMLabel diagnosticFieldLabel = NULL;
+    const PetscInt labelValue = 1;
+    err = DMGetLabel(diagnosticDM, "output", &diagnosticFieldLabel);PYLITH_CHECK_ERROR(err);
+    err = DMProjectBdFieldLabelLocal(diagnosticDM, t, diagnosticFieldLabel, 1, &labelValue, PETSC_DETERMINE, NULL, _auxiliaryField->getLocalVector(), kernelsArray, INSERT_VALUES, _diagnosticField->getLocalVector());PYLITH_CHECK_ERROR(err);
+    delete[] kernelsArray;kernelsArray = NULL;
+
+    pythia::journal::debug_t debug(GenericComponent::getName());
+    if (debug.state()) {
+        PYLITH_JOURNAL_DEBUG("Viewing diagnostic field.");
+        _diagnosticField->view("Diagnostic field");
+    } // if
+
+    PYLITH_METHOD_END;
+} // _computeDiagnosticField
 
 
 // End of file

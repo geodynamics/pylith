@@ -796,7 +796,7 @@ pylith::feassemble::IntegratorInterface::_computeDiagnosticField(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("_computeDiagnosticField()");
 
-    if (!_diagnosticField) {
+    if (!_diagnosticField || !_auxiliaryField) {
         PYLITH_METHOD_END;
     } // if
 
@@ -807,6 +807,7 @@ pylith::feassemble::IntegratorInterface::_computeDiagnosticField(void) {
     _setKernelConstants(*_auxiliaryField, dt);
 
     const size_t numKernels = _kernelsDiagnosticField.size();
+    assert(numKernels > 0);
     PetscBdPointFunc* kernelsArray = (numKernels > 0) ? new PetscBdPointFunc[numKernels] : NULL;
     for (size_t iKernel = 0; iKernel < numKernels; ++iKernel) {
         const pylith::topology::Field::SubfieldInfo& sinfo = _diagnosticField->getSubfieldInfo(_kernelsDiagnosticField[iKernel].subfield.c_str());

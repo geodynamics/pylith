@@ -58,9 +58,9 @@ class TestCase(FullTestCase):
                 defaults=defaults,
             ),
             Check(
-                mesh_entities=["bc_xneg", "bc_xpos"],
+                mesh_entities=["bc_xneg", "bc_xpos", "bc_yneg", "bc_ypos"],
                 filename="output/{name}-{mesh_entity}_info.h5",
-                vertex_fields=["initial_amplitude"],
+                vertex_fields=["initial_amplitude", "normal_dir", "tangential_dir"],
                 defaults=defaults,
             ),
             Check(

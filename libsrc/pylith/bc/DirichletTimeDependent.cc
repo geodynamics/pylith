@@ -252,6 +252,7 @@ pylith::bc::DirichletTimeDependent::createConstraints(const pylith::topology::Fi
     constraint->setConstrainedDOF(&_constrainedDOF[0], _constrainedDOF.size());
 
     _DirichletTimeDependent::setKernelConstraint(constraint, *this, solution);
+    BoundaryCondition::_setKernelsDiagnosticField(constraint, solution);
 
     constraintArray.resize(1);
     constraintArray[0] = constraint;
@@ -331,13 +332,6 @@ pylith::feassemble::AuxiliaryFactory*
 pylith::bc::DirichletTimeDependent::_getAuxiliaryFactory(void) {
     return _auxiliaryFactory;
 } // _getAuxiliaryFactory
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Update kernel constants.
-void
-pylith::bc::DirichletTimeDependent::_updateKernelConstants(const PylithReal dt) {
-}
 
 
 // ---------------------------------------------------------------------------------------------------------------------

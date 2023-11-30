@@ -78,17 +78,15 @@ class AnalyticalSoln(object):
                 "fault_xneg": self.slip_xneg,
             },
             "traction_change": self.traction_change,
-            "normal_dir": self.fault_normal_dir,
-            "strike_dir": self.fault_strike_dir,
+            "normal_dir": self.orientation_dir((+1, 0)),
+            "strike_dir": self.orientation_dir((0, +1)),
         }
-        return
 
     def getField(self, name, mesh_entity, pts):
-        if name == "slip":
+        if isinstance(self.fields[name], dict):
             field = self.fields[name][mesh_entity](pts)
         else:
             field = self.fields[name](pts)
-
         return field
 
     def getMask(self, name, mesh_entity, pts):
@@ -172,21 +170,14 @@ class AnalyticalSoln(object):
         traction = numpy.zeros((1, npts, 2), dtype=numpy.float64)
         return traction
 
-    def fault_normal_dir(self, locs):
-        """Compute fault normal direction.
-        """
-        (npts, dim) = locs.shape
-        normal_dir = numpy.zeros((1, npts, 2), dtype=numpy.float64)
-        normal_dir[:,:,0] = 1.0
-        return normal_dir
-
-    def fault_strike_dir(self, locs):
-        """Compute fault strike direction.
-        """
-        (npts, dim) = locs.shape
-        strike_dir = numpy.zeros((1, npts, 2), dtype=numpy.float64)
-        strike_dir[:,:,1] = 1.0
-        return strike_dir
+    def orientation_dir(self, vector):
+        def fn_dir(locs):
+            (npts, dim) = locs.shape
+            values = numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
+            for d in range(self.SPACE_DIM):
+                values[:,:,d] = vector[d]
+            return values
+        return fn_dir
 
 
 # End of file

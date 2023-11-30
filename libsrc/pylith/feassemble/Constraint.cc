@@ -169,6 +169,18 @@ pylith::feassemble::Constraint::getPhysicsDomainMesh(void) const {
 } // getPhysicsDomainMesh
 
 
+// ------------------------------------------------------------------------------------------------
+void
+pylith::feassemble::Constraint::setKernelsDiagnosticField(const std::vector<ProjectKernels>& kernels) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" setKernelsDiagnosticField(# kernels="<<kernels.size()<<")");
+
+    _kernelsDiagnosticField = kernels;
+
+    PYLITH_METHOD_END;
+} // setKernelsDiagnosticField
+
+
 // ----------------------------------------------------------------------
 // Initialize boundary condition.
 void
@@ -219,6 +231,76 @@ pylith::feassemble::Constraint::setState(const PylithReal t) {
 
     PYLITH_METHOD_END;
 } // setState
+
+
+// ------------------------------------------------------------------------------------------------
+// Compute diagnostic field from auxiliary field.
+void
+pylith::feassemble::Constraint::_computeDiagnosticField(void) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("_computeDiagnosticField()");
+
+    if (!_diagnosticField || !_auxiliaryField) {
+        PYLITH_METHOD_END;
+    } // if
+
+    assert(_auxiliaryField);
+    assert(_diagnosticField);
+    const PylithScalar t = 0.0;
+    const PylithScalar dt = 0.0;
+    _setKernelConstants(*_auxiliaryField, dt);
+
+    const size_t numKernels = _kernelsDiagnosticField.size();
+    assert(numKernels > 0);
+    PetscBdPointFunc* kernelsArray = (numKernels > 0) ? new PetscBdPointFunc[numKernels] : NULL;
+    for (size_t iKernel = 0; iKernel < numKernels; ++iKernel) {
+        const pylith::topology::Field::SubfieldInfo& sinfo = _diagnosticField->getSubfieldInfo(_kernelsDiagnosticField[iKernel].subfield.c_str());
+        kernelsArray[sinfo.index] = _kernelsDiagnosticField[iKernel].f;
+    } // for
+
+    PetscErrorCode err = 0;
+    PetscDM diagnosticDM = _diagnosticField->getDM();
+    PetscDMLabel diagnosticFieldLabel = NULL;
+    const PetscInt labelValue = 1;
+    err = DMGetLabel(diagnosticDM, "output", &diagnosticFieldLabel);PYLITH_CHECK_ERROR(err);
+    err = DMProjectBdFieldLabelLocal(diagnosticDM, t, diagnosticFieldLabel, 1, &labelValue, PETSC_DETERMINE, NULL, _auxiliaryField->getLocalVector(), kernelsArray, INSERT_VALUES, _diagnosticField->getLocalVector());PYLITH_CHECK_ERROR(err);
+    delete[] kernelsArray;kernelsArray = NULL;
+
+    pythia::journal::debug_t debug(GenericComponent::getName());
+    if (debug.state()) {
+        PYLITH_JOURNAL_DEBUG("Viewing diagnostic field.");
+        _diagnosticField->view("Diagnostic field");
+    } // if
+
+    PYLITH_METHOD_END;
+} // _computeDiagnosticField
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Set constants used in finite-element kernels (point-wise functions).
+void
+pylith::feassemble::Constraint::_setKernelConstants(const pylith::topology::Field& solution,
+                                                    const PylithReal dt) const {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("_setKernelConstants(solution="<<solution.getLabel()<<", dt="<<dt<<")");
+
+    assert(_physics);
+    const pylith::real_array& constants = _physics->getKernelConstants(dt);
+
+    PetscDS prob = NULL;
+    PetscDM dmSoln = solution.getDM();assert(dmSoln);
+
+    // :KLUDGE: Potentially we may have multiple PetscDS objects. This assumes that the first one (with a NULL label) is
+    // the correct one.
+    PetscErrorCode err = DMGetDS(dmSoln, &prob);PYLITH_CHECK_ERROR(err);assert(prob);
+    if (constants.size() > 0) {
+        err = PetscDSSetConstants(prob, constants.size(), const_cast<double*>(&constants[0]));PYLITH_CHECK_ERROR(err);
+    } else {
+        err = PetscDSSetConstants(prob, 0, NULL);PYLITH_CHECK_ERROR(err);
+    } // if/else
+
+    PYLITH_METHOD_END;
+} // _setKernelConstants
 
 
 // End of file
