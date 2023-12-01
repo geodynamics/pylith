@@ -284,3 +284,18 @@ The slip and slip initiation times are specified using spatial databases, so the
 :::{seealso}
 See [`KinSrcTimeHistory` Component](../components/faults/../../../components/faults/KinSrcTimeHistory.md) for the Pyre properties and facilities and configuration examples.
 :::
+
+## Output
+
+The derived subfield available for prescribed slip is the change in tractions on the fault surface.
+
+:::{tip}
+To compute the change in tractions on a locked fault, prescribe zero slip on the fault.
+:::
+
+```{table} Derived subfields that are available for output for prescribed slip.
+:name: tab:fault:prescribed_slip:derived:subfields
+|      Subfield |   Components            |
+|:--------------|:-----------------------|
+| `traction_change` | normal, along strike, up dip |
+```
