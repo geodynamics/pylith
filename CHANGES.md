@@ -1,5 +1,10 @@
 See <https://github.com/geodynamics/pylith/commits/main> for the complete log of changes made to PyLith.
 
+:::{note}
+Starting with v3.0.0, we strictly follow the [semantic versioning guidelines](https://semver.org/).
+The version numbers are in the form `MAJOR.MINOR.PATCH`, where major releases indicate changes to the public API (parameters), minor releases indicate new functionality that is backward compatible, and patch releases indicate backward compatible bug fixes.
+:::
+
 ## Version 4.0.0
 
 ### Changes in user parameters
