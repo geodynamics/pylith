@@ -21,7 +21,7 @@ The version numbers are in the form `MAJOR.MINOR.PATCH`, where major releases in
 * Add demonstration of `pylith_powerlaw_gendb` in Step 8 of `examples/reverse-2d`.
 * Add demonstration of using poroelasticity with porosity as a state variable to `examples/magma-2d`.
 * Switched from CppUnit to Catch2 as the C++ testing framework.
-* Update to PETSc 3.19.5
+* Update to PETSc 3.20.2
 * Improve integration with VSCode for testing and debugging (see Developer Guide)
 * Bug fixes
   * Fix errors in KinSrcTimeHistory.py
