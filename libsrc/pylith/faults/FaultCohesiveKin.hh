@@ -74,6 +74,16 @@ public:
     pylith::topology::Field* createAuxiliaryField(const pylith::topology::Field& solution,
                                                   const pylith::topology::Mesh& domainMesh);
 
+    /** Create derived field.
+     *
+     * @param[in] solution Solution field.
+     * @param[in\ domainMesh Finite-element mesh associated with integration domain.
+     *
+     * @returns Derived field if applicable, otherwise NULL.
+     */
+    pylith::topology::Field* createDerivedField(const pylith::topology::Field& solution,
+                                                const pylith::topology::Mesh& domainMesh);
+
     /** Update auxiliary subfields at beginning of time step.
      *
      * @param[out] auxiliaryField Auxiliary field.
@@ -90,6 +100,12 @@ protected:
      * @return Auxiliary factory for physics object.
      */
     pylith::feassemble::AuxiliaryFactory* _getAuxiliaryFactory(void);
+
+    /** Get derived factory associated with physics.
+     *
+     * @return Derived factory for physics object.
+     */
+    pylith::topology::FieldFactory* _getDerivedFactory(void);
 
     /** Update slip related subfields in auxiliary field at beginning of time step.
      *
@@ -121,6 +137,14 @@ protected:
                              const pylith::topology::Field& solution,
                              const std::vector<pylith::materials::Material*>& materials) const;
 
+    /** Set kernels for computing derived field.
+     *
+     * @param[out] integrator Integrator for material.
+     * @param[in] solution Solution field.
+     */
+    void _setKernelsDerivedField(pylith::feassemble::IntegratorInterface* integrator,
+                                 const pylith::topology::Field& solution) const;
+
     // PROTECTED TYPEDEFS /////////////////////////////////////////////////////////////////////////
 protected:
 
@@ -129,7 +153,8 @@ protected:
     // PROTECTED MEMBERS //////////////////////////////////////////////////////////////////////////
 protected:
 
-    pylith::faults::AuxiliaryFactoryKinematic* _auxiliaryFactory; ///< Factory for auxiliary subfields.
+    pylith::faults::AuxiliaryFieldFactory* _auxiliaryFactory; ///< Factory for auxiliary subfields.
+    pylith::faults::DerivedFieldFactory* _derivedFactory; ///< Factory for derived subfields.
     srcs_type _ruptures; ///< Array of kinematic earthquake ruptures.
     PetscVec _slipVecRupture; ///< PETSc local Vec to hold slip for one kinematic rupture.
     PetscVec _slipVecTotal; ///< PETSc local Vec to hold slip for all kinematic ruptures.

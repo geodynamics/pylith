@@ -146,18 +146,23 @@ pylith::feassemble::Integrator::setLHSJacobianLumpedTriggers(const int value) {
 void
 pylith::feassemble::Integrator::initialize(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("intialize(solution="<<solution.getLabel()<<")");
+    PYLITH_JOURNAL_DEBUG("initialize(solution="<<solution.getLabel()<<")");
 
     const pylith::topology::Mesh& physicsDomainMesh = getPhysicsDomainMesh();
-
     delete _auxiliaryField;_auxiliaryField = _physics->createAuxiliaryField(solution, physicsDomainMesh);
-    delete _derivedField;_derivedField = _physics->createDerivedField(solution, physicsDomainMesh);
-    _observers = _physics->getObservers();assert(_observers); // Memory managed by Physics
-    _observers->setPhysicsImplementation(this);
+    delete _diagnosticField;_diagnosticField = _physics->createDiagnosticField(solution, physicsDomainMesh);
+    _computeDiagnosticField();
+    _observers = _physics->getObservers(); // Memory managed by Physics
+    if (_observers) {
+        _observers->setPhysicsImplementation(this);
+        _observers->setTimeScale(_physics->getNormalizer().getTimeScale());
 
-    const bool infoOnly = true;
-    _observers->notifyObservers(0.0, 0, solution, infoOnly);
-    _observers->setTimeScale(_physics->getNormalizer().getTimeScale());
+        const pylith::problems::Observer::NotificationType notification = pylith::problems::ObserverPhysics::DIAGNOSTIC;
+        _observers->notifyObservers(0.0, 0, solution, notification);
+    } // if
+    delete _diagnosticField;_diagnosticField = NULL;
+
+    delete _derivedField;_derivedField = _physics->createDerivedField(solution, physicsDomainMesh);
 
     PYLITH_METHOD_END;
 } // initialize
@@ -180,14 +185,14 @@ void
 pylith::feassemble::Integrator::poststep(const PylithReal t,
                                          const PylithInt tindex,
                                          const PylithReal dt,
-                                         const pylith::topology::Field& solution) {
+                                         const pylith::topology::Field& solution,
+                                         const pylith::problems::Observer::NotificationType notification) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("poststep(t="<<t<<", dt="<<dt<<")");
 
     _updateStateVars(t, dt, solution);
-
     _computeDerivedField(t, dt, solution);
-    notifyObservers(t, tindex, solution);
+    notifyObservers(t, tindex, solution, notification);
 
     PYLITH_METHOD_END;
 } // poststep
@@ -236,6 +241,19 @@ pylith::feassemble::Integrator::_updateStateVars(const PylithReal t,
 
     PYLITH_METHOD_END;
 } // _updateStateVars
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Compute diagnostic field from auxiliary field.
+void
+pylith::feassemble::Integrator::_computeDiagnosticField(void) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("_computeDiagnosticField() empty method");
+
+    // Default is to do nothing.
+
+    PYLITH_METHOD_END;
+} // _computeDiagnosticField
 
 
 // ---------------------------------------------------------------------------------------------------------------------

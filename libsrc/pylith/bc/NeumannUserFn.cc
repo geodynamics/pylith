@@ -165,42 +165,11 @@ pylith::bc::NeumannUserFn::createAuxiliaryField(const pylith::topology::Field& s
 
 
 // ------------------------------------------------------------------------------------------------
-// Create derived field.
-pylith::topology::Field*
-pylith::bc::NeumannUserFn::createDerivedField(const pylith::topology::Field& solution,
-                                              const pylith::topology::Mesh& domainMesh) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("createDerivedField(solution="<<solution.getLabel()<<", domainMesh=)"<<typeid(domainMesh).name()<<") empty method");
-
-    PYLITH_METHOD_RETURN(NULL);
-} // createDerivedField
-
-
-// ------------------------------------------------------------------------------------------------
 // Get auxiliary factory associated with physics.
 pylith::feassemble::AuxiliaryFactory*
 pylith::bc::NeumannUserFn::_getAuxiliaryFactory(void) {
     return NULL;
 } // _getAuxiliaryFactory
-
-
-// ------------------------------------------------------------------------------------------------
-// Update kernel constants.
-void
-pylith::bc::NeumannUserFn::_updateKernelConstants(const PylithReal dt) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_updateKernelConstants(dt="<<dt<<")");
-
-    if (6 != _kernelConstants.size()) { _kernelConstants.resize(6);}
-    _kernelConstants[0] = _refDir1[0];
-    _kernelConstants[1] = _refDir1[1];
-    _kernelConstants[2] = _refDir1[2];
-    _kernelConstants[3] = _refDir2[0];
-    _kernelConstants[4] = _refDir2[1];
-    _kernelConstants[5] = _refDir2[2];
-
-    PYLITH_METHOD_END;
-} // _updateKernelConstants
 
 
 // ------------------------------------------------------------------------------------------------

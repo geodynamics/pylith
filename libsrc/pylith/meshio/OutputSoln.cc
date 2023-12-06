@@ -124,7 +124,8 @@ pylith::meshio::OutputSoln::verifyConfiguration(const pylith::topology::Field& s
 void
 pylith::meshio::OutputSoln::update(const PylithReal t,
                                    const PylithInt tindex,
-                                   const pylith::topology::Field& solution) {
+                                   const pylith::topology::Field& solution,
+                                   const pylith::problems::Observer::NotificationType notification) {
     assert(_trigger);
     if (_trigger->shouldWrite(t, tindex)) {
         _writeSolnStep(t, tindex, solution);

@@ -66,8 +66,11 @@ class AnalyticalSoln(object):
     """
     SPACE_DIM = 3
     TENSOR_SIZE = 6
+    FAULT_DIP_ANGLE = 0.4*numpy.pi
 
     def __init__(self):
+        sindip = numpy.sin(self.FAULT_DIP_ANGLE)
+        cosdip = numpy.cos(self.FAULT_DIP_ANGLE)
         self.fields = {
             "displacement": self.displacement,
             "density": self.density,
@@ -76,13 +79,32 @@ class AnalyticalSoln(object):
             "cauchy_strain": self.strain,
             "cauchy_stress": self.stress,
             "initial_amplitude": self.displacement,
+            "normal_dir": {
+                "bc_xneg": self.orientation_dir((-1, 0, 0)),
+                "bc_xpos": self.orientation_dir((+1, 0, 0)),
+                "fault": self.orientation_dir((sindip, 0, cosdip)),
+            },
+            "horizontal_tangential_dir": {
+                "bc_xneg": self.orientation_dir((0, -1, 0)),
+                "bc_xpos": self.orientation_dir((0, +1, 0)),
+            },
+            "vertical_tangential_dir": {
+                "bc_xneg": self.orientation_dir((0, 0, +1)),
+                "bc_xpos": self.orientation_dir((0, 0, +1)),
+            },
             "slip": self.slip,
-            "lagrange_multiplier_fault": self.lagrange_multiplier_fault,
+            "traction_change": self.traction_change,
+            "strike_dir": self.orientation_dir((0, +1, 0)),
+            "up_dip_dir": self.orientation_dir((-cosdip, 0, sindip)),
         }
         return
 
     def getField(self, name, mesh_entity, pts):
-        return self.fields[name](pts)
+        if isinstance(self.fields[name], dict):
+            field = self.fields[name][mesh_entity](pts)
+        else:
+            field = self.fields[name](pts)
+        return field
 
     def getMask(self, name, mesh_entity, pts):
         mask = None
@@ -160,12 +182,21 @@ class AnalyticalSoln(object):
         slip[:,:,2] = +1.0
         return slip
 
-    def lagrange_multiplier_fault(self, locs):
+    def traction_change(self, locs):
         """Compute change in fault traction field at locations.
         """
         (npts, dim) = locs.shape
         traction_change = numpy.zeros((1, npts, 3), dtype=numpy.float64)
         return traction_change
+
+    def orientation_dir(self, vector):
+        def fn_dir(locs):
+            (npts, dim) = locs.shape
+            values = numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
+            for d in range(self.SPACE_DIM):
+                values[:,:,d] = vector[d]
+            return values
+        return fn_dir
 
 
 # End of file

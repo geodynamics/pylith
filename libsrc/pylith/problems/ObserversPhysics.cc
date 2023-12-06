@@ -20,7 +20,6 @@
 
 #include "ObserversPhysics.hh" // Implementation of class methods
 
-#include "pylith/problems/ObserverPhysics.hh" // USES ObserverPhysics
 #include "pylith/feassemble/PhysicsImplementation.hh" // USES PhysicsImplementation
 #include "pylith/topology/Field.hh" // USES Field
 
@@ -143,13 +142,13 @@ void
 pylith::problems::ObserversPhysics::notifyObservers(const PylithReal t,
                                                     const PylithInt tindex,
                                                     const pylith::topology::Field& solution,
-                                                    const bool infoOnly) {
+                                                    const pylith::problems::Observer::NotificationType notification) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("notifyObservers(t="<<t<<", tindex="<<tindex<<", solution="<<solution.getLabel()<<")");
+    PYLITH_JOURNAL_DEBUG("notifyObservers(t="<<t<<", tindex="<<tindex<<", solution="<<solution.getLabel()<<", " <<notification<<")");
 
     for (iterator iter = _observers.begin(); iter != _observers.end(); ++iter) {
         assert(*iter);
-        (*iter)->update(t, tindex, solution, infoOnly);
+        (*iter)->update(t, tindex, solution, notification);
     } // for
 
     PYLITH_METHOD_END;

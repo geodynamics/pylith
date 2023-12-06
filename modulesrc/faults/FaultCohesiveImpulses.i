@@ -23,7 +23,7 @@
 
 namespace pylith {
     namespace faults {
-        class pylith::faults::FaultCohesiveImpulses : public pylith::faults::FaultCohesiveKin {
+        class pylith::faults::FaultCohesiveImpulses: public pylith::faults::FaultCohesiveKin {
             friend class TestFaultCohesiveImpulses; // unit testing
 
             // PUBLIC METHODS /////////////////////////////////////////////////////////////////////
@@ -100,7 +100,7 @@ protected:
              */
             void _setKernelsResidual(pylith::feassemble::IntegratorInterface* integrator,
                                      const pylith::topology::Field& solution,
-                                     const std::vector<pylith::materials::Material*>& materials) const;
+                                     const std::vector < pylith::materials::Material* > &materials) const;
 
             /** Set kernels for Jacobian.
              *
@@ -110,7 +110,7 @@ protected:
              */
             void _setKernelsJacobian(pylith::feassemble::IntegratorInterface* integrator,
                                      const pylith::topology::Field& solution,
-                                     const std::vector<pylith::materials::Material*>& materials) const;
+                                     const std::vector < pylith::materials::Material* > &materials) const;
 
         }; // class FaultCohesiveImpulses
 

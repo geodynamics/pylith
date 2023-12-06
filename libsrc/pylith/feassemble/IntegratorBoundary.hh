@@ -63,6 +63,24 @@ public:
 
     }; // ResidualKernels
 
+    /// Project kernels (pointwise functions) for updating state variables or computing derived fields.
+    struct ProjectKernels {
+        std::string subfield; ///< Name of subfield for function.
+        PetscBdPointFunc f; ///< Point-wise function.
+
+        ProjectKernels(void) :
+            subfield(""),
+            f(NULL) {}
+
+
+        ProjectKernels(const char* subfieldValue,
+                       PetscBdPointFunc fValue) :
+            subfield(subfieldValue),
+            f(fValue) {}
+
+
+    }; // ProjectKernels
+
     // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
@@ -101,6 +119,12 @@ public:
      */
     void setKernelsResidual(const std::vector<ResidualKernels>& kernels,
                             const pylith::topology::Field& solution);
+
+    /** Set kernels for computing diagnostic field.
+     *
+     * @param kernels Array of kernels for computing diagnostic field.
+     */
+    void setKernelsDiagnosticField(const std::vector<ProjectKernels>& kernels);
 
     /** Initialize integration domain, auxiliary field, and derived field. Update observers.
      *
@@ -148,12 +172,21 @@ public:
     void computeLHSJacobianLumpedInv(pylith::topology::Field* jacobianInv,
                                      const pylith::feassemble::IntegrationData& integrationData);
 
+    // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
+protected:
+
+    /// Compute diagnostic field from auxiliary field.
+    virtual
+    void _computeDiagnosticField(void);
+
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
     pylith::topology::Mesh* _boundaryMesh; ///< Boundary mesh.
     std::string _boundarySurfaceLabel; ///< Name of label identifying boundary surface.
     std::string _subfieldName; ///< Name of solution subfield for boundary condition.
+
+    std::vector<ProjectKernels> _kernelsDiagnosticField; ///< kernels for computing diagnostic field.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:

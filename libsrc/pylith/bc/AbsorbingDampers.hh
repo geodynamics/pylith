@@ -73,16 +73,6 @@ public:
     pylith::topology::Field* createAuxiliaryField(const pylith::topology::Field& solution,
                                                   const pylith::topology::Mesh& domainMesh);
 
-    /** Create derived field.
-     *
-     * @param[in] solution Solution field.
-     * @param[in\ domainMesh Finite-element mesh associated with integration domain.
-     *
-     * @returns Derived field if applicable, otherwise NULL.
-     */
-    pylith::topology::Field* createDerivedField(const pylith::topology::Field& solution,
-                                                const pylith::topology::Mesh& domainMesh);
-
     // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
 
@@ -92,18 +82,10 @@ protected:
      */
     pylith::feassemble::AuxiliaryFactory* _getAuxiliaryFactory(void);
 
-    /** Update kernel constants.
-     *
-     * @param[in] dt Current time step.
-     */
-    void _updateKernelConstants(const PylithReal dt);
-
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
     pylith::bc::AbsorbingDampersAuxiliaryFactory* _auxiliaryFactory; ///< Factory for auxiliary subfields.
-    PylithReal _refDir1[3]; ///< First choice reference direction used to compute boundary tangential directions.
-    PylithReal _refDir2[3]; ///< Second choice reference direction used to compute boundary tangential directions.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:

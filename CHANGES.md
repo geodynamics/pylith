@@ -1,16 +1,27 @@
 See <https://github.com/geodynamics/pylith/commits/main> for the complete log of changes made to PyLith.
 
+:::{note}
+Starting with v3.0.0, we strictly follow the [semantic versioning guidelines](https://semver.org/).
+The version numbers are in the form `MAJOR.MINOR.PATCH`, where major releases indicate changes to the public API (parameters), minor releases indicate new functionality that is backward compatible, and patch releases indicate backward compatible bug fixes.
+:::
+
 ## Version 4.0.0
 
+### Changes in user parameters
+
+* Changed name of fault Lagrange multiplier field for solution component in Python from `lagrange_fault` to `lagrange_multiplier_fault` to match name of solution field in C++.
 * Removed support for importing meshes from LaGriT.
-* Add output of change in fault tractions for prescribed slip.
+
+### Other changes
+
+* Change in fault tractions are now included in the fault `data_fields` for prescribed slip.
+* Fault and boundary orientation directions are now included in the `info_fields` for simulation output.
 * State variables are now included in the default `data_fields` for simulation output.
 * The default solver settings use the PETSc proper orthogonal decomposition (POD) methodology for initial guess of solutions to improve convergence.
-* Changed name of fault Lagrange multiplier field for solution component in Python from `lagrange_fault` to `lagrange_multiplier_fault` to match name of solution field in C++.
 * Add demonstration of `pylith_powerlaw_gendb` in Step 8 of `examples/reverse-2d`.
 * Add demonstration of using poroelasticity with porosity as a state variable to `examples/magma-2d`.
 * Switched from CppUnit to Catch2 as the C++ testing framework.
-* Update to PETSc 3.19.5
+* Update to PETSc 3.20.2
 * Improve integration with VSCode for testing and debugging (see Developer Guide)
 * Bug fixes
   * Fix errors in KinSrcTimeHistory.py

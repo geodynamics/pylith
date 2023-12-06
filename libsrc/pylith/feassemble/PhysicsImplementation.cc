@@ -37,6 +37,7 @@
 pylith::feassemble::PhysicsImplementation::PhysicsImplementation(pylith::problems::Physics* const physics) :
     _physics(physics),
     _auxiliaryField(NULL),
+    _diagnosticField(NULL),
     _derivedField(NULL),
     _observers(NULL),
     _logger(NULL) {}
@@ -56,6 +57,7 @@ pylith::feassemble::PhysicsImplementation::deallocate(void) {
     PYLITH_METHOD_BEGIN;
 
     delete _auxiliaryField;_auxiliaryField = NULL;
+    delete _diagnosticField;_diagnosticField = NULL;
     delete _derivedField;_derivedField = NULL;
     _observers = NULL; // :KLUDGE: Use shared pointer. _observers held by physics.
     delete _logger;_logger = NULL;
@@ -91,6 +93,14 @@ pylith::feassemble::PhysicsImplementation::getAuxiliaryField(void) const {
 
 
 // ------------------------------------------------------------------------------------------------
+// Get diagnostic field.
+const pylith::topology::Field*
+pylith::feassemble::PhysicsImplementation::getDiagnosticField(void) const {
+    return _diagnosticField;
+} // getDiagnosticField
+
+
+// ------------------------------------------------------------------------------------------------
 // Get derived field.
 const pylith::topology::Field*
 pylith::feassemble::PhysicsImplementation::getDerivedField(void) const {
@@ -103,14 +113,14 @@ pylith::feassemble::PhysicsImplementation::getDerivedField(void) const {
 void
 pylith::feassemble::PhysicsImplementation::notifyObservers(const PylithReal t,
                                                            const PylithInt tindex,
-                                                           const pylith::topology::Field& solution) {
+                                                           const pylith::topology::Field& solution,
+                                                           const pylith::problems::Observer::NotificationType notification) {
     if (!_observers) {
         return;
     } // if
 
     assert(_observers);
-    const bool infoOnly = false;
-    _observers->notifyObservers(t, tindex, solution, infoOnly);
+    _observers->notifyObservers(t, tindex, solution, notification);
 } // _notifyObservers
 
 

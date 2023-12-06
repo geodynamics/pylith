@@ -20,7 +20,7 @@
 
 #include "FaultCohesiveImpulses.hh" // implementation of object methods
 
-#include "pylith/faults/AuxiliaryFactoryKinematic.hh" // USES AuxiliaryFactoryKinematic
+#include "pylith/faults/AuxiliaryFieldFactory.hh" // USES AuxiliaryFieldFactory
 #include "pylith/feassemble/IntegratorInterface.hh" // USES IntegratorInterface
 #include "pylith/feassemble/InterfacePatches.hh" // USES InterfacePatches
 #include "pylith/feassemble/ConstraintSimple.hh" // USES ConstraintSimple
@@ -81,7 +81,7 @@ public:
 // ------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::faults::FaultCohesiveImpulses::FaultCohesiveImpulses(void) :
-    _auxiliaryFactory(new pylith::faults::AuxiliaryFactoryKinematic),
+    _auxiliaryFactory(new pylith::faults::AuxiliaryFieldFactory),
     _threshold(1.0e-6) {
     pylith::utils::PyreComponent::setName(_FaultCohesiveImpulses::pyreComponent);
 } // constructor

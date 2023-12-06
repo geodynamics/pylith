@@ -37,6 +37,11 @@ bc.y_pos = pylith.bc.AbsorbingDampers
 bc.z_neg = pylith.bc.NeumannTimeDependent
 ```
 
+## Diagnostic Information
+
+The diagnostic information includes the outward normal direction (`normal_dir`) and the two tangential directions (`horizontal_tangential_dir` and `vertical_tangential_dir`).
+The default basis order for discretizing these directions is 1, so these produce `vertex_fields` as opposed to `cell_fields` (basis order of 0).
+
 ## Boundary Condition Implementations
 
 :::{toctree}

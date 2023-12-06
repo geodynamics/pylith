@@ -27,6 +27,8 @@
 
 #include "problemsfwd.hh" // forward declarations
 
+#include "pylith/problems/Observer.hh" // USES NotificationType
+
 #include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
 #include "pylith/topology/topologyfwd.hh" // USES Field
@@ -80,11 +82,12 @@ public:
      * @param[in] t Current time.
      * @param[in] tindex Current time step.
      * @param[in] solution Solution at time t.
-     * @param[in] infoOnly Flag is true if this update is before solution is available (e.g., after initialization).
+     * @param[in] notification Type of notification.
      */
     void notifyObservers(const PylithReal t,
                          const PylithInt tindex,
-                         const pylith::topology::Field& solution);
+                         const pylith::topology::Field& solution,
+                         const pylith::problems::Observer::NotificationType notification);
 
     // PRIVATE METHODS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:

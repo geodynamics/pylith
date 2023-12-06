@@ -87,12 +87,12 @@ pylith::feassemble::ConstraintUserFn::setUserFnDot(const PetscUserFieldFunc fnDo
 void
 pylith::feassemble::ConstraintUserFn::initialize(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" intialize(solution="<<solution.getLabel()<<")");
+    PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" initialize(solution="<<solution.getLabel()<<")");
 
     Constraint::initialize(solution);
 
-    const bool infoOnly = true;
-    _observers->notifyObservers(0.0, 0, solution, infoOnly);
+    const pylith::problems::Observer::NotificationType notification = pylith::problems::ObserverPhysics::DIAGNOSTIC;
+    _observers->notifyObservers(0.0, 0, solution, notification);
 
     // :KLUDGE: Potentially we may have multiple PetscDS objects. This assumes that the first one (with a NULL
     // label) is the correct one.

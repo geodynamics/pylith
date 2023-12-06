@@ -16,7 +16,7 @@
 // ----------------------------------------------------------------------
 //
 
-/** @file libsrc/faults/AuxiliaryFactoryKinematic.hh
+/** @file libsrc/faults/AuxiliaryFieldFactory.hh
  *
  * @brief C++ helper class for setting up auxiliary subfields for faults.
  */
@@ -27,26 +27,17 @@
 #include "faultsfwd.hh" // forward declarations
 #include "pylith/feassemble/AuxiliaryFactory.hh" // ISA AuxiliaryFactory
 
-class pylith::faults::AuxiliaryFactoryKinematic : public pylith::feassemble::AuxiliaryFactory {
-    friend class TestAuxiliaryFactoryKinematic; // unit testing
+class pylith::faults::AuxiliaryFieldFactory : public pylith::feassemble::AuxiliaryFactory {
+    friend class TestAuxiliaryFieldFactory; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Default constructor.
-    AuxiliaryFactoryKinematic(void);
+    AuxiliaryFieldFactory(void);
 
     /// Destructor.
-    ~AuxiliaryFactoryKinematic(void);
-
-    /// Add fault strike direction subfield to auxiliary field.
-    void addStrikeDir(void);
-
-    /// Add fault up-dip direction modulus subfield to auxiliary field.
-    void addUpDipDir(void);
-
-    /// Add fault normal direction subfield to auxiliary field.
-    void addNormalDir(void);
+    ~AuxiliaryFieldFactory(void);
 
     /// Add slip subfield to auxiliary field.
     void addSlip(void);
@@ -60,10 +51,10 @@ public:
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    AuxiliaryFactoryKinematic(const AuxiliaryFactoryKinematic &); ///< Not implemented.
-    const AuxiliaryFactoryKinematic& operator=(const AuxiliaryFactoryKinematic&); ///< Not implemented
+    AuxiliaryFieldFactory(const AuxiliaryFieldFactory &); ///< Not implemented.
+    const AuxiliaryFieldFactory& operator=(const AuxiliaryFieldFactory&); ///< Not implemented
 
-}; // class AuxiliaryFactoryKinematic
+}; // class AuxiliaryFieldFactory
 
 #endif // pylith_faults_auxiliaryfactorykinematic_hh
 

@@ -36,6 +36,27 @@
 class pylith::feassemble::Constraint : public pylith::feassemble::PhysicsImplementation {
     friend class TestConstraint; // unit testing
 
+    // PUBLIC STRUCTS //////////////////////////////////////////////////////////////////////////////////////////////////
+public:
+
+    /// Project kernels (pointwise functions) for computing diagnostic fields.
+    struct ProjectKernels {
+        std::string subfield; ///< Name of subfield for function.
+        PetscBdPointFunc f; ///< Point-wise function.
+
+        ProjectKernels(void) :
+            subfield(""),
+            f(NULL) {}
+
+
+        ProjectKernels(const char* subfieldValue,
+                       PetscBdPointFunc fValue) :
+            subfield(subfieldValue),
+            f(fValue) {}
+
+
+    }; // ProjectKernels
+
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
@@ -111,6 +132,12 @@ public:
      */
     const pylith::topology::Mesh& getPhysicsDomainMesh(void) const;
 
+    /** Set kernels for computing diagnostic field.
+     *
+     * @param kernels Array of kernels for computing diagnostic field.
+     */
+    void setKernelsDiagnosticField(const std::vector<ProjectKernels>& kernels);
+
     /** Initialize constraint.
      *
      * @param[in] solution Solution field (layout).
@@ -124,12 +151,14 @@ public:
      * @param[in] tindex Current time step.
      * @param[in] dt Current time step.
      * @param[in] solution Solution at time t.
+     * @param[in] notification Type of notification.
      */
     virtual
     void poststep(const PylithReal t,
                   const PylithInt tindex,
                   const PylithReal dt,
-                  const pylith::topology::Field& solution);
+                  const pylith::topology::Field& solution,
+                  const pylith::problems::Observer::NotificationType notification);
 
     /** Set auxiliary field values for current time.
      *
@@ -145,6 +174,21 @@ public:
     virtual
     void setSolution(pylith::feassemble::IntegrationData* integrationData) = 0;
 
+    // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
+protected:
+
+    /** Set constants used in finite-element kernels.
+     *
+     * @param[in] solution Solution field.
+     * @param[in] dt Current time step.
+     */
+    void _setKernelConstants(const pylith::topology::Field& solution,
+                             const PylithReal dt) const;
+
+    /// Compute diagnostic field from auxiliary field.
+    virtual
+    void _computeDiagnosticField(void);
+
     // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
 
@@ -155,6 +199,8 @@ protected:
     int_array _constrainedDOF; ///< List of constrained degrees of freedom at each location.
     pylith::topology::Mesh* _boundaryMesh; ///< Boundary mesh.
     PylithReal _tSolution; ///< Time used for current solution.
+
+    std::vector<ProjectKernels> _kernelsDiagnosticField; ///< kernels for computing diagnostic field.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:

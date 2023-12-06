@@ -127,7 +127,7 @@ protected:
     // PRIVATE METHODS ////////////////////////////////////////////////////////////////////////////
 private:
 
-    pylith::faults::AuxiliaryFactoryKinematic* _auxiliaryFactory; ///< Factory for auxiliary subfields.
+    pylith::faults::AuxiliaryFieldFactory* _auxiliaryFactory; ///< Factory for auxiliary subfields.
     PylithReal _threshold; ///< Threshold for nonzero impulse amplitude.
     int_array _impulseDOF; ///< Degrees of freedom with impulses.
     int_array _impulsePoints; ///< Points with nonzero threshold.

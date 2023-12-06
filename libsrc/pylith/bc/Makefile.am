@@ -21,6 +21,7 @@ include $(top_srcdir)/subpackage.am
 
 subpkginclude_HEADERS = \
 	BoundaryCondition.hh \
+	DiagnosticFieldFactory.hh \
 	TimeDependentAuxiliaryFactory.hh \
 	DirichletTimeDependent.hh \
 	DirichletUserFn.hh \

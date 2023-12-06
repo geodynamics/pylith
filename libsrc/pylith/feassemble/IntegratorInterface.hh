@@ -44,6 +44,24 @@ public:
         FAULT_FACE=2,
     }; // FaceEnum
 
+    /// Project kernels (pointwise functions) for updating state variables or computing derived fields.
+    struct ProjectKernels {
+        std::string subfield; ///< Name of subfield for function.
+        PetscBdPointFunc f; ///< Point-wise function.
+
+        ProjectKernels(void) :
+            subfield(""),
+            f(NULL) {}
+
+
+        ProjectKernels(const char* subfieldValue,
+                       PetscBdPointFunc fValue) :
+            subfield(subfieldValue),
+            f(fValue) {}
+
+
+    }; // ProjectKernels
+
     // PUBLIC STRUCTS /////////////////////////////////////////////////////////////////////////////
 public:
 
@@ -182,6 +200,24 @@ public:
                     const pylith::topology::Field& solution,
                     const std::vector<pylith::materials::Material*>& materials);
 
+    /** Set kernels for updating state variables.
+     *
+     * @param kernels Array of kernels for updating state variables.
+     */
+    void setKernelsUpdateStateVars(const std::vector<ProjectKernels>& kernels);
+
+    /** Set kernels for computing diagnostic field.
+     *
+     * @param kernels Array of kernels for computing diagnostic field.
+     */
+    void setKernelsDiagnosticField(const std::vector<ProjectKernels>& kernels);
+
+    /** Set kernels for computing derived field.
+     *
+     * @param kernels Array of kernels for computing derived field.
+     */
+    void setKernelsDerivedField(const std::vector<ProjectKernels>& kernels);
+
     /** Compute weak form key part for face.
      *
      * For integration with hybrid cells, we must distinguish among integration of the
@@ -241,6 +277,32 @@ public:
     void computeLHSJacobianLumpedInv(pylith::topology::Field* jacobianInv,
                                      const pylith::feassemble::IntegrationData& integrationData);
 
+    // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
+protected:
+
+    /** Update state variables as needed.
+     *
+     * @param[in] t Current time.
+     * @param[in] dt Current time step.
+     * @param[in] solution Field with current trial solution.
+     */
+    void _updateStateVars(const PylithReal t,
+                          const PylithReal dt,
+                          const pylith::topology::Field& solution);
+
+    /// Compute diagnostic field from auxiliary field.
+    void _computeDiagnosticField(void);
+
+    /** Compute field derived from solution and auxiliary field.
+     *
+     * @param[in] t Current time.
+     * @param[in] dt Current time step.
+     * @param[in] solution Field with current trial solution.
+     */
+    void _computeDerivedField(const PylithReal t,
+                              const PylithReal dt,
+                              const pylith::topology::Field& solution);
+
     // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
 private:
 
@@ -248,6 +310,9 @@ private:
     std::string _surfaceLabelName; ///< Name of label identifying interface surface.
 
     pylith::feassemble::InterfacePatches* _integrationPatches; ///< Face patches.
+    std::vector<ProjectKernels> _kernelsUpdateStateVars; ///< kernels for updating state variables.
+    std::vector<ProjectKernels> _kernelsDiagnosticField; ///< kernels for computing diagnostic field.
+    std::vector<ProjectKernels> _kernelsDerivedField; ///< kernels for computing derived field.
 
     PetscDM _weightingDM; ///< PETSc DM for weighting.
     PetscVec _weightingVec; ///< PETSc Vec for weighting values.

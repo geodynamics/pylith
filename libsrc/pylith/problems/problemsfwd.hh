@@ -34,6 +34,7 @@ namespace pylith {
         class GreensFns;
 
         class SolutionFactory;
+        class Observer;
         class ObserversSoln;
         class ObserverSoln;
 

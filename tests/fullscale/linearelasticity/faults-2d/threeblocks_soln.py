@@ -77,16 +77,16 @@ class AnalyticalSoln(object):
                 "fault_xmid": self.slip_xmid,
                 "fault_xneg": self.slip_xneg,
             },
-            "lagrange_multiplier_fault": self.lagrange_multiplier_fault,
+            "traction_change": self.traction_change,
+            "normal_dir": self.orientation_dir((+1, 0)),
+            "strike_dir": self.orientation_dir((0, +1)),
         }
-        return
 
     def getField(self, name, mesh_entity, pts):
-        if name == "slip":
+        if isinstance(self.fields[name], dict):
             field = self.fields[name][mesh_entity](pts)
         else:
             field = self.fields[name](pts)
-
         return field
 
     def getMask(self, name, mesh_entity, pts):
@@ -163,13 +163,21 @@ class AnalyticalSoln(object):
         slip[0,:, 1] = +2.0
         return slip
 
-    def lagrange_multiplier_fault(self, locs):
-        """Compute Lagrange multiplier on faults.
+    def traction_change(self, locs):
+        """Compute change in traction on faults.
         """
         (npts, dim) = locs.shape
         traction = numpy.zeros((1, npts, 2), dtype=numpy.float64)
         return traction
 
+    def orientation_dir(self, vector):
+        def fn_dir(locs):
+            (npts, dim) = locs.shape
+            values = numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
+            for d in range(self.SPACE_DIM):
+                values[:,:,d] = vector[d]
+            return values
+        return fn_dir
 
 
 # End of file

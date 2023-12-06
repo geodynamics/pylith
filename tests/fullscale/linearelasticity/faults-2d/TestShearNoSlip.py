@@ -58,9 +58,9 @@ class TestCase(FullTestCase):
                 defaults=defaults,
             ),
             Check(
-                mesh_entities=["bc_xneg", "bc_xpos"],
+                mesh_entities=["bc_xneg", "bc_xpos", "bc_yneg", "bc_ypos"],
                 filename="output/{name}-{mesh_entity}_info.h5",
-                vertex_fields=["initial_amplitude"],
+                vertex_fields=["initial_amplitude", "normal_dir", "tangential_dir"],
                 defaults=defaults,
             ),
             Check(
@@ -69,13 +69,14 @@ class TestCase(FullTestCase):
                 defaults=defaults,
             ),
             Check(
-                mesh_entities=["fault_xmid"],
-                vertex_fields=["slip", "lagrange_multiplier_fault"],
+                mesh_entities=["fault_xneg", "fault_xmid"],
+                filename="output/{name}-{mesh_entity}_info.h5",
+                vertex_fields = ["normal_dir", "strike_dir"],
                 defaults=defaults,
             ),
             Check(
-                mesh_entities=["fault_xneg"],
-                vertex_fields=["slip", "lagrange_multiplier_fault"],
+                mesh_entities=["fault_xneg", "fault_xmid"],
+                vertex_fields=["slip", "traction_change"],
                 defaults=defaults,
             ),
         ]

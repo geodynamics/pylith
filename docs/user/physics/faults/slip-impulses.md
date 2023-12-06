@@ -25,3 +25,14 @@ Impulses will be applied at any point on the fault with a slip component greater
 :class: seealso
 See [`FaultCohesiveImpulses` Component](../../components/faults/FaultCohesiveImpulses.md)  for the Pyre properties and facilities and configuration examples.
 :::
+
+## Output
+
+The derived subfield available for Green's functions is the change in tractions on the fault surface.
+
+```{table} Derived subfields that are available for output for Green's functions.
+:name: tab:fault:prescribed_slip:derived:subfields
+|      Subfield |   Components            |
+|:--------------|:-----------------------|
+| `traction_change` | normal, along strike, up dip |
+```

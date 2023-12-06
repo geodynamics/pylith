@@ -24,7 +24,7 @@
 
 namespace pylith {
     namespace problems {
-        class ObserverPhysics {
+        class ObserverPhysics: public Observer {
             // PUBLIC METHODS ///////////////////////////////////////////////////////
 public:
 
@@ -63,14 +63,13 @@ public:
              * @param[in] t Current time.
              * @param[in] tindex Current time step.
              * @param[in] solution Solution at time t.
-             * @param[in] infoOnly Flag is true if this update is before solution is available (e.g., after
-             * initialization).
+             * @param[in] notification Type of notification.
              */
             virtual
             void update(const PylithReal t,
                         const PylithInt tindex,
                         const pylith::topology::Field& solution,
-                        const bool infoOnly) = 0;
+                        const pylith::problems::Observer::NotificationType notification) = 0;
 
         }; // ObserverPhysics
 

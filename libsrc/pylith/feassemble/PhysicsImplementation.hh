@@ -28,8 +28,10 @@
 
 #include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
-#include "pylith/problems/problemsfwd.hh" // HASA Physics, ObserversPhysics
+#include "pylith/problems/problemsfwd.hh" // HASA Physics
 #include "pylith/topology/topologyfwd.hh" // USES Field
+
+#include "pylith/problems/Observer.hh" // USES Observer
 
 #include "pylith/utils/array.hh" // HASA int_array
 #include "pylith/utils/utilsfwd.hh" // HOLDSA Logger
@@ -74,13 +76,19 @@ public:
 
     /** Get auxiliary field.
      *
-     * @returns field Field over boundary.
+     * @returns field Field with auxiliary subfields.
      */
     const pylith::topology::Field* getAuxiliaryField(void) const;
 
+    /** Get diagnostic field.
+     *
+     * @returns field Field with diagnostic subfields.
+     */
+    const pylith::topology::Field* getDiagnosticField(void) const;
+
     /** Get derived field.
      *
-     * @return field Field over integrator domain.
+     * @return field Field with subfields derived from solution.
      */
     const pylith::topology::Field* getDerivedField(void) const;
 
@@ -92,17 +100,19 @@ public:
      */
     void notifyObservers(const PylithReal t,
                          const PylithInt tindex,
-                         const pylith::topology::Field& solution);
+                         const pylith::topology::Field& solution,
+                         const pylith::problems::Observer::NotificationType notification);
 
     // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
 
-    pylith::problems::Physics* const _physics; ///< Physics associated with constraint.
-    pylith::topology::Field* _auxiliaryField; ///< Auxiliary field for this constraint.
-    pylith::topology::Field* _derivedField; ///< Derived field for this constraint.
-    pylith::problems::ObserversPhysics* _observers; ///< Observers component.
+    pylith::problems::Physics* const _physics;
+    pylith::topology::Field* _auxiliaryField;
+    pylith::topology::Field* _diagnosticField;
+    pylith::topology::Field* _derivedField;
+    pylith::problems::ObserversPhysics* _observers;
 
-    pylith::utils::EventLogger* _logger; ///< Event logger.
+    pylith::utils::EventLogger* _logger;
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:

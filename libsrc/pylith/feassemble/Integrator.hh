@@ -53,6 +53,27 @@ public:
         NEW_JACOBIAN_UPDATE_STATE_VARS=0x4, // Needs new Jacobian after updating state variables.
     };
 
+    // PUBLIC STRUCTS /////////////////////////////////////////////////////////////////////////////
+public:
+
+    /// Project kernels (pointwise functions) for updating state variables or computing derived fields.
+    struct ProjectKernels {
+        std::string subfield; ///< Name of subfield for function.
+        PetscPointFunc f; ///< Point-wise function.
+
+        ProjectKernels(void) :
+            subfield(""),
+            f(NULL) {}
+
+
+        ProjectKernels(const char* subfieldValue,
+                       PetscPointFunc fValue) :
+            subfield(subfieldValue),
+            f(fValue) {}
+
+
+    }; // ProjectKernels
+
     // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
 public:
 
@@ -128,12 +149,14 @@ public:
      * @param[in] tindex Current time step.
      * @param[in] dt Current time step.
      * @param[in] solution Solution at time t.
+     * @param[in] notification Type of notification.
      */
     virtual
     void poststep(const PylithReal t,
                   const PylithInt tindex,
                   const PylithReal dt,
-                  const pylith::topology::Field& solution);
+                  const pylith::topology::Field& solution,
+                  const pylith::problems::Observer::NotificationType notification);
 
     /** Set auxiliary field values for current time.
      *
@@ -202,6 +225,10 @@ protected:
     void _updateStateVars(const PylithReal t,
                           const PylithReal dt,
                           const pylith::topology::Field& solution);
+
+    /// Compute diagnostic field from auxiliary field.
+    virtual
+    void _computeDiagnosticField(void);
 
     /** Compute fields derived from solution and auxiliary field.
      *

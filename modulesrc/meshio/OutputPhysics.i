@@ -24,9 +24,9 @@
 
 namespace pylith {
     namespace meshio {
-        class pylith::meshio::OutputPhysics :
-            public pylith::problems::ObserverPhysics,
-            public pylith::meshio::OutputObserver {
+        class pylith::meshio::OutputPhysics:
+        public pylith::problems::ObserverPhysics,
+        public pylith::meshio::OutputObserver {
             // PUBLIC METHODS ///////////////////////////////////////////////
 public:
 
@@ -97,13 +97,12 @@ public:
              * @param[in] t Current time.
              * @param[in] tindex Current time step.
              * @param[in] solution Solution at time t.
-             * @param[in] infoOnly Flag is true if this update is before solution is available (e.g., after
-             * initialization).
+             * @param[in] notification Type of notification.
              */
             void update(const PylithReal t,
                         const PylithInt tindex,
                         const pylith::topology::Field& solution,
-                        const bool infoOnly);
+                        const pylith::problems::Observer::NotificationType notification);
 
         }; // OutputPhysics
 

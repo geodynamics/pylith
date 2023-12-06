@@ -68,7 +68,12 @@ The default value of [0, 0, 1] is appropriate for most 3D problems.
 
 By default the output observers write both diagnostic information (for example, fault orientation directions) and the slip at each time step.
 The fault coordinate system is shown in {numref}`fig:fault:slip:motions`.
-The vectors in the fault coordinate system can be transformed to the global coordinate system using the direction vectors in the diagnostic output.
+The vectors in the fault coordinate system can be transformed to the global coordinate system using the direction vectors in the diagnostic output ({ref}`sec-user-output-observers`).
+
+:::{important}
+The normal direction is chosen based on how the cells are split to create cohesive cells.
+If the normal direction contains a positive z component, then the directions conform to traditional seismologic conventions (along strike and up dip); however, if the normal direction contains a negative z component, then the directions correspond to along strike and down dip directions.
+:::
 
 :::{toctree}
 prescribed-slip.md

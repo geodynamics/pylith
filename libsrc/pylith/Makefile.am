@@ -33,6 +33,7 @@ lib_LTLIBRARIES = libpylith.la
 
 libpylith_la_SOURCES = \
 	bc/BoundaryCondition.cc \
+	bc/DiagnosticFieldFactory.cc \
 	bc/TimeDependentAuxiliaryFactory.cc \
 	bc/DirichletTimeDependent.cc \
 	bc/DirichletUserFn.cc \
@@ -43,7 +44,9 @@ libpylith_la_SOURCES = \
 	faults/FaultCohesive.cc \
 	faults/FaultCohesiveKin.cc \
 	faults/FaultCohesiveImpulses.cc \
-	faults/AuxiliaryFactoryKinematic.cc \
+	faults/AuxiliaryFieldFactory.cc \
+	faults/DiagnosticFieldFactory.cc \
+	faults/DerivedFieldFactory.cc \
 	faults/KinSrc.cc \
 	faults/KinSrcStep.cc \
 	faults/KinSrcRamp.cc \
@@ -120,6 +123,7 @@ libpylith_la_SOURCES = \
 	problems/ObserverSoln.cc \
 	problems/ObserversSoln.cc \
 	problems/Physics.cc \
+	problems/Observer.cc \
 	problems/ObserverPhysics.cc \
 	problems/ObserversPhysics.cc \
 	problems/InitialCondition.cc \

@@ -211,6 +211,7 @@ pylith::bc::NeumannTimeDependent::createIntegrator(const pylith::topology::Field
     integrator->setLabelValue(getLabelValue());
 
     _NeumannTimeDependent::setKernelsResidual(integrator, *this, solution, _formulation);
+    BoundaryCondition::_setKernelsDiagnosticField(integrator, solution);
 
     PYLITH_METHOD_RETURN(integrator);
 } // createIntegrator
@@ -298,18 +299,6 @@ pylith::bc::NeumannTimeDependent::createAuxiliaryField(const pylith::topology::F
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Create derived field.
-pylith::topology::Field*
-pylith::bc::NeumannTimeDependent::createDerivedField(const pylith::topology::Field& solution,
-                                                     const pylith::topology::Mesh& domainMesh) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("createDerivedField(solution="<<solution.getLabel()<<", domainMesh=)"<<typeid(domainMesh).name()<<") empty method");
-
-    PYLITH_METHOD_RETURN(NULL);
-} // createDerivedField
-
-
-// ---------------------------------------------------------------------------------------------------------------------
 // Update auxiliary subfields at beginning of time step.
 void
 pylith::bc::NeumannTimeDependent::updateAuxiliaryField(pylith::topology::Field* auxiliaryField,
@@ -333,25 +322,6 @@ pylith::feassemble::AuxiliaryFactory*
 pylith::bc::NeumannTimeDependent::_getAuxiliaryFactory(void) {
     return _auxiliaryFactory;
 } // _getAuxiliaryFactory
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Update kernel constants.
-void
-pylith::bc::NeumannTimeDependent::_updateKernelConstants(const PylithReal dt) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_updateKernelConstants(dt="<<dt<<")");
-
-    if (6 != _kernelConstants.size()) { _kernelConstants.resize(6);}
-    _kernelConstants[0] = _refDir1[0];
-    _kernelConstants[1] = _refDir1[1];
-    _kernelConstants[2] = _refDir1[2];
-    _kernelConstants[3] = _refDir2[0];
-    _kernelConstants[4] = _refDir2[1];
-    _kernelConstants[5] = _refDir2[2];
-
-    PYLITH_METHOD_END;
-} // _updateKernelConstants
 
 
 // ---------------------------------------------------------------------------------------------------------------------

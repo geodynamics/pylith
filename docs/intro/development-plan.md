@@ -6,48 +6,53 @@ Future implementation of features is guided by several target applications, incl
 * Inversion of geodetic data for slow slip events, fault creep, and long-term fault slip rates.
 * Quasistatic and dynamic modeling of fluids and faulting.
 
-## Version 3.0.4 (September 2023)
+:::{note}
+Because we strictly follow the [semantic versioning guidelines](https://semver.org/), a minor release may get promoted to a major releases if we make changes to the public API (parameters).
+This can happen if realize that we should modify the parameters to improve maintainability or prepare for future changes.
+:::
 
-Updates for examples and documentation along with bugfixes.
+## Version 4.0.0 (December 2023)
 
 * Analytical function spatial database ![easy](images/easy.png)[100%]
 * Use `pod` initial guess to improve convergence ![easy](images/easy.png) [100%]
-* Dynamic prescribed slip with diagonal Jacobian for explicit part of IMEX formulation ![expert](images/expert.png)[75%]
-* Output of fault tractions ![expert](images/expert.png) [75%]
-* Update coordinates with solution ![intermediate](images/intermediate.png) [50%]
-* Convert from CppUnit to Catch2 ![easy](images/easy.png) [40%]
+* Output of fault tractions ![expert](images/expert.png) [100%]
+* Output of boundary and fault orientation ![export](images/expert.png) [100%]
+* Convert from CppUnit to Catch2 ![easy](images/easy.png) [100%]
+
+## Version 4.1.0 (March 2024)
+
+* Output of fault rupture auxiliary subfields ![intermediate](images/intermediate.png) [0%]
+* Dynamic prescribed slip with diagonal Jacobian for explicit part of IMEX formulation ![expert](images/expert.png) [75%]
+* Parallel mesh loading ![expert](images/expert.png) [15%]
+* Add 2D and 3D examples for crustal faults with complex fault geometry ![easy](images/easy.png) [50%]
 * Better preconditioners ![expert](images/expert.png) [25%]
   * elasticity with fault
   * incompressible elasticity
   * poroelasticity
-* Finish updating `examples/subduction-3d` ![intermediate](images/intermediate.png) [20%]
-* Add `examples/barwaves-2d` ![expert](images/expert.png) [15%]
-* Parallel mesh loading ![expert](images/expert.png) [15%]
-* Elasticity with self-gravitation ![intermediate](images/intermediate.png) [0%]
-* Add 2D and 3D examples for crustal faults with complex fault geometry ![easy](images/easy.png) [0%]
+* Update VTK output to use `vtu` files rather than legacy `vtk` files ![easy](images/easy.png) [0%]
+* Finish updating `examples/subduction-3d` ![intermediate](images/intermediate.png) [40%]
 
-## Version 3.1.0 (December 2023)
+## Version 5.0.0 (June 2024)
 
-* Spontaneous rupture for quasistatic simulations ![expert](images/expert.png) [20%]
+* Spontaneous rupture for quasistatic and dynamic simulations ![expert](images/expert.png) [20%]
+* Convert from SWIG to pybind11 ![intermediate](images/intermediate.png) [0%]
+* Reimplementation of Drucker-Prager elastoplastic bulk rheology ![intermediate](images/intermediate.png) [0%]
 * Add support for GeoModelGrids implementation of spatial databases for 3D seismic velocity models. ![intermediate](images/intermediate.png) [0%]
 * Improve robustness of HDF5 output by opening/closing at each time step ![easy](images/easy.png)[0%]
-* Dirichlet boundary conditions with constraints on normal and tangential components. ![difficult](images/difficult.png) [0%]
-* Additional minor cleanup of code internals to improve maintainability.
-  * Refactor auxiliary field and derived field output (initial/timestep/final)
-  * Output of fault rupture auxiliary fields
-  * VTK output (vtk -> vtu)
-* Reimplementation of Drucker-Prager elastoplastic bulk rheology ![intermediate](images/intermediate.png) [0%]
-* Convert from SWIG to pybind11 ![intermediate](images/intermediate.png) [0%]
+* Add `examples/barwaves-2d` ![expert](images/expert.png) [15%]
+* Update coordinates with solution ![intermediate](images/intermediate.png) [50%]
 
-## Version 4.0 (June 2024)
+## Version 6.0.0 (TBD)
 
-* Spontaneous rupture for dynamic simulations ![expert](images/expert.png) [10%]
 * Migrate examples to Jupyter notebooks ![intermediate](images/intermediate.png)
 * Update to current version of Pyre ![difficult](images/difficult.png)
 * More flexible specification of time-dependent boundary conditions. ![difficult](images/difficult.png) [0%]
+* Dirichlet boundary conditions with constraints on normal and tangential components. ![difficult](images/difficult.png) [0%]
 * Integration with libCEED for fast high order residual evaluation ![expert](images/expert.png)\
   Contribution led by Jed Brown.
 * Add ability to output residual field during nonlinear solve for debugging ![easy](images/easy.png) [0%]
+* Elasticity with self-gravitation ![intermediate](images/intermediate.png) [0%]
+
 
 ## Features for Future Releases
 
@@ -59,7 +64,7 @@ Updates for examples and documentation along with bugfixes.
 * Adaptive mesh refinement ![expert](images/expert.png)
 * Line/point fluid sources in poroelasticity ![expert](images/expert.png) [20%]
 * Consolidate HDF5 output into a single file ![difficult](images/difficult.png)
-* Drucker-Prager bulk rheology with relaxation to yield surface ![intermediate](images/intermediate.png) 
+* Drucker-Prager bulk rheology with relaxation to yield surface ![intermediate](images/intermediate.png)
 * Drucker-Prager bulk rheology with strain hardening/softening  ![intermediate](images/intermediate.png)
 * Adjoint for data assimilation ![difficult](images/difficult.png)
 * Fault with both prescribed slip and spontaneous rupture ![difficult](images/difficult.png)\

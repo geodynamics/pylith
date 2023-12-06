@@ -30,14 +30,14 @@ subpkginclude_HEADERS = \
 	IsotropicPowerLaw.hh \
 	IncompressibleElasticity.hh \
 	IsotropicLinearIncompElasticity.hh \
+	IsotropicLinearPoroelasticity.hh \
+	Poroelasticity.hh \
 	Solution.hh \
 	DispVel.hh \
 	TimeDependentFn.hh \
 	NeumannTimeDependent.hh \
 	AbsorbingDampers.hh \
-	FaultCohesiveKin.hh \
-	IsotropicLinearPoroelasticity.hh \
-	Poroelasticity.hh 
+	FaultCohesiveKin.hh
 	
 dist_noinst_HEADERS =
 

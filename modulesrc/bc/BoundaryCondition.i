@@ -68,6 +68,17 @@ public:
             virtual
             void verifyConfiguration(const pylith::topology::Field& solution) const;
 
+            /** Create diagnostic field.
+             *
+             * @param[in] solution Solution field.
+             * @param[in] physicsMesh Finite-element mesh associated with physics.
+             *
+             * @returns Diagnostic field if applicable, otherwise NULL.
+             */
+            virtual
+            pylith::topology::Field* createDiagnosticField(const pylith::topology::Field& solution,
+                                                           const pylith::topology::Mesh& physicsMesh);
+
         };
 
         // class BoundaryCondition

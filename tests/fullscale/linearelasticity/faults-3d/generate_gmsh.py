@@ -14,6 +14,7 @@ class App(GenerateMesh):
     """
     DOMAIN_X = DOMAIN_Y = DOMAIN_Z = 8.0e+3
     DX = 2.0e+3
+    FAULT_DIP_ANGLE = 0.4*numpy.pi
 
     def __init__(self):
         self.cell_choices = {
@@ -31,7 +32,7 @@ class App(GenerateMesh):
                                     self.DOMAIN_X, self.DOMAIN_Y, self.DOMAIN_Z)
 
         disk = gmsh.model.occ.add_disk(0.0, 0.0, -0.5*self.DOMAIN_Z, self.DOMAIN_Y, self.DOMAIN_Z)
-        gmsh.model.occ.rotate([(2,disk)], 0.0, 0.0, -0.5*self.DOMAIN_Z, 0.0, 1.0, 0.0, 0.4*numpy.pi)
+        gmsh.model.occ.rotate([(2,disk)], 0.0, 0.0, -0.5*self.DOMAIN_Z, 0.0, 1.0, 0.0, self.FAULT_DIP_ANGLE)
         dimTags, dimTagsMap = gmsh.model.occ.fragment([(3,box)], [(2,disk)])
         gmsh.model.occ.remove([dimTags[-1]], recursive=True)
 

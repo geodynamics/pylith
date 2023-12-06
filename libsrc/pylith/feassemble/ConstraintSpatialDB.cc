@@ -62,19 +62,23 @@ pylith::feassemble::ConstraintSpatialDB::setKernelConstraint(const PetscBdPointF
 void
 pylith::feassemble::ConstraintSpatialDB::initialize(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" intialize(solution="<<solution.getLabel()<<")");
-
-    assert(_physics);
+    PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" initialize(solution="<<solution.getLabel()<<")");
 
     Constraint::initialize(solution);
 
     const pylith::topology::Mesh& physicsDomainMesh = getPhysicsDomainMesh();
-
     delete _auxiliaryField;_auxiliaryField = _physics->createAuxiliaryField(solution, physicsDomainMesh);
-    delete _derivedField;_derivedField = _physics->createDerivedField(solution, physicsDomainMesh);
+    delete _diagnosticField;_diagnosticField = _physics->createDiagnosticField(solution, physicsDomainMesh);
+    _computeDiagnosticField();
+    const pylith::problems::Observer::NotificationType notification = pylith::problems::ObserverPhysics::DIAGNOSTIC;
+    _observers->notifyObservers(0.0, 0, solution, notification);
+    if (_observers) {
+        const pylith::problems::Observer::NotificationType notification = pylith::problems::ObserverPhysics::DIAGNOSTIC;
+        _observers->notifyObservers(0.0, 0, solution, notification);
+    } // if
+    delete _diagnosticField;_diagnosticField = NULL;
 
-    const bool infoOnly = true;
-    _observers->notifyObservers(0.0, 0, solution, infoOnly);
+    delete _derivedField;_derivedField = _physics->createDerivedField(solution, physicsDomainMesh);
 
     // :KLUDGE: Potentially we may have multiple PetscDS objects. This assumes that the first one (with a NULL label) is
     // the correct one.
@@ -164,33 +168,6 @@ pylith::feassemble::ConstraintSpatialDB::setSolution(pylith::feassemble::Integra
 
     PYLITH_METHOD_END;
 } // setSolution
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Set constants used in finite-element kernels (point-wise functions).
-void
-pylith::feassemble::ConstraintSpatialDB::_setKernelConstants(const pylith::topology::Field& solution,
-                                                             const PylithReal dt) const {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("_setKernelConstants(solution="<<solution.getLabel()<<", dt="<<dt<<")");
-
-    assert(_physics);
-    const pylith::real_array& constants = _physics->getKernelConstants(dt);
-
-    PetscDS prob = NULL;
-    PetscDM dmSoln = solution.getDM();assert(dmSoln);
-
-    // :KLUDGE: Potentially we may have multiple PetscDS objects. This assumes that the first one (with a NULL label) is
-    // the correct one.
-    PetscErrorCode err = DMGetDS(dmSoln, &prob);PYLITH_CHECK_ERROR(err);assert(prob);
-    if (constants.size() > 0) {
-        err = PetscDSSetConstants(prob, constants.size(), const_cast<double*>(&constants[0]));PYLITH_CHECK_ERROR(err);
-    } else {
-        err = PetscDSSetConstants(prob, 0, NULL);PYLITH_CHECK_ERROR(err);
-    } // if/else
-
-    PYLITH_METHOD_END;
-} // _setKernelConstants
 
 
 // End of file

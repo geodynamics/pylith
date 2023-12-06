@@ -252,6 +252,7 @@ pylith::bc::DirichletTimeDependent::createConstraints(const pylith::topology::Fi
     constraint->setConstrainedDOF(&_constrainedDOF[0], _constrainedDOF.size());
 
     _DirichletTimeDependent::setKernelConstraint(constraint, *this, solution);
+    BoundaryCondition::_setKernelsDiagnosticField(constraint, solution);
 
     constraintArray.resize(1);
     constraintArray[0] = constraint;
@@ -308,18 +309,6 @@ pylith::bc::DirichletTimeDependent::createAuxiliaryField(const pylith::topology:
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Create derived field.
-pylith::topology::Field*
-pylith::bc::DirichletTimeDependent::createDerivedField(const pylith::topology::Field& solution,
-                                                       const pylith::topology::Mesh& domainMesh) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("createDerivedField(solution="<<solution.getLabel()<<", domainMesh=)"<<typeid(domainMesh).name()<<") empty method");
-
-    PYLITH_METHOD_RETURN(NULL);
-} // createDerivedField
-
-
-// ---------------------------------------------------------------------------------------------------------------------
 // Update auxiliary fields at beginning of time step.
 void
 pylith::bc::DirichletTimeDependent::updateAuxiliaryField(pylith::topology::Field* auxiliaryField,
@@ -343,12 +332,6 @@ pylith::feassemble::AuxiliaryFactory*
 pylith::bc::DirichletTimeDependent::_getAuxiliaryFactory(void) {
     return _auxiliaryFactory;
 } // _getAuxiliaryFactory
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Update kernel constants.
-void
-pylith::bc::DirichletTimeDependent::_updateKernelConstants(const PylithReal dt) {}
 
 
 // ---------------------------------------------------------------------------------------------------------------------

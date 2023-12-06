@@ -36,8 +36,9 @@ The monitor calculates the percent completed based on the number of steps (e.g.,
 ## Observers
 
 Observer objects manage transferring the solution and state variables to other objects, including output and external software.
-Currently, PyLith only includes observers for output.
+Currently, the only type of observers implemented in PyLith are ones that produce output.
 
+(sec-user-output-observers)=
 ### Output Observers
 
 PyLith currently supports output to HDF5/Xdmf and VTK files, which can be imported directly into a number of visualization tools, such as ParaView, Visit, and MayaVi.
@@ -54,6 +55,27 @@ Fields with a basis order of 1 are written as vertex fields, whereas fields with
 Fields with a basis order of 0 are kept at a basis order of 0 when output.
 Fields with a basis order of 1 or more can be output with a basis order of 0 or 1.
 :::
+
+The output observers produce files with either diagnostic information (`info` files) or solution and state variable information (`data` files).
+The default behavior is the files include all available information.
+The `info` files include the auxiliary subfields at the beginning of the simulation along with  surface orientation information for faults and boundary conditions.
+The `data` files include all solution subfields, state variables, and derived fields (fields computed from the solution, such as Cauchy stress and strain).
+
+For boundary conditions the orientation information is provided in terms of x, y, and z components of the unit vectors for the surface normal and tangential directions.
+In 3D the "vertical" tangential direction is the cross product of the surface normal and horizontal tangential direction; it is in the +z direction for a vertical boundary.
+In the case of the horizontal boundary, the horizontal tangential direction is in the +x direction and the "vertical" tangential direction is in the +y direction.
+For a fault surface the horizontal tangential direction generally corresponds to the along-strike direction and the "vertical" tangential direction generally corresponds to the up-dip direction; the exception is a 2D simulation for a vertical cross-section in which the "horizontal" tangential direction corresponds to the dip direction.
+
+The orientation information is useful for transforming from components written in terms of a surface (for example, left lateral, reverse, and opening fault tractions), into the model coordinate system (for example, the global Cartesian coordinate system).
+Given unit vector components $n_x$, $n_y$, $n_z$ (normal direction), $h_x$, $h_y$, $h_z$ (horizontal tangential direction or along-strike direction), and $v_x$, $v_y$, $v_z$ (vertical tangential direction or up-dip direction), we can transform a vector in the boundary (or fault) coordinate system ($a_n$, $a_h$, $a_v$) into the global coordinate system using
+
+\begin{align}
+a_x &= a_n n_x + a_h h_x + a_v v_x \\
+a_y &= a_n n_y + a_h h_y + a_v v_y \\
+a_z &= a_n n_z + a_h h_z + a_v v_z
+\end{align}
+
+This transformation is useful for plotting fault tractions and slip in 3D visualization tools such as ParaView that require vectors in the model coordinate system.
 
 (sec-user-solution-observers)=
 ### Solution Observers

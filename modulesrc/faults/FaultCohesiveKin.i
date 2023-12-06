@@ -23,7 +23,7 @@
 
 namespace pylith {
     namespace faults {
-        class FaultCohesiveKin : public pylith::faults::FaultCohesive {
+        class FaultCohesiveKin: public pylith::faults::FaultCohesive {
             // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////
 public:
 
@@ -67,7 +67,7 @@ public:
              * @returns Integrator if applicable, otherwise NULL.
              */
             pylith::feassemble::Integrator* createIntegrator(const pylith::topology::Field& solution,
-                                                             const std::vector<pylith::materials::Material*>& materials);
+                                                             const std::vector < pylith::materials::Material* >& materials);
 
             /** Create auxiliary field.
              *
@@ -78,6 +78,16 @@ public:
              */
             pylith::topology::Field* createAuxiliaryField(const pylith::topology::Field& solution,
                                                           const pylith::topology::Mesh& domainMesh);
+
+            /** Create derived field.
+             *
+             * @param[in] solution Solution field.
+             * @param[in\ domainMesh Finite-element mesh associated with integration domain.
+             *
+             * @returns Derived field if applicable, otherwise NULL.
+             */
+            pylith::topology::Field* createDerivedField(const pylith::topology::Field& solution,
+                                                        const pylith::topology::Mesh& domainMesh);
 
             /** Update auxiliary subfields at beginning of time step.
              *
@@ -114,7 +124,7 @@ protected:
              */
             void _setKernelsResidual(pylith::feassemble::IntegratorInterface* integrator,
                                      const pylith::topology::Field& solution,
-                                     const std::vector<pylith::materials::Material*>& materials) const;
+                                     const std::vector < pylith::materials::Material* >& materials) const;
 
             /** Set kernels for Jacobian.
              *
@@ -124,7 +134,7 @@ protected:
              */
             void _setKernelsJacobian(pylith::feassemble::IntegratorInterface* integrator,
                                      const pylith::topology::Field& solution,
-                                     const std::vector<pylith::materials::Material*>& materials) const;
+                                     const std::vector < pylith::materials::Material* >& materials) const;
 
         }; // class FaultCohesiveKin
 
