@@ -1,21 +1,13 @@
-#!/usr/bin/env python
+#!/usr/bin/env nemesis
+# =================================================================================================
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# ----------------------------------------------------------------------
+# Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+# All rights reserved.
 #
-# Brad T. Aagaard, U.S. Geological Survey
-# Charles A. Williams, GNS Science
-# Matthew G. Knepley, University at Buffalo
-#
-# This code was developed as part of the Computational Infrastructure
-# for Geodynamics (http://geodynamics.org).
-#
-# Copyright (c) 2010-2021 University of California, Davis
-#
-# See LICENSE.md for license information.
-#
-# ----------------------------------------------------------------------
-#
-
+# See https://mit-license.org/ and LICENSE.md and for license information. 
+# =================================================================================================
 # @file postproc/vtkcff
 
 # @brief Python application to compute the Coulomb Failure Function difference
@@ -46,7 +38,7 @@ class VtkCff(Application):
 
         # @class Inventory
         # Python object for managing VtkCff facilities and properties.
-        ##
+        #
         # \b Properties
         # @li \b stress_ref_mode Whether to reference stresses to a constant state, a selected state, or the previous state.
         # @li \b orientation_mode Compute CFF on predefined plane or optimally-oriented planes.

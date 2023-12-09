@@ -1,10 +1,7 @@
-// -*- C++ -*- (tell Emacs to use C++ mode for syntax highlighting)
-//
 // This spatial database specifies initial stresses that increase with
 // depth corresponding to the overburden pressure for gravitational
 // body forces acting on a material with a uniform density of 3300
 // kg/m**3 (mantle).
-//
 #SPATIAL.ascii 1
 SimpleDB {
   num-values = 6 // number of stress components

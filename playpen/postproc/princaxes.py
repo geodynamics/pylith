@@ -1,20 +1,18 @@
-#!/usr/bin/env python
+#!/usr/bin/env nemesis
+# =================================================================================================
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# ----------------------------------------------------------------------
+# Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+# All rights reserved.
 #
-#                           Brad T. Aagaard
-#                        U.S. Geological Survey
+# See https://mit-license.org/ and LICENSE.md and for license information. 
+# =================================================================================================
+# @file postproc/princaxes
 #
-# <LicenseText>
-#
-# ----------------------------------------------------------------------
-#
-
-## @file postproc/princaxes
-
-## @brief Python application to compute principal axes for a tensor respresented
-## as a vector. Information is read from a VTK file and a VTK file with the
-## same dimensions is output.
+# @brief Python application to compute principal axes for a tensor respresented
+# as a vector. Information is read from a VTK file and a VTK file with the
+# same dimensions is output.
 
 import math
 import numpy
@@ -35,18 +33,18 @@ class PrincAxes(Application):
     """Python object for managing PrincAxes facilities and properties.
     """
 
-    ## @class Inventory
-    ## Python object for managing PrincAxes facilities and properties.
-    ##
-    ## \b Properties
-    ## @li \b vtk_input_file  Name of VTK input file.
-    ## @li \b vtk_output_file Name of VTK output file.
-    ## @li \b vtk_tensor_index Index of desired VTK field array.
-    ## @li \b vtk_tensor_components_order Indices of xx,yy,zz,xy,yz,xz.
-    ## @li \b add_regional_field Add regional stress/strain field?
-    ## @li \b regional_sigma1 Value and direction cosines for sigma_1.
-    ## @li \b regional_sigma2 Value and direction cosines for sigma_2.
-    ## @li \b regional_sigma3 Value and direction cosines for sigma_3.
+    # @class Inventory
+    # Python object for managing PrincAxes facilities and properties.
+    #
+    # \b Properties
+    # @li \b vtk_input_file  Name of VTK input file.
+    # @li \b vtk_output_file Name of VTK output file.
+    # @li \b vtk_tensor_index Index of desired VTK field array.
+    # @li \b vtk_tensor_components_order Indices of xx,yy,zz,xy,yz,xz.
+    # @li \b add_regional_field Add regional stress/strain field?
+    # @li \b regional_sigma1 Value and direction cosines for sigma_1.
+    # @li \b regional_sigma2 Value and direction cosines for sigma_2.
+    # @li \b regional_sigma3 Value and direction cosines for sigma_3.
 
     import pythia.pyre.inventory
 

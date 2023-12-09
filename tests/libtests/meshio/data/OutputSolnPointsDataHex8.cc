@@ -1,25 +1,17 @@
-// -*- C++ -*-
+// =================================================================================================
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// ======================================================================
+// Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+// All rights reserved.
 //
-// Brad T. Aagaard, U.S. Geological Survey
-// Charles A. Williams, GNS Science
-// Matthew G. Knepley, University at Buffalo
-//
-// This code was developed as part of the Computational Infrastructure
-// for Geodynamics (http://geodynamics.org).
-//
-// Copyright (c) 2010-2022 University of California, Davis
-//
-// See LICENSE.md for license information.
-//
-// ======================================================================
-//
+// See https://mit-license.org/ and LICENSE.md and for license information.
+// =================================================================================================
 
 #include "OutputSolnPointsDataHex8.hh"
 
 const char* pylith::meshio::OutputSolnPointsDataHex8::_meshFilename =
-  "data/mesh_hex8.exo";
+    "data/mesh_hex8.exo";
 
 const int pylith::meshio::OutputSolnPointsDataHex8::_spaceDim = 3;
 const int pylith::meshio::OutputSolnPointsDataHex8::_numPoints = 12;
@@ -55,26 +47,25 @@ const char* pylith::meshio::OutputSolnPointsDataHex8::_names[12] = {
 
 const int pylith::meshio::OutputSolnPointsDataHex8::_fiberDim = 1;
 
-const PylithScalar pylith::meshio::OutputSolnPointsDataHex8::_coefs[1*3] = { 
+const PylithScalar pylith::meshio::OutputSolnPointsDataHex8::_coefs[1*3] = {
     -3.0, 6.0, 12.0,
 };
 
 // ----------------------------------------------------------------------
-pylith::meshio::OutputSolnPointsDataHex8::OutputSolnPointsDataHex8(void)
-{ // constructor
-  meshFilename = const_cast<char*>(_meshFilename);
-  spaceDim = _spaceDim;
-  numPoints = _numPoints;
-  points = const_cast<PylithScalar*>(_points);
-  names = const_cast<const char**>(_names);
-  
-  fiberDim = _fiberDim;
-  coefs = const_cast<PylithScalar*>(_coefs);
+pylith::meshio::OutputSolnPointsDataHex8::OutputSolnPointsDataHex8(void) { // constructor
+    meshFilename = const_cast<char*>(_meshFilename);
+    spaceDim = _spaceDim;
+    numPoints = _numPoints;
+    points = const_cast<PylithScalar*>(_points);
+    names = const_cast<const char**>(_names);
+
+    fiberDim = _fiberDim;
+    coefs = const_cast<PylithScalar*>(_coefs);
 
 } // constructor
 
-pylith::meshio::OutputSolnPointsDataHex8::~OutputSolnPointsDataHex8(void)
-{}
+
+pylith::meshio::OutputSolnPointsDataHex8::~OutputSolnPointsDataHex8(void) {}
 
 
 // End of file

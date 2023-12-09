@@ -1,20 +1,12 @@
-// -*- C++ -*-
+// =================================================================================================
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// ======================================================================
+// Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+// All rights reserved.
 //
-// Brad T. Aagaard, U.S. Geological Survey
-// Charles A. Williams, GNS Science
-// Matthew G. Knepley, University at Buffalo
-//
-// This code was developed as part of the Computational Infrastructure
-// for Geodynamics (http://geodynamics.org).
-//
-// Copyright (c) 2010-2022 University of California, Davis
-//
-// See LICENSE.md for license information.
-//
-// ======================================================================
-//
+// See https://mit-license.org/ and LICENSE.md and for license information.
+// =================================================================================================
 
 #include <portinfo>
 
@@ -29,37 +21,38 @@
 // Check to make sure array of values match expected values.
 bool
 pylith::utils::TestArray::check(const PylithScalar* valuesE,
-				const int nvalues,
-				const scalar_array& values)
-{ // check(PylithScalar)
-  assert( (0 == nvalues && 0 == valuesE) ||
-	  (0 < nvalues && 0 != valuesE) );
+                                const int nvalues,
+                                const scalar_array& values) { // check(PylithScalar)
+    assert( (0 == nvalues && 0 == valuesE) ||
+            (0 < nvalues && 0 != valuesE) );
 
-  if (size_t(nvalues) != values.size()) {
-    std::cerr << "Array size mismatch, expected: " << nvalues
-	      << " actual: " << values.size() << std::endl;
-    return false;
-  } // if
-
-  const PylithScalar tolerance = 1.0e-06;
-  bool okay = true;
-  for (int i=0; i < nvalues; ++i) {
-    okay = true;
-    if (0.0 != valuesE[i]) {
-      if (fabs(1.0 - values[i]/valuesE[i]) > tolerance)
-	okay = false;
-    } else if (fabs(values[i] - valuesE[i]) > tolerance)
-      okay = false;
-
-    if (!okay) {
-      std::cerr << "Mismatch in array at index " << i << ", expected: "
-		<< valuesE[i] << ", actual: " << values[i] << std::endl;
-      return false;
+    if (size_t(nvalues) != values.size()) {
+        std::cerr << "Array size mismatch, expected: " << nvalues
+                  << " actual: " << values.size() << std::endl;
+        return false;
     } // if
-  } // for
 
-  return true;
+    const PylithScalar tolerance = 1.0e-06;
+    bool okay = true;
+    for (int i = 0; i < nvalues; ++i) {
+        okay = true;
+        if (0.0 != valuesE[i]) {
+            if (fabs(1.0 - values[i]/valuesE[i]) > tolerance) {
+                okay = false;
+            }
+        } else if (fabs(values[i] - valuesE[i]) > tolerance) {
+            okay = false;
+        }
+
+        if (!okay) {
+            std::cerr << "Mismatch in array at index " << i << ", expected: "
+                      << valuesE[i] << ", actual: " << values[i] << std::endl;
+            return false;
+        } // if
+    } // for
+
+    return true;
 } // check(PylithScalar)
 
 
-// End of file 
+// End of file

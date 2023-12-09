@@ -1,19 +1,12 @@
-// -*- C++ -*-
+// =================================================================================================
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// ======================================================================
+// Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+// All rights reserved.
 //
-// Brad T. Aagaard, U.S. Geological Survey
-// Charles A. Williams, GNS Science
-// Matthew G. Knepley, University at Buffalo
-//
-// This code was developed as part of the Computational Infrastructure
-// for Geodynamics (http://geodynamics.org).
-//
-// Copyright (c) 2010-2021 University of California, Davis
-//
-// See LICENSE.md for license information.
-//
-// ======================================================================
+// See https://mit-license.org/ and LICENSE.md and for license information.
+// =================================================================================================
 //
 
 // Define the frictioncontrib SWIG interface module.
@@ -32,16 +25,17 @@
 
 #include "pylith/utils/types.hh"
 #include "pylith/utils/array.hh"
-%}
+    %
+}
 
 // Convert standard C++ exceptions to Python exceptions.
 %include "exception.i"
 %exception {
-  try {
-    $action
-  } catch (const std::exception& err) {
-    SWIG_exception(SWIG_RuntimeError, err.what());
-  } // try/catch
+    try {
+        $ action
+    } catch (const std::exception& err) {
+        SWIG_exception (SWIG_RuntimeError, err.what ());
+    } // try/catch
 } // exception
 
 %include "typemaps.i"
@@ -50,16 +44,16 @@
 // Numpy interface stuff
 %{
 #define SWIG_FILE_WITH_INIT
-%}
+    %
+}
 %include "include/numpy.i"
 %init %{
-import_array();
-%}
-
+    import_array();
+    %
+}
 
 // Interface files.
 %include "friction/FrictionModel.i"
 %include "ViscousFriction.i"
-
 
 // End of file

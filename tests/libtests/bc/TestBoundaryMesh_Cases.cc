@@ -1,20 +1,12 @@
-// -*- C++ -*-
+// =================================================================================================
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// ----------------------------------------------------------------------
+// Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+// All rights reserved.
 //
-// Brad T. Aagaard, U.S. Geological Survey
-// Charles A. Williams, GNS Science
-// Matthew G. Knepley, University at Buffalo
-//
-// This code was developed as part of the Computational Infrastructure
-// for Geodynamics (http://geodynamics.org).
-//
-// Copyright (c) 2010-2022 University of California, Davis
-//
-// See LICENSE.md for license information.
-//
-// ----------------------------------------------------------------------
-//
+// See https://mit-license.org/ and LICENSE.md and for license information.
+// =================================================================================================
 
 #include <portinfo>
 
@@ -23,7 +15,6 @@
 // ----------------------------------------------------------------------
 namespace pylith {
     namespace bc {
-
         // --------------------------------------------------------------
         class TestBoundaryMesh_Tri : public TestBoundaryMesh {
             CPPUNIT_TEST_SUB_SUITE(TestBoundaryMesh_Tri, TestBoundaryMesh);
@@ -42,9 +33,9 @@ namespace pylith {
                 _data->numVerticesNoFault = 2;
                 _data->numVerticesWithFault = 2;
             } // setUp
+
         }; // class TestBoundaryMesh_Tri
         CPPUNIT_TEST_SUITE_REGISTRATION(TestBoundaryMesh_Tri);
-
 
         // --------------------------------------------------------------
         class TestBoundaryMesh_Quad : public TestBoundaryMesh {
@@ -64,9 +55,9 @@ namespace pylith {
                 _data->numVerticesNoFault = 3;
                 _data->numVerticesWithFault = 4;
             } // setUp
+
         }; // class TestBoundaryMesh_Quad
         CPPUNIT_TEST_SUITE_REGISTRATION(TestBoundaryMesh_Quad);
-
 
         // --------------------------------------------------------------
         class TestBoundaryMesh_Tet : public TestBoundaryMesh {
@@ -86,9 +77,9 @@ namespace pylith {
                 _data->numVerticesNoFault = 4;
                 _data->numVerticesWithFault = 6;
             } // setUp
+
         }; // class TestBoundaryMesh_Tet
         CPPUNIT_TEST_SUITE_REGISTRATION(TestBoundaryMesh_Tet);
-
 
         // --------------------------------------------------------------
         class TestBoundaryMesh_Hex : public TestBoundaryMesh {
@@ -108,12 +99,11 @@ namespace pylith {
                 _data->numVerticesNoFault = 6;
                 _data->numVerticesWithFault = 8;
             } // setUp
+
         }; // class TestBoundaryMesh_Hex
         CPPUNIT_TEST_SUITE_REGISTRATION(TestBoundaryMesh_Hex);
 
-
     } // namespace bc
 } // namespace pylith
-
 
 // End of file

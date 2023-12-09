@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env nemesis
 #
 # Python script to run initial static simulations, generate initial state
 # variables spatial databases, run a restart simulation, and check the results.

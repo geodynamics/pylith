@@ -1,5 +1,3 @@
-// -*- C++ -*- (tell Emacs to use C++ mode for syntax highlighting)
-//
 #TIME HISTORY ascii
 TimeHistory {
   num-points = 11 // number of points in time history

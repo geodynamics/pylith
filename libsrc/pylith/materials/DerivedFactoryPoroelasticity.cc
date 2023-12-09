@@ -1,20 +1,12 @@
-// -*- C++ -*-
+// =================================================================================================
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// ----------------------------------------------------------------------
+// Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+// All rights reserved.
 //
-// Brad T. Aagaard, U.S. Geological Survey
-// Charles A. Williams, GNS Science
-// Matthew G. Knepley, University at Buffalo
-//
-// This code was developed as part of the Computational Infrastructure
-// for Geodynamics (http://geodynamics.org).
-//
-// Copyright (c) 2010-2022 University of California, Davis
-//
-// See LICENSE.md for license information.
-//
-// ----------------------------------------------------------------------
-//
+// See https://mit-license.org/ and LICENSE.md and for license information.
+// =================================================================================================
 
 #include <portinfo>
 
@@ -53,7 +45,6 @@ pylith::materials::DerivedFactoryPoroelasticity::addBulkDensity(void) {
     const char* fieldName = "bulk_density";
     const PylithReal densityScale = _normalizer->getDensityScale();
 
-    
     pylith::topology::Field::Description description;
     description.label = fieldName;
     description.alias = fieldName;
@@ -62,12 +53,13 @@ pylith::materials::DerivedFactoryPoroelasticity::addBulkDensity(void) {
     description.componentNames.resize(1);
     description.componentNames[0] = fieldName;
     description.scale = densityScale;
-    description.validator = pylith::topology::FieldQuery::validatorNonnegative;;
+    description.validator = pylith::topology::FieldQuery::validatorNonnegative;
 
     _field->subfieldAdd(description, getSubfieldDiscretization(fieldName));
 
     PYLITH_METHOD_END;
-} //addBulkDensity
+} // addBulkDensity
+
 
 // ------------------------------------------------------------------------------------------------
 // Add water content subfield to derived fields
@@ -77,7 +69,7 @@ pylith::materials::DerivedFactoryPoroelasticity::addWaterContent(void) {
     PYLITH_JOURNAL_DEBUG("addWaterContent(void)");
 
     const char* fieldName = "water_content";
-    
+
     pylith::topology::Field::Description description;
     description.label = fieldName;
     description.alias = fieldName;
@@ -90,7 +82,8 @@ pylith::materials::DerivedFactoryPoroelasticity::addWaterContent(void) {
     _field->subfieldAdd(description, getSubfieldDiscretization(fieldName));
 
     PYLITH_METHOD_END;
-} //addWaterContent
+} // addWaterContent
+
 
 // ------------------------------------------------------------------------------------------------
 // Add subfields using discretizations provided.
@@ -113,6 +106,7 @@ pylith::materials::DerivedFactoryPoroelasticity::addSubfields(void) {
     } // if
 
     PYLITH_METHOD_END;
-} //addSubfields
+} // addSubfields
+
 
 // End of file

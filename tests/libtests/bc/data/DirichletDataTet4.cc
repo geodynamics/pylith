@@ -1,20 +1,12 @@
-// -*- C++ -*-
+// =================================================================================================
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// ======================================================================
+// Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+// All rights reserved.
 //
-// Brad T. Aagaard, U.S. Geological Survey
-// Charles A. Williams, GNS Science
-// Matthew G. Knepley, University at Buffalo
-//
-// This code was developed as part of the Computational Infrastructure
-// for Geodynamics (http://geodynamics.org).
-//
-// Copyright (c) 2010-2022 University of California, Davis
-//
-// See LICENSE.md for license information.
-//
-// ======================================================================
-//
+// See https://mit-license.org/ and LICENSE.md and for license information.
+// =================================================================================================
 
 /* Mesh: meshTet4.txt
  *
@@ -43,42 +35,40 @@ const int pylith::bc::DirichletDataTet4::_fixedDOF[] = { 1, 2 };
 const int pylith::bc::DirichletDataTet4::_numConstrainedPts = 3;
 const int pylith::bc::DirichletDataTet4::_constrainedPoints[] = { 1, 2, 3 };
 
-
 const PylithScalar pylith::bc::DirichletDataTet4::_tRef = 1.2;
 const PylithScalar pylith::bc::DirichletDataTet4::_valueRate = 4.0;
 const PylithScalar pylith::bc::DirichletDataTet4::_valuesInitial[] = {
-  0.7, 0.2,
-  0.7, 0.2,
-  0.7, 0.2,
+    0.7, 0.2,
+    0.7, 0.2,
+    0.7, 0.2,
 };
 
-const char* pylith::bc::DirichletDataTet4::_meshFilename = 
-  "data/tet4.mesh";
+const char* pylith::bc::DirichletDataTet4::_meshFilename =
+    "data/tet4.mesh";
 const char* pylith::bc::DirichletDataTet4::_dbFilename =
-  "data/tet4_disp.spatialdb";
+    "data/tet4_disp.spatialdb";
 
-pylith::bc::DirichletDataTet4::DirichletDataTet4(void)
-{ // constructor
-  id = _id;
-  label = const_cast<char*>(_label);
+pylith::bc::DirichletDataTet4::DirichletDataTet4(void) { // constructor
+    id = _id;
+    label = const_cast<char*>(_label);
 
-  numDOF = _numDOF;
-  numFixedDOF = _numFixedDOF;
-  fixedDOF = const_cast<int*>(_fixedDOF);
+    numDOF = _numDOF;
+    numFixedDOF = _numFixedDOF;
+    fixedDOF = const_cast<int*>(_fixedDOF);
 
-  numConstrainedPts = _numConstrainedPts;
-  constrainedPoints = const_cast<int*>(_constrainedPoints);
+    numConstrainedPts = _numConstrainedPts;
+    constrainedPoints = const_cast<int*>(_constrainedPoints);
 
-  tRef = _tRef;
-  valueRate = _valueRate;
-  valuesInitial = const_cast<PylithScalar*>(_valuesInitial);
+    tRef = _tRef;
+    valueRate = _valueRate;
+    valuesInitial = const_cast<PylithScalar*>(_valuesInitial);
 
-  meshFilename = const_cast<char*>(_meshFilename);
-  dbFilename = const_cast<char*>(_dbFilename);
+    meshFilename = const_cast<char*>(_meshFilename);
+    dbFilename = const_cast<char*>(_dbFilename);
 } // constructor
 
-pylith::bc::DirichletDataTet4::~DirichletDataTet4(void)
-{}
+
+pylith::bc::DirichletDataTet4::~DirichletDataTet4(void) {}
 
 
 // End of file

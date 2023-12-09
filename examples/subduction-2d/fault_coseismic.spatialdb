@@ -1,10 +1,7 @@
-// -*- C++ -*- (syntax highlighting)
-//
 // This spatial database specifies the distribution of slip on the
 // fault surface. This is a cross-section extracted from Gavin Hayes's
 // rupture model
 // (http://earthquake.usgs.gov/earthquakes/eqinthenews/2011/usc0001xgp/finite_fault.php).
-//
 #SPATIAL.ascii 1
 SimpleDB {
   num-values = 3

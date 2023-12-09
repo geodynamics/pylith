@@ -1,20 +1,12 @@
-// -*- C++ -*-
+// =================================================================================================
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// ======================================================================
+// Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+// All rights reserved.
 //
-// Brad T. Aagaard, U.S. Geological Survey
-// Charles A. Williams, GNS Science
-// Matthew G. Knepley, University at Buffalo
-//
-// This code was developed as part of the Computational Infrastructure
-// for Geodynamics (http://geodynamics.org).
-//
-// Copyright (c) 2010-2022 University of California, Davis
-//
-// See LICENSE.md for license information.
-//
-// ======================================================================
-//
+// See https://mit-license.org/ and LICENSE.md and for license information.
+// =================================================================================================
 
 /**
  * @file libsrc/utils/journals.hh
@@ -29,98 +21,98 @@
 #include "pylith/utils/mpi.hh"
 
 #define PYLITH_COMPONENT_DEBUG(msg) \
-    do { \
-        pythia::journal::debug_t debug(PyreComponent::getName()); \
-        debug << pythia::journal::at(__HERE__) \
-              << "Component '"<<PyreComponent::getIdentifier()<<"': " \
-              << msg << pythia::journal::endl; \
-    } while (0)
+        do { \
+            pythia::journal::debug_t debug(PyreComponent::getName()); \
+            debug << pythia::journal::at(__HERE__) \
+                  << "Component '"<<PyreComponent::getIdentifier()<<"': " \
+                  << msg << pythia::journal::endl; \
+        } while (0)
 
 #define PYLITH_COMPONENT_INFO_ROOT(msg) \
-    do { \
-        if (pylith::utils::MPI::isRoot()) { \
+        do { \
+            if (pylith::utils::MPI::isRoot()) { \
+                pythia::journal::info_t info(PyreComponent::getName()); \
+                info << pythia::journal::at(__HERE__) \
+                     << "Component '"<<PyreComponent::getIdentifier()<<"': " \
+                     << msg << pythia::journal::endl; } \
+        } while (0)
+
+#define PYLITH_COMPONENT_INFO(msg) \
+        do { \
             pythia::journal::info_t info(PyreComponent::getName()); \
             info << pythia::journal::at(__HERE__) \
                  << "Component '"<<PyreComponent::getIdentifier()<<"': " \
-                 << msg << pythia::journal::endl; } \
-    } while (0)
-
-#define PYLITH_COMPONENT_INFO(msg) \
-    do { \
-        pythia::journal::info_t info(PyreComponent::getName()); \
-        info << pythia::journal::at(__HERE__) \
-             << "Component '"<<PyreComponent::getIdentifier()<<"': " \
-             << msg << pythia::journal::endl; \
-    } while (0)
+                 << msg << pythia::journal::endl; \
+        } while (0)
 
 #define PYLITH_COMPONENT_WARNING(msg) \
-    do { \
-        pythia::journal::warning_t warning(PyreComponent::getName()); \
-        warning << pythia::journal::at(__HERE__) \
-                << "Component '"<<PyreComponent::getIdentifier()<<"': " \
-                << msg << pythia::journal::endl; \
-    } while (0)
+        do { \
+            pythia::journal::warning_t warning(PyreComponent::getName()); \
+            warning << pythia::journal::at(__HERE__) \
+                    << "Component '"<<PyreComponent::getIdentifier()<<"': " \
+                    << msg << pythia::journal::endl; \
+        } while (0)
 
 #define PYLITH_COMPONENT_ERROR(msg) \
-    do { \
-        pythia::journal::error_t error(PyreComponent::getName()); \
-        error << pythia::journal::at(__HERE__) \
-              << "Component '"<<PyreComponent::getIdentifier()<<"': " \
-              << msg << pythia::journal::endl; \
-    } while (0)
+        do { \
+            pythia::journal::error_t error(PyreComponent::getName()); \
+            error << pythia::journal::at(__HERE__) \
+                  << "Component '"<<PyreComponent::getIdentifier()<<"': " \
+                  << msg << pythia::journal::endl; \
+        } while (0)
 
 #define PYLITH_COMPONENT_LOGICERROR(msg) \
-    do { \
-        std::ostringstream firewall; \
-        firewall << pythia::journal::at(__HERE__) \
-                 << "Component '"<<PyreComponent::getIdentifier()<<"': " \
-                 << msg; \
-        throw std::logic_error(firewall.str().c_str()); \
-    } while (0)
+        do { \
+            std::ostringstream firewall; \
+            firewall << pythia::journal::at(__HERE__) \
+                     << "Component '"<<PyreComponent::getIdentifier()<<"': " \
+                     << msg; \
+            throw std::logic_error(firewall.str().c_str()); \
+        } while (0)
 
 #define PYLITH_JOURNAL_DEBUG(msg) \
-    do { \
-        pythia::journal::debug_t debug(GenericComponent::getName()); \
-        debug << pythia::journal::at(__HERE__) \
-              << msg << pythia::journal::endl; \
-    } while (0)
+        do { \
+            pythia::journal::debug_t debug(GenericComponent::getName()); \
+            debug << pythia::journal::at(__HERE__) \
+                  << msg << pythia::journal::endl; \
+        } while (0)
 
 #define PYLITH_JOURNAL_INFO_ROOT(msg) \
-    do { \
-        if (pylith::utils::MPI::isRoot()) { \
-            pythia::journal::info_t info(GenericComponent::getName()); \
-            info << pythia::journal::at(__HERE__) \
-                 << msg << pythia::journal::endl; } \
-    } while (0)
+        do { \
+            if (pylith::utils::MPI::isRoot()) { \
+                pythia::journal::info_t info(GenericComponent::getName()); \
+                info << pythia::journal::at(__HERE__) \
+                     << msg << pythia::journal::endl; } \
+        } while (0)
 
 #define PYLITH_JOURNAL_INFO(msg) \
-    do { \
-        pythia::journal::info_t info(GenericComponent::getName()); \
-        info << pythia::journal::at(__HERE__) \
-             << msg << pythia::journal::endl; \
-    } while (0)
+        do { \
+            pythia::journal::info_t info(GenericComponent::getName()); \
+            info << pythia::journal::at(__HERE__) \
+                 << msg << pythia::journal::endl; \
+        } while (0)
 
 #define PYLITH_JOURNAL_WARNING(msg) \
-    do { \
-        pythia::journal::warning_t warning(GenericComponent::getName()); \
-        warning << pythia::journal::at(__HERE__) \
-                << msg << pythia::journal::endl; \
-    } while (0)
+        do { \
+            pythia::journal::warning_t warning(GenericComponent::getName()); \
+            warning << pythia::journal::at(__HERE__) \
+                    << msg << pythia::journal::endl; \
+        } while (0)
 
 #define PYLITH_JOURNAL_ERROR(msg) \
-    do { \
-        pythia::journal::error_t error(GenericComponent::getName()); \
-        error << pythia::journal::at(__HERE__) \
-              << msg << pythia::journal::endl; \
-    } while (0)
+        do { \
+            pythia::journal::error_t error(GenericComponent::getName()); \
+            error << pythia::journal::at(__HERE__) \
+                  << msg << pythia::journal::endl; \
+        } while (0)
 
 #define PYLITH_JOURNAL_LOGICERROR(msg) \
-    do { \
-        std::ostringstream firewall; \
-        firewall << pythia::journal::at(__HERE__) \
-                 << msg; \
-        throw std::logic_error(firewall.str().c_str()); \
-    } while (0)
+        do { \
+            std::ostringstream firewall; \
+            firewall << pythia::journal::at(__HERE__) \
+                     << msg; \
+            throw std::logic_error(firewall.str().c_str()); \
+        } while (0)
 
 #endif // pylith_utils_journals_hh
 

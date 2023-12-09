@@ -1,20 +1,12 @@
-// -*- C++ -*-
+// =================================================================================================
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// ======================================================================
+// Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+// All rights reserved.
 //
-// Brad T. Aagaard, U.S. Geological Survey
-// Charles A. Williams, GNS Science
-// Matthew G. Knepley, University at Buffalo
-//
-// This code was developed as part of the Computational Infrastructure
-// for Geodynamics (http://geodynamics.org).
-//
-// Copyright (c) 2010-2022 University of California, Davis
-//
-// See LICENSE.md for license information.
-//
-// ======================================================================
-//
+// See https://mit-license.org/ and LICENSE.md and for license information.
+// =================================================================================================
 
 /* Mesh: meshTri3.txt
  *
@@ -45,35 +37,34 @@ const int pylith::bc::DirichletDataTri3::_constrainedPoints[] = { 1, 3 };
 const PylithScalar pylith::bc::DirichletDataTri3::_tRef = 0.7;
 const PylithScalar pylith::bc::DirichletDataTri3::_valueRate = -0.2;
 const PylithScalar pylith::bc::DirichletDataTri3::_valuesInitial[] =
-  { 0.3, 0.7 };
+{ 0.3, 0.7 };
 
-const char* pylith::bc::DirichletDataTri3::_meshFilename = 
-  "data/tri3.mesh";
+const char* pylith::bc::DirichletDataTri3::_meshFilename =
+    "data/tri3.mesh";
 const char* pylith::bc::DirichletDataTri3::_dbFilename =
-  "data/tri3_disp.spatialdb";
+    "data/tri3_disp.spatialdb";
 
-pylith::bc::DirichletDataTri3::DirichletDataTri3(void)
-{ // constructor
-  id = _id;
-  label = const_cast<char*>(_label);
+pylith::bc::DirichletDataTri3::DirichletDataTri3(void) { // constructor
+    id = _id;
+    label = const_cast<char*>(_label);
 
-  numDOF = _numDOF;
-  numFixedDOF = _numFixedDOF;
-  fixedDOF = const_cast<int*>(_fixedDOF);
+    numDOF = _numDOF;
+    numFixedDOF = _numFixedDOF;
+    fixedDOF = const_cast<int*>(_fixedDOF);
 
-  numConstrainedPts = _numConstrainedPts;
-  constrainedPoints = const_cast<int*>(_constrainedPoints);
+    numConstrainedPts = _numConstrainedPts;
+    constrainedPoints = const_cast<int*>(_constrainedPoints);
 
-  tRef = _tRef;
-  valueRate = _valueRate;
-  valuesInitial = const_cast<PylithScalar*>(_valuesInitial);
+    tRef = _tRef;
+    valueRate = _valueRate;
+    valuesInitial = const_cast<PylithScalar*>(_valuesInitial);
 
-  meshFilename = const_cast<char*>(_meshFilename);
-  dbFilename = const_cast<char*>(_dbFilename);
+    meshFilename = const_cast<char*>(_meshFilename);
+    dbFilename = const_cast<char*>(_dbFilename);
 } // constructor
 
-pylith::bc::DirichletDataTri3::~DirichletDataTri3(void)
-{}
+
+pylith::bc::DirichletDataTri3::~DirichletDataTri3(void) {}
 
 
 // End of file

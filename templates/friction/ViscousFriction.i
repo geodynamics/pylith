@@ -1,19 +1,12 @@
-// -*- C++ -*-
+// =================================================================================================
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// ----------------------------------------------------------------------
+// Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+// All rights reserved.
 //
-// Brad T. Aagaard, U.S. Geological Survey
-// Charles A. Williams, GNS Science
-// Matthew G. Knepley, University at Buffalo
-//
-// This code was developed as part of the Computational Infrastructure
-// for Geodynamics (http://geodynamics.org).
-//
-// Copyright (c) 2010-2021 University of California, Davis
-//
-// See LICENSE.md for license information.
-//
-// ----------------------------------------------------------------------
+// See https://mit-license.org/ and LICENSE.md and for license information.
+// =================================================================================================
 //
 
 // SWIG interface to C++ ViscousFriction object.
@@ -29,93 +22,91 @@
  */
 
 namespace contrib {
-  namespace friction {
+    namespace friction {
+        class ViscousFriction: public pylith::friction::FrictionModel
+        { // class ViscousFriction
+          // PUBLIC METHODS /////////////////////////////////////////////////
+public:
 
-    class ViscousFriction : public pylith::friction::FrictionModel
-    { // class ViscousFriction
+            /// Default constructor.
+            ViscousFriction(void);
 
-      // PUBLIC METHODS /////////////////////////////////////////////////
-    public :
+            /// Destructor.
+            ~ViscousFriction(void);
 
-      /// Default constructor.
-      ViscousFriction(void);
+            // PROTECTED METHODS //////////////////////////////////////////////
+protected:
 
-      /// Destructor.
-      ~ViscousFriction(void);
+            /** Compute properties from values in spatial database.
+             *
+             * @param propValues Array of property values.
+             * @param dbValues Array of database values.
+             */
+            void _dbToProperties(PylithScalar* const propValues,
+                                 const scalar_array& dbValues) const;
 
-      // PROTECTED METHODS //////////////////////////////////////////////
-    protected :
+            /** Nondimensionalize properties.
+             *
+             * @param values Array of property values.
+             * @param nvalues Number of values.
+             */
+            void _nondimProperties(PylithScalar* const values,
+                                   const int nvalues) const;
 
-      /** Compute properties from values in spatial database.
-       *
-       * @param propValues Array of property values.
-       * @param dbValues Array of database values.
-       */
-      void _dbToProperties(PylithScalar* const propValues,
-			   const scalar_array& dbValues) const;
+            /** Dimensionalize properties.
+             *
+             * @param values Array of property values.
+             * @param nvalues Number of values.
+             */
+            void _dimProperties(PylithScalar* const values,
+                                const int nvalues) const;
 
-      /** Nondimensionalize properties.
-       *
-       * @param values Array of property values.
-       * @param nvalues Number of values.
-       */
-      void _nondimProperties(PylithScalar* const values,
-			     const int nvalues) const;
+            /** Compute friction from properties and state variables.
+             *
+             * @param t Time in simulation.
+             * @param slip Current slip at location.
+             * @param slipRate Current slip rate at location.
+             * @param normalTraction Normal traction at location.
+             * @param properties Properties at location.
+             * @param numProperties Number of properties.
+             * @param stateVars State variables at location.
+             * @param numStateVars Number of state variables.
+             */
+            PylithScalar _calcFriction(const PylithScalar t,
+                                       const PylithScalar slip,
+                                       const PylithScalar slipRate,
+                                       const PylithScalar normalTraction,
+                                       const PylithScalar* properties,
+                                       const int numProperties,
+                                       const PylithScalar* stateVars,
+                                       const int numStateVars);
 
-      /** Dimensionalize properties.
-       *
-       * @param values Array of property values.
-       * @param nvalues Number of values.
-       */
-      void _dimProperties(PylithScalar* const values,
-			  const int nvalues) const;
+            /** Compute derivative of friction with slip from properties and
+             * state variables.
+             *
+             * @param t Time in simulation.
+             * @param slip Current slip at location.
+             * @param slipRate Current slip rate at location.
+             * @param normalTraction Normal traction at location.
+             * @param properties Properties at location.
+             * @param numProperties Number of properties.
+             * @param stateVars State variables at location.
+             * @param numStateVars Number of state variables.
+             *
+             * @returns Derivative of friction (magnitude of shear traction) at vertex.
+             */
+            PylithScalar _calcFrictionDeriv(const PylithScalar t,
+                                            const PylithScalar slip,
+                                            const PylithScalar slipRate,
+                                            const PylithScalar normalTraction,
+                                            const PylithScalar* properties,
+                                            const int numProperties,
+                                            const PylithScalar* stateVars,
+                                            const int numStateVars);
 
-      /** Compute friction from properties and state variables.
-       *
-       * @param t Time in simulation.
-       * @param slip Current slip at location.
-       * @param slipRate Current slip rate at location.
-       * @param normalTraction Normal traction at location.
-       * @param properties Properties at location.
-       * @param numProperties Number of properties.
-       * @param stateVars State variables at location.
-       * @param numStateVars Number of state variables.
-       */
-      PylithScalar _calcFriction(const PylithScalar t,
-				 const PylithScalar slip,
-				 const PylithScalar slipRate,
-				 const PylithScalar normalTraction,
-				 const PylithScalar* properties,
-				 const int numProperties,
-				 const PylithScalar* stateVars,
-				 const int numStateVars);
+        }; // class ViscousFriction
 
-      /** Compute derivative of friction with slip from properties and
-       * state variables.
-       *
-       * @param t Time in simulation.
-       * @param slip Current slip at location.
-       * @param slipRate Current slip rate at location.
-       * @param normalTraction Normal traction at location.
-       * @param properties Properties at location.
-       * @param numProperties Number of properties.
-       * @param stateVars State variables at location.
-       * @param numStateVars Number of state variables.
-       *
-       * @returns Derivative of friction (magnitude of shear traction) at vertex.
-       */
-      PylithScalar _calcFrictionDeriv(const PylithScalar t,
-				      const PylithScalar slip,
-				      const PylithScalar slipRate,
-				      const PylithScalar normalTraction,
-				      const PylithScalar* properties,
-				      const int numProperties,
-				      const PylithScalar* stateVars,
-				      const int numStateVars);
-    }; // class ViscousFriction
-
-  } // friction
+    } // friction
 } // pylith
 
-
-// End of file 
+// End of file

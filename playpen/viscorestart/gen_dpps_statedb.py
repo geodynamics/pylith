@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env nemesis
 """
 This script creates a spatial database for the initial stress and state
 variables for a Drucker-Prager plane strain elastoplastic material.

@@ -137,21 +137,15 @@ The following code excerpt demonstrates the conventions we use in formatting hea
 ---
 caption: Sample C++ declaration (header) file.
 ---
-// ======================================================================
+// =================================================================================================
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Brad T. Aagaard, U.S. Geological Survey
-// Charles A. Williams, GNS Science
-// Matthew G. Knepley, The State University of New York at Buffalo
+// Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+// All rights reserved.
 //
-// This code was developed as part of the Computational Infrastructure
-// for Geodynamics (http://geodynamics.org).
-//
-// Copyright (c) 2010-2018 University of California, Davis
-//
-// See LICENSE.md for license information.
-//
-// ======================================================================
-//
+// See https://mit-license.org/ and LICENSE.md and for license information. 
+// =================================================================================================
 
 /* ANNOTATION: Next list the filename with the relative path of the file
  * along with a brief description.
@@ -403,21 +397,15 @@ We recommend using a static data member for the name with the lowercase name mat
 ---
 caption: Sample C++ definition (implementation) file.
 ---
-// ======================================================================
+// =================================================================================================
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Brad T. Aagaard, U.S. Geological Survey
-// Charles A. Williams, GNS Science
-// Matthew G. Knepley, The State University of New York at Buffalo
+// Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+// All rights reserved.
 //
-// This code was developed as part of the Computational Infrastructure
-// for Geodynamics (http://geodynamics.org).
-//
-// Copyright (c) 2010-2015 University of California, Davis
-//
-// See LICENSE.md for license information.
-//
-// ======================================================================
-//
+// See https://mit-license.org/ and LICENSE.md and for license information. 
+// =================================================================================================
 
 /* ANNOTATION: Order of including header files is:
  * 1. portinfo: (stuff from configure)
@@ -663,20 +651,15 @@ pylith::problems::Problem::computeRHSResidual(PetscVec residualVec,
 ---
 caption: Sample Python source code.
 ---
-# ----------------------------------------------------------------------
+# =================================================================================================
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Brad T. Aagaard, U.S. Geological Survey
-# Charles A. Williams, GNS Science
-# Matthew G. Knepley, The State University of New York at Buffalo
+# Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+# All rights reserved.
 #
-# This code was developed as part of the Computational Infrastructure
-# for Geodynamics (http://geodynamics.org).
-#
-# Copyright (c) 2010-2015 University of California, Davis
-#
-# See LICENSE.md for license information.
-#
-# ----------------------------------------------------------------------
+# See https://mit-license.org/ and LICENSE.md and for license information. 
+# =================================================================================================
 #
 # ANNOTATION: Next list the filename with the relative path of the file along with a
 # brief description.

@@ -1,8 +1,5 @@
-// -*- C++ -*- (tell Emacs to use C++ mode for syntax highlighting)
-//
 // This spatial database specifies the distribution of material
 // properties. In this case, the material properties are uniform.
-//
 #SPATIAL.ascii 1
 SimpleDB {
   num-values = 3 // number of material property values

@@ -1,20 +1,12 @@
-// -*- C++ -*-
+// =================================================================================================
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// ----------------------------------------------------------------------
+// Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+// All rights reserved.
 //
-// Brad T. Aagaard, U.S. Geological Survey
-// Charles A. Williams, GNS Science
-// Matthew G. Knepley, University at Buffalo
-//
-// This code was developed as part of the Computational Infrastructure
-// for Geodynamics (http://geodynamics.org).
-//
-// Copyright (c) 2010-2021 University of California, Davis
-//
-// See LICENSE.md for license information.
-//
-// ----------------------------------------------------------------------
-//
+// See https://mit-license.org/ and LICENSE.md and for license information.
+// =================================================================================================
 
 #include <portinfo>
 
@@ -37,95 +29,93 @@
 
 int
 main(int argc,
-     char** argv)
-{ // main
-  try {
-    // Initialize PETSc
-    PetscErrorCode err = PetscInitialize(&argc, &argv, NULL, NULL);
-    CHKERRQ(err);
-    
-    // Initialize Python
-    Py_Initialize();
+     char** argv) { // main
+    try {
+        // Initialize PETSc
+        PetscErrorCode err = PetscInitialize(&argc, &argv, NULL, NULL);
+        CHKERRQ(err);
 
-    const char* filenameGmv = "strikeslip_tet4_1000m.gmv";
-    const char* filenamePset = "strikeslip_tet4_1000m.pset";
+        // Initialize Python
+        Py_Initialize();
 
-    pylith::meshio::MeshIOLagrit iohandler;
-    iohandler.filenameGmv(filenameGmv);
-    iohandler.filenamePset(filenamePset);
-    ALE::Obj<pylith::Mesh> mesh;
-    iohandler.read(&mesh);
-    spatialdata::geocoords::CSCart cs;
-    cs.initialize();
+        const char* filenameGmv = "strikeslip_tet4_1000m.gmv";
+        const char* filenamePset = "strikeslip_tet4_1000m.pset";
 
+        pylith::meshio::MeshIOLagrit iohandler;
+        iohandler.filenameGmv(filenameGmv);
+        iohandler.filenamePset(filenamePset);
+        ALE::Obj<pylith::Mesh> mesh;
+        iohandler.read(&mesh);
+        spatialdata::geocoords::CSCart cs;
+        cs.initialize();
 
-    pylith::feassemble::Quadrature3D quadrature;
-    const int cellDim = 3;
-    const int numCorners = 4;
-    const int numQuadPts = 1;
-    const int spaceDim = 3;
-    const double verticesRef[] = {
-      -1.0, -1.0, -1.0,
-       1.0, -1.0, -1.0,
-      -1.0,  1.0, -1.0,
-      -1.0, -1.0,  1.0
-    };
-    const double basis[] = { 0.25, 0.25, 0.25, 0.25 };
-    const double basisDeriv[] = {
-      -0.5, -0.5, -0.5,
-       0.5,  0.0,  0.0,
-       0.0,  0.5,  0.0,
-       0.0,  0.0,  0.5
-    };
-    const double quadPtsRef[] = { -0.5, -0.5, -0.5 };
-    const double quadWts[] = { 1.33333333333  };
-    quadrature.initialize(verticesRef, basis, basisDeriv, quadPtsRef, quadWts,
-			  cellDim, numCorners, numQuadPts, spaceDim);
+        pylith::feassemble::Quadrature3D quadrature;
+        const int cellDim = 3;
+        const int numCorners = 4;
+        const int numQuadPts = 1;
+        const int spaceDim = 3;
+        const double verticesRef[] = {
+            -1.0, -1.0, -1.0,
+            1.0, -1.0, -1.0,
+            -1.0,  1.0, -1.0,
+            -1.0, -1.0,  1.0
+        };
+        const double basis[] = { 0.25, 0.25, 0.25, 0.25 };
+        const double basisDeriv[] = {
+            -0.5, -0.5, -0.5,
+            0.5,  0.0,  0.0,
+            0.0,  0.5,  0.0,
+            0.0,  0.0,  0.5
+        };
+        const double quadPtsRef[] = { -0.5, -0.5, -0.5 };
+        const double quadWts[] = { 1.33333333333  };
+        quadrature.initialize(verticesRef, basis, basisDeriv, quadPtsRef, quadWts,
+                              cellDim, numCorners, numQuadPts, spaceDim);
 
-    pylith::materials::ElasticIsotropic3D materialA;
-    pylith::materials::ElasticIsotropic3D materialB;
-    pylith::materials::ElasticIsotropic3D materialC;
-    pylith::materials::ElasticIsotropic3D materialD;
+        pylith::materials::ElasticIsotropic3D materialA;
+        pylith::materials::ElasticIsotropic3D materialB;
+        pylith::materials::ElasticIsotropic3D materialC;
+        pylith::materials::ElasticIsotropic3D materialD;
 
-    spatialdata::spatialdb::SimpleDB db;
-    spatialdata::spatialdb::SimpleIOAscii dbiohandler;
-    dbiohandler.filename("mat_elastic.spatialdb");
-    db.ioHandler(&dbiohandler);
-    db.queryType(spatialdata::spatialdb::SimpleDB::NEAREST);
-      
-    materialA.db(&db);
-    materialA.id(1);
-    materialA.label("elastic xpos");
-    materialA.initialize(mesh, &cs, &quadrature);
+        spatialdata::spatialdb::SimpleDB db;
+        spatialdata::spatialdb::SimpleIOAscii dbiohandler;
+        dbiohandler.filename("mat_elastic.spatialdb");
+        db.ioHandler(&dbiohandler);
+        db.queryType(spatialdata::spatialdb::SimpleDB::NEAREST);
 
-    materialB.db(&db);
-    materialB.id(2);
-    materialB.label("elastic xpos");
-    materialB.initialize(mesh, &cs, &quadrature);
+        materialA.db(&db);
+        materialA.id(1);
+        materialA.label("elastic xpos");
+        materialA.initialize(mesh, &cs, &quadrature);
 
-    materialC.db(&db);
-    materialC.id(3);
-    materialC.label("elastic xpos");
-    materialC.initialize(mesh, &cs, &quadrature);
+        materialB.db(&db);
+        materialB.id(2);
+        materialB.label("elastic xpos");
+        materialB.initialize(mesh, &cs, &quadrature);
 
-    materialD.db(&db);
-    materialD.id(4);
-    materialD.label("elastic xpos");
-    materialD.initialize(mesh, &cs, &quadrature);
+        materialC.db(&db);
+        materialC.id(3);
+        materialC.label("elastic xpos");
+        materialC.initialize(mesh, &cs, &quadrature);
 
-    // Finalize Python
-    Py_Finalize();
+        materialD.db(&db);
+        materialD.id(4);
+        materialD.label("elastic xpos");
+        materialD.initialize(mesh, &cs, &quadrature);
 
-    // Finalize PETSc
-    err = PetscFinalize();
-    CHKERRQ(err);
-  } catch (const std::exception& err) {
-    std::cerr << err.what() << std::endl;
-  } catch (...) {
-    abort();
-  } // catch
-  
-  return 0;
+        // Finalize Python
+        Py_Finalize();
+
+        // Finalize PETSc
+        err = PetscFinalize();
+        CHKERRQ(err);
+    } catch (const std::exception& err) {
+        std::cerr << err.what() << std::endl;
+    } catch (...) {
+        abort();
+    } // catch
+
+    return 0;
 } // main
 
 

@@ -1,10 +1,7 @@
-// -*- C++ -*- (tell Emacs to use C++ mode for syntax highlighting)
-//
 // This spatial database specifies the distribution of the slip
 // initiation time over the fault surface for the kinematic fault
 // rupture. We specify a slip time of 0.0 s so that the slip occurs at
 // the origin time of the earthquake rupture.
-//
 #SPATIAL.ascii 1
 SimpleDB {
   num-values = 1

@@ -26,7 +26,7 @@ class Dem2Lines(Application):
 
         # @class Inventory
         # Python object for managing Dem2Lines facilities and properties.
-        ##
+        #
         # \b Properties
         # @li \b input_dem Input DEM file (ASCII).
         # @li \b vtk_output_file Filename of VTK output file.

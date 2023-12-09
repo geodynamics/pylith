@@ -1,19 +1,13 @@
-// -*- C++ -*-
+// =================================================================================================
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// ======================================================================
+// Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+// All rights reserved.
 //
-// Brad T. Aagaard, U.S. Geological Survey
-// Charles A. Williams, GNS Science
-// Matthew G. Knepley, University at Buffalo
-//
-// This code was developed as part of the Computational Infrastructure
-// for Geodynamics (http://geodynamics.org).
-//
-// Copyright (c) 2010-2022 University of California, Davis
-//
-// See LICENSE.md for license information.
-//
-// ======================================================================
+// See https://mit-license.org/ and LICENSE.md and for license information.
+// =================================================================================================
+
 //
 
 #if !defined(pylith_topology_stratum_hh)
@@ -26,59 +20,58 @@
 // Default constructor.
 inline
 pylith::topology::Stratum::Stratum(const PetscDM dmMesh,
-				   const StratumEnum stype,
-				   const int level)
-{ // constructor
-  assert(dmMesh);
-  PetscErrorCode err = 0;
-  switch(stype) {
-  case HEIGHT:
-    err = DMPlexGetHeightStratum(dmMesh, level, &_begin, &_end);PYLITH_CHECK_ERROR(err);
-    break;
-  case DEPTH:
-    err = DMPlexGetDepthStratum(dmMesh, level, &_begin, &_end);PYLITH_CHECK_ERROR(err);
-    break;
-  default:
-    assert(false);
-    throw std::logic_error("Unknown case in Stratum constructor.");
-  } // switch
-  assert(_end >= _begin);
+                                   const StratumEnum stype,
+                                   const int level) { // constructor
+    assert(dmMesh);
+    PetscErrorCode err = 0;
+    switch (stype) {
+    case HEIGHT:
+        err = DMPlexGetHeightStratum(dmMesh, level, &_begin, &_end);PYLITH_CHECK_ERROR(err);
+        break;
+    case DEPTH:
+        err = DMPlexGetDepthStratum(dmMesh, level, &_begin, &_end);PYLITH_CHECK_ERROR(err);
+        break;
+    default:
+        assert(false);
+        throw std::logic_error("Unknown case in Stratum constructor.");
+    } // switch
+    assert(_end >= _begin);
 } // constructor
+
 
 // ----------------------------------------------------------------------
 // Default destructor
 inline
-pylith::topology::Stratum::~Stratum(void)
-{ // destructor
-  _begin = 0;
-  _end = 0;
+pylith::topology::Stratum::~Stratum(void) { // destructor
+    _begin = 0;
+    _end = 0;
 } // destructor
+
 
 // ----------------------------------------------------------------------
 // Get starting point.
 inline
 PetscInt
-pylith::topology::Stratum::begin(void) const
-{ // begin
-  return _begin;
+pylith::topology::Stratum::begin(void) const { // begin
+    return _begin;
 } // begin
+
 
 // ----------------------------------------------------------------------
 // Get ending point.
 inline
 PetscInt
-pylith::topology::Stratum::end(void) const
-{ // end
-  return _end;
+pylith::topology::Stratum::end(void) const { // end
+    return _end;
 } // end
+
 
 // ----------------------------------------------------------------------
 // Get number of points in stratum.
 inline
 PetscInt
-pylith::topology::Stratum::size(void) const
-{ // size
-  return _end-_begin;
+pylith::topology::Stratum::size(void) const { // size
+    return _end-_begin;
 } // size
 
 
@@ -86,88 +79,86 @@ pylith::topology::Stratum::size(void) const
 // Default constructor.
 inline
 pylith::topology::StratumIS::StratumIS(const PetscDM dmMesh,
-				       const char* label,
-				       const int id,
-				       const bool includeOnlyCells) :
-  _indexSet(0),
-  _size(0),
-  _points(0)
-{ // constructor
-  assert(dmMesh);
-  PetscErrorCode err;
-  if (!includeOnlyCells) {
-    err = DMGetStratumIS(dmMesh, label, id, &_indexSet);PYLITH_CHECK_ERROR(err);assert(_indexSet);
-  } else {
-    PetscIS pointsIS = NULL;
-    PetscInt numPoints = 0;
-    const PetscInt* points = NULL;
-    err = DMGetStratumIS(dmMesh, label, id, &pointsIS);PYLITH_CHECK_ERROR(err);
-    if (pointsIS) {
-      err = ISGetSize(pointsIS, &numPoints);PYLITH_CHECK_ERROR(err);assert(numPoints >= 0);
-      err = ISGetIndices(pointsIS, &points);PYLITH_CHECK_ERROR(err);assert(!numPoints || points);
-      PetscInt cStart, cEnd;
-      err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
-      PetscInt* cells = (numPoints > 0) ? new PetscInt[numPoints] : 0;
-      PetscInt count = 0;
-      for (PetscInt i=0; i < numPoints; ++i) {
-	if (points[i] >= cStart && points[i] < cEnd) {
-	  cells[count++] = points[i];
-	} // if
-      } // for
-      err = ISCreateGeneral(PETSC_COMM_SELF, count, cells, PETSC_COPY_VALUES, &_indexSet);PYLITH_CHECK_ERROR(err);
-      delete[] cells; cells = 0;
-      err = ISRestoreIndices(pointsIS, &points);PYLITH_CHECK_ERROR(err);_points=NULL;
-      err = ISDestroy(&pointsIS);PYLITH_CHECK_ERROR(err);assert(!pointsIS);
+                                       const char* label,
+                                       const int id,
+                                       const bool includeOnlyCells) :
+    _indexSet(0),
+    _size(0),
+    _points(0) { // constructor
+    assert(dmMesh);
+    PetscErrorCode err;
+    if (!includeOnlyCells) {
+        err = DMGetStratumIS(dmMesh, label, id, &_indexSet);PYLITH_CHECK_ERROR(err);assert(_indexSet);
+    } else {
+        PetscIS pointsIS = NULL;
+        PetscInt numPoints = 0;
+        const PetscInt* points = NULL;
+        err = DMGetStratumIS(dmMesh, label, id, &pointsIS);PYLITH_CHECK_ERROR(err);
+        if (pointsIS) {
+            err = ISGetSize(pointsIS, &numPoints);PYLITH_CHECK_ERROR(err);assert(numPoints >= 0);
+            err = ISGetIndices(pointsIS, &points);PYLITH_CHECK_ERROR(err);assert(!numPoints || points);
+            PetscInt cStart, cEnd;
+            err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
+            PetscInt* cells = (numPoints > 0) ? new PetscInt[numPoints] : 0;
+            PetscInt count = 0;
+            for (PetscInt i = 0; i < numPoints; ++i) {
+                if ((points[i] >= cStart) && (points[i] < cEnd) ) {
+                    cells[count++] = points[i];
+                } // if
+            } // for
+            err = ISCreateGeneral(PETSC_COMM_SELF, count, cells, PETSC_COPY_VALUES, &_indexSet);PYLITH_CHECK_ERROR(err);
+            delete[] cells;cells = 0;
+            err = ISRestoreIndices(pointsIS, &points);PYLITH_CHECK_ERROR(err);_points = NULL;
+            err = ISDestroy(&pointsIS);PYLITH_CHECK_ERROR(err);assert(!pointsIS);
+        } // if
+    } // if/else
+
+    if (_indexSet) {
+        err = ISGetSize(_indexSet, &_size);PYLITH_CHECK_ERROR(err);assert(_size >= 0);
+        err = ISGetIndices(_indexSet, &_points);PYLITH_CHECK_ERROR(err);assert(!_size || _points);
     } // if
-  } // if/else
-    
-  if (_indexSet) {
-    err = ISGetSize(_indexSet, &_size);PYLITH_CHECK_ERROR(err);assert(_size >= 0);
-    err = ISGetIndices(_indexSet, &_points);PYLITH_CHECK_ERROR(err);assert(!_size || _points);
-  } // if
 } // constructor
+
 
 // ----------------------------------------------------------------------
 // Default destructor.
 inline
-pylith::topology::StratumIS::~StratumIS(void)
-{ // destructor
-  deallocate();
+pylith::topology::StratumIS::~StratumIS(void) { // destructor
+    deallocate();
 } // destructor
+
 
 // ----------------------------------------------------------------------
 // Deallocate PETSc data structures.
 inline
 void
-pylith::topology::StratumIS::deallocate(void)
-{ // deallocate
-  PetscErrorCode err = 0;
-  if (_indexSet) {
-    err = ISRestoreIndices(_indexSet, &_points);PYLITH_CHECK_ERROR(err);_points=NULL;
-    err = ISDestroy(&_indexSet);PYLITH_CHECK_ERROR(err);assert(!_indexSet);
-  } // if
+pylith::topology::StratumIS::deallocate(void) { // deallocate
+    PetscErrorCode err = 0;
+    if (_indexSet) {
+        err = ISRestoreIndices(_indexSet, &_points);PYLITH_CHECK_ERROR(err);_points = NULL;
+        err = ISDestroy(&_indexSet);PYLITH_CHECK_ERROR(err);assert(!_indexSet);
+    } // if
 } // deallocate
+
 
 // ----------------------------------------------------------------------
 // Get array of points.
 inline
 const PetscInt*
-pylith::topology::StratumIS::points(void) const
-{ // points
-  return _points;
+pylith::topology::StratumIS::points(void) const { // points
+    return _points;
 } // points
+
 
 // ----------------------------------------------------------------------
 // Get number of points in index set.
 inline
 PetscInt
-pylith::topology::StratumIS::size(void) const
-{ // size
-  return _size;
+pylith::topology::StratumIS::size(void) const { // size
+    return _size;
 } // size
 
 
 #endif
-
 
 // End of file

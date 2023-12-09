@@ -1,20 +1,12 @@
-// -*- C++ -*-
+// =================================================================================================
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// ----------------------------------------------------------------------
+// Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+// All rights reserved.
 //
-// Brad T. Aagaard, U.S. Geological Survey
-// Charles A. Williams, GNS Science
-// Matthew G. Knepley, University at Buffalo
-//
-// This code was developed as part of the Computational Infrastructure
-// for Geodynamics (http://geodynamics.org).
-//
-// Copyright (c) 2010-2022 University of California, Davis
-//
-// See LICENSE.md for license information.
-//
-// ----------------------------------------------------------------------
-//
+// See https://mit-license.org/ and LICENSE.md and for license information.
+// =================================================================================================
 
 /**
  * @file tests/libtests/bc/TestNeumannTimeDependent.hh
@@ -38,7 +30,6 @@
 #include "spatialdata/geocoords/geocoordsfwd.hh" // HOLDSA CoordSys
 #include "spatialdata/units/unitsfwd.hh" // HOLDSA Nondimensional
 
-
 /// Namespace for pylith package
 namespace pylith {
     namespace bc {
@@ -50,7 +41,6 @@ namespace pylith {
 
 /// C++ unit testing for DirichletBC.
 class pylith::bc::TestNeumannTimeDependent : public CppUnit::TestFixture {
-
     // CPPUNIT TEST SUITE /////////////////////////////////////////////////
     CPPUNIT_TEST_SUITE(TestNeumannTimeDependent);
 
@@ -128,10 +118,8 @@ private:
 
 }; // class TestNeumannTimeDependent
 
-
 // ======================================================================
 class pylith::bc::TestNeumannTimeDependent_Data {
-
     // PUBLIC METHODS ///////////////////////////////////////////////////////
 public:
 
@@ -164,7 +152,6 @@ public:
     pylith::topology::Field::Discretization* auxDiscretizations; ///< Discretizations for auxiliary fields.
     spatialdata::spatialdb::UserFunctionDB* auxDB; ///< Spatial database with auxiliary field.
 
-
     PylithReal t; ///< Time associated with setting solution.
     int solnNumSubfields; ///< Number of solution subfields.
     pylith::topology::FieldBase::Discretization* solnDiscretizations; ///< Discretizations for solution fields.
@@ -172,8 +159,6 @@ public:
 
 }; // class TestNeumannTimeDependent_Data
 
-
 #endif // pylith_bc_neumanntimedependent_hh
-
 
 // End of file

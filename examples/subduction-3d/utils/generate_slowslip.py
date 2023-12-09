@@ -19,7 +19,7 @@ class GenerateSlowslip(Application):
 
     import pythia.pyre.inventory
     # Python object for managing GenerateSlowslip facilities and properties.
-    ##
+    #
     # \b Properties
     # @li \b rake Rake of fault slip (degrees).
     # @li \b slip_center (lon,lat) coordinates of slip center.
@@ -35,7 +35,7 @@ class GenerateSlowslip(Application):
     # @li \b grid_incr Grid increment (degrees) for spatial database.
     # @li \b time_db_filename Name of temporal DB output file.
     # @li \b database_filename Filename for generated spatial database.
-    ##
+    #
     # \b Facilities
     # @li \b coordsys Coordinate system for output database.
 

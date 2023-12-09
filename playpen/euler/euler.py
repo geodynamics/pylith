@@ -1,21 +1,13 @@
 #!/usr/bin/env nemesis
+# =================================================================================================
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# ----------------------------------------------------------------------
+# Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+# All rights reserved.
 #
-# Brad T. Aagaard, U.S. Geological Survey
-# Charles A. Williams, GNS Science
-# Matthew G. Knepley, University at Buffalo
-#
-# This code was developed as part of the Computational Infrastructure
-# for Geodynamics (http://geodynamics.org).
-#
-# Copyright (c) 2010-2021 University of California, Davis
-#
-# See LICENSE.md for license information.
-#
-# ----------------------------------------------------------------------
-#
-
+# See https://mit-license.org/ and LICENSE.md and for license information. 
+# =================================================================================================
 # @file euler/euler
 
 # @brief Python application to generate a spatial database based on
@@ -38,7 +30,7 @@ class Euler(Application):
 
         # @class Inventory
         # Python object for managing Euler facilities and properties.
-        ##
+        #
         # \b Properties
         # @li \b data_dim Dimension of data.
         # @li \b bc_type Boundary condition type (dislocation or displacement).
@@ -59,7 +51,7 @@ class Euler(Application):
         # @li \b z_min Minimum z-value for which to apply rotation.
         # @li \b z_max Maximum z-value for which to apply rotation.
         # @li \b default_values Values to use for out-of-range coordinates.
-        ##
+        #
         # \b Facilities
         # @li \b src_coordsys Coordinate system to convert from.
         # @li \b dest_coordsys Coordinate system to convert to.
