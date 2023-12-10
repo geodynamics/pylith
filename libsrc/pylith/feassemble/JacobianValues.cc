@@ -10,7 +10,7 @@
 
 #include <portinfo>
 
-#include "JacobianValues.hh" // implementation of object methods
+#include "pylith/feassemble/JacobianValues.hh" // implementation of object methods
 
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/feassemble/DSLabelAccess.hh" // USES DSLabelAccess

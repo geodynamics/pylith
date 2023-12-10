@@ -9,9 +9,9 @@
  * See https://mit-license.org/ and LICENSE.md and for license information.
  * =================================================================================================
  */
+#pragma once
 
-/** @file libsrc/fekernels/IsotropicLinearGenMaxwell.hh
- *
+/*
  * Kernels for linear Generalized Maxwell viscoelastic 3 Maxwell elements.
  *
  * Solution fields: [disp(dim), ...]
@@ -71,10 +71,7 @@
  * @param[out] f0 [dim].
  */
 
-#if !defined(pylith_fekernels_isotropiclineargenmaxwell_hh)
-#define pylith_fekernels_isotropiclineargenmaxwell_hh
-
-#include "fekernelsfwd.hh" // forward declarations
+#include "pylith/fekernels/fekernelsfwd.hh" // forward declarations
 #include "pylith/fekernels/Elasticity.hh" // USES Elasticity kernels
 #include "pylith/fekernels/IsotropicLinearElasticity.hh" // USES IsotropicLinearElasticity kernels
 #include "pylith/fekernels/IsotropicLinearMaxwell.hh" // USES IsotropicLinearMaxwell kernels
@@ -1639,7 +1636,5 @@ public:
     }
 
 }; // IsotropicLinearGenMaxwell3D
-
-#endif // pylith_fekernels_isotropiclineargenmaxwell_hh
 
 // End of file

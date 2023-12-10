@@ -7,15 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/**
- * @file libsrc/testing/StubMethodTracker.hh
- *
- * @brief C++ implementation to verify which Stub methods are executed in testing.
- */
-
-#if !defined(pylith_testing_stubmethodtracker_hh)
-#define pylith_testing_stubmethodtracker_hh
+#pragma once
 
 #include "pylith/testing/testingfwd.hh" // forward declarations
 
@@ -66,7 +58,5 @@ private:
     static map_type _methodCount; ///< Number of times method was called.
 
 }; // StubMethodTracker
-
-#endif // pylith_testing_stubmethodtrack_hh
 
 // End of file

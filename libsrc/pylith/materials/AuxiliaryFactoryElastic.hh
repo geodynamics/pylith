@@ -7,16 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/** @file libsrc/materials/AuxiliaryFactoryElastic.hh
- *
- * @brief C++ helper class for setting up auxiliary subfields for elastic materials.
- */
-
-#if !defined(pylith_materials_auxiliaryfactoryelastic_hh)
-#define pylith_materials_auxiliaryfactoryelastic_hh
-
-#include "materialsfwd.hh" // forward declarations
+#include "pylith/materials/materialsfwd.hh" // forward declarations
 #include "pylith/materials/AuxiliaryFactoryElasticity.hh" // ISA AuxiliaryFactoryElasticity
 
 class pylith::materials::AuxiliaryFactoryElastic : public pylith::materials::AuxiliaryFactoryElasticity {
@@ -50,7 +43,5 @@ private:
     const AuxiliaryFactoryElastic& operator=(const AuxiliaryFactoryElastic&); ///< Not implemented
 
 }; // class AuxiliaryFactoryElastic
-
-#endif // pylith_materials_auxiliaryfactoryelastic_hh
 
 // End of file

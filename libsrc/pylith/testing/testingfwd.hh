@@ -7,17 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/** @file libsrc/testing/testingfwd.hh
- *
- * @brief Forward declarations for stubs of PyLith objects used in unit testing.
- *
- * Including this header file eliminates the need to use separate
- * forward declarations.
- */
-
-#if !defined(pylith_testing_testingfwd_hh)
-#define pylith_testing_testingfwd_hh
+#pragma once
 
 namespace pylith {
     namespace testing {
@@ -43,7 +33,5 @@ namespace pylith {
     } // problems
 
 } // pylith
-
-#endif // pylith_testing_testingfwd_hh
 
 // End of file

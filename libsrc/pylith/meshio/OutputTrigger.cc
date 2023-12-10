@@ -7,11 +7,11 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
 #include <portinfo>
-#include <stdexcept>
 
-#include "OutputTrigger.hh" // Implementation of class methods
+#include "pylith/meshio/OutputTrigger.hh" // Implementation of class methods
+
+#include <stdexcept>
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Constructor

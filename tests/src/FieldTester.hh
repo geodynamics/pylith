@@ -7,15 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/**
- * @file libsrc/testing/FieldTester.hh
- *
- * @brief General routines for C++ unit tests related to Field.
- */
-
-#if !defined(pylith_testing_fieldtester_hh)
-#define pylith_testing_fieldtester_hh
+#pragma once
 
 #include "pylith/testing/testingfwd.hh" // forward declarations
 
@@ -57,7 +49,5 @@ private:
     const FieldTester& operator=(const FieldTester&); ///< Not implemented.
 
 }; // FieldTester
-
-#endif // pylith_testing_fieldtester_hh
 
 // End of file

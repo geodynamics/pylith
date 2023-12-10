@@ -7,17 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/**
- * @file tests/libtests/meshio/TestExodusII.hh
- *
- * @brief C++ TestExodusII object
- *
- * C++ unit testing for ExodusII.
- */
-
-#if !defined(pylith_meshio_testexodusii_hh)
-#define pylith_meshio_testexodusii_hh
+#pragma once
 
 #include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
@@ -60,7 +50,5 @@ public:
     void testGetVarString(void);
 
 }; // class TestExodusII
-
-#endif // pylith_meshio_testexodusii_hh
 
 // End of file

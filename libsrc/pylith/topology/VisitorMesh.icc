@@ -7,15 +7,10 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-//
-
-#if !defined(pylith_topology_visitormesh_hh)
-#error "VisitorMesh.icc must be included only from VisitorMesh.hh"
-#else
-
-#include "Mesh.hh" // USES Mesh
-#include "Field.hh" // USES Field
+#include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/Field.hh" // USES Field
 
 #include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
 
@@ -338,7 +333,5 @@ pylith::topology::MatVisitorMesh::setClosure(const PetscScalar* valuesCell,
     PetscErrorCode err = DMPlexMatSetClosure(_dm, _localSection, _globalSection, _mat, cell, valuesCell, mode);PYLITH_CHECK_ERROR(err);
 } // setClosure
 
-
-#endif
 
 // End of file

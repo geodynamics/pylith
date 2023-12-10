@@ -7,16 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/** @file libsrc/bc/AuxiliaryFactory.hh
- *
- * @brief C++ helper class for setting up auxiliary subfields.
- */
-
-#if !defined(pylith_feassemble_auxiliaryfactory_hh)
-#define pylith_feassemble_auxiliaryfactory_hh
-
-#include "feassemblefwd.hh" // forward declarations
+#include "pylith/feassemble/feassemblefwd.hh" // forward declarations
 #include "pylith/topology/FieldFactory.hh" // ISA FieldFactory
 
 #include "pylith/topology/FieldBase.hh" // USES FieldBase::Discretization
@@ -98,7 +91,5 @@ private:
     const AuxiliaryFactory& operator=(const AuxiliaryFactory&); ///< Not implemented
 
 }; // class AuxiliaryFactory
-
-#endif // pylith_feassemble_auxiliaryfactory_hh
 
 // End of file

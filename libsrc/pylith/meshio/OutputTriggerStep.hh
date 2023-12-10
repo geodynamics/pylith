@@ -7,17 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/**
- * @file libsrc/meshio/OutputTriggerStep.hh
- *
- * @brief Base decision on whether to write output based on number of steps since more recent write.
- */
-
-#if !defined(pylith_meshio_outputtriggerstep_hh)
-#define pylith_meshio_outputtriggerstep_hh
-
-#include "meshiofwd.hh" // forward declarations
+#include "pylith/meshio/meshiofwd.hh" // forward declarations
 
 #include "pylith/meshio/OutputTrigger.hh" // ISA OutputTrigger
 
@@ -69,7 +61,5 @@ private:
 };
 
 // OutputTriggerStep
-
-#endif // pylith_meshio_outputtriggerstep_hh
 
 // End of file

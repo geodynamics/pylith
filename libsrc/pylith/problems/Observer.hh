@@ -7,17 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/**
- * @file libsrc/problems/Observer.hh
- *
- * @brief Observer of subject.
- */
-
-#if !defined(pylith_problems_observer_hh)
-#define pylith_problems_observer_hh
-
-#include "problemsfwd.hh" // forward declarations
+#include "pylith/problems/problemsfwd.hh" // forward declarations
 
 class pylith::problems::Observer {
     friend class TestObserver; // unit testing
@@ -46,7 +38,5 @@ private:
     const Observer& operator=(const Observer&); ///< Not implemented
 
 }; // Observer
-
-#endif // pylith_problems_observer_hh
 
 // End of file

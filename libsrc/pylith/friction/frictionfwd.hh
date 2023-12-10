@@ -15,9 +15,7 @@
  * Including this header file eliminates the need to use separate
  * forward declarations.
  */
-
-#if !defined(pylith_friction_frictionfwd_hh)
-#define pylith_friction_frictionfwd_hh
+#pragma once
 
 namespace pylith {
     namespace friction {
@@ -32,7 +30,5 @@ namespace pylith {
 
     } // friction
 } // pylith
-
-#endif // pylith_friction_frictionfwd_hh
 
 // End of file

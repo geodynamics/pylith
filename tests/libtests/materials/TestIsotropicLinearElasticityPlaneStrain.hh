@@ -7,17 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/**
- * @file tests/libtests/materials/TestIsotropicLinearElasticityPlaneStrain.hh
- *
- * @brief C++ TestIsotropicLinearElasticityPlaneStrain object
- *
- * C++ unit testing for IsotropicLinearElasticityPlaneStrain.
- */
-
-#if !defined(pylith_materials_testisotropiclinearelasticityplanestrain_hh)
-#define pylith_materials_testisotropiclinearelasticityplanestrain_hh
+#pragma once
 
 #include "TestMaterial.hh" // ISA TestMaterial
 
@@ -106,7 +96,5 @@ public:
     double gravityVector[3]; ///< Array for gravity vector.
 
 };
-
-#endif // pylith_materials_testisotropiclinearelasticityplanestrain_hh
 
 // End of file

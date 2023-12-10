@@ -9,9 +9,9 @@
  * See https://mit-license.org/ and LICENSE.md and for license information.
  * =================================================================================================
  */
+#pragma once
 
-/** @file libsrc/fekernels/Poroelasticity.hh
- *
+/*
  * Solution fields: [disp(dim), pres, vol_strain]
  *
  * Displacement
@@ -42,11 +42,8 @@
  * @param[out] Storage coefficient at constant strain.
  */
 
-#if !defined(pylith_fekernels_poroelasticity_hh)
-#define pylith_fekernels_poroelasticity_hh
-
 // Include directives ---------------------------------------------------
-#include "fekernelsfwd.hh" // forward declarations
+#include "pylith/fekernels/fekernelsfwd.hh" // forward declarations
 
 #include "pylith/fekernels/Elasticity.hh" // USES Elasticity kernels
 
@@ -1288,7 +1285,5 @@ public:
     } // Jg0edotedot
 
 }; // Poroelasticity
-
-#endif // pylith_fekernels_poroelasticity_hh
 
 // End of file

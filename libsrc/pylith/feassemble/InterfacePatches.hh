@@ -7,21 +7,16 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/** @file libsrc/feassemble/InterfacePatches.hh
- *
- * @brief Interface integration patches.
- *
+/*
  * In some cases the weak form involves both integration over the cohesive cell as well as
  * the adjacent faces on the negative and positive sides of the fault. In such cases the pointwise
  * functions depend on the materials, so we split the integration into patches. Each patch
  * corresponds to a pair of materials on the negative and positive sides of the fault.
  */
 
-#if !defined(pylith_feassemble_interfacepatches_hh)
-#define pylith_feassemble_interfacepatches_hh
-
-#include "feassemblefwd.hh" // forward declarations
+#include "pylith/feassemble/feassemblefwd.hh" // forward declarations
 
 #include "pylith/faults/faultsfwd.hh" // USES FaultCohesive
 
@@ -88,7 +83,5 @@ private:
     const InterfacePatches& operator=(const InterfacePatches&); ///< Not implemented
 
 }; // class InterfacePatches
-
-#endif // pylith_feassemble_interfacepatches_hh
 
 // End of file

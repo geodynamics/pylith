@@ -7,12 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-//
-
-#if !defined(pylith_utils_eventlogger_hh)
-#error "EventLogger.icc must only be included from EventLogger.hh"
-#endif
+#pragma once
 
 // Set name of logging class.
 inline

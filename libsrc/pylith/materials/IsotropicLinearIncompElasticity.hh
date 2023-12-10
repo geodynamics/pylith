@@ -7,16 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/** @file libsrc/materials/IsotropicLinearIncompElasticity.hh
- *
- * @brief C++ class for isotropic linear incompressible elasticity.
- */
-
-#if !defined(pylith_materials_isotropiclinearincompelasticity_hh)
-#define pylith_materials_isotropiclinearincompelasticity_hh
-
-#include "materialsfwd.hh" // forward declarations
+#include "pylith/materials/materialsfwd.hh" // forward declarations
 
 #include "pylith/materials/RheologyIncompressibleElasticity.hh" // ISA RheologyIncompressibleElasticity
 
@@ -121,7 +114,5 @@ private:
     const IsotropicLinearIncompElasticity& operator=(const IsotropicLinearIncompElasticity&); ///< Not implemented
 
 }; // class IsotropicLinearIncompElasticity
-
-#endif // pylith_materials_isotropiclinearincompelasticity_hh
 
 // End of file

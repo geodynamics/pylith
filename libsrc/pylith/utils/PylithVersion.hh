@@ -7,18 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/**
- * @file libsrc/utils/PylithVersion.hh
- *
- * @brief C++ object for PyLith version information.
- */
-
-#if !defined(pylith_utils_pylithversion_hh)
-#define pylith_utils_pylithversion_hh
-
-// Include directives ---------------------------------------------------
-#include "utilsfwd.hh" // forward declarations
+#include "pylith/utils/utilsfwd.hh" // forward declarations
 
 // Version ----------------------------------------------------------
 /** @brief C++ object for getting version info.
@@ -102,7 +93,5 @@ private:
     static const char* _gitBranch; ///< GIT branch.
 
 }; // PylithVersion
-
-#endif // pylith_utils_pylithversion_hh
 
 // End of file

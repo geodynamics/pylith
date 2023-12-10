@@ -7,29 +7,15 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/**
- * @file libsrc/topology/FieldBase.hh
- *
- * @brief Basic information related to a vector field over the
- * vertices or cells of a finite-element mesh.
- */
-
-#if !defined(pylith_topology_fieldbase_hh)
-#define pylith_topology_fieldbase_hh
-
-// Include directives ---------------------------------------------------
-#include "topologyfwd.hh" // forward declarations
+#include "pylith/topology/topologyfwd.hh" // forward declarations
 
 #include "pylith/utils/array.hh" // HASA string_vector
 
 #include <string> // USES std::string
 #include <map> // USES std::map
 
-// FieldBase ------------------------------------------------------------
-/** @brief Basic information related to a vector field over the
- * vertices or cells of a finite-element mesh.
- */
 class pylith::topology::FieldBase {
     // PUBLIC ENUMS /////////////////////////////////////////////////////////
 public:
@@ -212,7 +198,5 @@ private:
     const FieldBase& operator=(const FieldBase&); ///< Not implemented
 
 }; // FieldBase
-
-#endif // pylith_topology_fieldbase_hh
 
 // End of file

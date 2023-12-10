@@ -10,7 +10,7 @@
 
 #include <portinfo>
 
-#include "DerivedFactoryElasticity.hh" // implementation of object methods
+#include "pylith/materials/DerivedFactoryElasticity.hh" // implementation of object methods
 
 #include "pylith/topology/Field.hh" // USES Field
 

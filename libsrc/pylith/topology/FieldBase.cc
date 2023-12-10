@@ -10,7 +10,7 @@
 
 #include <portinfo>
 
-#include "FieldBase.hh" // implementation of class methods
+#include "pylith/topology/FieldBase.hh" // implementation of class methods
 #include "pylith/utils/error.hh" // USES std::logic_error
 
 // ----------------------------------------------------------------------

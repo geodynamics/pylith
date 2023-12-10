@@ -7,17 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/**
- * @file tests/libtests/meshio/TestDataWriterMesh.hh
- *
- * @brief C++ TestDataWriterMesh object
- *
- * C++ unit testing for DataWriter<Mesh>.
- */
-
-#if !defined(pylith_meshio_testdatawritermesh_hh)
-#define pylith_meshio_testdatawritermesh_hh
+#pragma once
 
 #include "TestDataWriter.hh" // USES TestDataWriter_Data
 
@@ -88,7 +78,5 @@ protected:
     pylith::topology::Mesh* _mesh; ///< Finite-element mesh.
 
 }; // class TestDataWriterMesh
-
-#endif // pylith_meshio_testdatawritermesh_hh
 
 // End of file

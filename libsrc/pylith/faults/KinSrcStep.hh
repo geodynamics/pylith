@@ -7,16 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/** @file libsrc/faults/KinSrcStep.hh
- *
- * @brief C++ implementation of a step slip time function.
- */
-
-#if !defined(pylith_faults_kinsrcstep_hh)
-#define pylith_faults_kinsrcstep_hh
-
-#include "KinSrc.hh"
+#include "pylith/faults/KinSrc.hh"
 
 /** KinSrcStep
  *
@@ -101,7 +94,5 @@ private:
     const KinSrcStep& operator=(const KinSrcStep&); ///< Not implemented
 
 }; // class KinSrcStep
-
-#endif // pylith_faults_kinsrcstep_hh
 
 // End of file

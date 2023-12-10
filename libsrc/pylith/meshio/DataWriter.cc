@@ -10,7 +10,7 @@
 
 #include <portinfo>
 
-#include "DataWriter.hh" // Implementation of class methods
+#include "pylith/meshio/DataWriter.hh" // Implementation of class methods
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES isCohesiveCell()

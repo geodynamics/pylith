@@ -7,16 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/** @file libsrc/materials/AuxiliaryFactoryElasticity.hh
- *
- * @brief C++ helper class for setting up auxiliary subfields for the elasticity equation.
- */
-
-#if !defined(pylith_materials_auxiliaryfactoryelasticity_hh)
-#define pylith_materials_auxiliaryfactoryelasticity_hh
-
-#include "materialsfwd.hh" // forward declarations
+#include "pylith/materials/materialsfwd.hh" // forward declarations
 #include "pylith/feassemble/AuxiliaryFactory.hh" // ISA AuxiliaryFactory
 
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // USES GravityField
@@ -52,7 +45,5 @@ private:
     const AuxiliaryFactoryElasticity& operator=(const AuxiliaryFactoryElasticity&); ///< Not implemented
 
 }; // class AuxiliaryFactoryElasticity
-
-#endif // pylith_materials_auxiliaryfactoryelasticity_hh
 
 // End of file

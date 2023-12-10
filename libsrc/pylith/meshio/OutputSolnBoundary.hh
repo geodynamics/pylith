@@ -7,17 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/**
- * @file libsrc/meshio/OutputSolnBoundary.hh
- *
- * @brief C++ object for managing solution output over a boundary.
- */
-
-#if !defined(pylith_meshio_outputsolnboundary_hh)
-#define pylith_meshio_outputsolnboundary_hh
-
-#include "meshiofwd.hh" // forward declarations
+#include "pylith/meshio/meshiofwd.hh" // forward declarations
 
 #include "pylith/meshio/OutputSoln.hh" // ISA OutputSoln
 
@@ -85,7 +77,5 @@ private:
     const OutputSolnBoundary& operator=(const OutputSolnBoundary&); ///< Not implemented
 
 }; // OutputSolnBoundary
-
-#endif // pylith_meshio_outputsolnboundary_hh
 
 // End of file

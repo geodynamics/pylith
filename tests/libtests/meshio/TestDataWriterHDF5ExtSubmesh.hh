@@ -7,17 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/**
- * @file tests/libtests/meshio/TestDataWriterHDF5ExtSubmesh.hh
- *
- * @brief C++ TestDataWriterHDF5ExtSubmesh object
- *
- * C++ unit testing for DataWriterHDF5ExtSubmesh.
- */
-
-#if !defined(pylith_meshio_testdatawriterhdf5extsubmesh_hh)
-#define pylith_meshio_testdatawriterhdf5extsubmesh_hh
+#pragma once
 
 #include "TestDataWriterHDF5.hh" // ISA TestDataWriterHDF5
 #include "TestDataWriterSubmesh.hh" // ISA TestDataWriterSubmesh
@@ -71,7 +61,5 @@ protected:
 class pylith::meshio::TestDataWriterHDF5ExtSubmesh_Data :
     public TestDataWriterHDF5_Data,
     public TestDataWriterSubmesh_Data {};
-
-#endif // pylith_meshio_testdatawriterhdf5extsubmesh_hh
 
 // End of file

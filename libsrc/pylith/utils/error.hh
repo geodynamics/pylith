@@ -7,15 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/**
- * @file libsrc/utils/error.hh
- *
- * @brief C++ wrappers around PETSc error handling routines.
- */
-
-#if !defined(pylith_utils_error_hh)
-#define pylith_utils_error_hh
+#pragma once
 
 #include "petsc.h"
 
@@ -45,7 +37,5 @@
             throw std::runtime_error(msg); }
 
 #define PYLITH_ERROR_RETURN(comm,error,msg) SETERRQ(comm,error,"%s",msg)
-
-#endif // pylith_utils_error_hh
 
 // End of file

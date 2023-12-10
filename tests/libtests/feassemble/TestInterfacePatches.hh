@@ -7,15 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/**
- * @file tests/libtests/faults/TestInterfacePatches.hh
- *
- * C++ unit testing for InterfacePatches.
- */
-
-#if !defined(pylith_feassemble_testinterfacepatches_hh)
-#define pylith_feassemble_testinterfacepatches_hh
+#pragma once
 
 #include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
@@ -90,7 +82,5 @@ public:
     PylithInt** patchCells; ///< List of cohesive cells in each integration patch.
 
 }; // TestInterfacePatches_Data
-
-#endif // pylith_feassemble_testinterfacepatches_hh
 
 // End of file

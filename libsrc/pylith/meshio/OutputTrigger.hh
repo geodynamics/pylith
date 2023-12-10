@@ -7,17 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/**
- * @file libsrc/meshio/OutputTrigger.hh
- *
- * @brief Abstract base class for output trigger.
- */
-
-#if !defined(pylith_meshio_outputtrigger_hh)
-#define pylith_meshio_outputtrigger_hh
-
-#include "meshiofwd.hh" // forward declarations
+#include "pylith/meshio/meshiofwd.hh" // forward declarations
 
 #include "pylith/utils/PyreComponent.hh"
 
@@ -65,7 +57,5 @@ private:
 };
 
 // OutputTrigger
-
-#endif // pylith_meshio_outputtrigger_hh
 
 // End of file

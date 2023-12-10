@@ -10,7 +10,7 @@
 
 #include <portinfo>
 
-#include "OutputSolnPoints.hh" // implementation of class methods
+#include "pylith/meshio/OutputSolnPoints.hh" // implementation of class methods
 
 #include "pylith/meshio/DataWriter.hh" // USES DataWriter
 #include "pylith/meshio/MeshBuilder.hh" // USES MeshBuilder

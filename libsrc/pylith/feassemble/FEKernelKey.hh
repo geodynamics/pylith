@@ -7,16 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/**
- * @file libsrc/feassemble/FEKernelKey.hh
- *
- */
-
-#if !defined(pylith_feassemble_fekernelkey_hh)
-#define pylith_feassemble_fekernelkey_hh
-
-#include "feassemblefwd.hh" // forward declarations
+#include "pylith/feassemble/feassemblefwd.hh" // forward declarations
 
 #include "pylith/topology/topologyfwd.hh" // USES Field
 #include "pylith/feassemble/Integrator.hh" // USES EquationPart, eqnPart
@@ -90,7 +83,5 @@ private:
 }; // FEKernelKey
 
 #include "FEKernelKey.icc"
-
-#endif // pylith_feassemble_fekernelkey_hh
 
 // End of file

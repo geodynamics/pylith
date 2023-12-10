@@ -10,7 +10,7 @@
 
 #include <portinfo>
 
-#include "PylithVersion.hh" // Implementation of class methods
+#include "pylith/utils/PylithVersion.hh" // Implementation of class methods
 
 // ----------------------------------------------------------------------
 const bool pylith::utils::PylithVersion::_isRelease = int(PYLITH_RELEASE_VERSION);

@@ -7,19 +7,10 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-//
+#pragma once
 
-/** @file libsrc/pylith/meshio/Xdmf.hh
- *
- * @brief C++ interface to Python Xdmf object.
- */
+#include "pylith/meshio/meshiofwd.hh"
 
-#if !defined(pylith_meshio_xdmf_hh)
-#define pylith_meshio_xdmf_hh
-
-#include "meshiofwd.hh"
-
-/// C++ interface to Python Xdmf object.
 class pylith::meshio::Xdmf {
     friend class TestXdmf; // Unit testing
 
@@ -35,7 +26,5 @@ public:
     void write(const char* filenameH5);
 
 }; // class Xdmf
-
-#endif // pylith_meshio_xdmf_hh
 
 // End of file

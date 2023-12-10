@@ -10,9 +10,9 @@
 
 #include <portinfo>
 
-#include "GenericComponent.hh" // Implementation of class methods
+#include "pylith/utils/GenericComponent.hh" // Implementation of class methods
 
-#include "journals.hh"
+#include "pylith/utils/journals.hh"
 
 #include <Python.h>
 

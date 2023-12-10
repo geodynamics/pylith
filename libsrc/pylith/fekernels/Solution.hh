@@ -9,17 +9,9 @@
  * See https://mit-license.org/ and LICENSE.md and for license information.
  * =================================================================================================
  */
+#pragma once
 
-/** @file libsrc/fekernels/Solution.hh
- *
- * Kernel for projecting solution. Subfield values are passed through without modification.
- */
-
-#if !defined(pylith_fekernels_solution_hh)
-#define pylith_fekernels_solution_hh
-
-// Include directives ---------------------------------------------------
-#include "fekernelsfwd.hh" // forward declarations
+#include "pylith/fekernels/fekernelsfwd.hh" // forward declarations
 
 #include "pylith/utils/types.hh"
 
@@ -86,7 +78,5 @@ public:
     } // passThruSubfield
 
 }; // Solution
-
-#endif // pylith_fekernels_solution_hh
 
 // End of file

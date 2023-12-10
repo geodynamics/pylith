@@ -7,17 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/** @file libsrc/utils/utilsfwd.hh
- *
- * @brief Forward declarations for PyLith utils objects.
- *
- * Including this header file eliminates the need to use separate
- * forward declarations.
- */
-
-#if !defined(pylith_utils_utilsfwd_hh)
-#define pylith_utils_utilsfwd_hh
+#pragma once
 
 namespace pylith {
     namespace utils {
@@ -36,7 +26,5 @@ namespace pylith {
 
     } // utils
 } // pylith
-
-#endif // pylith_utils_utilsfwd_hh
 
 // End of file

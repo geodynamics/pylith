@@ -7,15 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/**
- * @file tests/libtests/topology/TestSubmesh.hh
- *
- * @brief C++ unit testing for Submesh.
- */
-
-#if !defined(pylith_topology_testsubmesh_hh)
-#define pylith_topology_testsubmesh_hh
+#pragma once
 
 #include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
@@ -118,7 +110,5 @@ public:
     /// @}
 
 }; // TestSubmesh_Data
-
-#endif // pylith_topology_testsubmesh_hh
 
 // End of file

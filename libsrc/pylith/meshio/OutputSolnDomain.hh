@@ -7,19 +7,11 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/**
- * @file libsrc/meshio/OutputSolnDomain.hh
- *
- * @brief C++ object for managing output of the solution over the domain.
- */
+#include "pylith/meshio/meshiofwd.hh" // forward declarations
 
-#if !defined(pylith_meshio_outputsolndomain_hh)
-#define pylith_meshio_outputsolndomain_hh
-
-#include "meshiofwd.hh" // forward declarations
-
-#include "OutputSoln.hh" // ISA OutputSoln
+#include "pylith/meshio/OutputSoln.hh" // ISA OutputSoln
 #include "pylith/problems/problemsfwd.hh" // HASA Problem
 
 class pylith::meshio::OutputSolnDomain : public pylith::meshio::OutputSoln {
@@ -54,7 +46,5 @@ private:
     const OutputSolnDomain& operator=(const OutputSolnDomain&); ///< Not implemented
 
 }; // OutputSolnDomain
-
-#endif // pylith_meshio_outputsolndomain_hh
 
 // End of file

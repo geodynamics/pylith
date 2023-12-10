@@ -7,19 +7,11 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/**
- * @file libsrc/problems/MMSTest.hh
- *
- * @brief Object for using the Method of Manufactured Solutions to test residual and Jacobian calculations.
- */
-
-#if !defined(pylith_testing_mmstest_hh)
-#define pylith_testing_mmstest_hh
+#pragma once
 
 #include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
-#include "testingfwd.hh" // forward declaration
+#include "pylith/testing/testingfwd.hh" // forward declaration
 
 #include "pylith/problems/problemsfwd.hh" // HOLDSA TimeDependent
 #include "pylith/topology/topologyfwd.hh" // HOLDSA Mesh
@@ -87,7 +79,5 @@ protected:
     bool _allowZeroResidual; ///< Allow residual to be exactly zero.
 
 }; // MMSTest
-
-#endif // pylith_testing_mmstest_hh
 
 // End of file

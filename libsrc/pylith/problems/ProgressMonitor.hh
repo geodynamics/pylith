@@ -7,17 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/*** @file libsrc/problems/ProgressMonitor.hh
- *
- * @brief Abstract base class for objects defining physics, such as behavior
- * of a bulk makterial, boundary condition, interface, or constraint.
- */
-
-#if !defined(pylith_problems_progressmonitor_hh)
-#define pylith_problems_progressmonitor_hh
-
-#include "problemsfwd.hh" // forward declarations
+#include "pylith/problems/problemsfwd.hh" // forward declarations
 
 #include "pylith/utils/PyreComponent.hh" // ISA PyreComponent
 
@@ -107,7 +99,5 @@ private:
     const ProgressMonitor& operator=(const ProgressMonitor&); ///< Not implemented.
 
 }; // ProgressMonitor
-
-#endif // pylith_problems_progressmonitor_hh
 
 // End of file

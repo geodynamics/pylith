@@ -19,7 +19,8 @@ SUBDIRS = \
 	bc \
 	faults \
 	friction \
-	fekernels
+	fekernels \
+        testing
 
 
 lib_LTLIBRARIES = libpylith.la

@@ -7,17 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/** @file libsrc/feassemble/feassemblefwd.hh
- *
- * @brief Forward declarations for PyLith feassemble objects.
- *
- * Including this header file eliminates the need to use separate
- * forward declarations.
- */
-
-#if !defined(pylith_feassemble_feassemblefwd_hh)
-#define pylith_feassemble_feassemblefwd_hh
+#pragma once
 
 namespace pylith {
     namespace feassemble {
@@ -43,7 +33,5 @@ namespace pylith {
 
     } // feassemble
 } // pylith
-
-#endif // pylith_feassemble_feassemblefwd_hh
 
 // End of file

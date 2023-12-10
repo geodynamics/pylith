@@ -7,9 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-#if !defined(pylith_bc_absorbingdampersdatatet4_hh)
-#define pylith_bc_absorbingdampersdatatet4_hh
+#pragma once
 
 #include "AbsorbingDampersData.hh"
 
@@ -60,7 +58,5 @@ private:
     static const PylithScalar _valsJacobian[];
 
 };
-
-#endif // pylith_bc_absorbingdampersdatatet4_hh
 
 // End of file

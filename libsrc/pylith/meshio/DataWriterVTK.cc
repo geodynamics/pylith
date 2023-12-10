@@ -10,7 +10,7 @@
 
 #include <portinfo>
 
-#include "DataWriterVTK.hh" // Implementation of class methods
+#include "pylith/meshio/DataWriterVTK.hh" // Implementation of class methods
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field

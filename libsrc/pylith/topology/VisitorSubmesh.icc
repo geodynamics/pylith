@@ -7,12 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-//
-
-#if !defined(pylith_topology_visitorsubmesh_hh)
-#error "VisitorSubmesh.icc must be included only from VisitorSubmesh.hh"
-#else
+#pragma once
 
 #include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
 
@@ -379,7 +374,5 @@ pylith::topology::SubmeshIS::size(void) const {
     return _size;
 } // size
 
-
-#endif
 
 // End of file

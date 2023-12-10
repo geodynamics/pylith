@@ -15,9 +15,7 @@
  *
  * C++ unit testing for AbsorbingDampers.
  */
-
-#if !defined(pylith_bc_testabsorbingdampers_hh)
-#define pylith_bc_testabsorbingdampers_hh
+#pragma once
 
 #include <cppunit/extensions/HelperMacros.h>
 
@@ -148,7 +146,5 @@ public:
     spatialdata::spatialdb::UserFunctionDB* solnDB; ///< Spatial database with solution.
 
 }; // class TestAbsorbingDampers_Data
-
-#endif // pylith_bc_absorbingdampers_hh
 
 // End of file

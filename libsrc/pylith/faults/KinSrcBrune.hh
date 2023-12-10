@@ -7,17 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/** @file libsrc/faults/KinSrcBrune.hh
- *
- * @brief C++ implementation of a constant slip rate slip time function.
- */
-
-#if !defined(pylith_faults_kinsrcbrune_hh)
-#define pylith_faults_kinsrcbrune_hh
-
-// Include directives ---------------------------------------------------
-#include "KinSrc.hh"
+#include "pylith/faults/KinSrc.hh"
 
 // KinSrcBrune ------------------------------------------------------
 /** @brief Slip function time history corresponding to the integral of Brune's (1970) far-field time function.
@@ -188,7 +180,5 @@ private:
     const KinSrcBrune& operator=(const KinSrcBrune&); ///< Not implemented
 
 }; // class KinSrcBrune
-
-#endif // pylith_faults_kinsrcbrune_hh
 
 // End of file

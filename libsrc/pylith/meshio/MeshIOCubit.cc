@@ -10,10 +10,10 @@
 
 #include <portinfo>
 
-#include "MeshIOCubit.hh" // implementation of class methods
+#include "pylith/meshio/MeshIOCubit.hh" // implementation of class methods
 
-#include "MeshBuilder.hh" // USES MeshBuilder
-#include "ExodusII.hh" // USES ExodusII
+#include "pylith/meshio/MeshBuilder.hh" // USES MeshBuilder
+#include "pylith/meshio/ExodusII.hh" // USES ExodusII
 
 #include "pylith/utils/array.hh" // USES scalar_array, int_array, string_vector
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_*

@@ -7,11 +7,10 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-//
 
 #include <portinfo>
 
-#include "IntegratorDomain.hh" // implementation of object methods
+#include "pylith/feassemble/IntegratorDomain.hh" // implementation of object methods
 
 #include "pylith/feassemble/UpdateStateVars.hh" // HOLDSA UpdateStateVars
 #include "pylith/feassemble/DSLabelAccess.hh" // USES DSLabelAccess

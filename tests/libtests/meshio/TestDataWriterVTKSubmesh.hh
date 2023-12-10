@@ -7,17 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/**
- * @file tests/libtests/meshio/TestDataWriterVTKSubmesh.hh
- *
- * @brief C++ TestDataWriterVTKSubmesh object
- *
- * C++ unit testing for DataWriterVTKSubmesh.
- */
-
-#if !defined(pylith_meshio_testdatawritervtksubmesh_hh)
-#define pylith_meshio_testdatawritervtksubmesh_hh
+#pragma once
 
 #include "TestDataWriterVTK.hh"
 #include "TestDataWriterSubmesh.hh"
@@ -70,7 +60,5 @@ protected:
 
 // ======================================================================
 class pylith::meshio::TestDataWriterVTKSubmesh_Data : public TestDataWriterVTK_Data, public TestDataWriterSubmesh_Data {};
-
-#endif // pylith_meshio_testdatawritervtksubmesh_hh
 
 // End of file

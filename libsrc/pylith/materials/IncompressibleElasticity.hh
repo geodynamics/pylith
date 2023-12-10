@@ -7,16 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/** @file libsrc/materials/IncompressibleElasticity.hh
- *
- * @brief C++ class for solving the elasticity equation with incompressible bulk materials.
- */
-
-#if !defined(pylith_materials_incompressibleelasticity_hh)
-#define pylith_materials_incompressibleelasticity_hh
-
-#include "materialsfwd.hh" // forward declarations
+#include "pylith/materials/materialsfwd.hh" // forward declarations
 
 #include "pylith/materials/Material.hh" // ISA Material
 
@@ -174,7 +167,5 @@ private:
 };
 
 // class Elasticity
-
-#endif // pylith_materials_incompressibleelasticity_hh
 
 // End of file

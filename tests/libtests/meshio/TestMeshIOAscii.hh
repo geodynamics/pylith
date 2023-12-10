@@ -7,17 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/**
- * @file tests/libtests/meshio/TestMeshIOAscii.hh
- *
- * @brief C++ TestMeshIOAscii object
- *
- * C++ unit testing for MeshIOAscii.
- */
-
-#if !defined(pylith_meshio_testmeshioascii_hh)
-#define pylith_meshio_testmeshioascii_hh
+#pragma once
 
 #include "TestMeshIO.hh" // ISA TestMeshIO
 
@@ -53,7 +43,5 @@ protected:
     MeshIOAscii* _io; ///< Test subject.
 
 }; // class TestMeshIOAscii
-
-#endif // pylith_meshio_testmeshioascii_hh
 
 // End of file

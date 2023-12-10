@@ -7,17 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/**
- * @file libsrc/utils/constdefs.h
- *
- * @brief Macro definitions for PyLith.
- */
-
-#if !defined(pylith_utils_constdefs_h)
-#define pylith_utils_constdefs_h
-
-#include "types.hh" // HASA PylithScalar
+#include "pylith/utils/types.hh" // HASA PylithScalar
 
 namespace pylith {
     static const double PYLITH_MAXDOUBLE = 1.0e+99;
@@ -26,7 +18,5 @@ namespace pylith {
     static const PylithInt PYLITH_MININT = PETSC_MIN_INT;
     static const PylithScalar PYLITH_MAXSCALAR = (sizeof(PylithScalar) == sizeof(double)) ? PYLITH_MAXDOUBLE : PYLITH_MAXFLOAT;
 }
-
-#endif // pylith_utils_constdefs_h
 
 // End of file

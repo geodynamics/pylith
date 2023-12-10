@@ -9,6 +9,7 @@
  * See https://mit-license.org/ and LICENSE.md and for license information.
  * =================================================================================================
  */
+#pragma once
 
 /** @file libsrc/fekernels/NeumannTimeDependent.h
  *
@@ -17,11 +18,8 @@
  * \int_{\Gamma_\tau} \trialvec[u] \vec{\tau}(\vec{x},t) d\Gamma
  */
 
-#if !defined(pylith_fekernels_neumanntimedependent_hh)
-#define pylith_fekernels_neumanntimedependent_hh
-
 // Include directives ---------------------------------------------------
-#include "fekernelsfwd.hh" // forward declarations
+#include "pylith/fekernels/fekernelsfwd.hh" // forward declarations
 
 #include "pylith/fekernels/BoundaryDirections.hh" // USES tangential_directions()
 #include "pylith/fekernels/TimeDependentFn.hh" // USES TimeDependentFn
@@ -594,7 +592,5 @@ public:
     } // f0_initialRateTimeHistory_vector
 
 }; // NeumannTimeDependent
-
-#endif // pylith_fekernels_neumanntimedependent_hh
 
 // End of file

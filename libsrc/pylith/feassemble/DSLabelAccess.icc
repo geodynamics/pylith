@@ -7,12 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-//
-
-#if !defined(pylith_feassemble_dslabelaccess_hh)
-#error "DSLabelAccess.icc must be included only from DSLabelAccess.hh"
-#else
+#pragma once
 
 #include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
 
@@ -190,7 +185,5 @@ pylith::feassemble::DSLabelAccess::removeOverlap(void) {
     PYLITH_METHOD_END;
 }
 
-
-#endif
 
 // End of file

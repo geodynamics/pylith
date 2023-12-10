@@ -7,20 +7,11 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/**
- * @file libsrc/topology/FieldOps.hh
- *
- * @brief Operations on fields.
- */
-
-#if !defined(pylith_topology_fieldops_hh)
-#define pylith_topology_fieldops_hh
-
-// Include directives ---------------------------------------------------
 #include "pylith/topology/topologyfwd.hh" // forward declarations
 
-#include "FieldBase.hh" // USES FieldBase::Discretization
+#include "pylith/topology/FieldBase.hh" // USES FieldBase::Discretization
 #include "pylith/utils/petscfwd.h" // USES PetscFE
 
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // USES SpatialDB
@@ -144,7 +135,5 @@ private:
     static std::map<FieldBase::Discretization, pylith::topology::FE> feStore;
 
 }; // FieldOps
-
-#endif // pylith_topology_fieldOps_hh
 
 // End of file

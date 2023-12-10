@@ -7,16 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/** @file libsrc/bc/BoundaryCondition.hh
- *
- * @brief C++ abstract base class for BoundaryCondition object.
- */
-
-#if !defined(pylith_bc_boundarycondition_hh)
-#define pylith_bc_boundarycondition_hh
-
-#include "bcfwd.hh" // forward declarations
+#include "pylith/bc/bcfwd.hh" // forward declarations
 
 #include "pylith/problems/Physics.hh" // ISA Physics
 
@@ -122,7 +115,5 @@ private:
     const BoundaryCondition& operator=(const BoundaryCondition&); ///< Not implemented.
 
 }; // class BoundaryCondition
-
-#endif // pylith_bc_boundarycondition_hh
 
 // End of file

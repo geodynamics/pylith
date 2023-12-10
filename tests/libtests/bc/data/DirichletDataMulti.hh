@@ -7,9 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-#if !defined(pylith_bc_dirichletdatamulti_hh)
-#define pylith_bc_dirichletdatamulti_hh
+#pragma once
 
 #include "pylith/utils/types.hh" // HASA PylithScalar
 
@@ -85,7 +83,5 @@ public:
     PylithScalar densityScale; ///< Density scale.
     //@}
 };
-
-#endif // pylith_bc_dirichletdatamulti_hh
 
 // End of file

@@ -7,18 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/**
- * @file libsrc/utils/GenericComponent.hh
- *
- * @brief C++ object for managing generic component and identifier information.
- */
-
-#if !defined(pylith_utils_genericcomponent_hh)
-#define pylith_utils_genericcomponent_hh
-
-// Include directives ---------------------------------------------------
-#include "utilsfwd.hh" // forward declarations
+#include "pylith/utils/utilsfwd.hh" // forward declarations
 
 #include <string> // HASA std::string
 
@@ -64,7 +55,5 @@ private:
     const GenericComponent& operator=(const GenericComponent&); ///< Not implemented
 
 }; // GenericComponent
-
-#endif // pylith_utils_genericcomponent_hh
 
 // End of file

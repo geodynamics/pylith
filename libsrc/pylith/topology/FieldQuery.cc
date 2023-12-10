@@ -10,10 +10,10 @@
 
 #include <portinfo>
 
-#include "FieldQuery.hh" // implementation of class methods
+#include "pylith/topology/FieldQuery.hh" // implementation of class methods
 
-#include "Field.hh" // USES Field
-#include "Mesh.hh" // USES Mesh
+#include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/Mesh.hh" // USES Mesh
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB

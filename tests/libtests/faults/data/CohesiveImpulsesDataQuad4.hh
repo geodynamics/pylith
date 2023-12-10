@@ -7,9 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-#if !defined(pylith_faults_cohesiveimpulsesdataquad4_hh)
-#define pylith_faults_cohesiveimpulsesdataquad4_hh
+#pragma once
 
 #include "CohesiveImpulsesData.hh"
 
@@ -66,7 +64,5 @@ private:
     static const int _numConstraintEdges; ///< Number of constraint edges
 
 };
-
-#endif // pylith_faults_cohesiveimpulsesdataquad4_hh
 
 // End of file

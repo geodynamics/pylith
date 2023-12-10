@@ -10,7 +10,7 @@
 
 #include <portinfo>
 
-#include "FaultCohesive.hh" // implementation of object methods
+#include "pylith/faults/FaultCohesive.hh" // implementation of object methods
 
 #include "pylith/faults/TopologyOps.hh" // USES TopologyOps
 #include "pylith/faults/DiagnosticFieldFactory.hh" // USES DiagnosticFieldFactory

@@ -7,11 +7,10 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-//
 
 #include <portinfo>
 
-#include "AuxiliaryFieldFactory.hh" // implementation of object methods
+#include "pylith/faults/AuxiliaryFieldFactory.hh" // implementation of object methods
 
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/FieldQuery.hh" // HOLDSA FieldQuery

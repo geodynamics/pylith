@@ -9,9 +9,9 @@
  * See https://mit-license.org/ and LICENSE.md and for license information.
  * =================================================================================================
  */
+#pragma once
 
-/** @file libsrc/fekernels/FaultCohesiveKin.hh
- *
+/*
  * Kernels for faults with prescribed slip.
  *
  * Solution fields: [disp(dim), vel(dim, optional), lagrange(dim)]
@@ -52,11 +52,7 @@
  * @param[out] f0 [dim].
  */
 
-#if !defined(pylith_fekernels_faultcohesivekin_hh)
-#define pylith_fekernels_faultcohesivekin_hh
-
-// Include directives ---------------------------------------------------
-#include "fekernelsfwd.hh" // forward declarations
+#include "pylith/fekernels/fekernelsfwd.hh" // forward declarations
 
 #include "pylith/fekernels/Tensor.hh" // USES Tensor
 #include "pylith/fekernels/BoundaryDirections.hh" // USES BoundaryDirections
@@ -638,7 +634,5 @@ public:
     } // tractionChange_asVector
 
 }; // FaultCohesiveKin
-
-#endif // pylith_fekernels_faultcohesivekin_hh
 
 /* End of file */

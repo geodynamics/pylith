@@ -10,7 +10,7 @@
 
 #include <portinfo>
 
-#include "ObserverSoln.hh" // Implementation of class methods
+#include "pylith/problems/ObserverSoln.hh" // Implementation of class methods
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Constructor.

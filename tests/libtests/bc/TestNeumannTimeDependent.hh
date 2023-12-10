@@ -15,9 +15,7 @@
  *
  * C++ unit testing for DirichletBC.
  */
-
-#if !defined(pylith_bc_testneumanntimedependent_hh)
-#define pylith_bc_testneumanntimedependent_hh
+#pragma once
 
 #include <cppunit/extensions/HelperMacros.h>
 
@@ -158,7 +156,5 @@ public:
     spatialdata::spatialdb::UserFunctionDB* solnDB; ///< Spatial database with solution.
 
 }; // class TestNeumannTimeDependent_Data
-
-#endif // pylith_bc_neumanntimedependent_hh
 
 // End of file

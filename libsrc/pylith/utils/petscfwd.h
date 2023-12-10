@@ -7,15 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/**
- * @file libsrc/utils/petscfwd.h
- *
- * @brief Forward declarations for Petsc objects.
- */
-
-#if !defined(pylith_utils_petscfwd_h)
-#define pylith_utils_petscfwd_h
+#pragma once
 
 /// forward declaration for PETSc PetscErrorCode
 typedef int PetscErrorCode;
@@ -67,7 +59,5 @@ typedef struct _p_PetscFE* PetscFE;
 
 /// forward declaration for PETSc weak form
 typedef struct _p_PetscWeakForm* PetscWeakForm;
-
-#endif // pylith_utils_petscfwd_h
 
 // End of file

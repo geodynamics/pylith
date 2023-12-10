@@ -7,16 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/** @file libsrc/materials/AuxiliaryFactoryPoroelasticity.hh
- *
- * @brief C++ helper class for setting up auxiliary subfields for the poroelasticity equation.
- */
-
-#if !defined(pylith_materials_auxiliaryfactoryporoelasticity_hh)
-#define pylith_materials_auxiliaryfactoryporoelasticity_hh
-
-#include "materialsfwd.hh" // forward declarations
+#include "pylith/materials/materialsfwd.hh" // forward declarations
 #include "pylith/feassemble/AuxiliaryFactory.hh" // ISA AuxiliaryFactory
 
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // USES GravityField
@@ -64,7 +57,5 @@ private:
     const AuxiliaryFactoryPoroelasticity& operator=(const AuxiliaryFactoryPoroelasticity&); ///< Not implemented
 
 }; // class AuxiliaryFactoryPoroelasticity
-
-#endif // pylith_materials_auxiliaryfactoryporoelasticity_hh
 
 // End of file

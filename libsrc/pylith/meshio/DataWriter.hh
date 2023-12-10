@@ -7,18 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/**
- * @file libsrc/meshio/DataWriter.hh
- *
- * @brief Abstract base class for writing finite-element data to file.
- */
-
-#if !defined(pylith_meshio_datawriter_hh)
-#define pylith_meshio_datawriter_hh
-
-// Include directives ---------------------------------------------------
-#include "meshiofwd.hh" // forward declarations
+#include "pylith/meshio/meshiofwd.hh" // forward declarations
 
 #include "pylith/utils/PyreComponent.hh" // ISA PyreComponent
 
@@ -164,7 +155,5 @@ protected:
     bool _isOpen; ///< True if writer is ready for openTimeStep()/closeTimeStep().
 
 }; // DataWriter
-
-#endif // pylith_meshio_datawriter_hh
 
 // End of file

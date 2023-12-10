@@ -10,7 +10,7 @@
 
 #include <portinfo>
 
-#include "Physics.hh" // implementation of class methods
+#include "pylith/problems/Physics.hh" // implementation of class methods
 
 #include "pylith/feassemble/AuxiliaryFactory.hh" // USES AuxiliaryFactory
 #include "pylith/problems/ObserversPhysics.hh" // USES ObserversPhysics

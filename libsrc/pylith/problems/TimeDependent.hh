@@ -7,17 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/**
- * @file libsrc/problems/TimeDependent.hh
- *
- * @brief Object for time dependent problem.
- */
-
-#if !defined(pylith_problems_timedependent_hh)
-#define pylith_problems_timedependent_hh
-
-#include "Problem.hh" // ISA Problem
+#include "pylith/problems/Problem.hh" // ISA Problem
 #include "pylith/testing/testingfwd.hh" // USES MMSTest
 
 class pylith::problems::TimeDependent : public pylith::problems::Problem {
@@ -303,7 +295,5 @@ private:
     const TimeDependent& operator=(const TimeDependent&); ///< Not implemented
 
 }; // TimeDependent
-
-#endif // pylith_problems_timedependent_hh
 
 // End of file

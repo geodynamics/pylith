@@ -7,17 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/**
- * @file libsrc/feassemble/IntegratorBoundary.hh
- *
- * @brief Object for finite-element integration over a boundary of the simulation domain.
- */
-
-#if !defined(pylith_feassemble_integratorboundary_hh)
-#define pylith_feassemble_integratorboundary_hh
-
-#include "feassemblefwd.hh" // forward declarations
+#include "pylith/feassemble/feassemblefwd.hh" // forward declarations
 
 #include "pylith/feassemble/Integrator.hh" // ISA Integrator
 
@@ -188,7 +180,5 @@ private:
     const IntegratorBoundary& operator=(const IntegratorBoundary&); ///< Not implemented.
 
 }; // IntegratorBoundary
-
-#endif // pylith_feassemble_integratorboundary_hh
 
 // End of file

@@ -10,7 +10,7 @@
 
 #include <portinfo>
 
-#include "MeshOps.hh" // implementation of class methods
+#include "pylith/topology/MeshOps.hh" // implementation of class methods
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Stratum.hh" // USES Stratum

@@ -10,7 +10,7 @@
 
 #include <portinfo>
 
-#include "ReverseCuthillMcKee.hh" // implementation of class methods
+#include "pylith/topology/ReverseCuthillMcKee.hh" // implementation of class methods
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR

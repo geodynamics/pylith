@@ -7,16 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/**
- * @file tests/libtests/meshio/TestDataWriterHDF5ExtMatMeshCases.hh
- *
- * @brief C++ unit testing for DataWriterHDF5Ext with material mesh and
- * various cell types.
- */
-
-#if !defined(pylith_meshio_testdatawriterhdf5extmatmeshcases_hh)
-#define pylith_meshio_testdatawriterhdf5extmatmeshcases_hh
+#pragma once
 
 #include "TestDataWriterHDF5ExtMesh.hh"
 
@@ -117,7 +108,5 @@ public:
     void setUp(void);
 
 }; // class TestDataWriterHDF5ExtMatMeshHex8
-
-#endif // pylith_meshio_testdatawriterhdf5extmatmeshcases_hh
 
 // End of file

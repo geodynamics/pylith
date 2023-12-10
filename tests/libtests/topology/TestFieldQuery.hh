@@ -7,15 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/**
- * @file tests/libtests/topology/TestFieldQuery.hh
- *
- * @brief C++ unit testing for FieldQuery.
- */
-
-#if !defined(pylith_topology_testfieldquery_hh)
-#define pylith_topology_testfieldquery_hh
+#pragma once
 
 #include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
@@ -121,7 +113,5 @@ public:
     /// @}
 
 }; // TestFieldQuery_Data
-
-#endif // pylith_topology_testfieldquery_hh
 
 // End of file

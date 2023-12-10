@@ -7,16 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/** @file libsrc/topology/FieldFactory.hh
- *
- * @brief C++ helper class for setting up subfields.
- */
-
-#if !defined(pylith_topology_fieldfactory_hh)
-#define pylith_topology_fieldfactory_hh
-
-#include "topologyfwd.hh" // forward declarations
+#include "pylith/topology/topologyfwd.hh" // forward declarations
 #include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
 #include "pylith/topology/FieldBase.hh" // USES FieldBase::Discretization
@@ -98,7 +91,5 @@ private:
     const FieldFactory& operator=(const FieldFactory&); ///< Not implemented
 
 }; // class FieldFactory
-
-#endif // pylith_topology_fieldfactory_hh
 
 // End of file

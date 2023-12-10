@@ -7,12 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/**
- * @file libsrc/meshio/DataWriterHDF5.hh
- *
- * @brief Object for writing finite-element data to HDF5 file.
- *
+/*
  * HDF5 schema for PyLith output.
  *
  * / - root group
@@ -34,10 +31,7 @@
  *     [nvertices, 64]
  */
 
-#if !defined(pylith_meshio_datawriterhdf5_hh)
-#define pylith_meshio_datawriterhdf5_hh
-
-#include "DataWriter.hh" // ISA DataWriter
+#include "pylith/meshio/DataWriter.hh" // ISA DataWriter
 
 #include "pylith/utils/petscfwd.h" // HASA PetscVec
 
@@ -159,7 +153,5 @@ private:
 }; // DataWriterHDF5
 
 #include "DataWriterHDF5.icc" // inline methods
-
-#endif // pylith_meshio_datawriterhdf5_hh
 
 // End of file

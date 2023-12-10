@@ -10,7 +10,7 @@
 
 #include <portinfo>
 
-#include "NeumannUserFn.hh" // implementation of object methods
+#include "pylith/bc/NeumannUserFn.hh" // implementation of object methods
 
 #include "pylith/fekernels/NeumannTimeDependent.hh" // USES NeumannTimeDepndent kernels
 

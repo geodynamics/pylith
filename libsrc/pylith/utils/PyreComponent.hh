@@ -7,18 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/**
- * @file libsrc/utils/PyreComponent.hh
- *
- * @brief C++ object for managing Pyre component and identifier information.
- */
-
-#if !defined(pylith_utils_pyrecomponent_hh)
-#define pylith_utils_pyrecomponent_hh
-
-// Include directives ---------------------------------------------------
-#include "utilsfwd.hh" // forward declarations
+#include "pylith/utils/utilsfwd.hh" // forward declarations
 
 #include <string> // HASA std::string
 
@@ -77,7 +68,5 @@ private:
     const PyreComponent& operator=(const PyreComponent&); ///< Not implemented
 
 }; // PyreComponent
-
-#endif // pylith_utils_pyrecomponent_hh
 
 // End of file

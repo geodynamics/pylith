@@ -7,18 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/**
- * @file libsrc/meshio/ExodusII.hh
- *
- * @brief C++ I/O functions for CUBIT Exodus II files.
- */
-
-#if !defined(pylith_meshio_exodusii_hh)
-#define pylith_meshio_exodusii_hh
-
-// Include directives ---------------------------------------------------
-#include "meshiofwd.hh" // Forward declarations
+#include "pylith/meshio/meshiofwd.hh" // Forward declarations
 
 #include "pylith/utils/arrayfwd.hh" // USES string_vector
 
@@ -141,7 +132,5 @@ private:
     int _file; ///< ExodusII file
 
 }; // ExodusII
-
-#endif // pylith_meshio_exodusii_hh
 
 // End of file

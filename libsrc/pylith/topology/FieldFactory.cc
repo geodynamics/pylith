@@ -10,7 +10,7 @@
 
 #include <portinfo>
 
-#include "FieldFactory.hh" // implementation of object methods
+#include "pylith/topology/FieldFactory.hh" // implementation of object methods
 
 #include "pylith/topology/Field.hh" // HOLDSA AuxiliaryField
 

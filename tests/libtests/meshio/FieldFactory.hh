@@ -7,14 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/** @file tests/libtests/meshio/FieldFactory.hh
- *
- * @brief C++ helper class for setting up solution fields for testing.
- */
-
-#if !defined(pylith_meshio_fieldfactory_hh)
-#define pylith_meshio_fieldfactory_hh
+#pragma once
 
 /// Namespace for pylith package
 namespace pylith {
@@ -87,7 +80,5 @@ private:
     const FieldFactory& operator=(const FieldFactory&); ///< Not implemented
 
 }; // class FieldFactory
-
-#endif // pylith_meshio_fieldfactory_hh
 
 // End of file

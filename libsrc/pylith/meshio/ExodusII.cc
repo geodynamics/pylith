@@ -10,7 +10,7 @@
 
 #include <portinfo>
 
-#include "ExodusII.hh" // implementation of class methods
+#include "pylith/meshio/ExodusII.hh" // implementation of class methods
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 

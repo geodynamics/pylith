@@ -7,9 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-#if !defined(pylith_meshio_datawritervtkdatafaultmeshquad4_hh)
-#define pylith_meshio_datawritervtkdatafaultmeshquad4_hh
+#pragma once
 
 #include "DataWriterData.hh" // ISA DataWriterData
 
@@ -66,7 +64,5 @@ private:
     //@}
 
 }; // DataWriterVTKDataFaultMeshQuad4
-
-#endif // pylith_meshio_datawritervtkdatafaultmeshquad4_hh
 
 // End of file

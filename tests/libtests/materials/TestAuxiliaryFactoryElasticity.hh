@@ -7,17 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/**
- * @file tests/libtests/materials/TestAuxiliaryFactoryElasticity.hh
- *
- * @brief C++ TestAuxiliaryFactoryElasticity object.
- *
- * C++ unit testing for AuxiliaryFactoryElasticity.
- */
-
-#if !defined(pylith_materials_testauxiliaryfactoryelasticity_hh)
-#define pylith_materials_testauxiliaryfactoryelasticity_hh
+#pragma once
 
 #include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
@@ -95,7 +85,5 @@ public:
     spatialdata::spatialdb::GravityField* gravityField; ///< Gravity field spatial database.
 
 }; // class TestAuxiliaryFactoryElasticity_Data
-
-#endif // pylith_materials_testauxiliaryfactoryelasticity_hh
 
 // End of file

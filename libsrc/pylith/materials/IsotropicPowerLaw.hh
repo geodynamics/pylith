@@ -7,16 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/** @file libsrc/materials/IsotropicPowerLaw.hh
- *
- * @brief C++ class for isotropic power-law viscoelastic material.
- */
-
-#if !defined(pylith_materials_isotropicpowerlaw_hh)
-#define pylith_materials_isotropicpowerlaw_hh
-
-#include "materialsfwd.hh" // forward declarations
+#include "pylith/materials/materialsfwd.hh" // forward declarations
 
 #include "pylith/materials/RheologyElasticity.hh" // ISA RheologyElasticity
 
@@ -130,7 +123,5 @@ private:
     const IsotropicPowerLaw& operator=(const IsotropicPowerLaw&); ///< Not implemented
 
 }; // class IsotropicPowerLaw
-
-#endif // pylith_materials_isotropicpowerlaw_hh
 
 // End of file

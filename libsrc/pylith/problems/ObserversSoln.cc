@@ -10,7 +10,7 @@
 
 #include <portinfo>
 
-#include "ObserversSoln.hh" // Implementation of class methods
+#include "pylith/problems/ObserversSoln.hh" // Implementation of class methods
 
 #include "pylith/problems/ObserverSoln.hh" // USES ObserverSoln
 #include "pylith/topology/Field.hh" // USES Field

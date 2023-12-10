@@ -7,15 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/** @file libsrc/bc/DirichletUserFn.hh
- *
- * @brief C++ implementation of Dirichlet (prescribed values at
- * degrees of freedom) boundary condition using a user-provided function.
- */
-
-#if !defined(pylith_bc_dirichletuserfn_hh)
-#define pylith_bc_dirichletuserfn_hh
+#pragma once
 
 #include "pylith/bc/BoundaryCondition.hh" // ISA BoundaryCondition
 
@@ -132,7 +124,5 @@ private:
     const DirichletUserFn& operator=(const DirichletUserFn&); ///< Not implemented.
 
 }; // class DirichletUserFn
-
-#endif // pylith_bc_dirichletuserfn_hh
 
 // End of file

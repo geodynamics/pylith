@@ -7,17 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/**
- * @file tests/libtests/meshio/TestDataWriterVTKMaterial.hh
- *
- * @brief C++ TestDataWriterVTKMaterial object
- *
- * C++ unit testing for DataWriterVTKMaterial.
- */
-
-#if !defined(pylith_meshio_testdatawritervtkmaterial_hh)
-#define pylith_meshio_testdatawritervtkmaterial_hh
+#pragma once
 
 #include "TestDataWriterVTK.hh" // ISA TestDataWriterVTK
 #include "TestDataWriterMaterial.hh" // ISA TestDataWriterMaterial
@@ -70,7 +60,5 @@ protected:
 
 // ======================================================================
 class pylith::meshio::TestDataWriterVTKMaterial_Data : public TestDataWriterVTK_Data, public TestDataWriterMaterial_Data {};
-
-#endif // pylith_meshio_testdatawritervtkmaterial_hh
 
 // End of file

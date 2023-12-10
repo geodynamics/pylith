@@ -7,17 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/*** @file libsrc/problems/ProgressMonitorTime.hh
- *
- * @brief Abstract base class for objects defining physics, such as behavior
- * of a bulk makterial, boundary condition, interface, or constraint.
- */
-
-#if !defined(pylith_problems_progressmonitortime_hh)
-#define pylith_problems_progressmonitortime_hh
-
-#include "ProgressMonitor.hh" // ISA ProgressMonitor
+#include "pylith/problems/ProgressMonitor.hh" // ISA ProgressMonitor
 
 #include <fstream> // HASA std::ofstream
 
@@ -93,7 +85,5 @@ private:
     const ProgressMonitorTime& operator=(const ProgressMonitorTime&); ///< Not implemented.
 
 }; // ProgressMonitorTime
-
-#endif // pylith_problems_progressmonitortime_hh
 
 // End of file

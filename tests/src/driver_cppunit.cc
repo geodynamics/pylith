@@ -10,7 +10,7 @@
 
 #include <portinfo>
 
-#include "testingfwd.hh"
+#include "pylith/testing/testingfwd.hh"
 #include "pylith/topology/FieldOps.hh" // USES FieldOps::deallocate()
 #include "pylith/utils/journals.hh" // USES journals
 

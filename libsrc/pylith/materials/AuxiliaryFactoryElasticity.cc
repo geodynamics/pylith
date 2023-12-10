@@ -10,9 +10,9 @@
 
 #include <portinfo>
 
-#include "AuxiliaryFactoryElasticity.hh" // implementation of object methods
+#include "pylith/materials/AuxiliaryFactoryElasticity.hh" // implementation of object methods
 
-#include "Query.hh" // USES Query
+#include "pylith/materials/Query.hh" // USES Query
 
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/FieldQuery.hh" // HOLDSA FieldQuery

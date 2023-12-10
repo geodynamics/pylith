@@ -10,7 +10,7 @@
 
 #include <portinfo>
 
-#include "KinSrcLiuCos.hh" // implementation of object methods
+#include "pylith/faults/KinSrcLiuCos.hh" // implementation of object methods
 
 #include "pylith/faults/KinSrcAuxiliaryFactory.hh" // USES KinSrcAuxiliaryFactory
 

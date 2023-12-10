@@ -10,7 +10,7 @@
 
 #include <portinfo>
 
-#include "FaultCohesiveKin.hh" // implementation of object methods
+#include "pylith/faults/FaultCohesiveKin.hh" // implementation of object methods
 
 #include "pylith/faults/KinSrc.hh" // USES KinSrc
 #include "pylith/faults/AuxiliaryFieldFactory.hh" // USES AuxiliaryFieldFactory

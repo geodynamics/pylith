@@ -7,15 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/**
- * @file tests/libtests/topology/TestFieldMesh.hh
- *
- * @brief C++ unit testing for Field.
- */
-
-#if !defined(pylith_topology_testfieldmesh_hh)
-#define pylith_topology_testfieldmesh_hh
+#pragma once
 
 #include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
@@ -156,7 +148,5 @@ public:
     /// @}
 
 }; // TestFieldMesh_Data
-
-#endif // pylith_topology_testfieldmesh_hh
 
 // End of file

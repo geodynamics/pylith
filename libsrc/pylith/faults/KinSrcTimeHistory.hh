@@ -7,16 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/** @file libsrc/faults/KinSrcTimeHistory.hh
- *
- * @brief C++ implementation of a time history data file slip time function.
- */
-
-#if !defined(pylith_faults_kinsrctimehistory_hh)
-#define pylith_faults_kinsrctimehistory_hh
-
-#include "KinSrc.hh"
+#include "pylith/faults/KinSrc.hh"
 
 class pylith::faults::KinSrcTimeHistory : public KinSrc {
     friend class TestKinSrcTimeHistory; // unit testing
@@ -208,7 +201,5 @@ private:
     const KinSrcTimeHistory& operator=(const KinSrcTimeHistory&); ///< Not implemented
 
 }; // class KinSrcTimeHistory
-
-#endif // pylith_faults_kinsrctimehistory_hh
 
 // End of file

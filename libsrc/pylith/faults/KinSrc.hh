@@ -7,18 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/** @file libsrc/faults/KinSrc.hh
- *
- * @brief C++ object for managing parameters for a kinematic
- * earthquake source.
- */
-
-#if !defined(pylith_faults_kinsrc_hh)
-#define pylith_faults_kinsrc_hh
-
-// Include directives ---------------------------------------------------
-#include "faultsfwd.hh" // forward declarations
+#include "pylith/faults/faultsfwd.hh" // forward declarations
 
 #include "pylith/utils/PyreComponent.hh" // ISA PyreComponent
 
@@ -158,7 +149,5 @@ private:
     const KinSrc& operator=(const KinSrc&); ///< Not implemented
 
 }; // class KinSrc
-
-#endif // pylith_faults_kinsrc_hh
 
 // End of file

@@ -7,17 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/**
- * @file tests/libtests/meshio/TestDataWriterHDF5Points.hh
- *
- * @brief C++ TestDataWriterHDF5Points object
- *
- * C++ unit testing for DataWriterHDF5Points.
- */
-
-#if !defined(pylith_meshio_testdatawriterhdf5points_hh)
-#define pylith_meshio_testdatawriterhdf5points_hh
+#pragma once
 
 #include "TestDataWriterHDF5.hh" // ISA TestDataWriterHDF5
 #include "TestDataWriterPoints.hh" // ISA TestDataWriterPoints
@@ -66,7 +56,5 @@ protected:
 
 // ------------------------------------------------------------------------------------------------
 class pylith::meshio::TestDataWriterHDF5Points_Data : public TestDataWriterHDF5_Data, public TestDataWriterPoints_Data {};
-
-#endif // pylith_meshio_testdatawriterhdf5points_hh
 
 // End of file

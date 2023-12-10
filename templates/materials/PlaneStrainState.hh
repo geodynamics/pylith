@@ -28,9 +28,7 @@
  * This implies that when $\epsilon = \epsilon_0$, $\sigma =
  * \sigma_0$.
  */
-
-#if !defined(pylith_materials_planestrainstate_hh)
-#define pylith_materials_planestrainstate_hh
+#pragma once
 
 #include "pylith/materials/ElasticMaterial.hh" // ISA ElasticMaterial
 
@@ -267,7 +265,5 @@ private:
     const PlaneStrainState& operator=(const PlaneStrainState& m);
 
 }; // class PlaneStrainState
-
-#endif // pylith_materials_planestrainstate_hh
 
 // End of file

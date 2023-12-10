@@ -7,16 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/** @file libsrc/materials/IsotropicLinearPoroelasticity.hh
- *
- * @brief C++ class for isotropic linear poroelasticity.
- */
-
-#if !defined(pylith_materials_isotropiclinearporoelasticity_hh)
-#define pylith_materials_isotropiclinearporoelasticity_hh
-
-#include "materialsfwd.hh" // forward declarations
+#include "pylith/materials/materialsfwd.hh" // forward declarations
 
 #include "pylith/materials/RheologyPoroelasticity.hh" // ISA RheologyPoroelasticity
 
@@ -223,7 +216,5 @@ private:
 };
 
 // class IsotropicLinearPoroelasticity
-
-#endif // pylith_materials_isotropiclinearporoelasticity_hh
 
 // End of file

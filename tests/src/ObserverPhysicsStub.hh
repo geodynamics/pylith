@@ -7,15 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/**
- * @file libsrc/problems/ObserverPhysicsStub.hh
- *
- * @brief Minimal C++ implementation of Observer to allow unit tests using Observer objects.
- */
-
-#if !defined(pylith_problems_observerphysicsstub_hh)
-#define pylith_problems_observerphysicsstub_hh
+#pragma once
 
 #include "pylith/testing/testingfwd.hh" // forward declarations
 
@@ -75,7 +67,5 @@ private:
     const ObserverPhysicsStub& operator=(const ObserverPhysicsStub&); ///< Not implemented
 
 }; // ObserverPhysicsStub
-
-#endif // pylith_problems_observerphysicsstub_hh
 
 // End of file

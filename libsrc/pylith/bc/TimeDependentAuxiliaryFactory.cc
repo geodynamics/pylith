@@ -10,7 +10,7 @@
 
 #include <portinfo>
 
-#include "TimeDependentAuxiliaryFactory.hh" // implementation of object methods
+#include "pylith/bc/TimeDependentAuxiliaryFactory.hh" // implementation of object methods
 
 #include "pylith/topology/Field.hh" // HOLDSA AuxiliaryField
 #include "pylith/topology/FieldQuery.hh" // USES FieldQuery

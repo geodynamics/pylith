@@ -7,17 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-//
+#pragma once
 
-/** @file libsrc/bc/TimeDependentAuxiliaryFactory.hh
- *
- * @brief C++ helper class for setting up auxiliary fields for time-dependent boundary conditions.
- */
-
-#if !defined(pylith_bc_timedependentauxiliaryfactory_hh)
-#define pylith_bc_timedependentauxiliaryfactory_hh
-
-#include "bcfwd.hh" // forward declarations
+#include "pylith/bc/bcfwd.hh" // forward declarations
 #include "pylith/feassemble/AuxiliaryFactory.hh" // ISA AuxiliaryFactory
 
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // USES TimeHistory
@@ -97,7 +89,5 @@ private:
     const TimeDependentAuxiliaryFactory& operator=(const TimeDependentAuxiliaryFactory&); ///< Not implemented
 
 }; // class TimeDependentAuxiliaryFactory
-
-#endif // pylith_bc_timedependentauxiliaryfactory_hh
 
 // End of file

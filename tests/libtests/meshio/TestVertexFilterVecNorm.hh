@@ -7,17 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/**
- * @file tests/libtests/meshio/TestVertexFilterVecNorm.hh
- *
- * @brief C++ TestVertexFilterVecNorm object
- *
- * C++ unit testing for VertexFilterVecNorm.
- */
-
-#if !defined(pylith_meshio_testvertexfiltervecnorm_hh)
-#define pylith_meshio_testvertexfiltervecnorm_hh
+#pragma once
 
 #include <cppunit/extensions/HelperMacros.h>
 
@@ -49,7 +39,5 @@ public:
     void testFilter(void);
 
 }; // class TestVertexFilterVecNorm
-
-#endif // pylith_meshio_testvertexfiltervecnorm_hh
 
 // End of file

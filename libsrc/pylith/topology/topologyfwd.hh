@@ -7,17 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/** @file libsrc/topology/topologyfwd.hh
- *
- * @brief Forward declarations for PyLith topology objects.
- *
- * Including this header file eliminates the need to use separate
- * forward declarations.
- */
-
-#if !defined(pylith_topology_topologyfwd_hh)
-#define pylith_topology_topologyfwd_hh
+#pragma once
 
 #include "pylith/utils/types.hh"
 
@@ -49,7 +39,5 @@ namespace pylith {
 
     } // topology
 } // pylith
-
-#endif // pylith_topology_topologyfwd_hh
 
 // End of file

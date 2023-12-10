@@ -7,11 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-#if !defined(pylith_topology_field_hh)
-#define pylith_topology_field_hh
-
-#include "FieldBase.hh" // ISA FieldBase
+#include "pylith/topology/FieldBase.hh" // ISA FieldBase
 #include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
 #include "pylith/utils/petscfwd.h" // HASA PetscVec
@@ -303,7 +301,5 @@ private:
     const Field& operator=(const Field&); ///< Not implemented
 
 }; // Field
-
-#endif // pylith_topology_field_hh
 
 // End of file

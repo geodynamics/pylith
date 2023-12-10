@@ -7,6 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
 /**
  * @file libsrc/topology/VisitorSubmesh.hh
@@ -23,11 +24,7 @@
  * or field of a mesh).
  */
 
-#if !defined(pylith_topology_visitorsubmesh_hh)
-#define pylith_topology_visitorsubmesh_hh
-
-// Include directives ---------------------------------------------------
-#include "topologyfwd.hh" // forward declarations
+#include "pylith/topology/topologyfwd.hh" // forward declarations
 
 #include "pylith/utils/petscfwd.h" // HASA PetscVec, PetscSection
 
@@ -295,7 +292,5 @@ private:
 }; // SubmeshIS
 
 #include "VisitorSubmesh.icc"
-
-#endif // pylith_topology_visitorsubmesh_hh
 
 // End of file

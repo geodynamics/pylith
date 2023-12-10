@@ -7,17 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/** @file libsrc/faults/faultsfwd.hh
- *
- * @brief Forward declarations for PyLith faults objects.
- *
- * Including this header file eliminates the need to use separate
- * forward declarations.
- */
-
-#if !defined(pylith_faults_faultsfwd_hh)
-#define pylith_faults_faultsfwd_hh
+#pragma once
 
 namespace pylith {
     namespace faults {
@@ -41,7 +31,5 @@ namespace pylith {
         class FaultOps;
     } // faults
 } // pylith
-
-#endif // pylith_faults_faultsfwd_hh
 
 // End of file

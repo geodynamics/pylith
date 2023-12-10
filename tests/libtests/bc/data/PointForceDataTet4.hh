@@ -7,9 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-#if !defined(pylith_bc_forcedatadatatet4_hh)
-#define pylith_bc_forcedatadatatet4_hh
+#pragma once
 
 #include "PointForceData.hh"
 
@@ -51,7 +49,5 @@ private:
     static const char* _meshFilename; ///< Filename for input mesh.
     static const char* _dbFilename; ///< Filename of simple spatial database.
 };
-
-#endif // pylith_bc_forcedatadatatet4_hh
 
 // End of file

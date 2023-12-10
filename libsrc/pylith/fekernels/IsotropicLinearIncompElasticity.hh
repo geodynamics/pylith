@@ -9,9 +9,9 @@
  * See https://mit-license.org/ and LICENSE.md and for license information.
  * =================================================================================================
  */
+#pragma once
 
-/** @file libsrc/fekernels/IsotropicLinearIncompElasticity.hh
- *
+/*
  * Kernels for linear incompressible elasticity WITHOUT inertia.
  *
  * Solution fields: [disp(dim), pressure(1)]
@@ -56,10 +56,7 @@
  * @param[out] f0 [dim].
  */
 
-#if !defined(pylith_fekernels_isotropiclinearincompelasticity_hh)
-#define pylith_fekernels_isotropiclinearincompelasticity_hh
-
-#include "fekernelsfwd.hh" // forward declarations
+#include "pylith/fekernels/fekernelsfwd.hh" // forward declarations
 
 #include "pylith/fekernels/IncompressibleElasticity.hh" // USES IncompressibleElasticity kernels
 #include "pylith/fekernels/IsotropicLinearElasticity.hh" // USES IsotropicLinearElasticity kernels
@@ -1127,7 +1124,5 @@ public:
     } // cauchyStress_infinitesimalStrain_refState_asVector
 
 }; // IsotropicLinearIncompElasticity3D
-
-#endif // pylith_fekernels_isotropiclinearincompelasticity_hh
 
 // End of file

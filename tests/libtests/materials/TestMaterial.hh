@@ -7,15 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/**
- * @file tests/libtests/materials/TestMaterial.hh
- *
- * @brief C++ abstract base class for testing material objects.
- */
-
-#if !defined(pylith_materials_testMaterial_hh)
-#define pylith_materials_testMaterial_hh
+#pragma once
 
 #include <cppunit/extensions/HelperMacros.h>
 #include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
@@ -191,7 +183,5 @@ public:
 
     bool isExplicit; ///< True for explicit time stepping.
 };
-
-#endif // pylith_materials_testMaterial_hh
 
 // End of file

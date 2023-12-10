@@ -7,15 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/**
- * @file libsrc/meshio/OutputSolnPoints.hh
- *
- * @brief C++ object for managing solution output over a an arbitrary set of points.
- */
-
-#if !defined(pylith_meshio_outputsolnpoints_hh)
-#define pylith_meshio_outputsolnpoints_hh
+#pragma once
 
 #include "pylith/meshio/OutputSoln.hh" // ISA OutputSoln
 
@@ -111,7 +103,5 @@ private:
     const OutputSolnPoints& operator=(const OutputSolnPoints&); ///< Not implemented
 
 }; // OutputSolnPoints
-
-#endif // pylith_meshio_outputsolnpoints_hh
 
 // End of file

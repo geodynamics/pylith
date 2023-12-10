@@ -11,7 +11,7 @@
 
 #include <portinfo>
 
-#include "IntegratorInterface.hh" // implementation of object methods
+#include "pylith/feassemble/IntegratorInterface.hh" // implementation of object methods
 
 #include "pylith/feassemble/InterfacePatches.hh" // USES InterfacePatches
 #include "pylith/feassemble/DSLabelAccess.hh" // USES DSLabelAccess

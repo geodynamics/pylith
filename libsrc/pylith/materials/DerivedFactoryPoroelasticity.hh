@@ -7,16 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/** @file libsrc/materials/DerivedFactoryElasticity.hh
- *
- * @brief C++ helper class for setting up derived subfields for elastic materials.
- */
-
-#if !defined(pylith_materials_derivedfactoryporoelasticity_hh)
-#define pylith_materials_derivedfactoryporoelasticity_hh
-
-#include "materialsfwd.hh" // forward declarations
+#include "pylith/materials/materialsfwd.hh" // forward declarations
 #include "pylith/materials/DerivedFactoryElasticity.hh" // ISA DerivedFactoryElasticity
 
 class pylith::materials::DerivedFactoryPoroelasticity : public pylith::materials::DerivedFactoryElasticity {
@@ -47,7 +40,5 @@ private:
     const DerivedFactoryPoroelasticity& operator=(const DerivedFactoryPoroelasticity&); ///< Not implemented
 
 }; // class DerivedFactoryPoroelasticity
-
-#endif // pylith_materials_derivedfactoryporoelasticity_hh
 
 // End of file

@@ -7,14 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/** @file libsrc/feassemble/PhysicsImplementation.hh
- *
- * @brief C++ abstract base class defining interface for constraining degrees of freedom in the solution.
- */
-
-#if !defined(pylith_feassemble_physicaimplementation_hh)
-#define pylith_feassemble_physicaimplementation_hh
+#pragma once
 
 #include "pylith/feassemble/feassemblefwd.hh"
 
@@ -114,7 +107,5 @@ private:
     const PhysicsImplementation& operator=(const PhysicsImplementation&); ///< Not implemented
 
 }; // class PhysicsImplementation
-
-#endif // pylith_feassemble_physicaimplementation_hh
 
 // End of file

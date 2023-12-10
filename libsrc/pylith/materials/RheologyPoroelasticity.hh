@@ -7,16 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/** @file libsrc/materials/RheologyPoroelasticity.hh
- *
- * @brief C++ abstract base class for bulk rheologies associated with the poroelasticity equation.
- */
-
-#if !defined(pylith_materials_rheologyporoelasticity_hh)
-#define pylith_materials_rheologyporoelasticity_hh
-
-#include "materialsfwd.hh" // forward declarations
+#include "pylith/materials/materialsfwd.hh" // forward declarations
 #include "pylith/utils/PyreComponent.hh" // ISA PyreComponent
 
 #include "pylith/topology/topologyfwd.hh" // USES Field
@@ -205,7 +198,5 @@ private:
     const RheologyPoroelasticity& operator=(const RheologyPoroelasticity&); /// Not implemented.
 
 }; // class RheologyPoroelasticity
-
-#endif // pylith_materials_rheologyporoelasticity_hh
 
 // End of file

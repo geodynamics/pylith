@@ -7,17 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/**
- * @file tests/libtests/meshio/TestMeshIO.hh
- *
- * @brief C++ TestMeshIO object
- *
- * C++ unit testing for MeshIO.
- */
-
-#if !defined(pylith_meshio_testmeshio_hh)
-#define pylith_meshio_testmeshio_hh
+#pragma once
 
 #include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
@@ -91,7 +81,5 @@ public:
 
     std::string filename;
 };
-
-#endif // pylith_meshio_testmeshio_hh
 
 // End of file

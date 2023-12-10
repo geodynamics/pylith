@@ -9,9 +9,9 @@
  * See https://mit-license.org/ and LICENSE.md and for license information.
  * =================================================================================================
  */
+#pragma once
 
-/** @file libsrc/fekernels/IsotropicLinearMaxwell.hh
- *
+/*
  * Kernels for linear Maxwell viscoelastic plane strain.
  *
  * Solution fields: [disp(dim), ...]
@@ -70,10 +70,7 @@
  * @param[out] f0 [dim].
  */
 
-#if !defined(pylith_fekernels_isotropiclinearmaxwell_hh)
-#define pylith_fekernels_isotropiclinearmaxwell_hh
-
-#include "fekernelsfwd.hh" // forward declarations
+#include "pylith/fekernels/fekernelsfwd.hh" // forward declarations
 #include "pylith/fekernels/Elasticity.hh" // USES Elasticity kernels
 #include "pylith/fekernels/IsotropicLinearElasticity.hh" // USES IsotropicLinearElasticity* kernels
 
@@ -1543,7 +1540,5 @@ public:
     }
 
 }; // IsotropicLinearMaxwell3D
-
-#endif // pylith_fekernels_isotropiclinearmaxwell_hh
 
 // End of file

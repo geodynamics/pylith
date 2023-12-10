@@ -7,16 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/** @file libsrc/bc/DiagnosticFieldFactory.hh
- *
- * @brief C++ helper class for setting up derived subfields for bc.
- */
-
-#if !defined(pylith_bc_diagnosticfieldfactory_hh)
-#define pylith_bc_diagnosticfieldfactory_hh
-
-#include "bcfwd.hh" // forward declarations
+#include "pylith/bc/bcfwd.hh" // forward declarations
 #include "pylith/topology/FieldFactory.hh" // ISA AuxiliaryFactory
 
 class pylith::bc::DiagnosticFieldFactory : public pylith::topology::FieldFactory {
@@ -50,7 +43,5 @@ private:
     const DiagnosticFieldFactory& operator=(const DiagnosticFieldFactory&); ///< Not implemented
 
 }; // class DiagnosticFieldFactory
-
-#endif // pylith_bc_diagnosticfieldfactory_hh
 
 // End of file

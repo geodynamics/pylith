@@ -10,7 +10,7 @@
 
 #include <portinfo>
 
-#include "DependenciesVersion.hh" // Implementation of class methods
+#include "pylith/utils/DependenciesVersion.hh" // Implementation of class methods
 
 #include "mpi.h"
 #include "H5pubconf.h"

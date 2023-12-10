@@ -7,10 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-//
+#pragma once
 
-/** @file libsrc/bc/DirichletTimeDependent.hh
- *
+/*
  * @brief C++ implementation of Dirichlet (prescribed values at
  * degrees of freedom) boundary condition with time-dependent expression
  * for value.
@@ -28,9 +27,6 @@
  *        time history start (scalar) t_2(x)
  *        time history value (scalar) a(t-t_2(x))
  */
-
-#if !defined(pylith_bc_dirichlettimedependent_hh)
-#define pylith_bc_dirichlettimedependent_hh
 
 #include "pylith/bc/BoundaryCondition.hh" // ISA BoundaryCondition
 
@@ -181,7 +177,5 @@ private:
     const DirichletTimeDependent& operator=(const DirichletTimeDependent&); ///< Not implemented.
 
 }; // class DirichletTimeDependent
-
-#endif // pylith_bc_dirichlettimedependent_hh
 
 // End of file

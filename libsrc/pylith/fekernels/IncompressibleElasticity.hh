@@ -9,9 +9,9 @@
  * See https://mit-license.org/ and LICENSE.md and for license information.
  * =================================================================================================
  */
+#pragma once
 
-/** @file libsrc/fekernels/IncompressibleElasticity.hh
- *
+/*
  * Kernels for incompressible elasticity independent of rheology.
  *
  * Solution fields: [disp(dim), pressure(1)]
@@ -38,10 +38,7 @@
  * @param[out] f0 [dim].
  */
 
-#if !defined(pylith_fekernels_incompressibleelasticity_hh)
-#define pylith_fekernels_incompressibleelasticity_hh
-
-#include "fekernelsfwd.hh" // forward declarations
+#include "pylith/fekernels/fekernelsfwd.hh" // forward declarations
 
 #include "pylith/fekernels/Elasticity.hh" // USES Elasticity kernels
 
@@ -219,7 +216,5 @@ public:
     } // meanStress_refState
 
 }; // IncompressibleElasticity
-
-#endif // pylith_fekernels_incompressibleelasticity_hh
 
 // End of file

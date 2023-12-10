@@ -10,7 +10,7 @@
 
 #include <portinfo>
 
-#include "KinSrcAuxiliaryFactory.hh" // implementation of object methods
+#include "pylith/faults/KinSrcAuxiliaryFactory.hh" // implementation of object methods
 
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/FieldQuery.hh" // HOLDSA FieldQuery

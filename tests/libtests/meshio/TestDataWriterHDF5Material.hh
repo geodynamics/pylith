@@ -7,17 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/**
- * @file tests/libtests/meshio/TestDataWriterHDF5Material.hh
- *
- * @brief C++ TestDataWriterHDF5Material object
- *
- * C++ unit testing for DataWriterHDF5Material.
- */
-
-#if !defined(pylith_meshio_testdatawriterhdf5material_hh)
-#define pylith_meshio_testdatawriterhdf5material_hh
+#pragma once
 
 #include "TestDataWriterHDF5.hh" // ISA TestDataWriterHDF5
 #include "TestDataWriterMaterial.hh" // ISA TestDataWriterMaterial
@@ -70,7 +60,5 @@ protected:
 
 // ------------------------------------------------------------------------------------------------
 class pylith::meshio::TestDataWriterHDF5Material_Data : public TestDataWriterHDF5_Data, public TestDataWriterMaterial_Data {};
-
-#endif // pylith_meshio_testdatawriterhdf5material_hh
 
 // End of file

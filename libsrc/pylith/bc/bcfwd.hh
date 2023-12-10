@@ -7,17 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/** @file libsrc/bc/bcfwd.hh
- *
- * @brief Forward declarations for PyLith boundary condition objects.
- *
- * Including this header file eliminates the need to use separate
- * forward declarations.
- */
-
-#if !defined(pylith_bc_bcfwd_hh)
-#define pylith_bc_bcfwd_hh
+#pragma once
 
 namespace pylith {
     namespace bc {
@@ -38,7 +28,5 @@ namespace pylith {
 
     } // bc
 } // pylith
-
-#endif // pylith_bc_bcfwd_hh
 
 // End of file

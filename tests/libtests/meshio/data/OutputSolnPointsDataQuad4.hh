@@ -7,9 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-#if !defined(pylith_meshio_outputsolnpointsquad4_hh)
-#define pylith_meshio_outputsolnpointsquad4_hh
+#pragma once
 
 #include "OutputSolnPointsData.hh"
 
@@ -43,7 +41,5 @@ private:
     static const PylithScalar _coefs[]; ///< Polynomial coefficients for field.
 
 };
-
-#endif // pylith_meshio_outputsolnpointsquad4_hh
 
 // End of file

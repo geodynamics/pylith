@@ -7,18 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/**
- * @file libsrc/topology/RefineUniform.hh
- *
- * @brief Object for managing uniform global mesh refinement.
- */
-
-#if !defined(pylith_topology_refineuniform_hh)
-#define pylith_topology_refineuniform_hh
-
-// Include directives ---------------------------------------------------
-#include "topologyfwd.hh" // forward declarations
+#include "pylith/topology/topologyfwd.hh" // forward declarations
 
 // RefineUniform --------------------------------------------------------
 /// Object for managing uniform global mesh refinement.
@@ -54,7 +45,5 @@ private:
     const RefineUniform& operator=(const RefineUniform&); ///< Not implemented
 
 }; // RefineUniform
-
-#endif // pylith_topology_refineuniform_hh
 
 // End of file

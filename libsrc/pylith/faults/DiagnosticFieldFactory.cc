@@ -10,7 +10,7 @@
 
 #include <portinfo>
 
-#include "DiagnosticFieldFactory.hh" // implementation of object methods
+#include "pylith/faults/DiagnosticFieldFactory.hh" // implementation of object methods
 
 #include "pylith/topology/Field.hh" // USES Field
 

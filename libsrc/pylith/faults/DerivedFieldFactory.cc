@@ -10,7 +10,7 @@
 
 #include <portinfo>
 
-#include "DerivedFieldFactory.hh" // implementation of object methods
+#include "pylith/faults/DerivedFieldFactory.hh" // implementation of object methods
 
 #include "pylith/topology/Field.hh" // USES Field
 

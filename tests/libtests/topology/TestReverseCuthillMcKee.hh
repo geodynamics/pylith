@@ -7,17 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/**
- * @file tests/libtests/topology/TestReverseCuthillMcKee.hh
- *
- * @brief C++ TestReverseCuthillMcKee object
- *
- * C++ unit testing for ReverseCuthillMcKee.
- */
-
-#if !defined(pylith_topology_testreversecuthillmckee_hh)
-#define pylith_topology_testreversecuthillmckee_hh
+#pragma once
 
 #include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
@@ -76,7 +66,5 @@ public:
     const char* faultLabel; ///< Label for fault (use NULL for no fault).
 
 };  // TestReverseCuthillMcKee_Data
-
-#endif // pylith_topology_testreversecuthillmckee_hh
 
 // End of file

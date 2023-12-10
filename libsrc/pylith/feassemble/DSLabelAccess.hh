@@ -7,18 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/**
- * @file libsrc/feassemble/DSLabelAccess.hh
- *
- * @brief C++ helper class for accessing PetscDMLabel, PetscDS, and PetscWeakForm
- * for a given DM, label, and label value.
- */
-
-#if !defined(pylith_feassemble_dslabelaccess_hh)
-#define pylith_feassemble_dslabelaccess_hh
-
-#include "feassemblefwd.hh" // forward declarations
+#include "pylith/feassemble/feassemblefwd.hh" // forward declarations
 
 #include "pylith/utils/types.hh" // USES PetscInt
 #include "pylith/utils/petscfwd.h" // HASA PetscDM, PetscDS, PetscWeakForm
@@ -111,7 +102,5 @@ private:
 };
 
 #include "DSLabelAccess.icc"
-
-#endif // pylith_feassemble_dslabelaccess_hh
 
 // End of file

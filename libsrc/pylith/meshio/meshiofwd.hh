@@ -7,17 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/** @file libsrc/meshio/meshiofwd.hh
- *
- * @brief Forward declarations for PyLith meshio objects.
- *
- * Including this header file eliminates the need to use separate
- * forward declarations.
- */
-
-#if !defined(pylith_meshio_meshiofwd_hh)
-#define pylith_meshio_meshiofwd_hh
+#pragma once
 
 namespace pylith {
     namespace meshio {
@@ -63,7 +53,5 @@ namespace pylith {
 
     } // meshio
 } // pylith
-
-#endif // pylith_meshio_meshiofwd_hh
 
 // End of file

@@ -7,17 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/**
- * @file libsrc/problems/ObserverPhysics.hh
- *
- * @brief Observer of physics (e.g., material, boundary condition, or interface condition).
- */
-
-#if !defined(pylith_problems_observerphysics_hh)
-#define pylith_problems_observerphysics_hh
-
-#include "problemsfwd.hh" // forward declarations
+#include "pylith/problems/problemsfwd.hh" // forward declarations
 
 #include "pylith/problems/Observer.hh" // ISA Observer
 
@@ -86,7 +78,5 @@ private:
     const ObserverPhysics& operator=(const ObserverPhysics&); ///< Not implemented
 
 }; // ObserverPhysics
-
-#endif // pylith_problems_observerphysics_hh
 
 // End of file

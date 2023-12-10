@@ -7,17 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/**
- * @file libsrc/meshio/MeshIOCubit.hh
- *
- * @brief C++ input/output manager for CUBIT Exodus II files.
- */
-
-#if !defined(pylith_meshio_meshiocubit_hh)
-#define pylith_meshio_meshiocubit_hh
-
-#include "MeshIO.hh" // ISA MeshIO
+#include "pylith/meshio/MeshIO.hh" // ISA MeshIO
 
 #include <string> // HASA std::string
 
@@ -138,7 +130,5 @@ private:
 }; // MeshIOCubit
 
 #include "MeshIOCubit.icc" // inline methods
-
-#endif // pylith_meshio_meshiocubit_hh
 
 // End of file

@@ -7,21 +7,16 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/**
- * @file libsrc/problems/Problem.hh
- *
- * @brief C++ object that manages the solution of a problem.formulating the equations.
- *
+/*
  * We cast the problem in terms of F(t,s,\dot{s}) = G(t,s), s(t0) = s0.
  *
  * In PETSc time stepping (TS) notation, G is the RHS, and F is the I
  * function (which we call the LHS).
  */
-#if !defined(pylith_problems_problem_hh)
-#define pylith_problems_problem_hh
 
-#include "problemsfwd.hh" // forward declarations
+#include "pylith/problems/problemsfwd.hh" // forward declarations
 
 #include "pylith/utils/PyreComponent.hh" // ISA PyreComponent
 
@@ -220,7 +215,5 @@ private:
     const Problem& operator=(const Problem&); ///< Not implemented
 
 }; // Problem
-
-#endif // pylith_problems_problem_hh
 
 // End of file

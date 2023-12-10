@@ -7,17 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/** @file libsrc/faults/KinSrcLiuCos.hh
- *
- * @brief C++ implementation of a Liu cosine-sine slip time function.
- */
-
-#if !defined(pylith_faults_kinsrcliucos_hh)
-#define pylith_faults_kinsrcliucos_hh
-
-// Include directives ---------------------------------------------------
-#include "KinSrc.hh"
+#include "pylith/faults/KinSrc.hh"
 
 // KinSrcLiuCos ------------------------------------------------------
 /** @brief Slip function time history from Liu, Archuleta, and Hartzell,
@@ -183,7 +175,5 @@ private:
     const KinSrcLiuCos& operator=(const KinSrcLiuCos&); ///< Not implemented
 
 }; // class KinSrcLiuCos
-
-#endif // pylith_faults_kinsrcliucos_hh
 
 // End of file

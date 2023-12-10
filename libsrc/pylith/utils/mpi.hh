@@ -7,15 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/**
- * @file libsrc/utils/mpi.hh
- *
- * @brief Simple functions for running in parallel.
- */
-
-#if !defined(pylith_utils_mpi_hh)
-#define pylith_utils_mpi_hh
+#pragma once
 
 #include <mpi.h>
 
@@ -39,7 +31,5 @@ public:
         };
     } // utils
 } // pylith
-
-#endif // pylith_utils_mpi_hh
 
 // End of file

@@ -7,16 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/** @file libsrc/materials/RheologyElasticity.hh
- *
- * @brief C++ abstract base class for bulk rheologies associated with the elasticity equation.
- */
-
-#if !defined(pylith_materials_rheologyelasticity_hh)
-#define pylith_materials_rheologyelasticity_hh
-
-#include "materialsfwd.hh" // forward declarations
+#include "pylith/materials/materialsfwd.hh" // forward declarations
 #include "pylith/utils/PyreComponent.hh" // ISA PyreComponent
 
 #include "pylith/topology/topologyfwd.hh" // USES Field
@@ -133,7 +126,5 @@ private:
     const RheologyElasticity& operator=(const RheologyElasticity&); /// Not implemented.
 
 }; // class RheologyElasticity
-
-#endif // pylith_materials_rheologyelasticity_hh
 
 // End of file

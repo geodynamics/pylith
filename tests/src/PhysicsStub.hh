@@ -7,16 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/**
- * @file libsrc/problems/PhysicsStub.hh
- *
- * @brief Minimal C++ implementation of Physics to allow testing of basic Physics functionality and use of Physics
- * objects in other tests.
- */
-
-#if !defined(pylith_problems_physicsstub_hh)
-#define pylith_problems_physicsstub_hh
+#pragma once
 
 #include "pylith/testing/testingfwd.hh" // forward declarations
 
@@ -88,7 +79,5 @@ private:
     const PhysicsStub& operator=(const PhysicsStub&); ///< Not implemented
 
 }; // PhysicsStub
-
-#endif // pylith_problems_physicsstub_hh
 
 // End of file

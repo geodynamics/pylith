@@ -1,3 +1,4 @@
+
 // =================================================================================================
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
@@ -10,9 +11,9 @@
 
 #include <portinfo>
 
-#include "TestArray.hh" // implementation of class methods
+#include "pylith/utils/TestArray.hh" // implementation of class methods
 
-#include "array.hh" // USES scalar_array
+#include "pylith/utils/array.hh" // USES scalar_array
 
 #include <iostream> // USES std::cerr
 #include <cassert> // USES assert()

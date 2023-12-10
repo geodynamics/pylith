@@ -7,13 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/**
- * @file libsrc/meshio/DataWriterHDF5Ext.hh
- *
- * @brief Object for writing finite-element data to HDF5 file with
- * datasets stored in raw external data files.
- *
+/*
  * HDF5 schema for PyLith output.
  *
  * / - root group
@@ -31,11 +27,7 @@
  *       [ntimesteps, ncells, fiberdim]
  */
 
-#if !defined(pylith_meshio_datawriterhdf5ext_hh)
-#define pylith_meshio_datawriterhdf5ext_hh
-
-// Include directives ---------------------------------------------------
-#include "DataWriter.hh" // ISA DataWriter
+#include "pylith/meshio/DataWriter.hh" // ISA DataWriter
 
 #include <string> // USES std::string
 #include <map> // HASA std::map
@@ -165,7 +157,5 @@ private:
 }; // DataWriterHDF5Ext
 
 #include "DataWriterHDF5Ext.icc" // inline methods
-
-#endif // pylith_meshio_datawriterhdf5ext_hh
 
 // End of file

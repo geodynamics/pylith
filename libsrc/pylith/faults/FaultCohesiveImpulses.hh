@@ -7,17 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/** @file libsrc/faults/FaultCohesiveImpulses.hh
- *
- * @brief C++ implementation for a fault surface with kinematic
- * (prescribed) slip implemented with cohesive elements which we decompose into impulses for a Green function.
- */
-
-#if !defined(pylith_faults_faultcohesiveimpulses_hh)
-#define pylith_faults_faultcohesiveimpulses_hh
-
-#include "FaultCohesive.hh" // ISA FaultCohesive
+#include "pylith/faults/FaultCohesive.hh" // ISA FaultCohesive
 
 class pylith::faults::FaultCohesiveImpulses : public pylith::faults::FaultCohesive {
     friend class TestFaultCohesiveImpulses; // unit testing
@@ -131,7 +123,5 @@ private:
     const FaultCohesiveImpulses& operator=(const FaultCohesiveImpulses&); ///< Not implemented.
 
 }; // class FaultCohesiveImpulses
-
-#endif // pylith_faults_faultcohesiveimpulses_hh
 
 // End of file

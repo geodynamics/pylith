@@ -7,16 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/** @file libsrc/materials/Elasticity.hh
- *
- * @brief C++ class for solving elasticity equation.
- */
-
-#if !defined(pylith_materials_elasticity_hh)
-#define pylith_materials_elasticity_hh
-
-#include "materialsfwd.hh" // forward declarations
+#include "pylith/materials/materialsfwd.hh" // forward declarations
 
 #include "pylith/materials/Material.hh" // ISA Material
 
@@ -192,7 +185,5 @@ private:
 };
 
 // class Elasticity
-
-#endif // pylith_materials_elasticity_hh
 
 // End of file

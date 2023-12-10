@@ -10,7 +10,7 @@
 
 #include <portinfo>
 
-#include "TopologyOps.hh" // implementation of object methods
+#include "pylith/faults/TopologyOps.hh" // implementation of object methods
 
 #include "pylith/topology/MeshOps.hh" // USES isCohesiveCell()
 #include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR

@@ -9,9 +9,9 @@
  * See https://mit-license.org/ and LICENSE.md and for license information.
  * =================================================================================================
  */
+#pragma once
 
-/** @file libsrc/fekernels/Elasticity.hh
- *
+/*
  * Solution fields: [disp(dim), vel(dim, optional)]
  *
  * \int_V \vec{\phi}_u \cdot \left( \rho \frac{\partial \vec{v}(t)}{\partial t} \right) \, dV =
@@ -40,10 +40,7 @@
  * @param[out] f0 [dim].
  */
 
-#if !defined(pylith_fekernels_elasticity_hh)
-#define pylith_fekernels_elasticity_hh
-
-#include "fekernelsfwd.hh" // forward declarations
+#include "pylith/fekernels/fekernelsfwd.hh" // forward declarations
 
 #include "pylith/fekernels/Tensor.hh"
 
@@ -633,7 +630,5 @@ public:
     } // traction
 
 }; // Elasticity3D
-
-#endif // pylith_fekernels_elasticity3d_hh
 
 // End of file

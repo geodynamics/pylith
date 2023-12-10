@@ -10,7 +10,7 @@
 
 #include <portinfo>
 
-#include "InitialCondition.hh" // implementation of class methods
+#include "pylith/problems/InitialCondition.hh" // implementation of class methods
 
 #include "pylith/topology/Field.hh" // USES Field
 

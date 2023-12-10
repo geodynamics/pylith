@@ -7,17 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/**
- * @file libsrc/problems/ObserverSoln.hh
- *
- * @brief ObserverSoln of subject.
- */
-
-#if !defined(pylith_problems_observersoln_hh)
-#define pylith_problems_observersoln_hh
-
-#include "problemsfwd.hh" // forward declarations
+#include "pylith/problems/problemsfwd.hh" // forward declarations
 
 #include "pylith/problems/Observer.hh" // ISA Observer
 
@@ -80,7 +72,5 @@ private:
     const ObserverSoln& operator=(const ObserverSoln&); ///< Not implemented
 
 }; // ObserverSoln
-
-#endif // pylith_problems_observersoln_hh
 
 // End of file

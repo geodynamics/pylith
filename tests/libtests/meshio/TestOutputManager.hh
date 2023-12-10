@@ -7,17 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/**
- * @file tests/libtests/meshio/TestOutputManager.hh
- *
- * @brief C++ TestOutputManager object
- *
- * C++ unit testing for OutputManager.
- */
-
-#if !defined(pylith_meshio_testoutputmanager_hh)
-#define pylith_meshio_testoutputmanager_hh
+#pragma once
 
 #include <cppunit/extensions/HelperMacros.h>
 
@@ -77,7 +67,5 @@ public:
     void testAppendCellField(void);
 
 }; // class TestOutputManager
-
-#endif // pylith_meshio_testoutputmanager_hh
 
 // End of file

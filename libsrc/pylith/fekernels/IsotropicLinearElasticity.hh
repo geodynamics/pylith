@@ -9,9 +9,9 @@
  * See https://mit-license.org/ and LICENSE.md and for license information.
  * =================================================================================================
  */
+#pragma once
 
-/** @file libsrc/fekernels/IsotropicLinearElasticity.hh
- *
+/*
  * Kernels for isotropic, linear elasticity.
  *
  * Solution fields: [disp(dim), vel(dim, optional)]
@@ -60,10 +60,7 @@
  * @param[out] f0 [dim].
  */
 
-#if !defined(pylith_fekernels_isotropiclinearelasticity_hh)
-#define pylith_fekernels_isotropiclinearelasticity_hh
-
-#include "fekernelsfwd.hh" // forward declarations
+#include "pylith/fekernels/fekernelsfwd.hh" // forward declarations
 #include "pylith/fekernels/Elasticity.hh" // USES Elasticity kernels
 #include "pylith/fekernels/FaultCohesiveKin.hh" // USES FaultCohesiveKin kernels
 
@@ -1325,7 +1322,5 @@ public:
     }
 
 }; // IsotropicLinearElasticity3D
-
-#endif // pylith_fekernels_isotropiclinearelasticity_hh
 
 // End of file

@@ -10,7 +10,7 @@
 
 #include <portinfo>
 
-#include "FaultOps.hh" // implementation of class methods
+#include "pylith/faults/FaultOps.hh" // implementation of class methods
 
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Mesh.hh" // USES Mesh

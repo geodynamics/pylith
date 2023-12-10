@@ -7,12 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-#if !defined(pylith_meshio_hdf5_hh)
-#define pylith_meshio_hdf5_hh
-
-// Include directives ---------------------------------------------------
-#include "meshiofwd.hh" // forward declarations
+#include "pylith/meshio/meshiofwd.hh" // forward declarations
 
 #include "pylith/utils/arrayfwd.hh" // USES string_vector
 
@@ -323,7 +320,5 @@ private:
     hid_t _file; ///< HDF5 file
 
 }; // HDF5
-
-#endif // pylith_meshio_hdf5_hh
 
 // End of file

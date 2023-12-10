@@ -7,17 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/**
- * @file libsrc/meshio/MeshIOAscii.hh
- *
- * @brief C++ input/output manager for PyLith ASCII mesh files.
- */
-
-#if !defined(pylith_meshio_meshioascii_hh)
-#define pylith_meshio_meshioascii_hh
-
-#include "MeshIO.hh" // ISA MeshIO
+#include "pylith/meshio/MeshIO.hh" // ISA MeshIO
 
 #include "spatialdata/utils/utilsfwd.hh" // USES LineParser
 
@@ -131,7 +123,5 @@ private:
 }; // MeshIOAscii
 
 #include "MeshIOAscii.icc" // inline methods
-
-#endif // pylith_meshio_meshioascii_hh
 
 // End of file

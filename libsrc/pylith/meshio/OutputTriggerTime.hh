@@ -7,17 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/**
- * @file libsrc/meshio/OutputTriggerTime.hh
- *
- * @brief Base decision on whether to write output based on time since more recent write.
- */
-
-#if !defined(pylith_meshio_outputtriggertime_hh)
-#define pylith_meshio_outputtriggertime_hh
-
-#include "meshiofwd.hh" // forward declarations
+#include "pylith/meshio/meshiofwd.hh" // forward declarations
 
 #include "pylith/meshio/OutputTrigger.hh" // ISA OutputTrigger
 
@@ -69,7 +61,5 @@ private:
 };
 
 // OutputTriggerTime
-
-#endif // pylith_meshio_outputtriggertime_hh
 
 // End of file

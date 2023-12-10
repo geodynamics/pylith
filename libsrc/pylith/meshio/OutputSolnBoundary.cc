@@ -10,7 +10,7 @@
 
 #include <portinfo>
 
-#include "OutputSolnBoundary.hh" // implementation of class methods
+#include "pylith/meshio/OutputSolnBoundary.hh" // implementation of class methods
 
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/FieldOps.hh" // USES FieldOps

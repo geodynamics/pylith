@@ -7,17 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/**
- * @file libsrc/topology/MeshOps.hh
- *
- * @brief Simple operations on a Mesh object.
- */
-
-#if !defined(pylith_topology_meshops_hh)
-#define pylith_topology_meshops_hh
-
-#include "topologyfwd.hh" // forward declarations
+#include "pylith/topology/topologyfwd.hh" // forward declarations
 
 #include "pylith/utils/petscfwd.h" // USES PetscDM
 #include "pylith/utils/array.hh" // USES int_array
@@ -150,7 +142,5 @@ private:
     const MeshOps& operator=(const MeshOps&); ///< Not implemented
 
 }; // MeshOps
-
-#endif // pylith_topology_meshops_hh
 
 // End of file

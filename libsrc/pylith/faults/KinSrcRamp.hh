@@ -7,17 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/** @file libsrc/faults/KinSrcRamp.hh
- *
- * @brief C++ implementation of a constant slip rate slip time function.
- */
-
-#if !defined(pylith_faults_kinsrcramp_hh)
-#define pylith_faults_kinsrcramp_hh
-
-// Include directives ---------------------------------------------------
-#include "KinSrc.hh"
+#include "pylith/faults/KinSrc.hh"
 
 // KinSrcRamp ------------------------------------------------------
 /** @brief Slip with finite-duration ramp slip-time function.
@@ -191,7 +183,5 @@ private:
     const KinSrcRamp& operator=(const KinSrcRamp&); ///< Not implemented
 
 }; // class KinSrcRamp
-
-#endif // pylith_faults_kinsrcramp_hh
 
 // End of file

@@ -7,15 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/**
- * @file tests/libtests/faults/TestAdjustTopology.hh
- *
- * C++ unit tests for FaultCohesive::adjustTopology().
- */
-
-#if !defined(pylith_faults_testadjusttopology_hh)
-#define pylith_faults_testadjusttopology_hh
+#pragma once
 
 #include "pylith/topology/topologyfwd.hh" // HOLDSA Mesh
 
@@ -93,7 +85,5 @@ public:
     bool failureExpected; ///< Flag indicating adjust topology should fail.
 
 }; // TestAdjustTopology_Data
-
-#endif // pylith_faults_testadjusttopology_hh
 
 // End of file

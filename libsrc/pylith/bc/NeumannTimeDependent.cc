@@ -10,9 +10,9 @@
 
 #include <portinfo>
 
-#include "NeumannTimeDependent.hh" // implementation of object methods
+#include "pylith/bc/NeumannTimeDependent.hh" // implementation of object methods
 
-#include "TimeDependentAuxiliaryFactory.hh" // USES TimeDependentAuxiliaryFactory
+#include "pylith/bc/TimeDependentAuxiliaryFactory.hh" // USES TimeDependentAuxiliaryFactory
 
 #include "pylith/fekernels/NeumannTimeDependent.hh" // USES NeumannTimeDependent kernels
 

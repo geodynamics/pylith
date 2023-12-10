@@ -9,9 +9,9 @@
  * See https://mit-license.org/ and LICENSE.md and for license information.
  * =================================================================================================
  */
+#pragma once
 
-/** @file libsrc/fekernels/DispVel.hh
- *
+/*
  * Kernels for time evolution equation with displacement and velocity
  * solution fields.
  *
@@ -43,11 +43,8 @@
  * ======================================================================
  */
 
-#if !defined(pylith_fekernels_DispVel_hh)
-#define pylith_fekernels_DispVel_hh
-
 // Include directives ---------------------------------------------------
-#include "fekernelsfwd.hh" // forward declarations
+#include "pylith/fekernels/fekernelsfwd.hh" // forward declarations
 
 #include "pylith/utils/types.hh"
 
@@ -290,7 +287,5 @@ public:
     } // Jg0uv
 
 }; // DispVel
-
-#endif /* pylith_fekernels_DispVel_hh */
 
 /* End of file */

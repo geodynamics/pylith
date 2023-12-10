@@ -10,7 +10,7 @@
 
 #include <portinfo>
 
-#include "KinSrc.hh" // implementation of object methods
+#include "pylith/faults/KinSrc.hh" // implementation of object methods
 
 #include "pylith/faults/KinSrcAuxiliaryFactory.hh" // USES KinSrcAuxiliaryFactory
 #include "pylith/topology/Field.hh" // USES Field

@@ -7,17 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/**
- * @file tests/libtests/meshio/TestMeshIOCubit.hh
- *
- * @brief C++ TestMeshIOCubit object
- *
- * C++ unit testing for MeshIOCubit.
- */
-
-#if !defined(pylith_meshio_testmeshiocubit_hh)
-#define pylith_meshio_testmeshiocubit_hh
+#pragma once
 
 #include "TestMeshIO.hh"
 
@@ -50,7 +40,5 @@ protected:
     MeshIOCubit* _io; ///< Test subject.
 
 }; // class TestMeshIOCubit
-
-#endif // pylith_meshio_testmeshiocubit_hh
 
 // End of file

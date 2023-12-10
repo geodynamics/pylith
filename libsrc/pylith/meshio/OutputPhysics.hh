@@ -13,9 +13,7 @@
  *
  * @brief Manager for output of finite-element data (e.g., material, boundary condition, interface condition).
  */
-
-#if !defined(pylith_meshio_outputphysics_hh)
-#define pylith_meshio_outputphysics_hh
+#pragma once
 
 #include "meshiofwd.hh" // forward declarations
 
@@ -169,7 +167,5 @@ private:
     const OutputPhysics& operator=(const OutputPhysics&); ///< Not implemented
 
 }; // OutputPhysics
-
-#endif // pylith_meshio_outputphysics_hh
 
 // End of file

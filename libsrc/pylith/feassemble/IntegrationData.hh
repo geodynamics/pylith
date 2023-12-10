@@ -7,15 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/**
- * @file libsrc/feassemble/IntegrationData.hh
- *
- * @brief Object for managing data needed to integrate governing equations.
- */
-
-#if !defined(pylith_feassemble_integrationdata_hh)
-#define pylith_feassemble_integrationdata_hh
+#pragma once
 
 #include "pylith/feassemble/feassemblefwd.hh" // Forward declarations
 #include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
@@ -145,7 +137,5 @@ private:
     const IntegrationData& operator=(const IntegrationData&); ///< Not implemented.
 
 }; // IntegrationData
-
-#endif // pylith_feassemble_integrationdata_hh
 
 // End of file

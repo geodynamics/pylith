@@ -7,15 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/**
- * @file tests/libtests/feassemble/TestIntegratorDomain.hh
- *
- * @brief C++ class for testing IntegratorDomain.
- */
-
-#if !defined(pylith_feassemble_testintegratordomain_hh)
-#define pylith_feassemble_testintegratordomain_hh
+#pragma once
 
 #include <cppunit/extensions/HelperMacros.h>
 #include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
@@ -158,7 +150,5 @@ public:
     std::vector<IntegratorDomain::ProjectKernels> kernelsDerivedField;
     bool hasLHSJacobianLumpedInv;
 };
-
-#endif // pylith_feassemble_testintegratordomain_hh
 
 // End of file

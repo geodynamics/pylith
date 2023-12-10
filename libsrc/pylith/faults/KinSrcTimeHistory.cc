@@ -10,7 +10,7 @@
 
 #include <portinfo>
 
-#include "KinSrcTimeHistory.hh" // implementation of object methods
+#include "pylith/faults/KinSrcTimeHistory.hh" // implementation of object methods
 
 #include "pylith/faults/KinSrcAuxiliaryFactory.hh" // USES KinSrcAuxiliaryFactory
 

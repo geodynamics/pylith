@@ -7,17 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/** @file libsrc/problems/SolutionFactory.hh
- *
- * @brief C++ helper class for setting up solution fields for testing.
- */
-
-#if !defined(pylith_problems_solutionfactory_hh)
-#define pylith_problems_solutionfactory_hh
-
-// Include directives ---------------------------------------------------
-#include "problemsfwd.hh" // forward declarations
+#include "pylith/problems/problemsfwd.hh" // forward declarations
 #include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
 #include "pylith/topology/FieldBase.hh" // USES FieldBase::Descretization
@@ -101,7 +93,5 @@ private:
     const SolutionFactory& operator=(const SolutionFactory&); ///< Not implemented
 
 }; // class SolutionFactory
-
-#endif // pylith_problems_solutionfactory_hh
 
 // End of file

@@ -7,17 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/**
- * @file tests/libtests/meshio/TestOutputSolnSubset.hh
- *
- * @brief C++ TestOutputSolnSubset object
- *
- * C++ unit testing for OutputSolnSubset.
- */
-
-#if !defined(pylith_meshio_testoutputsolnsubset_hh)
-#define pylith_meshio_testoutputsolnsubset_hh
+#pragma once
 
 #include <cppunit/extensions/HelperMacros.h>
 
@@ -53,7 +43,5 @@ public:
     void testSubdomainMesh(void);
 
 }; // class TestOutputSolnSubset
-
-#endif // pylith_meshio_testoutputsolnsubset_hh
 
 // End of file

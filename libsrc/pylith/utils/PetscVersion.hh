@@ -7,18 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/**
- * @file libsrc/utils/PetscVersion.hh
- *
- * @brief C++ object for PETSc version information.
- */
-
-#if !defined(pylith_utils_petscversion_hh)
-#define pylith_utils_petscversion_hh
-
-// Include directives ---------------------------------------------------
-#include "utilsfwd.hh" // forward declarations
+#include "pylith/utils/utilsfwd.hh" // forward declarations
 
 // Version ----------------------------------------------------------
 /** @brief C++ object for getting version info.
@@ -103,7 +94,5 @@ private:
     static const char* _petscArch; ///< PETSC_ARCH
 
 }; // PetscVersion
-
-#endif // pylith_utils_petscversion_hh
 
 // End of file

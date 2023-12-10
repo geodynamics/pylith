@@ -7,17 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/**
- * @file libsrc/problems/GreensFns.hh
- *
- * @brief Object for Green's functions problem.
- */
-
-#if !defined(pylith_problems_greensfns_hh)
-#define pylith_problems_greensfns_hh
-
-#include "Problem.hh" // ISA Problem
+#include "pylith/problems/Problem.hh" // ISA Problem
 #include "pylith/testing/testingfwd.hh" // USES MMSTest
 #include "pylith/faults/faultsfwd.hh" // HOLDSA FaultCohesiveImpulses
 #include "pylith/feassemble/feassemblefwd.hh" // HOLDSA Integrator
@@ -156,7 +148,5 @@ private:
     pylith::problems::ProgressMonitorStep* _monitor; ///< Monitor for simulation progress.
 
 }; // GreensFns
-
-#endif // pylith_problems_greensfns_hh
 
 // End of file

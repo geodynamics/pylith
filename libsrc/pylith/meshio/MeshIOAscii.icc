@@ -7,12 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-//
-
-#if !defined(pylith_meshio_meshioascii_hh)
-#error "MeshIOAscii.icc must be included only from MeshIOAscii.icc"
-#else
+#pragma once
 
 // Set filename for ASCII file.
 inline
@@ -29,7 +24,5 @@ pylith::meshio::MeshIOAscii::getFilename(void) const {
     return _filename.c_str();
 }
 
-
-#endif
 
 // End of file

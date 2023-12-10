@@ -10,7 +10,7 @@
 
 #include <portinfo>
 
-#include "UpdateStateVars.hh" // implementation of object methods
+#include "pylith/feassemble/UpdateStateVars.hh" // implementation of object methods
 
 #include "pylith/topology/Field.hh" // USES Field
 

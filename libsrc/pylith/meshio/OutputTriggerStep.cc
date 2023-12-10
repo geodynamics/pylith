@@ -10,7 +10,7 @@
 
 #include <portinfo>
 
-#include "OutputTriggerStep.hh" // Implementation of class methods
+#include "pylith/meshio/OutputTriggerStep.hh" // Implementation of class methods
 
 #include "pylith/utils/constdefs.h" // USES PYLITH_MAXSCALAR
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END

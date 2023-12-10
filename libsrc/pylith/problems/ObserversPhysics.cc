@@ -10,7 +10,7 @@
 
 #include <portinfo>
 
-#include "ObserversPhysics.hh" // Implementation of class methods
+#include "pylith/problems/ObserversPhysics.hh" // Implementation of class methods
 
 #include "pylith/feassemble/PhysicsImplementation.hh" // USES PhysicsImplementation
 #include "pylith/topology/Field.hh" // USES Field

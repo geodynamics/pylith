@@ -10,7 +10,7 @@
 
 #include <portinfo>
 
-#include "OutputSoln.hh" // Implementation of class methods
+#include "pylith/meshio/OutputSoln.hh" // Implementation of class methods
 
 #include "pylith/meshio/DataWriter.hh" // USES DataWriter
 #include "pylith/meshio/OutputTrigger.hh" // USES OutputTrigger

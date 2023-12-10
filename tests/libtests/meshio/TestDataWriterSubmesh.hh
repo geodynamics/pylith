@@ -7,17 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/**
- * @file tests/libtests/meshio/TestDataWriterSubmesh.hh
- *
- * @brief C++ TestDataWriterSubmesh object
- *
- * C++ unit testing for DataWriter for submesh.
- */
-
-#if !defined(pylith_meshio_testdatawritersubmesh_hh)
-#define pylith_meshio_testdatawritersubmesh_hh
+#pragma once
 
 #include "TestDataWriter.hh" // USES TestDataWriter_Data
 
@@ -108,7 +98,5 @@ public:
     const char* bcLabel; ///< Label marking submesh.
 
 }; // class TestDataWriterSubmesh_Data
-
-#endif // pylith_meshio_testdatawritersubmesh_hh
 
 // End of file

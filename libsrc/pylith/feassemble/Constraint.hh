@@ -7,14 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/** @file libsrc/feassemble/Constraint.hh
- *
- * @brief C++ abstract base class for constraining degrees of freedom in the solution.
- */
-
-#if !defined(pylith_feassemble_constraint_hh)
-#define pylith_feassemble_constraint_hh
+#pragma once
 
 #include "pylith/feassemble/PhysicsImplementation.hh" // ISA PhysicsImplementation
 
@@ -202,7 +195,5 @@ private:
     const Constraint& operator=(const Constraint&); ///< Not implemented
 
 }; // class Constraint
-
-#endif // pylith_feassemble_constraint_hh
 
 // End of file

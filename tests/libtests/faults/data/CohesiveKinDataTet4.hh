@@ -7,9 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-#if !defined(pylith_faults_cohesivekindatatet4_hh)
-#define pylith_faults_cohesivekindatatet4_hh
+#pragma once
 
 #include "CohesiveKinData.hh"
 
@@ -74,7 +72,5 @@ private:
     static const int _cellMappingCohesive[]; ///< Cohesive cell
 
 };
-
-#endif // pylith_faults_cohesivekindatatet4_hh
 
 // End of file

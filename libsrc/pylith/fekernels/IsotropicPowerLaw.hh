@@ -9,9 +9,9 @@
  * See https://mit-license.org/ and LICENSE.md and for license information.
  * =================================================================================================
  */
+#pragma once
 
-/** @file libsrc/fekernels/IsotropicPowerLaw.hh
- *
+/*
  * Kernels for power-law viscoelastic material.
  *
  * Solution fields: [disp(dim), ...]
@@ -70,10 +70,7 @@
  * @param[out] f0 [dim].
  */
 
-#if !defined(pylith_fekernels_isotropicpowerlaw_hh)
-#define pylith_fekernels_isotropicpowerlaw_hh
-
-#include "fekernelsfwd.hh" // forward declarations
+#include "pylith/fekernels/fekernelsfwd.hh" // forward declarations
 #include "pylith/fekernels/Elasticity.hh" // USES Elasticity kernels
 #include "pylith/fekernels/IsotropicLinearElasticity.hh" // USES IsotropicLinearElasticity* kernels
 
@@ -2628,7 +2625,5 @@ private:
     }
 
 }; // IsotropicPowerLaw3D
-
-#endif // pylith_fekernels_isotropicpowerlaw_hh
 
 // End of file

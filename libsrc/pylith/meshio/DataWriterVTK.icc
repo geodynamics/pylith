@@ -7,12 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-//
-
-#if !defined(pylith_meshio_datawritervtk_hh)
-#error "DataWriterVTK.icc must be included only from DataWriterVTK.hh"
-#else
+#pragma once
 
 // Make copy of this object.
 inline
@@ -37,7 +32,5 @@ pylith::meshio::DataWriterVTK::timeFormat(const char* format) {
     _timeFormat = format;
 }
 
-
-#endif
 
 // End of file

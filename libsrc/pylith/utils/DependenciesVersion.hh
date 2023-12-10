@@ -7,18 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/**
- * @file libsrc/utils/DependenciesVersion.hh
- *
- * @brief C++ object for version information of dependencies.
- */
-
-#if !defined(pylith_utils_dependenciesversion_hh)
-#define pylith_utils_dependenciesversion_hh
-
-// Include directives ---------------------------------------------------
-#include "utilsfwd.hh" // forward declarations
+#include "pylith/utils/utilsfwd.hh" // forward declarations
 
 // Version ----------------------------------------------------------
 /** @brief C++ object for getting version info.
@@ -88,7 +79,5 @@ private:
     static const char* _hdf5Version; ///< HDF5 version number.
 
 }; // DependenciesVersion
-
-#endif // pylith_utils_petscversion_hh
 
 // End of file

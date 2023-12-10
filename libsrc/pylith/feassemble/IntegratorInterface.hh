@@ -7,17 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/**
- * @file libsrc/feassemble/IntegratorInterface.hh
- *
- * @brief Object for finite-element integration over an interior interface of the simulation domain.
- */
-
-#if !defined(pylith_feassemble_integratorinterface_hh)
-#define pylith_feassemble_integratorinterface_hh
-
-#include "feassemblefwd.hh" // forward declarations
+#include "pylith/feassemble/feassemblefwd.hh" // forward declarations
 
 #include "pylith/feassemble/Integrator.hh" // ISA Integrator
 #include "pylith/feassemble/FEKernelKey.hh" // HASA FEKernelKey
@@ -320,7 +312,5 @@ private:
     const IntegratorInterface& operator=(const IntegratorInterface&); ///< Not implemented.
 
 }; // IntegratorInterface
-
-#endif // pylith_feassemble_integratorinterface_hh
 
 // End of file

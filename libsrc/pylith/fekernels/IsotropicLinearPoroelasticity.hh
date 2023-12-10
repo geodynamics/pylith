@@ -9,9 +9,9 @@
  * See https://mit-license.org/ and LICENSE.md and for license information.
  * =================================================================================================
  */
+#pragma once
 
-/** @file libsrc/fekernels/IsotropicLinearPoroelasticity.hh
- *
+/*
  * Kernels for linear poroelasticity plane strain.
  *
  * Solution fields: [disp(dim), pressure(1),trace_strain(1) ] (QS)
@@ -79,11 +79,8 @@
  * @param[out] f0 [dim].
  */
 
-#if !defined(pylith_fekernels_isotropiclinearporoelasticity_hh)
-#define pylith_fekernels_isotropiclinearporoelasticity_hh
-
 // Include directives ---------------------------------------------------
-#include "fekernelsfwd.hh" // forward declarations
+#include "pylith/fekernels/fekernelsfwd.hh" // forward declarations
 #include "pylith/fekernels/Poroelasticity.hh" // USES Poroelasticity kernels
 #include "pylith/fekernels/Elasticity.hh" // USES Elasticity kernels
 
@@ -4698,7 +4695,5 @@ public:
     } // updatePorosityExplicit
 
 }; // IsotropicLinearPoroelasticity3D
-
-#endif // pylith_fekernels_isotropiclinearporoelasticity_hh
 
 // End of file

@@ -10,7 +10,7 @@
 
 #include <portinfo>
 
-#include "MeshIO.hh" // implementation of class methods
+#include "pylith/meshio/MeshIO.hh" // implementation of class methods
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES MeshOps

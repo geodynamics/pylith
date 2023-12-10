@@ -9,14 +9,9 @@
  * See https://mit-license.org/ and LICENSE.md and for license information.
  * =================================================================================================
  */
+#pragma once
 
-/** @file libsrc/fekernels/Tensor.hh
- */
-
-#if !defined(pylith_fekernels_tensor_hh)
-#define pylith_fekernels_tensor_hh
-
-#include "fekernelsfwd.hh" // forward declarations
+#include "pylith/fekernels/fekernelsfwd.hh" // forward declarations
 
 #include "pylith/utils/types.hh"
 
@@ -252,7 +247,5 @@ private:
     }
 
 }; // TensorOps
-
-#endif // pylith_fekernels_tensor_hh
 
 // End of file

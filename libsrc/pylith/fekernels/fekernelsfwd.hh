@@ -7,17 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/** @file libsrc/fekernels/fekernelsfwd.hh
- *
- * @brief Forward declarations for PyLith fekernels objects.
- *
- * Including this header file eliminates the need to use separate
- * forward declarations.
- */
-
-#if !defined(pylith_fekernels_fekernelsfwd_hh)
-#define pylith_fekernels_fekernelsfwd_hh
+#pragma once
 
 namespace pylith {
     namespace fekernels {
@@ -70,7 +60,5 @@ namespace pylith {
         class BoundaryDirections;
     } // fekernels
 } // pylith
-
-#endif // pylith_fekernels_fekernelsfwd_hh
 
 // End of file

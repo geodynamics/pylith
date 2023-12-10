@@ -7,17 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/** @file libsrc/faults/TopologyOps.hh
- *
- * @brief C++ helper object for creating cohesive cells.
- */
-
-#if !defined(pylith_faults_topologyops_hh)
-#define pylith_faults_topologyops_hh
-
-// Include directives ---------------------------------------------------
-#include "faultsfwd.hh" // forward declarations
+#include "pylith/faults/faultsfwd.hh" // forward declarations
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include <set> // USES std::set
@@ -115,7 +107,5 @@ public:
                           const PylithInt cohesiveCell);
 
 }; // class TopologyOps
-
-#endif // pylith_faults_topologyops_hh
 
 // End of file

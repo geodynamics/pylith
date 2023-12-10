@@ -7,17 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/**
- * @file libsrc/feassemble/JacobianValues.hh
- *
- * @brief Object for setting Jacobian values without finite-element integration for a material.
- */
-
-#if !defined(pylith_feassemble_jacobianvalues_hh)
-#define pylith_feassemble_jacobianvalues_hh
-
-#include "feassemblefwd.hh" // forward declarations
+#include "pylith/feassemble/feassemblefwd.hh" // forward declarations
 #include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
 #include "pylith/topology/topologyfwd.hh" // USES Field
@@ -128,7 +120,5 @@ private:
     const JacobianValues& operator=(const JacobianValues&); ///< Not implemented.
 
 }; // JacobianValues
-
-#endif // pylith_feassemble_jacobianvalues_hh
 
 // End of file

@@ -7,16 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/**
- * @file libsrc/problems/InitialConditionDomain.hh
- *
- * @brief C++ object for specifying initial conditions over the entire domain.
- */
-#if !defined(pylith_problems_initialconditionsdomain_hh)
-#define pylith_problems_initialconditionsdomain_hh
-
-#include "InitialCondition.hh" // ISA InitialCondition
+#include "pylith/problems/InitialCondition.hh" // ISA InitialCondition
 
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // HOLDSA SpatialDB
 
@@ -61,7 +54,5 @@ private:
     const InitialConditionDomain& operator=(const InitialConditionDomain&); ///< Not implemented
 
 }; // InitialConditionDomain
-
-#endif // pylith_problems_initialconditionsdomain_hh
 
 // End of file

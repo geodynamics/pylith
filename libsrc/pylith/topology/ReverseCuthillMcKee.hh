@@ -7,18 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/**
- * @file libsrc/topology/ReverseCuthillMcKee.hh
- *
- * @brief Interface to PETSc reverse Cuthill-McKee reordering.
- */
-
-#if !defined(pylith_topology_reversecuthillmckee_hh)
-#define pylith_topology_reversecuthillmckee_hh
-
-// Include directives ---------------------------------------------------
-#include "topologyfwd.hh" // forward declarations
+#include "pylith/topology/topologyfwd.hh" // forward declarations
 
 // ReverseCuthillMcKee --------------------------------------------------
 /// Interface to PETSc reverse Cuthill-McKee reordering.
@@ -35,7 +26,5 @@ public:
     void reorder(topology::Mesh* mesh);
 
 }; // ReverseCuthillMcKee
-
-#endif // pylith_topology_reversecuthillmckee_hh
 
 // End of file

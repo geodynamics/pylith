@@ -7,16 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/** @file libsrc/materials/IsotropicLinearElasticity.hh
- *
- * @brief C++ class for isotropic linear elastic material.
- */
-
-#if !defined(pylith_materials_isotropiclinearelasticity_hh)
-#define pylith_materials_isotropiclinearelasticity_hh
-
-#include "materialsfwd.hh" // forward declarations
+#include "pylith/materials/materialsfwd.hh" // forward declarations
 
 #include "pylith/materials/RheologyElasticity.hh" // ISA RheologyElasticity
 
@@ -114,7 +107,5 @@ private:
     const IsotropicLinearElasticity& operator=(const IsotropicLinearElasticity&); /// Not implemented.
 
 }; // class IsotropicLinearElasticity
-
-#endif // pylith_materials_isotropiclinearelasticity_hh
 
 // End of file

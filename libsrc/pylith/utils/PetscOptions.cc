@@ -10,7 +10,7 @@
 
 #include <portinfo>
 
-#include "PetscOptions.hh" // implementation of object methods
+#include "pylith/utils/PetscOptions.hh" // implementation of object methods
 
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Mesh.hh" // USES Mesh

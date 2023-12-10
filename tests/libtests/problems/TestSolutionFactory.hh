@@ -7,17 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/**
- * @file tests/libtests/problems/TestSolutionFactory.hh
- *
- * @brief C++ TestSolutionFactory object.
- *
- * C++ unit testing for SolutionFactory.
- */
-
-#if !defined(pylith_problems_testsolutionfactory_hh)
-#define pylith_problems_testsolutionfactory_hh
+#pragma once
 
 #include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
@@ -103,7 +93,5 @@ public:
     spatialdata::spatialdb::UserFunctionDB* solutionDB; ///< Spatial database with values for solution.
 
 }; // class TestSolutionFactory_Data
-
-#endif // pylith_problems_testsolutionfactory_hh
 
 // End of file

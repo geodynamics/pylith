@@ -7,21 +7,8 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/**
- * @file libsrc/utils/array.hh
- *
- * @brief Header file for PyLith array objects.
- *
- * Since the arrays are really C++ STL objects, we simply include the
- * STL header files.
- */
-
-#if !defined(pylith_utils_array_hh)
-#define pylith_utils_array_hh
-
-#include "arrayfwd.hh"
-
-#endif // pylith_utils_array_hh
+#include "pylith/utils/arrayfwd.hh"
 
 // End of file

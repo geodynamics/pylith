@@ -21,9 +21,7 @@
  *
  * $\mu_f = \mu_s (1 + \dot{D} / v_0)
  */
-
-#if !defined(pylith_friction_viscousfriction_hh)
-#define pylith_friction_viscousfriction_hh
+#pragma once
 
 // Include directives ---------------------------------------------------
 #include "pylith/friction/FrictionModel.hh" // ISA FrictionModel
@@ -206,7 +204,5 @@ private:
     const ViscousFriction& operator=(const ViscousFriction&); ///< Not implemented
 
 }; // class ViscousFriction
-
-#endif // pylith_friction_viscousfriction_hh
 
 // End of file

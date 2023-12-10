@@ -10,7 +10,7 @@
 
 #include <portinfo>
 
-#include "InitialConditionDomain.hh" // implementation of class methods
+#include "pylith/problems/InitialConditionDomain.hh" // implementation of class methods
 
 #include "pylith/topology/FieldQuery.hh" // USES FieldQuery
 #include "pylith/topology/Field.hh" // USES Field

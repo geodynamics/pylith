@@ -10,7 +10,7 @@
 
 #include <portinfo>
 
-#include "KinSrcConstRate.hh" // implementation of object methods
+#include "pylith/faults/KinSrcConstRate.hh" // implementation of object methods
 
 #include "pylith/faults/KinSrcAuxiliaryFactory.hh" // USES KinSrcAuxiliaryFactory
 

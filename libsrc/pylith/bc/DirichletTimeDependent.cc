@@ -7,11 +7,10 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-//
 
 #include <portinfo>
 
-#include "DirichletTimeDependent.hh" // implementation of object methods
+#include "pylith/bc/DirichletTimeDependent.hh" // implementation of object methods
 
 #include "pylith/bc/TimeDependentAuxiliaryFactory.hh" // USES TimeDependentAuxiliaryFactory
 #include "pylith/feassemble/ConstraintSpatialDB.hh" // USES ConstraintSoatialDB

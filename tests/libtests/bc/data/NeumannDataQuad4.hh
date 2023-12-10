@@ -7,9 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-#if !defined(pylith_bc_neumanndataquad4_hh)
-#define pylith_bc_neumanndataquad4_hh
+#pragma once
 
 #include "NeumannData.hh"
 
@@ -60,7 +58,5 @@ private:
     static const PylithScalar _valsResidual[];
 
 };
-
-#endif // pylith_bc_neumanndataquad4_hh
 
 // End of file

@@ -10,7 +10,7 @@
 
 #include <portinfo>
 
-#include "BinaryIO.hh" // implementation of class methods
+#include "pylith/meshio/BinaryIO.hh" // implementation of class methods
 
 #include <fstream> // USES std::ifstream
 #include <cassert> // USES assert()

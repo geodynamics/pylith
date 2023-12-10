@@ -7,16 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/**
- * @file libsrc/feassemble/PhysicsImplementationStub.hh
- *
- * @brief Minimal C++ implementation of PhysicsImplementation to allow testing of basic PhysicsImplementation
- * functionality and use of PhysicsImplementation objects in other tests.
- */
-
-#if !defined(pylith_feassemble_physicsimplementationstub_hh)
-#define pylith_feassemble_physicsimplementationstub_hh
+#pragma once
 
 #include "pylith/testing/testingfwd.hh" // forward declarations
 
@@ -51,7 +42,5 @@ private:
     pylith::topology::Mesh* _mesh; ///< Mesh object.
 
 }; // PhysicsImplementationStub
-
-#endif // pylith_feassemble_physicsimplementationstub_hh
 
 // End of file

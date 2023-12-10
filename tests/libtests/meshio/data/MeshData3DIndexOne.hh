@@ -7,9 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-#if !defined(pylith_meshio_meshdata3dindexone_hh)
-#define pylith_meshio_meshdata3dindexone_hh
+#pragma once
 
 #include "MeshData.hh"
 
@@ -51,7 +49,5 @@ private:
     static const bool _useIndexZero; ///< First vertex is 0 if true, 1 if false
 
 };
-
-#endif // pylith_meshio_meshdata3dindexone_hh
 
 // End of file

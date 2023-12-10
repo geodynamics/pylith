@@ -7,13 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/** @file libsrc/materials/Quuery.hh
- *
- */
-
-#if !defined(pylith_materials_query_hh)
-#define pylith_materials_query_hh
+#pragma once
 
 #include "pylith/materials/materialsfwd.hh" // forward declarations
 
@@ -104,7 +98,5 @@ private:
     const Query& operator=(const Query&); ///< Not implemented
 
 }; // Query
-
-#endif // pylith_materials_query_hh
 
 // End of file

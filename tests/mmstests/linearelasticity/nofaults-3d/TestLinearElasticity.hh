@@ -7,15 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/**
- * @file mmstets/elasticity/TestLinearElasticity.hh
- *
- * @brief C++ abstract base class for testing Elasticity for various rheologies.
- */
-
-#if !defined(pylith_mmstests_testlinearelasticity_hh)
-#define pylith_mmstests_testlinearelasticity_hh
+#pragma once
 
 #include "tests/src/MMSTest.hh" // ISA MMSTEST
 
@@ -119,7 +111,5 @@ public:
     spatialdata::spatialdb::UserFunctionDB auxDB; ///< Spatial database for auxiliary field.
 
 }; // TestLinearElasticity_Data
-
-#endif // pylith_mmstests_testlinearelasticity_hh
 
 // End of file

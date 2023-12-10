@@ -7,15 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/**
- * @file libsrc/utils/pylithtypes.h
- *
- * @brief Type definitions for PyLith.
- */
-
-#if !defined(pylith_utils_pylithtypes_h)
-#define pylith_utils_pylithtypes_h
+#pragma once
 
 #include "petsc.h"
 
@@ -29,7 +21,5 @@ typedef PetscErrorCode (*PetscUserFieldFunc)(PetscInt,
                                              PetscInt,
                                              PetscScalar *u,
                                              void *ctx);
-
-#endif // pylith_utils_pylithtypes_h
 
 // End of file

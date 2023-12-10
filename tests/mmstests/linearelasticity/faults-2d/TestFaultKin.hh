@@ -7,15 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/**
- * @file mmstets/linearelasticity/faults-2d/TestFaultKin.hh
- *
- * @brief C++ class for testing faults with prescribed slip.
- */
-
-#if !defined(pylith_mmstests_testfaultkin_hh)
-#define pylith_mmstests_testfaultkin_hh
+#pragma once
 
 #include "tests/src/MMSTest.hh" // ISA MMSTEST
 
@@ -129,7 +121,5 @@ public:
     pylith::faults::KinSrc* kinSrc;
 
 }; // TestFaultKin_Data
-
-#endif // pylith_mmstests_testfaultkin_hh
 
 // End of file

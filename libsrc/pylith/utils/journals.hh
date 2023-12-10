@@ -7,15 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/**
- * @file libsrc/utils/journals.hh
- *
- * @brief Macros for easy use of JournalingComponent.
- */
-
-#if !defined(pylith_utils_journals_hh)
-#define pylith_utils_journals_hh
+#pragma once
 
 #include "pythia/journal/diagnostics.h"
 #include "pylith/utils/mpi.hh"
@@ -113,7 +105,5 @@
                      << msg; \
             throw std::logic_error(firewall.str().c_str()); \
         } while (0)
-
-#endif // pylith_utils_journals_hh
 
 // End of file

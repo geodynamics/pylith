@@ -7,17 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/**
- * @file tests/libtests/meshio/TestDataWriterPoints.hh
- *
- * @brief C++ TestDataWriterPoints object
- *
- * C++ unit testing for DataWriter for points.
- */
-
-#if !defined(pylith_meshio_testdatawriterpoints_hh)
-#define pylith_meshio_testdatawriterpoints_hh
+#pragma once
 
 #include "TestDataWriter.hh" // USES TestDataWriter_Data
 
@@ -102,7 +92,5 @@ public:
     pylith::string_vector names; ///< Station names for points.
 
 }; // class TestDataWriterPoints_Data
-
-#endif // pylith_meshio_testdatawriterpoints_hh
 
 // End of file

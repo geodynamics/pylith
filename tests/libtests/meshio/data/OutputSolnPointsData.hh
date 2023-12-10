@@ -7,9 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-#if !defined(pylith_meshio_outputsolnpointsdata_hh)
-#define pylith_meshio_outputsolnpointsdata_hh
+#pragma once
 
 #include "pylith/utils/types.hh" // HASA PylithScalar
 
@@ -49,7 +47,5 @@ public:
     //@}
 
 };
-
-#endif // pylith_meshio_outputsolnpointsdata_hh
 
 // End of file

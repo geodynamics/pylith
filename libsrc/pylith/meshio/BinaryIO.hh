@@ -7,17 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/**
- * @file libsrc/meshio/BinaryIO.hh
- *
- * @brief C++ object for general binary input/output operations.
- */
-
-#if !defined(pylith_meshio_binaryio_hh)
-#define pylith_meshio_binaryio_hh
-
-#include "meshiofwd.hh" // forward declarations
+#include "pylith/meshio/meshiofwd.hh" // forward declarations
 
 #include <iosfwd>
 
@@ -47,7 +39,5 @@ public:
                        const int typesize);
 
 }; // BinaryIO
-
-#endif // pylith_meshio_binaryio_hh
 
 // End of file

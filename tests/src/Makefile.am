@@ -9,7 +9,7 @@
 # =================================================================================================
 
 
-dist_noinst_HEADERS = 
+dist_noinst_HEADERS = \
 	StubMethodTracker.hh \
 	FaultCohesiveStub.hh \
 	FieldTester.hh \
@@ -18,9 +18,7 @@ dist_noinst_HEADERS =
 	ProgressMonitorStub.hh \
 	ObserverPhysicsStub.hh \
 	ObserverSolnStub.hh \
-	MMSTest.hh \
-	TestDriver.hh \
-	testingfwd.hh
+	MMSTest.hh
 
 
 # End of file

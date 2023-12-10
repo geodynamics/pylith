@@ -9,6 +9,7 @@
  * See https://mit-license.org/ and LICENSE.md and for license information.
  * =================================================================================================
  */
+#pragma once
 
 /** @file libsrc/fekernels/AbsorbingDampers.hh
  *
@@ -27,11 +28,7 @@
  * - 2: vs(1)
  */
 
-#if !defined(pylith_fekernels_absorbingdampers_hh)
-#define pylith_fekernels_absorbingdampers_hh
-
-// Include directives ---------------------------------------------------
-#include "fekernelsfwd.hh" // forward declarations
+#include "pylith/fekernels/fekernelsfwd.hh" // forward declarations
 
 #include "pylith/utils/types.hh"
 
@@ -126,7 +123,5 @@ public:
     } // g0
 
 }; // AbsorbingDampers
-
-#endif // pylith_fekernels_absorbingdampers_hh
 
 // End of file

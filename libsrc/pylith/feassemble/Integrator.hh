@@ -7,15 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/**
- * @file libsrc/feassemble/Integrator.hh
- *
- * @brief Abstract base class for finite-element integration.
- */
-
-#if !defined(pylith_feassemble_integrator_hh)
-#define pylith_feassemble_integrator_hh
+#pragma once
 
 #include "pylith/feassemble/PhysicsImplementation.hh" // ISA PhysicsImplementation
 
@@ -261,7 +253,5 @@ private:
     const Integrator& operator=(const Integrator&); ///< Not implemented.
 
 }; // Integrator
-
-#endif // pylith_feassemble_integrator_hh
 
 // End of file

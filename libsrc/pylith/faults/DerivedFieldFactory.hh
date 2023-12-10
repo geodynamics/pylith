@@ -7,14 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/** @file libsrc/faults/DerivedFieldFactory.hh
- *
- * @brief C++ helper class for setting up derived subfields for  faults.
- */
-
-#if !defined(pylith_faults_derivedfieldfactory_hh)
-#define pylith_faults_derivedfieldfactory_hh
+#pragma once
 
 #include "pylith/faults/faultsfwd.hh" // forward declarations
 #include "pylith/topology/FieldFactory.hh" // ISA FieldFactory
@@ -44,7 +37,5 @@ private:
     const DerivedFieldFactory& operator=(const DerivedFieldFactory&); ///< Not implemented
 
 }; // class DerivedFieldFactory
-
-#endif // pylith_faults_derivedfieldfactory_hh
 
 // End of file

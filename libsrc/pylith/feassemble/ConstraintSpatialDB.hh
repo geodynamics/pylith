@@ -7,15 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/** @file libsrc/feassemble/Constraint.hh
- *
- * @brief C++ class for constraining degrees of freedom in the solution via an auxiliary field constructed from
- *  spatial database(s).
- */
-
-#if !defined(pylith_feassemble_constraintspatialdb_hh)
-#define pylith_feassemble_constraintspatialdb_hh
+#pragma once
 
 #include "pylith/feassemble/Constraint.hh" // ISA Constraint
 
@@ -77,7 +69,5 @@ private:
     const ConstraintSpatialDB& operator=(const ConstraintSpatialDB&); ///< Not implemented
 
 }; // class Constraint
-
-#endif // pylith_feassemble_constraintspatialdb_hh
 
 // End of file

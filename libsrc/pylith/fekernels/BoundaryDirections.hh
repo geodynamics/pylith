@@ -9,16 +9,9 @@
  * See https://mit-license.org/ and LICENSE.md and for license information.
  * =================================================================================================
  */
+#pragma once
 
-/** @file libsrc/fekernels/BoundaryDirections.hh
- *
- * Kernels for computing tangential directions for boundaries.
- */
-
-#if !defined(pylith_fekernels_boundarydirections_hh)
-#define pylith_fekernels_boundarydirections_hh
-
-#include "fekernelsfwd.hh" // forward declarations
+#include "pylith/fekernels/fekernelsfwd.hh" // forward declarations
 
 #include "pylith/utils/types.hh"
 #include "pylith/utils/journals.hh"
@@ -269,7 +262,5 @@ private:
     } // _unitCrossProduct
 
 }; // BoundaryDirections
-
-#endif // pylith_fekernels_boundarydirections_hh
 
 /* End of file */

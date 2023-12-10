@@ -7,18 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/**
- * @file libsrc/utils/TestArray.hh
- *
- * @brief C++ object for testing array values.
- */
-
-#if !defined(pylith_utils_testarray_hh)
-#define pylith_utils_testarray_hh
-
-// Include directives ---------------------------------------------------
-#include "utilsfwd.hh" // forward declarations
+#include "pylith/utils/utilsfwd.hh" // forward declarations
 
 #include "array.hh" // USES scalar_array
 
@@ -47,7 +38,5 @@ public:
                const scalar_array& values);
 
 }; // EventLogger
-
-#endif // pylith_utils_testarray_hh
 
 // End of file

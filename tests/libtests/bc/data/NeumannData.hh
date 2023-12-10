@@ -7,9 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-#if !defined(pylith_bc_neumanndata_hh)
-#define pylith_bc_neumanndata_hh
+#pragma once
 
 #include "pylith/utils/types.hh" // HASA PylithScalar
 
@@ -76,7 +74,5 @@ public:
     //@}
 
 };
-
-#endif // pylith_bc_neumanndata_hh
 
 // End of file

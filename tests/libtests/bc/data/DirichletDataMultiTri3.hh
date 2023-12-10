@@ -7,9 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-#if !defined(pylith_bc_DirichletPointsDatamultitri3_hh)
-#define pylith_bc_DirichletPointsDatamultitri3_hh
+#pragma once
 
 #include "DirichletDataMulti.hh"
 
@@ -61,7 +59,5 @@ private:
 
     static const char* _meshFilename; ///< Filename of input mesh.
 };
-
-#endif // pylith_bc_dirichletdatamultitri3_hh
 
 // End of file

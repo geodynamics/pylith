@@ -10,7 +10,7 @@
 
 #include <portinfo>
 
-#include "ProgressMonitorStep.hh" // implementation of class methods
+#include "pylith/problems/ProgressMonitorStep.hh" // implementation of class methods
 
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 

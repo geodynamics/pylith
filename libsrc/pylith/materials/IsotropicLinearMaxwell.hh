@@ -7,16 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/** @file libsrc/materials/IsotropicLinearMaxwell.hh
- *
- * @brief C++ class for isotropic linear Maxwell viscoelastic material.
- */
-
-#if !defined(pylith_materials_isotropiclinearmaxwell_hh)
-#define pylith_materials_isotropiclinearmaxwell_hh
-
-#include "materialsfwd.hh" // forward declarations
+#include "pylith/materials/materialsfwd.hh" // forward declarations
 
 #include "pylith/materials/RheologyElasticity.hh" // ISA RheologyElasticity
 
@@ -130,7 +123,5 @@ private:
     const IsotropicLinearMaxwell& operator=(const IsotropicLinearMaxwell&); ///< Not implemented
 
 }; // class IsotropicLinearMaxwell
-
-#endif // pylith_materials_isotropiclinearmaxwell_hh
 
 // End of file

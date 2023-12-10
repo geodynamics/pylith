@@ -10,7 +10,7 @@
 
 #include <portinfo>
 
-#include "IntegratorBoundary.hh" // implementation of object methods
+#include "pylith/feassemble/IntegratorBoundary.hh" // implementation of object methods
 
 #include "pylith/feassemble/DSLabelAccess.hh" // USES DSLabelAccess
 #include "pylith/topology/Mesh.hh" // USES Mesh

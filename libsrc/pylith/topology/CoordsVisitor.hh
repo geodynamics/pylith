@@ -7,18 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/**
- * @file libsrc/topology/CoordsVisitor.hh
- *
- * @brief C++ helper class for accessing coordinates in a finite-element mesh.
- */
-
-#if !defined(pylith_topology_coordsvisitor_hh)
-#define pylith_topology_coordsvisitor_hh
-
-// Include directives ---------------------------------------------------
-#include "topologyfwd.hh" // forward declarations
+#include "pylith/topology/topologyfwd.hh" // forward declarations
 
 #include "pylith/utils/petscfwd.h" // HASA PetscVec, PetscSection
 #include "pylith/utils/arrayfwd.hh" // USES scalar_array
@@ -123,7 +114,5 @@ private:
 }; // CoordsVisitor
 
 #include "CoordsVisitor.icc"
-
-#endif // pylith_topology_coordsvisitor_hh
 
 // End of file

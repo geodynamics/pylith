@@ -7,17 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/** @file libsrc/faults/FaultCohesiveKin.hh
- *
- * @brief C++ implementation for a fault surface with kinematic
- * (prescribed) slip implemented with cohesive elements.
- */
-
-#if !defined(pylith_faults_faultcohesivekin_hh)
-#define pylith_faults_faultcohesivekin_hh
-
-#include "FaultCohesive.hh" // ISA FaultCohesive
+#include "pylith/faults/FaultCohesive.hh" // ISA FaultCohesive
 #include "pylith/materials/Material.hh" // USES Material
 
 #include <string> // HASA std::string
@@ -158,7 +150,5 @@ private:
     const FaultCohesiveKin& operator=(const FaultCohesiveKin&); ///< Not implemented.
 
 }; // class FaultCohesiveKin
-
-#endif // pylith_faults_faultcohesivekin_hh
 
 // End of file

@@ -7,17 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/**
- * @file tests/libtests/meshio/TestDataWriterHDF5.hh
- *
- * @brief C++ TestDataWriterHDF5 object
- *
- * C++ unit testing for DataWriterHDF5.
- */
-
-#if !defined(pylith_meshio_testdatawriterhdf5_hh)
-#define pylith_meshio_testdatawriterhdf5_hh
+#pragma once
 
 /// Namespace for pylith package
 namespace pylith {
@@ -60,7 +50,5 @@ public:
     const char* cellFilename; ///< Name of file with cell fields.
 
 };
-
-#endif // pylith_meshio_testdatawriterhdf5_hh
 
 // End of file

@@ -24,6 +24,7 @@ subpkginclude_HEADERS = \
 	IntegratorInterface.hh \
 	IntegrationData.hh \
 	InterfacePatches.hh \
+	JacobianValues.hh \
 	UpdateStateVars.hh \
 	Constraint.hh \
 	ConstraintSpatialDB.hh \

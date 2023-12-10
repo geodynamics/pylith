@@ -10,11 +10,11 @@
 
 #include <portinfo>
 
-#include "Field.hh" // implementation of class methods
+#include "pylith/topology/Field.hh" // implementation of class methods
 
-#include "Mesh.hh" // USES Mesh
-#include "FieldOps.hh" // USES FieldOps
-#include "VisitorMesh.hh" // USES VecVisitorMesh
+#include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/FieldOps.hh" // USES FieldOps
+#include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 
 #include "pylith/topology/MeshOps.hh" // USES isCohesiveCell()
 #include "pylith/faults/TopologyOps.hh" // USES getInterfacesLabel()

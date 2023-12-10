@@ -7,16 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/** @file libsrc/materials/AuxiliaryFactoryViscoelastic.hh
- *
- * @brief C++ helper class for setting up auxiliary subfields for viscoelastic materials.
- */
-
-#if !defined(pylith_materials_auxiliaryfactoryviscoelastic_hh)
-#define pylith_materials_auxiliaryfactoryviscoelastic_hh
-
-#include "materialsfwd.hh" // forward declarations
+#include "pylith/materials/materialsfwd.hh" // forward declarations
 #include "pylith/materials/AuxiliaryFactoryElastic.hh" // ISA AuxiliaryFactoryElastic
 
 /// @brief C++ helper class for setting up auxiliary fields for materials.
@@ -69,7 +62,5 @@ private:
     const AuxiliaryFactoryViscoelastic& operator=(const AuxiliaryFactoryViscoelastic&); ///< Not implemented
 
 }; // class AuxiliaryFactoryViscoelastic
-
-#endif // pylith_materials_auxiliaryfactoryviscoelastic_hh
 
 // End of file

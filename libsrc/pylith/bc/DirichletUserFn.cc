@@ -10,7 +10,7 @@
 
 #include <portinfo>
 
-#include "DirichletUserFn.hh" // implementation of object methods
+#include "pylith/bc/DirichletUserFn.hh" // implementation of object methods
 
 #include "pylith/feassemble/ConstraintUserFn.hh" // USES ConstraintBoundary
 #include "pylith/topology/Field.hh" // USES Field

@@ -7,15 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/**
- * @file mmstets/incompressibleelasticity/nofaults-2d/TestIncompressibleElasticity.hh
- *
- * @brief C++ class for testing incompressible elasticity for various rheologies.
- */
-
-#if !defined(pylith_mmstests_testincompressibleelasticity_hh)
-#define pylith_mmstests_testincompressibleelasticity_hh
+#pragma once
 
 #include "tests/src/MMSTest.hh" // ISA MMSTEST
 
@@ -116,7 +108,5 @@ public:
     spatialdata::spatialdb::UserFunctionDB auxDB; ///< Spatial database with auxiliary field.
 
 }; // TestIncompressibleElasticity_Data
-
-#endif // pylith_testincompressibleelasticity_hh
 
 // End of file

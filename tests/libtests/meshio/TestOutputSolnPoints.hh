@@ -7,17 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/**
- * @file tests/libtests/meshio/TestOutputSolnPoints.hh
- *
- * @brief C++ TestOutputSolnPoints object
- *
- * C++ unit testing for OutputSolnPoints.
- */
-
-#if !defined(pylith_meshio_testoutputsolnpoints_hh)
-#define pylith_meshio_testoutputsolnpoints_hh
+#pragma once
 
 #include <cppunit/extensions/HelperMacros.h>
 
@@ -108,7 +98,5 @@ private:
                     const OutputSolnPointsData& data);
 
 }; // class TestOutputSolnPoints
-
-#endif // pylith_meshio_testoutputsolnpoints_hh
 
 // End of file

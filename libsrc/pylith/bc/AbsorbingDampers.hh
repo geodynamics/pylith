@@ -7,15 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-//
-
-/** @file libsrc/bc/AbsorbingDampers.hh
- *
- * @brief C++ implementation of AbsorbingDampers for absorbing boundary conditions in dynamic problems.
- */
-
-#if !defined(pylith_bc_absorbingdampers_hh)
-#define pylith_bc_absorbingdampers_hh
+#pragma once
 
 #include "pylith/bc/BoundaryCondition.hh" // ISA Physics
 
@@ -89,7 +81,5 @@ private:
 };
 
 // class AbsorbingDampers
-
-#endif // pylith_bc_absorbingdampers_hh
 
 // End of file

@@ -10,7 +10,7 @@
 
 #include <portinfo>
 
-#include "MeshBuilder.hh" // implementation of class methods
+#include "pylith/meshio/MeshBuilder.hh" // implementation of class methods
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/utils/array.hh" // USES scalar_array, int_array

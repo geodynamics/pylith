@@ -7,17 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/**
- * @file tests/libtests/topology/TestRefineUniform.hh
- *
- * @brief C++ TestRefineUniform object
- *
- * C++ unit testing for RefineUniform.
- */
-
-#if !defined(pylith_topology_testrefineuniform_hh)
-#define pylith_topology_testrefineuniform_hh
+#pragma once
 
 #include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
@@ -99,7 +89,5 @@ public:
     /// @}
 
 };
-
-#endif // pylith_topology_testrefineuniform_hh
 
 // End of file

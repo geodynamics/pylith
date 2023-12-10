@@ -10,7 +10,7 @@
 
 #include <portinfo>
 
-#include "KinSrcBrune.hh" // implementation of object methods
+#include "pylith/faults/KinSrcBrune.hh" // implementation of object methods
 
 #include "pylith/faults/KinSrcAuxiliaryFactory.hh" // USES KinSrcAuxiliaryFactory
 

@@ -7,11 +7,10 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-//
 
 #include <portinfo>
 
-#include "AbsorbingDampersAuxiliaryFactory.hh" // implementation of object methods
+#include "pylith/bc/AbsorbingDampersAuxiliaryFactory.hh" // implementation of object methods
 
 #include "pylith/topology/Field.hh" // HOLDSA AuxiliaryField
 #include "pylith/topology/FieldQuery.hh" // USES FieldQuery

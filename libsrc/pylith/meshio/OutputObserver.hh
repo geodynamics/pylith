@@ -7,17 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/**
- * @file libsrc/meshio/OutputObserver.hh
- *
- * @brief Manager for output via observer.
- */
-
-#if !defined(pylith_meshio_outputobserver_hh)
-#define pylith_meshio_outputobserver_hh
-
-#include "meshiofwd.hh" // forward declarations
+#include "pylith/meshio/meshiofwd.hh" // forward declarations
 
 #include "pylith/utils/PyreComponent.hh" // ISA PyreComponent
 
@@ -116,7 +108,5 @@ private:
     const OutputObserver& operator=(const OutputObserver&); ///< Not implemented
 
 }; // OutputObserver
-
-#endif // pylith_meshio_outputobserver_hh
 
 // End of file

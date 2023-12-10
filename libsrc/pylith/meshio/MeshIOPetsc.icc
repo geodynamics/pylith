@@ -7,12 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-//
-
-#if !defined(pylith_meshio_meshiopetsc_hh)
-#error "MeshIOPetsc.icc must be included only from MeshIOPetsc.icc"
-#else
+#pragma once
 
 // Set filename for PETSc.
 inline
@@ -45,7 +40,5 @@ pylith::meshio::MeshIOPetsc::getPrefix(void) const {
     return _prefix.c_str();
 }
 
-
-#endif
 
 // End of file

@@ -7,12 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-#if !defined(pylith_utils_petscoptions_hh)
-#define pylith_utils_petscoptions_hh
-
-// Include directives ---------------------------------------------------
-#include "utilsfwd.hh" // forward declarations
+#include "pylith/utils/utilsfwd.hh" // forward declarations
 #include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
 #include "pylith/topology/topologyfwd.hh" // USES Field
@@ -108,7 +105,5 @@ private:
     options_t _options; ///< Map with PETSc options.
 
 }; // PetscOptions
-
-#endif // pylith_utils_petscoptions_hh
 
 // End of file

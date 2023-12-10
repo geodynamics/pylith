@@ -10,7 +10,7 @@
 
 #include <portinfo>
 
-#include "Distributor.hh" // implementation of class methods
+#include "pylith/topology/Distributor.hh" // implementation of class methods
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field

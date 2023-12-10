@@ -7,16 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/** @file libsrc/materials/RheologyIncompressibleElasticity.hh
- *
- * @brief C++ abstract base class for bulk rheologies associated with the incompressible elasticity equation.
- */
-
-#if !defined(pylith_materials_rheologyincompressibleelasticity_hh)
-#define pylith_materials_rheologyincompressibleelasticity_hh
-
-#include "materialsfwd.hh" // forward declarations
+#include "pylith/materials/materialsfwd.hh" // forward declarations
 #include "pylith/utils/PyreComponent.hh" // ISA PyreComponent
 
 #include "pylith/topology/topologyfwd.hh" // USES Field
@@ -125,7 +118,5 @@ private:
 };
 
 // class RheologyIncompressibleElasticity
-
-#endif // pylith_materials_rheologyincompressibleelasticity_hh
 
 // End of file

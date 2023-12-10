@@ -7,14 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/** @file libsrc/feassemble/UpdateStateVars.hh
- *
- * @brief C++ object for managing updating state variables.
- */
-
-#if !defined(pylith_feassemble_updatestatevars_hh)
-#define pylith_feassemble_updatestatevars_hh
+#pragma once
 
 #include "pylith/feassemble/feassemblefwd.hh"
 
@@ -86,7 +79,5 @@ private:
     const UpdateStateVars& operator=(const UpdateStateVars&); ///< Not implemented
 
 }; // class UpdateStateVars
-
-#endif // pylith_feassemble_updatestatevars_hh
 
 // End of file

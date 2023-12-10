@@ -7,12 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-//
-
-#if !defined(pylith_feassemble_fekernelkey_hh)
-#error "Stratum.icc must be included only from FEKernelKey.hh"
-#else
+#pragma once
 
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
@@ -108,7 +103,5 @@ pylith::feassemble::FEKernelKey::getPetscKey(const pylith::topology::Field& solu
     return weakFormKey;
 } // petscKey
 
-
-#endif
 
 // End of file

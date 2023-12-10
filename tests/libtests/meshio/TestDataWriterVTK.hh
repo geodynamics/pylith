@@ -7,17 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/**
- * @file tests/libtests/meshio/TestDataWriterVTK.hh
- *
- * @brief C++ TestDataWriterVTK object
- *
- * C++ unit testing for DataWriterVTK.
- */
-
-#if !defined(pylith_meshio_testdatawritervtk_hh)
-#define pylith_meshio_testdatawritervtk_hh
+#pragma once
 
 #include "pylith/utils/types.hh" // HASA PylithScalar
 
@@ -65,7 +55,5 @@ public:
     const char* cellFilename; ///< Name of file with cell fields.
 
 }; // TestDataWriterVTK_Data
-
-#endif // pylith_meshio_testdatawritervtk_hh
 
 // End of file

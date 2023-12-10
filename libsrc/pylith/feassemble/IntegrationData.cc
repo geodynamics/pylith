@@ -10,7 +10,7 @@
 
 #include <portinfo>
 
-#include "IntegrationData.hh" // implementation of class methods
+#include "pylith/feassemble/IntegrationData.hh" // implementation of class methods
 
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Mesh.hh" // USES Mesh

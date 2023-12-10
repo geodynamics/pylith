@@ -9,11 +9,10 @@
 // =================================================================================================
 
 #include <portinfo>
-#include <stdexcept>
 
-#include "Mesh.hh" // implementation of class methods
+#include "pylith/topology/Mesh.hh" // implementation of class methods
 
-#include "MeshOps.hh" // USES MeshOps
+#include "pylith/topology/MeshOps.hh" // USES MeshOps
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "pylith/utils/array.hh" // USES scalar_array

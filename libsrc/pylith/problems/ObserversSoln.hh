@@ -7,17 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/**
- * @file libsrc/problems/ObserversSoln.hh
- *
- * @brief Collection of observers for an object.
- */
-
-#if !defined(pylith_problems_observerssoln_hh)
-#define pylith_problems_observerssoln_hh
-
-#include "problemsfwd.hh" // forward declarations
+#include "pylith/problems/problemsfwd.hh" // forward declarations
 
 #include "pylith/problems/Observer.hh" // USES NotificationType
 
@@ -109,9 +101,5 @@ private:
     const ObserversSoln& operator=(const ObserversSoln&); ///< Not implemented
 
 };
-
-// ObserversSoln
-
-#endif // pylith_problems_observerssoln_hh
 
 // End of file

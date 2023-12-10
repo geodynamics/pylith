@@ -12,7 +12,7 @@
 
 #include "TestFaultKin.hh" // Implementation of class methods
 
-#include "pylith/bc/BoundaryCondition.cc" // HASA BoundaryCondition
+#include "pylith/bc/BoundaryCondition.hh" // HASA BoundaryCondition
 #include "pylith/problems/TimeDependent.hh" // USES TimeDependent
 #include "pylith/faults/FaultCohesiveKin.hh" // USES FaultCohesiveKin
 #include "pylith/faults/KinSrc.hh" // USES KinSrc

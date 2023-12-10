@@ -10,9 +10,9 @@
 
 #include <portinfo>
 
-#include "AbsorbingDampers.hh" // implementation of object methods
+#include "pylith/bc/AbsorbingDampers.hh" // implementation of object methods
 
-#include "AbsorbingDampersAuxiliaryFactory.hh" // USES AuxiliaryFactory
+#include "pylith/bc/AbsorbingDampersAuxiliaryFactory.hh" // USES AuxiliaryFactory
 
 #include "pylith/fekernels/AbsorbingDampers.hh" // USES AbsorbingDampers kernels
 

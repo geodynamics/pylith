@@ -7,15 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/**
- * @file libsrc/topology/FieldQuery.hh
- *
- * @brief Set field via query of spatial database, etc.
- */
-
-#if !defined(pylith_topology_fieldquery_hh)
-#define pylith_topology_fieldquery_hh
+#pragma once
 
 #include "pylith/topology/topologyfwd.hh" // forward declarations
 
@@ -226,7 +218,5 @@ private:
     const FieldQuery& operator=(const FieldQuery&); ///< Not implemented
 
 }; // FieldQuery
-
-#endif // pylith_topology_fieldquery_hh
 
 // End of file

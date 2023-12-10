@@ -7,15 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/**
- * @file libsrc/problems/ObserverSolnStub.hh
- *
- * @brief Minimal C++ implementation of ObserverSoln to allow unit tests using ObserverSoln objects.
- */
-
-#if !defined(pylith_feassemble_observersolnstub_hh)
-#define pylith_feassemble_observersolnstub_hh
+#pragma once
 
 #include "pylith/testing/testingfwd.hh" // forward declarations
 
@@ -75,7 +67,5 @@ private:
     const ObserverSolnStub& operator=(const ObserverSolnStub&); ///< Not implemented
 
 }; // ObserverSolnStub
-
-#endif // pylith_feassemble_observersolnstub_hh
 
 // End of file

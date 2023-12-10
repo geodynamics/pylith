@@ -7,17 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/**
- * @file libsrc/meshio/MeshIO.hh
- *
- * @brief C++ base class for managing mesh input/output.
- */
-
-#if !defined(pylith_meshio_meshio_hh)
-#define pylith_meshio_meshio_hh
-
-#include "meshiofwd.hh" // forward declarations
+#include "pylith/meshio/meshiofwd.hh" // forward declarations
 
 #include "pylith/utils/PyreComponent.hh" // ISA PyreComponent
 
@@ -141,7 +133,5 @@ protected:
     pylith::topology::Mesh* _mesh; ///< Pointer to finite-element mesh.
 
 }; // MeshIO
-
-#endif // pylith_meshio_meshio_hh
 
 // End of file

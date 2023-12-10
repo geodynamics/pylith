@@ -7,9 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-#if !defined(pylith_meshio_datawriterdatapoints_hh)
-#define pylith_meshio_datawriterdatapoints_hh
+#pragma once
 
 // Data for testing writing interpolation of solution to points.
 
@@ -40,7 +38,5 @@ public:
     const char* const* names; ///< Station names for points.
 
 }; // DataWriterData
-
-#endif // pylith_meshio_datawriterdatapoints_hh
 
 // End of file

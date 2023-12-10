@@ -7,18 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-//
+#pragma once
 
-/** @file libsrc/faults/FaultCohesive.hh
- *
- * @brief C++ abstract base class for a fault interface implemented with
- * cohesive cells.
- */
-
-#if !defined(pylith_faults_faultcohesive_hh)
-#define pylith_faults_faultcohesive_hh
-
-#include "faultsfwd.hh" // forward declarations
+#include "pylith/faults/faultsfwd.hh" // forward declarations
 
 #include "pylith/problems/Physics.hh" // ISA Physics
 #include "pylith/materials/materialsfwd.hh" // USES Material
@@ -263,7 +254,5 @@ private:
     pylith::feassemble::Integrator* createIntegrator(const pylith::topology::Field& solution); // Empty method
 
 }; // class FaultCohesive
-
-#endif // pylith_faults_faultcohesive_hh
 
 // End of file

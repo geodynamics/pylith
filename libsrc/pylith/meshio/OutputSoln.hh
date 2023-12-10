@@ -7,17 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/**
- * @file libsrc/meshio/OutputSoln.hh
- *
- * @brief Manager for output of solution.
- */
-
-#if !defined(pylith_meshio_outputsoln_hh)
-#define pylith_meshio_outputsoln_hh
-
-#include "meshiofwd.hh" // forward declarations
+#include "pylith/meshio/meshiofwd.hh" // forward declarations
 
 #include "pylith/problems/ObserverSoln.hh" // ISA Observer
 #include "pylith/meshio/OutputObserver.hh" // ISA OutputObserver
@@ -131,7 +123,5 @@ private:
     const OutputSoln& operator=(const OutputSoln&); ///< Not implemented
 
 }; // OutputSoln
-
-#endif // pylith_meshio_outputsoln_hh
 
 // End of file

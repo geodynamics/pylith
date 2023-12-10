@@ -10,7 +10,7 @@
 
 #include <portinfo>
 
-#include "SolutionFactory.hh" // implementation of object methods
+#include "pylith/problems/SolutionFactory.hh" // implementation of object methods
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field

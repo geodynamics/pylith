@@ -7,12 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-//
-
-#if !defined(pylith_topology_stratum_hh)
-#error "Stratum.icc must be included only from Stratum.hh"
-#else
+#pragma once
 
 #include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
 
@@ -158,7 +153,5 @@ pylith::topology::StratumIS::size(void) const { // size
     return _size;
 } // size
 
-
-#endif
 
 // End of file

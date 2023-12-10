@@ -7,9 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-#if !defined(pylith_bc_absorbingdampersdata_hh)
-#define pylith_bc_absorbingdampersdata_hh
+#pragma once
 
 #include "pylith/utils/types.hh" // USES PylithScalar
 
@@ -84,7 +82,5 @@ public:
     PylithScalar* valsJacobian; ///< Expected values from Jacobian calculation.
     //@}
 };
-
-#endif // pylith_bc_absorbingdampersdata_hh
 
 // End of file

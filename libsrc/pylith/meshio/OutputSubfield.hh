@@ -7,17 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/**
- * @file libsrc/meshio/OutputSubfield.hh
- *
- * @brief Manager for extracting subfield for output from a PyLith field.
- */
-
-#if !defined(pylith_meshio_outputsubfield_hh)
-#define pylith_meshio_outputsubfield_hh
-
-#include "meshiofwd.hh" // forward declarations
+#include "pylith/meshio/meshiofwd.hh" // forward declarations
 
 #include "pylith/utils/GenericComponent.hh" // ISA PyreComponent
 
@@ -144,7 +136,5 @@ private:
     const OutputSubfield& operator=(const OutputSubfield&); ///< Not implemented
 
 }; // OutputSubfield
-
-#endif // pylith_meshio_outputsubfield_hh
 
 // End of file

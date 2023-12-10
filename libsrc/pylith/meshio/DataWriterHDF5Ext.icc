@@ -7,12 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-//
-
-#if !defined(pylith_meshio_datawriterhdf5ext_hh)
-#error "DataWriterHDF5Ext.icc must be included only from DataWriterHDF5Ext.hh"
-#else
+#pragma once
 
 // Make copy of this object.
 inline
@@ -29,7 +24,5 @@ pylith::meshio::DataWriterHDF5Ext::filename(const char* filename) {
     _filename = filename;
 }
 
-
-#endif
 
 // End of file

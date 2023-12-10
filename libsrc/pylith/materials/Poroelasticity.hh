@@ -7,16 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/** @file libsrc/materials/Poroelasticity.hh
- *
- * @brief C++ class for solving poroelasticity equation.
- */
-
-#if !defined(pylith_materials_poroelasticity_hh)
-#define pylith_materials_poroelasticity_hh
-
-#include "materialsfwd.hh" // forward declarations
+#include "pylith/materials/materialsfwd.hh" // forward declarations
 
 #include "pylith/materials/Material.hh" // ISA Material
 
@@ -213,7 +206,5 @@ private:
     const Poroelasticity& operator=(const Poroelasticity&); /// Not implemented.
 
 }; // class Poroelasticity
-
-#endif // pylith_materials_poroelasticity_hh
 
 // End of file

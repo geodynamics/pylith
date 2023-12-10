@@ -7,9 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-#if !defined(pylith_meshio_meshdata_hh)
-#define pylith_meshio_meshdata_hh
+#pragma once
 
 #include "pylith/utils/types.hh" // USES PylithScalar
 
@@ -51,7 +49,5 @@ public:
     bool useIndexZero; ///< Indices start with 0 if true, 1 if false
 
 };
-
-#endif // pylith_meshio_meshdata_hh
 
 // End of file

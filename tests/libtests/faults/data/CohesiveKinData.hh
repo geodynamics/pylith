@@ -7,9 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-#if !defined(pylith_faults_cohesivekindata_hh)
-#define pylith_faults_cohesivekindata_hh
+#pragma once
 
 #include "pylith/utils/types.hh" // HASA PylithScalar
 
@@ -96,7 +94,5 @@ public:
     //@}
 
 };
-
-#endif // pylith_faults_cohesivekindata_hh
 
 // End of file

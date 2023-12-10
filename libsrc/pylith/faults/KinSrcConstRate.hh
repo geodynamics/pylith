@@ -7,16 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/** @file libsrc/faults/KinSrcConstRate.hh
- *
- * @brief C++ implementation of a constant slip rate slip time function.
- */
-
-#if !defined(pylith_faults_kinsrcconstrate_hh)
-#define pylith_faults_kinsrcconstrate_hh
-
-#include "KinSrc.hh"
+#include "pylith/faults/KinSrc.hh"
 
 // KinSrcConstRate --------------------------------------------------------------------------------
 /** @brief Constant slip rate slip-time function.
@@ -189,7 +182,5 @@ private:
     const KinSrcConstRate& operator=(const KinSrcConstRate&); ///< Not implemented
 
 }; // class KinSrcConstRate
-
-#endif // pylith_faults_kinsrcconstrate_hh
 
 // End of file

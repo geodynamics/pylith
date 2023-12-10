@@ -10,9 +10,9 @@
 
 #include <portinfo>
 
-#include "PyreComponent.hh" // Implementation of class methods
+#include "pylith/utils/PyreComponent.hh" // Implementation of class methods
 
-#include "journals.hh"
+#include "pylith/utils/journals.hh"
 
 #include <Python.h>
 

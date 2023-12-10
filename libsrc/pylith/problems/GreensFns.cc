@@ -10,7 +10,7 @@
 
 #include <portinfo>
 
-#include "GreensFns.hh" // implementation of class methods
+#include "pylith/problems/GreensFns.hh" // implementation of class methods
 
 #include "pylith/feassemble/IntegrationData.hh" // HOLDSA IntegrationData
 #include "pylith/topology/Mesh.hh" // USES Mesh

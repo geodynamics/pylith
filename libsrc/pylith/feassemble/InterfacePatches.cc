@@ -10,7 +10,7 @@
 
 #include <portinfo>
 
-#include "InterfacePatches.hh" // implementation of object methods
+#include "pylith/feassemble/InterfacePatches.hh" // implementation of object methods
 
 #include "pylith/faults/TopologyOps.hh" // USES TopologyOps
 #include "pylith/faults/FaultCohesive.hh" // USES FaultCohesive

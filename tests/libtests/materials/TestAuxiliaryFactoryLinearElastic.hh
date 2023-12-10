@@ -7,17 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/**
- * @file tests/libtests/materials/TestAuxiliaryFactoryLinearElastic.hh
- *
- * @brief C++ TestAuxiliaryFactoryLinearElastic object.
- *
- * C++ unit testing for AuxiliaryFactoryElastic.
- */
-
-#if !defined(pylith_materials_testauxiliaryfactorylinearelastic_hh)
-#define pylith_materials_testauxiliaryfactorylinearelastic_hh
+#pragma once
 
 #include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
@@ -95,7 +85,5 @@ public:
     spatialdata::spatialdb::UserFunctionDB* auxiliaryDB; ///< Spatial database with values for solution.
 
 }; // class TestAuxiliaryFactoryLinearElastic_Data
-
-#endif // pylith_materials_testauxiliaryfactorylinearelastic_hh
 
 // End of file

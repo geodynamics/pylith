@@ -7,17 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/*** @file libsrc/problems/Physics.hh
- *
- * @brief Abstract base class for objects defining physics, such as behavior
- * of a bulk makterial, boundary condition, interface, or constraint.
- */
-
-#if !defined(pylith_problems_physics_hh)
-#define pylith_problems_physics_hh
-
-#include "problemsfwd.hh" // forward declarations
+#include "pylith/problems/problemsfwd.hh" // forward declarations
 
 #include "pylith/utils/PyreComponent.hh" // ISA PyreComponent
 
@@ -275,7 +267,5 @@ private:
     const Physics& operator=(const Physics&); ///< Not implemented.
 
 }; // Physics
-
-#endif // pylith_problems_physics_hh
 
 // End of file

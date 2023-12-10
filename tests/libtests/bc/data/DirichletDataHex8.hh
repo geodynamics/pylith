@@ -7,9 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-#if !defined(pylith_bc_dirichletdatahex8_hh)
-#define pylith_bc_dirichletdatahex8_hh
+#pragma once
 
 #include "DirichletData.hh"
 
@@ -50,7 +48,5 @@ private:
     static const char* _meshFilename; ///< Filename of input mesh.
     static const char* _dbFilename; ///< Filename of simple spatial database.
 };
-
-#endif // pylith_bc_dirichletdatahex8_hh
 
 // End of file

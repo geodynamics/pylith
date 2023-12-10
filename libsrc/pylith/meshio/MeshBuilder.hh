@@ -7,18 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/**
- * @file libsrc/meshio/MeshBuilder.hh
- *
- * @brief Helper class for constructing PETSc mesh data structures.
- */
-
-#if !defined(pylith_meshio_meshbuilder_hh)
-#define pylith_meshio_meshbuilder_hh
-
-// Include directives ---------------------------------------------------
-#include "meshiofwd.hh" // forward declarations
+#include "pylith/meshio/meshiofwd.hh" // forward declarations
 
 #include "pylith/topology/topologyfwd.hh" // USES Mesh
 #include "pylith/utils/arrayfwd.hh" // USES scalar_array, int_array,
@@ -27,7 +18,6 @@
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 
-// MeshBuilder ----------------------------------------------------------
 /// Helper class for constructing PETSc mesh data structures.
 class pylith::meshio::MeshBuilder { // MeshBuilder
     // PUBLIC ENUMS /////////////////////////////////////////////////////
@@ -86,7 +76,5 @@ public:
                   const int_array& points);
 
 }; // MeshBuilder
-
-#endif // pylith_meshio_meshbuilder_hh
 
 // End of file

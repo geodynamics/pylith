@@ -7,17 +7,8 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/**
- * @file libsrc/faults/FaultOps.hh
- *
- * @brief Operations related to faults.
- */
-
-#if !defined(pylith_faults_faultops_hh)
-#define pylith_faults_faultops_hh
-
-// Include directives ---------------------------------------------------
 #include "pylith/faults/faultsfwd.hh" // forward declarations
 
 #include "pylith/feassemble/feassemblefwd.hh" // USES IntegrationData
@@ -51,7 +42,5 @@ private:
     const FaultOps& operator=(const FaultOps&); ///< Not implemented.
 
 }; // FaultOps
-
-#endif // pylith_faults_fieldOps_hh
 
 // End of file

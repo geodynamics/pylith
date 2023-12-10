@@ -10,9 +10,9 @@
 
 #include <portinfo>
 
-#include "EventLogger.hh" // Implementation of class methods
+#include "pylith/utils/EventLogger.hh" // Implementation of class methods
 
-#include "error.hh" // USES PYLITH_METHOD_BEGIN/END
+#include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 
 #include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream

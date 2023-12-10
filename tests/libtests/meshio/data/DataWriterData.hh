@@ -7,9 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-#if !defined(pylith_meshio_datawriterdata_hh)
-#define pylith_meshio_datawriterdata_hh
+#pragma once
 
 #include "pylith/topology/FieldBase.hh" // USES VectorFieldEnum
 
@@ -73,7 +71,5 @@ public:
     //@}
 
 }; // DataWriterData
-
-#endif // pylith_meshio_datawriterdata_hh
 
 // End of file

@@ -15,9 +15,7 @@
  *
  * C++ unit testing for BoundaryMesh.
  */
-
-#if !defined(pylith_bc_testboundarymesh_hh)
-#define pylith_bc_testboundarymesh_hh
+#pragma once
 
 #include <cppunit/extensions/HelperMacros.h>
 
@@ -96,7 +94,5 @@ public:
     //@}
 
 }; // class TestBoundaryMesh_Data
-
-#endif // pylith_bc_boundarymesh_hh
 
 // End of file

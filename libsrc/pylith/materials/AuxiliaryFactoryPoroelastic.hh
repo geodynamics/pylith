@@ -7,16 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/** @file libsrc/materials/AuxiliaryFactoryElastic.hh
- *
- * @brief C++ helper class for setting up auxiliary subfields for elastic materials.
- */
-
-#if !defined(pylith_materials_auxiliaryfactoryporoelastic_hh)
-#define pylith_materials_auxiliaryfactoryporoelastic_hh
-
-#include "materialsfwd.hh" // forward declarations
+#include "pylith/materials/materialsfwd.hh" // forward declarations
 #include "pylith/materials/AuxiliaryFactoryPoroelasticity.hh" // ISA AuxiliaryFactoryPoroelasticity
 
 class pylith::materials::AuxiliaryFactoryPoroelastic : public pylith::materials::AuxiliaryFactoryPoroelasticity {
@@ -62,7 +55,5 @@ private:
     const AuxiliaryFactoryPoroelastic& operator=(const AuxiliaryFactoryPoroelastic&); ///< Not implemented
 
 }; // class AuxiliaryFactoryPoroelastic
-
-#endif // pylith_materials_auxiliaryfactoryporoelastic_hh
 
 // End of file

@@ -7,17 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/**
- * @file tests/libtests/meshio/TestMeshIOPetsc.hh
- *
- * @brief C++ TestMeshIOPetsc object
- *
- * C++ unit testing for MeshIOPetsc.
- */
-
-#if !defined(pylith_meshio_testmeshiopetsc_hh)
-#define pylith_meshio_testmeshiopetsc_hh
+#pragma once
 
 #include "TestMeshIO.hh"
 
@@ -49,7 +39,5 @@ protected:
     MeshIOPetsc* _io; ///< Test subject.
 
 }; // class TestMeshIOPetsc
-
-#endif // pylith_meshio_testmeshiopetsc_hh
 
 // End of file

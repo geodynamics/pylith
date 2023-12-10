@@ -7,16 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/** @file libsrc/faults/KinSrcAuxiliaryFactory.hh
- *
- * @brief C++ helper class for setting up auxiliary fields for slip time functions.
- */
-
-#if !defined(pylith_faults_kinsrcauxiliaryfactory_hh)
-#define pylith_faults_kinsrcauxiliaryfactory_hh
-
-#include "faultsfwd.hh" // forward declarations
+#include "pylith/faults/faultsfwd.hh" // forward declarations
 #include "pylith/feassemble/AuxiliaryFactory.hh" // ISA AuxiliaryFactory
 
 class pylith::faults::KinSrcAuxiliaryFactory : public pylith::feassemble::AuxiliaryFactory {
@@ -69,7 +62,5 @@ private:
     const KinSrcAuxiliaryFactory& operator=(const KinSrcAuxiliaryFactory&); ///< Not implemented
 
 }; // class KinSrcAuxiliaryFactory
-
-#endif // pylith_faults_kinsrcauxiliaryfactory_hh
 
 // End of file

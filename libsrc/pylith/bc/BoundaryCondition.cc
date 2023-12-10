@@ -7,11 +7,10 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-//
 
 #include <portinfo>
 
-#include "BoundaryCondition.hh" // implementation of object methods
+#include "pylith/bc/BoundaryCondition.hh" // implementation of object methods
 
 #include "pylith/bc/DiagnosticFieldFactory.hh" // USES DiagnosticFieldFactory
 #include "pylith/feassemble/IntegratorBoundary.hh" // USES IntegratorBoundary

@@ -7,17 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/**
- * @file libsrc/problems/ObserversPhysics.hh
- *
- * @brief Collection of observers for an object.
- */
-
-#if !defined(pylith_problems_observersphysics_hh)
-#define pylith_problems_observersphysics_hh
-
-#include "problemsfwd.hh" // forward declarations
+#include "pylith/problems/problemsfwd.hh" // forward declarations
 
 #include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
@@ -108,7 +100,5 @@ private:
 };
 
 // ObserversPhysics
-
-#endif // pylith_problems_observersphysics_hh
 
 // End of file

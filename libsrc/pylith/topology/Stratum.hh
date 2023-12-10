@@ -7,12 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-#if !defined(pylith_topology_stratum_hh)
-#define pylith_topology_stratum_hh
-
-// Include directives ---------------------------------------------------
-#include "topologyfwd.hh" // forward declarations
+#include "pylith/topology/topologyfwd.hh" // forward declarations
 
 #include "pylith/utils/petscfwd.h" // HASA PetscDM, PetscIS
 
@@ -119,7 +116,5 @@ private:
 }; // StratumIS
 
 #include "Stratum.icc"
-
-#endif // pylith_topology_stratum_hh
 
 // End of file

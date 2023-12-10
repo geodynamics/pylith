@@ -7,16 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/**
- * @file libsrc/problems/InitialCondition.hh
- *
- * @brief C++ abstract base class for specifying initial conditions.
- */
-#if !defined(pylith_problems_initialcondition_hh)
-#define pylith_problems_initialcondition_hh
-
-#include "problemsfwd.hh" // forward declarations
+#include "pylith/problems/problemsfwd.hh" // forward declarations
 
 #include "pylith/utils/PyreComponent.hh" // ISA PyreComponent
 
@@ -76,7 +69,5 @@ private:
     const InitialCondition& operator=(const InitialCondition&); ///< Not implemented
 
 }; // InitialCondition
-
-#endif // pylith_problems_initialcondition_hh
 
 // End of file

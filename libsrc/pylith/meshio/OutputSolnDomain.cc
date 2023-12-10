@@ -10,7 +10,7 @@
 
 #include <portinfo>
 
-#include "OutputSolnDomain.hh" // implementation of class methods
+#include "pylith/meshio/OutputSolnDomain.hh" // implementation of class methods
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field

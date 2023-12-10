@@ -7,16 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/**
- * @file libsrc/problems/ProgressMonitorStub.hh
- *
- * @brief Minimal C++ implementation of ProgressMonitor to allow testing of basic ProgressMonitor functionality and use
- * of ProgressMoitor objects in other tests.
- */
-
-#if !defined(pylith_problems_progressmonitorstub_hh)
-#define pylith_problems_progressmonitorstub_hh
+#pragma once
 
 #include "pylith/testing/testingfwd.hh" // forward declarations
 
@@ -60,7 +51,5 @@ private:
     const ProgressMonitorStub& operator=(const ProgressMonitorStub&); ///< Not implemented
 
 }; // ProgressMonitorStub
-
-#endif // pylith_problems_progressmonitorstub_hh
 
 // End of file

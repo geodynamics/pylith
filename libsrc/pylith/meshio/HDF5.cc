@@ -10,7 +10,7 @@
 
 #include <portinfo>
 
-#include "HDF5.hh" // implementation of class methods
+#include "pylith/meshio/HDF5.hh" // implementation of class methods
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 

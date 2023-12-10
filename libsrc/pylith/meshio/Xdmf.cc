@@ -7,11 +7,10 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-//
 
 #include <portinfo>
 
-#include "Xdmf.hh" // implementation of class methods
+#include "pylith/meshio/Xdmf.hh" // implementation of class methods
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 

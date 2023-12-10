@@ -10,7 +10,7 @@
 
 #include <portinfo>
 
-#include "FieldOps.hh" // implementation of class methods
+#include "pylith/topology/FieldOps.hh" // implementation of class methods
 
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/FieldQuery.hh" // USES FieldQuery

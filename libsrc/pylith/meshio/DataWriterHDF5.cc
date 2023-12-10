@@ -10,10 +10,10 @@
 
 #include <portinfo>
 
-#include "DataWriterHDF5.hh" // Implementation of class methods
+#include "pylith/meshio/DataWriterHDF5.hh" // Implementation of class methods
 
-#include "HDF5.hh" // USES HDF5
-#include "Xdmf.hh" // USES Xdmf
+#include "pylith/meshio/HDF5.hh" // USES HDF5
+#include "pylith/meshio/Xdmf.hh" // USES Xdmf
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field

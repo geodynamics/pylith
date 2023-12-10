@@ -10,7 +10,7 @@
 
 #include <portinfo>
 
-#include "FaultCohesiveImpulses.hh" // implementation of object methods
+#include "pylith/faults/FaultCohesiveImpulses.hh" // implementation of object methods
 
 #include "pylith/faults/AuxiliaryFieldFactory.hh" // USES AuxiliaryFieldFactory
 #include "pylith/feassemble/IntegratorInterface.hh" // USES IntegratorInterface

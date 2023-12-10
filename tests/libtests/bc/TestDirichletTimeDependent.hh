@@ -15,9 +15,7 @@
  *
  * C++ unit testing for DirichletBC.
  */
-
-#if !defined(pylith_bc_testdirichlettimedependent_hh)
-#define pylith_bc_testdirichlettimedependent_hh
+#pragma once
 
 #include <cppunit/extensions/HelperMacros.h>
 #include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
@@ -161,7 +159,5 @@ public:
     spatialdata::spatialdb::UserFunctionDB* solnDB; ///< Spatial database with solution.
 
 }; // class TestDirichletTimeDependent_Data
-
-#endif // pylith_bc_dirichlettimedependent_hh
 
 // End of file

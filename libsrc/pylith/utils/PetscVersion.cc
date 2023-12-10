@@ -10,7 +10,7 @@
 
 #include <portinfo>
 
-#include "PetscVersion.hh" // Implementation of class methods
+#include "pylith/utils/PetscVersion.hh" // Implementation of class methods
 
 #include "petsc.h"
 

@@ -7,9 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-#if !defined(pylith_faults_cohesivedatahex8lagrange_hh)
-#define pylith_faults_cohesivedatahex8lagrange_hh
+#pragma once
 
 #include "CohesiveData.hh"
 
@@ -47,7 +45,5 @@ private:
 
     static const char* _filename; ///< Filename of input mesh
 };
-
-#endif // pylith_faults_cohesivedatahex8lagrange_hh
 
 // End of file

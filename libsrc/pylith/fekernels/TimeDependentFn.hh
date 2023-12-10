@@ -9,9 +9,9 @@
  * See https://mit-license.org/ and LICENSE.md and for license information.
  * =================================================================================================
  */
+#pragma once
 
-/** @file libsrc/fekernels/TimeDependentFn.hh
- *
+/*
  * Kernels for computing value from parameters for time dependent boundary conditions.
  *
  * f_0(x) +
@@ -19,11 +19,7 @@
  * f_2(x) * a(t-t_2(x)) * H(t-t_2(s).
  */
 
-#if !defined(pylith_fekernels_timedependentfn_hh)
-#define pylith_fekernels_timedependentfn_hh
-
-// Include directives ---------------------------------------------------
-#include "fekernelsfwd.hh" // forward declarations
+#include "pylith/fekernels/fekernelsfwd.hh" // forward declarations
 
 #include "pylith/utils/types.hh"
 
@@ -1237,7 +1233,5 @@ public:
     } // zero
 
 }; // TimeDependentFn
-
-#endif // pylith_fekernels_timedependentfn_hh
 
 // End of file

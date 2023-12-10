@@ -7,17 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/**
- * @file libsrc/feassemble/IntegratorDomain.hh
- *
- * @brief Object for finite-element integration over a subset (material) of the simulation domain.
- */
-
-#if !defined(pylith_feassemble_integratordomain_hh)
-#define pylith_feassemble_integratordomain_hh
-
-#include "feassemblefwd.hh" // forward declarations
+#include "pylith/feassemble/feassemblefwd.hh" // forward declarations
 
 #include "pylith/feassemble/Integrator.hh" // ISA Integrator
 #include "pylith/feassemble/JacobianValues.hh" // USES JacobianValues::JacobianKernels
@@ -246,7 +238,5 @@ private:
     const IntegratorDomain& operator=(const IntegratorDomain&); ///< Not implemented.
 
 }; // IntegratorDomain
-
-#endif // pylith_feassemble_integratordomain_hh
 
 // End of file

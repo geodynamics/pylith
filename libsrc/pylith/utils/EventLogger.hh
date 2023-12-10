@@ -7,20 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/**
- * @file libsrc/utils/EventLogger.hh
- *
- * @brief C++ object for managing event logging using PETSc.
- *
- * Each logger object manages the events for a single "logging class".
- */
-
-#if !defined(pylith_utils_eventlogger_hh)
-#define pylith_utils_eventlogger_hh
-
-// Include directives ---------------------------------------------------
-#include "utilsfwd.hh" // forward declarations
+#include "pylith/utils/utilsfwd.hh" // forward declarations
 
 #include <string> // USES std::string
 #include <map> // USES std::map
@@ -135,7 +124,5 @@ private:
 }; // EventLogger
 
 #include "EventLogger.icc" // inline methods
-
-#endif // pylith_utils_eventlogger_hh
 
 // End of file

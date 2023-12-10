@@ -7,17 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/**
- * @file tests/libtests/meshio/TestDataWriter.hh
- *
- * @brief C++ TestDataWriter object
- *
- * C++ unit testing for DataWriter..
- */
-
-#if !defined(pylith_meshio_testdatawriter_hh)
-#define pylith_meshio_testdatawriter_hh
+#pragma once
 
 #include "pylith/topology/FieldBase.hh" // USES FieldBase::VectorFieldEnum
 #include "pylith/utils/types.hh" // HASA PylithScalar
@@ -61,7 +51,5 @@ public:
     PylithInt cellNumDOF; ///< Number of values per cell.
 
 }; // class TestDataWriter_Data
-
-#endif // pylith_meshio_testdatawriter_hh
 
 // End of file

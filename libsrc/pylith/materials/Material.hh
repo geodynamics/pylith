@@ -7,16 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/** @file libsrc/materials/Material.hh
- *
- * @brief C++ abstract base class for materials.
- */
-
-#if !defined(pylith_materials_material_hh)
-#define pylith_materials_material_hh
-
-#include "materialsfwd.hh" // forward declarations
+#include "pylith/materials/materialsfwd.hh" // forward declarations
 
 #include "pylith/problems/Physics.hh" // ISA Physics
 #include "pylith/feassemble/IntegratorDomain.hh" // HOLDSA IntegratorDomain::ResidualKenels
@@ -147,7 +140,5 @@ private:
     const Material& operator=(const Material&); ///< Not implemented
 
 }; // Material
-
-#endif // pylith_materials_material_hh
 
 // End of file

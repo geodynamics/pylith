@@ -7,15 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/** @file libsrc/bc/FaultCohesiveStub.hh
- *
- * @brief Minimal C++ implementation of FaultCohesive to allow unit tests of
- * other objects needing meshes with cohesive cells.
- */
-
-#if !defined(pylith_faults_faultcohesivestub_hh)
-#define pylith_faults_faultcohesivestub_hh
+#pragma once
 
 #include "pylith/testing/testingfwd.hh" // forward declarations
 
@@ -94,7 +86,5 @@ private:
     const FaultCohesiveStub& operator=(const FaultCohesiveStub&); ///< Not implemented.
 
 }; // class FaultCohesiveStub
-
-#endif // pylith_faults_faultcohesivestub_hh
 
 // End of file

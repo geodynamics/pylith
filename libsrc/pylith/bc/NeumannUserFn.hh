@@ -7,15 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/** @file libsrc/bc/NeumannUserFn.hh
- *
- * @brief C++ implementation of Neumann (prescribed values at
- * degrees of freedom) boundary condition using a user-provided function.
- */
-
-#if !defined(pylith_bc_neumannuserfn_hh)
-#define pylith_bc_neumannuserfn_hh
+#pragma once
 
 #include "pylith/bc/BoundaryCondition.hh" // ISA BoundaryCondition
 
@@ -93,7 +85,5 @@ private:
     const NeumannUserFn& operator=(const NeumannUserFn&); ///< Not implemented.
 
 }; // class NeumannUserFn
-
-#endif // pylith_bc_neumannuserfn_hh
 
 // End of file

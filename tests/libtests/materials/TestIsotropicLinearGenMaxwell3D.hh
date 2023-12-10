@@ -7,17 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/**
- * @file tests/libtests/materials/TestIsotropicLinearGenMaxwell3D.hh
- *
- * @brief C++ TestIsotropicLinearGenMaxwell3D object
- *
- * C++ unit testing for IsotropicLinearGenMaxwell3D.
- */
-
-#if !defined(pylith_materials_testisotropiclineargenmaxwell3d_hh)
-#define pylith_materials_testisotropiclineargenmaxwell3d_hh
+#pragma once
 
 #include "TestMaterial.hh" // ISA TestMaterial
 
@@ -106,7 +96,5 @@ public:
     double gravityVector[3]; ///< Array for gravity vector.
 
 };
-
-#endif // pylith_materials_testisotropiclineargenmaxwell3d_hh
 
 // End of file

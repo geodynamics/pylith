@@ -7,9 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-#if !defined(pylith_faults_cohesivedynldatatri3d_hh)
-#define pylith_faults_cohesivedynldatatri3d_hh
+#pragma once
 
 #include "CohesiveDynData.hh"
 
@@ -68,7 +66,5 @@ private:
     static const int _numConstraintEdges; ///< Number of constraint edges
 
 };
-
-#endif // pylith_faults_cohesivedynldatatri3d_hh
 
 // End of file

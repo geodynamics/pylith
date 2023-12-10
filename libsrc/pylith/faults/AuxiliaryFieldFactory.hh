@@ -7,17 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-//
+#pragma once
 
-/** @file libsrc/faults/AuxiliaryFieldFactory.hh
- *
- * @brief C++ helper class for setting up auxiliary subfields for faults.
- */
-
-#if !defined(pylith_faults_auxiliaryfactorykinematic_hh)
-#define pylith_faults_auxiliaryfactorykinematic_hh
-
-#include "faultsfwd.hh" // forward declarations
+#include "pylith/faults/faultsfwd.hh" // forward declarations
 #include "pylith/feassemble/AuxiliaryFactory.hh" // ISA AuxiliaryFactory
 
 class pylith::faults::AuxiliaryFieldFactory : public pylith::feassemble::AuxiliaryFactory {
@@ -48,7 +40,5 @@ private:
     const AuxiliaryFieldFactory& operator=(const AuxiliaryFieldFactory&); ///< Not implemented
 
 }; // class AuxiliaryFieldFactory
-
-#endif // pylith_faults_auxiliaryfactorykinematic_hh
 
 // End of file

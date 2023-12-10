@@ -7,15 +7,7 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
-
-/**
- * @file tests/libtests/topology/TestfieldsubmeshSubmesh.hh
- *
- * @brief C++ unit testing for Field.
- */
-
-#if !defined(pylith_topology_testfieldsubmesh_hh)
-#define pylith_topology_testfieldsubmesh_hh
+#pragma once
 
 // Include directives ---------------------------------------------------
 #include <cppunit/extensions/HelperMacros.h>
@@ -138,7 +130,5 @@ private:
     void _buildMesh(Mesh* mesh);
 
 }; // class TestFieldSubmesh
-
-#endif // pylith_topology_testfieldsubmesh_hh
 
 // End of file

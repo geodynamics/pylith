@@ -7,18 +7,9 @@
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
+#pragma once
 
-/**
- * @file libsrc/topology/Mesh.hh
- *
- * @brief C++ PyLith finite-element mesh.
- */
-
-#if !defined(pylith_topology_mesh_hh)
-#define pylith_topology_mesh_hh
-
-// Include directives ---------------------------------------------------
-#include "topologyfwd.hh" // forward declarations
+#include "pylith/topology/topologyfwd.hh" // forward declarations
 #include "spatialdata/geocoords/geocoordsfwd.hh" // forward declarations
 
 #include "pylith/utils/petscfwd.h" // HASA PetscDM
@@ -29,7 +20,7 @@
  * Extends PETSc mesh to include coordinate system associated with
  * domain.
  */
-class pylith::topology::Mesh { // Mesh
+class pylith::topology::Mesh {
     friend class TestMesh; // unit testing
 
     // PUBLIC MEMBERS ///////////////////////////////////////////////////////
@@ -136,7 +127,5 @@ private:
     const Mesh& operator=(const Mesh&); ///< Not implemented
 
 }; // Mesh
-
-#endif // pylith_topology_mesh_hh
 
 // End of file
