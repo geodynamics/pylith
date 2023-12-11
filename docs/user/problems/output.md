@@ -56,6 +56,8 @@ Fields with a basis order of 0 are kept at a basis order of 0 when output.
 Fields with a basis order of 1 or more can be output with a basis order of 0 or 1.
 :::
 
+*New in v4.0.0*
+
 The output observers produce files with either diagnostic information (`info` files) or solution and state variable information (`data` files).
 The default behavior is the files include all available information.
 The `info` files include the auxiliary subfields at the beginning of the simulation along with  surface orientation information for faults and boundary conditions.

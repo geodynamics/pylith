@@ -48,6 +48,7 @@ db_B.query_type = linear
 ```
 
 ## Power-law spatial database
+*New in v4.0.0*
 
 We use the utility script `pylith_powerlaw_gendb` (see {ref}`sec-user-run-pylith-pylith-powerlaw-gendb`) to generate the spatial database `mat_powerlaw.spatialdb` with the power-law bulk rheology parameters.
 We provide the parameters for `pylith_powerlaw_gendb` in `powerlaw_gendb.cfg`, which follows the same formatting conventions as the PyLith parameter files. 
