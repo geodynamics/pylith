@@ -12,18 +12,13 @@ quasi-static simulations of crustal deformation, primarily earthquakes
 and volcanoes.
 
 * Main page: [https://geodynamics.org/resources/pylith](https://geodynamics.org/resources/pylith)
-  * [User Guide](https://pylith.readthedocs.io/en/latest/user/index.html)
+  * [Documentation](https://pylith.readthedocs.io/en/latest/)
   * Binary packages
   * Utility to build PyLith and all of its dependencies from source
 *
   [PyLith parameter viewer](https://geodynamics.github.io/pylith_parameters/) for viewing `.json` parameter files.
-* PyLith Wiki: [https://wiki.geodynamics.org/software:pylith:start](https://wiki.geodynamics.org/software:pylith:start)
-  * Archive of online tutorials
-  * Hints, tips, tricks, etc
-  * [PyLith development plan](https://github.com/geodynamics/pylith/wiki/Development-Plans)
 * Submit bug reports via [GitHub issues](https://github.com/geodynamics/pylith/issues).
-* Post all questions to the [PyLith category](https://community.geodynamics.org/c/pylith/29) on the [CIG Community Forum](https://community.geodynamics.org).
-
+* Post all questions to the [PyLith category](https://community.geodynamics.org/c/pylith/) on the [CIG Community Forum](https://community.geodynamics.org).
 
 ## Features
 
@@ -57,5 +52,5 @@ PyLith is continually being improved by a growing, collaborative, and inclusive 
 
 A complete and growing list of the authors that have contributed over the years can be found at [GitHub contributors](https://github.com/geodynamics/pylith/graphs/contributors).
 
-Please see the User Guide for complete and [acknowledgement and citation](https://pylith.readthedocs.io/en/latest/intro/preface.html#citation) information.
+Please see the User Guide for [acknowledgement and citation](https://pylith.readthedocs.io/en/latest/intro/preface.html#citation) information.
 

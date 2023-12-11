@@ -1,6 +1,6 @@
 # =================================================================================================
 # This code is part of PyLith, developed through the Computational Infrastructure
-# for Geodynamics (https://geodynamics.org).
+# for Geodynamics (https://github.com/geodynamics/pylith).
 #
 # Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
 # All rights reserved.
@@ -41,7 +41,8 @@ EXTRA_DIST = \
 	announce_v3.0.0.md \
 	announce_v3.0.1.md \
 	announce_v3.0.2.md \
-	announce_v3.0.3.md
+	announce_v3.0.3.md \
+	announce_v4.0.0.md
 
 
 # End of file 
