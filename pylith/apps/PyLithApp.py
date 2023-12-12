@@ -138,11 +138,11 @@ class PyLithApp(PetscApplication):
         import pylith.utils.utils as utils
         v = utils.PylithVersion()
         verNum = v.version()
-        verYear = 2022
+        verYear = 2023
         verDOI = v.doi()
 
         software = ("@Manual{PyLith:software,\n"
-                    "  title        = {PyLith v%s},\n"
+                    "  title        = {PyLith Version %s},\n"
                     "  author       = {Aagaard, B. and Knepley, M. and Williams, C.},\n"
                     "  organization = {Computational Infrastructure for Geodynamics (CIG)},\n"
                     "  address      = {University of California, Davis},\n"
@@ -162,7 +162,7 @@ class PyLithApp(PetscApplication):
                   )
 
         faultRup = ("@Article{Aagaard:Knepley:Williams:JGR:2013,\n"
-                    "  author   = {Aagaard, B.~T. and Knepley, M.~G. and Wiliams, C.~A.},\n"
+                    "  author   = {Aagaard, B.~T. and Knepley, M.~G. and Williams, C.~A.},\n"
                     "  title    = {A domain decomposition approach to implementing fault slip "
                     "in finite-element models of quasi-static and dynamic crustal deformation},\n"
                     "  journal  = {Journal of Geophysical Research Solid Earth},\n"
