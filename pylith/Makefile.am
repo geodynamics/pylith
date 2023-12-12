@@ -65,6 +65,7 @@ EXTRA_DIST = \
 	materials/AuxSubfieldsIsotropicPowerLaw.py \
 	materials/AuxSubfieldsPoroelasticity.py \
 	materials/DerivedSubfieldsElasticity.py \
+	materials/DerivedSubfieldsPoroelasticity.py \
 	materials/Elasticity.py \
 	materials/Homogeneous.py \
 	materials/IncompressibleElasticity.py \
