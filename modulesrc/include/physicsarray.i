@@ -90,6 +90,48 @@
 }
 
 // ----------------------------------------------------------------------
+// List of sources.
+%typemap(in)(pylith::sources::Source *sources[],
+              const int numSources)
+{
+  // Check to make sure input is a list.
+  if (PyList_Check($input))
+  {
+    const int size = PyList_Size($input);
+    $2 = size;
+    $1 = (size > 0) ? new pylith::sources::Source *[size] : 0;
+    for (int i = 0; i < size; i++)
+    {
+      PyObject *s = PyList_GetItem($input, i);
+      pylith::sources::Source *sources = 0;
+      int err = SWIG_ConvertPtr(s, (void **)&sources,
+                                $descriptor(pylith::sources::Source *),
+                                0);
+      if (SWIG_IsOK(err))
+        $1[i] = (pylith::sources::Source *)sources;
+      else
+      {
+        PyErr_SetString(PyExc_TypeError, "List must contain sources.");
+        delete[] $1;
+        return NULL;
+      } // if
+    }   // for
+  }
+  else
+  {
+    PyErr_SetString(PyExc_TypeError, "Expected list of sources.");
+    return NULL;
+  } // if/else
+} // typemap(in) [List of sources.]
+
+// This cleans up the array we malloc'd before the function call
+%typemap(freearg)(pylith::sources::Source *sources[],
+                   const int numSources)
+{
+  delete[] $1;
+}
+
+// ----------------------------------------------------------------------
 // List of initial conditions.
 %typemap(in) (pylith::problems::InitialCondition* ic[],
 	      const int numIC)

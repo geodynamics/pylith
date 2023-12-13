@@ -21,6 +21,7 @@ SUBDIRS = \
 	topology \
 	feassemble \
 	problems \
+	sources \
 	meshio \
 	materials \
 	bc \
@@ -74,6 +75,12 @@ libpylith_la_SOURCES = \
 	fekernels/Tensor.cc \
 	fekernels/IsotropicLinearGenMaxwell.cc \
 	fekernels/IsotropicPowerLaw.cc \
+	fekernels/SquareWavelet.cc \
+	fekernels/GaussianWavelet.cc \
+	fekernels/PointForce.cc \
+	fekernels/RickerWavelet.cc \
+	fekernels/SquarePulseSource.cc \
+	fekernels/WellboreSource.cc \
 	materials/Material.cc \
 	materials/Elasticity.cc \
 	materials/RheologyElasticity.cc \
@@ -132,6 +139,21 @@ libpylith_la_SOURCES = \
 	problems/ProgressMonitor.cc \
 	problems/ProgressMonitorTime.cc \
 	problems/ProgressMonitorStep.cc \
+	sources/AuxiliaryFactoryMomentTensorForce.cc \
+	sources/AuxiliaryFactoryPointForce.cc \
+	sources/AuxiliaryFactorySourceTime.cc \
+	sources/AuxiliaryFactorySquarePulseSource.cc \
+	sources/AuxiliaryFactoryWellboreSource.cc \
+	sources/DerivedFactoryMomentTensorForce.cc \
+	sources/GaussianWavelet.cc \
+	sources/MomentTensorForce.cc \
+	sources/PointForce.cc \
+	sources/SquareWavelet.cc \
+	sources/RickerWavelet.cc \
+	sources/Source.cc \
+	sources/SourceTimeFunctionMomentTensorForce.cc \
+	sources/SquarePulseSource.cc \
+	sources/WellboreSource.cc \
 	topology/Mesh.cc \
 	topology/MeshOps.cc \
 	topology/FieldBase.cc \

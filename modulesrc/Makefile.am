@@ -26,6 +26,7 @@ SUBDIRS = \
 	meshio \
 	mpi \
 	problems \
+	sources \
 	topology \
 	utils
 

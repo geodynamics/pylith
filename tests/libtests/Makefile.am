@@ -23,6 +23,7 @@ SUBDIRS = \
 	materials \
 	meshio \
 	problems \
+	sources \
 	topology \
 	testing \
 	utils

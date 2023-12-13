@@ -40,7 +40,6 @@ namespace pylith {
 
 /// C++ unit testing for IsotropicLinearElasticityPlaneStrain
 class pylith::materials::TestIsotropicLinearElasticityPlaneStrain : public TestMaterial {
-
     // CPPUNIT TEST SUITE /////////////////////////////////////////////////
     CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearElasticityPlaneStrain, TestMaterial);
 
@@ -99,7 +98,6 @@ protected:
 
 // =============================================================================
 class pylith::materials::TestIsotropicLinearElasticityPlaneStrain_Data : public TestMaterial_Data {
-
     // PUBLIC METHODS ///////////////////////////////////////////////////////
 public:
 
@@ -118,6 +116,5 @@ public:
 };
 
 #endif // pylith_materials_testisotropiclinearelasticityplanestrain_hh
-
 
 // End of file
