@@ -1,35 +1,22 @@
-// -*- C++ -*-
+// =================================================================================================
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// ----------------------------------------------------------------------
+// Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+// All rights reserved.
 //
-// Brad T. Aagaard, U.S. Geological Survey
-// Charles A. Williams, GNS Science
-// Matthew G. Knepley, University at Buffalo
-//
-// This code was developed as part of the Computational Infrastructure
-// for Geodynamics (http://geodynamics.org).
-//
-// Copyright (c) 2010-2022 University of California, Davis
-//
-// See LICENSE.md for license information.
-//
-// ----------------------------------------------------------------------
-//
+// See https://mit-license.org/ and LICENSE.md and for license information.
+// =================================================================================================
+#pragma once
 
-/** @file libsrc/feassemble/InterfacePatches.hh
- *
- * @brief Interface integration patches.
- *
+/*
  * In some cases the weak form involves both integration over the cohesive cell as well as
  * the adjacent faces on the negative and positive sides of the fault. In such cases the pointwise
  * functions depend on the materials, so we split the integration into patches. Each patch
  * corresponds to a pair of materials on the negative and positive sides of the fault.
  */
 
-#if !defined(pylith_feassemble_interfacepatches_hh)
-#define pylith_feassemble_interfacepatches_hh
-
-#include "feassemblefwd.hh" // forward declarations
+#include "pylith/feassemble/feassemblefwd.hh" // forward declarations
 
 #include "pylith/faults/faultsfwd.hh" // USES FaultCohesive
 
@@ -96,7 +83,5 @@ private:
     const InterfacePatches& operator=(const InterfacePatches&); ///< Not implemented
 
 }; // class InterfacePatches
-
-#endif // pylith_feassemble_interfacepatches_hh
 
 // End of file

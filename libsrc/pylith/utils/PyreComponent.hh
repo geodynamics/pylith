@@ -1,32 +1,15 @@
-// -*- C++ -*-
+// =================================================================================================
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// ======================================================================
+// Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+// All rights reserved.
 //
-// Brad T. Aagaard, U.S. Geological Survey
-// Charles A. Williams, GNS Science
-// Matthew G. Knepley, University at Buffalo
-//
-// This code was developed as part of the Computational Infrastructure
-// for Geodynamics (http://geodynamics.org).
-//
-// Copyright (c) 2010-2022 University of California, Davis
-//
-// See LICENSE.md for license information.
-//
-// ======================================================================
-//
+// See https://mit-license.org/ and LICENSE.md and for license information.
+// =================================================================================================
+#pragma once
 
-/**
- * @file libsrc/utils/PyreComponent.hh
- *
- * @brief C++ object for managing Pyre component and identifier information.
- */
-
-#if !defined(pylith_utils_pyrecomponent_hh)
-#define pylith_utils_pyrecomponent_hh
-
-// Include directives ---------------------------------------------------
-#include "utilsfwd.hh" // forward declarations
+#include "pylith/utils/utilsfwd.hh" // forward declarations
 
 #include <string> // HASA std::string
 
@@ -85,7 +68,5 @@ private:
     const PyreComponent& operator=(const PyreComponent&); ///< Not implemented
 
 }; // PyreComponent
-
-#endif // pylith_utils_pyrecomponent_hh
 
 // End of file

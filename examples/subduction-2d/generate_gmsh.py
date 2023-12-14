@@ -244,7 +244,7 @@ class App(GenerateMesh):
         math_exp = GenerateMesh.get_math_progression(fault_distance, min_dx=5.0e+3, bias=1.07)
         gmsh.model.mesh.field.setString(field_size, "F", math_exp)
 
-        ## Finally, we use the field `field_size` for the cell size of the mesh.
+        # Finally, we use the field `field_size` for the cell size of the mesh.
         gmsh.model.mesh.field.setAsBackgroundMesh(field_size)
 
         if cell == "quad":

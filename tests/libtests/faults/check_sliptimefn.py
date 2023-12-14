@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env nemesis
 
 import numpy
 import matplotlib.pyplot as pyplot

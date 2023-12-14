@@ -1,10 +1,8 @@
-// -*- C++ -*- (syntax highlighting)
 //
 // This spatial database specifies the patch over which we will compute
 // slip impulses for static Green's functions. We impose impulses over the
 // region -25 km <= y <= 25 km. This is slightly larger than the extent of slip
 // in Step 4 (see `slip_variable.spatialdb`).
-//
 #SPATIAL.ascii 1
 SimpleDB {
   num-values = 2

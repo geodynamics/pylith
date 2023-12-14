@@ -1,20 +1,12 @@
-// -*- C++ -*-
+// =================================================================================================
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// ----------------------------------------------------------------------
+// Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+// All rights reserved.
 //
-// Brad T. Aagaard, U.S. Geological Survey
-// Charles A. Williams, GNS Science
-// Matthew G. Knepley, University at Buffalo
-//
-// This code was developed as part of the Computational Infrastructure
-// for Geodynamics (http://geodynamics.org).
-//
-// Copyright (c) 2010-2022 University of California, Davis
-//
-// See LICENSE.md for license information.
-//
-// ----------------------------------------------------------------------
-//
+// See https://mit-license.org/ and LICENSE.md and for license information.
+// =================================================================================================
 
 #include <portinfo>
 
@@ -47,7 +39,6 @@ namespace pylith {
 // ----------------------------------------------------------------------
 class pylith::materials::TestIsotropicLinearElasticityPlaneStrain_GravityRefState :
     public pylith::materials::TestIsotropicLinearElasticityPlaneStrain {
-
     /// Spatial database user functions for auxiiliary subfields (includes derived fields).
     static const double SMALL;
     static const double GACC;
@@ -58,6 +49,7 @@ class pylith::materials::TestIsotropicLinearElasticityPlaneStrain_GravityRefStat
                           const double y) {
         return 2500.0;
     } // density
+
     static const char* density_units(void) {
         return "kg/m**3";
     } // density_units
@@ -67,6 +59,7 @@ class pylith::materials::TestIsotropicLinearElasticityPlaneStrain_GravityRefStat
                      const double y) {
         return 3000.0;
     } // vs
+
     static const char* vs_units(void) {
         return "m/s";
     } // vs_units
@@ -76,6 +69,7 @@ class pylith::materials::TestIsotropicLinearElasticityPlaneStrain_GravityRefStat
                      const double y) {
         return sqrt(3.0)*vs(x,y);
     } // vp
+
     static const char* vp_units(void) {
         return "m/s";
     } // vp_units
@@ -85,6 +79,7 @@ class pylith::materials::TestIsotropicLinearElasticityPlaneStrain_GravityRefStat
                                const double y) {
         return density(x,y) * vs(x,y) * vs(x,y);
     } // shearModulus
+
     static const char* shearModulus_units(void) {
         return "Pa";
     } // shearModulus_units
@@ -94,6 +89,7 @@ class pylith::materials::TestIsotropicLinearElasticityPlaneStrain_GravityRefStat
                               const double y) {
         return density(x,y)*(vp(x,y)*vp(x,y) - 4.0/3.0*vs(x,y)*vs(x,y));
     } // bulkModulus
+
     static const char* bulkModulus_units(void) {
         return "Pa";
     } // bulkModulus_units
@@ -104,43 +100,50 @@ class pylith::materials::TestIsotropicLinearElasticityPlaneStrain_GravityRefStat
                                       const double y) {
         return -density(x,y) * GACC * (YMAX-y);
     } // referenceMeanStress
+
     static double referenceShearStress(const double x,
                                        const double y) {
         return 0.0;
     } // referenceShearStress
+
     static const char* stress_units(void) {
         return "Pa";
     } // stress_units
+
     static double referenceStrain(const double x,
                                   const double y) {
         return 0.0;
     } // referencStrain
+
     static const char* strain_units(void) {
         return "none";
     } // strain_units
 
     static double setGravityAcc_x(const double x,
-                               const double y) {
+                                  const double y) {
         return 0.0;
     } // setGravityAcc_x
+
     static double setGravityAcc_y(const double x,
-                               const double y) {
+                                  const double y) {
         return -GACC;
     } // setGravityAcc_y
+
     static const char* acc_units(void) {
         return "m/s**2";
     } // acc_units
-
 
     // Displacement
     static double disp_x(const double x,
                          const double y) {
         return 0.0;
     } // disp_x
+
     static double disp_y(const double x,
                          const double y) {
         return 0.0;
     } // disp_y
+
     static const char* disp_units(void) {
         return "m";
     } // disp_units
@@ -149,20 +152,22 @@ class pylith::materials::TestIsotropicLinearElasticityPlaneStrain_GravityRefStat
                              const double y) {
         return 0.0;
     } // disp_dot_x
+
     static double disp_dot_y(const double x,
                              const double y) {
         return 0.0;
     } // disp_dot_y
+
     static const char* disp_dot_units(void) {
         return "m/s";
     } // disp_dot_units
-
 
     // Displacement + perturbation
     static double disp_perturb_x(const double x,
                                  const double y) {
         return disp_x(x, y) + SMALL;
     } // disp_perturb_x
+
     static double disp_perturb_y(const double x,
                                  const double y) {
         return disp_y(x, y) + SMALL;
@@ -172,7 +177,7 @@ protected:
 
     void setUp(void) {
         TestIsotropicLinearElasticityPlaneStrain::setUp();
-        _mydata = new TestIsotropicLinearElasticityPlaneStrain_Data(); CPPUNIT_ASSERT(_mydata);
+        _mydata = new TestIsotropicLinearElasticityPlaneStrain_Data();CPPUNIT_ASSERT(_mydata);
 
         // dimension set in base class.
         // meshFilename set in derived class.
@@ -184,7 +189,7 @@ protected:
         _mydata->normalizer->setPressureScale(2.25e+10);
         _mydata->normalizer->computeDensityScale();
 
-        delete _mydata->gravityField; _mydata->gravityField = new spatialdata::spatialdb::GravityField();
+        delete _mydata->gravityField;_mydata->gravityField = new spatialdata::spatialdb::GravityField();
         _mydata->gravityField->setGravityDir(0.0, -1.0, 0.0);
         _mydata->gravityField->setGravityAcc(GACC);
 
@@ -254,7 +259,6 @@ const double pylith::materials::TestIsotropicLinearElasticityPlaneStrain_Gravity
 
 class pylith::materials::TestIsotropicLinearElasticityPlaneStrain_GravityRefState_TriP1 :
     public pylith::materials::TestIsotropicLinearElasticityPlaneStrain_GravityRefState {
-
     CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearElasticityPlaneStrain_GravityRefState_TriP1,
                            TestIsotropicLinearElasticityPlaneStrain);
     CPPUNIT_TEST_SUITE_END();
@@ -277,11 +281,9 @@ class pylith::materials::TestIsotropicLinearElasticityPlaneStrain_GravityRefStat
 }; // TestIsotropicLinearElasticityPlaneStrain_GravityRefState_TriP1
 CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearElasticityPlaneStrain_GravityRefState_TriP1);
 
-
 // ----------------------------------------------------------------------
 class pylith::materials::TestIsotropicLinearElasticityPlaneStrain_GravityRefState_TriP2 :
     public pylith::materials::TestIsotropicLinearElasticityPlaneStrain_GravityRefState {
-
     CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearElasticityPlaneStrain_GravityRefState_TriP2,
                            TestIsotropicLinearElasticityPlaneStrain);
     CPPUNIT_TEST_SUITE_END();
@@ -314,11 +316,9 @@ class pylith::materials::TestIsotropicLinearElasticityPlaneStrain_GravityRefStat
 }; // TestIsotropicLinearElasticityPlaneStrain_GravityRefState_TriP2
 CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearElasticityPlaneStrain_GravityRefState_TriP2);
 
-
 // ----------------------------------------------------------------------
 class pylith::materials::TestIsotropicLinearElasticityPlaneStrain_GravityRefState_TriP3 :
     public pylith::materials::TestIsotropicLinearElasticityPlaneStrain_GravityRefState {
-
     CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearElasticityPlaneStrain_GravityRefState_TriP3,
                            TestIsotropicLinearElasticityPlaneStrain);
     CPPUNIT_TEST_SUITE_END();
@@ -351,11 +351,9 @@ class pylith::materials::TestIsotropicLinearElasticityPlaneStrain_GravityRefStat
 }; // TestIsotropicLinearElasticityPlaneStrain_GravityRefState_TriP3
 CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearElasticityPlaneStrain_GravityRefState_TriP3);
 
-
 // ----------------------------------------------------------------------
 class pylith::materials::TestIsotropicLinearElasticityPlaneStrain_GravityRefState_TriP4 :
     public pylith::materials::TestIsotropicLinearElasticityPlaneStrain_GravityRefState {
-
     CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearElasticityPlaneStrain_GravityRefState_TriP4,
                            TestIsotropicLinearElasticityPlaneStrain);
     CPPUNIT_TEST_SUITE_END();
@@ -387,13 +385,11 @@ class pylith::materials::TestIsotropicLinearElasticityPlaneStrain_GravityRefStat
 
 }; // TestIsotropicLinearElasticityPlaneStrain_GravityRefState_TriP4
 // Leave this out for now to shorten runtime.
-//CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearElasticityPlaneStrain_GravityRefState_TriP4);
-
+// CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearElasticityPlaneStrain_GravityRefState_TriP4);
 
 // ----------------------------------------------------------------------
 class pylith::materials::TestIsotropicLinearElasticityPlaneStrain_GravityRefState_QuadQ1 :
     public pylith::materials::TestIsotropicLinearElasticityPlaneStrain_GravityRefState {
-
     CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearElasticityPlaneStrain_GravityRefState_QuadQ1,
                            TestIsotropicLinearElasticityPlaneStrain);
     CPPUNIT_TEST_SUITE_END();
@@ -426,11 +422,9 @@ class pylith::materials::TestIsotropicLinearElasticityPlaneStrain_GravityRefStat
 }; // TestIsotropicLinearElasticityPlaneStrain_GravityRefState_QuadQ1
 CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearElasticityPlaneStrain_GravityRefState_QuadQ1);
 
-
 // ----------------------------------------------------------------------
 class pylith::materials::TestIsotropicLinearElasticityPlaneStrain_GravityRefState_QuadQ2 :
     public pylith::materials::TestIsotropicLinearElasticityPlaneStrain_GravityRefState {
-
     CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearElasticityPlaneStrain_GravityRefState_QuadQ2,  TestIsotropicLinearElasticityPlaneStrain);
     CPPUNIT_TEST_SUITE_END();
 
@@ -462,11 +456,9 @@ class pylith::materials::TestIsotropicLinearElasticityPlaneStrain_GravityRefStat
 }; // TestIsotropicLinearElasticityPlaneStrain_GravityRefState_QuadQ2
 CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearElasticityPlaneStrain_GravityRefState_QuadQ2);
 
-
 // ----------------------------------------------------------------------
 class pylith::materials::TestIsotropicLinearElasticityPlaneStrain_GravityRefState_QuadQ3 :
     public pylith::materials::TestIsotropicLinearElasticityPlaneStrain_GravityRefState {
-
     CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearElasticityPlaneStrain_GravityRefState_QuadQ3,
                            TestIsotropicLinearElasticityPlaneStrain);
     CPPUNIT_TEST_SUITE_END();
@@ -499,10 +491,9 @@ class pylith::materials::TestIsotropicLinearElasticityPlaneStrain_GravityRefStat
 }; // TestIsotropicLinearElasticityPlaneStrain_GravityRefState_QuadQ3
 CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearElasticityPlaneStrain_GravityRefState_QuadQ3);
 
-
 // ----------------------------------------------------------------------
-class pylith::materials::TestIsotropicLinearElasticityPlaneStrain_GravityRefState_QuadQ4 : public pylith::materials::TestIsotropicLinearElasticityPlaneStrain_GravityRefState { // TestIsotropicLinearElasticityPlaneStrain_GravityRefState_QuadQ4
-
+class pylith::materials::TestIsotropicLinearElasticityPlaneStrain_GravityRefState_QuadQ4 : public pylith::materials::TestIsotropicLinearElasticityPlaneStrain_GravityRefState { //
+                                                                                                                                                                                // TestIsotropicLinearElasticityPlaneStrain_GravityRefState_QuadQ4
     CPPUNIT_TEST_SUB_SUITE(TestIsotropicLinearElasticityPlaneStrain_GravityRefState_QuadQ4,
                            TestIsotropicLinearElasticityPlaneStrain);
     CPPUNIT_TEST_SUITE_END();
@@ -534,7 +525,6 @@ class pylith::materials::TestIsotropicLinearElasticityPlaneStrain_GravityRefStat
 
 }; // TestIsotropicLinearElasticityPlaneStrain_GravityRefState_QuadQ4
 // Leave this out for now to shorten runtime.
-//CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearElasticityPlaneStrain_GravityRefState_QuadQ4);
-
+// CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearElasticityPlaneStrain_GravityRefState_QuadQ4);
 
 // End of file

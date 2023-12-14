@@ -1,12 +1,9 @@
-// -*- C++ -*- (syntax highlighting)
-//
 // This spatial database specifies the distribution of slip-weakening
 // friction properties for the subducting interface.
 // 
 // We specify depth-dependent frictional properties with stable
 // sliding (equal dynamic and static coefficients of friction) above
 // and below the seismogenic zone (elevations of -5 km to -45 km).
-//
 #SPATIAL_GRID.ascii 1
 SimpleGridDB {
   num-x = 1

@@ -1,26 +1,15 @@
-// -*- C++ -*-
+// =================================================================================================
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// ======================================================================
+// Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+// All rights reserved.
 //
-// Brad T. Aagaard, U.S. Geological Survey
-// Charles A. Williams, GNS Science
-// Matthew G. Knepley, University at Buffalo
-//
-// This code was developed as part of the Computational Infrastructure
-// for Geodynamics (http://geodynamics.org).
-//
-// Copyright (c) 2010-2022 University of California, Davis
-//
-// See LICENSE.md for license information.
-//
-// ======================================================================
-//
+// See https://mit-license.org/ and LICENSE.md and for license information.
+// =================================================================================================
+#pragma once
 
-/**
- * @file libsrc/meshio/DataWriterHDF5.hh
- *
- * @brief Object for writing finite-element data to HDF5 file.
- *
+/*
  * HDF5 schema for PyLith output.
  *
  * / - root group
@@ -42,10 +31,7 @@
  *     [nvertices, 64]
  */
 
-#if !defined(pylith_meshio_datawriterhdf5_hh)
-#define pylith_meshio_datawriterhdf5_hh
-
-#include "DataWriter.hh" // ISA DataWriter
+#include "pylith/meshio/DataWriter.hh" // ISA DataWriter
 
 #include "pylith/utils/petscfwd.h" // HASA PetscVec
 
@@ -167,7 +153,5 @@ private:
 }; // DataWriterHDF5
 
 #include "DataWriterHDF5.icc" // inline methods
-
-#endif // pylith_meshio_datawriterhdf5_hh
 
 // End of file

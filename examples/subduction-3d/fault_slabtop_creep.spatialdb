@@ -1,12 +1,9 @@
-// -*- C++ -*- (syntax highlighting)
-//
 // This spatial database specifies the distribution of slip rate
 // associated with aseismic creep on the interface between the mantle
 // and the subducting oceanic crust.
 // 
 // We specify a uniform creep rate below a depth of 50 km, tapering to
 // 0 at a depth of 30 km.
-//
 #SPATIAL_GRID.ascii 1
 SimpleGridDB {
   num-x = 1

@@ -1,23 +1,17 @@
-/* -*- C++ -*-
+/*
+ * ================================================================================================
+ * This code is part of PyLith, developed through the Computational Infrastructure
+ * for Geodynamics (https://github.com/geodynamics/pylith).
  *
- * ----------------------------------------------------------------------
+ * Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+ * All rights reserved.
  *
- * Brad T. Aagaard, U.S. Geological Survey
- * Charles A. Williams, GNS Science
- * Matthew G. Knepley, University at Buffalo
- *
- * This code was developed as part of the Computational Infrastructure
- * for Geodynamics (http:*geodynamics.org).
- *
- * Copyright (c) 2010-2022 University of California, Davis
- *
- * See LICENSE.md for license information.
- *
- * ----------------------------------------------------------------------
+ * See https://mit-license.org/ and LICENSE.md and for license information.
+ * =================================================================================================
  */
+#pragma once
 
-/** @file libsrc/fekernels/IsotropicPowerLaw.hh
- *
+/*
  * Kernels for power-law viscoelastic material.
  *
  * Solution fields: [disp(dim), ...]
@@ -76,10 +70,7 @@
  * @param[out] f0 [dim].
  */
 
-#if !defined(pylith_fekernels_isotropicpowerlaw_hh)
-#define pylith_fekernels_isotropicpowerlaw_hh
-
-#include "fekernelsfwd.hh" // forward declarations
+#include "pylith/fekernels/fekernelsfwd.hh" // forward declarations
 #include "pylith/fekernels/Elasticity.hh" // USES Elasticity kernels
 #include "pylith/fekernels/IsotropicLinearElasticity.hh" // USES IsotropicLinearElasticity* kernels
 
@@ -2634,7 +2625,5 @@ private:
     }
 
 }; // IsotropicPowerLaw3D
-
-#endif // pylith_fekernels_isotropicpowerlaw_hh
 
 // End of file

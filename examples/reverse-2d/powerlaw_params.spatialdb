@@ -1,5 +1,3 @@
-// -*- C++ -*- (tell Emacs to use C++ mode for syntax highlighting)
-//
 // This spatial database defines the power-law parameters for two materials:
 // Wet granite and dry olivine. The properties are from Strehlau and
 // Meissner (1987). Wet granite is specified from zero to 2 km depth,
@@ -10,7 +8,6 @@
 // given units of are 'None', and we specify a new parameter
 // (flow-constant-multiplier), with a value of 9, to indicate that the
 // underlying units are GPa.  A value of 6 would indicate MPa, etc.
-//
 #SPATIAL.ascii 1
 SimpleDB {
   num-values = 4 // number of material property values

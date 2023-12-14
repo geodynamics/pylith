@@ -1,31 +1,13 @@
-// -*- C++ -*-
+// =================================================================================================
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// ----------------------------------------------------------------------
+// Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+// All rights reserved.
 //
-// Brad T. Aagaard, U.S. Geological Survey
-// Charles A. Williams, GNS Science
-// Matthew G. Knepley, University at Buffalo
-//
-// This code was developed as part of the Computational Infrastructure
-// for Geodynamics (http://geodynamics.org).
-//
-// Copyright (c) 2010-2022 University of California, Davis
-//
-// See LICENSE.md for license information.
-//
-// ----------------------------------------------------------------------
-//
-
-/**
- * @file tests/libtests/meshio/TestDataWriter.hh
- *
- * @brief C++ TestDataWriter object
- *
- * C++ unit testing for DataWriter..
- */
-
-#if !defined(pylith_meshio_testdatawriter_hh)
-#define pylith_meshio_testdatawriter_hh
+// See https://mit-license.org/ and LICENSE.md and for license information.
+// =================================================================================================
+#pragma once
 
 #include "pylith/topology/FieldBase.hh" // USES FieldBase::VectorFieldEnum
 #include "pylith/utils/types.hh" // HASA PylithScalar
@@ -69,7 +51,5 @@ public:
     PylithInt cellNumDOF; ///< Number of values per cell.
 
 }; // class TestDataWriter_Data
-
-#endif // pylith_meshio_testdatawriter_hh
 
 // End of file

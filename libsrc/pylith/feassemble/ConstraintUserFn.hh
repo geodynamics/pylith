@@ -1,28 +1,13 @@
-// -*- C++ -*-
+// =================================================================================================
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// ----------------------------------------------------------------------
+// Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+// All rights reserved.
 //
-// Brad T. Aagaard, U.S. Geological Survey
-// Charles A. Williams, GNS Science
-// Matthew G. Knepley, University at Buffalo
-//
-// This code was developed as part of the Computational Infrastructure
-// for Geodynamics (http://geodynamics.org).
-//
-// Copyright (c) 2010-2022 University of California, Davis
-//
-// See LICENSE.md for license information.
-//
-// ----------------------------------------------------------------------
-//
-
-/** @file libsrc/feassemble/Constraint.hh
- *
- * @brief C++ class for constraining degrees of freedom in the solution via a user-specified analytical function.
- */
-
-#if !defined(pylith_feassemble_constraintuserfn_hh)
-#define pylith_feassemble_constraintuserfn_hh
+// See https://mit-license.org/ and LICENSE.md and for license information.
+// =================================================================================================
+#pragma once
 
 #include "pylith/feassemble/Constraint.hh" // ISA Constraint
 
@@ -87,7 +72,5 @@ private:
     const ConstraintUserFn& operator=(const ConstraintUserFn&); ///< Not implemented
 
 }; // class ConstraintUserFn
-
-#endif // pylith_feassemble_constraintuserfn_hh
 
 // End of file

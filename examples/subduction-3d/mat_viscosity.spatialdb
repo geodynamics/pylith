@@ -1,5 +1,3 @@
-// -*- C++ -*- (syntax highlighting)
-//
 // This spatial database specifies a depth distribution of viscosity.
 // 
 // The rough variation of Maxwell relaxation time with depth is
@@ -8,7 +6,6 @@
 //  -30 km:    200 years
 // -100 km:    100 years
 // -400 km:     50 years
-//
 #SPATIAL_GRID.ascii 1
 SimpleGridDB {
   num-x = 1

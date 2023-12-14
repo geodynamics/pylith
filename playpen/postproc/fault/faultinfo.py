@@ -1,29 +1,21 @@
-#!/usr/bin/env python
+#!/usr/bin/env nemesis
+# =================================================================================================
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# ----------------------------------------------------------------------
+# Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+# All rights reserved.
 #
-# Brad T. Aagaard, U.S. Geological Survey
-# Charles A. Williams, GNS Science
-# Matthew G. Knepley, University at Buffalo
-#
-# This code was developed as part of the Computational Infrastructure
-# for Geodynamics (http://geodynamics.org).
-#
-# Copyright (c) 2010-2021 University of California, Davis
-#
-# See LICENSE.md for license information.
-#
-# ----------------------------------------------------------------------
-#
+# See https://mit-license.org/ and LICENSE.md and for license information. 
+# =================================================================================================
+# @file postproc/faultinfo
 
-## @file postproc/faultinfo
-
-## @brief Python application to compute a number of quantities on the fault
-## mesh using both the fault info file and the computed fault output from
-## PyLith. Information includes slip and stress vectors in global coordinates
-## and the CFF change using a specified value for the effective coefficient of
-## friction. Note that this application requires the output of fault tractions
-## as well as all three orientation vectors.
+# @brief Python application to compute a number of quantities on the fault
+# mesh using both the fault info file and the computed fault output from
+# PyLith. Information includes slip and stress vectors in global coordinates
+# and the CFF change using a specified value for the effective coefficient of
+# friction. Note that this application requires the output of fault tractions
+# as well as all three orientation vectors.
 
 import numpy
 
@@ -42,17 +34,17 @@ class FaultInfo(Application):
     """Python object for managing FaultInfo facilities and properties.
     """
 
-    ## @class Inventory
-    ## Python object for managing FaultInfo facilities and properties.
-    ##
-    ## \b Properties
-    ## @li \b fault_info_file VTK file containing fault information.
-    ## @li \b fault_results_file VTK file containing computed fault results.
-    ## @li \b fault_output_file VTK output file.
-    ## @li \b friction_coeff Effective coefficient of friction.
-    ## @li \b stress_scale_factor Stress scale factor.
-    ## @li \b slip_scale_factor Fault slip scale factor.
-    ## @li \b shear_direction General direction associated with positive shear.
+    # @class Inventory
+    # Python object for managing FaultInfo facilities and properties.
+    #
+    # \b Properties
+    # @li \b fault_info_file VTK file containing fault information.
+    # @li \b fault_results_file VTK file containing computed fault results.
+    # @li \b fault_output_file VTK output file.
+    # @li \b friction_coeff Effective coefficient of friction.
+    # @li \b stress_scale_factor Stress scale factor.
+    # @li \b slip_scale_factor Fault slip scale factor.
+    # @li \b shear_direction General direction associated with positive shear.
 
     import pythia.pyre.inventory
 

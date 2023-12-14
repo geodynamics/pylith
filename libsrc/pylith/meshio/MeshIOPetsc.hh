@@ -1,31 +1,15 @@
-// -*- C++ -*-
+// =================================================================================================
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// ======================================================================
+// Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+// All rights reserved.
 //
-// Brad T. Aagaard, U.S. Geological Survey
-// Charles A. Williams, GNS Science
-// Matthew G. Knepley, University at Buffalo
-//
-// This code was developed as part of the Computational Infrastructure
-// for Geodynamics (http://geodynamics.org).
-//
-// Copyright (c) 2010-2022 University of California, Davis
-//
-// See LICENSE.md for license information.
-//
-// ======================================================================
-//
+// See https://mit-license.org/ and LICENSE.md and for license information.
+// =================================================================================================
+#pragma once
 
-/**
- * @file libsrc/meshio/MeshIOPetsc.hh
- *
- * @brief C++ input/output manager for PyLith PETSc gmsh mesh files.
- */
-
-#if !defined(pylith_meshio_meshiopetsc_hh)
-#define pylith_meshio_meshiopetsc_hh
-
-#include "MeshIO.hh" // ISA MeshIO
+#include "pylith/meshio/MeshIO.hh" // ISA MeshIO
 
 #include <string> // HASA std::string
 
@@ -86,7 +70,5 @@ private:
 }; // MeshIOPetsc
 
 #include "MeshIOPetsc.icc" // inline methods
-
-#endif // pylith_meshio_meshiopetsc_hh
 
 // End of file

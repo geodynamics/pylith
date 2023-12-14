@@ -1,45 +1,33 @@
-// -*- C++ -*-
+// =================================================================================================
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// ======================================================================
+// Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+// All rights reserved.
 //
-// Brad T. Aagaard, U.S. Geological Survey
-// Charles A. Williams, GNS Science
-// Matthew G. Knepley, University at Buffalo
-//
-// This code was developed as part of the Computational Infrastructure
-// for Geodynamics (http://geodynamics.org).
-//
-// Copyright (c) 2010-2022 University of California, Davis
-//
-// See LICENSE.md for license information.
-//
-// ======================================================================
-//
-
-#if !defined(pylith_meshio_outputsolnpointstet4_hh)
-#define pylith_meshio_outputsolnpointstet4_hh
+// See https://mit-license.org/ and LICENSE.md and for license information.
+// =================================================================================================
+#pragma once
 
 #include "OutputSolnPointsData.hh"
 
 namespace pylith {
-  namespace meshio {
-     class OutputSolnPointsDataTet4;
-  } // pylith
+    namespace meshio {
+        class OutputSolnPointsDataTet4;
+    } // pylith
 } // meshio
 
-class pylith::meshio::OutputSolnPointsDataTet4 : public OutputSolnPointsData
-{
+class pylith::meshio::OutputSolnPointsDataTet4 : public OutputSolnPointsData {
+    // PUBLIC METHODS ///////////////////////////////////////////////////////
+public:
 
-// PUBLIC METHODS ///////////////////////////////////////////////////////
-public: 
+    /// Constructor
+    OutputSolnPointsDataTet4(void);
 
-  /// Constructor
-  OutputSolnPointsDataTet4(void);
+    /// Destructor
+    ~OutputSolnPointsDataTet4(void);
 
-  /// Destructor
-  ~OutputSolnPointsDataTet4(void);
-
-// PRIVATE MEMBERS //////////////////////////////////////////////////////
+    // PRIVATE MEMBERS //////////////////////////////////////////////////////
 private:
 
     static const char* _meshFilename; ///< Filename of input mesh
@@ -53,8 +41,5 @@ private:
     static const PylithScalar _coefs[]; ///< Polynomial coefficients for field.
 
 };
-
-#endif // pylith_meshio_outputsolnpointstet4_hh
-
 
 // End of file

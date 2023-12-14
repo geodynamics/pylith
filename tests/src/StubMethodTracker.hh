@@ -1,29 +1,13 @@
-// -*- C++ -*-
+// =================================================================================================
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// ======================================================================
+// Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+// All rights reserved.
 //
-// Brad T. Aagaard, U.S. Geological Survey
-// Charles A. Williams, GNS Science
-// Matthew G. Knepley, University at Buffalo
-//
-// This code was developed as part of the Computational Infrastructure
-// for Geodynamics (http://geodynamics.org).
-//
-// Copyright (c) 2010-2022 University of California, Davis
-//
-// See LICENSE.md for license information.
-//
-// ======================================================================
-//
-
-/**
- * @file libsrc/testing/StubMethodTracker.hh
- *
- * @brief C++ implementation to verify which Stub methods are executed in testing.
- */
-
-#if !defined(pylith_testing_stubmethodtracker_hh)
-#define pylith_testing_stubmethodtracker_hh
+// See https://mit-license.org/ and LICENSE.md and for license information.
+// =================================================================================================
+#pragma once
 
 #include "pylith/testing/testingfwd.hh" // forward declarations
 
@@ -74,7 +58,5 @@ private:
     static map_type _methodCount; ///< Number of times method was called.
 
 }; // StubMethodTracker
-
-#endif // pylith_testing_stubmethodtrack_hh
 
 // End of file

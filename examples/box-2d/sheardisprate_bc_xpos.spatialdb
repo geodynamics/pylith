@@ -1,5 +1,3 @@
-// -*- C++ -*-
-//
 // This spatial database specifies the initial displacement and
 // velocity on the +x boundary. For the linear variation (data-dim ==
 // 1) in displacement, we only need to specify the two end points with

@@ -1,23 +1,13 @@
-// -*- C++ -*-
+// =================================================================================================
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// ======================================================================
+// Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+// All rights reserved.
 //
-// Brad T. Aagaard, U.S. Geological Survey
-// Charles A. Williams, GNS Science
-// Matthew G. Knepley, University at Buffalo
-//
-// This code was developed as part of the Computational Infrastructure
-// for Geodynamics (http://geodynamics.org).
-//
-// Copyright (c) 2010-2022 University of California, Davis
-//
-// See LICENSE.md for license information.
-//
-// ======================================================================
-//
-
-#if !defined(pylith_meshio_outputsolnpointsdata_hh)
-#define pylith_meshio_outputsolnpointsdata_hh
+// See https://mit-license.org/ and LICENSE.md and for license information.
+// =================================================================================================
+#pragma once
 
 #include "pylith/utils/types.hh" // HASA PylithScalar
 
@@ -27,39 +17,35 @@ namespace pylith {
     } // pylith
 } // meshio
 
-class pylith::meshio::OutputSolnPointsData
-{
-
-// PUBLIC METHODS ///////////////////////////////////////////////////////
+class pylith::meshio::OutputSolnPointsData {
+    // PUBLIC METHODS ///////////////////////////////////////////////////////
 public:
 
-/// Constructor
-OutputSolnPointsData(void);
+    /// Constructor
+    OutputSolnPointsData(void);
 
-/// Destructor
-~OutputSolnPointsData(void);
+    /// Destructor
+    ~OutputSolnPointsData(void);
 
-// PUBLIC MEMBERS ///////////////////////////////////////////////////////
+    // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public:
 
-char* meshFilename;   ///< Filename for input mesh
+    char* meshFilename;   ///< Filename for input mesh
 
-/// @name Point information.
-//@{
-int spaceDim;   ///< Number of dimensions in vertex coordinates
-int numPoints;   ///< Number of points.
-PylithScalar* points;   ///< Coordinates of points [numPoints*spaceDim].
-const char** names;   ///< Names of points (e.g., station names).
-//@}
+    /// @name Point information.
+    //@{
+    int spaceDim;   ///< Number of dimensions in vertex coordinates
+    int numPoints;   ///< Number of points.
+    PylithScalar* points;   ///< Coordinates of points [numPoints*spaceDim].
+    const char** names;   ///< Names of points (e.g., station names).
+    //@}
 
-/// @name Field data.
-//@{
-int fiberDim;
-PylithScalar* coefs;   ///< Polynomial coefficients [fiberDim*spaceDim] for computing field.
-//@}
+    /// @name Field data.
+    //@{
+    int fiberDim;
+    PylithScalar* coefs;   ///< Polynomial coefficients [fiberDim*spaceDim] for computing field.
+    //@}
 
 };
-
-#endif // pylith_meshio_outputsolnpointsdata_hh
 
 // End of file

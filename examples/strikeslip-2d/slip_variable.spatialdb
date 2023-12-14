@@ -1,9 +1,6 @@
-// -*- C++ -*- (syntax highlighting)
-//
 // This spatial database specifies the distribution of slip on the
 // fault surface for Step 4 (forward simulation to generate fake observations).
 // The slip extends from -20 <= y <= 20 km.
-//
 #SPATIAL.ascii 1
 SimpleDB {
   num-values = 3

@@ -1,37 +1,15 @@
-// -*- C++ -*-
+// =================================================================================================
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// ======================================================================
+// Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+// All rights reserved.
 //
-// Brad T. Aagaard, U.S. Geological Survey
-// Charles A. Williams, GNS Science
-// Matthew G. Knepley, University at Buffalo
-//
-// This code was developed as part of the Computational Infrastructure
-// for Geodynamics (http://geodynamics.org).
-//
-// Copyright (c) 2010-2022 University of California, Davis
-//
-// See LICENSE.md for license information.
-//
-// ======================================================================
-//
+// See https://mit-license.org/ and LICENSE.md and for license information.
+// =================================================================================================
+#pragma once
 
-/**
- * @file libsrc/utils/arrayfwd.hh
- *
- * @brief Forward declarations for PyLith array objects.
- *
- * These are generally just typenames for C++ STL objects.
- *
- * For simple types (i.e., int and PylithScalar) std::valarray provides some
- * features that std::vector does not have, such as operating on the
- * whole array at once.
- */
-
-#if !defined(pylith_utils_arrayfwd_hh)
-#define pylith_utils_arrayfwd_hh
-
-#include "types.hh" // USES PylithScalar, PylithReal
+#include "pylith/utils/types.hh" // USES PylithScalar, PylithReal
 
 #include <string> // USES std::string
 #include <vector> // USES std::vector
@@ -67,7 +45,5 @@ namespace pylith {
     typedef std::valarray<PylithScalar> scalar_array;
 
 } // pylith
-
-#endif // pylith_utils_arrayfwd_hh
 
 // End of file

@@ -1,24 +1,16 @@
-// -*- C++ -*-
+// =================================================================================================
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// ======================================================================
+// Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+// All rights reserved.
 //
-// Brad T. Aagaard, U.S. Geological Survey
-// Charles A. Williams, GNS Science
-// Matthew G. Knepley, University at Buffalo
-//
-// This code was developed as part of the Computational Infrastructure
-// for Geodynamics (http://geodynamics.org).
-//
-// Copyright (c) 2010-2022 University of California, Davis
-//
-// See LICENSE.md for license information.
-//
-// ======================================================================
-//
+// See https://mit-license.org/ and LICENSE.md and for license information.
+// =================================================================================================
 
 #include <portinfo>
 
-#include "DependenciesVersion.hh" // Implementation of class methods
+#include "pylith/utils/DependenciesVersion.hh" // Implementation of class methods
 
 #include "mpi.h"
 #include "H5pubconf.h"
@@ -26,7 +18,6 @@
 // ----------------------------------------------------------------------
 #define STR_HELPER(x) #x
 #define STR(x) STR_HELPER(x)
-
 
 #if defined(MPICH_VERSION)
 const char* pylith::utils::DependenciesVersion::_mpiVersion = MPICH_VERSION;
@@ -59,53 +50,52 @@ const char* pylith::utils::DependenciesVersion::_hdf5Version = H5_VERSION;
 
 // ----------------------------------------------------------------------
 // Default constructor.
-pylith::utils::DependenciesVersion::DependenciesVersion(void)
-{}
+pylith::utils::DependenciesVersion::DependenciesVersion(void) {}
+
 
 // ----------------------------------------------------------------------
 // Default destrictor.
-pylith::utils::DependenciesVersion::~DependenciesVersion(void)
-{}
+pylith::utils::DependenciesVersion::~DependenciesVersion(void) {}
+
 
 // ----------------------------------------------------------------------
 // Get MPI version number.
 const char*
-pylith::utils::DependenciesVersion::mpiVersion(void)
-{ // mpiVersion
-  return _mpiVersion;
+pylith::utils::DependenciesVersion::mpiVersion(void) { // mpiVersion
+    return _mpiVersion;
 } // mpiVersion
 
+
 // ----------------------------------------------------------------------
 // Get MPI version number.
 const char*
-pylith::utils::DependenciesVersion::mpiImplementation(void)
-{ // mpiImplementation
-  return _mpiImplementation;
+pylith::utils::DependenciesVersion::mpiImplementation(void) { // mpiImplementation
+    return _mpiImplementation;
 } // mpiImplementation
+
 
 // ----------------------------------------------------------------------
 // Get MPI standard version number.
 const char*
-pylith::utils::DependenciesVersion::mpiStandard(void)
-{ // mpiStandard
-  return _mpiStandard;
+pylith::utils::DependenciesVersion::mpiStandard(void) { // mpiStandard
+    return _mpiStandard;
 } // mpiStandard
+
 
 // ----------------------------------------------------------------------
 // Get NetCDF version number.
 const char*
-pylith::utils::DependenciesVersion::netcdfVersion(void)
-{ // mpiVersion
-  return _netcdfVersion;
+pylith::utils::DependenciesVersion::netcdfVersion(void) { // mpiVersion
+    return _netcdfVersion;
 } // netcdfVersion
+
 
 // ----------------------------------------------------------------------
 // Get HDF5 version number.
 const char*
-pylith::utils::DependenciesVersion::hdf5Version(void)
-{ // hdf5Version
-  return _hdf5Version;
+pylith::utils::DependenciesVersion::hdf5Version(void) { // hdf5Version
+    return _hdf5Version;
 } // hdf5Version
 
-  
-// End of file 
+
+// End of file

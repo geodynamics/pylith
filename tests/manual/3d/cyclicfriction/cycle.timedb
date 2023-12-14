@@ -1,5 +1,3 @@
-// -*- C++ -*-
-//
 // This temporal database specifies the time history of loading. The
 // units are nondimensional corresponding to just a scaled version of
 // the spatial variation.

@@ -1,24 +1,16 @@
-// -*- C++ -*-
+// =================================================================================================
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// ======================================================================
+// Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+// All rights reserved.
 //
-// Brad T. Aagaard, U.S. Geological Survey
-// Charles A. Williams, GNS Science
-// Matthew G. Knepley, University at Buffalo
-//
-// This code was developed as part of the Computational Infrastructure
-// for Geodynamics (http://geodynamics.org).
-//
-// Copyright (c) 2010-2022 University of California, Davis
-//
-// See LICENSE.md for license information.
-//
-// ======================================================================
-//
+// See https://mit-license.org/ and LICENSE.md and for license information.
+// =================================================================================================
 
 #include <portinfo>
 
-#include "PetscVersion.hh" // Implementation of class methods
+#include "pylith/utils/PetscVersion.hh" // Implementation of class methods
 
 #include "petsc.h"
 
@@ -40,68 +32,68 @@ const char* pylith::utils::PetscVersion::_petscArch = PETSC_ARCH;
 
 // ----------------------------------------------------------------------
 // Default constructor.
-pylith::utils::PetscVersion::PetscVersion(void)
-{}
+pylith::utils::PetscVersion::PetscVersion(void) {}
+
 
 // ----------------------------------------------------------------------
 // Default destrictor.
-pylith::utils::PetscVersion::~PetscVersion(void)
-{}
+pylith::utils::PetscVersion::~PetscVersion(void) {}
+
 
 // ----------------------------------------------------------------------
 // Is source from a release?
 bool
-pylith::utils::PetscVersion::isRelease(void)
-{ // isRelease
-  return _isRelease;
+pylith::utils::PetscVersion::isRelease(void) { // isRelease
+    return _isRelease;
 } // isRelease
+
 
 // ----------------------------------------------------------------------
 // Get version number.
 const char*
-pylith::utils::PetscVersion::version(void)
-{ // version
-  return _version;
+pylith::utils::PetscVersion::version(void) { // version
+    return _version;
 } // version
+
 
 // ----------------------------------------------------------------------
 // Get GIT revision.
 const char*
-pylith::utils::PetscVersion::gitRevision(void)
-{ // gitRevision
-  return _gitRevision;
+pylith::utils::PetscVersion::gitRevision(void) { // gitRevision
+    return _gitRevision;
 } // gitRevision
+
 
 // ----------------------------------------------------------------------
 // Get date of GIT revision.
 const char*
-pylith::utils::PetscVersion::gitDate(void)
-{ // gitDate
-  return _gitDate;
+pylith::utils::PetscVersion::gitDate(void) { // gitDate
+    return _gitDate;
 } // gitDate
+
 
 // ----------------------------------------------------------------------
 // Get GIT branch.
 const char*
-pylith::utils::PetscVersion::gitBranch(void)
-{ // gitBranch
-  return _gitBranch;
+pylith::utils::PetscVersion::gitBranch(void) { // gitBranch
+    return _gitBranch;
 } // gitBranch
+
 
 // ----------------------------------------------------------------------
 // Get PETSC_DIR.
 const char*
-pylith::utils::PetscVersion::petscDir(void)
-{ // petscDir
-  return _petscDir;
+pylith::utils::PetscVersion::petscDir(void) { // petscDir
+    return _petscDir;
 } // petscDir
-  
+
+
 // ----------------------------------------------------------------------
 // Get PETSC_ARCH.
 const char*
-pylith::utils::PetscVersion::petscArch(void)
-{ // petscArch
-  return _petscArch;
+pylith::utils::PetscVersion::petscArch(void) { // petscArch
+    return _petscArch;
 } // petscArch
-  
-// End of file 
+
+
+// End of file

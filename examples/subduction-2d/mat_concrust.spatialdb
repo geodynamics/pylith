@@ -1,8 +1,5 @@
-// -*- C++ -*- (syntax highlighting)
-//
 // This spatial database specifies the parameters for the continental
 // crust material, which is linearly elastic.
-//
 #SPATIAL.ascii 1
 SimpleDB {
   // number of physical properties

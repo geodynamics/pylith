@@ -1,23 +1,16 @@
-dnl -*- autoconf -*-
+dnl ================================================================================================
+dnl This code is part of PyLith, developed through the Computational Infrastructure
+dnl for Geodynamics (https://github.com/geodynamics/pylith).
 dnl
-dnl ----------------------------------------------------------------------
+dnl Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+dnl All rights reserved.
 dnl
-dnl Brad T. Aagaard, U.S. Geological Survey
-dnl Charles A. Williams, GNS Science
-dnl Matthew G. Knepley, University at Buffalo
-dnl
-dnl This code was developed as part of the Computational Infrastructure
-dnl for Geodynamics (http://geodynamics.org).
-dnl
-dnl Copyright (c) 2010-2022 University of California, Davis
-dnl
-dnl See LICENSE.md for license information.
-dnl
-dnl ----------------------------------------------------------------------
+dnl See https://mit-license.org/ and LICENSE.md and for license information. 
+dnl ================================================================================================
 dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT([PyLith], [3.0.3], [https://geodynamics.org/resources/pylith])
+AC_INIT([PyLith], [4.0.0], [https://geodynamics.org/resources/pylith])
 AC_CONFIG_AUX_DIR([./aux-config])
 AC_CONFIG_HEADER([portinfo])
 AC_CONFIG_MACRO_DIR([m4])
@@ -96,11 +89,11 @@ AX_CXX_COMPILE_STDCXX(14)
 
 dnl PYTHON/PYTHIA (nemesis must be set before python)
 CIT_PATH_NEMESIS
-AM_PATH_PYTHON([3.6])
+AM_PATH_PYTHON([3.8])
 CIT_PYTHON_SYSCONFIG
 CIT_CHECK_PYTHON_HEADER
 CIT_CHECK_PYTHON_SHARED
-CIT_PYTHON_MODULE([pythia],[1.0.0])
+CIT_PYTHON_MODULE([pythia],[1.1.0])
 
 dnl MPI
 AC_LANG(C++)
@@ -159,7 +152,7 @@ AC_REQUIRE_CPP
 AC_LANG(C++)
 CIT_SPATIALDATA_HEADER
 CIT_SPATIALDATA_LIB
-CIT_PYTHON_MODULE([spatialdata],[3.0.0])
+CIT_PYTHON_MODULE([spatialdata],[3.1.0])
 
 dnl TEST COVERAGE
 AM_CONDITIONAL([ENABLE_TEST_COVERAGE], [test "$enable_test_coverage" = yes])
@@ -180,7 +173,7 @@ CIT_FUNCTIONSTRING
 dnl VERSION
 CIG_PKG_GIT(PYLITH)
 AC_DEFINE_UNQUOTED([PYLITH_VERSION], ["$PACKAGE_VERSION"], [Define PyLith version])
-AC_DEFINE_UNQUOTED([PYLITH_DOI], ["10.5281/zenodo.7072811"], [Define PyLith doi])
+AC_DEFINE_UNQUOTED([PYLITH_DOI], ["10.5281/zenodo.10359667"], [Define PyLith doi])
 
 dnl ENDIANNESS
 AC_C_BIGENDIAN
@@ -199,8 +192,8 @@ AC_CONFIG_FILES([Makefile
 		libsrc/pylith/meshio/Makefile
 		libsrc/pylith/problems/Makefile
 		libsrc/pylith/topology/Makefile
-		libsrc/pylith/testing/Makefile
 		libsrc/pylith/utils/Makefile
+                libsrc/pylith/testing/Makefile
 		modulesrc/Makefile
 		modulesrc/include/Makefile
 		modulesrc/bc/Makefile

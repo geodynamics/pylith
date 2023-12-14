@@ -1,31 +1,15 @@
-// -*- C++ -*-
+// =================================================================================================
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// ======================================================================
+// Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+// All rights reserved.
 //
-// Brad T. Aagaard, U.S. Geological Survey
-// Charles A. Williams, GNS Science
-// Matthew G. Knepley, University at Buffalo
-//
-// This code was developed as part of the Computational Infrastructure
-// for Geodynamics (http://geodynamics.org).
-//
-// Copyright (c) 2010-2022 University of California, Davis
-//
-// See LICENSE.md for license information.
-//
-// ======================================================================
-//
+// See https://mit-license.org/ and LICENSE.md and for license information.
+// =================================================================================================
+#pragma once
 
-/**
- * @file libsrc/feassemble/IntegratorInterface.hh
- *
- * @brief Object for finite-element integration over an interior interface of the simulation domain.
- */
-
-#if !defined(pylith_feassemble_integratorinterface_hh)
-#define pylith_feassemble_integratorinterface_hh
-
-#include "feassemblefwd.hh" // forward declarations
+#include "pylith/feassemble/feassemblefwd.hh" // forward declarations
 
 #include "pylith/feassemble/Integrator.hh" // ISA Integrator
 #include "pylith/feassemble/FEKernelKey.hh" // HASA FEKernelKey
@@ -328,7 +312,5 @@ private:
     const IntegratorInterface& operator=(const IntegratorInterface&); ///< Not implemented.
 
 }; // IntegratorInterface
-
-#endif // pylith_feassemble_integratorinterface_hh
 
 // End of file

@@ -1,4 +1,3 @@
-# -*- Python -*-
 # ----------------------------------------------------------------------
 # Create tri mesh at 2 km resolution along the fault and coarsening
 # with distance from the fault.

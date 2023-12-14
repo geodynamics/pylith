@@ -1,26 +1,18 @@
-#!/usr/bin/env python
+#!/usr/bin/env nemesis
+# =================================================================================================
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# ----------------------------------------------------------------------
+# Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+# All rights reserved.
 #
-# Brad T. Aagaard, U.S. Geological Survey
-# Charles A. Williams, GNS Science
-# Matthew G. Knepley, University at Buffalo
-#
-# This code was developed as part of the Computational Infrastructure
-# for Geodynamics (http://geodynamics.org).
-#
-# Copyright (c) 2010-2021 University of California, Davis
-#
-# See LICENSE.md for license information.
-#
-# ----------------------------------------------------------------------
-#
+# See https://mit-license.org/ and LICENSE.md and for license information. 
+# =================================================================================================
+# @file postproc/stressinfo
 
-## @file postproc/stressinfo
-
-## @brief Python application to compute several stress-related quantities
-## from the stress tensor provided by PyLith. Information is read from a VTK
-## file and a VTK file with the same dimensions is output.
+# @brief Python application to compute several stress-related quantities
+# from the stress tensor provided by PyLith. Information is read from a VTK
+# file and a VTK file with the same dimensions is output.
 
 import math
 import numpy
@@ -40,16 +32,16 @@ class StressInfo(Application):
     """Python object for managing StressInfo facilities and properties.
     """
 
-    ## @class Inventory
-    ## Python object for managing StressInfo facilities and properties.
-    ##
-    ## \b Properties
-    ## @li \b vtk_input_file  Name of VTK input file.
-    ## @li \b vtk_output_file Name of VTK output file.
-    ## @li \b tensor_index Index of desired input VTK field array.
-    ## @li \b tensor_components_order Indices of xx,yy,zz,xy,yz,xz.
-    ## @li \b friction_angle Friction angle for plasticity calculation.
-    ## @li \b cohesion Cohesion for plasticity calculation.
+    # @class Inventory
+    # Python object for managing StressInfo facilities and properties.
+    #
+    # \b Properties
+    # @li \b vtk_input_file  Name of VTK input file.
+    # @li \b vtk_output_file Name of VTK output file.
+    # @li \b tensor_index Index of desired input VTK field array.
+    # @li \b tensor_components_order Indices of xx,yy,zz,xy,yz,xz.
+    # @li \b friction_angle Friction angle for plasticity calculation.
+    # @li \b cohesion Cohesion for plasticity calculation.
 
     import pythia.pyre.inventory
     from pythia.pyre.units.pressure import MPa

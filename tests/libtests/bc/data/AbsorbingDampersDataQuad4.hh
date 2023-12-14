@@ -1,76 +1,160 @@
-// -*- C++ -*-
+// =================================================================================================
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// ======================================================================
+// Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+// All rights reserved.
 //
-// Brad T. Aagaard, U.S. Geological Survey
-// Charles A. Williams, GNS Science
-// Matthew G. Knepley, University at Buffalo
-//
-// This code was developed as part of the Computational Infrastructure
-// for Geodynamics (http://geodynamics.org).
-//
-// Copyright (c) 2010-2022 University of California, Davis
-//
-// See LICENSE.md for license information.
-//
-// ======================================================================
-//
-
-#if !defined(pylith_bc_absorbingdampersdataquad4_hh)
-#define pylith_bc_absorbingdampersdataquad4_hh
-
-#include "AbsorbingDampersData.hh"
-
-namespace pylith {
-  namespace bc {
-     class AbsorbingDampersDataQuad4;
-  } // pylith
-} // bc
-
-class pylith::bc::AbsorbingDampersDataQuad4 : public AbsorbingDampersData
-{
-
-public: 
-
-  /// Constructor
-  AbsorbingDampersDataQuad4(void);
-
-  /// Destructor
-  ~AbsorbingDampersDataQuad4(void);
-
-private:
-
-  static const char* _meshFilename;
-
-  static const int _numBasis;
-  static const int _numQuadPts;
-  static const PylithScalar _quadPts[];
-  static const PylithScalar _quadWts[];
-  static const PylithScalar _basis[];
-  static const PylithScalar _basisDerivRef[];
-
-  static const char* _spatialDBFilename;
-  static const int _id;
-  static const char* _label;
-
-  static const PylithScalar _dt;
-  static const PylithScalar _fieldTIncr[];
-  static const PylithScalar _fieldT[];
-  static const PylithScalar _fieldTmdt[];
-
-  static const int _spaceDim;
-  static const int _cellDim;
-  static const int _numVertices;
-  static const int _numCells;
-  static const int _numCorners;
-  static const int _cells[];
-
-  static const PylithScalar _dampingConsts[];
-  static const PylithScalar _valsResidual[];
-  static const PylithScalar _valsJacobian[];
-
+// See https://mit-license.org/ and LICENSE.md and for license information.
+// =================================================================================================
+nst PylithScalar pylith::bc::AbsorbingDampersDataQuad4::_fieldT[] = {
+    1.1,  2.0,
+    1.3,  2.1,
+    1.5,  2.2,
+    1.7,  2.3,
+    1.9,  2.4,
+    2.1,  2.5,
+};
+const PylithScalar pylith::bc::AbsorbingDampersDataQuad4::_fieldTIncr[] = {
+    1.2,  1.6,
+    1.5,  2.4,
+    1.8,  2.0,
+    2.1,  2.4,
+    2.4,  2.4,
+    2.7,  3.4,
 };
 
-#endif // pylith_bc_absorbingdampersdataquad4_hh
+const int pylith::bc::AbsorbingDampersDataQuad4::_spaceDim = 2;
+const int pylith::bc::AbsorbingDampersDataQuad4::_cellDim = 1;
+const int pylith::bc::AbsorbingDampersDataQuad4::_numVertices = 4;
+const int pylith::bc::AbsorbingDampersDataQuad4::_numCells = 2;
+const int pylith::bc::AbsorbingDampersDataQuad4::_numCorners = 2;
+/* Now vertices are renumbered in the submesh */
+const int pylith::bc::AbsorbingDampersDataQuad4::_cells[] = {
+    3 /*3*/, 2 /*2*/,
+    4 /*6*/, 5 /*7*/,
+};
+
+const PylithScalar pylith::bc::AbsorbingDampersDataQuad4::_dampingConsts[] = {
+    1.25e+07, 7.5e+06,
+    1.25e+07, 7.5e+06,
+};
+const PylithScalar pylith::bc::AbsorbingDampersDataQuad4::_valsResidual[] = {
+    -3.75000000e+07,   -2.92500000e+07,
+    -3.75000000e+07,   -2.92500000e+07,
+    0.0, 0.0,
+    0.0, 0.0,
+    -7.75000000e+07,   -5.02500000e+07,
+    -7.75000000e+07,   -5.02500000e+07,
+};
+const PylithScalar pylith::bc::AbsorbingDampersDataQuad4::_valsJacobian[] = {
+    1.25e+07, 0.0, // 0x
+    1.25e+07, 0.0,
+    0.0, 0.0,
+    0.0, 0.0,
+    0.0, 0.0,
+    0.0, 0.0,
+    0.0, 7.5e+06, // 0y
+    0.0, 7.5e+06,
+    0.0, 0.0,
+    0.0, 0.0,
+    0.0, 0.0,
+    0.0, 0.0,
+    1.25e+07, 0.0, // 1x
+    1.25e+07, 0.0,
+    0.0, 0.0,
+    0.0, 0.0,
+    0.0, 0.0,
+    0.0, 0.0,
+    0.0, 7.5e+06, // 1y
+    0.0, 7.5e+06,
+    0.0, 0.0,
+    0.0, 0.0,
+    0.0, 0.0,
+    0.0, 0.0,
+    0.0, 0.0, // 2x
+    0.0, 0.0,
+    0.0, 0.0,
+    0.0, 0.0,
+    0.0, 0.0,
+    0.0, 0.0,
+    0.0, 0.0, // 2y
+    0.0, 0.0,
+    0.0, 0.0,
+    0.0, 0.0,
+    0.0, 0.0,
+    0.0, 0.0,
+    0.0, 0.0, // 3x
+    0.0, 0.0,
+    0.0, 0.0,
+    0.0, 0.0,
+    0.0, 0.0,
+    0.0, 0.0,
+    0.0, 0.0, // 3y
+    0.0, 0.0,
+    0.0, 0.0,
+    0.0, 0.0,
+    0.0, 0.0,
+    0.0, 0.0,
+    0.0, 0.0, // 4x
+    0.0, 0.0,
+    0.0, 0.0,
+    0.0, 0.0,
+    1.25e+07, 0.0,
+    1.25e+07, 0.0,
+    0.0, 0.0, // 4y
+    0.0, 0.0,
+    0.0, 0.0,
+    0.0, 0.0,
+    0.0, 7.5e+06,
+    0.0, 7.5e+06,
+    0.0, 0.0, // 5x
+    0.0, 0.0,
+    0.0, 0.0,
+    0.0, 0.0,
+    1.25e+07, 0.0,
+    1.25e+07, 0.0,
+    0.0, 0.0, // 5y
+    0.0, 0.0,
+    0.0, 0.0,
+    0.0, 0.0,
+    0.0, 7.5e+06,
+    0.0, 7.5e+06,
+};
+
+pylith::bc::AbsorbingDampersDataQuad4::AbsorbingDampersDataQuad4(void) { // constructor
+    meshFilename = const_cast<char*>(_meshFilename);
+
+    numBasis = _numBasis;
+    numQuadPts = _numQuadPts;
+    quadPts = const_cast<PylithScalar*>(_quadPts);
+    quadWts = const_cast<PylithScalar*>(_quadWts);
+    basis = const_cast<PylithScalar*>(_basis);
+    basisDerivRef = const_cast<PylithScalar*>(_basisDerivRef);
+
+    spatialDBFilename = const_cast<char*>(_spatialDBFilename);
+    id = _id;
+    label = const_cast<char*>(_label);
+
+    dt = _dt;
+    fieldTIncr = const_cast<PylithScalar*>(_fieldTIncr);
+    fieldT = const_cast<PylithScalar*>(_fieldT);
+    fieldTmdt = const_cast<PylithScalar*>(_fieldTmdt);
+
+    spaceDim = _spaceDim;
+    cellDim = _cellDim;
+    numVertices = _numVertices;
+    numCells = _numCells;
+    numCorners = _numCorners;
+    cells = const_cast<int*>(_cells);
+
+    dampingConsts = const_cast<PylithScalar*>(_dampingConsts);
+    valsResidual = const_cast<PylithScalar*>(_valsResidual);
+    valsJacobian = const_cast<PylithScalar*>(_valsJacobian);
+} // constructor
+
+
+pylith::bc::AbsorbingDampersDataQuad4::~AbsorbingDampersDataQuad4(void) {}
+
 
 // End of file

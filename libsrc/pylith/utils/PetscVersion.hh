@@ -1,119 +1,98 @@
-// -*- C++ -*-
+// =================================================================================================
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// ======================================================================
+// Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+// All rights reserved.
 //
-// Brad T. Aagaard, U.S. Geological Survey
-// Charles A. Williams, GNS Science
-// Matthew G. Knepley, University at Buffalo
-//
-// This code was developed as part of the Computational Infrastructure
-// for Geodynamics (http://geodynamics.org).
-//
-// Copyright (c) 2010-2022 University of California, Davis
-//
-// See LICENSE.md for license information.
-//
-// ======================================================================
-//
+// See https://mit-license.org/ and LICENSE.md and for license information.
+// =================================================================================================
+#pragma once
 
-/**
- * @file libsrc/utils/PetscVersion.hh
- *
- * @brief C++ object for PETSc version information.
- */
-
-#if !defined(pylith_utils_petscversion_hh)
-#define pylith_utils_petscversion_hh
-
-// Include directives ---------------------------------------------------
-#include "utilsfwd.hh" // forward declarations
+#include "pylith/utils/utilsfwd.hh" // forward declarations
 
 // Version ----------------------------------------------------------
 /** @brief C++ object for getting version info.
  */
-class pylith::utils::PetscVersion
-{ // PetscVersion
-  friend class TestPetscVersion; // unit testing
+class pylith::utils::PetscVersion { // PetscVersion
+    friend class TestPetscVersion; // unit testing
 
-// PUBLIC MEMBERS ///////////////////////////////////////////////////////
-public :
+    // PUBLIC MEMBERS ///////////////////////////////////////////////////////
+public:
 
-  /// Default constructor.
-  PetscVersion(void);
+    /// Default constructor.
+    PetscVersion(void);
 
-  /// Default destrictor.
-  ~PetscVersion(void);
+    /// Default destrictor.
+    ~PetscVersion(void);
 
-  /** Is source from a release?
-   *
-   * @returns True if source code comes from a release?
-   */
-  static
-  bool isRelease(void);
+    /** Is source from a release?
+     *
+     * @returns True if source code comes from a release?
+     */
+    static
+    bool isRelease(void);
 
-  /** Get version number.
-   *
-   * @returns Version number.
-   */
-  static
-  const char* version(void);
+    /** Get version number.
+     *
+     * @returns Version number.
+     */
+    static
+    const char* version(void);
 
-  /** Get GIT revision.
-   *
-   * @returns GIT revision.
-   */
-  static
-  const char* gitRevision(void);
+    /** Get GIT revision.
+     *
+     * @returns GIT revision.
+     */
+    static
+    const char* gitRevision(void);
 
-  /** Get date of GIT revision.
-   *
-   * @returns Date of GIT revision.
-   */
-  static
-  const char* gitDate(void);
+    /** Get date of GIT revision.
+     *
+     * @returns Date of GIT revision.
+     */
+    static
+    const char* gitDate(void);
 
-  /** Get GIT branch.
-   *
-   * @returns GIT branch.
-   */
-  static
-  const char* gitBranch(void);
-  
-  /** Get PETSC_DIR.
-   *
-   * @returns PETSC_DIR.
-   */
-  static
-  const char* petscDir(void);
-  
-  /** Get PETSC_ARCH.
-   *
-   * @returns PETSC_ARCH.
-   */
-  static
-  const char* petscArch(void);
-  
-// PRIVATE METHODS //////////////////////////////////////////////////////
-private :
+    /** Get GIT branch.
+     *
+     * @returns GIT branch.
+     */
+    static
+    const char* gitBranch(void);
 
-  PetscVersion(const PetscVersion&); ///< Not implemented
-  const PetscVersion& operator=(const PetscVersion&); ///< Not implemented
+    /** Get PETSC_DIR.
+     *
+     * @returns PETSC_DIR.
+     */
+    static
+    const char* petscDir(void);
 
-// PRIVATE MEMBERS //////////////////////////////////////////////////////
-private :
+    /** Get PETSC_ARCH.
+     *
+     * @returns PETSC_ARCH.
+     */
+    static
+    const char* petscArch(void);
 
-  static const bool _isRelease; ///< Is source code from a release?
-  static const char* _version; ///< Version number.
-  static const char* _gitRevision; ///< GIT revision.
-  static const char* _gitDate; ///< Date of GIT revision.
-  static const char* _gitBranch; ///< GIT branch.
+    // PRIVATE METHODS //////////////////////////////////////////////////////
+private:
 
-  static const char* _petscDir; ///< PETSC_DIR
-  static const char* _petscArch; ///< PETSC_ARCH
-  
+    PetscVersion(const PetscVersion&); ///< Not implemented
+    const PetscVersion& operator=(const PetscVersion&); ///< Not implemented
+
+    // PRIVATE MEMBERS //////////////////////////////////////////////////////
+private:
+
+    static const bool _isRelease; ///< Is source code from a release?
+    static const char* _version; ///< Version number.
+    static const char* _gitRevision; ///< GIT revision.
+    static const char* _gitDate; ///< Date of GIT revision.
+    static const char* _gitBranch; ///< GIT branch.
+
+    static const char* _petscDir; ///< PETSC_DIR
+    static const char* _petscArch; ///< PETSC_ARCH
+
 }; // PetscVersion
 
-#endif // pylith_utils_petscversion_hh
-
-
-// End of file 
+// End of file

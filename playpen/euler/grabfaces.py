@@ -1,21 +1,13 @@
 #!/usr/bin/env nemesis
+# =================================================================================================
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# ----------------------------------------------------------------------
+# Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+# All rights reserved.
 #
-# Brad T. Aagaard, U.S. Geological Survey
-# Charles A. Williams, GNS Science
-# Matthew G. Knepley, University at Buffalo
-#
-# This code was developed as part of the Computational Infrastructure
-# for Geodynamics (http://geodynamics.org).
-#
-# Copyright (c) 2010-2021 University of California, Davis
-#
-# See LICENSE.md for license information.
-#
-# ----------------------------------------------------------------------
-#
-
+# See https://mit-license.org/ and LICENSE.md and for license information. 
+# =================================================================================================
 # @file euler/grabfaces
 
 # @brief Python application to grab a set of points specified in a UCD
@@ -39,14 +31,14 @@ class GrabFaces(Application):
 
         # @class Inventory
         # Python object for managing GrabFaces facilities and properties.
-        ##
+        #
         # \b Properties
         # @li \b ucd_face_file Filename of input UCD face description file.
         # @li \b fault_id_num ID number (material number) of fault to use.
         # @li \b point_output_file Filename of output set of points and normals.
         # @li \b node_values_list List specifying position of desired attributes in UCD face nodal attributes.
         # @li \b exclude_zero_normals Flag indicating whether to exclude points if the associated normal has zero magnitude.
-        ##
+        #
         # \b Facilities
         # @li None
 

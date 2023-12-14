@@ -1,30 +1,15 @@
-// -*- C++ -*-
+// =================================================================================================
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// ----------------------------------------------------------------------
+// Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+// All rights reserved.
 //
-// Brad T. Aagaard, U.S. Geological Survey
-// Charles A. Williams, GNS Science
-// Matthew G. Knepley, University at Buffalo
-//
-// This code was developed as part of the Computational Infrastructure
-// for Geodynamics (http://geodynamics.org).
-//
-// Copyright (c) 2010-2022 University of California, Davis
-//
-// See LICENSE.md for license information.
-//
-// ----------------------------------------------------------------------
-//
+// See https://mit-license.org/ and LICENSE.md and for license information.
+// =================================================================================================
+#pragma once
 
-/** @file libsrc/materials/Material.hh
- *
- * @brief C++ abstract base class for materials.
- */
-
-#if !defined(pylith_materials_material_hh)
-#define pylith_materials_material_hh
-
-#include "materialsfwd.hh" // forward declarations
+#include "pylith/materials/materialsfwd.hh" // forward declarations
 
 #include "pylith/problems/Physics.hh" // ISA Physics
 #include "pylith/feassemble/IntegratorDomain.hh" // HOLDSA IntegratorDomain::ResidualKenels
@@ -155,7 +140,5 @@ private:
     const Material& operator=(const Material&); ///< Not implemented
 
 }; // Material
-
-#endif // pylith_materials_material_hh
 
 // End of file

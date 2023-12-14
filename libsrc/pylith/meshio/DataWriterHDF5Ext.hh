@@ -1,27 +1,15 @@
-// -*- C++ -*-
+// =================================================================================================
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// ======================================================================
+// Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+// All rights reserved.
 //
-// Brad T. Aagaard, U.S. Geological Survey
-// Charles A. Williams, GNS Science
-// Matthew G. Knepley, University at Buffalo
-//
-// This code was developed as part of the Computational Infrastructure
-// for Geodynamics (http://geodynamics.org).
-//
-// Copyright (c) 2010-2022 University of California, Davis
-//
-// See LICENSE.md for license information.
-//
-// ======================================================================
-//
+// See https://mit-license.org/ and LICENSE.md and for license information.
+// =================================================================================================
+#pragma once
 
-/**
- * @file libsrc/meshio/DataWriterHDF5Ext.hh
- *
- * @brief Object for writing finite-element data to HDF5 file with
- * datasets stored in raw external data files.
- *
+/*
  * HDF5 schema for PyLith output.
  *
  * / - root group
@@ -39,11 +27,7 @@
  *       [ntimesteps, ncells, fiberdim]
  */
 
-#if !defined(pylith_meshio_datawriterhdf5ext_hh)
-#define pylith_meshio_datawriterhdf5ext_hh
-
-// Include directives ---------------------------------------------------
-#include "DataWriter.hh" // ISA DataWriter
+#include "pylith/meshio/DataWriter.hh" // ISA DataWriter
 
 #include <string> // USES std::string
 #include <map> // HASA std::map
@@ -173,7 +157,5 @@ private:
 }; // DataWriterHDF5Ext
 
 #include "DataWriterHDF5Ext.icc" // inline methods
-
-#endif // pylith_meshio_datawriterhdf5ext_hh
 
 // End of file

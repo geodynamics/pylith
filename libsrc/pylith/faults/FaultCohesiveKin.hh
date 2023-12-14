@@ -1,31 +1,15 @@
-// -*- C++ -*-
+// =================================================================================================
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// ----------------------------------------------------------------------
+// Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+// All rights reserved.
 //
-// Brad T. Aagaard, U.S. Geological Survey
-// Charles A. Williams, GNS Science
-// Matthew G. Knepley, University at Buffalo
-//
-// This code was developed as part of the Computational Infrastructure
-// for Geodynamics (http://geodynamics.org).
-//
-// Copyright (c) 2010-2022 University of California, Davis
-//
-// See LICENSE.md for license information.
-//
-// ----------------------------------------------------------------------
-//
+// See https://mit-license.org/ and LICENSE.md and for license information.
+// =================================================================================================
+#pragma once
 
-/** @file libsrc/faults/FaultCohesiveKin.hh
- *
- * @brief C++ implementation for a fault surface with kinematic
- * (prescribed) slip implemented with cohesive elements.
- */
-
-#if !defined(pylith_faults_faultcohesivekin_hh)
-#define pylith_faults_faultcohesivekin_hh
-
-#include "FaultCohesive.hh" // ISA FaultCohesive
+#include "pylith/faults/FaultCohesive.hh" // ISA FaultCohesive
 #include "pylith/materials/Material.hh" // USES Material
 
 #include <string> // HASA std::string
@@ -166,7 +150,5 @@ private:
     const FaultCohesiveKin& operator=(const FaultCohesiveKin&); ///< Not implemented.
 
 }; // class FaultCohesiveKin
-
-#endif // pylith_faults_faultcohesivekin_hh
 
 // End of file

@@ -1,70 +1,49 @@
-// -*- C++ -*-
+// =================================================================================================
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// ======================================================================
+// Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+// All rights reserved.
 //
-// Brad T. Aagaard, U.S. Geological Survey
-// Charles A. Williams, GNS Science
-// Matthew G. Knepley, University at Buffalo
-//
-// This code was developed as part of the Computational Infrastructure
-// for Geodynamics (http://geodynamics.org).
-//
-// Copyright (c) 2010-2022 University of California, Davis
-//
-// See LICENSE.md for license information.
-//
-// ======================================================================
-//
+// See https://mit-license.org/ and LICENSE.md and for license information.
+// =================================================================================================
+#pragma once
 
-/**
- * @file libsrc/topology/RefineUniform.hh
- *
- * @brief Object for managing uniform global mesh refinement.
- */
-
-#if !defined(pylith_topology_refineuniform_hh)
-#define pylith_topology_refineuniform_hh
-
-// Include directives ---------------------------------------------------
-#include "topologyfwd.hh" // forward declarations
+#include "pylith/topology/topologyfwd.hh" // forward declarations
 
 // RefineUniform --------------------------------------------------------
 /// Object for managing uniform global mesh refinement.
-class pylith::topology::RefineUniform
-{ // RefineUniform
-  friend class TestRefineUniform; // unit testing
+class pylith::topology::RefineUniform { // RefineUniform
+    friend class TestRefineUniform; // unit testing
 
-// PUBLIC MEMBERS ///////////////////////////////////////////////////////
-public :
+    // PUBLIC MEMBERS ///////////////////////////////////////////////////////
+public:
 
-  /// Constructor
-  RefineUniform(void);
+    /// Constructor
+    RefineUniform(void);
 
-  /// Destructor
-  ~RefineUniform(void);
+    /// Destructor
+    ~RefineUniform(void);
 
-  /// Deallocate data structures.
-  void deallocate(void);
+    /// Deallocate data structures.
+    void deallocate(void);
 
-  /** Refine mesh.
-   *
-   * @param newMesh Refined mesh (result).
-   * @param mesh Mesh to refine.
-   * @param levels Number of levels to refine.
-   */
-  void refine(Mesh* const newMesh,
-	      const Mesh& mesh,
-	      const int levels =1);
+    /** Refine mesh.
+     *
+     * @param newMesh Refined mesh (result).
+     * @param mesh Mesh to refine.
+     * @param levels Number of levels to refine.
+     */
+    void refine(Mesh* const newMesh,
+                const Mesh& mesh,
+                const int levels=1);
 
-// NOT IMPLEMENTED //////////////////////////////////////////////////////
-private :
+    // NOT IMPLEMENTED //////////////////////////////////////////////////////
+private:
 
-  RefineUniform(const RefineUniform&); ///< Not implemented
-  const RefineUniform& operator=(const RefineUniform&); ///< Not implemented
+    RefineUniform(const RefineUniform&); ///< Not implemented
+    const RefineUniform& operator=(const RefineUniform&); ///< Not implemented
 
 }; // RefineUniform
 
-#endif // pylith_topology_refineuniform_hh
-
- 
-// End of file 
+// End of file

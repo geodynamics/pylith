@@ -1,23 +1,17 @@
-/* -*- C++ -*-
+/*
+ * ================================================================================================
+ * This code is part of PyLith, developed through the Computational Infrastructure
+ * for Geodynamics (https://github.com/geodynamics/pylith).
  *
- * ----------------------------------------------------------------------
+ * Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+ * All rights reserved.
  *
- * Brad T. Aagaard, U.S. Geological Survey
- * Charles A. Williams, GNS Science
- * Matthew G. Knepley, University at Buffalo
- *
- * This code was developed as part of the Computational Infrastructure
- * for Geodynamics (http:*geodynamics.org).
- *
- * Copyright (c) 2010-2022 University of California, Davis
- *
- * See LICENSE.md for license information.
- *
- * ----------------------------------------------------------------------
+ * See https://mit-license.org/ and LICENSE.md and for license information.
+ * =================================================================================================
  */
+#pragma once
 
-/** @file libsrc/fekernels/IsotropicLinearPoroelasticity.hh
- *
+/*
  * Kernels for linear poroelasticity plane strain.
  *
  * Solution fields: [disp(dim), pressure(1),trace_strain(1) ] (QS)
@@ -85,11 +79,8 @@
  * @param[out] f0 [dim].
  */
 
-#if !defined(pylith_fekernels_isotropiclinearporoelasticity_hh)
-#define pylith_fekernels_isotropiclinearporoelasticity_hh
-
 // Include directives ---------------------------------------------------
-#include "fekernelsfwd.hh" // forward declarations
+#include "pylith/fekernels/fekernelsfwd.hh" // forward declarations
 #include "pylith/fekernels/Poroelasticity.hh" // USES Poroelasticity kernels
 #include "pylith/fekernels/Elasticity.hh" // USES Elasticity kernels
 
@@ -4499,8 +4490,8 @@ public:
             pylith::fekernels::Elasticity3D::infinitesimalStrain,
             pylith::fekernels::IsotropicLinearPoroelasticity::cauchyStress_refState,
             pylith::fekernels::Tensor::ops3D, stressVector);
-    } // 
-    
+    } //
+
     // Calculate water content
     static inline
     void waterContent_asScalar(const PylithInt dim,
@@ -4704,7 +4695,5 @@ public:
     } // updatePorosityExplicit
 
 }; // IsotropicLinearPoroelasticity3D
-
-#endif // pylith_fekernels_isotropiclinearporoelasticity_hh
 
 // End of file

@@ -1,5 +1,3 @@
-/* -*- C -*-  (not really, but good for syntax highlighting) */
-
 /*
  * Copyright (c) 2005-2015, NumPy Developers.
  * All rights reserved.

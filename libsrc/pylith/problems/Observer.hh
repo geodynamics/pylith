@@ -1,31 +1,15 @@
-// -*- C++ -*-
+// =================================================================================================
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// ======================================================================
+// Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+// All rights reserved.
 //
-// Brad T. Aagaard, U.S. Geological Survey
-// Charles A. Williams, GNS Science
-// Matthew G. Knepley, University at Buffalo
-//
-// This code was developed as part of the Computational Infrastructure
-// for Geodynamics (http://geodynamics.org).
-//
-// Copyright (c) 2010-2022 University of California, Davis
-//
-// See LICENSE.md for license information.
-//
-// ======================================================================
-//
+// See https://mit-license.org/ and LICENSE.md and for license information.
+// =================================================================================================
+#pragma once
 
-/**
- * @file libsrc/problems/Observer.hh
- *
- * @brief Observer of subject.
- */
-
-#if !defined(pylith_problems_observer_hh)
-#define pylith_problems_observer_hh
-
-#include "problemsfwd.hh" // forward declarations
+#include "pylith/problems/problemsfwd.hh" // forward declarations
 
 class pylith::problems::Observer {
     friend class TestObserver; // unit testing
@@ -54,7 +38,5 @@ private:
     const Observer& operator=(const Observer&); ///< Not implemented
 
 }; // Observer
-
-#endif // pylith_problems_observer_hh
 
 // End of file

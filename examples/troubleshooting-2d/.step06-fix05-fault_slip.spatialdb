@@ -1,11 +1,8 @@
-// -*- C++ -*- (syntax highlighting)
-//
 // This spatial database specifies the distribution of slip on the
 // main fault surface for Step 6.
 //
 // Slip = 2m reverse if -20km <= y < 0
 // Slip increases linearly from 0 at y=-30km to 2m reverse at y=-20 km
-//
 #SPATIAL.ascii 1
 SimpleDB {
   num-values = 3

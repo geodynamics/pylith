@@ -1,64 +1,43 @@
-// -*- C++ -*-
+// =================================================================================================
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// ----------------------------------------------------------------------
+// Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+// All rights reserved.
 //
-// Brad T. Aagaard, U.S. Geological Survey
-// Charles A. Williams, GNS Science
-// Matthew G. Knepley, University at Buffalo
-//
-// This code was developed as part of the Computational Infrastructure
-// for Geodynamics (http://geodynamics.org).
-//
-// Copyright (c) 2010-2022 University of California, Davis
-//
-// See LICENSE.md for license information.
-//
-// ----------------------------------------------------------------------
-//
-
-/**
- * @file tests/libtests/meshio/TestVertexFilterVecNorm.hh
- *
- * @brief C++ TestVertexFilterVecNorm object
- *
- * C++ unit testing for VertexFilterVecNorm.
- */
-
-#if !defined(pylith_meshio_testvertexfiltervecnorm_hh)
-#define pylith_meshio_testvertexfiltervecnorm_hh
+// See https://mit-license.org/ and LICENSE.md and for license information.
+// =================================================================================================
+#pragma once
 
 #include <cppunit/extensions/HelperMacros.h>
 
 /// Namespace for pylith package
 namespace pylith {
-  namespace meshio {
-    class TestVertexFilterVecNorm;
-  } // meshio
+    namespace meshio {
+        class TestVertexFilterVecNorm;
+    } // meshio
 } // pylith
 
 /// C++ unit testing for VertexFilterVecNorm
-class pylith::meshio::TestVertexFilterVecNorm : public CppUnit::TestFixture
-{ // class TestVertexFilterVecNorm
+class pylith::meshio::TestVertexFilterVecNorm : public CppUnit::TestFixture { // class TestVertexFilterVecNorm
+                                                                              // CPPUNIT TEST SUITE
+                                                                              // /////////////////////////////////////////////////
+    CPPUNIT_TEST_SUITE(TestVertexFilterVecNorm);
 
-  // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-  CPPUNIT_TEST_SUITE( TestVertexFilterVecNorm );
+    CPPUNIT_TEST(testConstructor);
+    CPPUNIT_TEST(testFilter);
 
-  CPPUNIT_TEST( testConstructor );
-  CPPUNIT_TEST( testFilter );
+    CPPUNIT_TEST_SUITE_END();
 
-  CPPUNIT_TEST_SUITE_END();
+    // PUBLIC METHODS /////////////////////////////////////////////////////
+public:
 
-  // PUBLIC METHODS /////////////////////////////////////////////////////
-public :
+    /// Test constructor
+    void testConstructor(void);
 
-  /// Test constructor
-  void testConstructor(void);
-
-  /// Test filter()
-  void testFilter(void);
+    /// Test filter()
+    void testFilter(void);
 
 }; // class TestVertexFilterVecNorm
 
-#endif // pylith_meshio_testvertexfiltervecnorm_hh
-
-// End of file 
+// End of file

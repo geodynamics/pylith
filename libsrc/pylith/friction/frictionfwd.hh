@@ -1,20 +1,12 @@
-// -*- C++ -*-
+// =================================================================================================
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// ======================================================================
+// Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+// All rights reserved.
 //
-// Brad T. Aagaard, U.S. Geological Survey
-// Charles A. Williams, GNS Science
-// Matthew G. Knepley, University at Buffalo
-//
-// This code was developed as part of the Computational Infrastructure
-// for Geodynamics (http://geodynamics.org).
-//
-// Copyright (c) 2010-2022 University of California, Davis
-//
-// See LICENSE.md for license information.
-//
-// ======================================================================
-//
+// See https://mit-license.org/ and LICENSE.md and for license information.
+// =================================================================================================
 
 /** @file libsrc/friction/frictionfwd.hh
  *
@@ -23,27 +15,20 @@
  * Including this header file eliminates the need to use separate
  * forward declarations.
  */
-
-#if !defined(pylith_friction_frictionfwd_hh)
-#define pylith_friction_frictionfwd_hh
+#pragma once
 
 namespace pylith {
-  namespace friction {
+    namespace friction {
+        class FrictionModel;
 
-    class FrictionModel;
+        class StaticFriction;
+        class SlipWeakening;
+        class SlipWeakeningTime;
+        class SlipWeakeningTimeStable;
+        class RateStateAgeing;
+        class TimeWeakening;
 
-    class StaticFriction;
-    class SlipWeakening;
-    class SlipWeakeningTime;
-    class SlipWeakeningTimeStable;
-    class RateStateAgeing;
-    class TimeWeakening;
-
-  } // friction
+    } // friction
 } // pylith
 
-
-#endif // pylith_friction_frictionfwd_hh
-
-
-// End of file 
+// End of file

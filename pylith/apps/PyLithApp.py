@@ -1,21 +1,14 @@
-# ----------------------------------------------------------------------
+# =================================================================================================
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Brad T. Aagaard, U.S. Geological Survey
-# Charles A. Williams, GNS Science
-# Matthew G. Knepley, University at Buffalo
+# Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+# All rights reserved.
 #
-# This code was developed as part of the Computational Infrastructure
-# for Geodynamics (http://geodynamics.org).
-#
-# Copyright (c) 2010-2022 University of California, Davis
-#
-# See LICENSE.md for license information.
-#
-# ----------------------------------------------------------------------
-#
-
+# See https://mit-license.org/ and LICENSE.md and for license information. 
+# =================================================================================================
 # @file pylith/apps/PyLithApp.py
-##
+#
 # @brief Python PyLith application
 
 from .PetscApplication import PetscApplication
@@ -145,11 +138,11 @@ class PyLithApp(PetscApplication):
         import pylith.utils.utils as utils
         v = utils.PylithVersion()
         verNum = v.version()
-        verYear = 2022
+        verYear = 2023
         verDOI = v.doi()
 
         software = ("@Manual{PyLith:software,\n"
-                    "  title        = {PyLith v%s},\n"
+                    "  title        = {PyLith Version %s},\n"
                     "  author       = {Aagaard, B. and Knepley, M. and Williams, C.},\n"
                     "  organization = {Computational Infrastructure for Geodynamics (CIG)},\n"
                     "  address      = {University of California, Davis},\n"
@@ -169,7 +162,7 @@ class PyLithApp(PetscApplication):
                   )
 
         faultRup = ("@Article{Aagaard:Knepley:Williams:JGR:2013,\n"
-                    "  author   = {Aagaard, B.~T. and Knepley, M.~G. and Wiliams, C.~A.},\n"
+                    "  author   = {Aagaard, B.~T. and Knepley, M.~G. and Williams, C.~A.},\n"
                     "  title    = {A domain decomposition approach to implementing fault slip "
                     "in finite-element models of quasi-static and dynamic crustal deformation},\n"
                     "  journal  = {Journal of Geophysical Research Solid Earth},\n"

@@ -1,29 +1,19 @@
-// -*- C++ -*-
+// =================================================================================================
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// ======================================================================
+// Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+// All rights reserved.
 //
-// Brad T. Aagaard, U.S. Geological Survey
-// Charles A. Williams, GNS Science
-// Matthew G. Knepley, University at Buffalo
-//
-// This code was developed as part of the Computational Infrastructure
-// for Geodynamics (http://geodynamics.org).
-//
-// Copyright (c) 2010-2022 University of California, Davis
-//
-// See LICENSE.md for license information.
-//
-// ======================================================================
-//
+// See https://mit-license.org/ and LICENSE.md and for license information.
+// =================================================================================================
 
 /**
  * @file libsrc/meshio/OutputPhysics.hh
  *
  * @brief Manager for output of finite-element data (e.g., material, boundary condition, interface condition).
  */
-
-#if !defined(pylith_meshio_outputphysics_hh)
-#define pylith_meshio_outputphysics_hh
+#pragma once
 
 #include "meshiofwd.hh" // forward declarations
 
@@ -177,7 +167,5 @@ private:
     const OutputPhysics& operator=(const OutputPhysics&); ///< Not implemented
 
 }; // OutputPhysics
-
-#endif // pylith_meshio_outputphysics_hh
 
 // End of file

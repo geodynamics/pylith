@@ -1,82 +1,102 @@
-// -*- C++ -*-
+// =================================================================================================
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// ======================================================================
+// Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+// All rights reserved.
 //
-// Brad T. Aagaard, U.S. Geological Survey
-// Charles A. Williams, GNS Science
-// Matthew G. Knepley, University at Buffalo
-//
-// This code was developed as part of the Computational Infrastructure
-// for Geodynamics (http://geodynamics.org).
-//
-// Copyright (c) 2010-2022 University of California, Davis
-//
-// See LICENSE.md for license information.
-//
-// ======================================================================
-//
+// See https://mit-license.org/ and LICENSE.md and for license information. 
+// =================================================================================================
 
-#if !defined(pylith_meshio_datawriterhdf5datafaultmeshtri3_hh)
-#define pylith_meshio_datawriterhdf5datafaultmeshtri3_hh
+const char* pylith::meshio::DataWriterHDF5DataFaultMeshTri3::_vertexFilename =
+    "tri3_fault_vertex.h5";
 
-#include "DataWriterData.hh" // ISA DataWriterData
+const char* pylith::meshio::DataWriterHDF5DataFaultMeshTri3::_cellFilename =
+    "tri3_fault_cell.h5";
 
-namespace pylith {
-  namespace meshio {
-     class DataWriterHDF5DataFaultMeshTri3;
-  } // meshio
-} // pylith
+const PylithScalar pylith::meshio::DataWriterHDF5DataFaultMeshTri3::_time = 1.0;
 
-class pylith::meshio::DataWriterHDF5DataFaultMeshTri3 : public DataWriterData
-{ // DataWriterHDF5DataFaultMeshTri3
+const char* pylith::meshio::DataWriterHDF5DataFaultMeshTri3::_timeFormat =
+    "%3.1f";
 
-public: 
+const int pylith::meshio::DataWriterHDF5DataFaultMeshTri3::_numVertices = 2;
 
-  /// Constructor
-  DataWriterHDF5DataFaultMeshTri3(void);
+const pylith::meshio::DataWriterData::FieldStruct
+pylith::meshio::DataWriterHDF5DataFaultMeshTri3::_vertexFields[4] = {
+    { "pressure", topology::FieldBase::SCALAR, 1 },
+    { "displacement", topology::FieldBase::VECTOR, 2 },
+    { "stress", topology::FieldBase::TENSOR, 3 },
+    { "other", topology::FieldBase::OTHER, 2 },
+};
+const PylithScalar pylith::meshio::DataWriterHDF5DataFaultMeshTri3::_vertexFieldScalar[2*1] = {
+    2.1, 3.2,
+};
+const PylithScalar pylith::meshio::DataWriterHDF5DataFaultMeshTri3::_vertexFieldVector[2*2] = {
+    1.1, 2.2,
+    3.3, 4.4,
+};
+const PylithScalar pylith::meshio::DataWriterHDF5DataFaultMeshTri3::_vertexFieldTensor[2*3] = {
+    1.1, 1.2, 1.3,
+    2.1, 2.2, 2.3,
+};
+const PylithScalar pylith::meshio::DataWriterHDF5DataFaultMeshTri3::_vertexFieldOther[2*2] = {
+    1.2, 2.3,
+    3.4, 4.5,
+};
 
-  /// Destructor
-  ~DataWriterHDF5DataFaultMeshTri3(void);
+const int pylith::meshio::DataWriterHDF5DataFaultMeshTri3::_numCells = 1;
 
-private:
+const pylith::meshio::DataWriterData::FieldStruct
+pylith::meshio::DataWriterHDF5DataFaultMeshTri3::_cellFields[4] = {
+    { "pressure", topology::FieldBase::SCALAR, 1 },
+    { "traction", topology::FieldBase::VECTOR, 2 },
+    { "stress", topology::FieldBase::TENSOR, 3 },
+    { "other", topology::FieldBase::OTHER, 4 },
+};
+const PylithScalar pylith::meshio::DataWriterHDF5DataFaultMeshTri3::_cellFieldScalar[1*1] = {
+    2.1,
+};
+const PylithScalar pylith::meshio::DataWriterHDF5DataFaultMeshTri3::_cellFieldVector[1*2] = {
+    1.1, 2.2,
+};
+const PylithScalar pylith::meshio::DataWriterHDF5DataFaultMeshTri3::_cellFieldTensor[1*3] = {
+    1.2, 2.3, 3.4,
+};
+const PylithScalar pylith::meshio::DataWriterHDF5DataFaultMeshTri3::_cellFieldOther[1*4] = {
+    1.2, 2.3, 3.4, 4.5,
+};
 
-  static const char* _meshFilename; ///< Name of mesh file.
-  static const char* _faultLabel; ///< Name of group of vertices for fault.
-  static const int _faultId; ///< Material identifier for fault.
+pylith::meshio::DataWriterHDF5DataFaultMeshTri3::DataWriterHDF5DataFaultMeshTri3(void) { // constructor
+    meshFilename = const_cast<char*>(_meshFilename);
+    faultLabel = const_cast<char*>(_faultLabel);
+    faultId = _faultId;
 
-  static const char* _timestepFilename; ///< Name of HDF5 file without fields.
-  static const char* _vertexFilename; ///< Name of HDF5 file for vertex fields.
-  static const char* _cellFilename; ///< Name of HDF5 file for cell fields.
+    timestepFilename = const_cast<char*>(_timestepFilename);
+    vertexFilename = const_cast<char*>(_vertexFilename);
+    cellFilename = const_cast<char*>(_cellFilename);
 
-  static const PylithScalar _time; ///< Time for fields.
-  static const char* _timeFormat; ///< Format for time stamp.
+    time = _time;
+    timeFormat = const_cast<char*>(_timeFormat);
 
-  /// @name Vertex field information.
-  //@{
-  static const int _numVertexFields; ///< Number of vertex fields.
-  static const int _numVertices; ///< Number of vertices.
-  static const FieldStruct _vertexFields[]; ///< Array of vertex fields.
+    numVertices = _numVertices;
+    assert(DataWriterData::numVertexFields == numVertexFields);
+    vertexFieldsInfo = const_cast<DataWriterData::FieldStruct*>(_vertexFields);
+    vertexFields[0] = const_cast<PylithScalar*>(_vertexFieldScalar);
+    vertexFields[1] = const_cast<PylithScalar*>(_vertexFieldVector);
+    vertexFields[2] = const_cast<PylithScalar*>(_vertexFieldTensor);
+    vertexFields[3] = const_cast<PylithScalar*>(_vertexFieldOther);
 
-  static const PylithScalar _vertexFieldScalar[]; ///< Values for scalar vertex field.
-  static const PylithScalar _vertexFieldVector[]; ///< Values for vector vertex field .
-  static const PylithScalar _vertexFieldTensor[]; ///< Values for tensor vertex field.
-  static const PylithScalar _vertexFieldOther[]; ///< Values for other vertex field.
-  //@}
+    numCells = _numCells;
+    assert(DataWriterData::numCellFields == numCellFields);
+    cellFieldsInfo = const_cast<DataWriterData::FieldStruct*>(_cellFields);
+    cellFields[0] = const_cast<PylithScalar*>(_cellFieldScalar);
+    cellFields[1] = const_cast<PylithScalar*>(_cellFieldVector);
+    cellFields[2] = const_cast<PylithScalar*>(_cellFieldTensor);
+    cellFields[3] = const_cast<PylithScalar*>(_cellFieldOther);
+} // constructor
 
-  /// @name Cell field information.
-  //@{
-  static const int _numCellFields; ///< Number of cell fields.
-  static const int _numCells; ///< Number of cells.
-  static const FieldStruct _cellFields[]; ///< Array of cell fields.
 
-  static const PylithScalar _cellFieldScalar[]; ///< Values for scalar cell field.
-  static const PylithScalar _cellFieldVector[]; ///< Values for vector cell field.
-  static const PylithScalar _cellFieldTensor[]; ///< Values for tensor cell field.
-  static const PylithScalar _cellFieldOther[]; ///< Values for other cell field.
-  //@}
+pylith::meshio::DataWriterHDF5DataFaultMeshTri3::~DataWriterHDF5DataFaultMeshTri3(void) {}
 
-}; // DataWriterHDF5DataFaultMeshTri3
-
-#endif // pylith_meshio_datawriterhdf5datafaultmeshtri3_hh
 
 // End of file

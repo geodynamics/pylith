@@ -1,24 +1,16 @@
-// -*- C++ -*-
+// =================================================================================================
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// ======================================================================
+// Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+// All rights reserved.
 //
-// Brad T. Aagaard, U.S. Geological Survey
-// Charles A. Williams, GNS Science
-// Matthew G. Knepley, University at Buffalo
-//
-// This code was developed as part of the Computational Infrastructure
-// for Geodynamics (http://geodynamics.org).
-//
-// Copyright (c) 2010-2022 University of California, Davis
-//
-// See LICENSE.md for license information.
-//
-// ======================================================================
-//
+// See https://mit-license.org/ and LICENSE.md and for license information.
+// =================================================================================================
 
 #include <portinfo>
 
-#include "InitialConditionPatch.hh" // implementation of class methods
+#include "pylith/problems/InitialConditionPatch.hh" // implementation of class methods
 
 #include "pylith/topology/FieldQuery.hh" // USES FieldQuery
 #include "pylith/topology/Field.hh" // USES Field
@@ -145,13 +137,13 @@ pylith::problems::InitialConditionPatch::verifyConfiguration(const pylith::topol
     PetscInt stratumStart = -1, stratumEnd = -1;
     err = DMLabelGetStratumBounds(dmLabel, _labelValue, &stratumStart, &stratumEnd);PYLITH_CHECK_ERROR(err);
     pylith::topology::Stratum cellsStratum(dmSoln, pylith::topology::Stratum::HEIGHT, 0);
-    if (stratumStart >= cellsStratum.begin() && stratumEnd <= cellsStratum.end()) {
+    if ((stratumStart >= cellsStratum.begin()) && (stratumEnd <= cellsStratum.end())) {
         std::ostringstream msg;
         msg << "Label '" << _labelName << "' with value '" << _labelValue << "' for initial condition '"
             << PyreComponent::getIdentifier() << "' contains only cells. Labels for initial conditions must "
-            "contain cells and lower dimension points (for example, vertices, edges, and faces). These are "
-            "not available for CUBIT meshes; the are available for physical groups created using VertexGroup "
-            "in Gmsh Python scripts.";
+                                             "contain cells and lower dimension points (for example, vertices, edges, and faces). These are "
+                                             "not available for CUBIT meshes; the are available for physical groups created using VertexGroup "
+                                             "in Gmsh Python scripts.";
         throw std::runtime_error(msg.str());
     } // if
 

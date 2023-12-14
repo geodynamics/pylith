@@ -1,29 +1,13 @@
-// -*- C++ -*-
+// =================================================================================================
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// ======================================================================
+// Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+// All rights reserved.
 //
-// Brad T. Aagaard, U.S. Geological Survey
-// Charles A. Williams, GNS Science
-// Matthew G. Knepley, University at Buffalo
-//
-// This code was developed as part of the Computational Infrastructure
-// for Geodynamics (http://geodynamics.org).
-//
-// Copyright (c) 2010-2022 University of California, Davis
-//
-// See LICENSE.md for license information.
-//
-// ======================================================================
-//
-
-/**
- * @file libsrc/utils/petscfwd.h
- *
- * @brief Forward declarations for Petsc objects.
- */
-
-#if !defined(pylith_utils_petscfwd_h)
-#define pylith_utils_petscfwd_h
+// See https://mit-license.org/ and LICENSE.md and for license information.
+// =================================================================================================
+#pragma once
 
 /// forward declaration for PETSc PetscErrorCode
 typedef int PetscErrorCode;
@@ -75,7 +59,5 @@ typedef struct _p_PetscFE* PetscFE;
 
 /// forward declaration for PETSc weak form
 typedef struct _p_PetscWeakForm* PetscWeakForm;
-
-#endif // pylith_utils_petscfwd_h
 
 // End of file

@@ -1,31 +1,13 @@
-// -*- C++ -*-
+// =================================================================================================
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// ----------------------------------------------------------------------
+// Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+// All rights reserved.
 //
-// Brad T. Aagaard, U.S. Geological Survey
-// Charles A. Williams, GNS Science
-// Matthew G. Knepley, University at Buffalo
-//
-// This code was developed as part of the Computational Infrastructure
-// for Geodynamics (http://geodynamics.org).
-//
-// Copyright (c) 2010-2022 University of California, Davis
-//
-// See LICENSE.md for license information.
-//
-// ----------------------------------------------------------------------
-//
-
-/**
- * @file tests/libtests/meshio/TestMeshIOAscii.hh
- *
- * @brief C++ TestMeshIOAscii object
- *
- * C++ unit testing for MeshIOAscii.
- */
-
-#if !defined(pylith_meshio_testmeshioascii_hh)
-#define pylith_meshio_testmeshioascii_hh
+// See https://mit-license.org/ and LICENSE.md and for license information.
+// =================================================================================================
+#pragma once
 
 #include "TestMeshIO.hh" // ISA TestMeshIO
 
@@ -61,7 +43,5 @@ protected:
     MeshIOAscii* _io; ///< Test subject.
 
 }; // class TestMeshIOAscii
-
-#endif // pylith_meshio_testmeshioascii_hh
 
 // End of file

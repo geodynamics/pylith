@@ -1,5 +1,3 @@
-// -*- C++ -*- (tell Emacs to use C++ mode for syntax highlighting)
-//
 // This temporal database specifies the time history of loading for
 // the loading. The units are nondimensional corresponding to just
 // a scaled version of the spatial variation. 

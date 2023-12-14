@@ -1,29 +1,13 @@
-// -*- C++ -*-
+// =================================================================================================
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// ======================================================================
+// Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+// All rights reserved.
 //
-// Brad T. Aagaard, U.S. Geological Survey
-// Charles A. Williams, GNS Science
-// Matthew G. Knepley, University at Buffalo
-//
-// This code was developed as part of the Computational Infrastructure
-// for Geodynamics (http://geodynamics.org).
-//
-// Copyright (c) 2010-2022 University of California, Davis
-//
-// See LICENSE.md for license information.
-//
-// ======================================================================
-//
-
-/**
- * @file libsrc/feassemble/IntegrationData.hh
- *
- * @brief Object for managing data needed to integrate governing equations.
- */
-
-#if !defined(pylith_feassemble_integrationdata_hh)
-#define pylith_feassemble_integrationdata_hh
+// See https://mit-license.org/ and LICENSE.md and for license information.
+// =================================================================================================
+#pragma once
 
 #include "pylith/feassemble/feassemblefwd.hh" // Forward declarations
 #include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
@@ -153,7 +137,5 @@ private:
     const IntegrationData& operator=(const IntegrationData&); ///< Not implemented.
 
 }; // IntegrationData
-
-#endif // pylith_feassemble_integrationdata_hh
 
 // End of file

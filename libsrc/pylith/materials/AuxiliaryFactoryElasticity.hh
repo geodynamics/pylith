@@ -1,30 +1,15 @@
-// -*- C++ -*-
+// =================================================================================================
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// ----------------------------------------------------------------------
+// Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+// All rights reserved.
 //
-// Brad T. Aagaard, U.S. Geological Survey
-// Charles A. Williams, GNS Science
-// Matthew G. Knepley, University at Buffalo
-//
-// This code was developed as part of the Computational Infrastructure
-// for Geodynamics (http://geodynamics.org).
-//
-// Copyright (c) 2010-2022 University of California, Davis
-//
-// See LICENSE.md for license information.
-//
-// ----------------------------------------------------------------------
-//
+// See https://mit-license.org/ and LICENSE.md and for license information.
+// =================================================================================================
+#pragma once
 
-/** @file libsrc/materials/AuxiliaryFactoryElasticity.hh
- *
- * @brief C++ helper class for setting up auxiliary subfields for the elasticity equation.
- */
-
-#if !defined(pylith_materials_auxiliaryfactoryelasticity_hh)
-#define pylith_materials_auxiliaryfactoryelasticity_hh
-
-#include "materialsfwd.hh" // forward declarations
+#include "pylith/materials/materialsfwd.hh" // forward declarations
 #include "pylith/feassemble/AuxiliaryFactory.hh" // ISA AuxiliaryFactory
 
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // USES GravityField
@@ -60,7 +45,5 @@ private:
     const AuxiliaryFactoryElasticity& operator=(const AuxiliaryFactoryElasticity&); ///< Not implemented
 
 }; // class AuxiliaryFactoryElasticity
-
-#endif // pylith_materials_auxiliaryfactoryelasticity_hh
 
 // End of file

@@ -1,32 +1,15 @@
-// -*- C++ -*-
+// =================================================================================================
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// ======================================================================
+// Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+// All rights reserved.
 //
-// Brad T. Aagaard, U.S. Geological Survey
-// Charles A. Williams, GNS Science
-// Matthew G. Knepley, University at Buffalo
-//
-// This code was developed as part of the Computational Infrastructure
-// for Geodynamics (http://geodynamics.org).
-//
-// Copyright (c) 2010-2022 University of California, Davis
-//
-// See LICENSE.md for license information.
-//
-// ======================================================================
-//
+// See https://mit-license.org/ and LICENSE.md and for license information.
+// =================================================================================================
+#pragma once
 
-/**
- * @file libsrc/feassemble/DSLabelAccess.hh
- *
- * @brief C++ helper class for accessing PetscDMLabel, PetscDS, and PetscWeakForm
- * for a given DM, label, and label value.
- */
-
-#if !defined(pylith_feassemble_dslabelaccess_hh)
-#define pylith_feassemble_dslabelaccess_hh
-
-#include "feassemblefwd.hh" // forward declarations
+#include "pylith/feassemble/feassemblefwd.hh" // forward declarations
 
 #include "pylith/utils/types.hh" // USES PetscInt
 #include "pylith/utils/petscfwd.h" // HASA PetscDM, PetscDS, PetscWeakForm
@@ -119,7 +102,5 @@ private:
 };
 
 #include "DSLabelAccess.icc"
-
-#endif // pylith_feassemble_dslabelaccess_hh
 
 // End of file

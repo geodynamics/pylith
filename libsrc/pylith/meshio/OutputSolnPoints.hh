@@ -1,29 +1,13 @@
-// -*- C++ -*-
+// =================================================================================================
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// ======================================================================
+// Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+// All rights reserved.
 //
-// Brad T. Aagaard, U.S. Geological Survey
-// Charles A. Williams, GNS Science
-// Matthew G. Knepley, University at Buffalo
-//
-// This code was developed as part of the Computational Infrastructure
-// for Geodynamics (http://geodynamics.org).
-//
-// Copyright (c) 2010-2022 University of California, Davis
-//
-// See LICENSE.md for license information.
-//
-// ======================================================================
-//
-
-/**
- * @file libsrc/meshio/OutputSolnPoints.hh
- *
- * @brief C++ object for managing solution output over a an arbitrary set of points.
- */
-
-#if !defined(pylith_meshio_outputsolnpoints_hh)
-#define pylith_meshio_outputsolnpoints_hh
+// See https://mit-license.org/ and LICENSE.md and for license information.
+// =================================================================================================
+#pragma once
 
 #include "pylith/meshio/OutputSoln.hh" // ISA OutputSoln
 
@@ -119,7 +103,5 @@ private:
     const OutputSolnPoints& operator=(const OutputSolnPoints&); ///< Not implemented
 
 }; // OutputSolnPoints
-
-#endif // pylith_meshio_outputsolnpoints_hh
 
 // End of file

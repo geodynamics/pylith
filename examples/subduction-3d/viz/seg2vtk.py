@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env nemesis
 
 # Get command-line arguments.
 from optparse import OptionParser

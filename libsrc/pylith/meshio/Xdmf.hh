@@ -1,34 +1,21 @@
-// -*- C++ -*-
+// =================================================================================================
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// ----------------------------------------------------------------------
+// Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+// All rights reserved.
 //
-// Brad T. Aagaard, U.S. Geological Survey
-//
-// This code was developed as part of the Computational Infrastructure
-// for Geodynamics (http://geodynamics.org).
-//
-// Copyright (c) 2010-2022 University of California, Davis
-//
-// See LICENSE.md for license information.
-//
-// ----------------------------------------------------------------------
-//
+// See https://mit-license.org/ and LICENSE.md and for license information.
+// =================================================================================================
+#pragma once
 
-/** @file libsrc/pylith/meshio/Xdmf.hh
- *
- * @brief C++ interface to Python Xdmf object.
- */
+#include "pylith/meshio/meshiofwd.hh"
 
-#if !defined(pylith_meshio_xdmf_hh)
-#define pylith_meshio_xdmf_hh
-
-#include "meshiofwd.hh"
-
-/// C++ interface to Python Xdmf object.
 class pylith::meshio::Xdmf {
     friend class TestXdmf; // Unit testing
 
 public:
+
     // PUBLIC METHODS /////////////////////////////////////////////////////
 
     /** Use Python Xdmf object to write Xdmf file corresponding to HDF5 file.
@@ -38,10 +25,6 @@ public:
     static
     void write(const char* filenameH5);
 
-
 }; // class Xdmf
-
-#endif // pylith_meshio_xdmf_hh
-
 
 // End of file

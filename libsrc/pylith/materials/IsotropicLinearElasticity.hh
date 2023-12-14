@@ -1,30 +1,15 @@
-// -*- C++ -*-
+// =================================================================================================
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// ----------------------------------------------------------------------
+// Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+// All rights reserved.
 //
-// Brad T. Aagaard, U.S. Geological Survey
-// Charles A. Williams, GNS Science
-// Matthew G. Knepley, University at Buffalo
-//
-// This code was developed as part of the Computational Infrastructure
-// for Geodynamics (http://geodynamics.org).
-//
-// Copyright (c) 2010-2022 University of California, Davis
-//
-// See LICENSE.md for license information.
-//
-// ----------------------------------------------------------------------
-//
+// See https://mit-license.org/ and LICENSE.md and for license information.
+// =================================================================================================
+#pragma once
 
-/** @file libsrc/materials/IsotropicLinearElasticity.hh
- *
- * @brief C++ class for isotropic linear elastic material.
- */
-
-#if !defined(pylith_materials_isotropiclinearelasticity_hh)
-#define pylith_materials_isotropiclinearelasticity_hh
-
-#include "materialsfwd.hh" // forward declarations
+#include "pylith/materials/materialsfwd.hh" // forward declarations
 
 #include "pylith/materials/RheologyElasticity.hh" // ISA RheologyElasticity
 
@@ -122,7 +107,5 @@ private:
     const IsotropicLinearElasticity& operator=(const IsotropicLinearElasticity&); /// Not implemented.
 
 }; // class IsotropicLinearElasticity
-
-#endif // pylith_materials_isotropiclinearelasticity_hh
 
 // End of file

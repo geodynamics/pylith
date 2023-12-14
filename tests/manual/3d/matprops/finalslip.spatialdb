@@ -1,11 +1,8 @@
-// -*- C++ -*- (tell Emacs to use C++ mode for syntax highlighting)
-//
 // This spatial database specifies the distribution of slip on the
 // fault surface. In this case we prescribe a piecewise linear, depth
 // dependent distribution of slip. The slip is 2.0 m right-lateral
 // with 0.25 m of reverse slip at the surface with a linear taper from
 // 2.0 m to 0.0 m from -2 km to -4 km.
-//
 #SPATIAL.ascii 1
 SimpleDB {
   num-values = 3

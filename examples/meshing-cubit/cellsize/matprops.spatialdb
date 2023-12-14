@@ -1,8 +1,5 @@
-// -*- C++ -*- (tell Emacs to use C++ mode for syntax highlighting)
-//
 // This spatial database specifies a piecewise linear depth variation
 // in the material properties.
-//
 #SPATIAL.ascii 1
 SimpleDB {
   num-values = 3 // number of material property values

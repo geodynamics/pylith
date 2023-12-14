@@ -1,31 +1,13 @@
-// -*- C++ -*-
+// =================================================================================================
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// ======================================================================
+// Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+// All rights reserved.
 //
-// Brad T. Aagaard, U.S. Geological Survey
-// Charles A. Williams, GNS Science
-// Matthew G. Knepley, University at Buffalo
-//
-// This code was developed as part of the Computational Infrastructure
-// for Geodynamics (http://geodynamics.org).
-//
-// Copyright (c) 2010-2022 University of California, Davis
-//
-// See LICENSE.md for license information.
-//
-// ======================================================================
-//
-
-/** @file libsrc/fekernels/fekernelsfwd.hh
- *
- * @brief Forward declarations for PyLith fekernels objects.
- *
- * Including this header file eliminates the need to use separate
- * forward declarations.
- */
-
-#if !defined(pylith_fekernels_fekernelsfwd_hh)
-#define pylith_fekernels_fekernelsfwd_hh
+// See https://mit-license.org/ and LICENSE.md and for license information.
+// =================================================================================================
+#pragma once
 
 namespace pylith {
     namespace fekernels {
@@ -78,7 +60,5 @@ namespace pylith {
         class BoundaryDirections;
     } // fekernels
 } // pylith
-
-#endif // pylith_fekernels_fekernelsfwd_hh
 
 // End of file

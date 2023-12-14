@@ -1,32 +1,15 @@
-// -*- C++ -*-
+// =================================================================================================
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// ======================================================================
+// Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+// All rights reserved.
 //
-// Brad T. Aagaard, U.S. Geological Survey
-// Charles A. Williams, GNS Science
-// Matthew G. Knepley, University at Buffalo
-//
-// This code was developed as part of the Computational Infrastructure
-// for Geodynamics (http://geodynamics.org).
-//
-// Copyright (c) 2010-2022 University of California, Davis
-//
-// See LICENSE.md for license information.
-//
-// ======================================================================
-//
+// See https://mit-license.org/ and LICENSE.md and for license information.
+// =================================================================================================
+#pragma once
 
-/**
- * @file libsrc/topology/Mesh.hh
- *
- * @brief C++ PyLith finite-element mesh.
- */
-
-#if !defined(pylith_topology_mesh_hh)
-#define pylith_topology_mesh_hh
-
-// Include directives ---------------------------------------------------
-#include "topologyfwd.hh" // forward declarations
+#include "pylith/topology/topologyfwd.hh" // forward declarations
 #include "spatialdata/geocoords/geocoordsfwd.hh" // forward declarations
 
 #include "pylith/utils/petscfwd.h" // HASA PetscDM
@@ -37,7 +20,7 @@
  * Extends PETSc mesh to include coordinate system associated with
  * domain.
  */
-class pylith::topology::Mesh { // Mesh
+class pylith::topology::Mesh {
     friend class TestMesh; // unit testing
 
     // PUBLIC MEMBERS ///////////////////////////////////////////////////////
@@ -144,7 +127,5 @@ private:
     const Mesh& operator=(const Mesh&); ///< Not implemented
 
 }; // Mesh
-
-#endif // pylith_topology_mesh_hh
 
 // End of file

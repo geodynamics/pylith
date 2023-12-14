@@ -1,20 +1,15 @@
-/* -*- C -*-
+/*
+ * ================================================================================================
+ * This code is part of PyLith, developed through the Computational Infrastructure
+ * for Geodynamics (https://github.com/geodynamics/pylith).
  *
- * ----------------------------------------------------------------------
+ * Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+ * All rights reserved.
  *
- * Brad T. Aagaard, U.S. Geological Survey
- * Charles A. Williams, GNS Science
- * Matthew G. Knepley, University at Buffalo
- *
- * This code was developed as part of the Computational Infrastructure
- * for Geodynamics (http:*geodynamics.org).
- *
- * Copyright (c) 2010-2022 University of California, Davis
- *
- * See LICENSE.md for license information.
- *
- * ----------------------------------------------------------------------
+ * See https://mit-license.org/ and LICENSE.md and for license information.
+ * =================================================================================================
  */
+#pragma once
 
 /** @file libsrc/fekernels/AbsorbingDampers.hh
  *
@@ -33,11 +28,7 @@
  * - 2: vs(1)
  */
 
-#if !defined(pylith_fekernels_absorbingdampers_hh)
-#define pylith_fekernels_absorbingdampers_hh
-
-// Include directives ---------------------------------------------------
-#include "fekernelsfwd.hh" // forward declarations
+#include "pylith/fekernels/fekernelsfwd.hh" // forward declarations
 
 #include "pylith/utils/types.hh"
 
@@ -132,7 +123,5 @@ public:
     } // g0
 
 }; // AbsorbingDampers
-
-#endif // pylith_fekernels_absorbingdampers_hh
 
 // End of file

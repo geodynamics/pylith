@@ -1,32 +1,15 @@
-// -*- C++ -*-
+// =================================================================================================
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// ----------------------------------------------------------------------
+// Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+// All rights reserved.
 //
-// Brad T. Aagaard, U.S. Geological Survey
-// Charles A. Williams, GNS Science
-// Matthew G. Knepley, University at Buffalo
-//
-// This code was developed as part of the Computational Infrastructure
-// for Geodynamics (http://geodynamics.org).
-//
-// Copyright (c) 2010-2022 University of California, Davis
-//
-// See LICENSE.md for license information.
-//
-// ----------------------------------------------------------------------
-//
+// See https://mit-license.org/ and LICENSE.md and for license information.
+// =================================================================================================
+#pragma once
 
-/** @file libsrc/faults/KinSrc.hh
- *
- * @brief C++ object for managing parameters for a kinematic
- * earthquake source.
- */
-
-#if !defined(pylith_faults_kinsrc_hh)
-#define pylith_faults_kinsrc_hh
-
-// Include directives ---------------------------------------------------
-#include "faultsfwd.hh" // forward declarations
+#include "pylith/faults/faultsfwd.hh" // forward declarations
 
 #include "pylith/utils/PyreComponent.hh" // ISA PyreComponent
 
@@ -166,7 +149,5 @@ private:
     const KinSrc& operator=(const KinSrc&); ///< Not implemented
 
 }; // class KinSrc
-
-#endif // pylith_faults_kinsrc_hh
 
 // End of file

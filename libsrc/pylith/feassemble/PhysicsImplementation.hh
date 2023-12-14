@@ -1,28 +1,13 @@
-// -*- C++ -*-
+// =================================================================================================
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// ----------------------------------------------------------------------
+// Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+// All rights reserved.
 //
-// Brad T. Aagaard, U.S. Geological Survey
-// Charles A. Williams, GNS Science
-// Matthew G. Knepley, University at Buffalo
-//
-// This code was developed as part of the Computational Infrastructure
-// for Geodynamics (http://geodynamics.org).
-//
-// Copyright (c) 2010-2022 University of California, Davis
-//
-// See LICENSE.md for license information.
-//
-// ----------------------------------------------------------------------
-//
-
-/** @file libsrc/feassemble/PhysicsImplementation.hh
- *
- * @brief C++ abstract base class defining interface for constraining degrees of freedom in the solution.
- */
-
-#if !defined(pylith_feassemble_physicaimplementation_hh)
-#define pylith_feassemble_physicaimplementation_hh
+// See https://mit-license.org/ and LICENSE.md and for license information.
+// =================================================================================================
+#pragma once
 
 #include "pylith/feassemble/feassemblefwd.hh"
 
@@ -122,7 +107,5 @@ private:
     const PhysicsImplementation& operator=(const PhysicsImplementation&); ///< Not implemented
 
 }; // class PhysicsImplementation
-
-#endif // pylith_feassemble_physicaimplementation_hh
 
 // End of file

@@ -1,31 +1,15 @@
-// -*- C++ -*-
+// =================================================================================================
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// ======================================================================
+// Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+// All rights reserved.
 //
-// Brad T. Aagaard, U.S. Geological Survey
-// Charles A. Williams, GNS Science
-// Matthew G. Knepley, University at Buffalo
-//
-// This code was developed as part of the Computational Infrastructure
-// for Geodynamics (http://geodynamics.org).
-//
-// Copyright (c) 2010-2022 University of California, Davis
-//
-// See LICENSE.md for license information.
-//
-// ======================================================================
-//
+// See https://mit-license.org/ and LICENSE.md and for license information.
+// =================================================================================================
+#pragma once
 
-/**
- * @file libsrc/meshio/OutputSoln.hh
- *
- * @brief Manager for output of solution.
- */
-
-#if !defined(pylith_meshio_outputsoln_hh)
-#define pylith_meshio_outputsoln_hh
-
-#include "meshiofwd.hh" // forward declarations
+#include "pylith/meshio/meshiofwd.hh" // forward declarations
 
 #include "pylith/problems/ObserverSoln.hh" // ISA Observer
 #include "pylith/meshio/OutputObserver.hh" // ISA OutputObserver
@@ -139,7 +123,5 @@ private:
     const OutputSoln& operator=(const OutputSoln&); ///< Not implemented
 
 }; // OutputSoln
-
-#endif // pylith_meshio_outputsoln_hh
 
 // End of file
