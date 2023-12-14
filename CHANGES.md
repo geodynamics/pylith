@@ -21,12 +21,12 @@ The version numbers are in the form `MAJOR.MINOR.PATCH`, where major releases in
 * Add demonstration of `pylith_powerlaw_gendb` in Step 8 of `examples/reverse-2d`.
 * Add demonstration of using poroelasticity with porosity as a state variable to `examples/magma-2d`.
 * Switched from CppUnit to Catch2 for the C++ testing framework.
-* Update to PETSc 3.20.2
 * Improve integration with VSCode for testing and debugging (see Developer Guide)
 * Bug fixes
   * Fix errors in KinSrcTimeHistory.py
   * Fix creation of PETSc label for edges when importing Gmsh files. This fixes creation of faults with buried edges for 3D meshes imported from Gmsh.
   * Add containers for solution fields for poroelasticity with faults.
+* Update PETSc to version 3.20.2
 * Update Python requirement to version 3.8 or later.
 * Update Pyre requirement to version 1.1.0 or later.
 * Update SpatialData requirement to version 3.1.0 or later.
