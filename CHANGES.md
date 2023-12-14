@@ -27,6 +27,9 @@ The version numbers are in the form `MAJOR.MINOR.PATCH`, where major releases in
   * Fix errors in KinSrcTimeHistory.py
   * Fix creation of PETSc label for edges when importing Gmsh files. This fixes creation of faults with buried edges for 3D meshes imported from Gmsh.
   * Add containers for solution fields for poroelasticity with faults.
+* Update Python requirement to version 3.8 or later.
+* Update Pyre requirement to version 1.1.0 or later.
+* Update SpatialData requirement to version 3.1.0 or later.
 
 ## Version 3.0.3
 
