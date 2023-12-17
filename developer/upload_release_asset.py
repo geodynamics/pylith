@@ -66,19 +66,19 @@ class App:
             f"Releases:\n\t{tags}"
             )
 
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--set-token", dest="set_token", action="store_true")
-    parser.add_argument("--upload", dest="upload", action="store")
-    parser.add_argument("--package", dest="package", action="store", default="pylith")
-    parser.add_argument("--release", dest="release", action="store", required=True)
+def cli():
+    parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument("--set-token", dest="set_token", action="store_true", help="GitHub token")
+    parser.add_argument("--package", dest="package", action="store", default="pylith", help="GitHub repository")
+    parser.add_argument("--release", dest="release", action="store", required=True, help="Release tag")
+    parser.add_argument("--asset", dest="asset", action="store", required=True, help="File to upload")
     args = parser.parse_args()
 
     app = App()
     if args.set_token:
         app.set_token()
-    if args.upload:
-        app.upload_file(filename=args.upload, release=args.release, package=args.package)
+    if args.asset:
+        app.upload_file(filename=args.asset, release=args.release, package=args.package)
 
 if __name__ == "__main__":
-    main()
+    cli()

@@ -4,25 +4,10 @@ RELEASE CHECKLIST
 
 TESTING
 
-  * Check tests on all buildbots.
-
   * Run valgrind on unit tests (make leakcheck)
 
   * Run all examples.
-    ./run_examples.py >& log
-    grep -e RUNNING -e abort log
-
-  * Run benchmarks.
-
-  * Check contrib stuff.
-
-MANUAL
-
-  * Update version number and DOI in macro at top of userguide.tex.
-
-  * Update version number in install/install.tex (verbatim shell environment)..
-
-  * Update citation information (year) in preface.tex.
+    ./pylith_runner --path=examples
 
 SOURCE CODE
 
@@ -32,17 +17,19 @@ SOURCE CODE
 
   * Add release notes in doc/releasenotes.
 
-DISTRIBUTIONS
+MANUAL
 
-  * Generate binaries using installer on virtual machines and a Mac.
-    Check on various platforms.
-    Check trapping of errors.
+  * Reserve DOI on zenodo and update version and DOI in code.
+
+  * Update citation information (year) in preface.tex.
+
+DISTRIBUTIONS
 
   * Create PETSc and PyLith source tarballs.
 
     - PETSc tarball
       1. Clone/update a clean petsc repo (e.g., petsc-dist)
-      2. pylith_installer/packager/make_petscdist.sh PETSC_DIST_REPO knepley/pylith
+      2. pylith_installer packager/make_petscdist.sh PETSC_DIST_REPO knepley/pylith
       3. mv $HOME/petsc-pylith.tar.gz petsc-pylith-X.X.X.tgz
 
     - PyLith tarball
@@ -53,12 +40,16 @@ DISTRIBUTIONS
                same fingerprints for pointers.
     - Check build.
 
+  * Generate binaries using pylith_installer packager/build.py.
+    Check on various platforms.
+    Check trapping of errors.
+
 TAG
 
   * Tag source code.
 
   git tag -a vX.X.X -m "MY MESSAGE"
-  git push origin vX.X.X
+  git push upstream vX.X.X
 
   To delete a tag:
     REMOTE: git push --delete origin vX.X.X
@@ -73,40 +64,8 @@ TAG
 
 RELEASE
 
-  * Reserve DOI at zenodo and update DOI in README.md, configure.ac, and preface.md.
-
   * Create release from tag on GitHub.
 
   * Upload source tarballs to GitHub. 
 
-  * Package binaries
-
-    1. Build master branch on buildbots using pylith_installer/packager/build.py
-    2. Fix paths in Darwin tarball using pylith_installer/packager/update_darwinlinking.py
-    3. Upload binaries to GitHub.
-
-  * Upload manual to GitHub.
-
-  * Create Docker image.
-
-UPDATE next and maint
-
-  * Rewind next to master
-
-    git checkout master
-    git branch -D next
-    git checkout -b next
-    git push -f
-
-    EVERYONE with a clone of 'next' must resync to new 'next' branch
-
-    git checkout master
-    git branch -D next
-    git fetch
-
-  * Fast-forward maint to master
-
-    git checkout maint
-    git merge master
-    git push
-
+  * Upload binaries to GitHub.
