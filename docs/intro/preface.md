@@ -7,11 +7,11 @@ If you want to modify the source code, you will likely need to be familiar with 
 
 The Computational Infrastructure for Geodynamics (CIG) ([geodynamics.org](https://geodynamics.org/)) is making this software and source code available to you at no cost in hopes that the software will enhance your research in geophysics.
 A number of individuals have contributed a significant portion of their careers toward the development of this software.
-It is essential that you recognize these individuals in the normal scientific practice by citing the appropriate peer-reviewed papers and making appropriate acknowledgments in talks and publications.
+It is essential that you recognize these individuals in the normal scientific practice by citing the appropriate software release and peer-reviewed papers as well as making appropriate acknowledgments in talks and publications.
 The preferred way to generate the list of publications (in BibTeX format) to cite is to run your simulations with the `--include-citations` command line argument, or equivalently, the `--petsc.citations` command line argument.
-The `--help-citations` command line argument will generate the BibTeX entries for the references mentioned below.
+The `--version` command line argument will generate the BibTeX entries for the references mentioned below.
 
-The following peer-reviewed paper discussed the development of PyLith:
+The following peer-reviewed paper discusses the development of PyLith:
 
 - Aagaard, B. T., M. G. Knepley, and C. A. Williams (2013). A domain decomposition approach to implementing fault slip in finite-element models of quasistatic and dynamic crustal deformation, *Journal of Geophysical Research: Solid Earth*, 118, doi: 10.1002/jgrb.50217.
 
@@ -20,6 +20,31 @@ To cite the software and manual, use:
 - Aagaard, B., M. Knepley, C. Williams (2023a), *PyLith v4.0.0.* Davis, CA: Computational Infrastructure of Geodynamics. DOI: 10.5281/zenodo.10359667.
 
 - Aagaard, B., M. Knepley, C. Williams (2023b), *PyLith Manual, Version 4.0.0.* Davis, CA: Computational Infrastructure of Geodynamics. https://pylith.readthedocs.io/en/v4.0.0
+
+## Publishing Models
+
+Open research statements are now a common requirement when publishing research.
+These support reuse, validation, and citation and often take the form of *Data availability*, *Data access*, *Code availability*, *Open Research*, and *Software* availability statements.
+We recommend depositing input files that allow your published research to be reproduced and output model data in support of your research outcomes and figures.
+In addition, consider depositing model files that may be reused by others.
+
+Remember to cite software and data in your text as well as in your *Data availability* or similar statement.
+
+Files should be deposited in an approved repository.
+
+Additional information on [*Publishing*](https://geodynamics.org/software/software-bp/software-publishing) and repositories are available on the CIG website.
+
+### Files
+
+Common input files include `.cfg`, , `.spatialdb`, and mesh files `.exo`, `.msh`, or `mesh`.
+Common output files include the solution fields and state variables as `.h5`, `.xmf`, `vtk`, and `vtu`..
+
+### Example Statement
+
+The configuration files, parameters of the simulation, and solution field for the models in this study are available at DOI (Authors X, Y, Z) under CC BY-NC-SA 4.0.
+
+PyLith version 4.0.0 (Aagaard et al., 2013; Aagaard et al., 2023a; Aagaard et al., 2023b) used in these models is freely available under the MIT license for download through its software landing page https://geodynamics.org/resources/pylith or Zenodo (10.5281/zenodo.10359667).
+The project is being actively developed on GitHub and can be accessed via https://github.com/geodynamics/pylith.
 
 ## Support
 
