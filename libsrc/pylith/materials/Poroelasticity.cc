@@ -455,22 +455,22 @@ pylith::materials::Poroelasticity::_setKernelsResidual(pylith::feassemble::Integ
     case DYNAMIC_IMEX:
     case DYNAMIC: {
         // Displacement
-        const PetscPointFunc f0u = pylith::fekernels::DispVel::f0u;
+        const PetscPointFunc f0u = pylith::fekernels::Poroelasticity::f0u_explicit;
         const PetscPointFunc f1u = NULL;
-        const PetscPointFunc g0u = pylith::fekernels::Poroelasticity::g0u;
+        const PetscPointFunc g0u = NULL;
         const PetscPointFunc g1u = NULL;
 
         // Pressure
-        const PetscPointFunc f0p = _rheology->getKernelf0p_explicit(coordsys);
-        const PetscPointFunc f1p = NULL;
-        const PetscPointFunc g0p = _rheology->getKernelg0p(coordsys, _useBodyForce, _gravityField, _useSourceDensity);
-        const PetscPointFunc g1p = _rheology->getKernelg1p_explicit(coordsys, _gravityField); // Darcy velocity
+        const PetscPointFunc f0p = _rheology->getKernelg0p(coordsys, _useBodyForce, _gravityField, _useSourceDensity);
+        const PetscPointFunc f1p = _rheology->getKernelg1p_explicit(coordsys, _gravityField); // Darcy velocity;
+        const PetscPointFunc g0p = NULL;
+        const PetscPointFunc g1p = NULL;
 
         // Velocity
         const PetscPointFunc f0v = pylith::fekernels::Poroelasticity::f0v_explicit;
-        const PetscPointFunc f1v = NULL;
-        const PetscPointFunc g0v = r0;
-        const PetscPointFunc g1v = _rheology->getKernelg1v_explicit(coordsys);
+        const PetscPointFunc f1v = _rheology->getKernelg1v_explicit(coordsys);
+        const PetscPointFunc g0v = r0; // NEED TO MOVE TO LHS
+        const PetscPointFunc g1v = NULL;
 
         kernels.resize(6);
         kernels[0] = ResidualKernels("displacement", pylith::feassemble::Integrator::LHS, f0u, f1u);
@@ -479,6 +479,7 @@ pylith::materials::Poroelasticity::_setKernelsResidual(pylith::feassemble::Integ
         kernels[3] = ResidualKernels("pressure", pylith::feassemble::Integrator::RHS, g0p, g1p);
         kernels[4] = ResidualKernels("velocity", pylith::feassemble::Integrator::LHS, f0v, f1v);
         kernels[5] = ResidualKernels("velocity", pylith::feassemble::Integrator::RHS, g0v, g1v);
+        break;
     } // DYNAMIC
     default:
         PYLITH_COMPONENT_LOGICERROR("Unknown formulation for equations (" << _formulation << ").");
@@ -785,7 +786,7 @@ pylith::materials::Poroelasticity::_setKernelsJacobian(pylith::feassemble::Integ
     } // QUASISTATIC
     case DYNAMIC_IMEX:
     case DYNAMIC: {
-        const PetscPointJac Jf0uu = pylith::fekernels::DispVel::Jf0uu_stshift;
+        const PetscPointJac Jf0uu = pylith::fekernels::Poroelasticity::Jf0uu_stshift;
         const PetscPointJac Jf1uu = NULL;
         const PetscPointJac Jf2uu = NULL;
         const PetscPointJac Jf3uu = NULL;

@@ -233,6 +233,8 @@ AC_CONFIG_FILES([Makefile
 		tests/mmstests/linearelasticity/faults-2d/Makefile
 		tests/mmstests/incompressibleelasticity/Makefile
 		tests/mmstests/incompressibleelasticity/nofaults-2d/Makefile
+		tests/mmstests/poroelastodynamics/Makefile
+		tests/mmstests/poroelastodynamics/nofaults-2d/Makefile
 		tests/fullscale/Makefile
 		tests/fullscale/cornercases/Makefile
 		tests/fullscale/cornercases/nofaults-2d/Makefile

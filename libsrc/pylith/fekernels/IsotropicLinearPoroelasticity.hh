@@ -492,14 +492,13 @@ public:
 
     // ================================ Kernels ====================================
     // --------------------------------------------------------------------------------------------
-    /** Helper function for calculating Cauchy stress for WITHOUT a reference stress and strain.
+    /** Helper function for calculating darcy flux
      *
      * ISA Poroelasticity::fluxrateFn
      *
      * @param[in] rheologyContext IsotropicLinearElasticity context.
-     * @param[in] strain Strain tensor.
      * @param[in] tensorOps Tensor operations.
-     * @param[out] stress Stress tensor.
+     * @param[out] fluxRate darcy flux vector
      */
     static inline
     void darcyFluxRate(const pylith::fekernels::Poroelasticity::Context& poroelasticContext,
@@ -532,6 +531,8 @@ public:
             } // for
         } // for
 
+        printf("darcyFluxRate\n");
+
         fluxRate->xx = fluxRateVector[0];
         fluxRate->yy = fluxRateVector[1];
         fluxRate->zz = fluxRateVector[2];
@@ -539,6 +540,58 @@ public:
         fluxRate->yz = 0.0;
         fluxRate->xz = 0.0;
     } // darcyFluxRate
+
+    // ================================ Kernels ====================================
+    // --------------------------------------------------------------------------------------------
+    /** Helper function for calculating darcy flux for poroelastodynamics
+     *
+     * ISA Poroelasticity::fluxrateFn
+     *
+     * @param[in] rheologyContext IsotropicLinearElasticity context.
+     * @param[in] tensorOps Tensor operations.
+     * @param[out] fluxRateDynamic darcy flux vector
+     */
+    static inline
+    void darcyFluxRateDynamic(const pylith::fekernels::Poroelasticity::PoroelasticContext& poroelasticContext,
+                              void* rheologyContext,
+                              const pylith::fekernels::TensorOps& tensorOps,
+                              pylith::fekernels::Tensor* fluxRateDynamic) {
+        Context* context = (Context*)(rheologyContext);
+        assert(context);
+        assert(fluxRateDynamic);
+
+        const PylithInt dim = poroelasticContext.dim;
+        // Solution Variables
+        const PylithScalar *pressure_x = poroelasticContext.pressure_x;
+        const PylithScalar *velocity_t = poroelasticContext.velocity_t;
+
+        // Poroelastic Auxiliaries
+        const PylithScalar fluidDensity = poroelasticContext.fluidDensity;
+        const PylithScalar fluidViscosity = poroelasticContext.fluidViscosity;
+        const PylithScalar *bodyForce = poroelasticContext.bodyForce;
+        const PylithScalar *gravityField = poroelasticContext.gravityField;
+
+        // Rheological Auxiliaries
+
+        PylithScalar tensorPermeability[9] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+        PylithScalar fluxRateVectorDynamic[3] = {0.0, 0.0, 0.0};
+        tensorOps.toTensor(context->permeability, tensorPermeability);
+
+        for (PylithInt i = 0; i < dim; ++i) {
+            for (PylithInt j = 0; j < dim; j++) {
+                fluxRateVectorDynamic[i] += (tensorPermeability[i * dim + j] / fluidViscosity) * (pressure_x[j] + fluidDensity * velocity_t[j] - bodyForce[j] - fluidDensity * gravityField[j]);
+            } // for
+        } // for
+
+        printf("darcyFluxRateDynamic\n");
+
+        fluxRateDynamic->xx = fluxRateVectorDynamic[0];
+        fluxRateDynamic->yy = fluxRateVectorDynamic[1];
+        fluxRateDynamic->zz = fluxRateVectorDynamic[2];
+        fluxRateDynamic->xy = 0.0;
+        fluxRateDynamic->yz = 0.0;
+        fluxRateDynamic->xz = 0.0;
+    } // darcyFluxRateDynamic
 
 }; // IsotropicLinearPoroelasticity
 
@@ -1788,11 +1841,16 @@ public:
 
         // Solution Variables
         const PylithScalar trace_strain_t = poroelasticContext.trace_strain_t;
+        const PylithScalar pressure_t = poroelasticContext.pressure_t;
 
         // Rheology Auxiliaries
         const PylithScalar biotCoefficient = rheologyContext.biotCoefficient;
+        const PylithScalar biotModulus = rheologyContext.biotModulus;
 
-        g0[0] -= biotCoefficient * trace_strain_t;
+        // Rheological Auxiliaries
+
+        g0[0] += pressure_t / biotModulus;
+        g0[0] += biotCoefficient * trace_strain_t;
     } // g0p_implicit
 
     // ----------------------------------------------------------------------
@@ -1835,15 +1893,20 @@ public:
 
         // Solution Variables
         const PylithScalar trace_strain_t = poroelasticContext.trace_strain_t;
+        const PylithScalar pressure_t = poroelasticContext.pressure_t;
+
+        // Rheology Auxiliaries
+        const PylithScalar biotCoefficient = rheologyContext.biotCoefficient;
+        const PylithScalar biotModulus = rheologyContext.biotModulus;
 
         // Poroelastic Auxiliaries
         const PylithScalar source = poroelasticContext.sourceDensity;
 
-        // Rheologic Auxiliaries
-        const PylithScalar biotCoefficient = rheologyContext.biotCoefficient;
+        // Rheological Auxiliaries
+        g0[0] -= source;
+        g0[0] += pressure_t / biotModulus;
+        g0[0] += biotCoefficient * trace_strain_t;
 
-        g0[0] += source;
-        g0[0] -= biotCoefficient * trace_strain_t;
     } // g0p_source
 
     // ----------------------------------------------------------------------
@@ -1886,15 +1949,19 @@ public:
 
         // Solution Variables
         const PylithScalar trace_strain_t = poroelasticContext.trace_strain_t;
+        const PylithScalar pressure_t = poroelasticContext.pressure_t;
+
+        // Rheology Auxiliaries
+        const PylithScalar biotCoefficient = rheologyContext.biotCoefficient;
+        const PylithScalar biotModulus = rheologyContext.biotModulus;
 
         // Poroelastic Auxiliaries
         const PylithScalar source = poroelasticContext.sourceDensity;
 
-        // Rheologic Auxiliaries
-        const PylithScalar biotCoefficient = rheologyContext.biotCoefficient;
+        g0[0] -= source;
+        g0[0] += pressure_t / biotModulus;
+        g0[0] += biotCoefficient * trace_strain_t;
 
-        g0[0] += source;
-        g0[0] -= biotCoefficient * trace_strain_t;
     } // g0p_source_body
 
     // ----------------------------------------------------------------------
@@ -1937,15 +2004,19 @@ public:
 
         // Solution Variables
         const PylithScalar trace_strain_t = poroelasticContext.trace_strain_t;
+        const PylithScalar pressure_t = poroelasticContext.pressure_t;
+
+        // Rheology Auxiliaries
+        const PylithScalar biotCoefficient = rheologyContext.biotCoefficient;
+        const PylithScalar biotModulus = rheologyContext.biotModulus;
 
         // Poroelastic Auxiliaries
         const PylithScalar source = poroelasticContext.sourceDensity;
 
-        // Rheologic Auxiliaries
-        const PylithScalar biotCoefficient = rheologyContext.biotCoefficient;
+        g0[0] -= source;
+        g0[0] += pressure_t / biotModulus;
+        g0[0] += biotCoefficient * trace_strain_t;
 
-        g0[0] += source;
-        g0[0] -= biotCoefficient * trace_strain_t;
     } // g0p_source_grav
 
     // ----------------------------------------------------------------------
@@ -1988,15 +2059,19 @@ public:
 
         // Solution Variables
         const PylithScalar trace_strain_t = poroelasticContext.trace_strain_t;
+        const PylithScalar pressure_t = poroelasticContext.pressure_t;
+
+        // Rheology Auxiliaries
+        const PylithScalar biotCoefficient = rheologyContext.biotCoefficient;
+        const PylithScalar biotModulus = rheologyContext.biotModulus;
 
         // Poroelastic Auxiliaries
         const PylithScalar source = poroelasticContext.sourceDensity;
 
-        // Rheologic Auxiliaries
-        const PylithScalar biotCoefficient = rheologyContext.biotCoefficient;
+        g0[0] -= source;
+        g0[0] += pressure_t / biotModulus;
+        g0[0] += biotCoefficient * trace_strain_t;
 
-        g0[0] += source;
-        g0[0] -= biotCoefficient * trace_strain_t;
     } // g0p_source_grav_body
 
     // -----------------------------------------------------------------------------
@@ -2040,10 +2115,11 @@ public:
             &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
             t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
 
+        printf("g1p\n");
         // Use f1p / fluxrate / darcy function
         pylith::fekernels::Poroelasticity::f1p(
             poroelasticContext, &rheologyContext,
-            pylith::fekernels::IsotropicLinearPoroelasticity::darcyFluxRate,
+            pylith::fekernels::IsotropicLinearPoroelasticity::darcyFluxRateDynamic,
             pylith::fekernels::Tensor::ops2D,
             g1);
 
@@ -3872,11 +3948,16 @@ public:
 
         // Solution Variables
         const PylithScalar trace_strain_t = poroelasticContext.trace_strain_t;
+        const PylithScalar pressure_t = poroelasticContext.pressure_t;
 
         // Rheology Auxiliaries
         const PylithScalar biotCoefficient = rheologyContext.biotCoefficient;
+        const PylithScalar biotModulus = rheologyContext.biotModulus;
 
-        g0[0] -= biotCoefficient * trace_strain_t;
+        // Rheological Auxiliaries
+        g0[0] += pressure_t / biotModulus;
+        g0[0] += biotCoefficient * trace_strain_t;
+
     } // g0p_implicit
 
     // ----------------------------------------------------------------------
@@ -3919,13 +4000,18 @@ public:
 
         // Solution Variables
         const PylithScalar trace_strain_t = poroelasticContext.trace_strain_t;
+        const PylithScalar pressure_t = poroelasticContext.pressure_t;
+
+        // Rheology Auxiliaries
+        const PylithScalar biotCoefficient = rheologyContext.biotCoefficient;
+        const PylithScalar biotModulus = rheologyContext.biotModulus;
+
         // Poroelastic Auxiliaries
         const PylithScalar source = poroelasticContext.sourceDensity;
-        // Rheologic Auxiliaries
-        const PylithScalar biotCoefficient = rheologyContext.biotCoefficient;
 
-        g0[0] += source;
-        g0[0] -= biotCoefficient * trace_strain_t;
+        g0[0] -= source;
+        g0[0] += pressure_t / biotModulus;
+        g0[0] += biotCoefficient * trace_strain_t;
     } // g0p_source
 
     // ----------------------------------------------------------------------
@@ -3968,13 +4054,19 @@ public:
 
         // Solution Variables
         const PylithScalar trace_strain_t = poroelasticContext.trace_strain_t;
+        const PylithScalar pressure_t = poroelasticContext.pressure_t;
+
+        // Rheology Auxiliaries
+        const PylithScalar biotCoefficient = rheologyContext.biotCoefficient;
+        const PylithScalar biotModulus = rheologyContext.biotModulus;
+
         // Poroelastic Auxiliaries
         const PylithScalar source = poroelasticContext.sourceDensity;
-        // Rheologic Auxiliaries
-        const PylithScalar biotCoefficient = rheologyContext.biotCoefficient;
 
-        g0[0] += source;
-        g0[0] -= biotCoefficient * trace_strain_t;
+        g0[0] -= source;
+        g0[0] += pressure_t / biotModulus;
+        g0[0] += biotCoefficient * trace_strain_t;
+
     } // g0p_source_body
 
     // ----------------------------------------------------------------------
@@ -4017,13 +4109,18 @@ public:
 
         // Solution Variables
         const PylithScalar trace_strain_t = poroelasticContext.trace_strain_t;
+        const PylithScalar pressure_t = poroelasticContext.pressure_t;
+
+        // Rheology Auxiliaries
+        const PylithScalar biotCoefficient = rheologyContext.biotCoefficient;
+        const PylithScalar biotModulus = rheologyContext.biotModulus;
+
         // Poroelastic Auxiliaries
         const PylithScalar source = poroelasticContext.sourceDensity;
-        // Rheologic Auxiliaries
-        const PylithScalar biotCoefficient = rheologyContext.biotCoefficient;
 
-        g0[0] += source;
-        g0[0] -= biotCoefficient * trace_strain_t;
+        g0[0] -= source;
+        g0[0] += pressure_t / biotModulus;
+        g0[0] += biotCoefficient * trace_strain_t;
     } // g0p_source_grav
 
     // ----------------------------------------------------------------------
@@ -4066,13 +4163,19 @@ public:
 
         // Solution Variables
         const PylithScalar trace_strain_t = poroelasticContext.trace_strain_t;
+        const PylithScalar pressure_t = poroelasticContext.pressure_t;
+
+        // Rheology Auxiliaries
+        const PylithScalar biotCoefficient = rheologyContext.biotCoefficient;
+        const PylithScalar biotModulus = rheologyContext.biotModulus;
+
         // Poroelastic Auxiliaries
         const PylithScalar source = poroelasticContext.sourceDensity;
-        // Rheologic Auxiliaries
-        const PylithScalar biotCoefficient = rheologyContext.biotCoefficient;
 
-        g0[0] += source;
-        g0[0] -= biotCoefficient * trace_strain_t;
+        g0[0] -= source;
+        g0[0] += pressure_t / biotModulus;
+        g0[0] += biotCoefficient * trace_strain_t;
+
     } // g0p_source_grav_body
 
     // -----------------------------------------------------------------------------
@@ -4119,7 +4222,7 @@ public:
         // Use f1p / fluxrate / darcy function
         pylith::fekernels::Poroelasticity::f1p(
             poroelasticContext, &rheologyContext,
-            pylith::fekernels::IsotropicLinearPoroelasticity::darcyFluxRate,
+            pylith::fekernels::IsotropicLinearPoroelasticity::darcyFluxRateDynamic,
             pylith::fekernels::Tensor::ops3D,
             g1);
 
@@ -4169,7 +4272,7 @@ public:
         // Use f1p / fluxrate / darcy function
         pylith::fekernels::Poroelasticity::f1p(
             poroelasticContext, &rheologyContext,
-            pylith::fekernels::IsotropicLinearPoroelasticity::darcyFluxRate,
+            pylith::fekernels::IsotropicLinearPoroelasticity::darcyFluxRateDynamic,
             pylith::fekernels::Tensor::ops3D,
             g1);
 
@@ -4221,7 +4324,7 @@ public:
         // Use f1p / fluxrate / darcy function
         pylith::fekernels::Poroelasticity::f1p(
             poroelasticContext, &rheologyContext,
-            pylith::fekernels::IsotropicLinearPoroelasticity::darcyFluxRate,
+            pylith::fekernels::IsotropicLinearPoroelasticity::darcyFluxRateDynamic,
             pylith::fekernels::Tensor::ops3D,
             g1);
 
@@ -4272,7 +4375,7 @@ public:
         // Use f1p / fluxrate / darcy function
         pylith::fekernels::Poroelasticity::f1p(
             poroelasticContext, &rheologyContext,
-            pylith::fekernels::IsotropicLinearPoroelasticity::darcyFluxRate,
+            pylith::fekernels::IsotropicLinearPoroelasticity::darcyFluxRateDynamic,
             pylith::fekernels::Tensor::ops3D,
             g1);
 

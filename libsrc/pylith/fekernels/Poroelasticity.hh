@@ -280,7 +280,7 @@ public:
         context->displacement_t = &s_t[sOff[i_displacement]];
         context->displacement_x = &s_x[sOff_x[i_displacement]];
         context->pressure = s[sOff[i_pressure]];
-        context->pressure_t = s_t[sOff[i_pressure]];
+        context->pressure_t = s_t ? s_t[sOff[i_pressure]] : 0.0;
         context->pressure_x = &s_x[sOff_x[i_pressure]];
         context->velocity = &s[sOff[i_velocity]];
         context->velocity_t = &s_t[sOff[i_velocity]];
@@ -573,6 +573,41 @@ public:
 
     } // setContextBodyForceSourceDensity
 
+    /** f0 function for displacement equation: f0u = \dot{u}.
+     *
+     * Solution fields: [disp(dim), vel(dim)]
+     */
+    static inline
+    void f0u_explicit(const PylithInt dim,
+                      const PylithInt numS,
+                      const PylithInt numA,
+                      const PylithInt sOff[],
+                      const PylithInt sOff_x[],
+                      const PylithScalar s[],
+                      const PylithScalar s_t[],
+                      const PylithScalar s_x[],
+                      const PylithInt aOff[],
+                      const PylithInt aOff_x[],
+                      const PylithScalar a[],
+                      const PylithScalar a_t[],
+                      const PylithScalar a_x[],
+                      const PylithReal t,
+                      const PylithScalar x[],
+                      const PylithInt numConstants,
+                      const PylithScalar constants[],
+                      PylithScalar f0[]) {
+        pylith::fekernels::Poroelasticity::PoroelasticContext poroelasticContext;
+        pylith::fekernels::Poroelasticity::setPoroelasticContextDynamic(
+            &poroelasticContext, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
+
+        const PylithScalar *displacement_t = poroelasticContext.displacement_t;
+        const PylithScalar *velocity = poroelasticContext.velocity;
+
+        for (PylithInt i = 0; i < dim; ++i) {
+            f0[i] += displacement_t[i] - velocity[i];
+        } // for
+    } // f0u_explicit
+
 #if 0
     // =============================================================================
     // Displacement
@@ -715,6 +750,7 @@ public:
         const PylithScalar bulkDensity = Context.bulkDensity; // Bulk Density
         const PylithScalar* velocity_t = Context.velocity_t; // acceleration
 
+        printf("f0v_explicit\n");
         for (PylithInt i = 0; i < dim; ++i) {
             f0[i] += velocity_t[i] * bulkDensity;
         } // for
@@ -898,6 +934,7 @@ public:
 
         const PylithScalar *velocity = Context.velocity;
 
+        printf("g0u \n");
         for (PylithInt i = 0; i < dim; ++i) {
             g0[i] += velocity[i];
         } // for
@@ -1176,6 +1213,35 @@ public:
             Jf0[i*dim+i] += s_tshift * bulkDensity;
         } // for
     } // Jf0vv_explicit
+
+    static inline
+    void Jf0uu_stshift(const PylithInt dim,
+                       const PylithInt numS,
+                       const PylithInt numA,
+                       const PylithInt sOff[],
+                       const PylithInt sOff_x[],
+                       const PylithScalar s[],
+                       const PylithScalar s_t[],
+                       const PylithScalar s_x[],
+                       const PylithInt aOff[],
+                       const PylithInt aOff_x[],
+                       const PylithScalar a[],
+                       const PylithScalar a_t[],
+                       const PylithScalar a_x[],
+                       const PylithReal t,
+                       const PylithReal s_tshift,
+                       const PylithScalar x[],
+                       const PylithInt numConstants,
+                       const PylithScalar constants[],
+                       PylithScalar Jf0[]) {
+        const PylithInt _numS = 3;
+        assert(_numS == numS);
+        assert(s_tshift > 0);
+
+        for (PylithInt i = 0; i < dim; ++i) {
+            Jf0[i*dim+i] += s_tshift;
+        } // for
+    } // Jf0uu_stshift
 
     // ---------------------------------------------------------------------------------------------------------------------
     /*

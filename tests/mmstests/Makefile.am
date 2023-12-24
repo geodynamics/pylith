@@ -10,7 +10,8 @@
 
 SUBDIRS = \
 	linearelasticity \
-	incompressibleelasticity
+	incompressibleelasticity \
+	poroelastodynamics
 
 
 # End of file 
