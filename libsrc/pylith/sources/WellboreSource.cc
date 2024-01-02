@@ -175,6 +175,7 @@ pylith::sources::WellboreSource::createAuxiliaryField(const pylith::topology::Fi
     _auxiliaryFactory->addWellborePressure(); // 5
     _auxiliaryFactory->addWellboreCharacter(); // 6
     _auxiliaryFactory->addElementDimensions(); // 7
+    _auxiliaryFactory->addTimeDelay(); // 8
 
     auxiliaryField->subfieldsSetup();
     auxiliaryField->createDiscretization();
