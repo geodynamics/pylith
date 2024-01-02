@@ -38,8 +38,6 @@ subpkginclude_HEADERS = \
 	NeumannTimeDependent.hh \
 	AbsorbingDampers.hh \
 	FaultCohesiveKin.hh \
-	IsotropicLinearPoroelasticity.hh \
-	Poroelasticity.hh \
 	WellboreSource.hh \
 	SquarePulseSource.hh \
 	SquareWavelet.hh \

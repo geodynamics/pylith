@@ -124,7 +124,7 @@ pylith::sources::TestAuxiliaryFactoryPointForce::testAdd(void) {
     CHECK(!_auxiliaryField->hasSubfield("point_force"));
     CHECK(!_auxiliaryField->hasSubfield("time_delay"));
 
-    _factory->addMomentTensor();
+    _factory->addPointForce();
     _factory->addTimeDelay();
 
     assert(_data->normalizer);
@@ -144,7 +144,7 @@ pylith::sources::TestAuxiliaryFactoryPointForce::testSetValuesFromDB(void) {
 
     assert(_factory);
 
-    _factory->addMomentTensor();
+    _factory->addPointForce();
     _factory->addTimeDelay();
     _auxiliaryField->subfieldsSetup();
     _auxiliaryField->createDiscretization();

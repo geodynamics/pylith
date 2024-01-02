@@ -273,4 +273,31 @@ pylith::sources::AuxiliaryFactoryWellboreSource::addElementDimensions(void) { //
 } // addElementLength
 
 
+// ---------------------------------------------------------------------------------------------------------------------
+// Add time delay of source time function to auxiliary fields.
+void
+pylith::sources::AuxiliaryFactoryWellboreSource::addTimeDelay(void) { // timeDelay
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("addTimeDelay(void)");
+
+    const char* subfieldName = "time_delay";
+
+    pylith::topology::Field::Description description;
+    const PylithReal timeScale = _normalizer->getTimeScale();
+    description.label = subfieldName;
+    description.alias = subfieldName;
+    description.vectorFieldType = pylith::topology::Field::SCALAR;
+    description.numComponents = 1;
+    description.componentNames.resize(1);
+    description.componentNames[0] = subfieldName;
+    description.scale = timeScale;
+    description.validator = pylith::topology::FieldQuery::validatorNonnegative;
+
+    _field->subfieldAdd(description, getSubfieldDiscretization(subfieldName));
+    this->setSubfieldQuery(subfieldName);
+
+    PYLITH_METHOD_END;
+} // addTimeDelay
+
+
 // End of file

@@ -44,6 +44,9 @@ public:
     /// Add point force subfield to auxiliary subfields.
     void addPointForce(void);
 
+    /// Add time delay subfield to auxiliary subfields.
+    void addTimeDelay(void);
+
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 

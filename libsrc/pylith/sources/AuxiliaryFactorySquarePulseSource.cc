@@ -32,19 +32,20 @@
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
-pylith::sources::AuxiliaryFactorySquarePulseSource::AuxiliaryFactorySquarePulseSource(void)
-{
+pylith::sources::AuxiliaryFactorySquarePulseSource::AuxiliaryFactorySquarePulseSource(void) {
     GenericComponent::setName("auxiliaryfactorysquarepulsesource");
 } // constructor
+
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Destructor.
 pylith::sources::AuxiliaryFactorySquarePulseSource::~AuxiliaryFactorySquarePulseSource(void) {}
 
+
 // ----------------------------------------------------------------------
 // Add fluid density subfield to auxiliary fields.
-void pylith::sources::AuxiliaryFactorySquarePulseSource::addVolumeFlowRate(void)
-{ // fluidDensity
+void
+pylith::sources::AuxiliaryFactorySquarePulseSource::addVolumeFlowRate(void) { // fluidDensity
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("addVolumeFlowRate(void)");
 
@@ -66,6 +67,34 @@ void pylith::sources::AuxiliaryFactorySquarePulseSource::addVolumeFlowRate(void)
     this->setSubfieldQuery(subfieldName);
 
     PYLITH_METHOD_END;
-} // addFluidDensity
+} // addVolumeFlowRate
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Add time delay of source time function to auxiliary fields.
+void
+pylith::sources::AuxiliaryFactorySquarePulseSource::addTimeDelay(void) { // timeDelay
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("addTimeDelay(void)");
+
+    const char* subfieldName = "time_delay";
+
+    pylith::topology::Field::Description description;
+    const PylithReal timeScale = _normalizer->getTimeScale();
+    description.label = subfieldName;
+    description.alias = subfieldName;
+    description.vectorFieldType = pylith::topology::Field::SCALAR;
+    description.numComponents = 1;
+    description.componentNames.resize(1);
+    description.componentNames[0] = subfieldName;
+    description.scale = timeScale;
+    description.validator = pylith::topology::FieldQuery::validatorNonnegative;
+
+    _field->subfieldAdd(description, getSubfieldDiscretization(subfieldName));
+    this->setSubfieldQuery(subfieldName);
+
+    PYLITH_METHOD_END;
+} // addTimeDelay
+
 
 // End of file
