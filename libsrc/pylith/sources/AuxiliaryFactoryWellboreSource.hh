@@ -65,6 +65,9 @@ public:
     /// Add element dimensions subfield to auxiliary subfields.
     void addElementDimensions(void);
 
+    /// Add time delay subfield to auxiliary subfields.
+    void addTimeDelay(void);
+
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 

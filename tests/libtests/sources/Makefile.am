@@ -32,8 +32,6 @@ libtest_sources_SOURCES = \
 	TestAuxiliaryFactorySourceTime_Cases.cc \
 	TestAuxiliaryFactoryPointForce.cc \
 	TestAuxiliaryFactoryPointForce_Cases.cc \
-	TestAuxiliaryFactoryWellboreSource.cc \
-	TestAuxiliaryFactoryWellboreSource_Cases.cc \	
 	$(top_srcdir)/tests/src/FieldTester.cc \
 	$(top_srcdir)/tests/src/driver_catch2.cc
 

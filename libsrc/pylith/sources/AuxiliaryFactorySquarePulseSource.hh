@@ -29,12 +29,12 @@
 
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // USES GravityField
 
-class pylith::sources::AuxiliaryFactorySquarePulseSource : public pylith::feassemble::AuxiliaryFactory
-{
+class pylith::sources::AuxiliaryFactorySquarePulseSource : public pylith::feassemble::AuxiliaryFactory {
     friend class TestAuxiliaryFactorySquarePulseSource; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
+
     /// Default constructor.
     AuxiliaryFactorySquarePulseSource(void);
 
@@ -44,8 +44,12 @@ public:
     /// Add fluid density subfield to auxiliary subfields.
     void addVolumeFlowRate(void);
 
+    /// Add time delay subfield to auxiliary subfields.
+    void addTimeDelay(void);
+
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
+
     AuxiliaryFactorySquarePulseSource(const AuxiliaryFactorySquarePulseSource &);                  ///< Not implemented.
     const AuxiliaryFactorySquarePulseSource &operator=(const AuxiliaryFactorySquarePulseSource &); ///< Not implemented
 

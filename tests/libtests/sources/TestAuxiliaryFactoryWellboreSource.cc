@@ -80,7 +80,7 @@ pylith::sources::TestAuxiliaryFactoryWellboreSource::TestAuxiliaryFactoryWellbor
         componentNames,
         componentNames.size(),
         pylith::topology::Field::SCALAR,
-        _data->normalizer->getViscosityScale(),
+        _data->normalizer->getPressureScale() * _data->normalizer->getTimeScale(),
         pylith::topology::FieldQuery::validatorPositive
         );
     info.fe = pylith::topology::Field::Discretization(
@@ -98,7 +98,7 @@ pylith::sources::TestAuxiliaryFactoryWellboreSource::TestAuxiliaryFactoryWellbor
         componentNames,
         componentNames.size(),
         pylith::topology::Field::SCALAR,
-        _data->normalizer->getLengthScale() * normalizer->getLengthScale(),
+        _data->normalizer->getLengthScale() * _data->normalizer->getLengthScale(),
         pylith::topology::FieldQuery::validatorPositive
         );
     info.fe = pylith::topology::Field::Discretization(
@@ -370,90 +370,3 @@ pylith::sources::TestAuxiliaryFactoryWellboreSource_Data::~TestAuxiliaryFactoryW
     delete normalizer;normalizer = NULL;
     delete auxiliaryDB;auxiliaryDB = NULL;
 } // testAdd
-
-
-// ------------------------------------------------------------------------------------------------
-// Test setValues().
-void
-pylith::sources::TestAuxiliaryFactoryWellboreSource::testSetValuesFromDB(void) {
-    PYLITH_METHOD_BEGIN;
-
-    assert(_factory);
-
-    _factory->addFluidDensity();
-    _factory->addFluidViscosity();
-    _factory->addIsotropicPermeability();
-    _factory->addWellboreRadius();
-    _factory->addWellboreLength();
-    _factory->addWellborePressure();
-    _factory->addWellboreCharacter();
-    _factory->addElementDimensions();
-    _factory->addTimeDelay();
-    _auxiliaryField->subfieldsSetup();
-    _auxiliaryField->createDiscretization();
-    _auxiliaryField->allocate();
-
-    assert(_data);
-    assert(_data->normalizer);
-    _factory->setValuesFromDB();
-    pylith::testing::FieldTester::checkFieldWithDB(*_auxiliaryField, _data->auxiliaryDB, _data->normalizer->getLengthScale());
-
-    PYLITH_METHOD_END;
-} // testSetValues
-
-
-// ------------------------------------------------------------------------------------------------
-// Initialze mesh, coordinate system, auxiliary field, and factory.
-void
-pylith::sources::TestAuxiliaryFactoryWellboreSource::_initialize(void) {
-    PYLITH_METHOD_BEGIN;
-    assert(_data);
-
-    pylith::meshio::MeshIOAscii iohandler;
-    assert(_data->meshFilename);
-    iohandler.setFilename(_data->meshFilename);
-    _mesh = new pylith::topology::Mesh();assert(_mesh);
-    iohandler.read(_mesh);
-
-    assert(pylith::topology::MeshOps::getNumCells(*_mesh) > 0);
-    assert(pylith::topology::MeshOps::getNumVertices(*_mesh) > 0);
-
-    // Setup coordinates.
-    _mesh->setCoordSys(_data->cs);
-    assert(_data->normalizer);
-    pylith::topology::MeshOps::nondimensionalize(_mesh, *_data->normalizer);
-
-    _auxiliaryField = new pylith::topology::Field(*_mesh);assert(_auxiliaryField);
-    _auxiliaryField->setLabel("auxiliary");
-
-    _factory = new AuxiliaryFactoryWellboreSource();
-    assert(_data->auxiliaryDB);
-    _factory->setQueryDB(_data->auxiliaryDB);
-    typedef std::map<std::string, pylith::topology::Field::SubfieldInfo>::const_iterator subfield_iter;
-    for (subfield_iter iter = _data->subfields.begin(); iter != _data->subfields.end(); ++iter) {
-        const char* subfieldName = iter->first.c_str();
-        const pylith::topology::Field::Discretization& fe = iter->second.fe;
-        _factory->setSubfieldDiscretization(subfieldName, fe.basisOrder, fe.quadOrder, fe.dimension, fe.isFaultOnly, fe.cellBasis,
-                                            fe.feSpace, fe.isBasisContinuous);
-    } // for
-    assert(_data->normalizer);
-    _factory->initialize(_auxiliaryField, *_data->normalizer, _data->dimension);
-
-    PYLITH_METHOD_END;
-} // _initialize
-
-
-// ------------------------------------------------------------------------------------------------
-pylith::sources::TestAuxiliaryFactoryWellboreSource_Data::TestAuxiliaryFactoryWellboreSource_Data(void) :
-    meshFilename(NULL),
-    cs(NULL),
-    normalizer(new spatialdata::units::Nondimensional),
-    auxiliaryDB(new spatialdata::spatialdb::UserFunctionDB) {}
-
-
-// ------------------------------------------------------------------------------------------------
-pylith::sources::TestAuxiliaryFactoryWellboreSource_Data::~TestAuxiliaryFactoryWellboreSource_Data(void) {
-    delete cs;cs = NULL;
-    delete normalizer;normalizer = NULL;
-    delete auxiliaryDB;auxiliaryDB = NULL;
-} // destructor

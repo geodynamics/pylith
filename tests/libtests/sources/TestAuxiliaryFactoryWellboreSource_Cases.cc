@@ -215,10 +215,13 @@ pylith::sources::TestAuxiliaryFactoryWellboreSource_Cases::Tri(void) {
     assert(data->auxiliaryDB);
     data->auxiliaryDB->addValue("fluid_density", fluid_density_2d, fluid_density_units());
     data->auxiliaryDB->addValue("fluid_viscosity", fluid_viscosity_2d, fluid_viscosity_units());
-    data->auxiliaryDB->addValue("isotropic_permeability", moment_tensor_2d_zz, pressure_units());
-    data->auxiliaryDB->addValue("moment_tensor_xy", moment_tensor_2d_xy, pressure_units());
+    data->auxiliaryDB->addValue("isotropic_permeability", isotropic_permeability_2d, isotropic_permeability_units());
+    data->auxiliaryDB->addValue("wellbore_radius", wellbore_radius_2d, wellbore_radius_units());
+    data->auxiliaryDB->addValue("wellbore_length", wellbore_length_2d, wellbore_length_units());
+    data->auxiliaryDB->addValue("wellbore_pressure", wellbore_pressure_2d, wellbore_pressure_units());
+    data->auxiliaryDB->addValue("wellbore_character", wellbore_character_2d, wellbore_character_units radius_units());
+    data->auxiliaryDB->addValue("element_dimensions", element_dimensions_2d, element_dimensions_units());
     data->auxiliaryDB->addValue("time_delay", time_delay_2d, time_units());
-    data->auxiliaryDB->addValue("center_frequency", center_frequency_2d, frequency_units());
     data->auxiliaryDB->setDescription("auxiliary");
     data->auxiliaryDB->setCoordSys(*data->cs);
 
@@ -239,14 +242,15 @@ pylith::sources::TestAuxiliaryFactoryWellboreSource_Cases::Hex(void) {
     data->cs->setSpaceDim(data->dimension);
 
     assert(data->auxiliaryDB);
-    data->auxiliaryDB->addValue("moment_tensor_xx", moment_tensor_3d_xx, pressure_units());
-    data->auxiliaryDB->addValue("moment_tensor_yy", moment_tensor_3d_yy, pressure_units());
-    data->auxiliaryDB->addValue("moment_tensor_zz", moment_tensor_3d_zz, pressure_units());
-    data->auxiliaryDB->addValue("moment_tensor_xy", moment_tensor_3d_xy, pressure_units());
-    data->auxiliaryDB->addValue("moment_tensor_yz", moment_tensor_3d_yz, pressure_units());
-    data->auxiliaryDB->addValue("moment_tensor_xz", moment_tensor_3d_xz, pressure_units());
+    data->auxiliaryDB->addValue("fluid_density", fluid_density_3d, fluid_density_units());
+    data->auxiliaryDB->addValue("fluid_viscosity", fluid_viscosity_3d, fluid_viscosity_units());
+    data->auxiliaryDB->addValue("isotropic_permeability", isotropic_permeability_3d, isotropic_permeability_units());
+    data->auxiliaryDB->addValue("wellbore_radius", wellbore_radius_3d, wellbore_radius_units());
+    data->auxiliaryDB->addValue("wellbore_length", wellbore_length_3d, wellbore_length_units());
+    data->auxiliaryDB->addValue("wellbore_pressure", wellbore_pressure_3d, wellbore_pressure_units());
+    data->auxiliaryDB->addValue("wellbore_character", wellbore_character_3d, wellbore_character_units radius_units());
+    data->auxiliaryDB->addValue("element_dimensions", element_dimensions_3d, element_dimensions_units());
     data->auxiliaryDB->addValue("time_delay", time_delay_3d, time_units());
-    data->auxiliaryDB->addValue("center_frequency", center_frequency_3d, frequency_units());
     data->auxiliaryDB->setDescription("auxiliary");
     data->auxiliaryDB->setCoordSys(*data->cs);
 

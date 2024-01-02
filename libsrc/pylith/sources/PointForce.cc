@@ -166,6 +166,7 @@ pylith::sources::PointForce::createAuxiliaryField(const pylith::topology::Field 
 
     // add in aux specific to square pulse
     _auxiliaryFactory->addPointForce(); // 0
+    _auxiliaryFactory->addTimeDelay(); // 1
 
     assert(_auxiliaryFactory);
     _auxiliaryFactory->setValuesFromDB();
