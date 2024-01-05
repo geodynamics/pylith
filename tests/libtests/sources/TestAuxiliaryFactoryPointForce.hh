@@ -56,7 +56,7 @@ public:
     /// Destructor.
     ~TestAuxiliaryFactoryPointForce(void);
 
-    /// Test adding density, body force, and gravity subfields.
+    /// Test adding subfields.
     void testAdd(void);
 
     /// Test setValuesFromDB().

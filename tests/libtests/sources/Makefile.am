@@ -38,7 +38,8 @@ libtest_sources_SOURCES = \
 
 dist_noinst_HEADERS = \
 	TestAuxiliaryFactoryMomentTensorForce.hh \
-	TestAuxiliaryFactorySourceTime.hh
+	TestAuxiliaryFactorySourceTime.hh \
+	TestAuxiliaryFactoryPointForce.hh
 
 
 # End of file
