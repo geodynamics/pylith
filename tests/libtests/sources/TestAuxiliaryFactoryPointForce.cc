@@ -114,10 +114,11 @@ pylith::sources::TestAuxiliaryFactoryPointForce::~TestAuxiliaryFactoryPointForce
 
 
 // ------------------------------------------------------------------------------------------------
-// Test adding moment tensor and time delay subfields.
+// Test adding point force and time delay subfields.
 void
 pylith::sources::TestAuxiliaryFactoryPointForce::testAdd(void) {
     PYLITH_METHOD_BEGIN;
+
     assert(_factory);
     assert(_data);
 
