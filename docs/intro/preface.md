@@ -17,16 +17,16 @@ The following peer-reviewed paper discussed the development of PyLith:
 
 To cite the software and manual, use:
 
-- Aagaard, B., M. Knepley, C. Williams (2023), *PyLith v4.0.0.* Davis, CA: Computational Infrastructure of Geodynamics. DOI: 10.5281/zenodo.10359667.
+- Aagaard, B., M. Knepley, C. Williams (2023a), *PyLith v4.0.0.* Davis, CA: Computational Infrastructure of Geodynamics. DOI: 10.5281/zenodo.10359667.
 
-- Aagaard, B., M. Knepley, C. Williams (2023), *PyLith Manual, Version 4.0.0.* Davis, CA: Computational Infrastructure of Geodynamics. https://pylith.readthedocs.io/en/v4.0.0
+- Aagaard, B., M. Knepley, C. Williams (2023b), *PyLith Manual, Version 4.0.0.* Davis, CA: Computational Infrastructure of Geodynamics. https://pylith.readthedocs.io/en/v4.0.0
 
 ## Support
 
 Current PyLith development is supported by the CIG, and internal GNS Science <https://www.gns.cri.nz/> and U.S. Geological Survey <https://www.usgs.gov/> funding.
 Pyre development was funded by the Department of Energy's <https://www.energy.gov/energygov> Advanced Simulation and Computing program and the National Science Foundation's Information Technology Research (ITR) program.
 
-This material is based upon work supported by the National Science Foundation under Grants No. 0313238, 0745391, 1150901, and EAR-1550901.
+This material is based upon work supported by the National Science Foundation under Grants No. 0313238, 0745391, and EAR-1550901.
 Any opinions, findings, and conclusions or recommendations expressed in this material are those of the author(s) and do not necessarily reflect the views of the National Science Foundation.
 
 ## Acknowledgments
