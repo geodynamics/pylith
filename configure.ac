@@ -193,7 +193,7 @@ AC_CONFIG_FILES([Makefile
 		libsrc/pylith/problems/Makefile
 		libsrc/pylith/topology/Makefile
 		libsrc/pylith/utils/Makefile
-                libsrc/pylith/testing/Makefile
+        libsrc/pylith/testing/Makefile
 		modulesrc/Makefile
 		modulesrc/include/Makefile
 		modulesrc/bc/Makefile
@@ -233,6 +233,8 @@ AC_CONFIG_FILES([Makefile
 		tests/mmstests/linearelasticity/faults-2d/Makefile
 		tests/mmstests/incompressibleelasticity/Makefile
 		tests/mmstests/incompressibleelasticity/nofaults-2d/Makefile
+		tests/mmstests/poroelasticity/Makefile
+		tests/mmstests/poroelasticity/nofaults-2d/Makefile
 		tests/fullscale/Makefile
 		tests/fullscale/cornercases/Makefile
 		tests/fullscale/cornercases/nofaults-2d/Makefile

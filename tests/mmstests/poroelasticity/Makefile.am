@@ -9,9 +9,7 @@
 # =================================================================================================
 
 SUBDIRS = \
-	linearelasticity \
-	incompressibleelasticity \
-        poroelasticity
+	nofaults-2d
 
 
 # End of file 
