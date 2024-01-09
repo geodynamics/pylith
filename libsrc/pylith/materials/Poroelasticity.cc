@@ -302,17 +302,37 @@ pylith::materials::Poroelasticity::getSolverDefaults(const bool isParallel,
         options->add("-ts_type", "beuler");
 
         if (!hasFault) {
+            options->add("-pc_type", "fieldsplit");
+            options->add("-pc_fieldsplit_type", "multiplicative");
+            options->add("-pc_fieldsplit_0_fields", "2");
+            options->add("-pc_fieldsplit_1_fields", "1");
+            options->add("-pc_fieldsplit_2_fields", "0");
+            options->add("-fieldsplit_trace_strain_pc_type", "bjacobi");
+            options->add("-fieldsplit_pressure_pc_type", "bjacobi");
             if (!isParallel) {
-                options->add("-pc_type", "lu");
+                options->add("-fieldsplit_displacement_pc_type", "lu");
             } else {
+                options->add("-fieldsplit_displacement_pc_type", "ml");
+                options->add("-fieldsplit_displacement_ksp_type", "gmres");
+            }
+
+            if (_useStateVars) {
+                options->add("-pc_fieldsplit_3_fields", "3");
+                options->add("-pc_fieldsplit_4_fields", "4");
+                options->add("-pc_fieldsplit_5_fields", "5");
+                options->add("-fieldsplit_velocity_pc_type", "bjacobi");
+                options->add("-fieldsplit_pressure_t_pc_type", "bjacobi");
+                options->add("-fieldsplit_trace_strain_t_pc_type", "bjacobi");
+            } // if
+
+        } else {
 #if 1
-                options->add("-pc_type", "ml");
+            options->add("-pc_type", "ml");
 #else
-                options->add("-pc_type", "gamg");
-                options->add("-mg_levels_pc_type", "sor");
-                options->add("-mg_levels_ksp_type", "richardson");
+            options->add("-pc_type", "gamg");
+            options->add("-mg_levels_pc_type", "sor");
+            options->add("-mg_levels_ksp_type", "richardson");
 #endif
-            } // if/else
         } // if
         break;
     case pylith::problems::Physics::DYNAMIC:
