@@ -1379,7 +1379,7 @@ public:
                const PylithScalar a_t[],
                const PylithScalar a_x[],
                const PylithReal t,
-               const PylithReal utshift,
+               const PylithReal s_tshift,
                const PylithScalar x[],
                const PylithInt numConstants,
                const PylithScalar constants[],
@@ -1423,7 +1423,7 @@ public:
                const PylithScalar a_t[],
                const PylithScalar a_x[],
                const PylithReal t,
-               const PylithReal utshift,
+               const PylithReal s_tshift,
                const PylithScalar x[],
                const PylithInt numConstants,
                const PylithScalar constants[],
@@ -1461,7 +1461,7 @@ public:
                const PylithScalar a_t[],
                const PylithScalar a_x[],
                const PylithReal t,
-               const PylithReal utshift,
+               const PylithReal s_tshift,
                const PylithScalar x[],
                const PylithInt numConstants,
                const PylithScalar constants[],
@@ -1504,7 +1504,7 @@ public:
                const PylithScalar a_t[],
                const PylithScalar a_x[],
                const PylithReal t,
-               const PylithReal utshift,
+               const PylithReal s_tshift,
                const PylithScalar x[],
                const PylithInt numConstants,
                const PylithScalar constants[],
@@ -1557,7 +1557,7 @@ public:
                                    const PylithScalar a_t[],
                                    const PylithScalar a_x[],
                                    const PylithReal t,
-                                   const PylithReal utshift,
+                                   const PylithReal s_tshift,
                                    const PylithScalar x[],
                                    const PylithInt numConstants,
                                    const PylithScalar constants[],
@@ -1608,7 +1608,7 @@ public:
                const PylithScalar a_t[],
                const PylithScalar a_x[],
                const PylithReal t,
-               const PylithReal utshift,
+               const PylithReal s_tshift,
                const PylithScalar x[],
                const PylithInt numConstants,
                const PylithScalar constants[],
@@ -1624,7 +1624,7 @@ public:
         // Rheological Auxiliaries
         const PylithScalar biotModulus = rheologyContext.biotModulus;
 
-        Jf0[0] += utshift / biotModulus;
+        Jf0[0] += s_tshift / biotModulus;
 
     } // Jf0pp
 
@@ -1649,7 +1649,7 @@ public:
                const PylithScalar a_t[],
                const PylithScalar a_x[],
                const PylithReal t,
-               const PylithReal utshift,
+               const PylithReal s_tshift,
                const PylithScalar x[],
                const PylithInt numConstants,
                const PylithScalar constants[],
@@ -1665,88 +1665,8 @@ public:
         // Rheological Auxiliaries
         const PylithScalar biotCoefficient = rheologyContext.biotCoefficient;
 
-        Jf0[0] += utshift * biotCoefficient;
+        Jf0[0] += s_tshift * biotCoefficient;
     } // Jf0pe
-
-    // ----------------------------------------------------------------------
-    /** Jf0_ppdot entry function for isotropic linear poroelasticity.
-     *
-     * Solution fields: [...]
-     * Auxiliary fields: [density(1), shear_modulus(1), bulk_modulus(1), other poroelastic related param ...]
-     */
-    static inline
-    void Jf0ppdot(const PylithInt dim,
-                  const PylithInt numS,
-                  const PylithInt numA,
-                  const PylithInt sOff[],
-                  const PylithInt sOff_x[],
-                  const PylithScalar s[],
-                  const PylithScalar s_t[],
-                  const PylithScalar s_x[],
-                  const PylithInt aOff[],
-                  const PylithInt aOff_x[],
-                  const PylithScalar a[],
-                  const PylithScalar a_t[],
-                  const PylithScalar a_x[],
-                  const PylithReal t,
-                  const PylithReal utshift,
-                  const PylithScalar x[],
-                  const PylithInt numConstants,
-                  const PylithScalar constants[],
-                  PylithScalar Jf0[]) {
-        const PylithInt _dim = 2;assert(_dim == dim);
-
-        // Rheology Context
-        pylith::fekernels::IsotropicLinearPoroelasticity::Context rheologyContext;
-        pylith::fekernels::IsotropicLinearPoroelasticity::setContext(
-            &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
-            t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
-
-        // Rheological Auxiliaries
-        const PylithScalar biotModulus = rheologyContext.biotModulus;
-
-        Jf0[0] += 1.0 / biotModulus;
-    } // Jf0ppdot
-
-    // ----------------------------------------------------------------------
-    /** Jf0_pedot entry function for isotropic linear poroelasticity.
-     *
-     * Solution fields: [...]
-     * Auxiliary fields: [density(1), shear_modulus(1), bulk_modulus(1), other poroelastic related param ...]
-     */
-    static inline
-    void Jf0pedot(const PylithInt dim,
-                  const PylithInt numS,
-                  const PylithInt numA,
-                  const PylithInt sOff[],
-                  const PylithInt sOff_x[],
-                  const PylithScalar s[],
-                  const PylithScalar s_t[],
-                  const PylithScalar s_x[],
-                  const PylithInt aOff[],
-                  const PylithInt aOff_x[],
-                  const PylithScalar a[],
-                  const PylithScalar a_t[],
-                  const PylithScalar a_x[],
-                  const PylithReal t,
-                  const PylithReal utshift,
-                  const PylithScalar x[],
-                  const PylithInt numConstants,
-                  const PylithScalar constants[],
-                  PylithScalar Jf0[]) {
-        const PylithInt _dim = 2;assert(_dim == dim);
-
-        // Rheology Context
-        pylith::fekernels::IsotropicLinearPoroelasticity::Context rheologyContext;
-        pylith::fekernels::IsotropicLinearPoroelasticity::setContext(
-            &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
-            t, x, numConstants, constants, pylith::fekernels::Tensor::ops2D);
-
-        // Rheological Auxiliaries
-        const PylithScalar biotCoefficient = rheologyContext.biotCoefficient;
-
-        Jf0[0] += biotCoefficient;
-    } // Jf0pedot
 
     // ============================== RHS Residual =================================
 
@@ -3458,7 +3378,7 @@ public:
                const PylithScalar a_t[],
                const PylithScalar a_x[],
                const PylithReal t,
-               const PylithReal utshift,
+               const PylithReal s_tshift,
                const PylithScalar x[],
                const PylithInt numConstants,
                const PylithScalar constants[],
@@ -3503,7 +3423,7 @@ public:
                const PylithScalar a_t[],
                const PylithScalar a_x[],
                const PylithReal t,
-               const PylithReal utshift,
+               const PylithReal s_tshift,
                const PylithScalar x[],
                const PylithInt numConstants,
                const PylithScalar constants[],
@@ -3542,7 +3462,7 @@ public:
                const PylithScalar a_t[],
                const PylithScalar a_x[],
                const PylithReal t,
-               const PylithReal utshift,
+               const PylithReal s_tshift,
                const PylithScalar x[],
                const PylithInt numConstants,
                const PylithScalar constants[],
@@ -3586,7 +3506,7 @@ public:
                const PylithScalar a_t[],
                const PylithScalar a_x[],
                const PylithReal t,
-               const PylithReal utshift,
+               const PylithReal s_tshift,
                const PylithScalar x[],
                const PylithInt numConstants,
                const PylithScalar constants[],
@@ -3639,7 +3559,7 @@ public:
                                    const PylithScalar a_t[],
                                    const PylithScalar a_x[],
                                    const PylithReal t,
-                                   const PylithReal utshift,
+                                   const PylithReal s_tshift,
                                    const PylithScalar x[],
                                    const PylithInt numConstants,
                                    const PylithScalar constants[],
@@ -3691,7 +3611,7 @@ public:
                const PylithScalar a_t[],
                const PylithScalar a_x[],
                const PylithReal t,
-               const PylithReal utshift,
+               const PylithReal s_tshift,
                const PylithScalar x[],
                const PylithInt numConstants,
                const PylithScalar constants[],
@@ -3707,7 +3627,7 @@ public:
         // Rheological Auxiliaries
         const PylithScalar biotModulus = rheologyContext.biotModulus;
 
-        Jf0[0] = utshift / biotModulus;
+        Jf0[0] = s_tshift / biotModulus;
 
     } // Jf0pp
 
@@ -3732,7 +3652,7 @@ public:
                const PylithScalar a_t[],
                const PylithScalar a_x[],
                const PylithReal t,
-               const PylithReal utshift,
+               const PylithReal s_tshift,
                const PylithScalar x[],
                const PylithInt numConstants,
                const PylithScalar constants[],
@@ -3748,89 +3668,9 @@ public:
         // Rheological Auxiliaries
         const PylithScalar biotCoefficient = rheologyContext.biotCoefficient;
 
-        Jf0[0] += utshift * biotCoefficient;
+        Jf0[0] += s_tshift * biotCoefficient;
 
     } // Jf0pe
-
-    // ----------------------------------------------------------------------
-    /** Jf0_ppdot entry function for isotropic linear poroelasticity.
-     *
-     * Solution fields: [...]
-     * Auxiliary fields: [density(1), shear_modulus(1), bulk_modulus(1), other poroelastic related param ...]
-     */
-    static inline
-    void Jf0ppdot(const PylithInt dim,
-                  const PylithInt numS,
-                  const PylithInt numA,
-                  const PylithInt sOff[],
-                  const PylithInt sOff_x[],
-                  const PylithScalar s[],
-                  const PylithScalar s_t[],
-                  const PylithScalar s_x[],
-                  const PylithInt aOff[],
-                  const PylithInt aOff_x[],
-                  const PylithScalar a[],
-                  const PylithScalar a_t[],
-                  const PylithScalar a_x[],
-                  const PylithReal t,
-                  const PylithReal utshift,
-                  const PylithScalar x[],
-                  const PylithInt numConstants,
-                  const PylithScalar constants[],
-                  PylithScalar Jf0[]) {
-        const PylithInt _dim = 3;assert(_dim == dim);
-
-        // Rheology Context
-        pylith::fekernels::IsotropicLinearPoroelasticity::Context rheologyContext;
-        pylith::fekernels::IsotropicLinearPoroelasticity::setContext(
-            &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
-            t, x, numConstants, constants, pylith::fekernels::Tensor::ops3D);
-
-        // Rheological Auxiliaries
-        const PylithScalar biotModulus = rheologyContext.biotModulus;
-
-        Jf0[0] += 1.0 / biotModulus;
-    } // Jf0ppdot
-
-    // ----------------------------------------------------------------------
-    /** Jf0_pedot entry function for isotropic linear poroelasticity.
-     *
-     * Solution fields: [...]
-     * Auxiliary fields: [density(1), shear_modulus(1), bulk_modulus(1), other poroelastic related param ...]
-     */
-    static inline
-    void Jf0pedot(const PylithInt dim,
-                  const PylithInt numS,
-                  const PylithInt numA,
-                  const PylithInt sOff[],
-                  const PylithInt sOff_x[],
-                  const PylithScalar s[],
-                  const PylithScalar s_t[],
-                  const PylithScalar s_x[],
-                  const PylithInt aOff[],
-                  const PylithInt aOff_x[],
-                  const PylithScalar a[],
-                  const PylithScalar a_t[],
-                  const PylithScalar a_x[],
-                  const PylithReal t,
-                  const PylithReal utshift,
-                  const PylithScalar x[],
-                  const PylithInt numConstants,
-                  const PylithScalar constants[],
-                  PylithScalar Jf0[]) {
-        const PylithInt _dim = 3;assert(_dim == dim);
-
-        // Rheology Context
-        pylith::fekernels::IsotropicLinearPoroelasticity::Context rheologyContext;
-        pylith::fekernels::IsotropicLinearPoroelasticity::setContext(
-            &rheologyContext, _dim, numS, numA, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x,
-            t, x, numConstants, constants, pylith::fekernels::Tensor::ops3D);
-
-        // Rheological Auxiliaries
-        const PylithScalar biotCoefficient = rheologyContext.biotCoefficient;
-
-        Jf0[0] += biotCoefficient;
-    } // Jf0pedot
 
     // ============================== RHS Residual =================================
 

@@ -573,42 +573,6 @@ public:
 
     } // setContextBodyForceSourceDensity
 
-#if 0
-    // =============================================================================
-    // Displacement
-    // =============================================================================
-    // ----------------------------------------------------------------------
-    /** f0 function for poroelasticity equation for displacement field
-     *
-     * Placeholder function
-     *
-     */
-    static inline
-    void f0u(const PylithInt dim,
-             const PylithInt numS,
-             const PylithInt numA,
-             const PylithInt sOff[],
-             const PylithInt sOff_x[],
-             const PylithScalar s[],
-             const PylithScalar s_t[],
-             const PylithScalar s_x[],
-             const PylithInt aOff[],
-             const PylithInt aOff_x[],
-             const PylithScalar a[],
-             const PylithScalar a_t[],
-             const PylithScalar a_x[],
-             const PylithReal t,
-             const PylithScalar x[],
-             const PylithInt numConstants,
-             const PylithScalar constants[],
-             PylithScalar f0[]) {
-        for (PylithInt i = 0; i < dim; ++i) {
-            f0[i] += 0.0;
-        } // for
-    } // f0u
-
-#endif
-
     // Calculate bulk density
     static inline
     void bulkDensity_asScalar(const PylithInt dim,
@@ -635,7 +599,6 @@ public:
             &context, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
         *bulkDensity = context.bulkDensity;
-
     } // bulkDensity_asScalar
 
     // =============================================================================
@@ -678,8 +641,7 @@ public:
         assert(velocity);
 
         for (PylithInt i = 0; i < dim; ++i) {
-            f0[i] += displacement_t[i];
-            f0[i] -= velocity[i];
+            f0[i] += displacement_t[i] - velocity[i];
         } // for
     } // f0v_implicit
 
@@ -790,15 +752,7 @@ public:
         pylith::fekernels::Poroelasticity::setContextQuasistatic_statevars(
             &context, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
-        // PylithScalar pressure_t = context.pressure_t;
-        // PylithScalar pressure_dot = context.pressure_dot;
-
-        PylithScalar pressure_t = (context.pressure_t ? context.pressure_t : 0.0);
-        PylithScalar pressure_dot = (context.pressure_dot ? context.pressure_dot : 0.0);
-
-        f0[0] += pressure_t;
-        f0[0] -= pressure_dot;
-
+        f0[0] += context.pressure_t - context.pressure_dot;
     } // f0pdot
 
     // =============================================================================
@@ -1023,10 +977,6 @@ public:
     // =============================================================================
     // Pressure
     // =============================================================================
-
-    /* -------------------------------------------------------------------------- */
-    /*                           LHS Jacobian                                     */
-    /* -------------------------------------------------------------------------- */
 
     // -----------------------------------------------------------------------------
     /*

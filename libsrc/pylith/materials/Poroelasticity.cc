@@ -576,16 +576,6 @@ pylith::materials::Poroelasticity::_setKernelsJacobian(pylith::feassemble::Integ
             const PetscPointJac Jf2pe = NULL;
             const PetscPointJac Jf3pe = NULL;
 
-            const PetscPointJac Jf0ppdot = _rheology->getKernelJf0ppdot(coordsys);
-            const PetscPointJac Jf1ppdot = NULL;
-            const PetscPointJac Jf2ppdot = NULL;
-            const PetscPointJac Jf3ppdot = NULL;
-
-            const PetscPointJac Jf0pedot = _rheology->getKernelJf0pedot(coordsys);
-            const PetscPointJac Jf1pedot = NULL;
-            const PetscPointJac Jf2pedot = NULL;
-            const PetscPointJac Jf3pedot = NULL;
-
             const PetscPointJac Jf0eu = NULL;
             const PetscPointJac Jf1eu = pylith::fekernels::Poroelasticity::Jf1eu;
             const PetscPointJac Jf2eu = NULL;
@@ -626,22 +616,20 @@ pylith::materials::Poroelasticity::_setKernelsJacobian(pylith::feassemble::Integ
             const PetscPointJac Jf2edotedot = NULL;
             const PetscPointJac Jf3edotedot = NULL;
 
-            kernels.resize(15);
+            kernels.resize(13);
             kernels[0] = JacobianKernels("displacement", "displacement", equationPart, Jf0uu, Jf1uu, Jf2uu, Jf3uu);
             kernels[1] = JacobianKernels("displacement", "pressure", equationPart, Jf0up, Jf1up, Jf2up, Jf3up);
             kernels[2] = JacobianKernels("displacement", "trace_strain", equationPart, Jf0ue, Jf1ue, Jf2ue, Jf3ue);
             kernels[3] = JacobianKernels("pressure", "pressure", equationPart, Jf0pp, Jf1pp, Jf2pp, Jf3pp);
             kernels[4] = JacobianKernels("pressure", "trace_strain", equationPart, Jf0pe, Jf1pe, Jf2pe, Jf3pe);
-            kernels[5] = JacobianKernels("pressure", "pressure_t", equationPart, Jf0ppdot, Jf1ppdot, Jf2ppdot, Jf3ppdot);
-            kernels[6] = JacobianKernels("pressure", "trace_strain_t", equationPart, Jf0pedot, Jf1pedot, Jf2pedot, Jf3pedot);
-            kernels[7] = JacobianKernels("trace_strain", "displacement", equationPart, Jf0eu, Jf1eu, Jf2eu, Jf3eu);
-            kernels[8] = JacobianKernels("trace_strain", "trace_strain", equationPart, Jf0ee, Jf1ee, Jf2ee, Jf3ee);
-            kernels[9] = JacobianKernels("velocity", "displacement", equationPart, Jf0vu, Jf1vu, Jf2vu, Jf3vu);
-            kernels[10] = JacobianKernels("velocity", "velocity", equationPart, Jf0vv, Jf1vv, Jf2vv, Jf3vv);
-            kernels[11] = JacobianKernels("pressure_t", "pressure", equationPart, Jf0pdotp, Jf1pdotp, Jf2pdotp, Jf3pdotp);
-            kernels[12] = JacobianKernels("pressure_t", "pressure_t", equationPart, Jf0pdotpdot, Jf1pdotpdot, Jf2pdotpdot, Jf3pdotpdot);
-            kernels[13] = JacobianKernels("trace_strain_t", "trace_strain", equationPart, Jf0edote, Jf1edote, Jf2edote, Jf3edote);
-            kernels[14] = JacobianKernels("trace_strain_t", "trace_strain_t", equationPart, Jf0edotedot, Jf1edotedot, Jf2edotedot, Jf3edotedot);
+            kernels[5] = JacobianKernels("trace_strain", "displacement", equationPart, Jf0eu, Jf1eu, Jf2eu, Jf3eu);
+            kernels[6] = JacobianKernels("trace_strain", "trace_strain", equationPart, Jf0ee, Jf1ee, Jf2ee, Jf3ee);
+            kernels[7] = JacobianKernels("velocity", "displacement", equationPart, Jf0vu, Jf1vu, Jf2vu, Jf3vu);
+            kernels[8] = JacobianKernels("velocity", "velocity", equationPart, Jf0vv, Jf1vv, Jf2vv, Jf3vv);
+            kernels[9] = JacobianKernels("pressure_t", "pressure", equationPart, Jf0pdotp, Jf1pdotp, Jf2pdotp, Jf3pdotp);
+            kernels[10] = JacobianKernels("pressure_t", "pressure_t", equationPart, Jf0pdotpdot, Jf1pdotpdot, Jf2pdotpdot, Jf3pdotpdot);
+            kernels[11] = JacobianKernels("trace_strain_t", "trace_strain", equationPart, Jf0edote, Jf1edote, Jf2edote, Jf3edote);
+            kernels[12] = JacobianKernels("trace_strain_t", "trace_strain_t", equationPart, Jf0edotedot, Jf1edotedot, Jf2edotedot, Jf3edotedot);
         }
         break;
     } // QUASISTATIC
