@@ -114,7 +114,7 @@ public:
                                                 pylith::fekernels::Tensor*);
 
     // Interface for functions computing flux term (Darcy).
-    typedef void (*fluxratefn_type) (const Context& Context,
+    typedef void (*fluxratefn_type) (const Context& context,
                                      void*,
                                      const pylith::fekernels::TensorOps&,
                                      pylith::fekernels::Tensor*);
@@ -630,11 +630,11 @@ public:
                               const PylithScalar constants[],
                               PylithReal* bulkDensity) {
         // Poroelastic Context
-        pylith::fekernels::Poroelasticity::Context Context;
+        pylith::fekernels::Poroelasticity::Context context;
         pylith::fekernels::Poroelasticity::setContextQuasistatic(
-            &Context, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
+            &context, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
-        *bulkDensity = Context.bulkDensity;
+        *bulkDensity = context.bulkDensity;
 
     } // bulkDensity_asScalar
 
@@ -666,14 +666,14 @@ public:
                       const PylithScalar constants[],
                       PylithScalar f0[]) {
         // Poroelastic Context
-        pylith::fekernels::Poroelasticity::Context Context;
+        pylith::fekernels::Poroelasticity::Context context;
         pylith::fekernels::Poroelasticity::setContextQuasistatic(
-            &Context, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
+            &context, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
         pylith::fekernels::Poroelasticity::setContextQuasistatic_statevars(
-            &Context, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
+            &context, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
-        const PylithScalar* displacement_t = Context.displacement_t; // disp_t
-        const PylithScalar* velocity = Context.velocity; // vel
+        const PylithScalar* displacement_t = context.displacement_t; // disp_t
+        const PylithScalar* velocity = context.velocity; // vel
         assert(displacement_t);
         assert(velocity);
 
@@ -708,12 +708,12 @@ public:
                       const PylithInt numConstants,
                       const PylithScalar constants[],
                       PylithScalar f0[]) {
-        pylith::fekernels::Poroelasticity::Context Context;
+        pylith::fekernels::Poroelasticity::Context context;
         pylith::fekernels::Poroelasticity::setContextDynamic(
-            &Context, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
+            &context, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
-        const PylithScalar bulkDensity = Context.bulkDensity; // Bulk Density
-        const PylithScalar* velocity_t = Context.velocity_t; // acceleration
+        const PylithScalar bulkDensity = context.bulkDensity; // Bulk Density
+        const PylithScalar* velocity_t = context.velocity_t; // acceleration
 
         for (PylithInt i = 0; i < dim; ++i) {
             f0[i] += velocity_t[i] * bulkDensity;
@@ -744,12 +744,12 @@ public:
              const PylithInt numConstants,
              const PylithScalar constants[],
              PylithScalar f0[]) {
-        pylith::fekernels::Poroelasticity::Context Context;
+        pylith::fekernels::Poroelasticity::Context context;
         pylith::fekernels::Poroelasticity::setContextQuasistatic(
-            &Context, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
+            &context, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
-        const PylithScalar* displacement_x = Context.displacement_x;
-        const PylithScalar trace_strain = Context.trace_strain;
+        const PylithScalar* displacement_x = context.displacement_x;
+        const PylithScalar trace_strain = context.trace_strain;
 
         for (PylithInt d = 0; d < dim; ++d) {
             f0[0] += displacement_x[d*dim+d];
@@ -784,17 +784,17 @@ public:
                 const PylithInt numConstants,
                 const PylithScalar constants[],
                 PylithScalar f0[]) {
-        pylith::fekernels::Poroelasticity::Context Context;
+        pylith::fekernels::Poroelasticity::Context context;
         pylith::fekernels::Poroelasticity::setContextQuasistatic(
-            &Context, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
+            &context, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
         pylith::fekernels::Poroelasticity::setContextQuasistatic_statevars(
-            &Context, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
+            &context, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
-        // PylithScalar pressure_t = Context.pressure_t;
-        // PylithScalar pressure_dot = Context.pressure_dot;
+        // PylithScalar pressure_t = context.pressure_t;
+        // PylithScalar pressure_dot = context.pressure_dot;
 
-        PylithScalar pressure_t = (Context.pressure_t ? Context.pressure_t : 0.0);
-        PylithScalar pressure_dot = (Context.pressure_dot ? Context.pressure_dot : 0.0);
+        PylithScalar pressure_t = (context.pressure_t ? context.pressure_t : 0.0);
+        PylithScalar pressure_dot = (context.pressure_dot ? context.pressure_dot : 0.0);
 
         f0[0] += pressure_t;
         f0[0] -= pressure_dot;
@@ -829,14 +829,14 @@ public:
                 const PylithScalar constants[],
                 PylithScalar f0[]) {
         // Poroelastic Context
-        pylith::fekernels::Poroelasticity::Context Context;
+        pylith::fekernels::Poroelasticity::Context context;
         pylith::fekernels::Poroelasticity::setContextQuasistatic(
-            &Context, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
+            &context, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
         pylith::fekernels::Poroelasticity::setContextQuasistatic_statevars(
-            &Context, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
+            &context, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
-        PylithScalar trace_strain_t = (Context.trace_strain_t ? Context.trace_strain_t : 0.0);
-        PylithScalar trace_strain_dot = (Context.trace_strain_dot ? Context.trace_strain_dot : 0.0);
+        PylithScalar trace_strain_t = (context.trace_strain_t ? context.trace_strain_t : 0.0);
+        PylithScalar trace_strain_dot = (context.trace_strain_dot ? context.trace_strain_dot : 0.0);
 
         f0[0] += trace_strain_t - trace_strain_dot;
     } // f0edot
@@ -844,16 +844,16 @@ public:
     // --------------------------------------------------------------------------------------------
     // f1 function for darcy term.
     static inline
-    void f1p(const Context& Context,
+    void f1p(const Context& context,
              void* rheologyContext,
              Poroelasticity::fluxratefn_type fluxRateFn,
              const TensorOps& tensorOps,
              PylithScalar f1[]) {
         Tensor fluxRate;
-        fluxRateFn(Context, rheologyContext, tensorOps, &fluxRate);
+        fluxRateFn(context, rheologyContext, tensorOps, &fluxRate);
         PylithScalar fluxRateTensor[9] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
         tensorOps.toTensor(fluxRate, fluxRateTensor);
-        PylithInt dim = Context.dim;
+        PylithInt dim = context.dim;
 
         for (PylithInt i = 0; i < dim; ++i) {
             f1[i] += fluxRateTensor[i*dim+i];
@@ -892,11 +892,11 @@ public:
              const PylithInt numConstants,
              const PylithScalar constants[],
              PylithScalar g0[]) {
-        pylith::fekernels::Poroelasticity::Context Context;
+        pylith::fekernels::Poroelasticity::Context context;
         pylith::fekernels::Poroelasticity::setContextDynamic(
-            &Context, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
+            &context, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
-        const PylithScalar *velocity = Context.velocity;
+        const PylithScalar *velocity = context.velocity;
 
         for (PylithInt i = 0; i < dim; ++i) {
             g0[i] += velocity[i];
@@ -927,15 +927,15 @@ public:
                   const PylithScalar constants[],
                   PylithScalar g0[]) {
         // Poroelastic Context
-        pylith::fekernels::Poroelasticity::Context Context;
+        pylith::fekernels::Poroelasticity::Context context;
         pylith::fekernels::Poroelasticity::setContextDynamic(
-            &Context, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
+            &context, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
         pylith::fekernels::Poroelasticity::setContextGravity(
-            &Context, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
+            &context, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
         // Poroelastic Auxiliariies
-        const PylithScalar bulkDensity = Context.bulkDensity;
-        const PylithScalar* gravityField = Context.gravityField;
+        const PylithScalar bulkDensity = context.bulkDensity;
+        const PylithScalar* gravityField = context.gravityField;
 
         for (PylithInt i = 0; i < dim; ++i) {
             g0[i] += bulkDensity * gravityField[i];
@@ -966,14 +966,14 @@ public:
                        const PylithScalar constants[],
                        PylithScalar g0[]) {
         // Poroelastic Context
-        pylith::fekernels::Poroelasticity::Context Context;
+        pylith::fekernels::Poroelasticity::Context context;
         pylith::fekernels::Poroelasticity::setContextDynamic(
-            &Context, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
+            &context, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
         pylith::fekernels::Poroelasticity::setContextBodyForce(
-            &Context, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
+            &context, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
         // Poroelastic Auxiliariies
-        const PylithScalar* bodyForce = Context.bodyForce;
+        const PylithScalar* bodyForce = context.bodyForce;
 
         for (PylithInt i = 0; i < dim; ++i) {
             g0[i] += bodyForce[i];
@@ -1004,16 +1004,16 @@ public:
                             const PylithScalar constants[],
                             PylithScalar g0[]) {
         // Poroelastic Context
-        pylith::fekernels::Poroelasticity::Context Context;
+        pylith::fekernels::Poroelasticity::Context context;
         pylith::fekernels::Poroelasticity::setContextDynamic(
-            &Context, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
+            &context, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
         pylith::fekernels::Poroelasticity::setContextGravityBodyForce(
-            &Context, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
+            &context, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
         // Poroelastic Auxiliariies
-        const PylithScalar bulkDensity = Context.bulkDensity;
-        const PylithScalar *gravityField = Context.gravityField;
-        const PylithScalar *bodyForce = Context.bodyForce;
+        const PylithScalar bulkDensity = context.bulkDensity;
+        const PylithScalar *gravityField = context.gravityField;
+        const PylithScalar *bodyForce = context.bodyForce;
 
         for (PylithInt i = 0; i < dim; ++i) {
             g0[i] += bulkDensity * gravityField[i] + bodyForce[i];
@@ -1166,11 +1166,11 @@ public:
                         const PylithInt numConstants,
                         const PylithScalar constants[],
                         PylithScalar Jf0[]) {
-        pylith::fekernels::Poroelasticity::Context Context;
+        pylith::fekernels::Poroelasticity::Context context;
         pylith::fekernels::Poroelasticity::setContextDynamic(
-            &Context, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
+            &context, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
-        const PylithScalar bulkDensity = Context.bulkDensity;
+        const PylithScalar bulkDensity = context.bulkDensity;
 
         for (PylithInt i = 0; i < dim; ++i) {
             Jf0[i*dim+i] += s_tshift * bulkDensity;
