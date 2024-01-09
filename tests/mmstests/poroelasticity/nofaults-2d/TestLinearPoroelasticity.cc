@@ -112,7 +112,13 @@ pylith::TestLinearPoroelasticity::_initialize(void) {
     factory.addPressure(_data->solnDiscretizations[1]);
     factory.addTraceStrain(_data->solnDiscretizations[2]);
     if (pylith::problems::Physics::QUASISTATIC == _data->formulation) {
-        assert(3 == _data->numSolnSubfields);
+        if (6 == _data->numSolnSubfields) {
+            factory.addVelocity(_data->solnDiscretizations[3]);
+            factory.addPressureDot(_data->solnDiscretizations[4]);
+            factory.addTraceStrainDot(_data->solnDiscretizations[5]);
+        } else {
+            assert(3 == _data->numSolnSubfields);
+        } // if/else
     } else {
         PYLITH_JOURNAL_LOGICERROR("MMS test only implemented for quasistatic formulation.");
     } // if/else

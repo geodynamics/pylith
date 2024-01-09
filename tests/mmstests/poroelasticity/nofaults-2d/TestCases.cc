@@ -74,4 +74,60 @@ TEST_CASE("PressureGradient::QuadQ3Q2Q2::testJacobianFiniteDiff", "[PressureGrad
     pylith::TestLinearPoroelasticity(pylith::PressureGradient::QuadQ3Q2Q2()).testJacobianFiniteDiff();
 }
 
+// TriP2P1P1 w/state variables
+TEST_CASE("PressureGradient::TriP2P1P1_StateVars::testDiscretization", "[PressureGradient][TriP2P1P1_StateVars][discretization]") {
+    pylith::TestLinearPoroelasticity(pylith::PressureGradient::TriP2P1P1_StateVars()).testDiscretization();
+}
+TEST_CASE("PressureGradient::TriP2P1P1_StateVars::testResidual", "[PressureGradient][TriP2P1P1_StateVars][residual]") {
+    pylith::TestLinearPoroelasticity(pylith::PressureGradient::TriP2P1P1_StateVars()).testResidual();
+}
+TEST_CASE("PressureGradient::TriP2P1P1_StateVars::testJacobianTaylorSeries", "[PressureGradient][TriP2P1P1_StateVars][Jacobian Taylor series]") {
+    pylith::TestLinearPoroelasticity(pylith::PressureGradient::TriP2P1P1_StateVars()).testJacobianTaylorSeries();
+}
+TEST_CASE("PressureGradient::TriP2P1P1_StateVars::testJacobianFiniteDiff", "[PressureGradient][TriP2P1P1_StateVars][Jacobian finite difference]") {
+    pylith::TestLinearPoroelasticity(pylith::PressureGradient::TriP2P1P1_StateVars()).testJacobianFiniteDiff();
+}
+
+// TriP3P2P2 with state variables
+TEST_CASE("PressureGradient::TriP3P2P2_StateVars::testDiscretization", "[PressureGradient][TriP3P2P2_StateVars][discretization]") {
+    pylith::TestLinearPoroelasticity(pylith::PressureGradient::TriP3P2P2_StateVars()).testDiscretization();
+}
+TEST_CASE("PressureGradient::TriP3P2P2_StateVars::testResidual", "[PressureGradient][TriP3P2P2_StateVars][residual]") {
+    pylith::TestLinearPoroelasticity(pylith::PressureGradient::TriP3P2P2_StateVars()).testResidual();
+}
+TEST_CASE("PressureGradient::TriP3P2P2_StateVars::testJacobianTaylorSeries", "[PressureGradient][TriP3P2P2_StateVars][Jacobian Taylor series]") {
+    pylith::TestLinearPoroelasticity(pylith::PressureGradient::TriP3P2P2_StateVars()).testJacobianTaylorSeries();
+}
+TEST_CASE("PressureGradient::TriP3P2P2_StateVars::testJacobianFiniteDiff", "[PressureGradient][TriP3P2P2_StateVars][Jacobian finite difference]") {
+    pylith::TestLinearPoroelasticity(pylith::PressureGradient::TriP3P2P2_StateVars()).testJacobianFiniteDiff();
+}
+
+// QuadQ2Q1Q1 with state variables
+TEST_CASE("PressureGradient::QuadQ2Q1Q1_StateVars::testDiscretization", "[PressureGradient][QuadQ2Q1Q1_StateVars][discretization]") {
+    pylith::TestLinearPoroelasticity(pylith::PressureGradient::QuadQ2Q1Q1_StateVars()).testDiscretization();
+}
+TEST_CASE("PressureGradient::QuadQ2Q1Q1_StateVars::testResidual", "[PressureGradient][QuadQ2Q1Q1_StateVars][residual]") {
+    pylith::TestLinearPoroelasticity(pylith::PressureGradient::QuadQ2Q1Q1_StateVars()).testResidual();
+}
+TEST_CASE("PressureGradient::QuadQ2Q1Q1_StateVars::testJacobianTaylorSeries", "[PressureGradient][QuadQ2Q1Q1_StateVars][Jacobian Taylor series]") {
+    pylith::TestLinearPoroelasticity(pylith::PressureGradient::QuadQ2Q1Q1_StateVars()).testJacobianTaylorSeries();
+}
+TEST_CASE("PressureGradient::QuadQ2Q1Q1_StateVars::testJacobianFiniteDiff", "[PressureGradient][QuadQ2Q1Q1_StateVars][Jacobian finite difference]") {
+    pylith::TestLinearPoroelasticity(pylith::PressureGradient::QuadQ2Q1Q1_StateVars()).testJacobianFiniteDiff();
+}
+
+// QuadQ3Q2Q2 with state variables
+TEST_CASE("PressureGradient::QuadQ3Q2Q2_StateVars::testDiscretization", "[PressureGradient][QuadQ3Q2Q2][discretization]") {
+    pylith::TestLinearPoroelasticity(pylith::PressureGradient::QuadQ3Q2Q2_StateVars()).testDiscretization();
+}
+TEST_CASE("PressureGradient::QuadQ3Q2Q2_StateVars::testResidual", "[PressureGradient][QuadQ3Q2Q2][residual]") {
+    pylith::TestLinearPoroelasticity(pylith::PressureGradient::QuadQ3Q2Q2_StateVars()).testResidual();
+}
+TEST_CASE("PressureGradient::QuadQ3Q2Q2_StateVars::testJacobianTaylorSeries", "[PressureGradient][QuadQ3Q2Q2][Jacobian Taylor series]") {
+    pylith::TestLinearPoroelasticity(pylith::PressureGradient::QuadQ3Q2Q2_StateVars()).testJacobianTaylorSeries();
+}
+TEST_CASE("PressureGradient::QuadQ3Q2Q2_StateVars::testJacobianFiniteDiff", "[PressureGradient][QuadQ3Q2Q2][Jacobian finite difference]") {
+    pylith::TestLinearPoroelasticity(pylith::PressureGradient::QuadQ3Q2Q2_StateVars()).testJacobianFiniteDiff();
+}
+
 // End of file

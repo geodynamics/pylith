@@ -29,6 +29,14 @@ public:
 
     static TestLinearPoroelasticity_Data* QuadQ3Q2Q2(void);
 
+    static TestLinearPoroelasticity_Data* TriP2P1P1_StateVars(void);
+
+    static TestLinearPoroelasticity_Data* TriP3P2P2_StateVars(void);
+
+    static TestLinearPoroelasticity_Data* QuadQ2Q1Q1_StateVars(void);
+
+    static TestLinearPoroelasticity_Data* QuadQ3Q2Q2_StateVars(void);
+
 private:
 
     PressureGradient(void); ///< Not implemented
