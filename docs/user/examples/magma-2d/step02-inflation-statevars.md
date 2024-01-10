@@ -75,6 +75,18 @@ auxiliary_subfields.porosity.basis_order = 1
 use_reference_state = True
 ```
 
+The changes in the physics as well as the default solver settings that impact the initial guess leads to a large initial residual at the second time step.
+Consequently, we increase the divergence tolerance for the linear solver.
+
+```{code-block} cfg
+---
+caption: Adjustment of the divergence tolerance for the linear solver for Step 2.
+---
+[pylithapp.petsc]
+# Increase divergence tolerance. Initial guess at second time step is not accurate.
+ksp_divtol = 1.0e+5
+```
+
 ## Running the simulation
 
 ```{code-block} console
@@ -85,145 +97,72 @@ $ pylith step02_inflation.cfg
 
 # The output should look something like the following.
 
- >> /Users/baagaard/software/unix/py310-venv/pylith-debug/lib/python3.10/site-packages/pylith/apps/PyLithApp.py:84:main
+ >> /home/pylith-user/software/unix/py310-venv/pylith-debug/lib/python3.10/site-packages/pylith/apps/PyLithApp.py:84:main
  -- pylithapp(info)
  -- Running on 1 process(es).
- >> /Users/baagaard/software/unix/py310-venv/pylith-debug/lib/python3.10/site-packages/pylith/meshio/MeshIOObj.py:43:read
+ >> /home/pylith-user/software/unix/py310-venv/pylith-debug/lib/python3.10/site-packages/pylith/meshio/MeshIOObj.py:43:read
  -- meshiocubit(info)
  -- Reading finite-element mesh
- >> /Users/baagaard/src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:156:void pylith::meshio::MeshIOCubit::_readVertices(ExodusII &, scalar_array *, int *, int *) const
+ >> /home/pylith-user/src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:156:void pylith::meshio::MeshIOCubit::_readVertices(ExodusII &, scalar_array *, int *, int *) const
  -- meshiocubit(info)
  -- Component 'reader': Reading 747 vertices.
 
 # -- many lines omitted --
 
- >> /Users/baagaard/software/unix/py310-venv/pylith-debug/lib/python3.10/site-packages/pylith/problems/TimeDependent.py:137:run
+ -- Setting PETSc options:
+fieldsplit_displacement_pc_type = lu
+fieldsplit_pressure_pc_type = ilu
+fieldsplit_pressure_t_pc_type = ilu
+fieldsplit_trace_strain_pc_type = ilu
+fieldsplit_trace_strain_t_pc_type = ilu
+fieldsplit_velocity_pc_type = ilu
+ksp_atol = 1.0e-12
+ksp_converged_reason = true
+ksp_error_if_not_converged = true
+ksp_guess_pod_size = 8
+ksp_guess_type = pod
+ksp_rtol = 1.0e-12
+pc_fieldsplit_0_fields = 2
+pc_fieldsplit_1_fields = 1
+pc_fieldsplit_2_fields = 0
+pc_fieldsplit_3_fields = 3
+pc_fieldsplit_4_fields = 4
+pc_fieldsplit_5_fields = 5
+pc_fieldsplit_type = multiplicative
+pc_type = fieldsplit
+snes_atol = 1.0e-9
+snes_converged_reason = true
+snes_error_if_not_converged = true
+snes_monitor = true
+snes_rtol = 1.0e-12
+ts_error_if_step_fails = true
+ts_monitor = true
+ts_type = beuler
+
+ >> /home/pylith-user/software/unix/py310-venv/pylith-debug/lib/python3.10/site-packages/pylith/problems/TimeDependent.py:132:run
  -- timedependent(info)
  -- Solving problem.
 0 TS dt 1. time -1.
     0 SNES Function norm 7.521665654021e-01
-    Linear solve converged due to CONVERGED_ATOL iterations 1
-    1 SNES Function norm 5.516056137722e-02
-    Linear solve converged due to CONVERGED_ATOL iterations 1
-    2 SNES Function norm 1.166275103468e-02
-    Linear solve converged due to CONVERGED_ATOL iterations 1
-    3 SNES Function norm 3.829709526109e-03
-    Linear solve converged due to CONVERGED_ATOL iterations 1
-    4 SNES Function norm 1.461994548486e-03
-    Linear solve converged due to CONVERGED_ATOL iterations 1
-    5 SNES Function norm 6.066575419934e-04
-    Linear solve converged due to CONVERGED_ATOL iterations 1
-    6 SNES Function norm 2.655403615568e-04
-    Linear solve converged due to CONVERGED_ATOL iterations 1
-    7 SNES Function norm 1.202717080189e-04
-    Linear solve converged due to CONVERGED_ATOL iterations 1
-    8 SNES Function norm 5.567347859811e-05
-    Linear solve converged due to CONVERGED_ATOL iterations 1
-    9 SNES Function norm 2.613778728633e-05
-    Linear solve converged due to CONVERGED_ATOL iterations 1
-   10 SNES Function norm 1.238875375025e-05
-    Linear solve converged due to CONVERGED_ATOL iterations 1
-   11 SNES Function norm 5.911640181274e-06
-    Linear solve converged due to CONVERGED_ATOL iterations 1
-   12 SNES Function norm 2.834946322421e-06
-    Linear solve converged due to CONVERGED_ATOL iterations 1
-   13 SNES Function norm 1.364700102970e-06
-    Linear solve converged due to CONVERGED_ATOL iterations 1
-   14 SNES Function norm 6.589360471852e-07
-    Linear solve converged due to CONVERGED_ATOL iterations 1
-   15 SNES Function norm 3.189484959867e-07
-    Linear solve converged due to CONVERGED_ATOL iterations 1
-   16 SNES Function norm 1.547003895237e-07
-    Linear solve converged due to CONVERGED_ATOL iterations 1
-   17 SNES Function norm 7.516606485367e-08
-    Linear solve converged due to CONVERGED_ATOL iterations 0
-   18 SNES Function norm 3.657704494472e-08
-    Linear solve converged due to CONVERGED_ATOL iterations 0
-   19 SNES Function norm 1.782258437327e-08
-    Linear solve converged due to CONVERGED_ATOL iterations 1
-   20 SNES Function norm 8.694405655955e-09
-    Linear solve converged due to CONVERGED_ATOL iterations 0
-   21 SNES Function norm 4.245852416264e-09
-  Nonlinear solve converged due to CONVERGED_SNORM_RELATIVE iterations 21
-1 TS dt 1. time 0.
-    0 SNES Function norm 1.826079838384e+01
-    Linear solve converged due to CONVERGED_ATOL iterations 31
-    1 SNES Function norm 4.299962863814e-02
-    Linear solve converged due to CONVERGED_ATOL iterations 1
-    2 SNES Function norm 6.431697063491e-03
-    Linear solve converged due to CONVERGED_ATOL iterations 1
-    3 SNES Function norm 1.639359669638e-03
-    Linear solve converged due to CONVERGED_ATOL iterations 1
-    4 SNES Function norm 5.026774903429e-04
-    Linear solve converged due to CONVERGED_ATOL iterations 1
-    5 SNES Function norm 1.680648206351e-04
-    Linear solve converged due to CONVERGED_ATOL iterations 1
-    6 SNES Function norm 5.967136123324e-05
-    Linear solve converged due to CONVERGED_ATOL iterations 1
-    7 SNES Function norm 2.230420331383e-05
-    Linear solve converged due to CONVERGED_ATOL iterations 1
-    8 SNES Function norm 8.721830601750e-06
-    Linear solve converged due to CONVERGED_ATOL iterations 1
-    9 SNES Function norm 3.542878294948e-06
-    Linear solve converged due to CONVERGED_ATOL iterations 1
-   10 SNES Function norm 1.484027205445e-06
-    Linear solve converged due to CONVERGED_ATOL iterations 1
-   11 SNES Function norm 6.368036188603e-07
-    Linear solve converged due to CONVERGED_ATOL iterations 1
-   12 SNES Function norm 2.784493002713e-07
-    Linear solve converged due to CONVERGED_ATOL iterations 1
-   13 SNES Function norm 1.235724894148e-07
-    Linear solve converged due to CONVERGED_ATOL iterations 1
-   14 SNES Function norm 5.549400015107e-08
-    Linear solve converged due to CONVERGED_ATOL iterations 0
-   15 SNES Function norm 2.516326072475e-08
-    Linear solve converged due to CONVERGED_ATOL iterations 0
-   16 SNES Function norm 1.150182762543e-08
-    Linear solve converged due to CONVERGED_ATOL iterations 1
-   17 SNES Function norm 5.293129922422e-09
-  Nonlinear solve converged due to CONVERGED_SNORM_RELATIVE iterations 17
+    Linear solve converged due to CONVERGED_RTOL iterations 42
+    1 SNES Function norm 1.098964504117e-10
+  Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
 
 # -- many lines omitted --
 
 50 TS dt 1. time 49.
-    0 SNES Function norm 1.583816680399e-01
-    Linear solve converged due to CONVERGED_ATOL iterations 1
-    1 SNES Function norm 3.297785796277e-05
-    Linear solve converged due to CONVERGED_ATOL iterations 1
-    2 SNES Function norm 1.625267288996e-05
-    Linear solve converged due to CONVERGED_ATOL iterations 1
-    3 SNES Function norm 8.011050419800e-06
-    Linear solve converged due to CONVERGED_ATOL iterations 1
-    4 SNES Function norm 3.949253118601e-06
-    Linear solve converged due to CONVERGED_ATOL iterations 1
-    5 SNES Function norm 1.947152025331e-06
-    Linear solve converged due to CONVERGED_ATOL iterations 1
-    6 SNES Function norm 9.601580478216e-07
-    Linear solve converged due to CONVERGED_ATOL iterations 1
-    7 SNES Function norm 4.735242133215e-07
-    Linear solve converged due to CONVERGED_ATOL iterations 1
-    8 SNES Function norm 2.335591654437e-07
-    Linear solve converged due to CONVERGED_ATOL iterations 1
-    9 SNES Function norm 1.152140892580e-07
-    Linear solve converged due to CONVERGED_ATOL iterations 0
-   10 SNES Function norm 5.684167635325e-08
-    Linear solve converged due to CONVERGED_ATOL iterations 0
-   11 SNES Function norm 2.804655474534e-08
-    Linear solve converged due to CONVERGED_ATOL iterations 0
-   12 SNES Function norm 1.384019346908e-08
-    Linear solve converged due to CONVERGED_ATOL iterations 0
-   13 SNES Function norm 6.830511841192e-09
-  Nonlinear solve converged due to CONVERGED_SNORM_RELATIVE iterations 13
+    0 SNES Function norm 1.583815770370e-01
+    Linear solve converged due to CONVERGED_ATOL iterations 10
+    1 SNES Function norm 7.897032897534e-12
+  Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
 51 TS dt 1. time 50.
- >> /Users/baagaard/software/unix/py310-venv/pylith-debug/lib/python3.10/site-packages/pylith/problems/Problem.py:204:finalize
+ >> /home/pylith-user/software/unix/py310-venv/pylith-debug/lib/python3.10/site-packages/pylith/problems/Problem.py:199:finalize
  -- timedependent(info)
  -- Finalizing problem.
-
-
 ```
 
-In contrast with Step 1, the evolution of porosity in Step 2 results in nonlinear governing equations.
-This requires multiple iterations of the linear solve for the nonlinear solver to converge.
+The linear solver exhibits similar performance with less than 50 iterations at most time steps.
+Furthermore, the problem is still linear, so the nonlinear solver converges in one iteration.
 
 ## Visualizing the results
 

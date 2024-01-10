@@ -88,9 +88,9 @@ caption: PETSc options used for quasistatic elasticity in parallel without a fau
 [pylithapp.petsc]
 ts_type = beuler
 pc_type = gamg
-mg_levels_pc_type = sor
-mg_levels_ksp_type = richardson
 ```
+%mg_levels_pc_type = sor
+%mg_levels_ksp_type = richardson
 
 The Lagrange multiplier corresponding to the tractions on the fault introduces a saddle point in the system of equations, so we use a Schur complement approach.
 
@@ -130,15 +130,17 @@ pc_fieldsplit_schur_precondition = selfp
 pc_fieldsplit_schur_scale = 1.0
 
 fieldsplit_displacement_ksp_type = preonly
-fieldsplit_displacement_pc_type = gamg
-fieldsplit_displacement_mg_levels_pc_type = sor
-fieldsplit_displacement_mg_levels_ksp_type = richardson
+fieldsplit_displacement_pc_type = ml
 
 fieldsplit_lagrange_multiplier_fault_ksp_type = preonly
-fieldsplit_lagrange_multiplier_fault_pc_type = gamg
-fieldsplit_lagrange_multiplier_fault_mg_levels_pc_type = sor
-fieldsplit_lagrange_multiplier_fault_mg_levels_ksp_type = richardson
+fieldsplit_lagrange_multiplier_fault_pc_type = ml
 ```
+%fieldsplit_displacement_pc_type = gamg
+%fieldsplit_displacement_mg_levels_pc_type = sor
+%fieldsplit_displacement_mg_levels_ksp_type = richardson
+%fieldsplit_lagrange_multiplier_fault_pc_type = gamg
+%fieldsplit_lagrange_multiplier_fault_mg_levels_pc_type = sor
+%fieldsplit_lagrange_multiplier_fault_mg_levels_ksp_type = richardson
 
 ```{code-block} cfg
 ---
@@ -213,7 +215,14 @@ caption: PETSc options used for quasistatic poroelasticity in serial.
 ---
 [pylithapp.petsc]
 ts_type = beuler
-pc_type = ilu
+pc_type = fieldsplit
+pc_fieldsplit_type = multiplicative
+pc_fieldsplit_0_fields = 2
+pc_fieldsplit_1_fields = 1
+pc_fieldsplit_2_fields = 0
+fieldsplit_trace_strain_pc_type = bjacobi
+fieldsplit_pressure_pc_type = bjacobi
+fieldsplit_displacement_pc_type = lu
 ```
 
 ```{code-block} cfg
@@ -221,10 +230,62 @@ pc_type = ilu
 caption: PETSc options used for quasistatic poroelasticity in parallel.
 ---
 [pylithapp.petsc]
+pc_type = fieldsplit
+pc_fieldsplit_type = multiplicative
+pc_fieldsplit_0_fields = 2
+pc_fieldsplit_1_fields = 1
+pc_fieldsplit_2_fields = 0
+fieldsplit_trace_strain_pc_type = bjacobi
+fieldsplit_pressure_pc_type = bjacobi
+fieldsplit_displacement_pc_type = ml
+fieldsplit_displacement_ksp_type = gmres
+```
+
+```{code-block} cfg
+---
+caption: PETSc options used for quasistatic poroelasticity with a porosity state variable in serial. The second set of parameters are the additional parameters needed for the additional solution subfields.
+---
+[pylithapp.petsc]
 ts_type = beuler
-pc_type = gamg
-mg_levels_pc_type = sor
-mg_levels_ksp_type = richardson
+pc_type = fieldsplit
+pc_fieldsplit_type = multiplicative
+pc_fieldsplit_0_fields = 2
+pc_fieldsplit_1_fields = 1
+pc_fieldsplit_2_fields = 0
+fieldsplit_trace_strain_pc_type = bjacobi
+fieldsplit_pressure_pc_type = bjacobi
+fieldsplit_displacement_pc_type = lu
+
+pc_fieldsplit_3_fields = 3
+pc_fieldsplit_4_fields = 4
+pc_fieldsplit_5_fields = 5
+fieldsplit_velocity_pc_type = bjacobi
+fieldsplit_pressure_t_pc_type = bjacobi
+fieldsplit_trace_strain_t_pc_type = bjacobi
+```
+
+```{code-block} cfg
+---
+caption: PETSc options used for quasistatic poroelasticity with a porosity state variable in parallel.
+The second set of parameters are the additional parameters needed for the additional solution subfields.
+---
+[pylithapp.petsc]
+pc_type = fieldsplit
+pc_fieldsplit_type = multiplicative
+pc_fieldsplit_0_fields = 2
+pc_fieldsplit_1_fields = 1
+pc_fieldsplit_2_fields = 0
+fieldsplit_trace_strain_pc_type = bjacobi
+fieldsplit_pressure_pc_type = bjacobi
+fieldsplit_displacement_pc_type = ml
+fieldsplit_displacement_ksp_type = gmres
+
+pc_fieldsplit_3_fields = 3
+pc_fieldsplit_4_fields = 4
+pc_fieldsplit_5_fields = 5
+fieldsplit_velocity_pc_type = bjacobi
+fieldsplit_pressure_t_pc_type = bjacobi
+fieldsplit_trace_strain_t_pc_type = bjacobi
 ```
 
 ### Monitoring

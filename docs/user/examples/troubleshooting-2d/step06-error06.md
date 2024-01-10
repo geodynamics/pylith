@@ -22,7 +22,7 @@ $ pylith step06_twofaults.cfg
 [0]PETSC ERROR: #1 MatPivotCheck_none() at /software/baagaard/petsc-dev/include/petsc/private/matimpl.h:802
 [0]PETSC ERROR: #2 MatPivotCheck() at /software/baagaard/petsc-dev/include/petsc/private/matimpl.h:821
 # -- many lines of PETSc stack omitted --
-[0]PETSC ERROR: #34 void pylith::problems::TimeDependent::deallocate()() at /home/baagaard/src/cig/pylith/libsrc/pylith/problems/TimeDependent.cc:92
+[0]PETSC ERROR: #34 void pylith::problems::TimeDependent::deallocate()() at /home/pylith-user/src/cig/pylith/libsrc/pylith/problems/TimeDependent.cc:92
 Traceback (most recent call last):
   File "/software/baagaard/py38-venv/pylith-debug/lib/python3.8/site-packages/pylith/apps/PetscApplication.py", line 61, in onComputeNodes
     self.main(*args, **kwds)

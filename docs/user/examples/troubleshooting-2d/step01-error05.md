@@ -20,13 +20,13 @@ spatial database 'Gravity field'. Found near zero magnitude (0) for gravity fiel
 
 # -- lines with PETSc configuration omitted --
 
-[0]PETSC ERROR: #1 static PetscErrorCode pylith::topology::FieldQuery::queryDBPointFn(PylithInt, PylithReal, const PylithReal*, PylithInt, PylithScalar*, void*)() at /home/baagaard/src/cig/pylith/libsrc/pylith/topology/FieldQuery.cc:327
+[0]PETSC ERROR: #1 static PetscErrorCode pylith::topology::FieldQuery::queryDBPointFn(PylithInt, PylithReal, const PylithReal*, PylithInt, PylithScalar*, void*)() at /home/pylith-user/src/cig/pylith/libsrc/pylith/topology/FieldQuery.cc:327
 [0]PETSC ERROR: #2 DMProjectPoint_Func_Private() at /software/baagaard/petsc-dev/src/dm/impls/plex/plexproject.c:127
 [0]PETSC ERROR: #3 DMProjectPoint_Private() at /software/baagaard/petsc-dev/src/dm/impls/plex/plexproject.c:409
 [0]PETSC ERROR: #4 DMProjectLocal_Generic_Plex() at /software/baagaard/petsc-dev/src/dm/impls/plex/plexproject.c:902
 [0]PETSC ERROR: #5 DMProjectFunctionLocal_Plex() at /software/baagaard/petsc-dev/src/dm/impls/plex/plexproject.c:933
 [0]PETSC ERROR: #6 DMProjectFunctionLocal() at /software/baagaard/petsc-dev/src/dm/interface/dm.c:8869
-[0]PETSC ERROR: #7 void pylith::topology::FieldQuery::queryDB()() at /home/baagaard/src/cig/pylith/libsrc/pylith/topology/FieldQuery.cc:211
+[0]PETSC ERROR: #7 void pylith::topology::FieldQuery::queryDB()() at /home/pylith-user/src/cig/pylith/libsrc/pylith/topology/FieldQuery.cc:211
 Fatal error. Calling MPI_Abort() to abort PyLith application.
 Traceback (most recent call last):
   File "/software/baagaard/py38-venv/pylith-debug/lib/python3.8/site-packages/pylith/apps/PetscApplication.py", line 61, in onComputeNodes
