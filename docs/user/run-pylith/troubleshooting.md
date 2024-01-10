@@ -8,7 +8,7 @@
 * Merge materials using the same material model. This will result in only one VTK or HDF5 file for each material model rather than several files.
 * The rate of convergence in quasistatic (implicit) problems can sometimes be improved by renumbering the vertices in the finite-element mesh to reduce the bandwidth of the sparse matrix. PyLith can use the reverse Cuthill-McKee algorithm to reorder the vertices and cells.
 * If you encounter errors or warnings, run `pylith_dumpparameters` or use the `--help`, `--help-components`, or `--help-properties` command-line arguments when running PyLith to check the parameters to make sure PyLith is using the parameters you intended.
-* Use the `--petsc.log_summary`, `--petsc.ksp_monitor`, `--petsc.ksp_view`, `--petsc.ksp_converged_reason`, and `--petsc.snes_converged_reason` command-line arguments (or set them in a parameter file) to view PyLith performance and monitor the convergence.
+* Use the `--petsc.log_view`, `--petsc.ksp_monitor`, `--petsc.ksp_view`, `--petsc.ksp_converged_reason`, and `--petsc.snes_converged_reason` command-line arguments (or set them in a parameter file) to view PyLith performance and monitor the convergence.
 * Turn on the journals (see the examples) to monitor the progress of the code.
 
 See {ref}`sec-user-examples-troubleshooting-2d` for examples of how to troubleshoot running PyLith simulations.
