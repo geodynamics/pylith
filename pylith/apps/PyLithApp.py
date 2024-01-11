@@ -141,25 +141,27 @@ class PyLithApp(PetscApplication):
         verYear = 2023
         verDOI = v.doi()
 
-        software = ("@Manual{PyLith:software,\n"
-                    "  title        = {PyLith Version %s},\n"
-                    "  author       = {Aagaard, B. and Knepley, M. and Williams, C.},\n"
-                    "  organization = {Computational Infrastructure for Geodynamics (CIG)},\n"
-                    "  address      = {University of California, Davis},\n"
-                    "  year         = {%d},\n"
-                    "  doi         = {http://doi.org/%s}\n"
-                    "}\n" % (verNum, verYear, verDOI)
-                    )
+        software = (
+            "@Manual{PyLith:software,\n"
+            "  title        = {PyLith Version %s},\n"
+            "  author       = {Aagaard, B. and Knepley, M. and Williams, C.},\n"
+            "  organization = {Computational Infrastructure for Geodynamics (CIG)},\n"
+            "  address      = {University of California, Davis},\n"
+            "  year         = {%d},\n"
+            "  doi         = {%s}\n"
+            "}\n" % (verNum, verYear, verDOI)
+            )
 
-        manual = ("@Manual{PyLith:manual,\n"
-                  "  title        = {PyLith User Manual, Version %s},\n"
-                  "  author       = {Aagaard, B. and Knepley, M. and Williams, C.},\n"
-                  "  organization = {Computational Infrastructure for Geodynamics (CIG)},\n"
-                  "  address      = {University of California, Davis},\n"
-                  "  year         = {%d},\n"
-                  "  note         = {https://pylith.readthedocs.io/en/v%s}\n"
-                  "}\n" % (verNum, verYear, verNum)
-                  )
+        manual = (
+            "@Manual{PyLith:manual,\n"
+            "  title        = {PyLith User Manual, Version %s},\n"
+            "  author       = {Aagaard, B. and Knepley, M. and Williams, C.},\n"
+            "  organization = {Computational Infrastructure for Geodynamics (CIG)},\n"
+            "  address      = {University of California, Davis},\n"
+            "  year         = {%d},\n"
+            "  note         = {https://pylith.readthedocs.io/en/v%s}\n"
+            "}\n" % (verNum, verYear, verNum)
+            )
 
         faultRup = ("@Article{Aagaard:Knepley:Williams:JGR:2013,\n"
                     "  author   = {Aagaard, B.~T. and Knepley, M.~G. and Williams, C.~A.},\n"
