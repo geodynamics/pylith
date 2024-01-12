@@ -10,7 +10,7 @@ dnl ============================================================================
 dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT([PyLith], [4.0.0], [https://geodynamics.org/resources/pylith])
+AC_INIT([PyLith], [4.1.0dev], [https://geodynamics.org/resources/pylith])
 AC_CONFIG_AUX_DIR([./aux-config])
 AC_CONFIG_HEADER([portinfo])
 AC_CONFIG_MACRO_DIR([m4])
@@ -193,7 +193,7 @@ AC_CONFIG_FILES([Makefile
 		libsrc/pylith/problems/Makefile
 		libsrc/pylith/topology/Makefile
 		libsrc/pylith/utils/Makefile
-                libsrc/pylith/testing/Makefile
+        libsrc/pylith/testing/Makefile
 		modulesrc/Makefile
 		modulesrc/include/Makefile
 		modulesrc/bc/Makefile
@@ -233,6 +233,8 @@ AC_CONFIG_FILES([Makefile
 		tests/mmstests/linearelasticity/faults-2d/Makefile
 		tests/mmstests/incompressibleelasticity/Makefile
 		tests/mmstests/incompressibleelasticity/nofaults-2d/Makefile
+		tests/mmstests/poroelasticity/Makefile
+		tests/mmstests/poroelasticity/nofaults-2d/Makefile
 		tests/fullscale/Makefile
 		tests/fullscale/cornercases/Makefile
 		tests/fullscale/cornercases/nofaults-2d/Makefile

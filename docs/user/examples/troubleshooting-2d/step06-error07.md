@@ -21,7 +21,7 @@ $ pylith step06_twofaults.cfg
 [0]PETSC ERROR: #1 KSPGMRESCycle() at /software/baagaard/petsc-dev/src/ksp/ksp/impls/gmres/gmres.c:126
 [0]PETSC ERROR: #2 KSPSolve_GMRES() at /software/baagaard/petsc-dev/src/ksp/ksp/impls/gmres/gmres.c:243
 # -- many lines of PETSc stack omitted --
-[0]PETSC ERROR: #11 void pylith::problems::TimeDependent::solve()() at /home/baagaard/src/cig/pylith/libsrc/pylith/problems/TimeDependent.cc:429
+[0]PETSC ERROR: #11 void pylith::problems::TimeDependent::solve()() at /home/pylith-user/src/cig/pylith/libsrc/pylith/problems/TimeDependent.cc:429
 Fatal error. Calling MPI_Abort() to abort PyLith application.
 Traceback (most recent call last):
   File "/software/baagaard/py38-venv/pylith-debug/lib/python3.8/site-packages/pylith/apps/PetscApplication.py", line 61, in onComputeNodes

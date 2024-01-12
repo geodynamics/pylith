@@ -15,10 +15,10 @@ $ pylith step06_twofaults.cfg
 [0]PETSC ERROR: Error in external library
 [0]PETSC ERROR: Could not find values for initiation_time at (  -24329  -29046.3) in spatial database 'Fault rupture for main fault'.
 # -- lines with PETSc configuration omitted --
-[0]PETSC ERROR: #1 static PetscErrorCode pylith::topology::FieldQuery::queryDBPointFn(PylithInt, PylithReal, const PylithReal*, PylithInt, PylithScalar*, void*)() at /home/baagaard/src/cig/pylith/libsrc/pylith/topology/FieldQuery.cc:313
+[0]PETSC ERROR: #1 static PetscErrorCode pylith::topology::FieldQuery::queryDBPointFn(PylithInt, PylithReal, const PylithReal*, PylithInt, PylithScalar*, void*)() at /home/pylith-user/src/cig/pylith/libsrc/pylith/topology/FieldQuery.cc:313
 # -- many lines of PETSc stack omitted --
 [0]PETSC ERROR: #6 DMProjectFunctionLocal() at /software/baagaard/petsc-dev/src/dm/interface/dm.c:8869
-[0]PETSC ERROR: #7 void pylith::topology::FieldQuery::queryDB()() at /home/baagaard/src/cig/pylith/libsrc/pylith/topology/FieldQuery.cc:211
+[0]PETSC ERROR: #7 void pylith::topology::FieldQuery::queryDB()() at /home/pylith-user/src/cig/pylith/libsrc/pylith/topology/FieldQuery.cc:211
 Fatal error. Calling MPI_Abort() to abort PyLith application.
 Traceback (most recent call last):
   File "/software/baagaard/py38-venv/pylith-debug/lib/python3.8/site-packages/pylith/apps/PetscApplication.py", line 61, in onComputeNodes

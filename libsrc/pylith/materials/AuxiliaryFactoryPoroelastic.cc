@@ -140,8 +140,6 @@ pylith::materials::AuxiliaryFactoryPoroelastic::addBiotCoefficient(void) { // bi
 
     const char* subfieldName = "biot_coefficient";
 
-    const PylithReal noScale = 1;
-
     pylith::topology::Field::Description description;
     description.label = subfieldName;
     description.alias = subfieldName;
@@ -149,7 +147,7 @@ pylith::materials::AuxiliaryFactoryPoroelastic::addBiotCoefficient(void) { // bi
     description.numComponents = 1;
     description.componentNames.resize(1);
     description.componentNames[0] = subfieldName;
-    description.scale = noScale;
+    description.scale = 1.0;
     description.validator = pylith::topology::FieldQuery::validatorPositive;
 
     _field->subfieldAdd(description, getSubfieldDiscretization(subfieldName));

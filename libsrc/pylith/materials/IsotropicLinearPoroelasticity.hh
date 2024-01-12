@@ -140,12 +140,6 @@ public:
     // Get biot coefficient kernel for LHS Jacobian F(t,s, \dot{s}).
     PetscPointJac getKernelJf0pe(const spatialdata::geocoords::CoordSys* coordsys) const;
 
-    // ---------------------------------------------------------------------------------------------------------------------
-    PetscPointJac getKernelJf0ppdot(const spatialdata::geocoords::CoordSys* coordsys) const;
-
-    // ---------------------------------------------------------------------------------------------------------------------
-    PetscPointJac getKernelJf0pedot(const spatialdata::geocoords::CoordSys* coordsys) const;
-
     // ============================ DERIVED FIELDS ========================== //
 
     /** Get stress kernel for derived field.

@@ -563,38 +563,6 @@ pylith::materials::IsotropicLinearPoroelasticity::getKernelJf0pe(const spatialda
 } // getKernelJf0pe
 
 
-// ---------------------------------------------------------------------------------------------------------------------
-PetscPointJac
-pylith::materials::IsotropicLinearPoroelasticity::getKernelJf0ppdot(const spatialdata::geocoords::CoordSys* coordsys) const {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("getKernelJf0ppdot(coordsys="<<typeid(coordsys).name()<<")");
-
-    const int spaceDim = coordsys->getSpaceDim();
-    PetscPointJac Jf0ppdot =
-        (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::Jf0ppdot :
-        (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::Jf0ppdot :
-        NULL;
-
-    PYLITH_METHOD_RETURN(Jf0ppdot);
-} // getKernelJf0ppdot
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-PetscPointJac
-pylith::materials::IsotropicLinearPoroelasticity::getKernelJf0pedot(const spatialdata::geocoords::CoordSys* coordsys) const {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("getKernelJf0pedot(coordsys="<<typeid(coordsys).name()<<")");
-
-    const int spaceDim = coordsys->getSpaceDim();
-    PetscPointJac Jf0pedot =
-        (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::Jf0pedot :
-        (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::Jf0pedot :
-        NULL;
-
-    PYLITH_METHOD_RETURN(Jf0pedot);
-} // getKernelJf0pedot
-
-
 // =========================== DERIVED FIELDS ==================================
 
 // ---------------------------------------------------------------------------------------------------------------------
