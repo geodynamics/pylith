@@ -132,7 +132,6 @@ private:
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    bool _useInertia; ///< Flag to include inertial term.
     spatialdata::spatialdb::TimeHistory *_dbTimeHistory; ///< Time history database.
     pylith::sources::AuxiliaryFactoryPointForce *_auxiliaryFactory; ///< Factory for auxiliary subfields.
 

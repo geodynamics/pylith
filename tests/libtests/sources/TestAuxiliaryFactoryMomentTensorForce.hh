@@ -101,7 +101,6 @@ public:
 
     std::map<std::string, pylith::topology::Field::SubfieldInfo> subfields;
     spatialdata::spatialdb::UserFunctionDB* auxiliaryDB; ///< Spatial database with values for solution.
-    spatialdata::spatialdb::GravityField* gravityField; ///< Gravity field spatial database.
 
 }; // class TestAuxiliaryFactoryMomentTensorForce_Data
 
