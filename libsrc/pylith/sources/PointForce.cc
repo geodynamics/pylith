@@ -44,7 +44,7 @@ typedef pylith::feassemble::Integrator::EquationPart EquationPart;
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
-pylith::sources::PointForce::PointForce(void) : _useInertia(false),
+pylith::sources::PointForce::PointForce(void) :
     _auxiliaryFactory(new pylith::sources::AuxiliaryFactoryPointForce) {
     pylith::utils::PyreComponent::setName("pointforce");
 } // constructor
@@ -143,13 +143,13 @@ pylith::sources::PointForce::createIntegrator(const pylith::topology::Field &sol
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Create auxiliary field.
-pylith::topology::Field *
+pylith::topology::Field*
 pylith::sources::PointForce::createAuxiliaryField(const pylith::topology::Field &solution,
                                                   const pylith::topology::Mesh &domainMesh) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("createAuxiliaryField(solution=" << solution.getLabel() << ", domainMesh=" << typeid(domainMesh).name() << ")");
 
-    pylith::topology::Field *auxiliaryField = new pylith::topology::Field(domainMesh);
+    pylith::topology::Field* auxiliaryField = new pylith::topology::Field(domainMesh);
     assert(auxiliaryField);
     auxiliaryField->setLabel("PointForce auxiliary field");
 
@@ -164,7 +164,6 @@ pylith::sources::PointForce::createAuxiliaryField(const pylith::topology::Field 
     // acceleration will have a scale of pressure divided by length and should be within a few orders
     // of magnitude of 1.
 
-    // add in aux specific to square pulse
     _auxiliaryFactory->addPointForce(); // 0
     _auxiliaryFactory->addTimeDelay(); // 1
 
