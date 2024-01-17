@@ -52,7 +52,7 @@ pylith::sources::TestAuxiliaryFactoryPointForce::TestAuxiliaryFactoryPointForce(
     pylith::topology::Field::SubfieldInfo info;
     pylith::string_vector componentNames;
 
-    // momentTensor
+    // pointForce
     componentNames.resize(3);
     componentNames[0] = "point_force_x";
     componentNames[1] = "point_force_y";
@@ -93,6 +93,8 @@ pylith::sources::TestAuxiliaryFactoryPointForce::TestAuxiliaryFactoryPointForce(
         );
     info.index = 1;
     _data->subfields["time_delay"] = info;
+
+    _initialize();
 
     PYLITH_METHOD_END;
 } // constructor

@@ -50,19 +50,19 @@ private:
     static
     double point_force_2d_x(const double x,
                             const double y) {
-        return -0.3*x*x + 0.1*x*y;
+        return 0.3*x*x + 0.1*x*y;
     } // point_force_2d_x
 
     static
     double point_force_2d_y(const double x,
                             const double y) {
-        return -0.8*x*y + 0.2*y*y;
+        return 0.8*x*y + 0.2*y*y;
     } // point_force_2d_yy
 
     static
     double point_force_2d_z(const double x,
                             const double y) {
-        return -0.3*x*x + 0.5*y*y;
+        return 0.3*x*x + 0.5*y*y;
     } // point_force_2d_z
 
     static
