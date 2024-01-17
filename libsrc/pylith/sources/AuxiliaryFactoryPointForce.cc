@@ -60,14 +60,14 @@ pylith::sources::AuxiliaryFactoryPointForce::addPointForce(void) {
     pylith::topology::Field::Description description;
     description.label = subfieldName;
     description.alias = subfieldName;
-    description.vectorFieldType = pylith::topology::Field::VECTOR;
+    description.vectorFieldType = (3 == _spaceDim) ? pylith::topology::Field::VECTOR : pylith::topology::Field::OTHER;
     description.numComponents = _spaceDim;
     description.componentNames.resize(_spaceDim);
     for (int i = 0; i < _spaceDim; ++i) {
         description.componentNames[i] = componentNames[i];
     } // for
     description.scale = pressureScale;
-    description.validator = pylith::topology::FieldQuery::validatorPositive;
+    description.validator = NULL;
 
     _field->subfieldAdd(description, getSubfieldDiscretization(subfieldName));
     this->setSubfieldQuery(subfieldName);
