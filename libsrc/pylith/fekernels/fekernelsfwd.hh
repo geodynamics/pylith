@@ -72,6 +72,10 @@ namespace pylith {
         class GaussianWaveletPlaneStrain;
         class GaussianWavelet3D;
 
+        class TimeHistoryWavelet;
+        class TimeHistoryWaveletPlaneStrain;
+        class TimeHistoryWavelet3D;
+
         class PointForce;
 
         class BoundaryDirections;

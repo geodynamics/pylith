@@ -43,18 +43,6 @@ public:
     /// Deallocate PETSc and local data structures.
     void deallocate(void);
 
-    /** Set time history database.
-     *
-     * @param[in] db Time history database.
-     */
-    void setTimeHistoryDB(spatialdata::spatialdb::TimeHistory *th);
-
-    /** Get time history database.
-     *
-     * @preturns Time history database.
-     */
-    const spatialdata::spatialdb::TimeHistory *getTimeHistoryDB(void);
-
     /** Get auxiliary factory associated with physics.
      *
      * @return Auxiliary factory for physics object.
@@ -78,7 +66,6 @@ public:
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    spatialdata::spatialdb::TimeHistory *_dbTimeHistory;                   ///< Time history database.
     pylith::sources::AuxiliaryFactorySourceTime* _auxiliaryFactory; ///< Factory for creating auxiliary subfields.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////

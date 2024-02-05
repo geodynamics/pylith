@@ -32,8 +32,7 @@
 // ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::sources::TimeHistoryWavelet::TimeHistoryWavelet(void) :
-    _auxiliaryFactory(new pylith::sources::AuxiliaryFactorySourceTime),
-    _useTimeHistory(true) {
+    _auxiliaryFactory(new pylith::sources::AuxiliaryFactorySourceTime) {
     pylith::utils::PyreComponent::setName("timehistorywavelet");
 } // constructor
 
@@ -43,24 +42,6 @@ pylith::sources::TimeHistoryWavelet::TimeHistoryWavelet(void) :
 pylith::sources::TimeHistoryWavelet::~TimeHistoryWavelet(void) {
     deallocate();
 } // destructor
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Set time history database.
-void
-pylith::sources::TimeHistoryWavelet::setTimeHistoryDB(spatialdata::spatialdb::TimeHistory *th) {
-    PYLITH_COMPONENT_DEBUG("setTimeHistoryDB(th" << th << ")");
-
-    _dbTimeHistory = th;
-} // setTimeHistoryDB
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Get time history database.
-const spatialdata::spatialdb::TimeHistory *
-pylith::sources::TimeHistoryWavelet::getTimeHistoryDB(void) {
-    return _dbTimeHistory;
-} // getTimeHistoryDB
 
 
 // ---------------------------------------------------------------------------------------------------------------------
