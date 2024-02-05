@@ -41,6 +41,7 @@ namespace pylith {
         class SquareWavelet;
         class RickerWavelet;
         class GaussianWavelet;
+        class TimeHistoryWavelet;
 
         class PointForce;
         class AuxiliaryFactoryPointForce;

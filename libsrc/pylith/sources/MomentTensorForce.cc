@@ -20,6 +20,7 @@
 
 #include "pylith/sources/MomentTensorForce.hh" // implementation of object methods
 
+#include "pylith/sources/AuxiliaryFactorySourceTime.hh" // USES AuxiliaryFactorySourceTime
 #include "pylith/sources/SourceTimeFunctionMomentTensorForce.hh" // HASA SourceTimeFunctionMomentTensorSource
 #include "pylith/sources/AuxiliaryFactoryMomentTensorForce.hh" // USES AuxiliaryFactoryMomentTensorForce
 #include "pylith/sources/DerivedFactoryMomentTensorForce.hh" // USES DerivedFactoryMomentTensorForce
@@ -28,6 +29,7 @@
 #include "pylith/topology/Field.hh" // USES Field::SubfieldInfo
 #include "pylith/topology/FieldOps.hh" // USES FieldOps
 #include "pylith/fekernels/DispVel.hh" // USES DispVel kernels
+#include "spatialdata/spatialdb/TimeHistory.hh" // USES TimeHistory
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
@@ -47,7 +49,8 @@ typedef pylith::feassemble::Integrator::EquationPart EquationPart;
 // Default constructor.
 pylith::sources::MomentTensorForce::MomentTensorForce(void) :
     _sourceTimeFunction(NULL),
-    _derivedFactory(new pylith::sources::DerivedFactoryMomentTensorForce) {
+    _derivedFactory(new pylith::sources::DerivedFactoryMomentTensorForce),
+    _useTimeHistory(false) {
     pylith::utils::PyreComponent::setName("momenttensorforce");
 } // constructor
 
@@ -68,6 +71,42 @@ pylith::sources::MomentTensorForce::deallocate(void) {
     delete _derivedFactory;_derivedFactory = NULL;
     _sourceTimeFunction = NULL;
 } // deallocate
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Set time history database.
+void
+pylith::sources::MomentTensorForce::setTimeHistoryDB(spatialdata::spatialdb::TimeHistory* th) {
+    PYLITH_COMPONENT_DEBUG("setTimeHistoryDB(th"<<th<<")");
+
+    _dbTimeHistory = th;
+} // setTimeHistoryDB
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Get time history database.
+const spatialdata::spatialdb::TimeHistory*
+pylith::sources::MomentTensorForce::getTimeHistoryDB(void) {
+    return _dbTimeHistory;
+} // getTimeHistoryDB
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Use time history term in time history expression.
+void
+pylith::sources::MomentTensorForce::useTimeHistory(const bool value) {
+    PYLITH_COMPONENT_DEBUG("useTimeHistory(value="<<value<<")");
+
+    _useTimeHistory = value;
+} // useTimeHistory
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Get flag associated with using time history term in time history expression.
+bool
+pylith::sources::MomentTensorForce::useTimeHistory(void) const { // useTimeHistory
+    return _useTimeHistory;
+} // useTimeHistory
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -144,7 +183,6 @@ pylith::sources::MomentTensorForce::createAuxiliaryField(const pylith::topology:
     // :ATTENTION: The order for adding subfields must match the order of the auxiliary fields in the FE kernels.
 
     auxiliaryFactory->addMomentTensor(); // 0
-    auxiliaryFactory->addTimeDelay(); // 1
 
     _sourceTimeFunction->addAuxiliarySubfields();
 
@@ -162,6 +200,24 @@ pylith::sources::MomentTensorForce::createAuxiliaryField(const pylith::topology:
 
     PYLITH_METHOD_RETURN(auxiliaryField);
 } // createAuxiliaryField
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Update auxiliary subfields at beginning of time step.
+void
+pylith::sources::MomentTensorForce::updateAuxiliaryField(pylith::topology::Field* auxiliaryField,
+                                                         const double t) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("updateAuxiliaryField(auxiliaryField="<<auxiliaryField<<", t="<<t<<")");
+
+    if (_useTimeHistory) {
+        assert(_normalizer);
+        const PylithScalar timeScale = _normalizer->getTimeScale();
+        AuxiliaryFactorySourceTime::updateAuxiliaryField(auxiliaryField, t, timeScale, _dbTimeHistory);
+    } // if
+
+    PYLITH_METHOD_END;
+} // updateAuxiliaryField
 
 
 // ---------------------------------------------------------------------------------------------------------------------

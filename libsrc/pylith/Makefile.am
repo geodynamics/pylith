@@ -73,7 +73,6 @@ libpylith_la_SOURCES = \
 	fekernels/SquareWavelet.cc \
 	fekernels/GaussianWavelet.cc \
 	fekernels/PointForce.cc \
-	fekernels/RickerWavelet.cc \
 	fekernels/SquarePulseSource.cc \
 	fekernels/WellboreSource.cc \
 	materials/Material.cc \
@@ -146,6 +145,7 @@ libpylith_la_SOURCES = \
 	sources/PointForce.cc \
 	sources/SquareWavelet.cc \
 	sources/RickerWavelet.cc \
+	sources/TimeHistoryWavelet.cc \
 	sources/Source.cc \
 	sources/SourceTimeFunctionMomentTensorForce.cc \
 	sources/SquarePulseSource.cc \

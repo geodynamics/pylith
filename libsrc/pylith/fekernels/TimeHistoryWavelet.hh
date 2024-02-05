@@ -16,7 +16,7 @@
  * ----------------------------------------------------------------------
  */
 
-/** @file libsrc/fekernels/RickerWavelet.hh
+/** @file libsrc/fekernels/TimeHistoryWavelet.hh
  *
  */
 
@@ -28,13 +28,11 @@
 
 #include "pylith/utils/types.hh"
 
-#include <cassert> // USES assert()
-
 // =====================================================================================================================
-// Kernels for the Ricker Source Time Function in 2D.
+// Kernels for the TimeHistory Source Time Function in 2D.
 // =====================================================================================================================
 
-class pylith::fekernels::RickerWaveletPlaneStrain {
+class pylith::fekernels::TimeHistoryWaveletPlaneStrain {
     // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public:
 
@@ -81,48 +79,15 @@ public:
              const PylithScalar x[],
              const PylithInt numConstants,
              const PylithScalar constants[],
-             PylithScalar g1[]) {
-        assert(sOff);
-        assert(s);
-        assert(g1);
+             PylithScalar g1[]);
 
-        PylithInt _dim = 2;
-
-        // Incoming re-packed solution field.
-
-        // Incoming re-packed auxiliary field.
-        const PylithInt i_momentTensor = 0;
-        const PylithInt i_timeDelay = 1;
-        const PylithInt i_rickerwaveletCenterFrequency = numA - 1;
-
-        const PylithScalar* momentTensor = &a[aOff[i_momentTensor]];
-        const PylithScalar timeDelay = a[aOff[i_timeDelay]];
-        const PylithScalar rickerwaveletCenterFrequency = a[aOff[i_rickerwaveletCenterFrequency]];
-
-        // RickerWavelet source time function (time domain)
-
-        PylithScalar rt = t - timeDelay;
-        PylithScalar rickerwavelet = (1.0 - 2.0*PETSC_PI*PETSC_PI*rickerwaveletCenterFrequency*rickerwaveletCenterFrequency*rt*rt) *
-                                     PetscExpReal(-PETSC_PI*PETSC_PI*rickerwaveletCenterFrequency*rickerwaveletCenterFrequency*rt*rt);
-
-        // PetscPrintf(PETSC_COMM_WORLD, "timeDelay %f\n", (double)timeDelay);
-        // PetscPrintf(PETSC_COMM_WORLD, "t %f\n", (double)t);
-        // PetscPrintf(PETSC_COMM_WORLD, "Center Freq %f\n", (double)rickerwaveletCenterFrequency);
-        // PetscPrintf(PETSC_COMM_WORLD, "rickerWavelet %f\n", (double)rickerwavelet);
-
-        for (PylithInt i = 0; i < dim*dim; ++i) {
-            g1[i] -= momentTensor[i] * rickerwavelet;
-            // PetscPrintf(PETSC_COMM_WORLD, "g1[%i]: %f - ricker\n", (int)i, (double)g1[i]);
-        } // for
-    } // g1v
-
-}; // RickerWaveletPlaneStrain
+}; // TimeHistoryWaveletPlaneStrain
 
 // =====================================================================================================================
-// Kernels for the Ricker Source Time Function in 3D.
+// Kernels for the TimeHistory Source Time Function in 3D.
 // =====================================================================================================================
 
-class pylith::fekernels::RickerWavelet3D {
+class pylith::fekernels::TimeHistoryWavelet3D {
     // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public:
 
@@ -180,14 +145,12 @@ public:
 
         // Incoming re-packed auxiliary field.
         const PylithInt i_momentTensor = 0;
-        const PylithInt i_timeDelay = 1;
-        const PylithInt i_rickerwaveletCenterFrequency = numA - 1;
 
         const PylithScalar* momentTensor = &a[aOff[i_momentTensor]];
         const PylithScalar timeDelay = a[aOff[i_timeDelay]];
         const PylithScalar rickerwaveletCenterFrequency = a[aOff[i_rickerwaveletCenterFrequency]];
 
-        // RickerWavelet source time function (time domain)
+        // TimeHistoryWavelet source time function (time domain)
 
         PylithScalar rt = t - timeDelay;
         PylithScalar rickerwavelet = (1.0 - 2.0*PETSC_PI*PETSC_PI*rickerwaveletCenterFrequency*rickerwaveletCenterFrequency*rt*rt) *
@@ -198,7 +161,7 @@ public:
         } // for
     } // g1v
 
-}; // RickerWaveletPlaneStrain
+}; // g1v
 
 #endif /* pylith_fekernels_rickerwavelet_hh */
 
