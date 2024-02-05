@@ -91,8 +91,8 @@ pylith::sources::TimeHistoryWavelet::addAuxiliarySubfields(void) {
     // :ATTENTION: The order for adding subfields must match the order of the auxiliary fields in the point-wise
     // functions (kernels).
 
-    _auxiliaryFactory->addTimeHistoryAmplitude();
-    _auxiliaryFactory->addTimeHistoryStartTime(); // numA - 1
+    // _auxiliaryFactory->addTimeHistoryAmplitude(); // numA - 3
+    _auxiliaryFactory->addTimeHistoryStartTime(); // numA - 2
     _auxiliaryFactory->addTimeHistoryValue(); // numA - 1
     if (_dbTimeHistory) {
         _dbTimeHistory->open();
