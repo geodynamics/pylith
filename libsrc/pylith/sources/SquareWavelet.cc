@@ -72,6 +72,7 @@ pylith::sources::SquareWavelet::addAuxiliarySubfields(void) {
     // :ATTENTION: The order for adding subfields must match the order of the auxiliary fields in the point-wise
     // functions (kernels).
 
+    _auxiliaryFactory->addTimeDelay(); // numA - 2
     _auxiliaryFactory->addCenterFrequency(); // numA - 1
 
     PYLITH_METHOD_END;

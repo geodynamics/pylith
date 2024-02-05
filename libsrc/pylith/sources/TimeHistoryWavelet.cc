@@ -32,7 +32,8 @@
 // ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::sources::TimeHistoryWavelet::TimeHistoryWavelet(void) :
-    _auxiliaryFactory(new pylith::sources::AuxiliaryFactorySourceTime) {
+    _auxiliaryFactory(new pylith::sources::AuxiliaryFactorySourceTime),
+    _useTimeHistory(true) {
     pylith::utils::PyreComponent::setName("timehistorywavelet");
 } // constructor
 
@@ -47,7 +48,7 @@ pylith::sources::TimeHistoryWavelet::~TimeHistoryWavelet(void) {
 // ---------------------------------------------------------------------------------------------------------------------
 // Set time history database.
 void
-pylith::sources::SquarePulseSource::setTimeHistoryDB(spatialdata::spatialdb::TimeHistory *th) {
+pylith::sources::TimeHistoryWavelet::setTimeHistoryDB(spatialdata::spatialdb::TimeHistory *th) {
     PYLITH_COMPONENT_DEBUG("setTimeHistoryDB(th" << th << ")");
 
     _dbTimeHistory = th;
@@ -57,7 +58,7 @@ pylith::sources::SquarePulseSource::setTimeHistoryDB(spatialdata::spatialdb::Tim
 // ---------------------------------------------------------------------------------------------------------------------
 // Get time history database.
 const spatialdata::spatialdb::TimeHistory *
-pylith::sources::SquarePulseSource::getTimeHistoryDB(void) {
+pylith::sources::TimeHistoryWavelet::getTimeHistoryDB(void) {
     return _dbTimeHistory;
 } // getTimeHistoryDB
 
@@ -90,10 +91,9 @@ pylith::sources::TimeHistoryWavelet::addAuxiliarySubfields(void) {
     // :ATTENTION: The order for adding subfields must match the order of the auxiliary fields in the point-wise
     // functions (kernels).
 
-    _auxiliaryFactory->addCenterFrequency(); // numA - 1
     _auxiliaryFactory->addTimeHistoryAmplitude();
-    _auxiliaryFactory->addTimeHistoryStartTime();
-    _auxiliaryFactory->addTimeHistoryValue();
+    _auxiliaryFactory->addTimeHistoryStartTime(); // numA - 1
+    _auxiliaryFactory->addTimeHistoryValue(); // numA - 1
     if (_dbTimeHistory) {
         _dbTimeHistory->open();
     } // if

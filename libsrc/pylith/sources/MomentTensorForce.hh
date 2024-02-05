@@ -61,6 +61,30 @@ public:
      */
     void verifyConfiguration(const pylith::topology::Field& solution) const;
 
+    /** Set time history database.
+     *
+     * @param[in] db Time history database.
+     */
+    void setTimeHistoryDB(spatialdata::spatialdb::TimeHistory* th);
+
+    /** Get time history database.
+     *
+     * @preturns Time history database.
+     */
+    const spatialdata::spatialdb::TimeHistory* getTimeHistoryDB(void);
+
+    /** Use time history term in time history expression.
+     *
+     * @param[in] value True if using time history term in expression.
+     */
+    void useTimeHistory(const bool value);
+
+    /** Get flag associated with using time history term in time history expression.
+     *
+     * @returns True if using time history term in expression, false otherwise.
+     */
+    bool useTimeHistory(void) const;
+
     /** Create integrator and set kernels.
      *
      * @param[in] solution Solution field.
@@ -78,6 +102,14 @@ public:
      */
     pylith::topology::Field* createAuxiliaryField(const pylith::topology::Field& solution,
                                                   const pylith::topology::Mesh& domainMesh);
+
+    /** Update auxiliary subfields at beginning of time step.
+     *
+     * @param[out] auxiliaryField Auxiliary field.
+     * @param[in] t Current time.
+     */
+    void updateAuxiliaryField(pylith::topology::Field* auxiliaryField,
+                              const double t);
 
     /** Create derived field.
      *
@@ -151,6 +183,9 @@ private:
     pylith::sources::SourceTimeFunctionMomentTensorForce* _sourceTimeFunction; ///< Source time function for
                                                                                ///< momenttensor force.
     pylith::sources::DerivedFactoryMomentTensorForce* _derivedFactory; ///< Factory for creating derived fields.
+    spatialdata::spatialdb::TimeHistory* _dbTimeHistory; ///< Time history database.
+
+    bool _useTimeHistory; ///< Use time history term.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
