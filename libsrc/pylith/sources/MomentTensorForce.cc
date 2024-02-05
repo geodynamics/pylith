@@ -48,6 +48,7 @@ typedef pylith::feassemble::Integrator::EquationPart EquationPart;
 // ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::sources::MomentTensorForce::MomentTensorForce(void) :
+    _dbTimeHistory(NULL),
     _sourceTimeFunction(NULL),
     _derivedFactory(new pylith::sources::DerivedFactoryMomentTensorForce),
     _useTimeHistory(false) {
@@ -70,6 +71,7 @@ pylith::sources::MomentTensorForce::deallocate(void) {
 
     delete _derivedFactory;_derivedFactory = NULL;
     _sourceTimeFunction = NULL;
+    _dbTimeHistory = NULL;
 } // deallocate
 
 
