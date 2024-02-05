@@ -32,6 +32,7 @@ subpkginclude_HEADERS = \
 	SquareWavelet.hh \
 	RickerWavelet.hh \
 	GaussianWavelet.hh \
+	TimeHistoryWavelet.hh \
 	PointForce.hh \
 	AuxiliaryFactoryPointForce.hh \
 	SourceTimeFunctionMomentTensorForce.hh \
