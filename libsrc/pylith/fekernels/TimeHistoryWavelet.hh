@@ -79,7 +79,28 @@ public:
              const PylithScalar x[],
              const PylithInt numConstants,
              const PylithScalar constants[],
-             PylithScalar g1[]);
+             PylithScalar g1[]) {
+        const PylithInt _numA = 4;
+        assert(_numA == numA);
+        assert(aOff);
+        assert(a);
+
+        // const PylithInt i_amplitude = aOff[numA - 3];
+        const PylithInt i_start_time = aOff[numA - 2];
+        const PylithInt i_value = aOff[numA - 1];
+
+        PylithInt _dim = 2;
+
+        // PetscPrintf(PETSC_COMM_WORLD, "timeDelay %f\n", (double)timeDelay);
+        // PetscPrintf(PETSC_COMM_WORLD, "t %f\n", (double)t);
+        // PetscPrintf(PETSC_COMM_WORLD, "Center Freq %f\n", (double)rickerwaveletCenterFrequency);
+        // PetscPrintf(PETSC_COMM_WORLD, "rickerWavelet %f\n", (double)rickerwavelet);
+
+        for (PylithInt i = 0; i < dim*dim; ++i) {
+            g1[i] -= momentTensor[i] * a[i_value];
+            // PetscPrintf(PETSC_COMM_WORLD, "g1[%i]: %f - ricker\n", (int)i, (double)g1[i]);
+        } // for
+    } // g1v
 
 }; // TimeHistoryWaveletPlaneStrain
 
@@ -135,34 +156,30 @@ public:
              const PylithInt numConstants,
              const PylithScalar constants[],
              PylithScalar g1[]) {
-        assert(sOff);
-        assert(s);
-        assert(g1);
+        const PylithInt _numA = 4;
+        assert(_numA == numA);
+        assert(aOff);
+        assert(a);
+
+        // const PylithInt i_amplitude = aOff[numA - 3];
+        const PylithInt i_start_time = aOff[numA - 2];
+        const PylithInt i_value = aOff[numA - 1];
 
         PylithInt _dim = 3;
 
-        // Incoming re-packed solution field.
-
-        // Incoming re-packed auxiliary field.
-        const PylithInt i_momentTensor = 0;
-
-        const PylithScalar* momentTensor = &a[aOff[i_momentTensor]];
-        const PylithScalar timeDelay = a[aOff[i_timeDelay]];
-        const PylithScalar rickerwaveletCenterFrequency = a[aOff[i_rickerwaveletCenterFrequency]];
-
-        // TimeHistoryWavelet source time function (time domain)
-
-        PylithScalar rt = t - timeDelay;
-        PylithScalar rickerwavelet = (1.0 - 2.0*PETSC_PI*PETSC_PI*rickerwaveletCenterFrequency*rickerwaveletCenterFrequency*rt*rt) *
-                                     PetscExpReal(-PETSC_PI*PETSC_PI*rickerwaveletCenterFrequency*rickerwaveletCenterFrequency*rt*rt);
+        // PetscPrintf(PETSC_COMM_WORLD, "timeDelay %f\n", (double)timeDelay);
+        // PetscPrintf(PETSC_COMM_WORLD, "t %f\n", (double)t);
+        // PetscPrintf(PETSC_COMM_WORLD, "Center Freq %f\n", (double)rickerwaveletCenterFrequency);
+        // PetscPrintf(PETSC_COMM_WORLD, "rickerWavelet %f\n", (double)rickerwavelet);
 
         for (PylithInt i = 0; i < dim*dim; ++i) {
-            g1[i] -= momentTensor[i] * rickerwavelet;
+            g1[i] -= momentTensor[i] * a[i_value];
+            // PetscPrintf(PETSC_COMM_WORLD, "g1[%i]: %f - ricker\n", (int)i, (double)g1[i]);
         } // for
     } // g1v
 
 }; // g1v
 
-#endif /* pylith_fekernels_rickerwavelet_hh */
+#endif /* pylith_fekernels_timehistorywavelet_hh */
 
 /* End of file */
