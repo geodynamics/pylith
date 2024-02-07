@@ -183,9 +183,7 @@ private:
     pylith::sources::SourceTimeFunctionMomentTensorForce* _sourceTimeFunction; ///< Source time function for
                                                                                ///< momenttensor force.
     pylith::sources::DerivedFactoryMomentTensorForce* _derivedFactory; ///< Factory for creating derived fields.
-    spatialdata::spatialdb::TimeHistory* _dbTimeHistory; ///< Time history database.
 
-    bool _useTimeHistory; ///< Use time history term.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:

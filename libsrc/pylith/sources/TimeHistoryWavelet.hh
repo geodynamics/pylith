@@ -43,6 +43,30 @@ public:
     /// Deallocate PETSc and local data structures.
     void deallocate(void);
 
+    /** Set time history database.
+     *
+     * @param[in] db Time history database.
+     */
+    void setTimeHistoryDB(spatialdata::spatialdb::TimeHistory* th);
+
+    /** Get time history database.
+     *
+     * @preturns Time history database.
+     */
+    const spatialdata::spatialdb::TimeHistory* getTimeHistoryDB(void);
+
+    /** Use time history term in time history expression.
+     *
+     * @param[in] value True if using time history term in expression.
+     */
+    void useTimeHistory(const bool value);
+
+    /** Get flag associated with using time history term in time history expression.
+     *
+     * @returns True if using time history term in expression, false otherwise.
+     */
+    bool useTimeHistory(void) const;
+
     /** Get auxiliary factory associated with physics.
      *
      * @return Auxiliary factory for physics object.
@@ -63,10 +87,22 @@ public:
      */
     PetscPointFunc getKernelg1v_explicit(const spatialdata::geocoords::CoordSys* coordsys) const;
 
+    /** Update auxiliary field for current time.
+     *
+     * @param[inout] auxiliaryField Auxiliary field to update.
+     * @param[in] t Current time.
+     * @param[in] timeScale Time scale for nondimensionalization.
+     */
+    PetscPointFunc updateAuxiliaryField(pylith::topology::Field* auxiliaryField,
+                              const PylithReal t,
+                              const PylithReal timeScale);
+    
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
     pylith::sources::AuxiliaryFactorySourceTime* _auxiliaryFactory; ///< Factory for creating auxiliary subfields.
+    spatialdata::spatialdb::TimeHistory* _dbTimeHistory; ///< Time history database.
+    bool _useTimeHistory; ///< Use time history term.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
