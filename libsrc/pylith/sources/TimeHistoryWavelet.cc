@@ -24,6 +24,7 @@
 #include "pylith/fekernels/TimeHistoryWavelet.hh" // USES TimeHistoryWavelet kernels
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
+#include "spatialdata/spatialdb/TimeHistory.hh" // USES TimeHistory
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 
@@ -32,7 +33,9 @@
 // ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::sources::TimeHistoryWavelet::TimeHistoryWavelet(void) :
-    _auxiliaryFactory(new pylith::sources::AuxiliaryFactorySourceTime) {
+    _dbTimeHistory(NULL),
+    _auxiliaryFactory(new pylith::sources::AuxiliaryFactorySourceTime),\
+    _useTimeHistory(True)  {
     pylith::utils::PyreComponent::setName("timehistorywavelet");
 } // constructor
 
@@ -53,10 +56,44 @@ pylith::sources::TimeHistoryWavelet::deallocate(void) {
     delete _auxiliaryFactory;_auxiliaryFactory = NULL;
 } // deallocate
 
+// ---------------------------------------------------------------------------------------------------------------------
+// Set time history database.
+void
+pylith::sources::TimeHistoryWavelet::setTimeHistoryDB(spatialdata::spatialdb::TimeHistory* th) {
+    PYLITH_COMPONENT_DEBUG("setTimeHistoryDB(th"<<th<<")");
+
+    _dbTimeHistory = th;
+} // setTimeHistoryDB
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Get time history database.
+const spatialdata::spatialdb::TimeHistory*
+pylith::sources::TimeHistoryWavelet::getTimeHistoryDB(void) {
+    return _dbTimeHistory;
+} // getTimeHistoryDB
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Use time history term in time history expression.
+void
+pylith::sources::TimeHistoryWavelet::useTimeHistory(const bool value) {
+    PYLITH_COMPONENT_DEBUG("useTimeHistory(value="<<value<<")");
+
+    _useTimeHistory = value;
+} // useTimeHistory
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Get flag associated with using time history term in time history expression.
+bool
+pylith::sources::TimeHistoryWavelet::useTimeHistory(void) const { // useTimeHistory
+    return _useTimeHistory;
+} // useTimeHistory
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Get auxiliary factory associated with physics.
-pylith::sources::AuxiliaryFactoryMomentTensorForce*
+pylith::sources::AuxiliaryFactoryTimeHistoryWavelet*
 pylith::sources::TimeHistoryWavelet::getAuxiliaryFactory(void) {
     return _auxiliaryFactory;
 } // getAuxiliaryFactory
@@ -98,5 +135,17 @@ pylith::sources::TimeHistoryWavelet::getKernelg1v_explicit(const spatialdata::ge
     PYLITH_METHOD_RETURN(g1v);
 } // getKernelResidualStress
 
+// ---------------------------------------------------------------------------------------------------------------------
+// Update auxiliary fields.
+PetscPointFunc
+pylith::sources::TimeHistoryWavelet::updateAuxiliaryField(pylith::topology::Field* auxiliaryField,
+                                                                  const PylithReal t,
+                                                                  const PylithReal timeScale,) const {
+    if (_useTimeHistory) {
+        assert(_normalizer);
+        const PylithScalar timeScale = _normalizer->getTimeScale();
+        AuxiliaryFactorySourceTime::updateAuxiliaryField(auxiliaryField, t, timeScale, _dbTimeHistory);
+    } // if
+                                                                  }
 
 // End of file
