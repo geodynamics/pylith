@@ -48,10 +48,8 @@ typedef pylith::feassemble::Integrator::EquationPart EquationPart;
 // ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::sources::MomentTensorForce::MomentTensorForce(void) :
-    _dbTimeHistory(NULL),
     _sourceTimeFunction(NULL),
-    _derivedFactory(new pylith::sources::DerivedFactoryMomentTensorForce),
-    _useTimeHistory(false) {
+    _derivedFactory(new pylith::sources::DerivedFactoryMomentTensorForce) {
     pylith::utils::PyreComponent::setName("momenttensorforce");
 } // constructor
 
@@ -73,42 +71,6 @@ pylith::sources::MomentTensorForce::deallocate(void) {
     _sourceTimeFunction = NULL;
     _dbTimeHistory = NULL;
 } // deallocate
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Set time history database.
-void
-pylith::sources::MomentTensorForce::setTimeHistoryDB(spatialdata::spatialdb::TimeHistory* th) {
-    PYLITH_COMPONENT_DEBUG("setTimeHistoryDB(th"<<th<<")");
-
-    _dbTimeHistory = th;
-} // setTimeHistoryDB
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Get time history database.
-const spatialdata::spatialdb::TimeHistory*
-pylith::sources::MomentTensorForce::getTimeHistoryDB(void) {
-    return _dbTimeHistory;
-} // getTimeHistoryDB
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Use time history term in time history expression.
-void
-pylith::sources::MomentTensorForce::useTimeHistory(const bool value) {
-    PYLITH_COMPONENT_DEBUG("useTimeHistory(value="<<value<<")");
-
-    _useTimeHistory = value;
-} // useTimeHistory
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Get flag associated with using time history term in time history expression.
-bool
-pylith::sources::MomentTensorForce::useTimeHistory(void) const { // useTimeHistory
-    return _useTimeHistory;
-} // useTimeHistory
 
 
 // ---------------------------------------------------------------------------------------------------------------------
