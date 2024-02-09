@@ -1,0 +1,212 @@
+\documentclass[crop,tikz]{standalone}
+\usepackage{tikz}
+\usepackage{ifthen}
+\usepackage[scaled]{helvet}
+\renewcommand*\familydefault{\sfdefault}
+
+\begin{document}
+
+\input{../../../../tikz-styles/figcolors}
+\input{../../../../tikz-styles/example-style}
+\tikzstyle{gfaults}=[fill=ltorange!25!white]
+
+\foreach \figpart in {4,...,4}{
+
+% -------------------------------------------------------------------------------------------------
+\begin{tikzpicture}[scale=0.1]
+
+\def\domainx{150}
+\def\domainy{30}
+\def\axesshift{0.05*\domainx}
+\def\bndryshift{2.5*\axesshift}
+\def\ticksize{0.5*\axesshift}
+\def\dirsize{0.15*\domainx}
+\def\fault_width{0.02*\domainx}
+
+% Reference points
+\coordinate (p1) at  (0.0*\domainx,0.0*\domainy);
+\coordinate (p2) at  (0.0*\domainx,1.0*\domainy);
+\coordinate (p3) at  (1.0*\domainx,1.0*\domainy);
+\coordinate (p4) at  (1.0*\domainx,0.0*\domainy);
+
+\coordinate (f1_1) at  (0.64*\domainx,+1.0*\domainy);
+\coordinate (f1_2) at  (0.66*\domainx,+1.0*\domainy);
+\coordinate (f1_3) at  (0.68*\domainx,+1.0*\domainy);
+\coordinate (f1_4) at  (0.69*\domainx,+0.5*\domainy);
+\coordinate (f1_5) at  (0.71*\domainx,+0.5*\domainy);
+\coordinate (f1_6) at  (0.73*\domainx,+0.5*\domainy);
+
+\coordinate (f2_1) at  (0.71*\domainx,+1.0*\domainy);
+\coordinate (f2_2) at  (0.73*\domainx,+1.0*\domainy);
+\coordinate (f2_3) at  (0.75*\domainx,+1.0*\domainy);
+\coordinate (f2_4) at  (0.76*\domainx,+0.5*\domainy);
+\coordinate (f2_5) at  (0.78*\domainx,+0.5*\domainy);
+\coordinate (f2_6) at  (0.80*\domainx,+0.5*\domainy);
+
+\coordinate (f3_1) at  (0.78*\domainx,+1.0*\domainy);
+\coordinate (f3_2) at  (0.8*\domainx,+1.0*\domainy);
+\coordinate (f3_3) at  (0.82*\domainx,+1.0*\domainy);
+\coordinate (f3_4) at  (0.83*\domainx,+0.5*\domainy);
+\coordinate (f3_5) at  (0.85*\domainx,+0.5*\domainy);
+\coordinate (f3_6) at  (0.87*\domainx,+0.5*\domainy);
+
+% Domain
+\draw[curve,gdomain] (p1) -- (p2) -- (p3) -- (p4) -- cycle;
+
+% -------------------------------------------------------------------------------------------------
+% Geometry
+% -------------------------------------------------------------------------------------------------
+
+\ifthenelse{\figpart=1}{
+
+\draw[curve, bc] (p1) -- (p2);
+\draw[curve, bc] (p2) -- (p3);
+\draw[curve, bc] (p3) -- (p4);
+\draw[curve, bc] (p4) -- (p1);
+\draw[curve, bc] (f1_2) -- (f1_5);
+\draw[curve, bc] (f2_2) -- (f2_5);
+\draw[curve, bc] (f3_2) -- (f3_5);
+
+\node[fevertex] (v) at ($(p1)$) {};
+\node[fevertex] (v) at ($(p2)$) {};
+\node[fevertex] (v) at ($(p3)$) {};
+\node[fevertex] (v) at ($(p4)$) {};
+
+\node[fevertex] (v) at ($(f1_2)$) {};
+\node[fevertex] (v) at ($(f1_5)$) {};
+\node[fevertex] (v) at ($(f2_2)$) {};
+\node[fevertex] (v) at ($(f2_5)$) {};
+\node[fevertex] (v) at ($(f3_2)$) {};
+\node[fevertex] (v) at ($(f3_5)$) {};
+
+\node[bc-label] (bndry-xneg) at ($(p1)+(-\bndryshift,0.5*\domainy)$) {bndry\_xneg};
+\draw[bc,arrow] ($(p1)+(-0.5*\bndryshift,0.5*\domainy)$) to ($(p1)+(0,0.5*\domainy)$);
+
+\node[bc-label] (bndry-yneg) at ($(p1)+(0.5*\domainx, -\bndryshift)$) {bndry\_yneg};
+\draw[bc,arrow] ($(p1)+(0.5*\domainx, -0.85*\bndryshift)$) to ($(p1)+(0.5*\domainx, 0.0)$);
+
+\node[bc-label] (bndry-xpos) at ($(p3)+(\bndryshift,-0.5*\domainy)$) {bndry\_xpos};
+\draw[bc,arrow] ($(p3) + (0.5*\bndryshift,-0.5*\domainy)$) to ($(p3)+(0,-0.5*\domainy)$);
+
+\node[bc-label] (bndry-ypos) at ($(p3)+(-0.5*\domainx, +\bndryshift)$) {bndry\_ypos};
+\draw[bc,arrow] ($(p3)+(-0.5*\domainx, +0.85*\bndryshift)$) to ($(p3)+(-0.5*\domainx, 0.0)$);
+
+\node[bc-label] (bndry-ypos-fluid) at ($(p3)+(-0.5*\domainx, -\bndryshift)$) {bndry\_ypos\_fluid};
+\draw[bc,arrow] ($(p3)+(-0.5*\domainx, -0.85*\bndryshift)$) to ($(p3)+(-0.5*\domainx, 0.0)$);
+
+\node[bc-label, rotate=-60, anchor=east] (fault-0) at ($(f1_2)+(5.0, -0.45*\domainy)$) {fault\_0};
+\node[bc-label, rotate=-60, anchor=east] (fault-1) at ($(f2_2)+(5.0, -0.45*\domainy)$) {fault\_1};
+\node[bc-label, rotate=-60, anchor=east] (fault-2) at ($(f3_2)+(5.0, -0.45*\domainy)$) {fault\_2};
+
+% Axes
+\draw[axes,arrow] ($(p1)+(0,-\axesshift)$) to ($(p4)+(1.0*\axesshift,-\axesshift)$);
+\node[axes-label,right] at ($(p4)+(1.0*\axesshift,-\axesshift)$) {x};
+\foreach \ix in {0,1}{%
+    \pgfmathsetmacro{\x}{\ix*\domainx}
+    \draw[axes] ($(p1)+(\ix*\domainx,-\axesshift)$) -- ++(0,-\ticksize) node[below]{\x\,km};
+}
+
+\draw[axes,arrow] ($(p1)+(-\axesshift,0)$) to ($(p2)+(-\axesshift,+1.0*\axesshift)$);
+\node[axes-label,above] at ($(p2)+(-\axesshift,1.0*\axesshift)$) {y};
+\foreach \iy in {0,1}{%
+    \pgfmathsetmacro{\y}{-\domainy + \iy*\domainy}
+    \draw[axes] ($(p1)+(-\axesshift,\iy*\domainy)$) -- ++(-\ticksize,0) node[left]{\y\,km};
+}
+
+\node[bc-label] at ($(0.1*\domainx,0.25*\domainy)$) {slab};
+
+}
+
+% -------------------------------------------------------------------------------------------------
+% Step-03
+% -------------------------------------------------------------------------------------------------
+
+\ifthenelse{\figpart=2}{
+
+% Materials
+\node[bc-label] at ($(0.1*\domainx,0.25*\domainy)$) {slab};
+
+
+\node[bc-label,rotate=0] (v-top) at ($(p3)+(-0.5*\domainx, +6.0)$) {$\begin{array}{l} v_x=0 \\ v_y=0 \\ P=bx^4\end{array}$};
+
+\node[ground, rotate=-90, minimum width=30mm] (ground) at ($(p1)+(0,0.5*\domainy)$) {};
+\node[bc-label, left] at (ground.south) {$\begin{array}{l} u_x=0 \\ u_y=0 \end{array}$};
+
+}
+
+% -------------------------------------------------------------------------------------------------
+% Step-02
+% -------------------------------------------------------------------------------------------------
+
+\ifthenelse{\figpart=3}{
+
+% Materials
+\node[bc-label] at ($(0.1*\domainx,0.25*\domainy)$) {slab};
+
+\coordinate (x0) at ($(p2)+(+0.0*\domainx,0)$);
+\coordinate (x1) at ($(p2)+(+0.125*\domainx,-0.25)$);
+\coordinate (x2) at ($(p2)+(+0.25*\domainx,-1.0)$);
+\coordinate (x3) at ($(p2)+(+0.375*\domainx,-2.25)$);
+\coordinate (x4) at ($(p2)+(+0.5*\domainx,-4.0)$);
+\coordinate (x5) at ($(p2)+(+0.625*\domainx,-6.25)$);
+\coordinate (x6) at ($(p2)+(+0.75*\domainx,-9.0)$);
+\coordinate (x7) at ($(p2)+(+0.875*\domainx,-12.25)$);
+\coordinate (x8) at ($(p2)+(+1.0*\domainx,-16.0)$);
+\draw[bc] (x0) -- (x1) -- (x1) -- (x2) -- (x3) -- (x4) -- (x5) -- (x6) -- (x7) -- (x8);
+
+\draw[bc,arrow] ($(x5) + (0.0, +6.25)$) -- ($(x5)$);
+\draw[bc,arrow] ($(x6) + (0.0, +9.0)$) -- ($(x6)$);
+\draw[bc,arrow] ($(x7) + (0.0, +12.25)$) -- ($(x7)$);
+\draw[bc,arrow] ($(x8) + (0.0, +16.0)$) -- ($(x8)$);
+
+\node[bc-label,rotate=-10] (v-top) at ($(x4)+(0.0, -7.0)$) {$\begin{array}{l} v_x=0 \\ v_y=ax^4 \\ P=bx^4\end{array}$};
+
+\node[ground, rotate=-90, minimum width=30mm] (ground) at ($(p1)+(0,0.5*\domainy)$) {};
+\node[bc-label, left] at (ground.south) {$\begin{array}{l} u_x=0 \\ u_y=0 \end{array}$};
+
+}
+
+% -------------------------------------------------------------------------------------------------
+% Step-03
+% -------------------------------------------------------------------------------------------------
+
+\ifthenelse{\figpart=4}{
+
+% Materials
+\node[bc-label] at ($(0.1*\domainx,0.25*\domainy)$) {slab};
+
+\draw[curve,gfaults] (f1_1) -- (f1_3) -- (f1_6) -- (f1_4) -- cycle;
+\draw[curve,gfaults] (f2_1) -- (f2_3) -- (f2_6) -- (f2_4) -- cycle;
+\draw[curve,gfaults] (f3_1) -- (f3_3) -- (f3_6) -- (f3_4) -- cycle;
+
+\node[dkslate] (fault-zones) at ($(f2_2)+(0.0, \bndryshift)$) {fault zones};
+\draw[dkslate,arrow] ($(f2_2) + (0.0, 0.85*\bndryshift)$) to[out=0,in=100,looseness=0] ($(f1_2)$);
+\draw[dkslate,arrow] ($(f2_2) + (0.0, 0.85*\bndryshift)$) to[out=0,in=100,looseness=0] ($(f2_2)$);
+\draw[dkslate,arrow] ($(f2_2) + (0.0, 0.85*\bndryshift)$) to[out=0,in=10,looseness=0] ($(f3_2)$);
+
+\coordinate (x0) at ($(p2)+(+0.0*\domainx,0)$);
+\coordinate (x1) at ($(p2)+(+0.125*\domainx,-0.25)$);
+\coordinate (x2) at ($(p2)+(+0.25*\domainx,-1.0)$);
+\coordinate (x3) at ($(p2)+(+0.375*\domainx,-2.25)$);
+\coordinate (x4) at ($(p2)+(+0.5*\domainx,-4.0)$);
+\coordinate (x5) at ($(p2)+(+0.625*\domainx,-6.25)$);
+\coordinate (x6) at ($(p2)+(+0.75*\domainx,-9.0)$);
+\coordinate (x7) at ($(p2)+(+0.875*\domainx,-12.25)$);
+\coordinate (x8) at ($(p2)+(+1.0*\domainx,-16.0)$);
+\draw[bc] (x0) -- (x1) -- (x1) -- (x2) -- (x3) -- (x4) -- (x5) -- (x6) -- (x7) -- (x8);
+
+\draw[bc,arrow] ($(x5) + (0.0, +6.25)$) -- ($(x5)$);
+\draw[bc,arrow] ($(x6) + (0.0, +9.0)$) -- ($(x6)$);
+\draw[bc,arrow] ($(x7) + (0.0, +12.25)$) -- ($(x7)$);
+\draw[bc,arrow] ($(x8) + (0.0, +16.0)$) -- ($(x8)$);
+
+\node[bc-label,rotate=-10] (v-top) at ($(x4)+(0.0, -7.0)$) {$\begin{array}{l} v_x=0 \\ v_y=ax^4 \\ P=bx^4\end{array}$};
+
+\node[ground, rotate=-90, minimum width=30mm] (ground) at ($(p1)+(0,0.5*\domainy)$) {};
+\node[bc-label, left] at (ground.south) {$\begin{array}{l} u_x=0 \\ u_y=0 \end{array}$};
+
+}
+
+\end{tikzpicture}}
+
+\end{document}
