@@ -385,7 +385,6 @@ pylith::problems::TimeDependent::initialize(void) {
     } // default
     } // switch
 
-    pylith::utils::PetscDefaults::set(*solution, _materials[0], _petscDefaults);
     err = TSSetFromOptions(_ts);PYLITH_CHECK_ERROR(err);
     err = TSSetUp(_ts);PYLITH_CHECK_ERROR(err);
 

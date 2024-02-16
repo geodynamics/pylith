@@ -250,7 +250,6 @@ pylith::problems::GreensFns::initialize(void) {
     } // default
     } // switch
 
-    pylith::utils::PetscDefaults::set(*solution, _materials[0], _petscDefaults);
     err = SNESSetFromOptions(_snes);PYLITH_CHECK_ERROR(err);
     err = SNESSetUp(_snes);PYLITH_CHECK_ERROR(err);
 
