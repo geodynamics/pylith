@@ -35,6 +35,7 @@ swig_sources = \
 	SourceTimeFunctionMomentTensorForce.i \
 	RickerWavelet.i \
 	GaussianWavelet.i \
+	TimeHistoryWavelet.i \
 	../utils/PyreComponent.i
 
 swigincludedir = $(pkgdatadir)/swig/$(subpackage)

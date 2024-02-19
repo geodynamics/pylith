@@ -26,19 +26,21 @@
 #include "pylith/sources/SquareWavelet.hh"
 #include "pylith/sources/RickerWavelet.hh"
 #include "pylith/sources/GaussianWavelet.hh"
+#include "pylith/sources/TimeHistoryWavelet.hh"
 #include "pylith/sources/SourceTimeFunctionMomentTensorForce.hh"
 
 #include "pylith/utils/arrayfwd.hh"
-%}
+    %
+}
 
 %include "exception.i"
 %exception {
-  try {
-    $action
-  } catch (const std::exception& err) {
-    SWIG_exception(SWIG_RuntimeError, err.what());
-  } // try/catch
- } // exception
+    try {
+        $ action
+    } catch (const std::exception& err) {
+        SWIG_exception (SWIG_RuntimeError, err.what ());
+    } // try/catch
+} // exception
 
 %include "typemaps.i"
 %include "../include/scalartypemaps.i"
@@ -47,11 +49,13 @@
 // Numpy interface stuff
 %{
 #define SWIG_FILE_WITH_INIT
-%}
+    %
+}
 %include "../include/numpy.i"
 %init %{
-import_array();
-%}
+    import_array();
+    %
+}
 
 // Interfaces
 %include "../utils/PyreComponent.i"
@@ -66,5 +70,6 @@ import_array();
 %include "SquareWavelet.i"
 %include "RickerWavelet.i"
 %include "GaussianWavelet.i"
+%include "TimeHistoryWavelet.i"
 
 // End of file
