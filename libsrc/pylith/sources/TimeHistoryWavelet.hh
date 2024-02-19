@@ -71,7 +71,7 @@ public:
      *
      * @return Auxiliary factory for physics object.
      */
-    pylith::sources::AuxiliaryFactoryMomentTensorForce* getAuxiliaryFactory(void);
+    pylith::sources::AuxiliaryFactorySourceTime* getAuxiliaryFactory(void);
 
     /** Add source time subfields to auxiliary field.
      *
@@ -93,10 +93,10 @@ public:
      * @param[in] t Current time.
      * @param[in] timeScale Time scale for nondimensionalization.
      */
-    PetscPointFunc updateAuxiliaryField(pylith::topology::Field* auxiliaryField,
+    void updateAuxiliaryField(pylith::topology::Field* auxiliaryField,
                               const PylithReal t,
                               const PylithReal timeScale);
-    
+
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
