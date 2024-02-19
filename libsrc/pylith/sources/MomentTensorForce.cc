@@ -69,7 +69,6 @@ pylith::sources::MomentTensorForce::deallocate(void) {
 
     delete _derivedFactory;_derivedFactory = NULL;
     _sourceTimeFunction = NULL;
-    _dbTimeHistory = NULL;
 } // deallocate
 
 
@@ -174,11 +173,16 @@ pylith::sources::MomentTensorForce::updateAuxiliaryField(pylith::topology::Field
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("updateAuxiliaryField(auxiliaryField="<<auxiliaryField<<", t="<<t<<")");
 
-    if (_useTimeHistory) {
-        assert(_normalizer);
-        const PylithScalar timeScale = _normalizer->getTimeScale();
-        AuxiliaryFactorySourceTime::updateAuxiliaryField(auxiliaryField, t, timeScale, _dbTimeHistory);
-    } // if
+    assert(_sourceTimeFunction);
+    const PylithScalar timeScale = _normalizer->getTimeScale();
+
+    _sourceTimeFunction->updateAuxiliaryField(auxiliaryField, t, timeScale);
+
+    // if (_useTimeHistory) {
+    //     assert(_normalizer);
+    //     const PylithScalar timeScale = _normalizer->getTimeScale();
+    //     AuxiliaryFactorySourceTime::updateAuxiliaryField(auxiliaryField, t, timeScale, _dbTimeHistory);
+    // } // if
 
     PYLITH_METHOD_END;
 } // updateAuxiliaryField

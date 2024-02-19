@@ -45,7 +45,8 @@ pylith::sources::SourceTimeFunctionMomentTensorForce::~SourceTimeFunctionMomentT
 // ---------------------------------------------------------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
-pylith::sources::SourceTimeFunctionMomentTensorForce::deallocate(void) {}
+pylith::sources::SourceTimeFunctionMomentTensorForce::deallocate(void) {
+}
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -82,6 +83,21 @@ pylith::sources::SourceTimeFunctionMomentTensorForce::addKernelsUpdateStateVars(
 
     PYLITH_METHOD_END;
 } // addKernelsUpdateStateVars
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Update auxiliary field values.
+void
+pylith::sources::SourceTimeFunctionMomentTensorForce::updateAuxiliaryField(pylith::topology::Field* auxiliaryField,
+                                                                           const PylithReal t,
+                                                                           const PylithReal timeScale) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("updateAuxiliaryField(auxiliaryField"<<auxiliaryField<<", t="<<t<<", timeScale"<<timeScale<<") empty method");
+
+    // Default is to do nothing.
+
+    PYLITH_METHOD_END;
+} // updateKernelConstants
 
 
 // End of file

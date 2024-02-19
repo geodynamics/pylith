@@ -17,14 +17,14 @@
 //
 
 #include <portinfo>
+#include "spatialdata/spatialdb/TimeHistory.hh" // USES TimeHistory
+#include "pylith/sources/AuxiliaryFactorySourceTime.hh" // USES AuxiliaryFactorySourceTime
 
 #include "pylith/sources/TimeHistoryWavelet.hh" // implementation of object methods
 
-#include "pylith/sources/AuxiliaryFactorySourceTime.hh" // USES AuxiliaryFactorySourceTime
 #include "pylith/fekernels/TimeHistoryWavelet.hh" // USES TimeHistoryWavelet kernels
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
-#include "spatialdata/spatialdb/TimeHistory.hh" // USES TimeHistory
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 
@@ -34,8 +34,8 @@
 // Default constructor.
 pylith::sources::TimeHistoryWavelet::TimeHistoryWavelet(void) :
     _dbTimeHistory(NULL),
-    _auxiliaryFactory(new pylith::sources::AuxiliaryFactorySourceTime),\
-    _useTimeHistory(True)  {
+    _auxiliaryFactory(new pylith::sources::AuxiliaryFactorySourceTime), \
+    _useTimeHistory(true) {
     pylith::utils::PyreComponent::setName("timehistorywavelet");
 } // constructor
 
@@ -55,6 +55,7 @@ pylith::sources::TimeHistoryWavelet::deallocate(void) {
 
     delete _auxiliaryFactory;_auxiliaryFactory = NULL;
 } // deallocate
+
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Set time history database.
@@ -91,9 +92,10 @@ pylith::sources::TimeHistoryWavelet::useTimeHistory(void) const { // useTimeHist
     return _useTimeHistory;
 } // useTimeHistory
 
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Get auxiliary factory associated with physics.
-pylith::sources::AuxiliaryFactoryTimeHistoryWavelet*
+pylith::sources::AuxiliaryFactorySourceTime*
 pylith::sources::TimeHistoryWavelet::getAuxiliaryFactory(void) {
     return _auxiliaryFactory;
 } // getAuxiliaryFactory
@@ -135,17 +137,19 @@ pylith::sources::TimeHistoryWavelet::getKernelg1v_explicit(const spatialdata::ge
     PYLITH_METHOD_RETURN(g1v);
 } // getKernelResidualStress
 
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Update auxiliary fields.
-PetscPointFunc
+void
 pylith::sources::TimeHistoryWavelet::updateAuxiliaryField(pylith::topology::Field* auxiliaryField,
-                                                                  const PylithReal t,
-                                                                  const PylithReal timeScale,) const {
+                                                          const PylithReal t,
+                                                          const PylithReal timeScale) {
     if (_useTimeHistory) {
-        assert(_normalizer);
-        const PylithScalar timeScale = _normalizer->getTimeScale();
+        // assert(_normalizer);
+        // const PylithScalar timeScale = _normalizer->getTimeScale();
         AuxiliaryFactorySourceTime::updateAuxiliaryField(auxiliaryField, t, timeScale, _dbTimeHistory);
     } // if
-                                                                  }
+}
+
 
 // End of file

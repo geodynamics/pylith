@@ -94,6 +94,17 @@ public:
     void updateKernelConstants(pylith::real_array* kernelConstants,
                                const PylithReal dt) const;
 
+    /** Update auxiliary field for current time.
+     *
+     * @param[inout] auxiliaryField Auxiliary field to update.
+     * @param[in] t Current time.
+     * @param[in] timeScale Time scale for nondimensionalization.
+     */
+    virtual
+    void updateAuxiliaryField(pylith::topology::Field* auxiliaryField,
+                              const PylithReal t,
+                              const PylithReal timeScale);
+
     // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
 
     int _JacobianTriggers; ///< Triggers for needing to recompute the RHS Jacobian.
