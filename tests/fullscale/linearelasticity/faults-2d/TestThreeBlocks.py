@@ -69,7 +69,13 @@ class TestCase(FullTestCase):
             ),
             Check(
                 mesh_entities=["fault_xneg", "fault_xmid"],
-                vertex_fields=["slip", "traction_change"],
+                vertex_fields=["slip"],
+                defaults=defaults,
+            ),
+            Check(
+                mesh_entities=["fault_xneg", "fault_xmid"],
+                vertex_fields=["traction_change"],
+                scale = 1.0e+6,
                 defaults=defaults,
             ),
         ]
