@@ -92,79 +92,19 @@ pc_type = gamg
 %mg_levels_pc_type = sor
 %mg_levels_ksp_type = richardson
 
-The Lagrange multiplier corresponding to the tractions on the fault introduces a saddle point in the system of equations, so we use a Schur complement approach.
+The Lagrange multiplier corresponding to the tractions on the fault introduces a saddle point in the system of equations.
+We could use a Schur complement approach, but we have found that grouping the degrees of freedom on each side of the fault into blocks and using a variable point-block Jacobi preconditioner provides better results; the number of iterations remains nearly constant with increased problem size and the overall solution time is low. 
 
 ```{code-block} cfg
 ---
-caption: PETSc options used for quasistatic elasticity in serial with a fault.
+caption: PETSc options used for quasistatic elasticity with a fault.
 ---
 [pylithapp.petsc]
-ts_type = beuler
-pc_type = fieldsplit
-pc_use_amat = true
-pc_fieldsplit_type = schur
+dm_reorder_section = True
+dm_reorder_section_type = cohesive
 
-pc_fieldsplit_schur_factorization_type = lower
-pc_fieldsplit_schur_precondition = selfp
-pc_fieldsplit_schur_scale = 1.0
-
-fieldsplit_displacement_ksp_type = preonly
-fieldsplit_displacement_pc_type = lu
-
-fieldsplit_lagrange_multiplier_fault_ksp_type = preonly
-fieldsplit_lagrange_multiplier_fault_pc_type = lu
-```
-
-```{code-block} cfg
----
-caption: PETSc options used for quasistatic elasticity in parallel with a fault.
----
-[pylithapp.petsc]
-ts_type = beuler
-pc_type = fieldsplit
-pc_use_amat = true
-pc_fieldsplit_type = schur
-
-pc_fieldsplit_schur_factorization_type = lower
-pc_fieldsplit_schur_precondition = selfp
-pc_fieldsplit_schur_scale = 1.0
-
-fieldsplit_displacement_ksp_type = preonly
-fieldsplit_displacement_pc_type = ml
-
-fieldsplit_lagrange_multiplier_fault_ksp_type = preonly
-fieldsplit_lagrange_multiplier_fault_pc_type = ml
-```
-%fieldsplit_displacement_pc_type = gamg
-%fieldsplit_displacement_mg_levels_pc_type = sor
-%fieldsplit_displacement_mg_levels_ksp_type = richardson
-%fieldsplit_lagrange_multiplier_fault_pc_type = gamg
-%fieldsplit_lagrange_multiplier_fault_mg_levels_pc_type = sor
-%fieldsplit_lagrange_multiplier_fault_mg_levels_ksp_type = richardson
-
-```{code-block} cfg
----
-caption: Alternative options for quasistatic elasticity with a fault that often provide similar performance.
----
-[pylithapp.petsc]
-ts_type = beuler
-pc_type = fieldsplit
-pc_use_amat = true
-pc_fieldsplit_type = schur
-
-pc_fieldsplit_schur_factorization_type = full
-pc_fieldsplit_schur_precondition = selfp
-pc_fieldsplit_schur_scale = 1.0
-
-fieldsplit_displacement_ksp_type = preonly
-fieldsplit_displacement_pc_type = gamg
-fieldsplit_displacement_mg_levels_pc_type = sor
-fieldsplit_displacement_mg_levels_ksp_type = richardson
-
-fieldsplit_lagrange_multiplier_fault_ksp_type = preonly
-fieldsplit_lagrange_multiplier_fault_pc_type = gamg
-fieldsplit_lagrange_multiplier_fault_mg_levels_pc_type = sor
-fieldsplit_lagrange_multiplier_fault_mg_levels_ksp_type = richardson
+pc_type = gamg
+mg_fine_pc_type = vpbjacobi
 ```
 
 #### Quasistatic Incompressible Elasticity

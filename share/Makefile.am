@@ -17,7 +17,7 @@ EXTRA_DIST = \
 	settings/petsc_monitor.cfg \
 	settings/attach_debugger.cfg \
 	settings/solver_fault_fieldsplit.cfg \
-	settings/solver_fault/vpbjacobi.cfg \
+	settings/solver_fault_vpbjacobi.cfg \
 	settings/solver_fieldsplit_poroelasticity.cfg \
 	settings/solver_fieldsplit_poroelasticity_statevars.cfg \
 	settings/solver_incompressible_elasticity.cfg \
