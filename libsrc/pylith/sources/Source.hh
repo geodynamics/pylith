@@ -65,15 +65,6 @@ public:
      */
     const char* getDescription(void) const;
 
-    /** Set first choice for reference direction to discriminate among tangential directions in 3-D.
-     *
-     * @param vec Reference direction unit vector.
-     * /** Create constraint and set kernels.
-     *
-     * @param[in] solution Solution field.
-     * @returns Constraint if applicable, otherwise NULL.
-     */
-
     /** Set name of solution subfield associated with boundary condition.
      *
      * @param[in] value Name of solution subfield.

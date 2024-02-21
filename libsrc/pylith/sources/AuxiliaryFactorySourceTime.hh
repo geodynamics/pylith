@@ -42,8 +42,8 @@ public:
     /// Add center frequency subfield to auxiliary subfields.
     void addCenterFrequency(void);
 
-    /// Add time history amplitude field to auxiliary fields.
-    void addTimeHistoryAmplitude(void);
+    // /// Add time history amplitude field to auxiliary fields.
+    // void addTimeHistoryAmplitude(void);
 
     /// Add time history start time field to auxiliary fields.
     void addTimeHistoryStartTime(void);

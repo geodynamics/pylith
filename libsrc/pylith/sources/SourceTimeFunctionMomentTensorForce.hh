@@ -55,7 +55,7 @@ public:
      * @return Auxiliary factory for physics object.
      */
     virtual
-    pylith::sources::AuxiliaryFactoryMomentTensorForce* getAuxiliaryFactory(void) = 0;
+    pylith::sources::AuxiliaryFactorySourceTime* getAuxiliaryFactory(void) = 0;
 
     /// Add sourcetimefunctionfunction subfields to auxiliary field.
     virtual

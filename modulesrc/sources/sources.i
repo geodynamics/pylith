@@ -28,10 +28,8 @@
 #include "pylith/sources/GaussianWavelet.hh"
 #include "pylith/sources/TimeHistoryWavelet.hh"
 #include "pylith/sources/SourceTimeFunctionMomentTensorForce.hh"
-
 #include "pylith/utils/arrayfwd.hh"
-    %
-}
+%}
 
 %include "exception.i"
 %exception {
@@ -49,18 +47,15 @@
 // Numpy interface stuff
 %{
 #define SWIG_FILE_WITH_INIT
-    %
-}
+%}
 %include "../include/numpy.i"
 %init %{
-    import_array();
-    %
-}
+import_array();
+%}
 
 // Interfaces
 %include "../utils/PyreComponent.i"
 %include "../problems/Physics.i"
-
 %include "Source.i"
 %include "WellboreSource.i"
 %include "SquarePulseSource.i"

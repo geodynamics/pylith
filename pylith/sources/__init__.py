@@ -31,6 +31,7 @@ __all__ = [
     "AuxSubfieldsSourceTime",
     "SquareWavelet",
     "RickerWavelet",
+    "TimeHistoryWavelet",
     "GaussianWavelet"
 ]
 

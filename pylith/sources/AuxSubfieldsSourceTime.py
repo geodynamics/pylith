@@ -30,8 +30,17 @@ class AuxSubfieldsSourceTime(PetscComponent):
 
     from pylith.topology.Subfield import Subfield
 
-    CenterFrequency = pythia.pyre.inventory.facility("center_frequency", family="auxiliary_subfield", factory=Subfield)
+    CenterFrequency = pythia.pyre.inventory.facility(
+        "center_frequency", family="auxiliary_subfield", factory=Subfield)
     CenterFrequency.meta['tip'] = "center frequency subfield."
+
+    useTimeHistory = pythia.pyre.inventory.bool(
+        "use_time_history", default=False)
+    useTimeHistory.meta['tip'] = "Use time history term in time-dependent expression."
+
+    dbTimeHistory = pythia.pyre.inventory.facility(
+        "time_history", factory=NullComponent, family="temporal_database")
+    dbTimeHistory.meta['tip'] = "Time history with normalized amplitude as a function of time."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 

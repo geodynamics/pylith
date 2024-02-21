@@ -56,7 +56,7 @@ pylith::sources::GaussianWavelet::deallocate(void) {
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Get auxiliary factory associated with physics.
-pylith::sources::AuxiliaryFactoryMomentTensorForce*
+pylith::sources::AuxiliaryFactorySourceTime*
 pylith::sources::GaussianWavelet::getAuxiliaryFactory(void) {
     return _auxiliaryFactory;
 } // getAuxiliaryFactory

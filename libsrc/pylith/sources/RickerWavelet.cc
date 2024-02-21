@@ -56,7 +56,7 @@ pylith::sources::RickerWavelet::deallocate(void) {
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Get auxiliary factory associated with physics.
-pylith::sources::AuxiliaryFactoryMomentTensorForce*
+pylith::sources::AuxiliaryFactorySourceTime*
 pylith::sources::RickerWavelet::getAuxiliaryFactory(void) {
     return _auxiliaryFactory;
 } // getAuxiliaryFactory

@@ -56,7 +56,7 @@ pylith::sources::SquareWavelet::deallocate(void) {
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Get auxiliary factory associated with physics.
-pylith::sources::AuxiliaryFactoryMomentTensorForce*
+pylith::sources::AuxiliaryFactorySourceTime*
 pylith::sources::SquareWavelet::getAuxiliaryFactory(void) {
     return _auxiliaryFactory;
 } // getAuxiliaryFactory

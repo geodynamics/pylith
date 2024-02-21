@@ -143,6 +143,7 @@ EXTRA_DIST = \
 	sources/Source.py \
 	sources/SquareWavelet.py \
 	sources/RickerWavelet.py \
+	sources/TimeHistoryWavelet.py \
 	sources/PointForce.py \
 	sources/MomentTensorForce.py \
 	sources/GaussianWavelet.py \
