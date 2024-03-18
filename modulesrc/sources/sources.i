@@ -27,6 +27,7 @@
 #include "pylith/sources/RickerWavelet.hh"
 #include "pylith/sources/GaussianWavelet.hh"
 #include "pylith/sources/SourceTimeFunctionMomentTensorForce.hh"
+#include "pylith/sources/TimeHistoryWavelet.hh"
 
 #include "pylith/utils/arrayfwd.hh"
 %}
@@ -66,5 +67,6 @@ import_array();
 %include "SquareWavelet.i"
 %include "RickerWavelet.i"
 %include "GaussianWavelet.i"
+%include "TimeHistoryWavelet.i"
 
 // End of file
