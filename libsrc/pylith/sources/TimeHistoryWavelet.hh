@@ -71,7 +71,7 @@ public:
      *
      * @return Auxiliary factory for physics object.
      */
-    pylith::sources::AuxiliaryFactorySourceTime* getAuxiliaryFactory(void);
+    pylith::sources::AuxiliaryFactoryMomentTensorForce* getAuxiliaryFactory(void);
 
     /** Add source time subfields to auxiliary field.
      *

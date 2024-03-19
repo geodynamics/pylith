@@ -18,9 +18,9 @@
 
 #include <portinfo>
 #include "spatialdata/spatialdb/TimeHistory.hh" // USES TimeHistory
-#include "pylith/sources/AuxiliaryFactorySourceTime.hh" // USES AuxiliaryFactorySourceTime
-
 #include "pylith/sources/TimeHistoryWavelet.hh" // implementation of object methods
+
+#include "pylith/sources/AuxiliaryFactorySourceTime.hh" // USES AuxiliaryFactorySourceTime
 
 #include "pylith/fekernels/TimeHistoryWavelet.hh" // USES TimeHistoryWavelet kernels
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
@@ -95,7 +95,7 @@ pylith::sources::TimeHistoryWavelet::useTimeHistory(void) const { // useTimeHist
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Get auxiliary factory associated with physics.
-pylith::sources::AuxiliaryFactorySourceTime*
+pylith::sources::AuxiliaryFactoryMomentTensorForce*
 pylith::sources::TimeHistoryWavelet::getAuxiliaryFactory(void) {
     return _auxiliaryFactory;
 } // getAuxiliaryFactory

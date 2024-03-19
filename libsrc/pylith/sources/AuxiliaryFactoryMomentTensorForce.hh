@@ -47,6 +47,31 @@ public:
     /// Add time delay subfield to auxiliary subfields.
     void addTimeDelay(void);
 
+    /// Add center frequency subfield to auxiliary subfields.
+    void addCenterFrequency(void);
+
+    /// Add time history amplitude field to auxiliary fields.
+    void addTimeHistoryAmplitude(void);
+
+    /// Add time history start time field to auxiliary fields.
+    void addTimeHistoryStartTime(void);
+
+    /// Add time history value field to auxiliary fields.
+    void addTimeHistoryValue(void);
+
+    /** Update auxiliary field for current time.
+     *
+     * @param[inout] auxiliaryField Auxiliary field to update.
+     * @param[in] t Current time.
+     * @param[in] timeScale Time scale for nondimensionalization.
+     * @param[in] dbTimeHistory Time history database.
+     */
+    static
+    void updateAuxiliaryField(pylith::topology::Field* auxiliaryField,
+                              const PylithReal t,
+                              const PylithReal timeScale,
+                              spatialdata::spatialdb::TimeHistory* const dbTimeHistory);
+
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
