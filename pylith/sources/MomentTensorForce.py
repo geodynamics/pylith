@@ -19,7 +19,7 @@
 #
 # Factory: source
 
-from pylith.sources.RickerWavelet import RickerWavelet
+from pylith.sources.TimeHistoryWavelet import TimeHistoryWavelet
 from .Source import Source
 from .sources import MomentTensorForce as ModuleMomentTensorForce
 
@@ -32,7 +32,8 @@ class MomentTensorForce(Source, ModuleMomentTensorForce):
 
     import pythia.pyre.inventory
 
-    source_time_function = pythia.pyre.inventory.facility("source_time_function", family="momenttensorforce_sourcetimefunction", factory=RickerWavelet)
+    source_time_function = pythia.pyre.inventory.facility(
+        "source_time_function", family="momenttensorforce_sourcetimefunction", factory=TimeHistoryWavelet)
     source_time_function.meta['tip'] = "Source time function for moment tensor force."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
@@ -45,8 +46,8 @@ class MomentTensorForce(Source, ModuleMomentTensorForce):
 
     def _defaults(self):
         from .AuxSubfieldsMomentTensorForce import AuxSubfieldsMomentTensorForce
-        self.auxiliarySubfields = AuxSubfieldsMomentTensorForce("auxiliary_subfields")
-
+        self.auxiliarySubfields = AuxSubfieldsMomentTensorForce(
+            "auxiliary_subfields")
 
     def preinitialize(self, problem):
         """Setup source.
@@ -62,7 +63,9 @@ class MomentTensorForce(Source, ModuleMomentTensorForce):
         """Create handle to C++ MomentTensorForce.
         """
         ModuleMomentTensorForce.__init__(self)
-        ModuleMomentTensorForce.setSourceTimeFunction(self, self.source_time_function)  # Material sets auxiliary db in source_time_function.
+        # Material sets auxiliary db in source_time_function.
+        ModuleMomentTensorForce.setSourceTimeFunction(
+            self, self.source_time_function)
         return
 
 

@@ -43,7 +43,8 @@ class SourceTimeFunctionMomentTensorForce(PetscComponent, ModuleSourceTimeFuncti
     def __init__(self, name):
         """Constructor.
         """
-        PetscComponent.__init__(self, name, facility="sourcetimefunctionmomenttensorforce")
+        PetscComponent.__init__(
+            self, name, facility="sourcetimefunctionmomenttensorforce")
         return
 
     def preinitialize(self, problem):

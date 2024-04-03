@@ -31,7 +31,6 @@ class PointForce(Source, ModulePointForce):
 
     import pythia.pyre.inventory
 
-
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="pointforce"):
@@ -44,12 +43,10 @@ class PointForce(Source, ModulePointForce):
         from .AuxSubfieldsPointForce import AuxSubfieldsPointForce
         self.auxiliarySubfields = AuxSubfieldsPointForce("auxiliary_subfields")
 
-
     def preinitialize(self, problem):
         """Setup source.
         """
         Source.preinitialize(self, problem)
-
 
         return
 
