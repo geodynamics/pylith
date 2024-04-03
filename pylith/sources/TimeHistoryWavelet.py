@@ -21,6 +21,7 @@
 
 from .SourceTimeFunctionMomentTensorForce import SourceTimeFunctionMomentTensorForce
 from .sources import TimeHistoryWavelet as ModuleTimeHistoryWavelet
+from pylith.utils.NullComponent import NullComponent
 
 
 class TimeHistoryWavelet(SourceTimeFunctionMomentTensorForce, ModuleTimeHistoryWavelet):
@@ -30,6 +31,10 @@ class TimeHistoryWavelet(SourceTimeFunctionMomentTensorForce, ModuleTimeHistoryW
     """
 
     import pythia.pyre.inventory
+
+    dbTimeHistory = pythia.pyre.inventory.facility(
+        "time_history", factory=NullComponent, family="temporal_database")
+    dbTimeHistory.meta['tip'] = "Time history with normalized amplitude as a function of time."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 

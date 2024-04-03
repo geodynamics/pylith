@@ -46,7 +46,6 @@ class RickerWavelet(SourceTimeFunctionMomentTensorForce, ModuleRickerWavelet):
     def preinitialize(self, problem):
         SourceTimeFunctionMomentTensorForce.preinitialize(self, problem)
 
-
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////
