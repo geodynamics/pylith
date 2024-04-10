@@ -283,7 +283,7 @@ pylith::topology::MatVisitorMesh::MatVisitorMesh(const PetscMat mat,
     _dm = field.getDM();assert(_dm);
     _localSection = field.getLocalSection();assert(_localSection);
     err = DMGetPointSF(_dm, &sf);PYLITH_CHECK_ERROR(err);assert(sf);
-    err = PetscSectionCreateGlobalSection(_localSection, sf, PETSC_FALSE, PETSC_FALSE, &_globalSection);PYLITH_CHECK_ERROR(err);assert(_globalSection);
+    err = PetscSectionCreateGlobalSection(_localSection, sf, PETSC_TRUE, PETSC_FALSE, PETSC_FALSE, &_globalSection);PYLITH_CHECK_ERROR(err);assert(_globalSection);
 
     initialize();
 } // constructor
