@@ -7,49 +7,66 @@ The version numbers are in the form `MAJOR.MINOR.PATCH`, where major releases in
 
 ## Version 4.1.0 (main)
 
-* Improve the default preconditioners for poroelasticity.
-* Bug fixes
+* **Changed**
+  * Improve the default preconditioners for poroelasticity.
+* **Fixed**
   * Remove extra (wrong) kernels for poroelasticity when using state variables.
 
-## Version 4.0.0
+% =================================================================================================
 
-### Changes in user parameters
+## Version 4.0.0 (2023/12/14)
 
-* Changed name of fault Lagrange multiplier field for solution component in Python from `lagrange_fault` to `lagrange_multiplier_fault` to match name of solution field in C++.
-* Removed support for importing meshes from LaGriT.
-
-### Other changes
-
-* Change in fault tractions are now included in the fault `data_fields` for prescribed slip.
-* Fault and boundary orientation directions are now included in the `info_fields` for simulation output.
-* State variables are now included in the default `data_fields` for simulation output.
-* The default solver settings use the PETSc proper orthogonal decomposition (POD) methodology for initial guess of solutions to improve convergence.
-* Add demonstration of `pylith_powerlaw_gendb` in Step 8 of `examples/reverse-2d`.
-* Add demonstration of using poroelasticity with porosity as a state variable to `examples/magma-2d`.
-* Switched from CppUnit to Catch2 for the C++ testing framework.
-* Improve integration with VSCode for testing and debugging (see Developer Guide)
-* Bug fixes
+* **User parameters**
+  * Changed name of fault Lagrange multiplier field for solution component in Python from `lagrange_fault` to `lagrange_multiplier_fault` to match name of solution field in C++.
+  * Removed support for importing meshes from LaGriT.
+* **Added**
+  * Change in fault tractions are now included in the fault `data_fields` for prescribed slip.
+  * Fault and boundary orientation directions are now included in the `info_fields` for simulation output.
+  * State variables are now included in the default `data_fields` for simulation output.
+  * The default solver settings use the PETSc proper orthogonal decomposition (POD) methodology for initial guess of solutions to improve convergence.
+  * Add demonstration of `pylith_powerlaw_gendb` in Step 8 of `examples/reverse-2d`.
+  * Add demonstration of using poroelasticity with porosity as a state variable to `examples/magma-2d`.
+  * Improve integration with VSCode for testing and debugging (see Developer Guide)
+* **Changed**
+  * Switched from CppUnit to Catch2 for the C++ testing framework.
+  * Update PETSc to version 3.20.2
+  * Update Python requirement to version 3.8 or later.
+  * Update Pyre requirement to version 1.1.0 or later.
+  * Update SpatialData requirement to version 3.1.0 or later.
+* **Fixed** 
   * Fix errors in KinSrcTimeHistory.py
   * Fix creation of PETSc label for edges when importing Gmsh files. This fixes creation of faults with buried edges for 3D meshes imported from Gmsh.
   * Add containers for solution fields for poroelasticity with faults.
-* Update PETSc to version 3.20.2
-* Update Python requirement to version 3.8 or later.
-* Update Pyre requirement to version 1.1.0 or later.
-* Update SpatialData requirement to version 3.1.0 or later.
 
-## Version 3.0.3
+### Contributors
+
+* Brad Aagaard ![ORCID iD](/_static/images/ORCIDiD_icon32x32.png){w=16px}[0000-0002-8795-9833](https://orcid.org/0000-0002-8795-9833)
+* Matthew Knepley ![ORCID iD](/_static/images/ORCIDiD_icon32x32.png){w=16px}[0000-0002-2292-0735](https://orcid.org/0000-0002-2292-0735)
+* Charles Williams ![ORCID iD](/_static/images/ORCIDiD_icon32x32.png){w=16px}[0000-0001-7435-9196](https://orcid.org/0000-0001-7435-9196)
+* Grant Block ![ORCID iD](/_static/images/ORCIDiD_icon32x32.png){w=16px}[0009-0003-3402-0923](https://orcid.org/0009-0003-3402-0923)
+* Daniel Douglas ![ORCID iD](/_static/images/ORCIDiD_icon32x32.png){w=16px}[0000-0002-7871-018X](https://orcid.org/0000-0002-7871-018X)
+* Lorraine Hwang ![ORCID iD](/_static/images/ORCIDiD_icon32x32.png){w=16px}[0000-0002-1021-3101](https://orcid.org/0000-0002-1021-3101)
+* Rezgar Shakeri ![ORCID iD](/_static/images/ORCIDiD_icon32x32.png){w=16px}[0000-0003-4790-7016](https://orcid.org/0000-0003-4790-7016)
+* Robert Walker ![ORCID iD](/_static/images/ORCIDiD_icon32x32.png){w=16px}[0000-0001-7856-1949](https://orcid.org/0000-0001-7856-1949)
+
+% =================================================================================================
+
+## Version 3.0.3 (2022/10/14)
 
 This is a bug fix release with no new features or changes to the user interface.
 
-* Fixed duplicate integration of fault terms if a fault had one material on one side and multiple materials on the other side.
-* Fixed bugs related to running in parallel.
-  * Creating constraints on buried fault edges failed for some mesh distribution cases.
-  * Green's function problems did not manage fault impulses on multiple processes.
-  * Creating a point mesh for `OutputSolnPoints` failed when running in parallel.
-  * PetscSF inconsistencies generated errors at various times when running in parallel.
-* Update to PETSc 3.18.0.
+* **Fixed**
+  * Fixed duplicate integration of fault terms if a fault had one material on one side and multiple materials on the other side.
+  * Fixed bugs related to running in parallel.
+    * Creating constraints on buried fault edges failed for some mesh distribution cases.
+    * Green's function problems did not manage fault impulses on multiple processes.
+    * Creating a point mesh for `OutputSolnPoints` failed when running in parallel.
+    * PetscSF inconsistencies generated errors at various times when running in parallel.
+* **Changed**
+  * Update to PETSc 3.18.0.
 
-**Note**: We now use PETSc routines to write the HDF5 files. As a result, there is one change to the layout: `topology/cells` is now `viz/topology/cells`.
+**Note**: We now use PETSc routines to write the HDF5 files.
+As a result, there is one change to the layout: `topology/cells` is now `viz/topology/cells`.
 The corresponding Xdmf files reflect this change.
 
 ### Binary packages
@@ -57,26 +74,37 @@ The corresponding Xdmf files reflect this change.
 * Update to Python 3.10.6.
 * Use `gmforker` process manager with MPICH to avoid localhost name issues.
 
-## Version 3.0.2
+### Contributors
+
+* Brad Aagaard ![ORCID iD](/_static/images/ORCIDiD_icon32x32.png){w=16px}[0000-0002-8795-9833](https://orcid.org/0000-0002-8795-9833)
+* Matthew Knepley ![ORCID iD](/_static/images/ORCIDiD_icon32x32.png){w=16px}[0000-0002-2292-0735](https://orcid.org/0000-0002-2292-0735)
+* Charles Williams ![ORCID iD](/_static/images/ORCIDiD_icon32x32.png){w=16px}[0000-0001-7435-9196](https://orcid.org/0000-0001-7435-9196)
+
+% =================================================================================================
+
+## Version 3.0.2 (2022/08/24)
 
 This is a bug fix release with no new features or changes to the user interface.
 
-* Add check of PyLith version against version requirements specified in metadata of parameter files.
-* Update defaults to better match most use cases.
-  * Use nonlinear solver.
-  * Basis order is 1 for solution fields.
-  * Basis order is 0 for Cauchy stress and strain.
-  * Use ML algebraic multigrid preconditioner (from Trilinos) instead of GAMG preconditioner for more robust solves. This is a temporary change until we find better GAMG settings.
-* Update PETSc to v3.17.3.
-* Remove obsolete LaTeX documentation.
-* Bug fixes
+* **Added**
+  * Add check of PyLith version against version requirements specified in metadata of parameter files.
+  * Documentation
+    * Add discussion of translating boundary value problem information to parameter settings. Add more code blocks to manual.
+    * Add discussion of `examples/troubleshooting-2d` to manual.
+* **Changed**
+  * Update defaults to better match most use cases.
+    * Use nonlinear solver.
+    * Basis order is 1 for solution fields.
+    * Basis order is 0 for Cauchy stress and strain.
+    * Use ML algebraic multigrid preconditioner (from Trilinos) instead of GAMG preconditioner for more robust solves. This is a temporary change until we find better GAMG settings.
+  * Update PETSc to v3.17.3.
+* **Fixed**
   * Add `viz` directory missing from `examples/subduction-2d` in source distribution.
   * Project output fields using correct PETSc routine (`DMProjectFieldLabel()`). Fixes memory access bugs in both serial and parallel.
   * Fix build warnings.
   * Fix reordering that causes errors when importing Gmsh files.
-* Documentation
-  * Add discussion of translating boundary value problem information to parameter settings. Add more code blocks to manual.
-  * Add discussion of `examples/troubleshooting-2d` to manual.
+* **Removed**
+  * Remove obsolete LaTeX documentation.
 
 ### Binary packages
 
@@ -88,22 +116,31 @@ This is a bug fix release with no new features or changes to the user interface.
 * The default PETSc options provide a computationally expensive preconditioner when solving incompressible elasticity problems in parallel. We expect to have a more optimal preconditioner in the next release.
 * You may still encounter a few bugs when running in parallel; they appear to cases with specific partitioning of the mesh in relation to one or more faults.
 
-## Version 3.0.1
+### Contributors
+
+* Brad Aagaard ![ORCID iD](/_static/images/ORCIDiD_icon32x32.png){w=16px}[0000-0002-8795-9833](https://orcid.org/0000-0002-8795-9833)
+* Matthew Knepley ![ORCID iD](/_static/images/ORCIDiD_icon32x32.png){w=16px}[0000-0002-2292-0735](https://orcid.org/0000-0002-2292-0735)
+* Charles Williams ![ORCID iD](/_static/images/ORCIDiD_icon32x32.png){w=16px}[0000-0001-7435-9196](https://orcid.org/0000-0001-7435-9196)
+
+% =================================================================================================
+
+## Version 3.0.1 (2022/06/19)
 
 This is a bug fix release with no new features or changes to the user interface.
 
-* Bug fixes
+* **Fixed**
   * Fix lots of small bugs related to running in parallel
   * Fix several discrepancies among the code, examples, and manual
-* Examples
-  * Added `examples/subduction-3d` steps 1-4 (included in the manual)
-  * Added `examples/troubleshooting-2d` (included in the PyLith v3.0 tutorials but not yet added to the manual)
-* Documentation
-  * Added instructions for how to remove Apple quarantine attributes
-  * Fix LaTeX build of documentation (now available at https://pylith.readthedocs.io)
-  * Improved instructions on how to run ParaView Python scripts when starting ParaView from a shortcut
-  * Added notes indicating steps of examples are not yet updated for v3.0
-  * Fix lots of typos
+* **Added**
+  * Examples
+    * Added `examples/subduction-3d` steps 1-4 (included in the manual)
+    * Added `examples/troubleshooting-2d` (included in the PyLith v3.0 tutorials but not yet added to the manual)
+  * Documentation
+    * Added instructions for how to remove Apple quarantine attributes
+    * Fix LaTeX build of documentation (now available at https://pylith.readthedocs.io)
+    * Improved instructions on how to run ParaView Python scripts when starting ParaView from a shortcut
+    * Added notes indicating steps of examples are not yet updated for v3.0
+    * Fix lots of typos
 
 ### Binary packages
 
@@ -114,36 +151,43 @@ This is a bug fix release with no new features or changes to the user interface.
 * The default PETSc options provide a computationally expensive preconditioner when solving incompressible elasticity problems in parallel. We expect to have a more optimal preconditioner in the next release.
 * You may still encounter a few bugs when running in parallel; they appear to cases with specific partitioning of the mesh in relation to one or more faults.
 
-## Version 3.0.0
+### Contributors
+
+* Brad Aagaard ![ORCID iD](/_static/images/ORCIDiD_icon32x32.png){w=16px}[0000-0002-8795-9833](https://orcid.org/0000-0002-8795-9833)
+* Matthew Knepley ![ORCID iD](/_static/images/ORCIDiD_icon32x32.png){w=16px}[0000-0002-2292-0735](https://orcid.org/0000-0002-2292-0735)
+* Charles Williams ![ORCID iD](/_static/images/ORCIDiD_icon32x32.png){w=16px}[0000-0001-7435-9196](https://orcid.org/0000-0001-7435-9196)
+
+% =================================================================================================
+
+## Version 3.0.0 (2022/06/08)
 
 Version 3.0.0 includes major changes to the underlying finite-element formulation and implementation in order to support a more flexible specification of the governing equations and higher order basis functions.
 These changes affect how simulations are defined.
 Parameter files for previous versions will need to be updated; the changes are too complex for a simple translation table.
 Some features present in v2.2.2, such as spontaneous rupture and finite strain, have not yet been implemented in the new formulation.
 
-* Multiphysics
-  * Elasticity for linear isotropic materials and linear Maxwell, generalized Maxwell, and power law viscoelastic models
-  * Incompressible elasticity for linear isotropic materials
-  * Prescribed slip for quasistatic and dynamic simulations
-* Higher order basis functions
-    Allow user to select order of basis functions independent of the mesh (which defines the geometry). This permits higher resolution for a given mesh.
-* Switch to using PETSc time-stepping (TS) algorithms
-  Replace simple Python-based time-stepping implementations with PETSc time-stepping algorithms that provide support for higher order discretization in time and real adaptive time stepping.
-* Static Green's functions with user-specified discretization of fault slip impulses
-* Import finite-element meshes from Cubit (Exodus II), Gmsh, and LaGriT
-* Modular approach for initial conditions
-* Output of subfields with user-defined basis order
-* Simulation metadata with command line utility for searching metadata
-* Convert to Python 3
-* Convert LaTeX documentation to Sphinx + MyST
-* Testing with the Method of Manufactured Solutions
-* Automatically assign label value for fault cohesive cells (`id` setting is obsolete).
-* Use `description` for descriptive labels and `label` and `label_value` for tagging entities. PyLith's use of`label` and `label_value` now corresponds to PETSc labels and label values.
-
-### Deprecated features
-
-* We plan to discontinue support for reading LaGriT mesh files in version 3.2. \
-  Gmsh provides an open-source alternative with a graphical user interface.
+* **Added**
+  * Multiphysics
+    * Elasticity for linear isotropic materials and linear Maxwell, generalized Maxwell, and power law viscoelastic models
+    * Incompressible elasticity for linear isotropic materials
+    * Prescribed slip for quasistatic and dynamic simulations
+  * Higher order basis functions
+      Allow user to select order of basis functions independent of the mesh (which defines the geometry). This permits higher resolution for a given mesh.
+  * Added ability to import finite-element meshes from Gmsh
+  * Switch to using PETSc time-stepping (TS) algorithms
+    Replace simple Python-based time-stepping implementations with PETSc time-stepping algorithms that provide support for higher order discretization in time and real adaptive time stepping.
+  * Modular approach for initial conditions
+  * Output of subfields with user-defined basis order
+  * Simulation metadata with command line utility for searching metadata
+  * Convert to Python 3
+  * Convert LaTeX documentation to Sphinx + MyST
+  * Testing with the Method of Manufactured Solutions
+  * Automatically assign label value for fault cohesive cells (`id` setting is obsolete).
+* **Changed**
+  * Use `description` for descriptive labels and `label` and `label_value` for tagging entities. PyLith's use of`label` and `label_value` now corresponds to PETSc labels and label values.
+* **Deprecated**
+  * We plan to discontinue support for reading LaGriT mesh files in version 3.2. \
+    Gmsh provides an open-source alternative with a graphical user interface.
 
 ### SpatialData settings
 
@@ -180,20 +224,23 @@ For Linux there are additional libraries that must be installed for Gmsh to run;
 
 ### Contributors
 
-* Brad Aagaard
-* Matthew Knepley
-* Charles Williams
-* Robert Walker
-* Chris Mills
-* Shengduo Liu
-* Thea Ragon
-* Alex Berne
-* Jed Brown
-* Rey Koki
-* Kali Allison
-* Lorraine Hwang
+* Brad Aagaard ![ORCID iD](/_static/images/ORCIDiD_icon32x32.png){w=16px}[0000-0002-8795-9833](https://orcid.org/0000-0002-8795-9833)
+* Matthew Knepley ![ORCID iD](/_static/images/ORCIDiD_icon32x32.png){w=16px}[0000-0002-2292-0735](https://orcid.org/0000-0002-2292-0735)
+* Charles Williams ![ORCID iD](/_static/images/ORCIDiD_icon32x32.png){w=16px}[0000-0001-7435-9196](https://orcid.org/0000-0001-7435-9196)
 
-## Version 2.2.2
+* Kali Allison ![ORCID iD](/_static/images/ORCIDiD_icon32x32.png){w=16px}[0000-0002-0561-8681](https://orcid.org/0000-0002-0561-8681)
+* Alex Berne ![ORCID iD](/_static/images/ORCIDiD_icon32x32.png){w=16px}[0000-0001-7857-8513](https://orcid.org/0000-0001-7857-8513)
+* Jed Brown ![ORCID iD](/_static/images/ORCIDiD_icon32x32.png){w=16px}[0000-0002-9945-0639](https://orcid.org/0000-0002-9945-0639)
+* Lorraine Hwang ![ORCID iD](/_static/images/ORCIDiD_icon32x32.png){w=16px}[0000-0002-1021-3101](https://orcid.org/0000-0002-1021-3101)
+* Rey Koki ![ORCID iD](/_static/images/ORCIDiD_icon32x32.png){w=16px}[0009-0007-6551-743X](https://orcid.org/0009-0007-6551-743X)
+* Shengduo Liu
+* Chris Mills
+* Thea Ragon ![ORCID iD](/_static/images/ORCIDiD_icon32x32.png){w=16px}[0000-0002-1276-1910](https://orcid.org/0000-0002-1276-1910)
+* Robert Walker ![ORCID iD](/_static/images/ORCIDiD_icon32x32.png){w=16px}[0000-0001-7856-1949](https://orcid.org/0000-0001-7856-1949)
+
+% =================================================================================================
+
+## Version 2.2.2 (2019/07/02)
 
 * Bug fixes
   * Fix several typos in the manual.
@@ -203,7 +250,9 @@ For Linux there are additional libraries that must be installed for Gmsh to run;
 * Added ability to write residual to an HDF5 file during solves. This is intended for debugging and is enabled at runtime using `--journal.debug.formulation=1`. The residual will be written to `residual.h5`. To generate the associated `.xdmf` file run `pylith_genxdmd -f residual.h5`.
 * Updated to PETSc 3.10.2
 
-## Version 2.2.1
+% =================================================================================================
+
+## Version 2.2.1 (2017/09/06)
 
 * Added new examples.
 
@@ -229,7 +278,9 @@ For Linux there are additional libraries that must be installed for Gmsh to run;
 
 * Switched to using CentOS 6.9 for Linux binary builds to insure compatibility with glibc 2.12 and later.
 
-## Version 2.2.0
+% =================================================================================================
+
+## Version 2.2.0 (2017/03/28)
 
 * Added a browser-based parameter viewer for interactive viewing of all PyLith parameters and version information. See Section 4.10 PyLith Parameter Viewer of the PyLith user manual.
 
@@ -248,8 +299,9 @@ For Linux there are additional libraries that must be installed for Gmsh to run;
 
 * Updated PETSc to v3.7.5.
 
+% =================================================================================================
 
-## Version 2.1.4
+## Version 2.1.4 (2016/10/21)
 
 * Added --version command line argument to display version information for PyLith and its dependencies.
 
@@ -265,8 +317,9 @@ For Linux there are additional libraries that must be installed for Gmsh to run;
 
 * Added integration with Travis for automated testing.
 
+% =================================================================================================
 
-## Version 2.1.3
+## Version 2.1.3 (2016/07/20)
 
 * Add `generate_statedb.py` and `postseismic.pvsm` files missing from `examples/2d/gravity`.
 
@@ -279,7 +332,9 @@ condition nodesets in `examples/meshing/surface_nurbs/subduction`.
 
   * Fix linking and executable mode permissions for Python scripts in binary by using nemesis so relative links are valid.
 
-## Version 2.1.2
+% =================================================================================================
+
+## Version 2.1.2 (2016/06/16)
 
 * Bugfixes for finite-strain formulation.
 
@@ -309,8 +364,9 @@ condition nodesets in `examples/meshing/surface_nurbs/subduction`.
 
   * Fixed Trilinos/ML configuration and code so that it can be built without a Fortran compiler.
 
+% =================================================================================================
 
-## Version 2.1.0
+## Version 2.1.0 (2015/02/19)
 
 * Station names are required for output at arbitrary points (`OutputSolnPoints`) and are included in a /stations dataset in HDF5 files.
 
@@ -332,12 +388,15 @@ condition nodesets in `examples/meshing/surface_nurbs/subduction`.
 
 The points file for `OutputSolnPoints` must now contain station names as the first column.
 
+% =================================================================================================
 
-## Version 2.0.3
+## Version 2.0.3 (2014/08/19)
 
 ### Bug fixes
 
 * Updated autotools files (Makefile.am, configure.ac) for compatibility with recent versions of automake (up to and including v1.14.1).
+
+% =================================================================================================
 
 ## Version 2.0.2
 
@@ -351,7 +410,9 @@ The points file for `OutputSolnPoints` must now contain station names as the fir
 
 * Added examples/debugging files from Crustal Deformation Modeling workshop debugging tutorial.
 
-## Version 2.0.1
+% =================================================================================================
+
+## Version 2.0.1 (2014/06/22)
 
 ### Bug fixes
 
@@ -361,8 +422,9 @@ The points file for `OutputSolnPoints` must now contain station names as the fir
 
 * Switched journal APREPRO lines to have leading '$' instead of '#' to differentiate from comments.
 
+% =================================================================================================
 
-## Version 2.0.0
+## Version 2.0.0 (2014/06/05)
 
 * Replaced C++ Sieve implementation of finite-element data structures with C DMPlex implementation.
 
@@ -457,7 +519,7 @@ distributor.partitioner = metis
 
 Buried edges of faults are handled differently in v2.0. A separate nodeset/pset should be created and contain the vertices on the buried edges of the fault. See the Section 6.4.2 of the PyLith manual for more information.
 
-## Version 1.9.0
+## Version 1.9.0 (2014/05/05)
 
 ### New features
 

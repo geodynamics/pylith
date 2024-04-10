@@ -46,11 +46,11 @@ See [CHANGES](CHANGES.md) for a complete list of changes for each release.
 
 PyLith is continually being improved by a growing, collaborative, and inclusive community. It is primarily developed and maintained by:
 
-* Brad Aagaard, Geologic Hazards Science Center, U.S. Geological Survey, USA
-* Matthew Knepley, Computer Science and Engineering, University at Buffalo, USA
-* Charles Williams, Tectonophysics, GNS Science, New Zealand
+* Brad Aagaard, Geologic Hazards Science Center, U.S. Geological Survey, USA <img alt="ORCID iD" src="docs/_static/images/ORCIDiD_icon32x32.png" width="16px"/>[0000-0002-8795-9833](https://orcid.org/0000-0002-8795-9833)
+* Matthew Knepley, Computer Science and Engineering, University at Buffalo, USA <img alt="ORCID iD" src="docs/_static/images/ORCIDiD_icon32x32.png" width="16px"/>[0000-0002-2292-0735](https://orcid.org/0000-0002-2292-0735)
+* Charles Williams, Tectonophysics, GNS Science, New Zealand <img alt="ORCID iD" src="docs/_static/images/ORCIDiD_icon32x32.png" width="16px"/>[0000-0001-7435-9196](https://orcid.org/0000-0001-7435-9196)
 
-A complete and growing list of the authors that have contributed over the years can be found at [GitHub contributors](https://github.com/geodynamics/pylith/graphs/contributors).
+For a more complete list of contributors, refer to the [GitHub contributors](https://github.com/geodynamics/pylith/graphs/contributors).
 
 Please see the User Guide for [acknowledgement and citation](https://pylith.readthedocs.io/en/latest/intro/preface.html#citation) information.
 

@@ -42,6 +42,7 @@ myst_enable_extensions = [
     "substitution",
     "dollarmath",
     "amsmath",
+    "attrs_inline",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
