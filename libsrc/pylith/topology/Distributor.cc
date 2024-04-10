@@ -240,7 +240,7 @@ pylith::topology::_Distributor::distributeOverlap(PetscDM* dmOverlap,
     delete[] ovExcludeLabelValues;ovExcludeLabelValues = NULL;
 
     /* Convert overlap label to stratified migration SF */
-    PetscCall(DMPlexPartitionLabelCreateSF(dmMesh, lblOverlap, &sfOverlap));
+    PetscCall(DMPlexPartitionLabelCreateSF(dmMesh, lblOverlap, PETSC_TRUE, &sfOverlap));
     PetscCall(DMPlexStratifyMigrationSF(dmMesh, sfOverlap, &sfStratified));
     PetscCall(PetscSFDestroy(&sfOverlap));
     sfOverlap = sfStratified;
