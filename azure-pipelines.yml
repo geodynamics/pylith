@@ -49,14 +49,12 @@ stages:
           matrix:
             debian_testing:
               BASE_IMAGE: "testenv-debian-testing"
-            ubuntu_20.04:
+            ubuntu_20_04:
               BASE_IMAGE: "testenv-ubuntu-20.04"
-            ubuntu_22.04:
+            ubuntu_22_04:
               BASE_IMAGE: "testenv-ubuntu-22.04"
-            ubuntu_23.04:
-              BASE_IMAGE: "testenv-ubuntu-23.04"
-            ubuntu_23.10:
-              BASE_IMAGE: "testenv-ubuntu-23.10"
+            ubuntu_24_04:
+              BASE_IMAGE: "testenv-ubuntu-24.04"
             fedora_38:
               BASE_IMAGE: "testenv-fedora-38"
             fedora_39:
