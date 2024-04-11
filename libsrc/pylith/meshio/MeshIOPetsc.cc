@@ -83,6 +83,7 @@ pylith::meshio::MeshIOPetsc::deallocate(void) {
 } // deallocate
 
 
+#include <iostream>
 // ------------------------------------------------------------------------------------------------
 // Read mesh.
 void
@@ -152,15 +153,23 @@ pylith::meshio::_MeshIOPetsc::fixMaterialLabel(PetscDM* dmMesh) {
     if (pStart == cStart) { pStart = cEnd; }
     if (pEnd == cEnd) { pEnd = cStart; }
 
+    /** Get all values for a label up front and then clear all label values for
+     * all non-cell points. This is much faster than checking to see if a point
+     * is in the label, getting the label value, and clearing that value.
+     */
+    PetscIS valuesIS = PETSC_NULLPTR;
+    err = DMLabelGetNonEmptyStratumValuesIS(dmLabel, &valuesIS);PYLITH_CHECK_ERROR(err);
+    PetscInt numValues;
+    err = ISGetLocalSize(valuesIS, &numValues);PYLITH_CHECK_ERROR(err);
+    const PetscInt* valuesIndices = PETSC_NULLPTR;
+    err = ISGetIndices(valuesIS, &valuesIndices);
     for (PetscInt point = pStart; point < pEnd; ++point) {
-        PetscBool hasLabel = PETSC_FALSE;
-        err = DMLabelHasPoint(dmLabel, point, &hasLabel);PYLITH_CHECK_ERROR(err);
-        if (hasLabel) {
-            PetscInt labelValue;
-            err = DMLabelGetValue(dmLabel, point, &labelValue);PYLITH_CHECK_ERROR(err);
-            err = DMLabelClearValue(dmLabel, point, labelValue);PYLITH_CHECK_ERROR(err);
-        } // if
+      for (PetscInt iValue=0; iValue < numValues; ++iValue) {
+	err = DMLabelClearValue(dmLabel, point, valuesIndices[iValue]);PYLITH_CHECK_ERROR(err);
+      } // for
     } // for
+    err = ISRestoreIndices(valuesIS, &valuesIndices);
+    err = ISDestroy(&valuesIS);
 
     PYLITH_METHOD_END;
 } // fixMaterialLabel
