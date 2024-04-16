@@ -102,7 +102,11 @@ pylith::TestFaultKin::_initialize(void) {
     // Set up faults
     for (size_t iFault = 0; iFault < _data->faults.size(); ++iFault) {
         REQUIRE(_data->faults[iFault]);
+#if 0
         _data->faults[iFault]->adjustTopology(_mesh);
+#else
+        _data->faults[iFault]->transformTopology(_mesh);
+#endif
 
         REQUIRE(_data->kinSrc);
         _data->kinSrc->auxFieldDB(&_data->faultAuxDB);

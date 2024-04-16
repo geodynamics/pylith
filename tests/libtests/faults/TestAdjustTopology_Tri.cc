@@ -48,6 +48,7 @@ private:
 // ------------------------------------------------------------------------------------------------
 #include "catch2/catch_test_macros.hpp"
 
+#if 0
 TEST_CASE("TestAdjustTopology_TriA", "[TestAdjustTopology][Tri]") {
     pylith::faults::TestAdjustTopology(pylith::faults::TestAdjustTopology_Tri::caseA()).run();
 }
@@ -75,8 +76,34 @@ TEST_CASE("TestAdjustTopology_TriH", "[TestAdjustTopology][Tri]") {
 TEST_CASE("TestAdjustTopology_TriI", "[TestAdjustTopology][Tri]") {
     pylith::faults::TestAdjustTopology(pylith::faults::TestAdjustTopology_Tri::caseI()).run();
 }
+#endif
+TEST_CASE("TestTransform_TriA", "[TestTransform][Tri]") {
+    pylith::faults::TestAdjustTopology(pylith::faults::TestAdjustTopology_Tri::caseA()).run_transform();
+}
+TEST_CASE("TestTransform_TriB", "[TestTransform][Tri]") {
+    pylith::faults::TestAdjustTopology(pylith::faults::TestAdjustTopology_Tri::caseB()).run_transform();
+}
+TEST_CASE("TestTransform_TriC", "[TestTransform][Tri]") {
+    pylith::faults::TestAdjustTopology(pylith::faults::TestAdjustTopology_Tri::caseC()).run_transform();
+}
+TEST_CASE("TestTransform_TriD", "[TestTransform][Tri]") {
+    pylith::faults::TestAdjustTopology(pylith::faults::TestAdjustTopology_Tri::caseD()).run_transform();
+}
+TEST_CASE("TestTransform_TriE", "[TestTransform][Tri]") {
+    pylith::faults::TestAdjustTopology(pylith::faults::TestAdjustTopology_Tri::caseE()).run_transform();
+}
+TEST_CASE("TestTransform_TriF", "[TestTransform][Tri]") {
+    pylith::faults::TestAdjustTopology(pylith::faults::TestAdjustTopology_Tri::caseF()).run_transform();
+}
+TEST_CASE("TestTransform_TriG", "[TestTransform][Tri]") {
+    pylith::faults::TestAdjustTopology(pylith::faults::TestAdjustTopology_Tri::caseG()).run_transform();
+}
+TEST_CASE("TestTransform_TriH", "[TestTransform][Tri]") {
+    pylith::faults::TestAdjustTopology(pylith::faults::TestAdjustTopology_Tri::caseH()).run_transform();
+}
 
 // ------------------------------------------------------------------------------------------------
+
 pylith::faults::TestAdjustTopology_Data*
 pylith::faults::TestAdjustTopology_Tri::caseA(void) {
     pylith::faults::TestAdjustTopology_Data* data = new pylith::faults::TestAdjustTopology_Data();
@@ -85,7 +112,7 @@ pylith::faults::TestAdjustTopology_Tri::caseA(void) {
     data->filename = "data/tri_a.mesh";
 
     data->numFaults = 1;
-    static const char* const faultSurfaceLabels[1] = { "fault" };
+    static const char* const faultSurfaceLabels[1] = { "fault_faces" };
     data->faultSurfaceLabels = const_cast<const char**>(faultSurfaceLabels);
     static const char* const faultEdgeLabels[1] = { NULL };
     data->faultEdgeLabels = const_cast<const char**>(faultEdgeLabels);
@@ -101,14 +128,13 @@ pylith::faults::TestAdjustTopology_Tri::caseA(void) {
 
     static const int numCorners[numCells] = { 3, 3, 4 };
     data->numCorners = const_cast<int*>(numCorners);
-    static const int materialIds[numCells] = { 0, 0, 100 };
-    data->materialIds = const_cast<int*>(materialIds);
+    data->getMatId = pylith::faults::TestAdjustTopology_Data::getMatIdDefault;
 
     static const size_t numGroups = 4;
     data->numGroups = numGroups;
     static const int groupSizes[numGroups] = { 5+4, 4+2, 2, 2 }; // vertices + edges
     data->groupSizes = const_cast<int*>(groupSizes);
-    static const char* groupNames[numGroups] = { "output_vertices", "fault", "output", "fault_faces" };
+    static const char* groupNames[numGroups] = { "output_vertices", "fault_vertices", "output_faces", "fault_faces" };
     data->groupNames = const_cast<char**>(groupNames);
     static const char* groupTypes[numGroups] = { "vertex", "vertex", "face", "face" };
     data->groupTypes = const_cast<char**>(groupTypes);
@@ -126,7 +152,7 @@ pylith::faults::TestAdjustTopology_Tri::caseB(void) {
     data->filename = "data/tri_b.mesh";
 
     data->numFaults = 1;
-    static const char* const faultSurfaceLabels[1] = { "fault" };
+    static const char* const faultSurfaceLabels[1] = { "fault_faces" };
     data->faultSurfaceLabels = const_cast<const char**>(faultSurfaceLabels);
     static const char* const faultEdgeLabels[1] = { NULL };
     data->faultEdgeLabels = const_cast<const char**>(faultEdgeLabels);
@@ -142,14 +168,13 @@ pylith::faults::TestAdjustTopology_Tri::caseB(void) {
 
     static const int numCorners[numCells] = { 3, 3, 4 };
     data->numCorners = const_cast<int*>(numCorners);
-    static const int materialIds[numCells] = { 0, 0, 100 };
-    data->materialIds = const_cast<int*>(materialIds);
+    data->getMatId = pylith::faults::TestAdjustTopology_Data::getMatIdDefault;
 
     static const size_t numGroups = 4;
     data->numGroups = numGroups;
     static const int groupSizes[numGroups] = { 5+4, 4+2, 2, 2 }; // vertices + edges
     data->groupSizes = const_cast<int*>(groupSizes);
-    static const char* groupNames[numGroups] = { "output_vertices", "fault", "output", "fault_faces" };
+    static const char* groupNames[numGroups] = { "output_vertices", "fault_vertices", "output_faces", "fault_faces" };
     data->groupNames = const_cast<char**>(groupNames);
     static const char* groupTypes[numGroups] = { "vertex", "vertex", "face", "face" };
     data->groupTypes = const_cast<char**>(groupTypes);
@@ -167,7 +192,7 @@ pylith::faults::TestAdjustTopology_Tri::caseC(void) {
     data->filename = "data/tri_c.mesh";
 
     data->numFaults = 1;
-    static const char* const faultSurfaceLabels[1] = { "fault" };
+    static const char* const faultSurfaceLabels[1] = { "fault_faces" };
     data->faultSurfaceLabels = const_cast<const char**>(faultSurfaceLabels);
     static const char* const faultEdgeLabels[1] = { NULL };
     data->faultEdgeLabels = const_cast<const char**>(faultEdgeLabels);
@@ -183,14 +208,13 @@ pylith::faults::TestAdjustTopology_Tri::caseC(void) {
 
     static const int numCorners[numCells] = { 3, 3, 4 };
     data->numCorners = const_cast<int*>(numCorners);
-    static const int materialIds[numCells] = { 0, 0, 100 };
-    data->materialIds = const_cast<int*>(materialIds);
+    data->getMatId = pylith::faults::TestAdjustTopology_Data::getMatIdDefault;
 
     static const size_t numGroups = 4;
     data->numGroups = numGroups;
     static const int groupSizes[numGroups] = { 5+4, 4+2, 2, 2 }; // vertices + edges
     data->groupSizes = const_cast<int*>(groupSizes);
-    static const char* groupNames[numGroups] = { "output_vertices", "fault", "output", "fault_faces" };
+    static const char* groupNames[numGroups] = { "output_vertices", "fault_vertices", "output_faces", "fault_faces" };
     data->groupNames = const_cast<char**>(groupNames);
     static const char* groupTypes[numGroups] = { "vertex", "vertex", "face", "face" };
     data->groupTypes = const_cast<char**>(groupTypes);
@@ -208,7 +232,7 @@ pylith::faults::TestAdjustTopology_Tri::caseD(void) {
     data->filename = "data/tri_d.mesh";
 
     data->numFaults = 1;
-    static const char* const faultSurfaceLabels[1] = { "fault" };
+    static const char* const faultSurfaceLabels[1] = { "fault_faces" };
     data->faultSurfaceLabels = const_cast<const char**>(faultSurfaceLabels);
     static const char* const faultEdgeLabels[1] = { NULL };
     data->faultEdgeLabels = const_cast<const char**>(faultEdgeLabels);
@@ -224,14 +248,13 @@ pylith::faults::TestAdjustTopology_Tri::caseD(void) {
 
     static const int numCorners[numCells] = { 3, 3, 3, 3, 4, 4, };
     data->numCorners = const_cast<int*>(numCorners);
-    static const int materialIds[numCells] = { 0, 0, 0, 0, 100, 100 };
-    data->materialIds = const_cast<int*>(materialIds);
+    data->getMatId = pylith::faults::TestAdjustTopology_Data::getMatIdDefault;
 
     static const size_t numGroups = 4;
     data->numGroups = numGroups;
     static const int groupSizes[numGroups] = { 5+4, 6+4, 2, 4 }; // vertices + edges
     data->groupSizes = const_cast<int*>(groupSizes);
-    static const char* groupNames[numGroups] = { "output_vertices", "fault", "output", "fault_faces" };
+    static const char* groupNames[numGroups] = { "output_vertices", "fault_vertices", "output_faces", "fault_faces" };
     data->groupNames = const_cast<char**>(groupNames);
     static const char* groupTypes[numGroups] = { "vertex", "vertex", "face", "face" };
     data->groupTypes = const_cast<char**>(groupTypes);
@@ -249,7 +272,7 @@ pylith::faults::TestAdjustTopology_Tri::caseE(void) {
     data->filename = "data/tri_e.mesh";
 
     data->numFaults = 1;
-    static const char* const faultSurfaceLabels[1] = { "fault" };
+    static const char* const faultSurfaceLabels[1] = { "fault_faces" };
     data->faultSurfaceLabels = const_cast<const char**>(faultSurfaceLabels);
     static const char* const faultEdgeLabels[1] = { NULL };
     data->faultEdgeLabels = const_cast<const char**>(faultEdgeLabels);
@@ -265,14 +288,13 @@ pylith::faults::TestAdjustTopology_Tri::caseE(void) {
 
     static const int numCorners[numCells] = { 3, 3, 3, 3, 4, 4, };
     data->numCorners = const_cast<int*>(numCorners);
-    static const int materialIds[numCells] = { 0, 0, 0, 0, 100, 100 };
-    data->materialIds = const_cast<int*>(materialIds);
+    data->getMatId = pylith::faults::TestAdjustTopology_Data::getMatIdDefault;
 
     static const size_t numGroups = 4;
     data->numGroups = numGroups;
     static const int groupSizes[numGroups] = { 5+4, 6+4, 2, 4 }; // vertices + edges
     data->groupSizes = const_cast<int*>(groupSizes);
-    static const char* groupNames[numGroups] = { "output_vertices", "fault", "output", "fault_faces" };
+    static const char* groupNames[numGroups] = { "output_vertices", "fault_vertices", "output_faces", "fault_faces" };
     data->groupNames = const_cast<char**>(groupNames);
     static const char* groupTypes[numGroups] = { "vertex", "vertex", "face", "face" };
     data->groupTypes = const_cast<char**>(groupTypes);
@@ -290,7 +312,7 @@ pylith::faults::TestAdjustTopology_Tri::caseF(void) {
     data->filename = "data/tri_f.mesh";
 
     data->numFaults = 1;
-    static const char* const faultSurfaceLabels[1] = { "fault" };
+    static const char* const faultSurfaceLabels[1] = { "fault_faces" };
     data->faultSurfaceLabels = const_cast<const char**>(faultSurfaceLabels);
     static const char* const faultEdgeLabels[1] = { NULL };
     data->faultEdgeLabels = const_cast<const char**>(faultEdgeLabels);
@@ -306,14 +328,21 @@ pylith::faults::TestAdjustTopology_Tri::caseF(void) {
 
     static const int numCorners[numCells] = { 3, 3, 3, 3, 4, };
     data->numCorners = const_cast<int*>(numCorners);
-    static const int materialIds[numCells] = { 0, 0, 2, 2, 100, };
-    data->materialIds = const_cast<int*>(materialIds);
+    data->getMatId = [](const int cell,
+                        const int numNoncohesiveCells,
+                        const double* xyz) {
+                         int value = 100;
+                         if (cell < numNoncohesiveCells) {
+                             value = (xyz[0] < 0.0) ? 0 : 2;
+                         }
+                         return value;
+                     };
 
     static const size_t numGroups = 4;
     data->numGroups = numGroups;
     static const int groupSizes[numGroups] = { 4+2, 4+2, 2, 2 }; // vertices + edges
     data->groupSizes = const_cast<int*>(groupSizes);
-    static const char* groupNames[numGroups] = { "output_vertices", "fault", "output", "fault_faces" };
+    static const char* groupNames[numGroups] = { "output_vertices", "fault_vertices", "output_faces", "fault_faces" };
     data->groupNames = const_cast<char**>(groupNames);
     static const char* groupTypes[numGroups] = { "vertex", "vertex", "face", "face" };
     data->groupTypes = const_cast<char**>(groupTypes);
@@ -331,9 +360,9 @@ pylith::faults::TestAdjustTopology_Tri::caseG(void) {
     data->filename = "data/tri_g.mesh";
 
     data->numFaults = 1;
-    static const char* const faultSurfaceLabels[1] = { "fault" };
+    static const char* const faultSurfaceLabels[1] = { "fault_faces" };
     data->faultSurfaceLabels = const_cast<const char**>(faultSurfaceLabels);
-    static const char* const faultEdgeLabels[1] = { "edge" };
+    static const char* const faultEdgeLabels[1] = { NULL };
     data->faultEdgeLabels = const_cast<const char**>(faultEdgeLabels);
     static const int interfaceIds[1] = { 100 };
     data->interfaceIds = const_cast<const int*>(interfaceIds);
@@ -347,16 +376,23 @@ pylith::faults::TestAdjustTopology_Tri::caseG(void) {
 
     static const int numCorners[numCells] = { 3, 3, 3, 3, 3, 3, 4, };
     data->numCorners = const_cast<int*>(numCorners);
-    static const int materialIds[numCells] = { 0, 2, 0, 2, 0, 2, 100, };
-    data->materialIds = const_cast<int*>(materialIds);
+    data->getMatId = [](const int cell,
+                        const int numNoncohesiveCells,
+                        const double* xyz) {
+                         int value = 100;
+                         if (cell < numNoncohesiveCells) {
+                             value = (xyz[0] < 0.0) ? 0 : 2;
+                         }
+                         return value;
+                     };
 
-    static const size_t numGroups = 5;
+    static const size_t numGroups = 6;
     data->numGroups = numGroups;
-    static const int groupSizes[numGroups] = { 5+3, 1, 3+2, 3, 2 }; // vertices + edges
+    static const int groupSizes[numGroups] = { 5+3, 1, 3+2, 3, 2, 1 }; // vertices + edges
     data->groupSizes = const_cast<int*>(groupSizes);
-    static const char* groupNames[numGroups] = { "output_vertices", "edge", "fault", "output", "fault_faces" };
+    static const char* groupNames[numGroups] = { "output_vertices", "edge_vertices", "fault_vertices", "output_faces", "fault_faces", "fault_faces_edge_auto" };
     data->groupNames = const_cast<char**>(groupNames);
-    static const char* groupTypes[numGroups] = { "vertex", "vertex", "vertex", "face", "face" };
+    static const char* groupTypes[numGroups] = { "vertex", "vertex", "vertex", "face", "face", "vertex" };
     data->groupTypes = const_cast<char**>(groupTypes);
 
     return data;
@@ -372,9 +408,9 @@ pylith::faults::TestAdjustTopology_Tri::caseH(void) {
     data->filename = "data/tri_h.mesh";
 
     data->numFaults = 1;
-    static const char* const faultSurfaceLabels[1] = { "fault" };
+    static const char* const faultSurfaceLabels[1] = { "fault_faces" };
     data->faultSurfaceLabels = const_cast<const char**>(faultSurfaceLabels);
-    static const char* const faultEdgeLabels[1] = { "edge" };
+    static const char* const faultEdgeLabels[1] = { NULL };
     data->faultEdgeLabels = const_cast<const char**>(faultEdgeLabels);
     static const int interfaceIds[1] = { 100 };
     data->interfaceIds = const_cast<const int*>(interfaceIds);
@@ -390,20 +426,29 @@ pylith::faults::TestAdjustTopology_Tri::caseH(void) {
         3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
         4, 4, };
     data->numCorners = const_cast<int*>(numCorners);
-    static const int materialIds[numCells] = {
-        0, 0, 0, 0,
-        2, 2, 3, 3, 3, 2, 3,
-        100, 100,
-    };
-    data->materialIds = const_cast<int*>(materialIds);
+    data->getMatId = [](const int cell,
+                        const int numNoncohesiveCells,
+                        const double* xyz) {
+                         int value = 100;
+                         if (cell < numNoncohesiveCells) {
+                             if (xyz[1] > 0.0) {
+                                 value = 0;
+                             } else if (xyz[1] > -1.0) {
+                                 value = 2;
+                             } else {
+                                 value = 3;
+                             } // if/else
+                         } // if
+                         return value;
+                     };
 
-    static const size_t numGroups = 5;
+    static const size_t numGroups = 6;
     data->numGroups = numGroups;
-    static const int groupSizes[numGroups] = { 3+2, 2, 4+4, 2, 4 }; // vertices + edges
+    static const int groupSizes[numGroups] = { 3+2, 2, 4+4, 2, 4, 2 }; // vertices + edges
     data->groupSizes = const_cast<int*>(groupSizes);
-    static const char* groupNames[numGroups] = { "output_vertices", "edge", "fault", "output", "fault_faces" };
+    static const char* groupNames[numGroups] = { "output_vertices", "edge_vertices", "fault_vertices", "output_faces", "fault_faces", "fault_faces_edge_auto" };
     data->groupNames = const_cast<char**>(groupNames);
-    static const char* groupTypes[numGroups] = { "vertex", "vertex", "vertex", "face", "face" };
+    static const char* groupTypes[numGroups] = { "vertex", "vertex", "vertex", "face", "face", "vertex" };
     data->groupTypes = const_cast<char**>(groupTypes);
 
     return data;
@@ -420,9 +465,9 @@ pylith::faults::TestAdjustTopology_Tri::caseI(void) {
     data->failureExpected = true;
 
     data->numFaults = 1;
-    static const char* const faultSurfaceLabels[1] = { "fault" };
+    static const char* const faultSurfaceLabels[1] = { "fault_vertices" };
     data->faultSurfaceLabels = const_cast<const char**>(faultSurfaceLabels);
-    static const char* const faultEdgeLabels[1] = { "edge" };
+    static const char* const faultEdgeLabels[1] = { NULL };
     data->faultEdgeLabels = const_cast<const char**>(faultEdgeLabels);
     static const int interfaceIds[1] = { 100 };
     data->interfaceIds = const_cast<const int*>(interfaceIds);

@@ -53,7 +53,7 @@ class MeshGenerator(PetscComponent):
                     )
                 interface.preinitialize(problem)
                 interface.setCohesiveLabelValue(cohesiveLabelValue)
-                interface.adjustTopology(mesh)
+                interface.transformTopology(mesh)
                 cohesiveLabelValue += 1
 
         self._eventLogger.eventEnd(logEvent)

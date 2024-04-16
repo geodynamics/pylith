@@ -16,18 +16,15 @@ class Mesh(ModuleMesh):
     Finite-element mesh defining the topology of the discretization.
     """
 
-    def __init__(self, dim=None, comm=None, mesh=None, label=None, isSubmesh=False):
+    def __init__(self, dim=None, comm=None, mesh=None):
         """Constructor.
         """
-        if comm is None and dim is None and label is None:
-            ModuleMesh.__init__(self, isSubmesh)
-        elif comm is None and mesh is None and label is None:
+        if comm is None and dim is None:
+            ModuleMesh.__init__(self)
+        elif comm is None:
             ModuleMesh.__init__(self, dim)
-        elif label is None:
-            ModuleMesh.__init__(self, dim, comm.handle)
         else:
-            assert(not mesh is None and not label is None)
-            ModuleMesh.__init__(self, mesh, label)
+            ModuleMesh.__init__(self, dim, comm.handle)
 
         # Name of logging stage for mesh. We progress through various
         # stages as we read, distribute, and refine mesh.

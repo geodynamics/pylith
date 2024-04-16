@@ -31,7 +31,7 @@ class MeshIOObj(PetscComponent, ModuleMeshIO):
         self._createModuleObj()
         ModuleMeshIO.setIdentifier(self, self.aliases[-1])
 
-    def read(self, debug):
+    def read(self, check):
         """Read finite-element mesh and store in Sieve mesh object.
 
         @returns PETSc DMPlex mesh object containing finite-element mesh
@@ -50,7 +50,7 @@ class MeshIOObj(PetscComponent, ModuleMeshIO):
         mesh.setCoordSys(self.coordsys)
 
         # Read mesh
-        ModuleMeshIO.read(self, mesh, debug)
+        ModuleMeshIO.read(self, mesh, check)
         return mesh
 
     def write(self, mesh):

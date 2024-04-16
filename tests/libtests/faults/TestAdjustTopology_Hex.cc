@@ -50,6 +50,7 @@ private:
 // ------------------------------------------------------------------------------------------------
 #include "catch2/catch_test_macros.hpp"
 
+#if 0
 TEST_CASE("TestAdjustTopology_HexA", "[TestAdjustTopology][Hex]") {
     pylith::faults::TestAdjustTopology(pylith::faults::TestAdjustTopology_Hex::caseA()).run();
 }
@@ -80,6 +81,37 @@ TEST_CASE("TestAdjustTopology_HexI", "[TestAdjustTopology][Hex]") {
 TEST_CASE("TestAdjustTopology_HexJ", "[TestAdjustTopology][Hex]") {
     pylith::faults::TestAdjustTopology(pylith::faults::TestAdjustTopology_Hex::caseJ()).run();
 }
+#endif
+TEST_CASE("TestTransform_HexA", "[TestTransform][Hex]") {
+    pylith::faults::TestAdjustTopology(pylith::faults::TestAdjustTopology_Hex::caseA()).run_transform();
+}
+TEST_CASE("TestTransform_HexB", "[TestTransform][Hex]") {
+    pylith::faults::TestAdjustTopology(pylith::faults::TestAdjustTopology_Hex::caseB()).run_transform();
+}
+TEST_CASE("TestTransform_HexC", "[TestTransform][Hex]") {
+    pylith::faults::TestAdjustTopology(pylith::faults::TestAdjustTopology_Hex::caseC()).run_transform();
+}
+TEST_CASE("TestTransform_HexD", "[TestTransform][Hex]") {
+    pylith::faults::TestAdjustTopology(pylith::faults::TestAdjustTopology_Hex::caseD()).run_transform();
+}
+TEST_CASE("TestTransform_HexE", "[TestTransform][Hex]") {
+    pylith::faults::TestAdjustTopology(pylith::faults::TestAdjustTopology_Hex::caseE()).run_transform();
+}
+TEST_CASE("TestTransform_HexF", "[TestTransform][Hex]") {
+    pylith::faults::TestAdjustTopology(pylith::faults::TestAdjustTopology_Hex::caseF()).run_transform();
+}
+TEST_CASE("TestTransform_HexG", "[TestTransform][Hex]") {
+    pylith::faults::TestAdjustTopology(pylith::faults::TestAdjustTopology_Hex::caseG()).run_transform();
+}
+TEST_CASE("TestTransform_HexH", "[TestTransform][Hex]") {
+    pylith::faults::TestAdjustTopology(pylith::faults::TestAdjustTopology_Hex::caseH()).run_transform();
+}
+TEST_CASE("TestTransform_HexI", "[TestTransform][Hex]") {
+    pylith::faults::TestAdjustTopology(pylith::faults::TestAdjustTopology_Hex::caseI()).run_transform();
+}
+TEST_CASE("TestTransform_HexJ", "[TestTransform][Hex]") {
+    pylith::faults::TestAdjustTopology(pylith::faults::TestAdjustTopology_Hex::caseJ()).run_transform();
+}
 
 // ------------------------------------------------------------------------------------------------
 pylith::faults::TestAdjustTopology_Data*
@@ -90,7 +122,7 @@ pylith::faults::TestAdjustTopology_Hex::caseA(void) {
     data->filename = "data/hex_a.mesh";
 
     data->numFaults = 1;
-    static const char* const faultSurfaceLabels[1] = { "fault" };
+    static const char* const faultSurfaceLabels[1] = { "fault_faces" };
     data->faultSurfaceLabels = const_cast<const char**>(faultSurfaceLabels);
     static const char* const faultEdgeLabels[1] = { NULL };
     data->faultEdgeLabels = const_cast<const char**>(faultEdgeLabels);
@@ -106,14 +138,13 @@ pylith::faults::TestAdjustTopology_Hex::caseA(void) {
 
     static const int numCorners[numCells] = { 6, 6, 6 };
     data->numCorners = const_cast<int*>(numCorners);
-    static const int materialIds[numCells] = { 0, 0, 100 };
-    data->materialIds = const_cast<int*>(materialIds);
+    data->getMatId = pylith::faults::TestAdjustTopology_Data::getMatIdDefault;
 
     static const size_t numGroups = 4;
     data->numGroups = numGroups;
-    static const int groupSizes[numGroups] = { 8+8+2, 8+8+2, 2, 2 }; // vertices + edges + faces
+    static const int groupSizes[numGroups] = { 8+8+2, 8+8+2, 2, 8 }; // vertices + edges + faces
     data->groupSizes = const_cast<int*>(groupSizes);
-    static const char* groupNames[numGroups] = { "output_vertices", "fault", "output", "fault_faces" };
+    static const char* groupNames[numGroups] = { "output_vertices", "fault_vertices", "output_faces", "fault_faces" };
     data->groupNames = const_cast<char**>(groupNames);
     static const char* groupTypes[numGroups] = { "vertex", "vertex", "face", "face" };
     data->groupTypes = const_cast<char**>(groupTypes);
@@ -131,7 +162,7 @@ pylith::faults::TestAdjustTopology_Hex::caseB(void) {
     data->filename = "data/hex_b.mesh";
 
     data->numFaults = 1;
-    static const char* const faultSurfaceLabels[1] = { "fault" };
+    static const char* const faultSurfaceLabels[1] = { "fault_faces" };
     data->faultSurfaceLabels = const_cast<const char**>(faultSurfaceLabels);
     static const char* const faultEdgeLabels[1] = { NULL };
     data->faultEdgeLabels = const_cast<const char**>(faultEdgeLabels);
@@ -147,14 +178,13 @@ pylith::faults::TestAdjustTopology_Hex::caseB(void) {
 
     static const int numCorners[numCells] = { 6, 6, 6 };
     data->numCorners = const_cast<int*>(numCorners);
-    static const int materialIds[numCells] = { 0, 0, 100 };
-    data->materialIds = const_cast<int*>(materialIds);
+    data->getMatId = pylith::faults::TestAdjustTopology_Data::getMatIdDefault;
 
     static const size_t numGroups = 4;
     data->numGroups = numGroups;
-    static const int groupSizes[numGroups] = { 8+8+2, 8+8+2, 2, 2 }; // vertices + edges + faces
+    static const int groupSizes[numGroups] = { 8+8+2, 8+8+2, 2, 8 }; // vertices + edges + faces
     data->groupSizes = const_cast<int*>(groupSizes);
-    static const char* groupNames[numGroups] = { "output_vertices", "fault", "output", "fault_faces" };
+    static const char* groupNames[numGroups] = { "output_vertices", "fault_vertices", "output_faces", "fault_faces" };
     data->groupNames = const_cast<char**>(groupNames);
     static const char* groupTypes[numGroups] = { "vertex", "vertex", "face", "face" };
     data->groupTypes = const_cast<char**>(groupTypes);
@@ -172,7 +202,7 @@ pylith::faults::TestAdjustTopology_Hex::caseC(void) {
     data->filename = "data/hex_c.mesh";
 
     data->numFaults = 1;
-    static const char* const faultSurfaceLabels[1] = { "fault" };
+    static const char* const faultSurfaceLabels[1] = { "fault_faces" };
     data->faultSurfaceLabels = const_cast<const char**>(faultSurfaceLabels);
     static const char* const faultEdgeLabels[1] = { NULL };
     data->faultEdgeLabels = const_cast<const char**>(faultEdgeLabels);
@@ -188,14 +218,13 @@ pylith::faults::TestAdjustTopology_Hex::caseC(void) {
 
     static const int numCorners[numCells] = { 6, 6, 6 };
     data->numCorners = const_cast<int*>(numCorners);
-    static const int materialIds[numCells] = { 0, 0, 100 };
-    data->materialIds = const_cast<int*>(materialIds);
+    data->getMatId = pylith::faults::TestAdjustTopology_Data::getMatIdDefault;
 
     static const size_t numGroups = 4;
     data->numGroups = numGroups;
-    static const int groupSizes[numGroups] = { 8+8+2, 8+8+2, 2, 2 }; // vertices + edges + faces
+    static const int groupSizes[numGroups] = { 8+8+2, 8+8+2, 2, 8 }; // vertices + edges + faces
     data->groupSizes = const_cast<int*>(groupSizes);
-    static const char* groupNames[numGroups] = { "output_vertices", "fault", "output", "fault_faces" };
+    static const char* groupNames[numGroups] = { "output_vertices", "fault_vertices", "output_faces", "fault_faces" };
     data->groupNames = const_cast<char**>(groupNames);
     static const char* groupTypes[numGroups] = { "vertex", "vertex", "face", "face" };
     data->groupTypes = const_cast<char**>(groupTypes);
@@ -213,7 +242,7 @@ pylith::faults::TestAdjustTopology_Hex::caseD(void) {
     data->filename = "data/hex_d.mesh";
 
     data->numFaults = 1;
-    static const char* const faultSurfaceLabels[1] = { "fault" };
+    static const char* const faultSurfaceLabels[1] = { "fault_faces" };
     data->faultSurfaceLabels = const_cast<const char**>(faultSurfaceLabels);
     static const char* const faultEdgeLabels[1] = { NULL };
     data->faultEdgeLabels = const_cast<const char**>(faultEdgeLabels);
@@ -229,14 +258,13 @@ pylith::faults::TestAdjustTopology_Hex::caseD(void) {
 
     static const int numCorners[numCells] = { 6, 6, 6 };
     data->numCorners = const_cast<int*>(numCorners);
-    static const int materialIds[numCells] = { 0, 0, 100 };
-    data->materialIds = const_cast<int*>(materialIds);
+    data->getMatId = pylith::faults::TestAdjustTopology_Data::getMatIdDefault;
 
     static const size_t numGroups = 4;
     data->numGroups = numGroups;
-    static const int groupSizes[numGroups] = { 8+8+2, 8+8+2, 2, 2 }; // vertices + edges + faces
+    static const int groupSizes[numGroups] = { 8+8+2, 8+8+2, 2, 8 }; // vertices + edges + faces
     data->groupSizes = const_cast<int*>(groupSizes);
-    static const char* groupNames[numGroups] = { "output_vertices", "fault", "output", "fault_faces" };
+    static const char* groupNames[numGroups] = { "output_vertices", "fault_vertices", "output_faces", "fault_faces" };
     data->groupNames = const_cast<char**>(groupNames);
     static const char* groupTypes[numGroups] = { "vertex", "vertex", "face", "face" };
     data->groupTypes = const_cast<char**>(groupTypes);
@@ -254,7 +282,7 @@ pylith::faults::TestAdjustTopology_Hex::caseE(void) {
     data->filename = "data/hex_e.mesh";
 
     data->numFaults = 1;
-    static const char* const faultSurfaceLabels[1] = { "fault" };
+    static const char* const faultSurfaceLabels[1] = { "fault_faces" };
     data->faultSurfaceLabels = const_cast<const char**>(faultSurfaceLabels);
     static const char* const faultEdgeLabels[1] = { NULL };
     data->faultEdgeLabels = const_cast<const char**>(faultEdgeLabels);
@@ -270,14 +298,13 @@ pylith::faults::TestAdjustTopology_Hex::caseE(void) {
 
     static const int numCorners[numCells] = { 6, 6, 6 };
     data->numCorners = const_cast<int*>(numCorners);
-    static const int materialIds[numCells] = { 0, 0, 100 };
-    data->materialIds = const_cast<int*>(materialIds);
+    data->getMatId = pylith::faults::TestAdjustTopology_Data::getMatIdDefault;
 
     static const size_t numGroups = 4;
     data->numGroups = numGroups;
-    static const int groupSizes[numGroups] = { 8+8+2, 8+8+2, 2, 2 }; // vertices + edges + faces
+    static const int groupSizes[numGroups] = { 8+8+2, 8+8+2, 2, 8 }; // vertices + edges + faces
     data->groupSizes = const_cast<int*>(groupSizes);
-    static const char* groupNames[numGroups] = { "output_vertices", "fault", "output", "fault_faces" };
+    static const char* groupNames[numGroups] = { "output_vertices", "fault_vertices", "output_faces", "fault_faces" };
     data->groupNames = const_cast<char**>(groupNames);
     static const char* groupTypes[numGroups] = { "vertex", "vertex", "face", "face" };
     data->groupTypes = const_cast<char**>(groupTypes);
@@ -295,7 +322,7 @@ pylith::faults::TestAdjustTopology_Hex::caseF(void) {
     data->filename = "data/hex_e.mesh";
 
     data->numFaults = 1;
-    static const char* const faultSurfaceLabels[1] = { "fault" };
+    static const char* const faultSurfaceLabels[1] = { "fault_faces" };
     data->faultSurfaceLabels = const_cast<const char**>(faultSurfaceLabels);
     static const char* const faultEdgeLabels[1] = { NULL };
     data->faultEdgeLabels = const_cast<const char**>(faultEdgeLabels);
@@ -311,14 +338,13 @@ pylith::faults::TestAdjustTopology_Hex::caseF(void) {
 
     static const int numCorners[numCells] = { 6, 6, 6 };
     data->numCorners = const_cast<int*>(numCorners);
-    static const int materialIds[numCells] = { 0, 0, 100 };
-    data->materialIds = const_cast<int*>(materialIds);
+    data->getMatId = pylith::faults::TestAdjustTopology_Data::getMatIdDefault;
 
     static const size_t numGroups = 4;
     data->numGroups = numGroups;
-    static const int groupSizes[numGroups] = { 8+8+2, 8+8+2, 2, 2 }; // vertices + edges + faces
+    static const int groupSizes[numGroups] = { 8+8+2, 8+8+2, 2, 8 }; // vertices + edges + faces
     data->groupSizes = const_cast<int*>(groupSizes);
-    static const char* groupNames[numGroups] = { "output_vertices", "fault", "output", "fault_faces" };
+    static const char* groupNames[numGroups] = { "output_vertices", "fault_vertices", "output_faces", "fault_faces" };
     data->groupNames = const_cast<char**>(groupNames);
     static const char* groupTypes[numGroups] = { "vertex", "vertex", "face", "face" };
     data->groupTypes = const_cast<char**>(groupTypes);
@@ -336,7 +362,7 @@ pylith::faults::TestAdjustTopology_Hex::caseG(void) {
     data->filename = "data/hex_g.mesh";
 
     data->numFaults = 1;
-    static const char* const faultSurfaceLabels[1] = { "fault" };
+    static const char* const faultSurfaceLabels[1] = { "fault_faces" };
     data->faultSurfaceLabels = const_cast<const char**>(faultSurfaceLabels);
     static const char* const faultEdgeLabels[1] = { NULL };
     data->faultEdgeLabels = const_cast<const char**>(faultEdgeLabels);
@@ -352,14 +378,13 @@ pylith::faults::TestAdjustTopology_Hex::caseG(void) {
 
     static const int numCorners[numCells] = { 6, 6, 6, 6, 6, 6 };
     data->numCorners = const_cast<int*>(numCorners);
-    static const int materialIds[numCells] = { 0, 0, 0, 0, 100, 100 };
-    data->materialIds = const_cast<int*>(materialIds);
+    data->getMatId = pylith::faults::TestAdjustTopology_Data::getMatIdDefault;
 
     static const size_t numGroups = 4;
     data->numGroups = numGroups;
-    static const int groupSizes[numGroups] = { 8+8+2, 12+14+4, 2, 4 }; // vertices + edges + faces
+    static const int groupSizes[numGroups] = { 8+8+2, 12+14+4, 2, 14 }; // vertices + edges + faces
     data->groupSizes = const_cast<int*>(groupSizes);
-    static const char* groupNames[numGroups] = { "output_vertices", "fault", "output", "fault_faces" };
+    static const char* groupNames[numGroups] = { "output_vertices", "fault_vertices", "output_faces", "fault_faces" };
     data->groupNames = const_cast<char**>(groupNames);
     static const char* groupTypes[numGroups] = { "vertex", "vertex", "face", "face" };
     data->groupTypes = const_cast<char**>(groupTypes);
@@ -377,7 +402,7 @@ pylith::faults::TestAdjustTopology_Hex::caseH(void) {
     data->filename = "data/hex_h.mesh";
 
     data->numFaults = 1;
-    static const char* const faultSurfaceLabels[1] = { "fault" };
+    static const char* const faultSurfaceLabels[1] = { "fault_faces" };
     data->faultSurfaceLabels = const_cast<const char**>(faultSurfaceLabels);
     static const char* const faultEdgeLabels[1] = { NULL };
     data->faultEdgeLabels = const_cast<const char**>(faultEdgeLabels);
@@ -393,14 +418,13 @@ pylith::faults::TestAdjustTopology_Hex::caseH(void) {
 
     static const int numCorners[numCells] = { 6, 6, 6, 6, 6, 6 };
     data->numCorners = const_cast<int*>(numCorners);
-    static const int materialIds[numCells] = { 0, 0, 0, 0, 100, 100 };
-    data->materialIds = const_cast<int*>(materialIds);
+    data->getMatId = pylith::faults::TestAdjustTopology_Data::getMatIdDefault;
 
     static const size_t numGroups = 4;
     data->numGroups = numGroups;
-    static const int groupSizes[numGroups] = { 8+8+2, 12+14+4, 2, 4 }; // vertices + edges + faces
+    static const int groupSizes[numGroups] = { 8+8+2, 12+14+4, 2, 14 }; // vertices + edges + faces
     data->groupSizes = const_cast<int*>(groupSizes);
-    static const char* groupNames[numGroups] = { "output_vertices", "fault", "output", "fault_faces" };
+    static const char* groupNames[numGroups] = { "output_vertices", "fault_vertices", "output_faces", "fault_faces" };
     data->groupNames = const_cast<char**>(groupNames);
     static const char* groupTypes[numGroups] = { "vertex", "vertex", "face", "face" };
     data->groupTypes = const_cast<char**>(groupTypes);
@@ -418,7 +442,7 @@ pylith::faults::TestAdjustTopology_Hex::caseI(void) {
     data->filename = "data/hex_i.mesh";
 
     data->numFaults = 1;
-    static const char* const faultSurfaceLabels[1] = { "fault" };
+    static const char* const faultSurfaceLabels[1] = { "fault_faces" };
     data->faultSurfaceLabels = const_cast<const char**>(faultSurfaceLabels);
     static const char* const faultEdgeLabels[1] = { NULL };
     data->faultEdgeLabels = const_cast<const char**>(faultEdgeLabels);
@@ -434,14 +458,21 @@ pylith::faults::TestAdjustTopology_Hex::caseI(void) {
 
     static const int numCorners[numCells] = { 6, 6, 6, 6, 6, 6, 6, 6, 6, };
     data->numCorners = const_cast<int*>(numCorners);
-    static const int materialIds[numCells] = { 0, 0, 0, 0, 0, 0, 2, 100, 100 };
-    data->materialIds = const_cast<int*>(materialIds);
+    data->getMatId = [](const int cell,
+                        const int numNoncohesiveCells,
+                        const double* xyz) {
+                         int value = 100;
+                         if (cell < numNoncohesiveCells) {
+                             value = (xyz[2] < 0.0) ? 0 : 2;
+                         }
+                         return value;
+                     };
 
     static const size_t numGroups = 4;
     data->numGroups = numGroups;
-    static const int groupSizes[numGroups] = { 10+13+4, 12+14+4, 4, 4 }; // vertices + edges + faces
+    static const int groupSizes[numGroups] = { 10+13+4, 12+14+4, 4, 14 }; // vertices + edges + faces
     data->groupSizes = const_cast<int*>(groupSizes);
-    static const char* groupNames[numGroups] = { "output_vertices", "fault", "output", "fault_faces" };
+    static const char* groupNames[numGroups] = { "output_vertices", "fault_vertices", "output_faces", "fault_faces" };
     data->groupNames = const_cast<char**>(groupNames);
     static const char* groupTypes[numGroups] = { "vertex", "vertex", "face", "face" };
     data->groupTypes = const_cast<char**>(groupTypes);
@@ -459,16 +490,16 @@ pylith::faults::TestAdjustTopology_Hex::caseJ(void) {
     data->filename = "data/hex_j.mesh";
 
     data->numFaults = 1;
-    static const char* const faultSurfaceLabels[1] = { "fault" };
+    static const char* const faultSurfaceLabels[1] = { "fault_faces" };
     data->faultSurfaceLabels = const_cast<const char**>(faultSurfaceLabels);
-    static const char* const faultEdgeLabels[1] = { "fault_edge" };
+    static const char* const faultEdgeLabels[1] = { NULL };
     data->faultEdgeLabels = const_cast<const char**>(faultEdgeLabels);
     static const int interfaceIds[1] = { 100 };
     data->interfaceIds = const_cast<const int*>(interfaceIds);
 
     data->cellDim = 3;
     data->spaceDim = 3;
-    data->numVertices = 61;
+    data->numVertices = 62;
 
     static const size_t numCells = 22;
     data->numCells = numCells;
@@ -479,19 +510,23 @@ pylith::faults::TestAdjustTopology_Hex::caseJ(void) {
         6, 6,
     };
     data->numCorners = const_cast<int*>(numCorners);
-    static const int materialIds[numCells] = {
-        10, 10, 11, 11, 10, 10, 11, 11, 11, 11,
-        10, 10, 10, 10, 11, 11, 11, 11, 10, 10,
-        100, 100 };
-    data->materialIds = const_cast<int*>(materialIds);
+    data->getMatId = [](const int cell,
+                        const int numNoncohesiveCells,
+                        const double* xyz) {
+                         int value = 100;
+                         if (cell < numNoncohesiveCells) {
+                             value = (xyz[2] > -10.0) ? 10 : 11;
+                         }
+                         return value;
+                     };
 
-    static const size_t numGroups = 5;
+    static const size_t numGroups = 6;
     data->numGroups = numGroups;
-    static const int groupSizes[numGroups] = { 21+31+10, 5+4, 6+7+2 + 1+2+3, 10, 4 }; // vertices + edges + faces
+    static const int groupSizes[numGroups] = { 22+31+10, 6+5, 8+11+4, 10, 8, 3 }; // vertices + edges + faces
     data->groupSizes = const_cast<int*>(groupSizes);
-    static const char* groupNames[numGroups] = { "output_vertices", "fault_edge", "fault", "output", "fault_faces" };
+    static const char* groupNames[numGroups] = { "output_vertices", "fault_edge_vertices", "fault_vertices", "output_faces", "fault_faces", "fault_faces_edge_auto" };
     data->groupNames = const_cast<char**>(groupNames);
-    static const char* groupTypes[numGroups] = { "vertex", "vertex", "vertex", "face", "face" };
+    static const char* groupTypes[numGroups] = { "vertex", "vertex", "vertex", "face", "face", "face" };
     data->groupTypes = const_cast<char**>(groupTypes);
 
     return data;

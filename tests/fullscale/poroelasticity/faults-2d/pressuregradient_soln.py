@@ -75,7 +75,7 @@ class AnalyticalSoln(object):
                 "bc_disp_ypos": self.orientation_dir((0, +1)),
                 "bc_press_xneg": self.orientation_dir((-1, 0)),
                 "bc_press_xpos": self.orientation_dir((+1, 0)),
-                "fault": self.orientation_dir((0, +1)),
+                "fault": self.orientation_dir((0, -1)),
             },
             "tangential_dir": {
                 "bc_disp_xneg": self.orientation_dir((0, -1)),
@@ -87,7 +87,7 @@ class AnalyticalSoln(object):
             },
             "slip": self.slip,
             "traction_change": self.traction_change,
-            "strike_dir": self.orientation_dir((-1, 0)),
+            "strike_dir": self.orientation_dir((+1, 0)),
         }
 
     def getField(self, name, mesh_entity, pts):

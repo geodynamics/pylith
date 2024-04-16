@@ -111,6 +111,7 @@ public:
      *   VTU vtk:refined.vtu:vtk_vtu
      *   HDF5 PETSc hdf5:mesh.h5:hdf5_petsc
      *   HDF5 XDMF hdf5:mesh.h5:hdf5_xdmf
+     *   PyVista pyvista:myscript.py
      */
     void view(const char* viewOption="::ascii_info_detail") const;
 

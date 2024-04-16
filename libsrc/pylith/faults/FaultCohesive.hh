@@ -122,6 +122,12 @@ public:
      */
     void adjustTopology(pylith::topology::Mesh* const mesh);
 
+    /** Adjust mesh topology for fault implementation.
+     *
+     * @param mesh[in] PETSc mesh.
+     */
+    void transformTopology(pylith::topology::Mesh* const mesh);
+
     /** Create integrator and set kernels.
      *
      * @param[in] solution Solution field.

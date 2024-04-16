@@ -179,16 +179,19 @@ pylith::testing::MMSTest::testJacobianTaylorSeries(void) {
 void
 pylith::testing::MMSTest::testJacobianFiniteDiff(void) {
     PYLITH_METHOD_BEGIN;
-    REQUIRE(_problem);
+    assert(_problem);
+
+    PetscErrorCode err = PETSC_SUCCESS;
+    pythia::journal::debug_t debug(GenericComponent::getName());
+    if (debug.state()) {
+        PylithCallPetsc(PetscOptionsSetValue(NULL, "-dm_plex_print_fem", "5"));
+        PylithCallPetsc(PetscOptionsSetValue(NULL, "-snes_test_jacobian_view", ""));
+    } // if
 
     PylithCallPetsc(PetscOptionsSetValue(NULL, "-ts_max_snes_failures", "1"));
     PylithCallPetsc(PetscOptionsSetValue(NULL, "-ts_error_if_step_fails", "false"));
     _initialize();
 
-    pythia::journal::debug_t debug(GenericComponent::getName());
-    if (debug.state()) {
-        PylithCallPetsc(PetscOptionsSetValue(NULL, "-snes_test_jacobian_view", ""));
-    } // if
     PylithCallPetsc(PetscOptionsSetValue(NULL, "-snes_error_if_not_converged", "false"));
     PylithCallPetsc(SNESSetFromOptions(_problem->getPetscSNES()));
 

@@ -78,6 +78,67 @@ public:
                          PointSet& noReplaceCells,
                          const int debug);
 
+    // NEW STUFF
+
+    /** Complete labels and change value to match dimension of point.
+     */
+    static
+    void updateCohesiveLabel(const pylith::topology::Mesh* mesh,
+                             const char* labelName,
+                             const int labelValue);
+
+    /** Set label and label value for newly created cohesive cells.
+     *
+     * @param[inout] dmMeshNew PETSc DM with cohesive cells.
+     * @param[in] dmMesh PETSc DM without cohesive cells.
+     * @param[in] labelName Name of label for cohesive cells.
+     * @param[in] labelValue Label value for cohesive cells.
+     */
+    static
+    void setCohesiveCellLabel(PetscDM dmMeshNew,
+                              PetscDM dmMesh,
+                              const char* labelName,
+                              const int labelValue);
+
+    /** Remove cohesive points from labels.
+     *
+     * @param[inout] dmMeshNew PETSc DM with cohesive cells.
+     */
+    static
+    void labelsRemoveCohesivePoints(PetscDM dmMeshNew);
+
+    /** Create buried edge label.
+     *
+     * @param[inout] dmMeshNew PETSc DM with cohesive cells.
+     * @param[in] dmMesh PETSc DM without cohesive cells.
+     * @param[in] buriedEdgeLabelName Name of label for buried edge.
+     * @param[in] buriedEdgeLabelValue Label value for buried edge.
+     * @param[in] surfaceLabel Label identifying fault surface.
+     * @param[in] transform Transform creating cohesive cells.
+     */
+    static
+    void createBuriedEdgeLabel(PetscDM dmMeshNew,
+                               PetscDM dmMesh,
+                               const char* buriedEdgeLabelName,
+                               const PylithInt buriedEdgeLabelValue,
+                               PetscDMLabel surfaceLabel,
+                               DMPlexTransform transform);
+
+    /** Create (distributed) fault mesh from cohesive cells.
+     *
+     * @param faultMesh Finite-element mesh of fault (output).
+     * @param mesh Finite-element mesh.
+     * @param labelValue Value of label associated with integration domain.
+     * @param labelName Name of label associated with integration domain.
+     * @param surfaceLabel Name of label for interface surface.
+     */
+    static
+    void createFaultFromCohesiveCells(pylith::topology::Mesh* faultMesh,
+                                      const topology::Mesh& mesh,
+                                      const char* labelName,
+                                      const int labelValue,
+                                      const char* surfaceLabel);
+
     /** Get name of PETSc DM label for interfaces.
      *
      * @returns PETSc Label name.

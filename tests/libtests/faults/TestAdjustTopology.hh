@@ -35,6 +35,9 @@ public:
     /// Test adjustTopology().
     void run(void);
 
+    /// Test new fault creation.
+    void run_transform(void);
+
     // PROTECTED MEMBERS //////////////////////////////////////////////////////////////////////////
 protected:
 
@@ -62,6 +65,18 @@ public:
     // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
 public:
 
+    typedef int (*matid_fn)(const int, // cell
+                            const int, // numNoncohesiveCells
+                            const double* // centroid
+                            );
+
+    static
+    int getMatIdDefault(const int cell,
+                        const int numNoncohesiveCells,
+                        const double* xyz) {
+        return (cell < numNoncohesiveCells) ? 0 : 100;
+    }
+
     const char* filename; ///< Name of mesh file.
 
     size_t numFaults; ///< Number of faults
@@ -73,9 +88,10 @@ public:
     size_t spaceDim; ///< Spatial dimension for vertex coordinates.
     size_t numVertices; // Number of vertices in updated mesh.
     size_t numCells; ///< Number of cells in updated mesh.
+    size_t numNoncohesiveCells; ///< Number of cells in original mesh (no cohesive cells).
 
     const int* numCorners; ///< Number of vertices in each cell in updated mesh.
-    const int* materialIds; ///< Material identifief for each cell in updated mesh.
+    matid_fn getMatId; ///< Function for getting material-id label value;
 
     size_t numGroups; ///< Number of groups.
     const int* groupSizes; ///< Array of sizes in each group.
