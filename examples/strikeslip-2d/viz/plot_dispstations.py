@@ -43,11 +43,11 @@ def visualize(parameters):
     paraview.simple._DisableFirstRenderCameraReset()
 
     # Read data
-    filename = os.path.join(parameters.output_dir, "%s-gps_stations.xmf" % parameters.sim)
+    filename = os.path.join(parameters.output_dir, "%s-gnss_stations.xmf" % parameters.sim)
     if not os.path.isfile(filename):
         raise IOError("File '%s' does not exist." % filename)
     dataStations = XDMFReader(FileNames=[filename])
-    RenameSource("%s-gps_stations" % parameters.sim, dataStations)
+    RenameSource("%s-gnss_stations" % parameters.sim, dataStations)
 
     scene = GetAnimationScene()
     scene.UpdateAnimationUsingDataTimeSteps()

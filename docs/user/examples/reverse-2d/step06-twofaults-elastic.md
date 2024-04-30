@@ -34,8 +34,6 @@ For properly topology of the cohesive cells, the main fault _must_ be listed fir
 :::
 
 We create an array of 2 faults, which are `FaultCohesiveKin` by default, and use `UniformDB` objects to specify uniform reverse slip on each fault.
-Because the wedge is not constrained by any Dirichlet boundary conditions,
-we change the preconditioner for the displacement field to `ilu` to avoid a zero pivot.
 
 ```{code-block} cfg
 ---
@@ -71,10 +69,6 @@ db_auxiliary_field = spatialdata.spatialdb.UniformDB
 db_auxiliary_field.description = Fault rupture for splay fault
 db_auxiliary_field.values = [initiation_time, final_slip_left_lateral, final_slip_opening]
 db_auxiliary_field.data = [0.0*s, -1.0*m, 0.0*m]
-
-
-[pylithapp.petsc]
-fieldsplit_displacement_pc_type = ilu
 ```
 
 ## Running the simulation
@@ -86,10 +80,13 @@ caption: Run Step 6 simulation
 $ pylith step06_twofaults_elastic.cfg
 
 # The output should look something like the following.
- >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/meshio/MeshIOObj.py:44:read
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:77:main
+ -- pylithapp(info)
+ -- Running on 1 process(es).
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/meshio/MeshIOObj.py:38:read
  -- meshiopetsc(info)
  -- Reading finite-element mesh
- >> /src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:94:void pylith::meshio::MeshIO::read(pylith::topology::Mesh*)
+ >> /src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:85:void pylith::meshio::MeshIO::read(pylith::topology::Mesh *, const bool)
  -- meshiopetsc(info)
  -- Component 'reader': Domain bounding box:
     (-100000, 100000)
@@ -97,21 +94,21 @@ $ pylith step06_twofaults_elastic.cfg
 
 # -- many lines omitted --
 
- >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/TimeDependent.py:139:run
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/TimeDependent.py:132:run
  -- timedependent(info)
  -- Solving problem.
 0 TS dt 0.01 time 0.
-    0 SNES Function norm 2.225574998436e-02 
-    Linear solve converged due to CONVERGED_ATOL iterations 415
-    1 SNES Function norm 8.564274482242e-13 
+    0 SNES Function norm 2.225574998436e-02
+    Linear solve converged due to CONVERGED_ATOL iterations 41
+    1 SNES Function norm 2.051112304555e-12
   Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
 1 TS dt 0.01 time 0.01
- >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:201:finalize
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:199:finalize
  -- timedependent(info)
  -- Finalizing problem.
 ```
 
-From the end of the output written to the terminal window, we see that the linear solver converged in 415 iterations and met the absolute convergence tolerance (`ksp_atol`).
+From the end of the output written to the terminal window, we see that the linear solver converged in 41 iterations and met the absolute convergence tolerance (`ksp_atol`).
 As we expect for this linear problem, the nonlinear solver converged in 1 iteration.
 
 ## Visualizing the results

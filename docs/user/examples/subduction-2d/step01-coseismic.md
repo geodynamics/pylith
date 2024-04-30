@@ -67,24 +67,27 @@ caption: Run Step 1 simulation
 $ pylith step01_coseismic.cfg
 
 # The output should look something like the following.
- >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/meshio/MeshIOObj.py:44:read
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:77:main
+ -- pylithapp(info)
+ -- Running on 1 process(es).
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/meshio/MeshIOObj.py:38:read
  -- meshiopetsc(info)
  -- Reading finite-element mesh
- >> /src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:94:void pylith::meshio::MeshIO::read(topology::Mesh *)
+ >> /src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:85:void pylith::meshio::MeshIO::read(pylith::topology::Mesh *, const bool)
  -- meshiopetsc(info)
  -- Component 'reader': Domain bounding box:
     (-600000, 600000)
     (-600000, 399.651)
- >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:116:preinitialize
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:116:preinitialize
  -- timedependent(info)
  -- Performing minimal initialization before verifying configuration.
- >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Solution.py:44:preinitialize
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Solution.py:39:preinitialize
  -- solution(info)
  -- Performing minimal initialization of solution.
- >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:175:verifyConfiguration
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:174:verifyConfiguration
  -- timedependent(info)
  -- Verifying compatibility of problem configuration.
- >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:221:_printInfo
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:219:_printInfo
  -- timedependent(info)
  -- Scales for nondimensionalization:
     Length scale: 1000*m
@@ -92,26 +95,22 @@ $ pylith step01_coseismic.cfg
     Pressure scale: 3e+10*m**-1*kg*s**-2
     Density scale: 2.98765e+23*m**-3*kg
     Temperature scale: 1*K
- >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:186:initialize
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:185:initialize
  -- timedependent(info)
  -- Initializing timedependent problem with quasistatic formulation.
- >> /src/cig/pylith/libsrc/pylith/utils/PetscOptions.cc:235:static void pylith::utils::_PetscOptions::write(pythia::journal::info_t &, const char *, const pylith::utils::PetscOptions &)
+ >> /src/cig/pylith/libsrc/pylith/utils/PetscOptions.cc:239:static void pylith::utils::_PetscOptions::write(pythia::journal::info_t &, const char *, const PetscOptions &)
  -- petscoptions(info)
  -- Setting PETSc options:
-fieldsplit_displacement_ksp_type = preonly
-fieldsplit_displacement_pc_type = lu
-fieldsplit_lagrange_multiplier_fault_ksp_type = preonly
-fieldsplit_lagrange_multiplier_fault_pc_type = lu
+dm_reorder_section = true
+dm_reorder_section_type = cohesive
 ksp_atol = 1.0e-12
 ksp_converged_reason = true
 ksp_error_if_not_converged = true
+ksp_guess_pod_size = 8
+ksp_guess_type = pod
 ksp_rtol = 1.0e-12
-pc_fieldsplit_schur_factorization_type = lower
-pc_fieldsplit_schur_precondition = selfp
-pc_fieldsplit_schur_scale = 1.0
-pc_fieldsplit_type = schur
-pc_type = fieldsplit
-pc_use_amat = true
+mg_fine_pc_type = vpbjacobi
+pc_type = gamg
 snes_atol = 1.0e-9
 snes_converged_reason = true
 snes_error_if_not_converged = true
@@ -121,16 +120,16 @@ ts_error_if_step_fails = true
 ts_monitor = true
 ts_type = beuler
 
- >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/TimeDependent.py:139:run
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/TimeDependent.py:132:run
  -- timedependent(info)
  -- Solving problem.
-0 TS dt 0.05 time -0.05
-    0 SNES Function norm 5.454651006059e-01 
-    Linear solve converged due to CONVERGED_ATOL iterations 85
-    1 SNES Function norm 3.437540896787e-12 
+0 TS dt 0.01 time 0.
+    0 SNES Function norm 5.454422153568e-01
+    Linear solve converged due to CONVERGED_ATOL iterations 35
+    1 SNES Function norm 3.520065681855e-12
   Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
-1 TS dt 0.05 time 0.
- >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:201:finalize
+1 TS dt 0.01 time 0.01
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:199:finalize
  -- timedependent(info)
  -- Finalizing problem.
 ```
@@ -139,7 +138,7 @@ At the beginning of the output written to the terminal, we see that PyLith is re
 The output also includes the scales used for nondimensionalization and the default PETSc options.
 
 At the end of the output written to the terminal, we see that the solver advanced the solution one time step (static simulation).
-The linear solve converged after 85 iterations and the norm of the residual met the absolute convergence tolerance (`ksp_atol`) .
+The linear solve converged after 35 iterations and the norm of the residual met the absolute convergence tolerance (`ksp_atol`) .
 The nonlinear solve converged in 1 iteration, which we expect because this is a linear problem, and the residual met the absolute convergence tolerance (`snes_atol`).
 
 ## Visualizing the results

@@ -1,7 +1,7 @@
 # Step 6: Least Squares Fault Slip Inversion
 
 In this example we do a simple static slip inversion using least squares.
-We treat the displacements at the fake GPS stations in Step 4 as the "observations" and use the Green's functions from Step 5 to invert for the fault slip that we prescribed in Step 4.
+We treat the displacements at the fake GNSS stations in Step 4 as the "observations" and use the Green's functions from Step 5 to invert for the fault slip that we prescribed in Step 4.
 
 We use simple generalized inversion method with penalties to minimize the seismic moment.
 The Python script `invert_slip.py` will load the observations from Step 4 and Green's functions and respones from Step 5 and invert for the slip.

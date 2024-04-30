@@ -107,10 +107,10 @@ caption: Run Step 1 simulation
 $ pylith step01_inflation.cfg
 
 # The output should look something like the following.
- >> /home/pylith-user/software/unix/py310-venv/pylith-debug/lib/python3.10/site-packages/pylith/apps/PyLithApp.py:77:main
+ >> /home/pylith-user/software/unix/py312-venv/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:77:main
  -- pylithapp(info)
  -- Running on 1 process(es).
- >> /home/pylith-user/software/unix/py310-venv/pylith-debug/lib/python3.10/site-packages/pylith/meshio/MeshIOObj.py:38:read
+ >> /home/pylith-user/software/unix/py312-venv/pylith-debug/lib/python3.12/site-packages/pylith/meshio/MeshIOObj.py:38:read
  -- meshiocubit(info)
  -- Reading finite-element mesh
  >> /home/pylith-user/src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:148:void pylith::meshio::MeshIOCubit::_readVertices(ExodusII &, scalar_array *, int *, int *) const
@@ -142,24 +142,24 @@ $ pylith step01_inflation.cfg
  -- Component 'reader': Domain bounding box:
     (0, 20000)
     (-20000, 0)
- >> /home/pylith-user/software/unix/py310-venv/pylith-debug/lib/python3.10/site-packages/pylith/problems/Problem.py:116:preinitialize
+ >> /home/pylith-user/software/unix/py312-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:116:preinitialize
  -- timedependent(info)
  -- Performing minimal initialization before verifying configuration.
- >> /home/pylith-user/software/unix/py310-venv/pylith-debug/lib/python3.10/site-packages/pylith/problems/Solution.py:39:preinitialize
+ >> /home/pylith-user/software/unix/py312-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Solution.py:39:preinitialize
  -- solution(info)
  -- Performing minimal initialization of solution.
- >> /home/pylith-user/software/unix/py310-venv/pylith-debug/lib/python3.10/site-packages/pylith/problems/Problem.py:174:verifyConfiguration
+ >> /home/pylith-user/software/unix/py312-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:174:verifyConfiguration
  -- timedependent(info)
  -- Verifying compatibility of problem configuration.
- >> /home/pylith-user/software/unix/py310-venv/pylith-debug/lib/python3.10/site-packages/pylith/problems/Problem.py:219:_printInfo
+ >> /home/pylith-user/software/unix/py312-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:219:_printInfo
  -- timedependent(info)
  -- Scales for nondimensionalization:
-    Length scale: 100*m
+    Length scale: 120*m
     Time scale: 6.31152e+06*s
-    Pressure scale: 1e+10*m**-1*kg*s**-2
+    Pressure scale: 1e+12*m**-1*kg*s**-2
     Density scale: 3.98353e+19*m**-3*kg
     Temperature scale: 1*K
- >> /home/pylith-user/software/unix/py310-venv/pylith-debug/lib/python3.10/site-packages/pylith/problems/Problem.py:185:initialize
+ >> /home/pylith-user/software/unix/py312-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:185:initialize
  -- timedependent(info)
  -- Initializing timedependent problem with quasistatic formulation.
  >> /home/pylith-user/src/cig/pylith/libsrc/pylith/utils/PetscOptions.cc:239:static void pylith::utils::_PetscOptions::write(pythia::journal::info_t &, const char *, const PetscOptions &)
@@ -188,7 +188,7 @@ ts_error_if_step_fails = true
 ts_monitor = true
 ts_type = beuler
 
- >> /home/pylith-user/software/unix/py310-venv/pylith-debug/lib/python3.10/site-packages/pylith/problems/TimeDependent.py:132:run
+ >> /home/pylith-user/software/unix/py312-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/TimeDependent.py:132:run
  -- timedependent(info)
  -- Solving problem.
 0 TS dt 1. time -1.
@@ -205,7 +205,7 @@ ts_type = beuler
     1 SNES Function norm 4.921699643384e-11
   Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
 51 TS dt 1. time 50.
- >> /home/pylith-user/software/unix/py310-venv/pylith-debug/lib/python3.10/site-packages/pylith/problems/Problem.py:199:finalize
+ >> /home/pylith-user/software/unix/py312-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:199:finalize
  -- timedependent(info)
  -- Finalizing problem.
 ```

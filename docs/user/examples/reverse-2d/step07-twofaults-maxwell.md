@@ -50,10 +50,13 @@ caption: Run Step 7 simulation
 $ pylith step07_twofaults_maxwell.cfg
 
 # The output should look something like the following.
- >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/meshio/MeshIOObj.py:44:read
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:77:main
+ -- pylithapp(info)
+ -- Running on 1 process(es).
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/meshio/MeshIOObj.py:38:read
  -- meshiopetsc(info)
  -- Reading finite-element mesh
- >> /src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:94:void pylith::meshio::MeshIO::read(pylith::topology::Mesh*)
+ >> /src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:85:void pylith::meshio::MeshIO::read(pylith::topology::Mesh *, const bool)
  -- meshiopetsc(info)
  -- Component 'reader': Domain bounding box:
     (-100000, 100000)
@@ -62,12 +65,12 @@ $ pylith step07_twofaults_maxwell.cfg
 # -- many lines omitted --
 
 25 TS dt 0.2 time 4.8
-    0 SNES Function norm 2.589196279152e-05 
-    Linear solve converged due to CONVERGED_ATOL iterations 339
-    1 SNES Function norm 6.643244443329e-13 
+    0 SNES Function norm 1.848072416515e-05
+    Linear solve converged due to CONVERGED_ATOL iterations 14
+    1 SNES Function norm 2.259491806598e-12
   Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
 26 TS dt 0.2 time 5.
- >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:201:finalize
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:199:finalize
  -- timedependent(info)
  -- Finalizing problem.
 ```

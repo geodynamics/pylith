@@ -350,7 +350,7 @@ dist_noinst_DATA = \
 	user/examples/strikeslip-2d/figs/step04-diagram.svg \
 	user/examples/strikeslip-2d/figs/step04-slip.pdf \
 	user/examples/strikeslip-2d/figs/step04-slip.svg \
-	user/examples/strikeslip-2d/figs/step04-gpsstations.jpg \
+	user/examples/strikeslip-2d/figs/step04-gnssstations.jpg \
 	user/examples/strikeslip-2d/figs/step04-solution.jpg \
 	user/examples/strikeslip-2d/figs/step05-diagram.pdf \
 	user/examples/strikeslip-2d/figs/step05-diagram.svg \

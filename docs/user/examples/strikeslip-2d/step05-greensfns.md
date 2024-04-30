@@ -20,7 +20,7 @@ We set the x and y displacement to zero on the +x and -x boundaries and prescrib
 :::
 
 We use the `GreensFns` problem and specify the fault on which to impose fault slip impulses.
-As in Step 4, we include output at the fake GPS stations using `OutputSolnPoints`.
+As in Step 4, we include output at the fake GNSS stations using `OutputSolnPoints`.
 In the fault interfaces section we set the fault type to `FaultCohesiveImpulses` for our fault where we want to impose fault slip impulses for the Green's functions.
 We also use a spatial database to limit the section of the fault where we impose the fault slip impulses to -25 km $\le$ y $\le$ +25 km.
 
@@ -73,31 +73,36 @@ caption: Run Step 5 simulation
 $  pylith step05_greensfns.cfg
 
 # The output should look something like the following.
- >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/meshio/MeshIOObj.py:44:read
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:77:main
+ -- pylithapp(info)
+ -- Running on 1 process(es).
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/meshio/MeshIOObj.py:38:read
  -- meshiopetsc(info)
  -- Reading finite-element mesh
- >> /src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:94:void pylith::meshio::MeshIO::read(topology::Mesh *)
- -- meshiopetsc(inf
+ >> /src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:85:void pylith::meshio::MeshIO::read(pylith::topology::Mesh *, const bool)
+ -- meshiopetsc(info)
  -- Component 'reader': Domain bounding box:
     (-50000, 50000)
     (-75000, 75000)
 
 # -- many lines omitted --
 
+ >> /src/cig/pylith/libsrc/pylith/problems/GreensFns.cc:322:void pylith::problems::GreensFns::solve()
+ -- greensfns(info)
  -- Component 'problem': Computing Green's function 12 of 12.
-  0 SNES Function norm 3.027654014252e-03
-  Linear solve converged due to CONVERGED_ATOL iterations 46
-  1 SNES Function norm 2.204080482014e-12
+  0 SNES Function norm 3.027654014246e-03
+  Linear solve converged due to CONVERGED_ATOL iterations 18
+  1 SNES Function norm 1.850212226728e-12
 Nonlinear solve converged due to CONVERGED_ITS iterations 1
- >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:201:finalize
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:199:finalize
  -- greensfns(info)
  -- Finalizing problem.
 WARNING! There are options you set that were not used!
 WARNING! could be spelling mistake, etc!
 There are 3 unused database options. They are:
-Option left: name:-ts_error_if_step_fails (no value)
-Option left: name:-ts_monitor (no value)
-Option left: name:-ts_type value: beuler
+Option left: name:-ts_error_if_step_fails (no value) source: code
+Option left: name:-ts_monitor (no value) source: code
+Option left: name:-ts_type value: beuler source: code
 ```
 
 The beginning of the output written to the terminal matches that in our previous simulations.
@@ -134,5 +139,5 @@ You can use the "play" button (right triangle) to flip between the solution for 
 
 Solution for Step 4.
 The colors of the shaded surface indicate the magnitude of the y displacement, and the deformation is exaggerated by a factor of 1000.
-The displacement vectors at the fake GPS stations use en exaggeration factor of 50,000.
+The displacement vectors at the fake GNSS stations use en exaggeration factor of 50,000.
 :::

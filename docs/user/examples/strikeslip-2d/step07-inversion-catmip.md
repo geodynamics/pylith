@@ -37,8 +37,8 @@ caption: Parameters in catmip_parameters.txt for static slip inversion using the
 # Sample parameter file for pylith_catmip model.
 
 # Data files
-filename_observations = output/step04_varslip-gps_stations.h5
-filename_greens_fns = output/step05_greensfns-gps_stations.h5
+filename_observations = output/step04_varslip-gnss_stations.h5
+filename_greens_fns = output/step05_greensfns-gnss_stations.h5
 
 # Model parameters
 rake_parallel_prior = logistic
@@ -116,8 +116,8 @@ caption: Parameters in cfcatmip_parameters.txt for static slip inversion using t
 # Sample parameter file for pylith_catmip model.
 
 # Data files
-filename_observations = output/step04_varslip-gps_stations.h5
-filename_greens_fns = output/step05_greensfns-gps_stations.h5
+filename_observations = output/step04_varslip-gnss_stations.h5
+filename_greens_fns = output/step05_greensfns-gnss_stations.h5
 
 # Model parameters
 rake_parallel_prior = logistic

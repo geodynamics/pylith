@@ -23,8 +23,8 @@ class InvertSlipApp:
     """
     def __init__(self):
         self.filename_fault = "output/step05_greensfns-fault.h5"
-        self.filename_responses = "output/step05_greensfns-gps_stations.h5"
-        self.filename_observed = "output/step04_varslip-gps_stations.h5"
+        self.filename_responses = "output/step05_greensfns-gnss_stations.h5"
+        self.filename_observed = "output/step04_varslip-gnss_stations.h5"
         self.filename_output = "output/step06_inversion-results.txt"
         self.penalties = [0.01, 0.1, 1.0]
 

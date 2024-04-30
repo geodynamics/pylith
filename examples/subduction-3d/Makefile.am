@@ -44,7 +44,7 @@ dist_noinst_DATA = \
 	utils/generate_initial_stress.py \
 	utils/generate_slowslip.py \
 	utils/generate_surfjou.py \
-	utils/make_synthetic_gpsdisp.py \
+	utils/make_synthetic_gnssdisp.py \
 	utils/slip_invert.py \
 	viz/plot_dispvec.py \
 	viz/plot_dispwarp.py \

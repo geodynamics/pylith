@@ -10,7 +10,7 @@
 
 dist_noinst_PYTHON = \
 	generate_gmsh.py \
-	generate_gpsstations.py \
+	generate_gnssstations.py \
 	invert_slip.py
 
 dist_noinst_DATA = \
@@ -31,7 +31,7 @@ dist_noinst_DATA = \
 	step05_greensfns.cfg \
 	disprate_bc_xneg.spatialdb \
 	disprate_bc_xpos.spatialdb \
-	gps_stations.txt \
+	gnss_stations.txt \
 	slip_impulses.spatialdb \
 	slip_variable.spatialdb \
 	viz/plot_dispwarp.py \

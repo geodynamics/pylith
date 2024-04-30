@@ -35,41 +35,37 @@ caption: Run Step 3 simulation
 $ pylith step03_interseismic.cfg mat_viscoelastic.cfg
 
 # The output should look something like the following.
- >> /software/py38-venv/pylith-opt/lib/python3.8/site-packages/pylith/meshio/MeshIOObj.py:44:read
+ >> /software/unix/py3.12-venv/pylith-opt/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:77:main
+ -- pylithapp(info)
+ -- Running on 1 process(es).
+ >> /software/unix/py3.12-venv/pylith-opt/lib/python3.12/site-packages/pylith/meshio/MeshIOObj.py:38:read
  -- meshiocubit(info)
  -- Reading finite-element mesh
- >> /pylith/libsrc/pylith/meshio/MeshIOCubit.cc:157:void pylith::meshio::MeshIOCubit::_readVertices(pylith::meshio::ExodusII&,
-pylith::scalar_array*, int*, int*) const
+ >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:148:void pylith::meshio::MeshIOCubit::_readVertices(ExodusII &, scalar_array *, int *, int *) const
  -- meshiocubit(info)
  -- Component 'reader': Reading 24824 vertices.
- >> /pylith/libsrc/pylith/meshio/MeshIOCubit.cc:217:void pylith::meshio::MeshIOCubit::_readCells(pylith::meshio::ExodusII&, pyl
-ith::int_array*, pylith::int_array*, int*, int*) const
+ >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:208:void pylith::meshio::MeshIOCubit::_readCells(ExodusII &, int_array *, int_array *, int *, int *) const
  -- meshiocubit(info)
  -- Component 'reader': Reading 134381 cells in 4 blocks.
+ >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:270:void pylith::meshio::MeshIOCubit::_readGroups(ExodusII &)
+ -- meshiocubit(info)
+ -- Component 'reader': Found 22 node sets.
 
 # -- many lines omitted --
 
- >> /pylith/libsrc/pylith/utils/PetscOptions.cc:235:static void pylith::utils::_PetscOptions::write(pythia::journal::info_t&, const char*, const pylith::utils::PetscOptions&)
+ >> /src/cig/pylith/libsrc/pylith/utils/PetscOptions.cc:239:static void pylith::utils::_PetscOptions::write(pythia::journal::info_t &, const char *, const PetscOptions &)
  -- petscoptions(info)
  -- Setting PETSc options:
-fieldsplit_displacement_ksp_type = preonly
-fieldsplit_displacement_mg_levels_ksp_type = richardson
-fieldsplit_displacement_mg_levels_pc_type = sor
-fieldsplit_displacement_pc_type = gamg
-fieldsplit_lagrange_multiplier_fault_ksp_type = preonly
-fieldsplit_lagrange_multiplier_fault_mg_levels_ksp_type = richardson
-fieldsplit_lagrange_multiplier_fault_mg_levels_pc_type = sor
-fieldsplit_lagrange_multiplier_fault_pc_type = gamg
+dm_reorder_section = true
+dm_reorder_section_type = cohesive
 ksp_atol = 1.0e-12
 ksp_converged_reason = true
 ksp_error_if_not_converged = true
+ksp_guess_pod_size = 8
+ksp_guess_type = pod
 ksp_rtol = 1.0e-12
-pc_fieldsplit_schur_factorization_type = lower
-pc_fieldsplit_schur_precondition = selfp
-pc_fieldsplit_schur_scale = 1.0
-pc_fieldsplit_type = schur
-pc_type = fieldsplit
-pc_use_amat = true
+mg_fine_pc_type = vpbjacobi
+pc_type = gamg
 snes_atol = 1.0e-9
 snes_converged_reason = true
 snes_error_if_not_converged = true
@@ -82,19 +78,20 @@ ts_type = beuler
 # -- many lines omitted --
 
 20 TS dt 0.1 time 1.9
-    0 SNES Function norm 8.195918512189e+00
-    Linear solve converged due to CONVERGED_ATOL iterations 385
-    1 SNES Function norm 3.709628561436e-10
+    0 SNES Function norm 8.194771946100e+00
+    Linear solve converged due to CONVERGED_ATOL iterations 13
+    1 SNES Function norm 1.577696903418e-10
   Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
 21 TS dt 0.1 time 2.
- >> /software/py38-venv/pylith-opt/lib/python3.8/site-packages/pylith/problems/Problem.py:201:finalize
+ >> /software/unix/py3.12-venv/pylith-opt/lib/python3.12/site-packages/pylith/problems/Problem.py:199:finalize
  -- timedependent(info)
  -- Finalizing problem.
+
 ```
 
 The beginning of the output is near the same as in Step 2.
 The simulation advances 21 time steps.
-The linear solve converged after 385 iterations and the norm of the residual met the absolute convergence tolerance (`ksp_atol`) .
+The linear solve converged after 13 iterations and the norm of the residual met the absolute convergence tolerance (`ksp_atol`) .
 In this simulation the fault interfaces on the top and bottom of the slab occupy a significant fraction of the domain.
 As a result, the linear solver requires many more iterations to converge compared to the limited fault interface in Step 2.
 
