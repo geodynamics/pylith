@@ -25,7 +25,8 @@ dist_noinst_DATA = \
 	output_points.txt \
 	twoblocks.cfg \
 	twoblocks_hex.cfg \
-	twoblocks_tet.cfg
+	twoblocks_tet.cfg \
+	solver_fault_fieldsplit.cfg
 
 
 noinst_TMP =
