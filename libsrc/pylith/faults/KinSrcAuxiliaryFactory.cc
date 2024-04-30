@@ -226,7 +226,8 @@ pylith::faults::KinSrcAuxiliaryFactory::updateTimeHistoryValue(pylith::topology:
     PetscInt pStart = 0, pEnd = 0;
     err = PetscSectionGetChart(auxiliaryFieldSection, &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
     pylith::topology::VecVisitorMesh auxiliaryFieldVisitor(*auxiliaryField);
-    PetscScalar* auxiliaryFieldArray = auxiliaryFieldVisitor.localArray();assert(auxiliaryFieldArray);
+    PetscScalar* auxiliaryFieldArray = auxiliaryFieldVisitor.localArray();
+    if (pEnd > pStart) { assert(auxiliaryFieldArray); }
 
     // Compute offset of time history subfields in auxiliary field.
     const PetscInt i_startTime = auxiliaryField->getSubfieldInfo("initiation_time").index;
