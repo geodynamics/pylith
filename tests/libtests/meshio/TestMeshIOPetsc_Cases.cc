@@ -41,6 +41,14 @@ public:
 
     static TestMeshIO_Data* GmshBoxHexBinary(void);
 
+    static TestMeshIO_Data* HDF5BoxTri(void);
+
+    static TestMeshIO_Data* HDF5BoxQuad(void);
+
+    static TestMeshIO_Data* HDF5BoxTet(void);
+
+    static TestMeshIO_Data* HDF5BoxHex(void);
+
 }; // TestMeshIOPetsc_Cases
 
 // ------------------------------------------------------------------------------------------------
@@ -74,6 +82,18 @@ TEST_CASE("TestMeshIOPetsc::GmshBoxHexAscii::testRead", "[TestMeshIOPetsc][Gmsh]
 }
 TEST_CASE("TestMeshIOPetsc::GmshBoxHexBinary::testRead", "[TestMeshIOPetsc][Gmsh][Hex][binary][testRead]") {
     pylith::meshio::TestMeshIOPetsc(pylith::meshio::TestMeshIOPetsc_Cases::GmshBoxHexBinary()).testRead();
+}
+TEST_CASE("TestMeshIOPetsc::HDF5BoxTri::testWriteRead", "[TestMeshIOPetsc][HDF5][Tri][testWriteRead]") {
+    pylith::meshio::TestMeshIOPetsc(pylith::meshio::TestMeshIOPetsc_Cases::HDF5BoxTri()).testWriteRead();
+}
+TEST_CASE("TestMeshIOPetsc::HDF5BoxQuad::testWriteRead", "[TestMeshIOPetsc][HDF5][Quad][testWriteRead]") {
+    pylith::meshio::TestMeshIOPetsc(pylith::meshio::TestMeshIOPetsc_Cases::HDF5BoxQuad()).testWriteRead();
+}
+TEST_CASE("TestMeshIOPetsc::HDF5BoxTet::testWriteRead", "[TestMeshIOPetsc][HDF5][Tet][testWriteRead]") {
+    pylith::meshio::TestMeshIOPetsc(pylith::meshio::TestMeshIOPetsc_Cases::HDF5BoxTet()).testWriteRead();
+}
+TEST_CASE("TestMeshIOPetsc::HDF5BoxHex::testWriteRead", "[TestMeshIOPetsc][HDF5][Hex][testWriteRead]") {
+    pylith::meshio::TestMeshIOPetsc(pylith::meshio::TestMeshIOPetsc_Cases::HDF5BoxHex()).testWriteRead();
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -612,6 +632,66 @@ pylith::meshio::TestMeshIOPetsc_Cases::GmshBoxHexBinary(void) {
 
     return data;
 } // GmshBoxHexBinary
+
+
+// ------------------------------------------------------------------------------------------------
+pylith::meshio::TestMeshIO_Data*
+pylith::meshio::TestMeshIOPetsc_Cases::HDF5BoxTri(void) {
+    TestMeshIO_Data* data = GmshBoxTriBinary();assert(data);
+
+    data->filename = "box_tri_binary.h5";
+    static const PylithInt groupTags[8] = {
+        1, 1, 1, 1, 1, 1, 1, 1,
+    };
+    data->groupTags = const_cast<PylithInt*>(groupTags);
+
+    return data;
+} // HDF5BoxTri
+
+
+// ------------------------------------------------------------------------------------------------
+pylith::meshio::TestMeshIO_Data*
+pylith::meshio::TestMeshIOPetsc_Cases::HDF5BoxQuad(void) {
+    TestMeshIO_Data* data = GmshBoxQuadBinary();assert(data);
+
+    data->filename = "box_quad_binary.h5";
+    static const PylithInt groupTags[8] = {
+        1, 1, 1, 1, 1, 1, 1, 1,
+    };
+    data->groupTags = const_cast<PylithInt*>(groupTags);
+
+    return data;
+} // HDF5BoxQuad
+
+
+// ------------------------------------------------------------------------------------------------
+pylith::meshio::TestMeshIO_Data*
+pylith::meshio::TestMeshIOPetsc_Cases::HDF5BoxTet(void) {
+    TestMeshIO_Data* data = GmshBoxTetBinary();assert(data);
+
+    data->filename = "box_tet_binary.h5";
+    static const PylithInt groupTags[9] = {
+        1, 1, 1, 1, 1, 1, 1, 1, 1,
+    };
+    data->groupTags = const_cast<PylithInt*>(groupTags);
+
+    return data;
+} // HDF5BoxTet
+
+
+// ------------------------------------------------------------------------------------------------
+pylith::meshio::TestMeshIO_Data*
+pylith::meshio::TestMeshIOPetsc_Cases::HDF5BoxHex(void) {
+    TestMeshIO_Data* data = GmshBoxHexBinary();assert(data);
+
+    data->filename = "box_hex_binary.h5";
+    static const PylithInt groupTags[9] = {
+        1, 1, 1, 1, 1, 1, 1, 1, 1,
+    };
+    data->groupTags = const_cast<PylithInt*>(groupTags);
+
+    return data;
+} // HDF5BoxHex
 
 
 // End of file

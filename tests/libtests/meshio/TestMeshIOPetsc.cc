@@ -97,4 +97,29 @@ pylith::meshio::TestMeshIOPetsc::testReadError(void) {
 } // testReadError
 
 
+// ----------------------------------------------------------------------
+// Test write() and read().
+void
+pylith::meshio::TestMeshIOPetsc::testWriteRead(void) {
+    PYLITH_METHOD_BEGIN;
+    assert(_io);
+
+    TestMeshIO::_createMesh();assert(_mesh);
+
+    // Write mesh
+    _io->setFilename(_data->filename.c_str());
+    _io->setFormat(MeshIOPetsc::HDF5);
+    _io->write(_mesh);
+
+    // Read mesh
+    delete _mesh;_mesh = new pylith::topology::Mesh;
+    _io->read(_mesh);
+
+    // Make sure meshIn matches data
+    TestMeshIO::_checkVals();
+
+    PYLITH_METHOD_END;
+} // testWriteRead
+
+
 // End of file
