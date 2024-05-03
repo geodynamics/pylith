@@ -16,6 +16,10 @@
 class pylith::meshio::MeshIOPetsc : public MeshIO {
     friend class TestMeshIOPetsc; // unit testing
 
+    enum Format {
+        HDF5=0, // PETSc HDF5 format
+    };
+
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
@@ -52,6 +56,18 @@ public:
      */
     const char* getPrefix(void) const;
 
+    /** Set mesh format.
+     *
+     * @param value Mesh format.
+     */
+    void setFormat(Format value);
+
+    /** Get mesh format.
+     *
+     * @returns Mesh format.
+     */
+    Format getFormat(void) const;
+
     // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
 protected:
 
@@ -64,8 +80,9 @@ protected:
     // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
 private:
 
-    std::string _filename; ///< Name of file
-    std::string _prefix; ///< Options prefix for mesh
+    std::string _filename; ///< Name of file.
+    std::string _prefix; ///< Options prefix for mesh.
+    Format _format; ///< Mesh format.
 
 }; // MeshIOPetsc
 

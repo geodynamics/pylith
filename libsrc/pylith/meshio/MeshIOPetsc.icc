@@ -41,4 +41,19 @@ pylith::meshio::MeshIOPetsc::getPrefix(void) const {
 }
 
 
+// Set mesh format.
+inline
+void
+pylith::meshio::MeshIOPetsc::setFormat(Format value) {
+    _format = value;
+}
+
+
+// Get mesh format.
+pylith::meshio::MeshIOPetsc::Format
+pylith::meshio::MeshIOPetsc::getFormat(void) const {
+    return _format;
+}
+
+
 // End of file
