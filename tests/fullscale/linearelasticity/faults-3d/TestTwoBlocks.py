@@ -86,7 +86,7 @@ class TestHexGmsh(TestCase):
         self.mesh = meshes.HexGmsh()
         super().setUp()
 
-        TestCase.run_pylith(self, self.name, ["twoblocks.cfg", "twoblocks_hex.cfg"], nprocs=2)
+        TestCase.run_pylith(self, self.name, ["twoblocks.cfg", "twoblocks_hex.cfg", "solver_fault_fieldsplit.cfg"], nprocs=2)
         return
 
 
@@ -98,7 +98,7 @@ class TestTetGmsh(TestCase):
         self.mesh = meshes.TetGmsh()
         super().setUp()
 
-        TestCase.run_pylith(self, self.name, ["twoblocks.cfg", "twoblocks_tet.cfg"], nprocs=3)
+        TestCase.run_pylith(self, self.name, ["twoblocks.cfg", "twoblocks_tet.cfg", "solver_fault_fieldsplit.cfg"], nprocs=3)
         return
 
 

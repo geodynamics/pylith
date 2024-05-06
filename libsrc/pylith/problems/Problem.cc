@@ -405,6 +405,7 @@ pylith::problems::Problem::initialize(void) {
     assert(solution);
 
     // Initialize solution field.
+    pylith::utils::PetscDefaults::set(*solution, _materials[0], _petscDefaults);
     PetscErrorCode err = DMSetFromOptions(solution->getDM());PYLITH_CHECK_ERROR(err);
     _setupSolution();
     pylith::topology::CoordsVisitor::optimizeClosure(solution->getDM());

@@ -75,10 +75,13 @@ caption: Run Step 2 simulation
 $ pylith step02_slip_velbc.cfg
 
 # The output should look something like the following.
- >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/meshio/MeshIOObj.py:44:read
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:77:main
+ -- pylithapp(info)
+ -- Running on 1 process(es).
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/meshio/MeshIOObj.py:38:read
  -- meshiopetsc(info)
  -- Reading finite-element mesh
- >> /src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:94:void pylith::meshio::MeshIO::read(topology::Mesh *)
+ >> /src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:85:void pylith::meshio::MeshIO::read(pylith::topology::Mesh *, const bool)
  -- meshiopetsc(info)
  -- Component 'reader': Domain bounding box:
     (-50000, 50000)
@@ -87,12 +90,12 @@ $ pylith step02_slip_velbc.cfg
 # -- many lines omitted --
 
 24 TS dt 0.05 time 1.15
-    0 SNES Function norm 5.390420823432e-04
-    Linear solve converged due to CONVERGED_ATOL iterations 29
-    1 SNES Function norm 1.250412952119e-12
+    0 SNES Function norm 5.390420823551e-04
+    Linear solve converged due to CONVERGED_ATOL iterations 1
+    1 SNES Function norm 3.564692198930e-12
   Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
 25 TS dt 0.05 time 1.2
- >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:201:finalize
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:199:finalize
  -- timedependent(info)
  -- Finalizing problem.
 ```

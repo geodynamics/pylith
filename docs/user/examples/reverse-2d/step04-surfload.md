@@ -47,10 +47,13 @@ caption: Run Step 4 simulation
 $ pylith step04_surfload.cfg
 
 # The output should look something like the following.
- >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/meshio/MeshIOObj.py:44:read
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:77:main
+ -- pylithapp(info)
+ -- Running on 1 process(es).
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/meshio/MeshIOObj.py:38:read
  -- meshiopetsc(info)
  -- Reading finite-element mesh
- >> /src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:94:void pylith::meshio::MeshIO::read(pylith::topology::Mesh*)
+ >> /src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:85:void pylith::meshio::MeshIO::read(pylith::topology::Mesh *, const bool)
  -- meshiopetsc(info)
  -- Component 'reader': Domain bounding box:
     (-100000, 100000)
@@ -58,21 +61,21 @@ $ pylith step04_surfload.cfg
 
 # -- many lines omitted --
 
- >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/TimeDependent.py:139:run
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/TimeDependent.py:132:run
  -- timedependent(info)
  -- Solving problem.
 0 TS dt 0.01 time 0.
-    0 SNES Function norm 1.213351093160e-02 
+    0 SNES Function norm 1.213351093160e-02
     Linear solve converged due to CONVERGED_ATOL iterations 1
-    1 SNES Function norm 1.038106792811e-15 
+    1 SNES Function norm 1.008881341134e-15
   Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
 1 TS dt 0.01 time 0.01
- >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:201:finalize
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:199:finalize
  -- timedependent(info)
  -- Finalizing problem.
 ```
 
-As expected from the use of the LU preconditioner and linear problem, both the linear and nonlinear solvers converged in 1 iterations.
+As expected from the use of the LU preconditioner and linear problem, both the linear and nonlinear solvers converged in 1 iteration.
 
 ## Visualizing the results
 

@@ -20,6 +20,8 @@
 
 #include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
 
+#include "petscdm.h" // USES DMReorderSectionSetDefault()
+
 #include <typeinfo> // USES typeid()
 
 // ------------------------------------------------------------------------------------------------
@@ -72,6 +74,8 @@ pylith::meshio::OutputSubfield::create(const pylith::topology::Field& field,
 
     PetscErrorCode err;
     err = DMClone(mesh.getDM(), &subfield->_dm);PYLITH_CHECK_ERROR(err);
+    err = DMReorderSectionSetDefault(subfield->_dm, DM_REORDER_DEFAULT_FALSE);PYLITH_CHECK_ERROR(err);
+    err = DMReorderSectionSetType(subfield->_dm, NULL);PYLITH_CHECK_ERROR(err);
     err = PetscObjectSetName((PetscObject)subfield->_dm, name);PYLITH_CHECK_ERROR(err);
 
     PetscFE fe = pylith::topology::FieldOps::createFE(subfield->_discretization, subfield->_dm,
@@ -105,6 +109,8 @@ pylith::meshio::OutputSubfield::create(const pylith::topology::Field& field,
 
     PetscErrorCode err;
     err = DMClone(mesh.getDM(), &subfield->_dm);PYLITH_CHECK_ERROR(err);
+    err = DMReorderSectionSetDefault(subfield->_dm, DM_REORDER_DEFAULT_FALSE);PYLITH_CHECK_ERROR(err);
+    err = DMReorderSectionSetType(subfield->_dm, NULL);PYLITH_CHECK_ERROR(err);
     err = PetscObjectSetName((PetscObject)subfield->_dm, name);PYLITH_CHECK_ERROR(err);
 
     pylith::topology::VecVisitorMesh fieldVisitor(field, name);

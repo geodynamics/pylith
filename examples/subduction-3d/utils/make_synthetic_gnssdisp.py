@@ -10,12 +10,12 @@
 # =================================================================================================
 # Python application to create synthetic data from PyLith points output.
 # This script is meant to be used with example step07. It reads the
-# slow slip displacements at synthetic cGPS stations from example
+# slow slip displacements at synthetic cGNSS stations from example
 # step06, adds noise to the displacements, and then generates text and
 # VTK files with the synthetic data. The parameters are defined in
-# the make_synthetic_gpsdisp.cfg file.
+# the make_synthetic_gnssdisp.cfg file.
 # Run this script as follows:
-# ./make_synthetic_gpsdisp.py
+# ./make_synthetic_gnssdisp.py
 #
 
 import math
@@ -42,7 +42,7 @@ class MakeSyntheticGpsdisp(Application):
   # @li \b vtk_output_file Name of VTK output file.
   #
 
-  pointInputFile = pythia.pyre.inventory.str("point_input_file", default="cascadia-cgps_points.h5")
+  pointInputFile = pythia.pyre.inventory.str("point_input_file", default="cascadia-cgnss_points.h5")
   pointInputFile.meta['tip'] = "HDF5 point output file from PyLith."
 
   timeStep = pythia.pyre.inventory.int("time_step", default=0)
@@ -57,16 +57,16 @@ class MakeSyntheticGpsdisp(Application):
   sigmaUp = pythia.pyre.inventory.float("sigma_up", default=0.001)
   sigmaUp.meta['tip'] = "Sigma value for Up displacements."
 
-  outputFile = pythia.pyre.inventory.str("output_file", default="cascadia-cgps_disp.txt")
+  outputFile = pythia.pyre.inventory.str("output_file", default="cascadia-cgnss_disp.txt")
   outputFile.meta['tip'] = "Name of ASCII output file."
 
-  vtkOutputFile = pythia.pyre.inventory.str("vtk_output_file", default="cascadia-cgps_disp.vtk")
+  vtkOutputFile = pythia.pyre.inventory.str("vtk_output_file", default="cascadia-cgnss_disp.vtk")
   vtkOutputFile.meta['tip'] = "Name of VTK output file."
 
 
   # PUBLIC METHODS /////////////////////////////////////////////////////
 
-  def __init__(self, name="make_synthetic_gpsdisp"):
+  def __init__(self, name="make_synthetic_gnssdisp"):
     Application.__init__(self, name)
 
     self.coords = None
@@ -159,7 +159,7 @@ class MakeSyntheticGpsdisp(Application):
     sigma[:, 2] *= self.sigmaUp
 
     vtkHead = "# vtk DataFile Version 2.0\n" + \
-              "Synthetic GPS stations\n" + \
+              "Synthetic GNSS stations\n" + \
               "ASCII\n" + \
               "DATASET POLYDATA\n" + \
               "POINTS " + repr(self.numStations) + " double\n"

@@ -76,7 +76,7 @@ pylith::feassemble::ConstraintSimple::initialize(const pylith::topology::Field& 
     if (!pointIS) {
         PYLITH_METHOD_END;
     } // if
-    err = ISGetIndices(pointIS, &points);PYLITH_CHECK_ERROR(err);
+    err = ISGetIndices(pointIS, &points);PYLITH_CHECK_ERROR(err);assert(points);
     point = points[0];
     err = ISRestoreIndices(pointIS, &points);PYLITH_CHECK_ERROR(err);
     err = ISDestroy(&pointIS);PYLITH_CHECK_ERROR(err);
@@ -106,9 +106,18 @@ pylith::feassemble::ConstraintSimple::initialize(const pylith::topology::Field& 
         // may not have any cells with that DOF. The underlying code doesn't actually care if the point is
         // in the DS, so just get any DS and use it for the constraint.
         err = DMGetDS(dm, &ds);PYLITH_CHECK_ERROR(err);
+        PetscInt numDS = 0, numFields = 0;
         i_field = solution.getSubfieldInfo(_subfieldName.c_str()).index;
         numConstrainedDOF = 0;
         constrainedDOF = NULL;
+
+        err = DMGetNumDS(dm, &numDS);PYLITH_CHECK_ERROR(err);
+        for (PetscInt s = 0; s < numDS; ++s) {
+            err = DMGetRegionNumDS(dm, s, NULL, NULL, &ds, NULL);PYLITH_CHECK_ERROR(err);
+            err = PetscDSGetNumFields(ds, &numFields);PYLITH_CHECK_ERROR(err);
+            if (i_field < numFields) { break;}
+        } // for
+
     } // if
     err = DMPlexRestoreTransitiveClosure(solution.getDM(), point, PETSC_FALSE, &clSize, &closure);PYLITH_CHECK_ERROR(err);
     err = DMGetLabel(solution.getDM(), _labelName.c_str(), &label);PYLITH_CHECK_ERROR(err);

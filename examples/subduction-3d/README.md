@@ -128,8 +128,8 @@ pylith step07b_reverse.cfg mat_elastic.cfg
 
 Before we run the inversion, we postprocess the output from Step 6 to create synthetic data. 
 ```
-# Generate synthetic GPS data
-./utils/make_synthetic_gpsdisp.py
+# Generate synthetic GNSS data
+./utils/make_synthetic_gnssdisp.py
 ```
 
 We perform a simple inversion using the `slip_invert.py` Python script.

@@ -96,26 +96,31 @@ caption: Run Step 2 simulation
 $ pylith step02_inflation.cfg
 
 # The output should look something like the following.
-
- >> /home/pylith-user/software/unix/py310-venv/pylith-debug/lib/python3.10/site-packages/pylith/apps/PyLithApp.py:84:main
+ >> /software/unix/py3.12-venv/pylith-opt/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:77:main
  -- pylithapp(info)
  -- Running on 1 process(es).
- >> /home/pylith-user/software/unix/py310-venv/pylith-debug/lib/python3.10/site-packages/pylith/meshio/MeshIOObj.py:43:read
+ >> /software/unix/py3.12-venv/pylith-opt/lib/python3.12/site-packages/pylith/meshio/MeshIOObj.py:38:read
  -- meshiocubit(info)
  -- Reading finite-element mesh
- >> /home/pylith-user/src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:156:void pylith::meshio::MeshIOCubit::_readVertices(ExodusII &, scalar_array *, int *, int *) const
+ >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:148:void pylith::meshio::MeshIOCubit::_readVertices(ExodusII &, scalar_array *, int *, int *) const
  -- meshiocubit(info)
  -- Component 'reader': Reading 747 vertices.
+ >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:208:void pylith::meshio::MeshIOCubit::_readCells(ExodusII &, int_array *, int_array *, int *, int *) const
+ -- meshiocubit(info)
+ -- Component 'reader': Reading 705 cells in 2 blocks.
+ >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:270:void pylith::meshio::MeshIOCubit::_readGroups(ExodusII &)
+ -- meshiocubit(info)
+ -- Component 'reader': Found 5 node sets.
 
 # -- many lines omitted --
 
  -- Setting PETSc options:
 fieldsplit_displacement_pc_type = lu
-fieldsplit_pressure_pc_type = ilu
-fieldsplit_pressure_t_pc_type = ilu
-fieldsplit_trace_strain_pc_type = ilu
-fieldsplit_trace_strain_t_pc_type = ilu
-fieldsplit_velocity_pc_type = ilu
+fieldsplit_pressure_pc_type = bjacobi
+fieldsplit_pressure_t_pc_type = bjacobi
+fieldsplit_trace_strain_pc_type = bjacobi
+fieldsplit_trace_strain_t_pc_type = bjacobi
+fieldsplit_velocity_pc_type = bjacobi
 ksp_atol = 1.0e-12
 ksp_converged_reason = true
 ksp_error_if_not_converged = true
@@ -139,26 +144,27 @@ ts_error_if_step_fails = true
 ts_monitor = true
 ts_type = beuler
 
- >> /home/pylith-user/software/unix/py310-venv/pylith-debug/lib/python3.10/site-packages/pylith/problems/TimeDependent.py:132:run
+ >> /software/unix/py3.12-venv/pylith-opt/lib/python3.12/site-packages/pylith/problems/TimeDependent.py:132:run
  -- timedependent(info)
  -- Solving problem.
 0 TS dt 1. time -1.
     0 SNES Function norm 7.521665654021e-01
     Linear solve converged due to CONVERGED_RTOL iterations 42
-    1 SNES Function norm 1.098964504117e-10
+    1 SNES Function norm 1.098354113346e-10
   Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
 
 # -- many lines omitted --
 
 50 TS dt 1. time 49.
-    0 SNES Function norm 1.583815770370e-01
-    Linear solve converged due to CONVERGED_ATOL iterations 10
-    1 SNES Function norm 7.897032897534e-12
+    0 SNES Function norm 1.583815770737e-01
+    Linear solve converged due to CONVERGED_ATOL iterations 11
+    1 SNES Function norm 1.554020039416e-11
   Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
 51 TS dt 1. time 50.
- >> /home/pylith-user/software/unix/py310-venv/pylith-debug/lib/python3.10/site-packages/pylith/problems/Problem.py:199:finalize
+ >> /software/unix/py3.12-venv/pylith-opt/lib/python3.12/site-packages/pylith/problems/Problem.py:199:finalize
  -- timedependent(info)
  -- Finalizing problem.
+
 ```
 
 The linear solver exhibits similar performance with less than 50 iterations at most time steps.

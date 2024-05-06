@@ -62,7 +62,7 @@ caption: Run Step 1 simulation
 $ pylith step01_gravity.cfg
 
 # The output should look something like the following.
- >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/meshio/MeshIOObj.py:44:read
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/meshio/MeshIOObj.py:44:read
  -- meshiopetsc(info)
  -- Reading finite-element mesh
  >> /src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:94:void pylith::meshio::MeshIO::read(topology::Mesh *)
@@ -70,34 +70,34 @@ $ pylith step01_gravity.cfg
  -- Component 'reader': Domain bounding box:
     (-100000, 100000)
     (-100000, 0)
- >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:116:preinitialize
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:116:preinitialize
  -- timedependent(info)
  -- Performing minimal initialization before verifying configuration.
- >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Solution.py:44:preinitialize
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Solution.py:44:preinitialize
  -- solution(info)
  -- Performing minimal initialization of solution.
- >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/materials/RheologyElasticity.py:41:preinitialize
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/materials/RheologyElasticity.py:41:preinitialize
  -- isotropiclinearelasticity(info)
  -- Performing minimal initialization of elasticity rheology 'bulk_rheology'.
- >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/materials/RheologyElasticity.py:41:preinitialize
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/materials/RheologyElasticity.py:41:preinitialize
  -- isotropiclinearelasticity(info)
  -- Performing minimal initialization of elasticity rheology 'bulk_rheology'.
- >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/materials/RheologyElasticity.py:41:preinitialize
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/materials/RheologyElasticity.py:41:preinitialize
  -- isotropiclinearelasticity(info)
  -- Performing minimal initialization of elasticity rheology 'bulk_rheology'.
- >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/bc/DirichletTimeDependent.py:92:preinitialize
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/bc/DirichletTimeDependent.py:92:preinitialize
  -- dirichlettimedependent(info)
  -- Performing minimal initialization of time-dependent Dirichlet boundary condition 'bc_xneg'.
- >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/bc/DirichletTimeDependent.py:92:preinitialize
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/bc/DirichletTimeDependent.py:92:preinitialize
  -- dirichlettimedependent(info)
  -- Performing minimal initialization of time-dependent Dirichlet boundary condition 'bc_xpos'.
- >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/bc/DirichletTimeDependent.py:92:preinitialize
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/bc/DirichletTimeDependent.py:92:preinitialize
  -- dirichlettimedependent(info)
  -- Performing minimal initialization of time-dependent Dirichlet boundary condition 'bc_yneg'.
- >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:175:verifyConfiguration
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:175:verifyConfiguration
  -- timedependent(info)
  -- Verifying compatibility of problem configuration.
- >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:221:_printInfo
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:221:_printInfo
  -- timedependent(info)
  -- Scales for nondimensionalization:
     Length scale: 1000*m
@@ -105,7 +105,7 @@ $ pylith step01_gravity.cfg
     Pressure scale: 3e+10*m**-1*kg*s**-2
     Density scale: 2.98765e+23*m**-3*kg
     Temperature scale: 1*K
- >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:186:initialize
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:186:initialize
  -- timedependent(info)
  -- Initializing timedependent problem with quasistatic formulation.
  >> /src/cig/pylith/libsrc/pylith/utils/PetscOptions.cc:235:static void pylith::utils::_PetscOptions::write(pythia::journal::info_t &, const char *, const pylith::utils::PetscOptions &)
@@ -125,7 +125,7 @@ ts_error_if_step_fails = true
 ts_monitor = true
 ts_type = beuler
 
- >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/TimeDependent.py:139:run
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/TimeDependent.py:139:run
  -- timedependent(info)
  -- Solving problem.
 0 TS dt 0.01 time 0.
@@ -134,7 +134,7 @@ ts_type = beuler
     1 SNES Function norm 3.025686251687e-13 
   Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
 1 TS dt 0.01 time 0.01
- >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:201:finalize
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:201:finalize
  -- timedependent(info)
  -- Finalizing problem.
 ```

@@ -204,8 +204,15 @@ pylith::topology::MeshOps::createFromPoints(const PylithReal* points,
     err = DMPlexCreate(comm, &dmPoints);PYLITH_CHECK_ERROR(err);
     err = DMSetDimension(dmPoints, 0);PYLITH_CHECK_ERROR(err);
     err = DMSetCoordinateDim(dmPoints, spaceDim);PYLITH_CHECK_ERROR(err);
-    err = DMPlexCreateFromDAG(dmPoints, depth, dmNumPoints, &dmConeSizes[0], &dmCones[0],
-                              &dmConeOrientations[0], points);PYLITH_CHECK_ERROR(err);
+    if (numPoints > 0) {
+        err = DMPlexCreateFromDAG(dmPoints, depth, dmNumPoints, &dmConeSizes[0], &dmCones[0],
+                                  &dmConeOrientations[0], points);PYLITH_CHECK_ERROR(err);
+    } else {
+        PetscInt empty[1];
+        empty[0] = 0;
+        err = DMPlexCreateFromDAG(dmPoints, depth, dmNumPoints, &empty[0], &empty[0],
+                                  &empty[0], points);PYLITH_CHECK_ERROR(err);
+    } // if/else
 
     PetscSF sf = NULL;
     err = DMGetPointSF(dmPoints, &sf);PYLITH_CHECK_ERROR(err);

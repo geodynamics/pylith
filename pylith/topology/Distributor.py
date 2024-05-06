@@ -25,9 +25,12 @@ class Distributor(PetscComponent, ModuleDistributor):
 
     import pythia.pyre.inventory
 
-    partitioner = pythia.pyre.inventory.str("partitioner", default="chaco",
-                                     validator=pythia.pyre.inventory.choice(["chaco", "metis", "parmetis", "simple"]))
-    partitioner.meta['tip'] = "Name of mesh partitioner."
+    partitioner = pythia.pyre.inventory.str("partitioner", default="parmetis",
+                                     validator=pythia.pyre.inventory.choice(["parmetis", "chaco", "simple"]))
+    partitioner.meta['tip'] = "Name of mesh partitioner (PETSc must be built with partitioner)."
+
+    useEdgeWeighting = pythia.pyre.inventory.bool("use_edge_weighting", default=True)
+    useEdgeWeighting.meta["tip"] = "Use edge weighting (parmetis only)."
 
     writePartition = pythia.pyre.inventory.bool("write_partition", default=False)
     writePartition.meta['tip'] = "Write partition information to file."
@@ -54,11 +57,7 @@ class Distributor(PetscComponent, ModuleDistributor):
 
         from pylith.topology.Mesh import Mesh
         newMesh = Mesh(mesh.getDimension())
-        if self.partitioner == "metis":
-            partitionerName = "parmetis"
-        else:
-            partitionerName = self.partitioner
-        ModuleDistributor.distribute(newMesh, mesh, problem.interfaces.components(), partitionerName)
+        ModuleDistributor.distribute(newMesh, mesh, problem.interfaces.components(), self.partitioner, self.useEdgeWeighting)
 
         mesh.cleanup()
 

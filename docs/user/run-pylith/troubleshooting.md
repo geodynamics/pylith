@@ -53,7 +53,7 @@ Error Message -------------------------------
 see http://www.mcs.anl.gov/petsc/petsc-as/documentation/faq.html\#ZeroPivot!
 ```
 
-This usually occurs when the null space of the system Jacobian is nonzero, such as the case of a problem without Dirichlet boundary conditions on any boundary or a portion of a domain disconnected from boundary conditions by faults.
+This usually occurs when the null space of the system Jacobian is nonzero, such as the case of a problem without Dirichlet boundary conditions on any boundary.
 If this arises and no additional Dirichlet boundary conditions are desired, then the workaround is to change the preconditioner from LU to ILU.
 See {ref}`sec-user-run-pylith-petsc-options` for additional information.
 

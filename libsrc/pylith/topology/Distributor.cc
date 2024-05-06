@@ -72,7 +72,8 @@ pylith::topology::Distributor::distribute(pylith::topology::Mesh* const newMesh,
                                           const pylith::topology::Mesh& origMesh,
                                           pylith::faults::FaultCohesive* faults[],
                                           const int numFaults,
-                                          const char* partitionerName) {
+                                          const char* partitionerName,
+                                          const bool useEdgeWeighting) {
     PYLITH_METHOD_BEGIN;
     pythia::journal::info_t info("mesh_distributor");
 
@@ -90,6 +91,10 @@ pylith::topology::Distributor::distribute(pylith::topology::Mesh* const newMesh,
     PetscDM dmOrig = origMesh.getDM();assert(dmOrig);
     err = DMPlexGetPartitioner(dmOrig, &partitioner);PYLITH_CHECK_ERROR(err);
     err = PetscPartitionerSetType(partitioner, partitionerName);PYLITH_CHECK_ERROR(err);
+    if ((std::string(partitionerName) == std::string("parmetis")) && useEdgeWeighting) {
+        err = PetscOptionsSetValue(NULL, "-petscpartitioner_use_vertex_weights", "true");PYLITH_CHECK_ERROR(err);
+        err = PetscPartitionerSetFromOptions(partitioner);PYLITH_CHECK_ERROR(err);
+    } // if
 
     if (0 == commRank) {
         info << pythia::journal::at(__HERE__)

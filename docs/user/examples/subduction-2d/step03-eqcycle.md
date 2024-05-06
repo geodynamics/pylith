@@ -69,10 +69,13 @@ caption: Run Step 3 simulation
 $ pylith step03_eqcycle.cfg
 
 # The output should look something like the following.
- >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/meshio/MeshIOObj.py:44:read
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:77:main
+ -- pylithapp(info)
+ -- Running on 1 process(es).
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/meshio/MeshIOObj.py:38:read
  -- meshiopetsc(info)
  -- Reading finite-element mesh
- >> /src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:94:void pylith::meshio::MeshIO::read(topology::Mesh *)
+ >> /src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:85:void pylith::meshio::MeshIO::read(pylith::topology::Mesh *, const bool)
  -- meshiopetsc(info)
  -- Component 'reader': Domain bounding box:
     (-600000, 600000)
@@ -81,12 +84,12 @@ $ pylith step03_eqcycle.cfg
 # -- many lines omitted --
 
 61 TS dt 0.05 time 3.
-    0 SNES Function norm 5.748198604376e-02 
-    Linear solve converged due to CONVERGED_ATOL iterations 178
-    1 SNES Function norm 1.127019123456e-11 
+    0 SNES Function norm 5.747931631973e-02
+    Linear solve converged due to CONVERGED_ATOL iterations 6
+    1 SNES Function norm 5.005918018395e-12
   Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
 62 TS dt 0.05 time 3.05
- >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:201:finalize
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:199:finalize
  -- timedependent(info)
  -- Finalizing problem.
 ```
