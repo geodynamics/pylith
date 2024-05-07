@@ -46,7 +46,7 @@ pylith::meshio::TestMeshIOPetsc::testFilename(void) {
     PYLITH_METHOD_BEGIN;
     assert(_io);
 
-    const std::string& filename = "hi.txt";
+    const std::string& filename = "hi.h5";
     _io->setFilename(filename.c_str());
     CHECK(filename == std::string(_io->getFilename()));
 
