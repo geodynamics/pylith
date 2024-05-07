@@ -1,4 +1,3 @@
-#!/usr/bin/env nemesis
 # =================================================================================================
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
@@ -8,13 +7,10 @@
 #
 # See https://mit-license.org/ and LICENSE.md and for license information. 
 # =================================================================================================
-# @file tests/pytests/faults/TestSingleRupture.py
-#
-# @brief Unit testing of Python SingleRupture object.
 
 import unittest
 
-from pylith.testing.UnitTestApp import TestAbstractComponent
+from pylith.testing.TestCases import TestAbstractComponent, make_suite
 from pylith.faults.SingleRupture import SingleRupture
 
 
@@ -24,10 +20,13 @@ class TestSingleRupture(TestAbstractComponent):
     _class = SingleRupture
 
 
+def load_tests(loader, tests, pattern):
+    TEST_CLASSES = [TestSingleRupture]
+    return make_suite(TEST_CLASSES, loader)
+
+
 if __name__ == "__main__":
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestSingleRupture))
-    unittest.TextTestRunner(verbosity=2).run(suite)
+    unittest.main(verbosity=2)
 
 
 # End of file

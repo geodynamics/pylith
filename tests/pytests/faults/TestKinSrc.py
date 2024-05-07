@@ -1,4 +1,3 @@
-#!/usr/bin/env nemesis
 # =================================================================================================
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
@@ -8,13 +7,10 @@
 #
 # See https://mit-license.org/ and LICENSE.md and for license information. 
 # =================================================================================================
-# @file tests/pytests/faults/TestKinSrc.py
-#
-# @brief Unit testing of Python KinSrc object.
 
 import unittest
 
-from pylith.testing.UnitTestApp import (TestAbstractComponent, TestComponent)
+from pylith.testing.TestCases import (TestAbstractComponent, TestComponent, make_suite)
 import pylith.faults.KinSrc
 import pylith.faults.KinSrcConstRate
 import pylith.faults.KinSrcStep
@@ -72,9 +68,8 @@ class TestKinSrcTimeHistory(TestComponent):
     _factory = pylith.faults.KinSrcTimeHistory.eq_kinematic_src
 
 
-if __name__ == "__main__":
-    suite = unittest.TestSuite()
-    for cls in [
+def load_tests(loader, tests, pattern):
+    TEST_CLASSES = [
         TestKinSrc,
         TestKinSrcConstRate,
         TestKinSrcStep,
@@ -82,9 +77,12 @@ if __name__ == "__main__":
         TestKinSrcBrune,
         TestKinSrcLiuCos,
         TestKinSrcTimeHistory,
-    ]:
-        suite.addTest(unittest.makeSuite(cls))
-    unittest.TextTestRunner(verbosity=2).run(suite)
+    ]
+    return make_suite(TEST_CLASSES, loader)
+
+
+if __name__ == "__main__":
+    unittest.main(verbosity=2)
 
 
 # End of file
