@@ -14,7 +14,7 @@
 
 import unittest
 
-from pylith.testing.UnitTestApp import TestComponent
+from pylith.testing.TestCases import TestComponent, make_suite
 import pylith.materials.AuxSubfieldsElasticity
 import pylith.materials.AuxSubfieldsIsotropicLinearElasticity
 import pylith.materials.AuxSubfieldsIsotropicLinearMaxwell
@@ -73,9 +73,8 @@ class TestAuxSubfieldsIsotropicLinearPoroelasticity(TestComponent):
     _factory = pylith.materials.AuxSubfieldsIsotropicLinearPoroelasticity.auxiliary_subfields
 
 
-if __name__ == "__main__":
-    suite = unittest.TestSuite()
-    for cls in [
+def load_tests(loader, tests, pattern):
+    TEST_CLASSES = [
         TestAuxSubfieldsElasticity,
         TestAuxSubfieldsIsotropicLinearElasticity,
         TestAuxSubfieldsIsotropicLinearMaxwell,
@@ -83,9 +82,12 @@ if __name__ == "__main__":
         TestAuxSubfieldsIsotropicPowerLaw,
         TestAuxSubfieldsPoroelasticity,
         TestAuxSubfieldsIsotropicLinearPoroelasticity,
-        ]:
-        suite.addTest(unittest.makeSuite(cls))
-    unittest.TextTestRunner(verbosity=2).run(suite)
+        ]
+    return make_suite(TEST_CLASSES, loader)
+
+
+if __name__ == "__main__":
+    unittest.main(verbosity=2)
 
 
 # End of file
