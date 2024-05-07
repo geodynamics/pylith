@@ -7,11 +7,7 @@
 #
 # See https://mit-license.org/ and LICENSE.md and for license information. 
 # =================================================================================================
-# @file pylith/testing/UnitTestApp.py
-#
-# @brief Python application for Python unit tests.
 
-from pythia.pyre.applications.Script import Script
 
 import unittest
 
@@ -22,6 +18,7 @@ def configureComponent(component):
         configureComponent(subcomponent)
     component._configure()
     return
+
 
 class TestAbstractComponent(unittest.TestCase):
     """Unit testing of abstract Pyre component.
@@ -54,49 +51,11 @@ class TestComponent(TestAbstractComponent):
         self.assertTrue(isinstance(obj, self._class))
 
 
-class UnitTestApp(Script):
-    """Test application.
-    """
-    cov = None
-    try:
-        import coverage
-        cov = coverage.Coverage(source=["pylith"])
-    except ImportError:
-        pass
-
-    # PUBLIC METHODS /////////////////////////////////////////////////////
-
-    def __init__(self, name="unittestapp", petsc_options=[("malloc_dump", "true")]):
-        """Constructor.
-        """
-        Script.__init__(self, name)
-        self.petscOptions = petsc_options
-        return
-
-    def main(self):
-        """Run the application.
-        """
-        if self.cov:
-            self.cov.start()
-
-        from pylith.utils.PetscManager import PetscManager
-        petsc = PetscManager()
-        petsc.options = self.petscOptions
-        petsc.initialize()
-
-        success = unittest.TextTestRunner(
-            verbosity=2).run(self._suite()).wasSuccessful()
-
-        petsc.finalize()
-
-        if self.cov:
-            self.cov.stop()
-            self.cov.save()
-
-        if not success:
-            import sys
-            sys.exit(1)
-        return
+def make_suite(test_classes, loader=unittest.defaultTestLoader):
+    suite = unittest.TestSuite()
+    for cls in test_classes:
+        suite.addTests(loader.loadTestsFromTestCase(cls))
+    return suite
 
 
 # End of file
