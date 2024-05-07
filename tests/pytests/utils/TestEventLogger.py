@@ -1,4 +1,3 @@
-#!/usr/bin/env nemesis
 # =================================================================================================
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
@@ -8,40 +7,31 @@
 #
 # See https://mit-license.org/ and LICENSE.md and for license information. 
 # =================================================================================================
-# @file tests/pytests/utils/TestEventLogger.py
-
-# @brief Unit testing of EventLogger object.
 
 import unittest
 
+from pylith.testing.TestCases import make_suite
+from pylith.utils.EventLogger import EventLogger
 
-# ----------------------------------------------------------------------
 class TestEventLogger(unittest.TestCase):
     """Unit testing of EventLogger object.
     """
 
     def test_constructor(self):
-        from pylith.utils.EventLogger import EventLogger
         logger = EventLogger()
-        return
 
     def test_className(self):
-        from pylith.utils.EventLogger import EventLogger
         logger = EventLogger()
         name = "my class"
         logger.setClassName(name)
         self.assertEqual(name, logger.getClassName())
-        return
 
     def test_initialize(self):
-        from pylith.utils.EventLogger import EventLogger
         logger = EventLogger()
         logger.setClassName("logging A")
         logger.initialize()
-        return
 
     def test_registerEvent(self):
-        from pylith.utils.EventLogger import EventLogger
         logger = EventLogger()
         logger.setClassName("logging A")
         logger.initialize()
@@ -52,10 +42,8 @@ class TestEventLogger(unittest.TestCase):
             id[event] = logger.registerEvent(event)
         for event in events:
             self.assertEqual(id[event], logger.getEventId(event))
-        return
 
     def test_eventLogging(self):
-        from pylith.utils.EventLogger import EventLogger
         logger = EventLogger()
         logger.setClassName("logging A")
         logger.initialize()
@@ -73,10 +61,8 @@ class TestEventLogger(unittest.TestCase):
         logger.eventBegin("event 1")
         logger.eventEnd("event 1")
         logger.eventEnd("event 3")
-        return
 
     def test_registerStage(self):
-        from pylith.utils.EventLogger import EventLogger
         logger = EventLogger()
         logger.setClassName("logging A")
         logger.initialize()
@@ -87,10 +73,8 @@ class TestEventLogger(unittest.TestCase):
             id[stage] = logger.registerStage(stage)
         for stage in stages:
             self.assertEqual(id[stage], logger.getStageId(stage))
-        return
 
     def test_stageLogging(self):
-        from pylith.utils.EventLogger import EventLogger
         logger = EventLogger()
         logger.setClassName("logging A")
         logger.initialize()
@@ -108,18 +92,19 @@ class TestEventLogger(unittest.TestCase):
         logger.stagePush("stage 1b")
         logger.stagePop()
         logger.stagePop()
-        return
+
+
+def load_tests(loader, tests, pattern):
+    TEST_CLASSES = [TestEventLogger]
+    return make_suite(TEST_CLASSES, loader)
 
 
 if __name__ == "__main__":
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestEventLogger))
-
     from pylith.utils.PetscManager import PetscManager
     petsc = PetscManager()
     petsc.initialize()
 
-    success = unittest.TextTestRunner(verbosity=2).run(suite).wasSuccessful()
+    unittest.main(verbosity=2)
 
     petsc.finalize()
 
