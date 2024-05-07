@@ -8,14 +8,11 @@
 #
 # See https://mit-license.org/ and LICENSE.md and for license information. 
 # =================================================================================================
-# @file tests/pytests/apps/TestEqInfoApp.py
-#
-# @brief Unit testing of Python EqInfoApp object.
 
 import unittest
 
 from pylith.apps.EqInfoApp import EqInfoApp
-from pylith.testing.UnitTestApp import configureComponent
+from pylith.testing.TestCases import make_suite
 
 
 class TestEqInfoApp(unittest.TestCase):
@@ -26,10 +23,13 @@ class TestEqInfoApp(unittest.TestCase):
         app = EqInfoApp()
 
 
+def load_tests(loader, tests, pattern):
+    TEST_CLASSES = [TestEqInfoApp]
+    return make_suite(TEST_CLASSES, loader)
+
+
 if __name__ == "__main__":
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestEqInfoApp))
-    unittest.TextTestRunner(verbosity=2).run(suite)
+    unittest.main(verbosity=2)
 
 
 # End of file

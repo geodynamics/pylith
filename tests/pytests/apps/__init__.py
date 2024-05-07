@@ -1,9 +1,7 @@
-from .TestPetscApplication import TestPetscApplication
-from .TestPyLithApp import TestPyLithApp
-from .TestEqInfoApp import TestEqInfoApp
+from . import (TestPetscApplication, TestPyLithApp, TestEqInfoApp)
 
 
-def test_classes():
+def test_modules():
     return [
         TestPetscApplication,
         TestPyLithApp,

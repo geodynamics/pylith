@@ -8,14 +8,11 @@
 #
 # See https://mit-license.org/ and LICENSE.md and for license information. 
 # =================================================================================================
-# @file tests/pytests/apps/TestPetscApplication.py
-#
-# @brief Unit testing of Python PetscApplication object.
 
 import unittest
 
 from pylith.apps.PetscApplication import PetscApplication
-from pylith.testing.UnitTestApp import configureComponent
+from pylith.testing.TestCases import make_suite
 
 
 class TestPetscApplication(unittest.TestCase):
@@ -26,10 +23,13 @@ class TestPetscApplication(unittest.TestCase):
         app = PetscApplication()
 
 
+def load_tests(loader, tests, pattern):
+    TEST_CLASSES = [TestPetscApplication]
+    return make_suite(TEST_CLASSES, loader)
+
+
 if __name__ == "__main__":
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestPetscApplication))
-    unittest.TextTestRunner(verbosity=2).run(suite)
+    unittest.main(verbosity=2)
 
 
 # End of file
