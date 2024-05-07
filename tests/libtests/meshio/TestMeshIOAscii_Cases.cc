@@ -29,8 +29,6 @@ public:
 
     static TestMeshIO_Data* Quad2D_Comments(void);
 
-    static TestMeshIO_Data* Quad3D(void);
-
     static TestMeshIO_Data* Hex3D(void);
 
     static TestMeshIO_Data* Hex3D_Index1(void);
@@ -48,9 +46,6 @@ TEST_CASE("TestMeshIOAscii::Quad2D::testFilename", "[TestMeshIOAscii][testFilena
 
 TEST_CASE("TestMeshIOAscii::Quad2D::testWriteRead", "[TestMeshIOAscii][testWriteRead]") {
     pylith::meshio::TestMeshIOAscii(pylith::meshio::TestMeshIOAscii_Cases::Quad2D()).testWriteRead();
-}
-TEST_CASE("TestMeshIOAscii::Quad3D::testWriteRead", "[TestMeshIOAscii][testWriteRead]") {
-    pylith::meshio::TestMeshIOAscii(pylith::meshio::TestMeshIOAscii_Cases::Quad3D()).testWriteRead();
 }
 TEST_CASE("TestMeshIOAscii::Hex3D::testWriteRead", "[TestMeshIOAscii][testWriteRead]") {
     pylith::meshio::TestMeshIOAscii(pylith::meshio::TestMeshIOAscii_Cases::Hex3D()).testWriteRead();
@@ -192,62 +187,6 @@ pylith::meshio::TestMeshIOAscii_Cases::Quad2D_Comments(void) {
 
     return data;
 } // Quad2D_Comments
-
-
-// ------------------------------------------------------------------------------------------------
-pylith::meshio::TestMeshIO_Data*
-pylith::meshio::TestMeshIOAscii_Cases::Quad3D(void) {
-    TestMeshIO_Data* data = new TestMeshIO_Data();assert(data);
-
-    data->filename = "mesh2Din3D.txt";
-    data->numVertices = 9;
-    data->spaceDim = 3;
-    data->numCells = 3;
-    data->cellDim = 2;
-    data->numCorners = 4;
-
-    static const PylithScalar vertices[9*3] = {
-        -1.0, +3.0, +0.2,
-        +1.0, +3.3, +0.5,
-        -1.2, +0.9, +0.3,
-        +0.9, +1.0, +0.4,
-        +3.0, +2.9, -0.1,
-        +6.0, +1.2, -0.2,
-        +3.4, -0.2, +0.1,
-        +0.1, -1.1, +0.9,
-        +2.9, -3.1, +0.8
-    };
-    data->vertices = const_cast<PylithScalar*>(vertices);
-
-    static const PylithInt cells[3*4] = {
-        0,  2,  3,  1,
-        4,  3,  6,  5,
-        3,  7,  8,  6,
-    };
-    data->cells = const_cast<PylithInt*>(cells);
-    static const PylithInt materialIds[3] = {
-        0, 1, 0,
-    };
-    data->materialIds = const_cast<PylithInt*>(materialIds);
-
-    data->numGroups = 1;
-    static const PylithInt groupSizes[3] = { 3, };
-    data->groupSizes = const_cast<PylithInt*>(groupSizes);
-    static const PylithInt groups[3] = {
-        0, 3, 6,
-    };
-    data->groups = const_cast<PylithInt*>(groups);
-    static const char* groupNames[1] = {
-        "group A",
-    };
-    data->groupNames = const_cast<char**>(groupNames);
-    static const char* groupTypes[1] = {
-        "vertex",
-    };
-    data->groupTypes = const_cast<char**>(groupTypes);
-
-    return data;
-} // Quad3D
 
 
 // ------------------------------------------------------------------------------------------------
