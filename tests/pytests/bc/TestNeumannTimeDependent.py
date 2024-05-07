@@ -1,4 +1,3 @@
-#!/usr/bin/env nemesis
 # =================================================================================================
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
@@ -8,13 +7,10 @@
 #
 # See https://mit-license.org/ and LICENSE.md and for license information. 
 # =================================================================================================
-# @file tests/pytests/bc/TestNeumannTimeDependent.py
-#
-# @brief Unit testing of Python NeumannTimeDependent object.
 
 import unittest
 
-from pylith.testing.UnitTestApp import TestComponent
+from pylith.testing.TestCases import TestComponent, make_suite
 from pylith.bc.NeumannTimeDependent import (NeumannTimeDependent, boundary_condition)
 
 
@@ -25,10 +21,13 @@ class TestNeumannTimeDependent(TestComponent):
     _factory = boundary_condition
 
 
+def load_tests(loader, tests, pattern):
+    TEST_CLASSES = [TestNeumannTimeDependent]
+    return make_suite(TEST_CLASSES, loader)
+
+
 if __name__ == "__main__":
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestNeumannTimeDependent))
-    unittest.TextTestRunner(verbosity=2).run(suite)
+    unittest.main(verbosity=2)
 
 
 # End of file

@@ -1,18 +1,18 @@
-from .TestDirichletTimeDependent import TestDirichletTimeDependent
-from .TestNeumannTimeDependent import TestNeumannTimeDependent
-from .TestAbsorbingDampers import TestAbsorbingDampers
-from .TestAuxiliarySubfields import (
-    TestAuxSubfieldsTimeDependent, TestAuxSubfieldsAbsorbingDampers)
-from .TestZeroDB import TestZeroDB
+from . import (
+    TestDirichletTimeDependent,
+    TestNeumannTimeDependent,
+    TestAbsorbingDampers,
+    TestAuxiliarySubfields,
+    TestZeroDB,
+    )
 
 
-def test_classes():
+def test_modules():
     return [
         TestDirichletTimeDependent,
         TestNeumannTimeDependent,
-        TestAuxSubfieldsTimeDependent,
         TestAbsorbingDampers,
-        TestAuxSubfieldsAbsorbingDampers,
+        TestAuxiliarySubfields,
         TestZeroDB,
     ]
 

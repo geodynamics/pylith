@@ -1,4 +1,3 @@
-#!/usr/bin/env nemesis
 # =================================================================================================
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
@@ -8,13 +7,10 @@
 #
 # See https://mit-license.org/ and LICENSE.md and for license information. 
 # =================================================================================================
-# @file tests/pytests/bc/TestZeroDB.py
-#
-# @brief Unit testing of Python ZeroDB object.
 
 import unittest
 
-from pylith.testing.UnitTestApp import (TestComponent, configureComponent)
+from pylith.testing.TestCases import (TestComponent, configureComponent, make_suite)
 from pylith.bc.ZeroDB import (ZeroDB, spatial_database)
 
 
@@ -33,10 +29,13 @@ class TestZeroDB(TestComponent):
         return
 
 
+def load_tests(loader, tests, pattern):
+    TEST_CLASSES = [TestZeroDB]
+    return make_suite(TEST_CLASSES, loader)
+
+
 if __name__ == "__main__":
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestZeroDB))
-    unittest.TextTestRunner(verbosity=2).run(suite)
+    unittest.main(verbosity=2)
 
 
 # End of file
