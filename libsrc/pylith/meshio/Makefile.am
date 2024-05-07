@@ -27,7 +27,7 @@ subpkginclude_HEADERS = \
 	MeshIOAscii.hh \
 	MeshIOAscii.icc \
 	MeshIOPetsc.hh \
-	MeshIOPetsc.icc \
+	MeshConverter.hh \
 	OutputObserver.hh \
 	OutputSubfield.hh \
 	OutputSoln.hh \

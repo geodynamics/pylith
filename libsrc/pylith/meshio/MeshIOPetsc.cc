@@ -118,6 +118,64 @@ pylith::meshio::MeshIOPetsc::deallocate(void) {
 
 
 // ------------------------------------------------------------------------------------------------
+// Set filename for PETSc.
+void
+pylith::meshio::MeshIOPetsc::setFilename(const char* name) {
+    _filename = name;
+
+    const std::string gmshSuffix = ".msh";
+    const std::string hdf5Suffix = ".h5";
+    if (gmshSuffix == _filename.substr(_filename.size()-gmshSuffix.size(), gmshSuffix.size())) {
+        _format = GMSH;
+    } else if (hdf5Suffix == _filename.substr(_filename.size()-hdf5Suffix.size(), hdf5Suffix.size())) {
+        _format = HDF5;
+    } else {
+        PYLITH_COMPONENT_LOGICERROR("Could not determine format for mesh file " << _filename << ".");
+    } // if/else
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// Get filename for PETSc.
+const char*
+pylith::meshio::MeshIOPetsc::getFilename(void) const {
+    return _filename.c_str();
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// Set options prefix for mesh.
+void
+pylith::meshio::MeshIOPetsc::setPrefix(const char* name) {
+    _prefix = name;
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// Get options prefix for mesh.
+const char*
+pylith::meshio::MeshIOPetsc::getPrefix(void) const {
+    return _prefix.c_str();
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// Set mesh format.
+void
+pylith::meshio::MeshIOPetsc::setFormat(Format value) {
+    _format = value;
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// Get mesh format.
+pylith::meshio::MeshIOPetsc::Format
+pylith::meshio::MeshIOPetsc::getFormat(void) const {
+    return _format;
+}
+
+
+// ------------------------------------------------------------------------------------------------
 // Read mesh.
 void
 pylith::meshio::MeshIOPetsc::_read(void) {
@@ -126,22 +184,29 @@ pylith::meshio::MeshIOPetsc::_read(void) {
     _MeshIOPetsc::Events::logger.eventBegin(_MeshIOPetsc::Events::read);
     assert(_mesh);
 
-    const size_t noptions = 3;
-    std::string options[noptions*2] = {
-        "-" + _prefix + "dm_plex_filename", _filename,
-        "-" + _prefix + "dm_plex_gmsh_use_regions", "", // :KLUDGE: Only for Gmsh
-        "-" + _prefix + "dm_plex_gmsh_mark_vertices", "", // :KLUDGE: Only for Gmsh
-    };
+    PetscErrorCode err = PETSC_SUCCESS;
+    if (!_filename.empty()) {
+        size_t noptions = 1;
+        pylith::string_vector options(noptions*2);
+        options[0] = "-" + _prefix + "dm_plex_filename";
+        options[1] = _filename;
+        if (GMSH == _format) {
+            noptions += 2;
+            options.resize(noptions*2);
+            options[2] = "-" + _prefix + "dm_plex_gmsh_use_regions";
+            options[3] = "";
+
+            options[4] = "-" + _prefix + "dm_plex_gmsh_mark_vertices";
+            options[5] = "";
+        } // if
+
+        for (size_t i = 0; i < noptions; ++i) {
+            err = PetscOptionsSetValue(NULL, options[2*i+0].c_str(), options[2*i+1].c_str());
+        } // for
+    } // if
 
     PetscDM dmMesh = NULL;
     try {
-        PetscErrorCode err;
-        if (!_filename.empty()) {
-            for (size_t i = 0; i < noptions; ++i) {
-                err = PetscOptionsSetValue(NULL, options[2*i+0].c_str(), options[2*i+1].c_str());
-            } // for
-        } // if
-
         err = DMCreate(_mesh->getComm(), &dmMesh);PYLITH_CHECK_ERROR(err);
         err = DMSetType(dmMesh, DMPLEX);PYLITH_CHECK_ERROR(err);
         err = PetscObjectSetName((PetscObject) dmMesh, "domain");
@@ -185,7 +250,7 @@ pylith::meshio::MeshIOPetsc::_write(void) const {
         err = PetscViewerHDF5SetDMPlexStorageVersionWriting(viewer, storageVersion);PYLITH_CHECK_ERROR(err);
         err = PetscFree(storageVersion);PYLITH_CHECK_ERROR(err);
     } else {
-        PYLITH_JOURNAL_LOGICERROR("Unknown mesh format " << _format << ".");
+        PYLITH_COMPONENT_LOGICERROR("Unknown mesh format " << _format << ".");
     } // if/else
     err = DMView(_mesh->getDM(), viewer);PYLITH_CHECK_ERROR(err);
     err = PetscViewerDestroy(&viewer);PYLITH_CHECK_ERROR(err);

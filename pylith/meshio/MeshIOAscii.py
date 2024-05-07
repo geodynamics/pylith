@@ -8,22 +8,10 @@
 # See https://mit-license.org/ and LICENSE.md and for license information. 
 # =================================================================================================
 
+import pathlib
+
 from .MeshIOObj import MeshIOObj
 from .meshio import MeshIOAscii as ModuleMeshIOAscii
-
-
-def validateFilename(value):
-    """Validate filename.
-    """
-    if 0 == len(value):
-        msg = "Filename for ASCII input mesh not specified.  " + \
-            "To test PyLith, run an example as discussed in the manual."
-        raise ValueError(msg)
-    try:
-        open(value, "r")
-    except IOError:
-        raise IOError("ASCII input mesh '{}' not found.".format(value))
-    return value
 
 
 class MeshIOAscii(MeshIOObj, ModuleMeshIOAscii):
@@ -46,17 +34,17 @@ class MeshIOAscii(MeshIOObj, ModuleMeshIOAscii):
 
     import pythia.pyre.inventory
 
-    filename = pythia.pyre.inventory.str("filename", default="", validator=validateFilename)
+    filename = pythia.pyre.inventory.str("filename", default="")
     filename.meta['tip'] = "Name of mesh file"
 
     from spatialdata.geocoords.CSCart import CSCart
     coordsys = pythia.pyre.inventory.facility("coordsys", family="coordsys", factory=CSCart)
     coordsys.meta['tip'] = "Coordinate system associated with mesh."
 
-    def __init__(self, name="meshioascii"):
+    def __init__(self, mode=MeshIOObj.READ, name="meshioascii"):
         """Constructor.
         """
-        MeshIOObj.__init__(self, name)
+        MeshIOObj.__init__(self, mode, name)
 
     def preinitialize(self):
         """Do minimal initialization."""
@@ -73,13 +61,24 @@ class MeshIOAscii(MeshIOObj, ModuleMeshIOAscii):
         """
         ModuleMeshIOAscii.__init__(self)
 
+    def _validate(self, context):
+        if 0 == len(self.filename):
+            context.error(ValueError("Filename for ASCII mesh not specified."))
+        if self.mode == self.READ and not pathlib.Path(self.filename).is_file():
+            context.error(IOError(f"ASCII input mesh '{self.filename}' not found."))
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
-def mesh_io():
+def mesh_input():
     """Factory associated with MeshIOAscii.
     """
-    return MeshIOAscii()
+    return MeshIOAscii(mode=MeshIOAscii.READ)
+
+
+def mesh_output():
+    """Factory associated with MeshIOAscii.
+    """
+    return MeshIOAscii(mode=MeshIOAscii.WRITE)
 
 
 # End of file

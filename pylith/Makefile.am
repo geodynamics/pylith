@@ -27,6 +27,7 @@ EXTRA_DIST = \
 	apps/PyLithApp.py \
 	apps/RunnerApp.py \
 	apps/VizApp.py \
+	apps/ConvertMeshApp.py \
 	apps/__init__.py \
 	bc/AbsorbingDampers.py \
 	bc/AuxSubfieldsAbsorbingDampers.py \

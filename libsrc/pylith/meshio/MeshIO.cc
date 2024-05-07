@@ -28,12 +28,12 @@
 // ----------------------------------------------------------------------
 // Constructor
 pylith::meshio::MeshIO::MeshIO(void) :
-    _mesh(0) {} // constructor
+    _mesh(NULL) {}
 
 
 // ----------------------------------------------------------------------
 // Destructor
-pylith::meshio::MeshIO::~MeshIO(void) { // destructor
+pylith::meshio::MeshIO::~MeshIO(void) {
     deallocate();
 } // destructor
 
@@ -41,14 +41,14 @@ pylith::meshio::MeshIO::~MeshIO(void) { // destructor
 // ----------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
-pylith::meshio::MeshIO::deallocate(void) { // deallocate
+pylith::meshio::MeshIO::deallocate(void) {
 } // deallocate
 
 
 // ----------------------------------------------------------------------
 // Get spatial dimension of mesh.
 int
-pylith::meshio::MeshIO::getMeshDim(void) const { // getMeshDim
+pylith::meshio::MeshIO::getMeshDim(void) const {
     return (_mesh) ? _mesh->getDimension() : 0;
 } // getMeshDim
 
@@ -66,7 +66,7 @@ pylith::meshio::MeshIO::read(pylith::topology::Mesh* mesh,
     _mesh = mesh;
     _read();
 
-    PetscErrorCode err = 0;
+    PetscErrorCode err = PETSC_SUCCESS;
 
     // Check for bounding box with positive volume.
     PylithReal cmin[3];
@@ -133,7 +133,7 @@ pylith::meshio::MeshIO::write(pylith::topology::Mesh* const mesh) { // write
 void
 pylith::meshio::MeshIO::_getVertices(scalar_array* coordinates,
                                      int* numVertices,
-                                     int* spaceDim) const { // _getVertices
+                                     int* spaceDim) const {
     PYLITH_METHOD_BEGIN;
 
     assert(coordinates);
@@ -141,8 +141,7 @@ pylith::meshio::MeshIO::_getVertices(scalar_array* coordinates,
     assert(spaceDim);
     assert(_mesh);
 
-    const spatialdata::geocoords::CoordSys* cs = _mesh->getCoordSys();assert(cs);
-    *spaceDim = cs->getSpaceDim();
+    *spaceDim = _mesh->getDimension();
 
     PetscDM dmMesh = _mesh->getDM();assert(dmMesh);
     PetscVec coordVec = NULL;

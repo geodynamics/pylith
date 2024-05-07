@@ -18,6 +18,7 @@
 #if defined(ENABLE_CUBIT)
 #include "pylith/meshio/MeshIOCubit.hh"
 #endif
+#include "pylith/meshio/MeshConverter.hh"
 
 #include "pylith/meshio/OutputTrigger.hh"
 #include "pylith/meshio/OutputTriggerStep.hh"
@@ -71,6 +72,7 @@ import_array();
 #if defined(ENABLE_CUBIT)
 %include "MeshIOCubit.i"
 #endif
+%include "MeshConverter.i"
 
 %include "OutputTrigger.i"
 %include "OutputTriggerStep.i"
@@ -87,6 +89,5 @@ import_array();
 %include "OutputSolnBoundary.i"
 %include "OutputSolnPoints.i"
 %include "OutputPhysics.i"
-
 
 // End of file

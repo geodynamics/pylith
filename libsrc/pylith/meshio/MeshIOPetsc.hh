@@ -17,7 +17,8 @@ class pylith::meshio::MeshIOPetsc : public MeshIO {
     friend class TestMeshIOPetsc; // unit testing
 
     enum Format {
-        HDF5=0, // PETSc HDF5 format
+        GMSH=0, // PETSc HDF5 format
+        HDF5=1, // PETSc HDF5 format
     };
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
@@ -85,7 +86,5 @@ private:
     Format _format; ///< Mesh format.
 
 }; // MeshIOPetsc
-
-#include "MeshIOPetsc.icc" // inline methods
 
 // End of file

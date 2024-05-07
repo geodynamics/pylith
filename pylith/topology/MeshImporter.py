@@ -36,8 +36,8 @@ class MeshImporter(MeshGenerator):
     checkTopology.meta['tip'] = "Check topology of imported mesh."
 
     from pylith.meshio.MeshIOAscii import MeshIOAscii
-    reader = pythia.pyre.inventory.facility("reader", family="mesh_io", factory=MeshIOAscii)
-    reader.meta['tip'] = "Reader for mesh files."
+    reader = pythia.pyre.inventory.facility("reader", family="mesh_input", factory=MeshIOAscii)
+    reader.meta['tip'] = "Reader for mesh file."
 
     from .Distributor import Distributor
     distributor = pythia.pyre.inventory.facility("distributor", family="mesh_distributor", factory=Distributor)

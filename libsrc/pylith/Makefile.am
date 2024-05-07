@@ -94,6 +94,7 @@ libpylith_la_SOURCES = \
 	meshio/MeshIO.cc \
 	meshio/MeshIOAscii.cc \
 	meshio/MeshIOPetsc.cc \
+	meshio/MeshConverter.cc \
 	meshio/DataWriter.cc \
 	meshio/HDF5.cc \
 	meshio/Xdmf.cc \

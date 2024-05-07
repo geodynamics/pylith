@@ -30,7 +30,7 @@
 // Constructor
 pylith::meshio::MeshIOCubit::MeshIOCubit(void) :
     _filename(""),
-    _useNodesetNames(true) { // constructor
+    _useNodesetNames(true) {
     PyreComponent::setName("meshiocubit");
 } // constructor
 

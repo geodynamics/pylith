@@ -48,14 +48,14 @@ public:
 // Constructor
 pylith::meshio::MeshIOAscii::MeshIOAscii(void) :
     _filename(""),
-    _useIndexZero(true) { // constructor
+    _useIndexZero(true) {
     PyreComponent::setName("meshioascii");
 } // constructor
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Destructor
-pylith::meshio::MeshIOAscii::~MeshIOAscii(void) { // destructor
+pylith::meshio::MeshIOAscii::~MeshIOAscii(void) {
     deallocate();
 } // destructor
 
@@ -63,7 +63,7 @@ pylith::meshio::MeshIOAscii::~MeshIOAscii(void) { // destructor
 // ---------------------------------------------------------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
-pylith::meshio::MeshIOAscii::deallocate(void) { // deallocate
+pylith::meshio::MeshIOAscii::deallocate(void) {
     PYLITH_METHOD_BEGIN;
 
     MeshIO::deallocate();
@@ -75,7 +75,7 @@ pylith::meshio::MeshIOAscii::deallocate(void) { // deallocate
 // ---------------------------------------------------------------------------------------------------------------------
 // Read mesh.
 void
-pylith::meshio::MeshIOAscii::_read(void) { // _read
+pylith::meshio::MeshIOAscii::_read(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_read()");
 
@@ -198,7 +198,7 @@ pylith::meshio::MeshIOAscii::_read(void) { // _read
 // ---------------------------------------------------------------------------------------------------------------------
 // Write mesh to file.
 void
-pylith::meshio::MeshIOAscii::_write(void) const { // write
+pylith::meshio::MeshIOAscii::_write(void) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_write()");
 
@@ -238,7 +238,7 @@ void
 pylith::meshio::MeshIOAscii::_readVertices(spatialdata::utils::LineParser& parser,
                                            scalar_array* coordinates,
                                            int* numVertices,
-                                           int* numDims) const { // _readVertices
+                                           int* numDims) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_readVertices(parser="<<typeid(parser).name()<<", cordinates="<<coordinates<<", numVertices="<<numVertices<<", numDims="<<numDims<<")");
 
@@ -297,7 +297,7 @@ pylith::meshio::MeshIOAscii::_readVertices(spatialdata::utils::LineParser& parse
 // ----------------------------------------------------------------------
 // Write mesh vertices.
 void
-pylith::meshio::MeshIOAscii::_writeVertices(std::ostream& fileout) const { // _writeVertices
+pylith::meshio::MeshIOAscii::_writeVertices(std::ostream& fileout) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_writeVertices(fileout="<<typeid(fileout).name()<<")");
 
@@ -337,7 +337,7 @@ pylith::meshio::MeshIOAscii::_readCells(spatialdata::utils::LineParser& parser,
                                         int_array* cells,
                                         int_array* materialIds,
                                         int* numCells,
-                                        int* numCorners) const { // _readCells
+                                        int* numCorners) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_readCells(parser="<<typeid(parser).name()<<", cells="<<cells<<", materialIds="<<materialIds<<", numCells="<<numCells<<",numCorners="<<numCorners<<")");
 
@@ -430,7 +430,7 @@ pylith::meshio::MeshIOAscii::_readCells(spatialdata::utils::LineParser& parser,
 // ----------------------------------------------------------------------
 // Write mesh cells.
 void
-pylith::meshio::MeshIOAscii::_writeCells(std::ostream& fileout) const { // _writeCells
+pylith::meshio::MeshIOAscii::_writeCells(std::ostream& fileout) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_writeCells(fileout="<<typeid(fileout).name()<<")");
 
@@ -478,7 +478,7 @@ void
 pylith::meshio::MeshIOAscii::_readGroup(spatialdata::utils::LineParser& parser,
                                         int_array* points,
                                         pylith::meshio::MeshBuilder::GroupPtType* type,
-                                        std::string* name) const { // _readGroup
+                                        std::string* name) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_readGroup(parser="<<typeid(parser).name()<<", points="<<points<<", type="<<type<<", name="<<name<<")");
 
@@ -562,7 +562,7 @@ pylith::meshio::MeshIOAscii::_readGroup(spatialdata::utils::LineParser& parser,
 // Write mesh group.
 void
 pylith::meshio::MeshIOAscii::_writeGroup(std::ostream& fileout,
-                                         const char* name) const { // _writeGroup
+                                         const char* name) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_writeGroup(fileout="<<typeid(fileout).name()<<", name="<<name<<")");
 
