@@ -1,4 +1,3 @@
-#!/usr/bin/env nemesis
 # =================================================================================================
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
@@ -8,12 +7,10 @@
 #
 # See https://mit-license.org/ and LICENSE.md and for license information. 
 # =================================================================================================
-# @file tests/pytests/topology/TestReverseCuthillMcKee.py
-#
-# @brief Unit testing of Python ReverseCuthillMcKee object.
 
 import unittest
 
+from pylith.testing.TestCases import make_suite
 from pylith.topology.ReverseCuthillMcKee import ReverseCuthillMcKee
 
 
@@ -26,15 +23,17 @@ class TestReverseCuthillMcKee(unittest.TestCase):
         self.assertTrue(not field is None)
 
 
-if __name__ == "__main__":
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestReverseCuthillMcKee))
+def load_tests(loader, tests, pattern):
+    TEST_CLASSES = [TestReverseCuthillMcKee]
+    return make_suite(TEST_CLASSES, loader)
 
+
+if __name__ == "__main__":
     from pylith.utils.PetscManager import PetscManager
     petsc = PetscManager()
     petsc.initialize()
 
-    success = unittest.TextTestRunner(verbosity=2).run(suite).wasSuccessful()
+    unittest.main(verbosity=2)
 
     petsc.finalize()
 

@@ -1,16 +1,18 @@
-from .TestDistributor import TestDistributor
-from .TestField import TestField
-from .TestMesh import TestMesh
-from .TestMeshGenerator import TestMeshGenerator
-from .TestMeshImporter import TestMeshImporter
-from .TestMeshRefiner import TestMeshRefiner
-from .TestRefineUniform import TestRefineUniform
-from .TestReverseCuthillMcKee import TestReverseCuthillMcKee
-from .TestSubfield import TestSubfield
+from . import (
+    TestDistributor,
+    TestField,
+    TestMesh,
+    TestMeshGenerator,
+    TestMeshImporter,
+    TestMeshRefiner,
+    TestRefineUniform,
+    TestReverseCuthillMcKee,
+    TestSubfield,
+)
 
 
-def test_classes():
-    classes = [
+def test_modules():
+    modules = [
         TestDistributor,
         TestField,
         TestMesh,
@@ -21,7 +23,7 @@ def test_classes():
         TestReverseCuthillMcKee,
         TestSubfield,
     ]
-    return classes
+    return modules
 
 
 # End of file
