@@ -10,23 +10,19 @@
 
 import unittest
 
-from pylith.testing.TestCases import TestAbstractComponent, make_suite
-from pylith.meshio.DataWriter import DataWriter
+from pylith.testing.TestCases import TestComponent, make_suite
+from pylith.meshio.MeshIOPetsc import (MeshIOPetsc, mesh_io)
 
 
-class TestDataWriter(TestAbstractComponent):
-    """Unit testing of DataWriter object.
+class TestMeshIOPetscInput(TestComponent):
+    """Unit testing of MeshIOPetsc object.
     """
-    _class = DataWriter
-
-    def test_mkfilename(self):
-        writer = DataWriter()
-        filename = writer.mkfilename(outputDir="abc", simName="defg", label="hijkl", suffix="hx3")
-        self.assertEqual("abc/defg-hijkl.hx3", filename)
+    _class = MeshIOPetsc
+    _factory = mesh_io
 
 
 def load_tests(loader, tests, pattern):
-    TEST_CLASSES = [TestDataWriter]
+    TEST_CLASSES = [TestMeshIOPetscInput]
     return make_suite(TEST_CLASSES, loader)
 
 
