@@ -14,7 +14,7 @@
 
 import unittest
 
-from pylith.testing.UnitTestApp import TestComponent
+from pylith.testing.TestCases import TestComponent
 from pylith.problems.SubfieldPressure import (SubfieldPressure, soln_subfield)
 
 

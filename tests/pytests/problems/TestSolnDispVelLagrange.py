@@ -14,7 +14,7 @@
 
 import unittest
 
-from pylith.testing.UnitTestApp import (TestAbstractComponent, TestComponent)
+from pylith.testing.TestCases import (TestAbstractComponent, TestComponent)
 from pylith.problems.SolnDispVelLagrange import (SolnDispVelLagrange, Solution, solution)
 
 

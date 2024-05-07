@@ -14,7 +14,7 @@
 
 import unittest
 
-from pylith.testing.UnitTestApp import TestAbstractComponent
+from pylith.testing.TestCases import TestAbstractComponent
 from pylith.problems.SolnDisp import SolnDisp
 
 

@@ -14,7 +14,7 @@
 
 import unittest
 
-from pylith.testing.UnitTestApp import TestComponent
+from pylith.testing.TestCases import TestComponent
 from pylith.problems.SubfieldDisplacement import (SubfieldDisplacement, soln_subfield)
 
 

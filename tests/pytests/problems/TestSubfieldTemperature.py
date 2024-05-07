@@ -14,7 +14,7 @@
 
 import unittest
 
-from pylith.testing.UnitTestApp import TestComponent
+from pylith.testing.TestCases import TestComponent
 from pylith.problems.SubfieldTemperature import (SubfieldTemperature, soln_subfield)
 
 

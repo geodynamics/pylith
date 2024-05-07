@@ -1,32 +1,21 @@
-from .TestInitialCondition import TestInitialCondition
-from .TestInitialConditionDomain import TestInitialConditionDomain
-from .TestInitialConditionPatch import TestInitialConditionPatch
-from .TestPhysics import TestPhysics
-from .TestProblem import TestProblem
-from .TestTimeDependent import TestTimeDependent
-from .TestProblemDefaults import TestProblemDefaults
-from .TestProgressMonitor import TestProgressMonitor
-from .TestProgressMonitorTime import TestProgressMonitorTime
-from .TestSingleObserver import (TestSinglePhysicsObserver, TestSingleSolnObserver)
-from .TestSolution import TestSolution
-from .TestSolnDisp import TestSolnDisp
-from .TestSolnDispLagrange import (TestSolnDispLagrange, TestSolutionDispLagrange)
-from .TestSolnDispPres import (TestSolnDispPres, TestSolutionDispPres)
-from .TestSolnDispLagrange import (TestSolnDispLagrange, TestSolutionDispLagrange)
-from .TestSolnDispTracStrain import (TestSolnDispPresTracStrain, TestSolutionDispTracStrain)
-from .TestSolnDispVel import (TestSolnDispVel, TestSolutionDispVel)
-from .TestSolnDispVelLagrange import (TestSolnDispVelLagrange, TestSolutionDispVelLagrange)
-from .TestSolutionSubfield import TestSolutionSubfield
-from .TestSubfieldDisplacement import TestSubfieldDisplacement
-from .TestSubfieldLagrangeFault import TestSubfieldLagrangeFault
-from .TestSubfieldPressure import TestSubfieldPressure
-from .TestSubfieldTemperature import TestSubfieldTemperature
-from .TestSubfieldTraceStrain import TestSubfieldTraceStrain
-from .TestSubfieldVelocity import TestSubfieldVelocity
+from . import (
+    TestInitialCondition,
+    TestInitialConditionDomain,
+    TestInitialConditionPatch,
+    TestPhysics,
+    TestProblem,
+    TestTimeDependent,
+    TestProblemDefaults,
+    TestProgressMonitor,
+    TestProgressMonitorTime,
+    TestSingleObserver,
+    TestSolution,
+    TestSolutionSubfields,
+)
 
 
-def test_classes():
-    classes = [
+def test_modules():
+    modules = [
         TestInitialCondition,
         TestInitialConditionDomain,
         TestInitialConditionPatch,
@@ -34,29 +23,13 @@ def test_classes():
         TestProblem,
         TestTimeDependent,
         TestProblemDefaults,
+        TestProgressMonitor,
         TestProgressMonitorTime,
-        TestProgressMonitorTime,
-        TestSingleSolnObserver,
-        TestSinglePhysicsObserver,
+        TestSingleObserver,
         TestSolution,
-        TestSolnDisp,
-        TestSolnDispLagrange,
-        TestSolutionDispLagrange,
-        TestSolnDispPresTracStrain, 
-        TestSolutionDispTracStrain,
-        TestSolnDispVel, 
-        TestSolutionDispVel,
-        TestSolnDispVelLagrange, 
-        TestSolutionDispVelLagrange,
-        TestSolutionSubfield,
-        TestSubfieldDisplacement,
-        TestSubfieldLagrangeFault,
-        TestSubfieldPressure,
-        TestSubfieldTemperature,
-        TestSubfieldTraceStrain,
-        TestSubfieldVelocity,
+        TestSolutionSubfields,
     ]
-    return classes
+    return modules
 
 
 # End of file

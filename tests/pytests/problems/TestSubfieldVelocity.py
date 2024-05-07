@@ -14,7 +14,7 @@
 
 import unittest
 
-from pylith.testing.UnitTestApp import TestComponent
+from pylith.testing.TestCases import TestComponent
 from pylith.problems.SubfieldVelocity import (SubfieldVelocity, soln_subfield)
 
 
