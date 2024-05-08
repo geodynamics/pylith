@@ -1,4 +1,3 @@
-#!/usr/bin/env nemesis
 # =================================================================================================
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
@@ -8,95 +7,83 @@
 #
 # See https://mit-license.org/ and LICENSE.md and for license information. 
 # =================================================================================================
-# @file tests/pytests/problems/TestSolutionSubfields.py
-
-# @brief Unit testing of containers with solution subfields.
 
 import unittest
 
+from pylith.testing.TestCases import TestComponent, make_suite
 
-# ----------------------------------------------------------------------
-class TestSolutionSubfields(unittest.TestCase):
-  """Unit testing of containers with solution subfields.
-  """
+import pylith.problems.SolutionSubfield
+import pylith.problems.SubfieldDisplacement
+import pylith.problems.SubfieldLagrangeFault
+import pylith.problems.SubfieldPressure
+import pylith.problems.SubfieldTemperature
+import pylith.problems.SubfieldTraceStrain
+import pylith.problems.SubfieldVelocity
 
-  def test_SolnDisp(self):
-    """Test SolnDisp.
+class TestSolutionSubfield(TestComponent):
+    """Unit testing of SolutionSubfield object.
     """
-    from pylith.problems.SolnDisp import SolnDisp
-    subfields = SolnDisp()
-    subfields._configure()
+    _class = pylith.problems.SolutionSubfield.SolutionSubfield
+    _factory = pylith.problems.SolutionSubfield.soln_subfield
 
-    components = subfields.components()
-    self.assertEqual(subfields.displacement, components[0])
-    return
-    
-  
-  def test_SolnDispLagrange(self):
-    """Test SolnDispLagrange.
+
+class TestSubfieldDisplacement(TestComponent):
+    """Unit testing of SubfieldDisplacement object.
     """
-    from pylith.problems.SolnDispLagrange import SolnDispLagrange
-    subfields = SolnDispLagrange()
-    subfields._configure()
+    _class = pylith.problems.SubfieldDisplacement.SubfieldDisplacement
+    _factory = pylith.problems.SubfieldDisplacement.soln_subfield
 
-    components = subfields.components()
-    self.assertEqual(subfields.displacement, components[0])
-    self.assertEqual(subfields.lagrangeFault, components[1])
-    return
-    
-  
-  def test_SolnDispVel(self):
-    """Test SolnDispVel.
+
+class TestSubfieldLagrangeFault(TestComponent):
+    """Unit testing of SubfieldLagrangeFault object.
     """
-    from pylith.problems.SolnDispVel import SolnDispVel
-    subfields = SolnDispVel()
-    subfields._configure()
+    _class = pylith.problems.SubfieldLagrangeFault.SubfieldLagrangeFault
+    _factory = pylith.problems.SubfieldLagrangeFault.soln_subfield
 
-    components = subfields.components()
-    self.assertEqual(subfields.displacement, components[0])
-    self.assertEqual(subfields.velocity, components[1])
-    return
-    
-  
-  def test_SolnDispVelLagrange(self):
-    """Test SolnDispVel.
+
+class TestSubfieldPressure(TestComponent):
+    """Unit testing of SubfieldPressure object.
     """
-    from pylith.problems.SolnDispVelLagrange import SolnDispVelLagrange
-    subfields = SolnDispVelLagrange()
-    subfields._configure()
+    _class = pylith.problems.SubfieldPressure.SubfieldPressure
+    _factory = pylith.problems.SubfieldPressure.soln_subfield
 
-    components = subfields.components()
-    self.assertEqual(subfields.displacement, components[0])
-    self.assertEqual(subfields.velocity, components[1])
-    self.assertEqual(subfields.lagrangeFault, components[2])
-    return
-    
-  
-  def test_SolnDispPres(self):
-    """Test SolnDispPres.
+
+class TestSubfieldTemperature(TestComponent):
+    """Unit testing of SubfieldTemperature object.
     """
-    from pylith.problems.SolnDispPres import SolnDispPres
-    subfields = SolnDispPres()
-    subfields._configure()
+    _class = pylith.problems.SubfieldTemperature.SubfieldTemperature
+    _factory = pylith.problems.SubfieldTemperature.soln_subfield
 
-    components = subfields.components()
-    self.assertEqual(subfields.displacement, components[0])
-    self.assertEqual(subfields.pressure, components[1])
-    return
-    
-  
-  def test_SolnDispPresLagrange(self):
-    """Test SolnDispPres.
+
+class TestSubfieldTraceStrain(TestComponent):
+    """Unit testing of SubfieldTraceStrain object.
     """
-    from pylith.problems.SolnDispPresLagrange import SolnDispPresLagrange
-    subfields = SolnDispPresLagrange()
-    subfields._configure()
+    _class = pylith.problems.SubfieldTraceStrain.SubfieldTraceStrain
+    _factory = pylith.problems.SubfieldTraceStrain.soln_subfield
 
-    components = subfields.components()
-    self.assertEqual(subfields.displacement, components[0])
-    self.assertEqual(subfields.pressure, components[1])
-    self.assertEqual(subfields.lagrangeFault, components[2])
-    return
-    
-  
-# End of file 
+
+class TestSubfieldVelocity(TestComponent):
+    """Unit testing of SubfieldVelocity object.
+    """
+    _class = pylith.problems.SubfieldVelocity.SubfieldVelocity
+    _factory = pylith.problems.SubfieldVelocity.soln_subfield
+
+
+def load_tests(loader, tests, pattern):
+    TEST_CLASSES = [
+        TestSolutionSubfield,
+        TestSubfieldDisplacement,
+        TestSubfieldLagrangeFault,
+        TestSubfieldPressure,
+        TestSubfieldTemperature,
+        TestSubfieldTraceStrain,
+        TestSubfieldVelocity,
+    ]
+    return make_suite(TEST_CLASSES, loader)
+
+
+if __name__ == "__main__":
+    unittest.main(verbosity=2)
+
+
+# End of file
