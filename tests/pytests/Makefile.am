@@ -45,9 +45,6 @@ dist_noinst_PYTHON = \
 	materials/TestMaterial.py \
 	materials/TestPoroelasticity.py \
 	materials/TestRheologies.py \
-	materials/TestRheologyLinearElasticity.py \
-	materials/TestRheologyPoroelasticity.py \
-	materials/TestRheologyViscoelasticity.py \
 	meshio/__init__.py \
 	meshio/TestDataWriter.py \
 	meshio/TestDataWriterHDF5.py \
@@ -55,20 +52,16 @@ dist_noinst_PYTHON = \
 	meshio/TestDataWriterVTK.py \
 	meshio/TestMeshIOAscii.py \
 	meshio/TestMeshIOCubit.py \
-	meshio/TestOutputManagerMesh.py \
-	meshio/TestOutputManagerSubmesh.py \
 	meshio/TestOutputObserver.py \
 	meshio/TestOutputPhysics.py \
 	meshio/TestOutputSoln.py \
 	meshio/TestOutputSolnBoundary.py \
 	meshio/TestOutputSolnDomain.py \
 	meshio/TestOutputSolnPoints.py \
-	meshio/TestOutputSolnSubset.py \
 	meshio/TestOutputTrigger.py \
 	meshio/TestOutputTriggerStep.py \
 	meshio/TestOutputTriggerTime.py \
 	meshio/TestPointsList.py \
-	meshio/TestSingleOutput.py \
 	meshio/TestXdmf.py \
 	mpi/__init__.py \
 	mpi/TestCommunicator.py \
@@ -83,22 +76,8 @@ dist_noinst_PYTHON = \
 	problems/TestProgressMonitor.py \
 	problems/TestProgressMonitorTime.py \
 	problems/TestSingleObserver.py \
-	problems/TestSolnDisp.py \
-	problems/TestSolnDispLagrange.py \
-	problems/TestSolnDispPres.py \
-	problems/TestSolnDispPresLagrange.py \
-	problems/TestSolnDispTracStrain.py \
-	problems/TestSolnDispVel.py \
-	problems/TestSolnDispVelLagrange.py \
 	problems/TestSolution.py \
-	problems/TestSolutionSubfield.py \
 	problems/TestSolutionSubfields.py \
-	problems/TestSubfieldDisplacement.py \
-	problems/TestSubfieldLagrangeFault.py \
-	problems/TestSubfieldPressure.py \
-	problems/TestSubfieldTemperature.py \
-	problems/TestSubfieldTraceStrain.py \
-	problems/TestSubfieldVelocity.py \
 	problems/TestTimeDependent.py \
 	topology/__init__.py \
 	topology/TestDistributor.py \

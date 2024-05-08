@@ -15,7 +15,7 @@
 import unittest
 
 from pylith.apps.PyLithApp import PyLithApp
-from pylith.testing.UnitTestApp import configureComponent
+from pylith.testing.TestCases import make_suite
 
 
 class TestPyLithApp(unittest.TestCase):
@@ -26,10 +26,13 @@ class TestPyLithApp(unittest.TestCase):
         app = PyLithApp()
 
 
+def load_tests(loader, tests, pattern):
+    TEST_CLASSES = [TestPyLithApp]
+    return make_suite(TEST_CLASSES, loader)
+
+
 if __name__ == "__main__":
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestPyLithApp))
-    unittest.TextTestRunner(verbosity=2).run(suite)
+    unittest.main(verbosity=2)
 
 
 # End of file

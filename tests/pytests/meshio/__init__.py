@@ -1,16 +1,19 @@
-from .TestDataWriter import TestDataWriter
-from .TestDataWriterVTK import TestDataWriterVTK
-from .TestMeshIOAscii import TestMeshIOAscii
-from .TestOutputObserver import TestOutputObserver
-from .TestOutputPhysics import TestOutputPhysics
-from .TestOutputSoln import TestOutputSoln
-from .TestOutputSolnDomain import TestOutputSolnDomain
-from .TestOutputSolnBoundary import TestOutputSolnBoundary
-from .TestOutputSolnPoints import TestOutputSolnPoints
-from .TestOutputTrigger import TestOutputTrigger
-from .TestOutputTriggerStep import TestOutputTriggerStep
-from .TestOutputTriggerTime import TestOutputTriggerTime
-from .TestPointsList import TestPointsList
+from . import (
+    TestMeshIOAscii,
+    TestMeshIOPetsc,
+    TestDataWriter,
+    TestDataWriterVTK,
+    TestOutputObserver,
+    TestOutputPhysics,
+    TestOutputSoln,
+    TestOutputSolnDomain,
+    TestOutputSolnBoundary,
+    TestOutputSolnPoints,
+    TestOutputTrigger,
+    TestOutputTriggerStep,
+    TestOutputTriggerTime,
+    TestPointsList,
+)
 
 
 def has_h5py():
@@ -31,8 +34,10 @@ def has_netcdf():
     return flag
 
 
-def test_classes():
-    classes = [
+def test_modules():
+    modules = [
+        TestMeshIOAscii,
+        TestMeshIOPetsc,
         TestDataWriter,
         TestDataWriterVTK,
         TestOutputObserver,
@@ -47,20 +52,22 @@ def test_classes():
         TestPointsList,
     ]
     if has_netcdf():
-        from .TestMeshIOCubit import TestMeshIOCubit
-        classes += [
+        from . import TestMeshIOCubit
+        modules += [
             TestMeshIOCubit,
         ]
     if has_h5py():
-        from .TestDataWriterHDF5 import TestDataWriterHDF5
-        from .TestDataWriterHDF5Ext import TestDataWriterHDF5Ext
-        from .TestXdmf import TestXdmf
-        classes += [
+        from . import (
+            TestDataWriterHDF5,
+            TestDataWriterHDF5Ext,
+            TestXdmf,
+        )
+        modules += [
             TestDataWriterHDF5,
             TestDataWriterHDF5Ext,
             TestXdmf,
         ]
-    return classes
+    return modules
 
 
 # End of file

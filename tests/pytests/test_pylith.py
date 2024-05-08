@@ -20,45 +20,31 @@ import unittest
 import sys
 import importlib
 
-from pythia.pyre.applications.Script import Script
 
-DIRS = [
-    "apps",
-    "bc",
-    "faults",
-    "materials",
-    "meshio",
-    "mpi",
-    "problems",
-    "topology",
-    "utils",
-]
-
-
-class TestApp(Script):
+class TestApp:
     """Application to run tests.
     """
-    cov = None
-    try:
-        import coverage
-        src_dirs = [
-            "pylith.apps",
-            "pylith.bc",
-            "pylith.faults",
-            "pylith.friction",
-            "pylith.materials",
-            "pylith.meshio",
-            "pylith.mpi",
-            "pylith.problems",
-            "pylith.testing",
-            "pylith.topology",
-            "pylith.utils",
-        ]
-        cov = coverage.Coverage(source=src_dirs)
-    except ImportError:
-        pass
+    DIRS = [
+        "apps",
+        "bc",
+        "faults",
+        "materials",
+        "meshio",
+        "mpi",
+        "problems",
+        "topology",
+        "utils",
+    ]
 
-    def main(self):
+    def __init__(self):
+        self.cov = None
+        try:
+            import coverage
+            self.cov = coverage.Coverage(source=["pylith"])
+        except ImportError:
+            pass
+
+    def run(self):
         """Run the application.
         """
         if self.cov:
@@ -84,17 +70,18 @@ class TestApp(Script):
     def _suite(self):
         """Setup the test suite.
         """
-        for d in DIRS:
+        for d in self.DIRS:
             sys.path.append(f"./{d}")
 
-        test_cases = []
-        for d in DIRS:
+        test_modules = []
+        for d in self.DIRS:
             mod = importlib.import_module(d)
-            test_cases += mod.test_classes()
+            test_modules += mod.test_modules()
 
+        loader = unittest.defaultTestLoader
         suite = unittest.TestSuite()
-        for test_case in test_cases:
-            suite.addTest(unittest.makeSuite(test_case))
+        for mod in test_modules:
+            suite.addTests(loader.loadTestsFromModule(mod))
 
         return suite
 

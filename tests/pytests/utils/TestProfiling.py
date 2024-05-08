@@ -1,4 +1,3 @@
-#!/usr/bin/env nemesis
 # =================================================================================================
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
@@ -8,12 +7,10 @@
 #
 # See https://mit-license.org/ and LICENSE.md and for license information. 
 # =================================================================================================
-# @file tests/pytests/utils/TestProfiling.py
-#
-# @brief Unit testing of Python EmptyBin object.
 
 import unittest
 
+from pylith.testing.TestCases import make_suite
 from pylith.utils.profiling import (resourceUsage, resourceUsageString)
 
 
@@ -31,15 +28,17 @@ class TestProfiling(unittest.TestCase):
         self.assertFalse(usage is None)
 
 
-if __name__ == "__main__":
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestProfiling))
+def load_tests(loader, tests, pattern):
+    TEST_CLASSES = [TestProfiling]
+    return make_suite(TEST_CLASSES, loader)
 
+
+if __name__ == "__main__":
     from pylith.utils.PetscManager import PetscManager
     petsc = PetscManager()
     petsc.initialize()
 
-    success = unittest.TextTestRunner(verbosity=2).run(suite).wasSuccessful()
+    unittest.main(verbosity=2)
 
     petsc.finalize()
 

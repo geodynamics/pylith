@@ -133,7 +133,7 @@ EXTRA_DIST = \
 	problems/__init__.py \
 	testing/FullTestApp.py \
 	testing/SolutionPoints.py \
-	testing/UnitTestApp.py \
+	testing/TestCases.py \
 	testing/__init__.py \
 	topology/Distributor.py \
 	topology/Field.py \

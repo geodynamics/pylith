@@ -1,4 +1,3 @@
-#!/usr/bin/env nemesis
 # =================================================================================================
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
@@ -8,13 +7,10 @@
 #
 # See https://mit-license.org/ and LICENSE.md and for license information. 
 # =================================================================================================
-# @file tests/pytests/topology/TestMeshImporter.py
-#
-# @brief Unit testing of Python MeshImporter object.
 
 import unittest
 
-from pylith.testing.UnitTestApp import TestComponent
+from pylith.testing.TestCases import TestComponent, make_suite
 from pylith.topology.MeshImporter import (MeshImporter, mesh_generator)
 
 
@@ -25,10 +21,13 @@ class TestMeshImporter(TestComponent):
     _factory = mesh_generator
 
 
+def load_tests(loader, tests, pattern):
+    TEST_CLASSES = [TestMeshImporter]
+    return make_suite(TEST_CLASSES, loader)
+
+
 if __name__ == "__main__":
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestMeshImporter))
-    unittest.TextTestRunner(verbosity=2).run(suite)
+    unittest.main(verbosity=2)
 
 
 # End of file

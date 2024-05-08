@@ -22,13 +22,13 @@ class AuxSubfieldsTimeDependent(PetscComponent):
     The boundary conditions values have the functional form:
 
     \\begin{equation}
-      f(x,t) = f_0(x) + \dot{f}_1(x)(t-t_1(x)) + f_2(x)a(t-t_2(x))
-    \end{equation}
+      f(x,t) = f_0(x) + \\dot{f}_1(x)(t-t_1(x)) + f_2(x)a(t-t_2(x))
+    \\end{equation}
 
     The association of these functions with the auxiliary subfields is:
 
     :$f_0(x)$: `initial_amplitude`
-    :$\dot{f}_1(x)$: `rate_amplitude`
+    :$\\dot{f}_1(x)$: `rate_amplitude`
     :$t_1(x)$: `rate_start`
     :$f_2(x)$: `time_history_amplitude`
     :$t_2(x)$: `time_history_start`
@@ -52,7 +52,7 @@ class AuxSubfieldsTimeDependent(PetscComponent):
     initialAmplitude.meta['tip'] = "Initial amplitude, f_0(x), subfield."
 
     rateAmplitude = pythia.pyre.inventory.facility("rate_amplitude", family="auxiliary_subfield", factory=Subfield)
-    rateAmplitude.meta['tip'] = "Rate amplitude, \dot{f}_1(x), subfield."
+    rateAmplitude.meta['tip'] = "Rate amplitude, dot{f}_1(x), subfield."
 
     rateStart = pythia.pyre.inventory.facility("rate_start_time", family="auxiliary_subfield", factory=Subfield)
     rateStart.meta['tip'] = "Rate starting time, t_1(x), subfield."

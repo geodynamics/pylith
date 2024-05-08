@@ -1,4 +1,3 @@
-#!/usr/bin/env nemesis
 # =================================================================================================
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
@@ -14,7 +13,7 @@
 
 import unittest
 
-from pylith.testing.UnitTestApp import TestComponent
+from pylith.testing.TestCases import TestComponent, make_suite
 import pylith.bc.AuxSubfieldsTimeDependent
 import pylith.bc.AuxSubfieldsAbsorbingDampers
 
@@ -33,11 +32,13 @@ class TestAuxSubfieldsAbsorbingDampers(TestComponent):
     _factory = pylith.bc.AuxSubfieldsAbsorbingDampers.auxiliary_subfields
 
 
+def load_tests(loader, tests, pattern):
+    TEST_CLASSES = [TestAuxSubfieldsTimeDependent, TestAuxSubfieldsAbsorbingDampers]
+    return make_suite(TEST_CLASSES, loader)
+
+
 if __name__ == "__main__":
-    suite = unittest.TestSuite()
-    for cls in [TestAuxSubfieldsTimeDependent, TestAuxSubfieldsAbsorbingDampers]:
-        suite.addTest(unittest.makeSuite(cls))
-    unittest.TextTestRunner(verbosity=2).run(suite)
+    unittest.main(verbosity=2)
 
 
 # End of file

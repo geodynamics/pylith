@@ -8,13 +8,10 @@
 #
 # See https://mit-license.org/ and LICENSE.md and for license information. 
 # =================================================================================================
-# @file tests/pytests/faults/TestFaultCohesive.py
-#
-# @brief Unit testing of Python FaultCohesive object.
 
 import unittest
 
-from pylith.testing.UnitTestApp import TestAbstractComponent
+from pylith.testing.TestCases import TestAbstractComponent, make_suite
 from pylith.faults.FaultCohesive import FaultCohesive
 
 
@@ -24,10 +21,13 @@ class TestFaultCohesive(TestAbstractComponent):
     _class = FaultCohesive
 
 
+def load_tests(loader, tests, pattern):
+    TEST_CLASSES = [TestFaultCohesive]
+    return make_suite(TEST_CLASSES, loader)
+
+
 if __name__ == "__main__":
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestFaultCohesive))
-    unittest.TextTestRunner(verbosity=2).run(suite)
+    unittest.main(verbosity=2)
 
 
 # End of file

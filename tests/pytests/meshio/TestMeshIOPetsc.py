@@ -1,4 +1,3 @@
-#!/usr/bin/env nemesis
 # =================================================================================================
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
@@ -8,27 +7,27 @@
 #
 # See https://mit-license.org/ and LICENSE.md and for license information. 
 # =================================================================================================
-# @file tests/pytests/problems/TestSubfieldPressure.py
-#
-# @brief Unit testing of Python SubfieldPressure object.
 
 import unittest
 
-from pylith.testing.UnitTestApp import TestComponent
-from pylith.problems.SubfieldPressure import (SubfieldPressure, soln_subfield)
+from pylith.testing.TestCases import TestComponent, make_suite
+from pylith.meshio.MeshIOPetsc import (MeshIOPetsc, mesh_io)
 
 
-class TestSubfieldPressure(TestComponent):
-    """Unit testing of SubfieldPressure object.
+class TestMeshIOPetscInput(TestComponent):
+    """Unit testing of MeshIOPetsc object.
     """
-    _class = SubfieldPressure
-    _factory = soln_subfield
+    _class = MeshIOPetsc
+    _factory = mesh_io
+
+
+def load_tests(loader, tests, pattern):
+    TEST_CLASSES = [TestMeshIOPetscInput]
+    return make_suite(TEST_CLASSES, loader)
 
 
 if __name__ == "__main__":
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestSubfieldPressure))
-    unittest.TextTestRunner(verbosity=2).run(suite)
+    unittest.main(verbosity=2)
 
 
 # End of file

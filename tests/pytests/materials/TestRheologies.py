@@ -1,4 +1,3 @@
-#!/usr/bin/env nemesis
 # =================================================================================================
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
@@ -8,13 +7,10 @@
 #
 # See https://mit-license.org/ and LICENSE.md and for license information. 
 # =================================================================================================
-# @file tests/pytests/materials/TestRheologies.py
-#
-# @brief Unit testing of Python bulk rheologies object.
 
 import unittest
 
-from pylith.testing.UnitTestApp import TestComponent
+from pylith.testing.TestCases import TestComponent, make_suite
 
 import pylith.materials.IsotropicLinearElasticity
 import pylith.materials.IsotropicLinearMaxwell
@@ -68,18 +64,20 @@ class TestIsotropicLinearPoroelasticity(TestComponent):
     _factory = pylith.materials.IsotropicLinearPoroelasticity.poroelasticity_rheology
 
 
-if __name__ == "__main__":
-    suite = unittest.TestSuite()
-    for cls in [
+def load_tests(loader, tests, pattern):
+    TEST_CLASSES = [
         TestIsotropicLinearElasticity, 
         TestIsotropicLinearMaxwell, 
         TestIsotropicLinearGenMaxwell, 
         TestIsotropicPowerLaw, 
         TestIsotropicLinearIncompElasticity,
         TestIsotropicLinearPoroelasticity, 
-        ]:
-        suite.addTest(unittest.makeSuite(cls))
-    unittest.TextTestRunner(verbosity=2).run(suite)
+    ]
+    return make_suite(TEST_CLASSES, loader)
+
+
+if __name__ == "__main__":
+    unittest.main(verbosity=2)
 
 
 # End of file

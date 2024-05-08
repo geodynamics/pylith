@@ -1,4 +1,3 @@
-#!/usr/bin/env nemesis
 # =================================================================================================
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
@@ -8,13 +7,10 @@
 #
 # See https://mit-license.org/ and LICENSE.md and for license information. 
 # =================================================================================================
-# @file tests/pytests/problems/TestInitialConditionPatch.py
-#
-# @brief Unit testing of Python InitialConditionPatch object.
 
 import unittest
 
-from pylith.testing.UnitTestApp import TestComponent
+from pylith.testing.TestCases import TestComponent, make_suite
 from pylith.problems.InitialConditionPatch import (InitialConditionPatch, initial_conditions)
 
 
@@ -25,10 +21,13 @@ class TestInitialConditionPatch(TestComponent):
     _factory = initial_conditions
 
 
+def load_tests(loader, tests, pattern):
+    TEST_CLASSES = [TestInitialConditionPatch]
+    return make_suite(TEST_CLASSES, loader)
+
+
 if __name__ == "__main__":
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestInitialConditionPatch))
-    unittest.TextTestRunner(verbosity=2).run(suite)
+    unittest.main(verbosity=2)
 
 
 # End of file

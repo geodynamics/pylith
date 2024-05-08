@@ -193,7 +193,7 @@ pylith::faults::TopologyOps::create(pylith::topology::Mesh* mesh,
         err = ISDestroy(&bdIS);PYLITH_CHECK_ERROR(err);
     }
     // Completes the set of cells scheduled to be replaced
-    err = DMPlexLabelCohesiveComplete(dm, label, faultBdLabel, faultBdLabelValue, PETSC_FALSE, faultMesh.getDM());PYLITH_CHECK_ERROR(err);
+    err = DMPlexLabelCohesiveComplete(dm, label, faultBdLabel, faultBdLabelValue, PETSC_FALSE, PETSC_FALSE, faultMesh.getDM());PYLITH_CHECK_ERROR(err);
     err = DMPlexConstructCohesiveCells(dm, label, NULL, &sdm);PYLITH_CHECK_ERROR(err);
 
     const char* interfaceLabelName = pylith::topology::Mesh::cells_label_name;

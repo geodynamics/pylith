@@ -1,4 +1,3 @@
-#!/usr/bin/env nemesis
 # =================================================================================================
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
@@ -8,13 +7,10 @@
 #
 # See https://mit-license.org/ and LICENSE.md and for license information. 
 # =================================================================================================
-# @file tests/pytests/materials/TestMaterial.py
-#
-# @brief Unit testing of Python TestMaterial object.
 
 import unittest
 
-from pylith.testing.UnitTestApp import TestAbstractComponent
+from pylith.testing.TestCases import TestAbstractComponent, make_suite
 from pylith.materials.Material import Material
 
 
@@ -24,10 +20,13 @@ class TestMaterial(TestAbstractComponent):
     _class = Material
 
 
+def load_tests(loader, tests, pattern):
+    TEST_CLASSES = [TestMaterial]
+    return make_suite(TEST_CLASSES, loader)
+
+
 if __name__ == "__main__":
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestMaterial))
-    unittest.TextTestRunner(verbosity=2).run(suite)
+    unittest.main(verbosity=2)
 
 
 # End of file
