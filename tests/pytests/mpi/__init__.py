@@ -1,13 +1,12 @@
-from .TestCommunicator import TestCommunicator
-from .TestReduce import TestReduce
+from . import (TestCommunicator, TestReduce)
 
 
-def test_classes():
-    classes = [
+def test_modules():
+    modules = [
         TestCommunicator,
         TestReduce,
     ]
-    return classes
+    return modules
 
 
 # End of file

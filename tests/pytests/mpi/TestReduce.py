@@ -1,4 +1,3 @@
-#!/usr/bin/env nemesis
 # =================================================================================================
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
@@ -8,20 +7,16 @@
 #
 # See https://mit-license.org/ and LICENSE.md and for license information. 
 # =================================================================================================
-# @file tests/pytests/mpi/TestReduce.py
-
-# @brief Unit testing of MPI reduce functions.
 
 import unittest
 
+from pylith.testing.TestCases import make_suite
 import pylith.mpi.mpi as mpi
 
-# ----------------------------------------------------------------------
 class TestReduce(unittest.TestCase):
   """Unit testing of MPI reduce functions.
   """
   
-
   def test_allreduce_scalar_double(self):
     value = 2.0
     result = mpi.allreduce_scalar_double(value, mpi.mpi_sum(), mpi.petsc_comm_world())
@@ -48,15 +43,17 @@ class TestReduce(unittest.TestCase):
     return
 
 
-if __name__ == "__main__":
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestReduce))
+def load_tests(loader, tests, pattern):
+    TEST_CLASSES = [TestReduce]
+    return make_suite(TEST_CLASSES, loader)
 
+
+if __name__ == "__main__":
     from pylith.utils.PetscManager import PetscManager
     petsc = PetscManager()
     petsc.initialize()
 
-    success = unittest.TextTestRunner(verbosity=2).run(suite).wasSuccessful()
+    unittest.main(verbosity=2)
 
     petsc.finalize()
 
