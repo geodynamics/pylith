@@ -16,6 +16,7 @@
 #include "pylith/topology/Stratum.hh" // USES Stratum
 #include "pylith/utils/array.hh" // USES int_array
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
+#include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL*
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
@@ -172,12 +173,10 @@ pylith::topology::MeshOps::createLowerDimMesh(const pylith::topology::Mesh& mesh
     assert(labelName);
 
     if (mesh.getDimension() < 1) {
-        throw std::logic_error("INTERNAL ERROR in MeshOps::createLowerDimMesh()\n"
-                               "Cannot create submesh for mesh with dimension < 1.");
+        PYLITH_JOURNAL_LOGICERROR("Cannot create submesh for mesh with dimension < 1.");
     } // if
 
     PetscErrorCode err = PETSC_SUCCESS;
-
     PetscDM dmDomain = mesh.getDM();assert(dmDomain);
     PetscBool hasLabel = PETSC_FALSE;
     err = DMHasLabel(dmDomain, labelName, &hasLabel);PYLITH_CHECK_ERROR(err);
@@ -203,8 +202,44 @@ pylith::topology::MeshOps::createLowerDimMesh(const pylith::topology::Mesh& mesh
         throw std::runtime_error(msg.str());
     } // if
 
+    PetscInt labelHasVertices = 0;
+    { // TEMPORARY: Continue to support creating lower dimension meshes using labels with vertices.
+        PetscIS labelIS = NULL;
+        const PetscInt* labelPoints = NULL;
+        PetscInt numPoints = 0;
+        err = DMGetStratumIS(dmDomain, labelName, 1, &labelIS);PYLITH_CHECK_ERROR(err);
+        err = ISGetIndices(labelIS, &labelPoints);PYLITH_CHECK_ERROR(err);
+        err = DMGetStratumSize(dmDomain, labelName, 1, &numPoints);PYLITH_CHECK_ERROR(err);
+
+        topology::Stratum verticesStratum(dmDomain, topology::Stratum::DEPTH, 0);
+        const PetscInt vStart = verticesStratum.begin();
+        const PetscInt vEnd = verticesStratum.end();
+        PetscInt labelHasVerticesLocal = 0;
+        for (PetscInt iPoint = 0; iPoint < numPoints; ++iPoint) {
+            if ((labelPoints[iPoint] >= vStart) && (labelPoints[iPoint] < vEnd) ) {
+                labelHasVerticesLocal = 1;
+                break;
+            } // if
+        } // if
+        err = ISRestoreIndices(labelIS, &labelPoints);PYLITH_CHECK_ERROR(err);
+        err = ISDestroy(&labelIS);PYLITH_CHECK_ERROR(err);
+
+        err = MPI_Allreduce(&labelHasVerticesLocal, &labelHasVertices, 1, MPI_INT, MPI_MAX,
+                            PetscObjectComm((PetscObject) dmDomain));PYLITH_CHECK_ERROR(err);
+    } // TEMPORARY
+
     PetscDM dmSubmesh = NULL;
-    err = DMPlexCreateSubmesh(dmDomain, dmLabel, labelValue, PETSC_FALSE, &dmSubmesh);PYLITH_CHECK_ERROR(err);
+    if (!labelHasVertices) {
+        err = DMPlexFilter(dmDomain, dmLabel, labelValue, PETSC_FALSE, PETSC_FALSE, NULL, &dmSubmesh);PYLITH_CHECK_ERROR(err);
+    } else {
+        pythia::journal::warning_t warning("deprecated");
+        warning << pythia::journal::at(__HERE__)
+                << "DEPRECATION: Creating lower dimension mesh from label with vertices. "
+                << "This feature will be removed in v6.0. "
+                << "In the future, you will need to mark boundaries not vertices for boundary conditions."
+                << pythia::journal::endl; \
+        err = DMPlexCreateSubmesh(dmDomain, dmLabel, labelValue, PETSC_FALSE, &dmSubmesh);PYLITH_CHECK_ERROR(err);
+    }
 
     PetscInt maxConeSizeLocal = 0, maxConeSize = 0;
     err = DMPlexGetMaxSizes(dmSubmesh, &maxConeSizeLocal, NULL);PYLITH_CHECK_ERROR(err);
