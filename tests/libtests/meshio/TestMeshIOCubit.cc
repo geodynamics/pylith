@@ -64,7 +64,6 @@ pylith::meshio::TestMeshIOCubit::testRead(void) {
     assert(_data);
 
     _io->setFilename(_data->filename.c_str());
-    _io->setUseNodesetNames(true);
 
     // Read mesh
     delete _mesh;_mesh = new topology::Mesh;assert(_mesh);

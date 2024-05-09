@@ -34,7 +34,6 @@ class MeshIOCubit(MeshIOObj, ModuleMeshIOCubit):
         "cfg": """
             [pylithapp.mesh_generator.reader]
             filename = mesh_quad.exo
-            use_nodeset_names = True
             coordsys.space_dim = 2
         """
     }
@@ -43,9 +42,6 @@ class MeshIOCubit(MeshIOObj, ModuleMeshIOCubit):
 
     filename = pythia.pyre.inventory.str("filename", default="mesh.exo")
     filename.meta['tip'] = "Name of Cubit Exodus file."
-
-    useNames = pythia.pyre.inventory.bool("use_nodeset_names", default=True)
-    useNames.meta['tip'] = "Use nodeset names instead of ids."
 
     from spatialdata.geocoords.CSCart import CSCart
     coordsys = pythia.pyre.inventory.facility("coordsys", family="coordsys", factory=CSCart)
@@ -61,7 +57,6 @@ class MeshIOCubit(MeshIOObj, ModuleMeshIOCubit):
         """Do minimal initialization."""
         MeshIOObj.preinitialize(self)
         ModuleMeshIOCubit.setFilename(self, self.filename)
-        ModuleMeshIOCubit.setUseNodesetNames(self, self.useNames)
 
     def _configure(self):
         """Set members based using inventory.
