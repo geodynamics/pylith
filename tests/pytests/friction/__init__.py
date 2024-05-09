@@ -1,6 +1,4 @@
-
-
-def test_classes():
+def test_modules():
     return []
 
 
