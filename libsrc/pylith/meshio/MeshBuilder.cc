@@ -170,6 +170,7 @@ pylith::meshio::MeshBuilder::setGroup(pylith::topology::Mesh* mesh,
 
     err = DMCreateLabel(dmMesh, name);PYLITH_CHECK_ERROR(err);
     err = DMGetLabel(dmMesh, name, &dmLabel);PYLITH_CHECK_ERROR(err);
+
     if (CELL == groupType) {
         for (PetscInt p = 0; p < numPoints; ++p) {
             err = DMLabelSetValue(dmLabel, points[p], labelValue);PYLITH_CHECK_ERROR(err);
@@ -191,7 +192,13 @@ pylith::meshio::MeshBuilder::setGroup(pylith::topology::Mesh* mesh,
         err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);PYLITH_CHECK_ERROR(err);
         numCells = cEnd - cStart;
         for (PetscInt p = 0; p < numPoints; ++p) {
-            err = DMLabelSetValue(dmLabel, numCells+points[p], labelValue);PYLITH_CHECK_ERROR(err);
+            const PetscInt vertex = numCells + points[p];
+            if ((vertex < vStart) || (vertex >= vEnd)) {
+                std::ostringstream msg;
+                msg << "Vertex in group '" << name << "' not found in mesh.";
+                throw std::runtime_error(msg.str());
+            } // if
+            err = DMLabelSetValue(dmLabel, vertex, labelValue);PYLITH_CHECK_ERROR(err);
         } // for
           // Also add any non-cells which have all vertices marked
         _MeshBuilder::Events::logger.eventBegin(_MeshBuilder::Events::setGroupAddPoints);
@@ -338,6 +345,11 @@ pylith::meshio::_MeshBuilder::faceFromCellSide(PetscInt* face,
     PetscInt coneSize = 0;
     err = DMPlexGetCone(dmMesh, cell, &cone);PYLITH_CHECK_ERROR(err);
     err = DMPlexGetConeSize(dmMesh, cell, &coneSize);PYLITH_CHECK_ERROR(err);
+    if ((side < 0) || (side >= coneSize)) {
+        std::ostringstream msg;
+        msg << "Cell side '" << side << "' must be in [0, " << coneSize << ").";
+        throw std::runtime_error(msg.str());
+    } // if
     PetscInt coneIndex = -1;
     switch (cellType) {
     case DM_POLYTOPE_TRIANGLE: {
