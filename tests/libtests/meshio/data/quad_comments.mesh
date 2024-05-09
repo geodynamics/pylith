@@ -44,40 +44,47 @@ mesh = { // begin mesh
     }
   }
  // comment before group
-  group = {
-    name = group A
-    type = vertices
+  vertex-group = {
+    name = vertex-group A
     count = 5
     indices = {
       0 // comment here
 // comment here again
       2 // and here
-      4  6
+      4  5
   // and here
-      8
+      6
     }
   }
-  group = { // begin group
-    name = group B
-    type = vertices
+  vertex-group = { // begin group
+    name = vertex-group B
     count = 3
   // comment here
     indices = {
-      1
-      4
-      7
-    }
-  // comment there
-  }
-  group = {
-    name = group C
-  // comments everywhere
-    type = cells
-    count = 2
-    indices = {
       0
+      1
       2
     }
- // even here
+  }
+ // comment before group
+  face-group = {
+    name =face-group A
+    count = 3
+    indices = {
+      0   0  2 // comment here
+// comment here again
+      1   6  5 // and here
+      1   5  4
+  // and here
+    }
+  }
+  face-group = { // begin group
+    name = face-group B
+    count = 2
+  // comment here
+    indices = {
+      0   0  2
+      0   1  0
+    }
   }
 }

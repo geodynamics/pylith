@@ -47,7 +47,7 @@ pylith::meshio::TestMeshIOCubit::testFilename(void) {
     PYLITH_METHOD_BEGIN;
     assert(_io);
 
-    const std::string& filename = "hi.txt";
+    const std::string& filename = "hi.exo";
     _io->setFilename(filename.c_str());
     CHECK(filename == std::string(_io->getFilename()));
 
@@ -72,6 +72,7 @@ pylith::meshio::TestMeshIOCubit::testRead(void) {
     pythia::journal::debug_t debug("TestMeshIOCubit");
     if (debug.state()) {
         _mesh->view();
+        _mesh->view(":mesh.tex:ascii_latex");
     } // if
 
     // Make sure mesh matches data

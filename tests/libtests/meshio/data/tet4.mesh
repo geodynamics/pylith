@@ -35,7 +35,7 @@ mesh = {
     }
   }
   group = {
-    name = boundary
+    name = boundary_vertices
     type = vertices
     count = 4
     indices = {
@@ -43,11 +43,36 @@ mesh = {
     }
   }
   group = {
-    name = face
+    name = face_vertices
     type = vertices
     count = 3
     indices = {
       0  1  2
+    }
+  }
+  group = {
+    name = fault_faces
+    type = faces
+    count = 1
+    indices = {
+      0   1  2  3
+    }
+  }
+  group = {
+    name = boundary
+    type = faces
+    count = 2
+    indices = {
+      0   0  1  3
+      1   1  4  3
+    }
+  }
+  group = {
+    name = face
+    type = faces
+    count = 1
+    indices = {
+      0   0  1  2
     }
   }
 }

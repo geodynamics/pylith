@@ -14,6 +14,8 @@
 #include "pylith/topology/topologyfwd.hh" // USES Mesh
 #include "pylith/meshio/meshiofwd.hh" // USES MeshIO
 
+#include "pylith/meshio/MeshBuilder.hh" // HOLDSA Topology, Geometry
+
 namespace pylith {
     namespace meshio {
         class TestMeshIO;
@@ -60,22 +62,23 @@ public:
     // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
 public:
 
-    PylithInt numVertices; ///< Number of vertices
-    PylithInt spaceDim; ///< Number of dimensions in vertex coordinates
-    PylithInt numCells; ///< Number of cells
-    PylithInt cellDim; ///< Number of dimensions associated with cell
-    PylithInt numCorners; ///< Number of vertices in cell
+    pylith::meshio::MeshBuilder::Topology* topology;
+    pylith::meshio::MeshBuilder::Geometry* geometry;
 
-    PylithScalar* vertices; ///< Pointer to coordinates of vertices
-    PylithInt* cells; ///< Pointer to indices of vertices in cells
     PylithInt* materialIds; ///< Pointer to cell material identifiers
 
-    PylithInt* groups; ///< Array of pointers to indices of points in groups
-    PylithInt* groupSizes; ///< Array of sizes of each group
-    PylithInt* groupTags; ///< Array of label values (tags) for each group.
-    char** groupNames; ///< Array of group names
-    char** groupTypes; ///< Array of group types
-    PylithInt numGroups; ///< Number of groups
+    PylithInt* vertexGroups; ///< Array of pointers to indices of points in vertex groups
+    PylithInt* vertexGroupSizes; ///< Array of sizes of each vertex group
+    PylithInt* vertexGroupTags; ///< Array of label values (tags) for each vertex group.
+    char** vertexGroupNames; ///< Array of vertex group names
+    size_t numVertexGroups; ///< Number of vertex groups
+
+    PylithInt* faceGroups; ///< Array of pointers to indices of points in face groups
+    PylithInt* faceGroupSizes; ///< Array of sizes of each face group
+    PylithInt* faceGroupTags; ///< Array of label values (tags) for each face group.
+    char** faceGroupNames; ///< Array of face group names
+    size_t numFaceGroups; ///< Number of face groups
+    size_t numFaceVertices; ///< Number of vertices on a cell face.
 
     bool useIndexZero; ///< Indices start with 0 if true, 1 if false
 

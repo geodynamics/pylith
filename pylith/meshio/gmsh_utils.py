@@ -8,13 +8,13 @@ from dataclasses import dataclass
 import gmsh
 
 @dataclass
-class VertexGroup:
+class BoundaryGroup:
     name: str
     tag: int
     dim: int
     entities: list
 
-    def create_physical_group(self, recursive=True):
+    def create_physical_group(self, recursive=False):
         create_group(self.name, self.tag, self.dim, self.entities, recursive)
 
 @dataclass

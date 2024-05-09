@@ -25,7 +25,6 @@ subpkginclude_HEADERS = \
 	MeshBuilder.hh \
 	MeshIO.hh \
 	MeshIOAscii.hh \
-	MeshIOAscii.icc \
 	MeshIOPetsc.hh \
 	MeshConverter.hh \
 	OutputObserver.hh \
@@ -43,8 +42,7 @@ subpkginclude_HEADERS = \
 
 if ENABLE_CUBIT
   subpkginclude_HEADERS += \
-	MeshIOCubit.hh \
-	MeshIOCubit.icc
+	MeshIOCubit.hh
 endif
 
 dist_noinst_HEADERS = \

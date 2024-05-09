@@ -10,7 +10,8 @@ from abc import ABC, abstractmethod
 import gmsh
 import numpy
 
-from pylith.meshio.gmsh_utils import (VertexGroup, MaterialGroup, group_exclude)
+from pylith.meshio.gmsh_utils import (BoundaryGroup, MaterialGroup, group_exclude)
+
 
 def get_vertices():
     dim = gmsh.model.get_dimension()
@@ -83,25 +84,29 @@ class WriterCxx():
     
     def write_vertices(self, vertices):
         nvertices, space_dim = vertices.shape
-        self.fout.write(f"static const PylithScalar vertices[{nvertices}*{space_dim}] = " + "{\n")
+        self.fout.write(f"const size_t numVertices = {nvertices};\n")
+        self.fout.write(f"const size_t space_dim = {space_dim};\n")
+        self.fout.write("static const PylithScalar vertices[numVertices*spaceDim] = " + "{\n")
         for vertex in vertices:
             line = ", ".join([f"{x:+16.8e}" for x in vertex]) + ",\n"
             self.fout.write(line)
         self.fout.write("};\n")
-        self.fout.write("_data->vertices = const_cast<PylithScalar*>(vertices);\n\n")
+        self.fout.write("delete data->geometry;data->geometry = new pylith::meshio::MeshBuilder::Geometry(numVertices, spaceDim, vertices);\n\n")
 
     def write_cells(self, cells):
         ncells, ncorners = cells.shape
-        print(f"static const PylithInt cells[{ncells}*{ncorners}] = " + "{")
+        self.fout.write(f"const size_t numCells = {ncells};\n")
+        self.fout.write(f"const size_t numCorners = {ncorners};\n")
+        self.fout.write("static const PylithInt cells[numCells*numCorners] = " + "{\n")
         for cell in cells[:,0:ncorners]:
             line = ", ".join([f"{int(node-1):d}" for node in cell]) + ",\n"
             self.fout.write(line)
         self.fout.write("};\n")
-        self.fout.write("_data->cells = const_cast<PylithInt*>(cells);\n\n")
+        self.fout.write("delete data->topology;data->topology = new pylith::meshio::MeshBuilder::Topology(cellDim, numCells, numCorners, cellShape, cells);\n\n")
 
     def write_material_ids(self, material_ids):
         ncells = len(material_ids)
-        self.fout.write(f"static const PylithInt materialIds[{ncells}] = " + "{\n")
+        self.fout.write("static const PylithInt materialIds[numCells] = " + "{\n")
         line = [f"{mid}," for mid in material_ids]
         self.fout.write("\n".join(line))
         self.fout.write("\n};\n")
@@ -109,23 +114,24 @@ class WriterCxx():
 
     def write_vertex_groups(self, groups):
         ngroups = len(groups)
-        self.fout.write(f"_data->numGroups = {ngroups};\n")
+        self.fout.write(f"_data->numVertexGroups = {ngroups};\n")
         gsizes = [len(group) for group in groups.values()]
         gsizes_str = [f"{len(group)}" for group in groups.values()]
-        self.fout.write(f"static const PylithInt groupSizes[{ngroups}] = ")
+        self.fout.write(f"static const PylithInt vertexGroupSizes[{ngroups}] = ")
         self.fout.write("{" + ", ".join(gsizes_str) + "};\n")
-        self.fout.write("_data->groupSizes = const_cast<PylithInt*>(groupSizes);\n")
-        self.fout.write(f"static const PylithInt groups[{sum(gsizes)}] = " + "{\n")
+        self.fout.write("_data->vertexGroupSizes = const_cast<PylithInt*>(vertexGroupSizes);\n")
+        self.fout.write(f"static const PylithInt vertexGroups[{sum(gsizes)}] = " + "{\n")
         for group in groups.values():
             line = ", ".join([f"{int(vertex-1):d}" for vertex in group]) + ",\n"
             self.fout.write(line)
         self.fout.write("};\n")
-        self.fout.write("_data->groups = const_cast<PylithInt*>(groups);\n")
-        self.fout.write(f"static const char* groupNames[{ngroups}] = " + "{\n")
+        self.fout.write("_data->vertexGroups = const_cast<PylithInt*>(vertexGroups);\n")
+        self.fout.write(f"static const char* vertexGroupNames[{ngroups}] = " + "{\n")
         for name in groups.keys():
             self.fout.write(f'"{name}",\n')
         self.fout.write("};\n")
-        self.fout.write("_data->groupNames = const_cast<char**>(groupNames);\n")
+        self.fout.write("_data->vertexGroupNames = const_cast<char**>(vertexGroupNames);\n")
+
 
 def write_mesh(writer=WriterCxx()):
     writer.write_vertices(get_vertices())
@@ -138,14 +144,16 @@ def write_mesh(writer=WriterCxx()):
 
 class GenerateApp(ABC):
 
-    def __init__(self, cell, dump_mesh=False, gui=False):
+    def __init__(self, cell, mark_vertices=False, dump_mesh=False, gui=False):
         self.cell = cell
         self.dump_mesh = dump_mesh
         self.gui = gui
+        self.mark_vertices = mark_vertices
+        self.geometry = None
 
     def main(self):
         self.create_geometry()
-        self.mark()
+        self.mark(self.mark_vertices)
         self.generate_mesh()
         self.write()
         if self.dump_mesh:
@@ -157,7 +165,7 @@ class GenerateApp(ABC):
         pass
 
     @abstractmethod
-    def mark(self):
+    def mark(self, mark_vertices):
         pass
 
     @abstractmethod
@@ -165,11 +173,12 @@ class GenerateApp(ABC):
         pass
 
     def write(self):
+        mark_flag = "vertices" if self.mark_vertices else "boundary"
         gmsh.option.setNumber("Mesh.Binary", 0)
-        gmsh.write(f"{self.geometry}_{self.cell}_ascii.msh")
+        gmsh.write(f"{self.geometry}_{self.cell}_{mark_flag}_ascii.msh")
 
         gmsh.option.setNumber("Mesh.Binary", 1)
-        gmsh.write(f"{self.geometry}_{self.cell}_binary.msh")
+        gmsh.write(f"{self.geometry}_{self.cell}_{mark_flag}_binary.msh")
 
     def print_mesh(self):
         write_mesh(writer=WriterCxx())
@@ -192,8 +201,8 @@ class GenerateBox2D(GenerateApp):
     DOMAIN_X = DOMAIN_Y = 8.0e+3
     DX = 4.0e+3
 
-    def __init__(self, cell="tri", dump_mesh=False, gui=False):
-        super().__init__(cell, dump_mesh, gui)
+    def __init__(self, cell="tri", mark_vertices=False, dump_mesh=False, gui=False):
+        super().__init__(cell, mark_vertices, dump_mesh, gui)
         self.geometry = "box"
 
     def create_geometry(self):
@@ -226,7 +235,7 @@ class GenerateBox2D(GenerateApp):
 
         gmsh.model.geo.synchronize()
 
-    def mark(self):
+    def mark(self, mark_vertices):
         materials = (
             MaterialGroup(tag=1, entities=[self.s_xpos]),
             MaterialGroup(tag=2, entities=[self.s_xneg]),
@@ -234,18 +243,20 @@ class GenerateBox2D(GenerateApp):
         for material in materials:
             material.create_physical_group()
 
-        vertex_groups = (
-            VertexGroup(name="boundary_xneg", tag=10, dim=1, entities=[self.l_xneg]),
-            VertexGroup(name="boundary_xpos", tag=11, dim=1, entities=[self.l_xpos]),
-            VertexGroup(name="boundary_yneg", tag=12, dim=1, entities=[self.l_yneg0, self.l_yneg1]),
-            VertexGroup(name="boundary_ypos", tag=13, dim=1, entities=[self.l_ypos0, self.l_ypos1]),
-            VertexGroup(name="boundary_xneg2", tag=15, dim=1, entities=[self.l_xneg]),
-            VertexGroup(name="fault", tag=20, dim=1, entities=[self.l_fault]),
-            VertexGroup(name="fault_end", tag=21, dim=0, entities=[self.p_fault_end]),
+        boundary_groups = (
+            BoundaryGroup(name="boundary_xneg", tag=10, dim=1, entities=[self.l_xneg]),
+            BoundaryGroup(name="boundary_xpos", tag=11, dim=1, entities=[self.l_xpos]),
+            BoundaryGroup(name="boundary_yneg", tag=12, dim=1, entities=[self.l_yneg0, self.l_yneg1]),
+            BoundaryGroup(name="boundary_ypos", tag=13, dim=1, entities=[self.l_ypos0, self.l_ypos1]),
+            BoundaryGroup(name="fault", tag=20, dim=1, entities=[self.l_fault]),
         )
-        for group in vertex_groups:
-            group.create_physical_group()
-        group_exclude("boundary_ypos", "fault", new_name="boundary_ypos_nofault", new_tag=14)
+        recursive = False
+        if mark_vertices:
+            boundary_groups += (BoundaryGroup(name="fault_end", tag=21, dim=0, entities=[self.p_fault_end]),
+            )
+            recursive = True
+        for group in boundary_groups:
+            group.create_physical_group(recursive=recursive)
 
     def generate_mesh(self):
         # right angle tris
@@ -263,8 +274,8 @@ class GenerateBox3D(GenerateApp):
     DOMAIN_X = DOMAIN_Y = DOMAIN_Z = 8.0e+3
     DX = 4.0e+3
 
-    def __init__(self, cell="tet", dump_mesh=False, gui=False):
-        super().__init__(cell, dump_mesh, gui)
+    def __init__(self, cell="tet", mark_vertices=False, dump_mesh=False, gui=False):
+        super().__init__(cell, mark_vertices, dump_mesh, gui)
         self.geometry = "box"
 
     def create_geometry(self):
@@ -295,7 +306,7 @@ class GenerateBox3D(GenerateApp):
         self.v_xneg = dimTags[0]
         self.v_xpos = dimTags[1]
 
-    def mark(self):
+    def mark(self, mark_vertices):
         materials = (
             MaterialGroup(tag=1, entities=[self.v_xneg[1]]),
             MaterialGroup(tag=2, entities=[self.v_xpos[1]]),
@@ -303,19 +314,22 @@ class GenerateBox3D(GenerateApp):
         for material in materials:
             material.create_physical_group()
 
-        vertex_groups = (
-            VertexGroup(name="boundary_xneg", tag=10, dim=2, entities=[tag for dim, tag in self.s_xneg]),
-            VertexGroup(name="boundary_xpos", tag=11, dim=2, entities=[tag for dim, tag in self.s_xpos]),
-            VertexGroup(name="boundary_yneg", tag=12, dim=2, entities=[tag for dim, tag in self.s_yneg]),
-            VertexGroup(name="boundary_ypos", tag=13, dim=2, entities=[tag for dim, tag in self.s_ypos]),
-            VertexGroup(name="boundary_zneg", tag=14, dim=2, entities=[tag for dim, tag in self.s_zneg]),
-            VertexGroup(name="boundary_zpos", tag=15, dim=2, entities=[tag for dim, tag in self.s_zpos]),
-            VertexGroup(name="fault", tag=20, dim=2, entities=[tag for dim,tag in self.s_fault]),
-            VertexGroup(name="fault_end", tag=21, dim=1, entities=[tag for dim,tag in self.l_fault_end]),
+        boundary_groups = (
+            BoundaryGroup(name="boundary_xneg", tag=10, dim=2, entities=[tag for dim, tag in self.s_xneg]),
+            BoundaryGroup(name="boundary_xpos", tag=11, dim=2, entities=[tag for dim, tag in self.s_xpos]),
+            BoundaryGroup(name="boundary_yneg", tag=12, dim=2, entities=[tag for dim, tag in self.s_yneg]),
+            BoundaryGroup(name="boundary_ypos", tag=13, dim=2, entities=[tag for dim, tag in self.s_ypos]),
+            BoundaryGroup(name="boundary_zneg", tag=14, dim=2, entities=[tag for dim, tag in self.s_zneg]),
+            BoundaryGroup(name="boundary_zpos", tag=15, dim=2, entities=[tag for dim, tag in self.s_zpos]),
+            BoundaryGroup(name="fault", tag=20, dim=2, entities=[tag for dim,tag in self.s_fault]),
         )
-        for group in vertex_groups:
-            group.create_physical_group()
-        group_exclude("boundary_ypos", "fault", new_name="boundary_ypos_nofault", new_tag=16)
+        recursive = False
+        if mark_vertices:
+            boundary_groups += (BoundaryGroup(name="fault_end", tag=21, dim=1, entities=[tag for dim,tag in self.l_fault_end]),
+            )
+            recursive = True
+        for group in boundary_groups:
+            group.create_physical_group(recursive=recursive)
 
     def generate_mesh(self):
         gmsh.option.setNumber("Mesh.MeshSizeMin", self.DX)
@@ -336,12 +350,11 @@ if __name__ == "__main__":
     parser.add_argument("--cell", action="store", dest="cell", required=True, choices=["tri","quad","hex","tet"])
     parser.add_argument("--dump-mesh", action="store_true", dest="dump_mesh")
     parser.add_argument("--gui", action="store_true", dest="gui")
+    parser.add_argument("--mark-vertices", action="store_true", dest="mark_vertices")
     args = parser.parse_args()
 
     if args.geometry == "box-2d":
         app = GenerateBox2D
-    elif args.geometry == "layer-2d":
-        app = GenerateLayer2D
     elif args.geometry == "box-3d":
         app = GenerateBox3D
-    app(args.cell, args.dump_mesh, args.gui).main()
+    app(args.cell, args.mark_vertices, args.dump_mesh, args.gui).main()

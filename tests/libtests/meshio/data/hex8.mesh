@@ -86,4 +86,29 @@ mesh = {
       6  7  8  9  10 11
     }
   }
+  group = {
+    name = fault_faces
+    type = faces
+    count = 1
+    indices = {
+      0   2  3  8  9
+    }
+  }
+  group = {
+    name = front
+    type = faces
+    count = 1
+    indices = {
+      0   0  1  6  7
+    }
+  }
+  group = {
+    name = top
+    type = faces
+    count = 2
+    indices = {
+      0  6  7  8  9
+      1  8  9 10 11
+    }
+  }
 }

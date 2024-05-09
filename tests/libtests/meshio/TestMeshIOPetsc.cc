@@ -57,10 +57,12 @@ pylith::meshio::TestMeshIOPetsc::testFilename(void) {
 // ------------------------------------------------------------------------------------------------
 // Test read().
 void
-pylith::meshio::TestMeshIOPetsc::testRead(void) {
+pylith::meshio::TestMeshIOPetsc::testRead(const bool gmshMarkVertices) {
     PYLITH_METHOD_BEGIN;
     assert(_io);
     assert(_data);
+
+    _io->setGmshMarkVertices(gmshMarkVertices);
 
     // Read mesh
     _io->setFilename(_data->filename.c_str());
@@ -114,6 +116,12 @@ pylith::meshio::TestMeshIOPetsc::testWriteRead(void) {
     // Read mesh
     delete _mesh;_mesh = new pylith::topology::Mesh;
     _io->read(_mesh);
+
+    pythia::journal::debug_t debug("TestMeshIOPetsc");
+    if (debug.state()) {
+        _mesh->view();
+        _mesh->view(":mesh.tex:ascii_latex");
+    } // if
 
     // Make sure meshIn matches data
     TestMeshIO::_checkVals();

@@ -92,7 +92,8 @@ pylith::meshio::_MeshIOPetsc::Events::init(void) {
 pylith::meshio::MeshIOPetsc::MeshIOPetsc(void) :
     _filename(""),
     _prefix(""),
-    _format(HDF5) {
+    _format(HDF5),
+    _gmshMarkVertices(false) {
     PyreComponent::setName("meshiopetsc");
     _MeshIOPetsc::Events::init();
 } // constructor
@@ -176,6 +177,22 @@ pylith::meshio::MeshIOPetsc::getFormat(void) const {
 
 
 // ------------------------------------------------------------------------------------------------
+// Set flag for marking Gmsh vertices.
+void
+pylith::meshio::MeshIOPetsc::setGmshMarkVertices(const bool value) {
+    _gmshMarkVertices = value;
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// Returns true if marking Gmsh vertices, otherwise false.
+bool
+pylith::meshio::MeshIOPetsc::getGmshMarkVertices(void) const {
+    return _gmshMarkVertices;
+}
+
+
+// ------------------------------------------------------------------------------------------------
 // Read mesh.
 void
 pylith::meshio::MeshIOPetsc::_read(void) {
@@ -195,9 +212,8 @@ pylith::meshio::MeshIOPetsc::_read(void) {
             options.resize(noptions*2);
             options[2] = "-" + _prefix + "dm_plex_gmsh_use_regions";
             options[3] = "";
-
             options[4] = "-" + _prefix + "dm_plex_gmsh_mark_vertices";
-            options[5] = "";
+            options[5] = (_gmshMarkVertices) ? "true" : "false";
         } // if
 
         for (size_t i = 0; i < noptions; ++i) {
@@ -214,11 +230,12 @@ pylith::meshio::MeshIOPetsc::_read(void) {
             err = PetscObjectSetOptionsPrefix((PetscObject) dmMesh, _prefix.c_str());PYLITH_CHECK_ERROR(err);
         } // if
         err = DMPlexDistributeSetDefault(dmMesh, PETSC_FALSE);PYLITH_CHECK_ERROR(err);
-        err = DMSetFromOptions(dmMesh);PYLITH_CHECK_ERROR_MSG(err, "Error creating mesh with MeshIOPetsc.");
-
+        err = DMSetFromOptions(dmMesh);PYLITH_CHECK_ERROR(err);
         _MeshIOPetsc::fixMaterialLabel(&dmMesh);
-        _MeshIOPetsc::fixBoundaryLabels(&dmMesh);
-        _mesh->setDM(dmMesh, "domain");
+        if (_gmshMarkVertices) {
+            _MeshIOPetsc::fixBoundaryLabels(&dmMesh);
+        } // if
+        _mesh->setDM(dmMesh);
     } catch (...) {
         DMDestroy(&dmMesh);
         throw;
@@ -316,7 +333,7 @@ pylith::meshio::_MeshIOPetsc::fixBoundaryLabels(PetscDM* dmMesh) {
     PYLITH_METHOD_BEGIN;
     _MeshIOPetsc::Events::logger.eventBegin(_MeshIOPetsc::Events::fixBoundaryLabels);
     assert(dmMesh);
-    PetscErrorCode err = 0;
+    PetscErrorCode err = PETSC_SUCCESS;
 
     // Create set with labels to ignore.
     std::set<std::string> labelsIgnore;

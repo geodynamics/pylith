@@ -40,7 +40,7 @@ public:
      */
     const char* getFilename(void) const;
 
-    // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
+    // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
 protected:
 
     /// Write mesh
@@ -49,85 +49,26 @@ protected:
     /// Read mesh
     void _read(void);
 
-    // PRIVATE METHODS /////////////////////////////////////////////////////////////////////////////////////////////////
-private:
+    // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
+protected:
 
-    /** Read mesh vertices.
+    /** Read groups of vertices.
      *
-     * @param ncfile Cubit Exodus file.
-     * @param coordinates Pointer to array of vertex coordinates.
-     * @param numVertices Pointer to number of vertices.
-     * @param spaceDim Pointer to dimension of coordinates vector space.
+     * @param[inout] fileIn Input file.
      */
-    void _readVertices(ExodusII& filein,
-                       scalar_array* coordinates,
-                       int* numVertices,
-                       int* spaceDim) const;
+    void _readNodeSets(pylith::meshio::ExodusII& fileIn);
 
-    /** Read mesh cells.
+    /** Read groups of faces.
      *
-     * @param ncfile Cubit Exodus file.
-     * @param pCells Pointer to array of indices of cell vertices
-     * @param pMaterialIds Pointer to array of material identifiers
-     * @param pNumCells Pointer to number of cells
-     * @param pNumCorners Pointer to number of corners
+     * @param[inout] fileIn Input file.
      */
-    void _readCells(ExodusII& filein,
-                    int_array* pCells,
-                    int_array* pMaterialIds,
-                    int* numCells,
-                    int* numCorners) const;
+    void _readSideSets(pylith::meshio::ExodusII& fileIn);
 
-    /** Read vertex groups.
-     *
-     * @param ncfile Cubit Exodus file.
-     */
-    void _readNodeSets(ExodusII& filein);
-
-    /** Read face groups.
-     *
-     * @param ncfile Cubit Exodus file.
-     */
-    void _readSideSets(ExodusII& filein);
-
-    /** Write mesh dimensions.
-     *
-     * @param ncfile Cubit Exodus file.
-     */
-    void _writeDimensions(ExodusII& ncfile) const;
-
-    /** Write mesh variables.
-     *
-     * @param ncfile Cubit Exodus file.
-     */
-    void _writeVariables(ExodusII& ncfile) const;
-
-    /** Write mesh attributes.
-     *
-     * @param ncfile Cubit Exodus file.
-     */
-    void _writeAttributes(ExodusII& ncfile) const;
-
-    /** Reorder vertices in cells to match PyLith conventions.
-     *
-     * @param cells Array of vertex indices for each cell [numCells*numCorners].
-     * @param numCells Number of cells.
-     * @param numCorners Number of vertices per cell.
-     * @param meshDim Spatial dimension of mesh.
-     */
-    static
-    void _orientCells(int_array* const cells,
-                      const int numCells,
-                      const int numCorners,
-                      const int meshDim);
-
-    // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
+    // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
 private:
 
     std::string _filename; ///< Name of file
 
 }; // MeshIOCubit
-
-#include "MeshIOCubit.icc" // inline methods
 
 // End of file
