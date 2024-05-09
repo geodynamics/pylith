@@ -85,7 +85,7 @@ class MeshIOCubit(MeshIOObj, ModuleMeshIOCubit):
 def mesh_input():
     """Factory associated with MeshIOCubit.
     """
-    return MeshIOCubit(mode=MeshIOCubit.READ)
+    return MeshIOCubit()
 
 
 # End of file

@@ -41,8 +41,7 @@ pylith::meshio::MeshIO::~MeshIO(void) {
 // ----------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
-pylith::meshio::MeshIO::deallocate(void) {
-} // deallocate
+pylith::meshio::MeshIO::deallocate(void) {} // deallocate
 
 
 // ----------------------------------------------------------------------
@@ -114,7 +113,7 @@ pylith::meshio::MeshIO::read(pylith::topology::Mesh* mesh,
 // ----------------------------------------------------------------------
 // Write mesh to file.
 void
-pylith::meshio::MeshIO::write(pylith::topology::Mesh* const mesh) { // write
+pylith::meshio::MeshIO::write(pylith::topology::Mesh* const mesh) {
     PYLITH_METHOD_BEGIN;
 
     assert(mesh);
@@ -324,64 +323,16 @@ pylith::meshio::MeshIO::_getGroupNames(string_vector* names) const { // _getGrou
 // ----------------------------------------------------------------------
 // Get group entities
 void
-pylith::meshio::MeshIO::_getGroup(int_array* points,
-                                  pylith::meshio::MeshBuilder::GroupPtType* groupType,
-                                  const char *name) const { // _getGroup
+pylith::meshio::MeshIO::_getGroup(pylith::meshio::MeshBuilder::GroupPtType* groupType,
+                                  int_array* points,
+                                  const char *name) const {
     PYLITH_METHOD_BEGIN;
 
     assert(points);
     assert(groupType);
     assert(_mesh);
 
-    PetscDM dmMesh = _mesh->getDM();assert(dmMesh);
-    topology::Stratum cellsStratum(dmMesh, topology::Stratum::HEIGHT, 0);
-    const PetscInt cStart = cellsStratum.begin();
-    const PetscInt cEnd = cellsStratum.end();
-    const PetscInt numCells = cellsStratum.size();
-
-    topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
-    const PetscInt vStart = verticesStratum.begin();
-    const PetscInt vEnd = verticesStratum.end();
-
-    PetscIS groupIS = NULL;
-    const PetscInt* groupIndices = NULL;
-    PetscErrorCode err;
-    err = DMGetStratumIS(dmMesh, name, 1, &groupIS);PYLITH_CHECK_ERROR(err);
-    err = ISGetIndices(groupIS, &groupIndices);PYLITH_CHECK_ERROR(err);
-
-    PetscInt totalSize;
-    err = DMGetStratumSize(dmMesh, name, 1, &totalSize);PYLITH_CHECK_ERROR(err);
-
-    *groupType = pylith::meshio::MeshBuilder::VERTEX;
-    if (( totalSize > 0) && (( groupIndices[0] >= cStart) && ( groupIndices[0] < cEnd) )) {
-        *groupType = pylith::meshio::MeshBuilder::CELL;
-    } // if
-
-    PetscInt offset = 0;
-    PetscInt pStart = cStart;
-    PetscInt pEnd = cEnd;
-    if (pylith::meshio::MeshBuilder::VERTEX == *groupType) {
-        offset = numCells;
-        pStart = vStart;
-        pEnd = vEnd;
-    } // if
-
-    // Count number of cells/vertices, filtering out edges and faces
-    PetscInt groupSize = 0;
-    for (PetscInt p = 0; p < totalSize; ++p) {
-        if (( groupIndices[p] >= pStart) && ( groupIndices[p] < pEnd) ) {
-            ++groupSize;
-        } // if
-    } // for
-
-    points->resize(groupSize);
-    for (PetscInt p = 0; p < groupSize; ++p) {
-        if (( groupIndices[p] >= pStart) && ( groupIndices[p] < pEnd) ) {
-            (*points)[p] = groupIndices[p]-offset;
-        } // if
-    } // for
-    err = ISRestoreIndices(groupIS, &groupIndices);PYLITH_CHECK_ERROR(err);
-    err = ISDestroy(&groupIS);PYLITH_CHECK_ERROR(err);
+    pylith::meshio::MeshBuilder::getGroup(groupType, points, *_mesh, name);
 
     PYLITH_METHOD_END;
 } // _getGroup

@@ -19,14 +19,15 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 
 /// Helper class for constructing PETSc mesh data structures.
-class pylith::meshio::MeshBuilder { // MeshBuilder
+class pylith::meshio::MeshBuilder {
     // PUBLIC ENUMS /////////////////////////////////////////////////////
 public:
 
     /// Type of points in a group.
     enum GroupPtType {
         VERTEX=0,
-        CELL=1,
+        FACE=1,
+        CELL=2,
     }; // GroupPtType
 
     // PUBLIC MEMBERS ///////////////////////////////////////////////////////
@@ -74,6 +75,22 @@ public:
                   const char* name,
                   const GroupPtType groupType,
                   const int_array& points);
+
+    /** Get a point group as an array of points.
+     *
+     * The indices in the points array must use zero based indices. In
+     * other words, the lowest index MUST be 0 not 1.
+     *
+     * @param[inout] mesh PyLith finite-element mesh.
+     * @param[in] name The group name
+     * @param[in] groupType The point type, e.g. VERTEX, CELL
+     * @param[in] points An array of the points in the group.
+     */
+    static
+    void getGroup(GroupPtType* groupType,
+                  int_array* points,
+                  const pylith::topology::Mesh& mesh,
+                  const char* name);
 
 }; // MeshBuilder
 

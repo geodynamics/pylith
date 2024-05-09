@@ -40,12 +40,6 @@ public:
      */
     const char* getFilename(void) const;
 
-    /** Set flag on whether to use nodeset ids or names.
-     *
-     * @param flag True to use node set names.
-     */
-    void setUseNodesetNames(const bool flag);
-
     // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
 
@@ -84,11 +78,17 @@ private:
                     int* numCells,
                     int* numCorners) const;
 
-    /** Read point groups.
+    /** Read vertex groups.
      *
      * @param ncfile Cubit Exodus file.
      */
-    void _readGroups(ExodusII& filein);
+    void _readNodeSets(ExodusII& filein);
+
+    /** Read face groups.
+     *
+     * @param ncfile Cubit Exodus file.
+     */
+    void _readSideSets(ExodusII& filein);
 
     /** Write mesh dimensions.
      *
@@ -125,7 +125,6 @@ private:
 private:
 
     std::string _filename; ///< Name of file
-    bool _useNodesetNames; ///< True to use node set names instead of ids.
 
 }; // MeshIOCubit
 

@@ -119,12 +119,12 @@ protected:
      * indices. In other words, the first vertex will be referred to
      * using an index of 0.
      *
-     * @param points An array of the points in the group
      * @param type The point type, e.g. VERTEX, CELL
+     * @param points An array of the points in the group
      * @param name The group name
      */
-    void _getGroup(int_array* points,
-                   pylith::meshio::MeshBuilder::GroupPtType* type,
+    void _getGroup(pylith::meshio::MeshBuilder::GroupPtType* type,
+                   int_array* points,
                    const char *name) const;
 
     // PROTECTED MEMBERS //////////////////////////////////////////////////////////////////////////

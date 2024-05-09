@@ -37,8 +37,9 @@ public:
 
             static const char* groupTypeNames[];
         }; // _MeshIOAscii
-        const char* _MeshIOAscii::_MeshIOAscii::groupTypeNames[2] = {
+        const char* _MeshIOAscii::_MeshIOAscii::groupTypeNames[3] = {
             "vertices",
+            "faces",
             "cells",
         };
     } // meshio
@@ -149,7 +150,7 @@ pylith::meshio::MeshIOAscii::_read(void) {
 
                     if (!builtMesh) {
                         throw std::runtime_error("Both 'vertices' and 'cells' must "
-                                                 "precede any groups in mesh file.");
+                                                 "precede any groups in the mesh file.");
                     }
                     _readGroup(parser, &points, &type, &name);
                     pylith::meshio::MeshBuilder::setGroup(_mesh, name.c_str(), type, points);
@@ -506,6 +507,8 @@ pylith::meshio::MeshIOAscii::_readGroup(spatialdata::utils::LineParser& parser,
             buffer >> typeName;
             if (typeName == _MeshIOAscii::groupTypeNames[pylith::meshio::MeshBuilder::VERTEX]) {
                 *type = pylith::meshio::MeshBuilder::VERTEX;
+            } else if (typeName == _MeshIOAscii::groupTypeNames[pylith::meshio::MeshBuilder::FACE]) {
+                *type = pylith::meshio::MeshBuilder::FACE;
             } else if (typeName == _MeshIOAscii::groupTypeNames[pylith::meshio::MeshBuilder::CELL]) {
                 *type = pylith::meshio::MeshBuilder::CELL;
             } else {
@@ -516,6 +519,9 @@ pylith::meshio::MeshIOAscii::_readGroup(spatialdata::utils::LineParser& parser,
         } else if (0 == strcasecmp(token.c_str(), "count")) {
             buffer.ignore(maxIgnore, '=');
             buffer >> numPoints;
+            if (pylith::meshio::MeshBuilder::FACE == *type) {
+                numPoints *= 2; // cell+side for each face
+            } // if
         } else if (0 == strcasecmp(token.c_str(), "indices")) {
             if (-1 == numPoints) {
                 std::ostringstream msg;
@@ -568,7 +574,7 @@ pylith::meshio::MeshIOAscii::_writeGroup(std::ostream& fileout,
 
     int_array points;
     pylith::meshio::MeshBuilder::GroupPtType type;
-    _getGroup(&points, &type, name);
+    _getGroup(&type, &points, name);
 
     const int offset = _useIndexZero ? 0 : 1;
 
@@ -579,9 +585,16 @@ pylith::meshio::MeshIOAscii::_writeGroup(std::ostream& fileout,
         << "    type = " << _MeshIOAscii::groupTypeNames[type] << "\n"
         << "    count = " << numPoints << "\n"
         << "    indices = {\n";
-    for (int i = 0; i < numPoints; ++i) {
-        fileout << "      " << points[i]+offset << "\n";
-    }
+    if (type == pylith::meshio::MeshBuilder::FACE) {
+        const int numFaces = numPoints / 2;
+        for (int iFace = 0; iFace < numFaces; ++iFace) {
+            fileout << "      " << points[2*iFace+0]+offset << " " << points[2*iFace+1]+offset << "\n";
+        } // for
+    } else {
+        for (int i = 0; i < numPoints; ++i) {
+            fileout << "      " << points[i]+offset << "\n";
+        }
+    } // if/else
 
     fileout
         << "    }\n"
