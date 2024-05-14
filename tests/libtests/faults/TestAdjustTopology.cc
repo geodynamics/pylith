@@ -20,6 +20,7 @@
 #include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
 
 #include "pylith/utils/array.hh" // USES int_array, scalar_array
+#include "pylith/utils/journals.hh" // USES journals
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
@@ -80,11 +81,13 @@ pylith::faults::TestAdjustTopology::run(void) {
         } // if/else
     } // for
 
-#if 0 // DEBUGGING
-    PetscViewerPushFormat(PETSC_VIEWER_STDOUT_WORLD, PETSC_VIEWER_ASCII_INFO_DETAIL);
-    DMView(_mesh->getDM(), PETSC_VIEWER_STDOUT_WORLD);
-    PetscViewerPopFormat(PETSC_VIEWER_STDOUT_WORLD);
-#endif
+    pythia::journal::debug_t debug(GenericComponent::getName());
+    if (debug.state()) {
+        _mesh->view("::ascii_info");
+        _mesh->view("::ascii_info_detail");
+        _mesh->view(":mesh_adjusttopology.tex:ascii_latex");
+        _mesh->view("vtk:mesh_adjusttopology.vtu");
+    } // if
 
     REQUIRE(_data->cellDim == size_t(_mesh->getDimension()));
     PetscDM dmMesh = _mesh->getDM();assert(dmMesh);
@@ -159,7 +162,7 @@ pylith::faults::TestAdjustTopology::run(void) {
         err = ISGetLocalSize(pointIS, &numPoints);PYLITH_CHECK_ERROR(err);
         err = ISGetIndices(pointIS, &points);PYLITH_CHECK_ERROR(err);
         err = DMGetLabelValue(dmMesh, "depth", points[0], &depth);PYLITH_CHECK_ERROR(err);
-        std::string groupType = depth ? "cell" : "vertex";
+        std::string groupType = depth ? "face" : "vertex";
 
         bool foundGroup = false;
         for (size_t i = 0; i < _data->numGroups; ++i) {
@@ -175,8 +178,8 @@ pylith::faults::TestAdjustTopology::run(void) {
         } // for
         err = ISRestoreIndices(pointIS, &points);PYLITH_CHECK_ERROR(err);
         err = ISDestroy(&pointIS);PYLITH_CHECK_ERROR(err);
-        INFO("Could not find group '" << labelName << "'.");
-        assert(foundGroup);
+        INFO("Could not find mesh group '" << labelName << "' in test data.");
+        REQUIRE(foundGroup);
     } // for
 
 } // run
