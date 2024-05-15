@@ -31,9 +31,8 @@ mesh = {
     }
   }
 
-  group = {
+  vertex-group = {
     name = fault
-    type = vertices
     count = 3
     indices = {
       1
@@ -42,9 +41,8 @@ mesh = {
     }
   }
 
-  group = {
-    name = end points
-    type = vertices
+  vertex-group = {
+    name = endpoints
     count = 2
     indices = {
       0
@@ -52,9 +50,8 @@ mesh = {
     }
   }
 
-  group = {
-    name = edge 1
-    type = vertices
+  vertex-group = {
+    name = bc1_vertices
     count = 3
     indices = {
       0
@@ -63,13 +60,38 @@ mesh = {
     }
   }
 
-  group = {
-    name = edge 2
-    type = vertices
+  vertex-group = {
+    name = bc2_vertices
     count = 2
     indices = {
       1
       4
+    }
+  }
+
+  face-group = {
+    name = fault_faces
+    count = 2
+    indices = {
+      0   1 2
+      1   2 3
+    }
+  }
+
+  face-group = {
+    name = bc1
+    count = 2
+    indices = {
+      0  0 1
+      1  0 3
+    }
+  }
+
+  face-group = {
+    name = bc2
+    count = 1
+    indices = {
+      2   1 4
     }
   }
 }

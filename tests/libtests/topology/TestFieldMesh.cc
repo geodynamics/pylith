@@ -74,6 +74,9 @@ pylith::topology::TestFieldMesh::testConstructor(void) {
 void
 pylith::topology::TestFieldMesh::testCopyConstructor(void) {
     PYLITH_METHOD_BEGIN;
+    assert(_data);
+    assert(_data->geometry);
+    assert(_data->topology);
     assert(_mesh);
     assert(_field);
 
@@ -104,23 +107,25 @@ pylith::topology::TestFieldMesh::testCopyConstructor(void) {
         err = PetscSectionGetDof(section, v, &dof);assert(!err);
         CHECK(ndof == dof);
 
+        err = PetscSectionGetConstraintDof(section, v, &cdof);assert(!err);
+
         // Count number of expected constraints on vertex.
         PylithInt numConstraintsE = 0;
-        for (int i = 0; i < _data->bcANumVertices; ++i) {
-            const PylithInt vIndex = v - _data->numCells;
+        const PetscInt offset = _data->topology->numCells;
+        for (size_t i = 0; i < _data->bcANumVertices; ++i) {
+            const PylithInt vIndex = v - offset;
             if (_data->bcAVertices[i] == vIndex) {
                 numConstraintsE += _data->bcANumConstrainedDOF;
                 break;
             }
         } // for
-        for (int i = 0; i < _data->bcBNumVertices; ++i) {
-            const PylithInt vIndex = v - _data->numCells;
+        for (size_t i = 0; i < _data->bcBNumVertices; ++i) {
+            const PylithInt vIndex = v - offset;
             if (_data->bcBVertices[i] == vIndex) {
                 numConstraintsE += _data->bcBNumConstrainedDOF;
                 break;
             }
         } // for
-        err = PetscSectionGetConstraintDof(section, v, &cdof);assert(!err);
         CHECK(numConstraintsE == cdof);
     } // for
 
@@ -136,9 +141,10 @@ void
 pylith::topology::TestFieldMesh::testMesh(void) {
     PYLITH_METHOD_BEGIN;
     assert(_data);
+    assert(_data->topology);
     assert(_field);
 
-    CHECK(_data->cellDim == _field->getMesh().getDimension());
+    CHECK(_data->topology->dimension == size_t(_field->getMesh().getDimension()));
 
     PYLITH_METHOD_END;
 } // testMesh
@@ -150,6 +156,7 @@ void
 pylith::topology::TestFieldMesh::testGeneralAccessors(void) {
     PYLITH_METHOD_BEGIN;
     assert(_data);
+    assert(_data->topology);
     assert(_field);
 
     // Test getLabel()
@@ -162,7 +169,7 @@ pylith::topology::TestFieldMesh::testGeneralAccessors(void) {
     CHECK(label == std::string(name));
 
     // Test getSpaceDim()
-    CHECK(size_t(_data->cellDim) == _field->getSpaceDim());
+    CHECK(size_t(_data->topology->dimension) == _field->getSpaceDim());
 
     PYLITH_METHOD_END;
 } // testGeneralAccessors
@@ -174,11 +181,12 @@ void
 pylith::topology::TestFieldMesh::testSectionAccessors(void) {
     PYLITH_METHOD_BEGIN;
     assert(_data);
+    assert(_data->geometry);
     assert(_field);
 
     assert(_field->getChartSize() > 0); // vertices + edges + faces + cells
     const PylithInt ndof = _data->descriptionA.numComponents + _data->descriptionB.numComponents;
-    CHECK(_data->numVertices*ndof == _field->getStorageSize());
+    CHECK(_data->geometry->numVertices*ndof == size_t(_field->getStorageSize()));
 
     PYLITH_METHOD_END;
 } // testSectionAccessors
@@ -189,13 +197,16 @@ pylith::topology::TestFieldMesh::testSectionAccessors(void) {
 void
 pylith::topology::TestFieldMesh::testVectorAccessors(void) {
     PYLITH_METHOD_BEGIN;
+    assert(_data);
+    assert(_data->geometry);
+    assert(_data->topology);
     assert(_field);
 
     PetscErrorCode err;
     const char* name = NULL;
     PylithInt size = 0;
     const PylithInt ndof =
-        _data->numVertices * (_data->descriptionA.numComponents + _data->descriptionB.numComponents);
+        _data->geometry->numVertices * (_data->descriptionA.numComponents + _data->descriptionB.numComponents);
     const PylithInt ndofConstrained =
         _data->bcANumConstrainedDOF*_data->bcANumVertices + _data->bcBNumConstrainedDOF*_data->bcBNumVertices;
 
@@ -331,39 +342,23 @@ void
 pylith::topology::TestFieldMesh::_initialize(void) {
     PYLITH_METHOD_BEGIN;
     assert(_data);
-
-    const int cellDim = _data->cellDim;
-    const int numCells = _data->numCells;
-    const int numVertices = _data->numVertices;
-    const int numCorners = _data->numCorners;
-    const int spaceDim = _data->cellDim;
-
-    PylithInt size = numVertices * spaceDim;
-    scalar_array coordinates(size);
-    for (PylithInt i = 0; i < size; ++i) {
-        coordinates[i] = _data->coordinates[i];
-    } // for
-
-    size = numCells * numCorners;
-    int_array cells(size);
-    for (PylithInt i = 0; i < size; ++i) {
-        cells[i] = _data->cells[i];
-    } // for
+    assert(_data->geometry);
+    assert(_data->topology);
 
     delete _mesh;_mesh = new Mesh;assert(_mesh);
-    pylith::meshio::MeshBuilder::buildMesh(_mesh, &coordinates, numVertices, spaceDim, cells, numCells, numCorners,
-                                           cellDim);
+    pylith::meshio::MeshBuilder::buildMesh(_mesh, *_data->topology, *_data->geometry);
 
     spatialdata::geocoords::CSCart cs;
-    cs.setSpaceDim(spaceDim);
+    cs.setSpaceDim(_data->geometry->spaceDim);
     _mesh->setCoordSys(&cs);
 
-    // Setup labels for constraints.
-    int_array groupA(_data->bcAVertices, _data->bcANumVertices);
-    pylith::meshio::MeshBuilder::setGroup(_mesh, _data->bcALabel, pylith::meshio::MeshBuilder::VERTEX, groupA);
+    // Setup labels
+    pylith::meshio::MeshBuilder::shape_t faceShape = pylith::meshio::MeshBuilder::faceShapeFromCellShape(_data->topology->cellShape);
+    pylith::int_array faceValuesA(_data->bcAFaceValues, _data->bcAFaceValuesSize);
+    pylith::meshio::MeshBuilder::setFaceGroupFromCellVertices(_mesh, _data->bcALabel, faceValuesA, faceShape);
 
-    int_array groupB(_data->bcBVertices, _data->bcBNumVertices);
-    pylith::meshio::MeshBuilder::setGroup(_mesh, _data->bcBLabel, pylith::meshio::MeshBuilder::VERTEX, groupB);
+    pylith::int_array faceValuesB(_data->bcBFaceValues, _data->bcBFaceValuesSize);
+    pylith::meshio::MeshBuilder::setFaceGroupFromCellVertices(_mesh, _data->bcBLabel, faceValuesB, faceShape);
 
     // Setup field
     delete _field;_field = new Field(*_mesh);
@@ -423,7 +418,7 @@ pylith::topology::TestFieldMesh::_checkValues(const Field& field,
     assert(_data);
 
     // Create array of values in field from subfields.
-    const int numVertices = _data->numVertices;
+    const int numVertices = _data->geometry->numVertices;
     const int numComponentsA = _data->descriptionA.numComponents;
     const int numComponentsB = _data->descriptionB.numComponents;
     scalar_array valuesE(numVertices * (numComponentsA + numComponentsB));
@@ -466,7 +461,7 @@ pylith::topology::TestFieldMesh::_checkValues(const PetscVec& vec,
     assert(_data);
 
     // Create array of values in field from subfields.
-    const int numVertices = _data->numVertices;
+    const int numVertices = _data->geometry->numVertices;
     const int numComponentsA = _data->descriptionA.numComponents;
     const int numComponentsB = _data->descriptionB.numComponents;
     scalar_array valuesE(numVertices * (numComponentsA + numComponentsB));
@@ -500,18 +495,16 @@ pylith::topology::TestFieldMesh::_checkValues(const PetscVec& vec,
 // ------------------------------------------------------------------------------------------------
 // Constructor
 pylith::topology::TestFieldMesh_Data::TestFieldMesh_Data(void) :
-    cellDim(0),
-    numVertices(0),
-    numCells(0),
-    numCorners(0),
-    cells(NULL),
-    coordinates(NULL),
+    topology(NULL),
+    geometry(NULL),
 
     subfieldAValues(NULL),
     bcALabel(NULL),
     bcALabelId(0),
     bcANumConstrainedDOF(0),
     bcAConstrainedDOF(NULL),
+    bcAFaceValuesSize(0),
+    bcAFaceValues(NULL),
     bcANumVertices(0),
     bcAVertices(NULL),
 
@@ -520,14 +513,18 @@ pylith::topology::TestFieldMesh_Data::TestFieldMesh_Data(void) :
     bcBLabelId(0),
     bcBNumConstrainedDOF(0),
     bcBConstrainedDOF(NULL),
+    bcBFaceValuesSize(0),
+    bcBFaceValues(NULL),
     bcBNumVertices(0),
-    bcBVertices(NULL) { // constructor
-} // constructor
+    bcBVertices(NULL) {}
 
 
 // ------------------------------------------------------------------------------------------------
 // Destructor
-pylith::topology::TestFieldMesh_Data::~TestFieldMesh_Data(void) {}
+pylith::topology::TestFieldMesh_Data::~TestFieldMesh_Data(void) {
+    delete topology;topology = NULL;
+    delete geometry;geometry = NULL;
+}
 
 
 // End of file

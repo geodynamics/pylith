@@ -13,6 +13,8 @@
 
 #include "TestFieldMesh.hh" // Implementation of class methods
 
+#include "pylith/meshio/MeshBuilder.hh" // USES MeshBuilder
+
 #include "catch2/catch_test_macros.hpp"
 
 namespace pylith {
@@ -67,22 +69,25 @@ pylith::topology::TestFieldMesh_Data*
 pylith::topology::TestFieldMesh_Cases::Quad(void) {
     TestFieldMesh_Data* data = new TestFieldMesh_Data();assert(data);
 
-    // Mesh information.
-    data->cellDim = 2;
-    data->numVertices = 4;
-    data->numCells = 1;
-    data->numCorners = 4;
-    static const int _cells[1*4] = {
-        0, 1, 2, 3,
-    };
-    data->cells = const_cast<int*>(_cells);
-    static const PylithScalar _coordinates[4*2] = {
+    const size_t numVertices = 4;
+    const size_t spaceDim = 2;
+    const size_t cellDim = 2;
+    const size_t numCells = 1;
+    const size_t numCorners = 4;
+    const pylith::meshio::MeshBuilder::shape_t cellShape = pylith::meshio::MeshBuilder::QUADRILATERAL;
+
+    static const PylithScalar vertices[numVertices*spaceDim] = {
         0.0, 0.0,
         1.0, 0.0,
         0.0, 1.0,
         1.0, 1.0,
     };
-    data->coordinates = const_cast<PylithScalar*>(_coordinates);
+    delete data->geometry;data->geometry = new pylith::meshio::MeshBuilder::Geometry(numVertices, spaceDim, vertices);
+
+    static const PylithInt cells[numCells*numCorners] = {
+        0, 1, 3, 2,
+    };
+    delete data->topology;data->topology = new pylith::meshio::MeshBuilder::Topology(cellDim, numCells, numCorners, cellShape, cells);
 
     // Subfield A
     data->descriptionA.label = "displacement";
@@ -115,6 +120,9 @@ pylith::topology::TestFieldMesh_Cases::Quad(void) {
     data->bcANumVertices = 2;
     static const int _bcAVertices[2] = { 1, 3, };
     data->bcAVertices = const_cast<int*>(_bcAVertices);
+    data->bcAFaceValuesSize = 3;
+    static const int _bcAFaceValues[3] = { 0, 1, 3 };
+    data->bcAFaceValues = const_cast<int*>(_bcAFaceValues);
 
     // Subfield B
     data->descriptionB.label = "fluid_pressure";
@@ -146,6 +154,9 @@ pylith::topology::TestFieldMesh_Cases::Quad(void) {
     data->bcBNumVertices = 2;
     static const int _bcBVertices[2] = { 2, 3, };
     data->bcBVertices = const_cast<int*>(_bcBVertices);
+    data->bcBFaceValuesSize = 3;
+    static const int _bcBFaceValues[3] = { 0, 2, 3 };
+    data->bcBFaceValues = const_cast<int*>(_bcBFaceValues);
 
     return data;
 } // Quad

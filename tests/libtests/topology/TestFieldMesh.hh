@@ -15,6 +15,7 @@
 #include "pylith/utils/petscfwd.h" // forward declarations
 
 #include "pylith/topology/FieldBase.hh" // USES FieldBase::Description
+#include "pylith/meshio/MeshBuilder.hh" // USES MeshBuilder
 
 namespace pylith {
     namespace topology {
@@ -109,15 +110,8 @@ public:
     // PUBLIC MEMBERS //////////////////////////////////////////////////////////
 public:
 
-    /// @defgroup Domain mesh information.
-    /// @{
-    int cellDim; ///< Cell dimension (matches space dimension).
-    int numVertices; ///< Number of vertices.
-    int numCells; ///< Number of cells.
-    int numCorners; ///< Number of vertices per cell.
-    int* cells; ///< Array of vertices in cells [numCells*numCorners].
-    PylithScalar* coordinates; ///< Coordinates of vertices [numVertices*cellDim].
-    /// @}
+    pylith::meshio::MeshBuilder::Topology* topology; ///< Topology for domain mesh
+    pylith::meshio::MeshBuilder::Geometry* geometry; ///< Geometry for domain mesh
 
     /// @defgroup Subfield A information.
     /// @{
@@ -127,9 +121,11 @@ public:
 
     const char* bcALabel; ///< Label for boundary condition.
     int bcALabelId; ///< Label id for boundary condition.
-    int bcANumConstrainedDOF; ///< Number of constrained DOF for boundary condition.
+    size_t bcANumConstrainedDOF; ///< Number of constrained DOF for boundary condition.
     int* bcAConstrainedDOF; ///< Array of constrained DOF.
-    int bcANumVertices; ///< Number of vertices associated with boundary condition.
+    size_t bcAFaceValuesSize; ///< Number of face values (cell+vertices) associated with boundary condition.
+    int* bcAFaceValues; ///< Array of face values.
+    size_t bcANumVertices; ///< Number of vertices in boundary condition.
     int* bcAVertices; ///< Array of vertex indices.
     /// @}
 
@@ -141,9 +137,11 @@ public:
 
     const char* bcBLabel; ///< Label for boundary condition.
     int bcBLabelId; ///< Label id for boundary condition.
-    int bcBNumConstrainedDOF; ///< Number of constrained DOF for boundary condition.
+    size_t bcBNumConstrainedDOF; ///< Number of constrained DOF for boundary condition.
     int* bcBConstrainedDOF; ///< Array of constrained DOF.
-    int bcBNumVertices; ///< Number of vertices associated with boundary condition.
+    size_t bcBFaceValuesSize; ///< Number of vertices associated with boundary condition.
+    int* bcBFaceValues; ///< Array of face values.
+    size_t bcBNumVertices; ///< Number of vertices in boundary condition.
     int* bcBVertices; ///< Array of vertex indices.
     /// @}
 

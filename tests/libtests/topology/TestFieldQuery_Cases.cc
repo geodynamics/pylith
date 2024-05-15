@@ -183,22 +183,26 @@ pylith::topology::TestFieldQuery_Cases::Tri(void) {
     _setData2D(data);
 
     // Mesh information.
-    data->cellDim = 2;
-    data->numVertices = 4;
-    data->numCells = 2;
-    data->numCorners = 3;
-    static const int _cells[2*3] = {
-        0, 1, 2,
-        3, 2, 1,
-    };
-    data->cells = const_cast<int*>(_cells);
-    static const PylithScalar _coordinates[4*2] = {
+    const size_t numVertices = 4;
+    const size_t spaceDim = 2;
+    const size_t cellDim = 2;
+    const size_t numCells = 2;
+    const size_t numCorners = 3;
+    const pylith::meshio::MeshBuilder::shape_t cellShape = pylith::meshio::MeshBuilder::TRIANGLE;
+
+    static const PylithScalar vertices[numVertices*spaceDim] = {
         -1.0,  0.0,
         +1.0, -2.0,
         +0.8, +1.2,
         +3.0,  0.0,
     };
-    data->coordinates = const_cast<PylithScalar*>(_coordinates);
+    delete data->geometry;data->geometry = new pylith::meshio::MeshBuilder::Geometry(numVertices, spaceDim, vertices);
+
+    static const PylithInt cells[numCells*numCorners] = {
+        0, 1, 2,
+        3, 2, 1,
+    };
+    delete data->topology;data->topology = new pylith::meshio::MeshBuilder::Topology(cellDim, numCells, numCorners, cellShape, cells);
 
     return data;
 } // Tri
@@ -212,16 +216,14 @@ pylith::topology::TestFieldQuery_Cases::Quad(void) {
     _setData2D(data);
 
     // Mesh information.
-    data->cellDim = 2;
-    data->numVertices = 6;
-    data->numCells = 2;
-    data->numCorners = 4;
-    static const int _cells[2*4] = {
-        0, 1, 3, 2,
-        5, 3, 1, 4,
-    };
-    data->cells = const_cast<int*>(_cells);
-    static const PylithScalar _coordinates[6*2] = {
+    const size_t numVertices = 6;
+    const size_t spaceDim = 2;
+    const size_t cellDim = 2;
+    const size_t numCells = 2;
+    const size_t numCorners = 4;
+    const pylith::meshio::MeshBuilder::shape_t cellShape = pylith::meshio::MeshBuilder::QUADRILATERAL;
+
+    static const PylithScalar vertices[numVertices*spaceDim] = {
         0.0, 0.0,
         1.0, 0.0,
         0.0, 1.0,
@@ -229,7 +231,13 @@ pylith::topology::TestFieldQuery_Cases::Quad(void) {
         1.8, 0.4,
         1.9, 1.5,
     };
-    data->coordinates = const_cast<PylithScalar*>(_coordinates);
+    delete data->geometry;data->geometry = new pylith::meshio::MeshBuilder::Geometry(numVertices, spaceDim, vertices);
+
+    static const PylithInt cells[numCells*numCorners] = {
+        0, 1, 3, 2,
+        5, 3, 1, 4,
+    };
+    delete data->topology;data->topology = new pylith::meshio::MeshBuilder::Topology(cellDim, numCells, numCorners, cellShape, cells);
 
     return data;
 } // Quad
@@ -261,23 +269,27 @@ pylith::topology::TestFieldQuery_Cases::Tet(void) {
     _setData3D(data);
 
     // Mesh information.
-    data->cellDim = 3;
-    data->numVertices = 5;
-    data->numCells = 2;
-    data->numCorners = 4;
-    static const int _cells[2*4] = {
-        0, 1, 3, 4,
-        4, 1, 3, 2,
-    };
-    data->cells = const_cast<int*>(_cells);
-    static const PylithScalar _coordinates[5*3] = {
+    const size_t numVertices = 5;
+    const size_t spaceDim = 3;
+    const size_t cellDim = 3;
+    const size_t numCells = 2;
+    const size_t numCorners = 4;
+    const pylith::meshio::MeshBuilder::shape_t cellShape = pylith::meshio::MeshBuilder::TETRAHEDRON;
+
+    static const PylithScalar vertices[numVertices*spaceDim] = {
         -2.0,  0.0,  0.0,
         +0.0, -1.0,  0.0,
         +2.0,  0.0,  0.0,
         +0.0, +2.0,  0.0,
         +0.0, +1.0, +2.0,
     };
-    data->coordinates = const_cast<PylithScalar*>(_coordinates);
+    delete data->geometry;data->geometry = new pylith::meshio::MeshBuilder::Geometry(numVertices, spaceDim, vertices);
+
+    static const PylithInt cells[numCells*numCorners] = {
+        0, 1, 3, 4,
+        4, 1, 3, 2,
+    };
+    delete data->topology;data->topology = new pylith::meshio::MeshBuilder::Topology(cellDim, numCells, numCorners, cellShape, cells);
 
     return data;
 } // Tet
@@ -291,16 +303,14 @@ pylith::topology::TestFieldQuery_Cases::Hex(void) {
     _setData3D(data);
 
     // Mesh information.
-    data->cellDim = 3;
-    data->numVertices = 12;
-    data->numCells = 2;
-    data->numCorners = 8;
-    static const int _cells[2*8] = {
-        0,  3,  9,  6,  1,  4, 10,  7,
-        10, 11,  8,  7,  4,  5,  2,  1,
-    };
-    data->cells = const_cast<int*>(_cells);
-    static const PylithScalar _coordinates[12*3] = {
+    const size_t numVertices = 12;
+    const size_t spaceDim = 3;
+    const size_t cellDim = 3;
+    const size_t numCells = 2;
+    const size_t numCorners = 8;
+    const pylith::meshio::MeshBuilder::shape_t cellShape = pylith::meshio::MeshBuilder::HEXAHEDRON;
+
+    static const PylithScalar vertices[numVertices*spaceDim] = {
         +0.0, +0.0, +0.0,
         +0.0, +0.0, +2.0,
         +0.0, +0.0, +4.5,
@@ -314,7 +324,13 @@ pylith::topology::TestFieldQuery_Cases::Hex(void) {
         +2.1, +2.9, +2.0,
         +2.0, +3.0, +4.0,
     };
-    data->coordinates = const_cast<PylithScalar*>(_coordinates);
+    delete data->geometry;data->geometry = new pylith::meshio::MeshBuilder::Geometry(numVertices, spaceDim, vertices);
+
+    static const PylithInt cells[numCells*numCorners] = {
+        0,  3,  9,  6,  1,  4, 10,  7,
+        10, 11,  8,  7,  4,  5,  2,  1,
+    };
+    delete data->topology;data->topology = new pylith::meshio::MeshBuilder::Topology(cellDim, numCells, numCorners, cellShape, cells);
 
     return data;
 } // Hex
