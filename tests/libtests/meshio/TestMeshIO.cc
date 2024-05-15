@@ -126,15 +126,16 @@ pylith::meshio::TestMeshIO::_createMesh(void) {
     } // for
 
     // Face groups
+    const pylith::meshio::MeshBuilder::shape_t faceShape = pylith::meshio::MeshBuilder::faceShapeFromCellShape(_data->topology->cellShape);
+    const size_t numFaceVertices = pylith::meshio::MeshBuilder::getNumVerticesFace(faceShape);
     for (size_t iGroup = 0, index = 0; iGroup < _data->numFaceGroups; ++iGroup) {
-        const size_t numFaceVertices = _data->numFaceVertices;assert(numFaceVertices > 0);
         const size_t numFaces = _data->faceGroupSizes[iGroup];assert(numFaces > 0);
         const size_t totalSize = numFaces * (1 + numFaceVertices); // cell + vertices
         int_array faceValues(totalSize);
         for (size_t i = 0; i < totalSize; ++i, ++index) {
             faceValues[i] = _data->faceGroups[index];
         } // for
-        pylith::meshio::MeshBuilder::setFaceGroupFromCellVertices(_mesh, _data->faceGroupNames[iGroup], faceValues, numFaceVertices);
+        pylith::meshio::MeshBuilder::setFaceGroupFromCellVertices(_mesh, _data->faceGroupNames[iGroup], faceValues, faceShape);
     } // for
 
     // Set coordinate system
@@ -310,8 +311,8 @@ pylith::meshio::TestMeshIO_Data::TestMeshIO_Data(void) :
 // ----------------------------------------------------------------------
 // Destructor
 pylith::meshio::TestMeshIO_Data::~TestMeshIO_Data(void) {
-    delete topology;
-    delete geometry;
+    delete topology;topology = NULL;
+    delete geometry;geometry = NULL;
 }
 
 

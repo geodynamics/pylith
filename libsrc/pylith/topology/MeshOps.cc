@@ -151,7 +151,7 @@ pylith::topology::MeshOps::createSubdomainMesh(const pylith::topology::Mesh& mes
     err = DMPlexGetScale(dmDomain, PETSC_UNIT_LENGTH, &lengthScale);PYLITH_CHECK_ERROR(err);
     err = DMPlexSetScale(dmSubdomain, PETSC_UNIT_LENGTH, lengthScale);PYLITH_CHECK_ERROR(err);
 
-    pylith::topology::Mesh* submesh = new pylith::topology::Mesh(true);assert(submesh);
+    pylith::topology::Mesh* submesh = new pylith::topology::Mesh();assert(submesh);
     submesh->setCoordSys(mesh.getCoordSys());
     submesh->setDM(dmSubdomain, descriptiveLabel);
 
@@ -222,8 +222,8 @@ pylith::topology::MeshOps::createLowerDimMesh(const pylith::topology::Mesh& mesh
                 } // if
             } // if
             err = ISRestoreIndices(labelIS, &labelPoints);PYLITH_CHECK_ERROR(err);
-            err = ISDestroy(&labelIS);PYLITH_CHECK_ERROR(err);
         } // if
+        err = ISDestroy(&labelIS);PYLITH_CHECK_ERROR(err);
         err = MPI_Allreduce(&labelHasVerticesLocal, &labelHasVertices, 1, MPI_INT, MPI_MAX,
                             PetscObjectComm((PetscObject) dmDomain));PYLITH_CHECK_ERROR(err);
 
@@ -233,7 +233,7 @@ pylith::topology::MeshOps::createLowerDimMesh(const pylith::topology::Mesh& mesh
                     << "DEPRECATION: Creating lower dimension mesh from label with vertices. "
                     << "This feature will be removed in v6.0. "
                     << "In the future, you will need to mark boundaries not vertices for boundary conditions."
-                    << pythia::journal::endl; \
+                    << pythia::journal::endl;
         } // if
     } // TEMPORARY
 
@@ -264,7 +264,7 @@ pylith::topology::MeshOps::createLowerDimMesh(const pylith::topology::Mesh& mesh
         throw std::runtime_error(msg.str());
     } // if
 
-    // Set lengthscale
+    // Set length scale
     PylithScalar lengthScale;
     err = DMPlexGetScale(dmDomain, PETSC_UNIT_LENGTH, &lengthScale);PYLITH_CHECK_ERROR(err);
     err = DMPlexSetScale(dmSubmesh, PETSC_UNIT_LENGTH, lengthScale);PYLITH_CHECK_ERROR(err);

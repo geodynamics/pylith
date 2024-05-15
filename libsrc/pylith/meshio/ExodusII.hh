@@ -69,11 +69,13 @@ public:
     /** Check if file contains attribute.
      *
      * @param[in] name Name of attribute.
+     * @param[in] varName Name of variable or NULL for global attribute.
      * @param[out] Id of attribute if found, -1 otherwise.
      * @returns True if file contains attribute, false otherwise.
      */
-    bool hasAtt(const char* name,
-                int* id) const;
+    bool hasAttr(const char* name,
+                 const char* varName,
+                 int* id) const;
 
     /** Check if file contains variable.
      *
@@ -90,6 +92,16 @@ public:
      * @returns Value of dimension.
      */
     int getDim(const char* name) const;
+
+    /** Get string attribute.
+     *
+     * @param[out] value String.
+     * @param[in] varName Name of variable or NULL for global attribute.
+     * @param name Name of string attribute.
+     */
+    void getAttr(std::string* value,
+                 const char* varName,
+                 const char* name) const;
 
     /** Get values for variable as an array of PylithScalars.
      *

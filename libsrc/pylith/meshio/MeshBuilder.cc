@@ -157,7 +157,7 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
     PetscDM dmMesh = NULL;
     PetscBool interpolate = PETSC_TRUE;
     err = DMPlexCreateFromCellListPetsc(comm, dim, topology.numCells, geometry.numVertices, topology.numCorners, interpolate, &cellsCopy[0], dim, &geometry.vertices[0], &dmMesh);PYLITH_CHECK_ERROR(err);
-    mesh->setDM(dmMesh);
+    mesh->setDM(dmMesh, "domain");
 
     _MeshBuilder::Events::logger.eventEnd(_MeshBuilder::Events::buildMesh);
     PYLITH_METHOD_END;
@@ -265,11 +265,12 @@ void
 pylith::meshio::MeshBuilder::setFaceGroupFromCellVertices(pylith::topology::Mesh* mesh,
                                                           const char* name,
                                                           const int_array& faceValues,
-                                                          const size_t numFaceVertices,
+                                                          const shape_t faceShape,
                                                           const int labelValue) {
     PYLITH_METHOD_BEGIN;
     assert(mesh);
 
+    const size_t numFaceVertices = getNumVerticesFace(faceShape);
     size_t numFaceValues = 1 + numFaceVertices;
     assert(0 == faceValues.size() % numFaceValues);
     const size_t numFaces = faceValues.size() / numFaceValues;
@@ -413,6 +414,7 @@ pylith::meshio::MeshBuilder::getCells(Topology* topology,
         err = DMPlexInvertCell(ct, &topology->cells[index-numCorners]);PYLITH_CHECK_ERROR(err);
         assert(numCorners == topology->numCorners);
     } // for
+    err = ISRestoreIndices(globalVertexNumbers, &gvertex);PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // getCells
@@ -612,6 +614,24 @@ pylith::meshio::MeshBuilder::faceShapeFromCellShape(const shape_t cellShape) {
 } // faceShapeFromCellShape
 
 
+// ------------------------------------------------------------------------------------------------
+// Get number of face vertices given face shape.
+size_t
+pylith::meshio::MeshBuilder::getNumVerticesFace(const shape_t faceShape) {
+    size_t numVertices = 0;
+    switch (faceShape) {
+    case POINT: numVertices = 1;break;
+    case LINE: numVertices = 2;break;
+    case TRIANGLE: numVertices = 3;break;
+    case QUADRILATERAL: numVertices = 4;break;
+    default:
+        PYLITH_JOURNAL_LOGICERROR("Unknown face shape '" << faceShape << "'.");
+    } // switch
+
+    return numVertices;
+}
+
+
 // ----------------------------------------------------------------------
 // Get names of groups in mesh with points in given range.
 void
@@ -645,7 +665,7 @@ pylith::meshio::_MeshBuilder::getGroupNames(string_vector* names,
             PetscInt numLabelValues;
             PetscIS labelValuesIS = PETSC_NULLPTR;
             const PetscInt* labelValues = PETSC_NULLPTR;
-            err = DMLabelGetNumValues(dmLabel, &numLabelValues);PYLITH_CHECK_ERROR(err);// assert(1 == numLabelValues);
+            err = DMLabelGetNumValues(dmLabel, &numLabelValues);PYLITH_CHECK_ERROR(err); // assert(1 == numLabelValues);
             err = DMLabelGetValueIS(dmLabel, &labelValuesIS);PYLITH_CHECK_ERROR(err);assert(labelValuesIS);
             err = ISGetIndices(labelValuesIS, &labelValues);PYLITH_CHECK_ERROR(err);assert(labelValues);
             const PetscInt labelValue = labelValues[0];
@@ -716,12 +736,11 @@ pylith::meshio::_MeshBuilder::faceFromCellSide(PetscInt* face,
         break;
     } // triangle
     case DM_POLYTOPE_QUADRILATERAL: {
-        // Cubit uses shell sides, not quad sides.
-        // side: 2=bottom, 3=right, 4=top, 5=left
+        // side: 0=bottom, 1=right, 2=top, 3=left
         // face: 0=bottom, 1=right, 2=top, 3=left
         const int faceMapping[4] = { 0, 1, 2, 3 };
         assert(coneSize == 4);
-        coneIndex = faceMapping[side-2];
+        coneIndex = faceMapping[side];
         break;
     } // quadrilateral
     case DM_POLYTOPE_TETRAHEDRON: {

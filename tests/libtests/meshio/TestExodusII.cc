@@ -11,7 +11,7 @@
 #include <portinfo>
 #include <stdexcept>
 
-#include "TestExodusII.hh" // Implementation of class methods
+#include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
 #include "pylith/meshio/ExodusII.hh"
 
@@ -20,6 +20,91 @@
 
 #include "catch2/catch_test_macros.hpp"
 #include "catch2/matchers/catch_matchers_floating_point.hpp"
+
+namespace pylith {
+    namespace meshio {
+        class TestExodusII;
+    } // meshio
+} // pylith
+
+// ------------------------------------------------------------------------------------------------
+class pylith::meshio::TestExodusII : public pylith::utils::GenericComponent {
+    // PUBLIC METHODS /////////////////////////////////////////////////////
+public:
+
+    /// Test constructor
+    static
+    void testConstructor(void);
+
+    /// Test filename()
+    static
+    void testFilename(void);
+
+    /// Test open() and close().
+    static
+    void testOpenClose(void);
+
+    /// Test hasDim()
+    static
+    void testHasDim(void);
+
+    /// Test hasAttr()
+    static
+    void testHasAttr(void);
+
+    /// Test hasVar()
+    static
+    void testHasVar(void);
+
+    /// Test getAttr(string)
+    static
+    void testGetAttr(void);
+
+    /// Test getVar(PylithScalar*)
+    static
+    void testGetVarDouble(void);
+
+    /// Test getVar(int*)
+    static
+    void testGetVarInt(void);
+
+    /// Test getVar(string_vector)
+    static
+    void testGetVarString(void);
+
+}; // class TestExodusII
+
+// ------------------------------------------------------------------------------------------------
+TEST_CASE("TestExodusII::testConstructor", "[TestExodusII]") {
+    pylith::meshio::TestExodusII::testConstructor();
+}
+TEST_CASE("TestExodusII::testFilename", "[TestExodusII]") {
+    pylith::meshio::TestExodusII::testFilename();
+}
+TEST_CASE("TestExodusII::testOpenClose", "[TestExodusII]") {
+    pylith::meshio::TestExodusII::testOpenClose();
+}
+TEST_CASE("TestExodusII::testHasDim", "[TestExodusII]") {
+    pylith::meshio::TestExodusII::testHasDim();
+}
+TEST_CASE("TestExodusII::testHasAttr", "[TestExodusII]") {
+    pylith::meshio::TestExodusII::testHasAttr();
+}
+TEST_CASE("TestExodusII::testHasVar", "[TestExodusII]") {
+    pylith::meshio::TestExodusII::testHasVar();
+}
+TEST_CASE("TestExodusII::testGetAttr", "[TestExodusII]") {
+    pylith::meshio::TestExodusII::testGetAttr();
+}
+TEST_CASE("TestExodusII::testGetVarDouble", "[TestExodusII]") {
+    pylith::meshio::TestExodusII::testGetVarDouble();
+}
+TEST_CASE("TestExodusII::testGetVarInt", "[TestExodusII]") {
+    pylith::meshio::TestExodusII::testGetVarInt();
+}
+TEST_CASE("TestExodusII::testGetVarString", "[TestExodusII]") {
+    pylith::meshio::TestExodusII::testGetVarString();
+}
 
 // ------------------------------------------------------------------------------------------------
 // Test constructor
@@ -88,21 +173,40 @@ pylith::meshio::TestExodusII::testHasDim(void) {
 
 
 // ------------------------------------------------------------------------------------------------
-// Test hasAtt()
+// Test hasAttr()
 void
-pylith::meshio::TestExodusII::testHasAtt(void) {
+pylith::meshio::TestExodusII::testHasAttr(void) {
     PYLITH_METHOD_BEGIN;
 
     ExodusII exofile("data/twotri3_13.0.exo");
 
     int id = -1;
-    CHECK(exofile.hasAtt("version", &id));
+    CHECK(exofile.hasAttr("version", nullptr, &id));
     CHECK(id >= 0);
-    CHECK(!exofile.hasAtt("abcdefghijklm", &id));
+    CHECK(!exofile.hasAttr("abcdefghijklm", "connect1", &id));
     CHECK(-1 == id);
 
     PYLITH_METHOD_END;
-} // testHasAtt
+} // testHasAttr
+
+
+// ------------------------------------------------------------------------------------------------
+// Test getAttr()
+void
+pylith::meshio::TestExodusII::testGetAttr(void) {
+    PYLITH_METHOD_BEGIN;
+
+    ExodusII exofile("data/twotri3_13.0.exo");
+
+    std::string cellShape;
+    exofile.getAttr(&cellShape, "connect1", "elem_type");
+    CHECK(cellShape == std::string("TRI3"));
+
+    std::string missing;
+    CHECK_THROWS_AS(exofile.getAttr(&missing, nullptr, "aabbcc"), std::runtime_error);
+
+    PYLITH_METHOD_END;
+} // testGetAttr
 
 
 // ------------------------------------------------------------------------------------------------

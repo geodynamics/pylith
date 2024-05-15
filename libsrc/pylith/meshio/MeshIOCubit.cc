@@ -301,32 +301,32 @@ pylith::meshio::_MeshIOCubit::readCells(pylith::meshio::MeshBuilder::Topology* t
     materialIds->resize(topology->numCells);
     topology->numCorners = 0;
     for (int iMaterial = 0, index = 0; iMaterial < numMaterials; ++iMaterial) {
-        std::ostringstream varname;
-        varname << "num_nod_per_el" << iMaterial+1;
+        std::ostringstream varName;
+        varName << "num_nod_per_el" << iMaterial+1;
         if (0 == topology->numCorners) {
-            topology->numCorners = exoFile.getDim(varname.str().c_str());
+            topology->numCorners = exoFile.getDim(varName.str().c_str());
             const int size = (topology->numCells) * (topology->numCorners);
             topology->cells.resize(size);
-        } else if (size_t(exoFile.getDim(varname.str().c_str())) != topology->numCorners) {
+        } else if (size_t(exoFile.getDim(varName.str().c_str())) != topology->numCorners) {
             std::ostringstream msg;
             msg << "All materials must have the same number of vertices per cell.\n"
                 << "Expected " << topology->numCorners << " vertices per cell, but block "
                 << blockIds[iMaterial] << " has "
-                << exoFile.getDim(varname.str().c_str())
+                << exoFile.getDim(varName.str().c_str())
                 << " vertices.";
             throw std::runtime_error(msg.str());
         } // if
 
-        varname.str("");
-        varname << "num_el_in_blk" << iMaterial+1;
-        const int blockSize = exoFile.getDim(varname.str().c_str());
+        varName.str("");
+        varName << "num_el_in_blk" << iMaterial+1;
+        const int blockSize = exoFile.getDim(varName.str().c_str());
 
-        varname.str("");
-        varname << "connect" << iMaterial+1;
+        varName.str("");
+        varName << "connect" << iMaterial+1;
         ndims = 2;
         dims[0] = blockSize;
         dims[1] = topology->numCorners;
-        exoFile.getVar(&topology->cells[index* topology->numCorners], dims, ndims, varname.str().c_str());
+        exoFile.getVar(&topology->cells[index* topology->numCorners], dims, ndims, varName.str().c_str());
 
         for (int i = 0; i < blockSize; ++i) {
             (*materialIds)[index+i] = blockIds[iMaterial];
@@ -369,18 +369,18 @@ pylith::meshio::MeshIOCubit::_readNodeSets(ExodusII& exoFile) {
     exoFile.getVar(&groupNames, numGroups, "ns_names");
 
     for (int iGroup = 0; iGroup < numGroups; ++iGroup) {
-        std::ostringstream varname;
-        varname << "num_nod_ns" << iGroup+1;
-        const size_t nodesetSize = exoFile.getDim(varname.str().c_str());
+        std::ostringstream varName;
+        varName << "num_nod_ns" << iGroup+1;
+        const size_t nodesetSize = exoFile.getDim(varName.str().c_str());
         int_array points(nodesetSize);
 
-        varname.str("");
-        varname << "node_ns" << iGroup+1;
+        varName.str("");
+        varName << "node_ns" << iGroup+1;
         ndims = 1;
         dims[0] = nodesetSize;
 
         PYLITH_COMPONENT_INFO_ROOT("Reading node set '" << groupNames[iGroup] << "' with id " << ids[iGroup] << " containing " << nodesetSize << " nodes.");
-        exoFile.getVar(&points[0], dims, ndims, varname.str().c_str());
+        exoFile.getVar(&points[0], dims, ndims, varName.str().c_str());
 
         std::sort(&points[0], &points[0]+nodesetSize);
         points -= 1; // use zero index
@@ -409,6 +409,16 @@ pylith::meshio::MeshIOCubit::_readSideSets(ExodusII& exoFile) {
         PYLITH_METHOD_END;
     } // if
 
+    // Need cell shape to interpret sides
+    const char* varName = "connect1"; // :KLUDGE: Assume uniform cell type
+    const char* attrName = "elem_type";
+    std::string shapeName;
+    exoFile.getAttr(&shapeName, varName, attrName);
+    int sideOffset = -1; // 1-based to 0-based index
+    if ((shapeName == std::string("SHELL")) || (shapeName == std::string("SHELL4"))) {
+        sideOffset -= 2; // 6 sides and start at 3 instead of 1
+    } // if
+
     int_array ids(numGroups);
     int ndims = 1;
     int dims[2];
@@ -420,32 +430,32 @@ pylith::meshio::MeshIOCubit::_readSideSets(ExodusII& exoFile) {
     exoFile.getVar(&groupNames, numGroups, "ss_names");
 
     for (int iGroup = 0; iGroup < numGroups; ++iGroup) {
-        std::ostringstream varname;
-        varname << "num_side_ss" << iGroup+1;
-        const size_t sideSetSize = exoFile.getDim(varname.str().c_str());
+        std::ostringstream varName;
+        varName << "num_side_ss" << iGroup+1;
+        const size_t sideSetSize = exoFile.getDim(varName.str().c_str());
         int_array ioBuffer(sideSetSize);
         int_array points(2*sideSetSize);
 
         PYLITH_COMPONENT_INFO_ROOT("Reading side set '" << groupNames[iGroup] << "' with id " << ids[iGroup] << " containing " << sideSetSize << " faces.");
 
         // Read cells
-        varname.str("");
-        varname << "elem_ss" << iGroup+1;
+        varName.str("");
+        varName << "elem_ss" << iGroup+1;
         ndims = 1;
         dims[0] = sideSetSize;
-        exoFile.getVar(&ioBuffer[0], dims, ndims, varname.str().c_str());
+        exoFile.getVar(&ioBuffer[0], dims, ndims, varName.str().c_str());
         ioBuffer -= 1; // use zero index
         for (size_t i = 0; i < sideSetSize; ++i) {
             points[2*i+0] = ioBuffer[i];
         } // for
 
         // Read cell sides
-        varname.str("");
-        varname << "side_ss" << iGroup+1;
+        varName.str("");
+        varName << "side_ss" << iGroup+1;
         ndims = 1;
         dims[0] = sideSetSize;
-        exoFile.getVar(&ioBuffer[0], dims, ndims, varname.str().c_str());
-        ioBuffer -= 1; // use zero index
+        exoFile.getVar(&ioBuffer[0], dims, ndims, varName.str().c_str());
+        ioBuffer += sideOffset;
         for (size_t i = 0; i < sideSetSize; ++i) {
             points[2*i+1] = ioBuffer[i];
         } // for

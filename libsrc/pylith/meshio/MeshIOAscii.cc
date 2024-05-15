@@ -118,13 +118,6 @@ namespace pylith {
                                 const pylith::meshio::MeshBuilder::shape_t faceShape,
                                 const char* name);
 
-            /** Get number of face vertices given face shape.
-             *
-             * @returns Number of face vertices.
-             * @param[in] faceShape Face shape.
-             */
-            size_t getNumVerticesFace(const pylith::meshio::MeshBuilder::shape_t faceShape);
-
         } // _MeshIOAscii
     } // meshio
 } // pylith
@@ -257,9 +250,8 @@ pylith::meshio::MeshIOAscii::_read(void) {
                     std::string name;
                     int_array faceValues;
                     pylith::meshio::MeshBuilder::shape_t faceShape = pylith::meshio::MeshBuilder::faceShapeFromCellShape(topology.cellShape);
-                    const size_t numFaceVertices = _MeshIOAscii::getNumVerticesFace(faceShape);
                     _MeshIOAscii::readFaceGroup(&faceValues, &name, parser, faceShape, _useIndexZero);
-                    pylith::meshio::MeshBuilder::setFaceGroupFromCellVertices(_mesh, name.c_str(), faceValues, numFaceVertices);
+                    pylith::meshio::MeshBuilder::setFaceGroupFromCellVertices(_mesh, name.c_str(), faceValues, faceShape);
                 } else {
                     std::ostringstream msg;
                     msg << "Could not parse '" << token << "' into a mesh setting.";
@@ -684,7 +676,7 @@ pylith::meshio::_MeshIOAscii::readFaceGroup(int_array* faceValues,
     assert(faceValues);
     assert(name);
 
-    const size_t numFaceValues = 1 + _MeshIOAscii::getNumVerticesFace(faceShape);
+    const size_t numFaceValues = 1 + pylith::meshio::MeshBuilder::getNumVerticesFace(faceShape);
 
     std::string token;
     std::istringstream buffer;
@@ -755,7 +747,7 @@ pylith::meshio::_MeshIOAscii::writeFaceGroup(std::ostream& fileout,
                                              const char* name) {
     PYLITH_METHOD_BEGIN;
 
-    const size_t numFaceValues = 1 + _MeshIOAscii::getNumVerticesFace(faceShape);
+    const size_t numFaceValues = 1 + pylith::meshio::MeshBuilder::getNumVerticesFace(faceShape);
     assert(0 == faceValues.size() % numFaceValues);
     const size_t numFaces = faceValues.size() / numFaceValues;
 
@@ -778,24 +770,6 @@ pylith::meshio::_MeshIOAscii::writeFaceGroup(std::ostream& fileout,
 
     PYLITH_METHOD_END;
 } // writeFaceGroup
-
-
-// ------------------------------------------------------------------------------------------------
-// Get number of face vertices given face shape.
-size_t
-pylith::meshio::_MeshIOAscii::getNumVerticesFace(const pylith::meshio::MeshBuilder::shape_t faceShape) {
-    size_t numVertices = 0;
-    switch (faceShape) {
-    case pylith::meshio::MeshBuilder::POINT: numVertices = 1;break;
-    case pylith::meshio::MeshBuilder::LINE: numVertices = 2;break;
-    case pylith::meshio::MeshBuilder::TRIANGLE: numVertices = 3;break;
-    case pylith::meshio::MeshBuilder::QUADRILATERAL: numVertices = 4;break;
-    default:
-        PYLITH_JOURNAL_LOGICERROR("Unknown face shape '" << faceShape << "'.");
-    } // switch
-
-    return numVertices;
-}
 
 
 // End of file

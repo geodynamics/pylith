@@ -75,8 +75,8 @@ pylith::meshio::TestMeshIOAscii_Cases::Quad2D(void) {
     data->filename = "quad.mesh";
     const size_t numVertices = 9;
     const size_t spaceDim = 2;
-    const size_t numCells = 3;
     const size_t cellDim = 2;
+    const size_t numCells = 3;
     const size_t numCorners = 4;
     const pylith::meshio::MeshBuilder::shape_t cellShape = pylith::meshio::MeshBuilder::QUADRILATERAL;
 

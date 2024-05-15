@@ -143,34 +143,40 @@ pylith::meshio::ExodusII::hasDim(const char* name,
 // ----------------------------------------------------------------------
 // Check if Cubit Exodus file constains attribute.
 bool
-pylith::meshio::ExodusII::hasAtt(const char* name,
-                                 int* id) const { // hasAtt
+pylith::meshio::ExodusII::hasAttr(const char* name,
+                                  const char* varName,
+                                  int* id) const {
     PYLITH_METHOD_BEGIN;
 
     assert(_file);
 
     bool found = false;
+    if (id) {
+        *id = -1; // Not found
+    } // if
 
-    int i = -1;
-    int err = nc_inq_attid(_file, NC_GLOBAL, name, &i);
-    if (err == NC_NOERR) {
+    int varId = -1;
+    if (varName && !hasVar(varName, &varId)) {
+        PYLITH_METHOD_RETURN(found);
+    } // if
+
+    int attrId = -1;
+    if (NC_NOERR == nc_inq_attid(_file, varId, name, &attrId)) {
         found = true;
         if (id) {
-            *id = i;
+            *id = attrId;
         } // if
-    } else if (id) {
-        *id = -1;
-    } // if/else
+    } // if
 
     PYLITH_METHOD_RETURN(found);
-} // hasAtt
+} // hasAttr
 
 
 // ----------------------------------------------------------------------
 // Check if Cubit Exodus file constains variable.
 bool
 pylith::meshio::ExodusII::hasVar(const char* name,
-                                 int* id) const { // hasVar
+                                 int* id) const {
     PYLITH_METHOD_BEGIN;
 
     assert(_file);
@@ -217,6 +223,56 @@ pylith::meshio::ExodusII::getDim(const char* name) const { // getDim
 
     PYLITH_METHOD_RETURN(dimSize);
 } // getDim
+
+
+// ----------------------------------------------------------------------
+// Get string attribute.
+void
+pylith::meshio::ExodusII::getAttr(std::string* value,
+                                  const char* varName,
+                                  const char* name) const {
+    PYLITH_METHOD_BEGIN;
+
+    assert(_file);
+    assert(value);
+
+    int varId = NC_GLOBAL;
+    if (varName && !hasVar(varName, &varId)) {
+        std::ostringstream msg;
+        msg << "Could not find variable '" << varName << "' to get string attribute '" << name << "'.";
+        throw std::runtime_error(msg.str());
+    } // if
+    assert(!varName || varId >= 0);
+
+    int attrId = -1;
+    if (!hasAttr(name, varName, &attrId)) {
+        std::ostringstream msg;
+        msg << "Missing string attribute '" << name << "'.";
+        throw std::runtime_error(msg.str());
+    } // if
+
+    int err = NC_NOERR;
+    size_t stringLen = 0;
+    err = nc_inq_attlen(_file, varId, name, &stringLen);
+    if (NC_NOERR != err) {
+        std::ostringstream msg;
+        msg << "Could not get length of string attribute '" << name << "' for variable '" << varName << "'.";
+        throw std::runtime_error(msg.str());
+    } // if
+    char* cValue = stringLen > 0 ? new char[stringLen+1] : nullptr;
+    if (cValue) {
+        err = nc_get_att_text(_file, varId, name, cValue);
+        if (err != NC_NOERR) {
+            std::ostringstream msg;
+            msg << "Could not read string attribute '" << name << "' for variable '" << varName << "'.";
+            throw std::runtime_error(msg.str());
+        } // if
+        *value = cValue;
+        delete[] cValue;cValue = nullptr;
+    } // if
+
+    PYLITH_METHOD_END;
+} // getAttr
 
 
 // ----------------------------------------------------------------------
