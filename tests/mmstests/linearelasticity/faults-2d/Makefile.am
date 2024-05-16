@@ -49,9 +49,7 @@ dist_noinst_HEADERS = \
 
 dist_noinst_DATA = \
 	data/tri.mesh \
-	data/quad.mesh \
-	data/tet.mesh \
-	data/hex.mesh
+	data/quad.mesh
 
 
 export_datadir = $(abs_builddir)

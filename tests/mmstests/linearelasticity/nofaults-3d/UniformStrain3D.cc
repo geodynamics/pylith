@@ -194,7 +194,7 @@ pylith::TestLinearElasticity_Data*
 pylith::UniformStrain3D::TetP1(void) {
     TestLinearElasticity_Data* data = pylith::_UniformStrain3D::createData();assert(data);
 
-    data->meshFilename = "data/tet.mesh";
+    data->meshFilename = "data/tet.msh";
 
     data->numSolnSubfields = 1;
     static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
@@ -212,7 +212,6 @@ pylith::UniformStrain3D::TetP2(void) {
     TestLinearElasticity_Data* data = pylith::_UniformStrain3D::createData();assert(data);
 
     data->meshFilename = "data/tet.msh";
-    data->useAsciiMesh = false;
 
     static const pylith::topology::Field::Discretization _auxDiscretizations[3] = {
         pylith::topology::Field::Discretization(0, 2), // density
@@ -236,7 +235,7 @@ pylith::TestLinearElasticity_Data*
 pylith::UniformStrain3D::TetP3(void) {
     TestLinearElasticity_Data* data = pylith::_UniformStrain3D::createData();assert(data);
 
-    data->meshFilename = "data/tet.mesh";
+    data->meshFilename = "data/tet.msh";
 
     static const pylith::topology::Field::Discretization _auxDiscretizations[3] = {
         pylith::topology::Field::Discretization(0, 3), // density
@@ -260,7 +259,7 @@ pylith::TestLinearElasticity_Data*
 pylith::UniformStrain3D::TetP4(void) {
     TestLinearElasticity_Data* data = pylith::_UniformStrain3D::createData();assert(data);
 
-    data->meshFilename = "data/tet.mesh";
+    data->meshFilename = "data/tet.msh";
 
     static const pylith::topology::Field::Discretization _auxDiscretizations[3] = {
         pylith::topology::Field::Discretization(0, 4), // density
@@ -285,7 +284,6 @@ pylith::UniformStrain3D::HexQ1(void) {
     TestLinearElasticity_Data* data = pylith::_UniformStrain3D::createData();assert(data);
 
     data->meshFilename = "data/hex.msh";
-    data->useAsciiMesh = false;
 
     data->numSolnSubfields = 1;
     static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
@@ -302,7 +300,7 @@ pylith::TestLinearElasticity_Data*
 pylith::UniformStrain3D::HexQ2(void) {
     TestLinearElasticity_Data* data = pylith::_UniformStrain3D::createData();assert(data);
 
-    data->meshFilename = "data/hex.mesh";
+    data->meshFilename = "data/hex.msh";
 
     static const pylith::topology::Field::Discretization _auxDiscretizations[3] = {
         pylith::topology::Field::Discretization(0, 2), // density
@@ -327,7 +325,6 @@ pylith::UniformStrain3D::HexQ3(void) {
     TestLinearElasticity_Data* data = pylith::_UniformStrain3D::createData();assert(data);
 
     data->meshFilename = "data/hex.msh";
-    data->useAsciiMesh = false;
 
     static const pylith::topology::Field::Discretization _auxDiscretizations[3] = {
         pylith::topology::Field::Discretization(0, 3), // density
@@ -351,7 +348,7 @@ pylith::TestLinearElasticity_Data*
 pylith::UniformStrain3D::HexQ4(void) {
     TestLinearElasticity_Data* data = pylith::_UniformStrain3D::createData();assert(data);
 
-    data->meshFilename = "data/hex.mesh";
+    data->meshFilename = "data/hex.msh";
 
     static const pylith::topology::Field::Discretization _auxDiscretizations[3] = {
         pylith::topology::Field::Discretization(0, 4), // density

@@ -46,9 +46,7 @@ dist_noinst_HEADERS = \
 
 
 dist_noinst_DATA = \
-	data/tet.mesh \
 	data/tet.msh \
-	data/hex.mesh \
 	data/hex.msh
 
 noinst_TMP =

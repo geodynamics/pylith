@@ -224,7 +224,7 @@ pylith::TestLinearElasticity_Data*
 pylith::GravityRefState3D::TetP1(void) {
     TestLinearElasticity_Data* data = pylith::_GravityRefState3D::createData();assert(data);
 
-    data->meshFilename = "data/tet.mesh";
+    data->meshFilename = "data/tet.msh";
 
     data->numSolnSubfields = 1;
     static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
@@ -252,7 +252,6 @@ pylith::GravityRefState3D::TetP2(void) {
     TestLinearElasticity_Data* data = pylith::_GravityRefState3D::createData();assert(data);
 
     data->meshFilename = "data/tet.msh";
-    data->useAsciiMesh = false;
 
     data->numSolnSubfields = 1;
     static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
@@ -279,7 +278,7 @@ pylith::TestLinearElasticity_Data*
 pylith::GravityRefState3D::TetP3(void) {
     TestLinearElasticity_Data* data = pylith::_GravityRefState3D::createData();assert(data);
 
-    data->meshFilename = "data/tet.mesh";
+    data->meshFilename = "data/tet.msh";
 
     data->numSolnSubfields = 1;
     static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
@@ -307,7 +306,6 @@ pylith::GravityRefState3D::HexQ1(void) {
     TestLinearElasticity_Data* data = pylith::_GravityRefState3D::createData();assert(data);
 
     data->meshFilename = "data/hex.msh";
-    data->useAsciiMesh = false;
 
     data->numSolnSubfields = 1;
     static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
@@ -334,7 +332,7 @@ pylith::TestLinearElasticity_Data*
 pylith::GravityRefState3D::HexQ2(void) {
     TestLinearElasticity_Data* data = pylith::_GravityRefState3D::createData();assert(data);
 
-    data->meshFilename = "data/hex.mesh";
+    data->meshFilename = "data/hex.msh";
 
     data->numSolnSubfields = 1;
     static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
@@ -361,7 +359,7 @@ pylith::TestLinearElasticity_Data*
 pylith::GravityRefState3D::HexQ3(void) {
     TestLinearElasticity_Data* data = pylith::_GravityRefState3D::createData();assert(data);
 
-    data->meshFilename = "data/hex.mesh";
+    data->meshFilename = "data/hex.msh";
 
     data->numSolnSubfields = 1;
     static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {

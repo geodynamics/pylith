@@ -1,7 +1,7 @@
 #!/usr/bin/env nemesis
 
 import gmsh
-from pylith.meshio.gmsh_utils import (VertexGroup, MaterialGroup, GenerateMesh)
+from pylith.meshio.gmsh_utils import (BoundaryGroup, MaterialGroup, GenerateMesh)
 
 class App(GenerateMesh):
     """
@@ -37,10 +37,10 @@ class App(GenerateMesh):
         for material in materials:
             material.create_physical_group()
 
-        vertex_groups = (
-            VertexGroup(name="boundary", tag=1, dim=2, entities=self.boundaries),
+        boundary_groups = (
+            BoundaryGroup(name="boundary", tag=1, dim=2, entities=self.boundaries),
         )
-        for group in vertex_groups:
+        for group in boundary_groups:
             group.create_physical_group()
 
     def generate_mesh(self, cell):

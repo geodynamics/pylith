@@ -67,52 +67,101 @@ mesh = {
             17   15
     }
   }
-  group = {
-    type = vertices
-    name = boundary_xpos
+  vertex-group = {
+    name = vertices_xpos
     count = 4
     indices = {
       12 13 14 15
     }
   }
-  group = {
-    type = vertices
-    name = boundary_xneg
+  vertex-group = {
+    name = vertices_xneg
     count = 4
     indices = {
       0  1  2  3
     }
   }
-  group = {
-    type = vertices
-    name = boundary_ypos
+  vertex-group = {
+    name = vertices_ypos
     count = 4
     indices = {
       3  7 11 15
     }
   }
-  group = {
-    type = vertices
-    name = boundary_yneg
+  vertex-group = {
+    name = vertices_yneg
     count = 4
     indices = {
       0  4  8 12
     }
   }
-  group = {
-    type = vertices
+  vertex-group = {
     name = fault_xneg
     count = 4
     indices = {
       4  5  6  7
     }
   }  
-  group = {
-    type = vertices
+  vertex-group = {
     name = fault_xpos
     count = 4
     indices = {
       8  9 10 11
+    }
+  }  
+
+  face-group = {
+    name = boundary_xpos
+    count = 3
+    indices = {
+      13   12 13
+      16   13 14
+      15   14 15
+    }
+  }
+  face-group = {
+    name = boundary_xneg
+    count = 3
+    indices = {
+      0   0  1
+      3   1  2
+      4   2  3
+    }
+  }
+  face-group = {
+    name = boundary_ypos
+    count = 3
+    indices = {
+      4    3   7
+      11   7  11
+      15  11  15
+    }
+  }
+  face-group = {
+    name = boundary_yneg
+    count = 3
+    indices = {
+      0    0  4
+      6    4  8
+      13   8 12
+    }
+  }
+  face-group = {
+    name = fault_xneg_faces
+    count = 3
+    indices = {
+      1    4  5
+      2    5  6
+      5    6  7
+    }
+  }  
+  face-group = {
+    name = fault_xpos_faces
+    count = 3
+    indices = {
+      7     8  9
+      8     9 10
+      11   10 11
     }
   }  
 }

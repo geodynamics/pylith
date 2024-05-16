@@ -91,6 +91,7 @@ pylith::meshio::MeshIO::read(pylith::topology::Mesh* mesh,
     pythia::journal::debug_t debug(PyreComponent::getName());
     if (debug.state()) {
         _mesh->view("::ascii_info_detail");
+        _mesh->view(":mesh.tex:ascii_latex");
     } // if
     // Respond to PETSc diagnostic output
     err = DMViewFromOptions(_mesh->getDM(), NULL, "-pylith_dm_view");PYLITH_CHECK_ERROR(err);

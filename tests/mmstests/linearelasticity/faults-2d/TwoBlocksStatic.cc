@@ -288,7 +288,7 @@ public:
         { // xpos
             pylith::faults::FaultCohesiveKin* fault = new pylith::faults::FaultCohesiveKin();
             fault->setCohesiveLabelValue(100);
-            fault->setSurfaceLabelName("fault_xpos");
+            fault->setSurfaceLabelName("fault_xpos_faces");
 
             const int numRuptures = 1;
             const char* ruptureNames[1] = { "rupture" };
