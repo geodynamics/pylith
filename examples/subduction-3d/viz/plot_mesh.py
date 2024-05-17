@@ -28,7 +28,8 @@ DEFAULTS = {
     "SHOW_NODESETS": True,
     "SHOW_QUALITY": True,
     "QUALITY_METRIC": "Condition",
-    "QUALITY_THRESHOLD": 2.0,
+    "QUALITY_LOWER_THRESHOLD": 2.0,
+    "QUALITY_UPPER_THRESHOLD": 1.0e3,
     }
 
 # ----------------------------------------------------------------------
@@ -95,7 +96,9 @@ def plot_quality(dataDomain, parameters):
     # Threshold
     threshold = Threshold(Input=quality)
     threshold.Scalars = ['CELLS', 'Quality']
-    threshold.ThresholdRange = [parameters.quality_threshold, 1.0e+3]
+    threshold.LowerThreshold = parameters.quality_lower_threshold
+    threshold.UpperThreshold = parameters.quality_upper_threshold
+    threshold.ThresholdMethod = 'Between'
 
     thresholdDisplay = Show(threshold, view)
     thresholdDisplay.Representation = 'Surface'
@@ -150,7 +153,7 @@ class Parameters(object):
     """Object for managing default values and overriding them from the
     current Python shell.
     """
-    keys = ("EXODUS_FILE", "SHOW_NODESETS", "SHOW_QUALITY", "QUALITY_METRIC", "QUALITY_THRESHOLD",)
+    keys = ("EXODUS_FILE", "SHOW_NODESETS", "SHOW_QUALITY", "QUALITY_METRIC", "QUALITY_LOWER_THRESHOLD", "QUALITY_UPPER_THRESHOLD")
     
     def __init__(self):
         globalVars = globals()
@@ -172,7 +175,8 @@ if __name__ == "__main__":
     parser.add_argument("--hide-nodesets", action="store_false", dest="show_nodesets", default=DEFAULTS["SHOW_NODESETS"])
     parser.add_argument("--hide-quality", action="store_false", dest="show_quality", default=DEFAULTS["SHOW_QUALITY"])
     parser.add_argument("--quality-metric", action="store", dest="quality_metric", default=DEFAULTS["QUALITY_METRIC"])
-    parser.add_argument("--quality-threshold", action="store", type=float, dest="quality_threshold", default=DEFAULTS["QUALITY_THRESHOLD"])
+    parser.add_argument("--quality-lower-threshold", action="store", type=float, dest="quality_lower_threshold", default=DEFAULTS["QUALITY_LOWER_THRESHOLD"])
+    parser.add_argument("--quality-upper-threshold", action="store", type=float, dest="quality_upper_threshold", default=DEFAULTS["QUALITY_UPPER_THRESHOLD"])
     parser.add_argument("--screenshot", action="store", dest="screenshot")
     args = parser.parse_args()
 

@@ -76,7 +76,7 @@ def visualize(parameters):
     
     # Add arrows to show displacement vectors.
     glyph = Glyph(Input=groupFaults, GlyphType="Arrow")
-    glyph.Vectors = ["POINTS", parameters.field]
+    glyph.OrientationArray = ["POINTS", parameters.field]
     glyph.GlyphMode = "All Points"
 
     glyphDisplay = Show(glyph, view)

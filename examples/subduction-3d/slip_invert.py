@@ -25,7 +25,6 @@
 import math
 import numpy
 import sys
-import os
 from pythia.pyre.units.angle import degree
 import h5py
 
@@ -155,18 +154,15 @@ class SlipInvert(Application):
         s = h5py.File(self.slipOutputFile, 'w')
 
         # Write fault mesh and time info.
-        summaryInfo = numpy.zeros((self.numPenaltyWeights, self.numSummaryCols),
-                                  dtype=numpy.float64)
+        summaryInfo = numpy.zeros((self.numPenaltyWeights, self.numSummaryCols), dtype=numpy.float64)
         cellDimF = 2
         timesF = self.penaltyWeights.reshape(self.numPenaltyWeights, 1, 1)
         vertsF = s.create_dataset('geometry/vertices', data=self.faultVertCoords)
         timesF = s.create_dataset('time', data=timesF, maxshape=(None, 1, 1))
         topoF = s.create_dataset('viz/topology/cells', data=self.faultCells, dtype='d')
         topoF.attrs['cell_dim'] = numpy.int64(cellDimF)
-        slipVec = numpy.zeros((self.numPenaltyWeights, self.numFaultVerts, 3),
-                              dtype=numpy.float64)
-        slipAlongRake = numpy.zeros((self.numPenaltyWeights, self.numFaultVerts, 1),
-                                    dtype=numpy.float64)
+        slipVec = numpy.zeros((self.numPenaltyWeights, self.numFaultVerts, 3), dtype=numpy.float64)
+        slipAlongRake = numpy.zeros((self.numPenaltyWeights, self.numFaultVerts, 1), dtype=numpy.float64)
 
         # Write data mesh and time info.
         cellDimD = 0
@@ -231,8 +227,7 @@ class SlipInvert(Application):
             slipAlongRake[invNum, self.impulseInds, 0] = solution
             slipVec[invNum, self.impulseInds, 0] = self.llComp * solution
             slipVec[invNum, self.impulseInds, 1] = self.udComp * solution
-            predictedDisp[invNum,:,:] = predicted.reshape(self.numDataPoints, 3,
-                                                            order='F')
+            predictedDisp[invNum,:,:] = predicted.reshape(self.numDataPoints, 3, order='F')
 
             print("    Data residual:              %e" % dataResidualNorm)
             print("    Weighted data residual:     %e" % dataWeightResidualNorm)
@@ -242,8 +237,7 @@ class SlipInvert(Application):
             print("    Weighted total residual:    %e" % totalWeightResidualNorm)
             sys.stdout.flush()
 
-        numpy.savetxt(self.resultSummaryFile, summaryInfo, delimiter='\t',
-                      header=self.summaryHead)
+        numpy.savetxt(self.resultSummaryFile, summaryInfo, delimiter='\t', header=self.summaryHead)
 
         # Write results to HDF5 files.
         rakeSlip = s.create_dataset('vertex_fields/rake_slip', data=slipAlongRake)
@@ -274,10 +268,9 @@ class SlipInvert(Application):
         impulsesLl = h5py.File(self.gfImpulsesLlFile, 'r')
         self.faultVertCoords = impulsesLl['geometry/vertices'][:]
         self.numFaultVerts = self.faultVertCoords.shape[0]
-        self.faultCells = numpy.array(impulsesLl['viz/topology/cells'][:],
-                                      dtype=numpy.int64)
+        self.faultCells = numpy.array(impulsesLl['viz/topology/cells'][:], dtype=numpy.int64)
         self.numFaultCells = self.faultCells.shape[0]
-        llSlip = impulsesLl['vertex_fields/slip'][:,:, 0]
+        llSlip = impulsesLl['vertex_fields/slip'][:,:, 1]
         llImpInds = numpy.nonzero(llSlip != 0.0)
         self.impulseCoords = self.faultVertCoords[llImpInds[1]]
         self.numImpulses = self.impulseCoords.shape[0]
@@ -285,21 +278,19 @@ class SlipInvert(Application):
         print("    Number of fault vertices:     %d" % self.numFaultVerts)
         print("    Number of impulses:           %d" % self.numImpulses)
 
-        (distances, self.impulseInds) = self.matchCoords(self.faultVertCoords,
-                                                         self.impulseCoords)
+        (distances, self.impulseInds) = self.matchCoords(self.faultVertCoords, self.impulseCoords)
         impulsesLl.close()
 
         print("  Reading updip impulses:")
         sys.stdout.flush()
         impulsesUd = h5py.File(self.gfImpulsesUdFile, 'r')
         udCoords = impulsesUd['geometry/vertices'][:]
-        udSlip = impulsesUd['vertex_fields/slip'][:,:, 1]
+        udSlip = impulsesUd['vertex_fields/slip'][:,:, 2]
         udImpInds = numpy.nonzero(udSlip != 0.0)
         numUdImpulses = udImpInds[0].shape[0]
         udCoordsUsed = udCoords[udImpInds[1]]
         udSlipUsed = udSlip[udImpInds[0], udImpInds[1]]
-        (distances, udCoordInds) = self.matchCoords(udCoordsUsed,
-                                                    self.impulseCoords)
+        (distances, udCoordInds) = self.matchCoords(udCoordsUsed, self.impulseCoords)
         udCoordsUsed = udCoordsUsed[udCoordInds,:]
         impulsesUd.close()
 
@@ -310,8 +301,7 @@ class SlipInvert(Application):
         llResponseCoords = responseLl['geometry/vertices'][:]
         llResponseVals = responseLl['vertex_fields/displacement'][:]
 
-        (distances, llDataInds) = self.matchCoords(llResponseCoords,
-                                                   self.dataCoords)
+        (distances, llDataInds) = self.matchCoords(llResponseCoords, self.dataCoords)
         llResponsesEast = llResponseVals[:, llDataInds, 0]
         llResponsesNorth = llResponseVals[:, llDataInds, 1]
         llResponsesUp = llResponseVals[:, llDataInds, 2]
@@ -324,8 +314,7 @@ class SlipInvert(Application):
         responseUdVals = responseUd['vertex_fields/displacement'][:]
         udResponseVals = responseUdVals[udCoordInds,:,:]
 
-        (distances, udDataInds) = self.matchCoords(udResponseCoords,
-                                                   self.dataCoords)
+        (distances, udDataInds) = self.matchCoords(udResponseCoords, self.dataCoords)
         udResponsesEast = udResponseVals[:, udDataInds, 0]
         udResponsesNorth = udResponseVals[:, udDataInds, 1]
         udResponsesUp = udResponseVals[:, udDataInds, 2]
@@ -337,28 +326,22 @@ class SlipInvert(Application):
         nE = self.numDataPoints
         nN = self.numDataPoints
         nU = self.numDataPoints
-        self.design = numpy.zeros((self.numDesignRows, self.numImpulses),
-                                  dtype=numpy.float64)
-        self.design[0:nE,:] = numpy.transpose(self.llComp * llResponsesEast +
-                                               self.udComp * udResponsesEast)
-        self.design[nE:nE + nN,:] = numpy.transpose(
-            self.llComp * llResponsesNorth + self.udComp * udResponsesNorth)
-        self.design[nE + nN:nE + nN + nU,:] = numpy.transpose(
-            self.llComp * llResponsesUp + self.udComp * udResponsesUp)
+        self.design = numpy.zeros((self.numDesignRows, self.numImpulses), dtype=numpy.float64)
+        self.design[0:nE,:] = numpy.transpose(self.llComp * llResponsesEast + self.udComp * udResponsesEast)
+        self.design[nE:nE + nN,:] = numpy.transpose(self.llComp * llResponsesNorth + self.udComp * udResponsesNorth)
+        self.design[nE + nN:nE + nN + nU,:] = numpy.transpose(self.llComp * llResponsesUp + self.udComp * udResponsesUp)
 
         return
 
     def matchCoords(self, coordsRef, coords):
         """Function to provide indices that match the given set of coordinates to a
         reference set.
-        """
 
+        This is a lot easier if you have scipy.
+        import scipy
+        tree = scipy.spatial.cKDTree(coordsRef)
+        (distances, inds) = tree.query(coords)
         """
-    This is a lot easier if you have scipy.
-    import scipy
-    tree = scipy.spatial.cKDTree(coordsRef)
-    (distances, inds) = tree.query(coords)
-    """
 
         diff = coordsRef[:,:, None] - coords[:,:, None].transpose()
         dist = numpy.linalg.norm(diff, axis=1)

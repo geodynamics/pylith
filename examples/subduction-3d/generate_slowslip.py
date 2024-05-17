@@ -130,11 +130,11 @@ class GenerateSlowslip(Application):
         self.lat = numpy.linspace(latMin, latMax, num=numLat, dtype=numpy.float64)
         self.z = numpy.zeros(1, dtype=numpy.float64)
 
-        lonGrid, latGrid = numpy.meshgrid(self.lon, self.lat)
-        zGrid = numpy.zeros_like(lonGrid)
+        latGrid, lonGrid = numpy.meshgrid(self.lat, self.lon)
+        zGrid = numpy.zeros_like(latGrid)
         self.grid = numpy.column_stack((
-            lonGrid.flatten(),
             latGrid.flatten(),
+            lonGrid.flatten(),
             zGrid.flatten(),
         ))
 
@@ -142,8 +142,8 @@ class GenerateSlowslip(Application):
         """Function to compute 2D Gaussian slip distribution.
         """
 
-        lonShift = self.grid[:, 0] - float(self.slipCenter[0])
-        latShift = self.grid[:, 1] - float(self.slipCenter[1])
+        latShift = self.grid[:, 0] - float(self.slipCenter[0])
+        lonShift = self.grid[:, 1] - float(self.slipCenter[1])
 
         distance = numpy.sqrt(lonShift * lonShift + latShift * latShift)
         outside = numpy.where(distance > self.slipRadius)
@@ -167,28 +167,33 @@ class GenerateSlowslip(Application):
     def _writeSpatialdb(self):
         """Write spatial database with fault slip.
         """
-        llSlipInfo = {'name': "left-lateral-slip",
+        initTime = numpy.zeros_like(self.faultSlip[:,0])
+        llSlipInfo = {'name': "final_slip_left_lateral",
                       'units': "m",
                       'data': self.faultSlip[:, 0]}
 
-        udSlipInfo = {'name': "reverse-slip",
+        udSlipInfo = {'name': "final_slip_reverse",
                       'units': "m",
                       'data': self.faultSlip[:, 1]}
 
-        openInfo = {'name': "fault-opening",
+        openInfo = {'name': "final_slip_opening",
                     'units': "m",
                     'data': self.faultSlip[:, 2]}
 
-        data = {'num-x': self.lon.shape[0],
-                'num-y': self.lat.shape[0],
+        initTimeInfo = {'name': "initiation_time",
+                        'units': "day",
+                        'data': initTime}
+
+        data = {'num-x': self.lat.shape[0],
+                'num-y': self.lon.shape[0],
                 'num-z': 1,
                 'points': self.grid,
-                'x': self.lon,
-                'y': self.lat,
+                'x': self.lat,
+                'y': self.lon,
                 'z': self.z,
                 'coordsys': self.coordsys,
                 'data_dim': 2,
-                'values': [llSlipInfo, udSlipInfo, openInfo]}
+                'values': [llSlipInfo, udSlipInfo, openInfo, initTimeInfo]}
 
         writer = createWriter(self.dbFilename)
         writer.write(data)

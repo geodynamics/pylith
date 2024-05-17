@@ -77,9 +77,9 @@ def visualize(parameters):
 
     # Add arrows to show vectors.
     glyph = Glyph(Input=dataDomain, GlyphType="Arrow")
-    glyph.Vectors = ["POINTS", parameters.field]
+    glyph.OrientationArray = ["POINTS", parameters.field]
+    glyph.ScaleArray = ["POINTS", parameters.field]
     glyph.ScaleFactor = parameters.vector_scale
-    glyph.ScaleMode = "vector"
     glyph.GlyphMode = "All Points"
     glyph.GlyphType.TipRadius = 0.2
     glyph.GlyphType.ShaftRadius = 0.05

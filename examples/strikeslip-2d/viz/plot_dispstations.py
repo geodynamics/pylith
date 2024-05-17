@@ -29,7 +29,7 @@ OUTPUT_DIR = os.path.join(os.environ["HOME"], "src", "pylith", "examples", "stri
 
 DEFAULTS = {
     "OUTPUT_DIR": "output",
-    "SIM": "step01_slip",
+    "SIM": "step04_varslip",
     "GLYPH_SCALE": 50.0e+3,
     "FIELD": "displacement",
     "TIMESTEP": 0,  # Use 0 for first, -1 for last.

@@ -1,0 +1,38 @@
+// This spatial database specifies the distribution of material
+// properties as well as the reference stress and strain values.
+// Although the elastic properties are different (but constant)
+// within each material, we assume a constant density equal to the
+// crustal density to compute the reference stress.
+#SPATIAL.ascii 1
+SimpleDB {
+  num-values = 15 // number of material property values
+  value-names =  density vs vp reference_stress_xx reference_stress_yy reference_stress_zz reference_stress_xy reference_stress_yz reference_stress_xz reference_strain_xx reference_strain_yy reference_strain_zz reference_strain_xy reference_strain_yz reference_strain_xz
+  value-units =  kg/m**3  km/s  km/s Pa Pa Pa Pa Pa Pa none none none none none none // units
+  num-locs = 2 // number of locations
+  data-dim = 1
+  space-dim = 3
+  cs-data = geographic {
+    crs-string = +proj=tmerc +datum=WGS84 +lon_0=-122.6765 +lat_0=45.5231 +k=0.9996 +units=km +vunits=km
+  } // cs-data
+}
+// Columns are
+// (1) x coordinate (km)
+// (2) y coordinate (km)
+// (3) z coordinate (km)
+// (4) density (kg/m^3)
+// (5) vs (km/s)
+// (6) vp (km/s)
+// (7) reference_stress_xx (Pa)
+// (8) reference_stress_yy (Pa)
+// (9) reference_stress_zz (Pa)
+// (10) reference_stress_xy (Pa)
+// (11) reference_stress_yz (Pa)
+// (12) reference_stress_xz (Pa)
+// (13) reference_strain_xx (none)
+// (14) reference_strain_yy (none)
+// (15) reference_strain_zz (none)
+// (16) reference_strain_xy (none)
+// (17) reference_strain_yz (none)
+// (18) reference_strain_xz(none)
+0.0  0.0     0.0   3400.0  4.5  8.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0
+0.0  0.0  -402.0   3400.0  4.5  8.0  -1.18268199e10  -1.18268199e10  -1.18268199e10  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0
