@@ -207,9 +207,9 @@ pylith::topology::MeshOps::createLowerDimMesh(const pylith::topology::Mesh& mesh
         PetscIS labelIS = NULL;
         const PetscInt* labelPoints = NULL;
         PetscInt numPoints = 0;
-        err = DMGetStratumIS(dmDomain, labelName, 1, &labelIS);PYLITH_CHECK_ERROR(err);
+        err = DMGetStratumIS(dmDomain, labelName, labelValue, &labelIS);PYLITH_CHECK_ERROR(err);assert(labelIS);
         err = ISGetIndices(labelIS, &labelPoints);PYLITH_CHECK_ERROR(err);
-        err = DMGetStratumSize(dmDomain, labelName, 1, &numPoints);PYLITH_CHECK_ERROR(err);
+        err = DMGetStratumSize(dmDomain, labelName, labelValue, &numPoints);PYLITH_CHECK_ERROR(err);
 
         topology::Stratum verticesStratum(dmDomain, topology::Stratum::DEPTH, 0);
         const PetscInt vStart = verticesStratum.begin();
