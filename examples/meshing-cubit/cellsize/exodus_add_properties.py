@@ -49,7 +49,7 @@ def getCellSizeDB(points):
     db.open()
     db.setQueryValues(["vs"])
     data = numpy.zeros((npoints, 1), dtype=numpy.float64)
-    err = numpy.zeros((npoints,), dtype=numpy.int64)
+    err = numpy.zeros((npoints,), dtype=numpy.int32)
     db.multiquery(data, err, points, cs)
     db.close()
 
@@ -81,7 +81,14 @@ def getCellSizeFn(points):
 # ----------------------------------------------------------------------
 # Get coordinates of points from ExodusII file.
 exodus = netCDF4.Dataset(filenameExodus, 'a')
-points = exodus.variables['coord'][:].transpose()
+try:
+    x = exodus.variables['coordx'][:]
+    y = exodus.variables['coordy'][:]
+    z = exodus.variables['coordz'][:]
+    points = numpy.column_stack((x,y,z))
+except:
+    points = exodus.variables['coord'][:].transpose()
+
 cellSizeDB = getCellSizeDB(points)
 cellSizeFn = getCellSizeFn(points)
 
@@ -94,15 +101,18 @@ if not 'num_nod_var' in exodus.dimensions.keys():
     name_nod_var[0,:] = netCDF4.stringtoarr("cell_size_db", 33)
     name_nod_var[1,:] = netCDF4.stringtoarr("cell_size_fn", 33)
 
-    vals_nod_var = exodus.createVariable('vals_nod_var', numpy.float64,
-                                         ('time_step', 'num_nod_var', 'num_nodes',))
+    vals_nod_var1 = exodus.createVariable('vals_nod_var1', numpy.float64,
+                                          ('time_step', 'num_nodes',))
+    vals_nod_var2 = exodus.createVariable('vals_nod_var2', numpy.float64,
+                                          ('time_step', 'num_nodes',))
 
 
 time_whole = exodus.variables['time_whole']
 time_whole[0] = 0.0
-vals_nod_var = exodus.variables['vals_nod_var']
-vals_nod_var[0, 0,:] = cellSizeDB.transpose()
-vals_nod_var[0, 1,:] = cellSizeFn.transpose()
+vals_nod_var1 = exodus.variables['vals_nod_var1']
+vals_nod_var2 = exodus.variables['vals_nod_var2']
+vals_nod_var1[0, :] = cellSizeDB.transpose()
+vals_nod_var2[0, :] = cellSizeFn.transpose()
 
 exodus.close()
 
