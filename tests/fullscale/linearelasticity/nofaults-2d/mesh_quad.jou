@@ -18,6 +18,8 @@ mesh surface all
 # Mark entities for boundary conditions, etc.
 # ----------------------------------------------------------------------
 playback 'bc.jou'
+# Set element type to quad (4 sides) instead of shell4 (6 sides) default
+block all element type quad
 
 # ----------------------------------------------------------------------
 # Export exodus file

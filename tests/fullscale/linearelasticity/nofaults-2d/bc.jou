@@ -8,52 +8,67 @@ block 2 surface 3
 block 2 name "elastic_xpos"
 
 # ----------------------------------------------------------------------
-# Create nodeset for faults
-# ----------------------------------------------------------------------
-group "fault_x" add node in curve 5
-nodeset 10 group fault_x
-nodeset 10 name "fault_x"
-
-group "fault_x2" add node in curve 10
-nodeset 11 group fault_x2
-nodeset 11 name "fault_x2"
-
-# ----------------------------------------------------------------------
 # Create nodeset for +x edge
 # ----------------------------------------------------------------------
-group "boundary_xpos" add node in curve 3
-nodeset 20 group boundary_xpos
-nodeset 20 name "boundary_xpos"
+group "vertices_xpos" add node in curve 3
+nodeset 120 group vertices_xpos
+nodeset 120 name "vertices_xpos"
 
 # ----------------------------------------------------------------------
 # Create nodeset for -x edge
 # ----------------------------------------------------------------------
-group "boundary_xneg" add node in curve 1
-nodeset 21 group boundary_xneg
-nodeset 21 name "boundary_xneg"
+group "vertices_xneg" add node in curve 1
+nodeset 121 group vertices_xneg
+nodeset 121 name "vertices_xneg"
 
 # ----------------------------------------------------------------------
 # Create nodeset for +y edge
 # ----------------------------------------------------------------------
-group "boundary_ypos" add node in curve  8
-group "boundary_ypos" add node in curve 11
-group "boundary_ypos" add node in curve 14
-nodeset 22 group boundary_ypos
-nodeset 22 name "boundary_ypos"
+group "vertices_ypos" add node in curve  8
+group "vertices_ypos" add node in curve 11
+group "vertices_ypos" add node in curve 14
+nodeset 122 group vertices_ypos
+nodeset 122 name "vertices_ypos"
 
 # ----------------------------------------------------------------------
 # Create nodeset for -y edge
 # ----------------------------------------------------------------------
-group "boundary_yneg" add node in curve  9
-group "boundary_yneg" add node in curve 12
-group "boundary_yneg" add node in curve 13
-nodeset 23 group boundary_yneg
-nodeset 23 name "boundary_yneg"
+group "vertices_yneg" add node in curve  9
+group "vertices_yneg" add node in curve 12
+group "vertices_yneg" add node in curve 13
+nodeset 123 group vertices_yneg
+nodeset 123 name "vertices_yneg"
+
+
 
 # ----------------------------------------------------------------------
-# Create nodeset for -y edge w/o overlap with fault
+# Create sideset for +x edge
 # ----------------------------------------------------------------------
-group "boundary_yneg_nofault" add node in boundary_yneg
-group "boundary_yneg_nofault" remove node in fault_x
-nodeset 24 group boundary_yneg_nofault
-nodeset 24 name "boundary_yneg_nofault"
+group "boundary_xpos" add curve 3
+sideset 20 group boundary_xpos
+sideset 20 name "boundary_xpos"
+
+# ----------------------------------------------------------------------
+# Create sideset for -x edge
+# ----------------------------------------------------------------------
+group "boundary_xneg" add curve 1
+sideset 21 group boundary_xneg
+sideset 21 name "boundary_xneg"
+
+# ----------------------------------------------------------------------
+# Create sideset for +y edge
+# ----------------------------------------------------------------------
+group "boundary_ypos" add curve  8
+group "boundary_ypos" add curve 11
+group "boundary_ypos" add curve 14
+sideset 22 group boundary_ypos
+sideset 22 name "boundary_ypos"
+
+# ----------------------------------------------------------------------
+# Create sideset for -y edge
+# ----------------------------------------------------------------------
+group "boundary_yneg" add curve  9
+group "boundary_yneg" add curve 12
+group "boundary_yneg" add curve 13
+sideset 23 group boundary_yneg
+sideset 23 name "boundary_yneg"
