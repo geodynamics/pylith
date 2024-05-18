@@ -79,6 +79,7 @@ pylith::topology::RefineUniform::refine(Mesh* const newMesh,
 
         err = DMDestroy(&dmCur);PYLITH_CHECK_ERROR(err);
     } // for
+    err = DMPlexReorderCohesiveSupports(dmNew);PYLITH_CHECK_ERROR(err);
 
     newMesh->setDM(dmNew);
 
