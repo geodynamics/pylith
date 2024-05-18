@@ -10,17 +10,13 @@
 
 dist_noinst_PYTHON = \
 	generate_gmsh.py \
+	generate_cubit.py \
 	generate_gnssstations.py \
 	invert_slip.py
 
 dist_noinst_DATA = \
 	README.md \
 	mesh_tri.msh \
-	geometry.jou \
-	mesh_tri.jou \
-	mesh_quad.jou \
-	gradient.jou \
-	createbc.jou \
 	mesh_tri.exo \
 	mesh_quad.exo \
 	pylithapp.cfg \
