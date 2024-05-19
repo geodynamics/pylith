@@ -15,17 +15,21 @@ The names of the verties and curves match the ones we use in the Cubit journal f
 
 ## Meshing using Python Script
 
-We use Cubit journal files `mesh_tri.jou`  and `mesh_quad.jou` to generate triangular and quadrilateral meshes, respectively.
-Both of these journal files make use of the `geometry.jou`, `gradient.jou`, and `createbc.jou` files for creating the geometry, setting the discretization size, and tagging boundary conditions, faults, and materials, respectively.
-We use the Cubit graphical user interface to play the Journal files.
+We use the Python script `generate_cubit.py` to generate the mesh.
+The Python script is setup so that it can be run from within Cubit or as a standalone Python script without the Cubit GUI interface.
+In this example, we will run the script from within Cubit using the Journal editor.
+
+Open the Python script `generate_cubit.py` in the Cubit journal editor.
+Play the selected script or play the lines, making sure you play the first line so that Cubit uses the Python interpreter when running the script.
+We specify the parameters controlling the geometry, mesh size, and cell shape near the top of the script.
 
 We create a brick, extracting a midsurface from it, and then splitting the remaining surface with an extended fault and a splay surface.
-We then assign names to the surfaces, curves, and important vertices that we use when we specify the mesh sizing information and defining blocks and nodesets.
+We assign names to the surfaces, curves, and important vertices that we use when we specify the mesh sizing information and defining blocks and nodesets.
 
 :::{important}
 We use IDless journaling in CUBIT.
-This allows us to reference objects in a manner that should be independent of the version of CUBIT that is being used.
-In the journal files, the original command used is typically commented out, and the following command is the equivalent IDless command.
+This allows us to reference objects in a manner that should be independent of the version of Cubit that is being used.
+In the Python script the original command used is typically commented out, and the following command is the equivalent IDless command.
 :::
 
 :::{important}
@@ -41,7 +45,7 @@ For this simple geometry, it required less than 10 lines of Python code in Gmsh 
 In Gmsh the code is very general and remains the same even as the domain geometry becomes more complex, whereas in Cubit the number of commands increases quickly as the geometry becomes more complex.
 :::
 
-Once you have run either the `mesh_tri.jou` or `mesh_quad.jou` journal file to construct the geometry and generate the mesh, you will have a corresponding Exodus-II file (`mesh_tri.exo` or `mesh_quad.exo`).
+Once you have run the Python script to construct the geometry and generate the mesh, you will have a corresponding Exodus-II file (`mesh_tri.exo` or `mesh_quad.exo`).
 These are NetCDF files, and they can be loaded into ParaView.
 This can be done by either running ParaView and loading the file, or using the script provided in the viz directory.
 For example, if ParaView is in your path, you can run the
