@@ -13,7 +13,7 @@ Geometry created in Cubit for generating the finite-element mesh.
 The names of the verties and curves match the ones we use in the Cubit journal files.
 :::
 
-## Meshing using Journal Scripts
+## Meshing using Python Script
 
 We use Cubit journal files `mesh_tri.jou`  and `mesh_quad.jou` to generate triangular and quadrilateral meshes, respectively.
 Both of these journal files make use of the `geometry.jou`, `gradient.jou`, and `createbc.jou` files for creating the geometry, setting the discretization size, and tagging boundary conditions, faults, and materials, respectively.
