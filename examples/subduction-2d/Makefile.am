@@ -9,6 +9,11 @@
 # =================================================================================================
 
 
+dist_noinst_PYTHON = \
+	generate_gmsh.py \
+	generate_cubit.py
+
+
 dist_noinst_DATA = \
 	README.md \
 	pylithapp.cfg \
@@ -18,11 +23,7 @@ dist_noinst_DATA = \
 	step04_afterslip.cfg \
 	step05_eqcycleslipweakening.cfg \
 	step06_eqcycleratestate.cfg \
-	geometry.jou \
-	generate_gmsh.py \
 	mesh_tri.msh \
-	createbc.jou \
-	mesh_tri.jou \
 	mesh_tri.exo \
 	fault_coseismic.spatialdb \
 	fault_slabtop_creep.spatialdb \

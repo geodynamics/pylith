@@ -13,14 +13,11 @@ Geometry created in Cubit for generating the finite-element mesh.
 The names of the verties and curves match the ones we use in the Cubit journal files.
 :::
 
-## Meshing using Journal Scripts
+## Meshing using Python script
 
-We use Cubit journal files `mesh_tri.jou`  and `mesh_quad.jou` to generate triangular and quadrilateral meshes, respectively.
-Both of these journal files make use of the `geometry.jou`, `gradient.jou`, and `createbc.jou` files for creating the geometry, setting the discretization size, and tagging boundary conditions, faults, and materials, respectively.
-We use the Cubit graphical user interface to play the Journal files.
-
-We create a brick, extracting a midsurface from it, and then splitting the remaining surface with an extended fault and a splay surface.
-We then assign names to the surfaces, curves, and important vertices that we use when we specify the mesh sizing information and defining blocks and nodesets.
+We use the Python script `generate_cubit.py` to generate the mesh.
+The Python script is setup so that it can be run from within Cubit or as a standalone Python script without the Cubit GUI interface.
+In this example, we will run the script from within Cubit using the Journal editor.
 
 :::{warning}
 In this example we do not use IDless journaling in Cubit.
@@ -29,7 +26,7 @@ The differences are most likely to occur when we split curves.
 For example, the section of the curve labeled `c_topo` might be labeled `c_topo@A` in your version with similar permutations for other curve sections.
 :::
 
-Once you have run the `mesh_tri.jou` journal file to construct the geometry and generate the mesh, you will have a Exodus-II file (`mesh_tri.exo`).
+Once you have run the Python script to construct the geometry and generate the mesh, you will have a Exodus-II file (`mesh_tri.exo`).
 These are NetCDF files, and they can be loaded into ParaView.
 This can be done by either running ParaView and loading the file, or using the script provided in the viz directory.
 For example, if ParaView is in your path, you can run the
