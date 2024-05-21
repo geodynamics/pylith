@@ -1,22 +1,33 @@
 # Cubit Mesh
 
-## Geometry
+## Overview
 
-We can create the geometry directly from the brick primitive in Cubit.
+We create the geometry, set the mesh parameters, generate the mesh, mark the materials and boundaries, and then write the mesh to a file.
 
-## Meshing using Journal Scripts
+## Meshing using Python Script
 
-We use Cubit journal files `mesh_tet.jou`  and `mesh_hex.jou` to generate tetrahedral and hexahedral meshes, respectively.
-Both of these journal files make use of the `geometry.jou`, and `bc.jou` files for creating the geometry and tagging boundary conditions and materials.
-We use the Cubit graphical user interface to play the Journal files.
-
-:::{important}
-We use IDless journaling in CUBIT.
-This allows us to reference objects in a manner that should be independent of the version of CUBIT that is being used.
-In the journal files, the original command used is typically commented out, and the following command is the equivalent IDless command.
+:::{note}
+New in v4.1.0
 :::
 
-Once you have run either the `mesh_tet.jou` or `mesh_hex.jou` journal file to construct the geometry and generate the mesh, you will have a corresponding Exodus-II file (`mesh_tet.exo` or `mesh_hex.exo`).
+We use the Python script `generate_cubit.py` to generate the mesh.
+The Python script is setup so that it can be run from within Cubit or as a standalone Python script without the Cubit GUI interface.
+In this example, we will run the script from within Cubit using the Journal editor.
+
+Open the Python script `generate_cubit.py` in the Cubit journal editor.
+Play the selected script or play the lines, making sure you play the first line so that Cubit uses the Python interpreter when running the script.
+We specify the parameters controlling the geometry, mesh size, and cell shape near the top of the script.
+
+:::{important}
+The numbering of geometric entities, such as points, curves, and surfaces can depend upon the version of the ACIS geometry library used in Cubit.
+Strategies to make scripts independent of the version of the ACIS geometry library being used include:
+1. Use a variable to store the geometry `id`.
+2. Use "idless" scripts that refer to entities by location rather than `id`. Refer to the Cubit documentation for more informaiton.
+3. Name entities when they are created to minimize use of the entity `id` in scripts.
+We often make use of all three of these methods.
+:::
+
+Once you have run the Python script to construct the geometry and generate the mesh, you will have a corresponding Exodus-II file (`mesh_tet.exo` or `mesh_hex.exo`).
 These are NetCDF files, and they can be loaded into ParaView.
 This can be done by either running ParaView and loading the file, or using the script provided in the viz directory.
 For example, if ParaView is in your path, you can run the following command:

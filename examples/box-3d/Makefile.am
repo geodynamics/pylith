@@ -9,19 +9,16 @@
 # =================================================================================================
 
 dist_noinst_PYTHON = \
-	generate_gmsh.py
+	generate_gmsh.py \
+	generate_cubit.py
 
 
 dist_noinst_DATA = \
 	README.md \
 	mesh_tet.msh \
 	mesh_hex.msh \
-	geometry.jou \
-	bc.jou \
 	mesh_hex.exo \
-	mesh_hex.jou \
 	mesh_tet.exo \
-	mesh_tet.jou \
 	pylithapp.cfg \
 	step01_axialdisp.cfg \
 	step02_sheardisp.cfg \

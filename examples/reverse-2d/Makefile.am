@@ -9,19 +9,15 @@
 # =================================================================================================
 
 dist_noinst_PYTHON = \
-	generate_gmsh.py
+	generate_gmsh.py \
+	generate_cubit.py
 
 
 dist_noinst_DATA = \
 	README.md \
 	mesh_tri.msh \
-	geometry.jou \
-	gradient.jou \
-	createbc.jou \
-	mesh_quad.jou \
 	mesh_quad.exo \
 	mesh_tri.exo \
-	mesh_tri.jou \
 	pylithapp.cfg \
 	step01_gravity.cfg \
 	step02_gravity_refstate.cfg \
