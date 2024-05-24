@@ -1,0 +1,20 @@
+// Spatial database for spatially variable slip on fault 'west'.
+// We specify the slip with points in latitude and longitude in the WGS84 datum (EPSG:4326).
+#SPATIAL.ascii 1
+SimpleDB {
+  num-values = 3
+  value-names =  initiation_time  final_slip_left_lateral  final_slip_opening
+  value-units =  s   m   m
+  num-locs = 5
+  data-dim = 1
+  space-dim = 2
+  cs-data = geographic {
+    crs-string = EPSG:4326
+    space-dim = 2
+  }
+}
+35.5942	 -117.6068   0.0   0.0   0.0
+35.6227	 -117.5681   0.0   0.5   0.0
+35.6444	 -117.5363   0.0   1.5   0.0
+35.6579	 -117.5219   0.0   2.0   0.0
+35.6699	 -117.5112   0.0   0.0   0.0
