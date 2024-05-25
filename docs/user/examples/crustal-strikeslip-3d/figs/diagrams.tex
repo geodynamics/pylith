@@ -1,0 +1,297 @@
+\documentclass[crop,tikz]{standalone}
+\usepackage{tikz}
+\usepackage{ifthen}
+\usepackage[scaled]{helvet}
+\renewcommand*\familydefault{\sfdefault}
+
+
+\begin{document}
+
+\input{../../../../tikz-styles/figcolors}
+\input{../../../../tikz-styles/example-style}
+
+\usetikzlibrary{3d}
+
+\foreach \figpart in {1,...,3}{
+
+% -------------------------------------------------------------------------------------------------
+\begin{tikzpicture}[%
+    scale=0.2,
+    x={({cos(10)},{+sin(10)})},z={(0,{sin(90)})},y={({-sin(30)},{+cos(30)})}]
+
+\def\domainX{80}
+\def\domainY{60}
+\def\domainZ{40}
+\def\axesshift{0.05*\domainX}
+\def\bndryshift{4*\axesshift}
+\def\ticksize{0.5*\axesshift}
+\pgfmathsetmacro\halfheight{0.5*\domainY}
+\def\xangle{10}
+\def\yangle{60}
+\def\dx{26.67}
+\def\dy{20.0}
+\def\dz{13.33}
+
+% Domain
+\def\domainW{410.0}
+\def\domainE{490.0}
+\def\domainS{3910.0}
+\def\domainN{3990.0}
+\def\originX{453.700}
+\def\originY{3947.000}
+
+% Reference points
+\coordinate (p0) at (-0.5*\domainX,-0.5*\domainY,-\domainZ);
+\coordinate (p1) at (+0.5*\domainX,-0.5*\domainY,-\domainZ);
+\coordinate (p2) at (+0.5*\domainX,+0.5*\domainY,-\domainZ);
+\coordinate (p3) at (-0.5*\domainX,+0.5*\domainY,-\domainZ);
+\coordinate (p4) at (-0.5*\domainX,-0.5*\domainY,0.0);
+\coordinate (p5) at (+0.5*\domainX,-0.5*\domainY,0.0);
+\coordinate (p6) at (+0.5*\domainX,+0.5*\domainY,0.0);
+\coordinate (p7) at (-0.5*\domainX,+0.5*\domainY,0.0);
+
+% Domain
+\draw[curve,gdomain] (p0) -- (p1) -- (p5) -- (p4) -- cycle;
+\draw[curve,gdomain] (p3) -- (p0) -- (p4) -- (p7) -- cycle;
+\draw[curve,gdomain] (p4) -- (p5) -- (p6) -- (p7) -- cycle;
+\draw[curve,dashed] (p1) -- (p2) -- (p3);
+\draw[curve,dashed] (p2) -- (p6);
+
+% Faults
+\def\faultWidth{15}
+\def\faultmain{
+    (444.20439-\originX, 3963.17297-\originY, 0)
+    (445.98459-\originX, 3957.30552-\originY, 0)
+    (450.88891-\originX, 3949.91226-\originY, 0)
+    (453.73532-\originX, 3947.4569-\originY, 0)
+    (456.04227-\originX, 3945.43768-\originY, 0)
+    (458.68755-\originX, 3943.90552-\originY, 0)
+    (466.41829-\originX, 3936.33115-\originY, 0)
+}
+\def\faultmainW{
+    (466.41829-\originX, 3936.33115-\originY, -\faultWidth)
+    (458.68755-\originX, 3943.90552-\originY, -\faultWidth)
+    (456.04227-\originX, 3945.43768-\originY, -\faultWidth)
+    (453.73532-\originX, 3947.4569-\originY, -\faultWidth)
+    (450.88891-\originX, 3949.91226-\originY, -\faultWidth)
+    (445.98459-\originX, 3957.30552-\originY, -\faultWidth)
+    (444.20439-\originX, 3963.17297-\originY, -\faultWidth)
+}
+\coordinate (p-fault-main-north) at (445.98459-\originX, 3957.30552-\originY, 0);
+\coordinate (p-fault-main-south) at (458.68755-\originX, 3943.90552-\originY, 0);
+\draw[curve, dashed] plot [smooth] coordinates {\faultmain} -- plot [smooth] coordinates {\faultmainW} -- cycle;
+\draw[curve] plot [smooth] coordinates {\faultmain};
+
+\def\faultwest{
+    (445.03142-\originX, 3939.11025-\originY, 0)
+    (448.55545-\originX, 3942.25024-\originY, 0)
+    (451.44826-\originX, 3944.6408-\originY, 0)
+    (452.75987-\originX, 3946.13107-\originY, 0)
+    (453.73532-\originX, 3947.4569-\originY, 0)
+ }
+ \def\faultwestW{
+    (453.73532-\originX, 3947.4569-\originY, -\faultWidth)
+    (452.75987-\originX, 3946.13107-\originY, -\faultWidth)
+    (451.44826-\originX, 3944.6408-\originY, -\faultWidth)
+    (448.55545-\originX, 3942.25024-\originY, -\faultWidth)
+    (445.03142-\originX, 3939.11025-\originY, -\faultWidth)
+ }
+\coordinate (p-fault-west) at (448.55545-\originX, 3942.25024-\originY);
+\draw [curve, dashed] plot [smooth] coordinates {\faultwest} -- plot [smooth] coordinates {\faultwestW} -- cycle;
+\draw [curve] plot [smooth] coordinates {\faultwest};
+
+\def\faulteast{
+    (453.73532-\originX, 3947.4569-\originY, 0)
+    (454.42741-\originX, 3948.28517-\originY, 0)
+    (454.84836-\originX, 3949.2036-\originY, 0)
+    (455.54065-\originX, 3950.12069-\originY, 0)
+    (457.03572-\originX, 3952.4425-\originY, 0)
+}
+\def\faulteastW{
+    (457.03572-\originX, 3952.4425-\originY, -\faultWidth)
+    (455.54065-\originX, 3950.12069-\originY, -\faultWidth)
+    (454.84836-\originX, 3949.2036-\originY, -\faultWidth)
+    (454.42741-\originX, 3948.28517-\originY, -\faultWidth)
+    (453.73532-\originX, 3947.4569-\originY, -\faultWidth)
+}
+\coordinate (p-fault-east) at (455.54065-\originX, 3950.12069-\originY);
+\draw [curve, dashed] plot [smooth] coordinates {\faulteast} -- plot [smooth] coordinates {\faulteastW} -- cycle;
+\draw [curve] plot [smooth] coordinates {\faulteast};
+
+
+
+% -------------------------------------------------------------------------------------------------
+% Geometry
+% -------------------------------------------------------------------------------------------------
+\ifthenelse{\figpart=1}{
+
+% Axes
+\draw[axes,arrow] ($(p0)+(0,-\axesshift,0)$) to ($(p1)+(2*\axesshift,-\axesshift,0)$);
+\node[axes-label,right] at ($(p1)+(2*\axesshift,-\axesshift)$) {x};
+\foreach \ix in {0,1}{%
+    \pgfmathsetmacro{\x}{\domainW+\ix*\domainX}
+    \draw[axes] ($(p0)+(\ix*\domainX,-\axesshift,0)$) -- ++(0,-\ticksize,0) node[below, anchor=west, rotate=-\xangle]{\x\,km};
+}
+
+\draw[axes,arrow] ($(p0)+(-\axesshift,0,0)$) to ($(p3)+(-\axesshift,+2*\axesshift,0)$);
+\node[axes-label,above] at ($(p3)+(-\axesshift,2*\axesshift)$) {y};
+\foreach \iy in {0,1}{%
+    \pgfmathsetmacro{\y}{\domainS+\iy*\domainY}
+    \draw[axes] ($(p0)+(-\axesshift,\iy*\domainY,0)$) -- ++(-\ticksize,0,0) node[below,anchor=east,rotate=\xangle]{\y\,km};
+}
+
+\draw[axes,arrow] ($(p3)+(-\axesshift,0,0)$) to ($(p7)+(-\axesshift,0,+2*\axesshift)$);
+\node[axes-label,above] at ($(p7)+(-\axesshift,0,2*\axesshift)$) {z};
+\foreach \iz in {0,1}{%
+    \pgfmathsetmacro{\z}{-\domainZ+\iz*\domainZ}
+    \draw[axes] ($(p3)+(-\axesshift,0,\iz*\domainZ)$) -- ++(-\ticksize,0) node[left, anchor=east]{\z\,km};
+}
+
+% Boundaries
+\node[bc-label, rotate=-\yangle] (west-label) at ($0.5*(p0)+0.5*(p7)$) {boundary\_west};
+\node[bc-label, rotate=-\yangle] (east-label) at ($0.5*(p1)+0.5*(p6)$) {boundary\_east};
+
+\node[bc-label, rotate=\xangle] (south-label) at ($0.5*(p0)+0.5*(p5)$) {boundary\_south};
+\node[bc-label, rotate=\xangle] (north-label) at ($0.25*(p3)+0.75*(p6)$) {boundary\_north};
+
+\node[bc-label, rotate=\xangle] (bottom-label) at ($0.5*(p0)+0.5*(p2)$) {boundary\_bottom};
+\node[bc-label, rotate=\xangle] (top-label) at ($0.8*(p4)+0.2*(p6)$) {boundary\_top};
+
+% Faults
+\node[bc-label, rotate=\xangle, anchor=west] at (p-fault-main-north) {fault\_main};
+\node[bc-label, rotate=\xangle, anchor=east] at (p-fault-west) {fault\_west};
+\node[bc-label, rotate=\xangle, anchor=west] at (p-fault-east) {fault\_east};
+
+}{}
+
+
+% -------------------------------------------------------------------------------------------------
+% Step 1
+% -------------------------------------------------------------------------------------------------
+\ifthenelse{\figpart=2}{
+
+    \def\radius{0.15*\bndryshift}%
+
+    % Dirichlet roller BC on +x and -x boundaries
+    \foreach \iz in {0,...,2}{%
+        \draw[roller,canvas is xz plane at y=0] ($(p0)+(-\radius, \iz*\dz+0.5*\dz)$) circle (\radius);
+        \node[ground,rotate=-90,canvas is xz plane at y=0] at ($(p0)+(-2*\radius, 0, \iz*\dz+0.5*\dz)$) {};
+    }
+    \foreach \iz in {0,...,2}{%
+        \draw[roller,canvas is xz plane at y=0] ($(p3)+(-\radius, \iz*\dz+0.5*\dz)$) circle (\radius);
+        \node[ground,rotate=-90,canvas is xz plane at y=0] at ($(p3)+(-2*\radius, 0, \iz*\dz+0.5*\dz)$) {};
+    }
+    \foreach \iz in {0,...,2}{%
+        \draw[roller,canvas is xz plane at y=0] ($(p1)+(+\radius, \iz*\dz+0.5*\dz)$) circle (\radius);
+        \node[ground,rotate=90,canvas is xz plane at y=0] at ($(p1)+(+2*\radius, 0, \iz*\dz+0.5*\dz)$) {};
+    }
+    \foreach \iz in {0,...,2}{%
+        \draw[roller,canvas is xz plane at y=0] ($(p2)+(+\radius, \iz*\dz+0.5*\dz)$) circle (\radius);
+        \node[ground,rotate=90,canvas is xz plane at y=0] at ($(p2)+(+2*\radius, 0, \iz*\dz+0.5*\dz)$) {};
+    }
+    
+    % Dirichlet roller BC on +y and -y boundaries
+    \foreach \iz in {0,...,2}{%
+        \draw[roller,canvas is yz plane at x=0] ($(p0)+(-\radius, \iz*\dz+0.5*\dz)$) circle (\radius);
+        \node[ground,rotate=150,canvas is yz plane at x=0] at ($(p0)+(0, -2*\radius, \iz*\dz+0.5*\dz)$) {};
+    }
+    \foreach \iz in {0,...,2}{%
+        \draw[roller,canvas is yz plane at x=0] ($(p3)+(+\radius, \iz*\dz+0.5*\dz)$) circle (\radius);
+        \node[ground,rotate=150,canvas is yz plane at x=0] at ($(p3)+(0, +2*\radius, \iz*\dz+0.5*\dz)$) {};
+    }
+    \foreach \iz in {0,...,2}{%
+        \draw[roller,canvas is yz plane at x=0] ($(p1)+(-\radius, \iz*\dz+0.5*\dz)$) circle (\radius);
+        \node[ground,rotate=150,canvas is yz plane at x=0] at ($(p1)+(0, -2*\radius, \iz*\dz+0.5*\dz)$) {};
+    }
+    \foreach \iz in {0,...,2}{%
+        \draw[roller,canvas is yz plane at x=0] ($(p2)+(+\radius, \iz*\dz+0.5*\dz)$) circle (\radius);
+        \node[ground,rotate=150,canvas is yz plane at x=0] at ($(p2)+(0, +2*\radius, \iz*\dz+0.5*\dz)$) {};
+    }
+    
+    % Dirichlet roller BC on -z boundary
+    \foreach \ix in {0,...,2}{%
+        \draw[roller,canvas is xz plane at y=0] ($(p0)+(\ix*\dx+0.5*\dx,-\radius)$) circle (\radius);
+        \node[ground,canvas is xz plane at y=0] at ($(p0)+(\ix*\dx+0.5*\dx,0,-2*\radius)$) {};
+    }
+    \foreach \iy in {0,...,2}{%
+        \draw[roller,canvas is yz plane at x=0] ($(p0)+(\iy*\dy+0.5*\dy,-\radius)$) circle (\radius);
+        \node[ground,canvas is yz plane at x=0] at ($(p0)+(0,\iy*\dy+0.5*\dy,-2*\radius)$) {};
+    }
+    \node[bc-label] at ($(p0)+(0.5*\domainX,0,-\bndryshift)$) {$u_z=0$};
+
+    % Faults
+    \node[bc-label, rotate=\xangle, anchor=west] at (p-fault-main-north) {$d=4.0\textrm{m RL}$};
+    \node[bc-label, rotate=\xangle, anchor=east] at (p-fault-west) {$d=2.0\textrm{m LL}$};
+    \node[bc-label, rotate=\xangle, anchor=west] at (p-fault-east) {$d=1.0\textrm{m LL}$};
+
+
+}{} % if/else
+
+
+% -------------------------------------------------------------------------------------------------
+% Step 2
+% -------------------------------------------------------------------------------------------------
+\ifthenelse{\figpart=3}{
+
+\def\radius{0.15*\bndryshift}%
+
+% Dirichlet roller BC on +x and -x boundaries
+\foreach \iz in {0,...,2}{%
+    \draw[roller,canvas is xz plane at y=0] ($(p0)+(-\radius, \iz*\dz+0.5*\dz)$) circle (\radius);
+    \node[ground,rotate=-90,canvas is xz plane at y=0] at ($(p0)+(-2*\radius, 0, \iz*\dz+0.5*\dz)$) {};
+}
+\foreach \iz in {0,...,2}{%
+    \draw[roller,canvas is xz plane at y=0] ($(p3)+(-\radius, \iz*\dz+0.5*\dz)$) circle (\radius);
+    \node[ground,rotate=-90,canvas is xz plane at y=0] at ($(p3)+(-2*\radius, 0, \iz*\dz+0.5*\dz)$) {};
+}
+\foreach \iz in {0,...,2}{%
+    \draw[roller,canvas is xz plane at y=0] ($(p1)+(+\radius, \iz*\dz+0.5*\dz)$) circle (\radius);
+    \node[ground,rotate=90,canvas is xz plane at y=0] at ($(p1)+(+2*\radius, 0, \iz*\dz+0.5*\dz)$) {};
+}
+\foreach \iz in {0,...,2}{%
+    \draw[roller,canvas is xz plane at y=0] ($(p2)+(+\radius, \iz*\dz+0.5*\dz)$) circle (\radius);
+    \node[ground,rotate=90,canvas is xz plane at y=0] at ($(p2)+(+2*\radius, 0, \iz*\dz+0.5*\dz)$) {};
+}
+
+% Dirichlet roller BC on +y and -y boundaries
+\foreach \iz in {0,...,2}{%
+    \draw[roller,canvas is yz plane at x=0] ($(p0)+(-\radius, \iz*\dz+0.5*\dz)$) circle (\radius);
+    \node[ground,rotate=150,canvas is yz plane at x=0] at ($(p0)+(0, -2*\radius, \iz*\dz+0.5*\dz)$) {};
+}
+\foreach \iz in {0,...,2}{%
+    \draw[roller,canvas is yz plane at x=0] ($(p3)+(+\radius, \iz*\dz+0.5*\dz)$) circle (\radius);
+    \node[ground,rotate=150,canvas is yz plane at x=0] at ($(p3)+(0, +2*\radius, \iz*\dz+0.5*\dz)$) {};
+}
+\foreach \iz in {0,...,2}{%
+    \draw[roller,canvas is yz plane at x=0] ($(p1)+(-\radius, \iz*\dz+0.5*\dz)$) circle (\radius);
+    \node[ground,rotate=150,canvas is yz plane at x=0] at ($(p1)+(0, -2*\radius, \iz*\dz+0.5*\dz)$) {};
+}
+\foreach \iz in {0,...,2}{%
+    \draw[roller,canvas is yz plane at x=0] ($(p2)+(+\radius, \iz*\dz+0.5*\dz)$) circle (\radius);
+    \node[ground,rotate=150,canvas is yz plane at x=0] at ($(p2)+(0, +2*\radius, \iz*\dz+0.5*\dz)$) {};
+}
+
+% Dirichlet roller BC on -z boundary
+\foreach \ix in {0,...,2}{%
+    \draw[roller,canvas is xz plane at y=0] ($(p0)+(\ix*\dx+0.5*\dx,-\radius)$) circle (\radius);
+    \node[ground,canvas is xz plane at y=0] at ($(p0)+(\ix*\dx+0.5*\dx,0,-2*\radius)$) {};
+}
+\foreach \iy in {0,...,2}{%
+    \draw[roller,canvas is yz plane at x=0] ($(p0)+(\iy*\dy+0.5*\dy,-\radius)$) circle (\radius);
+    \node[ground,canvas is yz plane at x=0] at ($(p0)+(0,\iy*\dy+0.5*\dy,-2*\radius)$) {};
+}
+\node[bc-label] at ($(p0)+(0.5*\domainX,0,-\bndryshift)$) {$u_z=0$};
+
+% Faults
+\node[bc-label, rotate=\xangle, anchor=west] at (p-fault-main-north) {$d=d_1(x,y)\textrm{ RL}$};
+\node[bc-label, rotate=\xangle, anchor=east] at (p-fault-west) {$d=d_2(x,y)\textrm{ LL}$};
+\node[bc-label, rotate=\xangle, anchor=west] at (p-fault-east) {$d=d_3(x,y)\textrm{ LL}$};
+
+
+}{} % if/else
+
+
+
+\end{tikzpicture}}
+
+\end{document}
