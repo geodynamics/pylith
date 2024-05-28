@@ -371,7 +371,7 @@ dist_noinst_DATA = \
 	user/examples/subduction-2d/step03-eqcycle.md \
 	user/examples/subduction-2d/figs/cartoon.pdf \
 	user/examples/subduction-2d/figs/cartoon.svg \
-	user/examples/subduction-2d/figs/cubit-tri.jpg \
+	user/examples/subduction-2d/figs/cubit-tri.png \
 	user/examples/subduction-2d/figs/diagrams.tex \
 	user/examples/subduction-2d/figs/generate.sh \
 	user/examples/subduction-2d/figs/geometry-cubit.pdf \

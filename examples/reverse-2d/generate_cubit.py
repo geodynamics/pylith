@@ -7,7 +7,31 @@ PATH_TO_CUBIT/Cubit.app/Contents/Frameworks/Python.framework/Versions/Current/bi
 
 where you replace 'PATH_TO_CUBIT' with the absolute path.
 """
+# -------------------------------------------------------------------------------------------------
+# Utility functions. No edits should be needed.
+# -------------------------------------------------------------------------------------------------
+def setup_cubit():
+    """Detect if we are running outside Cubit. If so, then we parse command line arguments and setup
+    Cubit."""
+    import sys
+    if not "cubit" in sys.modules:
+        import argparse
+        import pathlib
 
+        parser = argparse.ArgumentParser()
+        parser.add_argument("--cubit-directory", action="store", dest="cubit_dir", required=True, help="Directory containing cubit executable.")
+        args = parser.parse_args()
+
+        # Initialize cubit
+        cubit_absdir = pathlib.Path(args.cubit_dir).expanduser().resolve()
+        sys.path.append(str(cubit_absdir))
+        import cubit
+        cubit.init(['cubit','-nojournal'])
+
+
+# -------------------------------------------------------------------------------------------------
+# Mesh definition
+# -------------------------------------------------------------------------------------------------
 import math
 
 # 2D domain is 200 km x 100 km
@@ -27,39 +51,21 @@ SPLAY_DIP_ANGLE = 45.0 / 180.0 * math.pi
 SPLAY_OFFSET = 20*km
 
 
-DX = 2.0*km # Discretization size on fault
-BIAS_FACTOR = 1.07 # rate of geometric increase in cell size with distance from the fault
+DX_FAULT = 2.0*km # Discretization size on fault
+DX_BIAS = 1.07 # rate of geometric increase in cell size with distance from the fault
 cell = "tri"
 
-# Detect if we are running outside Cubit.
-try:
-    cubit.reset()
-except NameError:
-    import argparse
-    import pathlib
-    import sys
 
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--cell", action="store", dest="cell", choices=("quad","tri"), default="tri")
-
-    parser.add_argument("--cubit-directory", action="store", dest="cubit_dir", required=True, help="Directory containing cubit executable.")
-    args = parser.parse_args()
-
-    # Initialize cubit
-    cubit_absdir = pathlib.Path(args.cubit_dir).expanduser().resolve()
-    sys.path.append(str(cubit_absdir))
-    import cubit
-    cubit.init(['cubit','-nojournal'])
-
-    cell = args.cell
-
-
+# -------------------------------------------------------------------------------------------------
+# Start cubit
+# -------------------------------------------------------------------------------------------------
+setup_cubit()
 cubit.reset()
+
 
 # -------------------------------------------------------------------------------------------------
 # Geometry
 # -------------------------------------------------------------------------------------------------
-
 # Create block and then create 2D domain from mid-surface of block.
 # Create a brick and move it so fault is centered and upper surface
 # is at y=0.
@@ -181,59 +187,18 @@ if cell == "quad":
 else:
     cubit.cmd("surface all scheme trimesh")
 
-# Set sizes to create mesh with cell size than increases at a geometric rate with distance from the fault.
-def compute_dx_curve_end(dx_start, curve_length):
-    """Compute cell size at end of curve given cell size at start of curve."""
-    return dx_start * BIAS_FACTOR**math.ceil(math.log(1-curve_length/dx_start*(1-BIAS_FACTOR))/math.log(BIAS_FACTOR))
-
-# Compute sizes at curve endpoints
-# ----------------------------------------------------------------------
-
-# dxA - size at v_top_xpos
-curve_id = cubit.get_id_from_name("c_ypos_fw")
-dx_A = compute_dx_curve_end(dx_start=DX, curve_length=cubit.get_curve_length(curve_id))
-
-# dxB - size at v_top_xneg
-curve_id = cubit.get_id_from_name("c_ypos_hw")
-dx_B = compute_dx_curve_end(dx_start=DX, curve_length=cubit.get_curve_length(curve_id))
-
-# dxC - size at v_fault_xneg
-curve_id = cubit.get_id_from_name("c_fault_ext")
-dx_C = compute_dx_curve_end(dx_start=DX, curve_length=cubit.get_curve_length(curve_id))
-
-# dxD - size at v_bot_xpos
-curve_id = cubit.get_id_from_name("c_xpos")
-dx_D = compute_dx_curve_end(dx_start=dx_A, curve_length=cubit.get_curve_length(curve_id))
-
-
 # Reset sizes
 cubit.cmd("curve all scheme default")
 cubit.cmd("surface all sizing function none")
 
 # Set size on faults
-cubit.cmd(f"curve c_fault_upper size {DX}")
-cubit.cmd(f"curve c_fault_lower size {DX}")
-cubit.cmd(f"curve c_splay size {DX}")
-cubit.cmd(f"curve c_ypos_w size {DX}")
+cubit.cmd(f"curve c_fault_upper size {DX_FAULT}")
+cubit.cmd(f"curve c_fault_lower size {DX_FAULT}")
+cubit.cmd(f"curve c_splay size {DX_FAULT}")
+cubit.cmd(f"curve c_ypos_w size {DX_FAULT}")
 
-# Set bias on curves extending from faults
-cubit.cmd(f"curve c_ypos_fw scheme bias fine size {DX} factor {BIAS_FACTOR} start vertex v_fault_top")
-cubit.cmd(f"curve c_ypos_hw scheme bias fine size {DX} factor {BIAS_FACTOR} start vertex v_splay_top")
-cubit.cmd(f"curve c_fault_ext scheme bias fine size {DX} factor {BIAS_FACTOR} start vertex v_fault_bot")
-
-cubit.cmd(f"curve c_yneg size {dx_D}")
-
-# A to D
-cubit.cmd(f"curve c_xpos scheme bias fine size {dx_A} coarse size {dx_D} start vertex v_ypos_xpos")
-
-# C to B
-cubit.cmd(f"curve c_xneg_hw scheme bias fine size {dx_C} coarse size {dx_B} start vertex v_fault_xneg")
-
-# B to D
-cubit.cmd(f"curve c_xneg_fw scheme bias fine size {dx_B} coarse size {dx_D} start vertex v_fault_xneg")
-
-cubit.cmd(f"surface all sizing function type bias start curve c_fault_upper c_fault_lower c_splay c_ypos_w factor {BIAS_FACTOR}")
-
+# Use skeleton sizing to increase cell size away from fault.
+cubit.cmd(f"surface all sizing function skeleton min_size {DX_FAULT} max_gradient {DX_BIAS}")
 
 # cubit.cmd("preview mesh surface all")
 cubit.cmd("mesh surface all")
@@ -263,82 +228,82 @@ cubit.cmd("block 3 name 'surface_wedge'")
 
 
 # Nodesets
+if True:
+    # Create nodeset for fault
+    cubit.cmd("group 'fault' add node in c_fault_upper c_fault_lower")
+    cubit.cmd("nodeset 10 group fault")
+    cubit.cmd("nodeset 10 name 'fault'")
 
-# Create nodeset for fault
-cubit.cmd("group 'fault' add node in c_fault_upper c_fault_lower")
-cubit.cmd("nodeset 10 group fault")
-cubit.cmd("nodeset 10 name 'fault'")
+    # Create nodeset for fault edge
+    cubit.cmd("group 'fault_end' add node in vertex v_fault_bot")
+    cubit.cmd("nodeset 11 group fault_end")
+    cubit.cmd("nodeset 11 name 'fault_end'")
 
-# Create nodeset for fault edge
-cubit.cmd("group 'fault_end' add node in vertex v_fault_bot")
-cubit.cmd("nodeset 11 group fault_end")
-cubit.cmd("nodeset 11 name 'fault_end'")
+    # Create nodeset for splay
+    cubit.cmd("group 'splay' add node in c_splay")
+    cubit.cmd("nodeset 12 group splay")
+    cubit.cmd("nodeset 12 name 'splay'")
 
-# Create nodeset for splay
-cubit.cmd("group 'splay' add node in c_splay")
-cubit.cmd("nodeset 12 group splay")
-cubit.cmd("nodeset 12 name 'splay'")
+    # Create nodeset for splay edge
+    cubit.cmd("group 'splay_end' add node in vertex v_splay_bot")
+    cubit.cmd("nodeset 13 group splay_end")
+    cubit.cmd("nodeset 13 name 'splay_end'")
 
-# Create nodeset for splay edge
-cubit.cmd("group 'splay_end' add node in vertex v_splay_bot")
-cubit.cmd("nodeset 13 group splay_end")
-cubit.cmd("nodeset 13 name 'splay_end'")
+    # Create nodeset for +x edge
+    cubit.cmd("group 'boundary_xpos' add node in curve c_xpos")
+    cubit.cmd("nodeset 20 group boundary_xpos")
+    cubit.cmd("nodeset 20 name 'boundary_xpos'")
 
-# Create nodeset for +x edge
-cubit.cmd("group 'boundary_xpos' add node in curve c_xpos")
-cubit.cmd("nodeset 20 group boundary_xpos")
-cubit.cmd("nodeset 20 name 'boundary_xpos'")
+    # Create nodeset for -x edge
+    cubit.cmd("group 'boundary_xneg' add node in curve c_xneg_hw")
+    cubit.cmd("group 'boundary_xneg' add node in curve c_xneg_fw")
+    cubit.cmd("nodeset 21 group boundary_xneg")
+    cubit.cmd("nodeset 21 name 'boundary_xneg'")
 
-# Create nodeset for -x edge
-cubit.cmd("group 'boundary_xneg' add node in curve c_xneg_hw")
-cubit.cmd("group 'boundary_xneg' add node in curve c_xneg_fw")
-cubit.cmd("nodeset 21 group boundary_xneg")
-cubit.cmd("nodeset 21 name 'boundary_xneg'")
+    # Create nodeset for +y edge
+    cubit.cmd("group 'boundary_ypos' add node in curve c_ypos_fw c_ypos_hw c_ypos_w")
+    cubit.cmd("nodeset 22 group boundary_ypos")
+    cubit.cmd("nodeset 22 name 'boundary_ypos'")
 
-# Create nodeset for +y edge
-cubit.cmd("group 'boundary_ypos' add node in curve c_ypos_fw c_ypos_hw c_ypos_w")
-cubit.cmd("nodeset 22 group boundary_ypos")
-cubit.cmd("nodeset 22 name 'boundary_ypos'")
-
-# Create nodeset for -y edge
-cubit.cmd("group 'boundary_yneg' add node in curve c_yneg")
-cubit.cmd("nodeset 23 group boundary_yneg")
-cubit.cmd("nodeset 23 name 'boundary_yneg'")
+    # Create nodeset for -y edge
+    cubit.cmd("group 'boundary_yneg' add node in curve c_yneg")
+    cubit.cmd("nodeset 23 group boundary_yneg")
+    cubit.cmd("nodeset 23 name 'boundary_yneg'")
 
 
 # Starting in PyLith v5, we will use sidesets instead of nodesets for BCs.
 # Sidesets
-#
-# Create sideset for fault
-#cubit.cmd("group 'fault' add c_fault_upper c_fault_lower")
-#cubit.cmd("sideset 10 group fault")
-#cubit.cmd("sideset 10 name 'fault'")
-#
-# Create sideset for splay
-#cubit.cmd("group 'splay' add c_splay")
-#cubit.cmd("sideset 12 group splay")
-#cubit.cmd("sideset 12 name 'splay'")
-#
-# Create sideset for +x edge
-#cubit.cmd("group 'boundary_xpos' add curve c_xpos")
-#cubit.cmd("sideset 20 group boundary_xpos")
-#cubit.cmd("sideset 20 name 'boundary_xpos'")
-#
-# Create sideset for -x edge
-#cubit.cmd("group 'boundary_xneg' add curve c_xneg_hw")
-#cubit.cmd("group 'boundary_xneg' add curve c_xneg_fw")
-#cubit.cmd("sideset 21 group boundary_xneg")
-#cubit.cmd("sideset 21 name 'boundary_xneg'")
-#
-# Create sideset for +y edge
-#cubit.cmd("group 'boundary_ypos' add curve c_ypos_fw c_ypos_hw c_ypos_w")
-#cubit.cmd("sideset 22 group boundary_ypos")
-#cubit.cmd("sideset 22 name 'boundary_ypos'")
-#
-# Create sideset for -y edge
-#cubit.cmd("group 'boundary_yneg' add curve c_yneg")
-#cubit.cmd("sideset 23 group boundary_yneg")
-#cubit.cmd("sideset 23 name 'boundary_yneg'")
+if False:
+    # Create sideset for fault
+    cubit.cmd("group 'fault' add c_fault_upper c_fault_lower")
+    cubit.cmd("sideset 10 group fault")
+    cubit.cmd("sideset 10 name 'fault'")
+
+    # Create sideset for splay
+    cubit.cmd("group 'splay' add c_splay")
+    cubit.cmd("sideset 12 group splay")
+    cubit.cmd("sideset 12 name 'splay'")
+
+    # Create sideset for +x edge
+    cubit.cmd("group 'boundary_xpos' add curve c_xpos")
+    cubit.cmd("sideset 20 group boundary_xpos")
+    cubit.cmd("sideset 20 name 'boundary_xpos'")
+
+    # Create sideset for -x edge
+    cubit.cmd("group 'boundary_xneg' add curve c_xneg_hw")
+    cubit.cmd("group 'boundary_xneg' add curve c_xneg_fw")
+    cubit.cmd("sideset 21 group boundary_xneg")
+    cubit.cmd("sideset 21 name 'boundary_xneg'")
+
+    # Create sideset for +y edge
+    cubit.cmd("group 'boundary_ypos' add curve c_ypos_fw c_ypos_hw c_ypos_w")
+    cubit.cmd("sideset 22 group boundary_ypos")
+    cubit.cmd("sideset 22 name 'boundary_ypos'")
+
+    # Create sideset for -y edge
+    cubit.cmd("group 'boundary_yneg' add curve c_yneg")
+    cubit.cmd("sideset 23 group boundary_yneg")
+    cubit.cmd("sideset 23 name 'boundary_yneg'")
 
 
 # Write mesh as ExodusII file
