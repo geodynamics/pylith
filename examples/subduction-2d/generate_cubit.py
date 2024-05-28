@@ -7,35 +7,46 @@ PATH_TO_CUBIT/Cubit.app/Contents/Frameworks/Python.framework/Versions/Current/bi
 
 where you replace 'PATH_TO_CUBIT' with the absolute path.
 """
+# -------------------------------------------------------------------------------------------------
+# Utility functions. No edits should be needed.
+# -------------------------------------------------------------------------------------------------
+def setup_cubit():
+    """Detect if we are running outside Cubit. If so, then we parse command line arguments and setup
+    Cubit."""
+    import sys
+    if not "cubit" in sys.modules:
+        import argparse
+        import pathlib
 
+        parser = argparse.ArgumentParser()
+        parser.add_argument("--cubit-directory", action="store", dest="cubit_dir", required=True, help="Directory containing cubit executable.")
+        args = parser.parse_args()
+
+        # Initialize cubit
+        cubit_absdir = pathlib.Path(args.cubit_dir).expanduser().resolve()
+        sys.path.append(str(cubit_absdir))
+        import cubit
+        cubit.init(['cubit','-nojournal'])
+
+
+# -------------------------------------------------------------------------------------------------
+# Mesh definition
+# -------------------------------------------------------------------------------------------------
 # 2D subduction zone example based on the 2011 M9.0 Tohoku earthquake.
-
 km = 1000.0
-DX = 5.0*km # Discretization size on fault
-BIAS_FACTOR = 1.07 # rate of geometric increase in cell size with distance from the fault
+DX_FAULT = 5.0*km # Discretization size on fault
+DX_BIAS = 1.07 # rate of geometric increase in cell size with distance from the fault
 CELL = "tri"
 
-# Detect if we are running outside Cubit.
-try:
-    cubit.reset()
-except NameError:
-    import argparse
-    import pathlib
-    import sys
 
-    parser = argparse.ArgumentParser()
-
-    parser.add_argument("--cubit-directory", action="store", dest="cubit_dir", required=True, help="Directory containing cubit executable.")
-    args = parser.parse_args()
-
-    # Initialize cubit
-    cubit_absdir = pathlib.Path(args.cubit_dir).expanduser().resolve()
-    sys.path.append(str(cubit_absdir))
-    import cubit
-    cubit.init(['cubit','-nojournal'])
-
-
+# -------------------------------------------------------------------------------------------------
+# Start cubit
+# -------------------------------------------------------------------------------------------------
+setup_cubit()
 cubit.reset()
+
+import math
+
 
 # -------------------------------------------------------------------------------------------------
 # Geometry
@@ -194,17 +205,12 @@ cubit.cmd("curve all scheme default")
 cubit.cmd("surface all sizing function none")
 
 # Set size on faults (and bottom of slab corresponding to fault section)
-cubit.cmd(f"curve c_slabtop@A c_slabtop size {DX}")
-cubit.cmd(f"curve c_topo size {DX}")
-cubit.cmd(f"curve c_slabbot@D size {DX}")
+cubit.cmd(f"curve c_slabtop@A c_slabtop size {DX_FAULT}")
+cubit.cmd(f"curve c_topo size {DX_FAULT}")
+cubit.cmd(f"curve c_slabbot@D size {DX_FAULT}")
 
-# Set bias on curves extending from faults
-cubit.cmd(f"curve c_topo@B scheme bias fine size {DX} factor {BIAS_FACTOR} start vertex 66")
-cubit.cmd(f"curve c_topo@A scheme bias fine size {DX} factor {BIAS_FACTOR} start vertex 43")
-cubit.cmd(f"curve c_conmoho scheme bias fine size {DX} factor {BIAS_FACTOR} start vertex 21")
-cubit.cmd(f"curve c_slabtop@D scheme bias fine size {DX} factor {BIAS_FACTOR} start vertex 65")
-cubit.cmd(f"curve c_slabbot@B scheme bias fine size {DX} factor {BIAS_FACTOR} start vertex 67")
-cubit.cmd(f"curve c_slabbot scheme bias fine size {DX} factor {BIAS_FACTOR} start vertex 68")
+# Use skeleton sizing to increase cell size away from fault.
+cubit.cmd(f"surface all sizing function skeleton min_size {DX_FAULT} max_gradient {DX_BIAS}")
 
 # cubit.cmd("preview mesh surface all")
 cubit.cmd("mesh surface all")
