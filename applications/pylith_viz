@@ -1,0 +1,11 @@
+#!/usr/bin/env nemesis
+"""Application for searching for and running simulations with PyLith .cfg files.
+"""
+
+
+if __name__ == "__main__":
+    from pylith.apps import VizApp
+    VizApp.cli()
+
+
+# End of file
