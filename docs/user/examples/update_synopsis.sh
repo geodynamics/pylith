@@ -10,3 +10,6 @@ done
 rm strikeslip-2d/step01_slip_cubit-synopsis.md
 rm crustal-strikeslip-2d/step01_slip_cubit-synopsis.md
 rm crustal-strikeslip-3d/step01_slip_cubit-synopsis.md
+rm subduction-3d/step07b_reverse-synopsis.md
+rm subduction-3d/step08b_gravity_incompressible-synopsis.md
+rm subduction-3d/step08c_gravity_viscoelastic-synopsis.md

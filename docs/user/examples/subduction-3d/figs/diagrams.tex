@@ -13,20 +13,23 @@
 
 \def\radius{0.025}%
 
-\foreach \figpart in {1,...,5}{
+\foreach \figpart in {1,...,7}{
 
 % -------------------------------------------------------------------------------------------------
 \begin{tikzpicture}
 
 \ifthenelse{\figpart=2}{%
     \node[local-image] (image) at (0,0) {\includegraphics[width=5.5in]{cubit-geometry-patch.png}};
-}{%
+}{
 \ifthenelse{\figpart=5}{%
+    \node[local-image] (image) at (0,0) {\includegraphics[width=5.5in]{cubit-geometry-patch.png}};
+}{%
+\ifthenelse{\figpart=6}{%
     \node[local-image] (image) at (0,0) {\includegraphics[width=5.5in]{cubit-geometry-patch.png}};
 }{%
     \node[local-image] (image) at (0,0) {\includegraphics[width=5.5in]{cubit-geometry}};
 }
-}{}
+}{}}{}
 
 
 % -------------------------------------------------------------------------------------------------
@@ -202,6 +205,83 @@
     % Fault
     \node[anchor=west, bc-label] (xneg) at (0.12,0.70) {Prescribed slip};
     \draw[bc,arrow] (xneg) -- (0.35,0.77);
+    
+    % -x
+    \foreach \iy in {0,...,1}{%
+    \draw[roller] ($(0.1,0)+(-\radius-\iy*0.07,\iy*\rspacing+0.2*\rspacing)$) circle (\radius);
+    \node[ground, anchor=north, rotate=-90] at ($(0.1,0)+(-2*\radius-\iy*0.07,\iy*\rspacing+0.2*\rspacing)$) {};
+    }
+    \node[bc-label] at ($(0.1,0)+(-0.15,0.2)$) {$u_x=0$};
+
+    % +x
+    \foreach \iy in {0,...,1}{%
+    \draw[roller] ($(0.9,0)+(+\radius+\iy*0.07,\iy*\rspacing+0.2*\rspacing)$) circle (\radius);
+    \node[ground, anchor=north, rotate=+90] at ($(0.9,0)+(+2*\radius+\iy*0.07,\iy*\rspacing+0.2*\rspacing)$) {};
+    }
+    \node[bc-label] at ($(0.9,0)+(0.15,0.2)$) {$u_x=0$};
+
+    % -z
+    \foreach \ix in {0,...,2}{%
+    \draw[roller] ($(0.1,0)+(\ix*\rspacing+0.4*\rspacing,-\radius)$) circle (\radius);
+    \node[ground] at ($(0.1,0)+(\ix*\rspacing+0.4*\rspacing,-2*\radius)$) {};
+    }
+    \node[bc-label] at ($(0,0)+(0.5,-5*\radius)$) {$u_z=0$};
+
+\end{scope}
+
+}{} % if/else
+
+
+% -------------------------------------------------------------------------------------------------
+% Step 7 (Green's functions)
+% -------------------------------------------------------------------------------------------------
+\ifthenelse{\figpart=6}{
+    \def\rspacing{0.285}%
+
+\begin{scope}[x={(image.south east)},y={(image.north west)}]
+
+    % Fault
+    \node[anchor=west, bc-label] (xneg) at (0.12,0.70) {Prescribed slip impulses};
+    \draw[bc,arrow] (xneg) -- (0.35,0.77);
+    
+    % -x
+    \foreach \iy in {0,...,1}{%
+    \draw[roller] ($(0.1,0)+(-\radius-\iy*0.07,\iy*\rspacing+0.2*\rspacing)$) circle (\radius);
+    \node[ground, anchor=north, rotate=-90] at ($(0.1,0)+(-2*\radius-\iy*0.07,\iy*\rspacing+0.2*\rspacing)$) {};
+    }
+    \node[bc-label] at ($(0.1,0)+(-0.15,0.2)$) {$u_x=0$};
+
+    % +x
+    \foreach \iy in {0,...,1}{%
+    \draw[roller] ($(0.9,0)+(+\radius+\iy*0.07,\iy*\rspacing+0.2*\rspacing)$) circle (\radius);
+    \node[ground, anchor=north, rotate=+90] at ($(0.9,0)+(+2*\radius+\iy*0.07,\iy*\rspacing+0.2*\rspacing)$) {};
+    }
+    \node[bc-label] at ($(0.9,0)+(0.15,0.2)$) {$u_x=0$};
+
+    % -z
+    \foreach \ix in {0,...,2}{%
+    \draw[roller] ($(0.1,0)+(\ix*\rspacing+0.4*\rspacing,-\radius)$) circle (\radius);
+    \node[ground] at ($(0.1,0)+(\ix*\rspacing+0.4*\rspacing,-2*\radius)$) {};
+    }
+    \node[bc-label] at ($(0,0)+(0.5,-5*\radius)$) {$u_z=0$};
+
+\end{scope}
+
+}{} % if/else
+
+
+% -------------------------------------------------------------------------------------------------
+% Step 8 (gravity)
+% -------------------------------------------------------------------------------------------------
+\ifthenelse{\figpart=7}{
+    \def\rspacing{0.285}%
+    \def\bndryshift{0.15}
+
+\begin{scope}[x={(image.south east)},y={(image.north west)}]
+
+    % gravity
+    \coordinate (x) at (0.5,0.50);
+    \draw[bc,arrow] ($(x)+(0,+0.5*\bndryshift)$) -- ++(0,-\bndryshift) node[bc-label, below] {$\rho g$};
     
     % -x
     \foreach \iy in {0,...,1}{%

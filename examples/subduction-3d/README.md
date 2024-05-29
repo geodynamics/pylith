@@ -38,17 +38,15 @@ https://github.com/geodynamics/pylith/releases/download/v3.0.1/mesh_tet.exo.gz a
 generating the mesh. See `input/README.md` for instructions on how to download the file.
 
 ```
-# Run the Python script to generate the journal file 'cubit_create_surfs.jou'.
+# Run the Python script to generate the journal file `scratch/cubit_create_surfs.jou`.
 ./generate_surfjou.py
 ```
 
 The next step is to use Cubit to run the `cubit_create_surfs.jou` journal file to generate the spline surfaces for
-the slab and splay fault and save them as ACIS surfaces. Note that you will generally have to set the directory to
-your current directory within Cubit before running the journal file.
+the slab and splay fault and save them as ACIS surfaces. Note that you will need to set the directory to
+the `scratch` directory within Cubit before running the journal file.
 
-After you generate the ACIS surface files (these will be created in the 'scratch' directory), run the `cubit_tet.jou`
-journal file to construct the geometry, and generate the mesh. In the end you will have an Exodus-II file
-`mesh_tet.exo`, which is a NetCDF file, in the `input` directory.
+After you generate the ACIS surface files (these will be created in the 'scratch' directory), run the `cubit_tet.jou` journal file to construct the geometry, and generate the mesh. Note that you will need to set your directory back to the `subduction-3d` directory within Cubit before you run this journal file. In the end you will have an Exodus-II file `mesh_tet.exo`, which is a NetCDF file, in the `input` directory.
 
 The examples are briefly described below. Note that you can run most examples in parallel by simply appending
 ```
@@ -122,9 +120,9 @@ pylith step06_slowslip.cfg mat_elastic.cfg
 
 ## Step 7: Inversion of Slow-Slip Event using 3D Green's Functions
 
-We compute the static Green's function for prescribed slip imulses on the central portion of the 
+We compute the static Green's function for prescribed slip ipmulses on the central portion of the 
 subduction interface. We then use the responses to perform a simple geodetic inversion of the slip 
-in Step 7. We divide generating Green's functions into two sub-problems:
+from Step 6. We divide generating Green's functions into two sub-problems:
 
 * **Step 7a**: Left-lateral slip component
 * **Step 7b**: Reverse slip component
@@ -149,6 +147,8 @@ We perform a simple inversion using the `slip_invert.py` Python script.
 ```
 ./slip_invert.py
 ```
+
+This script will generate files in the `output` directory containing an inversion summary, and predicted fault slip and site displacements for each penalty parameter used.
 
 ## Step 8: Stress Field Due to Gravitational Body Forces
 

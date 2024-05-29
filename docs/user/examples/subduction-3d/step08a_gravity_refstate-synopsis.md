@@ -9,9 +9,6 @@
 * pylith.bc.DirichletTimeDependent
 * pylith.bc.ZeroDB
 * spatialdata.geocoords.CSGeo
-* pylith.materials.Elasticity
-* pylith.materials.IsotropicLinearElasticity
-* spatialdata.spatialdb.SimpleDB
 * Static simulation
-* pylith.materials.IsotropicLinearElasticity
-* spatialdata.spatialdb.SimpleDB
+* spatialdata.spatialdb.GravityField
+* Reference state

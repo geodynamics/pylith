@@ -22,14 +22,15 @@ The parameters specific to this example are in `step04_eqcycle.cfg` and include:
 
 * `pylithapp.metadata` Metadata for this simulation. Even when the author and version are the same for all simulations in a directory, we prefer to keep that metadata in each simulation file as a reminder to keep it up-to-date for each simulation.
 * `pylithapp` Parameters defining where to write the output.
-* `pylithapp.problem` Parameters for the solution field with displacement and Lagrange multiplier subfields.
+* `pylithapp.problem` Parameters for the time step information as well as solution field with displacement and Lagrange multiplier subfields.
 * `pylithapp.interfaces` Parameters for the earthquake ruptures and aseismic slip (creep) on the top and bottom of the slab.
+* `pylithapp.problem.bc` Parameters for describing the boundary conditions that override the defaults.
 
 We extend the duration of the simulation to 300 years.
 We impose two earthquake ruptures on slab interface at t=100 and t=200 years and one earthquake rupture on the splay fault at t=250 years.
 Now that we have both earthquake rupture and aseismic creep on the top of the slab, we use `SimpleDB` spatial databases to give depth-dependent, complementary slip.
 We impose uniform slip on the splay fault using a `UniformDB`.
-As in Step 3 we also adjust the nodesets used for the boundary conditions to remove overlap with the slab to allow the slab to move independently.
+As in Step 3 we also adjust the nodesets used for the boundary conditions to remove overlap with the slab to allow the slab to move independently. Note that the aseismic slip uses `KinSrcConstRate`, while the two ruptures use the default `KinSrcStep`.
 
 ```{code-block} console
 ---
@@ -111,8 +112,8 @@ In {numref}`fig:example:subduction:3d:step04:solution` we use ParaView to visual
 We start ParaView from the `examples/subduction-3d` directory and then run the `viz/plot_dispwarp.py` Python script as described in {ref}`sec-paraview-python-scripts`.
 
 :::{figure-md} fig:example:subduction:3d:step04:solution
-<img src="figs/step04-solution.*" alt="Solution for Step 4. The colors indicate the magnitude of the x displacement, and the deformation is exaggerated by a factor of 1000." width="100%"/>
+<img src="figs/step04-solution.*" alt="Solution for Step 4. The colors indicate the x displacement, and the deformation is exaggerated by a factor of 5000." width="100%"/>
 
 Solution for Step 4.
-The colors of the shaded surface indicate the magnitude of the x displacement, and the deformation is exaggerated by a factor of 1000.
+The colors of the shaded surface indicate the x displacement, and the deformation is exaggerated by a factor of 5000.
 :::

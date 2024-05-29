@@ -15,5 +15,11 @@
 * spatialdata.spatialdb.CompositeDB
 * spatialdata.spatialdb.SimpleDB
 * spatialdata.spatialdb.SimpleGridDB
+* pylith.materials.Elasticity
+* pylith.materials.IsotropicLinearElasticity
+* pylith.materials.IsotropicLinearMaxwell
+* spatialdata.spatialdb.CompositeDB
+* spatialdata.spatialdb.SimpleDB
+* spatialdata.spatialdb.SimpleGridDB
 * Quasi-static simulation
 * pylith.faults.KinSrcConstRate

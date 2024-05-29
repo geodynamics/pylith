@@ -19,7 +19,7 @@ The parameters specific to this example are in `step01_axialdisp.cfg` and includ
 
 * `pylithapp.metadata` Metadata for this simulation. Even when the author and version are the same for all simulations in a directory, we prefer to keep that metadata in each simulation file as a reminder to keep it up-to-date for each simulation.
 * `pylithapp` Parameters defining where to write the output.
-* `pylithapp.problem` Parameters for the solution field with displacement and Lagrange multiplier subfields.
+* `pylithapp.problem.bc` Parameters for describing the boundary conditions that override the defaults.
 
 We override the parameters for the Dirichlet displacement boundary conditions on the -x and +x boundaries.
 We replace the `ZeroDB` spatial database for zero displacement values with a `UniformDB` to impose axial compression with 2.0 m of displacement on the two boundaries.
@@ -113,8 +113,8 @@ In {numref}`fig:example:subduction:3d:step01:solution` we use ParaView to visual
 We start ParaView from the `examples/subduction-3d` directory and then run the `viz/plot_dispwarp.py` Python script as described in {ref}`sec-paraview-python-scripts`.
 
 :::{figure-md} fig:example:subduction:3d:step01:solution
-<img src="figs/step01-solution.*" alt="Solution for Step 1. The colors indicate the magnitude of the x displacement, and the deformation is exaggerated by a factor of 1000." width="100%"/>
+<img src="figs/step01-solution.*" alt="Solution for Step 1. The colors indicate the x displacement, and the deformation is exaggerated by a factor of 10,000." width="100%"/>
 
 Solution for Step 1.
-The colors of the shaded surface indicate the magnitude of the x displacement, and the deformation is exaggerated by a factor of 1000.
+The colors of the shaded surface indicate the x displacement, and the deformation is exaggerated by a factor of 10,000.
 :::

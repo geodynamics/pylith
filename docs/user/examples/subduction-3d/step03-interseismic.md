@@ -22,8 +22,9 @@ The parameters specific to this example are in `step03_interseismic.cfg` and inc
 
 * `pylithapp.metadata` Metadata for this simulation. Even when the author and version are the same for all simulations in a directory, we prefer to keep that metadata in each simulation file as a reminder to keep it up-to-date for each simulation.
 * `pylithapp` Parameters defining where to write the output.
-* `pylithapp.problem` Parameters for the solution field with displacement and Lagrange multiplier subfields.
+* `pylithapp.problem` Parameters for the time step information as well as solution field with displacement and Lagrange multiplier subfields.
 * `pylithapp.interfaces` Parameters for the aseismic slip (creep) on the top and bottom of the slab.
+* `pylithapp.problem.bc` Parameters for describing the boundary conditions that override the defaults.
 
 For aseismic slip we use the `KinSrcConstRate` kinematic source to prescribe a constant slip rate.
 We also adjust the nodesets used for the boundary conditions to remove overlap with the slab to allow the slab to move independently.
@@ -89,7 +90,7 @@ ts_type = beuler
 
 ```
 
-The beginning of the output is near the same as in Step 2.
+The beginning of the output is nearly the same as in Step 2.
 The simulation advances 21 time steps.
 The linear solve converged after 13 iterations and the norm of the residual met the absolute convergence tolerance (`ksp_atol`) .
 In this simulation the fault interfaces on the top and bottom of the slab occupy a significant fraction of the domain.
@@ -107,8 +108,8 @@ In {numref}`fig:example:subduction:3d:step03:solution` we use ParaView to visual
 We start ParaView from the `examples/subduction-3d` directory and then run the `viz/plot_dispwarp.py` Python script as described in {ref}`sec-paraview-python-scripts`.
 
 :::{figure-md} fig:example:subduction:3d:step03:solution
-<img src="figs/step03-solution.*" alt="Solution for Step 3. The colors indicate the magnitude of the x displacement, and the deformation is exaggerated by a factor of 1000." width="100%"/>
+<img src="figs/step03-solution.*" alt="Solution for Step 3. The colors indicate the x displacement, and the deformation is exaggerated by a factor of 5000." width="100%"/>
 
 Solution for Step 3.
-The colors of the shaded surface indicate the magnitude of the x displacement, and the deformation is exaggerated by a factor of 1000.
+The colors of the shaded surface indicate the x displacement, and the deformation is exaggerated by a factor of 5000.
 :::
