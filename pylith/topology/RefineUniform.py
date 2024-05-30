@@ -46,7 +46,7 @@ class RefineUniform(MeshRefiner, ModuleRefineUniform):
         """Refine mesh.
         """
         self._setupLogging()
-        logEvent = "%srefine" % self._loggingPrefix
+        logEvent = f"{self._loggingPrefix}refine"
         self._eventLogger.eventBegin(logEvent)
 
         from pylith.mpi.Communicator import mpi_is_root

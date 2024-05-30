@@ -57,7 +57,7 @@ class PyLithApp(PetscApplication):
         """Constructor.
         """
         PetscApplication.__init__(self, name)
-        self._loggingPrefix = "PyLith "
+        self._loggingPrefix = "PL.PyLithApp."
         return
 
     def main(self, *args, **kwds):
@@ -110,8 +110,10 @@ class PyLithApp(PetscApplication):
             return
 
         # Run problem
+        self._eventLogger.stagePush("Run")
         self.problem.run(self)
         self._debug.log(resourceUsageString())
+        self._eventLogger.stagePop()
 
         # Cleanup
         self._eventLogger.stagePush("Finalize")
