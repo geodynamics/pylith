@@ -15,14 +15,55 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES MeshOps
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
+#include "pylith/utils/EventLogger.hh" // USES EventLogger
 
 #include <cassert> // USES assert()
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
 
+// ------------------------------------------------------------------------------------------------
+namespace pylith {
+    namespace topology {
+        class _RefineUniform {
+public:
+
+            class Events {
+public:
+
+                static
+                void init(void);
+
+                static pylith::utils::EventLogger logger;
+                static PylithInt refine;
+                static PylithInt refineFixCellLabel;
+                static PylithInt refineCheckTopology;
+            };
+
+        }; // _RefineUniform
+    } // topology
+} // pylith
+
+pylith::utils::EventLogger pylith::topology::_RefineUniform::Events::logger;
+PylithInt pylith::topology::_RefineUniform::Events::refine;
+PylithInt pylith::topology::_RefineUniform::Events::refineFixCellLabel;
+PylithInt pylith::topology::_RefineUniform::Events::refineCheckTopology;
+
+// ------------------------------------------------------------------------------------------------
+void
+pylith::topology::_RefineUniform::Events::init(void) {
+    logger.setClassName("RefineUniform");
+    logger.initialize();
+    refine = logger.registerEvent("PL:RefineUniform:refine");
+    refineFixCellLabel = logger.registerEvent("PL:RefineUniform:refineFixCellLabel");
+    refineCheckTopology = logger.registerEvent("PL:RefineUniform:refineCheckTopology");
+}
+
+
 // ----------------------------------------------------------------------
 // Constructor
-pylith::topology::RefineUniform::RefineUniform(void) {}
+pylith::topology::RefineUniform::RefineUniform(void) {
+    _RefineUniform::Events::init();
+}
 
 
 // ----------------------------------------------------------------------
@@ -35,8 +76,7 @@ pylith::topology::RefineUniform::~RefineUniform(void) {
 // ----------------------------------------------------------------------
 // Deallocate data structures.
 void
-pylith::topology::RefineUniform::deallocate(void) {
-}
+pylith::topology::RefineUniform::deallocate(void) {}
 
 
 // ----------------------------------------------------------------------
@@ -46,6 +86,7 @@ pylith::topology::RefineUniform::refine(Mesh* const newMesh,
                                         const Mesh& mesh,
                                         const int levels) {
     PYLITH_METHOD_BEGIN;
+    _RefineUniform::Events::logger.eventBegin(_RefineUniform::Events::refine);
 
     if (levels < 1) {
         PYLITH_METHOD_END;
@@ -83,6 +124,7 @@ pylith::topology::RefineUniform::refine(Mesh* const newMesh,
 
     newMesh->setDM(dmNew);
 
+    _RefineUniform::Events::logger.eventBegin(_RefineUniform::Events::refineFixCellLabel);
     // Remove all non-cells from cells label
     const char* const labelName = pylith::topology::Mesh::cells_label_name;
     PetscDMLabel matidLabel = NULL;
@@ -113,12 +155,16 @@ pylith::topology::RefineUniform::refine(Mesh* const newMesh,
     } // for
     err = ISRestoreIndices(valuesIS, &values);PYLITH_CHECK_ERROR(err);
     err = ISDestroy(&valuesIS);PYLITH_CHECK_ERROR(err);
+    _RefineUniform::Events::logger.eventEnd(_RefineUniform::Events::refineFixCellLabel);
 
+    _RefineUniform::Events::logger.eventBegin(_RefineUniform::Events::refineCheckTopology);
     // Check consistency
-    topology::MeshOps::checkTopology(*newMesh);
+    pylith::topology::MeshOps::checkTopology(*newMesh);
+    _RefineUniform::Events::logger.eventEnd(_RefineUniform::Events::refineCheckTopology);
 
     // newMesh->view("REFINED_MESH", "::ascii_info_detail");
 
+    _RefineUniform::Events::logger.eventEnd(_RefineUniform::Events::refine);
     PYLITH_METHOD_END;
 } // refine
 

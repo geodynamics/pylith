@@ -27,6 +27,45 @@
 #include <typeinfo> // USES typeid()
 #include <stdexcept> // USES std::runtime_error
 
+// ------------------------------------------------------------------------------------------------
+namespace pylith {
+    namespace feassemble {
+        class _Integrator {
+public:
+
+            class Events {
+public:
+
+                static
+                void init(void);
+
+                static pylith::utils::EventLogger logger;
+                static PylithInt initialize;
+                static PylithInt poststep;
+                static PylithInt setState;
+                static PylithInt updateStateVars;
+                static PylithInt computeDiagnosticField;
+                static PylithInt computeDerivedField;
+            };
+
+        }; // _Integrator
+    } // feassemble
+} // pylith
+
+pylith::utils::EventLogger pylith::feassemble::_Integrator::Events::logger;
+PylithInt pylith::feassemble::_Integrator::Events::initialize;
+PylithInt pylith::feassemble::_Integrator::Events::poststep;
+
+// ------------------------------------------------------------------------------------------------
+void
+pylith::feassemble::_Integrator::Events::init(void) {
+    logger.setClassName("Integrator");
+    logger.initialize();
+    initialize = logger.registerEvent("PL:Integrator:initialize");
+    poststep = logger.registerEvent("PL:Integrator:poststep");
+}
+
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Constructor
 pylith::feassemble::Integrator::Integrator(pylith::problems::Physics* const physics) :
@@ -40,7 +79,9 @@ pylith::feassemble::Integrator::Integrator(pylith::problems::Physics* const phys
     _hasLHSJacobian(false),
     _hasLHSJacobianLumped(false),
     _needNewLHSJacobian(true),
-    _needNewLHSJacobianLumped(true) {}
+    _needNewLHSJacobianLumped(true) {
+    _Integrator::Events::init();
+}
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -139,6 +180,7 @@ void
 pylith::feassemble::Integrator::initialize(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("initialize(solution="<<solution.getLabel()<<")");
+    _Integrator::Events::logger.eventBegin(_Integrator::Events::initialize);
 
     const pylith::topology::Mesh& physicsDomainMesh = getPhysicsDomainMesh();
     delete _auxiliaryField;_auxiliaryField = _physics->createAuxiliaryField(solution, physicsDomainMesh);
@@ -156,6 +198,7 @@ pylith::feassemble::Integrator::initialize(const pylith::topology::Field& soluti
 
     delete _derivedField;_derivedField = _physics->createDerivedField(solution, physicsDomainMesh);
 
+    _Integrator::Events::logger.eventEnd(_Integrator::Events::initialize);
     PYLITH_METHOD_END;
 } // initialize
 
@@ -181,11 +224,13 @@ pylith::feassemble::Integrator::poststep(const PylithReal t,
                                          const pylith::problems::Observer::NotificationType notification) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("poststep(t="<<t<<", dt="<<dt<<")");
+    _Integrator::Events::logger.eventBegin(_Integrator::Events::poststep);
 
     _updateStateVars(t, dt, solution);
     _computeDerivedField(t, dt, solution);
     notifyObservers(t, tindex, solution, notification);
 
+    _Integrator::Events::logger.eventEnd(_Integrator::Events::poststep);
     PYLITH_METHOD_END;
 } // poststep
 

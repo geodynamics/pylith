@@ -19,10 +19,58 @@
 #include "pylith/fekernels/Solution.hh" // USES Solution::passThruSubfield
 
 #include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
+#include "pylith/utils/EventLogger.hh" // USES EventLogger
 
 #include "petscdm.h" // USES DMReorderSectionSetDefault()
 
 #include <typeinfo> // USES typeid()
+
+// ------------------------------------------------------------------------------------------------
+namespace pylith {
+    namespace meshio {
+        class _OutputSubfield {
+public:
+
+            class Events {
+public:
+
+                static
+                void init(void);
+
+                static pylith::utils::EventLogger logger;
+                static PylithInt create;
+                static PylithInt createBasisOrder;
+                static PylithInt setLabel;
+                static PylithInt project;
+                static PylithInt projectWithLabel;
+                static PylithInt extractSubfield;
+            };
+
+        }; // _OutputSubfield
+    } // meshio
+} // pylith
+
+pylith::utils::EventLogger pylith::meshio::_OutputSubfield::Events::logger;
+PylithInt pylith::meshio::_OutputSubfield::Events::create;
+PylithInt pylith::meshio::_OutputSubfield::Events::createBasisOrder;
+PylithInt pylith::meshio::_OutputSubfield::Events::setLabel;
+PylithInt pylith::meshio::_OutputSubfield::Events::project;
+PylithInt pylith::meshio::_OutputSubfield::Events::projectWithLabel;
+PylithInt pylith::meshio::_OutputSubfield::Events::extractSubfield;
+
+// ------------------------------------------------------------------------------------------------
+void
+pylith::meshio::_OutputSubfield::Events::init(void) {
+    logger.setClassName("OutputSubfield");
+    logger.initialize();
+    create = logger.registerEvent("PL:OutputSubfield:create");
+    createBasisOrder = logger.registerEvent("PL:OutputSubfield:createBasisOrder");
+    setLabel = logger.registerEvent("PL:OutputSubfield:setLabel");
+    project = logger.registerEvent("PL:OutputSubfield:project");
+    projectWithLabel = logger.registerEvent("PL:OutputSubfield:projectWithLabel");
+    extractSubfield = logger.registerEvent("PL:OutputSubfield:extractSubfield");
+}
+
 
 // ------------------------------------------------------------------------------------------------
 // Constructor
@@ -31,7 +79,9 @@ pylith::meshio::OutputSubfield::OutputSubfield(void) :
     _vector(NULL),
     _fn(pylith::fekernels::Solution::passThruSubfield),
     _label(NULL),
-    _labelValue(0) {}
+    _labelValue(0) {
+    _OutputSubfield::Events::init();
+}
 
 
 // ------------------------------------------------------------------------------------------------
@@ -61,6 +111,7 @@ pylith::meshio::OutputSubfield::create(const pylith::topology::Field& field,
                                        const char* name,
                                        const int basisOrder) {
     PYLITH_METHOD_BEGIN;
+    // _OutputSubfield::Events::logger.eventBegin(_OutputSubfield::Events::create);
 
     OutputSubfield* subfield = new OutputSubfield();assert(subfield);
 
@@ -72,7 +123,7 @@ pylith::meshio::OutputSubfield::create(const pylith::topology::Field& field,
     // Basis order of output should be less than or equai to the basis order of the computed field.
     subfield->_discretization.basisOrder = std::min(basisOrder, info.fe.basisOrder);
 
-    PetscErrorCode err;
+    PetscErrorCode err = PETSC_SUCCESS;
     err = DMClone(mesh.getDM(), &subfield->_dm);PYLITH_CHECK_ERROR(err);
     err = DMReorderSectionSetDefault(subfield->_dm, DM_REORDER_DEFAULT_FALSE);PYLITH_CHECK_ERROR(err);
     err = DMReorderSectionSetType(subfield->_dm, NULL);PYLITH_CHECK_ERROR(err);
@@ -89,6 +140,7 @@ pylith::meshio::OutputSubfield::create(const pylith::topology::Field& field,
     err = DMCreateGlobalVector(subfield->_dm, &subfield->_vector);PYLITH_CHECK_ERROR(err);
     err = PetscObjectSetName((PetscObject)subfield->_vector, name);PYLITH_CHECK_ERROR(err);
 
+    // _OutputSubfield::Events::logger.eventEnd(_OutputSubfield::Events::create);
     PYLITH_METHOD_RETURN(subfield);
 }
 
@@ -100,6 +152,7 @@ pylith::meshio::OutputSubfield::create(const pylith::topology::Field& field,
                                        const pylith::topology::Mesh& mesh,
                                        const char* name) {
     PYLITH_METHOD_BEGIN;
+    _OutputSubfield::Events::logger.eventBegin(_OutputSubfield::Events::createBasisOrder);
 
     OutputSubfield* subfield = new OutputSubfield();assert(subfield);
 
@@ -130,6 +183,7 @@ pylith::meshio::OutputSubfield::create(const pylith::topology::Field& field,
     err = DMCreateGlobalVector(subfield->_dm, &subfield->_vector);PYLITH_CHECK_ERROR(err);
     err = PetscObjectSetName((PetscObject)subfield->_vector, name);PYLITH_CHECK_ERROR(err);
 
+    _OutputSubfield::Events::logger.eventEnd(_OutputSubfield::Events::createBasisOrder);
     PYLITH_METHOD_RETURN(subfield);
 }
 
@@ -140,6 +194,7 @@ void
 pylith::meshio::OutputSubfield::setLabel(const char* name,
                                          const int value) {
     PYLITH_METHOD_BEGIN;
+    _OutputSubfield::Events::logger.eventBegin(_OutputSubfield::Events::setLabel);
 
     if (_label) {
         PYLITH_METHOD_END;
@@ -150,6 +205,7 @@ pylith::meshio::OutputSubfield::setLabel(const char* name,
 
     _labelValue = value;
 
+    _OutputSubfield::Events::logger.eventEnd(_OutputSubfield::Events::setLabel);
     PYLITH_METHOD_END;
 }
 
@@ -191,6 +247,7 @@ pylith::meshio::OutputSubfield::getDM(void) const {
 void
 pylith::meshio::OutputSubfield::project(const PetscVec& fieldVector) {
     PYLITH_METHOD_BEGIN;
+    _OutputSubfield::Events::logger.eventBegin(_OutputSubfield::Events::project);
     assert(fieldVector);
     assert(_vector);
 
@@ -200,6 +257,7 @@ pylith::meshio::OutputSubfield::project(const PetscVec& fieldVector) {
     err = DMProjectField(_dm, t, fieldVector, &_fn, INSERT_VALUES, _vector);PYLITH_CHECK_ERROR(err);
     err = VecScale(_vector, _description.scale);PYLITH_CHECK_ERROR(err);
 
+    _OutputSubfield::Events::logger.eventEnd(_OutputSubfield::Events::project);
     PYLITH_METHOD_END;
 }
 
@@ -209,6 +267,7 @@ pylith::meshio::OutputSubfield::project(const PetscVec& fieldVector) {
 void
 pylith::meshio::OutputSubfield::projectWithLabel(const PetscVec& fieldVector) {
     PYLITH_METHOD_BEGIN;
+    _OutputSubfield::Events::logger.eventBegin(_OutputSubfield::Events::projectWithLabel);
     assert(fieldVector);
     assert(_vector);
     assert(_label);
@@ -219,6 +278,7 @@ pylith::meshio::OutputSubfield::projectWithLabel(const PetscVec& fieldVector) {
     err = DMProjectFieldLabel(_dm, t, _label, 1, &_labelValue, PETSC_DETERMINE, NULL, fieldVector, &_fn, INSERT_VALUES, _vector);PYLITH_CHECK_ERROR(err);
     err = VecScale(_vector, _description.scale);PYLITH_CHECK_ERROR(err);
 
+    _OutputSubfield::Events::logger.eventEnd(_OutputSubfield::Events::projectWithLabel);
     PYLITH_METHOD_END;
 }
 
@@ -229,6 +289,7 @@ void
 pylith::meshio::OutputSubfield::extractSubfield(const pylith::topology::Field& field,
                                                 const PetscInt subfieldIndex) {
     PYLITH_METHOD_BEGIN;
+    _OutputSubfield::Events::logger.eventBegin(_OutputSubfield::Events::extractSubfield);
 
     PetscErrorCode err;
     PetscSection subfieldSection = NULL;
@@ -261,6 +322,7 @@ pylith::meshio::OutputSubfield::extractSubfield(const pylith::topology::Field& f
 
     err = VecRestoreArray(subfieldVector, &subfieldArray);PYLITH_CHECK_ERROR(err);
 
+    _OutputSubfield::Events::logger.eventEnd(_OutputSubfield::Events::extractSubfield);
     PYLITH_METHOD_END;
 } // extractSubfield
 

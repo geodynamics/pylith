@@ -22,7 +22,7 @@
  *
  * Each logger object manages the events for a single "logging class".
  */
-class pylith::utils::EventLogger { // EventLogger
+class pylith::utils::EventLogger {
     friend class TestEventLogger; // unit testing
 
     // PUBLIC MEMBERS ///////////////////////////////////////////////////////

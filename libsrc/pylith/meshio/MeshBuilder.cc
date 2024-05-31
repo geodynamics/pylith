@@ -15,12 +15,55 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/utils/array.hh" // USES scalar_array, int_array
 #include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
+#include "pylith/utils/EventLogger.hh" // USES EventLogger
 
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 #include <cassert> // USES assert()
 #include <sstream> // USES std::ostringstream
 #include <stdexcept> // USES std::runtime_error
+
+namespace pylith {
+    namespace meshio {
+        class _MeshBuilder {
+public:
+
+            class Events {
+public:
+
+                static
+                void init(void);
+
+                static pylith::utils::EventLogger logger;
+                static PylithInt buildMesh;
+                static PylithInt setGroup;
+                static PylithInt setGroupAddPoints;
+
+                static bool isInitialized;
+            };
+        };
+    }
+}
+pylith::utils::EventLogger pylith::meshio::_MeshBuilder::Events::logger;
+PylithInt pylith::meshio::_MeshBuilder::Events::buildMesh;
+PylithInt pylith::meshio::_MeshBuilder::Events::setGroup;
+PylithInt pylith::meshio::_MeshBuilder::Events::setGroupAddPoints;
+bool pylith::meshio::_MeshBuilder::Events::isInitialized = false;
+
+void
+pylith::meshio::_MeshBuilder::Events::init(void) {
+    if (isInitialized) {
+        return;
+    } // if
+
+    logger.setClassName("MeshBuilder");
+    logger.initialize();
+    buildMesh = logger.registerEvent("PL:MeshBuilder:buildMesh");
+    setGroup = logger.registerEvent("PL:MeshBuilder:setGroup");
+    setGroupAddPoints = logger.registerEvent("PL:MeshBuilder:setGroupAddPoints");
+    isInitialized = true;
+}
+
 
 // ----------------------------------------------------------------------
 // Set vertices and cells in mesh.
@@ -33,8 +76,10 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
                                        const int numCells,
                                        const int numCorners,
                                        const int meshDim,
-                                       const bool isParallel) { // buildMesh
+                                       const bool isParallel) {
     PYLITH_METHOD_BEGIN;
+    _MeshBuilder::Events::init();
+    _MeshBuilder::Events::logger.eventBegin(_MeshBuilder::Events::buildMesh);
 
     assert(mesh);
     assert(coordinates);
@@ -84,6 +129,7 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
     err = DMPlexCreateFromCellListPetsc(comm, dim, numCells, numVertices, numCorners, interpolate, &cells[0], spaceDim, &(*coordinates)[0], &dmMesh);PYLITH_CHECK_ERROR(err);
     mesh->setDM(dmMesh);
 
+    _MeshBuilder::Events::logger.eventEnd(_MeshBuilder::Events::buildMesh);
     PYLITH_METHOD_END;
 } // buildMesh
 
@@ -96,6 +142,8 @@ pylith::meshio::MeshBuilder::setGroup(pylith::topology::Mesh* mesh,
                                       const GroupPtType groupType,
                                       const int_array& points) {
     PYLITH_METHOD_BEGIN;
+    _MeshBuilder::Events::init();
+    _MeshBuilder::Events::logger.eventBegin(_MeshBuilder::Events::setGroup);
     assert(mesh);
 
     PetscDM dmMesh = mesh->getDM();assert(dmMesh);
@@ -119,6 +167,7 @@ pylith::meshio::MeshBuilder::setGroup(pylith::topology::Mesh* mesh,
             err = DMLabelSetValue(label, numCells+points[p], 1);PYLITH_CHECK_ERROR(err);
         } // for
           // Also add any non-cells which have all vertices marked
+        _MeshBuilder::Events::logger.eventBegin(_MeshBuilder::Events::setGroupAddPoints);
         for (PetscInt p = 0; p < numPoints; ++p) {
             const PetscInt vertex = numCells+points[p];
             PetscInt      *star = NULL, starSize, s;
@@ -142,8 +191,10 @@ pylith::meshio::MeshBuilder::setGroup(pylith::topology::Mesh* mesh,
             }
             err = DMPlexRestoreTransitiveClosure(dmMesh, vertex, PETSC_FALSE, &starSize, &star);PYLITH_CHECK_ERROR(err);
         }
+        _MeshBuilder::Events::logger.eventEnd(_MeshBuilder::Events::setGroupAddPoints);
     } // if/else
 
+    _MeshBuilder::Events::logger.eventEnd(_MeshBuilder::Events::setGroup);
     PYLITH_METHOD_END;
 } // setGroup
 

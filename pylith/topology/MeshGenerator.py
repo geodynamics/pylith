@@ -41,7 +41,7 @@ class MeshGenerator(PetscComponent):
     def _adjustTopology(self, mesh, interfaces, problem):
         """Adjust topology for interface implementation.
         """
-        logEvent = "%sadjTopo" % self._loggingPrefix
+        logEvent = f"{self._loggingPrefix}adjTopo"
         self._eventLogger.eventBegin(logEvent)
 
         from pylith.mpi.Communicator import mpi_is_root
@@ -65,17 +65,17 @@ class MeshGenerator(PetscComponent):
         """Setup event logging.
         """
         if not "_loggingPrefix" in dir(self):
-            self._loggingPrefix = ""
+            self._loggingPrefix = "PL.MeshGenerator."
 
         from pylith.utils.EventLogger import EventLogger
         logger = EventLogger()
-        logger.setClassName("Mesh Generator")
+        logger.setClassName("MeshGenerator")
         logger.initialize()
 
         events = ["create",
                   "adjTopo"]
         for event in events:
-            logger.registerEvent("%s%s" % (self._loggingPrefix, event))
+            logger.registerEvent(f"{self._loggingPrefix}{event}")
 
         self._eventLogger = logger
 

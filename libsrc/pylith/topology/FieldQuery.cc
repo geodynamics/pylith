@@ -34,9 +34,37 @@ public:
             void findQueryIndices(FieldQuery::DBQueryContext* context,
                                   const pylith::string_vector& valuesForSubfield);
 
+            // Logging events
+            class Events {
+public:
+
+                static
+                void init(void);
+
+                static pylith::utils::EventLogger logger;
+                static PylithInt queryDB;
+                static PylithInt queryDBLabel;
+                static PylithInt openDB;
+            };
+
         }; // _FieldQuery
     } // topology
 } // pylith
+pylith::utils::EventLogger pylith::topology::_FieldQuery::Events::logger;
+PylithInt pylith::topology::_FieldQuery::Events::queryDB;
+PylithInt pylith::topology::_FieldQuery::Events::queryDBLabel;
+PylithInt pylith::topology::_FieldQuery::Events::openDB;
+
+// ------------------------------------------------------------------------------------------------
+void
+pylith::topology::_FieldQuery::Events::init(void) {
+    logger.setClassName("FieldQuery");
+    logger.initialize();
+    openDB = logger.registerEvent("PL:FieldQuery:openDB");
+    queryDB = logger.registerEvent("PL:FieldQuery:queryDB");
+    queryDBLabel = logger.registerEvent("PL:FieldQuery:queryDBLabel");
+} // init
+
 
 // ----------------------------------------------------------------------
 // Default constructor.
@@ -44,13 +72,8 @@ pylith::topology::FieldQuery::FieldQuery(const Field& field) :
     _field(field),
     _functions(NULL),
     _contexts(NULL),
-    _contextPtrs(NULL),
-    _logger(new pylith::utils::EventLogger) {
-    assert(_logger);
-    _logger->setClassName("FieldQuery");
-    _logger->initialize();
-    _logger->registerEvent("Py-FdQu-queryDB");
-    _logger->registerEvent("Py-FdQu-queryPt");
+    _contextPtrs(NULL) {
+    _FieldQuery::Events::init();
 } // constructor
 
 
@@ -70,7 +93,6 @@ pylith::topology::FieldQuery::deallocate(void) {
     delete[] _functions;_functions = NULL;
     delete[] _contexts;_contexts = NULL;
     delete[] _contextPtrs;_contextPtrs = NULL;
-    delete _logger;_logger = NULL;
 
     _subfieldQueries.clear();
 
@@ -138,6 +160,7 @@ void
 pylith::topology::FieldQuery::openDB(spatialdata::spatialdb::SpatialDB* db,
                                      const PylithReal lengthScale) {
     PYLITH_METHOD_BEGIN;
+    _FieldQuery::Events::logger.eventBegin(_FieldQuery::Events::openDB);
 
     // Open spatial database.
     if (db) {
@@ -178,11 +201,11 @@ pylith::topology::FieldQuery::openDB(spatialdata::spatialdb::SpatialDB* db,
         _contexts[index].description = description.label;
         _contexts[index].valueScale = description.scale;
         _contexts[index].validator = description.validator;
-        _contexts[index].logger = _logger;
 
         _contextPtrs[index] = &_contexts[index];
     } // for
 
+    _FieldQuery::Events::logger.eventEnd(_FieldQuery::Events::openDB);
     PYLITH_METHOD_END;
 } // openDB
 
@@ -192,18 +215,14 @@ pylith::topology::FieldQuery::openDB(spatialdata::spatialdb::SpatialDB* db,
 void
 pylith::topology::FieldQuery::queryDB(void) {
     PYLITH_METHOD_BEGIN;
-
-    assert(_logger);
-    const PylithInt queryEvent = _logger->getEventId("Py-FdQu-queryDB");
-    _logger->eventBegin(queryEvent);
+    _FieldQuery::Events::logger.eventBegin(_FieldQuery::Events::queryDB);
 
     PetscErrorCode err = 0;
     PetscReal dummyTime = 0.0;
     err = DMProjectFunctionLocal(_field.getDM(), dummyTime, _functions, (void**)_contextPtrs, INSERT_ALL_VALUES,
                                  _field.getLocalVector());PYLITH_CHECK_ERROR(err);
 
-    _logger->eventEnd(queryEvent);
-
+    _FieldQuery::Events::logger.eventEnd(_FieldQuery::Events::queryDB);
     PYLITH_METHOD_END;
 } // queryDB
 
@@ -214,10 +233,7 @@ void
 pylith::topology::FieldQuery::queryDBLabel(const char* labelName,
                                            const PylithInt labelValue) {
     PYLITH_METHOD_BEGIN;
-
-    assert(_logger);
-    const PylithInt queryEvent = _logger->getEventId("Py-FdQu-queryDB");
-    _logger->eventBegin(queryEvent);
+    _FieldQuery::Events::logger.eventBegin(_FieldQuery::Events::queryDBLabel);
 
     PetscErrorCode err = 0;
     PetscReal dummyTime = 0.0;
@@ -236,8 +252,7 @@ pylith::topology::FieldQuery::queryDBLabel(const char* labelName,
                                       numSubfields, &subfieldIndices[0], _functions, (void**)_contextPtrs,
                                       INSERT_ALL_VALUES, _field.getLocalVector());PYLITH_CHECK_ERROR(err);
 
-    _logger->eventEnd(queryEvent);
-
+    _FieldQuery::Events::logger.eventEnd(_FieldQuery::Events::queryDBLabel);
     PYLITH_METHOD_END;
 } // queryDBLabel
 
@@ -280,10 +295,6 @@ pylith::topology::FieldQuery::queryDBPointFn(PylithInt dim,
     if (!queryctx->db) {
         PYLITH_METHOD_RETURN(0);
     } // if
-
-    assert(queryctx->logger);
-    const PylithInt pointFnEvent = queryctx->logger->getEventId("Py-FdQu-queryPt");
-    queryctx->logger->eventBegin(pointFnEvent);
 
     // Dimensionalize query location coordinates.
     assert(queryctx->lengthScale > 0);
@@ -346,8 +357,6 @@ pylith::topology::FieldQuery::queryDBPointFn(PylithInt dim,
     for (int i = 0; i < nvalues; ++i) {
         values[i] /= queryctx->valueScale;
     } // for
-
-    queryctx->logger->eventEnd(pointFnEvent);
 
     PYLITH_METHOD_RETURN(0);
 } // queryDBPointFn

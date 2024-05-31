@@ -29,12 +29,54 @@
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
+#include "pylith/utils/EventLogger.hh" // EventLogger
 
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 #include <typeinfo> // USES typeid()
+
+// ------------------------------------------------------------------------------------------------
+namespace pylith {
+    namespace materials {
+        class _Elasticity {
+public:
+
+            class Events {
+public:
+
+                static
+                void init(void);
+
+                static pylith::utils::EventLogger logger;
+                static PylithInt verifyConfiguration;
+                static PylithInt createIntegrator;
+                static PylithInt createAuxiliaryField;
+                static PylithInt createDerivedField;
+            };
+
+        }; // _Elasticity
+    } // materials
+} // pylith
+
+pylith::utils::EventLogger pylith::materials::_Elasticity::Events::logger;
+PylithInt pylith::materials::_Elasticity::Events::verifyConfiguration;
+PylithInt pylith::materials::_Elasticity::Events::createIntegrator;
+PylithInt pylith::materials::_Elasticity::Events::createAuxiliaryField;
+PylithInt pylith::materials::_Elasticity::Events::createDerivedField;
+
+// ------------------------------------------------------------------------------------------------
+void
+pylith::materials::_Elasticity::Events::init(void) {
+    logger.setClassName("Elasticity");
+    logger.initialize();
+    verifyConfiguration = logger.registerEvent("PL:Elasticity:verifyConfiguration");
+    createIntegrator = logger.registerEvent("PL:Elasticity:createIntegrator");
+    createAuxiliaryField = logger.registerEvent("PL:Elasticity:createAuxiliaryField");
+    createDerivedField = logger.registerEvent("PL:Elasticity:createDerivedField");
+}
+
 
 // ------------------------------------------------------------------------------------------------
 typedef pylith::feassemble::IntegratorDomain::ResidualKernels ResidualKernels;
@@ -49,6 +91,7 @@ pylith::materials::Elasticity::Elasticity(void) :
     _rheology(NULL),
     _derivedFactory(new pylith::materials::DerivedFactoryElasticity) {
     pylith::utils::PyreComponent::setName("elasticity");
+    _Elasticity::Events::init();
 } // constructor
 
 
@@ -110,6 +153,7 @@ void
 pylith::materials::Elasticity::verifyConfiguration(const pylith::topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("verifyConfiguration(solution="<<solution.getLabel()<<")");
+    _Elasticity::Events::logger.eventBegin(_Elasticity::Events::verifyConfiguration);
 
     // Verify solution contains required fields.
     std::string reason = "material 'Elasticity'.";
@@ -133,6 +177,7 @@ pylith::materials::Elasticity::verifyConfiguration(const pylith::topology::Field
 
     pylith::topology::FieldOps::checkSubfieldsExist(requiredFields, reason, solution);
 
+    _Elasticity::Events::logger.eventEnd(_Elasticity::Events::verifyConfiguration);
     PYLITH_METHOD_END;
 } // verifyConfiguration
 
@@ -143,6 +188,7 @@ pylith::feassemble::Integrator*
 pylith::materials::Elasticity::createIntegrator(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("createIntegrator(solution="<<solution.getLabel()<<")");
+    _Elasticity::Events::logger.eventBegin(_Elasticity::Events::createIntegrator);
 
     pylith::feassemble::IntegratorDomain* integrator = new pylith::feassemble::IntegratorDomain(this);assert(integrator);
     integrator->setLabelName(getLabelName());
@@ -153,6 +199,7 @@ pylith::materials::Elasticity::createIntegrator(const pylith::topology::Field& s
     _setKernelsUpdateStateVars(integrator, solution);
     _setKernelsDerivedField(integrator, solution);
 
+    _Elasticity::Events::logger.eventEnd(_Elasticity::Events::createIntegrator);
     PYLITH_METHOD_RETURN(integrator);
 } // createIntegrator
 
@@ -164,6 +211,7 @@ pylith::materials::Elasticity::createAuxiliaryField(const pylith::topology::Fiel
                                                     const pylith::topology::Mesh& domainMesh) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("createAuxiliaryField(solution="<<solution.getLabel()<<", domainMesh="<<typeid(domainMesh).name()<<")");
+    _Elasticity::Events::logger.eventBegin(_Elasticity::Events::createAuxiliaryField);
 
     pylith::topology::Field* auxiliaryField = new pylith::topology::Field(domainMesh);assert(auxiliaryField);
     auxiliaryField->setLabel("Elasticity auxiliary field");
@@ -200,6 +248,7 @@ pylith::materials::Elasticity::createAuxiliaryField(const pylith::topology::Fiel
     assert(auxiliaryFactory);
     auxiliaryFactory->setValuesFromDB();
 
+    _Elasticity::Events::logger.eventEnd(_Elasticity::Events::createAuxiliaryField);
     PYLITH_METHOD_RETURN(auxiliaryField);
 } // createAuxiliaryField
 
@@ -211,6 +260,7 @@ pylith::materials::Elasticity::createDerivedField(const pylith::topology::Field&
                                                   const pylith::topology::Mesh& domainMesh) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("createDerivedField(solution="<<solution.getLabel()<<", domainMesh="<<typeid(domainMesh).name()<<")");
+    _Elasticity::Events::logger.eventBegin(_Elasticity::Events::createDerivedField);
 
     assert(_derivedFactory);
     if (_derivedFactory->getNumSubfields() == 1) {
@@ -230,6 +280,7 @@ pylith::materials::Elasticity::createDerivedField(const pylith::topology::Field&
     derivedField->allocate();
     derivedField->createOutputVector();
 
+    _Elasticity::Events::logger.eventEnd(_Elasticity::Events::createDerivedField);
     PYLITH_METHOD_RETURN(derivedField);
 } // createDerivedField
 

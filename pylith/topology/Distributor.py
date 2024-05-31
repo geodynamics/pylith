@@ -52,7 +52,7 @@ class Distributor(PetscComponent, ModuleDistributor):
         """Distribute a Mesh
         """
         self._setupLogging()
-        logEvent = "%sdistribute" % self._loggingPrefix
+        logEvent = f"{self._loggingPrefix}distribute"
         self._eventLogger.eventBegin(logEvent)
 
         from pylith.topology.Mesh import Mesh
@@ -76,14 +76,14 @@ class Distributor(PetscComponent, ModuleDistributor):
     def _setupLogging(self):
         """Setup event logging.
         """
-        self._loggingPrefix = "Dist "
+        self._loggingPrefix = "PL.Distributor."
         from pylith.utils.EventLogger import EventLogger
         logger = EventLogger()
-        logger.setClassName("FE Distribution")
+        logger.setClassName("Distributor")
         logger.initialize()
         events = ["distribute"]
         for event in events:
-            logger.registerEvent("%s%s" % (self._loggingPrefix, event))
+            logger.registerEvent(f"{self._loggingPrefix}{event}")
 
         self._eventLogger = logger
 

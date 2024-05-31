@@ -51,7 +51,7 @@ class MeshImporter(MeshGenerator):
         """Constructor.
         """
         MeshGenerator.__init__(self, name)
-        self._loggingPrefix = "MeIm "
+        self._loggingPrefix = "PL.MeshImporter."
 
     def preinitialize(self, problem):
         """Do minimal initialization.
@@ -70,7 +70,7 @@ class MeshImporter(MeshGenerator):
         isRoot = mpi_is_root()
 
         self._setupLogging()
-        logEvent = "%screate" % self._loggingPrefix
+        logEvent = f"{self._loggingPrefix}create"
         self._eventLogger.eventBegin(logEvent)
 
         # Read mesh
@@ -78,7 +78,7 @@ class MeshImporter(MeshGenerator):
 
         # Reorder mesh
         if self.reorderMesh:
-            logEvent2 = "%sreorder" % self._loggingPrefix
+            logEvent2 = f"{self._loggingPrefix}reorder"
             self._eventLogger.eventBegin(logEvent2)
             self._debug.log(resourceUsageString())
             if isRoot:
@@ -107,7 +107,6 @@ class MeshImporter(MeshGenerator):
         newMesh = self.refiner.refine(mesh)
         if not newMesh == mesh:
             mesh.cleanup()
-            newMesh.memLoggingStage = "RefinedMesh"
 
         # Can't reorder mesh again, because we do not have routine to
         # unmix normal and hybrid cells.
@@ -128,7 +127,7 @@ class MeshImporter(MeshGenerator):
         """Setup event logging.
         """
         MeshGenerator._setupLogging(self)
-        self._eventLogger.registerEvent("%sreorder" % self._loggingPrefix)
+        self._eventLogger.registerEvent(f"{self._loggingPrefix}reorder")
 
 
 # FACTORIES ////////////////////////////////////////////////////////////

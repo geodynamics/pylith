@@ -222,7 +222,7 @@ class Problem(PetscComponent, ModuleProblem):
         """Setup event logging.
         """
         if not "_loggingPrefix" in dir(self):
-            self._loggingPrefix = ""
+            self._loggingPrefix = "PL.Problem."
 
         from pylith.utils.EventLogger import EventLogger
         logger = EventLogger()

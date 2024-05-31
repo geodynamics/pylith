@@ -23,9 +23,45 @@
 #include "pylith/utils/constdefs.h" // USES PYLITH_MAXSCALAR
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
+#include "pylith/utils/EventLogger.hh" // USES EventLogger
 
 #include <iostream> // USES std::cout
 #include <typeinfo> // USES typeid()
+
+// ------------------------------------------------------------------------------------------------
+namespace pylith {
+    namespace meshio {
+        class _OutputObserver {
+public:
+
+            class Events {
+public:
+
+                static
+                void init(void);
+
+                static pylith::utils::EventLogger logger;
+                static PylithInt getSubfield;
+                static PylithInt appendField;
+            };
+
+        }; // _OutputObserver
+    } // meshio
+} // pylith
+
+pylith::utils::EventLogger pylith::meshio::_OutputObserver::Events::logger;
+PylithInt pylith::meshio::_OutputObserver::Events::getSubfield;
+PylithInt pylith::meshio::_OutputObserver::Events::appendField;
+
+// ------------------------------------------------------------------------------------------------
+void
+pylith::meshio::_OutputObserver::Events::init(void) {
+    logger.setClassName("OutputObserver");
+    logger.initialize();
+    getSubfield = logger.registerEvent("PL:OutputObserver:getSubfield");
+    appendField = logger.registerEvent("PL:OutputObserver:appendField");
+}
+
 
 // ------------------------------------------------------------------------------------------------
 // Constructor
@@ -33,7 +69,9 @@ pylith::meshio::OutputObserver::OutputObserver(void) :
     _timeScale(1.0),
     _writer(NULL),
     _trigger(NULL),
-    _outputBasisOrder(1) {}
+    _outputBasisOrder(1) {
+    _OutputObserver::Events::init();
+}
 
 
 // ------------------------------------------------------------------------------------------------
@@ -135,11 +173,13 @@ pylith::meshio::OutputObserver::_getSubfield(const pylith::topology::Field& fiel
                                              const char* name) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_getSubfield(field="<<field.getLabel()<<", name="<<name<<", submesh="<<typeid(submesh).name()<<")");
+    _OutputObserver::Events::logger.eventBegin(_OutputObserver::Events::getSubfield);
 
     if (0 == _subfields.count(name) ) {
         _subfields[name] = OutputSubfield::create(field, submesh, name, _outputBasisOrder);
     } // if
 
+    _OutputObserver::Events::logger.eventEnd(_OutputObserver::Events::getSubfield);
     PYLITH_METHOD_RETURN(_subfields[name]);
 } // _getSubfield
 
@@ -151,6 +191,7 @@ pylith::meshio::OutputObserver::_appendField(const PylithReal t,
                                              const pylith::meshio::OutputSubfield& subfield) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_appendField(t="<<t<<", subfield="<<typeid(subfield).name()<<")");
+    _OutputObserver::Events::logger.eventBegin(_OutputObserver::Events::appendField);
 
     // Use basis order from subfield since requested basis order for output may be greater than original basis order.
     const int basisOrder = subfield.getBasisOrder();
@@ -170,6 +211,7 @@ pylith::meshio::OutputObserver::_appendField(const PylithReal t,
             );
     } // switch
 
+    _OutputObserver::Events::logger.eventEnd(_OutputObserver::Events::appendField);
     PYLITH_METHOD_END;
 } // _appendField
 

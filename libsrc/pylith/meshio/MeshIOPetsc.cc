@@ -20,6 +20,7 @@
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
+#include "pylith/utils/EventLogger.hh" // USES EventLogger
 
 #include <set> // USES std::set
 #include <cassert> // USES assert()
@@ -51,9 +52,37 @@ public:
             static
             void fixBoundaryLabels(PetscDM* dmMesh);
 
+            class Events {
+public:
+
+                static
+                void init(void);
+
+                static pylith::utils::EventLogger logger;
+                static PylithInt read;
+                static PylithInt fixMaterialLabel;
+                static PylithInt fixBoundaryLabels;
+            };
+
         }; // _MeshIOPetsc
     } // meshio
 } // pylith
+
+pylith::utils::EventLogger pylith::meshio::_MeshIOPetsc::Events::logger;
+PylithInt pylith::meshio::_MeshIOPetsc::Events::read;
+PylithInt pylith::meshio::_MeshIOPetsc::Events::fixMaterialLabel;
+PylithInt pylith::meshio::_MeshIOPetsc::Events::fixBoundaryLabels;
+
+// ------------------------------------------------------------------------------------------------
+void
+pylith::meshio::_MeshIOPetsc::Events::init(void) {
+    logger.setClassName("MeshIOPetsc");
+    logger.initialize();
+    read = logger.registerEvent("PL:MeshIOPetsc:read");
+    fixMaterialLabel = logger.registerEvent("PL:MeshIOPetsc:fixMaterialLabel");
+    fixBoundaryLabels = logger.registerEvent("PL:MeshIOPetsc:fixBoundaryLabels");
+}
+
 
 // ------------------------------------------------------------------------------------------------
 // Constructor
@@ -61,6 +90,7 @@ pylith::meshio::MeshIOPetsc::MeshIOPetsc(void) :
     _filename(""),
     _prefix("") {
     PyreComponent::setName("meshiopetsc");
+    _MeshIOPetsc::Events::init();
 } // constructor
 
 
@@ -83,13 +113,13 @@ pylith::meshio::MeshIOPetsc::deallocate(void) {
 } // deallocate
 
 
-#include <iostream>
 // ------------------------------------------------------------------------------------------------
 // Read mesh.
 void
 pylith::meshio::MeshIOPetsc::_read(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_read()");
+    _MeshIOPetsc::Events::logger.eventBegin(_MeshIOPetsc::Events::read);
     assert(_mesh);
 
     const size_t noptions = 3;
@@ -114,10 +144,12 @@ pylith::meshio::MeshIOPetsc::_read(void) {
     } // if
     err = DMPlexDistributeSetDefault(dmMesh, PETSC_FALSE);PYLITH_CHECK_ERROR(err);
     err = DMSetFromOptions(dmMesh);PYLITH_CHECK_ERROR(err);
+
     _MeshIOPetsc::fixMaterialLabel(&dmMesh);
     _MeshIOPetsc::fixBoundaryLabels(&dmMesh);
     _mesh->setDM(dmMesh);
 
+    _MeshIOPetsc::Events::logger.eventEnd(_MeshIOPetsc::Events::read);
     PYLITH_METHOD_END;
 } // read
 
@@ -125,8 +157,7 @@ pylith::meshio::MeshIOPetsc::_read(void) {
 // ------------------------------------------------------------------------------------------------
 // Write mesh to file.
 void
-pylith::meshio::MeshIOPetsc::_write(void) const {
-}
+pylith::meshio::MeshIOPetsc::_write(void) const {}
 
 
 // ------------------------------------------------------------------------------------------------
@@ -134,6 +165,8 @@ pylith::meshio::MeshIOPetsc::_write(void) const {
 void
 pylith::meshio::_MeshIOPetsc::fixMaterialLabel(PetscDM* dmMesh) {
     PYLITH_METHOD_BEGIN;
+    _MeshIOPetsc::Events::logger.eventBegin(_MeshIOPetsc::Events::fixMaterialLabel);
+
     assert(dmMesh);
     PetscErrorCode err = 0;
     const char* const labelName = pylith::topology::Mesh::cells_label_name;
@@ -164,13 +197,14 @@ pylith::meshio::_MeshIOPetsc::fixMaterialLabel(PetscDM* dmMesh) {
     const PetscInt* valuesIndices = PETSC_NULLPTR;
     err = ISGetIndices(valuesIS, &valuesIndices);
     for (PetscInt point = pStart; point < pEnd; ++point) {
-      for (PetscInt iValue=0; iValue < numValues; ++iValue) {
-	err = DMLabelClearValue(dmLabel, point, valuesIndices[iValue]);PYLITH_CHECK_ERROR(err);
-      } // for
+        for (PetscInt iValue = 0; iValue < numValues; ++iValue) {
+            err = DMLabelClearValue(dmLabel, point, valuesIndices[iValue]);PYLITH_CHECK_ERROR(err);
+        } // for
     } // for
     err = ISRestoreIndices(valuesIS, &valuesIndices);
     err = ISDestroy(&valuesIS);
 
+    _MeshIOPetsc::Events::logger.eventEnd(_MeshIOPetsc::Events::fixMaterialLabel);
     PYLITH_METHOD_END;
 } // fixMaterialLabel
 
@@ -181,6 +215,7 @@ pylith::meshio::_MeshIOPetsc::fixMaterialLabel(PetscDM* dmMesh) {
 void
 pylith::meshio::_MeshIOPetsc::fixBoundaryLabels(PetscDM* dmMesh) {
     PYLITH_METHOD_BEGIN;
+    _MeshIOPetsc::Events::logger.eventBegin(_MeshIOPetsc::Events::fixBoundaryLabels);
     assert(dmMesh);
     PetscErrorCode err = 0;
 
@@ -281,5 +316,6 @@ pylith::meshio::_MeshIOPetsc::fixBoundaryLabels(PetscDM* dmMesh) {
 
     } // for
 
+    _MeshIOPetsc::Events::logger.eventEnd(_MeshIOPetsc::Events::fixBoundaryLabels);
     PYLITH_METHOD_END;
 } // fixBoundaryLabels

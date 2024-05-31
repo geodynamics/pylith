@@ -27,6 +27,7 @@
 #include "petscds.h" // USES PetscDS
 
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
+#include "pylith/utils/EventLogger.hh" // USES EventLogger
 
 #include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error
@@ -65,22 +66,57 @@ extern "C" PetscErrorCode DMPlexComputeJacobian_Action_Internal(PetscDM,
 
 namespace pylith {
     namespace feassemble {
-        class _IntegratorDomian {
+        class _IntegratorDomain {
 public:
 
-            /** Create list of cells to include in integration.
-             *
-             * We start with the cells in the label and kick out any cells in the overlap with other
-             * processes; cells in the overlap are integratored by other processes.
-             *
-             * @returns PETSc IS with cells to include in integration.
-             */
-            static
-            PetscIS createIntegrationList(void);
+            class Events {
+public:
 
+                static
+                void init(void);
+
+                static pylith::utils::EventLogger logger;
+                static PylithInt initialize;
+                static PylithInt setInterfaceData;
+                static PylithInt setState;
+                static PylithInt computeRHSResidual;
+                static PylithInt computeLHSResidual;
+                static PylithInt computeLHSJacobian;
+                static PylithInt computeLHSJacobianLumpedInv;
+                static PylithInt updateStateVars;
+                static PylithInt computeDerivedField;
+            };
         };
+
     }
 }
+pylith::utils::EventLogger pylith::feassemble::_IntegratorDomain::Events::logger;
+PylithInt pylith::feassemble::_IntegratorDomain::Events::initialize;
+PylithInt pylith::feassemble::_IntegratorDomain::Events::setInterfaceData;
+PylithInt pylith::feassemble::_IntegratorDomain::Events::setState;
+PylithInt pylith::feassemble::_IntegratorDomain::Events::computeRHSResidual;
+PylithInt pylith::feassemble::_IntegratorDomain::Events::computeLHSResidual;
+PylithInt pylith::feassemble::_IntegratorDomain::Events::computeLHSJacobian;
+PylithInt pylith::feassemble::_IntegratorDomain::Events::computeLHSJacobianLumpedInv;
+PylithInt pylith::feassemble::_IntegratorDomain::Events::updateStateVars;
+PylithInt pylith::feassemble::_IntegratorDomain::Events::computeDerivedField;
+
+// ------------------------------------------------------------------------------------------------
+void
+pylith::feassemble::_IntegratorDomain::Events::init(void) {
+    logger.setClassName("IntegratorDomain");
+    logger.initialize();
+    initialize = logger.registerEvent("PL:IntegratorDomain:initialize");
+    setInterfaceData = logger.registerEvent("PL:IntegratorDomain:setInterfaceData");
+    setState = logger.registerEvent("PL:IntegratorDomain:setState");
+    computeRHSResidual = logger.registerEvent("PL:IntegratorDomain:computeRHSResidual");
+    computeLHSResidual = logger.registerEvent("PL:IntegratorDomain:computeLHSResidual");
+    computeLHSJacobian = logger.registerEvent("PL:IntegratorDomain:computeLHSJacobian");
+    computeLHSJacobianLumpedInv = logger.registerEvent("PL:IntegratorDomain:computeLHSJacobianLumpedInv");
+    updateStateVars = logger.registerEvent("PL:IntegratorDomain:updateStateVars");
+    computeDerivedField = logger.registerEvent("PL:IntegratorDomain:computeDerivedField");
+}
+
 
 // ------------------------------------------------------------------------------------------------
 // Default constructor.
@@ -91,6 +127,7 @@ pylith::feassemble::IntegratorDomain::IntegratorDomain(pylith::problems::Physics
     _jacobianValues(NULL),
     _dsLabel(NULL) {
     GenericComponent::setName("integratordomain");
+    _IntegratorDomain::Events::init();
 } // constructor
 
 
@@ -245,6 +282,7 @@ void
 pylith::feassemble::IntegratorDomain::initialize(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" initialize(solution="<<solution.getLabel()<<")");
+    _IntegratorDomain::Events::logger.eventBegin(_IntegratorDomain::Events::initialize);
 
     delete _materialMesh;
     _materialMesh = pylith::topology::MeshOps::createSubdomainMesh(solution.getMesh(), _labelName.c_str(), _labelValue, ":UNKOWN:");
@@ -275,6 +313,7 @@ pylith::feassemble::IntegratorDomain::initialize(const pylith::topology::Field& 
         _auxiliaryField->view("Auxiliary field");
     } // if
 
+    _IntegratorDomain::Events::logger.eventEnd(_IntegratorDomain::Events::initialize);
     PYLITH_METHOD_END;
 } // initialize
 
@@ -286,6 +325,7 @@ pylith::feassemble::IntegratorDomain::setInterfaceData(const pylith::topology::F
                                                        const std::vector<pylith::feassemble::IntegratorInterface*> interfaceIntegrators) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" setInterfaceData(# interfaceIntegrators="<<interfaceIntegrators.size()<<")");
+    _IntegratorDomain::Events::logger.eventBegin(_IntegratorDomain::Events::setInterfaceData);
     typedef pylith::feassemble::InterfacePatches::keysmap_t keysmap_t;
 
     assert(solution);
@@ -354,6 +394,7 @@ pylith::feassemble::IntegratorDomain::setInterfaceData(const pylith::topology::F
         } // for
     } // for
 
+    _IntegratorDomain::Events::logger.eventEnd(_IntegratorDomain::Events::setInterfaceData);
     PYLITH_METHOD_END;
 } // setInterfaceData
 
@@ -364,6 +405,7 @@ void
 pylith::feassemble::IntegratorDomain::setState(const PylithReal t) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("setState(t="<<t<<")");
+    _IntegratorDomain::Events::logger.eventBegin(_IntegratorDomain::Events::setState);
 
     Integrator::setState(t);
 
@@ -379,6 +421,7 @@ pylith::feassemble::IntegratorDomain::setState(const PylithReal t) {
         _auxiliaryField->view("IntegratorInterface auxiliary field", pylith::topology::Field::VIEW_ALL);
     } // if
 
+    _IntegratorDomain::Events::logger.eventEnd(_IntegratorDomain::Events::setState);
     PYLITH_METHOD_END;
 } // setState
 
@@ -388,9 +431,10 @@ pylith::feassemble::IntegratorDomain::setState(const PylithReal t) {
 void
 pylith::feassemble::IntegratorDomain::computeRHSResidual(pylith::topology::Field* residual,
                                                          const pylith::feassemble::IntegrationData& integrationData) {
+    if (!_hasRHSResidual) { return; }
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" computeRHSResidual(residual="<<residual<<", integrationData="<<integrationData.str()<<")");
-    if (!_hasRHSResidual) { PYLITH_METHOD_END;}
+    _IntegratorDomain::Events::logger.eventBegin(_IntegratorDomain::Events::computeRHSResidual);
     assert(residual);
 
     const pylith::topology::Field* solution = integrationData.getField(pylith::feassemble::IntegrationData::solution);
@@ -413,6 +457,7 @@ pylith::feassemble::IntegratorDomain::computeRHSResidual(pylith::topology::Field
     err = DMPlexComputeResidual_Internal(_dsLabel->dm(), key, _dsLabel->cellsIS(), PETSC_MIN_REAL, solution->getLocalVector(),
                                          solutionDotVec, t, residual->getLocalVector(), NULL);PYLITH_CHECK_ERROR(err);
 
+    _IntegratorDomain::Events::logger.eventEnd(_IntegratorDomain::Events::computeRHSResidual);
     PYLITH_METHOD_END;
 } // computeRHSResidual
 
@@ -422,9 +467,10 @@ pylith::feassemble::IntegratorDomain::computeRHSResidual(pylith::topology::Field
 void
 pylith::feassemble::IntegratorDomain::computeLHSResidual(pylith::topology::Field* residual,
                                                          const pylith::feassemble::IntegrationData& integrationData) {
+    if (!_hasLHSResidual) { return; }
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" computeLHSResidual(residual="<<residual<<", integrationData="<<integrationData.str()<<")");
-    if (!_hasLHSResidual) { PYLITH_METHOD_END; }
+    _IntegratorDomain::Events::logger.eventBegin(_IntegratorDomain::Events::computeLHSResidual);
 
     const pylith::topology::Field* solution = integrationData.getField(pylith::feassemble::IntegrationData::solution);
     assert(solution);
@@ -448,6 +494,7 @@ pylith::feassemble::IntegratorDomain::computeLHSResidual(pylith::topology::Field
     err = DMPlexComputeResidual_Internal(_dsLabel->dm(), key, _dsLabel->cellsIS(), PETSC_MIN_REAL, solution->getLocalVector(),
                                          solutionDot->getLocalVector(), t, residual->getLocalVector(), NULL);PYLITH_CHECK_ERROR(err);
 
+    _IntegratorDomain::Events::logger.eventEnd(_IntegratorDomain::Events::computeLHSResidual);
     PYLITH_METHOD_END;
 } // computeLHSResidual
 
@@ -458,12 +505,12 @@ void
 pylith::feassemble::IntegratorDomain::computeLHSJacobian(PetscMat jacobianMat,
                                                          PetscMat precondMat,
                                                          const pylith::feassemble::IntegrationData& integrationData) {
+    if (!_hasLHSJacobian) { return;}
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" computeLHSJacobian(jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", integrationData="<<integrationData.str()<<")");
+    _IntegratorDomain::Events::logger.eventBegin(_IntegratorDomain::Events::computeLHSJacobian);
 
     _needNewLHSJacobian = false;
-    if (!_hasLHSJacobian) { PYLITH_METHOD_END;}
-
     const pylith::topology::Field* solution = integrationData.getField(pylith::feassemble::IntegrationData::solution);
     assert(solution);
     const pylith::topology::Field* solutionDot = integrationData.getField(pylith::feassemble::IntegrationData::solution_dot);
@@ -498,6 +545,7 @@ pylith::feassemble::IntegratorDomain::computeLHSJacobian(PetscMat jacobianMat,
         } // if
     } // if
 
+    _IntegratorDomain::Events::logger.eventEnd(_IntegratorDomain::Events::computeLHSJacobian);
     PYLITH_METHOD_END;
 } // computeLHSJacobian
 
@@ -507,11 +555,12 @@ pylith::feassemble::IntegratorDomain::computeLHSJacobian(PetscMat jacobianMat,
 void
 pylith::feassemble::IntegratorDomain::computeLHSJacobianLumpedInv(pylith::topology::Field* jacobianInv,
                                                                   const pylith::feassemble::IntegrationData& integrationData) {
+    if (!_hasLHSJacobianLumped) { return; }
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" computeLHSJacobianLumpedInv(jacobianInv="<<jacobianInv<<", integrationData="<<integrationData.str()<<")");
+    _IntegratorDomain::Events::logger.eventBegin(_IntegratorDomain::Events::computeLHSJacobianLumpedInv);
 
     _needNewLHSJacobianLumped = false;
-    if (!_hasLHSJacobianLumped) { PYLITH_METHOD_END;}
 
     const pylith::topology::Field* solution = integrationData.getField(pylith::feassemble::IntegrationData::solution);
     assert(solution);
@@ -541,6 +590,7 @@ pylith::feassemble::IntegratorDomain::computeLHSJacobianLumpedInv(pylith::topolo
     // Compute the Jacobian inverse.
     err = VecReciprocal(jacobianInv->getLocalVector());PYLITH_CHECK_ERROR(err);
 
+    _IntegratorDomain::Events::logger.eventEnd(_IntegratorDomain::Events::computeLHSJacobianLumpedInv);
     PYLITH_METHOD_END;
 } // computeLHSJacobianLumpedInv
 
@@ -551,12 +601,10 @@ void
 pylith::feassemble::IntegratorDomain::_updateStateVars(const PylithReal t,
                                                        const PylithReal dt,
                                                        const pylith::topology::Field& solution) {
+    if (0 == _kernelsUpdateStateVars.size()) { return; }
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("_updateStateVars(t="<<t<<", dt="<<dt<<", solution="<<solution.getLabel()<<")");
-
-    if (0 == _kernelsUpdateStateVars.size()) {
-        PYLITH_METHOD_END;
-    } // if
+    _IntegratorDomain::Events::logger.eventBegin(_IntegratorDomain::Events::updateStateVars);
 
     assert(_updateState);
     assert(_auxiliaryField);
@@ -584,6 +632,7 @@ pylith::feassemble::IntegratorDomain::_updateStateVars(const PylithReal t,
 
     delete[] kernelsStateVars;kernelsStateVars = NULL;
 
+    _IntegratorDomain::Events::logger.eventEnd(_IntegratorDomain::Events::updateStateVars);
     PYLITH_METHOD_END;
 } // _updateStateVars
 
@@ -594,12 +643,10 @@ void
 pylith::feassemble::IntegratorDomain::_computeDerivedField(const PylithReal t,
                                                            const PylithReal dt,
                                                            const pylith::topology::Field& solution) {
+    if (!_derivedField) { return; }
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("_computeDerivedField(t="<<t<<", dt="<<dt<<", solution="<<solution.getLabel()<<")");
-
-    if (!_derivedField) {
-        PYLITH_METHOD_END;
-    } // if
+    _IntegratorDomain::Events::logger.eventBegin(_IntegratorDomain::Events::computeDerivedField);
 
     assert(_derivedField);
     _setKernelConstants(solution, dt);
@@ -628,6 +675,7 @@ pylith::feassemble::IntegratorDomain::_computeDerivedField(const PylithReal t,
         _derivedField->view("Derived field");
     } // if
 
+    _IntegratorDomain::Events::logger.eventEnd(_IntegratorDomain::Events::computeDerivedField);
     PYLITH_METHOD_END;
 } // _computeDerivedField
 

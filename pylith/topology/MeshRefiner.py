@@ -38,14 +38,14 @@ class MeshRefiner(PetscComponent):
     def _setupLogging(self):
         """Setup event logging.
         """
-        self._loggingPrefix = "Refin "
+        self._loggingPrefix = "PL.MeshRefiner."
         from pylith.utils.EventLogger import EventLogger
         logger = EventLogger()
-        logger.setClassName("FE Refinement")
+        logger.setClassName("MeshRefiner")
         logger.initialize()
         events = ["refine"]
         for event in events:
-            logger.registerEvent("%s%s" % (self._loggingPrefix, event))
+            logger.registerEvent(f"{self._loggingPrefix}{event}")
 
         self._eventLogger = logger
 
