@@ -1,0 +1,72 @@
+# Set vertex spacing with increasing spacing away from fault
+# ----------------------------------------------------------------------
+#{bias_factor=1.050}
+
+# Function for computing discretization size at end of curve with bias
+#{fun_dx='dxStart*bias_factor**ceil( ln(1-curveL/dxStart*(1-bias_factor))/ln(bias_factor))'}
+
+# ----------------------------------------------------------------------
+# Set gardients for increaseing tet size ####
+#dxA - size at vertex 28
+#{dxStart=dx}{curveL=Length(57)}{execute("dxA="//fun_dx)}
+
+#dxAA - size at vertex 27
+#{dxStart=dx}{curveL=Length(57)}{execute("dxAA="//fun_dx)}
+
+#dxB - size at vertex 25
+#{dxStart=dx}{curveL=Length(70)}{execute("dxB="//fun_dx)}
+
+#dxBB - size at vertex 24
+#{dxStart=dx}{curveL=Length(70)}{execute("dxBB="//fun_dx)}
+
+#dxC - size at vertex 26
+#{dxStart=dx}{curveL=Length(60)}{execute("dxC="//fun_dx)}
+
+#dxCC - size at vertex 23
+#{dxStart=dx}{curveL=Length(60)}{execute("dxCC="//fun_dx)}
+
+#dxD - size at vertex 30
+#{dxStart=dx}{curveL=Length(66)}{execute("dxD="//fun_dx)}
+
+#dxDD - size at vertex 29
+#{dxStart=dx}{curveL=Length(66)}{execute("dxDD="//fun_dx)}
+
+##### Set surface sizes on fault #####
+curve all scheme bias
+surface all sizing function none
+surface size all {dx}
+surface scheme all trimesh
+
+surface 32 35 36 39 size {dx}
+
+curve 31 size {dx}
+curve 55 size {dx}
+
+### set values for curves horizontal from fault
+
+curve 57 scheme bias fine size {dx} factor {bias_factor} start vertex 5
+curve 56 scheme bias fine size {dx} factor {bias_factor} start vertex 53
+
+curve 70 scheme bias fine size {dx} factor {bias_factor} start vertex 18
+curve 69 scheme bias fine size {dx} factor {bias_factor} start vertex 56
+
+curve 60 scheme bias fine size {dx} factor {bias_factor} start vertex 11
+curve 59 scheme bias fine size {dx} factor {bias_factor} start vertex 54
+
+curve 66 scheme bias fine size {dx} factor {bias_factor} start vertex 12
+curve 67 scheme bias fine size {dx} factor {bias_factor} start vertex 55
+
+#### sides of volume ####
+
+curve 13 scheme equal size {dxB} 
+curve 11 scheme equal size {dxBB}
+curve 9 scheme equal size {dxB} 
+curve 7 scheme equal size {dxBB}
+curve 18 scheme equal size {dxC} 
+curve 17 scheme equal size {dxCC}
+curve 18 scheme equal size {dxD} 
+curve 17 scheme equal size {dxDD}
+
+set trimesher surface gradation {bias_factor}
+
+# End File

@@ -1,0 +1,30 @@
+
+#### Create tri mesh at 4 km resolution ####
+
+##### Generate geometry #######
+reset
+## Plays journal file which makes geometry ##
+playback '2D_ridgecrest.jou'
+
+#### Set discretization size and scheme ###
+
+#{dx=800.0*m}
+surface all scheme trimesh
+surface all size {dx}
+mesh surface all
+
+
+#### Smooth ####
+surface all smooth scheme condition number beta 1.1 cpu 2
+smooth surface all
+
+## set boundary consitions ##
+## Plays journal file to set conditions ##
+playback 'bc_2d_ridgecrest.jou'
+
+## Export Mesh ##
+export mesh "2D_Ridgecrest_mesh_tri.exo" dimension 2 overwrite
+
+
+# End of file
+
