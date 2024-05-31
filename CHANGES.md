@@ -9,8 +9,18 @@ The version numbers are in the form `MAJOR.MINOR.PATCH`, where major releases in
 
 * **Changed**
   * Improve the default preconditioners for poroelasticity.
+* **Added**
+  * New 2D and 3D crustal strike-slip faults examples based on the 2019 Ridgecrest earthquake.
 * **Fixed**
   * Remove extra (wrong) kernels for poroelasticity when using state variables.
+
+### Contributors
+
+* Brad Aagaard ![ORCID iD](/_static/images/ORCIDiD_icon32x32.png){w=16px}[0000-0002-8795-9833](https://orcid.org/0000-0002-8795-9833)
+* Matthew Knepley ![ORCID iD](/_static/images/ORCIDiD_icon32x32.png){w=16px}[0000-0002-2292-0735](https://orcid.org/0000-0002-2292-0735)
+* Charles Williams ![ORCID iD](/_static/images/ORCIDiD_icon32x32.png){w=16px}[0000-0001-7435-9196](https://orcid.org/0000-0001-7435-9196)
+* Evan Marschall ![ORCID iD](/_static/images/ORCIDiD_icon32x32.png){w=16px}[0009-0003-0916-6656](https://orcid.org/0009-0003-0916-6656)   
+* Zechao Zhuo ![ORCID iD](/_static/images/ORCIDiD_icon32x32.png){w=16px}[0000-0002-8163-5731](https://orcid.org/0000-0002-8163-5731)
 
 % =================================================================================================
 
