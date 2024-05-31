@@ -47,6 +47,9 @@ class App(GenerateMesh):
     DOMAIN_X = 100.0e+3
     DOMAIN_Y = 150.0e+3
 
+    DX_FAULT = 4.0e+3
+    DX_BIAS = 1.07
+
     def __init__(self):
         """Constructor.
         """
@@ -155,7 +158,7 @@ class App(GenerateMesh):
         # The `GenerateMesh` class includes a special function `get_math_progression` 
         # for creating the string with the mathematical function.
         field_size = gmsh.model.mesh.field.add("MathEval")
-        math_exp = GenerateMesh.get_math_progression(field_distance, min_dx=4.0e+3, bias=1.05)
+        math_exp = GenerateMesh.get_math_progression(field_distance, min_dx=self.DX_FAULT, bias=self.DX_BIAS)
         gmsh.model.mesh.field.setString(field_size, "F", math_exp)
 
         # Finally, we use the field `field_size` for the cell size of the mesh.
