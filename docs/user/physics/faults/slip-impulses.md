@@ -31,8 +31,8 @@ See [`FaultCohesiveImpulses` Component](../../components/faults/FaultCohesiveImp
 The derived subfield available for Green's functions is the change in tractions on the fault surface.
 
 ```{table} Derived subfields that are available for output for Green's functions.
-:name: tab:fault:prescribed_slip:derived:subfields
-|      Subfield |   Components            |
-|:--------------|:-----------------------|
+:name: tab:fault:greens_functions:derived:subfields
+| Subfield          | Components                   |
+| :---------------- | :--------------------------- |
 | `traction_change` | normal, along strike, up dip |
 ```

@@ -54,7 +54,6 @@ pylith::meshio::MeshIOCubit::deallocate(void) {
 } // deallocate
 
 
-#include <iostream>
 // ---------------------------------------------------------------------------------------------------------------------
 // Unpickle mesh
 void
@@ -85,14 +84,9 @@ pylith::meshio::MeshIOCubit::_read(void) {
             err = MPI_Bcast(&spaceDim, 1, MPI_INT, 0, _mesh->getComm());PYLITH_CHECK_ERROR(err);
             _readCells(exofile, &cells, &materialIds, &numCells, &numCorners);
             _orientCells(&cells, numCells, numCorners, meshDim);
-            std::cout << "buildMesh" << std::endl;
             MeshBuilder::buildMesh(_mesh, &coordinates, numVertices, spaceDim, cells, numCells, numCorners, meshDim);
-            std::cout << "setMaterials" << std::endl;
             _setMaterials(materialIds);
-            std::cout << "readGroups" << std::endl;
-
             _readGroups(exofile);
-            std::cout << "DONE" << std::endl;
         } catch (std::exception& err) {
             std::ostringstream msg;
             msg << "Error while reading Cubit Exodus file '" << _filename << "'.\n"

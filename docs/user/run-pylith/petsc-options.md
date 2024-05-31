@@ -217,8 +217,7 @@ fieldsplit_trace_strain_t_pc_type = bjacobi
 
 ```{code-block} cfg
 ---
-caption: PETSc options used for quasistatic poroelasticity with a porosity state variable in parallel.
-The second set of parameters are the additional parameters needed for the additional solution subfields.
+caption: PETSc options used for quasistatic poroelasticity with a porosity state variable in parallel. The second set of parameters are the additional parameters needed for the additional solution subfields.
 ---
 [pylithapp.petsc]
 pc_type = fieldsplit
@@ -288,19 +287,19 @@ When optimizing and troubleshooting solver options, we usually turn on all the m
 
 ```{table} Description of PETSc monitoring options
 :name: tab-petsc-options-monitor
-| Option | Description |
-| :------| :-----------|
-| `log_view` | Show logging objects and events. |
-| `ts_monitor` | Show time-stepping progress. |
-| `ksp_monitor` | Show preconditioned residual norm. |
-| `ksp_view` | Show linear solver parameters. |
-| `ksp_error_if_not_converged` | Generate an error if linear solver does not converge. |
-| `ksp_converged_reason` | Indicate why iterating stopped in linear solve. |
-| `snes_monitor` | Show residual norm for each nonlinear solve iteration. |
-| `snes_view` | Show nonlinear solver parameters. |
+| Option                        | Description                                              |
+| :---------------------------- | :------------------------------------------------------- |
+| `log_view`                    | Show logging objects and events.                         |
+| `ts_monitor`                  | Show time-stepping progress.                             |
+| `ksp_monitor`                 | Show preconditioned residual norm.                       |
+| `ksp_view`                    | Show linear solver parameters.                           |
+| `ksp_error_if_not_converged`  | Generate an error if linear solver does not converge.    |
+| `ksp_converged_reason`        | Indicate why iterating stopped in linear solve.          |
+| `snes_monitor`                | Show residual norm for each nonlinear solve iteration.   |
+| `snes_view`                   | Show nonlinear solver parameters.                        |
 | `snes_error_if_not_converged` | Generate an error if nonlinear solver does not converge. |
-| `snes_converged_reason` | Indicate why iterating stopped in nonlinear solve. |
-| `snes_linesearch_monitor` | Show line search information in nonlinear solve. |
+| `snes_converged_reason`       | Indicate why iterating stopped in nonlinear solve.       |
+| `snes_linesearch_monitor`     | Show line search information in nonlinear solve.         |
 ```
 
 ### Solver Options
@@ -315,12 +314,12 @@ For example, matching observations with an accuracy of 1.0 mm does not require s
 
 ```{table} Summary of PETSc solver tolerances.
 :name: tab-petsc-options-solver
-| Option   | Description            |
-| :--------- | :--------------------- |
-| `ksp_rtol` | Stop iterating when the preconditioned KSP residual norm has this amount relative to its starting value. |
-| `ksp_atol` | Stop iterating when the preconditioned KSP residual normal is smaller than this value. |
-| `snes_rtol` | Stop iterating when the SNES residual norm has this amount relative to its starting value. |
-| `snes_atol` | Stop iterating when the SNES residual normal is smaller than this value. |
+| Option      | Description                                                                                              |
+| :---------- | :------------------------------------------------------------------------------------------------------- |
+| `ksp_rtol`  | Stop iterating when the preconditioned KSP residual norm has this amount relative to its starting value. |
+| `ksp_atol`  | Stop iterating when the preconditioned KSP residual normal is smaller than this value.                   |
+| `snes_rtol` | Stop iterating when the SNES residual norm has this amount relative to its starting value.               |
+| `snes_atol` | Stop iterating when the SNES residual normal is smaller than this value.                                 |
 ```
 
 % End of file

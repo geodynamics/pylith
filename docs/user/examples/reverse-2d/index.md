@@ -29,7 +29,7 @@ We build on the previous examples and add complexity through a series of steps:
 :Step 8: Earthquake rupture on two faults and linear isotropic powerlaw viscoelastic rheology.
 
 :::{figure-md} fig:example:reverse:2d:geometry
-<img src="figs/geometry.*" alt="Geometry used for 2D reverse fault example." width="100%"/>
+<img src="figs/geometry.*" alt="Geometry used for 2D reverse fault example." scale="75%"/>
 
 Diagram of geometry for domain with reverse and splay faults and three materials (crust, slab, and wedge).
 The domain extends from -100 km to +100 km in the x direction and from -100 km to 0 in the y direction.
