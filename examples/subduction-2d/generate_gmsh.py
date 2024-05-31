@@ -25,6 +25,9 @@ class App(GenerateMesh):
     Y_BOT = -600.0e+3
     Y_MOHO = -40.0e+3
 
+    DX_FAULT = 5.0e+3
+    DX_BIAS = 1.07
+
     # Topography/bathymetry extracted manually from Google Earth
     TOPO_POINTS = (
         (   X_WEST, -2000.0),
@@ -241,7 +244,7 @@ class App(GenerateMesh):
         # The `GenerateMesh` class includes a special function `get_math_progression` 
         # for creating the string with the mathematical function.
         field_size = gmsh.model.mesh.field.add("MathEval")
-        math_exp = GenerateMesh.get_math_progression(fault_distance, min_dx=5.0e+3, bias=1.07)
+        math_exp = GenerateMesh.get_math_progression(fault_distance, min_dx=self.DX_FAULT, bias=self.DX_BIAS)
         gmsh.model.mesh.field.setString(field_size, "F", math_exp)
 
         # Finally, we use the field `field_size` for the cell size of the mesh.
