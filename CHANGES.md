@@ -13,10 +13,12 @@ The version numbers are in the form `MAJOR.MINOR.PATCH`, where major releases in
   * Replaced use of Cubit journal files with Cubit Python scripts for several examples, and use the skeleton sizing function to increase cell size with distance from the fault.
 * **Added**
   * New 2D and 3D crustal strike-slip faults examples based on the 2019 Ridgecrest earthquake.
-  * Added documentation describing the process for adding event logging and evaluating performance, including performance logging for top-level C++ code.
+  * Documentation
+    * Developer Guide: Added description of the process for adding event logging and evaluating performance, including performance logging.
+    * Developer Guide: Added checklist for what is needed when contributing examples.
 * **Fixed**
   * Updated `examples/subduction-3d` Steps 6, 7, and 8 to work with PyLith v3+.
-  * Fix bottleneck when reading Gmsh files.
+  * Fix performance bottleneck when reading Gmsh files.
   * Remove extra (wrong) kernels for poroelasticity when using state variables.
   * Update Python unit tests setup for compatibility with the current unittest API (use `load_tests()`).
 

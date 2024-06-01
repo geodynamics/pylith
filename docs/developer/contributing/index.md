@@ -8,6 +8,7 @@ rebuilding.md
 codelayout.md
 petscfem.md
 newmaterial.md
+examples.md
 documentation/index.md
 git-quickref.md
 :::
