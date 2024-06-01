@@ -12,6 +12,11 @@
 * pylith.materials.Elasticity
 * pylith.materials.IsotropicLinearElasticity
 * spatialdata.spatialdb.SimpleDB
-* Static simulation
-* pylith.materials.IsotropicLinearElasticity
-* spatialdata.spatialdb.SimpleDB
+* Quasi-static simulation
+* Temporal database
+* pylith.meshio.OutputSolnPoints
+* pylith.faults.KinSrcTimeHistory
+* spatialdata.geocoords.CSGeo
+* spatialdata.spatialdb.UniformDB
+* spatialdata.spatialdb.SimpleGridDB
+* spatialdata.spatialdb.SimpleGridAscii

@@ -223,9 +223,9 @@ class SurfaceApp:
     """
     JOURNAL_FILENAME = "scratch/cubit_create_surfs.jou"
     CONTOURS_FILENAME = "cas_contours_dep.in.txt.gz"
-    SLAB_TOP_FILENAME = "scratch/cubit_surf_slabtop.sat"
-    SLAB_BOT_FILENAME = "scratch/cubit_surf_slabbot.sat"
-    SPLAY_FILENAME = "scratch/cubit_surf_splay.sat"
+    SLAB_TOP_FILENAME = "cubit_surf_slabtop.sat"
+    SLAB_BOT_FILENAME = "cubit_surf_slabbot.sat"
+    SPLAY_FILENAME = "cubit_surf_splay.sat"
 
     from pythia.pyre.units.length import km
     from pythia.pyre.units.angle import deg

@@ -441,19 +441,22 @@ dist_noinst_DATA = \
 	user/examples/subduction-2d/figs/step03-solution.jpg \
 	user/examples/subduction-3d/index.md \
 	user/examples/subduction-3d/common-information.md \
-	user/examples/subduction-3d/exercises.md \
 	user/examples/subduction-3d/meshing-cubit.md \
 	user/examples/subduction-3d/step01-axialdisp.md \
 	user/examples/subduction-3d/step02-coseismic.md \
 	user/examples/subduction-3d/step03-interseismic.md \
 	user/examples/subduction-3d/step04-eqcycle.md \
+	user/examples/subduction-3d/step05-spontaneous.md \
+	user/examples/subduction-3d/step06-slowslip.md \
+	user/examples/subduction-3d/step07-greensfns.md \
+	user/examples/subduction-3d/step08-gravity.md \
+	user/examples/subduction-3d/exercises.md \
 	user/examples/subduction-3d/figs/cascadia.png \
 	user/examples/subduction-3d/figs/conceptualmodel.png \
 	user/examples/subduction-3d/figs/cubit-geometry-patch.png \
 	user/examples/subduction-3d/figs/cubit-geometry.png \
 	user/examples/subduction-3d/figs/cubit-mesh.jpg \
 	user/examples/subduction-3d/figs/diagrams.tex \
-	user/examples/subduction-3d/figs/generate.sh \
 	user/examples/subduction-3d/figs/step01-diagram.pdf \
 	user/examples/subduction-3d/figs/step01-diagram.svg \
 	user/examples/subduction-3d/figs/step01-solution.jpg \
@@ -468,6 +471,14 @@ dist_noinst_DATA = \
 	user/examples/subduction-3d/figs/step04-solution.jpg \
 	user/examples/subduction-3d/figs/step06-diagram.pdf \
 	user/examples/subduction-3d/figs/step06-diagram.svg \
+	user/examples/subduction-3d/figs/step06-solution.jpg \
+	user/examples/subduction-3d/figs/step07-diagram.pdf \
+	user/examples/subduction-3d/figs/step07-diagram.svg \
+	user/examples/subduction-3d/figs/step07a-slipimpulse.jpg \
+	user/examples/subduction-3d/figs/step07-inversion-summary.png \
+	user/examples/subduction-3d/figs/step08-diagram.pdf \
+	user/examples/subduction-3d/figs/step08-diagram.svg \
+	user/examples/subduction-3d/figs/step08a-solution.jpg \
 	user/examples/troubleshooting-2d/index.md \
 	user/examples/troubleshooting-2d/error-messages.md \
 	user/examples/troubleshooting-2d/step01-gravity.md \

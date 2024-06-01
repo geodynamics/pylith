@@ -21,7 +21,7 @@ The parameters specific to this example are in `step02_coseismic.cfg` and includ
 
 * `pylithapp.metadata` Metadata for this simulation. Even when the author and version are the same for all simulations in a directory, we prefer to keep that metadata in each simulation file as a reminder to keep it up-to-date for each simulation.
 * `pylithapp` Parameters defining where to write the output.
-* `pylithapp.problem` Parameters for the solution field with displacement and Lagrange multiplier subfields.
+* `pylithapp.problem` Parameters for the time step information as well as solution field with displacement and Lagrange multiplier subfields.
 * `pylithapp.interfaces` Parameters for the earthquake rupture.
 
 We define the duration of the simulation to be 200 years with an initial time step of 10 years.
@@ -114,8 +114,8 @@ In {numref}`fig:example:subduction:3d:step02:solution` we use ParaView to visual
 We start ParaView from the `examples/subduction-3d` directory and then run the `viz/plot_dispwarp.py` Python script as described in {ref}`sec-paraview-python-scripts`.
 
 :::{figure-md} fig:example:subduction:3d:step02:solution
-<img src="figs/step02-solution.*" alt="Solution for Step 2. The colors indicate the magnitude of the x displacement, and the deformation is exaggerated by a factor of 1000." width="100%"/>
+<img src="figs/step02-solution.*" alt="Solution for Step 2. The colors indicate the x displacement, and the deformation is exaggerated by a factor of 10,000." width="100%"/>
 
 Solution for Step 2.
-The colors of the shaded surface indicate the magnitude of the x displacement, and the deformation is exaggerated by a factor of 1000.
+The colors of the shaded surface indicate the x displacement, and the deformation is exaggerated by a factor of 10,000.
 :::

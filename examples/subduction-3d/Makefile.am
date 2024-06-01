@@ -40,12 +40,12 @@ dist_noinst_DATA = \
 	step08b_gravity_incompressible.cfg \
 	step08c_gravity_viscoelastic.cfg \
 	cas_contours_dep.in.txt.gz \
-	utils/coordsys.py \
-	utils/generate_initial_stress.py \
-	utils/generate_slowslip.py \
-	utils/generate_surfjou.py \
-	utils/make_synthetic_gnssdisp.py \
-	utils/slip_invert.py \
+	coordsys.py \
+	generate_initial_stress.py \
+	generate_slowslip.py \
+	generate_surfjou.py \
+	make_synthetic_gnssdisp.py \
+	slip_invert.py \
 	viz/plot_dispvec.py \
 	viz/plot_dispwarp.py \
 	viz/plot_faultdir.py \
@@ -54,9 +54,6 @@ dist_noinst_DATA = \
 	viz/plot_matprops.py \
 	viz/plot_mesh.py \
 	viz/plot_inversion_misfit.py \
-	viz/get_coast.sh \
-	viz/seg2vtk.py \
-	viz/cascadia_tm.vtk \
 	input/README.md \
 	scratch/README.md
 

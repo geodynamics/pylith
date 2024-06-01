@@ -12,6 +12,10 @@
 * pylith.materials.Elasticity
 * pylith.materials.IsotropicLinearElasticity
 * spatialdata.spatialdb.SimpleDB
-* Static simulation
-* pylith.materials.IsotropicLinearElasticity
-* spatialdata.spatialdb.SimpleDB
+* "Green's functions"
+* pylith.problems.GreensFns
+* pylith.meshio.OutputSolnPoints
+* pylith.faults.FaultCohesiveImpulses
+* spatialdata.spatialdb.UniformDB
+* spatialdata.geocoords.CSGeo
+* 

@@ -25,7 +25,7 @@ OUTPUT_DIR = os.path.join(os.environ["HOME"], "src", "pylith", "examples", "subd
 DEFAULTS = {
     "OUTPUT_DIR": "output",
     "SIM": "step01_axialdisp",
-    "FIELD": "mu",
+    "FIELD": "shear_modulus",
     "MATERIALS": ["crust", "mantle", "wedge", "slab"],
     }
 

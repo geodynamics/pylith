@@ -27,8 +27,8 @@
 
 DEFAULTS = {
     "OUTPUT_DIR": "output",
-    "SIM": "step02",
-    "FAULTS": ["fault-slab"],
+    "SIM": "step02_coseismic",
+    "FAULTS": ["fault_slabtop"],
     "TIMESTEP": 0, # Use 0 for first, -1 for last.
     }
 

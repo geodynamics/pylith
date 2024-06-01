@@ -5,10 +5,12 @@ The files are in the directory `examples/subduction-3d`.
 The files and directories for this set of examples includes:
 
 :`README.md`: README file containing a brief description of the various examples.
-:`*.cfg`: PyLith parameter files.
+:`step*.cfg`: PyLith parameter files.
+:`mat_*.cfg`: Additional PyLith parameter files that are specific to materials used.
+:`*.cfg`: Parameter files in addition to those above that are used with example Python scripts.
 :`cubit_*.jou`: Files used to construct the finite-element mesh using Cubit.
-:`*.spatialdb`: Spatial database filesFiles associated with the spatial databases.
-:`utils`: Directory containing Python scripts for pre- and post-processing.
+:`*.spatialdb`: Spatial database files associated with the spatial databases.
+:`*.py`: Python scripts used in the examples.
 :`viz`: Directory containing ParaView Python scripts and other files for visualizing results.
 :`input`: Directory for simulation input data that must be downloaded.
 :`output`: Directory containing simulation output. It is created automatically when running the simulations.
@@ -44,9 +46,13 @@ Conceptual model based on the Cascadia Subduction Zone. The model includes the s
 :Step 2: Quasi-static coseismic and postseismic deformation from an earthquake rupture in the center of the subduction zone interface.
 :Step 3: Quasi-static interseisic deformation with creep on the top and bottom of the slab.
 :Step 4: Quasi-static earthquake cycle with prescribed earthquake rupture and creep.
+:Step 5: Spontaneous rupture driven by subducting slab.
+:Step 6: Prescribed slow-slip event.
+:Step 7a,b: Generation of 3D Green's functions and inversion of displacements for slow slip event from Step 6.
+:Step 8a,b,c: Stress field due to gravitational body forces.
 
 :::{warning}
-Steps 5-8 are still being updated for use with PyLith v3.
+Steps 5 and 8c have not yet been updated for PyLith v3+.
 :::
 
 :::{danger}
@@ -64,5 +70,9 @@ step01-axialdisp.md
 step02-coseismic.md
 step03-interseismic.md
 step04-eqcycle.md
+step05-spontaneous.md
+step06-slowslip.md
+step07-greensfns.md
+step08-gravity.md
 exercises.md
 :::
