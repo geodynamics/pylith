@@ -3,7 +3,7 @@
 ## Style guide
 
 1. Use Markedly Structured Text (MyST), not reStructured Text (rST).
-2. Place each sentence on its own single line.
+2. **Place each sentence on its own single line.**
 
 ## Headings
 
