@@ -271,6 +271,8 @@ AC_CONFIG_FILES([Makefile
 		examples/box-3d/Makefile
 		examples/reverse-2d/Makefile
 		examples/strikeslip-2d/Makefile
+		examples/crustal-strikeslip-2d/Makefile
+		examples/crustal-strikeslip-3d/Makefile
 		examples/subduction-2d/Makefile
 		examples/subduction-3d/Makefile
 		examples/magma-2d/Makefile

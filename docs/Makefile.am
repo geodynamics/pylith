@@ -248,6 +248,55 @@ dist_noinst_DATA = \
 	user/examples/box-3d/figs/step05-diagram.pdf \
 	user/examples/box-3d/figs/step05-diagram.svg \
 	user/examples/box-3d/figs/step05-solution.jpg \
+	user/examples/crustal-strikeslip-2d/index.md \
+	user/examples/crustal-strikeslip-2d/meshing-gmsh.md \
+	user/examples/crustal-strikeslip-2d/meshing-cubit.md \
+	user/examples/crustal-strikeslip-2d/common-information.md \
+	user/examples/crustal-strikeslip-2d/step01-slip.md \
+	user/examples/crustal-strikeslip-2d/step01_slip-synopsis.md \
+	user/examples/crustal-strikeslip-2d/step02-varslip.md \
+	user/examples/crustal-strikeslip-2d/step02_varslip-synopsis.md \
+	user/examples/crustal-strikeslip-2d/exercises.md \
+	user/examples/crustal-strikeslip-2d/figs/geometry-gmsh.pdf \
+	user/examples/crustal-strikeslip-2d/figs/cubit-tri.png \
+	user/examples/crustal-strikeslip-2d/figs/step01-diagram.pdf \
+	user/examples/crustal-strikeslip-2d/figs/geometry-cubit.svg \
+	user/examples/crustal-strikeslip-2d/figs/step02-diagram.svg \
+	user/examples/crustal-strikeslip-2d/figs/diagrams.tex \
+	user/examples/crustal-strikeslip-2d/figs/step01-solution.jpg \
+	user/examples/crustal-strikeslip-2d/figs/step01-diagram.svg \
+	user/examples/crustal-strikeslip-2d/figs/gmsh-tri.png \
+	user/examples/crustal-strikeslip-2d/figs/geometry-cubit.pdf \
+	user/examples/crustal-strikeslip-2d/figs/step02-diagram.pdf \
+	user/examples/crustal-strikeslip-2d/figs/geometry-gmsh.svg \
+	user/examples/crustal-strikeslip-2d/figs/step02-solution.jpg \
+	user/examples/crustal-strikeslip-2d/figs/geometry.svg \
+	user/examples/crustal-strikeslip-2d/figs/geometry.pdf \
+	user/examples/crustal-strikeslip-2d/figs/generate_diagrams.py \
+	user/examples/crustal-strikeslip-3d/index.md \
+	user/examples/crustal-strikeslip-3d/meshing-gmsh.md \
+	user/examples/crustal-strikeslip-3d/meshing-cubit.md \
+	user/examples/crustal-strikeslip-3d/common-information.md \
+	user/examples/crustal-strikeslip-3d/step01-slip.md \
+	user/examples/crustal-strikeslip-3d/step01_slip-synopsis.md \
+	user/examples/crustal-strikeslip-3d/step02-varslip.md \
+	user/examples/crustal-strikeslip-3d/step02_varslip-synopsis.md \
+	user/examples/crustal-strikeslip-3d/exercises.md \
+	user/examples/crustal-strikeslip-3d/figs/step01-diagram.pdf \
+	user/examples/crustal-strikeslip-3d/figs/gmsh-geometry.png \
+	user/examples/crustal-strikeslip-3d/figs/step02-diagram.svg \
+	user/examples/crustal-strikeslip-3d/figs/diagrams.tex \
+	user/examples/crustal-strikeslip-3d/figs/step01-solution.jpg \
+	user/examples/crustal-strikeslip-3d/figs/step01-diagram.svg \
+	user/examples/crustal-strikeslip-3d/figs/step02-diagram.pdf \
+	user/examples/crustal-strikeslip-3d/figs/gmsh-tet.png \
+	user/examples/crustal-strikeslip-3d/figs/cubit-geometry.png \
+	user/examples/crustal-strikeslip-3d/figs/cubit-tet.png \
+	user/examples/crustal-strikeslip-3d/figs/step02-solution.jpg \
+	user/examples/crustal-strikeslip-3d/figs/cubit-mesh.png \
+	user/examples/crustal-strikeslip-3d/figs/geometry.svg \
+	user/examples/crustal-strikeslip-3d/figs/geometry.pdf \
+	user/examples/crustal-strikeslip-3d/figs/generate_diagrams.py \
 	user/examples/magma-2d/index.md \
 	user/examples/magma-2d/common-information.md \
 	user/examples/magma-2d/exercises.md \

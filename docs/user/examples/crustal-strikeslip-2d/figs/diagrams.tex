@@ -1,0 +1,352 @@
+\documentclass[crop,tikz]{standalone}
+\usepackage{tikz}
+\usepackage{ifthen}
+\usepackage[scaled]{helvet}
+\renewcommand*\familydefault{\sfdefault}
+
+\begin{document}
+
+\input{../../../../tikz-styles/figcolors}
+\input{../../../../tikz-styles/example-style}
+
+
+\foreach \figpart in {1,...,5}{
+
+% -------------------------------------------------------------------------------------------------
+\begin{tikzpicture}[scale=1.0,x=0.1cm,y=0.1cm]
+\def\domainW{410.0}
+\def\domainE{490.0}
+\def\domainS{3910.0}
+\def\domainN{3990.0}
+\def\domainX{80.0}
+\def\domainY{80.0}
+\def\dx{0.33*\domainX}
+\def\axesshift{0.15*\domainX}
+\def\bndryshift{1.5*\axesshift}
+\def\ticksize{0.25*\axesshift}
+\def\dirsize{0.15*\domainX}
+
+% Domain
+\coordinate (pSW) at (\domainW,\domainS);
+\coordinate (pSE) at (\domainE,\domainS);
+\coordinate (pNE) at (\domainE,\domainN);
+\coordinate (pNW) at (\domainW,\domainN);
+\draw[curve,gdomain] (pSW) -- (pSE) -- (pNE) -- (pNW) -- cycle;
+
+% Faults
+\def\faultmain{
+    (444.20439, 3963.17297)
+    (445.98459, 3957.30552)
+    (450.88891, 3949.91226)
+    (453.73532, 3947.4569 )
+    (456.04227, 3945.43768)
+    (458.68755, 3943.90552)
+    (466.41829, 3936.33115)
+}
+\coordinate (p-fault-main-north) at (445.98459, 3957.30552);
+\coordinate (p-fault-main-south) at (458.68755, 3943.90552);
+\draw [curve] plot [smooth] coordinates {\faultmain};
+
+\def\faultwest{
+    (445.03142, 3939.11025)
+    (448.55545, 3942.25024)
+    (451.44826, 3944.6408 )
+    (452.75987, 3946.13107)
+    (453.73532, 3947.4569)
+ }
+\coordinate (p-fault-west) at (448.55545, 3942.25024);
+\draw [curve] plot [smooth] coordinates {\faultwest};
+
+\def\faulteast{
+    (453.73532, 3947.4569)
+    (454.42741, 3948.28517)
+    (454.84836, 3949.2036)
+    (455.54065, 3950.12069)
+    (457.03572, 3952.4425)
+}
+\coordinate (p-fault-east) at (455.54065, 3950.12069);
+\draw [curve] plot [smooth] coordinates {\faulteast};
+
+
+% -------------------------------------------------------------------------------------------------
+% Domain
+% -------------------------------------------------------------------------------------------------
+\ifthenelse{\figpart=1}{
+
+% Axes
+\draw[axes,arrow] ($(pSW)+(0,-\axesshift)$) to ($(pSE)+(1.0*\axesshift,-\axesshift)$);
+\node[axes-label,right] at ($(pSE)+(1.0*\axesshift,-\axesshift)$) {x};
+\foreach \ix in {0,1}{%
+    \pgfmathsetmacro{\x}{(\domainW+\ix*\domainX)}
+    \draw[axes] ($(pSW)+(\ix*\domainX,-\axesshift)$) -- ++(0,-\ticksize) node[below]{\x\,km};
+}
+
+\draw[axes,arrow] ($(pSW)+(-\axesshift,0)$) to ($(pNW)+(-\axesshift,+1.0*\axesshift)$);
+\node[axes-label,above] at ($(pNW)+(-\axesshift,1.0*\axesshift)$) {y};
+\foreach \iy in {0,1}{%
+    \pgfmathsetmacro{\y}{\domainS+\iy*\domainY}
+    \draw[axes] ($(pSW)+(-\axesshift,\iy*\domainY)$) -- ++(-\ticksize,0) node[left]{\y\,km};
+}
+
+% Materials
+\node[bc-label] at ($(pSW)+(0.5*\domainX,0.90*\domainY)$) {elastic};
+
+% Boundaries
+\node[bc-label, anchor=east] (west-label) at ($(pSW)+(-\bndryshift,0.5*\domainY)$) {boundary\_west};
+\draw[bc,arrow] (west-label) to[out=10,in=-170,looseness=2] ($(pSW)+(0,0.5*\domainY)$);
+
+\node[bc-label, anchor=west] (east-label) at ($(pSE)+(+\bndryshift,0.5*\domainY)$) {boundary\_east};
+\draw[bc,arrow] (east-label) to[out=-170,in=+10,looseness=2] ($(pSE)+(0,0.5*\domainY)$);
+
+\node[bc-label, anchor=north] (south-label) at ($(pSW)+(0.5*\domainX,-\bndryshift)$) {boundary\_south};
+\draw[bc,arrow] (south-label) to[out=100,in=-80,looseness=2] ($(pSW)+(0.5*\domainX,0)$);
+
+\node[bc-label, anchor=south] (north-label) at ($(pNW)+(0.5*\domainX,\bndryshift)$) {boundary\_north};
+\draw[bc,arrow] (north-label) to[out=-80,in=100,looseness=2] ($(pNW)+(0.5*\domainX,0)$);
+
+% Faults
+\node[bc-label, anchor=west] (fault-main-label) at ($(p-fault-main-north)+(+0.5*\bndryshift,+0.4*\bndryshift)$) {fault\_main};
+\draw[bc,arrow] (fault-main-label) to[out=-170,in=+10,looseness=2] ($(p-fault-main-north)$);
+
+\node[bc-label, anchor=east] (fault-west-label) at ($(p-fault-west)+(-0.4*\bndryshift,+0.2*\bndryshift)$) {fault\_west};
+\draw[bc,arrow] (fault-west-label) to[out=-50,in=+160,looseness=2] ($(p-fault-west)$);
+
+\node[bc-label, anchor=west] (fault-east-label) at ($(p-fault-east)+(+0.6*\bndryshift,-0.4*\bndryshift)$) {fault\_east};
+\draw[bc,arrow] (fault-east-label) to[out=+170,in=-20,looseness=2] ($(p-fault-east)$);
+
+}{}
+
+
+% -------------------------------------------------------------------------------------------------
+% Gmsh Geometry
+% -------------------------------------------------------------------------------------------------
+\ifthenelse{\figpart=2}{
+
+% Points
+\node[fevertex] (v1) at (pSW) {};
+\node[fevertex-label, below, anchor=north] at (v1) {pSW};
+
+\node[fevertex] (v2) at (pSE) {};
+\node[fevertex-label, below, anchor=north] at (v2) {pSE};
+
+\node[fevertex] (v3) at (pNE) {};
+\node[fevertex-label, above, anchor=south] at (v3) {pNE};
+
+\node[fevertex] (v4) at (pNW) {};
+\node[fevertex-label, above, anchor=south] at (v4) {pNW};
+
+% Curves
+\node (south) at ($(pSW)+(0.5*\domainX,0)$) {};
+\node[curve-label, below] at (south) {c\_south};
+\draw[curve-dir] ($(south)+(-0.5*\dirsize,4)$) -- ++(\dirsize,0);
+
+\node (east) at ($(pSE)+(0,0.5*\domainY)$) {};
+\node[curve-label, right, rotate=90, anchor=north] at (east) {c\_east};
+\draw[curve-dir] ($(east)+(-4,-0.5*\dirsize)$) -- ++(0,\dirsize);
+
+\node (north) at ($(pNW)+(0.5*\domainX,0)$) {};
+\node[curve-label, above] at (north) {c\_north};
+\draw[curve-dir] ($(north)+(+0.5*\dirsize,-4)$) -- ++(-\dirsize,0);
+
+\node (west) at ($(pSW)+(0,0.5*\domainY)$) {};
+\node[curve-label, left, rotate=-90, anchor=north] at (west) {c\_west};
+\draw[curve-dir] ($(west)+(4,+0.5*\dirsize)$) -- ++(0,-\dirsize);
+
+\node (fault-main) at ($(p-fault-main-north)+(0,0.05*\domainY)$) {};
+\node[curve-label, right, rotate=-60, anchor=east] at (fault-main) {c\_fault\_main};
+%\draw[curve-dir] ($(fault-main)+(+4,-0.5*\dirsize)$) -- ++(0,\dirsize);
+
+\node (fault-west) at ($(p-fault-west)+(0,0.0*\domainY)$) {};
+\node[curve-label, right, rotate=45, anchor=east] at (fault-west) {c\_fault\_west};
+%\draw[curve-dir] ($(fault-west)+(-4,-0.5*\dirsize)$) -- ++(0,\dirsize);
+
+\node (fault-east) at ($(p-fault-east)+(0,0.0*\domainY)$) {};
+\node[curve-label, right, rotate=45, anchor=west] at (fault-east) {c\_fault\_east};
+%\draw[curve-dir] ($(fault-east)+(-4,-0.5*\dirsize)$) -- ++(0,\dirsize);
+
+
+% Axes
+\draw[axes,arrow] ($(pSW)+(0,-\axesshift)$) to ($(pSE)+(1.0*\axesshift,-\axesshift)$);
+\node[axes-label,right] at ($(pSE)+(1.0*\axesshift,-\axesshift)$) {x};
+\foreach \ix in {0,1}{%
+    \pgfmathsetmacro{\x}{(\domainW+\ix*\domainX)}
+    \draw[axes] ($(pSW)+(\ix*\domainX,-\axesshift)$) -- ++(0,-\ticksize) node[below]{\x\,km};
+}
+
+\draw[axes,arrow] ($(pSW)+(-\axesshift,0)$) to ($(pNW)+(-\axesshift,+1.0*\axesshift)$);
+\node[axes-label,above] at ($(pNW)+(-\axesshift,1.0*\axesshift)$) {y};
+\foreach \iy in {0,1}{%
+    \pgfmathsetmacro{\y}{\domainS+\iy*\domainY}
+    \draw[axes] ($(pSW)+(-\axesshift,\iy*\domainY)$) -- ++(-\ticksize,0) node[left]{\y\,km};
+}
+
+}{} % if/else
+
+
+% -------------------------------------------------------------------------------------------------
+% Cubit Geometry
+% -------------------------------------------------------------------------------------------------
+\ifthenelse{\figpart=3}{
+
+% Points
+\node[fevertex] (v1) at (pSW) {};
+\node[fevertex-label, below, anchor=north] at (v1) {pSW};
+
+\node[fevertex] (v2) at (pSE) {};
+\node[fevertex-label, below, anchor=north] at (v2) {pSE};
+
+\node[fevertex] (v3) at (pNE) {};
+\node[fevertex-label, above, anchor=south] at (v3) {pNE};
+
+\node[fevertex] (v4) at (pNW) {};
+\node[fevertex-label, above, anchor=south] at (v4) {pNW};
+
+% Curves
+\node (south) at ($(pSW)+(0.5*\domainX,0)$) {};
+\node[curve-label, below] at (south) {c\_south};
+
+\node (east) at ($(pSE)+(0,0.5*\domainY)$) {};
+\node[curve-label, right, rotate=90, anchor=north] at (east) {c\_east};
+
+\node (north) at ($(pNW)+(0.5*\domainX,0)$) {};
+\node[curve-label, above] at (north) {c\_north};
+
+\node (west) at ($(pSW)+(0,0.5*\domainY)$) {};
+\node[curve-label, left, rotate=-90, anchor=north] at (west) {c\_west};
+
+\node (fault-main-north) at ($(p-fault-main-north)+(0,0.05*\domainY)$) {};
+\node[curve-label, right, rotate=-60, anchor=east] at (fault-main-north) {c\_fault\_main\_north};
+
+\node (fault-main-south) at ($(p-fault-main-south)+(0,0.05*\domainY)$) {};
+\node[curve-label, right, rotate=-60, anchor=west] at (fault-main-south) {c\_fault\_main\_south};
+
+\node (fault-west) at ($(p-fault-west)+(0,0.0*\domainY)$) {};
+\node[curve-label, right, rotate=45, anchor=east] at (fault-west) {c\_fault\_west};
+
+\node (fault-east) at ($(p-fault-east)+(0,0.0*\domainY)$) {};
+\node[curve-label, right, rotate=45, anchor=west] at (fault-east) {c\_fault\_east};
+
+
+% Axes
+\draw[axes,arrow] ($(pSW)+(0,-\axesshift)$) to ($(pSE)+(1.0*\axesshift,-\axesshift)$);
+\node[axes-label,right] at ($(pSE)+(1.0*\axesshift,-\axesshift)$) {x};
+\foreach \ix in {0,1}{%
+    \pgfmathsetmacro{\x}{(\domainW+\ix*\domainX)}
+    \draw[axes] ($(pSW)+(\ix*\domainX,-\axesshift)$) -- ++(0,-\ticksize) node[below]{\x\,km};
+}
+
+\draw[axes,arrow] ($(pSW)+(-\axesshift,0)$) to ($(pNW)+(-\axesshift,+1.0*\axesshift)$);
+\node[axes-label,above] at ($(pNW)+(-\axesshift,1.0*\axesshift)$) {y};
+\foreach \iy in {0,1}{%
+    \pgfmathsetmacro{\y}{\domainS+\iy*\domainY}
+    \draw[axes] ($(pSW)+(-\axesshift,\iy*\domainY)$) -- ++(-\ticksize,0) node[left]{\y\,km};
+}
+
+}{} % if/else
+
+
+% -------------------------------------------------------------------------------------------------
+% Step 1
+% -------------------------------------------------------------------------------------------------
+\ifthenelse{\figpart=4}{
+
+    % Dirichlet roller BCs
+    % West
+    \def\radius{0.15*\bndryshift}%
+    \foreach \ix in {0,...,2}{%
+        \draw[roller] ($(pSW)+(-\radius,\ix*\dx+0.5*\dx)$) circle (\radius);
+        \node[ground, rotate=-90] at ($(pSW)+(-2*\radius,\ix*\dx+0.5*\dx)$) {};
+    }
+    \node[bc-label, left] at ($(pSW)+(-\bndryshift,0.5*\domainY)$) {$\begin{array}{l} u_x=0 \end{array}$};
+
+    % South
+    \foreach \ix in {0,...,2}{%
+        \draw[roller] ($(pSW)+(\ix*\dx+0.5*\dx,-\radius)$) circle (\radius);
+        \node[ground] at ($(pSW)+(\ix*\dx+0.5*\dx,-2*\radius)$) {};
+    }
+    \node[bc-label, below] at ($(pSW)+(0.5*\domainX,-\bndryshift)$) {$\begin{array}{l} u_y=0 \end{array}$};
+
+    % East
+    \def\radius{0.15*\bndryshift}%
+    \foreach \ix in {0,...,2}{%
+        \draw[roller] ($(pSE)+(+\radius,\ix*\dx+0.5*\dx)$) circle (\radius);
+        \node[ground, rotate=90] at ($(pSE)+(+2*\radius,\ix*\dx+0.5*\dx)$) {};
+    }
+    \node[bc-label, right] at ($(pSE)+(+\bndryshift,+0.5*\domainY)$) {$\begin{array}{l} u_x=0 \end{array}$};
+
+    % North
+    \foreach \ix in {0,...,2}{%
+        \draw[roller] ($(pNW)+(\ix*\dx+0.5*\dx,+\radius)$) circle (\radius);
+        \node[ground, rotate=180] at ($(pNW)+(\ix*\dx+0.5*\dx,+2*\radius)$) {};
+    }
+    \node[bc-label, above] at ($(pNW)+(0.5*\domainX,+\bndryshift)$) {$\begin{array}{l} u_y=0 \end{array}$};
+
+
+    % Fault slip
+    \coordinate (x1) at (p-fault-main-north);
+    \node[bc-label, xshift=-2, yshift=9, anchor=south] at (x1) {$d=4.0\textrm{m RL}$};
+
+    \coordinate (x1) at (p-fault-west);
+    \node[bc-label, xshift=-2, yshift=2, anchor=east] at (x1) {$d=2.0\textrm{m LL}$};
+
+    \coordinate (x1) at (p-fault-east);
+    \node[bc-label, xshift=1, yshift=3, anchor=west] at (x1) {$d=1.0\textrm{m LL}$};
+
+
+}{} % if/else
+
+
+% -------------------------------------------------------------------------------------------------
+% Step 2
+% -------------------------------------------------------------------------------------------------
+\ifthenelse{\figpart=5}{
+
+    % Dirichlet roller BCs
+    % West
+    \def\radius{0.15*\bndryshift}%
+    \foreach \ix in {0,...,2}{%
+        \draw[roller] ($(pSW)+(-\radius,\ix*\dx+0.5*\dx)$) circle (\radius);
+        \node[ground, rotate=-90] at ($(pSW)+(-2*\radius,\ix*\dx+0.5*\dx)$) {};
+    }
+    \node[bc-label, left] at ($(pSW)+(-\bndryshift,0.5*\domainY)$) {$\begin{array}{l} u_x=0 \end{array}$};
+
+    % South
+    \foreach \ix in {0,...,2}{%
+        \draw[roller] ($(pSW)+(\ix*\dx+0.5*\dx,-\radius)$) circle (\radius);
+        \node[ground] at ($(pSW)+(\ix*\dx+0.5*\dx,-2*\radius)$) {};
+    }
+    \node[bc-label, below] at ($(pSW)+(0.5*\domainX,-\bndryshift)$) {$\begin{array}{l} u_y=0 \end{array}$};
+
+    % East
+    \def\radius{0.15*\bndryshift}%
+    \foreach \ix in {0,...,2}{%
+        \draw[roller] ($(pSE)+(+\radius,\ix*\dx+0.5*\dx)$) circle (\radius);
+        \node[ground, rotate=90] at ($(pSE)+(+2*\radius,\ix*\dx+0.5*\dx)$) {};
+    }
+    \node[bc-label, right] at ($(pSE)+(+\bndryshift,+0.5*\domainY)$) {$\begin{array}{l} u_x=0 \end{array}$};
+
+    % North
+    \foreach \ix in {0,...,2}{%
+        \draw[roller] ($(pNW)+(\ix*\dx+0.5*\dx,+\radius)$) circle (\radius);
+        \node[ground, rotate=180] at ($(pNW)+(\ix*\dx+0.5*\dx,+2*\radius)$) {};
+    }
+    \node[bc-label, above] at ($(pNW)+(0.5*\domainX,+\bndryshift)$) {$\begin{array}{l} u_y=0 \end{array}$};
+
+
+    % Fault slip
+    \coordinate (x1) at (p-fault-main-north);
+    \node[bc-label, xshift=-2, yshift=9, anchor=south] at (x1) {$d=d_1(x)\textrm{ RL}$};
+
+    \coordinate (x1) at (p-fault-west);
+    \node[bc-label, xshift=-2, yshift=2, anchor=east] at (x1) {$d=d_2(x)\textrm{ LL}$};
+
+    \coordinate (x1) at (p-fault-east);
+    \node[bc-label, xshift=1, yshift=3, anchor=west] at (x1) {$d=d_3(x)\textrm{ LL}$};
+
+
+}{} % if/else
+
+
+\end{tikzpicture}}
+
+\end{document}
