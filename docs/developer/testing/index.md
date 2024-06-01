@@ -9,7 +9,7 @@ When an example, user simulation, or one of the tests indicates a bug exists, we
 In general, the most efficient strategy for debugging is to first try to expose the bug in a serial unit test, followed by an MMS Test, a serial full-scale test, and finally a parallel full-scale test.
 This may require creating new tests if the bug is not exposed by current tests.
 The PyLith developers make extensive use of debuggers, such as `gdb` and `lldb`, and memory management analysis tools, such as `valgrind`, to detect and squash bugs.
-These are discussed in {ref}`developer-debugging-tools`.
+We tools for debugging in {ref}`developer-debugging-tools` and tools for evaluating performance in {ref}`developer-performance-tools`.
 
 ```{toctree}
 libtests.md
@@ -18,6 +18,7 @@ run-cxxtests.md
 pytests.md
 fullscale.md
 debugging-tools.md
+performance-tools.md
 fields.md
 ci-docker.md
 ```
