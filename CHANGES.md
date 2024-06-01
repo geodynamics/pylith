@@ -8,11 +8,17 @@ The version numbers are in the form `MAJOR.MINOR.PATCH`, where major releases in
 ## Version 4.1.0 (main)
 
 * **Changed**
-  * Improve the default preconditioners for poroelasticity.
+  * Improved the default preconditioners for poroelasticity for improved scalability.
+  * Improved the default preconditioners for elasticity with faults.
+  * Replaced use of Cubit journal files with Cubit Python scripts for several examples, and use the skeleton sizing function to increase cell size with distance from the fault.
 * **Added**
   * New 2D and 3D crustal strike-slip faults examples based on the 2019 Ridgecrest earthquake.
+  * Add performance logging for top-level C++ code using PETSc events.
 * **Fixed**
+  * Updated `examples/subduction-3d` Steps 6, 7, and 8 to work with PyLith v3+.
+  * Fix bottleneck when reading Gmsh files.
   * Remove extra (wrong) kernels for poroelasticity when using state variables.
+  * Update Python unit tests setup for compatibility with the current unittest API (use `load_tests()`).
 
 ### Contributors
 
