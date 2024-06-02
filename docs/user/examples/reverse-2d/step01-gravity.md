@@ -155,23 +155,18 @@ The HDF5 (`.h5`) files contain the mesh geometry and topology information along 
 The Xdmf (`.xmf`) files contain metadata that allow visualization tools like ParaView to know where to find the information in the HDF5 files.
 To visualize the data using ParaView or Visit, load the Xdmf files.
 
-In {numref}`fig:example:reverse:2d:step01:solution` we use ParaView to visualize the displacement field using the `viz/plot_dispwarp.py` Python script.
-First, we start ParaView from the `examples/reverse-2d` directory.
-Next, we use the Python Shell to change the default exaggeration of the deformation to 5 to account for the large deformation.
+In {numref}`fig:example:reverse:2d:step01:solution` we use the `pylith_viz` utility to visualize the displacement field.
+Because we apply the gravitational body forces to an undeformed, stress-free domain, the vertical deformation is about 2 kilometers.
 
-```{code-block} python
+```{code-block} console
 ---
-caption: Change the exaggeration (warp scaling) to 5.
+caption: Visualize PyLith output using `pylith_viz`.
 ---
->>> WARP_SCALE = 5
+pylith_viz --filename=output/step01_gravity-domain.h5 warp_grid --exaggeration=5
 ```
 
-Finally, we run the `viz/plot_dispwarp.py` Python script as described in {ref}`sec-paraview-python-scripts`.
-We apply the gravitational body forces to an undeformed, stress-free domain.
-As a result, the vertical deformation is about 2 kilometers.
-
 :::{figure-md} fig:example:reverse:2d:step01:solution
-<img src="figs/step01-solution.*" alt="Solution for Step 1. The colors indicate the magnitude of the displacement, and the deformation is exaggerated by a factor of 5." width="100%"/>
+<img src="figs/step01-solution.*" alt="Solution for Step 1. The colors indicate the magnitude of the displacement, and the deformation is exaggerated by a factor of 5." width="600px"/>
 
 Solution for Step 1.
 The colors of the shaded surface indicate the magnitude of the displacement, and the deformation is exaggerated by a factor of 5.
