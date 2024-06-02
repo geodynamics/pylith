@@ -30,7 +30,7 @@ $ ./viz/plot_inversion_results.py
 ```
 
 :::{figure-md} fig:example:strikeslip:2d:step06:solution
-<img src="figs/step06-solution.*" alt="Results of slip inversion in Step 6." width="100%"/>
+<img src="figs/step06-solution.*" alt="Results of slip inversion in Step 6." width="600px"/>
 
 Results of slip inversion in Step 6.
 The thick black line shows the prescribed slip in Step 4.

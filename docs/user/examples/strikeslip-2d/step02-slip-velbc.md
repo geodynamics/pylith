@@ -106,39 +106,21 @@ Remember that the PETSc TS monitor shows the nondimensionalized time and time st
 
 ## Visualizing the results
 
-In {numref}`fig:example:strikeslip:2d:step02:solution` we use ParaView to visualize the x displacement field using the `viz/plot_dispwarp.py` Python script.
-First, we start ParaView from the `examples/strikeslip-2d` directory.
+In {numref}`fig:example:strikeslip:2d:step02:solution` we use the `pylith_viz` utility to visualize the y displacement field.
+You can move the slider or use the `p` and `n` keys to change the increment or decrement time.
 
 ```{code-block} console
 ---
-caption: Open ParaView using the command line.
+caption: Visualize PyLith output using `pylith_viz`.
 ---
-$ PATH_TO_PARAVIEW/paraview
-
-# For macOS, it will be something like
-$ /Applications/ParaView-5.10.1.app/Contents/MacOS/paraview
+pylith_viz --filename=output/step02_slip_velbc-domain.h5 warp_grid --component=y
 ```
-
-Next, we override the default name of the simulation file with the name of the current simulation.
-
-```{code-block} python
----
-caption: Set the simulation in the ParaView Python Shell.
----
->>> SIM = "step02_slip_velbc"
-```
-
-Finally, we run the `viz/plot_dispwarp.py` Python script as described in {ref}`sec-paraview-python-scripts`.
-
-:::{tip}
-You can use the "play" button to animate the solution in time.
-:::
 
 :::{figure-md} fig:example:strikeslip:2d:step02:solution
-<img src="figs/step02-solution.*" alt="Solution for Step 2 at t=100 yr. The colors indicate the magnitude of the displacement, and the deformation is exaggerated by a factor of 1000." width="100%"/>
+<img src="figs/step02-solution.*" alt="Solution for Step 2 at t=100 yr. The colors indicate the y displacement, and the deformation is exaggerated by a factor of 1000." width="400px"/>
 
 Solution for Step 2 at t=100 yr.
-The colors of the shaded surface indicate the magnitude of the y displacement, and the deformation is exaggerated by a factor of 1000.
+The colors of the shaded surface indicate the y displacement, and the deformation is exaggerated by a factor of 1000.
 The undeformed configuration is show by the gray wireframe.
 The coseismic fault slip at 100 years releases all of the accumulated strain energy.
 :::
