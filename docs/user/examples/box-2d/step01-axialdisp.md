@@ -132,26 +132,19 @@ The HDF5 (`.h5`) files contain the mesh geometry and topology information along 
 The Xdmf (`.xmf`) files contain metadata that allow visualization tools like ParaView to know where to find the information in the HDF5 files.
 To visualize the data using ParaView or Visit, load the Xdmf files.
 
-In {numref}`fig:example:box:2d:step01:solution` we use ParaView to visualize the x displacement field using the `viz/plot_dispwarp.py` Python script.
-First, we first start ParaView from the `examples/box-2d` directory.
+In {numref}`fig:example:box:2d:step01:solution` we use the `pylith_viz` utility to visualize the x displacement field.
 
 ```{code-block} console
 ---
-caption: Open ParaView using the command line.
+caption: Visualize PyLith output using `pylith_viz`.
 ---
-$ PATH_TO_PARAVIEW/paraview
-
-# For macOS, it will be something like
-$ /Applications/ParaView-5.10.1.app/Contents/MacOS/paraview
+pylith_viz --filenames=output/step01_axialdisp-domain.h5 warp_grid --component=x
 ```
 
-Next we run the `viz/plot_dispwarp.py` Python script as described in {ref}`sec-paraview-python-scripts`.
-For Step 1 we do not need to change any of the default values.
-
 :::{figure-md} fig:example:box:2d:step01:solution
-<img src="figs/step01-solution.*" alt="Solution for Step 1. The colors indicate the magnitude of the displacement, and the deformation is exaggerated by a factor of 1000." width="100%"/>
+<img src="figs/step01-solution.*" alt="Solution for Step 1. The colors indicate the x displacement, and the deformation is exaggerated by a factor of 1000." width="400"/>
 
 Solution for Step 1.
-The colors of the shaded surface indicate the magnitude of the x displacement, and the deformation is exaggerated by a factor of 1000.
+The colors of the shaded surface indicate the x displacement, and the deformation is exaggerated by a factor of 1000.
 The undeformed configuration is show by the gray wireframe.
 :::
