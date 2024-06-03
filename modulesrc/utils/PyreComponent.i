@@ -2,10 +2,10 @@
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+// Copyright (c) 2010-2024, University of California, Davis and the PyLith Development Team.
 // All rights reserved.
 //
-// See https://mit-license.org/ and LICENSE.md and for license information. 
+// See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
 
 /**
@@ -14,49 +14,45 @@
  * @brief Python interface to C++ PyreComponent.
  */
 
-
 namespace pylith {
     namespace utils {
-
         class PyreComponent {
-
-        // PUBLIC MEMBERS /////////////////////////////////////////////////
+            // PUBLIC MEMBERS /////////////////////////////////////////////////
 public:
 
-        /// Constructor
-        PyreComponent(void);
+            /// Constructor
+            PyreComponent(void);
 
-        /// Destructor
-        ~PyreComponent(void);
+            /// Destructor
+            ~PyreComponent(void);
 
-        /** Set name of component.
-         *
-         * @param value Name of component.
-         */
-        void setName(const char* value);
+            /** Set name of component.
+             *
+             * @param value Name of component.
+             */
+            void setName(const char* value);
 
-        /** Get name of component.
-         *
-         * @returns Name of component.
-         */
-        const char* getName(void) const;
+            /** Get name of component.
+             *
+             * @returns Name of component.
+             */
+            const char* getName(void) const;
 
-        /** Set component identifier (identifies object in component hierarchy).
-         *
-         * @param value Component identifier.
-         */
-        void setIdentifier(const char* value);
+            /** Set component identifier (identifies object in component hierarchy).
+             *
+             * @param value Component identifier.
+             */
+            void setIdentifier(const char* value);
 
-        /** Get component identifier (identifies object in component hierarchy).
-         *
-         * @returns Component identifier.
-         */
-        const char* getIdentifier(void) const;
+            /** Get component identifier (identifies object in component hierarchy).
+             *
+             * @returns Component identifier.
+             */
+            const char* getIdentifier(void) const;
 
         }; // PyreComponent
 
     } // utils
 } // pylith
-
 
 // End of file

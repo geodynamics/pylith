@@ -2,10 +2,10 @@
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+// Copyright (c) 2010-2024, University of California, Davis and the PyLith Development Team.
 // All rights reserved.
 //
-// See https://mit-license.org/ and LICENSE.md and for license information. 
+// See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
 
 /** @file modulesrc/materials/IsotropicLinearMaxwell.i
@@ -15,7 +15,7 @@
 
 namespace pylith {
     namespace materials {
-        class IsotropicLinearMaxwell : public pylith::materials::RheologyElasticity {
+        class IsotropicLinearMaxwell: public pylith::materials::RheologyElasticity {
             // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////
 public:
 
@@ -99,7 +99,7 @@ public:
              * @param[inout] kernels Array of kernels for updating state variables.
              * @param[in] coordsys Coordinate system.
              */
-            void addKernelsUpdateStateVars(std::vector<pylith::feassemble::IntegratorDomain::ProjectKernels>* kernels,
+            void addKernelsUpdateStateVars(std::vector < pylith::feassemble::IntegratorDomain::ProjectKernels > * kernels,
                                            const spatialdata::geocoords::CoordSys* coordsys) const;
 
             /** Update kernel constants.
