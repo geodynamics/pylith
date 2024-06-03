@@ -2,10 +2,10 @@
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+// Copyright (c) 2010-2024, University of California, Davis and the PyLith Development Team.
 // All rights reserved.
 //
-// See https://mit-license.org/ and LICENSE.md and for license information. 
+// See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
 
 /**
@@ -14,94 +14,90 @@
  * @brief Python interface to C++ EventLogger.
  */
 
-
 namespace pylith {
-  namespace utils {
+    namespace utils {
+        class EventLogger
+        { // EventLogger
+          // PUBLIC MEMBERS /////////////////////////////////////////////////
+public:
 
-    class EventLogger
-    { // EventLogger
+            /// Constructor
+            EventLogger(void);
 
-      // PUBLIC MEMBERS /////////////////////////////////////////////////
-    public :
+            /// Destructor
+            ~EventLogger(void);
 
-      /// Constructor
-      EventLogger(void);
+            /** Set name of logging class.
+             *
+             * @param name Name of logging class.
+             */
+            void setClassName(const char* name);
 
-      /// Destructor
-      ~EventLogger(void);
+            /** Get name of logging class.
+             *
+             * @returns Name of logging class.
+             */
+            const char* getClassName(void) const;
 
-      /** Set name of logging class.
-       *
-       * @param name Name of logging class.
-       */
-      void setClassName(const char* name);
+            /// Setup logging class.
+            void initialize(void);
 
-      /** Get name of logging class.
-       *
-       * @returns Name of logging class.
-       */
-      const char* getClassName(void) const;
+            /** Register event.
+             *
+             * @prerequisite Must call initialize() before registerEvent().
+             *
+             * @param name Name of event.
+             * @returns Event identifier.
+             */
+            int registerEvent(const char* name);
 
-      /// Setup logging class.
-      void initialize(void);
+            /** Get event identifier.
+             *
+             * @param name Name of event.
+             * @returns Event identifier.
+             */
+            int getEventId(const char* name);
 
-      /** Register event.
-       *
-       * @prerequisite Must call initialize() before registerEvent().
-       * 
-       * @param name Name of event.
-       * @returns Event identifier.
-       */
-      int registerEvent(const char* name);
+            /** Log event begin.
+             *
+             * @param id Event identifier.
+             */
+            void eventBegin(const int id);
 
-      /** Get event identifier.
-       *
-       * @param name Name of event.
-       * @returns Event identifier.
-       */
-      int getEventId(const char* name);
+            /** Log event end.
+             *
+             * @param id Event identifier.
+             */
+            void eventEnd(const int id);
 
-      /** Log event begin.
-       *
-       * @param id Event identifier.
-       */
-      void eventBegin(const int id);
+            /** Register stage.
+             *
+             * @prerequisite Must call initialize() before registerStage().
+             *
+             * @param name Name of stage.
+             * @returns Stage identifier.
+             */
+            int registerStage(const char* name);
 
-      /** Log event end.
-       *
-       * @param id Event identifier.
-       */
-      void eventEnd(const int id);
+            /** Get stage identifier.
+             *
+             * @param name Name of stage.
+             * @returns Stage identifier.
+             */
+            int getStageId(const char* name);
 
-      /** Register stage.
-       *
-       * @prerequisite Must call initialize() before registerStage().
-       * 
-       * @param name Name of stage.
-       * @returns Stage identifier.
-       */
-      int registerStage(const char* name);
+            /** Log stage begin.
+             *
+             * @param id Stage identifier.
+             */
+            void stagePush(const int id);
 
-      /** Get stage identifier.
-       *
-       * @param name Name of stage.
-       * @returns Stage identifier.
-       */
-      int getStageId(const char* name);
+            /// Log stage end.
+            void stagePop(void);
 
-      /** Log stage begin.
-       *
-       * @param id Stage identifier.
-       */
-      void stagePush(const int id);
-      
-      /// Log stage end.
-      void stagePop(void);
+        }; // EventLogger
 
-    }; // EventLogger
-
-  } // utils
+    } // utils
 } // pylith
 
-
-// End of file 
+// End of file

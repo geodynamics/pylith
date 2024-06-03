@@ -141,7 +141,7 @@ caption: Sample C++ declaration (header) file.
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+// Copyright (c) 2010-2024, University of California, Davis and the PyLith Development Team.
 // All rights reserved.
 //
 // See https://mit-license.org/ and LICENSE.md and for license information. 
@@ -401,7 +401,7 @@ caption: Sample C++ definition (implementation) file.
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+// Copyright (c) 2010-2024, University of California, Davis and the PyLith Development Team.
 // All rights reserved.
 //
 // See https://mit-license.org/ and LICENSE.md and for license information. 
@@ -655,7 +655,7 @@ caption: Sample Python source code.
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+# Copyright (c) 2010-2024, University of California, Davis and the PyLith Development Team.
 # All rights reserved.
 #
 # See https://mit-license.org/ and LICENSE.md and for license information. 

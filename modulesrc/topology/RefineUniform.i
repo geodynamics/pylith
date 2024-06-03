@@ -2,10 +2,10 @@
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+// Copyright (c) 4, University of California, Davis and the PyLith Development Team.
 // All rights reserved.
 //
-// See https://mit-license.org/ and LICENSE.md and for license information. 
+// See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
 
 /**
@@ -15,35 +15,32 @@
  */
 
 namespace pylith {
-  namespace topology {
+    namespace topology {
+        // RefineUniform ----------------------------------------------------
+        class pylith::topology::RefineUniform
+        { // RefineUniform
+          // PUBLIC MEMBERS /////////////////////////////////////////////////
+public:
 
-    // RefineUniform ----------------------------------------------------
-    class pylith::topology::RefineUniform
-    { // RefineUniform
+            /// Constructor
+            RefineUniform(void);
 
-      // PUBLIC MEMBERS /////////////////////////////////////////////////
-    public :
+            /// Destructor
+            ~RefineUniform(void);
 
-      /// Constructor
-      RefineUniform(void);
-      
-      /// Destructor
-      ~RefineUniform(void);
-      
-      /** Refine mesh.
-       *
-       * @param newMesh Refined mesh (result).
-       * @param mesh Mesh to refine.
-       * @param levels Number of levels to refine.
-       */
-      void refine(Mesh* const newMesh,
-		  const Mesh& mesh,
-		  const int levels =1);
+            /** Refine mesh.
+             *
+             * @param newMesh Refined mesh (result).
+             * @param mesh Mesh to refine.
+             * @param levels Number of levels to refine.
+             */
+            void refine(Mesh* const newMesh,
+                        const Mesh& mesh,
+                        const int levels=1);
 
-    }; // RefineUniform
+        }; // RefineUniform
 
-  } // topology
+    } // topology
 } // pylith
-
 
 // End of file

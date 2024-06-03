@@ -2,10 +2,10 @@
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
+// Copyright (c) 2010-2024, University of California, Davis and the PyLith Development Team.
 // All rights reserved.
 //
-// See https://mit-license.org/ and LICENSE.md and for license information. 
+// See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
 /** @file modulesrc/faults/KinSrcLiuCos.i
  *
@@ -14,33 +14,30 @@
 
 namespace pylith {
     namespace faults {
+        class KinSrcLiuCos: public pylith::faults::KinSrc {
+            // PUBLIC METHODS /////////////////////////////////////////////////
+public:
 
-	class KinSrcLiuCos : public pylith::faults::KinSrc {
+            /// Default constructor.
+            KinSrcLiuCos(void);
 
-	    // PUBLIC METHODS /////////////////////////////////////////////////
-	public :
+            /// Destructor.
+            ~KinSrcLiuCos(void);
 
-	    /// Default constructor.
-	    KinSrcLiuCos(void);
-      
-	    /// Destructor.
-	    ~KinSrcLiuCos(void);
-      
-	    // PROTECTED METHODS //////////////////////////////////////////////////
-	protected:
+            // PROTECTED METHODS //////////////////////////////////////////////////
+protected:
 
-	    /** Setup auxiliary subfields (discretization and query fns).
-	     *
-	     * @param[in] normalizer Normalizer for nondimensionalizing values.
-	     * @param[in] cs Coordinate system for problem.
-	     */
-	    void _auxiliaryFieldSetup(const spatialdata::units::Nondimensional& normalizer,
-				const spatialdata::geocoords::CoordSys* cs);
-	    
-	}; // class KinSrcLiuCos
+            /** Setup auxiliary subfields (discretization and query fns).
+             *
+             * @param[in] normalizer Normalizer for nondimensionalizing values.
+             * @param[in] cs Coordinate system for problem.
+             */
+            void _auxiliaryFieldSetup(const spatialdata::units::Nondimensional& normalizer,
+                                      const spatialdata::geocoords::CoordSys* cs);
+
+        }; // class KinSrcLiuCos
 
     } // faults
 } // pylith
 
-
-// End of file 
+// End of file
