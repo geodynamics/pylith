@@ -7,7 +7,7 @@ This example demonstrates the use of gravitational body forces as well as the us
 * **Step 8c**: Gravitational body forces with 3-D density variations in elastic and viscoelastic materials and initial stresses from Step 8a plus finite strain formulation (does not reach a steady-state solution). This example is not yet implemented for PyLith v3+.
 
 :::{warning}
-Step 8c is still being updated for use with PyLith v3.
+Step 8c is still being updated for use with PyLith v3+.
 :::
 
 :::{danger}
@@ -20,7 +20,7 @@ All these simulations use the default `ZeroDB` displacement boundary conditions 
 {numref}`fig:example:subduction:3d:step08:diagram` shows the boundary conditions on the domain.
 
 :::{figure-md} fig:example:subduction:3d:step08:diagram
-<img src="figs/step08-diagram.*" alt="" width="100%">
+<img src="figs/step08-diagram.*" alt="" width="75%">
 
 Boundary conditions for gravitational body forces examples.
 Body forces are applied along with roller boundary conditions on the lateral sides and bottom of the domain. For Step 8b, we also apply zero pressure BC along the upper surface of the mesh.
@@ -41,7 +41,6 @@ The parameters specific to this example are in `step08a_gravity_refstate.cfg` an
 * `pylithapp.problem.materials` For Step 8a, we set `use_reference_state` and provide spatial databases that include reference stresses.
 
 For all of the problems involving gravitational body forces we use `spatialdata.spatialdb.GravityField` to define the `gravity_field`. For Step 8a, we use higher order `quadrature_order` and `basis_order` to accurately capture the displacement field. This is not needed for Step 8b, which has much smaller displacements. Note that Step 8b also requires `mat_elastic_incompressible.cfg`, which provides all of the necessary properties using a `UniformDB`.
-
 
 ```{code-block} console
 ---
@@ -102,27 +101,26 @@ ts_type = beuler
  >> /work/charlesw/virtualenv/python3.12/lib/python3.12/site-packages/pylith/problems/Problem.py:199:finalize
  -- timedependent(info)
  -- Finalizing problem.
-
 ```
 
 The beginning of the output is nearly the same as in several previous examples. Both of these problems are static, however, so there is only a single time step.
 
 ## Visualizing the results
 
-The `output` directory contains the simulation output.
-Each "observer" writes its own set of files, so the solution over the domain is in one set of files, the boundary condition information is in another set of files, and the material information is in yet another set of files.
-The HDF5 (`.h5`) files contain the mesh geometry and topology information along with the solution fields.
-The Xdmf (`.xmf`) files contain metadata that allow visualization tools like ParaView to know where to find the information in the HDF5 files.
-To visualize the data using ParaView or Visit, load the Xdmf files.
+In {numref}`fig:example:subduction:3d:step08a:solution` we use the `pylith_viz` utility to visualize the z displacement field.
 
-In {numref}`fig:example:subduction:3d:step08a:solution` we use ParaView to visualize the x displacement field using the `viz/plot_dispwarp.py` Python script.
-We start ParaView from the `examples/subduction-3d` directory and then run the `viz/plot_dispwarp.py` Python script as described in {ref}`sec-paraview-python-scripts`.
+```{code-block} console
+---
+caption: Visualize PyLith output using `pylith_viz`.
+---
+pylith_viz --filename=output/step08a_gravity_refstate-domain.h5 warp_grid --component=z --exaggeration=50
+```
 
 :::{figure-md} fig:example:subduction:3d:step08a:solution
-<img src="figs/step08a-solution.*" alt="Solution for Step 8a. The colors indicate the z displacement, and the deformation is exaggerated by a factor of 50." width="100%"/>
+<img src="figs/step08a-solution.*" alt="Solution for Step 8a. The colors indicate the z displacement, and the deformation is exaggerated by a factor of 50." width="600px"/>
 
 Solution for Step 8a.
-The colors of the shaded surface indicate the x displacement, and the deformation is exaggerated by a factor of 50.
+The colors of the shaded surface indicate the z displacement, and the deformation is exaggerated by a factor of 50.
 :::
 
 Note that the vertical displacements for Step 8b are very close to zero, because the material is nearly incompressible.

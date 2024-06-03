@@ -7,7 +7,7 @@ For this simulation, we use linearly elastic materials.
 {numref}`fig:example:subduction:3d:step06:diagram` shows the boundary conditions on the domain.
 
 :::{figure-md} fig:example:subduction:3d:step06:diagram
-<img src="figs/step06-diagram.*" alt="" width="100%">
+<img src="figs/step06-diagram.*" alt="" width="75%">
 
 Boundary conditions for prescribed slow slip.
 We prescribe time-varying slip on a patch within the subduction interface with roller boundary conditions on the lateral sides and bottom of the domain.
@@ -103,18 +103,19 @@ The beginning of the output is nearly the same as in previous examples. The simu
 
 ## Visualizing the results
 
-The `output` directory contains the simulation output.
-Each "observer" writes its own set of files, so the solution over the domain is in one set of files, the boundary condition information is in another set of files, and the material information is in yet another set of files.
-The HDF5 (`.h5`) files contain the mesh geometry and topology information along with the solution fields.
-The Xdmf (`.xmf`) files contain metadata that allow visualization tools like ParaView to know where to find the information in the HDF5 files.
-To visualize the data using ParaView or Visit, load the Xdmf files.
+In {numref}`fig:example:subduction:3d:step06:solution` we use the `pylith_viz` utility to visualize the x displacement field.
+You can move the slider or use the `p` and `n` keys to change the increment or decrement time.
 
-In {numref}`fig:example:subduction:3d:step06:solution` we use ParaView to visualize the x displacement field using the `viz/plot_dispwarp.py` Python script.
-We start ParaView from the `examples/subduction-3d` directory and then run the `viz/plot_dispwarp.py` Python script as described in {ref}`sec-paraview-python-scripts`.
+```{code-block} console
+---
+caption: Visualize PyLith output using `pylith_viz`.
+---
+pylith_viz --filename=output/step06_slowslip-domain.h5 warp_grid --component=x --exaggeration=10000
+```
 
 :::{figure-md} fig:example:subduction:3d:step06:solution
-<img src="figs/step06-solution.*" alt="Solution for Step 6. The colors indicate the x displacement, and the deformation is exaggerated by a factor of 10,000." width="100%"/>
+<img src="figs/step06-solution.*" alt="Solution for Step 6 at t=0.09 yr. The colors indicate the x displacement, and the deformation is exaggerated by a factor of 10,000." width="600px"/>
 
-Solution for Step 6.
+Solution for Step 6 at t=0.09 yr.
 The colors of the shaded surface indicate the x displacement, and the deformation is exaggerated by a factor of 10,000.
 :::

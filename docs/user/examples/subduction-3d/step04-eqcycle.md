@@ -6,7 +6,7 @@ We use linear Maxwell viscoelastic bulk rheologies in the mantle and deeper part
 {numref}`fig:example:subduction:3d:step04:diagram` shows the boundary conditions on the domain.
 
 :::{figure-md} fig:example:subduction:3d:step04:diagram
-<img src="figs/step04-diagram.*" alt="" width="100%">
+<img src="figs/step04-diagram.*" alt="" width="75%">
 
 Boundary conditions for quasi-static interseismic deformation.
 We prescribe aseismic slip (creep) on the bottom of the slab and the deeper portion of the top of the slab; the shallow portion of the top of the slab remains locked.
@@ -102,18 +102,20 @@ As in Step 3 each linear solve requires about 400 iterations to converge.
 
 ## Visualizing the results
 
-The `output` directory contains the simulation output.
-Each "observer" writes its own set of files, so the solution over the domain is in one set of files, the boundary condition information is in another set of files, and the material information is in yet another set of files.
-The HDF5 (`.h5`) files contain the mesh geometry and topology information along with the solution fields.
-The Xdmf (`.xmf`) files contain metadata that allow visualization tools like ParaView to know where to find the information in the HDF5 files.
-To visualize the data using ParaView or Visit, load the Xdmf files.
+In {numref}`fig:example:subduction:3d:step04:solution` we use the `pylith_viz` utility to visualize the x displacement field.
+You can move the slider or use the `p` and `n` keys to change the increment or decrement time.
 
-In {numref}`fig:example:subduction:3d:step04:solution` we use ParaView to visualize the x displacement field using the `viz/plot_dispwarp.py` Python script.
-We start ParaView from the `examples/subduction-3d` directory and then run the `viz/plot_dispwarp.py` Python script as described in {ref}`sec-paraview-python-scripts`.
+```{code-block} console
+---
+caption: Visualize PyLith output using `pylith_viz`.
+---
+pylith_viz --filename=output/step03_eqcycle-domain.h5 warp_grid --component=x --exaggeration=5000
+
+```
 
 :::{figure-md} fig:example:subduction:3d:step04:solution
-<img src="figs/step04-solution.*" alt="Solution for Step 4. The colors indicate the x displacement, and the deformation is exaggerated by a factor of 5000." width="100%"/>
+<img src="figs/step04-solution.*" alt="Solution for Step 4 at t=100 yr. The colors indicate the x displacement, and the deformation is exaggerated by a factor of 5000." width="600px"/>
 
-Solution for Step 4.
+Solution for Step 4 at t=100 yr.
 The colors of the shaded surface indicate the x displacement, and the deformation is exaggerated by a factor of 5000.
 :::

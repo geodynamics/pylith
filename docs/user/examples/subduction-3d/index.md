@@ -26,7 +26,7 @@ To keep the computation time in these examples short, we limit our model to an 8
 For simplicity and to reduce complexity in constructing the mesh, we use a flat top surface (elevation of 0 with respect to mean sea level).
 
 :::{figure-md} fig:example:subduction:3d:cascadia
-<img src="figs/cascadia.*" alt="Cartoon of the Cascadia Subduction Zone showing the subduction of the Juan de Fuca Plate under the North American Plate. Source - [U.S. Geological Survey Fact Sheet 060-00](https://pubs.usgs.gov/fs/2000/fs060-00/)" width="100%"/>
+<img src="figs/cascadia.*" alt="Cartoon of the Cascadia Subduction Zone showing the subduction of the Juan de Fuca Plate under the North American Plate. Source - [U.S. Geological Survey Fact Sheet 060-00](https://pubs.usgs.gov/fs/2000/fs060-00/)" width="75%"/>
 
 Cartoon of the Cascadia Subduction Zone showing the subduction of the Juan de Fuca Plate under the North American Plate. Source - [U.S. Geological Survey Fact Sheet 060-00](https://pubs.usgs.gov/fs/2000/fs060-00/)
 :::
@@ -37,7 +37,7 @@ We use a transverse geographic projection coordinate system with Portland, Orego
 To model the motion of the slab, we include a fault for the subduction interface (the interface between the top of the slab and the mantle, crust, and wedge), as well as a fault between the bottom of the slab and the mantle.
 
 :::{figure-md} fig:example:subduction:3d:concept
-<img src="figs/conceptualmodel.*" alt="Conceptual model based on the Cascadia Subduction Zone. The model includes the subduction slab (white), the mantle (green), continental crust (blue), and an accretionary wedge (red)." width="100%"/>
+<img src="figs/conceptualmodel.*" alt="Conceptual model based on the Cascadia Subduction Zone. The model includes the subduction slab (white), the mantle (green), continental crust (blue), and an accretionary wedge (red)." width="75%"/>
 
 Conceptual model based on the Cascadia Subduction Zone. The model includes the subduction slab (white), the mantle (green), continental crust (blue), and an accretionary wedge (red).
 :::

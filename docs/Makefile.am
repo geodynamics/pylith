@@ -455,7 +455,7 @@ dist_noinst_DATA = \
 	user/examples/subduction-3d/figs/conceptualmodel.png \
 	user/examples/subduction-3d/figs/cubit-geometry-patch.png \
 	user/examples/subduction-3d/figs/cubit-geometry.png \
-	user/examples/subduction-3d/figs/cubit-mesh.jpg \
+	user/examples/subduction-3d/figs/cubit-tet.png \
 	user/examples/subduction-3d/figs/diagrams.tex \
 	user/examples/subduction-3d/figs/step01-diagram.pdf \
 	user/examples/subduction-3d/figs/step01-diagram.svg \
