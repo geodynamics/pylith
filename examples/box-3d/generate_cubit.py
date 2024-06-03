@@ -7,38 +7,48 @@ PATH_TO_CUBIT/Cubit.app/Contents/Frameworks/Python.framework/Versions/Current/bi
 
 where you replace 'PATH_TO_CUBIT' with the absolute path.
 """
+# -------------------------------------------------------------------------------------------------
+# Utility functions. No edits should be needed.
+# -------------------------------------------------------------------------------------------------
+def setup_cubit():
+    """Detect if we are running outside Cubit. If so, then we parse command line arguments and setup
+    Cubit."""
+    import sys
+    if not "cubit" in sys.modules:
+        import argparse
+        import pathlib
 
+        parser = argparse.ArgumentParser()
+        parser.add_argument("--cell", action="store", dest="cell", choices=("hex","tet"), default="hex")
+
+        parser = argparse.ArgumentParser()
+        parser.add_argument("--cubit-directory", action="store", dest="cubit_dir", required=True, help="Directory containing cubit executable.")
+        args = parser.parse_args()
+
+        # Initialize cubit
+        cubit_absdir = pathlib.Path(args.cubit_dir).expanduser().resolve()
+        sys.path.append(str(cubit_absdir))
+        import cubit
+        cubit.init(['cubit','-nojournal'])
+
+# -------------------------------------------------------------------------------------------------
+# Mesh definition
+# -------------------------------------------------------------------------------------------------
 km = 1000.0
 DOMAIN_X = DOMAIN_Y = 12.0*km
 DOMAIN_Z = 9.0*km
 DX = 3.0*km
 cell = "hex"
 
-# Detect if we are running outside Cubit.
-try:
-    cubit.reset()
-except NameError:
-    import argparse
-    import pathlib
-    import sys
-
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--cell", action="store", dest="cell", choices=("hex","tet"), default="hex")
-
-    parser.add_argument("--cubit-directory", action="store", dest="cubit_dir", required=False, help="Directory containing cubit executable.")
-    args = parser.parse_args()
-
-    # Initialize cubit
-    cubit_absdir = pathlib.Path(args.cubit_dir).expanduser().resolve()
-    sys.path.append(str(cubit_absdir))
-    import cubit
-    cubit.init(['cubit','-nojournal'])
-
-    cell = args.cell
-
-
+# -------------------------------------------------------------------------------------------------
+# Start cubit
+# -------------------------------------------------------------------------------------------------
+setup_cubit()
 cubit.reset()
 
+# -------------------------------------------------------------------------------------------------
+# Geometry
+# -------------------------------------------------------------------------------------------------
 # Create block.
 #
 # -6 km <= x <= 6 km

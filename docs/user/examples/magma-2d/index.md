@@ -19,7 +19,7 @@ This example demonstrates the use of poroelasticity to model magma flow in a con
 :Step 2: Same as Step 1 with evolution of porosity state variable.
 
 :::{figure-md} fig:example:magma:2d:overview
-<img src="figs/geometry.*" alt="Diagram of geometry for magma reservoir." scale="100%"/>
+<img src="figs/geometry.*" alt="Diagram of geometry for magma reservoir." width="75%"/>
 
 Diagram of geometry for magma reservoir.
 The domain extends from 0 km to +20 km in the x direction and from -20 km to 0 km in the y direction.

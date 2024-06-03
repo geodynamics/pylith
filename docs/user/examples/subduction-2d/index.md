@@ -28,13 +28,13 @@ Steps 4-6 have not yet been updated for PyLith v3.
 :::
 
 :::{figure-md} fig:example:subduction:2d:cartoon
-<img src="figs/cartoon.*" alt="Cartoon of subduction zone example." width="75%"/>
+<img src="figs/cartoon.*" alt="Cartoon of subduction zone example." width="600px"/>
 
 Diagram of 2D subduction zone example.
 :::
 
 :::{figure-md} fig:example:subduction:2d:geometry
-<img src="figs/geometry.*" alt="Geometry of subduction zone example." width="100%"/>
+<img src="figs/geometry.*" alt="Geometry of subduction zone example." width="720px"/>
 
 Geometry of the 2D subduction zone example.
 The domain extends from -600 km to +600 km in the x direction and from -340 km to 0 in the y direction.

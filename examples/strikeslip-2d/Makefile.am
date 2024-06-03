@@ -30,10 +30,8 @@ dist_noinst_DATA = \
 	gnss_stations.txt \
 	slip_impulses.spatialdb \
 	slip_variable.spatialdb \
-	viz/plot_dispwarp.py \
-	viz/plot_dispstations.py \
 	viz/plot_inversion_results.py \
-	viz/plot_mesh.py
+	viz/plot_catmip_results.py
 
 
 # End of file

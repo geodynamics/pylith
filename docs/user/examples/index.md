@@ -38,10 +38,6 @@ Before you begin any of the examples, you will need to install PyLith following 
 You should also read {ref}`sec-user-run-pylith`.
 Complete sets of input files are included in the examples.
 However, if you wish to generate the finite-element meshes yourself, you will also need Gmsh (available from <https://gmsh.info> and included in the PyLith binary package), Coreform Cubit (available from <https://coreform.com/>), or CUBIT (available to US federal government agencies from <https://cubit.sandia.gov/>).
-The ParaView <https://www.paraview.org/> visualization package may be used to view simulation results.
-ParaView includes built-in documentation that is accessed by clicking on the Help menu item.
-Some additional documentation is available on the ParaView Wiki site <https://www.paraview.org/Wiki/ParaView>.
-You may use other visualization software, but some adaption from what is described here will be necessary.
 
 ### Input Files
 
@@ -50,8 +46,9 @@ All of the files used in the example problems are extensively documented with co
 
 ### Visualizing PyLith Output
 
-See [ParaView Python Scripts](paraview-python.md) for a description of how to make use of the provided Python scripts for visualizing simulation output with ParaView.
-Alternatively, you can manually construct the visuzliation pipeline in several open-source visualization tools, such as ParaView and Visit.
+You can visualize the results using the {ref}`sec-user-run-pylith-viz` utility or other general scientific visualization tools, such as [ParaView](https://www.paraview.org/).
+ParaView includes built-in documentation that is accessed by clicking on the Help menu item.
+Some additional documentation is available on the ParaView Wiki site <https://www.paraview.org/Wiki/ParaView>.
 
 ## Examples
 

@@ -36,9 +36,7 @@ dist_noinst_DATA = \
 	powerlaw_temperature.spatialdb \
 	powerlaw_gendb.cfg \
 	powerlaw_points.txt \
-	traction_surfload.spatialdb \
-	viz/plot_dispwarp.py \
-	viz/plot_mesh.py
+	traction_surfload.spatialdb
 
 
 # End of file

@@ -77,25 +77,17 @@ The linear solver is not used; this is why PETSc reports an unused option at the
 
 ## Visualizing the results
 
-The `output` directory contains the simulation output.
-Each "observer" writes its own set of files, so the solution over the domain is in one set of files, the boundary condition information is in another set of files, and the material information is in yet another set of files.
-The HDF5 (`.h5`) files contain the mesh geometry and topology information along with the solution fields.
-The Xdmf (`.xmf`) files contain metadata that allow visualization tools like ParaView to know where to find the information in the HDF5 files.
-To visualize the data using ParaView or Visit, load the Xdmf files.
+In {numref}`fig:example:reverse:2d:step02:solution` we use the `pylith_viz` utility to visualize the displacement field.
 
-In {numref}`fig:example:reverse:2d:step02:solution` we use ParaView to visualize the displacement field using the `viz/plot_dispwarp.py` Python script.
-First, we start ParaView from the `examples/reverse-2d` directory.
-Before running the `viz/plot_dispwarp.py` Python script as described in {ref}`sec-paraview-python-scripts`, we set the simulation name in the ParaView Python Shell.
-
-```{code-block} python
+```{code-block} console
 ---
-caption: Set the simulation in the ParaView Python Shell.
+caption: Visualize PyLith output using `pylith_viz`.
 ---
->>> SIM = "step02_gravity_refstate"
+pylith_viz --filename=output/step02_gravity_refstate-domain.h5 warp_grid --exaggeration=5
 ```
 
 :::{figure-md} fig:example:reverse:2d:step02:solution
-<img src="figs/step02-solution.*" alt="Solution for Step 2. The colors indicate the magnitude of the displacement." width="100%"/>
+<img src="figs/step02-solution.*" alt="Solution for Step 2. The colors indicate the magnitude of the displacement." width="600px"/>
 
 Solution for Step 2.
 The colors of the shaded surface indicate the magnitude of the displacement, which is zero.

@@ -121,29 +121,18 @@ The nonlinear solve converged in 1 iteration, which we expect because this is a 
 
 ## Visualizing the results
 
-The `output` directory contains the simulation output.
-Each "observer" writes its own set of files, so the solution over the domain is in one set of files, the boundary condition information is in another set of files, and the material information is in yet another set of files.
-The HDF5 (`.h5`) files contain the mesh geometry and topology information along with the solution fields.
-The Xdmf (`.xmf`) files contain metadata that allow visualization tools like ParaView to know where to find the information in the HDF5 files.
-To visualize the data using ParaView or Visit, load the Xdmf files.
+In {numref}`fig:example:strikeslip:2d:step04:solution` we use the `pylith_viz` utility to visualize the y displacement field.
 
-In {numref}`fig:example:strikeslip:2d:step04:solution` we use ParaView to visualize the y displacement field using the `viz/plot_dispwarp.py` Python script.
-As in Steps 2-3 we override the default name of the simulation file with the name of the current simulation.
-
-```{code-block} python
+```{code-block} console
 ---
-caption: Set the simulation in the ParaView Python Shell.
+caption: Visualize PyLith output using `pylith_viz`.
 ---
->>> SIM = "step04_varslip"
+pylith_viz --filename=output/step04_varslip-domain.h5 warp_grid --component=y
 ```
 
-Next we run the `viz/plot_dispwarp.py` Python script as described in {ref}`sec-paraview-python-scripts`.
-We can add the displacement vectors at the fake GNSS stations using the `viz/plot_dispstations.py` Python script.
-
 :::{figure-md} fig:example:strikeslip:2d:step04:solution
-<img src="figs/step04-solution.*" alt="Solution for Step 4. The colors indicate the magnitude of the displacement, and the deformation is exaggerated by a factor of 1000." width="75%"/>
+<img src="figs/step04-solution.*" alt="Solution for Step 4. The colors indicate the y displacement, and the deformation is exaggerated by a factor of 1000." width="400px"/>
 
 Solution for Step 4.
-The colors of the shaded surface indicate the magnitude of the y displacement, and the deformation is exaggerated by a factor of 1000.
-The displacement vectors at the fake GNSS stations use en exaggeration factor of 50,000.
+The colors of the shaded surface indicate the y displacement, and the deformation is exaggerated by a factor of 1000.
 :::

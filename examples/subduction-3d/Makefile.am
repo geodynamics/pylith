@@ -46,13 +46,6 @@ dist_noinst_DATA = \
 	generate_surfjou.py \
 	make_synthetic_gnssdisp.py \
 	slip_invert.py \
-	viz/plot_dispvec.py \
-	viz/plot_dispwarp.py \
-	viz/plot_faultdir.py \
-	viz/plot_faultslip.py \
-	viz/plot_faultslip-reltract.py \
-	viz/plot_matprops.py \
-	viz/plot_mesh.py \
 	viz/plot_inversion_misfit.py \
 	input/README.md \
 	scratch/README.md

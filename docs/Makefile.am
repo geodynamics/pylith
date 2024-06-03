@@ -307,10 +307,11 @@ dist_noinst_DATA = \
 	user/examples/magma-2d/figs/generate.sh \
 	user/examples/magma-2d/figs/geometry.svg \
 	user/examples/magma-2d/figs/geometry.pdf \
+	user/examples/magma-2d/figs/cubit-quad.png \
 	user/examples/magma-2d/figs/step01-diagram.pdf \
 	user/examples/magma-2d/figs/step01-diagram.svg \
 	user/examples/magma-2d/figs/step01-solution.jpg \
-	user/examples/magma-2d/figs/step01-solution.jpg \
+	user/examples/magma-2d/figs/step02-solution.jpg \
 	user/examples/reverse-2d/index.md \
 	user/examples/reverse-2d/common-information.md \
 	user/examples/reverse-2d/exercises.md \
@@ -455,7 +456,7 @@ dist_noinst_DATA = \
 	user/examples/subduction-3d/figs/conceptualmodel.png \
 	user/examples/subduction-3d/figs/cubit-geometry-patch.png \
 	user/examples/subduction-3d/figs/cubit-geometry.png \
-	user/examples/subduction-3d/figs/cubit-mesh.jpg \
+	user/examples/subduction-3d/figs/cubit-tet.png \
 	user/examples/subduction-3d/figs/diagrams.tex \
 	user/examples/subduction-3d/figs/step01-diagram.pdf \
 	user/examples/subduction-3d/figs/step01-diagram.svg \
@@ -505,7 +506,6 @@ dist_noinst_DATA = \
 	user/examples/troubleshooting-2d/figs/step06-faults-wrong1.jpg \
 	user/examples/examples-other.md \
 	user/examples/index.md \
-	user/examples/paraview-python.md \
 	user/file-formats/figs/mesh_quad.pdf \
 	user/file-formats/figs/mesh_quad.svg \
 	user/file-formats/index.md \

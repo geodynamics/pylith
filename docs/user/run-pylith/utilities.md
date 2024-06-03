@@ -4,6 +4,9 @@
 The PyLith distribution contains several utilities for working with PyLith simulations and processing output.
 These Python scripts are all installed into the same `bin` directory as the `pylith` application with the exception of the `pyre_doc.py` script which is installed as part of Pythia/Pyre.
 
+pylith_viz
+: Visualize output from PyLith
+
 pyre_doc
 : Display the Pyre properties and facilities available for a given component.
 
@@ -24,6 +27,82 @@ pylith_genxdmf
 
 pylith_powerlaw_gendb
 : Generate a spatial database with power-law bulk rheology parameters for PyLith.
+
+(sec-user-run-pylith-viz)=
+## pylith_viz
+
+:::{note}
+New in v4.1.0
+:::
+
+This utility provides an interactive graphical user interface for plotting output from PyLith simulations using [PyVista](https://docs.pyvista.org/version/stable/).
+We demonstrate use of this utility in the examples.
+
+:::{important}
+`pylith_viz` works with **HDF5 files** that use the same layout as those written by PyLith.
+:::
+
+```{code-block} bash
+pylith_viz --filenames FILENAMES [--help] subcommand subcommand_options
+```
+
+:--help: Display help information for script.
+:--filenames FILENAMES: Comma separated list of relative paths to HDF5 files from PyLith.
+:subcommand: Subcommand to use for plotting data. Available subcommands are `plot_mesh`, `plot_field`, and `warp_grid`.
+:subcommand_options: Options specific to subcommand.
+
+### plot_mesh Subcommand
+
+Plot the mesh and, optionally, the mesh quality.
+When plotting the mesh quality, you can use the slider to adjust the threshold for the range of metric values shown.
+This makes it easier to identify cells with the poorest and best mesh quality.
+
+```{code-block} bash
+pylith_viz --filenames FILENAMES plot_mesh [--mesh-quality METRIC] [--help]
+```
+:--help: Display help information for subcommand.
+:--mesh-quality METRIC: Plot the mesh quality using METRIC. Refer to the [VTK mesh quality documentation](https://vtk.org/doc/nightly/html/classvtkMeshQuality.html) for definitions of the metrics.
+
+### plot_field Subcommand
+
+Plot a diagnostic, solution, or derived field.
+If the data has more than one time step, then a slider will be enabled so that you can plot the data at different time steps.
+Additionally, you can press the `n` key to increment time and the `p` key to decrement time.
+
+The colormap and its range are selected based upon the component.
+When you plot the `magnitude` component, the plotting uses the `plasma` sequential colormap with the minimum value set to 0 and the maximum value set to the maximum absolute magnitude over the time span of the data.
+When you plot a vector or tensor component, the plotting uses the a blue-red diverging colormap with zero at the center of the colormap and the range set to the maximum absolute value of the component over the time span of the data.
+
+```{code-block} bash
+pylith_viz --filenames FILENAMES plot_field [--field FIELD_NAME] [--component COMPONENT] [--help]
+```
+
+:--help: Display help information for subcommand.
+:--field FIELD_NAME: Plot field FIELD_NAME (default: `displacement`).
+:--component COMPONENT: Component to display (default: `magnitude`).
+
+### warp_grid Subcommand
+
+Plot a solution field and warp the grid according to the displacement vector.
+You can specify a scale factor for how much the deformation is exaggerated using a slider or a command line argument.
+The maximum exaggeration is 5.0 times the initial exaggeration.
+
+If the data has more than one time step, then a slider will be enabled so that you can plot the data at different time steps.
+Additionally, you can press the `n` key to increment time and the `p` key to decrement time.
+
+The colormap and its range are selected based upon the component.
+When you plot the `magnitude` component, the plotting uses the `plasma` sequential colormap with the minimum value set to 0 and the maximum value set to the maximum absolute magnitude over the time span of the data.
+When you plot a vector or tensor component, the plotting uses the a blue-red diverging colormap with zero at the center of the colormap and the range set to the maximum absolute value of the component over the time span of the data.
+
+```{code-block} bash
+pylith_viz --filenames FILENAMES warp_grid [--field FIELD_NAME] [--component COMPONENT] [--exaggeration EXAGGERATION] [--hide-outline] [--help]
+```
+
+:--help: Display help information for subcommand.
+:--field FIELD_NAME: Plot field FIELD_NAME (default: `displacement`).
+:--component COMPONENT: Component to display (default: `magnitude`).
+:--exaggeration EXAGGERATION: Scale factor for exaggerating the displacement deformation (default: 1000).
+:--hide-outline: Turn off showing the grid outline with the warped grid.
 
 ## pyre_doc.py
 

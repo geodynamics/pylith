@@ -26,6 +26,7 @@ EXTRA_DIST = \
 	apps/PetscApplication.py \
 	apps/PyLithApp.py \
 	apps/RunnerApp.py \
+	apps/VizApp.py \
 	apps/__init__.py \
 	bc/AbsorbingDampers.py \
 	bc/AuxSubfieldsAbsorbingDampers.py \
@@ -161,7 +162,13 @@ EXTRA_DIST = \
 	utils/__init__.py \
 	utils/converters.py \
 	utils/profiling.py \
-	utils/validators.py 
+	utils/validators.py \
+	viz/__init__.py \
+	viz/PlotField.py \
+	viz/PlotMesh.py \
+	viz/WarpGrid.py \
+	viz/core.py \
+	viz/io.py
 
 
 # End of file

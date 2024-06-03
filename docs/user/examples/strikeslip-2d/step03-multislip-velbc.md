@@ -80,26 +80,20 @@ Remember that the PETSc TS monitor shows the nondimensionalized time and time st
 
 ## Visualizing the results
 
-In {numref}`fig:example:strikeslip:2d:step03:solution` we use ParaView to visualize the x displacement field using the `viz/plot_dispwarp.py` Python script.
-As in Step 2 we override the default name of the simulation file with the name of the current simulation.
+In {numref}`fig:example:strikeslip:2d:step03:solution` we use the `pylith_viz` utility to visualize the y displacement field.
+You can move the slider or use the `p` and `n` keys to change the increment or decrement time.
 
-```{code-block} python
+```{code-block} console
 ---
-caption: Set the simulation in the ParaView Python Shell.
+caption: Visualize PyLith output using `pylith_viz`.
 ---
->>> SIM = "step03_multislip_velbc"
+pylith_viz --filename=output/step03_multislip_velbc-domain.h5 warp_grid --component=y
 ```
 
-Next we run the `viz/plot_dispwarp.py` Python script as described in {ref}`sec-paraview-python-scripts`.
-
-:::{tip}
-You can use the "play" button to animate the solution in time.
-:::
-
 :::{figure-md} fig:example:strikeslip:2d:step03:solution
-<img src="figs/step03-solution.*" alt="Solution for Step 3 at t=190 yr. The colors indicate the magnitude of the displacement, and the deformation is exaggerated by a factor of 1000." width="100%"/>
+<img src="figs/step03-solution.*" alt="Solution for Step 3 at t=190 yr. The colors indicate the y displacement, and the deformation is exaggerated by a factor of 1000." width="400px"/>
 
 Solution for Step 3 at t=190 yr.
-The colors of the shaded surface indicate the magnitude of the y displacement, and the deformation is exaggerated by a factor of 1000.
+The colors of the shaded surface indicate the y displacement, and the deformation is exaggerated by a factor of 1000.
 The undeformed configuration is show by the gray wireframe.
 :::

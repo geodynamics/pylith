@@ -101,22 +101,21 @@ The PETSc TS (time stepping) monitor shows the time step number followed by the 
 
 ## Visualizing the results
 
-In {numref}`fig:example:box:2d:step03:solution` we use ParaView to visualize the x displacement field using the `viz/plot_dispwarp.py` Python script.
-As in Step 2 we override the default name of the simulation file with the name of the current simulation before running the `viz/plot_dispwarp.py` Python script.
+In {numref}`fig:example:box:2d:step05:solution` we use the `pylith_viz` utility to visualize the x displacement field.
 
-```{code-block} python
+```{code-block} console
 ---
-caption: Set the simulation in the ParaView Python Shell.
+caption: Visualize PyLith output using `pylith_viz`.
 ---
->>> SIM = "step05_sheardisptractrate"
+pylith_viz --filenames=output/step05_sheardisptractrate-domain.h5 warp_grid --component=x
 ```
 
-One you run the `viz/plot_dispwarp.py` Python script, you can click on the "play" button corresponding to the right triangle in the toolbar to view the time-dependent deformation.
+You can move the slider or use the `p` and `n` keys to change the increment or decrement time.
 
 :::{figure-md} fig:example:box:2d:step05:solution
-<img src="figs/step05-solution.*" alt="Solution for Step 5. The colors indicate the magnitude of the displacement, and the deformation is exaggerated by a factor of 1000." width="100%"/>
+<img src="figs/step05-solution.*" alt="Solution for Step 5. The colors indicate the x displacement, and the deformation is exaggerated by a factor of 1000." width="400px"/>
 
 Solution for Step 5 at a time of 4.0 years.
-The colors of the shaded surface indicate the magnitude of the x displacement, and the deformation is exaggerated by a factor of 1000.
+The colors of the shaded surface indicate the x displacement, and the deformation is exaggerated by a factor of 1000.
 The undeformed configuration is show by the gray wireframe.
 :::

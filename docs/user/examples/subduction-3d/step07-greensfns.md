@@ -12,7 +12,7 @@ Although PyLith can generate the two components in one simulation, we often pref
 {numref}`fig:example:subduction:3d:step07:diagram` shows the boundary conditions on the domain.
 
 :::{figure-md} fig:example:subduction:3d:step07:diagram
-<img src="figs/step07-diagram.*" alt="" width="100%">
+<img src="figs/step07-diagram.*" alt="" width="75%">
 
 Boundary conditions for Green's function generation.
 We apply left-lateral (Step 7a) and reverse (Step 7b) slip impulses on a patch within the subduction interface with roller boundary conditions on the lateral sides and bottom of the domain.
@@ -105,17 +105,18 @@ In this case, however, rather than stepping through time, we are stepping throug
 
 ## Visualizing the results
 
-The `output` directory contains the simulation output.
-Each "observer" writes its own set of files, so the solution over the domain is in one set of files, the boundary condition information is in another set of files, and the material information is in yet another set of files.
-The HDF5 (`.h5`) files contain the mesh geometry and topology information along with the solution fields.
-The Xdmf (`.xmf`) files contain metadata that allow visualization tools like ParaView to know where to find the information in the HDF5 files.
-To visualize the data using ParaView or Visit, load the Xdmf files.
+In {numref}`fig:example:subduction:3d:step07a:slip` we use the `pylith_viz` utility to visualize the slip for the impulses on the fault surface.
+You can move the slider or use the `p` and `n` keys to increment or decrement the slip impulse (shown as time).
 
-In {numref}`fig:example:subduction:3d:step07a:slip` we use ParaView to visualize the x displacement field using the `viz/plot_dispwarp.py` Python script.
-We start ParaView from the `examples/subduction-3d` directory and then run the `viz/plot_dispwarp.py` Python script as described in {ref}`sec-paraview-python-scripts`.
+```{code-block} console
+---
+caption: Visualize PyLith output using `pylith_viz`.
+---
+pylith_viz --filename=output/step07a_leftlateral-faultslabtop.h5 plot_field
+```
 
 :::{figure-md} fig:example:subduction:3d:step07a:slip
-<img src="figs/step07a-slipimpulse.*" alt="Slip impulse 41 for Step 7a. The colors indicate the magnitude of the slip." width="100%"/>
+<img src="figs/step07a-slipimpulse.*" alt="Slip impulse 41 for Step 7a. The colors indicate the magnitude of the slip." width="600px"/>
 
 Distribution of left-lateral fault slip for slip impulse 41 (time corresponds to the zero-based index) for Step 7a.
 The colors of the shaded surface indicate the magnitude of the slip.
@@ -162,7 +163,7 @@ $ viz/plot_inversion_misfit.py --summary=output/step07-inversion-summary.txt
 {numref}`fig:example:subduction:3d:step07:inversion_summary` shows the data residual versus the penalty residual, showing very clearly the 'corner' of the L-curve.
 
 :::{figure-md} fig:example:subduction:3d:step07:inversion_summary
-<img src="figs/step07-inversion-summary.*" alt="" width="75%">
+<img src="figs/step07-inversion-summary.*" alt="" width="500px">
 
 Data residual versus penalty residual for inversion from Step 7.
 :::

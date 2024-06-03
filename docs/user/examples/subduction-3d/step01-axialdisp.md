@@ -4,7 +4,7 @@ This example involves a static simulation that solves for the deformation from a
 {numref}`fig:example:subduction:3d:step01:diagram` shows the boundary conditions on the domain.
 
 :::{figure-md} fig:example:subduction:3d:step01:diagram
-<img src="figs/step01-diagram.*" alt="" width="100%">
+<img src="figs/step01-diagram.*" alt="" width="75%">
 
 Boundary conditions for axial compression in the x direction with roller boundary conditions on the -y, +y, and -z boundaries.
 :::
@@ -109,11 +109,17 @@ The HDF5 (`.h5`) files contain the mesh geometry and topology information along 
 The Xdmf (`.xmf`) files contain metadata that allow visualization tools like ParaView to know where to find the information in the HDF5 files.
 To visualize the data using ParaView or Visit, load the Xdmf files.
 
-In {numref}`fig:example:subduction:3d:step01:solution` we use ParaView to visualize the x displacement field using the `viz/plot_dispwarp.py` Python script.
-We start ParaView from the `examples/subduction-3d` directory and then run the `viz/plot_dispwarp.py` Python script as described in {ref}`sec-paraview-python-scripts`.
+In {numref}`fig:example:subduction:3d:step01:solution` we use the `pylith_viz` utility to visualize the x displacement field.
+
+```{code-block} console
+---
+caption: Visualize PyLith output using `pylith_viz`.
+---
+pylith_viz --filename=output/step01_axialdisp-domain.h5 warp_grid --component=x --exaggeration=10000
+```
 
 :::{figure-md} fig:example:subduction:3d:step01:solution
-<img src="figs/step01-solution.*" alt="Solution for Step 1. The colors indicate the x displacement, and the deformation is exaggerated by a factor of 10,000." width="100%"/>
+<img src="figs/step01-solution.*" alt="Solution for Step 1. The colors indicate the x displacement, and the deformation is exaggerated by a factor of 10,000." width="600px"/>
 
 Solution for Step 1.
 The colors of the shaded surface indicate the x displacement, and the deformation is exaggerated by a factor of 10,000.
