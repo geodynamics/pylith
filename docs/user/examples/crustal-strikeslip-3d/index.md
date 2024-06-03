@@ -28,7 +28,7 @@ The geometry is based on the 2019 Ridgecrest earthquake sequence.
 :Step 2: Static spatially varying coseismic slip with Dirichlet (displacement) boundary conditions.
 
 :::{figure-md} fig:example:crustal:strikeslip:3d:overview
-<img src="figs/geometry.*" alt="Diagram of geometry for the intersecting strike-slip faults." scale="75%"/>
+<img src="figs/geometry.*" alt="Diagram of geometry for the intersecting strike-slip faults." scale="50%"/>
 
 Diagram of geometry for the domain with three intersecting strike-slip faults.
 The domain extends from 80 km in the east-west direction, 60 km in the north-south direction, and 40 km in the vertical direction.
