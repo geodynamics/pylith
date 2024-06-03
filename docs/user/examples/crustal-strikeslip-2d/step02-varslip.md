@@ -144,28 +144,20 @@ The nonlinear solve converged in 1 iteration, which we expect because this is a 
 
 ## Visualizing the results
 
-The `output` directory contains the simulation output.
-In {numref}`fig:example:crustal:strikeslip:2d:step02:solution` we use ParaView to visualize the y displacement field using the `viz/plot_dispwarp.py` Python script.
-First, we start ParaView from the `examples/strikeslip-2d` directory.
+In {numref}`fig:example:crustal:strikeslip:2d:step02:solution` we use the `pylith_viz` utility to visualize the y displacement field.
 
 ```{code-block} console
 ---
-caption: Open ParaView using the command line.
+caption: Visualize PyLith output using `pylith_viz`.
 ---
-$ PATH_TO_PARAVIEW/paraview
-
-# For macOS, it will be something like
-$ /Applications/ParaView-5.10.1.app/Contents/MacOS/paraview
+pylith_viz --filename=output/step02_varslip-domain.h5 warp_grid --component=y
 ```
 
-Next we run the `viz/plot_dispwarp.py` Python script as described in {ref}`sec-paraview-python-scripts`.
-For Step 2 we do not need to change any of the default values.
-
 :::{figure-md} fig:example:crustal:strikeslip:2d:step02:solution
-<img src="figs/step02-solution.*" alt="Solution for Step 2. The colors indicate the magnitude of the displacement, and the deformation is exaggerated by a factor of 1000." width="75%"/>
+<img src="figs/step02-solution.*" alt="Solution for Step 2. The colors indicate the y displacement, and the deformation is exaggerated by a factor of 1000." width="600px"/>
 
 Solution for Step 2.
-The colors of the shaded surface indicate the magnitude of the y displacement, and the deformation is exaggerated by a factor of 1000.
+The colors of the shaded surface indicate the y displacement, and the deformation is exaggerated by a factor of 1000.
 The undeformed configuration is show by the gray wireframe.
 The contrast in material properties across the faults causes the asymmetry in the y displacement field.
 :::
