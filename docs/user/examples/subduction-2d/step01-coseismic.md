@@ -12,7 +12,7 @@ The depth variation in the prescribed slip is based on the 2011 Tohoku-oki earth
 The parameters specific to this example are in `step01_coseismic.cfg`.
 
 :::{figure-md} fig:example:subduction:2d:step01:diagram
-<img src="figs/step01-diagram.*" alt="" width="100%">
+<img src="figs/step01-diagram.*" alt="" width="600px">
 
 Boundary conditions for static coseismic slip on the subduction interface.
 We prescribe reverse slip that varies with depth and roller boundary conditions on the lateral sides and bottom of the domain.
@@ -149,12 +149,18 @@ The HDF5 (`.h5`) files contain the mesh geometry and topology information along 
 The Xdmf (`.xmf`) files contain metadata that allow visualization tools like ParaView to know where to find the information in the HDF5 files.
 To visualize the data using ParaView or Visit, load the Xdmf files.
 
-In {numref}`fig:example:subduction:2d:step01:solution` we use ParaView to visualize the x displacement field using the `viz/plot_dispwarp.py` Python script.
-We start ParaView from the `examples/subduction-2d` directory and then run the `viz/plot_dispwarp.py` Python script as described in {ref}`sec-paraview-python-scripts`.
+In {numref}`fig:example:subduction:2d:step01:solution` we use the `pylith_viz` utility to visualize the x displacement field.
+
+```{code-block} console
+---
+caption: Visualize PyLith output using `pylith_viz`.
+---
+pylith_viz --filename=output/step01_coseismic-domain.h5 warp_grid --component=x
+```
 
 :::{figure-md} fig:example:subduction:2d:step01:solution
-<img src="figs/step01-solution.*" alt="Solution for Step 1. The colors indicate the magnitude of the x displacement, and the deformation is exaggerated by a factor of 1000." width="100%"/>
+<img src="figs/step01-solution.*" alt="Solution for Step 1. The colors indicate the x displacement, and the deformation is exaggerated by a factor of 1000." width="600px"/>
 
 Solution for Step 1.
-The colors of the shaded surface indicate the magnitude of the x displacement, and the deformation is exaggerated by a factor of 1000.
+The colors of the shaded surface indicate the x displacement, and the deformation is exaggerated by a factor of 1000.
 :::
