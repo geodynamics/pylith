@@ -11,8 +11,10 @@ The version numbers are in the form `MAJOR.MINOR.PATCH`, where major releases in
   * Improved the default preconditioners for poroelasticity for improved scalability.
   * Improved the default preconditioners for elasticity with faults for improved scalability.
   * Replaced use of Cubit journal files with Cubit Python scripts for several examples, and use the skeleton sizing function to increase cell size with distance from the fault.
+  * Removed ParaView Python scripts (replaced by `pylith_viz`)
 * **Added**
   * New 2D and 3D crustal strike-slip faults examples based on the 2019 Ridgecrest earthquake.
+  * New `pylith_viz` utility for plotting PyLith results.
   * Documentation
     * Developer Guide: Added description of the process for adding event logging and evaluating performance, including performance logging.
     * Developer Guide: Added checklist for what is needed when contributing examples.
