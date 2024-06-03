@@ -24,7 +24,6 @@ Boundary conditions for static coseismic slip.
 We set the x and y displacement to zero on the +x and -x boundaries and prescribe left-lateral slip that varies along strike.
 :::
 
-We increase the basis order of the solution subfields to 2 to better resolve the spatial variation in slip.
 We also add output of the solution at fake GNSS stations given in the file `gnss_stations.txt`.
 You can use the Python script `generate_gnssstations.py` to generate a different random set of stations; the default parameters will generate the provided `gnss_stations.txt` file.
 
@@ -36,15 +35,8 @@ Location of randomly distributed fake GNSS stations in `gnss_stations.txt`.
 
 ```{code-block} cfg
 ---
-caption: Solution and output parameters for Step 4. We use a basis order of 2 for the solution fields and add output of the solution at fake GNSS stations.
+caption: Solution and output parameters for Step 4. We add output of the solution at fake GNSS stations.
 ---
-[pylithapp.problem]
-defaults.quadrature_order = 2
-
-[pylithapp.problem.solution.subfields]
-displacement.basis_order = 2
-lagrange_multiplier_fault.basis_order = 2
-
 [pylithapp.problem]
 solution_observers = [domain, top_boundary, bot_boundary, gnss_stations]
 solution_observers.gnss_stations = pylith.meshio.OutputSolnPoints

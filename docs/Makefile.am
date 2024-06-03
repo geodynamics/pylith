@@ -390,7 +390,7 @@ dist_noinst_DATA = \
 	user/examples/strikeslip-2d/meshing-cubit.md \
 	user/examples/strikeslip-2d/meshing-gmsh.md \
 	user/examples/strikeslip-2d/step01-slip.md \
-	user/examples/strikeslip-2d/step01_slip-synopsis.md \
+	user/examples/strikeslip-2d/step01a_slip-synopsis.md \
 	user/examples/strikeslip-2d/step02-slip-velbc.md \
 	user/examples/strikeslip-2d/step02_slip_velbc-synopsis.md \
 	user/examples/strikeslip-2d/step03-multislip-velbc.md \
@@ -414,7 +414,12 @@ dist_noinst_DATA = \
 	user/examples/strikeslip-2d/figs/gmsh-tri.png \
 	user/examples/strikeslip-2d/figs/step01-diagram.pdf \
 	user/examples/strikeslip-2d/figs/step01-diagram.svg \
-	user/examples/strikeslip-2d/figs/step01-solution.jpg \
+	user/examples/strikeslip-2d/figs/step01a-solution.jpg \
+	user/examples/strikeslip-2d/figs/step01a-stress.jpg \
+	user/examples/strikeslip-2d/figs/step01b-solution.jpg \
+	user/examples/strikeslip-2d/figs/step01b-stress.jpg \
+	user/examples/strikeslip-2d/figs/step01c-solution.jpg \
+	user/examples/strikeslip-2d/figs/step01c-stress.jpg \
 	user/examples/strikeslip-2d/figs/step02-diagram.pdf \
 	user/examples/strikeslip-2d/figs/step02-diagram.svg \
 	user/examples/strikeslip-2d/figs/step02-solution.jpg \
