@@ -24,10 +24,11 @@ class WarpGrid:
         self.data = data
         self.interactive = interactive
 
-    def plot(self, exaggeration: float, field_name: str, component_name: str, show_outline: bool=True):
+    def plot(self, exaggeration: float, field_name: str, component_name: str, show_outline: bool=True, show_edges: bool=True):
         self.field_name = field_name
         self.component_name = component_name
         self.exaggeration = exaggeration
+        self.show_edges = show_edges
 
         if show_outline:
             self._create_outlines()
@@ -65,12 +66,12 @@ class WarpGrid:
         
         warped_grid = domain.grid.warp_by_vector("displacement-vector", factor=self.exaggeration)
         cb_args = {"title": self.cb_title}
-        self.plotter.add_mesh(warped_grid, name=domain.name, show_edges=True, cmap=self.lut, scalars=self.field_name, scalar_bar_args=cb_args)
+        self.plotter.add_mesh(warped_grid, name=domain.name, show_edges=self.show_edges, cmap=self.lut, scalars=self.field_name, scalar_bar_args=cb_args)
 
     def _warp_grid(self, domain):
         warped_grid = domain.grid.warp_by_vector("displacement-vector", factor=self.exaggeration)
         cb_args = {"title": self.cb_title}
-        self.plotter.add_mesh(warped_grid, name=domain.name, show_edges=True, cmap=self.lut, scalars=self.field_name, scalar_bar_args=cb_args)
+        self.plotter.add_mesh(warped_grid, name=domain.name, show_edges=self.show_edges, cmap=self.lut, scalars=self.field_name, scalar_bar_args=cb_args)
 
     def _set_scalar(self, domain, t_index: int):
         grid_field = domain.get_field(self.field_name)
@@ -86,7 +87,7 @@ class WarpGrid:
 
 def cli(plotter, data, args):
     figure = WarpGrid(plotter=plotter, data=data)
-    figure.plot(exaggeration=args.exaggeration, field_name=args.field_name, component_name=args.component, show_outline=args.show_outline)
+    figure.plot(exaggeration=args.exaggeration, field_name=args.field_name, component_name=args.component, show_outline=args.show_outline, show_edges=args.show_edges)
     return figure
 
 
@@ -95,4 +96,5 @@ def add_args(parser):
     parser.add_argument("--component", action="store", help="Component of field for shading.", dest="component", default="magnitude", choices=("x", "y", "z", "magnitude"))
     parser.add_argument("--exaggeration", action="store", help="Exaggeration factor for displacement.", dest="exaggeration", default=1000.0, type=float)
     parser.add_argument("--hide-outline", action="store_false", help="Hide outline of undeformed domain.", dest="show_outline")
+    parser.add_argument("--hide-edges", action="store_false", help="Hide cell edges of deformed domain.", dest="show_edges")
     parser.set_defaults(func=cli)

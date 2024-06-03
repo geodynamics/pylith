@@ -14,6 +14,7 @@ The version numbers are in the form `MAJOR.MINOR.PATCH`, where major releases in
   * Removed ParaView Python scripts (replaced by `pylith_viz`)
 * **Added**
   * New 2D and 3D crustal strike-slip faults examples based on the 2019 Ridgecrest earthquake.
+  * New 2D subduction zone outer-rise faulting example examining poroelastic response to bending stresses.
   * New `pylith_viz` utility for plotting PyLith results.
   * Documentation
     * Developer Guide: Added description of the process for adding event logging and evaluating performance, including performance logging.
