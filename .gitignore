@@ -30,6 +30,7 @@ examples/subduction-3d/scratch/*.sat
 examples/subduction-3d/scratch/*.txt
 examples/subduction-3d/scratch/*.jou
 examples/subduction-3d/input/*.exo
+examples/poroelastic-outerrise-2d/*.spatialdb
 /docs/_build/
 /doc-latex/userguide/userguide.pdf
 /doc-latex/userguide/userguide.aux

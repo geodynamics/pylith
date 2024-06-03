@@ -1,7 +1,5 @@
 from spatialdata.spatialdb.SimpleGridAscii import createWriter
 from spatialdata.geocoords.CSCart import CSCart
-import numpy as np
-
 
 
 def write_spatialgrid_file(vertices, x_points, y_points, z_points, field_names, field_units, field_data, filename, dimension=2):

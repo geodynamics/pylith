@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env nemesis
 """Generate a tri or quad mesh of a subduction zone vertical profile using Gmsh, making
 use of the built-in geometry engine.
 
@@ -15,7 +15,7 @@ Run `generate_gmsh.py --help` to see the command line options.
 """
 import gmsh
 import numpy as np
-from pylith.meshio.gmsh_utils import (VertexGroup, MaterialGroup, GenerateMesh, group_exclude)
+from pylith.meshio.gmsh_utils import (VertexGroup, MaterialGroup, GenerateMesh)
 
 class App(GenerateMesh):
     """
@@ -50,39 +50,39 @@ class App(GenerateMesh):
     def create_geometry(self):
         """Create geometry.
         """
-        BOTLEFT_PT = gmsh.model.geo.add_point(self.X_WEST, self.Y_BOT, 0.0)
-        BOTRIGHT_PT = gmsh.model.geo.add_point(self.X_EAST, self.Y_BOT, 0.0)
-        TOPRIGHT_PT = gmsh.model.geo.add_point(self.X_EAST, self.Y_TOP, 0.0)
-        TOPLEFT_PT = gmsh.model.geo.add_point(self.X_WEST, self.Y_TOP, 0.0)
+        p_LL = gmsh.model.geo.add_point(self.X_WEST, self.Y_BOT, 0.0)
+        p_LR = gmsh.model.geo.add_point(self.X_EAST, self.Y_BOT, 0.0)
+        p_UR = gmsh.model.geo.add_point(self.X_EAST, self.Y_TOP, 0.0)
+        p_UL = gmsh.model.geo.add_point(self.X_WEST, self.Y_TOP, 0.0)
 
         # Create Domain Boundary Curves
-        self.c_leftbound = gmsh.model.geo.add_line(TOPLEFT_PT, BOTLEFT_PT)
-        self.c_botbound = gmsh.model.geo.add_line(BOTLEFT_PT, BOTRIGHT_PT)
-        self.c_rightbound = gmsh.model.geo.add_line(BOTRIGHT_PT, TOPRIGHT_PT)
+        self.c_left = gmsh.model.geo.add_line(p_UL, p_LL)
+        self.c_bottom = gmsh.model.geo.add_line(p_LL, p_LR)
+        self.c_right = gmsh.model.geo.add_line(p_LR, p_UR)
 
         self.c_outer_rise_faults = np.zeros(len(self.OUTER_RISE_FAULT_SURFACES_X), dtype=int)
         self.outer_rise_fault_surface_points = np.zeros(len(self.OUTER_RISE_FAULT_SURFACES_X), dtype=int)
         self.outer_rise_fault_buried_edges = np.zeros(len(self.OUTER_RISE_FAULT_BURIED_EDGES_X), dtype=int)
 
         for i in range(len(self.OUTER_RISE_FAULT_SURFACES_X)):
-            self.outer_rise_fault_buried_edges[i] = gmsh.model.geo.add_point(self.OUTER_RISE_FAULT_BURIED_EDGES_X[i], \
-                                                                             self.OUTER_RISE_FAULT_BURIED_EDGES_Y[i], \
+            self.outer_rise_fault_buried_edges[i] = gmsh.model.geo.add_point(self.OUTER_RISE_FAULT_BURIED_EDGES_X[i],
+                                                                             self.OUTER_RISE_FAULT_BURIED_EDGES_Y[i],
                                                                              0.0)
 
-            self.outer_rise_fault_surface_points[i] = gmsh.model.geo.add_point(self.OUTER_RISE_FAULT_SURFACES_X[i], \
-                                                                               self.OUTER_RISE_FAULT_SURFACES_Y[i], \
+            self.outer_rise_fault_surface_points[i] = gmsh.model.geo.add_point(self.OUTER_RISE_FAULT_SURFACES_X[i],
+                                                                               self.OUTER_RISE_FAULT_SURFACES_Y[i],
                                                                                0.0)
 
             self.c_outer_rise_faults[i] = gmsh.model.geo.add_polyline([self.outer_rise_fault_surface_points[i], self.outer_rise_fault_buried_edges[i]])
         
-        self.subducting_top_bound_points = TOPRIGHT_PT
+        self.subducting_top_bound_points = p_UR
         self.subducting_top_bound_points = np.insert(self.subducting_top_bound_points, 0, self.outer_rise_fault_surface_points)
-        self.subducting_top_bound_points = np.insert(self.subducting_top_bound_points, 0, TOPLEFT_PT)
+        self.subducting_top_bound_points = np.insert(self.subducting_top_bound_points, 0, p_UL)
 
-        self.c_topbound = gmsh.model.geo.add_polyline(self.subducting_top_bound_points)
+        self.c_top = gmsh.model.geo.add_polyline(self.subducting_top_bound_points)
 
         self.all_curves = np.zeros(len(self.outer_rise_fault_surface_points) + 1, dtype=int)
-        curves = gmsh.model.geo.split_curve(self.c_topbound, [self.outer_rise_fault_surface_points[0]])
+        curves = gmsh.model.geo.split_curve(self.c_top, [self.outer_rise_fault_surface_points[0]])
         self.all_curves[0] = curves[0]
         self.all_curves[1] = curves[1]
         for i in range(1, len(self.outer_rise_fault_surface_points)):
@@ -91,9 +91,9 @@ class App(GenerateMesh):
             self.all_curves[i + 1] = curves[1]
 
         # Create surfaces from bounding curves
-        loop_array = np.array([self.c_leftbound,
-                               self.c_botbound,
-                               self.c_rightbound])
+        loop_array = np.array([self.c_left,
+                               self.c_bottom,
+                               self.c_right])
 
         for j in range(len(self.outer_rise_fault_surface_points)):
             loop_array = np.append(loop_array, -self.all_curves[j])
@@ -122,11 +122,10 @@ class App(GenerateMesh):
 
         # Create physical groups for the boundaries and the fault.
         vertex_groups = (
-            VertexGroup(name="bndry_ypos", tag=10, dim=1, entities=top_boundary_entities),
-            VertexGroup(name="bndry_xneg", tag=11, dim=1, entities=[self.c_leftbound]),
-            VertexGroup(name="bndry_xpos", tag=12, dim=1, entities=[self.c_rightbound]),
-            VertexGroup(name="bndry_yneg", tag=13, dim=1, entities=[self.c_botbound]),
-            VertexGroup(name="bndry_ypos_fluid", tag=14, dim=1, entities=top_boundary_entities),
+            VertexGroup(name="boundary_ypos", tag=10, dim=1, entities=top_boundary_entities),
+            VertexGroup(name="boundary_xneg", tag=11, dim=1, entities=[self.c_left]),
+            VertexGroup(name="boundary_xpos", tag=12, dim=1, entities=[self.c_right]),
+            VertexGroup(name="boundary_yneg", tag=13, dim=1, entities=[self.c_bottom]),
 
         )
         for i in range(len(self.outer_rise_fault_surface_points)):
@@ -152,16 +151,16 @@ class App(GenerateMesh):
         gmsh.model.mesh.field.setNumber(fault_distance, "Sampling", 200)
 
         mesh_refinement_array = np.empty(0)
-        for i in range(len(self.c_outer_rise_faults)):
-            mesh_refinement_array = np.append(mesh_refinement_array, self.c_outer_rise_faults[i])
-        for i in range(len(self.all_curves)):
-            mesh_refinement_array = np.append(mesh_refinement_array, self.all_curves[i])
+        for fault in self.c_outer_rise_faults:
+            mesh_refinement_array = np.append(mesh_refinement_array, fault)
+        for curve in self.all_curves:
+            mesh_refinement_array = np.append(mesh_refinement_array, curve)
         gmsh.model.mesh.field.setNumbers(fault_distance, "CurvesList", mesh_refinement_array)
 
         # Second, we setup a field `field_size`, which is the mathematical expression
         # for the cell size as a function of the cell size on the fault, the distance from
         # the fault (as given by `field_size`, and the bias factor.
-        # The `GenerateMesh` class includes a special function `get_math_progression` 
+        # The `GenerateMesh` class includes a special function `get_math_progression`
         # for creating the string with the mathematical function.
 
         field_size = gmsh.model.mesh.field.add("MathEval")

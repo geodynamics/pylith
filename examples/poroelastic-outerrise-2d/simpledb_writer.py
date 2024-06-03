@@ -1,6 +1,6 @@
 from spatialdata.spatialdb.SimpleIOAscii import createWriter
 from spatialdata.geocoords.CSCart import CSCart
-import numpy as np
+import numpy
 
 def fault_slip(x_values, y_values, maximum_depth_of_slip, minimum_depth_of_slip, specified_slip_points, polynomial_degree):
     '''
@@ -10,8 +10,8 @@ def fault_slip(x_values, y_values, maximum_depth_of_slip, minimum_depth_of_slip,
     is an array of points where slip is specified, between specified points the slip is fit using a polynomial with degree set by
     polynomial_degree.
     '''
-    slip_array = np.zeros(len(x_values))
-    polynomial_coefficients = np.polyfit(specified_slip_points[:, 0], specified_slip_points[:, 1], deg=polynomial_degree)
+    slip_array = numpy.zeros(len(x_values))
+    polynomial_coefficients = numpy.polyfit(specified_slip_points[:, 0], specified_slip_points[:, 1], deg=polynomial_degree)
 
     for i in range(len(y_values)):
         if y_values[i] <= minimum_depth_of_slip and y_values[i] >= maximum_depth_of_slip:
