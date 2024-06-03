@@ -307,10 +307,11 @@ dist_noinst_DATA = \
 	user/examples/magma-2d/figs/generate.sh \
 	user/examples/magma-2d/figs/geometry.svg \
 	user/examples/magma-2d/figs/geometry.pdf \
+	user/examples/magma-2d/figs/cubit-quad.png \
 	user/examples/magma-2d/figs/step01-diagram.pdf \
 	user/examples/magma-2d/figs/step01-diagram.svg \
 	user/examples/magma-2d/figs/step01-solution.jpg \
-	user/examples/magma-2d/figs/step01-solution.jpg \
+	user/examples/magma-2d/figs/step02-solution.jpg \
 	user/examples/reverse-2d/index.md \
 	user/examples/reverse-2d/common-information.md \
 	user/examples/reverse-2d/exercises.md \

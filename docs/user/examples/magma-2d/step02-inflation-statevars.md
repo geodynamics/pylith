@@ -172,32 +172,18 @@ Furthermore, the problem is still linear, so the nonlinear solver converges in o
 
 ## Visualizing the results
 
-In {numref}`fig:example:magma:2d:step02:solution` we use ParaView to visualize the evolution of the y displacement component using the `viz/plot_dispwarp.py` Python script.
-First, we start ParaView from the `examples/magma-2d` directory.
+In {numref}`fig:example:magma:2d:step02:solution` we use the `pylith_viz` utility to visualize the pressure field.
+You can move the slider or use the `p` and `n` keys to change the increment or decrement time.
 
 ```{code-block} console
 ---
-caption: Open ParaView using the command line.
+caption: Visualize PyLith output using `pylith_viz`.
 ---
-$ PATH_TO_PARAVIEW/paraview
-
-# For macOS, it will be something like
-$ /Applications/ParaView-5.10.1.app/Contents/MacOS/paraview
+pylith_viz --filenames=output/step02_inflation_statevars-domain.h5 warp_grid --field=pressure
 ```
-
-Next, we override the default name of the simulation file with the name of the current simulation.
-
-```{code-block} python
----
-caption: Set the simulation in the ParaView Python Shell.
----
->>> SIM = "step02_inflation_statevars"
-```
-
-Next we run the `viz/plot_dispwarp.py` Python script as described in {ref}`sec-paraview-python-scripts`.
 
 :::{figure-md} fig:example:magma:2d:step02:solution
-<img src="figs/step02-solution.*" alt="Solution for Step 2 at t=100 yr. The colors indicate the fluid pressure, and the deformation is exaggerated by a factor of 1000." width="75%"/>
+<img src="figs/step02-solution.*" alt="Solution for Step 2 at t=100 yr. The colors indicate the fluid pressure, and the deformation is exaggerated by a factor of 1000." width="500px"/>
 
 Solution for Step 2 at t=100 yr.
 The colors of the shaded surface indicate the fluid pressure, and the deformation is exaggerated by a factor of 1000.
