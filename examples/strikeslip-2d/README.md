@@ -16,8 +16,18 @@ finite-element mesh with triangular or quadrilateral cell using Cubit.
 This example involves a static simulation that solves for the deformation from prescribed coseismic slip on the fault. We specify 2 meters of right-lateral slip.
 
 To run the example:
-```
-pylith step01_slip.cfg
+```bash
+# Coarse resolution mesh
+pylith step01a_slip.cfg
+
+# Refined mesh
+pylith step01b_slip.cfg
+
+# Coarse mesh with basis order 2 for solution fields
+pylith step01c_slip.cfg
+
+# Cubit mesh
+pylith step01_slip_cubit.cfg
 ```
 
 ## Step 2: Single Earthquake Rupture and Velocity Boundary Conditions
@@ -26,7 +36,7 @@ This example involves a quasistatic simulation that solves for the deformation f
 We let strain accumulate due to the motion of the boundaries and then release the strain by prescribing 2 meters of right-lateral slip at t=100 years.
 
 To run the example:
-```
+```bash
 pylith step02_slip_velbc.cfg
 ```
 
@@ -37,6 +47,6 @@ The velocity boundary conditions match those in Step 2.
 We prescribe the first earthquake rupture to occur at 100 years with 1 meter of right-lateral slip and the second earthquake rupture to occur at 200 years with 3 meters of right-lateral slip.
 
 To run the example:
-```
+```bash
 pylith step03_multislip_velbc.cfg
 ```
