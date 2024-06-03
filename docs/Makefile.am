@@ -506,7 +506,6 @@ dist_noinst_DATA = \
 	user/examples/troubleshooting-2d/figs/step06-faults-wrong1.jpg \
 	user/examples/examples-other.md \
 	user/examples/index.md \
-	user/examples/paraview-python.md \
 	user/file-formats/figs/mesh_quad.pdf \
 	user/file-formats/figs/mesh_quad.svg \
 	user/file-formats/index.md \
