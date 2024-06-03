@@ -312,6 +312,31 @@ dist_noinst_DATA = \
 	user/examples/magma-2d/figs/step01-diagram.svg \
 	user/examples/magma-2d/figs/step01-solution.jpg \
 	user/examples/magma-2d/figs/step02-solution.jpg \
+	user/examples/poroelastic-outerrise-2d/index.md \
+	user/examples/poroelastic-outerrise-2d/meshing-gmsh.md \
+	user/examples/poroelastic-outerrise-2d/common-information.md \
+	user/examples/poroelastic-outerrise-2d/step01-no-faults-no-flexure.md \
+	user/examples/poroelastic-outerrise-2d/step01-no-faults-no-flexure-synopsis.md \
+	user/examples/poroelastic-outerrise-2d/step02-no-faults-with-flexure.md \
+	user/examples/poroelastic-outerrise-2d/step02-no-faults-with-flexure-synopsis.md \
+	user/examples/poroelastic-outerrise-2d/step03-faults-with-flexure.md \
+	user/examples/poroelastic-outerrise-2d/step03-faults-with-flexure-synopsis.md \
+	user/examples/poroelastic-outerrise-2d/exercises.md \
+	user/examples/poroelastic-outerrise-2d/figs/diagrams.tex \
+	user/examples/poroelastic-outerrise-2d/figs/geometry.svg \
+	user/examples/poroelastic-outerrise-2d/figs/geometry.pdf \
+	user/examples/poroelastic-outerrise-2d/figs/geometry-gmsh.svg \
+	user/examples/poroelastic-outerrise-2d/figs/geometry-gmsh.pdf \
+	user/examples/poroelastic-outerrise-2d/figs/gmsh-tri.png \
+	user/examples/poroelastic-outerrise-2d/figs/step01-diagram.pdf \
+	user/examples/poroelastic-outerrise-2d/figs/step01-diagram.svg \
+	user/examples/poroelastic-outerrise-2d/figs/step01-solution.png \
+	user/examples/poroelastic-outerrise-2d/figs/step02-diagram.pdf \
+	user/examples/poroelastic-outerrise-2d/figs/step02-diagram.svg \
+	user/examples/poroelastic-outerrise-2d/figs/step02-solution.png \
+	user/examples/poroelastic-outerrise-2d/figs/step03-diagram.pdf \
+	user/examples/poroelastic-outerrise-2d/figs/step03-diagram.svg \
+	user/examples/poroelastic-outerrise-2d/figs/step03-solution.png \
 	user/examples/reverse-2d/index.md \
 	user/examples/reverse-2d/common-information.md \
 	user/examples/reverse-2d/exercises.md \

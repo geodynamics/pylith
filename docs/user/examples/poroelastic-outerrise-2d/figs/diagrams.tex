@@ -10,7 +10,7 @@
 \input{../../../../tikz-styles/example-style}
 \tikzstyle{gfaults}=[fill=ltorange!25!white]
 
-\foreach \figpart in {4,...,4}{
+\foreach \figpart in {1,...,5}{
 
 % -------------------------------------------------------------------------------------------------
 \begin{tikzpicture}[scale=0.1]
@@ -18,9 +18,9 @@
 \def\domainx{150}
 \def\domainy{30}
 \def\axesshift{0.05*\domainx}
-\def\bndryshift{2.5*\axesshift}
+\def\bndryshift{1.5*\axesshift}
 \def\ticksize{0.5*\axesshift}
-\def\dirsize{0.15*\domainx}
+\def\dirsize{0.05*\domainx}
 \def\fault_width{0.02*\domainx}
 
 % Reference points
@@ -54,49 +54,9 @@
 \draw[curve,gdomain] (p1) -- (p2) -- (p3) -- (p4) -- cycle;
 
 % -------------------------------------------------------------------------------------------------
-% Geometry
+% Domain
 % -------------------------------------------------------------------------------------------------
-
 \ifthenelse{\figpart=1}{
-
-\draw[curve, bc] (p1) -- (p2);
-\draw[curve, bc] (p2) -- (p3);
-\draw[curve, bc] (p3) -- (p4);
-\draw[curve, bc] (p4) -- (p1);
-\draw[curve, bc] (f1_2) -- (f1_5);
-\draw[curve, bc] (f2_2) -- (f2_5);
-\draw[curve, bc] (f3_2) -- (f3_5);
-
-\node[fevertex] (v) at ($(p1)$) {};
-\node[fevertex] (v) at ($(p2)$) {};
-\node[fevertex] (v) at ($(p3)$) {};
-\node[fevertex] (v) at ($(p4)$) {};
-
-\node[fevertex] (v) at ($(f1_2)$) {};
-\node[fevertex] (v) at ($(f1_5)$) {};
-\node[fevertex] (v) at ($(f2_2)$) {};
-\node[fevertex] (v) at ($(f2_5)$) {};
-\node[fevertex] (v) at ($(f3_2)$) {};
-\node[fevertex] (v) at ($(f3_5)$) {};
-
-\node[bc-label] (bndry-xneg) at ($(p1)+(-\bndryshift,0.5*\domainy)$) {bndry\_xneg};
-\draw[bc,arrow] ($(p1)+(-0.5*\bndryshift,0.5*\domainy)$) to ($(p1)+(0,0.5*\domainy)$);
-
-\node[bc-label] (bndry-yneg) at ($(p1)+(0.5*\domainx, -\bndryshift)$) {bndry\_yneg};
-\draw[bc,arrow] ($(p1)+(0.5*\domainx, -0.85*\bndryshift)$) to ($(p1)+(0.5*\domainx, 0.0)$);
-
-\node[bc-label] (bndry-xpos) at ($(p3)+(\bndryshift,-0.5*\domainy)$) {bndry\_xpos};
-\draw[bc,arrow] ($(p3) + (0.5*\bndryshift,-0.5*\domainy)$) to ($(p3)+(0,-0.5*\domainy)$);
-
-\node[bc-label] (bndry-ypos) at ($(p3)+(-0.5*\domainx, +\bndryshift)$) {bndry\_ypos};
-\draw[bc,arrow] ($(p3)+(-0.5*\domainx, +0.85*\bndryshift)$) to ($(p3)+(-0.5*\domainx, 0.0)$);
-
-\node[bc-label] (bndry-ypos-fluid) at ($(p3)+(-0.5*\domainx, -\bndryshift)$) {bndry\_ypos\_fluid};
-\draw[bc,arrow] ($(p3)+(-0.5*\domainx, -0.85*\bndryshift)$) to ($(p3)+(-0.5*\domainx, 0.0)$);
-
-\node[bc-label, rotate=-60, anchor=east] (fault-0) at ($(f1_2)+(5.0, -0.45*\domainy)$) {fault\_0};
-\node[bc-label, rotate=-60, anchor=east] (fault-1) at ($(f2_2)+(5.0, -0.45*\domainy)$) {fault\_1};
-\node[bc-label, rotate=-60, anchor=east] (fault-2) at ($(f3_2)+(5.0, -0.45*\domainy)$) {fault\_2};
 
 % Axes
 \draw[axes,arrow] ($(p1)+(0,-\axesshift)$) to ($(p4)+(1.0*\axesshift,-\axesshift)$);
@@ -113,15 +73,130 @@
     \draw[axes] ($(p1)+(-\axesshift,\iy*\domainy)$) -- ++(-\ticksize,0) node[left]{\y\,km};
 }
 
+% Materials
 \node[bc-label] at ($(0.1*\domainx,0.25*\domainy)$) {slab};
+
+% Boundaries
+\node[bc-label, anchor=east] (xneg-label) at ($(p1)+(-\bndryshift,0.5*\domainy)$) {boundary\_xneg};
+\draw[bc,arrow] (xneg-label) to[out=10,in=-170,looseness=2] ($(p1)+(0,0.5*\domainy)$);
+
+\node[bc-label, anchor=north] (yneg-label) at ($(p1)+(0.5*\domainx, -\bndryshift)$) {boundary\_yneg};
+\draw[bc,arrow] (yneg-label) to[out=100,in=-80,looseness=2] ($(p1)+(0.5*\domainx, 0.0)$);
+
+\node[bc-label, anchor=west] (xpos-label) at ($(p3)+(\bndryshift,-0.5*\domainy)$) {boundary\_xpos};
+\draw[bc,arrow] (xpos-label) to[out=-170,in=+10,looseness=2] ($(p3)+(0,-0.5*\domainy)$);
+
+\node[bc-label, anchor=south] (ypos-label) at ($(p3)+(-0.5*\domainx, +\bndryshift)$) {boundary\_ypos};
+\draw[bc,arrow] (ypos-label) to[out=-80,in=100,looseness=2] ($(p3)+(-0.5*\domainx, 0.0)$);
+
+% Faults
+\draw[curve, bc] (f1_2) -- (f1_5);
+\draw[curve, bc] (f2_2) -- (f2_5);
+\draw[curve, bc] (f3_2) -- (f3_5);
+\node[bc-label, rotate=-60, anchor=east] (fault-0) at ($(f1_2)+(5.0, -0.45*\domainy)$) {fault\_0};
+\node[bc-label, rotate=-60, anchor=east] (fault-1) at ($(f2_2)+(5.0, -0.45*\domainy)$) {fault\_1};
+\node[bc-label, rotate=-60, anchor=east] (fault-2) at ($(f3_2)+(5.0, -0.45*\domainy)$) {fault\_2};
+
+
+}{}
+
+
+% -------------------------------------------------------------------------------------------------
+% Gmsh Geometry
+% -------------------------------------------------------------------------------------------------
+
+\ifthenelse{\figpart=2}{
+
+\draw[curve] (f1_2) -- (f1_5);
+\draw[curve] (f2_2) -- (f2_5);
+\draw[curve] (f3_2) -- (f3_5);
+
+% Points
+\node[fevertex] (v1) at ($(p1)$) {};
+\node[fevertex-label, below left, anchor=north] at (v1) {p\_LL};
+
+\node[fevertex] (v2) at ($(p2)$) {};
+\node[fevertex-label, below left, anchor=south] at (v2) {p\_UL};
+
+\node[fevertex] (v3) at ($(p3)$) {};
+\node[fevertex-label, below left, anchor=south west] at (v3) {p\_UR};
+
+\node[fevertex] (v4) at ($(p4)$) {};
+\node[fevertex-label, below left, anchor=north west] at (v4) {p\_LR};
+
+\node[fevertex] (f0_v1) at ($(f1_2)$) {};
+\node[fevertex-label, below left, anchor=south east] at (f0_v1) {p\_f0\_top};
+
+\node[fevertex] (f0_v2) at ($(f1_5)$) {};
+\node[fevertex-label, below left, anchor=north east] at (f0_v2) {p\_f0\_bot};
+
+\node[fevertex] (f1_v1) at ($(f2_2)$) {};
+\node[fevertex-label, below left, anchor=south] at (f1_v1) {p\_f1\_top};
+
+\node[fevertex] (f1_v2) at ($(f2_5)$) {};
+\node[fevertex-label, below left, anchor=north] at (f1_v2) {p\_f1\_bot};
+
+\node[fevertex] (f2_v1) at ($(f3_2)$) {};
+\node[fevertex-label, below left, anchor=south west] at (f2_v1) {p\_f2\_top};
+
+\node[fevertex] (f2_v2) at ($(f3_5)$) {};
+\node[fevertex-label, below left, anchor=north west] at (f2_v2) {p\_f2\_bot};
+
+% Curves
+\node (yneg) at ($(p1)+(0.5*\domainx,0)$) {};
+\node[curve-label, below] at (yneg) {c\_bottom};
+\draw[curve-dir] ($(yneg)+(-0.5*\dirsize,2)$) -- ++(\dirsize,0);
+
+\node (xpos) at ($(p4)+(0,0.5*\domainy)$) {};
+\node[curve-label, right, rotate=90, anchor=north] at (xpos) {c\_right};
+\draw[curve-dir] ($(xpos)+(-2,-0.5*\dirsize)$) -- ++(0,\dirsize);
+
+\node (ypos) at ($(p2)+(0.5*\domainx,0)$) {};
+\node[curve-label, above] at (ypos) {c\_top};
+\draw[curve-dir] ($(ypos)+(+0.5*\dirsize,-2)$) -- ++(-\dirsize,0);
+
+\node (xneg) at ($(p1)+(0,0.5*\domainy)$) {};
+\node[curve-label, left, rotate=-90, anchor=north] at (xneg) {c\_left};
+\draw[curve-dir] ($(xneg)+(2,+0.5*\dirsize)$) -- ++(0,-\dirsize);
+
+\pgfmathsetmacro{\xstart}{2*cos(30)+0.5*\dirsize*sin(30)}%
+\pgfmathsetmacro{\ystart}{+2*sin(30)-0.5*\dirsize*cos(30)}%
+\pgfmathsetmacro{\dx}{-\dirsize*sin(30)}%
+\pgfmathsetmacro{\dy}{\dirsize*cos(30)}%
+\node (f0) at ($0.5*(f1_2)+0.5*(f1_5)$) {};
+\node[curve-label, left, rotate=-60, anchor=north] at (f0) {c\_fault0};
+\draw[curve-dir] ($(f0)+(\xstart,\ystart)$) -- ++(\dx,\dy);
+
+\node (f1) at ($0.5*(f2_2)+0.5*(f2_5)$) {};
+\node[curve-label, left, rotate=-60, anchor=north] at (f1) {c\_fault1};
+\draw[curve-dir] ($(f1)+(\xstart,\ystart)$) -- ++(\dx,\dy);
+
+\node (f2) at ($0.5*(f3_2)+0.5*(f3_5)$) {};
+\node[curve-label, left, rotate=-60, anchor=north] at (f2) {c\_fault2};
+\draw[curve-dir] ($(f2)+(\xstart,\ystart)$) -- ++(\dx,\dy);
+
+% Axes
+\draw[axes,arrow] ($(p1)+(0,-\axesshift)$) to ($(p4)+(1.0*\axesshift,-\axesshift)$);
+\node[axes-label,right] at ($(p4)+(1.0*\axesshift,-\axesshift)$) {x};
+\foreach \ix in {0,1}{%
+    \pgfmathsetmacro{\x}{\ix*\domainx}
+    \draw[axes] ($(p1)+(\ix*\domainx,-\axesshift)$) -- ++(0,-\ticksize) node[below]{\x\,km};
+}
+
+\draw[axes,arrow] ($(p1)+(-\axesshift,0)$) to ($(p2)+(-\axesshift,+1.0*\axesshift)$);
+\node[axes-label,above] at ($(p2)+(-\axesshift,1.0*\axesshift)$) {y};
+\foreach \iy in {0,1}{%
+    \pgfmathsetmacro{\y}{-\domainy + \iy*\domainy}
+    \draw[axes] ($(p1)+(-\axesshift,\iy*\domainy)$) -- ++(-\ticksize,0) node[left]{\y\,km};
+}
 
 }
 
 % -------------------------------------------------------------------------------------------------
-% Step-03
+% Step 1
 % -------------------------------------------------------------------------------------------------
 
-\ifthenelse{\figpart=2}{
+\ifthenelse{\figpart=3}{
 
 % Materials
 \node[bc-label] at ($(0.1*\domainx,0.25*\domainy)$) {slab};
@@ -135,10 +210,10 @@
 }
 
 % -------------------------------------------------------------------------------------------------
-% Step-02
+% Step 2
 % -------------------------------------------------------------------------------------------------
 
-\ifthenelse{\figpart=3}{
+\ifthenelse{\figpart=4}{
 
 % Materials
 \node[bc-label] at ($(0.1*\domainx,0.25*\domainy)$) {slab};
@@ -167,10 +242,10 @@
 }
 
 % -------------------------------------------------------------------------------------------------
-% Step-03
+% Step 3
 % -------------------------------------------------------------------------------------------------
 
-\ifthenelse{\figpart=4}{
+\ifthenelse{\figpart=5}{
 
 % Materials
 \node[bc-label] at ($(0.1*\domainx,0.25*\domainy)$) {slab};

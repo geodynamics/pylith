@@ -1,20 +1,23 @@
-# Step 2: No faults, with flexure
+# Step 2: No faults with flexure
 
 ```{include} step02-no-faults-with-flexure-synopsis.md
 ```
 
 ## Simulation parameters
 
-This example uses poroelasticity to model the infiltration of seawater through a slab of oceanic lithosphere. The permeability field is depth dependent, decreasing with depth but does not vary laterally. The lithosphere is now subject to deformation, over 300 kyr the slab bends to simulate extensional stresses in the outer-rise of a subduction zone. A fluid pressure is applied to the top boundary that is equivalent to the pressure exerted on the seafloor by the water column. This simulates what the hydration state of the oceanic lithosphere as it is about to enter a convergent margin. 
-
+This example uses poroelasticity to model the infiltration of seawater through a slab of oceanic lithosphere.
+The permeability field is depth dependent, decreasing with depth but does not vary laterally.
+The lithosphere is now subject to deformation, over 300 kyr the slab bends to simulate extensional stresses in the outer-rise of a subduction zone.
+A fluid pressure is applied to the top boundary that is equivalent to the pressure exerted on the seafloor by the water column.
+This simulates what the hydration state of the oceanic lithosphere as it is about to enter a convergent margin.
 
 {numref}`fig:example:poroelastic:outerrise:2d:step02:diagram` shows the boundary conditions on the domain.
 The parameters specific to this example are in `step02-no-faults-with-flexure.cfg`.
 
-:::{figure-md} fig:example:outerrise:poroelastic:2d:step02:diagram
-<img src="figs/step02-diagram.*" alt="" scale="100%">
+:::{figure-md} fig:example:poroelastic:outerrise:2d:step02:diagram
+<img src="figs/step02-diagram.*" alt="" width="75%">
 
-Boundary and initial conditions for step02.
+Boundary and initial conditions for Step 2.
 We fix the left boundary, but we now apply a spatially varying velocity condition on the top boundary using a `SimpleDB` file, while leaving the right and bottom boundaries unconstrained. 
 We impose a fluid pressure  on the +y boundary equal to the weight of the water column to generate fluid flow.
 :::
@@ -23,7 +26,7 @@ We impose a fluid pressure  on the +y boundary equal to the weight of the water 
 ---
 caption: Modified top boundary condition for Step 2.
 ---
-[pylithapp.problem.bc.bndry_top]
+[pylithapp.problem.bc.boundary_top]
 use_initial = False
 use_rate = True
 
@@ -34,22 +37,12 @@ db_auxiliary_field.iohandler.filename = top_velocity_boundary.spatialdb
 
 ```{code-block} cfg
 ---
-caption: Time stepping parameters for Step 2.
----
-[pylithapp.timedependent]
-start_time = -6e3*year
-initial_dt = 6e3*year
-end_time = 300e3*year
-```
-
-```{code-block} cfg
----
 caption: Initial condition parameters for Step 2. We use a `SimpleGridDB` file that does not contain enhanced permeability due to outer rise faults. 
 ---
 [pylithapp.problem]
 
 [pylithapp.problem.materials.slab]
-db_auxiliary_field.filename = no_faultzone_permeability.spatialgrid
+db_auxiliary_field.filename = no_faultzone_permeability.spatialdb
 ```
 
 ## Running the simulation
@@ -101,9 +94,19 @@ $ pylith step02-no-faults-with-flexure.cfg
  -- Finalizing problem.
 ```
 
+## Visualizing the results
 
-:::{figure-md} fig:example:poroelastic:outerrise:2d:gmsh:mesh
-<img src="figs/step02-porosity.*" alt="Porosity field at the end of model run time for step02." width="100%"/>
+In {numref}`fig:example:poroelastic:outerrise:2d:step02:solution` we use the `pylith_viz` utility to visualize the porosity field.
 
-Porosity field at the end of model run time for step02.
+```{code-block} console
+---
+caption: Visualize PyLith output using `pylith_viz`.
+---
+pylith_viz --filenames=output/step02-no-faults-flexure-slab.h5 warp_grid --field=porosity --exaggeration=1 --hide-edges
+```
+
+:::{figure-md} fig:example:poroelastic:outerrise:2d:step02:solution
+<img src="figs/step02-solution.*" alt="Porosity field at the end of the simulation for Step 2." width="100%"/>
+
+Porosity field at the end of the simulation for Step 2.
 :::

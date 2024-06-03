@@ -5,29 +5,22 @@
 
 ## Simulation parameters
 
-This example uses poroelasticity to model the infiltration of seawater through a slab of oceanic lithosphere. The permeability field is depth dependent, decreasing with depth but does not vary laterally. The lithosphere is not subject to any deformation, but a fluid pressure is applied to the top boundary that is equivalent to the pressure exerted on the seafloor by the water column. This simulates what the hydration state of the oceanic lithosphere is far from any spreading centers, or convergent margins. It also serves as a comparison to see how the hydration state varies for later steps where more complexities are introduced. 
-
+This example uses poroelasticity to model the infiltration of seawater through a slab of oceanic lithosphere.
+The permeability field is depth dependent, decreasing with depth but does not vary laterally.
+The lithosphere is not subject to any deformation, but a fluid pressure is applied to the top boundary that is equivalent to the pressure exerted on the seafloor by the water column.
+This simulates what the hydration state of the oceanic lithosphere is far from any spreading centers, or convergent margins.
+It also serves as a comparison to see how the hydration state varies for later steps where more complexities are introduced.
 
 {numref}`fig:example:poroelastic:outerrise:2d:step01:diagram` shows the boundary conditions on the domain.
 The parameters specific to this example are in `step01-no-faults-no-flexure.cfg`.
 
-:::{figure-md} fig:example:outerrise:poroelastic:2d:step01:diagram
-<img src="figs/step01-diagram.*" alt="" scale="100%">
+:::{figure-md} fig:example:poroelastic:outerrise:2d:step01:diagram
+<img src="figs/step01-diagram.*" alt="" width="75%">
 
-Boundary and initial conditions for step01.
-We fix the left and the top boundaries with a zero displacement boundary condition, while leaving the right and bottom boundaries unconstrained. 
+Boundary and initial conditions for Step 1.
+We fix the left and the top boundaries with a zero displacement boundary condition, while leaving the right and bottom boundaries unconstrained.
 We impose a fluid pressure  on the +y boundary equal to the weight of the water column to generate fluid flow.
 :::
-
-```{code-block} cfg
----
-caption: Time stepping parameters for Step 1.
----
-[pylithapp.timedependent]
-start_time = -6e3*year
-initial_dt = 6e3*year
-end_time = 300e3*year
-```
 
 ```{code-block} cfg
 ---
@@ -36,7 +29,7 @@ caption: Initial condition parameters for Step 1. We use a `SimpleGridDB` file t
 [pylithapp.problem]
 
 [pylithapp.problem.materials.slab]
-db_auxiliary_field.filename = no_faultzone_permeability.spatialgrid
+db_auxiliary_field.filename = no_faultzone_permeability.spatialdb
 ```
 
 ## Running the simulation
@@ -89,8 +82,25 @@ $ pylith step01-no-faults-no-flexure.cfg
  -- Finalizing problem.
 ```
 
-:::{figure-md} fig:example:poroelastic:outerrise:2d:gmsh:mesh
-<img src="figs/step01-porosity.*" alt="Porosity field at the end of model run time for step01." width="100%"/>
+## Visualizing the results
 
-Porosity field at the end of model run time for step01.
+The `output` directory contains the simulation output.
+Each "observer" writes its own set of files, so the solution over the domain is in one set of files, the boundary condition information is in another set of files, and the material information is in yet another set of files.
+The HDF5 (`.h5`) files contain the mesh geometry and topology information along with the solution fields.
+The Xdmf (`.xmf`) files contain metadata that allow visualization tools like ParaView to know where to find the information in the HDF5 files.
+To visualize the data using ParaView or Visit, load the Xdmf files.
+
+In {numref}`fig:example:poroelastic:outerrise:2d:step01:solution` we use the `pylith_viz` utility to visualize the porosity field.
+
+```{code-block} console
+---
+caption: Visualize PyLith output using `pylith_viz`.
+---
+pylith_viz --filenames=output/step01-no-faults-no-flexure-slab.h5 warp_grid --field=porosity --exaggeration=1 --hide-edges
+```
+
+:::{figure-md} fig:example:poroelastic:outerrise:2d:step01:solution
+<img src="figs/step01-solution.*" alt="Porosity field at the end of the simulation for Step 1." width="100%"/>
+
+Porosity field at the end of model run time for Step 1.
 :::
