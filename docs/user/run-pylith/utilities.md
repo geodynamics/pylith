@@ -74,12 +74,13 @@ When you plot the `magnitude` component, the plotting uses the `plasma` sequenti
 When you plot a vector or tensor component, the plotting uses the a blue-red diverging colormap with zero at the center of the colormap and the range set to the maximum absolute value of the component over the time span of the data.
 
 ```{code-block} bash
-pylith_viz --filenames FILENAMES plot_field [--field FIELD_NAME] [--component COMPONENT] [--help]
+pylith_viz --filenames FILENAMES plot_field [--field FIELD_NAME] [--component COMPONENT] [--hide-edges] [--help]
 ```
 
 :--help: Display help information for subcommand.
 :--field FIELD_NAME: Plot field FIELD_NAME (default: `displacement`).
 :--component COMPONENT: Component to display (default: `magnitude`).
+:--hide-edges: Do not show cell edges.
 
 ### warp_grid Subcommand
 
@@ -95,7 +96,7 @@ When you plot the `magnitude` component, the plotting uses the `plasma` sequenti
 When you plot a vector or tensor component, the plotting uses the a blue-red diverging colormap with zero at the center of the colormap and the range set to the maximum absolute value of the component over the time span of the data.
 
 ```{code-block} bash
-pylith_viz --filenames FILENAMES warp_grid [--field FIELD_NAME] [--component COMPONENT] [--exaggeration EXAGGERATION] [--hide-outline] [--help]
+pylith_viz --filenames FILENAMES warp_grid [--field FIELD_NAME] [--component COMPONENT] [--exaggeration EXAGGERATION] [--hide-outline] [--hide-edges] [--help]
 ```
 
 :--help: Display help information for subcommand.
@@ -103,6 +104,7 @@ pylith_viz --filenames FILENAMES warp_grid [--field FIELD_NAME] [--component COM
 :--component COMPONENT: Component to display (default: `magnitude`).
 :--exaggeration EXAGGERATION: Scale factor for exaggerating the displacement deformation (default: 1000).
 :--hide-outline: Turn off showing the grid outline with the warped grid.
+:--hide-edges: Do not show cell edges on warped grid.
 
 ## pyre_doc.py
 

@@ -19,21 +19,22 @@ class PlotField:
         self.data = data
         self.interactive = interactive
 
-    def plot(self, field_name: str, component_name: str):
+    def plot(self, field_name: str, component_name: str, show_edges: bool=True):
         self.field_name = field_name
         self.component_name = component_name
+
         self.lut = core.create_colormap(dataset=self.data, field_name=field_name, component_name=component_name)
         for domain in self.data:
-            self._plot_data(domain)
+            self._plot_data(domain, show_edges)
         self.plotter.add_scalar_bar(title=f"{self.component_name} {self.field_name}")
 
     def update_time(self, t_index: int):
         for domain in self.data:
             self._update_data(domain=domain, t_index=t_index)
 
-    def _plot_data(self, domain):
+    def _plot_data(self, domain, show_edges):
         self._set_scalar(domain=domain, t_index=0)
-        self.plotter.add_mesh(domain.grid, name=domain.name, show_edges=True, show_scalar_bar=False, cmap=self.lut, scalars=self.field_name)
+        self.plotter.add_mesh(domain.grid, name=domain.name, show_edges=show_edges, show_scalar_bar=False, cmap=self.lut, scalars=self.field_name)
 
     def _update_data(self, domain, t_index: int):
         self._set_scalar(domain=domain, t_index=t_index)
@@ -50,11 +51,12 @@ class PlotField:
 
 def cli(plotter, data, args):
     figure = PlotField(plotter=plotter, data=data)
-    figure.plot(field_name=args.field_name, component_name=args.component)
+    figure.plot(field_name=args.field_name, component_name=args.component, show_edges=args.show_edges)
     return figure
 
 
 def add_args(parser):
     parser.add_argument("--field", action="store", help="Field for shading. Currently, must be a vertex field.", dest="field_name", default="displacement")
     parser.add_argument("--component", action="store", help="Component of field for shading.", dest="component", default="magnitude", choices=core.Field.COMPONENT.keys())
+    parser.add_argument("--hide-edges", action="store_false", help="Hide cell edges of deformed domain.", dest="show_edges")
     parser.set_defaults(func=cli)
