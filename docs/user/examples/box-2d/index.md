@@ -8,7 +8,6 @@ The files and directories for this set of examples includes:
 :`*.cfg`: PyLith parameter files.
 :`*.mesh`: Finite-element mesh files generated manually using a text editor.
 :`*.spatialdb`: Spatial database filesFiles associated with the spatial databases.
-:`viz`: Directory containing ParaView Python scripts and other files for visualizing results.
 :`output`: Directory containing simulation output. It is created automatically when running the simulations.
 
 ## Overview
