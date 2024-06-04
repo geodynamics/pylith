@@ -16,10 +16,15 @@ We add a Neumann (traction) boundary condition on the +y boundary with roller bo
 
 ## Step 4a: Coarse Mesh
 
-We use the mesh generated with Gmsh which is relatively coarse but captures the geometry.
-The parameters specific to this example are in `step04a_surfload.cfg`.
+:::{note}
+New in v4.1.0.
+
+We start with a coarse resolution mesh that captures the geometry and increase the resolution of the simulation by using uniform refinement or increasing the basis order of the solution fields.
+:::
 
 ### Simulation parameters
+
+The parameters specific to this example are in `step04a_surfload.cfg`.
 
 ```{code-block} cfg
 ---
