@@ -16,11 +16,14 @@ SUBDIRS = \
 	box-2d \
 	box-3d \
 	meshing-cubit \
-	magma-2d \
 	reverse-2d \
 	strikeslip-2d \
+	crustal-strikeslip-2d \
+	crustal-strikeslip-3d \
 	subduction-2d \
 	subduction-3d \
+	magma-2d \
+	poroelastic-outerrise-2d \
 	troubleshooting-2d
 
 
