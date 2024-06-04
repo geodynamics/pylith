@@ -343,15 +343,15 @@ dist_noinst_DATA = \
 	user/examples/reverse-2d/meshing-cubit.md \
 	user/examples/reverse-2d/meshing-gmsh.md \
 	user/examples/reverse-2d/step01-gravity.md \
-	user/examples/reverse-2d/step01_gravity-synopsis.md \
+	user/examples/reverse-2d/step01a_gravity-synopsis.md \
 	user/examples/reverse-2d/step02-gravity-refstate.md \
 	user/examples/reverse-2d/step02_gravity_refstate-synopsis.md \
 	user/examples/reverse-2d/step03-gravity-incompressible.md \
 	user/examples/reverse-2d/step03_gravity_incompressible-synopsis.md \
 	user/examples/reverse-2d/step04-surfload.md \
-	user/examples/reverse-2d/step04_surfload-synopsis.md \
+	user/examples/reverse-2d/step04a_surfload-synopsis.md \
 	user/examples/reverse-2d/step05-onefault.md \
-	user/examples/reverse-2d/step05_onefault-synopsis.md \
+	user/examples/reverse-2d/step05a_onefault-synopsis.md \
 	user/examples/reverse-2d/step06-twofaults-elastic.md \
 	user/examples/reverse-2d/step06_twofaults_elastic-synopsis.md \
 	user/examples/reverse-2d/step07-twofaults-maxwell.md \
@@ -371,19 +371,26 @@ dist_noinst_DATA = \
 	user/examples/reverse-2d/figs/gmsh-tri.png \
 	user/examples/reverse-2d/figs/step01-diagram.pdf \
 	user/examples/reverse-2d/figs/step01-diagram.svg \
-	user/examples/reverse-2d/figs/step01-solution.jpg \
+	user/examples/reverse-2d/figs/step01a-solution.jpg \
+	user/examples/reverse-2d/figs/step01b-solution.jpg \
+	user/examples/reverse-2d/figs/step01c-solution.jpg \
 	user/examples/reverse-2d/figs/step02-solution.jpg \
 	user/examples/reverse-2d/figs/step03-solution.jpg \
 	user/examples/reverse-2d/figs/step04-diagram.pdf \
 	user/examples/reverse-2d/figs/step04-diagram.svg \
-	user/examples/reverse-2d/figs/step04-solution.jpg \
+	user/examples/reverse-2d/figs/step04a-solution.jpg \
+	user/examples/reverse-2d/figs/step04b-solution.jpg \
+	user/examples/reverse-2d/figs/step04c-solution.jpg \
 	user/examples/reverse-2d/figs/step05-diagram.pdf \
 	user/examples/reverse-2d/figs/step05-diagram.svg \
-	user/examples/reverse-2d/figs/step05-solution.jpg \
+	user/examples/reverse-2d/figs/step05a-solution.jpg \
+	user/examples/reverse-2d/figs/step05b-solution.jpg \
+	user/examples/reverse-2d/figs/step05c-solution.jpg \
 	user/examples/reverse-2d/figs/step06-diagram.pdf \
 	user/examples/reverse-2d/figs/step06-diagram.svg \
 	user/examples/reverse-2d/figs/step06-solution.jpg \
 	user/examples/reverse-2d/figs/step07-solution.jpg \
+	user/examples/reverse-2d/figs/step08-solution.jpg \
 	user/examples/strikeslip-2d/index.md \
 	user/examples/strikeslip-2d/common-information.md \
 	user/examples/strikeslip-2d/exercises.md \

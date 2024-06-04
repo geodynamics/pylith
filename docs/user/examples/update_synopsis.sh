@@ -10,6 +10,12 @@ done
 rm strikeslip-2d/step01b_slip-synopsis.md
 rm strikeslip-2d/step01c_slip-synopsis.md
 rm strikeslip-2d/step01_slip_cubit-synopsis.md
+rm reverse-2d/step01b_gravity-synopsis.md
+rm reverse-2d/step01c_gravity-synopsis.md
+rm reverse-2d/step04b_surfload-synopsis.md
+rm reverse-2d/step04c_surfload-synopsis.md
+rm reverse-2d/step05b_onefault-synopsis.md
+rm reverse-2d/step05c_onefault-synopsis.md
 rm crustal-strikeslip-2d/step01_slip_cubit-synopsis.md
 rm crustal-strikeslip-3d/step01_slip_cubit-synopsis.md
 rm subduction-3d/step07b_reverse-synopsis.md

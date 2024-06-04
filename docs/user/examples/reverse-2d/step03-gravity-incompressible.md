@@ -128,13 +128,14 @@ As a result, the linear solve converged in 1 iterations.
 
 ## Visualizing the results
 
-In {numref}`fig:example:reverse:2d:step03:solution` we use the `pylith_viz` utility to visualize the displacement field.
+In {numref}`fig:example:reverse:2d:step03:solution` and {numref}`fig:example:reverse:2d:step03:stress` we use the `pylith_viz` utility to visualize the simulation results.
 
 ```{code-block} console
 ---
 caption: Visualize PyLith output using `pylith_viz`.
 ---
 pylith_viz --filename=output/step01_gravity-domain.h5 warp_grid --exaggeration=5
+pylith_viz --filenames=output/step03_gravity_incompressible-crust.h5,output/step03_gravity_incompressible-slab.h5,output/step03_gravity_incompressible-wedge.h5 warp_grid --field=cauchy_stress --component=xy --exaggeration=5
 ```
 
 :::{figure-md} fig:example:reverse:2d:step03:solution
@@ -144,4 +145,13 @@ Solution for Step 3.
 The colors of the shaded surface indicate the magnitude of the displacement.
 The undeformed configuration is show by the gray wireframe.
 There is negligible deformation and the stress state (not shown) matches the one in Step 2.
+:::
+
+:::{figure-md} fig:example:reverse:2d:step03:stress
+<img src="figs/step03-stress.*" alt="Cauchy stress tensor component xy for Step 3. The colors indicate the stress tensor component, and the deformation is exaggerated by a factor of 5." width="600px"/>
+
+Cauchy stress tensor component xy for Step 3.
+The colors of the shaded surface indicate the xy component of the Cauchy stress tensor, and the deformation is exaggerated by a factor of 5.
+The undeformed configuration is show by the gray wireframe.
+The shear stress is negligible.
 :::
