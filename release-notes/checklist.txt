@@ -5,23 +5,17 @@ RELEASE CHECKLIST
 TESTING
 
   * Run valgrind on unit tests (make leakcheck)
-
+  * Build using tarball
+  * Build documentation using tarball
   * Run all examples.
     ./pylith_runner --path=examples
 
 SOURCE CODE
 
-  * Update version number and DOI in configure.ac.
-
-  * Add changes to CHANGES.
-
-  * Add release notes in doc/releasenotes.
-
-MANUAL
-
-  * Reserve DOI on zenodo and update version and DOI in code.
-
+  * Reserve DOI on Zenodo and update version and DOI in code.
   * Update citation information (year) in preface.tex.
+  * Add changes to CHANGES.
+  * Add release notes in release-notes.
 
 DISTRIBUTIONS
 
