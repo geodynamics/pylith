@@ -51,9 +51,9 @@ SPLAY_DIP_ANGLE = 45.0 / 180.0 * math.pi
 SPLAY_OFFSET = 20*km
 
 
-DX_FAULT = 2.0*km # Discretization size on fault
-DX_BIAS = 1.07 # rate of geometric increase in cell size with distance from the fault
-cell = "tri"
+DX_FAULT = 5.0*km # Discretization size on fault
+DX_BIAS = 1.1 # rate of geometric increase in cell size with distance from the fault
+cell = "quad"
 
 
 # -------------------------------------------------------------------------------------------------

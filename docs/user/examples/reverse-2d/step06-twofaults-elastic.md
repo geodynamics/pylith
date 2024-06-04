@@ -4,9 +4,7 @@
 ```{include} step06_twofaults_elastic-synopsis.md
 ```
 
-## Simulation parameters
-
-In this example we add coseismic slip on the splay fault.
+In this example we add coseismic slip on the splay fault with an origin time of 40 years.
 We specify 2 meters of reverse slip on the main fault and 1 meter of reverse slip on the splay fault.
 {numref}`fig:example:reverse:2d:step06:diagram` shows the boundary conditions on the domain.
 The parameters specific to this example are in `step06_twofaults-elastic.cfg`.
@@ -15,9 +13,29 @@ The parameters specific to this example are in `step06_twofaults-elastic.cfg`.
 <img src="figs/step06-diagram.*" alt="" scale="75%">
 
 Boundary conditions for static coseismic slip on both the main and splay faults.
-We prescribe 2 meters of reverse slip on the main fault with 1 meter of reverse slip on the splay fauult.
+We prescribe 2 meters of reverse slip on the main fault with 1 meter of reverse slip on the splay fault.
 We use roller boundary conditions on the lateral sides and bottom of the domain.
 :::
+
+## Simulation parameters
+
+We use uniform refinement to reduce the discretization size by a factor of 2 and increase the numerical resolution.
+With different origin times for slip on the two faults, we need to add time stepping.
+With a linearly elastic, quasistatic model (no inertia) and fixed displacements on the boundaries, the displacement field only changes as a result of fault slip, so we can use just a few time steps to resolve the deformation.
+We impose slip on the main fault in the first time step (advancing the solution to t=0), and impose slip on the splay fault in the third time step (advancing the solution to t=40 years).
+
+```{code-block} cfg
+---
+caption: Parameters for uniform refinement and time stepping in Step 6.
+---
+[pylithapp.mesh_generator]
+refiner = pylith.topology.RefineUniform
+
+[pylithapp.problem]
+initial_dt = 20.0*year
+start_time = -20.0*year
+end_time = 40.0*year
+```
 
 :::{important}
 In 2D simulations slip is specified in terms of opening and left-lateral components.
@@ -123,9 +141,9 @@ pylith_viz --filename=output/step05_onefault-domain.h5 warp_grid --component=x
 ```
 
 :::{figure-md} fig:example:reverse:2d:step06:solution
-<img src="figs/step06-solution.*" alt="Solution for Step 6. The colors indicate the x displacement, and the deformation is exaggerated by a factor of 1000." width="600px"/>
+<img src="figs/step06-solution.*" alt="Solution for Step 6 at t=40 yr. The colors indicate the x displacement, and the deformation is exaggerated by a factor of 1000." width="600px"/>
 
-Solution for Step 6.
+Solution for Step 6 at t=40 yr.
 The colors of the shaded surface indicate the x displacement, and the deformation is exaggerated by a factor of 1000.
 The undeformed configuration is show by the gray wireframe.
 :::

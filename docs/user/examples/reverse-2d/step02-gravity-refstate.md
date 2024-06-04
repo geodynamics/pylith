@@ -77,13 +77,14 @@ The linear solver is not used; this is why PETSc reports an unused option at the
 
 ## Visualizing the results
 
-In {numref}`fig:example:reverse:2d:step02:solution` we use the `pylith_viz` utility to visualize the displacement field.
+In {numref}`fig:example:reverse:2d:step02:solution` and {numref}`fig:example:reverse:2d:step02:stress` we use the `pylith_viz` utility to visualize the simulation results.
 
 ```{code-block} console
 ---
 caption: Visualize PyLith output using `pylith_viz`.
 ---
-pylith_viz --filename=output/step02_gravity_refstate-domain.h5 warp_grid --exaggeration=5
+pylith_viz --filenames=output/step02_gravity_refstate-domain.h5 warp_grid --exaggeration=5
+pylith_viz --filenames=output/step02_gravity_refstate-crust.h5,output/step02_gravity_refstate-slab.h5,output/step02_gravity_refstate-wedge.h5 warp_grid --field=cauchy_stress --component=xy --exaggeration=5
 ```
 
 :::{figure-md} fig:example:reverse:2d:step02:solution
@@ -92,4 +93,13 @@ pylith_viz --filename=output/step02_gravity_refstate-domain.h5 warp_grid --exagg
 Solution for Step 2.
 The colors of the shaded surface indicate the magnitude of the displacement, which is zero.
 The undeformed configuration is show by the gray wireframe.
+:::
+
+:::{figure-md} fig:example:reverse:2d:step02:stress
+<img src="figs/step02-stress.*" alt="Cauchy stress tensor component xy for Step 2. The colors indicate the stress tensor component, and the deformation is exaggerated by a factor of 5." width="600px"/>
+
+Cauchy stress tensor component xy for Step 2.
+The colors of the shaded surface indicate the xy component of the Cauchy stress tensor, and the deformation is exaggerated by a factor of 5.
+The undeformed configuration is show by the gray wireframe.
+The shear stress is zero.
 :::

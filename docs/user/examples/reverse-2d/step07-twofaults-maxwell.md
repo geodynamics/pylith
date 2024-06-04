@@ -7,8 +7,7 @@
 ## Simulation parameters
 
 In this example we replace the linear, isotropic elastic bulk rheology in the slab with a linear, isotropic Maxwell viscoelastic rheology.
-We also switch from a static simulation to a quasistatic simulation to compute the time-dependent relaxation in the slab.
-We use the same boundary conditions as in Step 6.
+We use the same boundary conditions as in Step 6 but reduce the time step to resolve the viscoelastic relaxation.
 The parameters specific to this example are in `step07_twofaults_maxwell.cfg`.
 
 We use a very short relaxation time of 20 years, so we run the simulation for 100 years with a time step of 4 years.

@@ -93,7 +93,7 @@ def cli(plotter, data, args):
 
 def add_args(parser):
     parser.add_argument("--field", action="store", help="Field for shading. Currently, must be a vertex field.", dest="field_name", default="displacement")
-    parser.add_argument("--component", action="store", help="Component of field for shading.", dest="component", default="magnitude", choices=("x", "y", "z", "magnitude"))
+    parser.add_argument("--component", action="store", help="Component of field for shading.", dest="component", default="magnitude", choices=core.Field.COMPONENT.keys())
     parser.add_argument("--exaggeration", action="store", help="Exaggeration factor for displacement.", dest="exaggeration", default=1000.0, type=float)
     parser.add_argument("--hide-outline", action="store_false", help="Hide outline of undeformed domain.", dest="show_outline")
     parser.add_argument("--hide-edges", action="store_false", help="Hide cell edges of deformed domain.", dest="show_edges")

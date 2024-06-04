@@ -75,9 +75,10 @@ class App:
     def _update_time(self, t_index):
         times = self.data[0].time
         self.t_index = max(0, min(t_index, len(times)-1))
-        self.figure.update_time(t_index=self.t_index)
+        # Update time label _before_ updating figure to ensure updated label is rendered.
         t_label = self._get_time_label(times[self.t_index])
         self.timestamp_widget.set_text("upper_left", t_label)
+        self.figure.update_time(t_index=self.t_index)
 
     def _add_keybindings(self):
         def increment_time():
