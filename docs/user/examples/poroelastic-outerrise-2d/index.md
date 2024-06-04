@@ -34,7 +34,7 @@ We refer to the domain boundaries using the names shown in the diagram.
 meshing-gmsh.md
 common-information.md
 step01-no-faults-no-flexure.md
-step02-no-faults-with-flexure.md
-step03-faults-with-flexure.md
+step02-no-faults-flexure.md
+step03-faults-flexure.md
 exercises.md
 :::
