@@ -4,6 +4,16 @@
 ```{include} step01a_slip-synopsis.md
 ```
 
+This example involves a static simulation that solves for the deformation from prescribed coseismic slip on the fault.
+{numref}`fig:example:strikeslip:2d:step01:diagram` shows the boundary conditions on the domain.
+
+:::{figure-md} fig:example:strikeslip:2d:step01:diagram
+<img src="figs/step01-diagram.*" alt="" scale="75%">
+
+Boundary conditions for static coseismic slip.
+We set the x and y displacement to zero on the +x and -x boundaries and prescribe 2 meters of right-lateral slip.
+:::
+
 ## Step 1a: Coarse Mesh
 
 :::{note}
@@ -14,16 +24,7 @@ We start with a coarse resolution mesh and increase the resolution of the simula
 
 ### Simulation parameters
 
-This example involves a static simulation that solves for the deformation from prescribed coseismic slip on the fault.
-{numref}`fig:example:strikeslip:2d:step01:diagram` shows the boundary conditions on the domain.
 The parameters specific to this example are in `step01a_slip.cfg`.
-
-:::{figure-md} fig:example:strikeslip:2d:step01:diagram
-<img src="figs/step01-diagram.*" alt="" scale="75%">
-
-Boundary conditions for static coseismic slip.
-We set the x and y displacement to zero on the +x and -x boundaries and prescribe 2 meters of right-lateral slip.
-:::
 
 ```{code-block} cfg
 ---
@@ -377,3 +378,11 @@ Output with a basis order of 1 shows much better resolution of the shear stress 
 We focus on the displacement field in the subsequent steps in the example, which has sufficient accuracy with a basis order of 1 if we use uniform refinement.
 Consequently, in the subsequent steps we adopt the uniform refinement parameters that we used in Step 1b.
 :::
+
+## Key Points
+
+1. We can generate a mesh at coarse resolution that captures the geometry and use uniform refinement and high order discretizations of the solution subfields to achieve sufficient resolution.
+2. Using uniform mesh refinement in PyLith requires only two parameter settings: enabling uniform refinement by setting the mesh generator `refiner` facility to `pylith.topology.RefineUniform` and setting the number of levels of refinement.
+3. Using higher order discretizations of the solution subfields requires adjusting more parameters that uniform refinement. We adjust the default quadrature order, basis order of the solution fields, and basis order of relevant output fields.
+4. Because uniform mesh refinement requires only a couple of additional parameters, we recommend first using uniform refinement to assess the sensitivity of the results to the discretization size before increasing the basis order of the solution subfields. However, if you know your results are sensitive to the stress field, then we recommend first increasing the basis order.
+5. In some cases, you may find that uniform refinement and higher order discretizations indicate that some portions of the mesh need higher resolution that others, and you might need to adjust the spatial variation of the discretization size in the initial coarse mesh.

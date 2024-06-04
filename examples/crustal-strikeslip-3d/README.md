@@ -31,8 +31,8 @@ to understand the mesh generation process.
 ## Step 1: Coseismic slip simulation
 
 This simulation involves uniform coseismic slip on the three faults. We provide
-parameter files for finite-element meshes generated for both Gmsh (`step01_slip.cfg`)
-and Cubit (`step01_slip_cubit.cfg`).
+parameter files for finite-element meshes generated with Gmsh (`step01_slip.cfg`)
+or Cubit (`step01_slip_cubit.cfg`).
 
 To run the example:
 
@@ -42,4 +42,16 @@ pylith step01_slip.cfg
 
 # Cubit
 pylith step01_slip_cubit.cfg
+```
+
+## Step 2: Static Spatially Variable Coseismic Slip
+
+This simulation involves spatially variable coseismic slip on the three faults. We provide
+parameter files for the finite-element mesh generated with Gmsh (`step02_varslip.cfg`).
+
+To run the example:
+
+```bash
+# Gmsh
+pylith step02_varslip.cfg
 ```

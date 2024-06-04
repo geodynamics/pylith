@@ -316,11 +316,11 @@ dist_noinst_DATA = \
 	user/examples/poroelastic-outerrise-2d/meshing-gmsh.md \
 	user/examples/poroelastic-outerrise-2d/common-information.md \
 	user/examples/poroelastic-outerrise-2d/step01-no-faults-no-flexure.md \
-	user/examples/poroelastic-outerrise-2d/step01-no-faults-no-flexure-synopsis.md \
-	user/examples/poroelastic-outerrise-2d/step02-no-faults-with-flexure.md \
-	user/examples/poroelastic-outerrise-2d/step02-no-faults-with-flexure-synopsis.md \
-	user/examples/poroelastic-outerrise-2d/step03-faults-with-flexure.md \
-	user/examples/poroelastic-outerrise-2d/step03-faults-with-flexure-synopsis.md \
+	user/examples/poroelastic-outerrise-2d/step01_no_faults_no_flexure-synopsis.md \
+	user/examples/poroelastic-outerrise-2d/step02-no-faults-flexure.md \
+	user/examples/poroelastic-outerrise-2d/step02_no_faults_flexure-synopsis.md \
+	user/examples/poroelastic-outerrise-2d/step03-faults-flexure.md \
+	user/examples/poroelastic-outerrise-2d/step03_faults_flexure-synopsis.md \
 	user/examples/poroelastic-outerrise-2d/exercises.md \
 	user/examples/poroelastic-outerrise-2d/figs/diagrams.tex \
 	user/examples/poroelastic-outerrise-2d/figs/geometry.svg \

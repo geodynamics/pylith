@@ -1,6 +1,6 @@
 # Step 3: Faults with flexure
 
-```{include} step03-faults-with-flexure-synopsis.md
+```{include} step03_faults_flexure-synopsis.md
 ```
 
 ## Simulation parameters
@@ -11,7 +11,7 @@ The lithosphere is subject to deformation, over 300 kyr the slab bends to simula
 A fluid pressure is applied to the top boundary that is equivalent to the pressure exerted on the seafloor by the water column. This simulates what the hydration state of the oceanic lithosphere as it is about to enter a convergent margin with the addition of enhanced permeability within faults.
 
 {numref}`fig:example:poroelastic:outerrise:2d:step03:diagram` shows the boundary conditions on the domain.
-The parameters specific to this example are in `step03-faults-with-flexure.cfg`.
+The parameters specific to this example are in `step03_faults_flexure.cfg`.
 
 :::{figure-md} fig:example:poroelastic:outerrise:2d:step03:diagram
 <img src="figs/step03-diagram.*" alt="" width="75%">
@@ -51,7 +51,7 @@ db_auxiliary_field.filename = enhanced_faultzone_permeability.spatialdb
 ---
 caption: Run Step 3 simulation
 ---
-$ pylith step03-faults-with-flexure.cfg
+$ pylith step03_faults_flexure.cfg
 
  >> /software/pylith-debug/lib/python3.11/site-packages/pylith/apps/PyLithApp.py:77:main
  -- pylithapp(info)
@@ -102,7 +102,7 @@ In {numref}`fig:example:poroelastic:outerrise:2d:step03:solution` we use the `py
 ---
 caption: Visualize PyLith output using `pylith_viz`.
 ---
-pylith_viz --filenames=output/step03-faults-flexure-slab.h5 warp_grid --field=porosity --exaggeration=1 --hide-edges
+pylith_viz --filenames=output/step03_faults_flexure-slab.h5 warp_grid --field=porosity --exaggeration=1 --hide-edges
 ```
 
 :::{figure-md} fig:example:poroelastic:outerrise:2d:step03:solution

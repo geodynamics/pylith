@@ -22,11 +22,15 @@ We solve the static elasticity equation with gravitational body forces,
 
 ## Step 1a: Coarse Mesh
 
-We use the mesh generated with Gmsh which is relatively coarse but captures the geometry.
-The parameters specific to this example are in `step01a_gravity.cfg`.
+:::{note}
+New in v4.1.0.
+
+We start with a coarse resolution mesh that captures the geometry and increase the resolution of the simulation by using uniform refinement or increasing the basis order of the solution fields.
+:::
 
 ### Simulation parameters
 
+The parameters specific to this example are in `step01a_gravity.cfg`.
 In 2D with gravitational body forces acting in the -y direction, we need to set the direction.
 
 ```{code-block} cfg
@@ -312,4 +316,4 @@ Increasing the basis order reduces the maximum shear stress by about 10 orders o
 4. With the coarse mesh, the shear stress is close to 10 MPa throughout the mesh.
 5. Refining the mesh decreases the magnitude shear stress by about a factor of 2.
 6. Using a basis order of 2 for the solution subfields reduces the magnitude of the shear stress by nearly 10 orders of magnitude.
-7. When resolving the stress field components is important, you will likely want to use a basis ordre of 2 for the displacement solution subfield.
+7. When resolving the stress field components is important, you will likely want to use a basis order of 2 for the displacement solution subfield.

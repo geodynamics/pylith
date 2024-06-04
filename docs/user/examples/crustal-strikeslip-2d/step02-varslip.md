@@ -8,7 +8,7 @@
 
 This example involves a static simulation that solves for the deformation from prescribed spatially variable coseismic slip on each of the faults.
 {numref}`fig:example:crustal:strikeslip:2d:step02:diagram` shows the boundary conditions on the domain.
-The parameters specific to this example are in `step02_slip.cfg`.
+The parameters specific to this example are in `step02_varslip.cfg`.
 
 :::{figure-md} fig:example:crustal:strikeslip:2d:step02:diagram
 <img src="figs/step02-diagram.*" alt="" scale="75%">
@@ -18,7 +18,7 @@ On the boundary of the domain, we set the displacement component that is perpend
 We prescribe piecewise linear variations in slip along strike on each of the faults.
 :::
 
-We prescribe piecewise linear variations in slip along strike on each of the faults using `SimpleDB` spatial databases
+We prescribe piecewise linear variations in slip along strike on each of the faults using `SimpleDB` spatial databases.
 The spatial databases contain coordinates of points in geographic coordinates.
 PyLith will transform each the coordinates of point on the fault to the geographic coordinates and interpolate the values in the spatial database to the point on the fault.
 

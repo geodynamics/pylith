@@ -37,8 +37,7 @@ dist_noinst_DATA = \
 	mesh_tri.msh \
 	pylithapp.cfg \
 	step01_gravity.cfg \
-	step06_twofaults.cfg \
-	viz/plot_dispwarp.py
+	step06_twofaults.cfg
 
 
 # End of file 

@@ -1,6 +1,6 @@
 # Step 1: No faults, no flexure
 
-```{include} step01-no-faults-no-flexure-synopsis.md
+```{include} step01_no_faults_no_flexure-synopsis.md
 ```
 
 ## Simulation parameters
@@ -12,7 +12,7 @@ This simulates what the hydration state of the oceanic lithosphere is far from a
 It also serves as a comparison to see how the hydration state varies for later steps where more complexities are introduced.
 
 {numref}`fig:example:poroelastic:outerrise:2d:step01:diagram` shows the boundary conditions on the domain.
-The parameters specific to this example are in `step01-no-faults-no-flexure.cfg`.
+The parameters specific to this example are in `step01_no_faults_no_flexure.cfg`.
 
 :::{figure-md} fig:example:poroelastic:outerrise:2d:step01:diagram
 <img src="figs/step01-diagram.*" alt="" width="75%">
@@ -38,7 +38,7 @@ db_auxiliary_field.filename = no_faultzone_permeability.spatialdb
 ---
 caption: Run Step 1 simulation
 ---
-$ pylith step01-no-faults-no-flexure.cfg
+$ pylith step01_no_faults_no_flexure.cfg
 
 # The output should look something like the following.
 >> /software/pylith-debug/lib/python3.11/site-packages/pylith/apps/PyLithApp.py:77:main
@@ -96,7 +96,7 @@ In {numref}`fig:example:poroelastic:outerrise:2d:step01:solution` we use the `py
 ---
 caption: Visualize PyLith output using `pylith_viz`.
 ---
-pylith_viz --filenames=output/step01-no-faults-no-flexure-slab.h5 warp_grid --field=porosity --exaggeration=1 --hide-edges
+pylith_viz --filenames=output/step01_no_faults_no_flexure-slab.h5 warp_grid --field=porosity --exaggeration=1 --hide-edges
 ```
 
 :::{figure-md} fig:example:poroelastic:outerrise:2d:step01:solution

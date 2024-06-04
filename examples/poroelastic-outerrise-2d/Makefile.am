@@ -19,6 +19,6 @@ dist_noinst_DATA = \
 	README.md \
 	mesh_tri.msh \
 	pylithapp.cfg \
-	step01-no-faults-no-flexure.cfg \
-	step02-no-faults-flexure.cfg \
-	step03-faults-flexure.cfg
+	step01_no_faults_no_flexure.cfg \
+	step02_no_faults_flexure.cfg \
+	step03_faults_flexure.cfg

@@ -1,6 +1,6 @@
 # Step 2: No faults with flexure
 
-```{include} step02-no-faults-with-flexure-synopsis.md
+```{include} step02_no_faults_flexure-synopsis.md
 ```
 
 ## Simulation parameters
@@ -12,7 +12,7 @@ A fluid pressure is applied to the top boundary that is equivalent to the pressu
 This simulates what the hydration state of the oceanic lithosphere as it is about to enter a convergent margin.
 
 {numref}`fig:example:poroelastic:outerrise:2d:step02:diagram` shows the boundary conditions on the domain.
-The parameters specific to this example are in `step02-no-faults-with-flexure.cfg`.
+The parameters specific to this example are in `step02_no_faults_flexure.cfg`.
 
 :::{figure-md} fig:example:poroelastic:outerrise:2d:step02:diagram
 <img src="figs/step02-diagram.*" alt="" width="75%">
@@ -51,7 +51,7 @@ db_auxiliary_field.filename = no_faultzone_permeability.spatialdb
 ---
 caption: Run Step 2 simulation
 ---
-$ pylith step02-no-faults-with-flexure.cfg
+$ pylith step02_no_faults_flexure.cfg
 
  software/pylith-debug/lib/python3.11/site-packages/pylith/apps/PyLithApp.py:77:main
  -- pylithapp(info)
@@ -102,7 +102,7 @@ In {numref}`fig:example:poroelastic:outerrise:2d:step02:solution` we use the `py
 ---
 caption: Visualize PyLith output using `pylith_viz`.
 ---
-pylith_viz --filenames=output/step02-no-faults-flexure-slab.h5 warp_grid --field=porosity --exaggeration=1 --hide-edges
+pylith_viz --filenames=output/step02_no_faults_flexure-slab.h5 warp_grid --field=porosity --exaggeration=1 --hide-edges
 ```
 
 :::{figure-md} fig:example:poroelastic:outerrise:2d:step02:solution

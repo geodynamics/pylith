@@ -28,11 +28,16 @@ When PyLith inserts cohesive cells into a mesh with buried edges (in this case a
 
 ## Step 5a: Coarse Mesh
 
-We start with the mesh generated with Gmsh which is relatively coarse but captures the geometry.
-The parameters specific to this example are in `step05a_onefault.cfg`.
+:::{note}
+New in v4.1.0.
+
+We start with a coarse resolution mesh that captures the geometry and increase the resolution of the simulation by using uniform refinement or increasing the basis order of the solution fields.
+We also introduce different origin times for the coseismic slip on the two faults.
+:::
 
 ### Simulation parameters
 
+The parameters specific to this example are in `step05a_onefault.cfg`.
 We adjust the solution field to include both displacement and the Lagrange multiplier associated with the fault.
 For uniform prescribed slip we use a `UniformDB`.
 
