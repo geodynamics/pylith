@@ -19,11 +19,17 @@ dist_noinst_DATA = \
 	mesh_quad.exo \
 	mesh_tri.exo \
 	pylithapp.cfg \
-	step01_gravity.cfg \
+	step01a_gravity.cfg \
+	step01b_gravity.cfg \
+	step01c_gravity.cfg \
 	step02_gravity_refstate.cfg \
 	step03_gravity_incompressible.cfg \
-	step04_surfload.cfg \
-	step05_onefault.cfg \
+	step04a_surfload.cfg \
+	step04b_surfload.cfg \
+	step04c_surfload.cfg \
+	step05a_onefault.cfg \
+	step05b_onefault.cfg \
+	step05c_onefault.cfg \
 	step06_twofaults_elastic.cfg \
 	step07_twofaults_maxwell.cfg \
 	step08_twofaults_powerlaw.cfg \

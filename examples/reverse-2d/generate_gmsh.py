@@ -44,8 +44,8 @@ class App(GenerateMesh):
     SPLAY_DIP = 45.0
     SPLAY_OFFSET = 15.0e+3
 
-    DX_FAULT = 2.0e+3
-    DX_BIAS = 1.07
+    DX_FAULT = 5.0e+3
+    DX_BIAS = 1.1
 
     def __init__(self):
         """Constructor.
