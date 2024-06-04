@@ -47,8 +47,8 @@ class App(GenerateMesh):
     DOMAIN_X = 100.0e+3
     DOMAIN_Y = 150.0e+3
 
-    DX_FAULT = 4.0e+3
-    DX_BIAS = 1.07
+    DX_FAULT = 8.0e+3
+    DX_BIAS = 1.1
 
     def __init__(self):
         """Constructor.
@@ -58,7 +58,7 @@ class App(GenerateMesh):
         # in the PyLith parameter files.
         self.cell_choices = {
             "default": "tri",
-            "choices": ["tri"],
+            "choices": ["tri", "quad"],
             }
         self.filename = "mesh_tri.msh"
 

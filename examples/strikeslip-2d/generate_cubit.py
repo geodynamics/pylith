@@ -40,9 +40,9 @@ BLOCK_WIDTH = 100*km
 BLOCK_LENGTH = 150*km
 BLOCK_HEIGHT = 10*km
 
-DX_FAULT = 4.0*km # Discretization size on fault
-DX_BIAS = 1.07 # rate of geometric increase in cell size with distance from the fault
-cell = "tri"
+DX_FAULT = 8.0*km # Discretization size on fault
+DX_BIAS = 1.1 # rate of geometric increase in cell size with distance from the fault
+cell = "quad"
 
 # -------------------------------------------------------------------------------------------------
 # Start cubit

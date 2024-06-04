@@ -20,7 +20,9 @@ dist_noinst_DATA = \
 	mesh_tri.exo \
 	mesh_quad.exo \
 	pylithapp.cfg \
-	step01_slip.cfg \
+	step01a_slip.cfg \
+	step01b_slip.cfg \
+	step01c_slip.cfg \
 	step02_slip_velbc.cfg \
 	step03_multislip_velbc.cfg \
 	step04_varslip.cfg \

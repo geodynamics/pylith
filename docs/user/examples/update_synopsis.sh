@@ -7,6 +7,8 @@ for d in ${subdirs[*]}; do
 done
 
 # Remove superfluous metadata files (not used).
+rm strikeslip-2d/step01b_slip-synopsis.md
+rm strikeslip-2d/step01c_slip-synopsis.md
 rm strikeslip-2d/step01_slip_cubit-synopsis.md
 rm crustal-strikeslip-2d/step01_slip_cubit-synopsis.md
 rm crustal-strikeslip-3d/step01_slip_cubit-synopsis.md

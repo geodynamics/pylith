@@ -1,14 +1,22 @@
 # Step 1: Static Coseismic Slip
 
 % Metadata extracted from parameter files.
-```{include} step01_slip-synopsis.md
+```{include} step01a_slip-synopsis.md
 ```
 
-## Simulation parameters
+## Step 1a: Coarse Mesh
+
+:::{note}
+New in v4.1.0.
+
+We start with a coarse resolution mesh and increase the resolution of the simulation by using uniform refinement or increasing the basis order of the solution fields.
+:::
+
+### Simulation parameters
 
 This example involves a static simulation that solves for the deformation from prescribed coseismic slip on the fault.
 {numref}`fig:example:strikeslip:2d:step01:diagram` shows the boundary conditions on the domain.
-The parameters specific to this example are in `step01_slip.cfg`.
+The parameters specific to this example are in `step01a_slip.cfg`.
 
 :::{figure-md} fig:example:strikeslip:2d:step01:diagram
 <img src="figs/step01-diagram.*" alt="" scale="75%">
@@ -28,13 +36,13 @@ db_auxiliary_field.values = [initiation_time, final_slip_left_lateral, final_sli
 db_auxiliary_field.data = [0.0*s, -2.0*m, 0.0*m]
 ```
 
-## Running the simulation
+### Running the simulation
 
 ```{code-block} console
 ---
-caption: Run Step 1 simulation
+caption: Run Step 1a simulation
 ---
-$ pylith step01_slip.cfg
+$ pylith step01a_slip.cfg
 
 # The output should look something like the following.
  >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:77:main
@@ -130,7 +138,7 @@ At the end of the output written to the terminal, we see that the solver advance
 The linear solve converged after 21 iterations and the norm of the residual met the absolute convergence tolerance (`ksp_atol`) .
 The nonlinear solve converged in 1 iteration, which we expect because this is a linear problem, and the residual met the absolute convergence tolerance (`snes_atol`).
 
-## Visualizing the results
+### Visualizing the results
 
 The `output` directory contains the simulation output.
 Each "observer" writes its own set of files, so the solution over the domain is in one set of files, the boundary condition information is in another set of files, and the material information is in yet another set of files.
@@ -138,25 +146,33 @@ The HDF5 (`.h5`) files contain the mesh geometry and topology information along 
 The Xdmf (`.xmf`) files contain metadata that allow visualization tools like ParaView to know where to find the information in the HDF5 files.
 To visualize the data using ParaView or Visit, load the Xdmf files.
 
-In {numref}`fig:example:strikeslip:2d:step01:solution` we use the `pylith_viz` utility to visualize the y displacement field.
+In {numref}`fig:example:strikeslip:2d:step01a:solution` and {numref}`fig:example:strikeslip:2d:step01a:stress` we use the `pylith_viz` utility to visualize the simulation results.
 
 ```{code-block} console
 ---
 caption: Visualize PyLith output using `pylith_viz`.
 ---
-pylith_viz --filename=output/step01_slip-domain.h5 warp_grid --component=y
+pylith_viz --filename=output/step01a_slip-domain.h5 warp_grid --component=y
 ```
 
-:::{figure-md} fig:example:strikeslip:2d:step01:solution
-<img src="figs/step01-solution.*" alt="Solution for Step 1. The colors indicate the y displacement, and the deformation is exaggerated by a factor of 1000." width="400px"/>
+:::{figure-md} fig:example:strikeslip:2d:step01a:solution
+<img src="figs/step01a-solution.*" alt="Solution for Step 1a. The colors indicate the y displacement, and the deformation is exaggerated by a factor of 1000." width="400px"/>
 
-Solution for Step 1.
+Solution for Step 1a.
 The colors of the shaded surface indicate the y displacement, and the deformation is exaggerated by a factor of 1000.
 The undeformed configuration is show by the gray wireframe.
 The contrast in material properties across the faults causes the asymmetry in the y displacement field.
 :::
 
-## Step 1 with Cubit Mesh
+:::{figure-md} fig:example:strikeslip:2d:step01a:stress
+<img src="figs/step01a-stress.*" alt="Cauchy stress component xy for Step 1a. The colors indicate the xy stress component." width="400px"/>
+
+Cauchy stress component xy for for Step 1a.
+The colors of the shaded surface indicate the xy stress component.
+The stress field is uniform within each cell, and the coarse resolution shows a checkerboard pattern near the top and bottom boundaries, which is indicative of poor resolution of the stress field in those regions.
+:::
+
+### Step 1a with Cubit Mesh
 
 Using the Cubit mesh rather than the Gmsh mesh involves two changes:
 
@@ -226,3 +242,138 @@ $ pylith step01_slip_cubit.cfg
 ```
 
 The `MeshIOCubit` reader includes diagnostic information in the journal output related to the sizes of the nodesets and material blocks.
+
+## Step 1b: Refined Mesh
+
+The parameters specific to this example are in `step01b_slip.cfg`.
+
+### Simulation parameters
+
+In an attempt to better resolve the stress field, we use the same coarse resolution input mesh but add uniform refinement after PyLith reads in the mesh to reduce the discretization size by a factor of 2 in the.
+During uniform refinement, each triangle is subdivided into four triangles.
+
+```{code-block} cfg
+---
+caption: Uniform refinement parameters added in Step 1b.
+---
+[pylithapp.mesh_generator]
+refiner = pylith.topology.RefineUniform
+```
+
+### Running the simulation
+
+```{code-block} console
+---
+caption: Run Step 1b simulation
+---
+$ pylith step01b_slip.cfg
+
+# The output will look almost identical to Step 1a.
+```
+
+### Visualizing the results
+
+In {numref}`fig:example:strikeslip:2d:step01b:solution` and {numref}`fig:example:strikeslip:2d:step01b:stress` we use the `pylith_viz` utility to visualize the simulation results.
+
+```{code-block} console
+---
+caption: Visualize PyLith output using `pylith_viz`.
+---
+pylith_viz --filename=output/step01b_slip-domain.h5 warp_grid --component=y
+```
+
+:::{figure-md} fig:example:strikeslip:2d:step01b:solution
+<img src="figs/step01b-solution.*" alt="Solution for Step 1b. The colors indicate the y displacement, and the deformation is exaggerated by a factor of 1000." width="400px"/>
+
+Solution for Step 1b.
+The colors of the shaded surface indicate the y displacement, and the deformation is exaggerated by a factor of 1000.
+The undeformed configuration is show by the gray wireframe.
+Uniform refinement reduces the discretization size by a factor of 2.
+:::
+
+:::{figure-md} fig:example:strikeslip:2d:step01b:stress
+<img src="figs/step01b-stress.*" alt="Cauchy stress component xy for Step 1b. The colors indicate the xy stress component." width="400px"/>
+
+Cauchy stress component xy for for Step 1b.
+The colors of the shaded surface indicate the xy stress component.
+The reduced discretization size results in better resolution of the stress changes near the top and bottom boundaries.
+However, the stress field is still uniform within each cell, so the checkerboard pattern still persists, albeit with less variation between cells.
+:::
+
+## Step 1c: Higher Order Discretization
+
+The parameters specific to this example are in `step01c_slip.cfg`.
+
+### Simulation parameters
+
+Increasing the basis order of the solution subfields provides an alternative approach to increasing the resolution of the mesh using uniform refinement.
+
+The accuracy of the stress and strain will be 1 order lower than the basis order of the displacement field.
+Consequently, we use a basis order of 1 (rather than 0) for the output of the Cauchy stress and strain.
+We continue to output the solution fields using a basis order of 1, because many visualization tools do not know how to display fields with a basis order of 2.
+This means the solution subfields in the output are at a reduced resolution compared to the simulation and correspond to projection of each subfield from a basis order of 2 to a basis order of 1.
+
+```{code-block} cfg
+---
+caption: Parameters related to increasing the basis order of the solution subfields to 2.
+---
+[pylithapp.problem]
+defaults.quadrature_order = 2
+
+[pylithapp.problem.solution.subfields]
+displacement.basis_order = 2
+lagrange_multiplier_fault.basis_order = 2
+
+
+[pylithapp.problem.materials.elastic_xneg]
+derived_subfields.cauchy_strain.basis_order = 1
+derived_subfields.cauchy_stress.basis_order = 1
+
+[pylithapp.problem.materials.elastic_xpos]
+derived_subfields.cauchy_strain.basis_order = 1
+derived_subfields.cauchy_stress.basis_order = 1
+```
+
+### Running the simulation
+
+```{code-block} console
+---
+caption: Run Step 1c simulation
+---
+$ pylith step01c_slip.cfg
+
+# The output will look almost identical to Steps 1a and 1b.
+```
+
+### Visualizing the results
+
+In {numref}`fig:example:strikeslip:2d:step01c:solution` and {numref}`fig:example:strikeslip:2d:step01c:stress` we use the `pylith_viz` utility to visualize the simulation results.
+
+```{code-block} console
+---
+caption: Visualize PyLith output using `pylith_viz`.
+---
+pylith_viz --filename=output/step01c_slip-domain.h5 warp_grid --component=y
+```
+
+:::{figure-md} fig:example:strikeslip:2d:step01c:solution
+<img src="figs/step01c-solution.*" alt="Solution for Step 1a. The colors indicate the y displacement, and the deformation is exaggerated by a factor of 1000." width="400px"/>
+
+Solution for Step 1a.
+The colors of the shaded surface indicate the y displacement, and the deformation is exaggerated by a factor of 1000.
+The undeformed configuration is show by the gray wireframe.
+The displacement field shows little difference from Step 1a.
+:::
+
+:::{figure-md} fig:example:strikeslip:2d:step01c:stress
+<img src="figs/step01c-stress.*" alt="Cauchy stress component xy for Step 1a. The colors indicate the xy stress component." width="400px"/>
+
+Cauchy stress component xy for for Step 1a.
+The colors of the shaded surface indicate the xy stress component.
+Output with a basis order of 1 shows much better resolution of the shear stress near the top and bottom of the domain with no noticeable checkboard pattern.
+:::
+
+:::{note}
+We focus on the displacement field in the subsequent steps in the example, which has sufficient accuracy with a basis order of 1 if we use uniform refinement.
+Consequently, in the subsequent steps we adopt the uniform refinement parameters that we used in Step 1b.
+:::
