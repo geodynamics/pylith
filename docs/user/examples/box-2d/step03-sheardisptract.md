@@ -97,8 +97,7 @@ In {numref}`fig:example:box:2d:step03:solution` we use the `pylith_viz` utility 
 ---
 caption: Visualize PyLith output using `pylith_viz`.
 ---
-pylith_viz --filenames=output/step03_sheardisptract-domain.h5 warp_grid --component=x```
-
+pylith_viz --filenames=output/step03_sheardisptract-domain.h5 warp_grid --component=x
 ```
 
 :::{figure-md} fig:example:box:2d:step03:solution
@@ -106,6 +105,6 @@ pylith_viz --filenames=output/step03_sheardisptract-domain.h5 warp_grid --compon
 
 Solution for Step 3.
 The colors of the shaded surface indicate the x displacement, and the deformation is exaggerated by a factor of 1000.
-The undeformed configuration is show by the gray wireframe.
+The undeformed configuration is shown by the gray wireframe.
 The solution matches the one from Step 2.
 :::

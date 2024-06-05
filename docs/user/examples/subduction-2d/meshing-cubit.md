@@ -10,7 +10,7 @@ We first create points, then connect the points into curves, and finally connect
 <img src="figs/geometry-cubit.*" alt="Geometry created in Cubit for generating the mesh." width="720px"/>
 
 Geometry created in Cubit for generating the finite-element mesh.
-The names of the verties and curves match the ones we use in the Cubit journal files.
+The names of the vertices and curves match the ones we use in the Cubit journal files.
 :::
 
 ## Meshing using Python script

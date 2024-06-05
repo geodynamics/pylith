@@ -154,6 +154,7 @@ In {numref}`fig:example:strikeslip:2d:step01a:solution` and {numref}`fig:example
 caption: Visualize PyLith output using `pylith_viz`.
 ---
 pylith_viz --filename=output/step01a_slip-domain.h5 warp_grid --component=y
+pylith_viz --filename=output/step01a_slip-elastic_xneg.h5,output/step01a_slip-elastic_xpos.h5 plot_field --field=cauchy_stress --component=xy
 ```
 
 :::{figure-md} fig:example:strikeslip:2d:step01a:solution
@@ -161,7 +162,7 @@ pylith_viz --filename=output/step01a_slip-domain.h5 warp_grid --component=y
 
 Solution for Step 1a.
 The colors of the shaded surface indicate the y displacement, and the deformation is exaggerated by a factor of 1000.
-The undeformed configuration is show by the gray wireframe.
+The undeformed configuration is shown by the gray wireframe.
 The contrast in material properties across the faults causes the asymmetry in the y displacement field.
 :::
 
@@ -281,6 +282,7 @@ In {numref}`fig:example:strikeslip:2d:step01b:solution` and {numref}`fig:example
 caption: Visualize PyLith output using `pylith_viz`.
 ---
 pylith_viz --filename=output/step01b_slip-domain.h5 warp_grid --component=y
+pylith_viz --filename=output/step01b_slip-elastic_xneg.h5,output/step01b_slip-elastic_xpos.h5 plot_field --field=cauchy_stress --component=xy
 ```
 
 :::{figure-md} fig:example:strikeslip:2d:step01b:solution
@@ -288,7 +290,7 @@ pylith_viz --filename=output/step01b_slip-domain.h5 warp_grid --component=y
 
 Solution for Step 1b.
 The colors of the shaded surface indicate the y displacement, and the deformation is exaggerated by a factor of 1000.
-The undeformed configuration is show by the gray wireframe.
+The undeformed configuration is shown by the gray wireframe.
 Uniform refinement reduces the discretization size by a factor of 2.
 :::
 
@@ -355,6 +357,7 @@ In {numref}`fig:example:strikeslip:2d:step01c:solution` and {numref}`fig:example
 caption: Visualize PyLith output using `pylith_viz`.
 ---
 pylith_viz --filename=output/step01c_slip-domain.h5 warp_grid --component=y
+pylith_viz --filename=output/step01c_slip-elastic_xneg.h5,output/step01c_slip-elastic_xpos.h5 plot_field --field=cauchy_stress --component=xy
 ```
 
 :::{figure-md} fig:example:strikeslip:2d:step01c:solution
@@ -362,7 +365,7 @@ pylith_viz --filename=output/step01c_slip-domain.h5 warp_grid --component=y
 
 Solution for Step 1a.
 The colors of the shaded surface indicate the y displacement, and the deformation is exaggerated by a factor of 1000.
-The undeformed configuration is show by the gray wireframe.
+The undeformed configuration is shown by the gray wireframe.
 The displacement field shows little difference from Step 1a.
 :::
 

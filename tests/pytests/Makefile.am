@@ -52,6 +52,7 @@ dist_noinst_PYTHON = \
 	meshio/TestDataWriterVTK.py \
 	meshio/TestMeshIOAscii.py \
 	meshio/TestMeshIOCubit.py \
+	meshio/TestMeshIOPetsc.py \
 	meshio/TestOutputObserver.py \
 	meshio/TestOutputPhysics.py \
 	meshio/TestOutputSoln.py \

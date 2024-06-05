@@ -5,7 +5,7 @@
 ```
 
 This example focuses on loading via surface tractions on the +y boundary.
-We apply tractions normal to the boundary with a trapezoidal distribution as shown in {numref}`fig:example:reverse:2d:step04:diagram`
+We apply tractions normal to the boundary with a trapezoidal distribution as shown in {numref}`fig:example:reverse:2d:step04:diagram`.
 We use the same roller boundary conditions that we used in Steps 1-3.
 
 :::{figure-md} fig:example:reverse:2d:step04:diagram
@@ -103,7 +103,7 @@ pylith_viz --filenames=output/step04a_surfload-crust.h5,output/step04a_surfload-
 
 Solution for Step 4a.
 The colors of the shaded surface indicate the magnitude of the displacement, and the deformation is exaggerated by a factor of 500.
-The undeformed configuration is show by the gray wireframe.
+The undeformed configuration is shown by the gray wireframe.
 :::
 
 :::{figure-md} fig:example:reverse:2d:step04a:stress
@@ -111,7 +111,7 @@ The undeformed configuration is show by the gray wireframe.
 
 Cauchy stress tensor component xy for Step 4a.
 The colors of the shaded surface indicate the xy component of the Cauchy stress tensor, and the deformation is exaggerated by a factor of 500.
-The undeformed configuration is show by the gray wireframe.
+The undeformed configuration is shown by the gray wireframe.
 We observe that the coarse resolution mesh does not resolve the shear stress very well, and we have moderate jumps in the shear stress field between adjacent cells.
 :::
 
@@ -159,7 +159,7 @@ pylith_viz --filenames=output/step04b_surfload-crust.h5,output/step04b_surfload-
 
 Solution for Step 4b.
 The colors of the shaded surface indicate the magnitude of the displacement, and the deformation is exaggerated by a factor of 500.
-The undeformed configuration is show by the gray wireframe.
+The undeformed configuration is shown by the gray wireframe.
 :::
 
 :::{figure-md} fig:example:reverse:2d:step04b:stress
@@ -167,7 +167,7 @@ The undeformed configuration is show by the gray wireframe.
 
 Cauchy stress tensor component xy for Step 4b.
 The colors of the shaded surface indicate the xy component of the Cauchy stress tensor, and the deformation is exaggerated by a factor of 500.
-The undeformed configuration is show by the gray wireframe.
+The undeformed configuration is shown by the gray wireframe.
 Refining the mesh reduces the size of the jumps in the shear stress field between adjacent cells.
 :::
 
@@ -230,7 +230,7 @@ pylith_viz --filenames=output/step04c_surfload-crust.h5,output/step04c_surfload-
 
 Solution for Step 4c.
 The colors of the shaded surface indicate the magnitude of the displacement, and the deformation is exaggerated by a factor of 500.
-The undeformed configuration is show by the gray wireframe.
+The undeformed configuration is shown by the gray wireframe.
 :::
 
 :::{figure-md} fig:example:reverse:2d:step04c:stress
@@ -238,7 +238,7 @@ The undeformed configuration is show by the gray wireframe.
 
 Cauchy stress tensor component xy for Step 4c.
 The colors of the shaded surface indicate the xy component of the Cauchy stress tensor, and the deformation is exaggerated by a factor of 500.
-The undeformed configuration is show by the gray wireframe.
+The undeformed configuration is shown by the gray wireframe.
 The higher order discretization removes the jumps in the shear stress field between adjacent cells.
 :::
 

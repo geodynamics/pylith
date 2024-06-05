@@ -160,7 +160,7 @@ pylith_viz --filenames=output/step01a_gravity-crust.h5,output/step01a_gravity-sl
 
 Solution for Step 1a.
 The colors of the shaded surface indicate the magnitude of the displacement, and the deformation is exaggerated by a factor of 5.
-The undeformed configuration is show by the gray wireframe.
+The undeformed configuration is shown by the gray wireframe.
 :::
 
 :::{figure-md} fig:example:reverse:2d:step01a:stress
@@ -168,7 +168,7 @@ The undeformed configuration is show by the gray wireframe.
 
 Cauchy stress tensor component xy for Step 1a.
 The colors of the shaded surface indicate the xy component of the Cauchy stress tensor, and the deformation is exaggerated by a factor of 5.
-The undeformed configuration is show by the gray wireframe.
+The undeformed configuration is shown by the gray wireframe.
 We expect the shear stress (xy component) to be zero.
 The checkerboard pattern shows that it is close to zero on average, but there are substantial variations.
 :::
@@ -220,7 +220,7 @@ pylith_viz --filenames=output/step01b_gravity-crust.h5,output/step01b_gravity-sl
 
 Solution for Step 1b.
 The colors of the shaded surface indicate the magnitude of the displacement, and the deformation is exaggerated by a factor of 5.
-The undeformed configuration is show by the gray wireframe.
+The undeformed configuration is shown by the gray wireframe.
 :::
 
 :::{figure-md} fig:example:reverse:2d:step01b:stress
@@ -228,7 +228,7 @@ The undeformed configuration is show by the gray wireframe.
 
 Cauchy stress tensor component xy for Step 1b.
 The colors of the shaded surface indicate the xy component of the Cauchy stress tensor, and the deformation is exaggerated by a factor of 5.
-The undeformed configuration is show by the gray wireframe.
+The undeformed configuration is shown by the gray wireframe.
 Refining the mesh reduced the maximum shear stress by about a factor of 2.
 :::
 
@@ -296,7 +296,7 @@ pylith_viz --filenames=output/step01c_gravity-crust.h5,output/step01c_gravity-sl
 
 Solution for Step 1c.
 The colors of the shaded surface indicate the magnitude of the displacement, and the deformation is exaggerated by a factor of 5.
-The undeformed configuration is show by the gray wireframe.
+The undeformed configuration is shown by the gray wireframe.
 :::
 
 :::{figure-md} fig:example:reverse:2d:step01c:stress
@@ -304,7 +304,7 @@ The undeformed configuration is show by the gray wireframe.
 
 Cauchy stress tensor component xy for Step 1c.
 The colors of the shaded surface indicate the xy component of the Cauchy stress tensor, and the deformation is exaggerated by a factor of 5.
-The undeformed configuration is show by the gray wireframe.
+The undeformed configuration is shown by the gray wireframe.
 Increasing the basis order reduces the maximum shear stress by about 10 orders of magnitude!
 :::
 

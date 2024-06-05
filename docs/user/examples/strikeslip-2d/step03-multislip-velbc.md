@@ -95,5 +95,5 @@ pylith_viz --filename=output/step03_multislip_velbc-domain.h5 warp_grid --compon
 
 Solution for Step 3 at t=190 yr.
 The colors of the shaded surface indicate the y displacement, and the deformation is exaggerated by a factor of 1000.
-The undeformed configuration is show by the gray wireframe.
+The undeformed configuration is shown by the gray wireframe.
 :::

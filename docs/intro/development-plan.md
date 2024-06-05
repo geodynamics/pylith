@@ -11,48 +11,37 @@ Because we strictly follow the [semantic versioning guidelines](https://semver.o
 This can happen if realize that we should modify the parameters to improve maintainability or prepare for future changes.
 :::
 
-## Version 4.1.0 (April 2024)
+## Version 5.0.0 (October 2024)
 
-* Finish updating `examples/subduction-3d` ![intermediate](images/intermediate.png) [40%]
 * Better preconditioners ![expert](images/expert.png) [67%]
-  * elasticity with fault [90%]
   * incompressible elasticity [5%]
-  * poroelasticity [100%]
 * Parallel mesh loading ![expert](images/expert.png) [15%]
-
-## Version 5.0.0 (June 2024)
-
-* Add 2D and 3D examples for crustal faults with complex fault geometry ![easy](images/easy.png) [50%]
-* Update some examples to illustrate how to select mesh size and use refinement and basis order.
 * Convert from SWIG to pybind11 ![intermediate](images/intermediate.png) [0%]
 * Add support for GeoModelGrids implementation of spatial databases for 3D seismic velocity models. ![intermediate](images/intermediate.png) [0%]
-* Update coordinates with solution ![intermediate](images/intermediate.png) [10%]
+* Update VTK output to use `vtu` files rather than legacy `vtk` files ![easy](images/easy.png) [0%]
+* Improve robustness of HDF5 output by opening/closing at each time step ![easy](images/easy.png)[0%]
 
 ## Version 6.0.0 (TBD)
 
 * Output of fault rupture auxiliary subfields ![intermediate](images/intermediate.png) [0%]
-* Update VTK output to use `vtu` files rather than legacy `vtk` files ![easy](images/easy.png) [0%]
 * Improve creation of auxiliary, diagnostic, and derived fields.
 * Dynamic prescribed slip with diagonal Jacobian for explicit part of IMEX formulation ![expert](images/expert.png) [75%]
-* Spontaneous rupture for quasistatic and dynamic simulations ![expert](images/expert.png) [20%]
-
+* Update to current version of Pyre ![difficult](images/difficult.png)
 * Reimplement Drucker-Prager elastoplastic bulk rheology ![intermediate](images/intermediate.png) [0%]
 
 ## Version 7.0.0 (TBD)
 
-* Improve robustness of HDF5 output by opening/closing at each time step ![easy](images/easy.png)[0%]
 * Add `examples/barwaves-2d` ![expert](images/expert.png) [15%]
-* Update to current version of Pyre ![difficult](images/difficult.png)
 * Migrate examples to Jupyter notebooks ![intermediate](images/intermediate.png)
-* More flexible specification of time-dependent boundary conditions. ![difficult](images/difficult.png) [0%]
+* Spontaneous rupture for quasistatic and dynamic simulations ![expert](images/expert.png) [20%]
 * Dirichlet boundary conditions with constraints on normal and tangential components. ![difficult](images/difficult.png) [0%]
 * Integration with libCEED for fast high order residual evaluation ![expert](images/expert.png)\
-  Contribution led by Jed Brown.
 * Add ability to output residual field during nonlinear solve for debugging ![easy](images/easy.png) [0%]
-* Elasticity with self-gravitation ![intermediate](images/intermediate.png) [0%]
 
 ## Features for Future Releases
 
+* More flexible specification of time-dependent boundary conditions. ![difficult](images/difficult.png) [0%]
+* Elasticity with self-gravitation ![intermediate](images/intermediate.png) [0%]
 * Coupling of problems with compatible meshes ![difficult](images/difficult.png) [10%]\
     Implement "injectors" for solution and state variables.
 * Reimplementation of small strain formulation for elasticity ![difficult](images/difficult.png) [20%]

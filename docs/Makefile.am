@@ -15,6 +15,7 @@ dist_noinst_DATA = \
 	_static/images/cig_logo_dots.png \
 	_static/images/cig_short_nolabel.png \
 	_static/images/cig_short_pylith.png \
+	_static/images/ORCIDiD_icon32x32.png \
 	_templates/sidebar-cig.html \
 	tikz-styles/figcolors.tex \
 	index.md \
@@ -29,6 +30,7 @@ dist_noinst_DATA = \
 	intro/preface.md \
 	intro/quickstart.md \
 	intro/release-notes.md \
+	intro/conventions.md \
 	user/appendices/analytical-solns.md \
 	user/appendices/figs/airy_stress_axial_extension.pdf \
 	user/appendices/figs/airy_stress_axial_extension.svg \
@@ -75,6 +77,7 @@ dist_noinst_DATA = \
 	user/components/bc/NeumannTimeDependent.md \
 	user/components/bc/ZeroDB.md \
 	user/components/bc/index.md \
+	user/components/faults/AuxSubfieldsFault.md \
 	user/components/faults/FaultCohesive.md \
 	user/components/faults/FaultCohesiveKin.md \
 	user/components/faults/FaultCohesiveImpulses.md \
@@ -117,6 +120,7 @@ dist_noinst_DATA = \
 	user/components/meshio/DataWriterVTK.md \
 	user/components/meshio/MeshIOAscii.md \
 	user/components/meshio/MeshIOCubit.md \
+	user/components/meshio/MeshIOPetsc.md \
 	user/components/meshio/MeshIOObj.md \
 	user/components/meshio/OutputObserver.md \
 	user/components/meshio/OutputPhysics.md \
@@ -138,6 +142,7 @@ dist_noinst_DATA = \
 	user/components/problems/ProblemDefaults.md \
 	user/components/problems/ProgressMonitor.md \
 	user/components/problems/ProgressMonitorTime.md \
+	user/components/problems/ProgressMonitorStep.md \
 	user/components/problems/SolnDisp.md \
 	user/components/problems/SolnDispLagrange.md \
 	user/components/problems/SolnDispPres.md \
@@ -158,6 +163,7 @@ dist_noinst_DATA = \
 	user/components/problems/SubfieldTraceStrainDot.md \
 	user/components/problems/SubfieldVelocity.md \
 	user/components/problems/TimeDependent.md \
+	user/components/problems/SingleProblem.md \
 	user/components/problems/index.md \
 	user/components/testing/UnitTestApp.md \
 	user/components/testing/index.md \
@@ -180,10 +186,12 @@ dist_noinst_DATA = \
 	user/components/utils/PetscManager.md \
 	user/components/utils/PropertyList.md \
 	user/components/utils/SimulationMetadata.md \
+	user/components/utils/PetscDefaults.md \
 	user/components/utils/index.md \
 	user/examples/box-2d/index.md \
 	user/examples/box-2d/common-information.md \
 	user/examples/box-2d/exercises.md \
+	user/examples/box-2d/meshing.md \
 	user/examples/box-2d/step01-axialdisp.md \
 	user/examples/box-2d/step01_axialdisp-synopsis.md \
 	user/examples/box-2d/step02-sheardisp.md \
@@ -229,7 +237,7 @@ dist_noinst_DATA = \
 	user/examples/box-3d/step05-sheardisptractrate.md \
 	user/examples/box-3d/step05_sheardisptractrate-synopsis.md \
 	user/examples/box-3d/figs/cubit-hex.jpg \
-	user/examples/box-3d/figs/cubit-hex.jpg \
+	user/examples/box-3d/figs/cubit-tet.jpg \
 	user/examples/box-3d/figs/diagrams.tex \
 	user/examples/box-3d/figs/generate.sh \
 	user/examples/box-3d/figs/geometry.pdf \
@@ -303,6 +311,8 @@ dist_noinst_DATA = \
 	user/examples/magma-2d/meshing-cubit.md \
 	user/examples/magma-2d/step01-inflation.md \
 	user/examples/magma-2d/step01_inflation-synopsis.md \
+	user/examples/magma-2d/step02-inflation-statevars.md \
+	user/examples/magma-2d/step02_inflation_statevars-synopsis.md \
 	user/examples/magma-2d/figs/diagrams.tex \
 	user/examples/magma-2d/figs/generate.sh \
 	user/examples/magma-2d/figs/geometry.svg \
@@ -372,20 +382,31 @@ dist_noinst_DATA = \
 	user/examples/reverse-2d/figs/step01-diagram.pdf \
 	user/examples/reverse-2d/figs/step01-diagram.svg \
 	user/examples/reverse-2d/figs/step01a-solution.jpg \
+	user/examples/reverse-2d/figs/step01a-stress.jpg \
 	user/examples/reverse-2d/figs/step01b-solution.jpg \
+	user/examples/reverse-2d/figs/step01b-stress.jpg \
 	user/examples/reverse-2d/figs/step01c-solution.jpg \
+	user/examples/reverse-2d/figs/step01c-stress.jpg \
 	user/examples/reverse-2d/figs/step02-solution.jpg \
+	user/examples/reverse-2d/figs/step02-stress.jpg \
 	user/examples/reverse-2d/figs/step03-solution.jpg \
+	user/examples/reverse-2d/figs/step03-stress.jpg \
 	user/examples/reverse-2d/figs/step04-diagram.pdf \
 	user/examples/reverse-2d/figs/step04-diagram.svg \
 	user/examples/reverse-2d/figs/step04a-solution.jpg \
+	user/examples/reverse-2d/figs/step04a-stress.jpg \
 	user/examples/reverse-2d/figs/step04b-solution.jpg \
+	user/examples/reverse-2d/figs/step04b-stress.jpg \
 	user/examples/reverse-2d/figs/step04c-solution.jpg \
+	user/examples/reverse-2d/figs/step04c-stress.jpg \
 	user/examples/reverse-2d/figs/step05-diagram.pdf \
 	user/examples/reverse-2d/figs/step05-diagram.svg \
 	user/examples/reverse-2d/figs/step05a-solution.jpg \
+	user/examples/reverse-2d/figs/step05a-stress.jpg \
 	user/examples/reverse-2d/figs/step05b-solution.jpg \
+	user/examples/reverse-2d/figs/step05b-stress.jpg \
 	user/examples/reverse-2d/figs/step05c-solution.jpg \
+	user/examples/reverse-2d/figs/step05c-stress.jpg \
 	user/examples/reverse-2d/figs/step06-diagram.pdf \
 	user/examples/reverse-2d/figs/step06-diagram.svg \
 	user/examples/reverse-2d/figs/step06-solution.jpg \
@@ -454,8 +475,11 @@ dist_noinst_DATA = \
 	user/examples/subduction-2d/meshing-cubit.md \
 	user/examples/subduction-2d/meshing-gmsh.md \
 	user/examples/subduction-2d/step01-coseismic.md \
+	user/examples/subduction-2d/step01_coseismic-synopsis.md \
 	user/examples/subduction-2d/step02-interseismic.md \
+	user/examples/subduction-2d/step02_interseismic-synopsis.md \
 	user/examples/subduction-2d/step03-eqcycle.md \
+	user/examples/subduction-2d/step03_eqcycle-synopsis.md \
 	user/examples/subduction-2d/figs/cartoon.pdf \
 	user/examples/subduction-2d/figs/cartoon.svg \
 	user/examples/subduction-2d/figs/cubit-tri.png \
@@ -481,13 +505,20 @@ dist_noinst_DATA = \
 	user/examples/subduction-3d/common-information.md \
 	user/examples/subduction-3d/meshing-cubit.md \
 	user/examples/subduction-3d/step01-axialdisp.md \
+	user/examples/subduction-3d/step01_axialdisp-synopsis.md \
 	user/examples/subduction-3d/step02-coseismic.md \
+	user/examples/subduction-3d/step02_coseismic-synopsis.md \
 	user/examples/subduction-3d/step03-interseismic.md \
+	user/examples/subduction-3d/step03_interseismic-synopsis.md \
 	user/examples/subduction-3d/step04-eqcycle.md \
+	user/examples/subduction-3d/step04_eqcycle-synopsis.md \
 	user/examples/subduction-3d/step05-spontaneous.md \
 	user/examples/subduction-3d/step06-slowslip.md \
+	user/examples/subduction-3d/step06_slowslip-synopsis.md \
 	user/examples/subduction-3d/step07-greensfns.md \
+	user/examples/subduction-3d/step07a_leftlateral-synopsis.md \
 	user/examples/subduction-3d/step08-gravity.md \
+	user/examples/subduction-3d/step08a_gravity_refstate-synopsis.md \
 	user/examples/subduction-3d/exercises.md \
 	user/examples/subduction-3d/figs/cascadia.png \
 	user/examples/subduction-3d/figs/conceptualmodel.png \
@@ -618,6 +649,7 @@ dist_noinst_DATA = \
 	user/physics/index.md \
 	user/physics/materials/elasticity.md \
 	user/physics/materials/incompressible-elasticity.md \
+	user/physics/materials/poroelasticity.md \
 	user/physics/materials/index.md \
 	user/problems/figs/hdf5layout.pdf \
 	user/problems/figs/hdf5layout.svg \
@@ -653,6 +685,7 @@ dist_noinst_DATA = \
 	developer/contributing/documentation/install.md \
 	developer/contributing/documentation/index.md \
 	developer/contributing/documentation/quickref.md \
+	developer/contributing/examples.md \
 	developer/contributing/newmaterial.md \
 	developer/contributing/workflow.md \
 	developer/contributing/codingstyle.md \
@@ -670,6 +703,7 @@ dist_noinst_DATA = \
 	developer/testing/fields.md \
 	developer/testing/index.md \
 	developer/testing/debugging-tools.md \
+	developer/testing/performance-tools.md \
 	developer/index.md \
 	developer/contributing/figs/classdiagram_bc.pdf \
 	developer/contributing/figs/classdiagram_bc.png \

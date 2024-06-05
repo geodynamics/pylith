@@ -117,5 +117,5 @@ You can move the slider or use the `p` and `n` keys to change the increment or d
 
 Solution for Step 5 at a time of 4.0 years.
 The colors of the shaded surface indicate the x displacement, and the deformation is exaggerated by a factor of 1000.
-The undeformed configuration is show by the gray wireframe.
+The undeformed configuration is shown by the gray wireframe.
 :::

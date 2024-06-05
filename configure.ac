@@ -10,7 +10,7 @@ dnl ============================================================================
 dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT([PyLith], [4.1.0dev], [https://geodynamics.org/resources/pylith])
+AC_INIT([PyLith], [4.1.0], [https://geodynamics.org/resources/pylith])
 AC_CONFIG_AUX_DIR([./aux-config])
 AC_CONFIG_HEADER([portinfo])
 AC_CONFIG_MACRO_DIR([m4])
@@ -173,7 +173,7 @@ CIT_FUNCTIONSTRING
 dnl VERSION
 CIG_PKG_GIT(PYLITH)
 AC_DEFINE_UNQUOTED([PYLITH_VERSION], ["$PACKAGE_VERSION"], [Define PyLith version])
-AC_DEFINE_UNQUOTED([PYLITH_DOI], ["10.5281/zenodo.10359667"], [Define PyLith doi])
+AC_DEFINE_UNQUOTED([PYLITH_DOI], ["10.5281/zenodo.11479383"], [Define PyLith doi])
 
 dnl ENDIANNESS
 AC_C_BIGENDIAN
@@ -276,6 +276,7 @@ AC_CONFIG_FILES([Makefile
 		examples/subduction-2d/Makefile
 		examples/subduction-3d/Makefile
 		examples/magma-2d/Makefile
+		examples/poroelastic-outerrise-2d/Makefile
 		examples/troubleshooting-2d/Makefile
 		examples/meshing-cubit/Makefile
 		examples/meshing-cubit/surface-nurbs/Makefile

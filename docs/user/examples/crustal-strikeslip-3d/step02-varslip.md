@@ -137,6 +137,6 @@ pylith_viz --filename=output/step02_varslip-domain.h5 warp_grid --component=y
 
 Solution for Step 2.
 The colors of the shaded surface indicate the y displacement, and the deformation is exaggerated by a factor of 1000.
-The undeformed configuration is show by the gray wireframe.
+The undeformed configuration is shown by the gray wireframe.
 The contrast in material properties across the faults causes the asymmetry in the y displacement field.
 :::
