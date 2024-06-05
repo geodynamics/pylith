@@ -162,7 +162,7 @@ pylith_viz --filename=output/step01a_slip-elastic_xneg.h5,output/step01a_slip-el
 
 Solution for Step 1a.
 The colors of the shaded surface indicate the y displacement, and the deformation is exaggerated by a factor of 1000.
-The undeformed configuration is show by the gray wireframe.
+The undeformed configuration is shown by the gray wireframe.
 The contrast in material properties across the faults causes the asymmetry in the y displacement field.
 :::
 
@@ -290,7 +290,7 @@ pylith_viz --filename=output/step01b_slip-elastic_xneg.h5,output/step01b_slip-el
 
 Solution for Step 1b.
 The colors of the shaded surface indicate the y displacement, and the deformation is exaggerated by a factor of 1000.
-The undeformed configuration is show by the gray wireframe.
+The undeformed configuration is shown by the gray wireframe.
 Uniform refinement reduces the discretization size by a factor of 2.
 :::
 
@@ -365,7 +365,7 @@ pylith_viz --filename=output/step01c_slip-elastic_xneg.h5,output/step01c_slip-el
 
 Solution for Step 1a.
 The colors of the shaded surface indicate the y displacement, and the deformation is exaggerated by a factor of 1000.
-The undeformed configuration is show by the gray wireframe.
+The undeformed configuration is shown by the gray wireframe.
 The displacement field shows little difference from Step 1a.
 :::
 

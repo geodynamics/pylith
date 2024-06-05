@@ -121,6 +121,6 @@ pylith_viz --filename=output/step02_slip_velbc-domain.h5 warp_grid --component=y
 
 Solution for Step 2 at t=100 yr.
 The colors of the shaded surface indicate the y displacement, and the deformation is exaggerated by a factor of 1000.
-The undeformed configuration is show by the gray wireframe.
+The undeformed configuration is shown by the gray wireframe.
 The coseismic fault slip at 100 years releases all of the accumulated strain energy.
 :::
