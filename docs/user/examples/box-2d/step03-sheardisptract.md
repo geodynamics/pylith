@@ -97,8 +97,7 @@ In {numref}`fig:example:box:2d:step03:solution` we use the `pylith_viz` utility 
 ---
 caption: Visualize PyLith output using `pylith_viz`.
 ---
-pylith_viz --filenames=output/step03_sheardisptract-domain.h5 warp_grid --component=x```
-
+pylith_viz --filenames=output/step03_sheardisptract-domain.h5 warp_grid --component=x
 ```
 
 :::{figure-md} fig:example:box:2d:step03:solution
