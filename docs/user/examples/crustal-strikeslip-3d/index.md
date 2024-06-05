@@ -21,7 +21,7 @@ The files and directories for this set of examples includes:
 ## Overview
 
 This suite of examples demonstrates using PyLith to model multiple intersecting faults embedded in a 3D georeferenced domain ({numref}`fig:example:crustal:strikeslip:3d:overview`).
-The geometry is based on the 2019 Ridgecrest earthquake sequence.
+The geometry is based on studies of the 2019 Ridgecrest earthquake sequence by {cite:t}`Uphoff:etal:2022` and {cite:t}`Nevitt:etal:2023`.
 
 :Step 1: Static uniform coseismic slip with Dirichlet (displacement) boundary conditions.
 :Step 2: Static spatially varying coseismic slip with Dirichlet (displacement) boundary conditions.
