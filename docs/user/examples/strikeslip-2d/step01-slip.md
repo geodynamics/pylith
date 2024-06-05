@@ -154,6 +154,7 @@ In {numref}`fig:example:strikeslip:2d:step01a:solution` and {numref}`fig:example
 caption: Visualize PyLith output using `pylith_viz`.
 ---
 pylith_viz --filename=output/step01a_slip-domain.h5 warp_grid --component=y
+pylith_viz --filename=output/step01a_slip-elastic_xneg.h5,output/step01a_slip-elastic_xpos.h5 plot_field --field=cauchy_stress --component=xy
 ```
 
 :::{figure-md} fig:example:strikeslip:2d:step01a:solution
@@ -281,6 +282,7 @@ In {numref}`fig:example:strikeslip:2d:step01b:solution` and {numref}`fig:example
 caption: Visualize PyLith output using `pylith_viz`.
 ---
 pylith_viz --filename=output/step01b_slip-domain.h5 warp_grid --component=y
+pylith_viz --filename=output/step01b_slip-elastic_xneg.h5,output/step01b_slip-elastic_xpos.h5 plot_field --field=cauchy_stress --component=xy
 ```
 
 :::{figure-md} fig:example:strikeslip:2d:step01b:solution
@@ -355,6 +357,7 @@ In {numref}`fig:example:strikeslip:2d:step01c:solution` and {numref}`fig:example
 caption: Visualize PyLith output using `pylith_viz`.
 ---
 pylith_viz --filename=output/step01c_slip-domain.h5 warp_grid --component=y
+pylith_viz --filename=output/step01c_slip-elastic_xneg.h5,output/step01c_slip-elastic_xpos.h5 plot_field --field=cauchy_stress --component=xy
 ```
 
 :::{figure-md} fig:example:strikeslip:2d:step01c:solution
