@@ -216,7 +216,7 @@ pylith_cfgsearch [--help] [--path SEARCHPATH] [--display DISPLAY] [--verbose] [-
 caption: Example of running `pylith_cfgsearch` in `examples/strikeslip-2d`.
 ---
 $ pylith_cfgsearch
-step01_slip.cfg v1.0.0; requires PyLith >=3.0 and <4.0
+step01_slip.cfg v1.0.0; requires PyLith >=3.0 and <5.0
     Coseismic prescribed slip with zero displacement Dirichlet boundary conditions.
     Authors: Brad Aagaard
     Keywords: example, 2D, strike slip, prescribed slip
@@ -226,7 +226,7 @@ step01_slip.cfg v1.0.0; requires PyLith >=3.0 and <4.0
         preconditioner, Schur complement preconditioner, pylith.bc.DirichletTimeDependent, spatialdata.spatialdb.UniformDB,
         pylith.meshio.OutputSolnBoundary, pylith.meshio.DataWriterHDF5, Static simulation
     pylith step01_slip.cfg
-step02_slip_velbc.cfg v1.0.0; requires PyLith >=3.0 and <4.0
+step02_slip_velbc.cfg v1.0.0; requires PyLith >=3.0 and <5.0
     Coseismic prescribed slip with velocity Dirichlet boundary conditions.
     Authors: Brad Aagaard
     Keywords: example, 2D, strike slip, prescribed slip, velocity boundary conditions
@@ -236,7 +236,7 @@ step02_slip_velbc.cfg v1.0.0; requires PyLith >=3.0 and <4.0
         preconditioner, Schur complement preconditioner, pylith.bc.DirichletTimeDependent, spatialdata.spatialdb.UniformDB,
         pylith.meshio.OutputSolnBoundary, pylith.meshio.DataWriterHDF5, Quasi-static simulation, spatialdata.spatialdb.SimpleDB
     pylith step02_slip_velbc.cfg
-step03_multislip_velbc.cfg v1.0.0; requires PyLith >=3.0 and <4.0
+step03_multislip_velbc.cfg v1.0.0; requires PyLith >=3.0 and <5.0
     Coseismic prescribed slip with multiple ruptures and velocity Dirichlet boundary conditions.
     Authors: Brad Aagaard
     Keywords: example, 2D, strike slip, prescribed slip, multiple fault ruptures, velocity boundary conditions
@@ -269,7 +269,7 @@ step03_multislip_velbc.cfg
 caption: Example of running `pylith_cfgsearch` in `examples/strikeslip-2d`, filtering search results to quasistatic simulations.
 ---
 $ pylith_cfgsearch --features="Quasi-static simulation"
-step02_slip_velbc.cfg v1.0.0; requires PyLith >=3.0 and <4.0
+step02_slip_velbc.cfg v1.0.0; requires PyLith >=3.0 and <5.0
     Coseismic prescribed slip with velocity Dirichlet boundary conditions.
     Authors: Brad Aagaard
     Keywords: example, 2D, strike slip, prescribed slip, velocity boundary conditions
@@ -279,7 +279,7 @@ step02_slip_velbc.cfg v1.0.0; requires PyLith >=3.0 and <4.0
         preconditioner, Schur complement preconditioner, pylith.bc.DirichletTimeDependent, spatialdata.spatialdb.UniformDB,
         pylith.meshio.OutputSolnBoundary, pylith.meshio.DataWriterHDF5, Quasi-static simulation, spatialdata.spatialdb.SimpleDB
     pylith step02_slip_velbc.cfg
-step03_multislip_velbc.cfg v1.0.0; requires PyLith >=3.0 and <4.0
+step03_multislip_velbc.cfg v1.0.0; requires PyLith >=3.0 and <5.0
     Coseismic prescribed slip with multiple ruptures and velocity Dirichlet boundary conditions.
     Authors: Brad Aagaard
     Keywords: example, 2D, strike slip, prescribed slip, multiple fault ruptures, velocity boundary conditions

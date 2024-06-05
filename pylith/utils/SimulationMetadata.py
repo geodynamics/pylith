@@ -39,7 +39,7 @@ class SimulationMetadata(Component):
             authors = [Brad Aagaard]
             version = 1.0.0
             arguments = [step01_axialdisp.cfg]
-            pylith_version = [>=3.0, <4.0]
+            pylith_version = [>=3.0, <5.0]
         """
     }
 
