@@ -92,7 +92,7 @@ pylith_viz --filenames=output/step02_gravity_refstate-crust.h5,output/step02_gra
 
 Solution for Step 2.
 The colors of the shaded surface indicate the magnitude of the displacement, which is zero.
-The undeformed configuration is show by the gray wireframe.
+The undeformed configuration is shown by the gray wireframe.
 :::
 
 :::{figure-md} fig:example:reverse:2d:step02:stress
@@ -100,6 +100,6 @@ The undeformed configuration is show by the gray wireframe.
 
 Cauchy stress tensor component xy for Step 2.
 The colors of the shaded surface indicate the xy component of the Cauchy stress tensor, and the deformation is exaggerated by a factor of 5.
-The undeformed configuration is show by the gray wireframe.
+The undeformed configuration is shown by the gray wireframe.
 The shear stress is zero.
 :::

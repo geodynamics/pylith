@@ -137,7 +137,7 @@ In {numref}`fig:example:reverse:2d:step06:solution` we use the `pylith_viz` util
 ---
 caption: Visualize PyLith output using `pylith_viz`.
 ---
-pylith_viz --filename=output/step05_onefault-domain.h5 warp_grid --component=x
+pylith_viz --filenames=output/step06_twofaults_elastic-domain.h5 warp_grid --component=x
 ```
 
 :::{figure-md} fig:example:reverse:2d:step06:solution
@@ -145,5 +145,5 @@ pylith_viz --filename=output/step05_onefault-domain.h5 warp_grid --component=x
 
 Solution for Step 6 at t=40 yr.
 The colors of the shaded surface indicate the x displacement, and the deformation is exaggerated by a factor of 1000.
-The undeformed configuration is show by the gray wireframe.
+The undeformed configuration is shown by the gray wireframe.
 :::

@@ -94,6 +94,6 @@ pylith_viz --filename=output/step07_twofaults_maxwell-domain.h5 warp_grid --comp
 
 Solution for Step 7 at t=100 years.
 The colors of the shaded surface indicate the x displacement, and the deformation is exaggerated by a factor of 1000.
-The undeformed configuration is show by the gray wireframe.
+The undeformed configuration is shown by the gray wireframe.
 Viscoelastic relaxation results in significant deformation in the `slab` material.
 :::

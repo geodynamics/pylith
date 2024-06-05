@@ -57,7 +57,7 @@ We provide the parameters for `pylith_powerlaw_gendb` in `powerlaw_gendb.cfg`, w
 ---
 caption: Generate spatial database with power-law viscoelastic material properties.
 ---
-$ pylith_powerlaw_gendb powerlaw_gendb.cfg
+pylith_powerlaw_gendb powerlaw_gendb.cfg
 ```
 
 ## Running the simulation
@@ -116,6 +116,6 @@ pylith_viz --filename=output/step08_twofaults_powerlaw-domain.h5 warp_grid --com
 
 Solution for Step 8 at t=100 years.
 The colors of the shaded surface indicate the x displacement, and the deformation is exaggerated by a factor of 1000.
-The undeformed configuration is show by the gray wireframe.
+The undeformed configuration is shown by the gray wireframe.
 Our parameters for the power-law bulk rheology result in much less viscoelastic relaxation in this case compared to Step 7.
 :::

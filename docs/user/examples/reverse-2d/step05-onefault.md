@@ -119,7 +119,7 @@ pylith_viz --filenames=output/step05a_onefault-crust.h5,output/step05a_onefault-
 
 Solution for Step 5a.
 The colors of the shaded surface indicate the x displacement, and the deformation is exaggerated by a factor of 3000.
-The undeformed configuration is show by the gray wireframe.
+The undeformed configuration is shown by the gray wireframe.
 :::
 
 :::{figure-md} fig:example:reverse:2d:step05a:stress
@@ -127,7 +127,7 @@ The undeformed configuration is show by the gray wireframe.
 
 Cauchy stress tensor component xy for Step 5a.
 The colors of the shaded surface indicate the xy component of the Cauchy stress tensor, and the deformation is exaggerated by a factor of 3000.
-The undeformed configuration is show by the gray wireframe.
+The undeformed configuration is shown by the gray wireframe.
 With uniform slip on the fault, we generate a stress concentration at the buried end of the fault that is confined to just one or two cells.
 Thus, the stress concentration is not well resolved.
 :::
@@ -178,7 +178,7 @@ pylith_viz --filenames=output/step05b_onefault-crust.h5,output/step05b_onefault-
 
 Solution for Step 5b.
 The colors of the shaded surface indicate the x displacement, and the deformation is exaggerated by a factor of 3000.
-The undeformed configuration is show by the gray wireframe.
+The undeformed configuration is shown by the gray wireframe.
 :::
 
 :::{figure-md} fig:example:reverse:2d:step05b:stress
@@ -186,7 +186,7 @@ The undeformed configuration is show by the gray wireframe.
 
 Cauchy stress tensor component xy for Step 5b.
 The colors of the shaded surface indicate the xy component of the Cauchy stress tensor, and the deformation is exaggerated by a factor of 3000.
-The undeformed configuration is show by the gray wireframe.
+The undeformed configuration is shown by the gray wireframe.
 Refining the mesh shows the stress concentration at the buried end of the fault is smaller in spatial extent than we observed in Step 5a.
 We need a higher resolution mesh to resolve the stress concentration.
 :::
@@ -253,7 +253,7 @@ pylith_viz --filenames=output/step05c_onefault-crust.h5,output/step05c_onefault-
 
 Solution for Step 5c.
 The colors of the shaded surface indicate the x displacement, and the deformation is exaggerated by a factor of 3000.
-The undeformed configuration is show by the gray wireframe.
+The undeformed configuration is shown by the gray wireframe.
 :::
 
 :::{figure-md} fig:example:reverse:2d:step05c:stress
@@ -261,7 +261,7 @@ The undeformed configuration is show by the gray wireframe.
 
 Cauchy stress tensor component xy for Step 5c.
 The colors of the shaded surface indicate the xy component of the Cauchy stress tensor, and the deformation is exaggerated by a factor of 3000.
-The undeformed configuration is show by the gray wireframe.
+The undeformed configuration is shown by the gray wireframe.
 With the higher order discretization of the solution subfields, we find better resolution of the stress concentration, which is now spread across a few cells.
 :::
 
@@ -271,4 +271,4 @@ With the higher order discretization of the solution subfields, we find better r
 2. Uniform slip generates a stress concentration at the buried end of the fault.
 3. This stress concentration is difficult to resolve with a basis order of 1 for the solution subfields, even if we refine the mesh.
 4. Using a basis order of 2 provides better resolution of the stress concentration, but it is poorly resolved without also refining the mesh.
-5. Adaptive mesh refinement (not yet available in PyLith) that refines the region just around the stress concentration would help resolve the stress concentration without substatially increasing the problem size.
+5. Adaptive mesh refinement (not yet available in PyLith) that refines the region just around the stress concentration would help resolve the stress concentration without substantially increasing the problem size.
