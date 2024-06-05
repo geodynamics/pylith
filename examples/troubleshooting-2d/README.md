@@ -12,7 +12,7 @@ boundaries, and gravitational body forces.
 
 To run the example:
 ```
-pylith step01_gravity.cfg
+pylith step01a_gravity.cfg
 ```
 
 ## Step 6: Earthquake rupture on two faults and linear isotropic linear elasticity

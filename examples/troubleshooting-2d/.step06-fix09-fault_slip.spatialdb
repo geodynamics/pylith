@@ -8,7 +8,7 @@ SimpleDB {
   num-values = 3
   value-names = final_slip_left_lateral  final_slip_opening  initiation_time
   value-units =  m  m  year
-  num-locs = 4
+  num-locs = 3
   data-dim = 1
   space-dim = 2
   cs-data = cartesian {
@@ -24,5 +24,4 @@ SimpleDB {
 // (5) slip time relative to origin time (year)
 0.0   99.0     -2.0       0.0   0.0
 0.0  -20.0     -2.0       0.0   0.0
-0.0  -30.0      0.0       0.0   0.0
-0.0  -99.0      0.0       0.0   0.0
+0.0  -25.0      0.0       0.0   0.0
