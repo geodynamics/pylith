@@ -31,6 +31,7 @@ Documentation
 
 ### Known issues
 
+* The new default preconditioner for simulations using elasticity and faults can cause convergence issues when running in parallel in which fault faces lie on the boundaries between processors. The workaround is to use the previous preconditioner provided in `share/settings/solver_fault_fieldsplit.cfg`.
 * The default PETSc options provide a computationally expensive preconditioner when solving incompressible elasticity problems. We expect to have a more optimal preconditioner in the next release.
 
 ## Contributors
