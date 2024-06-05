@@ -34,6 +34,8 @@ pylith::utils::EventLogger::~EventLogger(void) {}
 // Setup logging class.
 void
 pylith::utils::EventLogger::initialize(void) {
+    PetscErrorCode err;
+
     PYLITH_METHOD_BEGIN;
 
     if (_className == "") {
@@ -41,11 +43,14 @@ pylith::utils::EventLogger::initialize(void) {
     }
 
     _events.clear();
-    PetscErrorCode err = PetscClassIdRegister(_className.c_str(), &_classId);
-    if (err) {
-        std::ostringstream msg;
-        msg << "Could not register logging class '" << _className << "'.";
-        throw std::runtime_error(msg.str());
+    err = PetscLogClassGetClassId(_className.c_str(), &_classId);PYLITH_CHECK_ERROR(err);
+    if (_classId < 0) {
+        err = PetscClassIdRegister(_className.c_str(), &_classId);
+        if (err) {
+            std::ostringstream msg;
+            msg << "Could not register logging class '" << _className << "'.";
+            throw std::runtime_error(msg.str());
+        } // if
     } // if
     assert(_classId);
 
