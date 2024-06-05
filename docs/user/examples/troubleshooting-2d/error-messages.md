@@ -8,18 +8,20 @@ Summary of error messages addressed in this set of examples.
 ---
 caption: See [Step 1, Error 1](step01-error01.md).
 ---
-ValueError: No constrained degrees of freedom found for time-dependent Dirichlet boundary condition 'bc_xpos'.
-'constrained_dof' must be a zero-based integer array (0=x, 1=y, 2=z).
+ >> {default}::
+ -- pyre.inventory(error)
+ -- timedependent.problem_defaults.name <- ''
+ -- Missing required property 'name' in default options for problem.
 ```
 
 ```{code-block} bash
 ---
 caption: See [Step 1, Error 2](step01-error02.md).
 ---
->> {default}::
--- pyre.inventory(error)
--- timedependent.problem_defaults.name <- ''
--- Missing required property 'name' in default options for problem.
+ >> {default}::
+ -- pyre.inventory(error)
+ -- timedependent.bc.dirichlettimedependent.label <- ''
+ -- Label for boundary condition group/nodeset/pset in mesh not specified.
 ```
 
 ```{code-block} bash
@@ -36,7 +38,7 @@ caption: See [Step 1, Error 3](step01-error03.md).
 ---
 caption: See [Step 1, Error 4](step01-error04.md).
 ---
-RuntimeError: Material label_value '3' for cell '3009' does not match the label_value of any materials or interfaces.
+RuntimeError: Material label_value '3' for cell '609' does not match the label_value of any materials or interfaces.
 ```
 
 ```{code-block}
@@ -65,9 +67,6 @@ caption: See [Step 6, Error 3](step06-error03.md).
 ---
 RuntimeError: Cannot find 'lagrange_multiplier_fault' subfield in solution field for fault implementation in component 'splay'.
 ```
-
-
-
 
 ## Runtime Errors
 
@@ -101,7 +100,7 @@ RuntimeError: Could not find value 'final_slip_opening' in spatial database 'Fau
 ---
 caption: See [Step 6, Error 6](step06-error06.md).
 ---
-[0]PETSC ERROR: Zero pivot in LU factorization: https://petsc.org/release/faq/#zeropivot
+Nonlinear solve did not converge due to DIVERGED_MAX_IT iterations 1
 ```
 
 ```{code-block} bash
@@ -115,5 +114,5 @@ caption: See [Step 6, Error 7](step06-error07.md).
 ---
 caption: See [Step 6, Error 9](step06-error09.md).
 ---
-[0]PETSC ERROR: Could not find values for initiation_time at (  -24329  -29046.3) in spatial database 'Fault rupture for main fault'.
+[0]PETSC ERROR: Could not find values for initiation_time at (  -21860.3  -27621) in spatial database 'Fault rupture for main fault'.
 ```
