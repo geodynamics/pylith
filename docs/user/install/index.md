@@ -148,7 +148,7 @@ To run the example discussed in Section {ref}`sec-examples-box-2d`:
 
 ```{code-block} bash
 $ cd examples/box-2d
-$ pylilth step01_axialdisp.cfg
+$ pylith step01_axialdisp.cfg
 # A bunch of stuff will be written to stdout. The last few lines should be:
  >> .../lib/python3.9/site-packages/pylith/problems/Problem.py:201:finalize
  -- timedependent(info)
