@@ -15,6 +15,7 @@ SOURCE CODE
   * Reserve DOI on Zenodo and update version and DOI in code.
   * Update citation information (year) in preface.tex.
   * Add changes to CHANGES.
+    * List contributors https://github.com/geodynamics/pylith/graphs/contributors?from=2024-01-01&to=2024-06-05&type=c
   * Add release notes in release-notes.
 
 DISTRIBUTIONS
