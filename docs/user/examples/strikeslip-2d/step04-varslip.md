@@ -24,6 +24,29 @@ Boundary conditions for static coseismic slip.
 We set the x and y displacement to zero on the +x and -x boundaries and prescribe left-lateral slip that varies along strike.
 :::
 
+For greater accuracy in modeling the spatial variation in slip, we use a basis order of 2 for the solution subfields.
+
+```{code-block} cfg
+---
+caption: Parameters related to increasing the basis order of the solution subfields to 2.
+---
+[pylithapp.problem]
+defaults.quadrature_order = 2
+
+[pylithapp.problem.solution.subfields]
+displacement.basis_order = 2
+lagrange_multiplier_fault.basis_order = 2
+
+
+[pylithapp.problem.materials.elastic_xneg]
+derived_subfields.cauchy_strain.basis_order = 1
+derived_subfields.cauchy_stress.basis_order = 1
+
+[pylithapp.problem.materials.elastic_xpos]
+derived_subfields.cauchy_strain.basis_order = 1
+derived_subfields.cauchy_stress.basis_order = 1
+```
+
 We also add output of the solution at fake GNSS stations given in the file `gnss_stations.txt`.
 You can use the Python script `generate_gnssstations.py` to generate a different random set of stations; the default parameters will generate the provided `gnss_stations.txt` file.
 
@@ -32,6 +55,20 @@ You can use the Python script `generate_gnssstations.py` to generate a different
 
 Location of randomly distributed fake GNSS stations in `gnss_stations.txt`.
 :::
+
+```{code-block} cfg
+---
+caption: Solution and output parameters for Step 4. We add output of the solution at fake GNSS stations.
+---
+[pylithapp.problem]
+solution_observers = [domain, top_boundary, bot_boundary, gnss_stations]
+solution_observers.gnss_stations = pylith.meshio.OutputSolnPoints
+
+[pylithapp.problem.solution_observers.gnss_stations]
+label = gnss_stations
+reader.filename = gnss_stations.txt
+reader.coordsys.space_dim = 2
+```
 
 ```{code-block} cfg
 ---
@@ -96,10 +133,10 @@ $ pylith step04_varslip.cfg
  -- timedependent(info)
  -- Solving problem.
 0 TS dt 0.01 time 0.
-    0 SNES Function norm 3.786132692381e-03
-    Linear solve converged due to CONVERGED_ATOL iterations 61
-    1 SNES Function norm 2.070681594908e-12
-  Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
+    0 SNES Function norm 5.220560316093e-03
+      Linear solve converged due to CONVERGED_ATOL iterations 27
+    1 SNES Function norm 1.523809186100e-12
+    Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
 1 TS dt 0.01 time 0.01
  >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:199:finalize
  -- timedependent(info)
@@ -108,7 +145,7 @@ $ pylith step04_varslip.cfg
 
 The beginning of the output written to the terminal matches that in our previous simulations.
 At the end of the output written to the terminal, we see that the solver advanced the solution one time step (static simulation).
-The linear solve converged after 61 iterations and the norm of the residual met the absolute convergence tolerance (`ksp_atol`).
+The linear solve converged after 27 iterations and the norm of the residual met the absolute convergence tolerance (`ksp_atol`).
 The nonlinear solve converged in 1 iteration, which we expect because this is a linear problem, and the residual met the absolute convergence tolerance (`snes_atol`).
 
 ## Visualizing the results
