@@ -566,6 +566,7 @@ dist_noinst_DATA = \
 	user/examples/troubleshooting-2d/step06-error07.md \
 	user/examples/troubleshooting-2d/step06-error08.md \
 	user/examples/troubleshooting-2d/step06-error09.md \
+	user/examples/troubleshooting-2d/step06-error10.md \
 	user/examples/troubleshooting-2d/figs/step01-diagram.pdf \
 	user/examples/troubleshooting-2d/figs/step01-diagram.svg \
 	user/examples/troubleshooting-2d/figs/step06-diagram.pdf \

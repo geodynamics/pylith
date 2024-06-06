@@ -8,13 +8,13 @@ caption: Error message 3 when running Step 1.
 linenos: True
 emphasize-lines: 3-6
 ---
-$ pylith step01_gravity.cfg
+$ pylith step01a_gravity.cfg
 
- >> ./pylithapp.cfg:133:
+ >> ./pylithapp.cfg:118:
  -- pyre.inventory(error)
  -- pylithapp.timedependent.materials.elasticity.auxiliary_subfields.bulk_modulus.basis_order <- '0'
  -- unknown component 'pylithapp.timedependent.materials.elasticity.auxiliary_subfields.bulk_modulus'
- >> ./pylithapp.cfg:134:
+ >> ./pylithapp.cfg:119:
  -- pyre.inventory(error)
  -- pylithapp.timedependent.materials.elasticity.auxiliary_subfields.shear_modulus.basis_order <- '0'
  -- unknown component 'pylithapp.timedependent.materials.elasticity.auxiliary_subfields.shear_modulus'

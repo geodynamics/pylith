@@ -14,7 +14,7 @@ $ pylith step06_twofaults.cfg
  -- pyre.inventory(error)
  -- timedependent.interfaces.faultcohesivekin.singlerupture.kinsrcstep.simpledb.simpleioascii.filename <- ''
  -- Filename for spatial database not specified.
- >> step06_twofaults.cfg:68:
+ >> step06_twofaults.cfg:85:
  -- pyre.inventory(error)
  -- timedependent.interfaces.faultcohesivekin.singlerupture.kinsrcstep.simpledb.filename <- 'fault_slip.spatialdb'
  -- unrecognized property 'timedependent.interfaces.faultcohesivekin.singlerupture.kinsrcstep.simpledb.filename'

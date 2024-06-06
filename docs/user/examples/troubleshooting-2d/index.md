@@ -2,7 +2,7 @@
 # Troubleshooting (2D)
 
 This set of examples demonstrations how to troubleshoot PyLith simulations.
-We consider Steps 1 and 6 from `examples/reverse-2d` and introduce errors into the parameter files and spatial databases.
+We consider Steps 1a and 6 from `examples/reverse-2d` and introduce errors into the parameter files and spatial databases.
 We illustrate how to dissect a variety of error messages, strategies for diagnosing errors, and the resolution.
 
 The files are in the directory `examples/troubleshooting-2d`.
@@ -34,4 +34,5 @@ step06-error06.md
 step06-error07.md
 step06-error08.md
 step06-error09.md
+step06-error10.md
 :::

@@ -11,17 +11,17 @@
 dist_noinst_DATA = \
 	.correct-fault_slip.spatialdb \
 	.correct-pylithapp.cfg \
-	.correct-step01_gravity.cfg \
+	.correct-step01a_gravity.cfg \
 	.correct-step06_twofaults.cfg \
 	.err-fault_slip.spatialdb \
 	.err-pylithapp.cfg \
-	.err-step01_gravity.cfg \
+	.err-step01a_gravity.cfg \
 	.err-step06_twofaults.cfg \
-	.step01-fix01-pylithapp.cfg \
-	.step01-fix02-step01_gravity.cfg \
-	.step01-fix03-pylithapp.cfg \
-	.step01-fix04-pylithapp.cfg \
-	.step01-fix05-step01_gravity.cfg \
+	.step01a-fix01-step01a_gravity.cfg \
+	.step01a-fix02-pylithapp.cfg \
+	.step01a-fix03-pylithapp.cfg \
+	.step01a-fix04-pylithapp.cfg \
+	.step01a-fix05-step01a_gravity.cfg \
 	.step06-fix01-step06_twofaults.cfg \
 	.step06-fix02-step06_twofaults.cfg \
 	.step06-fix03-step06_twofaults.cfg \
@@ -31,12 +31,13 @@ dist_noinst_DATA = \
 	.step06-fix07-step06_twofaults.cfg \
 	.step06-fix08-step06_twofaults.cfg \
 	.step06-fix09-fault_slip.spatialdb \
+	.step06-fix10-fault_slip.spatialdb \
 	README.md \
 	fault_slip.spatialdb \
 	mat_elastic.spatialdb \
 	mesh_tri.msh \
 	pylithapp.cfg \
-	step01_gravity.cfg \
+	step01a_gravity.cfg \
 	step06_twofaults.cfg
 
 

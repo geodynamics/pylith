@@ -9,14 +9,26 @@ linenos: True
 ---
 $ pylith step06_twofaults.cfg
 
+-- many lines not shown --
+
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/TimeDependent.py:132:run
+ -- timedependent(info)
  -- Solving problem.
-0 TS dt 0.01 time 0.
-    0 SNES Function norm 1.975141284264e-02 
-    Linear solve converged due to CONVERGED_ATOL iterations 408
-    1 SNES Function norm 7.771687291628e-13 
-  Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
-1 TS dt 0.01 time 0.01
- >> /software/baagaard/py38-venv/pylith-debug/lib/python3.8/site-packages/pylith/problems/Problem.py:201:finalize
+0 TS dt 0.2 time -0.2
+    0 SNES Function norm 1.933709845425e-02
+      Linear solve converged due to CONVERGED_ATOL iterations 23
+    1 SNES Function norm 9.419694087448e-13
+    Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
+1 TS dt 0.2 time 0.
+    0 SNES Function norm 9.419697323909e-13
+    Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 0
+2 TS dt 0.2 time 0.2
+    0 SNES Function norm 8.112736904304e-03
+      Linear solve converged due to CONVERGED_ATOL iterations 22
+    1 SNES Function norm 1.563260631101e-12
+    Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
+3 TS dt 0.2 time 0.4
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:199:finalize
  -- timedependent(info)
  -- Finalizing problem.
 ```

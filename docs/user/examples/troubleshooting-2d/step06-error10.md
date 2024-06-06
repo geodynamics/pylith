@@ -1,10 +1,10 @@
-# Step 6: Error 9
+# Step 6: Error 10
 
 ## Error Message
 
 ```{code-block} console
 ---
-caption: Error message 9 when running Step 6.
+caption: Error message 10 when running Step 6.
 linenos: True
 emphasize-lines: 5
 ---
@@ -33,7 +33,7 @@ $ pylith step06_twofaults.cfg
 [0]PETSC ERROR:   Option left: name:-ts_type value: beuler source: code
 [0]PETSC ERROR: See https://petsc.org/release/faq/ for trouble shooting.
 [0]PETSC ERROR: Petsc Development GIT revision: v3.21.2-167-g4fed2113cae  GIT Date: 2024-05-31 10:11:14 -0400
-[0]PETSC ERROR: /software/unix/py3.12-venv/pylith-debug/bin/mpinemesis on a arch-clang-15.0_debug named IGSKCI164LM006 by baagaard Wed Jun  5 15:14:26 2024
+[0]PETSC ERROR: /software/unix/py3.12-venv/pylith-debug/bin/mpinemesis on a arch-clang-15.0_debug named IGSKCI164LM006 by baagaard Wed Jun  5 15:18:41 2024
 [0]PETSC ERROR: Configure options --PETSC_ARCH=arch-clang-15.0_debug --with-debugging=1 --with-clanguage=c --with-mpi-compilers=1 --with-shared-libraries=1 --with-64-bit-points=1 --with-large-file-io=1 --with-lgrind=0 --download-chaco=1 --download-parmetis=1 --download-metis=1 --download-triangle --download-ml=1 --download-superlu=1 --with-fc=0 --download-f2cblaslapack --with-hdf5=1 --with-hdf5-include=/software/unix/hdf5-1.14/clang-15.0/include --with-hdf5-lib=/software/unix/hdf5-1.14/clang-15.0/lib/libhdf5.dylib --with-zlib=1
 [0]PETSC ERROR: #1 static PetscErrorCode pylith::topology::FieldQuery::queryDBPointFn(PylithInt, PylithReal, const PylithReal *, PylithInt, PylithScalar *, void *)() at /src/cig/pylith/libsrc/pylith/topology/FieldQuery.cc:316
 [0]PETSC ERROR: #2 DMProjectPoint_Func_Private() at /software/unix/petsc-dev/src/dm/impls/plex/plexproject.c:128
@@ -56,15 +56,16 @@ Traceback (most recent call last):
 RuntimeError: Error detected while in PETSc function.
 Abort(-1) on node 0 (rank 0 in comm 0): application called MPI_Abort(MPI_COMM_WORLD, -1) - process 0
 /software/unix/py3.12-venv/pylith-debug/bin/nemesis: mpiexec: exit 255
-/software/unix/py3.12-venv/pylith-debug/bin/pylith: /software/unix/py3.12-venv/pylith-debug/bin/nemesis: exit 1
 ```
 
 ## Troubleshooting Strategy
 
-With the linear interpolation we get an error about not being able to find an initiation time for a point.
-This suggests there are errors in our spatial database file related to interpolation.
+We still get an error about not being able to find an initiation time for a point.
+This suggests there are still one or more errors in our spatial database file related to interpolation.
 We examine the header and data points for errors.
-We notice that our points lie along a line (data dimension is 1), but our header has `data-dim=2`.
+We notice that our deepest point has a y coordinate of -25 km, but PyLith is looking for values at a point with a y coordinate of -27.621 km.
+We need to add an additional point to our spatial database.
+This explains why we had `num-locs=4` when we started!
 
 ## Resolution
 
@@ -72,9 +73,12 @@ We notice that our points lie along a line (data dimension is 1), but our header
 ---
 caption: Correct error in `fault_slip.spatialdb`.
 ---
-# Error
-data-dim = 2
-    
-# Correct
-data-dim = 1
+num-locs = 4
+...
+0.0   99.0     -2.0       0.0   0.0
+0.0  -20.0     -2.0       0.0   0.0
+0.0  -25.0      0.0       0.0   0.0
+0.0  -99.0      0.0       0.0   0.0
 ```
+
+Our simulation now runs without errors and the output looks correct.
