@@ -46,7 +46,7 @@ label_value = 21
 edge = fault_slabtop_edge
 edge_value = 31
 
-observers.observer.data_fields = [slip]
+observers.observer.data_fields = [slip, traction_change]
 
 [pylithapp.problem.interfaces.fault_slabtop.eq_ruptures]
 rupture = pylith.faults.KinSrcConstRate
@@ -64,7 +64,7 @@ label_value = 22
 edge = fault_slabbot_edge
 edge_value = 32
 
-observers.observer.data_fields = [slip]
+observers.observer.data_fields = [slip, traction_change]
 
 [pylithapp.problem.interfaces.fault_slabbot.eq_ruptures]
 rupture = pylith.faults.KinSrcConstRate
