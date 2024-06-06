@@ -98,8 +98,8 @@ interfaces = [fault]
 label = fault
 label_value = 20
 
-# Output `slip` on the fault.
-observers.observer.data_fields = [slip]
+# Output `slip` and the change in fault traction on the fault.
+observers.observer.data_fields = [slip, traction_change]
 ```
 
 All simulations in this directory use Dirichlet boundary conditions on the -x and +x boundaries with zero displacements,

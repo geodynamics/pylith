@@ -34,7 +34,7 @@ label_value = 21
 edge = fault_slabtop_edge
 edge_value = 31
 
-observers.observer.data_fields = [slip]
+observers.observer.data_fields = [slip, traction_change]
 
 [pylithapp.problem.interfaces.fault.eq_ruptures.rupture]
 db_auxiliary_field = spatialdata.spatialdb.SimpleDB

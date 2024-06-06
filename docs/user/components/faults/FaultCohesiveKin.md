@@ -63,7 +63,7 @@ Example of setting `FaultCohesiveKin` Pyre properties and facilities in a parame
 label = fault
 edge = fault_edge
 
-observers.observer.data_fields = [slip]
+observers.observer.data_fields = [slip, traction_change]
 
 # Two earthquakes with different slip time functions.
 eq_ruptures = [quake10, quake50]
