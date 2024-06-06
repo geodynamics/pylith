@@ -312,7 +312,7 @@ Increasing the basis order reduces the maximum shear stress by about 10 orders o
 
 1. The displacement field is very similar for the three different discretizations.
 2. In this case, we know the vertical displacement in the exact solution depends on the square of the depth, so we expect the numerical accuracy to be limited when we use a basis order of 1 for the displacement solution subfield.
-3. In the exact solution, the axial components of the Cauchy stress tensor vary linear with depth, and the xy component of the Cauchy stress is zero.
+3. In the exact solution, the axial components of the Cauchy stress tensor increase linearly with depth, and the xy component of the Cauchy stress is zero.
 4. With the coarse mesh, the shear stress is close to 10 MPa throughout the mesh.
 5. Refining the mesh decreases the magnitude shear stress by about a factor of 2.
 6. Using a basis order of 2 for the solution subfields reduces the magnitude of the shear stress by nearly 10 orders of magnitude.

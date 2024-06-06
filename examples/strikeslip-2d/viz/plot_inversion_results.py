@@ -20,7 +20,7 @@ class PlotApp:
 
     
     COLOR_OBSERVED = "black"
-    COLORS_MODEL = ["blue", "orange", "purple", "red", "cyan"]
+    COLORS_MODEL = ["orange", "purple", "red", "cyan"]
     XLIM = (-25.0, 25.0)
 
     def main(self, filename_models: str=None, filename_observed: str=None, observed_only: bool=False, show_plot: bool=False):
@@ -78,7 +78,7 @@ class PlotApp:
         nmodels = self.models_slip.shape[1]
         coords = self.models_coords / 1.0e+3
         for imodel in range(nmodels):
-            axes.plot(coords, self.models_slip[:,imodel], color=self.COLORS_MODEL[imodel], label=f"Model penalty={self.models_penalty[imodel]}")
+            axes.plot(coords, self.models_slip[:,imodel], "--", color=self.COLORS_MODEL[imodel], label=f"Model penalty={self.models_penalty[imodel]}")
 
 
 def cli():
