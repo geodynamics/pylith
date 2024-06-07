@@ -1,4 +1,23 @@
-# New in PyLith Version 3.0.0
+# Significant Recent Changes
+
+## PyLith Version 4.1
+
+* Improved runtime performance, including better preconditioners for elasticity with faults and poroelasticity
+* 2D and 3D crustal strike-slip faults examples based on the 2019 Ridgecrest earthquake.
+* 2D subduction zone outer-rise faulting example examining poroelastic response to bending stresses.
+* `pylith_viz` utility for plotting PyLith results.
+* Updated `examples/strikeslip-2d` and `examples/reverse-2d` to demonstrate use of uniform refinement and higher order discretizations to improve resolution of solution.
+
+## PyLith Version 4.0
+
+* Changed name of fault Lagrange multiplier field for solution component in Python from `lagrange_fault` to `lagrange_multiplier_fault` to match name of solution field in C++.
+* Removed support for importing meshes from LaGriT.
+* Change in fault tractions are now included in the fault `data_fields` for prescribed slip.
+* Fault and boundary orientation directions are now included in the `info_fields` for simulation output.
+* State variables are now included in the default `data_fields` for simulation output.
+* The default solver settings use the PETSc proper orthogonal decomposition (POD) methodology for initial guess of solutions to improve convergence.
+
+## PyLith Version 3.0
 
 * Major rewrite of the finite-element implementation to support higher order discretizations and flexible specification of the governing equations.
   * Use of pointwise functions to implement governing equations;
