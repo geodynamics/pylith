@@ -93,7 +93,7 @@ ksp_divtol = 1.0e+5
 ---
 caption: Run Step 2 simulation
 ---
-$ pylith step02_inflation.cfg
+$ pylith step02_inflation_statevars.cfg
 
 # The output should look something like the following.
  >> /software/unix/py3.12-venv/pylith-opt/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:77:main
