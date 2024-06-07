@@ -101,7 +101,7 @@ class App(GenerateMesh):
         # Create curves. We store the curve tag as a data member
         # so that we can refer to them later.
         # We traverse the curves in a counter clock-wise direction.
-        # If the curve is in the opporite direction, we use the negative tag.
+        # If the curve is in the opposite direction, we use the negative tag.
         self.c_yneg = gmsh.model.geo.add_line(p1, p2)
         self.c_xpos = gmsh.model.geo.add_line(p2, p3)
         self.c_ypos_fw = gmsh.model.geo.add_line(p3, p7)
