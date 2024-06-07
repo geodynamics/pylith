@@ -203,13 +203,14 @@ The user supplies:
 
 PyLith writes solution information, such as solution fields and state variables, to either VTK files or HDF5/Xdmf files using the observer components.
 ParaView and Visit as well as several other visualization tools can read both types of files.
+PyLith includes {ref}`sec-user-run-pylith-viz` for visualizing PyLith HDF files using PyVista.
 Post-processing of output is generally performed using HDF5 files accessed via a Python script and the h5py package or a Matlab script.
 
 :::{figure-md} fig:pylith:simulation
 <img src="figs/pylith_simulation.*" alt="Diagram of a PyLith simulation" width="100%"/> 
 
 PyLith requires a finite-element mesh (three different mechanisms for generating a mesh are currently supported), simulation parameters, and spatial databases (defining the spatial variation of various parameters).
-PyLith writes the solution output to either VTK or HDF5/Xdmf files, which can be visualized with ParaView or Visit. Post-processing is generally done using the HDF5 files with Python or Matlab scripts.
+PyLith writes the solution output to either VTK or HDF5/Xdmf files, which can be visualized with ParaView or Visit. PyLith includes {ref}`sec-user-run-pylith-viz` for visualizing PyLith HDF files using PyVista. Post-processing is generally done using the HDF5 files with Python or Matlab scripts.
 :::
 
 ## Nondimensionalization

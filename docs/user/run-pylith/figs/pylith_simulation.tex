@@ -57,8 +57,8 @@
 
     \node (mesh) [mesh, above left=of pylith, text depth=11em, minimum width=26em, xshift=8em] {Mesh Generator};
     \node (params) [params, above right=of pylith, text depth=11em, minimum width=18em, xshift=0em] {Simulation Parameters};
-    \node (viz) [visualize, below= of pylith, text height=15em, minimum width=20em] {Visualization};
-    \node (postprocess) [postprocess, right=of viz, text height=8em, xshift=5em] {Post-processing};
+    \node (viz) [visualize, below= of pylith, text height=15em, minimum width=28em] {Visualization};
+    \node (postprocess) [postprocess, right=of viz, text height=8em, xshift=2em] {Post-processing};
     
   \end{pgfonlayer}
   
@@ -82,8 +82,9 @@
   \node (vtk) [output, xshift=-5.5em, yshift=+2em] at (viz) {VTK File(s) [.vtk]};
   \node (hdf5) [output, right=of vtk, text width=8em] {HDF5 File(s) [.h5] \par Xdmf File(s) [.xmf]};
 
-  \node (paraview) [app, below=of vtk, yshift=-2em] {ParaView};
+  \node (paraview) [app, below=of vtk, xshift=-3.0em, yshift=-2em] {ParaView};
   \node (visit) [app, right=of paraview] {Visit};
+  \node (pylith-viz) [app, right=of visit] {pylith\_viz (PyVista)};
 
 
   % Post-processing
@@ -115,6 +116,7 @@
   \path (vtk.south) edge[arrowto_minor] (visit.north);
   \path (hdf5.south) edge[arrowto_minor] (paraview.north);
   \path (hdf5.south) edge[arrowto_minor] (visit.north);
+  \path (hdf5.south) edge[arrowto_minor] (pylith-viz.north);
 
 
 \end{tikzpicture}
