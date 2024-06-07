@@ -143,7 +143,7 @@ The `nodelist` property is a comma-separated list of values in square brackets.
 Now, invoke the following:
 
 ```{code-block} bash
-$ pylith example.cfg mynodes.cfg
+pylith example.cfg mynodes.cfg
 ```
 
 This strategy gives you the flexibility to create an assortment of `cfg` files (with one `cfg` file for each list of compute nodes) which can be easily paired with different parameter files.
@@ -152,7 +152,7 @@ If your list of compute nodes does not change often, you may find it more conven
 Then, you can run any simulation with no additional arguments:
 
 ```{code-block} console
-$ pylilth example.cfg
+pylith example.cfg
 ```
 
 :::{warning}
