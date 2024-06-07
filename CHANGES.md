@@ -5,6 +5,12 @@ Starting with v3.0.0, we strictly follow the [semantic versioning guidelines](ht
 The version numbers are in the form `MAJOR.MINOR.PATCH`, where major releases indicate changes to the public API (parameters), minor releases indicate new functionality that is backward compatible, and patch releases indicate backward compatible bug fixes.
 :::
 
+## Version 4.1.1 (2024/06/09)
+
+* **Fixed**
+  * Improved setup of variable block Jacobian preconditioner used for elasticity with faults to reduce runtime.
+  * Fix several typos and update a few diagrams in the documentation.
+
 ## Version 4.1.0 (2024/06/05)
 
 * **Changed**
