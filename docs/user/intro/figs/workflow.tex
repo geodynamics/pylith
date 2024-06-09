@@ -61,7 +61,8 @@
   \node (abaqus) [commercial, below=of relax] {Abaqus};
 
   % Visualization
-  \node (paraview) [open, below=of viz] {ParaView};
+  \node (pylith-viz) [open, below=of viz] {pylith\_viz (PyVista)};
+  \node (paraview) [open, below=of pylith-viz] {ParaView};
   \node (visit) [open, below=of paraview] {Visit};
   \node (matplotlib) [open, below=of visit] {Matplotlib};
   \node (matlab) [commercial, below=of matplotlib] {Matlab};
@@ -78,6 +79,7 @@
   \path (cubit.east) edge[available] (pylith.west);
   \path (cubit.east) edge[available] (abaqus.west);
 
+  \path (pylith.east) edge[available] (pylith-viz.west);
   \path (pylith.east) edge[available] (paraview.west);
   \path (pylith.east) edge[available] (visit.west);
   \path (pylith.east) edge[available] (matlab.west);

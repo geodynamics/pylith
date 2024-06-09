@@ -1,14 +1,20 @@
-# PyLith v4.1.0 now available
+# PyLith v4.1.1 now available
 
-I am pleased to announce the release of PyLith 4.1.0, a finite-element code designed to solve dynamic elastic problems and quasi-static viscoelastic problems in tectonic deformation.
+I am pleased to announce the release of PyLith 4.1.1, a finite-element code designed to solve dynamic elastic problems and quasi-static viscoelastic problems in tectonic deformation.
 
 You can download the source code and binaries from
   <https://geodynamics.org/resources/pylith>
 
 Documentation
-  <https://pylith.readthedocs.org/en/v4.1.0>
+  <https://pylith.readthedocs.org/en/v4.1.1>
 
 ## Release Notes
+
+* **Fixed**
+  * Improved setup of variable block Jacobian preconditioner used for elasticity with faults to reduce runtime.
+  * Fix several typos and update a few diagrams in the documentation.
+
+### Version 4.1.0
 
 * **Changed**
   * Improved the default preconditioners for poroelasticity for improved scalability.

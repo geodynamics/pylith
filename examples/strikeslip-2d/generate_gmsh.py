@@ -95,7 +95,7 @@ class App(GenerateMesh):
 
         # Create curve loops and surfaces from the curves.
         # We traverse the curves in a counter clock-wise direction.
-        # If the curve is in the opporite direction, we use the negative tag.
+        # If the curve is in the opposite direction, we use the negative tag.
         c0 = gmsh.model.geo.add_curve_loop([self.c_yneg1, self.c_fault, self.c_ypos1, self.c_xneg])
         self.s_xneg = gmsh.model.geo.add_plane_surface([c0])
         c1 = gmsh.model.geo.add_curve_loop([self.c_yneg2, self.c_xpos, self.c_ypos2, -self.c_fault])

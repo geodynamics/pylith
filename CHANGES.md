@@ -5,6 +5,12 @@ Starting with v3.0.0, we strictly follow the [semantic versioning guidelines](ht
 The version numbers are in the form `MAJOR.MINOR.PATCH`, where major releases indicate changes to the public API (parameters), minor releases indicate new functionality that is backward compatible, and patch releases indicate backward compatible bug fixes.
 :::
 
+## Version 4.1.1 (2024/06/09)
+
+* **Fixed**
+  * Improved setup of variable block Jacobian preconditioner used for elasticity with faults to reduce runtime.
+  * Fix several typos and update a few diagrams in the documentation.
+
 ## Version 4.1.0 (2024/06/05)
 
 * **Changed**
@@ -16,7 +22,7 @@ The version numbers are in the form `MAJOR.MINOR.PATCH`, where major releases in
   * New 2D and 3D crustal strike-slip faults examples based on the 2019 Ridgecrest earthquake.
   * New 2D subduction zone outer-rise faulting example examining poroelastic response to bending stresses.
   * New `pylith_viz` utility for plotting PyLith results.
-  * Updated `examples/strikeslip-2d` and `examples/reverse-2d` to demonstrate use of uniform refinement and higher ordder discretizations to improve resolution of solution.
+  * Updated `examples/strikeslip-2d` and `examples/reverse-2d` to demonstrate use of uniform refinement and higher order discretizations to improve resolution of solution.
   * Documentation
     * Developer Guide: Added description of the process for adding event logging and evaluating performance, including performance logging.
     * Developer Guide: Added checklist for what is needed when contributing examples.
