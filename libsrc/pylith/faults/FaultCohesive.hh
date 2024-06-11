@@ -139,6 +139,16 @@ public:
      */
     std::vector<pylith::feassemble::Constraint*> createConstraints(const pylith::topology::Field& solution);
 
+    /** Create derived field.
+     *
+     * @param[in] solution Solution field.
+     * @param[in\ domainMesh Finite-element mesh associated with integration domain.
+     *
+     * @returns Derived field if applicable, otherwise NULL.
+     */
+    pylith::topology::Field* createDerivedField(const pylith::topology::Field& solution,
+                                                const pylith::topology::Mesh& domainMesh);
+
     /** Create diagnostic field.
      *
      * @param[in] solution Solution field.
@@ -152,20 +162,17 @@ public:
     // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
 protected:
 
-    /** Create single integratin patch for entire fault.
+    /** Get auxiliary factory associated with physics.
      *
-     * @param[inout] integrator Integrator for fault interface.
+     * @return Auxiliary factory for physics object.
      */
-    void _createIntegrationPatch(pylith::feassemble::IntegratorInterface* integrator);
+    pylith::feassemble::AuxiliaryFactory* _getAuxiliaryFactory(void);
 
-    /** Create integration patches associated with cohesive cells that have the same pairs of materials on the
-     * two sides of the fault.
+    /** Get derived factory associated with physics.
      *
-     * @param[inout] integrator Integrator for fault interface.
-     * @param[in] dmSoln PETSc DM associated with solution.
+     * @return Derived factory for physics object.
      */
-    void _createIntegrationPatches(pylith::feassemble::IntegratorInterface* integrator,
-                                   const PetscDM dmSoln);
+    pylith::topology::FieldFactory* _getDerivedFactory(void);
 
     /** Update kernel constants.
      *
@@ -236,10 +243,16 @@ private:
         return 0;
     } // _zero
 
+    // PROTECTED MEMBERS ////////////////////////////////////////////////////////////////////////////
+protected:
+
+    pylith::faults::AuxiliaryFieldFactory* _auxiliaryFactory; ///< Factory for auxiliary subfields.
+
     // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
 private:
 
     pylith::faults::DiagnosticFieldFactory* _diagnosticFactory; ///< Factory for auxiliary subfields.
+    pylith::faults::DerivedFieldFactory* _derivedFactory; ///< Factory for derived subfields.
     std::string _surfaceLabelName; ///< Name of label identifying points associated with fault.
     std::string _buriedEdgesLabelName; ///< Name of label identifying buried edges of fault.
     int _surfaceLabelValue; ///< Value of label identifying points associated with fault.

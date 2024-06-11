@@ -135,6 +135,16 @@ public:
              */
             std::vector < pylith::feassemble::Constraint*> createConstraints(const pylith::topology::Field& solution);
 
+            /** Create derived field.
+             *
+             * @param[in] solution Solution field.
+             * @param[in\ domainMesh Finite-element mesh associated with integration domain.
+             *
+             * @returns Derived field if applicable, otherwise NULL.
+             */
+            pylith::topology::Field* createDerivedField(const pylith::topology::Field& solution,
+                                                        const pylith::topology::Mesh& domainMesh);
+
             /** Create diagnostic field.
              *
              * @param[in] solution Solution field.
@@ -147,6 +157,18 @@ public:
 
             // PROTECTED METHODS //////////////////////////////////////////////////////////////////
 protected:
+
+            /** Get auxiliary factory associated with physics.
+             *
+             * @return Auxiliary factory for physics object.
+             */
+            pylith::feassemble::AuxiliaryFactory* _getAuxiliaryFactory(void);
+
+            /** Get derived factory associated with physics.
+             *
+             * @return Derived factory for physics object.
+             */
+            pylith::topology::FieldFactory* _getDerivedFactory(void);
 
             /** Set kernels for residual.
              *

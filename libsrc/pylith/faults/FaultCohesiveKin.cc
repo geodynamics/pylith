@@ -69,8 +69,6 @@ public:
 // ------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::faults::FaultCohesiveKin::FaultCohesiveKin(void) :
-    _auxiliaryFactory(new pylith::faults::AuxiliaryFieldFactory),
-    _derivedFactory(new pylith::faults::DerivedFieldFactory),
     _slipVecRupture(NULL),
     _slipVecTotal(NULL) {
     pylith::utils::PyreComponent::setName(_FaultCohesiveKin::pyreComponent);
@@ -92,8 +90,6 @@ pylith::faults::FaultCohesiveKin::deallocate(void) {
 
     PetscErrorCode err = VecDestroy(&_slipVecRupture);PYLITH_CHECK_ERROR(err);
     err = VecDestroy(&_slipVecTotal);PYLITH_CHECK_ERROR(err);
-    delete _auxiliaryFactory;_auxiliaryFactory = NULL;
-    delete _derivedFactory;_derivedFactory = NULL;
     _ruptures.clear(); // :TODO: Use shared pointers for earthquake ruptures
 } // deallocate
 
@@ -233,56 +229,6 @@ pylith::faults::FaultCohesiveKin::createAuxiliaryField(const pylith::topology::F
 
 
 // ------------------------------------------------------------------------------------------------
-// Create derived field.
-pylith::topology::Field*
-pylith::faults::FaultCohesiveKin::createDerivedField(const pylith::topology::Field& solution,
-                                                     const pylith::topology::Mesh& domainMesh) {
-    PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("createDerivedField(solution="<<solution.getLabel()<<", domainMesh=)"<<typeid(domainMesh).name()<<")");
-
-    assert(_normalizer);
-
-    pylith::topology::Field* derivedField = new pylith::topology::Field(domainMesh);assert(derivedField);
-    derivedField->setLabel("FaultCohesiveKin derived field");
-
-    // Create label for output.
-    const char* outputLabelName = "output";
-    PetscDM derivedDM = derivedField->getDM();
-    PetscDMLabel outputLabel = NULL;
-    PetscErrorCode err = PETSC_SUCCESS;
-    err = DMCreateLabel(derivedDM, outputLabelName);PYLITH_CHECK_ERROR(err);
-    err = DMGetLabel(derivedDM, outputLabelName, &outputLabel);PYLITH_CHECK_ERROR(err);
-    pylith::topology::Stratum faultStratum(derivedDM, pylith::topology::Stratum::HEIGHT, 1);
-    for (PetscInt point = faultStratum.begin(); point != faultStratum.end(); ++point) {
-        err = DMLabelSetValue(outputLabel, point, 1);
-    } // for
-    err = DMPlexLabelComplete(derivedDM, outputLabel);PYLITH_CHECK_ERROR(err);
-
-    assert(_derivedFactory);
-    const pylith::topology::FieldBase::Discretization& discretization = solution.getSubfieldInfo("lagrange_multiplier_fault").fe;
-    const PylithInt cellDim = solution.getSpaceDim()-1;
-    const bool isFaultOnly = false;
-    _derivedFactory->setSubfieldDiscretization("default", discretization.basisOrder, discretization.quadOrder, cellDim,
-                                               isFaultOnly, discretization.cellBasis, discretization.feSpace,
-                                               discretization.isBasisContinuous);
-
-    assert(_derivedFactory);
-    assert(_normalizer);
-    _derivedFactory->initialize(derivedField, *_normalizer, solution.getSpaceDim());
-
-    _derivedFactory->addTractionChange(); // 0
-
-    derivedField->subfieldsSetup();
-    derivedField->createDiscretization();
-    pylith::topology::FieldOps::checkDiscretization(solution, *derivedField);
-    derivedField->allocate();
-    derivedField->createOutputVector();
-
-    PYLITH_METHOD_RETURN(derivedField);
-} // createDerivedField
-
-
-// ------------------------------------------------------------------------------------------------
 // Update auxiliary fields at beginning of time step.
 void
 pylith::faults::FaultCohesiveKin::updateAuxiliaryField(pylith::topology::Field* auxiliaryField,
@@ -312,22 +258,6 @@ pylith::faults::FaultCohesiveKin::updateAuxiliaryField(pylith::topology::Field* 
 
     PYLITH_METHOD_END;
 } // updateAuxiliaryField
-
-
-// ------------------------------------------------------------------------------------------------
-// Get auxiliary factory associated with physics.
-pylith::feassemble::AuxiliaryFactory*
-pylith::faults::FaultCohesiveKin::_getAuxiliaryFactory(void) {
-    return _auxiliaryFactory;
-} // _getAuxiliaryFactory
-
-
-// ------------------------------------------------------------------------------------------------
-// Get derived factory associated with fault.
-pylith::topology::FieldFactory*
-pylith::faults::FaultCohesiveKin::_getDerivedFactory(void) {
-    return _derivedFactory;
-} // _getDerivedFactory
 
 
 // ------------------------------------------------------------------------------------------------

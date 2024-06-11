@@ -73,7 +73,6 @@ public:
 // ------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::faults::FaultCohesiveImpulses::FaultCohesiveImpulses(void) :
-    _auxiliaryFactory(new pylith::faults::AuxiliaryFieldFactory),
     _threshold(1.0e-6) {
     pylith::utils::PyreComponent::setName(_FaultCohesiveImpulses::pyreComponent);
 } // constructor
@@ -92,7 +91,6 @@ void
 pylith::faults::FaultCohesiveImpulses::deallocate(void) {
     FaultCohesive::deallocate();
 
-    delete _auxiliaryFactory;_auxiliaryFactory = NULL;
 } // deallocate
 
 
