@@ -213,6 +213,13 @@ pylith::sources::AuxiliaryFactoryWellboreSource::addWellborePressure(void) { // 
 
 // ----------------------------------------------------------------------
 // Add wellbore character subfield to auxiliary fields.
+// If zero then borehole does nothing.
+// If positive the borehole acts as a sink (production well) for porepressure > borehole pressure, and does nothing
+// otherwise.
+// If negative the borehole acts as a source (injection well) for porepressure < borehole pressure, and does nothing
+// otherwise.
+// The flow rate to/from the borehole is multiplied by |character|, so usually character = +/- 1,
+// but you can specify other quantities to provide an overall scaling to the flow if you like.
 void
 pylith::sources::AuxiliaryFactoryWellboreSource::addWellboreCharacter(void) { // wellboreCharacter
     PYLITH_METHOD_BEGIN;
