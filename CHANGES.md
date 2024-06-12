@@ -5,6 +5,11 @@ Starting with v3.0.0, we strictly follow the [semantic versioning guidelines](ht
 The version numbers are in the form `MAJOR.MINOR.PATCH`, where major releases indicate changes to the public API (parameters), minor releases indicate new functionality that is backward compatible, and patch releases indicate backward compatible bug fixes.
 :::
 
+## Version 4.1.2 (2024/06/12)
+
+* **Fixed**
+  * Fix inconsistency in normal direction on fault surfaces. Orientation was correct but direction was flipped at some locations. This affected local slip direction and the resulting deformation close to the fault.
+
 ## Version 4.1.1 (2024/06/09)
 
 * **Fixed**
