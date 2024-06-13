@@ -11,7 +11,7 @@ Associating material properties with a given cell involves several steps.
 1. In the mesh generation process, assign a material identifier to each cell.
 
 2. Define material property groups corresponding to each material identifier.
-    In CUBIT/Trelis this is done by creating the blocks as part of the boundary conditions.
+    In Cubit/Trelis this is done by creating the blocks as part of the boundary conditions.
 
 3. Provide the settings for each material group in the parameters, i.e., `cfg` file.
 

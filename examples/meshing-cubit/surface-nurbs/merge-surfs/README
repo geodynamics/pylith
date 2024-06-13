@@ -1,6 +1,6 @@
-CUBIT example demonstrating how to merge sheet bodies (surfaces) and
+Cubit example demonstrating how to merge sheet bodies (surfaces) and
 use them in a webcut. This technique is useful for creating
 multisegment faults from primitive geometry.
 
-Geometry and meshing commands are in the CUBIT journal files
+Geometry and meshing commands are in the Cubit journal files
 'geometry.jou' and 'mesh.jou' respectively.

@@ -56,7 +56,7 @@ In 2D the fault edges are just a single vertex as shown in {numref}`fig:fault:co
 
 For faults that have buried edges, splitting the mesh apart and inserting the cohesive cells becomes complex at the buried edges due to the ambiguity of defining where the fault ends and how to insert the cohesive cell.
 Starting in PyLith v2.0.0 we changed how the buried edges of the fault are managed.
-An additional group of fault nodes is specified (for example, via a nodeset from CUBIT) that marks the buried edges of the fault (see {numref}`fig:fault:fault_edge`).
+An additional group of fault nodes is specified (for example, via a nodeset from Cubit) that marks the buried edges of the fault (see {numref}`fig:fault:fault_edge`).
 This allows the cohesive cell insertion algorithm to adjust the topology so that cohseive cells are inserted up to the buried edge of the fault but no additional degrees of freedom are added on the fault edge.
 This naturally forces slip to zero along the buried edges.
 

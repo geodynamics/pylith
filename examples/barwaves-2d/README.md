@@ -7,7 +7,7 @@ triangular or quadrilateral cells.
 Concepts discussed include:
 
 * Solution of the dynamic elasticity equation
-* Mesh from CUBIT/Trelis
+* Mesh from Cubit/Trelis
 * Dirichlet boundary condition
 * Absorbing boundary condition
 * Isotropic, linear elasticity with uniform material properties

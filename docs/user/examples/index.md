@@ -38,7 +38,7 @@ You can use the `pylith_cfgsearch` utility (see {ref}`sec-user-run-pylith-utilit
 Before you begin any of the examples, you will need to install PyLith following the instructions in {ref}`sec-install`.
 You should also read {ref}`sec-user-run-pylith`.
 Complete sets of input files are included in the examples.
-However, if you wish to generate the finite-element meshes yourself, you will also need Gmsh (available from <https://gmsh.info> and included in the PyLith binary package), Coreform Cubit (available from <https://coreform.com/>), or CUBIT (available to US federal government agencies from <https://cubit.sandia.gov/>).
+However, if you wish to generate the finite-element meshes yourself, you will also need Gmsh (available from <https://gmsh.info> and included in the PyLith binary package), Coreform Cubit (available from <https://coreform.com/>), or Cubit (available to US federal government agencies from <https://cubit.sandia.gov/>).
 
 ### Input Files
 

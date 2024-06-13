@@ -22,11 +22,11 @@ def validateFilename(value):
     """Validate filename.
     """
     if 0 == len(value):
-        raise ValueError("Filename for CUBIT/Trlis input mesh not specified.")
+        raise ValueError("Filename for Cubit/Trlis input mesh not specified.")
     try:
         open(value, "r")
     except IOError:
-        raise IOError("CUBIT/Trelis input mesh '{}' not found.".format(value))
+        raise IOError("Cubit/Trelis input mesh '{}' not found.".format(value))
     return value
 
 

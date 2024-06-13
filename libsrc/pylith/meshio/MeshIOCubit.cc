@@ -355,7 +355,7 @@ pylith::meshio::MeshIOCubit::_orientCells(int_array* const cells,
         // do nothing
 
     } else if ((2 == meshDim) && (6 == numCorners)) { // TRI6
-        // CUBIT
+        // Cubit
         // corners,
         // bottom edges, middle edges, top edges
 
@@ -380,7 +380,7 @@ pylith::meshio::MeshIOCubit::_orientCells(int_array* const cells,
         } // for
 
     } else if ((3 == meshDim) && (27 == numCorners)) { // HEX27
-        // CUBIT
+        // Cubit
         // corners,
         // bottom edges, middle edges, top edges
         // interior

@@ -1,15 +1,15 @@
-CUBIT example illustrating methods for creating nonplanar surfaces in
+Cubit example illustrating methods for creating nonplanar surfaces in
 meshing a subduction interface with a steeply-dipping splay fault and
 topography/bathymetry.
 
 To generate the mesh for this example, we perform the following steps:
 
-1.  Generate CUBIT journal files for creation of the surfaces:
+1.  Generate Cubit journal files for creation of the surfaces:
 
     a.  Generate the subduction interface journal file by first
     running the Python script interface_netsurf.py. This reads points
     from interface_points.txt, which defines the interface geometry,
-    and creates a CUBIT journal file to create the surface using a net
+    and creates a Cubit journal file to create the surface using a net
     surface.
 
       python interface_netsurf.py    
@@ -17,7 +17,7 @@ To generate the mesh for this example, we perform the following steps:
     b.  Generate the splay fault journal file by running the Python
     script splay_skinsurf.py. This reads points from the file
     splay_points.txt, which defines the splay fault geometry, and
-    creates a CUBIT journal file to create the surface using a skin
+    creates a Cubit journal file to create the surface using a skin
     surface.
 
       python splay_skinsurf.py    
@@ -25,13 +25,13 @@ To generate the mesh for this example, we perform the following steps:
     c.  Generate the topography/bathymetry journal file by running the
     Python script topobath_netsurf.py script. This reads points from
     topobath_points.txt, which defines the topography/bathymetry, and
-    creates a CUBIT journal file to create the surface using a net
+    creates a Cubit journal file to create the surface using a net
     surface.
 
       python topobath_netsurf.py    
 
 2.  Create the surfaces by running each of the three journal files
-produced by the Python scripts within CUBIT.
+produced by the Python scripts within Cubit.
 
     a.  interface_netsurf.jou creates the interface surface.
 
@@ -41,7 +41,7 @@ produced by the Python scripts within CUBIT.
 
 
 3.  Generate the mesh using these surfaces by running the
-    mesh.jou journal file within CUBIT. Note that this file also
+    mesh.jou journal file within Cubit. Note that this file also
     makes use of the following journal files:
 
     geometry.jou:  Imports the surfaces created in step 2 and creates the

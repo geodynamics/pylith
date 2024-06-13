@@ -10,7 +10,7 @@
 #
 # This file is called from the mesh file (mesh_tet.jou or mesh_hex.jou).
 #
-# CUBIT/Trelis journal file for setting blocks and nodesets for the meshes
+# Cubit/Trelis journal file for setting blocks and nodesets for the meshes
 # created by mesh_tet.jou and mesh_hex.jou.
 #
 

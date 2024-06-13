@@ -8,7 +8,7 @@
 # See https://mit-license.org/ and LICENSE.md and for license information. 
 # =================================================================================================
 #
-# CUBIT journal file for creating blocks and nodesets associated with
+# Cubit journal file for creating blocks and nodesets associated with
 # materials and boundary conditions.
 #
 # NOTE: We remove the overlap between groups associated with 

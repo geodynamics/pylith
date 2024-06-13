@@ -43,7 +43,7 @@ Release notes:
 
       - Parameters are all set using .cfg files (or .pml/command-line).
 
-      - Mesh may be directly imported from CUBIT, LaGriT, or using
+      - Mesh may be directly imported from Cubit, LaGriT, or using
         PyLith mesh ASCII format.
 
       - Material properties, fault dislocations, and BC are all given
@@ -86,7 +86,7 @@ Release notes:
       - Final slip of zero resulted in fault slip and slip increments
         of NAN.
 
-      - Parallel importing of meshes from LaGrit and CUBIT lacked
+      - Parallel importing of meshes from LaGrit and Cubit lacked
         guards against all processors reading the files.
 
   * Known issues

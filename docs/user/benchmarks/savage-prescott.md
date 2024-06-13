@@ -70,7 +70,7 @@ On the x-boundaries, the x-displacements are set to zero, while constant velocit
 **Discretization**  
 For the nonuniform hexahedral mesh, the resolution at the outer boundaries is 20 km.
 An inner region is then put through one level of refinement, so that near the center of the mesh the resolution is 6.7 km.
-All meshes were generated with CUBIT.
+All meshes were generated with Cubit.
 
 **Basis functions**  
 We use trilinear hexahedral cells.

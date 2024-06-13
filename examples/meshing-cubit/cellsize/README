@@ -1,5 +1,5 @@
-CUBIT example demonstrating how to use a field variable in an ExodusII
-file to specify the cell size in a CUBIT mesh. This technique only
+Cubit example demonstrating how to use a field variable in an ExodusII
+file to specify the cell size in a Cubit mesh. This technique only
 works for triangluar, quadrilateral, and tetrahedral cells.
 
 Steps:
@@ -8,7 +8,7 @@ Steps:
 variable (computed at the vertices) for the cell size. Create one
 block so all sizing information is contained in a single block.
 
-  Run the CUBIT journal file mesh_cellsize.jou.
+  Run the Cubit journal file mesh_cellsize.jou.
 
 2. Add the cell size field variable to the ExodusII file. In this case
 we add two cell size variables, one based upon an analytical function
@@ -16,13 +16,13 @@ and one based upon a spatial database.
 
   Run the Python script exodus_add_properties.py.
 
-3. Generate the CUBIT meshes using the cell size field variables.
+3. Generate the Cubit meshes using the cell size field variables.
 
-  Run the CUBIT journal file mesh_size_spatialdb.jou and
+  Run the Cubit journal file mesh_size_spatialdb.jou and
   mesh_size_analyticfn.jou.
 
 NOTES:
 
   The geometry in the background mesh used to specify the cell size
-  *must* be exactly the same geometry as that of the final mesh. CUBIT
+  *must* be exactly the same geometry as that of the final mesh. Cubit
   will crash if the geometry is different.

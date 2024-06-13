@@ -1,4 +1,4 @@
-# CUBIT script to generate simple Exodus files for testing ExodusII
+# Cubit script to generate simple Exodus files for testing ExodusII
 # and MeshIOCubit.
 
 playback "twotri3.jou"

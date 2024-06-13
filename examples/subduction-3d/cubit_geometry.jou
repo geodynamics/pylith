@@ -12,9 +12,9 @@
 # mesh_hex.jou). You can also run this file separately to examine how
 # the geometry is constructed.
 #
-# We use the CUBIT/Trelis support for APREPRO (the expressions in
+# We use the Cubit/Trelis support for APREPRO (the expressions in
 # braces), which includes units and mathematical functions. See the
-# APREPRO section in the appendix of the CUBIT/Trelis documentation
+# APREPRO section in the appendix of the Cubit/Trelis documentation
 # for more information.
 #
 # We use the Id() APPREPRO function to get the id of various objects

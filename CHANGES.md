@@ -438,7 +438,7 @@ The points file for `OutputSolnPoints` must now contain station names as the fir
 
 * Fixed linking issue in Darwin binary distribution, primarily affecting systems with OS X 10.7 and 10.8.
 
-* Improved example journal files for CUBIT/Trelis to improve compatibility (examples/meshing/surface_nurbs/dem).
+* Improved example journal files for Cubit/Trelis to improve compatibility (examples/meshing/surface_nurbs/dem).
 
 * Updated more journal in examples so that APREPRO lines have a leading '$' instead of a '#' to differentiate from comments.
 
@@ -450,9 +450,9 @@ The points file for `OutputSolnPoints` must now contain station names as the fir
 
 ### Bug fixes
 
-* Improved example journal files for CUBIT/Trelis to improve compatibility. All journal files should work with CUBIT 14.1 and Trelis 15.0.
+* Improved example journal files for Cubit/Trelis to improve compatibility. All journal files should work with Cubit 14.1 and Trelis 15.0.
 
-* Created examples of IDless journal files in examples/2d/greensfns.  These files should work with all recent versions of CUBIT and Trelis.
+* Created examples of IDless journal files in examples/2d/greensfns.  These files should work with all recent versions of Cubit and Trelis.
 
 * Switched journal APREPRO lines to have leading '$' instead of '#' to differentiate from comments.
 
@@ -484,9 +484,9 @@ The points file for `OutputSolnPoints` must now contain station names as the fir
 
   Error messages originating in PETSc will include a stack trace that includes both PyLith and PETSc code. Previously, only the PETSc code was included. This provides significantly more information for debugging.
 
-* Improved CUBIT example for mesh sizing functions.
+* Improved Cubit example for mesh sizing functions.
 
-  Based on experimentation with CUBIT 14.0, 14.1, and Trelis 15.0, we have improved the CUBIT mesh sizing examples (`examples/meshing/cubit_cellsize`). We were able to simplify the journal files and use fewer CUBIT commands. The new procedure also eliminates some CUBIT warnings.
+  Based on experimentation with Cubit 14.0, 14.1, and Trelis 15.0, we have improved the Cubit mesh sizing examples (`examples/meshing/cubit_cellsize`). We were able to simplify the journal files and use fewer Cubit commands. The new procedure also eliminates some Cubit warnings.
 
 * Several small improvements to various sections of the manual based
   on feedback and questions from users.
@@ -911,9 +911,9 @@ No changes in parameters are required. Version 1.6.1 does require users to speci
 
   Data values in ASCII data files are written in scientific notation with user-specified precision.
 
-* Nodeset names in CUBIT Exodus files
+* Nodeset names in Cubit Exodus files
 
-  Use of nodeset names in CUBIT Exodus files for boundary conditions and faults. Users can specify to use nodeset names (default behavior) or ids.
+  Use of nodeset names in Cubit Exodus files for boundary conditions and faults. Users can specify to use nodeset names (default behavior) or ids.
 
 * Velocity and slip rate as output fields
 
@@ -937,7 +937,7 @@ No changes in parameters are required. Version 1.6.1 does require users to speci
 
 Three changes to the code require updating old parameters settings for use with version 1.5.
 
-1. Recent releases of CUBIT include nodeset names in the Exodus file and PyLith now uses them to associate vertices with boundary conditions and faults. Use the NetCDF utility `ncdump` to examine the contents of the Exodus (.exo) file to see it it includes the variable ns_names. If it does, then use nodeset names rather than nodeset ids for boundary condition label properties. If your Exodus file does not contain nodeset names, then set the MeshIOCubit property use_nodeset_names to False to continue to use nodeset id values for boundary condition labels.
+1. Recent releases of Cubit include nodeset names in the Exodus file and PyLith now uses them to associate vertices with boundary conditions and faults. Use the NetCDF utility `ncdump` to examine the contents of the Exodus (.exo) file to see it it includes the variable ns_names. If it does, then use nodeset names rather than nodeset ids for boundary condition label properties. If your Exodus file does not contain nodeset names, then set the MeshIOCubit property use_nodeset_names to False to continue to use nodeset id values for boundary condition labels.
 
 2. The power-law constitutive parameters have been changed so that the parameter units are no longer dependent on the power-law exponent. This is a more logical implementation and allows (among other things) users to vary power-law parameters using a spatial database. Previously, it was not possible to vary power-law parameters unless everything used the same power-law exponent. The new implementation uses reference-strain-rate, reference-stress, and power-law-exponent to describe the material. This is described in the 'Material Models' section of the manual.
 
@@ -1126,7 +1126,7 @@ There are two new features in PyLith version 1.1 that require users to adjust in
 
 * Final slip of zero resulted in fault slip and slip increments of Nan.
 
-* Parallel importing of meshes from LaGrit and CUBIT lacked guards against all processors reading the files.
+* Parallel importing of meshes from LaGrit and Cubit lacked guards against all processors reading the files.
 
 
 ## Version 1.0.0
@@ -1139,7 +1139,7 @@ There are two new features in PyLith version 1.1 that require users to adjust in
 
   * Parameters are all set using .cfg files (or .pml/command-line).
 
-  * Mesh may be directly imported from CUBIT, LaGriT, or using PyLith mesh ASCII format.
+  * Mesh may be directly imported from Cubit, LaGriT, or using PyLith mesh ASCII format.
 
   * Material properties, fault dislocations, and BC are all given using spatial databases, which are independent of mesh discretization.
 

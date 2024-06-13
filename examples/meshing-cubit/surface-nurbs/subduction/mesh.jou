@@ -8,7 +8,7 @@
 # See https://mit-license.org/ and LICENSE.md and for license information. 
 # =================================================================================================
 #
-# CUBIT journal file to create an ExodusII file with a mesh at uniform
+# Cubit journal file to create an ExodusII file with a mesh at uniform
 # resolution.
 #
 # ----------------------------------------------------------------------

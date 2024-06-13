@@ -1,4 +1,4 @@
-These examples demonstrate how to create NURBS surfaces in CUBIT. 
+These examples demonstrate how to create NURBS surfaces in Cubit. 
 
 dem - Example of creating a topographic surface using a grid of spline
     curves.
