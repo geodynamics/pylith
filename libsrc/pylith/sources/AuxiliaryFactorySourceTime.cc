@@ -131,11 +131,6 @@ pylith::sources::AuxiliaryFactorySourceTime::updateAuxiliaryField(pylith::topolo
                                                                   const PylithReal timeScale,
                                                                   spatialdata::spatialdb::TimeHistory* const dbTimeHistory) {
     PYLITH_METHOD_BEGIN;
-    // pythia::journal::debug_t debug(_TimeDependentAuxiliaryFactory::genericComponent);
-    // debug << pythia::journal::at(__HERE__)
-    //       << "TimeDependentAuxiliaryFactory::updateAuxiliaryField(auxiliaryField="<<auxiliaryField<<", t="<<t
-    //       <<", timeScale="<<timeScale<<", dbTimeHistory="<<dbTimeHistory<<")"
-    //       << pythia::journal::endl;
 
     assert(auxiliaryField);
     assert(dbTimeHistory);
@@ -146,7 +141,10 @@ pylith::sources::AuxiliaryFactorySourceTime::updateAuxiliaryField(pylith::topolo
     PetscInt pStart = 0, pEnd = 0;
     err = PetscSectionGetChart(auxiliaryFieldSection, &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
     pylith::topology::VecVisitorMesh auxiliaryFieldVisitor(*auxiliaryField);
-    PetscScalar* auxiliaryFieldArray = auxiliaryFieldVisitor.localArray();assert(auxiliaryFieldArray);
+    PetscScalar* auxiliaryFieldArray = auxiliaryFieldVisitor.localArray();
+    if (auxiliaryFieldArray == NULL) {
+        PYLITH_METHOD_END;
+    }
 
     // Compute offset of time history subfields in auxiliary field.
     const PetscInt i_startTime = auxiliaryField->getSubfieldInfo("time_history_start_time").index;
