@@ -32,6 +32,9 @@ class TimeHistoryWavelet(SourceTimeFunctionMomentTensorForce, ModuleTimeHistoryW
 
     import pythia.pyre.inventory
 
+    useTimeHistory = pythia.pyre.inventory.bool("use_time_history", default=True)
+    useTimeHistory.meta['tip'] = "Use time history term in time-dependent expression."
+
     dbTimeHistory = pythia.pyre.inventory.facility(
         "time_history", factory=NullComponent, family="temporal_database")
     dbTimeHistory.meta['tip'] = "Time history with normalized amplitude as a function of time."
@@ -50,8 +53,23 @@ class TimeHistoryWavelet(SourceTimeFunctionMomentTensorForce, ModuleTimeHistoryW
 
     def preinitialize(self, problem):
         SourceTimeFunctionMomentTensorForce.preinitialize(self, problem)
-
+        ModuleTimeHistoryWavelet.useTimeHistory(self, self.useTimeHistory)
+        if not isinstance(self.dbTimeHistory, NullComponent):
+            ModuleTimeHistoryWavelet.setTimeHistoryDB(
+                self, self.dbTimeHistory)
         return
+    
+    def _validate(self, context):
+        if isinstance(self.inventory.dbTimeHistory, NullComponent):
+            trait = self.inventory.getTrait("time_history")
+            self._validationError(context, trait,
+                f"Missing time history database for time history wavelet source '{self.aliases[-1]}'.")
+
+    def _validationError(self, context, trait, msg):
+        from pythia.pyre.inventory.Item import Item
+        error = ValueError(msg)
+        descriptor = self.getTraitDescriptor(trait.name)
+        context.error(error, items=[Item(trait, descriptor)])
 
     # PRIVATE METHODS ////////////////////////////////////////////////////
 

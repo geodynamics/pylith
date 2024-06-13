@@ -31,6 +31,8 @@
 #include "pylith/utils/arrayfwd.hh" // USES std::vector
 #include "pylith/feassemble/IntegratorDomain.hh" // USES IntegratorDomain::ProjectKernels
 
+#include "spatialdata/units/unitsfwd.hh" // HASA Nondimensional
+
 #include "spatialdata/geocoords/geocoordsfwd.hh" // USES Coordsys
 
 #include "petscds.h" // USES PetscPointFunc, PetscPointJac
@@ -103,7 +105,8 @@ public:
     virtual
     void updateAuxiliaryField(pylith::topology::Field* auxiliaryField,
                               const PylithReal t,
-                              const PylithReal timeScale);
+                              const PylithReal timeScale,
+                              spatialdata::units::Nondimensional* _normalizer);
 
     // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
 

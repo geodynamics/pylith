@@ -82,7 +82,7 @@ public:
              const PylithInt numConstants,
              const PylithScalar constants[],
              PylithScalar g1[]) {
-        const PylithInt _numA = 4;
+        const PylithInt _numA = 3;
         assert(_numA == numA);
         assert(aOff);
         assert(a);
@@ -161,7 +161,7 @@ public:
              const PylithInt numConstants,
              const PylithScalar constants[],
              PylithScalar g1[]) {
-        const PylithInt _numA = 4;
+        const PylithInt _numA = 3;
         assert(_numA == numA);
         assert(aOff);
         assert(a);

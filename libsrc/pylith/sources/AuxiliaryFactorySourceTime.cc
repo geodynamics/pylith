@@ -80,19 +80,18 @@ pylith::sources::AuxiliaryFactorySourceTime::addTimeHistoryStartTime(void) {
 
     const char* subfieldName = "time_history_start_time";
 
-    assert(_defaultDescription);
     assert(_normalizer);
-    pylith::topology::FieldBase::Description subfieldDescription(*_defaultDescription);
-    subfieldDescription.label = subfieldName;
-    subfieldDescription.alias = subfieldName;
-    subfieldDescription.vectorFieldType = pylith::topology::FieldBase::SCALAR;
-    subfieldDescription.numComponents = 1;
-    subfieldDescription.componentNames.resize(1);
-    subfieldDescription.componentNames[0] = subfieldName;
-    subfieldDescription.scale = _normalizer->getTimeScale();
-    subfieldDescription.validator = NULL;
+    pylith::topology::Field::Description description;
+    description.label = subfieldName;
+    description.alias = subfieldName;
+    description.vectorFieldType = pylith::topology::FieldBase::SCALAR;
+    description.numComponents = 1;
+    description.componentNames.resize(1);
+    description.componentNames[0] = subfieldName;
+    description.scale = _normalizer->getTimeScale();
+    description.validator = NULL;
 
-    _field->subfieldAdd(subfieldDescription, getSubfieldDiscretization(subfieldName));
+    _field->subfieldAdd(description, getSubfieldDiscretization(subfieldName));
     this->setSubfieldQuery(subfieldName);
 
     PYLITH_METHOD_END;
@@ -108,18 +107,17 @@ pylith::sources::AuxiliaryFactorySourceTime::addTimeHistoryValue(void) {
 
     const char* subfieldName = "time_history_value";
 
-    assert(_defaultDescription);
     assert(_normalizer);
-    pylith::topology::FieldBase::Description subfieldDescription(*_defaultDescription);
-    subfieldDescription.label = subfieldName;
-    subfieldDescription.alias = subfieldName;
-    subfieldDescription.vectorFieldType = pylith::topology::FieldBase::SCALAR;
-    subfieldDescription.numComponents = 1;
-    subfieldDescription.componentNames.resize(1);
-    subfieldDescription.componentNames[0] = subfieldName;
-    subfieldDescription.validator = NULL;
+    pylith::topology::Field::Description description;
+    description.label = subfieldName;
+    description.alias = subfieldName;
+    description.vectorFieldType = pylith::topology::FieldBase::SCALAR;
+    description.numComponents = 1;
+    description.componentNames.resize(1);
+    description.componentNames[0] = subfieldName;
+    description.validator = NULL;
 
-    _field->subfieldAdd(subfieldDescription, getSubfieldDiscretization("time_history_amplitude"));
+    _field->subfieldAdd(description, getSubfieldDiscretization("time_history_amplitude"));
     // No subfield query; populated by integrator or constraint at beginning of time step.
 
     PYLITH_METHOD_END;
