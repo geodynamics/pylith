@@ -245,6 +245,33 @@ pylith::sources::AuxiliaryFactoryWellboreSource::addWellboreCharacter(void) { //
 } // addWellboreCharacter
 
 
+// ----------------------------------------------------------------------
+// Add r_e constant subfield to auxiliary fields.
+void
+pylith::sources::AuxiliaryFactoryWellboreSource::addr_e_constant(void) { // r_e constant
+    PYLITH_METHOD_BEGIN;
+    PYLITH_JOURNAL_DEBUG("addr_e_constant(void)");
+
+    const char* subfieldName = "r_e_constant";
+    const PylithReal noScale = 1;
+
+    pylith::topology::Field::Description description;
+    description.label = subfieldName;
+    description.alias = subfieldName;
+    description.vectorFieldType = pylith::topology::Field::SCALAR;
+    description.numComponents = 1;
+    description.componentNames.resize(1);
+    description.componentNames[0] = subfieldName;
+    description.scale = noScale;
+    description.validator = NULL;
+
+    _field->subfieldAdd(description, getSubfieldDiscretization(subfieldName));
+    this->setSubfieldQuery(subfieldName);
+
+    PYLITH_METHOD_END;
+} // addWellboreCharacter
+
+
 // ----------------------------------------------------------------------------
 // Add isotropic permeability subfield to auxiliary fields.
 void

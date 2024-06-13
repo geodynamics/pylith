@@ -62,6 +62,9 @@ public:
     /// Add wellbore character subfield to auxiliary subfields.
     void addWellboreCharacter(void);
 
+    /// Add r_e constant character subfield to auxiliary subfields.
+    void addr_e_constant(void);
+
     /// Add element dimensions subfield to auxiliary subfields.
     void addElementDimensions(void);
 

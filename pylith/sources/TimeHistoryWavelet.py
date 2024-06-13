@@ -15,7 +15,7 @@
 #
 # @file pylith/sources/TimeHistoryWavelet.py
 #
-# @brief Python source time functiof for a ricker wavelet.
+# @brief Python source time function for a user defined wavelet.
 #
 # Factory: pointforce_sourcetimefunction
 
