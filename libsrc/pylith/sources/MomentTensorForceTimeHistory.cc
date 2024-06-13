@@ -20,7 +20,7 @@
 
 #include "pylith/sources/MomentTensorForce.hh" // implementation of object methods
 
-// #include "pylith/sources/AuxiliaryFactorySourceTime.hh" // USES AuxiliaryFactorySourceTime
+#include "pylith/sources/AuxiliaryFactorySourceTime.hh" // USES AuxiliaryFactorySourceTime
 #include "pylith/sources/SourceTimeFunctionMomentTensorForce.hh" // HASA SourceTimeFunctionMomentTensorSource
 #include "pylith/sources/AuxiliaryFactoryMomentTensorForce.hh" // USES AuxiliaryFactoryMomentTensorForce
 #include "pylith/sources/DerivedFactoryMomentTensorForce.hh" // USES DerivedFactoryMomentTensorForce
@@ -176,7 +176,7 @@ pylith::sources::MomentTensorForce::updateAuxiliaryField(pylith::topology::Field
     assert(_sourceTimeFunction);
     const PylithScalar timeScale = _normalizer->getTimeScale();
 
-    _sourceTimeFunction->updateAuxiliaryField(auxiliaryField, t, timeScale, _normalizer);
+    _sourceTimeFunction->updateAuxiliaryField(auxiliaryField, t, timeScale);
 
     // if (_useTimeHistory) {
     //     assert(_normalizer);

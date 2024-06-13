@@ -23,6 +23,8 @@
 #include "pylith/sources/AuxiliaryFactorySourceTime.hh" // USES AuxiliaryFactorySourceTime
 
 #include "pylith/fekernels/TimeHistoryWavelet.hh" // USES TimeHistoryWavelet kernels
+#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 
@@ -34,7 +36,7 @@
 // Default constructor.
 pylith::sources::TimeHistoryWavelet::TimeHistoryWavelet(void) :
     _dbTimeHistory(NULL),
-    _auxiliaryFactory(new pylith::sources::AuxiliaryFactorySourceTime), \
+    _auxiliaryFactory(new pylith::sources::AuxiliaryFactorySourceTime),
     _useTimeHistory(true) {
     pylith::utils::PyreComponent::setName("timehistorywavelet");
 } // constructor
@@ -143,10 +145,11 @@ pylith::sources::TimeHistoryWavelet::getKernelg1v_explicit(const spatialdata::ge
 void
 pylith::sources::TimeHistoryWavelet::updateAuxiliaryField(pylith::topology::Field* auxiliaryField,
                                                           const PylithReal t,
-                                                          const PylithReal timeScale) {
+                                                          const PylithReal timeScale,
+                                                          spatialdata::units::Nondimensional* _normalizer) {
     if (_useTimeHistory) {
-        // assert(_normalizer);
-        // const PylithScalar timeScale = _normalizer->getTimeScale();
+        assert(_normalizer);
+        const PylithScalar timeScale = _normalizer->getTimeScale();
         AuxiliaryFactorySourceTime::updateAuxiliaryField(auxiliaryField, t, timeScale, _dbTimeHistory);
     } // if
 }

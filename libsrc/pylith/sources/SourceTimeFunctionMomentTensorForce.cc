@@ -90,7 +90,8 @@ pylith::sources::SourceTimeFunctionMomentTensorForce::addKernelsUpdateStateVars(
 void
 pylith::sources::SourceTimeFunctionMomentTensorForce::updateAuxiliaryField(pylith::topology::Field* auxiliaryField,
                                                                            const PylithReal t,
-                                                                           const PylithReal timeScale) {
+                                                                           const PylithReal timeScale,
+                                                                           spatialdata::units::Nondimensional* _normalizer) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("updateAuxiliaryField(auxiliaryField"<<auxiliaryField<<", t="<<t<<", timeScale"<<timeScale<<") empty method");
 

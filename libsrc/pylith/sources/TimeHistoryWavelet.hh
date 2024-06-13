@@ -95,7 +95,8 @@ public:
      */
     void updateAuxiliaryField(pylith::topology::Field* auxiliaryField,
                               const PylithReal t,
-                              const PylithReal timeScale);
+                              const PylithReal timeScale,
+                              spatialdata::units::Nondimensional* _normalizer);
 
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
