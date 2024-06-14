@@ -43,9 +43,13 @@ dist_noinst_DATA = \
 	coordsys.py \
 	generate_initial_stress.py \
 	generate_slowslip.py \
+	generate_slowslip.cfg \
 	generate_surfjou.py \
 	make_synthetic_gnssdisp.py \
+	make_synthetic_gnssdisp.cfg \
+	cgnss_stations.txt \
 	slip_invert.py \
+	slip_invert.cfg \
 	viz/plot_inversion_misfit.py \
 	input/README.md \
 	scratch/README.md

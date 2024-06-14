@@ -66,7 +66,7 @@ class GenerateSlowslip(Application):
     slipAmplitudes = pythia.pyre.inventory.list("slip_amplitudes", default=[0.0, 0.5, 1.0])
     slipAmplitudes.meta['tip'] = "List of slip amplitudes."
 
-    gridLonRange = pythia.pyre.inventory.list("grid_lon_range", default=[-123.0, -124.0])
+    gridLonRange = pythia.pyre.inventory.list("grid_lon_range", default=[-124.0, -123.0])
     gridLonRange.meta['tip'] = "Min and max longitude values for grid."
 
     gridLatRange = pythia.pyre.inventory.list("grid_lat_range", default=[45.0, 46.0])
