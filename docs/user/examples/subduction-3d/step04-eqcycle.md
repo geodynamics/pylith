@@ -109,7 +109,7 @@ You can move the slider or use the `p` and `n` keys to change the increment or d
 ---
 caption: Visualize PyLith output using `pylith_viz`.
 ---
-pylith_viz --filename=output/step03_eqcycle-domain.h5 warp_grid --component=x --exaggeration=5000
+pylith_viz --filename=output/step04_eqcycle-domain.h5 warp_grid --component=x --exaggeration=5000
 
 ```
 

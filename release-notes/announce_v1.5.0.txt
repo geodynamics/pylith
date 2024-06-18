@@ -9,7 +9,7 @@ friction with a few widely-used fault constitutive models, (2) an
 optimized solver for explicit time-stepping with a lumped Jacobian
 matrix, (3) a total Langrangian formulation for rigid-body motion and
 small strains, (4) use of scientific notation in VTK output files with
-user-specified precision, and (5) use of nodeset names in CUBIT Exodus
+user-specified precision, and (5) use of nodeset names in Cubit Exodus
 files. We encourage all users of previous PyLith releases to switch to
 this latest release.
 
@@ -75,9 +75,9 @@ RELEASE NOTES
     Data values in ASCII data files are written in scientific notation
     with user-specified precision.
 
-  * Nodeset names in CUBIT Exodus files
+  * Nodeset names in Cubit Exodus files
 
-    Use of nodeset names in CUBIT Exodus files for boundary conditions
+    Use of nodeset names in Cubit Exodus files for boundary conditions
     and faults. Users can specify to use nodeset names (default
     behavior) or ids.
 

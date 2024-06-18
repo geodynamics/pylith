@@ -66,6 +66,7 @@ dist_noinst_DATA = \
 	user/benchmarks/quasistatic-strikeslip.md \
 	user/benchmarks/savage-prescott.md \
 	user/benchmarks/scec-dynrup.md \
+	user/components/implementations.md \
 	user/components/apps/EqInfoApp.md \
 	user/components/apps/PyLithApp.md \
 	user/components/apps/index.md \
@@ -176,7 +177,7 @@ dist_noinst_DATA = \
 	user/components/topology/RefineUniform.md \
 	user/components/topology/Subfield.md \
 	user/components/topology/index.md \
-	user/components/update.sh \
+	user/components/update_components.sh \
 	user/components/utils/CollectVersionInfo.md \
 	user/components/utils/DumpParameters.md \
 	user/components/utils/DumpParametersAscii.md \

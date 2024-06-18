@@ -51,7 +51,7 @@ materials = [elastic]
 materials.elastic = pylith.materials.Elasticity
 
 [pylithapp.problem.materials.elastic]
-elastic.bulk_rheology = pylith.materials.IsotropicLinearElasticity
+bulk_rheology = pylith.materials.IsotropicLinearElasticity
 ```
 
 In this suite of examples we have a single material, and we must specify a description for the material and the label value.

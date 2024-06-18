@@ -8,7 +8,7 @@
 # See https://mit-license.org/ and LICENSE.md and for license information. 
 # =================================================================================================
 #
-# CUBIT/Trelis journal file for generating a tet mesh of the subduction zone.
+# Cubit/Trelis journal file for generating a tet mesh of the subduction zone.
 
 # ----------------------------------------------------------------------
 # Generate geometry

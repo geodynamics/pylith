@@ -142,7 +142,7 @@ pylith::problems::InitialConditionPatch::verifyConfiguration(const pylith::topol
         msg << "Label '" << _labelName << "' with value '" << _labelValue << "' for initial condition '"
             << PyreComponent::getIdentifier() << "' contains only cells. Labels for initial conditions must "
                                              "contain cells and lower dimension points (for example, vertices, edges, and faces). These are "
-                                             "not available for CUBIT meshes; the are available for physical groups created using VertexGroup "
+                                             "not available for Cubit meshes; the are available for physical groups created using VertexGroup "
                                              "in Gmsh Python scripts.";
         throw std::runtime_error(msg.str());
     } // if

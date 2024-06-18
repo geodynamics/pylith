@@ -137,7 +137,7 @@ In {numref}`fig:example:reverse:2d:step06:solution` we use the `pylith_viz` util
 ---
 caption: Visualize PyLith output using `pylith_viz`.
 ---
-pylith_viz --filenames=output/step06_twofaults_elastic-domain.h5 warp_grid --component=x
+pylith_viz --filenames=output/step06_twofaults_elastic-domain.h5 warp_grid --component=x --exaggeration=3000
 ```
 
 :::{figure-md} fig:example:reverse:2d:step06:solution

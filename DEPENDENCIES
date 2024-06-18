@@ -26,6 +26,6 @@ git (if building from repository)
 OPTIONAL DEPENDENCIES
 
 Catch2 (https://github.com/catchorg/Catch2)
-CUBIT (https://cubit.sandia.gov)
+Cubit (https://cubit.sandia.gov)
 Gmsh (https://gmsh.info)
 netcdf (http://www.unidata.ucar.edu/software/netcdf/)

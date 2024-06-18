@@ -35,7 +35,7 @@ We create a brick, extracting a midsurface from it, and then splitting the remai
 We assign names to the surfaces, curves, and important vertices that we use when we specify the mesh sizing information and defining blocks and nodesets.
 
 :::{important}
-We use IDless journaling in CUBIT.
+We use IDless journaling in Cubit.
 This allows us to reference objects in a manner that should be independent of the version of Cubit that is being used.
 In the Python script the original command used is typically commented out, and the following command is the equivalent IDless command.
 :::

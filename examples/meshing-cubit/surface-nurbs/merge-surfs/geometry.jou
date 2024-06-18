@@ -9,12 +9,12 @@
 # =================================================================================================
 # ----------------------------------------------------------------------
 #
-# CUBIT journal file with geometry for example showing how to merge
+# Cubit journal file with geometry for example showing how to merge
 # planar surfaces.
 #
-# We also use the CUBIT support for APREPRO (the expressions in
+# We also use the Cubit support for APREPRO (the expressions in
 # braces), which includes units and mathematical functions. See the
-# APREPRO section in the appendix of the CUBIT documentation for more
+# APREPRO section in the appendix of the Cubit documentation for more
 # information.
 #
 # ----------------------------------------------------------------------

@@ -17,8 +17,8 @@ Both of these journal files make use of the `geometry.jou` and `createbc.jou` fi
 We use the Cubit graphical user interface to play the Journal files.
 
 :::{important}
-We use IDless journaling in CUBIT.
-This allows us to reference objects in a manner that should be independent of the version of CUBIT that is being used.
+We use IDless journaling in Cubit.
+This allows us to reference objects in a manner that should be independent of the version of Cubit that is being used.
 In the journal files, the original command used is typically commented out, and the following command is the equivalent IDless command.
 :::
 

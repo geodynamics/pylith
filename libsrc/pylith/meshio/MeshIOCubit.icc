@@ -9,7 +9,7 @@
 // =================================================================================================
 #pragma once
 
-// Set filename for CUBIT file.
+// Set filename for Cubit file.
 inline
 void
 pylith::meshio::MeshIOCubit::setFilename(const char* name) {
@@ -17,7 +17,7 @@ pylith::meshio::MeshIOCubit::setFilename(const char* name) {
 }
 
 
-// Get filename of CUBIT file.
+// Get filename of Cubit file.
 inline
 const char*
 pylith::meshio::MeshIOCubit::getFilename(void) const {

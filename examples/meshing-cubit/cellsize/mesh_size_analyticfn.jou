@@ -8,7 +8,7 @@
 # See https://mit-license.org/ and LICENSE.md and for license information. 
 # =================================================================================================
 #
-# CUBIT journal file to create a mesh where the resolution is given as
+# Cubit journal file to create a mesh where the resolution is given as
 # a field variable in an ExodusII file. The field variable
 # 'cell_size_fn' is computed in a Python script using an analytic
 # function.

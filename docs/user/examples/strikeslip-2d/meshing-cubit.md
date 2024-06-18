@@ -31,7 +31,7 @@ Play the selected script or play the lines, making sure you play the first line 
 We specify the parameters controlling the geometry, mesh size, and cell shape near the top of the script.
 
 :::{important}
-We reference objects by their centroid so the resulting script should be independent of the version of CUBIT that is being used.
+We reference objects by their centroid so the resulting script should be independent of the version of Cubit that is being used.
 :::
 
 :::{note}

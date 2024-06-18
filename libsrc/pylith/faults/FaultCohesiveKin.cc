@@ -133,7 +133,7 @@ pylith::faults::FaultCohesiveKin::verifyConfiguration(const pylith::topology::Fi
     PYLITH_COMPONENT_DEBUG("verifyConfiguration(solution="<<solution.getLabel()<<")");
 
     // Verify solution contains required fields.
-    std::string reason = "interface 'FaultCohesiveImpulses'.";
+    std::string reason = "interface 'FaultCohesiveKin'.";
     size_t numRequired = 0;
     const size_t maxRequired = 2;
     pylith::string_vector requiredFields(maxRequired);
