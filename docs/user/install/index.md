@@ -10,7 +10,7 @@ Installation of PyLith on other operating systems - or installation on a cluster
 We have created a small utility called PyLith Installer that makes installing PyLith and all of its dependencies from source much easier.
 
 :::{figure-md} fig:install:choices
-<img src="figs/install_choices.*" alt="Guide for selecting the appropriate installation choice based on a hardware and intended use. The installation options are discussed in more detail in the following sections." width = "100%" />
+<img src="figs/install_choices.*" alt="Guide for selecting the appropriate installation choice based on a hardware and intended use. The installation options are discussed in more detail in the following sections." width = "800px" />
 
 Guide for selecting the appropriate installation choice based on a hardware and intended use.
 The installation options are discussed in more detail in the following sections.
@@ -38,9 +38,9 @@ On macOS systems you can check the operating system version by clicking on the A
 
 1. Open a terminal window and change to the directory where you want to place the distribution.
     ```{code-block} bash
-    $ cd $HOME
-    $ mkdir pylith
-    $ cd pylith
+    cd $HOME
+    mkdir pylith
+    cd pylith
     ```
 2. Download the Linux or macOS tarball from the PyLith web page
     <https://geodynamics.org/resources/pylith/supportingdocs/>, and save it to
@@ -48,16 +48,16 @@ On macOS systems you can check the operating system version by clicking on the A
 3. Unpack the tarball.
     ```{code-block} bash
       # Linux 64-bit
-      $ tar -xzf pylith-4.1.2-linux-x86_64.tar.gz
+      tar -xzf pylith-4.1.2-linux-x86_64.tar.gz
 
       # macOS
-      $ tar -xzf pylith-4.1.2-macOS-10.15-x86_64.tar.gz
+      tar -xzf pylith-4.1.2-macOS-10.15-x86_64.tar.gz
       ```
 4. Set environment variables.
 The provided `setup.sh` script only works if you are using bash shell.
 If you are using a different shell, you will need to alter how the environment variables are set in `setup.sh`.
 ```{code-block} bash
-$ source setup.sh
+source setup.sh
 Ready to run PyLith.
 ```
 
@@ -70,7 +70,7 @@ curl -L -O https://github.com/geodynamics/pylith/releases/download/v4.1.2/pylith
 
 Alternatively, if you do download the tarball using a web browser, after you unpack the tarball you can remove the macOS quarantine flags using the following commands (requires Administrator access):
 
-```{code-block} console
+```{code-block} bash
 # Show extended attributes
 xattr ./pylith-4.1.2-macOS-10.15-x86_64
 
@@ -115,7 +115,7 @@ You will run PyLith within the bash environment just like you would for a Linux 
 The PyLith Linux binary package includes Gmsh and PyVista, which rely on several Linux libraries that are not included with PyLith.
 In this section, we outline how to install these libraries based on user experiences; we do not have access to a Windows Subsystem for Linux for testing.
 
-```{code-block} console
+```{code-block} bash
 ---
 caption: Installation of extra libraries needed for Gmsh and PyVista. You only need to run these commands once per WSL installation.
 ---
@@ -132,13 +132,17 @@ sudo ln -s /usr/lib/x86_64-linux-gnu/dri /usr/lib/dri
 sudo apt-get install libstdc++6
 ```
 
+:::{important}
+Instead of running `source setup.sh` you will need to run `source setup.sh add-wsl-libs`.
+:::
+
 :::{tip}
-If you are able to run Gmsh or pylith_viz, but do not see any graphics, then you likely need to turn on software rendering by setting the `LIBGL_ALWAYS_SOFTWARE` environment variable.
-You can set this environment variable using the `enable-software-rendering` argument to the PyLith `setup.sh` script or set it in your shell.
+If you are able to run Gmsh or pylith_viz, but do not see any graphics, then you likely need to turn on software rendering by setting the environment variable `LIBGL_ALWAYS_SOFTWARE=1` in your shell.
+You can set this environment variable or have the `setup.sh` script set it for you with the `enable-software-rendering` argument.
 
 ```{code-block} bash
-# Turn on libGL software rendering.
-export LIBGL_ALWAYS_SOFTWARE=1
+# Add WSL libraries and turn on libGL software rendering.
+source setup.sh add-wsl-libs enable-software-rendering
 ```
 :::
 
