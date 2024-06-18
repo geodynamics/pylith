@@ -19,14 +19,13 @@ The installation options are discussed in more detail in the following sections.
 Help for installing and using PyLith is available from both a CIG forum and the GitHub issue tracking system <https://github.com/geodynamics/pylith/issues>.
 See {ref}`sec-getting-help` for more information.
 
-## Installation of Binary Executable
+## Binary Package
 
 The binaries are intended for users running on laptops or desktop computers (as opposed to clusters).
 The binaries contain the compilers and header files, so users wishing to extend the code can still use the binary and do not need to build PyLith and its dependencies from source.
 See {ref}`sec-developer-contributing` for more information on extending PyLith.
 
-Binary executables are available for Linux (glibc 2.12 and later) and macOS (Intel 11.0 and later) from the PyLith web page <https://geodynamics.org/resources/pylith/>.
-Users running macOS on MX based computers can use the Intel version.
+Binary executables are available for Linux (glibc 2.12 and later) and macOS (Intel 10.15 and later and arm64 11.0 and later) from the PyLith web page <https://geodynamics.org/resources/pylith/>.
 Users running Windows 10 build 14316 and later can install a Linux bash environment and use the PyLith binary for Linux (see Section {ref}`sec:install:windows` for more information).
 
 :::{tip}
@@ -37,16 +36,16 @@ On macOS systems you can check the operating system version by clicking on the A
 
 ### Linux and macOS
 
-1.  Open a terminal window and change to the directory where you want to place the distribution.
+1. Open a terminal window and change to the directory where you want to place the distribution.
     ```{code-block} bash
     $ cd $HOME
     $ mkdir pylith
     $ cd pylith
     ```
-2.  Download the Linux or macOS tarball from the PyLith web page
+2. Download the Linux or macOS tarball from the PyLith web page
     <https://geodynamics.org/resources/pylith/supportingdocs/>, and save it to
     the desired location, e.g., `$HOME/pylith`.
-3.  Unpack the tarball.
+3. Unpack the tarball.
     ```{code-block} bash
       # Linux 64-bit
       $ tar -xzf pylith-4.1.2-linux-x86_64.tar.gz
@@ -65,13 +64,13 @@ Ready to run PyLith.
 :::{tip}
 To bypass macOS quarantine restrictions, simply use command line program `curl` to download the tarball from within a terminal rather than using a web browser.
 
-```
+```{code-block} console
 curl -L -O https://github.com/geodynamics/pylith/releases/download/v4.1.2/pylith-4.1.2-macOS-10.15-x86_64.tar.gz
 ```
 
 Alternatively, if you do download the tarball using a web browser, after you unpack the tarball you can remove the macOS quarantine flags using the following commands (requires Administrator access):
 
-```
+```{code-block} console
 # Show extended attributes
 xattr ./pylith-4.1.2-macOS-10.15-x86_64
 
@@ -91,10 +90,10 @@ This will prevent most conflicts.
 :::
 
 (sec:install:windows)=
-### Windows
+### Windows Subsystem for Linux Setup
 
 PyLith is developed within the Unix/Linux framework, and we do not provide a native PyLith binary distribution for Windows.
-The preferred approach to installing PyLith on a computer running Windows is to enable use of a Linux subsystem.
+The preferred approach for installing PyLith on a computer running Windows is to enable use of a Linux subsystem.
 This permits use of the PyLith Linux x86_64 binary within the bash environment.
 
 To enable the Linux subsystem on Windows 10 build 14316 and later (users running an earlier Windows build should use the PyLith Docker container):
@@ -111,9 +110,40 @@ Create a user account and password for the bash environment.
 7. Install the PyLith Linux x86 binary within the bash environment following the instructions for installing the PyLith binary for Linux.
 You will run PyLith within the bash environment just like you would for a Linux operating system.
 
+#### WSL Setup for Gmsh and PyVista
+
+The PyLith Linux binary package includes Gmsh and PyVista, which rely on several Linux libraries that are not included with PyLith.
+In this section, we outline how to install these libraries based on user experiences; we do not have access to a Windows Subsystem for Linux for testing.
+
+```{code-block} console
+---
+caption: Installation of extra libraries needed for Gmsh and PyVista. You only need to run these commands once per WSL installation.
+---
+# Update Linux
+sudo apt-get update
+
+# Install X libraries
+sudo apt-get install libgl1-mesa-dri libglu1-mesa x11-apps gnome-terminal -y
+
+# Make drivers visible to locations where Gmsh and PyVista expect them to be (/usr/lib/dri)
+sudo ln -s /usr/lib/x86_64-linux-gnu/dri /usr/lib/dri
+
+# Install libstdc++6
+sudo apt-get install libstdc++6
+```
+
 :::{tip}
-To be able to use Gmsh within the Windows Subsystem for Linux, you can install `libglu1-mesa-dev`.
-This provides the graphics libraries needed by Gmsh.
+If you are able to run Gmsh or pylith_viz, but do not see any graphics, then you likely need to turn on software rendering by setting the `LIBGL_ALWAYS_SOFTWARE` environment variable.
+You can set this environment variable using the `enable-software-rendering` argument to the PyLith `setup.sh` script or set it in your shell.
+
+```{code-block} bash
+# Turn on libGL software rendering.
+export LIBGL_ALWAYS_SOFTWARE=1
+```
+:::
+
+:::{seealso}
+Refer to [Microsoft Tutorial: Run Linux GUI apps on the WSL](https://learn.microsoft.com/en-us/windows/wsl/tutorials/gui-apps) for additional information about running graphic user interface applications within the Windows Subsystem for Linux.
 :::
 
 ### Extending PyLith or Integrating Other Software Into PyLith
@@ -124,7 +154,7 @@ New in v3.0.0
 
 We strongly recommend using the [PyLith development environment Docker container](https://pylith-installer.readthedocs.io/en/latest/devenv/index.html) if you want to extend PyLith or integrate PyLith into other software.
 
-## Installation from Source
+## Source Installation
 
 PyLith depends on a number of other packages (see {numref}`fig:pylith:dependencies`).
 This complicates building the software from the source code.
@@ -139,7 +169,7 @@ For each package this utility downloads the source code, configures it, builds i
  This insures that the versions of the dependencies are consistent with PyLith and that the proper configure arguments are used.
  The minimum requirements for using the PyLith installer are a C compiler, `tar`, and `wget` or `curl`. Detailed instructions for how to install PyLith using the installer are included in the installer distribution, which is available from the PyLith web page <https://geodynamics.org/resources/pylith/supportingdocs/>.
 
-## Verifying PyLith is Installed Correctly
+## Verifying PyLith Installation
 
 The easiest way to verify that PyLith has been installed correctly is to run one or more of the examples supplied with the binary and source code.
 In the binary distribution, the examples are located in `src/pylith-4.1.2/examples` while in the source distribution, they are located in `pylith-4.1.2/examples`.
@@ -192,5 +222,3 @@ Pyre contains support for the LSF, PBS, SGE, and Globus batch systems.
 Properly configured, Pyre can handle job submissions automatically, insulating users from the details of the batch system and the site configuration.
 
 See {ref}`sec-run-pylith-cluster` for more information on how to use PyLith on a cluster with a job scheduling system.
-
-% End of file
