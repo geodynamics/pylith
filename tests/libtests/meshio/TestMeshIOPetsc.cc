@@ -79,4 +79,22 @@ pylith::meshio::TestMeshIOPetsc::testRead(void) {
 } // testRead
 
 
+// ------------------------------------------------------------------------------------------------
+// Test read() with common user mesh generation errors.
+void
+pylith::meshio::TestMeshIOPetsc::testReadError(void) {
+    PYLITH_METHOD_BEGIN;
+    assert(_io);
+    assert(_data);
+
+    // Read mesh
+    _io->setFilename(_data->filename.c_str());
+    delete _mesh;_mesh = new topology::Mesh;assert(_mesh);
+
+    CHECK_THROWS_AS(_io->read(_mesh), std::runtime_error);
+
+    PYLITH_METHOD_END;
+} // testReadError
+
+
 // End of file
