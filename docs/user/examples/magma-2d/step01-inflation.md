@@ -12,7 +12,7 @@ We generate flow by imposing a pressure on the external boundary of the conduit 
 The parameters specific to this example are in `step01_inflation.cfg`.
 
 :::{figure-md} fig:example:magma:2d:step01:diagram
-<img src="figs/step01-diagram.*" alt="" scale="100%">
+<img src="figs/step01-diagram.*" alt="" width="400px">
 
 Boundary and initial conditions for magma inflation.
 We apply roller boundary conditions on the +x, -x, and -y boundaries.
