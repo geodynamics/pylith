@@ -23,7 +23,7 @@ dist_noinst_DATA = \
 	fault_main_slip.spatialdb \
 	fault_west_slip.spatialdb \
 	fault_east_slip.spatialdb \
-	convert_fault_traces.sh \	
+	convert_fault_traces.sh \
 	faulttrace_east_latlon.txt \
 	faulttrace_east_utm.txt \
 	faulttrace_main_latlon.txt \
