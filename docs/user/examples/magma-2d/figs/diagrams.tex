@@ -10,7 +10,7 @@
 \input{../../../../tikz-styles/example-style}
 
 
-\foreach \figpart in {1,...,2}{
+\foreach \figpart in {1,...,4}{
 
 % -------------------------------------------------------------------------------------------------
 \begin{tikzpicture}[scale=0.3]
@@ -97,9 +97,86 @@
 
 
 % -------------------------------------------------------------------------------------------------
-% Step 1 - Confined
+% Gmsh geometry
 % -------------------------------------------------------------------------------------------------
 \ifthenelse{\figpart=2}{
+
+% Axes
+\draw[axes,arrow] ($(p1)+(0,-\axesshift)$) to ($(p2)+(1.0*\axesshift,-\axesshift)$);
+\node[axes-label,right] at ($(p2)+(1.0*\axesshift,-\axesshift)$) {x};
+\foreach \ix in {0,1}{%
+    \pgfmathsetmacro{\x}{\ix*\domainx}
+    \draw[axes] ($(p1)+(\ix*\domainx,-\axesshift)$) -- ++(0,-\ticksize) node[below]{\x\,km};
+}
+
+\draw[axes,arrow] ($(p1)+(-\axesshift,0)$) to ($(p4)+(-\axesshift,+1.0*\axesshift)$);
+\node[axes-label,above] at ($(p4)+(-\axesshift,1.0*\axesshift)$) {y};
+\foreach \iy in {0,1}{%
+    \pgfmathsetmacro{\y}{-\domainy + \iy*\domainy}
+    \draw[axes] ($(p1)+(-\axesshift,\iy*\domainy)$) -- ++(-\ticksize,0) node[left]{\y\,km};
+}
+
+% Surfaces
+\node[curve-label] at ($(p1)+(0.5*\domainx,0.75*\domainy)$) {s\_domain};
+\node[curve-label, text=white] at ($(p7)+(0.0,0.0)$) {s\_reservoir};
+
+% Curves
+\node[bc-label, anchor=north, rotate=90] at ($(p1)+(0,0.5*\domainy)$) {c\_xneg};
+\node[bc-label, anchor=south, rotate=-90] at ($(p2)+(0,0.5*\domainy)$) {c\_xpos};
+\node[bc-label, anchor=south] at ($(p1)+(0.25*\domainx,0)$) {c\_yneg\_left};
+\node[bc-label, anchor=south] at ($(p1)+(0.75*\domainx,0)$) {c\_yneg\_right};
+\node[bc-label, anchor=south] at ($(p4)+(0.5*\domainx,0)$) {c\_ypos};
+\node[bc-label, anchor=north] at ($(p16)-(0,4ex)$) {c\_inflow};
+\node[bc-label, anchor=south] at (p12) {c\_chamber\_left};
+\node[bc-label, anchor=north] at (p13) {c\_chamber\_right};
+\node[bc-label, anchor=north, rotate=-90] at ($(p15)+(-2ex,0.14*\domainy)$) {c\_conduit\_left};
+\node[bc-label, anchor=north, rotate=90] at ($(p9)+(+2ex,0.14*\domainy)$) {c\_conduit\_right};
+
+}{}
+
+
+% -------------------------------------------------------------------------------------------------
+% Cubit geometry
+% -------------------------------------------------------------------------------------------------
+\ifthenelse{\figpart=3}{
+
+% Axes
+\draw[axes,arrow] ($(p1)+(0,-\axesshift)$) to ($(p2)+(1.0*\axesshift,-\axesshift)$);
+\node[axes-label,right] at ($(p2)+(1.0*\axesshift,-\axesshift)$) {x};
+\foreach \ix in {0,1}{%
+    \pgfmathsetmacro{\x}{\ix*\domainx}
+    \draw[axes] ($(p1)+(\ix*\domainx,-\axesshift)$) -- ++(0,-\ticksize) node[below]{\x\,km};
+}
+
+\draw[axes,arrow] ($(p1)+(-\axesshift,0)$) to ($(p4)+(-\axesshift,+1.0*\axesshift)$);
+\node[axes-label,above] at ($(p4)+(-\axesshift,1.0*\axesshift)$) {y};
+\foreach \iy in {0,1}{%
+    \pgfmathsetmacro{\y}{-\domainy + \iy*\domainy}
+    \draw[axes] ($(p1)+(-\axesshift,\iy*\domainy)$) -- ++(-\ticksize,0) node[left]{\y\,km};
+}
+
+% Surfaces
+\node[bc-label] at ($(p1)+(0.5*\domainx,0.75*\domainy)$) {s\_domain};
+\node[bc-label, text=white] at ($(p7)+(0.0,0.0)$) {s\_reservoir};
+
+% Curves
+\node[bc-label, anchor=north, rotate=90] (xneg-label) at ($(p1)+(0,0.5*\domainy)$) {c\_xneg};
+\node[bc-label, anchor=south, rotate=-90] (xpos-label) at ($(p2)+(0,0.5*\domainy)$) {c\_xpos};
+\node[bc-label, anchor=south] (yneg-label) at ($(p1)+(0.25*\domainx,0)$) {c\_yneg\_left};
+\node[bc-label, anchor=south] (yneg-label) at ($(p1)+(0.75*\domainx,0)$) {c\_yneg\_right};
+\node[bc-label, anchor=south] (ypos-label) at ($(p4)+(0.5*\domainx,0)$) {c\_ypos};
+\node[bc-label, anchor=north] at ($(p16)-(0,4ex)$) {c\_inflow};
+\node[bc-label, anchor=south] at (p12) {c\_chamber};
+\node[bc-label, anchor=north, rotate=-90] at ($(p15)+(-2ex,0.14*\domainy)$) {c\_conduit\_left};
+\node[bc-label, anchor=north, rotate=90] at ($(p9)+(+2ex,0.14*\domainy)$) {c\_conduit\_right};
+
+}{}
+
+
+% -------------------------------------------------------------------------------------------------
+% Step 1 - Confined
+% -------------------------------------------------------------------------------------------------
+\ifthenelse{\figpart=4}{
 \def\radius{0.15*\bndryshift}%
 \def\rspacing{0.5*\domainy}%
     
