@@ -9,15 +9,14 @@
 # =================================================================================================
 
 dist_noinst_PYTHON = \
-    generate_gmsh.py
+    generate_gmsh.py \
+    generate_cubit.py
 
 dist_noinst_DATA = \
 	README.md \
-	geometry.jou \
-	mesh_tri.jou \
-	mesh_quad.jou \
-	bc.jou \
     mesh_tri.msh \
+    mesh_tri.exo \
+    mesh_quad.exo \
     pylithapp.cfg \
     step01_inflation.cfg \
     step02_inflation_statevars.cfg
