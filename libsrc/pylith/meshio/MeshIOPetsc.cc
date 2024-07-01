@@ -129,25 +129,30 @@ pylith::meshio::MeshIOPetsc::_read(void) {
         "-" + _prefix + "dm_plex_gmsh_mark_vertices", "",
     };
 
-    PetscErrorCode err;
-    if (!_filename.empty()) {
-        for (size_t i = 0; i < noptions; ++i) {
-            err = PetscOptionsSetValue(NULL, options[2*i+0].c_str(), options[2*i+1].c_str());
-        } // for
-    } // if
-
     PetscDM dmMesh = NULL;
-    err = DMCreate(_mesh->getComm(), &dmMesh);PYLITH_CHECK_ERROR(err);
-    err = DMSetType(dmMesh, DMPLEX);PYLITH_CHECK_ERROR(err);
-    if (!_prefix.empty()) {
-        err = PetscObjectSetOptionsPrefix((PetscObject) dmMesh, _prefix.c_str());PYLITH_CHECK_ERROR(err);
-    } // if
-    err = DMPlexDistributeSetDefault(dmMesh, PETSC_FALSE);PYLITH_CHECK_ERROR(err);
-    err = DMSetFromOptions(dmMesh);PYLITH_CHECK_ERROR(err);
+    try {
+        PetscErrorCode err;
+        if (!_filename.empty()) {
+            for (size_t i = 0; i < noptions; ++i) {
+                err = PetscOptionsSetValue(NULL, options[2*i+0].c_str(), options[2*i+1].c_str());
+            } // for
+        } // if
 
-    _MeshIOPetsc::fixMaterialLabel(&dmMesh);
-    _MeshIOPetsc::fixBoundaryLabels(&dmMesh);
-    _mesh->setDM(dmMesh);
+        err = DMCreate(_mesh->getComm(), &dmMesh);PYLITH_CHECK_ERROR(err);
+        err = DMSetType(dmMesh, DMPLEX);PYLITH_CHECK_ERROR(err);
+        if (!_prefix.empty()) {
+            err = PetscObjectSetOptionsPrefix((PetscObject) dmMesh, _prefix.c_str());PYLITH_CHECK_ERROR(err);
+        } // if
+        err = DMPlexDistributeSetDefault(dmMesh, PETSC_FALSE);PYLITH_CHECK_ERROR(err);
+        err = DMSetFromOptions(dmMesh);PYLITH_CHECK_ERROR(err);
+
+        _MeshIOPetsc::fixMaterialLabel(&dmMesh);
+        _MeshIOPetsc::fixBoundaryLabels(&dmMesh);
+        _mesh->setDM(dmMesh);
+    } catch (...) {
+        DMDestroy(&dmMesh);
+        throw;
+    } // try/catch
 
     _MeshIOPetsc::Events::logger.eventEnd(_MeshIOPetsc::Events::read);
     PYLITH_METHOD_END;

@@ -116,7 +116,11 @@ pylith::testing::TestDriver::run(int argc,
     } // if
 
     // Initialize PETSc
+#if defined(MALLOC_DEBUG_OFF)
+    const bool mallocDump = false;
+#else
     const bool mallocDump = !quiet;
+#endif
     int err = _initializePetsc(argv[0], petscArgs, mallocDump);CHKERRQ(err);
 
     // Initialize Python (needed for journals).

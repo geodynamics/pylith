@@ -33,6 +33,9 @@ public:
     /// Test read().
     void testRead(void);
 
+    /// Test read() with common user mesh generation errors.
+    void testReadError(void);
+
     // PROTECTED METHODS ////////////////////////////////////////////////
 protected:
 

@@ -57,6 +57,9 @@ dist_noinst_DATA = \
 	box_tet_binary.msh \
 	box_hex_ascii.msh \
 	box_hex_binary.msh \
+	noembed_tri.msh \
+	noembed_tet.msh \
+	nosplit_tri.msh \
 	tri3.mesh \
 	tri3_vertex_t10.vtk \
 	tri3_cell_t10.vtk \

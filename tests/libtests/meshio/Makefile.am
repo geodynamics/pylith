@@ -12,7 +12,7 @@ include $(top_srcdir)/tests/check_catch2.am
 
 SUBDIRS = data
 
-TESTS = libtest_meshio libtest_vtk libtest_hdf5
+TESTS = libtest_meshio libtest_meshio_errors libtest_vtk libtest_hdf5
 
 check_PROGRAMS = $(TESTS)
 
@@ -28,6 +28,16 @@ libtest_meshio_SOURCES = \
 	$(top_srcdir)/tests/src/FaultCohesiveStub.cc \
 	$(top_srcdir)/tests/src/StubMethodTracker.cc \
 	$(top_srcdir)/tests/src/driver_catch2.cc
+
+libtest_meshio_errors_SOURCES = \
+	TestMeshIO.cc \
+	TestMeshIOPetsc.cc \
+	TestMeshIOPetsc_ErrorCases.cc \
+	$(top_srcdir)/tests/src/FaultCohesiveStub.cc \
+	$(top_srcdir)/tests/src/StubMethodTracker.cc \
+	$(top_srcdir)/tests/src/driver_catch2.cc
+
+libtest_meshio_errors_CPPFLAGS = $(AM_CPPFLAGS) -DMALLOC_DEBUG_OFF
 
 
 # VTK data writer
