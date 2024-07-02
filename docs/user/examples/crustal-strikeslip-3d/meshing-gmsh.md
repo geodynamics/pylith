@@ -2,12 +2,12 @@
 
 ## Geometry
 
-We use a the Open Cascade geometry engine to create a rectangular prism for the domain and construct vertical fault surfaces from the surface traces.
+We use a the OpenCASCADE geometry engine to create a rectangular prism for the domain and construct vertical fault surfaces from the surface traces.
 
 ## Meshing using Python Script
 
 We use the Python script `generate_gmsh.py` to create the geometry and generate the mesh.
-The script makes use of the `gmsh_utils.GenerateMesh` class (discussed in {ref}`sec-usr-run-pylith-gmsh-utils`), which provides the command line arguments and boilerplate methods.
+The script makes use of the `gmsh_utils.GenerateMesh` class (discussed in {ref}`sec-user-meshing-gmsh-utils`), which provides the command line arguments and boilerplate methods.
 In our `generate_gmsh.py` Python script, we create a class `App` that implements the functionality missing in `gmsh_utils.GenerateMesh`.
 We must implement the `create_geometry()`, `mark()`, and `generate_mesh()` methods that are abstract in the `GenerateMesh` base class.
 
@@ -16,7 +16,7 @@ We must implement the `create_geometry()`, `mark()`, and `generate_mesh()` metho
 
 Geometry created in Gmsh for generating the finite-element mesh.
 :::
-
+tro
 :::{important}
 In most cases, we store geometric entities in variables, so that we can refer to them later.
 However, when we subdivide the domain using the fault surfaces, we do not know the ids of the newly created entities.
@@ -25,7 +25,7 @@ In these cases we use the GUI to identify the curves and surfaces and save the i
 
 :::{important}
 In order for Gmsh to create cells with faces that align with the fault surfaces, we embed the fault surfaces in the domain.
-We use the Gmsh Open Cascade geometry function `fragment()` to embed the fault surfaces.
+We use the Gmsh OpenCASCADE geometry function `fragment()` to embed the fault surfaces.
 :::
 
 We use the Gmsh MeshSize options to define a discretization size that grows slowly at a geometric rate with distance from the fault.

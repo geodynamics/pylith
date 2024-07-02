@@ -5,6 +5,7 @@ intro/index.md
 install/index.md
 governingeqns/index.md
 run-pylith/index.md
+meshing/index.md
 problems/index.md
 physics/index.md
 components/index.md

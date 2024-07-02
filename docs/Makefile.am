@@ -684,6 +684,11 @@ dist_noinst_DATA = \
 	user/run-pylith/pylithapp.md \
 	user/run-pylith/troubleshooting.md \
 	user/run-pylith/utilities.md \
+	user/meshing/index.md \
+	user/meshing/overview.md \
+	user/meshing/cubit.md \
+	user/meshing/gmsh.md \
+	user/meshing/gmsh-utils.md \
 	developer/contributing/documentation/install.md \
 	developer/contributing/documentation/index.md \
 	developer/contributing/documentation/quickref.md \

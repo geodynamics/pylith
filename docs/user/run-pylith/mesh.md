@@ -1,4 +1,4 @@
-(sec-user-mesh)=
+(sec-user-femesh)=
 # Finite-Element Mesh
 
 The finite-element mesh specifies the geometry and topology of the discretization.
@@ -43,48 +43,7 @@ We have implemented our own readers for Exodus II files.
 For Gmsh files we use the reader included in PETSc; PETSc also supports several other formats, but they have not been tested for use with PyLith.
 Currently, PyLith requires that boundary conditions be specified by marking vertices and all materials are marked by the same label `material-id` with different label values for each material.
 The PyLith readers create the labels from the mesh input files.
-
-### Mesh generation with Cubit and Gmsh
-
-Cubit and Gmsh can generate quadrilateral or triangular meshes in 2D and hexahedral or tetrahedral meshes in 3D.
-In each case, you first create the geometry, specify the meshing algorithm and discretization size, and then generate the mesh.
-You can build up the geometry from points, curves, surfaces, and volumes or use the geometry engines to construct the domain using simple shapes.
-
-#### Cubit
-
-We have tended to construct Cubit meshes using journal files and leverage the Cubit APREPRO scripting language.
-Cubit also provides a Python interface, but you must use the Python interpreter provided with Cubit.
-The functionality of the two interfaces is quite similar, although the Python interface leverages a more complete development experience through a commonly used programming language.
-We have converted several of our Journal scripts using the APRERPRO scripting language in our examples to Python.
-
-#### Gmsh
-
-We only recently started using Gmsh and have only used the [Python interface](https://gitlab.onelab.info/gmsh/gmsh/-/blob/master/api/gmsh.py).
-Gmsh also offers a simple scripting language, similar to Cubit journal files.
-The Gmsh Python interface integrates well with the rest of Python; it can be installed so that it is compatible with the Python interpreter used by PyLith.
-This means one can leverage additional Python packages, such as geographic projection libraries. 
-Gmsh includes its own geometry engine as well as an interface to the Open CASCADE engine.
-
-:::{warning}
-Gmsh does not construct quadrilateral or hexahedral meshes directly; instead, it first constructs a triangular or tetrahedral mesh and then combines triangles or tetrahedra to form quadrilaterals or hexahedra.
-
-Sometimes it will not be able to remove all triangular or hexahedral cells, resulting in meshes with multiple shapes, which PyLith does not support.
-:::
-
-#### 2D meshing
-
-Constructing surfaces from points and curves for 2D meshing with Cubit and Gmsh is very similar.
-Cubit provides more geometric operations than Gmsh, but many simple geometric operations in Gmsh can be implemented by the user when using the Python interface.
-Gmsh includes a simple yet powerful interface for specifying the discretization size.
-Generating unstructured quadrilateral meshes for complex geometry is often easier in Cubit, whereas generating meshes with complex specification of discretization size is often easier with Gmsh.
-
-#### 3D meshing
-
-Cubit provides an extensive suite of tools for constructing complex 3D geometry.
-This includes building surfaces and performing geometric operations on surfaces and volumes.
-The suite of tools in the Gmsh geometry engine is more limited; the Open CASCADE engine interface provides additional tools.
-With either Cubit or Gmsh, you can use external CAD tools to generate the geometry.
-As in the case with 2D meshing, generating unstructure hexahedral meshes is often easier in Cubit, whereas generating meshes with complex specification of discretization size is often eaiser in Gmsh.
+Refer to {ref}`sec-user-meshing` for information about generating finite-element meshes using Cubit and Gmsh.
 
 ## ASCII Mesh Files - `MeshIOAscii`
 
@@ -161,72 +120,6 @@ Click on `Plot` to view the cumulative distribution of the metric over the cells
 :class: seealso
 [`MeshIOPetsc` Component](../components/meshio/MeshIOPetsc.md)
 :::
-
-(sec-usr-run-pylith-gmsh-utils)=
-### `gmsh_utils`
-
-In Gmsh we use physical groups to associate cells with materials and mark entities for boundary conditions and faults.
-The names of physical groups for materials must follow the syntax `material-id:TAG`, where TAG is the tag of the physical group.
-PyLith includes a Python module `pylith.meshio.gmsh_utils` to make it easy to generate a PyLith compatible Gmsh file.
-
-The function `create_material()` generates physical groups following the required naming convention of `material-id:TAG` given the tag and names of entities.
-Similarly, the function `create_group()` will construct physical groups for boundary conditions and faults compatible with PyLith.
-
-The physical groups for boundary conditions and faults must include entities at the topological dimension of the boundary condition as well as all lower dimensions.
-For example, for a boundary condition on curves a physical group must include the entities on the curves as well as the vertices defining the curves.
-For a boundary condition on surfaces a physical group must include the entities on the surfaces as well as the curves and vertices defining the surfaces.
-
-#### `GenerateMesh` Application Template
-
-The `gmsh_utils` module also includes a application template object (Python abstract base class) called `GenerateMesh` for writing Python scripts that generate meshes using Gmsh.
-The application template defines the steps for generating the mesh with a separate function (to be implemented by the user) for each step:
-
-1. `initialize()`: Initialize Gmsh;
-2. `create_geometry()`: Create the geometry (implemented in user application);
-3. `mark()`: Create physical groups for boundary conditions, faults, and materials (implemented in user application);
-4. `generate_mesh()`: Generate the finite-element mesh (implemented in user application);
-5. `write()`: Save the mesh to a file; and
-6. `finalize()`: Start the Gmsh graphical user interface, if requested, and then finalize Gmsh.
-
-The command line arguments specify which step(s) to run, the output filename, and whether to invoke the Gmsh graphical user interface upon completing the steps:
-
-:`--geometry`: Generate the geometry by calling `create_geometry()`.
-:`--mark`: Create physical groups by calling `mark()`.
-:`--generate`: Generate the mesh by calling `generate_mesh()`.
-:`--write`: Save the mesh by calling `write()`.
-:`--name`: Name of the mesh in Gmsh (default="mesh").
-:`--filename=FILENAME`: Name of output mesh file (default="mesh.msh").
-:`--ascii`: Write mesh to ASCII file (default is binary).
-:`--cell=[tri,quad,tet,hex]`: Generate mesh with specified cell type.
-:`--gui`: Start the Gmsh graphical user interface after running steps.
-
-The application template always calls the `initialize()` and `finalize()` methods.
-Additionally, the application will run any prerequisite steps.
-For example, specifying `--generate` will trigger creating the geometry and physical groups before generating the mesh.
-
-The application is discussed in more detail in the examples.
-
-#### MaterialGroup
-
-`MaterialGroup` is a Python data class that holds information about a physical group associated with a material.
-The data members include:
-
-:tag (int): Integer tag for the physical group.
-:entities (list): List (array) of entities for the material.
-
-The `MaterialGroup` data class include a method `create_physical_group()` that will create a physical group from the information in the `MaterialGroup`.
-
-#### VertexGroup
-
-`VertexGroup` is a Python data class that holds information about a physical group associated with a boundary or fault.
-The data members include:
-
-:name (str): Name for the physical group.
-:tag (int): Integer tag for the physical group.
-:dim (int): Dimension of the entities (0=points, 1=curves, 2=surfaces)
-:entities: List (array) of entities for the boundary condition or fault.
-
-The `VertexGroup` data class include a method `create_physical_group()` that will create a physical group from the information in the `VertexGroup`.
 
 ## Distribution among Processes - `Distributor`
 
