@@ -8,6 +8,8 @@
 # See https://mit-license.org/ and LICENSE.md and for license information. 
 # =================================================================================================
 
+dist_noinst_PYTHON = \
+    generate_gmsh.py
 
 dist_noinst_DATA = \
 	README.md \
@@ -15,8 +17,7 @@ dist_noinst_DATA = \
 	mesh_tri.jou \
 	mesh_quad.jou \
 	bc.jou \
-	mesh_quad.exo \
-    mesh_tri.exo \
+    mesh_tri.msh \
     pylithapp.cfg \
     step01_inflation.cfg \
     step02_inflation_statevars.cfg
