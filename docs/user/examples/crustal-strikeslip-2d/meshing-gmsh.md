@@ -24,7 +24,7 @@ To reverse the direction of a curve, use the negative tag.
 ## Meshing using Python Script
 
 We use the Python script `generate_gmsh.py` to create the geometry and generate the mesh.
-The script makes use of the `gmsh_utils.GenerateMesh` class (discussed in {ref}`sec-usr-run-pylith-gmsh-utils`), which provides the command line arguments and boilerplate methods.
+The script makes use of the `gmsh_utils.GenerateMesh` class (discussed in {ref}`sec-user-meshing-gmsh-utils`), which provides the command line arguments and boilerplate methods.
 In our `generate_gmsh.py` Python script, we create a class `App` that implements the functionality missing in `gmsh_utils.GenerateMesh`.
 We must implement the `create_geometry()`, `mark()`, and `generate_mesh()` methods that are abstract in the `GenerateMesh` base class.
 

@@ -5,6 +5,15 @@ Starting with v3.0.0, we strictly follow the [semantic versioning guidelines](ht
 The version numbers are in the form `MAJOR.MINOR.PATCH`, where major releases indicate changes to the public API (parameters), minor releases indicate new functionality that is backward compatible, and patch releases indicate backward compatible bug fixes.
 :::
 
+## Version 4.1.3 (2024/07/XX)
+
+* **Added**
+  * Expanded the section of the manual discussing mesh generation with Cubit and Gmsh. Added a list of useful functions in the Cubit and Gmsh Python interfaces.
+  * Added a test to verify Gmsh files with entities that are not embedded generate errors when read via `MeshIOPetsc`.
+  * Expanded section of manual discussing installation on Windows Subsystem for Linux, including components needed to run GUI applications (Gmsh and `pylith_viz`).
+* **Fixed**
+  * Added output of fault traction change when computing static Green's functions.
+
 ## Version 4.1.2 (2024/06/12)
 
 * **Fixed**
