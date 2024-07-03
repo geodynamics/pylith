@@ -309,16 +309,22 @@ dist_noinst_DATA = \
 	user/examples/magma-2d/index.md \
 	user/examples/magma-2d/common-information.md \
 	user/examples/magma-2d/exercises.md \
+	user/examples/magma-2d/meshing-gmsh.md \
 	user/examples/magma-2d/meshing-cubit.md \
 	user/examples/magma-2d/step01-inflation.md \
 	user/examples/magma-2d/step01_inflation-synopsis.md \
 	user/examples/magma-2d/step02-inflation-statevars.md \
 	user/examples/magma-2d/step02_inflation_statevars-synopsis.md \
 	user/examples/magma-2d/figs/diagrams.tex \
-	user/examples/magma-2d/figs/generate.sh \
+	user/examples/magma-2d/figs/generate_diagrams.py \
 	user/examples/magma-2d/figs/geometry.svg \
 	user/examples/magma-2d/figs/geometry.pdf \
+	user/examples/magma-2d/figs/geometry-cubit.svg \
+	user/examples/magma-2d/figs/geometry-cubit.pdf \
+	user/examples/magma-2d/figs/geometry-gmsh.svg \
+	user/examples/magma-2d/figs/geometry-gmsh.pdf \
 	user/examples/magma-2d/figs/cubit-quad.png \
+	user/examples/magma-2d/figs/cubit-tri.png \
 	user/examples/magma-2d/figs/step01-diagram.pdf \
 	user/examples/magma-2d/figs/step01-diagram.svg \
 	user/examples/magma-2d/figs/step01-solution.jpg \
