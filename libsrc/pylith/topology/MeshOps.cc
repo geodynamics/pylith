@@ -376,6 +376,7 @@ pylith::topology::MeshOps::checkTopology(const Mesh& mesh) {
 
     _MeshOps::Events::logger.eventBegin(_MeshOps::Events::checkTopologySkeleton);
     err = DMPlexCheckSkeleton(dmMesh, cellHeight);PYLITH_CHECK_ERROR_MSG(err, "Error in topology of mesh cells.");
+    err = DMPlexCheckOrphanVertices(dmMesh);PYLITH_CHECK_ERROR_MSG(err, "Mesh contains vertices not connected to cells.");
     _MeshOps::Events::logger.eventEnd(_MeshOps::Events::checkTopologySkeleton);
 
     /* Other check functions that we are not using:
