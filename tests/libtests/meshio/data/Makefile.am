@@ -61,6 +61,7 @@ dist_noinst_DATA = \
 	noembed_tet.msh \
 	nosplit_tri.msh \
 	tri3.mesh \
+	tri_orphan_vertex.mesh \
 	tri3_vertex_t10.vtk \
 	tri3_cell_t10.vtk \
 	quad4.mesh \
@@ -70,6 +71,7 @@ dist_noinst_DATA = \
 	tet4_vertex_t10.vtk \
 	tet4_cell_t10.vtk \
 	hex8.mesh \
+	hex_orphan_vertex.mesh \
 	hex8_vertex_t10.vtk \
 	hex8_cell_t10.vtk \
 	tri3_mat_vertex_t10.vtk \

@@ -94,7 +94,23 @@ pylith::meshio::TestMeshIOAscii::testRead(void) {
     _checkVals();
 
     PYLITH_METHOD_END;
-} // testRead3DIndexOne
+} // testRead
+
+
+// ----------------------------------------------------------------------
+// Test read() with error.
+void
+pylith::meshio::TestMeshIOAscii::testReadError(void) {
+    PYLITH_METHOD_BEGIN;
+    assert(_io);
+
+    // Read mesh
+    delete _mesh;_mesh = new pylith::topology::Mesh;
+    _io->setFilename(_data->filename.c_str());
+    CHECK_THROWS_AS(_io->read(_mesh), std::runtime_error);
+
+    PYLITH_METHOD_END;
+} // testRead
 
 
 // End of file
