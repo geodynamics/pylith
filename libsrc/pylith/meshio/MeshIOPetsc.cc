@@ -144,7 +144,7 @@ pylith::meshio::MeshIOPetsc::_read(void) {
             err = PetscObjectSetOptionsPrefix((PetscObject) dmMesh, _prefix.c_str());PYLITH_CHECK_ERROR(err);
         } // if
         err = DMPlexDistributeSetDefault(dmMesh, PETSC_FALSE);PYLITH_CHECK_ERROR(err);
-        err = DMSetFromOptions(dmMesh);PYLITH_CHECK_ERROR(err);
+        err = DMSetFromOptions(dmMesh);PYLITH_CHECK_ERROR_MSG(err, "Error creating mesh with MeshIOPetsc.");
 
         _MeshIOPetsc::fixMaterialLabel(&dmMesh);
         _MeshIOPetsc::fixBoundaryLabels(&dmMesh);
