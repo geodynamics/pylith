@@ -37,6 +37,9 @@ public:
     /// Test read().
     void testRead(void);
 
+    /// Test read() with known errors.
+    void testReadError(void);
+
     // PROTECTED METHODS ////////////////////////////////////////////////
 protected:
 
