@@ -33,6 +33,11 @@ class AuxSubfieldsSquarePulseSource(PetscComponent):
     volumeFlowRate = pythia.pyre.inventory.facility("volume_flow_rate", family="auxiliary_subfield", factory=Subfield)
     volumeFlowRate.meta['tip'] = "Volume Flow Rate subfield."
 
+    timeDelay = pythia.pyre.inventory.facility(
+        "time_delay", family="auxiliary_subfield", factory=Subfield)
+    timeDelay.meta['tip'] = "time delay subfield."
+
+
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="auxsubfieldssquarepulsesource"):

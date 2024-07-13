@@ -61,7 +61,7 @@ pylith::sources::AuxiliaryFactorySquarePulseSource::addVolumeFlowRate(void) { //
     description.componentNames.resize(1);
     description.componentNames[0] = subfieldName;
     description.scale = lengthScale * lengthScale * lengthScale / timeScale;
-    description.validator = pylith::topology::FieldQuery::validatorPositive;
+    description.validator = NULL;
 
     _field->subfieldAdd(description, getSubfieldDiscretization(subfieldName));
     this->setSubfieldQuery(subfieldName);

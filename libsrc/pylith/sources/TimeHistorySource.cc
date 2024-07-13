@@ -17,7 +17,7 @@
 //
 
 #include <portinfo>
-
+#include "spatialdata/spatialdb/TimeHistory.hh" // USES TimeHistory
 #include "pylith/sources/SquarePulseSource.hh" // implementation of object methods
 
 #include "pylith/sources/AuxiliaryFactorySquarePulseSource.hh" // USES AuxiliaryFactorySquarePulseSource
@@ -43,9 +43,43 @@ typedef pylith::feassemble::IntegratorDomain::ProjectKernels ProjectKernels;
 typedef pylith::feassemble::Integrator::EquationPart EquationPart;
 
 // ---------------------------------------------------------------------------------------------------------------------
+namespace pylith {
+    namespace sources {
+        class _SquarePulseSource {
+            // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////
+public:
+
+            /** Set kernels for RHS residual.
+             *
+             * @param[out] integrator Integrator for source condition.
+             * @param[in] sources Square Pulse time-dependent source condition.
+             * @param[in] solution Solution field.
+             * @param[in] formulation Formulation for equations.
+             */
+            static
+            void setKernelsResidual(pylith::feassemble::IntegratorDomain* integrator,
+                                    const pylith::sources::SquarePulseSource& sources,
+                                    const pylith::topology::Field& solution,
+                                    const pylith::problems::Physics::FormulationEnum formulation);
+
+            static const char* pyreComponent;
+
+        }; // _SquarePulseSource
+        const char* _SquarePulseSource::pyreComponent = "squarepulsesource";
+
+    } // sources
+} // pylith
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
-pylith::sources::SquarePulseSource::SquarePulseSource(void) : _useInertia(false),
-    _auxiliaryFactory(new pylith::sources::AuxiliaryFactorySquarePulseSource) {
+pylith::sources::SquarePulseSource::SquarePulseSource(void) :
+    _dbTimeHistory(NULL),
+    _auxiliaryFactory(new pylith::sources::AuxiliaryFactorySquarePulseSource(pylith::sources::AuxiliaryFactorySquarePulseSource::XYZ)),
+    _useInitial(true),
+    _useRate(false),
+    _useTimeHistory(false) {
+    PyreComponent::setName(_SquarePulseSource::pyreComponent);
+
     pylith::utils::PyreComponent::setName("squarepulsesource");
 } // constructor
 
@@ -168,13 +202,22 @@ pylith::sources::SquarePulseSource::createAuxiliaryField(const pylith::topology:
 
     // add in aux specific to square pulse
     _auxiliaryFactory->addVolumeFlowRate(); // 0
-    _auxiliaryFactory->addTimeDelay(); // 1
 
-    auxiliaryField->subfieldsSetup();
-    auxiliaryField->createDiscretization();
-    pylith::topology::FieldOps::checkDiscretization(solution, *auxiliaryField);
-    auxiliaryField->allocate();
-    auxiliaryField->createOutputVector();
+    if (_useInitial) {
+        _auxiliaryFactory->addInitialAmplitude();
+    } // if
+    if (_useRate) {
+        _auxiliaryFactory->addRateAmplitude();
+        _auxiliaryFactory->addRateStartTime();
+    } // _useRate
+    if (_useTimeHistory) {
+        _auxiliaryFactory->addTimeHistoryAmplitude();
+        _auxiliaryFactory->addTimeHistoryStartTime();
+        _auxiliaryFactory->addTimeHistoryValue();
+        if (_dbTimeHistory) {
+            _dbTimeHistory->open();
+        } // if
+    } // _useTimeHistory
 
     assert(_auxiliaryFactory);
     _auxiliaryFactory->setValuesFromDB();
@@ -206,46 +249,135 @@ pylith::sources::SquarePulseSource::_getAuxiliaryFactory(void) {
 } // _getAuxiliaryFactory
 
 
+// //
 // ---------------------------------------------------------------------------------------------------------------------
-// Set kernels for LHS residual F(t,s,\dot{s}).
+// // Set kernels for LHS residual F(t,s,\dot{s}).
+// void
+// pylith::sources::SquarePulseSource::_setKernelsResidual(pylith::feassemble::IntegratorDomain *integrator,
+//                                                         const topology::Field &solution) const {
+//     PYLITH_METHOD_BEGIN;
+//     PYLITH_COMPONENT_DEBUG("_setKernelsResidual(integrator=" << integrator << ", solution=" << solution.getLabel() <<
+// ")");
+
+//     const spatialdata::geocoords::CoordSys *coordsys = solution.getMesh().getCoordSys();
+
+//     std::vector<ResidualKernels> kernels;
+
+//     switch (_formulation) {
+//     case QUASISTATIC:
+//     {
+//         // Pressure
+//         const PetscPointFunc f0p = pylith::fekernels::SquarePulseSource::f0p;
+//         const PetscPointFunc f1p = NULL;
+
+//         kernels.resize(1);
+//         kernels[0] = ResidualKernels(getSubfieldName(), pylith::feassemble::Integrator::LHS, f0p, f1p);
+//         break;
+//     } // QUASISTATIC
+//     case DYNAMIC_IMEX:
+//     {
+//         break;
+//     } // DYNAMIC
+//     case DYNAMIC:
+//     {
+//         break;
+//     } // DYNAMIC
+//     default:
+//         PYLITH_COMPONENT_LOGICERROR("Unknown formulation for equations (" << _formulation << ").");
+//     } // switch
+
+//     assert(integrator);
+//     integrator->setKernelsResidual(kernels, solution);
+
+//     PYLITH_METHOD_END;
+// } // _setKernelsResidual
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Set kernels for residual.
 void
-pylith::sources::SquarePulseSource::_setKernelsResidual(pylith::feassemble::IntegratorDomain *integrator,
-                                                        const topology::Field &solution) const {
+pylith::sources::_SquarePulseSource::setKernelsResidual(pylith::feassemble::IntegratorDomain* integrator,
+                                                        const pylith::sources::SquarePulseSource& sources,
+                                                        const topology::Field& solution,
+                                                        const pylith::problems::Physics::FormulationEnum formulation) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_setKernelsResidual(integrator=" << integrator << ", solution=" << solution.getLabel() << ")");
+    pythia::journal::debug_t debug(_SquarePulseSource::pyreComponent);
+    debug << pythia::journal::at(__HERE__)
+          << "setKernelsResidual(integrator="<<integrator<<", sources="<<typeid(sources).name()<<", solution="
+          << solution.getLabel()<<")"
+          << pythia::journal::endl;
 
-    const spatialdata::geocoords::CoordSys *coordsys = solution.getMesh().getCoordSys();
+    const pylith::topology::Field::VectorFieldEnum fieldType = solution.getSubfieldInfo(sources.getSubfieldName()).description.vectorFieldType;
+    const bool isScalarField = fieldType == pylith::topology::Field::SCALAR;
 
-    std::vector<ResidualKernels> kernels;
+    const int bitInitial = sources.useInitial() ? 0x1 : 0x0;
+    const int bitRate = sources.useRate() ? 0x2 : 0x0;
+    const int bitTimeHistory = sources.useTimeHistory() ? 0x4 : 0x0;
+    const int bitUse = bitInitial | bitRate | bitTimeHistory;
 
-    switch (_formulation) {
-    case QUASISTATIC:
-    {
-        // Pressure
-        const PetscPointFunc f0p = pylith::fekernels::SquarePulseSource::f0p;
-        const PetscPointFunc f1p = NULL;
-
-        kernels.resize(1);
-        kernels[0] = ResidualKernels(getSubfieldName(), pylith::feassemble::Integrator::LHS, f0p, f1p);
+    PetscPointFunc r0 = NULL;
+    PetscPointFunc r1 = NULL;
+    switch (bitUse) {
+    case 0x1:
+        r0 = (isScalarField) ? pylith::fekernels::SquarePulseSource::f0_initial_scalar :
+             pylith::fekernels::SquarePulseSource::f0_initial_vector;
         break;
-    } // QUASISTATIC
-    case DYNAMIC_IMEX:
-    {
+    case 0x2:
+        r0 = (isScalarField) ? pylith::fekernels::SquarePulseSource::f0_rate_scalar :
+             pylith::fekernels::SquarePulseSource::f0_rate_vector;
         break;
-    } // DYNAMIC
-    case DYNAMIC:
-    {
+    case 0x4:
+        r0 = (isScalarField) ? pylith::fekernels::SquarePulseSource::f0_timeHistory_scalar :
+             pylith::fekernels::SquarePulseSource::f0_timeHistory_vector;
         break;
-    } // DYNAMIC
-    default:
-        PYLITH_COMPONENT_LOGICERROR("Unknown formulation for equations (" << _formulation << ").");
+    case 0x3:
+        r0 = (isScalarField) ? pylith::fekernels::SquarePulseSource::f0_initialRate_scalar :
+             pylith::fekernels::SquarePulseSource::f0_initialRate_vector;
+        break;
+    case 0x5:
+        r0 = (isScalarField) ? pylith::fekernels::SquarePulseSource::f0_initialTimeHistory_scalar :
+             pylith::fekernels::SquarePulseSource::f0_initialTimeHistory_vector;
+        break;
+    case 0x6:
+        r0 = (isScalarField) ? pylith::fekernels::SquarePulseSource::f0_rateTimeHistory_scalar :
+             pylith::fekernels::SquarePulseSource::f0_rateTimeHistory_vector;
+        break;
+    case 0x7:
+        r0 = (isScalarField) ? pylith::fekernels::SquarePulseSource::f0_initialRateTimeHistory_scalar :
+             pylith::fekernels::SquarePulseSource::f0_initialRateTimeHistory_vector;
+        break;
+    case 0x0: {
+        pythia::journal::warning_t warning(_SquarePulseSource::pyreComponent);
+        warning << pythia::journal::at(__HERE__)
+                << "Square Pulse time-dependent SOURCES provides no values."
+                << pythia::journal::endl;
+        break;
+    } // case 0x0
+    default: {
+        PYLITH_JOURNAL_LOGICERROR("Unknown combination of flags for Square Pulse SOURCES terms (useInitial="
+                                  <<sources.useInitial()
+                                  << ", useRate="<<sources.useRate()<<", useTimeHistory="<<sources.useTimeHistory()<<").");
+    } // default
+    } // switch
+
+    std::vector<ResidualKernels> kernels(1);
+    switch (formulation) {
+    case pylith::problems::Physics::QUASISTATIC:
+        kernels[0] = ResidualKernels(sources.getSubfieldName(), pylith::feassemble::Integrator::LHS, r0, r1);
+        break;
+    case pylith::problems::Physics::DYNAMIC_IMEX:
+    case pylith::problems::Physics::DYNAMIC:
+        kernels[0] = ResidualKernels(sources.getSubfieldName(), pylith::feassemble::Integrator::RHS, r0, r1);
+        break;
+    default: {
+        PYLITH_JOURNAL_LOGICERROR("Unknown formulation for equations ("<<formulation<<").");
+    } // default
     } // switch
 
     assert(integrator);
     integrator->setKernelsResidual(kernels, solution);
 
     PYLITH_METHOD_END;
-} // _setKernelsResidual
+} // setKernelsResidual
 
 
 // ---------------------------------------------------------------------------------------------------------------------

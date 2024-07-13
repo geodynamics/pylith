@@ -2,35 +2,40 @@
 #
 # Brad T. Aagaard, U.S. Geological Survey
 # Charles A. Williams, GNS Science
-# Matthew G. Knepley, University at Buffalo
+# Matthew G. Knepley, University of Chicago
 #
 # This code was developed as part of the Computational Infrastructure
 # for Geodynamics (http://geodynamics.org).
 #
-# Copyright (c) 2010-2021 University of California, Davis
+# Copyright (c) 2010-2016 University of California, Davis
 #
-# See LICENSE.md for license information.
+# See COPYING for license information.
 #
 # ----------------------------------------------------------------------
 #
-# @file pylith/sources/TimeHistoryWavelet.py
+# @file pylith/sources/SquarePulseSource.py
 #
-# @brief Python source time function for a user defined wavelet.
+# @brief Python object for solving the squarepulsesource equation.
 #
-# Factory: pointforce_sourcetimefunction
+# Factory: source
 
-from .SourceTimeFunctionMomentTensorForce import SourceTimeFunctionMomentTensorForce
-from .sources import TimeHistoryWavelet as ModuleTimeHistoryWavelet
-from pylith.utils.NullComponent import NullComponent
+from .Source import Source
+from .sources import SquarePulseSource as ModuleSquarePulseSource
 
 
-class TimeHistoryWavelet(SourceTimeFunctionMomentTensorForce, ModuleTimeHistoryWavelet):
-    """Python source time function for time history source.
+class SquarePulseSource(Source, ModuleSquarePulseSource):
+    """Python source property manager.
 
-    FACTORY: pointforce_sourcetimefunction
+    FACTORY: source
     """
 
     import pythia.pyre.inventory
+
+    useInitial = pythia.pyre.inventory.bool("use_initial", default=True)
+    useInitial.meta['tip'] = "Use initial term in time-dependent expression."
+
+    useRate = pythia.pyre.inventory.bool("use_rate", default=False)
+    useRate.meta['tip'] = "Use rate term in time-dependent expression."
 
     useTimeHistory = pythia.pyre.inventory.bool("use_time_history", default=True)
     useTimeHistory.meta['tip'] = "Use time history term in time-dependent expression."
@@ -38,18 +43,18 @@ class TimeHistoryWavelet(SourceTimeFunctionMomentTensorForce, ModuleTimeHistoryW
     dbTimeHistory = pythia.pyre.inventory.facility(
         "time_history", factory=NullComponent, family="temporal_database")
     dbTimeHistory.meta['tip'] = "Time history with normalized amplitude as a function of time."
-
+    
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
-    def __init__(self, name="timehistorywavelet"):
+    def __init__(self, name="squarepulsesource"):
         """Constructor.
         """
-        SourceTimeFunctionMomentTensorForce.__init__(self, name)
+        Source.__init__(self, name)
         return
 
     def _defaults(self):
-        from .AuxSubfieldsSourceTime import AuxSubfieldsSourceTime
-        self.auxiliarySubfields = AuxSubfieldsSourceTime("auxiliary_subfields")
+        from .AuxSubfieldsSquarePulseSource import AuxSubfieldsSquarePulseSource
+        self.auxiliarySubfields = AuxSubfieldsSquarePulseSource("auxiliary_subfields")
 
     def preinitialize(self, problem):
         """Do pre-initialization setup.
@@ -60,10 +65,10 @@ class TimeHistoryWavelet(SourceTimeFunctionMomentTensorForce, ModuleTimeHistoryW
                 "Performing minimal initialization of time-dependent Neumann boundary condition '%s'." % self.aliases[-1])
         
         
-        SourceTimeFunctionMomentTensorForce.preinitialize(self, problem)
-        ModuleTimeHistoryWavelet.useTimeHistory(self, self.useTimeHistory)
+        Source.preinitialize(self, problem)
+        ModuleSquarePulseSource.useTimeHistory(self, self.useTimeHistory)
         if not isinstance(self.dbTimeHistory, NullComponent):
-            ModuleTimeHistoryWavelet.setTimeHistoryDB(
+            ModuleSquarePulseSource.setTimeHistoryDB(
                 self, self.dbTimeHistory)
         return
     
@@ -79,20 +84,30 @@ class TimeHistoryWavelet(SourceTimeFunctionMomentTensorForce, ModuleTimeHistoryW
         descriptor = self.getTraitDescriptor(trait.name)
         context.error(error, items=[Item(trait, descriptor)])
 
-    # PRIVATE METHODS ////////////////////////////////////////////////////
+
+
+
+    def preinitialize(self, problem):
+        """Setup source.
+        """
+        Source.preinitialize(self, problem)
+
+
+        return
 
     def _createModuleObj(self):
-        """Call constructor for module object for access to C++ object.
+        """Create handle to C++ SquarePulseSource.
         """
-        ModuleTimeHistoryWavelet.__init__(self)
+        ModuleSquarePulseSource.__init__(self)
+        return
 
 
-# FACTORIES ////////////////////////////////////////////////////////////
+# Factories
 
-def momenttensorforce_sourcetimefunction():
-    """Factory associated with TimeHistoryWavelet.
+def source():
+    """Factory associated with SquarePulseSource.
     """
-    return TimeHistoryWavelet()
+    return SquarePulseSource()
 
 
 # End of file

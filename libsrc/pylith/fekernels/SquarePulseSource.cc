@@ -54,10 +54,15 @@ pylith::fekernels::SquarePulseSource::f0p(const PylithInt dim,
 
     // Incoming re-packed auxiliary field.
     const PylithInt i_volumeFlowRate = 0;
+    const PylithInt i_timeDelay = 1;
 
     const PylithScalar volumeFlowRate = a[aOff[i_volumeFlowRate]];
+    const PylithScalar timeDelay = a[aOff[i_timeDelay]];
 
-    f0[0] += volumeFlowRate;
+    PylithScalar rt = t - timeDelay;
+    PylithScalar squarewavelet = (rt >= 0.0) ? 1.0 : 0.0;
+
+    f0[0] += volumeFlowRate * squarewavelet;
 } // f0p
 
 
