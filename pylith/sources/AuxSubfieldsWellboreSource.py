@@ -60,6 +60,9 @@ class AuxSubfieldsWellboreSource(PetscComponent):
         "element_dimensions", family="auxiliary_subfield", factory=Subfield)
     elementDimensions.meta['tip'] = "Element dimension subfield."    
 
+    timeDelay = pythia.pyre.inventory.facility("time_delay", family="auxiliary_subfield", factory=Subfield)
+    timeDelay.meta['tip'] = "time delay subfield."
+
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="auxsubfieldswellboresource"):

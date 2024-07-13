@@ -34,9 +34,9 @@ class AuxSubfieldsMomentTensorForce(PetscComponent):
         "moment_tensor", family="auxiliary_subfield", factory=Subfield)
     momentTensor.meta['tip'] = "Moment tensor subfield."
 
-    TimeDelay = pythia.pyre.inventory.facility(
+    timeDelay = pythia.pyre.inventory.facility(
         "time_delay", family="auxiliary_subfield", factory=Subfield)
-    TimeDelay.meta['tip'] = "time delay subfield."
+    timeDelay.meta['tip'] = "time delay subfield."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
