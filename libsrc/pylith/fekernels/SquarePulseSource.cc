@@ -50,7 +50,7 @@ pylith::fekernels::SquarePulseSource::f0p(const PylithInt dim,
     assert(f0);
 
     // Incoming re-packed solution field.
-    const PylithInt i_pressure = 1;
+    // const PylithInt i_pressure = 1;
 
     // Incoming re-packed auxiliary field.
     const PylithInt i_volumeFlowRate = 0;

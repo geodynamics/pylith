@@ -135,10 +135,7 @@ private:
     bool _useInertia;                                                      ///< Flag to include inertial term.
     spatialdata::spatialdb::TimeHistory *_dbTimeHistory;                   ///< Time history database.
     pylith::sources::AuxiliaryFactorySquarePulseSource *_auxiliaryFactory; ///< Factory for auxiliary subfields.
-    std::string _scaleName; ///< Name of scale associated with Neumann boundary condition.
 
-    bool _useInitial; ///< Use initial value term.
-    bool _useRate; ///< Use rate term.
     bool _useTimeHistory; ///< Use time history term.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
