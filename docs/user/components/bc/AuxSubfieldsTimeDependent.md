@@ -25,7 +25,7 @@ The association of these functions with the auxiliary subfields is:
 * `initial_amplitude`: Initial amplitude, f_0(x), subfield.
   - **current value**: 'subfield', from {default}
   - **configurable as**: subfield, initial_amplitude
-* `rate_amplitude`: Rate amplitude, \dot{f}_1(x), subfield.
+* `rate_amplitude`: Rate amplitude, dot{f}_1(x), subfield.
   - **current value**: 'subfield', from {default}
   - **configurable as**: subfield, rate_amplitude
 * `rate_start_time`: Rate starting time, t_1(x), subfield.

@@ -11,9 +11,9 @@ Container for solution subfields with displacement, velocity, and fault Lagrange
 * `displacement`: Displacement subfield.
   - **current value**: 'subfielddisplacement', from {default}
   - **configurable as**: subfielddisplacement, displacement
-* `lagrange_fault`: Fault Lagrange multiplier subfield.
+* `lagrange_multiplier_fault`: Fault Lagrange multiplier subfield.
   - **current value**: 'subfieldlagrangefault', from {default}
-  - **configurable as**: subfieldlagrangefault, lagrange_fault
+  - **configurable as**: subfieldlagrangefault, lagrange_multiplier_fault
 * `velocity`: Velocity subfield.
   - **current value**: 'subfieldvelocity', from {default}
   - **configurable as**: subfieldvelocity, velocity

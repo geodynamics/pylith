@@ -14,6 +14,7 @@ AuxSubfieldsIsotropicLinearPoroelasticity.md
 AuxSubfieldsIsotropicPowerLaw.md
 AuxSubfieldsPoroelasticity.md
 DerivedSubfieldsElasticity.md
+DerivedSubfieldsPoroelasticity.md
 Elasticity.md
 Homogeneous.md
 IncompressibleElasticity.md

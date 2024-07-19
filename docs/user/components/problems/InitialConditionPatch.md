@@ -6,6 +6,11 @@
 
 Initial conditions over a portion of the domain (patch).
 
+:::{warning}
+Initial conditions over a patch currently only work for Gmsh input files.
+Exodus II files from Cubit do not contain the information needed by the current PyLith implementation.
+:::
+
 Implements `InitialCondition`.
 
 ## Pyre Facilities

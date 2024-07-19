@@ -11,8 +11,12 @@ The version numbers are in the form `MAJOR.MINOR.PATCH`, where major releases in
   * Expanded the section of the manual discussing mesh generation with Cubit and Gmsh. Added a list of useful functions in the Cubit and Gmsh Python interfaces.
   * Added a test to verify Gmsh files with entities that are not embedded generate errors when read via `MeshIOPetsc`.
   * Expanded section of manual discussing installation on Windows Subsystem for Linux, including components needed to run GUI applications (Gmsh and `pylith_viz`).
+  * Add Gmsh Python script and corresponding mesh in `examples/magma-2d`.
 * **Fixed**
   * Added output of fault traction change when computing static Green's functions.
+  * Turn on PETSc HDF5 collective input and output by default. This resolves errors when using HDF5 1.14 on NFS filesystems.
+  * Include all necessary files from `examples/subduction-3d` in source and binary packages.
+  * Fix typos in documentation and update Components section of User Guide (sync with code).
 
 ## Version 4.1.2 (2024/06/12)
 

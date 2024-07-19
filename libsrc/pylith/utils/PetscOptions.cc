@@ -63,6 +63,13 @@ public:
             static
             void addMonitoring(PetscOptions* options);
 
+            /** Add collective I/O options.
+             *
+             * @param[in] options PETSc options.
+             */
+            static
+            void addCollectiveIO(PetscOptions* options);
+
             /** Add default solver tolerances to options.
              *
              * @param[in] options PETSc options.
@@ -88,6 +95,7 @@ const int pylith::utils::PetscDefaults::SOLVER = 0x2;
 const int pylith::utils::PetscDefaults::PARALLEL = 0x4;
 const int pylith::utils::PetscDefaults::INITIAL_GUESS = 0x8;
 const int pylith::utils::PetscDefaults::TESTING = 0x10;
+const int pylith::utils::PetscDefaults::COLLECTIVE_IO = 0x20;
 
 // ------------------------------------------------------------------------------------------------
 // Set default PETSc solver options based on solution field and material.
@@ -122,6 +130,9 @@ pylith::utils::PetscDefaults::set(const pylith::topology::Field& solution,
     } // if
     if (flags & MONITORS) {
         _PetscOptions::addMonitoring(options);
+    } // if
+    if (flags & COLLECTIVE_IO) {
+        _PetscOptions::addCollectiveIO(options);
     } // if
 
     options->set();
@@ -301,6 +312,17 @@ pylith::utils::_PetscOptions::addMonitoring(PetscOptions* options) {
 
     options->add("-ts_monitor");
     options->add("-ts_error_if_step_fails");
+
+} // addMonitoring
+
+
+// ------------------------------------------------------------------------------------------------
+// Add collective I/O options.
+void
+pylith::utils::_PetscOptions::addCollectiveIO(PetscOptions* options) {
+    assert(options);
+
+    options->add("-viewer_hdf5_collective");
 
 } // addMonitoring
 

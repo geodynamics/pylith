@@ -40,7 +40,7 @@ Implements `SolutionSubfield`.
 Example of setting `SubfieldLagrangeFault` Pyre properties and facilities in a parameter file.
 
 :::{code-block} cfg
-[pylithapp.problems.solution.subfields.lagrange_fault]
+[pylithapp.problems.solution.subfields.lagrange_multiplier_fault]
 alias = lagrange_multiplier_fault
 basis_order = 1
 :::

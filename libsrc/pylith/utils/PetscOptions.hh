@@ -31,6 +31,7 @@ public:
     static const int PARALLEL;
     static const int INITIAL_GUESS;
     static const int TESTING;
+    static const int COLLECTIVE_IO;
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:

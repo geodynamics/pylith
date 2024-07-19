@@ -9,6 +9,12 @@ No user-specified settings will be overwritten.
 
 ## Pyre Properties
 
+* `collective_io`=\<bool\>: Use default PETSc collective I/O options.
+  - **default value**: True
+  - **current value**: True, from {default}
+* `initial_guess`=\<bool\>: Use initial guess options.
+  - **default value**: True
+  - **current value**: True, from {default}
 * `monitors`=\<bool\>: Use default solver monitors.
   - **default value**: True
   - **current value**: True, from {default}
@@ -18,7 +24,7 @@ No user-specified settings will be overwritten.
 * `solver`=\<bool\>: Use default solver settings based on governing equations.
   - **default value**: True
   - **current value**: True, from {default}
-* `testing`=\<bool\>: Use default PETSc testingging options.
+* `testing`=\<bool\>: Use default PETSc testing options.
   - **default value**: False
   - **current value**: False, from {default}
 
@@ -31,6 +37,7 @@ Example of setting `PetscDefaults` Pyre properties and facilities in a parameter
 solver = True
 monitors = True
 parallel = False
+initial_guess = True
 testing = False
 :::
 

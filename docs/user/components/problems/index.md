@@ -22,7 +22,9 @@ SolnDispLagrange.md
 SolnDispPres.md
 SolnDispPresLagrange.md
 SolnDispPresTracStrain.md
+SolnDispPresTracStrainLagrange.md
 SolnDispPresTracStrainVelPdotTdot.md
+SolnDispPresTracStrainVelPdotTdotLagrange.md
 SolnDispPresVel.md
 SolnDispVel.md
 SolnDispVelLagrange.md
