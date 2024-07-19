@@ -1,10 +1,10 @@
-# SolnDispPresLagrange
+# SolnDispPresTracStrainLagrange
 
 % WARNING: Do not edit; this is a generated file!
-:Full name: `pylith.problems.SolnDispPresLagrange`
-:Journal name: `solndisppres`
+:Full name: `pylith.problems.SolnDispPresTracStrainLagrange`
+:Journal name: `SolnDispPresTracStrainLagrange`
 
-Container for solution subfields with displacement, pressure, and fault Lagrange multiplier subfields.
+Container for solution subfields with displacement, pore pressure, trace strain subfields, and fault Lagrange multiplier subfields.
 
 ## Pyre Facilities
 
@@ -17,13 +17,16 @@ Container for solution subfields with displacement, pressure, and fault Lagrange
 * `pressure`: Pressure subfield.
   - **current value**: 'subfieldpressure', from {default}
   - **configurable as**: subfieldpressure, pressure
+* `trace_strain`: Trace strain subfield.
+  - **current value**: 'subfieldtracestrain', from {default}
+  - **configurable as**: subfieldtracestrain, trace_strain
 
 ## Example
 
-Example of setting `SolnDispPresLagrange` Pyre properties and facilities in a parameter file.
+Example of setting `SolnDispPresTracStrainLagrange` Pyre properties and facilities in a parameter file.
 
 :::{code-block} cfg
 [pylithapp.problem]
-solution = pylith.problems.SolnDispPresLagrange
+solution = pylith.problems.SolnDispPresTracStrainLagrange
 :::
 

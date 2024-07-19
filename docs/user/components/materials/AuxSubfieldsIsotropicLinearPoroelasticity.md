@@ -20,6 +20,12 @@ Auxiliary subfields associated with the isotropic linear poroelastic bulk rheolo
 * `isotropic_permeability`: Isotropic permeability subfield.
   - **current value**: 'subfield', from {default}
   - **configurable as**: subfield, isotropic_permeability
+* `reference_strain`: Reference strain subfield.
+  - **current value**: 'subfield', from {default}
+  - **configurable as**: subfield, reference_strain
+* `reference_stress`: Reference stress subfield.
+  - **current value**: 'subfield', from {default}
+  - **configurable as**: subfield, reference_stress
 * `shear_modulus`: Shear modulus subfield.
   - **current value**: 'subfield', from {default}
   - **configurable as**: subfield, shear_modulus
