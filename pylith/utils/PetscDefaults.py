@@ -41,6 +41,9 @@ class PetscDefaults(Component):
     initialGuess = pythia.pyre.inventory.bool("initial_guess", default=True)
     initialGuess.meta["tip"] = "Use initial guess options."
 
+    collectiveIO = pythia.pyre.inventory.bool("collective_io", default=True)
+    collectiveIO.meta["tip"] = "Use default PETSc collective I/O options."
+
     testing = pythia.pyre.inventory.bool("testing", default=False)
     testing.meta["tip"] = "Use default PETSc testing options."
 
@@ -60,6 +63,8 @@ class PetscDefaults(Component):
             value |= ModuleDefaults.MONITORS
         if self.initialGuess:
             value |= ModuleDefaults.INITIAL_GUESS
+        if self.collectiveIO:
+            value |= ModuleDefaults.COLLECTIVE_IO
         if self.testing:
             value |= ModuleDefaults.TESTING
         return value
