@@ -22,7 +22,8 @@ We separate the defaults into a few categories to make it easy to select desired
 
 :solver: Options for the preconditioner and solver;
 :parallel: Options used when running in parallel (can be used in serial as well);
-:monitors: Options for basic monitoring of the solver; and
+:monitors: Options for basic monitoring of the solver;
+:collective_io: Options for collective input/output; and
 :testing: Options used in testing.
 
 :::{tip}
@@ -260,6 +261,24 @@ snes_monitor = true
 
 ts_monitor = tru
 ts_error_if_step_fails = true
+```
+
+### Collective I/O
+
+The collective input and output options are enabled by default and turn on HDF5 collective output.
+We use parallel HDF5 implementation, which in turn relies on MPI IO.
+Many MPI IO implementations require collective input and output to be enabled for parallel HDF5 output even if only one process is being used.
+
+```{code-block} cfg
+---
+caption: Default PETSc options for collective input and output.
+---
+[pylithapp.problem.petsc_defaults]
+collective_io = True
+
+# Corresponding PETSc options
+[pylithapp.petsc]
+viewer_hdf5_collective = true
 ```
 
 ### Testing
