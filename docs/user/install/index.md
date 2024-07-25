@@ -48,10 +48,10 @@ On macOS systems you can check the operating system version by clicking on the A
 3. Unpack the tarball.
     ```{code-block} bash
       # Linux 64-bit
-      tar -xzf pylith-4.1.2-linux-x86_64.tar.gz
+      tar -xzf pylith-4.1.3-linux-x86_64.tar.gz
 
       # macOS
-      tar -xzf pylith-4.1.2-macOS-10.15-x86_64.tar.gz
+      tar -xzf pylith-4.1.3-macOS-10.15-x86_64.tar.gz
       ```
 4. Set environment variables.
 The provided `setup.sh` script only works if you are using bash shell.
@@ -65,20 +65,20 @@ Ready to run PyLith.
 To bypass macOS quarantine restrictions, simply use command line program `curl` to download the tarball from within a terminal rather than using a web browser.
 
 ```{code-block} console
-curl -L -O https://github.com/geodynamics/pylith/releases/download/v4.1.2/pylith-4.1.2-macOS-10.15-x86_64.tar.gz
+curl -L -O https://github.com/geodynamics/pylith/releases/download/v4.1.3/pylith-4.1.3-macOS-10.15-x86_64.tar.gz
 ```
 
 Alternatively, if you do download the tarball using a web browser, after you unpack the tarball you can remove the macOS quarantine flags using the following commands (requires Administrator access):
 
 ```{code-block} bash
 # Show extended attributes
-xattr ./pylith-4.1.2-macOS-10.15-x86_64
+xattr ./pylith-4.1.3-macOS-10.15-x86_64
 
 # Output should be
 com.apple.quarantine
 
 # Remove quarantine attributes
-sudo xattr -r -d com.apple.quarantine ./pylith-4.1.2-macOS-10.15-x86_64
+sudo xattr -r -d com.apple.quarantine ./pylith-4.1.3-macOS-10.15-x86_64
 ```
 :::
 
@@ -176,7 +176,7 @@ For each package this utility downloads the source code, configures it, builds i
 ## Verifying PyLith Installation
 
 The easiest way to verify that PyLith has been installed correctly is to run one or more of the examples supplied with the binary and source code.
-In the binary distribution, the examples are located in `src/pylith-4.1.2/examples` while in the source distribution, they are located in `pylith-4.1.2/examples`.
+In the binary distribution, the examples are located in `src/pylith-4.1.3/examples` while in the source distribution, they are located in `pylith-4.1.3/examples`.
 {ref}`sec-examples` discusses how to run and visualize the results for the examples.
 To run the example discussed in Section {ref}`sec-examples-box-2d`:
 

@@ -1,4 +1,3 @@
-#!/usr/bin/env nemesis
 # =================================================================================================
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
@@ -8,11 +7,8 @@
 #
 # See https://mit-license.org/ and LICENSE.md and for license information. 
 # =================================================================================================
-# @file pylith/__init__.py
 
-# @brief Python top-level PyLith module initialization
-
-__version__ = "2.2.1"
+__version__ = "4.1.3"
 
 __all__ = ['apps',
            'bc',
@@ -22,9 +18,10 @@ __all__ = ['apps',
            'meshio',
            'mpi',
            'problems',
+           'testing',
            'topology',
            'utils',
-           'tests',
+           'viz',
            ]
 
 
