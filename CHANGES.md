@@ -5,7 +5,7 @@ Starting with v3.0.0, we strictly follow the [semantic versioning guidelines](ht
 The version numbers are in the form `MAJOR.MINOR.PATCH`, where major releases indicate changes to the public API (parameters), minor releases indicate new functionality that is backward compatible, and patch releases indicate backward compatible bug fixes.
 :::
 
-## Version 4.1.3 (2024/07/XX)
+## Version 4.1.3 (2024/07/31)
 
 * **Added**
   * Expanded the section of the manual discussing mesh generation with Cubit and Gmsh. Added a list of useful functions in the Cubit and Gmsh Python interfaces.
@@ -22,6 +22,14 @@ The version numbers are in the form `MAJOR.MINOR.PATCH`, where major releases in
 
 * **Fixed**
   * Fix inconsistency in normal direction on fault surfaces. Orientation was correct but direction was flipped at some locations. This affected local slip direction and the resulting deformation close to the fault.
+
+### Contributors
+
+* Brad Aagaard ![ORCID iD](/_static/images/ORCIDiD_icon32x32.png){w=16px}[0000-0002-8795-9833](https://orcid.org/0000-0002-8795-9833)
+* Matthew Knepley ![ORCID iD](/_static/images/ORCIDiD_icon32x32.png){w=16px}[0000-0002-2292-0735](https://orcid.org/0000-0002-2292-0735)
+* Charles Williams ![ORCID iD](/_static/images/ORCIDiD_icon32x32.png){w=16px}[0000-0001-7435-9196](https://orcid.org/0000-0001-7435-9196)
+* Grant Block ![ORCID iD](/_static/images/ORCIDiD_icon32x32.png){w=16px}[0009-0003-3402-0923](https://orcid.org/0009-0003-3402-0923)
+
 
 ## Version 4.1.1 (2024/06/09)
 

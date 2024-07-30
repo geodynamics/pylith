@@ -100,6 +100,7 @@ dist_noinst_DATA = \
 	user/components/materials/AuxSubfieldsIsotropicPowerLaw.md \
 	user/components/materials/AuxSubfieldsPoroelasticity.md \
 	user/components/materials/DerivedSubfieldsElasticity.md \
+	user/components/materials/DerivedSubfieldsPoroelasticity.md \
 	user/components/materials/Elasticity.md \
 	user/components/materials/Homogeneous.md \
 	user/components/materials/IncompressibleElasticity.md \
@@ -150,6 +151,8 @@ dist_noinst_DATA = \
 	user/components/problems/SolnDispPresLagrange.md \
 	user/components/problems/SolnDispPresTracStrain.md \
 	user/components/problems/SolnDispPresTracStrainVelPdotTdot.md \
+	user/components/problems/SolnDispPresTracStrainLagrange.md \
+	user/components/problems/SolnDispPresTracStrainVelPdotTdotLagrange.md \
 	user/components/problems/SolnDispPresVel.md \
 	user/components/problems/SolnDispVel.md \
 	user/components/problems/SolnDispVelLagrange.md \
@@ -323,6 +326,7 @@ dist_noinst_DATA = \
 	user/examples/magma-2d/figs/geometry-cubit.pdf \
 	user/examples/magma-2d/figs/geometry-gmsh.svg \
 	user/examples/magma-2d/figs/geometry-gmsh.pdf \
+	user/examples/magma-2d/figs/gmsh-tri.png \
 	user/examples/magma-2d/figs/cubit-quad.png \
 	user/examples/magma-2d/figs/cubit-tri.png \
 	user/examples/magma-2d/figs/step01-diagram.pdf \
