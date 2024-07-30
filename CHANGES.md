@@ -23,6 +23,14 @@ The version numbers are in the form `MAJOR.MINOR.PATCH`, where major releases in
 * **Fixed**
   * Fix inconsistency in normal direction on fault surfaces. Orientation was correct but direction was flipped at some locations. This affected local slip direction and the resulting deformation close to the fault.
 
+### Contributors
+
+* Brad Aagaard ![ORCID iD](/_static/images/ORCIDiD_icon32x32.png){w=16px}[0000-0002-8795-9833](https://orcid.org/0000-0002-8795-9833)
+* Matthew Knepley ![ORCID iD](/_static/images/ORCIDiD_icon32x32.png){w=16px}[0000-0002-2292-0735](https://orcid.org/0000-0002-2292-0735)
+* Charles Williams ![ORCID iD](/_static/images/ORCIDiD_icon32x32.png){w=16px}[0000-0001-7435-9196](https://orcid.org/0000-0001-7435-9196)
+* Grant Block ![ORCID iD](/_static/images/ORCIDiD_icon32x32.png){w=16px}[0009-0003-3402-0923](https://orcid.org/0009-0003-3402-0923)
+
+
 ## Version 4.1.1 (2024/06/09)
 
 * **Fixed**
