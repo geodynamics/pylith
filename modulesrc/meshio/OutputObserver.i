@@ -54,6 +54,12 @@ public:
              */
             void setOutputBasisOrder(const int value);
 
+            /** Set number of mesh refinement levels for output.
+             *
+             * @param[in] value Number of mesh refinement levels for output.
+             */
+            void setRefineLevels(const int value);
+
             /** Set time scale.
              *
              * @param[in] value Time scale for dimensionalizing time.

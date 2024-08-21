@@ -57,6 +57,12 @@ public:
      */
     void setOutputBasisOrder(const int value);
 
+    /** Set number of mesh refinement levels for output.
+     *
+     * @param[in] value Number of mesh refinement levels for output.
+     */
+    void setRefineLevels(const int value);
+
     /** Set time scale.
      *
      * @param[in] value Time scale for dimensionalizing time.
@@ -72,6 +78,13 @@ protected:
      * @param[in] mesh Mesh associated with output.
      */
     void _setContext(const pylith::topology::Mesh & mesh);
+
+    /** Get mesh associated with subfield output.
+     *
+     * @param[in] subfield Subfield for output.
+     * @returns Mesh associated with output.
+     */
+    pylith::topology::Mesh* _getOutputMesh(const pylith::meshio::OutputSubfield& subfield);
 
     /** Get output subfield, creating if necessary.
      *
@@ -97,9 +110,11 @@ protected:
 
     PylithReal _timeScale; ///< Time scale for dimentionalizing time.
     std::map<std::string, OutputSubfield*> _subfields; ///< Subfields extracted for output.
+    pylith::topology::Mesh* _outputMesh; ///< Mesh associated with output.ß
     DataWriter* _writer; ///< Writer for data.
     OutputTrigger* _trigger; ///< Trigger for deciding how often to write output.
     int _outputBasisOrder; ///< Basis order for output.
+    int _refineLevels; ///< Number of mesh refinement levels for output.
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
 private:

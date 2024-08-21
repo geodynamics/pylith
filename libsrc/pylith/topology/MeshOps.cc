@@ -146,9 +146,6 @@ pylith::topology::MeshOps::createSubdomainMesh(const pylith::topology::Mesh& mes
         throw std::runtime_error(msg.str());
     } // if
 
-    // Set name
-    err = PetscObjectSetName((PetscObject) dmSubdomain, descriptiveLabel);PYLITH_CHECK_ERROR(err);
-
     // Set lengthscale
     PylithScalar lengthScale;
     err = DMPlexGetScale(dmDomain, PETSC_UNIT_LENGTH, &lengthScale);PYLITH_CHECK_ERROR(err);
@@ -156,7 +153,7 @@ pylith::topology::MeshOps::createSubdomainMesh(const pylith::topology::Mesh& mes
 
     pylith::topology::Mesh* submesh = new pylith::topology::Mesh(true);assert(submesh);
     submesh->setCoordSys(mesh.getCoordSys());
-    submesh->setDM(dmSubdomain);
+    submesh->setDM(dmSubdomain, descriptiveLabel);
 
     _MeshOps::Events::logger.eventEnd(_MeshOps::Events::createSubdomainMesh);
     PYLITH_METHOD_RETURN(submesh);
@@ -223,18 +220,15 @@ pylith::topology::MeshOps::createLowerDimMesh(const pylith::topology::Mesh& mesh
         throw std::runtime_error(msg.str());
     } // if
 
-    // Set name
-    std::string meshLabel = "subdomain_" + std::string(labelName);
-    err = PetscObjectSetName((PetscObject) dmSubmesh, meshLabel.c_str());PYLITH_CHECK_ERROR(err);
-
     // Set lengthscale
     PylithScalar lengthScale;
     err = DMPlexGetScale(dmDomain, PETSC_UNIT_LENGTH, &lengthScale);PYLITH_CHECK_ERROR(err);
     err = DMPlexSetScale(dmSubmesh, PETSC_UNIT_LENGTH, lengthScale);PYLITH_CHECK_ERROR(err);
-
     pylith::topology::Mesh* submesh = new pylith::topology::Mesh(true);assert(submesh);
     submesh->setCoordSys(mesh.getCoordSys());
-    submesh->setDM(dmSubmesh);
+
+    std::string meshLabel = "subdomain_" + std::string(labelName);
+    submesh->setDM(dmSubmesh, meshLabel.c_str());
 
     // Check topology
     MeshOps::checkTopology(*submesh);
@@ -347,6 +341,44 @@ pylith::topology::MeshOps::nondimensionalize(Mesh* const mesh,
     _MeshOps::Events::logger.eventEnd(_MeshOps::Events::nondimensionalize);
     PYLITH_METHOD_END;
 } // nondimensionalize
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Strip out "ghost" cells hanging off mesh
+PetscDM
+pylith::topology::MeshOps::removeHangingCells(const PetscDM& dmMesh) {
+    PYLITH_METHOD_BEGIN;
+
+    PetscErrorCode err = PETSC_SUCCESS;
+    PetscDM dmClean = PETSC_NULLPTR;
+
+    MPI_Comm comm = PetscObjectComm((PetscObject) dmMesh);
+    pylith::topology::Stratum cells(dmMesh, pylith::topology::Stratum::HEIGHT, 0);
+    DMPolytopeType cellType;
+    err = DMPlexGetCellType(dmMesh, cells.begin(), &cellType);PYLITH_CHECK_ERROR(err);
+    if (DMPolytopeTypeGetDim(cellType) < 0) {
+        // Hanging cells have dim == -1
+
+        // Create label over cells 1 dimension lower
+        PetscDMLabel labelInclude = PETSC_NULLPTR;
+        const PetscInt labelValue = 1;
+        err = DMLabelCreate(comm, "no_hanging_cells", &labelInclude);PYLITH_CHECK_ERROR(err);
+        pylith::topology::Stratum faces(dmMesh, pylith::topology::Stratum::HEIGHT, 1);
+        for (PetscInt face = faces.begin(); face < faces.end(); ++face) {
+            err = DMLabelSetValue(labelInclude, face, labelValue);PYLITH_CHECK_ERROR(err);
+        } // for
+
+        err = DMPlexFilter(dmMesh, labelInclude, labelValue, PETSC_FALSE, PETSC_FALSE, PETSC_NULLPTR, &dmClean);PYLITH_CHECK_ERROR(err);
+    } else {
+        dmClean = dmMesh;
+        err = PetscObjectReference((PetscObject) dmClean);
+    } // if/else
+    PetscReal lengthScale = 1.0;
+    err = DMPlexGetScale(dmMesh, PETSC_UNIT_LENGTH, &lengthScale);PYLITH_CHECK_ERROR(err);
+    err = DMPlexSetScale(dmClean, PETSC_UNIT_LENGTH, lengthScale);PYLITH_CHECK_ERROR(err);
+
+    PYLITH_METHOD_RETURN(dmClean);
+}
 
 
 // ---------------------------------------------------------------------------------------------------------------------

@@ -29,6 +29,7 @@ namespace pylith {
         class FieldFactory;
         class FieldOps;
         class FieldQuery;
+        class RefineInterpolator;
 
         class MatVisitorMesh;
         class MatVisitorSubmesh;
