@@ -212,8 +212,8 @@ pylith::meshio::DataWriterVTK::writeVertexField(const PylithScalar t,
     PetscViewerVTKFieldType ft = subfield.getDescription().vectorFieldType == pylith::topology::FieldBase::VECTOR ?
                                  PETSC_VTK_POINT_VECTOR_FIELD : PETSC_VTK_POINT_FIELD;
     err = PetscViewerVTKAddField(_viewer, (PetscObject)_dm, DMPlexVTKWriteAll, PETSC_DEFAULT, ft,
-                                 PETSC_TRUE, (PetscObject)subfield.getVector());PYLITH_CHECK_ERROR(err);
-    err = PetscObjectReference((PetscObject) subfield.getVector());PYLITH_CHECK_ERROR(err); // Viewer destroys Vec
+                                 PETSC_TRUE, (PetscObject)subfield.getOutputVector());PYLITH_CHECK_ERROR(err);
+    err = PetscObjectReference((PetscObject) subfield.getOutputVector());PYLITH_CHECK_ERROR(err); // Viewer destroys Vec
 
     _wroteVertexHeader = true;
 
@@ -234,8 +234,8 @@ pylith::meshio::DataWriterVTK::writeCellField(const PylithScalar t,
     PetscViewerVTKFieldType ft = subfield.getDescription().vectorFieldType == pylith::topology::FieldBase::VECTOR ?
                                  PETSC_VTK_CELL_VECTOR_FIELD : PETSC_VTK_CELL_FIELD;
     err = PetscViewerVTKAddField(_viewer, (PetscObject)_dm, DMPlexVTKWriteAll, PETSC_DEFAULT, ft,
-                                 PETSC_TRUE, (PetscObject)subfield.getVector());PYLITH_CHECK_ERROR(err);
-    err = PetscObjectReference((PetscObject) subfield.getVector());PYLITH_CHECK_ERROR(err); // Viewer destroys Vec
+                                 PETSC_TRUE, (PetscObject)subfield.getOutputVector());PYLITH_CHECK_ERROR(err);
+    err = PetscObjectReference((PetscObject) subfield.getOutputVector());PYLITH_CHECK_ERROR(err); // Viewer destroys Vec
 
     _wroteCellHeader = true;
 

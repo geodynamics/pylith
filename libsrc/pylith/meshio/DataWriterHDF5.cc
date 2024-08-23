@@ -178,7 +178,7 @@ pylith::meshio::DataWriterHDF5::writeVertexField(const PylithScalar t,
         const int istep = _timesteps[name];
         // Add time stamp to "/time" if necessary.
         MPI_Comm comm;
-        err = PetscObjectGetComm((PetscObject)subfield.getDM(), &comm);PYLITH_CHECK_ERROR(err);
+        err = PetscObjectGetComm((PetscObject)subfield.getOutputDM(), &comm);PYLITH_CHECK_ERROR(err);
         PetscMPIInt commRank;
         err = MPI_Comm_rank(comm, &commRank);PYLITH_CHECK_ERROR(err);
         if (_tstampIndex == istep) {
@@ -189,7 +189,7 @@ pylith::meshio::DataWriterHDF5::writeVertexField(const PylithScalar t,
         err = PetscViewerHDF5PushTimestepping(_viewer);PYLITH_CHECK_ERROR(err);
         err = PetscViewerHDF5SetTimestep(_viewer, istep);PYLITH_CHECK_ERROR(err);
 
-        PetscVec vector = subfield.getVector();assert(vector);
+        PetscVec vector = subfield.getOutputVector();assert(vector);
         DataWriter::_writeVec(vector, _viewer);PYLITH_CHECK_ERROR(err);
         err = PetscViewerHDF5PopTimestepping(_viewer);PYLITH_CHECK_ERROR(err);
         err = PetscViewerHDF5PopGroup(_viewer);PYLITH_CHECK_ERROR(err);
@@ -240,8 +240,7 @@ pylith::meshio::DataWriterHDF5::writeCellField(const PylithScalar t,
         }
         const int istep = _timesteps[name];
         // Add time stamp to "/time" if necessary.
-        MPI_Comm comm;
-        err = PetscObjectGetComm((PetscObject)subfield.getDM(), &comm);PYLITH_CHECK_ERROR(err);
+        MPI_Comm comm = PetscObjectComm((PetscObject)subfield.getOutputDM());
         PetscMPIInt commRank;
         err = MPI_Comm_rank(comm, &commRank);PYLITH_CHECK_ERROR(err);
         if (_tstampIndex == istep) {
@@ -252,7 +251,7 @@ pylith::meshio::DataWriterHDF5::writeCellField(const PylithScalar t,
         err = PetscViewerHDF5PushTimestepping(_viewer);PYLITH_CHECK_ERROR(err);
         err = PetscViewerHDF5SetTimestep(_viewer, istep);PYLITH_CHECK_ERROR(err);
 
-        PetscVec vector = subfield.getVector();assert(vector);
+        PetscVec vector = subfield.getOutputVector();assert(vector);
         DataWriter::_writeVec(vector, _viewer);
         err = PetscViewerHDF5PopTimestepping(_viewer);PYLITH_CHECK_ERROR(err);
         err = PetscViewerHDF5PopGroup(_viewer);PYLITH_CHECK_ERROR(err);

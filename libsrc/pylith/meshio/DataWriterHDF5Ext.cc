@@ -148,7 +148,7 @@ pylith::meshio::DataWriterHDF5Ext::writeVertexField(const PylithScalar t,
 
     const char* name = subfield.getDescription().label.c_str();
     try {
-        PetscDM dmMesh = subfield.getDM();assert(dmMesh);
+        PetscDM dmMesh = subfield.getOutputDM();assert(dmMesh);
         PetscErrorCode err;
 
         MPI_Comm comm;
@@ -176,7 +176,7 @@ pylith::meshio::DataWriterHDF5Ext::writeVertexField(const PylithScalar t,
         } // else
         assert(binaryViewer);
 
-        PetscVec vector = subfield.getVector();assert(vector);
+        PetscVec vector = subfield.getOutputVector();assert(vector);
         DataWriter::_writeVec(vector, binaryViewer);
 
         ExternalDataset& datasetInfo = _datasets[name];
@@ -288,7 +288,7 @@ pylith::meshio::DataWriterHDF5Ext::writeCellField(const PylithScalar t,
     try {
         PetscErrorCode err;
 
-        PetscDM dmMesh = subfield.getDM();assert(dmMesh);
+        PetscDM dmMesh = subfield.getOutputDM();assert(dmMesh);
         MPI_Comm comm;
         PetscMPIInt commRank;
         err = PetscObjectGetComm((PetscObject) dmMesh, &comm);PYLITH_CHECK_ERROR(err);
@@ -314,7 +314,7 @@ pylith::meshio::DataWriterHDF5Ext::writeCellField(const PylithScalar t,
         } // else
         assert(binaryViewer);
 
-        PetscVec vector = subfield.getVector();assert(vector);
+        PetscVec vector = subfield.getOutputVector();assert(vector);
         DataWriter::_writeVec(vector, binaryViewer);
 
         ExternalDataset& datasetInfo = _datasets[name];
@@ -333,7 +333,7 @@ pylith::meshio::DataWriterHDF5Ext::writeCellField(const PylithScalar t,
         if (createdExternalDataset) {
             // Get cell information
             PetscSection section = NULL;
-            err = DMGetLocalSection(subfield.getDM(), &section);assert(section);
+            err = DMGetLocalSection(subfield.getOutputDM(), &section);assert(section);
             PetscInt dof = 0, numLocalCells = 0, numCells, cellHeight, cStart, cEnd;
             PetscIS globalCellNumbers;
 
