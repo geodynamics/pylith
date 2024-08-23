@@ -114,7 +114,7 @@ pylith::meshio::TestMeshIO::_createMesh(void) {
     } // for
     err = DMPlexCreateFromCellListPetsc(_mesh->getComm(), _data->cellDim, _data->numCells, _data->numVertices, _data->numCorners, interpolateMesh, cells, _data->spaceDim, _data->vertices, &dmMesh);PYLITH_CHECK_ERROR(err);
     delete [] cells;
-    _mesh->setDM(dmMesh);
+    _mesh->setDM(dmMesh, "domain");
 
     // Material ids
     PylithInt cStart, cEnd;

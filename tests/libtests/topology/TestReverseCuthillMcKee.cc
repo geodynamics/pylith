@@ -65,7 +65,7 @@ pylith::topology::TestReverseCuthillMcKee::testReorder(void) {
     const PetscDM dmOrig = _mesh->getDM();
     PetscObjectReference((PetscObject) dmOrig);
     Mesh meshOrig;
-    meshOrig.setDM(dmOrig);
+    meshOrig.setDM(dmOrig, "domain");
 
     ReverseCuthillMcKee::reorder(_mesh);
 
