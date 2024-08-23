@@ -128,10 +128,16 @@ pylith::meshio::OutputSubfield::create(const pylith::topology::Field& field,
     const pylith::topology::Field::SubfieldInfo& info = field.getSubfieldInfo(name);
     subfield->_subfieldIndex = info.index;
     subfield->_description = info.description;
-    subfield->_discretization = info.fe;
-    subfield->_discretization.dimension = mesh.getDimension();
-    // Basis order of output should be less than or equai to the basis order of the computed field.
-    subfield->_discretization.basisOrder = std::min(basisOrder, info.fe.basisOrder);
+    const int outputBasisOrder = std::min(basisOrder, info.fe.basisOrder);
+
+    // Discretization for projection
+    pylith::topology::FieldBase::Discretization projectDiscretization = info.fe;
+    projectDiscretization.dimension = mesh.getDimension();
+    projectDiscretization.basisOrder = refineLevels ? info.fe.basisOrder : outputBasisOrder;
+
+    // Discretization for output
+    subfield->_discretization = projectDiscretization;
+    subfield->_discretization.basisOrder = outputBasisOrder;
 
     PetscErrorCode err = PETSC_SUCCESS;
 
@@ -141,12 +147,13 @@ pylith::meshio::OutputSubfield::create(const pylith::topology::Field& field,
     err = DMReorderSectionSetType(subfield->_projectDM, NULL);PYLITH_CHECK_ERROR(err);
     err = PetscObjectSetName((PetscObject)subfield->_projectDM, name);PYLITH_CHECK_ERROR(err);
 
-    PetscFE fe = pylith::topology::FieldOps::createFE(subfield->_discretization, subfield->_projectDM,
-                                                      info.description.numComponents);assert(fe);
-    err = PetscFESetName(fe, info.description.label.c_str());PYLITH_CHECK_ERROR(err);
-    err = DMSetField(subfield->_projectDM, 0, NULL, (PetscObject)fe);PYLITH_CHECK_ERROR(err);
+    // Setup PETSc FE (discretization) for projection
+    PetscFE projectFE = pylith::topology::FieldOps::createFE(projectDiscretization, subfield->_projectDM,
+                                                             info.description.numComponents);assert(projectFE);
+    err = PetscFESetName(projectFE, info.description.label.c_str());PYLITH_CHECK_ERROR(err);
+    err = DMSetField(subfield->_projectDM, 0, NULL, (PetscObject)projectFE);PYLITH_CHECK_ERROR(err);
     err = DMSetFieldAvoidTensor(subfield->_projectDM, 0, PETSC_TRUE);PYLITH_CHECK_ERROR(err);
-    err = PetscFEDestroy(&fe);PYLITH_CHECK_ERROR(err);
+    err = PetscFEDestroy(&projectFE);PYLITH_CHECK_ERROR(err);
     err = DMCreateDS(subfield->_projectDM);PYLITH_CHECK_ERROR(err);
 
     if (!refineLevels) {
@@ -155,10 +162,10 @@ pylith::meshio::OutputSubfield::create(const pylith::topology::Field& field,
     } else {
         delete subfield->_interpolator;subfield->_interpolator = new pylith::topology::RefineInterpolator();
         assert(subfield->_interpolator);
-        subfield->_interpolator->initialize(subfield->_projectDM, refineLevels);
+        subfield->_interpolator->initialize(subfield->_projectDM, refineLevels, outputBasisOrder, info.description, subfield->_discretization);
         subfield->_outputDM = subfield->_interpolator->getOutputDM();
         err = PetscObjectReference((PetscObject)subfield->_outputDM);PYLITH_CHECK_ERROR(err);
-    }
+    } // if/else
 
     err = DMCreateGlobalVector(subfield->_projectDM, &subfield->_projectVector);PYLITH_CHECK_ERROR(err);
     err = PetscObjectSetName((PetscObject)subfield->_projectVector, name);PYLITH_CHECK_ERROR(err);

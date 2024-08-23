@@ -15,6 +15,7 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES MeshOps
 #include "pylith/topology/Field.hh" // USES Field
+#include "pylith/topology/FieldOps.hh" // USES FieldOps
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
@@ -95,7 +96,10 @@ pylith::topology::RefineInterpolator::getOutputDM(void) {
 // Initialize interpolation to refined mesh.
 void
 pylith::topology::RefineInterpolator::initialize(const PetscDM& dmMesh,
-                                                 const int refineLevels) {
+                                                 const int refineLevels,
+                                                 const int outputBasisOrder,
+                                                 const pylith::topology::FieldBase::Description& description,
+                                                 const pylith::topology::FieldBase::Discretization& discretization) {
     PYLITH_METHOD_BEGIN;
     _RefineInterpolator::Events::logger.eventBegin(_RefineInterpolator::Events::initialize);
 
@@ -127,7 +131,25 @@ pylith::topology::RefineInterpolator::initialize(const PetscDM& dmMesh,
         PetscCall(DMGetCoordinatesLocal(rdm, &rcl));
 
 #endif
-        err = DMCopyDisc(dmPrev, _levels[iLevel].dm);PYLITH_CHECK_ERROR(err);
+
+        if (iLevel < _levels.size()-1) {
+            err = DMCopyDisc(dmPrev, _levels[iLevel].dm);PYLITH_CHECK_ERROR(err);
+        } else {
+#if 1
+            PetscFE outputFE = pylith::topology::FieldOps::createFE(discretization, _levels[iLevel].dm,
+                                                                    description.numComponents);assert(outputFE);
+            err = PetscFESetName(outputFE, description.label.c_str());PYLITH_CHECK_ERROR(err);
+            err = DMSetField(_levels[iLevel].dm, 0, NULL, (PetscObject)outputFE);PYLITH_CHECK_ERROR(err);
+            err = DMSetFieldAvoidTensor(_levels[iLevel].dm, 0, PETSC_TRUE);PYLITH_CHECK_ERROR(err);
+            err = PetscFEDestroy(&outputFE);PYLITH_CHECK_ERROR(err);
+            err = DMCreateDS(_levels[iLevel].dm);PYLITH_CHECK_ERROR(err);
+#else
+            err = DMCopyFields(dmPrev, _levels[iLevel].dm);PYLITH_CHECK_ERROR(err);
+            const PetscInt minBasisOrder = PETSC_DETERMINE;
+            const PetscInt maxBasisOrder = outputBasisOrder;
+            err = DMCopyDS(dmPrev, minBasisOrder, maxBasisOrder, _levels[iLevel].dm);PYLITH_CHECK_ERROR(err);
+#endif
+        } // else
         err = DMGetGlobalVector(_levels[iLevel].dm, &_levels[iLevel].vector);PYLITH_CHECK_ERROR(err);
         err = PetscObjectReference((PetscObject) _levels[iLevel].vector);PYLITH_CHECK_ERROR(err);
 

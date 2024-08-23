@@ -101,7 +101,7 @@ pylith::meshio::TestDataWriterVTKSubmesh::testWriteVertexField(void) {
     const pylith::string_vector& subfieldNames = vertexField.getSubfieldNames();
     const size_t numFields = subfieldNames.size();
     for (size_t i = 0; i < numFields; ++i) {
-        OutputSubfield* subfield = OutputSubfield::create(vertexField, *_submesh, subfieldNames[i].c_str(), 1);
+        OutputSubfield* subfield = OutputSubfield::create(vertexField, *_submesh, subfieldNames[i].c_str(), 1, 0);
         assert(subfield);
         subfield->project(vertexField.getOutputVector());
         writer.writeVertexField(t, *subfield);
@@ -146,7 +146,7 @@ pylith::meshio::TestDataWriterVTKSubmesh::testWriteCellField(void) {
     const pylith::string_vector& subfieldNames = cellField.getSubfieldNames();
     const size_t numFields = subfieldNames.size();
     for (size_t i = 0; i < numFields; ++i) {
-        OutputSubfield* subfield = OutputSubfield::create(cellField, *_submesh, subfieldNames[i].c_str(), 0);
+        OutputSubfield* subfield = OutputSubfield::create(cellField, *_submesh, subfieldNames[i].c_str(), 0, 0);
         assert(subfield);
         subfield->project(cellField.getOutputVector());
         writer.writeCellField(t, *subfield);
