@@ -222,7 +222,7 @@ pylith::faults::TopologyOps::create(pylith::topology::Mesh* mesh,
     err = DMPlexGetScale(dm, PETSC_UNIT_LENGTH, &lengthScale);PYLITH_CHECK_ERROR(err);
     err = DMPlexSetScale(sdm, PETSC_UNIT_LENGTH, lengthScale);PYLITH_CHECK_ERROR(err);
     err = DMViewFromOptions(sdm, NULL, "-pylith_cohesive_dm_view");PYLITH_CHECK_ERROR(err);
-    mesh->setDM(sdm);
+    mesh->setDM(sdm, "domain");
 } // create
 
 

@@ -126,6 +126,7 @@ protected:
     PetscInt _subfieldIndex; ///< Index of subfield in fields.
     PetscDM _projectDM; ///< PETSc global vector for subfield projection.
     PetscVec _projectVector; ///< PETSc global vector for subfield projection.
+    PetscVec _projectVectorInterp; ///< PETSc global vector for subfield projection transformed for interpolation.
     PetscPointFunc _fn; ///< PETSc point function for projection.
     PetscDM _outputDM; ///< PETSc DM for subfield output.
     PetscVec _outputVector; ///< PETSc global vector for subfield output.

@@ -32,6 +32,11 @@ public:
     /// Deallocate data structures.
     void deallocate(void);
 
+    /** Get PETSc DM for input (coarsest level)
+     *
+     */
+    PetscDM getInputDM(void);
+
     /** Get PETSc DM for output (finest level)
      *
      */

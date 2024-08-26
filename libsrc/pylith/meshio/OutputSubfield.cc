@@ -79,6 +79,7 @@ pylith::meshio::OutputSubfield::OutputSubfield(void) :
     _subfieldIndex(-1),
     _projectDM(PETSC_NULLPTR),
     _projectVector(PETSC_NULLPTR),
+    _projectVectorInterp(PETSC_NULLPTR),
     _fn(pylith::fekernels::Solution::passThruSubfield),
     _outputDM(PETSC_NULLPTR),
     _outputVector(PETSC_NULLPTR),
@@ -104,6 +105,7 @@ pylith::meshio::OutputSubfield::deallocate(void) {
 
     PetscErrorCode err;
     err = VecDestroy(&_projectVector);PYLITH_CHECK_ERROR(err);
+    err = VecDestroy(&_projectVectorInterp);PYLITH_CHECK_ERROR(err);
     err = DMDestroy(&_projectDM);PYLITH_CHECK_ERROR(err);
     err = VecDestroy(&_outputVector);PYLITH_CHECK_ERROR(err);
     err = DMDestroy(&_outputDM);PYLITH_CHECK_ERROR(err);
@@ -143,9 +145,10 @@ pylith::meshio::OutputSubfield::create(const pylith::topology::Field& field,
 
     // Setup PETSc DM for projection
     err = DMClone(mesh.getDM(), &subfield->_projectDM);PYLITH_CHECK_ERROR(err);
+    err = PetscObjectSetName((PetscObject)subfield->_projectDM, name);PYLITH_CHECK_ERROR(err);
     err = DMReorderSectionSetDefault(subfield->_projectDM, DM_REORDER_DEFAULT_FALSE);PYLITH_CHECK_ERROR(err);
     err = DMReorderSectionSetType(subfield->_projectDM, NULL);PYLITH_CHECK_ERROR(err);
-    err = PetscObjectSetName((PetscObject)subfield->_projectDM, name);PYLITH_CHECK_ERROR(err);
+    err = DMPlexReorderSetDefault(subfield->_projectDM, DM_REORDER_DEFAULT_FALSE);
 
     // Setup PETSc FE (discretization) for projection
     PetscFE projectFE = pylith::topology::FieldOps::createFE(projectDiscretization, subfield->_projectDM,
@@ -172,6 +175,7 @@ pylith::meshio::OutputSubfield::create(const pylith::topology::Field& field,
     if (refineLevels) {
         err = DMCreateGlobalVector(subfield->_outputDM, &subfield->_outputVector);PYLITH_CHECK_ERROR(err);
         err = PetscObjectSetName((PetscObject)subfield->_outputVector, name);PYLITH_CHECK_ERROR(err);
+        err = VecDuplicate(subfield->_projectVector, &subfield->_projectVectorInterp);PYLITH_CHECK_ERROR(err);
     } else {
         subfield->_outputVector = subfield->_projectVector;
         err = PetscObjectReference((PetscObject)subfield->_outputVector);PYLITH_CHECK_ERROR(err);
@@ -299,7 +303,8 @@ pylith::meshio::OutputSubfield::project(const PetscVec& fieldVector) {
 
     err = DMProjectField(_projectDM, t, fieldVector, &_fn, INSERT_VALUES, _projectVector);PYLITH_CHECK_ERROR(err);
     if (_interpolator) {
-        _interpolator->interpolate(&_outputVector, _projectVector);
+        pylith::topology::FieldOps::transformVector(&_projectVectorInterp, _interpolator->getInputDM(), _projectVector, _projectDM);
+        _interpolator->interpolate(&_outputVector, _projectVectorInterp);
     } // if
     err = VecScale(_outputVector, _description.scale);PYLITH_CHECK_ERROR(err);
 
@@ -324,7 +329,8 @@ pylith::meshio::OutputSubfield::projectWithLabel(const PetscVec& fieldVector) {
 
     err = DMProjectFieldLabel(_projectDM, t, _label, 1, &_labelValue, PETSC_DETERMINE, NULL, fieldVector, &_fn, INSERT_VALUES, _projectVector);PYLITH_CHECK_ERROR(err);
     if (_interpolator) {
-        _interpolator->interpolate(&_outputVector, _projectVector);
+        pylith::topology::FieldOps::transformVector(&_projectVectorInterp, _interpolator->getInputDM(), _projectVector, _projectDM);
+        _interpolator->interpolate(&_outputVector, _projectVectorInterp);
     } // if
     err = VecScale(_outputVector, _description.scale);PYLITH_CHECK_ERROR(err);
 

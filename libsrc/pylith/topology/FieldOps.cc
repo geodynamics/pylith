@@ -318,4 +318,69 @@ pylith::topology::FieldOps::createOutputLabel(const pylith::topology::Field* fie
 }
 
 
+// ------------------------------------------------------------------------------------------------
+void
+pylith::topology::FieldOps::transformVector(PetscVec* outputVector,
+                                            const PetscDM& outputDM,
+                                            const PetscVec& inputVector,
+                                            const PetscDM& inputDM) {
+    PYLITH_METHOD_BEGIN;
+
+    assert(outputVector);
+    assert(outputDM);
+    assert(inputVector);
+    assert(inputDM);
+
+    PetscErrorCode err = PETSC_SUCCESS;
+    PetscSection inputSection = PETSC_NULLPTR, outputSection = PETSC_NULLPTR;
+    err = DMGetGlobalSection(inputDM, &inputSection);PYLITH_CHECK_ERROR(err);
+    err = DMGetGlobalSection(outputDM, &outputSection);PYLITH_CHECK_ERROR(err);
+
+    // Verify sizes
+    PetscInt outputNumFields = 0, inputNumFields = 0;
+    err = PetscSectionGetNumFields(inputSection, &inputNumFields);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionGetNumFields(outputSection, &outputNumFields);PYLITH_CHECK_ERROR(err);
+    assert(inputNumFields == outputNumFields);
+
+    PetscInt inputSize = 0, outputSize = 0;
+    err = PetscSectionGetStorageSize(inputSection, &inputSize);PYLITH_CHECK_ERROR(err);
+    err = PetscSectionGetStorageSize(outputSection, &outputSize);PYLITH_CHECK_ERROR(err);
+    assert(inputSize == outputSize);
+
+    // Copy values from input vector to output vector
+    PetscIS subpointMap = PETSC_NULLPTR; // Mapping of points in output DM back to input DM
+    err = DMPlexGetSubpointIS(outputDM, &subpointMap);PYLITH_CHECK_ERROR(err);
+    PetscInt subpointMapSize = 0;
+    const PetscInt* subpointMapPoints = PETSC_NULLPTR;
+    err = ISGetSize(subpointMap, &subpointMapSize);PYLITH_CHECK_ERROR(err);
+    err = ISGetIndices(subpointMap, &subpointMapPoints);PYLITH_CHECK_ERROR(err);
+
+    const PetscScalar* inputArray = PETSC_NULLPTR;
+    PetscScalar* outputArray = PETSC_NULLPTR;
+    err = VecGetArrayRead(inputVector, &inputArray);PYLITH_CHECK_ERROR(err);
+    err = VecGetArray(*outputVector, &outputArray);PYLITH_CHECK_ERROR(err);
+
+    PetscInt pStart = 0, pEnd = 0;
+    err = PetscSectionGetChart(outputSection, &pStart, &pEnd);
+    for (PetscInt iPoint = 0; iPoint < subpointMapSize; ++iPoint) {
+        PetscInt inputDof = 0, inputOffset = 0;
+        PetscInt outputDof = 0, outputOffset = 0;
+        const PetscInt inputPoint = subpointMapPoints[iPoint];
+        const PetscInt outputPoint = pStart + iPoint;
+        err = PetscSectionGetDof(inputSection, inputPoint, &inputDof);PYLITH_CHECK_ERROR(err);
+        err = PetscSectionGetOffset(inputSection, inputPoint, &inputOffset);PYLITH_CHECK_ERROR(err);
+        err = PetscSectionGetDof(outputSection, outputPoint, &outputDof);PYLITH_CHECK_ERROR(err);
+        err = PetscSectionGetOffset(outputSection, outputPoint, &outputOffset);PYLITH_CHECK_ERROR(err);
+        assert(inputDof == outputDof);
+        for (PetscInt iDof = 0; iDof < inputDof; ++iDof) {
+            outputArray[outputOffset + iDof] = inputArray[inputOffset + iDof];
+        } // for
+    } // for
+    err = VecRestoreArrayRead(inputVector, &inputArray);PYLITH_CHECK_ERROR(err);
+    err = VecRestoreArray(*outputVector, &outputArray);PYLITH_CHECK_ERROR(err);
+
+    PYLITH_METHOD_END;
+}
+
+
 // End of file

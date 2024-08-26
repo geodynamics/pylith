@@ -369,13 +369,24 @@ pylith::topology::MeshOps::removeHangingCells(const PetscDM& dmMesh) {
         } // for
 
         err = DMPlexFilter(dmMesh, labelInclude, labelValue, PETSC_FALSE, PETSC_FALSE, PETSC_NULLPTR, &dmClean);PYLITH_CHECK_ERROR(err);
+        err = DMLabelDestroy(&labelInclude);PYLITH_CHECK_ERROR(err);
+
+        // Create section using subpoint map to ensure sections are consistent.
+        PetscIS subpointIS = PETSC_NULLPTR;
+        PetscSection sectionOld = PETSC_NULLPTR, sectionNew = PETSC_NULLPTR;
+        err = DMPlexGetSubpointIS(dmClean, &subpointIS);PYLITH_CHECK_ERROR(err);
+        err = DMGetLocalSection(dmMesh, &sectionOld);PYLITH_CHECK_ERROR(err);
+        err = PetscSectionCreateSubmeshSection(sectionOld, subpointIS, &sectionNew);PYLITH_CHECK_ERROR(err);
+        err = DMSetLocalSection(dmClean, sectionNew);PYLITH_CHECK_ERROR(err);
+        err = PetscSectionDestroy(&sectionNew);PYLITH_CHECK_ERROR(err);
+
+        PetscReal lengthScale = 0.0;
+        err = DMPlexGetScale(dmMesh, PETSC_UNIT_LENGTH, &lengthScale);PYLITH_CHECK_ERROR(err);
+        err = DMPlexSetScale(dmClean, PETSC_UNIT_LENGTH, lengthScale);PYLITH_CHECK_ERROR(err);
     } else {
         dmClean = dmMesh;
         err = PetscObjectReference((PetscObject) dmClean);
     } // if/else
-    PetscReal lengthScale = 1.0;
-    err = DMPlexGetScale(dmMesh, PETSC_UNIT_LENGTH, &lengthScale);PYLITH_CHECK_ERROR(err);
-    err = DMPlexSetScale(dmClean, PETSC_UNIT_LENGTH, lengthScale);PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_RETURN(dmClean);
 }
