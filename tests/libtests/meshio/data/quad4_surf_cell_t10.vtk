@@ -1,5 +1,5 @@
 # vtk DataFile Version 2.0
-domain
+subdomain_bc3
 ASCII
 DATASET UNSTRUCTURED_GRID
 POINTS 3 double
