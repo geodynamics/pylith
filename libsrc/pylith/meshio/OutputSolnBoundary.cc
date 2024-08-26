@@ -116,7 +116,6 @@ pylith::meshio::OutputSolnBoundary::_writeSolnStep(const PylithReal t,
     const pylith::string_vector& subfieldNames = pylith::topology::FieldOps::getSubfieldNamesDomain(solution);
     PetscVec solutionVector = solution.getOutputVector();assert(solutionVector);
 
-    _openSolnStep(t, *_boundaryMesh);
     const size_t numSubfieldNames = subfieldNames.size();
     for (size_t iField = 0; iField < numSubfieldNames; iField++) {
         assert(solution.hasSubfield(subfieldNames[iField].c_str()));
@@ -125,6 +124,12 @@ pylith::meshio::OutputSolnBoundary::_writeSolnStep(const PylithReal t,
         subfield = OutputObserver::_getSubfield(solution, *_boundaryMesh, subfieldNames[iField].c_str());assert(subfield);
         subfield->project(solutionVector);
 
+        if (0 == iField) {
+            // Need output mesh from subfield (which may be refined).
+            assert(subfield);
+            pylith::topology::Mesh* outputMesh = _getOutputMesh(*subfield);
+            _openSolnStep(t, *outputMesh);
+        } // if
         OutputObserver::_appendField(t, *subfield);
     } // for
     _closeSolnStep();
