@@ -16,29 +16,29 @@
 // ----------------------------------------------------------------------
 //
 
-/** @file libsrc/sources/SquarePulseSource.hh
+/** @file libsrc/sources/TimeHistorySource.hh
  *
- * @brief C++ class for solving squarepulsesource equation.
+ * @brief C++ class for solving timehistorysource equation.
  */
 
-#if !defined(pylith_sources_squarepulsesource_hh)
-#define pylith_sources_squarepulsesource_hh
+#if !defined(pylith_sources_timehistorysource_hh)
+#define pylith_sources_timehistorysource_hh
 
 #include "sourcesfwd.hh" // forward declarations
 
 #include "pylith/sources/Source.hh" // ISA Source
 
-class pylith::sources::SquarePulseSource : public pylith::sources::Source {
-    friend class TestSquarePulseSource; // unit testing
+class pylith::sources::TimeHistorySource : public pylith::sources::Source {
+    friend class TestTimeHistorySource; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Default constructor.
-    SquarePulseSource(void);
+    TimeHistorySource(void);
 
     /// Destructor.
-    ~SquarePulseSource(void);
+    ~TimeHistorySource(void);
 
     /// Deallocate PETSc and local data structures.
     void deallocate(void);
@@ -134,7 +134,7 @@ private:
 
     bool _useInertia;                                                      ///< Flag to include inertial term.
     spatialdata::spatialdb::TimeHistory *_dbTimeHistory;                   ///< Time history database.
-    pylith::sources::AuxiliaryFactorySquarePulseSource *_auxiliaryFactory; ///< Factory for auxiliary subfields.
+    pylith::sources::AuxiliaryFactoryTimeHistorySource *_auxiliaryFactory; ///< Factory for auxiliary subfields.
     std::string _scaleName; ///< Name of scale associated with Neumann boundary condition.
 
     bool _useInitial; ///< Use initial value term.
@@ -144,13 +144,13 @@ private:
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
-    SquarePulseSource(const SquarePulseSource &);                  ///< Not implemented.
-    const SquarePulseSource &operator=(const SquarePulseSource &); /// Not implemented.
+    TimeHistorySource(const TimeHistorySource &);                  ///< Not implemented.
+    const TimeHistorySource &operator=(const TimeHistorySource &); /// Not implemented.
 
 };
 
-// class SquarePulseSource
+// class TimeHistorySource
 
-#endif // pylith_sources_squarepulsesource_hh
+#endif // pylith_sources_timehistorysource_hh
 
 // End of file

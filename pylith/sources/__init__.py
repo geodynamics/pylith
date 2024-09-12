@@ -32,6 +32,7 @@ __all__ = [
     "SquareWavelet",
     "RickerWavelet",
     "TimeHistoryWavelet",
+    "TimeHistorySource",
     "GaussianWavelet"
 ]
 

@@ -18,15 +18,15 @@
 
 #include <portinfo>
 #include "spatialdata/spatialdb/TimeHistory.hh" // USES TimeHistory
-#include "pylith/sources/SquarePulseSource.hh" // implementation of object methods
+#include "pylith/sources/TimeHistorySource.hh" // implementation of object methods
 
-#include "pylith/sources/AuxiliaryFactorySquarePulseSource.hh" // USES AuxiliaryFactorySquarePulseSource
+#include "pylith/sources/AuxiliaryFactoryTimeHistorySource.hh" // USES AuxiliaryFactoryTimeHistorySource
 #include "pylith/feassemble/IntegratorDomain.hh" // USES IntegratorDomain
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field::SubfieldInfo
 #include "pylith/topology/FieldOps.hh" // USES FieldOps
 
-#include "pylith/fekernels/SquarePulseSource.hh" // USES SquarePulseSource kernels
+#include "pylith/fekernels/TimeHistorySource.hh" // USES TimeHistorySource kernels
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
@@ -45,7 +45,7 @@ typedef pylith::feassemble::Integrator::EquationPart EquationPart;
 // ---------------------------------------------------------------------------------------------------------------------
 namespace pylith {
     namespace sources {
-        class _SquarePulseSource {
+        class _TimeHistorySource {
             // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////
 public:
 
@@ -58,35 +58,35 @@ public:
              */
             static
             void setKernelsResidual(pylith::feassemble::IntegratorDomain* integrator,
-                                    const pylith::sources::SquarePulseSource& sources,
+                                    const pylith::sources::TimeHistorySource& sources,
                                     const pylith::topology::Field& solution,
                                     const pylith::problems::Physics::FormulationEnum formulation);
 
             static const char* pyreComponent;
 
-        }; // _SquarePulseSource
-        const char* _SquarePulseSource::pyreComponent = "squarepulsesource";
+        }; // _TimeHistorySource
+        const char* _TimeHistorySource::pyreComponent = "timehistorysource";
 
     } // sources
 } // pylith
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
-pylith::sources::SquarePulseSource::SquarePulseSource(void) :
+pylith::sources::TimeHistorySource::TimeHistorySource(void) :
     _dbTimeHistory(NULL),
-    _auxiliaryFactory(new pylith::sources::AuxiliaryFactorySquarePulseSource(pylith::sources::AuxiliaryFactorySquarePulseSource::XYZ)),
+    _auxiliaryFactory(new pylith::sources::AuxiliaryFactoryTimeHistorySource(pylith::sources::AuxiliaryFactoryTimeHistorySource::XYZ)),
     _useInitial(true),
     _useRate(false),
     _useTimeHistory(false) {
-    PyreComponent::setName(_SquarePulseSource::pyreComponent);
+    PyreComponent::setName(_TimeHistorySource::pyreComponent);
 
-    pylith::utils::PyreComponent::setName("squarepulsesource");
+    pylith::utils::PyreComponent::setName("timehistorysource");
 } // constructor
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Destructor.
-pylith::sources::SquarePulseSource::~SquarePulseSource(void) {
+pylith::sources::TimeHistorySource::~TimeHistorySource(void) {
     deallocate();
 } // destructor
 
@@ -94,7 +94,7 @@ pylith::sources::SquarePulseSource::~SquarePulseSource(void) {
 // ---------------------------------------------------------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
-pylith::sources::SquarePulseSource::deallocate(void) {
+pylith::sources::TimeHistorySource::deallocate(void) {
     Source::deallocate();
 
     delete _auxiliaryFactory;
@@ -105,7 +105,7 @@ pylith::sources::SquarePulseSource::deallocate(void) {
 // ---------------------------------------------------------------------------------------------------------------------
 // Set time history database.
 void
-pylith::sources::SquarePulseSource::setTimeHistoryDB(spatialdata::spatialdb::TimeHistory *th) {
+pylith::sources::TimeHistorySource::setTimeHistoryDB(spatialdata::spatialdb::TimeHistory *th) {
     PYLITH_COMPONENT_DEBUG("setTimeHistoryDB(th" << th << ")");
 
     _dbTimeHistory = th;
@@ -115,7 +115,7 @@ pylith::sources::SquarePulseSource::setTimeHistoryDB(spatialdata::spatialdb::Tim
 // ---------------------------------------------------------------------------------------------------------------------
 // Get time history database.
 const spatialdata::spatialdb::TimeHistory *
-pylith::sources::SquarePulseSource::getTimeHistoryDB(void) {
+pylith::sources::TimeHistorySource::getTimeHistoryDB(void) {
     return _dbTimeHistory;
 } // getTimeHistoryDB
 
@@ -123,7 +123,7 @@ pylith::sources::SquarePulseSource::getTimeHistoryDB(void) {
 // ---------------------------------------------------------------------------------------------------------------------
 // Use time history term in time history expression.
 void
-pylith::sources::SquarePulseSource::useTimeHistory(const bool value) {
+pylith::sources::TimeHistorySource::useTimeHistory(const bool value) {
     PYLITH_COMPONENT_DEBUG("useTimeHistory(value=" << value << ")");
 
     _useTimeHistory = value;
@@ -133,7 +133,7 @@ pylith::sources::SquarePulseSource::useTimeHistory(const bool value) {
 // ---------------------------------------------------------------------------------------------------------------------
 // Get flag associated with using time history term in time history expression.
 bool
-pylith::sources::SquarePulseSource::useTimeHistory(void) const {
+pylith::sources::TimeHistorySource::useTimeHistory(void) const {
     return _useTimeHistory;
 } // useTimeHistory
 
@@ -141,13 +141,13 @@ pylith::sources::SquarePulseSource::useTimeHistory(void) const {
 // ---------------------------------------------------------------------------------------------------------------------
 // Verify configuration is acceptable.
 void
-pylith::sources::SquarePulseSource::verifyConfiguration(const pylith::topology::Field &solution) const {
+pylith::sources::TimeHistorySource::verifyConfiguration(const pylith::topology::Field &solution) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("verifyConfiguration(solution=" << solution.getLabel() << ")");
 
     // Verify solution contains expected fields.
     if (!solution.hasSubfield("pressure")) {
-        throw std::runtime_error("Cannot find 'pressure' field in solution; required for 'SquarePulseSource'.");
+        throw std::runtime_error("Cannot find 'pressure' field in solution; required for 'TimeHistorySource'.");
     } // if
 
     PYLITH_METHOD_END;
@@ -157,7 +157,7 @@ pylith::sources::SquarePulseSource::verifyConfiguration(const pylith::topology::
 // ---------------------------------------------------------------------------------------------------------------------
 // Create integrator and set kernels.
 pylith::feassemble::Integrator *
-pylith::sources::SquarePulseSource::createIntegrator(const pylith::topology::Field &solution) {
+pylith::sources::TimeHistorySource::createIntegrator(const pylith::topology::Field &solution) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("createIntegrator(solution=" << solution.getLabel() << ")");
 
@@ -167,7 +167,7 @@ pylith::sources::SquarePulseSource::createIntegrator(const pylith::topology::Fie
     assert(integrator);
     integrator->setLabelName(getLabelName());
     integrator->setLabelValue(getLabelValue());
-    // printf("In SquarePulseSource end\n");
+    // printf("In TimeHistorySource end\n");
     // DMView(dmSoln, NULL);
 
     _setKernelsResidual(integrator, solution);
@@ -180,14 +180,14 @@ pylith::sources::SquarePulseSource::createIntegrator(const pylith::topology::Fie
 // ---------------------------------------------------------------------------------------------------------------------
 // Create auxiliary field.
 pylith::topology::Field *
-pylith::sources::SquarePulseSource::createAuxiliaryField(const pylith::topology::Field &solution,
+pylith::sources::TimeHistorySource::createAuxiliaryField(const pylith::topology::Field &solution,
                                                          const pylith::topology::Mesh &domainMesh) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("createAuxiliaryField(solution=" << solution.getLabel() << ", domainMesh=" << typeid(domainMesh).name() << ")");
 
     pylith::topology::Field *auxiliaryField = new pylith::topology::Field(domainMesh);
     assert(auxiliaryField);
-    auxiliaryField->setLabel("SquarePulseSource auxiliary field");
+    auxiliaryField->setLabel("TimeHistorySource auxiliary field");
 
     assert(_normalizer);
     _auxiliaryFactory->initialize(auxiliaryField, *_normalizer, domainMesh.getDimension());
@@ -203,36 +203,29 @@ pylith::sources::SquarePulseSource::createAuxiliaryField(const pylith::topology:
     // add in aux specific to square pulse
     _auxiliaryFactory->addVolumeFlowRate(); // 0
 
-    if (_useInitial) {
-        _auxiliaryFactory->addInitialAmplitude();
+    _auxiliaryFactory->addTimeHistoryStartTime();
+    _auxiliaryFactory->addTimeHistoryValue();
+
+    if (_dbTimeHistory) {
+        _dbTimeHistory->open();
     } // if
-    if (_useRate) {
-        _auxiliaryFactory->addRateAmplitude();
-        _auxiliaryFactory->addRateStartTime();
-    } // _useRate
-    if (_useTimeHistory) {
-        _auxiliaryFactory->addTimeHistoryAmplitude();
-        _auxiliaryFactory->addTimeHistoryStartTime();
-        _auxiliaryFactory->addTimeHistoryValue();
-        if (_dbTimeHistory) {
-            _dbTimeHistory->open();
-        } // if
-    } // _useTimeHistory
 
-    assert(_auxiliaryFactory);
-    _auxiliaryFactory->setValuesFromDB();
+} // _useTimeHistory
 
-    // Debug option
-    auxiliaryField->view("SquarePulse auxiliary field.");
 
-    PYLITH_METHOD_RETURN(auxiliaryField);
+assert(_auxiliaryFactory);
+_auxiliaryFactory->setValuesFromDB();
+
+// Debug option
+auxiliaryField->view("SquarePulse auxiliary field.");
+
+PYLITH_METHOD_RETURN(auxiliaryField);
 } // createAuxiliaryField
-
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Create derived field.
 pylith::topology::Field *
-pylith::sources::SquarePulseSource::createDerivedField(const pylith::topology::Field &solution,
+pylith::sources::TimeHistorySource::createDerivedField(const pylith::topology::Field &solution,
                                                        const pylith::topology::Mesh &domainMesh) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("createDerivedField(solution=" << solution.getLabel() << ", domainMesh=)" << typeid(domainMesh).name() << ") empty method");
@@ -244,7 +237,7 @@ pylith::sources::SquarePulseSource::createDerivedField(const pylith::topology::F
 // ---------------------------------------------------------------------------------------------------------------------
 // Get auxiliary factory associated with physics.
 pylith::feassemble::AuxiliaryFactory *
-pylith::sources::SquarePulseSource::_getAuxiliaryFactory(void) {
+pylith::sources::TimeHistorySource::_getAuxiliaryFactory(void) {
     return _auxiliaryFactory;
 } // _getAuxiliaryFactory
 
@@ -253,7 +246,7 @@ pylith::sources::SquarePulseSource::_getAuxiliaryFactory(void) {
 // ---------------------------------------------------------------------------------------------------------------------
 // // Set kernels for LHS residual F(t,s,\dot{s}).
 // void
-// pylith::sources::SquarePulseSource::_setKernelsResidual(pylith::feassemble::IntegratorDomain *integrator,
+// pylith::sources::TimeHistorySource::_setKernelsResidual(pylith::feassemble::IntegratorDomain *integrator,
 //                                                         const topology::Field &solution) const {
 //     PYLITH_METHOD_BEGIN;
 //     PYLITH_COMPONENT_DEBUG("_setKernelsResidual(integrator=" << integrator << ", solution=" << solution.getLabel() <<
@@ -267,7 +260,7 @@ pylith::sources::SquarePulseSource::_getAuxiliaryFactory(void) {
 //     case QUASISTATIC:
 //     {
 //         // Pressure
-//         const PetscPointFunc f0p = pylith::fekernels::SquarePulseSource::f0p;
+//         const PetscPointFunc f0p = pylith::fekernels::TimeHistorySource::f0p;
 //         const PetscPointFunc f1p = NULL;
 
 //         kernels.resize(1);
@@ -295,12 +288,12 @@ pylith::sources::SquarePulseSource::_getAuxiliaryFactory(void) {
 // ---------------------------------------------------------------------------------------------------------------------
 // Set kernels for residual.
 void
-pylith::sources::_SquarePulseSource::setKernelsResidual(pylith::feassemble::IntegratorDomain* integrator,
-                                                        const pylith::sources::SquarePulseSource& sources,
+pylith::sources::_TimeHistorySource::setKernelsResidual(pylith::feassemble::IntegratorDomain* integrator,
+                                                        const pylith::sources::TimeHistorySource& sources,
                                                         const topology::Field& solution,
                                                         const pylith::problems::Physics::FormulationEnum formulation) {
     PYLITH_METHOD_BEGIN;
-    pythia::journal::debug_t debug(_SquarePulseSource::pyreComponent);
+    pythia::journal::debug_t debug(_TimeHistorySource::pyreComponent);
     debug << pythia::journal::at(__HERE__)
           << "setKernelsResidual(integrator="<<integrator<<", sources="<<typeid(sources).name()<<", solution="
           << solution.getLabel()<<")"
@@ -318,35 +311,35 @@ pylith::sources::_SquarePulseSource::setKernelsResidual(pylith::feassemble::Inte
     PetscPointFunc r1 = NULL;
     switch (bitUse) {
     case 0x1:
-        r0 = (isScalarField) ? pylith::fekernels::SquarePulseSource::f0_initial_scalar :
-             pylith::fekernels::SquarePulseSource::f0_initial_vector;
+        r0 = (isScalarField) ? pylith::fekernels::TimeHistorySource::f0_initial_scalar :
+             pylith::fekernels::TimeHistorySource::f0_initial_vector;
         break;
     case 0x2:
-        r0 = (isScalarField) ? pylith::fekernels::SquarePulseSource::f0_rate_scalar :
-             pylith::fekernels::SquarePulseSource::f0_rate_vector;
+        r0 = (isScalarField) ? pylith::fekernels::TimeHistorySource::f0_rate_scalar :
+             pylith::fekernels::TimeHistorySource::f0_rate_vector;
         break;
     case 0x4:
-        r0 = (isScalarField) ? pylith::fekernels::SquarePulseSource::f0_timeHistory_scalar :
-             pylith::fekernels::SquarePulseSource::f0_timeHistory_vector;
+        r0 = (isScalarField) ? pylith::fekernels::TimeHistorySource::f0_timeHistory_scalar :
+             pylith::fekernels::TimeHistorySource::f0_timeHistory_vector;
         break;
     case 0x3:
-        r0 = (isScalarField) ? pylith::fekernels::SquarePulseSource::f0_initialRate_scalar :
-             pylith::fekernels::SquarePulseSource::f0_initialRate_vector;
+        r0 = (isScalarField) ? pylith::fekernels::TimeHistorySource::f0_initialRate_scalar :
+             pylith::fekernels::TimeHistorySource::f0_initialRate_vector;
         break;
     case 0x5:
-        r0 = (isScalarField) ? pylith::fekernels::SquarePulseSource::f0_initialTimeHistory_scalar :
-             pylith::fekernels::SquarePulseSource::f0_initialTimeHistory_vector;
+        r0 = (isScalarField) ? pylith::fekernels::TimeHistorySource::f0_initialTimeHistory_scalar :
+             pylith::fekernels::TimeHistorySource::f0_initialTimeHistory_vector;
         break;
     case 0x6:
-        r0 = (isScalarField) ? pylith::fekernels::SquarePulseSource::f0_rateTimeHistory_scalar :
-             pylith::fekernels::SquarePulseSource::f0_rateTimeHistory_vector;
+        r0 = (isScalarField) ? pylith::fekernels::TimeHistorySource::f0_rateTimeHistory_scalar :
+             pylith::fekernels::TimeHistorySource::f0_rateTimeHistory_vector;
         break;
     case 0x7:
-        r0 = (isScalarField) ? pylith::fekernels::SquarePulseSource::f0_initialRateTimeHistory_scalar :
-             pylith::fekernels::SquarePulseSource::f0_initialRateTimeHistory_vector;
+        r0 = (isScalarField) ? pylith::fekernels::TimeHistorySource::f0_initialRateTimeHistory_scalar :
+             pylith::fekernels::TimeHistorySource::f0_initialRateTimeHistory_vector;
         break;
     case 0x0: {
-        pythia::journal::warning_t warning(_SquarePulseSource::pyreComponent);
+        pythia::journal::warning_t warning(_TimeHistorySource::pyreComponent);
         warning << pythia::journal::at(__HERE__)
                 << "Square Pulse time-dependent SOURCES provides no values."
                 << pythia::journal::endl;
@@ -383,7 +376,7 @@ pylith::sources::_SquarePulseSource::setKernelsResidual(pylith::feassemble::Inte
 // ---------------------------------------------------------------------------------------------------------------------
 // Set kernels for LHS Jacobian F(t,s,\dot{s}).
 void
-pylith::sources::SquarePulseSource::_setKernelsJacobian(pylith::feassemble::IntegratorDomain *integrator,
+pylith::sources::TimeHistorySource::_setKernelsJacobian(pylith::feassemble::IntegratorDomain *integrator,
                                                         const topology::Field &solution) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_setKernelsJacobian(integrator=" << integrator << ", solution=" << solution.getLabel() << ")");

@@ -168,7 +168,7 @@ public:
 
         // const PylithInt i_amplitude = aOff[numA - 3];
         const PylithInt i_moment_tensor = aOff[0];
-        const PylithInt i_start_time = aOff[numA - 2];
+        // const PylithInt i_start_time = aOff[numA - 2];
         const PylithInt i_value = aOff[numA - 1];
 
         PylithInt _dim = 3;
