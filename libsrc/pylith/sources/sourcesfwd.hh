@@ -49,6 +49,9 @@ namespace pylith {
         class SquarePulseSource;
         class AuxiliaryFactorySquarePulseSource;
 
+        class TimeHistorySource;
+        class AuxiliaryFactoryTimeHistorySource;
+
         class WellboreSource;
         class AuxiliaryFactoryWellboreSource;
 

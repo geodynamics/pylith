@@ -33,6 +33,7 @@ subpkginclude_HEADERS = \
 	FaultCohesiveKin.hh \
 	WellboreSource.hh \
 	SquarePulseSource.hh \
+	TimeHistorySource.hh \
 	SquareWavelet.hh \
 	RickerWavelet.hh \
 	GaussianWavelet.hh \

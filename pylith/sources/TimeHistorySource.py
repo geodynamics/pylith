@@ -13,17 +13,17 @@
 #
 # ----------------------------------------------------------------------
 #
-# @file pylith/sources/SquarePulseSource.py
+# @file pylith/sources/TimeHistorySource.py
 #
-# @brief Python object for solving the squarepulsesource equation.
+# @brief Python object for solving the timehistorysource equation.
 #
 # Factory: source
 
 from .Source import Source
-from .sources import SquarePulseSource as ModuleSquarePulseSource
+from .sources import TimeHistorySource as ModuleTimeHistorySource
 
 
-class SquarePulseSource(Source, ModuleSquarePulseSource):
+class TimeHistorySource(Source, ModuleTimeHistorySource):
     """Python source property manager.
 
     FACTORY: source
@@ -46,15 +46,15 @@ class SquarePulseSource(Source, ModuleSquarePulseSource):
     
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
-    def __init__(self, name="squarepulsesource"):
+    def __init__(self, name="timehistorysource"):
         """Constructor.
         """
         Source.__init__(self, name)
         return
 
     def _defaults(self):
-        from .AuxSubfieldsSquarePulseSource import AuxSubfieldsSquarePulseSource
-        self.auxiliarySubfields = AuxSubfieldsSquarePulseSource("auxiliary_subfields")
+        from .AuxSubfieldsTimeHistorySource import AuxSubfieldsTimeHistorySource
+        self.auxiliarySubfields = AuxSubfieldsTimeHistorySource("auxiliary_subfields")
 
     def preinitialize(self, problem):
         """Do pre-initialization setup.
@@ -66,9 +66,9 @@ class SquarePulseSource(Source, ModuleSquarePulseSource):
         
         
         Source.preinitialize(self, problem)
-        ModuleSquarePulseSource.useTimeHistory(self, self.useTimeHistory)
+        ModuleTimeHistorySource.useTimeHistory(self, self.useTimeHistory)
         if not isinstance(self.dbTimeHistory, NullComponent):
-            ModuleSquarePulseSource.setTimeHistoryDB(
+            ModuleTimeHistorySource.setTimeHistoryDB(
                 self, self.dbTimeHistory)
         return
     
@@ -96,18 +96,18 @@ class SquarePulseSource(Source, ModuleSquarePulseSource):
         return
 
     def _createModuleObj(self):
-        """Create handle to C++ SquarePulseSource.
+        """Create handle to C++ TimeHistorySource.
         """
-        ModuleSquarePulseSource.__init__(self)
+        ModuleTimeHistorySource.__init__(self)
         return
 
 
 # Factories
 
 def source():
-    """Factory associated with SquarePulseSource.
+    """Factory associated with TimeHistorySource.
     """
-    return SquarePulseSource()
+    return TimeHistorySource()
 
 
 # End of file
