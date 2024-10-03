@@ -10,6 +10,7 @@ The version numbers are in the form `MAJOR.MINOR.PATCH`, where major releases in
 * **Added**
 * **Fixed**
   * Fix inconsistency in normal direction on fault surfaces. Orientation was correct but direction was flipped at some locations. This affected local slip direction and the resulting deformation close to the fault. This bug fix was not in version 4.1.3.
+  * Update autoconf macros for numpy for compatibility with location of include files in numpy version 2.x.
 
 ## Version 4.1.3 (2024/07/31)
 
