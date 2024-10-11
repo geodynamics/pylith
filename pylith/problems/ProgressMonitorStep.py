@@ -30,10 +30,10 @@ class ProgressMonitorStep(ProgressMonitor, ModuleProgressMonitorStep):
         """
         ProgressMonitor.__init__(self, name)
 
-    def preinitialize(self):
+    def preinitialize(self, defaults):
         """Do minimal initialization.
         """
-        ProgressMonitor.preinitialize(self)
+        ProgressMonitor.preinitialize(self, defaults)
 
     def _createModuleObj(self):
         """Create handle to corresponding C++ object.

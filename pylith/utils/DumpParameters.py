@@ -120,11 +120,11 @@ class DumpParameters(Component):
     def _createPath(self, filename):
         """Create path for filename if it doesn't exist.
         """
-        import os
-        relpath = os.path.dirname(filename)
+        import pathlib
 
-        if len(relpath) > 0 and not os.path.exists(relpath):
-            os.makedirs(relpath)
+        parentDir = pathlib.Path(filename).parent
+        if parentDir:
+            parentDir.mkdir(exist_ok=True)
 
 
 # End of file

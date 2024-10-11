@@ -30,7 +30,7 @@ class DumpParametersAscii(DumpParameters):
 
     import pythia.pyre.inventory
 
-    filename = pythia.pyre.inventory.str("filename", default="pylith_paramters.txt")
+    filename = pythia.pyre.inventory.str("filename", default="")
     filename.meta["tip"] = "Name of file written with parameters."
 
     indent = pythia.pyre.inventory.int("indent", default=4)
@@ -55,8 +55,10 @@ class DumpParametersAscii(DumpParameters):
             self.collect(app)
 
         parameters = self.info["application"]
-        self._createPath(self.filename)
-        with open(self.filename, "w") as fout:
+        defaults = app.problem.defaults
+        filename = self.filename or f"{defaults.outputDir}/{defaults.simName}-parameters.txt"
+        self._createPath(filename)
+        with open(filename, "w") as fout:
             from .CollectVersionInfo import CollectVersionInfo
             import datetime
             now = datetime.datetime.now()

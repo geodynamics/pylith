@@ -121,7 +121,7 @@ class TimeDependent(Problem, ModuleTimeDependent):
             ic.preinitialize(mesh)
         ModuleTimeDependent.setInitialCondition(self, self.ic.components())
 
-        self.progressMonitor.preinitialize()
+        self.progressMonitor.preinitialize(self.defaults)
         ModuleTimeDependent.setProgressMonitor(self, self.progressMonitor)
 
     def run(self, app):
