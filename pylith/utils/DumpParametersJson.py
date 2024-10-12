@@ -15,6 +15,9 @@ class DumpParametersJson(DumpParameters):
     """
     Dump PyLith parameter information to an ASCII file.
 
+    If you do not set the filename for the progress monitor, then PyLith will create one using the
+    simulation name from the application defaults settings.
+
     Implements `DumpParameters`.
     """
     DOC_CONFIG = {
@@ -31,7 +34,7 @@ class DumpParametersJson(DumpParameters):
 
     import pythia.pyre.inventory
 
-    filename = pythia.pyre.inventory.str("filename", default="pylith_parameters.json")
+    filename = pythia.pyre.inventory.str("filename", default="")
     filename.meta["tip"] = "Name of file written with parameters."
 
     style = pythia.pyre.inventory.str("style", default="normal", validator=pythia.pyre.inventory.choice(["normal", "compact"]))
@@ -55,8 +58,10 @@ class DumpParametersJson(DumpParameters):
         if self.info is None:
             self.collect(app)
 
-        self._createPath(self.filename)
-        with open(self.filename, "w") as fout:
+        defaults = app.problem.defaults
+        filename = self.filename or f"{defaults.outputDir}/{defaults.simName}-parameters.json"
+        self._createPath(filename)
+        with open(filename, "w") as fout:
             import json
             if self.style == "compact":
                 indent = None

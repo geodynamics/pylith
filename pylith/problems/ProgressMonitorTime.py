@@ -15,6 +15,9 @@ from .problems import ProgressMonitorTime as ModuleProgressMonitorTime
 class ProgressMonitorTime(ProgressMonitor, ModuleProgressMonitorTime):
     """
     Progress monitor for time-dependent problem.
+
+    If you do not set the filename for the progress monitor, then PyLith will create one using the
+    simulation name from the application defaults settings.
     """
     DOC_CONFIG = {
         "cfg": """
@@ -34,10 +37,10 @@ class ProgressMonitorTime(ProgressMonitor, ModuleProgressMonitorTime):
         """
         ProgressMonitor.__init__(self, name)
 
-    def preinitialize(self):
+    def preinitialize(self, defaults):
         """Do minimal initialization.
         """
-        ProgressMonitor.preinitialize(self)
+        ProgressMonitor.preinitialize(self, defaults)
         ModuleProgressMonitorTime.setTimeUnit(self, self.tUnits)
 
     def _createModuleObj(self):

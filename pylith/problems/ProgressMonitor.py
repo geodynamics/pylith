@@ -19,7 +19,7 @@ class ProgressMonitor(PetscComponent, ModuleProgressMonitor):
 
     import pythia.pyre.inventory
 
-    filename = pythia.pyre.inventory.str("filename", default="progress.txt")
+    filename = pythia.pyre.inventory.str("filename", default="")
     filename.meta['tip'] = "Name of output file."
 
     updatePercent = pythia.pyre.inventory.float(
@@ -31,11 +31,13 @@ class ProgressMonitor(PetscComponent, ModuleProgressMonitor):
         """
         PetscComponent.__init__(self, name, facility="progress_monitor")
 
-    def preinitialize(self):
+    def preinitialize(self, defaults):
         """Do minimal initialization.
         """
+        filename = self.filename or f"{defaults.outputDir}/{defaults.simName}-progress.txt"
+
         self._createModuleObj()
-        ModuleProgressMonitor.setFilename(self, self.filename)
+        ModuleProgressMonitor.setFilename(self, filename)
         ModuleProgressMonitor.setUpdatePercent(self, self.updatePercent)
         self._createPath()
 

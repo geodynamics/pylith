@@ -94,7 +94,7 @@ class GreensFns(Problem, ModuleGreensFns):
         ModuleGreensFns.setFaultLabelName(self, self.faultLabelName)
         ModuleGreensFns.setFaultLabelValue(self, self.faultLabelValue)
 
-        self.progressMonitor.preinitialize()
+        self.progressMonitor.preinitialize(self.defaults)
         ModuleGreensFns.setProgressMonitor(self, self.progressMonitor)
 
     def run(self, app):
