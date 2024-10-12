@@ -6,13 +6,16 @@
 
 Dump PyLith parameter information to an ASCII file.
 
+If you do not set the filename for the progress monitor, then PyLith will create one using the
+simulation name from the application defaults settings.
+
 Implements `DumpParameters`.
 
 ## Pyre Properties
 
 * `filename`=\<str\>: Name of file written with parameters.
-  - **default value**: 'pylith_paramters.txt'
-  - **current value**: 'pylith_paramters.txt', from {default}
+  - **default value**: ''
+  - **current value**: '', from {default}
 * `indent`=\<int\>: Nmber of spaces to indent.
   - **default value**: 4
   - **current value**: 4, from {default}

@@ -16,7 +16,10 @@ class ProgressMonitorStep(ProgressMonitor, ModuleProgressMonitorStep):
     """
     Progress monitor for problems with a given number of steps, such as Green's functions problem.
 
-    Implementes `ProgressMonitor`.
+    If you do not set the filename for the progress monitor, then PyLith will create one using the
+    simulation name from the application defaults settings.
+
+    Implements `ProgressMonitor`.
     """
     DOC_CONFIG = {
         "cfg": """

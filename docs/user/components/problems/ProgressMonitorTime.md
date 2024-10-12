@@ -6,11 +6,14 @@
 
 Progress monitor for time-dependent problem.
 
+If you do not set the filename for the progress monitor, then PyLith will create one using the
+simulation name from the application defaults settings.
+
 ## Pyre Properties
 
 * `filename`=\<str\>: Name of output file.
-  - **default value**: 'progress.txt'
-  - **current value**: 'progress.txt', from {default}
+  - **default value**: ''
+  - **current value**: '', from {default}
 * `t_units`=\<str\>: Units used for simulation time in output.
   - **default value**: 'year'
   - **current value**: 'year', from {default}

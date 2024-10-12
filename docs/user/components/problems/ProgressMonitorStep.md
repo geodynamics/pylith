@@ -6,13 +6,16 @@
 
 Progress monitor for problems with a given number of steps, such as Green's functions problem.
 
-Implementes `ProgressMonitor`.
+If you do not set the filename for the progress monitor, then PyLith will create one using the
+simulation name from the application defaults settings.
+
+Implements `ProgressMonitor`.
 
 ## Pyre Properties
 
 * `filename`=\<str\>: Name of output file.
-  - **default value**: 'progress.txt'
-  - **current value**: 'progress.txt', from {default}
+  - **default value**: ''
+  - **current value**: '', from {default}
 * `update_percent`=\<float\>: Frequency of progress updates (percent).
   - **default value**: 5.0
   - **current value**: 5.0, from {default}

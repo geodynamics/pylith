@@ -15,6 +15,9 @@ class DumpParametersJson(DumpParameters):
     """
     Dump PyLith parameter information to an ASCII file.
 
+    If you do not set the filename for the progress monitor, then PyLith will create one using the
+    simulation name from the application defaults settings.
+
     Implements `DumpParameters`.
     """
     DOC_CONFIG = {
