@@ -8,6 +8,8 @@ The version numbers are in the form `MAJOR.MINOR.PATCH`, where major releases in
 ## Version 4.2.0
 
 * **Added**
+  * Default filenames for progress monitor and parameters file are set from the simulation name like
+  the other output files.
 * **Fixed**
   * Fix inconsistency in normal direction on fault surfaces. Orientation was correct but direction was flipped at some locations. This affected local slip direction and the resulting deformation close to the fault. This bug fix was not in version 4.1.3.
 
