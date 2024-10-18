@@ -473,13 +473,15 @@ dist_noinst_DATA = \
 	user/examples/strikeslip-2d/figs/step04-solution.jpg \
 	user/examples/strikeslip-2d/figs/step05-diagram.pdf \
 	user/examples/strikeslip-2d/figs/step05-diagram.svg \
+	user/examples/strikeslip-2d/figs/step05_greensfns-impulses.pdf \
+	user/examples/strikeslip-2d/figs/step05_greensfns-impulses.svg \
 	user/examples/strikeslip-2d/figs/step05-solution.jpg \
-	user/examples/strikeslip-2d/figs/step06-solution.pdf \
-	user/examples/strikeslip-2d/figs/step06-solution.svg \
-	user/examples/strikeslip-2d/figs/step07a-solution.pdf \
-	user/examples/strikeslip-2d/figs/step07a-solution.svg \
-	user/examples/strikeslip-2d/figs/step07b-solution.pdf \
-	user/examples/strikeslip-2d/figs/step07b-solution.svg \
+	user/examples/strikeslip-2d/figs/step06_inversion-results.pdf \
+	user/examples/strikeslip-2d/figs/step06_inversion-results.svg \
+	user/examples/strikeslip-2d/figs/step07a_catmip-results.pdf \
+	user/examples/strikeslip-2d/figs/step07a_catmip-results.svg \
+	user/examples/strikeslip-2d/figs/step07b_cfcatmip-results.pdf \
+	user/examples/strikeslip-2d/figs/step07b_cfcatmip-results.svg \
 	user/examples/subduction-2d/index.md \
 	user/examples/subduction-2d/common-information.md \
 	user/examples/subduction-2d/exercises.md \
