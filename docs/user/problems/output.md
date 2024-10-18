@@ -79,6 +79,13 @@ a_z &= a_n n_z + a_h h_z + a_v v_z
 
 This transformation is useful for plotting fault tractions and slip in 3D visualization tools such as ParaView that require vectors in the model coordinate system.
 
+*New in v4.2.0*
+
+Output observers can output information on a finer resolution mesh than the one used in the simulaiton.
+This is useful when using a basis order of 2 or greater for the discretization of the solution and writing output at a basis order of 1.
+In this case, output using a mesh that is 4-8 times finer and fields discretized using a basis order of 1 (usually required by visualization tools) will do a good job representing the fields with a basis order of 2 on the mesh used in the simulation.
+This feature is used in [`examples/strikeslip-2d/step04-varslip`](../examples/strikeslip-2d/step04-varslip.md).
+
 (sec-user-solution-observers)=
 ### Solution Observers
 
