@@ -1,8 +1,8 @@
-# Sample parameter file for pylith_catmip model.
+# Sample parameter file for pylith_cfcatmip model.
 
 # Data files
-filename_observations = output/step04_varslip-gps_stations.h5
-filename_greens_fns = output/step05_greensfns-gps_stations.h5
+filename_observations = output/step04_varslip-gnss_stations.h5
+filename_greens_fns = output/step05_greensfns-gnss_stations.h5
 
 # Model parameters
 rake_parallel_prior = logistic

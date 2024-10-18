@@ -12,7 +12,12 @@ dist_noinst_PYTHON = \
 	generate_gmsh.py \
 	generate_cubit.py \
 	generate_gnssstations.py \
-	invert_slip.py
+	generate_slip.py \
+	invert_slip.py \
+	viz/plot_slip.py \
+	viz/plot_slip_impulses.py \
+	viz/plot_inversion_results.py \
+	viz/plot_catmip_results.py
 
 dist_noinst_DATA = \
 	README.md \
@@ -31,9 +36,7 @@ dist_noinst_DATA = \
 	disprate_bc_xpos.spatialdb \
 	gnss_stations.txt \
 	slip_impulses.spatialdb \
-	slip_variable.spatialdb \
-	viz/plot_inversion_results.py \
-	viz/plot_catmip_results.py
+	slip_variable.spatialdb
 
 
 # End of file
