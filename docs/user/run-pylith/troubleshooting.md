@@ -101,4 +101,23 @@ $ mpirun /path/to/valgrind --log-file=valgrind-log /path/to/mpinemesis --pyre-st
   [..lots of junk..]
 ```
 
+## Diagnosing solver issues
+
+### SNES does not converge in one iteration for a linear problem
+
+The PETSc nonlinear solver (SNES) should converge in one iteration for a linear problem.
+If it does not, it usually means that either the Jacobian and residual are not consistent or there is a problem with the preconditioner.
+The following steps can help diagnose the source of the problem.
+
+1. Check the consistency of the Jacobian and residual using `--petsc.snes_check_jacobian=1.0e-6` and `--petsc.snes_check_jacobian_view`.
+2. Use LU for all preconditioners on a small problem and verify that the true residual matches the preconditioner residual.
+  Helpful PETSc settings include `--petsc.ksp_monitor_true_residual` and `--petsc.pc_type=lu`.
+3. Use the desired preconditioner and compare the true and preconditioned residuals.
+  If they differ, then the preconditioner may not be appropriate for the boundary value problem or you may need to adjust the scales for nondimensionalization.
+  Manually verify that the terms in the Jacobian will be O(1), adjusting the scales for nondimensionalization accordingly.
+1. If using `preonly` for the KSP type (often the default), then try switching to `gmres` with a KSP tolerance of `1.0e-12`.
+  If that works, then try backing off on the tolerance.
+  Helpful PETSc settings include `--petsc.ksp_view=true`, `--petsc.ksp_type=gmres` and `--petsc.ksp_rtol=1.0e-12`.
+
+
 % End of file
