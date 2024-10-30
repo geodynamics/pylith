@@ -1,0 +1,17 @@
+name: run-ci
+
+concurrency:
+  group: ${{ github.actor }}-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  stage-1:
+    uses: ./.github/workflows/ci-stage-1.yml
+  stage-2:
+    uses: ./.github/workflows/ci-stage-2.yml
+    needs: [stage-1]

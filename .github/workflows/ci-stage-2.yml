@@ -1,0 +1,34 @@
+name: stage-2
+
+on:
+  - workflow_call
+
+env:
+  IMAGE_REGISTRY: "ghcr.io/geodynamics/pylith_installer"
+
+jobs:
+
+  # CI tests
+  tests:
+    strategy:
+      matrix:
+        os:
+          - debian-testing
+          - ubuntu-20.04
+          - ubuntu-22.04
+          - fedora-39
+          - rockylinux-8
+          - rockylinux-9
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Build Docker image
+        run: docker build -t pylith-testenv --build-arg BASE_IMAGE=$IMAGE_REGISTRY/testenv-${{ matrix.os }} --target build -f docker/pylith-testenv .
+
+      - name: Run tests
+        run: docker run pylith-testenv ci-config/run_tests.sh
