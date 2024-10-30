@@ -6,8 +6,8 @@ concurrency:
 
 on:
   pull_request:
-    branches:
-      - "main"
+#    branches:
+#      - main
 
 jobs:
   stage-1:
