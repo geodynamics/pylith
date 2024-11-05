@@ -56,6 +56,9 @@ PylithInt pylith::topology::_FieldQuery::Events::queryDBLabel;
 PylithInt pylith::topology::_FieldQuery::Events::openDB;
 
 // ------------------------------------------------------------------------------------------------
+const PylithReal pylith::topology::FieldQuery::SCALE_TOLERANCE = 25.0;
+
+// ------------------------------------------------------------------------------------------------
 void
 pylith::topology::_FieldQuery::Events::init(void) {
     logger.setClassName("FieldQuery");
@@ -201,6 +204,7 @@ pylith::topology::FieldQuery::openDB(spatialdata::spatialdb::SpatialDB* db,
         _contexts[index].description = description.label;
         _contexts[index].valueScale = description.scale;
         _contexts[index].validator = description.validator;
+        _contexts[index].validatorTolerance = description.validatorTolerance;
 
         _contextPtrs[index] = &_contexts[index];
     } // for
@@ -338,13 +342,14 @@ pylith::topology::FieldQuery::queryDBPointFn(PylithInt dim,
     // Validate subfield values if validator function was specified.
     if (queryctx->validator) {
         for (PylithInt i = 0; i < nvalues; ++i) {
-            const char* invalidMsg = queryctx->validator(values[i]);
-            if (invalidMsg) {
+            const std::string& invalidMsg = queryctx->validator(values[i], queryctx->valueScale, queryctx->validatorTolerance);
+            if (invalidMsg.length() > 0) {
                 std::ostringstream msg;
-                msg << "Found invalid value for " << queryctx->description << " (" << values[i] << ") at location (";
+                msg << "Found invalid value (" << values[i] << ") for " << queryctx->description
+                    << " at location (";
                 for (int i = 0; i < dim; ++i) {
                     msg << "  " << xDim[i];
-                }
+                } // for
                 msg << ") from spatial database '" << queryctx->db->getDescription() << "'. ";
                 msg << invalidMsg;
                 PYLITH_ERROR_RETURN(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
@@ -363,16 +368,68 @@ pylith::topology::FieldQuery::queryDBPointFn(PylithInt dim,
 
 
 // ----------------------------------------------------------------------
-const char*
-pylith::topology::FieldQuery::validatorPositive(const PylithReal value) {
-    return (value > 0.0) ? NULL : "Value must be positive.";
+std::string
+pylith::topology::FieldQuery::validatorPositive(const PylithReal value,
+                                                const PylithReal scale,
+                                                const PylithReal tolerance) {
+    std::string errorMsg;
+    if (value <= 0.0) {
+        errorMsg = std::string("Value must be positive.");
+    } else if ((scale > 0.0) && (tolerance > 0.0)) {
+        const PylithReal minValue = scale / tolerance;
+        const PylithReal maxValue = scale * tolerance;
+        if ((value < minValue) || (value > maxValue)) {
+            std::ostringstream msg;
+            msg << "Value outside range [" << minValue << ", " << maxValue << "] for nondimensionalization. "
+                << "You likely need to adjust the scales for nondimensionalization.";
+            errorMsg = msg.str();
+        } // if
+    } // if
+    return errorMsg;
 } // validatorPositive
 
 
 // ----------------------------------------------------------------------
-const char*
-pylith::topology::FieldQuery::validatorNonnegative(const PylithReal value) {
-    return (value >= 0.0) ? NULL : "Value must be nonnegative.";
+std::string
+pylith::topology::FieldQuery::validatorNonnegative(const PylithReal value,
+                                                   const PylithReal scale,
+                                                   const PylithReal tolerance) {
+    std::string errorMsg;
+    if (value < 0.0) {
+        errorMsg = std::string("Value must be non-negative.");
+    } else if ((value > 0) && (scale > 0.0) && (tolerance > 0)) {
+        const PylithReal minValue = scale / tolerance;
+        const PylithReal maxValue = scale * tolerance;
+        if ((value < minValue) || (value > maxValue)) {
+            std::ostringstream msg;
+            msg << "Value outside range [" << minValue << ", " << maxValue << "] for nondimensionalization. "
+                << "You likely need to adjust the scales for nondimensionalization.";
+            errorMsg = msg.str();
+        } // if
+    } // if/else
+
+    return errorMsg;
+} // validatorNonnegative
+
+
+// ----------------------------------------------------------------------
+std::string
+pylith::topology::FieldQuery::validatorScale(const PylithReal value,
+                                             const PylithReal scale,
+                                             const PylithReal tolerance) {
+    std::string errorMsg;
+    if ((scale > 0.0) && (tolerance > 0)) {
+        const PylithReal minValue = scale / tolerance;
+        const PylithReal maxValue = scale * tolerance;
+        if ((fabs(value) < minValue) || (fabs(value) > maxValue)) {
+            std::ostringstream msg;
+            msg << "Absolute value outside range [" << minValue << ", " << maxValue << "] for nondimensionalization. "
+                << "You likely need to adjust the scales for nondimensionalization.";
+            errorMsg = msg.str();
+        } // if
+    } // if/else
+
+    return errorMsg;
 } // validatorNonnegative
 
 

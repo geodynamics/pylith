@@ -10,11 +10,11 @@
 #pragma once
 
 #include "pylith/materials/materialsfwd.hh" // forward declarations
-#include "pylith/feassemble/AuxiliaryFactory.hh" // ISA AuxiliaryFactory
+#include "pylith/materials/AuxiliaryFactoryElasticity.hh" // ISA AuxiliaryFactory
 
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // USES GravityField
 
-class pylith::materials::AuxiliaryFactoryPoroelasticity : public pylith::feassemble::AuxiliaryFactory {
+class pylith::materials::AuxiliaryFactoryPoroelasticity : public pylith::materials::AuxiliaryFactoryElasticity {
     friend class TestAuxiliaryFactoryPoroelasticity; // unit testing
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////

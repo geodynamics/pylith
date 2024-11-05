@@ -36,6 +36,11 @@ class pylith::topology::FieldQuery {
     // PUBLIC TYPEDEF ///////////////////////////////////////////////////////
 public:
 
+    static const PylithReal SCALE_TOLERANCE;
+
+    // PUBLIC TYPEDEF ///////////////////////////////////////////////////////
+public:
+
     /** Function prototype for converter functions.
      *
      * @param[out] values Values for subfield.
@@ -133,19 +138,48 @@ public:
 
     /** Validator for positive values.
      *
+     * If scale and tolerance are greater than zero, then the value must be
+     * in the range [scale/tolerance, scale*tolerance].
+     *
      * @param[in] value Value to validate.
-     * @returns Error message if not positive, NULL otherwise.
+     * @param[in] scale Scale for nondimensionalization.
+     * @param[in] tolerance Tolerance relative to scale for validation.
+     * @returns Error message if not positive, empty string otherwise.
      */
     static
-    const char* validatorPositive(const PylithReal value);
+    std::string validatorPositive(const PylithReal value,
+                                  const PylithReal scale,
+                                  const PylithReal tolerance);
 
     /** Validator for nonnegative values.
      *
+     * If scale and tolerance are greater than zero, then the value must be
+     * in the range [scale/tolerance, scale*tolerance].
+     *
      * @param[in] value Value to validate.
-     * @returns Error message if negative, NULL otherwise.
+     * @param[in] scale Scale for nondimensionalization.
+     * @param[in] tolerance Tolerance relative to scale for validation.
+     * @returns Error message if negative, empty string otherwise.
      */
     static
-    const char* validatorNonnegative(const PylithReal value);
+    std::string validatorNonnegative(const PylithReal value,
+                                     const PylithReal scale,
+                                     const PylithReal tolerance);
+
+    /** Validator for scale only.
+     *
+     * If scale and tolerance are greater than zero, then the value must be
+     * in the range [scale/tolerance, scale*tolerance].
+     *
+     * @param[in] value Value to validate.
+     * @param[in] scale Scale for nondimensionalization.
+     * @param[in] tolerance Tolerance relative to scale for validation.
+     * @returns Error message if negative, empty string otherwise.
+     */
+    static
+    std::string validatorScale(const PylithReal value,
+                               const PylithReal scale,
+                               const PylithReal tolerance);
 
     // PRIVATE TYPEDEFS /////////////////////////////////////////////////////
 private:
@@ -178,6 +212,7 @@ private:
         const spatialdata::geocoords::CoordSys* cs; ///< Coordinate system of input point locations.
         PylithReal lengthScale; ///< Length scale for dimensionalizing coordinates.
         PylithReal valueScale; ///< Scale for dimensionalizing values for subfield.
+        PylithReal validatorTolerance; ///< Tolerance relative to valueScale for validation.
         std::string description; ///< Name of value;
         pylith::scalar_array queryValues; ///< Values returned by spatial database query;
         pylith::int_array queryIndices; ///< Indices of spatial database values to use for subfield.
@@ -189,6 +224,7 @@ private:
             cs(NULL),
             lengthScale(1.0),
             valueScale(1.0),
+            validatorTolerance(0.0),
             description("unknown"),
             converter(NULL),
             validator(NULL) {}

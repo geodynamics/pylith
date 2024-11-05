@@ -222,9 +222,9 @@ pylith::materials::_Query::vmToShearModulus(PylithScalar valueSubfield[],
 
     std::ostringstream msg;
     if (density <= 0) {
-        msg << "Found negative density (" << density << ").";
+        msg << "Found non-positive density (" << density << ").";
     } // if
-    if (vs <= 0) {
+    if (vs < 0) {
         msg << "Found negative shear wave speed (" << vs << ").";
     } // if
 
@@ -257,13 +257,13 @@ pylith::materials::_Query::vmToBulkModulus(PylithScalar valueSubfield[],
 
     std::ostringstream msg;
     if (density <= 0) {
-        msg << "Found nonpositive density (" << density << ").";
+        msg << "Found non-positive density (" << density << ").";
     } // if
     if (vs < 0) {
         msg << "Found negative shear wave speed (" << vs << ").";
     } // if
     if (vp <= 0) {
-        msg << "Found nonpositive dilatational wave speed (" << vp << ").";
+        msg << "Found non-positive dilatational wave speed (" << vp << ").";
     } // if
 
     PYLITH_METHOD_RETURN(msg.str());
@@ -296,13 +296,13 @@ pylith::materials::_Query::vmToMaxwellTime(PylithScalar valueSubfield[],
 
     std::ostringstream msg;
     if (density <= 0) {
-        msg << "Found negative density (" << density << ").";
+        msg << "Found non-positive density (" << density << ").";
     } // if
     if (vs <= 0) {
-        msg << "Found negative shear wave speed (" << vs << ").";
+        msg << "Found non-positive shear wave speed (" << vs << ").";
     } // if
     if (viscosity <= 0) {
-        msg << "Found nonpositive viscosity (" << viscosity << ").";
+        msg << "Found non-positive viscosity (" << viscosity << ").";
     } // if
 
     PYLITH_METHOD_RETURN(msg.str());
@@ -351,28 +351,28 @@ pylith::materials::_Query::vmToGeneralizedMaxwellTimes(PylithScalar valueSubfiel
 
     std::ostringstream msg;
     if (density <= 0) {
-        msg << "Found negative density (" << density << ").";
+        msg << "Found non-positive density (" << density << ").";
     } // if
     if (vs <= 0) {
-        msg << "Found negative shear wave speed (" << vs << ").";
+        msg << "Found non-positive shear wave speed (" << vs << ").";
     } // if
     if (viscosity1 <= 0) {
-        msg << "Found nonpositive viscosity 1 (" << viscosity1 << ").";
+        msg << "Found non-positive viscosity 1 (" << viscosity1 << ").";
     } // if
     if (viscosity2 <= 0) {
-        msg << "Found nonpositive viscosity 2 (" << viscosity2 << ").";
+        msg << "Found non-positive viscosity 2 (" << viscosity2 << ").";
     } // if
     if (viscosity3 <= 0) {
-        msg << "Found nonpositive viscosity 3 (" << viscosity3 << ").";
+        msg << "Found non-positive viscosity 3 (" << viscosity3 << ").";
     } // if
     if (shearModulusRatio1 <= 0) {
-        msg << "Found negative shear modulus ratio 1 (" << shearModulusRatio1 << ").";
+        msg << "Found non-positive shear modulus ratio 1 (" << shearModulusRatio1 << ").";
     } // if
     if (shearModulusRatio2 <= 0) {
-        msg << "Found negative shear modulus ratio 2 (" << shearModulusRatio2 << ").";
+        msg << "Found non-positive shear modulus ratio 2 (" << shearModulusRatio2 << ").";
     } // if
     if (shearModulusRatio3 <= 0) {
-        msg << "Found negative shear modulus ratio 3 (" << shearModulusRatio3 << ").";
+        msg << "Found non-positive shear modulus ratio 3 (" << shearModulusRatio3 << ").";
     } // if
 
     const double ratioSum = shearModulusRatio1 + shearModulusRatio2 + shearModulusRatio3;
@@ -409,13 +409,13 @@ pylith::materials::_Query::vmToGeneralizedMaxwellShearModulusRatios(PylithScalar
 
     std::ostringstream msg;
     if (shearModulusRatio1 <= 0) {
-        msg << "Found negative shear modulus ratio 1 (" << shearModulusRatio1 << ").";
+        msg << "Found non-positive shear modulus ratio 1 (" << shearModulusRatio1 << ").";
     } // if
     if (shearModulusRatio2 <= 0) {
-        msg << "Found negative shear modulus ratio 2 (" << shearModulusRatio2 << ").";
+        msg << "Found non-positive shear modulus ratio 2 (" << shearModulusRatio2 << ").";
     } // if
     if (shearModulusRatio3 <= 0) {
-        msg << "Found negative shear modulus ratio 3 (" << shearModulusRatio3 << ").";
+        msg << "Found non-positive shear modulus ratio 3 (" << shearModulusRatio3 << ").";
     } // if
     const double ratioSum = shearModulusRatio1 + shearModulusRatio2 + shearModulusRatio3;
     if (ratioSum > 1) {
@@ -498,7 +498,7 @@ pylith::materials::_Query::inputToBiotModulus(PylithScalar valueSubfield[],
         msg << "Found negative porosity (" << porosity << ").";
     } // if
     if (biot_coefficient <= 0) {
-        msg << "Found negative biot coefficient (" << biot_coefficient << ").";
+        msg << "Found non-positive biot coefficient (" << biot_coefficient << ").";
     } // if
 
     // Debug

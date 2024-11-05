@@ -114,8 +114,11 @@ pylith::materials::AuxiliaryFactoryViscoelastic::addShearModulusRatioGeneralized
     description.vectorFieldType = pylith::topology::Field::OTHER;
     description.numComponents = 3;
     description.componentNames.resize(3);
-    const char* componentNames[3] = { "shear_modulus_ratio_1", "shear_modulus_ratio_2",
-                                      "shear_modulus_ratio_3" };
+    const char* componentNames[3] = {
+        "shear_modulus_ratio_1",
+        "shear_modulus_ratio_2",
+        "shear_modulus_ratio_3",
+    };
     for (int i = 0; i < 3; ++i) {
         description.componentNames[i] = componentNames[i];
     } // for

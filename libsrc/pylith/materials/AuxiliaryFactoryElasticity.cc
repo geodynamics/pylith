@@ -72,7 +72,11 @@ pylith::materials::AuxiliaryFactoryElasticity::addBodyForce(void) {
     PYLITH_JOURNAL_DEBUG("addBodyForce(void)");
 
     const char* subfieldName = "body_force";
-    const char* componentNames[3] = { "body_force_x", "body_force_y", "body_force_z" };
+    const char* componentNames[3] = {
+        "body_force_x",
+        "body_force_y",
+        "body_force_z",
+    };
 
     const PylithReal forceScale = _normalizer->getPressureScale() / _normalizer->getLengthScale();
 
