@@ -39,7 +39,7 @@ pylith::materials::AuxiliaryFactoryPoroelastic::~AuxiliaryFactoryPoroelastic(voi
 // ----------------------------------------------------------------------------
 // Add isotropic permeability subfield to auxiliary fields.
 void
-pylith::materials::AuxiliaryFactoryPoroelastic::addIsotropicPermeability(void) { // isotropicPermeablity
+pylith::materials::AuxiliaryFactoryPoroelastic::addIsotropicPermeability(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("addIsotropicPermeability(void)");
 
@@ -56,7 +56,8 @@ pylith::materials::AuxiliaryFactoryPoroelastic::addIsotropicPermeability(void) {
     description.componentNames.resize(1);
     description.componentNames[0] = subfieldName;
     description.scale = permeabilityScale;
-    description.validator = NULL;
+    // description.validator = pylith::topology::FieldQuery::validatorScale;
+    // description.validatorTolerance = 10.0;
 
     _field->subfieldAdd(description, getSubfieldDiscretization(subfieldName));
     this->setSubfieldQuery(subfieldName);
@@ -68,7 +69,7 @@ pylith::materials::AuxiliaryFactoryPoroelastic::addIsotropicPermeability(void) {
 // ----------------------------------------------------------------------------
 // Add isotropic permeability subfield to auxiliary fields.
 void
-pylith::materials::AuxiliaryFactoryPoroelastic::addTensorPermeability(void) { // tensorPermeablity
+pylith::materials::AuxiliaryFactoryPoroelastic::addTensorPermeability(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("addTensorPermeability(void)");
 
@@ -95,7 +96,8 @@ pylith::materials::AuxiliaryFactoryPoroelastic::addTensorPermeability(void) { //
         description.componentNames[i] = componentNames[i];
     } // for
     description.scale = permeabilityScale;
-    description.validator = NULL;
+    // description.validator = pylith::topology::FieldQuery::validatorScale;
+    // description.validatorTolerance = 10.0;
 
     _field->subfieldAdd(description, getSubfieldDiscretization(subfieldName));
     this->setSubfieldQuery(subfieldName);
@@ -107,7 +109,7 @@ pylith::materials::AuxiliaryFactoryPoroelastic::addTensorPermeability(void) { //
 // --------------------------------------------------------------------
 // Add drained bulk modulus subfield to auxiliary fields.
 void
-pylith::materials::AuxiliaryFactoryPoroelastic::addDrainedBulkModulus(void) { // DrainedBulkModulus
+pylith::materials::AuxiliaryFactoryPoroelastic::addDrainedBulkModulus(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("addDrainedBulkModulus(void)");
 
@@ -123,6 +125,7 @@ pylith::materials::AuxiliaryFactoryPoroelastic::addDrainedBulkModulus(void) { //
     description.componentNames[0] = subfieldName;
     description.scale = pressureScale;
     description.validator = pylith::topology::FieldQuery::validatorPositive;
+    description.validatorTolerance = 25.0;
 
     _field->subfieldAdd(description, getSubfieldDiscretization(subfieldName));
     this->setSubfieldQuery(subfieldName);
@@ -134,7 +137,7 @@ pylith::materials::AuxiliaryFactoryPoroelastic::addDrainedBulkModulus(void) { //
 // ---------------------------------------------------------------------
 // Add biot coefficient subfield to auxiliary fields.
 void
-pylith::materials::AuxiliaryFactoryPoroelastic::addBiotCoefficient(void) { // biotCoefficient
+pylith::materials::AuxiliaryFactoryPoroelastic::addBiotCoefficient(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("addBiotCoefficient(void)");
 
@@ -149,6 +152,7 @@ pylith::materials::AuxiliaryFactoryPoroelastic::addBiotCoefficient(void) { // bi
     description.componentNames[0] = subfieldName;
     description.scale = 1.0;
     description.validator = pylith::topology::FieldQuery::validatorPositive;
+    description.validatorTolerance = 10.0;
 
     _field->subfieldAdd(description, getSubfieldDiscretization(subfieldName));
     this->setSubfieldQuery(subfieldName);
@@ -160,7 +164,7 @@ pylith::materials::AuxiliaryFactoryPoroelastic::addBiotCoefficient(void) { // bi
 // ---------------------------------------------------------------------
 // Add biot modulus subfield to auxiliary fields.
 void
-pylith::materials::AuxiliaryFactoryPoroelastic::addBiotModulus(void) { // biotCoefficient
+pylith::materials::AuxiliaryFactoryPoroelastic::addBiotModulus(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("addBiotModulus(void)");
 
@@ -176,6 +180,7 @@ pylith::materials::AuxiliaryFactoryPoroelastic::addBiotModulus(void) { // biotCo
     description.componentNames[0] = subfieldName;
     description.scale = pressureScale;
     description.validator = pylith::topology::FieldQuery::validatorPositive;
+    description.validatorTolerance = 25.0;
 
     _field->subfieldAdd(description, getSubfieldDiscretization(subfieldName));
     pylith::materials::Query::biotModulusFromInput(subfieldName, this);
@@ -187,7 +192,7 @@ pylith::materials::AuxiliaryFactoryPoroelastic::addBiotModulus(void) { // biotCo
 // ----------------------------------------------------------------------
 // Add reference stress subfield to auxiliary fields.
 void
-pylith::materials::AuxiliaryFactoryPoroelastic::addReferenceStress(void) { // referenceStress
+pylith::materials::AuxiliaryFactoryPoroelastic::addReferenceStress(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("addReferenceStress(void)");
 
@@ -225,7 +230,7 @@ pylith::materials::AuxiliaryFactoryPoroelastic::addReferenceStress(void) { // re
 // ----------------------------------------------------------------------
 // Add reference strain subfield to auxiliary fields.
 void
-pylith::materials::AuxiliaryFactoryPoroelastic::addReferenceStrain(void) { // addReferenceStrain
+pylith::materials::AuxiliaryFactoryPoroelastic::addReferenceStrain(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("addRefrenceStrain(void)");
 

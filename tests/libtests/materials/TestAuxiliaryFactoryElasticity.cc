@@ -34,12 +34,6 @@ pylith::materials::TestAuxiliaryFactoryElasticity::TestAuxiliaryFactoryElasticit
     _data(data) {
     PYLITH_METHOD_BEGIN;
 
-    assert(_data->normalizer);
-    _data->normalizer->setLengthScale(1.0e+03);
-    _data->normalizer->setTimeScale(2.0);
-    _data->normalizer->setDensityScale(3.0e+3);
-    _data->normalizer->setPressureScale(2.25e+10);
-
     pylith::topology::Field::SubfieldInfo info;
     pylith::string_vector componentNames;
 
@@ -53,6 +47,7 @@ pylith::materials::TestAuxiliaryFactoryElasticity::TestAuxiliaryFactoryElasticit
         componentNames.size(),
         pylith::topology::Field::SCALAR,
         _data->normalizer->getDensityScale(),
+        0.0,
         pylith::topology::FieldQuery::validatorPositive
         );
     info.fe = pylith::topology::Field::Discretization(

@@ -116,7 +116,7 @@ pylith::materials::AuxiliaryFactoryPoroelasticity::addPorosity(void) { // porosi
     PYLITH_JOURNAL_DEBUG("addPorosity(void)");
 
     const char* subfieldName = "porosity";
-    const PylithReal noScale = 1;
+    const PylithReal noScale = 1.0;
 
     pylith::topology::Field::Description description;
     description.label = subfieldName;

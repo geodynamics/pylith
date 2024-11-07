@@ -68,6 +68,7 @@ pylith::testing::FieldTester::checkSubfieldInfo(const pylith::topology::Field& f
     } // for
     CHECK(descriptionE.scale == description.scale);
     CHECK(descriptionE.validator == description.validator);
+    CHECK(descriptionE.validatorTolerance == description.validatorTolerance);
     CHECK(descriptionE.hasHistory == description.hasHistory);
     CHECK(descriptionE.historySize == description.historySize);
 

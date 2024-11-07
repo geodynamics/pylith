@@ -10,6 +10,7 @@ The version numbers are in the form `MAJOR.MINOR.PATCH`, where major releases in
 * **Added**
   * Default filenames for progress monitor and parameters file are set from the simulation name like
   the other output files.
+  * Consistency check for material properties and scales used in nondimensionalization (currently just the shear modulus).
   * Add section to User Guide on troubleshooting solver issues.
 * **Changed**
   * Switch CI from Azure Pipelines to GitHub Actions.

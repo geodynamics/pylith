@@ -39,10 +39,17 @@ public:
 
 private:
 
+    static const PylithReal LENGTH_SCALE;
+    static const PylithReal TIME_SCALE;
+    static const PylithReal PRESSURE_SCALE;
+    static const PylithReal DENSITY_SCALE;
+
+private:
+
     static
     double density_2d(const double x,
                       const double y) {
-        return 3.4 + 3.0*fabs(x) + 2.0*fabs(y);
+        return 2500.0 + 3.0*fabs(x)/LENGTH_SCALE + 2.0*fabs(y)/LENGTH_SCALE;
     } // density
 
     static
@@ -53,23 +60,23 @@ private:
     static
     double vs_2d(const double x,
                  const double y) {
-        return 3.4 + 3.0*fabs(x) + 2.0*fabs(y);
+        return 1000.0 + 30.0*fabs(x)/LENGTH_SCALE + 20.0*fabs(y)/LENGTH_SCALE;
     } // vs
 
     static
     const char* vs_units(void) {
-        return "km/s";
+        return "m/s";
     } // vs_units
 
     static
     double vp_2d(const double x,
                  const double y) {
-        return 6.4 + 5.0*fabs(x) + 4.3*fabs(y);
+        return 2000.0 + 50.0*fabs(x)/LENGTH_SCALE + 43.0*fabs(y)/LENGTH_SCALE;
     } // vp
 
     static
     const char* vp_units(void) {
-        return "km/s";
+        return "m/s";
     } // vp_units
 
     static
@@ -95,25 +102,25 @@ private:
     static
     double reference_stress_2d_xx(const double x,
                                   const double y) {
-        return -0.3*x*x + 0.1*x*y;
+        return -0.3*x*x/(LENGTH_SCALE*LENGTH_SCALE) + 0.1*x*y/(LENGTH_SCALE*LENGTH_SCALE);
     } // reference_stress_xx
 
     static
     double reference_stress_2d_yy(const double x,
                                   const double y) {
-        return -0.8*x*y + 0.2*y*y;
+        return -8.0e+6*x*y/(LENGTH_SCALE*LENGTH_SCALE) + 2.0e+6*y*y/(LENGTH_SCALE*LENGTH_SCALE);
     } // reference_stress_2d_yy
 
     static
     double reference_stress_2d_zz(const double x,
                                   const double y) {
-        return -0.3*x*x + 0.5*y*y;
+        return -3.0e+6*x*x/(LENGTH_SCALE*LENGTH_SCALE) + 5.0e+6*y*y/(LENGTH_SCALE*LENGTH_SCALE);
     } // reference_stress_2d_zz
 
     static
     double reference_stress_2d_xy(const double x,
                                   const double y) {
-        return -0.3*x*x + 0.2*x*y;
+        return -3.0e+6*x*x/(LENGTH_SCALE*LENGTH_SCALE) + 2.0e+6*x*y/(LENGTH_SCALE*LENGTH_SCALE);
     } // reference_stress_xy
 
     static
@@ -124,25 +131,25 @@ private:
     static
     double reference_strain_2d_xx(const double x,
                                   const double y) {
-        return -0.3*x*x + 0.1*x*y;
+        return -0.3*x*x/(LENGTH_SCALE*LENGTH_SCALE) + 0.1*x*y/(LENGTH_SCALE*LENGTH_SCALE);
     } // reference_strain_2d_xx
 
     static
     double reference_strain_2d_yy(const double x,
                                   const double y) {
-        return -0.8*x*y + 0.2*y*y;
+        return -0.8*x*y/(LENGTH_SCALE*LENGTH_SCALE) + 0.2*y*y/(LENGTH_SCALE*LENGTH_SCALE);
     } // reference_strain_2d_yy
 
     static
     double reference_strain_2d_zz(const double x,
                                   const double y) {
-        return -0.3*x*x + 0.5*y*y;
+        return -0.3*x*x/(LENGTH_SCALE*LENGTH_SCALE) + 0.5*y*y/(LENGTH_SCALE*LENGTH_SCALE);
     } // reference_strain_2d_zz
 
     static
     double reference_strain_2d_xy(const double x,
                                   const double y) {
-        return -0.3*x*x + 0.2*x*y;
+        return -0.3*x*x/(LENGTH_SCALE*LENGTH_SCALE) + 0.2*x*y/(LENGTH_SCALE*LENGTH_SCALE);
     } // reference_strain_xy
 
     static
@@ -154,21 +161,21 @@ private:
     double density_3d(const double x,
                       const double y,
                       const double z) {
-        return 3.4 + 3.0*fabs(x) + 2.0*fabs(z);
+        return 2500.0 + 3.0*fabs(x)/LENGTH_SCALE + 2.0*fabs(z)/LENGTH_SCALE;
     } // density
 
     static
     double vs_3d(const double x,
                  const double y,
                  const double z) {
-        return 3.4 + 3.0*fabs(x) + 2.0*fabs(z);
+        return 1000.0 + 300.0*fabs(x)/LENGTH_SCALE + 200.0*fabs(z)/LENGTH_SCALE;
     } // vs
 
     static
     double vp_3d(const double x,
                  const double y,
                  const double z) {
-        return 6.4 + 4.0*fabs(x) + 5.3*fabs(z);
+        return 2500.0 + 400.0*fabs(x)/LENGTH_SCALE + 5.3*fabs(z)/LENGTH_SCALE;
     } // vp
 
     static
@@ -192,84 +199,84 @@ private:
     double reference_stress_3d_xx(const double x,
                                   const double y,
                                   const double z) {
-        return -0.3*x*z + 0.1*x*z;
+        return -3.0e+6*x*z/(LENGTH_SCALE*LENGTH_SCALE) + 1.0e+6*x*z/(LENGTH_SCALE*LENGTH_SCALE);
     } // reference_stress_3d_xx
 
     static
     double reference_stress_3d_yy(const double x,
                                   const double y,
                                   const double z) {
-        return -0.8*x*z + 0.2*y*y;
+        return -8.0e+6*x*z/(LENGTH_SCALE*LENGTH_SCALE) + 2.0e+6*y*y/(LENGTH_SCALE*LENGTH_SCALE);
     } // reference_stress_3d_yy
 
     static
     double reference_stress_3d_zz(const double x,
                                   const double y,
                                   const double z) {
-        return -0.3*x*x + 0.5*y*z;
+        return -3.0e+6*x*x/(LENGTH_SCALE*LENGTH_SCALE) + 5.0e+6*y*z/(LENGTH_SCALE*LENGTH_SCALE);
     } // reference_stress_3d_zz
 
     static
     double reference_stress_3d_xy(const double x,
                                   const double y,
                                   const double z) {
-        return -0.3*x + 0.2*x*y;
+        return -3.0e+6*x/LENGTH_SCALE + 2.0e+6*x*y/(LENGTH_SCALE*LENGTH_SCALE);
     } // reference_stress_3d_xy
 
     static
     double reference_stress_3d_yz(const double x,
                                   const double y,
                                   const double z) {
-        return -0.3*x*z + 0.2*x*y;
+        return -3.0e+6*x*z/(LENGTH_SCALE*LENGTH_SCALE) + 2.0e+6*x*y/(LENGTH_SCALE*LENGTH_SCALE);
     } // reference_stress_3d_yz
 
     static
     double reference_stress_3d_xz(const double x,
                                   const double y,
                                   const double z) {
-        return -0.3*x + 0.2*y;
+        return -3.0e+6*x/LENGTH_SCALE + 2.0e+6*y/LENGTH_SCALE;
     } // reference_stress_3d_xz
 
     static
     double reference_strain_3d_xx(const double x,
                                   const double y,
                                   const double z) {
-        return -0.3*x*x + 0.1*x*z;
+        return -0.3*x*x/(LENGTH_SCALE*LENGTH_SCALE) + 0.1*x*z/(LENGTH_SCALE*LENGTH_SCALE);
     } // reference_strain_3d_xx
 
     static
     double reference_strain_3d_yy(const double x,
                                   const double y,
                                   const double z) {
-        return -0.8*x*y + 0.2*y*y;
+        return -0.8*x*y/(LENGTH_SCALE*LENGTH_SCALE) + 0.2*y*y/(LENGTH_SCALE*LENGTH_SCALE);
     } // reference_strain_3d_yy
 
     static
     double reference_strain_3d_zz(const double x,
                                   const double y,
                                   const double z) {
-        return -0.3*x*z + 0.5*y*y;
+        return -0.3*x*z/(LENGTH_SCALE*LENGTH_SCALE) + 0.5*y*y/(LENGTH_SCALE*LENGTH_SCALE);
     } // reference_strain_3d_zz
 
     static
     double reference_strain_3d_xy(const double x,
                                   const double y,
                                   const double z) {
-        return -0.3*x*x + 0.2*x*z;
+        return -0.3*x*x/(LENGTH_SCALE*LENGTH_SCALE) + 0.2*x*z/(LENGTH_SCALE*LENGTH_SCALE);
     } // reference_strain_3d_xy
 
     static
     double reference_strain_3d_yz(const double x,
                                   const double y,
                                   const double z) {
-        return -0.3*y*z + 0.2*x*z;
+        return -0.3*y*z/(LENGTH_SCALE*LENGTH_SCALE) + 0.2*x*z/(LENGTH_SCALE*LENGTH_SCALE);
     } // reference_strain_3d_yz
 
     static
     double reference_strain_3d_xz(const double x,
                                   const double y,
                                   const double z) {
-        return -0.3*y*y + 0.2*x*z;
+        return -0.3*y*y/(LENGTH_SCALE*LENGTH_SCALE) + 0.2*x*z/(LENGTH_SCALE*LENGTH_SCALE);
     } // reference_strain_3d_xz
 
 };
@@ -289,6 +296,11 @@ TEST_CASE("TestAuxiliaryFactoryLinearElastic::Hex::testSetValuesFromDB", "[TestA
     pylith::materials::TestAuxiliaryFactoryLinearElastic(pylith::materials::TestAuxiliaryFactoryLinearElastic_Cases::Hex()).testSetValuesFromDB();
 }
 
+const PylithReal pylith::materials::TestAuxiliaryFactoryLinearElastic_Cases::LENGTH_SCALE = 1.0e+3;
+const PylithReal pylith::materials::TestAuxiliaryFactoryLinearElastic_Cases::TIME_SCALE = 2.0;
+const PylithReal pylith::materials::TestAuxiliaryFactoryLinearElastic_Cases::PRESSURE_SCALE = 2.0e+10;
+const PylithReal pylith::materials::TestAuxiliaryFactoryLinearElastic_Cases::DENSITY_SCALE = 3.0e+3;
+
 // --------------------------------------------------------------------------------------------------------------------
 pylith::materials::TestAuxiliaryFactoryLinearElastic_Data*
 pylith::materials::TestAuxiliaryFactoryLinearElastic_Cases::Tri(void) {
@@ -300,6 +312,12 @@ pylith::materials::TestAuxiliaryFactoryLinearElastic_Cases::Tri(void) {
     data->meshFilename = "data/tri.mesh";
     data->cs = new spatialdata::geocoords::CSCart();assert(data->cs);
     data->cs->setSpaceDim(data->dimension);
+
+    assert(data->normalizer);
+    data->normalizer->setLengthScale(LENGTH_SCALE);
+    data->normalizer->setTimeScale(TIME_SCALE);
+    data->normalizer->setPressureScale(PRESSURE_SCALE);
+    data->normalizer->setDensityScale(DENSITY_SCALE);
 
     assert(data->auxiliaryDB);
     data->auxiliaryDB->addValue("density", density_2d, density_units());
@@ -333,6 +351,12 @@ pylith::materials::TestAuxiliaryFactoryLinearElastic_Cases::Hex(void) {
     data->meshFilename = "data/hex.mesh";
     data->cs = new spatialdata::geocoords::CSCart();assert(data->cs);
     data->cs->setSpaceDim(data->dimension);
+
+    assert(data->normalizer);
+    data->normalizer->setLengthScale(LENGTH_SCALE);
+    data->normalizer->setTimeScale(TIME_SCALE);
+    data->normalizer->setPressureScale(PRESSURE_SCALE);
+    data->normalizer->setDensityScale(DENSITY_SCALE);
 
     assert(data->auxiliaryDB);
     data->auxiliaryDB->addValue("density", density_3d, density_units());

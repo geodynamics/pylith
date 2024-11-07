@@ -46,7 +46,9 @@ public:
 public:
 
     /// Function prototype for validator functions.
-    typedef const char* (*validatorfn_type)(const PylithReal);
+    typedef std::string (*validatorfn_type)(const PylithReal /*value */,
+                                            const PylithReal /* scale */,
+                                            const PylithReal /* tolerance */);
 
     // PUBLIC STRUCTS ///////////////////////////////////////////////////////
 public:
@@ -58,6 +60,7 @@ public:
         pylith::string_vector componentNames; ///< Names of components.
         size_t numComponents; ///< Number of components.
         PylithReal scale; ///< Dimension scale associated with values.
+        PylithReal validatorTolerance; ///< Tolerance relative to scale for validation.
         validatorfn_type validator; ///< Validator for values in field;
         bool hasHistory; ///< Has subfields with history, i.e., state variables.
         size_t historySize; ///< Number of points in time history (currently only).
@@ -68,6 +71,7 @@ public:
             vectorFieldType(OTHER),
             numComponents(0),
             scale(1.0),
+            validatorTolerance(0.0),
             validator(NULL),
             hasHistory(false),
             historySize(0) {}
@@ -79,6 +83,7 @@ public:
                     const size_t numComponentsValue=0,
                     const VectorFieldEnum vectorFieldTypeValue=SCALAR,
                     const PylithReal scaleValue=1.0,
+                    const PylithReal validatorToleranceValue=0.0,
                     const validatorfn_type validatorValue=NULL,
                     bool isFaultOnlyValue=false,
                     bool hasHistoryValue=false,
@@ -89,6 +94,7 @@ public:
             componentNames(componentNamesValue),
             numComponents(numComponentsValue),
             scale(scaleValue),
+            validatorTolerance(validatorToleranceValue),
             validator(validatorValue),
             hasHistory(hasHistoryValue),
             historySize(historySizeValue) {}

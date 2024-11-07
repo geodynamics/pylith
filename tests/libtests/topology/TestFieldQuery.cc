@@ -278,9 +278,11 @@ void
 pylith::topology::TestFieldQuery::testValidatorPositive(void) {
     PYLITH_METHOD_BEGIN;
 
-    CHECK(NULL != pylith::topology::FieldQuery::validatorPositive(-1.0));
-    CHECK(NULL != pylith::topology::FieldQuery::validatorPositive(0.0));
-    CHECK(NULL == pylith::topology::FieldQuery::validatorPositive(1.0));
+    CHECK(std::string() != pylith::topology::FieldQuery::validatorPositive(-1.0, 1.0, 0.0));
+    CHECK(std::string() != pylith::topology::FieldQuery::validatorPositive(0.0, 1.0, 0.0));
+    CHECK(std::string() == pylith::topology::FieldQuery::validatorPositive(1.0, 1.0, 0.0));
+    CHECK(std::string() == pylith::topology::FieldQuery::validatorPositive(10.0, 8.0, 2.0));
+    CHECK(std::string() != pylith::topology::FieldQuery::validatorPositive(10.0, 1.0, 5.0));
 
     PYLITH_METHOD_END;
 } // testValidatorPositive
@@ -292,9 +294,11 @@ void
 pylith::topology::TestFieldQuery::testValidatorNonnegative(void) {
     PYLITH_METHOD_BEGIN;
 
-    CHECK(NULL != pylith::topology::FieldQuery::validatorNonnegative(-1.0));
-    CHECK(NULL == pylith::topology::FieldQuery::validatorNonnegative(0.0));
-    CHECK(NULL == pylith::topology::FieldQuery::validatorNonnegative(1.0));
+    CHECK(std::string() != pylith::topology::FieldQuery::validatorNonnegative(-1.0, 1.0, 0.0));
+    CHECK(std::string() == pylith::topology::FieldQuery::validatorNonnegative(0.0, 1.0, 0.0));
+    CHECK(std::string() == pylith::topology::FieldQuery::validatorNonnegative(1.0, 1.0, 0.0));
+    CHECK(std::string() == pylith::topology::FieldQuery::validatorNonnegative(5.0, 2.0, 3.0));
+    CHECK(std::string() != pylith::topology::FieldQuery::validatorNonnegative(5.0, 1.0, 3.0));
 
     PYLITH_METHOD_END;
 } // testValidatorPositive
