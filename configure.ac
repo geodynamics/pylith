@@ -48,6 +48,18 @@ AC_ARG_WITH([python-coverage],
 	[python_coverage="coverage2"])
 AC_SUBST(python_coverage)
 
+dnl sanitizer
+AC_ARG_ENABLE([sanitizer],
+    [AC_HELP_STRING([--enable-sanitizer],
+        [enable compiling C++ code with -fsanitizer @<:@default=no@:>@])],
+	[if test "$enableval" != no; then enable_sanitizer=yes; else enable_sanitizer=no; fi;
+	if test "$enableval" = yes; then sanitizer=address; else sanitizer=$enableval; fi],
+	[enable_sanitizer=no])
+if test "$enable_sanitizer" = "yes"; then
+  SANITIZER_CXXFLAGS="-fsanitize=$sanitizer"; export SANITIZER_CXXFLAGS
+fi
+AC_SUBST(SANITIZER_CXXFLAGS)
+
 dnl CUBIT I/O w/netcdf
 AC_ARG_ENABLE([cubit],
     [AC_HELP_STRING([--enable-cubit],
