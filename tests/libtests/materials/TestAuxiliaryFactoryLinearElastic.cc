@@ -68,7 +68,7 @@ pylith::materials::TestAuxiliaryFactoryLinearElastic::TestAuxiliaryFactoryLinear
         componentNames.size(),
         pylith::topology::Field::SCALAR,
         _data->normalizer->getPressureScale(),
-        25.0,
+        100.0,
         pylith::topology::FieldQuery::validatorNonnegative
         );
     info.fe = pylith::topology::Field::Discretization(

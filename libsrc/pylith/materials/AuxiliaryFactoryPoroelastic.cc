@@ -125,7 +125,7 @@ pylith::materials::AuxiliaryFactoryPoroelastic::addDrainedBulkModulus(void) {
     description.componentNames[0] = subfieldName;
     description.scale = pressureScale;
     description.validator = pylith::topology::FieldQuery::validatorPositive;
-    description.validatorTolerance = 25.0;
+    description.validatorTolerance = 100.0;
 
     _field->subfieldAdd(description, getSubfieldDiscretization(subfieldName));
     this->setSubfieldQuery(subfieldName);
@@ -180,7 +180,7 @@ pylith::materials::AuxiliaryFactoryPoroelastic::addBiotModulus(void) {
     description.componentNames[0] = subfieldName;
     description.scale = pressureScale;
     description.validator = pylith::topology::FieldQuery::validatorPositive;
-    description.validatorTolerance = 25.0;
+    description.validatorTolerance = 100.0;
 
     _field->subfieldAdd(description, getSubfieldDiscretization(subfieldName));
     pylith::materials::Query::biotModulusFromInput(subfieldName, this);
