@@ -146,7 +146,7 @@ libpylith_la_SOURCES = \
 	utils/TestArray.cc
 
 
-
+libpylith_la_CXXFLAGS = $(SANITIZER_CXXFLAGS)
 libpylith_la_LDFLAGS = $(AM_LDFLAGS) $(PYTHON_LDFLAGS) $(PYTHON_LA_LDFLAGS)
 libpylith_la_LIBADD = \
 	-lspatialdata \
