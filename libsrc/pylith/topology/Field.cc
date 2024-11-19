@@ -590,7 +590,7 @@ pylith::topology::Field::getSubfieldNames(void) const {
         names[sinfo.index] = s_iter->first;
     } // for
 
-    PYLITH_METHOD_RETURN(pylith::string_vector(names));
+    PYLITH_METHOD_RETURN(names);
 } // subfieldNames
 
 
@@ -599,6 +599,7 @@ pylith::topology::Field::getSubfieldNames(void) const {
 const pylith::topology::Field::SubfieldInfo&
 pylith::topology::Field::getSubfieldInfo(const char* name) const {
     PYLITH_METHOD_BEGIN;
+    assert(name);
 
     subfields_type::const_iterator iter = _subfields.find(name);
     if (_subfields.end() == iter) {
