@@ -55,7 +55,7 @@ pylith::materials::AuxiliaryFactoryElastic::addShearModulus(void) {
     description.componentNames[0] = subfieldName;
     description.scale = pressureScale;
     description.validator = pylith::topology::FieldQuery::validatorNonnegative;
-    description.validatorTolerance = 25.0;
+    description.validatorTolerance = 100.0;
 
     _field->subfieldAdd(description, getSubfieldDiscretization(subfieldName));
     pylith::materials::Query::shearModulusFromVM(subfieldName, this);
