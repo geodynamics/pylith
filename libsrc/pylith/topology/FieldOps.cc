@@ -348,34 +348,65 @@ pylith::topology::FieldOps::transformVector(PetscVec* outputVector,
     assert(inputSize == outputSize);
 
     // Copy values from input vector to output vector
-    PetscIS subpointMap = PETSC_NULLPTR; // Mapping of points in output DM back to input DM
-    err = DMPlexGetSubpointIS(outputDM, &subpointMap);PYLITH_CHECK_ERROR(err);
-    PetscInt subpointMapSize = 0;
-    const PetscInt* subpointMapPoints = PETSC_NULLPTR;
-    err = ISGetSize(subpointMap, &subpointMapSize);PYLITH_CHECK_ERROR(err);
-    err = ISGetIndices(subpointMap, &subpointMapPoints);PYLITH_CHECK_ERROR(err);
-
     const PetscScalar* inputArray = PETSC_NULLPTR;
     PetscScalar* outputArray = PETSC_NULLPTR;
     err = VecGetArrayRead(inputVector, &inputArray);PYLITH_CHECK_ERROR(err);
     err = VecGetArray(*outputVector, &outputArray);PYLITH_CHECK_ERROR(err);
 
-    PetscInt pStart = 0, pEnd = 0;
-    err = PetscSectionGetChart(outputSection, &pStart, &pEnd);
-    for (PetscInt iPoint = 0; iPoint < subpointMapSize; ++iPoint) {
-        PetscInt inputDof = 0, inputOffset = 0;
-        PetscInt outputDof = 0, outputOffset = 0;
-        const PetscInt inputPoint = subpointMapPoints[iPoint];
-        const PetscInt outputPoint = pStart + iPoint;
-        err = PetscSectionGetDof(inputSection, inputPoint, &inputDof);PYLITH_CHECK_ERROR(err);
-        err = PetscSectionGetOffset(inputSection, inputPoint, &inputOffset);PYLITH_CHECK_ERROR(err);
-        err = PetscSectionGetDof(outputSection, outputPoint, &outputDof);PYLITH_CHECK_ERROR(err);
-        err = PetscSectionGetOffset(outputSection, outputPoint, &outputOffset);PYLITH_CHECK_ERROR(err);
-        assert(inputDof == outputDof);
-        for (PetscInt iDof = 0; iDof < inputDof; ++iDof) {
-            outputArray[outputOffset + iDof] = inputArray[inputOffset + iDof];
+    // Check whether inputDM and outputDM have the same names for points.
+    // We will assume that if inputDM and outputDM have the same range of points,
+    // then the names are the same and we ignore the subpoint map.
+    PetscDMLabel subpointMap = PETSC_NULLPTR; // Mapping of points in output DM back to input DM
+    PetscInt pStartIn, pEndIn, pStartOut, pEndOut;
+    PetscBool renamePoints = PETSC_FALSE;
+    err = DMPlexGetSubpointMap(outputDM, &subpointMap);PYLITH_CHECK_ERROR(err);
+    err = DMPlexGetChart(inputDM, &pStartIn, &pEndIn);
+    err = DMPlexGetChart(outputDM, &pStartOut, &pEndOut);
+    renamePoints = subpointMap && ((pStartIn != pStartOut) || (pEndIn != pEndOut)) ? PETSC_TRUE : PETSC_FALSE;
+    if (renamePoints) {
+        PetscIS subpointIS = PETSC_NULLPTR; // Mapping of points in output DM back to input DM
+        PetscInt subpointISSize = 0;
+        const PetscInt* subpointISPoints = PETSC_NULLPTR;
+        err = DMPlexGetSubpointIS(outputDM, &subpointIS);PYLITH_CHECK_ERROR(err);
+        err = ISGetSize(subpointIS, &subpointISSize);PYLITH_CHECK_ERROR(err);
+        err = ISGetIndices(subpointIS, &subpointISPoints);PYLITH_CHECK_ERROR(err);
+
+        PetscInt pStart = 0, pEnd = 0;
+        err = PetscSectionGetChart(outputSection, &pStart, &pEnd);
+        for (PetscInt iPoint = 0; iPoint < subpointISSize; ++iPoint) {
+            PetscInt inputDof = 0, inputOffset = 0;
+            PetscInt outputDof = 0, outputOffset = 0;
+            const PetscInt inputPoint = subpointISPoints[iPoint];
+            const PetscInt outputPoint = pStart + iPoint;
+            err = PetscSectionGetDof(inputSection, inputPoint, &inputDof);PYLITH_CHECK_ERROR(err);
+            err = PetscSectionGetOffset(inputSection, inputPoint, &inputOffset);PYLITH_CHECK_ERROR(err);
+            err = PetscSectionGetDof(outputSection, outputPoint, &outputDof);PYLITH_CHECK_ERROR(err);
+            err = PetscSectionGetOffset(outputSection, outputPoint, &outputOffset);PYLITH_CHECK_ERROR(err);
+
+            assert(inputDof == outputDof);
+            for (PetscInt iDof = 0; iDof < inputDof; ++iDof) {
+                outputArray[outputOffset + iDof] = inputArray[inputOffset + iDof];
+            } // for
         } // for
-    } // for
+    } else {
+        PetscInt pStart = 0, pEnd = 0;
+        err = PetscSectionGetChart(outputSection, &pStart, &pEnd);
+        for (PetscInt point = pStart; point < pEnd; ++point) {
+            PetscInt inputDof = 0, inputOffset = 0;
+            PetscInt outputDof = 0, outputOffset = 0;
+            const PetscInt inputPoint = point;
+            const PetscInt outputPoint = point;
+            err = PetscSectionGetDof(inputSection, inputPoint, &inputDof);PYLITH_CHECK_ERROR(err);
+            err = PetscSectionGetOffset(inputSection, inputPoint, &inputOffset);PYLITH_CHECK_ERROR(err);
+            err = PetscSectionGetDof(outputSection, outputPoint, &outputDof);PYLITH_CHECK_ERROR(err);
+            err = PetscSectionGetOffset(outputSection, outputPoint, &outputOffset);PYLITH_CHECK_ERROR(err);
+
+            assert(inputDof == outputDof);
+            for (PetscInt iDof = 0; iDof < inputDof; ++iDof) {
+                outputArray[outputOffset + iDof] = inputArray[inputOffset + iDof];
+            } // for
+        } // for
+    } // if/else
     err = VecRestoreArrayRead(inputVector, &inputArray);PYLITH_CHECK_ERROR(err);
     err = VecRestoreArray(*outputVector, &outputArray);PYLITH_CHECK_ERROR(err);
 
