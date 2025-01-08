@@ -119,7 +119,7 @@ pylith::topology::RefineInterpolator::initialize(const PetscDM& dmMesh,
     _levels.resize(refineLevels);
     PetscErrorCode err = PETSC_SUCCESS;
 
-    PetscDM dmStart = pylith::topology::MeshOps::removeHangingCells(dmMesh);
+    PetscDM dmStart = pylith::topology::MeshOps::removeHangingCells(dmMesh);assert(dmStart);
     err = DMCopyDisc(dmMesh, dmStart);PYLITH_CHECK_ERROR(err);
 
     PetscDM dmPrev = dmStart;

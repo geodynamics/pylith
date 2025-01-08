@@ -202,7 +202,7 @@ pylith::meshio::OutputSubfield::create(const pylith::topology::Field& field,
     subfield->_description = info.description;
 
     PetscErrorCode err = PETSC_SUCCESS;
-    err = DMClone(mesh.getDM(), &subfield->_projectDM);PYLITH_CHECK_ERROR(err);
+    err = DMClone(mesh.getDM(), &subfield->_projectDM);PYLITH_CHECK_ERROR(err);assert(subfield->_projectDM);
     err = DMReorderSectionSetDefault(subfield->_projectDM, DM_REORDER_DEFAULT_FALSE);PYLITH_CHECK_ERROR(err);
     err = DMReorderSectionSetType(subfield->_projectDM, NULL);PYLITH_CHECK_ERROR(err);
     err = PetscObjectSetName((PetscObject)subfield->_projectDM, name);PYLITH_CHECK_ERROR(err);
