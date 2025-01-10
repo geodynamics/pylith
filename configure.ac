@@ -2,7 +2,7 @@ dnl ============================================================================
 dnl This code is part of PyLith, developed through the Computational Infrastructure
 dnl for Geodynamics (https://github.com/geodynamics/pylith).
 dnl
-dnl Copyright (c) 2010-2024, University of California, Davis and the PyLith Development Team.
+dnl Copyright (c) 2010-2025, University of California, Davis and the PyLith Development Team.
 dnl All rights reserved.
 dnl
 dnl See https://mit-license.org/ and LICENSE.md and for license information. 
