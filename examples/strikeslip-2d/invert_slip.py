@@ -11,40 +11,64 @@ Consequently, we reorder the impulses and stations by the y coordinate to insure
 consistent ordering.
 """
 
-# Import argparse Python module (standard Python)
-import argparse
+import pathlib
 
 # Import numpy and h5py modules (included in PyLith installation)
 import numpy
 import h5py
 
+OUTPUT_DIR = pathlib.Path("output")
+
+def cli():
+    """Command line interface.
+    """
+    import argparse
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument("--impulse-data", action="store", type=str, dest="filename_fault", default="step05_greensfns-fault.h5", help="Fault HDF5 data file from Green's function simulation.")
+    parser.add_argument("--impulse-responses", action="store", type=str, dest="filename_responses", default="step05_greensfns-gnss_stations.h5", help="Station HDF5 data file from Green's function simulation.")
+    parser.add_argument("--observed-data", action="store", type=str, dest="filename_observed", default="step04_varslip-gnss_stations.h5", help="Station HDF5 data file from variable slip simulation.")
+    parser.add_argument("--penalties", action="store", type=str, dest="penalties", default="0.02,0.1,0.4", help="Comma separated list of penalties.")
+    parser.add_argument("--output", action="store", type=str, dest="filename_output", default="step06_inversion-results.txt", help="Name of output file with inversion results.")
+
+    args = parser.parse_args()
+    app = InvertSlipApp(output_dir=OUTPUT_DIR)
+    app.run(
+        filename_fault=args.filename_fault,
+        filename_responses=args.filename_responses,
+        filename_observed=args.filename_observed,
+        filename_output=args.filename_output,
+        penalties=[float(p) for p in args.penalties.split(",")],
+        )
+
+
 class InvertSlipApp:
     """Application to invert for fault slip using PyLith-generated Green's functions.
     """
-    def __init__(self):
-        self.filename_fault = "output/step05_greensfns-fault.h5"
-        self.filename_responses = "output/step05_greensfns-gnss_stations.h5"
-        self.filename_observed = "output/step04_varslip-gnss_stations.h5"
-        self.filename_output = "output/step06_inversion-results.txt"
-        self.penalties = [0.01, 0.1, 1.0]
+    def __init__(self, output_dir: str):
+        """Constructor
 
-    def main(self):
+        Args:
+            output_dir: Directory with simulation output.
+        """
+        self.output_dir = output_dir
+
+    def run(self, filename_fault: str, filename_responses: str, filename_observed: str, filename_output: str, penalties: list):
         """Entry point for running application.
         """
-        args = self._parse_command_line()
+        self._get_fault_impulses(self.output_dir / filename_fault)
+        self._get_station_responses(self.output_dir / filename_responses)
+        self._get_station_observed(self.output_dir / filename_observed)
 
-        self.get_fault_impulses(args.filename_fault)
-        self.get_station_responses(args.filename_responses)
-        self.get_station_observed(args.filename_observed)
+        self.penalties = penalties
+        results = self._invert()
+        self.write_results(self.output_dir / filename_output, results)
 
-        self.penalties = list(map(float, args.penalties.split(",")))
-        results = self.invert()
-        self.write_results(self.filename_output, results)
-
-    def get_fault_impulses(self, filename):
+    def _get_fault_impulses(self, filename: str):
         """Get coordinates, amplitude, and order of impulses. Fault points are sorted by y coordinate.
 
-        :param filename: Name of HDF5 file with fault data from PyLith Green's function simulation (Step 5).
+        Args:
+            filename: Name of HDF5 file with fault data from PyLith Green's function simulation (Step 5).
         """
         h5 = h5py.File(filename, "r")
         y = h5['geometry/vertices'][:,1]
@@ -57,11 +81,12 @@ class InvertSlipApp:
         self.impulse_y = y[reorder]
         self.impulse_slip = slip[:,reorder]
 
-    def get_station_responses(self, filename):
+    def _get_station_responses(self, filename):
         """
         Get coordinates and displacements at stations for Green's function responses.
 
-        :param filename: Name of HDF5 file with point data from PyLith Green's function simulation (Step 5_).
+        Args:
+            filename: Name of HDF5 file with point data from PyLith Green's function simulation (Step 5_).
         """
         h5 = h5py.File(filename, "r")
         xy = h5['geometry/vertices'][:,0:2]
@@ -72,11 +97,12 @@ class InvertSlipApp:
         reorder = numpy.argsort(xy[:,1])
         self.station_responses = displacement[:,reorder,:]
 
-    def get_station_observed(self, filename):
+    def _get_station_observed(self, filename):
         """
         Get coordinates and displacements at stations for fake observations.
 
-        :param filename: Name of HDF5 file with point data from PyLith forward simulation (Step 4).
+        Args:
+            filename: Name of HDF5 file with point data from PyLith forward simulation (Step 4).
         """
         h5 = h5py.File(filename, "r")
         xy = h5['geometry/vertices'][:,0:2]
@@ -87,7 +113,7 @@ class InvertSlipApp:
         reorder = numpy.argsort(xy[:,1])
         self.station_observed = displacement[:,reorder,:]
 
-    def invert(self):
+    def _invert(self) -> numpy.ndarray:
         """Invert observations for amplitude of impulses and fault slip.
         """
         # Determine matrix sizes and set up A-matrix.
@@ -129,11 +155,12 @@ class InvertSlipApp:
             print(f"Residual norm:      {residual_norm}")
         return results
 
-    def write_results(self, filename, results):
+    def write_results(self, filename: str, results: numpy.ndarray):
         """Write inversion results to file.
 
-        :param filename: Name of output file.
-        :param results: Inversion results as Numpy array.
+        Args:
+            filename: Name of output file.
+            results: Inversion results as Numpy array.
         """
         header = "# y"
         for penalty in self.penalties:
@@ -144,22 +171,9 @@ class InvertSlipApp:
             fout.write(header)
             numpy.savetxt(fout, results, fmt="%14.6e")
 
-    def _parse_command_line(self):
-        """Parse command line arguments.
-
-        :returns: Command line arugment information as argparse.Namespace.
-        """
-        parser = argparse.ArgumentParser()
-
-        parser.add_argument("--impulse-data", action="store", type=str, dest="filename_fault", default=self.filename_fault, help="Fault HDF5 data file from Green's function simulation.")
-        parser.add_argument("--impulse-responses", action="store", type=str, dest="filename_responses", default=self.filename_responses, help="Station HDF5 data file from Green's function simulation.")
-        parser.add_argument("--observed-data", action="store", type=str, dest="filename_observed", default=self.filename_observed, help="Station HDF5 data file from variable slip simulation.")
-        parser.add_argument("--penalties", action="store", type=str, dest="penalties", default="0.01,0.1,1.0", help="Comma separated list of penalties.")
-        parser.add_argument("--output", action="store", type=str, dest="filename_output", default=self.filename_output, help="Name of output file with inversion results.")
-        return parser.parse_args()
 
 if __name__ == "__main__":
-    InvertSlipApp().main()
+    cli()
 
 
 # End of file

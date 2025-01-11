@@ -148,7 +148,7 @@ pylith::meshio::MeshIOPetsc::_read(void) {
 
         _MeshIOPetsc::fixMaterialLabel(&dmMesh);
         _MeshIOPetsc::fixBoundaryLabels(&dmMesh);
-        _mesh->setDM(dmMesh);
+        _mesh->setDM(dmMesh, "domain");
     } catch (...) {
         DMDestroy(&dmMesh);
         throw;

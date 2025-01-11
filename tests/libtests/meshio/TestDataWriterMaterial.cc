@@ -270,7 +270,7 @@ pylith::meshio::TestDataWriterMaterial::_initialize(void) {
     } // if
 
     delete _materialMesh;
-    _materialMesh = pylith::topology::MeshOps::createSubdomainMesh(*_domainMesh, pylith::topology::Mesh::cells_label_name, data->materialId, ":UNKNOWN:");
+    _materialMesh = pylith::topology::MeshOps::createSubdomainMesh(*_domainMesh, pylith::topology::Mesh::cells_label_name, data->materialId, "material");
     assert(_materialMesh);
 
     PYLITH_METHOD_END;

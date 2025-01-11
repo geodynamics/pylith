@@ -108,10 +108,12 @@ pylith::topology::Mesh::setDM(PetscDM dm,
                               const char* label) {
     PYLITH_METHOD_BEGIN;
 
-    PetscErrorCode err;
+    PetscErrorCode err = PETSC_SUCCESS;
     err = DMDestroy(&_dm);PYLITH_CHECK_ERROR(err);
     _dm = dm;
-    err = PetscObjectSetName((PetscObject) _dm, label);PYLITH_CHECK_ERROR(err);
+    if (label) {
+        err = PetscObjectSetName((PetscObject) _dm, label);PYLITH_CHECK_ERROR(err);
+    } // if
 
     PYLITH_METHOD_END;
 }

@@ -136,6 +136,7 @@ libpylith_la_SOURCES = \
 	topology/Distributor.cc \
 	topology/ReverseCuthillMcKee.cc \
 	topology/RefineUniform.cc \
+	topology/RefineInterpolator.cc \
 	utils/EventLogger.cc \
 	utils/PyreComponent.cc \
 	utils/GenericComponent.cc \

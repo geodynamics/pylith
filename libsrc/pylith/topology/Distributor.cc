@@ -109,7 +109,7 @@ pylith::topology::Distributor::distribute(pylith::topology::Mesh* const newMesh,
     err = DMPlexDistributeSetDefault(dmNew, PETSC_FALSE);PYLITH_CHECK_ERROR(err);
     err = DMPlexReorderCohesiveSupports(dmNew);PYLITH_CHECK_ERROR(err);
     err = DMViewFromOptions(dmNew, NULL, "-pylith_dist_dm_view");PYLITH_CHECK_ERROR(err);
-    newMesh->setDM(dmNew);
+    newMesh->setDM(dmNew, "domain");
 
     PYLITH_METHOD_END;
 } // distribute
@@ -171,8 +171,9 @@ pylith::topology::Distributor::write(meshio::DataWriter* const writer,
     partitionField.scatterLocalToOutput();
 
     const int basisOrder = 0;
+    const int refineLevels = 0;
     pylith::meshio::OutputSubfield* outputField =
-        pylith::meshio::OutputSubfield::create(partitionField, mesh, "partition", basisOrder);
+        pylith::meshio::OutputSubfield::create(partitionField, mesh, "partition", basisOrder, refineLevels);
     outputField->project(partitionField.getOutputVector());
 
     const PylithScalar t = 0.0;

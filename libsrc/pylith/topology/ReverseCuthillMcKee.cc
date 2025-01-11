@@ -32,7 +32,7 @@ pylith::topology::ReverseCuthillMcKee::reorder(topology::Mesh* mesh) {
     err = DMPlexGetOrdering(dmOrig, MATORDERINGRCM, dmLabel, &permutation);PYLITH_CHECK_ERROR(err);
     err = DMPlexPermute(dmOrig, permutation, &dmNew);PYLITH_CHECK_ERROR(err);
     err = ISDestroy(&permutation);PYLITH_CHECK_ERROR(err);
-    mesh->setDM(dmNew);
+    mesh->setDM(dmNew, "domain");
 
     // Verify that all material points (cells) are consecutive.
     PetscIS valuesIS = NULL;

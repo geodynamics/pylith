@@ -24,7 +24,7 @@ Boundary conditions for static coseismic slip.
 We set the x and y displacement to zero on the +x and -x boundaries and prescribe left-lateral slip that varies along strike.
 :::
 
-For greater accuracy in modeling the spatial variation in slip, we use a basis order of 2 for the solution subfields.
+For greater accuracy in modeling the spatial variation in slip, we refine the mesh by a factor of 2 and use a basis order of 2 for the solution subfields.
 
 ```{code-block} cfg
 ---
@@ -93,12 +93,15 @@ Prescribed left-lateral slip that varies along the strike of the fault.
 A strike of 0 corresponds to y=0.
 :::
 
-We use a `SimpleDB` to define the spatial variation in slip.
+We use a `SimpleGridDB` to define the spatial variation in slip.
 
 ```{code-block} cfg
 ---
-caption: Prescribed slip parameters for Step 4.
+caption: Prescribed slip parameters for Step 4. We refine the fault mesh by a factor of 8 (3 levels of refinement by a factor of 2) so that the output, which uses a basis order of 1, better captures the discretization of slip, which uses a basis order of 2.
 ---
+[pylithapp.problem.interfaces.fault]
+observers.observer.refine_levels = 3
+
 [pylithapp.problem.interfaces.fault.eq_ruptures.rupture]
 db_auxiliary_field = spatialdata.spatialdb.SimpleDB
 db_auxiliary_field.description = Fault rupture auxiliary field spatial database

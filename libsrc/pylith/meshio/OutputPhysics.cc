@@ -268,13 +268,11 @@ pylith::meshio::OutputPhysics::_writeInfo(void) {
     assert(_physics);
     const pylith::topology::Field* auxiliaryField = _physics->getAuxiliaryField();
     const pylith::topology::Field* diagnosticField = _physics->getDiagnosticField();
+    const pylith::topology::Mesh& domainMesh = _physics->getPhysicsDomainMesh();
 
     const pylith::string_vector& infoNames = _expandInfoFieldNames(auxiliaryField, diagnosticField);
 
     const bool isInfo = true;
-    const pylith::topology::Mesh& domainMesh = _physics->getPhysicsDomainMesh();
-    _open(domainMesh, isInfo);
-    _openDataStep(0.0, domainMesh);
 
     if (auxiliaryField) { auxiliaryField->scatterLocalToOutput(); }
     PetscVec auxiliaryVector = (auxiliaryField) ? auxiliaryField->getOutputVector() : NULL;
@@ -284,20 +282,28 @@ pylith::meshio::OutputPhysics::_writeInfo(void) {
 
     const size_t numInfoFields = infoNames.size();
     for (size_t i = 0; i < numInfoFields; i++) {
+        OutputSubfield* subfield = NULL;
         if (auxiliaryField->hasSubfield(infoNames[i].c_str())) {
-            OutputSubfield* subfield = _getSubfield(*auxiliaryField, domainMesh, infoNames[i].c_str());
+            subfield = _getSubfield(*auxiliaryField, domainMesh, infoNames[i].c_str());
             subfield->project(auxiliaryVector);
-            _appendField(0.0, *subfield);
         } else if (diagnosticField->hasSubfield(infoNames[i].c_str())) {
-            OutputSubfield* subfield = _getSubfield(*diagnosticField, domainMesh, infoNames[i].c_str());
+            subfield = _getSubfield(*diagnosticField, domainMesh, infoNames[i].c_str());
             subfield->project(diagnosticVector);
-            _appendField(0.0, *subfield);
         } else {
             std::ostringstream msg;
             msg << "Internal Error: Could not find subfield '" << infoNames[i] << "' for info output.";
             PYLITH_COMPONENT_ERROR(msg.str());
             throw std::runtime_error(msg.str());
         } // if/else
+
+        if (0 == i) {
+            // Need output mesh from subfield (which may be refined).
+            assert(subfield);
+            pylith::topology::Mesh* outputMesh = _getOutputMesh(*subfield);
+            _open(*outputMesh, isInfo);
+            _openDataStep(0.0, *outputMesh);
+        } // if
+        OutputObserver::_appendField(0.0, *subfield);
     } // for
 
     _closeDataStep();
@@ -395,8 +401,6 @@ pylith::meshio::OutputPhysics::_writeDataStep(const PylithReal t,
 
     const pylith::string_vector& dataNames = _expandDataFieldNames(solution, auxiliaryField, derivedField);
 
-    _openDataStep(t, domainMesh);
-
     if (auxiliaryField) { auxiliaryField->scatterLocalToOutput(); }
     PetscVec auxiliaryVector = (auxiliaryField) ? auxiliaryField->getOutputVector() : NULL;
 
@@ -429,6 +433,12 @@ pylith::meshio::OutputPhysics::_writeDataStep(const PylithReal t,
             throw std::runtime_error(msg.str());
         } // if/else
 
+        if (0 == i) {
+            // Need output mesh from subfield (which may be refined).
+            assert(subfield);
+            pylith::topology::Mesh* outputMesh = _getOutputMesh(*subfield);
+            _openDataStep(t, *outputMesh);
+        } // if
         OutputObserver::_appendField(t, *subfield);
     } // for
     _closeDataStep();

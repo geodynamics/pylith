@@ -16,7 +16,7 @@
 inline
 pylith::topology::Stratum::Stratum(const PetscDM dmMesh,
                                    const StratumEnum stype,
-                                   const int level) { // constructor
+                                   const int level) {
     assert(dmMesh);
     PetscErrorCode err = 0;
     switch (stype) {
@@ -37,7 +37,7 @@ pylith::topology::Stratum::Stratum(const PetscDM dmMesh,
 // ----------------------------------------------------------------------
 // Default destructor
 inline
-pylith::topology::Stratum::~Stratum(void) { // destructor
+pylith::topology::Stratum::~Stratum(void) {
     _begin = 0;
     _end = 0;
 } // destructor
@@ -47,7 +47,7 @@ pylith::topology::Stratum::~Stratum(void) { // destructor
 // Get starting point.
 inline
 PetscInt
-pylith::topology::Stratum::begin(void) const { // begin
+pylith::topology::Stratum::begin(void) const {
     return _begin;
 } // begin
 

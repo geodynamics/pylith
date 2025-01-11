@@ -66,7 +66,7 @@ public:
      * @param label Label for mesh.
      */
     void setDM(PetscDM dm,
-               const char* label="domain");
+               const char* label=NULL);
 
     /** Set coordinate system.
      *

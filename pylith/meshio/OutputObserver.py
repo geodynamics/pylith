@@ -30,6 +30,9 @@ class OutputObserver(PetscComponent, ModuleOutputObserver):
     outputBasisOrder = pythia.pyre.inventory.int("output_basis_order", default=1, validator=pythia.pyre.inventory.choice([0,1]))
     outputBasisOrder.meta['tip'] = "Basis order for output."
 
+    refineLevels = pythia.pyre.inventory.int("refine_levels", default=0, validator=pythia.pyre.inventory.greaterEqual(0))
+    refineLevels.meta['tip'] = "Number of mesh refinement levels for output."
+
     def __init__(self, name="outputobserver"):
         """Constructor.
         """
@@ -50,6 +53,7 @@ class OutputObserver(PetscComponent, ModuleOutputObserver):
         else:
             outputBasisOrder = self.outputBasisOrder
         ModuleOutputObserver.setOutputBasisOrder(self, outputBasisOrder)
+        ModuleOutputObserver.setRefineLevels(self, self.refineLevels)
 
         self.writer.preinitialize()
         ModuleOutputObserver.setWriter(self, self.writer)

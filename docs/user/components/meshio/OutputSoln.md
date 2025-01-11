@@ -26,4 +26,8 @@ Implements `OutputObserver`.
   - **default value**: 1
   - **current value**: 1, from {default}
   - **validator**: (in [0, 1])
+* `refine_levels`=\<int\>: Number of mesh refinement levels for output.
+  - **default value**: 0
+  - **current value**: 0, from {default}
+  - **validator**: (greater than or equal to 0)
 

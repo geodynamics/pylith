@@ -45,20 +45,6 @@ public:
              */
             Mesh* clone(void) const;
 
-            /** Get DMPlex mesh.
-             *
-             * @returns DMPlex mesh.
-             */
-            PetscDM getDM(void) const;
-
-            /** Set DMPlex mesh.
-             *
-             * @param DMPlex mesh.
-             * @param label Label for mesh.
-             */
-            void setDM(PetscDM dm,
-                       const char* label="domain");
-
             /** Set coordinate system.
              *
              * @param cs Coordinate system.

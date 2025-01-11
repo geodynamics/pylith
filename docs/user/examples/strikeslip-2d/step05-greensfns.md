@@ -25,14 +25,12 @@ In the fault interfaces section we set the fault type to `FaultCohesiveImpulses`
 We also use a spatial database to limit the section of the fault where we impose the fault slip impulses to -25 km $\le$ y $\le$ +25 km.
 
 :::{important}
-**Currently, a basis order of 1 (default) for the slip auxiliary subfield is the only choice that gives accurate results in a slip inversion due to the factors described here.**
+**Currently, we recommend a basis order of 1 (default) for the slip auxiliary subfield.**
 
 The basis order for the slip auxiliary subfield controls the representation of the slip field for the impulses.
 For a given impulse, a basis order of 1 will impose unit slip at a vertex with zero slip at all other vertices.
-Likewise, a basis order of 0 will attempt to impose unit slip over a cell with zero slip in all other cells; however, this creates a jump in slip at the cell boundaries that cannot be accurately represented by the finite-element solution.
-As a result, you should not use a basis order of 0 for the slip auxiliary field.
-A basis order of 2 will impose slip at vertices as well as edge degrees of freedom in the cell.
-Because PyLith output decimates the basis order to 0 or 1, you should avoid this choice of basis order as well until we provide better ways to output fields discretized with higher order basis functions.
+A basis order of 0 will impose unit slip over a cell with zero slip in all other cells; however, this creates jumps in the slip at the cell boundaries and reduces the accuracy of the slip inversion for a given mesh resolution.
+A basis order of 2 will impose slip at vertices as well as edge degrees of freedom in the cell; regularization becomes trickier with the higher order discretization, and a basis order of 2 does not always give more accurate results for a given number of impulses.
 :::
 
 ```{code-block} cfg
@@ -112,15 +110,23 @@ We get warnings about unused PETSc options because we do not use time stepping.
 
 ## Visualizing the results
 
+In {numref}`fig:example:strikeslip:2d:step05:impulses` we use the `viz/plot_slip_impulses.py` Pyhon script to visualize the slip impulses.
 In {numref}`fig:example:strikeslip:2d:step05:solution` we use the `pylith_viz` utility to visualize the y displacement field.
 You can move the slider or use the `p` and `n` keys to change the increment or decrement slip impulses (shown as different time stamps).
 
 ```{code-block} console
 ---
-caption: Visualize PyLith output using `pylith_viz`.
+caption: Plot the slip impulses and visualize PyLith output using `pylith_viz`.
 ---
+viz/plot_slip_impulses.py
 pylith_viz --filename=output/step05_greensfns-domain.h5 warp_grid --component=y
 ```
+
+:::{figure-md} fig:example:strikeslip:2d:step05:impulses
+<img src="figs/step05_greensfns-impulses.*" alt="Slip impulses for the Green's functions in Step 5." width="400px"/>
+
+Slip impulses for the Green's functions in Step 5.
+:::
 
 :::{figure-md} fig:example:strikeslip:2d:step05:solution
 <img src="figs/step05-solution.*" alt="Solution for Step 5. The colors indicate the y displacement, and the deformation is exaggerated by a factor of 1000." width="400px"/>

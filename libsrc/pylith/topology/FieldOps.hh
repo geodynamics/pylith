@@ -120,6 +120,21 @@ public:
     static
     void createOutputLabel(const pylith::topology::Field* field);
 
+    /** Transform vector using mapping from one PETSc DM to another.
+     *
+     * @note PETSc DMs must be compatible, including discretization.
+     *
+     * @param[out] outputVector Output vector.
+     * @param[in] outputDM PETSc DM associated with output vector.
+     * @param[out] outputVector Output vector.
+     * @param[in] outputDM PETSc DM associated with output vector.
+     */
+    static
+    void transformVector(PetscVec* outputVector,
+                         const PetscDM& outputDM,
+                         const PetscVec& inputVector,
+                         const PetscDM& inputDM);
+
     /** Free saved PetscFE objects.
      */
     static

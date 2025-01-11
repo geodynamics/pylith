@@ -101,7 +101,7 @@ class GenerateMesh(ABC):
         """
         args = self._parse_command_line()
 
-        self.initialize(args.name)
+        self.initialize(args)
         if args.geometry:
             self.create_geometry()
         if args.mark:
@@ -112,13 +112,12 @@ class GenerateMesh(ABC):
             self.write(args.filename, args.binary)
         self.finalize(args.gui)
 
-    def initialize(self, name: str):
+    def initialize(self, args):
         """Initialize Gmsh.
 
         :param name: Name for mesh.
         """
         gmsh.initialize()
-        gmsh.model.add(name)
 
     def finalize(self, gui=False):
         """Finalize Gmsh.
@@ -174,7 +173,7 @@ class GenerateMesh(ABC):
 
         parser.add_argument("--gui", action="store_true", dest="gui", help="Show GUI after running steps.")
 
-        GenerateMesh._add_arguments(parser)
+        self._add_arguments(parser)
         args = parser.parse_args()
         if args.write:
             args.generate = True

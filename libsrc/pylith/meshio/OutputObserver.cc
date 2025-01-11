@@ -67,6 +67,7 @@ pylith::meshio::_OutputObserver::Events::init(void) {
 // Constructor
 pylith::meshio::OutputObserver::OutputObserver(void) :
     _timeScale(1.0),
+    _outputMesh(NULL),
     _writer(NULL),
     _trigger(NULL),
     _outputBasisOrder(1) {
@@ -95,6 +96,7 @@ pylith::meshio::OutputObserver::deallocate(void) {
         delete iter->second;iter->second = NULL;
     } // for
     _subfields.clear();
+    delete _outputMesh;_outputMesh = NULL;
 
     _writer = NULL; // :TODO: Use shared pointer
     _trigger = NULL; // :TODO: Use shared pointer
@@ -153,6 +155,26 @@ pylith::meshio::OutputObserver::setOutputBasisOrder(const int value) {
 
 
 // ------------------------------------------------------------------------------------------------
+
+// Set number of refinement levels for output.
+void
+pylith::meshio::OutputObserver::setRefineLevels(const int value) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("OutputObserver::setRefineLevels(value="<<value<<")");
+
+    if (value < 0) {
+        std::ostringstream msg;
+        msg << "Number of refinement levels for output (" << value << ") must be nonnegative.";
+        throw std::out_of_range(msg.str());
+    } // if
+
+    _refineLevels = value;
+
+    PYLITH_METHOD_END;
+} // setRefineLevels
+
+
+// ------------------------------------------------------------------------------------------------
 // Set time scale.
 void
 pylith::meshio::OutputObserver::setTimeScale(const PylithReal value) {
@@ -166,6 +188,23 @@ pylith::meshio::OutputObserver::setTimeScale(const PylithReal value) {
 
 
 // ------------------------------------------------------------------------------------------------
+// Get mesh associated with subfield output.
+pylith::topology::Mesh*
+pylith::meshio::OutputObserver::_getOutputMesh(const pylith::meshio::OutputSubfield& subfield) {
+    PYLITH_METHOD_BEGIN;
+
+    if (!_outputMesh) {
+        _outputMesh = new pylith::topology::Mesh();
+        PetscDM dmOutput = subfield.getOutputDM();
+        PetscObjectReference((PetscObject) dmOutput);
+        _outputMesh->setDM(dmOutput);
+    } // if
+
+    PYLITH_METHOD_RETURN(_outputMesh);
+} // _getOutputMesh
+
+
+// ------------------------------------------------------------------------------------------------
 // Get output subfield, creating if necessary.
 pylith::meshio::OutputSubfield*
 pylith::meshio::OutputObserver::_getSubfield(const pylith::topology::Field& field,
@@ -176,7 +215,7 @@ pylith::meshio::OutputObserver::_getSubfield(const pylith::topology::Field& fiel
     _OutputObserver::Events::logger.eventBegin(_OutputObserver::Events::getSubfield);
 
     if (0 == _subfields.count(name) ) {
-        _subfields[name] = OutputSubfield::create(field, submesh, name, _outputBasisOrder);
+        _subfields[name] = OutputSubfield::create(field, submesh, name, _outputBasisOrder, _refineLevels);
     } // if
 
     _OutputObserver::Events::logger.eventEnd(_OutputObserver::Events::getSubfield);

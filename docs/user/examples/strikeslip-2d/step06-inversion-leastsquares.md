@@ -16,7 +16,7 @@ $ ./invert_slip.py
 $ ./invert_slip.py --help
 ```
 
-By default, the inversion code will write the results of the inversion to `output/step06_greensfns-inversion_results.txt`.
+By default, the inversion code will write the results of the inversion to `output/step06_inversion-results.txt`.
 
 ## Plotting the results
 
@@ -26,18 +26,18 @@ If you are using the PyLith binary, which includes the `matplotlib` Python modul
 ---
 caption: Plot the inversion results using the `matplotlib` Python module.
 ---
-$ ./viz/plot_inversion_results.py
+$ viz/plot_inversion_results.py
 ```
 
 :::{figure-md} fig:example:strikeslip:2d:step06:solution
-<img src="figs/step06-solution.*" alt="Results of slip inversion in Step 6." width="600px"/>
+<img src="figs/step06_inversion-results.*" alt="Results of slip inversion in Step 6." width="600px"/>
 
 Results of slip inversion in Step 6.
-The thick black line shows the prescribed slip in Step 4.
+The thick black line shows the prescribed slip in Step 4, and the thick gray line shows the raw (exact) slip.
 The thin colored lines show the slip from the inversion with different penalty factors.
 :::
 
 ::{tip}
-You can pass`--no-gui` as a command line argument to the plotting script turn off displaying the plot window.
+You can pass`--no-gui` as a command line argument to the plotting script to turn off displaying the plot window.
 This is useful if you do not have a matplotlib GUI backend.
 :::

@@ -74,10 +74,10 @@ viz/plot_catmip_results.py --catmip-theta=output/step07a_catmip-theta20.bin
 ```
 
 :::{figure-md} fig:example:strikeslip:2d:step07a:solution
-<img src="figs/step07a-solution.*" alt="Results of slip inversion in Step 7a." width="600px"/>
+<img src="figs/step07a_catmip-results.*" alt="Results of slip inversion in Step 7a." width="600px"/>
 
 Results of slip inversion in Step 7a.
-The thick black line shows the prescribed slip in Step 4.
+The thick black line shows the prescribed slip in Step 4, and the thick gray line shows the raw (exact) slip.
 The solid orange line shows the median slip, the shaded orange regions shows the median plus and minus one standard deviation, and the dashed lines show the minimum and maximum values.
 The median values are almost identical to the results with minimal smoothing in Step 6.
 :::
@@ -157,10 +157,10 @@ viz/plot_catmip_results.py --catmip-theta=output/step07b_cfcatmip-theta1.bin
 ```
 
 :::{figure-md} fig:example:strikeslip:2d:step07b:solution
-<img src="figs/step07b-solution.*" alt="Results of slip inversion in Step 7b." width="600px"/>
+<img src="figs/step07b_cfcatmip-results.*" alt="Results of slip inversion in Step 7b." width="600px"/>
 
 Results of slip inversion in Step 7b.
-The thick black line shows the prescribed slip in Step 4.
+The thick black line shows the prescribed slip in Step 4, and the thick gray line shows the raw (exact) slip.
 The solid orange line shows the median slip, the shaded orange regions shows the median plus and minus one standard deviation, and the dashed lines show the minimum and maximum values.
 The results are almost identical to those in Step 7a.
 :::

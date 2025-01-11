@@ -31,6 +31,7 @@ subpkginclude_HEADERS = \
 	VisitorSubmesh.hh \
 	VisitorSubmesh.icc \
 	RefineUniform.hh \
+	RefineInterpolator.hh \
 	topologyfwd.hh
 
 

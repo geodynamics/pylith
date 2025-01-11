@@ -66,6 +66,15 @@ public:
                                              const PylithReal lengthScale,
                                              MPI_Comm comm);
 
+    /** Remove cells hanging off mesh.
+     *
+     * @param[in] dmMesh PETSc DM to clean.
+     *
+     * @returns PETSc DM without hanging cells.
+     */
+    static
+    PetscDM removeHangingCells(const PetscDM& dmMesh);
+
     /** Nondimensionalize the finite-element mesh.
      *
      * @param[in] mesh Finite-element mesh.
