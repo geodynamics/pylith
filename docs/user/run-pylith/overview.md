@@ -19,6 +19,13 @@ The amount of speedup you will see by running in parallel depends on the process
 On most desktops and laptops, you can obtain reduced runtimes using about one-quarter to one-half of the number of physical cores.
 Once you saturate the memory bus, using additional processes (cores) will result in little, if any, speedup.
 
+### Running on a Offline Desktop or Laptop
+
+The MPI implementation (MPICH) used in the PyLith binary by default uses the network interface.
+If your desktop or laptop is offline, then you need to tell MPI to use sockets rather than the network interface.
+You can do this by setting the `IF_PROVIDER` environment variable.
+For example, in a terminal running zsh or tcsh, you can use `export IF_PROVIDER=sockets`.
+
 (sec-run-pylith-cluster)=
 ### Running in Parallel on a Cluster
 

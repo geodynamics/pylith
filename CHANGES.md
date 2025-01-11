@@ -16,6 +16,7 @@ The version numbers are in the form `MAJOR.MINOR.PATCH`, where major releases in
   the other output files.
   * Consistency check for material properties and scales used in nondimensionalization (currently just the shear modulus).
   * Add section to User Guide on troubleshooting solver issues.
+  * Add section to User Guide on how to run PyLith binary offline.
   * Allow output on a finer resolution mesh than used in the simulation to facilitate accurate representation of fields with a basis order of 2 or greater.
 * **Fixed**
   * Fix inconsistency in normal direction on fault surfaces. Orientation was correct but direction was flipped at some locations. This affected local slip direction and the resulting deformation close to the fault. This bug fix was not in version 4.1.3.
