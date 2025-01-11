@@ -113,7 +113,7 @@ pylith::topology::MeshOps::createSubdomainMesh(const pylith::topology::Mesh& mes
         throw std::runtime_error(msg.str());
     } // if
 
-    /* TODO: Add creation of pointSF for submesh */
+    /* :TODO: Add creation of pointSF for submesh */
     PetscDMLabel dmLabel = NULL;
     err = DMGetLabel(dmDomain, labelName, &dmLabel);PYLITH_CHECK_ERROR(err);assert(dmLabel);
     PetscBool hasLabelValue = PETSC_FALSE;
