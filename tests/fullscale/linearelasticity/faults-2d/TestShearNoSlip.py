@@ -104,10 +104,36 @@ class TestTriGmsh(TestCase):
 
 
 # -------------------------------------------------------------------------------------------------
+class TestQuadGmshRefineOutput(TestCase):
+
+    def setUp(self):
+        self.name = "shearnoslip_refineoutput_quad"
+        self.mesh = meshes.QuadGmshRefineOutput()
+        super().setUp()
+
+        TestCase.run_pylith(self, self.name, ["shearnoslip.cfg", "shearnoslip_refineoutput.cfg", "shearnoslip_refineoutput_quad.cfg"])
+        return
+
+
+# -------------------------------------------------------------------------------------------------
+class TestTriGmshRefineOutput(TestCase):
+
+    def setUp(self):
+        self.name = "shearnoslip_refineoutput_tri"
+        self.mesh = meshes.TriGmshRefineOutput()
+        super().setUp()
+
+        TestCase.run_pylith(self, self.name, ["shearnoslip.cfg", "shearnoslip_refineoutput.cfg", "shearnoslip_refineoutput_tri.cfg"])
+        return
+
+
+# -------------------------------------------------------------------------------------------------
 def test_cases():
     return [
         TestQuadGmsh,
         TestTriGmsh,
+        TestQuadGmshRefineOutput,
+        TestTriGmshRefineOutput,
     ]
 
 

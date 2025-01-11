@@ -43,6 +43,9 @@ dist_noinst_DATA = \
 	shearnoslip.cfg \
 	shearnoslip_quad.cfg \
 	shearnoslip_tri.cfg \
+	shearnoslip_refineoutput.cfg \
+	shearnoslip_refineoutput_quad.cfg \
+	shearnoslip_refineoutput_tri.cfg \
 	zeroslipfn.timedb
 
 
