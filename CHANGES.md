@@ -9,7 +9,7 @@ The version numbers are in the form `MAJOR.MINOR.PATCH`, where major releases in
 
 * **Changed**
   * Updated `examples/strikeslip-2d` Steps 4-7 to use a more realistic slip distribution and mesh refinement in output.
-  * Updated to PETSc 3.22.0
+  * Updated to PETSc 3.22.2
   * Switch CI from Azure Pipelines to GitHub Actions.
 * **Added**
   * Default filenames for progress monitor and parameters file are set from the simulation name like

@@ -114,7 +114,7 @@ AC_CHECK_HEADER([mpi.h], [], [AC_MSG_ERROR([header 'mpi.h' not found])])
 
 dnl PETSC
 AC_LANG(C)
-CIT_PATH_PETSC([3.22.0])
+CIT_PATH_PETSC([3.22.2])
 CIT_HEADER_PETSC
 CIT_CHECK_LIB_PETSC
 
