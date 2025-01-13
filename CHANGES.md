@@ -19,7 +19,8 @@ The version numbers are in the form `MAJOR.MINOR.PATCH`, where major releases in
   * Added section to User Guide on how to run PyLith binary offline.
   * Allow output on a finer resolution mesh than used in the simulation to facilitate accurate representation of fields with a basis order of 2 or greater.
 * **Fixed**
-  * Fixed inconsistency in normal direction on fault surfaces. Orientation was correct but direction was flipped at some locations. This affected local slip direction and the resulting deformation close to the fault. This bug fix was not in version 4.1.3.
+  * Fixed inconsistency in normal direction on fault surfaces. Orientation was correct but direction was flipped at some locations. This affected local slip direction and the resulting deformation close to the fault. This bug fix in a PETSc branch was not in version 4.1.3.
+  * Updated `TimeDependentAuxiliaryFactory::updateAuxiliaryField()` to account for some processes potentially not having points in a boundary condition (`auxiliaryFieldArray == NULL_PTR`).
   * Updated autoconf numpy macros for compatibility with location of include files in numpy version 2.x.
 
 ## Version 4.1.3 (2024/07/31)
