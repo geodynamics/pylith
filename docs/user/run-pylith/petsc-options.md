@@ -259,7 +259,7 @@ ksp_converged_reason = true
 snes_converged_reason = true
 snes_monitor = true
 
-ts_monitor = tru
+ts_monitor = true
 ts_error_if_step_fails = true
 ```
 

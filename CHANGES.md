@@ -9,18 +9,19 @@ The version numbers are in the form `MAJOR.MINOR.PATCH`, where major releases in
 
 * **Changed**
   * Updated `examples/strikeslip-2d` Steps 4-7 to use a more realistic slip distribution and mesh refinement in output.
-  * Updated to PETSc 3.22.0
+  * Updated to PETSc 3.22.2
   * Switch CI from Azure Pipelines to GitHub Actions.
 * **Added**
   * Default filenames for progress monitor and parameters file are set from the simulation name like
   the other output files.
   * Consistency check for material properties and scales used in nondimensionalization (currently just the shear modulus).
-  * Add section to User Guide on troubleshooting solver issues.
-  * Add section to User Guide on how to run PyLith binary offline.
+  * Added section to User Guide on troubleshooting solver issues.
+  * Added section to User Guide on how to run PyLith binary offline.
   * Allow output on a finer resolution mesh than used in the simulation to facilitate accurate representation of fields with a basis order of 2 or greater.
 * **Fixed**
-  * Fix inconsistency in normal direction on fault surfaces. Orientation was correct but direction was flipped at some locations. This affected local slip direction and the resulting deformation close to the fault. This bug fix was not in version 4.1.3.
-  * Update autoconf numpy macros for compatibility with location of include files in numpy version 2.x.
+  * Fixed inconsistency in normal direction on fault surfaces. Orientation was correct but direction was flipped at some locations. This affected local slip direction and the resulting deformation close to the fault. This bug fix in a PETSc branch was not in version 4.1.3.
+  * Updated `TimeDependentAuxiliaryFactory::updateAuxiliaryField()` to account for some processes potentially not having points in a boundary condition (`auxiliaryFieldArray == NULL_PTR`).
+  * Updated autoconf numpy macros for compatibility with location of include files in numpy version 2.x.
 
 ## Version 4.1.3 (2024/07/31)
 

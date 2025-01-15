@@ -91,7 +91,7 @@ ts_type = beuler
     1 SNES Function norm 4.780619312733e-10
   Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
 31 TS dt 0.1 time 3.
- >> /software/baagaard/py38-venv/pylith-opt/lib/python3.8/site-packages/pylith/problems/Problem.py:201:finalize
+ >> /software/unix/py38-venv/pylith-opt/lib/python3.8/site-packages/pylith/problems/Problem.py:201:finalize
  -- timedependent(info)
  -- Finalizing problem.
  ```
