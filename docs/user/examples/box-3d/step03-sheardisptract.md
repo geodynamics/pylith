@@ -79,7 +79,7 @@ $ pylith step03_sheardisptract.cfg
 
 # -- many lines omitted --
 
- >> /software/baagaard/py38-venv/pylith-debug/lib/python3.8/site-packages/pylith/problems/TimeDependent.py:139:run
+ >> /software/unix/py38-venv/pylith-debug/lib/python3.8/site-packages/pylith/problems/TimeDependent.py:139:run
  -- timedependent(info)
  -- Solving problem.
 0 TS dt 0.01 time 0.
@@ -88,7 +88,7 @@ $ pylith step03_sheardisptract.cfg
     1 SNES Function norm 2.511862662012e-17 
   Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
 1 TS dt 0.01 time 0.01
- >> /software/baagaard/py38-venv/pylith-debug/lib/python3.8/site-packages/pylith/problems/Problem.py:201:finalize
+ >> /software/unix/py38-venv/pylith-debug/lib/python3.8/site-packages/pylith/problems/Problem.py:201:finalize
  -- timedependent(info)
  -- Finalizing problem.
 ```

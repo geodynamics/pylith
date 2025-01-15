@@ -102,7 +102,7 @@ $ pylith step05_sheardisptractrate.cfg
     1 SNES Function norm 1.130764208982e-17 
   Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
 6 TS dt 0.1 time 0.5
- >> /software/baagaard/py38-venv/pylith-debug/lib/python3.8/site-packages/pylith/problems/Problem.py:201:finalize
+ >> /software/unix/py38-venv/pylith-debug/lib/python3.8/site-packages/pylith/problems/Problem.py:201:finalize
  -- timedependent(info)
  -- Finalizing problem.
 ```

@@ -185,52 +185,52 @@ caption: Run Step 1 simulation with the Cubit mesh
 $ pylith step01_slip_cubit.cfg
 
 # The output should look something like the following.
- >> /Users/baagaard/software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:77:main
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:77:main
  -- pylithapp(info)
  -- Running on 1 process(es).
- >> /Users/baagaard/software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/meshio/MeshIOObj.py:38:read
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/meshio/MeshIOObj.py:38:read
  -- meshiocubit(info)
  -- Reading finite-element mesh
- >> /Users/baagaard/src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:148:void pylith::meshio::MeshIOCubit::_readVertices(ExodusII &, scalar_array *, int *, int *) const
+ >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:148:void pylith::meshio::MeshIOCubit::_readVertices(ExodusII &, scalar_array *, int *, int *) const
  -- meshiocubit(info)
  -- Component 'reader': Reading 1610 vertices.
- >> /Users/baagaard/src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:208:void pylith::meshio::MeshIOCubit::_readCells(ExodusII &, int_array *, int_array *, int *, int *) const
+ >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:208:void pylith::meshio::MeshIOCubit::_readCells(ExodusII &, int_array *, int_array *, int *, int *) const
  -- meshiocubit(info)
  -- Component 'reader': Reading 3125 cells in 1 blocks.
- >> /Users/baagaard/src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:270:void pylith::meshio::MeshIOCubit::_readGroups(ExodusII &)
+ >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:270:void pylith::meshio::MeshIOCubit::_readGroups(ExodusII &)
  -- meshiocubit(info)
  -- Component 'reader': Found 10 node sets.
- >> /Users/baagaard/src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:296:void pylith::meshio::MeshIOCubit::_readGroups(ExodusII &)
+ >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:296:void pylith::meshio::MeshIOCubit::_readGroups(ExodusII &)
  -- meshiocubit(info)
  -- Component 'reader': Reading node set 'boundary_south' with id 10 containing 25 nodes.
- >> /Users/baagaard/src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:296:void pylith::meshio::MeshIOCubit::_readGroups(ExodusII &)
+ >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:296:void pylith::meshio::MeshIOCubit::_readGroups(ExodusII &)
  -- meshiocubit(info)
  -- Component 'reader': Reading node set 'boundary_east' with id 11 containing 25 nodes.
- >> /Users/baagaard/src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:296:void pylith::meshio::MeshIOCubit::_readGroups(ExodusII &)
+ >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:296:void pylith::meshio::MeshIOCubit::_readGroups(ExodusII &)
  -- meshiocubit(info)
  -- Component 'reader': Reading node set 'boundary_north' with id 12 containing 24 nodes.
- >> /Users/baagaard/src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:296:void pylith::meshio::MeshIOCubit::_readGroups(ExodusII &)
+ >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:296:void pylith::meshio::MeshIOCubit::_readGroups(ExodusII &)
  -- meshiocubit(info)
  -- Component 'reader': Reading node set 'boundary_west' with id 13 containing 23 nodes.
- >> /Users/baagaard/src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:296:void pylith::meshio::MeshIOCubit::_readGroups(ExodusII &)
+ >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:296:void pylith::meshio::MeshIOCubit::_readGroups(ExodusII &)
  -- meshiocubit(info)
  -- Component 'reader': Reading node set 'fault_main' with id 20 containing 37 nodes.
- >> /Users/baagaard/src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:296:void pylith::meshio::MeshIOCubit::_readGroups(ExodusII &)
+ >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:296:void pylith::meshio::MeshIOCubit::_readGroups(ExodusII &)
  -- meshiocubit(info)
  -- Component 'reader': Reading node set 'fault_west' with id 21 containing 13 nodes.
- >> /Users/baagaard/src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:296:void pylith::meshio::MeshIOCubit::_readGroups(ExodusII &)
+ >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:296:void pylith::meshio::MeshIOCubit::_readGroups(ExodusII &)
  -- meshiocubit(info)
  -- Component 'reader': Reading node set 'fault_east' with id 22 containing 6 nodes.
- >> /Users/baagaard/src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:296:void pylith::meshio::MeshIOCubit::_readGroups(ExodusII &)
+ >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:296:void pylith::meshio::MeshIOCubit::_readGroups(ExodusII &)
  -- meshiocubit(info)
  -- Component 'reader': Reading node set 'fault_main_ends' with id 30 containing 2 nodes.
- >> /Users/baagaard/src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:296:void pylith::meshio::MeshIOCubit::_readGroups(ExodusII &)
+ >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:296:void pylith::meshio::MeshIOCubit::_readGroups(ExodusII &)
  -- meshiocubit(info)
  -- Component 'reader': Reading node set 'fault_west_ends' with id 31 containing 2 nodes.
- >> /Users/baagaard/src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:296:void pylith::meshio::MeshIOCubit::_readGroups(ExodusII &)
+ >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:296:void pylith::meshio::MeshIOCubit::_readGroups(ExodusII &)
  -- meshiocubit(info)
  -- Component 'reader': Reading node set 'fault_east_ends' with id 32 containing 2 nodes.
- >> /Users/baagaard/src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:85:void pylith::meshio::MeshIO::read(pylith::topology::Mesh *, const bool)
+ >> /src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:85:void pylith::meshio::MeshIO::read(pylith::topology::Mesh *, const bool)
  -- meshiocubit(info)
  -- Component 'reader': Domain bounding box:
     (410000, 490000)
@@ -238,7 +238,7 @@ $ pylith step01_slip_cubit.cfg
 
 -- many lines omitted --
 
- >> /Users/baagaard/software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/TimeDependent.py:132:run
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/TimeDependent.py:132:run
  -- timedependent(info)
  -- Solving problem.
 0 TS dt 0.01 time 0.
@@ -247,7 +247,7 @@ $ pylith step01_slip_cubit.cfg
     1 SNES Function norm 1.131725395538e-12
     Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
 1 TS dt 0.01 time 0.01
- >> /Users/baagaard/software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:199:finalize
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:199:finalize
  -- timedependent(info)
  -- Finalizing problem.
 ```
