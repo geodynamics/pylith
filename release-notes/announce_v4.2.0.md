@@ -23,6 +23,7 @@ Documentation
   * Allow output on a finer resolution mesh than used in the simulation to facilitate accurate representation of fields with a basis order of 2 or greater.
 * **Fixed**
   * Fixed inconsistency in normal direction on fault surfaces. Orientation was correct but direction was flipped at some locations. This affected local slip direction and the resulting deformation close to the fault. This bug fix was not in version 4.1.3.
+  * Updated `TimeDependentAuxiliaryFactory::updateAuxiliaryField()` to account for some processes potentially not having points in a boundary condition (`auxiliaryFieldArray == NULL_PTR`).
   * Updated autoconf numpy macros for compatibility with location of include files in numpy version 2.x.
 
 ### Known issues
@@ -32,6 +33,6 @@ Documentation
 
 ## Contributors
 
-* Brad Aagaard ![ORCID iD](/_static/images/ORCIDiD_icon32x32.png){w=16px}[0000-0002-8795-9833](https://orcid.org/0000-0002-8795-9833)
-* Matthew Knepley ![ORCID iD](/_static/images/ORCIDiD_icon32x32.png){w=16px}[0000-0002-2292-0735](https://orcid.org/0000-0002-2292-0735)
-* Charles Williams ![ORCID iD](/_static/images/ORCIDiD_icon32x32.png){w=16px}[0000-0001-7435-9196](https://orcid.org/0000-0001-7435-9196)
+* Brad Aagaard [ORCID iD 0000-0002-8795-9833](https://orcid.org/0000-0002-8795-9833)
+* Matthew Knepley [ORCID iD 0000-0002-2292-0735](https://orcid.org/0000-0002-2292-0735)
+* Charles Williams [ORCID iD 0000-0001-7435-9196](https://orcid.org/0000-0001-7435-9196)
