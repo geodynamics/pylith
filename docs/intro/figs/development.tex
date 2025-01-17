@@ -1,0 +1,147 @@
+\documentclass[tikz, border=2pt, svgnames]{standalone}
+\usepackage[none]{hyphenat}
+\usepackage{helvet}
+\renewcommand{\familydefault}{phv}
+\usepackage{ifthen}
+
+\begin{document}
+\pagestyle{empty}
+
+\newcommand{\level}[3]{%
+  \node [anchor=west] at ($(#1.east)+(0,1.2ex)$) {\includegraphics[height=1.2em]{../images/#2}};
+  \node [anchor=west] at ($(#1.east)-(0,1.2ex)$) {#3};
+}
+
+\usetikzlibrary{arrows,shapes,positioning}
+\usetikzlibrary{shadows.blur}
+\usetikzlibrary{backgrounds}
+
+\tikzstyle{generic} = [
+  rectangle,
+  text centered,
+  rounded corners=0.75em,
+  text width=8.0em,
+  minimum height=2.0em,
+  blur shadow,
+  ]
+
+  \tikzstyle{root} = [generic,
+  font=\bf\Large,
+  text width=16em,
+                      draw=red!80!black,
+                      top color=red!30!white,
+                      bottom color=red!60!white]
+\tikzstyle{category} = [generic, 
+  font=\bf,
+draw=yellow!80!black,
+                      top color=yellow!50!white,
+                      bottom color=yellow]
+\tikzstyle{sustainability} = [generic, 
+                      draw=orange!80!black,
+                      top color=orange!50!white,
+                      bottom color=orange]
+\tikzstyle{performance} = [generic, 
+                      draw=green!80!black,
+                      top color=green!50!white,
+                      bottom color=green]
+\tikzstyle{usability} = [generic, 
+                      draw=DeepSkyBlue!80!black,
+                      top color=DeepSkyBlue!50!white,
+                      bottom color=DeepSkyBlue]
+\tikzstyle{features} = [generic, 
+                      draw=Plum!80!black,
+                      top color=Plum!50!white,
+                      bottom color=Plum]
+
+\tikzstyle{arrowto} = [-latex, line width=2pt, opacity=0.5]
+
+\foreach \figpart in {1,...,2}{
+\begin{tikzpicture}[
+  node distance=1.5em and 4.0em,
+  thick]
+
+  % Root
+  \node (root) [root] at (0,0) {PyLith Development};
+
+  % Maintenance
+  \node (maintenance) [category, xshift=-38em, below=of root] {Code Maintenance};
+  \node (side-sets) [sustainability, below=of maintenance] {Face group BCs};\level{side-sets}{intermediate}{3, 75\%}
+  \node (vtk)  [sustainability, below=of side-sets] {VTK $\rightarrow$ VTU};\level{vtk}{easy}{2}
+  \node (qs-vel) [sustainability, below=of vtk] {QS Disp+Vel};\level{qs-vel}{easy}{2}
+  \node (rate-rheologies) [sustainability, below=of qs-vel] {Reformulate viscoelastic rheologies};\level{rate-rheologies}{intermediate}{4}
+  \node (pybind11) [sustainability, below=of rate-rheologies] {SWIG $\rightarrow$ pybind11};\level{pybind11}{difficult}{5}
+  \node (pyre) [sustainability, below=of pybind11] {New Pyre};\level{pyre}{difficult}{5}
+
+% Performance
+  \node (performance) [category, right=of maintenance] {Performance};
+  \node (parallel-loading) [performance, below=of performance] {Parallel mesh loading};\level{parallel-loading}{expert}{5,85\%}
+  \node (dmproject) [performance, below=of parallel-loading] {DMProject optimization};\level{dmproject}{difficult}{3}
+  \node (incompressible-pc) [performance, below=of dmproject] {Incompressible elasticity preconditioner};\level{incompressible-pc}{difficult}{2,80\%}
+  \node (libceed) [performance, below=of incompressible-pc] {libCEED integration};\level{libceed}{expert}{5}
+
+  % Usability
+  \node (usability) [category, right=of performance] {Usability};
+  \node (pylith-viz)  [usability, below=of usability] {Expand pylith\_viz};\level{pylith-viz}{intermediate}{2}
+  \node (material-labels) [usability, below=of pylith-viz] {User material labels};\level{material-labels}{intermediate}{2}
+  \node (geomodelgrids)  [usability, below=of material-labels] {GeoModelGrids spatial database};\level{geomodelgrids}{intermediate}{2}
+  \node (field-settings)  [usability, below=of geomodelgrids] {Simplify field settings};\level{field-settings}{intermediate}{3}
+  \node (jupyter-notebooks)  [usability, below=of field-settings] {Jupyter notebooks};\level{jupyter-notebooks}{intermediate}{5}
+  \node (scec-gfm) [usability, below=of jupyter-notebooks] {SCEC CRM spatial database};\level{scec-gfm}{intermediate}{3}
+  \node (hdf5)  [usability, below=of scec-gfm] {Reorganize HDF5 output};\level{hdf5}{intermediate}{4}
+  \node (amr)  [usability, below=of hdf5] {Adaptive Mesh Refinement};\level{amr}{expert}{4}
+  
+  % Earthquake cycle
+  \node (eqcycle) [category, right=of usability] {Earthquake Cycle};
+  \node (dyn-kin)  [features, below=of eqcycle] {Prescribed dynamic slip};\level{dyn-kin}{expert}{5,80\%}
+  \node (dynrup)  [features, below=of dyn-kin] {Spontaneous rupture};\level{dynrup}{expert}{5,30\%}
+  \node (drucker-prager)  [features, below=of dynrup] {Drucker-Prager viscoelastoplastic};\level{drucker-prager}{difficult}{3,10\%}
+  \node (small-strain)  [features, below=of drucker-prager] {Small strain};\level{small-strain}{intermediate}{3}
+  \node (eqcycle-same)  [features, below=of small-strain] {QS+Dyn same mesh};\level{eqcycle-same}{difficult}{5}
+  \node (eqcycle-diff)  [features, below=of eqcycle-same] {QS+Dyn different meshes};\level{eqcycle-diff}{expert}{4}
+% Earthquake cycle (qs & dyn same mesh) (requires: pyre)
+% Earthquake cycle (qs & dyn diff meshes) (requires: pyre, AMR)
+% Viscoelastic bulk rheologies for higher order TS (requires Disp+Vel)
+
+  % Data assimilation
+  \node (data-assimilation) [category, right=of eqcycle] {Data Assimilation};
+  \node (catmip-integration) [features, below=of data-assimilation] {CATMIP integration};\level{catmip-integration}{difficult}{4}
+  \node (point-sources) [features, below=of catmip-integration] {Point sources};\level{point-sources}{difficult}{4,60\%}
+  \node (adjoint) [features, below=of point-sources] {Adjoints};\level{adjoint}{expert}{5}
+
+  % Multiphysics
+  \node (multiphysics) [category, right=of data-assimilation] {Multiphysics};
+  \node (poro-faults) [features, below=of multiphysics] {Faults with poroelastic properties};\level{poro-faults}{difficult}{4, 80\%}
+  \node (sympy-physics) [features, below=of poro-faults] {Physics via SymPy};\level{sympy-physics}{expert}{5}
+  
+  % Surface loading
+  \node (surf-load) [category, right=of multiphysics] {Surface Loading};
+  \node (st-data) [features, below=of surf-load] {SpatialData $\rightarrow$ SpatialTimeData};\level{st-data}{intermediate}{4}
+  \node (complex-bcs) [features, below=of st-data] {Complex spatial+temporal BCs};\level{complex-bcs}{intermediate}{3}
+
+
+\ifthenelse{\figpart=2}{
+  \begin{scope}[on background layer]
+    \draw[arrowto] (pybind11.south) -- (pyre.north);
+    \draw[arrowto] (pyre.east) -- (jupyter-notebooks.west);
+
+    \draw[arrowto] (pyre.east) -- (eqcycle-same.west);
+    \draw[arrowto] (amr.east) -- (eqcycle-diff.west);
+    \draw[arrowto] (eqcycle-same.south) -- (eqcycle-diff.north);
+    \draw[arrowto] (libceed.east) -- (eqcycle-same.west);
+    \draw (parallel-loading.east) edge[out=-25,in=-155,arrowto] (dyn-kin.west);
+    \draw[arrowto] (dyn-kin.south) -- (dynrup.north);
+    \draw (dynrup.west) edge[out=-110,in=110,arrowto] (eqcycle-same.west);
+    \draw (drucker-prager.west) edge[out=-110,in=110,arrowto] (eqcycle-same.west);
+    
+    \draw[arrowto] (qs-vel.south) -- (rate-rheologies.north);
+    
+    \draw[arrowto] (pybind11.east) -- (geomodelgrids.west);
+    
+    \draw[arrowto] (field-settings.east) -- (sympy-physics.west);
+
+    \draw[arrowto] (st-data.south) -- (complex-bcs.north);
+  \end{scope}}{}
+
+\end{tikzpicture}}
+
+\end{document}
