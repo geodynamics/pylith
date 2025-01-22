@@ -24,23 +24,26 @@ Because we strictly follow the [semantic versioning guidelines](https://semver.o
 This can happen if realize that we should modify the parameters to improve maintainability or prepare for future changes.
 :::
 
-## Version 4.3 (April 2025)
+## Version 5.0 (April 2025)
+
+This version will include a few very minor changes to the public API.
 
 * Specify boundary conditions using faces instead of vertices ![expert](images/intermediate.png) [75%]
 * Parallel mesh loading ![expert](images/expert.png) [85%]
 
-## Version 4.4 (June 2025)
+## Version 5.1 (June 2025)
 
 * Dynamic prescribed slip with diagonal Jacobian for explicit part of IMEX formulation ![expert](images/expert.png) [80%]
 * Add `examples/barwaves-2d` ![expert](images/expert.png) [25%]
 * Better preconditioner for incompressible elasticity ![expert](images/expert.png) [80%]
 
-## Version 4.5 (October 2025)
+## Version 5.2 (October 2025)
 
 * Spontaneous rupture for quasistatic and dynamic simulations ![expert](images/expert.png) [30%]
 
+## Version 6.0 (June 2026)
 
-## Version 5.0 (June 2026)
+This version will include major changes to the public API associated with the switch to the current version of the Pyre Python framework.
 
 * Convert from SWIG to pybind11 ![intermediate](images/intermediate.png) [0%]
 * Add support for GeoModelGrids implementation of spatial databases for 3D seismic velocity models. ![intermediate](images/intermediate.png) [0%]
@@ -48,15 +51,13 @@ This can happen if realize that we should modify the parameters to improve maint
 * Migrate examples to Jupyter notebooks ![intermediate](images/intermediate.png)
 * Update VTK output to use `vtu` files rather than legacy `vtk` files ![easy](images/easy.png) [0%]
 * Improve robustness of HDF5 output by opening/closing at each time step ![easy](images/easy.png)[0%]
-
-## Version 6.0 (TBD)
-
-* Output of fault rupture auxiliary subfields ![intermediate](images/intermediate.png) [0%]
 * Improve creation of auxiliary, diagnostic, and derived fields.
+* More flexible specification of time-dependent boundary conditions. ![difficult](images/difficult.png) [0%]
 * Reimplement Drucker-Prager elastoplastic bulk rheology ![intermediate](images/intermediate.png) [0%]
 
-## Version 7.0.0 (TBD)
+## Version 7.0 (TBD)
 
+* Output of fault rupture auxiliary subfields ![intermediate](images/intermediate.png) [0%]
 * Dirichlet boundary conditions with constraints on normal and tangential components. ![difficult](images/difficult.png) [0%]
 * Integration with libCEED for fast high order residual evaluation ![expert](images/expert.png)\
 * Add ability to output residual field during nonlinear solve for debugging ![easy](images/easy.png) [0%]
@@ -68,7 +69,6 @@ They may be added to the planned releases based upon further discussion and cont
 
 * Adaptive mesh refinement ![expert](images/expert.png)
 * Faults with poroelastic properties ![expert]{images/expert.png} [80%]
-* More flexible specification of time-dependent boundary conditions. ![difficult](images/difficult.png) [0%]
 * Elasticity with self-gravitation ![intermediate](images/intermediate.png) [0%]
 * Coupling of problems with compatible meshes ![difficult](images/difficult.png) [10%]\
     Implement "injectors" for solution and state variables.
