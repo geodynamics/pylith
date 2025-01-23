@@ -166,7 +166,7 @@ pylith::meshio::DataWriter::getCoordsGlobalVec(PetscVec* coordsGlobalVec,
     PylithInt excludeRanges[4] = {cMax, cEnd, vMax, vEnd};
     PylithInt numExcludes = (cMax < cEnd ? 1 : 0) + (vMax >= 0 ? 1 : 0);
 
-    err = DMGetSection(dmCoord, &section);PYLITH_CHECK_ERROR(err);
+    err = DMGetLocalSection(dmCoord, &section);PYLITH_CHECK_ERROR(err);
     err = DMGetDimension(dmMesh,  &dim);PYLITH_CHECK_ERROR(err);
     err = DMGetDimension(dmCoord, &dimF);PYLITH_CHECK_ERROR(err);
     err = DMPlexGetChart(dmMesh,  &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
@@ -213,7 +213,7 @@ pylith::meshio::DataWriter::getCoordsGlobalVec(PetscVec* coordsGlobalVec,
     err = DMClone(dmCoord, &dmCoordGlobal);PYLITH_CHECK_ERROR(err);
     err = DMCopyDisc(dmCoord, dmCoordGlobal);PYLITH_CHECK_ERROR(err);
     err = PetscSectionClone(section, &newSection);PYLITH_CHECK_ERROR(err);
-    err = DMSetSection(dmCoordGlobal, newSection);PYLITH_CHECK_ERROR(err);
+    err = DMSetLocalSection(dmCoordGlobal, newSection);PYLITH_CHECK_ERROR(err);
     err = PetscSectionDestroy(&newSection);PYLITH_CHECK_ERROR(err);
     err = DMGetPointSF(dmCoordGlobal, &sf);PYLITH_CHECK_ERROR(err);
     err = PetscSectionCreateGlobalSectionCensored(section, sf, PETSC_TRUE, numExcludes, excludeRanges, &gsection);PYLITH_CHECK_ERROR(err);
