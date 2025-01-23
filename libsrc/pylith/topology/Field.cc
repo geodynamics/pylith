@@ -184,7 +184,7 @@ pylith::topology::Field::getLocalSection(void) const {
     assert(_mesh);
 
     PetscSection s = NULL;
-    PetscErrorCode err = DMGetSection(_mesh->getDM(), &s);PYLITH_CHECK_ERROR(err);
+    PetscErrorCode err = DMGetLocalSection(_mesh->getDM(), &s);PYLITH_CHECK_ERROR(err);
     PYLITH_METHOD_RETURN(s);
 }
 
@@ -247,7 +247,7 @@ pylith::topology::Field::getChartSize(void) const {
     PylithInt pStart, pEnd;
     PetscErrorCode err;
 
-    err = DMGetSection(_mesh->getDM(), &s);PYLITH_CHECK_ERROR(err);
+    err = DMGetLocalSection(_mesh->getDM(), &s);PYLITH_CHECK_ERROR(err);
     err = PetscSectionGetChart(s, &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_RETURN(pEnd-pStart);
@@ -264,7 +264,7 @@ pylith::topology::Field::getStorageSize(void) const {
     PylithInt size = 0;
     PetscSection s = NULL;
     PetscErrorCode err;
-    err = DMGetSection(_mesh->getDM(), &s);PYLITH_CHECK_ERROR(err);
+    err = DMGetLocalSection(_mesh->getDM(), &s);PYLITH_CHECK_ERROR(err);
     err = PetscSectionGetStorageSize(s, &size);PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_RETURN(size);
@@ -300,7 +300,7 @@ pylith::topology::Field::allocate(void) {
      */
 
     const PetscDM dm = _mesh->getDM();assert(dm);
-    err = DMGetSection(dm, &s);PYLITH_CHECK_ERROR(err);assert(s); // Creates local section
+    err = DMGetLocalSection(dm, &s);PYLITH_CHECK_ERROR(err);assert(s); // Creates local section
     err = DMSetGlobalSection(dm, NULL);PYLITH_CHECK_ERROR(err); // Creates global section
     err = PetscSectionSetUp(s);PYLITH_CHECK_ERROR(err);
 
