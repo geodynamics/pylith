@@ -33,36 +33,63 @@ mesh = {
              1   2
     }
   }
-  group = {
+  vertex-group = {
     name = fault
-    type = vertices
     count = 2
     indices = {
       2  3
     }
   }
-  group = {
-    name = bc
-    type = vertices
+  vertex-group = {
+    name = bc_vertices
     count = 3
     indices = {
-      0  1  4
+      0  1  2
     }
   }
-  group = {
-    name = bc2
-    type = vertices
+  vertex-group = {
+    name = bc2_vertices
     count = 4
     indices = {
       0  1  4  5
     }
   }
-  group = {
-    name = bc3
-    type = vertices
+  vertex-group = {
+    name = bc3_vertices
     count = 3
     indices = {
       0  2  4
+    }
+  }
+  face-group = {
+    name = fault_faces
+    count = 1
+    indices = {
+      0   2  3
+    }
+  }
+  face-group = {
+    name = bc
+    count = 2
+    indices = {
+      0   0  1
+      0   0  2
+    }
+  }
+  face-group = {
+    name = bc2
+    count = 2
+    indices = {
+      0   0  1
+      1   4  5
+    }
+  }
+  face-group = {
+    name = bc3
+    count = 2
+    indices = {
+      0   0  2
+      1   2  4
     }
   }
 }

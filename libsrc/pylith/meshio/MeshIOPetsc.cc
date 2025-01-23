@@ -131,7 +131,7 @@ pylith::meshio::MeshIOPetsc::setFilename(const char* name) {
     } else if (hdf5Suffix == _filename.substr(_filename.size()-hdf5Suffix.size(), hdf5Suffix.size())) {
         _format = HDF5;
     } else {
-        PYLITH_COMPONENT_LOGICERROR("Could not determine format for mesh file " << _filename << ".");
+        PYLITH_COMPONENT_LOGICERROR("Could not determine format for mesh file " << _filename << " from suffix (must be '.msh' for GMSH and '.h5' for HDF5).");
     } // if/else
 }
 
@@ -225,7 +225,7 @@ pylith::meshio::MeshIOPetsc::_read(void) {
     try {
         err = DMCreate(_mesh->getComm(), &dmMesh);PYLITH_CHECK_ERROR(err);
         err = DMSetType(dmMesh, DMPLEX);PYLITH_CHECK_ERROR(err);
-        err = PetscObjectSetName((PetscObject) dmMesh, "domain");
+        err = PetscObjectSetName((PetscObject) dmMesh, "domain"); // Needed for reading PETSc HDF5
         if (!_prefix.empty()) {
             err = PetscObjectSetOptionsPrefix((PetscObject) dmMesh, _prefix.c_str());PYLITH_CHECK_ERROR(err);
         } // if
@@ -262,7 +262,7 @@ pylith::meshio::MeshIOPetsc::_write(void) const {
         DMPlexStorageVersion storageVersion = PETSC_NULLPTR;
         err = PetscNew(&storageVersion);PYLITH_CHECK_ERROR(err);assert(storageVersion);
         storageVersion->major = 3;
-        storageVersion->minor = 0;
+        storageVersion->minor = 1;
         storageVersion->subminor = 0;
         err = PetscViewerHDF5SetDMPlexStorageVersionWriting(viewer, storageVersion);PYLITH_CHECK_ERROR(err);
         err = PetscFree(storageVersion);PYLITH_CHECK_ERROR(err);

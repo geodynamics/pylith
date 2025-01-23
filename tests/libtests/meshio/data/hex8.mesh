@@ -62,53 +62,47 @@ mesh = {
              1   0
     }
   }
-  group = {
+  vertex-group = {
     name = fault
-    type = vertices
     count = 4
     indices = {
       2  3  8  9
     }
   }
-  group = {
+  vertex-group = {
     name = front
-    type = vertices
     count = 4
     indices = {
       0  1  6  7
     }
   }
-  group = {
+  vertex-group = {
     name = top
-    type = vertices
     count = 6
     indices = {
       6  7  8  9  10 11
     }
   }
-  group = {
+  face-group = {
     name = fault_faces
-    type = faces
     count = 1
     indices = {
       0   2  3  8  9
     }
   }
-  group = {
+  face-group = {
     name = front
-    type = faces
     count = 1
     indices = {
       0   0  1  6  7
     }
   }
-  group = {
+  face-group = {
     name = top
-    type = faces
     count = 2
     indices = {
-      0  6  7  8  9
-      1  8  9 10 11
+      0   6  7  8  9
+      1   8  9 10 11
     }
   }
 }
