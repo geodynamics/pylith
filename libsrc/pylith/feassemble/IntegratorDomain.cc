@@ -284,8 +284,10 @@ pylith::feassemble::IntegratorDomain::initialize(const pylith::topology::Field& 
     PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" initialize(solution="<<solution.getLabel()<<")");
     _IntegratorDomain::Events::logger.eventBegin(_IntegratorDomain::Events::initialize);
 
+    std::ostringstream descriptiveLabel;
+    descriptiveLabel << _labelName << "=" << _labelValue;
     delete _materialMesh;
-    _materialMesh = pylith::topology::MeshOps::createSubdomainMesh(solution.getMesh(), _labelName.c_str(), _labelValue, ":UNKOWN:");
+    _materialMesh = pylith::topology::MeshOps::createSubdomainMesh(solution.getMesh(), _labelName.c_str(), _labelValue, descriptiveLabel.str().c_str());
     pylith::topology::CoordsVisitor::optimizeClosure(_materialMesh->getDM());
 
     Integrator::initialize(solution);
