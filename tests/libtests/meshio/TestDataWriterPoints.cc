@@ -217,7 +217,7 @@ pylith::meshio::TestDataWriterPoints::_initialize(void) {
     cs.setSpaceDim(data->spaceDim);
 
     delete _pointMesh;_pointMesh = pylith::topology::MeshOps::createFromPoints(
-        data->points, data->numPoints, &cs, data->lengthScale, PETSC_COMM_WORLD);
+        data->points, data->numPoints, &cs, data->lengthScale, PETSC_COMM_WORLD, "points");
 
     spatialdata::units::Nondimensional normalizer;
     normalizer.setLengthScale(data->lengthScale);

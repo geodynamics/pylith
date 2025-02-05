@@ -17,6 +17,7 @@
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "pylith/utils/array.hh" // USES scalar_array
 #include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
+#include "pylith/utils/journals.hh" // USES pythia::journal_t
 #include "pylith/utils/petscfwd.h" // USES PetscVec
 
 #include <stdexcept> // USES std::runtime_error
@@ -80,9 +81,11 @@ pylith::topology::Mesh::clone(void) const {
     Mesh* mesh = new Mesh();assert(mesh);
     mesh->setCoordSys(this->getCoordSys());
 
-    PetscErrorCode err;
+    PetscErrorCode err = PETSC_SUCCESS;
     if (this->_dm) {
-        err = DMClone(this->_dm, &mesh->_dm);
+        PetscDM dmClone = NULL;
+        err = DMClone(this->_dm, &dmClone);
+        mesh->setDM(dmClone);
 
         const char* name = NULL;
         err = PetscObjectGetName((PetscObject)this->_dm, &name);PYLITH_CHECK_ERROR(err);
@@ -111,7 +114,7 @@ pylith::topology::Mesh::setDM(PetscDM dm,
     PetscErrorCode err = PETSC_SUCCESS;
     err = DMDestroy(&_dm);PYLITH_CHECK_ERROR(err);
     _dm = dm;
-    if (label) {
+    if (_dm && label) {
         err = PetscObjectSetName((PetscObject) _dm, label);PYLITH_CHECK_ERROR(err);
     } // if
 

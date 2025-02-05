@@ -58,7 +58,7 @@ pylith::topology::TestSubmesh::testAccessors(void) {
 
     _buildMesh();
     const int labelValue = 1;
-    delete _testMesh;_testMesh = MeshOps::createLowerDimMesh(*_domainMesh, _data->faceGroupName, labelValue);assert(_testMesh);
+    delete _testMesh;_testMesh = MeshOps::createLowerDimMesh(*_domainMesh, _data->faceGroupName, labelValue, "testAccessors");assert(_testMesh);
     assert(_testMesh->getCoordSys());
 
     REQUIRE(_data->topology->dimension == _testMesh->getCoordSys()->getSpaceDim());
@@ -85,7 +85,7 @@ pylith::topology::TestSubmesh::testSizes(void) {
 
     _buildMesh();
     const int labelValue = 1;
-    delete _testMesh;_testMesh = MeshOps::createLowerDimMesh(*_domainMesh, _data->faceGroupName, labelValue);assert(_testMesh);
+    delete _testMesh;_testMesh = MeshOps::createLowerDimMesh(*_domainMesh, _data->faceGroupName, labelValue, "testSizes");assert(_testMesh);
     assert(_testMesh);
 
     CHECK(_data->topology->dimension-1 == size_t(_testMesh->getDimension()));
@@ -104,7 +104,7 @@ pylith::topology::TestSubmesh::testCreateLowerDimMesh(void) {
 
     _buildMesh();
     const int labelValue = 1;
-    delete _testMesh;_testMesh = MeshOps::createLowerDimMesh(*_domainMesh, _data->faceGroupName, labelValue);assert(_testMesh);
+    delete _testMesh;_testMesh = MeshOps::createLowerDimMesh(*_domainMesh, _data->faceGroupName, labelValue, "testCreateLowerDimMesh");assert(_testMesh);
 
     REQUIRE(_data->topology->dimension-1 == size_t(_testMesh->getDimension()));
 
@@ -136,8 +136,8 @@ pylith::topology::TestSubmesh::testCreateLowerDimMesh(void) {
     } // for
 
     delete _testMesh;_testMesh = NULL;
-    REQUIRE_THROWS_AS(MeshOps::createLowerDimMesh(*_domainMesh, "zzyyxx", labelValue), std::runtime_error);
-    REQUIRE_THROWS_AS(MeshOps::createLowerDimMesh(*_domainMesh, _data->faceGroupName, labelValue+99), std::runtime_error);
+    REQUIRE_THROWS_AS(MeshOps::createLowerDimMesh(*_domainMesh, "zzyyxx", labelValue, "testFail1"), std::runtime_error);
+    REQUIRE_THROWS_AS(MeshOps::createLowerDimMesh(*_domainMesh, _data->faceGroupName, labelValue+99, "testFail2"), std::runtime_error);
 } // testCreateLowerDimMesh
 
 
@@ -150,8 +150,7 @@ pylith::topology::TestSubmesh::testCreateSubdomainMesh(void) {
     assert(_data->geometry);
 
     _buildMesh();
-    delete _testMesh;_testMesh = MeshOps::createSubdomainMesh(*_domainMesh, _data->subdomainLabel,
-                                                              _data->subdomainLabelValue, "Test subdomain");
+    delete _testMesh;_testMesh = MeshOps::createSubdomainMesh(*_domainMesh, _data->subdomainLabel, _data->subdomainLabelValue, "Test subdomain");
     assert(_testMesh);
 
     REQUIRE(_data->topology->dimension == size_t(_testMesh->getDimension()));

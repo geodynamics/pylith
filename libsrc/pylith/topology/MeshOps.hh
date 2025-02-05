@@ -28,7 +28,7 @@ public:
      * @param[in] mesh Mesh for domain.
      * @param[in] labelName Name of label marking subdomain.
      * @param[in] labelValue Value of label marking subdomain.
-     * @param[in] descriptiveLabel Descriptive label for subdomain.
+     * @param[in] componentName Name of component associated with subdomain.
      *
      * @returns Mesh for subdomain.
      */
@@ -36,20 +36,22 @@ public:
     pylith::topology::Mesh* createSubdomainMesh(const pylith::topology::Mesh& mesh,
                                                 const char* labelName,
                                                 const int labelValue,
-                                                const char* descriptiveLabel);
+                                                const char* componentName);
 
     /** Create lower dimension mesh using label.
      *
      * @param[in] mesh Mesh for domain.
      * @param[in] labelName Name of label marking subdomain.
      * @param[in] labelValue Value of label marking subdomain.
+     * @param[in] componentName Name of component associated with subdomain.
      *
      * @returns Lower dimension mesh.
      */
     static
     pylith::topology::Mesh* createLowerDimMesh(const pylith::topology::Mesh& mesh,
                                                const char* labelName,
-                                               const int labelValue);
+                                               const int labelValue,
+                                               const char* componentName);
 
     /** Create 0-dimension mesh from points.
      *
@@ -58,13 +60,15 @@ public:
      * @param[in] cs Coordinate system for points.
      * @param[in] lengthScale Length scale for nondimensionalization.
      * @param[in] comm MPI communicator.
+     * @param[in] componentName Name of component associated with subdomain.
      */
     static
     pylith::topology::Mesh* createFromPoints(const PylithReal* points,
                                              const size_t numPoints,
                                              const spatialdata::geocoords::CoordSys* cs,
                                              const PylithReal lengthScale,
-                                             MPI_Comm comm);
+                                             MPI_Comm comm,
+                                             const char* componentName);
 
     /** Remove cells hanging off mesh.
      *

@@ -144,7 +144,7 @@ pylith::bc::NeumannUserFn::createAuxiliaryField(const pylith::topology::Field& s
     PYLITH_COMPONENT_DEBUG("createAuxiliaryField(solution="<<solution.getLabel()<<", domainMesh=)"<<typeid(domainMesh).name()<<")");
 
     pylith::topology::Field* auxiliaryField = new pylith::topology::Field(domainMesh);assert(auxiliaryField);
-    auxiliaryField->setLabel("NeumannUserFn auxiliary field (not used)");
+    auxiliaryField->setLabel("auxiliary field (not used)");
 
     pythia::journal::debug_t debug(PyreComponent::getName());
     if (debug.state()) {

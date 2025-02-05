@@ -169,7 +169,7 @@ pylith::faults::FaultCohesiveImpulses::createAuxiliaryField(const pylith::topolo
     assert(_normalizer);
 
     pylith::topology::Field* auxiliaryField = new pylith::topology::Field(domainMesh);assert(auxiliaryField);
-    auxiliaryField->setLabel("FaultCohesiveImpulses auxiliary field");
+    auxiliaryField->setLabel("auxiliary field");
 
     // Set default discretization of auxiliary subfields to match lagrange_multiplier_fault subfield in solution.
     const pylith::topology::FieldBase::Discretization& discretization = solution.getSubfieldInfo("lagrange_multiplier_fault").fe;

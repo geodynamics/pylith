@@ -264,7 +264,7 @@ pylith::meshio::TestDataWriterSubmesh::_initialize(void) {
 
     assert(data->bcLabel);
     const int labelValue = 1;
-    delete _submesh;_submesh = pylith::topology::MeshOps::createLowerDimMesh(*_mesh, data->bcLabel, labelValue);assert(_submesh);
+    delete _submesh;_submesh = pylith::topology::MeshOps::createLowerDimMesh(*_mesh, data->bcLabel, labelValue, "subdomain_bc");assert(_submesh);
 
     PYLITH_METHOD_END;
 } // _initialize

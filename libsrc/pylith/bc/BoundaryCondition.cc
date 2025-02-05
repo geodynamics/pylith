@@ -164,7 +164,7 @@ pylith::bc::BoundaryCondition::createDiagnosticField(const pylith::topology::Fie
     assert(_normalizer);
 
     pylith::topology::Field* diagnosticField = new pylith::topology::Field(physicsMesh);assert(diagnosticField);
-    diagnosticField->setLabel("BoundaryCondition diagnostic field");
+    diagnosticField->setLabel("diagnostic field");
     pylith::topology::FieldOps::createOutputLabel(diagnosticField);
 
     assert(_diagnosticFactory);

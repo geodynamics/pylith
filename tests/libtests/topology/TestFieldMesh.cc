@@ -88,18 +88,19 @@ pylith::topology::TestFieldMesh::testCopyConstructor(void) {
     PetscErrorCode err = 0;
 
     const std::string& label = "field A";
+    const std::string& fullLabel = "domain solution " + label;
     Field field(*_field);
     field.setLabel(label.c_str());
 
     const char *name = NULL;
     err = PetscObjectGetName((PetscObject)field.getDM(), &name);assert(!err);
-    CHECK(label == std::string(name));
+    CHECK(fullLabel == std::string(name));
 
     PetscSection section = field.getLocalSection();assert(section);
     PetscVec vec = field.getLocalVector();assert(vec);
 
     err = PetscObjectGetName((PetscObject) vec, &name);assert(!err);
-    CHECK(label == std::string(name));
+    CHECK(fullLabel == std::string(name));
 
     const PylithInt ndof = _data->descriptionA.numComponents + _data->descriptionB.numComponents;
     for (PylithInt v = vStart, iV = 0; v < vEnd; ++v, ++iV) {
@@ -160,13 +161,14 @@ pylith::topology::TestFieldMesh::testGeneralAccessors(void) {
     assert(_field);
 
     // Test getLabel()
-    const std::string label = "velocity";
+    const std::string& label = "velocity";
+    const std::string& fullLabel = "domain solution " + label;
     _field->setLabel(label.c_str());
-    CHECK(label == std::string(_field->getLabel()));
+    CHECK(fullLabel == std::string(_field->getLabel()));
     const char* name = NULL;
     PetscErrorCode err = 0;
     err = PetscObjectGetName((PetscObject)_field->getDM(), &name);assert(!err);
-    CHECK(label == std::string(name));
+    CHECK(fullLabel == std::string(name));
 
     // Test getSpaceDim()
     CHECK(size_t(_data->topology->dimension) == _field->getSpaceDim());

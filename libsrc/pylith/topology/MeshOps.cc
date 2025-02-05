@@ -96,7 +96,7 @@ pylith::topology::Mesh*
 pylith::topology::MeshOps::createSubdomainMesh(const pylith::topology::Mesh& mesh,
                                                const char* labelName,
                                                const int labelValue,
-                                               const char* descriptiveLabel) {
+                                               const char* componentName) {
     PYLITH_METHOD_BEGIN;
     _MeshOps::Events::init();
     _MeshOps::Events::logger.eventBegin(_MeshOps::Events::createSubdomainMesh);
@@ -153,7 +153,8 @@ pylith::topology::MeshOps::createSubdomainMesh(const pylith::topology::Mesh& mes
 
     pylith::topology::Mesh* submesh = new pylith::topology::Mesh();assert(submesh);
     submesh->setCoordSys(mesh.getCoordSys());
-    submesh->setDM(dmSubdomain, descriptiveLabel);
+
+    submesh->setDM(dmSubdomain, componentName);
 
     _MeshOps::Events::logger.eventEnd(_MeshOps::Events::createSubdomainMesh);
     PYLITH_METHOD_RETURN(submesh);
@@ -165,7 +166,8 @@ pylith::topology::MeshOps::createSubdomainMesh(const pylith::topology::Mesh& mes
 pylith::topology::Mesh*
 pylith::topology::MeshOps::createLowerDimMesh(const pylith::topology::Mesh& mesh,
                                               const char* labelName,
-                                              const int labelValue) {
+                                              const int labelValue,
+                                              const char* componentName) {
     PYLITH_METHOD_BEGIN;
     _MeshOps::Events::init();
     _MeshOps::Events::logger.eventBegin(_MeshOps::Events::createLowerDimMesh);
@@ -271,8 +273,7 @@ pylith::topology::MeshOps::createLowerDimMesh(const pylith::topology::Mesh& mesh
     pylith::topology::Mesh* submesh = new pylith::topology::Mesh(true);assert(submesh);
     submesh->setCoordSys(mesh.getCoordSys());
 
-    std::string meshLabel = "subdomain_" + std::string(labelName);
-    submesh->setDM(dmSubmesh, meshLabel.c_str());
+    submesh->setDM(dmSubmesh, componentName);
 
     // Check topology
     MeshOps::checkTopology(*submesh);
@@ -289,7 +290,8 @@ pylith::topology::MeshOps::createFromPoints(const PylithReal* points,
                                             const size_t numPoints,
                                             const spatialdata::geocoords::CoordSys* cs,
                                             const PylithReal lengthScale,
-                                            MPI_Comm comm) {
+                                            MPI_Comm comm,
+                                            const char* componentName) {
     PYLITH_METHOD_BEGIN;
     _MeshOps::Events::init();
     _MeshOps::Events::logger.eventBegin(_MeshOps::Events::createFromPoints);
@@ -327,7 +329,7 @@ pylith::topology::MeshOps::createFromPoints(const PylithReal* points,
     err = DMGetPointSF(dmPoints, &sf);PYLITH_CHECK_ERROR(err);
     err = PetscSFSetGraph(sf, numPoints, 0, NULL, PETSC_COPY_VALUES, NULL, PETSC_COPY_VALUES);
 
-    mesh->setDM(dmPoints, "points");
+    mesh->setDM(dmPoints, componentName);
 
     mesh->setCoordSys(cs);
 

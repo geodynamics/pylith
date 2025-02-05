@@ -116,7 +116,7 @@ pylith::faults::KinSrc::initialize(const pylith::topology::Field& faultAuxField,
                                                  discretization.isBasisContinuous);
 
     delete _auxiliaryField;_auxiliaryField = new pylith::topology::Field(faultAuxField.getMesh());assert(_auxiliaryField);
-    _auxiliaryField->setLabel("kinsrc auxiliary");
+    _auxiliaryField->setLabel("auxiliary field");
     _auxiliaryFieldSetup(normalizer, cs);
     _auxiliaryField->subfieldsSetup();
     _auxiliaryField->createDiscretization();

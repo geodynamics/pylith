@@ -214,7 +214,7 @@ pylith::materials::Elasticity::createAuxiliaryField(const pylith::topology::Fiel
     _Elasticity::Events::logger.eventBegin(_Elasticity::Events::createAuxiliaryField);
 
     pylith::topology::Field* auxiliaryField = new pylith::topology::Field(domainMesh);assert(auxiliaryField);
-    auxiliaryField->setLabel("Elasticity auxiliary field");
+    auxiliaryField->setLabel("auxiliary field");
 
     assert(_rheology);
     pylith::materials::AuxiliaryFactoryElasticity* auxiliaryFactory = _rheology->getAuxiliaryFactory();assert(auxiliaryFactory);
@@ -268,7 +268,7 @@ pylith::materials::Elasticity::createDerivedField(const pylith::topology::Field&
     } // if
 
     pylith::topology::Field* derivedField = new pylith::topology::Field(domainMesh);assert(derivedField);
-    derivedField->setLabel("Elasticity derived field");
+    derivedField->setLabel("derived field");
 
     assert(_normalizer);
     _derivedFactory->initialize(derivedField, *_normalizer, domainMesh.getDimension());
