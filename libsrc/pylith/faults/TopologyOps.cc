@@ -45,26 +45,26 @@ pylith::faults::TopologyOps::createFault(pylith::topology::Mesh* faultMesh,
     PetscInt labelHasVertices = 0;
     { // TEMPORARY: Continue to support creating lower dimension meshes using labels with vertices.
         PetscIS labelIS = NULL;
-        const PetscInt* labelPoints = NULL;
-        PetscInt numPoints = 0;
-        PetscInt vStart = 0, vEnd = 0;
+        PetscInt labelHasVerticesLocal = 0;
         if (surfaceLabel) {
+            const PetscInt* labelPoints = NULL;
+            PetscInt numPoints = 0;
             err = DMGetStratumIS(dmDomain, groupName, surfaceLabelValue, &labelIS);PYLITH_CHECK_ERROR(err);assert(labelIS);
             err = ISGetIndices(labelIS, &labelPoints);PYLITH_CHECK_ERROR(err);
             err = DMGetStratumSize(dmDomain, groupName, surfaceLabelValue, &numPoints);PYLITH_CHECK_ERROR(err);
 
             pylith::topology::Stratum verticesStratum(dmDomain, pylith::topology::Stratum::DEPTH, 0);
+            PetscInt vStart = 0, vEnd = 0;
             vStart = verticesStratum.begin();
             vEnd = verticesStratum.end();
-        } // if
-        PetscInt labelHasVerticesLocal = 0;
-        for (PetscInt iPoint = 0; iPoint < numPoints; ++iPoint) {
-            if ((labelPoints[iPoint] >= vStart) && (labelPoints[iPoint] < vEnd) ) {
-                labelHasVerticesLocal = 1;
-                break;
+            for (PetscInt iPoint = 0; iPoint < numPoints; ++iPoint) {
+                if ((labelPoints[iPoint] >= vStart) && (labelPoints[iPoint] < vEnd) ) {
+                    labelHasVerticesLocal = 1;
+                    break;
+                } // if
             } // if
+            err = ISRestoreIndices(labelIS, &labelPoints);PYLITH_CHECK_ERROR(err);
         } // if
-        err = ISRestoreIndices(labelIS, &labelPoints);PYLITH_CHECK_ERROR(err);
         err = ISDestroy(&labelIS);PYLITH_CHECK_ERROR(err);
 
         err = MPI_Allreduce(&labelHasVerticesLocal, &labelHasVertices, 1, MPI_INT, MPI_MAX,
