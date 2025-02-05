@@ -15,7 +15,7 @@ Run `generate_gmsh.py --help` to see the command line options.
 """
 import gmsh
 import numpy as np
-from pylith.meshio.gmsh_utils import (VertexGroup, MaterialGroup, GenerateMesh)
+from pylith.meshio.gmsh_utils import (BoundaryGroup, MaterialGroup, GenerateMesh)
 
 class App(GenerateMesh):
     """
@@ -121,20 +121,20 @@ class App(GenerateMesh):
         top_boundary_entities = self.all_curves
 
         # Create physical groups for the boundaries and the fault.
-        vertex_groups = (
-            VertexGroup(name="boundary_ypos", tag=10, dim=1, entities=top_boundary_entities),
-            VertexGroup(name="boundary_xneg", tag=11, dim=1, entities=[self.c_left]),
-            VertexGroup(name="boundary_xpos", tag=12, dim=1, entities=[self.c_right]),
-            VertexGroup(name="boundary_yneg", tag=13, dim=1, entities=[self.c_bottom]),
+        face_groups = (
+            BoundaryGroup(name="boundary_ypos", tag=10, dim=1, entities=top_boundary_entities),
+            BoundaryGroup(name="boundary_xneg", tag=11, dim=1, entities=[self.c_left]),
+            BoundaryGroup(name="boundary_xpos", tag=12, dim=1, entities=[self.c_right]),
+            BoundaryGroup(name="boundary_yneg", tag=13, dim=1, entities=[self.c_bottom]),
 
         )
         for i in range(len(self.outer_rise_fault_surface_points)):
-            vertex_groups = np.append(vertex_groups, VertexGroup(name="fault_" + str(i), \
+            face_groups = np.append(face_groups, BoundaryGroup(name="fault_" + str(i), \
                                                                  tag=201 + i, dim=1, entities=[self.c_outer_rise_faults[i]]))
 
-            vertex_groups = np.append(vertex_groups, VertexGroup(name="edge_fault_" + str(i), tag=301 + i, dim=0, \
+            face_groups = np.append(face_groups, BoundaryGroup(name="edge_fault_" + str(i), tag=301 + i, dim=0, \
                                                                  entities=[int(self.outer_rise_fault_buried_edges[i])]))
-        for group in vertex_groups:
+        for group in face_groups:
             group.create_physical_group()
 
     def generate_mesh(self, cell):

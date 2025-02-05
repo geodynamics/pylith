@@ -19,7 +19,7 @@ import numpy
 import gmsh
 
 # Import the gmsh_utils Python module supplied with PyLith.
-from pylith.meshio.gmsh_utils import (VertexGroup, MaterialGroup, GenerateMesh)
+from pylith.meshio.gmsh_utils import (BoundaryGroup, MaterialGroup, GenerateMesh)
 
 class App(GenerateMesh):
     """
@@ -154,24 +154,24 @@ class App(GenerateMesh):
             material.create_physical_group()
 
         # Create physical groups for the boundaries and the faults.
-        # We use the `VertexGroup` data class defined in `gmsh_utils`.
+        # We use the `BoundaryGroup` data class defined in `gmsh_utils`.
         # The name and tag specify the name and tag assigned to the physical group.
         # The dimension and entities specify the geometric entities to include in the physical
         # group.
-        vertex_groups = (
-            VertexGroup(name="boundary_south", tag=10, dim=1, entities=[self.c_south]),
-            VertexGroup(name="boundary_east", tag=11, dim=1, entities=[self.c_east]),
-            VertexGroup(name="boundary_north", tag=12, dim=1, entities=[self.c_north]),
-            VertexGroup(name="boundary_west", tag=13, dim=1, entities=[self.c_west]),
+        face_groups = (
+            BoundaryGroup(name="boundary_south", tag=10, dim=1, entities=[self.c_south]),
+            BoundaryGroup(name="boundary_east", tag=11, dim=1, entities=[self.c_east]),
+            BoundaryGroup(name="boundary_north", tag=12, dim=1, entities=[self.c_north]),
+            BoundaryGroup(name="boundary_west", tag=13, dim=1, entities=[self.c_west]),
 
-            VertexGroup(name="fault_main", tag=20, dim=1, entities=self.curves_fault_main),
-            VertexGroup(name="fault_west", tag=21, dim=1, entities=[self.c_fault_west]),
-            VertexGroup(name="fault_east", tag=22, dim=1, entities=[self.c_fault_east]),
-            VertexGroup(name="fault_main_ends", tag=30, dim=0, entities=self.fault_main_ends),
-            VertexGroup(name="fault_west_ends", tag=31, dim=0, entities=self.fault_west_ends),
-            VertexGroup(name="fault_east_ends", tag=32, dim=0, entities=self.fault_east_ends),
+            BoundaryGroup(name="fault_main", tag=20, dim=1, entities=self.curves_fault_main),
+            BoundaryGroup(name="fault_west", tag=21, dim=1, entities=[self.c_fault_west]),
+            BoundaryGroup(name="fault_east", tag=22, dim=1, entities=[self.c_fault_east]),
+            BoundaryGroup(name="fault_main_ends", tag=30, dim=0, entities=self.fault_main_ends),
+            BoundaryGroup(name="fault_west_ends", tag=31, dim=0, entities=self.fault_west_ends),
+            BoundaryGroup(name="fault_east_ends", tag=32, dim=0, entities=self.fault_east_ends),
         )
-        for group in vertex_groups:
+        for group in face_groups:
             group.create_physical_group()
 
     def generate_mesh(self, cell):

@@ -244,7 +244,7 @@ cubit.cmd("block 1 name 'domain'")
 
 # Nodesets
 
-if True:
+if False:
     # Create nodeset for south boundary
     cubit.cmd(f"group 'boundary_south' add node in {surfaces_south_str}")
     cubit.cmd("nodeset 10 group boundary_south")
@@ -307,10 +307,10 @@ if True:
     cubit.cmd("nodeset 32 name 'fault_east_edges'")
 
 
-# Starting in PyLith v5, we will use sidesets instead of nodesets for BCs.
+# Starting in PyLith v5, we can use sidesets instead of nodesets for BCs.
 # Sidesets
 #
-if False:
+if True:
     # Create sideset for south boundary
     cubit.cmd(f"group 'boundary_south' add {surfaces_south_str}")
     cubit.cmd("sideset 10 group boundary_south")
@@ -356,6 +356,23 @@ if False:
     cubit.cmd(f"group 'fault_east' add {surfaces_fault_east_str}")
     cubit.cmd("sideset 22 group fault_east")
     cubit.cmd("sideset 22 name 'fault_east'")
+
+    # Buried edges (nodesets)
+    
+    # Create nodeset for fault 'main' edges
+    cubit.cmd(f"group 'fault_main_edges' add node in {fault_main_edges_str}")
+    cubit.cmd("nodeset 30 group fault_main_edges")
+    cubit.cmd("nodeset 30 name 'fault_main_edges'")
+
+    # Create nodeset for fault 'west' edges
+    cubit.cmd(f"group 'fault_west_edges' add node in {fault_west_edges_str}")
+    cubit.cmd("nodeset 31 group fault_west_edges")
+    cubit.cmd("nodeset 31 name 'fault_west_edges'")
+
+    # Create nodeset for fault 'east' edges
+    cubit.cmd(f"group 'fault_east_edges' add node in {fault_east_edges_str}")
+    cubit.cmd("nodeset 32 group fault_east_edges")
+    cubit.cmd("nodeset 32 name 'fault_east_edges'")
 
 
 # Write mesh as ExodusII file

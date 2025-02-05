@@ -16,7 +16,7 @@ Run `generate_gmsh.py --write` to generate the mesh.
 import gmsh
 
 # Import the gmsh_utils Python module supplied with PyLith.
-from pylith.meshio.gmsh_utils import (VertexGroup, MaterialGroup, GenerateMesh)
+from pylith.meshio.gmsh_utils import (BoundaryGroup, MaterialGroup, GenerateMesh)
 
 class App(GenerateMesh):
     """
@@ -115,18 +115,18 @@ class App(GenerateMesh):
             material.create_physical_group()
 
         # Create physical groups for the boundaries.
-        # We use the `VertexGroup` data class defined in `gmsh_utils`.
+        # We use the `BoundaryGroup` data class defined in `gmsh_utils`.
         # The name and tag specify the name and tag assigned to the physical group.
         # The dimension and entities specify the geometric entities to include in the physical
         # group.
-        vertex_groups = (
-            VertexGroup(name="boundary_xneg", tag=20, dim=1, entities=[self.c_xneg]),
-            VertexGroup(name="boundary_xpos", tag=21, dim=1, entities=[self.c_xpos]),
-            VertexGroup(name="boundary_yneg", tag=22, dim=1, entities=[self.c_yneg_left, self.c_flow, self.c_yneg_right]),
-            VertexGroup(name="boundary_ypos", tag=23, dim=1, entities=[self.c_ypos]),
-            VertexGroup(name="boundary_flow", tag=24, dim=1, entities=[self.c_flow])
+        face_groups = (
+            BoundaryGroup(name="boundary_xneg", tag=20, dim=1, entities=[self.c_xneg]),
+            BoundaryGroup(name="boundary_xpos", tag=21, dim=1, entities=[self.c_xpos]),
+            BoundaryGroup(name="boundary_yneg", tag=22, dim=1, entities=[self.c_yneg_left, self.c_flow, self.c_yneg_right]),
+            BoundaryGroup(name="boundary_ypos", tag=23, dim=1, entities=[self.c_ypos]),
+            BoundaryGroup(name="boundary_flow", tag=24, dim=1, entities=[self.c_flow])
         )
-        for group in vertex_groups:
+        for group in face_groups:
             group.create_physical_group()
 
     def generate_mesh(self, cell):
