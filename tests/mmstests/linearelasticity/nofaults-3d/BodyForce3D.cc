@@ -180,7 +180,8 @@ public:
         data->material.useBodyForce(true);
         data->rheology.useReferenceState(false);
 
-        data->material.setDescription("Isotropic Linear Elascitity Plane Strain");
+        data->material.setIdentifier("elasticity");
+        data->material.setName("material-id=24");
         data->material.setLabelValue(24);
 
         static const PylithInt constrainedDOF[3] = { 0, 1, 2 };

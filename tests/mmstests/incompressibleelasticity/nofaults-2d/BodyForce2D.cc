@@ -175,7 +175,8 @@ public:
         data->material.useBodyForce(true);
         data->rheology.useReferenceState(false);
 
-        data->material.setDescription("Isotropic Linear Incompressible Elasticity Plane Strain");
+        data->material.setIdentifier("incompressibleelasticity");
+        data->material.setName("material-id=24");
         data->material.setLabelValue(24);
 
         data->bcs.resize(2);

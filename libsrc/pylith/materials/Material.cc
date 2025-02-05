@@ -21,8 +21,7 @@
 // ------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::materials::Material::Material(void) :
-    _gravityField(NULL),
-    _description("") {}
+    _gravityField(NULL) {}
 
 
 // ------------------------------------------------------------------------------------------------
@@ -44,24 +43,6 @@ pylith::materials::Material::deallocate(void) {
 
     PYLITH_METHOD_END;
 } // deallocate
-
-
-// ------------------------------------------------------------------------------------------------
-// Set descriptive label of material.
-void
-pylith::materials::Material::setDescription(const char* value) {
-    PYLITH_COMPONENT_DEBUG("setDescription(value="<<value<<")");
-
-    _description = value;
-} // setDescription
-
-
-// ------------------------------------------------------------------------------------------------
-// Get label of material.
-const char*
-pylith::materials::Material::getDescription(void) const {
-    return _description.c_str();
-} // getDescription
 
 
 // ------------------------------------------------------------------------------------------------

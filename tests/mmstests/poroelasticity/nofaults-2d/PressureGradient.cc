@@ -296,7 +296,8 @@ public:
         data->material.setFormulation(pylith::problems::Physics::QUASISTATIC);
         data->rheology.useReferenceState(false);
 
-        data->material.setDescription("Isotropic Linear Poroelasticity Plane Strain");
+        data->material.setIdentifier("poroelasticity");
+        data->material.setName("material-id=24");
         data->material.setLabelValue(24);
 
         static const PylithInt constrainedX[1] = { 0 };

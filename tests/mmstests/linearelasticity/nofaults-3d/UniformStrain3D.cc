@@ -164,7 +164,8 @@ public:
         data->material.useBodyForce(false);
         data->rheology.useReferenceState(false);
 
-        data->material.setDescription("Isotropic Linear Elascitity");
+        data->material.setIdentifier("elasticity");
+        data->material.setName("material-id=24");
         data->material.setLabelValue(24);
 
         static const PylithInt constrainedDOF[3] = { 0, 1, 2 };
