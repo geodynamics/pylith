@@ -64,40 +64,35 @@ mesh = {
              3   10
     }
   }
-  group = {
-    type = vertices
+  vertex-group = {
     name = boundary_xpos
     count = 3
     indices = {
       6 7 8
     }
   }
-  group = {
-    type = vertices
+  vertex-group = {
     name = boundary_xneg
     count = 3
     indices = {
       0  1  2
     }
   }
-  group = {
-    type = vertices
+  vertex-group = {
     name = boundary_ypos
     count = 3
     indices = {
       2  5  8
     }
   }
-  group = {
-    type = vertices
+  vertex-group = {
     name = boundary_yneg
     count = 3
     indices = {
       0  3  6
     }
   }
-  group = {
-    type = vertices
+  vertex-group = {
     name = fault
     count = 3
     indices = {

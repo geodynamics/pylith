@@ -1,7 +1,7 @@
 #!/usr/bin/env nemesis
 
 import gmsh
-from pylith.meshio.gmsh_utils import (VertexGroup, MaterialGroup, GenerateMesh)
+from pylith.meshio.gmsh_utils import (BoundaryGroup, MaterialGroup, GenerateMesh)
 
 class App(GenerateMesh):
     """
@@ -86,17 +86,21 @@ class App(GenerateMesh):
         for material in materials:
             material.create_physical_group()
 
-        vertex_groups = (
-            VertexGroup(name="boundary_xneg", tag=10, dim=1, entities=[self.l_xneg]),
-            VertexGroup(name="boundary_xpos", tag=11, dim=1, entities=[self.l_xpos0, self.l_xpos1]),
-            VertexGroup(name="boundary_yneg", tag=12, dim=1, entities=[self.l_yneg0, self.l_yneg1, self.l_yneg2]),
-            VertexGroup(name="boundary_ypos", tag=13, dim=1, entities=[self.l_ypos0, self.l_ypos1, self.l_ypos2]),
-            VertexGroup(name="fault_xmid", tag=20, dim=1, entities=[self.l_fault0, self.l_fault1]),
-            VertexGroup(name="fault_xneg", tag=21, dim=1, entities=[self.l_split0]),
-            VertexGroup(name="patch_xmid", tag=30, dim=2, entities=[self.s_xmid]),
+        face_groups = (
+            BoundaryGroup(name="boundary_xneg", tag=10, dim=1, entities=[self.l_xneg]),
+            BoundaryGroup(name="boundary_xpos", tag=11, dim=1, entities=[self.l_xpos0, self.l_xpos1]),
+            BoundaryGroup(name="boundary_yneg", tag=12, dim=1, entities=[self.l_yneg0, self.l_yneg1, self.l_yneg2]),
+            BoundaryGroup(name="boundary_ypos", tag=13, dim=1, entities=[self.l_ypos0, self.l_ypos1, self.l_ypos2]),
+            BoundaryGroup(name="fault_xmid", tag=20, dim=1, entities=[self.l_fault0, self.l_fault1]),
+            BoundaryGroup(name="fault_xneg", tag=21, dim=1, entities=[self.l_split0]),
         )
-        for group in vertex_groups:
+        for group in face_groups:
             group.create_physical_group()
+        patch_groups = (
+            BoundaryGroup(name="patch_xmid", tag=30, dim=2, entities=[self.s_xmid]),
+        )
+        for group in patch_groups:
+            group.create_physical_group(recursive=True)
 
     def generate_mesh(self, cell):
         """Generate the mesh. Should also include optimizing the mesh quality.
