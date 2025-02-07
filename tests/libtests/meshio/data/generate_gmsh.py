@@ -10,7 +10,7 @@ from abc import ABC, abstractmethod
 import gmsh
 import numpy
 
-from pylith.meshio.gmsh_utils import (BoundaryGroup, MaterialGroup, group_exclude)
+from pylith.meshio.gmsh_utils import (BoundaryGroup, MaterialGroup)
 
 
 def get_vertices():
