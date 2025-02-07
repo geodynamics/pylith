@@ -5,6 +5,11 @@ Starting with v3.0.0, we strictly follow the [semantic versioning guidelines](ht
 The version numbers are in the form `MAJOR.MINOR.PATCH`, where major releases indicate changes to the public API (parameters), minor releases indicate new functionality that is backward compatible, and patch releases indicate backward compatible bug fixes.
 :::
 
+## Version 5.0.0
+
+* **Changed**
+  * Update PETSc to 3.22.3
+
 ## Version 4.2.0
 
 * **Changed**
