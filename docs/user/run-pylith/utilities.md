@@ -337,19 +337,56 @@ pylith_dumpparameters [--quiet] [--format=ascii|json] [--filnemame=FILENAME]
 ## pylith_eqinfo
 
 This utility computes the moment magnitude, seismic moment, seismic potency, and average slip at user-specified time snapshots from PyLith fault HDF5 output.
-The utility works with output from simulations with either prescribed slip and/or spontaneous rupture.
-Currently, we compute the shear modulus from a user-specified spatial database at the centroid of the fault cells. In the future we plan to account for lateral variations in shear modulus across the fault when calculating the seismic moment.
-The Python script is a Pyre application, so its parameters can be specified using `cfg` and command line arguments just like PyLith.
+The utility works with output from simulations with either prescribed slip or spontaneous rupture.
+The moment magnitudes, seismic moment, and seismic potentency for 2D simulation have limited value, because they use on a 1D fault.
+Currently, we compute the shear modulus from a user-specified spatial database at the centroid of the fault cells.
+In the future we plan to automatically account for lateral variations in shear modulus across the fault when calculating the seismic moment.
+The average slip, rupture area, seismic moment, and seismic potency are all given in SI units.
+
+```{tip}
+From {cite:t}`Wu:Chen:2003` the seismic moment, $M_0$, when considering a laterial variation in the shear modulus across the fault is
+
+\begin{equation}
+M_0 = \mu_\mathit{eff} A D
+\end{equation}
+
+where $A$ is the rupture area, $D$ is the average slip, and $\mu_\mathit{eff}$ is the effective shear modulus given by
+
+\begin{equation}
+\mu_\mathit{eff} = \frac{1}{2} \left( \mu^+ + \mu^- \right) \left(1 - \left(\frac{\mu^+ - \mu^-}{\mu^+ + \mu^-} \right)^2 \right)
+\end{equation}
+
+where $\mu^+$ and $\mu^-$ are the shear modulus on each side of the fault.
+```
+
+The Python script is a Pyre application, so its parameters can be specified using `cfg` files (`eqinfoapp.cfg` will be read if it exists) or command line arguments just like PyLith.
 
 The Pyre properties and facilities include:
 
 :output_filename: Filename for output of slip information.
+:coordsys: Coordinate system associated with mesh in simulation.
 :faults: Array of fault names.
 :filename_pattern: Filename pattern in C/Python format for creating filename for each fault. Default is `output/fault_\%s.h5`.
 :snapshots: Array of timestamps for slip snapshosts ([-1] means use last time step in file, which is the default).
 :snapshot_units: Units for timestamps in array of snapshots.
 :db_properties: Spatial database for elastic properties.
-:coordsys: Coordinate system associated with mesh in simulation.
+```{code-block} cfg
+---
+caption: Example `cfg` file for running `pylith_eqinfo` in `examples/strikeslip-2d` to compute the earthquake magnitude, seismic moment, and average slip for step04_varslip.
+---
+[eqinfoapp]
+output_filename = output/step04_varslip-eqinfo.py
+
+coordsys.space_dim = 2
+
+faults = [fault]
+filename_pattern = output/step04_varslip-%s.h5
+
+db_properties = spatialdata.spatialdb.UniformDB
+db_properties.description = Fault properties
+db_properties.values = [density, Vs]
+db_properties.data = [2500.0*kg/m**3, 3.46*km/s]
+```
 
 (sec-user-run-pylith-pylith-genxdmf)=
 ## pylith_genxdmf
