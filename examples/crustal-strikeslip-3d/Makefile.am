@@ -16,6 +16,7 @@ dist_noinst_DATA = \
 	README.md \
 	mesh_tet.msh \
 	pylithapp.cfg \
+    eqinfoapp.cfg \
 	step01_slip.cfg \
 	step01_slip_cubit.cfg \
 	step02_varslip.cfg \
