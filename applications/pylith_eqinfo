@@ -28,7 +28,7 @@ NOTE: Works with HDF5 files, not VTK files.
 if __name__ == "__main__":
 
     from pylith.apps.EqInfoApp import EqInfoApp
-    from pyre.applications import start
+    from pythia.pyre.applications import start
     start(applicationClass=EqInfoApp)
 
 # End of file
