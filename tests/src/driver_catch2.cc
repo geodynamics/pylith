@@ -60,10 +60,12 @@ private:
      * @param[in] programName Name of executable program.
      * @param[in] petscArgs String with comma separated list of PETSc arguments.
      * @param[in] mallocDump Set malloc debug dump.
+     * @param[in] trapFloatErrors Trap floating point errors.
      */
     int _initializePetsc(char* programName,
                          const std::string& petscArgs,
-                         const bool mallocDump);
+                         const bool mallocDump,
+                         const bool trapFloatErrors);
 
     /** Activate journals.
      *
@@ -102,11 +104,13 @@ pylith::testing::TestDriver::run(int argc,
     Catch::Session session;
 
     bool quiet = false;
+    bool trapFloatErrors = false;
     std::string petscArgs;
     std::string infoJournalArgs;
     std::string debugJournalArgs;
     auto cli = session.cli()
-               | Catch::Clara::Opt(quiet, "quiet")["--petsc-quiet"]("Turn off some PETSc debugging flags (e.g., memory leak detection)")
+               | Catch::Clara::Opt(quiet)["--petsc-quiet"]("Turn off some PETSc debugging flags (e.g., memory leak detection)")
+               | Catch::Clara::Opt(trapFloatErrors)["--trap-float-errors"]("Trap floating point errors")
                | Catch::Clara::Opt(petscArgs, "petsc")["--petsc"]("Comma separated list of PETSc arguments")
                | Catch::Clara::Opt(infoJournalArgs, "journal.info")["--journal.info"]("Comma separated list of info journal names to activate")
                | Catch::Clara::Opt(debugJournalArgs, "journal.debug")["--journal.debug"]("Comma separated list of debug journal names to activate");
@@ -122,7 +126,7 @@ pylith::testing::TestDriver::run(int argc,
 #else
     const bool mallocDump = !quiet;
 #endif
-    int err = _initializePetsc(argv[0], petscArgs, mallocDump);CHKERRQ(err);
+    int err = _initializePetsc(argv[0], petscArgs, mallocDump, trapFloatErrors);CHKERRQ(err);
 
     // Initialize Python (needed for journals).
     Py_Initialize();
@@ -151,10 +155,14 @@ pylith::testing::TestDriver::run(int argc,
 int
 pylith::testing::TestDriver::_initializePetsc(char* programName,
                                               const std::string& petscArgs,
-                                              const bool mallocDump) {
-    int argc = 1;
+                                              const bool mallocDump,
+                                              const bool trapFloatErrors) {
+    int argc = trapFloatErrors ? 2 : 1;
     char** argv = new char*[argc+1];
     argv[0] = programName;
+    if (trapFloatErrors) {
+        argv[1] = (char*)"-fp_trap";
+    } // if
     argv[argc] = nullptr; // C standard is argv[argc] == nullptr.
     PylithCallPetsc(PetscInitialize(&argc, &argv, nullptr, nullptr));
     delete[] argv;argv = nullptr;
