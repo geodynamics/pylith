@@ -9,31 +9,6 @@
 # =================================================================================================
 
 
-dist_noinst_HEADERS = \
-	DataWriterData.hh \
-	DataWriterDataPoints.hh \
-	DataWriterHDF5DataFaultMeshHex8.hh \
-	DataWriterHDF5DataFaultMeshQuad4.hh \
-	DataWriterHDF5DataFaultMeshTet4.hh \
-	DataWriterHDF5DataFaultMeshTri3.hh \
-	DataWriterVTKDataFaultMeshHex8.hh \
-	DataWriterVTKDataFaultMeshQuad4.hh \
-	DataWriterVTKDataFaultMeshTet4.hh \
-	DataWriterVTKDataFaultMeshTri3.hh \
-	MeshData.hh \
-	MeshData1D.hh \
-	MeshData1Din2D.hh \
-	MeshData1Din3D.hh \
-	MeshData2D.hh \
-	MeshData2Din3D.hh \
-	MeshData3D.hh \
-	MeshData3DIndexOne.hh \
-	OutputSolnPointsData.hh \
-	OutputSolnPointsDataHex8.hh \
-	OutputSolnPointsDataQuad4.hh \
-	OutputSolnPointsDataTet4.hh \
-	OutputSolnPointsDataTri3.hh
-
 dist_noinst_DATA = \
 	mesh2D_comments.txt \
 	mesh3D_index1.txt \
@@ -62,55 +37,55 @@ dist_noinst_DATA = \
 	nosplit_tri.msh \
 	tri3.mesh \
 	tri_orphan_vertex.mesh \
-	tri3_vertex_t10.vtk \
-	tri3_cell_t10.vtk \
+	tri3_vertex_t10.vtu \
+	tri3_cell_t10.vtu \
 	quad4.mesh \
-	quad4_vertex_t10.vtk \
-	quad4_cell_t10.vtk \
+	quad4_vertex_t10.vtu \
+	quad4_cell_t10.vtu \
 	tet4.mesh \
-	tet4_vertex_t10.vtk \
-	tet4_cell_t10.vtk \
+	tet4_vertex_t10.vtu \
+	tet4_cell_t10.vtu \
 	hex8.mesh \
 	hex_orphan_vertex.mesh \
-	hex8_vertex_t10.vtk \
-	hex8_cell_t10.vtk \
-	tri3_mat_vertex_t10.vtk \
-	tri3_mat_cell_t10.vtk \
-	quad4_mat_vertex_t10.vtk \
-	quad4_mat_cell_t10.vtk \
-	tet4_mat_vertex_t10.vtk \
-	tet4_mat_cell_t10.vtk \
-	hex8_mat_vertex_t10.vtk \
-	hex8_mat_cell_t10.vtk \
-	tri3_surf_vertex_t10.vtk \
-	tri3_surf_cell_t10.vtk \
-	quad4_surf_vertex_t10.vtk \
-	quad4_surf_cell_t10.vtk \
-	tet4_surf_vertex_t10.vtk \
-	tet4_surf_cell_t10.vtk \
-	hex8_surf_vertex_t10.vtk \
-	hex8_surf_cell_t10.vtk \
-	tri3_bc_vertex_t10.vtk \
-	tri3_bc_cell_t10.vtk \
-	quad4_bc_vertex_t10.vtk \
-	quad4_bc_cell_t10.vtk \
-	tet4_bc_vertex_t10.vtk \
-	tet4_bc_cell_t10.vtk \
-	hex8_bc_vertex_t10.vtk \
-	hex8_bc_cell_t10.vtk \
-	tri3_fault_vertex_t10.vtk \
-	tri3_fault_cell_t10.vtk \
-	quad4_fault_vertex_t10.vtk \
-	quad4_fault_cell_t10.vtk \
-	tet4_fault_vertex_t10.vtk \
-	tet4_fault_cell_t10.vtk \
-	hex8_fault_vertex_t10.vtk \
-	hex8_fault_cell_t10.vtk \
-	output_t12.vtk \
-	output_vertex_t12.vtk \
-	output_vertex_filter_t12.vtk \
-	output_cell_t12.vtk \
-	output_cell_filter_t12.vtk \
+	hex8_vertex_t10.vtu \
+	hex8_cell_t10.vtu \
+	tri3_mat_vertex_t10.vtu \
+	tri3_mat_cell_t10.vtu \
+	quad4_mat_vertex_t10.vtu \
+	quad4_mat_cell_t10.vtu \
+	tet4_mat_vertex_t10.vtu \
+	tet4_mat_cell_t10.vtu \
+	hex8_mat_vertex_t10.vtu \
+	hex8_mat_cell_t10.vtu \
+	tri3_surf_vertex_t10.vtu \
+	tri3_surf_cell_t10.vtu \
+	quad4_surf_vertex_t10.vtu \
+	quad4_surf_cell_t10.vtu \
+	tet4_surf_vertex_t10.vtu \
+	tet4_surf_cell_t10.vtu \
+	hex8_surf_vertex_t10.vtu \
+	hex8_surf_cell_t10.vtu \
+	tri3_bc_vertex_t10.vtu \
+	tri3_bc_cell_t10.vtu \
+	quad4_bc_vertex_t10.vtu \
+	quad4_bc_cell_t10.vtu \
+	tet4_bc_vertex_t10.vtu \
+	tet4_bc_cell_t10.vtu \
+	hex8_bc_vertex_t10.vtu \
+	hex8_bc_cell_t10.vtu \
+	tri3_fault_vertex_t10.vtu \
+	tri3_fault_cell_t10.vtu \
+	quad4_fault_vertex_t10.vtu \
+	quad4_fault_cell_t10.vtu \
+	tet4_fault_vertex_t10.vtu \
+	tet4_fault_cell_t10.vtu \
+	hex8_fault_vertex_t10.vtu \
+	hex8_fault_cell_t10.vtu \
+	output_t12.vtu \
+	output_vertex_t12.vtu \
+	output_vertex_filter_t12.vtu \
+	output_cell_t12.vtu \
+	output_cell_filter_t12.vtu \
 	tri3.h5 \
 	tri3_cell.h5 \
 	tri3_vertex.h5 \
@@ -171,10 +146,10 @@ dist_noinst_DATA = \
 	hex8_fault.h5 \
 	hex8_fault_vertex.h5 \
 	hex8_fault_cell.h5 \
-	tri3_points_vertex_t10.vtk \
-	quad4_points_vertex_t10.vtk \
-	tet4_points_vertex_t10.vtk \
-	hex8_points_vertex_t10.vtk \
+	tri3_points_vertex_t10.vtu \
+	quad4_points_vertex_t10.vtu \
+	tet4_points_vertex_t10.vtu \
+	hex8_points_vertex_t10.vtu \
 	tri3_points.h5 \
 	tri3_points_vertex.h5 \
 	quad4_points.h5 \

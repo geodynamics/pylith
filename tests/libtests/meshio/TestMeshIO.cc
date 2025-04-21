@@ -20,8 +20,6 @@
 
 #include "pylith/utils/array.hh" // USES int_array
 
-#include "data/MeshData.hh"
-
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 

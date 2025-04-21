@@ -166,7 +166,7 @@ pylith::meshio::TestOutputManager::testOpenCloseTimeStep(void) { // testOpenClos
     spatialdata::geocoords::CSCart cs;
     const bool isInfo = false;
     const PylithScalar t = 1.2;
-    const char* filenameRoot = "output.vtk";
+    const char* filenameRoot = "output.vtu";
     const char* timeFormat = "%3.1f";
 
     DataWriterVTK writer;
@@ -238,8 +238,8 @@ pylith::meshio::TestOutputManager::testAppendVertexField(void) { // testAppendVe
     spatialdata::geocoords::CSCart cs;
     const bool isInfo = false;
     const PylithScalar t = 1.2;
-    const char* filenameRoot = "output_vertex.vtk";
-    const char* filenameRootF = "output_vertex_filter.vtk";
+    const char* filenameRoot = "output_vertex.vtu";
+    const char* filenameRootF = "output_vertex_filter.vtu";
     const char* timeFormat = "%3.1f";
 
     DataWriterVTK writer;
@@ -327,8 +327,8 @@ pylith::meshio::TestOutputManager::testAppendCellField(void) { // testAppendCell
     spatialdata::geocoords::CSCart cs;
     const bool isInfo = false;
     const PylithScalar t = 1.2;
-    const char* filenameRoot = "output_cell.vtk";
-    const char* filenameRootF = "output_cell_filter.vtk";
+    const char* filenameRoot = "output_cell.vtu";
+    const char* filenameRootF = "output_cell_filter.vtu";
     const char* timeFormat = "%3.1f";
 
     DataWriterVTK writer;
