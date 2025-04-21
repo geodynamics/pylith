@@ -49,7 +49,7 @@ pylith::meshio::TestDataWriterVTKMesh::testAccessors(void) {
 
     DataWriterVTK writer;
 
-    const std::string& filename = "data.vtk";
+    const std::string& filename = "data.vtu";
     writer.filename(filename.c_str());
     CHECK(filename == writer._filename);
 
@@ -83,21 +83,21 @@ pylith::meshio::TestDataWriterVTKMesh::testVtkFilename(void) {
     DataWriterVTK writer;
 
     writer._isInfo = true;
-    writer._filename = "output.vtk";
-    CHECK(std::string("output_info.vtk") == writer._vtkFilename(0.0));
+    writer._filename = "output.vtu";
+    CHECK(std::string("output_info.vtu") == writer._vtkFilename(0.0));
 
     // Use default normalization of 1.0, remove period from time stamp.
     writer._isInfo = false;
-    writer._filename = "output.vtk";
+    writer._filename = "output.vtu";
     writer.timeFormat("%05.2f");
-    CHECK(std::string("output_t0230.vtk") == writer._vtkFilename(2.3));
+    CHECK(std::string("output_t0230.vtu") == writer._vtkFilename(2.3));
 
     // Use normalization of 20.0, remove period from time stamp.
     writer._isInfo = false;
-    writer._filename = "output.vtk";
+    writer._filename = "output.vtu";
     writer.timeFormat("%05.2f");
     writer.timeConstant(20.0);
-    CHECK(std::string("output_t0250.vtk") == writer._vtkFilename(50.0));
+    CHECK(std::string("output_t0250.vtu") == writer._vtkFilename(50.0));
 
     PYLITH_METHOD_END;
 } // testVtkFilename

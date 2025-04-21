@@ -33,7 +33,7 @@ pylith::meshio::TestDataWriterVTK::checkFile(const char* filenameRoot,
     const std::string& fileroot = filenameRoot;
 
     std::ostringstream buffer;
-    const int indexExt = fileroot.find(".vtk");
+    const int indexExt = fileroot.find(".vtu");
     // Add time stamp to filename
     char sbuffer[256];
     snprintf(sbuffer, 256, timeFormat, t);
@@ -42,7 +42,7 @@ pylith::meshio::TestDataWriterVTK::checkFile(const char* filenameRoot,
     if (pos != timestamp.length()) {
         timestamp.erase(pos, 1);
     }
-    buffer << std::string(fileroot, 0, indexExt) << "_t" << timestamp << ".vtk";
+    buffer << std::string(fileroot, 0, indexExt) << "_t" << timestamp << ".vtu";
 
     const std::string& filename = buffer.str();
     const std::string filenameE = "data/" + filename;
@@ -62,11 +62,14 @@ pylith::meshio::TestDataWriterVTK::checkFile(const char* filenameRoot,
     const int maxLen = 256;
     char line[maxLen];
     char lineE[maxLen];
-
+    const char* rawMarker = "AppendedData encoding=\"raw\"";
     int i = 1;
     while (!fileInE.eof()) {
         fileInE.getline(lineE, maxLen);
         fileIn.getline(line, maxLen);
+        if (std::string(line).find(rawMarker) > 0) {
+            break;
+        } // if
         CHECK(std::string(lineE) == std::string(line));
         if (0 != strcmp(line, lineE)) {
             std::ostringstream msg;

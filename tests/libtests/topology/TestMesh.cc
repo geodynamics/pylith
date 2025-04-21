@@ -243,7 +243,6 @@ pylith::topology::TestMesh::testView(void) { // testView
 
     mesh.view();
     mesh.view("ascii:mesh.txt:ascii_info_detail");
-    mesh.view("vtk:mesh.vtk:ascii_vtk");
     mesh.view("vtk:mesh.vtu:vtk_vtu");
     mesh.view("ascii:mesh.tex:ascii_latex");
     mesh.view("hdf5:mesh_xdmf.h5:hdf5_xdmf");

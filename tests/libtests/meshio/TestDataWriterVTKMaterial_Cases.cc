@@ -84,9 +84,9 @@ pylith::meshio::TestDataWriterVTKMaterial_Cases::Tri(void) {
     PYLITH_METHOD_BEGIN;
     TestDataWriterVTKMaterial_Data* data = new TestDataWriterVTKMaterial_Data();assert(data);
 
-    data->timestepFilename = "tri3_mat.vtk";
-    data->vertexFilename = "tri3_mat_vertex.vtk";
-    data->cellFilename = "tri3_mat_cell.vtk";
+    data->timestepFilename = "tri3_mat.vtu";
+    data->vertexFilename = "tri3_mat_vertex.vtu";
+    data->cellFilename = "tri3_mat_cell.vtu";
 
     TestDataWriterMaterial::setDataTri(data);
 
@@ -100,9 +100,9 @@ pylith::meshio::TestDataWriterVTKMaterial_Cases::Quad(void) {
     PYLITH_METHOD_BEGIN;
     TestDataWriterVTKMaterial_Data* data = new TestDataWriterVTKMaterial_Data();assert(data);
 
-    data->timestepFilename = "quad4_mat.vtk";
-    data->vertexFilename = "quad4_mat_vertex.vtk";
-    data->cellFilename = "quad4_mat_cell.vtk";
+    data->timestepFilename = "quad4_mat.vtu";
+    data->vertexFilename = "quad4_mat_vertex.vtu";
+    data->cellFilename = "quad4_mat_cell.vtu";
 
     TestDataWriterMaterial::setDataQuad(data);
 
@@ -116,9 +116,9 @@ pylith::meshio::TestDataWriterVTKMaterial_Cases::Tet(void) {
     PYLITH_METHOD_BEGIN;
     TestDataWriterVTKMaterial_Data* data = new TestDataWriterVTKMaterial_Data();assert(data);
 
-    data->timestepFilename = "tet4_mat.vtk";
-    data->vertexFilename = "tet4_mat_vertex.vtk";
-    data->cellFilename = "tet4_mat_cell.vtk";
+    data->timestepFilename = "tet4_mat.vtu";
+    data->vertexFilename = "tet4_mat_vertex.vtu";
+    data->cellFilename = "tet4_mat_cell.vtu";
 
     TestDataWriterMaterial::setDataTet(data);
 
@@ -132,9 +132,9 @@ pylith::meshio::TestDataWriterVTKMaterial_Cases::Hex(void) {
     PYLITH_METHOD_BEGIN;
     TestDataWriterVTKMaterial_Data* data = new TestDataWriterVTKMaterial_Data();assert(data);
 
-    data->timestepFilename = "hex8_mat.vtk";
-    data->vertexFilename = "hex8_mat_vertex.vtk";
-    data->cellFilename = "hex8_mat_cell.vtk";
+    data->timestepFilename = "hex8_mat.vtu";
+    data->vertexFilename = "hex8_mat_vertex.vtu";
+    data->cellFilename = "hex8_mat_cell.vtu";
 
     TestDataWriterMaterial::setDataHex(data);
 

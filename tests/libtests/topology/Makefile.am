@@ -54,7 +54,6 @@ noinst_TMP = \
 	jacobian.mat.info \
 	mesh.tex \
 	mesh.txt \
-	mesh.vtk \
 	mesh.vtu \
 	mesh_petsc.h5 \
 	mesh_xdmf.h5
