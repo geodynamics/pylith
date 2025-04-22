@@ -103,7 +103,7 @@ caption: Printing PETsc and PyLith objects (same for gdb and lldb)
 #   "::ascii_info_detail" - ASCII to stdout
 #   ":mesh.txt:ascii_info_detail" - ASCII to mesh.txt
 #   ":mesh.tex:ascii_latex" - LaTeX to mesh.tex
-#   ":mesh.vtk:ascii_vtk" - VTK to mesh.vtk
+#   "vtk:mesh.vtu:vtk_vtu" - VTK to mesh.vtu
 (gdb) call mesh.view("::ascii_info_detail")
 
 # Print PyLith field "field"

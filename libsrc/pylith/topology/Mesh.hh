@@ -108,7 +108,7 @@ public:
      *   detail in a file :refined.mesh:ascii_info_detail
      *   latex in a file  :refined.tex:ascii_latex
      *   python in a file :mesh.py:ascii_python
-     *   VTU vtk:refined.vtu:ascii_vtk_vtu
+     *   VTU vtk:refined.vtu:vtk_vtu
      *   HDF5 PETSc hdf5:mesh.h5:hdf5_petsc
      *   HDF5 XDMF hdf5:mesh.h5:hdf5_xdmf
      */

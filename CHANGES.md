@@ -8,7 +8,10 @@ The version numbers are in the form `MAJOR.MINOR.PATCH`, where major releases in
 ## Version 5.0.0
 
 * **Changed**
-  * Update PETSc to 3.22.3
+  * Update PETSc to 3.23.0
+  * Use the VTU (XML) format for VTK files instead of the legacy ASCII format.
+* **Added**
+  * Improve documentation for pylith_eqinfo and illustrate its use in examples.
 
 ## Version 4.2.0
 
