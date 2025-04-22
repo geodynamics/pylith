@@ -1,11 +1,11 @@
 # Preface
 
-This documentation is aimed at two categories of users: (1) scientists who prefer to use prepackaged and specialized analysis tools, and (2) experienced computational Earth scientists.
-If you want to modify the source code, you will likely need to be familiar with object-oriented programming, Python and C++, and finite-element analysis.
+This documentation targets two categories of users: (1) scientists who prefer to use prepackaged and specialized analysis tools, and (2) experienced computational Earth scientists.
+If you want to modify the source code, it is helpful to be familiar with object-oriented programming, Python and C++, and finite-element analysis.
 
 ## Citation
 
-The Computational Infrastructure for Geodynamics (CIG) ([geodynamics.org](https://geodynamics.org/)) is making this software and source code available to you at no cost in hopes that the software will enhance your research in geophysics.
+The Computational Infrastructure for Geodynamics (CIG) ([geodynamics.org](https://geodynamics.org/)) makes this software and source code available to you at no cost in hopes that the software will enhance your research in geophysics.
 A number of individuals have contributed a significant portion of their careers toward the development of this software.
 It is essential that you recognize these individuals in the normal scientific practice by citing the appropriate software release and peer-reviewed papers as well as making appropriate acknowledgments in talks and publications.
 The preferred way to generate the list of publications (in BibTeX format) to cite is to run your simulations with the `--include-citations` command line argument, or equivalently, the `--petsc.citations` command line argument.
@@ -25,19 +25,17 @@ To cite the software and manual, use:
 
 Open research statements are now a common requirement when publishing research.
 These support reuse, validation, and citation and often take the form of *Data availability*, *Data access*, *Code availability*, *Open Research*, and *Software* availability statements.
-We recommend depositing input files that allow your published research to be reproduced and output model data in support of your research outcomes and figures.
-In addition, consider depositing model files that may be reused by others.
-
-Remember to cite software and data in your text as well as in your *Data availability* or similar statement.
-
+We recommend including all input files to allow your published research to be reproduced and output model data to support your research outcomes and figures.
+In addition, consider including model files that may be useful to others.
 Files should be deposited in an approved repository.
 
-Additional information on [*Publishing*](https://geodynamics.org/software/software-bp/software-publishing) and repositories are available on the CIG website.
+Remember to cite software and data in your text as well as in your *Data availability* or similar statement.
+Additional information on [*Publishing*](https://geodynamics.org/software/software-bp/software-publishing) and repositories is available on the CIG website.
 
 ### Files
 
-Common input files include `.cfg`, , `.spatialdb`, and mesh files `.exo`, `.msh`, or `mesh`.
-Common output files include the solution fields and state variables as `.h5`, `.xmf`, `vtk`, and `vtu`..
+Common input files include `.cfg`, `.spatialdb`, and `.exo`, `.msh`, or `mesh` mesh files.
+Common output files include the solution fields and state variables in `.h5`, `.xmf`, and `vtu` files.
 
 ### Example Statement
 

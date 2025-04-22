@@ -9,6 +9,7 @@ The version numbers are in the form `MAJOR.MINOR.PATCH`, where major releases in
 
 * **Changed**
   * Update PETSc to 3.23.1
+  * Use the VTU (XML) format for VTK files instead of the legacy ASCII format.
 * **Added**
   * Improved documentation for `pylith_eqinfo` and illustrate use in `examples/strikdslip-2d`, `examples/crustal-strikeslip-2d`, and `examples/crustal-strikeslip-3d`.
   * Improved the organization of the governing equations section and added documentation for poroelasticity with prescribed fault slip, including governing equations and default PETSc solver settings. Also added a full-scale test.
@@ -18,6 +19,8 @@ The version numbers are in the form `MAJOR.MINOR.PATCH`, where major releases in
   * Remove `solid_bulk_modulus` as a spatial database field for poroelasticity; compute it from the other fields.
   * Fixed typos in setting up gravity with poroelasticity.
   * Fix pythia import in `pylith_eqinfo`.
+* **Added**
+  * Improve documentation for pylith_eqinfo and illustrate its use in examples.
 
 ## Version 4.2.0 (2025-01-15)
 

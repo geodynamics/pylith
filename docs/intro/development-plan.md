@@ -30,6 +30,7 @@ This version will include a few very minor changes to the public API.
 
 * Specify boundary conditions using faces instead of vertices ![expert](images/intermediate.png) [75%]
 * Parallel mesh loading ![expert](images/expert.png) [85%]
+* Update VTK output to use `vtu` files rather than legacy `vtk` files ![easy](images/easy.png) [100%]
 
 ## Version 5.1 (June 2025)
 
@@ -49,7 +50,6 @@ This version will include major changes to the public API associated with the sw
 * Add support for GeoModelGrids implementation of spatial databases for 3D seismic velocity models. ![intermediate](images/intermediate.png) [0%]
 * Update to current version of Pyre ![difficult](images/difficult.png)
 * Migrate examples to Jupyter notebooks ![intermediate](images/intermediate.png)
-* Update VTK output to use `vtu` files rather than legacy `vtk` files ![easy](images/easy.png) [0%]
 * Improve robustness of HDF5 output by opening/closing at each time step ![easy](images/easy.png)[0%]
 * Improve creation of auxiliary, diagnostic, and derived fields.
 * More flexible specification of time-dependent boundary conditions. ![difficult](images/difficult.png) [0%]

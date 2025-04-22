@@ -216,18 +216,16 @@ This is very useful if you add fields to HDF5 files in post-processing and wish 
 (sec-user-data-writer-vtk)=
 ### VTK Output
 
-PyLith writes legacy (non-XML) VTK files.
-These are simple files with vertex coordinates, the mesh topology, and fields over vertices and/or
-cells.
+PyLith writes VTU files for VTK output, which are in the XML format.
+The XML files contain metadata in XML tags and raw data for the vertex coordinates, mesh topology, and fields over vertices and/or cells.
 Each time step is written to a different file.
 The time stamp is included in the filename with the decimal point removed.
 This allows automatic generation of animations with many visualization packages that use VTK files.
 The default time stamp is the time in seconds, but this can be changed using the normalization constant to give a time stamp in years, tens of years, or any other value.
 
 :::{warning}
-We strongly discourage use of using VTK output.
-It is slow, inefficient, and not easily read from post-processing scripts.
-We strongly recommwnd using HDF5 output instead, which is the default starting in PyLith v3.0.0.
+We discourage use of the VTK output as the files are not easily read from post-processing scripts.
+We strongly recommend using HDF5 output instead, which is the default starting in PyLith v3.0.0.
 :::
 
 :::{seealso}
