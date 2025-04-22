@@ -83,6 +83,18 @@ class OutputSolnPoints(OutputSoln, ModuleOutputSolnPoints):
 
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
+    def _validate(self, context):
+        from .DataWriterVTK import DataWriterVTK
+        if isinstance(self.inventory.writer, DataWriterVTK):
+            trait = self.inventory.getTrait("writer")
+            self._validationError(context, trait, "PETSc VTK writer using the VTU format does not support output at points. Use the default DataWriterHDF5 writer.")
+
+    def _validationError(self, context, trait, msg):
+        from pythia.pyre.inventory.Item import Item
+        error = ValueError(msg)
+        descriptor = self.getTraitDescriptor(trait.name)
+        context.error(error, items=[Item(trait, descriptor)])
+
     def _createModuleObj(self):
         """Create handle to C++ object.
         """
