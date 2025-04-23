@@ -32,7 +32,7 @@ PetscErrorCode DMPlexVTKWriteAll(PetscObject odm,
 pylith::meshio::DataWriterVTK::DataWriterVTK(void) :
     _timeConstant(1.0),
     _precision(6),
-    _filename("output.vtk"),
+    _filename("output.vtu"),
     _timeFormat("%f"),
     _viewer(NULL),
     _dm(NULL),
@@ -250,7 +250,7 @@ pylith::meshio::DataWriterVTK::_vtkFilename(const PylithScalar t) const {
     PYLITH_METHOD_BEGIN;
 
     std::ostringstream filename;
-    const int indexExt = _filename.find(".vtk");
+    const int indexExt = _filename.find(".vtu");
     if (!DataWriter::_isInfo) {
         // If data with multiple time steps, then add time stamp to filename
         char sbuffer[256];
@@ -260,9 +260,9 @@ pylith::meshio::DataWriterVTK::_vtkFilename(const PylithScalar t) const {
         if (pos != std::string::npos) {
             timestamp.erase(pos, 1);
         } // if
-        filename << std::string(_filename, 0, indexExt) << "_t" << timestamp << ".vtk";
+        filename << std::string(_filename, 0, indexExt) << "_t" << timestamp << ".vtu";
     } else {
-        filename << std::string(_filename, 0, indexExt) << "_info.vtk";
+        filename << std::string(_filename, 0, indexExt) << "_info.vtu";
     } // if/else
 
     PYLITH_METHOD_RETURN(std::string(filename.str()));

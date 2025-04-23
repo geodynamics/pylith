@@ -161,7 +161,7 @@ noinst_TMP =
 #include $(top_srcdir)/tests/data.am
 
 clean-local:
-	$(RM) $(RM_FLAGS) mesh*.txt *.h5 *.xmf *.dat *.dat.info *.vtk
+	$(RM) $(RM_FLAGS) mesh*.txt *.h5 *.xmf *.dat *.dat.info *.vtu
 
 
 # End of file

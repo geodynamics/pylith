@@ -79,7 +79,7 @@
   \node (spatialdb) [input, right=of cfg] {Spatial Database(s) [.spatialdb]};
 
   % Visualization
-  \node (vtk) [output, xshift=-5.5em, yshift=+2em] at (viz) {VTK File(s) [.vtk]};
+  \node (vtk) [output, xshift=-5.5em, yshift=+2em] at (viz) {VTK File(s) [.vtu]};
   \node (hdf5) [output, right=of vtk, text width=8em] {HDF5 File(s) [.h5] \par Xdmf File(s) [.xmf]};
 
   \node (paraview) [app, below=of vtk, xshift=-3.0em, yshift=-2em] {ParaView};

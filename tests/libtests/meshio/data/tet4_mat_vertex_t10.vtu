@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<VTKFile type="UnstructuredGrid" version="0.1" byte_order="LittleEndian" header_type="UInt64">
+  <UnstructuredGrid>
+    <Piece NumberOfPoints="8" NumberOfCells="2">
+      <Points>
+        <DataArray type="Float64" Name="Position" NumberOfComponents="3" format="appended" offset="0" />
+      </Points>
+      <Cells>
+        <DataArray type="Int32" Name="connectivity" NumberOfComponents="1" format="appended" offset="200" />
+        <DataArray type="Int32" Name="offsets"      NumberOfComponents="1" format="appended" offset="240" />
+        <DataArray type="UInt8" Name="types"        NumberOfComponents="1" format="appended" offset="256" />
+      </Cells>
+      <CellData>
+        <DataArray type="Int32" Name="Rank" NumberOfComponents="1" format="appended" offset="266" />
+      </CellData>
+      <PointData>

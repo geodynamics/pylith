@@ -13,6 +13,7 @@
 #include "pylith/meshio/OutputSolnPoints.hh" // implementation of class methods
 
 #include "pylith/meshio/DataWriter.hh" // USES DataWriter
+#include "pylith/meshio/DataWriterVTK.hh" // USES DataWriterVTK
 #include "pylith/meshio/MeshBuilder.hh" // USES MeshBuilder
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
@@ -105,6 +106,10 @@ pylith::meshio::OutputSolnPoints::_writeSolnStep(const PylithReal t,
                                                  const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_writeSolnStep(t="<<t<<", tindex="<<tindex<<", solution="<<solution.getLabel()<<")");
+
+    if (dynamic_cast<pylith::meshio::DataWriterVTK*>(_writer)) {
+        PYLITH_JOURNAL_LOGICERROR("PETSc VTK writer using the VTU format does not support output at points. Use the default DataWriterHDF5 writer.");
+    } // if
 
     if (!_interpolator) {
         _setupInterpolator(solution);

@@ -84,9 +84,9 @@ pylith::meshio::TestDataWriterVTKSubmesh_Cases::Tri(void) {
     PYLITH_METHOD_BEGIN;
     TestDataWriterVTKSubmesh_Data* data = new TestDataWriterVTKSubmesh_Data();assert(data);
 
-    data->timestepFilename = "tri3_surf.vtk";
-    data->vertexFilename = "tri3_surf_vertex.vtk";
-    data->cellFilename = "tri3_surf_cell.vtk";
+    data->timestepFilename = "tri3_surf.vtu";
+    data->vertexFilename = "tri3_surf_vertex.vtu";
+    data->cellFilename = "tri3_surf_cell.vtu";
 
     TestDataWriterSubmesh::setDataTri(data);
 
@@ -100,9 +100,9 @@ pylith::meshio::TestDataWriterVTKSubmesh_Cases::Quad(void) {
     PYLITH_METHOD_BEGIN;
     TestDataWriterVTKSubmesh_Data* data = new TestDataWriterVTKSubmesh_Data();assert(data);
 
-    data->timestepFilename = "quad4_surf.vtk";
-    data->vertexFilename = "quad4_surf_vertex.vtk";
-    data->cellFilename = "quad4_surf_cell.vtk";
+    data->timestepFilename = "quad4_surf.vtu";
+    data->vertexFilename = "quad4_surf_vertex.vtu";
+    data->cellFilename = "quad4_surf_cell.vtu";
 
     TestDataWriterSubmesh::setDataQuad(data);
 
@@ -116,9 +116,9 @@ pylith::meshio::TestDataWriterVTKSubmesh_Cases::Tet(void) {
     PYLITH_METHOD_BEGIN;
     TestDataWriterVTKSubmesh_Data* data = new TestDataWriterVTKSubmesh_Data();assert(data);
 
-    data->timestepFilename = "tet4_surf.vtk";
-    data->vertexFilename = "tet4_surf_vertex.vtk";
-    data->cellFilename = "tet4_surf_cell.vtk";
+    data->timestepFilename = "tet4_surf.vtu";
+    data->vertexFilename = "tet4_surf_vertex.vtu";
+    data->cellFilename = "tet4_surf_cell.vtu";
 
     TestDataWriterSubmesh::setDataTet(data);
 
@@ -132,9 +132,9 @@ pylith::meshio::TestDataWriterVTKSubmesh_Cases::Hex(void) {
     PYLITH_METHOD_BEGIN;
     TestDataWriterVTKSubmesh_Data* data = new TestDataWriterVTKSubmesh_Data();assert(data);
 
-    data->timestepFilename = "hex8_surf.vtk";
-    data->vertexFilename = "hex8_surf_vertex.vtk";
-    data->cellFilename = "hex8_surf_cell.vtk";
+    data->timestepFilename = "hex8_surf.vtu";
+    data->vertexFilename = "hex8_surf_vertex.vtu";
+    data->cellFilename = "hex8_surf_cell.vtu";
 
     TestDataWriterSubmesh::setDataHex(data);
 
