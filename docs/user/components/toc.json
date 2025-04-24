@@ -1,3 +1,6 @@
-{ 
-    "apps": ["PyLithApp"]
+{
+    "apps": [
+        "PyLithApp",
+        "ConvertMeshApp"
+    ]
 }

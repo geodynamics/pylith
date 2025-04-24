@@ -23,10 +23,10 @@ Abstract base class for a bulk material.
 
 ## Pyre Properties
 
-* `description`=\<str\>: Descriptive label for material.
+* `description`=\<str\>: Descriptive label for material (deprecated in v5.0; will be removed in v6.0).
   - **default value**: ''
   - **current value**: '', from {default}
-  - **validator**: <function validateDescription at 0x1248ef790>
+  - **validator**: <function validateDescription at 0x10608f2e0>
 * `label`=\<str\>: Name of label for material. Currently only 'material-id' is allowed.
   - **default value**: 'material-id'
   - **current value**: 'material-id', from {default}

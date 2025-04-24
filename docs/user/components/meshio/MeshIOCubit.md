@@ -23,10 +23,6 @@ Implements `MeshIOObj`.
 * `filename`=\<str\>: Name of Cubit Exodus file.
   - **default value**: 'mesh.exo'
   - **current value**: 'mesh.exo', from {default}
-  - **validator**: <function validateFilename at 0x1248de790>
-* `use_nodeset_names`=\<bool\>: Use nodeset names instead of ids.
-  - **default value**: True
-  - **current value**: True, from {default}
 
 ## Example
 
@@ -35,7 +31,6 @@ Example of setting `MeshIOCubit` Pyre properties and facilities in a parameter f
 :::{code-block} cfg
 [pylithapp.mesh_generator.reader]
 filename = mesh_quad.exo
-use_nodeset_names = True
 coordsys.space_dim = 2
 :::
 

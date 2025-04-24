@@ -51,6 +51,9 @@ output_trigger.num_skip = 2
 writer = pylith.meshio.DataWriterHDF5
 writer.filename = domain.h5
 
+# Output with a basis order of 1 and refine mesh 3x (cells are 1/8 size).
+# Refining the output mesh is useful with a basis order of 2 or greater in the solution.
 output_basis_order = 1
+refine_levels = 3
 :::
 

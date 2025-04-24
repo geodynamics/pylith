@@ -6,6 +6,7 @@
 ---
 maxdepth: 1
 ---
+ConvertMeshApp.md
 EqInfoApp.md
 PyLithApp.md
 :::
