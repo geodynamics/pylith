@@ -24,7 +24,6 @@ class Elasticity(Material, ModuleElasticity):
         "cfg": """
             [pylithapp.problem.materials.mat_elastic]
             label_value = 4
-            description = Upper crust elastic material
             use_body_force = False
             bulk_rheology = pylith.materials.IsotropicLinearElasticity
 

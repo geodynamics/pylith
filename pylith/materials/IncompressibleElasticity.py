@@ -23,7 +23,6 @@ class IncompressibleElasticity(Material, ModuleIncompressibleElasticity):
     DOC_CONFIG = {
         "cfg": """
             [pylithapp.problem.materials.mat_incompelastic]
-            description = Upper crust incompressible elastic material
             label_value = 3
             use_body_force = True
             bulk_rheology = pylith.materials.IsotropicLinearIncompElasticity
