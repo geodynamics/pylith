@@ -1,6 +1,20 @@
 # Significant Recent Changes
 
-## PyLith Version 4.1
+See [Release Notes](../../intro/release-notes.md) for a summary of features and bug fixes for each release.
+
+## Version 5.0
+
+* Use the VTU (XML) format for VTK files instead of the legacy ASCII format.
+* Renamed `VertexGroup` to `BoundaryGroup` in `meshio.gmsh_utils` and changed default behavior to not be recursive (generate "face" groups, not "vertex" groups).
+* Material `description` property is no longer used; a deprecation warning is printed to stdout if it is specified. This feature will be removed in v6.0.
+
+## Version 4.2
+
+* Default filenames for progress monitor and parameters file are set from the simulation name like the other output files.
+* Allow output on a finer resolution mesh than used in the simulation to facilitate accurate representation of fields with a basis order of 2 or greater.
+* Fixed inconsistency in normal direction on fault surfaces. Orientation was correct but direction was flipped at some locations. This affected local slip direction and the resulting deformation close to the fault. This bug fix in a PETSc branch was not in version 4.1.3.
+
+## Version 4.1
 
 * Improved runtime performance, including better preconditioners for elasticity with faults and poroelasticity
 * 2D and 3D crustal strike-slip faults examples based on the 2019 Ridgecrest earthquake.
@@ -8,7 +22,7 @@
 * `pylith_viz` utility for plotting PyLith results.
 * Updated `examples/strikeslip-2d` and `examples/reverse-2d` to demonstrate use of uniform refinement and higher order discretizations to improve resolution of solution.
 
-## PyLith Version 4.0
+## Version 4.0
 
 * Changed name of fault Lagrange multiplier field for solution component in Python from `lagrange_fault` to `lagrange_multiplier_fault` to match name of solution field in C++.
 * Removed support for importing meshes from LaGriT.
@@ -17,7 +31,7 @@
 * State variables are now included in the default `data_fields` for simulation output.
 * The default solver settings use the PETSc proper orthogonal decomposition (POD) methodology for initial guess of solutions to improve convergence.
 
-## PyLith Version 3.0
+## Version 3.0
 
 * Major rewrite of the finite-element implementation to support higher order discretizations and flexible specification of the governing equations.
   * Use of pointwise functions to implement governing equations;
@@ -42,7 +56,3 @@
 * Updated to Python 3.
   * Pythia/Pyre, spatialdata, and PyLith have all been migrated to Python 3; and
   * The nemesis package has been merged into Pyre/Pyre.
-
-See [Release Notes](../../intro/release-notes.md) for a summary of features and bug fixes for each release.
-
-% End of file

@@ -49,8 +49,8 @@ mesh = { // begin specification of the mesh
         // index of cell precedes the list of vertices for the cell
         // exactly one cell must appear on each line
         // (excluding whitespace)
-        0 0 2 3 1
-        1 4 5 3 2
+        0  0 2 3 1
+        1  4 5 3 2
       } // end of simplices list
 
       material-ids = { // associated each cell with a material model
@@ -63,19 +63,28 @@ mesh = { // begin specification of the mesh
 
     // This next section lists groups of vertices that can be used
     // in applying boundary conditions to portions of the domain
-    group = { // start of a group
+    vertex-group = { // start of a group
       // the name can have whitespace, so no comments are allowed
       // after the name
-      name = face +y
-
-      // Either groups of vertices or groups of cells can be
-      // specified, but currently PyLith only makes use of groups
-      // of vertices
-      type = vertices // ’vertices’ or ’cells’
-      count = 2 // number of vertices in the group
+      name = vertices_negy
+      count = 3 // number of vertices in the group
       indices = { // list of vertex indices in the group
         // multiple vertices may appear on a line
-        0 4 // this group contains vertices 0 and 4
+        0 2 4 // this group contains vertices 0, 2, 4
+      } // end of list of vertices
+    } // end of group
+
+    // This next section lists groups of cell faces that can be used
+    // in applying boundary conditions to portions of the domain
+    face-group = { // start of a group
+      // the name can have whitespace, so no comments are allowed
+      // after the name
+      name = faces_negy
+      count = 2 // number of faces in the group
+      indices = { // list of cell and vertices on face in the group
+        // only 1 face per line
+        0  0 2  // cell 0, face with vertices 0 and 2
+        1  2 5  // cell 1, face with vertices 2 and 5
       } // end of list of vertices
     } // end of group
 

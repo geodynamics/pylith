@@ -24,21 +24,21 @@ Because we strictly follow the [semantic versioning guidelines](https://semver.o
 This can happen if realize that we should modify the parameters to improve maintainability or prepare for future changes.
 :::
 
-## Version 5.0 (April 2025)
+## Version 5.0 (May 2025)
 
 This version will include a few very minor changes to the public API.
 
-* Specify boundary conditions using faces instead of vertices ![expert](images/intermediate.png) [75%]
-* Parallel mesh loading ![expert](images/expert.png) [85%]
+* Parallel mesh loading ![expert](images/expert.png) [90%]
+* Specify boundary conditions using faces instead of vertices ![expert](images/intermediate.png) [100%]
 * Update VTK output to use `vtu` files rather than legacy `vtk` files ![easy](images/easy.png) [100%]
 
-## Version 5.1 (June 2025)
+## Version 5.1 (August 2025)
 
 * Dynamic prescribed slip with diagonal Jacobian for explicit part of IMEX formulation ![expert](images/expert.png) [80%]
 * Add `examples/barwaves-2d` ![expert](images/expert.png) [25%]
 * Better preconditioner for incompressible elasticity ![expert](images/expert.png) [80%]
 
-## Version 5.2 (October 2025)
+## Version 5.2 (December 2025)
 
 * Spontaneous rupture for quasistatic and dynamic simulations ![expert](images/expert.png) [30%]
 

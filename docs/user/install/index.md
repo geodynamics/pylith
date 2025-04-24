@@ -34,6 +34,17 @@ On Linux systems you can check which version of glibc you have by running `ldd-v
 On macOS systems you can check the operating system version by clicking on the Apple icon and *About This Mac*.
 :::
 
+:::{tip}
+When running PyLith, we recommend starting with a clean environment to avoid conflicts from any other software you may have installed.
+
+```{code-block} bash
+PATH=/usr/bin:/bin:/sbin:/usr/sbin
+unset PYTHONPATH LD_LIBRARY_PATH
+```
+
+You should not have a Python virtual environment activated as PyLith uses its own Python virtual environment.
+:::
+
 ### Linux and macOS
 
 1. Open a terminal window and change to the directory where you want to place the distribution.
@@ -54,12 +65,12 @@ On macOS systems you can check the operating system version by clicking on the A
       tar -xzf pylith-4.2.0-macOS-10.15-x86_64.tar.gz
       ```
 4. Set environment variables.
-The provided `setup.sh` script only works if you are using bash shell.
+The provided `setup.sh` script only works if you are using a bash compatible shell.
 If you are using a different shell, you will need to alter how the environment variables are set in `setup.sh`.
-```{code-block} bash
-source setup.sh
-Ready to run PyLith.
-```
+    ```{code-block} console
+    $ source setup.sh
+    Ready to run PyLith.
+    ```
 
 :::{tip}
 To bypass macOS quarantine restrictions, simply use command line program `curl` to download the tarball from within a terminal rather than using a web browser.

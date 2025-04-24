@@ -34,5 +34,3 @@ We strongly encourage users to include all of the metadata in their own PyLith p
 :::{seealso}
 [`SimulationMetadata` Component](../components/utils/SimulationMetadata.md)
 :::
-
-% End of file

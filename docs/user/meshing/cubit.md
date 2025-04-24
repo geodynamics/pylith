@@ -1,10 +1,21 @@
 (sec-user-meshing-cubit)=
 # Cubit
 
-For many years we constructed Cubit meshes using journal files while leverating the Cubit APREPRO scripting language.
+:::{danger}
+Starting in late 2024, Cubit is no longer available for macOS.
+:::
+
+For many years we constructed Cubit meshes using journal files while leveraging the Cubit APREPRO scripting language.
 The Cubit Python interface has improved over this time, and with the use of Python scripting with Gmsh, we have replaced some of the Cubit journal files with Python scripts.
 In a Python script, you can run any Cubit command using the `cubit.cmd()` function; however, for a more genuine Python experience, we recommend using the available Python functions.
 Using Python scripts provides access to the complete programming language, making it easier to read in information from external files (for example, fault traces).
+
+## Sidesets
+
+*New in v5.0.0.*
+
+PyLith supports reading sidesets for boundary conditions, fault interfaces, and output on surfaces.
+We strongly recommend using sidesets rather than nodesets.
 
 ## Complex fault surfaces
 

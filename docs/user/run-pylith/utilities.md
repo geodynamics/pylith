@@ -10,6 +10,9 @@ pylith_viz
 pyre_doc
 : Display the Pyre properties and facilities available for a given component.
 
+pylith_convertmesh
+: Convert an Exodus II file from Cubit or a Gmsh file to an HDF5 file in the PETSc mesh format. 
+
 pylith_cfgsearch
 : Search and display metadata in `.cfg` files.
 
@@ -186,6 +189,39 @@ properties of 'problem':
         default value: 'linear'
         current value: 'linear', from {default}
         validator: (in ['linear', 'nonlinear'])
+```
+
+(sec-user-run-pylith-convertmesh)=
+## pylith_convertmesh
+
+:::{note}
+New in v5.0.0
+:::
+
+This utility converts a finite-element mesh from one file format to another.
+The primary use case is converting an Exodus II file from Cubit or a Gmsh file to an HDF5 in the PETSc mesh format.
+This is a Pyre application, so you can get help using the same command line tools as those for PyLith.
+The default reader and writer are `MeshIOPetsc` components, so you do not need to change the reader or writer component to convert a Gmsh file to an HDF5 in the PETSc mesh format.
+
+```{code-block} console
+---
+caption: Example of running `pylith_convertmesh` with command line arguments for getting help.
+---
+$ pylith_convertmesh [--help] [--help-components] [--help-properties]
+```
+
+```{code-block} console
+---
+caption: Example of running `pylith_convertmesh` to convert a Gmsh file `mesh_tri.msh` to an HDF5 file in PETSc mesh format `mesh_tri.h5`.
+---
+$ pylith_convertmesh --reader.filename=mesh_tri.mesh --writer.filename=mesh_tri.h5
+```
+
+```{code-block} console
+---
+caption: Example of running `pylith_convertmesh` to convert an Exodus II file `mesh_tri.exo` to an HDF5 file in PETSc mesh format `mesh_tri.h5`.
+---
+$ pylith_convertmesh --reader=pylith.meshio.MeshIOCubit --reader.filename=mesh_tri.exo --writer.filename=mesh_tri.h5
 ```
 
 ## pylith_cfgsearch

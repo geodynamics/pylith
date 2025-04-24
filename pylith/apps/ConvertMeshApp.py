@@ -10,7 +10,6 @@
 # Application for converting mesh files from one format to another.
 
 import pathlib
-from importlib import import_module
 
 from .PetscApplication import PetscApplication
 
