@@ -121,12 +121,12 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
     { // Check to make sure every vertex is in at least one cell.
       // This is required by PETSc
         std::vector<bool> vertexInCell(geometry.numVertices, false);
-        const int size = topology.cells.size();
-        for (int i = 0; i < size; ++i) {
+        const size_t size = topology.cells.size();
+        for (size_t i = 0; i < size; ++i) {
             vertexInCell[topology.cells[i]] = true;
         }
-        int count = 0;
-        for (int i = 0; i < geometry.numVertices; ++i) {
+        size_t count = 0;
+        for (size_t i = 0; i < geometry.numVertices; ++i) {
             if (!vertexInCell[i]) {
                 ++count;
             }
@@ -375,7 +375,7 @@ pylith::meshio::MeshBuilder::getCells(Topology* topology,
     assert(topology);
 
     PetscDM dmMesh = mesh.getDM();assert(dmMesh);
-    topology::Stratum cellsStratum(dmMesh, topology::Stratum::HEIGHT, 0);
+    pylith::topology::Stratum cellsStratum(dmMesh, topology::Stratum::HEIGHT, 0);
     const PetscInt cStart = cellsStratum.begin();
     const PetscInt cEnd = cellsStratum.end();
 
@@ -386,7 +386,7 @@ pylith::meshio::MeshBuilder::getCells(Topology* topology,
     topology->dimension = mesh.getDimension();
     topology->numCells = pylith::topology::MeshOps::getNumCells(mesh);assert(topology->numCells > 0);
     topology->numCorners = pylith::topology::MeshOps::getNumCorners(mesh);assert(topology->numCorners > 0);
-    assert(cellsStratum.size() == topology->numCells);
+    assert(size_t(cellsStratum.size()) == topology->numCells);
     topology->cellShape = cellShapeFromCorners(topology->dimension, topology->numCorners);
 
     topology->cells.resize(topology->numCells * topology->numCorners);
@@ -412,7 +412,7 @@ pylith::meshio::MeshBuilder::getCells(Topology* topology,
         } // for
         err = DMPlexRestoreTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
         err = DMPlexInvertCell(ct, &topology->cells[index-numCorners]);PYLITH_CHECK_ERROR(err);
-        assert(numCorners == topology->numCorners);
+        assert(size_t(numCorners) == topology->numCorners);
     } // for
     err = ISRestoreIndices(globalVertexNumbers, &gvertex);PYLITH_CHECK_ERROR(err);
 
@@ -563,7 +563,7 @@ pylith::meshio::MeshBuilder::getFaceGroup(int_array* points,
         int_array faceVertices;
         _MeshBuilder::cellVerticesFromFace(&cell, &faceVertices, faces[iFace], dmMesh);
         buffer[index++] = cell;
-        for (PetscInt i = 0; i < faceVertices.size(); ++i) {
+        for (size_t i = 0; i < faceVertices.size(); ++i) {
             buffer[index++] = faceVertices[i] - offset;
         } // for
     } // for

@@ -328,7 +328,7 @@ pylith::meshio::MeshIOAscii::_write(void) const {
 
     pylith::meshio::MeshBuilder::getVertexGroupNames(&groupNames, *_mesh);
     size_t numGroups = groupNames.size();
-    for (int i = 0; i < numGroups; ++i) {
+    for (size_t i = 0; i < numGroups; ++i) {
         int_array points;
         pylith::meshio::MeshBuilder::getVertexGroup(&points, *_mesh, groupNames[i].c_str());
         _MeshIOAscii::writeVertexGroup(fileout, points, groupNames[i].c_str());
@@ -336,7 +336,7 @@ pylith::meshio::MeshIOAscii::_write(void) const {
 
     pylith::meshio::MeshBuilder::getFaceGroupNames(&groupNames, *_mesh);
     numGroups = groupNames.size();
-    for (int i = 0; i < numGroups; ++i) {
+    for (size_t i = 0; i < numGroups; ++i) {
         int_array faceValues;
         pylith::meshio::MeshBuilder::shape_t faceShape = pylith::meshio::MeshBuilder::faceShapeFromCellShape(topology.cellShape);
         pylith::meshio::MeshBuilder::getFaceGroup(&faceValues, *_mesh, groupNames[i].c_str());
@@ -381,11 +381,11 @@ pylith::meshio::_MeshIOAscii::readVertices(pylith::meshio::MeshBuilder::Geometry
             } // if
             geometry->vertices.resize(size);
             int label;
-            for (int iVertex = 0, i = 0; iVertex < geometry->numVertices; ++iVertex) {
+            for (size_t iVertex = 0, i = 0; iVertex < geometry->numVertices; ++iVertex) {
                 buffer.str(parser.next());
                 buffer.clear();
                 buffer >> label;
-                for (int iDim = 0; iDim < geometry->spaceDim; ++iDim) {
+                for (size_t iDim = 0; iDim < geometry->spaceDim; ++iDim) {
                     buffer >> geometry->vertices[i++];
                 }
             } // for
@@ -422,10 +422,10 @@ pylith::meshio::_MeshIOAscii::writeVertices(std::ostream& fileout,
         << std::resetiosflags(std::ios::fixed)
         << std::setiosflags(std::ios::scientific)
         << std::setprecision(6);
-    for (int iVertex = 0, i = 0; iVertex < geometry.numVertices; ++iVertex) {
+    for (size_t iVertex = 0, i = 0; iVertex < geometry.numVertices; ++iVertex) {
         fileout << "      ";
         fileout << std::setw(8) << iVertex;
-        for (int iDim = 0; iDim < geometry.spaceDim; ++iDim) {
+        for (size_t iDim = 0; iDim < geometry.spaceDim; ++iDim) {
             fileout << std::setw(18) << geometry.vertices[i++];
         }
         fileout << "\n";
@@ -472,11 +472,11 @@ pylith::meshio::_MeshIOAscii::readCells(pylith::meshio::MeshBuilder::Topology* t
             } // if
             topology->cells.resize(size);
             int label;
-            for (int iCell = 0, i = 0; iCell < topology->numCells; ++iCell) {
+            for (size_t iCell = 0, i = 0; iCell < topology->numCells; ++iCell) {
                 buffer.str(parser.next());
                 buffer.clear();
                 buffer >> label;
-                for (int iCorner = 0; iCorner < topology->numCorners; ++iCorner) {
+                for (size_t iCorner = 0; iCorner < topology->numCorners; ++iCorner) {
                     buffer >> topology->cells[i++];
                 }
             } // for
@@ -494,7 +494,7 @@ pylith::meshio::_MeshIOAscii::readCells(pylith::meshio::MeshBuilder::Topology* t
             } // if
             materialIds->resize(topology->numCells);
             int label = 0;
-            for (int iCell = 0; iCell < topology->numCells; ++iCell) {
+            for (size_t iCell = 0; iCell < topology->numCells; ++iCell) {
                 buffer.str(parser.next());
                 buffer.clear();
                 buffer >> label;
@@ -543,9 +543,9 @@ pylith::meshio::_MeshIOAscii::writeCells(std::ostream& fileout,
         << "    num-corners = " << topology.numCorners << "\n"
         << "    simplices = {\n";
 
-    for (int iCell = 0, i = 0; iCell < topology.numCells; ++iCell) {
+    for (size_t iCell = 0, i = 0; iCell < topology.numCells; ++iCell) {
         fileout << "      " << std::setw(8) << iCell;
-        for (int iCorner = 0; iCorner < topology.numCorners; ++iCorner) {
+        for (size_t iCorner = 0; iCorner < topology.numCorners; ++iCorner) {
             fileout << std::setw(8) << topology.cells[i++];
         }
         fileout << "\n";
@@ -555,7 +555,7 @@ pylith::meshio::_MeshIOAscii::writeCells(std::ostream& fileout,
     // Write material identifiers
     assert(size_t(topology.numCells) == materialIds.size());
     fileout << "    material-ids = {\n";
-    for (int iCell = 0; iCell < topology.numCells; ++iCell) {
+    for (size_t iCell = 0; iCell < topology.numCells; ++iCell) {
         fileout << "      " << std::setw(8) << iCell;
         fileout << std::setw(4) << materialIds[iCell] << "\n";
     } // for
@@ -582,7 +582,7 @@ pylith::meshio::_MeshIOAscii::readVertexGroup(int_array* points,
     std::string token;
     std::istringstream buffer;
     const int maxIgnore = 1024;
-    size_t groupSize = -1;
+    int groupSize = -1;
     buffer.str(parser.next());
     buffer.clear();
     buffer >> token;
@@ -651,7 +651,7 @@ pylith::meshio::_MeshIOAscii::writeVertexGroup(std::ostream& fileout,
         << "    name = " << name << "\n"
         << "    count = " << points.size() << "\n"
         << "    indices = {\n";
-    for (int iPoint = 0; iPoint < points.size(); ++iPoint) {
+    for (size_t iPoint = 0; iPoint < points.size(); ++iPoint) {
         fileout << "    " << points[iPoint] << "\n";
     } // for
 
@@ -681,7 +681,7 @@ pylith::meshio::_MeshIOAscii::readFaceGroup(int_array* faceValues,
     std::string token;
     std::istringstream buffer;
     const int maxIgnore = 1024;
-    size_t numFaces = -1;
+    int numFaces = -1;
     buffer.str(parser.next());
     buffer.clear();
     buffer >> token;
@@ -705,7 +705,7 @@ pylith::meshio::_MeshIOAscii::readFaceGroup(int_array* faceValues,
             faceValues->resize(size);
             buffer.str(parser.next());
             buffer.clear();
-            int i = 0;
+            size_t i = 0;
             while (buffer.good() && i < size) {
                 buffer >> (*faceValues)[i++];
                 buffer >> std::ws;
@@ -756,9 +756,9 @@ pylith::meshio::_MeshIOAscii::writeFaceGroup(std::ostream& fileout,
         << "    name = " << name << "\n"
         << "    count = " << numFaces << "\n"
         << "    indices = {\n";
-    for (int iFace = 0; iFace < numFaces; ++iFace) {
+    for (size_t iFace = 0; iFace < numFaces; ++iFace) {
         fileout << "    ";
-        for (int iValue = 0; iValue < numFaceValues; ++iValue) {
+        for (size_t iValue = 0; iValue < numFaceValues; ++iValue) {
             fileout << "  " << faceValues[numFaceValues*iFace+iValue];
         } // for
         fileout << "\n";
