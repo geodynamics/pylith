@@ -32,38 +32,6 @@
 #include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error
 
-extern "C" PetscErrorCode DMPlexComputeResidual_Internal(PetscDM dm,
-                                                         PetscFormKey key,
-                                                         PetscIS cellIS,
-                                                         PetscReal time,
-                                                         PetscVec locX,
-                                                         PetscVec locX_t,
-                                                         PetscReal t,
-                                                         PetscVec locF,
-                                                         void *user);
-
-extern "C" PetscErrorCode DMPlexComputeJacobian_Internal(PetscDM dm,
-                                                         PetscFormKey key,
-                                                         PetscIS cellIS,
-                                                         PetscReal t,
-                                                         PetscReal X_tShift,
-                                                         PetscVec X,
-                                                         PetscVec X_t,
-                                                         PetscMat Jac,
-                                                         PetscMat JacP,
-                                                         void *user);
-
-extern "C" PetscErrorCode DMPlexComputeJacobian_Action_Internal(PetscDM,
-                                                                PetscFormKey,
-                                                                PetscIS,
-                                                                PetscReal,
-                                                                PetscReal,
-                                                                PetscVec,
-                                                                PetscVec,
-                                                                PetscVec,
-                                                                PetscVec,
-                                                                void *);
-
 namespace pylith {
     namespace feassemble {
         class _IntegratorDomain {
