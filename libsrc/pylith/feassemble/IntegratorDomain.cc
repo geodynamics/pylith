@@ -32,38 +32,6 @@
 #include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error
 
-extern "C" PetscErrorCode DMPlexComputeResidual_Internal(PetscDM dm,
-                                                         PetscFormKey key,
-                                                         PetscIS cellIS,
-                                                         PetscReal time,
-                                                         PetscVec locX,
-                                                         PetscVec locX_t,
-                                                         PetscReal t,
-                                                         PetscVec locF,
-                                                         void *user);
-
-extern "C" PetscErrorCode DMPlexComputeJacobian_Internal(PetscDM dm,
-                                                         PetscFormKey key,
-                                                         PetscIS cellIS,
-                                                         PetscReal t,
-                                                         PetscReal X_tShift,
-                                                         PetscVec X,
-                                                         PetscVec X_t,
-                                                         PetscMat Jac,
-                                                         PetscMat JacP,
-                                                         void *user);
-
-extern "C" PetscErrorCode DMPlexComputeJacobian_Action_Internal(PetscDM,
-                                                                PetscFormKey,
-                                                                PetscIS,
-                                                                PetscReal,
-                                                                PetscReal,
-                                                                PetscVec,
-                                                                PetscVec,
-                                                                PetscVec,
-                                                                PetscVec,
-                                                                void *);
-
 namespace pylith {
     namespace feassemble {
         class _IntegratorDomain {
@@ -456,8 +424,8 @@ pylith::feassemble::IntegratorDomain::computeRHSResidual(pylith::topology::Field
     assert(solution->getLocalVector());
     assert(residual->getLocalVector());
     PetscVec solutionDotVec = NULL;
-    err = DMPlexComputeResidual_Internal(_dsLabel->dm(), key, _dsLabel->cellsIS(), PETSC_MIN_REAL, solution->getLocalVector(),
-                                         solutionDotVec, t, residual->getLocalVector(), NULL);PYLITH_CHECK_ERROR(err);
+    err = DMPlexComputeResidualByKey(_dsLabel->dm(), key, _dsLabel->cellsIS(), PETSC_MIN_REAL, solution->getLocalVector(),
+                                     solutionDotVec, t, residual->getLocalVector(), NULL);PYLITH_CHECK_ERROR(err);
 
     _IntegratorDomain::Events::logger.eventEnd(_IntegratorDomain::Events::computeRHSResidual);
     PYLITH_METHOD_END;
@@ -493,8 +461,8 @@ pylith::feassemble::IntegratorDomain::computeLHSResidual(pylith::topology::Field
     assert(solution->getLocalVector());
     assert(solutionDot->getLocalVector());
     assert(residual->getLocalVector());
-    err = DMPlexComputeResidual_Internal(_dsLabel->dm(), key, _dsLabel->cellsIS(), PETSC_MIN_REAL, solution->getLocalVector(),
-                                         solutionDot->getLocalVector(), t, residual->getLocalVector(), NULL);PYLITH_CHECK_ERROR(err);
+    err = DMPlexComputeResidualByKey(_dsLabel->dm(), key, _dsLabel->cellsIS(), PETSC_MIN_REAL, solution->getLocalVector(),
+                                     solutionDot->getLocalVector(), t, residual->getLocalVector(), NULL);PYLITH_CHECK_ERROR(err);
 
     _IntegratorDomain::Events::logger.eventEnd(_IntegratorDomain::Events::computeLHSResidual);
     PYLITH_METHOD_END;
@@ -534,8 +502,8 @@ pylith::feassemble::IntegratorDomain::computeLHSJacobian(PetscMat jacobianMat,
     assert(solutionDot->getLocalVector());
     assert(jacobianMat);
     assert(precondMat);
-    err = DMPlexComputeJacobian_Internal(_dsLabel->dm(), key, _dsLabel->cellsIS(), t, s_tshift, solution->getLocalVector(),
-                                         solutionDot->getLocalVector(), jacobianMat, precondMat, NULL);PYLITH_CHECK_ERROR(err);
+    err = DMPlexComputeJacobianByKey(_dsLabel->dm(), key, _dsLabel->cellsIS(), t, s_tshift, solution->getLocalVector(),
+                                     solutionDot->getLocalVector(), jacobianMat, precondMat, NULL);PYLITH_CHECK_ERROR(err);
 
     if (_jacobianValues) {
         _jacobianValues->computeLHSJacobian(jacobianMat, precondMat, t, dt, s_tshift, *solution, *_dsLabel);
@@ -585,8 +553,8 @@ pylith::feassemble::IntegratorDomain::computeLHSJacobianLumpedInv(pylith::topolo
 
     assert(jacobianInv);
     assert(jacobianInv->getLocalVector());
-    err = DMPlexComputeJacobian_Action_Internal(_dsLabel->dm(), key, _dsLabel->cellsIS(), t, s_tshift, vecRowSum, NULL,
-                                                vecRowSum, jacobianInv->getLocalVector(), NULL);PYLITH_CHECK_ERROR(err);
+    err = DMPlexComputeJacobianActionByKey(_dsLabel->dm(), key, _dsLabel->cellsIS(), t, s_tshift, vecRowSum, NULL,
+                                           vecRowSum, jacobianInv->getLocalVector(), NULL);PYLITH_CHECK_ERROR(err);
 
     err = DMRestoreLocalVector(_dsLabel->dm(), &vecRowSum);PYLITH_CHECK_ERROR(err);
     // Compute the Jacobian inverse.
