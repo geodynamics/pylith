@@ -2,7 +2,7 @@
 
 ## Geometry
 
-We construct the geometry by taking a horizontal cross-section of a 3D block.
+We construct the geometry by taking a vertical cross-section of a 3D block.
 Alternatively, we could have constructed the geometry by building it up from points and curves like we did with Gmsh.
 {numref}`fig:example:reverse:2d:geometry:cubit` shows the geometry and variables names of the vertices and curves.
 
@@ -22,7 +22,6 @@ We use a Python script to generate the mesh rather than Journal files.
 We also use the skeleton sizing function for the surface.
 :::
 
-
 We use the Python script `generate_cubit.py` to generate the mesh.
 The Python script is setup so that it can be run from within Cubit or as a standalone Python script without the Cubit GUI interface.
 In this example, we will run the script from within Cubit using the Journal editor.
@@ -41,7 +40,7 @@ In the Python script the original command used is typically commented out, and t
 :::
 
 :::{important}
-In addition to providing nodesets for the fault and splay, it is also important to provide nodesets defining the buried edges of these two surfaces.
+In addition to providing sidesets for the fault and splay, it is also important to provide nodesets defining the buried edges of these two surfaces.
 In 2D this consists of a single vertex for each surface.
 This information is required by PyLith to form the corresponding cohesive cells defining fault surfaces.
 :::
@@ -49,7 +48,7 @@ This information is required by PyLith to form the corresponding cohesive cells 
 :::{note}
 We use the skeleton sizing function to gradually increase the cell size with distance from the fault.
 This is much simpler than applying the bias sizing function to the curves and surfaces.
-We set the minimim size equal to the cell size on the fault and the maximum gradient equal to the "bias".
+We set the minimum size equal to the cell size on the fault and the maximum gradient equal to the "bias".
 :::
 
 Once you have run the Python script to construct the geometry and generate the mesh, you will have a corresponding Exodus-II file (`mesh_tri.exo` or `mesh_quad.exo`).

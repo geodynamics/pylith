@@ -36,7 +36,7 @@ For example, the section of the curve labeled `c_topo` might be labeled `c_topo@
 :::{note}
 We use the skeleton sizing function to gradually increase the cell size with distance from the fault.
 This is much simpler than applying the bias sizing function to the curves and surfaces.
-We set the minimim size equal to the cell size on the fault and the maximum gradient equal to the "bias".
+We set the minimum size equal to the cell size on the fault and the maximum gradient equal to the "bias".
 :::
 
 Once you have run the Python script to construct the geometry and generate the mesh, you will have a Exodus-II file (`mesh_tri.exo`).

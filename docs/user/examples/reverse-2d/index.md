@@ -36,7 +36,7 @@ We refer to the domain boundaries using the names shown in the diagram.
 :::
 
 :::{important}
-We decribe how to generate the finite-element mesh using both Gmsh and Cubit.
+We describe how to generate the finite-element mesh using both Gmsh and Cubit.
 The mesh files for both methods are included; however, we only use the Gmsh file in the PyLith parameter files.
 See [examples/strikeslip-2d/step01_slip_cubit.cfg](../strikeslip-2d/step01-slip.md) for a description of how to modify the parameter files to switch from using mesh files from Gmsh to mesh files from Cubit.
 :::

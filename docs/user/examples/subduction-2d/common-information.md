@@ -57,7 +57,6 @@ materials = [continent_crust, ocean_crust, mantle]
 
 [pylithapp.problem.materials]
 [pylithapp.problem.materials.continent_crust]
-description = Continental crust
 label_value = 1
 
 db_auxiliary_field.description = Continental crust properties

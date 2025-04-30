@@ -242,7 +242,7 @@ cubit.cmd(f"block 1 volume {domain_ids}")
 cubit.cmd("block 1 name 'domain'")
 
 
-# Nodesets
+# Nodesets, deprecated and we will remove these in v6
 
 if False:
     # Create nodeset for south boundary

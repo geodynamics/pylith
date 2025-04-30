@@ -133,8 +133,9 @@ cubit.cmd("block 2 surface surface_xpos")
 cubit.cmd("block 2 name 'elastic_xpos'")
 
 
-# Nodesets
-if True:
+# Nodesets, deprecated and we will remove these in v6
+
+if False:
     cubit.cmd("group 'fault_g' add curve fault")
     cubit.cmd("nodeset 10 group fault_g")
     cubit.cmd("nodeset 10 name 'fault'")
@@ -160,7 +161,7 @@ if True:
 
 # Starting in PyLith v5, we will use sidesets instead of nodesets for BCs.
 # Sidesets
-if False:
+if True:
     cubit.cmd("group 'fault_g' add curve fault")
     cubit.cmd("sideset 10 group fault_g")
     cubit.cmd("sideset 10 name 'fault'")

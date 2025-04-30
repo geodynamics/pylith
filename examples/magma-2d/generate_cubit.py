@@ -189,8 +189,9 @@ cubit.cmd("block 1 name 'domain'")
 cubit.cmd("block 2 surface reservoir")
 cubit.cmd("block 2 name 'reservoir'")
 
-# Nodesets
-if True:
+# Nodesets, deprecated and will be removed in v6
+
+if False:
     cubit.cmd("group 'boundary_xneg' add node in curve c_xneg")
     cubit.cmd("nodeset 20 group boundary_xneg")
     cubit.cmd("nodeset 20 name 'boundary_xneg'")
@@ -214,7 +215,7 @@ if True:
 
 # Starting in PyLith v5, we will use sidesets instead of nodesets for BCs.
 # Sidesets
-if False:
+if True:
     cubit.cmd("group 'boundary_xneg' add curve c_xneg")
     cubit.cmd("sideset 20 group boundary_xneg")
     cubit.cmd("sideset 20 name 'boundary_xneg'")

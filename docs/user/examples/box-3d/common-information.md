@@ -63,7 +63,6 @@ caption: Material settings in `pylithapp.cfg`.
 materials = [elastic]
 
 [pylithapp.problem.materials.elastic]
-description = Elastic material
 label_value = 0
 
 # We will use uniform material properties, so we use the UniformDB
