@@ -1,8 +1,6 @@
 # Horizontal Cross-Section of Intersecting Strike-Slip Faults (2D)
 
-:::{note}
-New in v4.1.0
-:::
+*New in v4.1.0.*
 
 The files are in the directory `examples/crustal-strikeslip-2d`.
 The files and directories for this set of examples includes:

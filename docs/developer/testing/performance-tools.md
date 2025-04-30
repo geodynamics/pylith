@@ -1,9 +1,7 @@
 (developer-performance-tools)=
 # Performance Tools
 
-:::{note}
-New in v4.1.0
-:::
+*New in v4.1.0.*
 
 ## Overview
 

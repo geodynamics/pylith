@@ -56,7 +56,7 @@ Fields with a basis order of 0 are kept at a basis order of 0 when output.
 Fields with a basis order of 1 or more can be output with a basis order of 0 or 1.
 :::
 
-*New in v4.0.0*
+*New in v4.0.0.*
 
 The output observers produce files with either diagnostic information (`info` files) or solution and state variable information (`data` files).
 The default behavior is the files include all available information.
@@ -79,7 +79,7 @@ a_z &= a_n n_z + a_h h_z + a_v v_z
 
 This transformation is useful for plotting fault tractions and slip in 3D visualization tools such as ParaView that require vectors in the model coordinate system.
 
-*New in v4.2.0*
+*New in v4.2.0.*
 
 Output observers can output information on a finer resolution mesh than the one used in the simulaiton.
 This is useful when using a basis order of 2 or greater for the discretization of the solution and writing output at a basis order of 1.
@@ -235,9 +235,7 @@ We strongly recommend using HDF5 output instead, which is the default starting i
 (sec-user-output-triggers)=
 ## Output Triggers
 
-:::{note}
-New in PyLith v3.0.0
-:::
+*New in v3.0.0.*
 
 By default PyLith will write the requested output after every time step.
 In many cases we prefer to save the solution, state variables, etc at a coarser temporal resolution.

@@ -1,6 +1,6 @@
 # Step 2: Magma inflation with evolution of porosity
 
-*New in v4.0.0*
+*New in v4.0.0.*
 
 ```{include} step02_inflation_statevars-synopsis.md
 ```

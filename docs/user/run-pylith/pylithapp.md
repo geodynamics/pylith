@@ -19,9 +19,7 @@ It defines the finite-element discretization, materials, faults, initial conditi
 
 ## Simulation Metadata
 
-:::{note}
-New in v3.0.0
-:::
+*New in v3.0.0.*
 
 We use metadata to provide a concise summary of a simulation.
 The metadata gives structure to information previously placed in comments within the parameter files while also making this information machine readable.

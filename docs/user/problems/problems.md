@@ -19,9 +19,7 @@ See [`TimeDependent` Component](../components/problems/TimeDependent.md) for Pyr
 
 ### Initial Conditions
 
-:::{note}
-New in v3.0.0.
-:::
+*New in v3.0.0.*
 
 The initial conditions for a simulation are specified via a combination of initial values for the solution and initial values for state variables.
 The initial values for state variables are specified via the spatial databases for the auxiliary field of each material.

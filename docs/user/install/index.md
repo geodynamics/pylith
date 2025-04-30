@@ -163,9 +163,7 @@ Refer to [Microsoft Tutorial: Run Linux GUI apps on the WSL](https://learn.micro
 
 ### Extending PyLith or Integrating Other Software Into PyLith
 
-:::{note}
-New in v3.0.0
-:::
+*New in v3.0.0.*
 
 We strongly recommend using the [PyLith development environment Docker container](https://pylith-installer.readthedocs.io/en/latest/devenv/index.html) if you want to extend PyLith or integrate PyLith into other software.
 

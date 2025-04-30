@@ -17,7 +17,7 @@ We set the x and y displacement to zero on the +x and -x boundaries and prescrib
 ## Step 1a: Coarse Mesh
 
 :::{note}
-New in v4.1.0.
+*New in v4.1.0.*
 
 We start with a coarse resolution mesh and increase the resolution of the simulation by using uniform refinement or increasing the basis order of the solution fields.
 :::

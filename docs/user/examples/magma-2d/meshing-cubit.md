@@ -14,7 +14,7 @@ The names of the vertices and curves match the ones we use in the Cubit Python s
 ## Meshing using Python script
 
 :::{note}
-New in v4.1.3.
+*New in v4.1.3.*
 
 We use a Python script to generate the mesh rather than Journal files.
 We also use the skeleton sizing function for the surface.
