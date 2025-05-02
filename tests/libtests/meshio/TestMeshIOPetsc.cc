@@ -57,12 +57,12 @@ pylith::meshio::TestMeshIOPetsc::testFilename(void) {
 // ------------------------------------------------------------------------------------------------
 // Test read().
 void
-pylith::meshio::TestMeshIOPetsc::testRead(const bool gmshMarkVertices) {
+pylith::meshio::TestMeshIOPetsc::testRead(const bool gmshMarkRecursive) {
     PYLITH_METHOD_BEGIN;
     assert(_io);
     assert(_data);
 
-    _io->setGmshMarkVertices(gmshMarkVertices);
+    _io->setGmshMarkRecursive(gmshMarkRecursive);
 
     // Read mesh
     _io->setFilename(_data->filename.c_str());

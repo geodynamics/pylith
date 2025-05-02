@@ -58,13 +58,13 @@ public:
              *
              * @param value True if marking Gmsh vertices.
              */
-            void setGmshMarkVertices(const bool value);
+            void setGmshMarkRecursive(const bool value);
 
             /** Returns true if marking Gmsh vertices, otherwise false.
              *
              * @returns Mesh format.
              */
-            bool getGmshMarkVertices(void) const;
+            bool getGmshMarkRecursive(void) const;
 
             // PROTECTED METHODS //////////////////////////////////////////////
 protected:

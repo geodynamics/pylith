@@ -39,8 +39,8 @@ class MeshIOPetsc(MeshIOObj, ModuleMeshIOPetsc):
     filename = pythia.pyre.inventory.str("filename", default="")
     filename.meta['tip'] = "Name of mesh file for reading with PETSc."
 
-    gmshMarkVertices = pythia.pyre.inventory.bool("gmsh_mark_vertices", default=False)
-    gmshMarkVertices.meta['tip'] = "Gmsh file marks faces, edges, and vertices rather than just faces."
+    gmshMarkRecursive = pythia.pyre.inventory.bool("gmsh_mark_recursive", default=False)
+    gmshMarkRecursive.meta['tip'] = "Gmsh file marks faces, edges, and vertices rather than just faces (3D) or edges (2D)."
 
     prefix = pythia.pyre.inventory.str("options_prefix", default="")
     prefix.meta['tip'] = "Name of PETSc options prefix for this mesh."
@@ -59,7 +59,7 @@ class MeshIOPetsc(MeshIOObj, ModuleMeshIOPetsc):
         MeshIOObj.preinitialize(self)
         ModuleMeshIOPetsc.setFilename(self, self.filename)
         ModuleMeshIOPetsc.setPrefix(self, self.prefix)
-        ModuleMeshIOPetsc.setGmshMarkVertices(self, self.gmshMarkVertices)
+        ModuleMeshIOPetsc.setGmshMarkRecursive(self, self.gmshMarkRecursive)
 
     def _configure(self):
         """Set members based using inventory.

@@ -83,7 +83,6 @@ pylith::meshio::_MeshIOPetsc::Events::init(void) {
     logger.initialize();
     read = logger.registerEvent("PL:MeshIOPetsc:read");
     fixMaterialLabel = logger.registerEvent("PL:MeshIOPetsc:fixMaterialLabel");
-    fixBoundaryLabels = logger.registerEvent("PL:MeshIOPetsc:fixBoundaryLabels");
 }
 
 
@@ -93,7 +92,7 @@ pylith::meshio::MeshIOPetsc::MeshIOPetsc(void) :
     _filename(""),
     _prefix(""),
     _format(HDF5),
-    _gmshMarkVertices(false) {
+    _gmshMarkRecursive(false) {
     PyreComponent::setName("meshiopetsc");
     _MeshIOPetsc::Events::init();
 } // constructor
@@ -179,16 +178,16 @@ pylith::meshio::MeshIOPetsc::getFormat(void) const {
 // ------------------------------------------------------------------------------------------------
 // Set flag for marking Gmsh vertices.
 void
-pylith::meshio::MeshIOPetsc::setGmshMarkVertices(const bool value) {
-    _gmshMarkVertices = value;
+pylith::meshio::MeshIOPetsc::setGmshMarkRecursive(const bool value) {
+    _gmshMarkRecursive = value;
 }
 
 
 // ------------------------------------------------------------------------------------------------
 // Returns true if marking Gmsh vertices, otherwise false.
 bool
-pylith::meshio::MeshIOPetsc::getGmshMarkVertices(void) const {
-    return _gmshMarkVertices;
+pylith::meshio::MeshIOPetsc::getGmshMarkRecursive(void) const {
+    return _gmshMarkRecursive;
 }
 
 
@@ -208,12 +207,14 @@ pylith::meshio::MeshIOPetsc::_read(void) {
         options[0] = "-" + _prefix + "dm_plex_filename";
         options[1] = _filename;
         if (GMSH == _format) {
-            noptions += 2;
+            noptions += 3;
             options.resize(noptions*2);
             options[2] = "-" + _prefix + "dm_plex_gmsh_use_regions";
-            options[3] = "";
-            options[4] = "-" + _prefix + "dm_plex_gmsh_mark_vertices";
-            options[5] = (_gmshMarkVertices) ? "true" : "false";
+            options[3] = "true";
+            options[4] = "-" + _prefix + "dm_plex_gmsh_mark_vertices_strict"; // physical group with dim==0
+            options[5] = "true";
+            options[6] = "-" + _prefix + "dm_plex_gmsh_mark_vertices"; // faces, edges, & vertices; :DEPRECATED:
+            options[7] = (_gmshMarkRecursive) ? "true" : "false";
         } // if
 
         for (size_t i = 0; i < noptions; ++i) {
@@ -232,7 +233,7 @@ pylith::meshio::MeshIOPetsc::_read(void) {
         err = DMPlexDistributeSetDefault(dmMesh, PETSC_FALSE);PYLITH_CHECK_ERROR(err);
         err = DMSetFromOptions(dmMesh);PYLITH_CHECK_ERROR(err);
         _MeshIOPetsc::fixMaterialLabel(&dmMesh);
-        if (_gmshMarkVertices) {
+        if (_gmshMarkRecursive) {
             _MeshIOPetsc::fixBoundaryLabels(&dmMesh);
         } // if
         _mesh->setDM(dmMesh);

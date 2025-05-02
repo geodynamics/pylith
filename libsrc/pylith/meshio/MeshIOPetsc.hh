@@ -69,17 +69,17 @@ public:
      */
     Format getFormat(void) const;
 
-    /** Set flag for marking Gmsh vertices.
+    /** Set flag for marking Gmsh faces, edges, and vertices recursively.
      *
-     * @param value True if marking Gmsh vertices.
+     * @param value True if marking Gmsh faces, edges, and vertices.
      */
-    void setGmshMarkVertices(const bool value);
+    void setGmshMarkRecursive(const bool value);
 
-    /** Returns true if marking Gmsh vertices, otherwise false.
+    /** Returns true if marking Gmsh faces, edges, and vertices recursively, otherwise false.
      *
      * @returns Mesh format.
      */
-    bool getGmshMarkVertices(void) const;
+    bool getGmshMarkRecursive(void) const;
 
     // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
 protected:
@@ -96,7 +96,7 @@ private:
     std::string _filename; ///< Name of file.
     std::string _prefix; ///< Options prefix for mesh.
     Format _format; ///< Mesh format.
-    bool _gmshMarkVertices; ///< Mark vertices when importing BC info for Gmsh.
+    bool _gmshMarkRecursive; ///< Mark faces, edges, and vertices recursively for physical groups in Gmsh.
 
 }; // MeshIOPetsc
 
