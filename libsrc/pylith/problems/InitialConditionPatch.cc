@@ -125,9 +125,13 @@ pylith::problems::InitialConditionPatch::verifyConfiguration(const pylith::topol
 
     PetscDMLabel dmLabel = NULL;
     err = DMGetLabel(solution.getDM(), _labelName.c_str(), &dmLabel);PYLITH_CHECK_ERROR(err);assert(dmLabel);
-    PetscBool hasValue = PETSC_FALSE;
-    err = DMLabelHasValue(dmLabel, _labelValue, &hasValue);PYLITH_CHECK_ERROR(err);
-    if (!hasValue) {
+    PetscBool hasLabelValue = PETSC_FALSE;
+    err = DMLabelHasValue(dmLabel, _labelValue, &hasLabelValue);PYLITH_CHECK_ERROR(err);
+    int hasLabelValueIntLocal = int(hasLabelValue);
+    int hasLabelValueInt = 0;
+    err = MPI_Allreduce(&hasLabelValueIntLocal, &hasLabelValueInt, 1, MPI_INT, MPI_MAX,
+                        PetscObjectComm((PetscObject) dmSoln));PYLITH_CHECK_ERROR(err);
+    if (!hasLabelValueInt) {
         std::ostringstream msg;
         msg << "Label '" << _labelName << "' missing value '" << _labelValue << "' for initial condition '"
             << PyreComponent::getIdentifier() << "'.";
