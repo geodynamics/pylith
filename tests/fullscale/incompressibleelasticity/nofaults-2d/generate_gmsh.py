@@ -1,7 +1,7 @@
 #!/usr/bin/env nemesis
 
 import gmsh
-from pylith.meshio.gmsh_utils import (VertexGroup, MaterialGroup, GenerateMesh)
+from pylith.meshio.gmsh_utils import (BoundaryGroup, MaterialGroup, GenerateMesh)
 
 class App(GenerateMesh):
     """
@@ -65,16 +65,21 @@ class App(GenerateMesh):
         for material in materials:
             material.create_physical_group()
 
-        vertex_groups = (
-            VertexGroup(name="boundary_xneg", tag=10, dim=1, entities=[self.l_xneg]),
-            VertexGroup(name="boundary_xpos", tag=11, dim=1, entities=[self.l_xpos]),
-            VertexGroup(name="boundary_yneg", tag=12, dim=1, entities=[self.l_yneg0, self.l_yneg1]),
-            VertexGroup(name="boundary_ypos", tag=13, dim=1, entities=[self.l_ypos0, self.l_ypos1]),
-            VertexGroup(name="patch_xneg", tag=20, dim=2, entities=[self.s_xneg]),
-            VertexGroup(name="patch_xpos", tag=21, dim=2, entities=[self.s_xpos]),
+        face_groups = (
+            BoundaryGroup(name="boundary_xneg", tag=10, dim=1, entities=[self.l_xneg]),
+            BoundaryGroup(name="boundary_xpos", tag=11, dim=1, entities=[self.l_xpos]),
+            BoundaryGroup(name="boundary_yneg", tag=12, dim=1, entities=[self.l_yneg0, self.l_yneg1]),
+            BoundaryGroup(name="boundary_ypos", tag=13, dim=1, entities=[self.l_ypos0, self.l_ypos1]),
         )
-        for group in vertex_groups:
+        for group in face_groups:
             group.create_physical_group()
+
+        patch_groups = (
+            BoundaryGroup(name="patch_xneg", tag=20, dim=2, entities=[self.s_xneg]),
+            BoundaryGroup(name="patch_xpos", tag=21, dim=2, entities=[self.s_xpos]),
+        )
+        for group in patch_groups:
+            group.create_physical_group(recursive=True)
 
     def generate_mesh(self, cell):
         """Generate the mesh. Should also include optimizing the mesh quality.

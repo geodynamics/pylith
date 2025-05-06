@@ -11,18 +11,28 @@
 import unittest
 
 from pylith.testing.TestCases import TestComponent, make_suite
-from pylith.meshio.MeshIOPetsc import (MeshIOPetsc, mesh_io)
+from pylith.meshio.MeshIOPetsc import (MeshIOPetsc, mesh_input, mesh_output)
 
 
-class TestMeshIOPetscInput(TestComponent):
+class TestMeshIOPetscInputRead(TestComponent):
     """Unit testing of MeshIOPetsc object.
     """
     _class = MeshIOPetsc
-    _factory = mesh_io
+    _factory = mesh_input
+
+
+class TestMeshIOPetscInputWrite(TestComponent):
+    """Unit testing of MeshIOPetsc object.
+    """
+    _class = MeshIOPetsc
+    _factory = mesh_output
 
 
 def load_tests(loader, tests, pattern):
-    TEST_CLASSES = [TestMeshIOPetscInput]
+    TEST_CLASSES = [
+        TestMeshIOPetscInputRead,
+        TestMeshIOPetscInputWrite,
+        ]
     return make_suite(TEST_CLASSES, loader)
 
 

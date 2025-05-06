@@ -59,9 +59,8 @@ mesh = {
              6   2
     }
   }
-  group = {
+  vertex-group = {
     name = fault
-    type = vertices
     count = 6
     indices = {
      13
@@ -72,9 +71,8 @@ mesh = {
      18
     }
   }
-  group = {
-    name = output
-    type = vertices
+  vertex-group = {
+    name = output_vertices
     count = 10
     indices = {
      20
@@ -87,6 +85,24 @@ mesh = {
      27
      28
      29
+    }
+  }
+  face-group = {
+    name = fault_faces
+    count = 2
+    indices = {
+      0   13 14 16 17
+      2   14 15 17 18
+    }
+  }
+  face-group = {
+    name = output
+    count = 4
+    indices = {
+     3   21 22 26 27
+     3   22 23 27 28
+     4   23 24 28 29
+     5   20 21 25 26
     }
   }
 }

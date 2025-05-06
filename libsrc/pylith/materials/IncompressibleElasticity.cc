@@ -154,7 +154,7 @@ pylith::materials::IncompressibleElasticity::createAuxiliaryField(const pylith::
     PYLITH_COMPONENT_DEBUG("createAuxiliaryField(solution="<<solution.getLabel()<<", domainMesh=)"<<typeid(domainMesh).name()<<")");
 
     pylith::topology::Field* auxiliaryField = new pylith::topology::Field(domainMesh);assert(auxiliaryField);
-    auxiliaryField->setLabel("IncompressibleElasticity auxiliary field");
+    auxiliaryField->setLabel("auxiliary field");
 
     assert(_rheology);
     pylith::materials::AuxiliaryFactoryElasticity* auxiliaryFactory = _rheology->getAuxiliaryFactory();assert(auxiliaryFactory);
@@ -206,7 +206,7 @@ pylith::materials::IncompressibleElasticity::createDerivedField(const pylith::to
     } // if
 
     pylith::topology::Field* derivedField = new pylith::topology::Field(domainMesh);assert(derivedField);
-    derivedField->setLabel("Elasticity derived field");
+    derivedField->setLabel("derived field");
 
     assert(_normalizer);
     _derivedFactory->initialize(derivedField, *_normalizer, domainMesh.getDimension());

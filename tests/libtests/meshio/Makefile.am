@@ -37,6 +37,8 @@ libtest_meshio_errors_SOURCES = \
 	$(top_srcdir)/tests/src/StubMethodTracker.cc \
 	$(top_srcdir)/tests/src/driver_catch2.cc
 
+
+
 libtest_meshio_errors_CPPFLAGS = $(AM_CPPFLAGS) -DMALLOC_DEBUG_OFF
 
 
@@ -151,8 +153,7 @@ if ENABLE_CUBIT
 	TestMeshIOCubit.cc \
 	TestMeshIOCubit_Cases.cc
   dist_noinst_HEADERS += \
-	TestExodusII.hh \
-	TestMeshIOCubit.hh
+	TestMeshIOCubit.hh 
 endif
 
 

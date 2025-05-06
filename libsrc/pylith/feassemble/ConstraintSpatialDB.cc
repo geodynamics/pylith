@@ -143,6 +143,10 @@ pylith::feassemble::ConstraintSpatialDB::setSolution(pylith::feassemble::Integra
     const int fieldIndex = solution->getSubfieldInfo(_subfieldName.c_str()).index;
     const PylithInt numConstrained = _constrainedDOF.size();
     assert(solution->getLocalVector());
+
+    // :KLUDGE: We normally don't want the label to contain the domain cells hanging off the submesh, so
+    // we use DMPlexLabelAddFaceCells() to add the domain cells so we can project from the submesh
+    // to the domain mesh. Then we clear the domain cells from the label afterwards.
     err = DMPlexLabelAddFaceCells(dmSoln, dmLabel);PYLITH_CHECK_ERROR(err);
     err = DMPlexInsertBoundaryValuesEssentialBdField(dmSoln, t, solution->getLocalVector(), fieldIndex,
                                                      numConstrained, &_constrainedDOF[0], dmLabel, 1, &_labelValue,

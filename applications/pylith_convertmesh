@@ -1,0 +1,12 @@
+#!/usr/bin/env nemesis
+"""Application for converting mesh files from one format to another.
+"""
+
+
+if __name__ == "__main__":
+    from pylith.apps.ConvertMeshApp import ConvertMeshApp
+    from pythia.pyre.applications import start
+    start(applicationClass=ConvertMeshApp)
+
+
+# End of file

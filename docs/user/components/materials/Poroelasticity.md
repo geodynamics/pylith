@@ -11,7 +11,7 @@ Implements `Material`.
 ## Pyre Facilities
 
 * `auxiliary_subfields`: Discretization information for auxiliary subfields.
-  - **current value**: 'auxiliary_subfields', from {file='/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pythia/pyre/inventory/ConfigurableClass.py', line=26, function='__set__'}
+  - **current value**: 'auxiliary_subfields', from {file='/Users/baagaard/software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pythia/pyre/inventory/ConfigurableClass.py', line=26, function='__set__'}
   - **configurable as**: auxiliary_subfields
 * `bulk_rheology`: Bulk rheology for poroelastic material.
   - **current value**: 'isotropiclinearporoelasticity', from {default}
@@ -20,7 +20,7 @@ Implements `Material`.
   - **current value**: 'simpledb', from {default}
   - **configurable as**: simpledb, db_auxiliary_field
 * `derived_subfields`: Discretization of derived subfields.
-  - **current value**: 'derived_subfields', from {file='/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pythia/pyre/inventory/ConfigurableClass.py', line=26, function='__set__'}
+  - **current value**: 'derived_subfields', from {file='/Users/baagaard/software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pythia/pyre/inventory/ConfigurableClass.py', line=26, function='__set__'}
   - **configurable as**: derived_subfields
 * `observers`: Observers (e.g., output).
   - **current value**: 'singlephysicsobserver', from {default}
@@ -28,10 +28,10 @@ Implements `Material`.
 
 ## Pyre Properties
 
-* `description`=\<str\>: Descriptive label for material.
+* `description`=\<str\>: Descriptive label for material (deprecated in v5.0; will be removed in v6.0).
   - **default value**: ''
   - **current value**: '', from {default}
-  - **validator**: <function validateDescription at 0x1248ef790>
+  - **validator**: <function validateDescription at 0x10608f2e0>
 * `label`=\<str\>: Name of label for material. Currently only 'material-id' is allowed.
   - **default value**: 'material-id'
   - **current value**: 'material-id', from {default}

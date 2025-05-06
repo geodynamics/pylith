@@ -11,7 +11,7 @@ from abc import ABC, abstractmethod
 import gmsh
 import numpy
 
-from pylith.meshio.gmsh_utils import (VertexGroup, MaterialGroup, group_exclude)
+from pylith.meshio.gmsh_utils import (BoundaryGroup, MaterialGroup)
 
 class GenerateApp(ABC):
 
@@ -50,7 +50,8 @@ class GenerateApp(ABC):
 
 
 class GenerateNoEmbed2D(GenerateApp):
-    """
+    """Fault curve is not embedded in domain.
+
     p3-------p2
     |         |
     |  p4--p5 |
@@ -96,14 +97,14 @@ class GenerateNoEmbed2D(GenerateApp):
         for material in materials:
             material.create_physical_group()
 
-        vertex_groups = (
-            VertexGroup(name="boundary_xneg", tag=10, dim=1, entities=[self.c_xneg]),
-            VertexGroup(name="boundary_xpos", tag=11, dim=1, entities=[self.c_xpos]),
-            VertexGroup(name="boundary_yneg", tag=12, dim=1, entities=[self.c_yneg]),
-            VertexGroup(name="boundary_ypos", tag=13, dim=1, entities=[self.c_ypos]),
-            VertexGroup(name="fault", tag=20, dim=1, entities=[self.c_fault]),
+        face_groups = (
+            BoundaryGroup(name="boundary_xneg", tag=10, dim=1, entities=[self.c_xneg]),
+            BoundaryGroup(name="boundary_xpos", tag=11, dim=1, entities=[self.c_xpos]),
+            BoundaryGroup(name="boundary_yneg", tag=12, dim=1, entities=[self.c_yneg]),
+            BoundaryGroup(name="boundary_ypos", tag=13, dim=1, entities=[self.c_ypos]),
+            BoundaryGroup(name="fault", tag=20, dim=1, entities=[self.c_fault]),
         )
-        for group in vertex_groups:
+        for group in face_groups:
             group.create_physical_group()
 
     def generate_mesh(self):
@@ -117,6 +118,8 @@ class GenerateNoEmbed2D(GenerateApp):
 
 
 class GenerateNoEmbed3D(GenerateApp):
+    """Fault surface is not embedded in domain.
+    """
 
     DOMAIN_X = DOMAIN_Y = DOMAIN_Z = 8.0e+3
     DX = 2.0e+3
@@ -151,10 +154,10 @@ class GenerateNoEmbed3D(GenerateApp):
         for material in materials:
             material.create_physical_group()
 
-        vertex_groups = (
-            VertexGroup(name="fault", tag=20, dim=2, entities=[self.s_fault]),
+        face_groups = (
+            BoundaryGroup(name="fault", tag=20, dim=2, entities=[self.s_fault]),
         )
-        for group in vertex_groups:
+        for group in face_groups:
             group.create_physical_group()
 
     def generate_mesh(self):
@@ -169,7 +172,8 @@ class GenerateNoEmbed3D(GenerateApp):
 
 
 class GenerateNoSplit2D(GenerateApp):
-    """
+    """Fault spline is not split at T intersection (should be split at point P6).
+
     p3----------p2
     |            |
     |  p4-----p5 |
@@ -224,15 +228,15 @@ class GenerateNoSplit2D(GenerateApp):
         for material in materials:
             material.create_physical_group()
 
-        vertex_groups = (
-            VertexGroup(name="boundary_xneg", tag=10, dim=1, entities=[self.c_xneg]),
-            VertexGroup(name="boundary_xpos", tag=11, dim=1, entities=[self.c_xpos]),
-            VertexGroup(name="boundary_yneg", tag=12, dim=1, entities=[self.c_yneg]),
-            VertexGroup(name="boundary_ypos", tag=13, dim=1, entities=[self.c_ypos]),
-            VertexGroup(name="main_fault", tag=20, dim=1, entities=[self.c_main_fault]),
-            VertexGroup(name="splay_fault", tag=21, dim=1, entities=[self.c_splay_fault]),
+        face_groups = (
+            BoundaryGroup(name="boundary_xneg", tag=10, dim=1, entities=[self.c_xneg]),
+            BoundaryGroup(name="boundary_xpos", tag=11, dim=1, entities=[self.c_xpos]),
+            BoundaryGroup(name="boundary_yneg", tag=12, dim=1, entities=[self.c_yneg]),
+            BoundaryGroup(name="boundary_ypos", tag=13, dim=1, entities=[self.c_ypos]),
+            BoundaryGroup(name="main_fault", tag=20, dim=1, entities=[self.c_main_fault]),
+            BoundaryGroup(name="splay_fault", tag=21, dim=1, entities=[self.c_splay_fault]),
         )
-        for group in vertex_groups:
+        for group in face_groups:
             group.create_physical_group()
 
     def generate_mesh(self):

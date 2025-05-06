@@ -82,10 +82,13 @@ public:
 
     int matIdSum; ///< Sum of material id as simple checksum.
 
-    int* groupSizes; ///< Array of sizes of each group
-    const char** groupNames; ///< Array of group names
-    const char** groupTypes; ///< Array of group types
-    int numGroups; ///< Number of groups
+    size_t* vertexGroupSizes; ///< Array of sizes of each vertex group
+    const char** vertexGroupNames; ///< Array of vertex group names
+    size_t numVertexGroups; ///< Number of groups
+
+    size_t* faceGroupSizes; ///< Array of sizes of each face group
+    const char** faceGroupNames; ///< Array of face group names
+    size_t numFaceGroups; ///< Number of groups
     /// @}
 
 };

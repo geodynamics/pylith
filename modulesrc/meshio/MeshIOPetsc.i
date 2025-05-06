@@ -54,6 +54,18 @@ public:
              */
             const char* getPrefix(void) const;
 
+            /** Set flag for marking Gmsh vertices.
+             *
+             * @param value True if marking Gmsh vertices.
+             */
+            void setGmshMarkRecursive(const bool value);
+
+            /** Returns true if marking Gmsh vertices, otherwise false.
+             *
+             * @returns Mesh format.
+             */
+            bool getGmshMarkRecursive(void) const;
+
             // PROTECTED METHODS //////////////////////////////////////////////
 protected:
 

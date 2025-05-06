@@ -220,9 +220,9 @@ cubit.cmd(f"block 1 surface {s_domain.id()}")
 cubit.cmd("block 1 name 'domain'")
 
 
-# Nodesets
+# Nodesets, deprecated and we will remove these in v6
 
-if True:
+if False:
     # Create nodeset for south boundary
     cubit.cmd(f"group 'boundary_south' add node in curve {c_south.id()}")
     cubit.cmd("nodeset 10 group boundary_south")
@@ -278,7 +278,7 @@ if True:
 # Starting in PyLith v5, we will use sidesets instead of nodesets for BCs.
 # Sidesets
 
-if False:
+if True:
     # Create sideset for south boundary
     cubit.cmd(f"group 'boundary_south' add curve {c_south.id()}")
     cubit.cmd("sideset 10 group boundary_south")
@@ -315,6 +315,21 @@ if False:
     cubit.cmd("sideset 22 group fault_east")
     cubit.cmd("sideset 22 name 'fault_east'")
 
+    # :TODO: Remove when using transform to create faults.
+    # Create nodeset for fault 'main' ends
+    cubit.cmd(f"group 'fault_main_ends' add node in vertex {ids_from_entities(fault_main_ends)}")
+    cubit.cmd("nodeset 30 group fault_main_ends")
+    cubit.cmd("nodeset 30 name 'fault_main_ends'")
+
+    # Create nodeset for fault 'west' ends
+    cubit.cmd(f"group 'fault_west_ends' add node in vertex {ids_from_entities(fault_west_ends)}")
+    cubit.cmd("nodeset 31 group fault_west_ends")
+    cubit.cmd("nodeset 31 name 'fault_west_ends'")
+
+    # Create nodeset for fault 'east' ends
+    cubit.cmd(f"group 'fault_east_ends' add node in vertex {ids_from_entities(fault_east_ends)}")
+    cubit.cmd("nodeset 32 group fault_east_ends")
+    cubit.cmd("nodeset 32 name 'fault_east_ends'")
 
 # Write mesh as ExodusII file
 cubit.cmd(f"export mesh 'mesh_{CELL}.exo' dimension 2 overwrite")

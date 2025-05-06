@@ -11,7 +11,7 @@ Run `generate_gmsh.py --help` to see the command line options.
 """
 
 import gmsh
-from pylith.meshio.gmsh_utils import (VertexGroup, MaterialGroup, GenerateMesh)
+from pylith.meshio.gmsh_utils import (BoundaryGroup, MaterialGroup, GenerateMesh)
 
 class App(GenerateMesh):
     """
@@ -83,8 +83,8 @@ class App(GenerateMesh):
         for material in materials:
             material.create_physical_group()
 
-        # We use the `VertexGroup` data class and `create_group` function from `gmsh_utils`
-        # to define the groups of vertices. The `VertexGroup` constructor takes the name and
+        # We use the `BoundaryGroup` data class and `create_group` function from `gmsh_utils`
+        # to define the groups of vertices. The `BoundaryGroup` constructor takes the name and
         # tag of the physical group as the first two arguments and the list of entities
         # for the group as the third argument. The name corresponds to the `label` Pyre property
         # and the tag corresponds to the `label_value` Pyre property in the boundary condition
@@ -92,15 +92,15 @@ class App(GenerateMesh):
         #
         # The `create_group` function will automatically create the physical groups for all
         # lower dimension entities; these are needed by PyLith.
-        vertex_groups = (
-            VertexGroup(name="boundary_xneg", tag=10, dim=2, entities=[tag for dim, tag in self.s_xneg]),
-            VertexGroup(name="boundary_xpos", tag=11, dim=2, entities=[tag for dim, tag in self.s_xpos]),
-            VertexGroup(name="boundary_yneg", tag=12, dim=2, entities=[tag for dim, tag in self.s_yneg]),
-            VertexGroup(name="boundary_ypos", tag=13, dim=2, entities=[tag for dim, tag in self.s_ypos]),
-            VertexGroup(name="boundary_zneg", tag=14, dim=2, entities=[tag for dim, tag in self.s_zneg]),
-            VertexGroup(name="boundary_zpos", tag=15, dim=2, entities=[tag for dim, tag in self.s_zpos]),
+        face_groups = (
+            BoundaryGroup(name="boundary_xneg", tag=10, dim=2, entities=[tag for dim, tag in self.s_xneg]),
+            BoundaryGroup(name="boundary_xpos", tag=11, dim=2, entities=[tag for dim, tag in self.s_xpos]),
+            BoundaryGroup(name="boundary_yneg", tag=12, dim=2, entities=[tag for dim, tag in self.s_yneg]),
+            BoundaryGroup(name="boundary_ypos", tag=13, dim=2, entities=[tag for dim, tag in self.s_ypos]),
+            BoundaryGroup(name="boundary_zneg", tag=14, dim=2, entities=[tag for dim, tag in self.s_zneg]),
+            BoundaryGroup(name="boundary_zpos", tag=15, dim=2, entities=[tag for dim, tag in self.s_zpos]),
         )
-        for group in vertex_groups:
+        for group in face_groups:
             group.create_physical_group()
 
     def generate_mesh(self, cell):

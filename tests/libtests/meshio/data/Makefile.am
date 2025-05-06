@@ -10,31 +10,43 @@
 
 
 dist_noinst_DATA = \
-	mesh2D_comments.txt \
-	mesh3D_index1.txt \
+	quad_comments.mesh \
+	hex_index1.mesh \
 	twotri3_12.2.exo \
 	twotri3_13.0.exo \
+	smalltri_v16.exo \
 	twoquad4_12.2.exo \
 	twoquad4_13.0.exo \
+	smallquad_v16.exo \
 	twotet4_12.2.exo \
 	twotet4_13.0.exo \
+	smalltet_v16.exo \
 	twohex8_12.2.exo \
 	twohex8_13.0.exo \
+	smallhex_v16.exo \
 	mesh_tri3.exo \
 	mesh_quad4.exo \
 	mesh_tet4.exo \
 	mesh_hex8.exo \
-	box_tri_ascii.msh \
-	box_tri_binary.msh \
-	box_quad_ascii.msh \
-	box_quad_binary.msh \
-	box_tet_ascii.msh \
-	box_tet_binary.msh \
-	box_hex_ascii.msh \
-	box_hex_binary.msh \
 	noembed_tri.msh \
 	noembed_tet.msh \
 	nosplit_tri.msh \
+	box_tri_vertices_ascii.msh \
+	box_tri_vertices_binary.msh \
+	box_tri_boundary_ascii.msh \
+	box_tri_boundary_binary.msh \
+	box_quad_vertices_ascii.msh \
+	box_quad_vertices_binary.msh \
+	box_quad_boundary_ascii.msh \
+	box_quad_boundary_binary.msh \
+	box_tet_vertices_ascii.msh \
+	box_tet_vertices_binary.msh \
+	box_tet_boundary_ascii.msh \
+	box_tet_boundary_binary.msh \
+	box_hex_vertices_ascii.msh \
+	box_hex_vertices_binary.msh \
+	box_hex_boundary_ascii.msh \
+	box_hex_boundary_binary.msh \
 	tri3.mesh \
 	tri_orphan_vertex.mesh \
 	tri3_vertex_t10.vtu \
@@ -158,6 +170,11 @@ dist_noinst_DATA = \
 	tet4_points_vertex.h5 \
 	hex8_points.h5 \
 	hex8_points_vertex.h5
+
+
+dist_noinst_PYTHON = \
+	cubit_smalltri.py \
+	cubit_smallquad.py
 
 
 noinst_TMP =

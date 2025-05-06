@@ -94,28 +94,32 @@ pylith::topology::TestRefineUniform_Cases::Tri_2xNoFault(void) {
 
     data->matIdSum = 8*1 + 8*2;
 
-    data->numGroups = 4;
-
-    static const int _groupSizes[4] = {
-        9, 5, 2, 9,
+    data->numVertexGroups = 4;
+    static const size_t _vertexGroupSizes[4] = {
+        5, 3, 2, 5,
     };
-    data->groupSizes = const_cast<int*>(_groupSizes);
+    data->vertexGroupSizes = const_cast<size_t*>(_vertexGroupSizes);
 
-    static const char* _groupNames[4] = {
-        "edge 1",
-        "edge 2",
-        "end points",
+    static const char* _vertexGroupNames[4] = {
+        "bc1_vertices",
+        "bc2_vertices",
+        "endpoints",
         "fault",
     };
-    data->groupNames = const_cast<const char**>(_groupNames);
+    data->vertexGroupNames = const_cast<const char**>(_vertexGroupNames);
 
-    static const char* _groupTypes[4] = {
-        "vertex",
-        "vertex",
-        "vertex",
-        "vertex",
+    data->numFaceGroups = 3;
+    static const size_t _faceGroupSizes[3] = {
+        4, 2, 4,
     };
-    data->groupTypes = const_cast<const char**>(_groupTypes);
+    data->faceGroupSizes = const_cast<size_t*>(_faceGroupSizes);
+
+    static const char* _faceGroupNames[3] = {
+        "bc1",
+        "bc2",
+        "fault_faces",
+    };
+    data->faceGroupNames = const_cast<const char**>(_faceGroupNames);
 
     return data;
 } // Tri_2xNoFault
@@ -142,28 +146,26 @@ pylith::topology::TestRefineUniform_Cases::Tri_2xFault(void) {
 
     data->matIdSum = 8*1 + 8*2 + 4*100;
 
-    data->numGroups = 4;
-
-    static const int _groupSizes[4] = {
-        11, 6, 2, 18,
-    };
-    data->groupSizes = const_cast<int*>(_groupSizes);
-
-    static const char* _groupNames[4] = {
-        "edge 1",
-        "edge 2",
-        "end points",
+    static const char* _vertexGroupNames[4] = {
+        "bc1_vertices",
+        "bc2_vertices",
+        "endpoints",
         "fault",
     };
-    data->groupNames = const_cast<const char**>(_groupNames);
+    data->vertexGroupNames = const_cast<const char**>(_vertexGroupNames);
 
-    static const char* _groupTypes[4] = {
-        "vertex",
-        "vertex",
-        "vertex",
-        "vertex",
+    data->numFaceGroups = 3;
+    static const size_t _faceGroupSizes[3] = {
+        4, 2, 8,
     };
-    data->groupTypes = const_cast<const char**>(_groupTypes);
+    data->faceGroupSizes = const_cast<size_t*>(_faceGroupSizes);
+
+    static const char* _faceGroupNames[3] = {
+        "bc1",
+        "bc2",
+        "fault_faces",
+    };
+    data->faceGroupNames = const_cast<const char**>(_faceGroupNames);
 
     return data;
 } // Tri_2xFault
@@ -190,26 +192,28 @@ pylith::topology::TestRefineUniform_Cases::Quad_2xNoFault(void) {
 
     data->matIdSum = 8*1 + 8*2;
 
-    data->numGroups = 3;
-
-    static const int _groupSizes[3] = {
-        9, 9, 9,
+    data->numVertexGroups = 3;
+    static const size_t _vertexGroupSizes[3] = {
+        5, 5, 5,
     };
-    data->groupSizes = const_cast<int*>(_groupSizes);
-
-    static const char* _groupNames[3] = {
-        "edge 1",
-        "end points",
+    data->vertexGroupSizes = const_cast<size_t*>(_vertexGroupSizes);
+    static const char* _vertexGroupNames[3] = {
         "fault",
+        "endpoints",
+        "bc_vertices",
     };
-    data->groupNames = const_cast<const char**>(_groupNames);
+    data->vertexGroupNames = const_cast<const char**>(_vertexGroupNames);
 
-    static const char* _groupTypes[3] = {
-        "vertex",
-        "vertex",
-        "vertex",
+    data->numFaceGroups = 2;
+    static const size_t _faceGroupSizes[2] = {
+        4, 4,
     };
-    data->groupTypes = const_cast<const char**>(_groupTypes);
+    data->faceGroupSizes = const_cast<size_t*>(_faceGroupSizes);
+    static const char* _faceGroupNames[2] = {
+        "fault_faces",
+        "bc",
+    };
+    data->faceGroupNames = const_cast<const char**>(_faceGroupNames);
 
     return data;
 } // Quad_2dNoFault
@@ -236,31 +240,31 @@ pylith::topology::TestRefineUniform_Cases::Quad_2xFault(void) {
 
     data->matIdSum = 8*1 + 8*2 + 4*100;
 
-    data->numGroups = 3;
-
-    static const int _groupSizes[3] = {
-        6+4, // vertices+edges
-        5+4,
-        10+8,
+    data->numVertexGroups = 3;
+    static const size_t _vertexGroupSizes[3] = {
+        10, 5, 5+1,
     };
-    data->groupSizes = const_cast<int*>(_groupSizes);
-
-    static const char* _groupNames[3] = {
-        "edge 1",
-        "end points",
+    data->vertexGroupSizes = const_cast<size_t*>(_vertexGroupSizes);
+    static const char* _vertexGroupNames[3] = {
         "fault",
+        "endpoints",
+        "bc_vertices",
     };
-    data->groupNames = const_cast<const char**>(_groupNames);
+    data->vertexGroupNames = const_cast<const char**>(_vertexGroupNames);
 
-    static const char* _groupTypes[3] = {
-        "vertex",
-        "vertex",
-        "vertex",
+    data->numFaceGroups = 2;
+    static const size_t _faceGroupSizes[2] = {
+        8, 4,
     };
-    data->groupTypes = const_cast<const char**>(_groupTypes);
+    data->faceGroupSizes = const_cast<size_t*>(_faceGroupSizes);
+    static const char* _faceGroupNames[2] = {
+        "fault_faces",
+        "bc",
+    };
+    data->faceGroupNames = const_cast<const char**>(_faceGroupNames);
 
     return data;
-} // Quad_2dFault
+} // Quad_2xFault
 
 
 // ------------------------------------------------------------------------------------------------
@@ -284,31 +288,31 @@ pylith::topology::TestRefineUniform_Cases::Tet_2xNoFault(void) {
 
     data->matIdSum = 8*1 + 8*2;
 
-    data->numGroups = 4;
-
-    static const int _groupSizes[4] = {
-        3+2+0, // vertices+edges+faces
-        3+2+0,
-        2+0+0,
-        6+9+4
+    data->numVertexGroups = 4;
+    static const size_t _vertexGroupSizes[4] = {
+        3, 3, 2, 6,
     };
-    data->groupSizes = const_cast<int*>(_groupSizes);
+    data->vertexGroupSizes = const_cast<size_t*>(_vertexGroupSizes);
 
-    static const char* _groupNames[4] = {
-        "edge 1",
-        "edge 2",
-        "end points",
+    static const char* _vertexGroupNames[4] = {
+        "bc1_vertices",
+        "bc2_vertices",
+        "endpoints",
         "fault",
     };
-    data->groupNames = const_cast<const char**>(_groupNames);
+    data->vertexGroupNames = const_cast<const char**>(_vertexGroupNames);
 
-    static const char* _groupTypes[4] = {
-        "vertex",
-        "vertex",
-        "vertex",
-        "vertex",
+    data->numFaceGroups = 3;
+    static const size_t _faceGroupSizes[3] = {
+        4, 4, 4,
     };
-    data->groupTypes = const_cast<const char**>(_groupTypes);
+    data->faceGroupSizes = const_cast<size_t*>(_faceGroupSizes);
+    static const char* _faceGroupNames[3] = {
+        "bc1",
+        "bc2",
+        "fault_faces",
+    };
+    data->faceGroupNames = const_cast<const char**>(_faceGroupNames);
 
     return data;
 } // Tet_2xNoFault
@@ -335,31 +339,33 @@ pylith::topology::TestRefineUniform_Cases::Tet_2xFault(void) {
 
     data->matIdSum = 8*1 + 8*2 + 4*100;
 
-    data->numGroups = 4;
+    data->numVertexGroups = 4;
 
-    static const int _groupSizes[4] = {
-        6,
-        6,
-        2,
-        38,
+    data->numVertexGroups = 4;
+    static const size_t _vertexGroupSizes[4] = {
+        3+1, 3+1, 2, 12,
     };
-    data->groupSizes = const_cast<int*>(_groupSizes);
+    data->vertexGroupSizes = const_cast<size_t*>(_vertexGroupSizes);
 
-    static const char* _groupNames[4] = {
-        "edge 1",
-        "edge 2",
-        "end points",
+    static const char* _vertexGroupNames[4] = {
+        "bc1_vertices",
+        "bc2_vertices",
+        "endpoints",
         "fault",
     };
-    data->groupNames = const_cast<const char**>(_groupNames);
+    data->vertexGroupNames = const_cast<const char**>(_vertexGroupNames);
 
-    static const char* _groupTypes[4] = {
-        "vertex",
-        "vertex",
-        "vertex",
-        "vertex",
+    data->numFaceGroups = 3;
+    static const size_t _faceGroupSizes[3] = {
+        4, 4, 8,
     };
-    data->groupTypes = const_cast<const char**>(_groupTypes);
+    data->faceGroupSizes = const_cast<size_t*>(_faceGroupSizes);
+    static const char* _faceGroupNames[3] = {
+        "bc1",
+        "bc2",
+        "fault_faces",
+    };
+    data->faceGroupNames = const_cast<const char**>(_faceGroupNames);
 
     return data;
 } // Tet_2xFault
@@ -386,31 +392,30 @@ pylith::topology::TestRefineUniform_Cases::Hex_2xNoFault(void) {
 
     data->matIdSum = 8*1 + 8*2;
 
-    data->numGroups = 4;
-
-    static const int _groupSizes[4] = {
-        2+0+0, // vertices+edges+faces
-        9+12+4,
-        9+12+4,
-        9+12+4,
+    data->numVertexGroups = 4;
+    static const size_t _vertexGroupSizes[4] = {
+        9, 2, 9, 9,
     };
-    data->groupSizes = const_cast<int*>(_groupSizes);
-
-    static const char* _groupNames[4] = {
-        "end points",
-        "face 1",
-        "face 2",
+    data->vertexGroupSizes = const_cast<size_t*>(_vertexGroupSizes);
+    static const char* _vertexGroupNames[4] = {
         "fault",
+        "endpoints",
+        "face1_vertices",
+        "face2_vertices",
     };
-    data->groupNames = const_cast<const char**>(_groupNames);
+    data->vertexGroupNames = const_cast<const char**>(_vertexGroupNames);
 
-    static const char* _groupTypes[4] = {
-        "vertex",
-        "vertex",
-        "vertex",
-        "vertex",
+    data->numFaceGroups = 3;
+    static const size_t _faceGroupSizes[3] = {
+        4, 4, 4,
     };
-    data->groupTypes = const_cast<const char**>(_groupTypes);
+    data->faceGroupSizes = const_cast<size_t*>(_faceGroupSizes);
+    static const char* _faceGroupNames[3] = {
+        "fault_faces",
+        "face1",
+        "face2",
+    };
+    data->faceGroupNames = const_cast<const char**>(_faceGroupNames);
 
     return data;
 } // Hex2x_NoFault
@@ -437,31 +442,30 @@ pylith::topology::TestRefineUniform_Cases::Hex_2xFault(void) {
 
     data->matIdSum = 8*1 + 8*2 + 4*100;
 
-    data->numGroups = 4;
-
-    static const int _groupSizes[4] = {
-        2+0+0, // vertices+edges+faces
-        9+12+4,
-        12+14+4,
-        18+24+8,
+    data->numVertexGroups = 4;
+    static const size_t _vertexGroupSizes[4] = {
+        18, 2, 9, 12,
     };
-    data->groupSizes = const_cast<int*>(_groupSizes);
-
-    static const char* _groupNames[4] = {
-        "end points",
-        "face 1",
-        "face 2",
+    data->vertexGroupSizes = const_cast<size_t*>(_vertexGroupSizes);
+    static const char* _vertexGroupNames[4] = {
         "fault",
+        "endpoints",
+        "face1_vertices",
+        "face2_vertices",
     };
-    data->groupNames = const_cast<const char**>(_groupNames);
+    data->vertexGroupNames = const_cast<const char**>(_vertexGroupNames);
 
-    static const char* _groupTypes[4] = {
-        "vertex",
-        "vertex",
-        "vertex",
-        "vertex",
+    data->numFaceGroups = 3;
+    static const size_t _faceGroupSizes[3] = {
+        8, 4, 4,
     };
-    data->groupTypes = const_cast<const char**>(_groupTypes);
+    data->faceGroupSizes = const_cast<size_t*>(_faceGroupSizes);
+    static const char* _faceGroupNames[3] = {
+        "fault_faces",
+        "face1",
+        "face2",
+    };
+    data->faceGroupNames = const_cast<const char**>(_faceGroupNames);
 
     return data;
 } // Hex_2xFault

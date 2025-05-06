@@ -309,27 +309,11 @@ void
 pylith::topology::TestFieldQuery::_initialize(void) {
     PYLITH_METHOD_BEGIN;
     assert(_data);
-
-    const int cellDim = _data->cellDim;
-    const int numCells = _data->numCells;
-    const int numVertices = _data->numVertices;
-    const int numCorners = _data->numCorners;
-    const int spaceDim = _data->cellDim;
-
-    PylithInt size = numVertices * spaceDim;
-    scalar_array coordinates(size);
-    for (PylithInt i = 0; i < size; ++i) {
-        coordinates[i] = _data->coordinates[i];
-    } // for
-
-    size = numCells * numCorners;
-    int_array cells(size);
-    for (PylithInt i = 0; i < size; ++i) {
-        cells[i] = _data->cells[i];
-    } // for
+    assert(_data->topology);
+    assert(_data->geometry);
 
     delete _mesh;_mesh = new Mesh;assert(_mesh);
-    pylith::meshio::MeshBuilder::buildMesh(_mesh, &coordinates, numVertices, spaceDim, cells, numCells, numCorners, cellDim);
+    pylith::meshio::MeshBuilder::buildMesh(_mesh, *_data->topology, *_data->geometry);
 
     assert(_data->cs);
     _mesh->setCoordSys(_data->cs);
@@ -359,12 +343,8 @@ pylith::topology::TestFieldQuery::_initialize(void) {
 // ----------------------------------------------------------------------
 // Constructor
 pylith::topology::TestFieldQuery_Data::TestFieldQuery_Data(void) :
-    cellDim(0),
-    numVertices(0),
-    numCells(0),
-    numCorners(0),
-    cells(NULL),
-    coordinates(NULL),
+    topology(NULL),
+    geometry(NULL),
     cs(new spatialdata::geocoords::CSCart),
     normalizer(new spatialdata::units::Nondimensional),
     numAuxSubfields(0),
@@ -378,8 +358,8 @@ pylith::topology::TestFieldQuery_Data::TestFieldQuery_Data(void) :
 // ----------------------------------------------------------------------
 // Destructor
 pylith::topology::TestFieldQuery_Data::~TestFieldQuery_Data(void) {
-    cells = NULL; // Assigned from const.
-    coordinates = NULL; // Assigned from const.
+    delete topology;topology = NULL;
+    delete geometry;geometry = NULL;
 
     delete cs;cs = NULL;
     delete normalizer;normalizer = NULL;

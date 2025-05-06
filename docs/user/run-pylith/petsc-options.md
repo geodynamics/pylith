@@ -14,9 +14,7 @@ The user-specified values always take precedence over the default values.
 
 ## Default PETSc Options
 
-:::{note}
-New in v3.0.0
-:::
+*New in v3.0.0.*
 
 We separate the defaults into a few categories to make it easy to select desired options.
 

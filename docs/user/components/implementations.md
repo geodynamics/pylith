@@ -176,4 +176,4 @@
 
 ## SpatialData implementations
 
-Refer to URL for SpatialData component implementations.
+<https://spatialdata.readthedocs.io/en/latest/user/components/index.html>

@@ -240,122 +240,142 @@ cubit.cmd("block 3 name 'mantle'")
 
 
 # Nodesets
-# Fault (coseismic region only)
-cubit.cmd("group 'fault_coseismic' add node in c_slabtop@A")
-cubit.cmd("group 'fault_coseismic' add node in c_slabtop")
-cubit.cmd("nodeset 20 group fault_coseismic")
-cubit.cmd("nodeset 20 name 'fault_coseismic'")
 
-# Fault edge (coseismic region only)
-cubit.cmd("group 'fault_coseismic_edge' add node in vertex 65")
-cubit.cmd("nodeset 30 group fault_coseismic_edge")
-cubit.cmd("nodeset 30 name 'fault_coseismic_edge'")
+if False:
+    # Fault (coseismic region only)
+    cubit.cmd("group 'fault_coseismic' add node in c_slabtop@A")
+    cubit.cmd("group 'fault_coseismic' add node in c_slabtop")
+    cubit.cmd("nodeset 20 group fault_coseismic")
+    cubit.cmd("nodeset 20 name 'fault_coseismic'")
 
-cubit.cmd("group 'fault_slabtop' add node in c_slabtop@A")
-cubit.cmd("group 'fault_slabtop' add node in c_slabtop")
-cubit.cmd("group 'fault_slabtop' add node in c_slabtop@D")
-cubit.cmd("nodeset 21 group fault_slabtop")
-cubit.cmd("nodeset 21 name 'fault_slabtop'")
+    # Fault edge (coseismic region only)
+    cubit.cmd("group 'fault_coseismic_edge' add node in vertex 65")
+    cubit.cmd("nodeset 30 group fault_coseismic_edge")
+    cubit.cmd("nodeset 30 name 'fault_coseismic_edge'")
 
-# Fault edge (slabtop)
-cubit.cmd("group 'fault_slabtop_edge' add node in vertex 33")
-cubit.cmd("nodeset 31 group fault_slabtop_edge")
-cubit.cmd("nodeset 31 name 'fault_slabtop_edge'")
+    cubit.cmd("group 'fault_slabtop' add node in c_slabtop@A")
+    cubit.cmd("group 'fault_slabtop' add node in c_slabtop")
+    cubit.cmd("group 'fault_slabtop' add node in c_slabtop@D")
+    cubit.cmd("nodeset 21 group fault_slabtop")
+    cubit.cmd("nodeset 21 name 'fault_slabtop'")
 
-cubit.cmd("group 'fault_slabbot' add node in c_slabbot@B")
-cubit.cmd("group 'fault_slabbot' add node in c_slabbot@D")
-cubit.cmd("group 'fault_slabbot' add node in c_slabbot")
-cubit.cmd("nodeset 22 group fault_slabbot")
-cubit.cmd("nodeset 22 name 'fault_slabbot'")
+    # Fault edge (slabtop)
+    cubit.cmd("group 'fault_slabtop_edge' add node in vertex 33")
+    cubit.cmd("nodeset 31 group fault_slabtop_edge")
+    cubit.cmd("nodeset 31 name 'fault_slabtop_edge'")
 
-# Fault edge (slabbot)
-cubit.cmd("group 'fault_slabbot_edge' add node in vertex 24")
-cubit.cmd("nodeset 32 group fault_slabbot_edge")
-cubit.cmd("nodeset 32 name 'fault_slabbot_edge'")
+    cubit.cmd("group 'fault_slabbot' add node in c_slabbot@B")
+    cubit.cmd("group 'fault_slabbot' add node in c_slabbot@D")
+    cubit.cmd("group 'fault_slabbot' add node in c_slabbot")
+    cubit.cmd("nodeset 22 group fault_slabbot")
+    cubit.cmd("nodeset 22 name 'fault_slabbot'")
 
-
-# Create nodeset for topography/bathymetry
-cubit.cmd("group 'groundsurf' add node in curve c_topo")
-cubit.cmd("group 'groundsurf' add node in curve c_topo@A")
-cubit.cmd("group 'groundsurf' add node in curve c_topo@B")
-cubit.cmd("nodeset 10 group groundsurf")
-cubit.cmd("nodeset 10 name 'groundsurf'")
-
-# Create nodesets for west boundary
-cubit.cmd("group 'bndry_west' add node in curve c_west")
-cubit.cmd("group 'bndry_west' add node in curve c_west@A")
-cubit.cmd("nodeset 11 group bndry_west")
-cubit.cmd("nodeset 11 name 'bndry_west'")
-
-# Create nodeset for east boundary
-# Crust
-cubit.cmd("group 'bndry_east_crust' add node in curve c_east")
-cubit.cmd("nodeset 12 group bndry_east_crust")
-cubit.cmd("nodeset 12 name 'bndry_east_crust'")
-
-# Mantle
-cubit.cmd("group 'bndry_east_mantle' add node in curve c_east@A")
-cubit.cmd("group 'bndry_east_mantle' remove node in group fault_slabbot")
-cubit.cmd("nodeset 13 group bndry_east_mantle")
-cubit.cmd("nodeset 13 name 'bndry_east_mantle'")
-
-# Create nodesets for bottom boundary
-cubit.cmd("group 'bndry_bot' add node in curve c_bot")
-cubit.cmd("nodeset 14 group bndry_bot")
-cubit.cmd("nodeset 14 name 'bndry_bot'")
+    # Fault edge (slabbot)
+    cubit.cmd("group 'fault_slabbot_edge' add node in vertex 24")
+    cubit.cmd("nodeset 32 group fault_slabbot_edge")
+    cubit.cmd("nodeset 32 name 'fault_slabbot_edge'")
 
 
-# Starting in PyLith v5, we will use sidesets instead of nodesets for BCs.
+    # Create nodeset for topography/bathymetry
+    cubit.cmd("group 'groundsurf' add node in curve c_topo")
+    cubit.cmd("group 'groundsurf' add node in curve c_topo@A")
+    cubit.cmd("group 'groundsurf' add node in curve c_topo@B")
+    cubit.cmd("nodeset 10 group groundsurf")
+    cubit.cmd("nodeset 10 name 'groundsurf'")
+
+    # Create nodesets for west boundary
+    cubit.cmd("group 'bndry_west' add node in curve c_west")
+    cubit.cmd("group 'bndry_west' add node in curve c_west@A")
+    cubit.cmd("nodeset 11 group bndry_west")
+    cubit.cmd("nodeset 11 name 'bndry_west'")
+
+    # Create nodeset for east boundary
+    # Crust
+    cubit.cmd("group 'bndry_east_crust' add node in curve c_east")
+    cubit.cmd("nodeset 12 group bndry_east_crust")
+    cubit.cmd("nodeset 12 name 'bndry_east_crust'")
+
+    # Mantle
+    cubit.cmd("group 'bndry_east_mantle' add node in curve c_east@A")
+    cubit.cmd("group 'bndry_east_mantle' remove node in group fault_slabbot")
+    cubit.cmd("nodeset 13 group bndry_east_mantle")
+    cubit.cmd("nodeset 13 name 'bndry_east_mantle'")
+
+    # Create nodesets for bottom boundary
+    cubit.cmd("group 'bndry_bot' add node in curve c_bot")
+    cubit.cmd("nodeset 14 group bndry_bot")
+    cubit.cmd("nodeset 14 name 'bndry_bot'")
+
+
 # Sidesets
-#
-## Fault (coseismic region only)
-#cubit.cmd("group 'fault_coseismic' add c_slabtop@A")
-#cubit.cmd("group 'fault_coseismic' add c_slabtop")
-#cubit.cmd("sideset 20 group fault_coseismic")
-#cubit.cmd("sideset 20 name 'fault_coseismic'")
-#
-#cubit.cmd("group 'fault_slabtop' add c_slabtop@A")
-#cubit.cmd("group 'fault_slabtop' add c_slabtop")
-#cubit.cmd("group 'fault_slabtop' add c_slabtop@D")
-#cubit.cmd("sideset 21 group fault_slabtop")
-#cubit.cmd("sideset 21 name 'fault_slabtop'")
-#
-#cubit.cmd("group 'fault_slabbot' add c_slabbot@B")
-#cubit.cmd("group 'fault_slabbot' add c_slabbot@D")
-#cubit.cmd("group 'fault_slabbot' add c_slabbot")
-#cubit.cmd("sideset 22 group fault_slabbot")
-#cubit.cmd("sideset 22 name 'fault_slabbot'")
-#
-#
-## Create sideset for topography/bathymetry
-#cubit.cmd("group 'groundsurf' add curve c_topo")
-#cubit.cmd("group 'groundsurf' add curve c_topo@A")
-#cubit.cmd("group 'groundsurf' add curve c_topo@B")
-#cubit.cmd("sideset 10 group groundsurf")
-#cubit.cmd("sideset 10 name 'groundsurf'")
-#
-## Create sideset for west boundary
-#cubit.cmd("group 'bndry_west' add curve c_west")
-#cubit.cmd("group 'bndry_west' add curve c_west@A")
-#cubit.cmd("sideset 11 group bndry_west")
-#cubit.cmd("sideset 11 name 'bndry_west'")
-#
-## Create sideset for east boundary
-## Crust
-#cubit.cmd("group 'bndry_east_crust' add curve c_east")
-#cubit.cmd("sideset 12 group bndry_east_crust")
-#cubit.cmd("sideset 12 name 'bndry_east_crust'")
-#
-## Mantle
-#cubit.cmd("group 'bndry_east_mantle' add curve c_east@A")
-#cubit.cmd("group 'bndry_east_mantle' remove group fault_slabbot")
-#cubit.cmd("sideset 13 group bndry_east_mantle")
-#cubit.cmd("sideset 13 name 'bndry_east_mantle'")
-#
-## Create sideset for bottom boundary
-#cubit.cmd("group 'bndry_bot' add curve c_bot")
-#cubit.cmd("sideset 14 group bndry_bot")
-#cubit.cmd("sideset 14 name 'bndry_bot'")
+# Starting in PyLith v5, we will use sidesets instead of nodesets for BCs.
+
+if True:
+    # Fault (coseismic region only)
+    cubit.cmd("group 'fault_coseismic' add c_slabtop@A")
+    cubit.cmd("group 'fault_coseismic' add c_slabtop")
+    cubit.cmd("sideset 20 group fault_coseismic")
+    cubit.cmd("sideset 20 name 'fault_coseismic'")
+
+    cubit.cmd("group 'fault_slabtop' add c_slabtop@A")
+    cubit.cmd("group 'fault_slabtop' add c_slabtop")
+    cubit.cmd("group 'fault_slabtop' add c_slabtop@D")
+    cubit.cmd("sideset 21 group fault_slabtop")
+    cubit.cmd("sideset 21 name 'fault_slabtop'")
+
+    cubit.cmd("group 'fault_slabbot' add c_slabbot@B")
+    cubit.cmd("group 'fault_slabbot' add c_slabbot@D")
+    cubit.cmd("group 'fault_slabbot' add c_slabbot")
+    cubit.cmd("sideset 22 group fault_slabbot")
+    cubit.cmd("sideset 22 name 'fault_slabbot'")
+
+
+    ## Create sideset for topography/bathymetry
+    cubit.cmd("group 'groundsurf' add curve c_topo")
+    cubit.cmd("group 'groundsurf' add curve c_topo@A")
+    cubit.cmd("group 'groundsurf' add curve c_topo@B")
+    cubit.cmd("sideset 10 group groundsurf")
+    cubit.cmd("sideset 10 name 'groundsurf'")
+
+    ## Create sideset for west boundary
+    cubit.cmd("group 'bndry_west' add curve c_west")
+    cubit.cmd("group 'bndry_west' add curve c_west@A")
+    cubit.cmd("sideset 11 group bndry_west")
+    cubit.cmd("sideset 11 name 'bndry_west'")
+
+    # Create sideset for east boundary
+    # Crust
+    cubit.cmd("group 'bndry_east_crust' add curve c_east")
+    cubit.cmd("sideset 12 group bndry_east_crust")
+    cubit.cmd("sideset 12 name 'bndry_east_crust'")
+
+    # Mantle
+    cubit.cmd("group 'bndry_east_mantle' add curve c_east@A")
+    cubit.cmd("group 'bndry_east_mantle' remove group fault_slabbot")
+    cubit.cmd("sideset 13 group bndry_east_mantle")
+    cubit.cmd("sideset 13 name 'bndry_east_mantle'")
+
+    # Create sideset for bottom boundary
+    cubit.cmd("group 'bndry_bot' add curve c_bot")
+    cubit.cmd("sideset 14 group bndry_bot")
+    cubit.cmd("sideset 14 name 'bndry_bot'")
+
+
+    # Buried edges :TODO: Remove after using transform to create fault
+    # Fault edge (coseismic region only)
+    cubit.cmd("group 'fault_coseismic_edge' add node in vertex 65")
+    cubit.cmd("nodeset 30 group fault_coseismic_edge")
+    cubit.cmd("nodeset 30 name 'fault_coseismic_edge'")
+
+    # Fault edge (slabtop)
+    cubit.cmd("group 'fault_slabtop_edge' add node in vertex 33")
+    cubit.cmd("nodeset 31 group fault_slabtop_edge")
+    cubit.cmd("nodeset 31 name 'fault_slabtop_edge'")
+
+    # Fault edge (slabbot)
+    cubit.cmd("group 'fault_slabbot_edge' add node in vertex 24")
+    cubit.cmd("nodeset 32 group fault_slabbot_edge")
+    cubit.cmd("nodeset 32 name 'fault_slabbot_edge'")
 
 
 # Write mesh as ExodusII file

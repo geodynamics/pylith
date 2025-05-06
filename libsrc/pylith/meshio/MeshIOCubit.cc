@@ -26,23 +26,114 @@
 #include <sstream> // USES std::ostringstream
 #include <typeinfo> // USES std::typeid
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
+namespace pylith {
+    namespace meshio {
+        namespace _MeshIOCubit {
+            /** Read mesh vertices.
+             *
+             * @param[out] geometry Mesh geometry.
+             * @param[inout] fileIn Cubit Exodus file.
+             */
+            void readVertices(pylith::meshio::MeshBuilder::Geometry* geometry,
+                              pylith::meshio::ExodusII& fileIn);
+
+            /** Write mesh vertices.
+             *
+             * @param[inout] fileOut Cubit Exodus file.
+             * @param[in] geometry Mesh geometry.
+             */
+            void writeVertices(pylith::meshio::ExodusII& fileOut,
+                               const pylith::meshio::MeshBuilder::Geometry& geometry);
+
+            /** Read mesh cells.
+             *
+             * @param[out] topology Mesh topology.
+             * @param[out] materialIds Material id for each cell.
+             * @param[inout] fileIn Cubit Exodus file.
+             */
+            void readCells(pylith::meshio::MeshBuilder::Topology* topology,
+                           int_array* materialIds,
+                           pylith::meshio::ExodusII& fileIn);
+
+            /** Write mesh cells.
+             *
+             * @param[inout] fileOut Cubit Exodus file.
+             * @param[in] topology Mesh topology.
+             */
+            void writeCells(pylith::meshio::ExodusII& fileOut,
+                            const pylith::meshio::MeshBuilder::Topology& topology,
+                            const int_array& materialIds);
+
+            /** Read a point group with vertices.
+             *
+             * @param[out] points Vertices in group.
+             * @param[out] name Name of group.
+             * @param[inout] fileIn Cubit Exodus file.
+             */
+            void readNodeSet(int_array* points,
+                             std::string* name,
+                             pylith::meshio::ExodusII& fileIn);
+
+            /** Write a point group with vertices.
+             *
+             * @param[inout] fileOut Output stream.
+             * @param[in] points Vertices in group.
+             * @param[in] name Name of group.
+             */
+            void writeNodeSet(std::ostream& fileOut,
+                              const int_array& points,
+                              const char* name);
+
+            /** Read a point group with faces.
+             *
+             * @param[out] faceValues Array of cell+vertices for each face.
+             * @param[out] name Name of group.
+             * @param[inout] parser Input parser.
+             * @param[in] faceShape Shape of face.
+             * @param[in] useIndexZero True if using zero-based indexing.
+             */
+            void readSideSet(int_array* faceValues,
+                             std::string* name,
+                             pylith::meshio::ExodusII& fileIn);
+
+            /** Write a point group with faces
+             *
+             * @param[inout] fileOut Output stream.
+             * @param[in] faceValues Array of cell+vertices for each face.
+             * @param[in] faceShape Shape of face.
+             * @param[in] name Name of group.
+             */
+            void writeSideSet(std::ostream& fileOut,
+                              const int_array& faceValues,
+                              const char* name);
+
+            /** Reorder vertices in cells to match PyLith/PETSc conventions.
+             *
+             * @param[inout] topology Mesh topology.
+             */
+            void orientCells(pylith::meshio::MeshBuilder::Topology* topology);
+
+        } // _MeshIOCubit
+    } // meshio
+} // pylith
+
+// ------------------------------------------------------------------------------------------------
 // Constructor
 pylith::meshio::MeshIOCubit::MeshIOCubit(void) :
-    _filename(""),
-    _useNodesetNames(true) { // constructor
+    _filename("") {
     PyreComponent::setName("meshiocubit");
 } // constructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Destructor
 pylith::meshio::MeshIOCubit::~MeshIOCubit(void) {
     deallocate();
 } // destructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
 pylith::meshio::MeshIOCubit::deallocate(void) {
@@ -54,39 +145,55 @@ pylith::meshio::MeshIOCubit::deallocate(void) {
 } // deallocate
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
+// Set filename for CUBIT file.
+void
+pylith::meshio::MeshIOCubit::setFilename(const char* name) {
+    _filename = name;
+} // setFilename
+
+
+// ------------------------------------------------------------------------------------------------
+// Get filename of CUBIT file.
+const char*
+pylith::meshio::MeshIOCubit::getFilename(void) const {
+    return _filename.c_str();
+} // getFilename
+
+
+// ------------------------------------------------------------------------------------------------
 // Unpickle mesh
 void
 pylith::meshio::MeshIOCubit::_read(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_read()");
-
     assert(_mesh);
 
     const int commRank = _mesh->getCommRank();
-    int meshDim = 0;
-    int spaceDim = 0;
-    int numVertices = 0;
-    int numCells = 0;
-    int numCorners = 0;
-    scalar_array coordinates;
-    int_array cells;
+
+    pylith::meshio::MeshBuilder::Topology topology;
+    pylith::meshio::MeshBuilder::Geometry geometry;
     int_array materialIds;
-    PetscErrorCode err = 0;
 
     if (0 == commRank) {
         try {
-            ExodusII exofile(_filename.c_str());
+            pylith::meshio::ExodusII exoFile(_filename.c_str());
 
-            const int meshDim = exofile.getDim("num_dim");
+            topology.dimension = exoFile.getDim("num_dim");
 
-            _readVertices(exofile, &coordinates, &numVertices, &spaceDim);
-            err = MPI_Bcast(&spaceDim, 1, MPI_INT, 0, _mesh->getComm());PYLITH_CHECK_ERROR(err);
-            _readCells(exofile, &cells, &materialIds, &numCells, &numCorners);
-            _orientCells(&cells, numCells, numCorners, meshDim);
-            MeshBuilder::buildMesh(_mesh, &coordinates, numVertices, spaceDim, cells, numCells, numCorners, meshDim);
-            _setMaterials(materialIds);
-            _readGroups(exofile);
+            _MeshIOCubit::readVertices(&geometry, exoFile);
+            PYLITH_COMPONENT_INFO_ROOT("Read " << geometry.numVertices << " vertices.");
+
+            _MeshIOCubit::readCells(&topology, &materialIds, exoFile);
+            topology.cellShape = pylith::meshio::MeshBuilder::cellShapeFromCorners(topology.dimension, topology.numCorners);
+            PYLITH_COMPONENT_INFO_ROOT("Read " << topology.numCells << " cells.");
+
+            _MeshIOCubit::orientCells(&topology);
+            pylith::meshio::MeshBuilder::buildMesh(_mesh, topology, geometry);
+            pylith::meshio::MeshBuilder::setMaterials(_mesh, materialIds);
+
+            _readNodeSets(exoFile);
+            _readSideSets(exoFile);
         } catch (std::exception& err) {
             std::ostringstream msg;
             msg << "Error while reading Cubit Exodus file '" << _filename << "'.\n"
@@ -98,264 +205,279 @@ pylith::meshio::MeshIOCubit::_read(void) {
             throw std::runtime_error(msg.str());
         } // try/catch
     } else {
-        err = MPI_Bcast(&spaceDim, 1, MPI_INT, 0, _mesh->getComm());PYLITH_CHECK_ERROR(err);
-        MeshBuilder::buildMesh(_mesh, &coordinates, numVertices, spaceDim, cells, numCells, numCorners, meshDim);
-        _setMaterials(materialIds);
-    }
+        pylith::meshio::MeshBuilder::buildMesh(_mesh, topology, geometry);
+        pylith::meshio::MeshBuilder::setMaterials(_mesh, materialIds);
+    } // if/else
 
     PYLITH_METHOD_END;
 } // read
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Write mesh to file.
 void
 pylith::meshio::MeshIOCubit::_write(void) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_write()");
 
-    ExodusII exofile(_filename.c_str());
-
-    _writeDimensions(exofile);
-    _writeVariables(exofile);
-    _writeAttributes(exofile);
+    throw std::logic_error("MeshIOCubit::_write() not implemented.");
 
     PYLITH_METHOD_END;
 } // write
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Read mesh vertices.
 void
-pylith::meshio::MeshIOCubit::_readVertices(ExodusII& exofile,
-                                           scalar_array* coordinates,
-                                           int* numVertices,
-                                           int* numDims) const {
+pylith::meshio::_MeshIOCubit::readVertices(pylith::meshio::MeshBuilder::Geometry* geometry,
+                                           pylith::meshio::ExodusII& exoFile) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_readVertices(exofile="<<typeid(exofile).name()<<", coordinates="<<coordinates<<", numVertices="<<numVertices<<", numDims="<<numDims<<")");
 
-    assert(coordinates);
-    assert(numVertices);
-    assert(numDims);
+    assert(geometry);
 
-    // Space dimension
-    *numDims = exofile.getDim("num_dim");
+    geometry->spaceDim = exoFile.getDim("num_dim");
+    geometry->numVertices = exoFile.getDim("num_nodes");
 
-    // Number of vertices
-    *numVertices = exofile.getDim("num_nodes");
-
-    PYLITH_COMPONENT_INFO_ROOT("Reading " << *numVertices << " vertices.");
-
-    if (exofile.hasVar("coord", NULL)) {
+    if (exoFile.hasVar("coord", NULL)) {
         const int ndims = 2;
         int dims[2];
-        dims[0] = *numDims;
-        dims[1] = *numVertices;
-        scalar_array buffer(*numVertices * *numDims);
-        exofile.getVar(&buffer[0], dims, ndims, "coord");
+        dims[0] = geometry->spaceDim;
+        dims[1] = geometry->numVertices;
+        scalar_array buffer(geometry->numVertices * geometry->spaceDim);
+        exoFile.getVar(&buffer[0], dims, ndims, "coord");
 
-        coordinates->resize(*numVertices * *numDims);
-        for (int iVertex = 0; iVertex < *numVertices; ++iVertex) {
-            for (int iDim = 0; iDim < *numDims; ++iDim) {
-                (*coordinates)[iVertex*(*numDims)+iDim] =
-                    buffer[iDim*(*numVertices)+iVertex];
-            }
-        }
+        geometry->vertices.resize(geometry->numVertices * geometry->spaceDim);
+        for (size_t iVertex = 0; iVertex < geometry->numVertices; ++iVertex) {
+            for (size_t iDim = 0; iDim < geometry->spaceDim; ++iDim) {
+                geometry->vertices[iVertex*(geometry->spaceDim)+iDim] =
+                    buffer[iDim*geometry->numVertices+iVertex];
+            } // for
+        } // for
 
     } else {
         const char* coordNames[3] = { "coordx", "coordy", "coordz" };
 
-        coordinates->resize(*numVertices * *numDims);
-        scalar_array buffer(*numVertices);
+        geometry->vertices.resize(geometry->numVertices * geometry->spaceDim);
+        scalar_array buffer(geometry->numVertices);
 
         const int ndims = 1;
         int dims[1];
-        dims[0] = *numVertices;
+        dims[0] = geometry->numVertices;
 
-        for (int i = 0; i < *numDims; ++i) {
-            exofile.getVar(&buffer[0], dims, ndims, coordNames[i]);
+        for (size_t i = 0; i < geometry->spaceDim; ++i) {
+            exoFile.getVar(&buffer[0], dims, ndims, coordNames[i]);
 
-            for (int iVertex = 0; iVertex < *numVertices; ++iVertex) {
-                (*coordinates)[iVertex*(*numDims)+i] = buffer[iVertex];
-            }
+            for (size_t iVertex = 0; iVertex < geometry->numVertices; ++iVertex) {
+                geometry->vertices[iVertex*(geometry->spaceDim)+i] = buffer[iVertex];
+            } // for
         } // for
     } // else
 
     PYLITH_METHOD_END;
-} // _readVertices
+} // readVertices
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Read mesh cells.
 void
-pylith::meshio::MeshIOCubit::_readCells(ExodusII& exofile,
-                                        int_array* cells,
+pylith::meshio::_MeshIOCubit::readCells(pylith::meshio::MeshBuilder::Topology* topology,
                                         int_array* materialIds,
-                                        int* numCells,
-                                        int* numCorners) const {
+                                        pylith::meshio::ExodusII& exoFile) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_readCells(exofile="<<typeid(exofile).name()<<", cells="<<cells<<", materialIds="<<materialIds<<", numCells="<<numCells<<", numCorners="<<numCorners<<")");
 
-    assert(cells);
+    assert(topology);
     assert(materialIds);
-    assert(numCells);
-    assert(numCorners);
 
-    *numCells = exofile.getDim("num_elem");
-    const int numMaterials = exofile.getDim("num_el_blk");
-
-    PYLITH_COMPONENT_INFO_ROOT("Reading " << *numCells << " cells in " << numMaterials << " blocks.");
+    topology->numCells = exoFile.getDim("num_elem");
+    const int numMaterials = exoFile.getDim("num_el_blk");
 
     int_array blockIds(numMaterials);
     int ndims = 1;
     int dims[2];
     dims[0] = numMaterials;
     dims[1] = 0;
-    exofile.getVar(&blockIds[0], dims, ndims, "eb_prop1");
+    exoFile.getVar(&blockIds[0], dims, ndims, "eb_prop1");
 
-    materialIds->resize(*numCells);
-    *numCorners = 0;
+    materialIds->resize(topology->numCells);
+    topology->numCorners = 0;
     for (int iMaterial = 0, index = 0; iMaterial < numMaterials; ++iMaterial) {
-        std::ostringstream varname;
-        varname << "num_nod_per_el" << iMaterial+1;
-        if (0 == *numCorners) {
-            *numCorners = exofile.getDim(varname.str().c_str());
-            const int size = (*numCells) * (*numCorners);
-            cells->resize(size);
-        } else if (exofile.getDim(varname.str().c_str()) != *numCorners) {
+        std::ostringstream varName;
+        varName << "num_nod_per_el" << iMaterial+1;
+        if (0 == topology->numCorners) {
+            topology->numCorners = exoFile.getDim(varName.str().c_str());
+            const int size = (topology->numCells) * (topology->numCorners);
+            topology->cells.resize(size);
+        } else if (size_t(exoFile.getDim(varName.str().c_str())) != topology->numCorners) {
             std::ostringstream msg;
             msg << "All materials must have the same number of vertices per cell.\n"
-                << "Expected " << *numCorners << " vertices per cell, but block "
+                << "Expected " << topology->numCorners << " vertices per cell, but block "
                 << blockIds[iMaterial] << " has "
-                << exofile.getDim(varname.str().c_str())
+                << exoFile.getDim(varName.str().c_str())
                 << " vertices.";
             throw std::runtime_error(msg.str());
         } // if
 
-        varname.str("");
-        varname << "num_el_in_blk" << iMaterial+1;
-        const int blockSize = exofile.getDim(varname.str().c_str());
+        varName.str("");
+        varName << "num_el_in_blk" << iMaterial+1;
+        const int blockSize = exoFile.getDim(varName.str().c_str());
 
-        varname.str("");
-        varname << "connect" << iMaterial+1;
+        varName.str("");
+        varName << "connect" << iMaterial+1;
         ndims = 2;
         dims[0] = blockSize;
-        dims[1] = *numCorners;
-        exofile.getVar(&(*cells)[index* (*numCorners)], dims, ndims,
-                       varname.str().c_str());
+        dims[1] = topology->numCorners;
+        exoFile.getVar(&topology->cells[index* topology->numCorners], dims, ndims, varName.str().c_str());
 
         for (int i = 0; i < blockSize; ++i) {
             (*materialIds)[index+i] = blockIds[iMaterial];
-        }
+        } // for
 
         index += blockSize;
     } // for
 
-    *cells -= 1; // use zero index
+    topology->cells -= 1; // use zero index
 
     PYLITH_METHOD_END;
 } // _readCells
 
 
-// ---------------------------------------------------------------------------------------------------------------------
-// Read mesh groups.
+// ------------------------------------------------------------------------------------------------
+// Read vertex groups.
 void
-pylith::meshio::MeshIOCubit::_readGroups(ExodusII& exofile) {
+pylith::meshio::MeshIOCubit::_readNodeSets(ExodusII& exoFile) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_readGroups(exofile="<<typeid(exofile).name()<<")");
+    PYLITH_COMPONENT_DEBUG("_readNodeSets(exoFile="<<typeid(exoFile).name()<<")");
 
-    const int numGroups = exofile.getDim("num_node_sets");
-
+    if (!exoFile.hasDim("num_node_sets", NULL)) {
+        PYLITH_COMPONENT_INFO_ROOT("No nodesets found.");
+        PYLITH_METHOD_END;
+    } // if
+    const int numGroups = exoFile.getDim("num_node_sets");
     PYLITH_COMPONENT_INFO_ROOT("Found " << numGroups << " node sets.");
+    if (!numGroups) {
+        PYLITH_METHOD_END;
+    } // if
 
     int_array ids(numGroups);
     int ndims = 1;
     int dims[2];
     dims[0] = numGroups;
     dims[1] = 0;
-    exofile.getVar(&ids[0], dims, ndims, "ns_prop1");
+    exoFile.getVar(&ids[0], dims, ndims, "ns_prop1");
 
     string_vector groupNames(numGroups);
-
-    if (_useNodesetNames) {
-        exofile.getVar(&groupNames, numGroups, "ns_names");
-    } // if
+    exoFile.getVar(&groupNames, numGroups, "ns_names");
 
     for (int iGroup = 0; iGroup < numGroups; ++iGroup) {
-        std::ostringstream varname;
-        varname << "num_nod_ns" << iGroup+1;
-        const size_t nodesetSize = exofile.getDim(varname.str().c_str());
+        std::ostringstream varName;
+        varName << "num_nod_ns" << iGroup+1;
+        const size_t nodesetSize = exoFile.getDim(varName.str().c_str());
         int_array points(nodesetSize);
 
-        varname.str("");
-        varname << "node_ns" << iGroup+1;
+        varName.str("");
+        varName << "node_ns" << iGroup+1;
         ndims = 1;
         dims[0] = nodesetSize;
 
         PYLITH_COMPONENT_INFO_ROOT("Reading node set '" << groupNames[iGroup] << "' with id " << ids[iGroup] << " containing " << nodesetSize << " nodes.");
-        exofile.getVar(&points[0], dims, ndims, varname.str().c_str());
+        exoFile.getVar(&points[0], dims, ndims, varName.str().c_str());
 
         std::sort(&points[0], &points[0]+nodesetSize);
         points -= 1; // use zero index
 
-        pylith::meshio::MeshBuilder::GroupPtType type = pylith::meshio::MeshBuilder::VERTEX;
-        if (_useNodesetNames) {
-            pylith::meshio::MeshBuilder::setGroup(_mesh, groupNames[iGroup].c_str(), type, points);
-        } else {
-            std::ostringstream name;
-            name << ids[iGroup];
-            pylith::meshio::MeshBuilder::setGroup(_mesh, name.str().c_str(), type, points);
-        } // if/else
+        pylith::meshio::MeshBuilder::setVertexGroup(_mesh, groupNames[iGroup].c_str(), points);
     } // for
 
     PYLITH_METHOD_END;
-} // _readGroups
+} // _readNodeSets
 
 
-// ---------------------------------------------------------------------------------------------------------------------
-// Write mesh dimensions.
+// ------------------------------------------------------------------------------------------------
+// Read face groups.
 void
-pylith::meshio::MeshIOCubit::_writeDimensions(ExodusII& exofile) const {
-    throw std::logic_error("MeshIOCubit::_writeDimensions() not implemented.");
-} // _writeDimensions
+pylith::meshio::MeshIOCubit::_readSideSets(ExodusII& exoFile) {
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("_readSideSets(exoFile="<<typeid(exoFile).name()<<")");
+
+    if (!exoFile.hasDim("num_side_sets", NULL)) {
+        PYLITH_COMPONENT_INFO_ROOT("No sidesets found.");
+        PYLITH_METHOD_END;
+    } // if
+    const int numGroups = exoFile.getDim("num_side_sets");
+    PYLITH_COMPONENT_INFO_ROOT("Found " << numGroups << " side sets.");
+    if (!numGroups) {
+        PYLITH_METHOD_END;
+    } // if
+
+    // Need cell shape to interpret sides
+    const char* varName = "connect1"; // :KLUDGE: Assume uniform cell type
+    const char* attrName = "elem_type";
+    std::string shapeName;
+    exoFile.getAttr(&shapeName, varName, attrName);
+    int sideOffset = -1; // 1-based to 0-based index
+    if ((shapeName == std::string("SHELL")) || (shapeName == std::string("SHELL4"))) {
+        sideOffset -= 2; // 6 sides and start at 3 instead of 1
+    } // if
+
+    int_array ids(numGroups);
+    int ndims = 1;
+    int dims[2];
+    dims[0] = numGroups;
+    dims[1] = 0;
+    exoFile.getVar(&ids[0], dims, ndims, "ss_prop1");
+
+    string_vector groupNames(numGroups);
+    exoFile.getVar(&groupNames, numGroups, "ss_names");
+
+    for (int iGroup = 0; iGroup < numGroups; ++iGroup) {
+        std::ostringstream varName;
+        varName << "num_side_ss" << iGroup+1;
+        const size_t sideSetSize = exoFile.getDim(varName.str().c_str());
+        int_array ioBuffer(sideSetSize);
+        int_array points(2*sideSetSize);
+
+        PYLITH_COMPONENT_INFO_ROOT("Reading side set '" << groupNames[iGroup] << "' with id " << ids[iGroup] << " containing " << sideSetSize << " faces.");
+
+        // Read cells
+        varName.str("");
+        varName << "elem_ss" << iGroup+1;
+        ndims = 1;
+        dims[0] = sideSetSize;
+        exoFile.getVar(&ioBuffer[0], dims, ndims, varName.str().c_str());
+        ioBuffer -= 1; // use zero index
+        for (size_t i = 0; i < sideSetSize; ++i) {
+            points[2*i+0] = ioBuffer[i];
+        } // for
+
+        // Read cell sides
+        varName.str("");
+        varName << "side_ss" << iGroup+1;
+        ndims = 1;
+        dims[0] = sideSetSize;
+        exoFile.getVar(&ioBuffer[0], dims, ndims, varName.str().c_str());
+        ioBuffer += sideOffset;
+        for (size_t i = 0; i < sideSetSize; ++i) {
+            points[2*i+1] = ioBuffer[i];
+        } // for
+
+        pylith::meshio::MeshBuilder::setFaceGroupFromCellSide(_mesh, groupNames[iGroup].c_str(), points);
+    } // for
+
+    PYLITH_METHOD_END;
+} // _readSideSets
 
 
-// ---------------------------------------------------------------------------------------------------------------------
-// Write mesh variables.
-void
-pylith::meshio::MeshIOCubit::_writeVariables(ExodusII& exofile) const {
-    throw std::logic_error("MeshIOCubit::_writeVariables() not implemented.");
-} // _writeVariables
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Write mesh attributes.
-void
-pylith::meshio::MeshIOCubit::_writeAttributes(ExodusII& exofile) const {
-    throw std::logic_error("MeshIOCubit::_writeAttributes() not implemented.");
-} // _writeAttributes
-
-
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Reorder vertices in cells to match PyLith conventions.
 void
-pylith::meshio::MeshIOCubit::_orientCells(int_array* const cells,
-                                          const int numCells,
-                                          const int numCorners,
-                                          const int meshDim) {
+pylith::meshio::_MeshIOCubit::orientCells(pylith::meshio::MeshBuilder::Topology* topology) {
     PYLITH_METHOD_BEGIN;
 
-    assert(cells);
-    assert(cells->size() == size_t(numCells*numCorners));
+    assert(topology);
+    const size_t numCorners = topology->numCorners;
 
-    if ((2 == meshDim) && (4 == numCorners)) { // QUAD4
-        // do nothing
-
-    } else if ((3 == meshDim) && (8 == numCorners)) { // HEX8
-        // do nothing
-
-    } else if ((2 == meshDim) && (6 == numCorners)) { // TRI6
-        // Cubit
+    if ((2 == topology->dimension) && (6 == numCorners)) { // TRI6
+        // CUBIT
         // corners,
         // bottom edges, middle edges, top edges
 
@@ -364,23 +486,23 @@ pylith::meshio::MeshIOCubit::_orientCells(int_array* const cells,
 
         // Permutation: 3, 4, 5, 0, 1, 2
         int tmp = 0;
-        for (int iCell = 0; iCell < numCells; ++iCell) {
-            const int ii = iCell*numCorners;
-            tmp = (*cells)[ii+0];
-            (*cells)[ii+0] = (*cells)[ii+3];
-            (*cells)[ii+3] = tmp;
+        for (size_t iCell = 0; iCell < topology->numCells; ++iCell) {
+            const size_t ii = iCell*numCorners;
+            tmp = (topology->cells)[ii+0];
+            (topology->cells)[ii+0] = (topology->cells)[ii+3];
+            (topology->cells)[ii+3] = tmp;
 
-            tmp = (*cells)[ii+1];
-            (*cells)[ii+1] = (*cells)[ii+4];
-            (*cells)[ii+4] = tmp;
+            tmp = (topology->cells)[ii+1];
+            (topology->cells)[ii+1] = (topology->cells)[ii+4];
+            (topology->cells)[ii+4] = tmp;
 
-            tmp = (*cells)[ii+2];
-            (*cells)[ii+2] = (*cells)[ii+5];
-            (*cells)[ii+5] = tmp;
+            tmp = (topology->cells)[ii+2];
+            (topology->cells)[ii+2] = (topology->cells)[ii+5];
+            (topology->cells)[ii+5] = tmp;
         } // for
 
-    } else if ((3 == meshDim) && (27 == numCorners)) { // HEX27
-        // Cubit
+    } else if ((3 == topology->dimension) && (27 == numCorners)) { // HEX27
+        // CUBIT
         // corners,
         // bottom edges, middle edges, top edges
         // interior
@@ -392,7 +514,7 @@ pylith::meshio::MeshIOCubit::_orientCells(int_array* const cells,
         // left/right, front/back, bottom/top
         // interior
         int tmp = 0;
-        for (int iCell = 0; iCell < numCells; ++iCell) {
+        for (size_t iCell = 0; iCell < topology->numCells; ++iCell) {
             const int i12 = iCell*numCorners+12;
             const int i13 = iCell*numCorners+13;
             const int i14 = iCell*numCorners+14;
@@ -409,34 +531,34 @@ pylith::meshio::MeshIOCubit::_orientCells(int_array* const cells,
             const int i25 = iCell*numCorners+25;
             const int i26 = iCell*numCorners+26;
 
-            tmp = (*cells)[i12];
-            (*cells)[i12] = (*cells)[i16];
-            (*cells)[i16] = tmp;
+            tmp = (topology->cells)[i12];
+            (topology->cells)[i12] = (topology->cells)[i16];
+            (topology->cells)[i16] = tmp;
 
-            tmp = (*cells)[i13];
-            (*cells)[i13] = (*cells)[i17];
-            (*cells)[i17] = tmp;
+            tmp = (topology->cells)[i13];
+            (topology->cells)[i13] = (topology->cells)[i17];
+            (topology->cells)[i17] = tmp;
 
-            tmp = (*cells)[i14];
-            (*cells)[i14] = (*cells)[i18];
-            (*cells)[i18] = tmp;
+            tmp = (topology->cells)[i14];
+            (topology->cells)[i14] = (topology->cells)[i18];
+            (topology->cells)[i18] = tmp;
 
-            tmp = (*cells)[i15];
-            (*cells)[i15] = (*cells)[i19];
-            (*cells)[i19] = tmp;
+            tmp = (topology->cells)[i15];
+            (topology->cells)[i15] = (topology->cells)[i19];
+            (topology->cells)[i19] = tmp;
 
-            tmp = (*cells)[i20];
-            (*cells)[i20] = (*cells)[i23];
-            (*cells)[i23] = (*cells)[i26];
-            (*cells)[i26] = tmp;
+            tmp = (topology->cells)[i20];
+            (topology->cells)[i20] = (topology->cells)[i23];
+            (topology->cells)[i23] = (topology->cells)[i26];
+            (topology->cells)[i26] = tmp;
 
-            tmp = (*cells)[i21];
-            (*cells)[i21] = (*cells)[i24];
-            (*cells)[i24] = tmp;
+            tmp = (topology->cells)[i21];
+            (topology->cells)[i21] = (topology->cells)[i24];
+            (topology->cells)[i24] = tmp;
 
-            tmp = (*cells)[i22];
-            (*cells)[i22] = (*cells)[i25];
-            (*cells)[i25] = tmp;
+            tmp = (topology->cells)[i22];
+            (topology->cells)[i22] = (topology->cells)[i25];
+            (topology->cells)[i25] = tmp;
         } // for
     } // if/else
 

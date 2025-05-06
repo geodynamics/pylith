@@ -10,7 +10,7 @@ dnl ============================================================================
 dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT([PyLith], [4.2.0], [https://geodynamics.org/resources/pylith])
+AC_INIT([PyLith], [5.0.0dev], [https://geodynamics.org/resources/pylith])
 AC_CONFIG_AUX_DIR([./aux-config])
 AC_CONFIG_HEADER([portinfo])
 AC_CONFIG_MACRO_DIR([m4])
@@ -114,7 +114,7 @@ AC_CHECK_HEADER([mpi.h], [], [AC_MSG_ERROR([header 'mpi.h' not found])])
 
 dnl PETSC
 AC_LANG(C)
-CIT_PATH_PETSC([3.22.3])
+CIT_PATH_PETSC([3.23.1])
 CIT_HEADER_PETSC
 CIT_CHECK_LIB_PETSC
 

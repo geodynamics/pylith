@@ -150,7 +150,7 @@ pylith::bc::AbsorbingDampers::createAuxiliaryField(const pylith::topology::Field
     PYLITH_COMPONENT_DEBUG("createAuxiliaryField(solution="<<solution.getLabel()<<", domainMesh=)"<<typeid(domainMesh).name()<<")");
 
     pylith::topology::Field* auxiliaryField = new pylith::topology::Field(domainMesh);assert(auxiliaryField);
-    auxiliaryField->setLabel("AbsorbingDampers auxiliary field");
+    auxiliaryField->setLabel("auxiliary field");
 
     assert(_auxiliaryFactory);
     assert(_normalizer);

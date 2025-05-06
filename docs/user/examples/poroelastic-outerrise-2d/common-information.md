@@ -56,7 +56,6 @@ normalizer.relaxation_time = 1*year
 normalizer.shear_modulus = 10.0*GPa
 ```
 
-
 ```{code-block} cfg
 ---
 caption: Time stepping parameters for the 2D outer-rise examples with poroelasticity.
@@ -83,7 +82,6 @@ materials.slab = pylith.materials.Poroelasticity
 slab.bulk_rheology = pylith.materials.IsotropicLinearPoroelasticity
 
 [pylithapp.problem.materials.slab]
-description = slab
 label_value = 1
 use_state_variables = True
 db_auxiliary_field = spatialdata.spatialdb.SimpleGridDB 

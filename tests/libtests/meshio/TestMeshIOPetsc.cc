@@ -46,7 +46,7 @@ pylith::meshio::TestMeshIOPetsc::testFilename(void) {
     PYLITH_METHOD_BEGIN;
     assert(_io);
 
-    const std::string& filename = "hi.txt";
+    const std::string& filename = "hi.h5";
     _io->setFilename(filename.c_str());
     CHECK(filename == std::string(_io->getFilename()));
 
@@ -57,10 +57,12 @@ pylith::meshio::TestMeshIOPetsc::testFilename(void) {
 // ------------------------------------------------------------------------------------------------
 // Test read().
 void
-pylith::meshio::TestMeshIOPetsc::testRead(void) {
+pylith::meshio::TestMeshIOPetsc::testRead(const bool gmshMarkRecursive) {
     PYLITH_METHOD_BEGIN;
     assert(_io);
     assert(_data);
+
+    _io->setGmshMarkRecursive(gmshMarkRecursive);
 
     // Read mesh
     _io->setFilename(_data->filename.c_str());
@@ -95,6 +97,37 @@ pylith::meshio::TestMeshIOPetsc::testReadError(void) {
 
     PYLITH_METHOD_END;
 } // testReadError
+
+
+// ----------------------------------------------------------------------
+// Test write() and read().
+void
+pylith::meshio::TestMeshIOPetsc::testWriteRead(void) {
+    PYLITH_METHOD_BEGIN;
+    assert(_io);
+
+    TestMeshIO::_createMesh();assert(_mesh);
+
+    // Write mesh
+    _io->setFilename(_data->filename.c_str());
+    _io->setFormat(MeshIOPetsc::HDF5);
+    _io->write(_mesh);
+
+    // Read mesh
+    delete _mesh;_mesh = new pylith::topology::Mesh;
+    _io->read(_mesh);
+
+    pythia::journal::debug_t debug("TestMeshIOPetsc");
+    if (debug.state()) {
+        _mesh->view();
+        _mesh->view(":mesh.tex:ascii_latex");
+    } // if
+
+    // Make sure meshIn matches data
+    TestMeshIO::_checkVals();
+
+    PYLITH_METHOD_END;
+} // testWriteRead
 
 
 // End of file

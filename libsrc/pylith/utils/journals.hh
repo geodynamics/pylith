@@ -16,7 +16,7 @@
         do { \
             pythia::journal::debug_t debug(PyreComponent::getName()); \
             debug << pythia::journal::at(__HERE__) \
-                  << "Component '"<<PyreComponent::getIdentifier()<<"': " \
+                  << "Component '"<<PyreComponent::getFullIdentifier()<<"': " \
                   << msg << pythia::journal::endl; \
         } while (0)
 
@@ -25,7 +25,7 @@
             if (pylith::utils::MPI::isRoot()) { \
                 pythia::journal::info_t info(PyreComponent::getName()); \
                 info << pythia::journal::at(__HERE__) \
-                     << "Component '"<<PyreComponent::getIdentifier()<<"': " \
+                     << "Component '"<<PyreComponent::getFullIdentifier()<<"': " \
                      << msg << pythia::journal::endl; } \
         } while (0)
 
@@ -33,7 +33,7 @@
         do { \
             pythia::journal::info_t info(PyreComponent::getName()); \
             info << pythia::journal::at(__HERE__) \
-                 << "Component '"<<PyreComponent::getIdentifier()<<"': " \
+                 << "Component '"<<PyreComponent::getFullIdentifier()<<"': " \
                  << msg << pythia::journal::endl; \
         } while (0)
 
@@ -41,7 +41,7 @@
         do { \
             pythia::journal::warning_t warning(PyreComponent::getName()); \
             warning << pythia::journal::at(__HERE__) \
-                    << "Component '"<<PyreComponent::getIdentifier()<<"': " \
+                    << "Component '"<<PyreComponent::getFullIdentifier()<<"': " \
                     << msg << pythia::journal::endl; \
         } while (0)
 
@@ -49,7 +49,7 @@
         do { \
             pythia::journal::error_t error(PyreComponent::getName()); \
             error << pythia::journal::at(__HERE__) \
-                  << "Component '"<<PyreComponent::getIdentifier()<<"': " \
+                  << "Component '"<<PyreComponent::getFullIdentifier()<<"': " \
                   << msg << pythia::journal::endl; \
         } while (0)
 
@@ -57,7 +57,7 @@
         do { \
             std::ostringstream firewall; \
             firewall << pythia::journal::at(__HERE__) \
-                     << "Component '"<<PyreComponent::getIdentifier()<<"': " \
+                     << "Component '"<<PyreComponent::getFullIdentifier()<<"': " \
                      << msg; \
             throw std::logic_error(firewall.str().c_str()); \
         } while (0)

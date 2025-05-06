@@ -1,9 +1,6 @@
 # Intersecting Strike-Slip Faults (3D)
 
-:::{note}
-New in v4.1.0
-:::
-
+*New in v4.1.0.*
 
 The files are in the directory `examples/crustal-strikeslip-3d`.
 The files and directories for this set of examples includes:

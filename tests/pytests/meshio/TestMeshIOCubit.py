@@ -11,14 +11,14 @@
 import unittest
 
 from pylith.testing.TestCases import TestComponent, make_suite
-from pylith.meshio.MeshIOCubit import (MeshIOCubit, mesh_io)
+from pylith.meshio.MeshIOCubit import (MeshIOCubit, mesh_input)
 
 
 class TestMeshIOCubit(TestComponent):
     """Unit testing of MeshIOCubit object.
     """
     _class = MeshIOCubit
-    _factory = mesh_io
+    _factory = mesh_input
 
 
 def load_tests(loader, tests, pattern):

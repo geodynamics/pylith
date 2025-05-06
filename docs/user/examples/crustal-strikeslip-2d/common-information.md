@@ -62,7 +62,6 @@ materials = [elastic]
 # (isotropic, linearly elastic).
 #
 # `label_value` must match the tag for the physical group in the Gmsh Python script.
-description = Elastic material
 label_value = 1
 
 # The properties are uniform within the material, so we use a UniformDB.

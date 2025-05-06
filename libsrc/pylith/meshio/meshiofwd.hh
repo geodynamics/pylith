@@ -18,13 +18,8 @@ namespace pylith {
         class MeshIOAscii;
         class MeshIOPetsc;
         class MeshIOCubit;
+        class MeshConverter;
 
-        class GMVFile;
-        class GMVFileAscii;
-        class GMVFileBinary;
-        class PsetFile;
-        class PsetFileAscii;
-        class PsetFileBinary;
         class ExodusII;
 
         class OutputObserver;

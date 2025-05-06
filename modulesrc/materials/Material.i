@@ -32,18 +32,6 @@ public:
             virtual
             void deallocate(void);
 
-            /** Set descriptive label for material.
-             *
-             * @param value Label of material.
-             */
-            void setDescription(const char* value);
-
-            /** Get descruptive label of material.
-             *
-             * @returns Label of material
-             */
-            const char* getDescription(void) const;
-
             /** Set gravity field.
              *
              * @param g Gravity field.

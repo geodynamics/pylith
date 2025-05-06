@@ -14,7 +14,7 @@ This is a tip, helpful hint, or suggestion.
 
 For features recently added to PyLith, we show the version number when they
 were added.
-*New in v3.0.0*
+*New in v3.0.0.*
 
 ## Command Line Arguments
 

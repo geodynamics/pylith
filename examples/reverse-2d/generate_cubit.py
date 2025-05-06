@@ -227,8 +227,9 @@ cubit.cmd("block 3 surface surface_wedge")
 cubit.cmd("block 3 name 'surface_wedge'")
 
 
-# Nodesets
-if True:
+# Nodesets, deprecated and we will remove these in v6
+
+if False:
     # Create nodeset for fault
     cubit.cmd("group 'fault' add node in c_fault_upper c_fault_lower")
     cubit.cmd("nodeset 10 group fault")
@@ -273,7 +274,7 @@ if True:
 
 # Starting in PyLith v5, we will use sidesets instead of nodesets for BCs.
 # Sidesets
-if False:
+if True:
     # Create sideset for fault
     cubit.cmd("group 'fault' add c_fault_upper c_fault_lower")
     cubit.cmd("sideset 10 group fault")
@@ -304,6 +305,20 @@ if False:
     cubit.cmd("group 'boundary_yneg' add curve c_yneg")
     cubit.cmd("sideset 23 group boundary_yneg")
     cubit.cmd("sideset 23 name 'boundary_yneg'")
+
+# TEMPORARY: Until using transform to create faults.
+if True:
+    # Create nodeset for fault edge
+    cubit.cmd("group 'fault_end' add node in vertex v_fault_bot")
+    cubit.cmd("nodeset 11 group fault_end")
+    cubit.cmd("nodeset 11 name 'fault_end'")
+
+    # Create nodeset for splay edge
+    cubit.cmd("group 'splay_end' add node in vertex v_splay_bot")
+    cubit.cmd("nodeset 13 group splay_end")
+    cubit.cmd("nodeset 13 name 'splay_end'")
+
+
 
 
 # Write mesh as ExodusII file

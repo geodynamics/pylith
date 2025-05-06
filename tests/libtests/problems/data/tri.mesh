@@ -55,12 +55,25 @@ mesh = {
             13   24
     }
   }
-  group = {
-    type = vertices
+  vertex-group = {
     name = boundary
     count = 8
     indices = {
       0  1  2  5  6  9 10 11
+    }
+  }
+  face-group = {
+    name = boundary
+    count = 8
+    indices = {
+      0   0  1
+      2   1  2
+      3   0  5
+      4   2  6
+      9   5  9
+      10  6 11
+      11  9 10
+      13 10 11
     }
   }
   

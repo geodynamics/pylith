@@ -90,26 +90,26 @@ cubit.cmd(f"block 1 volume {brick.id()}")
 cubit.cmd("block 1 name 'elastic'")
 
 # Nodesets
-nodeset_id = 20
-for surface_name in surfaces.values():
-    group_name = surface_name.replace("surface", "boundary")
-    nodeset_name = group_name
-    cubit.cmd(f"group '{group_name}' add node in surface {surface_name}")
-    cubit.cmd(f"nodeset {nodeset_id} group {group_name}")
-    cubit.cmd(f"nodeset {nodeset_id} name '{nodeset_name}'")
-    nodeset_id += 1
+#nodeset_id = 20
+#for surface_name in surfaces.values():
+#    group_name = surface_name.replace("surface", "boundary")
+#    nodeset_name = group_name
+#    cubit.cmd(f"group '{group_name}' add node in surface {surface_name}")
+#    cubit.cmd(f"nodeset {nodeset_id} group {group_name}")
+#    cubit.cmd(f"nodeset {nodeset_id} name '{nodeset_name}'")
+#    nodeset_id += 1
 
 
 # Starting in PyLith v5, we will use sidesets instead of nodesets for BCs.
 # Sidesets
-#sideset_id = 20
-#for surface_name in surfaces.values():
-#    group_name = surface_name.replace("surface", "boundary")
-#    sideset_name = group_name
-#    cubit.cmd(f"group '{group_name}' add surface {surface_name}")
-#    cubit.cmd(f"sideset {sideset_id} group {group_name}")
-#    cubit.cmd(f"sideset {sideset_id} name '{sideset_name}'")
-#    sideset_id += 1
+sideset_id = 20
+for surface_name in surfaces.values():
+    group_name = surface_name.replace("surface", "boundary")
+    sideset_name = group_name
+    cubit.cmd(f"group '{group_name}' add surface {surface_name}")
+    cubit.cmd(f"sideset {sideset_id} group {group_name}")
+    cubit.cmd(f"sideset {sideset_id} name '{sideset_name}'")
+    sideset_id += 1
 
 # Write mesh as ExodusII file
 cubit.cmd(f"export mesh 'mesh_{cell}.exo' dimension 3 overwrite")

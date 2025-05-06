@@ -6,9 +6,7 @@ We create the geometry, set the mesh parameters, generate the mesh, mark the mat
 
 ## Meshing using Python Script
 
-:::{note}
-New in v4.1.0
-:::
+*New in v4.1.0*
 
 We use the Python script `generate_cubit.py` to generate the mesh.
 The Python script is setup so that it can be run from within Cubit or as a standalone Python script without the Cubit GUI interface.

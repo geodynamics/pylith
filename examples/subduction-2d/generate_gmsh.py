@@ -14,7 +14,7 @@ and a latitude of 38.0 degrees (WGS84).
 Run `generate_gmsh.py --help` to see the command line options.
 """
 import gmsh
-from pylith.meshio.gmsh_utils import (VertexGroup, MaterialGroup, GenerateMesh, group_exclude)
+from pylith.meshio.gmsh_utils import (BoundaryGroup, MaterialGroup, GenerateMesh, group_exclude)
 
 class App(GenerateMesh):
     """
@@ -208,20 +208,20 @@ class App(GenerateMesh):
             material.create_physical_group()
 
         # Create physical groups for the boundaries and the fault.
-        vertex_groups = (
-            VertexGroup(name="groundsurf", tag=10, dim=1, entities=[self.c_topo_west, self.c_topo_east]),
-            VertexGroup(name="bndry_west", tag=11, dim=1, entities=[self.c_west_mantle, self.c_west_crust]),
-            VertexGroup(name="bndry_east_crust", tag=12, dim=1, entities=[self.c_east_crust]),
-            VertexGroup(name="bndry_east_mantle_tmp", tag=113, dim=1, entities=[self.c_east_mantle]),
-            VertexGroup(name="bndry_bot", tag=14, dim=1, entities=[self.c_bot]),
-            VertexGroup(name="fault_coseismic", tag=20, dim=1, entities=[self.c_slabtop_mantle_upper, self.c_slabtop_crust]),
-            VertexGroup(name="fault_coseismic_edge", tag=30, dim=0, entities=[self.p_slabtop_coseismic]),
-            VertexGroup(name="fault_slabtop", tag=21, dim=1, entities=[self.c_slabtop_mantle_lower, self.c_slabtop_mantle_upper, self.c_slabtop_crust]),
-            VertexGroup(name="fault_slabtop_edge", tag=31, dim=0, entities=[self.p_slabtop_west]),
-            VertexGroup(name="fault_slabbot", tag=22, dim=1, entities=[self.c_slabbot]),
-            VertexGroup(name="fault_slabbot_edge", tag=32, dim=0, entities=[self.p_slabbot_west]),
+        face_groups = (
+            BoundaryGroup(name="groundsurf", tag=10, dim=1, entities=[self.c_topo_west, self.c_topo_east]),
+            BoundaryGroup(name="bndry_west", tag=11, dim=1, entities=[self.c_west_mantle, self.c_west_crust]),
+            BoundaryGroup(name="bndry_east_crust", tag=12, dim=1, entities=[self.c_east_crust]),
+            BoundaryGroup(name="bndry_east_mantle_tmp", tag=113, dim=1, entities=[self.c_east_mantle]),
+            BoundaryGroup(name="bndry_bot", tag=14, dim=1, entities=[self.c_bot]),
+            BoundaryGroup(name="fault_coseismic", tag=20, dim=1, entities=[self.c_slabtop_mantle_upper, self.c_slabtop_crust]),
+            BoundaryGroup(name="fault_coseismic_edge", tag=30, dim=0, entities=[self.p_slabtop_coseismic]),
+            BoundaryGroup(name="fault_slabtop", tag=21, dim=1, entities=[self.c_slabtop_mantle_lower, self.c_slabtop_mantle_upper, self.c_slabtop_crust]),
+            BoundaryGroup(name="fault_slabtop_edge", tag=31, dim=0, entities=[self.p_slabtop_west]),
+            BoundaryGroup(name="fault_slabbot", tag=22, dim=1, entities=[self.c_slabbot]),
+            BoundaryGroup(name="fault_slabbot_edge", tag=32, dim=0, entities=[self.p_slabbot_west]),
         )
-        for group in vertex_groups:
+        for group in face_groups:
             group.create_physical_group()
         group_exclude("bndry_east_mantle_tmp", "fault_slabbot", new_name="bndry_east_mantle", new_tag=13)
 

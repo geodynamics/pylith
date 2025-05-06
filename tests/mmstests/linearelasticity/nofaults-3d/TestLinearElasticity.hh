@@ -76,7 +76,6 @@ public:
     const char* meshFilename; ///< Name of file with ASCII mesh.
     const char* meshOptions; ///< Command line options for mesh.
     const char* boundaryLabel; ///< Group defining domain boundary.
-    bool useAsciiMesh; ///< Use MeshIOAscii to read mesh, otherwise use PETSc.
 
     PylithReal jacobianConvergenceRate; ///< Expected convergence rate for Jacobiab (when not linear).
     PylithReal tolerance; ///< Tolerance for discretization and residual test.

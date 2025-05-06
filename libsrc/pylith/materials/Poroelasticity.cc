@@ -208,7 +208,7 @@ pylith::materials::Poroelasticity::createAuxiliaryField(const pylith::topology::
     PYLITH_COMPONENT_DEBUG("createAuxiliaryField(solution="<<solution.getLabel()<<", domainMesh=)"<<typeid(domainMesh).name()<<")");
 
     pylith::topology::Field* auxiliaryField = new pylith::topology::Field(domainMesh);assert(auxiliaryField);
-    auxiliaryField->setLabel("Poroelasticity auxiliary field");
+    auxiliaryField->setLabel("auxiliary field");
 
     assert(_rheology);
     pylith::materials::AuxiliaryFactoryPoroelasticity* auxiliaryFactory = _rheology->getAuxiliaryFactory();assert(auxiliaryFactory);
@@ -271,7 +271,7 @@ pylith::materials::Poroelasticity::createDerivedField(const pylith::topology::Fi
     } // if
 
     pylith::topology::Field* derivedField = new pylith::topology::Field(domainMesh);assert(derivedField);
-    derivedField->setLabel("Poroelasticity derived field");
+    derivedField->setLabel("derived field");
 
     assert(_normalizer);
     _derivedFactory->initialize(derivedField, *_normalizer, domainMesh.getDimension());

@@ -14,6 +14,7 @@
 #include "pylith/topology/topologyfwd.hh" // forward declarations
 
 #include "pylith/topology/FieldBase.hh" // USES FieldBase::VectorFieldType
+#include "pylith/meshio/MeshBuilder.hh" // USES MeshBuilder
 
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // HOLDSA UserFunctionDB
 #include "spatialdata/geocoords/geocoordsfwd.hh" // HOLDSA CoordSys
@@ -90,18 +91,10 @@ public:
     // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
 public:
 
-    /// @defgroup Domain mesh information.
-    /// @{
-    int cellDim; ///< Cell dimension (matches space dimension).
-    int numVertices; ///< Number of vertices.
-    int numCells; ///< Number of cells.
-    int numCorners; ///< Number of vertices per cell.
-    const int* cells; ///< Array of vertices in cells [numCells*numCorners].
-    const PylithScalar* coordinates; ///< Coordinates of vertices [numVertices*cellDim].
-
+    pylith::meshio::MeshBuilder::Topology* topology; ///< Topology for domain mesh
+    pylith::meshio::MeshBuilder::Geometry* geometry; ///< Geometry for domain mesh
     spatialdata::geocoords::CoordSys* cs; ///< Coordinate system.
     spatialdata::units::Nondimensional* normalizer; ///< Scales for nondimensionalization.
-    /// @}
 
     /// @defgroup Subfield discretization information
     /// @{

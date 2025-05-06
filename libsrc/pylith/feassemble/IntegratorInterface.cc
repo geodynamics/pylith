@@ -33,27 +33,6 @@
 #include <typeinfo> // USES typeid()
 #include <stdexcept> // USES std::runtime_error
 
-extern "C" PetscErrorCode DMPlexComputeResidual_Hybrid_Internal(PetscDM dm,
-                                                                PetscFormKey key[],
-                                                                PetscIS cellIS,
-                                                                PetscReal time,
-                                                                PetscVec locX,
-                                                                PetscVec locX_t,
-                                                                PetscReal t,
-                                                                PetscVec locF,
-                                                                void *user);
-
-extern "C" PetscErrorCode DMPlexComputeJacobian_Hybrid_Internal(PetscDM dm,
-                                                                PetscFormKey key[],
-                                                                PetscIS cellIS,
-                                                                PetscReal t,
-                                                                PetscReal X_tShift,
-                                                                PetscVec locX,
-                                                                PetscVec locX_t,
-                                                                PetscMat Jac,
-                                                                PetscMat JacP,
-                                                                void *user);
-
 // ------------------------------------------------------------------------------------------------
 // Local "private" functions.
 namespace pylith {
@@ -686,8 +665,8 @@ pylith::feassemble::_IntegratorInterface::computeResidual(pylith::topology::Fiel
 
         assert(solution->getLocalVector());
         assert(residual->getLocalVector());
-        err = DMPlexComputeResidual_Hybrid_Internal(dmSoln, weakFormKeys, patchCellsIS, t, solution->getLocalVector(),
-                                                    solutionDotVec, t, residual->getLocalVector(), NULL);PYLITH_CHECK_ERROR(err);
+        err = DMPlexComputeResidualHybridByKey(dmSoln, weakFormKeys, patchCellsIS, t, solution->getLocalVector(),
+                                               solutionDotVec, t, residual->getLocalVector(), NULL);PYLITH_CHECK_ERROR(err);
         err = ISRestoreIndices(patchCellsIS, &patchCells);PYLITH_CHECK_ERROR(err);
         err = ISDestroy(&patchCellsIS);PYLITH_CHECK_ERROR(err);
     } // for
@@ -753,9 +732,9 @@ pylith::feassemble::_IntegratorInterface::computeJacobian(PetscMat jacobianMat,
         assert(pylith::topology::MeshOps::isCohesiveCell(dmSoln, patchCells[0]));
 
         assert(solution->getLocalVector());
-        err = DMPlexComputeJacobian_Hybrid_Internal(dmSoln, weakFormKeys, patchCellsIS, t, s_tshift, solution->getLocalVector(),
-                                                    solutionDot->getLocalVector(), jacobianMat, precondMat,
-                                                    NULL);PYLITH_CHECK_ERROR(err);
+        err = DMPlexComputeJacobianHybridByKey(dmSoln, weakFormKeys, patchCellsIS, t, s_tshift, solution->getLocalVector(),
+                                               solutionDot->getLocalVector(), jacobianMat, precondMat,
+                                               NULL);PYLITH_CHECK_ERROR(err);
         err = ISRestoreIndices(patchCellsIS, &patchCells);PYLITH_CHECK_ERROR(err);
         err = ISDestroy(&patchCellsIS);PYLITH_CHECK_ERROR(err);
     }

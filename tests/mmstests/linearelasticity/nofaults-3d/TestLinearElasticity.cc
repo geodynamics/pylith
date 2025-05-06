@@ -60,18 +60,12 @@ pylith::TestLinearElasticity::_initialize(void) {
 
     PetscErrorCode err = 0;
 
-    if (_data->useAsciiMesh) {
-        pylith::meshio::MeshIOAscii iohandler;
-        iohandler.setFilename(_data->meshFilename);
-        iohandler.read(_mesh);assert(_mesh);
-    } else {
-        if (_data->meshOptions) {
-            err = PetscOptionsInsertString(NULL, _data->meshOptions);PYLITH_CHECK_ERROR(err);
-        } // if
-        pylith::meshio::MeshIOPetsc iohandler;
-        iohandler.setFilename(_data->meshFilename);
-        iohandler.read(_mesh);assert(_mesh);
-    } // if/else
+    if (_data->meshOptions) {
+        err = PetscOptionsInsertString(NULL, _data->meshOptions);PYLITH_CHECK_ERROR(err);
+    } // if
+    pylith::meshio::MeshIOPetsc iohandler;
+    iohandler.setFilename(_data->meshFilename);
+    iohandler.read(_mesh);assert(_mesh);
 
     assert(pylith::topology::MeshOps::getNumCells(*_mesh) > 0);
     assert(pylith::topology::MeshOps::getNumVertices(*_mesh) > 0);
@@ -151,7 +145,6 @@ pylith::TestLinearElasticity_Data::TestLinearElasticity_Data(void) :
     meshFilename(NULL),
     meshOptions(NULL),
     boundaryLabel(NULL),
-    useAsciiMesh(true),
 
     jacobianConvergenceRate(1.0),
     tolerance(1.0e-9),

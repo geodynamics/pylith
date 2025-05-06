@@ -34,6 +34,17 @@ On Linux systems you can check which version of glibc you have by running `ldd-v
 On macOS systems you can check the operating system version by clicking on the Apple icon and *About This Mac*.
 :::
 
+:::{tip}
+When running PyLith, we recommend starting with a clean environment to avoid conflicts from any other software you may have installed.
+
+```{code-block} bash
+PATH=/usr/bin:/bin:/sbin:/usr/sbin
+unset PYTHONPATH LD_LIBRARY_PATH
+```
+
+You should not have a Python virtual environment activated as PyLith uses its own Python virtual environment.
+:::
+
 ### Linux and macOS
 
 1. Open a terminal window and change to the directory where you want to place the distribution.
@@ -48,37 +59,37 @@ On macOS systems you can check the operating system version by clicking on the A
 3. Unpack the tarball.
     ```{code-block} bash
       # Linux 64-bit
-      tar -xzf pylith-4.2.0-linux-x86_64.tar.gz
+      tar -xzf pylith-5.0.0-linux-x86_64.tar.gz
 
       # macOS
-      tar -xzf pylith-4.2.0-macOS-10.15-x86_64.tar.gz
+      tar -xzf pylith-5.0.0-macOS-10.15-x86_64.tar.gz
       ```
 4. Set environment variables.
-The provided `setup.sh` script only works if you are using bash shell.
+The provided `setup.sh` script only works if you are using a bash compatible shell.
 If you are using a different shell, you will need to alter how the environment variables are set in `setup.sh`.
-```{code-block} bash
-source setup.sh
-Ready to run PyLith.
-```
+    ```{code-block} console
+    $ source setup.sh
+    Ready to run PyLith.
+    ```
 
 :::{tip}
 To bypass macOS quarantine restrictions, simply use command line program `curl` to download the tarball from within a terminal rather than using a web browser.
 
 ```{code-block} console
-curl -L -O https://github.com/geodynamics/pylith/releases/download/v4.2.0/pylith-4.2.0-macOS-10.15-x86_64.tar.gz
+curl -L -O https://github.com/geodynamics/pylith/releases/download/v5.0.0/pylith-5.0.0-macOS-10.15-x86_64.tar.gz
 ```
 
 Alternatively, if you do download the tarball using a web browser, after you unpack the tarball you can remove the macOS quarantine flags using the following commands (requires Administrator access):
 
 ```{code-block} bash
 # Show extended attributes
-xattr ./pylith-4.2.0-macOS-10.15-x86_64
+xattr ./pylith-5.0.0-macOS-10.15-x86_64
 
 # Output should be
 com.apple.quarantine
 
 # Remove quarantine attributes
-sudo xattr -r -d com.apple.quarantine ./pylith-4.2.0-macOS-10.15-x86_64
+sudo xattr -r -d com.apple.quarantine ./pylith-5.0.0-macOS-10.15-x86_64
 ```
 :::
 
@@ -152,9 +163,7 @@ Refer to [Microsoft Tutorial: Run Linux GUI apps on the WSL](https://learn.micro
 
 ### Extending PyLith or Integrating Other Software Into PyLith
 
-:::{note}
-New in v3.0.0
-:::
+*New in v3.0.0.*
 
 We strongly recommend using the [PyLith development environment Docker container](https://pylith-installer.readthedocs.io/en/latest/devenv/index.html) if you want to extend PyLith or integrate PyLith into other software.
 
@@ -176,7 +185,7 @@ For each package this utility downloads the source code, configures it, builds i
 ## Verifying PyLith Installation
 
 The easiest way to verify that PyLith has been installed correctly is to run one or more of the examples supplied with the binary and source code.
-In the binary distribution, the examples are located in `src/pylith-4.2.0/examples` while in the source distribution, they are located in `pylith-4.2.0/examples`.
+In the binary distribution, the examples are located in `src/pylith-5.0.0/examples` while in the source distribution, they are located in `pylith-5.0.0/examples`.
 {ref}`sec-examples` discusses how to run and visualize the results for the examples.
 To run the example discussed in Section {ref}`sec-examples-box-2d`:
 

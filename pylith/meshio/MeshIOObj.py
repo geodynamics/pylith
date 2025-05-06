@@ -16,12 +16,15 @@ class MeshIOObj(PetscComponent, ModuleMeshIO):
     """
     Abstract base class for finite-element mesh readers.
     """
+    READ = "read_mode"
+    WRITE = "write_mode"
 
-    def __init__(self, name="meshio"):
+    def __init__(self, mode=READ, name="meshio"):
         """Constructor.
         """
         PetscComponent.__init__(self, name, facility="mesh_io")
         self.coordsys = None
+        self.mode = mode
 
     def preinitialize(self):
         """Do minimal initialization."""

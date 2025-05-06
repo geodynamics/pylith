@@ -302,7 +302,7 @@ pylith::faults::FaultCohesive::createDiagnosticField(const pylith::topology::Fie
     assert(_normalizer);
 
     pylith::topology::Field* diagnosticField = new pylith::topology::Field(physicsMesh);assert(diagnosticField);
-    diagnosticField->setLabel("FaultCohesiveKin diagnostic field");
+    diagnosticField->setLabel("diagnostic field");
     pylith::topology::FieldOps::createOutputLabel(diagnosticField);
 
     assert(_diagnosticFactory);
@@ -344,7 +344,7 @@ pylith::faults::FaultCohesive::createDerivedField(const pylith::topology::Field&
     assert(_normalizer);
 
     pylith::topology::Field* derivedField = new pylith::topology::Field(domainMesh);assert(derivedField);
-    derivedField->setLabel("FaultCohesive derived field");
+    derivedField->setLabel("derived field");
 
     // Create label for output.
     const char* outputLabelName = "output";

@@ -55,37 +55,65 @@ mesh = {
             13   24
     }
   }
-  group = {
-    type = vertices
-    name = boundary_xneg
+  vertex-group = {
+    name = vertices_xneg
     count = 3
     indices = {
       0  1  2
     }
   }
-  group = {
-    type = vertices
-    name = boundary_xpos
+  vertex-group = {
+    name = vertices_xpos
     count = 3
     indices = {
       9 10 11
     }
   }
-  group = {
-    type = vertices
-    name = boundary_yneg
+  vertex-group = {
+    name = vertices_yneg
     count = 3
     indices = {
       0  5  9
     }
   }
-  group = {
-    type = vertices
-    name = boundary_ypos
+  vertex-group = {
+    name = vertices_ypos
     count = 3
     indices = {
       2  6  11
     }
   }
   
+  face-group = {
+    name = boundary_xneg
+    count = 2
+    indices = {
+      0    0  1
+      2    1  2
+    }
+  }
+  face-group = {
+    name = boundary_xpos
+    count = 2
+    indices = {
+      11   9 10
+      13  10 11
+    }
+  }
+  face-group = {
+    name = boundary_yneg
+    count = 2
+    indices = {
+      3    0  5
+      5    5  9
+    }
+  }
+  face-group = {
+    name = boundary_ypos
+    count = 2
+    indices = {
+      4    2  6
+     10    6 11
+    }
+  }
 }

@@ -180,7 +180,9 @@ pylith::feassemble::Constraint::initialize(const pylith::topology::Field& soluti
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("initialize(solution="<<solution.getLabel()<<")");
 
-    delete _boundaryMesh;_boundaryMesh = pylith::topology::MeshOps::createLowerDimMesh(solution.getMesh(), _labelName.c_str(), _labelValue);assert(_boundaryMesh);
+    const char* componentName = _physics->getFullIdentifier();
+    delete _boundaryMesh;_boundaryMesh = pylith::topology::MeshOps::createLowerDimMesh(solution.getMesh(), _labelName.c_str(), _labelValue, componentName);
+    assert(_boundaryMesh);
     PetscDM dmBoundary = _boundaryMesh->getDM();assert(dmBoundary);
     pylith::topology::CoordsVisitor::optimizeClosure(dmBoundary);
 

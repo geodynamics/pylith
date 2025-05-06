@@ -30,25 +30,22 @@ mesh = {
              0   1
     }
   }
-  group = {
+  vertex-group = {
     name = fault
-    type = vertices
     count = 4
     indices = {
       2  3  8  9
     }
   }
-  group = {
+  vertex-group = {
     name = front
-    type = vertices
     count = 4
     indices = {
       0  1  6  7
     }
   }
-  group = {
+  vertex-group = {
     name = top
-    type = vertices
     count = 6
     indices = {
       6  7  8  9  10 11

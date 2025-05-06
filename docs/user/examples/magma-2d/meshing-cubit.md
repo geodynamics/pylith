@@ -14,7 +14,7 @@ The names of the vertices and curves match the ones we use in the Cubit Python s
 ## Meshing using Python script
 
 :::{note}
-New in v4.1.3.
+*New in v4.1.3.*
 
 We use a Python script to generate the mesh rather than Journal files.
 We also use the skeleton sizing function for the surface.
@@ -35,7 +35,7 @@ We reference objects by their centroid so the resulting script should be indepen
 :::{note}
 We use the skeleton sizing function to gradually increase the cell size with distance from the magma reservoir.
 This is much simpler than applying the bias sizing function to the curves and surfaces.
-We set the minimim size equal to the cell size on the reservoir boundary and the maximum gradient equal to the "bias".
+We set the minimum size equal to the cell size on the reservoir boundary and the maximum gradient equal to the "bias".
 :::
 
 After running the Python script in Cubit, you will have a corresponding Exodus-II file (`mesh_tri.exo` or `mesh_quad.exo`).

@@ -8,7 +8,7 @@ We adjust the dimensions of the domain to avoid small surfaces where the extened
 :::{warning}
 With Cubit, we can embed the fault surfaces in the domain analogous to what we did using Gmsh.
 However, in most cases Cubit will not generate a valid mesh when there are embedded surfaces.
-The workaround is to create closed volumes by extendubg the fault surfaces to other interior surfaces or the boundaries of the domain.
+The workaround is to create closed volumes by extending the fault surfaces to other interior surfaces or the boundaries of the domain.
 This can result in volumes with small angles when there are multiple fault surfaces with different strikes and dips, and you might need to adjust the geometry to create volumes that will not result in severely distorted cells.
 :::
 

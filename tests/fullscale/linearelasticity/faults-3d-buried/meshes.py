@@ -15,10 +15,10 @@ class TetGmsh(object):
     """Mesh information for tet mesh using Gmsh.
     """
     ENTITIES = {
-        "domain": MeshEntity(ncells=1450, ncorners=4, nvertices=425+9),
+        "domain": MeshEntity(ncells=2218, ncorners=4, nvertices=422+9),
 
         # Materials
-        "mat_elastic": MeshEntity(ncells=1450, ncorners=4, nvertices=425+9),
+        "mat_elastic": MeshEntity(ncells=2218, ncorners=4, nvertices=422+9),
 
         # Faults
         "fault": MeshEntity(ncells=22, ncorners=3, nvertices=18),

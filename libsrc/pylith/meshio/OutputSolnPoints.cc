@@ -193,8 +193,9 @@ pylith::meshio::OutputSolnPoints::_setupInterpolator(const pylith::topology::Fie
     err = DMPlexGetScale(dmSoln, PETSC_UNIT_LENGTH, &lengthScale);PYLITH_CHECK_ERROR(err);
 
     const spatialdata::geocoords::CoordSys* cs = solution.getMesh().getCoordSys();
+    const char* componentName = this->getFullIdentifier();
     delete _pointMesh;_pointMesh = pylith::topology::MeshOps::createFromPoints(
-        pointsLocal, numPointsLocal, cs, lengthScale, comm);
+        pointsLocal, numPointsLocal, cs, lengthScale, comm, componentName);
 
     // Upate point names to only local points.
     pylith::string_vector pointNamesLocal(numPointsLocal);

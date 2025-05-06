@@ -22,6 +22,9 @@
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
 
+#include "petscviewerhdf5.h"
+#include "petscdmplex.h"
+
 #include <set> // USES std::set
 #include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error
@@ -80,7 +83,6 @@ pylith::meshio::_MeshIOPetsc::Events::init(void) {
     logger.initialize();
     read = logger.registerEvent("PL:MeshIOPetsc:read");
     fixMaterialLabel = logger.registerEvent("PL:MeshIOPetsc:fixMaterialLabel");
-    fixBoundaryLabels = logger.registerEvent("PL:MeshIOPetsc:fixBoundaryLabels");
 }
 
 
@@ -88,7 +90,9 @@ pylith::meshio::_MeshIOPetsc::Events::init(void) {
 // Constructor
 pylith::meshio::MeshIOPetsc::MeshIOPetsc(void) :
     _filename(""),
-    _prefix("") {
+    _prefix(""),
+    _format(HDF5),
+    _gmshMarkRecursive(false) {
     PyreComponent::setName("meshiopetsc");
     _MeshIOPetsc::Events::init();
 } // constructor
@@ -114,6 +118,80 @@ pylith::meshio::MeshIOPetsc::deallocate(void) {
 
 
 // ------------------------------------------------------------------------------------------------
+// Set filename for PETSc.
+void
+pylith::meshio::MeshIOPetsc::setFilename(const char* name) {
+    _filename = name;
+
+    const std::string gmshSuffix = ".msh";
+    const std::string hdf5Suffix = ".h5";
+    if (gmshSuffix == _filename.substr(_filename.size()-gmshSuffix.size(), gmshSuffix.size())) {
+        _format = GMSH;
+    } else if (hdf5Suffix == _filename.substr(_filename.size()-hdf5Suffix.size(), hdf5Suffix.size())) {
+        _format = HDF5;
+    } else {
+        PYLITH_COMPONENT_LOGICERROR("Could not determine format for mesh file " << _filename << " from suffix (must be '.msh' for GMSH and '.h5' for HDF5).");
+    } // if/else
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// Get filename for PETSc.
+const char*
+pylith::meshio::MeshIOPetsc::getFilename(void) const {
+    return _filename.c_str();
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// Set options prefix for mesh.
+void
+pylith::meshio::MeshIOPetsc::setPrefix(const char* name) {
+    _prefix = name;
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// Get options prefix for mesh.
+const char*
+pylith::meshio::MeshIOPetsc::getPrefix(void) const {
+    return _prefix.c_str();
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// Set mesh format.
+void
+pylith::meshio::MeshIOPetsc::setFormat(Format value) {
+    _format = value;
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// Get mesh format.
+pylith::meshio::MeshIOPetsc::Format
+pylith::meshio::MeshIOPetsc::getFormat(void) const {
+    return _format;
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// Set flag for marking Gmsh vertices.
+void
+pylith::meshio::MeshIOPetsc::setGmshMarkRecursive(const bool value) {
+    _gmshMarkRecursive = value;
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// Returns true if marking Gmsh vertices, otherwise false.
+bool
+pylith::meshio::MeshIOPetsc::getGmshMarkRecursive(void) const {
+    return _gmshMarkRecursive;
+}
+
+
+// ------------------------------------------------------------------------------------------------
 // Read mesh.
 void
 pylith::meshio::MeshIOPetsc::_read(void) {
@@ -122,33 +200,43 @@ pylith::meshio::MeshIOPetsc::_read(void) {
     _MeshIOPetsc::Events::logger.eventBegin(_MeshIOPetsc::Events::read);
     assert(_mesh);
 
-    const size_t noptions = 3;
-    std::string options[noptions*2] = {
-        "-" + _prefix + "dm_plex_filename", _filename,
-        "-" + _prefix + "dm_plex_gmsh_use_regions", "",
-        "-" + _prefix + "dm_plex_gmsh_mark_vertices", "",
-    };
+    PetscErrorCode err = PETSC_SUCCESS;
+    if (!_filename.empty()) {
+        size_t noptions = 1;
+        pylith::string_vector options(noptions*2);
+        options[0] = "-" + _prefix + "dm_plex_filename";
+        options[1] = _filename;
+        if (GMSH == _format) {
+            noptions += 3;
+            options.resize(noptions*2);
+            options[2] = "-" + _prefix + "dm_plex_gmsh_use_regions";
+            options[3] = "true";
+            options[4] = "-" + _prefix + "dm_plex_gmsh_mark_vertices_strict"; // physical group with dim==0
+            options[5] = "true";
+            options[6] = "-" + _prefix + "dm_plex_gmsh_mark_vertices"; // faces, edges, & vertices; :DEPRECATED:
+            options[7] = (_gmshMarkRecursive) ? "true" : "false";
+        } // if
+
+        for (size_t i = 0; i < noptions; ++i) {
+            err = PetscOptionsSetValue(NULL, options[2*i+0].c_str(), options[2*i+1].c_str());
+        } // for
+    } // if
 
     PetscDM dmMesh = NULL;
     try {
-        PetscErrorCode err;
-        if (!_filename.empty()) {
-            for (size_t i = 0; i < noptions; ++i) {
-                err = PetscOptionsSetValue(NULL, options[2*i+0].c_str(), options[2*i+1].c_str());
-            } // for
-        } // if
-
         err = DMCreate(_mesh->getComm(), &dmMesh);PYLITH_CHECK_ERROR(err);
         err = DMSetType(dmMesh, DMPLEX);PYLITH_CHECK_ERROR(err);
+        err = PetscObjectSetName((PetscObject) dmMesh, "domain"); // Needed for reading PETSc HDF5
         if (!_prefix.empty()) {
             err = PetscObjectSetOptionsPrefix((PetscObject) dmMesh, _prefix.c_str());PYLITH_CHECK_ERROR(err);
         } // if
         err = DMPlexDistributeSetDefault(dmMesh, PETSC_FALSE);PYLITH_CHECK_ERROR(err);
-        err = DMSetFromOptions(dmMesh);PYLITH_CHECK_ERROR_MSG(err, "Error creating mesh with MeshIOPetsc.");
-
+        err = DMSetFromOptions(dmMesh);PYLITH_CHECK_ERROR(err);
         _MeshIOPetsc::fixMaterialLabel(&dmMesh);
-        _MeshIOPetsc::fixBoundaryLabels(&dmMesh);
-        _mesh->setDM(dmMesh, "domain");
+        if (_gmshMarkRecursive) {
+            _MeshIOPetsc::fixBoundaryLabels(&dmMesh);
+        } // if
+        _mesh->setDM(dmMesh);
     } catch (...) {
         DMDestroy(&dmMesh);
         throw;
@@ -163,7 +251,30 @@ pylith::meshio::MeshIOPetsc::_read(void) {
 // Write mesh to file.
 void
 pylith::meshio::MeshIOPetsc::_write(void) const {
-}
+    PYLITH_METHOD_BEGIN;
+    PYLITH_COMPONENT_DEBUG("_write()");
+    assert(_mesh);
+
+    PetscErrorCode err = PETSC_SUCCESS;
+    PetscViewer viewer = PETSC_NULLPTR;
+    if (_format == HDF5) {
+        err = PetscViewerHDF5Open(PETSC_COMM_WORLD, _filename.c_str(), FILE_MODE_WRITE, &viewer);
+
+        DMPlexStorageVersion storageVersion = PETSC_NULLPTR;
+        err = PetscNew(&storageVersion);PYLITH_CHECK_ERROR(err);assert(storageVersion);
+        storageVersion->major = 3;
+        storageVersion->minor = 1;
+        storageVersion->subminor = 0;
+        err = PetscViewerHDF5SetDMPlexStorageVersionWriting(viewer, storageVersion);PYLITH_CHECK_ERROR(err);
+        err = PetscFree(storageVersion);PYLITH_CHECK_ERROR(err);
+    } else {
+        PYLITH_COMPONENT_LOGICERROR("Unknown mesh format " << _format << ".");
+    } // if/else
+    err = DMView(_mesh->getDM(), viewer);PYLITH_CHECK_ERROR(err);
+    err = PetscViewerDestroy(&viewer);PYLITH_CHECK_ERROR(err);
+
+    PYLITH_METHOD_END;
+} // _write
 
 
 // ------------------------------------------------------------------------------------------------
@@ -223,7 +334,7 @@ pylith::meshio::_MeshIOPetsc::fixBoundaryLabels(PetscDM* dmMesh) {
     PYLITH_METHOD_BEGIN;
     _MeshIOPetsc::Events::logger.eventBegin(_MeshIOPetsc::Events::fixBoundaryLabels);
     assert(dmMesh);
-    PetscErrorCode err = 0;
+    PetscErrorCode err = PETSC_SUCCESS;
 
     // Create set with labels to ignore.
     std::set<std::string> labelsIgnore;

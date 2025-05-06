@@ -16,6 +16,7 @@
 #include "pylith/topology/Stratum.hh" // USES Stratum
 #include "pylith/utils/array.hh" // USES int_array
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
+#include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL*
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
@@ -95,7 +96,7 @@ pylith::topology::Mesh*
 pylith::topology::MeshOps::createSubdomainMesh(const pylith::topology::Mesh& mesh,
                                                const char* labelName,
                                                const int labelValue,
-                                               const char* descriptiveLabel) {
+                                               const char* componentName) {
     PYLITH_METHOD_BEGIN;
     _MeshOps::Events::init();
     _MeshOps::Events::logger.eventBegin(_MeshOps::Events::createSubdomainMesh);
@@ -146,14 +147,14 @@ pylith::topology::MeshOps::createSubdomainMesh(const pylith::topology::Mesh& mes
         throw std::runtime_error(msg.str());
     } // if
 
-    // Set lengthscale
     PylithScalar lengthScale;
     err = DMPlexGetScale(dmDomain, PETSC_UNIT_LENGTH, &lengthScale);PYLITH_CHECK_ERROR(err);
     err = DMPlexSetScale(dmSubdomain, PETSC_UNIT_LENGTH, lengthScale);PYLITH_CHECK_ERROR(err);
 
-    pylith::topology::Mesh* submesh = new pylith::topology::Mesh(true);assert(submesh);
+    pylith::topology::Mesh* submesh = new pylith::topology::Mesh();assert(submesh);
     submesh->setCoordSys(mesh.getCoordSys());
-    submesh->setDM(dmSubdomain, descriptiveLabel);
+
+    submesh->setDM(dmSubdomain, componentName);
 
     _MeshOps::Events::logger.eventEnd(_MeshOps::Events::createSubdomainMesh);
     PYLITH_METHOD_RETURN(submesh);
@@ -165,19 +166,18 @@ pylith::topology::MeshOps::createSubdomainMesh(const pylith::topology::Mesh& mes
 pylith::topology::Mesh*
 pylith::topology::MeshOps::createLowerDimMesh(const pylith::topology::Mesh& mesh,
                                               const char* labelName,
-                                              const int labelValue) {
+                                              const int labelValue,
+                                              const char* componentName) {
     PYLITH_METHOD_BEGIN;
     _MeshOps::Events::init();
     _MeshOps::Events::logger.eventBegin(_MeshOps::Events::createLowerDimMesh);
     assert(labelName);
 
     if (mesh.getDimension() < 1) {
-        throw std::logic_error("INTERNAL ERROR in MeshOps::createLowerDimMesh()\n"
-                               "Cannot create submesh for mesh with dimension < 1.");
+        PYLITH_JOURNAL_LOGICERROR("Cannot create submesh for mesh with dimension < 1.");
     } // if
 
     PetscErrorCode err = PETSC_SUCCESS;
-
     PetscDM dmDomain = mesh.getDM();assert(dmDomain);
     PetscBool hasLabel = PETSC_FALSE;
     err = DMHasLabel(dmDomain, labelName, &hasLabel);PYLITH_CHECK_ERROR(err);
@@ -203,8 +203,54 @@ pylith::topology::MeshOps::createLowerDimMesh(const pylith::topology::Mesh& mesh
         throw std::runtime_error(msg.str());
     } // if
 
+    PetscInt labelHasVertices = 0;
+    { // TEMPORARY: Continue to support creating lower dimension meshes using labels with vertices.
+        PetscIS labelIS = NULL;
+        const PetscInt* labelPoints = NULL;
+        PetscInt numPoints = 0;
+        err = DMGetStratumIS(dmDomain, labelName, labelValue, &labelIS);PYLITH_CHECK_ERROR(err);
+        PetscInt labelHasVerticesLocal = 0;
+        if (labelIS) {
+            err = ISGetIndices(labelIS, &labelPoints);PYLITH_CHECK_ERROR(err);
+            err = DMGetStratumSize(dmDomain, labelName, labelValue, &numPoints);PYLITH_CHECK_ERROR(err);
+
+            topology::Stratum verticesStratum(dmDomain, topology::Stratum::DEPTH, 0);
+            const PetscInt vStart = verticesStratum.begin();
+            const PetscInt vEnd = verticesStratum.end();
+            for (PetscInt iPoint = 0; iPoint < numPoints; ++iPoint) {
+                if ((labelPoints[iPoint] >= vStart) && (labelPoints[iPoint] < vEnd) ) {
+                    labelHasVerticesLocal = 1;
+                    break;
+                } // if
+            } // if
+            err = ISRestoreIndices(labelIS, &labelPoints);PYLITH_CHECK_ERROR(err);
+        } // if
+        err = ISDestroy(&labelIS);PYLITH_CHECK_ERROR(err);
+        err = MPI_Allreduce(&labelHasVerticesLocal, &labelHasVertices, 1, MPI_INT, MPI_MAX,
+                            PetscObjectComm((PetscObject) dmDomain));PYLITH_CHECK_ERROR(err);
+
+        if (labelHasVertices) {
+            pythia::journal::warning_t warning("deprecated");
+            warning << pythia::journal::at(__HERE__)
+                    << "DEPRECATION: Creating lower dimension mesh from label with vertices. "
+                    << "This feature will be removed in v6.0. "
+                    << "In the future, you will need to mark boundaries not vertices for boundary conditions."
+                    << pythia::journal::endl;
+        } // if
+    } // TEMPORARY
+
+    // We use DMPlexCreateSubmesh() instead of DMPlexFilter, because we want the submesh to have
+    // domain cells hanging off of it, which allows us to project from the submesh to the domain mesh
+    // to set boundary conditions using the auxiliary fields defined over the submesh.
+    // DMPlexCreateSubmesh() requires a completed label.
+    PetscDMLabel dmLabelFull = NULL;
+    err = DMLabelDuplicate(dmLabel, &dmLabelFull);PYLITH_CHECK_ERROR(err);
+    err = DMPlexLabelComplete(dmDomain, dmLabelFull);PYLITH_CHECK_ERROR(err);
+
     PetscDM dmSubmesh = NULL;
-    err = DMPlexCreateSubmesh(dmDomain, dmLabel, labelValue, PETSC_FALSE, &dmSubmesh);PYLITH_CHECK_ERROR(err);
+    const PetscBool markedFaces = !labelHasVertices ? PETSC_TRUE : PETSC_FALSE;
+    err = DMPlexCreateSubmesh(dmDomain, dmLabelFull, labelValue, markedFaces, &dmSubmesh);PYLITH_CHECK_ERROR(err);
+    err = DMLabelDestroy(&dmLabelFull);PYLITH_CHECK_ERROR(err);
 
     PetscInt maxConeSizeLocal = 0, maxConeSize = 0;
     err = DMPlexGetMaxSizes(dmSubmesh, &maxConeSizeLocal, NULL);PYLITH_CHECK_ERROR(err);
@@ -220,15 +266,14 @@ pylith::topology::MeshOps::createLowerDimMesh(const pylith::topology::Mesh& mesh
         throw std::runtime_error(msg.str());
     } // if
 
-    // Set lengthscale
+    // Set length scale
     PylithScalar lengthScale;
     err = DMPlexGetScale(dmDomain, PETSC_UNIT_LENGTH, &lengthScale);PYLITH_CHECK_ERROR(err);
     err = DMPlexSetScale(dmSubmesh, PETSC_UNIT_LENGTH, lengthScale);PYLITH_CHECK_ERROR(err);
     pylith::topology::Mesh* submesh = new pylith::topology::Mesh(true);assert(submesh);
     submesh->setCoordSys(mesh.getCoordSys());
 
-    std::string meshLabel = "subdomain_" + std::string(labelName);
-    submesh->setDM(dmSubmesh, meshLabel.c_str());
+    submesh->setDM(dmSubmesh, componentName);
 
     // Check topology
     MeshOps::checkTopology(*submesh);
@@ -245,7 +290,8 @@ pylith::topology::MeshOps::createFromPoints(const PylithReal* points,
                                             const size_t numPoints,
                                             const spatialdata::geocoords::CoordSys* cs,
                                             const PylithReal lengthScale,
-                                            MPI_Comm comm) {
+                                            MPI_Comm comm,
+                                            const char* componentName) {
     PYLITH_METHOD_BEGIN;
     _MeshOps::Events::init();
     _MeshOps::Events::logger.eventBegin(_MeshOps::Events::createFromPoints);
@@ -283,7 +329,7 @@ pylith::topology::MeshOps::createFromPoints(const PylithReal* points,
     err = DMGetPointSF(dmPoints, &sf);PYLITH_CHECK_ERROR(err);
     err = PetscSFSetGraph(sf, numPoints, 0, NULL, PETSC_COPY_VALUES, NULL, PETSC_COPY_VALUES);
 
-    mesh->setDM(dmPoints, "points");
+    mesh->setDM(dmPoints, componentName);
 
     mesh->setCoordSys(cs);
 

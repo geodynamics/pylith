@@ -109,7 +109,8 @@ pylith::meshio::OutputSolnBoundary::_writeSolnStep(const PylithReal t,
     PYLITH_COMPONENT_DEBUG("_writeSolnStep(t="<<t<<", tindex="<<tindex<<", solution="<<solution.getLabel()<<")");
 
     if (!_boundaryMesh) {
-        _boundaryMesh = pylith::topology::MeshOps::createLowerDimMesh(solution.getMesh(), _labelName.c_str(), _labelValue);
+        const char* componentName = this->getFullIdentifier();
+        _boundaryMesh = pylith::topology::MeshOps::createLowerDimMesh(solution.getMesh(), _labelName.c_str(), _labelValue, componentName);
         assert(_boundaryMesh);
     } // if
 

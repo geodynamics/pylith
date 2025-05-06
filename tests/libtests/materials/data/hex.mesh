@@ -268,8 +268,7 @@ mesh = {
 		64 24
     }
   }
-  group = {
-    type = vertices
+  vertex-group = {
     name = boundary
     count = 98
     indices = {

@@ -38,11 +38,7 @@ dist_noinst_HEADERS = \
 
 dist_noinst_DATA = \
 	data/tri.mesh \
-	data/tri_fourcells.mesh \
-	data/quad.mesh \
-	data/quad_distorted.mesh \
-	data/quad_fourcells.mesh
-
+	data/quad.mesh
 
 export_datadir = $(abs_builddir)
 include $(top_srcdir)/tests/data.am

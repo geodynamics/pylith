@@ -13,6 +13,8 @@
 
 #include "TestSubmesh.hh" // Implementation of class methods
 
+#include "pylith/meshio/MeshBuilder.hh" // USES MeshBuilder
+
 #include "catch2/catch_test_macros.hpp"
 
 namespace pylith {
@@ -94,30 +96,35 @@ pylith::topology::TestSubmesh_Data*
 pylith::topology::TestSubmesh_Cases::Tri(void) {
     TestSubmesh_Data* data = new TestSubmesh_Data();assert(data);
 
-    data->cellDim = 2;
-    data->numVertices = 4;
-    data->numCells = 2;
-    data->numCorners = 3;
-    static const int _cells[2*3] = {
-        0, 1, 3,
-        0, 3, 2,
-    };
-    data->cells = const_cast<int*>(_cells);
-    static const PylithScalar _coordinates[4*2] = {
+    const size_t numVertices = 4;
+    const size_t spaceDim = 2;
+    const size_t cellDim = 2;
+    const size_t numCells = 2;
+    const size_t numCorners = 3;
+    const pylith::meshio::MeshBuilder::shape_t cellShape = pylith::meshio::MeshBuilder::TRIANGLE;
+
+    static const PylithScalar vertices[numVertices*spaceDim] = {
         0.0, 0.0,
         1.0, 0.0,
         0.0, 1.0,
         1.0, 1.0,
     };
-    data->coordinates = const_cast<PylithScalar*>(_coordinates);
+    delete data->geometry;data->geometry = new pylith::meshio::MeshBuilder::Geometry(numVertices, spaceDim, vertices);
+
+    static const PylithInt cells[numCells*numCorners] = {
+        0, 1, 3,
+        0, 3, 2,
+    };
+    delete data->topology;data->topology = new pylith::meshio::MeshBuilder::Topology(cellDim, numCells, numCorners, cellShape, cells);
 
     // Submesh data
-    data->groupLabel = "bc";
-    data->groupSize = 3;
-    static const int _groupVertices[3] = {
-        1, 2, 3,
+    data->faceGroupName = "bc";
+    data->faceGroupSize = 6;
+    static const int faceGroup[6] = {
+        0,   1, 3,
+        1,   2, 3,
     };
-    data->groupVertices = const_cast<int*>(_groupVertices);
+    data->faceGroup = const_cast<int*>(faceGroup);
 
     data->submeshNumCorners = 2;
     data->submeshNumVertices = 3;
@@ -159,16 +166,14 @@ pylith::topology::TestSubmesh_Data*
 pylith::topology::TestSubmesh_Cases::Quad(void) {
     TestSubmesh_Data* data = new TestSubmesh_Data();assert(data);
 
-    data->cellDim = 2;
-    data->numVertices = 6;
-    data->numCells = 2;
-    data->numCorners = 4;
-    static const int _cells[2*4] = {
-        0, 2, 3, 1,
-        2, 4, 5, 3,
-    };
-    data->cells = const_cast<int*>(_cells);
-    static const PylithScalar _coordinates[6*2] = {
+    const size_t numVertices = 6;
+    const size_t spaceDim = 2;
+    const size_t cellDim = 2;
+    const size_t numCells = 2;
+    const size_t numCorners = 4;
+    const pylith::meshio::MeshBuilder::shape_t cellShape = pylith::meshio::MeshBuilder::QUADRILATERAL;
+
+    static const PylithScalar vertices[numVertices*spaceDim] = {
         -1.0, -1.0,
         -1.0, +1.0,
         +0.0, -1.0,
@@ -176,15 +181,23 @@ pylith::topology::TestSubmesh_Cases::Quad(void) {
         +1.0, -1.0,
         +1.0, +1.0,
     };
-    data->coordinates = const_cast<PylithScalar*>(_coordinates);
+    delete data->geometry;data->geometry = new pylith::meshio::MeshBuilder::Geometry(numVertices, spaceDim, vertices);
+
+    static const PylithInt cells[numCells*numCorners] = {
+        0, 2, 3, 1,
+        2, 4, 5, 3,
+    };
+    delete data->topology;data->topology = new pylith::meshio::MeshBuilder::Topology(cellDim, numCells, numCorners, cellShape, cells);
 
     // Submesh data
-    data->groupLabel = "bc";
-    data->groupSize = 3;
-    static const int _groupVertices[3] = {
-        0, 2, 4,
+    data->faceGroupName = "bc";
+    data->faceGroupSize = 6;
+    static const int faceGroup[6] = {
+        0,   0, 2,
+        1,   2, 4,
     };
-    data->groupVertices = const_cast<int*>(_groupVertices);
+    data->faceGroup = const_cast<int*>(faceGroup);
+
     data->submeshNumCorners = 2;
     data->submeshNumVertices = 3;
     static const int _submeshVertices[3] = {
@@ -225,31 +238,36 @@ pylith::topology::TestSubmesh_Data*
 pylith::topology::TestSubmesh_Cases::Tet(void) {
     TestSubmesh_Data* data = new TestSubmesh_Data();assert(data);
 
-    data->cellDim = 3;
-    data->numVertices = 5;
-    data->numCells = 2;
-    data->numCorners = 4;
-    static const int _cells[2*4] = {
-        1, 2, 3, 0,
-        1, 3, 2, 4,
-    };
-    data->cells = const_cast<int*>(_cells);
-    static const PylithScalar _coordinates[5*3] = {
+    const size_t numVertices = 5;
+    const size_t spaceDim = 3;
+    const size_t cellDim = 3;
+    const size_t numCells = 2;
+    const size_t numCorners = 4;
+    const pylith::meshio::MeshBuilder::shape_t cellShape = pylith::meshio::MeshBuilder::TETRAHEDRON;
+
+    static const PylithScalar vertices[numVertices*spaceDim] = {
         -1.0, +0.0, +0.0,
         +0.0, -1.0, +0.0,
         +0.0, +0.0, +1.0,
         +0.0, +1.0, +0.0,
         +1.0, +0.0, +0.0,
     };
-    data->coordinates = const_cast<PylithScalar*>(_coordinates);
+    delete data->geometry;data->geometry = new pylith::meshio::MeshBuilder::Geometry(numVertices, spaceDim, vertices);
+
+    static const PylithInt cells[numCells*numCorners] = {
+        1, 2, 3, 0,
+        1, 3, 2, 4,
+    };
+    delete data->topology;data->topology = new pylith::meshio::MeshBuilder::Topology(cellDim, numCells, numCorners, cellShape, cells);
 
     // Submesh data
-    data->groupLabel = "bc";
-    data->groupSize = 4;
-    static const int _groupVertices[4] = {
-        0, 1, 3, 4,
+    data->faceGroupName = "bc";
+    data->faceGroupSize = 8;
+    static const int faceGroup[8] = {
+        0,   0, 1, 3,
+        1,   1, 3, 4,
     };
-    data->groupVertices = const_cast<int*>(_groupVertices);
+    data->faceGroup = const_cast<int*>(faceGroup);
     data->submeshNumCorners = 3;
     data->submeshNumVertices = 4;
     static const int _submeshVertices[4] = {
@@ -290,16 +308,14 @@ pylith::topology::TestSubmesh_Data*
 pylith::topology::TestSubmesh_Cases::Hex(void) {
     TestSubmesh_Data* data = new TestSubmesh_Data();assert(data);
 
-    data->cellDim = 3;
-    data->numVertices = 12;
-    data->numCells = 2;
-    data->numCorners = 8;
-    static const int _cells[2*8] = {
-        0,  2,  3,  1,  6,  8,  9,  7,
-        2,  4,  5,  3,  8, 10, 11,  9,
-    };
-    data->cells = const_cast<int*>(_cells);
-    static const PylithScalar _coordinates[12*3] = {
+    const size_t numVertices = 12;
+    const size_t spaceDim = 3;
+    const size_t cellDim = 3;
+    const size_t numCells = 2;
+    const size_t numCorners = 8;
+    const pylith::meshio::MeshBuilder::shape_t cellShape = pylith::meshio::MeshBuilder::HEXAHEDRON;
+
+    static const PylithScalar vertices[numVertices*spaceDim] = {
         -1.0, -1.0, -1.0,
         -1.0, +1.0, -1.0,
         +0.0, -1.0, -1.0,
@@ -313,15 +329,22 @@ pylith::topology::TestSubmesh_Cases::Hex(void) {
         +1.0, -1.0, +1.0,
         +1.0, +1.0, +1.0,
     };
-    data->coordinates = const_cast<PylithScalar*>(_coordinates);
+    delete data->geometry;data->geometry = new pylith::meshio::MeshBuilder::Geometry(numVertices, spaceDim, vertices);
+
+    static const PylithInt cells[numCells*numCorners] = {
+        0,  2,  3,  1,  6,  8,  9,  7,
+        2,  4,  5,  3,  8, 10, 11,  9,
+    };
+    delete data->topology;data->topology = new pylith::meshio::MeshBuilder::Topology(cellDim, numCells, numCorners, cellShape, cells);
 
     // Submesh data
-    data->groupLabel = "bc";
-    data->groupSize = 6;
-    static const int _groupVertices[6] = {
-        6, 7, 8, 9, 10, 11,
+    data->faceGroupName = "bc";
+    data->faceGroupSize = 10;
+    static const int faceGroup[10] = {
+        0,   6, 7,  8,  9,
+        1,   8, 9, 10, 11,
     };
-    data->groupVertices = const_cast<int*>(_groupVertices);
+    data->faceGroup = const_cast<int*>(faceGroup);
     data->submeshNumCorners = 4;
     data->submeshNumVertices = 6;
     static const int _submeshVertices[6] = {

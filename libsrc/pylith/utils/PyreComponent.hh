@@ -55,11 +55,18 @@ public:
      */
     const char* getIdentifier(void) const;
 
+    /** Get full name from identifier and name.
+     *
+     * @returns Full name of component.
+     */
+    const char* getFullIdentifier(void) const;
+
     // PRIVATE METHODS //////////////////////////////////////////////////////
 private:
 
     std::string _name; ///< Name of component (used in journals).
     std::string _identifier; ///< Identifier for object in component hierarchy.
+    std::string _fullIdentifier; ///< Full name of component.
 
     // PRIVATE METHODS //////////////////////////////////////////////////////
 private:

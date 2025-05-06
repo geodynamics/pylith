@@ -64,7 +64,6 @@ intrusion.bulk_rheology = pylith.materials.IsotropicLinearPoroelasticity
 [pylithapp.problem.materials.crust]
 
 # `label_value` must match the blocks in `bc.jou` Cubit Journal file.
-description = crust
 label_value = 1
 
 # We will use uniform material properties, so we use the UniformDB
@@ -94,7 +93,6 @@ auxiliary_subfields.isotropic_permeability.basis_order = 0
 
 [pylithapp.problem.materials.intrusion]
 # `label_value` must match the blocks in `bc.jou` Cubit Journal file.
-description = Intrusion
 label_value = 2
 
 # We will use uniform material properties, so we use the UniformDB

@@ -152,4 +152,3 @@ This will generate the following error when the mesh is read via the `MeshIOPets
 [0]PETSC ERROR: #6 DMSetFromOptions() at petsc-dev/src/dm/interface/dm.c:914
 [0]PETSC ERROR: #7 virtual void pylith::meshio::MeshIOPetsc::_read()() at src/cig/pylith/libsrc/pylith/meshio/MeshIOPetsc.cc:147
 ```
-

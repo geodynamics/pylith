@@ -16,6 +16,11 @@
 class pylith::meshio::MeshIOPetsc : public MeshIO {
     friend class TestMeshIOPetsc; // unit testing
 
+    enum Format {
+        GMSH=0, // PETSc HDF5 format
+        HDF5=1, // PETSc HDF5 format
+    };
+
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
@@ -52,6 +57,30 @@ public:
      */
     const char* getPrefix(void) const;
 
+    /** Set mesh format.
+     *
+     * @param value Mesh format.
+     */
+    void setFormat(Format value);
+
+    /** Get mesh format.
+     *
+     * @returns Mesh format.
+     */
+    Format getFormat(void) const;
+
+    /** Set flag for marking Gmsh faces, edges, and vertices recursively.
+     *
+     * @param value True if marking Gmsh faces, edges, and vertices.
+     */
+    void setGmshMarkRecursive(const bool value);
+
+    /** Returns true if marking Gmsh faces, edges, and vertices recursively, otherwise false.
+     *
+     * @returns Mesh format.
+     */
+    bool getGmshMarkRecursive(void) const;
+
     // PROTECTED METHODS //////////////////////////////////////////////////////////////////////////
 protected:
 
@@ -64,11 +93,11 @@ protected:
     // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
 private:
 
-    std::string _filename; ///< Name of file
-    std::string _prefix; ///< Options prefix for mesh
+    std::string _filename; ///< Name of file.
+    std::string _prefix; ///< Options prefix for mesh.
+    Format _format; ///< Mesh format.
+    bool _gmshMarkRecursive; ///< Mark faces, edges, and vertices recursively for physical groups in Gmsh.
 
 }; // MeshIOPetsc
-
-#include "MeshIOPetsc.icc" // inline methods
 
 // End of file

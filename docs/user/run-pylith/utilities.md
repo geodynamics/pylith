@@ -10,6 +10,9 @@ pylith_viz
 pyre_doc
 : Display the Pyre properties and facilities available for a given component.
 
+pylith_convertmesh
+: Convert an Exodus II file from Cubit or a Gmsh file to an HDF5 file in the PETSc mesh format. 
+
 pylith_cfgsearch
 : Search and display metadata in `.cfg` files.
 
@@ -31,9 +34,7 @@ pylith_powerlaw_gendb
 (sec-user-run-pylith-viz)=
 ## pylith_viz
 
-:::{note}
-New in v4.1.0
-:::
+*New in v4.1.0.*
 
 This utility provides an interactive graphical user interface for plotting output from PyLith simulations using [PyVista](https://docs.pyvista.org/version/stable/).
 We demonstrate use of this utility in the examples.
@@ -108,9 +109,7 @@ pylith_viz --filenames FILENAMES warp_grid [--field FIELD_NAME] [--component COM
 
 ## pyre_doc.py
 
-:::{note}
-New in v3.0.0
-:::
+*New in v3.0.0.*
 
 This utility is part of the Pythia/Pyre framework.
 It will be installed to the `bin` directory where Pythia/Pyre is installed.
@@ -188,11 +187,40 @@ properties of 'problem':
         validator: (in ['linear', 'nonlinear'])
 ```
 
+(sec-user-run-pylith-convertmesh)=
+## pylith_convertmesh
+
+*New in v5.0.0.*
+
+This utility converts a finite-element mesh from one file format to another.
+The primary use case is converting an Exodus II file from Cubit or a Gmsh file to an HDF5 in the PETSc mesh format.
+This is a Pyre application, so you can get help using the same command line tools as those for PyLith.
+The default reader and writer are `MeshIOPetsc` components, so you do not need to change the reader or writer component to convert a Gmsh file to an HDF5 in the PETSc mesh format.
+
+```{code-block} console
+---
+caption: Example of running `pylith_convertmesh` with command line arguments for getting help.
+---
+$ pylith_convertmesh [--help] [--help-components] [--help-properties]
+```
+
+```{code-block} console
+---
+caption: Example of running `pylith_convertmesh` to convert a Gmsh file `mesh_tri.msh` to an HDF5 file in PETSc mesh format `mesh_tri.h5`.
+---
+$ pylith_convertmesh --reader.filename=mesh_tri.mesh --writer.filename=mesh_tri.h5
+```
+
+```{code-block} console
+---
+caption: Example of running `pylith_convertmesh` to convert an Exodus II file `mesh_tri.exo` to an HDF5 file in PETSc mesh format `mesh_tri.h5`.
+---
+$ pylith_convertmesh --reader=pylith.meshio.MeshIOCubit --reader.filename=mesh_tri.exo --writer.filename=mesh_tri.h5
+```
+
 ## pylith_cfgsearch
 
-:::{note}
-New in v3.0.0
-:::
+*New in v3.0.0.*
 
 This utility searches and displays the metadata in `.cfg` files based on criteria provided via the command line.
 
@@ -293,9 +321,7 @@ step03_multislip_velbc.cfg v1.0.0; requires PyLith >=3.0 and <5.0
 
 ## pylith_runner
 
-:::{note}
-New in v3.0.0
-:::
+*New in v3.0.0.*
 
 The runner utility searches a directory path for `.cfg` files with `arguments` in the simulation metadata (see {ref}`sec-user-run-pylith-pylithapp` for details).
 It uses those arguments to run PyLith simulations.

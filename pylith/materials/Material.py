@@ -15,8 +15,8 @@ from .materials import Material as ModuleMaterial
 def validateDescription(value):
     """Validate description.
     """
-    if 0 == len(value):
-        raise ValueError("Description for material not specified.")
+    if len(value) > 0:
+        print("WARNING: Specifying a 'description' for a material is deprecated starting in v5.0; this will be remove in v6.0.")
     return value
 
 
@@ -28,7 +28,7 @@ class Material(Physics, ModuleMaterial):
     import pythia.pyre.inventory
 
     description = pythia.pyre.inventory.str("description", default="", validator=validateDescription)
-    description.meta['tip'] = "Descriptive label for material."
+    description.meta['tip'] = "Descriptive label for material (deprecated in v5.0; will be removed in v6.0)."
 
     labelName = pythia.pyre.inventory.str("label", default="material-id", validator=pythia.pyre.inventory.choice(["material-id"]))
     labelName.meta['tip'] = "Name of label for material. Currently only 'material-id' is allowed."
@@ -45,7 +45,6 @@ class Material(Physics, ModuleMaterial):
         """Setup material.
         """
         Physics.preinitialize(self, problem)
-        ModuleMaterial.setDescription(self, self.description)
         ModuleMaterial.setLabelName(self, self.labelName)
         ModuleMaterial.setLabelValue(self, self.labelValue)
 

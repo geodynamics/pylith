@@ -12,14 +12,13 @@
                 "${env:MPI_INCDIR}",
                 "${env:HDF5_INCDIR}",
                 "${env:PROJ_INCDIR}",
-                "${env:CPPUNIT_INCDIR}",
                 "${env:CATCH2_INCDIR}",
                 "${env:PETSC_DIR}/include",
                 "${env:PETSC_DIR}/${env:PETSC_ARCH}/include"
             ],
             "defines": [],
             "macFrameworkPath": [
-                "/Library/Developer/CommandLineTools/SDKs/MacOSX11.sdk/System/Library/Frameworks"
+                "/Library/Developer/CommandLineTools/SDKs/MacOSX13.sdk/System/Library/Frameworks"
             ],
             "cStandard": "c11",
             "cppStandard": "c++14",
@@ -37,7 +36,6 @@
                 "${env:MPI_INCDIR}",
                 "${env:HDF5_INCDIR}",
                 "${env:PROJ_INCDIR}",
-                "${env:CPPUNIT_INCDIR}",
                 "${env:CATCH2_INCDIR}",
                 "${env:PETSC_DIR}/include",
                 "${env:PETSC_DIR}/${env:PETSC_ARCH}/include"

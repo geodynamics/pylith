@@ -35,13 +35,19 @@ mesh = {
              5   2
     }
   }
-  group = {
+  vertex-group = {
     name = fault
-    type = vertices
     count = 2
     indices = {
       4
       5
+    }
+  }
+  face-group = {
+    name = fault_faces
+    count = 1
+    indices = {
+      4   4 5
     }
   }
 }

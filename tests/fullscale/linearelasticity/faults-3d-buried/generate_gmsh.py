@@ -2,7 +2,7 @@
 
 import numpy
 import gmsh
-from pylith.meshio.gmsh_utils import (VertexGroup, MaterialGroup, GenerateMesh)
+from pylith.meshio.gmsh_utils import (BoundaryGroup, MaterialGroup, GenerateMesh)
 
 class App(GenerateMesh):
     """
@@ -66,17 +66,17 @@ class App(GenerateMesh):
         for material in materials:
             material.create_physical_group()
 
-        vertex_groups = (
-            VertexGroup(name="boundary_xneg", tag=10, dim=2, entities=[self.s_xneg]),
-            VertexGroup(name="boundary_xpos", tag=11, dim=2, entities=[self.s_xpos]),
-            VertexGroup(name="boundary_yneg", tag=12, dim=2, entities=[self.s_yneg]),
-            VertexGroup(name="boundary_ypos", tag=13, dim=2, entities=[self.s_ypos]),
-            VertexGroup(name="boundary_zneg", tag=14, dim=2, entities=[self.s_zneg]),
-            VertexGroup(name="boundary_zpos", tag=15, dim=2, entities=[self.s_zpos]),
-            VertexGroup(name="fault", tag=20, dim=2, entities=[self.s_fault]),
-            VertexGroup(name="fault_edges", tag=21, dim=1, entities=[self.c_fault_yneg, self.c_faultbot, self.c_fault_ypos]),
+        face_groups = (
+            BoundaryGroup(name="boundary_xneg", tag=10, dim=2, entities=[self.s_xneg]),
+            BoundaryGroup(name="boundary_xpos", tag=11, dim=2, entities=[self.s_xpos]),
+            BoundaryGroup(name="boundary_yneg", tag=12, dim=2, entities=[self.s_yneg]),
+            BoundaryGroup(name="boundary_ypos", tag=13, dim=2, entities=[self.s_ypos]),
+            BoundaryGroup(name="boundary_zneg", tag=14, dim=2, entities=[self.s_zneg]),
+            BoundaryGroup(name="boundary_zpos", tag=15, dim=2, entities=[self.s_zpos]),
+            BoundaryGroup(name="fault", tag=20, dim=2, entities=[self.s_fault]),
+            BoundaryGroup(name="fault_edges", tag=21, dim=1, entities=[self.c_fault_yneg, self.c_faultbot, self.c_fault_ypos]),
         )
-        for group in vertex_groups:
+        for group in face_groups:
             group.create_physical_group()
 
     def generate_mesh(self, cell):

@@ -16,7 +16,7 @@ The names of the vertices and curves match the ones we use in the Cubit journal 
 ## Meshing using Python Script
 
 :::{note}
-New in v4.1.0.
+*New in v4.1.0.*
 
 We use a Python script to generate the mesh rather than Journal files.
 We also use the skeleton sizing function for the surface.
@@ -37,7 +37,7 @@ We reference objects by their centroid so the resulting script should be indepen
 :::{note}
 We use the skeleton sizing function to gradually increase the cell size with distance from the fault.
 This is much simpler than applying the bias sizing function to the curves and surfaces.
-We set the minimim size equal to the cell size on the fault and the maximum gradient equal to the "bias".
+We set the minimum size equal to the cell size on the fault and the maximum gradient equal to the "bias".
 :::
 
 After running the Python script in Cubit, you will have a corresponding Exodus-II file (`mesh_tri.exo` or `mesh_quad.exo`).

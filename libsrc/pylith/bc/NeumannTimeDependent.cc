@@ -230,7 +230,7 @@ pylith::bc::NeumannTimeDependent::createAuxiliaryField(const pylith::topology::F
     PYLITH_COMPONENT_DEBUG("createAuxiliaryField(solution="<<solution.getLabel()<<", domainMesh=)"<<typeid(domainMesh).name()<<")");
 
     pylith::topology::Field* auxiliaryField = new pylith::topology::Field(domainMesh);assert(auxiliaryField);
-    auxiliaryField->setLabel("NeumannTimeDependent auxiliary field");
+    auxiliaryField->setLabel("auxiliary field");
 
     assert(_auxiliaryFactory);
     assert(_normalizer);

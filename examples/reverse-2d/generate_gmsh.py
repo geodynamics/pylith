@@ -20,7 +20,7 @@ import math
 import gmsh
 
 # Import the gmsh_utils Python module supplied with PyLith.
-from pylith.meshio.gmsh_utils import (VertexGroup, MaterialGroup, GenerateMesh)
+from pylith.meshio.gmsh_utils import (BoundaryGroup, MaterialGroup, GenerateMesh)
 
 class App(GenerateMesh):
     """
@@ -145,21 +145,21 @@ class App(GenerateMesh):
             material.create_physical_group()
 
         # Create physical groups for the boundaries and the faults.
-        # We use the `VertexGroup` data class defined in `gmsh_utils`.
+        # We use the `BoundaryGroup` data class defined in `gmsh_utils`.
         # The name and tag specify the name and tag assigned to the physical group.
         # The dimension and entities specify the geometric entities to include in the physical
         # group.
-        vertex_groups = (
-            VertexGroup(name="boundary_xneg", tag=10, dim=1, entities=[self.c_xneg_hw, self.c_xneg_fw]),
-            VertexGroup(name="boundary_xpos", tag=11, dim=1, entities=[self.c_xpos]),
-            VertexGroup(name="boundary_yneg", tag=12, dim=1, entities=[self.c_yneg]),
-            VertexGroup(name="boundary_ypos", tag=13, dim=1, entities=[self.c_ypos_fw, self.c_ypos_w, self.c_ypos_hw]),
-            VertexGroup(name="fault", tag=20, dim=1, entities=[self.c_fault_l, self.c_fault_u]),
-            VertexGroup(name="fault_end", tag=21, dim=0, entities=[self.p_fault_end]),
-            VertexGroup(name="splay", tag=22, dim=1, entities=[self.c_splay]),
-            VertexGroup(name="splay_end", tag=23, dim=0, entities=[self.p_splay_end]),
+        face_groups = (
+            BoundaryGroup(name="boundary_xneg", tag=10, dim=1, entities=[self.c_xneg_hw, self.c_xneg_fw]),
+            BoundaryGroup(name="boundary_xpos", tag=11, dim=1, entities=[self.c_xpos]),
+            BoundaryGroup(name="boundary_yneg", tag=12, dim=1, entities=[self.c_yneg]),
+            BoundaryGroup(name="boundary_ypos", tag=13, dim=1, entities=[self.c_ypos_fw, self.c_ypos_w, self.c_ypos_hw]),
+            BoundaryGroup(name="fault", tag=20, dim=1, entities=[self.c_fault_l, self.c_fault_u]),
+            BoundaryGroup(name="fault_end", tag=21, dim=0, entities=[self.p_fault_end]),
+            BoundaryGroup(name="splay", tag=22, dim=1, entities=[self.c_splay]),
+            BoundaryGroup(name="splay_end", tag=23, dim=0, entities=[self.p_splay_end]),
         )
-        for group in vertex_groups:
+        for group in face_groups:
             group.create_physical_group()
 
     def generate_mesh(self, cell):

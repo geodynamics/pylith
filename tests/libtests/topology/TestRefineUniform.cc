@@ -42,6 +42,7 @@ pylith::topology::TestRefineUniform::~TestRefineUniform(void) {
 } // destructor
 
 
+#include <iostream>
 // ------------------------------------------------------------------------------------------------
 // Test refine().
 void
@@ -59,22 +60,22 @@ pylith::topology::TestRefineUniform::testRefine(void) {
     // Check mesh dimension
     REQUIRE(_data->cellDim == newMesh.getDimension());
 
-    const PetscDM& dmMesh = newMesh.getDM();assert(dmMesh);
+    const PetscDM dmNewMesh = newMesh.getDM();assert(dmNewMesh);
 
     // Check vertices
-    pylith::topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
+    pylith::topology::Stratum verticesStratum(dmNewMesh, topology::Stratum::DEPTH, 0);
     REQUIRE(_data->numVertices == verticesStratum.size());
     const PetscInt vStart = verticesStratum.begin();
     const PetscInt vEnd = verticesStratum.end();
 
-    pylith::topology::CoordsVisitor coordsVisitor(dmMesh);
+    pylith::topology::CoordsVisitor coordsVisitor(dmNewMesh);
     const int spaceDim = _data->spaceDim;
     for (PetscInt v = vStart; v < vEnd; ++v) {
         CHECK(spaceDim == coordsVisitor.sectionDof(v));
     } // for
 
     // Check cells
-    pylith::topology::Stratum cellsStratum(dmMesh, topology::Stratum::HEIGHT, 0);
+    pylith::topology::Stratum cellsStratum(dmNewMesh, topology::Stratum::HEIGHT, 0);
     const PetscInt cStart = cellsStratum.begin();
     const PetscInt cEnd = cellsStratum.end();
     const PetscInt numCells = cellsStratum.size();
@@ -87,8 +88,8 @@ pylith::topology::TestRefineUniform::testRefine(void) {
         PetscInt *closure = NULL;
         PetscInt closureSize, numCorners = 0;
 
-        err = DMPlexGetCellType(dmMesh, c, &ct);assert(!err);
-        err = DMPlexGetTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);assert(!err);
+        err = DMPlexGetCellType(dmNewMesh, c, &ct);assert(!err);
+        err = DMPlexGetTransitiveClosure(dmNewMesh, c, PETSC_TRUE, &closureSize, &closure);assert(!err);
         for (PetscInt p = 0; p < closureSize*2; p += 2) {
             const PetscInt point = closure[p];
             if ((point >= vStart) && (point < vEnd)) {
@@ -97,7 +98,7 @@ pylith::topology::TestRefineUniform::testRefine(void) {
         } // for
         err = DMPlexInvertCell(ct, closure);assert(!err);
         CHECK(_data->numCorners == numCorners);
-        err = DMPlexRestoreTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);assert(!err);
+        err = DMPlexRestoreTransitiveClosure(dmNewMesh, c, PETSC_TRUE, &closureSize, &closure);assert(!err);
     } // for
 
     // Cohesive cells
@@ -106,8 +107,8 @@ pylith::topology::TestRefineUniform::testRefine(void) {
         PetscInt *closure = NULL;
         PetscInt closureSize, numCorners = 0;
 
-        err = DMPlexGetCellType(dmMesh, c, &ct);assert(!err);
-        err = DMPlexGetTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);assert(!err);
+        err = DMPlexGetCellType(dmNewMesh, c, &ct);assert(!err);
+        err = DMPlexGetTransitiveClosure(dmNewMesh, c, PETSC_TRUE, &closureSize, &closure);assert(!err);
         for (PetscInt p = 0; p < closureSize*2; p += 2) {
             const PetscInt point = closure[p];
             if ((point >= vStart) && (point < vEnd)) {
@@ -116,69 +117,55 @@ pylith::topology::TestRefineUniform::testRefine(void) {
         } // for
         err = DMPlexInvertCell(ct, closure);assert(!err);
         CHECK(_data->numCornersCohesive == numCorners);
-        err = DMPlexRestoreTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);assert(!err);
+        err = DMPlexRestoreTransitiveClosure(dmNewMesh, c, PETSC_TRUE, &closureSize, &closure);assert(!err);
     } // for
 
     // check materials
     PetscInt matId = 0;
     PetscInt matIdSum = 0; // Use sum of material ids as simple checksum.
     for (PetscInt c = cStart; c < cEnd; ++c) {
-        err = DMGetLabelValue(dmMesh, pylith::topology::Mesh::cells_label_name, c, &matId);assert(!err);
+        err = DMGetLabelValue(dmNewMesh, pylith::topology::Mesh::cells_label_name, c, &matId);assert(!err);
         matIdSum += matId;
     } // for
     CHECK(_data->matIdSum == matIdSum);
 
-    // Check groups
-    PetscInt numGroups, pStart, pEnd;
-    err = DMPlexGetChart(dmMesh, &pStart, &pEnd);assert(!err);
-    err = DMGetNumLabels(dmMesh, &numGroups);assert(!err);
-    for (PetscInt iGroup = 0; iGroup < _data->numGroups; ++iGroup) {
-        // Omit depth, vtk, ghost and material-id labels
-        // Don't know order of labels, so do brute force linear search
-        bool foundLabel = false;
-        int iLabel = 0;
-        const char *name = NULL;
-        PetscInt firstPoint = 0;
-
-        while (iLabel < numGroups) {
-            err = DMGetLabelName(dmMesh, iLabel, &name);assert(!err);
-            if (0 == strcmp(_data->groupNames[iGroup], name)) {
-                foundLabel = true;
-                break;
-            } else {
-                ++iLabel;
-            } // if/else
-        } // while
-        assert(foundLabel);
-
-        for (PetscInt p = pStart; p < pEnd; ++p) {
-            PetscInt val;
-            err = DMGetLabelValue(dmMesh, name, p, &val);assert(!err);
-            if (val >= 0) {
-                firstPoint = p;
-                break;
-            } // if
+    // Check vertex groups
+    pylith::string_vector vertexGroupNames;
+    pylith::meshio::MeshBuilder::getVertexGroupNames(&vertexGroupNames, newMesh);
+    for (size_t iGroup = 0; iGroup < _data->numVertexGroups; ++iGroup) {
+        INFO("Checking vertex group '"<<_data->vertexGroupNames[iGroup]<<"'.");
+        int_array points;
+        pylith::meshio::MeshBuilder::getVertexGroup(&points, newMesh, _data->vertexGroupNames[iGroup]);
+        REQUIRE(_data->vertexGroupSizes[iGroup] == points.size());
+        for (size_t iPoint = 0; iPoint < points.size(); ++iPoint) {
+            CHECK(points[iPoint] >= 0);
+            CHECK(points[iPoint] < _data->numVertices);
         } // for
-        std::string groupType = (firstPoint >= cStart && firstPoint < cEnd) ? "cell" : "vertex";
-        CHECK(std::string(_data->groupTypes[iGroup]) == groupType);
-        PetscInt numPoints;
-        err = DMGetStratumSize(dmMesh, name, 1, &numPoints);assert(!err);
-        REQUIRE(_data->groupSizes[iGroup] == numPoints);
-        PetscIS pointIS = NULL;
-        const PetscInt *points = NULL;
-        err = DMGetStratumIS(dmMesh, name, 1, &pointIS);assert(!err);
-        err = ISGetIndices(pointIS, &points);assert(!err);
-        if (groupType == std::string("vertex")) {
-            for (PetscInt p = 0; p < numPoints; ++p) {
-                assert((points[p] >= 0 && points[p] < cStart) || (points[p] >= cEnd));
-            } // for
-        } else {
-            for (PetscInt p = 0; p < numPoints; ++p) {
-                assert(points[p] >= cStart && points[p] < cEnd);
-            } // for
-        } // if/else
-        err = ISRestoreIndices(pointIS, &points);assert(!err);
-        err = ISDestroy(&pointIS);assert(!err);
+    } // for
+
+    // Check face groups
+    pylith::topology::Stratum facesStratum(dmNewMesh, topology::Stratum::HEIGHT, 1);
+    const PetscInt fStart = facesStratum.begin();
+    const PetscInt fEnd = facesStratum.end();
+    pylith::string_vector faceGroupNames;
+    pylith::meshio::MeshBuilder::getFaceGroupNames(&faceGroupNames, newMesh);
+    REQUIRE(_data->numFaceGroups == faceGroupNames.size());
+    for (size_t iGroup = 0; iGroup < _data->numFaceGroups; ++iGroup) {
+        INFO("Checking face group '"<<_data->faceGroupNames[iGroup]<<"'.");
+        PetscInt numFaces = 0;
+        const PetscInt labelValue = 1;
+        err = DMGetStratumSize(dmNewMesh, _data->faceGroupNames[iGroup], labelValue, &numFaces);REQUIRE(!err);
+        REQUIRE(_data->faceGroupSizes[iGroup] == size_t(numFaces));
+        PetscIS facesIS = NULL;
+        const PetscInt *faces = NULL;
+        err = DMGetStratumIS(dmNewMesh, _data->faceGroupNames[iGroup], labelValue, &facesIS);REQUIRE(!err);
+        err = ISGetIndices(facesIS, &faces);assert(!err);
+        for (PetscInt iFace = 0; iFace < numFaces; ++iFace) {
+            CHECK((faces[iFace] >= fStart && faces[iFace] < fEnd));
+        } // for
+        err = ISRestoreIndices(facesIS, &faces);REQUIRE(!err);
+        err = ISDestroy(&facesIS);REQUIRE(!err);
+
     } // for
 
     PYLITH_METHOD_END;
@@ -231,16 +218,17 @@ pylith::topology::TestRefineUniform_Data::TestRefineUniform_Data(void) :
     numCellsCohesive(0),
     numCornersCohesive(0),
     matIdSum(0),
-    groupSizes(NULL),
-    groupNames(NULL),
-    groupTypes(NULL),
-    numGroups(0) { // constructor
-} // constructor
+    vertexGroupSizes(NULL),
+    vertexGroupNames(NULL),
+    numVertexGroups(0),
+    faceGroupSizes(NULL),
+    faceGroupNames(NULL),
+    numFaceGroups(0) {}
 
 
 // ------------------------------------------------------------------------------------------------
 // Destructor
-pylith::topology::TestRefineUniform_Data::~TestRefineUniform_Data(void) {} // destructor
+pylith::topology::TestRefineUniform_Data::~TestRefineUniform_Data(void) {}
 
 
 // End of file

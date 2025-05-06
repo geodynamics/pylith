@@ -169,7 +169,7 @@ pylith::faults::FaultCohesiveKin::createAuxiliaryField(const pylith::topology::F
     assert(_normalizer);
 
     pylith::topology::Field* auxiliaryField = new pylith::topology::Field(domainMesh);assert(auxiliaryField);
-    auxiliaryField->setLabel("FaultCohesiveKin auxiliary field");
+    auxiliaryField->setLabel("auxiliary field");
 
     // Set default discretization of auxiliary subfields to match lagrange_multiplier_fault subfield in solution.
     assert(_auxiliaryFactory);

@@ -29,12 +29,6 @@ dist_noinst_PYTHON = \
 	faults/TestFaultCohesiveKin.py \
 	faults/TestFaultCohesiveImpulses.py \
 	faults/TestKinSrc.py \
-	faults/TestKinSrcConstRate.py \
-	faults/TestKinSrcStep.py \
-	faults/TestKinSrcRamp.py \
-	faults/TestKinSrcBrune.py \
-	faults/TestKinSrcLiuCos.py \
-	faults/TestKinSrcTimeHistory.py \
 	faults/TestSingleRupture.py \
 	materials/__init__.py \
 	materials/TestAuxiliarySubfields.py \

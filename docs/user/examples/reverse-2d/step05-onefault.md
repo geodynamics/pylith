@@ -29,7 +29,7 @@ When PyLith inserts cohesive cells into a mesh with buried edges (in this case a
 ## Step 5a: Coarse Mesh
 
 :::{note}
-New in v4.1.0.
+*New in v4.1.0.*
 
 We start with a coarse resolution mesh that captures the geometry and increase the resolution of the simulation by using uniform refinement or increasing the basis order of the solution fields.
 We also introduce different origin times for the coseismic slip on the two faults.

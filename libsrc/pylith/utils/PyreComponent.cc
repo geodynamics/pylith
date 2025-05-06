@@ -43,6 +43,7 @@ pylith::utils::PyreComponent::setName(const char* value) {
         throw std::logic_error("Cannot set name of Pyre component to empty string.");
     } // if
     _name = value;
+    _fullIdentifier = _name + std::string(".") + _identifier;
 } // setName
 
 
@@ -62,6 +63,7 @@ pylith::utils::PyreComponent::setIdentifier(const char* value) {
         throw std::logic_error("Cannot set name of Pyre identifier to empty string.");
     } // if
     _identifier = value;
+    _fullIdentifier = _name + std::string(".") + _identifier;
 } // setIdentifier
 
 
@@ -71,6 +73,14 @@ const char*
 pylith::utils::PyreComponent::getIdentifier(void) const {
     return _identifier.c_str();
 } // getIdentifier
+
+
+// ----------------------------------------------------------------------
+// Get full name from identifier and name.
+const char*
+pylith::utils::PyreComponent::getFullIdentifier(void) const {
+    return _fullIdentifier.c_str();
+} // getFullIdentifier
 
 
 // End of file

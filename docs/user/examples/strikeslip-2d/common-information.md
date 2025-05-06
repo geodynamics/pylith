@@ -53,7 +53,6 @@ caption: Material parameters common to all simulations in this directory.
 materials = [elastic_xneg, elastic_xpos]
 
 [pylithapp.problem.materials.elastic_xneg]
-description = Material to on the -x side of the fault
 label_value = 1
 
 db_auxiliary_field = spatialdata.spatialdb.UniformDB
@@ -69,7 +68,6 @@ derived_subfields.cauchy_strain.basis_order = 0
 derived_subfields.cauchy_stress.basis_order = 0
 
 [pylithapp.problem.materials.elastic_xpos]
-description = Material to on the +x side of the fault
 label_value = 2
 
 db_auxiliary_field = spatialdata.spatialdb.UniformDB

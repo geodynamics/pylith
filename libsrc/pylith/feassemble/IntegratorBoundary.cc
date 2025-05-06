@@ -165,7 +165,8 @@ pylith::feassemble::IntegratorBoundary::initialize(const pylith::topology::Field
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" initialize(solution="<<solution.getLabel()<<")");
 
-    delete _boundaryMesh;_boundaryMesh = pylith::topology::MeshOps::createLowerDimMesh(solution.getMesh(), _labelName.c_str(), _labelValue);
+    const char* componentName = _physics->getFullIdentifier();
+    delete _boundaryMesh;_boundaryMesh = pylith::topology::MeshOps::createLowerDimMesh(solution.getMesh(), _labelName.c_str(), _labelValue, componentName);
     assert(_boundaryMesh);
     pylith::topology::CoordsVisitor::optimizeClosure(_boundaryMesh->getDM());
 

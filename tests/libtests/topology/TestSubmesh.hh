@@ -12,6 +12,8 @@
 #include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
 #include "pylith/topology/topologyfwd.hh" // forward declarations
+
+#include "pylith/meshio/MeshBuilder.hh" // USES MeshBuilder
 #include "pylith/utils/types.hh" // USES PylithScalar
 
 namespace pylith {
@@ -75,21 +77,14 @@ public:
 
     // GENERAL, VALUES DEPEND ON TEST CASE
 
-    /// @defgroup Domain mesh information.
-    /// @{
-    int cellDim; ///< Cell dimension (matches space dimension).
-    int numVertices; ///< Number of vertices.
-    int numCells; ///< Number of cells.
-    int numCorners; ///< Number of vertices per cell.
-    int* cells; ///< Array of vertices in cells [numCells*numCorners].
-    PylithScalar* coordinates; ///< Coordinates of vertices [numVertices*cellDim].
-    /// @}
+    pylith::meshio::MeshBuilder::Topology* topology; ///< Topology for domain mesh
+    pylith::meshio::MeshBuilder::Geometry* geometry; ///< Geometry for domain mesh
 
     /// @defgroup Submesh information.
     /// @{
-    const char* groupLabel; ///< Label of group associated with submesh.
-    int groupSize; ///< Number of vertices in submesh group.
-    int* groupVertices; ///< Array of vertices in submesh group.
+    const char* faceGroupName; ///< Label of face group associated with submesh.
+    size_t faceGroupSize; ///< Number of vertices in submesh group.
+    int* faceGroup; ///< Array of vertices in submesh group.
     int submeshNumCorners; ///< Number of vertices per cell.
     int submeshNumVertices; ///< Number of vertices in submesh.
     int* submeshVertices; ///< Vertices in submesh.

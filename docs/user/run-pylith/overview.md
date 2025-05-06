@@ -12,6 +12,10 @@ $ pylith strikeslip.cfg
 
 See {ref}`sec-user-run-pylith-setting-parameters` for more information about setting parameters via parameter files and the command line.
 
+:::{tip}
+When running PyLith in parallel, convert your finite-element mesh to an HDF5 file in the PETSc mesh format to allow it to be read in parallel.
+:::
+
 ### Running in Parallel on a Desktop or Laptop
 
 You can run PyLith in parallel on a desktop or laptop using the `--nodes=NPROCS` command line argument, where `NPROCS` is the number of processes to use.
@@ -204,20 +208,27 @@ The physics components provide the point-wise functions (kernels) used by the ph
 {numref}`fig:pylith:simulation` shows the inputs and outputs for a PyLith simulation.
 The user supplies:
 
-1. Mesh information. This includes the topology of the finite-element mesh (coordinates of vertices and how the vertices are connected into cells), a material identifier for each cell, and sets of vertices associated with boundary conditions, faults, and output (for subsets of the mesh). This information can be provided using the PyLith mesh ASCII format (see {ref}`sec-user-file-formats-meshio-ascii` for the format specification) or by importing the information from Cubit or Gmsh mesh generation software (see {ref}`sec-user-femesh` for more information).
+1. Mesh information. This includes the topology of the finite-element mesh (coordinates of vertices and how the vertices are connected into cells), a material identifier for each cell, and sets of vertices associated with boundary conditions, faults, and output (for subsets of the mesh). This information can be provided using the PyLith mesh ASCII format (see {ref}`sec-user-file-formats-meshio-ascii` for the format specification), by importing the information from Cubit or Gmsh mesh generation software, or an HDF5 file in the PETSc mesh format. Refer to {ref}`sec-user-femesh` for more information.
 2. A set of parameters describing the problem. These parameters describe the type of problem to be run, solver information, time-stepping information, boundary conditions, materials, etc. This information can be provided from the command-line or by using a `cfg` file.
 3. Spatial databases specifying the values for the material properties and boundary conditions. Arbitrarily complex spatial variations in boundary and fault conditions and material properties may be given in the spatial database (see {ref}`sec-examples` and [Spatialdata Documentation](https://spatialdata.readthedocs.io).
 
-PyLith writes solution information, such as solution fields and state variables, to either VTK files or HDF5/Xdmf files using the observer components.
+PyLith writes solution information, such as solution fields and state variables, to either VTK/VTU files or HDF5/Xdmf files using the observer components.
 ParaView and Visit as well as several other visualization tools can read both types of files.
 PyLith includes {ref}`sec-user-run-pylith-viz` for visualizing PyLith HDF files using PyVista.
 Post-processing of output is generally performed using HDF5 files accessed via a Python script and the h5py package or a Matlab script.
+
+:::{tip}
+When running PyLith in parallel, convert your finite-element mesh to an HDF5 file in the PETSc mesh format to allow it to be read in parallel.
+Refer to section {ref}`sec-user-run-pylith-convertmesh` for more information.
+:::
 
 :::{figure-md} fig:pylith:simulation
 <img src="figs/pylith_simulation.*" alt="Diagram of a PyLith simulation" width="100%"/> 
 
 PyLith requires a finite-element mesh (three different mechanisms for generating a mesh are currently supported), simulation parameters, and spatial databases (defining the spatial variation of various parameters).
-PyLith writes the solution output to either VTK or HDF5/Xdmf files, which can be visualized with ParaView or Visit. PyLith includes {ref}`sec-user-run-pylith-viz` for visualizing PyLith HDF files using PyVista. Post-processing is generally done using the HDF5 files with Python or Matlab scripts.
+PyLith writes the solution output to either VTK/VTU or HDF5/Xdmf files, which can be visualized with ParaView or Visit.
+PyLith includes {ref}`sec-user-run-pylith-viz` for visualizing PyLith HDF files using PyVista. 
+Post-processing is generally done using the HDF5 files with Python or Matlab scripts.
 :::
 
 ## Nondimensionalization
@@ -233,13 +244,13 @@ In specifying simulation parameters, some details of the finite-element implemen
 In this section we describe the data structures to give the user greater context for understanding what the parameters mean.
 
 :::{tip}
-See {ref}`sec-developer-code-layout` for a detailed discussion of the we organize the PyLith code.
+See {ref}`sec-developer-code-layout` for a detailed discussion of organization of the PyLith code.
 :::
 
 ### Fields and Subfields
 
 Finite-element coefficients for the finite-element basis functions (sometimes thought of as the values at vertices, on edges and faces, or in cells) are stored in a `Field`.
-A `Field` is composed of a `Section`, which associates the points (vertices, edges, faces, and cells) with the finite-element coefficients, and a `Vec`, which is a vector storing the finite-element coefficients.
+A `Field` is composed of a `PetscSection`, which associates the points (vertices, edges, faces, and cells) with the finite-element coefficients, and a `PetscVec`, which is a vector storing the finite-element coefficients.
 A `Field` may hold a single subfield, such as displacement, or it may hold several subfields, such as the density, shear modulus, and bulk modulus for an isotropic, linear elastic material.
 
 Spatial discretization is specified for each subfield.
@@ -257,8 +268,8 @@ See [Solution component](../components/problems/Solution.md) for details of the 
 
 #### Auxiliary Field
 
-We specify parameters for materials, boundary conditions, and fault interfaces using fields we refer to as the "auxiliary" field.
-Each parameter (scalar, vector, tensor, or other) is held in a separate subfield.
+We specify parameters for materials, boundary conditions, and fault interfaces using fields we refer to as the `auxiliary` field.
+Each scalar, vector, tensor, or other parameter is held in a separate subfield.
 We also store state variables in the auxiliary field, with each state variable as a different subfield.
 This provides a single container for the collection of spatially varying parameters while maintaining the flexibility to specify the discretization of each parameter separately.
 
@@ -266,7 +277,7 @@ This provides a single container for the collection of spatially varying paramet
 
 The discretization of a field is given in terms of the topology (vertices, edges, faces, and cells) associated with the field and the basis order and quadrature order.
 The basis order refers to the highest order in the basis functions.
-For example, a basis order of 0 has just a constant and a basis order of 2 for a polynomial basis has constant, linear, and quadratic terms.
+For example, a basis order of 0 has just a constant term whereas a basis order of 2 for a polynomial basis has constant, linear, and quadratic terms.
 
 :::{warning}
 Currently, the quadrature order **MUST** be the same for all subfields in a simulation.
@@ -278,7 +289,7 @@ PyLith verifies that the quadrature order is the same for all subfields, and it 
 ## Setting PyLith Parameters
 
 There are several methods for setting input parameters for the `pylith` executable: via the command line or by using a text file in `cfg` or `pml` format.
-Both facilities and properties have default values provided, so you only need to set values when you want to deviate from the default behavior.
+Both facilities and properties may have default values, so you only need to set values when you want to deviate from the default behavior.
 
 ### Units
 
@@ -359,7 +370,7 @@ It is composed of nested sections which are formatted as follows:
 </component>
 ```
 
-XML files are intended to be read and written by machines, not edited manually by humans.
+XML files are intended to be read and written by software, not edited manually by humans.
 The `pml` file format is intended for applications in which PyLith input files are generated by another program, e.g., a GUI, web application, or a high-level structured editor.
 This file format will not be discussed further here, but if you are interested in using `pml` files, note that `pml` files and `cfg` files can be used interchangeably; in the following discussion, a file with a `pml` extension can be substituted anywhere a `cfg` file can be used.
 
@@ -393,5 +404,3 @@ The `pylithapp.cfg` files placed in (3) will override those in (2), (2) override
 :::{tip}
 See {ref}`sec-user-run-pylith-utilities` and {ref}`sec-user-run-pylith-parameter-gui` for several helpful utilities for viewing PyLith parameters and finding examples using specific features.
 :::
-
-% End of file

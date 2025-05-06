@@ -12,22 +12,12 @@
 # @brief Python object for reading/writing finite-element mesh from
 # Cubit.
 #
-# Factory: mesh_io
+# Factory: mesh_input, mesh_output
+
+import pathlib
 
 from .MeshIOObj import MeshIOObj
 from .meshio import MeshIOCubit as ModuleMeshIOCubit
-
-
-def validateFilename(value):
-    """Validate filename.
-    """
-    if 0 == len(value):
-        raise ValueError("Filename for Cubit/Trlis input mesh not specified.")
-    try:
-        open(value, "r")
-    except IOError:
-        raise IOError("Cubit/Trelis input mesh '{}' not found.".format(value))
-    return value
 
 
 class MeshIOCubit(MeshIOObj, ModuleMeshIOCubit):
@@ -44,18 +34,14 @@ class MeshIOCubit(MeshIOObj, ModuleMeshIOCubit):
         "cfg": """
             [pylithapp.mesh_generator.reader]
             filename = mesh_quad.exo
-            use_nodeset_names = True
             coordsys.space_dim = 2
         """
     }
 
     import pythia.pyre.inventory
 
-    filename = pythia.pyre.inventory.str("filename", default="mesh.exo", validator=validateFilename)
+    filename = pythia.pyre.inventory.str("filename", default="mesh.exo")
     filename.meta['tip'] = "Name of Cubit Exodus file."
-
-    useNames = pythia.pyre.inventory.bool("use_nodeset_names", default=True)
-    useNames.meta['tip'] = "Use nodeset names instead of ids."
 
     from spatialdata.geocoords.CSCart import CSCart
     coordsys = pythia.pyre.inventory.facility("coordsys", family="coordsys", factory=CSCart)
@@ -64,13 +50,13 @@ class MeshIOCubit(MeshIOObj, ModuleMeshIOCubit):
     def __init__(self, name="meshiocubit"):
         """Constructor.
         """
-        MeshIOObj.__init__(self, name)
+        mode = MeshIOObj.READ
+        MeshIOObj.__init__(self, mode, name)
 
     def preinitialize(self):
         """Do minimal initialization."""
         MeshIOObj.preinitialize(self)
         ModuleMeshIOCubit.setFilename(self, self.filename)
-        ModuleMeshIOCubit.setUseNodesetNames(self, self.useNames)
 
     def _configure(self):
         """Set members based using inventory.
@@ -82,10 +68,16 @@ class MeshIOCubit(MeshIOObj, ModuleMeshIOCubit):
         """
         ModuleMeshIOCubit.__init__(self)
 
+    def _validate(self, context):
+        if 0 == len(self.filename):
+            context.error(ValueError("Filename for CUBIT mesh not specified."))
+        if self.mode == self.READ and not pathlib.Path(self.filename).is_file():
+            context.error(IOError(f"CUBIT input mesh '{self.filename}' not found."))
+
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
-def mesh_io():
+def mesh_input():
     """Factory associated with MeshIOCubit.
     """
     return MeshIOCubit()

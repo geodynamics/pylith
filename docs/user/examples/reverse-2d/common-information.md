@@ -30,7 +30,6 @@ caption: Material parameters for isotropic, linear elasticity. We only show the 
 materials = [slab, crust, wedge]
 
 [pylithapp.problem.materials.slab]
-description = Slab material below main fault
 label_value = 1
 
 db_auxiliary_field = spatialdata.spatialdb.SimpleDB

@@ -52,9 +52,11 @@ The data members include:
 
 The `MaterialGroup` data class include a method `create_physical_group()` that will create a physical group from the information in the `MaterialGroup`.
 
-## VertexGroup
+## BoundaryGroup
 
-`VertexGroup` is a Python data class that holds information about a physical group associated with a boundary or fault.
+*New in v5.0.0.*
+
+`BoundaryGroup` (formerly `VertexGroup`) is a Python data class that holds information about a physical group associated with a boundary or fault.
 The data members include:
 
 :name (str): Name for the physical group.
@@ -62,5 +64,6 @@ The data members include:
 :dim (int): Dimension of the entities (0=points, 1=curves, 2=surfaces)
 :entities: List (array) of entities for the boundary condition or fault.
 
-The `VertexGroup` data class include a method `create_physical_group()` that will create a physical group from the information in the `VertexGroup`.
-
+The `BoundaryGroup` data class include a method `create_physical_group()` that will create a physical group from the information in the `BoundaryGroup`.
+The `create_physical_group()` method has an argument `recursive` with a default value of `False`; this will create a physical group with entities passed as an argument.
+Using `recursive=True` will create a physical group with the entities passed as an argument as well as lower dimension entities; this was required in PyLith before version 5.0.0.

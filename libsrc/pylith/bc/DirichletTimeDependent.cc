@@ -262,7 +262,7 @@ pylith::bc::DirichletTimeDependent::createAuxiliaryField(const pylith::topology:
     PYLITH_COMPONENT_DEBUG("createAuxiliaryField(solution="<<solution.getLabel()<<", domainMesh=)"<<typeid(domainMesh).name()<<")");
 
     pylith::topology::Field* auxiliaryField = new pylith::topology::Field(domainMesh);assert(auxiliaryField);
-    auxiliaryField->setLabel("DirichletTimeDependent auxiliary field");
+    auxiliaryField->setLabel("auxiliary field");
 
     assert(_auxiliaryFactory);
     assert(_normalizer);

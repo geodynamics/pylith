@@ -65,7 +65,7 @@ pylith::topology::Field::Field(const pylith::topology::Mesh& mesh) :
     PYLITH_METHOD_BEGIN;
 
     GenericComponent::setName("field");
-    _label = "unknown";
+    _label = ":UNKNOWN:";
     _mesh = mesh.clone();assert(_mesh);
 
     PYLITH_METHOD_END;
@@ -156,20 +156,21 @@ pylith::topology::Field::setLabel(const char* value) {
     PYLITH_METHOD_BEGIN;
     assert(_mesh);
 
-    PetscErrorCode err;
+    const char* dmName = NULL;
+    PetscErrorCode err = PetscObjectGetName((PetscObject) _mesh->getDM(), &dmName);PYLITH_CHECK_ERROR(err);
+    _label = std::string(dmName) + std::string(" ") + std::string(value);
 
-    _label = value;
     if (_mesh->getDM()) {
-        err = PetscObjectSetName((PetscObject) _mesh->getDM(), value);PYLITH_CHECK_ERROR(err);
-    } // of
+        err = PetscObjectSetName((PetscObject) _mesh->getDM(), _label.c_str());PYLITH_CHECK_ERROR(err);
+    } // if
     if (_localVec) {
-        err = PetscObjectSetName((PetscObject) _localVec, value);PYLITH_CHECK_ERROR(err);
+        err = PetscObjectSetName((PetscObject) _localVec, _label.c_str());PYLITH_CHECK_ERROR(err);
     } // if
     if (_globalVec) {
-        err = PetscObjectSetName((PetscObject) _globalVec, value);PYLITH_CHECK_ERROR(err);
+        err = PetscObjectSetName((PetscObject) _globalVec, _label.c_str());PYLITH_CHECK_ERROR(err);
     } // if
     if (_outputVec) {
-        err = PetscObjectSetName((PetscObject) _outputVec, value);PYLITH_CHECK_ERROR(err);
+        err = PetscObjectSetName((PetscObject) _outputVec, _label.c_str());PYLITH_CHECK_ERROR(err);
     } // if
 
     PYLITH_METHOD_END;

@@ -165,7 +165,8 @@ public:
         data->material.useBodyForce(false);
         data->rheology.useReferenceState(false);
 
-        data->material.setDescription("Isotropic Linear Elascitity");
+        data->material.setIdentifier("elasticity");
+        data->material.setName("material-id=24");
         data->material.setLabelValue(24);
 
         static const PylithInt constrainedDOF[3] = { 0, 1, 2 };
@@ -201,7 +202,7 @@ pylith::TestLinearElasticity_Data*
 pylith::Gravity3D::TetP2(void) {
     TestLinearElasticity_Data* data = pylith::_Gravity3D::createData();assert(data);
 
-    data->meshFilename = "data/tet.mesh";
+    data->meshFilename = "data/tet.msh";
 
     data->numSolnSubfields = 1;
     static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
@@ -226,7 +227,7 @@ pylith::TestLinearElasticity_Data*
 pylith::Gravity3D::TetP3(void) {
     TestLinearElasticity_Data* data = pylith::_Gravity3D::createData();assert(data);
 
-    data->meshFilename = "data/tet.mesh";
+    data->meshFilename = "data/tet.msh";
 
     data->numSolnSubfields = 1;
     static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
@@ -251,7 +252,7 @@ pylith::TestLinearElasticity_Data*
 pylith::Gravity3D::HexQ2(void) {
     TestLinearElasticity_Data* data = pylith::_Gravity3D::createData();assert(data);
 
-    data->meshFilename = "data/hex.mesh";
+    data->meshFilename = "data/hex.msh";
 
     data->numSolnSubfields = 1;
     static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
@@ -276,7 +277,7 @@ pylith::TestLinearElasticity_Data*
 pylith::Gravity3D::HexQ3(void) {
     TestLinearElasticity_Data* data = pylith::_Gravity3D::createData();assert(data);
 
-    data->meshFilename = "data/hex.mesh";
+    data->meshFilename = "data/hex.msh";
 
     data->numSolnSubfields = 1;
     static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
