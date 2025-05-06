@@ -6,7 +6,7 @@ SimpleDB {
   value-names =  initiation_time  final_slip_left_lateral  final_slip_reverse  final_slip_opening
   value-units =  s   m   m  m
   num-locs = 20
-  data-dim = 1
+  data-dim = 2
   space-dim = 3
   cs-data = geographic {
     crs-string = EPSG:4326
