@@ -11,7 +11,7 @@ quasi-static simulations of crustal deformation, primarily earthquakes
 and volcanoes.
 
 * Main page: [https://geodynamics.org/resources/pylith](https://geodynamics.org/resources/pylith)
-  * [Documentation](https://pylith.readthedocs.io/en/latest/)
+  * Documentation: [Latest release](https://pylith.readthedocs.io/en/stable/), [Development version](https://pylith.readthedocs.io/en/latest/)
   * Binary packages
   * Utility to build PyLith and all of its dependencies from source
 *
@@ -51,5 +51,5 @@ PyLith is continually being improved by a growing, collaborative, and inclusive 
 
 For a more complete list of contributors, refer to the [GitHub contributors](https://github.com/geodynamics/pylith/graphs/contributors).
 
-Please see the User Guide for [acknowledgement and citation](https://pylith.readthedocs.io/en/latest/intro/preface.html#citation) information.
+Please see the User Guide for [acknowledgement and citation](https://pylith.readthedocs.io/en/stable/intro/preface.html#citation) information.
 
