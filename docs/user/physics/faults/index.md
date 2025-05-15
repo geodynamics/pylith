@@ -8,7 +8,7 @@ Dislocations in 2D are specified in terms of left-lateral-slip and fault opening
 PyLith supports kinematic (prescribed) slip and dynamic (spontaneous) rupture simulations.
 
 :::{warning}
-Spontaneous rupture is not available in PyLith v3.0; we plan to have it reimplemented in v3.1
+Spontaneous rupture is not available in PyLith v3.0+; we plan to have it reimplemented in v6.0 or v7.0
 :::
 
 ## Conventions
@@ -60,20 +60,19 @@ An additional group of fault nodes is specified (for example, via a nodeset from
 This allows the cohesive cell insertion algorithm to adjust the topology so that cohseive cells are inserted up to the buried edge of the fault but no additional degrees of freedom are added on the fault edge.
 This naturally forces slip to zero along the buried edges.
 
-In 2D the default in-plane slip is left-lateral, so we use the reference directions to resolve the ambiguity in specifying reverse slip.
+:::{important}
+In 2D, positive in-plane slip is left-lateral; this applies to all faults regardless of whether the domain is a horizontal slice (strike-slip motion) or a vertical slice (reverse or normal motion).
 In 3D the reference directions are used to resolve the ambiguity in the along-strike and dip-dir directions.
-If the fault plane is horizontal, then the up-dir corresponds to the reverse-motion on the +z side of the fault.
-The only requirement for this direction is that it not be colinear with the fault normal direction.
-The default value of [0, 0, 1] is appropriate for most 3D problems.
+Left-lateral slip is in the along-strike direction, which is defined to be $\vec{t}_1 = \vec{r}_1 \times \vec{n}$, where $\vec{r}_1$ is the first reference direction; to match seismological conventions, $\vec{r}_1$ should approximately be in the be in the vertical or up-dip direction.
+The default value is (0, 0, 1), which works as long as the fault surface is not horizontal at any location.
+Reverse slip is in the dip direction, which is defined to be $\vec{t}_2 = \vec{n} \times \vec{t}_1$.
+Because the fault normal direction is arbitrary, the dip direction can be either up dip or down dip.
+We resolve the ambiguity by using the second reference direction to define the preferred approximate fault normal direction.
+:::
 
 By default the output observers write both diagnostic information (for example, fault orientation directions) and the slip at each time step.
 The fault coordinate system is shown in {numref}`fig:fault:slip:motions`.
 The vectors in the fault coordinate system can be transformed to the global coordinate system using the direction vectors in the diagnostic output ({ref}`sec-user-output-observers`).
-
-:::{important}
-The normal direction is chosen based on how the cells are split to create cohesive cells.
-If the normal direction contains a positive z component, then the directions conform to traditional seismologic conventions (along strike and up dip); however, if the normal direction contains a negative z component, then the directions correspond to along strike and down dip directions.
-:::
 
 :::{toctree}
 prescribed-slip.md
