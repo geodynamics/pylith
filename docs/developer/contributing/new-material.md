@@ -14,10 +14,10 @@ There are four basic tasks for adding new physics in the form of a governing equ
 
 `Material` is responsible for the terms in the governing equations associated with the domain (i.e., volume integrals in a 3D domain and surface integrals in a 2D domain).
 A separate object implements the bulk rheology for a specific governing equation.
-{numref}`fig-developer-material-classes` shows the objects used to implement multiple rheologies for the elasticity equation: an isotropic, linear elastic rheology for incompressible elasticity, and an isotropic, linear elastic rheology for poroelasticity.
+{numref}`fig-developer-contributing-material-classes` shows the objects used to implement multiple rheologies for the elasticity equation: an isotropic, linear elastic rheology for incompressible elasticity, and an isotropic, linear elastic rheology for poroelasticity.
 The `Elasticity` object describes the physics for the elasticity equation, including the pointwise functions and flags for turning on optional terms (such as inertia) in the governing equation, and `RheologyElasticity` defines the interface for bulk elastic rheologies.
 
-:::{figure-md} fig-developer-material-classes
+:::{figure-md} fig-developer-contributing-material-classes
 <img src="figs/classdiagram_material.*" alt="Hierarchy for Material related classes." width="450px"/>
 
 Class diagram for the implementation of governing equations and bulk rheologies.
@@ -27,7 +27,7 @@ Each governing equation implementation inherits from the abstract `Material` cla
 ## Python
 
 * Define solution subfields.
-  * All subfields in the solution field are `SolutionSubfield` objects (see {numref}`fig-developer-solution-classes`). PyLith already includes several solution subfields:
+  * All subfields in the solution field are `SolutionSubfield` objects (see {numref}`fig-developer-contributing-solution-classes`). PyLith already includes several solution subfields:
     * `SubfieldDisplacement` Displacement vector field.
     * `SubfieldVelocity` Velocity vector field.
     * `SubfieldLagrangeFault` Lagrange multiplier field for fault constraints.
@@ -52,7 +52,7 @@ Each governing equation implementation inherits from the abstract `Material` cla
 
   For the elasticity equation, we sometimes do not include body forces or inertial terms in our simulations. Rather than implement these cases as separate materials, we simply include flags in the material to turn these terms on/off. The flags are implemented as Pyre properties in our material component.
 
-:::{figure-md} fig-developer-solution-classes
+:::{figure-md} fig-developer-contributing-solution-classes
 <img src="figs/classdiagram_solution.*" alt="Hierarchy for solution related classes." width="90%"/>
 
 Class diagram for the solution field, solution subfields, and pre-defined containers of solution subfields.
@@ -68,7 +68,7 @@ Class diagram for the solution field, solution subfields, and pre-defined contai
   Within the concrete implementation of the material and bulk rheology objects, we add the subfields to the auxiliary field.
   The order in which they are added determines the order they will be in the auxiliary field.
   You will need to use know this order when you implement the pointwise functions.
-  See {numref}`fig-developer-material-auxiliary-field` for more information on the layout of the auxiliary field.
+  See {numref}`fig-developer-contributing-material-auxiliary-field` for more information on the layout of the auxiliary field.
   :::
 
 * Implement the pointwise functions.
@@ -81,10 +81,10 @@ Class diagram for the solution field, solution subfields, and pre-defined contai
 
   We set the pointwise functions for the RHS and LHS residuals and Jacobians, taking into consideration which optional terms of the governing equation have been selected by the user.
 
-:::{figure-md} fig-developer-material-auxiliary-field
+:::{figure-md} fig-developer-contributing-material-auxiliary-field
 <img src="figs/material_auxiliarylayout.*" alt="Layout of auxiliary subfields." width="100%"/>
 
 Layout of material auxiliary subfields.
 The subfields include those for both the governing equation and the bulk rheology.
-The required subfields are at the ends with the optionalfields in the middle. This allows the same pointwise functions to be used for some cases with and without the optional subfields.
+The required subfields are at the ends with the optional fields in the middle. This allows the same pointwise functions to be used for some cases with and without the optional subfields.
 :::
