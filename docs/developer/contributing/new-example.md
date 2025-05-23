@@ -1,8 +1,11 @@
-# Examples
+# Creating a new example
+
+The workflow for creating a new example is similar to the workflow for creating a new feature.
+A new example is added using a feature branch with additions to the `examples` directory and documentation.
 
 ## Checklist
 
-1. Example Files
+1. Example files
     1. Example files: `README.md`, `Makefile.am`, parameter files, spatial databases, mesh generation scripts.
     2. Add directory in `examples/Makefile.am`
     3. Update `configure.ac` to include example Makefile.

@@ -17,8 +17,4 @@ mmstests.md
 run-cxxtests.md
 pytests.md
 fullscale.md
-debugging-tools.md
-performance-tools.md
-fields.md
-ci-docker.md
 ```

@@ -701,66 +701,85 @@ dist_noinst_DATA = \
 	user/meshing/cubit.md \
 	user/meshing/gmsh.md \
 	user/meshing/gmsh-utils.md \
+	developer/design/overview.md \
+	developer/design/code-layout.md \
+	developer/design/index.md \
+	developer/design/application-flow.md \
 	developer/contributing/documentation/install.md \
 	developer/contributing/documentation/index.md \
 	developer/contributing/documentation/quickref.md \
-	developer/contributing/examples.md \
-	developer/contributing/newmaterial.md \
+	developer/contributing/coding-style.md \
+	developer/contributing/figs/classdiagram_material.png \
+	developer/contributing/figs/classdiagram_material.pdf \
+	developer/contributing/figs/classdiagram_solution.png \
+	developer/contributing/figs/classdiagram_solution.pdf \
+	developer/contributing/figs/material_auxiliarylayout.pdf \
+	developer/contributing/figs/material_auxiliarylayout.png \
 	developer/contributing/workflow.md \
-	developer/contributing/codingstyle.md \
-	developer/contributing/rebuilding.md \
-	developer/contributing/petscfem.md \
 	developer/contributing/index.md \
-	developer/contributing/codelayout.md \
-	developer/contributing/git-quickref.md \
+	developer/contributing/new-example.md \
+	developer/contributing/new-material.md \
+	developer/git-workflow/overview.md \
+	developer/git-workflow/figs/gitworkflow_repositories.tex \
+	developer/git-workflow/figs/gitworkflow_branch.tex \
+	developer/git-workflow/figs/gitworkflow_branch.pdf \
+	developer/git-workflow/figs/gitworkflow_branch.png \
+	developer/git-workflow/figs/gitworkflow_repositories.png \
+	developer/git-workflow/figs/gitworkflow_repositories.pdf \
+	developer/git-workflow/tasks.md \
+	developer/git-workflow/index.md \
+	developer/git-workflow/git-quickref.md \
+	developer/debugging/ci-docker.md \
+	developer/debugging/fields.md \
+	developer/debugging/index.md \
+	developer/debugging/tools.md \
 	developer/testing/libtests.md \
 	developer/testing/run-cxxtests.md \
 	developer/testing/fullscale.md \
-	developer/testing/ci-docker.md \
 	developer/testing/pytests.md \
 	developer/testing/mmstests.md \
-	developer/testing/fields.md \
 	developer/testing/index.md \
-	developer/testing/debugging-tools.md \
-	developer/testing/performance-tools.md \
+	developer/ides/vs-code.md \
+	developer/ides/index.md \
 	developer/index.md \
-	developer/contributing/figs/classdiagram_bc.pdf \
-	developer/contributing/figs/classdiagram_bc.png \
-	developer/contributing/figs/classdiagram_bc.tex \
-	developer/contributing/figs/classdiagram_material.pdf \
-	developer/contributing/figs/classdiagram_material.png \
-	developer/contributing/figs/classdiagram_material.tex \
-	developer/contributing/figs/classdiagram_mesher.pdf \
-	developer/contributing/figs/classdiagram_mesher.svg \
-	developer/contributing/figs/classdiagram_mesher.tex \
-	developer/contributing/figs/classdiagram_output.pdf \
-	developer/contributing/figs/classdiagram_output.png \
-	developer/contributing/figs/classdiagram_output.tex \
-	developer/contributing/figs/classdiagram_physics_fem.pdf \
-	developer/contributing/figs/classdiagram_physics_fem.png \
-	developer/contributing/figs/classdiagram_physics_fem.tex \
-	developer/contributing/figs/classdiagram_problem.pdf \
-	developer/contributing/figs/classdiagram_problem.png \
-	developer/contributing/figs/classdiagram_problem.tex \
-	developer/contributing/figs/classdiagram_pylithapp.pdf \
-	developer/contributing/figs/classdiagram_pylithapp.png \
-	developer/contributing/figs/classdiagram_pylithapp.tex \
-	developer/contributing/figs/classdiagram_solution.pdf \
-	developer/contributing/figs/classdiagram_solution.png \
-	developer/contributing/figs/classdiagram_solution.tex \
-	developer/contributing/figs/gitworkflow_branch.pdf \
-	developer/contributing/figs/gitworkflow_branch.png \
-	developer/contributing/figs/gitworkflow_branch.tex \
-	developer/contributing/figs/gitworkflow_repositories.pdf \
-	developer/contributing/figs/gitworkflow_repositories.png \
-	developer/contributing/figs/gitworkflow_repositories.tex \
-	developer/contributing/figs/material_auxiliarylayout.pdf \
-	developer/contributing/figs/material_auxiliarylayout.png \
-	developer/contributing/figs/material_auxiliarylayout.tex \
-	developer/contributing/figs/meshtopology.pdf \
-	developer/contributing/figs/meshtopology.png \
-	developer/contributing/figs/meshtopology.tex \
-	developer/contributing/figs/umlstyle.tex
+	developer/implementation/figs/classdiagram_output.png \
+	developer/implementation/figs/classdiagram_material.tex \
+	developer/implementation/figs/classdiagram_output.pdf \
+	developer/implementation/figs/classdiagram_pylithapp.pdf \
+	developer/implementation/figs/classdiagram_mesher.tex \
+	developer/implementation/figs/classdiagram_physics_fem.png \
+	developer/implementation/figs/classdiagram_problem.tex \
+	developer/implementation/figs/classdiagram_mesher.svg \
+	developer/implementation/figs/classdiagram_physics_fem.pdf \
+	developer/implementation/figs/classdiagram_pylithapp.png \
+	developer/implementation/figs/classdiagram_problem.pdf \
+	developer/implementation/figs/classdiagram_physics_fem.tex \
+	developer/implementation/figs/classdiagram_mesher.pdf \
+	developer/implementation/figs/classdiagram_problem.png \
+	developer/implementation/figs/classdiagram_pylithapp.tex \
+	developer/implementation/figs/classdiagram_output.tex \
+	developer/implementation/figs/classdiagram_material.png \
+	developer/implementation/figs/classdiagram_material.pdf \
+	developer/implementation/figs/classdiagram_solution.png \
+	developer/implementation/figs/meshtopology.pdf \
+	developer/implementation/figs/classdiagram_bc.tex \
+	developer/implementation/figs/classdiagram_solution.pdf \
+	developer/implementation/figs/meshtopology.png \
+	developer/implementation/figs/material_auxiliarylayout.tex \
+	developer/implementation/figs/material_auxiliarylayout.pdf \
+	developer/implementation/figs/umlstyle.tex \
+	developer/implementation/figs/material_auxiliarylayout.png \
+	developer/implementation/figs/classdiagram_solution.tex \
+	developer/implementation/figs/classdiagram_bc.png \
+	developer/implementation/figs/classdiagram_bc.pdf \
+	developer/implementation/figs/meshtopology.tex \
+	developer/implementation/petsc-fem.md \
+	developer/implementation/index.md \
+	developer/implementation/object-organization.md \
+	developer/performance/index.md \
+	developer/performance/logging.md \
+	developer/performance/tools.md \
+	developer/building/index.md
 
 
 # End of file 
