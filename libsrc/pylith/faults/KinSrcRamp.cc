@@ -193,7 +193,9 @@ pylith::faults::KinSrcRamp::slipRateFn(const PylithInt dim,
     const double finalSlipMag = dim == 2 ?
                                 sqrt(pow(finalSlip[0],2) + pow(finalSlip[1],2)) :
                                 sqrt(pow(finalSlip[0],2) + pow(finalSlip[1],2) + pow(finalSlip[2],2));
-    const double slipCoef = 2.0 * _KinSrcRamp::maxAcc(finalSlipMag, riseTime, impulseDuration) / impulseDuration;
+    const double slipCoef = impulseDuration > 0.0 ?
+                            2.0 * _KinSrcRamp::maxAcc(finalSlipMag, riseTime, impulseDuration) / impulseDuration :
+                            0.0;
 
     double slipRateTimeFn = 0.0;
     if (t-t0 < 0.0) {
@@ -217,7 +219,7 @@ pylith::faults::KinSrcRamp::slipRateFn(const PylithInt dim,
     } // if/else
 
     for (PylithInt i = 0; i < dim; ++i) {
-        slipRate[i] = slipCoef * slipRateTimeFn * finalSlip[i] / finalSlipMag;
+        slipRate[i] = finalSlipMag > 0.0 ? slipCoef * slipRateTimeFn * finalSlip[i] / finalSlipMag : 0.0;
     } // for
 } // slipRateFn
 
@@ -266,7 +268,9 @@ pylith::faults::KinSrcRamp::slipAccFn(const PylithInt dim,
     const double finalSlipMag = dim == 2 ?
                                 sqrt(pow(finalSlip[0],2) + pow(finalSlip[1],2)) :
                                 sqrt(pow(finalSlip[0],2) + pow(finalSlip[1],2) + pow(finalSlip[2],2));
-    const double slipCoef = 2.0 * _KinSrcRamp::maxAcc(finalSlipMag, riseTime, impulseDuration) / impulseDuration;
+    const double slipCoef = impulseDuration > 0.0 ?
+                            2.0 * _KinSrcRamp::maxAcc(finalSlipMag, riseTime, impulseDuration) / impulseDuration :
+                            0.0;
 
     double slipAccTimeFn = 0.0;
     if (t-t0 < 0.0) {
@@ -286,7 +290,7 @@ pylith::faults::KinSrcRamp::slipAccFn(const PylithInt dim,
     } // if/else
 
     for (PylithInt i = 0; i < dim; ++i) {
-        slipAcc[i] = slipCoef * slipAccTimeFn * finalSlip[i] / finalSlipMag;
+        slipAcc[i] = finalSlipMag > 0.0 ? slipCoef * slipAccTimeFn * finalSlip[i] / finalSlipMag : 0.0;
     } // for
 } // slipAccFn
 

@@ -13,6 +13,7 @@ The version numbers are in the form `MAJOR.MINOR.PATCH`, where major releases in
   * Improved documentation for `pylith_eqinfo` and illustrate use in `examples/strikdslip-2d`, `examples/crustal-strikeslip-2d`, and `examples/crustal-strikeslip-3d`.
 * **Fixed**
   * Account for processes without cells in initial condition patch when verifying configuration.
+  * Avoid divide by zero for `KinSrcRamp` when final slip is zero.
   * Fix pythia import in `pylith_eqinfo`.
 
 ## Version 4.2.0 (2025-01-15)
