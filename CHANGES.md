@@ -26,6 +26,7 @@ The version numbers are in the form `MAJOR.MINOR.PATCH`, where major releases in
       * Add compatibility for reading PETSc HDF5 format
 * **Fixed**
   * Account for processes without cells in initial condition patch when verifying configuration.
+  * Avoid divide by zero for `KinSrcRamp` when final slip is zero.
   * Fix pythia import in `pylith_eqinfo`.
 
 ## Version 4.2.0 (2025-01-15)
