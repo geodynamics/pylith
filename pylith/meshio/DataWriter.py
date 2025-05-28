@@ -8,7 +8,7 @@
 # See https://mit-license.org/ and LICENSE.md and for license information. 
 # =================================================================================================
 
-import os
+import pathlib
 
 from pylith.utils.PetscComponent import PetscComponent
 
@@ -29,23 +29,21 @@ class DataWriter(PetscComponent):
         self._createModuleObj()
 
     @staticmethod
-    def mkfilename(outputDir, simName, label, suffix):
+    def makeFilename(outputDir, simName, label, suffix):
         """Create filename from output directory, simulation name, label, and filename suffix.
         """
-        filename = os.path.join(outputDir, "{}-{}.{}".format(simName, label, suffix))
-        return filename
+        return pathlib.Path(outputDir) / f"{simName}-{label}.{suffix}"
 
-    def mkpath(self, filename):
+    def makePath(self, filename):
         """Create path for output file.
         """
         from pylith.mpi.Communicator import mpi_is_root
         isRoot = mpi_is_root()
         if isRoot:
             self._info.log("Creating path for output file '{}'".format(filename))
-        relpath = os.path.dirname(filename)
-
-        if relpath and not os.path.exists(relpath) and isRoot:
-            os.makedirs(relpath)
+        relpath = pathlib.Path(filename).parent.resolve()
+        if isRoot:
+            relpath.mkdir(exist_ok=True, parents=True)
 
     def verifyConfiguration(self):
         """Verify compatibility of configuration.

@@ -62,9 +62,9 @@ class DataWriterVTK(DataWriter, ModuleDataWriterVTK):
         """Set filename from default options and inventory. If filename is given in inventory, use it,
         otherwise create filename from default options.
         """
-        filename = self.filename or DataWriter.mkfilename(outputDir, simName, label, "vtk")
-        self.mkpath(filename)
-        ModuleDataWriterVTK.filename(self, filename)
+        filename = self.filename or DataWriter.makeFilename(outputDir, simName, label, "vtk")
+        self.makePath(filename)
+        ModuleDataWriterVTK.filename(self, str(filename))
 
     def _configure(self):
         """Configure object.

@@ -19,10 +19,10 @@ class TestDataWriter(TestAbstractComponent):
     """
     _class = DataWriter
 
-    def test_mkfilename(self):
+    def test_makeFilename(self):
         writer = DataWriter()
-        filename = writer.mkfilename(outputDir="abc", simName="defg", label="hijkl", suffix="hx3")
-        self.assertEqual("abc/defg-hijkl.hx3", filename)
+        filename = writer.makeFilename(outputDir="abc", simName="defg", label="hijkl", suffix="hx3")
+        self.assertEqual("abc/defg-hijkl.hx3", str(filename))
 
 
 def load_tests(loader, tests, pattern):
