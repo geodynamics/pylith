@@ -44,15 +44,12 @@ class ProgressMonitor(PetscComponent, ModuleProgressMonitor):
     def _createPath(self):
         """Create path for filename if it doesn't exist.
         """
-        import os
+        import pathlib
         import pylith.mpi.mpi as mpi
 
-        relpath = os.path.dirname(self.filename)
-        if relpath and not os.path.exists(relpath):
-            # Only create directory on master
-            isMaster = 0 == mpi.rank()
-            if isMaster:
-                os.makedirs(relpath)
+        relpath = pathlib.Path(self.filename).parent.resolve()
+        if 0 == mpi.rank(mpi.petsc_comm_world()):
+            relpath.mkdir(exist_ok=True, parents=True)
 
     def _createModuleObj(self):
         """Create handle to corresponding C++ object.

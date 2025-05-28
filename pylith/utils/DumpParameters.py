@@ -122,9 +122,8 @@ class DumpParameters(Component):
         """
         import pathlib
 
-        parentDir = pathlib.Path(filename).parent
-        if parentDir:
-            parentDir.mkdir(exist_ok=True)
+        parentDir = pathlib.Path(filename).parent.resolve()
+        parentDir.mkdir(exist_ok=True, parents=True)
 
 
 # End of file

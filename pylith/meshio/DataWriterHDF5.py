@@ -46,9 +46,9 @@ class DataWriterHDF5(DataWriter, ModuleDataWriterHDF5):
         """Set filename from default options and inventory. If filename is given in inventory, use it,
         otherwise create filename from default options.
         """
-        filename = self.filename or DataWriter.mkfilename(outputDir, simName, label, "h5")
-        self.mkpath(filename)
-        ModuleDataWriterHDF5.filename(self, filename)
+        filename = self.filename or DataWriter.makeFilename(outputDir, simName, label, "h5")
+        self.makePath(filename)
+        ModuleDataWriterHDF5.filename(self, str(filename))
 
     def _createModuleObj(self):
         """Create handle to C++ object."""
