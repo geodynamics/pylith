@@ -7,6 +7,7 @@ In fact, adding materials and boundary conditions requires calling only a few PE
 A new material may need to add to the library of solution subfields and auxiliary subfields, but adding these fields is also done at a high-level.
 
 The remainder of this section discusses three aspects of the finite-element implementation handled by PyLith to give you a peek of what is going on under the hood.
+Refer to the {ref}`cha:glossary` for definitions of the terminology.
 
 ## DMPlex
 

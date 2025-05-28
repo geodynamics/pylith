@@ -6,23 +6,16 @@ For instructions on how to build PyLith from source, please see the [PyLith Inst
 
 Updating and rebuilding PETSc is quite simple once it has been configured and built once before.
 
-:::{warning}
-Updating the PETSc `knepley/pylith` branch that PyLith uses almost always involves rebasing and forced pushes.
-As a result, you cannot simply use `git pull` to update the `knepley/pylith` branch.
-Instead, you need to delete the old `knepley/pylith` branch and then check it out again to get the current version.
-:::
-
 ```{code-block} bash
 # Change to PETSc source Directory
 cd $PETSC_DIR
 
-# Switch to the main branch and fetch the updates, pruning deleted branches.
-git checkout main
+# Fetch the updates, pruning deleted branches.
 git fetch -p
 
-# Remove your old knepley/pylith branch and then get the current knepley/pylith branch.
-git branch -D knepley/pylith
+# Ensure you are on the `knepley/pylith` branch and then pull updates.
 git checkout knepley/pylith
+git pull
 
 # Reconfigure
 arch-pylith-debug/lib/petsc/conf/reconfigure-arch-pylith-debug.py
@@ -47,8 +40,8 @@ Note that the `m4` directory is a Git submodule corresponding to the `geodynamic
 
 ### Updating your fork
 
-It is a good idea to keep your `main` branch and any other branches you use from the `geodynamics/pylith` repository up to date.
-See {ref}`sec-developer-merge-upstream` for how to merge updates from the upstream (`geodynamics/pylith`) repository.
+As long as you setup your `main` branch to correspond to `upstream/main`, you should never have to use the `main` branch in your fork.
+You only use your fork for your feature branches.
 
 ### Makefiles
 
@@ -92,11 +85,11 @@ caption: Rebuilding Pylith C++ library, SWIG modules, and Python modules
 # Change to top-level PyLith build directory.
 cd $PYLITH_BUILDDIR
 
-# Reinstall everything using 8 threads to build library.
-make install -j8
+# Reinstall everything using 16 threads to build library.
+make install -j16
 
-# Rebuild and reinstall only the library using 8 threads.
-make install -j8 -C libsrc
+# Rebuild and reinstall only the library using 16 threads.
+make install -j16 -C libsrc
 
 # Rebuild and reinstall only the SWIG modules
 make install -C modulesrc
@@ -114,8 +107,8 @@ caption: Rebuilding Pylith C++ library and rerunning the C++ unit tests
 # Change to top-level PyLith build directory.
 cd $PYLITH_BUILDDIR/build/pylith-debug
 
-# Rebuild the library using 8 threads.
-make -j8 -C libsrc
+# Rebuild the library using 16 threads.
+make -j16 -C libsrc
 
 # Rerun the C++ unit tests.
 make check -C tests/libtests

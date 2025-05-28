@@ -1,13 +1,14 @@
 (sec-developer)=
 # Developer Guide
 
-:::{admonition} Under construction.
-:class: warning
-
-This section is still a work in progress.
-:::
-
 ```{toctree}
-contributing/index.md
+design/index.md
+implementation/index.md
+building/index.md
 testing/index.md
+git-workflow/index.md
+debugging/index.md
+performance/index.md
+contributing/index.md
+ides/index.md
 ```

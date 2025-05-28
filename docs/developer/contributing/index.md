@@ -2,14 +2,9 @@
 # Contributing to PyLith
 
 :::{toctree}
-codingstyle.md
-workflow.md
-rebuilding.md
-codelayout.md
-petscfem.md
-newmaterial.md
-examples.md
 documentation/index.md
-git-quickref.md
+workflow.md
+new-example.md
+coding-style.md
+new-material.md
 :::
-%adding-materials.md

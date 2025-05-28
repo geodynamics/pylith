@@ -247,7 +247,7 @@
             }
         },
         {
-            "name": "Attach to process",
+            "name": "Attach to pylith (mpinemesis)",
             "type": "cppdbg",
             "request": "attach",
             "processId": "${command:pickProcess}",

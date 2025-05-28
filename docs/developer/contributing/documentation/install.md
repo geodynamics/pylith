@@ -5,13 +5,16 @@ You can build a local copy of the documentation using Sphinx.
 ## Prerequisites
 
 You do not have to install PyLith to generate a local copy of the documentation.
-Nevertheless, you must have Python 3 and the following Python packages installed:
+Nevertheless, you must have Python and the following Python packages installed:
 
-* **sphinx** (v3.5 or later)
-* **myst-parser** (0.14.0 or later)
-* **pydata-sphinx-theme** (0.6.2 or later)
-* **sphinx-copybutton**
-* **sphinxcontrib.bibtex**
+- **sphinx** (v3.5 or later)
+- **myst-parser** (0.14.0 or later)
+- **pydata-sphinx-theme** (0.6.2 or later)
+- **sphinx-copybutton**
+- **sphinxcontrib.bibtex**
+- **sphinx_design**
+
+These packages are all included in the PyLith development Docker container.
 
 ## Generating the documentation
 

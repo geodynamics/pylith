@@ -244,7 +244,7 @@ In specifying simulation parameters, some details of the finite-element implemen
 In this section we describe the data structures to give the user greater context for understanding what the parameters mean.
 
 :::{tip}
-See {ref}`sec-developer-code-layout` for a detailed discussion of organization of the PyLith code.
+See {ref}`sec-developer-design-code-layout` for a detailed discussion of organization of the PyLith code.
 :::
 
 ### Fields and Subfields
