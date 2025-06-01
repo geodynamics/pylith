@@ -1,0 +1,65 @@
+\documentclass[crop,tikz]{standalone}
+\usepackage[none]{hyphenat}
+\usepackage{helvet}
+\usepackage{calc}
+\renewcommand{\familydefault}{phv}
+
+\usepackage{tikz}
+
+\begin{document}
+\usetikzlibrary{positioning,arrows,shapes,calc}
+\input{../../../tikz-styles/figcolors}
+\input{umlstyle}
+
+\begin{tikzpicture}[node distance=10em, line width=1.5pt]
+
+  \node (pyre-component) [abstract-class] {\umlemptyclass{PyreComponent}};
+
+  \node (physics) [abstract-class] at ($(pyre-component.south)-(0,4em)$) {\umlemptyclass{Physics}};
+
+  \node (fault) [abstract-class] at ($(physics.south)-(0,4em)$) {\umlemptyclass{FaultCohesive}};
+
+  \node (fault-kin) [concrete-class] at ($(fault.south)-(0,4em)$) {\umlclass{FaultCohesiveKin}{
+    eq\_rupture
+  }};
+  
+  \node (fault-impulses) [concrete-class] at ($(fault-kin.south)-(0,1ex)$) {\umlemptyclass{FaultCohesiveImpulses}};
+
+
+  \node (generic-component) [abstract-class, anchor=west] at ($(pyre-component.east)+(12em,0)$) {\umlemptyclass{GenericComponent}};
+
+  \node (kinsrc) [abstract-class] at ($(generic-component.south)-(6em,4em)$) {\umlemptyclass{KinSrc}};
+
+  \node (kinsrc-step) [concrete-class] at ($(kinsrc.south)-(0,4em)$) {\umlemptyclass{KinSrcStep}};
+  \node (kinsrc-constrate) [concrete-class] at ($(kinsrc-step.south)-(0,1ex)$) {\umlemptyclass{KinSrcConstRate}};
+  \node (kinsrc-ramp) [concrete-class] at ($(kinsrc-constrate.south)-(0,1ex)$) {\umlemptyclass{KinSrcRamp}};
+  \node (kinsrc-brune) [concrete-class] at ($(kinsrc-ramp.south)-(0,1ex)$) {\umlemptyclass{KinSrcBrune}};
+  \node (kinsrc-liucos) [concrete-class] at ($(kinsrc-brune.south)-(0,1ex)$) {\umlemptyclass{KinSrcLiuCos}};
+  \node (kinsrc-time-history) [concrete-class] at ($(kinsrc-liucos.south)-(0,1ex)$) {\umlemptyclass{KinSrcTimeHistory}};
+ 
+  \node (field-factory) [abstract-class, anchor=west] at ($(kinsrc.east)+(4em,0)$) {\umlemptyclass{FieldFactory}};
+
+  \node (auxiliary-factory) [abstract-class] at ($(field-factory.south)-(0,4em)$) {\umlemptyclass{AuxiliaryFactory}};
+
+  \node (auxiliary-factory-fault) [concrete-class] at ($(auxiliary-factory.south)-(0,4em)$) {\umlemptyclass{AuxiliaryFactoryFault}};
+  
+  % Relationships
+  \draw[inherit] (physics) -- (pyre-component);
+  \draw[inherit] (fault) -- (physics);
+  \draw[inherit] (fault-kin) -- (fault);
+
+  \draw[inherit] (kinsrc) -- (generic-component);
+  \draw[inherit] (kinsrc-step) -- (kinsrc);
+
+  \draw[aggregate] (fault.east) -- (auxiliary-factory-fault.west);
+
+  \draw[aggregate] ($(fault-kin.east)-(0,1.0ex)$) -- (kinsrc.west);
+
+  \draw[inherit] (field-factory) -- (generic-component);
+  \draw[inherit] (auxiliary-factory) -- (field-factory);
+  \draw[inherit] (auxiliary-factory-fault) -- (auxiliary-factory);
+
+
+\end{tikzpicture}
+
+\end{document}

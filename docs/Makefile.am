@@ -742,36 +742,39 @@ dist_noinst_DATA = \
 	developer/ides/vs-code.md \
 	developer/ides/index.md \
 	developer/index.md \
-	developer/implementation/figs/classdiagram_output.png \
-	developer/implementation/figs/classdiagram_material.tex \
-	developer/implementation/figs/classdiagram_output.pdf \
-	developer/implementation/figs/classdiagram_pylithapp.pdf \
-	developer/implementation/figs/classdiagram_mesher.tex \
-	developer/implementation/figs/classdiagram_physics_fem.png \
-	developer/implementation/figs/classdiagram_problem.tex \
-	developer/implementation/figs/classdiagram_mesher.svg \
-	developer/implementation/figs/classdiagram_physics_fem.pdf \
-	developer/implementation/figs/classdiagram_pylithapp.png \
-	developer/implementation/figs/classdiagram_problem.pdf \
-	developer/implementation/figs/classdiagram_physics_fem.tex \
-	developer/implementation/figs/classdiagram_mesher.pdf \
-	developer/implementation/figs/classdiagram_problem.png \
-	developer/implementation/figs/classdiagram_pylithapp.tex \
 	developer/implementation/figs/classdiagram_output.tex \
-	developer/implementation/figs/classdiagram_material.png \
+	developer/implementation/figs/classdiagram_output.pdf \
+	developer/implementation/figs/classdiagram_output.svg \
+	developer/implementation/figs/classdiagram_material.tex \
 	developer/implementation/figs/classdiagram_material.pdf \
-	developer/implementation/figs/classdiagram_solution.png \
-	developer/implementation/figs/meshtopology.pdf \
-	developer/implementation/figs/classdiagram_bc.tex \
+	developer/implementation/figs/classdiagram_material.svg \
+	developer/implementation/figs/classdiagram_pylithapp.tex \
+	developer/implementation/figs/classdiagram_pylithapp.pdf \
+	developer/implementation/figs/classdiagram_pylithapp.svg \
+	developer/implementation/figs/classdiagram_mesher.pdf \
+	developer/implementation/figs/classdiagram_mesher.svg \
+	developer/implementation/figs/classdiagram_mesher.tex \
+	developer/implementation/figs/classdiagram_physics_fem.tex \
+	developer/implementation/figs/classdiagram_physics_fem.pdf \
+	developer/implementation/figs/classdiagram_physics_fem.svg \
+	developer/implementation/figs/classdiagram_problem.tex \
+	developer/implementation/figs/classdiagram_problem.pdf \
+	developer/implementation/figs/classdiagram_problem.svg \
 	developer/implementation/figs/classdiagram_solution.pdf \
-	developer/implementation/figs/meshtopology.png \
+	developer/implementation/figs/classdiagram_solution.svg \
+	developer/implementation/figs/classdiagram_bc.tex \
+	developer/implementation/figs/classdiagram_bc.pdf \
+	developer/implementation/figs/classdiagram_bc.svg \
+	developer/implementation/figs/classdiagram_fault.tex \
+	developer/implementation/figs/classdiagram_fault.pdf \
+	developer/implementation/figs/classdiagram_fault.svg \
+	developer/implementation/figs/meshtopology.pdf \
+	developer/implementation/figs/meshtopology.svg \
 	developer/implementation/figs/material_auxiliarylayout.tex \
 	developer/implementation/figs/material_auxiliarylayout.pdf \
 	developer/implementation/figs/umlstyle.tex \
-	developer/implementation/figs/material_auxiliarylayout.png \
+	developer/implementation/figs/material_auxiliarylayout.svg \
 	developer/implementation/figs/classdiagram_solution.tex \
-	developer/implementation/figs/classdiagram_bc.png \
-	developer/implementation/figs/classdiagram_bc.pdf \
 	developer/implementation/figs/meshtopology.tex \
 	developer/implementation/petsc-fem.md \
 	developer/implementation/index.md \

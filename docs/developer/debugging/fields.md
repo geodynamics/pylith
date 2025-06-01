@@ -4,7 +4,7 @@ In addition to using the debugger to inspect code and variables, it is often hel
 Turning on this type of output is usually done by activating debug journals via command line arguments.
 
 Viewing a field will print the subfield metadata, the layout of the field, and the field values.
-See {ref}`sec-developer-petsc-section` for how to interpret the layout of a field.
+See {ref}`sec-developer-pylith-field` for how to interpret the layout of a field.
 
 ```{code-block} console
 ---
