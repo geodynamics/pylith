@@ -71,10 +71,10 @@ Diagram showing the relationships among objects associated with boundary conditi
 
 ## Interior Interfaces (Faults)
 
-:::{admonition} TODO
-:class: error
+:::{figure-md} fig-developer-classes-fault
+<img src="figs/classdiagram_fault.*" alt="Hierarchy of fault related objects." width="60%" />
 
-Add class diagram and discussion for FaultCohesiveKin, KinSrc.
+Diagram showing the relationships among objects associated with faults.
 :::
 
 ## Mesh Importing

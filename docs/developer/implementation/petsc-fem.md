@@ -46,12 +46,12 @@ This means the "boundary" cells are at a height of 1 and a depth equal to the ma
 Conventional numbering (left) with vertices and cells numbered independently and `DMPlex` numbering (right) with cells, vertices, edges, (and faces), numbered sequentially.
 :::
 
-(sec-developer-petsc-section)=
-## `PetscSection` and `PetscVec`
+(sec-developer-pylith-field)=
+## `pylith::topology::Field`, `PetscSection`, and `PetscVec`
 
-We store a field over the mesh in a vector (PETSc `Vec` object, called `PetscVec` in PyLith).
-The `PetscSection` object describes the layout of the vector over the DMPlex object.
-The vector may hold multiple subfields, each with its own discretization.
+A PyLith `Field` (`pylith::topology::Field`) is composed of a `PetscSection`, which associates the points (vertices, edges, faces, and cells) with the finite-element coefficients, and a `PetscVec`, which is a vector storing the finite-element coefficients.
+A `Field` may hold a single subfield, such as displacement, or it may hold several subfields, such as the density, shear modulus, and bulk modulus for an isotropic, linear elastic material.
+
 The chart of the `PetscSection` defines the range of points (minimum and maximum) over which the section is defined.
 For each point in the chart, the section holds the number of degrees of freedom a point has and the offset in the `PetscVec` for its first degree of freedom.
 The section also holds the number of degrees of freedom and offset for each individual subfield within the section for each point in the chart.
@@ -69,84 +69,287 @@ Constraints often arise from Dirichlet boundary conditions, which change the bas
 A local vector is used for assembly of the residual vector and Jacobian matrix, because we need the boundary values in order to compute those integrals.
 Global vectors are used for the algebraic solver because we do not want solution values fixed by constraints to participate in the solve.
 
+The `Field::view()` method will print the `Field` metadata and the `PetscSection` in a more useful format compared to the corresponding PETSc viewer functions.
+
+% ./mmstest_linearelasticity_faults2d OneFaultShearNoSlip::QuadQ1::testResidual --journal.debug=timedependent
 ```{code-block} bash
 ---
-caption: PetscSection information for a solution field with three subfields.
+caption: Output from `pylith::topology::Field::view()` for a solution field with two subfields showing only the sections (layout of the field). The displacement subfield has degrees of freedom on the vertices of the bulk cells. The lagrange_multiplier_fault subfield has degrees of freedom on the edges of the cohesive cells. The order of the values (offsets in the PetscVec) follows the ordering of the points (cells, vertices, edges, and faces). The local section includes the constrained degrees of freedom, whereas the global section does not. The sections list the point and then the degree of freedom associated with the components of the fields.
 ---
-# This example solution field has three subfields:
-#   * displacement (vector field, 2 components, basis order 1)
-#   * velocity (vector field, 2 components, basis order 1)
-#   * pressure (scalar field, 1 component, basis order 0)
-#
-# The displacement and velocity subfields have degrees of freedom on the vertices.
-# The pressure subfield has degrees of freedom on the cells.
-#
-# The order of the values (offsets in the PetscVec) follows the
-# ordering of the points (cells, vertices, edges, and faces).
-# In this example, the pressure subfield appears first (offsets 0-3),
-# followed by the two components of the displacement subfield and
-# velocity subfield for each point.
-PetscSection Object: 1 MPI processes
+Viewing field 'DM_0x84000000_1 solution' Solution field.
+  Subfields:
+    Subfield displacement, index: 0, components: displacement_x displacement_y, scale: 1000, basisOrder: 1, quadOrder: 1, dimension: -1, cellBasis: tensor
+    Subfield lagrange_multiplier_fault, index: 1, components: lagrange_multiplier_fault_x lagrange_multiplier_fault_y, scale: 2.25e+10, basisOrder: 1, quadOrder: 1, dimension: 1, cellBasis: tensor
+        displacement  lagrange_multiplier_fault
+Local Section
+Processor 0
+     0    --    --      --    -- # cells
+     1    --    --      --    --
+     2    --    --      --    --
+     3    --    --      --    --
+     4    --    --      --    --
+     5    --    --      --    --
+     6    --    --      --    --
+     7    --    --      --    --
+     8    --    --      --    --
+     9    --    --      --    --
+    10    --    --      --    --
+    11    --    --      --    --
+    12    24    25      --    --    (constrained: 24 25) # vertices
+    13    26    27      --    --    (constrained: 26 27)
+    14    28    29      --    --    (constrained: 28 29)
+    15    30    31      --    --    (constrained: 30 31)
+    16    32    33      --    --
+    17    34    35      --    --
+    18    36    37      --    --
+    19    38    39      --    --
+    20    40    41      --    --    (constrained: 40 41)
+    21    42    43      --    --    (constrained: 42 43)
+    22    44    45      --    --    (constrained: 44 45)
+    23    46    47      --    --    (constrained: 46 47)
+    24     0     1      --    --
+    25     2     3      --    --
+    26     6     7      --    --
+    27     8     9      --    --
+    28    12    13      --    --
+    29    14    15      --    --
+    30    18    19      --    --
+    31    20    21      --    --
+    32    --    --      --    -- # edges
+    33    --    --      --    --
+    34    --    --      --    --
+    35    --    --      --    --
+    36    --    --      --    --
+    37    --    --      --    --
+    38    --    --      --    --
+    39    --    --      --    --
+    40    --    --      --    --
+    41    --    --      --    --
+    42    --    --      --    --
+    43    --    --      --    --
+    44    --    --      --    --
+    45    --    --      --    --
+    46    --    --      --    --
+    47    --    --      --    --
+    48    --    --      --    --
+    49    --    --      --    --
+    50    --    --      --    --
+    51    --    --      --    --
+    52    --    --      --    --
+    53    --    --      --    --
+    54    --    --      --    --
+    55    --    --      --    --
+    56    --    --      --    --
+    57    --    --      --    --
+    58    --    --      --    --
+    59    --    --       4     5 # cohesive edges
+    60    --    --      10    11
+    61    --    --      16    17
+    62    --    --      22    23
+Global Section
+Processor 0
+     0    --    --      --    -- # cells
+     1    --    --      --    --
+     2    --    --      --    --
+     3    --    --      --    --
+     4    --    --      --    --
+     5    --    --      --    --
+     6    --    --      --    --
+     7    --    --      --    --
+     8    --    --      --    --
+     9    --    --      --    --
+    10    --    --      --    --
+    11    --    --      --    --
+    12    --    --      --    -- # vertices
+    13    --    --      --    --
+    14    --    --      --    --
+    15    --    --      --    --
+    16    24    25      --    --
+    17    26    27      --    --
+    18    28    29      --    --
+    19    30    31      --    --
+    20    --    --      --    --
+    21    --    --      --    --
+    22    --    --      --    --
+    23    --    --      --    --
+    24     0     1      --    --
+    25     2     3      --    --
+    26     6     7      --    --
+    27     8     9      --    --
+    28    12    13      --    --
+    29    14    15      --    --
+    30    18    19      --    --
+    31    20    21      --    --
+    32    --    --      --    -- # edges
+    33    --    --      --    --
+    34    --    --      --    --
+    35    --    --      --    --
+    36    --    --      --    --
+    37    --    --      --    --
+    38    --    --      --    --
+    39    --    --      --    --
+    40    --    --      --    --
+    41    --    --      --    --
+    42    --    --      --    --
+    43    --    --      --    --
+    44    --    --      --    --
+    45    --    --      --    --
+    46    --    --      --    --
+    47    --    --      --    --
+    48    --    --      --    --
+    49    --    --      --    --
+    50    --    --      --    --
+    51    --    --      --    --
+    52    --    --      --    --
+    53    --    --      --    --
+    54    --    --      --    --
+    55    --    --      --    --
+    56    --    --      --    --
+    57    --    --      --    --
+    58    --    --      --    --
+    59    --    --       4     5 # cohesive edges
+    60    --    --      10    11
+    61    --    --      16    17
+    62    --    --      22    23
+```
+
+```{code-block} bash
+---
+caption: Corresponding output of PetscSectionVew() for the local section of the solution field.
+---
+PetscSection Object: 1 MPI process
   type not yet set
-3 fields
-  field 0 with 2 components # displacement field
+2 fields
+  field 0 "displacement" with 2 components
 Process 0:
-# (POINT) dim SUBFIELD_NUM_COMPONENTS offset OFFSET
-(   0) dim  0 offset   0 # Cells
-(   1) dim  0 offset   0
-(   2) dim  0 offset   0
-(   3) dim  0 offset   0
-(   4) dim  2 offset   4 # Vertices
-(   5) dim  2 offset   8
-(   6) dim  2 offset  12
-(   7) dim  2 offset  16
-(   8) dim  2 offset  20
-(   9) dim  0 offset  24 # Edges
-(  10) dim  0 offset  24
-(  11) dim  0 offset  24
-(  12) dim  0 offset  24
-(  13) dim  0 offset  24
-(  14) dim  0 offset  24
-(  15) dim  0 offset  24
-(  16) dim  0 offset  24
-field 1 with 2 components # velocity field
+  (   0) dof  0 offset  24 # cells
+  (   1) dof  0 offset  24
+  (   2) dof  0 offset  24
+  (   3) dof  0 offset  24
+  (   4) dof  0 offset  24
+  (   5) dof  0 offset  24
+  (   6) dof  0 offset  24
+  (   7) dof  0 offset  24
+  (   8) dof  0 offset  24
+  (   9) dof  0 offset  12
+  (  10) dof  0 offset  18
+  (  11) dof  0 offset  24
+  (  12) dof  2 offset  24 constrained 0 1 # vertices
+  (  13) dof  2 offset  26 constrained 0 1
+  (  14) dof  2 offset  28 constrained 0 1
+  (  15) dof  2 offset  30 constrained 0 1
+  (  16) dof  2 offset  32
+  (  17) dof  2 offset  34
+  (  18) dof  2 offset  36
+  (  19) dof  2 offset  38
+  (  20) dof  2 offset   0
+  (  21) dof  2 offset   6
+  (  22) dof  2 offset  12
+  (  23) dof  2 offset  18
+  (  24) dof  2 offset  40 constrained 0 1
+  (  25) dof  2 offset  42 constrained 0 1
+  (  26) dof  2 offset  44 constrained 0 1
+  (  27) dof  2 offset  46 constrained 0 1
+  (  28) dof  2 offset   2
+  (  29) dof  2 offset   8
+  (  30) dof  2 offset  14
+  (  31) dof  2 offset  20
+  (  32) dof  0 offset  48 # edges
+  (  33) dof  0 offset  48
+  (  34) dof  0 offset  48
+  (  35) dof  0 offset  48
+  (  36) dof  0 offset  48
+  (  37) dof  0 offset  48
+  (  38) dof  0 offset  48
+  (  39) dof  0 offset  48
+  (  40) dof  0 offset  48
+  (  41) dof  0 offset  48
+  (  42) dof  0 offset  48
+  (  43) dof  0 offset   0
+  (  44) dof  0 offset  48
+  (  45) dof  0 offset  12
+  (  46) dof  0 offset  48
+  (  47) dof  0 offset  18
+  (  48) dof  0 offset  48
+  (  49) dof  0 offset  48
+  (  50) dof  0 offset  48
+  (  51) dof  0 offset  48
+  (  52) dof  0 offset  48
+  (  53) dof  0 offset  48
+  (  54) dof  0 offset  48
+  (  55) dof  0 offset  48
+  (  56) dof  0 offset   0
+  (  57) dof  0 offset  12
+  (  58) dof  0 offset  18
+  (  59) dof  0 offset   4 # cohesive edges
+  (  60) dof  0 offset  10
+  (  61) dof  0 offset  16
+  (  62) dof  0 offset  22
+  field 1 "lagrange_multiplier_fault" with 2 components
 Process 0:
-(   0) dim  0 offset   0 # Cells
-(   1) dim  0 offset   0
-(   2) dim  0 offset   0
-(   3) dim  0 offset   0
-(   4) dim  2 offset   6 # Vertices
-(   5) dim  2 offset  10
-(   6) dim  2 offset  14
-(   7) dim  2 offset  18
-(   8) dim  2 offset  22
-(   9) dim  0 offset  24 # Edges
-(  10) dim  0 offset  24
-(  11) dim  0 offset  24
-(  12) dim  0 offset  24
-(  13) dim  0 offset  24
-(  14) dim  0 offset  24
-(  15) dim  0 offset  24
-(  16) dim  0 offset  24
-field 2 with 1 components # pressure field
-Process 0:
-(   0) dim  1 offset   0 # Cells
-(   1) dim  1 offset   1
-(   2) dim  1 offset   2
-(   3) dim  1 offset   3
-(   4) dim  0 offset   4 # Vertices
-(   5) dim  0 offset   4
-(   6) dim  0 offset   4
-(   7) dim  0 offset   4
-(   8) dim  0 offset   4
-(   9) dim  0 offset   4 # Edges
-(  10) dim  0 offset   4
-(  11) dim  0 offset   4
-(  12) dim  0 offset   4
-(  13) dim  0 offset   4
-(  14) dim  0 offset   4
-(  15) dim  0 offset   4
-(  16) dim  0 offset   4
+  (   0) dof  0 offset  24 # cells
+  (   1) dof  0 offset  24
+  (   2) dof  0 offset  24
+  (   3) dof  0 offset  24
+  (   4) dof  0 offset  24
+  (   5) dof  0 offset  24
+  (   6) dof  0 offset  24
+  (   7) dof  0 offset  24
+  (   8) dof  0 offset  24
+  (   9) dof  0 offset  12
+  (  10) dof  0 offset  18
+  (  11) dof  0 offset  24
+  (  12) dof  0 offset  26 # vertices
+  (  13) dof  0 offset  28
+  (  14) dof  0 offset  30
+  (  15) dof  0 offset  32
+  (  16) dof  0 offset  34
+  (  17) dof  0 offset  36
+  (  18) dof  0 offset  38
+  (  19) dof  0 offset  40
+  (  20) dof  0 offset   2
+  (  21) dof  0 offset   8
+  (  22) dof  0 offset  14
+  (  23) dof  0 offset  20
+  (  24) dof  0 offset  42
+  (  25) dof  0 offset  44
+  (  26) dof  0 offset  46
+  (  27) dof  0 offset  48
+  (  28) dof  0 offset   4
+  (  29) dof  0 offset  10
+  (  30) dof  0 offset  16
+  (  31) dof  0 offset  22
+  (  32) dof  0 offset  48 # edges
+  (  33) dof  0 offset  48
+  (  34) dof  0 offset  48
+  (  35) dof  0 offset  48
+  (  36) dof  0 offset  48
+  (  37) dof  0 offset  48
+  (  38) dof  0 offset  48
+  (  39) dof  0 offset  48
+  (  40) dof  0 offset  48
+  (  41) dof  0 offset  48
+  (  42) dof  0 offset  48
+  (  43) dof  0 offset   0
+  (  44) dof  0 offset  48
+  (  45) dof  0 offset  12
+  (  46) dof  0 offset  48
+  (  47) dof  0 offset  18
+  (  48) dof  0 offset  48
+  (  49) dof  0 offset  48
+  (  50) dof  0 offset  48
+  (  51) dof  0 offset  48
+  (  52) dof  0 offset  48
+  (  53) dof  0 offset  48
+  (  54) dof  0 offset  48
+  (  55) dof  0 offset  48
+  (  56) dof  0 offset   0
+  (  57) dof  0 offset  12
+  (  58) dof  0 offset  18
+  (  59) dof  2 offset   4 # cohesive edges
+  (  60) dof  2 offset  10
+  (  61) dof  2 offset  16
+  (  62) dof  2 offset  22
 ```
 
 ## Integration
