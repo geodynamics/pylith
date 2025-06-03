@@ -7,7 +7,7 @@ import gmsh
 
 # Import the gmsh_utils Python module supplied with PyLith.
 from pylith.meshio.gmsh_utils import (BoundaryGroup, MaterialGroup, GenerateMesh)
-
+from pyproj import Transformer, CRS
 
 class App(GenerateMesh):
     """
@@ -81,33 +81,21 @@ class App(GenerateMesh):
         splines = []
         wires = []
 
-        first_side = []
-        second_side = []
-
-        all_points = []
         sorted_final_points = [v for k, v in sorted(final_points.items())]
         for final_point in sorted_final_points:
             points = []
             for point in final_point:
                 gmsh_point = gmsh.model.occ.add_point(point[0],point[1], point[2])
                 points.append(gmsh_point)
-                all_points.append(gmsh_point)
-            first_side.append(points[0])
-            second_side.append(points[-1])
             spline = gmsh.model.occ.add_spline(points)
             splines.append(spline)
             wires.append(gmsh.model.occ.add_wire([spline]))
 
-        first_side_spline = gmsh.model.occ.add_spline(first_side)
-        first_side_wire = gmsh.model.occ.add_wire([first_side_spline])
-        second_size_spline = gmsh.model.occ.add_spline(second_side)
-        second_size_wire = gmsh.model.occ.add_wire([second_size_spline])
-
-        wire = gmsh.model.occ.add_wire([wires[0], first_side_wire,wires[-1], second_size_wire])
-        surface = gmsh.model.occ.addSurfaceFilling(wire,pointTags=all_points)
+        surface = gmsh.model.occ.add_thru_sections(wires,makeSolid=False, makeRuled=False)
 
         gmsh.model.occ.synchronize()
         gmsh.fltk.run()
+
     def mark(self):
         """Mark geometry for materials, boundary conditions, faults, etc.
 
