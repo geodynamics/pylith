@@ -84,22 +84,34 @@ class App(GenerateMesh):
     def create_geometry(self):
         """Create geometry.
         """
+        crs_wgs84_3d = CRS.from_epsg(4979)
+        crs_projected = CRS.from_proj4(
+            "+proj=tmerc +datum=WGS84 +lat_0=45.5231 +lon_0=-122.6765 +k=0.9996 +units=m +type=crs"
+        )
+        transformer = Transformer.from_crs(crs_wgs84_3d, crs_projected, always_xy=True)
+
         # gmsh.model.occ.add_box(-60*1000,-60*1000,-400*1000,800*1000,800*1000,400*1000)
         dem_nc = netCDF4.Dataset(self.FILENAME_LOCALDEM)
         latitude = dem_nc.variables["lat"][:]
         longitude = dem_nc.variables["lon"][:]
         elevation = dem_nc.variables["Band1"][:].astype(float)
 
+        topography_points = []
+        topo_mask = elevation.recordmask
+        for i in range(elevation.shape[0]):
+            for j in range(elevation.shape[1]):
+                point_latitude = latitude[i]
+                point_longitude = longitude[j]
+                if not topo_mask[i, j]:
+                    point_elevation = elevation[i, j]
+                    position = transformer.transform(point_longitude, point_latitude,point_elevation)
+                    point = gmsh.model.occ.add_point(position[0], position[1], position[2])
+                    topography_points.append(point)
+
         contours,all_points = self._read_and_generate_splines()
         bounding_box = self._generate_bounding_box(lats=all_points[:,0],longs=all_points[:,1])
         print("Bounding box:", bounding_box)
         contours[5] = np.flip(contours[5],axis=0)
-
-        crs_wgs84_3d = CRS.from_epsg(4979)
-        crs_projected = CRS.from_proj4(
-            "+proj=tmerc +datum=WGS84 +lat_0=45.5231 +lon_0=-122.6765 +k=0.9996 +units=m +type=crs"
-        )
-        transformer = Transformer.from_crs(crs_wgs84_3d, crs_projected, always_xy=True)
 
         projected_contours = {}
         for depth, contour in contours.items():
@@ -121,20 +133,19 @@ class App(GenerateMesh):
             spline = gmsh.model.occ.add_spline(points)
             splines.append(spline)
             wires.append(gmsh.model.occ.add_wire([spline]))
-        gmsh.model.occ.synchronize()
-        gmsh.fltk.run()
-        slab_top_surface = gmsh.model.occ.add_thru_sections(wires,makeSolid=False, makeRuled=False)
 
+        slab_top_surface = gmsh.model.occ.add_thru_sections(wires,makeSolid=False, makeRuled=False)
         gmsh.model.occ.synchronize()
+
         space = np.linspace(0, 1, 10)
         xv, yv = np.meshgrid(space, space)
         parametricCoords = np.column_stack((xv.flatten(), yv.flatten())).ravel()
         normals = gmsh.model.getNormal(slab_top_surface[0][1],parametricCoords)
         normal = np.average(normals.reshape(-1, 3),axis=0)
 
-        dx = self.SLAB_THICKNESS * normal[0]
-        dy = self.SLAB_THICKNESS * normal[1]
-        dz = self.SLAB_THICKNESS * normal[2]
+        dx = -self.SLAB_THICKNESS * normal[0]
+        dy = -self.SLAB_THICKNESS * normal[1]
+        dz = -self.SLAB_THICKNESS * normal[2]
 
         slab_volume = gmsh.model.occ.extrude(slab_top_surface,dx=dx,dy=dy,dz=dz,recombine=True)
         gmsh.model.occ.synchronize()
