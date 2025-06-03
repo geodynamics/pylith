@@ -23,10 +23,10 @@ class App(GenerateMesh):
     SLAB_THICKNESS = 50.0 * 1000
     FILENAME_LOCALDEM = "topography.nc"
 
-    UP_DIP_ELEV = 1.0*1000
+    UP_DIP_ELEV = 2.0*1000
     UP_DIP_DIST = 600.0*1000
-    UP_DIP_ANGLE = 10.0*1000
-    FAULT_STRIKE = 0.0
+    UP_DIP_ANGLE = math.radians(10.0)
+    FAULT_STRIKE = math.radians(0.0)
     CONTOURS_STRIDE = 4
     POINTS_STRIDE = 20
 
@@ -67,18 +67,19 @@ class App(GenerateMesh):
     def _generate_extended_contours(self,contours):
         key = min(contours.keys())
         contour_top = contours[key]
-        z_top = contour_top[0][2] * 1000
+        z_top = contour_top[0][2]
         dist_horiz = (self.UP_DIP_ELEV - z_top) / math.tan(self.UP_DIP_ANGLE)
         dx = -dist_horiz * math.cos(self.FAULT_STRIKE)
         dy = dist_horiz * math.sin(self.FAULT_STRIKE)
         contours_up_dip = {}
         ncontours = int(math.ceil(math.log((self.UP_DIP_DIST / dist_horiz) + 1) / math.log(2.0)))
+        target_range = np.linspace(z_top, self.UP_DIP_ELEV, ncontours+1)
         for i in range(ncontours):
             contour = np.array(contour_top)
             contour[:, 0] += (2 ** i) * dx
             contour[:, 1] += (2 ** i) * dy
-            contour[:, 2] = self.UP_DIP_ELEV
-            contours_up_dip[-i] = contour
+            contour[:, 2] = target_range[i+1]
+            contours_up_dip[-target_range[i+1]/1000] = contour
         return contours_up_dip
 
     def create_geometry(self):
@@ -120,8 +121,8 @@ class App(GenerateMesh):
             position = transformer.transform(contour[:,1],contour[:,0],contour[:,2]*1000)
             projected_contours[depth] = np.array(position).T
 
-        # projected_contours_up_dip = self._generate_extended_contours(projected_contours)
-        # projected_contours = projected_contours_up_dip | projected_contours
+        projected_contours_up_dip = self._generate_extended_contours(projected_contours)
+        projected_contours = projected_contours_up_dip | projected_contours
 
         splines = []
         wires = []
@@ -136,7 +137,7 @@ class App(GenerateMesh):
             splines.append(spline)
             wires.append(gmsh.model.occ.add_wire([spline]))
 
-        slab_top_surface = gmsh.model.occ.add_thru_sections(wires,makeSolid=False, makeRuled=False)
+        slab_top_surface = gmsh.model.occ.add_thru_sections(wires,makeSolid=False, makeRuled=False,maxDegree=2)
         gmsh.model.occ.synchronize()
 
         space = np.linspace(0, 1, 10)
