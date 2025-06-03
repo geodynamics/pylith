@@ -8,6 +8,9 @@ import gmsh
 # Import the gmsh_utils Python module supplied with PyLith.
 from pylith.meshio.gmsh_utils import (BoundaryGroup, MaterialGroup, GenerateMesh)
 from pyproj import Transformer, CRS
+import netCDF4
+import math
+
 
 class App(GenerateMesh):
     """
@@ -18,7 +21,14 @@ class App(GenerateMesh):
     """
     CONTOURS_FILENAME = "cas_contours_dep.in.txt.gz"
     SLAB_THICKNESS = 50.0 * 1000
-    SLAB_NORMAL_DIR = (+0.209, -0.016, +0.979)
+    FILENAME_LOCALDEM = "topography.nc"
+
+    UP_DIP_ELEV = 1.0*1000
+    UP_DIP_DIST = 600.0*1000
+    UP_DIP_ANGLE = 10.0*1000
+    FAULT_STRIKE = 0.0
+    CONTOURS_STRIDE = 4
+    POINTS_STRIDE = 20
 
     def __init__(self):
         """Constructor.
@@ -34,19 +44,13 @@ class App(GenerateMesh):
         }
         self.filename = "mesh_tet.msh"
 
-    # def _create_points_from_file(self, filename):
-    #     coordinates = numpy.loadtxt(filename)
-    #     points = []
-    #     for xy in coordinates:
-    #         points.append(gmsh.model.occ.add_point(xy[0], xy[1], 0))
-    #     return points
-
     def _read_and_generate_splines(self):
         with gzip.open(self.CONTOURS_FILENAME, "rb") as file:
             lines = file.readlines()
         contours = {}
         points = []
         key = None
+        all_points = []
         for line in lines:
             if line.decode().strip() == "END":
                 contours[key] = np.array(points, dtype=np.float64)
@@ -57,12 +61,38 @@ class App(GenerateMesh):
                 continue
             pt = list(map(float, line.strip().split()))  # lon/lat/elev
             points.append([pt[1], pt[0], pt[2]])  # lat/lon/elev
-        return contours
+            all_points.append([pt[1], pt[0], pt[2]])
+        return contours,np.array(all_points)
+
+    def _generate_extended_contours(self,contours):
+        key = min(contours.keys())
+        contour_top = contours[key]
+        z_top = contour_top[0][2] * 1000
+        dist_horiz = (self.UP_DIP_ELEV - z_top) / math.tan(self.UP_DIP_ANGLE)
+        dx = -dist_horiz * math.cos(self.FAULT_STRIKE)
+        dy = dist_horiz * math.sin(self.FAULT_STRIKE)
+        contours_up_dip = {}
+        ncontours = int(math.ceil(math.log((self.UP_DIP_DIST / dist_horiz) + 1) / math.log(2.0)))
+        for i in range(ncontours):
+            contour = np.array(contour_top)
+            contour[:, 0] += (2 ** i) * dx
+            contour[:, 1] += (2 ** i) * dy
+            contour[:, 2] = self.UP_DIP_ELEV
+            contours_up_dip[-i] = contour
+        return contours_up_dip
 
     def create_geometry(self):
         """Create geometry.
         """
-        contours = self._read_and_generate_splines()
+        # gmsh.model.occ.add_box(-60*1000,-60*1000,-400*1000,800*1000,800*1000,400*1000)
+        dem_nc = netCDF4.Dataset(self.FILENAME_LOCALDEM)
+        latitude = dem_nc.variables["lat"][:]
+        longitude = dem_nc.variables["lon"][:]
+        elevation = dem_nc.variables["Band1"][:].astype(float)
+
+        contours,all_points = self._read_and_generate_splines()
+        bounding_box = self._generate_bounding_box(lats=all_points[:,0],longs=all_points[:,1])
+        print("Bounding box:", bounding_box)
         contours[5] = np.flip(contours[5],axis=0)
 
         crs_wgs84_3d = CRS.from_epsg(4979)
@@ -76,6 +106,9 @@ class App(GenerateMesh):
             position = transformer.transform(contour[:,1],contour[:,0],contour[:,2]*1000)
             projected_contours[depth] = np.array(position).T
 
+        # projected_contours_up_dip = self._generate_extended_contours(projected_contours)
+        # projected_contours = projected_contours_up_dip | projected_contours
+
         splines = []
         wires = []
 
@@ -88,7 +121,8 @@ class App(GenerateMesh):
             spline = gmsh.model.occ.add_spline(points)
             splines.append(spline)
             wires.append(gmsh.model.occ.add_wire([spline]))
-
+        gmsh.model.occ.synchronize()
+        gmsh.fltk.run()
         slab_top_surface = gmsh.model.occ.add_thru_sections(wires,makeSolid=False, makeRuled=False)
 
         gmsh.model.occ.synchronize()
@@ -122,6 +156,16 @@ class App(GenerateMesh):
         """
         gmsh.model.mesh.generate(3)
         gmsh.model.mesh.optimize("Laplace2D")
+
+    @staticmethod
+    def _generate_bounding_box(lats,longs,radius=0):
+        # Calculate the min and max for latitude and longitude
+        min_lat = np.min(lats) - radius
+        max_lat = np.max(lats) + radius
+        min_lon = np.min(longs) - radius
+        max_lon = np.max(longs) + radius
+
+        return min_lat, max_lat, min_lon, max_lon
 
 # If script is called from the command line, run the application.
 if __name__ == "__main__":
