@@ -17,6 +17,8 @@ class App(GenerateMesh):
     duplicating in each of our examples.
     """
     CONTOURS_FILENAME = "cas_contours_dep.in.txt.gz"
+    SLAB_THICKNESS = 50.0 * 1000
+    SLAB_NORMAL_DIR = (+0.209, -0.016, +0.979)
 
     def __init__(self):
         """Constructor.
@@ -63,36 +65,44 @@ class App(GenerateMesh):
         contours = self._read_and_generate_splines()
         contours[5] = np.flip(contours[5],axis=0)
 
-        positions = {}
+        crs_wgs84_3d = CRS.from_epsg(4979)
+        crs_projected = CRS.from_proj4(
+            "+proj=tmerc +datum=WGS84 +lat_0=45.5231 +lon_0=-122.6765 +k=0.9996 +units=m +type=crs"
+        )
+        transformer = Transformer.from_crs(crs_wgs84_3d, crs_projected, always_xy=True)
+
+        projected_contours = {}
         for depth, contour in contours.items():
-            position = self._get_cartesian(contour[:,0],contour[:,1],contour[:,2])
-            positions[depth] = position
-        rotational_center = self._get_center(positions[5])
-        rotation_matrix = self._get_rotation_matrix_from_direction(rotational_center)
-        center = self._get_center(self._apply_rotation_points(positions[5], rotation_matrix))
-
-        final_points = {}
-
-        for depth,position in positions.items():
-            position = self._apply_rotation_points(position, rotation_matrix)
-            position = self._apply_centering_points(position, center)
-            final_points[depth] = position
+            position = transformer.transform(contour[:,1],contour[:,0],contour[:,2]*1000)
+            projected_contours[depth] = np.array(position).T
 
         splines = []
         wires = []
 
-        sorted_final_points = [v for k, v in sorted(final_points.items())]
-        for final_point in sorted_final_points:
+        sorted_project_contours = [v for k, v in sorted(projected_contours.items())]
+        for projected_contour in sorted_project_contours:
             points = []
-            for point in final_point:
+            for point in projected_contour:
                 gmsh_point = gmsh.model.occ.add_point(point[0],point[1], point[2])
                 points.append(gmsh_point)
             spline = gmsh.model.occ.add_spline(points)
             splines.append(spline)
             wires.append(gmsh.model.occ.add_wire([spline]))
 
-        surface = gmsh.model.occ.add_thru_sections(wires,makeSolid=False, makeRuled=False)
+        slab_top_surface = gmsh.model.occ.add_thru_sections(wires,makeSolid=False, makeRuled=False)
 
+        gmsh.model.occ.synchronize()
+        space = np.linspace(0, 1, 10)
+        xv, yv = np.meshgrid(space, space)
+        parametricCoords = np.column_stack((xv.flatten(), yv.flatten())).ravel()
+        normals = gmsh.model.getNormal(slab_top_surface[0][1],parametricCoords)
+        normal = np.average(normals.reshape(-1, 3),axis=0)
+
+        dx = self.SLAB_THICKNESS * normal[0]
+        dy = self.SLAB_THICKNESS * normal[1]
+        dz = self.SLAB_THICKNESS * normal[2]
+
+        slab_volume = gmsh.model.occ.extrude(slab_top_surface,dx=dx,dy=dy,dz=dz,recombine=True)
         gmsh.model.occ.synchronize()
         gmsh.fltk.run()
 
@@ -112,58 +122,6 @@ class App(GenerateMesh):
         """
         gmsh.model.mesh.generate(3)
         gmsh.model.mesh.optimize("Laplace2D")
-
-    @staticmethod
-    def _get_cartesian(lat_deg, lon_deg, alt):
-        lat = np.radians(lat_deg)
-        lon = np.radians(lon_deg)
-        rad = np.float64(6378137.0)
-        # Radius of the Earth (in meters)
-        f = np.float64(1.0 / 298.257223563)  # Flattening factor WGS84 Model
-        cosLat = np.cos(lat)
-        sinLat = np.sin(lat)
-        FF = (1.0 - f) ** 2
-        C = 1 / np.sqrt(cosLat ** 2 + FF * sinLat ** 2)
-        S = C * FF
-
-        x = (rad * C + alt) * cosLat * np.cos(lon)
-        y = (rad * C + alt) * cosLat * np.sin(lon)
-        z = (rad * S + alt) * sinLat
-
-        return np.vstack((x, y, z)).T
-
-    @staticmethod
-    def _get_center(vertices):
-        return np.average(vertices, axis=0)
-
-    @staticmethod
-    def _get_rotation_matrix_from_direction(direction):
-        normal = direction / np.linalg.norm(direction)  # Normalize the normal vector
-
-        # Define the target normal vector (Z-axis)
-        target = np.array([0, 0, 1])
-
-        # Compute the rotation axis (cross product of normal and target)
-        axis = np.cross(normal, target)
-        axis = axis / np.linalg.norm(axis)  # Normalize the rotation axis
-
-        # Compute the rotation angle (dot product of normal and target)
-        angle = np.arccos(np.dot(normal, target))
-
-        # Create the rotation matrix using Rodrigues' rotation formula
-        K = np.array([[0, -axis[2], axis[1]],
-                      [axis[2], 0, -axis[0]],
-                      [-axis[1], axis[0], 0]])
-        R = np.eye(3) + np.sin(angle) * K + (1 - np.cos(angle)) * np.dot(K, K)
-        return R
-
-    @staticmethod
-    def _apply_rotation_points(points, R):
-        return np.dot(points, R.T)
-
-    @staticmethod
-    def _apply_centering_points(points, center):
-        return points - center
 
 # If script is called from the command line, run the application.
 if __name__ == "__main__":
