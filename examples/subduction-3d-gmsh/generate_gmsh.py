@@ -96,20 +96,22 @@ class App(GenerateMesh):
         longitude = dem_nc.variables["lon"][:]
         elevation = dem_nc.variables["Band1"][:].astype(float)
 
-        topography_points = []
+        topography_points = np.full(elevation.shape,-1, dtype=np.int32)
         topo_mask = elevation.recordmask
         for i in range(elevation.shape[0]):
             for j in range(elevation.shape[1]):
+                if topo_mask and topo_mask[i, j]:
+                    continue  # Skip masked values
                 point_latitude = latitude[i]
                 point_longitude = longitude[j]
-                if not topo_mask[i, j]:
-                    point_elevation = elevation[i, j]
-                    position = transformer.transform(point_longitude, point_latitude,point_elevation)
-                    point = gmsh.model.occ.add_point(position[0], position[1], position[2])
-                    topography_points.append(point)
+                point_elevation = elevation[i, j]
+                position = transformer.transform(point_longitude, point_latitude,point_elevation)
+                point = gmsh.model.occ.add_point(position[0], position[1], position[2])
+                topography_points[i,j] = point
+
 
         contours,all_points = self._read_and_generate_splines()
-        bounding_box = self._generate_bounding_box(lats=all_points[:,0],longs=all_points[:,1])
+        bounding_box = self._calculate_bounding_box(lats=all_points[:, 0], longs=all_points[:, 1])
         print("Bounding box:", bounding_box)
         contours[5] = np.flip(contours[5],axis=0)
 
@@ -169,7 +171,7 @@ class App(GenerateMesh):
         gmsh.model.mesh.optimize("Laplace2D")
 
     @staticmethod
-    def _generate_bounding_box(lats,longs,radius=0):
+    def _calculate_bounding_box(lats, longs, radius=0):
         # Calculate the min and max for latitude and longitude
         min_lat = np.min(lats) - radius
         max_lat = np.max(lats) + radius
