@@ -23,7 +23,7 @@ class App(GenerateMesh):
     SLAB_THICKNESS = 50.0 * 1000
     FILENAME_LOCALDEM = "topography.nc"
 
-    UP_DIP_ELEV = 2.0*1000
+    UP_DIP_ELEV = 6.0*1000
     UP_DIP_DIST = 600.0*1000
     UP_DIP_ANGLE = math.radians(10.0)
     FAULT_STRIKE = math.radians(0.0)
@@ -91,7 +91,6 @@ class App(GenerateMesh):
         )
         transformer = Transformer.from_crs(crs_wgs84_3d, crs_projected, always_xy=True)
 
-        # gmsh.model.occ.add_box(-60*1000,-60*1000,-400*1000,800*1000,800*1000,400*1000)
         dem_nc = netCDF4.Dataset(self.FILENAME_LOCALDEM)
         latitude = dem_nc.variables["lat"][:]
         longitude = dem_nc.variables["lon"][:]
@@ -101,15 +100,23 @@ class App(GenerateMesh):
         topo_mask = elevation.recordmask
         for i in range(elevation.shape[0]):
             for j in range(elevation.shape[1]):
-                if topo_mask and topo_mask[i, j]:
-                    continue  # Skip masked values
+                if topo_mask:
+                    if topo_mask[i, j]:
+                        continue  # Skip masked values
                 point_latitude = latitude[i]
                 point_longitude = longitude[j]
                 point_elevation = elevation[i, j]
                 position = transformer.transform(point_longitude, point_latitude,point_elevation)
                 point = gmsh.model.occ.add_point(position[0], position[1], position[2])
                 topography_points[i,j] = point
-
+        topography_side_a = gmsh.model.occ.add_spline(topography_points[:,0])
+        topography_side_b = gmsh.model.occ.add_spline(topography_points[-1,:])
+        topography_side_c = gmsh.model.occ.add_spline(np.flip(topography_points[:,-1]))
+        topography_side_d = gmsh.model.occ.add_spline(np.flip(topography_points[0,:]))
+        topography_wire = gmsh.model.occ.add_wire(
+            [topography_side_a, topography_side_b, topography_side_c, topography_side_d]
+        )
+        topography_surface = gmsh.model.occ.addSurfaceFilling(topography_wire,pointTags=topography_points.flatten())
 
         contours,all_points = self._read_and_generate_splines()
         bounding_box = self._calculate_bounding_box(lats=all_points[:, 0], longs=all_points[:, 1])
@@ -151,6 +158,9 @@ class App(GenerateMesh):
         dz = -self.SLAB_THICKNESS * normal[2]
 
         slab_volume = gmsh.model.occ.extrude(slab_top_surface,dx=dx,dy=dy,dz=dz,recombine=True)
+
+        #Splay Fault
+
         gmsh.model.occ.synchronize()
         gmsh.fltk.run()
 
@@ -179,7 +189,8 @@ class App(GenerateMesh):
         min_lon = np.min(longs) - radius
         max_lon = np.max(longs) + radius
 
-        return min_lat, max_lat, min_lon, max_lon
+        # return min_lat, max_lat, min_lon, max_lon
+        return min_lon, max_lat, max_lon, min_lat
 
 # If script is called from the command line, run the application.
 if __name__ == "__main__":
