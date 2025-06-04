@@ -66,7 +66,7 @@ pylith::sources::TestAuxiliaryFactoryMomentTensorForce::TestAuxiliaryFactoryMome
         componentNames,
         componentNames.size(),
         pylith::topology::Field::TENSOR,
-        _data->normalizer->getPressureScale()
+        _data->normalizer->getPressureScale() * normalizer->getLengthScale() * normalizer->getLengthScale() * normalizer->getLengthScale();
         );
     info.fe = pylith::topology::Field::Discretization(
         2, 2, _data->auxDim, _data->auxDim, false, pylith::topology::Field::DEFAULT_BASIS, pylith::topology::Field::POLYNOMIAL_SPACE, false
