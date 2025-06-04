@@ -395,6 +395,7 @@ pylith::faults::FaultCohesive::createIntegrator(const pylith::topology::Field& s
     integrator->setLabelName(getCohesiveLabelName());
     integrator->setLabelValue(getCohesiveLabelValue());
     integrator->setSurfaceLabelName(getSurfaceLabelName());
+    integrator->createLabelDS(solution);
 
     pylith::feassemble::InterfacePatches* patches =
         pylith::feassemble::InterfacePatches::createMaterialPairs(this, solution.getDM());

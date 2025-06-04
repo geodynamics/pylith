@@ -70,6 +70,10 @@ public:
     /// Destructor
     virtual ~Integrator(void);
 
+    /// Deallocate storage.
+    virtual
+    void deallocate(void);
+
     /** Set name of label used to identify integration domain.
      *
      * @param name Name of label.
@@ -119,6 +123,12 @@ public:
      * @param[in] value Triggers for needing new LHS lumped Jacobian.
      */
     void setLHSJacobianLumpedTriggers(const int value);
+
+    /** Create PETSc DS for label and label value.
+     *
+     * @param[in] solution Solution field.
+     */
+    void createLabelDS(const pylith::topology::Field& solution);
 
     /** Initialize integration domain, auxiliary field, and derived field. Update observers.
      *
@@ -230,6 +240,7 @@ protected:
 
     std::string _labelName; ///< Name of label associated with integration domain.
     int _labelValue; ///< Value of label associated with integration domain.
+    pylith::feassemble::DSLabelAccess* _dsLabel; ///< Information about integration (PETSc DS, Label, label value, etc).
 
     int _lhsJacobianTriggers; // Triggers for needing new LHS Jacobian.
     int _lhsJacobianLumpedTriggers; // Triggers for needing new LHS lumped Jacobian.

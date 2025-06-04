@@ -121,6 +121,7 @@ pylith::bc::AbsorbingDampers::createIntegrator(const pylith::topology::Field& so
     integrator->setSubfieldName(getSubfieldName());
     integrator->setLabelName(getLabelName());
     integrator->setLabelValue(getLabelValue());
+    integrator->createLabelDS(solution);
 
     _AbsorbingDampers::setKernelsResidual(integrator, *this, solution);
     BoundaryCondition::_setKernelsDiagnosticField(integrator, solution);

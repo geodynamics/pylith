@@ -116,6 +116,7 @@ pylith::bc::NeumannUserFn::createIntegrator(const pylith::topology::Field& solut
     integrator->setSubfieldName(getSubfieldName());
     integrator->setLabelName(getLabelName());
     integrator->setLabelValue(getLabelValue());
+    integrator->createLabelDS(solution);
 
     _NeumannUserFn::setKernelsResidual(integrator, *this, solution, _formulation);
 

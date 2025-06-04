@@ -228,7 +228,6 @@ private:
 
     pylith::feassemble::UpdateStateVars* _updateState; ///< Data structure for layout needed to update state vars.
     pylith::feassemble::JacobianValues* _jacobianValues; ///< Jacobian values without finite-element integration.
-    pylith::feassemble::DSLabelAccess* _dsLabel; ///< Information about integration (PETSc DS, Label, label value, etc).
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:

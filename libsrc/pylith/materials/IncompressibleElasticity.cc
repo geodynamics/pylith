@@ -135,6 +135,7 @@ pylith::materials::IncompressibleElasticity::createIntegrator(const pylith::topo
     pylith::feassemble::IntegratorDomain* integrator = new pylith::feassemble::IntegratorDomain(this);assert(integrator);
     integrator->setLabelName(getLabelName());
     integrator->setLabelValue(getLabelValue());
+    integrator->createLabelDS(solution);
 
     _setKernelsResidual(integrator, solution);
     _setKernelsJacobian(integrator, solution);
