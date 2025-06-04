@@ -100,7 +100,9 @@ pylith::sources::AuxiliaryFactoryMomentTensorForce::addTimeDelay(void) { // time
     description.componentNames.resize(1);
     description.componentNames[0] = subfieldName;
     description.scale = timeScale;
-    description.validator = pylith::topology::FieldQuery::validatorNonnegative;
+    // description.validator = pylith::topology::FieldQuery::validatorNonnegative;
+    description.validator = NULL;
+
 
     _field->subfieldAdd(description, getSubfieldDiscretization(subfieldName));
     this->setSubfieldQuery(subfieldName);
