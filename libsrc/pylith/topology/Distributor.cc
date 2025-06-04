@@ -51,13 +51,18 @@ public:
                                              pylith::faults::FaultCohesive* faults[],
                                              const int numFaults);
 
+            static const char* componentName;
+
         }; // _Distributor
+        const char* _Distributor::componentName = "distributor";
     } // topology
 } // pylith
 
 // ------------------------------------------------------------------------------------------------
 // Constructor
-pylith::topology::Distributor::Distributor(void) {}
+pylith::topology::Distributor::Distributor(void) {
+    GenericComponent::setName(_Distributor::componentName);
+}
 
 
 // ------------------------------------------------------------------------------------------------
@@ -75,7 +80,7 @@ pylith::topology::Distributor::distribute(pylith::topology::Mesh* const newMesh,
                                           const char* partitionerName,
                                           const bool useEdgeWeighting) {
     PYLITH_METHOD_BEGIN;
-    pythia::journal::info_t info("mesh_distributor");
+    pythia::journal::info_t info(_Distributor::componentName);
 
     assert(newMesh);
     newMesh->setCoordSys(origMesh.getCoordSys());
@@ -111,6 +116,12 @@ pylith::topology::Distributor::distribute(pylith::topology::Mesh* const newMesh,
     err = DMViewFromOptions(dmNew, NULL, "-pylith_dist_dm_view");PYLITH_CHECK_ERROR(err);
     newMesh->setDM(dmNew, "domain");
 
+    pythia::journal::debug_t debug(_Distributor::componentName);
+    if (debug.state()) {
+        newMesh->view(":mesh_distributed.txt:ascii_info_detail");
+        newMesh->view(":mesh_distributed.tex:ascii_latex");
+    } // if
+
     PYLITH_METHOD_END;
 } // distribute
 
@@ -123,7 +134,7 @@ pylith::topology::Distributor::write(meshio::DataWriter* const writer,
     PYLITH_METHOD_BEGIN;
 
     if (pylith::utils::MPI::isRoot()) {
-        pythia::journal::info_t info("mesh_distributor");
+        pythia::journal::info_t info(_Distributor::componentName);
         info << pythia::journal::at(__HERE__)
              << "Writing partition." << pythia::journal::endl;
     } // if
