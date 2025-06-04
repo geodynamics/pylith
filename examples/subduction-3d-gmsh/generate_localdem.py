@@ -5,9 +5,9 @@ import pathlib
 
 from osgeo import gdal
 
-FILENAME_DEMS_CSV = "30n150w_20101117_gmted_med300.tif,50n150w_20101117_gmted_med300.tif"
+FILENAME_DEMS_CSV = "30n150w_20101117_gmted_med300.tif,50n150w_20101117_gmted_med300.tif,30n120w_20101117_gmted_med300.tif,50n120w_20101117_gmted_med300.tif"
 FILENAME_DEMSUB = "topography.nc"
-BBOX = (-138.195718069, 51.5863472565, -120.821471093, 39.0650222389)
+BBOX = (-130.195718069, 51.5863472565, -115.821471093, 39.0650222389)
 RESOLUTION = 0.2 # degrees
 
 FILENAME_DEMS = [filename.strip() for filename in FILENAME_DEMS_CSV.split(",")]

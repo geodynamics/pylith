@@ -22,11 +22,15 @@ class App(GenerateMesh):
     CONTOURS_FILENAME = "cas_contours_dep.in.txt.gz"
     SLAB_THICKNESS = 50.0 * 1000
     FILENAME_LOCALDEM = "topography.nc"
+    BOX_SIDE_LENGTH = 800*1000
+    BOX_DEPTH_LENGTH = 400*1000
 
     UP_DIP_ELEV = 6.0*1000
     UP_DIP_DIST = 600.0*1000
     UP_DIP_ANGLE = math.radians(10.0)
     FAULT_STRIKE = math.radians(0.0)
+
+    DX = 20.0e+3
 
     def __init__(self):
         """Constructor.
@@ -95,6 +99,9 @@ class App(GenerateMesh):
     def create_geometry(self):
         """Create geometry.
         """
+        gmsh.option.setNumber("Mesh.MeshSizeMin", self.DX) #delete this later
+        gmsh.option.setNumber("Mesh.MeshSizeMax", self.DX)
+
         crs_wgs84_3d = CRS.from_epsg(4979)
         crs_projected = CRS.from_proj4(
             "+proj=tmerc +datum=WGS84 +lat_0=45.5231 +lon_0=-122.6765 +k=0.9996 +units=m +type=crs"
@@ -111,7 +118,7 @@ class App(GenerateMesh):
         for i in range(elevation.shape[0]):
             points = []
             for j in range(elevation.shape[1]):
-                if topo_mask:
+                if isinstance(topo_mask, np.ndarray):
                     if topo_mask[i, j]:
                         continue  # Skip masked values
                 point_latitude = latitude[i]
@@ -170,6 +177,22 @@ class App(GenerateMesh):
         _,splay_top_wire = self._generate_gmsh_contour(splay_top)
         splay_surface = gmsh.model.occ.add_thru_sections([splay_bottom_wire,splay_top_wire], makeSolid=False, makeRuled=False, maxDegree=2)
 
+        bounding_box = gmsh.model.occ.add_box(
+            -self.BOX_SIDE_LENGTH/2,
+            -self.BOX_SIDE_LENGTH/2,
+            30*1000-self.BOX_DEPTH_LENGTH,
+            self.BOX_SIDE_LENGTH,
+            self.BOX_SIDE_LENGTH,
+            self.BOX_DEPTH_LENGTH
+        )
+        gmsh.model.occ.fragment(topography_surface,[[3,bounding_box]])
+        gmsh.model.occ.remove([(3, 3)], recursive=True)
+
+        gmsh.model.occ.fragment([(3,2)],[(3,1)])
+        gmsh.model.occ.remove([(3,3)], recursive=True)
+
+        # gmsh.model.occ.fragment([(3,1)],splay_surface)
+
         gmsh.model.occ.synchronize()
         gmsh.fltk.run()
 
@@ -187,6 +210,8 @@ class App(GenerateMesh):
         This method is abstract in the base class and must be implemented
         in our local App class.
         """
+        gmsh.option.setNumber("Mesh.MeshSizeMin", self.DX)
+        gmsh.option.setNumber("Mesh.MeshSizeMax", self.DX)
         gmsh.model.mesh.generate(3)
         gmsh.model.mesh.optimize("Laplace2D")
 
