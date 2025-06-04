@@ -9,7 +9,7 @@ We introduce the velocity as a unknown, $\vec{v}=\frac{\partial u}{\partial t}$,
 % Displacement-velocity
 \frac{\partial \vec{u}}{\partial t} &= \vec{v} \text{ in } \Omega, \\
 % Elasticity
-\rho(\vec{x}) \frac{\partial\vec{v}}{\partial t} &= \vec{f}(\vec{x},t) + \boldsymbol{\nabla} \cdot \boldsymbol{\sigma}(\vec{u}) \text{ in } \Omega, \\
+\rho(\vec{x}) \frac{\partial\vec{v}}{\partial t} &= \vec{f}(\vec{x},t) + \boldsymbol{\nabla} \cdot \boldsymbol{\sigma}(\vec{u}) + \boldsymbol{\nabla} \cdot {\bf M} \text{ in } \Omega, \\
 % Neumann
 \boldsymbol{\sigma} \cdot \vec{n} &= \vec{\tau}(\vec{x},t) \text{ on } \Gamma_\tau, \\
 % Dirichlet

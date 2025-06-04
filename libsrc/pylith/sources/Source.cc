@@ -190,13 +190,36 @@ pylith::sources::Source::locateSource(const pylith::topology::Field& solution,
     // pylith::sources::Source numLeaves);
     // PetscMPIInt rank;
     err = MPI_Comm_rank(PetscObjectComm((PetscObject)dmSoln), &rank);
-    for (PetscInt p = 0; p < _pointCoords.size() / dim; ++p) {
+    
+    PetscInt pcs = _pointCoords.size() / dim;
+    _cellNumber.resize(pcs);
+    _cellVolume.resize(pcs);
+
+    for (PetscInt p = 0; p < pcs; ++p) {
         PetscPrintf(PETSC_COMM_SELF, "[%i] OUTPUT rank: %i, index: %i, label: %s, labelValue: %i \n", (int)rank, (PetscInt)remotePoints[p].rank, (PetscInt)remotePoints[p].index, labelName, (int) labelValue);
         if ((remotePoints[p].index >= 0)) {
+            PetscReal cV;
             err = DMLabelSetValue(label, remotePoints[p].index, labelValue);PYLITH_CHECK_ERROR(err);
+            err = DMPlexComputeCellGeometryFVM(dmSoln,remotePoints[p].index, &cV, NULL, NULL);PYLITH_CHECK_ERROR(err);
+            _cellVolume[p] = cV;
+            _cellNumber[p] = remotePoints[p].index;
         }
     } // for
-    DMLabelView(label, NULL);
+    PetscIS cellIS;
+    err = DMLabelGetStratumIS(label, labelValue, &cellIS);PYLITH_CHECK_ERROR(err);
+    if (cellIS) {
+        const PetscInt* cells;
+        err = ISGetIndices(cellIS, &cells);PYLITH_CHECK_ERROR(err);
+        for (PetscInt p = 0; p < pcs; ++p) {
+            PetscInt loc;
+            err = PetscFindInt(_cellNumber[p], pcs, cells, &loc);PYLITH_CHECK_ERROR(err);
+            assert(loc >= 0);
+            _cellNumber[p] = loc;
+        }
+        err = ISRestoreIndices(cellIS, &cells);PYLITH_CHECK_ERROR(err);
+    }
+    err = DMLabelView(label, NULL);PYLITH_CHECK_ERROR(err);
+    
     err = PetscSFDestroy(&sfPoints);PYLITH_CHECK_ERROR(err);
     // printf("In MomentTensorForce end\n");
     // // DMView(dmSoln, NULL);

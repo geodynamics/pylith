@@ -118,6 +118,8 @@ protected:
     std::string _labelName; ///< Name of label to identify source points in mesh.
     int _labelValue; ///< Value of label to identify source points in mesh.
     std::string _subfieldName; ///< Name of solution subfield for boundary condition.
+    pylith::int_array _cellNumber; ///< Numbers of cells used for source
+    pylith::scalar_array _cellVolume; ///< Volumes of cell used for source
 
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:

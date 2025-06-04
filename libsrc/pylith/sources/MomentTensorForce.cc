@@ -158,6 +158,21 @@ pylith::sources::MomentTensorForce::createAuxiliaryField(const pylith::topology:
     assert(auxiliaryFactory);
     auxiliaryFactory->setValuesFromDB();
 
+    // Scale Moment Tensor Values
+    PetscDM dm = auxiliaryField->getDM();
+    PetscVec v = auxiliaryField->getLocalVector();
+    PylithScalar* array;
+    PylithScalar* ptr;
+    PetscErrorCode err;
+    err = VecGetArray(v, &array);PYLITH_CHECK_ERROR(err);
+    PetscInt dim;
+    err = DMGetDimension(dm, &dim);PYLITH_CHECK_ERROR(err);
+    for (int p = 0; p < _pointCoords.size() / dim; ++p) {
+        err = DMPlexPointLocalRef(dm, _cellNumber[p], array, (void*) &ptr);PYLITH_CHECK_ERROR(err);
+        ptr[0] /= _cellVolume[p];
+    }
+    err = VecRestoreArray(v, &array);PYLITH_CHECK_ERROR(err);
+
     // Debug option
     auxiliaryField->view("MomentTensor auxiliary field.");
 
