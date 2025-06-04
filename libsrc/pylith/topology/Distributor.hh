@@ -11,12 +11,14 @@
 
 #include "pylith/topology/topologyfwd.hh" // forward declarations
 
+#include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
+
 #include "pylith/meshio/meshiofwd.hh" // USES DataWriter
 #include "pylith/faults/faultsfwd.hh" // USES FaultCohesive
 
 // Distributor ----------------------------------------------------------
 /// Distribute mesh among processors.
-class pylith::topology::Distributor { // Distributor
+class pylith::topology::Distributor : public pylith::utils::GenericComponent {
     friend class TestDistributor; // unit testing
 
     // PUBLIC MEMBERS ///////////////////////////////////////////////////////
