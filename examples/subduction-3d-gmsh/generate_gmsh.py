@@ -30,7 +30,8 @@ class App(GenerateMesh):
     UP_DIP_ANGLE = math.radians(10.0)
     FAULT_STRIKE = math.radians(0.0)
 
-    DX = 20.0e+3
+    DX_MIN = 1.0e+4
+    DX_BIAS = 1.2
 
     def __init__(self):
         """Constructor.
@@ -99,9 +100,6 @@ class App(GenerateMesh):
     def create_geometry(self):
         """Create geometry.
         """
-        gmsh.option.setNumber("Mesh.MeshSizeMin", self.DX) #delete this later
-        gmsh.option.setNumber("Mesh.MeshSizeMax", self.DX)
-
         crs_wgs84_3d = CRS.from_epsg(4979)
         crs_projected = CRS.from_proj4(
             "+proj=tmerc +datum=WGS84 +lat_0=45.5231 +lon_0=-122.6765 +k=0.9996 +units=m +type=crs"
@@ -186,15 +184,15 @@ class App(GenerateMesh):
             self.BOX_DEPTH_LENGTH
         )
         gmsh.model.occ.fragment(topography_surface,[[3,bounding_box]])
-        gmsh.model.occ.remove([(3, 3)], recursive=True)
+        gmsh.model.occ.remove([(3, 3),(2,20)], recursive=True)
 
         gmsh.model.occ.fragment([(3,2)],[(3,1)])
         gmsh.model.occ.remove([(3,3)], recursive=True)
 
-        # gmsh.model.occ.fragment([(3,1)],splay_surface)
-
+        gmsh.model.occ.fragment([(3,1)],splay_surface)
+        gmsh.model.occ.remove_all_duplicates()
         gmsh.model.occ.synchronize()
-        gmsh.fltk.run()
+
 
     def mark(self):
         """Mark geometry for materials, boundary conditions, faults, etc.
@@ -210,8 +208,22 @@ class App(GenerateMesh):
         This method is abstract in the base class and must be implemented
         in our local App class.
         """
-        gmsh.option.setNumber("Mesh.MeshSizeMin", self.DX)
-        gmsh.option.setNumber("Mesh.MeshSizeMax", self.DX)
+        gmsh.option.set_number("Mesh.MeshSizeFromPoints", 0)
+        gmsh.option.set_number("Mesh.MeshSizeFromCurvature", 0)
+        gmsh.option.set_number("Mesh.MeshSizeExtendFromBoundary", 0)
+
+        _, slab_surfaces = gmsh.model.getAdjacencies(3, 2)
+        _, wedge_surfaces = gmsh.model.getAdjacencies(3, 4)
+        high_res_surfaces = list(set(slab_surfaces) | set(wedge_surfaces))
+
+        field_distance = gmsh.model.mesh.field.add("Distance")
+        gmsh.model.mesh.field.setNumbers(field_distance, "SurfacesList", high_res_surfaces)
+
+        field_size = gmsh.model.mesh.field.add("MathEval")
+        math_exp = GenerateMesh.get_math_progression(field_distance, min_dx=self.DX_MIN, bias=self.DX_BIAS)
+        gmsh.model.mesh.field.setString(field_size, "F", math_exp)
+        gmsh.model.mesh.field.setAsBackgroundMesh(field_size)
+
         gmsh.model.mesh.generate(3)
         gmsh.model.mesh.optimize("Laplace2D")
 
