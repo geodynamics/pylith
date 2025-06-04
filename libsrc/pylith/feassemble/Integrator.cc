@@ -12,6 +12,7 @@
 
 #include "pylith/feassemble/Integrator.hh" // implementation of class methods
 
+#include "pylith/feassemble/DSLabelAccess.hh" // HOLDSA DSLabelAccess
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/problems/ObserversPhysics.hh" // USES ObserversPhysics
@@ -72,6 +73,7 @@ pylith::feassemble::Integrator::Integrator(pylith::problems::Physics* const phys
     PhysicsImplementation(physics),
     _labelName(""),
     _labelValue(1),
+    _dsLabel(NULL),
     _lhsJacobianTriggers(NEW_JACOBIAN_NEVER),
     _lhsJacobianLumpedTriggers(NEW_JACOBIAN_NEVER),
     _hasRHSResidual(false),
@@ -89,6 +91,16 @@ pylith::feassemble::Integrator::Integrator(pylith::problems::Physics* const phys
 pylith::feassemble::Integrator::~Integrator(void) {
     deallocate();
 } // destructor
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Deallocate storage.
+void
+pylith::feassemble::Integrator::deallocate(void) {
+    delete _dsLabel;_dsLabel = NULL;
+
+    PhysicsImplementation::deallocate();
+} // deallocate
 
 
 // ---------------------------------------------------------------------------------------------------------------------

@@ -124,8 +124,7 @@ pylith::feassemble::IntegratorDomain::IntegratorDomain(pylith::problems::Physics
     Integrator(physics),
     _materialMesh(NULL),
     _updateState(NULL),
-    _jacobianValues(NULL),
-    _dsLabel(NULL) {
+    _jacobianValues(NULL) {
     GenericComponent::setName("integratordomain");
     _IntegratorDomain::Events::init();
 } // constructor
@@ -149,7 +148,6 @@ pylith::feassemble::IntegratorDomain::deallocate(void) {
     delete _materialMesh;_materialMesh = NULL;
     delete _updateState;_updateState = NULL;
     delete _jacobianValues;_jacobianValues = NULL;
-    delete _dsLabel;_dsLabel = NULL;
 
     PYLITH_METHOD_END;
 } // deallocate
@@ -171,13 +169,13 @@ pylith::feassemble::IntegratorDomain::setKernelsResidual(const std::vector<Resid
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" setKernelsResidual(# kernels="<<kernels.size()<<")");
 
-    PetscErrorCode err;
-    DSLabelAccess dsLabel(solution.getDM(), _labelName.c_str(), _labelValue);
+    PetscErrorCode err = PETSC_SUCCESS;
+    assert(_dsLabel);
     for (size_t i = 0; i < kernels.size(); ++i) {
         const PetscInt i_field = solution.getSubfieldInfo(kernels[i].subfield.c_str()).index;
         const PetscInt i_part = kernels[i].part;
-        if (dsLabel.weakForm()) {
-            err = PetscWeakFormAddResidual(dsLabel.weakForm(), dsLabel.label(), dsLabel.value(), i_field, i_part,
+        if (_dsLabel->weakForm()) {
+            err = PetscWeakFormAddResidual(_dsLabel->weakForm(), _dsLabel->label(), _dsLabel->value(), i_field, i_part,
                                            kernels[i].r0, kernels[i].r1);PYLITH_CHECK_ERROR(err);
         } // if
 
@@ -195,7 +193,7 @@ pylith::feassemble::IntegratorDomain::setKernelsResidual(const std::vector<Resid
 
     pythia::journal::debug_t debug(GenericComponent::getName());
     if (debug.state()) {
-        err = PetscDSView(dsLabel.ds(), PETSC_VIEWER_STDOUT_WORLD);PYLITH_CHECK_ERROR(err);
+        err = PetscDSView(_dsLabel->ds(), PETSC_VIEWER_STDOUT_WORLD);PYLITH_CHECK_ERROR(err);
     } // if
 
     PYLITH_METHOD_END;
@@ -209,14 +207,14 @@ pylith::feassemble::IntegratorDomain::setKernelsJacobian(const std::vector<Jacob
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" setKernelsJacobian(# kernels="<<kernels.size()<<")");
 
-    PetscErrorCode err;
-    DSLabelAccess dsLabel(solution.getDM(), _labelName.c_str(), _labelValue);
+    PetscErrorCode err = PETSC_SUCCESS;
+    assert(_dsLabel);
     for (size_t i = 0; i < kernels.size(); ++i) {
         const PetscInt i_fieldTrial = solution.getSubfieldInfo(kernels[i].subfieldTrial.c_str()).index;
         const PetscInt i_fieldBasis = solution.getSubfieldInfo(kernels[i].subfieldBasis.c_str()).index;
         const PetscInt i_part = kernels[i].part;
-        if (dsLabel.weakForm()) {
-            err = PetscWeakFormAddJacobian(dsLabel.weakForm(), dsLabel.label(), dsLabel.value(), i_fieldTrial, i_fieldBasis,
+        if (_dsLabel->weakForm()) {
+            err = PetscWeakFormAddJacobian(_dsLabel->weakForm(), _dsLabel->label(), _dsLabel->value(), i_fieldTrial, i_fieldBasis,
                                            i_part, kernels[i].j0, kernels[i].j1, kernels[i].j2, kernels[i].j3);PYLITH_CHECK_ERROR(err);
         } // if
 
@@ -234,7 +232,7 @@ pylith::feassemble::IntegratorDomain::setKernelsJacobian(const std::vector<Jacob
 
     pythia::journal::debug_t debug(GenericComponent::getName());
     if (debug.state()) {
-        err = PetscDSView(dsLabel.ds(), PETSC_VIEWER_STDOUT_WORLD);PYLITH_CHECK_ERROR(err);
+        err = PetscDSView(_dsLabel->ds(), PETSC_VIEWER_STDOUT_WORLD);PYLITH_CHECK_ERROR(err);
     } // if
 
     PYLITH_METHOD_END;
@@ -303,9 +301,6 @@ pylith::feassemble::IntegratorDomain::initialize(const pylith::topology::Field& 
         delete _updateState;_updateState = new pylith::feassemble::UpdateStateVars;assert(_updateState);
         _updateState->initialize(*_auxiliaryField);
     } // if
-
-    delete _dsLabel;_dsLabel = new DSLabelAccess(solution.getDM(), _labelName.c_str(), _labelValue);assert(_dsLabel);
-    _dsLabel->removeOverlap();
 
     pythia::journal::debug_t debug(GenericComponent::getName());
     if (debug.state()) {
