@@ -27,8 +27,6 @@ class App(GenerateMesh):
     UP_DIP_DIST = 600.0*1000
     UP_DIP_ANGLE = math.radians(10.0)
     FAULT_STRIKE = math.radians(0.0)
-    CONTOURS_STRIDE = 4
-    POINTS_STRIDE = 20
 
     def __init__(self):
         """Constructor.
@@ -108,9 +106,10 @@ class App(GenerateMesh):
         longitude = dem_nc.variables["lon"][:]
         elevation = dem_nc.variables["Band1"][:].astype(float)
 
-        topography_points = np.full(elevation.shape,-1, dtype=np.int32)
         topo_mask = elevation.recordmask
+        wires = []
         for i in range(elevation.shape[0]):
+            points = []
             for j in range(elevation.shape[1]):
                 if topo_mask:
                     if topo_mask[i, j]:
@@ -119,16 +118,12 @@ class App(GenerateMesh):
                 point_longitude = longitude[j]
                 point_elevation = elevation[i, j]
                 position = transformer.transform(point_longitude, point_latitude,point_elevation)
-                point = gmsh.model.occ.add_point(position[0], position[1], position[2])
-                topography_points[i,j] = point
-        topography_side_a = gmsh.model.occ.add_spline(topography_points[:,0])
-        topography_side_b = gmsh.model.occ.add_spline(topography_points[-1,:])
-        topography_side_c = gmsh.model.occ.add_spline(np.flip(topography_points[:,-1]))
-        topography_side_d = gmsh.model.occ.add_spline(np.flip(topography_points[0,:]))
-        topography_wire = gmsh.model.occ.add_wire(
-            [topography_side_a, topography_side_b, topography_side_c, topography_side_d]
-        )
-        # topography_surface = gmsh.model.occ.addSurfaceFilling(topography_wire,pointTags=topography_points.flatten())
+                points.append(position)
+            points = np.array(points)
+            _,wire = self._generate_gmsh_contour(points)
+            wires.append(wire)
+        topography_surface = gmsh.model.occ.add_thru_sections(wires, makeSolid=False, makeRuled=False, maxDegree=2)
+
 
         contours,all_points = self._read_and_generate_splines()
         bounding_box = self._calculate_bounding_box(lats=all_points[:, 0], longs=all_points[:, 1])
@@ -143,13 +138,10 @@ class App(GenerateMesh):
         projected_contours_up_dip = self._generate_extended_contours(projected_contours)
         projected_contours = projected_contours_up_dip | projected_contours
 
-        splines = []
         wires = []
-
         sorted_project_contours = [v for k, v in sorted(projected_contours.items())]
         for projected_contour in sorted_project_contours:
             spline,wire = self._generate_gmsh_contour(projected_contour)
-            splines.append(spline)
             wires.append(wire)
 
         slab_top_surface = gmsh.model.occ.add_thru_sections(wires,makeSolid=False, makeRuled=False,maxDegree=2)
@@ -164,7 +156,6 @@ class App(GenerateMesh):
         dx = -self.SLAB_THICKNESS * normal[0]
         dy = -self.SLAB_THICKNESS * normal[1]
         dz = -self.SLAB_THICKNESS * normal[2]
-
         slab_volume = gmsh.model.occ.extrude(slab_top_surface,dx=dx,dy=dy,dz=dz,recombine=True)
 
         #Splay Fault
@@ -174,7 +165,6 @@ class App(GenerateMesh):
         splay_bottom[:, 2] -= 8.0e+3
         _,splay_bottom_wire = self._generate_gmsh_contour(splay_bottom)
 
-        # self.modeler.add_contour(contour)
         splay_top[:, 2] = 3.0e+3
         splay_top[:, 0] -= 24.0e+3
         _,splay_top_wire = self._generate_gmsh_contour(splay_top)
