@@ -193,7 +193,7 @@ pylith::materials::Elasticity::createIntegrator(const pylith::topology::Field& s
     pylith::feassemble::IntegratorDomain* integrator = new pylith::feassemble::IntegratorDomain(this);assert(integrator);
     integrator->setLabelName(getLabelName());
     integrator->setLabelValue(getLabelValue());
-    integrator->createLabelDS(solution);
+    integrator->createLabelDS(solution, solution.getMesh().getDimension());
 
     _setKernelsResidual(integrator, solution);
     _setKernelsJacobian(integrator, solution);

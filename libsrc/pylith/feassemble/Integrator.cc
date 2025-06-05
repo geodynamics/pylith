@@ -189,8 +189,9 @@ pylith::feassemble::Integrator::setLHSJacobianLumpedTriggers(const int value) {
 // ---------------------------------------------------------------------------------------------------------------------
 // Create PETSc DS for label and label value.
 void
-pylith::feassemble::Integrator::createLabelDS(const pylith::topology::Field& solution) {
-    delete _dsLabel;_dsLabel = new DSLabelAccess(solution.getDM(), _labelName.c_str(), _labelValue);assert(_dsLabel);
+pylith::feassemble::Integrator::createLabelDS(const pylith::topology::Field& solution,
+                                              const int dim) {
+    delete _dsLabel;_dsLabel = new DSLabelAccess(solution.getDM(), _labelName.c_str(), _labelValue, dim);assert(_dsLabel);
     _dsLabel->removeOverlap();
 } // createLabelDS
 

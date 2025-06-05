@@ -239,12 +239,14 @@ pylith::feassemble::IntegratorBoundary::computeRHSResidual(pylith::topology::Fie
     key.field = solution->getSubfieldInfo(_subfieldName.c_str()).index;
     key.part = pylith::feassemble::Integrator::RHS;
 
-    PetscErrorCode err;
+    PetscErrorCode err = PETSC_SUCCESS;
+    PetscDMField coordField = NULL;
     assert(solution->getLocalVector());
     assert(residual->getLocalVector());
     PetscVec solutionDotVec = NULL;
-    err = DMPlexComputeBdResidualSingle(_dsLabel->dm(), t, _dsLabel->weakForm(), key, solution->getLocalVector(), solutionDotVec,
-                                        residual->getLocalVector());PYLITH_CHECK_ERROR(err);
+    err = DMGetCoordinateField(_dsLabel->dm(), &coordField);PYLITH_CHECK_ERROR(err);
+    err = DMPlexComputeBdResidualSingleByKey(_dsLabel->dm(), _dsLabel->weakForm(), key, _dsLabel->pointsIS(), solution->getLocalVector(),
+                                             solutionDotVec, t, coordField, residual->getLocalVector());PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // computeRHSResidual
@@ -276,11 +278,13 @@ pylith::feassemble::IntegratorBoundary::computeLHSResidual(pylith::topology::Fie
     key.field = solution->getSubfieldInfo(_subfieldName.c_str()).index;
     key.part = pylith::feassemble::Integrator::LHS;
 
-    PetscErrorCode err;
+    PetscErrorCode err = PETSC_SUCCESS;
+    PetscDMField coordField = NULL;
     assert(solution->getLocalVector());
     assert(residual->getLocalVector());
-    err = DMPlexComputeBdResidualSingle(_dsLabel->dm(), t, _dsLabel->weakForm(), key, solution->getLocalVector(),
-                                        solutionDot->getLocalVector(), residual->getLocalVector());PYLITH_CHECK_ERROR(err);
+    err = DMGetCoordinateField(_dsLabel->dm(), &coordField);PYLITH_CHECK_ERROR(err);
+    err = DMPlexComputeBdResidualSingleByKey(_dsLabel->dm(), _dsLabel->weakForm(), key, _dsLabel->pointsIS(), solution->getLocalVector(),
+                                             solutionDot->getLocalVector(), t, coordField, residual->getLocalVector());PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // computeLHSResidual

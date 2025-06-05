@@ -300,7 +300,7 @@ pylith::feassemble::IntegratorInterface::setKernels(const std::vector<ResidualKe
 
     pythia::journal::debug_t debug(_IntegratorInterface::genericComponent);
     if (debug.state()) {
-        DSLabelAccess dsLabel(solution.getDM(), _labelName.c_str(), _labelValue);
+        DSLabelAccess dsLabel(solution.getDM(), _labelName.c_str(), _labelValue, solution.getMesh().getDimension()-1);
         err = PetscDSView(dsLabel.ds(), PETSC_VIEWER_STDOUT_WORLD);PYLITH_CHECK_ERROR(err);
     } // if
 
@@ -378,7 +378,7 @@ pylith::feassemble::IntegratorInterface::setKernels(const std::vector<JacobianKe
 
     pythia::journal::debug_t debug(_IntegratorInterface::genericComponent);
     if (debug.state()) {
-        DSLabelAccess dsLabel(solution.getDM(), _labelName.c_str(), _labelValue);
+        DSLabelAccess dsLabel(solution.getDM(), _labelName.c_str(), _labelValue, solution.getMesh().getDimension()-1);
         err = PetscDSView(dsLabel.ds(), PETSC_VIEWER_STDOUT_WORLD);PYLITH_CHECK_ERROR(err);
     } // if
 

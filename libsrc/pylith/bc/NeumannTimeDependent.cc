@@ -201,7 +201,7 @@ pylith::bc::NeumannTimeDependent::createIntegrator(const pylith::topology::Field
     integrator->setSubfieldName(getSubfieldName());
     integrator->setLabelName(getLabelName());
     integrator->setLabelValue(getLabelValue());
-    integrator->createLabelDS(solution);
+    integrator->createLabelDS(solution, solution.getMesh().getDimension()-1);
 
     _NeumannTimeDependent::setKernelsResidual(integrator, *this, solution, _formulation);
     BoundaryCondition::_setKernelsDiagnosticField(integrator, solution);

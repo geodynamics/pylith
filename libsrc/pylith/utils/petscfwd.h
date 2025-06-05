@@ -42,6 +42,9 @@ typedef struct _p_DM* PetscDM;
 /// forward declaration for PETSc DMLabel
 typedef struct _p_DMLabel* PetscDMLabel;
 
+/// forward declaration for PETSc DMField
+typedef struct _p_DMField* PetscDMField;
+
 /// forward declaration for PETSc IS
 typedef struct _p_IS* PetscIS;
 
