@@ -354,11 +354,15 @@ pylith::topology::MeshOps::removeHangingCells(const PetscDM& dmMesh) {
 
     MPI_Comm comm = PetscObjectComm((PetscObject) dmMesh);
     pylith::topology::Stratum cells(dmMesh, pylith::topology::Stratum::HEIGHT, 0);
-    DMPolytopeType cellType;
-    err = DMPlexGetCellType(dmMesh, cells.begin(), &cellType);PYLITH_CHECK_ERROR(err);
-    if (DMPolytopeTypeGetDim(cellType) < 0) {
-        // Hanging cells have dim == -1
-
+    PetscInt hasHangingCellsLocal = 0;
+    if (cells.begin() != cells.end()) {
+        DMPolytopeType cellType;
+        err = DMPlexGetCellType(dmMesh, cells.begin(), &cellType);PYLITH_CHECK_ERROR(err);
+        hasHangingCellsLocal = DMPolytopeTypeGetDim(cellType) < 0; // Hanging cells have dim == -1
+    } // if
+    PetscInt hasHangingCellsGlobal = 0;
+    err = MPI_Allreduce(&hasHangingCellsLocal, &hasHangingCellsGlobal, 1, MPIU_INT, MPI_MAX, comm);PYLITH_CHECK_ERROR(err);
+    if (hasHangingCellsGlobal) {
         // Create label over cells 1 dimension lower
         PetscDMLabel labelInclude = PETSC_NULLPTR;
         const PetscInt labelValue = 1;

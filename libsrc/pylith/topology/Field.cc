@@ -719,26 +719,29 @@ pylith::topology::_Field::viewValues(const Field& field) {
     err = PetscSectionGetChart(fieldVisitor.selectedSection(), &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
     const PetscScalar* localArray = fieldVisitor.localArray();
     for (PetscInt iProc = 0; iProc < numProcs; ++iProc) {
-        std::cout << "Processor " << iProc << "\n";
-        for (PetscInt point = pStart; point < pEnd; ++point) {
-            std::cout << std::setw(pwidth) << point;
-            for (size_t iField = 0; iField < numSubfields; ++iField) {
-                const PetscInt numDof = fieldVisitor.sectionSubfieldDof(iField, point);
-                if (numDof > 0) {
-                    assert(numDof == numComponents[iField]);
-                    const PetscInt off = fieldVisitor.sectionSubfieldOffset(iField, point);
-                    for (PetscInt iDof = 0; iDof < numDof; ++iDof) {
-                        std::cout << std::setw(fwidth) << localArray[off+iDof];
-                    } // for
-                } else {
-                    for (PetscInt iDof = 0; iDof < numComponents[iField]; ++iDof) {
-                        std::cout << std::setw(fwidth) << none;
-                    } // for
-                } // if/else
-                std::cout << "  ";
+        if (rank == iProc) {
+            std::cout << "Processor " << iProc << "\n";
+            for (PetscInt point = pStart; point < pEnd; ++point) {
+                std::cout << std::setw(pwidth) << point;
+                for (size_t iField = 0; iField < numSubfields; ++iField) {
+                    const PetscInt numDof = fieldVisitor.sectionSubfieldDof(iField, point);
+                    if (numDof > 0) {
+                        assert(numDof == numComponents[iField]);
+                        const PetscInt off = fieldVisitor.sectionSubfieldOffset(iField, point);
+                        for (PetscInt iDof = 0; iDof < numDof; ++iDof) {
+                            std::cout << std::setw(fwidth) << localArray[off+iDof];
+                        } // for
+                    } else {
+                        for (PetscInt iDof = 0; iDof < numComponents[iField]; ++iDof) {
+                            std::cout << std::setw(fwidth) << none;
+                        } // for
+                    } // if/else
+                    std::cout << "  ";
+                } // for
+                std::cout << "\n";
             } // for
-            std::cout << "\n";
-        } // for
+        } // if
+        std::cout << std::flush;
         err = PetscBarrier((PetscObject) dm);PYLITH_CHECK_ERROR(err);
     } // for
 
@@ -778,37 +781,40 @@ pylith::topology::_Field::viewLocalSection(const Field& field) {
     } // if
 
     for (PetscInt iProc = 0; iProc < numProcs; ++iProc) {
-        std::cout << "Processor " << iProc << "\n";
-        for (PetscInt point = pStart; point < pEnd; ++point) {
-            std::cout << std::setw(pwidth) << point;
-            for (size_t iField = 0; iField < numSubfields; ++iField) {
-                const PetscInt numDof = fieldVisitor.sectionSubfieldDof(iField, point);
-                if (numDof > 0) {
-                    const PetscInt off = fieldVisitor.sectionSubfieldOffset(iField, point);
-                    for (PetscInt iDof = 0; iDof < numDof; ++iDof) {
-                        std::cout << std::setw(pwidth) << off+iDof;
-                    } // for
-                } else {
-                    for (PetscInt iDof = 0; iDof < numComponents[iField]; ++iDof) {
-                        std::cout << std::setw(pwidth) << none;
-                    } // for
-                } // if/else
-                std::cout << "  ";
-            } // for
-            PetscInt numConstraintDof;
-            err = PetscSectionGetConstraintDof(section, point, &numConstraintDof);PYLITH_CHECK_ERROR(err);
-            if (numConstraintDof > 0) {
-                const PetscInt off = fieldVisitor.sectionOffset(point);
-                std::cout << "  (constrained:";
-                const PetscInt* constraintIndices = NULL;
-                err = PetscSectionGetConstraintIndices(section, point, &constraintIndices);PYLITH_CHECK_ERROR(err);
-                for (PetscInt iDof = 0; iDof < numConstraintDof; ++iDof) {
-                    std::cout << " " << off+constraintIndices[iDof];
+        if (rank == iProc) {
+            std::cout << "Processor " << iProc << "\n";
+            for (PetscInt point = pStart; point < pEnd; ++point) {
+                std::cout << std::setw(pwidth) << point;
+                for (size_t iField = 0; iField < numSubfields; ++iField) {
+                    const PetscInt numDof = fieldVisitor.sectionSubfieldDof(iField, point);
+                    if (numDof > 0) {
+                        const PetscInt off = fieldVisitor.sectionSubfieldOffset(iField, point);
+                        for (PetscInt iDof = 0; iDof < numDof; ++iDof) {
+                            std::cout << std::setw(pwidth) << off+iDof;
+                        } // for
+                    } else {
+                        for (PetscInt iDof = 0; iDof < numComponents[iField]; ++iDof) {
+                            std::cout << std::setw(pwidth) << none;
+                        } // for
+                    } // if/else
+                    std::cout << "  ";
                 } // for
-                std::cout << ")";
-            }
-            std::cout << "\n";
-        } // for
+                PetscInt numConstraintDof;
+                err = PetscSectionGetConstraintDof(section, point, &numConstraintDof);PYLITH_CHECK_ERROR(err);
+                if (numConstraintDof > 0) {
+                    const PetscInt off = fieldVisitor.sectionOffset(point);
+                    std::cout << "  (constrained:";
+                    const PetscInt* constraintIndices = NULL;
+                    err = PetscSectionGetConstraintIndices(section, point, &constraintIndices);PYLITH_CHECK_ERROR(err);
+                    for (PetscInt iDof = 0; iDof < numConstraintDof; ++iDof) {
+                        std::cout << " " << off+constraintIndices[iDof];
+                    } // for
+                    std::cout << ")";
+                }
+                std::cout << "\n";
+            } // for
+        } // if
+        std::cout << std::flush;
         err = PetscBarrier((PetscObject) dm);PYLITH_CHECK_ERROR(err);
     } // for
 
@@ -848,43 +854,46 @@ pylith::topology::_Field::viewGlobalSection(const Field& field) {
     } // if
 
     for (PetscInt iProc = 0; iProc < numProcs; ++iProc) {
-        std::cout << "Processor " << iProc << "\n";
-        for (PetscInt point = pStart; point < pEnd; ++point) {
-            std::cout << std::setw(pwidth) << point;
-            for (size_t iField = 0; iField < numSubfields; ++iField) {
-                const PetscInt numDof = fieldVisitor.sectionSubfieldDof(iField, point);
-                if (numDof > 0) {
-                    PetscInt numConstraintDof;
-                    err = PetscSectionGetFieldConstraintDof(section, point, iField, &numConstraintDof);PYLITH_CHECK_ERROR(err);
-                    if (numConstraintDof > 0) {
-                        assert(numConstraintDof <= numDof);
-                        PetscInt iConstraint = 0;
-                        const PetscInt* constraintIndices = NULL;
-                        err = PetscSectionGetFieldConstraintIndices(section, point, iField, &constraintIndices);PYLITH_CHECK_ERROR(err);
-                        const PetscInt off = fieldVisitor.sectionSubfieldOffset(iField, point);
-                        for (PetscInt iDof = 0; iDof < numDof; ++iDof) {
-                            if ((iConstraint < numConstraintDof) && (constraintIndices[iConstraint] == iDof)) {
-                                std::cout << std::setw(pwidth) << none;
-                                ++iConstraint;
-                            } else {
-                                std::cout << std::setw(pwidth) << off+iDof-iConstraint;
-                            } // if/else
-                        } // for
+        if (rank == iProc) {
+            std::cout << "Processor " << iProc << "\n";
+            for (PetscInt point = pStart; point < pEnd; ++point) {
+                std::cout << std::setw(pwidth) << point;
+                for (size_t iField = 0; iField < numSubfields; ++iField) {
+                    const PetscInt numDof = fieldVisitor.sectionSubfieldDof(iField, point);
+                    if (numDof > 0) {
+                        PetscInt numConstraintDof;
+                        err = PetscSectionGetFieldConstraintDof(section, point, iField, &numConstraintDof);PYLITH_CHECK_ERROR(err);
+                        if (numConstraintDof > 0) {
+                            assert(numConstraintDof <= numDof);
+                            PetscInt iConstraint = 0;
+                            const PetscInt* constraintIndices = NULL;
+                            err = PetscSectionGetFieldConstraintIndices(section, point, iField, &constraintIndices);PYLITH_CHECK_ERROR(err);
+                            const PetscInt off = fieldVisitor.sectionSubfieldOffset(iField, point);
+                            for (PetscInt iDof = 0; iDof < numDof; ++iDof) {
+                                if ((iConstraint < numConstraintDof) && (constraintIndices[iConstraint] == iDof)) {
+                                    std::cout << std::setw(pwidth) << none;
+                                    ++iConstraint;
+                                } else {
+                                    std::cout << std::setw(pwidth) << off+iDof-iConstraint;
+                                } // if/else
+                            } // for
+                        } else {
+                            const PetscInt off = fieldVisitor.sectionSubfieldOffset(iField, point);
+                            for (PetscInt iDof = 0; iDof < numDof; ++iDof) {
+                                std::cout << std::setw(pwidth) << off+iDof;
+                            } // for
+                        } // if/else
                     } else {
-                        const PetscInt off = fieldVisitor.sectionSubfieldOffset(iField, point);
-                        for (PetscInt iDof = 0; iDof < numDof; ++iDof) {
-                            std::cout << std::setw(pwidth) << off+iDof;
+                        for (PetscInt iDof = 0; iDof < numComponents[iField]; ++iDof) {
+                            std::cout << std::setw(pwidth) << none;
                         } // for
                     } // if/else
-                } else {
-                    for (PetscInt iDof = 0; iDof < numComponents[iField]; ++iDof) {
-                        std::cout << std::setw(pwidth) << none;
-                    } // for
-                } // if/else
-                std::cout << "  ";
+                    std::cout << "  ";
+                } // for
+                std::cout << "\n";
             } // for
-            std::cout << "\n";
-        } // for
+        } // if
+        std::cout << std::flush;
         err = PetscBarrier((PetscObject) dm);PYLITH_CHECK_ERROR(err);
     } // for
 

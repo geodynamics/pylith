@@ -86,18 +86,18 @@ public:
      */
     PetscVec localVec(void) const;
 
-    /** Get fiber dimension for values at point.
+    /** Get number of values at point.
      *
      * @param point Point in mesh.
-     * @returns Fiber dimension.
+     * @returns Number of values.
      */
     PetscInt sectionDof(const PetscInt point) const;
 
-    /** Get fiber dimension for values of subfield at point.
+    /** Get number of values of subfield at point.
      *
      * @param subfield Index of subfield in section.
      * @param point Point in mesh.
-     * @returns Fiber dimension.
+     * @returns Number of values.
      */
     PetscInt sectionSubfieldDof(const PetscInt subfield,
                                 const PetscInt point) const;
@@ -161,12 +161,6 @@ public:
                     const PetscInt valuesSize,
                     const PetscInt cell,
                     const InsertMode mode) const;
-
-    /** Optimize the closure operator by creating index for closures.
-     *
-     * :TODO: Remove this method. Call static version when setting up fields.
-     */
-    void optimizeClosure(void);
 
     /** Optimize the closure operator by creating index for closures.
      *

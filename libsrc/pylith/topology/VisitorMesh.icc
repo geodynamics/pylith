@@ -240,21 +240,6 @@ pylith::topology::VecVisitorMesh::setClosure(const PetscScalar* valuesCell,
 // Optimize the closure operation.
 inline
 void
-pylith::topology::VecVisitorMesh::optimizeClosure(void) {
-    PetscErrorCode err;
-
-    PetscSection indexSection = NULL;
-    err = PetscSectionGetClosureIndex(_localSection, (PetscObject) _dm, &indexSection, NULL);PYLITH_CHECK_ERROR(err);
-    if (!indexSection) {
-        err = DMPlexCreateClosureIndex(_dm, _localSection);PYLITH_CHECK_ERROR(err);
-    } // if
-} // optimizeClosure
-
-
-// ----------------------------------------------------------------------
-// Optimize the closure operation.
-inline
-void
 pylith::topology::VecVisitorMesh::optimizeClosure(const Field& field) {
     PetscErrorCode err;
 
