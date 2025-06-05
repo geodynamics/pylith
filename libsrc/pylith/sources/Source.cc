@@ -190,7 +190,7 @@ pylith::sources::Source::locateSource(const pylith::topology::Field& solution,
     // pylith::sources::Source numLeaves);
     // PetscMPIInt rank;
     err = MPI_Comm_rank(PetscObjectComm((PetscObject)dmSoln), &rank);
-    
+
     PetscInt pcs = _pointCoords.size() / dim;
     _cellNumber.resize(pcs);
     _cellVolume.resize(pcs);
@@ -203,6 +203,9 @@ pylith::sources::Source::locateSource(const pylith::topology::Field& solution,
             err = DMPlexComputeCellGeometryFVM(dmSoln,remotePoints[p].index, &cV, NULL, NULL);PYLITH_CHECK_ERROR(err);
             _cellVolume[p] = cV;
             _cellNumber[p] = remotePoints[p].index;
+        } else {
+            _cellVolume[p] = -1.;
+            _cellNumber[p] = -1;
         }
     } // for
     PetscIS cellIS;
@@ -212,6 +215,7 @@ pylith::sources::Source::locateSource(const pylith::topology::Field& solution,
         err = ISGetIndices(cellIS, &cells);PYLITH_CHECK_ERROR(err);
         for (PetscInt p = 0; p < pcs; ++p) {
             PetscInt loc;
+            if (_cellNumber[p] < 0) continue;
             err = PetscFindInt(_cellNumber[p], pcs, cells, &loc);PYLITH_CHECK_ERROR(err);
             assert(loc >= 0);
             _cellNumber[p] = loc;
@@ -219,7 +223,7 @@ pylith::sources::Source::locateSource(const pylith::topology::Field& solution,
         err = ISRestoreIndices(cellIS, &cells);PYLITH_CHECK_ERROR(err);
     }
     err = DMLabelView(label, NULL);PYLITH_CHECK_ERROR(err);
-    
+
     err = PetscSFDestroy(&sfPoints);PYLITH_CHECK_ERROR(err);
     // printf("In MomentTensorForce end\n");
     // // DMView(dmSoln, NULL);

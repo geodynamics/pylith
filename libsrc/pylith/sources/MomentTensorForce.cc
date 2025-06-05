@@ -168,6 +168,7 @@ pylith::sources::MomentTensorForce::createAuxiliaryField(const pylith::topology:
     PetscInt dim;
     err = DMGetDimension(dm, &dim);PYLITH_CHECK_ERROR(err);
     for (int p = 0; p < _pointCoords.size() / dim; ++p) {
+        if (_cellNumber[p] < 0) continue;
         err = DMPlexPointLocalRef(dm, _cellNumber[p], array, (void*) &ptr);PYLITH_CHECK_ERROR(err);
         ptr[0] /= _cellVolume[p];
     }
