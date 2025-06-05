@@ -277,21 +277,25 @@ class App(GenerateMesh):
         gmsh.model.occ.synchronize()
 
         # Get tags of the different sections using GUI
-        self.domain_volume = 5
+        self.mantle_volume = 5
         self.crust_volume = 6
         self.wedge_volume = 4
         self.slab_volume = 2
 
         self.surface_west = [41, 45]
         self.surface_south = [38, 31, 44, 51]
+        self.surface_south_no_slab = [38, 31, 44]
         self.surface_top = [46, 32, 52]
         self.surface_north = [39, 48, 53, 35]
+        self.surface_north_no_slab = [39, 48, 35]
         self.surface_bottom = [40]
         self.surface_east = [50, 37]
+        self.surface_east_no_slab = [37]
 
         self.slab_top = [52, 33, 47, 43]
+        self.slab_top_edge = [107]
         self.slab_bottom = [11]
-        self.slab_edge = [95]
+        self.slab_bottom_edge = [95]
 
         self.surface_splay = [29]
         self.edge_splay = [128]
@@ -300,29 +304,33 @@ class App(GenerateMesh):
         """Mark geometry for materials, boundary conditions, faults, etc.
         """
         materials = (
-            MaterialGroup(tag=1, entities=[self.domain_volume]),
-            MaterialGroup(tag=2, entities=[self.crust_volume]),
-            MaterialGroup(tag=3, entities=[self.wedge_volume]),
-            MaterialGroup(tag=4, entities=[self.slab_volume]),
+            MaterialGroup(tag=1, entities=[self.slab_volume]),
+            MaterialGroup(tag=2, entities=[self.wedge_volume]),
+            MaterialGroup(tag=3, entities=[self.mantle_volume]),
+            MaterialGroup(tag=4, entities=[self.crust_volume]),
         )
 
         for material in materials:
             material.create_physical_group()
 
         face_groups = (
-            BoundaryGroup(name="boundary_south", tag=10, dim=2, entities=self.surface_south),
-            BoundaryGroup(name="boundary_east", tag=11, dim=2, entities=self.surface_east),
-            BoundaryGroup(name="boundary_north", tag=12, dim=2, entities=self.surface_north),
-            BoundaryGroup(name="boundary_west", tag=13, dim=2, entities=self.surface_west),
-            BoundaryGroup(name="boundary_bottom", tag=14, dim=2, entities=self.surface_bottom),
-            BoundaryGroup(name="boundary_top", tag=15, dim=2, entities=self.surface_top),
+            BoundaryGroup(name="boundary_yneg", tag=10, dim=2, entities=self.surface_south),
+            BoundaryGroup(name="boundary_xneg", tag=11, dim=2, entities=self.surface_east),
+            BoundaryGroup(name="boundary_ypos", tag=12, dim=2, entities=self.surface_north),
+            BoundaryGroup(name="boundary_xpos", tag=13, dim=2, entities=self.surface_west),
+            BoundaryGroup(name="boundary_zneg", tag=14, dim=2, entities=self.surface_bottom),
+            BoundaryGroup(name="boundary_zpos", tag=15, dim=2, entities=self.surface_top),
+            BoundaryGroup(name="boundary_xneg_noslab", tag=16, dim=2, entities=self.surface_east_no_slab),
+            BoundaryGroup(name="boundary_yneg_noslab", tag=17, dim=2, entities=self.surface_south_no_slab),
+            BoundaryGroup(name="boundary_ypos_noslab", tag=18, dim=2, entities=self.surface_north_no_slab),
 
-            BoundaryGroup(name="slab_top", tag=20, dim=2, entities=self.slab_top),
-            BoundaryGroup(name="slab_bottom", tag=21, dim=2, entities=self.slab_bottom),
-            BoundaryGroup(name="slab_edge", tag=22, dim=1, entities=self.slab_edge),
+            BoundaryGroup(name="fault_slabtop", tag=20, dim=2, entities=self.slab_top),
+            BoundaryGroup(name="fault_slabbot", tag=21, dim=2, entities=self.slab_bottom),
+            BoundaryGroup(name="fault_slabtop_edge", tag=22, dim=1, entities=self.slab_bottom_edge),
+            BoundaryGroup(name="fault_slabbot_edge", tag=23, dim=1, entities=self.slab_bottom_edge),
 
-            BoundaryGroup(name="splay_surface", tag=30, dim=2, entities=self.surface_splay),
-            BoundaryGroup(name="splay_edges", tag=31, dim=1, entities=self.edge_splay),
+            BoundaryGroup(name="fault_splay", tag=30, dim=2, entities=self.surface_splay),
+            BoundaryGroup(name="fault_splay_edge", tag=31, dim=1, entities=self.edge_splay),
         )
         for group in face_groups:
             group.create_physical_group()
