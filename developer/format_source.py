@@ -219,7 +219,7 @@ class App(object):
         parser.add_argument("--python", action="store", dest="python",
                             default=None, help="[None, 'all', FILE, PATTERN]")
         parser.add_argument("--config-dir", action="store", dest="config_dir",
-                            default="doc/developer", help="Directory containing config files for formatters.")
+                            default="developer", help="Directory containing config files for formatters.")
         parser.add_argument("--quiet", action="store_false",
                             dest="show_progress", default=True)
         parser.add_argument("--debug", action="store_true",
