@@ -347,11 +347,20 @@ pylith::topology::FieldOps::transformVector(PetscVec* outputVector,
     err = PetscSectionGetStorageSize(outputSection, &outputSize);PYLITH_CHECK_ERROR(err);
     assert(inputSize == outputSize);
 
+    PetscInt inputVecSize = 0, outputVecSize = 0;
+    err = VecGetLocalSize(inputVector, &inputVecSize);PYLITH_CHECK_ERROR(err);
+    err = VecGetLocalSize(*outputVector, &outputVecSize);PYLITH_CHECK_ERROR(err);
+    assert(inputVecSize == inputSize);
+    assert(outputVecSize == outputSize);
+
     // Copy values from input vector to output vector
     const PetscScalar* inputArray = PETSC_NULLPTR;
     PetscScalar* outputArray = PETSC_NULLPTR;
     err = VecGetArrayRead(inputVector, &inputArray);PYLITH_CHECK_ERROR(err);
     err = VecGetArray(*outputVector, &outputArray);PYLITH_CHECK_ERROR(err);
+
+    const PetscInt inputSectionLocalOffset = getGlobalSectionLocalOffset(inputSection);
+    const PetscInt outputSectionLocalOffset = getGlobalSectionLocalOffset(outputSection);
 
     // Check whether inputDM and outputDM have the same names for points.
     // We will assume that if inputDM and outputDM have the same range of points,
@@ -368,7 +377,7 @@ pylith::topology::FieldOps::transformVector(PetscVec* outputVector,
         PetscInt subpointISSize = 0;
         const PetscInt* subpointISPoints = PETSC_NULLPTR;
         err = DMPlexGetSubpointIS(outputDM, &subpointIS);PYLITH_CHECK_ERROR(err);
-        err = ISGetSize(subpointIS, &subpointISSize);PYLITH_CHECK_ERROR(err);
+        err = ISGetLocalSize(subpointIS, &subpointISSize);PYLITH_CHECK_ERROR(err);
         err = ISGetIndices(subpointIS, &subpointISPoints);PYLITH_CHECK_ERROR(err);
 
         PetscInt pStart = 0, pEnd = 0;
@@ -380,8 +389,10 @@ pylith::topology::FieldOps::transformVector(PetscVec* outputVector,
             const PetscInt outputPoint = pStart + iPoint;
             err = PetscSectionGetDof(inputSection, inputPoint, &inputDof);PYLITH_CHECK_ERROR(err);
             err = PetscSectionGetOffset(inputSection, inputPoint, &inputOffset);PYLITH_CHECK_ERROR(err);
+            inputOffset -= inputSectionLocalOffset;
             err = PetscSectionGetDof(outputSection, outputPoint, &outputDof);PYLITH_CHECK_ERROR(err);
             err = PetscSectionGetOffset(outputSection, outputPoint, &outputOffset);PYLITH_CHECK_ERROR(err);
+            outputOffset -= outputSectionLocalOffset;
 
             assert(inputDof == outputDof);
             for (PetscInt iDof = 0; iDof < inputDof; ++iDof) {
@@ -398,8 +409,10 @@ pylith::topology::FieldOps::transformVector(PetscVec* outputVector,
             const PetscInt outputPoint = point;
             err = PetscSectionGetDof(inputSection, inputPoint, &inputDof);PYLITH_CHECK_ERROR(err);
             err = PetscSectionGetOffset(inputSection, inputPoint, &inputOffset);PYLITH_CHECK_ERROR(err);
+            inputOffset -= inputSectionLocalOffset;
             err = PetscSectionGetDof(outputSection, outputPoint, &outputDof);PYLITH_CHECK_ERROR(err);
             err = PetscSectionGetOffset(outputSection, outputPoint, &outputOffset);PYLITH_CHECK_ERROR(err);
+            outputOffset -= outputSectionLocalOffset;
 
             assert(inputDof == outputDof);
             for (PetscInt iDof = 0; iDof < inputDof; ++iDof) {
@@ -407,10 +420,32 @@ pylith::topology::FieldOps::transformVector(PetscVec* outputVector,
             } // for
         } // for
     } // if/else
+
     err = VecRestoreArrayRead(inputVector, &inputArray);PYLITH_CHECK_ERROR(err);
     err = VecRestoreArray(*outputVector, &outputArray);PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
+}
+
+
+// ------------------------------------------------------------------------------------------------
+PetscInt
+pylith::topology::FieldOps::getGlobalSectionLocalOffset(PetscSection globalSection) {
+    PetscInt pStart = 0, pEnd = 0;
+    PetscInt localOffset = 0;
+    PetscErrorCode err = PETSC_SUCCESS;
+
+    err = PetscSectionGetChart(globalSection, &pStart, &pEnd);
+    if (pStart < pEnd) {
+        for (PetscInt point = pStart; point < pEnd; ++point) {
+            err = PetscSectionGetOffset(globalSection, point, &localOffset);PYLITH_CHECK_ERROR(err);
+            if (localOffset >= 0) {
+                break;
+            } // if
+        } // for
+    } // if
+
+    return localOffset;
 }
 
 

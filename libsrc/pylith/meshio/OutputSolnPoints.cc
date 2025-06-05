@@ -242,6 +242,7 @@ pylith::meshio::OutputSolnPoints::_setupInterpolator(const pylith::topology::Fie
     _pointSoln->createDiscretization();
     _pointSoln->setLabel(solution.getLabel());
     _pointSoln->allocate();
+    _pointSoln->createOutputVector();
 
     PYLITH_METHOD_END;
 } // setupInterpolator
@@ -254,12 +255,12 @@ pylith::meshio::OutputSolnPoints::_interpolateField(const pylith::topology::Fiel
     PYLITH_METHOD_BEGIN;
     assert(_pointSoln);
 
-    PetscErrorCode err;
+    PetscErrorCode err = PETSC_SUCCESS;
     err = DMInterpolationEvaluate(_interpolator, solution.getDM(), solution.getLocalVector(),
-                                  _pointSoln->getLocalVector());PYLITH_CHECK_ERROR(err);
+                                  _pointSoln->getOutputVector());PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
-} // appendVertexField
+} // _interpolateField
 
 
 // ------------------------------------------------------------------------------------------------

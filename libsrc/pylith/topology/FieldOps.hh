@@ -135,6 +135,14 @@ public:
                          const PetscVec& inputVector,
                          const PetscDM& inputDM);
 
+    /** Get local offset in numbering for global section.
+     *
+     * @param[in] globalSection PETSc global section.
+     * @returns Local offset in numbering.
+     */
+    static
+    PetscInt getGlobalSectionLocalOffset(PetscSection globalSection);
+
     /** Free saved PetscFE objects.
      */
     static

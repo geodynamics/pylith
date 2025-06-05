@@ -348,7 +348,7 @@ pylith::feassemble::IntegratorBoundary::_computeDiagnosticField(void) {
         kernelsArray[sinfo.index] = _kernelsDiagnosticField[iKernel].f;
     } // for
 
-    PetscErrorCode err = 0;
+    PetscErrorCode err = PETSC_SUCCESS;
     PetscDM diagnosticDM = _diagnosticField->getDM();
     PetscDMLabel diagnosticFieldLabel = NULL;
     const PetscInt labelValue = 1;
