@@ -81,9 +81,9 @@ pylith::feassemble::JacobianValues::computeLHSJacobian(PetscMat jacobianMat,
     PetscDM dm = dsLabel.dm();assert(dm);
 
     PetscErrorCode err;
-    const PetscInt numCells = dsLabel.numCells();
+    const PetscInt numCells = dsLabel.numPoints();
     const PetscInt* cellIndices = NULL;
-    err = ISGetIndices(dsLabel.cellsIS(), &cellIndices);PYLITH_CHECK_ERROR(err);
+    err = ISGetIndices(dsLabel.pointsIS(), &cellIndices);PYLITH_CHECK_ERROR(err);
 
     PetscInt totalDof = 0;
     err = PetscDSGetTotalDimension(dsLabel.ds(), &totalDof);PYLITH_CHECK_ERROR(err);
@@ -114,7 +114,7 @@ pylith::feassemble::JacobianValues::computeLHSJacobian(PetscMat jacobianMat,
                                       INSERT_VALUES);PYLITH_CHECK_ERROR(err);
         } // for
     } // if
-    err = ISRestoreIndices(dsLabel.cellsIS(), &cellIndices);PYLITH_CHECK_ERROR(err);
+    err = ISRestoreIndices(dsLabel.pointsIS(), &cellIndices);PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // computeLHSJacobian

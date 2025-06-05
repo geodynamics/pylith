@@ -454,8 +454,8 @@ pylith::feassemble::IntegratorDomain::computeRHSResidual(pylith::topology::Field
     assert(solution->getLocalVector());
     assert(residual->getLocalVector());
     PetscVec solutionDotVec = NULL;
-    err = DMPlexComputeResidual_Internal(_dsLabel->dm(), key, _dsLabel->cellsIS(), PETSC_MIN_REAL, solution->getLocalVector(),
-                                         solutionDotVec, t, residual->getLocalVector(), NULL);PYLITH_CHECK_ERROR(err);
+    err = DMPlexComputeResidualByKey(_dsLabel->dm(), key, _dsLabel->pointsIS(), PETSC_MIN_REAL, solution->getLocalVector(),
+                                     solutionDotVec, t, residual->getLocalVector(), NULL);PYLITH_CHECK_ERROR(err);
 
     _IntegratorDomain::Events::logger.eventEnd(_IntegratorDomain::Events::computeRHSResidual);
     PYLITH_METHOD_END;
@@ -491,8 +491,8 @@ pylith::feassemble::IntegratorDomain::computeLHSResidual(pylith::topology::Field
     assert(solution->getLocalVector());
     assert(solutionDot->getLocalVector());
     assert(residual->getLocalVector());
-    err = DMPlexComputeResidual_Internal(_dsLabel->dm(), key, _dsLabel->cellsIS(), PETSC_MIN_REAL, solution->getLocalVector(),
-                                         solutionDot->getLocalVector(), t, residual->getLocalVector(), NULL);PYLITH_CHECK_ERROR(err);
+    err = DMPlexComputeResidualByKey(_dsLabel->dm(), key, _dsLabel->pointsIS(), PETSC_MIN_REAL, solution->getLocalVector(),
+                                     solutionDot->getLocalVector(), t, residual->getLocalVector(), NULL);PYLITH_CHECK_ERROR(err);
 
     _IntegratorDomain::Events::logger.eventEnd(_IntegratorDomain::Events::computeLHSResidual);
     PYLITH_METHOD_END;
@@ -532,8 +532,8 @@ pylith::feassemble::IntegratorDomain::computeLHSJacobian(PetscMat jacobianMat,
     assert(solutionDot->getLocalVector());
     assert(jacobianMat);
     assert(precondMat);
-    err = DMPlexComputeJacobian_Internal(_dsLabel->dm(), key, _dsLabel->cellsIS(), t, s_tshift, solution->getLocalVector(),
-                                         solutionDot->getLocalVector(), jacobianMat, precondMat, NULL);PYLITH_CHECK_ERROR(err);
+    err = DMPlexComputeJacobianByKey(_dsLabel->dm(), key, _dsLabel->pointsIS(), t, s_tshift, solution->getLocalVector(),
+                                     solutionDot->getLocalVector(), jacobianMat, precondMat, NULL);PYLITH_CHECK_ERROR(err);
 
     if (_jacobianValues) {
         _jacobianValues->computeLHSJacobian(jacobianMat, precondMat, t, dt, s_tshift, *solution, *_dsLabel);
@@ -583,8 +583,8 @@ pylith::feassemble::IntegratorDomain::computeLHSJacobianLumpedInv(pylith::topolo
 
     assert(jacobianInv);
     assert(jacobianInv->getLocalVector());
-    err = DMPlexComputeJacobian_Action_Internal(_dsLabel->dm(), key, _dsLabel->cellsIS(), t, s_tshift, vecRowSum, NULL,
-                                                vecRowSum, jacobianInv->getLocalVector(), NULL);PYLITH_CHECK_ERROR(err);
+    err = DMPlexComputeJacobianActionByKey(_dsLabel->dm(), key, _dsLabel->pointsIS(), t, s_tshift, vecRowSum, NULL,
+                                           vecRowSum, jacobianInv->getLocalVector(), NULL);PYLITH_CHECK_ERROR(err);
 
     err = DMRestoreLocalVector(_dsLabel->dm(), &vecRowSum);PYLITH_CHECK_ERROR(err);
     // Compute the Jacobian inverse.

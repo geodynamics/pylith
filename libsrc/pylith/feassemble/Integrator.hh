@@ -120,6 +120,14 @@ public:
      */
     void setLHSJacobianLumpedTriggers(const int value);
 
+    /** Create PETSc DS for label and label value.
+     *
+     * @param[in] solution Solution field.
+     * @param[in] dim If nonnegative, limit label values to dimension.
+     */
+    void createLabelDS(const pylith::topology::Field& solution,
+                       const int dim);
+
     /** Initialize integration domain, auxiliary field, and derived field. Update observers.
      *
      * @param[in] solution Solution field (layout).
