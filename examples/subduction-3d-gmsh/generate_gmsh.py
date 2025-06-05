@@ -33,6 +33,8 @@ class App(GenerateMesh):
     DX_MIN = 1.0e+4
     DX_BIAS = 1.2
 
+    CRUST_DEPTH = 40.0 * 1000
+
     def __init__(self):
         """Constructor.
         """
@@ -96,10 +98,28 @@ class App(GenerateMesh):
         wire = gmsh.model.occ.add_wire([spline])
         return spline,wire
 
+    @staticmethod
+    def add_plane_surface_at_point(x, y, z, x_extent, y_extent):
+        p1 = gmsh.model.occ.add_point(x, y, z)
+        p2 = gmsh.model.occ.add_point(x + x_extent, y, z)
+        p3 = gmsh.model.occ.add_point(x + x_extent, y + y_extent, z)
+        p4 = gmsh.model.occ.add_point(x, y + y_extent, z)
+
+        l1 = gmsh.model.occ.add_line(p1, p2)
+        l2 = gmsh.model.occ.add_line(p2, p3)
+        l3 = gmsh.model.occ.add_line(p3, p4)
+        l4 = gmsh.model.occ.add_line(p4, p1)
+
+        loop = gmsh.model.occ.add_curve_loop([l1, l2, l3, l4])
+        surface = gmsh.model.occ.add_plane_surface([loop])
+        return surface
 
     def create_geometry(self):
         """Create geometry.
         """
+        gmsh.option.setNumber("Mesh.MeshSizeMin", self.DX_MIN) #delete this later
+        gmsh.option.setNumber("Mesh.MeshSizeMax", self.DX_MIN)
+
         crs_wgs84_3d = CRS.from_epsg(4979)
         crs_projected = CRS.from_proj4(
             "+proj=tmerc +datum=WGS84 +lat_0=45.5231 +lon_0=-122.6765 +k=0.9996 +units=m +type=crs"
@@ -217,13 +237,20 @@ class App(GenerateMesh):
         gmsh.model.occ.remove([(3,3)], recursive=True)
 
         gmsh.model.occ.fragment([(3,1)],splay_surface)
+
+        crust_surface = self.add_plane_surface_at_point(
+            -self.BOX_SIDE_LENGTH / 2 - 50 * 1000,
+            -self.BOX_SIDE_LENGTH / 2 - 50 * 1000,
+            -1 * 1000 - self.CRUST_DEPTH,  # Crust side of the bounding box about is approximately -1km below 0
+            self.BOX_SIDE_LENGTH + 100 * 1000,
+            self.BOX_SIDE_LENGTH + 100 * 1000,
+        )
+        gmsh.model.occ.fragment([(3,3)],[(2,crust_surface)])
+
         gmsh.model.occ.remove_all_duplicates()
 
         gmsh.model.occ.synchronize()
         gmsh.fltk.run()
-        exit()
-
-
 
     def mark(self):
         """Mark geometry for materials, boundary conditions, faults, etc.
