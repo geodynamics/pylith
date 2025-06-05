@@ -143,25 +143,52 @@ class App(GenerateMesh):
         projected_contours_up_dip = self._generate_extended_contours(projected_contours)
         projected_contours = projected_contours_up_dip | projected_contours
 
-        wires = []
+        # wires = []
+        # sorted_project_contours = [v for k, v in sorted(projected_contours.items())]
+        # for projected_contour in sorted_project_contours:
+        #     spline,wire = self._generate_gmsh_contour(projected_contour)
+        #     wires.append(wire)
+        # slab_top_surface = gmsh.model.occ.add_thru_sections(wires,makeSolid=False, makeRuled=False,maxDegree=2)
+        #
+
+        all_points_on_grid = []
+        first_side = []
+        third_side = []
         sorted_project_contours = [v for k, v in sorted(projected_contours.items())]
         for projected_contour in sorted_project_contours:
-            spline,wire = self._generate_gmsh_contour(projected_contour)
-            wires.append(wire)
+            gmsh_points = []
+            for point in projected_contour:
+                gmsh_point = gmsh.model.occ.add_point(point[0],point[1], point[2])
+                gmsh_points.append(gmsh_point)
+            first_side.append(gmsh_points[0])
+            third_side.append(gmsh_points[-1])
+            all_points_on_grid.append(gmsh_points)
 
-        slab_top_surface = gmsh.model.occ.add_thru_sections(wires,makeSolid=False, makeRuled=False,maxDegree=2)
+        first_side_spline = gmsh.model.occ.add_spline(first_side)
+        # first_side_wire = gmsh.model.occ.add_wire([first_side_spline])
+        third_side_spline = gmsh.model.occ.add_spline(third_side)
+        # third_side_wire = gmsh.model.occ.add_wire([third_side_spline])
+        second_side_spline = gmsh.model.occ.add_spline(all_points_on_grid[0])
+        # second_side_wire = gmsh.model.occ.add_wire([second_side_spline])
+        forth_side_spline = gmsh.model.occ.add_spline(all_points_on_grid[-1])
+        # forth_side_wire = gmsh.model.occ.add_wire([forth_side_spline])
+
+        #slab is oriented the other way, the front is at the bottom, normals do not need to be inverted
+        wire = gmsh.model.occ.add_wire([first_side_spline,second_side_spline,third_side_spline,forth_side_spline])
+        slab_top_surface = gmsh.model.occ.addSurfaceFilling(wire,pointTags=np.concatenate(all_points_on_grid).tolist())
+
         gmsh.model.occ.synchronize()
 
         space = np.linspace(0, 1, 10)
         xv, yv = np.meshgrid(space, space)
         parametricCoords = np.column_stack((xv.flatten(), yv.flatten())).ravel()
-        normals = gmsh.model.getNormal(slab_top_surface[0][1],parametricCoords)
+        normals = gmsh.model.getNormal(slab_top_surface,parametricCoords)
         normal = np.average(normals.reshape(-1, 3),axis=0)
 
-        dx = -self.SLAB_THICKNESS * normal[0]
-        dy = -self.SLAB_THICKNESS * normal[1]
-        dz = -self.SLAB_THICKNESS * normal[2]
-        slab_volume = gmsh.model.occ.extrude(slab_top_surface,dx=dx,dy=dy,dz=dz,recombine=True)
+        dx = self.SLAB_THICKNESS * normal[0]
+        dy = self.SLAB_THICKNESS * normal[1]
+        dz = self.SLAB_THICKNESS * normal[2]
+        slab_volume = gmsh.model.occ.extrude([(2,slab_top_surface)],dx=dx,dy=dy,dz=dz,recombine=True)
 
         #Splay Fault
         splay_bottom = np.copy(projected_contours[15])
@@ -191,7 +218,11 @@ class App(GenerateMesh):
 
         gmsh.model.occ.fragment([(3,1)],splay_surface)
         gmsh.model.occ.remove_all_duplicates()
+
         gmsh.model.occ.synchronize()
+        gmsh.fltk.run()
+        exit()
+
 
 
     def mark(self):
