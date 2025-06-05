@@ -31,7 +31,7 @@ class App(GenerateMesh):
     FAULT_STRIKE = math.radians(0.0)
 
     DX_MIN = 1.0e+4
-    DX_BIAS = 1.2
+    DX_BIAS = 1.1
 
     CRUST_DEPTH = 40.0 * 1000
 
@@ -117,9 +117,6 @@ class App(GenerateMesh):
     def create_geometry(self):
         """Create geometry.
         """
-        gmsh.option.setNumber("Mesh.MeshSizeMin", self.DX_MIN) #delete this later
-        gmsh.option.setNumber("Mesh.MeshSizeMax", self.DX_MIN)
-
         crs_wgs84_3d = CRS.from_epsg(4979)
         crs_projected = CRS.from_proj4(
             "+proj=tmerc +datum=WGS84 +lat_0=45.5231 +lon_0=-122.6765 +k=0.9996 +units=m +type=crs"
@@ -251,10 +248,10 @@ class App(GenerateMesh):
 
         self.slab_top = [52,33,47,43]
         self.slab_bottom = [11]
-        self.slab_east = [17]
+        self.slab_edge = [92]
 
         self.surface_splay = [29]
-        self.edge_splay = [117,122,128]
+        self.edge_splay = [128]
 
     def mark(self):
         """Mark geometry for materials, boundary conditions, faults, etc.
@@ -282,10 +279,10 @@ class App(GenerateMesh):
 
             BoundaryGroup(name="slab_top", tag=20, dim=2, entities=self.slab_top),
             BoundaryGroup(name="slab_bottom", tag=21, dim=2, entities=self.slab_bottom),
-            BoundaryGroup(name="slab_east", tag=22, dim=2, entities=self.slab_east),
+            BoundaryGroup(name="slab_edge", tag=22, dim=1, entities=self.slab_bottom),
 
             BoundaryGroup(name="splay_surface", tag=30, dim=2, entities=self.surface_splay),
-            BoundaryGroup(name="splay_edges", tag=40, dim=1, entities=self.edge_splay),
+            BoundaryGroup(name="splay_edges", tag=31, dim=1, entities=self.edge_splay),
         )
         for group in face_groups:
             group.create_physical_group()
@@ -301,12 +298,8 @@ class App(GenerateMesh):
         gmsh.option.set_number("Mesh.MeshSizeFromCurvature", 0)
         gmsh.option.set_number("Mesh.MeshSizeExtendFromBoundary", 0)
 
-        _, slab_surfaces = gmsh.model.getAdjacencies(3, 2)
-        _, wedge_surfaces = gmsh.model.getAdjacencies(3, 4)
-        high_res_surfaces = list(set(slab_surfaces) | set(wedge_surfaces))
-
         field_distance = gmsh.model.mesh.field.add("Distance")
-        gmsh.model.mesh.field.setNumbers(field_distance, "SurfacesList", high_res_surfaces)
+        gmsh.model.mesh.field.setNumbers(field_distance, "SurfacesList", self.slab_top)
 
         field_size = gmsh.model.mesh.field.add("MathEval")
         math_exp = GenerateMesh.get_math_progression(field_distance, min_dx=self.DX_MIN, bias=self.DX_BIAS)
