@@ -248,7 +248,7 @@ class App(GenerateMesh):
 
         self.slab_top = [52,33,47,43]
         self.slab_bottom = [11]
-        self.slab_edge = [92]
+        self.slab_edge = [95]
 
         self.surface_splay = [29]
         self.edge_splay = [128]
@@ -279,7 +279,7 @@ class App(GenerateMesh):
 
             BoundaryGroup(name="slab_top", tag=20, dim=2, entities=self.slab_top),
             BoundaryGroup(name="slab_bottom", tag=21, dim=2, entities=self.slab_bottom),
-            BoundaryGroup(name="slab_edge", tag=22, dim=1, entities=self.slab_bottom),
+            BoundaryGroup(name="slab_edge", tag=22, dim=1, entities=self.slab_edge),
 
             BoundaryGroup(name="splay_surface", tag=30, dim=2, entities=self.surface_splay),
             BoundaryGroup(name="splay_edges", tag=31, dim=1, entities=self.edge_splay),
