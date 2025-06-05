@@ -163,14 +163,6 @@ class App(GenerateMesh):
         projected_contours_up_dip = self._generate_extended_contours(projected_contours)
         projected_contours = projected_contours_up_dip | projected_contours
 
-        # wires = []
-        # sorted_project_contours = [v for k, v in sorted(projected_contours.items())]
-        # for projected_contour in sorted_project_contours:
-        #     spline,wire = self._generate_gmsh_contour(projected_contour)
-        #     wires.append(wire)
-        # slab_top_surface = gmsh.model.occ.add_thru_sections(wires,makeSolid=False, makeRuled=False,maxDegree=2)
-        #
-
         all_points_on_grid = []
         first_side = []
         third_side = []
@@ -185,13 +177,9 @@ class App(GenerateMesh):
             all_points_on_grid.append(gmsh_points)
 
         first_side_spline = gmsh.model.occ.add_spline(first_side)
-        # first_side_wire = gmsh.model.occ.add_wire([first_side_spline])
         third_side_spline = gmsh.model.occ.add_spline(third_side)
-        # third_side_wire = gmsh.model.occ.add_wire([third_side_spline])
         second_side_spline = gmsh.model.occ.add_spline(all_points_on_grid[0])
-        # second_side_wire = gmsh.model.occ.add_wire([second_side_spline])
         forth_side_spline = gmsh.model.occ.add_spline(all_points_on_grid[-1])
-        # forth_side_wire = gmsh.model.occ.add_wire([forth_side_spline])
 
         #slab is oriented the other way, the front is at the bottom, normals do not need to be inverted
         wire = gmsh.model.occ.add_wire([first_side_spline,second_side_spline,third_side_spline,forth_side_spline])
@@ -246,11 +234,27 @@ class App(GenerateMesh):
             self.BOX_SIDE_LENGTH + 100 * 1000,
         )
         gmsh.model.occ.fragment([(3,3)],[(2,crust_surface)])
-
         gmsh.model.occ.remove_all_duplicates()
-
         gmsh.model.occ.synchronize()
-        gmsh.fltk.run()
+
+        self.domain_volume = 5
+        self.crust_volume = 6
+        self.wedge_volume = 4
+        self.slab_volume = 2
+
+        self.surface_west = [41,45]
+        self.surface_south = [38,31,44,51]
+        self.surface_top = [46,32,52]
+        self.surface_north = [39,48,53,35]
+        self.surface_bottom = [40]
+        self.surface_east = [50,37]
+
+        self.slab_top = [52,33,47,43]
+        self.slab_bottom = [11]
+        self.slab_east = [17]
+
+        self.surface_splay = [29]
+        self.edge_splay = [117,122,128]
 
     def mark(self):
         """Mark geometry for materials, boundary conditions, faults, etc.
@@ -258,7 +262,34 @@ class App(GenerateMesh):
         This method is abstract in the base class and must be implemented
         in our local App class.
         """
-        pass
+        materials = (
+            MaterialGroup(tag=1, entities=[self.domain_volume]),
+            MaterialGroup(tag=2, entities=[self.crust_volume]),
+            MaterialGroup(tag=3, entities=[self.wedge_volume]),
+            MaterialGroup(tag=4, entities=[self.slab_volume]),
+        )
+
+        for material in materials:
+            material.create_physical_group()
+
+        face_groups = (
+            BoundaryGroup(name="boundary_south", tag=10, dim=2, entities=self.surface_south),
+            BoundaryGroup(name="boundary_east", tag=11, dim=2, entities=self.surface_east),
+            BoundaryGroup(name="boundary_north", tag=12, dim=2, entities=self.surface_north),
+            BoundaryGroup(name="boundary_west", tag=13, dim=2, entities=self.surface_west),
+            BoundaryGroup(name="boundary_bottom", tag=14, dim=2, entities=self.surface_bottom),
+            BoundaryGroup(name="boundary_top", tag=15, dim=2, entities=self.surface_top),
+
+            BoundaryGroup(name="slab_top", tag=20, dim=2, entities=self.slab_top),
+            BoundaryGroup(name="slab_bottom", tag=21, dim=2, entities=self.slab_bottom),
+            BoundaryGroup(name="slab_east", tag=22, dim=2, entities=self.slab_east),
+
+            BoundaryGroup(name="splay_surface", tag=30, dim=2, entities=self.surface_splay),
+            BoundaryGroup(name="splay_edges", tag=40, dim=1, entities=self.edge_splay),
+        )
+        for group in face_groups:
+            group.create_physical_group()
+
 
     def generate_mesh(self, cell):
         """Generate the mesh.
