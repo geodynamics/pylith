@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
-"""Python script to extract elevation data in region around Kilamonjaro using GDAL Python API."""
-
-import pathlib
-
+"""Python script to extract elevation data in region around Cascadia Subduction Zone using GDAL Python API."""
 from osgeo import gdal
 
 FILENAME_DEMS = [

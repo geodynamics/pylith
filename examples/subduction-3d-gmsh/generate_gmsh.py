@@ -50,6 +50,9 @@ class App(GenerateMesh):
         self.filename = "mesh_tet.msh"
 
     def _read_and_generate_splines(self):
+        """Read geographic coordinates from "cas_contours_dep.in.txt.gz" and return a dictionary where the keys are
+        the depth of the contour and the values are the coordinates (latitude, longitude, elevation) as a numpy array.
+        """
         with gzip.open(self.CONTOURS_FILENAME, "rb") as file:
             lines = file.readlines()
         contours = {}
@@ -71,6 +74,15 @@ class App(GenerateMesh):
         return contours,np.array(all_points)
 
     def _generate_extended_contours(self,contours):
+        """Add contours up-dip from original contours.
+
+        We increase the horizontal distance between the contours at a
+        geometric rate. The first contour is at a distance of
+        dist_horiz, followed by 2*dist_horiz, 4*dist_horiz, etc.
+
+        The horizontal distance of contour n from the original one is
+        (2**(n+1)-1)) * dist_horiz, n=0,1,2,...
+        """
         key = min(contours.keys())
         contour_top = contours[key]
         z_top = contour_top[0][2]
@@ -90,6 +102,8 @@ class App(GenerateMesh):
 
     @staticmethod
     def _generate_gmsh_contour(contour: np.ndarray):
+        """Helper function for creating a spline and wire from a np array of shape (x,3)
+        """
         points = []
         for point in contour:
             gmsh_point = gmsh.model.occ.add_point(point[0], point[1], point[2])
@@ -100,6 +114,8 @@ class App(GenerateMesh):
 
     @staticmethod
     def add_plane_surface_at_point(x, y, z, x_extent, y_extent):
+        """Helper function for creating a plane surface
+        """
         p1 = gmsh.model.occ.add_point(x, y, z)
         p2 = gmsh.model.occ.add_point(x + x_extent, y, z)
         p3 = gmsh.model.occ.add_point(x + x_extent, y + y_extent, z)
@@ -114,8 +130,23 @@ class App(GenerateMesh):
         surface = gmsh.model.occ.add_plane_surface([loop])
         return surface
 
+    @staticmethod
+    def _calculate_bounding_box(lats, longs, radius=0):
+        """Helper function for calculating the bounding box, takes in an array of shape (x,3)
+        """
+        # Calculate the min and max for latitude and longitude
+        min_lat = np.min(lats) - radius
+        max_lat = np.max(lats) + radius
+        min_lon = np.min(longs) - radius
+        max_lon = np.max(longs) + radius
+
+        return min_lon, max_lat, max_lon, min_lat
+
+
     def create_geometry(self):
         """Create geometry.
+        We use a local Transverse Mercator projection centered at latitude 45.5231 and longitude -122.6765.
+        We use contour traces in geographic coordinates from "cas_contours_dep.in.txt.gz"
         """
         crs_wgs84_3d = CRS.from_epsg(4979)
         crs_projected = CRS.from_proj4(
@@ -128,6 +159,7 @@ class App(GenerateMesh):
         longitude = dem_nc.variables["lon"][:]
         elevation = dem_nc.variables["Band1"][:].astype(float)
 
+        # Generate topography surface
         topo_mask = elevation.recordmask
         wires = []
         for i in range(elevation.shape[0]):
@@ -146,20 +178,23 @@ class App(GenerateMesh):
             wires.append(wire)
         topography_surface = gmsh.model.occ.add_thru_sections(wires, makeSolid=False, makeRuled=False, maxDegree=2)
 
-
+        # Read slab contours
         contours,all_points = self._read_and_generate_splines()
         bounding_box = self._calculate_bounding_box(lats=all_points[:, 0], longs=all_points[:, 1])
         print("Bounding box:", bounding_box)
-        contours[5] = np.flip(contours[5],axis=0)
+        contours[5] = np.flip(contours[5],axis=0) # The orientation of the first contour in this file is reversed
 
+        # Project to mercator
         projected_contours = {}
         for depth, contour in contours.items():
             position = transformer.transform(contour[:,1],contour[:,0],contour[:,2])
             projected_contours[depth] = np.array(position).T
 
+        # Extend the slab to the topography
         projected_contours_up_dip = self._generate_extended_contours(projected_contours)
-        projected_contours = projected_contours_up_dip | projected_contours
+        projected_contours = projected_contours_up_dip | projected_contours # merge the 2 dicts
 
+        # Generate the top surface of the slab
         all_points_on_grid = []
         first_side = []
         third_side = []
@@ -178,24 +213,25 @@ class App(GenerateMesh):
         second_side_spline = gmsh.model.occ.add_spline(all_points_on_grid[0])
         forth_side_spline = gmsh.model.occ.add_spline(all_points_on_grid[-1])
 
-        #slab is oriented the other way, the front is at the bottom, normals do not need to be inverted
         wire = gmsh.model.occ.add_wire([first_side_spline,second_side_spline,third_side_spline,forth_side_spline])
         slab_top_surface = gmsh.model.occ.addSurfaceFilling(wire,pointTags=np.concatenate(all_points_on_grid).tolist())
 
         gmsh.model.occ.synchronize()
 
+        # Find the normals of the slab surface
         space = np.linspace(0, 1, 10)
         xv, yv = np.meshgrid(space, space)
         parametricCoords = np.column_stack((xv.flatten(), yv.flatten())).ravel()
         normals = gmsh.model.getNormal(slab_top_surface,parametricCoords)
         normal = np.average(normals.reshape(-1, 3),axis=0)
 
+        # Extrude the slab surface to get it's volume
         dx = self.SLAB_THICKNESS * normal[0]
         dy = self.SLAB_THICKNESS * normal[1]
         dz = self.SLAB_THICKNESS * normal[2]
         slab_volume = gmsh.model.occ.extrude([(2,slab_top_surface)],dx=dx,dy=dy,dz=dz,recombine=True)
 
-        #Splay Fault
+        # Generate the splay fault
         splay_bottom = np.copy(projected_contours[15])
         splay_top = np.copy(projected_contours[15])
 
@@ -207,6 +243,7 @@ class App(GenerateMesh):
         _,splay_top_wire = self._generate_gmsh_contour(splay_top)
         splay_surface = gmsh.model.occ.add_thru_sections([splay_bottom_wire,splay_top_wire], makeSolid=False, makeRuled=False, maxDegree=2)
 
+        # Generate the bounding box
         bounding_box = gmsh.model.occ.add_box(
             -self.BOX_SIDE_LENGTH/2,
             -self.BOX_SIDE_LENGTH/2,
@@ -215,14 +252,19 @@ class App(GenerateMesh):
             self.BOX_SIDE_LENGTH,
             self.BOX_DEPTH_LENGTH
         )
+
+        # Create the topography on top of the bounding box
         gmsh.model.occ.fragment(topography_surface,[[3,bounding_box]])
         gmsh.model.occ.remove([(3, 3),(2,20)], recursive=True)
 
+        # Fragment the bounding box with the slab to get the main volume and the slab volume inside the bounding box
         gmsh.model.occ.fragment([(3,2)],[(3,1)])
         gmsh.model.occ.remove([(3,3)], recursive=True)
 
+        # Fragment the main volume with the splay surface to get the wedge volume
         gmsh.model.occ.fragment([(3,1)],splay_surface)
 
+        # Create the crust surface
         crust_surface = self.add_plane_surface_at_point(
             -self.BOX_SIDE_LENGTH / 2 - 50 * 1000,
             -self.BOX_SIDE_LENGTH / 2 - 50 * 1000,
@@ -230,10 +272,13 @@ class App(GenerateMesh):
             self.BOX_SIDE_LENGTH + 100 * 1000,
             self.BOX_SIDE_LENGTH + 100 * 1000,
         )
+
+        # Split the main volume to get the crust volume
         gmsh.model.occ.fragment([(3,3)],[(2,crust_surface)])
         gmsh.model.occ.remove_all_duplicates()
         gmsh.model.occ.synchronize()
 
+        # Get tags of the different sections using GUI
         self.domain_volume = 5
         self.crust_volume = 6
         self.wedge_volume = 4
@@ -255,9 +300,6 @@ class App(GenerateMesh):
 
     def mark(self):
         """Mark geometry for materials, boundary conditions, faults, etc.
-
-        This method is abstract in the base class and must be implemented
-        in our local App class.
         """
         materials = (
             MaterialGroup(tag=1, entities=[self.domain_volume]),
@@ -290,14 +332,12 @@ class App(GenerateMesh):
 
     def generate_mesh(self, cell):
         """Generate the mesh.
-
-        This method is abstract in the base class and must be implemented
-        in our local App class.
         """
         gmsh.option.set_number("Mesh.MeshSizeFromPoints", 0)
         gmsh.option.set_number("Mesh.MeshSizeFromCurvature", 0)
         gmsh.option.set_number("Mesh.MeshSizeExtendFromBoundary", 0)
 
+        # We setup a field `field_distance` with the distance from the top of the slab.
         field_distance = gmsh.model.mesh.field.add("Distance")
         gmsh.model.mesh.field.setNumbers(field_distance, "SurfacesList", self.slab_top)
 
@@ -308,17 +348,6 @@ class App(GenerateMesh):
 
         gmsh.model.mesh.generate(3)
         gmsh.model.mesh.optimize("Laplace2D")
-
-    @staticmethod
-    def _calculate_bounding_box(lats, longs, radius=0):
-        # Calculate the min and max for latitude and longitude
-        min_lat = np.min(lats) - radius
-        max_lat = np.max(lats) + radius
-        min_lon = np.min(longs) - radius
-        max_lon = np.max(longs) + radius
-
-        # return min_lat, max_lat, min_lon, max_lon
-        return min_lon, max_lat, max_lon, min_lat
 
 # If script is called from the command line, run the application.
 if __name__ == "__main__":
