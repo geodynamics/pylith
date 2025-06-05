@@ -5,7 +5,7 @@
 # Copyright (c) 2010-2025, University of California, Davis and the PyLith Development Team.
 # All rights reserved.
 #
-# See https://mit-license.org/ and LICENSE.md and for license information. 
+# See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
 
 import pathlib
@@ -57,7 +57,7 @@ class MeshIOPetsc(MeshIOObj, ModuleMeshIOPetsc):
     def preinitialize(self):
         """Do minimal initialization."""
         MeshIOObj.preinitialize(self)
-        ModuleMeshIOPetsc.setFilename(self, self.filename)
+        if len(self.filename) > 0: ModuleMeshIOPetsc.setFilename(self, self.filename)
         ModuleMeshIOPetsc.setPrefix(self, self.prefix)
         ModuleMeshIOPetsc.setGmshMarkRecursive(self, self.gmshMarkRecursive)
 
@@ -72,7 +72,7 @@ class MeshIOPetsc(MeshIOObj, ModuleMeshIOPetsc):
         ModuleMeshIOPetsc.__init__(self)
 
     def _validate(self, context):
-        if 0 == len(self.filename) and self.mode == self.READ and not pathlib.Path(self.filename).is_file():
+        if 0 < len(self.filename) and self.mode == self.READ and not pathlib.Path(self.filename).is_file():
             context.error(IOError(f"Input mesh '{self.filename}' not found."))
 
 # FACTORIES ////////////////////////////////////////////////////////////
