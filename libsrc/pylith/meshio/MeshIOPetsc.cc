@@ -299,6 +299,13 @@ pylith::meshio::_MeshIOPetsc::fixMaterialLabel(PetscDM* dmMesh) {
     PetscDMLabel dmLabel = NULL;
     PetscInt pStart = -1, pEnd = -1;
     err = DMGetLabel(*dmMesh, labelName, &dmLabel);PYLITH_CHECK_ERROR(err);
+    if (!dmLabel) {
+      err = DMCreateLabel(*dmMesh, labelName);PYLITH_CHECK_ERROR(err);
+      err = DMGetLabel(*dmMesh, labelName, &dmLabel);PYLITH_CHECK_ERROR(err);
+      for (PetscInt point = cStart; point < cEnd; ++point) {
+        err = DMLabelSetValue(dmLabel, point, 1);PYLITH_CHECK_ERROR(err);
+      }
+    }
     err = DMLabelGetBounds(dmLabel, &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
     if (pStart == cStart) { pStart = cEnd; }
     if (pEnd == cEnd) { pEnd = cStart; }
