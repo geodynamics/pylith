@@ -56,9 +56,6 @@ import_array();
 %include "../problems/Physics.i"
 
 %include "Source.i"
-%include "WellboreSource.i"
-%include "SquarePulseSource.i"
-%include "PointForce.i"
 %include "MomentTensorForce.i"
 %include "SourceTimeFunctionMomentTensorForce.i"
 %include "SquareWavelet.i"
