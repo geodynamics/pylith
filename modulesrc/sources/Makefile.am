@@ -28,9 +28,6 @@ swig_sources = \
 	sources.i \
 	../problems/Physics.i \
 	Source.i \
-	WellboreSource.i \
-	SquarePulseSource.i \
-	PointForce.i \
 	MomentTensorForce.i \
 	SourceTimeFunctionMomentTensorForce.i \
 	RickerWavelet.i \

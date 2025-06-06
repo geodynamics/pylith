@@ -145,14 +145,11 @@ EXTRA_DIST = \
 	sources/Source.py \
 	sources/SquareWavelet.py \
 	sources/RickerWavelet.py \
-	sources/PointForce.py \
 	sources/MomentTensorForce.py \
 	sources/GaussianWavelet.py \
-	sources/AuxSubfieldsWellboreSource.py \
-	sources/AuxSubfieldsSquarePulseSource.py \
 	sources/AuxSubfieldsSourceTime.py \
-	sources/AuxSubfieldsPointForce.py \
 	sources/AuxSubfieldsMomentTensorForce.py \
+	sources/TimeHistoryWavelet.py \
 	sources/__init__.py \
 	testing/FullTestApp.py \
 	testing/SolutionPoints.py \

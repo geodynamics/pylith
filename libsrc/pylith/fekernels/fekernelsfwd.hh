@@ -57,9 +57,6 @@ namespace pylith {
         class FaultCohesive;
         class FaultCohesiveKin;
 
-        class SquarePulseSource;
-        class WellboreSource;
-
         class SquareWavelet;
         class SquareWaveletPlaneStrain;
         class SquareWavelet3D;
@@ -75,12 +72,6 @@ namespace pylith {
         class TimeHistoryWavelet;
         class TimeHistoryWaveletPlaneStrain;
         class TimeHistoryWavelet3D;
-
-        class TimeHistorySource;
-        class TimeHistorySourcePlaneStrain;
-        class TimeHistorySource;
-
-        class PointForce;
 
         class BoundaryDirections;
     } // fekernels

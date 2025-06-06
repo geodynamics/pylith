@@ -22,21 +22,14 @@ include $(top_srcdir)/subpackage.am
 subpkginclude_HEADERS = \
 	Source.hh \
 	MomentTensorForce.hh \
-	WellboreSource.hh \
-	SquarePulseSource.hh \
 	AuxiliaryFactorySquarePulseSource.hh \
 	AuxiliaryFactoryMomentTensorForce.hh \
-	AuxiliaryFactoryWellboreSource.hh \
 	AuxiliaryFactorySourceTime.hh \
-	AuxiliaryFactoryTimeHistorySource.hh \
 	DerivedFactoryMomentTensorForce.hh \
 	SquareWavelet.hh \
 	RickerWavelet.hh \
 	GaussianWavelet.hh \
 	TimeHistoryWavelet.hh \
-	TimeHistorySource.hh \
-	PointForce.hh \
-	AuxiliaryFactoryPointForce.hh \
 	SourceTimeFunctionMomentTensorForce.hh \
 	sourcesfwd.hh
 

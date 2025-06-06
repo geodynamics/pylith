@@ -43,18 +43,6 @@ namespace pylith {
         class GaussianWavelet;
         class TimeHistoryWavelet;
 
-        class PointForce;
-        class AuxiliaryFactoryPointForce;
-
-        class SquarePulseSource;
-        class AuxiliaryFactorySquarePulseSource;
-
-        class TimeHistorySource;
-        class AuxiliaryFactoryTimeHistorySource;
-
-        class WellboreSource;
-        class AuxiliaryFactoryWellboreSource;
-
     } // sources
 } // pylith
 

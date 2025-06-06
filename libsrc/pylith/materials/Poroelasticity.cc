@@ -704,6 +704,7 @@ pylith::materials::Poroelasticity::_setKernelsJacobian(pylith::feassemble::Integ
         PetscPointJacFn* Jf3vv = NULL;
 
         const EquationPart equationPart = pylith::feassemble::Integrator::LHS_LUMPED_INV;
+        kernels.resize(9);
         kernels[0] = JacobianKernels("displacement",  "displacement", equationPart, Jf0uu, Jf1uu, Jf2uu, Jf3uu);
         kernels[1] = JacobianKernels("displacement",  "pressure",     equationPart, Jf0up, Jf1up, Jf2up, Jf3up);
         kernels[2] = JacobianKernels("displacement",  "velocity",     equationPart, Jf0uv, Jf1uv, Jf2uv, Jf3uv);
