@@ -18,7 +18,7 @@
 
 #include "spatialdata/geocoords/geocoordsfwd.hh" // USES Coordsys
 
-#include "petscds.h" // USES PetscPointFunc, PetscPointJac
+#include "petscds.h" // USES PetscPointFn*, PetscPointJacFn*
 
 class pylith::materials::RheologyIncompressibleElasticity : public pylith::utils::PyreComponent {
     friend class TestIsotropicLinearElasticity; // unit testing
@@ -53,7 +53,7 @@ public:
      * @return RHS residual kernel for pressure.
      */
     virtual
-    PetscPointFunc getKernelf0p(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
+    PetscPointFn* getKernelf0p(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
 
     /** Get f1u kernel for LHS residual, F(t,s,\dot{s}).
      *
@@ -62,7 +62,7 @@ public:
      * @return LHS residual kernel for stress.
      */
     virtual
-    PetscPointFunc getKernelf1u(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
+    PetscPointFn* getKernelf1u(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
 
     /** Get Jf0pp kernel for LHS Jacobian F(t,s,\dot{s}).
      *
@@ -71,7 +71,7 @@ public:
      * @return LHS Jf0pp kernel.
      */
     virtual
-    PetscPointJac getKernelJf0pp(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
+    PetscPointJacFn* getKernelJf0pp(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
 
     /** Get Jf3uu kernel for LHS Jacobian F(t,s,\dot{s}).
      *
@@ -80,7 +80,7 @@ public:
      * @return LHS Jacobian kernel for elastic constants.
      */
     virtual
-    PetscPointJac getKernelJf3uu(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
+    PetscPointJacFn* getKernelJf3uu(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
 
     /** Get stress kernel for derived field.
      *
@@ -89,7 +89,7 @@ public:
      * @return Project kernel for computing stress subfield in derived field.
      */
     virtual
-    PetscPointFunc getKernelCauchyStressVector(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
+    PetscPointFn* getKernelCauchyStressVector(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
 
     /** Add kernels for updating state variables.
      *

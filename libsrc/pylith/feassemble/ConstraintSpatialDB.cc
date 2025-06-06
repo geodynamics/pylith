@@ -44,7 +44,7 @@ pylith::feassemble::ConstraintSpatialDB::~ConstraintSpatialDB(void) {
 // ---------------------------------------------------------------------------------------------------------------------
 // Set constraint kernel.
 void
-pylith::feassemble::ConstraintSpatialDB::setKernelConstraint(const PetscBdPointFunc kernel) {
+pylith::feassemble::ConstraintSpatialDB::setKernelConstraint(PetscBdPointFn* kernel) {
     _kernelConstraint = kernel;
 } // setkernelConstraint
 

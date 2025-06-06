@@ -32,13 +32,13 @@ public:
      *
      * @param[in] fn Function specifying field on boundary.
      */
-    void setUserFn(PetscBdPointFunc fn);
+    void setUserFn(PetscBdPointFn* fn);
 
     /** Get user function specifying field on boundary
      *
      * @preturns Function specifying field on boundary.
      */
-    PetscBdPointFunc getUserFn(void) const;
+    PetscBdPointFn* getUserFn(void) const;
 
     /** Create integrator and set kernels.
      *
@@ -76,7 +76,7 @@ protected:
     // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
 private:
 
-    PetscBdPointFunc _fn; ///< Kernel for boundary integration.
+    PetscBdPointFn* _fn; ///< Kernel for boundary integration.
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
 private:

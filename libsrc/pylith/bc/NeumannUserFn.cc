@@ -90,7 +90,7 @@ pylith::bc::NeumannUserFn::deallocate(void) {
 // ------------------------------------------------------------------------------------------------
 // Set user function specifying field on boundary.
 void
-pylith::bc::NeumannUserFn::setUserFn(PetscBdPointFunc fn) {
+pylith::bc::NeumannUserFn::setUserFn(PetscBdPointFn* fn) {
     PYLITH_COMPONENT_DEBUG("setUserFn(fn="<<fn<<")");
 
     _fn = fn;
@@ -99,7 +99,7 @@ pylith::bc::NeumannUserFn::setUserFn(PetscBdPointFunc fn) {
 
 // ------------------------------------------------------------------------------------------------
 // Get user function specifying field on boundary.
-PetscBdPointFunc
+PetscBdPointFn*
 pylith::bc::NeumannUserFn::getUserFn(void) const {
     return _fn;
 } // getUserFn
@@ -178,8 +178,8 @@ pylith::bc::_NeumannUserFn::setKernelsResidual(pylith::feassemble::IntegratorBou
           << solution.getLabel()<<")"
           << pythia::journal::endl;
 
-    PetscBdPointFunc r0 = bc.getUserFn();
-    PetscBdPointFunc r1 = NULL;
+    PetscBdPointFn* r0 = bc.getUserFn();
+    PetscBdPointFn* r1 = NULL;
 
     std::vector<ResidualKernels> kernels(1);
     switch (formulation) {

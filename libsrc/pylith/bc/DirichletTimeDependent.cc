@@ -338,7 +338,7 @@ pylith::bc::_DirichletTimeDependent::setKernelConstraint(pylith::feassemble::Con
           << "setKernelConstraint(constraint="<<constraint<<", bc="<<typeid(bc).name()<<", solution="<<solution.getLabel()
           <<")" << pythia::journal::endl;
 
-    PetscBdPointFunc bcKernel = NULL;
+    PetscBdPointFn* bcKernel = NULL;
 
     const pylith::topology::Field::VectorFieldEnum fieldType = solution.getSubfieldInfo(bc.getSubfieldName()).description.vectorFieldType;
     const bool isScalarField = fieldType == pylith::topology::Field::SCALAR;

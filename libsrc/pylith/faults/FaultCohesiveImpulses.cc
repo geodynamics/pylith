@@ -309,16 +309,16 @@ pylith::faults::FaultCohesiveImpulses::_setKernelsResidual(pylith::feassemble::I
     switch (_formulation) {
     case pylith::problems::Physics::QUASISTATIC: {
         // Elasticity equation (displacement) for negative side of the fault.
-        const PetscBdPointFunc f0u_neg = pylith::fekernels::FaultCohesiveKin::f0u_neg;
-        const PetscBdPointFunc f1u_neg = NULL;
+        PetscBdPointFn* f0u_neg = pylith::fekernels::FaultCohesiveKin::f0u_neg;
+        PetscBdPointFn* f1u_neg = NULL;
 
         // Elasticity equation (displacement) for positive side of the fault.
-        const PetscBdPointFunc f0u_pos = pylith::fekernels::FaultCohesiveKin::f0u_pos;
-        const PetscBdPointFunc f1u_pos = NULL;
+        PetscBdPointFn* f0u_pos = pylith::fekernels::FaultCohesiveKin::f0u_pos;
+        PetscBdPointFn* f1u_pos = NULL;
 
         // Fault slip constraint equation.
-        const PetscBdPointFunc f0l = pylith::fekernels::FaultCohesiveKin::f0l_slip;
-        const PetscBdPointFunc f1l = NULL;
+        PetscBdPointFn* f0l = pylith::fekernels::FaultCohesiveKin::f0l_slip;
+        PetscBdPointFn* f1l = NULL;
 
         kernels.resize(3);
         kernels[0] = ResidualKernels("displacement", integrator_t::LHS, integrator_t::NEGATIVE_FACE,
@@ -357,20 +357,20 @@ pylith::faults::FaultCohesiveImpulses::_setKernelsJacobian(pylith::feassemble::I
     std::vector<JacobianKernels> kernels;
     switch (_formulation) {
     case QUASISTATIC: {
-        const PetscBdPointJac Jf0ul_neg = pylith::fekernels::FaultCohesiveKin::Jf0ul_neg;
-        const PetscBdPointJac Jf1ul_neg = NULL;
-        const PetscBdPointJac Jf2ul_neg = NULL;
-        const PetscBdPointJac Jf3ul_neg = NULL;
+        PetscBdPointJacFn* Jf0ul_neg = pylith::fekernels::FaultCohesiveKin::Jf0ul_neg;
+        PetscBdPointJacFn* Jf1ul_neg = NULL;
+        PetscBdPointJacFn* Jf2ul_neg = NULL;
+        PetscBdPointJacFn* Jf3ul_neg = NULL;
 
-        const PetscBdPointJac Jf0ul_pos = pylith::fekernels::FaultCohesiveKin::Jf0ul_pos;
-        const PetscBdPointJac Jf1ul_pos = NULL;
-        const PetscBdPointJac Jf2ul_pos = NULL;
-        const PetscBdPointJac Jf3ul_pos = NULL;
+        PetscBdPointJacFn* Jf0ul_pos = pylith::fekernels::FaultCohesiveKin::Jf0ul_pos;
+        PetscBdPointJacFn* Jf1ul_pos = NULL;
+        PetscBdPointJacFn* Jf2ul_pos = NULL;
+        PetscBdPointJacFn* Jf3ul_pos = NULL;
 
-        const PetscBdPointJac Jf0lu = pylith::fekernels::FaultCohesiveKin::Jf0lu;
-        const PetscBdPointJac Jf1lu = NULL;
-        const PetscBdPointJac Jf2lu = NULL;
-        const PetscBdPointJac Jf3lu = NULL;
+        PetscBdPointJacFn* Jf0lu = pylith::fekernels::FaultCohesiveKin::Jf0lu;
+        PetscBdPointJacFn* Jf1lu = NULL;
+        PetscBdPointJacFn* Jf2lu = NULL;
+        PetscBdPointJacFn* Jf3lu = NULL;
 
         kernels.resize(3);
         const char* nameDisplacement = "displacement";

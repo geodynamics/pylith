@@ -25,8 +25,8 @@ public:
     struct ResidualKernels {
         std::string subfield; ///< Name of subfield
         EquationPart part; ///< Residual part (LHS or RHS).
-        PetscBdPointFunc r0; ///< f0 (RHS) or g0 (LHS) function.
-        PetscBdPointFunc r1; ///< f1 (RHS) or g1 (LHS) function.
+        PetscBdPointFn* r0; ///< f0 (RHS) or g0 (LHS) function.
+        PetscBdPointFn* r1; ///< f1 (RHS) or g1 (LHS) function.
 
         ResidualKernels(void) :
             subfield(""),
@@ -37,8 +37,8 @@ public:
 
         ResidualKernels(const char* subfieldValue,
                         const EquationPart partValue,
-                        PetscBdPointFunc r0Value,
-                        PetscBdPointFunc r1Value) :
+                        PetscBdPointFn* r0Value,
+                        PetscBdPointFn* r1Value) :
             subfield(subfieldValue),
             part(partValue),
             r0(r0Value),
@@ -50,7 +50,7 @@ public:
     /// Project kernels (pointwise functions) for updating state variables or computing derived fields.
     struct ProjectKernels {
         std::string subfield; ///< Name of subfield for function.
-        PetscBdPointFunc f; ///< Point-wise function.
+        PetscBdPointFn* f; ///< Point-wise function.
 
         ProjectKernels(void) :
             subfield(""),
@@ -58,7 +58,7 @@ public:
 
 
         ProjectKernels(const char* subfieldValue,
-                       PetscBdPointFunc fValue) :
+                       PetscBdPointFn* fValue) :
             subfield(subfieldValue),
             f(fValue) {}
 

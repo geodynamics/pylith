@@ -132,9 +132,9 @@ protected:
 protected:
 
     pylith::faults::KinSrcAuxiliaryFactory* _auxiliaryFactory; ///< Factory for auxiliary subfields.
-    PetscPointFunc _slipFnKernel; ///< Kernel for slip time function.
-    PetscPointFunc _slipRateFnKernel; ///< Kernel for slip rate time function.
-    PetscPointFunc _slipAccFnKernel; ///< Kernel for slip acceleration time function.
+    PetscPointFn* _slipFnKernel; ///< Kernel for slip time function.
+    PetscPointFn* _slipRateFnKernel; ///< Kernel for slip rate time function.
+    PetscPointFn* _slipAccFnKernel; ///< Kernel for slip acceleration time function.
     pylith::topology::Field* _auxiliaryField; ///< Auxiliary field for this integrator.
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////

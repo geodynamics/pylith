@@ -25,8 +25,8 @@ public:
     struct ResidualKernels {
         std::string subfield; ///< Name of subfield.
         EquationPart part; ///< Residual part (LHS or RHS).
-        PetscPointFunc r0; ///< f0 (RHS) or g0 (LHS) function.
-        PetscPointFunc r1; ///< f1 (RHS) or g1 (LHS) function.
+        PetscPointFn* r0; ///< f0 (RHS) or g0 (LHS) function.
+        PetscPointFn* r1; ///< f1 (RHS) or g1 (LHS) function.
 
         ResidualKernels(void) :
             subfield(""),
@@ -37,8 +37,8 @@ public:
 
         ResidualKernels(const char* subfieldValue,
                         const EquationPart partValue,
-                        PetscPointFunc r0Value,
-                        PetscPointFunc r1Value) :
+                        PetscPointFn* r0Value,
+                        PetscPointFn* r1Value) :
             subfield(subfieldValue),
             part(partValue),
             r0(r0Value),
@@ -52,10 +52,10 @@ public:
         std::string subfieldTrial; ///< Name of subfield associated with trial function (row in Jacobian).
         std::string subfieldBasis; ///< Name of subfield associated with basis function (column in Jacobian).
         EquationPart part; ///< Jacobian part (LHS or LHS lumped inverse).
-        PetscPointJac j0; ///< J0 function.
-        PetscPointJac j1; ///< J1 function.
-        PetscPointJac j2; ///< J2 function.
-        PetscPointJac j3; ///< J3 function.
+        PetscPointJacFn* j0; ///< J0 function.
+        PetscPointJacFn* j1; ///< J1 function.
+        PetscPointJacFn* j2; ///< J2 function.
+        PetscPointJacFn* j3; ///< J3 function.
 
         JacobianKernels(void) :
             subfieldTrial(""),
@@ -70,10 +70,10 @@ public:
         JacobianKernels(const char* subfieldTrialValue,
                         const char* subfieldBasisValue,
                         EquationPart partValue,
-                        PetscPointJac j0Value,
-                        PetscPointJac j1Value,
-                        PetscPointJac j2Value,
-                        PetscPointJac j3Value) :
+                        PetscPointJacFn* j0Value,
+                        PetscPointJacFn* j1Value,
+                        PetscPointJacFn* j2Value,
+                        PetscPointJacFn* j3Value) :
             subfieldTrial(subfieldTrialValue),
             subfieldBasis(subfieldBasisValue),
             part(partValue),
