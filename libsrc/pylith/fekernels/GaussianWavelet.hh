@@ -79,8 +79,34 @@ public:
              const PylithScalar x[],
              const PylithInt numConstants,
              const PylithScalar constants[],
-             PylithScalar g1[]);
+             PylithScalar g1[]) {
+        assert(sOff);
+        assert(s);
+        assert(g1);
 
+        PylithInt _dim = 2;
+        // Incoming re-packed solution field.
+
+        // Incoming re-packed auxiliary field.
+        const PylithInt i_momentTensor = 0;
+        const PylithInt i_timeDelay = 1;
+        const PylithInt i_gaussianwaveletCenterFrequency = numA - 1;
+
+        const PylithScalar* momentTensor = &a[aOff[i_momentTensor]];
+        const PylithScalar timeDelay = a[aOff[i_timeDelay]];
+        const PylithScalar f0 = a[aOff[i_gaussianwaveletCenterFrequency]];
+
+        // GaussianWavelet source time function (time domain)
+
+        PylithScalar rt = t - timeDelay;
+        PylithScalar gaussianwavelet = PetscExpReal( (PETSC_PI*PETSC_PI * f0*f0) * rt*rt) / (2.0 * (PETSC_PI*PETSC_PI * f0*f0) );
+        // PetscPrintf(PETSC_COMM_WORLD, "timeDelay %d\n", (double)timeDelay);
+        // PetscPrintf(PETSC_COMM_WORLD, "t %d\n", (double)t);
+        // PetscPrintf(PETSC_COMM_WORLD, "gaussianWavelet %d\n", (double)gaussianwavelet);
+        for (PylithInt i = 0; i < dim*dim; ++i) {
+            g1[i] -= momentTensor[i] * gaussianwavelet;
+        } // for
+    } // g1v
 }; // GaussianWaveletPlaneStrain
 
 // =====================================================================================================================
@@ -134,8 +160,33 @@ public:
              const PylithScalar x[],
              const PylithInt numConstants,
              const PylithScalar constants[],
-             PylithScalar g1[]);
+             PylithScalar g1[]) {
+        assert(sOff);
+        assert(s);
+        assert(g1);
 
+        PylithInt _dim = 3;
+
+        // Incoming re-packed solution field.
+
+        // Incoming re-packed auxiliary field.
+        const PylithInt i_momentTensor = 0;
+        const PylithInt i_timeDelay = 1;
+        const PylithInt i_gaussianwaveletCenterFrequency = numA - 1;
+
+        const PylithScalar* momentTensor = &a[aOff[i_momentTensor]];
+        const PylithScalar timeDelay = a[aOff[i_timeDelay]];
+        const PylithScalar f0 = a[aOff[i_gaussianwaveletCenterFrequency]];
+
+        // GaussianWavelet source time function (time domain)
+
+        PylithScalar rt = t - timeDelay;
+        PylithScalar gaussianwavelet = PetscExpReal( (PETSC_PI*PETSC_PI * f0*f0) * rt*rt) / (2.0 * (PETSC_PI*PETSC_PI * f0*f0) );
+
+        for (PylithInt i = 0; i < dim*dim; ++i) {
+            g1[i] -= momentTensor[i] * gaussianwavelet;
+        } // for
+    } // g1v
 }; // GaussianWaveletPlaneStrain
 
 #endif /* pylith_fekernels_gaussianwavelet_hh */

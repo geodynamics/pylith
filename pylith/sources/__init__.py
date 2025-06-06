@@ -20,11 +20,6 @@
 
 __all__ = [
     "Source",
-    "AuxSubfieldsWellboreSource",
-    "WellboreSource",
-    "SquarePulseSource",
-    "PointForce",
-    "AuxSubfieldsPointForce",
     "MomentTensorForce",
     "AuxSubfieldsMomentTensorForce",
     "SourceTimeFunctionMomentTensorForce",
@@ -32,7 +27,6 @@ __all__ = [
     "SquareWavelet",
     "RickerWavelet",
     "TimeHistoryWavelet",
-    "TimeHistorySource",
     "GaussianWavelet"
 ]
 

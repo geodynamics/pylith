@@ -19,9 +19,6 @@
 // Header files for module C++ code
 %{
 #include "pylith/sources/Source.hh"
-#include "pylith/sources/WellboreSource.hh"
-#include "pylith/sources/SquarePulseSource.hh"
-#include "pylith/sources/PointForce.hh"
 #include "pylith/sources/MomentTensorForce.hh"
 #include "pylith/sources/SquareWavelet.hh"
 #include "pylith/sources/RickerWavelet.hh"
