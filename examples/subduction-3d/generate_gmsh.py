@@ -287,11 +287,13 @@ class App(GenerateMesh):
             600.0 * 1000
         )
 
-        gmsh.model.occ.remove([(3, patch_box)], recursive=False)
-        gmsh.model.occ.remove([(2, 54), (2, 55), (2, 58), (2, 59)])
+        gmsh.model.occ.remove([(3, patch_box)])
+        gmsh.model.occ.remove([(2, 54), (2, 55), (2, 58), (2, 59)], recursive=True)
         gmsh.model.occ.fragment([(3, 2)], [(2, 56), (2, 57)])
+        gmsh.model.occ.remove_all_duplicates()
 
         gmsh.model.occ.synchronize()
+        # gmsh.fltk.run()
 
         # Get tags of the different sections using GUI
         self.mantle_volume = [5]
@@ -299,25 +301,25 @@ class App(GenerateMesh):
         self.wedge_volume = [4]
         self.slab_volume = [7, 8, 9]
 
-        self.surface_west = [41, 45]
-        self.surface_south = [38, 31, 44, 51]
-        self.surface_south_no_slab = [38, 31, 44]
-        self.surface_top = [46, 32, 52, 60, 68]
-        self.surface_north = [70, 39, 48, 35]
-        self.surface_north_no_slab = [39, 48, 35]
-        self.surface_bottom = [40]
-        self.surface_east = [50, 37, 59, 67]
-        self.surface_east_no_slab = [37]
+        self.surface_west_xpos = [86, 89]
+        self.surface_south_yneg = [88, 77, 83, 51]
+        self.surface_south_no_slab = [88, 77, 83]
+        self.surface_top_zpos = [52, 60, 68] + [78] + [90]
+        self.surface_north_ypos = [81, 84, 91, 70]
+        self.surface_north_no_slab = [81, 84, 91]
+        self.surface_bottom_zneg = [85]
+        self.surface_east_xneg = [80, 82] + [50, 59, 67]
+        self.surface_east_no_slab = [80, 82]
 
         self.slab_top = [52, 56, 57, 58] + [60, 66, 65, 64] + [68, 69, 74, 73]
-        self.slab_top_edge = [189, 203, 212]
+        self.slab_top_edge = [177, 191, 200]
         self.slab_bottom = [54, 62, 71]
-        self.slab_bottom_edge = [188, 202, 211]
+        self.slab_bottom_edge = [176, 190, 199]
         self.slab_top_patch = [66, 65]
-        self.slab_top_patch_edge = [187, 186, 204, 200, 201]
+        self.slab_top_patch_edge = [175, 174, 192, 188, 189]
 
-        self.surface_splay = [29]
-        self.edge_splay = [128]
+        self.surface_splay = [56, 66, 69]
+        self.edge_splay = [178, 193, 198]
 
     def mark(self):
         """Mark geometry for materials, boundary conditions, faults, etc.
@@ -333,12 +335,12 @@ class App(GenerateMesh):
             material.create_physical_group()
 
         face_groups = (
-            BoundaryGroup(name="boundary_yneg", tag=10, dim=2, entities=self.surface_south),
-            BoundaryGroup(name="boundary_xneg", tag=11, dim=2, entities=self.surface_east),
-            BoundaryGroup(name="boundary_ypos", tag=12, dim=2, entities=self.surface_north),
-            BoundaryGroup(name="boundary_xpos", tag=13, dim=2, entities=self.surface_west),
-            BoundaryGroup(name="boundary_zneg", tag=14, dim=2, entities=self.surface_bottom),
-            BoundaryGroup(name="boundary_zpos", tag=15, dim=2, entities=self.surface_top),
+            BoundaryGroup(name="boundary_yneg", tag=10, dim=2, entities=self.surface_south_yneg),
+            BoundaryGroup(name="boundary_xneg", tag=11, dim=2, entities=self.surface_east_xneg),
+            BoundaryGroup(name="boundary_ypos", tag=12, dim=2, entities=self.surface_north_ypos),
+            BoundaryGroup(name="boundary_xpos", tag=13, dim=2, entities=self.surface_west_xpos),
+            BoundaryGroup(name="boundary_zneg", tag=14, dim=2, entities=self.surface_bottom_zneg),
+            BoundaryGroup(name="boundary_zpos", tag=15, dim=2, entities=self.surface_top_zpos),
             BoundaryGroup(name="boundary_xneg_noslab", tag=16, dim=2, entities=self.surface_east_no_slab),
             BoundaryGroup(name="boundary_yneg_noslab", tag=17, dim=2, entities=self.surface_south_no_slab),
             BoundaryGroup(name="boundary_ypos_noslab", tag=18, dim=2, entities=self.surface_north_no_slab),
