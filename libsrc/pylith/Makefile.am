@@ -138,6 +138,7 @@ libpylith_la_SOURCES = \
 	sources/TimeHistoryWavelet.cc \
 	sources/Source.cc \
 	sources/SourceTimeFunctionMomentTensorForce.cc \
+	sources/MomentTensorForce.cc \
 	topology/Mesh.cc \
 	topology/MeshOps.cc \
 	topology/FieldBase.cc \

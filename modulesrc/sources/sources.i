@@ -25,7 +25,6 @@
 #include "pylith/sources/GaussianWavelet.hh"
 #include "pylith/sources/SourceTimeFunctionMomentTensorForce.hh"
 #include "pylith/sources/TimeHistoryWavelet.hh"
-
 #include "pylith/utils/arrayfwd.hh"
 %}
 
@@ -54,7 +53,6 @@ import_array();
 // Interfaces
 %include "../utils/PyreComponent.i"
 %include "../problems/Physics.i"
-
 %include "Source.i"
 %include "MomentTensorForce.i"
 %include "SourceTimeFunctionMomentTensorForce.i"
