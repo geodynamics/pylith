@@ -45,7 +45,7 @@ class OutputTriggerTime(OutputTrigger, ModuleOutputTriggerTime):
         """
         ModuleOutputTriggerTime.__init__(self)
         ModuleOutputTriggerTime.setIdentifier(self, self.aliases[-1])
-        ModuleOutputTriggerTime.setTimeSkip(self, self.timeSkip)
+        ModuleOutputTriggerTime.setTimeSkip(self, self.timeSkip.value)
 
     def _configure(self):
         """Set members based using inventory.
