@@ -106,13 +106,13 @@ pylith::materials::IsotropicLinearMaxwell::addAuxiliarySubfields(void) {
 
 // ------------------------------------------------------------------------------------------------
 // Get stress kernel for LHS residual, F(t,s,\dot{s}).
-PetscPointFunc
+PetscPointFn*
 pylith::materials::IsotropicLinearMaxwell::getKernelf1v(const spatialdata::geocoords::CoordSys* coordsys) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("getKernelf1v(coordsys="<<typeid(coordsys).name()<<")");
 
     const int spaceDim = coordsys->getSpaceDim();
-    PetscPointFunc f1u =
+    PetscPointFn* f1u =
         (!_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearMaxwell3D::f1v_infinitesimalStrain :
         (!_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::f1v_infinitesimalStrain :
         (_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearMaxwell3D::f1v_infinitesimalStrain_refState :
@@ -125,13 +125,13 @@ pylith::materials::IsotropicLinearMaxwell::getKernelf1v(const spatialdata::geoco
 
 // ------------------------------------------------------------------------------------------------
 // Get elastic constants kernel for LHS Jacobian F(t,s,\dot{s}).
-PetscPointJac
+PetscPointJacFn*
 pylith::materials::IsotropicLinearMaxwell::getKernelJf3vu(const spatialdata::geocoords::CoordSys* coordsys) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("getKernelJf3vu(coordsys="<<typeid(coordsys).name()<<")");
 
     const int spaceDim = coordsys->getSpaceDim();
-    PetscPointJac Jf3uu =
+    PetscPointJacFn* Jf3uu =
         (3 == spaceDim) ? pylith::fekernels::IsotropicLinearMaxwell3D::Jf3vu_infinitesimalStrain :
         (2 == spaceDim) ? pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::Jf3vu_infinitesimalStrain :
         NULL;
@@ -142,13 +142,13 @@ pylith::materials::IsotropicLinearMaxwell::getKernelJf3vu(const spatialdata::geo
 
 // ------------------------------------------------------------------------------------------------
 // Get f0 kernel for LHS interface residual, F(t,s), for negative fault face.
-PetscBdPointFunc
+PetscBdPointFn*
 pylith::materials::IsotropicLinearMaxwell::getKernelf0Neg(const spatialdata::geocoords::CoordSys* coordsys) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("getKernelf0Neg(coordsys="<<typeid(coordsys).name()<<")");
 
     const int spaceDim = coordsys->getSpaceDim();
-    PetscBdPointFunc kernel =
+    PetscBdPointFn* kernel =
         (!_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearMaxwell3D::f0l_neg_infinitesimalStrain :
         (!_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::f0l_neg_infinitesimalStrain :
         (_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearMaxwell3D::f0l_neg_infinitesimalStrain_refState :
@@ -161,13 +161,13 @@ pylith::materials::IsotropicLinearMaxwell::getKernelf0Neg(const spatialdata::geo
 
 // ------------------------------------------------------------------------------------------------
 // Get f0 kernel for LHS interface residual, F(t,s), for positive fault face.
-PetscBdPointFunc
+PetscBdPointFn*
 pylith::materials::IsotropicLinearMaxwell::getKernelf0Pos(const spatialdata::geocoords::CoordSys* coordsys) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("getKernelf0Pos(coordsys="<<typeid(coordsys).name()<<")");
 
     const int spaceDim = coordsys->getSpaceDim();
-    PetscBdPointFunc kernel =
+    PetscBdPointFn* kernel =
         (!_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearMaxwell3D::f0l_pos_infinitesimalStrain :
         (!_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::f0l_pos_infinitesimalStrain :
         (_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearMaxwell3D::f0l_pos_infinitesimalStrain_refState :
@@ -180,13 +180,13 @@ pylith::materials::IsotropicLinearMaxwell::getKernelf0Pos(const spatialdata::geo
 
 // ------------------------------------------------------------------------------------------------
 // Get stress kernel for derived field.
-PetscPointFunc
+PetscPointFn*
 pylith::materials::IsotropicLinearMaxwell::getKernelCauchyStressVector(const spatialdata::geocoords::CoordSys* coordsys) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("getKernelCauchyStressVector(coordsys="<<typeid(coordsys).name()<<")");
 
     const int spaceDim = coordsys->getSpaceDim();
-    PetscPointFunc kernel =
+    PetscPointFn* kernel =
         (!_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearMaxwell3D::cauchyStress_infinitesimalStrain_asVector :
         (!_useReferenceState && 2 == spaceDim) ? pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::cauchyStress_infinitesimalStrain_asVector :
         (_useReferenceState && 3 == spaceDim) ? pylith::fekernels::IsotropicLinearMaxwell3D::cauchyStress_infinitesimalStrain_refState_asVector :
@@ -223,11 +223,11 @@ pylith::materials::IsotropicLinearMaxwell::addKernelsUpdateStateVars(std::vector
     PYLITH_COMPONENT_DEBUG("addKernelsUpdateStateVars(kernels="<<kernels<<", coordsys="<<coordsys<<")");
 
     const int spaceDim = coordsys->getSpaceDim();
-    const PetscPointFunc funcViscousStrain =
+    const PetscPointFn* funcViscousStrain =
         (3 == spaceDim) ? pylith::fekernels::IsotropicLinearMaxwell3D::viscousStrain_infinitesimalStrain_asVector :
         (2 == spaceDim) ? pylith::fekernels::IsotropicLinearMaxwellPlaneStrain::viscousStrain_infinitesimalStrain_asVector :
         NULL;
-    const PetscPointFunc funcTotalStrain =
+    const PetscPointFn* funcTotalStrain =
         (3 == spaceDim) ? pylith::fekernels::Elasticity3D::infinitesimalStrain_asVector :
         (2 == spaceDim) ? pylith::fekernels::ElasticityPlaneStrain::infinitesimalStrain_asVector :
         NULL;

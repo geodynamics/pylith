@@ -69,10 +69,10 @@ public:
 
             // ---------------------------------------------------------------------------------------------------------------------
             // Select g0p function. Will only be used for the dynamic case.
-            PetscPointFunc getKernelg0p(const spatialdata::geocoords::CoordSys* coordsys,
-                                        const bool _useBodyForce,
-                                        const bool _gravityField,
-                                        const bool _useSourceDensity) const;
+            PetscPointFnWrapper getKernelg0p(const spatialdata::geocoords::CoordSys* coordsys,
+                                             const bool _useBodyForce,
+                                             const bool _gravityField,
+                                             const bool _useSourceDensity) const;
 
             // ---------------------------------------------------------------------------------------------------------------------
             /** Get pressure kernel for RHS residual, G(t,s).
@@ -81,29 +81,29 @@ public:
              *
              * @return RHS residual kernel for Darcy velocity.
              */
-            PetscPointFunc getKernelg1p_explicit(const spatialdata::geocoords::CoordSys* coordsys,
-                                                 const bool _gravityField) const;
+            PetscPointFnWrapper getKernelg1p_explicit(const spatialdata::geocoords::CoordSys* coordsys,
+                                                      const bool _gravityField) const;
 
             // ---------------------------------------------------------------------------------------------------------------------
             // Get stress kernel for RHS residual, G(t,s)
-            PetscPointFunc getKernelg1v_explicit(const spatialdata::geocoords::CoordSys* coordsys) const;
+            PetscPointFnWrapper getKernelg1v_explicit(const spatialdata::geocoords::CoordSys* coordsys) const;
 
             // ============================= LHS ==================================== //
 
             // ---------------------------------------------------------------------------------------------------------------------
             // Get variation in fluid content kernel for LHS residual, F(t,s,\dot{s})
-            PetscPointFunc getKernelf0p_explicit(const spatialdata::geocoords::CoordSys* coordsys) const;
+            PetscPointFnWrapper getKernelf0p_explicit(const spatialdata::geocoords::CoordSys* coordsys) const;
 
             // ---------------------------------------------------------------------------------------------------------------------
             // Select implicit f0p function.
-            PetscPointFunc getKernelf0p_implicit(const spatialdata::geocoords::CoordSys* coordsys,
-                                                 const bool _useBodyForce,
-                                                 const bool _gravityField,
-                                                 const bool _useSourceDensity) const;
+            PetscPointFnWrapper getKernelf0p_implicit(const spatialdata::geocoords::CoordSys* coordsys,
+                                                      const bool _useBodyForce,
+                                                      const bool _gravityField,
+                                                      const bool _useSourceDensity) const;
 
             // ---------------------------------------------------------------------------------------------------------------------
             // Get stress kernel for LHS residual, F(t,s,\dot{s})
-            PetscPointFunc getKernelf1u_implicit(const spatialdata::geocoords::CoordSys* coordsys) const;
+            PetscPointFnWrapper getKernelf1u_implicit(const spatialdata::geocoords::CoordSys* coordsys) const;
 
             // ---------------------------------------------------------------------------------------------------------------------
             /** Get pressure kernel for LHS residual.
@@ -112,33 +112,33 @@ public:
              *
              * @return RHS residual kernel for Darcy velocity.
              */
-            PetscPointFunc getKernelf1p_implicit(const spatialdata::geocoords::CoordSys* coordsys,
-                                                 const bool _useBodyForce,
-                                                 const bool _gravityField) const;
+            PetscPointFnWrapper getKernelf1p_implicit(const spatialdata::geocoords::CoordSys* coordsys,
+                                                      const bool _useBodyForce,
+                                                      const bool _gravityField) const;
 
             // ---------------------------------------------------------------------------------------------------------------------
             // Get poroelastic constants kernel for LHS Jacobian
-            PetscPointJac getKernelJf3uu(const spatialdata::geocoords::CoordSys* coordsys) const;
+            PetscPointJacFnWrapper getKernelJf3uu(const spatialdata::geocoords::CoordSys* coordsys) const;
 
             // ---------------------------------------------------------------------------------------------------------------------
             // Get biot coefficient kernel for LHS Jacobian
-            PetscPointJac getKernelJf2up(const spatialdata::geocoords::CoordSys* coordsys) const;
+            PetscPointJacFnWrapper getKernelJf2up(const spatialdata::geocoords::CoordSys* coordsys) const;
 
             // ---------------------------------------------------------------------------------------------------------------------
             // Get lambda kernel for LHS Jacobian
-            PetscPointJac getKernelJf2ue(const spatialdata::geocoords::CoordSys* coordsys) const;
+            PetscPointJacFnWrapper getKernelJf2ue(const spatialdata::geocoords::CoordSys* coordsys) const;
 
             // ---------------------------------------------------------------------------------------------------------------------
             // Get Specific storage kernel for LHS Jacobian F(t,s, \dot{s}).
-            PetscPointJac getKernelJf0pp(const spatialdata::geocoords::CoordSys* coordsys) const;
+            PetscPointJacFnWrapper getKernelJf0pp(const spatialdata::geocoords::CoordSys* coordsys) const;
 
             // ---------------------------------------------------------------------------------------------------------------------
             // Get Darcy Conductivity kernel for LHS Jacobian
-            PetscPointJac getKernelJf3pp(const spatialdata::geocoords::CoordSys* coordsys) const;
+            PetscPointJacFnWrapper getKernelJf3pp(const spatialdata::geocoords::CoordSys* coordsys) const;
 
             // ---------------------------------------------------------------------------------------------------------------------
             // Get biot coefficient kernel for LHS Jacobian F(t,s, \dot{s}).
-            PetscPointJac getKernelJf0pe(const spatialdata::geocoords::CoordSys* coordsys) const;
+            PetscPointJacFnWrapper getKernelJf0pe(const spatialdata::geocoords::CoordSys* coordsys) const;
 
             // ============================ DERIVED FIELDS ========================== //
 
@@ -148,7 +148,7 @@ public:
              *
              * @return Project kernel for computing stress subfield in derived field.
              */
-            PetscPointFunc getKernelCauchyStressVector(const spatialdata::geocoords::CoordSys* coordsys) const;
+            PetscPointFnWrapper getKernelCauchyStressVector(const spatialdata::geocoords::CoordSys* coordsys) const;
 
             /** Update kernel constants.
              *

@@ -63,4 +63,9 @@ typedef struct _p_PetscFE* PetscFE;
 /// forward declaration for PETSc weak form
 typedef struct _p_PetscWeakForm* PetscWeakForm;
 
+/// Forward declaration for point function
+typedef PetscPointFn* PetscPointFnWrapper;
+typedef PetscPointJacFn* PetscPointJacFnWrapper;
+typedef PetscBdPointFn* PetscBdPointFnWrapper;
+
 // End of file

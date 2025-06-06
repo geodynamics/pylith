@@ -46,7 +46,7 @@ public:
              * @return RHS residual kernel for pressure.
              */
             virtual
-            PetscPointFunc getKernelf0p(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
+            PetscPointFnWrapper getKernelf0p(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
 
             /** Get f1u kernel for LHS residual, F(t,s,\dot{s}).
              *
@@ -55,7 +55,7 @@ public:
              * @return LHS residual kernel for stress.
              */
             virtual
-            PetscPointFunc getKernelf1u(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
+            PetscPointFnWrapper getKernelf1u(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
 
             /** Get Jf0pp kernel for LHS Jacobian F(t,s,\dot{s}).
              *
@@ -64,7 +64,7 @@ public:
              * @return LHS Jf0pp kernel.
              */
             virtual
-            PetscPointJac getKernelJf0pp(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
+            PetscPointJacFnWrapper getKernelJf0pp(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
 
             /** Get Jf3uu kernel for LHS Jacobian F(t,s,\dot{s}).
              *
@@ -73,7 +73,7 @@ public:
              * @return LHS Jacobian kernel for elastic constants.
              */
             virtual
-            PetscPointJac getKernelJf3uu(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
+            PetscPointJacFnWrapper getKernelJf3uu(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
 
             /** Get stress kernel for derived field.
              *
@@ -82,7 +82,7 @@ public:
              * @return Project kernel for computing stress subfield in derived field.
              */
             virtual
-            PetscPointFunc getKernelCauchyStressVector(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
+            PetscPointFnWrapper getKernelCauchyStressVector(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
 
             /** Add kernels for updating state variables.
              *

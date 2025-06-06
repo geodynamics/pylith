@@ -342,7 +342,7 @@ pylith::feassemble::IntegratorBoundary::_computeDiagnosticField(void) {
 
     const size_t numKernels = _kernelsDiagnosticField.size();
     assert(numKernels > 0);
-    PetscBdPointFunc* kernelsArray = (numKernels > 0) ? new PetscBdPointFunc[numKernels] : NULL;
+    PetscBdPointFn** kernelsArray = (numKernels > 0) ? new PetscBdPointFn*[numKernels] : NULL;
     for (size_t iKernel = 0; iKernel < numKernels; ++iKernel) {
         const pylith::topology::Field::SubfieldInfo& sinfo = _diagnosticField->getSubfieldInfo(_kernelsDiagnosticField[iKernel].subfield.c_str());
         kernelsArray[sinfo.index] = _kernelsDiagnosticField[iKernel].f;

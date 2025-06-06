@@ -43,7 +43,7 @@ public:
     /// Project kernels (pointwise functions) for updating state variables or computing derived fields.
     struct ProjectKernels {
         std::string subfield; ///< Name of subfield for function.
-        PetscPointFunc f; ///< Point-wise function.
+        PetscPointFn* f; ///< Point-wise function.
 
         ProjectKernels(void) :
             subfield(""),
@@ -51,7 +51,7 @@ public:
 
 
         ProjectKernels(const char* subfieldValue,
-                       PetscPointFunc fValue) :
+                       PetscPointFn* fValue) :
             subfield(subfieldValue),
             f(fValue) {}
 

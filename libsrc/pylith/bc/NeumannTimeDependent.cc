@@ -339,8 +339,8 @@ pylith::bc::_NeumannTimeDependent::setKernelsResidual(pylith::feassemble::Integr
     const int bitTimeHistory = bc.useTimeHistory() ? 0x4 : 0x0;
     const int bitUse = bitInitial | bitRate | bitTimeHistory;
 
-    PetscBdPointFunc r0 = NULL;
-    PetscBdPointFunc r1 = NULL;
+    PetscBdPointFn* r0 = NULL;
+    PetscBdPointFn* r1 = NULL;
     switch (bitUse) {
     case 0x1:
         r0 = (isScalarField) ? pylith::fekernels::NeumannTimeDependent::f0_initial_scalar :

@@ -580,7 +580,7 @@ pylith::feassemble::IntegratorDomain::_updateStateVars(const PylithReal t,
     // the order of the correspoinding subfields in the auxiliary
     // field.
     const size_t numKernels = _kernelsUpdateStateVars.size();
-    PetscPointFunc* kernelsStateVars = (numKernels > 0) ? new PetscPointFunc[numKernels] : NULL;
+    PetscPointFn** kernelsStateVars = (numKernels > 0) ? new PetscPointFn*[numKernels] : NULL;
     for (size_t iKernel = 0; iKernel < numKernels; ++iKernel) {
         kernelsStateVars[iKernel] = _kernelsUpdateStateVars[iKernel].f;
     } // for
@@ -617,7 +617,7 @@ pylith::feassemble::IntegratorDomain::_computeDerivedField(const PylithReal t,
     _setKernelConstants(solution, dt);
 
     const size_t numKernels = _kernelsDerivedField.size();
-    PetscPointFunc* kernelsArray = (numKernels > 0) ? new PetscPointFunc[numKernels] : NULL;
+    PetscPointFn** kernelsArray = (numKernels > 0) ? new PetscPointFn*[numKernels] : NULL;
     for (size_t iKernel = 0; iKernel < numKernels; ++iKernel) {
         const pylith::topology::Field::SubfieldInfo& sinfo = _derivedField->getSubfieldInfo(_kernelsDerivedField[iKernel].subfield.c_str());
         kernelsArray[sinfo.index] = _kernelsDerivedField[iKernel].f;
