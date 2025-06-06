@@ -32,6 +32,7 @@ class App(GenerateMesh):
     DX_BIAS = 1.1
 
     CRUST_DEPTH = 40.0 * 1000
+    PATCH_LENGTH = 200.0 * 1000
 
     def __init__(self):
         """Constructor.
@@ -276,26 +277,44 @@ class App(GenerateMesh):
         gmsh.model.occ.remove_all_duplicates()
         gmsh.model.occ.synchronize()
 
+        # Generate patch
+        patch_box = gmsh.model.occ.add_box(
+            -self.BOX_SIDE_LENGTH / 2,
+            -self.PATCH_LENGTH / 2,
+            -400.0 * 1000,
+            1000.0 * 1000,
+            self.PATCH_LENGTH,
+            600.0 * 1000
+        )
+
+        gmsh.model.occ.remove([(3, patch_box)], recursive=False)
+        gmsh.model.occ.remove([(2, 54), (2, 55), (2, 58), (2, 59)])
+        gmsh.model.occ.fragment([(3, 2)], [(2, 56), (2, 57)])
+
+        gmsh.model.occ.synchronize()
+
         # Get tags of the different sections using GUI
-        self.mantle_volume = 5
-        self.crust_volume = 6
-        self.wedge_volume = 4
-        self.slab_volume = 2
+        self.mantle_volume = [5]
+        self.crust_volume = [6]
+        self.wedge_volume = [4]
+        self.slab_volume = [7, 8, 9]
 
         self.surface_west = [41, 45]
         self.surface_south = [38, 31, 44, 51]
         self.surface_south_no_slab = [38, 31, 44]
-        self.surface_top = [46, 32, 52]
-        self.surface_north = [39, 48, 53, 35]
+        self.surface_top = [46, 32, 52, 60, 68]
+        self.surface_north = [70, 39, 48, 35]
         self.surface_north_no_slab = [39, 48, 35]
         self.surface_bottom = [40]
-        self.surface_east = [50, 37]
+        self.surface_east = [50, 37, 59, 67]
         self.surface_east_no_slab = [37]
 
-        self.slab_top = [52, 33, 47, 43]
-        self.slab_top_edge = [107]
-        self.slab_bottom = [11]
-        self.slab_bottom_edge = [95]
+        self.slab_top = [52, 56, 57, 58] + [60, 66, 65, 64] + [68, 69, 74, 73]
+        self.slab_top_edge = [189, 203, 212]
+        self.slab_bottom = [54, 62, 71]
+        self.slab_bottom_edge = [188, 202, 211]
+        self.slab_top_patch = [66, 65]
+        self.slab_top_patch_edge = [187, 186, 204, 200, 201]
 
         self.surface_splay = [29]
         self.edge_splay = [128]
@@ -304,10 +323,10 @@ class App(GenerateMesh):
         """Mark geometry for materials, boundary conditions, faults, etc.
         """
         materials = (
-            MaterialGroup(tag=1, entities=[self.slab_volume]),
-            MaterialGroup(tag=2, entities=[self.wedge_volume]),
-            MaterialGroup(tag=3, entities=[self.mantle_volume]),
-            MaterialGroup(tag=4, entities=[self.crust_volume]),
+            MaterialGroup(tag=1, entities=self.slab_volume),
+            MaterialGroup(tag=2, entities=self.wedge_volume),
+            MaterialGroup(tag=3, entities=self.mantle_volume),
+            MaterialGroup(tag=4, entities=self.crust_volume),
         )
 
         for material in materials:
@@ -326,8 +345,10 @@ class App(GenerateMesh):
 
             BoundaryGroup(name="fault_slabtop", tag=20, dim=2, entities=self.slab_top),
             BoundaryGroup(name="fault_slabbot", tag=21, dim=2, entities=self.slab_bottom),
-            BoundaryGroup(name="fault_slabtop_edge", tag=22, dim=1, entities=self.slab_bottom_edge),
+            BoundaryGroup(name="fault_slabtop_edge", tag=22, dim=1, entities=self.slab_top_edge),
             BoundaryGroup(name="fault_slabbot_edge", tag=23, dim=1, entities=self.slab_bottom_edge),
+            BoundaryGroup(name="fault_slabtop_patch", tag=24, dim=2, entities=self.slab_top_patch),
+            BoundaryGroup(name="fault_slabtop_patch_edge", tag=25, dim=1, entities=self.slab_top_patch_edge),
 
             BoundaryGroup(name="fault_splay", tag=30, dim=2, entities=self.surface_splay),
             BoundaryGroup(name="fault_splay_edge", tag=31, dim=1, entities=self.edge_splay),
