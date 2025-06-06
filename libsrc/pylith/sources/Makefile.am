@@ -22,7 +22,6 @@ include $(top_srcdir)/subpackage.am
 subpkginclude_HEADERS = \
 	Source.hh \
 	MomentTensorForce.hh \
-	AuxiliaryFactorySquarePulseSource.hh \
 	AuxiliaryFactoryMomentTensorForce.hh \
 	AuxiliaryFactorySourceTime.hh \
 	DerivedFactoryMomentTensorForce.hh \
