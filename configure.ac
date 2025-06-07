@@ -234,8 +234,6 @@ AC_CONFIG_FILES([Makefile
 		tests/libtests/meshio/Makefile
 		tests/libtests/problems/Makefile
 		tests/libtests/problems/data/Makefile
-		tests/libtests/sources/Makefile
-		tests/libtests/sources/data/Makefile
 		tests/libtests/meshio/data/Makefile
 		tests/libtests/topology/Makefile
 		tests/libtests/topology/data/Makefile
