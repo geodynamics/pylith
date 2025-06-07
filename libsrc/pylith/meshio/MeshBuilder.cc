@@ -667,33 +667,33 @@ pylith::meshio::_MeshBuilder::getGroupNames(string_vector* names,
             const PetscInt* labelValues = PETSC_NULLPTR;
             err = DMLabelGetNumValues(dmLabel, &numLabelValues);PYLITH_CHECK_ERROR(err); // assert(1 == numLabelValues);
             err = DMLabelGetValueIS(dmLabel, &labelValuesIS);PYLITH_CHECK_ERROR(err);assert(labelValuesIS);
-            err = ISGetIndices(labelValuesIS, &labelValues);PYLITH_CHECK_ERROR(err);assert(labelValues);
-            const PetscInt labelValue = labelValues[0];
-
+            err = ISGetIndices(labelValuesIS, &labelValues);PYLITH_CHECK_ERROR(err);
+            if (labelValues) {
+                const PetscInt labelValue = labelValues[0];
+                pylith::topology::StratumIS pointIS(dmMesh, labelStr, labelValue);
+                const PetscInt* points = pointIS.points();
+                const PetscInt numPoints = pointIS.size();
+                bool hasOtherPoints = false;
+                bool foundPoint = false;
+                for (PetscInt iPoint = 0; iPoint < numPoints; ++iPoint) {
+                    if ((points[iPoint] >= pStart) && (points[iPoint] < pEnd) ) {
+                        foundPoint = true;
+                        if (!exclusive) {
+                            break;
+                        } // if
+                    } else {
+                        hasOtherPoints = true;
+                        if (exclusive) {
+                            break;
+                        } // if
+                    } // if/else
+                } // for
+                if ((foundPoint && !exclusive) || (foundPoint && exclusive && !hasOtherPoints)) {
+                    (*names)[numNames++] = labelName;
+                } // if
+            }
             err = ISRestoreIndices(labelValuesIS, &labelValues);PYLITH_CHECK_ERROR(err);
             err = ISDestroy(&labelValuesIS);PYLITH_CHECK_ERROR(err);
-
-            pylith::topology::StratumIS pointIS(dmMesh, labelStr, labelValue);
-            const PetscInt* points = pointIS.points();
-            const PetscInt numPoints = pointIS.size();
-            bool hasOtherPoints = false;
-            bool foundPoint = false;
-            for (PetscInt iPoint = 0; iPoint < numPoints; ++iPoint) {
-                if ((points[iPoint] >= pStart) && (points[iPoint] < pEnd) ) {
-                    foundPoint = true;
-                    if (!exclusive) {
-                        break;
-                    } // if
-                } else {
-                    hasOtherPoints = true;
-                    if (exclusive) {
-                        break;
-                    } // if
-                } // if/else
-            } // for
-            if ((foundPoint && !exclusive) || (foundPoint && exclusive && !hasOtherPoints)) {
-                (*names)[numNames++] = labelName;
-            } // if
         } // if
     } // for
     names->resize(numNames);

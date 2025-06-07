@@ -5,7 +5,7 @@
 # Copyright (c) 2010-2025, University of California, Davis and the PyLith Development Team.
 # All rights reserved.
 #
-# See https://mit-license.org/ and LICENSE.md and for license information. 
+# See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
 
 
@@ -150,7 +150,7 @@ class Xdmf(object):
         """Get Xdmf vector field type.
         """
         import numpy
-        
+
         if type(vectorFieldString) == str:
             vectorFieldTypeName = vectorFieldString.lower()
         elif type(vectorFieldString) == bytes:
@@ -449,8 +449,12 @@ class Xdmf(object):
                 raise ValueError(
                     "Unexpected shape for dataset '%s'." % field.name)
         else:
-            assert(3 == len(field.data.shape))
-            numTimeSteps, numPoints, numComponents = field.data.shape
+            if 2 == len(field.data.shape):
+                numPoints, numComponents = field.data.shape
+                numTimeSteps = 1
+            else:
+                assert(3 == len(field.data.shape))
+                numTimeSteps, numPoints, numComponents = field.data.shape
 
         if 2 == self._getSpaceDim() and field.vectorFieldType == "Vector":
 

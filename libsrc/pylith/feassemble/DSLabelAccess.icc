@@ -52,7 +52,9 @@ pylith::feassemble::DSLabelAccess::DSLabelAccess(const PetscDM dm,
         } else {
             err = ISDestroy(&_cellsIS);PYLITH_CHECK_ERROR(err);
         } // if/else
-    } // if
+        // } else {
+        //     err = ISCreateGeneral(PETSC_COMM_SELF,0,NULL,PETSC_OWN_POINTER,&_cellsIS);
+    }
 
     PYLITH_METHOD_END;
 }

@@ -30,7 +30,11 @@ subpkginclude_HEADERS = \
 	TimeDependentFn.hh \
 	NeumannTimeDependent.hh \
 	AbsorbingDampers.hh \
-	FaultCohesiveKin.hh
+	FaultCohesiveKin.hh \
+	SquareWavelet.hh \
+	RickerWavelet.hh \
+	GaussianWavelet.hh \
+	TimeHistoryWavelet.hh
 	
 dist_noinst_HEADERS =
 

@@ -14,6 +14,7 @@ SUBDIRS = \
 	topology \
 	feassemble \
 	problems \
+	sources \
 	meshio \
 	materials \
 	bc \
@@ -127,6 +128,16 @@ libpylith_la_SOURCES = \
 	problems/ProgressMonitor.cc \
 	problems/ProgressMonitorTime.cc \
 	problems/ProgressMonitorStep.cc \
+	sources/AuxiliaryFactoryMomentTensorForce.cc \
+	sources/AuxiliaryFactorySourceTime.cc \
+	sources/DerivedFactoryMomentTensorForce.cc \
+	sources/GaussianWavelet.cc \
+	sources/SquareWavelet.cc \
+	sources/RickerWavelet.cc \
+	sources/TimeHistoryWavelet.cc \
+	sources/Source.cc \
+	sources/SourceTimeFunctionMomentTensorForce.cc \
+	sources/MomentTensorForce.cc \
 	topology/Mesh.cc \
 	topology/MeshOps.cc \
 	topology/FieldBase.cc \
