@@ -13,7 +13,7 @@ Implements `MeshGenerator`.
 * `distributor`: Distributes mesh among processes.
   - **current value**: 'mesh_distributor', from {default}
   - **configurable as**: mesh_distributor, distributor
-* `reader`: Reader for mesh files.
+* `reader`: Reader for mesh file.
   - **current value**: 'meshioascii', from {default}
   - **configurable as**: meshioascii, reader
 * `refiner`: Performs uniform global mesh refinement after distribution among processes (default is no refinement).
