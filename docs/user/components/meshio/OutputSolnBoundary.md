@@ -29,7 +29,7 @@ Implements `OutputSoln`.
 * `label`=\<str\>: Name of label identifier for external boundary.
   - **default value**: ''
   - **current value**: '', from {default}
-  - **validator**: <function validateLabel at 0x10816d800>
+  - **validator**: <function validateLabel at 0x104835e40>
 * `label_value`=\<int\>: Value of label identifier for external boundary (tag of physical group in Gmsh files).
   - **default value**: 1
   - **current value**: 1, from {default}
@@ -53,8 +53,8 @@ data_fields = [displacement]
 label = boundary_xpos
 
 # Skip two time steps between output.
-output_trigger = pylith.meshio.OutputTriggerStep
-output_trigger.num_skip = 2
+trigger = pylith.meshio.OutputTriggerStep
+trigger.num_skip = 2
 
 # Write output to HDF5 file with name `boundary_xpos.h5`.
 writer = pylith.meshio.DataWriterHDF5

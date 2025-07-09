@@ -45,8 +45,8 @@ Example of setting `OutputPhysics` Pyre properties and facilities in a parameter
 :::{code-block} cfg
 [observer]
 # Skip two time steps between output.
-output_trigger = pylith.meshio.OutputTriggerStep
-output_trigger.num_skip = 2
+trigger = pylith.meshio.OutputTriggerStep
+trigger.num_skip = 2
 
 # Write output to HDF5 file with name `boundary_xpos.h5`.
 writer = pylith.meshio.DataWriterHDF5
