@@ -24,7 +24,7 @@ Implements `MeshIOObj`.
 * `filename`=\<str\>: Name of mesh file for reading with PETSc.
   - **default value**: ''
   - **current value**: '', from {default}
-* `gmsh_mark_vertices`=\<bool\>: Gmsh file marks faces, edges, and vertices rather than just faces.
+* `gmsh_mark_recursive`=\<bool\>: Gmsh file marks faces, edges, and vertices rather than just faces (3D) or edges (2D).
   - **default value**: False
   - **current value**: False, from {default}
 * `options_prefix`=\<str\>: Name of PETSc options prefix for this mesh.

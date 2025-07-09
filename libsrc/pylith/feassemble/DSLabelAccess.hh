@@ -27,10 +27,12 @@ public:
      * @param[in] dm PETSc DM holding label.
      * @param[in] labelName Name of label.
      * @param[in] labelValue Label value.
+     * @param[in] dim If nonnegative, limit label values to dimension.
      */
     DSLabelAccess(const PetscDM dm,
                   const char* labelName,
-                  const int labelValue);
+                  const int labelValue,
+                  const int dim);
 
     /// Default destructor
     ~DSLabelAccess(void);
@@ -69,15 +71,15 @@ public:
      *
      * @returns PETSc IS.
      */
-    PetscIS cellsIS(void) const;
+    PetscIS pointsIS(void) const;
 
-    /** Get number of cells in PETSc IS associated with label and value.
+    /** Get number of points in PETSc IS associated with label and value.
      *
-     * @returns Number of cells.
+     * @returns Number of points.
      */
-    PetscInt numCells(void) const;
+    PetscInt numPoints(void) const;
 
-    /// Remove overlap from list of cells in label.
+    /// Remove overlap from list of points in label.
     void removeOverlap(void);
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
@@ -87,9 +89,10 @@ private:
     PetscDMLabel _label; ///< Cached PETSc DMLabel.
     PetscDS _ds; ///< Cached PetscDS for label and value.
     PetscWeakForm _weakForm; ///< Cached PETSc weak form for PetscDS.
-    PetscIS _cellsIS; ///< Cached PETSc IS of cells for label and value.
-    PetscInt _numCells; ///< Number of cells in PETSc IS.
+    PetscIS _pointsIS; ///< Cached PETSc IS of points for label and value.
+    PetscInt _numPoints; ///< Number of points in PETSc IS.
     PetscInt _value; ///< Label value.
+    PetscInt _dim; ///< If nonnegative, limit PETSc IS to label values in dimension.
     std::string _name; ///< Name of label;
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////

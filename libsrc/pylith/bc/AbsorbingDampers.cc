@@ -121,6 +121,7 @@ pylith::bc::AbsorbingDampers::createIntegrator(const pylith::topology::Field& so
     integrator->setSubfieldName(getSubfieldName());
     integrator->setLabelName(getLabelName());
     integrator->setLabelValue(getLabelValue());
+    integrator->createLabelDS(solution, solution.getMesh().getDimension()-1);
 
     _AbsorbingDampers::setKernelsResidual(integrator, *this, solution);
     BoundaryCondition::_setKernelsDiagnosticField(integrator, solution);
@@ -201,8 +202,8 @@ pylith::bc::_AbsorbingDampers::setKernelsResidual(pylith::feassemble::Integrator
           << "_AbsorbingDampers::_setKernelsRHSResidual(integrator="<<integrator<<", bc="<<typeid(bc).name()
           <<", solution="<<solution.getLabel()<<")"<<pythia::journal::endl;
 
-    PetscBdPointFunc g0 = pylith::fekernels::AbsorbingDampers::g0;
-    PetscBdPointFunc g1 = NULL;
+    PetscBdPointFn* g0 = pylith::fekernels::AbsorbingDampers::g0;
+    PetscBdPointFn* g1 = NULL;
 
     std::vector<ResidualKernels> kernels(1);
     kernels[0] = ResidualKernels(bc.getSubfieldName(), pylith::feassemble::Integrator::RHS, g0, g1);

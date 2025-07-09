@@ -36,7 +36,7 @@ public:
      *
      * @param kernel Kernel to compute constrained value from auxiliary field.
      */
-    void setKernelConstraint(const PetscBdPointFunc kernel);
+    void setKernelConstraint(PetscBdPointFn* kernel);
 
     /** Initialize constraint.
      *
@@ -59,7 +59,7 @@ public:
     // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:
 
-    PetscBdPointFunc _kernelConstraint; ///< Kernel for computing constrained values from auxiliary field.
+    PetscBdPointFn* _kernelConstraint; ///< Kernel for computing constrained values from auxiliary field.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:

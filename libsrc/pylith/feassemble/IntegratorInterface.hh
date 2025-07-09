@@ -31,7 +31,7 @@ public:
     /// Project kernels (pointwise functions) for updating state variables or computing derived fields.
     struct ProjectKernels {
         std::string subfield; ///< Name of subfield for function.
-        PetscBdPointFunc f; ///< Point-wise function.
+        PetscBdPointFn* f; ///< Point-wise function.
 
         ProjectKernels(void) :
             subfield(""),
@@ -39,7 +39,7 @@ public:
 
 
         ProjectKernels(const char* subfieldValue,
-                       PetscBdPointFunc fValue) :
+                       PetscBdPointFn* fValue) :
             subfield(subfieldValue),
             f(fValue) {}
 
@@ -54,8 +54,8 @@ public:
         std::string subfield; ///< Name of subfield
         EquationPart part; ///< Residual part (LHS or RHS).
         FaceEnum face; ///< Face domain.
-        PetscBdPointFunc r0; ///< f0 (RHS) or g0 (LHS) function.
-        PetscBdPointFunc r1; ///< f1 (RHS) or g1 (LHS) function.
+        PetscBdPointFn* r0; ///< f0 (RHS) or g0 (LHS) function.
+        PetscBdPointFn* r1; ///< f1 (RHS) or g1 (LHS) function.
 
         ResidualKernels(void) :
             subfield(""),
@@ -68,8 +68,8 @@ public:
         ResidualKernels(const char* subfieldValue,
                         const EquationPart partValue,
                         FaceEnum faceValue,
-                        PetscBdPointFunc r0Value,
-                        PetscBdPointFunc r1Value) :
+                        PetscBdPointFn* r0Value,
+                        PetscBdPointFn* r1Value) :
             subfield(subfieldValue),
             part(partValue),
             face(faceValue),
@@ -85,10 +85,10 @@ public:
         std::string subfieldBasis; ///< Name of subfield associated with basis function (column in Jacobian).
         EquationPart part; ///< Jacobian part (LHS or LHS lumped inverse).
         FaceEnum face; ///< Integration domain.
-        PetscBdPointJac j0; ///< J0 function.
-        PetscBdPointJac j1; ///< J1 function.
-        PetscBdPointJac j2; ///< J2 function.
-        PetscBdPointJac j3; ///< J3 function.
+        PetscBdPointJacFn* j0; ///< J0 function.
+        PetscBdPointJacFn* j1; ///< J1 function.
+        PetscBdPointJacFn* j2; ///< J2 function.
+        PetscBdPointJacFn* j3; ///< J3 function.
 
         JacobianKernels(void) :
             subfieldTrial(""),
@@ -105,10 +105,10 @@ public:
                         const char* subfieldBasisValue,
                         EquationPart partValue,
                         FaceEnum faceValue,
-                        PetscBdPointJac j0Value,
-                        PetscBdPointJac j1Value,
-                        PetscBdPointJac j2Value,
-                        PetscBdPointJac j3Value) :
+                        PetscBdPointJacFn* j0Value,
+                        PetscBdPointJacFn* j1Value,
+                        PetscBdPointJacFn* j2Value,
+                        PetscBdPointJacFn* j3Value) :
             subfieldTrial(subfieldTrialValue),
             subfieldBasis(subfieldBasisValue),
             part(partValue),

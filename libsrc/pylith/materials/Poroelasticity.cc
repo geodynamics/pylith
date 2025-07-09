@@ -189,6 +189,7 @@ pylith::materials::Poroelasticity::createIntegrator(const pylith::topology::Fiel
     pylith::feassemble::IntegratorDomain* integrator = new pylith::feassemble::IntegratorDomain(this);assert(integrator);
     integrator->setLabelName(getLabelName());
     integrator->setLabelValue(getLabelValue());
+    integrator->createLabelDS(solution, solution.getMesh().getDimension());
 
     _setKernelsResidual(integrator, solution);
     _setKernelsJacobian(integrator, solution);
@@ -388,7 +389,7 @@ pylith::materials::Poroelasticity::_setKernelsResidual(pylith::feassemble::Integ
     const int bitSourceDensity = _useSourceDensity ? 0x4 : 0x0;
     const int bitUse = bitBodyForce | bitGravity | bitSourceDensity;
 
-    PetscPointFunc r0 = NULL;
+    PetscPointFn* r0 = NULL;
     switch (bitUse) {
     case 0x0:
         break;
@@ -421,17 +422,17 @@ pylith::materials::Poroelasticity::_setKernelsResidual(pylith::feassemble::Integ
     case QUASISTATIC: {
         if (!_useStateVars) {
             // Displacement
-            const PetscPointFunc f0u = r0;
-            const PetscPointFunc f1u = _rheology->getKernelf1u_implicit(coordsys);
+            const PetscPointFn* f0u = r0;
+            const PetscPointFn* f1u = _rheology->getKernelf1u_implicit(coordsys);
 
             // Pressure
-            PetscPointFunc f0p = _rheology->getKernelf0p_implicit(coordsys, _useBodyForce, _gravityField, _useSourceDensity);
-            PetscPointFunc f1p = _rheology->getKernelf1p_implicit(coordsys, _useBodyForce, _gravityField); // darcy
-                                                                                                           // velocity
+            PetscPointFn* f0p = _rheology->getKernelf0p_implicit(coordsys, _useBodyForce, _gravityField, _useSourceDensity);
+            PetscPointFn* f1p = _rheology->getKernelf1p_implicit(coordsys, _useBodyForce, _gravityField); // darcy
+                                                                                                          // velocity
 
             // Volumetric Strain
-            const PetscPointFunc f0e = pylith::fekernels::Poroelasticity::f0e;
-            const PetscPointFunc f1e = NULL;
+            const PetscPointFn* f0e = pylith::fekernels::Poroelasticity::f0e;
+            const PetscPointFn* f1e = NULL;
 
             kernels.resize(3);
             kernels[0] = ResidualKernels("displacement", pylith::feassemble::Integrator::LHS, f0u, f1u);
@@ -439,28 +440,28 @@ pylith::materials::Poroelasticity::_setKernelsResidual(pylith::feassemble::Integ
             kernels[2] = ResidualKernels("trace_strain", pylith::feassemble::Integrator::LHS, f0e, f1e);
         } else {
             // Displacement
-            PetscPointFunc f0u = r0;
-            const PetscPointFunc f1u = _rheology->getKernelf1u_implicit(coordsys);
+            PetscPointFn* f0u = r0;
+            const PetscPointFn* f1u = _rheology->getKernelf1u_implicit(coordsys);
 
             // Pressure
-            PetscPointFunc f0p = _rheology->getKernelf0p_implicit(coordsys, _useBodyForce, _gravityField, _useSourceDensity);
-            PetscPointFunc f1p = _rheology->getKernelf1p_implicit(coordsys, _useBodyForce, _gravityField);
+            PetscPointFn* f0p = _rheology->getKernelf0p_implicit(coordsys, _useBodyForce, _gravityField, _useSourceDensity);
+            PetscPointFn* f1p = _rheology->getKernelf1p_implicit(coordsys, _useBodyForce, _gravityField);
 
             // Volumetric Strain
-            const PetscPointFunc f0e = pylith::fekernels::Poroelasticity::f0e;
-            const PetscPointFunc f1e = NULL;
+            const PetscPointFn* f0e = pylith::fekernels::Poroelasticity::f0e;
+            const PetscPointFn* f1e = NULL;
 
             // Velocity
-            const PetscPointFunc f0v = pylith::fekernels::Poroelasticity::f0v_implicit;
-            const PetscPointFunc f1v = NULL;
+            const PetscPointFn* f0v = pylith::fekernels::Poroelasticity::f0v_implicit;
+            const PetscPointFn* f1v = NULL;
 
             // Time derivative of pressure
-            const PetscPointFunc f0pdot = pylith::fekernels::Poroelasticity::f0pdot;
-            const PetscPointFunc f1pdot = NULL;
+            const PetscPointFn* f0pdot = pylith::fekernels::Poroelasticity::f0pdot;
+            const PetscPointFn* f1pdot = NULL;
 
             // Time derivative of Volumetric Strain
-            const PetscPointFunc f0edot = pylith::fekernels::Poroelasticity::f0edot;
-            const PetscPointFunc f1edot = NULL;
+            const PetscPointFn* f0edot = pylith::fekernels::Poroelasticity::f0edot;
+            const PetscPointFn* f1edot = NULL;
 
             kernels.resize(6);
             kernels[0] = ResidualKernels("displacement", pylith::feassemble::Integrator::LHS, f0u, f1u);
@@ -475,22 +476,22 @@ pylith::materials::Poroelasticity::_setKernelsResidual(pylith::feassemble::Integ
     case DYNAMIC_IMEX:
     case DYNAMIC: {
         // Displacement
-        const PetscPointFunc f0u = pylith::fekernels::DispVel::f0u;
-        const PetscPointFunc f1u = NULL;
-        const PetscPointFunc g0u = pylith::fekernels::Poroelasticity::g0u;
-        const PetscPointFunc g1u = NULL;
+        const PetscPointFn* f0u = pylith::fekernels::DispVel::f0u;
+        const PetscPointFn* f1u = NULL;
+        const PetscPointFn* g0u = pylith::fekernels::Poroelasticity::g0u;
+        const PetscPointFn* g1u = NULL;
 
         // Pressure
-        const PetscPointFunc f0p = _rheology->getKernelf0p_explicit(coordsys);
-        const PetscPointFunc f1p = NULL;
-        const PetscPointFunc g0p = _rheology->getKernelg0p(coordsys, _useBodyForce, _gravityField, _useSourceDensity);
-        const PetscPointFunc g1p = _rheology->getKernelg1p_explicit(coordsys, _gravityField); // Darcy velocity
+        const PetscPointFn* f0p = _rheology->getKernelf0p_explicit(coordsys);
+        const PetscPointFn* f1p = NULL;
+        const PetscPointFn* g0p = _rheology->getKernelg0p(coordsys, _useBodyForce, _gravityField, _useSourceDensity);
+        const PetscPointFn* g1p = _rheology->getKernelg1p_explicit(coordsys, _gravityField); // Darcy velocity
 
         // Velocity
-        const PetscPointFunc f0v = pylith::fekernels::Poroelasticity::f0v_explicit;
-        const PetscPointFunc f1v = NULL;
-        const PetscPointFunc g0v = r0;
-        const PetscPointFunc g1v = _rheology->getKernelg1v_explicit(coordsys);
+        const PetscPointFn* f0v = pylith::fekernels::Poroelasticity::f0v_explicit;
+        const PetscPointFn* f1v = NULL;
+        const PetscPointFn* g0v = r0;
+        const PetscPointFn* g1v = _rheology->getKernelg1v_explicit(coordsys);
 
         kernels.resize(6);
         kernels[0] = ResidualKernels("displacement", pylith::feassemble::Integrator::LHS, f0u, f1u);
@@ -528,40 +529,40 @@ pylith::materials::Poroelasticity::_setKernelsJacobian(pylith::feassemble::Integ
     case QUASISTATIC: {
         const EquationPart equationPart = pylith::feassemble::Integrator::LHS;
         if (!_useStateVars) {
-            const PetscPointJac Jf0uu = NULL;
-            const PetscPointJac Jf1uu = NULL;
-            const PetscPointJac Jf2uu = NULL;
-            const PetscPointJac Jf3uu = _rheology->getKernelJf3uu(coordsys);
+            PetscPointJacFn* Jf0uu = NULL;
+            PetscPointJacFn* Jf1uu = NULL;
+            PetscPointJacFn* Jf2uu = NULL;
+            PetscPointJacFn* Jf3uu = _rheology->getKernelJf3uu(coordsys);
 
-            const PetscPointJac Jf0up = NULL;
-            const PetscPointJac Jf1up = NULL;
-            const PetscPointJac Jf2up = _rheology->getKernelJf2up(coordsys);
-            const PetscPointJac Jf3up = NULL;
+            PetscPointJacFn* Jf0up = NULL;
+            PetscPointJacFn* Jf1up = NULL;
+            PetscPointJacFn* Jf2up = _rheology->getKernelJf2up(coordsys);
+            PetscPointJacFn* Jf3up = NULL;
 
-            const PetscPointJac Jf0ue = NULL;
-            const PetscPointJac Jf1ue = NULL;
-            const PetscPointJac Jf2ue = _rheology->getKernelJf2ue(coordsys);
-            const PetscPointJac Jf3ue = NULL;
+            PetscPointJacFn* Jf0ue = NULL;
+            PetscPointJacFn* Jf1ue = NULL;
+            PetscPointJacFn* Jf2ue = _rheology->getKernelJf2ue(coordsys);
+            PetscPointJacFn* Jf3ue = NULL;
 
-            const PetscPointJac Jf0pp = _rheology->getKernelJf0pp(coordsys);
-            const PetscPointJac Jf1pp = NULL;
-            const PetscPointJac Jf2pp = NULL;
-            const PetscPointJac Jf3pp = _rheology->getKernelJf3pp(coordsys);
+            PetscPointJacFn* Jf0pp = _rheology->getKernelJf0pp(coordsys);
+            PetscPointJacFn* Jf1pp = NULL;
+            PetscPointJacFn* Jf2pp = NULL;
+            PetscPointJacFn* Jf3pp = _rheology->getKernelJf3pp(coordsys);
 
-            const PetscPointJac Jf0pe = _rheology->getKernelJf0pe(coordsys);
-            const PetscPointJac Jf1pe = NULL;
-            const PetscPointJac Jf2pe = NULL;
-            const PetscPointJac Jf3pe = NULL;
+            PetscPointJacFn* Jf0pe = _rheology->getKernelJf0pe(coordsys);
+            PetscPointJacFn* Jf1pe = NULL;
+            PetscPointJacFn* Jf2pe = NULL;
+            PetscPointJacFn* Jf3pe = NULL;
 
-            const PetscPointJac Jf0eu = NULL;
-            const PetscPointJac Jf1eu = pylith::fekernels::Poroelasticity::Jf1eu;
-            const PetscPointJac Jf2eu = NULL;
-            const PetscPointJac Jf3eu = NULL;
+            PetscPointJacFn* Jf0eu = NULL;
+            PetscPointJacFn* Jf1eu = pylith::fekernels::Poroelasticity::Jf1eu;
+            PetscPointJacFn* Jf2eu = NULL;
+            PetscPointJacFn* Jf3eu = NULL;
 
-            const PetscPointJac Jf0ee = pylith::fekernels::Poroelasticity::Jf0ee;
-            const PetscPointJac Jf1ee = NULL;
-            const PetscPointJac Jf2ee = NULL;
-            const PetscPointJac Jf3ee = NULL;
+            PetscPointJacFn* Jf0ee = pylith::fekernels::Poroelasticity::Jf0ee;
+            PetscPointJacFn* Jf1ee = NULL;
+            PetscPointJacFn* Jf2ee = NULL;
+            PetscPointJacFn* Jf3ee = NULL;
 
             kernels[0] = JacobianKernels("displacement", "displacement", equationPart, Jf0uu, Jf1uu, Jf2uu, Jf3uu);
             kernels[1] = JacobianKernels("displacement", "pressure",     equationPart, Jf0up, Jf1up, Jf2up, Jf3up);
@@ -571,70 +572,70 @@ pylith::materials::Poroelasticity::_setKernelsJacobian(pylith::feassemble::Integ
             kernels[5] = JacobianKernels("trace_strain", "displacement", equationPart, Jf0eu, Jf1eu, Jf2eu, Jf3eu);
             kernels[6] = JacobianKernels("trace_strain", "trace_strain", equationPart, Jf0ee, Jf1ee, Jf2ee, Jf3ee);
         } else {
-            const PetscPointJac Jf0uu = NULL;
-            const PetscPointJac Jf1uu = NULL;
-            const PetscPointJac Jf2uu = NULL;
-            const PetscPointJac Jf3uu = _rheology->getKernelJf3uu(coordsys);
+            PetscPointJacFn* Jf0uu = NULL;
+            PetscPointJacFn* Jf1uu = NULL;
+            PetscPointJacFn* Jf2uu = NULL;
+            PetscPointJacFn* Jf3uu = _rheology->getKernelJf3uu(coordsys);
 
-            const PetscPointJac Jf0up = NULL;
-            const PetscPointJac Jf1up = NULL;
-            const PetscPointJac Jf2up = _rheology->getKernelJf2up(coordsys);
-            const PetscPointJac Jf3up = NULL;
+            PetscPointJacFn* Jf0up = NULL;
+            PetscPointJacFn* Jf1up = NULL;
+            PetscPointJacFn* Jf2up = _rheology->getKernelJf2up(coordsys);
+            PetscPointJacFn* Jf3up = NULL;
 
-            const PetscPointJac Jf0ue = NULL;
-            const PetscPointJac Jf1ue = NULL;
-            const PetscPointJac Jf2ue = _rheology->getKernelJf2ue(coordsys);
-            const PetscPointJac Jf3ue = NULL;
+            PetscPointJacFn* Jf0ue = NULL;
+            PetscPointJacFn* Jf1ue = NULL;
+            PetscPointJacFn* Jf2ue = _rheology->getKernelJf2ue(coordsys);
+            PetscPointJacFn* Jf3ue = NULL;
 
-            const PetscPointJac Jf0pp = _rheology->getKernelJf0pp(coordsys);
-            const PetscPointJac Jf1pp = NULL;
-            const PetscPointJac Jf2pp = NULL;
-            const PetscPointJac Jf3pp = _rheology->getKernelJf3pp(coordsys);
+            PetscPointJacFn* Jf0pp = _rheology->getKernelJf0pp(coordsys);
+            PetscPointJacFn* Jf1pp = NULL;
+            PetscPointJacFn* Jf2pp = NULL;
+            PetscPointJacFn* Jf3pp = _rheology->getKernelJf3pp(coordsys);
 
-            const PetscPointJac Jf0pe = _rheology->getKernelJf0pe(coordsys);
-            const PetscPointJac Jf1pe = NULL;
-            const PetscPointJac Jf2pe = NULL;
-            const PetscPointJac Jf3pe = NULL;
+            PetscPointJacFn* Jf0pe = _rheology->getKernelJf0pe(coordsys);
+            PetscPointJacFn* Jf1pe = NULL;
+            PetscPointJacFn* Jf2pe = NULL;
+            PetscPointJacFn* Jf3pe = NULL;
 
-            const PetscPointJac Jf0eu = NULL;
-            const PetscPointJac Jf1eu = pylith::fekernels::Poroelasticity::Jf1eu;
-            const PetscPointJac Jf2eu = NULL;
-            const PetscPointJac Jf3eu = NULL;
+            PetscPointJacFn* Jf0eu = NULL;
+            PetscPointJacFn* Jf1eu = pylith::fekernels::Poroelasticity::Jf1eu;
+            PetscPointJacFn* Jf2eu = NULL;
+            PetscPointJacFn* Jf3eu = NULL;
 
-            const PetscPointJac Jf0ee = pylith::fekernels::Poroelasticity::Jf0ee;
-            const PetscPointJac Jf1ee = NULL;
-            const PetscPointJac Jf2ee = NULL;
-            const PetscPointJac Jf3ee = NULL;
+            PetscPointJacFn* Jf0ee = pylith::fekernels::Poroelasticity::Jf0ee;
+            PetscPointJacFn* Jf1ee = NULL;
+            PetscPointJacFn* Jf2ee = NULL;
+            PetscPointJacFn* Jf3ee = NULL;
 
-            const PetscPointJac Jf0vu = pylith::fekernels::Poroelasticity::Jf0vu_implicit;
-            const PetscPointJac Jf1vu = NULL;
-            const PetscPointJac Jf2vu = NULL;
-            const PetscPointJac Jf3vu = NULL;
+            PetscPointJacFn* Jf0vu = pylith::fekernels::Poroelasticity::Jf0vu_implicit;
+            PetscPointJacFn* Jf1vu = NULL;
+            PetscPointJacFn* Jf2vu = NULL;
+            PetscPointJacFn* Jf3vu = NULL;
 
-            const PetscPointJac Jf0vv = pylith::fekernels::Poroelasticity::Jf0vv_implicit;
-            const PetscPointJac Jf1vv = NULL;
-            const PetscPointJac Jf2vv = NULL;
-            const PetscPointJac Jf3vv = NULL;
+            PetscPointJacFn* Jf0vv = pylith::fekernels::Poroelasticity::Jf0vv_implicit;
+            PetscPointJacFn* Jf1vv = NULL;
+            PetscPointJacFn* Jf2vv = NULL;
+            PetscPointJacFn* Jf3vv = NULL;
 
-            const PetscPointJac Jf0pdotp = pylith::fekernels::Poroelasticity::Jf0pdotp;
-            const PetscPointJac Jf1pdotp = NULL;
-            const PetscPointJac Jf2pdotp = NULL;
-            const PetscPointJac Jf3pdotp = NULL;
+            PetscPointJacFn* Jf0pdotp = pylith::fekernels::Poroelasticity::Jf0pdotp;
+            PetscPointJacFn* Jf1pdotp = NULL;
+            PetscPointJacFn* Jf2pdotp = NULL;
+            PetscPointJacFn* Jf3pdotp = NULL;
 
-            const PetscPointJac Jf0pdotpdot = pylith::fekernels::Poroelasticity::Jf0pdotpdot;
-            const PetscPointJac Jf1pdotpdot = NULL;
-            const PetscPointJac Jf2pdotpdot = NULL;
-            const PetscPointJac Jf3pdotpdot = NULL;
+            PetscPointJacFn* Jf0pdotpdot = pylith::fekernels::Poroelasticity::Jf0pdotpdot;
+            PetscPointJacFn* Jf1pdotpdot = NULL;
+            PetscPointJacFn* Jf2pdotpdot = NULL;
+            PetscPointJacFn* Jf3pdotpdot = NULL;
 
-            const PetscPointJac Jf0edote = pylith::fekernels::Poroelasticity::Jf0edote;
-            const PetscPointJac Jf1edote = NULL;
-            const PetscPointJac Jf2edote = NULL;
-            const PetscPointJac Jf3edote = NULL;
+            PetscPointJacFn* Jf0edote = pylith::fekernels::Poroelasticity::Jf0edote;
+            PetscPointJacFn* Jf1edote = NULL;
+            PetscPointJacFn* Jf2edote = NULL;
+            PetscPointJacFn* Jf3edote = NULL;
 
-            const PetscPointJac Jf0edotedot = pylith::fekernels::Poroelasticity::Jf0edotedot;
-            const PetscPointJac Jf1edotedot = NULL;
-            const PetscPointJac Jf2edotedot = NULL;
-            const PetscPointJac Jf3edotedot = NULL;
+            PetscPointJacFn* Jf0edotedot = pylith::fekernels::Poroelasticity::Jf0edotedot;
+            PetscPointJacFn* Jf1edotedot = NULL;
+            PetscPointJacFn* Jf2edotedot = NULL;
+            PetscPointJacFn* Jf3edotedot = NULL;
 
             kernels.resize(13);
             kernels[0] = JacobianKernels("displacement", "displacement", equationPart, Jf0uu, Jf1uu, Jf2uu, Jf3uu);
@@ -655,50 +656,50 @@ pylith::materials::Poroelasticity::_setKernelsJacobian(pylith::feassemble::Integ
     } // QUASISTATIC
     case DYNAMIC_IMEX:
     case DYNAMIC: {
-        const PetscPointJac Jf0uu = pylith::fekernels::DispVel::Jf0uu_stshift;
-        const PetscPointJac Jf1uu = NULL;
-        const PetscPointJac Jf2uu = NULL;
-        const PetscPointJac Jf3uu = NULL;
+        PetscPointJacFn* Jf0uu = pylith::fekernels::DispVel::Jf0uu_stshift;
+        PetscPointJacFn* Jf1uu = NULL;
+        PetscPointJacFn* Jf2uu = NULL;
+        PetscPointJacFn* Jf3uu = NULL;
 
-        const PetscPointJac Jf0up = NULL;
-        const PetscPointJac Jf1up = NULL;
-        const PetscPointJac Jf2up = NULL;
-        const PetscPointJac Jf3up = NULL;
+        PetscPointJacFn* Jf0up = NULL;
+        PetscPointJacFn* Jf1up = NULL;
+        PetscPointJacFn* Jf2up = NULL;
+        PetscPointJacFn* Jf3up = NULL;
 
-        const PetscPointJac Jf0uv = NULL;
-        const PetscPointJac Jf1uv = NULL;
-        const PetscPointJac Jf2uv = NULL;
-        const PetscPointJac Jf3uv = NULL;
+        PetscPointJacFn* Jf0uv = NULL;
+        PetscPointJacFn* Jf1uv = NULL;
+        PetscPointJacFn* Jf2uv = NULL;
+        PetscPointJacFn* Jf3uv = NULL;
 
-        const PetscPointJac Jf0pu = NULL;
-        const PetscPointJac Jf1pu = NULL;
-        const PetscPointJac Jf2pu = NULL;
-        const PetscPointJac Jf3pu = NULL;
+        PetscPointJacFn* Jf0pu = NULL;
+        PetscPointJacFn* Jf1pu = NULL;
+        PetscPointJacFn* Jf2pu = NULL;
+        PetscPointJacFn* Jf3pu = NULL;
 
-        const PetscPointJac Jf0pp = _rheology->getKernelJf0pp(coordsys);
-        const PetscPointJac Jf1pp = NULL;
-        const PetscPointJac Jf2pp = NULL;
-        const PetscPointJac Jf3pp = NULL;
+        PetscPointJacFn* Jf0pp = _rheology->getKernelJf0pp(coordsys);
+        PetscPointJacFn* Jf1pp = NULL;
+        PetscPointJacFn* Jf2pp = NULL;
+        PetscPointJacFn* Jf3pp = NULL;
 
-        const PetscPointJac Jf0pv = NULL;
-        const PetscPointJac Jf1pv = NULL;
-        const PetscPointJac Jf2pv = NULL;
-        const PetscPointJac Jf3pv = NULL;
+        PetscPointJacFn* Jf0pv = NULL;
+        PetscPointJacFn* Jf1pv = NULL;
+        PetscPointJacFn* Jf2pv = NULL;
+        PetscPointJacFn* Jf3pv = NULL;
 
-        const PetscPointJac Jf0vu = NULL;
-        const PetscPointJac Jf1vu = NULL;
-        const PetscPointJac Jf2vu = NULL;
-        const PetscPointJac Jf3vu = NULL;
+        PetscPointJacFn* Jf0vu = NULL;
+        PetscPointJacFn* Jf1vu = NULL;
+        PetscPointJacFn* Jf2vu = NULL;
+        PetscPointJacFn* Jf3vu = NULL;
 
-        const PetscPointJac Jf0vp = NULL;
-        const PetscPointJac Jf1vp = NULL;
-        const PetscPointJac Jf2vp = NULL;
-        const PetscPointJac Jf3vp = NULL;
+        PetscPointJacFn* Jf0vp = NULL;
+        PetscPointJacFn* Jf1vp = NULL;
+        PetscPointJacFn* Jf2vp = NULL;
+        PetscPointJacFn* Jf3vp = NULL;
 
-        const PetscPointJac Jf0vv = pylith::fekernels::Poroelasticity::Jf0vv_explicit;
-        const PetscPointJac Jf1vv = NULL;
-        const PetscPointJac Jf2vv = NULL;
-        const PetscPointJac Jf3vv = NULL;
+        PetscPointJacFn* Jf0vv = pylith::fekernels::Poroelasticity::Jf0vv_explicit;
+        PetscPointJacFn* Jf1vv = NULL;
+        PetscPointJacFn* Jf2vv = NULL;
+        PetscPointJacFn* Jf3vv = NULL;
 
         integrator->setLHSJacobianTriggers(pylith::feassemble::Integrator::NEW_JACOBIAN_TIME_STEP_CHANGE);
 
@@ -775,13 +776,13 @@ pylith::materials::Poroelasticity::_setKernelsDerivedField(pylith::feassemble::I
     kernels[0] = ProjectKernels("cauchy_stress", _rheology->getKernelCauchyStressVector(coordsys));
 
     const int spaceDim = coordsys->getSpaceDim();
-    const PetscPointFunc strainKernel =
+    const PetscPointFn* strainKernel =
         (3 == spaceDim) ? pylith::fekernels::Elasticity3D::infinitesimalStrain_asVector :
         (2 == spaceDim) ? pylith::fekernels::ElasticityPlaneStrain::infinitesimalStrain_asVector :
         NULL;
     kernels[1] = ProjectKernels("cauchy_strain", strainKernel);
 
-    const PetscPointFunc bulkDensity = pylith::fekernels::Poroelasticity::bulkDensity_asScalar;
+    const PetscPointFn* bulkDensity = pylith::fekernels::Poroelasticity::bulkDensity_asScalar;
 
     kernels[2] = ProjectKernels("bulk_density", bulkDensity);
 

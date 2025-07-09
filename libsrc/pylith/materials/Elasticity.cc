@@ -193,6 +193,7 @@ pylith::materials::Elasticity::createIntegrator(const pylith::topology::Field& s
     pylith::feassemble::IntegratorDomain* integrator = new pylith::feassemble::IntegratorDomain(this);assert(integrator);
     integrator->setLabelName(getLabelName());
     integrator->setLabelValue(getLabelValue());
+    integrator->createLabelDS(solution, solution.getMesh().getDimension());
 
     _setKernelsResidual(integrator, solution);
     _setKernelsJacobian(integrator, solution);
@@ -340,8 +341,8 @@ pylith::materials::Elasticity::getInterfaceKernelsResidual(const pylith::topolog
     case DYNAMIC:
         break;
     case DYNAMIC_IMEX: {
-        PetscBdPointFunc f0l = NULL;
-        PetscBdPointFunc f1l = NULL;
+        PetscBdPointFn* f0l = NULL;
+        PetscBdPointFn* f1l = NULL;
 
         switch (face) {
         case pylith::feassemble::IntegratorInterface::NEGATIVE_FACE:
@@ -381,10 +382,10 @@ pylith::materials::Elasticity::getInterfaceKernelsJacobian(const pylith::topolog
     case DYNAMIC:
         break;
     case DYNAMIC_IMEX: {
-        PetscBdPointJac Jf0ll = NULL;
-        PetscBdPointJac Jf1ll = NULL;
-        PetscBdPointJac Jf2ll = NULL;
-        PetscBdPointJac Jf3ll = NULL;
+        PetscBdPointJacFn* Jf0ll = NULL;
+        PetscBdPointJacFn* Jf1ll = NULL;
+        PetscBdPointJacFn* Jf2ll = NULL;
+        PetscBdPointJacFn* Jf3ll = NULL;
 
         switch (face) {
         case pylith::feassemble::IntegratorInterface::NEGATIVE_FACE:
@@ -451,7 +452,7 @@ pylith::materials::Elasticity::_setKernelsResidual(pylith::feassemble::Integrato
     const int bitGravity = _gravityField ? 0x2 : 0x0;
     const int bitUse = bitBodyForce | bitGravity;
 
-    PetscPointFunc r0 = NULL;
+    PetscPointFn* r0 = NULL;
     switch (bitUse) {
     case 0x1:
         r0 = pylith::fekernels::Elasticity::g0v_bodyforce;
@@ -467,13 +468,13 @@ pylith::materials::Elasticity::_setKernelsResidual(pylith::feassemble::Integrato
     default:
         PYLITH_COMPONENT_LOGICERROR("Unknown case (bitUse=" << bitUse << ") for residual kernels.");
     } // switch
-    const PetscPointFunc r1 = _rheology->getKernelf1v(coordsys);
+    const PetscPointFn* r1 = _rheology->getKernelf1v(coordsys);
 
     std::vector<ResidualKernels> kernels;
     switch (_formulation) {
     case QUASISTATIC: {
-        const PetscPointFunc f0u = r0;
-        const PetscPointFunc f1u = r1;
+        const PetscPointFn* f0u = r0;
+        const PetscPointFn* f1u = r1;
 
         kernels.resize(1);
         kernels[0] = ResidualKernels("displacement", pylith::feassemble::Integrator::LHS, f0u, f1u);
@@ -481,16 +482,16 @@ pylith::materials::Elasticity::_setKernelsResidual(pylith::feassemble::Integrato
     } // QUASISTATIC
     case DYNAMIC: {
         // Displacement
-        const PetscPointFunc f0u = pylith::fekernels::DispVel::f0u;
-        const PetscPointFunc f1u = NULL;
-        const PetscPointFunc g0u = pylith::fekernels::DispVel::g0u;
-        const PetscPointFunc g1u = NULL;
+        const PetscPointFn* f0u = pylith::fekernels::DispVel::f0u;
+        const PetscPointFn* f1u = NULL;
+        const PetscPointFn* g0u = pylith::fekernels::DispVel::g0u;
+        const PetscPointFn* g1u = NULL;
 
         // Velocity
-        const PetscPointFunc f0v = pylith::fekernels::Elasticity::f0v;
-        const PetscPointFunc f1v = NULL;
-        const PetscPointFunc g0v = r0;
-        const PetscPointFunc g1v = r1;
+        const PetscPointFn* f0v = pylith::fekernels::Elasticity::f0v;
+        const PetscPointFn* f1v = NULL;
+        const PetscPointFn* g0v = r0;
+        const PetscPointFn* g1v = r1;
 
         kernels.resize(4);
         kernels[0] = ResidualKernels("displacement", pylith::feassemble::Integrator::LHS, f0u, f1u);
@@ -501,16 +502,16 @@ pylith::materials::Elasticity::_setKernelsResidual(pylith::feassemble::Integrato
     } // DYNAMIC
     case DYNAMIC_IMEX: {
         // Displacement
-        const PetscPointFunc f0u = pylith::fekernels::DispVel::f0u;
-        const PetscPointFunc f1u = NULL;
-        const PetscPointFunc g0u = pylith::fekernels::DispVel::g0u;
-        const PetscPointFunc g1u = NULL;
+        const PetscPointFn* f0u = pylith::fekernels::DispVel::f0u;
+        const PetscPointFn* f1u = NULL;
+        const PetscPointFn* g0u = pylith::fekernels::DispVel::g0u;
+        const PetscPointFn* g1u = NULL;
 
         // Velocity
-        const PetscPointFunc f0v = pylith::fekernels::DispVel::f0v;
-        const PetscPointFunc f1v = NULL;
-        const PetscPointFunc g0v = r0;
-        const PetscPointFunc g1v = r1;
+        const PetscPointFn* f0v = pylith::fekernels::DispVel::f0v;
+        const PetscPointFn* f1v = NULL;
+        const PetscPointFn* g0v = r0;
+        const PetscPointFn* g1v = r1;
 
         kernels.resize(4);
         kernels[0] = ResidualKernels("displacement", pylith::feassemble::Integrator::LHS, f0u, f1u);
@@ -548,10 +549,10 @@ pylith::materials::Elasticity::_setKernelsJacobian(pylith::feassemble::Integrato
 
     switch (_formulation) {
     case QUASISTATIC: {
-        const PetscPointJac Jf0uu = NULL;
-        const PetscPointJac Jf1uu = NULL;
-        const PetscPointJac Jf2uu = NULL;
-        const PetscPointJac Jf3uu = _rheology->getKernelJf3vu(coordsys);
+        PetscPointJacFn* Jf0uu = NULL;
+        PetscPointJacFn* Jf1uu = NULL;
+        PetscPointJacFn* Jf2uu = NULL;
+        PetscPointJacFn* Jf3uu = _rheology->getKernelJf3vu(coordsys);
 
         integrator->setLHSJacobianTriggers(_rheology->getLHSJacobianTriggers());
 
@@ -570,15 +571,15 @@ pylith::materials::Elasticity::_setKernelsJacobian(pylith::feassemble::Integrato
 
     } // DYNAMIC_IMEX continue with DYNAMIC
     case DYNAMIC: {
-        const PetscPointJac Jf0uu = pylith::fekernels::DispVel::Jf0uu_stshift;
-        const PetscPointJac Jf1uu = NULL;
-        const PetscPointJac Jf2uu = NULL;
-        const PetscPointJac Jf3uu = NULL;
+        PetscPointJacFn* Jf0uu = pylith::fekernels::DispVel::Jf0uu_stshift;
+        PetscPointJacFn* Jf1uu = NULL;
+        PetscPointJacFn* Jf2uu = NULL;
+        PetscPointJacFn* Jf3uu = NULL;
 
-        const PetscPointJac Jf0vv = pylith::fekernels::Elasticity::Jf0vv;
-        const PetscPointJac Jf1vv = NULL;
-        const PetscPointJac Jf2vv = NULL;
-        const PetscPointJac Jf3vv = NULL;
+        PetscPointJacFn* Jf0vv = pylith::fekernels::Elasticity::Jf0vv;
+        PetscPointJacFn* Jf1vv = NULL;
+        PetscPointJacFn* Jf2vv = NULL;
+        PetscPointJacFn* Jf3vv = NULL;
 
         integrator->setLHSJacobianTriggers(pylith::feassemble::Integrator::NEW_JACOBIAN_TIME_STEP_CHANGE);
 
@@ -633,7 +634,7 @@ pylith::materials::Elasticity::_setKernelsDerivedField(pylith::feassemble::Integ
     kernels[0] = ProjectKernels("cauchy_stress", _rheology->getKernelCauchyStressVector(coordsys));
 
     const int spaceDim = coordsys->getSpaceDim();
-    const PetscPointFunc strainKernel =
+    const PetscPointFn* strainKernel =
         (3 == spaceDim) ? pylith::fekernels::Elasticity3D::infinitesimalStrain_asVector :
         (2 == spaceDim) ? pylith::fekernels::ElasticityPlaneStrain::infinitesimalStrain_asVector :
         NULL;

@@ -46,7 +46,7 @@ public:
              * @return RHS residual kernel for stress.
              */
             virtual
-            PetscPointFunc getKernelf1v(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
+            PetscPointFnWrapper getKernelf1v(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
 
             /** Get elastic constants kernel for RHS Jacobian G(t,s).
              *
@@ -55,7 +55,7 @@ public:
              * @return RHS Jacobian kernel for elastic constants.
              */
             virtual
-            PetscPointJac getKernelJf3vu(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
+            PetscPointJacFnWrapper getKernelJf3vu(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
 
             /** Get f0 kernel for LHS interface residual, F(t,s,dot{s}), for negative fault face.
              *
@@ -64,7 +64,7 @@ public:
              * @return LHS residual f0 kernel.
              */
             virtual
-            PetscBdPointFunc getKernelf0Neg(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
+            PetscBdPointFnWrapper getKernelf0Neg(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
 
             /** Get f0 kernel for LHS interface residual, F(t,s,dot{s}), for positive fault face.
              *
@@ -73,7 +73,7 @@ public:
              * @return LHS residual f0 kernel.
              */
             virtual
-            PetscBdPointFunc getKernelf0Pos(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
+            PetscBdPointFnWrapper getKernelf0Pos(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
 
             /** Get stress kernel for derived field.
              *
@@ -82,7 +82,7 @@ public:
              * @return Project kernel for computing stress subfield in derived field.
              */
             virtual
-            PetscPointFunc getKernelCauchyStressVector(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
+            PetscPointFnWrapper getKernelCauchyStressVector(const spatialdata::geocoords::CoordSys* coordsys) const = 0;
 
             /** Add kernels for updating state variables.
              *

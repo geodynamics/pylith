@@ -31,7 +31,7 @@ Implements `Material`.
 * `description`=\<str\>: Descriptive label for material (deprecated in v5.0; will be removed in v6.0).
   - **default value**: ''
   - **current value**: '', from {default}
-  - **validator**: <function validateDescription at 0x10608f2e0>
+  - **validator**: <function validateDescription at 0x10480b2e0>
 * `label`=\<str\>: Name of label for material. Currently only 'material-id' is allowed.
   - **default value**: 'material-id'
   - **current value**: 'material-id', from {default}
@@ -55,7 +55,6 @@ Example of setting `Poroelasticity` Pyre properties and facilities in a paramete
 
 :::{code-block} cfg
 [pylithapp.problem.materials.mat_poroelastic]
-description = Upper crust poroelastic material
 label_value = 3
 use_body_force = True
 use_source_density = False

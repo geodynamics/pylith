@@ -156,7 +156,7 @@ pylith::faults::KinSrc::getSlipSubfields(PetscVec slipLocalVec,
 
     _setFEConstants(*faultAuxiliaryField); // Constants are attached to the auxiliary field for the slip vector.
 
-    PetscPointFunc subfieldKernels[3];
+    PetscPointFn* subfieldKernels[3];
     size_t numSubfields = 0;
     if (bitSlipSubfields & GET_SLIP) {
         subfieldKernels[numSubfields++] = _slipFnKernel;

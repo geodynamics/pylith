@@ -56,8 +56,8 @@ public:
 
     /** Interpolate field to fine mesh level.
      *
-     * @param[out] vectorOut PETSc Vec with interpolated field.
-     * @param[in] vectorIn PETSc Vec with field to interpolate.
+     * @param[out] vectorOut Global PETSc Vec with interpolated field.
+     * @param[in] vectorIn Global PETSc Vec with field to interpolate.
      */
     void interpolate(const PetscVec* vectorOut,
                      const PetscVec& vectorIn);
@@ -68,7 +68,7 @@ private:
     struct Level {
         PetscDM dm;
         PetscMat interpolateMatrix;
-        PetscVec vector;
+        PetscVec vector; ///< Global vector.
     };
 
     std::vector<Level> _levels; ///< Information at each refinement level.

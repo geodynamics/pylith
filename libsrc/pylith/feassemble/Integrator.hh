@@ -43,7 +43,7 @@ public:
     /// Project kernels (pointwise functions) for updating state variables or computing derived fields.
     struct ProjectKernels {
         std::string subfield; ///< Name of subfield for function.
-        PetscPointFunc f; ///< Point-wise function.
+        PetscPointFn* f; ///< Point-wise function.
 
         ProjectKernels(void) :
             subfield(""),
@@ -51,7 +51,7 @@ public:
 
 
         ProjectKernels(const char* subfieldValue,
-                       PetscPointFunc fValue) :
+                       PetscPointFn* fValue) :
             subfield(subfieldValue),
             f(fValue) {}
 
@@ -69,6 +69,10 @@ public:
 
     /// Destructor
     virtual ~Integrator(void);
+
+    /// Deallocate storage.
+    virtual
+    void deallocate(void);
 
     /** Set name of label used to identify integration domain.
      *
@@ -119,6 +123,14 @@ public:
      * @param[in] value Triggers for needing new LHS lumped Jacobian.
      */
     void setLHSJacobianLumpedTriggers(const int value);
+
+    /** Create PETSc DS for label and label value.
+     *
+     * @param[in] solution Solution field.
+     * @param[in] dim If nonnegative, limit label values to dimension.
+     */
+    void createLabelDS(const pylith::topology::Field& solution,
+                       const int dim);
 
     /** Initialize integration domain, auxiliary field, and derived field. Update observers.
      *
@@ -230,6 +242,7 @@ protected:
 
     std::string _labelName; ///< Name of label associated with integration domain.
     int _labelValue; ///< Value of label associated with integration domain.
+    pylith::feassemble::DSLabelAccess* _dsLabel; ///< Information about integration (PETSc DS, Label, label value, etc).
 
     int _lhsJacobianTriggers; // Triggers for needing new LHS Jacobian.
     int _lhsJacobianLumpedTriggers; // Triggers for needing new LHS lumped Jacobian.

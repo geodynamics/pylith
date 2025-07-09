@@ -75,8 +75,8 @@ class TestCase(FullTestCase):
             ),
         ]
 
-    def run_pylith(self, testName, args):
-        FullTestCase.run_pylith(self, testName, args, shearnoslip_gendb.GenerateDB)
+    def run_pylith(self, testName, args, nprocs=1):
+        FullTestCase.run_pylith(self, testName, args, shearnoslip_gendb.GenerateDB, nprocs=nprocs)
 
 
 # -------------------------------------------------------------------------------------------------
@@ -87,8 +87,7 @@ class TestQuadGmsh(TestCase):
         self.mesh = meshes.QuadGmsh()
         super().setUp()
 
-        TestCase.run_pylith(self, self.name, ["shearnoslip.cfg", "shearnoslip_quad.cfg"])
-        return
+        TestCase.run_pylith(self, self.name, ["shearnoslip.cfg", "shearnoslip_quad.cfg"], nprocs=1)
 
 
 # -------------------------------------------------------------------------------------------------
@@ -99,8 +98,7 @@ class TestTriGmsh(TestCase):
         self.mesh = meshes.TriGmsh()
         super().setUp()
 
-        TestCase.run_pylith(self, self.name, ["shearnoslip.cfg", "shearnoslip_tri.cfg"])
-        return
+        TestCase.run_pylith(self, self.name, ["shearnoslip.cfg", "shearnoslip_tri.cfg"], nprocs=1)
 
 
 # -------------------------------------------------------------------------------------------------
@@ -111,8 +109,7 @@ class TestQuadGmshRefineOutput(TestCase):
         self.mesh = meshes.QuadGmshRefineOutput()
         super().setUp()
 
-        TestCase.run_pylith(self, self.name, ["shearnoslip.cfg", "shearnoslip_refineoutput.cfg", "shearnoslip_refineoutput_quad.cfg"])
-        return
+        TestCase.run_pylith(self, self.name, ["shearnoslip.cfg", "shearnoslip_refineoutput.cfg", "shearnoslip_refineoutput_quad.cfg"], nprocs=2)
 
 
 # -------------------------------------------------------------------------------------------------
@@ -123,8 +120,7 @@ class TestTriGmshRefineOutput(TestCase):
         self.mesh = meshes.TriGmshRefineOutput()
         super().setUp()
 
-        TestCase.run_pylith(self, self.name, ["shearnoslip.cfg", "shearnoslip_refineoutput.cfg", "shearnoslip_refineoutput_tri.cfg"])
-        return
+        TestCase.run_pylith(self, self.name, ["shearnoslip.cfg", "shearnoslip_refineoutput.cfg", "shearnoslip_refineoutput_tri.cfg"], nprocs=1)
 
 
 # -------------------------------------------------------------------------------------------------

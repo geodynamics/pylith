@@ -31,7 +31,7 @@ Implements `Material`.
 * `description`=\<str\>: Descriptive label for material (deprecated in v5.0; will be removed in v6.0).
   - **default value**: ''
   - **current value**: '', from {default}
-  - **validator**: <function validateDescription at 0x10608f2e0>
+  - **validator**: <function validateDescription at 0x10480b2e0>
 * `label`=\<str\>: Name of label for material. Currently only 'material-id' is allowed.
   - **default value**: 'material-id'
   - **current value**: 'material-id', from {default}
@@ -50,7 +50,6 @@ Example of setting `Elasticity` Pyre properties and facilities in a parameter fi
 :::{code-block} cfg
 [pylithapp.problem.materials.mat_elastic]
 label_value = 4
-description = Upper crust elastic material
 use_body_force = False
 bulk_rheology = pylith.materials.IsotropicLinearElasticity
 

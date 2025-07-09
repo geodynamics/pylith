@@ -67,9 +67,9 @@ void
 pylith::feassemble::IntegratorBoundary::deallocate(void) {
     PYLITH_METHOD_BEGIN;
 
-    Integrator::deallocate();
-
     delete _boundaryMesh;_boundaryMesh = NULL;
+
+    Integrator::deallocate();
 
     PYLITH_METHOD_END;
 } // deallocate
@@ -115,13 +115,13 @@ pylith::feassemble::IntegratorBoundary::setKernelsResidual(const std::vector<Res
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" setKernelsResidual(# kernels="<<kernels.size()<<")");
 
-    PetscErrorCode err;
-    DSLabelAccess dsLabel(solution.getDM(), _labelName.c_str(), _labelValue);
+    PetscErrorCode err = PETSC_SUCCESS;
+    assert(_dsLabel);
     for (size_t i = 0; i < kernels.size(); ++i) {
         const PetscInt i_field = solution.getSubfieldInfo(kernels[i].subfield.c_str()).index;
         const PetscInt i_part = kernels[i].part;
-        if (dsLabel.weakForm()) {
-            err = PetscWeakFormAddBdResidual(dsLabel.weakForm(), dsLabel.label(), dsLabel.value(), i_field, i_part,
+        if (_dsLabel->weakForm()) {
+            err = PetscWeakFormAddBdResidual(_dsLabel->weakForm(), _dsLabel->label(), _dsLabel->value(), i_field, i_part,
                                              kernels[i].r0, kernels[i].r1);PYLITH_CHECK_ERROR(err);
         } // if
 
@@ -139,7 +139,7 @@ pylith::feassemble::IntegratorBoundary::setKernelsResidual(const std::vector<Res
 
     pythia::journal::debug_t debug(GenericComponent::getName());
     if (debug.state()) {
-        err = PetscDSView(dsLabel.ds(), PETSC_VIEWER_STDOUT_WORLD);PYLITH_CHECK_ERROR(err);
+        err = PetscDSView(_dsLabel->ds(), PETSC_VIEWER_STDOUT_WORLD);PYLITH_CHECK_ERROR(err);
     } // if
 
     PYLITH_METHOD_END;
@@ -230,21 +230,23 @@ pylith::feassemble::IntegratorBoundary::computeRHSResidual(pylith::topology::Fie
     const PylithReal t = integrationData.getScalar(pylith::feassemble::IntegrationData::time);
     const PylithReal dt = integrationData.getScalar(pylith::feassemble::IntegrationData::time_step);
 
-    DSLabelAccess dsLabel(solution->getDM(), _labelName.c_str(), _labelValue);
     _setKernelConstants(*solution, dt);
 
     PetscFormKey key;
-    key.label = dsLabel.label();
-    key.value = dsLabel.value();
+    assert(_dsLabel);
+    key.label = _dsLabel->label();
+    key.value = _dsLabel->value();
     key.field = solution->getSubfieldInfo(_subfieldName.c_str()).index;
     key.part = pylith::feassemble::Integrator::RHS;
 
-    PetscErrorCode err;
+    PetscErrorCode err = PETSC_SUCCESS;
+    PetscDMField coordField = NULL;
     assert(solution->getLocalVector());
     assert(residual->getLocalVector());
     PetscVec solutionDotVec = NULL;
-    err = DMPlexComputeBdResidualSingle(dsLabel.dm(), t, dsLabel.weakForm(), key, solution->getLocalVector(), solutionDotVec,
-                                        residual->getLocalVector());PYLITH_CHECK_ERROR(err);
+    err = DMGetCoordinateField(_dsLabel->dm(), &coordField);PYLITH_CHECK_ERROR(err);
+    err = DMPlexComputeBdResidualSingleByKey(_dsLabel->dm(), _dsLabel->weakForm(), key, _dsLabel->pointsIS(), solution->getLocalVector(),
+                                             solutionDotVec, t, coordField, residual->getLocalVector());PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // computeRHSResidual
@@ -267,20 +269,22 @@ pylith::feassemble::IntegratorBoundary::computeLHSResidual(pylith::topology::Fie
     const PylithReal t = integrationData.getScalar(pylith::feassemble::IntegrationData::time);
     const PylithReal dt = integrationData.getScalar(pylith::feassemble::IntegrationData::time_step);
 
-    DSLabelAccess dsLabel(solution->getDM(), _labelName.c_str(), _labelValue);
     _setKernelConstants(*solution, dt);
 
     PetscFormKey key;
-    key.label = dsLabel.label();
-    key.value = dsLabel.value();
+    assert(_dsLabel);
+    key.label = _dsLabel->label();
+    key.value = _dsLabel->value();
     key.field = solution->getSubfieldInfo(_subfieldName.c_str()).index;
     key.part = pylith::feassemble::Integrator::LHS;
 
-    PetscErrorCode err;
+    PetscErrorCode err = PETSC_SUCCESS;
+    PetscDMField coordField = NULL;
     assert(solution->getLocalVector());
     assert(residual->getLocalVector());
-    err = DMPlexComputeBdResidualSingle(dsLabel.dm(), t, dsLabel.weakForm(), key, solution->getLocalVector(),
-                                        solutionDot->getLocalVector(), residual->getLocalVector());PYLITH_CHECK_ERROR(err);
+    err = DMGetCoordinateField(_dsLabel->dm(), &coordField);PYLITH_CHECK_ERROR(err);
+    err = DMPlexComputeBdResidualSingleByKey(_dsLabel->dm(), _dsLabel->weakForm(), key, _dsLabel->pointsIS(), solution->getLocalVector(),
+                                             solutionDot->getLocalVector(), t, coordField, residual->getLocalVector());PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
 } // computeLHSResidual
@@ -338,13 +342,13 @@ pylith::feassemble::IntegratorBoundary::_computeDiagnosticField(void) {
 
     const size_t numKernels = _kernelsDiagnosticField.size();
     assert(numKernels > 0);
-    PetscBdPointFunc* kernelsArray = (numKernels > 0) ? new PetscBdPointFunc[numKernels] : NULL;
+    PetscBdPointFn** kernelsArray = (numKernels > 0) ? new PetscBdPointFn*[numKernels] : NULL;
     for (size_t iKernel = 0; iKernel < numKernels; ++iKernel) {
         const pylith::topology::Field::SubfieldInfo& sinfo = _diagnosticField->getSubfieldInfo(_kernelsDiagnosticField[iKernel].subfield.c_str());
         kernelsArray[sinfo.index] = _kernelsDiagnosticField[iKernel].f;
     } // for
 
-    PetscErrorCode err = 0;
+    PetscErrorCode err = PETSC_SUCCESS;
     PetscDM diagnosticDM = _diagnosticField->getDM();
     PetscDMLabel diagnosticFieldLabel = NULL;
     const PetscInt labelValue = 1;

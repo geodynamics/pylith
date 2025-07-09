@@ -33,8 +33,8 @@ class OutputSolnPoints(OutputSoln, ModuleOutputSolnPoints):
             reader.filename = stations.txt
 
             # Skip two time steps between output.
-            output_trigger = pylith.meshio.OutputTriggerStep
-            output_trigger.num_skip = 2
+            trigger = pylith.meshio.OutputTriggerStep
+            trigger.num_skip = 2
 
             # Write output to HDF5 file with name `domain.h5`.
             writer = pylith.meshio.DataWriterHDF5

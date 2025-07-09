@@ -27,7 +27,7 @@ public:
     /// Project kernels (pointwise functions) for computing diagnostic fields.
     struct ProjectKernels {
         std::string subfield; ///< Name of subfield for function.
-        PetscBdPointFunc f; ///< Point-wise function.
+        PetscBdPointFn* f; ///< Point-wise function.
 
         ProjectKernels(void) :
             subfield(""),
@@ -35,7 +35,7 @@ public:
 
 
         ProjectKernels(const char* subfieldValue,
-                       PetscBdPointFunc fValue) :
+                       PetscBdPointFn* fValue) :
             subfield(subfieldValue),
             f(fValue) {}
 

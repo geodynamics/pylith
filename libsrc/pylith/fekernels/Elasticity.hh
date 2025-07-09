@@ -116,7 +116,7 @@ public:
     // --------------------------------------------------------------------------------------------
     /** f0 function for elasticity equation for velocity field.
      *
-     * ISA PetscPointFunc
+     * ISA PetscPointFn*
      *
      * Solution fields: [disp(dim), vel(dim)]
      * Auxiliary fields: [density(1), ...]
@@ -238,7 +238,7 @@ public:
     // --------------------------------------------------------------------------------------------
     /** g0 function for elasticity equation with gravitational body force.
      *
-     * ISA PetscPointFunc
+     * ISA PetscPointFn*
      *
      * \vec{g0} = \vec{f}(t)
      *
@@ -290,7 +290,7 @@ public:
     /** g0 function for elasticity equation with body force for the velocity field (dynamic)
      * and the f0 function for the displacement field (quasi-static).
      *
-     * ISA PetscPointFunc
+     * ISA PetscPointFn*
      *
      * \vec{g0} = \vec{f}(t)
      *
@@ -337,7 +337,7 @@ public:
     /** g0 function for elasticity with both gravitational and body forces for the velocity field (dynamic)
      * and the f0 function for the displacement field (quasi-static).
      *
-     * ISA PetscPointFunc
+     * ISA PetscPointFn*
      *
      * Solution fields: [...]
      * Auxiliary fields: [density(1), body_force(dim), gravity_field(dim), ...]
@@ -492,7 +492,7 @@ public:
     // --------------------------------------------------------------------------------------------
     /** Calculate vector with infinitesimal strain for 2D plane strain elasticity.
      *
-     * ISA PetscPointFunc
+     * ISA PetscPointFn*
      *
      * Order of output components is xx, yy, zz, xy.
      *
@@ -577,7 +577,7 @@ public:
     // --------------------------------------------------------------------------------------------
     /** Calculate vector with infinitesimal strain for 3D elasticity.
      *
-     * ISA PetscPointFunc
+     * ISA PetscPointFn*
      *
      * Order of output components is xx, yy, zz, xy, yz, xz.
      *
