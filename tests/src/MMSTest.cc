@@ -187,14 +187,20 @@ pylith::testing::MMSTest::testJacobianFiniteDiff(void) {
     if (debug.state()) {
         err = PetscOptionsSetValue(NULL, "-snes_test_jacobian_view", "");PYLITH_CHECK_ERROR(err);
     } // if
-    err = PetscOptionsSetValue(NULL, "-snes_test_jacobian", "1.0e-6");PYLITH_CHECK_ERROR(err);
     err = PetscOptionsSetValue(NULL, "-snes_error_if_not_converged", "false");PYLITH_CHECK_ERROR(err);
     err = SNESSetFromOptions(_problem->getPetscSNES());PYLITH_CHECK_ERROR(err);
 
-    _problem->solve();
-    INFO("IMPORTANT: You must check the Jacobian values printed here manually!\n"
-         << "           They should be O(1.0e-6) or smaller.\n");
-    err = PetscOptionsClearValue(NULL, "-snes_test_jacobian");PYLITH_CHECK_ERROR(err);
+    PetscReal jacobianNorm = 1.0e+20, diffNorm = 1.0e+20;
+    err = TSSetUp(_problem->getPetscTS());PYLITH_CHECK_ERROR(err);
+    PetscMat jacobian = PETSC_NULLPTR, jacobianPreconditioner = PETSC_NULLPTR;
+    err = TSGetIJacobian(_problem->getPetscTS(), &jacobian, &jacobianPreconditioner, NULL, NULL);PYLITH_CHECK_ERROR(err);
+    err = SNESComputeJacobian(_problem->getPetscSNES(), _solutionExactVec, jacobian, jacobianPreconditioner);PYLITH_CHECK_ERROR(err);
+    err = SNESTestJacobian(_problem->getPetscSNES(), &jacobianNorm, &diffNorm);PYLITH_CHECK_ERROR(err);
+
+    INFO("jacobianNorm=" << jacobianNorm << ", ||Code Jacobian - Finite Diff Jacobain||="<<diffNorm);
+    const PetscReal jacobianTolerance = 100 * _tolerance * jacobianNorm;
+    REQUIRE_THAT(jacobianNorm, !Catch::Matchers::WithinAbs(0.0, _tolerance));
+    REQUIRE_THAT(diffNorm, Catch::Matchers::WithinAbs(0.0, jacobianTolerance));
     err = PetscOptionsClearValue(NULL, "-snes_test_jacobian_view");PYLITH_CHECK_ERROR(err);
 
     PYLITH_METHOD_END;
