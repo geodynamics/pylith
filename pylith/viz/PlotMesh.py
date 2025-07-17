@@ -44,7 +44,7 @@ def cli(plotter, data, args):
 
 
 def add_args(parser):
-    QUALITU_METRICS = (
+    QUALITY_METRICS = (
         "area",
         "aspect_beta",
         "aspect_frobenius",
@@ -75,5 +75,5 @@ def add_args(parser):
         "volume",
         "warpage",
     )
-    parser.add_argument("--mesh-quality", action="store", help="Show mesh quality metric.", dest="quality_metric", choices=QUALITU_METRICS)
+    parser.add_argument("--mesh-quality", action="store", help="Show mesh quality metric.", dest="quality_metric", choices=QUALITY_METRICS)
     parser.set_defaults(func=cli)
