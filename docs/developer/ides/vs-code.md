@@ -20,6 +20,9 @@ If you are working in VS Code with local source code, then we recommend setting 
 | `PROJ_INCDIR`        | Directory containing Proj header files [^vscode]        |
 | `CATCH_INCDIR`       | Directory containing Catch2 header files [^vscode]      |
 
+[^vscode]: Used in VS Code tasks.
+
+
 ## Starting VS Code
 
 If you have PyLith source code on your local machine, then it is best to start VS Code from a terminal in which you have activated the PyLith virtual environment.

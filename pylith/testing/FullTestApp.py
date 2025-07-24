@@ -9,7 +9,7 @@
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
 # @file pylith/testing/FullTestApp.py
-
+#
 # @brief Python application for Python full-scale tests.
 
 import unittest
