@@ -67,30 +67,29 @@ We can write the trace of the strain tensor as the dot product of the gradient a
 ```{table} Mathematical notation for poroelasticity with infinitesimal strain.
 :name: tab:notation:poroelasticity
 
-| **Category**                   |   **Symbol**    | **Description**                                                                                               |
-|:-------------------------------|:---------------:|:--------------------------------------------------------------------------------------------------------------|
-| Unknowns                       |    $\vec{u}$    | Displacement field                                                                                            |
-|                                |    $\vec{v}$    | Velocity field                                                                                                |
-|                                |       $p$       | Pressure field (corresponds to pore fluid pressure)                                                           |
-|                                | $\epsilon_{v}$  | Volumetric (trace) strain                                                                                     |
-| Derived quantities             |  $\boldsymbol{\sigma}$  | Cauchy stress tensor                                                                                  |
-|                                | $\boldsymbol{\epsilon}$ | Cauchy strain tensor                                                                                  |
-|                                |     $\zeta$     | Variation of fluid content (variation of fluid vol. per unit vol. of PM), $\alpha \epsilon_{v} + \frac{p}{M}$ |
-|                                |   $\rho_{b}$    | Bulk density, $\left(1 - \phi\right) \rho_{s} + \phi \rho_{f}$                                                |
-|                                |    $\vec{q}$    | Darcy flux, $-\frac{\boldsymbol{k}}{\mu_{f}} \cdot \left(\nabla p - \vec{f}_{f}\right)$                       |
-|                                |       $M$       | Biot modulus                                                                                                  |
-| Common constitutive parameters |   $\rho_{f}$    | Fluid density                                                                                                 |
-|                                |   $\rho_{s}$    | Solid (matrix) density                                                                                        |
-|                                |     $\phi$      | Porosity                                                                                                      |
-|                                |    $\boldsymbol{k}$     | Permeability                                                                                          |
-|                                |    $\mu_{f}$    | Fluid viscosity                                                                                               |
-|                                |     $K_{s}$     | Solid grain bulk modulus                                                                                      |
-|                                |     $K_{f}$     | Fluid bulk modulus                                                                                            |
-|                                |     $K_{d}$     | Drained bulk modulus                                                                                          |
-|                                |    $\alpha$     | Biot coefficient, $1 - \frac{K_{d}}{K_{s}}$                                                                   |
-| Source terms                   |    $\vec{f}$    | Body force per unit volume, for example: $\rho_{b} \vec{g}$                                                   |
-|                                |  $\vec{f}_{f}$  | Fluid body force, for example: $\rho_{f} \vec{g}$                                                             |
-|                                |    $\gamma$     | Source density; rate of injected fluid per unit volume of the porous solid                                    |
+| **Category**                   |       **Symbol**        | **Description**                                                                                               |
+| :----------------------------- | :---------------------: | :------------------------------------------------------------------------------------------------------------ |
+| Unknowns                       |        $\vec{u}$        | Displacement field                                                                                            |
+|                                |        $\vec{v}$        | Velocity field                                                                                                |
+|                                |           $p$           | Pressure field (corresponds to pore fluid pressure)                                                           |
+|                                |     $\epsilon_{v}$      | Volumetric (trace) strain                                                                                     |
+| Derived quantities             |  $\boldsymbol{\sigma}$  | Cauchy stress tensor                                                                                          |
+|                                | $\boldsymbol{\epsilon}$ | Cauchy strain tensor                                                                                          |
+|                                |         $\zeta$         | Variation of fluid content (variation of fluid vol. per unit vol. of PM), $\alpha \epsilon_{v} + \frac{p}{M}$ |
+|                                |       $\rho_{b}$        | Bulk density, $\left(1 - \phi\right) \rho_{s} + \phi \rho_{f}$                                                |
+|                                |        $\vec{q}$        | Darcy flux, $-\frac{\boldsymbol{k}}{\mu_{f}} \cdot \left(\nabla p - \vec{f}_{f}\right)$                       |
+| Common constitutive parameters |       $\rho_{s}$        | Solid (matrix) density                                                                                        |
+|                                |       $\rho_{f}$        | Fluid density                                                                                                 |
+|                                |        $\mu_{f}$        | Fluid viscosity                                                                                               |
+|                                |         $\phi$          | Porosity                                                                                                      |
+|                                |          $\mu$          | Shear modulus                                                                                                 |
+|                                |         $K_{d}$         | Drained bulk modulus                                                                                          |
+|                                |        $\alpha$         | Biot coefficient, $1 - \frac{K_{d}}{K_{s}}$                                                                   |
+|                                |           $M$           | Biot modulus                                                                                                  |
+|                                |    $\boldsymbol{k}$     | Permeability                                                                                                  |
+| Source terms                   |        $\vec{f}$        | Body force per unit volume, for example: $\rho_{b} \vec{g}$                                                   |
+|                                |      $\vec{f}_{f}$      | Fluid body force, for example: $\rho_{f} \vec{g}$                                                             |
+|                                |        $\gamma$         | Source density; rate of injected fluid per unit volume of the porous solid                                    |
 ```
 
 :::{toctree}
