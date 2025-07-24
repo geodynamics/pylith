@@ -189,7 +189,7 @@ pylith::materials::Query::biotModulusFromInput(const char* subfieldName,
     const size_t numDBValues = 4;
     const char* dbValues[numDBValues] = {
         "fluid_bulk_modulus",
-        "solid_bulk_modulus",
+        "drained_bulk_modulus",
         "biot_coefficient",
         "porosity"
     };
@@ -482,29 +482,30 @@ pylith::materials::_Query::inputToBiotModulus(PylithScalar valueSubfield[],
     assert(4 == dbIndices.size());
 
     const size_t i_fluid_bulk_modulus = 0;assert(size_t(dbIndices[i_fluid_bulk_modulus]) < dbValues.size());
-    const size_t i_solid_bulk_modulus = 1;assert(size_t(dbIndices[i_solid_bulk_modulus]) < dbValues.size());
+    const size_t i_drained_bulk_modulus = 1;assert(size_t(dbIndices[i_drained_bulk_modulus]) < dbValues.size());
     const size_t i_biot_coefficient = 2;assert(size_t(dbIndices[i_biot_coefficient]) < dbValues.size());
     const size_t i_porosity = 3;assert(size_t(dbIndices[i_porosity]) < dbValues.size());
 
     const PylithScalar fluid_bulk_modulus = dbValues[dbIndices[i_fluid_bulk_modulus]];
-    const PylithScalar solid_bulk_modulus = dbValues[dbIndices[i_solid_bulk_modulus]];
+    const PylithScalar drained_bulk_modulus = dbValues[dbIndices[i_drained_bulk_modulus]];
     const PylithScalar biot_coefficient = dbValues[dbIndices[i_biot_coefficient]];
     const PylithScalar porosity = dbValues[dbIndices[i_porosity]];
 
-    valueSubfield[0] = 1.0 / ( porosity / fluid_bulk_modulus + (biot_coefficient - porosity) / solid_bulk_modulus );
+    const PylithScalar solid_bulk_modulus = drained_bulk_modulus / (1.0 - biot_coefficient);
+    PylithScalar biot_modulus = 1.0 / ( porosity / fluid_bulk_modulus + (biot_coefficient - porosity) / solid_bulk_modulus );
+    valueSubfield[0] = biot_modulus;
 
     std::ostringstream msg;
     if (porosity < 0) {
         msg << "Found negative porosity (" << porosity << ").";
     } // if
-    if (biot_coefficient <= 0) {
-        msg << "Found non-positive biot coefficient (" << biot_coefficient << ").";
+    if ((biot_coefficient <= 0) || (biot_coefficient >= 1.0)) {
+        msg << "Biot coefficient out or range (0, 1) (" << biot_coefficient << ").";
     } // if
 
     // Debug
-    PylithScalar biot_modulus = 1.0 / ( porosity / fluid_bulk_modulus + (biot_coefficient - porosity) / solid_bulk_modulus );
     if (biot_modulus <= 0) {
-        msg << "biot modulus (" << biot_modulus << ") wrong. Kfl: " << fluid_bulk_modulus << " Ksg: " << solid_bulk_modulus << " phi: " << porosity << " alpha: " << biot_coefficient;
+        msg << "biot modulus (" << biot_modulus << ") wrong. K_f: " << fluid_bulk_modulus << " Ksg: " << solid_bulk_modulus << " phi: " << porosity << " alpha: " << biot_coefficient;
     } // if
 
     PYLITH_METHOD_RETURN(msg.str());
