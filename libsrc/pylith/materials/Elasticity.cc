@@ -300,14 +300,9 @@ pylith::materials::Elasticity::getSolverDefaults(const bool isParallel,
     case pylith::problems::Physics::QUASISTATIC:
         options->add("-ts_type", "beuler");
 
-        if (!hasFault) {
-            if (!isParallel) {
-                options->add("-pc_type", "lu");
-            } else {
-                options->add("-pc_type", "gamg");
-            } // if/else
-        } else {
-            options->add("-pc_type", "gamg");
+        options->add("-pc_type", "gamg");
+
+        if (hasFault) {
             options->add("-dm_reorder_section");
             options->add("-dm_reorder_section_type", "cohesive");
             options->add("-mg_fine_pc_type", "vpbjacobi");

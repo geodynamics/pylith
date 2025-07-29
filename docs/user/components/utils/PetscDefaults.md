@@ -35,9 +35,10 @@ Example of setting `PetscDefaults` Pyre properties and facilities in a parameter
 :::{code-block} cfg
 [pylithapp.problem.petsc_defaults]
 solver = True
-monitors = True
 parallel = False
+monitors = True
 initial_guess = True
+collective_io = True
 testing = False
 :::
 

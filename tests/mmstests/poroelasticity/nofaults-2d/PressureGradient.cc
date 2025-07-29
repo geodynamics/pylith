@@ -14,7 +14,6 @@
 
 #include "pylith/problems/TimeDependent.hh" // USES TimeDependent
 #include "pylith/topology/Field.hh" // USES pylith::topology::Field::Discretization
-#include "pylith/utils/journals.hh" // USES pythia::journal::debug_t
 
 namespace pylith {
     class _PressureGradient;
