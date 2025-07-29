@@ -5,7 +5,7 @@
 # Copyright (c) 2010-2025, University of California, Davis and the PyLith Development Team.
 # All rights reserved.
 #
-# See https://mit-license.org/ and LICENSE.md and for license information. 
+# See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
 
 from pythia.pyre.components.Component import Component
@@ -16,13 +16,15 @@ class PetscDefaults(Component):
     Flags controlling use of default PETSc settings.
     No user-specified settings will be overwritten.
     """
+
     DOC_CONFIG = {
         "cfg": """
             [pylithapp.problem.petsc_defaults]
             solver = True
-            monitors = True
             parallel = False
+            monitors = True
             initial_guess = True
+            collective_io = True
             testing = False
         """
     }
@@ -48,12 +50,12 @@ class PetscDefaults(Component):
     testing.meta["tip"] = "Use default PETSc testing options."
 
     def __init__(self, name="petscdefaults"):
-        """Constructor.
-        """
+        """Constructor."""
         Component.__init__(self, name)
 
     def flags(self):
         from .utils import PetscDefaults as ModuleDefaults
+
         value = ModuleDefaults.NONE
         if self.solver:
             value |= ModuleDefaults.SOLVER
@@ -72,9 +74,9 @@ class PetscDefaults(Component):
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
+
 def petsc_defaults():
-    """Factory associated with PetscDefaults.
-    """
+    """Factory associated with PetscDefaults."""
     return PetscDefaults()
 
 
