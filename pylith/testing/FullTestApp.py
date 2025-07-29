@@ -51,6 +51,7 @@ class Check(object):
         exact_soln=None,
         tolerance=None,
         scale=1.0,
+        final_time_only=False,
         defaults={},
     ):
         """Set parameters for checking PyLith output.
@@ -72,12 +73,15 @@ class Check(object):
                 Tolerance for use in tests.
             scale (float):
                 Scale for nondimensionalizing results.
+            final_time_only (bool):
+                Only check final time step.
             defaults (dict):
                 Dictionary with default values.
         """
         self.tolerance = 1.0e-5
         self.zero_tolerance = 1.0e-10
         self.scale = scale
+        self.final_time_only = final_time_only
         self.vertex_fields = []
         self.cell_fields = []
 
@@ -111,6 +115,7 @@ class FullTestCase(unittest.TestCase):
         super().setUp()
         self.name = None
         self.mesh = None
+        self.checks = []
 
     def test_output(self):
         for check in self.checks:
@@ -216,7 +221,13 @@ class HDF5Checker(object):
         return self.cellCentroids
 
     def checkVertexField(
-        self, fieldName, mesh_entity, exact_soln, tolerance, zero_tolerance
+        self,
+        fieldName,
+        mesh_entity,
+        exact_soln,
+        tolerance,
+        zero_tolerance,
+        final_time_only,
     ):
         self.testcase.assertTrue("vertex_fields" in self.h5.keys())
         fieldsH5 = self.h5["vertex_fields"].keys()
@@ -224,7 +235,7 @@ class HDF5Checker(object):
             fieldName in fieldsH5, f"Could not find field in vertex fields {fieldsH5}"
         )
         field = self.h5["vertex_fields/" + fieldName][:]
-        if len(field.shape) == 3:
+        if len(field.shape) == 3 and final_time_only:
             dims = field.shape
             field = field[-1, :, :].reshape(1, dims[1], dims[2])
 
@@ -239,7 +250,13 @@ class HDF5Checker(object):
         return
 
     def checkCellField(
-        self, fieldName, mesh_entity, exact_soln, tolerance, zero_tolerance
+        self,
+        fieldName,
+        mesh_entity,
+        exact_soln,
+        tolerance,
+        zero_tolerance,
+        final_time_only,
     ):
         self.testcase.assertTrue(
             "cell_fields" in self.h5.keys(),
@@ -250,7 +267,7 @@ class HDF5Checker(object):
             fieldName in fieldsH5, f"Could not find field in cell fields {fieldsH5}"
         )
         field = self.h5["cell_fields/" + fieldName][:]
-        if len(field.shape) == 3:
+        if len(field.shape) == 3 and final_time_only:
             dims = field.shape
             field = field[-1, :, :].reshape(1, dims[1], dims[2])
 
@@ -343,17 +360,28 @@ def check_data(testcase, filename, check, mesh_entity, mesh):
 
     tolerance = check.tolerance * check.scale
     zero_tolerance = check.zero_tolerance * check.scale
+    final_time_only = check.final_time_only
 
     for field in check.vertex_fields:
         with testcase.subTest(vertex_field=field):
             checker.checkVertexField(
-                field, mesh_entity, check.exact_soln, tolerance, zero_tolerance
+                field,
+                mesh_entity,
+                check.exact_soln,
+                tolerance,
+                zero_tolerance,
+                final_time_only,
             )
 
     for field in check.cell_fields:
         with testcase.subTest(cell_field=field):
             checker.checkCellField(
-                field, mesh_entity, check.exact_soln, tolerance, zero_tolerance
+                field,
+                mesh_entity,
+                check.exact_soln,
+                tolerance,
+                zero_tolerance,
+                final_time_only,
             )
     return
 
