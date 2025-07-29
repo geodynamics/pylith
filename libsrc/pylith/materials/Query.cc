@@ -499,8 +499,8 @@ pylith::materials::_Query::inputToBiotModulus(PylithScalar valueSubfield[],
     if (porosity < 0) {
         msg << "Found negative porosity (" << porosity << ").";
     } // if
-    if ((biot_coefficient <= 0) || (biot_coefficient >= 1.0)) {
-        msg << "Biot coefficient out or range (0, 1) (" << biot_coefficient << ").";
+    if ((biot_coefficient <= 0) || (biot_coefficient > 1.0)) {
+        msg << "Biot coefficient of range (0, 1] (" << biot_coefficient << ").";
     } // if
 
     // Debug
