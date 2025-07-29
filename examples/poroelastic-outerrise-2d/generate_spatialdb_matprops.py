@@ -84,7 +84,7 @@ vertices = numpy.array([X_flat, Y_flat]).T
 
 field_names = ["solid_density", "fluid_density", "fluid_viscosity", \
                "porosity", "shear_modulus", "drained_bulk_modulus", "biot_coefficient", 
-               "fluid_bulk_modulus", "solid_bulk_modulus", "isotropic_permeability"]
+               "fluid_bulk_modulus", "isotropic_permeability"]
 
 field_units = ["kg/m**3", "kg/m**3", "Pa*s", \
                "none", "Pa", "Pa", "none", \
@@ -92,11 +92,11 @@ field_units = ["kg/m**3", "kg/m**3", "Pa*s", \
 
 field_data = numpy.array([[solid_density], [fluid_density], [fluid_viscosity],\
                        [porosity], [shear_modulus], [drained_bulk_modulus], [biot_coefficient], \
-                       [fluid_bulk_modulus], [solid_bulk_modulus], [background_permeability]])
+                       [fluid_bulk_modulus], [background_permeability]])
 
 field_data_faults= numpy.array([[solid_density], [fluid_density], [fluid_viscosity],\
                              [porosity], [shear_modulus], [drained_bulk_modulus], [biot_coefficient], \
-                             [fluid_bulk_modulus], [solid_bulk_modulus], [total_permeability]])
+                             [fluid_bulk_modulus], [total_permeability]])
 
 no_fault_file = 'no_faultzone_permeability.spatialdb'
 fault_file = 'enhanced_faultzone_permeability.spatialdb'
