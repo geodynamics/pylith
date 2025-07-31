@@ -1,17 +1,7 @@
-(sec-user-governing-eqns-incompressible-elasticity)=
-# Incompressible Isotropic Elasticity with Infinitesimal Strain (Bathe)
+# Quastistatic
 
-In this section we apply a similar approach to the one we use for the elasticity equation to the case of an incompressible material.
-We only consider the quasistatic case (neglect inertia) without faults.
-As the bulk modulus ($K$) approaches infinity, the volumetric strain ($\mathop{\mathrm{Tr}}(\epsilon)$) approaches zero and the pressure remains finite, $p = -K \mathop{\mathrm{Tr}}(\epsilon)$.
-We consider pressure $p$ as an independent variable and decompose the stress into the pressure and deviatoric components.
-As a result, we write the stress tensor in terms of both the displacement and pressure fields,
-%
-\begin{equation}
-\boldsymbol{\sigma}(\vec{u},p) = \boldsymbol{\sigma}^\mathit{dev}(\vec{u}) - p\boldsymbol{I}.
-\end{equation}
-%
-The strong form is
+If we neglect the inertial term ($\rho \frac{\partial \vec{v}}{\partial t} \approx \vec{0}$), then time dependence only arises from history-dependent constitutive equations and boundary conditions.
+Our solution vector is the displacement vector and the elasticity equation reduces to
 %
 \begin{gather}
   % Solution
@@ -27,24 +17,7 @@ The strong form is
   p = p_0 \text{ on }\Gamma_p.
 \end{gather}
 %
-We place all terms for the elasticity and pressure equations on the left-hand-side, consistent with PETSc TS implicit time stepping.
-
-```{table} Mathematical notation for incompressible elasticity with infinitesimal strain
-:name: tab:notation:incompressible:elasticity
-
-| Category                       |               Symbol               | Description                                               |
-| :----------------------------- | :--------------------------------: | :-------------------------------------------------------- |
-| Unknowns                       |             $\vec{u}$              | Displacement field                                        |
-|                                |                $p$                 | Pressure field ($p>0$ corresponds to negative mean stress) |
-| Derived quantities             |       $\boldsymbol{\sigma}$        | Cauchy stress tensor                                      |
-|                                | $\boldsymbol{\sigma}^\mathit{dev}$ | Cauchy deviatoric stress tensor                           |
-|                                |      $\boldsymbol{\epsilon}$       | Cauchy strain tensor                                      |
-| Common constitutive parameters |               $\rho$               | Density                                                   |
-|                                |               $\mu$                | Shear modulus                                             |
-|                                |                $K$                 | Bulk modulus                                              |
-| Source terms                   |             $\vec{f}$              | Body force per unit volume, for example $\rho \vec{g}$    |
-```
-
+Because we will use implicit time stepping, we place all of the terms in the elasticity equation on the LHS.
 Using trial functions ${\vec{\psi}_\mathit{trial}^{u}}$ and ${\psi_\mathit{trial}^{p}}$ and incorporating the Neumann boundary conditions, we write the weak form as
 %
 \begin{gather}
@@ -98,10 +71,3 @@ J_F^{pp} &= \frac{\partial F^p}{\partial p}  + s_\mathit{tshift} \frac{\partial 
            \int_\Omega {\psi_\mathit{trial}^{p}}{\color{blue}\underbrace{\color{black}\frac{1} {K}}_{\color{blue}{J_{f0}^{pp}}}} {\psi_\mathit{basis}^{p}} \, d\Omega
 \end{align}
 %
-For isotropic, linear incompressible elasticity, the deviatoric elastic constants are:
-%
-\begin{align}
-  C^\mathit{dev}_{1111} &= C^\mathit{dev}_{2222} = C^\mathit{dev}_{3333} = +\frac{4}{3} \mu \\
-  C^\mathit{dev}_{1122} &= C^\mathit{dev}_{1133} = C^\mathit{dev}_{2233} = -\frac{2}{3} \mu \\
-  C^\mathit{dev}_{1212} &= C^\mathit{dev}_{1313} = C^\mathit{dev}_{2323} = \mu
-\end{align}
