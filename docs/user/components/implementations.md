@@ -103,8 +103,14 @@
 [`SolnDispPresTracStrain`](problems/SolnDispPresTracStrain.md)
 : Solution field with `displacement`, `pressure`, and `trace_strain` subfields.
 
+[`SolnDispPresTracStrainLagrange`](problems/SolnDispPresTracStrainLagrange.md)
+: Solution field with `displacement`, `pressure`, `trace_strain` and `lagrange_multiplier_fault` subfields.
+
 [`SolnDispPresTracStrainVelPdotTdot`](problems/SolnDispPresTracStrainVelPdotTdot.md)
-: Solution field with `displacement`, `pressure`, `trace_strain`, `velocity`, `pressure_dot`, `trace_strain_dot` subfields.
+: Solution field with `displacement`, `pressure`, `trace_strain`, `velocity`, `pressure_dot`, and `trace_strain_dot` subfields.
+
+[`SolnDispPresTracStrainVelPdotTdotLagrange`](problems/SolnDispPresTracStrainVelPdotTdotLagrange.md)
+: Solution field with `displacement`, `pressure`, `trace_strain`, `velocity`, `pressure_dot`, `trace_strain_dot`, and `lagrange_multiplier_fault` subfields.
 
 [`SolnDispPresVel`](problems/SolnDispPresVel.md)
 : Solution field with `displacement`, `pressure`, and `velocity` subfields.
