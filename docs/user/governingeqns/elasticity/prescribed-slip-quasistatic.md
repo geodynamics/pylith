@@ -24,7 +24,7 @@ Our solution vector consists of both displacements and Lagrange multipliers, and
   % Dirichlet
   \vec{u} = \vec{u}_0(\vec{x},t) \text{ on }\Gamma_u, \\
   % Prescribed slip
-  \vec{u}^+ - \vec{u}^- - \vec{d}(\vec{x},t) = \vec{0} \text{ on }\Gamma_f,  \\
+  -\vec{u}^+ + \vec{u}^- + \vec{d}(\vec{x},t) = \vec{0} \text{ on }\Gamma_f,  \\
   \boldsymbol{\sigma} \cdot \vec{n} = -\vec{\lambda}(\vec{x},t) \text{ on }\Gamma_{f^+}, \text{ and}\\
   \boldsymbol{\sigma} \cdot \vec{n} = +\vec{\lambda}(\vec{x},t) \text{ on }\Gamma_{f^-}.
 \end{gather}

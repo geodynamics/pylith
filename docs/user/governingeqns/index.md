@@ -21,10 +21,8 @@ In all of our derivations, we use the notation described in {ref}`tab:notation`.
 ```
 
 :::{toctree}
-elasticity-derivation.md
 petsc-formulation.md
-elasticity-infstrain/index.md
-elasticity-infstrain-prescribedslip/index.md
-incompressible-elasticity.md
+elasticity/index.md
+incompressible-elasticity/index.md
 poroelasticity/index.md
 :::

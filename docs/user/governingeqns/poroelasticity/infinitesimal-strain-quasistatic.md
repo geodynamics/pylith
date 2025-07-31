@@ -14,10 +14,10 @@ The strong form of the problem may be expressed as
   \nabla \cdot \vec{u} - \epsilon_{v} = 0 \text{ in } \Omega, \\
 % Neumann traction
   \boldsymbol{\sigma} \cdot \vec{n} = \vec{\tau}(\vec{x},t) \text{ on } \Gamma_{\tau}, \\
-% Dirichlet displacement
-  \vec{u} = \vec{u}_0(\vec{x}, t) \text{ on } \Gamma_{u}, \\
 % Neumann flow
-  \vec{q} \cdot \vec{n} = q_0(\vec{x}, t) \text{ on } \Gamma_{q}, \text{ and } \\
+  \vec{q} \cdot \vec{n} = q_0(\vec{x}, t) \text{ on } \Gamma_{q}, \\
+% Dirichlet displacement
+  \vec{u} = \vec{u}_0(\vec{x}, t) \text{ on } \Gamma_{u}, \text{ and } \\
 % Dirichlet pressure
   p = p_0(\vec{x},t) \text{ on } \Gamma_{p}.
 \end{gather}
@@ -71,7 +71,7 @@ Identifying $F(t,s,\dot{s})$ and $G(t,s)$ we have
 %
 ## Jacobian Pointwise Functions
 
-Three field results in a potential nine Jacobian pointwise functions for the LHS:
+Three fields yields potentially 9 Jacobian pointwise functions for the LHS:
 %
 \begin{align}
 %
