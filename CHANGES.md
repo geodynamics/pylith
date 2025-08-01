@@ -11,9 +11,11 @@ The version numbers are in the form `MAJOR.MINOR.PATCH`, where major releases in
   * Update PETSc to 3.23.1
 * **Added**
   * Improved documentation for `pylith_eqinfo` and illustrate use in `examples/strikdslip-2d`, `examples/crustal-strikeslip-2d`, and `examples/crustal-strikeslip-3d`.
+  * Improved the organization of the governing equations section and added documentation for poroelasticity with prescribed fault slip, including governing equations and default PETSc solver settings. Also added a full-scale test.
 * **Fixed**
   * Account for processes without cells in initial condition patch when verifying configuration.
   * Avoid divide by zero for `KinSrcRamp` when final slip is zero.
+  * Remove `solid_bulk_modulus` as a spatial database field for poroelasticity; compute it from the other fields.
   * Fix pythia import in `pylith_eqinfo`.
 
 ## Version 4.2.0 (2025-01-15)
