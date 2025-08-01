@@ -594,28 +594,38 @@ dist_noinst_DATA = \
 	user/file-formats/meshio-ascii.md \
 	user/file-formats/points-list.md \
 	user/glossary/index.md \
-	user/governingeqns/elasticity-derivation.md \
-	user/governingeqns/elasticity-infstrain-prescribedslip/dynamic.md \
-	user/governingeqns/elasticity-infstrain-prescribedslip/index.md \
-	user/governingeqns/elasticity-infstrain-prescribedslip/quasistatic.md \
-	user/governingeqns/elasticity-infstrain/dynamic.md \
-	user/governingeqns/elasticity-infstrain/index.md \
-	user/governingeqns/elasticity-infstrain/quasistatic.md \
-	user/governingeqns/elasticity-infstrain/bulk-rheologies/index.md \
-	user/governingeqns/elasticity-infstrain/bulk-rheologies/elasticity-constitutive.md \
-	user/governingeqns/elasticity-infstrain/bulk-rheologies/effective-stress.md \
-	user/governingeqns/elasticity-infstrain/bulk-rheologies/linear-elastic.md \
-	user/governingeqns/elasticity-infstrain/bulk-rheologies/linear-genmaxwell.md \
-	user/governingeqns/elasticity-infstrain/bulk-rheologies/linear-maxwell.md \
-	user/governingeqns/elasticity-infstrain/bulk-rheologies/powerlaw.md \
-	user/governingeqns/elasticity-infstrain/bulk-rheologies/figs/viscoelastic-schematic.pdf \
-	user/governingeqns/elasticity-infstrain/bulk-rheologies/figs/viscoelastic-schematic.svg \
-	user/governingeqns/incompressible-elasticity.md \
 	user/governingeqns/index.md \
 	user/governingeqns/petsc-formulation.md \
-	user/governingeqns/poroelasticity/dynamic.md \
+	user/governingeqns/elasticity/index.md \
+	user/governingeqns/elasticity/derivation.md \
+	user/governingeqns/elasticity/infinitesimal-strain.md \
+	user/governingeqns/elasticity/infinitesimal-strain-quasistatic.md \
+	user/governingeqns/elasticity/infinitesimal-strain-dynamic.md \
+	user/governingeqns/elasticity/prescribed-slip.md \
+	user/governingeqns/elasticity/prescribed-slip-quasistatic.md \
+	user/governingeqns/elasticity/prescribed-slip-dynamic.md \
+	user/governingeqns/elasticity/bulk-rheologies/index.md \
+	user/governingeqns/elasticity/bulk-rheologies/elasticity-constitutive.md \
+	user/governingeqns/elasticity/bulk-rheologies/effective-stress.md \
+	user/governingeqns/elasticity/bulk-rheologies/linear-elastic.md \
+	user/governingeqns/elasticity/bulk-rheologies/linear-genmaxwell.md \
+	user/governingeqns/elasticity/bulk-rheologies/linear-maxwell.md \
+	user/governingeqns/elasticity/bulk-rheologies/powerlaw.md \
+	user/governingeqns/elasticity/bulk-rheologies/figs/viscoelastic-schematic.pdf \
+	user/governingeqns/elasticity/bulk-rheologies/figs/viscoelastic-schematic.svg \
+	user/governingeqns/incompressible-elasticity/index.md \
+	user/governingeqns/incompressible-elasticity/infinitesimal-strain.md \
+	user/governingeqns/incompressible-elasticity/infinitesimal-strain-quasistatic.md \
+	user/governingeqns/incompressible-elasticity/bulk-rheologies/index.md \
+	user/governingeqns/incompressible-elasticity/bulk-rheologies/linear-elastic.md \
 	user/governingeqns/poroelasticity/index.md \
-	user/governingeqns/poroelasticity/quasistatic.md \
+	user/governingeqns/poroelasticity/infinitesimal-strain.md \
+	user/governingeqns/poroelasticity/infinitesimal-strain-quasistatic.md \
+	user/governingeqns/poroelasticity/infinitesimal-strain-dynamic.md \
+	user/governingeqns/poroelasticity/prescribed-slip.md \
+	user/governingeqns/poroelasticity/prescribed-slip-quasistatic.md \
+	user/governingeqns/poroelasticity/bulk-rheologies/index.md \
+	user/governingeqns/poroelasticity/bulk-rheologies/linear-elastic.md \
 	user/index.md \
 	user/install/figs/install_choices.pdf \
 	user/install/figs/install_choices.svg \
