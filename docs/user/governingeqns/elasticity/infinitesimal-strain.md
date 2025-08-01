@@ -1,4 +1,4 @@
-# Elasticity with Infinitesimal Strain and No Faults
+# Infinitesimal Strain and No Faults
 
 We begin with the elasticity equation including the inertial term,
 
@@ -23,20 +23,19 @@ Because both $\vec{\tau}$ and $\vec{u}$ are vector quantities, there can be some
 ```{table} Mathematical notation for elasticity equation with infinitesimal strain.
 :name: tab:notation:elasticity
 
-| **Category**                   |   **Symbol**    | **Description**                                        |
-|:-------------------------------|:---------------:|:-------------------------------------------------------|
-| Unknowns                       |    $\vec{u}$    | Displacement field                                     |
-|                                |    $\vec{v}$    | Velocity field                                         |
+| **Category**                   |       **Symbol**        | **Description**                                        |
+| :----------------------------- | :---------------------: | :----------------------------------------------------- |
+| Unknowns                       |        $\vec{u}$        | Displacement field                                     |
+|                                |        $\vec{v}$        | Velocity field                                         |
 | Derived quantities             |  $\boldsymbol{\sigma}$  | Cauchy stress tensor                                   |
 |                                | $\boldsymbol{\epsilon}$ | Cauchy strain tensor                                   |
-| Common constitutive parameters |     $\rho$      | Density                                                |
-|                                |      $\mu$      | Shear modulus                                          |
-|                                |       $K$       | Bulk modulus                                           |
-| Source terms                   |    $\vec{f}$    | Body force per unit volume, for example $\rho \vec{g}$ |
+| Common constitutive parameters |         $\rho$          | Density                                                |
+|                                |          $\mu$          | Shear modulus                                          |
+|                                |           $K$           | Bulk modulus                                           |
+| Source terms                   |        $\vec{f}$        | Body force per unit volume, for example $\rho \vec{g}$ |
 ```
 
 :::{toctree}
-quasistatic.md
-dynamic.md
-bulk-rheologies/index.md
+infinitesimal-strain-quasistatic.md
+infinitesimal-strain-dynamic.md
 :::

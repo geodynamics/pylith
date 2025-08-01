@@ -14,7 +14,6 @@
 
 #include "pylith/problems/TimeDependent.hh" // USES TimeDependent
 #include "pylith/topology/Field.hh" // USES pylith::topology::Field::Discretization
-#include "pylith/utils/journals.hh" // USES pythia::journal::debug_t
 
 namespace pylith {
     class _PressureGradient;
@@ -83,7 +82,7 @@ class pylith::_PressureGradient {
     // Biot coefficient
     static double biot_coefficient(const double x,
                                    const double y) {
-        return 1.0;
+        return 0.8;
     } // biot_coefficient
 
     static const char* biot_coefficient_units(void) {
@@ -95,12 +94,6 @@ class pylith::_PressureGradient {
                                      const double y) {
         return 1.0e+10;
     } // fluid_bulk_modulus
-
-    // Solid modulus
-    static double solid_bulk_modulus(const double x,
-                                     const double y) {
-        return 9.0e+10;
-    } // solid_bulk_modulus
 
     // Permeability
     static double isotropic_permeability(const double x,
@@ -289,7 +282,6 @@ public:
         data->auxDB.addValue("drained_bulk_modulus", drained_bulk_modulus, modulus_units());
         data->auxDB.addValue("biot_coefficient", biot_coefficient, modulus_units());
         data->auxDB.addValue("fluid_bulk_modulus", fluid_bulk_modulus, modulus_units());
-        data->auxDB.addValue("solid_bulk_modulus", solid_bulk_modulus, modulus_units());
         data->auxDB.addValue("isotropic_permeability", isotropic_permeability, permeability_units());
         data->auxDB.setCoordSys(data->cs);
 

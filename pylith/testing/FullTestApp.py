@@ -6,7 +6,7 @@
 # Copyright (c) 2010-2025, University of California, Davis and the PyLith Development Team.
 # All rights reserved.
 #
-# See https://mit-license.org/ and LICENSE.md and for license information. 
+# See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
 # @file pylith/testing/FullTestApp.py
 
@@ -37,10 +37,23 @@ class MeshEntity(object):
         self.ncorners = ncorners
         self.nvertices = nvertices
 
+
 # -------------------------------------------------------------------------------------------------
 class Check(object):
 
-    def __init__(self, mesh_entities, filename=None, mesh=None, vertex_fields=[], cell_fields=[], exact_soln=None, tolerance=None, scale=1.0, defaults={}):
+    def __init__(
+        self,
+        mesh_entities,
+        filename=None,
+        mesh=None,
+        vertex_fields=[],
+        cell_fields=[],
+        exact_soln=None,
+        tolerance=None,
+        scale=1.0,
+        final_time_only=False,
+        defaults={},
+    ):
         """Set parameters for checking PyLith output.
 
         Args
@@ -60,12 +73,15 @@ class Check(object):
                 Tolerance for use in tests.
             scale (float):
                 Scale for nondimensionalizing results.
+            final_time_only (bool):
+                Only check final time step.
             defaults (dict):
                 Dictionary with default values.
         """
         self.tolerance = 1.0e-5
         self.zero_tolerance = 1.0e-10
         self.scale = scale
+        self.final_time_only = final_time_only
         self.vertex_fields = []
         self.cell_fields = []
 
@@ -87,10 +103,11 @@ class Check(object):
         if tolerance:
             self.tolerance = tolerance
 
+
 # -------------------------------------------------------------------------------------------------
 class FullTestCase(unittest.TestCase):
-    """Generic test case for full-scale test.
-    """
+    """Generic test case for full-scale test."""
+
     VERBOSITY = 0
     RUN_PYLITH = True
 
@@ -98,13 +115,22 @@ class FullTestCase(unittest.TestCase):
         super().setUp()
         self.name = None
         self.mesh = None
+        self.checks = []
 
     def test_output(self):
         for check in self.checks:
             for mesh_entity in check.mesh_entities:
-                filename = check.filename.format(name=self.name, mesh_entity=mesh_entity)
+                filename = check.filename.format(
+                    name=self.name, mesh_entity=mesh_entity
+                )
                 with self.subTest(filename=filename):
-                    check_data(self, filename, check, mesh_entity, check.mesh.ENTITIES[mesh_entity])
+                    check_data(
+                        self,
+                        filename,
+                        check,
+                        mesh_entity,
+                        check.mesh.ENTITIES[mesh_entity],
+                    )
 
     def run_pylith(self, testName, args, generatedb=None, nprocs=1):
         if self.RUN_PYLITH:
@@ -116,9 +142,14 @@ class FullTestCase(unittest.TestCase):
     @staticmethod
     def parse_args():
         import argparse
+
         parser = argparse.ArgumentParser()
-        parser.add_argument("--verbose", action="store_true", dest="verbosity", default=0)
-        parser.add_argument("--skip-pylith-run", action="store_false", dest="run_pylith", default=True)
+        parser.add_argument(
+            "--verbose", action="store_true", dest="verbosity", default=0
+        )
+        parser.add_argument(
+            "--skip-pylith-run", action="store_false", dest="run_pylith", default=True
+        )
         args = parser.parse_args()
         FullTestCase.VERBOSITY = args.verbosity
         FullTestCase.RUN_PYLITH = args.run_pylith
@@ -127,21 +158,21 @@ class FullTestCase(unittest.TestCase):
 
 # -------------------------------------------------------------------------------------------------
 class TestDriver(object):
-    """Driver application for running full-scale tests.
-    """
+    """Driver application for running full-scale tests."""
 
     def __init__(self):
-        """Constructor.
-        """
+        """Constructor."""
         return
 
     def main(self):
-        """Run the test suite.
-        """
-        success = unittest.TextTestRunner(verbosity=2).run(self._suite()).wasSuccessful()
+        """Run the test suite."""
+        success = (
+            unittest.TextTestRunner(verbosity=2).run(self._suite()).wasSuccessful()
+        )
 
         if not success:
             import sys
+
             sys.exit(1)
         return
 
@@ -150,9 +181,9 @@ class TestDriver(object):
 class HDF5Checker(object):
 
     def __init__(self, filename, testcase, mesh):
-        """Constructor.
-        """
+        """Constructor."""
         import h5py
+
         self.debug = False
 
         self.h5 = h5py.File(filename, "r")
@@ -163,8 +194,7 @@ class HDF5Checker(object):
         return
 
     def _getVertices(self):
-        """Get vertices, reading from file if necessary.
-        """
+        """Get vertices, reading from file if necessary."""
         if self.vertices is None:
             self.testcase.assertTrue("geometry" in self.h5.keys())
             self.testcase.assertTrue("vertices" in self.h5["geometry"].keys())
@@ -175,8 +205,7 @@ class HDF5Checker(object):
         return self.vertices
 
     def _getCellCentroids(self):
-        """Get cell centroids, reading cells and vertices from file if necessary.
-        """
+        """Get cell centroids, reading cells and vertices from file if necessary."""
         if self.cellCentroids is None:
             vertices = self._getVertices()
             self.testcase.assertTrue("topology" in self.h5["viz"].keys())
@@ -186,17 +215,29 @@ class HDF5Checker(object):
             (nvertices, spaceDim) = vertices.shape
             centroids = numpy.zeros((ncells, spaceDim), dtype=numpy.float64)
             for icorner in range(ncorners):
-                centroids[:,:] += vertices[cells[:, icorner],:]
+                centroids[:, :] += vertices[cells[:, icorner], :]
             centroids /= float(ncorners)
             self.cellCentroids = centroids
         return self.cellCentroids
 
-    def checkVertexField(self, fieldName, mesh_entity, exact_soln, tolerance, zero_tolerance):
+    def checkVertexField(
+        self,
+        fieldName,
+        mesh_entity,
+        exact_soln,
+        tolerance,
+        zero_tolerance,
+        final_time_only,
+    ):
         self.testcase.assertTrue("vertex_fields" in self.h5.keys())
         fieldsH5 = self.h5["vertex_fields"].keys()
-        self.testcase.assertTrue(fieldName in fieldsH5,
-                                 f"Could not find field in vertex fields {fieldsH5}")
+        self.testcase.assertTrue(
+            fieldName in fieldsH5, f"Could not find field in vertex fields {fieldsH5}"
+        )
         field = self.h5["vertex_fields/" + fieldName][:]
+        if len(field.shape) == 3 and final_time_only:
+            dims = field.shape
+            field = field[-1, :, :].reshape(1, dims[1], dims[2])
 
         vertices = self._getVertices()
         (nvertices, spaceDim) = vertices.shape
@@ -208,13 +249,27 @@ class HDF5Checker(object):
         self._checkField(fieldE, field, mask, tolerance, zero_tolerance)
         return
 
-    def checkCellField(self, fieldName, mesh_entity, exact_soln, tolerance, zero_tolerance):
-        self.testcase.assertTrue("cell_fields" in self.h5.keys(),
-                                 f"Missing 'cell_fields'. Groups: {self.h5.keys()}".format)
+    def checkCellField(
+        self,
+        fieldName,
+        mesh_entity,
+        exact_soln,
+        tolerance,
+        zero_tolerance,
+        final_time_only,
+    ):
+        self.testcase.assertTrue(
+            "cell_fields" in self.h5.keys(),
+            f"Missing 'cell_fields'. Groups: {self.h5.keys()}".format,
+        )
         fieldsH5 = self.h5["cell_fields"].keys()
-        self.testcase.assertTrue(fieldName in fieldsH5,
-                                 f"Could not find field in cell fields {fieldsH5}")
+        self.testcase.assertTrue(
+            fieldName in fieldsH5, f"Could not find field in cell fields {fieldsH5}"
+        )
         field = self.h5["cell_fields/" + fieldName][:]
+        if len(field.shape) == 3 and final_time_only:
+            dims = field.shape
+            field = field[-1, :, :].reshape(1, dims[1], dims[2])
 
         centroids = self._getCellCentroids()
         fieldE = exact_soln.getField(fieldName, mesh_entity, centroids)
@@ -225,19 +280,23 @@ class HDF5Checker(object):
     def _checkField(self, fieldE, field, maskField, tolerance, zero_tolerance):
         (nstepsE, nptsE, ncompsE) = fieldE.shape
         (nsteps, npts, ncomps) = field.shape
-        self.testcase.assertEqual(nstepsE, nsteps, msg="Mismatch in number of time steps")
+        self.testcase.assertEqual(
+            nstepsE, nsteps, msg="Mismatch in number of time steps"
+        )
         self.testcase.assertEqual(nptsE, npts, msg="Mismatch in number of points")
-        self.testcase.assertEqual(ncompsE, ncomps, msg="Mismatch in number of components")
+        self.testcase.assertEqual(
+            ncompsE, ncomps, msg="Mismatch in number of components"
+        )
 
         scale = numpy.mean(numpy.abs(fieldE).ravel())
-        vtolerance = scale*tolerance if scale > zero_tolerance else tolerance
+        vtolerance = scale * tolerance if scale > zero_tolerance else tolerance
         okay = numpy.abs(field - fieldE) < vtolerance
 
         if not maskField is None:
             okay[:, maskField, :] = True
 
         msg = []
-        if numpy.sum(okay) != nsteps*npts*ncomps:
+        if numpy.sum(okay) != nsteps * npts * ncomps:
             if self.debug:
                 msg += [f"Expected values: {fieldE[:]}"]
                 msg += [f"Computed values: {field[:]}"]
@@ -245,28 +304,36 @@ class HDF5Checker(object):
             msg += [""]
             msg += [f"Expected values (not okay): {fieldE[~okay]}"]
             msg += [f"Computed values (not okay): {field[~okay]}"]
-            #msg += [f"Coordinates: {pts[~okay, :]}"]
+            # msg += [f"Coordinates: {pts[~okay, :]}"]
             msg += [f"Tolerance: {vtolerance}"]
-        self.testcase.assertEqual(nsteps*npts*ncomps, numpy.sum(okay), msg="\n".join(msg))
+        self.testcase.assertEqual(
+            nsteps * npts * ncomps, numpy.sum(okay), msg="\n".join(msg)
+        )
 
 
 # -------------------------------------------------------------------------------------------------
 class HDF5SizeChecker(HDF5Checker):
 
     def checkVertexField(self, fieldName, mesh, exact_soln):
-        self.testcase.assertTrue("vertex_fields" in self.h5.keys(), "Missing `vertex_fields`.")
+        self.testcase.assertTrue(
+            "vertex_fields" in self.h5.keys(), "Missing `vertex_fields`."
+        )
         fieldsH5 = self.h5["vertex_fields"].keys()
-        self.testcase.assertTrue(fieldName in fieldsH5,
-                                 f"Could not find field in vertex fields {fieldsH5}")
+        self.testcase.assertTrue(
+            fieldName in fieldsH5, f"Could not find field in vertex fields {fieldsH5}"
+        )
         dims = self.h5["vertex_fields/" + fieldName].shape
         dimsE = exact_soln.getDims(fieldName, mesh)
         self._checkDims(dimsE, dims)
 
     def checkCellField(self, fieldName, mesh, exact_soln):
-        self.testcase.assertTrue("cell_fields" in self.h5.keys(), "Missing `cell_fields`.")
+        self.testcase.assertTrue(
+            "cell_fields" in self.h5.keys(), "Missing `cell_fields`."
+        )
         fieldsH5 = self.h5["cell_fields"].keys()
-        self.testcase.assertTrue(fieldName in fieldsH5,
-                                 f"Could not find field in cell fields {fieldsH5}")
+        self.testcase.assertTrue(
+            fieldName in fieldsH5, f"Could not find field in cell fields {fieldsH5}"
+        )
         dims = self.h5["cell_fields/" + fieldName].shape
         dimsE = exact_soln.getDims(fieldName, mesh)
         self._checkDims(dimsE, dims)
@@ -274,15 +341,18 @@ class HDF5SizeChecker(HDF5Checker):
     def _checkDims(self, dimsE, dims):
         (nstepsE, nptsE, ncompsE) = dimsE
         (nsteps, npts, ncomps) = dims
-        self.testcase.assertEqual(nstepsE, nsteps, msg="Mismatch in number of time steps")
+        self.testcase.assertEqual(
+            nstepsE, nsteps, msg="Mismatch in number of time steps"
+        )
         self.testcase.assertEqual(nptsE, npts, msg="Mismatch in number of points")
-        self.testcase.assertEqual(ncompsE, ncomps, msg="Mismatch in number of components")
+        self.testcase.assertEqual(
+            ncompsE, ncomps, msg="Mismatch in number of components"
+        )
 
 
 # -------------------------------------------------------------------------------------------------
 def check_data(testcase, filename, check, mesh_entity, mesh):
-    """Check vertex and cell fields in specified file.
-    """
+    """Check vertex and cell fields in specified file."""
     if not has_h5py():
         return
 
@@ -290,21 +360,35 @@ def check_data(testcase, filename, check, mesh_entity, mesh):
 
     tolerance = check.tolerance * check.scale
     zero_tolerance = check.zero_tolerance * check.scale
+    final_time_only = check.final_time_only
 
     for field in check.vertex_fields:
         with testcase.subTest(vertex_field=field):
-            checker.checkVertexField(field, mesh_entity, check.exact_soln, tolerance, zero_tolerance)
+            checker.checkVertexField(
+                field,
+                mesh_entity,
+                check.exact_soln,
+                tolerance,
+                zero_tolerance,
+                final_time_only,
+            )
 
     for field in check.cell_fields:
         with testcase.subTest(cell_field=field):
-            checker.checkCellField(field, mesh_entity, check.exact_soln, tolerance, zero_tolerance)
+            checker.checkCellField(
+                field,
+                mesh_entity,
+                check.exact_soln,
+                tolerance,
+                zero_tolerance,
+                final_time_only,
+            )
     return
 
 
 # -------------------------------------------------------------------------------------------------
 def check_sizes(testcase, filename, check, mesh_entity, mesh):
-    """Check sizes of vertex and cell fields in specified file.
-    """
+    """Check sizes of vertex and cell fields in specified file."""
     if not has_h5py():
         return
 
@@ -322,8 +406,7 @@ def check_sizes(testcase, filename, check, mesh_entity, mesh):
 
 # -------------------------------------------------------------------------------------------------
 def run_pylith(appName, cfgfiles=[], dbClass=None, nprocs=1):
-    """Helper function to generate spatial databases and run PyLith.
-    """
+    """Helper function to generate spatial databases and run PyLith."""
     # Skip running if already run.
     if str(appName) in dir(run_pylith):
         return
@@ -335,24 +418,33 @@ def run_pylith(appName, cfgfiles=[], dbClass=None, nprocs=1):
 
     # Limit number of processes to number of local CPUs or maximum specified by environment.
     import os
+
     if "MAX_PYLITH_PROCS" in os.environ:
         appNumProcs = min(int(os.environ["MAX_PYLITH_PROCS"]), nprocs)
         if appNumProcs < nprocs:
-            print("WARNING: Detected environment with MAX_PYLITH_PROCS=%d. Reducing number of processes from %d to %d." % (
-                appNumProcs, nprocs, appNumProcs))
+            print(
+                "WARNING: Detected environment with MAX_PYLITH_PROCS=%d. Reducing number of processes from %d to %d."
+                % (appNumProcs, nprocs, appNumProcs)
+            )
     else:
         import pylith.utils.CollectVersionInfo
         import multiprocessing
 
         cpuCount = multiprocessing.cpu_count()
-        mpiVersion = pylith.utils.CollectVersionInfo.CollectVersionInfo._collectVersionMPI()
-        if mpiVersion["implementation"] == "OpenMPI" and mpiVersion["standard"].startswith("3"):
+        mpiVersion = (
+            pylith.utils.CollectVersionInfo.CollectVersionInfo._collectVersionMPI()
+        )
+        if mpiVersion["implementation"] == "OpenMPI" and mpiVersion[
+            "standard"
+        ].startswith("3"):
             cpuCount /= 2  # Assume hyperthreading is turned on and OpenMPI 3 doesn't allow oversubscribing
 
         appNumProcs = min(cpuCount, nprocs)
         if appNumProcs < nprocs:
-            print("WARNING: Detected %d CPUs. Reducing number of processes from %d to %d." %
-                  (appNumProcs, nprocs, appNumProcs))
+            print(
+                "WARNING: Detected %d CPUs. Reducing number of processes from %d to %d."
+                % (appNumProcs, nprocs, appNumProcs)
+            )
 
     # Run Pylith
     app = PyLithApp()

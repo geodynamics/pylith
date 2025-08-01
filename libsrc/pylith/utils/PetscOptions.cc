@@ -306,9 +306,11 @@ pylith::utils::_PetscOptions::addMonitoring(PetscOptions* options) {
     assert(options);
 
     options->add("-ksp_converged_reason");
+    options->add("-ksp_error_if_not_converged");
 
-    options->add("-snes_converged_reason");
     options->add("-snes_monitor");
+    options->add("-snes_converged_reason");
+    options->add("-snes_error_if_not_converged");
 
     options->add("-ts_monitor");
     options->add("-ts_error_if_step_fails");
@@ -335,11 +337,9 @@ pylith::utils::_PetscOptions::addSolverTolerances(PetscOptions* options) {
 
     options->add("-ksp_rtol", "1.0e-12");
     options->add("-ksp_atol", "1.0e-12");
-    options->add("-ksp_error_if_not_converged");
 
     options->add("-snes_rtol", "1.0e-12");
     options->add("-snes_atol", "1.0e-9");
-    options->add("-snes_error_if_not_converged");
 
 } // addSolverTolerances
 
