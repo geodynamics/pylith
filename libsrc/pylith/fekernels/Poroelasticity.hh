@@ -435,8 +435,8 @@ public:
         assert(context);
         assert(numS >= 3);
 
-        const PylithInt i_gravityField = 4;
-        const PylithInt i_bodyForce = 5;
+        const PylithInt i_bodyForce = 4;
+        const PylithInt i_gravityField = 5;
 
         assert(aOff[i_gravityField] >= 0);
         assert(aOff[i_bodyForce] >= 0);
@@ -513,8 +513,8 @@ public:
         assert(context);
         assert(numS >= 3);
 
-        const PylithInt i_gravityField = 4;
-        const PylithInt i_bodyForce = 5;
+        const PylithInt i_bodyForce = 4;
+        const PylithInt i_gravityField = 5;
         const PylithInt i_sourceDensity = 6;
 
         assert(aOff[i_gravityField] >= 0);
@@ -887,7 +887,6 @@ public:
         pylith::fekernels::Poroelasticity::setContextGravity(
             &context, dim, numS, sOff, sOff_x, s, s_t, s_x, aOff, aOff_x, a, a_t, a_x, t, x);
 
-        // Poroelastic Auxiliariies
         const PylithScalar bulkDensity = context.bulkDensity;
         const PylithScalar* gravityField = context.gravityField;
 
