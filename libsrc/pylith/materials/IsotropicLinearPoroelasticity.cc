@@ -162,9 +162,10 @@ pylith::materials::IsotropicLinearPoroelasticity::getKernelg0p(const spatialdata
               NULL;
         break;
     case 0x4:
+        // aOff for sourceDensity is 3
         g0p = (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::g0p_source :
               (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::g0p_source :
-              NULL; // aOff for sourceDensity is 3
+              NULL;
         break;
     case 0x3:
         g0p = (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::g0p :
@@ -172,19 +173,22 @@ pylith::materials::IsotropicLinearPoroelasticity::getKernelg0p(const spatialdata
               NULL;
         break;
     case 0x5:
+        // aOff for sourceDensity is 4
         g0p = (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::g0p_source_body :
               (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::g0p_source_body :
-              NULL; // aOff for sourceDensity is 4
+              NULL;
         break;
     case 0x6:
+        // aOff for sourceDensity is 4
         g0p = (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::g0p_source_grav :
               (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::g0p_source_grav :
-              NULL; // aOff for sourceDensity is 4
+              NULL;
         break;
     case 0x7:
+        // aOff for sourceDensity is 5
         g0p = (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::g0p_source_grav_body :
               (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::g0p_source_grav_body :
-              NULL; // aOff for sourceDensity is 5
+              NULL;
         break;
     default:
         PYLITH_COMPONENT_LOGICERROR("Unknown case (bitUse=" << bitUse << ") for Poroelasticity RHS residual kernels.");
@@ -326,9 +330,10 @@ pylith::materials::IsotropicLinearPoroelasticity::getKernelf0p_implicit(const sp
               NULL;
         break;
     case 0x4:
+        // aOff for sourceDensity is 3
         f0p = (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::f0p_implicit_source :
               (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f0p_implicit_source :
-              NULL; // aOff for sourceDensity is 3
+              NULL;
         break;
     case 0x3:
         f0p = (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::f0p_implicit :
@@ -336,19 +341,22 @@ pylith::materials::IsotropicLinearPoroelasticity::getKernelf0p_implicit(const sp
               NULL;
         break;
     case 0x5:
+        // aOff for sourceDensity is 4
         f0p = (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::f0p_implicit_source_body :
               (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f0p_implicit_source_body :
-              NULL; // aOff for sourceDensity is 4
+              NULL;
         break;
     case 0x6:
+        // aOff for sourceDensity is 4
         f0p = (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::f0p_implicit_source_grav :
               (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f0p_implicit_source_grav :
-              NULL; // aOff for sourceDensity is 4
+              NULL;
         break;
     case 0x7:
+        // aOff for sourceDensity is 5
         f0p = (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::f0p_implicit_source_grav_body :
               (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::f0p_implicit_source_grav_body :
-              NULL; // aOff for sourceDensity is 5
+              NULL;
         break;
     default:
         PYLITH_COMPONENT_LOGICERROR("Unknown case (bitUse=" << bitUse << ") for Poroelasticity LHS residual kernels.");

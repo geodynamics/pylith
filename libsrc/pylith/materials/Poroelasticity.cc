@@ -254,6 +254,11 @@ pylith::materials::Poroelasticity::createAuxiliaryField(const pylith::topology::
     assert(auxiliaryFactory);
     auxiliaryFactory->setValuesFromDB();
 
+    pythia::journal::debug_t debug("poroelasticity.view_auxiliary_field");
+    if (debug.state()) {
+        auxiliaryField->view("Poroelasticity auxiliary field");
+    } // if
+
     PYLITH_METHOD_RETURN(auxiliaryField);
 } // createAuxiliaryField
 
@@ -395,8 +400,7 @@ pylith::materials::Poroelasticity::_setKernelsResidual(pylith::feassemble::Integ
 
     const int bitBodyForce = _useBodyForce ? 0x1 : 0x0;
     const int bitGravity = _gravityField ? 0x2 : 0x0;
-    const int bitSourceDensity = _useSourceDensity ? 0x4 : 0x0;
-    const int bitUse = bitBodyForce | bitGravity | bitSourceDensity;
+    const int bitUse = bitBodyForce | bitGravity;
 
     PetscPointFn* r0 = NULL;
     switch (bitUse) {
@@ -408,18 +412,7 @@ pylith::materials::Poroelasticity::_setKernelsResidual(pylith::feassemble::Integ
     case 0x2:
         r0 = pylith::fekernels::Poroelasticity::g0v_grav;
         break;
-    case 0x4:
-        break;
     case 0x3:
-        r0 = pylith::fekernels::Poroelasticity::g0v_grav_bodyforce;
-        break;
-    case 0x5:
-        r0 = pylith::fekernels::Poroelasticity::g0v_bodyforce;
-        break;
-    case 0x6:
-        r0 = pylith::fekernels::Poroelasticity::g0v_grav;
-        break;
-    case 0x7:
         r0 = pylith::fekernels::Poroelasticity::g0v_grav_bodyforce;
         break;
     default:
