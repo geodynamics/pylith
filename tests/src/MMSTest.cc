@@ -219,6 +219,7 @@ pylith::testing::MMSTest::_initialize(void) {
     PYLITH_METHOD_BEGIN;
     REQUIRE(_problem);
 
+    _problem->setPetscDefaults(pylith::utils::PetscDefaults::TESTING | pylith::utils::PetscDefaults::SOLVER);
     _problem->setSolverType(pylith::problems::Problem::NONLINEAR);
     _problem->setMaxTimeSteps(1);
     _problem->preinitialize(*_mesh);

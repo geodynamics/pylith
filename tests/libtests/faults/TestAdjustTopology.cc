@@ -212,7 +212,8 @@ pylith::faults::TestAdjustTopology::run_transform(void) {
             fault.setBuriedEdgesLabelValue(1);
         } // if
         if (!_data->failureExpected) {
-            fault.transformTopology(_mesh);
+            pylith::topology::Mesh* meshNew = fault.transformTopology(_mesh);
+            delete _mesh;_mesh = meshNew;
         } else {
             REQUIRE_THROWS_AS(fault.transformTopology(_mesh), std::runtime_error);
             return;

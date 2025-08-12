@@ -57,6 +57,7 @@ class MeshIOCubit(MeshIOObj, ModuleMeshIOCubit):
         """Do minimal initialization."""
         MeshIOObj.preinitialize(self)
         ModuleMeshIOCubit.setFilename(self, self.filename)
+        ModuleMeshIOCubit.setCoordSys(self, self.coordsys)
 
     def _configure(self):
         """Set members based using inventory.

@@ -13,13 +13,14 @@ TESTS = test_pylith.py
 dist_check_SCRIPTS = test_pylith.py
 
 dist_noinst_PYTHON = \
+	generate_gmsh.py \
 	meshes.py \
 	TestTwoBlocks.py \
 	twoblocks_soln.py
 
 dist_noinst_DATA = \
-	tri.mesh \
-	quad.mesh \
+	mesh_tri.msh \
+	mesh_quad.msh \
 	pylithapp.cfg \
 	twoblocks.cfg \
 	twoblocks_quad.cfg \

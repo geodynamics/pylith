@@ -50,6 +50,7 @@ class MeshIOAscii(MeshIOObj, ModuleMeshIOAscii):
         """Do minimal initialization."""
         MeshIOObj.preinitialize(self)
         ModuleMeshIOAscii.setFilename(self, self.filename)
+        ModuleMeshIOAscii.setCoordSys(self, self.coordsys)
 
     def _configure(self):
         """Set members based using inventory.

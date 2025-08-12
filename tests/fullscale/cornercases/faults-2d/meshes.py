@@ -15,19 +15,20 @@ class Tri(object):
     """Mesh information for tri mesh.
     """
     ENTITIES = {
-        "domain": MeshEntity(ncells=8, ncorners=3, nvertices=9+3),
+        "domain": MeshEntity(ncells=16, ncorners=3, nvertices=14+2),
 
         # Materials
-        "elastic": MeshEntity(ncells=8, ncorners=3, nvertices=9+3),
+        "mat_xneg": MeshEntity(ncells=8, ncorners=3, nvertices=8),
+        "mat_xpos": MeshEntity(ncells=8, ncorners=3, nvertices=8),
 
         # Faults
-        "fault": MeshEntity(ncells=2, ncorners=2, nvertices=3),
+        "fault": MeshEntity(ncells=1, ncorners=2, nvertices=2),
 
         # Boundaries
-        "bc_xneg": MeshEntity(ncells=2, ncorners=2, nvertices=3),
-        "bc_xpos": MeshEntity(ncells=2, ncorners=2, nvertices=3),
-        "bc_yneg": MeshEntity(ncells=2, ncorners=2, nvertices=3+1),
-        "bc_ypos": MeshEntity(ncells=2, ncorners=2, nvertices=3+1),
+        "bc_xneg": MeshEntity(ncells=1, ncorners=2, nvertices=2),
+        "bc_xpos": MeshEntity(ncells=1, ncorners=2, nvertices=2),
+        "bc_yneg": MeshEntity(ncells=4, ncorners=2, nvertices=5+1),
+        "bc_ypos": MeshEntity(ncells=4, ncorners=2, nvertices=5+1),
     }
 
 
@@ -35,19 +36,20 @@ class Quad(object):
     """Mesh information for quad mesh.
     """
     ENTITIES = {
-        "domain": MeshEntity(ncells=4, ncorners=4, nvertices=9+3),
+        "domain": MeshEntity(ncells=4, ncorners=4, nvertices=10+2),
 
         # Materials
-        "elastic": MeshEntity(ncells=4, ncorners=4, nvertices=9+3),
+        "mat_xneg": MeshEntity(ncells=2, ncorners=4, nvertices=6),
+        "mat_xpos": MeshEntity(ncells=2, ncorners=4, nvertices=6),
 
         # Faults
-        "fault": MeshEntity(ncells=2, ncorners=2, nvertices=3),
+        "fault": MeshEntity(ncells=1, ncorners=2, nvertices=2),
 
         # Boundaries
-        "bc_xneg": MeshEntity(ncells=2, ncorners=2, nvertices=3),
-        "bc_xpos": MeshEntity(ncells=2, ncorners=2, nvertices=3),
-        "bc_yneg": MeshEntity(ncells=2, ncorners=2, nvertices=3+1),
-        "bc_ypos": MeshEntity(ncells=2, ncorners=2, nvertices=3+1),
+        "bc_xneg": MeshEntity(ncells=1, ncorners=2, nvertices=2),
+        "bc_xpos": MeshEntity(ncells=1, ncorners=2, nvertices=2),
+        "bc_yneg": MeshEntity(ncells=4, ncorners=2, nvertices=5+1),
+        "bc_ypos": MeshEntity(ncells=4, ncorners=2, nvertices=5+1),
     }
 
 

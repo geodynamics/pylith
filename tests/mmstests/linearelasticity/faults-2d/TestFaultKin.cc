@@ -105,7 +105,8 @@ pylith::TestFaultKin::_initialize(void) {
 #if 0
         _data->faults[iFault]->adjustTopology(_mesh);
 #else
-        _data->faults[iFault]->transformTopology(_mesh);
+        pylith::topology::Mesh* meshNew = _data->faults[iFault]->transformTopology(_mesh);
+        delete _mesh;_mesh = meshNew;
 #endif
 
         REQUIRE(_data->kinSrc);

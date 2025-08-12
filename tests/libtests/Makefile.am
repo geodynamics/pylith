@@ -13,10 +13,11 @@ SUBDIRS = \
 	bc \
 	faults \
 	feassemble \
+	initializers \
 	materials \
 	meshio \
 	problems \
-        scales \
+    scales \
 	topology \
 	testing \
 	utils

@@ -105,7 +105,7 @@ pylith::meshio::_MeshBuilder::Events::init(void) {
 // ------------------------------------------------------------------------------------------------
 // Set vertices and cells in mesh.
 void
-pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
+pylith::meshio::MeshBuilder::buildMesh(pylith::topology::Mesh* mesh,
                                        const Topology& topology,
                                        const Geometry& geometry,
                                        const bool isParallel) {

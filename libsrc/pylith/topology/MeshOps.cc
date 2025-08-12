@@ -353,7 +353,6 @@ pylith::topology::MeshOps::nondimensionalize(Mesh* const mesh,
     PylithCallPetsc(DMGetCoordinatesLocal(dmMesh, &coordVec));assert(coordVec);
     PylithCallPetsc(VecScale(coordVec, 1.0/lengthScale));
     PylithCallPetsc(DMPlexSetScale(dmMesh, PETSC_UNIT_LENGTH, lengthScale));
-    PylithCallPetsc(DMViewFromOptions(dmMesh, NULL, "-pylith_nondim_dm_view"));
 
     const PetscInt dim = mesh->getDimension();
     if (dim >= 1) {

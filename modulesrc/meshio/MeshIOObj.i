@@ -8,19 +8,9 @@
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
 
-/**
- * @file modulesrc/meshio/MeshIO.i
- *
- * @brief Python interface to C++ MeshIO object.
- */
-
 namespace pylith {
-    namespace topology {
-        class Mesh;
-    } // topology
-
     namespace meshio {
-        class MeshIO:public pylith::utils::PyreComponent {
+        class MeshIO : public pylith::utils::PyreComponent {
             // PUBLIC MEMBERS /////////////////////////////////////////////////
 public:
 
@@ -28,8 +18,7 @@ public:
             MeshIO(void);
 
             /// Destructor
-            virtual
-            ~MeshIO(void);
+            virtual ~MeshIO(void);
 
             /// Deallocate PETSc and local data structures.
             virtual
@@ -48,6 +37,15 @@ public:
              * @param mesh PyLith finite-element mesh.
              */
             void write(pylith::topology::Mesh* const mesh);
+
+            /** Set coordinate system used in mesh.
+             *
+             * @note Most mesh file formats do not include a coordinate system, so we set the coordinate
+             * system manually.
+             *
+             * @param[in] cs Coordinate system.
+             */
+            void setCoordSys(spatialdata::geocoords::CoordSys* const cs);
 
             // PROTECTED MEMBERS //////////////////////////////////////////////
 protected:

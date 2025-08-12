@@ -109,10 +109,10 @@ pylith::problems::_Problem::Events::init(void) {
     preinitialize = logger.registerEvent("PL:Problem:preinitialize");
     verifyConfiguration = logger.registerEvent("PL:Problem:verifyConfiguration");
     initialize = logger.registerEvent("PL:Problem:initialize");
-    checkMaterials = logger.registerEvent("PL:Problem:initialize");
-    createIntegrators = logger.registerEvent("PL:Problem:initialize");
-    createConstraints = logger.registerEvent("PL:Problem:initialize");
-    setupSolution = logger.registerEvent("PL:Problem:initialize");
+    checkMaterials = logger.registerEvent("PL:Problem:checkMaterials");
+    createIntegrators = logger.registerEvent("PL:Problem:createIntegrators");
+    createConstraints = logger.registerEvent("PL:Problem:createConstraints");
+    setupSolution = logger.registerEvent("PL:Problem:setupSolution");
 } // init
 
 
@@ -208,21 +208,32 @@ pylith::problems::Problem::getSolverType(void) const {
 void
 pylith::problems::Problem::setPetscDefaults(const int flags) {
     _petscDefaults = flags;
+    const bool hasFault = _interfaces.size() > 0;
+    pylith::utils::PetscDefaults::set(_materials[0], hasFault, _petscDefaults);
 } // setPetscDefaults
 
 
 // ------------------------------------------------------------------------------------------------
 // Set manager of scales used to nondimensionalize problem.
 void
-pylith::problems::Problem::setScales(const pylith::scales::Scales& dim) {
-    PYLITH_COMPONENT_DEBUG("Problem::setScales(dim="<<typeid(dim).name()<<")");
+pylith::problems::Problem::setScales(const pylith::scales::Scales& scales) {
+    PYLITH_COMPONENT_DEBUG("Problem::setScales(scales="<<typeid(scales).name()<<")");
 
     if (!_scales) {
-        _scales = new pylith::scales::Scales(dim);
+        _scales = new pylith::scales::Scales(scales);
     } else {
-        *_scales = dim;
+        *_scales = scales;
     } // if/else
 } // setScales
+
+
+// ------------------------------------------------------------------------------------------------
+// Get manager of scales used to nondimensionalize problem.
+const pylith::scales::Scales&
+pylith::problems::Problem::getScales(void) const {
+    assert(_scales);
+    return *_scales;
+}
 
 
 // ------------------------------------------------------------------------------------------------
@@ -329,6 +340,14 @@ pylith::problems::Problem::setMaterials(pylith::materials::Material* materials[]
 
 
 // ------------------------------------------------------------------------------------------------
+// Get materials.
+const std::vector<pylith::materials::Material*>&
+pylith::problems::Problem::getMaterials(void) const {
+    return _materials;
+} // getMaterials
+
+
+// ------------------------------------------------------------------------------------------------
 // Set boundary conditions.
 void
 pylith::problems::Problem::setBoundaryConditions(pylith::bc::BoundaryCondition* bc[],
@@ -348,7 +367,15 @@ pylith::problems::Problem::setBoundaryConditions(pylith::bc::BoundaryCondition* 
 
 
 // ------------------------------------------------------------------------------------------------
-// Set materials.
+// Get boundary conditions.
+const std::vector<pylith::bc::BoundaryCondition*>&
+pylith::problems::Problem::getBoundaryConditions(void) const {
+    return _bc;
+} // getBoundaryConditions
+
+
+// ------------------------------------------------------------------------------------------------
+// Set fault interfaces.
 void
 pylith::problems::Problem::setInterfaces(pylith::faults::FaultCohesive* interfaces[],
                                          const int numInterfaces) {
@@ -364,6 +391,14 @@ pylith::problems::Problem::setInterfaces(pylith::faults::FaultCohesive* interfac
 
     PYLITH_METHOD_END;
 } // setInterfaces
+
+
+// ------------------------------------------------------------------------------------------------
+// Get fault interfaces.
+const std::vector<pylith::faults::FaultCohesive*>&
+pylith::problems::Problem::getInterfaces(void) const {
+    return _interfaces;
+} // getInterfaces
 
 
 // ----------------------------------------------------------------------
@@ -459,8 +494,6 @@ pylith::problems::Problem::initialize(void) {
     assert(solution);
 
     // Initialize solution field.
-    pylith::utils::PetscDefaults::set(*solution, _materials[0], _petscDefaults);
-    PylithCallPetsc(DMSetFromOptions(solution->getDM()));
     _setupSolution();
     pylith::topology::CoordsVisitor::optimizeClosure(solution->getDM());
 
@@ -638,7 +671,7 @@ void
 pylith::problems::Problem::_setupSolution(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("Problem::_setupSolution()");
-    _Problem::Events::logger.eventBegin(_Problem::Events::createConstraints);
+    _Problem::Events::logger.eventBegin(_Problem::Events::setupSolution);
 
     assert(_integrationData);
     pylith::topology::Field* solution = _integrationData->getField("solution");

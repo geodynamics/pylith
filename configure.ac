@@ -200,6 +200,7 @@ AC_CONFIG_FILES([Makefile
 		libsrc/pylith/fekernels/Makefile
 		libsrc/pylith/faults/Makefile
 		libsrc/pylith/friction/Makefile
+		libsrc/pylith/initializers/Makefile
 		libsrc/pylith/materials/Makefile
 		libsrc/pylith/meshio/Makefile
 		libsrc/pylith/problems/Makefile
@@ -213,6 +214,7 @@ AC_CONFIG_FILES([Makefile
 		modulesrc/faults/Makefile
 		modulesrc/feassemble/Makefile
 		modulesrc/friction/Makefile
+		modulesrc/initializers/Makefile
 		modulesrc/materials/Makefile
 		modulesrc/meshio/Makefile
 		modulesrc/mpi/Makefile
@@ -229,6 +231,8 @@ AC_CONFIG_FILES([Makefile
 		tests/libtests/faults/data/Makefile
 		tests/libtests/feassemble/Makefile
 		tests/libtests/feassemble/data/Makefile
+		tests/libtests/initializers/Makefile
+		tests/libtests/initializers/data/Makefile
 		tests/libtests/materials/Makefile
 		tests/libtests/materials/data/Makefile
 		tests/libtests/meshio/Makefile
@@ -276,6 +280,7 @@ AC_CONFIG_FILES([Makefile
 		tests/fullscale/poroelasticity/cryer/Makefile
 		tests/fullscale/petsc/Makefile
 		tests/fullscale/eqinfo/Makefile
+		tests/fullscale/convert/Makefile
 		tests/manual/Makefile
 		tests/manual/powerlaw-2d/Makefile
 		tests/manual/powerlaw-3d/Makefile

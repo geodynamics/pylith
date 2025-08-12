@@ -256,14 +256,14 @@ pylith::meshio::TestOutputSolnPoints::_testInterpolate(const OutputSolnPointsDat
     const char* fieldName = "data_field";
     const int fiberDim = data.fiberDim;
     pylith::topology::Field field(mesh);
-    field.newSection(topology::FieldBase::VERTICES_FIELD, fiberDim);
+    field.newSection(pylith::topology::FieldBase::VERTICES_FIELD, fiberDim);
     field.allocate();
     field.setLabel(fieldName);
     this->_calcField(&field, data);
 
     // Create field for interpolated data.
     pylith::topology::Field fieldInterp(output.pointsMesh());
-    fieldInterp.newSection(topology::FieldBase::VERTICES_FIELD, fiberDim);
+    fieldInterp.newSection(pylith::topology::FieldBase::VERTICES_FIELD, fiberDim);
     fieldInterp.allocate();
     fieldInterp.setLabel(field.getLabel());
     fieldInterp.vectorFieldType(field.vectorFieldType());

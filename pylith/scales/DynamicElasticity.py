@@ -58,9 +58,7 @@ class DynamicElasticity(General):
         "shear_wave_speed", default=3.0 * km / second
     )
     shearWaveSpeed.validator = pythia.pyre.inventory.greater(0.0 * second)
-    shearWaveSpeed.meta["tip"] = (
-        "Time scale of boundary value problem (for example, viscoelastic relaxation time)."
-    )
+    shearWaveSpeed.meta["tip"] = "Nominal shear wave speed in boundary value problem."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 

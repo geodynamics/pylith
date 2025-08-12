@@ -20,6 +20,9 @@ class Distributor(PetscComponent, ModuleDistributor):
         "cfg": """
             [pylithapp.mesh_generator.distributor]
             partitioner = parmetis
+            use_edge_weighting = True
+            write_partition = False
+            data_writer = pylith.meshio.DataWriterHDF5
         """
     }
 
@@ -47,45 +50,15 @@ class Distributor(PetscComponent, ModuleDistributor):
     def preinitialize(self):
         """Do minimal initialization."""
         ModuleDistributor.__init__(self)
-
-    def distribute(self, mesh, problem):
-        """Distribute a Mesh
-        """
-        self._setupLogging()
-        logEvent = f"{self._loggingPrefix}distribute"
-        self._eventLogger.eventBegin(logEvent)
-
-        from pylith.topology.Mesh import Mesh
-        newMesh = Mesh(mesh.getDimension())
-        ModuleDistributor.distribute(newMesh, mesh, problem.interfaces.components(), self.partitioner, self.useEdgeWeighting)
-
-        mesh.cleanup()
-
+        ModuleDistributor.setPartitioner(self, self.partitioner)
+        ModuleDistributor.setUseEdgeWeighting(self, self.useEdgeWeighting)
         if self.writePartition:
-            self.dataWriter.setFilename(problem.defaults.outputDir, problem.defaults.simName, "partition")
-            ModuleDistributor.write(self.dataWriter, newMesh)
-
-        self._eventLogger.eventEnd(logEvent)
-        return newMesh
+            ModuleDistributor.setDataWriter(self, self.dataWriter)
 
     def _configure(self):
         """Set members based using inventory.
         """
         PetscComponent._configure(self)
-
-    def _setupLogging(self):
-        """Setup event logging.
-        """
-        self._loggingPrefix = "PL.Distributor."
-        from pylith.utils.EventLogger import EventLogger
-        logger = EventLogger()
-        logger.setClassName("Distributor")
-        logger.initialize()
-        events = ["distribute"]
-        for event in events:
-            logger.registerEvent(f"{self._loggingPrefix}{event}")
-
-        self._eventLogger = logger
 
 
 # FACTORIES ////////////////////////////////////////////////////////////

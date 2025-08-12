@@ -15,6 +15,7 @@ SUBDIRS = \
 	viscoelasticity \
 	poroelasticity \
 	petsc \
+	convert \
 	eqinfo
 
 

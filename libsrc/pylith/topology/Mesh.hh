@@ -42,6 +42,14 @@ public:
     Mesh(const int dim,
          const MPI_Comm& comm=PETSC_COMM_WORLD);
 
+    /** Constructor with new PETSc DM and original mesh.
+     *
+     * @param dm PETSc DM for mesh.
+     * @param meshOrig Original mesh used in creating new DM.
+     */
+    Mesh(const PetscDM dm,
+         const Mesh& meshOrig);
+
     /// Default destructor
     ~Mesh(void);
 

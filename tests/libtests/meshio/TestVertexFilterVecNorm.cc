@@ -76,7 +76,7 @@ pylith::meshio::TestVertexFilterVecNorm::testFilter(void) { // testFilter
     const PetscInt vEnd = verticesStratum.end();
 
     topology::Field field(mesh);
-    field.newSection(topology::FieldBase::VERTICES_FIELD, fiberDim);
+    field.newSection(pylith::topology::FieldBase::VERTICES_FIELD, fiberDim);
     field.allocate();
     field.vectorFieldType(fieldType);
     field.setLabel(label.c_str());

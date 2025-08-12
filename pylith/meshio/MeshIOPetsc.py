@@ -60,6 +60,7 @@ class MeshIOPetsc(MeshIOObj, ModuleMeshIOPetsc):
         ModuleMeshIOPetsc.setFilename(self, self.filename)
         ModuleMeshIOPetsc.setPrefix(self, self.prefix)
         ModuleMeshIOPetsc.setGmshMarkRecursive(self, self.gmshMarkRecursive)
+        ModuleMeshIOPetsc.setCoordSys(self, self.coordsys)
 
     def _configure(self):
         """Set members based using inventory.

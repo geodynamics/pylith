@@ -92,9 +92,15 @@ public:
 
     /** Set manager of scales used to nondimensionalize problem.
      *
-     * @param[in] dim Nondimensionalizer.
+     * @param[in] scales Scales for nondimensionalization.
      */
-    void setScales(const pylith::scales::Scales& dim);
+    void setScales(const pylith::scales::Scales& scales);
+
+    /** Get manager of scales used to nondimensionalize problem.
+     *
+     * @returns Scales for nondimensionalization.
+     */
+    const pylith::scales::Scales& getScales(void) const;
 
     /** Set gravity field.
      *
@@ -142,6 +148,12 @@ public:
     void setMaterials(pylith::materials::Material* materials[],
                       const int numMaterials);
 
+    /** Get materials.
+     *
+     * @returns Materials.
+     */
+    const std::vector<pylith::materials::Material*>& getMaterials(void) const;
+
     /** Set boundary conditions.
      *
      * @param[in] bc Array of boundary conditions.
@@ -150,13 +162,25 @@ public:
     void setBoundaryConditions(pylith::bc::BoundaryCondition* bc[],
                                const int numBC);
 
-    /** Set interior interface conditions.
+    /** Get boundary conditions.
+     *
+     * @returns Boundary conditions.
+     */
+    const std::vector<pylith::bc::BoundaryCondition*>& getBoundaryConditions(void) const;
+
+    /** Set interior interfaces.
      *
      * @param[in] interfaces Array of interior interfaces.
      * @param[in] numInterfaces Number of interior interfaces.
      */
     void setInterfaces(pylith::faults::FaultCohesive* faults[],
                        const int numFaults);
+
+    /** Get interior interfaces.
+     *
+     * @returns Fault interfaces.
+     */
+    const std::vector<pylith::faults::FaultCohesive*>& getInterfaces(void) const;
 
     /** Do minimal initialization.
      *

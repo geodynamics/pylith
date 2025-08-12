@@ -61,39 +61,35 @@ pylith::topology::TestReverseCuthillMcKee::testReorder(void) {
     _initialize();
     REQUIRE(_mesh);
 
-    // Get original DM and create Mesh for it
+    pylith::topology::Mesh* meshNew = ReverseCuthillMcKee::reorder(*_mesh);assert(meshNew);
+
     const PetscDM dmOrig = _mesh->getDM();
-    PetscObjectReference((PetscObject) dmOrig);
-    Mesh meshOrig;
-    meshOrig.setDM(dmOrig, "domain");
-
-    ReverseCuthillMcKee::reorder(_mesh);
-
-    const PetscDM& dmMesh = _mesh->getDM();REQUIRE(dmMesh);
+    const PetscDM dmNew = meshNew->getDM();
 
     // Check vertices (size only)
     topology::Stratum verticesStratumE(dmOrig, topology::Stratum::DEPTH, 0);
-    topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
+    topology::Stratum verticesStratum(dmNew, topology::Stratum::DEPTH, 0);
     CHECK(verticesStratumE.size() == verticesStratum.size());
 
     // Check cells (size only)
     topology::Stratum cellsStratumE(dmOrig, topology::Stratum::HEIGHT, 0);
-    topology::Stratum cellsStratum(dmMesh, topology::Stratum::HEIGHT, 0);
+    topology::Stratum cellsStratum(dmNew, topology::Stratum::HEIGHT, 0);
     CHECK(cellsStratumE.size() == cellsStratum.size());
 
     // Check groups
     PetscInt numGroupsE, numGroups;
+    PetscErrorCode err;
     PylithCallPetscRequire(DMGetNumLabels(dmOrig, &numGroupsE));
-    PylithCallPetscRequire(DMGetNumLabels(dmMesh, &numGroups));
+    PylithCallPetscRequire(DMGetNumLabels(dmNew, &numGroups));
     REQUIRE(numGroupsE == numGroups);
 
     for (PetscInt iGroup = 0; iGroup < numGroups; ++iGroup) {
         const char *name = NULL;
-        PylithCallPetscRequire(DMGetLabelName(dmMesh, iGroup, &name));
+        PylithCallPetscRequire(DMGetLabelName(dmNew, iGroup, &name));
 
         PetscInt numPointsE, numPoints;
         PylithCallPetscRequire(DMGetStratumSize(dmOrig, name, 1, &numPointsE));
-        PylithCallPetscRequire(DMGetStratumSize(dmMesh, name, 1, &numPoints));
+        PylithCallPetscRequire(DMGetStratumSize(dmNew, name, 1, &numPoints));
         CHECK(numPointsE == numPoints);
     } // for
 
@@ -120,15 +116,16 @@ pylith::topology::TestReverseCuthillMcKee::testReorder(void) {
             coordsVisitor.restoreClosure(&coordsCell, &coordsSize, cell);
         } // for
     } // original
+
     PylithScalar coordsCheckReorder = 0.0;
     PylithInt numCellsReorder = 0;
     PylithInt totalClosureSizeReorder = 0;
     { // reordered
-        Stratum cellsStratum(dmMesh, Stratum::HEIGHT, 0);
+        Stratum cellsStratum(dmNew, Stratum::HEIGHT, 0);
         const PetscInt cStart = cellsStratum.begin();
         const PetscInt cEnd = cellsStratum.end();
         numCellsReorder = cEnd - cStart;
-        pylith::topology::CoordsVisitor coordsVisitor(dmMesh);
+        pylith::topology::CoordsVisitor coordsVisitor(dmNew);
         for (PetscInt cell = cStart; cell < cEnd; ++cell) {
             PetscScalar* coordsCell = NULL;
             PetscInt coordsSize = 0;
@@ -148,7 +145,6 @@ pylith::topology::TestReverseCuthillMcKee::testReorder(void) {
     CHECK_THAT(coordsCheckReorder, Catch::Matchers::WithinAbs(coordsCheckOrig, tolerance*coordsCheckOrig));
 
     // Verify reduction in Jacobian bandwidth
-    Field fieldOrig(meshOrig);
     Field::Description description;
     description.label = "solution";
     description.vectorFieldType = FieldBase::SCALAR;
@@ -161,6 +157,8 @@ pylith::topology::TestReverseCuthillMcKee::testReorder(void) {
     Field::Discretization discretization;
     discretization.basisOrder = 1;
     discretization.quadOrder = 1;
+
+    Field fieldOrig(*_mesh);
     fieldOrig.subfieldAdd(description, discretization);
     fieldOrig.subfieldsSetup();
     fieldOrig.createDiscretization();
@@ -171,7 +169,7 @@ pylith::topology::TestReverseCuthillMcKee::testReorder(void) {
     PylithCallPetscRequire(MatComputeBandwidth(matrix, 0.0, &bandwidthOrig));
     PylithCallPetscRequire(MatDestroy(&matrix));
 
-    Field field(*_mesh);
+    Field field(*meshNew);
     field.subfieldAdd(description, discretization);
     field.subfieldsSetup();
     field.createDiscretization();
@@ -181,10 +179,11 @@ pylith::topology::TestReverseCuthillMcKee::testReorder(void) {
     PylithCallPetscRequire(MatComputeBandwidth(matrix, 0.0, &bandwidth));
     PylithCallPetscRequire(MatDestroy(&matrix));
 
-    REQUIRE(bandwidthOrig > 0);
-    REQUIRE(bandwidth > 0);
-    REQUIRE(bandwidth <= bandwidthOrig);
+    CHECK(bandwidthOrig > 0);
+    CHECK(bandwidth > 0);
+    CHECK(bandwidth <= bandwidthOrig);
 
+    delete meshNew;meshNew = nullptr;
     PYLITH_METHOD_END;
 } // testReorder
 

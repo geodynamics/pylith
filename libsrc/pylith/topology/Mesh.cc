@@ -52,6 +52,32 @@ pylith::topology::Mesh::Mesh(const int dim,
 
 
 // ------------------------------------------------------------------------------------------------
+// Constructor with new PETSc DM and original mesh.
+pylith::topology::Mesh::Mesh(const PetscDM dm,
+                             const Mesh& meshOrig) :
+    _coordSys(nullptr),
+    _dm(dm) {
+    PYLITH_METHOD_BEGIN;
+
+    const spatialdata::geocoords::CoordSys* cs = meshOrig.getCoordSys();
+    if (cs) {
+        _coordSys = cs->clone();
+    } // if
+
+    PetscReal lengthScale = 1.0;
+    PetscErrorCode err = PETSC_SUCCESS;
+    err = DMPlexGetScale(meshOrig.getDM(), PETSC_UNIT_LENGTH, &lengthScale);PYLITH_CHECK_ERROR(err);
+    err = DMPlexSetScale(_dm, PETSC_UNIT_LENGTH, lengthScale);PYLITH_CHECK_ERROR(err);
+
+    const char* name = nullptr;
+    err = PetscObjectGetName((PetscObject) meshOrig._dm, &name);PYLITH_CHECK_ERROR(err);
+    err = PetscObjectSetName((PetscObject) _dm, name);PYLITH_CHECK_ERROR(err);
+
+    PYLITH_METHOD_END;
+} // constructor
+
+
+// ------------------------------------------------------------------------------------------------
 // Default destructor
 pylith::topology::Mesh::~Mesh(void) {
     deallocate();
@@ -197,12 +223,14 @@ pylith::topology::Mesh::view(const char* viewOption) const {
         const char* label = 0;
         PylithCallPetsc(PetscObjectGetName((PetscObject) _dm, &label));
 
-        std::ostringstream optionname, optionprefix;
-        optionprefix << label << "_";
-        optionname << "-" << label << "_dm_view";
+        if (strlen(label) > 0) {
+            std::ostringstream optionname, optionprefix;
+            optionprefix << label << "_";
+            PylithCallPetsc(DMSetOptionsPrefix(_dm, optionprefix.str().c_str()));
 
-        PylithCallPetsc(DMSetOptionsPrefix(_dm, optionprefix.str().c_str()));
-        PylithCallPetsc(PetscOptionsSetValue(NULL, optionname.str().c_str(), viewOption));
+            optionname << "-" << label << "_dm_view";
+            PylithCallPetsc(PetscOptionsSetValue(NULL, optionname.str().c_str(), viewOption));
+        } // if
         PylithCallPetsc(DMViewFromOptions(_dm, NULL, "-dm_view"));
 
     } else {

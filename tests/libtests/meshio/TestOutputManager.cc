@@ -217,7 +217,7 @@ pylith::meshio::TestOutputManager::testAppendVertexField(void) { // testAppendVe
     const PetscInt vEnd = verticesStratum.end();
 
     topology::Field field(mesh);
-    field.newSection(topology::FieldBase::VERTICES_FIELD, fiberDim);
+    field.newSection(pylith::topology::FieldBase::VERTICES_FIELD, fiberDim);
     field.allocate();
     field.setLabel(label);
     field.vectorFieldType(fieldType);
@@ -304,7 +304,7 @@ pylith::meshio::TestOutputManager::testAppendCellField(void) { // testAppendCell
     PetscInt numCells = cellsStratum.size();
 
     topology::Field field(mesh);
-    field.newSection(topology::FieldBase::CELLS_FIELD, fiberDim);
+    field.newSection(pylith::topology::FieldBase::CELLS_FIELD, fiberDim);
     field.allocate();
     field.setLabel(label);
     field.vectorFieldType(fieldType);

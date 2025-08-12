@@ -137,7 +137,7 @@ pylith::topology::TestFieldSubmesh::testNewSectionPoints(void) { // testNewSecti
     Mesh submesh(mesh, _TestFieldSubmesh::label);
 
     Field field(submesh);
-    field.newSection(topology::FieldBase::VERTICES_FIELD, fiberDim);
+    field.newSection(pylith::topology::FieldBase::VERTICES_FIELD, fiberDim);
     field.allocate();
 
     PetscDM dmMesh = submesh.getDM();CPPUNIT_ASSERT(dmMesh);

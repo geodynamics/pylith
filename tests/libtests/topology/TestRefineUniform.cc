@@ -42,7 +42,6 @@ pylith::topology::TestRefineUniform::~TestRefineUniform(void) {
 } // destructor
 
 
-#include <iostream>
 // ------------------------------------------------------------------------------------------------
 // Test refine().
 void
@@ -54,13 +53,12 @@ pylith::topology::TestRefineUniform::testRefine(void) {
     _initializeMesh(&mesh);
 
     RefineUniform refiner;
-    Mesh newMesh(_data->cellDim);
-    refiner.refine(&newMesh, mesh, _data->refineLevel);
+    refiner.setNumLevels(_data->refineLevel);
+    Mesh* meshNew = refiner.refine(mesh);
+    const PetscDM dmNewMesh = meshNew->getDM();assert(dmNewMesh);
 
     // Check mesh dimension
-    REQUIRE(_data->cellDim == newMesh.getDimension());
-
-    const PetscDM dmNewMesh = newMesh.getDM();REQUIRE(dmNewMesh);
+    REQUIRE(_data->cellDim == meshNew->getDimension());
 
     // Check vertices
     pylith::topology::Stratum verticesStratum(dmNewMesh, topology::Stratum::DEPTH, 0);
@@ -73,6 +71,7 @@ pylith::topology::TestRefineUniform::testRefine(void) {
     for (PetscInt v = vStart; v < vEnd; ++v) {
         CHECK(spaceDim == coordsVisitor.sectionDof(v));
     } // for
+    coordsVisitor.clear();
 
     // Check cells
     pylith::topology::Stratum cellsStratum(dmNewMesh, topology::Stratum::HEIGHT, 0);
@@ -130,11 +129,11 @@ pylith::topology::TestRefineUniform::testRefine(void) {
 
     // Check vertex groups
     pylith::string_vector vertexGroupNames;
-    pylith::meshio::MeshBuilder::getVertexGroupNames(&vertexGroupNames, newMesh);
+    pylith::meshio::MeshBuilder::getVertexGroupNames(&vertexGroupNames, *meshNew);
     for (size_t iGroup = 0; iGroup < _data->numVertexGroups; ++iGroup) {
         INFO("Checking vertex group '"<<_data->vertexGroupNames[iGroup]<<"'.");
         int_array points;
-        pylith::meshio::MeshBuilder::getVertexGroup(&points, newMesh, _data->vertexGroupNames[iGroup]);
+        pylith::meshio::MeshBuilder::getVertexGroup(&points, *meshNew, _data->vertexGroupNames[iGroup]);
         REQUIRE(_data->vertexGroupSizes[iGroup] == points.size());
         for (size_t iPoint = 0; iPoint < points.size(); ++iPoint) {
             CHECK(points[iPoint] >= 0);
@@ -147,7 +146,7 @@ pylith::topology::TestRefineUniform::testRefine(void) {
     const PetscInt fStart = facesStratum.begin();
     const PetscInt fEnd = facesStratum.end();
     pylith::string_vector faceGroupNames;
-    pylith::meshio::MeshBuilder::getFaceGroupNames(&faceGroupNames, newMesh);
+    pylith::meshio::MeshBuilder::getFaceGroupNames(&faceGroupNames, *meshNew);
     REQUIRE(_data->numFaceGroups == faceGroupNames.size());
     for (size_t iGroup = 0; iGroup < _data->numFaceGroups; ++iGroup) {
         INFO("Checking face group '"<<_data->faceGroupNames[iGroup]<<"'.");
@@ -166,6 +165,7 @@ pylith::topology::TestRefineUniform::testRefine(void) {
         PylithCallPetscRequire(ISDestroy(&facesIS));
 
     } // for
+    delete meshNew;meshNew = nullptr;
 
     PYLITH_METHOD_END;
 } // testRefine

@@ -69,6 +69,14 @@ libpylith_la_SOURCES = \
 	fekernels/Tensor.cc \
 	fekernels/IsotropicLinearGenMaxwell.cc \
 	fekernels/IsotropicPowerLaw.cc \
+	initializers/Initializer.cc \
+	initializers/InitializePhase.cc \
+	initializers/MeshReader.cc \
+	initializers/MeshWriter.cc \
+	initializers/MeshRefiner.cc \
+	initializers/MeshReordering.cc \
+	initializers/MeshDistributor.cc \
+	initializers/MeshInsertInterfaces.cc \
 	materials/Material.cc \
 	materials/Elasticity.cc \
 	materials/RheologyElasticity.cc \
@@ -137,8 +145,9 @@ libpylith_la_SOURCES = \
 	topology/FieldQuery.cc \
 	topology/Distributor.cc \
 	topology/ReverseCuthillMcKee.cc \
+	topology/RefineMesh.cc \
 	topology/RefineUniform.cc \
-	topology/RefineInterpolator.cc \
+	topology/RefineOutputInterpolator.cc \
 	scales/ElasticityScales.cc \
 	scales/Scales.cc \
 	utils/EventLogger.cc \

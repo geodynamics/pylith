@@ -48,6 +48,15 @@ public:
      */
     void write(pylith::topology::Mesh* const mesh);
 
+    /** Set coordinate system used in mesh.
+     *
+     * @note Most mesh file formats do not include a coordinate system, so we set the coordinate
+     * system manually.
+     *
+     * @param[in] cs Coordinate system.
+     */
+    void setCoordSys(spatialdata::geocoords::CoordSys* const cs);
+
     // PROTECTED MEMBERS //////////////////////////////////////////////////////////////////////////
 protected:
 
@@ -63,6 +72,7 @@ protected:
 protected:
 
     pylith::topology::Mesh* _mesh; ///< Pointer to finite-element mesh.
+    spatialdata::geocoords::CoordSys* _cs; ///< Temporary holder of mesh coordinate system.
 
 }; // MeshIO
 

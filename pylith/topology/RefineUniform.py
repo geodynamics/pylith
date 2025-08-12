@@ -22,13 +22,13 @@ class RefineUniform(MeshRefiner, ModuleRefineUniform):
         "cfg": """
             # Refine mesh twice to reduce size of cell edges by a factor of 4.
             [pylithapp.mesh_generator.refiner]
-            levels = 2
+            levels = 0
         """
     }
 
     import pythia.pyre.inventory
 
-    levels = pythia.pyre.inventory.int("levels", default=1, validator=pythia.pyre.inventory.greaterEqual(1))
+    levels = pythia.pyre.inventory.int("levels", default=0, validator=pythia.pyre.inventory.greaterEqual(0))
     levels.meta['tip'] = "Number of refinement levels."
 
     def __init__(self, name="refineuniform"):

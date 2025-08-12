@@ -33,19 +33,19 @@ class TestCase(FullTestCase):
                 defaults=defaults,
             ),
             Check(
-                mesh_entities=["elastic"],
+                mesh_entities=["mat_xneg", "mat_xpos"],
                 filename="output/{name}-{mesh_entity}_info.h5",
                 cell_fields = ["density", "bulk_modulus", "shear_modulus"],
                 defaults=defaults,
             ),
             Check(
-                mesh_entities=["elastic"],
+                mesh_entities=["mat_xneg", "mat_xpos"],
                 vertex_fields = ["displacement"],
                 cell_fields = ["cauchy_strain"],
                 defaults=defaults,
             ),
             Check(
-                mesh_entities=["elastic"],
+                mesh_entities=["mat_xneg", "mat_xpos"],
                 cell_fields = ["cauchy_stress"],
                 scale = 1.0e+6,
                 defaults=defaults,

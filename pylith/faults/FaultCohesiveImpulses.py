@@ -104,7 +104,7 @@ class FaultCohesiveImpulses(FaultCohesive, ModuleFaultCohesiveImpulses):
         """Verify compatibility of configuration.
         """
         FaultCohesive.verifyConfiguration(self)
-        ModuleFaultCohesiveImpulses.verifyConfiguration(self, self.mesh())
+        ModuleFaultCohesiveImpulses.verifyConfiguration(self, self.mesh)
 
     def _createModuleObj(self):
         """Create handle to C++ FaultCohesiveImpulses.

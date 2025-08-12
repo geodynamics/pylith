@@ -88,6 +88,11 @@ class Problem(PetscComponent, ModuleProblem):
     )
     petscDefaults.meta["tip"] = "Flags controlling which default PETSc options to use."
 
+    from pylith.initializers.Initializer import Initializer
+    meshInitializer = pythia.pyre.inventory.facility(
+        "mesh_initializer", family="mesh_initializer", factory=Initializer)
+    meshInitializer.meta["tip"] = "Mesh initializer."
+
     from .Solution import Solution
 
     solution = pythia.pyre.inventory.facility(
@@ -138,7 +143,7 @@ class Problem(PetscComponent, ModuleProblem):
         PetscComponent.__init__(self, name, facility="problem")
         self.mesh = None
 
-    def preinitialize(self, mesh):
+    def preinitialize(self):
         """Do minimal initialization."""
         from pylith.mpi.Communicator import mpi_is_root
 
@@ -167,15 +172,10 @@ class Problem(PetscComponent, ModuleProblem):
             ModuleProblem.setSolverType(self, ModuleProblem.NONLINEAR)
         else:
             raise ValueError("Unknown solver choice '%s'." % self.solverChoice)
-        ModuleProblem.setPetscDefaults(self, self.petscDefaults.flags())
         ModuleProblem.setScales(self, self.scales)
         if not isinstance(self.gravityField, NullComponent):
             ModuleProblem.setGravityField(self, self.gravityField)
-
-        # Do minimal setup of solution.
-        self.solution.preinitialize(self, mesh)
-        ModuleProblem.setSolution(self, self.solution.field)
-
+    
         # Preinitialize materials
         for material in self.materials.components():
             material.preinitialize(self)
@@ -191,12 +191,21 @@ class Problem(PetscComponent, ModuleProblem):
             interface.preinitialize(self)
         ModuleProblem.setInterfaces(self, self.interfaces.components())
 
+        # Initialize mesh
+        ModuleProblem.setPetscDefaults(self, self.petscDefaults.flags())
+        self.meshInitializer.preinitialize()
+        self.mesh = self.meshInitializer.runPhases(self)
+
+        # Do minimal setup of solution.
+        self.solution.preinitialize(self, self.mesh)
+        ModuleProblem.setSolution(self, self.solution.field)
+
         # Preinitialize observers.
         for observer in self.observers.components():
             observer.preinitialize(self)
             ModuleProblem.registerObserver(self, observer)
 
-        ModuleProblem.preinitialize(self, mesh)
+        ModuleProblem.preinitialize(self, self.mesh)
 
     def verifyConfiguration(self):
         """Verify compatibility of configuration."""
@@ -230,10 +239,8 @@ class Problem(PetscComponent, ModuleProblem):
 
         if mpi_is_root():
             self._info.log("Finalizing problem.")
-
-    def checkpoint(self):
-        """Save problem state for restart."""
-        raise NotImplementedError("checkpoint() not implemented.")
+        self.mesh.deallocate()
+        del self.mesh
 
     # PRIVATE METHODS ////////////////////////////////////////////////////
 

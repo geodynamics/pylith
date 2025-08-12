@@ -16,9 +16,8 @@
 
 namespace pylith {
     namespace topology {
-        class Distributor
-        { // Distributor
-          // PUBLIC MEMBERS /////////////////////////////////////////////////
+        class Distributor { // Distributor
+                            // PUBLIC MEMBERS /////////////////////////////////////////////////
 public:
 
             /// Constructor
@@ -27,31 +26,31 @@ public:
             /// Destructor
             ~Distributor(void);
 
-            /** Distribute mesh among processors.
+            /** Set data writer.
              *
-             * @param[out newMesh Distributed mesh (result).
-             * @param[in] origMesh Mesh to distribute.
-             * @param[in] faults Array of fault interfaces.
-             * @param[in] numFaults Number of fault interfaces.
-             * @param[in] partitionerName Name of PETSc partitioner to use in distributing mesh.
-             * @param[in] useEdgeWeighting Use edge weighting when partitioning (parmetis only).
+             * @param[in] writer Data writer.
              */
-            static
-            void distribute(pylith::topology::Mesh* const newMesh,
-                            const pylith::topology::Mesh& origMesh,
-                            pylith::faults::FaultCohesive* faults[],
-                            const int numFaults,
-                            const char* partitionerName,
-                            const bool useEdgeWeighting);
+            void setDataWriter(pylith::meshio::DataWriter* writer);
 
-            /** Write partitioning info for distributed mesh.
+            /** Set edge weighting.
              *
-             * @param writer Data writer for partition information.
-             * @param mesh Distributed mesh.
+             * @param[in] useEdgeWeighting If true, weight edges in distribution.
              */
-            static
-            void write(pylith::meshio::DataWriter* const writer,
-                       const pylith::topology::Mesh& mesh);
+            void setUseEdgeWeighting(const bool flag);
+
+            /** Set partitioner.
+             *
+             * @param[in] partitioner Name of mesh partitioner.
+             */
+            void setPartitioner(const char* partitioner);
+
+            /** Distribute mesh.
+             *
+             * @param[in] mesh Original mesh.
+             * @param[in] faults Fault interfaces.
+             */
+            pylith::topology::Mesh* distribute(const pylith::topology::Mesh& mesh,
+                                               const std::vector<pylith::faults::FaultCohesive*>& faults) const;
 
         }; // Distributor
 

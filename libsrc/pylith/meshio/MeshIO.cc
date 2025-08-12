@@ -27,7 +27,8 @@
 // ----------------------------------------------------------------------
 // Constructor
 pylith::meshio::MeshIO::MeshIO(void) :
-    _mesh(NULL) {}
+    _mesh(nullptr),
+    _cs(nullptr) {}
 
 
 // ----------------------------------------------------------------------
@@ -41,6 +42,8 @@ pylith::meshio::MeshIO::~MeshIO(void) {
 // Deallocate PETSc and local data structures.
 void
 pylith::meshio::MeshIO::deallocate(void) {
+    _mesh = nullptr; // :KLUDGE: Use shared pointer
+    _cs = nullptr; // :KLUDGE: Use shared pointer
 } // deallocate
 
 
@@ -87,6 +90,10 @@ pylith::meshio::MeshIO::read(pylith::topology::Mesh* mesh,
         pylith::topology::MeshOps::checkTopology(*_mesh);
     } // if
 
+    if (_cs) {
+        _mesh->setCoordSys(_cs);
+    } // if
+
     pythia::journal::debug_t debug(PyreComponent::getName());
     if (debug.state()) {
         _mesh->view("::ascii_info_detail");
@@ -112,10 +119,18 @@ pylith::meshio::MeshIO::write(pylith::topology::Mesh* const mesh) {
 
     _mesh = mesh;
     _write();
-    _mesh = 0;
+    _mesh = nullptr;
 
     PYLITH_METHOD_END;
 } // write
+
+
+// ----------------------------------------------------------------------
+// Set coordinate system used in mesh.
+void
+pylith::meshio::MeshIO::setCoordSys(spatialdata::geocoords::CoordSys* const cs) {
+    _cs = cs;
+} // setCoordSys
 
 
 // End of file

@@ -14,6 +14,7 @@ SUBDIRS = \
 	faults \
 	feassemble \
 	friction \
+	initializers \
 	materials \
 	meshio \
 	mpi \

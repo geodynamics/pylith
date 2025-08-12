@@ -29,14 +29,17 @@ namespace pylith {
         class FieldFactory;
         class FieldOps;
         class FieldQuery;
-        class RefineInterpolator;
+
+        class RefineOutputInterpolator;
 
         class MatVisitorMesh;
         class MatVisitorSubmesh;
 
         class Distributor;
-        class RefineUniform;
         class ReverseCuthillMcKee;
+
+        class RefineMesh;
+        class RefineUniform;
 
     } // topology
 } // pylith

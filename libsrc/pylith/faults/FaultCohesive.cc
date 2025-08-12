@@ -236,7 +236,7 @@ pylith::faults::FaultCohesive::setRefDir2(const double vec[3]) {
 // ------------------------------------------------------------------------------------------------
 // Adjust mesh topology for fault implementation.
 void
-pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh) {
+pylith::faults::FaultCohesive::adjustTopology(pylith::topology::Mesh* const mesh) {
     PYLITH_METHOD_BEGIN;
 
     assert(mesh);
@@ -301,13 +301,14 @@ pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh) {
 
 // ------------------------------------------------------------------------------------------------
 // Transform mesh topology for fault implementation.
-void
-pylith::faults::FaultCohesive::transformTopology(topology::Mesh* const mesh) {
+pylith::topology::Mesh*
+pylith::faults::FaultCohesive::transformTopology(pylith::topology::Mesh* const mesh) {
     PYLITH_METHOD_BEGIN;
 
     assert(mesh);
     assert(_surfaceLabelName.length() > 0);
 
+    pylith::topology::Mesh* meshNew = nullptr;
     try {
         pylith::topology::Mesh faultMesh;
 
@@ -364,8 +365,7 @@ pylith::faults::FaultCohesive::transformTopology(topology::Mesh* const mesh) {
             const PylithInt buriedEdgeLabelValue = 1;
             pylith::faults::TopologyOps::createBuriedEdgeLabel(dmMeshNew, dmMesh, buriedEdgeLabelName.c_str(), buriedEdgeLabelValue, surfaceLabel, transform);
         } // if
-
-        mesh->setDM(dmMeshNew);
+        meshNew = new pylith::topology::Mesh(dmMeshNew, *mesh);
         err = DMPlexTransformDestroy(&transform);PYLITH_CHECK_ERROR(err);
 
         // Check consistency of mesh.
@@ -384,7 +384,7 @@ pylith::faults::FaultCohesive::transformTopology(topology::Mesh* const mesh) {
         throw std::runtime_error(msg.str());
     } // try/catch
 
-    PYLITH_METHOD_END;
+    PYLITH_METHOD_RETURN(meshNew);
 } // transformTopology
 
 

@@ -487,11 +487,28 @@ pylith::faults::TopologyOps::setCohesiveCellLabel(PetscDM dmMeshNew,
     pylith::topology::Stratum newStratum(dmMeshNew, pylith::topology::Stratum::HEIGHT, 0);
     const PylithInt pEnd = newStratum.end();
     const PylithInt cohesiveLabelValue = labelValue;
+
     PetscDMLabel dmLabel = NULL;
     err = DMGetLabel(dmMeshNew, labelName, &dmLabel);PYLITH_CHECK_ERROR(err);
-    for (PylithInt point = pStart; point < pEnd; ++point) {
-        DMLabelSetValue(dmLabel, point, cohesiveLabelValue);
-    } // for
+
+    PetscSF sf = NULL;
+    const PetscInt *leaves = NULL;
+    PetscInt numLeaves = 0;
+    err = DMGetPointSF(dmMeshNew, &sf);PYLITH_CHECK_ERROR(err);
+    err = PetscSFGetGraph(sf, NULL, &numLeaves, &leaves, NULL);PYLITH_CHECK_ERROR(err);
+    if (leaves) {
+        for (PylithInt point = pStart; point < pEnd; ++point) {
+            PetscInt loc;
+            err = PetscFindInt(point, numLeaves, leaves, &loc);PYLITH_CHECK_ERROR(err);
+            if (loc < 0) { // not a ghost cell
+                DMLabelSetValue(dmLabel, point, cohesiveLabelValue);
+            } // if
+        } // for
+    } else {
+        for (PylithInt point = pStart; point < pEnd; ++point) {
+            DMLabelSetValue(dmLabel, point, cohesiveLabelValue);
+        } // for
+    } // if/else
 
     PYLITH_METHOD_END;
 } // setCohesiveCellLabel
@@ -630,9 +647,11 @@ pylith::faults::TopologyOps::createFaultFromCohesiveCells(pylith::topology::Mesh
     const PetscBool hasLagrangeConstraints = PETSC_TRUE;
     err = DMPlexCreateCohesiveSubmesh(dmDomain, hasLagrangeConstraints, labelName, labelValue, &dmFaultMesh);PYLITH_CHECK_ERROR(err);
 #else
+#if 0
     mesh.view(":mesh_domain.tex:ascii_latex");
     mesh.view(":mesh_domain.txt:ascii_info_detail");
     mesh.view("vtk:mesh_domain.vtu:vtk_vtu");
+#endif
 
     const char* negativeLabelName = "fault_cohesive_negative_sides";
     PetscDMLabel negativeLabel = nullptr;
@@ -678,9 +697,11 @@ pylith::faults::TopologyOps::createFaultFromCohesiveCells(pylith::topology::Mesh
     faultMesh->setDM(dmFaultMesh, surfaceLabel);
     pylith::topology::MeshOps::checkTopology(*faultMesh);
 
+#if 0
     faultMesh->view(":mesh_fault.tex:ascii_latex");
     faultMesh->view(":mesh_fault.txt:ascii_info_detail");
     faultMesh->view("vtk:mesh_fault.vtu:vtk_vtu");
+#endif
 
     PYLITH_METHOD_END;
 } // createFaultFromCohesiveCells
@@ -746,8 +767,9 @@ pylith::faults::TopologyOps::getAdjacentCells(PylithInt* adjacentCellNegative,
         PylithCallPetsc(DMPlexGetSupport(dmDomain, cone[iCone], &support));
         PylithCallPetsc(DMPlexGetSupportSize(dmDomain, cone[iCone], &supportSize));
         if (2 != supportSize) {
-            PYLITH_JOURNAL_LOGICERROR("Inconsistent topology. Expected support of size 2 for cohesive cell "
-                                      <<cohesiveCell<<". Support has size "<<supportSize<<".");
+            PYLITH_JOURNAL_LOGICERROR("Inconsistent topology. Expected support of size 2 for face "
+                                      << cone[iCone] << " of cohesive cell " <<cohesiveCell
+                                      <<". Support has size "<<supportSize<<".");
         } // if
         assert(2 == supportSize);
         if ((cohesiveCell != support[0]) && (cohesiveCell != support[1]) ) {
