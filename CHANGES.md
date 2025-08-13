@@ -16,6 +16,7 @@ The version numbers are in the form `MAJOR.MINOR.PATCH`, where major releases in
   * Account for processes without cells in initial condition patch when verifying configuration.
   * Avoid divide by zero for `KinSrcRamp` when final slip is zero.
   * Remove `solid_bulk_modulus` as a spatial database field for poroelasticity; compute it from the other fields.
+  * Fixed typos in setting up gravity with poroelasticity.
   * Fix pythia import in `pylith_eqinfo`.
 
 ## Version 4.2.0 (2025-01-15)
