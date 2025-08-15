@@ -5,6 +5,10 @@ Starting with v3.0.0, we strictly follow the [semantic versioning guidelines](ht
 The version numbers are in the form `MAJOR.MINOR.PATCH`, where major releases indicate changes to the public API (parameters), minor releases indicate new functionality that is backward compatible, and patch releases indicate backward compatible bug fixes.
 :::
 
+:::{note}
+Some features present in v2.2.2, such as spontaneous rupture and finite strain, have not yet been implemented in the new multiphysics formulation used in v3.0.0 and later.
+:::
+
 ## Version 4.2.1 (2025-08-20)
 
 * **Changed**

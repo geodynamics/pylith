@@ -11,7 +11,7 @@ Documentation
 ## Release Notes
 
 * **Changed**
-  * Update PETSc to v3.23.5
+  * Update PETSc to v3.23.5.
   * Use the VTU (XML) format for VTK files instead of the legacy ASCII format (required for PETSc v3.23.5).
 * **Added**
   * Improved documentation for `pylith_eqinfo` and illustrate use in `examples/strikdslip-2d`, `examples/crustal-strikeslip-2d`, and `examples/crustal-strikeslip-3d`.
@@ -28,6 +28,8 @@ Documentation
 
 * The new default preconditioner for simulations using elasticity and faults can cause convergence issues when running in parallel in which fault faces lie on the boundaries between processors. The workaround is to use the previous preconditioner provided in `share/settings/solver_fault_fieldsplit.cfg`.
 * The default PETSc options provide a computationally expensive preconditioner when solving incompressible elasticity problems. We expect to have a more optimal preconditioner in the next release.
+* Some features present in v2.2.2, such as spontaneous rupture and finite strain, have not yet been implemented in the new multiphysics formulation used in v3.0.0 and later.
+
 
 ## Contributors
 
