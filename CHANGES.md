@@ -5,11 +5,11 @@ Starting with v3.0.0, we strictly follow the [semantic versioning guidelines](ht
 The version numbers are in the form `MAJOR.MINOR.PATCH`, where major releases indicate changes to the public API (parameters), minor releases indicate new functionality that is backward compatible, and patch releases indicate backward compatible bug fixes.
 :::
 
-## Version 4.2.1 (2025-08-XX)
+## Version 4.2.1 (2025-08-20)
 
 * **Changed**
-  * Update PETSc to 3.23.1
-  * Use the VTU (XML) format for VTK files instead of the legacy ASCII format.
+  * Update PETSc to v3.23.5
+  * Use the VTU (XML) format for VTK files instead of the legacy ASCII format (required for PETSc v3.23.5).
 * **Added**
   * Improved documentation for `pylith_eqinfo` and illustrate use in `examples/strikdslip-2d`, `examples/crustal-strikeslip-2d`, and `examples/crustal-strikeslip-3d`.
   * Improved the organization of the governing equations section and added documentation for poroelasticity with prescribed fault slip, including governing equations and default PETSc solver settings. Also added a full-scale test.
@@ -18,9 +18,8 @@ The version numbers are in the form `MAJOR.MINOR.PATCH`, where major releases in
   * Avoid divide by zero for `KinSrcRamp` when final slip is zero.
   * Remove `solid_bulk_modulus` as a spatial database field for poroelasticity; compute it from the other fields.
   * Fixed typos in setting up gravity with poroelasticity.
+  * Update default solver settings for poroelasticity and faults.
   * Fix pythia import in `pylith_eqinfo`.
-* **Added**
-  * Improve documentation for pylith_eqinfo and illustrate its use in examples.
 
 ## Version 4.2.0 (2025-01-15)
 
