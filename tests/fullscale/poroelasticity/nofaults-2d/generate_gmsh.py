@@ -1,7 +1,7 @@
 #!/usr/bin/env nemesis
 
 import gmsh
-from pylith.meshio.gmsh_utils import BoundaryGroup, MaterialGroup, GenerateMesh
+from pylith.meshio.gmsh_utils import VertexGroup, MaterialGroup, GenerateMesh
 
 
 class App(GenerateMesh):
@@ -58,25 +58,25 @@ class App(GenerateMesh):
             material.create_physical_group()
 
         face_groups = (
-            BoundaryGroup(
+            VertexGroup(
                 name="boundary_xneg",
                 tag=10,
                 dim=1,
                 entities=[self.l_xneg],
             ),
-            BoundaryGroup(
+            VertexGroup(
                 name="boundary_xpos",
                 tag=11,
                 dim=1,
                 entities=[self.l_xpos],
             ),
-            BoundaryGroup(
+            VertexGroup(
                 name="boundary_yneg",
                 tag=12,
                 dim=1,
                 entities=[self.l_yneg],
             ),
-            BoundaryGroup(
+            VertexGroup(
                 name="boundary_ypos",
                 tag=13,
                 dim=1,
