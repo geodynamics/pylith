@@ -341,6 +341,8 @@ pylith::materials::Poroelasticity::getSolverDefaults(const bool isParallel,
 
             options->add("-dm_reorder_section");
             options->add("-dm_reorder_section_type", "cohesive");
+            options->add("-fieldsplit_displacement_pc_type", "ml");
+            options->add("-fieldsplit_displacement_ksp_type", "gmres");
             options->add("-fieldsplit_displacement_mg_fine_pc_type", "vpbjacobi");
 
             if (_useStateVars) {
