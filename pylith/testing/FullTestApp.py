@@ -79,7 +79,6 @@ class Check(object):
                 Dictionary with default values.
         """
         self.tolerance = 1.0e-5
-        self.zero_tolerance = 1.0e-10
         self.scale = scale
         self.final_time_only = final_time_only
         self.vertex_fields = []
@@ -226,7 +225,7 @@ class HDF5Checker(object):
         mesh_entity,
         exact_soln,
         tolerance,
-        zero_tolerance,
+        scale,
         final_time_only,
     ):
         self.testcase.assertTrue("vertex_fields" in self.h5.keys())
@@ -246,7 +245,7 @@ class HDF5Checker(object):
         mask = None
         if "getMask" in dir(exact_soln):
             mask = exact_soln.getMask(fieldName, mesh_entity, vertices)
-        self._checkField(fieldE, field, mask, tolerance, zero_tolerance)
+        self._checkField(fieldE, field, mask, tolerance, scale)
         return
 
     def checkCellField(
@@ -255,7 +254,7 @@ class HDF5Checker(object):
         mesh_entity,
         exact_soln,
         tolerance,
-        zero_tolerance,
+        scale,
         final_time_only,
     ):
         self.testcase.assertTrue(
@@ -274,10 +273,10 @@ class HDF5Checker(object):
         centroids = self._getCellCentroids()
         fieldE = exact_soln.getField(fieldName, mesh_entity, centroids)
         mask = None
-        self._checkField(fieldE, field, mask, tolerance, zero_tolerance)
+        self._checkField(fieldE, field, mask, tolerance, scale)
         return
 
-    def _checkField(self, fieldE, field, maskField, tolerance, zero_tolerance):
+    def _checkField(self, fieldE, field, maskField, tolerance, scale):
         (nstepsE, nptsE, ncompsE) = fieldE.shape
         (nsteps, npts, ncomps) = field.shape
         self.testcase.assertEqual(
@@ -288,9 +287,9 @@ class HDF5Checker(object):
             ncompsE, ncomps, msg="Mismatch in number of components"
         )
 
-        scale = numpy.mean(numpy.abs(fieldE).ravel())
-        vtolerance = scale * tolerance if scale > zero_tolerance else tolerance
-        okay = numpy.abs(field - fieldE) < vtolerance
+        v_scale = max(scale, numpy.mean(numpy.abs(fieldE).ravel()))
+        v_tolerance = v_scale * tolerance
+        okay = numpy.abs(field - fieldE) < v_tolerance
 
         if not maskField is None:
             okay[:, maskField, :] = True
@@ -305,7 +304,7 @@ class HDF5Checker(object):
             msg += [f"Expected values (not okay): {fieldE[~okay]}"]
             msg += [f"Computed values (not okay): {field[~okay]}"]
             # msg += [f"Coordinates: {pts[~okay, :]}"]
-            msg += [f"Tolerance: {vtolerance}"]
+            msg += [f"Tolerance: {v_tolerance}"]
         self.testcase.assertEqual(
             nsteps * npts * ncomps, numpy.sum(okay), msg="\n".join(msg)
         )
@@ -358,19 +357,15 @@ def check_data(testcase, filename, check, mesh_entity, mesh):
 
     checker = HDF5Checker(filename, testcase, mesh)
 
-    tolerance = check.tolerance * check.scale
-    zero_tolerance = check.zero_tolerance * check.scale
-    final_time_only = check.final_time_only
-
     for field in check.vertex_fields:
         with testcase.subTest(vertex_field=field):
             checker.checkVertexField(
                 field,
                 mesh_entity,
                 check.exact_soln,
-                tolerance,
-                zero_tolerance,
-                final_time_only,
+                check.tolerance,
+                check.scale,
+                check.final_time_only,
             )
 
     for field in check.cell_fields:
@@ -379,9 +374,9 @@ def check_data(testcase, filename, check, mesh_entity, mesh):
                 field,
                 mesh_entity,
                 check.exact_soln,
-                tolerance,
-                zero_tolerance,
-                final_time_only,
+                check.tolerance,
+                check.scale,
+                check.final_time_only,
             )
     return
 

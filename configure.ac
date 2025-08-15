@@ -114,7 +114,7 @@ AC_CHECK_HEADER([mpi.h], [], [AC_MSG_ERROR([header 'mpi.h' not found])])
 
 dnl PETSC
 AC_LANG(C)
-CIT_PATH_PETSC([3.23.4])
+CIT_PATH_PETSC([3.23.5])
 CIT_HEADER_PETSC
 CIT_CHECK_LIB_PETSC
 
@@ -266,6 +266,7 @@ AC_CONFIG_FILES([Makefile
 		tests/fullscale/viscoelasticity/nofaults-2d/Makefile
 		tests/fullscale/viscoelasticity/nofaults-3d/Makefile
 		tests/fullscale/poroelasticity/Makefile
+		tests/fullscale/poroelasticity/nofaults-2d/Makefile
 		tests/fullscale/poroelasticity/faults-2d/Makefile
 		tests/fullscale/poroelasticity/terzaghi/Makefile
 		tests/fullscale/poroelasticity/mandel/Makefile

@@ -12,10 +12,10 @@
 import unittest
 
 from pylith.testing.FullTestApp import FullTestCase, Check
+from pylith.testing import TestCases
 
 import meshes
-import pressuregradient_soln
-import pressuregradient_gendb
+import gravity_bodyforce_soln
 
 
 # -------------------------------------------------------------------------------------------------
@@ -24,13 +24,13 @@ class TestCase(FullTestCase):
     def setUp(self):
         defaults = {
             "filename": "output/{name}-{mesh_entity}.h5",
-            "exact_soln": pressuregradient_soln.AnalyticalSoln(),
+            "exact_soln": gravity_bodyforce_soln.AnalyticalSoln(),
             "mesh": self.mesh,
         }
         self.checks = [
             Check(
                 mesh_entities=["domain"],
-                vertex_fields=["displacement", "trace_strain", "pressure"],
+                vertex_fields=["displacement", "pressure", "trace_strain"],
                 final_time_only=True,
                 defaults=defaults,
             ),
@@ -67,7 +67,6 @@ class TestCase(FullTestCase):
                     "bc_disp_xneg",
                     "bc_disp_xpos",
                     "bc_disp_yneg",
-                    "bc_disp_ypos",
                 ],
                 filename="output/{name}-{mesh_entity}_info.h5",
                 vertex_fields=["initial_amplitude", "normal_dir", "tangential_dir"],
@@ -78,42 +77,28 @@ class TestCase(FullTestCase):
                     "bc_disp_xneg",
                     "bc_disp_xpos",
                     "bc_disp_yneg",
-                    "bc_disp_ypos",
-                    "bc_press_xneg",
-                    "bc_press_xpos",
+                    "bc_press_ypos",
                 ],
-                vertex_fields=["displacement", "trace_strain", "pressure"],
-                final_time_only=True,
-                defaults=defaults,
-            ),
-            Check(
-                mesh_entities=["fault"],
-                filename="output/{name}-{mesh_entity}_info.h5",
-                vertex_fields=["normal_dir", "strike_dir"],
-                defaults=defaults,
-            ),
-            Check(
-                mesh_entities=["fault"],
-                vertex_fields=["slip", "traction_change"],
+                vertex_fields=["displacement", "pressure", "trace_strain"],
                 final_time_only=True,
                 defaults=defaults,
             ),
         ]
 
     def run_pylith(self, testName, args):
-        FullTestCase.run_pylith(self, testName, args, pressuregradient_gendb.GenerateDB)
+        FullTestCase.run_pylith(self, testName, args)
 
 
 # -------------------------------------------------------------------------------------------------
 class TestQuadGmsh(TestCase):
 
     def setUp(self):
-        self.name = "pressuregradient_quad"
+        self.name = "gravity_bodyforce_quad"
         self.mesh = meshes.QuadGmsh()
         super().setUp()
 
         TestCase.run_pylith(
-            self, self.name, ["pressuregradient.cfg", "pressuregradient_quad.cfg"]
+            self, self.name, ["gravity_bodyforce.cfg", "gravity_bodyforce_quad.cfg"]
         )
         return
 
@@ -122,32 +107,29 @@ class TestQuadGmsh(TestCase):
 class TestTriGmsh(TestCase):
 
     def setUp(self):
-        self.name = "pressuregradient_tri"
+        self.name = "gravity_bodyforce_tri"
         self.mesh = meshes.TriGmsh()
         super().setUp()
 
         TestCase.run_pylith(
-            self, self.name, ["pressuregradient.cfg", "pressuregradient_tri.cfg"]
+            self, self.name, ["gravity_bodyforce.cfg", "gravity_bodyforce_tri.cfg"]
         )
         return
 
 
 # -------------------------------------------------------------------------------------------------
-def test_cases():
-    return [
+def load_tests(loader, tests, pattern):
+    TEST_CLASSES = (
         TestQuadGmsh,
         TestTriGmsh,
-    ]
+    )
+    return TestCases.make_suite(test_classes=TEST_CLASSES, loader=loader)
 
 
 # -------------------------------------------------------------------------------------------------
 if __name__ == "__main__":
     FullTestCase.parse_args()
-
-    suite = unittest.TestSuite()
-    for test in test_cases():
-        suite.addTest(unittest.makeSuite(test))
-    unittest.TextTestRunner(verbosity=2).run(suite)
+    unittest.main(verbosity=2, argv=["test"])
 
 
 # End of file

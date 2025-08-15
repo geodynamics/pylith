@@ -249,6 +249,11 @@ pylith::materials::Elasticity::createAuxiliaryField(const pylith::topology::Fiel
     assert(auxiliaryFactory);
     auxiliaryFactory->setValuesFromDB();
 
+    pythia::journal::debug_t debug("elasticity.view_auxiliary_field");
+    if (debug.state()) {
+        auxiliaryField->view("Elasticity auxiliary field");
+    } // if
+
     _Elasticity::Events::logger.eventEnd(_Elasticity::Events::createAuxiliaryField);
     PYLITH_METHOD_RETURN(auxiliaryField);
 } // createAuxiliaryField

@@ -28,18 +28,18 @@ p_isotropic_permeability = 1.0e-14
 
 p_mu = p_shear_modulus
 p_lambda = p_drained_bulk_modulus - 2.0 / 3.0 * p_shear_modulus
+p_bulk_density = (1.0 - p_porosity) * p_solid_density + p_porosity * p_fluid_density
 
 
-p0 = 4.0e4
-s0 = -1.0e8
-domain_x = 8.0e3
-p_alpha = p_biot_coefficient
-u0 = 1.0 / (p_lambda + 2.0 * p_mu) * domain_x * (-s0 - 0.5 * p_alpha * p0)
+gacc = 9.80665  # m/s
+ymax = 0.0
+ymin = -8000.0  # m
+fy = 5.0e3  # Pa/m
 
 
 # ----------------------------------------------------------------------
 class AnalyticalSoln(object):
-    """Analytical solution to shear problem."""
+    """Analytical solution to gravity problem."""
 
     SPACE_DIM = 2
     TENSOR_SIZE = 4
@@ -61,33 +61,23 @@ class AnalyticalSoln(object):
             "cauchy_strain": self.strain,
             "cauchy_stress": self.stress,
             "initial_amplitude": {
-                "bc_disp_xneg": self.displacement,
-                "bc_disp_xpos": self.displacement,
+                "bc_disp_xneg": self.displacement_zero,
+                "bc_disp_xpos": self.displacement_zero,
                 "bc_disp_yneg": self.displacement_zero,
-                "bc_disp_ypos": self.displacement_zero,
-                "bc_press_xneg": self.displacement,
-                "bc_press_xpos": self.displacement,
+                "bc_press_ypos": self.pressure_zero,
             },
             "normal_dir": {
                 "bc_disp_xneg": self.orientation_dir((-1, 0)),
                 "bc_disp_xpos": self.orientation_dir((+1, 0)),
                 "bc_disp_yneg": self.orientation_dir((0, -1)),
-                "bc_disp_ypos": self.orientation_dir((0, +1)),
-                "bc_press_xneg": self.orientation_dir((-1, 0)),
-                "bc_press_xpos": self.orientation_dir((+1, 0)),
-                "fault": self.orientation_dir((0, +1)),
+                "bc_press_ypos": self.orientation_dir((+1, 0)),
             },
             "tangential_dir": {
                 "bc_disp_xneg": self.orientation_dir((0, -1)),
                 "bc_disp_xpos": self.orientation_dir((0, +1)),
                 "bc_disp_yneg": self.orientation_dir((+1, 0)),
-                "bc_disp_ypos": self.orientation_dir((-1, 0)),
-                "bc_press_xneg": self.orientation_dir((0, -1)),
-                "bc_press_xpos": self.orientation_dir((0, +1)),
+                "bc_press_ypos": self.orientation_dir((0, +1)),
             },
-            "slip": self.slip,
-            "traction_change": self.traction_change,
-            "strike_dir": self.orientation_dir((-1, 0)),
         }
 
     def getField(self, name, mesh_entity, pts):
@@ -104,13 +94,17 @@ class AnalyticalSoln(object):
         p_mu = p_shear_modulus
         p_lambda = p_drained_bulk_modulus - 2.0 / 3.0 * p_shear_modulus
         p_alpha = p_biot_coefficient
-        x = locs[:, 0]
+        y = locs[:, 1]
 
         disp = numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
-        disp[0, :, 0] = u0 + 1.0 / (p_lambda + 2 * p_mu) * (
-            s0 * x + p_alpha * p0 * x - 0.5 * p_alpha * p0 * x**2 / domain_x
+        uy = (
+            -0.5
+            / (p_lambda + 2 * p_mu)
+            * ((p_bulk_density - p_alpha * p_fluid_density) * gacc - (1 - p_alpha) * fy)
+            * ((ymax - ymin) ** 2 - y**2)
         )
-        disp[0, :, 1] = 0.0
+        disp[0, :, 0] = 0.0
+        disp[0, :, 1] = uy
         return disp
 
     def displacement_zero(self, locs):
@@ -123,22 +117,34 @@ class AnalyticalSoln(object):
         """Compute pressure field at locations."""
         (npts, _) = locs.shape
 
-        x = locs[:, 0]
+        y = locs[:, 1]
 
         pressure = numpy.zeros((1, npts, 1), dtype=numpy.float64)
-        pressure[0, :, 0] = p0 * (1.0 - x / domain_x)
+        pressure[0, :, 0] = (p_fluid_density * gacc - fy) * (ymax - y)
+        return pressure
+
+    def pressure_zero(self, locs):
+        (npts, _) = locs.shape
+
+        pressure = numpy.zeros((1, npts, 1), dtype=numpy.float64)
         return pressure
 
     def trace_strain(self, locs):
         """Compute trace_strain field at locations."""
         (npts, _) = locs.shape
 
-        x = locs[:, 0]
+        y = locs[:, 1]
         p_alpha = p_biot_coefficient
-        exx = 1.0 / (p_lambda + 2 * p_mu) * (s0 + p_alpha * p0 * (1.0 - x / domain_x))
+
+        ev = (
+            -1.0
+            / (p_lambda + 2.0 * p_mu)
+            * ((p_bulk_density - p_alpha * p_fluid_density) * gacc - (1 - p_alpha) * fy)
+            * (ymax - y)
+        )
 
         trace = numpy.zeros((1, npts, 1), dtype=numpy.float64)
-        trace[0, :, 0] = exx
+        trace[0, :, 0] = ev
         return trace
 
     def solid_density(self, locs):
@@ -208,13 +214,18 @@ class AnalyticalSoln(object):
         """Compute strain field at locations."""
         (npts, _) = locs.shape
 
-        x = locs[:, 0]
+        y = locs[:, 1]
         p_alpha = p_biot_coefficient
-        exx = 1.0 / (p_lambda + 2 * p_mu) * (s0 + p_alpha * p0 * (1.0 - x / domain_x))
 
         strain = numpy.zeros((1, npts, self.TENSOR_SIZE), dtype=numpy.float64)
-        strain[0, :, 0] = exx
-        strain[0, :, 1] = 0.0
+        eyy = (
+            -1
+            / (p_lambda + 2 * p_mu)
+            * ((p_bulk_density - p_alpha * p_fluid_density) * gacc - (1 - p_alpha) * fy)
+            * (ymax - y)
+        )
+        strain[0, :, 0] = 0.0
+        strain[0, :, 1] = eyy
         strain[0, :, 2] = 0.0
         strain[0, :, 3] = 0.0
         return strain
@@ -223,12 +234,16 @@ class AnalyticalSoln(object):
         """Compute stress field at locations."""
         (npts, _) = locs.shape
 
-        x = locs[:, 0]
+        y = locs[:, 1]
         p_alpha = p_biot_coefficient
-        exx = 1.0 / (p_lambda + 2 * p_mu) * (s0 + p_alpha * p0 * (1.0 - x / domain_x))
-
-        sxx = s0
-        syy = szz = p_lambda * exx - p_alpha * p0 * (1.0 - x / domain_x)
+        syy = -(p_bulk_density * gacc - fy) * (ymax - y)
+        sxx = szz = -p_lambda / (p_lambda + 2 * p_mu) * (p_bulk_density * gacc - fy) * (
+            ymax - y
+        ) - 2 * p_mu / (p_lambda + 2 * p_mu) * p_alpha * (
+            p_fluid_density * gacc - fy
+        ) * (
+            ymax - y
+        )
 
         stress = numpy.zeros((1, npts, self.TENSOR_SIZE), dtype=numpy.float64)
         stress[0, :, 0] = sxx
@@ -236,30 +251,6 @@ class AnalyticalSoln(object):
         stress[0, :, 2] = szz
         stress[0, :, 3] = 0.0
         return stress
-
-    def slip(self, locs):
-        """Compute slip field."""
-        (npts, _) = locs.shape
-        slip = numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
-        return slip
-
-    def traction_change(self, locs):
-        """Compute change in traction on faults."""
-        (npts, _) = locs.shape
-
-        x = locs[:, 0]
-        p_alpha = p_biot_coefficient
-        exx = (
-            1.0
-            / (p_lambda + 2 * p_mu)
-            * (0.5 * s0 + p_alpha * p0 * (1.0 - x / domain_x))
-        )
-        syy = p_lambda * exx - p_alpha * p0 * (1.0 - x / domain_x)
-        offset = p_alpha * p0 * 1000 / domain_x
-
-        traction = numpy.zeros((1, npts, self.SPACE_DIM), dtype=numpy.float64)
-        traction[:, :, 0] = syy + offset
-        return traction
 
     def orientation_dir(self, vector):
         def fn_dir(locs):
