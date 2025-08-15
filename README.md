@@ -1,6 +1,6 @@
 # PyLith
 
-[![DOI](https://www.zenodo.org/badge/DOI/10.5281/zenodo.14635926.svg)](https://doi.org/10.5281/zenodo.14635926)
+[![DOI](https://www.zenodo.org/badge/DOI/10.5281/zenodo.16884017.svg)](https://doi.org/10.5281/zenodo.16884017)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/geodynamics/pylith/blob/main/LICENSE.md)
 [![Build Status](https://github.com/geodynamics/pylith/actions/workflows/ci-main.yml/badge.svg)](https://github.com/geodynamics/pylith/actions/workflows/ci-main.yml)
 

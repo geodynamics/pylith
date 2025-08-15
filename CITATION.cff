@@ -22,7 +22,7 @@ authors:
     orcid: "https://orcid.org/0000-0001-7435-9196"
 identifiers:
   - type: doi
-    value: 10.5281/zenodo.14635926
+    value: 10.5281/zenodo.16884017
 repository-code: "https://github.com/geodynamics/pylith"
 url: "https://geodynamics.org/resources/pylith"
 keywords:
@@ -31,8 +31,8 @@ keywords:
   - earthquake
   - finite element
 license: MIT
-version: 4.2.0
-date-released: "2025-01-17"
+version: 4.2.1
+date-released: "2025-08-19"
 preferred-citation:
   type: article
   authors:

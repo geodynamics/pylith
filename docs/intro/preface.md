@@ -17,9 +17,9 @@ The following peer-reviewed paper discusses the development of PyLith:
 
 To cite the software and manual, use:
 
-- Aagaard, B., M. Knepley, C. Williams (2025a), *PyLith v4.2.0.* Davis, CA: Computational Infrastructure of Geodynamics. DOI: 10.5281/zenodo.14635926.
+- Aagaard, B., M. Knepley, C. Williams (2025a), *PyLith v4.2.1.* Davis, CA: Computational Infrastructure of Geodynamics. DOI: 10.5281/zenodo.16884017.
 
-- Aagaard, B., M. Knepley, C. Williams (2025b), *PyLith Manual, Version 4.2.0.* Davis, CA: Computational Infrastructure of Geodynamics. https://pylith.readthedocs.io/en/v4.2.0
+- Aagaard, B., M. Knepley, C. Williams (2025b), *PyLith Manual, Version 4.2.1.* Davis, CA: Computational Infrastructure of Geodynamics. https://pylith.readthedocs.io/en/v4.2.1
 
 ## Publishing Models
 
@@ -41,7 +41,7 @@ Common output files include the solution fields and state variables in `.h5`, `.
 
 The configuration files, parameters of the simulation, and solution field for the models in this study are available at DOI (Authors X, Y, Z) under CC BY-NC-SA 4.0.
 
-PyLith version 4.2.0 (Aagaard et al., 2013; Aagaard et al., 2025a; Aagaard et al., 2025b) used in these models is freely available under the MIT license for download through its software landing page https://geodynamics.org/resources/pylith or Zenodo (10.5281/zenodo.14635926).
+PyLith version 4.2.1 (Aagaard et al., 2013; Aagaard et al., 2025a; Aagaard et al., 2025b) used in these models is freely available under the MIT license for download through its software landing page https://geodynamics.org/resources/pylith or Zenodo (10.5281/zenodo.16884017).
 The project is being actively developed on GitHub and can be accessed via https://github.com/geodynamics/pylith.
 
 ## Support
