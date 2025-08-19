@@ -306,6 +306,9 @@ pylith::materials::Elasticity::getSolverDefaults(const bool isParallel,
         options->add("-ts_type", "beuler");
 
         options->add("-pc_type", "gamg");
+        options->add("-pc_gamg_coarse_eq_limit", "200");
+        options->add("-mg_fine_ksp_max_it", "5");
+        options->add("-mg_levels_pc_type", "pbjacobi");
 
         if (hasFault) {
             options->add("-dm_reorder_section");
