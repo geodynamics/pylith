@@ -6,12 +6,12 @@
 # Copyright (c) 2010-2025, University of California, Davis and the PyLith Development Team.
 # All rights reserved.
 #
-# See https://mit-license.org/ and LICENSE.md and for license information. 
+# See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
 
 import unittest
 
-from pylith.testing.FullTestApp import (FullTestCase, Check)
+from pylith.testing.FullTestApp import FullTestCase, Check
 
 import meshes
 import sheartraction_rate_soln
@@ -36,19 +36,23 @@ class TestCase(FullTestCase):
             Check(
                 mesh_entities=["elastic_xpos", "elastic_xneg"],
                 filename="output/{name}-{mesh_entity}_info.h5",
-                cell_fields = ["density", "bulk_modulus", "shear_modulus"],
+                cell_fields=["density", "bulk_modulus", "shear_modulus"],
                 defaults=defaults,
             ),
             Check(
                 mesh_entities=["elastic_xpos", "elastic_xneg"],
-                vertex_fields = ["displacement"],
-                cell_fields = ["cauchy_strain", "cauchy_stress"],
+                vertex_fields=["displacement"],
+                cell_fields=["cauchy_strain", "cauchy_stress"],
                 defaults=defaults,
             ),
             Check(
                 mesh_entities=["bc_xneg", "bc_xpos", "bc_yneg", "bc_ypos"],
                 filename="output/{name}-{mesh_entity}_info.h5",
-                vertex_fields=["initial_amplitude", "rate_start_time", "rate_amplitude"],
+                vertex_fields=[
+                    "initial_amplitude",
+                    "rate_start_time",
+                    "rate_amplitude",
+                ],
                 defaults=defaults,
             ),
             Check(
@@ -59,7 +63,9 @@ class TestCase(FullTestCase):
         ]
 
     def run_pylith(self, testName, args):
-        FullTestCase.run_pylith(self, testName, args, sheartraction_rate_gendb.GenerateDB)
+        FullTestCase.run_pylith(
+            self, testName, args, sheartraction_rate_gendb.GenerateDB
+        )
 
 
 # -------------------------------------------------------------------------------------------------
@@ -70,7 +76,9 @@ class TestQuad(TestCase):
         self.mesh = meshes.QuadGmsh()
         super().setUp()
 
-        TestCase.run_pylith(self, self.name, ["sheartraction_rate.cfg", "sheartraction_rate_quad.cfg"])
+        TestCase.run_pylith(
+            self, self.name, ["sheartraction_rate.cfg", "sheartraction_rate_quad.cfg"]
+        )
         return
 
 
@@ -82,7 +90,9 @@ class TestTri(TestCase):
         self.mesh = meshes.TriGmsh()
         super().setUp()
 
-        TestCase.run_pylith(self, self.name, ["sheartraction_rate.cfg", "sheartraction_rate_tri.cfg"])
+        TestCase.run_pylith(
+            self, self.name, ["sheartraction_rate.cfg", "sheartraction_rate_tri.cfg"]
+        )
         return
 
 
@@ -95,7 +105,7 @@ def test_cases():
 
 
 # -------------------------------------------------------------------------------------------------
-if __name__ == '__main__':
+if __name__ == "__main__":
     FullTestCase.parse_args()
 
     suite = unittest.TestSuite()

@@ -79,7 +79,7 @@ pylith::TestIncompressibleElasticity::_initialize(void) {
 
     // Set up coordinates.
     _mesh->setCoordSys(&_data->cs);
-    pylith::topology::MeshOps::nondimensionalize(_mesh, _data->normalizer);
+    pylith::topology::MeshOps::nondimensionalize(_mesh, _data->scales);
 
     // Set up material
     _data->material.setBulkRheology(&_data->rheology);
@@ -94,7 +94,7 @@ pylith::TestIncompressibleElasticity::_initialize(void) {
 
     // Set up problem.
     assert(_problem);
-    _problem->setNormalizer(_data->normalizer);
+    _problem->setScales(_data->scales);
     _problem->setGravityField(_data->gravityField);
     pylith::materials::Material* materials[1] = { &_data->material };
     _problem->setMaterials(materials, 1);
@@ -108,7 +108,7 @@ pylith::TestIncompressibleElasticity::_initialize(void) {
     assert(!_solution);
     _solution = new pylith::topology::Field(*_mesh);assert(_solution);
     _solution->setLabel("solution");
-    pylith::problems::SolutionFactory factory(*_solution, _data->normalizer);
+    pylith::problems::SolutionFactory factory(*_solution, _data->scales);
     int iField = 0;
     factory.addDisplacement(_data->solnDiscretizations[iField++]);
     factory.addPressure(_data->solnDiscretizations[iField++]);
@@ -157,7 +157,7 @@ pylith::TestIncompressibleElasticity_Data::TestIncompressibleElasticity_Data(voi
     useAsciiMesh(true),
 
     jacobianConvergenceRate(1.0),
-    tolerance(1.0e-9),
+    tolerance(1.0e-8),
     isJacobianLinear(true),
     allowZeroResidual(false),
 

@@ -23,7 +23,7 @@
 #include "pylith/utils/journals.hh" // USES journals
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "spatialdata/units/Scales.hh" // USES Scales
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 
 #include "catch2/catch_test_macros.hpp"

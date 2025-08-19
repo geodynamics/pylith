@@ -67,13 +67,13 @@ public:
              *
              * @param dim Nondimensionalizer.
              */
-            void setNormalizer(const spatialdata::units::Nondimensional& dim);
+            void setScales(const spatialdata::units::Scales& dim);
 
             /** Get manager of scales used to nondimensionalize problem.
              *
              * @param dim Nondimensionalizer.
              */
-            const spatialdata::units::Nondimensional& getNormalizer(void) const;
+            const spatialdata::units::Scales& getScales(void) const;
 
             /** Set formulation for equations.
              *

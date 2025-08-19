@@ -17,7 +17,7 @@
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/FieldQuery.hh" // HOLDSA FieldQuery
 
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "spatialdata/units/Scales.hh" // USES Scales
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD*
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL*
@@ -45,7 +45,7 @@ pylith::materials::AuxiliaryFactoryPoroelastic::addIsotropicPermeability(void) {
 
     const char* subfieldName = "isotropic_permeability";
 
-    const PylithReal lengthScale = _normalizer->getLengthScale();
+    const PylithReal lengthScale = _scales->getLengthScale();
     const PylithReal permeabilityScale = lengthScale*lengthScale;
 
     pylith::topology::Field::Description description;
@@ -56,8 +56,6 @@ pylith::materials::AuxiliaryFactoryPoroelastic::addIsotropicPermeability(void) {
     description.componentNames.resize(1);
     description.componentNames[0] = subfieldName;
     description.scale = permeabilityScale;
-    // description.validator = pylith::topology::FieldQuery::validatorScale;
-    // description.validatorTolerance = 10.0;
 
     _field->subfieldAdd(description, getSubfieldDiscretization(subfieldName));
     this->setSubfieldQuery(subfieldName);
@@ -83,7 +81,7 @@ pylith::materials::AuxiliaryFactoryPoroelastic::addTensorPermeability(void) {
         "permeability_xz"
     };
     const int tensorSize = (3 == _spaceDim) ? 6 : (2 == _spaceDim) ? 4 : 1;
-    const PylithReal lengthScale = _normalizer->getLengthScale();
+    const PylithReal lengthScale = _scales->getLengthScale();
     const PylithReal permeabilityScale = lengthScale*lengthScale;
 
     pylith::topology::Field::Description description;
@@ -96,8 +94,6 @@ pylith::materials::AuxiliaryFactoryPoroelastic::addTensorPermeability(void) {
         description.componentNames[i] = componentNames[i];
     } // for
     description.scale = permeabilityScale;
-    // description.validator = pylith::topology::FieldQuery::validatorScale;
-    // description.validatorTolerance = 10.0;
 
     _field->subfieldAdd(description, getSubfieldDiscretization(subfieldName));
     this->setSubfieldQuery(subfieldName);
@@ -114,7 +110,7 @@ pylith::materials::AuxiliaryFactoryPoroelastic::addDrainedBulkModulus(void) {
     PYLITH_JOURNAL_DEBUG("addDrainedBulkModulus(void)");
 
     const char* subfieldName = "drained_bulk_modulus";
-    const PylithReal pressureScale = _normalizer->getPressureScale();
+    const PylithReal pressureScale = _scales->getPressureScale();
 
     pylith::topology::Field::Description description;
     description.label = subfieldName;
@@ -125,7 +121,6 @@ pylith::materials::AuxiliaryFactoryPoroelastic::addDrainedBulkModulus(void) {
     description.componentNames[0] = subfieldName;
     description.scale = pressureScale;
     description.validator = pylith::topology::FieldQuery::validatorPositive;
-    description.validatorTolerance = 100.0;
 
     _field->subfieldAdd(description, getSubfieldDiscretization(subfieldName));
     this->setSubfieldQuery(subfieldName);
@@ -152,7 +147,6 @@ pylith::materials::AuxiliaryFactoryPoroelastic::addBiotCoefficient(void) {
     description.componentNames[0] = subfieldName;
     description.scale = 1.0;
     description.validator = pylith::topology::FieldQuery::validatorPositive;
-    description.validatorTolerance = 10.0;
 
     _field->subfieldAdd(description, getSubfieldDiscretization(subfieldName));
     this->setSubfieldQuery(subfieldName);
@@ -169,7 +163,7 @@ pylith::materials::AuxiliaryFactoryPoroelastic::addBiotModulus(void) {
     PYLITH_JOURNAL_DEBUG("addBiotModulus(void)");
 
     const char* subfieldName = "biot_modulus";
-    const PylithReal pressureScale = _normalizer->getPressureScale();
+    const PylithReal pressureScale = _scales->getPressureScale();
 
     pylith::topology::Field::Description description;
     description.label = subfieldName;
@@ -180,7 +174,6 @@ pylith::materials::AuxiliaryFactoryPoroelastic::addBiotModulus(void) {
     description.componentNames[0] = subfieldName;
     description.scale = pressureScale;
     description.validator = pylith::topology::FieldQuery::validatorPositive;
-    description.validatorTolerance = 100.0;
 
     _field->subfieldAdd(description, getSubfieldDiscretization(subfieldName));
     pylith::materials::Query::biotModulusFromInput(subfieldName, this);
@@ -206,7 +199,7 @@ pylith::materials::AuxiliaryFactoryPoroelastic::addReferenceStress(void) {
         "reference_stress_xz"
     };
     const int stressSize = (3 == _spaceDim) ? 6 : (2 == _spaceDim) ? 4 : 1;
-    const PylithReal pressureScale = _normalizer->getPressureScale();
+    const PylithReal pressureScale = _scales->getPressureScale();
 
     pylith::topology::Field::Description description;
     description.label = subfieldName;
@@ -272,7 +265,7 @@ pylith::materials::AuxiliaryFactoryPoroelastic::addShearModulus(void) {
     PYLITH_JOURNAL_DEBUG("addShearModulus(void)");
 
     const char* subfieldName = "shear_modulus";
-    const PylithReal pressureScale = _normalizer->getPressureScale();
+    const PylithReal pressureScale = _scales->getPressureScale();
 
     pylith::topology::Field::Description description;
     description.label = subfieldName;

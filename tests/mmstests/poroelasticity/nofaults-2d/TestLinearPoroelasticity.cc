@@ -79,7 +79,7 @@ pylith::TestLinearPoroelasticity::_initialize(void) {
 
     // Set up coordinates.
     _mesh->setCoordSys(&_data->cs);
-    pylith::topology::MeshOps::nondimensionalize(_mesh, _data->normalizer);
+    pylith::topology::MeshOps::nondimensionalize(_mesh, _data->scales);
 
     // Set up material
     _data->material.setBulkRheology(&_data->rheology);
@@ -94,7 +94,7 @@ pylith::TestLinearPoroelasticity::_initialize(void) {
 
     // Set up problem.
     assert(_problem);
-    _problem->setNormalizer(_data->normalizer);
+    _problem->setScales(_data->scales);
     pylith::materials::Material* materials[1] = { &_data->material };
     _problem->setMaterials(materials, 1);
     _problem->setBoundaryConditions(_data->bcs.data(), _data->bcs.size());
@@ -107,7 +107,7 @@ pylith::TestLinearPoroelasticity::_initialize(void) {
     assert(!_solution);
     _solution = new pylith::topology::Field(*_mesh);assert(_solution);
     _solution->setLabel("solution");
-    pylith::problems::SolutionFactory factory(*_solution, _data->normalizer);
+    pylith::problems::SolutionFactory factory(*_solution, _data->scales);
     factory.addDisplacement(_data->solnDiscretizations[0]);
     factory.addPressure(_data->solnDiscretizations[1]);
     factory.addTraceStrain(_data->solnDiscretizations[2]);

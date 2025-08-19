@@ -15,7 +15,7 @@
 #include "pylith/feassemble/AuxiliaryFactory.hh" // USES AuxiliaryFactory
 #include "pylith/problems/ObserversPhysics.hh" // USES ObserversPhysics
 #include "pylith/topology/Mesh.hh" // USES Mesh
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "spatialdata/units/Scales.hh" // USES Scales
 
 #include "pylith/utils/error.hh" // USES PYLITH_JMETHOD_*
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
@@ -27,7 +27,7 @@
 // ------------------------------------------------------------------------------------------------
 // Constructor
 pylith::problems::Physics::Physics(void) :
-    _normalizer(NULL),
+    _scales(NULL),
     _labelName(pylith::topology::Mesh::cells_label_name),
     _labelValue(1),
     _observers(new pylith::problems::ObserversPhysics) {}
@@ -46,7 +46,7 @@ void
 pylith::problems::Physics::deallocate(void) {
     PYLITH_METHOD_BEGIN;
 
-    delete _normalizer;_normalizer = NULL;
+    delete _scales;_scales = NULL;
     delete _observers;_observers = NULL;
 
     PYLITH_METHOD_END;
@@ -94,15 +94,15 @@ pylith::problems::Physics::getLabelValue(void) const {
 // ------------------------------------------------------------------------------------------------
 // Set manager of scales used to nondimensionalize problem.
 void
-pylith::problems::Physics::setNormalizer(const spatialdata::units::Nondimensional& dim) {
-    PYLITH_COMPONENT_DEBUG("setNormalizer(dim="<<typeid(dim).name()<<")");
+pylith::problems::Physics::setScales(const spatialdata::units::Scales& dim) {
+    PYLITH_COMPONENT_DEBUG("setScales(dim="<<typeid(dim).name()<<")");
 
-    if (!_normalizer) {
-        _normalizer = new spatialdata::units::Nondimensional(dim);
+    if (!_scales) {
+        _scales = new spatialdata::units::Scales(dim);
     } else {
-        *_normalizer = dim;
+        *_scales = dim;
     } // if/else
-} // setNormalizer
+} // setScales
 
 
 // ------------------------------------------------------------------------------------------------
@@ -110,11 +110,11 @@ pylith::problems::Physics::setNormalizer(const spatialdata::units::Nondimensiona
  *
  * @param dim Nondimensionalizer.
  */
-const spatialdata::units::Nondimensional&
-pylith::problems::Physics::getNormalizer(void) const {
-    assert(_normalizer);
-    return *_normalizer;
-} // getNormalizer
+const spatialdata::units::Scales&
+pylith::problems::Physics::getScales(void) const {
+    assert(_scales);
+    return *_scales;
+} // getScales
 
 
 // ------------------------------------------------------------------------------------------------

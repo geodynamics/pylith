@@ -18,7 +18,7 @@
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/FieldQuery.hh" // HOLDSA FieldQuery
 
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "spatialdata/units/Scales.hh" // USES Scales
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD*
@@ -46,7 +46,7 @@ pylith::materials::AuxiliaryFactoryViscoelastic::addMaxwellTime(void) {
     PYLITH_JOURNAL_DEBUG("addMaxwellTime(void)");
 
     const char* subfieldName = "maxwell_time";
-    const PylithReal timeScale = _normalizer->getTimeScale();
+    const PylithReal timeScale = _scales->getTimeScale();
 
     pylith::topology::Field::Description description;
     description.label = subfieldName;
@@ -78,7 +78,7 @@ pylith::materials::AuxiliaryFactoryViscoelastic::addMaxwellTimeGeneralizedMaxwel
         "maxwell_time_2",
         "maxwell_time_3"
     };
-    const PylithReal timeScale = _normalizer->getTimeScale();
+    const PylithReal timeScale = _scales->getTimeScale();
 
     pylith::topology::Field::Description description;
     description.label = subfieldName;
@@ -140,7 +140,7 @@ pylith::materials::AuxiliaryFactoryViscoelastic::addPowerLawReferenceStrainRate(
     PYLITH_JOURNAL_DEBUG("addPowerLawReferenceStrainRate(void)");
 
     const char* subfieldName = "power_law_reference_strain_rate";
-    const PylithReal strainRateScale = 1.0/_normalizer->getTimeScale();
+    const PylithReal strainRateScale = 1.0/_scales->getTimeScale();
 
     pylith::topology::Field::Description description;
     description.label = subfieldName;
@@ -167,7 +167,7 @@ pylith::materials::AuxiliaryFactoryViscoelastic::addPowerLawReferenceStress(void
     PYLITH_JOURNAL_DEBUG("addPowerLawReferenceStress(void)");
 
     const char* subfieldName = "power_law_reference_stress";
-    const PylithReal pressureScale = _normalizer->getPressureScale();
+    const PylithReal pressureScale = _scales->getPressureScale();
 
     pylith::topology::Field::Description description;
     description.label = subfieldName;
@@ -268,7 +268,7 @@ pylith::materials::AuxiliaryFactoryViscoelastic::addDeviatoricStress(void) {
         "deviatoric_stress_xz"
     };
     const int stressSize = (3 == _spaceDim) ? 6 : (2 == _spaceDim) ? 4 : 1;
-    const PylithReal pressureScale = _normalizer->getPressureScale();
+    const PylithReal pressureScale = _scales->getPressureScale();
 
     pylith::topology::Field::Description description;
     description.label = subfieldName;

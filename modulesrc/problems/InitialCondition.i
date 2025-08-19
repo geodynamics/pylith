@@ -5,7 +5,7 @@
 // Copyright (c) 2010-2025, University of California, Davis and the PyLith Development Team.
 // All rights reserved.
 //
-// See https://mit-license.org/ and LICENSE.md and for license information. 
+// See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
 
 /**
@@ -16,7 +16,7 @@
 
 namespace pylith {
     namespace problems {
-        class InitialCondition : public pylith::utils::PyreComponent {
+        class InitialCondition: public pylith::utils::PyreComponent {
             // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////
 public:
 
@@ -29,26 +29,27 @@ public:
             /// Deallocate PETSc and local data structures.
             void deallocate(void);
 
-	    /** Set fields for initial condition.
-	     *
-	     * @param[in] subfields Array of names of solution subfields.
-	     * @param[in] numSubfields Number of subfields.
-	     */
-	    %apply(const char* const* string_list, const int list_len){
-		(const char* subfields[], const int numSubfields)
-	    };
-	    void setSubfields(const char* subfields[],
-			   const int numSubfields);
-	    %clear(const char* subfields[], const int numSubfields);
+            /** Set fields for initial condition.
+             *
+             * @param[in] subfields Array of names of solution subfields.
+             * @param[in] numSubfields Number of subfields.
+             */
+            %apply(const char* const* string_list, const int list_len) {
+                (const char* subfields[], const int numSubfields)
+            };
+            void setSubfields(const char* subfields[],
+                              const int numSubfields);
+
+            %clear(const char* subfields[], const int numSubfields);
 
             /** Set solver type.
              *
              * @param[out] solution Solution field.
-             * @param[in] normalizer Nondimensionalization.
+             * @param[in] scales Nondimensionalization.
              */
             virtual
             void setValues(pylith::topology::Field* solution,
-                           const spatialdata::units::Nondimensional& normalizer) = 0;
+                           const spatialdata::units::Scales& scales) = 0;
 
         }; // InitialCondition
 

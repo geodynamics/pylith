@@ -60,7 +60,7 @@ namespace pylith {
 class pylith::problems::TestPhysics : public CppUnit::TestFixture {
     CPPUNIT_TEST_SUITE(TestPhysics); // CppUnit macro used to define the `TestPhysics` test suite.
 
-    CPPUNIT_TEST(testSetNormalizer); // CppUnit macro to add test implemented by class method.
+    CPPUNIT_TEST(testSetScales); // CppUnit macro to add test implemented by class method.
     CPPUNIT_TEST(testSetAuxiliaryFieldDB);
     CPPUNIT_TEST(testSetAuxiliarySubfieldDiscretization);
     CPPUNIT_TEST(testObservers);
@@ -81,7 +81,7 @@ public:
 
     // Methods that implement tests. The naming convention is testMethodName.
     // All test methods must return void and not have any arguments.
-    void testSetNormalizer(void);
+    void testSetScales(void);
     void testSetAuxiliaryFieldDB(void);
     void testSetAuxiliarySubfieldDiscretization(void);
     void testObservers(void);
@@ -129,20 +129,20 @@ pylith::problems::TestPhysics::tearDown(void) {
 
 
 void
-pylith::problems::TestPhysics::testSetNormalizer(void) {
+pylith::problems::TestPhysics::testSetScales(void) {
     PYLITH_METHOD_BEGIN;
 
-    spatialdata::units::Nondimensional normalizer;
+    spatialdata::units::Scales scales;
     const PylithReal lengthScale = 3.0;
-    normalizer.setLengthScale(lengthScale);
+    scales.setLengthScale(lengthScale);
 
     CPPUNIT_ASSERT(_physics);
-    _physics->setNormalizer(normalizer);
+    _physics->setScales(scales);
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(lengthScale, _physics->_normalizer->getLengthScale(), 1.0e-6);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(lengthScale, _physics->_scales->getLengthScale(), 1.0e-6);
 
     PYLITH_METHOD_END;
-} // testSetNormalizer
+} // testSetScales
 
 
 void

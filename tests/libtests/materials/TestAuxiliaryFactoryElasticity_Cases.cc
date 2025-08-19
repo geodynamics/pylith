@@ -16,7 +16,7 @@
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "spatialdata/units/Scales.hh" // USES Scales
 
 #include "catch2/catch_test_macros.hpp"
 
@@ -44,20 +44,21 @@ private:
     static const PylithReal TIME_SCALE;
     static const PylithReal PRESSURE_SCALE;
     static const PylithReal DENSITY_SCALE;
+    static const PylithReal KM;
 
 private:
 
     static
     double density_2d(const double x,
                       const double y) {
-        return 2500.0 + 3.0*fabs(x)/LENGTH_SCALE + 2.0*fabs(y)/LENGTH_SCALE;
+        return 2500.0 + 3.0*fabs(x)/KM + 2.0*fabs(y)/KM;
     } // density
 
     static
     double density_3d(const double x,
                       const double y,
                       const double z) {
-        return 2500.0 + 3.0*fabs(x) + 2.0*fabs(y)/LENGTH_SCALE + 1.1*fabs(z)/LENGTH_SCALE;
+        return 2500.0 + 3.0*fabs(x) + 2.0*fabs(y)/KM + 1.1*fabs(z)/KM;
     } // density
 
     static
@@ -68,34 +69,34 @@ private:
     static
     double body_force_2d_x(const double x,
                            const double y) {
-        return -0.3*x*y/(LENGTH_SCALE*LENGTH_SCALE) + 0.2*y*y/(LENGTH_SCALE*LENGTH_SCALE);
+        return -0.3*x*y/(KM*KM) + 0.2*y*y/(KM*KM);
     } // body_force_x
 
     static
     double body_force_2d_y(const double x,
                            const double y) {
-        return +0.3*x*x/(LENGTH_SCALE*LENGTH_SCALE) + 0.2*x*y/(LENGTH_SCALE*LENGTH_SCALE);
+        return +0.3*x*x/(KM*KM) + 0.2*x*y/(KM*KM);
     } // body_force_y
 
     static
     double body_force_3d_x(const double x,
                            const double y,
                            const double z) {
-        return -0.3*x*y/(LENGTH_SCALE*LENGTH_SCALE) + 0.2*y*y/(LENGTH_SCALE*LENGTH_SCALE);
+        return -0.3*x*y/(KM*KM) + 0.2*y*y/(KM*KM);
     } // body_force_x
 
     static
     double body_force_3d_y(const double x,
                            const double y,
                            const double z) {
-        return +0.3*x*x/(LENGTH_SCALE*LENGTH_SCALE) + 0.2*x*y/(LENGTH_SCALE*LENGTH_SCALE);
+        return +0.3*x*x/(KM*KM) + 0.2*x*y/(KM*KM);
     } // body_force_y
 
     static
     double body_force_3d_z(const double x,
                            const double y,
                            const double z) {
-        return +0.3*x*y/(LENGTH_SCALE*LENGTH_SCALE) + 0.2*x*z/(LENGTH_SCALE*LENGTH_SCALE);
+        return +0.3*x*y/(KM*KM) + 0.2*x*z/(KM*KM);
     } // body_force_z
 
     static
@@ -158,10 +159,10 @@ TEST_CASE("TestAuxiliaryFactoryElasticity::Hex::testSetValuesFromDB", "[TestAuxi
     pylith::materials::TestAuxiliaryFactoryElasticity(pylith::materials::TestAuxiliaryFactoryElasticity_Cases::Hex()).testSetValuesFromDB();
 }
 
-const PylithReal pylith::materials::TestAuxiliaryFactoryElasticity_Cases::LENGTH_SCALE = 1.0e+3;
+const PylithReal pylith::materials::TestAuxiliaryFactoryElasticity_Cases::LENGTH_SCALE = 1.0;
 const PylithReal pylith::materials::TestAuxiliaryFactoryElasticity_Cases::TIME_SCALE = 2.0;
-const PylithReal pylith::materials::TestAuxiliaryFactoryElasticity_Cases::PRESSURE_SCALE = 2.0e+10;
-const PylithReal pylith::materials::TestAuxiliaryFactoryElasticity_Cases::DENSITY_SCALE = 3.0e+3;
+const PylithReal pylith::materials::TestAuxiliaryFactoryElasticity_Cases::PRESSURE_SCALE = 2.0e+6;
+const PylithReal pylith::materials::TestAuxiliaryFactoryElasticity_Cases::KM = 1.0;
 
 // ------------------------------------------------------------------------------------------------
 pylith::materials::TestAuxiliaryFactoryElasticity_Data*
@@ -175,11 +176,10 @@ pylith::materials::TestAuxiliaryFactoryElasticity_Cases::Tri(void) {
     data->cs = new spatialdata::geocoords::CSCart();assert(data->cs);
     data->cs->setSpaceDim(data->dimension);
 
-    assert(data->normalizer);
-    data->normalizer->setLengthScale(LENGTH_SCALE);
-    data->normalizer->setTimeScale(TIME_SCALE);
-    data->normalizer->setPressureScale(PRESSURE_SCALE);
-    data->normalizer->setDensityScale(DENSITY_SCALE);
+    assert(data->scales);
+    data->scales->setLengthScale(LENGTH_SCALE);
+    data->scales->setTimeScale(TIME_SCALE);
+    data->scales->setPressureScale(PRESSURE_SCALE);
 
     assert(data->auxiliaryDB);
     data->auxiliaryDB->addValue("density", density_2d, density_units());
@@ -209,11 +209,10 @@ pylith::materials::TestAuxiliaryFactoryElasticity_Cases::Hex(void) {
     data->cs = new spatialdata::geocoords::CSCart();assert(data->cs);
     data->cs->setSpaceDim(data->dimension);
 
-    assert(data->normalizer);
-    data->normalizer->setLengthScale(LENGTH_SCALE);
-    data->normalizer->setTimeScale(TIME_SCALE);
-    data->normalizer->setPressureScale(PRESSURE_SCALE);
-    data->normalizer->setDensityScale(DENSITY_SCALE);
+    assert(data->scales);
+    data->scales->setLengthScale(LENGTH_SCALE);
+    data->scales->setTimeScale(TIME_SCALE);
+    data->scales->setPressureScale(PRESSURE_SCALE);
 
     assert(data->auxiliaryDB);
     data->auxiliaryDB->addValue("density", density_3d, density_units());

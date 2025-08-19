@@ -31,7 +31,7 @@ p_lambda = p_drained_bulk_modulus - 2.0 / 3.0 * p_shear_modulus
 
 
 p0 = 4.0e4
-s0 = -1.0e8
+s0 = -1.0e6
 domain_x = 8.0e3
 p_alpha = p_biot_coefficient
 u0 = 1.0 / (p_lambda + 2.0 * p_mu) * domain_x * (-s0 - 0.5 * p_alpha * p0)

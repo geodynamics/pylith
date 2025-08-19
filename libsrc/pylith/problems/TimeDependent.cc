@@ -24,7 +24,7 @@
 #include "pylith/utils/PetscOptions.hh" // USES SolverDefaults
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
 
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "spatialdata/units/Scales.hh" // USES Scales
 
 #include "petscts.h" // USES PetscTS
 
@@ -376,8 +376,8 @@ pylith::problems::TimeDependent::initialize(void) {
                            <<", maxTimeSteps="<<_maxTimeSteps
                            <<", endTime="<<_endTime);
 
-    assert(_normalizer);
-    const PylithReal timeScale = _normalizer->getTimeScale();
+    assert(_scales);
+    const PylithReal timeScale = _scales->getTimeScale();
     err = TSSetTime(_ts, _startTime / timeScale);PYLITH_CHECK_ERROR(err);
     err = TSSetTimeStep(_ts, _dtInitial / timeScale);PYLITH_CHECK_ERROR(err);
     err = TSSetMaxSteps(_ts, _maxTimeSteps);PYLITH_CHECK_ERROR(err);
@@ -390,7 +390,7 @@ pylith::problems::TimeDependent::initialize(void) {
     const size_t numIC = _ic.size();
     for (size_t i = 0; i < numIC; ++i) {
         assert(_ic[i]);
-        _ic[i]->setValues(solution, *_normalizer);
+        _ic[i]->setValues(solution, *_scales);
     } // for
     PetscVec solutionVector = solution->getGlobalVector();
     solution->scatterLocalToVector(solutionVector);
@@ -533,8 +533,8 @@ pylith::problems::TimeDependent::poststep(void) {
     _observers->notifyObservers(t, tindex, *solution, notification);
 
     if (_monitor) {
-        assert(_normalizer);
-        const PylithReal timeScale = _normalizer->getTimeScale();
+        assert(_scales);
+        const PylithReal timeScale = _scales->getTimeScale();
         _monitor->update(t*timeScale, _startTime, _endTime);
     } // if
 
@@ -962,8 +962,8 @@ pylith::problems::TimeDependent::_notifyObserversInitialSoln(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_notifyObserversInitialSoln()");
 
-    assert(_normalizer);
-    const PylithReal timeScale = _normalizer->getTimeScale();
+    assert(_scales);
+    const PylithReal timeScale = _scales->getTimeScale();
     const PylithReal tStartNondim = _startTime / timeScale;
     const PylithInt tindex = 0;
     const pylith::problems::Observer::NotificationType notification = pylith::problems::Observer::SOLUTION;

@@ -24,6 +24,11 @@ namespace pylith {
 class pylith::_UniformPressure2D {
 private:
 
+    static const double LENGTH_SCALE;
+    static const double TIME_SCALE;
+    static const double PRESSURE_SCALE;
+    static const double PRESSURE;
+
     // Density
     static double density(const double x,
                           const double y) {
@@ -70,7 +75,7 @@ private:
     // Pressure
     static double pressure(const double x,
                            const double y) {
-        return 5.0+6;
+        return PRESSURE;
     } // pressure
 
     static PetscErrorCode solnkernel_disp(PetscInt spaceDim,
@@ -116,14 +121,14 @@ public:
 
         data->isJacobianLinear = true;
         data->jacobianConvergenceRate = 1.0;
+        data->tolerance = 4.0e-8;
 
         data->meshFilename = ":UNKNOWN:"; // Set in child class.
         data->boundaryLabel = "boundary";
 
-        data->normalizer.setLengthScale(1.0e+03);
-        data->normalizer.setTimeScale(2.0);
-        data->normalizer.setPressureScale(2.25e+10);
-        data->normalizer.computeDensityScale();
+        data->scales.setLengthScale(LENGTH_SCALE);
+        data->scales.setTimeScale(TIME_SCALE);
+        data->scales.setPressureScale(PRESSURE_SCALE);
 
         // solnDiscretizations set in derived class.
 
@@ -186,6 +191,10 @@ public:
     } // createData
 
 }; // _UniformPressure2D
+const double pylith::_UniformPressure2D::LENGTH_SCALE = 100.0;
+const double pylith::_UniformPressure2D::TIME_SCALE = 2.0;
+const double pylith::_UniformPressure2D::PRESSURE_SCALE = 2.0e+6;
+const double pylith::_UniformPressure2D::PRESSURE = 3.0e+6;
 
 // ------------------------------------------------------------------------------------------------
 pylith::TestIncompressibleElasticity_Data*

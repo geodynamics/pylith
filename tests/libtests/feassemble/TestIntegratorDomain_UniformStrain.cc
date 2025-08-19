@@ -15,7 +15,7 @@
 #include "pylith/feassemble/IntegratorDomain.hh" // USES IntegratorDomain
 #include "pylith/topology/Field.hh" // USES pylith::topology::Field::Discretization
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "spatialdata/units/Scales.hh" // USES Scales
 
 // forward declarations
 namespace pylith {
@@ -157,11 +157,10 @@ protected:
         _data->cs = new spatialdata::spatialdb::CSCart();CPPUNIT_ASSERT(_data->cs);
         _data->cs->setSpaceDim(_data->dimension);
 
-        CPPUNIT_ASSERT(_data->normalizer);
-        _data->normalizer->setLengthScale(1.0e+03);
-        _data->normalizer->setTimeScale(2.0);
-        _data->normalizer->setDensityScale(3.0e+3);
-        _data->normalizer->setPressureScale(2.25e+10);
+        CPPUNIT_ASSERT(_data->scales);
+        _data->scales->setLengthScale(1.0);
+        _data->scales->setTimeScale(2.0);
+        _data->scales->setPressureScale(2.5e+6);
 
         _data->t = 1.0;
         _data->dt = 0.05;

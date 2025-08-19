@@ -20,7 +20,7 @@
 #include "pylith/utils/array.hh" // USES scalar_array
 #include "pylith/utils/constdefs.h" // USES MAXDOUBLE
 
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "spatialdata/units/Scales.hh" // USES Scales
 
 #include <cassert> // USES assert()
 #include <sstream> // USES std::ostringstream
@@ -191,23 +191,23 @@ void
 contrib::materials::PlaneStrainState::_nondimProperties(PylithScalar* const values,
                                                         const int nvalues) const { // _nondimProperties
                                                                                    // Check consistency of arguments.
-    assert(_normalizer);
+    assert(_scales);
     assert(values);
     assert(nvalues == _PlaneStrainState::numProperties);
 
     // Get scales needed to nondimensional parameters from the
-    // Nondimensional object.
-    const PylithScalar densityScale = _normalizer->getDensityScale();
-    const PylithScalar pressureScale = _normalizer->getPressureScale();
+    // Scales object.
+    const PylithScalar densityScale = _scales->getDensityScale();
+    const PylithScalar pressureScale = _scales->getPressureScale();
 
-    // Use the Nondimensional::nondimensionalize() function to
+    // Use the Scales::nondimensionalize() function to
     // nondimensionalize the quantities using the appropriate scale.
     values[p_density] =
-        _normalizer->nondimensionalize(values[p_density], densityScale);
+        _scales->nondimensionalize(values[p_density], densityScale);
     values[p_mu] =
-        _normalizer->nondimensionalize(values[p_mu], pressureScale);
+        _scales->nondimensionalize(values[p_mu], pressureScale);
     values[p_lambda] =
-        _normalizer->nondimensionalize(values[p_lambda], pressureScale);
+        _scales->nondimensionalize(values[p_lambda], pressureScale);
 } // _nondimProperties
 
 
@@ -217,23 +217,23 @@ void
 contrib::materials::PlaneStrainState::_dimProperties(PylithScalar* const values,
                                                      const int nvalues) const { // _dimProperties
                                                                                 // Check consistency of arguments
-    assert(_normalizer);
+    assert(_scales);
     assert(values);
     assert(nvalues == _PlaneStrainState::numProperties);
 
     // Get scales needed to dimensional parameters from the
-    // Nondimensional object.
-    const PylithScalar densityScale = _normalizer->getDensityScale();
-    const PylithScalar pressureScale = _normalizer->getPressureScale();
+    // Scales object.
+    const PylithScalar densityScale = _scales->getDensityScale();
+    const PylithScalar pressureScale = _scales->getPressureScale();
 
-    // Use the Nondimensional::dimensionalize() function to
+    // Use the Scales::dimensionalize() function to
     // dimensionalize the quantities using the appropriate scale.
     values[p_density] =
-        _normalizer->dimensionalize(values[p_density], densityScale);
+        _scales->dimensionalize(values[p_density], densityScale);
     values[p_mu] =
-        _normalizer->dimensionalize(values[p_mu], pressureScale);
+        _scales->dimensionalize(values[p_mu], pressureScale);
     values[p_lambda] =
-        _normalizer->dimensionalize(values[p_lambda], pressureScale);
+        _scales->dimensionalize(values[p_lambda], pressureScale);
 } // _dimProperties
 
 

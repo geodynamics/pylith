@@ -34,7 +34,7 @@ initial_dt = 1.0*year
 start_time = -1.0*year
 end_time = 5.0*year
 
-[pylithapp.problem.normalizer]
+[pylithapp.problem.scales]
 relaxation_time = 10.0*year
 ```
 

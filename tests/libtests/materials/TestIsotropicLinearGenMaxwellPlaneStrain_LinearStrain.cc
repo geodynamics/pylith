@@ -15,7 +15,7 @@
 #include "pylith/materials/IsotropicLinearGenMaxwellPlaneStrain.hh" // USES IsotropicLinearGenMaxwellPlaneStrain
 #include "pylith/topology/Field.hh" // USES pylith::topology::Field::Discretization
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "spatialdata/units/Scales.hh" // USES Scales
 
 #include "pylith/utils/journals.hh" // :TEMPORARY: USES PYLITH_JOURNAL_ERROR
 
@@ -566,14 +566,13 @@ protected:
         // meshFilename set in derived class.
         _mydata->boundaryLabel = "boundary";
 
-        CPPUNIT_ASSERT(_mydata->normalizer);
-        _mydata->normalizer->setLengthScale(1.0e+03);
-        _mydata->normalizer->setTimeScale(2.0e+7);
-        _mydata->normalizer->setDensityScale(3.0e+3);
-        _mydata->normalizer->setPressureScale(2.25e+10);
+        CPPUNIT_ASSERT(_mydata->scales);
+        _mydata->scales->setLengthScale(1.0);
+        _mydata->scales->setTimeScale(2.0e+7);
+        _mydata->scales->setPressureScale(2.5e+6);
 
-        _mydata->t = constants.t/_mydata->normalizer->getTimeScale();
-        _mydata->dt = constants.dt/_mydata->normalizer->getTimeScale();
+        _mydata->t = constants.t/_mydata->scales->getTimeScale();
+        _mydata->dt = constants.dt/_mydata->scales->getTimeScale();
         _mydata->s_tshift = 1.0 / _mydata->dt;
 
         // solnDiscretizations set in derived class.

@@ -5,7 +5,7 @@
 # Copyright (c) 2010-2025, University of California, Davis and the PyLith Development Team.
 # All rights reserved.
 #
-# See https://mit-license.org/ and LICENSE.md and for license information. 
+# See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
 
 from .SolutionSubfield import SolutionSubfield
@@ -17,6 +17,7 @@ class SubfieldLagrangeFault(SolutionSubfield):
 
     Implements `SolutionSubfield`.
     """
+
     DOC_CONFIG = {
         "cfg": """
         [pylithapp.problems.solution.subfields.lagrange_multiplier_fault]
@@ -28,34 +29,32 @@ class SubfieldLagrangeFault(SolutionSubfield):
     fieldName = "lagrange_multiplier_fault"
 
     def __init__(self, name="subfieldlagrangefault"):
-        """Constructor.
-        """
+        """Constructor."""
         SolutionSubfield.__init__(self, name)
 
     def _defaults(self):
         self.userAlias = self.fieldName
 
-    def initialize(self, normalizer, spaceDim):
-        """Initialize subfield metadata.
-        """
+    def initialize(self, scales, spaceDim):
+        """Initialize subfield metadata."""
         from pylith.topology.Field import Field
+
         self.dimension = spaceDim - 1
         self.vectorFieldType = Field.VECTOR
-        self.scale = normalizer.getPressureScale()
+        self.scale = scales.getPressureScale()
         self._setComponents(spaceDim)
         self.isFaultOnly = True
 
     def _configure(self):
-        """Set members based using inventory.
-        """
+        """Set members based using inventory."""
         SolutionSubfield._configure(self)
+
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
 
 def soln_subfield():
-    """Factory associated with SubfieldLagrangeFault.
-    """
+    """Factory associated with SubfieldLagrangeFault."""
     return SubfieldLagrangeFault()
 
 

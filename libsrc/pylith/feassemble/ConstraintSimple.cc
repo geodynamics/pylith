@@ -12,8 +12,6 @@
 
 #include "pylith/feassemble/ConstraintSimple.hh" // implementation of object methods
 
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
-
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/feassemble/IntegrationData.hh" // USES IntegrationData
@@ -24,6 +22,8 @@
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
 
+#include "spatialdata/units/Scales.hh" // USES Scales
+
 #include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error
 
@@ -32,7 +32,7 @@
 pylith::feassemble::ConstraintSimple::ConstraintSimple(pylith::problems::Physics* const physics) :
     Constraint(physics),
     _fn(NULL) {
-    GenericComponent::setName("constraintSimple");
+    GenericComponent::setName("constraintSimple ");
 } // constructor
 
 
@@ -56,7 +56,7 @@ pylith::feassemble::ConstraintSimple::setUserFn(const PetscUserFieldFunc fn) {
 void
 pylith::feassemble::ConstraintSimple::initialize(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("initialize(solution="<<solution.getLabel()<<")");
+    PYLITH_JOURNAL_DEBUG("initialize (solution = "<<solution.getLabel()<<") ");
 
     assert(_physics);
     _observers = NULL;
@@ -122,15 +122,15 @@ pylith::feassemble::ConstraintSimple::initialize(const pylith::topology::Field& 
     err = DMPlexRestoreTransitiveClosure(solution.getDM(), point, PETSC_FALSE, &clSize, &closure);PYLITH_CHECK_ERROR(err);
     err = DMGetLabel(solution.getDM(), _labelName.c_str(), &label);PYLITH_CHECK_ERROR(err);
     err = PetscDSAddBoundary(ds, DM_BC_ESSENTIAL, _labelName.c_str(), label, 1, &_labelValue, i_field,
-                             numConstrainedDOF, constrainedDOF, (void (*)(void)) _fn, NULL, context, NULL);
+                             numConstrainedDOF, constrainedDOF, (void (*)(void))_fn, NULL, context, NULL);
     PYLITH_CHECK_ERROR(err);
-    err = DMViewFromOptions(dm, NULL, "-constraint_simple_dm_view");PYLITH_CHECK_ERROR(err);
+    err = DMViewFromOptions(dm, NULL, "-constraint_simple_dm_view ");PYLITH_CHECK_ERROR(err);
     {
         PetscInt numDS;
         err = DMGetNumDS(dm, &numDS);PYLITH_CHECK_ERROR(err);
         for (int s = 0; s < numDS; ++s) {
             err = DMGetRegionNumDS(dm, s, NULL, NULL, &ds, NULL);PYLITH_CHECK_ERROR(err);
-            err = PetscObjectViewFromOptions((PetscObject) ds, NULL, "-constraint_simple_ds_view");PYLITH_CHECK_ERROR(err);
+            err = PetscObjectViewFromOptions((PetscObject) ds, NULL, "-constraint_simple_ds_view ");PYLITH_CHECK_ERROR(err);
         }
     }
 
@@ -144,7 +144,7 @@ void
 pylith::feassemble::ConstraintSimple::setSolution(pylith::feassemble::IntegrationData* integrationData) {
     assert(integrationData);
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("setSolution(integrationData="<<integrationData->str()<<")");
+    PYLITH_JOURNAL_DEBUG("setSolution (integrationData = "<<integrationData->str()<<") ");
 
     const pylith::topology::Field* solution = integrationData->getField(pylith::feassemble::IntegrationData::solution);
     assert(solution);
@@ -169,8 +169,8 @@ pylith::feassemble::ConstraintSimple::setSolution(pylith::feassemble::Integratio
 
     pythia::journal::debug_t debug(GenericComponent::getName());
     if (debug.state()) {
-        PYLITH_JOURNAL_DEBUG("Displaying solution field");
-        solution->view("solution field");
+        PYLITH_JOURNAL_DEBUG("Displaying solution field ");
+        solution->view("solution field ");
     } // if
 
     PYLITH_METHOD_END;

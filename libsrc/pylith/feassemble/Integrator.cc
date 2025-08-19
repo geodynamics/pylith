@@ -22,7 +22,7 @@
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
 
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "spatialdata/units/Scales.hh" // USES Scales
 
 #include <cassert> // USES assert()
 #include <typeinfo> // USES typeid()
@@ -211,7 +211,7 @@ pylith::feassemble::Integrator::initialize(const pylith::topology::Field& soluti
     _observers = _physics->getObservers(); // Memory managed by Physics
     if (_observers) {
         _observers->setPhysicsImplementation(this);
-        _observers->setTimeScale(_physics->getNormalizer().getTimeScale());
+        _observers->setTimeScale(_physics->getScales().getTimeScale());
 
         const pylith::problems::Observer::NotificationType notification = pylith::problems::ObserverPhysics::DIAGNOSTIC;
         _observers->notifyObservers(0.0, 0, solution, notification);

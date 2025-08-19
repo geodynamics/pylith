@@ -24,7 +24,7 @@
 #include "pylith/meshio/DataWriter.hh" // USES DataWriter
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "spatialdata/units/Scales.hh" // USES Scales
 
 #include <cassert> // USES assert()
 
@@ -57,7 +57,7 @@ pylith::meshio::TestDataWriterSubmesh::setDataTri(TestDataWriterSubmesh_Data* da
     data->faultLabel = "fault";
     data->faultId = 100;
     data->spaceDim = 2;
-    data->lengthScale = 10.0;
+    data->lengthScale = 0.1;
 
     data->time = 1.0;
     data->timeFormat = "%3.1f";
@@ -102,7 +102,7 @@ pylith::meshio::TestDataWriterSubmesh::setDataQuad(TestDataWriterSubmesh_Data* d
     data->meshFilename = "data/quad4.mesh";
     data->bcLabel = "bc3";
     data->spaceDim = 2;
-    data->lengthScale = 10.0;
+    data->lengthScale = 0.1;
 
     data->time = 1.0;
     data->timeFormat = "%3.1f";
@@ -147,7 +147,7 @@ pylith::meshio::TestDataWriterSubmesh::setDataTet(TestDataWriterSubmesh_Data* da
     data->meshFilename = "data/tet4.mesh";
     data->bcLabel = "boundary";
     data->spaceDim = 3;
-    data->lengthScale = 10.0;
+    data->lengthScale = 0.1;
 
     data->time = 1.0;
     data->timeFormat = "%3.1f";
@@ -191,7 +191,7 @@ pylith::meshio::TestDataWriterSubmesh::setDataHex(TestDataWriterSubmesh_Data* da
     data->meshFilename = "data/hex8.mesh";
     data->bcLabel = "top";
     data->spaceDim = 2;
-    data->lengthScale = 10.0;
+    data->lengthScale = 0.1;
 
     data->time = 1.0;
     data->timeFormat = "%3.1f";
@@ -251,9 +251,9 @@ pylith::meshio::TestDataWriterSubmesh::_initialize(void) {
     cs.setSpaceDim(_mesh->getDimension());
     _mesh->setCoordSys(&cs);
 
-    spatialdata::units::Nondimensional normalizer;
-    normalizer.setLengthScale(data->lengthScale);
-    pylith::topology::MeshOps::nondimensionalize(_mesh, normalizer);
+    spatialdata::units::Scales scales;
+    scales.setLengthScale(data->lengthScale);
+    pylith::topology::MeshOps::nondimensionalize(_mesh, scales);
 
     if (data->faultLabel) {
         pylith::faults::FaultCohesiveStub fault;

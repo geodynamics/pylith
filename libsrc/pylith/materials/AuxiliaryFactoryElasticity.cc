@@ -17,7 +17,7 @@
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/FieldQuery.hh" // HOLDSA FieldQuery
 
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "spatialdata/units/ElasticityScales.hh" // USES ElasticityScales
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD*
@@ -45,7 +45,7 @@ pylith::materials::AuxiliaryFactoryElasticity::addDensity(void) {
     PYLITH_JOURNAL_DEBUG("addDensity(void)");
 
     const char* subfieldName = "density";
-    const PylithReal densityScale = _normalizer->getDensityScale();
+    const PylithReal densityScale = spatialdata::units::ElasticityScales::getDensityScale(*_scales);
 
     pylith::topology::Field::Description description;
     description.label = subfieldName;
@@ -78,7 +78,7 @@ pylith::materials::AuxiliaryFactoryElasticity::addBodyForce(void) {
         "body_force_z",
     };
 
-    const PylithReal forceScale = _normalizer->getPressureScale() / _normalizer->getLengthScale();
+    const PylithReal bodyForceScale = spatialdata::units::ElasticityScales::getBodyForceScale(*_scales);
 
     pylith::topology::Field::Description description;
     description.label = subfieldName;
@@ -89,7 +89,7 @@ pylith::materials::AuxiliaryFactoryElasticity::addBodyForce(void) {
     for (int i = 0; i < _spaceDim; ++i) {
         description.componentNames[i] = componentNames[i];
     } // for
-    description.scale = forceScale;
+    description.scale = bodyForceScale;
     description.validator = NULL;
 
     _field->subfieldAdd(description, getSubfieldDiscretization(subfieldName));
@@ -113,9 +113,7 @@ pylith::materials::AuxiliaryFactoryElasticity::addGravityField(spatialdata::spat
         "gravitational_acceleration_z",
     };
 
-    const PylithReal lengthScale = _normalizer->getLengthScale();
-    const PylithReal timeScale = _normalizer->getTimeScale();
-    const PylithReal accelerationScale = lengthScale / (timeScale * timeScale);
+    const PylithReal accelerationScale = spatialdata::units::ElasticityScales::getAccelerationScale(*_scales);
 
     pylith::topology::Field::Description description;
     description.label = subfieldName;

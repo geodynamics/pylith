@@ -38,10 +38,10 @@ pressure.basis_order = 1
 trace_strain.basis_order = 1
 
 [pylithapp.problem]
-normalizer = spatialdata.units.NondimElasticQuasistatic
-normalizer.length_scale = 100.0*m
-normalizer.relaxation_time = 0.2*year
-normalizer.shear_modulus = 10.0*GPa
+scales = spatialdata.units.NondimElasticQuasistatic
+scales.length_scale = 100.0*m
+scales.relaxation_time = 0.2*year
+scales.shear_modulus = 10.0*GPa
 ```
 
 We use the material properties in all of the simulations in this directory, so we specify them in `pylithapp.cfg` to avoid repeating the information in the file with parameters for each simulation.

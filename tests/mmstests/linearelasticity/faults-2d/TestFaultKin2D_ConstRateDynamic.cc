@@ -31,7 +31,7 @@
 
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "spatialdata/units/Scales.hh" // USES Scales
 
 namespace pylith {
     namespace mmstests {
@@ -260,11 +260,10 @@ protected:
         _data->cs = new spatialdata::geocoords::CSCart;CPPUNIT_ASSERT(_data->cs);
         _data->cs->setSpaceDim(_data->spaceDim);
 
-        CPPUNIT_ASSERT(_data->normalizer);
-        _data->normalizer->setLengthScale(LENGTH_SCALE);
-        _data->normalizer->setTimeScale(TIME_SCALE);
-        _data->normalizer->setPressureScale(2.25e+10);
-        _data->normalizer->computeDensityScale();
+        CPPUNIT_ASSERT(_data->scales);
+        _data->scales->setLengthScale(LENGTH_SCALE);
+        _data->scales->setTimeScale(TIME_SCALE);
+        _data->scales->setPressureScale(2.25e+10);
 
         _data->startTime = 0.0;
         _data->endTime = 2.0*TIMESTAMP;
@@ -413,8 +412,8 @@ const double pylith::mmstests::TestFaultKin2D_ConstRateDynamic::DOMAIN_X = 8000.
 const double pylith::mmstests::TestFaultKin2D_ConstRateDynamic::SLIPRATE = 3.0;
 const double pylith::mmstests::TestFaultKin2D_ConstRateDynamic::VELOCITY = 1.5;
 const double pylith::mmstests::TestFaultKin2D_ConstRateDynamic::TIMESTAMP = 10.0;
-const double pylith::mmstests::TestFaultKin2D_ConstRateDynamic::LENGTH_SCALE = 1000.0;
-const double pylith::mmstests::TestFaultKin2D_ConstRateDynamic::PRESSURE_SCALE = 2.5e+10;
+const double pylith::mmstests::TestFaultKin2D_ConstRateDynamic::LENGTH_SCALE = 1.0;
+const double pylith::mmstests::TestFaultKin2D_ConstRateDynamic::PRESSURE_SCALE = 2.0e+6;
 const double pylith::mmstests::TestFaultKin2D_ConstRateDynamic::TIME_SCALE = 2.0;
 const double pylith::mmstests::TestFaultKin2D_ConstRateDynamic::DOMAIN_X = 8000.0;
 

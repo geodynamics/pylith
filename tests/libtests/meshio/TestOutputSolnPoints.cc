@@ -22,7 +22,7 @@
 #include "pylith/meshio/MeshIOCubit.hh" // USES MeshIOCubit
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "spatialdata/units/Scales.hh" // USES Scales
 
 #include "data/OutputSolnPointsDataTri3.hh"
 #include "data/OutputSolnPointsDataQuad4.hh"
@@ -181,7 +181,7 @@ pylith::meshio::TestOutputSolnPoints::_testSetupInterpolator(const OutputSolnPoi
 
     topology::Mesh mesh;
     spatialdata::geocoords::CSCart cs;
-    spatialdata::units::Nondimensional normalizer;
+    spatialdata::units::Scales scales;
 
     cs.setSpaceDim(spaceDim);
     mesh.setCoordSys(&cs);
@@ -191,7 +191,7 @@ pylith::meshio::TestOutputSolnPoints::_testSetupInterpolator(const OutputSolnPoi
 
     OutputSolnPoints output;
     CPPUNIT_ASSERT(data.points);
-    output.setupInterpolator(&mesh, data.points, numPoints, spaceDim, data.names, numPoints, normalizer);
+    output.setupInterpolator(&mesh, data.points, numPoints, spaceDim, data.names, numPoints, scales);
 
     PetscDM dmMesh = output.pointsMesh().dmMesh();CPPUNIT_ASSERT(dmMesh);
 
@@ -241,7 +241,7 @@ pylith::meshio::TestOutputSolnPoints::_testInterpolate(const OutputSolnPointsDat
 
     topology::Mesh mesh;
     spatialdata::geocoords::CSCart cs;
-    spatialdata::units::Nondimensional normalizer;
+    spatialdata::units::Scales scales;
 
     cs.setSpaceDim(spaceDim);
     mesh.setCoordSys(&cs);
@@ -251,7 +251,7 @@ pylith::meshio::TestOutputSolnPoints::_testInterpolate(const OutputSolnPointsDat
 
     OutputSolnPoints output;
     CPPUNIT_ASSERT(data.points);
-    output.setupInterpolator(&mesh, data.points, numPoints, spaceDim, data.names, numPoints, normalizer);
+    output.setupInterpolator(&mesh, data.points, numPoints, spaceDim, data.names, numPoints, scales);
 
     // Create field with data.
     const char* fieldName = "data_field";

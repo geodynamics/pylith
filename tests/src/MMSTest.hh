@@ -75,6 +75,7 @@ protected:
     PetscVec _solutionDotExactVec; ///< Global vector to use for time derivative of exact solution.
     PylithReal _jacobianConvergenceRate; ///< Expected convergence rate for Jacobiab (when not linear).
     PylithReal _tolerance; ///< Tolerance for discretization and residual test.
+    PylithReal _avgCellDim; ///< Average cell dimension.
     bool _isJacobianLinear; ///< Jacobian is should be linear.
     bool _allowZeroResidual; ///< Allow residual to be exactly zero.
 

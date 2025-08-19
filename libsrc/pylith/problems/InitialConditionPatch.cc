@@ -18,7 +18,7 @@
 #include "pylith/topology/Stratum.hh" // USES Stratum
 
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "spatialdata/units/Scales.hh" // USES Scales
 
 #include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
@@ -159,9 +159,9 @@ pylith::problems::InitialConditionPatch::verifyConfiguration(const pylith::topol
 // Set solver type.
 void
 pylith::problems::InitialConditionPatch::setValues(pylith::topology::Field* solution,
-                                                   const spatialdata::units::Nondimensional& normalizer) {
+                                                   const spatialdata::units::Scales& scales) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("setValues(solution="<<solution<<", normalizer)");
+    PYLITH_COMPONENT_DEBUG("setValues(solution="<<solution<<", scales)");
 
     assert(solution);
 
@@ -175,7 +175,7 @@ pylith::problems::InitialConditionPatch::setValues(pylith::topology::Field* solu
         fieldQuery.setQuery(_subfields[i].c_str(), queryValues, numValues, convertFn, _db);
     } // for
 
-    fieldQuery.openDB(_db, normalizer.getLengthScale());
+    fieldQuery.openDB(_db, scales.getLengthScale());
     fieldQuery.queryDBLabel(_labelName.c_str(), _labelValue);
     fieldQuery.closeDB(_db);
 

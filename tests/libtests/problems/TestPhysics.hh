@@ -25,7 +25,7 @@ class pylith::problems::TestPhysics : public CppUnit::TestFixture {
     // CPPUNIT TEST SUITE //////////////////////////////////////////////////////////////////////////////////////////////
     CPPUNIT_TEST_SUITE(TestPhysics);
 
-    CPPUNIT_TEST(testSetNormalizer);
+    CPPUNIT_TEST(testSetScales);
     CPPUNIT_TEST(testSetAuxiliaryFieldDB);
     CPPUNIT_TEST(testSetAuxiliarySubfieldDiscretization);
     CPPUNIT_TEST(testObservers);
@@ -47,8 +47,8 @@ public:
     /// Tear down testing data.
     void tearDown(void);
 
-    /// Test setNormalizer().
-    void testSetNormalizer(void);
+    /// Test setScales().
+    void testSetScales(void);
 
     /// Test setAuxiliaryFieldDB().
     void testSetAuxiliaryFieldDB(void);

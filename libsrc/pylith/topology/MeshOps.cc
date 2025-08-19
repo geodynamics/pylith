@@ -19,7 +19,7 @@
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL*
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "spatialdata/units/Scales.hh" // USES Scales
 
 #include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream
@@ -28,7 +28,6 @@
 #include <algorithm> // USES std::sort, std::find
 #include <map> // USES std::map
 
-// ---------------------------------------------------------------------------------------------------------------------
 namespace pylith {
     namespace topology {
         class _MeshOps {
@@ -90,7 +89,7 @@ pylith::topology::_MeshOps::Events::init(void) {
 }
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Create subdomain mesh using label.
 pylith::topology::Mesh*
 pylith::topology::MeshOps::createSubdomainMesh(const pylith::topology::Mesh& mesh,
@@ -161,7 +160,7 @@ pylith::topology::MeshOps::createSubdomainMesh(const pylith::topology::Mesh& mes
 } // createSubdomainMesh
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Create lower dimension mesh using label.
 pylith::topology::Mesh*
 pylith::topology::MeshOps::createLowerDimMesh(const pylith::topology::Mesh& mesh,
@@ -283,7 +282,7 @@ pylith::topology::MeshOps::createLowerDimMesh(const pylith::topology::Mesh& mesh
 } // createLowerDimMesh
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Create 0-dimension mesh from points.
 pylith::topology::Mesh*
 pylith::topology::MeshOps::createFromPoints(const PylithReal* points,
@@ -340,11 +339,11 @@ pylith::topology::MeshOps::createFromPoints(const PylithReal* points,
 } // createFromPoints
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Nondimensionalize the finite-element mesh.
 void
 pylith::topology::MeshOps::nondimensionalize(Mesh* const mesh,
-                                             const spatialdata::units::Nondimensional& normalizer) {
+                                             const spatialdata::units::Scales& scales) {
     PYLITH_METHOD_BEGIN;
     _MeshOps::Events::init();
     _MeshOps::Events::logger.eventBegin(_MeshOps::Events::nondimensionalize);
@@ -352,7 +351,7 @@ pylith::topology::MeshOps::nondimensionalize(Mesh* const mesh,
     assert(mesh);
 
     PetscVec coordVec = NULL;
-    const PylithScalar lengthScale = normalizer.getLengthScale();
+    const PylithScalar lengthScale = scales.getLengthScale();
     PetscErrorCode err = 0;
 
     PetscDM dmMesh = mesh->getDM();assert(dmMesh);
@@ -362,34 +361,25 @@ pylith::topology::MeshOps::nondimensionalize(Mesh* const mesh,
     err = DMViewFromOptions(dmMesh, NULL, "-pylith_nondim_dm_view");PYLITH_CHECK_ERROR(err);
 
     const PetscInt dim = mesh->getDimension();
-    if (dim < 1) {
-        PYLITH_METHOD_END;
+    if (dim >= 1) {
+        const PylithReal avgDomainDim = computeAvgDomainDim(*mesh);
+        const PylithReal avgDimTolerance = 0.01;
+        if (avgDomainDim < avgDimTolerance) {
+            std::ostringstream msg;
+            msg << "Average domain dimension (" << avgDomainDim << ") is less than minimum tolerance ("
+                << avgDimTolerance << "). This usually means the length scale (" << lengthScale << ") used in the "
+                << "nondimensionalization needs to be smaller. The length scale should be on the order of the size "
+                << "of the features controlling the displacement variations (fault length or domain size).";
+            throw std::runtime_error(msg.str());
+        } // if/else
     } // if
-    PylithReal coordMin[3];
-    PylithReal coordMax[3];
-    err = DMGetBoundingBox(dmMesh, coordMin, coordMax);
-    PylithReal volume = 1.0;
-    for (int i = 0; i < dim; ++i) {
-        volume *= coordMax[i] - coordMin[i];
-    } // for
-    assert(dim > 0);
-    const PylithReal avgCellDim = pow(volume / MeshOps::getNumCells(*mesh), 1.0/dim);
-    const PylithReal avgDimTolerance = 0.02;
-    if (avgCellDim < avgDimTolerance) {
-        std::ostringstream msg;
-        msg << "Nondimensional average cell dimension (" << avgCellDim << ") is less than minimum tolerance ("
-            << avgDimTolerance << "). This usually means the length scale (" << lengthScale << ") used in the "
-            << "nondimensionalization needs to be smaller. Based on the average cell size, a value of about "
-            << pow(10, int(log10(avgCellDim*lengthScale))) << " should be appropriate.";
-        throw std::runtime_error(msg.str());
-    } // if/else
 
     _MeshOps::Events::logger.eventEnd(_MeshOps::Events::nondimensionalize);
     PYLITH_METHOD_END;
 } // nondimensionalize
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Strip out "ghost" cells hanging off mesh
 PetscDM
 pylith::topology::MeshOps::removeHangingCells(const PetscDM& dmMesh) {
@@ -442,7 +432,7 @@ pylith::topology::MeshOps::removeHangingCells(const PetscDM& dmMesh) {
 }
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Check topology of mesh.
 void
 pylith::topology::MeshOps::checkTopology(const Mesh& mesh) {
@@ -484,7 +474,7 @@ pylith::topology::MeshOps::checkTopology(const Mesh& mesh) {
 } // checkTopology
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 bool
 pylith::topology::MeshOps::isSimplexMesh(const Mesh& mesh) {
     PYLITH_METHOD_BEGIN;
@@ -523,7 +513,7 @@ pylith::topology::MeshOps::isSimplexMesh(const Mesh& mesh) {
 } // isSimplexMesh
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 bool
 pylith::topology::MeshOps::isCohesiveCell(const PetscDM dm,
                                           const PetscInt cell) {
@@ -539,7 +529,7 @@ pylith::topology::MeshOps::isCohesiveCell(const PetscDM dm,
 } // isCohesiveCell
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get number of vertices in mesh.
 PylithInt
 pylith::topology::MeshOps::getNumVertices(const pylith::topology::Mesh& mesh) {
@@ -555,7 +545,7 @@ pylith::topology::MeshOps::getNumVertices(const pylith::topology::Mesh& mesh) {
 }
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get number of cells in mesh.
 PylithInt
 pylith::topology::MeshOps::getNumCells(const pylith::topology::Mesh& mesh) {
@@ -572,7 +562,7 @@ pylith::topology::MeshOps::getNumCells(const pylith::topology::Mesh& mesh) {
 }
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get number of vertices in a cell.
 PylithInt
 pylith::topology::MeshOps::getNumCorners(const pylith::topology::Mesh& mesh) {
@@ -598,7 +588,36 @@ pylith::topology::MeshOps::getNumCorners(const pylith::topology::Mesh& mesh) {
 }
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
+/** Compute nominal dimension of domain based on mesh bounding box.
+ *
+ * @param[in] mesh Finite-element mesh.
+ * @returns Average cell size.
+ */
+PylithReal
+pylith::topology::MeshOps::computeAvgDomainDim(const pylith::topology::Mesh& mesh) {
+    PYLITH_METHOD_BEGIN;
+    const PetscInt dim = mesh.getDimension();
+    if (dim < 1) {
+        PYLITH_METHOD_RETURN(0.0);
+    } // if
+    PylithReal coordMin[3];
+    PylithReal coordMax[3];
+
+    PetscErrorCode err = PETSC_SUCCESS;
+    err = DMGetBoundingBox(mesh.getDM(), coordMin, coordMax);PYLITH_CHECK_ERROR(err);
+    PylithReal volume = 1.0;
+    for (int i = 0; i < dim; ++i) {
+        volume *= coordMax[i] - coordMin[i];
+    } // for
+    assert(dim > 0);
+    const PylithReal avgDomainDim = pow(volume, 1.0/dim);
+
+    PYLITH_METHOD_RETURN(avgDomainDim);
+} // computeAvgDomainDim
+
+
+// ------------------------------------------------------------------------------------------------
 void
 pylith::topology::MeshOps::checkMaterialLabels(const pylith::topology::Mesh& mesh,
                                                pylith::int_array& labelValues) {

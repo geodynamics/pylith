@@ -22,7 +22,8 @@
 
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "spatialdata/units/Scales.hh" // USES Scales
+#include "spatialdata/units/ElasticityScales.hh" // USES ElasticityScales
 
 #include "catch2/catch_test_macros.hpp"
 #include "catch2/matchers/catch_matchers_floating_point.hpp"
@@ -179,8 +180,8 @@ pylith::feassemble::TestAuxiliaryFactory::testInitialize(void) {
     pylith::topology::Field field(mesh);
 
     const int spaceDim = 2;
-    spatialdata::units::Nondimensional normalizer;
-    normalizer.setLengthScale(10.0);
+    spatialdata::units::Scales scales;
+    scales.setLengthScale(2.0);
 
     pylith::topology::Field::Description description;
     description.label = "displacement";
@@ -189,14 +190,14 @@ pylith::feassemble::TestAuxiliaryFactory::testInitialize(void) {
     description.numComponents = 1;
     description.componentNames.resize(1);
     description.componentNames[0] = "displacement_x";
-    description.scale = normalizer.getLengthScale();
+    description.scale = scales.getDisplacementScale();
 
     assert(_factory);
-    _factory->initialize(&field, normalizer, spaceDim, &description);
+    _factory->initialize(&field, scales, spaceDim, &description);
 
     CHECK(&field == _factory->_field);
     CHECK(spaceDim == _factory->_spaceDim);
-    CHECK(normalizer.getLengthScale() == _factory->_normalizer->getLengthScale());
+    CHECK(scales.getDisplacementScale() == _factory->_scales->getDisplacementScale());
 
     const pylith::topology::Field::Description* descriptionTest = _factory->_defaultDescription;
     CHECK(description.label == descriptionTest->label);
@@ -217,9 +218,8 @@ pylith::feassemble::TestAuxiliaryFactory::testInitialize(void) {
 void
 pylith::feassemble::TestAuxiliaryFactory::testSetValuesFromDB(void) {
     const int spaceDim = 2;
-    spatialdata::units::Nondimensional normalizer;
-    normalizer.setLengthScale(10.0);
-    normalizer.setDensityScale(2.0);
+    spatialdata::units::Scales scales;
+    scales.setLengthScale(1.5);
 
     spatialdata::geocoords::CSCart cs;
     cs.setSpaceDim(spaceDim);
@@ -238,7 +238,7 @@ pylith::feassemble::TestAuxiliaryFactory::testSetValuesFromDB(void) {
     descriptionDensity.numComponents = 1;
     descriptionDensity.componentNames.resize(1);
     descriptionDensity.componentNames[0] = "density";
-    descriptionDensity.scale = normalizer.getDensityScale();
+    descriptionDensity.scale = spatialdata::units::ElasticityScales::getDensityScale(scales);
 
     pylith::topology::Field::Description descriptionVelocity;
     descriptionVelocity.label = "velocity";
@@ -248,7 +248,7 @@ pylith::feassemble::TestAuxiliaryFactory::testSetValuesFromDB(void) {
     descriptionVelocity.componentNames.resize(2);
     descriptionVelocity.componentNames[0] = "velocity_x";
     descriptionVelocity.componentNames[1] = "velocity_y";
-    descriptionVelocity.scale = normalizer.getLengthScale() / normalizer.getTimeScale();
+    descriptionVelocity.scale = scales.getLengthScale() / scales.getTimeScale();
 
     pylith::topology::Field::Description subfieldDescriptions[2];
     subfieldDescriptions[0] = descriptionDensity;
@@ -265,7 +265,7 @@ pylith::feassemble::TestAuxiliaryFactory::testSetValuesFromDB(void) {
     iohandler.setFilename("data/tri.mesh");
     iohandler.read(&mesh);
     mesh.setCoordSys(&cs);
-    pylith::topology::MeshOps::nondimensionalize(&mesh, normalizer);
+    pylith::topology::MeshOps::nondimensionalize(&mesh, scales);
 
     assert(pylith::topology::MeshOps::getNumCells(mesh) > 0);
     assert(pylith::topology::MeshOps::getNumVertices(mesh) > 0);
@@ -274,7 +274,7 @@ pylith::feassemble::TestAuxiliaryFactory::testSetValuesFromDB(void) {
     _factory->setQueryDB(&auxiliaryDB);
 
     pylith::topology::Field auxiliaryField(mesh);
-    _factory->initialize(&auxiliaryField, normalizer, spaceDim);
+    _factory->initialize(&auxiliaryField, scales, spaceDim);
     for (int i = 0; i < numSubfields; ++i) {
         auxiliaryField.subfieldAdd(subfieldDescriptions[i], subfieldDiscretizations[i]);
         _factory->setSubfieldQuery(subfields[i]);
@@ -291,7 +291,7 @@ pylith::feassemble::TestAuxiliaryFactory::testSetValuesFromDB(void) {
     const PetscDM dmField = auxiliaryField.getDM();assert(dmField);
     pylith::topology::FieldQuery query(auxiliaryField);
     query.initializeWithDefaultQueries();
-    query.openDB(&auxiliaryDB, normalizer.getLengthScale());
+    query.openDB(&auxiliaryDB, scales.getLengthScale());
     PetscErrorCode err = DMPlexComputeL2DiffLocal(dmField, t, query._functions, (void**)query._contextPtrs,
                                                   auxiliaryField.getLocalVector(), &norm);assert(!err);
     query.closeDB(&auxiliaryDB);

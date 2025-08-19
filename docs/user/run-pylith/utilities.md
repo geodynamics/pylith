@@ -155,9 +155,9 @@ facilities of 'problem':
     materials=<component name>: Materials in problem.
         current value: 'homogeneous', from {default}
         configurable as: homogeneous, materials
-    normalizer=<component name>: Nondimensionalizer for problem.
+    scales=<component name>: Nondimensionalizer for problem.
         current value: 'nondimelasticquasistatic', from {default}
-        configurable as: nondimelasticquasistatic, normalizer
+        configurable as: nondimelasticquasistatic, scales
     solution=<component name>: Solution field for problem.
         current value: 'solution', from {default}
         configurable as: solution

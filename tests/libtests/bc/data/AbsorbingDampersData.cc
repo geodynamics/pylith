@@ -14,9 +14,8 @@
 // Constructor
 pylith::bc::AbsorbingDampersData::AbsorbingDampersData(void) :
     meshFilename(0),
-    setLengthScale(1.0e+3),
-    setPressureScale(2.25e+10),
-    setDensityScale(1.0),
+    setLengthScale(1.0),
+    setPressureScale(2.0e+6),
     setTimeScale(2.0),
     numBasis(0),
     numQuadPts(0),

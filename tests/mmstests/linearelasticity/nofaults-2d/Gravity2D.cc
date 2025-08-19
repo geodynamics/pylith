@@ -17,6 +17,7 @@
 #include "pylith/utils/journals.hh" // USES pythia::journal::debug_t
 
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
+#include "spatialdata/units/ElasticityScales.hh" // USES ElasticityScales
 
 // ------------------------------------------------------------------------------------------------
 namespace pylith {
@@ -25,13 +26,10 @@ namespace pylith {
 class pylith::_Gravity2D {
 private:
 
-    static const double LENGTHSCALE;
-    static const double TIMESCALE;
-    static const double PRESSURESCALE;
-    static const double BODYFORCE;
-    static const double GACC;
-    static const double YMIN;
-    static const double YMAX;
+    static spatialdata::units::Scales scales;
+    static const double G_ACC;
+    static const double Y_MIN;
+    static const double Y_MAX;
 
     // Density
     static double density(const double x,
@@ -70,7 +68,7 @@ private:
 
     static double setGravityAcc_y(const double x,
                                   const double y) {
-        return -GACC;
+        return -G_ACC;
     } // setGravityAcc_y
 
     static const char* acc_units(void) {
@@ -87,16 +85,16 @@ private:
 
     static double disp_y(const double x,
                          const double y) {
-        const double velocityScale = LENGTHSCALE / TIMESCALE;
-        const double densityScale = PRESSURESCALE / (velocityScale * velocityScale);
-        const double accelerationScale = LENGTHSCALE / (TIMESCALE * TIMESCALE);
-        const double densityN = density(x,y) / densityScale;
-        const double muN = density(x,y) * vs(x,y) * vs(x,y) / PRESSURESCALE;
-        const double lambdaN = density(x,y) * vp(x,y) * vp(x,y) / PRESSURESCALE - 2.0*muN;
-        const double yminN = YMIN / LENGTHSCALE;
-        const double ymaxN = YMAX / LENGTHSCALE;
-        const double gaccN = GACC / accelerationScale;
-        return densityN * gaccN / (lambdaN + 2.0*muN) * (0.5*(y*y-yminN*yminN) - ymaxN*(y-yminN));
+        const double lengthScale = scales.getLengthScale();
+        const double pressureScale = scales.getPressureScale();
+        const double bodyForceScale = spatialdata::units::ElasticityScales::getBodyForceScale(scales);
+
+        const double muN = density(x,y) * vs(x,y) * vs(x,y) / pressureScale;
+        const double lambdaN = density(x,y) * vp(x,y) * vp(x,y) / pressureScale - 2.0*muN;
+        const double yMinN = Y_MIN / lengthScale;
+        const double yMaxN = Y_MAX / lengthScale;
+        const double bodyForceN = G_ACC * density(x, y) / bodyForceScale;
+        return bodyForceN / (lambdaN + 2.0*muN) * (0.5*(y*y-yMinN*yMinN) - yMaxN*(y-yMinN));
     } // disp_y
 
     static PetscErrorCode solnkernel_disp(PetscInt spaceDim,
@@ -128,14 +126,12 @@ public:
         data->meshFilename = ":UNKNOWN:"; // Set in child class.
         data->boundaryLabel = "boundary";
 
-        data->normalizer.setLengthScale(1.0e+03);
-        data->normalizer.setTimeScale(2.0);
-        data->normalizer.setPressureScale(2.25e+10);
-        data->normalizer.computeDensityScale();
+        data->scales.setDisplacementScale(10.0);
+        scales = data->scales;
 
         delete data->gravityField;data->gravityField = new spatialdata::spatialdb::GravityField();
         data->gravityField->setGravityDir(0.0, -1.0, 0.0);
-        data->gravityField->setGravityAcc(GACC);
+        data->gravityField->setGravityAcc(G_ACC);
 
         // solnDiscretizations set in derived class.
 
@@ -190,12 +186,10 @@ public:
     } // createData
 
 }; // _Gravity2D
-const double pylith::_Gravity2D::LENGTHSCALE = 1.0e+3;
-const double pylith::_Gravity2D::TIMESCALE = 2.0;
-const double pylith::_Gravity2D::PRESSURESCALE = 2.25e+10;
-const double pylith::_Gravity2D::GACC = 9.80665;
-const double pylith::_Gravity2D::YMIN = -4.0e+3;
-const double pylith::_Gravity2D::YMAX = +4.0e+3;
+spatialdata::units::Scales pylith::_Gravity2D::scales;
+const double pylith::_Gravity2D::G_ACC = 9.80665;
+const double pylith::_Gravity2D::Y_MIN = -4.0e+3;
+const double pylith::_Gravity2D::Y_MAX = +4.0e+3;
 
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*

@@ -20,7 +20,8 @@
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL*
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "spatialdata/units/Scales.hh" // USES Scales
+#include "spatialdata/units/ElasticityScales.hh" // USES ElasticityScales
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 
 #include <typeinfo> // USES "<<typeid()
@@ -29,9 +30,9 @@
 // ------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::problems::SolutionFactory::SolutionFactory(pylith::topology::Field& solution,
-                                                   const spatialdata::units::Nondimensional& normalizer) :
+                                                   const spatialdata::units::Scales& scales) :
     _solution(solution),
-    _normalizer(normalizer),
+    _scales(scales),
     _spaceDim(solution.getSpaceDim()) {
     GenericComponent::setName("solutionfactory");
     assert(1 <= _spaceDim && _spaceDim <= 3);
@@ -62,7 +63,7 @@ pylith::problems::SolutionFactory::addDisplacement(const pylith::topology::Field
     for (int i = 0; i < _spaceDim; ++i) {
         description.componentNames[i] = componentNames[i];
     } // for
-    description.scale = _normalizer.getLengthScale();
+    description.scale = _scales.getDisplacementScale();
     description.validator = NULL;
 
     _solution.subfieldAdd(description, discretization);
@@ -90,7 +91,7 @@ pylith::problems::SolutionFactory::addVelocity(const pylith::topology::Field::Di
     for (int i = 0; i < _spaceDim; ++i) {
         description.componentNames[i] = componentNames[i];
     } // for
-    description.scale = _normalizer.getLengthScale() / _normalizer.getTimeScale();
+    description.scale = _scales.getDisplacementScale() / _scales.getTimeScale();
     description.validator = NULL;
 
     _solution.subfieldAdd(description, discretization);
@@ -116,7 +117,7 @@ pylith::problems::SolutionFactory::addPressure(const pylith::topology::Field::Di
     description.numComponents = 1;
     description.componentNames.resize(1);
     description.componentNames[0] = componentNames[0];
-    description.scale = _normalizer.getPressureScale();
+    description.scale = spatialdata::units::ElasticityScales::getStressScale(_scales);
     description.validator = NULL;
 
     _solution.subfieldAdd(description, discretization);
@@ -142,7 +143,7 @@ pylith::problems::SolutionFactory::addPressureDot(const pylith::topology::Field:
     description.numComponents = 1;
     description.componentNames.resize(1);
     description.componentNames[0] = componentNames[0];
-    description.scale = _normalizer.getPressureScale() / _normalizer.getTimeScale();
+    description.scale = _scales.getPressureScale() / _scales.getTimeScale();
     description.validator = NULL;
 
     _solution.subfieldAdd(description, discretization);
@@ -228,7 +229,7 @@ pylith::problems::SolutionFactory::addLagrangeMultiplierFault(const pylith::topo
     for (int i = 0; i < _spaceDim; ++i) {
         description.componentNames[i] = componentNames[i];
     } // for
-    description.scale = _normalizer.getPressureScale();
+    description.scale = spatialdata::units::ElasticityScales::getStressScale(_scales);
     description.validator = NULL;
 
     _solution.subfieldAdd(description, discretization);
@@ -254,7 +255,7 @@ pylith::problems::SolutionFactory::addTemperature(const pylith::topology::Field:
     description.numComponents = 1;
     description.componentNames.resize(1);
     description.componentNames[0] = componentNames[0];
-    description.scale = _normalizer.getTemperatureScale();
+    description.scale = _scales.getTemperatureScale();
     description.validator = NULL;
 
     _solution.subfieldAdd(description, discretization);
@@ -274,7 +275,7 @@ pylith::problems::SolutionFactory::setValues(spatialdata::spatialdb::SpatialDB* 
 
     pylith::topology::FieldQuery query(_solution);
     query.initializeWithDefaultQueries();
-    query.openDB(db, _normalizer.getLengthScale());
+    query.openDB(db, _scales.getLengthScale());
     query.queryDB();
     query.closeDB(db);
 

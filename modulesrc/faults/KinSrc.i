@@ -55,11 +55,11 @@ public:
             /** Initialize kinematic (prescribed slip) earthquake source.
              *
              * @param[in] auxField Auxiliary field associated with fault finite-element integration.
-             * @param[in] normalizer Normalizer for nondimensionalizing values.
+             * @param[in] scales Scales for nondimensionalizing values.
              * @param[in] cs Coordinate system for problem.
              */
             void initialize(const pylith::topology::Field& auxField,
-                            const spatialdata::units::Nondimensional& normalizer,
+                            const spatialdata::units::Scales& scales,
                             const spatialdata::geocoords::CoordSys* cs);
 
             /** Get requested slip subfields at time t.
@@ -90,11 +90,11 @@ protected:
              * @attention The order of the calls to subfieldAdd() must match the
              * order of the auxiliary fields in the FE kernels.
              *
-             * @param[in] normalizer Normalizer for nondimensionalizing values.
+             * @param[in] scales Scales for nondimensionalizing values.
              * @param[in] cs Coordinate system for problem.
              */
             virtual
-            void _auxiliaryFieldSetup(const spatialdata::units::Nondimensional& normalizer,
+            void _auxiliaryFieldSetup(const spatialdata::units::Scales& scales,
                                       const spatialdata::geocoords::CoordSys* cs) = 0;
 
         }; // class KinSrc

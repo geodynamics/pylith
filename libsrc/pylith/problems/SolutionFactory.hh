@@ -14,8 +14,8 @@
 
 #include "pylith/topology/FieldBase.hh" // USES FieldBase::Descretization
 
-#include "spatialdata/units/unitsfwd.hh" // HASA Nondimensional
-#include "spatialdata/spatialdb/spatialdbfwd.hh" // HASA Nondimensional
+#include "spatialdata/units/unitsfwd.hh" // HASA Scales
+#include "spatialdata/spatialdb/spatialdbfwd.hh" // HASA Scales
 
 // SolutionFactory-----------------------------------------------
 /// @brief C++ helper class for setting up solution subfields for unit tests.
@@ -28,11 +28,11 @@ public:
     /** Default constructor.
      *
      * @param[inout] solution Solution field.
-     * @param[in] normalizer Nondimensionalizer for problem.
+     * @param[in] scales Nondimensionalizer for problem.
      * @param[in] spaceDim Spatial dimension of problem.
      */
     SolutionFactory(pylith::topology::Field& solution,
-                    const spatialdata::units::Nondimensional& normalizer);
+                    const spatialdata::units::Scales& scales);
 
     /// Destructor.
     ~SolutionFactory(void);
@@ -95,7 +95,7 @@ public:
 private:
 
     pylith::topology::Field& _solution; ///< Solution field.
-    const spatialdata::units::Nondimensional& _normalizer; ///< Nondimensionalizer.
+    const spatialdata::units::Scales& _scales; ///< Nondimensionalizer.
     const int _spaceDim; ///< Spatal dimension of problem.
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////

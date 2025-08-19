@@ -28,9 +28,9 @@ Implements `Problem`.
 * `materials`: Materials in problem.
   - **current value**: 'homogeneous', from {default}
   - **configurable as**: homogeneous, materials
-* `normalizer`: Nondimensionalizer for problem.
+* `scales`: Nondimensionalizer for problem.
   - **current value**: 'nondimelasticquasistatic', from {default}
-  - **configurable as**: nondimelasticquasistatic, normalizer
+  - **configurable as**: nondimelasticquasistatic, scales
 * `petsc_defaults`: Flags controlling which default PETSc options to use.
   - **current value**: 'petscdefaults', from {default}
   - **configurable as**: petscdefaults, petsc_defaults
@@ -89,8 +89,8 @@ ic = [domain]
 # Turn on gravitational body forces
 gravity_field = spatialdata.spatialdb.GravityField
 
-# Set the normalizer for nondimensionalizing the problem
-normalizer = spatialdata.units.NondimElasticQuasistatic
+# Set the scales for nondimensionalizing the problem
+scales = spatialdata.units.NondimElasticQuasistatic
 
 # Set the subfields in the solution
 solution = = pylith.problems.SolnDispLagrange

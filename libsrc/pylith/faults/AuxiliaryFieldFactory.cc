@@ -15,7 +15,7 @@
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/FieldQuery.hh" // HOLDSA FieldQuery
 
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "spatialdata/units/Scales.hh" // USES Scales
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD*
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL*
@@ -45,7 +45,7 @@ pylith::faults::AuxiliaryFieldFactory::addSlip(void) {
     const char* fieldName = "slip";
     const char* componentNames[3] = { "slip_opening", "slip_left_lateral", "slip_reverse" };
 
-    const PylithReal lengthScale = _normalizer->getLengthScale();
+    const PylithReal displacementScale = _scales->getDisplacementScale();
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
@@ -56,7 +56,7 @@ pylith::faults::AuxiliaryFieldFactory::addSlip(void) {
     for (int i = 0; i < _spaceDim; ++i) {
         description.componentNames[i] = componentNames[i];
     } // for
-    description.scale = lengthScale;
+    description.scale = displacementScale;
     description.validator = NULL;
 
     _field->subfieldAdd(description, getSubfieldDiscretization(fieldName));
@@ -76,7 +76,7 @@ pylith::faults::AuxiliaryFieldFactory::addSlipRate(void) {
     const char* fieldName = "slip_rate";
     const char* componentNames[3] = { "slip_rate_opening", "slip_rate_left_lateral", "slip_rate_reverse" };
 
-    const PylithReal velocityScale = _normalizer->getLengthScale() / _normalizer->getTimeScale();
+    const PylithReal velocityScale = _scales->getDisplacementScale() / _scales->getTimeScale();
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
@@ -111,7 +111,7 @@ pylith::faults::AuxiliaryFieldFactory::addSlipAcceleration(void) {
         "slip_acceleration_reverse",
     };
 
-    const PylithReal accelerationScale = _normalizer->getLengthScale() / pow(_normalizer->getTimeScale(), 2);
+    const PylithReal accelerationScale = _scales->getDisplacementScale() / pow(_scales->getTimeScale(), 2);
 
     pylith::topology::Field::Description description;
     description.label = fieldName;

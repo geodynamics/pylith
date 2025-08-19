@@ -25,9 +25,9 @@ namespace pylith {
 class pylith::_Gravity2D {
 private:
 
-    static const double LENGTHSCALE;
-    static const double TIMESCALE;
-    static const double PRESSURESCALE;
+    static const double LENGTH_SCALE;
+    static const double TIME_SCALE;
+    static const double PRESSURE_SCALE;
     static const double GACC;
     static const double YMAX;
 
@@ -80,21 +80,21 @@ private:
     // Displacement
     static double disp_x(const double x,
                          const double y) {
-        return 0.0 / LENGTHSCALE;
+        return 0.0 / LENGTH_SCALE;
     } // disp_x
 
     static double disp_y(const double x,
                          const double y) {
-        return 0.0 / LENGTHSCALE;
+        return 0.0 / LENGTH_SCALE;
     } // disp_y
 
     // Pressure
     static double pressure(const double x,
                            const double y) {
-        const double velocityScale = LENGTHSCALE / TIMESCALE;
-        const double accelerationScale = LENGTHSCALE / (TIMESCALE * TIMESCALE);
-        const double densityScale = PRESSURESCALE / (velocityScale * velocityScale);
-        return density(x,y) / densityScale * GACC / (accelerationScale) * (YMAX/LENGTHSCALE-y);
+        const double velocityScale = LENGTH_SCALE / TIME_SCALE;
+        const double accelerationScale = LENGTH_SCALE / (TIME_SCALE * TIME_SCALE);
+        const double densityScale = PRESSURE_SCALE / (velocityScale * velocityScale);
+        return density(x,y) / densityScale * GACC / (accelerationScale) * (YMAX/LENGTH_SCALE-y);
     } // pressure
 
     static PetscErrorCode solnkernel_disp(PetscInt spaceDim,
@@ -140,10 +140,9 @@ public:
 
         data->isJacobianLinear = true;
 
-        data->normalizer.setLengthScale(LENGTHSCALE);
-        data->normalizer.setTimeScale(TIMESCALE);
-        data->normalizer.setPressureScale(PRESSURESCALE);
-        data->normalizer.computeDensityScale();
+        data->scales.setLengthScale(LENGTH_SCALE);
+        data->scales.setTimeScale(TIME_SCALE);
+        data->scales.setPressureScale(PRESSURE_SCALE);
 
         delete data->gravityField;data->gravityField = new spatialdata::spatialdb::GravityField();
         data->gravityField->setGravityDir(0.0, -1.0, 0.0);
@@ -215,9 +214,9 @@ public:
     } // createData
 
 }; // TestIsotropicLinearIncompElasticity2D_Gravity
-const double pylith::_Gravity2D::LENGTHSCALE = 1.0e+3;
-const double pylith::_Gravity2D::TIMESCALE = 2.0;
-const double pylith::_Gravity2D::PRESSURESCALE = 2.25e+10;
+const double pylith::_Gravity2D::LENGTH_SCALE = 1.0;
+const double pylith::_Gravity2D::TIME_SCALE = 2.0;
+const double pylith::_Gravity2D::PRESSURE_SCALE = 2.5e+6;
 const double pylith::_Gravity2D::GACC = 9.80665;
 const double pylith::_Gravity2D::YMAX = +4.0e+3;
 

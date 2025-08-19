@@ -32,7 +32,8 @@
 
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "spatialdata/units/Scales.hh" // USES Scales
+#include "spatialdata/units/ElasticityScales.hh" // USES ElasticityScales
 
 namespace pylith {
     class _OneFaultShearNoSlip;
@@ -40,6 +41,8 @@ namespace pylith {
 
 // ------------------------------------------------------------------------------------------------
 class pylith::_OneFaultShearNoSlip {
+    static spatialdata::units::Scales scales;
+
     // Density
     static double density(const double x,
                           const double y) {
@@ -132,9 +135,10 @@ class pylith::_OneFaultShearNoSlip {
 
     static double faulttraction_y(const double x,
                                   const double y) {
+        const double pressureScale = scales.getPressureScale();
         const double mu = density(x, y) * vs(x, y) * vs(x, y);
 
-        return strain_xy() * 2.0 * mu / 2.25e+10;
+        return strain_xy() * 2.0 * mu / pressureScale;
     } // faulttraction_y
 
     static
@@ -158,10 +162,11 @@ class pylith::_OneFaultShearNoSlip {
                             const PylithScalar constants[],
                             PylithScalar r0[]) {
         assert(r0);
+        const double pressureScale = scales.getPressureScale();
         const double mu = density(x[0], x[1]) * vs(x[0], x[1]) * vs(x[0], x[1]);
 
         const PylithScalar tanDir[2] = {-n[1], n[0] };
-        const PylithScalar tractionShear = -strain_xy() * 2.0 * mu / 2.25e+10;
+        const PylithScalar tractionShear = -strain_xy() * 2.0 * mu / pressureScale;
         const PylithScalar tractionNormal = 0.0;
         r0[0] += tractionShear*tanDir[0] + tractionNormal*n[0];
         r0[1] += tractionShear*tanDir[1] + tractionNormal*n[1];
@@ -207,16 +212,13 @@ public:
     TestFaultKin_Data* createData(void) {
         TestFaultKin_Data* data = new TestFaultKin_Data();assert(data);
 
-        data->journalName = "OneFaultShearNoSLip";
+        data->journalName = "OneFaultShearNoSlip";
 
         data->isJacobianLinear = true;
 
         data->meshFilename = ":UNKNOWN:"; // Set in child class.
 
-        data->normalizer.setLengthScale(1.0e+03);
-        data->normalizer.setTimeScale(2.0);
-        data->normalizer.setPressureScale(2.25e+10);
-        data->normalizer.computeDensityScale();
+        scales = data->scales;
 
         // solnDiscretizations set in derived class.
 
@@ -354,6 +356,7 @@ public:
     } // createData
 
 }; // TestFaultKin2D_OneFaultShearNoSlip
+spatialdata::units::Scales pylith::_OneFaultShearNoSlip::scales;
 
 // ------------------------------------------------------------------------------------------------
 pylith::TestFaultKin_Data*

@@ -28,7 +28,7 @@
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 #include "spatialdata/spatialdb/TimeHistory.hh" // USES TimeHistory
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "spatialdata/units/Scales.hh" // USES Scales
 
 const double pylith::bc::TestAbsorbingDampers::FILL_VALUE = -999.0;
 
@@ -167,21 +167,21 @@ pylith::bc::TestAbsorbingDampers::testAuxFieldDB(void) {
 
 
 // ----------------------------------------------------------------------
-// Test normalizer().
+// Test scales().
 void
-pylith::bc::TestAbsorbingDampers::testNormalizer(void) {
+pylith::bc::TestAbsorbingDampers::testScales(void) {
     PYLITH_METHOD_BEGIN;
 
-    spatialdata::units::Nondimensional normalizer;
-    const double scale = 5.0;
-    normalizer.setLengthScale(scale);
+    spatialdata::units::Scales scales;
+    const double scale = 2.0;
+    scales.setLengthScale(scale);
 
     CPPUNIT_ASSERT(_bc);
-    _bc->normalizer(normalizer);
-    CPPUNIT_ASSERT_EQUAL(scale, _bc->_normalizer->getLengthScale());
+    _bc->scales(scales);
+    CPPUNIT_ASSERT_EQUAL(scale, _bc->_scales->getLengthScale());
 
     PYLITH_METHOD_END;
-} // testNormalizer
+} // testScales
 
 
 // ----------------------------------------------------------------------
@@ -240,8 +240,8 @@ pylith::bc::TestAbsorbingDampers::testInitialize(void) {
     const PetscDM dm = auxField->getDM();CPPUNIT_ASSERT(dm);
     pylith::topology::FieldQuery query(*auxField);
     query.initializeWithDefaultQueryFns();
-    CPPUNIT_ASSERT(_data->normalizer);
-    query.openDB(_data->auxDB, _data->normalizer->getLengthScale());
+    CPPUNIT_ASSERT(_data->scales);
+    query.openDB(_data->auxDB, _data->scales->getLengthScale());
     PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, query.functions(), (void**)query.contextPtrs(), auxField->localVector(), &norm);CPPUNIT_ASSERT(!err);
     query.closeDB(_data->auxDB);
     const PylithReal tolerance = 1.0e-6;
@@ -327,7 +327,7 @@ pylith::bc::TestAbsorbingDampers::testAuxFieldSetup(void) {
     CPPUNIT_ASSERT(_solution);
     CPPUNIT_ASSERT(_mesh);
     CPPUNIT_ASSERT(_data);
-    CPPUNIT_ASSERT(_data->normalizer);
+    CPPUNIT_ASSERT(_data->scales);
 
     delete _bc->_boundaryMesh;_bc->_boundaryMesh = new pylith::topology::Mesh(_solution->mesh(), _data->bcLabel);
     CPPUNIT_ASSERT(_bc->_boundaryMesh);
@@ -346,7 +346,7 @@ pylith::bc::TestAbsorbingDampers::testAuxFieldSetup(void) {
         CPPUNIT_ASSERT_EQUAL(size_t(1), info.description.numComponents);
         CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::SCALAR, info.description.vectorFieldType);
-        CPPUNIT_ASSERT_EQUAL(_data->normalizer->getDensityScale(), info.description.scale);
+        CPPUNIT_ASSERT_EQUAL(_data->scales->getDensityScale(), info.description.scale);
         CPPUNIT_ASSERT_EQUAL(discretization.basisOrder, info.fe.basisOrder);
         CPPUNIT_ASSERT_EQUAL(discretization.quadOrder, info.fe.quadOrder);
         CPPUNIT_ASSERT_EQUAL(discretization.isBasisContinuous, info.fe.isBasisContinuous);
@@ -354,7 +354,7 @@ pylith::bc::TestAbsorbingDampers::testAuxFieldSetup(void) {
         ++ifield;
     } // density
 
-    const PylithScalar velocityScale = _data->normalizer->getLengthScale() / _data->normalizer->getTimeScale();
+    const PylithScalar velocityScale = _data->scales->getLengthScale() / _data->scales->getTimeScale();
 
     { // vp
         const char* label = "vp";
@@ -407,13 +407,13 @@ pylith::bc::TestAbsorbingDampers::_initialize(void) {
     iohandler.filename(_data->meshFilename);
     iohandler.read(_mesh);
     _mesh->setCoordSys(_data->cs);
-    CPPUNIT_ASSERT(_data->normalizer);
-    pylith::topology::MeshOps::nondimensionalize(_mesh, *_data->normalizer);
+    CPPUNIT_ASSERT(_data->scales);
+    pylith::topology::MeshOps::nondimensionalize(_mesh, *_data->scales);
 
     _bc->setLabel(_data->bcLabel);
     _bc->field(_data->field);
     _bc->auxFieldDB(_data->auxDB);
-    _bc->normalizer(*_data->normalizer);
+    _bc->scales(*_data->scales);
     for (int ifield = 0; ifield < _data->numAuxSubfields; ++ifield) {
         const pylith::topology::Field::Discretization& discretization = _data->auxDiscretizations[ifield];
         const char* name = _data->auxSubfields[ifield];
@@ -431,10 +431,10 @@ pylith::bc::TestAbsorbingDampers::_setupSolutionField(void) {
 
     CPPUNIT_ASSERT(_mesh);
     CPPUNIT_ASSERT(_data);
-    CPPUNIT_ASSERT(_data->normalizer);
+    CPPUNIT_ASSERT(_data->scales);
 
     delete _solution;_solution = new pylith::topology::Field(*_mesh);
-    pylith::problems::SolutionFactory factory(*_solution, *_data->normalizer);
+    pylith::problems::SolutionFactory factory(*_solution, *_data->scales);
     factory.displacement(_data->solnDiscretizations[0]);
     factory.velocity(_data->solnDiscretizations[1]);
     factory.fluidPressure(_data->solnDiscretizations[2]);
@@ -449,7 +449,7 @@ pylith::bc::TestAbsorbingDampers::_setupSolutionField(void) {
 pylith::bc::TestAbsorbingDampers_Data::TestAbsorbingDampers_Data(void) :
     meshFilename(NULL),
     bcLabel(NULL),
-    normalizer(new spatialdata::units::Nondimensional),
+    scales(new spatialdata::units::Scales),
     field(NULL),
     vectorFieldType(pylith::topology::Field::OTHER),
     numAuxSubfields(0),
@@ -466,7 +466,7 @@ pylith::bc::TestAbsorbingDampers_Data::TestAbsorbingDampers_Data(void) :
 // Destructor
 pylith::bc::TestAbsorbingDampers_Data::~TestAbsorbingDampers_Data(void) {
     delete cs;cs = NULL;
-    delete normalizer;normalizer = NULL;
+    delete scales;scales = NULL;
     delete auxDB;auxDB = NULL;
     delete solnDB;solnDB = NULL;
 } // destructor

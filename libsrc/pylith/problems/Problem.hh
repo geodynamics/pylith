@@ -28,7 +28,7 @@
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // HASA GravityField
 
 #include "pylith/topology/topologyfwd.hh" // USES Mesh, Field
-#include "spatialdata/units/unitsfwd.hh" // HASA Nondimensional
+#include "spatialdata/units/unitsfwd.hh" // HASA Scales
 
 #include "pylith/utils/petscfwd.h" // USES PetscVec, PetscMat
 
@@ -94,7 +94,7 @@ public:
      *
      * @param[in] dim Nondimensionalizer.
      */
-    void setNormalizer(const spatialdata::units::Nondimensional& dim);
+    void setScales(const spatialdata::units::Scales& dim);
 
     /** Set gravity field.
      *
@@ -178,7 +178,7 @@ protected:
 
     pylith::feassemble::IntegrationData* _integrationData; /// > Data needed to integrate PDE.
 
-    spatialdata::units::Nondimensional* _normalizer; ///< Nondimensionalization of scales.
+    spatialdata::units::Scales* _scales; ///< Nondimensionalization of scales.
     spatialdata::spatialdb::GravityField* _gravityField; ///< Gravity field.
 
     std::vector<pylith::materials::Material*> _materials; ///< Array of materials.

@@ -17,7 +17,8 @@
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/FieldQuery.hh" // HOLDSA FieldQuery
 
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "spatialdata/units/Scales.hh" // USES Scales
+#include "spatialdata/units/ElasticityScales.hh" // USES ElasticityScales
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD*
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL*
@@ -44,7 +45,7 @@ pylith::materials::AuxiliaryFactoryElastic::addShearModulus(void) {
     PYLITH_JOURNAL_DEBUG("addShearModulus(void)");
 
     const char* subfieldName = "shear_modulus";
-    const PylithReal pressureScale = _normalizer->getPressureScale();
+    const PylithReal pressureScale = _scales->getPressureScale();
 
     pylith::topology::Field::Description description;
     description.label = subfieldName;
@@ -55,7 +56,6 @@ pylith::materials::AuxiliaryFactoryElastic::addShearModulus(void) {
     description.componentNames[0] = subfieldName;
     description.scale = pressureScale;
     description.validator = pylith::topology::FieldQuery::validatorNonnegative;
-    description.validatorTolerance = 100.0;
 
     _field->subfieldAdd(description, getSubfieldDiscretization(subfieldName));
     pylith::materials::Query::shearModulusFromVM(subfieldName, this);
@@ -72,7 +72,7 @@ pylith::materials::AuxiliaryFactoryElastic::addBulkModulus(void) {
     PYLITH_JOURNAL_DEBUG("addBulkModulus(void)");
 
     const char* subfieldName = "bulk_modulus";
-    const PylithReal pressureScale = _normalizer->getPressureScale();
+    const PylithReal pressureScale = _scales->getPressureScale();
 
     pylith::topology::Field::Description description;
     description.label = subfieldName;
@@ -107,7 +107,7 @@ pylith::materials::AuxiliaryFactoryElastic::addReferenceStress(void) {
         "reference_stress_yz",
         "reference_stress_xz" };
     const int stressSize = (3 == _spaceDim) ? 6 : (2 == _spaceDim) ? 4 : 1;
-    const PylithReal pressureScale = _normalizer->getPressureScale();
+    const PylithReal stressScale = spatialdata::units::ElasticityScales::getStressScale(*_scales);
 
     pylith::topology::Field::Description description;
     description.label = subfieldName;
@@ -118,7 +118,7 @@ pylith::materials::AuxiliaryFactoryElastic::addReferenceStress(void) {
     for (int i = 0; i < stressSize; ++i) {
         description.componentNames[i] = componentNames[i];
     } // for
-    description.scale = pressureScale;
+    description.scale = stressScale;
     description.validator = NULL;
 
     _field->subfieldAdd(description, getSubfieldDiscretization(subfieldName));
@@ -145,6 +145,7 @@ pylith::materials::AuxiliaryFactoryElastic::addReferenceStrain(void) {
         "reference_strain_xz"
     };
     const int strainSize = (3 == _spaceDim) ? 6 : (2 == _spaceDim) ? 4 : 1;
+    const PylithReal strainScale = spatialdata::units::ElasticityScales::getStrainScale(*_scales);
 
     pylith::topology::Field::Description description;
     description.label = subfieldName;
@@ -155,7 +156,7 @@ pylith::materials::AuxiliaryFactoryElastic::addReferenceStrain(void) {
     for (int i = 0; i < strainSize; ++i) {
         description.componentNames[i] = componentNames[i];
     } // for
-    description.scale = 1.0;
+    description.scale = strainScale;
     description.validator = NULL;
 
     _field->subfieldAdd(description, getSubfieldDiscretization(subfieldName));

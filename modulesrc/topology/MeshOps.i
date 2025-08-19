@@ -5,7 +5,7 @@
 // Copyright (c) 2010-2025, University of California, Davis and the PyLith Development Team.
 // All rights reserved.
 //
-// See https://mit-license.org/ and LICENSE.md and for license information. 
+// See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
 
 /**
@@ -18,12 +18,12 @@
   /** Nondimensionalize the finite-element mesh.
    *
    * @param mesh Finite-element mesh.
-   * @param normalizer Nondimensionalizer.
+   * @param scales Nondimensionalizer.
    */
   void
   MeshOps_nondimensionalize(pylith::topology::Mesh* const mesh,
-			    const spatialdata::units::Nondimensional& normalizer) {
-    pylith::topology::MeshOps::nondimensionalize(mesh, normalizer);
+			    const spatialdata::units::Scales& scales) {
+    pylith::topology::MeshOps::nondimensionalize(mesh, scales);
   } // nondimensionalize
 %}
 

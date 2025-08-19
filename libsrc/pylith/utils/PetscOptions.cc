@@ -73,9 +73,11 @@ public:
             /** Add default solver tolerances to options.
              *
              * @param[in] options PETSc options.
+             * @param[in] solution Solution field for problem.
              */
             static
-            void addSolverTolerances(PetscOptions* options);
+            void addSolverTolerances(PetscOptions* options,
+                                     const pylith::topology::Field& solution);
 
             /** Add initial guess options.
              *
@@ -121,7 +123,7 @@ pylith::utils::PetscDefaults::set(const pylith::topology::Field& solution,
     } // if
     assert(options);
 
-    _PetscOptions::addSolverTolerances(options);
+    _PetscOptions::addSolverTolerances(options, solution);
     if (flags & INITIAL_GUESS) {
         _PetscOptions::addInitialGuess(options);
     } // if
@@ -332,15 +334,15 @@ pylith::utils::_PetscOptions::addCollectiveIO(PetscOptions* options) {
 // ------------------------------------------------------------------------------------------------
 // Add default solver tolerances to options.
 void
-pylith::utils::_PetscOptions::addSolverTolerances(PetscOptions* options) {
+pylith::utils::_PetscOptions::addSolverTolerances(PetscOptions* options,
+                                                  const pylith::topology::Field& solution) {
     assert(options);
 
     options->add("-ksp_rtol", "1.0e-12");
-    options->add("-ksp_atol", "1.0e-12");
+    options->add("-ksp_atol", "1.0e-7");
 
     options->add("-snes_rtol", "1.0e-12");
-    options->add("-snes_atol", "1.0e-9");
-
+    options->add("-snes_atol", "4.0e-7");
 } // addSolverTolerances
 
 

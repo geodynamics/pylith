@@ -28,7 +28,7 @@
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensionalizer
+#include "spatialdata/units/Scales.hh" // USES Nondimensionalizer
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 
 #include <cmath> // USES pow(), sqrt()
@@ -123,8 +123,8 @@ pylith::faults::FaultCohesiveImpulses::setThreshold(const double value) {
         msg << "Threshold ("<< value << ") for impulse amplitude must be nonnegative.";
         throw std::out_of_range(msg.str());
     } // if
-    assert(_normalizer);
-    _threshold = value / _normalizer->getLengthScale();
+    assert(_scales);
+    _threshold = value / _scales->getDisplacementScale();
 } // setThreshold
 
 
@@ -166,7 +166,7 @@ pylith::faults::FaultCohesiveImpulses::createAuxiliaryField(const pylith::topolo
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("createAuxiliaryField(solution="<<solution.getLabel()<<", domainMesh=)"<<typeid(domainMesh).name()<<")");
 
-    assert(_normalizer);
+    assert(_scales);
 
     pylith::topology::Field* auxiliaryField = new pylith::topology::Field(domainMesh);assert(auxiliaryField);
     auxiliaryField->setLabel("auxiliary field");
@@ -180,8 +180,8 @@ pylith::faults::FaultCohesiveImpulses::createAuxiliaryField(const pylith::topolo
                                                  isFaultOnly, discretization.cellBasis, discretization.feSpace,
                                                  discretization.isBasisContinuous);
 
-    assert(_normalizer);
-    _auxiliaryFactory->initialize(auxiliaryField, *_normalizer, solution.getSpaceDim());
+    assert(_scales);
+    _auxiliaryFactory->initialize(auxiliaryField, *_scales, solution.getSpaceDim());
 
     // :ATTENTION: The order for adding subfields must match the order of the auxiliary fields in the FE kernels.
 
@@ -228,7 +228,7 @@ pylith::faults::FaultCohesiveImpulses::updateAuxiliaryField(pylith::topology::Fi
     PYLITH_COMPONENT_DEBUG("updateAuxiliaryField(auxiliaryField="<<auxiliaryField<<", impulseReal="<<impulseReal<<")");
 
     assert(auxiliaryField);
-    assert(_normalizer);
+    assert(_scales);
 
     switch (_formulation) {
     case QUASISTATIC:
@@ -263,7 +263,7 @@ pylith::faults::FaultCohesiveImpulses::_updateSlip(pylith::topology::Field* auxi
     PYLITH_COMPONENT_DEBUG("_updateSlip(auxiliaryField="<<auxiliaryField<<", impulseStep="<<impulseStep<<")");
 
     assert(auxiliaryField);
-    assert(_normalizer);
+    assert(_scales);
 
     const size_t numComponents = _impulseDOF.size();
     const size_t iComponent = impulseStep % numComponents;
@@ -279,7 +279,7 @@ pylith::faults::FaultCohesiveImpulses::_updateSlip(pylith::topology::Field* auxi
         const PetscInt dof = _impulseDOF[iComponent];
         const PetscInt slipDof = auxiliaryVisitor.sectionDof(pImpulse);assert(iComponent < size_t(slipDof));
         const PetscInt slipOff = auxiliaryVisitor.sectionOffset(pImpulse);
-        auxiliaryArray[slipOff+dof] = 1.0 / _normalizer->getLengthScale();
+        auxiliaryArray[slipOff+dof] = 1.0 / _scales->getDisplacementScale();
     } // if
 
     pythia::journal::debug_t debug(pylith::utils::PyreComponent::getName());

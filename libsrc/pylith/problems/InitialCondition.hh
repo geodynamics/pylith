@@ -16,7 +16,7 @@
 #include "pylith/utils/arrayfwd.hh" // USES string_vector
 
 #include "pylith/topology/topologyfwd.hh" // USES Field
-#include "spatialdata/units/unitsfwd.hh" // HASA Nondimensional
+#include "spatialdata/units/unitsfwd.hh" // HASA Scales
 
 class pylith::problems::InitialCondition : public pylith::utils::PyreComponent {
     friend class TestInitialCondition; // unit testing
@@ -51,11 +51,11 @@ public:
     /** Set solution to values for initial condition.
      *
      * @param[out] solution Solution field.
-     * @param[in] normalizer Nondimensionalization.
+     * @param[in] scales Nondimensionalization.
      */
     virtual
     void setValues(pylith::topology::Field* solution,
-                   const spatialdata::units::Nondimensional& normalizer) = 0;
+                   const spatialdata::units::Scales& scales) = 0;
 
     // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:

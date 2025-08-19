@@ -14,7 +14,7 @@
 
 #include "pylith/topology/Field.hh" // USES Field
 
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "spatialdata/units/Scales.hh" // USES Scales
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD*
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL*
@@ -42,7 +42,7 @@ pylith::faults::DerivedFieldFactory::addTractionChange(void) {
 
     const char* fieldName = "traction_change";
     const char* componentNames[3] = { "traction_change_opening", "traction_change_left_lateral", "traction_change_reverse" };
-    const PylithReal pressureScale = _normalizer->getPressureScale();
+    const PylithReal pressureScale = _scales->getPressureScale();
 
     pylith::topology::Field::Description description;
     description.label = fieldName;

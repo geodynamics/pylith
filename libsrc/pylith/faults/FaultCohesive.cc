@@ -299,7 +299,7 @@ pylith::faults::FaultCohesive::createDiagnosticField(const pylith::topology::Fie
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("createDiagnosticField(solution="<<solution.getLabel()<<", physicsMesh=)"<<typeid(physicsMesh).name()<<")");
 
-    assert(_normalizer);
+    assert(_scales);
 
     pylith::topology::Field* diagnosticField = new pylith::topology::Field(physicsMesh);assert(diagnosticField);
     diagnosticField->setLabel("diagnostic field");
@@ -314,8 +314,8 @@ pylith::faults::FaultCohesive::createDiagnosticField(const pylith::topology::Fie
                                                   discretization.isBasisContinuous);
 
     assert(_diagnosticFactory);
-    assert(_normalizer);
-    _diagnosticFactory->initialize(diagnosticField, *_normalizer, solution.getSpaceDim());
+    assert(_scales);
+    _diagnosticFactory->initialize(diagnosticField, *_scales, solution.getSpaceDim());
 
     _diagnosticFactory->addNormalDir(); // 0
     _diagnosticFactory->addStrikeDir(); // 1
@@ -341,7 +341,7 @@ pylith::faults::FaultCohesive::createDerivedField(const pylith::topology::Field&
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("createDerivedField(solution="<<solution.getLabel()<<", domainMesh=)"<<typeid(domainMesh).name()<<")");
 
-    assert(_normalizer);
+    assert(_scales);
 
     pylith::topology::Field* derivedField = new pylith::topology::Field(domainMesh);assert(derivedField);
     derivedField->setLabel("derived field");
@@ -368,8 +368,8 @@ pylith::faults::FaultCohesive::createDerivedField(const pylith::topology::Field&
                                                discretization.isBasisContinuous);
 
     assert(_derivedFactory);
-    assert(_normalizer);
-    _derivedFactory->initialize(derivedField, *_normalizer, solution.getSpaceDim());
+    assert(_scales);
+    _derivedFactory->initialize(derivedField, *_scales, solution.getSpaceDim());
 
     _derivedFactory->addTractionChange(); // 0
 

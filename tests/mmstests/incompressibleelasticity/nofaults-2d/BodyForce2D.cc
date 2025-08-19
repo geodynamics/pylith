@@ -25,10 +25,10 @@ namespace pylith {
 class pylith::_BodyForce2D {
 private:
 
-    static const double LENGTHSCALE;
-    static const double TIMESCALE;
-    static const double PRESSURESCALE;
-    static const double BODYFORCE;
+    static const double LENGTH_SCALE;
+    static const double TIME_SCALE;
+    static const double PRESSURE_SCALE;
+    static const double BODY_FORCE;
     static const double XMAX;
 
     // Density
@@ -63,7 +63,7 @@ private:
 
     static double bodyforce_x(const double x,
                               const double y) {
-        return BODYFORCE;
+        return BODY_FORCE;
     } // bodyforce_x
 
     static double bodyforce_y(const double x,
@@ -80,23 +80,23 @@ private:
     // Displacement
     static double disp_x(const double x,
                          const double y) {
-        return 0.0 / LENGTHSCALE;
+        return 0.0 / LENGTH_SCALE;
     } // disp_x
 
     static double disp_y(const double x,
                          const double y) {
-        return 0.0 / LENGTHSCALE;
+        return 0.0 / LENGTH_SCALE;
     } // disp_y
 
     // Pressure
     static double pressure(const double x,
                            const double y) {
-        const double velocityScale = LENGTHSCALE / TIMESCALE;
-        const double densityScale = PRESSURESCALE / (velocityScale * velocityScale);
-        const double accelerationScale = LENGTHSCALE / (TIMESCALE * TIMESCALE);
+        const double velocityScale = LENGTH_SCALE / TIME_SCALE;
+        const double densityScale = PRESSURE_SCALE / (velocityScale * velocityScale);
+        const double accelerationScale = LENGTH_SCALE / (TIME_SCALE * TIME_SCALE);
         const double forceScale = densityScale * accelerationScale;
-        const double bodyforceN = BODYFORCE / forceScale;
-        return -bodyforceN * (XMAX/LENGTHSCALE - x);
+        const double bodyforceN = BODY_FORCE / forceScale;
+        return -bodyforceN * (XMAX/LENGTH_SCALE - x);
     } // pressure
 
     static PetscErrorCode solnkernel_disp(PetscInt spaceDim,
@@ -142,10 +142,9 @@ public:
 
         data->isJacobianLinear = true;
 
-        data->normalizer.setLengthScale(LENGTHSCALE);
-        data->normalizer.setTimeScale(TIMESCALE);
-        data->normalizer.setPressureScale(PRESSURESCALE);
-        data->normalizer.computeDensityScale();
+        data->scales.setLengthScale(LENGTH_SCALE);
+        data->scales.setTimeScale(TIME_SCALE);
+        data->scales.setPressureScale(PRESSURE_SCALE);
 
         // solnDiscretizations set in derived class.
 
@@ -215,10 +214,10 @@ public:
     } // createData
 
 }; // TestIsotropicLinearIncompElasticity2D_BodyForce
-const double pylith::_BodyForce2D::LENGTHSCALE = 1.0e+3;
-const double pylith::_BodyForce2D::TIMESCALE = 2.0;
-const double pylith::_BodyForce2D::PRESSURESCALE = 2.25e+10;
-const double pylith::_BodyForce2D::BODYFORCE = 20.0e+3;
+const double pylith::_BodyForce2D::LENGTH_SCALE = 1.0;
+const double pylith::_BodyForce2D::TIME_SCALE = 2.0;
+const double pylith::_BodyForce2D::PRESSURE_SCALE = 2.0e+6;
+const double pylith::_BodyForce2D::BODY_FORCE = 20.0e+3;
 const double pylith::_BodyForce2D::XMAX = +4.0e+3;
 
 // ------------------------------------------------------------------------------------------------

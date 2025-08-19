@@ -240,10 +240,9 @@ public:
         data->meshFilename = ":UNKNOWN:"; // Set in child class.
         data->boundaryLabel = "boundary";
 
-        data->normalizer.setLengthScale(LENGTH_SCALE);
-        data->normalizer.setTimeScale(TIME_SCALE);
-        data->normalizer.setPressureScale(PRESSURE_SCALE);
-        data->normalizer.computeDensityScale();
+        data->scales.setLengthScale(LENGTH_SCALE);
+        data->scales.setTimeScale(TIME_SCALE);
+        data->scales.setPressureScale(PRESSURE_SCALE);
 
         // solnDiscretizations set in derived class.
 
@@ -382,9 +381,9 @@ public:
     } // createDataStateVars
 
 }; // PressureGradient
-const double pylith::_PressureGradient::LENGTH_SCALE = 1.0e+3;
+const double pylith::_PressureGradient::LENGTH_SCALE = 1.0;
 const double pylith::_PressureGradient::TIME_SCALE = 2.0;
-const double pylith::_PressureGradient::PRESSURE_SCALE = 2.25e+10;
+const double pylith::_PressureGradient::PRESSURE_SCALE = 2.0e+6;
 
 const double pylith::_PressureGradient::PRESSURE0 = 4.0e+6;
 const double pylith::_PressureGradient::XMAX = 8.0e+3;

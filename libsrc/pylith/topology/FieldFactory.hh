@@ -14,7 +14,7 @@
 
 #include "pylith/topology/FieldBase.hh" // USES FieldBase::Discretization
 
-#include "spatialdata/units/unitsfwd.hh" // HOLDSA Normalizer
+#include "spatialdata/units/unitsfwd.hh" // HOLDSA Scales
 
 class pylith::topology::FieldFactory : public pylith::utils::GenericComponent {
     friend class TestFieldFactory; // unit testing
@@ -65,13 +65,13 @@ public:
     /** Initialize factory for setting up auxiliary subfields.
      *
      * @param[inout] field Auxiliary field for which subfields are to be created.
-     * @param[in] normalizer Scales for nondimensionalization.
+     * @param[in] scales Scales for nondimensionalization.
      * @param[in] spaceDim Spatial dimension of problem.
      * @param[in] defaultDescription Default description for new subfields.
      */
     virtual
     void initialize(pylith::topology::Field* field,
-                    const spatialdata::units::Nondimensional& normalizer,
+                    const spatialdata::units::Scales& scales,
                     const int spaceDim,
                     const pylith::topology::FieldBase::Description* defaultDescription=NULL);
 
@@ -81,7 +81,7 @@ protected:
     pylith::topology::Field* _field; ///< Auxiliary field.
     pylith::topology::FieldBase::discretizations_map _subfieldDiscretizations; ///< Discretization for each subfield.
     pylith::topology::FieldBase::Description* _defaultDescription; ///< Description for default subfield.
-    spatialdata::units::Nondimensional* _normalizer; ///< Scales for nondimensionalization.
+    spatialdata::units::Scales* _scales; ///< Scales for nondimensionalization.
     int _spaceDim; ///< Spatial dimension.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////

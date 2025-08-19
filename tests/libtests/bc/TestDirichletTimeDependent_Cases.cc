@@ -15,7 +15,7 @@
 #include "pylith/topology/Field.hh" // USES pylith::topology::Field::Discretization
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "spatialdata/units/Scales.hh" // USES Scales
 
 // ----------------------------------------------------------------------
 namespace pylith {
@@ -59,15 +59,14 @@ protected:
                 _data->cs = new spatialdata::geocoords::CSCart();CPPUNIT_ASSERT(_data->cs);
                 _data->cs->setSpaceDim(2);
 
-                CPPUNIT_ASSERT(_data->normalizer);
-                _data->normalizer->setLengthScale(1000.0);
-                _data->normalizer->setTimeScale(10.0);
-                _data->normalizer->setPressureScale(0.1);
-                _data->normalizer->setDensityScale(2.0);
+                CPPUNIT_ASSERT(_data->scales);
+                _data->scales->setLengthScale(1.0);
+                _data->scales->setTimeScale(10.0);
+                _data->scales->setPressureScale(3.0e+6);
 
                 _data->field = "displacement";
                 _data->vectorFieldType = pylith::topology::Field::VECTOR;
-                _data->scale = _data->normalizer->getLengthScale();
+                _data->scale = _data->scales->getDisplacementScale();
                 _data->numConstrainedDOF = 1;
                 static const int constrainedDOF[1] = { 1 };
                 _data->constrainedDOF = const_cast<int*>(constrainedDOF);

@@ -16,17 +16,17 @@
 #include "pylith/topology/Field.hh" // USES pylith::topology::Field::Discretization
 #include "pylith/utils/journals.hh" // USES pythia::journal::debug_t
 
+#include "spatialdata/units/ElasticityScales.hh" // USES ElasticityScales
+
 namespace pylith {
     class _BodyForce2D;
 } // pylith
 
 // ------------------------------------------------------------------------------------------------
 class pylith::_BodyForce2D {
-    static const double LENGTHSCALE;
-    static const double TIMESCALE;
-    static const double PRESSURESCALE;
-    static const double BODYFORCE;
-    static const double XMAX;
+    static spatialdata::units::Scales scales;
+    static const double BODY_FORCE;
+    static const double X_MAX;
 
     // Density
     static double density(const double x,
@@ -60,7 +60,7 @@ class pylith::_BodyForce2D {
 
     static double bodyforce_x(const double x,
                               const double y) {
-        return BODYFORCE;
+        return BODY_FORCE;
     } // bodyforce_x
 
     static double bodyforce_y(const double x,
@@ -77,14 +77,13 @@ class pylith::_BodyForce2D {
     // Displacement
     static double disp_x(const double x,
                          const double y) {
-        const double velocityScale = LENGTHSCALE / TIMESCALE;
-        const double densityScale = PRESSURESCALE / (velocityScale * velocityScale);
-        const double accelerationScale = LENGTHSCALE / (TIMESCALE * TIMESCALE);
-        const double forceScale = densityScale * accelerationScale;
-        const double bodyforceN = BODYFORCE / forceScale;
-        const double muN = density(x,y) * vs(x,y) * vs(x,y) / PRESSURESCALE;
-        const double lambdaN = density(x,y) * vp(x,y) * vp(x,y) / PRESSURESCALE - 2.0*muN;
-        const double xp = x - XMAX / LENGTHSCALE;
+        const double lengthScale = scales.getLengthScale();
+        const double pressureScale = scales.getPressureScale();
+        const double bodyForceScale = spatialdata::units::ElasticityScales::getBodyForceScale(scales);
+        const double bodyforceN = BODY_FORCE / bodyForceScale;
+        const double muN = density(x,y) * vs(x,y) * vs(x,y) / pressureScale;
+        const double lambdaN = density(x,y) * vp(x,y) * vp(x,y) / pressureScale - 2.0*muN;
+        const double xp = x - X_MAX / lengthScale;
         return -0.5 * bodyforceN / (lambdaN + 2.0*muN) * (xp*xp);
     } // disp_x
 
@@ -121,10 +120,8 @@ public:
         data->meshFilename = ":UNKNOWN:"; // Set in child class.
         data->boundaryLabel = "boundary";
 
-        data->normalizer.setLengthScale(LENGTHSCALE);
-        data->normalizer.setTimeScale(TIMESCALE);
-        data->normalizer.setPressureScale(PRESSURESCALE);
-        data->normalizer.computeDensityScale();
+        data->scales.setDisplacementScale(10.0);
+        scales = data->scales;
 
         // solnDiscretizations set in derived class.
 
@@ -181,11 +178,9 @@ public:
     } // createData
 
 }; // BodyForce2D
-const double pylith::_BodyForce2D::LENGTHSCALE = 1.0e+3;
-const double pylith::_BodyForce2D::TIMESCALE = 2.0;
-const double pylith::_BodyForce2D::PRESSURESCALE = 2.25e+10;
-const double pylith::_BodyForce2D::BODYFORCE = 5.0e+3;
-const double pylith::_BodyForce2D::XMAX = 4.0e+3;
+spatialdata::units::Scales pylith::_BodyForce2D::scales;
+const double pylith::_BodyForce2D::BODY_FORCE = 5.0e+3;
+const double pylith::_BodyForce2D::X_MAX = 4.0e+3;
 
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*

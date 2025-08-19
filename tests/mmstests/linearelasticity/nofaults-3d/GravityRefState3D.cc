@@ -25,8 +25,8 @@ namespace pylith {
 // ------------------------------------------------------------------------------------------------
 class pylith::_GravityRefState3D {
     /// Spatial database user functions for auxiiliary subfields (includes derived fields).
-    static const double GACC;
-    static const double ZMAX;
+    static const double G_ACC;
+    static const double Z_MAX;
 
     // Density
     static double density(const double x,
@@ -64,7 +64,7 @@ class pylith::_GravityRefState3D {
     static double referenceMeanStress(const double x,
                                       const double y,
                                       const double z) {
-        return density(x,y,z) * GACC * (z-ZMAX);
+        return density(x,y,z) * G_ACC * (z-Z_MAX);
     } // referenceMeanStress
 
     static double referenceShearStress(const double x,
@@ -139,14 +139,9 @@ public:
         data->meshFilename = ":UNKNOWN:"; // Set in child class.
         data->boundaryLabel = "boundary";
 
-        data->normalizer.setLengthScale(1.0e+03);
-        data->normalizer.setTimeScale(2.0);
-        data->normalizer.setPressureScale(2.25e+10);
-        data->normalizer.computeDensityScale();
-
         delete data->gravityField;data->gravityField = new spatialdata::spatialdb::GravityField();
         data->gravityField->setGravityDir(0.0, 0.0, -1.0);
-        data->gravityField->setGravityAcc(GACC);
+        data->gravityField->setGravityAcc(G_ACC);
 
         // solnDiscretizations set in derived class.
 
@@ -217,8 +212,8 @@ public:
     } // createData
 
 }; // GravityRefState3D
-const double pylith::_GravityRefState3D::GACC = 9.80665;
-const double pylith::_GravityRefState3D::ZMAX = +4.0e+3;
+const double pylith::_GravityRefState3D::G_ACC = 9.80665;
+const double pylith::_GravityRefState3D::Z_MAX = +4.0e+3;
 
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*

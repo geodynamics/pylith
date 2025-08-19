@@ -5,7 +5,7 @@
 # Copyright (c) 2010-2025, University of California, Davis and the PyLith Development Team.
 # All rights reserved.
 #
-# See https://mit-license.org/ and LICENSE.md and for license information. 
+# See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
 
 from .SolutionSubfield import SolutionSubfield
@@ -17,6 +17,7 @@ class SubfieldTraceStrain(SolutionSubfield):
 
     Implements `SolutionSubfield`.
     """
+
     DOC_CONFIG = {
         "cfg": """
         [pylithapp.problems.solution.subfields.trace_strain]
@@ -28,19 +29,18 @@ class SubfieldTraceStrain(SolutionSubfield):
     fieldName = "trace_strain"
 
     def __init__(self, name="subfieldtracestrain"):
-        """Constructor.
-        """
+        """Constructor."""
         SolutionSubfield.__init__(self, name)
         return
 
     def _defaults(self):
         self.userAlias = self.fieldName
 
-    def initialize(self, normalizer, spaceDim):
-        """Initialize subfield metadata.
-        """
+    def initialize(self, scales, spaceDim):
+        """Initialize subfield metadata."""
         from pylith.topology.Field import Field
         from pythia.pyre.units.unit import one
+
         self.vectorFieldType = Field.SCALAR
         self.scale = one
         self._setComponents(spaceDim)
@@ -49,17 +49,16 @@ class SubfieldTraceStrain(SolutionSubfield):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
-        """Set members based using inventory.
-        """
+        """Set members based using inventory."""
         SolutionSubfield._configure(self)
         return
+
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
 
 def soln_subfield():
-    """Factory associated with SubfieldTraceStrain.
-    """
+    """Factory associated with SubfieldTraceStrain."""
     return SubfieldTraceStrain()
 
 

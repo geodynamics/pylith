@@ -24,7 +24,7 @@
 #include "pylith/meshio/DataWriter.hh" // USES DataWriter
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "spatialdata/units/Scales.hh" // USES Scales
 
 // ------------------------------------------------------------------------------------------------
 // Constructor.
@@ -52,7 +52,7 @@ pylith::meshio::TestDataWriterMesh::setDataTri(TestDataWriter_Data* data) {
     data->faultLabel = "fault";
     data->faultId = 100;
     data->spaceDim = 2;
-    data->lengthScale = 10.0;
+    data->lengthScale = 0.1;
 
     data->time = 1.0;
     data->timeFormat = "%3.1f";
@@ -97,7 +97,7 @@ pylith::meshio::TestDataWriterMesh::setDataQuad(TestDataWriter_Data* data) {
     // We do not use a fault in this test case.
     data->meshFilename = "data/quad4.mesh";
     data->spaceDim = 2;
-    data->lengthScale = 10.0;
+    data->lengthScale = 0.1;
 
     data->time = 1.0;
     data->timeFormat = "%3.1f";
@@ -143,7 +143,7 @@ pylith::meshio::TestDataWriterMesh::setDataTet(TestDataWriter_Data* data) {
     data->faultLabel = "fault";
     data->faultId = 100;
     data->spaceDim = 2;
-    data->lengthScale = 10.0;
+    data->lengthScale = 0.1;
 
     data->time = 1.0;
     data->timeFormat = "%3.1f";
@@ -191,7 +191,7 @@ pylith::meshio::TestDataWriterMesh::setDataHex(TestDataWriter_Data* data) {
     data->faultLabel = "fault";
     data->faultId = 100;
     data->spaceDim = 2;
-    data->lengthScale = 10.0;
+    data->lengthScale = 0.1;
 
     data->time = 1.0;
     data->timeFormat = "%3.1f";
@@ -255,9 +255,9 @@ pylith::meshio::TestDataWriterMesh::_initialize(void) {
     cs.setSpaceDim(_mesh->getDimension());
     _mesh->setCoordSys(&cs);
 
-    spatialdata::units::Nondimensional normalizer;
-    normalizer.setLengthScale(data->lengthScale);
-    pylith::topology::MeshOps::nondimensionalize(_mesh, normalizer);
+    spatialdata::units::Scales scales;
+    scales.setLengthScale(data->lengthScale);
+    pylith::topology::MeshOps::nondimensionalize(_mesh, scales);
 
     if (data->faultLabel) {
         pylith::faults::FaultCohesiveStub fault;

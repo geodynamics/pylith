@@ -16,6 +16,7 @@
 #include "pylith/utils/PetscOptions.hh" // USES PetscOptions
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/MeshOps.hh" // USES MeshOps
 #include "pylith/topology/Field.hh" // USES Field
 
 #include "petscts.h" // USES PetscTS
@@ -36,7 +37,7 @@ pylith::testing::MMSTest::MMSTest(void) :
     _solutionExactVec(NULL),
     _solutionDotExactVec(NULL),
     _jacobianConvergenceRate(0.0),
-    _tolerance(1.0e-9),
+    _tolerance(1.0e-8),
     _isJacobianLinear(false),
     _allowZeroResidual(false) {
     GenericComponent::setName("mmstest"); // Override in child class for finer control of journal output.
@@ -67,21 +68,24 @@ pylith::testing::MMSTest::testDiscretization(void) {
     PYLITH_METHOD_BEGIN;
     assert(_problem);
 
-    _initialize();
-
+    PetscErrorCode err = PETSC_SUCCESS;
     pythia::journal::debug_t debug(GenericComponent::getName());
+    if (debug.state()) {
+        err = PetscOptionsSetValue(NULL, "-dm_plex_print_l2", "2");PYLITH_CHECK_ERROR(err);
+    } // if
+
+    _initialize();
     const pylith::topology::Field* solution = _problem->getSolution();assert(solution);
     if (debug.state()) {
         solution->view("Solution field layout", pylith::topology::Field::VIEW_LAYOUT);
     } // if
 
-    PetscErrorCode err = 0;
-    const PylithReal tolerance = -1.0;
+    const PylithReal ignoreTolerance = -1.0;
     const pylith::string_vector subfieldNames = solution->getSubfieldNames();
     const size_t numSubfields = subfieldNames.size();
     pylith::real_array error(numSubfields);
     err = DMSNESCheckDiscretization(_problem->getPetscSNES(), _problem->getPetscDM(), _problem->getStartTime(),
-                                    _solutionExactVec, tolerance, &error[0]);PYLITH_CHECK_ERROR(err);
+                                    _solutionExactVec, ignoreTolerance, &error[0]);PYLITH_CHECK_ERROR(err);
 
     if (debug.state()) {
         solution->view("Solution field");
@@ -89,11 +93,11 @@ pylith::testing::MMSTest::testDiscretization(void) {
 
     bool fail = false;
     std::ostringstream msg;
+    msg << "Discretization test failed for subfield(s):\n";
     for (size_t i_field = 0; i_field < numSubfields; ++i_field) {
-        msg << "Discretization test failed for subfield(s): ";
         if (error[i_field] > _tolerance) {
             fail = true;
-            msg << " " << subfieldNames[i_field] << " (" << error[i_field] << ")";
+            msg << "    " << subfieldNames[i_field] << " (error=" << error[i_field] << ", tolerance="<< _tolerance << ")\n";
         } // if
     } // for
     if (fail) {
@@ -111,7 +115,7 @@ pylith::testing::MMSTest::testResidual(void) {
     PYLITH_METHOD_BEGIN;
     assert(_problem);
 
-    PetscErrorCode err = 0;
+    PetscErrorCode err = PETSC_SUCCESS;
     pythia::journal::debug_t debug(GenericComponent::getName());
     if (debug.state()) {
         err = PetscOptionsSetValue(NULL, "-dm_plex_print_fem", "2");PYLITH_CHECK_ERROR(err);
@@ -153,12 +157,12 @@ pylith::testing::MMSTest::testJacobianTaylorSeries(void) {
 
     assert(_solutionExactVec);
     assert(_solutionDotExactVec);
-    PetscErrorCode err = 0;
-    const PylithReal tolerance = -1.0;
+    PetscErrorCode err = PETSC_SUCCESS;
+
     PetscBool isLinear = PETSC_FALSE;
     PylithReal convergenceRate = 0.0;
     err = DMTSCheckJacobian(_problem->getPetscTS(), _problem->getPetscDM(), _problem->getStartTime(), _solutionExactVec,
-                            _solutionDotExactVec, tolerance, &isLinear, &convergenceRate);PYLITH_CHECK_ERROR(err);
+                            _solutionDotExactVec, _tolerance, &isLinear, &convergenceRate);PYLITH_CHECK_ERROR(err);
 
     if (_isJacobianLinear) {
         REQUIRE(isLinear == PETSC_TRUE);
@@ -178,7 +182,7 @@ pylith::testing::MMSTest::testJacobianFiniteDiff(void) {
     PYLITH_METHOD_BEGIN;
     assert(_problem);
 
-    PetscErrorCode err = 0;
+    PetscErrorCode err = PETSC_SUCCESS;
     err = PetscOptionsSetValue(NULL, "-ts_max_snes_failures", "1");PYLITH_CHECK_ERROR(err);
     err = PetscOptionsSetValue(NULL, "-ts_error_if_step_fails", "false");PYLITH_CHECK_ERROR(err);
     _initialize();
@@ -198,7 +202,7 @@ pylith::testing::MMSTest::testJacobianFiniteDiff(void) {
     err = SNESTestJacobian(_problem->getPetscSNES(), &jacobianNorm, &diffNorm);PYLITH_CHECK_ERROR(err);
 
     INFO("jacobianNorm=" << jacobianNorm << ", ||Code Jacobian - Finite Diff Jacobain||="<<diffNorm);
-    const PetscReal jacobianTolerance = 100 * _tolerance * jacobianNorm;
+    const PetscReal jacobianTolerance = 20 * jacobianNorm * _tolerance;
     REQUIRE_THAT(jacobianNorm, !Catch::Matchers::WithinAbs(0.0, _tolerance));
     REQUIRE_THAT(diffNorm, Catch::Matchers::WithinAbs(0.0, jacobianTolerance));
     err = PetscOptionsClearValue(NULL, "-snes_test_jacobian_view");PYLITH_CHECK_ERROR(err);

@@ -6,12 +6,12 @@
 # Copyright (c) 2010-2025, University of California, Davis and the PyLith Development Team.
 # All rights reserved.
 #
-# See https://mit-license.org/ and LICENSE.md and for license information. 
+# See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
 
 import unittest
 
-from pylith.testing.FullTestApp import (FullTestCase, Check)
+from pylith.testing.FullTestApp import FullTestCase, Check
 
 import meshes
 import twoblocks_soln
@@ -35,25 +35,30 @@ class TestCase(FullTestCase):
             Check(
                 mesh_entities=["mat_elastic"],
                 filename="output/{name}-{mesh_entity}_info.h5",
-                cell_fields = ["density", "bulk_modulus", "shear_modulus"],
+                cell_fields=["density", "bulk_modulus", "shear_modulus"],
                 defaults=defaults,
             ),
             Check(
                 mesh_entities=["mat_elastic"],
-                vertex_fields = ["displacement"],
-                cell_fields = ["cauchy_strain"],
+                vertex_fields=["displacement"],
+                cell_fields=["cauchy_strain"],
                 defaults=defaults,
             ),
             Check(
                 mesh_entities=["mat_elastic"],
-                cell_fields = ["cauchy_stress"],
-                scale = 1.0e+6,
+                cell_fields=["cauchy_stress"],
+                scale=1.0e6,
                 defaults=defaults,
             ),
             Check(
                 mesh_entities=["bc_xneg", "bc_xpos"],
                 filename="output/{name}-{mesh_entity}_info.h5",
-                vertex_fields=["initial_amplitude", "normal_dir", "horizontal_tangential_dir", "vertical_tangential_dir"],
+                vertex_fields=[
+                    "initial_amplitude",
+                    "normal_dir",
+                    "horizontal_tangential_dir",
+                    "vertical_tangential_dir",
+                ],
                 defaults=defaults,
             ),
             Check(
@@ -69,7 +74,7 @@ class TestCase(FullTestCase):
             Check(
                 mesh_entities=["fault"],
                 vertex_fields=["traction_change"],
-                scale = 1.0e+6,
+                scale=1.0e6,
                 defaults=defaults,
             ),
         ]
@@ -86,7 +91,12 @@ class TestHexGmsh(TestCase):
         self.mesh = meshes.HexGmsh()
         super().setUp()
 
-        TestCase.run_pylith(self, self.name, ["twoblocks.cfg", "twoblocks_hex.cfg", "solver_fault_fieldsplit.cfg"], nprocs=2)
+        TestCase.run_pylith(
+            self,
+            self.name,
+            ["twoblocks.cfg", "twoblocks_hex.cfg", "solver_fault_fieldsplit.cfg"],
+            nprocs=2,
+        )
         return
 
 
@@ -98,7 +108,12 @@ class TestTetGmsh(TestCase):
         self.mesh = meshes.TetGmsh()
         super().setUp()
 
-        TestCase.run_pylith(self, self.name, ["twoblocks.cfg", "twoblocks_tet.cfg", "solver_fault_fieldsplit.cfg"], nprocs=3)
+        TestCase.run_pylith(
+            self,
+            self.name,
+            ["twoblocks.cfg", "twoblocks_tet.cfg", "solver_fault_fieldsplit.cfg"],
+            nprocs=3,
+        )
         return
 
 
@@ -111,7 +126,7 @@ def test_cases():
 
 
 # -------------------------------------------------------------------------------------------------
-if __name__ == '__main__':
+if __name__ == "__main__":
     FullTestCase.parse_args()
 
     suite = unittest.TestSuite()

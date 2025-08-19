@@ -67,10 +67,10 @@ public:
     /** Set solver type.
      *
      * @param[out] solution Solution field.
-     * @param[in] normalizer Nondimensionalization.
+     * @param[in] scales Nondimensionalization.
      */
     void setValues(pylith::topology::Field* solution,
-                   const spatialdata::units::Nondimensional& normalizer);
+                   const spatialdata::units::Scales& scales);
 
     // PRIVATE MEMEBRS
     // //////////////////////////////////////////////////////////////////////////////////////////////////

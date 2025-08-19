@@ -5,7 +5,7 @@
 # Copyright (c) 2010-2025, University of California, Davis and the PyLith Development Team.
 # All rights reserved.
 #
-# See https://mit-license.org/ and LICENSE.md and for license information. 
+# See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
 
 from .SolutionSubfield import SolutionSubfield
@@ -17,6 +17,7 @@ class SubfieldDisplacement(SolutionSubfield):
 
     Implements `SolutionSubfield`.
     """
+
     DOC_CONFIG = {
         "cfg": """
         [pylithapp.problems.solution.subfields.displacement]
@@ -28,32 +29,30 @@ class SubfieldDisplacement(SolutionSubfield):
     fieldName = "displacement"
 
     def __init__(self, name="subfielddisplacement"):
-        """Constructor.
-        """
+        """Constructor."""
         SolutionSubfield.__init__(self, name)
 
     def _defaults(self):
         self.userAlias = self.fieldName
 
-    def initialize(self, normalizer, spaceDim):
-        """Initialize subfield metadata.
-        """
+    def initialize(self, scales, spaceDim):
+        """Initialize subfield metadata."""
         from pylith.topology.Field import Field
+
         self.vectorFieldType = Field.VECTOR
-        self.scale = normalizer.getLengthScale()
+        self.scale = scales.getDisplacementScale()
         self._setComponents(spaceDim)
 
     def _configure(self):
-        """Set members based using inventory.
-        """
+        """Set members based using inventory."""
         SolutionSubfield._configure(self)
+
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
 
 def soln_subfield():
-    """Factory associated with SubfieldDisplacement.
-    """
+    """Factory associated with SubfieldDisplacement."""
     return SubfieldDisplacement()
 
 

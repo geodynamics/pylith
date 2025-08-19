@@ -34,7 +34,7 @@
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "spatialdata/units/ElasticityScales.hh" // USES ElasticityScales
 
 // ------------------------------------------------------------------------------------------------
 // Constuctor.
@@ -65,7 +65,7 @@ pylith::TestFaultKin::_initialize(void) {
     assert(_mesh);
     assert(_data);
 
-    PetscErrorCode err = 0;
+    PetscErrorCode err = PETSC_SUCCESS;
 
     if (_data->useAsciiMesh) {
         pylith::meshio::MeshIOAscii iohandler;
@@ -85,7 +85,7 @@ pylith::TestFaultKin::_initialize(void) {
 
     // Set up coordinates.
     _mesh->setCoordSys(&_data->cs);
-    pylith::topology::MeshOps::nondimensionalize(_mesh, _data->normalizer);
+    pylith::topology::MeshOps::nondimensionalize(_mesh, _data->scales);
 
     // Set up materials
     for (size_t iMat = 0; iMat < _data->materials.size(); ++iMat) {
@@ -115,7 +115,7 @@ pylith::TestFaultKin::_initialize(void) {
 
     // Set up problem.
     assert(_problem);
-    _problem->setNormalizer(_data->normalizer);
+    _problem->setScales(_data->scales);
     _problem->setGravityField(_data->gravityField);
     _problem->setMaterials(_data->materials.data(), _data->materials.size());
     _problem->setInterfaces(_data->faults.data(), _data->faults.size());
@@ -129,7 +129,7 @@ pylith::TestFaultKin::_initialize(void) {
     assert(!_solution);
     _solution = new pylith::topology::Field(*_mesh);assert(_solution);
     _solution->setLabel("solution");
-    pylith::problems::SolutionFactory factory(*_solution, _data->normalizer);
+    pylith::problems::SolutionFactory factory(*_solution, _data->scales);
     int iField = 0;
     factory.addDisplacement(_data->solnDiscretizations[iField++]);
     if (pylith::problems::Physics::QUASISTATIC == _data->formulation) {
@@ -198,7 +198,7 @@ pylith::TestFaultKin_Data::TestFaultKin_Data(void) :
     useAsciiMesh(true),
 
     jacobianConvergenceRate(1.0),
-    tolerance(1.0e-9),
+    tolerance(1.0e-8),
     isJacobianLinear(true),
     allowZeroResidual(false),
 
@@ -224,6 +224,9 @@ pylith::TestFaultKin_Data::TestFaultKin_Data(void) :
     faultAuxDB.setDescription("fault auxiliary field spatial database");
 
     cs.setSpaceDim(spaceDim);
+
+    const double lengthScale = 12.0e+3;
+    spatialdata::units::ElasticityScales::setDefaultsQuasistatic(&scales, lengthScale);
 } // constructor
 
 

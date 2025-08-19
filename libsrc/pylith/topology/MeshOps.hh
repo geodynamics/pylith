@@ -82,11 +82,11 @@ public:
     /** Nondimensionalize the finite-element mesh.
      *
      * @param[in] mesh Finite-element mesh.
-     * @param[in] normalizer Nondimensionalizer.
+     * @param[in] scales Nondimensionalizer.
      */
     static
     void nondimensionalize(Mesh* const mesh,
-                           const spatialdata::units::Nondimensional& normalizer);
+                           const spatialdata::units::Scales& scales);
 
     /** Check topology of mesh.
      *
@@ -136,6 +136,14 @@ public:
      */
     static
     PylithInt getNumCorners(const pylith::topology::Mesh& mesh);
+
+    /** Compute nominal dimension of domain based on mesh bounding box.
+     *
+     * @param[in] mesh Finite-element mesh.
+     * @returns Average domain dimension.
+     */
+    static
+    PylithReal computeAvgDomainDim(const pylith::topology::Mesh& mesh);
 
     /** Check to make sure material label value for every cell matches the label value of
      *  one of the materials.

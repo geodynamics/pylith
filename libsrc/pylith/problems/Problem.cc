@@ -28,7 +28,7 @@
 #include "pylith/topology/MeshOps.hh" // USES MeshOps
 #include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor::optimizeClosure()
 
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "spatialdata/units/Scales.hh" // USES Scales
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 
 #include "pylith/utils/EventLogger.hh" // HASA EventLogger
@@ -120,7 +120,7 @@ pylith::problems::_Problem::Events::init(void) {
 // Constructor
 pylith::problems::Problem::Problem() :
     _integrationData(new pylith::feassemble::IntegrationData),
-    _normalizer(NULL),
+    _scales(NULL),
     _gravityField(NULL),
     _observers(new pylith::problems::ObserversSoln),
     _formulation(pylith::problems::Physics::QUASISTATIC),
@@ -154,7 +154,7 @@ pylith::problems::Problem::deallocate(void) {
     } // for
 
     delete _integrationData;_integrationData = NULL;
-    delete _normalizer;_normalizer = NULL;
+    delete _scales;_scales = NULL;
     _gravityField = NULL; // Held by Python. :KLUDGE: :TODO: Use shared pointer.
     delete _observers;_observers = NULL;
 
@@ -214,15 +214,15 @@ pylith::problems::Problem::setPetscDefaults(const int flags) {
 // ------------------------------------------------------------------------------------------------
 // Set manager of scales used to nondimensionalize problem.
 void
-pylith::problems::Problem::setNormalizer(const spatialdata::units::Nondimensional& dim) {
-    PYLITH_COMPONENT_DEBUG("Problem::setNormalizer(dim="<<typeid(dim).name()<<")");
+pylith::problems::Problem::setScales(const spatialdata::units::Scales& dim) {
+    PYLITH_COMPONENT_DEBUG("Problem::setScales(dim="<<typeid(dim).name()<<")");
 
-    if (!_normalizer) {
-        _normalizer = new spatialdata::units::Nondimensional(dim);
+    if (!_scales) {
+        _scales = new spatialdata::units::Scales(dim);
     } else {
-        *_normalizer = dim;
+        *_scales = dim;
     } // if/else
-} // setNormalizer
+} // setScales
 
 
 // ------------------------------------------------------------------------------------------------
@@ -243,9 +243,9 @@ pylith::problems::Problem::registerObserver(pylith::problems::ObserverSoln* obse
     PYLITH_COMPONENT_DEBUG("registerObserver(observer="<<typeid(observer).name()<<")");
 
     assert(_observers);
-    assert(_normalizer);
+    assert(_scales);
     _observers->registerObserver(observer);
-    _observers->setTimeScale(_normalizer->getTimeScale());
+    _observers->setTimeScale(_scales->getTimeScale());
 
     PYLITH_METHOD_END;
 } // registerObserver
@@ -374,12 +374,12 @@ pylith::problems::Problem::preinitialize(const pylith::topology::Mesh& mesh) {
     PYLITH_COMPONENT_DEBUG("Problem::preinitialzie(mesh="<<typeid(mesh).name()<<")");
     _Problem::Events::logger.eventBegin(_Problem::Events::preinitialize);
 
-    assert(_normalizer);
+    assert(_scales);
 
     const size_t numMaterials = _materials.size();
     for (size_t i = 0; i < numMaterials; ++i) {
         assert(_materials[i]);
-        _materials[i]->setNormalizer(*_normalizer);
+        _materials[i]->setScales(*_scales);
         _materials[i]->setGravityField(_gravityField);
         _materials[i]->setFormulation(_formulation);
     } // for
@@ -387,14 +387,14 @@ pylith::problems::Problem::preinitialize(const pylith::topology::Mesh& mesh) {
     const size_t numInterfaces = _interfaces.size();
     for (size_t i = 0; i < numInterfaces; ++i) {
         assert(_interfaces[i]);
-        _interfaces[i]->setNormalizer(*_normalizer);
+        _interfaces[i]->setScales(*_scales);
         _interfaces[i]->setFormulation(_formulation);
     } // for
 
     const size_t numBC = _bc.size();
     for (size_t i = 0; i < numBC; ++i) {
         assert(_bc[i]);
-        _bc[i]->setNormalizer(*_normalizer);
+        _bc[i]->setScales(*_scales);
         _bc[i]->setFormulation(_formulation);
     } // for
 
