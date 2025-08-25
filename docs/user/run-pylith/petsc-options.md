@@ -65,9 +65,9 @@ caption: Default PETSc options for monitoring the solver. These settings are als
 ---
 [pylithapp.petsc]
 # Turn on TS, KSP, and SNES monitors
-ts_monitor = True
-ksp_monitor = True
-snes_monitor = True
+ts_monitor =
+ksp_monitor =
+snes_monitor =
 
 ksp_converged_reason = True
 snes_converged_reason = True
