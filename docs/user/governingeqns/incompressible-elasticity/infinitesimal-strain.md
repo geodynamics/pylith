@@ -15,7 +15,7 @@ The strong form is
   % Solution
   \vec{s}^T = \left( \vec{u} \quad \ p \right)^T, \\
   % Elasticity
-\rho \frac{\partial^2\vec{u}}{\partial t^2} - \vec{f}(\vec{x},t) - \left(\boldsymbol{\sigma}^\mathit{dev}(\vec{u}) - p\boldsymbol{I}\right) = \vec{0} \text{ in }\Omega,
+\rho \frac{\partial^2\vec{u}}{\partial t^2} - \vec{f}(\vec{x},t) - \left(\boldsymbol{\sigma}^\mathit{dev}(\vec{u}) - p\boldsymbol{I}\right) = \vec{0} \text{ in }\Omega, \\
   % Pressure
   \vec{\nabla} \cdot \vec{u} + \frac{p}{K} = 0 \text{ in }\Omega, \\
   % Neumann
