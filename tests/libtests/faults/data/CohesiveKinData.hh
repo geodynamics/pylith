@@ -35,7 +35,7 @@ public:
     /// @name Scales information for nondimensionalization.
     //@{
     PylithScalar lengthScale; ///< Length scale.
-    PylithScalar pressureScale; ///< Pressure scale.
+    PylithScalar rigidityScale; ///< Pressure scale.
     PylithScalar timeScale; ///< Time scale.
     PylithScalar densityScale; ///< Density scale.
     //@}

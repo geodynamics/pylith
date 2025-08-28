@@ -52,7 +52,7 @@ pylith::materials::AuxiliaryFactoryPoroelasticity::addBodyForce(void) {
         "body_force_z"
     };
 
-    const PylithReal forceScale = _scales->getPressureScale() / _scales->getLengthScale();
+    const PylithReal bodyForceScale = spatialdata::units::ElasticityScales::getBodyForceScale(*_scales);
 
     pylith::topology::Field::Description description;
     description.label = subfieldName;
@@ -63,7 +63,7 @@ pylith::materials::AuxiliaryFactoryPoroelasticity::addBodyForce(void) {
     for (int i = 0; i < _spaceDim; ++i) {
         description.componentNames[i] = componentNames[i];
     } // for
-    description.scale = forceScale;
+    description.scale = bodyForceScale;
     description.validator = NULL;
 
     _field->subfieldAdd(description, getSubfieldDiscretization(subfieldName));
@@ -86,9 +86,7 @@ pylith::materials::AuxiliaryFactoryPoroelasticity::addGravityField(spatialdata::
         "gravitational_acceleration_y",
         "gravitational_acceleration_z"
     };
-    const PylithReal lengthScale = _scales->getLengthScale();
-    const PylithReal timeScale = _scales->getTimeScale();
-    const PylithReal accelerationScale = lengthScale / (timeScale * timeScale);
+    const PylithReal accelerationScale = spatialdata::units::ElasticityScales::getAccelerationScale(*_scales);
 
     pylith::topology::Field::Description description;
     description.label = subfieldName;
@@ -117,7 +115,7 @@ pylith::materials::AuxiliaryFactoryPoroelasticity::addPorosity(void) { // porosi
     PYLITH_JOURNAL_DEBUG("addPorosity(void)");
 
     const char* subfieldName = "porosity";
-    const PylithReal noScale = 1.0;
+    const PylithReal porosityScale = 1.0;
 
     pylith::topology::Field::Description description;
     description.label = subfieldName;
@@ -128,7 +126,7 @@ pylith::materials::AuxiliaryFactoryPoroelasticity::addPorosity(void) { // porosi
     description.historySize = 1;
     description.componentNames.resize(1);
     description.componentNames[0] = subfieldName;
-    description.scale = noScale;
+    description.scale = porosityScale;
     description.validator = pylith::topology::FieldQuery::validatorNonnegative;
 
     _field->subfieldAdd(description, getSubfieldDiscretization(subfieldName));
@@ -195,14 +193,12 @@ pylith::materials::AuxiliaryFactoryPoroelasticity::addFluidDensity(void) { // fl
 // ----------------------------------------------------------------------
 // Add fluid viscosity subfield to auxiliary fields.
 void
-pylith::materials::AuxiliaryFactoryPoroelasticity::addFluidViscosity(void) { // fluidViscosity
+pylith::materials::AuxiliaryFactoryPoroelasticity::addFluidViscosity(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("addFluidViscosity(void)");
 
     const char* subfieldName = "fluid_viscosity";
-    const PylithReal pressureScale = _scales->getPressureScale();
-    const PylithReal timeScale = _scales->getTimeScale();
-    const PylithReal viscosityScale = pressureScale*timeScale;
+    const PylithReal viscosityScale = spatialdata::units::ElasticityScales::getViscosityScale(*_scales);
 
     pylith::topology::Field::Description description;
     description.label = subfieldName;
@@ -230,9 +226,8 @@ pylith::materials::AuxiliaryFactoryPoroelasticity::addSourceDensity(void) { // s
     PYLITH_JOURNAL_DEBUG("addSourceDensity(void)");
 
     const char* subfieldName = "source_density";
-    const PylithReal lengthScale = _scales->getLengthScale();
     const PylithReal timeScale = _scales->getTimeScale();
-    const PylithReal sourceDensityScale = lengthScale/timeScale;
+    const PylithReal sourceDensityScale = 1.0 / timeScale;
 
     pylith::topology::Field::Description description;
     description.label = subfieldName;

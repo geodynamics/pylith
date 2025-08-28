@@ -86,11 +86,11 @@ private:
     static double disp_y(const double x,
                          const double y) {
         const double lengthScale = scales.getLengthScale();
-        const double pressureScale = scales.getPressureScale();
+        const double rigidityScale = scales.getRigidityScale();
         const double bodyForceScale = spatialdata::units::ElasticityScales::getBodyForceScale(scales);
 
-        const double muN = density(x,y) * vs(x,y) * vs(x,y) / pressureScale;
-        const double lambdaN = density(x,y) * vp(x,y) * vp(x,y) / pressureScale - 2.0*muN;
+        const double muN = density(x,y) * vs(x,y) * vs(x,y) / rigidityScale;
+        const double lambdaN = density(x,y) * vp(x,y) * vp(x,y) / rigidityScale - 2.0*muN;
         const double yMinN = Y_MIN / lengthScale;
         const double yMaxN = Y_MAX / lengthScale;
         const double bodyForceN = pylith::g_acc * density(x, y) / bodyForceScale;

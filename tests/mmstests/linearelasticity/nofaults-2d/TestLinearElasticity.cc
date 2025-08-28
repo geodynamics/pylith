@@ -176,7 +176,7 @@ pylith::TestLinearElasticity_Data::TestLinearElasticity_Data(void) :
     cs.setSpaceDim(spaceDim);
 
     const double lengthScale = 8.0e+3;
-    spatialdata::units::ElasticityScales::setDefaultsQuasistatic(&scales, lengthScale);
+    spatialdata::units::ElasticityScales::setQuasistaticElasticity(&scales, lengthScale);
 } // constructor
 
 

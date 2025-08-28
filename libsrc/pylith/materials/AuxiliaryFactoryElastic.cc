@@ -45,7 +45,7 @@ pylith::materials::AuxiliaryFactoryElastic::addShearModulus(void) {
     PYLITH_JOURNAL_DEBUG("addShearModulus(void)");
 
     const char* subfieldName = "shear_modulus";
-    const PylithReal pressureScale = _scales->getPressureScale();
+    const PylithReal rigidityScale = _scales->getRigidityScale();
 
     pylith::topology::Field::Description description;
     description.label = subfieldName;
@@ -54,7 +54,7 @@ pylith::materials::AuxiliaryFactoryElastic::addShearModulus(void) {
     description.numComponents = 1;
     description.componentNames.resize(1);
     description.componentNames[0] = subfieldName;
-    description.scale = pressureScale;
+    description.scale = rigidityScale;
     description.validator = pylith::topology::FieldQuery::validatorNonnegative;
 
     _field->subfieldAdd(description, getSubfieldDiscretization(subfieldName));
@@ -72,7 +72,7 @@ pylith::materials::AuxiliaryFactoryElastic::addBulkModulus(void) {
     PYLITH_JOURNAL_DEBUG("addBulkModulus(void)");
 
     const char* subfieldName = "bulk_modulus";
-    const PylithReal pressureScale = _scales->getPressureScale();
+    const PylithReal rigidityScale = _scales->getRigidityScale();
 
     pylith::topology::Field::Description description;
     description.label = subfieldName;
@@ -81,7 +81,7 @@ pylith::materials::AuxiliaryFactoryElastic::addBulkModulus(void) {
     description.numComponents = 1;
     description.componentNames.resize(1);
     description.componentNames[0] = subfieldName;
-    description.scale = pressureScale;
+    description.scale = rigidityScale;
     description.validator = pylith::topology::FieldQuery::validatorPositive;
 
     _field->subfieldAdd(description, getSubfieldDiscretization(subfieldName));

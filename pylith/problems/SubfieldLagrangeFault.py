@@ -9,6 +9,7 @@
 # =================================================================================================
 
 from .SolutionSubfield import SolutionSubfield
+from spatialdata.units.ElasticityScales import ElasticityScales
 
 
 class SubfieldLagrangeFault(SolutionSubfield):
@@ -41,7 +42,7 @@ class SubfieldLagrangeFault(SolutionSubfield):
 
         self.dimension = spaceDim - 1
         self.vectorFieldType = Field.VECTOR
-        self.scale = scales.getPressureScale()
+        self.scale = ElasticityScales.getStressScale(scales)
         self._setComponents(spaceDim)
         self.isFaultOnly = True
 

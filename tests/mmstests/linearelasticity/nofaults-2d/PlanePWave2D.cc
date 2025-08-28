@@ -190,7 +190,7 @@ public:
 
         const double lengthScale = data->scales.getLengthScale(); // domain-specific value
         const double velocityScale = vs(0.0, 0.0);
-        spatialdata::units::ElasticityScales::setDefaultsDynamic(&scales, lengthScale, velocityScale);
+        spatialdata::units::ElasticityScales::setDynamicElasticity(&scales, lengthScale, velocityScale);
         data->scales = scales;
         data->formulation = pylith::problems::Physics::DYNAMIC;
 

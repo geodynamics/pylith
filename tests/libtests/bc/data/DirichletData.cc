@@ -26,10 +26,10 @@ pylith::bc::DirichletData::DirichletData(void) :
     meshFilename(0),
     dbFilename(0),
     setLengthScale(1.0),
-    setPressureScale(2.0e+6),
+    setRigidityScale(2.0e+6),
     setTimeScale(2.0) {
     const PylithScalar velScale = lengthScale / timeScale;
-    densityScale = pressureScale / (velScale*velScale);
+    densityScale = rigidityScale / (velScale*velScale);
 } // constructor
 
 

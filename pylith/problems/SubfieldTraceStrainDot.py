@@ -9,6 +9,7 @@
 # =================================================================================================
 
 from .SolutionSubfield import SolutionSubfield
+from spatialdata.units.ElasticityScales import ElasticityScales
 
 
 class SubfieldTraceStrainDot(SolutionSubfield):
@@ -45,7 +46,7 @@ class SubfieldTraceStrainDot(SolutionSubfield):
         from pythia.pyre.units.unit import one
 
         self.vectorFieldType = Field.SCALAR
-        self.scale = one / scales.getTimeScale()
+        self.scale = ElasticityScales.getStrainScale(scales) / scales.getTimeScale()
         self._setComponents(spaceDim)
 
     def _configure(self):

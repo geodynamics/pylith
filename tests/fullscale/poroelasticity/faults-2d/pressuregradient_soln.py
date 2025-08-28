@@ -19,10 +19,10 @@ p_fluid_density = 1000.0
 p_fluid_viscosity = 1.0e-3
 p_porosity = 0.02
 
-p_shear_modulus = 3.0e10
-p_drained_bulk_modulus = 8.0e10
-p_fluid_bulk_modulus = 1.0e10
-p_biot_coefficient = 0.2
+p_shear_modulus = 30.0e9
+p_drained_bulk_modulus = 80.0e9
+p_fluid_bulk_modulus = 10.0e9
+p_biot_coefficient = 0.7
 p_isotropic_permeability = 1.0e-14
 
 

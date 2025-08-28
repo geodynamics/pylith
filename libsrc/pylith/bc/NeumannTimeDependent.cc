@@ -69,7 +69,7 @@ public:
 pylith::bc::NeumannTimeDependent::NeumannTimeDependent(void) :
     _dbTimeHistory(NULL),
     _auxiliaryFactory(new pylith::bc::TimeDependentAuxiliaryFactory(pylith::bc::TimeDependentAuxiliaryFactory::TANGENTIAL_NORMAL)),
-    _scaleName("pressure"),
+    _scaleName("stress"),
     _useInitial(true),
     _useRate(false),
     _useTimeHistory(false) {
@@ -235,7 +235,7 @@ pylith::bc::NeumannTimeDependent::createAuxiliaryField(const pylith::topology::F
     auxiliaryField->setLabel("auxiliary field");
 
     assert(_scales);
-    const PylithReal pressureScale = _scales->getPressureScale();
+    const PylithReal rigidityScale = _scales->getRigidityScale();
     const PylithReal lengthScale = _scales->getLengthScale();
     const PylithReal timeScale = _scales->getTimeScale();
     const PylithReal stressScale = spatialdata::units::ElasticityScales::getStressScale(*_scales);
@@ -246,7 +246,7 @@ pylith::bc::NeumannTimeDependent::createAuxiliaryField(const pylith::topology::F
     if (_scaleName == std::string("stress")) {
         description.scale = stressScale;
     } else if (_scaleName == std::string("velocity")) {
-        description.scale = sqrt(pressureScale / densityScale);
+        description.scale = sqrt(rigidityScale / densityScale);
     } else if (_scaleName == std::string("length")) {
         description.scale = lengthScale;
     } else if (_scaleName == std::string("time")) {

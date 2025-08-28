@@ -14,6 +14,7 @@
 # Factory: subfield.
 
 from .SolutionSubfield import SolutionSubfield
+from spatialdata.units.ElasticityScales import ElasticityScales
 
 
 class SubfieldPressureDot(SolutionSubfield):
@@ -49,7 +50,9 @@ class SubfieldPressureDot(SolutionSubfield):
         from pylith.topology.Field import Field
 
         self.vectorFieldType = Field.SCALAR
-        self.scale = scales.getPressureScale() / scales.getTimeScale()
+        self.scale = (
+            ElasticityScales.getFluidPressureScale(scales) / scales.getTimeScale()
+        )
         self._setComponents(spaceDim)
 
     def _configure(self):

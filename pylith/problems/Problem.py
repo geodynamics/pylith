@@ -98,9 +98,9 @@ class Problem(PetscComponent, ModuleProblem):
     from spatialdata.units.QuasistaticElasticity import QuasistaticElasticity
 
     scales = pythia.pyre.inventory.facility(
-        "scales", family="nondimensional", factory=QuasistaticElasticity
+        "scales", family="scales", factory=QuasistaticElasticity
     )
-    scales.meta["tip"] = "Nondimensionalizer for problem."
+    scales.meta["tip"] = "Scales for nondimensionalizing boundary value problem."
 
     from pylith.materials.Homogeneous import Homogeneous
 
@@ -244,8 +244,7 @@ class Problem(PetscComponent, ModuleProblem):
             "    Length scale: {}".format(self.scales.getLengthScale()),
             "    Displacement scale: {}".format(self.scales.getDisplacementScale()),
             "    Time scale: {}".format(self.scales.getTimeScale()),
-            "    Pressure scale: {}".format(self.scales.getPressureScale()),
-            "    Fluid pressure scale: {}".format(self.scales.getFluidPressureScale()),
+            "    Rigidity scale: {}".format(self.scales.getRigidityScale()),
             "    Temperature scale: {}".format(self.scales.getTemperatureScale()),
         )
         self._info.log("\n".join(msg))

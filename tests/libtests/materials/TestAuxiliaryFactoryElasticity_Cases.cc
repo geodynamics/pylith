@@ -43,7 +43,7 @@ private:
 
     static const PylithReal LENGTH_SCALE;
     static const PylithReal TIME_SCALE;
-    static const PylithReal PRESSURE_SCALE;
+    static const PylithReal RIGIDITY_SCALE;
     static const PylithReal DENSITY_SCALE;
     static const PylithReal KM;
 
@@ -162,7 +162,7 @@ TEST_CASE("TestAuxiliaryFactoryElasticity::Hex::testSetValuesFromDB", "[TestAuxi
 
 const PylithReal pylith::materials::TestAuxiliaryFactoryElasticity_Cases::LENGTH_SCALE = 1.0;
 const PylithReal pylith::materials::TestAuxiliaryFactoryElasticity_Cases::TIME_SCALE = 2.0;
-const PylithReal pylith::materials::TestAuxiliaryFactoryElasticity_Cases::PRESSURE_SCALE = 2.0e+6;
+const PylithReal pylith::materials::TestAuxiliaryFactoryElasticity_Cases::RIGIDITY_SCALE = 2.0e+6;
 const PylithReal pylith::materials::TestAuxiliaryFactoryElasticity_Cases::KM = 1.0;
 
 // ------------------------------------------------------------------------------------------------
@@ -180,7 +180,7 @@ pylith::materials::TestAuxiliaryFactoryElasticity_Cases::Tri(void) {
     assert(data->scales);
     data->scales->setLengthScale(LENGTH_SCALE);
     data->scales->setTimeScale(TIME_SCALE);
-    data->scales->setPressureScale(PRESSURE_SCALE);
+    data->scales->setRigidityScale(RIGIDITY_SCALE);
 
     assert(data->auxiliaryDB);
     data->auxiliaryDB->addValue("density", density_2d, density_units());
@@ -213,7 +213,7 @@ pylith::materials::TestAuxiliaryFactoryElasticity_Cases::Hex(void) {
     assert(data->scales);
     data->scales->setLengthScale(LENGTH_SCALE);
     data->scales->setTimeScale(TIME_SCALE);
-    data->scales->setPressureScale(PRESSURE_SCALE);
+    data->scales->setRigidityScale(RIGIDITY_SCALE);
 
     assert(data->auxiliaryDB);
     data->auxiliaryDB->addValue("density", density_3d, density_units());

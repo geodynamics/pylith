@@ -175,14 +175,14 @@ contrib::friction::ViscousFriction::_nondimProperties(PylithScalar* const values
     // Scales object.
     const PylithScalar lengthScale = _scales->getLengthScale();
     const PylithScalar timeScale = _scales->getTimeScale();
-    const PylithScalar pressureScale = _scales->getPressureScale();
+    const PylithScalar rigidityScale = _scales->getRigidityScale();
     const PylithScalar velocityScale = lengthScale / timeScale;
 
     // Use the Scales::nondimensionalize() function to
     // nondimensionalize the quantities using the appropriate scale.
     values[p_v0] = _scales->nondimensionalize(values[p_v0], velocityScale);
     values[p_cohesion] =
-        _scales->nondimensionalize(values[p_cohesion], pressureScale);
+        _scales->nondimensionalize(values[p_cohesion], rigidityScale);
 } // _nondimProperties
 
 
@@ -200,14 +200,14 @@ contrib::friction::ViscousFriction::_dimProperties(PylithScalar* const values,
     // Scales object.
     const PylithScalar lengthScale = _scales->getLengthScale();
     const PylithScalar timeScale = _scales->getTimeScale();
-    const PylithScalar pressureScale = _scales->getPressureScale();
+    const PylithScalar rigidityScale = _scales->getRigidityScale();
     const PylithScalar velocityScale = lengthScale / timeScale;
 
     // Use the Scales::dimensionalize() function to
     // dimensionalize the quantities using the appropriate scale.
     values[p_v0] = _scales->dimensionalize(values[p_v0], velocityScale);
     values[p_cohesion] =
-        _scales->dimensionalize(values[p_cohesion], pressureScale);
+        _scales->dimensionalize(values[p_cohesion], rigidityScale);
 } // _dimProperties
 
 

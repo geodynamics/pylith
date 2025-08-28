@@ -29,6 +29,7 @@
 #include "pylith/utils/journals.hh" // pythia::journal
 
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
+#include "spatialdata/units/ElasticityScales.hh" // USES ElasticityScales
 
 // ------------------------------------------------------------------------------------------------
 // Constuctor.
@@ -160,12 +161,12 @@ pylith::TestLinearPoroelasticity_Data::TestLinearPoroelasticity_Data(void) :
     useAsciiMesh(true),
 
     jacobianConvergenceRate(1.0),
-    tolerance(1.0e-9),
+    tolerance(4.0e-9),
     isJacobianLinear(true),
     allowZeroResidual(false),
 
     t(0.0),
-    dt(0.05),
+    dt(0.0),
     formulation(pylith::problems::Physics::QUASISTATIC),
 
     numSolnSubfields(0),
@@ -176,6 +177,10 @@ pylith::TestLinearPoroelasticity_Data::TestLinearPoroelasticity_Data(void) :
     auxDiscretizations(NULL) {
     auxDB.setDescription("material auxiliary field spatial database");
     cs.setSpaceDim(spaceDim);
+
+    const double lengthScale = 8.0e+3;
+    spatialdata::units::ElasticityScales::setQuasistaticPoroelasticity(&scales, lengthScale);
+    dt = 0.05*scales.getTimeScale();
 } // constructor
 
 

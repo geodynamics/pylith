@@ -15,7 +15,9 @@
 #include "pylith/problems/TimeDependent.hh" // USES TimeDependent
 #include "pylith/topology/Field.hh" // USES pylith::topology::Field::Discretization
 #include "pylith/utils/journals.hh" // USES pythia::journal::debug_t
+#include "pylith/utils/constants.hh" // USES pylith::g_acc
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
+#include "spatialdata/units/ElasticityScales.hh" // USES ElasticityScales
 
 namespace pylith {
     class _Gravity2D;
@@ -25,11 +27,8 @@ namespace pylith {
 class pylith::_Gravity2D {
 private:
 
-    static const double LENGTH_SCALE;
-    static const double TIME_SCALE;
-    static const double PRESSURE_SCALE;
-    static const double GACC;
-    static const double YMAX;
+    static spatialdata::units::Scales scales;
+    static const double Y_MAX; // dimensioned
 
     // Density
     static double density(const double x,
@@ -68,7 +67,7 @@ private:
 
     static double setGravityAcc_y(const double x,
                                   const double y) {
-        return -GACC;
+        return -pylith::g_acc;
     } // setGravityAcc_y
 
     static const char* acc_units(void) {
@@ -80,21 +79,21 @@ private:
     // Displacement
     static double disp_x(const double x,
                          const double y) {
-        return 0.0 / LENGTH_SCALE;
+        return 0.0;
     } // disp_x
 
     static double disp_y(const double x,
                          const double y) {
-        return 0.0 / LENGTH_SCALE;
+        return 0.0;
     } // disp_y
 
     // Pressure
     static double pressure(const double x,
                            const double y) {
-        const double velocityScale = LENGTH_SCALE / TIME_SCALE;
-        const double accelerationScale = LENGTH_SCALE / (TIME_SCALE * TIME_SCALE);
-        const double densityScale = PRESSURE_SCALE / (velocityScale * velocityScale);
-        return density(x,y) / densityScale * GACC / (accelerationScale) * (YMAX/LENGTH_SCALE-y);
+        const double lengthScale = scales.getLengthScale();
+        const double bodyForceScale = spatialdata::units::ElasticityScales::getBodyForceScale(scales);
+
+        return density(x,y) * pylith::g_acc / bodyForceScale * (Y_MAX/lengthScale-y);
     } // pressure
 
     static PetscErrorCode solnkernel_disp(PetscInt spaceDim,
@@ -140,13 +139,11 @@ public:
 
         data->isJacobianLinear = true;
 
-        data->scales.setLengthScale(LENGTH_SCALE);
-        data->scales.setTimeScale(TIME_SCALE);
-        data->scales.setPressureScale(PRESSURE_SCALE);
+        scales = data->scales;
 
         delete data->gravityField;data->gravityField = new spatialdata::spatialdb::GravityField();
         data->gravityField->setGravityDir(0.0, -1.0, 0.0);
-        data->gravityField->setGravityAcc(GACC);
+        data->gravityField->setGravityAcc(pylith::g_acc);
 
         // solnDiscretizations set in derived class.
 
@@ -214,11 +211,8 @@ public:
     } // createData
 
 }; // TestIsotropicLinearIncompElasticity2D_Gravity
-const double pylith::_Gravity2D::LENGTH_SCALE = 1.0;
-const double pylith::_Gravity2D::TIME_SCALE = 2.0;
-const double pylith::_Gravity2D::PRESSURE_SCALE = 2.5e+6;
-const double pylith::_Gravity2D::GACC = 9.80665;
-const double pylith::_Gravity2D::YMAX = +4.0e+3;
+spatialdata::units::Scales pylith::_Gravity2D::scales;
+const double pylith::_Gravity2D::Y_MAX = +4.0e+3;
 
 // ------------------------------------------------------------------------------------------------
 pylith::TestIncompressibleElasticity_Data*

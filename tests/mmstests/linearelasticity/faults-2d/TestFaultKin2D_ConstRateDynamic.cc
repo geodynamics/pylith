@@ -60,7 +60,7 @@ class pylith::mmstests::TestFaultKin2D_ConstRateDynamic :
     static const double TIMESTAMP;
     static const double LENGTH_SCALE;
     static const double TIME_SCALE;
-    static const double PRESSURE_SCALE;
+    static const double RIGIDITY_SCALE;
     static const double DOMAIN_X;
 
     // Density
@@ -163,7 +163,7 @@ class pylith::mmstests::TestFaultKin2D_ConstRateDynamic :
 
     static double faulttraction_y(const double x,
                                   const double y) {
-        const double shearModulusN = density(x,y) * pow(vs(x,y), 2) / PRESSURE_SCALE;
+        const double shearModulusN = density(x,y) * pow(vs(x,y), 2) / RIGIDITY_SCALE;
 
         return shearModulusN * (VELOCITY - 0.5*SLIPRATE) * TIMESTAMP / (0.5*DOMAIN_X);
     } // faulttraction_y
@@ -263,7 +263,7 @@ protected:
         CPPUNIT_ASSERT(_data->scales);
         _data->scales->setLengthScale(LENGTH_SCALE);
         _data->scales->setTimeScale(TIME_SCALE);
-        _data->scales->setPressureScale(2.25e+10);
+        _data->scales->setRigidityScale(2.25e+10);
 
         _data->startTime = 0.0;
         _data->endTime = 2.0*TIMESTAMP;
@@ -405,7 +405,7 @@ const double pylith::mmstests::TestFaultKin2D_ConstRateDynamic::SLIPRATE = 1.5;
 const double pylith::mmstests::TestFaultKin2D_ConstRateDynamic::VELOCITY = 4.0;
 const double pylith::mmstests::TestFaultKin2D_ConstRateDynamic::TIMESTAMP = 10.0;
 const double pylith::mmstests::TestFaultKin2D_ConstRateDynamic::LENGTH_SCALE = 1000.0;
-const double pylith::mmstests::TestFaultKin2D_ConstRateDynamic::PRESSURE_SCALE = 2.5e+10;
+const double pylith::mmstests::TestFaultKin2D_ConstRateDynamic::RIGIDITY_SCALE = 2.5e+10;
 const double pylith::mmstests::TestFaultKin2D_ConstRateDynamic::TIME_SCALE = 2.0;
 const double pylith::mmstests::TestFaultKin2D_ConstRateDynamic::DOMAIN_X = 8000.0;
 #else
@@ -413,7 +413,7 @@ const double pylith::mmstests::TestFaultKin2D_ConstRateDynamic::SLIPRATE = 3.0;
 const double pylith::mmstests::TestFaultKin2D_ConstRateDynamic::VELOCITY = 1.5;
 const double pylith::mmstests::TestFaultKin2D_ConstRateDynamic::TIMESTAMP = 10.0;
 const double pylith::mmstests::TestFaultKin2D_ConstRateDynamic::LENGTH_SCALE = 1.0;
-const double pylith::mmstests::TestFaultKin2D_ConstRateDynamic::PRESSURE_SCALE = 2.0e+6;
+const double pylith::mmstests::TestFaultKin2D_ConstRateDynamic::RIGIDITY_SCALE = 2.0e+6;
 const double pylith::mmstests::TestFaultKin2D_ConstRateDynamic::TIME_SCALE = 2.0;
 const double pylith::mmstests::TestFaultKin2D_ConstRateDynamic::DOMAIN_X = 8000.0;
 

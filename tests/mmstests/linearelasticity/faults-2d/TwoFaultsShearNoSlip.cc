@@ -135,10 +135,10 @@ class pylith::_TwoFaultsShearNoSlip {
 
     static double faulttraction_y(const double x,
                                   const double y) {
-        const double pressureScale = scales.getPressureScale();
+        const double rigidityScale = scales.getRigidityScale();
         const double mu = density(x, y) * vs(x, y) * vs(x, y);
 
-        return strain_xy() * 2.0 * mu / pressureScale;
+        return strain_xy() * 2.0 * mu / rigidityScale;
     } // faulttraction_y
 
     static
@@ -162,11 +162,11 @@ class pylith::_TwoFaultsShearNoSlip {
                             const PylithScalar constants[],
                             PylithScalar r0[]) {
         assert(r0);
-        const double pressureScale = scales.getPressureScale();
+        const double rigidityScale = scales.getRigidityScale();
         const double mu = density(x[0], x[1]) * vs(x[0], x[1]) * vs(x[0], x[1]);
 
         const PylithScalar tanDir[2] = {-n[1], n[0] };
-        const PylithScalar tractionShear = -strain_xy() * 2.0 * mu / pressureScale;
+        const PylithScalar tractionShear = -strain_xy() * 2.0 * mu / rigidityScale;
         const PylithScalar tractionNormal = 0.0;
         r0[0] += tractionShear*tanDir[0] + tractionNormal*n[0];
         r0[0] += tractionShear*tanDir[1] + tractionNormal*n[1];

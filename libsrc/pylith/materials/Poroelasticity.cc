@@ -219,12 +219,6 @@ pylith::materials::Poroelasticity::createAuxiliaryField(const pylith::topology::
 
     // :ATTENTION: The order for adding subfields must match the order of the auxiliary fields in the FE kernels.
 
-    // :ATTENTION: In quasi-static problems, the time scale is usually quite large
-    // (order of tens to hundreds of years), which means that the density scale is very large,
-    // and the acceleration scale is very small. Nevertheless, density times gravitational
-    // acceleration will have a scale of pressure divided by length and should be within a few orders
-    // of magnitude of 1.
-
     // ---------------------------------
     // Required Auxiliary
     auxiliaryFactory->addSolidDensity(); // 0 Rock Density
@@ -235,13 +229,13 @@ pylith::materials::Poroelasticity::createAuxiliaryField(const pylith::topology::
     // ---------------------------------
     // Optional Auxiliary
     if (_useBodyForce) {
-        auxiliaryFactory->addBodyForce(); // +1
+        auxiliaryFactory->addBodyForce();
     } // if
     if (_gravityField) {
-        auxiliaryFactory->addGravityField(_gravityField); // +1
+        auxiliaryFactory->addGravityField(_gravityField);
     } // if
     if (_useSourceDensity) {
-        auxiliaryFactory->addSourceDensity(); // +1
+        auxiliaryFactory->addSourceDensity();
     } // if
     _rheology->addAuxiliarySubfields();
 

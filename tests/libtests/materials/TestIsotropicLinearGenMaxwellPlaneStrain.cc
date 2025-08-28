@@ -101,7 +101,7 @@ pylith::materials::TestIsotropicLinearGenMaxwellPlaneStrain::test_auxiliaryField
     CPPUNIT_ASSERT(_mydata);
     CPPUNIT_ASSERT(_mydata->scales);
     const PylithReal lengthScale = _mydata->scales->getLengthScale();
-    const PylithReal pressureScale = _mydata->scales->getPressureScale();
+    const PylithReal rigidityScale = _mydata->scales->getRigidityScale();
     const PylithReal timeScale = _mydata->scales->getTimeScale();
     const PylithReal densityScale = spatialdata::units::ElasticityScales::getDensityScale(*_mydata->scales);
     const PylithReal accelerationScale = spatialdata::units::ElasticityScales::getAccelerationScale(*_mydata->scales);
@@ -130,7 +130,7 @@ pylith::materials::TestIsotropicLinearGenMaxwellPlaneStrain::test_auxiliaryField
         CPPUNIT_ASSERT_EQUAL(size_t(1), info.description.numComponents);
         CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::SCALAR, info.description.vectorFieldType);
-        CPPUNIT_ASSERT_EQUAL(pressureScale, info.description.scale);
+        CPPUNIT_ASSERT_EQUAL(rigidityScale, info.description.scale);
         CPPUNIT_ASSERT_EQUAL(1, info.fe.basisOrder);
         CPPUNIT_ASSERT_EQUAL(1, info.fe.quadOrder);
         CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
@@ -143,7 +143,7 @@ pylith::materials::TestIsotropicLinearGenMaxwellPlaneStrain::test_auxiliaryField
         CPPUNIT_ASSERT_EQUAL(size_t(1), info.description.numComponents);
         CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::SCALAR, info.description.vectorFieldType);
-        CPPUNIT_ASSERT_EQUAL(pressureScale, info.description.scale);
+        CPPUNIT_ASSERT_EQUAL(rigidityScale, info.description.scale);
         CPPUNIT_ASSERT_EQUAL(1, info.fe.basisOrder);
         CPPUNIT_ASSERT_EQUAL(1, info.fe.quadOrder);
         CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
@@ -234,7 +234,7 @@ pylith::materials::TestIsotropicLinearGenMaxwellPlaneStrain::test_auxiliaryField
         CPPUNIT_ASSERT_EQUAL(size_t(4), info.description.numComponents);
         CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::OTHER, info.description.vectorFieldType);
-        CPPUNIT_ASSERT_EQUAL(pressureScale, info.description.scale);
+        CPPUNIT_ASSERT_EQUAL(rigidityScale, info.description.scale);
         CPPUNIT_ASSERT_EQUAL(1, info.fe.basisOrder);
         CPPUNIT_ASSERT_EQUAL(1, info.fe.quadOrder);
         CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);

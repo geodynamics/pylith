@@ -85,11 +85,11 @@ class pylith::_Gravity3D {
                          const double y,
                          const double z) {
         const double lengthScale = scales.getLengthScale();
-        const double pressureScale = scales.getPressureScale();
+        const double rigidityScale = scales.getRigidityScale();
         const double bodyForceScale = spatialdata::units::ElasticityScales::getBodyForceScale(scales);
 
-        const double muN = density(x,y,z) * vs(x,y,z) * vs(x,y,z) / pressureScale;
-        const double lambdaN = density(x,y,z) * vp(x,y,z) * vp(x,y,z) / pressureScale - 2.0*muN;
+        const double muN = density(x,y,z) * vs(x,y,z) * vs(x,y,z) / rigidityScale;
+        const double lambdaN = density(x,y,z) * vp(x,y,z) * vp(x,y,z) / rigidityScale - 2.0*muN;
         const double zminN = Z_MIN / lengthScale;
         const double zmaxN = Z_MAX / lengthScale;
         const double bodyForceN = pylith::g_acc * density(x, y, z) / bodyForceScale;

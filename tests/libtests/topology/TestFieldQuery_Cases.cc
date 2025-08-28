@@ -123,7 +123,7 @@ pylith::topology::TestFieldQuery_Cases::_setData(TestFieldQuery_Data* data) {
     assert(data->scales);
     data->scales->setLengthScale(0.02);
     data->scales->setTimeScale(10.0);
-    data->scales->setPressureScale(1.0e+6);
+    data->scales->setRigidityScale(1.0e+6);
 
     data->numAuxSubfields = 2;
     static const char* auxSubfields[2] = { "displacement", "temperature" };

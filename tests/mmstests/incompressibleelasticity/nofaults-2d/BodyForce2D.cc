@@ -15,7 +15,9 @@
 #include "pylith/problems/TimeDependent.hh" // USES TimeDependent
 #include "pylith/topology/Field.hh" // USES pylith::topology::Field::Discretization
 #include "pylith/utils/journals.hh" // USES pythia::journal::debug_t
+
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
+#include "spatialdata/units/ElasticityScales.hh" // USES ElasticityScales
 
 namespace pylith {
     class _BodyForce2D;
@@ -25,11 +27,9 @@ namespace pylith {
 class pylith::_BodyForce2D {
 private:
 
-    static const double LENGTH_SCALE;
-    static const double TIME_SCALE;
-    static const double PRESSURE_SCALE;
-    static const double BODY_FORCE;
-    static const double XMAX;
+    static spatialdata::units::Scales scales;
+    static const double BODY_FORCE; // dimensioned
+    static const double X_MAX; // dimensioned
 
     // Density
     static double density(const double x,
@@ -80,23 +80,22 @@ private:
     // Displacement
     static double disp_x(const double x,
                          const double y) {
-        return 0.0 / LENGTH_SCALE;
+        return 0.0;
     } // disp_x
 
     static double disp_y(const double x,
                          const double y) {
-        return 0.0 / LENGTH_SCALE;
+        return 0.0;
     } // disp_y
 
     // Pressure
     static double pressure(const double x,
                            const double y) {
-        const double velocityScale = LENGTH_SCALE / TIME_SCALE;
-        const double densityScale = PRESSURE_SCALE / (velocityScale * velocityScale);
-        const double accelerationScale = LENGTH_SCALE / (TIME_SCALE * TIME_SCALE);
-        const double forceScale = densityScale * accelerationScale;
-        const double bodyforceN = BODY_FORCE / forceScale;
-        return -bodyforceN * (XMAX/LENGTH_SCALE - x);
+        const double lengthScale = scales.getLengthScale();
+        const double bodyForceScale = spatialdata::units::ElasticityScales::getBodyForceScale(scales);
+
+        const double bodyforceN = BODY_FORCE / bodyForceScale;
+        return -bodyforceN * (X_MAX/lengthScale - x);
     } // pressure
 
     static PetscErrorCode solnkernel_disp(PetscInt spaceDim,
@@ -142,9 +141,7 @@ public:
 
         data->isJacobianLinear = true;
 
-        data->scales.setLengthScale(LENGTH_SCALE);
-        data->scales.setTimeScale(TIME_SCALE);
-        data->scales.setPressureScale(PRESSURE_SCALE);
+        scales = data->scales;
 
         // solnDiscretizations set in derived class.
 
@@ -214,11 +211,9 @@ public:
     } // createData
 
 }; // TestIsotropicLinearIncompElasticity2D_BodyForce
-const double pylith::_BodyForce2D::LENGTH_SCALE = 1.0;
-const double pylith::_BodyForce2D::TIME_SCALE = 2.0;
-const double pylith::_BodyForce2D::PRESSURE_SCALE = 2.0e+6;
+spatialdata::units::Scales pylith::_BodyForce2D::scales;
 const double pylith::_BodyForce2D::BODY_FORCE = 20.0e+3;
-const double pylith::_BodyForce2D::XMAX = +4.0e+3;
+const double pylith::_BodyForce2D::X_MAX = +4.0e+3;
 
 // ------------------------------------------------------------------------------------------------
 pylith::TestIncompressibleElasticity_Data*

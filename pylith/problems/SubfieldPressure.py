@@ -9,6 +9,7 @@
 # =================================================================================================
 
 from .SolutionSubfield import SolutionSubfield
+from spatialdata.units.ElasticityScales import ElasticityScales
 
 
 class SubfieldPressure(SolutionSubfield):
@@ -41,7 +42,7 @@ class SubfieldPressure(SolutionSubfield):
         from pylith.topology.Field import Field
 
         self.vectorFieldType = Field.SCALAR
-        self.scale = scales.getPressureScale()
+        self.scale = ElasticityScales.getFluidPressureScale(scales)
         self._setComponents(spaceDim)
         return
 

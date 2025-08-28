@@ -42,7 +42,7 @@ namespace pylith {
 class pylith::_TwoBlocksStatic {
     static const double LENGTH_SCALE;
     static const double TIME_SCALE;
-    static const double PRESSURE_SCALE;
+    static const double RIGIDITY_SCALE;
     static const double AMPLITUDE; // nondimensional
     static const double X_FAULT; // nondimensional
 
@@ -191,7 +191,7 @@ public:
 
         data->scales.setLengthScale(LENGTH_SCALE);
         data->scales.setTimeScale(TIME_SCALE);
-        data->scales.setPressureScale(PRESSURE_SCALE);
+        data->scales.setRigidityScale(RIGIDITY_SCALE);
 
         // solnDiscretizations set in derived class.
 
@@ -314,7 +314,7 @@ public:
 }; // _TwoBlocksStatic
 const double pylith::_TwoBlocksStatic::LENGTH_SCALE = 1.0;
 const double pylith::_TwoBlocksStatic::TIME_SCALE = 2.0;
-const double pylith::_TwoBlocksStatic::PRESSURE_SCALE = 2.0e+6;
+const double pylith::_TwoBlocksStatic::RIGIDITY_SCALE = 2.0e+6;
 const double pylith::_TwoBlocksStatic::AMPLITUDE = 3.0;
 const double pylith::_TwoBlocksStatic::X_FAULT = +2.0e+3;
 

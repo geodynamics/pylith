@@ -186,7 +186,7 @@ protected:
         CPPUNIT_ASSERT(_mydata->scales);
         _mydata->scales->setLengthScale(1.0);
         _mydata->scales->setTimeScale(2.0);
-        _mydata->scales->setPressureScale(2.5e+6);
+        _mydata->scales->setRigidityScale(2.5e+6);
 
         delete _mydata->gravityField;_mydata->gravityField = new spatialdata::spatialdb::GravityField();
         _mydata->gravityField->setGravityDir(0.0, -1.0, 0.0);
@@ -251,7 +251,6 @@ protected:
 
 }; // TestIsotropicLinearElasticityPlaneStrain_GravityRefState
 const double pylith::materials::TestIsotropicLinearElasticityPlaneStrain_GravityRefState::SMALL = 0.1;
-const double pylith::materials::TestIsotropicLinearElasticityPlaneStrain_GravityRefState::GACC = 9.80665;
 const double pylith::materials::TestIsotropicLinearElasticityPlaneStrain_GravityRefState::YMAX = +4.0e+3;
 
 // ----------------------------------------------------------------------
@@ -492,6 +491,8 @@ CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearElasticity
 
 // ----------------------------------------------------------------------
 class pylith::materials::TestIsotropicLinearElasticityPlaneStrain_GravityRefState_QuadQ4 : public pylith::materials::TestIsotropicLinearElasticityPlaneStrain_GravityRefState { //
+                                                                                                                                                                                //
+                                                                                                                                                                                //
                                                                                                                                                                                 //
                                                                                                                                                                                 //
                                                                                                                                                                                 //

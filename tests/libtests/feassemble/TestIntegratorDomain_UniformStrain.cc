@@ -160,7 +160,7 @@ protected:
         CPPUNIT_ASSERT(_data->scales);
         _data->scales->setLengthScale(1.0);
         _data->scales->setTimeScale(2.0);
-        _data->scales->setPressureScale(2.5e+6);
+        _data->scales->setRigidityScale(2.5e+6);
 
         _data->t = 1.0;
         _data->dt = 0.05;

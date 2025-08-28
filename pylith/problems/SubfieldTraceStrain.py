@@ -9,6 +9,7 @@
 # =================================================================================================
 
 from .SolutionSubfield import SolutionSubfield
+from spatialdata.units.ElasticityScales import ElasticityScales
 
 
 class SubfieldTraceStrain(SolutionSubfield):
@@ -39,10 +40,9 @@ class SubfieldTraceStrain(SolutionSubfield):
     def initialize(self, scales, spaceDim):
         """Initialize subfield metadata."""
         from pylith.topology.Field import Field
-        from pythia.pyre.units.unit import one
 
         self.vectorFieldType = Field.SCALAR
-        self.scale = one
+        self.scale = ElasticityScales.getStrainScale(scales)
         self._setComponents(spaceDim)
         return
 

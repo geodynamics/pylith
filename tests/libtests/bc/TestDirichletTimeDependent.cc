@@ -23,7 +23,7 @@
 #include "pylith/topology/Stratum.hh" // USES Stratum
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 #include "pylith/problems/SolutionFactory.hh" // USES SolutionFactory
-#include "pylith/utils/constdefs.h" // USES PYLITH_MAXFLOAT
+#include "pylith/utils/constants.hh" // USES PYLITH_MAXFLOAT
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 

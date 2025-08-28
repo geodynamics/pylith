@@ -15,7 +15,7 @@
 pylith::faults::CohesiveImpulsesData::CohesiveImpulsesData(void) :
     meshFilename(0),
     setLengthScale(1.0),
-    setPressureScale(2.5e+6),
+    setRigidityScale(2.5e+6),
     setTimeScale(2.0),
     spaceDim(0),
     cellDim(0),
@@ -41,7 +41,7 @@ pylith::faults::CohesiveImpulsesData::CohesiveImpulsesData(void) :
     constraintEdges(0),
     numConstraintEdges(0) { // constructor
     const PylithScalar velScale = lengthScale / timeScale;
-    densityScale = pressureScale / (velScale*velScale);
+    densityScale = rigidityScale / (velScale*velScale);
 } // constructor
 
 

@@ -68,7 +68,7 @@ pylith::materials::TestAuxiliaryFactoryLinearElastic::TestAuxiliaryFactoryLinear
         componentNames,
         componentNames.size(),
         pylith::topology::Field::SCALAR,
-        _data->scales->getPressureScale(),
+        _data->scales->getRigidityScale(),
         0.0,
         pylith::topology::FieldQuery::validatorNonnegative
         );
@@ -87,7 +87,7 @@ pylith::materials::TestAuxiliaryFactoryLinearElastic::TestAuxiliaryFactoryLinear
         componentNames,
         componentNames.size(),
         pylith::topology::Field::SCALAR,
-        _data->scales->getPressureScale(),
+        _data->scales->getRigidityScale(),
         0.0,
         pylith::topology::FieldQuery::validatorPositive
         );
@@ -111,7 +111,7 @@ pylith::materials::TestAuxiliaryFactoryLinearElastic::TestAuxiliaryFactoryLinear
         componentNames,
         componentNames.size(),
         pylith::topology::Field::TENSOR,
-        _data->scales->getPressureScale()
+        _data->scales->getRigidityScale()
         );
     info.fe = pylith::topology::Field::Discretization(
         2, 2, _data->auxDim, _data->auxDim, false, pylith::topology::Field::DEFAULT_BASIS, pylith::topology::Field::POLYNOMIAL_SPACE, false

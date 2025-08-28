@@ -198,16 +198,16 @@ contrib::materials::PlaneStrainState::_nondimProperties(PylithScalar* const valu
     // Get scales needed to nondimensional parameters from the
     // Scales object.
     const PylithScalar densityScale = _scales->getDensityScale();
-    const PylithScalar pressureScale = _scales->getPressureScale();
+    const PylithScalar rigidityScale = _scales->getRigidityScale();
 
     // Use the Scales::nondimensionalize() function to
     // nondimensionalize the quantities using the appropriate scale.
     values[p_density] =
         _scales->nondimensionalize(values[p_density], densityScale);
     values[p_mu] =
-        _scales->nondimensionalize(values[p_mu], pressureScale);
+        _scales->nondimensionalize(values[p_mu], rigidityScale);
     values[p_lambda] =
-        _scales->nondimensionalize(values[p_lambda], pressureScale);
+        _scales->nondimensionalize(values[p_lambda], rigidityScale);
 } // _nondimProperties
 
 
@@ -224,16 +224,16 @@ contrib::materials::PlaneStrainState::_dimProperties(PylithScalar* const values,
     // Get scales needed to dimensional parameters from the
     // Scales object.
     const PylithScalar densityScale = _scales->getDensityScale();
-    const PylithScalar pressureScale = _scales->getPressureScale();
+    const PylithScalar rigidityScale = _scales->getRigidityScale();
 
     // Use the Scales::dimensionalize() function to
     // dimensionalize the quantities using the appropriate scale.
     values[p_density] =
         _scales->dimensionalize(values[p_density], densityScale);
     values[p_mu] =
-        _scales->dimensionalize(values[p_mu], pressureScale);
+        _scales->dimensionalize(values[p_mu], rigidityScale);
     values[p_lambda] =
-        _scales->dimensionalize(values[p_lambda], pressureScale);
+        _scales->dimensionalize(values[p_lambda], rigidityScale);
 } // _dimProperties
 
 

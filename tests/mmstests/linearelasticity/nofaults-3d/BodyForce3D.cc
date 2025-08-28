@@ -92,11 +92,11 @@ class pylith::_BodyForce3D {
                          const double y,
                          const double z) {
         const double lengthScale = scales.getLengthScale();
-        const double pressureScale = scales.getPressureScale();
+        const double rigidityScale = scales.getRigidityScale();
         const double bodyForceScale = spatialdata::units::ElasticityScales::getBodyForceScale(scales);
         const double bodyforceN = BODY_FORCE / bodyForceScale;
-        const double muN = density(x,y,z) * vs(x,y,z) * vs(x,y,z) / pressureScale;
-        const double lambdaN = density(x,y,z) * vp(x,y,z) * vp(x,y,z) / pressureScale - 2.0*muN;
+        const double muN = density(x,y,z) * vs(x,y,z) * vs(x,y,z) / rigidityScale;
+        const double lambdaN = density(x,y,z) * vp(x,y,z) * vp(x,y,z) / rigidityScale - 2.0*muN;
         const double xp = x - X_MAX / lengthScale;
         return -0.5 * bodyforceN / (lambdaN + 2.0*muN) * (xp*xp);
     } // disp_x

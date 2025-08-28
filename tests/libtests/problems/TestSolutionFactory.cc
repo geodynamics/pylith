@@ -37,7 +37,7 @@ pylith::problems::TestSolutionFactory::TestSolutionFactory(TestSolutionFactory_D
     assert(_data->scales);
     _data->scales->setLengthScale(1.0);
     _data->scales->setTimeScale(2.0);
-    _data->scales->setPressureScale(2.25e+6);
+    _data->scales->setRigidityScale(2.25e+6);
 
     pylith::topology::Field::SubfieldInfo info;
     pylith::string_vector componentNames;
@@ -91,7 +91,7 @@ pylith::problems::TestSolutionFactory::TestSolutionFactory(TestSolutionFactory_D
         componentNames,
         componentNames.size(),
         pylith::topology::Field::SCALAR,
-        _data->scales->getPressureScale()
+        _data->scales->getRigidityScale()
         );
     info.fe = pylith::topology::Field::Discretization(
         2, 2, -1, -1, false, pylith::topology::Field::DEFAULT_BASIS, pylith::topology::Field::POLYNOMIAL_SPACE, true
@@ -127,7 +127,7 @@ pylith::problems::TestSolutionFactory::TestSolutionFactory(TestSolutionFactory_D
         componentNames,
         componentNames.size(),
         pylith::topology::Field::VECTOR,
-        _data->scales->getPressureScale()
+        _data->scales->getRigidityScale()
         );
     info.fe = pylith::topology::Field::Discretization(
         2, 2, -1, -1, true, pylith::topology::Field::DEFAULT_BASIS, pylith::topology::Field::POLYNOMIAL_SPACE, true

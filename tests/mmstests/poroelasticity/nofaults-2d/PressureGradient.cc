@@ -15,18 +15,17 @@
 #include "pylith/problems/TimeDependent.hh" // USES TimeDependent
 #include "pylith/topology/Field.hh" // USES pylith::topology::Field::Discretization
 
+#include "spatialdata/units/ElasticityScales.hh" // USES ElasticityScales
+
 namespace pylith {
     class _PressureGradient;
 } // pylith
 
 // ------------------------------------------------------------------------------------------------
 class pylith::_PressureGradient {
-    static const double LENGTH_SCALE;
-    static const double TIME_SCALE;
-    static const double PRESSURE_SCALE;
-
-    static const double PRESSURE0; // dimensional
-    static const double XMAX; // dimensional
+    static spatialdata::units::Scales scales;
+    static const double PRESSURE; // dimensional
+    static const double X_MAX; // dimensional
 
     // Density
     static double solid_density(const double x,
@@ -92,7 +91,7 @@ class pylith::_PressureGradient {
     // Fluid modulus
     static double fluid_bulk_modulus(const double x,
                                      const double y) {
-        return 1.0e+10;
+        return 2.0e+9;
     } // fluid_bulk_modulus
 
     // Permeability
@@ -110,10 +109,14 @@ class pylith::_PressureGradient {
     // Displacement
     static double disp_x(const double x,
                          const double y) {
-        const double muN = shear_modulus(x, y) / PRESSURE_SCALE;
-        const double lambdaN = drained_bulk_modulus(x, y) / PRESSURE_SCALE - 2.0/3.0 * muN;
+        const PylithReal lengthScale = scales.getLengthScale();
+        const PylithReal rigidityScale = scales.getRigidityScale();
+        const PylithReal fluidPressureScale = spatialdata::units::ElasticityScales::getFluidPressureScale(scales);
+
+        const double muN = shear_modulus(x, y) / rigidityScale;
+        const double lambdaN = drained_bulk_modulus(x, y) / rigidityScale - 2.0/3.0 * muN;
         const double alpha = biot_coefficient(x, y);
-        return -0.5 * alpha  * (PRESSURE0 / PRESSURE_SCALE) / (lambdaN + 2.0*muN) * (x*x / (XMAX / LENGTH_SCALE));
+        return -0.5 * alpha  * (PRESSURE / fluidPressureScale) / (lambdaN + 2.0*muN) * (x*x / (X_MAX / lengthScale));
     } // disp_x
 
     static double disp_y(const double x,
@@ -124,16 +127,23 @@ class pylith::_PressureGradient {
     // Pressure
     static double fluid_pressure(const double x,
                                  const double y) {
-        return (PRESSURE0 / PRESSURE_SCALE) * (1.0 - x / (XMAX / LENGTH_SCALE));
+        const PylithReal lengthScale = scales.getLengthScale();
+        const PylithReal fluidPressureScale = spatialdata::units::ElasticityScales::getFluidPressureScale(scales);
+
+        return (PRESSURE / fluidPressureScale) * (1.0 - x / (X_MAX / lengthScale));
     } // fluid_pressure
 
     // Trace strain
     static double trace_strain(const double x,
                                const double y) {
-        const double muN = shear_modulus(x, y) / PRESSURE_SCALE;
-        const double lambdaN = drained_bulk_modulus(x, y) / PRESSURE_SCALE - 2.0/3.0 * muN;
+        const PylithReal lengthScale = scales.getLengthScale();
+        const PylithReal rigidityScale = scales.getRigidityScale();
+        const PylithReal fluidPressureScale = spatialdata::units::ElasticityScales::getFluidPressureScale(scales);
+
+        const double muN = shear_modulus(x, y) / rigidityScale;
+        const double lambdaN = drained_bulk_modulus(x, y) / rigidityScale - 2.0/3.0 * muN;
         const double alpha = biot_coefficient(x, y);
-        return -alpha  * (PRESSURE0 / PRESSURE_SCALE)  / (lambdaN + 2.0*muN) * (x / (XMAX / LENGTH_SCALE));
+        return -alpha  * (PRESSURE / fluidPressureScale)  / (lambdaN + 2.0*muN) * (x / (X_MAX / lengthScale));
     } // trace_strain
 
     static PetscErrorCode solnkernel_disp(PetscInt spaceDim,
@@ -182,12 +192,12 @@ class pylith::_PressureGradient {
         return 0;
     } // solnkernel_trace_strain
 
-    static PetscErrorCode solnkernel_vel(PetscInt spaceDim,
-                                         PetscReal t,
-                                         const PetscReal x[],
-                                         PetscInt numComponents,
-                                         PetscScalar* s,
-                                         void* context) {
+    static PetscErrorCode solnkernel_velocity(PetscInt spaceDim,
+                                              PetscReal t,
+                                              const PetscReal x[],
+                                              PetscInt numComponents,
+                                              PetscScalar* s,
+                                              void* context) {
         assert(2 == spaceDim);
         assert(2 == numComponents);
         assert(s);
@@ -196,7 +206,7 @@ class pylith::_PressureGradient {
         s[1] = 0.0;
 
         return 0;
-    } // solnkernel_vel
+    } // solnkernel_velocity
 
     static PetscErrorCode solnkernel_fluid_pressure_dot(PetscInt spaceDim,
                                                         PetscReal t,
@@ -240,9 +250,7 @@ public:
         data->meshFilename = ":UNKNOWN:"; // Set in child class.
         data->boundaryLabel = "boundary";
 
-        data->scales.setLengthScale(LENGTH_SCALE);
-        data->scales.setTimeScale(TIME_SCALE);
-        data->scales.setPressureScale(PRESSURE_SCALE);
+        scales = data->scales;
 
         // solnDiscretizations set in derived class.
 
@@ -371,7 +379,7 @@ public:
             solnkernel_disp,
             solnkernel_fluid_pressure,
             solnkernel_trace_strain,
-            solnkernel_vel,
+            solnkernel_velocity,
             solnkernel_fluid_pressure_dot,
             solnkernel_trace_strain_dot,
         };
@@ -381,12 +389,9 @@ public:
     } // createDataStateVars
 
 }; // PressureGradient
-const double pylith::_PressureGradient::LENGTH_SCALE = 1.0;
-const double pylith::_PressureGradient::TIME_SCALE = 2.0;
-const double pylith::_PressureGradient::PRESSURE_SCALE = 2.0e+6;
-
-const double pylith::_PressureGradient::PRESSURE0 = 4.0e+6;
-const double pylith::_PressureGradient::XMAX = 8.0e+3;
+spatialdata::units::Scales pylith::_PressureGradient::scales;
+const double pylith::_PressureGradient::PRESSURE = 4.0e+6;
+const double pylith::_PressureGradient::X_MAX = 8.0e+3;
 
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearPoroelasticity_Data*

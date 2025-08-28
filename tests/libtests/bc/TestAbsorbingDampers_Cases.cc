@@ -98,7 +98,7 @@ protected:
                 CPPUNIT_ASSERT(_data->scales);
                 _data->scales->setLengthScale(1.0);
                 _data->scales->setTimeScale(10.0);
-                _data->scales->setPressureScale(2.0e+6);
+                _data->scales->setRigidityScale(2.0e+6);
 
                 _data->field = "velocity";
                 _data->vectorFieldType = pylith::topology::Field::VECTOR;

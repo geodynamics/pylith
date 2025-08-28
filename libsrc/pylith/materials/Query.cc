@@ -491,8 +491,8 @@ pylith::materials::_Query::inputToBiotModulus(PylithScalar valueSubfield[],
     const PylithScalar biot_coefficient = dbValues[dbIndices[i_biot_coefficient]];
     const PylithScalar porosity = dbValues[dbIndices[i_porosity]];
 
-    const PylithScalar solid_bulk_modulus = drained_bulk_modulus / (1.0 - biot_coefficient);
-    PylithScalar biot_modulus = 1.0 / ( porosity / fluid_bulk_modulus + (biot_coefficient - porosity) / solid_bulk_modulus );
+    const PylithScalar solid_bulk_modulus = (biot_coefficient < 1.0) ? drained_bulk_modulus / (1.0 - biot_coefficient) : pylith::max_real;
+    PylithScalar biot_modulus = fluid_bulk_modulus / ( porosity + (biot_coefficient - porosity) *  fluid_bulk_modulus / solid_bulk_modulus);
     valueSubfield[0] = biot_modulus;
 
     std::ostringstream msg;
@@ -505,7 +505,7 @@ pylith::materials::_Query::inputToBiotModulus(PylithScalar valueSubfield[],
 
     // Debug
     if (biot_modulus <= 0) {
-        msg << "biot modulus (" << biot_modulus << ") wrong. K_f: " << fluid_bulk_modulus << " Ksg: " << solid_bulk_modulus << " phi: " << porosity << " alpha: " << biot_coefficient;
+        msg << "Found negative Biot modulus (" << biot_modulus << "). K_f: " << fluid_bulk_modulus << " Ksg: " << solid_bulk_modulus << " phi: " << porosity << " alpha: " << biot_coefficient;
     } // if
 
     PYLITH_METHOD_RETURN(msg.str());

@@ -24,10 +24,6 @@ namespace pylith {
 class pylith::_UniformShear2D {
 private:
 
-    static const double LENGTH_SCALE;
-    static const double TIME_SCALE;
-    static const double PRESSURE_SCALE;
-
     // Density
     static double density(const double x,
                           const double y) {
@@ -132,10 +128,6 @@ public:
         data->isJacobianLinear = true;
         data->jacobianConvergenceRate = 1.0;
 
-        data->scales.setLengthScale(LENGTH_SCALE);
-        data->scales.setTimeScale(TIME_SCALE);
-        data->scales.setPressureScale(PRESSURE_SCALE);
-
         // solnDiscretizations set in derived class.
 
         data->numAuxSubfields = 3;
@@ -197,9 +189,6 @@ public:
     } // createData
 
 }; // TestIsotropicLinearIncompElasticity2D_UniformShear
-const double pylith::_UniformShear2D::LENGTH_SCALE = 1.0;
-const double pylith::_UniformShear2D::TIME_SCALE = 2.0;
-const double pylith::_UniformShear2D::PRESSURE_SCALE = 2.0e+6;
 
 // ------------------------------------------------------------------------------------------------
 pylith::TestIncompressibleElasticity_Data*

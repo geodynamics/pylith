@@ -569,7 +569,7 @@ protected:
         CPPUNIT_ASSERT(_mydata->scales);
         _mydata->scales->setLengthScale(1.0);
         _mydata->scales->setTimeScale(2.0e+7);
-        _mydata->scales->setPressureScale(2.5e+6);
+        _mydata->scales->setRigidityScale(2.5e+6);
 
         _mydata->t = constants.t/_mydata->scales->getTimeScale();
         _mydata->dt = constants.dt/_mydata->scales->getTimeScale();
