@@ -143,7 +143,7 @@ pylith::problems::SolutionFactory::addPressureDot(const pylith::topology::Field:
     description.numComponents = 1;
     description.componentNames.resize(1);
     description.componentNames[0] = componentNames[0];
-    description.scale = _scales.getPressureScale() / _scales.getTimeScale();
+    description.scale = _scales.getRigidityScale() / _scales.getTimeScale();
     description.validator = NULL;
 
     _solution.subfieldAdd(description, discretization);

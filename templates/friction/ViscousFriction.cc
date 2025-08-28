@@ -18,7 +18,7 @@
 #include "pylith/materials/Metadata.hh" // USES Metadata
 
 #include "pylith/utils/array.hh" // USES scaary_array
-#include "pylith/utils/constdefs.h" // USES PYLITH_MAXSCALAR
+#include "pylith/utils/constants.hh" // USES PYLITH_MAXSCALAR
 
 #include "spatialdata/units/Scales.hh" // USES Scales
 

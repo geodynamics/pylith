@@ -17,7 +17,7 @@
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END, PYLITH_ERROR_RETURN
 #include "pylith/utils/array.hh" // USES scalar_array, int_array
 #include "pylith/utils/types.hh" // USES PylithScalar
-#include "pylith/utils/constdefs.h" // USES PYLITH_MAXSCALAR
+#include "pylith/utils/constants.hh" // USES pylith::max_real
 
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 
@@ -341,13 +341,13 @@ pylith::materials::_Query::vmToGeneralizedMaxwellTimes(PylithScalar valueSubfiel
     const PylithScalar shearModulus = density * vs * vs;
 
     const PylithScalar shearModulus1 = shearModulusRatio1 * shearModulus;
-    valueSubfield[0] = (shearModulus1 > 0.0) ? viscosity1 / shearModulus1 : PYLITH_MAXSCALAR;
+    valueSubfield[0] = (shearModulus1 > 0.0) ? viscosity1 / shearModulus1 : pylith::max_real;
 
     const PylithReal shearModulus2 = shearModulusRatio2 * shearModulus;
-    valueSubfield[1] = (shearModulus2 > 0.0) ? viscosity2 / shearModulus2 : PYLITH_MAXSCALAR;
+    valueSubfield[1] = (shearModulus2 > 0.0) ? viscosity2 / shearModulus2 : pylith::max_real;
 
     const PylithReal shearModulus3 = shearModulusRatio3 * shearModulus;
-    valueSubfield[2] = (shearModulus3 > 0.0) ? viscosity3 / shearModulus3 : PYLITH_MAXSCALAR;
+    valueSubfield[2] = (shearModulus3 > 0.0) ? viscosity3 / shearModulus3 : pylith::max_real;
 
     std::ostringstream msg;
     if (density <= 0) {

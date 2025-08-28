@@ -26,7 +26,7 @@ subpkginclude_HEADERS = \
 	array.hh \
 	mpi.hh \
 	arrayfwd.hh \
-	constdefs.h \
+	constants.hh \
 	lapack.h \
 	macrodefs.h \
 	petscfwd.h \

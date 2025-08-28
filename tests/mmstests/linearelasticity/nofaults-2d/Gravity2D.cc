@@ -15,6 +15,7 @@
 #include "pylith/problems/TimeDependent.hh" // USES TimeDependent
 #include "pylith/topology/Field.hh" // USES pylith::topology::Field::Discretization
 #include "pylith/utils/journals.hh" // USES pythia::journal::debug_t
+#include "pylith/utils/constants.hh" // USES pylith::g_acc
 
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 #include "spatialdata/units/ElasticityScales.hh" // USES ElasticityScales
@@ -27,7 +28,6 @@ class pylith::_Gravity2D {
 private:
 
     static spatialdata::units::Scales scales;
-    static const double G_ACC;
     static const double Y_MIN;
     static const double Y_MAX;
 
@@ -68,7 +68,7 @@ private:
 
     static double setGravityAcc_y(const double x,
                                   const double y) {
-        return -G_ACC;
+        return -pylith::g_acc;
     } // setGravityAcc_y
 
     static const char* acc_units(void) {
@@ -93,7 +93,7 @@ private:
         const double lambdaN = density(x,y) * vp(x,y) * vp(x,y) / pressureScale - 2.0*muN;
         const double yMinN = Y_MIN / lengthScale;
         const double yMaxN = Y_MAX / lengthScale;
-        const double bodyForceN = G_ACC * density(x, y) / bodyForceScale;
+        const double bodyForceN = pylith::g_acc * density(x, y) / bodyForceScale;
         return bodyForceN / (lambdaN + 2.0*muN) * (0.5*(y*y-yMinN*yMinN) - yMaxN*(y-yMinN));
     } // disp_y
 
@@ -131,7 +131,7 @@ public:
 
         delete data->gravityField;data->gravityField = new spatialdata::spatialdb::GravityField();
         data->gravityField->setGravityDir(0.0, -1.0, 0.0);
-        data->gravityField->setGravityAcc(G_ACC);
+        data->gravityField->setGravityAcc(pylith::g_acc);
 
         // solnDiscretizations set in derived class.
 
@@ -187,7 +187,6 @@ public:
 
 }; // _Gravity2D
 spatialdata::units::Scales pylith::_Gravity2D::scales;
-const double pylith::_Gravity2D::G_ACC = 9.80665;
 const double pylith::_Gravity2D::Y_MIN = -4.0e+3;
 const double pylith::_Gravity2D::Y_MAX = +4.0e+3;
 

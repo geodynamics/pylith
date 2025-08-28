@@ -15,6 +15,7 @@
 #include "pylith/problems/TimeDependent.hh" // USES TimeDependent
 #include "pylith/topology/Field.hh" // USES pylith::topology::Field::Discretization
 #include "pylith/utils/journals.hh" // USES pythia::journal::debug_t
+#include "pylith/utils/constants.hh" // USES pylith::g_acc
 
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 
@@ -25,7 +26,6 @@ namespace pylith {
 // ------------------------------------------------------------------------------------------------
 class pylith::_GravityRefState3D {
     /// Spatial database user functions for auxiiliary subfields (includes derived fields).
-    static const double G_ACC;
     static const double Z_MAX;
 
     // Density
@@ -64,7 +64,7 @@ class pylith::_GravityRefState3D {
     static double referenceMeanStress(const double x,
                                       const double y,
                                       const double z) {
-        return density(x,y,z) * G_ACC * (z-Z_MAX);
+        return density(x,y,z) * pylith::g_acc * (z-Z_MAX);
     } // referenceMeanStress
 
     static double referenceShearStress(const double x,
@@ -141,7 +141,7 @@ public:
 
         delete data->gravityField;data->gravityField = new spatialdata::spatialdb::GravityField();
         data->gravityField->setGravityDir(0.0, 0.0, -1.0);
-        data->gravityField->setGravityAcc(G_ACC);
+        data->gravityField->setGravityAcc(pylith::g_acc);
 
         // solnDiscretizations set in derived class.
 
@@ -212,7 +212,6 @@ public:
     } // createData
 
 }; // GravityRefState3D
-const double pylith::_GravityRefState3D::G_ACC = 9.80665;
 const double pylith::_GravityRefState3D::Z_MAX = +4.0e+3;
 
 // ------------------------------------------------------------------------------------------------

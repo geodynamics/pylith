@@ -11,12 +11,17 @@
 
 #include "pylith/utils/types.hh" // HASA PylithScalar
 
+#include <limits>
+
 namespace pylith {
-    static const double PYLITH_MAXDOUBLE = 1.0e+99;
-    static const float PYLITH_MAXFLOAT = 1.0e+30;
-    static const PylithInt PYLITH_MAXINT = PETSC_MAX_INT;
-    static const PylithInt PYLITH_MININT = PETSC_MIN_INT;
-    static const PylithScalar PYLITH_MAXSCALAR = (sizeof(PylithScalar) == sizeof(double)) ? PYLITH_MAXDOUBLE : PYLITH_MAXFLOAT;
+    static const double g_acc = 9.80665;
+
+    static const double max_double = std::numeric_limits<double>::max();
+    static const float max_float = std::numeric_limits<float>::max();
+    static const PylithInt max_int = PETSC_MAX_INT;
+    static const PylithInt min_int = PETSC_MIN_INT;
+    static const PylithReal max_real = (sizeof(PylithReal) == sizeof(double)) ? max_double : max_float;
+
 }
 
 // End of file

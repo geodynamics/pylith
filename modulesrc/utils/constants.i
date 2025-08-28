@@ -9,42 +9,39 @@
 // =================================================================================================
 
 /**
- * @file modulesrc/utils/constdefs.i
+ * @file modulesrc/utils/constants.i
  *
  * @brief PyLith constants.
  */
 
 // ----------------------------------------------------------------------
-// PYLITH_MAXDOUBLE
+// pylith::g_acc
 %inline %{
   double
-  maxdouble(void)
-  { // maxdouble
-    return pylith::PYLITH_MAXDOUBLE;
-  } // maxdouble
-%} // inline
+  g_acc(void) {
+    return pylith::g_acc;
+  }
+%}
 
 
 // ----------------------------------------------------------------------
-// PYLITH_MAXFLOAT
+// pylith::max_double
+%inline %{
+  double
+  max_double(void) {
+    return pylith::max_double;
+  }
+%}
+
+
+// ----------------------------------------------------------------------
+// pylith::max_float
 %inline %{
   float
-  maxfloat(void)
-  { // maxfloat
-    return pylith::PYLITH_MAXFLOAT;
-  } // maxfloat
-%} // inline
-
-
-// ----------------------------------------------------------------------
-// PYLITH_MAXSCALAR
-%inline %{
-  double
-  maxscalar(void)
-  { // maxscalar
-    return pylith::PYLITH_MAXSCALAR;
-  } // maxscalar
-%} // inline
+  max_float(void) {
+    return pylith::max_float;
+  }
+%}
 
 
 // End of file 

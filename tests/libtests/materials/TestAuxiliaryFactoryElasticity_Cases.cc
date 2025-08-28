@@ -13,6 +13,7 @@
 #include "TestAuxiliaryFactoryElasticity.hh" // Implementation of cases
 
 #include "pylith/materials/AuxiliaryFactoryElasticity.hh" // USES AuxiliaryFactoryElasticity
+#include "pylith/utils/constants.hh" // USES pylith::g_acc
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
@@ -113,7 +114,7 @@ private:
     static
     double gravity_field_2d_y(const double x,
                               const double y) {
-        return -9.80665;
+        return -pylith::g_acc;
     } // gravity_field_y
 
     static
@@ -134,7 +135,7 @@ private:
     double gravity_field_3d_z(const double x,
                               const double y,
                               const double z) {
-        return -9.80665;
+        return -pylith::g_acc;
     } // gravity_field_z
 
     static

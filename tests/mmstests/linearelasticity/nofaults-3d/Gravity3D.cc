@@ -15,6 +15,7 @@
 #include "pylith/problems/TimeDependent.hh" // USES TimeDependent
 #include "pylith/topology/Field.hh" // USES pylith::topology::Field::Discretization
 #include "pylith/utils/journals.hh" // USES pythia::journal::debug_t
+#include "pylith/utils/constants.hh" // USES pylith::g_acc
 
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 #include "spatialdata/units/ElasticityScales.hh" // USES ElasticityScales
@@ -26,11 +27,7 @@ namespace pylith {
 
 class pylith::_Gravity3D {
     static spatialdata::units::Scales scales;
-    static const double LENGTH_SCALE;
-    static const double TIME_SCALE;
-    static const double PRESSURE_SCALE;
     static const double BODY_FORCE;
-    static const double G_ACC;
     static const double Z_MIN;
     static const double Z_MAX;
 
@@ -95,7 +92,7 @@ class pylith::_Gravity3D {
         const double lambdaN = density(x,y,z) * vp(x,y,z) * vp(x,y,z) / pressureScale - 2.0*muN;
         const double zminN = Z_MIN / lengthScale;
         const double zmaxN = Z_MAX / lengthScale;
-        const double bodyForceN = G_ACC * density(x, y, z) / bodyForceScale;
+        const double bodyForceN = pylith::g_acc * density(x, y, z) / bodyForceScale;
         return bodyForceN / (lambdaN + 2.0*muN) * (0.5*(z*z-zminN*zminN) - zmaxN*(z-zminN));
     } // disp_z
 
@@ -135,7 +132,7 @@ public:
 
         delete data->gravityField;data->gravityField = new spatialdata::spatialdb::GravityField();
         data->gravityField->setGravityDir(0.0, 0.0, -1.0);
-        data->gravityField->setGravityAcc(G_ACC);
+        data->gravityField->setGravityAcc(pylith::g_acc);
 
         // solnDiscretizations set in derived class.
 
@@ -191,7 +188,6 @@ public:
 
 }; // Gravity3D
 spatialdata::units::Scales pylith::_Gravity3D::scales;
-const double pylith::_Gravity3D::G_ACC = 9.80665;
 const double pylith::_Gravity3D::Z_MIN = -4.0e+3;
 const double pylith::_Gravity3D::Z_MAX = +4.0e+3;
 

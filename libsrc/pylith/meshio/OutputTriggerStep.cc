@@ -12,7 +12,7 @@
 
 #include "pylith/meshio/OutputTriggerStep.hh" // Implementation of class methods
 
-#include "pylith/utils/constdefs.h" // USES PYLITH_MAXSCALAR
+#include "pylith/utils/constants.hh" // USES pylith::min_int
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
@@ -20,7 +20,7 @@
 // Constructor
 pylith::meshio::OutputTriggerStep::OutputTriggerStep(void) :
     _numStepsSkip(0),
-    _stepWrote(PYLITH_MININT+10) { // constructor
+    _stepWrote(pylith::min_int+10) { // constructor
     PyreComponent::setName("outputtriggerstep");
 } // constructor
 
