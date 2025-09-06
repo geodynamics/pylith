@@ -44,7 +44,7 @@ public:
     /** Function prototype for converter functions.
      *
      * @param[out] values Values for subfield.
-     * @param[in] nvalues Number of values for subfield.
+     * @param[in] numValues Number of values for subfield.
      * @param[in] Array of values from spatial database query.
      * @param[in] Indices of values from spatial database to use for computing subfield values.
      */
@@ -123,7 +123,7 @@ public:
      * @param[in] dim Spatial dimension.
      * @param[in] t Current time.
      * @param[in] x Coordinates (nondimensioned) of point location for query.
-     * @param[in] nvalues Size of values array.
+     * @param[in] numValues Size of values array.
      * @param[out] values Array of values to be returned.
      * @param[in] context Query context.
      * @returns PETSc error code (0 for success).
@@ -132,7 +132,7 @@ public:
     PetscErrorCode queryDBPointFn(PylithInt dim,
                                   PylithReal t,
                                   const PylithReal x[],
-                                  PylithInt nvalues,
+                                  PylithInt numValues,
                                   PylithScalar* values,
                                   void* context);
 
