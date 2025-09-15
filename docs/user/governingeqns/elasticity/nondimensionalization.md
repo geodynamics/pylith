@@ -1,4 +1,4 @@
-# Nondimensionalization of Elasticity Equation
+# Nondimensionalization
 
 Starting with the elasticity equation,
 %
@@ -74,7 +74,10 @@ Returning to the expression for $\rho_o$ and substituting in the expression for 
 ## Inertia
 
 The scale of the inertial term is $\Pi_\mathit{inertia} = \frac{\rho_o x_o^2}{\mu_o t_o^2}$.
-If the time scale equals the time it takes the shear wave ($v_o^2 = \frac{\mu_o}{\rho_o}$) to propagate over the length scale, then
+If this term is O(1), then we should include inertia and solve the dynamic form of the elasticity equation.
+If this term is very small, then we can neglect inertia and solve the quasistatic form of the elasticity equation.
+
+**If the time scale equals the time it takes the shear wave ($v_o^2 = \frac{\mu_o}{\rho_o}$) to propagate over the length scale**, then
 \begin{align}
 t_o &= \frac{x_o}{v_o}, \\
 t_o^2 &= \frac{x_o^2}{v_o^2}, \\
@@ -88,7 +91,7 @@ Substituting into the expression for $\Pi_\mathit{inertia}$, we have
 \end{align}
 In this case, the inertial term is important, and we have the dynamic case with propagating seismic waves.
 
-If the time scale is much larger than the time it takes the shear wave to propagate over the length scale, then
+**If the time scale is much larger than the time it takes the shear wave to propagate over the length scale**, then
 \begin{align}
 t_o &\gg \frac{x_o}{v_o}, \\
 t_o^2 &\gg \frac{x_o^2 \rho_o}{\mu_o}.
@@ -105,9 +108,10 @@ In this case, the inertial term is negligible, and we have quasistatic elasticit
 :::{note}
 In PyLith v4 and earlier, we used a displacement scale equal to the length scale.
 Using separate length and displacement scales facilitates accurately solving for displacements many orders of magnitude smaller than the length scale.
+It also separates the stress scale used to nondimensionalize stress, tractions, and fluid pressure from the rigidity scale.
 :::
 
-```{table} Nondimensionalization of elasticity
+```{table} Nondimensionalization of elasticity.
 :name: tab:elasticity:scales
 | **Quantity** | **Scale**          |
 | :---------: | :------------------ |
@@ -116,6 +120,6 @@ Using separate length and displacement scales facilitates accurately solving for
 | $\mu_o$     | Rigidity scale      |
 | $t_o$       | Time scale          |
 | $\sigma_o = \mu_o \frac{u_o}{x_o}$  | Stress scale        |
-| $f_o = \frac{\sigma_o}{x_o}$    | Density scale       |
+| $f_o = \frac{\sigma_o}{x_o}$    | Body force scale       |
 | $\rho_o = \mu_o \frac{t_o^2}{x_o^2}$    | Density scale       |
 ```
