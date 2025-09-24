@@ -5,48 +5,41 @@
 # Copyright (c) 2010-2025, University of California, Davis and the PyLith Development Team.
 # All rights reserved.
 #
-# See https://mit-license.org/ and LICENSE.md and for license information. 
+# See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
-# @file tests/fullscale/poroelasticty/terzaghi/meshes.py
-#
-# @brief Mesh information for test cases.
 
 from pylith.testing.FullTestApp import MeshEntity
 
 
 class Tri(object):
-    """Mesh information for tri mesh.
-    """
+    """Mesh information for tri mesh."""
+
     ENTITIES = {
-        "domain": MeshEntity(ncells=902, ncorners=3, nvertices=492),
-
+        "domain": MeshEntity(ncells=206, ncorners=3, nvertices=156),
         # Materials
-        "poroelastic": MeshEntity(ncells=902, ncorners=3, nvertices=492),
-
+        "poroelastic": MeshEntity(ncells=206, ncorners=3, nvertices=156),
         # Boundaries
-        "x_neg": MeshEntity(ncells=20, ncorners=2, nvertices=21),
-        "x_pos": MeshEntity(ncells=20, ncorners=2, nvertices=21),
-        "y_neg": MeshEntity(ncells=20, ncorners=2, nvertices=21),
-        "y_pos_dir": MeshEntity(ncells=20, ncorners=2, nvertices=21),
-        "y_pos_neu": MeshEntity(ncells=20, ncorners=2, nvertices=21),
+        "bc_xneg": MeshEntity(ncells=50, ncorners=2, nvertices=51),
+        "bc_xpos": MeshEntity(ncells=50, ncorners=2, nvertices=51),
+        "bc_yneg": MeshEntity(ncells=2, ncorners=2, nvertices=3),
+        "bc_ypos_pressure": MeshEntity(ncells=2, ncorners=2, nvertices=3),
+        "bc_ypos_traction": MeshEntity(ncells=2, ncorners=2, nvertices=3),
     }
 
 
 class Quad(object):
-    """Mesh information for quad mesh.
-    """
+    """Mesh information for quad mesh."""
+
     ENTITIES = {
-        "domain": MeshEntity(ncells=400, ncorners=4, nvertices=441),
-
+        "domain": MeshEntity(ncells=100, ncorners=4, nvertices=153),
         # Materials
-        "poroelastic": MeshEntity(ncells=400, ncorners=4, nvertices=441),
-
+        "poroelastic": MeshEntity(ncells=100, ncorners=4, nvertices=153),
         # Boundaries
-        "x_neg": MeshEntity(ncells=20, ncorners=2, nvertices=21),
-        "x_pos": MeshEntity(ncells=20, ncorners=2, nvertices=21),
-        "y_neg": MeshEntity(ncells=20, ncorners=2, nvertices=21),
-        "y_pos_dir": MeshEntity(ncells=20, ncorners=2, nvertices=21),
-        "y_pos_neu": MeshEntity(ncells=20, ncorners=2, nvertices=21),
+        "bc_xneg": MeshEntity(ncells=50, ncorners=2, nvertices=51),
+        "bc_xpos": MeshEntity(ncells=50, ncorners=2, nvertices=51),
+        "bc_yneg": MeshEntity(ncells=2, ncorners=2, nvertices=3),
+        "bc_ypos_pressure": MeshEntity(ncells=2, ncorners=2, nvertices=3),
+        "bc_ypos_traction": MeshEntity(ncells=2, ncorners=2, nvertices=3),
     }
 
 

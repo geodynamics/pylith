@@ -13,34 +13,17 @@ TESTS = test_pylith.py
 dist_check_SCRIPTS = test_pylith.py
 
 dist_noinst_PYTHON = \
+	generate_gmsh.py \
 	meshes.py \
 	TestTerzaghi.py \
-	terzaghi_soln.py \
-	terzaghi_gendb.py \
-	TestTerzaghiCompaction.py \
-	terzaghi_compaction_soln.py \
-	terzaghi_compaction_gendb.py	
+	terzaghi_soln.py
 
 dist_noinst_DATA = \
-	geometry.jou \
-	bc.jou \
-	mesh_tri.jou \
-	mesh_tri.exo \
-	mesh_quad.jou \
-	mesh_quad.exo \
-	terzaghi.cfg \
+	mesh_tri.msh \
+	mesh_quad.msh \
+	pylithapp.cfg \
 	terzaghi_tri.cfg \
-	terzaghi_quad.cfg \
-	terzaghi_compaction.cfg \
-	terzaghi_compaction_tri.cfg \
-	terzaghi_compaction_quad.cfg	
-
-noinst_TMP = \
-	terzaghi_bc.spatialdb \
-	terzaghi_ic.spatialdb \
-	terzaghi_compaction_bc.spatialdb \
-	terzaghi_compaction_ic.spatialdb	
-
+	terzaghi_quad.cfg
 
 
 export_datadir = $(abs_builddir)

@@ -442,7 +442,7 @@ pylith::problems::TimeDependent::initialize(void) {
     } // switch
 
     err = TSSetFromOptions(_ts);PYLITH_CHECK_ERROR(err);
-    if (_petscDefaults && pylith::utils::PetscDefaults::TS_ADAPT) {
+    if (_petscDefaults & pylith::utils::PetscDefaults::TS_ADAPT) {
         pylith::utils::TSAdaptImpulse::set(_ts);
     } // if
     err = TSSetUp(_ts);PYLITH_CHECK_ERROR(err);

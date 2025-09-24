@@ -6,7 +6,7 @@
 # Copyright (c) 2010-2025, University of California, Davis and the PyLith Development Team.
 # All rights reserved.
 #
-# See https://mit-license.org/ and LICENSE.md and for license information. 
+# See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
 # @file tests/fullscale/poroelasticity/terzaghi/TestTerzaghi.py
 #
@@ -17,11 +17,10 @@
 
 import unittest
 
-from pylith.testing.FullTestApp import (FullTestCase, Check, check_data)
+from pylith.testing.FullTestApp import FullTestCase, Check
 
 import meshes
 import terzaghi_soln
-import terzaghi_gendb
 
 
 # -------------------------------------------------------------------------------------------------
@@ -36,15 +35,16 @@ class TestCase(FullTestCase):
         self.checks = [
             Check(
                 mesh_entities=["domain"],
-                vertex_fields=["displacement"],
+                vertex_fields=["displacement", "trace_strain"],
+                final_time_only=True,
                 defaults=defaults,
-                tolerance=0.5,
             ),
             Check(
                 mesh_entities=["domain"],
                 vertex_fields=["pressure"],
+                final_time_only=True,
                 defaults=defaults,
-                scale=1.0e+6,
+                tolerance=0.02,
             ),
             Check(
                 mesh_entities=["poroelastic"],
@@ -63,39 +63,21 @@ class TestCase(FullTestCase):
                 defaults=defaults,
             ),
             Check(
-                mesh_entities=["poroelastic"],
-                vertex_fields = ["displacement"],
-                defaults=defaults,
-                tolerance=0.5,
-            ),
-            Check(
-                mesh_entities=["poroelastic"],
-                vertex_fields = ["pressure"],
-                defaults=defaults,
-                scale=1.0e+6,
-            ),
-            Check(
-                mesh_entities=["x_neg", "x_pos", "y_pos_dir", "y_neg", "y_pos_neu"],
+                mesh_entities=["bc_xneg", "bc_xpos", "bc_ypos_pressure", "bc_yneg"],
                 filename="output/{name}-{mesh_entity}_info.h5",
                 vertex_fields=["initial_amplitude"],
                 defaults=defaults,
             ),
             Check(
-                mesh_entities=["x_neg", "x_pos", "y_pos_dir", "y_neg", "y_pos_neu"],
-                vertex_fields=["displacement"],
+                mesh_entities=["bc_ypos_traction"],
+                filename="output/{name}-{mesh_entity}_info.h5",
+                cell_fields=["initial_amplitude"],
                 defaults=defaults,
-                tolerance=0.5,
-            ),
-            Check(
-                mesh_entities=["x_neg", "x_pos", "y_pos_dir", "y_neg", "y_pos_neu"],
-                vertex_fields=["pressure"],
-                defaults=defaults,
-                scale=1.0e+6,
             ),
         ]
 
     def run_pylith(self, testName, args):
-        FullTestCase.run_pylith(self, testName, args, terzaghi_gendb.GenerateDB)
+        FullTestCase.run_pylith(self, testName, args)
 
 
 # -------------------------------------------------------------------------------------------------
@@ -106,7 +88,7 @@ class TestQuad(TestCase):
         self.mesh = meshes.Quad()
         super().setUp()
 
-        TestCase.run_pylith(self, self.name, ["terzaghi.cfg", "terzaghi_quad.cfg"])
+        TestCase.run_pylith(self, self.name, ["terzaghi_quad.cfg"])
 
 
 # -------------------------------------------------------------------------------------------------
@@ -117,7 +99,7 @@ class TestTri(TestCase):
         self.mesh = meshes.Tri()
         super().setUp()
 
-        TestCase.run_pylith(self, self.name, ["terzaghi.cfg", "terzaghi_tri.cfg"])
+        TestCase.run_pylith(self, self.name, ["terzaghi_tri.cfg"])
 
 
 # -------------------------------------------------------------------------------------------------
@@ -129,7 +111,7 @@ def test_cases():
 
 
 # -------------------------------------------------------------------------------------------------
-if __name__ == '__main__':
+if __name__ == "__main__":
     FullTestCase.parse_args()
 
     suite = unittest.TestSuite()
