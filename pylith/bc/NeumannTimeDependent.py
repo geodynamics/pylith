@@ -76,9 +76,7 @@ class NeumannTimeDependent(BoundaryCondition, ModuleNeumannTimeDependent):
     scaleName = pythia.pyre.inventory.str(
         "scale_name",
         default="stress",
-        validator=pythia.pyre.inventory.choice(
-            ["length", "time", "stress", "density", "velocity"]
-        ),
+        validator=pythia.pyre.inventory.choice(["displacement", "stress"]),
     )
     scaleName.meta["tip"] = (
         "Type of scale for nondimensionalizing Neumann boundary condition ('stress' for elasticity)."

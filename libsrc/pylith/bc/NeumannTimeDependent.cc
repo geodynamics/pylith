@@ -69,7 +69,7 @@ public:
 pylith::bc::NeumannTimeDependent::NeumannTimeDependent(void) :
     _dbTimeHistory(NULL),
     _auxiliaryFactory(new pylith::bc::TimeDependentAuxiliaryFactory(pylith::bc::TimeDependentAuxiliaryFactory::TANGENTIAL_NORMAL)),
-    _scaleName("stress"),
+    _scaleName("pressure"),
     _useInitial(true),
     _useRate(false),
     _useTimeHistory(false) {
@@ -177,11 +177,8 @@ void
 pylith::bc::NeumannTimeDependent::setScaleName(const char* value) {
     PYLITH_COMPONENT_DEBUG("setScaleName(value"<<value<<")");
 
-    if (( value == std::string("length")) ||
-        ( value == std::string("time")) ||
-        ( value == std::string("stress")) ||
-        ( value == std::string("density")) ||
-        ( value == std::string("velocity")) ) {
+    if (( value == std::string("displacement")) ||
+        ( value == std::string("stress"))  ) {
         _scaleName = value;
     } else {
         std::ostringstream msg;
@@ -235,24 +232,15 @@ pylith::bc::NeumannTimeDependent::createAuxiliaryField(const pylith::topology::F
     auxiliaryField->setLabel("auxiliary field");
 
     assert(_scales);
-    const PylithReal rigidityScale = _scales->getRigidityScale();
-    const PylithReal lengthScale = _scales->getLengthScale();
-    const PylithReal timeScale = _scales->getTimeScale();
+    const PylithReal displacementScale = _scales->getLengthScale();
     const PylithReal stressScale = spatialdata::units::ElasticityScales::getStressScale(*_scales);
-    const PylithReal densityScale = spatialdata::units::ElasticityScales::getDensityScale(*_scales);
 
     assert(_auxiliaryFactory);
     pylith::topology::Field::Description description = solution.getSubfieldInfo(_subfieldName.c_str()).description;
     if (_scaleName == std::string("stress")) {
         description.scale = stressScale;
-    } else if (_scaleName == std::string("velocity")) {
-        description.scale = sqrt(rigidityScale / densityScale);
-    } else if (_scaleName == std::string("length")) {
-        description.scale = lengthScale;
-    } else if (_scaleName == std::string("time")) {
-        description.scale = timeScale;
-    } else if (_scaleName == std::string("density")) {
-        description.scale = densityScale;
+    } else if (_scaleName == std::string("displacement")) {
+        description.scale = displacementScale;
     } else {
         std::ostringstream msg;
         msg << "Unknown name of scale ("<<_scaleName<<") for Neumann boundary condition for '" << getLabelName() << "'.";
