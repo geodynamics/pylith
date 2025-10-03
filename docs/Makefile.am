@@ -679,6 +679,7 @@ dist_noinst_DATA = \
 	user/problems/figs/hdf5layout.svg \
 	user/problems/figs/hdf5layout.tex \
 	user/problems/index.md \
+	user/problems/nondimensionalization.md \
 	user/problems/output.md \
 	user/problems/problems.md \
 	user/run-pylith/figs/cells2d.pdf \

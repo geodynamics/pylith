@@ -3,5 +3,6 @@
 
 :::{toctree}
 problems.md
+nondimensionalization.md
 output.md
 :::
