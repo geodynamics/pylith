@@ -59,7 +59,7 @@ public:
              * @param[in] cs Coordinate system for problem.
              */
             void initialize(const pylith::topology::Field& auxField,
-                            const spatialdata::units::Scales& scales,
+                            const pylith::scales::Scales& scales,
                             const spatialdata::geocoords::CoordSys* cs);
 
             /** Get requested slip subfields at time t.
@@ -94,7 +94,7 @@ protected:
              * @param[in] cs Coordinate system for problem.
              */
             virtual
-            void _auxiliaryFieldSetup(const spatialdata::units::Scales& scales,
+            void _auxiliaryFieldSetup(const pylith::scales::Scales& scales,
                                       const spatialdata::geocoords::CoordSys* cs) = 0;
 
         }; // class KinSrc

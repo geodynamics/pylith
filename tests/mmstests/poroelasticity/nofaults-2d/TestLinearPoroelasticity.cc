@@ -29,7 +29,7 @@
 #include "pylith/utils/journals.hh" // pythia::journal
 
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
-#include "spatialdata/units/ElasticityScales.hh" // USES ElasticityScales
+#include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
 
 // ------------------------------------------------------------------------------------------------
 // Constuctor.
@@ -179,7 +179,7 @@ pylith::TestLinearPoroelasticity_Data::TestLinearPoroelasticity_Data(void) :
     cs.setSpaceDim(spaceDim);
 
     const double lengthScale = 8.0e+3;
-    spatialdata::units::ElasticityScales::setQuasistaticPoroelasticity(&scales, lengthScale);
+    pylith::scales::ElasticityScales::setQuasistaticPoroelasticity(&scales, lengthScale);
     dt = 0.05*scales.getTimeScale();
 } // constructor
 

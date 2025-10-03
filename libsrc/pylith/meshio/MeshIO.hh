@@ -16,7 +16,7 @@
 #include "pylith/meshio/MeshBuilder.hh" // USES MeshBuilder::GroupPtType
 
 #include "pylith/topology/topologyfwd.hh" // forward declarations
-#include "spatialdata/units/unitsfwd.hh" // forward declarations
+#include "pylith/scales/scalesfwd.hh" // forward declarations
 #include "pylith/utils/arrayfwd.hh" // USES scalar_array, int_array, string_vector
 
 // ------------------------------------------------------------------------------------------------

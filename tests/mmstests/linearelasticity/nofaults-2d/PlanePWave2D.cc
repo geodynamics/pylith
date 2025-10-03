@@ -16,7 +16,7 @@
 #include "pylith/topology/Field.hh" // USES pylith::topology::Field::Discretization
 #include "pylith/utils/journals.hh" // USES pythia::journal::debug_t
 
-#include "spatialdata/units/ElasticityScales.hh" // USES ElasticityScales
+#include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
 
 // ---------------------------------------------------------------------------------------------------------------------
 namespace pylith {
@@ -24,7 +24,7 @@ namespace pylith {
 } // pylith
 
 class pylith::_PlanePWave2D {
-    static spatialdata::units::Scales scales;
+    static pylith::scales::Scales scales;
     static const double WAVELENGTH; // nondimensional
     static const double TIME_SNAPSHOT; // nondimensional
     static const double AMPLITUDE;
@@ -190,7 +190,7 @@ public:
 
         const double lengthScale = data->scales.getLengthScale(); // domain-specific value
         const double velocityScale = vs(0.0, 0.0);
-        spatialdata::units::ElasticityScales::setDynamicElasticity(&scales, lengthScale, velocityScale);
+        pylith::scales::ElasticityScales::setDynamicElasticity(&scales, lengthScale, velocityScale);
         data->scales = scales;
         data->formulation = pylith::problems::Physics::DYNAMIC;
 
@@ -262,7 +262,7 @@ public:
 
 }; // PlanePWave2D
 
-spatialdata::units::Scales pylith::_PlanePWave2D::scales;
+pylith::scales::Scales pylith::_PlanePWave2D::scales;
 const double pylith::_PlanePWave2D::WAVELENGTH = 1.0e+5;
 const double pylith::_PlanePWave2D::TIME_SNAPSHOT = 7.657345769747113;
 const double pylith::_PlanePWave2D::AMPLITUDE = 0.1;

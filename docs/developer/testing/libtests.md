@@ -132,7 +132,7 @@ void
 pylith::problems::TestPhysics::testSetScales(void) {
     PYLITH_METHOD_BEGIN;
 
-    spatialdata::units::Scales scales;
+    pylith::scales::Scales scales;
     const PylithReal lengthScale = 3.0;
     scales.setLengthScale(lengthScale);
 

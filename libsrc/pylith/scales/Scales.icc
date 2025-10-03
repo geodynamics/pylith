@@ -1,0 +1,132 @@
+// =================================================================================================
+// This code is part of SpatialData, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/spatialdata).
+//
+// Copyright (c) 2010-2025, University of California, Davis and the SpatialData Development Team.
+// All rights reserved.
+//
+// See https://mit-license.org/ and LICENSE.md and for license information.
+// =================================================================================================
+#pragma once
+
+#include <assert.h> // USES assert()
+
+// Get value to nondimensionalize position in meters (SI units).
+inline
+double
+pylith::scales::Scales::getLengthScale(void) const {
+    return _length;
+}
+
+
+// Get value to nondimensionalize displacement in meters (SI units).
+inline
+double
+pylith::scales::Scales::getDisplacementScale(void) const {
+    return _displacement;
+}
+
+
+// Get value to nondimensionalize rigidity (elastic moduli).
+inline
+double
+pylith::scales::Scales::getRigidityScale(void) const {
+    return _rigidity;
+}
+
+
+// Get value to nondimensionalize time scale in seconds (SI units).
+inline
+double
+pylith::scales::Scales::getTimeScale(void) const {
+    return _time;
+}
+
+
+// Get value to nondimensionalize temperature scale in Kelvin (SI units).
+inline
+double
+pylith::scales::Scales::getTemperatureScale(void) const {
+    return _temperature;
+}
+
+
+// Make value dimensionless.
+inline
+double
+pylith::scales::Scales::nondimensionalize(const double value,
+                                              const double scale) const {
+    return value / scale;
+}
+
+
+// Make values dimensionless.
+inline
+void
+pylith::scales::Scales::nondimensionalize(double* const values,
+                                              const size_t nvalues,
+                                              const double scale) const {
+    assert( (0 < nvalues && values) ||
+            (0 == nvalues && !values) );
+
+    for (size_t i = 0; i < nvalues; ++i) {
+        values[i] /= scale;
+    }
+} // nondimensionalize
+
+
+// Make values dimensionless.
+inline
+void
+pylith::scales::Scales::nondimensionalize(float* const values,
+                                              const size_t nvalues,
+                                              const double scale) const {
+    assert( (0 < nvalues && values) ||
+            (0 == nvalues && !values) );
+
+    for (size_t i = 0; i < nvalues; ++i) {
+        values[i] /= scale;
+    }
+} // nondimensionalize
+
+
+// Make value dimensionless.
+inline
+double
+pylith::scales::Scales::dimensionalize(const double value,
+                                           const double scale) const {
+    return value * scale;
+}
+
+
+// Make value dimensionless.
+inline
+void
+pylith::scales::Scales::dimensionalize(double* const values,
+                                           const size_t nvalues,
+                                           const double scale) const {
+    assert( (0 < nvalues && values) ||
+            (0 == nvalues && !values) );
+
+    for (size_t i = 0; i < nvalues; ++i) {
+        values[i] *= scale;
+    }
+} // dimensionalize
+
+
+// Make value dimensionless.
+inline
+void
+pylith::scales::Scales::dimensionalize(float* const values,
+                                           const size_t nvalues,
+                                           const double scale) const {
+    assert( (0 < nvalues && values) ||
+            (0 == nvalues && !values) );
+
+    for (size_t i = 0; i < nvalues; ++i) {
+        values[i] *= scale;
+    }
+} // dimensionalize
+
+
+// End of file

@@ -32,7 +32,7 @@ protected:
              * @param[in] scales Scales for nondimensionalizing values.
              * @param[in] cs Coordinate system for problem.
              */
-            void _auxiliaryFieldSetup(const spatialdata::units::Scales& scales,
+            void _auxiliaryFieldSetup(const pylith::scales::Scales& scales,
                                       const spatialdata::geocoords::CoordSys* cs);
 
         }; // class KinSrcBrune

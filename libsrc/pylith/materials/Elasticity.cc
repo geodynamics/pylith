@@ -33,7 +33,7 @@
 
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
-#include "spatialdata/units/Scales.hh" // USES Scales
+#include "pylith/scales/Scales.hh" // USES Scales
 
 #include <typeinfo> // USES typeid()
 

@@ -18,7 +18,7 @@
 #include "pylith/utils/constants.hh" // USES pylith::g_acc
 
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
-#include "spatialdata/units/ElasticityScales.hh" // USES ElasticityScales
+#include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
 
 // ------------------------------------------------------------------------------------------------
 namespace pylith {
@@ -26,7 +26,7 @@ namespace pylith {
 } // pylith
 
 class pylith::_Gravity3D {
-    static spatialdata::units::Scales scales;
+    static pylith::scales::Scales scales;
     static const double BODY_FORCE;
     static const double Z_MIN;
     static const double Z_MAX;
@@ -86,7 +86,7 @@ class pylith::_Gravity3D {
                          const double z) {
         const double lengthScale = scales.getLengthScale();
         const double rigidityScale = scales.getRigidityScale();
-        const double bodyForceScale = spatialdata::units::ElasticityScales::getBodyForceScale(scales);
+        const double bodyForceScale = pylith::scales::ElasticityScales::getBodyForceScale(scales);
 
         const double muN = density(x,y,z) * vs(x,y,z) * vs(x,y,z) / rigidityScale;
         const double lambdaN = density(x,y,z) * vp(x,y,z) * vp(x,y,z) / rigidityScale - 2.0*muN;
@@ -187,7 +187,7 @@ public:
     } // createData
 
 }; // Gravity3D
-spatialdata::units::Scales pylith::_Gravity3D::scales;
+pylith::scales::Scales pylith::_Gravity3D::scales;
 const double pylith::_Gravity3D::Z_MIN = -4.0e+3;
 const double pylith::_Gravity3D::Z_MAX = +4.0e+3;
 

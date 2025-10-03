@@ -17,8 +17,8 @@
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/FieldQuery.hh" // HOLDSA FieldQuery
 
-#include "spatialdata/units/Scales.hh" // USES Scales
-#include "spatialdata/units/ElasticityScales.hh" // USES ElasticityScales
+#include "pylith/scales/Scales.hh" // USES Scales
+#include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD*
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL*
@@ -107,7 +107,7 @@ pylith::materials::AuxiliaryFactoryElastic::addReferenceStress(void) {
         "reference_stress_yz",
         "reference_stress_xz" };
     const int stressSize = (3 == _spaceDim) ? 6 : (2 == _spaceDim) ? 4 : 1;
-    const PylithReal stressScale = spatialdata::units::ElasticityScales::getStressScale(*_scales);
+    const PylithReal stressScale = pylith::scales::ElasticityScales::getStressScale(*_scales);
 
     pylith::topology::Field::Description description;
     description.label = subfieldName;
@@ -145,7 +145,7 @@ pylith::materials::AuxiliaryFactoryElastic::addReferenceStrain(void) {
         "reference_strain_xz"
     };
     const int strainSize = (3 == _spaceDim) ? 6 : (2 == _spaceDim) ? 4 : 1;
-    const PylithReal strainScale = spatialdata::units::ElasticityScales::getStrainScale(*_scales);
+    const PylithReal strainScale = pylith::scales::ElasticityScales::getStrainScale(*_scales);
 
     pylith::topology::Field::Description description;
     description.label = subfieldName;

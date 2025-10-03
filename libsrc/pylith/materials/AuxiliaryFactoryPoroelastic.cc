@@ -17,8 +17,8 @@
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/FieldQuery.hh" // HOLDSA FieldQuery
 
-#include "spatialdata/units/Scales.hh" // USES Scales
-#include "spatialdata/units/ElasticityScales.hh" // USES ElasticityScales
+#include "pylith/scales/Scales.hh" // USES Scales
+#include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD*
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL*
@@ -45,7 +45,7 @@ pylith::materials::AuxiliaryFactoryPoroelastic::addIsotropicPermeability(void) {
     PYLITH_JOURNAL_DEBUG("addIsotropicPermeability(void)");
 
     const char* subfieldName = "isotropic_permeability";
-    const PylithReal permeabilityScale = spatialdata::units::ElasticityScales::getPermeabilityScale(*_scales);
+    const PylithReal permeabilityScale = pylith::scales::ElasticityScales::getPermeabilityScale(*_scales);
 
     pylith::topology::Field::Description description;
     description.label = subfieldName;
@@ -80,7 +80,7 @@ pylith::materials::AuxiliaryFactoryPoroelastic::addTensorPermeability(void) {
         "permeability_xz"
     };
     const int tensorSize = (3 == _spaceDim) ? 6 : (2 == _spaceDim) ? 4 : 1;
-    const PylithReal permeabilityScale = spatialdata::units::ElasticityScales::getPermeabilityScale(*_scales);
+    const PylithReal permeabilityScale = pylith::scales::ElasticityScales::getPermeabilityScale(*_scales);
 
     pylith::topology::Field::Description description;
     description.label = subfieldName;
@@ -198,7 +198,7 @@ pylith::materials::AuxiliaryFactoryPoroelastic::addReferenceStress(void) {
         "reference_stress_xz"
     };
     const int stressSize = (3 == _spaceDim) ? 6 : (2 == _spaceDim) ? 4 : 1;
-    const PylithReal stressScale = spatialdata::units::ElasticityScales::getStressScale(*_scales);
+    const PylithReal stressScale = pylith::scales::ElasticityScales::getStressScale(*_scales);
 
     pylith::topology::Field::Description description;
     description.label = subfieldName;
@@ -236,7 +236,7 @@ pylith::materials::AuxiliaryFactoryPoroelastic::addReferenceStrain(void) {
         "reference_strain_xz"
     };
     const int strainSize = (3 == _spaceDim) ? 6 : (2 == _spaceDim) ? 4 : 1;
-    const PylithReal strainScale = spatialdata::units::ElasticityScales::getStrainScale(*_scales);
+    const PylithReal strainScale = pylith::scales::ElasticityScales::getStrainScale(*_scales);
 
     pylith::topology::Field::Description description;
     description.label = subfieldName;

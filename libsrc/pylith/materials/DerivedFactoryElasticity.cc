@@ -14,7 +14,7 @@
 
 #include "pylith/topology/Field.hh" // USES Field
 
-#include "spatialdata/units/ElasticityScales.hh" // USES ElasticityScales
+#include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD*
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL*
@@ -53,7 +53,7 @@ pylith::materials::DerivedFactoryElasticity::addCauchyStress(void) {
     for (int i = 0; i < stressSize; ++i) {
         description.componentNames[i] = componentNames[i];
     } // for
-    description.scale = spatialdata::units::ElasticityScales::getStressScale(*_scales);
+    description.scale = pylith::scales::ElasticityScales::getStressScale(*_scales);
     description.validator = NULL;
 
     _field->subfieldAdd(description, getSubfieldDiscretization(fieldName));
@@ -82,7 +82,7 @@ pylith::materials::DerivedFactoryElasticity::addCauchyStrain(void) {
     for (int i = 0; i < strainSize; ++i) {
         description.componentNames[i] = componentNames[i];
     } // for
-    description.scale = spatialdata::units::ElasticityScales::getStrainScale(*_scales);
+    description.scale = pylith::scales::ElasticityScales::getStrainScale(*_scales);
     description.validator = NULL;
 
     _field->subfieldAdd(description, getSubfieldDiscretization(fieldName));

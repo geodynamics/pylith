@@ -22,7 +22,7 @@
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
-#include "spatialdata/units/Scales.hh" // USES Scales
+#include "pylith/scales/Scales.hh" // USES Scales
 
 #include "catch2/catch_test_macros.hpp"
 #include "catch2/matchers/catch_matchers_floating_point.hpp"
@@ -346,7 +346,7 @@ pylith::topology::TestFieldQuery_Data::TestFieldQuery_Data(void) :
     topology(NULL),
     geometry(NULL),
     cs(new spatialdata::geocoords::CSCart),
-    scales(new spatialdata::units::Scales),
+    scales(new pylith::scales::Scales),
     numAuxSubfields(0),
     auxSubfields(NULL),
     auxDescriptions(NULL),

@@ -10,6 +10,7 @@
 
 
 SUBDIRS = \
+	scales \
 	utils \
 	topology \
 	feassemble \
@@ -138,6 +139,8 @@ libpylith_la_SOURCES = \
 	topology/ReverseCuthillMcKee.cc \
 	topology/RefineUniform.cc \
 	topology/RefineInterpolator.cc \
+	scales/ElasticityScales.cc \
+	scales/Scales.cc \
 	utils/EventLogger.cc \
 	utils/PyreComponent.cc \
 	utils/GenericComponent.cc \

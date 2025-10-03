@@ -17,7 +17,7 @@
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 
 #include "spatialdata/spatialdb/TimeHistory.hh" // USES TimeHistory
-#include "spatialdata/units/Scales.hh" // USES Scales
+#include "pylith/scales/Scales.hh" // USES Scales
 
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL*
 

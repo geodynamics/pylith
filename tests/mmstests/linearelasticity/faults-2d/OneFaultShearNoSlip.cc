@@ -32,8 +32,8 @@
 
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
-#include "spatialdata/units/Scales.hh" // USES Scales
-#include "spatialdata/units/ElasticityScales.hh" // USES ElasticityScales
+#include "pylith/scales/Scales.hh" // USES Scales
+#include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
 
 namespace pylith {
     class _OneFaultShearNoSlip;
@@ -41,7 +41,7 @@ namespace pylith {
 
 // ------------------------------------------------------------------------------------------------
 class pylith::_OneFaultShearNoSlip {
-    static spatialdata::units::Scales scales;
+    static pylith::scales::Scales scales;
 
     // Density
     static double density(const double x,
@@ -356,7 +356,7 @@ public:
     } // createData
 
 }; // TestFaultKin2D_OneFaultShearNoSlip
-spatialdata::units::Scales pylith::_OneFaultShearNoSlip::scales;
+pylith::scales::Scales pylith::_OneFaultShearNoSlip::scales;
 
 // ------------------------------------------------------------------------------------------------
 pylith::TestFaultKin_Data*

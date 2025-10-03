@@ -18,7 +18,7 @@
 #include "pylith/utils/constants.hh" // USES pylith::g_acc
 
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
-#include "spatialdata/units/ElasticityScales.hh" // USES ElasticityScales
+#include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
 
 // ------------------------------------------------------------------------------------------------
 namespace pylith {
@@ -27,7 +27,7 @@ namespace pylith {
 class pylith::_Gravity2D {
 private:
 
-    static spatialdata::units::Scales scales;
+    static pylith::scales::Scales scales;
     static const double Y_MIN;
     static const double Y_MAX;
 
@@ -87,7 +87,7 @@ private:
                          const double y) {
         const double lengthScale = scales.getLengthScale();
         const double rigidityScale = scales.getRigidityScale();
-        const double bodyForceScale = spatialdata::units::ElasticityScales::getBodyForceScale(scales);
+        const double bodyForceScale = pylith::scales::ElasticityScales::getBodyForceScale(scales);
 
         const double muN = density(x,y) * vs(x,y) * vs(x,y) / rigidityScale;
         const double lambdaN = density(x,y) * vp(x,y) * vp(x,y) / rigidityScale - 2.0*muN;
@@ -186,7 +186,7 @@ public:
     } // createData
 
 }; // _Gravity2D
-spatialdata::units::Scales pylith::_Gravity2D::scales;
+pylith::scales::Scales pylith::_Gravity2D::scales;
 const double pylith::_Gravity2D::Y_MIN = -4.0e+3;
 const double pylith::_Gravity2D::Y_MAX = +4.0e+3;
 

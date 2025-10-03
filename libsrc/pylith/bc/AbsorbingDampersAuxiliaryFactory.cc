@@ -15,8 +15,8 @@
 #include "pylith/topology/Field.hh" // HOLDSA AuxiliaryField
 #include "pylith/topology/FieldQuery.hh" // USES FieldQuery
 
-#include "spatialdata/units/Scales.hh" // USES Scales
-#include "spatialdata/units/ElasticityScales.hh" // USES ElasticityScales
+#include "pylith/scales/Scales.hh" // USES Scales
+#include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD*
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL*
@@ -43,7 +43,7 @@ pylith::bc::AbsorbingDampersAuxiliaryFactory::addDensity(void) {
     PYLITH_JOURNAL_DEBUG("addDensity(void)");
 
     const char* subfieldName = "density";
-    const PylithReal densityScale = spatialdata::units::ElasticityScales::getDensityScale(*_scales);
+    const PylithReal densityScale = pylith::scales::ElasticityScales::getDensityScale(*_scales);
 
     pylith::topology::Field::Description description;
     description.label = subfieldName;

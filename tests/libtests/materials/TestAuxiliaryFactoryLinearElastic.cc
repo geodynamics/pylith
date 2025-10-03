@@ -26,8 +26,8 @@
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
-#include "spatialdata/units/Scales.hh" // USES Scales
-#include "spatialdata/units/ElasticityScales.hh" // USES ElasticityScales
+#include "pylith/scales/Scales.hh" // USES Scales
+#include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
 
 #include "catch2/catch_test_macros.hpp"
 
@@ -49,7 +49,7 @@ pylith::materials::TestAuxiliaryFactoryLinearElastic::TestAuxiliaryFactoryLinear
         componentNames,
         componentNames.size(),
         pylith::topology::Field::SCALAR,
-        spatialdata::units::ElasticityScales::getDensityScale(*_data->scales),
+        pylith::scales::ElasticityScales::getDensityScale(*_data->scales),
         0.0,
         pylith::topology::FieldQuery::validatorPositive
         );
@@ -273,7 +273,7 @@ pylith::materials::TestAuxiliaryFactoryLinearElastic::_initialize(void) {
 pylith::materials::TestAuxiliaryFactoryLinearElastic_Data::TestAuxiliaryFactoryLinearElastic_Data(void) :
     meshFilename(NULL),
     cs(NULL),
-    scales(new spatialdata::units::Scales),
+    scales(new pylith::scales::Scales),
     auxiliaryDB(new spatialdata::spatialdb::UserFunctionDB) {}
 
 

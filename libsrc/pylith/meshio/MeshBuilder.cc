@@ -20,7 +20,7 @@
 #include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
 
-#include "spatialdata/units/Scales.hh" // USES Scales
+#include "pylith/scales/Scales.hh" // USES Scales
 
 #include "petscdmlabel.h" // USES PetscDMLabel
 

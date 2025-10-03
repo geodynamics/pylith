@@ -34,7 +34,7 @@
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
-#include "spatialdata/units/ElasticityScales.hh" // USES ElasticityScales
+#include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
 
 // ------------------------------------------------------------------------------------------------
 // Constuctor.
@@ -226,7 +226,7 @@ pylith::TestFaultKin_Data::TestFaultKin_Data(void) :
     cs.setSpaceDim(spaceDim);
 
     const double lengthScale = 12.0e+3;
-    spatialdata::units::ElasticityScales::setQuasistaticElasticity(&scales, lengthScale);
+    pylith::scales::ElasticityScales::setQuasistaticElasticity(&scales, lengthScale);
 } // constructor
 
 

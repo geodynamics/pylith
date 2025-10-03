@@ -18,8 +18,8 @@
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/FieldQuery.hh" // HOLDSA FieldQuery
 
-#include "spatialdata/units/Scales.hh" // USES Scales
-#include "spatialdata/units/ElasticityScales.hh" // USES ElasticityScales
+#include "pylith/scales/Scales.hh" // USES Scales
+#include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD*
@@ -141,7 +141,7 @@ pylith::materials::AuxiliaryFactoryViscoelastic::addPowerLawReferenceStrainRate(
     PYLITH_JOURNAL_DEBUG("addPowerLawReferenceStrainRate(void)");
 
     const char* subfieldName = "power_law_reference_strain_rate";
-    const PylithReal strainRateScale = spatialdata::units::ElasticityScales::getStrainScale(*_scales) / _scales->getTimeScale();
+    const PylithReal strainRateScale = pylith::scales::ElasticityScales::getStrainScale(*_scales) / _scales->getTimeScale();
 
     pylith::topology::Field::Description description;
     description.label = subfieldName;
@@ -168,7 +168,7 @@ pylith::materials::AuxiliaryFactoryViscoelastic::addPowerLawReferenceStress(void
     PYLITH_JOURNAL_DEBUG("addPowerLawReferenceStress(void)");
 
     const char* subfieldName = "power_law_reference_stress";
-    const PylithReal stressScale = spatialdata::units::ElasticityScales::getStressScale(*_scales);
+    const PylithReal stressScale = pylith::scales::ElasticityScales::getStressScale(*_scales);
 
     pylith::topology::Field::Description description;
     description.label = subfieldName;
@@ -242,7 +242,7 @@ pylith::materials::AuxiliaryFactoryViscoelastic::addTotalStrain(void) {
     for (int i = 0; i < strainSize; ++i) {
         description.componentNames[i] = componentNames[i];
     } // for
-    description.scale = spatialdata::units::ElasticityScales::getStrainScale(*_scales);
+    description.scale = pylith::scales::ElasticityScales::getStrainScale(*_scales);
     description.validator = NULL;
 
     _field->subfieldAdd(description, getSubfieldDiscretization(subfieldName));
@@ -269,7 +269,7 @@ pylith::materials::AuxiliaryFactoryViscoelastic::addDeviatoricStress(void) {
         "deviatoric_stress_xz"
     };
     const int stressSize = (3 == _spaceDim) ? 6 : (2 == _spaceDim) ? 4 : 1;
-    const PylithReal stressScale = spatialdata::units::ElasticityScales::getStressScale(*_scales);
+    const PylithReal stressScale = pylith::scales::ElasticityScales::getStressScale(*_scales);
 
     pylith::topology::Field::Description description;
     description.label = subfieldName;
@@ -321,7 +321,7 @@ pylith::materials::AuxiliaryFactoryViscoelastic::addViscousStrain(void) {
     for (int i = 0; i < strainSize; ++i) {
         description.componentNames[i] = componentNames[i];
     } // for
-    description.scale = spatialdata::units::ElasticityScales::getStrainScale(*_scales);
+    description.scale = pylith::scales::ElasticityScales::getStrainScale(*_scales);
     description.validator = NULL;
 
     _field->subfieldAdd(description, getSubfieldDiscretization(subfieldName));
@@ -356,7 +356,7 @@ pylith::materials::AuxiliaryFactoryViscoelastic::addViscousStrainGeneralizedMaxw
             description.componentNames[iname] = std::string(subfieldName) + std::string(componentElementNumbers[j]) + std::string(componentSuffixes[i]);
         } // for i
     } // for j
-    description.scale = spatialdata::units::ElasticityScales::getStrainScale(*_scales);
+    description.scale = pylith::scales::ElasticityScales::getStrainScale(*_scales);
     description.validator = NULL;
 
     _field->subfieldAdd(description, getSubfieldDiscretization(subfieldName));

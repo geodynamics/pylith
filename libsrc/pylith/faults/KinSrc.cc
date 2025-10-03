@@ -19,7 +19,7 @@
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN
 
-#include "spatialdata/units/Scales.hh" // USES Scales
+#include "pylith/scales/Scales.hh" // USES Scales
 
 #include <typeinfo> // USES typeid()
 #include <cassert> // USES assert()
@@ -101,7 +101,7 @@ pylith::faults::KinSrc::auxFieldDB(spatialdata::spatialdb::SpatialDB* value) {
 // Initialize kinematic (prescribed slip) earthquake source.
 void
 pylith::faults::KinSrc::initialize(const pylith::topology::Field& faultAuxField,
-                                   const spatialdata::units::Scales& scales,
+                                   const pylith::scales::Scales& scales,
                                    const spatialdata::geocoords::CoordSys* cs) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("initialize(faultAuxField"<<faultAuxField.getLabel()<<", scales, cs="<<typeid(cs).name()<<")");

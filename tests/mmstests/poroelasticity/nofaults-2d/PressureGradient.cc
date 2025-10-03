@@ -15,7 +15,7 @@
 #include "pylith/problems/TimeDependent.hh" // USES TimeDependent
 #include "pylith/topology/Field.hh" // USES pylith::topology::Field::Discretization
 
-#include "spatialdata/units/ElasticityScales.hh" // USES ElasticityScales
+#include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
 
 namespace pylith {
     class _PressureGradient;
@@ -23,7 +23,7 @@ namespace pylith {
 
 // ------------------------------------------------------------------------------------------------
 class pylith::_PressureGradient {
-    static spatialdata::units::Scales scales;
+    static pylith::scales::Scales scales;
     static const double PRESSURE; // dimensional
     static const double X_MAX; // dimensional
 
@@ -111,7 +111,7 @@ class pylith::_PressureGradient {
                          const double y) {
         const PylithReal lengthScale = scales.getLengthScale();
         const PylithReal rigidityScale = scales.getRigidityScale();
-        const PylithReal fluidPressureScale = spatialdata::units::ElasticityScales::getFluidPressureScale(scales);
+        const PylithReal fluidPressureScale = pylith::scales::ElasticityScales::getFluidPressureScale(scales);
 
         const double muN = shear_modulus(x, y) / rigidityScale;
         const double lambdaN = drained_bulk_modulus(x, y) / rigidityScale - 2.0/3.0 * muN;
@@ -128,7 +128,7 @@ class pylith::_PressureGradient {
     static double fluid_pressure(const double x,
                                  const double y) {
         const PylithReal lengthScale = scales.getLengthScale();
-        const PylithReal fluidPressureScale = spatialdata::units::ElasticityScales::getFluidPressureScale(scales);
+        const PylithReal fluidPressureScale = pylith::scales::ElasticityScales::getFluidPressureScale(scales);
 
         return (PRESSURE / fluidPressureScale) * (1.0 - x / (X_MAX / lengthScale));
     } // fluid_pressure
@@ -138,7 +138,7 @@ class pylith::_PressureGradient {
                                const double y) {
         const PylithReal lengthScale = scales.getLengthScale();
         const PylithReal rigidityScale = scales.getRigidityScale();
-        const PylithReal fluidPressureScale = spatialdata::units::ElasticityScales::getFluidPressureScale(scales);
+        const PylithReal fluidPressureScale = pylith::scales::ElasticityScales::getFluidPressureScale(scales);
 
         const double muN = shear_modulus(x, y) / rigidityScale;
         const double lambdaN = drained_bulk_modulus(x, y) / rigidityScale - 2.0/3.0 * muN;
@@ -389,7 +389,7 @@ public:
     } // createDataStateVars
 
 }; // PressureGradient
-spatialdata::units::Scales pylith::_PressureGradient::scales;
+pylith::scales::Scales pylith::_PressureGradient::scales;
 const double pylith::_PressureGradient::PRESSURE = 4.0e+6;
 const double pylith::_PressureGradient::X_MAX = 8.0e+3;
 

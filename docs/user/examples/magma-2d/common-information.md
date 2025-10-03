@@ -38,7 +38,7 @@ pressure.basis_order = 1
 trace_strain.basis_order = 1
 
 [pylithapp.problem]
-scales = spatialdata.units.NondimElasticQuasistatic
+scales = pylith.scales.NondimElasticQuasistatic
 scales.length_scale = 100.0*m
 scales.relaxation_time = 0.2*year
 scales.shear_modulus = 10.0*GPa

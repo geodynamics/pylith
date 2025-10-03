@@ -14,7 +14,7 @@
 
 #include "pylith/topology/Field.hh" // HOLDSA AuxiliaryField
 
-#include "spatialdata/units/Scales.hh" // USES Scales
+#include "pylith/scales/Scales.hh" // USES Scales
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD*
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL*
@@ -26,7 +26,7 @@
 pylith::topology::FieldFactory::FieldFactory(void) :
     _field(NULL),
     _defaultDescription(NULL),
-    _scales(new spatialdata::units::Scales),
+    _scales(new pylith::scales::Scales),
     _spaceDim(0) {
     GenericComponent::setName("auxiliaryfactory");
     _subfieldDiscretizations["default"] = pylith::topology::FieldBase::Discretization();
@@ -105,7 +105,7 @@ pylith::topology::FieldFactory::getSubfieldDiscretization(const char* subfieldNa
 // Initialie factory for setting up auxiliary subfields.
 void
 pylith::topology::FieldFactory::initialize(pylith::topology::Field* field,
-                                           const spatialdata::units::Scales& scales,
+                                           const pylith::scales::Scales& scales,
                                            const int spaceDim,
                                            const pylith::topology::FieldBase::Description* defaultDescription) {
     PYLITH_METHOD_BEGIN;

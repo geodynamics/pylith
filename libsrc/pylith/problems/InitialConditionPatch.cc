@@ -18,7 +18,7 @@
 #include "pylith/topology/Stratum.hh" // USES Stratum
 
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
-#include "spatialdata/units/Scales.hh" // USES Scales
+#include "pylith/scales/Scales.hh" // USES Scales
 
 #include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
@@ -159,7 +159,7 @@ pylith::problems::InitialConditionPatch::verifyConfiguration(const pylith::topol
 // Set solver type.
 void
 pylith::problems::InitialConditionPatch::setValues(pylith::topology::Field* solution,
-                                                   const spatialdata::units::Scales& scales) {
+                                                   const pylith::scales::Scales& scales) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("setValues(solution="<<solution<<", scales)");
 

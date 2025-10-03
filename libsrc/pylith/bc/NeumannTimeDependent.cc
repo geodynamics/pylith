@@ -22,8 +22,8 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 
 #include "spatialdata/spatialdb/TimeHistory.hh" // USES TimeHistory
-#include "spatialdata/units/Scales.hh" // USES Scales
-#include "spatialdata/units/ElasticityScales.hh" // USES ElasticityScales
+#include "pylith/scales/Scales.hh" // USES Scales
+#include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
@@ -233,7 +233,7 @@ pylith::bc::NeumannTimeDependent::createAuxiliaryField(const pylith::topology::F
 
     assert(_scales);
     const PylithReal displacementScale = _scales->getLengthScale();
-    const PylithReal stressScale = spatialdata::units::ElasticityScales::getStressScale(*_scales);
+    const PylithReal stressScale = pylith::scales::ElasticityScales::getStressScale(*_scales);
 
     assert(_auxiliaryFactory);
     pylith::topology::Field::Description description = solution.getSubfieldInfo(_subfieldName.c_str()).description;

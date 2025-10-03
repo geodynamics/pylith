@@ -25,8 +25,8 @@
 
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
-#include "spatialdata/units/Scales.hh" // USES Scales
-#include "spatialdata/units/ElasticityScales.hh" // USES ElasticityScales
+#include "pylith/scales/Scales.hh" // USES Scales
+#include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
 
 // ----------------------------------------------------------------------
 // Setup testing data.
@@ -103,9 +103,9 @@ pylith::materials::TestIsotropicLinearGenMaxwellPlaneStrain::test_auxiliaryField
     const PylithReal lengthScale = _mydata->scales->getLengthScale();
     const PylithReal rigidityScale = _mydata->scales->getRigidityScale();
     const PylithReal timeScale = _mydata->scales->getTimeScale();
-    const PylithReal densityScale = spatialdata::units::ElasticityScales::getDensityScale(*_mydata->scales);
-    const PylithReal accelerationScale = spatialdata::units::ElasticityScales::getAccelerationScale(*_mydata->scales);
-    const PylithReal bodyForceScale = spatialdata::units::ElasticityScales::getBodyForceScale(*_mydata->scales);
+    const PylithReal densityScale = pylith::scales::ElasticityScales::getDensityScale(*_mydata->scales);
+    const PylithReal accelerationScale = pylith::scales::ElasticityScales::getAccelerationScale(*_mydata->scales);
+    const PylithReal bodyForceScale = pylith::scales::ElasticityScales::getBodyForceScale(*_mydata->scales);
 
     delete _mymaterial->_auxiliaryField;_mymaterial->_auxiliaryField = new topology::Field(*_mesh);CPPUNIT_ASSERT(_mymaterial->_auxiliaryField);
     _mymaterial->_auxiliaryFieldSetup();

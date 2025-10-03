@@ -19,7 +19,7 @@
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL*
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
-#include "spatialdata/units/Scales.hh" // USES Scales
+#include "pylith/scales/Scales.hh" // USES Scales
 
 #include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream
@@ -343,7 +343,7 @@ pylith::topology::MeshOps::createFromPoints(const PylithReal* points,
 // Nondimensionalize the finite-element mesh.
 void
 pylith::topology::MeshOps::nondimensionalize(Mesh* const mesh,
-                                             const spatialdata::units::Scales& scales) {
+                                             const pylith::scales::Scales& scales) {
     PYLITH_METHOD_BEGIN;
     _MeshOps::Events::init();
     _MeshOps::Events::logger.eventBegin(_MeshOps::Events::nondimensionalize);

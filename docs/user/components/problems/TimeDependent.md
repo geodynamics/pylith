@@ -90,7 +90,7 @@ ic = [domain]
 gravity_field = spatialdata.spatialdb.GravityField
 
 # Set the scales for nondimensionalizing the problem
-scales = spatialdata.units.NondimElasticQuasistatic
+scales = pylith.scales.NondimElasticQuasistatic
 
 # Set the subfields in the solution
 solution = = pylith.problems.SolnDispLagrange

@@ -15,7 +15,7 @@
 #include "pylith/feassemble/AuxiliaryFactory.hh" // USES AuxiliaryFactory
 #include "pylith/problems/ObserversPhysics.hh" // USES ObserversPhysics
 #include "pylith/topology/Mesh.hh" // USES Mesh
-#include "spatialdata/units/Scales.hh" // USES Scales
+#include "pylith/scales/Scales.hh" // USES Scales
 
 #include "pylith/utils/error.hh" // USES PYLITH_JMETHOD_*
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
@@ -94,11 +94,11 @@ pylith::problems::Physics::getLabelValue(void) const {
 // ------------------------------------------------------------------------------------------------
 // Set manager of scales used to nondimensionalize problem.
 void
-pylith::problems::Physics::setScales(const spatialdata::units::Scales& dim) {
+pylith::problems::Physics::setScales(const pylith::scales::Scales& dim) {
     PYLITH_COMPONENT_DEBUG("setScales(dim="<<typeid(dim).name()<<")");
 
     if (!_scales) {
-        _scales = new spatialdata::units::Scales(dim);
+        _scales = new pylith::scales::Scales(dim);
     } else {
         *_scales = dim;
     } // if/else
@@ -110,7 +110,7 @@ pylith::problems::Physics::setScales(const spatialdata::units::Scales& dim) {
  *
  * @param dim Nondimensionalizer.
  */
-const spatialdata::units::Scales&
+const pylith::scales::Scales&
 pylith::problems::Physics::getScales(void) const {
     assert(_scales);
     return *_scales;

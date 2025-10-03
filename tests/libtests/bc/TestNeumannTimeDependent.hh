@@ -26,7 +26,7 @@
 
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // HOLDSA UserFunctionDB
 #include "spatialdata/geocoords/geocoordsfwd.hh" // HOLDSA CoordSys
-#include "spatialdata/units/unitsfwd.hh" // HOLDSA Scales
+#include "pylith/scales/scalesfwd.hh" // HOLDSA Scales
 
 /// Namespace for pylith package
 namespace pylith {
@@ -134,7 +134,7 @@ public:
     const char* bcLabel; ///< Label defining cells associated with material.
 
     spatialdata::geocoords::CoordSys* cs; ///< Coordinate system.
-    spatialdata::units::Scales* scales; ///< Scales for nondimensionalization.
+    pylith::scales::Scales* scales; ///< Scales for nondimensionalization.
 
     const char* field; ///< Name of solution field constrained.
     pylith::topology::FieldBase::VectorFieldEnum vectorFieldType; ///< Vector field type for constrained field.

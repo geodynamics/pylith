@@ -29,7 +29,7 @@
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
-#include "spatialdata/units/Scales.hh" // USES Scales
+#include "pylith/scales/Scales.hh" // USES Scales
 
 // ----------------------------------------------------------------------
 // Setup testing data.
@@ -149,7 +149,7 @@ void
 pylith::materials::TestMaterial::testScales(void) {
     PYLITH_METHOD_BEGIN;
 
-    spatialdata::units::Scales scales;
+    pylith::scales::Scales scales;
     const double scale = 5.0;
     scales.setLengthScale(scale);
 
@@ -726,7 +726,7 @@ pylith::materials::TestMaterial_Data::TestMaterial_Data(void) :
     cs(NULL),
     gravityField(NULL),
 
-    scales(new spatialdata::units::Scales),
+    scales(new pylith::scales::Scales),
 
     t(0.0),
     dt(0.0),

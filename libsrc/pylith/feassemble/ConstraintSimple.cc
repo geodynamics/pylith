@@ -22,7 +22,7 @@
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
 
-#include "spatialdata/units/Scales.hh" // USES Scales
+#include "pylith/scales/Scales.hh" // USES Scales
 
 #include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error

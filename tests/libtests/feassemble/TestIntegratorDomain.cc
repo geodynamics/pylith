@@ -28,7 +28,7 @@
 
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
-#include "spatialdata/units/Scales.hh" // USES Scales
+#include "pylith/scales/Scales.hh" // USES Scales
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Setup testing data.
@@ -519,7 +519,7 @@ pylith::feassemble::TestIntegratorDomain_Data::TestIntegratorDomain_Data(void) :
     materialId(0),
     cs(NULL),
 
-    scales(new spatialdata::units::Scales),
+    scales(new pylith::scales::Scales),
 
     t(0.0),
     dt(0.0),

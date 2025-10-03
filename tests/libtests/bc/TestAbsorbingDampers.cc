@@ -28,7 +28,7 @@
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 #include "spatialdata/spatialdb/TimeHistory.hh" // USES TimeHistory
-#include "spatialdata/units/Scales.hh" // USES Scales
+#include "pylith/scales/Scales.hh" // USES Scales
 
 const double pylith::bc::TestAbsorbingDampers::FILL_VALUE = -999.0;
 
@@ -172,7 +172,7 @@ void
 pylith::bc::TestAbsorbingDampers::testScales(void) {
     PYLITH_METHOD_BEGIN;
 
-    spatialdata::units::Scales scales;
+    pylith::scales::Scales scales;
     const double scale = 2.0;
     scales.setLengthScale(scale);
 
@@ -449,7 +449,7 @@ pylith::bc::TestAbsorbingDampers::_setupSolutionField(void) {
 pylith::bc::TestAbsorbingDampers_Data::TestAbsorbingDampers_Data(void) :
     meshFilename(NULL),
     bcLabel(NULL),
-    scales(new spatialdata::units::Scales),
+    scales(new pylith::scales::Scales),
     field(NULL),
     vectorFieldType(pylith::topology::Field::OTHER),
     numAuxSubfields(0),

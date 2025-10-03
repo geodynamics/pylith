@@ -50,7 +50,7 @@ auxiliary_subfields.isotropic_permeability.basis_order = 2
 caption: Nondimensionalization parameters for the 2D outer-rise examples with poroelasticity.
 ---
 [pylithapp.problem]
-scales = spatialdata.units.NondimElasticQuasistatic
+scales = pylith.scales.NondimElasticQuasistatic
 scales.length_scale = 100.0*m
 scales.relaxation_time = 1*year
 scales.shear_modulus = 10.0*GPa

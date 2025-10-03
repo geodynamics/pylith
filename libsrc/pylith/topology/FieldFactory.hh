@@ -14,7 +14,7 @@
 
 #include "pylith/topology/FieldBase.hh" // USES FieldBase::Discretization
 
-#include "spatialdata/units/unitsfwd.hh" // HOLDSA Scales
+#include "pylith/scales/scalesfwd.hh" // HOLDSA Scales
 
 class pylith::topology::FieldFactory : public pylith::utils::GenericComponent {
     friend class TestFieldFactory; // unit testing
@@ -71,7 +71,7 @@ public:
      */
     virtual
     void initialize(pylith::topology::Field* field,
-                    const spatialdata::units::Scales& scales,
+                    const pylith::scales::Scales& scales,
                     const int spaceDim,
                     const pylith::topology::FieldBase::Description* defaultDescription=NULL);
 
@@ -81,7 +81,7 @@ protected:
     pylith::topology::Field* _field; ///< Auxiliary field.
     pylith::topology::FieldBase::discretizations_map _subfieldDiscretizations; ///< Discretization for each subfield.
     pylith::topology::FieldBase::Description* _defaultDescription; ///< Description for default subfield.
-    spatialdata::units::Scales* _scales; ///< Scales for nondimensionalization.
+    pylith::scales::Scales* _scales; ///< Scales for nondimensionalization.
     int _spaceDim; ///< Spatial dimension.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////

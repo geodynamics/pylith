@@ -24,8 +24,8 @@
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
-#include "spatialdata/units/Scales.hh" // USES Scales
-#include "spatialdata/units/ElasticityScales.hh" // USES ElasticityScales
+#include "pylith/scales/Scales.hh" // USES Scales
+#include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
 
 #include "catch2/catch_test_macros.hpp"
 
@@ -47,7 +47,7 @@ pylith::materials::TestAuxiliaryFactoryElasticity::TestAuxiliaryFactoryElasticit
         componentNames,
         componentNames.size(),
         pylith::topology::Field::SCALAR,
-        spatialdata::units::ElasticityScales::getDensityScale(*_data->scales),
+        pylith::scales::ElasticityScales::getDensityScale(*_data->scales),
         0.0,
         pylith::topology::FieldQuery::validatorPositive
         );
@@ -68,7 +68,7 @@ pylith::materials::TestAuxiliaryFactoryElasticity::TestAuxiliaryFactoryElasticit
         componentNames,
         componentNames.size(),
         pylith::topology::Field::VECTOR,
-        spatialdata::units::ElasticityScales::getBodyForceScale(*_data->scales)
+        pylith::scales::ElasticityScales::getBodyForceScale(*_data->scales)
         );
     info.fe = pylith::topology::Field::Discretization(
         2, 2, _data->auxDim, _data->auxDim, false, pylith::topology::Field::DEFAULT_BASIS, pylith::topology::Field::POLYNOMIAL_SPACE, false
@@ -88,7 +88,7 @@ pylith::materials::TestAuxiliaryFactoryElasticity::TestAuxiliaryFactoryElasticit
         componentNames,
         componentNames.size(),
         pylith::topology::Field::VECTOR,
-        spatialdata::units::ElasticityScales::getAccelerationScale(*_data->scales)
+        pylith::scales::ElasticityScales::getAccelerationScale(*_data->scales)
         );
     info.fe = pylith::topology::Field::Discretization(
         2, 2, _data->auxDim, _data->auxDim, false, pylith::topology::Field::DEFAULT_BASIS, pylith::topology::Field::POLYNOMIAL_SPACE, true
@@ -215,7 +215,7 @@ pylith::materials::TestAuxiliaryFactoryElasticity::_initialize(void) {
 pylith::materials::TestAuxiliaryFactoryElasticity_Data::TestAuxiliaryFactoryElasticity_Data(void) :
     meshFilename(NULL),
     cs(NULL),
-    scales(new spatialdata::units::Scales),
+    scales(new pylith::scales::Scales),
     auxiliaryDB(new spatialdata::spatialdb::UserFunctionDB),
     gravityField(new spatialdata::spatialdb::GravityField) {}
 

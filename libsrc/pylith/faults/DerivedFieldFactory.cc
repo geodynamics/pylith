@@ -14,8 +14,8 @@
 
 #include "pylith/topology/Field.hh" // USES Field
 
-#include "spatialdata/units/Scales.hh" // USES Scales
-#include "spatialdata/units/ElasticityScales.hh" // USES ElasticityScales
+#include "pylith/scales/Scales.hh" // USES Scales
+#include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD*
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL*
@@ -43,7 +43,7 @@ pylith::faults::DerivedFieldFactory::addTractionChange(void) {
 
     const char* fieldName = "traction_change";
     const char* componentNames[3] = { "traction_change_opening", "traction_change_left_lateral", "traction_change_reverse" };
-    const PylithReal stressScale = spatialdata::units::ElasticityScales::getStressScale(*_scales);
+    const PylithReal stressScale = pylith::scales::ElasticityScales::getStressScale(*_scales);
 
     pylith::topology::Field::Description description;
     description.label = fieldName;

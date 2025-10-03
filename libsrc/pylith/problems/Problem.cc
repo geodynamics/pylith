@@ -28,7 +28,7 @@
 #include "pylith/topology/MeshOps.hh" // USES MeshOps
 #include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor::optimizeClosure()
 
-#include "spatialdata/units/Scales.hh" // USES Scales
+#include "pylith/scales/Scales.hh" // USES Scales
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 
 #include "pylith/utils/EventLogger.hh" // HASA EventLogger
@@ -214,11 +214,11 @@ pylith::problems::Problem::setPetscDefaults(const int flags) {
 // ------------------------------------------------------------------------------------------------
 // Set manager of scales used to nondimensionalize problem.
 void
-pylith::problems::Problem::setScales(const spatialdata::units::Scales& dim) {
+pylith::problems::Problem::setScales(const pylith::scales::Scales& dim) {
     PYLITH_COMPONENT_DEBUG("Problem::setScales(dim="<<typeid(dim).name()<<")");
 
     if (!_scales) {
-        _scales = new spatialdata::units::Scales(dim);
+        _scales = new pylith::scales::Scales(dim);
     } else {
         *_scales = dim;
     } // if/else

@@ -22,7 +22,7 @@
 #include "pylith/meshio/MeshIOCubit.hh" // USES MeshIOCubit
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
-#include "spatialdata/units/Scales.hh" // USES Scales
+#include "pylith/scales/Scales.hh" // USES Scales
 
 #include "data/OutputSolnPointsDataTri3.hh"
 #include "data/OutputSolnPointsDataQuad4.hh"
@@ -181,7 +181,7 @@ pylith::meshio::TestOutputSolnPoints::_testSetupInterpolator(const OutputSolnPoi
 
     topology::Mesh mesh;
     spatialdata::geocoords::CSCart cs;
-    spatialdata::units::Scales scales;
+    pylith::scales::Scales scales;
 
     cs.setSpaceDim(spaceDim);
     mesh.setCoordSys(&cs);
@@ -241,7 +241,7 @@ pylith::meshio::TestOutputSolnPoints::_testInterpolate(const OutputSolnPointsDat
 
     topology::Mesh mesh;
     spatialdata::geocoords::CSCart cs;
-    spatialdata::units::Scales scales;
+    pylith::scales::Scales scales;
 
     cs.setSpaceDim(spaceDim);
     mesh.setCoordSys(&cs);

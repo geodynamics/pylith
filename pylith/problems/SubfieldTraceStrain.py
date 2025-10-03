@@ -9,7 +9,7 @@
 # =================================================================================================
 
 from .SolutionSubfield import SolutionSubfield
-from spatialdata.units.ElasticityScales import ElasticityScales
+from pylith.scales.ElasticityScales import ElasticityScales
 
 
 class SubfieldTraceStrain(SolutionSubfield):

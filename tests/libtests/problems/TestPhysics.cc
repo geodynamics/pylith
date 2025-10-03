@@ -24,7 +24,7 @@
 #include "pylith/problems/ObserversPhysics.hh" // USES ObserversPhysics
 
 #include "spatialdata/spatialdb/UniformDB.hh" // USES UniformDB
-#include "spatialdata/units/Scales.hh" // USES Scales
+#include "pylith/scales/Scales.hh" // USES Scales
 
 // ---------------------------------------------------------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION(pylith::problems::TestPhysics);
@@ -56,7 +56,7 @@ void
 pylith::problems::TestPhysics::testSetScales(void) {
     PYLITH_METHOD_BEGIN;
 
-    spatialdata::units::Scales scales;
+    pylith::scales::Scales scales;
     const PylithReal lengthScale = 3.0;
     scales.setLengthScale(lengthScale);
 

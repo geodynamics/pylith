@@ -24,7 +24,7 @@
 #include "pylith/utils/PetscOptions.hh" // USES SolverDefaults
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
 
-#include "spatialdata/units/Scales.hh" // USES Scales
+#include "pylith/scales/Scales.hh" // USES Scales
 
 #include "petscts.h" // USES PetscTS
 

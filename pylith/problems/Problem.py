@@ -95,7 +95,7 @@ class Problem(PetscComponent, ModuleProblem):
     )
     solution.meta["tip"] = "Solution field for problem."
 
-    from spatialdata.units.QuasistaticElasticity import QuasistaticElasticity
+    from pylith.scales.QuasistaticElasticity import QuasistaticElasticity
 
     scales = pythia.pyre.inventory.facility(
         "scales", family="scales", factory=QuasistaticElasticity

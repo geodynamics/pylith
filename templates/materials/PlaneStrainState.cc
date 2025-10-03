@@ -20,7 +20,7 @@
 #include "pylith/utils/array.hh" // USES scalar_array
 #include "pylith/utils/constants.hh" // USES pylith::max_double
 
-#include "spatialdata/units/Scales.hh" // USES Scales
+#include "pylith/scales/Scales.hh" // USES Scales
 
 #include <cassert> // USES assert()
 #include <sstream> // USES std::ostringstream

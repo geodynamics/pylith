@@ -14,7 +14,7 @@
 
 #include "pylith/topology/FieldBase.hh" // USES FieldBase::Descretization
 
-#include "spatialdata/units/unitsfwd.hh" // HASA Scales
+#include "pylith/scales/scalesfwd.hh" // HASA Scales
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // HASA Scales
 
 // SolutionFactory-----------------------------------------------
@@ -32,7 +32,7 @@ public:
      * @param[in] spaceDim Spatial dimension of problem.
      */
     SolutionFactory(pylith::topology::Field& solution,
-                    const spatialdata::units::Scales& scales);
+                    const pylith::scales::Scales& scales);
 
     /// Destructor.
     ~SolutionFactory(void);
@@ -95,7 +95,7 @@ public:
 private:
 
     pylith::topology::Field& _solution; ///< Solution field.
-    const spatialdata::units::Scales& _scales; ///< Nondimensionalizer.
+    const pylith::scales::Scales& _scales; ///< Nondimensionalizer.
     const int _spaceDim; ///< Spatal dimension of problem.
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////

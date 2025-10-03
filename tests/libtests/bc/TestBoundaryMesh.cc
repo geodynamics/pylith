@@ -21,7 +21,7 @@
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
-#include "spatialdata/units/Scales.hh" // USES Scales
+#include "pylith/scales/Scales.hh" // USES Scales
 
 // ----------------------------------------------------------------------
 // Setup testing data.
@@ -64,7 +64,7 @@ pylith::bc::TestBoundaryMesh::testSubmesh(void) { // testSubmesh
 
     // Set up coordinates
     spatialdata::geocoords::CSCart cs;
-    spatialdata::units::Scales scales;
+    pylith::scales::Scales scales;
     cs.setSpaceDim(mesh.getDimension());
     mesh.setCoordSys(&cs);
     pylith::topology::MeshOps::nondimensionalize(&mesh, scales);
@@ -118,7 +118,7 @@ pylith::bc::TestBoundaryMesh::testSubmeshFault(void) { // testSubmeshFault
 
     // Set up coordinates
     spatialdata::geocoords::CSCart cs;
-    spatialdata::units::Scales scales;
+    pylith::scales::Scales scales;
     cs.setSpaceDim(mesh.getDimension());
     mesh.setCoordSys(&cs);
     pylith::topology::MeshOps::nondimensionalize(&mesh, scales);

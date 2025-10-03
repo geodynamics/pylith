@@ -15,7 +15,7 @@
 #include "pylith/topology/Field.hh" // USES pylith::topology::Field::Discretization
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
-#include "spatialdata/units/Scales.hh" // USES Scales
+#include "pylith/scales/Scales.hh" // USES Scales
 
 // ----------------------------------------------------------------------
 namespace pylith {

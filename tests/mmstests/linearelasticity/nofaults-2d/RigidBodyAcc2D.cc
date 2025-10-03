@@ -17,7 +17,7 @@
 #include "pylith/topology/Field.hh" // USES pylith::topology::Field::Discretization
 #include "pylith/utils/journals.hh" // USES pythia::journal::debug_t
 
-#include "spatialdata/units/ElasticityScales.hh" // USES ElasticityScales
+#include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
 
 // ---------------------------------------------------------------------------------------------------------------------
 namespace pylith {
@@ -25,7 +25,7 @@ namespace pylith {
 } // pylith
 
 class pylith::_RigidBodyAcc2D {
-    static spatialdata::units::Scales scales;
+    static pylith::scales::Scales scales;
     static const double TIME_SNAPSHOT; // nondimensional
 
     // Density
@@ -183,7 +183,7 @@ class pylith::_RigidBodyAcc2D {
         assert(2 == dim);
         assert(x);
         assert(f0);
-        const double densityScale = spatialdata::units::ElasticityScales::getDensityScale(scales);
+        const double densityScale = pylith::scales::ElasticityScales::getDensityScale(scales);
         f0[0] += density(x[0], x[1]) / densityScale * acc_x(x[0], x[1], t);
         f0[1] += density(x[0], x[1]) / densityScale * acc_y(x[0], x[1], t);
     } // mmsBodyForceKernel
@@ -203,7 +203,7 @@ public:
 
         const double lengthScale = data->scales.getLengthScale(); // domain specific value
         const double velocityScale = vs(0.0, 0.0);
-        spatialdata::units::ElasticityScales::setDynamicElasticity(&scales, lengthScale, velocityScale);
+        pylith::scales::ElasticityScales::setDynamicElasticity(&scales, lengthScale, velocityScale);
         data->scales = scales;
         data->formulation = pylith::problems::Physics::DYNAMIC;
 
@@ -275,7 +275,7 @@ public:
     } // createData
 
 }; // _RigidBodyAcc2D
-spatialdata::units::Scales pylith::_RigidBodyAcc2D::scales;
+pylith::scales::Scales pylith::_RigidBodyAcc2D::scales;
 
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*

@@ -16,7 +16,7 @@
 #include "pylith/utils/arrayfwd.hh" // USES string_vector
 
 #include "pylith/topology/topologyfwd.hh" // USES Field
-#include "spatialdata/units/unitsfwd.hh" // HASA Scales
+#include "pylith/scales/scalesfwd.hh" // HASA Scales
 
 class pylith::problems::InitialCondition : public pylith::utils::PyreComponent {
     friend class TestInitialCondition; // unit testing
@@ -55,7 +55,7 @@ public:
      */
     virtual
     void setValues(pylith::topology::Field* solution,
-                   const spatialdata::units::Scales& scales) = 0;
+                   const pylith::scales::Scales& scales) = 0;
 
     // PROTECTED MEMBERS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:

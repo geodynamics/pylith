@@ -28,7 +28,7 @@
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
-#include "spatialdata/units/Scales.hh" // USES Nondimensionalizer
+#include "pylith/scales/Scales.hh" // USES Nondimensionalizer
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 
 #include <cmath> // USES pow(), sqrt()

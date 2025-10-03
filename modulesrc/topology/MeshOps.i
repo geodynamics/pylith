@@ -22,7 +22,7 @@
    */
   void
   MeshOps_nondimensionalize(pylith::topology::Mesh* const mesh,
-			    const spatialdata::units::Scales& scales) {
+			    const pylith::scales::Scales& scales) {
     pylith::topology::MeshOps::nondimensionalize(mesh, scales);
   } // nondimensionalize
 %}

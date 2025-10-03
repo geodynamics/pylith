@@ -20,8 +20,8 @@
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL*
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
-#include "spatialdata/units/Scales.hh" // USES Scales
-#include "spatialdata/units/ElasticityScales.hh" // USES ElasticityScales
+#include "pylith/scales/Scales.hh" // USES Scales
+#include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 
 #include <typeinfo> // USES "<<typeid()
@@ -30,7 +30,7 @@
 // ------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::problems::SolutionFactory::SolutionFactory(pylith::topology::Field& solution,
-                                                   const spatialdata::units::Scales& scales) :
+                                                   const pylith::scales::Scales& scales) :
     _solution(solution),
     _scales(scales),
     _spaceDim(solution.getSpaceDim()) {
@@ -109,7 +109,7 @@ pylith::problems::SolutionFactory::addPressure(const pylith::topology::Field::Di
 
     const char* fieldName = "pressure";
     const char* componentNames[1] = { "pressure" };
-    const PylithReal fluidPressureScale = spatialdata::units::ElasticityScales::getFluidPressureScale(_scales);
+    const PylithReal fluidPressureScale = pylith::scales::ElasticityScales::getFluidPressureScale(_scales);
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
@@ -137,7 +137,7 @@ pylith::problems::SolutionFactory::addPressureDot(const pylith::topology::Field:
     const char* fieldName = "pressure_t";
     const char* componentNames[1] = { "pressure_t" };
     const PylithReal timeScale = _scales.getTimeScale();
-    const PylithReal fluidPressureScale = spatialdata::units::ElasticityScales::getFluidPressureScale(_scales);
+    const PylithReal fluidPressureScale = pylith::scales::ElasticityScales::getFluidPressureScale(_scales);
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
@@ -164,7 +164,7 @@ pylith::problems::SolutionFactory::addTraceStrain(const pylith::topology::Field:
 
     const char* fieldName = "trace_strain";
     const char* componentNames[1] = { "trace_strain" };
-    const PylithReal strainScale = spatialdata::units::ElasticityScales::getStrainScale(_scales);
+    const PylithReal strainScale = pylith::scales::ElasticityScales::getStrainScale(_scales);
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
@@ -192,7 +192,7 @@ pylith::problems::SolutionFactory::addTraceStrainDot(const pylith::topology::Fie
     const char* fieldName = "trace_strain_t";
     const char* componentNames[1] = { "trace_strain_t" };
     const PylithReal timeScale = _scales.getTimeScale();
-    const PylithReal strainScale = spatialdata::units::ElasticityScales::getStrainScale(_scales);
+    const PylithReal strainScale = pylith::scales::ElasticityScales::getStrainScale(_scales);
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
@@ -233,7 +233,7 @@ pylith::problems::SolutionFactory::addLagrangeMultiplierFault(const pylith::topo
     for (int i = 0; i < _spaceDim; ++i) {
         description.componentNames[i] = componentNames[i];
     } // for
-    description.scale = spatialdata::units::ElasticityScales::getStressScale(_scales);
+    description.scale = pylith::scales::ElasticityScales::getStressScale(_scales);
     description.validator = NULL;
 
     _solution.subfieldAdd(description, discretization);

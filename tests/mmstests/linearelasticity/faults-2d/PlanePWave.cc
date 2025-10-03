@@ -31,8 +31,8 @@
 
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
-#include "spatialdata/units/Scales.hh" // USES Scales
-#include "spatialdata/units/ElasticityScales.hh" // USES ElasticityScales
+#include "pylith/scales/Scales.hh" // USES Scales
+#include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
 
 // ------------------------------------------------------------------------------------------------
 namespace pylith {
@@ -40,7 +40,7 @@ namespace pylith {
 } // pylith
 
 class pylith::_PlanePWave {
-    static spatialdata::units::Scales scales;
+    static pylith::scales::Scales scales;
 
     static const double SLIP_RATE; // nondimensional
     static const double TIME_SNAPSHOT; // nondimensional
@@ -437,7 +437,7 @@ public:
     } // createData
 
 }; // TestFaultKin2D_PlanePWave
-spatialdata::units::Scales pylith::_PlanePWave::scales;
+pylith::scales::Scales pylith::_PlanePWave::scales;
 const double pylith::_PlanePWave::SLIP_RATE = 3.0;
 const double pylith::_PlanePWave::TIME_SNAPSHOT = 5.0;
 

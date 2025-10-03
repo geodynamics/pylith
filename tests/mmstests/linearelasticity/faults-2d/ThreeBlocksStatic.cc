@@ -32,8 +32,8 @@
 
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
-#include "spatialdata/units/Scales.hh" // USES Scales
-#include "spatialdata/units/ElasticityScales.hh" // USES ElasticityScales
+#include "pylith/scales/Scales.hh" // USES Scales
+#include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
 
 namespace pylith {
     class _ThreeBlocksStatic;
@@ -41,7 +41,7 @@ namespace pylith {
 
 // ------------------------------------------------------------------------------------------------
 class pylith::_ThreeBlocksStatic {
-    static spatialdata::units::Scales scales;
+    static pylith::scales::Scales scales;
     static const double X_FAULT_LEFT; // nondimensional
     static const double X_FAULT_RIGHT; // nondimensional
     static const double Y_DISP_LEFT; // nondimensional
@@ -343,7 +343,7 @@ public:
     } // ccreateData
 
 }; // TestFaultKin2D_ThreeBlocksStatic
-spatialdata::units::Scales pylith::_ThreeBlocksStatic::scales;
+pylith::scales::Scales pylith::_ThreeBlocksStatic::scales;
 
 const double pylith::_ThreeBlocksStatic::X_FAULT_LEFT = -2.0/12.0;
 const double pylith::_ThreeBlocksStatic::X_FAULT_RIGHT = +2.0/12.0;

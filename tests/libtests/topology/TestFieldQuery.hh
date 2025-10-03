@@ -18,7 +18,7 @@
 
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // HOLDSA UserFunctionDB
 #include "spatialdata/geocoords/geocoordsfwd.hh" // HOLDSA CoordSys
-#include "spatialdata/units/unitsfwd.hh" // HOLDSA Scales
+#include "pylith/scales/scalesfwd.hh" // HOLDSA Scales
 
 namespace pylith {
     namespace topology {
@@ -94,7 +94,7 @@ public:
     pylith::meshio::MeshBuilder::Topology* topology; ///< Topology for domain mesh
     pylith::meshio::MeshBuilder::Geometry* geometry; ///< Geometry for domain mesh
     spatialdata::geocoords::CoordSys* cs; ///< Coordinate system.
-    spatialdata::units::Scales* scales; ///< Scales for nondimensionalization.
+    pylith::scales::Scales* scales; ///< Scales for nondimensionalization.
 
     /// @defgroup Subfield discretization information
     /// @{

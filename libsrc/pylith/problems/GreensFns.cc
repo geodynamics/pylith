@@ -23,7 +23,7 @@
 #include "pylith/problems/ProgressMonitorStep.hh" // USES ProgressMonitorStep
 #include "pylith/utils/PetscOptions.hh" // USES SolverDefaults
 
-#include "spatialdata/units/Scales.hh" // USES Scales
+#include "pylith/scales/Scales.hh" // USES Scales
 
 #include "petscsnes.h" // USES PetscSNES
 

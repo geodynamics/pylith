@@ -17,7 +17,7 @@
 #include "pylith/utils/journals.hh" // USES pythia::journal::debug_t
 
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
-#include "spatialdata/units/ElasticityScales.hh" // USES ElasticityScales
+#include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
 
 namespace pylith {
     class _BodyForce2D;
@@ -27,7 +27,7 @@ namespace pylith {
 class pylith::_BodyForce2D {
 private:
 
-    static spatialdata::units::Scales scales;
+    static pylith::scales::Scales scales;
     static const double BODY_FORCE; // dimensioned
     static const double X_MAX; // dimensioned
 
@@ -92,7 +92,7 @@ private:
     static double pressure(const double x,
                            const double y) {
         const double lengthScale = scales.getLengthScale();
-        const double bodyForceScale = spatialdata::units::ElasticityScales::getBodyForceScale(scales);
+        const double bodyForceScale = pylith::scales::ElasticityScales::getBodyForceScale(scales);
 
         const double bodyforceN = BODY_FORCE / bodyForceScale;
         return -bodyforceN * (X_MAX/lengthScale - x);
@@ -211,7 +211,7 @@ public:
     } // createData
 
 }; // TestIsotropicLinearIncompElasticity2D_BodyForce
-spatialdata::units::Scales pylith::_BodyForce2D::scales;
+pylith::scales::Scales pylith::_BodyForce2D::scales;
 const double pylith::_BodyForce2D::BODY_FORCE = 20.0e+3;
 const double pylith::_BodyForce2D::X_MAX = +4.0e+3;
 

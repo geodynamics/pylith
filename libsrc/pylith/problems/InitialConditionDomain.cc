@@ -16,7 +16,7 @@
 #include "pylith/topology/Field.hh" // USES Field
 
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
-#include "spatialdata/units/Scales.hh" // USES Scales
+#include "pylith/scales/Scales.hh" // USES Scales
 
 #include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
@@ -66,7 +66,7 @@ pylith::problems::InitialConditionDomain::setDB(spatialdata::spatialdb::SpatialD
 // Set solver type.
 void
 pylith::problems::InitialConditionDomain::setValues(pylith::topology::Field* solution,
-                                                    const spatialdata::units::Scales& scales) {
+                                                    const pylith::scales::Scales& scales) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("setValues(solution="<<solution<<", scales)");
 

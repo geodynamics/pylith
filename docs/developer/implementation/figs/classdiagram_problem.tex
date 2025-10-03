@@ -53,7 +53,7 @@
 }};
 
 
-  \node (scales) [abstract-class, anchor=west] at ($(cxx-problem.east)+(12em,12em)$) {\umlemptyclass{spatialdata::units::Scales}};
+  \node (scales) [abstract-class, anchor=west] at ($(cxx-problem.east)+(12em,12em)$) {\umlemptyclass{pylith::scales::Scales}};
   \node (material) [abstract-class] at ($(scales.south)-(0,1em)$) {\umlemptyclass{Material}};
   \node (bc) [abstract-class] at ($(material.south)-(0,1em)$) {\umlemptyclass{BoundaryCondition}};
   \node (interface) [abstract-class] at ($(bc.south)-(0,1em)$) {\umlemptyclass{FaultCohesive}};

@@ -41,7 +41,7 @@ class TimeDependent(Problem, ModuleTimeDependent):
             gravity_field = spatialdata.spatialdb.GravityField
 
             # Set the scales for nondimensionalizing the problem
-            scales = spatialdata.units.QuasistaticElasticity
+            scales = pylith.scales.QuasistaticElasticity
 
             # Set the subfields in the solution
             solution = = pylith.problems.SolnDispLagrange

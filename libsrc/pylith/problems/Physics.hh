@@ -17,7 +17,7 @@
 #include "pylith/feassemble/feassemblefwd.hh" // USES Integrator, Constraint
 
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // USES SpatialDB
-#include "spatialdata/units/unitsfwd.hh" // HASA Scales
+#include "pylith/scales/scalesfwd.hh" // HASA Scales
 
 class pylith::problems::Physics : public pylith::utils::PyreComponent {
     friend class TestPhysics; // unit testing
@@ -72,13 +72,13 @@ public:
      *
      * @param dim Nondimensionalizer.
      */
-    void setScales(const spatialdata::units::Scales& dim);
+    void setScales(const pylith::scales::Scales& dim);
 
     /** Get manager of scales used to nondimensionalize problem.
      *
      * @param dim Nondimensionalizer.
      */
-    const spatialdata::units::Scales& getScales(void) const;
+    const pylith::scales::Scales& getScales(void) const;
 
     /** Set formulation for equations.
      *
@@ -249,7 +249,7 @@ protected:
     // PROTECTED MEMBERS //////////////////////////////////////////////////////////////////////////
 protected:
 
-    spatialdata::units::Scales* _scales; ///< Nondimensionalizer.
+    pylith::scales::Scales* _scales; ///< Nondimensionalizer.
     FormulationEnum _formulation; ///< Formulation for equations.
     pylith::real_array _kernelConstants; ///< Constants used in finite-element kernels (point-wise functions).
 

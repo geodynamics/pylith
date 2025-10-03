@@ -15,7 +15,7 @@
 #include "pylith/materials/IsotropicLinearGenMaxwell3D.hh" // USES IsotropicLinearGenMaxwell3D
 #include "pylith/topology/Field.hh" // USES pylith::topology::Field::Discretization
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
-#include "spatialdata/units/Scales.hh" // USES Scales
+#include "pylith/scales/Scales.hh" // USES Scales
 
 #include "pylith/utils/journals.hh" // :TEMPORARY: USES PYLITH_JOURNAL_ERROR
 

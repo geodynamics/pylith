@@ -16,7 +16,7 @@
 #include "pylith/topology/Field.hh" // USES pylith::topology::Field::Discretization
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
-#include "spatialdata/units/Scales.hh" // USES Scales
+#include "pylith/scales/Scales.hh" // USES Scales
 
 // forward declarations
 namespace pylith {

@@ -30,7 +30,7 @@
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 #include "spatialdata/spatialdb/TimeHistory.hh" // USES TimeHistory
-#include "spatialdata/units/Scales.hh" // USES Scales
+#include "pylith/scales/Scales.hh" // USES Scales
 
 const double pylith::bc::TestDirichletTimeDependent::FILL_VALUE = -999.0;
 
@@ -219,7 +219,7 @@ void
 pylith::bc::TestDirichletTimeDependent::testScales(void) {
     PYLITH_METHOD_BEGIN;
 
-    spatialdata::units::Scales scales;
+    pylith::scales::Scales scales;
     const double scale = 4.0;
     scales.setLengthScale(scale);
 
@@ -629,7 +629,7 @@ pylith::bc::TestDirichletTimeDependent_Data::TestDirichletTimeDependent_Data(voi
     meshFilename(NULL),
     bcLabel(NULL),
     cs(NULL),
-    scales(new spatialdata::units::Scales),
+    scales(new pylith::scales::Scales),
     field(NULL),
     vectorFieldType(pylith::topology::Field::OTHER),
     numConstrainedDOF(0),

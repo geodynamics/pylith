@@ -49,7 +49,7 @@ public:
              */
             virtual
             void setValues(pylith::topology::Field* solution,
-                           const spatialdata::units::Scales& scales) = 0;
+                           const pylith::scales::Scales& scales) = 0;
 
         }; // InitialCondition
 

@@ -17,8 +17,8 @@
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/FieldQuery.hh" // HOLDSA FieldQuery
 
-#include "spatialdata/units/Scales.hh" // USES Scales
-#include "spatialdata/units/ElasticityScales.hh" // USES ElasticityScales
+#include "pylith/scales/Scales.hh" // USES Scales
+#include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD*
@@ -52,7 +52,7 @@ pylith::materials::AuxiliaryFactoryPoroelasticity::addBodyForce(void) {
         "body_force_z"
     };
 
-    const PylithReal bodyForceScale = spatialdata::units::ElasticityScales::getBodyForceScale(*_scales);
+    const PylithReal bodyForceScale = pylith::scales::ElasticityScales::getBodyForceScale(*_scales);
 
     pylith::topology::Field::Description description;
     description.label = subfieldName;
@@ -86,7 +86,7 @@ pylith::materials::AuxiliaryFactoryPoroelasticity::addGravityField(spatialdata::
         "gravitational_acceleration_y",
         "gravitational_acceleration_z"
     };
-    const PylithReal accelerationScale = spatialdata::units::ElasticityScales::getAccelerationScale(*_scales);
+    const PylithReal accelerationScale = pylith::scales::ElasticityScales::getAccelerationScale(*_scales);
 
     pylith::topology::Field::Description description;
     description.label = subfieldName;
@@ -144,7 +144,7 @@ pylith::materials::AuxiliaryFactoryPoroelasticity::addSolidDensity(void) {
     PYLITH_JOURNAL_DEBUG("addSolidDensity(void)");
 
     const char* subfieldName = "solid_density";
-    const PylithReal densityScale = spatialdata::units::ElasticityScales::getDensityScale(*_scales);
+    const PylithReal densityScale = pylith::scales::ElasticityScales::getDensityScale(*_scales);
 
     pylith::topology::Field::Description description;
     description.label = subfieldName;
@@ -171,7 +171,7 @@ pylith::materials::AuxiliaryFactoryPoroelasticity::addFluidDensity(void) { // fl
     PYLITH_JOURNAL_DEBUG("addFluidDensity(void)");
 
     const char* subfieldName = "fluid_density";
-    const PylithReal densityScale = spatialdata::units::ElasticityScales::getDensityScale(*_scales);
+    const PylithReal densityScale = pylith::scales::ElasticityScales::getDensityScale(*_scales);
 
     pylith::topology::Field::Description description;
     description.label = subfieldName;
@@ -198,7 +198,7 @@ pylith::materials::AuxiliaryFactoryPoroelasticity::addFluidViscosity(void) {
     PYLITH_JOURNAL_DEBUG("addFluidViscosity(void)");
 
     const char* subfieldName = "fluid_viscosity";
-    const PylithReal viscosityScale = spatialdata::units::ElasticityScales::getViscosityScale(*_scales);
+    const PylithReal viscosityScale = pylith::scales::ElasticityScales::getViscosityScale(*_scales);
 
     pylith::topology::Field::Description description;
     description.label = subfieldName;

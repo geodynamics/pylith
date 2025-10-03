@@ -29,7 +29,7 @@
 #include "pylith/utils/journals.hh" // pythia::journal
 
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
-#include "spatialdata/units/ElasticityScales.hh" // USES ElasticityScales
+#include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
 
 // ------------------------------------------------------------------------------------------------
 // Constuctor.
@@ -178,7 +178,7 @@ pylith::TestIncompressibleElasticity_Data::TestIncompressibleElasticity_Data(voi
     cs.setSpaceDim(spaceDim);
 
     const double lengthScale = 8.0e+3;
-    spatialdata::units::ElasticityScales::setQuasistaticElasticity(&scales, lengthScale);
+    pylith::scales::ElasticityScales::setQuasistaticElasticity(&scales, lengthScale);
 } // constructor
 
 

@@ -22,8 +22,8 @@
 
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
-#include "spatialdata/units/Scales.hh" // USES Scales
-#include "spatialdata/units/ElasticityScales.hh" // USES ElasticityScales
+#include "pylith/scales/Scales.hh" // USES Scales
+#include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
 
 #include "catch2/catch_test_macros.hpp"
 #include "catch2/matchers/catch_matchers_floating_point.hpp"
@@ -180,7 +180,7 @@ pylith::feassemble::TestAuxiliaryFactory::testInitialize(void) {
     pylith::topology::Field field(mesh);
 
     const int spaceDim = 2;
-    spatialdata::units::Scales scales;
+    pylith::scales::Scales scales;
     scales.setLengthScale(2.0);
 
     pylith::topology::Field::Description description;
@@ -218,7 +218,7 @@ pylith::feassemble::TestAuxiliaryFactory::testInitialize(void) {
 void
 pylith::feassemble::TestAuxiliaryFactory::testSetValuesFromDB(void) {
     const int spaceDim = 2;
-    spatialdata::units::Scales scales;
+    pylith::scales::Scales scales;
     scales.setLengthScale(1.5);
 
     spatialdata::geocoords::CSCart cs;
@@ -238,7 +238,7 @@ pylith::feassemble::TestAuxiliaryFactory::testSetValuesFromDB(void) {
     descriptionDensity.numComponents = 1;
     descriptionDensity.componentNames.resize(1);
     descriptionDensity.componentNames[0] = "density";
-    descriptionDensity.scale = spatialdata::units::ElasticityScales::getDensityScale(scales);
+    descriptionDensity.scale = pylith::scales::ElasticityScales::getDensityScale(scales);
 
     pylith::topology::Field::Description descriptionVelocity;
     descriptionVelocity.label = "velocity";

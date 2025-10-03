@@ -24,7 +24,7 @@
 #include "pylith/meshio/DataWriter.hh" // USES DataWriter
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
-#include "spatialdata/units/Scales.hh" // USES Scales
+#include "pylith/scales/Scales.hh" // USES Scales
 
 // ------------------------------------------------------------------------------------------------
 // Constructor.
@@ -255,7 +255,7 @@ pylith::meshio::TestDataWriterMesh::_initialize(void) {
     cs.setSpaceDim(_mesh->getDimension());
     _mesh->setCoordSys(&cs);
 
-    spatialdata::units::Scales scales;
+    pylith::scales::Scales scales;
     scales.setLengthScale(data->lengthScale);
     pylith::topology::MeshOps::nondimensionalize(_mesh, scales);
 

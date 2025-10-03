@@ -87,7 +87,7 @@ pylith::faults::KinSrcStep::slipFn(const PylithInt dim,
 // ---------------------------------------------------------------------------------------------------------------------
 // Preinitialize earthquake source. Set names/sizes of auxiliary subfields.
 void
-pylith::faults::KinSrcStep::_auxiliaryFieldSetup(const spatialdata::units::Scales& scales,
+pylith::faults::KinSrcStep::_auxiliaryFieldSetup(const pylith::scales::Scales& scales,
                                                  const spatialdata::geocoords::CoordSys* cs) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_auxiliaryFieldSetup()");

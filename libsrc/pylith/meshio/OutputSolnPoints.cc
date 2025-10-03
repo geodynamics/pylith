@@ -28,7 +28,7 @@
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/geocoords/Converter.hh" // USES Converter
-#include "spatialdata/units/Scales.hh" // USES Scales
+#include "pylith/scales/Scales.hh" // USES Scales
 
 #include <cassert> // USES assert()
 

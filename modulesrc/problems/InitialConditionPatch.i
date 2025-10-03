@@ -65,7 +65,7 @@ public:
              * @param[in] scales Nondimensionalization.
              */
             void setValues(pylith::topology::Field* solution,
-                           const spatialdata::units::Scales& scales);
+                           const pylith::scales::Scales& scales);
 
         }; // InitialConditionPatch
 

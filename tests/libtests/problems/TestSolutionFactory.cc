@@ -23,7 +23,7 @@
 
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
-#include "spatialdata/units/Scales.hh" // USES Scales
+#include "pylith/scales/Scales.hh" // USES Scales
 
 #include "catch2/catch_test_macros.hpp"
 
@@ -313,7 +313,7 @@ pylith::problems::TestSolutionFactory::_initialize(void) {
 pylith::problems::TestSolutionFactory_Data::TestSolutionFactory_Data(void) :
     meshFilename(NULL),
     cs(NULL),
-    scales(new spatialdata::units::Scales),
+    scales(new pylith::scales::Scales),
     solutionDB(new spatialdata::spatialdb::UserFunctionDB) {}
 
 

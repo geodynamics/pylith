@@ -19,7 +19,7 @@
 #include "pylith/friction/frictionfwd.hh" // forward declarations
 
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // forward declarations
-#include "spatialdata/units/unitsfwd.hh" // forward declarations
+#include "pylith/scales/scalesfwd.hh" // forward declarations
 
 #include "ViscousFriction.hh"
 

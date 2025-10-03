@@ -16,7 +16,7 @@
 #include "pylith/topology/Field.hh" // USES pylith::topology::Field::Discretization
 #include "pylith/utils/journals.hh" // USES pythia::journal::debug_t
 
-#include "spatialdata/units/ElasticityScales.hh" // USES ElasticityScales
+#include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
 
 namespace pylith {
     class _UniformPressure2D;
@@ -26,7 +26,7 @@ namespace pylith {
 class pylith::_UniformPressure2D {
 private:
 
-    static spatialdata::units::Scales scales;
+    static pylith::scales::Scales scales;
     static const double PRESSURE; // nondimensional
 
     // Density
@@ -195,7 +195,7 @@ public:
     } // createData
 
 }; // _UniformPressure2D
-spatialdata::units::Scales pylith::_UniformPressure2D::scales;
+pylith::scales::Scales pylith::_UniformPressure2D::scales;
 const double pylith::_UniformPressure2D::PRESSURE = 3.0e+6;
 
 // ------------------------------------------------------------------------------------------------

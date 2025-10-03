@@ -20,7 +20,7 @@
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
-#include "spatialdata/units/Scales.hh" // USES Scales
+#include "pylith/scales/Scales.hh" // USES Scales
 
 #include <stdexcept> // USES std::runtime_error
 
@@ -95,7 +95,7 @@ pylith::topology::TestMeshOps::testNondimensionalize(void) {
     spatialdata::geocoords::CSCart cs;
     cs.setSpaceDim(2);
     mesh.setCoordSys(&cs);
-    spatialdata::units::Scales scales;
+    pylith::scales::Scales scales;
     scales.setLengthScale(lengthScale);
     MeshOps::nondimensionalize(&mesh, scales);
 

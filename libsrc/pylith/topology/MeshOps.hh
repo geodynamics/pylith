@@ -15,7 +15,7 @@
 #include "pylith/utils/array.hh" // USES int_array
 
 #include "spatialdata/geocoords/geocoordsfwd.hh"
-#include "spatialdata/units/unitsfwd.hh"
+#include "pylith/scales/scalesfwd.hh"
 
 class pylith::topology::MeshOps {
     friend class TestMeshOps; // unit testing
@@ -86,7 +86,7 @@ public:
      */
     static
     void nondimensionalize(Mesh* const mesh,
-                           const spatialdata::units::Scales& scales);
+                           const pylith::scales::Scales& scales);
 
     /** Check topology of mesh.
      *

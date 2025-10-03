@@ -16,7 +16,7 @@
 #include "pylith/topology/Field.hh" // USES pylith::topology::Field::Discretization
 #include "pylith/utils/journals.hh" // USES pythia::journal::debug_t
 
-#include "spatialdata/units/ElasticityScales.hh" // USES ElasticityScales
+#include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
 
 namespace pylith {
     class _BodyForce3D;
@@ -24,7 +24,7 @@ namespace pylith {
 
 // ------------------------------------------------------------------------------------------------
 class pylith::_BodyForce3D {
-    static spatialdata::units::Scales scales;
+    static pylith::scales::Scales scales;
     static const double BODY_FORCE;
     static const double X_MAX;
 
@@ -93,7 +93,7 @@ class pylith::_BodyForce3D {
                          const double z) {
         const double lengthScale = scales.getLengthScale();
         const double rigidityScale = scales.getRigidityScale();
-        const double bodyForceScale = spatialdata::units::ElasticityScales::getBodyForceScale(scales);
+        const double bodyForceScale = pylith::scales::ElasticityScales::getBodyForceScale(scales);
         const double bodyforceN = BODY_FORCE / bodyForceScale;
         const double muN = density(x,y,z) * vs(x,y,z) * vs(x,y,z) / rigidityScale;
         const double lambdaN = density(x,y,z) * vp(x,y,z) * vp(x,y,z) / rigidityScale - 2.0*muN;
@@ -202,7 +202,7 @@ public:
     } // createData
 
 }; // BodyForce3D
-spatialdata::units::Scales pylith::_BodyForce3D::scales;
+pylith::scales::Scales pylith::_BodyForce3D::scales;
 const double pylith::_BodyForce3D::BODY_FORCE = 5.0e+3;
 const double pylith::_BodyForce3D::X_MAX = 4.0e+3;
 
