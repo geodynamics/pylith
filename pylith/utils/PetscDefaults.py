@@ -49,6 +49,9 @@ class PetscDefaults(Component):
     testing = pythia.pyre.inventory.bool("testing", default=False)
     testing.meta["tip"] = "Use default PETSc testing options."
 
+    impulse_ts = pythia.pyre.inventory.bool("impulse_ts", default=False)
+    impulse_ts.meta["tip"] = "Use custom PETSc TS for impulses."
+
     def __init__(self, name="petscdefaults"):
         """Constructor."""
         Component.__init__(self, name)
@@ -69,6 +72,8 @@ class PetscDefaults(Component):
             value |= ModuleDefaults.COLLECTIVE_IO
         if self.testing:
             value |= ModuleDefaults.TESTING
+        if self.impulse_ts:
+            value |= ModuleDefaults.TS_ADAPT
         return value
 
 

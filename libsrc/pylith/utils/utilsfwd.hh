@@ -23,6 +23,7 @@ namespace pylith {
         class DependenciesVersion;
 
         class TestArray;
+        class TSAdaptImpulse;
 
     } // utils
 } // pylith

@@ -21,7 +21,8 @@
 #include "pylith/problems/ObserversSoln.hh" // USES ObserversSoln
 #include "pylith/problems/InitialCondition.hh" // USES InitialCondition
 #include "pylith/problems/ProgressMonitorTime.hh" // USES ProgressMonitorTime
-#include "pylith/utils/PetscOptions.hh" // USES SolverDefaults
+#include "pylith/utils/PetscOptions.hh" // USES PetscDefaults
+#include "pylith/utils/TSAdaptImpulse.hh" // USES TSAdaptImpulse
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
 
 #include "pylith/scales/Scales.hh" // USES Scales
@@ -352,7 +353,7 @@ pylith::problems::TimeDependent::initialize(void) {
     PetscErrorCode err = TSDestroy(&_ts);PYLITH_CHECK_ERROR(err);assert(!_ts);
     const pylith::topology::Mesh& mesh = solution->getMesh();
     err = TSCreate(mesh.getComm(), &_ts);PYLITH_CHECK_ERROR(err);assert(_ts);
-    err = TSSetType(_ts, TSBEULER);PYLITH_CHECK_ERROR(err); // Backward Euler is default time stepping method.
+    // err = TSSetType(_ts, TSBEULER);PYLITH_CHECK_ERROR(err); // Backward Euler is default time stepping method.
     err = TSSetExactFinalTime(_ts, TS_EXACTFINALTIME_STEPOVER);PYLITH_CHECK_ERROR(err); // Ok to step over final time.
     err = TSSetApplicationContext(_ts, (void*)this);PYLITH_CHECK_ERROR(err);
 
@@ -441,18 +442,10 @@ pylith::problems::TimeDependent::initialize(void) {
     } // switch
 
     err = TSSetFromOptions(_ts);PYLITH_CHECK_ERROR(err);
+    if (_petscDefaults && pylith::utils::PetscDefaults::TS_ADAPT) {
+        pylith::utils::TSAdaptImpulse::set(_ts);
+    } // if
     err = TSSetUp(_ts);PYLITH_CHECK_ERROR(err);
-
-#if 0
-    // Set solve type for solution fields defined over the domain (not Lagrange multipliers).
-    PetscDS dsSoln = NULL;
-    err = DMGetDS(solution->getDM(), &dsSoln);PYLITH_CHECK_ERROR(err);
-    PetscInt numFields = 0;
-    err = PetscDSGetNumFields(dsSoln, &numFields);PYLITH_CHECK_ERROR(err);
-    for (PetscInt iField = 0; iField < numFields; ++iField) {
-        err = PetscDSSetImplicit(dsSoln, iField, (_formulation == pylith::problems::Physics::QUASISTATIC) ? PETSC_TRUE : PETSC_FALSE);
-    } // for
-#endif
 
     pythia::journal::debug_t debug(pylith::utils::PyreComponent::getName());
     if (debug.state()) {
