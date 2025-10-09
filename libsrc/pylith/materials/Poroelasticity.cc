@@ -523,6 +523,8 @@ pylith::materials::Poroelasticity::_setKernelsJacobian(pylith::feassemble::Integ
     const spatialdata::geocoords::CoordSys* coordsys = solution.getMesh().getCoordSys();
     std::vector<JacobianKernels> kernels(7);
 
+    integrator->setLHSJacobianTriggers(pylith::feassemble::Integrator::NEW_JACOBIAN_TIME_STEP_CHANGE);
+
     switch (_formulation) {
     case QUASISTATIC: {
         const EquationPart equationPart = pylith::feassemble::Integrator::LHS;
@@ -698,8 +700,6 @@ pylith::materials::Poroelasticity::_setKernelsJacobian(pylith::feassemble::Integ
         PetscPointJacFn* Jf1vv = NULL;
         PetscPointJacFn* Jf2vv = NULL;
         PetscPointJacFn* Jf3vv = NULL;
-
-        integrator->setLHSJacobianTriggers(pylith::feassemble::Integrator::NEW_JACOBIAN_TIME_STEP_CHANGE);
 
         const EquationPart equationPart = pylith::feassemble::Integrator::LHS_LUMPED_INV;
         kernels[0] = JacobianKernels("displacement",  "displacement", equationPart, Jf0uu, Jf1uu, Jf2uu, Jf3uu);
