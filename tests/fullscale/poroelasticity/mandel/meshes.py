@@ -18,16 +18,16 @@ class Tri(object):
     """Mesh information for tri mesh.
     """
     ENTITIES = {
-        "domain": MeshEntity(ncells=320, ncorners=3, nvertices=205),
+        "domain": MeshEntity(ncells=488, ncorners=3, nvertices=290),
 
         # Materials
-        "poroelastic": MeshEntity(ncells=320, ncorners=3, nvertices=205),
+        "poroelastic": MeshEntity(ncells=488, ncorners=3, nvertices=290),
 
         # Boundaries
-        "x_neg": MeshEntity(ncells=4, ncorners=2, nvertices=5),
-        "x_pos": MeshEntity(ncells=4, ncorners=2, nvertices=5),
-        "y_neg": MeshEntity(ncells=40, ncorners=2, nvertices=41),
-        "y_pos": MeshEntity(ncells=40, ncorners=2, nvertices=41),
+        "bc_xneg": MeshEntity(ncells=5, ncorners=2, nvertices=6),
+        "bc_xpos": MeshEntity(ncells=5, ncorners=2, nvertices=6),
+        "bc_yneg": MeshEntity(ncells=40, ncorners=2, nvertices=41),
+        "bc_ypos": MeshEntity(ncells=40, ncorners=2, nvertices=41),
     }
 
 
@@ -35,16 +35,16 @@ class Quad(object):
     """Mesh information for quad mesh.
     """
     ENTITIES = {
-        "domain": MeshEntity(ncells=160, ncorners=4, nvertices=205),
+        "domain": MeshEntity(ncells=200, ncorners=4, nvertices=246),
 
         # Materials
-        "poroelastic": MeshEntity(ncells=160, ncorners=4, nvertices=205),
+        "poroelastic": MeshEntity(ncells=200, ncorners=4, nvertices=246),
 
         # Boundaries
-        "x_neg": MeshEntity(ncells=4, ncorners=2, nvertices=5),
-        "x_pos": MeshEntity(ncells=4, ncorners=2, nvertices=5),
-        "y_neg": MeshEntity(ncells=40, ncorners=2, nvertices=41),
-        "y_pos": MeshEntity(ncells=40, ncorners=2, nvertices=41),
+        "bc_xneg": MeshEntity(ncells=5, ncorners=2, nvertices=6),
+        "bc_xpos": MeshEntity(ncells=5, ncorners=2, nvertices=6),
+        "bc_yneg": MeshEntity(ncells=40, ncorners=2, nvertices=41),
+        "bc_ypos": MeshEntity(ncells=40, ncorners=2, nvertices=41),
     }
 
 

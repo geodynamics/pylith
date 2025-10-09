@@ -13,34 +13,21 @@ TESTS = test_pylith.py
 dist_check_SCRIPTS = test_pylith.py
 
 dist_noinst_PYTHON = \
+	generate_gmsh.py \
 	meshes.py \
 	TestMandel.py \
 	mandel_soln.py \
-	mandel_gendb.py \
-	TestMandelCompaction.py \
-	mandel_compaction_soln.py \
-	mandel_compaction_gendb.py	
+	mandel_gendb.py
 
 dist_noinst_DATA = \
-	geometry.jou \
-	bc.jou \
-	mesh_tri.jou \
-	mesh_tri.exo \
-	mesh_quad.jou \
-	mesh_quad.exo \
-	mandel.cfg \
+	pylithapp.cfg \
+	mesh_tri.msh \
+	mesh_quad.msh \
 	mandel_tri.cfg \
-	mandel_quad.cfg \
-	mandel_compaction.cfg \
-	mandel_compaction_tri.cfg \
-	mandel_compaction_quad.cfg 	
+	mandel_quad.cfg
 
 noinst_TMP = \
-	mandel_bc.spatialdb \
-	mandel_ic.spatialdb \
-	mandel_compaction_bc.spatialdb \
-	mandel_compaction_ic.spatialdb	
-
+	mandel_disp.timedb
 
 
 export_datadir = $(abs_builddir)

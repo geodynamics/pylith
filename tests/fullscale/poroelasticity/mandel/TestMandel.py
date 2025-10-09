@@ -17,7 +17,7 @@
 
 import unittest
 
-from pylith.testing.FullTestApp import (FullTestCase, Check, check_data)
+from pylith.testing.FullTestApp import (FullTestCase, Check)
 
 import meshes
 import mandel_soln
@@ -35,15 +35,10 @@ class TestCase(FullTestCase):
         self.checks = [
             Check(
                 mesh_entities=["domain"],
-                vertex_fields=["displacement"],
+                vertex_fields=["displacement", "pressure", "trace_strain"],
+                final_time_only=True,
                 defaults=defaults,
-                tolerance=0.5,
-            ),
-            Check(
-                mesh_entities=["domain"],
-                vertex_fields=["pressure"],
-                defaults=defaults,
-                scale=1.0e+6,
+                tolerance=0.01,
             ),
             Check(
                 mesh_entities=["poroelastic"],
@@ -62,34 +57,10 @@ class TestCase(FullTestCase):
                 defaults=defaults,
             ),
             Check(
-                mesh_entities=["poroelastic"],
-                vertex_fields = ["displacement"],
-                defaults=defaults,
-                tolerance=0.5,
-            ),
-            Check(
-                mesh_entities=["poroelastic"],
-                vertex_fields = ["pressure"],
-                defaults=defaults,
-                scale=1.0e+6,
-            ),
-            Check(
-                mesh_entities=["x_neg", "x_pos", "y_neg", "y_pos"],
+                mesh_entities=["bc_xneg", "bc_xpos", "bc_yneg"],
                 filename="output/{name}-{mesh_entity}_info.h5",
                 vertex_fields=["initial_amplitude"],
                 defaults=defaults,
-            ),
-            Check(
-                mesh_entities=["x_neg", "x_pos", "y_neg", "y_pos"],
-                vertex_fields=["displacement"],
-                defaults=defaults,
-                tolerance=0.5,
-            ),
-            Check(
-                mesh_entities=["x_neg", "x_pos", "y_neg", "y_pos"],
-                vertex_fields=["pressure"],
-                defaults=defaults,
-                scale=1.0e+6,
             ),
         ]
 
@@ -105,7 +76,7 @@ class TestQuad(TestCase):
         self.mesh = meshes.Quad()
         super().setUp()
 
-        TestCase.run_pylith(self, self.name, ["mandel.cfg", "mandel_quad.cfg"])
+        TestCase.run_pylith(self, self.name, ["mandel_quad.cfg"])
         return
 
 
@@ -117,7 +88,7 @@ class TestTri(TestCase):
         self.mesh = meshes.Tri()
         super().setUp()
 
-        TestCase.run_pylith(self, self.name, ["mandel.cfg", "mandel_tri.cfg"])
+        TestCase.run_pylith(self, self.name, ["mandel_tri.cfg"])
         return
 
 
