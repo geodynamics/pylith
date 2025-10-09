@@ -19,17 +19,17 @@ class Tet(object):
     Mesh information for tet mesh.
     """
     ENTITIES = {
-        "domain": MeshEntity(ncells=5398, ncorners=4, nvertices=1150),
+        "domain": MeshEntity(ncells=2735, ncorners=4, nvertices=718),
 
         # Materials
-        "poroelastic": MeshEntity(ncells=5398, ncorners=4, nvertices=1150),
+        "poroelastic": MeshEntity(ncells=2735, ncorners=4, nvertices=718),
 
         # Boundaries
-        "surface_traction": MeshEntity(ncells=374, ncorners=3, nvertices=212),
-        "surface_pressure": MeshEntity(ncells=374, ncorners=3, nvertices=212),
-        "x_neg": MeshEntity(ncells=184, ncorners=3, nvertices=111),
-        "y_neg": MeshEntity(ncells=184, ncorners=3, nvertices=111),
-        "z_neg": MeshEntity(ncells=184, ncorners=3, nvertices=111),
+        "bc_shell_traction": MeshEntity(ncells=404, ncorners=3, nvertices=227),
+        "bc_shell_pressure": MeshEntity(ncells=404, ncorners=3, nvertices=227),
+        "bc_xneg": MeshEntity(ncells=198, ncorners=3, nvertices=118),
+        "bc_yneg": MeshEntity(ncells=196, ncorners=3, nvertices=117),
+        "bc_zneg": MeshEntity(ncells=196, ncorners=3, nvertices=117),
     }
 
 
@@ -44,8 +44,8 @@ class Hex(object):
         "poroelastic": MeshEntity(ncells=896, ncorners=8, nvertices=1163),
 
         # Boundaries
-        "surface_traction": MeshEntity(ncells=192, ncorners=4, nvertices=217),
-        "surface_pressure": MeshEntity(ncells=192, ncorners=4, nvertices=217),
+        "bc_shell_traction": MeshEntity(ncells=192, ncorners=4, nvertices=217),
+        "bc_shell_pressure": MeshEntity(ncells=192, ncorners=4, nvertices=217),
         "x_neg": MeshEntity(ncells=96, ncorners=4, nvertices=115),
         "y_neg": MeshEntity(ncells=96, ncorners=4, nvertices=115),
         "z_neg": MeshEntity(ncells=96, ncorners=4, nvertices=115),
