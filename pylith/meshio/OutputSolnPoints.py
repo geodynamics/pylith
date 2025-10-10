@@ -5,7 +5,7 @@
 # Copyright (c) 2010-2025, University of California, Davis and the PyLith Development Team.
 # All rights reserved.
 #
-# See https://mit-license.org/ and LICENSE.md and for license information. 
+# See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
 
 from .OutputSoln import OutputSoln
@@ -22,6 +22,7 @@ class OutputSolnPoints(OutputSoln, ModuleOutputSolnPoints):
 
     Implements `OutputSoln`.
     """
+
     DOC_CONFIG = {
         "cfg": """
             [observer]
@@ -47,66 +48,77 @@ class OutputSolnPoints(OutputSoln, ModuleOutputSolnPoints):
     import pythia.pyre.inventory
 
     label = pythia.pyre.inventory.str("label", default="points")
-    label.meta['tip'] = "Label identifier for points (used in constructing default filenames)."
+    label.meta["tip"] = (
+        "Label identifier for points (used in constructing default filenames)."
+    )
 
     from .PointsList import PointsList
-    reader = pythia.pyre.inventory.facility("reader", factory=PointsList, family="points_list")
-    reader.meta['tip'] = "Reader for points list."
+
+    reader = pythia.pyre.inventory.facility(
+        "reader", factory=PointsList, family="points_list"
+    )
+    reader.meta["tip"] = "Reader for points list."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
     def __init__(self, name="outputsolnpoints"):
-        """Constructor.
-        """
+        """Constructor."""
         OutputSoln.__init__(self, name)
         return
 
     def preinitialize(self, problem):
-        """Do mimimal initialization.
-        """
+        """Do mimimal initialization."""
         OutputSoln.preinitialize(self, problem)
 
         stationNames, stationCoords = self.reader.read()
 
         # Convert to mesh coordinate system
         from spatialdata.geocoords.Converter import convert
+
         convert(stationCoords, problem.mesh().getCoordSys(), self.reader.coordsys)
 
         # Nondimensionalize
-        stationCoords /= problem.normalizer.lengthScale.value
+        stationCoords /= problem.scales.lengthScale.value
 
         ModuleOutputSolnPoints.setPoints(self, stationCoords, stationNames)
 
         identifier = self.aliases[-1]
-        self.writer.setFilename(problem.defaults.outputDir, problem.defaults.simName, identifier)
+        self.writer.setFilename(
+            problem.defaults.outputDir, problem.defaults.simName, identifier
+        )
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _validate(self, context):
         from .DataWriterVTK import DataWriterVTK
+
         if isinstance(self.inventory.writer, DataWriterVTK):
             trait = self.inventory.getTrait("writer")
-            self._validationError(context, trait, "PETSc VTK writer using the VTU format does not support output at points. Use the default DataWriterHDF5 writer.")
+            self._validationError(
+                context,
+                trait,
+                "PETSc VTK writer using the VTU format does not support output at points. Use the default DataWriterHDF5 writer.",
+            )
 
     def _validationError(self, context, trait, msg):
         from pythia.pyre.inventory.Item import Item
+
         error = ValueError(msg)
         descriptor = self.getTraitDescriptor(trait.name)
         context.error(error, items=[Item(trait, descriptor)])
 
     def _createModuleObj(self):
-        """Create handle to C++ object.
-        """
+        """Create handle to C++ object."""
         ModuleOutputSolnPoints.__init__(self)
         return
+
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
 
 def observer():
-    """Factory associated with OutputSoln.
-    """
+    """Factory associated with OutputSoln."""
     return OutputSolnPoints()
 
 

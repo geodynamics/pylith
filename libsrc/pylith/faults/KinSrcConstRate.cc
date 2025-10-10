@@ -169,14 +169,14 @@ pylith::faults::KinSrcConstRate::slipAccFn(const PylithInt dim,
 // ------------------------------------------------------------------------------------------------
 // Preinitialize earthquake source. Set names/sizes of auxiliary subfields.
 void
-pylith::faults::KinSrcConstRate::_auxiliaryFieldSetup(const spatialdata::units::Nondimensional& normalizer,
+pylith::faults::KinSrcConstRate::_auxiliaryFieldSetup(const pylith::scales::Scales& scales,
                                                       const spatialdata::geocoords::CoordSys* cs) {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("_auxiliaryFieldSetup()");
 
     assert(_auxiliaryFactory);
     assert(cs);
-    _auxiliaryFactory->initialize(_auxiliaryField, normalizer, cs->getSpaceDim());
+    _auxiliaryFactory->initialize(_auxiliaryField, scales, cs->getSpaceDim());
 
     // :ATTENTION: The order for adding subfields must match the order of the auxiliary fields in the slip time function
     // kernel.

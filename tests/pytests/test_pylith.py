@@ -32,6 +32,7 @@ class TestApp:
         "meshio",
         "mpi",
         "problems",
+        "scales",
         "topology",
         "utils",
     ]

@@ -5,7 +5,7 @@
 # Copyright (c) 2010-2025, University of California, Davis and the PyLith Development Team.
 # All rights reserved.
 #
-# See https://mit-license.org/ and LICENSE.md and for license information. 
+# See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
 
 from pylith.utils.PetscComponent import PetscComponent
@@ -17,34 +17,34 @@ from pylith.utils.PetscDefaults import PetscDefaults
 
 
 def materialFactory(name):
-    """Factory for material items.
-    """
+    """Factory for material items."""
     from pythia.pyre.inventory import facility
     from pylith.materials.Elasticity import Elasticity
+
     return facility(name, family="material", factory=Elasticity)
 
 
 def bcFactory(name):
-    """Factory for boundary condition items.
-    """
+    """Factory for boundary condition items."""
     from pythia.pyre.inventory import facility
     from pylith.bc.DirichletTimeDependent import DirichletTimeDependent
+
     return facility(name, family="boundary_condition", factory=DirichletTimeDependent)
 
 
 def faultFactory(name):
-    """Factory for fault items.
-    """
+    """Factory for fault items."""
     from pythia.pyre.inventory import facility
     from pylith.faults.FaultCohesiveKin import FaultCohesiveKin
+
     return facility(name, family="fault", factory=FaultCohesiveKin)
 
 
 def observerFactory(name):
-    """Factory for output items.
-    """
+    """Factory for output items."""
     from pythia.pyre.inventory import facility
     from pylith.meshio.OutputSolnDomain import OutputSolnDomain
+
     return facility(name, family="observer", factory=OutputSolnDomain)
 
 
@@ -62,58 +62,90 @@ class Problem(PetscComponent, ModuleProblem):
     import pythia.pyre.inventory
     from pylith.utils.EmptyBin import EmptyBin
 
-    defaults = pythia.pyre.inventory.facility("defaults", family="problem_defaults", factory=ProblemDefaults)
-    defaults.meta['tip'] = "Default options for problem."
+    defaults = pythia.pyre.inventory.facility(
+        "defaults", family="problem_defaults", factory=ProblemDefaults
+    )
+    defaults.meta["tip"] = "Default options for problem."
 
-    formulation = pythia.pyre.inventory.str("formulation", default="quasistatic",
-                                     validator=pythia.pyre.inventory.choice(["quasistatic", "dynamic", "dynamic_imex"]))
-    formulation.meta['tip'] = "Formulation for equations."
+    formulation = pythia.pyre.inventory.str(
+        "formulation",
+        default="quasistatic",
+        validator=pythia.pyre.inventory.choice(
+            ["quasistatic", "dynamic", "dynamic_imex"]
+        ),
+    )
+    formulation.meta["tip"] = "Formulation for equations."
 
-    solverChoice = pythia.pyre.inventory.str("solver", default="nonlinear",
-                                      validator=pythia.pyre.inventory.choice(["linear", "nonlinear"]))
-    solverChoice.meta['tip'] = "Type of solver to use ['linear', 'nonlinear']."
+    solverChoice = pythia.pyre.inventory.str(
+        "solver",
+        default="nonlinear",
+        validator=pythia.pyre.inventory.choice(["linear", "nonlinear"]),
+    )
+    solverChoice.meta["tip"] = "Type of solver to use ['linear', 'nonlinear']."
 
-    petscDefaults = pythia.pyre.inventory.facility("petsc_defaults", family="petsc_defaults", factory=PetscDefaults)
-    petscDefaults.meta['tip'] = "Flags controlling which default PETSc options to use."
+    petscDefaults = pythia.pyre.inventory.facility(
+        "petsc_defaults", family="petsc_defaults", factory=PetscDefaults
+    )
+    petscDefaults.meta["tip"] = "Flags controlling which default PETSc options to use."
 
     from .Solution import Solution
-    solution = pythia.pyre.inventory.facility("solution", family="solution", factory=Solution)
-    solution.meta['tip'] = "Solution field for problem."
 
-    from spatialdata.units.NondimElasticQuasistatic import NondimElasticQuasistatic
-    normalizer = pythia.pyre.inventory.facility("normalizer", family="nondimensional", factory=NondimElasticQuasistatic)
-    normalizer.meta['tip'] = "Nondimensionalizer for problem."
+    solution = pythia.pyre.inventory.facility(
+        "solution", family="solution", factory=Solution
+    )
+    solution.meta["tip"] = "Solution field for problem."
+
+    from pylith.scales.QuasistaticElasticity import QuasistaticElasticity
+
+    scales = pythia.pyre.inventory.facility(
+        "scales", family="scales", factory=QuasistaticElasticity
+    )
+    scales.meta["tip"] = "Scales for nondimensionalizing boundary value problem."
 
     from pylith.materials.Homogeneous import Homogeneous
-    materials = pythia.pyre.inventory.facilityArray("materials", itemFactory=materialFactory, factory=Homogeneous)
-    materials.meta['tip'] = "Materials in problem."
 
-    bc = pythia.pyre.inventory.facilityArray("bc", itemFactory=bcFactory, factory=EmptyBin)
-    bc.meta['tip'] = "Boundary conditions."
+    materials = pythia.pyre.inventory.facilityArray(
+        "materials", itemFactory=materialFactory, factory=Homogeneous
+    )
+    materials.meta["tip"] = "Materials in problem."
 
-    interfaces = pythia.pyre.inventory.facilityArray("interfaces", itemFactory=faultFactory, factory=EmptyBin)
-    interfaces.meta['tip'] = "Interior surfaces with constraints or constitutive models."
+    bc = pythia.pyre.inventory.facilityArray(
+        "bc", itemFactory=bcFactory, factory=EmptyBin
+    )
+    bc.meta["tip"] = "Boundary conditions."
+
+    interfaces = pythia.pyre.inventory.facilityArray(
+        "interfaces", itemFactory=faultFactory, factory=EmptyBin
+    )
+    interfaces.meta["tip"] = (
+        "Interior surfaces with constraints or constitutive models."
+    )
 
     from pylith.problems.SingleObserver import SingleSolnObserver
-    observers = pythia.pyre.inventory.facilityArray(
-        "solution_observers", itemFactory=observerFactory, factory=SingleSolnObserver)
-    observers.meta['tip'] = "Observers (e.g., output) for solution."
 
-    gravityField = pythia.pyre.inventory.facility("gravity_field", family="spatial_database", factory=NullComponent)
-    gravityField.meta['tip'] = "Database used for gravity field."
+    observers = pythia.pyre.inventory.facilityArray(
+        "solution_observers", itemFactory=observerFactory, factory=SingleSolnObserver
+    )
+    observers.meta["tip"] = "Observers (e.g., output) for solution."
+
+    gravityField = pythia.pyre.inventory.facility(
+        "gravity_field", family="spatial_database", factory=NullComponent
+    )
+    gravityField.meta["tip"] = "Database used for gravity field."
 
     def __init__(self, name="problem"):
-        """Constructor.
-        """
+        """Constructor."""
         PetscComponent.__init__(self, name, facility="problem")
         self.mesh = None
 
     def preinitialize(self, mesh):
-        """Do minimal initialization.
-        """
+        """Do minimal initialization."""
         from pylith.mpi.Communicator import mpi_is_root
+
         if mpi_is_root():
-            self._info.log("Performing minimal initialization before verifying configuration.")
+            self._info.log(
+                "Performing minimal initialization before verifying configuration."
+            )
 
         self._createModuleObj()
         ModuleProblem.setIdentifier(self, self.aliases[-1])
@@ -135,8 +167,8 @@ class Problem(PetscComponent, ModuleProblem):
             ModuleProblem.setSolverType(self, ModuleProblem.NONLINEAR)
         else:
             raise ValueError("Unknown solver choice '%s'." % self.solverChoice)
-        ModuleProblem.setPetscDefaults(self, self.petscDefaults.flags());
-        ModuleProblem.setNormalizer(self, self.normalizer)
+        ModuleProblem.setPetscDefaults(self, self.petscDefaults.flags())
+        ModuleProblem.setScales(self, self.scales)
         if not isinstance(self.gravityField, NullComponent):
             ModuleProblem.setGravityField(self, self.gravityField)
 
@@ -167,9 +199,9 @@ class Problem(PetscComponent, ModuleProblem):
         ModuleProblem.preinitialize(self, mesh)
 
     def verifyConfiguration(self):
-        """Verify compatibility of configuration.
-        """
+        """Verify compatibility of configuration."""
         from pylith.mpi.Communicator import mpi_is_root
+
         if mpi_is_root():
             self._info.log("Verifying compatibility of problem configuration.")
 
@@ -178,53 +210,52 @@ class Problem(PetscComponent, ModuleProblem):
             self._printInfo()
 
     def initialize(self):
-        """Initialize integrators and constraints.
-        """
+        """Initialize integrators and constraints."""
         from pylith.mpi.Communicator import mpi_is_root
+
         if mpi_is_root():
-            self._info.log(f"Initializing {self.name} problem with {self.formulation} formulation.")
+            self._info.log(
+                f"Initializing {self.name} problem with {self.formulation} formulation."
+            )
 
         ModuleProblem.initialize(self)
 
     def run(self, app):
-        """Solve the problem.
-        """
+        """Solve the problem."""
         raise NotImplementedError("run() not implemented.")
 
     def finalize(self):
-        """Cleanup after running problem.
-        """
+        """Cleanup after running problem."""
         from pylith.mpi.Communicator import mpi_is_root
+
         if mpi_is_root():
             self._info.log("Finalizing problem.")
 
     def checkpoint(self):
-        """Save problem state for restart.
-        """
+        """Save problem state for restart."""
         raise NotImplementedError("checkpoint() not implemented.")
 
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _printInfo(self):
-        """Write overview of problem to info journal.
-        """
+        """Write overview of problem to info journal."""
         msg = (
             "Scales for nondimensionalization:",
-            "    Length scale: {}".format(self.normalizer.getLengthScale()),
-            "    Time scale: {}".format(self.normalizer.getTimeScale()),
-            "    Pressure scale: {}".format(self.normalizer.getPressureScale()),
-            "    Density scale: {}".format(self.normalizer.getDensityScale()),
-            "    Temperature scale: {}".format(self.normalizer.getTemperatureScale()),
+            "    Length scale: {}".format(self.scales.getLengthScale()),
+            "    Displacement scale: {}".format(self.scales.getDisplacementScale()),
+            "    Time scale: {}".format(self.scales.getTimeScale()),
+            "    Rigidity scale: {}".format(self.scales.getRigidityScale()),
+            "    Temperature scale: {}".format(self.scales.getTemperatureScale()),
         )
         self._info.log("\n".join(msg))
 
     def _setupLogging(self):
-        """Setup event logging.
-        """
+        """Setup event logging."""
         if not "_loggingPrefix" in dir(self):
             self._loggingPrefix = "PL.Problem."
 
         from pylith.utils.EventLogger import EventLogger
+
         logger = EventLogger()
         logger.setClassName("Problem")
         logger.initialize()

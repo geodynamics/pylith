@@ -13,24 +13,17 @@ TESTS = test_pylith.py
 dist_check_SCRIPTS = test_pylith.py
 
 dist_noinst_PYTHON = \
+	generate_gmsh.py \
 	meshes.py \
 	TestCryer.py \
 	cryer_soln.py 
 
 dist_noinst_DATA = \
-	geometry.jou \
-	bc.jou \
-	mesh_tet.jou \
-	mesh_tet.exo \
-	mesh_hex.jou \
-	mesh_hex.exo \
-	cryer.cfg \
+	pylithapp.cfg \
+	mesh_tet.msh \
 	cryer_tet.cfg \
 	cryer_hex.cfg
 
-noinst_TMP = \
-	cryer_bc.spatialdb \
-	cryer_ic.spatialdb
 
 export_datadir = $(abs_builddir)
 include $(top_srcdir)/tests/data.am

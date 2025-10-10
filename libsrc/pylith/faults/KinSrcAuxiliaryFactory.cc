@@ -17,7 +17,7 @@
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 
 #include "spatialdata/spatialdb/TimeHistory.hh" // USES TimeHistory
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "pylith/scales/Scales.hh" // USES Scales
 
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL*
 
@@ -43,7 +43,7 @@ pylith::faults::KinSrcAuxiliaryFactory::addInitiationTime(void) {
     PYLITH_JOURNAL_DEBUG("addInitiationTime(void)");
 
     const char* subfieldName = "initiation_time";
-    const PylithReal timeScale = _normalizer->getTimeScale();
+    const PylithReal timeScale = _scales->getTimeScale();
 
     pylith::topology::Field::Description description;
     description.label = subfieldName;
@@ -70,7 +70,7 @@ pylith::faults::KinSrcAuxiliaryFactory::addRiseTime(void) {
     PYLITH_JOURNAL_DEBUG("addRiseTime(void)");
 
     const char* subfieldName = "rise_time";
-    const PylithReal timeScale = _normalizer->getTimeScale();
+    const PylithReal timeScale = _scales->getTimeScale();
 
     pylith::topology::Field::Description description;
     description.label = subfieldName;
@@ -97,7 +97,7 @@ pylith::faults::KinSrcAuxiliaryFactory::addImpulseDuration(void) {
     PYLITH_JOURNAL_DEBUG("addImpulseDuration(void)");
 
     const char* subfieldName = "impulse_duration";
-    const PylithReal timeScale = _normalizer->getTimeScale();
+    const PylithReal timeScale = _scales->getTimeScale();
 
     pylith::topology::Field::Description description;
     description.label = subfieldName;
@@ -126,7 +126,7 @@ pylith::faults::KinSrcAuxiliaryFactory::addFinalSlip(void) {
     const char* subfieldName = "final_slip";
     const char* componentNames[3] = { "final_slip_opening", "final_slip_left_lateral", "final_slip_reverse" };
 
-    const PylithReal lengthScale = _normalizer->getLengthScale();
+    const PylithReal displacementScale = _scales->getDisplacementScale();
 
     pylith::topology::Field::Description description;
     description.label = subfieldName;
@@ -137,7 +137,7 @@ pylith::faults::KinSrcAuxiliaryFactory::addFinalSlip(void) {
     for (int i = 0; i < _spaceDim; ++i) {
         description.componentNames[i] = componentNames[i];
     } // for
-    description.scale = lengthScale;
+    description.scale = displacementScale;
     description.validator = NULL;
 
     _field->subfieldAdd(description, getSubfieldDiscretization(subfieldName));
@@ -157,8 +157,8 @@ pylith::faults::KinSrcAuxiliaryFactory::addSlipRate(void) {
     const char* subfieldName = "slip_rate";
     const char* componentNames[3] = { "slip_rate_opening", "slip_rate_left_lateral", "slip_rate_reverse" };
 
-    const PylithReal lengthScale = _normalizer->getLengthScale();
-    const PylithReal timeScale = _normalizer->getTimeScale();
+    const PylithReal displacementScale = _scales->getDisplacementScale();
+    const PylithReal timeScale = _scales->getTimeScale();
 
     pylith::topology::Field::Description description;
     description.label = subfieldName;
@@ -169,7 +169,7 @@ pylith::faults::KinSrcAuxiliaryFactory::addSlipRate(void) {
     for (int i = 0; i < _spaceDim; ++i) {
         description.componentNames[i] = componentNames[i];
     } // for
-    description.scale = lengthScale / timeScale;
+    description.scale = displacementScale / timeScale;
     description.validator = NULL;
 
     _field->subfieldAdd(description, getSubfieldDiscretization(subfieldName));

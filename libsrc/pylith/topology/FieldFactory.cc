@@ -14,7 +14,7 @@
 
 #include "pylith/topology/Field.hh" // HOLDSA AuxiliaryField
 
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "pylith/scales/Scales.hh" // USES Scales
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD*
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL*
@@ -26,7 +26,7 @@
 pylith::topology::FieldFactory::FieldFactory(void) :
     _field(NULL),
     _defaultDescription(NULL),
-    _normalizer(new spatialdata::units::Nondimensional),
+    _scales(new pylith::scales::Scales),
     _spaceDim(0) {
     GenericComponent::setName("auxiliaryfactory");
     _subfieldDiscretizations["default"] = pylith::topology::FieldBase::Discretization();
@@ -39,7 +39,7 @@ pylith::topology::FieldFactory::~FieldFactory(void) {
     _field = NULL; // :TODO: use shared pointer
 
     delete _defaultDescription;_defaultDescription = NULL;
-    delete _normalizer;_normalizer = NULL;
+    delete _scales;_scales = NULL;
 } // destructor
 
 
@@ -105,11 +105,11 @@ pylith::topology::FieldFactory::getSubfieldDiscretization(const char* subfieldNa
 // Initialie factory for setting up auxiliary subfields.
 void
 pylith::topology::FieldFactory::initialize(pylith::topology::Field* field,
-                                           const spatialdata::units::Nondimensional& normalizer,
+                                           const pylith::scales::Scales& scales,
                                            const int spaceDim,
                                            const pylith::topology::FieldBase::Description* defaultDescription) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("initialize(field="<<field<<", normalizer="<<&normalizer<<", spaceDim="<<spaceDim<<", defaultDescription="<<defaultDescription<<")");
+    PYLITH_JOURNAL_DEBUG("initialize(field="<<field<<", scales="<<&scales<<", spaceDim="<<spaceDim<<", defaultDescription="<<defaultDescription<<")");
 
     assert(field);
 
@@ -122,8 +122,8 @@ pylith::topology::FieldFactory::initialize(pylith::topology::Field* field,
     } else {
         delete _defaultDescription;_defaultDescription = NULL;
     } // if/else
-    assert(_normalizer);
-    *_normalizer = normalizer;
+    assert(_scales);
+    *_scales = scales;
     _spaceDim = spaceDim;
 
     assert(1 <= _spaceDim && _spaceDim <= 3);

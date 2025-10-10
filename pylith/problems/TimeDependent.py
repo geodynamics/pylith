@@ -5,7 +5,7 @@
 # Copyright (c) 2010-2025, University of California, Davis and the PyLith Development Team.
 # All rights reserved.
 #
-# See https://mit-license.org/ and LICENSE.md and for license information. 
+# See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
 
 from .Problem import Problem
@@ -13,10 +13,10 @@ from .problems import TimeDependent as ModuleTimeDependent
 
 
 def icFactory(name):
-    """Factory for initial conditions items.
-    """
+    """Factory for initial conditions items."""
     from pythia.pyre.inventory import facility
     from pylith.problems.InitialConditionDomain import InitialConditionDomain
+
     return facility(name, family="initial_conditions", factory=InitialConditionDomain)
 
 
@@ -26,6 +26,7 @@ class TimeDependent(Problem, ModuleTimeDependent):
 
     Implements `Problem`.
     """
+
     DOC_CONFIG = {
         "cfg": """
             # Set boundary conditions, faults, and materials
@@ -39,8 +40,8 @@ class TimeDependent(Problem, ModuleTimeDependent):
             # Turn on gravitational body forces
             gravity_field = spatialdata.spatialdb.GravityField
 
-            # Set the normalizer for nondimensionalizing the problem
-            normalizer = spatialdata.units.NondimElasticQuasistatic
+            # Set the scales for nondimensionalizing the problem
+            scales = pylith.scales.QuasistaticElasticity
 
             # Set the subfields in the solution
             solution = = pylith.problems.SolnDispLagrange
@@ -69,34 +70,45 @@ class TimeDependent(Problem, ModuleTimeDependent):
     from pythia.pyre.units.time import year
     from pylith.utils.EmptyBin import EmptyBin
 
-    dtInitial = pythia.pyre.inventory.dimensional("initial_dt", default=1.0 * year,
-                                           validator=pythia.pyre.inventory.greater(0.0 * year))
-    dtInitial.meta['tip'] = "Initial time step."
+    dtInitial = pythia.pyre.inventory.dimensional(
+        "initial_dt",
+        default=1.0 * year,
+        validator=pythia.pyre.inventory.greater(0.0 * year),
+    )
+    dtInitial.meta["tip"] = "Initial time step."
 
     startTime = pythia.pyre.inventory.dimensional("start_time", default=0.0 * year)
-    startTime.meta['tip'] = "Start time for problem."
+    startTime.meta["tip"] = "Start time for problem."
 
-    endTime = pythia.pyre.inventory.dimensional("end_time", default=0.1 * year,
-                                         validator=pythia.pyre.inventory.greaterEqual(0.0 * year))
-    endTime.meta['tip'] = "End time for problem."
+    endTime = pythia.pyre.inventory.dimensional(
+        "end_time",
+        default=0.1 * year,
+        validator=pythia.pyre.inventory.greaterEqual(0.0 * year),
+    )
+    endTime.meta["tip"] = "End time for problem."
 
-    maxTimeSteps = pythia.pyre.inventory.int("max_timesteps", default=20000, validator=pythia.pyre.inventory.greater(0))
-    maxTimeSteps.meta['tip'] = "Maximum number of time steps."
+    maxTimeSteps = pythia.pyre.inventory.int(
+        "max_timesteps", default=20000, validator=pythia.pyre.inventory.greater(0)
+    )
+    maxTimeSteps.meta["tip"] = "Maximum number of time steps."
 
-    ic = pythia.pyre.inventory.facilityArray("ic", itemFactory=icFactory, factory=EmptyBin)
-    ic.meta['tip'] = "Initial conditions."
+    ic = pythia.pyre.inventory.facilityArray(
+        "ic", itemFactory=icFactory, factory=EmptyBin
+    )
+    ic.meta["tip"] = "Initial conditions."
 
     shouldNotifyIC = pythia.pyre.inventory.bool("notify_observers_ic", default=False)
     shouldNotifyIC.meta["tip"] = "Notify observers of solution with initial conditions."
 
     from .ProgressMonitorTime import ProgressMonitorTime
+
     progressMonitor = pythia.pyre.inventory.facility(
-        "progress_monitor", family="progress_monitor", factory=ProgressMonitorTime)
-    progressMonitor.meta['tip'] = "Simple progress monitor via text file."
+        "progress_monitor", family="progress_monitor", factory=ProgressMonitorTime
+    )
+    progressMonitor.meta["tip"] = "Simple progress monitor via text file."
 
     def __init__(self, name="timedependent"):
-        """Constructor.
-        """
+        """Constructor."""
         Problem.__init__(self, name)
 
     def preinitialize(self, mesh):
@@ -106,6 +118,7 @@ class TimeDependent(Problem, ModuleTimeDependent):
         self._setupLogging()
 
         import weakref
+
         self.mesh = weakref.ref(mesh)
 
         Problem.preinitialize(self, mesh)
@@ -125,32 +138,34 @@ class TimeDependent(Problem, ModuleTimeDependent):
         ModuleTimeDependent.setProgressMonitor(self, self.progressMonitor)
 
     def run(self, app):
-        """Solve time dependent problem.
-        """
+        """Solve time dependent problem."""
         from pylith.mpi.Communicator import mpi_is_root
+
         if mpi_is_root():
             self._info.log("Solving problem.")
 
         ModuleTimeDependent.solve(self)
 
     def _configure(self):
-        """Set members based using inventory.
-        """
+        """Set members based using inventory."""
         Problem._configure(self)
         if self.startTime > self.endTime:
-            raise ValueError("End time {} must be later than start time {}.".format(self.startTime, self.endTime))
+            raise ValueError(
+                "End time {} must be later than start time {}.".format(
+                    self.startTime, self.endTime
+                )
+            )
 
     def _createModuleObj(self):
-        """Create handle to C++ object.
-        """
+        """Create handle to C++ object."""
         ModuleTimeDependent.__init__(self)
 
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
+
 def problem():
-    """Factory associated with TimeDependent.
-    """
+    """Factory associated with TimeDependent."""
     return TimeDependent()
 
 

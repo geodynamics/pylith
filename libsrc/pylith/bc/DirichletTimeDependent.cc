@@ -21,7 +21,7 @@
 #include "pylith/fekernels/TimeDependentFn.hh" // USES TimeDependentFn kernels
 
 #include "spatialdata/spatialdb/TimeHistory.hh" // USES TimeHistory
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "pylith/scales/Scales.hh" // USES Scales
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
@@ -265,8 +265,8 @@ pylith::bc::DirichletTimeDependent::createAuxiliaryField(const pylith::topology:
     auxiliaryField->setLabel("auxiliary field");
 
     assert(_auxiliaryFactory);
-    assert(_normalizer);
-    _auxiliaryFactory->initialize(auxiliaryField, *_normalizer, solution.getSpaceDim(),
+    assert(_scales);
+    _auxiliaryFactory->initialize(auxiliaryField, *_scales, solution.getSpaceDim(),
                                   &solution.getSubfieldInfo(_subfieldName.c_str()).description);
 
     // :ATTENTION: The order of the factory methods must match the order of the auxiliary subfields in the FE kernels.
@@ -309,8 +309,8 @@ pylith::bc::DirichletTimeDependent::updateAuxiliaryField(pylith::topology::Field
     PYLITH_COMPONENT_DEBUG("updateAuxiliaryField(auxiliaryField="<<auxiliaryField<<", t="<<t<<")");
 
     if (_useTimeHistory) {
-        assert(_normalizer);
-        const PylithScalar timeScale = _normalizer->getTimeScale();
+        assert(_scales);
+        const PylithScalar timeScale = _scales->getTimeScale();
         TimeDependentAuxiliaryFactory::updateAuxiliaryField(auxiliaryField, t, timeScale, _dbTimeHistory);
     } // if
 

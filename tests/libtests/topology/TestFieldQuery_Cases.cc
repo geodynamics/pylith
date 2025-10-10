@@ -17,7 +17,7 @@
 
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "pylith/scales/Scales.hh" // USES Scales
 
 #include "catch2/catch_test_macros.hpp"
 
@@ -120,11 +120,10 @@ TEST_CASE("TestFieldQuery::Quad::testValidatorNonnegative", "[TestFieldQuery][Tr
 // ------------------------------------------------------------------------------------------------
 void
 pylith::topology::TestFieldQuery_Cases::_setData(TestFieldQuery_Data* data) {
-    assert(data->normalizer);
-    data->normalizer->setLengthScale(1.0);
-    data->normalizer->setTimeScale(10.0);
-    data->normalizer->setPressureScale(0.1);
-    data->normalizer->setDensityScale(2.0);
+    assert(data->scales);
+    data->scales->setLengthScale(0.02);
+    data->scales->setTimeScale(10.0);
+    data->scales->setRigidityScale(1.0e+6);
 
     data->numAuxSubfields = 2;
     static const char* auxSubfields[2] = { "displacement", "temperature" };

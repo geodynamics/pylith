@@ -18,7 +18,7 @@
 
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // HOLDSA UserFunctionDB
 #include "spatialdata/geocoords/geocoordsfwd.hh" // HOLDSA CoordSys
-#include "spatialdata/units/unitsfwd.hh" // HOLDSA Nondimensional
+#include "pylith/scales/scalesfwd.hh" // HOLDSA Scales
 
 /// Namespace for pylith package
 namespace pylith {
@@ -125,7 +125,7 @@ public:
     PylithInt materialId; ///< Identifier of cells in integration domain.
 
     spatialdata::geocoords::CoordSys* cs; ///< Coordinate system.
-    spatialdata::units::Nondimensional* normalizer; ///< Scales for nondimensionalization.
+    pylith::scales::Scales* scales; ///< Scales for nondimensionalization.
 
     PylithReal t; ///< Time for solution in simulation.
     PylithReal dt; ///< Time step in simulation.

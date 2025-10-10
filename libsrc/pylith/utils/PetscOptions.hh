@@ -32,6 +32,7 @@ public:
     static const int INITIAL_GUESS;
     static const int TESTING;
     static const int COLLECTIVE_IO;
+    static const int TS_ADAPT; // :KLUDGE: Flag indicating use of TSAdaptImpulse (full-scale testing)
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:

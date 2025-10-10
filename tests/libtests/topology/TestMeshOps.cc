@@ -20,7 +20,7 @@
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "pylith/scales/Scales.hh" // USES Scales
 
 #include <stdexcept> // USES std::runtime_error
 
@@ -77,7 +77,7 @@ void
 pylith::topology::TestMeshOps::testNondimensionalize(void) {
     PYLITH_METHOD_BEGIN;
 
-    const PylithScalar lengthScale = 2.0;
+    const PylithScalar lengthScale = 0.02;
     const int spaceDim = 2;
     const int numVertices = 4;
     const PylithScalar coordinates[numVertices*spaceDim] = {
@@ -95,9 +95,9 @@ pylith::topology::TestMeshOps::testNondimensionalize(void) {
     spatialdata::geocoords::CSCart cs;
     cs.setSpaceDim(2);
     mesh.setCoordSys(&cs);
-    spatialdata::units::Nondimensional normalizer;
-    normalizer.setLengthScale(lengthScale);
-    MeshOps::nondimensionalize(&mesh, normalizer);
+    pylith::scales::Scales scales;
+    scales.setLengthScale(lengthScale);
+    MeshOps::nondimensionalize(&mesh, scales);
 
     // Get vertices
     PetscDM dmMesh = mesh.getDM();assert(dmMesh);

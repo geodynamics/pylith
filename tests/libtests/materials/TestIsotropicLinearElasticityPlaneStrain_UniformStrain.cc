@@ -15,7 +15,7 @@
 #include "pylith/materials/IsotropicLinearElasticityPlaneStrain.hh" // USES IsotropicLinearElasticityPlaneStrain
 #include "pylith/topology/Field.hh" // USES pylith::topology::Field::Discretization
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "pylith/scales/Scales.hh" // USES Scales
 
 // forward declarations
 namespace pylith {
@@ -157,11 +157,10 @@ protected:
         // meshFilename set in derived class.
         _mydata->boundaryLabel = "boundary";
 
-        CPPUNIT_ASSERT(_mydata->normalizer);
-        _mydata->normalizer->setLengthScale(1.0e+03);
-        _mydata->normalizer->setTimeScale(2.0);
-        _mydata->normalizer->setDensityScale(3.0e+3);
-        _mydata->normalizer->setPressureScale(2.25e+10);
+        CPPUNIT_ASSERT(_mydata->scales);
+        _mydata->scales->setLengthScale(1.0);
+        _mydata->scales->setTimeScale(2.0);
+        _mydata->scales->setRigidityScale(2.5e+6);
 
         _mydata->t = 1.0;
         _mydata->dt = 0.05;

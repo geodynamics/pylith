@@ -133,6 +133,12 @@ EXTRA_DIST = \
 	problems/SubfieldVelocity.py \
 	problems/TimeDependent.py \
 	problems/__init__.py \
+	scales/General.py \
+	scales/ElasticityScales.py \
+	scales/DynamicElasticity.py \
+	scales/QuasistaticPoroelasticity.py \
+	scales/QuasistaticElasticity.py \
+	scales/__init__.py \
 	testing/FullTestApp.py \
 	testing/SolutionPoints.py \
 	testing/TestCases.py \

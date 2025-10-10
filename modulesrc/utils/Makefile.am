@@ -40,7 +40,7 @@ utils_swig_sources = \
 	PyreComponent.i \
 	PetscOptions.i \
 	TestArray.i \
-	constdefs.i
+	constants.i
 
 utils_swig_generated = \
 	utils_wrap.cxx \

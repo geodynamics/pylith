@@ -16,7 +16,8 @@
 
 #include "pylith/topology/FieldQuery.hh" // HOLDSA FieldQuery
 
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "pylith/scales/Scales.hh" // USES Scales
+#include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD*
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL*
@@ -43,7 +44,7 @@ pylith::materials::DerivedFactoryPoroelasticity::addBulkDensity(void) {
     PYLITH_JOURNAL_DEBUG("addBulkDensity(void)");
 
     const char* fieldName = "bulk_density";
-    const PylithReal densityScale = _normalizer->getDensityScale();
+    const PylithReal densityScale = pylith::scales::ElasticityScales::getDensityScale(*_scales);
 
     pylith::topology::Field::Description description;
     description.label = fieldName;

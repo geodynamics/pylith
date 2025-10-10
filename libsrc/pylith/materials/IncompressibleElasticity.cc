@@ -29,7 +29,7 @@
 
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "pylith/scales/Scales.hh" // USES Scales
 
 #include <typeinfo> // USES typeid()
 
@@ -160,8 +160,8 @@ pylith::materials::IncompressibleElasticity::createAuxiliaryField(const pylith::
     assert(_rheology);
     pylith::materials::AuxiliaryFactoryElasticity* auxiliaryFactory = _rheology->getAuxiliaryFactory();assert(auxiliaryFactory);
 
-    assert(_normalizer);
-    auxiliaryFactory->initialize(auxiliaryField, *_normalizer, domainMesh.getDimension());
+    assert(_scales);
+    auxiliaryFactory->initialize(auxiliaryField, *_scales, domainMesh.getDimension());
 
     // :ATTENTION: The order for adding subfields must match the order of the auxiliary fields in the FE kernels.
 
@@ -209,8 +209,8 @@ pylith::materials::IncompressibleElasticity::createDerivedField(const pylith::to
     pylith::topology::Field* derivedField = new pylith::topology::Field(domainMesh);assert(derivedField);
     derivedField->setLabel("derived field");
 
-    assert(_normalizer);
-    _derivedFactory->initialize(derivedField, *_normalizer, domainMesh.getDimension());
+    assert(_scales);
+    _derivedFactory->initialize(derivedField, *_scales, domainMesh.getDimension());
     _derivedFactory->addSubfields();
 
     derivedField->subfieldsSetup();

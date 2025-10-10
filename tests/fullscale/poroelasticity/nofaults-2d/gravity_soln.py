@@ -22,7 +22,7 @@ p_porosity = 0.02
 p_shear_modulus = 3.0e10
 p_drained_bulk_modulus = 8.0e10
 p_fluid_bulk_modulus = 1.0e10
-p_biot_coefficient = 0.2
+p_biot_coefficient = 0.7
 p_isotropic_permeability = 1.0e-14
 
 
@@ -31,9 +31,9 @@ p_lambda = p_drained_bulk_modulus - 2.0 / 3.0 * p_shear_modulus
 p_bulk_density = (1.0 - p_porosity) * p_solid_density + p_porosity * p_fluid_density
 
 
-gacc = 9.80665  # m/s
-ymax = 0.0
-ymin = -8000.0  # m
+g_acc = 9.80665  # m/s
+y_max = 0.0
+y_min = -8000.0  # m
 
 
 # ----------------------------------------------------------------------
@@ -100,8 +100,8 @@ class AnalyticalSoln(object):
             -0.5
             / (p_lambda + 2 * p_mu)
             * (p_bulk_density - p_alpha * p_fluid_density)
-            * gacc
-            * ((ymax - ymin) ** 2 - y**2)
+            * g_acc
+            * ((y_max - y_min) ** 2 - y**2)
         )
         disp[0, :, 0] = 0.0
         disp[0, :, 1] = uy
@@ -120,7 +120,7 @@ class AnalyticalSoln(object):
         y = locs[:, 1]
 
         pressure = numpy.zeros((1, npts, 1), dtype=numpy.float64)
-        pressure[0, :, 0] = p_fluid_density * gacc * (ymax - y)
+        pressure[0, :, 0] = p_fluid_density * g_acc * (y_max - y)
         return pressure
 
     def pressure_zero(self, locs):
@@ -140,8 +140,8 @@ class AnalyticalSoln(object):
             -1.0
             / (p_lambda + 2.0 * p_mu)
             * (p_bulk_density - p_alpha * p_fluid_density)
-            * gacc
-            * (ymax - y)
+            * g_acc
+            * (y_max - y)
         )
 
         trace = numpy.zeros((1, npts, 1), dtype=numpy.float64)
@@ -189,10 +189,16 @@ class AnalyticalSoln(object):
     def biot_modulus(self, locs):
         """Compute Biot modulus field at locations."""
         (npts, _) = locs.shape
-        p_solid_bulk_modulus = p_drained_bulk_modulus / (1.0 - p_biot_coefficient)
-        p_biot_modulus = 1.0 / (
-            p_porosity / p_fluid_bulk_modulus
-            + (p_biot_coefficient - p_porosity) / p_solid_bulk_modulus
+        p_solid_bulk_modulus = (
+            p_drained_bulk_modulus / (1.0 - p_biot_coefficient)
+            if p_biot_coefficient < 1.0
+            else 1.0e50
+        )
+        p_biot_modulus = p_fluid_bulk_modulus / (
+            p_porosity
+            + (p_biot_coefficient - p_porosity)
+            * p_fluid_bulk_modulus
+            / p_solid_bulk_modulus
         )
         modulus = p_biot_modulus * numpy.ones((1, npts, 1), dtype=numpy.float64)
         return modulus
@@ -223,8 +229,8 @@ class AnalyticalSoln(object):
             -1
             / (p_lambda + 2 * p_mu)
             * (p_bulk_density - p_alpha * p_fluid_density)
-            * gacc
-            * (ymax - y)
+            * g_acc
+            * (y_max - y)
         )
         strain[0, :, 0] = 0.0
         strain[0, :, 1] = eyy
@@ -238,11 +244,11 @@ class AnalyticalSoln(object):
 
         y = locs[:, 1]
         p_alpha = p_biot_coefficient
-        syy = -p_bulk_density * gacc * (ymax - y)
-        sxx = szz = -p_lambda / (p_lambda + 2 * p_mu) * p_bulk_density * gacc * (
-            ymax - y
-        ) - 2 * p_mu / (p_lambda + 2 * p_mu) * p_alpha * p_fluid_density * gacc * (
-            ymax - y
+        syy = -p_bulk_density * g_acc * (y_max - y)
+        sxx = szz = -p_lambda / (p_lambda + 2 * p_mu) * p_bulk_density * g_acc * (
+            y_max - y
+        ) - 2 * p_mu / (p_lambda + 2 * p_mu) * p_alpha * p_fluid_density * g_acc * (
+            y_max - y
         )
 
         stress = numpy.zeros((1, npts, self.TENSOR_SIZE), dtype=numpy.float64)

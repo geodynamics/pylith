@@ -32,7 +32,7 @@
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensionalizer
+#include "pylith/scales/Scales.hh" // USES Nondimensionalizer
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 
 #include <cmath> // USES pow(), sqrt()
@@ -166,7 +166,7 @@ pylith::faults::FaultCohesiveKin::createAuxiliaryField(const pylith::topology::F
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG("createAuxiliaryField(solution="<<solution.getLabel()<<", domainMesh=)"<<typeid(domainMesh).name()<<")");
 
-    assert(_normalizer);
+    assert(_scales);
 
     pylith::topology::Field* auxiliaryField = new pylith::topology::Field(domainMesh);assert(auxiliaryField);
     auxiliaryField->setLabel("auxiliary field");
@@ -181,8 +181,8 @@ pylith::faults::FaultCohesiveKin::createAuxiliaryField(const pylith::topology::F
                                                  discretization.isBasisContinuous);
 
     assert(_auxiliaryFactory);
-    assert(_normalizer);
-    _auxiliaryFactory->initialize(auxiliaryField, *_normalizer, solution.getSpaceDim());
+    assert(_scales);
+    _auxiliaryFactory->initialize(auxiliaryField, *_scales, solution.getSpaceDim());
 
     // :ATTENTION: The order for adding subfields must match the order of the auxiliary fields in the FE kernels.
 
@@ -216,7 +216,7 @@ pylith::faults::FaultCohesiveKin::createAuxiliaryField(const pylith::topology::F
     for (srcs_type::iterator r_iter = _ruptures.begin(); r_iter != rupturesEnd; ++r_iter) {
         KinSrc* src = r_iter->second;
         assert(src);
-        src->initialize(*auxiliaryField, *_normalizer, solution.getMesh().getCoordSys());
+        src->initialize(*auxiliaryField, *_scales, solution.getMesh().getCoordSys());
     } // for
 
     // Create local PETSc vector to hold current slip.
@@ -237,7 +237,7 @@ pylith::faults::FaultCohesiveKin::updateAuxiliaryField(pylith::topology::Field* 
     PYLITH_COMPONENT_DEBUG("updateAuxiliaryField(auxiliaryField="<<auxiliaryField<<", t="<<t<<")");
 
     assert(auxiliaryField);
-    assert(_normalizer);
+    assert(_scales);
 
     int bitSlipSubfields = 0x0;
     switch (_formulation) {
@@ -270,7 +270,7 @@ pylith::faults::FaultCohesiveKin::_updateSlip(pylith::topology::Field* auxiliary
     PYLITH_COMPONENT_DEBUG("updateSlip(auxiliaryField="<<auxiliaryField<<", t="<<t<<", bitSlipSubfields="<<bitSlipSubfields<<")");
 
     assert(auxiliaryField);
-    assert(_normalizer);
+    assert(_scales);
 
     // Update slip subfield at current time step
     PetscErrorCode err = VecSet(_slipVecTotal, 0.0);PYLITH_CHECK_ERROR(err);
@@ -279,7 +279,7 @@ pylith::faults::FaultCohesiveKin::_updateSlip(pylith::topology::Field* auxiliary
         err = VecSet(_slipVecRupture, 0.0);PYLITH_CHECK_ERROR(err);
 
         KinSrc* src = r_iter->second;assert(src);
-        src->getSlipSubfields(_slipVecRupture, auxiliaryField, t, _normalizer->getTimeScale(), bitSlipSubfields);
+        src->getSlipSubfields(_slipVecRupture, auxiliaryField, t, _scales->getTimeScale(), bitSlipSubfields);
         err = VecAYPX(_slipVecTotal, 1.0, _slipVecRupture);
     } // for
 

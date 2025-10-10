@@ -32,7 +32,8 @@
 
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "pylith/scales/Scales.hh" // USES Scales
+#include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
 
 namespace pylith {
     class _ThreeBlocksStatic;
@@ -40,6 +41,13 @@ namespace pylith {
 
 // ------------------------------------------------------------------------------------------------
 class pylith::_ThreeBlocksStatic {
+    static pylith::scales::Scales scales;
+    static const double X_FAULT_LEFT; // nondimensional
+    static const double X_FAULT_RIGHT; // nondimensional
+    static const double Y_DISP_LEFT; // nondimensional
+    static const double Y_DISP_CENTER; // nondimensional
+    static const double Y_DISP_RIGHT; // nondimensional
+
     // Density
     static double density(const double x,
                           const double y) {
@@ -90,7 +98,7 @@ class pylith::_ThreeBlocksStatic {
 
     static double finalslip_leftlateral(const double x,
                                         const double y) {
-        return +1.5;
+        return +1.0 * scales.getDisplacementScale();
     } // slip_leftlateral
 
     static const char* slip_units(void) {
@@ -108,23 +116,22 @@ class pylith::_ThreeBlocksStatic {
     static double disp_y(const double x,
                          const double y,
                          PetscInt flag) {
-        const double amplitude = 1.5e-3;
         double disp = 0.0;
         if (!flag) {
-            if (x < -2.0) {
-                disp = -amplitude;
-            } else if (x < +2.0) {
-                disp = 0.0;
+            if (x < X_FAULT_LEFT) {
+                disp = Y_DISP_LEFT;
+            } else if (x < X_FAULT_RIGHT) {
+                disp = Y_DISP_CENTER;
             } else {
-                disp = +amplitude;
+                disp = Y_DISP_RIGHT;
             } // if/else
         } else {
             if (flag == 10) {
-                disp = -amplitude;
+                disp = Y_DISP_LEFT;
             } else if (flag == 20) {
-                disp = 0.0;
+                disp = Y_DISP_CENTER;
             } else {
-                disp = +amplitude;
+                disp = Y_DISP_RIGHT;
             } // if/else
         } // if
         return disp;
@@ -154,25 +161,21 @@ class pylith::_ThreeBlocksStatic {
         s[0] = disp_x(x[0], x[1]);
         PetscInt flag = 0;
         if (context) {
+            PetscErrorCode err = PETSC_SUCCESS;
+            PetscDM dmMesh = PetscDM(context);
             PetscInt cell = 0;
-            DMPolytopeType cellType = DM_POLYTOPE_UNKNOWN;
-            DMPlexGetActivePoint((PetscDM) context, &cell);
-            DMPlexGetCellType((PetscDM) context, cell, &cellType);
-            PetscInt maxCellLeft = 0;
-            PetscInt maxCellMiddle = 0;
-            switch (cellType) {
-            case DM_POLYTOPE_TRIANGLE:
-                maxCellLeft = 6;
-                maxCellMiddle = 12;
-                break;
-            case DM_POLYTOPE_QUADRILATERAL:
-                maxCellLeft = 3;
-                maxCellMiddle = 6;
-                break;
-            default:
-                PYLITH_JOURNAL_LOGICERROR("Unknown cell type in solution displacement kernel.");
-            }
-            flag = cell < maxCellLeft ? 10 : cell < maxCellMiddle ? 20 : 15;
+            err = DMPlexGetActivePoint(dmMesh, &cell);PYLITH_CHECK_ERROR(err);
+
+            double centroid[3] = {0.0, 0.0, 0.0};
+            err = DMPlexComputeCellGeometryFVM(dmMesh, cell, NULL, centroid, NULL);PYLITH_CHECK_ERROR(err);
+            flag = 0;
+            if (centroid[0] < X_FAULT_LEFT) {
+                flag = 10;
+            } else if (centroid[0] < X_FAULT_RIGHT) {
+                flag = 20;
+            } else {
+                flag = 15;
+            } // if/else
         } // if
         s[1] = disp_y(x[0], x[1], flag);
 
@@ -209,10 +212,7 @@ public:
 
         data->meshFilename = ":UNKNOWN:"; // Set in child class.
 
-        data->normalizer.setLengthScale(1.0e+03);
-        data->normalizer.setTimeScale(2.0);
-        data->normalizer.setPressureScale(2.25e+10);
-        data->normalizer.computeDensityScale();
+        scales = data->scales;
 
         // solnDiscretizations set in derived class.
 
@@ -343,6 +343,13 @@ public:
     } // ccreateData
 
 }; // TestFaultKin2D_ThreeBlocksStatic
+pylith::scales::Scales pylith::_ThreeBlocksStatic::scales;
+
+const double pylith::_ThreeBlocksStatic::X_FAULT_LEFT = -2.0/12.0;
+const double pylith::_ThreeBlocksStatic::X_FAULT_RIGHT = +2.0/12.0;
+const double pylith::_ThreeBlocksStatic::Y_DISP_LEFT = -1.5;
+const double pylith::_ThreeBlocksStatic::Y_DISP_CENTER = -0.5;
+const double pylith::_ThreeBlocksStatic::Y_DISP_RIGHT = +0.5;
 
 // ------------------------------------------------------------------------------------------------
 pylith::TestFaultKin_Data*

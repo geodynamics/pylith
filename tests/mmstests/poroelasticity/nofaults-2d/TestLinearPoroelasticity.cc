@@ -29,6 +29,7 @@
 #include "pylith/utils/journals.hh" // pythia::journal
 
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
+#include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
 
 // ------------------------------------------------------------------------------------------------
 // Constuctor.
@@ -79,7 +80,7 @@ pylith::TestLinearPoroelasticity::_initialize(void) {
 
     // Set up coordinates.
     _mesh->setCoordSys(&_data->cs);
-    pylith::topology::MeshOps::nondimensionalize(_mesh, _data->normalizer);
+    pylith::topology::MeshOps::nondimensionalize(_mesh, _data->scales);
 
     // Set up material
     _data->material.setBulkRheology(&_data->rheology);
@@ -94,7 +95,7 @@ pylith::TestLinearPoroelasticity::_initialize(void) {
 
     // Set up problem.
     assert(_problem);
-    _problem->setNormalizer(_data->normalizer);
+    _problem->setScales(_data->scales);
     pylith::materials::Material* materials[1] = { &_data->material };
     _problem->setMaterials(materials, 1);
     _problem->setBoundaryConditions(_data->bcs.data(), _data->bcs.size());
@@ -107,7 +108,7 @@ pylith::TestLinearPoroelasticity::_initialize(void) {
     assert(!_solution);
     _solution = new pylith::topology::Field(*_mesh);assert(_solution);
     _solution->setLabel("solution");
-    pylith::problems::SolutionFactory factory(*_solution, _data->normalizer);
+    pylith::problems::SolutionFactory factory(*_solution, _data->scales);
     factory.addDisplacement(_data->solnDiscretizations[0]);
     factory.addPressure(_data->solnDiscretizations[1]);
     factory.addTraceStrain(_data->solnDiscretizations[2]);
@@ -160,12 +161,12 @@ pylith::TestLinearPoroelasticity_Data::TestLinearPoroelasticity_Data(void) :
     useAsciiMesh(true),
 
     jacobianConvergenceRate(1.0),
-    tolerance(1.0e-9),
+    tolerance(4.0e-9),
     isJacobianLinear(true),
     allowZeroResidual(false),
 
     t(0.0),
-    dt(0.05),
+    dt(0.0),
     formulation(pylith::problems::Physics::QUASISTATIC),
 
     numSolnSubfields(0),
@@ -176,6 +177,10 @@ pylith::TestLinearPoroelasticity_Data::TestLinearPoroelasticity_Data(void) :
     auxDiscretizations(NULL) {
     auxDB.setDescription("material auxiliary field spatial database");
     cs.setSpaceDim(spaceDim);
+
+    const double lengthScale = 8.0e+3;
+    pylith::scales::ElasticityScales::setQuasistaticPoroelasticity(&scales, lengthScale);
+    dt = 0.05*scales.getTimeScale();
 } // constructor
 
 

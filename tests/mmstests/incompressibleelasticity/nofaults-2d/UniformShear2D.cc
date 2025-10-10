@@ -128,11 +128,6 @@ public:
         data->isJacobianLinear = true;
         data->jacobianConvergenceRate = 1.0;
 
-        data->normalizer.setLengthScale(1.0e+03);
-        data->normalizer.setTimeScale(2.0);
-        data->normalizer.setPressureScale(2.25e+10);
-        data->normalizer.computeDensityScale();
-
         // solnDiscretizations set in derived class.
 
         data->numAuxSubfields = 3;

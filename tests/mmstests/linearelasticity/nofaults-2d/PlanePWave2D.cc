@@ -16,16 +16,16 @@
 #include "pylith/topology/Field.hh" // USES pylith::topology::Field::Discretization
 #include "pylith/utils/journals.hh" // USES pythia::journal::debug_t
 
+#include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
+
 // ---------------------------------------------------------------------------------------------------------------------
 namespace pylith {
     class _PlanePWave2D;
 } // pylith
 
 class pylith::_PlanePWave2D {
-    static const double LENGTH_SCALE;
-    static const double TIME_SCALE;
-    static const double WAVELENGTH; // (in terms of LENGTH_SCALE)
-    static const double PRESSURE_SCALE;
+    static pylith::scales::Scales scales;
+    static const double WAVELENGTH; // nondimensional
     static const double TIME_SNAPSHOT; // nondimensional
     static const double AMPLITUDE;
 
@@ -67,7 +67,7 @@ class pylith::_PlanePWave2D {
                          const double t) {
         const double pi = M_PI;
         const double l = WAVELENGTH;
-        const double velocityScale = LENGTH_SCALE / TIME_SCALE;
+        const double velocityScale = scales.getLengthScale() / scales.getTimeScale();
         const double c = vp(x,y) / velocityScale;
         return AMPLITUDE*sin(2.0*pi*(x-c*t)/l);
     } // disp_x
@@ -88,7 +88,7 @@ class pylith::_PlanePWave2D {
                         const double t) {
         const double pi = M_PI;
         const double l = WAVELENGTH;
-        const double velocityScale = LENGTH_SCALE / TIME_SCALE;
+        const double velocityScale = scales.getLengthScale() / scales.getTimeScale();
         const double c = vp(x,y) / velocityScale;
         return -AMPLITUDE*2.0*pi*c/l * cos(2.0*pi*(x-c*t)/l);
     } // vel_x
@@ -109,7 +109,7 @@ class pylith::_PlanePWave2D {
                         const double t) {
         const double pi = M_PI;
         const double l = WAVELENGTH;
-        const double velocityScale = LENGTH_SCALE / TIME_SCALE;
+        const double velocityScale = scales.getLengthScale() / scales.getTimeScale();
         const double c = vp(x,y) / velocityScale;
         return -AMPLITUDE*pow(2.0*pi*c/l, 2) * sin(2.0*pi*(x-c*t)/l);
     } // vel_x
@@ -183,14 +183,15 @@ public:
 
         data->journalName = "PlanePWave2D";
         data->isJacobianLinear = true;
+        data->tolerance = 1.0e-8;
 
         data->meshFilename = ":UNKNOWN:"; // Set in child class.
         data->boundaryLabel = "boundary";
 
-        data->normalizer.setLengthScale(LENGTH_SCALE);
-        data->normalizer.setTimeScale(TIME_SCALE);
-        data->normalizer.setPressureScale(PRESSURE_SCALE);
-        data->normalizer.computeDensityScale();
+        const double lengthScale = data->scales.getLengthScale(); // domain-specific value
+        const double velocityScale = vs(0.0, 0.0);
+        pylith::scales::ElasticityScales::setDynamicElasticity(&scales, lengthScale, velocityScale);
+        data->scales = scales;
         data->formulation = pylith::problems::Physics::DYNAMIC;
 
         data->t = TIME_SNAPSHOT;
@@ -261,12 +262,10 @@ public:
 
 }; // PlanePWave2D
 
-const double pylith::_PlanePWave2D::LENGTH_SCALE = 1.0e+3;
-const double pylith::_PlanePWave2D::TIME_SCALE = 10.0;
-const double pylith::_PlanePWave2D::PRESSURE_SCALE = 3.0e+10;
-const double pylith::_PlanePWave2D::WAVELENGTH = 1.0e+4;
+pylith::scales::Scales pylith::_PlanePWave2D::scales;
+const double pylith::_PlanePWave2D::WAVELENGTH = 1.0e+5;
 const double pylith::_PlanePWave2D::TIME_SNAPSHOT = 7.657345769747113;
-const double pylith::_PlanePWave2D::AMPLITUDE = 1.0e+2;
+const double pylith::_PlanePWave2D::AMPLITUDE = 0.1;
 
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
@@ -275,7 +274,6 @@ pylith::PlanePWave2D::TriP1(void) {
 
     data->meshFilename = "data/tri.msh";
     data->useAsciiMesh = false;
-    data->tolerance = 2.0e-4;
 
     data->numSolnSubfields = 2;
     static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
@@ -293,8 +291,8 @@ pylith::TestLinearElasticity_Data*
 pylith::PlanePWave2D::TriP2(void) {
     TestLinearElasticity_Data* data = pylith::_PlanePWave2D::createData();assert(data);
 
-    data->meshFilename = "data/tri.mesh";
-    data->tolerance = 5.0e-7;
+    data->meshFilename = "data/tri.msh";
+    data->useAsciiMesh = false;
 
     static const pylith::topology::Field::Discretization _auxDiscretizations[3] = {
         pylith::topology::Field::Discretization(0, 2), // density
@@ -321,7 +319,6 @@ pylith::PlanePWave2D::TriP3(void) {
 
     data->meshFilename = "data/tri.msh";
     data->useAsciiMesh = false;
-    data->tolerance = 1.0e-9;
 
     static const pylith::topology::Field::Discretization _auxDiscretizations[3] = {
         pylith::topology::Field::Discretization(0, 3), // density
@@ -347,7 +344,6 @@ pylith::PlanePWave2D::TriP4(void) {
     TestLinearElasticity_Data* data = pylith::_PlanePWave2D::createData();assert(data);
 
     data->meshFilename = "data/tri.mesh";
-    data->tolerance = 1.0e-9;
 
     static const pylith::topology::Field::Discretization _auxDiscretizations[3] = {
         pylith::topology::Field::Discretization(0, 4), // density
@@ -373,7 +369,6 @@ pylith::PlanePWave2D::QuadQ1(void) {
     TestLinearElasticity_Data* data = pylith::_PlanePWave2D::createData();assert(data);
 
     data->meshFilename = "data/quad.mesh";
-    data->tolerance = 1.0e-4;
 
     data->numSolnSubfields = 2;
     static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
@@ -392,7 +387,6 @@ pylith::PlanePWave2D::QuadQ1Distorted(void) {
     TestLinearElasticity_Data* data = pylith::_PlanePWave2D::createData();assert(data);
 
     data->meshFilename = "data/quad_distorted.mesh";
-    data->tolerance = 1.0e-5;
 
     data->numSolnSubfields = 2;
     static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
@@ -412,7 +406,6 @@ pylith::PlanePWave2D::QuadQ2(void) {
 
     data->meshFilename = "data/quad.msh";
     data->useAsciiMesh = false;
-    data->tolerance = 2.0e-8;
 
     static const pylith::topology::Field::Discretization _auxDiscretizations[3] = {
         pylith::topology::Field::Discretization(0, 2), // density
@@ -438,7 +431,6 @@ pylith::PlanePWave2D::QuadQ3(void) {
     TestLinearElasticity_Data* data = pylith::_PlanePWave2D::createData();assert(data);
 
     data->meshFilename = "data/quad.mesh";
-    data->tolerance = 1.0e-9;
 
     static const pylith::topology::Field::Discretization _auxDiscretizations[3] = {
         pylith::topology::Field::Discretization(0, 3), // density

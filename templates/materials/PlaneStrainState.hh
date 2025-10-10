@@ -58,7 +58,7 @@ public:
 
     /** Get stable time step for implicit time integration.
      *
-     * Default is MAXDOUBLE (or 1.0e+30 if MAXFLOAT is not defined in math.h).
+     * Default is pylith::max_double.
      *
      * This function is optional but provides an optimized
      * implementation of the more general

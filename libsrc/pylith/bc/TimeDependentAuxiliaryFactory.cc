@@ -17,7 +17,7 @@
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 
 #include "spatialdata/spatialdb/TimeHistory.hh" // USES TimeHistory
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "pylith/scales/Scales.hh" // USES Scales
 
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL*
 
@@ -144,11 +144,11 @@ pylith::bc::TimeDependentAuxiliaryFactory::addRateAmplitude(void) {
     const char* subfieldName = "rate_amplitude";
 
     assert(_defaultDescription);
-    assert(_normalizer);
+    assert(_scales);
     pylith::topology::FieldBase::Description subfieldDescription(*_defaultDescription);
     subfieldDescription.label = subfieldName;
     subfieldDescription.alias = subfieldName;
-    subfieldDescription.scale = _defaultDescription->scale / _normalizer->getTimeScale();
+    subfieldDescription.scale = _defaultDescription->scale / _scales->getTimeScale();
     subfieldDescription.validator = NULL;
     switch (subfieldDescription.vectorFieldType) {
     case pylith::topology::FieldBase::SCALAR: {
@@ -184,7 +184,7 @@ pylith::bc::TimeDependentAuxiliaryFactory::addRateStartTime(void) {
     const char* subfieldName = "rate_start_time";
 
     assert(_defaultDescription);
-    assert(_normalizer);
+    assert(_scales);
     pylith::topology::FieldBase::Description subfieldDescription(*_defaultDescription);
     subfieldDescription.label = subfieldName;
     subfieldDescription.alias = subfieldName;
@@ -192,7 +192,7 @@ pylith::bc::TimeDependentAuxiliaryFactory::addRateStartTime(void) {
     subfieldDescription.numComponents = 1;
     subfieldDescription.componentNames.resize(1);
     subfieldDescription.componentNames[0] = subfieldName;
-    subfieldDescription.scale = _normalizer->getTimeScale();
+    subfieldDescription.scale = _scales->getTimeScale();
     subfieldDescription.validator = NULL;
 
     _field->subfieldAdd(subfieldDescription, getSubfieldDiscretization(subfieldName));
@@ -250,7 +250,7 @@ pylith::bc::TimeDependentAuxiliaryFactory::addTimeHistoryStartTime(void) {
     const char* subfieldName = "time_history_start_time";
 
     assert(_defaultDescription);
-    assert(_normalizer);
+    assert(_scales);
     pylith::topology::FieldBase::Description subfieldDescription(*_defaultDescription);
     subfieldDescription.label = subfieldName;
     subfieldDescription.alias = subfieldName;
@@ -258,7 +258,7 @@ pylith::bc::TimeDependentAuxiliaryFactory::addTimeHistoryStartTime(void) {
     subfieldDescription.numComponents = 1;
     subfieldDescription.componentNames.resize(1);
     subfieldDescription.componentNames[0] = subfieldName;
-    subfieldDescription.scale = _normalizer->getTimeScale();
+    subfieldDescription.scale = _scales->getTimeScale();
     subfieldDescription.validator = NULL;
 
     _field->subfieldAdd(subfieldDescription, getSubfieldDiscretization(subfieldName));
@@ -278,7 +278,7 @@ pylith::bc::TimeDependentAuxiliaryFactory::addTimeHistoryValue(void) {
     const char* subfieldName = "time_history_value";
 
     assert(_defaultDescription);
-    assert(_normalizer);
+    assert(_scales);
     pylith::topology::FieldBase::Description subfieldDescription(*_defaultDescription);
     subfieldDescription.label = subfieldName;
     subfieldDescription.alias = subfieldName;

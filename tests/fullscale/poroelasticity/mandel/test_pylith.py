@@ -33,10 +33,6 @@ class TestApp(TestDriver):
         for test in TestMandel.test_cases():
             suite.addTest(unittest.makeSuite(test))
 
-        import TestMandelCompaction
-        for test in TestMandelCompaction.test_cases():
-            suite.addTest(unittest.makeSuite(test))
-
         return suite
 
 

@@ -22,7 +22,7 @@
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
 
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "pylith/scales/Scales.hh" // USES Scales
 
 #include <cassert> // USES assert()
 #include <stdexcept> // USES std::runtime_error
@@ -190,7 +190,7 @@ pylith::feassemble::Constraint::initialize(const pylith::topology::Field& soluti
     _observers = _physics->getObservers(); // Memory managed by Physics
     if (_observers) {
         _observers->setPhysicsImplementation(this);
-        _observers->setTimeScale(_physics->getNormalizer().getTimeScale());
+        _observers->setTimeScale(_physics->getScales().getTimeScale());
     } // if
 
     PYLITH_METHOD_END;

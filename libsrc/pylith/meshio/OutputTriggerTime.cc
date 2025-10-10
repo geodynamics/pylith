@@ -12,7 +12,7 @@
 
 #include "pylith/meshio/OutputTriggerTime.hh" // Implementation of class methods
 
-#include "pylith/utils/constdefs.h" // USES PYLITH_MAXSCALAR
+#include "pylith/utils/constants.hh" // USES pylith::max_real
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
@@ -20,7 +20,7 @@
 // Constructor
 pylith::meshio::OutputTriggerTime::OutputTriggerTime(void) :
     _timeSkip(0.0),
-    _timeNondimWrote(-PYLITH_MAXSCALAR) {
+    _timeNondimWrote(-pylith::max_real) {
     PyreComponent::setName("outputtriggertime");
 } // constructor
 

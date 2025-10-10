@@ -24,7 +24,8 @@
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "pylith/scales/Scales.hh" // USES Scales
+#include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
 
 #include "catch2/catch_test_macros.hpp"
 
@@ -46,7 +47,7 @@ pylith::materials::TestAuxiliaryFactoryElasticity::TestAuxiliaryFactoryElasticit
         componentNames,
         componentNames.size(),
         pylith::topology::Field::SCALAR,
-        _data->normalizer->getDensityScale(),
+        pylith::scales::ElasticityScales::getDensityScale(*_data->scales),
         0.0,
         pylith::topology::FieldQuery::validatorPositive
         );
@@ -67,7 +68,7 @@ pylith::materials::TestAuxiliaryFactoryElasticity::TestAuxiliaryFactoryElasticit
         componentNames,
         componentNames.size(),
         pylith::topology::Field::VECTOR,
-        _data->normalizer->getPressureScale() / _data->normalizer->getLengthScale()
+        pylith::scales::ElasticityScales::getBodyForceScale(*_data->scales)
         );
     info.fe = pylith::topology::Field::Discretization(
         2, 2, _data->auxDim, _data->auxDim, false, pylith::topology::Field::DEFAULT_BASIS, pylith::topology::Field::POLYNOMIAL_SPACE, false
@@ -87,7 +88,7 @@ pylith::materials::TestAuxiliaryFactoryElasticity::TestAuxiliaryFactoryElasticit
         componentNames,
         componentNames.size(),
         pylith::topology::Field::VECTOR,
-        _data->normalizer->getLengthScale() / pow(_data->normalizer->getTimeScale(), 2)
+        pylith::scales::ElasticityScales::getAccelerationScale(*_data->scales)
         );
     info.fe = pylith::topology::Field::Discretization(
         2, 2, _data->auxDim, _data->auxDim, false, pylith::topology::Field::DEFAULT_BASIS, pylith::topology::Field::POLYNOMIAL_SPACE, true
@@ -134,7 +135,7 @@ pylith::materials::TestAuxiliaryFactoryElasticity::testAdd(void) {
     assert(_data->gravityField);
     _factory->addGravityField(_data->gravityField);
 
-    assert(_data->normalizer);
+    assert(_data->scales);
 
     pylith::testing::FieldTester::checkSubfieldInfo(*_auxiliaryField, _data->subfields["density"]);
     pylith::testing::FieldTester::checkSubfieldInfo(*_auxiliaryField, _data->subfields["body_force"]);
@@ -161,9 +162,9 @@ pylith::materials::TestAuxiliaryFactoryElasticity::testSetValuesFromDB(void) {
     _auxiliaryField->allocate();
 
     assert(_data);
-    assert(_data->normalizer);
+    assert(_data->scales);
     _factory->setValuesFromDB();
-    pylith::testing::FieldTester::checkFieldWithDB(*_auxiliaryField, _data->auxiliaryDB, _data->normalizer->getLengthScale());
+    pylith::testing::FieldTester::checkFieldWithDB(*_auxiliaryField, _data->auxiliaryDB, _data->scales->getLengthScale());
 
     PYLITH_METHOD_END;
 } // testSetValues
@@ -187,8 +188,8 @@ pylith::materials::TestAuxiliaryFactoryElasticity::_initialize(void) {
 
     // Setup coordinates.
     _mesh->setCoordSys(_data->cs);
-    assert(_data->normalizer);
-    pylith::topology::MeshOps::nondimensionalize(_mesh, *_data->normalizer);
+    assert(_data->scales);
+    pylith::topology::MeshOps::nondimensionalize(_mesh, *_data->scales);
 
     _auxiliaryField = new pylith::topology::Field(*_mesh);assert(_auxiliaryField);
     _auxiliaryField->setLabel("auxiliary");
@@ -203,8 +204,8 @@ pylith::materials::TestAuxiliaryFactoryElasticity::_initialize(void) {
         _factory->setSubfieldDiscretization(subfieldName, fe.basisOrder, fe.quadOrder, fe.dimension, fe.isFaultOnly, fe.cellBasis,
                                             fe.feSpace, fe.isBasisContinuous);
     } // for
-    assert(_data->normalizer);
-    _factory->initialize(_auxiliaryField, *_data->normalizer, _data->dimension);
+    assert(_data->scales);
+    _factory->initialize(_auxiliaryField, *_data->scales, _data->dimension);
 
     PYLITH_METHOD_END;
 } // _initialize
@@ -214,7 +215,7 @@ pylith::materials::TestAuxiliaryFactoryElasticity::_initialize(void) {
 pylith::materials::TestAuxiliaryFactoryElasticity_Data::TestAuxiliaryFactoryElasticity_Data(void) :
     meshFilename(NULL),
     cs(NULL),
-    normalizer(new spatialdata::units::Nondimensional),
+    scales(new pylith::scales::Scales),
     auxiliaryDB(new spatialdata::spatialdb::UserFunctionDB),
     gravityField(new spatialdata::spatialdb::GravityField) {}
 
@@ -222,7 +223,7 @@ pylith::materials::TestAuxiliaryFactoryElasticity_Data::TestAuxiliaryFactoryElas
 // ------------------------------------------------------------------------------------------------
 pylith::materials::TestAuxiliaryFactoryElasticity_Data::~TestAuxiliaryFactoryElasticity_Data(void) {
     delete cs;cs = NULL;
-    delete normalizer;normalizer = NULL;
+    delete scales;scales = NULL;
     delete auxiliaryDB;auxiliaryDB = NULL;
     delete gravityField;gravityField = NULL;
 } // destructor

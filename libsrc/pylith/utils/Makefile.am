@@ -22,11 +22,12 @@ subpkginclude_HEADERS = \
 	PylithVersion.hh \
 	PetscVersion.hh \
 	DependenciesVersion.hh \
+	TSAdaptImpulse.hh \
 	TestArray.hh \
 	array.hh \
 	mpi.hh \
 	arrayfwd.hh \
-	constdefs.h \
+	constants.hh \
 	lapack.h \
 	macrodefs.h \
 	petscfwd.h \

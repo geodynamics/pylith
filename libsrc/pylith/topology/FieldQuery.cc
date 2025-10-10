@@ -286,7 +286,7 @@ PetscErrorCode
 pylith::topology::FieldQuery::queryDBPointFn(PylithInt dim,
                                              PylithReal t,
                                              const PylithReal x[],
-                                             PylithInt nvalues,
+                                             PylithInt numValues,
                                              PylithScalar* values,
                                              void* context) {
     PYLITH_METHOD_BEGIN;
@@ -322,7 +322,7 @@ pylith::topology::FieldQuery::queryDBPointFn(PylithInt dim,
 
     // Convert database values to subfield values if converter function specified.
     if (queryctx->converter) {
-        const std::string& invalidMsg = queryctx->converter(values, nvalues, queryctx->queryValues, queryctx->queryIndices);
+        const std::string& invalidMsg = queryctx->converter(values, numValues, queryctx->queryValues, queryctx->queryIndices);
         if (invalidMsg.length() > 0) {
             std::ostringstream msg;
             msg << "Error converting spatial database values for " << queryctx->description << " at (";
@@ -334,14 +334,14 @@ pylith::topology::FieldQuery::queryDBPointFn(PylithInt dim,
             PYLITH_ERROR_RETURN(PETSC_COMM_SELF, PETSC_ERR_LIB, msg.str().c_str());
         }
     } else {
-        for (PylithInt i = 0; i < nvalues; ++i) {
+        for (PylithInt i = 0; i < numValues; ++i) {
             values[i] = queryctx->queryValues[queryctx->queryIndices[i]];
         } // for
     } // if/else
 
     // Validate subfield values if validator function was specified.
     if (queryctx->validator) {
-        for (PylithInt i = 0; i < nvalues; ++i) {
+        for (PylithInt i = 0; i < numValues; ++i) {
             const std::string& invalidMsg = queryctx->validator(values[i], queryctx->valueScale, queryctx->validatorTolerance);
             if (invalidMsg.length() > 0) {
                 std::ostringstream msg;
@@ -359,7 +359,7 @@ pylith::topology::FieldQuery::queryDBPointFn(PylithInt dim,
 
     // Nondimensionalize values
     assert(queryctx->valueScale > 0);
-    for (int i = 0; i < nvalues; ++i) {
+    for (int i = 0; i < numValues; ++i) {
         values[i] /= queryctx->valueScale;
     } // for
 

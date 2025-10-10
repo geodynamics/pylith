@@ -23,7 +23,7 @@
 
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "pylith/scales/Scales.hh" // USES Scales
 
 #include "catch2/catch_test_macros.hpp"
 
@@ -34,11 +34,10 @@ pylith::problems::TestSolutionFactory::TestSolutionFactory(TestSolutionFactory_D
     PYLITH_METHOD_BEGIN;
     assert(_data);
 
-    assert(_data->normalizer);
-    _data->normalizer->setLengthScale(1.0e+03);
-    _data->normalizer->setTimeScale(2.0);
-    _data->normalizer->setDensityScale(3.0e+3);
-    _data->normalizer->setPressureScale(2.25e+10);
+    assert(_data->scales);
+    _data->scales->setLengthScale(1.0);
+    _data->scales->setTimeScale(2.0);
+    _data->scales->setRigidityScale(2.25e+6);
 
     pylith::topology::Field::SubfieldInfo info;
     pylith::string_vector componentNames;
@@ -54,7 +53,7 @@ pylith::problems::TestSolutionFactory::TestSolutionFactory(TestSolutionFactory_D
         componentNames,
         componentNames.size(),
         pylith::topology::Field::VECTOR,
-        _data->normalizer->getLengthScale()
+        _data->scales->getLengthScale()
         );
     info.fe = pylith::topology::Field::Discretization(
         1, 2, -1, -1, false, pylith::topology::Field::DEFAULT_BASIS, pylith::topology::Field::POLYNOMIAL_SPACE, true
@@ -74,7 +73,7 @@ pylith::problems::TestSolutionFactory::TestSolutionFactory(TestSolutionFactory_D
         componentNames,
         componentNames.size(),
         pylith::topology::Field::VECTOR,
-        _data->normalizer->getLengthScale() / _data->normalizer->getTimeScale()
+        _data->scales->getLengthScale() / _data->scales->getTimeScale()
         );
     info.fe = pylith::topology::Field::Discretization(
         2, 3, -1, -1, false, pylith::topology::Field::DEFAULT_BASIS, pylith::topology::Field::POLYNOMIAL_SPACE, false
@@ -92,7 +91,7 @@ pylith::problems::TestSolutionFactory::TestSolutionFactory(TestSolutionFactory_D
         componentNames,
         componentNames.size(),
         pylith::topology::Field::SCALAR,
-        _data->normalizer->getPressureScale()
+        _data->scales->getRigidityScale()
         );
     info.fe = pylith::topology::Field::Discretization(
         2, 2, -1, -1, false, pylith::topology::Field::DEFAULT_BASIS, pylith::topology::Field::POLYNOMIAL_SPACE, true
@@ -109,7 +108,7 @@ pylith::problems::TestSolutionFactory::TestSolutionFactory(TestSolutionFactory_D
         componentNames,
         componentNames.size(),
         pylith::topology::Field::SCALAR,
-        _data->normalizer->getLengthScale() / _data->normalizer->getLengthScale()
+        _data->scales->getLengthScale() / _data->scales->getLengthScale()
         );
     info.fe = pylith::topology::Field::Discretization(
         2, 2, -1, -1, false, pylith::topology::Field::DEFAULT_BASIS, pylith::topology::Field::POLYNOMIAL_SPACE, true
@@ -128,7 +127,7 @@ pylith::problems::TestSolutionFactory::TestSolutionFactory(TestSolutionFactory_D
         componentNames,
         componentNames.size(),
         pylith::topology::Field::VECTOR,
-        _data->normalizer->getPressureScale()
+        _data->scales->getRigidityScale()
         );
     info.fe = pylith::topology::Field::Discretization(
         2, 2, -1, -1, true, pylith::topology::Field::DEFAULT_BASIS, pylith::topology::Field::POLYNOMIAL_SPACE, true
@@ -146,7 +145,7 @@ pylith::problems::TestSolutionFactory::TestSolutionFactory(TestSolutionFactory_D
         componentNames,
         componentNames.size(),
         pylith::topology::Field::SCALAR,
-        _data->normalizer->getTemperatureScale()
+        _data->scales->getTemperatureScale()
         );
     info.fe = pylith::topology::Field::Discretization(
         2, 3, -1, -1, false, pylith::topology::Field::DEFAULT_BASIS, pylith::topology::Field::POINT_SPACE, true
@@ -274,7 +273,7 @@ pylith::problems::TestSolutionFactory::testSetValues(void) {
 
     assert(_data->solutionDB);
     _factory->setValues(_data->solutionDB);
-    pylith::testing::FieldTester::checkFieldWithDB(*_solution, _data->solutionDB, _data->normalizer->getLengthScale());
+    pylith::testing::FieldTester::checkFieldWithDB(*_solution, _data->solutionDB, _data->scales->getLengthScale());
 
     PYLITH_METHOD_END;
 } // testSetValues
@@ -299,12 +298,12 @@ pylith::problems::TestSolutionFactory::_initialize(void) {
 
     // Setup coordinates.
     _mesh->setCoordSys(_data->cs);
-    assert(_data->normalizer);
-    pylith::topology::MeshOps::nondimensionalize(_mesh, *_data->normalizer);
+    assert(_data->scales);
+    pylith::topology::MeshOps::nondimensionalize(_mesh, *_data->scales);
 
     _solution = new pylith::topology::Field(*_mesh);assert(_solution);
     _solution->setLabel("solution");
-    _factory = new SolutionFactory(*_solution, *_data->normalizer);
+    _factory = new SolutionFactory(*_solution, *_data->scales);
 
     PYLITH_METHOD_END;
 } // _initialize
@@ -314,14 +313,14 @@ pylith::problems::TestSolutionFactory::_initialize(void) {
 pylith::problems::TestSolutionFactory_Data::TestSolutionFactory_Data(void) :
     meshFilename(NULL),
     cs(NULL),
-    normalizer(new spatialdata::units::Nondimensional),
+    scales(new pylith::scales::Scales),
     solutionDB(new spatialdata::spatialdb::UserFunctionDB) {}
 
 
 // ------------------------------------------------------------------------------------------------
 pylith::problems::TestSolutionFactory_Data::~TestSolutionFactory_Data(void) {
     delete cs;cs = NULL;
-    delete normalizer;normalizer = NULL;
+    delete scales;scales = NULL;
     delete solutionDB;solutionDB = NULL;
 }
 

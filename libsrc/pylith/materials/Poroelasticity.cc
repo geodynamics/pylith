@@ -29,7 +29,7 @@
 
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "pylith/scales/Scales.hh" // USES Scales
 
 #include <typeinfo> // USES typeid()
 
@@ -214,16 +214,10 @@ pylith::materials::Poroelasticity::createAuxiliaryField(const pylith::topology::
     assert(_rheology);
     pylith::materials::AuxiliaryFactoryPoroelasticity* auxiliaryFactory = _rheology->getAuxiliaryFactory();assert(auxiliaryFactory);
 
-    assert(_normalizer);
-    auxiliaryFactory->initialize(auxiliaryField, *_normalizer, domainMesh.getDimension());
+    assert(_scales);
+    auxiliaryFactory->initialize(auxiliaryField, *_scales, domainMesh.getDimension());
 
     // :ATTENTION: The order for adding subfields must match the order of the auxiliary fields in the FE kernels.
-
-    // :ATTENTION: In quasi-static problems, the time scale is usually quite large
-    // (order of tens to hundreds of years), which means that the density scale is very large,
-    // and the acceleration scale is very small. Nevertheless, density times gravitational
-    // acceleration will have a scale of pressure divided by length and should be within a few orders
-    // of magnitude of 1.
 
     // ---------------------------------
     // Required Auxiliary
@@ -235,13 +229,13 @@ pylith::materials::Poroelasticity::createAuxiliaryField(const pylith::topology::
     // ---------------------------------
     // Optional Auxiliary
     if (_useBodyForce) {
-        auxiliaryFactory->addBodyForce(); // +1
+        auxiliaryFactory->addBodyForce();
     } // if
     if (_gravityField) {
-        auxiliaryFactory->addGravityField(_gravityField); // +1
+        auxiliaryFactory->addGravityField(_gravityField);
     } // if
     if (_useSourceDensity) {
-        auxiliaryFactory->addSourceDensity(); // +1
+        auxiliaryFactory->addSourceDensity();
     } // if
     _rheology->addAuxiliarySubfields();
 
@@ -279,8 +273,8 @@ pylith::materials::Poroelasticity::createDerivedField(const pylith::topology::Fi
     pylith::topology::Field* derivedField = new pylith::topology::Field(domainMesh);assert(derivedField);
     derivedField->setLabel("derived field");
 
-    assert(_normalizer);
-    _derivedFactory->initialize(derivedField, *_normalizer, domainMesh.getDimension());
+    assert(_scales);
+    _derivedFactory->initialize(derivedField, *_scales, domainMesh.getDimension());
     _derivedFactory->addSubfields();
 
     derivedField->subfieldsSetup();
@@ -529,6 +523,8 @@ pylith::materials::Poroelasticity::_setKernelsJacobian(pylith::feassemble::Integ
     const spatialdata::geocoords::CoordSys* coordsys = solution.getMesh().getCoordSys();
     std::vector<JacobianKernels> kernels(7);
 
+    integrator->setLHSJacobianTriggers(pylith::feassemble::Integrator::NEW_JACOBIAN_TIME_STEP_CHANGE);
+
     switch (_formulation) {
     case QUASISTATIC: {
         const EquationPart equationPart = pylith::feassemble::Integrator::LHS;
@@ -704,8 +700,6 @@ pylith::materials::Poroelasticity::_setKernelsJacobian(pylith::feassemble::Integ
         PetscPointJacFn* Jf1vv = NULL;
         PetscPointJacFn* Jf2vv = NULL;
         PetscPointJacFn* Jf3vv = NULL;
-
-        integrator->setLHSJacobianTriggers(pylith::feassemble::Integrator::NEW_JACOBIAN_TIME_STEP_CHANGE);
 
         const EquationPart equationPart = pylith::feassemble::Integrator::LHS_LUMPED_INV;
         kernels[0] = JacobianKernels("displacement",  "displacement", equationPart, Jf0uu, Jf1uu, Jf2uu, Jf3uu);

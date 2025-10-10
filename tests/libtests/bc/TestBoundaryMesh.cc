@@ -21,7 +21,7 @@
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "pylith/scales/Scales.hh" // USES Scales
 
 // ----------------------------------------------------------------------
 // Setup testing data.
@@ -64,10 +64,10 @@ pylith::bc::TestBoundaryMesh::testSubmesh(void) { // testSubmesh
 
     // Set up coordinates
     spatialdata::geocoords::CSCart cs;
-    spatialdata::units::Nondimensional normalizer;
+    pylith::scales::Scales scales;
     cs.setSpaceDim(mesh.getDimension());
     mesh.setCoordSys(&cs);
-    pylith::topology::MeshOps::nondimensionalize(&mesh, normalizer);
+    pylith::topology::MeshOps::nondimensionalize(&mesh, scales);
 
     // Create submesh
     CPPUNIT_ASSERT(_data->bcLabel);
@@ -118,10 +118,10 @@ pylith::bc::TestBoundaryMesh::testSubmeshFault(void) { // testSubmeshFault
 
     // Set up coordinates
     spatialdata::geocoords::CSCart cs;
-    spatialdata::units::Nondimensional normalizer;
+    pylith::scales::Scales scales;
     cs.setSpaceDim(mesh.getDimension());
     mesh.setCoordSys(&cs);
-    pylith::topology::MeshOps::nondimensionalize(&mesh, normalizer);
+    pylith::topology::MeshOps::nondimensionalize(&mesh, scales);
 
     // Adjust topology
     CPPUNIT_ASSERT(_data->faultLabel);

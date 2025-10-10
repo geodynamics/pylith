@@ -15,7 +15,7 @@
 #include "pylith/topology/Field.hh" // HOLDSA AuxiliaryField
 #include "pylith/topology/FieldQuery.hh" // USES FieldQuery
 
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "pylith/scales/Scales.hh" // USES Scales
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD*
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL*
@@ -60,13 +60,13 @@ pylith::feassemble::AuxiliaryFactory::getQueryDB(void) const {
 // Initialie factory for setting up auxiliary subfields.
 void
 pylith::feassemble::AuxiliaryFactory::initialize(pylith::topology::Field* field,
-                                                 const spatialdata::units::Nondimensional& normalizer,
+                                                 const pylith::scales::Scales& scales,
                                                  const int spaceDim,
                                                  const pylith::topology::FieldBase::Description* defaultDescription) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("initialize(field="<<field<<", normalizer="<<&normalizer<<", spaceDim="<<spaceDim<<", defaultDescription="<<defaultDescription<<")");
+    PYLITH_JOURNAL_DEBUG("initialize(field="<<field<<", scales="<<&scales<<", spaceDim="<<spaceDim<<", defaultDescription="<<defaultDescription<<")");
 
-    FieldFactory::initialize(field, normalizer, spaceDim, defaultDescription);
+    FieldFactory::initialize(field, scales, spaceDim, defaultDescription);
     delete _fieldQuery;_fieldQuery = new pylith::topology::FieldQuery(*field);
 
     PYLITH_METHOD_END;
@@ -80,11 +80,11 @@ pylith::feassemble::AuxiliaryFactory::setValuesFromDB(void) {
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG("setValuesFromDB()");
 
-    assert(_normalizer);
+    assert(_scales);
 
     if (_queryDB) {
         assert(_fieldQuery);
-        _fieldQuery->openDB(_queryDB, _normalizer->getLengthScale());
+        _fieldQuery->openDB(_queryDB, _scales->getLengthScale());
         _fieldQuery->queryDB();
         _fieldQuery->closeDB(_queryDB);
     } else {

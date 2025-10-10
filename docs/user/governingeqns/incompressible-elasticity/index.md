@@ -3,5 +3,6 @@
 
 :::{toctree}
 infinitesimal-strain.md
+nondimensionalization.md
 bulk-rheologies/index.md
 :::

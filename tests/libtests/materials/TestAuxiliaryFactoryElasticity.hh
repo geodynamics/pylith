@@ -15,7 +15,7 @@
 #include "pylith/topology/Field.hh" // HOLDSA Field::SubfieldInfo
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // HOLDSA SpatialDB
 #include "spatialdata/geocoords/geocoordsfwd.hh" // HOLDSA Coordsys
-#include "spatialdata/units/unitsfwd.hh" // HOLDSA Nondimensional
+#include "pylith/scales/scalesfwd.hh" // HOLDSA Scales
 
 #include <map> // USES std::map
 
@@ -78,7 +78,7 @@ public:
     size_t auxDim; ///< Topological dimension of auxiliary field.
     const char* meshFilename; ///< Name of file with ASCII mesh.
     spatialdata::geocoords::CoordSys* cs; ///< Coordinate system.
-    spatialdata::units::Nondimensional* normalizer; ///< Scales for nondimensionalization.
+    pylith::scales::Scales* scales; ///< Scales for nondimensionalization.
 
     std::map<std::string, pylith::topology::Field::SubfieldInfo> subfields;
     spatialdata::spatialdb::UserFunctionDB* auxiliaryDB; ///< Spatial database with values for solution.

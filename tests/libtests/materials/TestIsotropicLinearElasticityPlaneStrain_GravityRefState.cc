@@ -16,7 +16,7 @@
 #include "pylith/topology/Field.hh" // USES pylith::topology::Field::Discretization
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "pylith/scales/Scales.hh" // USES Scales
 
 // forward declarations
 namespace pylith {
@@ -183,11 +183,10 @@ protected:
         // meshFilename set in derived class.
         _mydata->boundaryLabel = "boundary";
 
-        CPPUNIT_ASSERT(_mydata->normalizer);
-        _mydata->normalizer->setLengthScale(1.0e+03);
-        _mydata->normalizer->setTimeScale(2.0);
-        _mydata->normalizer->setPressureScale(2.25e+10);
-        _mydata->normalizer->computeDensityScale();
+        CPPUNIT_ASSERT(_mydata->scales);
+        _mydata->scales->setLengthScale(1.0);
+        _mydata->scales->setTimeScale(2.0);
+        _mydata->scales->setRigidityScale(2.5e+6);
 
         delete _mydata->gravityField;_mydata->gravityField = new spatialdata::spatialdb::GravityField();
         _mydata->gravityField->setGravityDir(0.0, -1.0, 0.0);
@@ -208,7 +207,7 @@ protected:
             pylith::topology::Field::Discretization(0, 1), // bulk_modulus
             pylith::topology::Field::Discretization(0, 1), // gravitational_acceleration
             pylith::topology::Field::Discretization(1, 1), // reference_stress
-            pylith::topology::Field::Discretization(1, 1)  // reference_strain
+            pylith::topology::Field::Discretization(1, 1) // reference_strain
         };
         _mydata->auxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_auxDiscretizations);
 
@@ -252,7 +251,6 @@ protected:
 
 }; // TestIsotropicLinearElasticityPlaneStrain_GravityRefState
 const double pylith::materials::TestIsotropicLinearElasticityPlaneStrain_GravityRefState::SMALL = 0.1;
-const double pylith::materials::TestIsotropicLinearElasticityPlaneStrain_GravityRefState::GACC = 9.80665;
 const double pylith::materials::TestIsotropicLinearElasticityPlaneStrain_GravityRefState::YMAX = +4.0e+3;
 
 // ----------------------------------------------------------------------
@@ -271,7 +269,7 @@ class pylith::materials::TestIsotropicLinearElasticityPlaneStrain_GravityRefStat
 
         _mydata->numSolnSubfields = 1;
         static const pylith::topology::Field::Discretization _solnDiscretizations[1] = {
-            pylith::topology::Field::Discretization(1, 1)  // disp
+            pylith::topology::Field::Discretization(1, 1) // disp
         };
         _mydata->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
@@ -493,6 +491,13 @@ CPPUNIT_TEST_SUITE_REGISTRATION(pylith::materials::TestIsotropicLinearElasticity
 
 // ----------------------------------------------------------------------
 class pylith::materials::TestIsotropicLinearElasticityPlaneStrain_GravityRefState_QuadQ4 : public pylith::materials::TestIsotropicLinearElasticityPlaneStrain_GravityRefState { //
+                                                                                                                                                                                //
+                                                                                                                                                                                //
+                                                                                                                                                                                //
+                                                                                                                                                                                //
+                                                                                                                                                                                //
+                                                                                                                                                                                //
+                                                                                                                                                                                //
                                                                                                                                                                                 //
                                                                                                                                                                                 //
                                                                                                                                                                                 // TestIsotropicLinearElasticityPlaneStrain_GravityRefState_QuadQ4

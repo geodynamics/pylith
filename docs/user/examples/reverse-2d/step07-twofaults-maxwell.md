@@ -22,7 +22,7 @@ initial_dt = 4.0*year
 start_time = -4.0*year
 end_time = 100.0*year
 
-normalizer.relaxation_time = 20.0*year
+scales.relaxation_time = 20.0*year
 ```
 
 ```{code-block} cfg

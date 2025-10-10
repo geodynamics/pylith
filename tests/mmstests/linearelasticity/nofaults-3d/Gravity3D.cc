@@ -15,8 +15,10 @@
 #include "pylith/problems/TimeDependent.hh" // USES TimeDependent
 #include "pylith/topology/Field.hh" // USES pylith::topology::Field::Discretization
 #include "pylith/utils/journals.hh" // USES pythia::journal::debug_t
+#include "pylith/utils/constants.hh" // USES pylith::g_acc
 
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
+#include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
 
 // ------------------------------------------------------------------------------------------------
 namespace pylith {
@@ -24,13 +26,10 @@ namespace pylith {
 } // pylith
 
 class pylith::_Gravity3D {
-    static const double LENGTHSCALE;
-    static const double TIMESCALE;
-    static const double PRESSURESCALE;
-    static const double BODYFORCE;
-    static const double GACC;
-    static const double ZMIN;
-    static const double ZMAX;
+    static pylith::scales::Scales scales;
+    static const double BODY_FORCE;
+    static const double Z_MIN;
+    static const double Z_MAX;
 
     /// Spatial database user functions for auxiiliary subfields (includes derived fields).
 
@@ -85,17 +84,17 @@ class pylith::_Gravity3D {
     static double disp_z(const double x,
                          const double y,
                          const double z) {
-        const double velocityScale = LENGTHSCALE / TIMESCALE;
-        const double densityScale = PRESSURESCALE / (velocityScale * velocityScale);
-        const double accelerationScale = LENGTHSCALE / (TIMESCALE * TIMESCALE);
-        const double densityN = density(x,y,z) / densityScale;
-        const double muN = density(x,y,z) * vs(x,y,z) * vs(x,y,z) / PRESSURESCALE;
-        const double lambdaN = density(x,y,z) * vp(x,y,z) * vp(x,y,z) / PRESSURESCALE - 2.0*muN;
-        const double zminN = ZMIN / LENGTHSCALE;
-        const double zmaxN = ZMAX / LENGTHSCALE;
-        const double gaccN = GACC / accelerationScale;
-        return densityN * gaccN / (lambdaN + 2.0*muN) * (0.5*(z*z-zminN*zminN) - zmaxN*(z-zminN));
-    } // disp_y
+        const double lengthScale = scales.getLengthScale();
+        const double rigidityScale = scales.getRigidityScale();
+        const double bodyForceScale = pylith::scales::ElasticityScales::getBodyForceScale(scales);
+
+        const double muN = density(x,y,z) * vs(x,y,z) * vs(x,y,z) / rigidityScale;
+        const double lambdaN = density(x,y,z) * vp(x,y,z) * vp(x,y,z) / rigidityScale - 2.0*muN;
+        const double zminN = Z_MIN / lengthScale;
+        const double zmaxN = Z_MAX / lengthScale;
+        const double bodyForceN = pylith::g_acc * density(x, y, z) / bodyForceScale;
+        return bodyForceN / (lambdaN + 2.0*muN) * (0.5*(z*z-zminN*zminN) - zmaxN*(z-zminN));
+    } // disp_z
 
     static PetscErrorCode solnkernel_disp(PetscInt spaceDim,
                                           PetscReal t,
@@ -128,14 +127,12 @@ public:
         data->meshFilename = ":UNKNOWN:"; // Set in child class.
         data->boundaryLabel = "boundary";
 
-        data->normalizer.setLengthScale(1.0e+03);
-        data->normalizer.setTimeScale(2.0);
-        data->normalizer.setPressureScale(2.25e+10);
-        data->normalizer.computeDensityScale();
+        data->scales.setDisplacementScale(10.0);
+        scales = data->scales;
 
         delete data->gravityField;data->gravityField = new spatialdata::spatialdb::GravityField();
         data->gravityField->setGravityDir(0.0, 0.0, -1.0);
-        data->gravityField->setGravityAcc(GACC);
+        data->gravityField->setGravityAcc(pylith::g_acc);
 
         // solnDiscretizations set in derived class.
 
@@ -190,12 +187,9 @@ public:
     } // createData
 
 }; // Gravity3D
-const double pylith::_Gravity3D::LENGTHSCALE = 1.0e+3;
-const double pylith::_Gravity3D::TIMESCALE = 2.0;
-const double pylith::_Gravity3D::PRESSURESCALE = 2.25e+10;
-const double pylith::_Gravity3D::GACC = 9.80665;
-const double pylith::_Gravity3D::ZMIN = -4.0e+3;
-const double pylith::_Gravity3D::ZMAX = +4.0e+3;
+pylith::scales::Scales pylith::_Gravity3D::scales;
+const double pylith::_Gravity3D::Z_MIN = -4.0e+3;
+const double pylith::_Gravity3D::Z_MAX = +4.0e+3;
 
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*

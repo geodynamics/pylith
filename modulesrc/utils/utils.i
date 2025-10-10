@@ -5,7 +5,7 @@
 // Copyright (c) 2010-2025, University of California, Davis and the PyLith Development Team.
 // All rights reserved.
 //
-// See https://mit-license.org/ and LICENSE.md and for license information. 
+// See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
 // SWIG interface
 %module utils
@@ -19,7 +19,7 @@
 #include "pylith/utils/PetscVersion.hh"
 #include "pylith/utils/DependenciesVersion.hh"
 #include "pylith/utils/TestArray.hh"
-#include "pylith/utils/constdefs.h"
+#include "pylith/utils/constants.hh"
 
 #include <petsclog.h> // USES PetscLogEventBegin/End() in inline methods
 #include "pylith/utils/arrayfwd.hh" // USES scalar_array
@@ -27,12 +27,12 @@
 
 %include "exception.i"
 %exception {
-  try {
-    $action
-  } catch (const std::exception& err) {
-    SWIG_exception(SWIG_RuntimeError, err.what());
-  } // try/catch
- } // exception
+    try {
+        $action
+    } catch (const std::exception& err) {
+        SWIG_exception (SWIG_RuntimeError, err.what ());
+    } // try/catch
+} // exception
 
 %include "typemaps.i"
 %include "../include/scalartypemaps.i"
@@ -43,7 +43,7 @@
 %}
 %include "../include/numpy.i"
 %init %{
-import_array();
+    import_array();
 %}
 
 // Interfaces
@@ -55,6 +55,6 @@ import_array();
 %include "PetscVersion.i"
 %include "DependenciesVersion.i"
 %include "TestArray.i"
-%include "constdefs.i"
+%include "constants.i"
 
 // End of file

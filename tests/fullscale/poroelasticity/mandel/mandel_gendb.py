@@ -24,71 +24,19 @@ class GenerateDB(object):
     def run(self):
         """Generate the database.
         """
-        # Domain
-        x1 = numpy.arange(-0.1, 10.1, 0.1)
-        y1 = numpy.arange(-0.1, 1.01, 0.1)
-        x, y = numpy.meshgrid(x1, y1)
+        import mandel_soln
+        soln = mandel_soln.AnalyticalSoln()
+        locs = numpy.array([[0, mandel_soln.y_max]])
+        t_steps = numpy.arange(0.0, 100.0e+5, 1.0e+4)
 
-        xy = numpy.zeros((len(x1) * len(y1), 2), dtype=numpy.float64)
-        xy[:, 0] = x.ravel()
-        xy[:, 1] = y.ravel()
+        # Need to restore tsteps in mandel_soln for checking fields
+        soln_tsteps = mandel_soln.tsteps
+        mandel_soln.tsteps = t_steps
+        displacement = soln.displacement(locs)
 
-        from mandel_soln import AnalyticalSoln
-        soln = AnalyticalSoln()
-        disp = soln.initial_displacement(xy)
-        pres = soln.initial_pressure(xy)
-        trace_strain = soln.initial_trace_strain(xy)
-
-        from spatialdata.geocoords.CSCart import CSCart
-        cs = CSCart()
-        cs.inventory.spaceDim = 2
-        cs._configure()
-        data = {
-            'x': x1,
-            'y': y1,
-            'points': xy,
-            'coordsys': cs,
-            'data_dim': 2,
-            'values': [{'name': "initial_amplitude_x",
-                        'units': "m",
-                        'data': numpy.ravel(disp[0, :, 0])},
-                       {'name': "initial_amplitude_y",
-                        'units': "m",
-                        'data': numpy.ravel(disp[0, :, 1])},
-                       {'name': "initial_pressure",
-                        'units': "Pa",
-                        'data': numpy.ravel(pres[0, :])},
-                       {'name': "initial_trace_strain",
-                        'units': "none",
-                        'data': numpy.ravel(trace_strain[0, :])}]}
-
-        from spatialdata.spatialdb.SimpleGridAscii import SimpleGridAscii
-        io = SimpleGridAscii()
-        io.inventory.filename = "mandel_bc.spatialdb"
-        io._configure()
-        io.write(data)
-        data["values"] = [
-            {
-                'name': "displacement_x",
-                'units': "m",
-                'data': numpy.ravel(disp[0, :, 0])
-            }, {
-                'name': "displacement_y",
-                'units': "m",
-                'data': numpy.ravel(disp[0, :, 1])
-            }, {
-                'name': "pressure",
-                'units': "Pa",
-                'data': numpy.ravel(pres[0, :])
-            }, {
-                'name': "trace_strain",
-                'units': "none",
-                'data': numpy.ravel(trace_strain[0, :])
-            }]
-        io.inventory.filename = "mandel_ic.spatialdb"
-        io._configure()
-        io.write(data)
-        return
+        from spatialdata.spatialdb.TimeHistoryIO import write
+        write(t_steps, displacement[:,0,1], units="m", filename="mandel_disp.timedb")
+        mandel_soln.tsteps = soln_tsteps
 
 
 # ======================================================================

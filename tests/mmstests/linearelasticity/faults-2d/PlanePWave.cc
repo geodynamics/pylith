@@ -31,7 +31,8 @@
 
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "pylith/scales/Scales.hh" // USES Scales
+#include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
 
 // ------------------------------------------------------------------------------------------------
 namespace pylith {
@@ -39,11 +40,9 @@ namespace pylith {
 } // pylith
 
 class pylith::_PlanePWave {
-    // Dimensionless
-    static const double LENGTH_SCALE;
-    static const double TIME_SCALE;
-    static const double PRESSURE_SCALE;
-    static const double SLIPRATE;
+    static pylith::scales::Scales scales;
+
+    static const double SLIP_RATE; // nondimensional
     static const double TIME_SNAPSHOT; // nondimensional
 
     // Density
@@ -96,7 +95,8 @@ class pylith::_PlanePWave {
 
     static double finalslip_leftlateral(const double x,
                                         const double y) {
-        return SLIPRATE * TIME_SNAPSHOT * LENGTH_SCALE;
+        const double displacementScale = scales.getDisplacementScale();
+        return SLIP_RATE * TIME_SNAPSHOT * displacementScale;
     } // finalslip_leftlateral
 
     static const char* slip_units(void) {
@@ -131,9 +131,9 @@ class pylith::_PlanePWave {
                         PetscInt flag) {
         double amplitude = 0.0;
         if (!flag) {
-            amplitude = x < +2.0 ? -0.5*SLIPRATE : +0.5*SLIPRATE;
+            amplitude = x < +2.0 ? -0.5*SLIP_RATE : +0.5*SLIP_RATE;
         } else {
-            amplitude = flag < 0 ? -0.5*SLIPRATE : +0.5*SLIPRATE;
+            amplitude = flag < 0 ? -0.5*SLIP_RATE : +0.5*SLIP_RATE;
         } // if/else
         return amplitude;
     } // vel_y
@@ -283,10 +283,7 @@ public:
 
         data->meshFilename = ":UNKNOWN:"; // Set in child class.
 
-        data->normalizer.setLengthScale(LENGTH_SCALE);
-        data->normalizer.setTimeScale(TIME_SCALE);
-        data->normalizer.setPressureScale(2.25e+10);
-        data->normalizer.computeDensityScale();
+        scales = data->scales;
 
         data->formulation = pylith::problems::Physics::DYNAMIC_IMEX;
         data->t = TIME_SNAPSHOT;
@@ -440,10 +437,8 @@ public:
     } // createData
 
 }; // TestFaultKin2D_PlanePWave
-const double pylith::_PlanePWave::LENGTH_SCALE = 1000.0;
-const double pylith::_PlanePWave::PRESSURE_SCALE = 2.5e+10;
-const double pylith::_PlanePWave::TIME_SCALE = 2.0;
-const double pylith::_PlanePWave::SLIPRATE = 3.0;
+pylith::scales::Scales pylith::_PlanePWave::scales;
+const double pylith::_PlanePWave::SLIP_RATE = 3.0;
 const double pylith::_PlanePWave::TIME_SNAPSHOT = 5.0;
 
 // ------------------------------------------------------------------------------------------------

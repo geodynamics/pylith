@@ -19,7 +19,7 @@
   \node (pyre-component) [abstract-class, anchor=west] at ($(pythia-component.east)+(2em,0)$) {\umlemptyclass{PyreComponent}};
   
   \node (python-problem) [abstract-class] at ($(petsc-component.south)-(0,4em)$) {\umlclass{Python Problem}{%
-      normalizer\\
+      scales\\
       materials\\
       bc\\
       interfaces\\
@@ -28,7 +28,7 @@
       observers
 }};
   \node (cxx-problem) [abstract-class, anchor=north] at ($(python-problem.north)+(12em,0)$) {\umlclass{C++ Problem}{%
-      normalizer\\
+      scales\\
       materials\\
       bc\\
       interfaces\\
@@ -53,8 +53,8 @@
 }};
 
 
-  \node (normalizer) [abstract-class, anchor=west] at ($(cxx-problem.east)+(12em,12em)$) {\umlemptyclass{spatialdata::units::Nondimensional}};
-  \node (material) [abstract-class] at ($(normalizer.south)-(0,1em)$) {\umlemptyclass{Material}};
+  \node (scales) [abstract-class, anchor=west] at ($(cxx-problem.east)+(12em,12em)$) {\umlemptyclass{pylith::scales::Scales}};
+  \node (material) [abstract-class] at ($(scales.south)-(0,1em)$) {\umlemptyclass{Material}};
   \node (bc) [abstract-class] at ($(material.south)-(0,1em)$) {\umlemptyclass{BoundaryCondition}};
   \node (interface) [abstract-class] at ($(bc.south)-(0,1em)$) {\umlemptyclass{FaultCohesive}};
   \node (gravity-field) [concrete-class] at ($(interface.south)-(0,1em)$) {\umlemptyclass{spatialdata::spatialdb::GravityField}};
@@ -76,7 +76,7 @@
   \draw[inherit] (cxx-problem) -- (pyre-component);
   \draw[inherit] (cxx-time-dependent) -- (cxx-problem);
 
-  \draw[aggregate] ($(cxx-problem.east)+(0,8ex)$) -- (normalizer.west);
+  \draw[aggregate] ($(cxx-problem.east)+(0,8ex)$) -- (scales.west);
   \draw[aggregate] ($(cxx-problem.east)+(0,5.5ex)$) -- (material.west);
   \draw[aggregate] ($(cxx-problem.east)+(0,3.0ex)$) -- (bc.west);
   \draw[aggregate] ($(cxx-problem.east)+(0,0.5ex)$) -- (interface.west);

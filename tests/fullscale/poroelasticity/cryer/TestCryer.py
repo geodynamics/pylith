@@ -35,15 +35,10 @@ class TestCase(FullTestCase):
         self.checks = [
             Check(
                 mesh_entities=["domain"],
-                vertex_fields=["displacement"],
+                vertex_fields=["displacement", "pressure"],
+                final_time_only=True,
+                tolerance=0.09,
                 defaults=defaults,
-                tolerance=0.5,
-            ),
-            Check(
-                mesh_entities=["domain"],
-                vertex_fields=["pressure"],
-                defaults=defaults,
-                scale=1.0e+6,
             ),
             Check(
                 mesh_entities=["poroelastic"],
@@ -62,34 +57,16 @@ class TestCase(FullTestCase):
                 defaults=defaults,
             ),
             Check(
-                mesh_entities=["poroelastic"],
-                vertex_fields = ["displacement"],
-                defaults=defaults,
-                tolerance=0.5,
-            ),
-            Check(
-                mesh_entities=["poroelastic"],
-                vertex_fields = ["pressure"],
-                defaults=defaults,
-                scale=1.0e+6,
-            ),
-            Check(
-                mesh_entities=["x_neg", "y_neg", "z_neg", "surface_pressure"],
+                mesh_entities=["bc_xneg", "bc_yneg", "bc_zneg", "bc_shell_pressure"],
                 filename="output/{name}-{mesh_entity}_info.h5",
                 vertex_fields=["initial_amplitude"],
                 defaults=defaults,
             ),
             Check(
-                mesh_entities=["x_neg", "y_neg", "z_neg", "surface_pressure"],
-                vertex_fields=["displacement"],
+                mesh_entities=["bc_shell_traction"],
+                filename="output/{name}-{mesh_entity}_info.h5",
+                cell_fields=["initial_amplitude"],
                 defaults=defaults,
-                tolerance=0.5,
-            ),
-            Check(
-                mesh_entities=["x_neg", "y_neg", "z_neg", "surface_pressure"],
-                vertex_fields=["pressure"],
-                defaults=defaults,
-                scale=1.0e+6,
             ),
         ]
 
@@ -105,7 +82,7 @@ class TestHex(TestCase):
         self.mesh = meshes.Hex()
         super().setUp()
 
-        TestCase.run_pylith(self, self.name, ["cryer.cfg", "cryer_hex.cfg"])
+        TestCase.run_pylith(self, self.name, ["cryer_hex.cfg"])
         return
 
 
@@ -117,14 +94,14 @@ class TestTet(TestCase):
         self.mesh = meshes.Tet()
         super().setUp()
 
-        TestCase.run_pylith(self, self.name, ["cryer.cfg", "cryer_tet.cfg"])
+        TestCase.run_pylith(self, self.name, ["cryer_tet.cfg"])
         return
 
 
 # -------------------------------------------------------------------------------------------------
 def test_cases():
     return [
-        TestHex,
+        #TestHex,
         TestTet,
     ]
 

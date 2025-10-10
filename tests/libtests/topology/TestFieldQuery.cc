@@ -22,7 +22,7 @@
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "pylith/scales/Scales.hh" // USES Scales
 
 #include "catch2/catch_test_macros.hpp"
 #include "catch2/matchers/catch_matchers_floating_point.hpp"
@@ -193,7 +193,7 @@ pylith::topology::TestFieldQuery::testOpenClose(void) {
     _query->initializeWithDefaultQueries();
 
     // Test with non-NULL database.
-    _query->openDB(_data->auxDB, _data->normalizer->getLengthScale());
+    _query->openDB(_data->auxDB, _data->scales->getLengthScale());
     _query->closeDB(_data->auxDB);
     // Nothing to verify.
 
@@ -214,11 +214,11 @@ pylith::topology::TestFieldQuery::testQuery(void) {
     assert(_query);
     assert(_field);
     assert(_data);
-    assert(_data->normalizer);
+    assert(_data->scales);
 
     _query->initializeWithDefaultQueries();
 
-    _query->openDB(_data->auxDB, _data->normalizer->getLengthScale());
+    _query->openDB(_data->auxDB, _data->scales->getLengthScale());
     _query->queryDB();
     _query->closeDB(_data->auxDB);
 
@@ -230,7 +230,7 @@ pylith::topology::TestFieldQuery::testQuery(void) {
     const PylithReal t = 0.0;
     pylith::topology::FieldQuery query(*_field);
     query.initializeWithDefaultQueries();
-    query.openDB(_data->auxDB, _data->normalizer->getLengthScale());
+    query.openDB(_data->auxDB, _data->scales->getLengthScale());
     PetscErrorCode err = DMPlexComputeL2DiffLocal(_field->getDM(), t, query._functions, (void**)query._contextPtrs,
                                                   _field->getLocalVector(), &norm);REQUIRE(!err);
     query.closeDB(_data->auxDB);
@@ -317,8 +317,8 @@ pylith::topology::TestFieldQuery::_initialize(void) {
 
     assert(_data->cs);
     _mesh->setCoordSys(_data->cs);
-    assert(_data->normalizer);
-    pylith::topology::MeshOps::nondimensionalize(_mesh, *_data->normalizer);
+    assert(_data->scales);
+    pylith::topology::MeshOps::nondimensionalize(_mesh, *_data->scales);
 
     // Setup field
     delete _field;_field = new pylith::topology::Field(*_mesh);assert(_field);
@@ -346,7 +346,7 @@ pylith::topology::TestFieldQuery_Data::TestFieldQuery_Data(void) :
     topology(NULL),
     geometry(NULL),
     cs(new spatialdata::geocoords::CSCart),
-    normalizer(new spatialdata::units::Nondimensional),
+    scales(new pylith::scales::Scales),
     numAuxSubfields(0),
     auxSubfields(NULL),
     auxDescriptions(NULL),
@@ -362,7 +362,7 @@ pylith::topology::TestFieldQuery_Data::~TestFieldQuery_Data(void) {
     delete geometry;geometry = NULL;
 
     delete cs;cs = NULL;
-    delete normalizer;normalizer = NULL;
+    delete scales;scales = NULL;
 
     auxSubfields = NULL; // Assigned from const.
     auxDescriptions = NULL; // Assigned from const.

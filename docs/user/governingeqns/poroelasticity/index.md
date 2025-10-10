@@ -3,6 +3,7 @@
 
 :::{toctree}
 infinitesimal-strain.md
+nondimensionalization.md
 prescribed-slip.md
 bulk-rheologies/index.md
 :::

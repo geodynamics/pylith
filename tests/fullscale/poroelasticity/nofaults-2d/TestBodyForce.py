@@ -72,17 +72,17 @@ class TestCase(FullTestCase):
                 vertex_fields=["initial_amplitude", "normal_dir", "tangential_dir"],
                 defaults=defaults,
             ),
-            # Check(
-            #     mesh_entities=[
-            #         "bc_disp_xpos",
-            #         "bc_disp_yneg",
-            #         "bc_disp_ypos",
-            #         "bc_press_yneg",
-            #     ],
-            #     vertex_fields=["displacement", "pressure", "trace_strain"],
-            #     final_time_only=True,
-            #     defaults=defaults,
-            # ),
+            Check(
+                mesh_entities=[
+                    "bc_disp_xpos",
+                    "bc_disp_yneg",
+                    "bc_disp_ypos",
+                    "bc_press_xneg",
+                ],
+                vertex_fields=["displacement", "pressure", "trace_strain"],
+                final_time_only=True,
+                defaults=defaults,
+            ),
         ]
 
     def run_pylith(self, testName, args):

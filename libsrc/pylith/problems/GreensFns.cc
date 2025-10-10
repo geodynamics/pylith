@@ -23,7 +23,7 @@
 #include "pylith/problems/ProgressMonitorStep.hh" // USES ProgressMonitorStep
 #include "pylith/utils/PetscOptions.hh" // USES SolverDefaults
 
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "pylith/scales/Scales.hh" // USES Scales
 
 #include "petscsnes.h" // USES PetscSNES
 
@@ -346,7 +346,7 @@ pylith::problems::GreensFns::poststep(const size_t impulse,
     PYLITH_COMPONENT_DEBUG("poststep(impulse"<<impulse<<")");
 
     // Get current solution. ParaView needs valid times.
-    const PetscReal t = impulse / _normalizer->getTimeScale();
+    const PetscReal t = impulse / _scales->getTimeScale();
     const PetscReal dt = 1.0;
     const pylith::problems::Observer::NotificationType notification = pylith::problems::Observer::SOLUTION;
 
@@ -372,7 +372,7 @@ pylith::problems::GreensFns::poststep(const size_t impulse,
 
     // Update number of impulses for monitor
     if (_monitor) {
-        assert(_normalizer);
+        assert(_scales);
         _monitor->update(impulse, 0, numImpulses);
     } // if
 

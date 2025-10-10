@@ -25,7 +25,8 @@
 
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "pylith/scales/Scales.hh" // USES Scales
+#include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
 
 // ----------------------------------------------------------------------
 // Setup testing data.
@@ -98,13 +99,13 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::test_auxiliaryFieldSet
     CPPUNIT_ASSERT(_mymaterial);
     CPPUNIT_ASSERT(_mesh);
     CPPUNIT_ASSERT(_mydata);
-    CPPUNIT_ASSERT(_mydata->normalizer);
-    const PylithReal densityScale = _mydata->normalizer->getDensityScale();
-    const PylithReal lengthScale = _mydata->normalizer->getLengthScale();
-    const PylithReal timeScale = _mydata->normalizer->getTimeScale();
-    const PylithReal pressureScale = _mydata->normalizer->getPressureScale();
-    const PylithReal forceScale = pressureScale / lengthScale;
-    const PylithReal accelerationScale = lengthScale/(timeScale * timeScale);
+    CPPUNIT_ASSERT(_mydata->scales);
+    const PylithReal lengthScale = _mydata->scales->getLengthScale();
+    const PylithReal rigidityScale = _mydata->scales->getRigidityScale();
+    const PylithReal timeScale = _mydata->scales->getTimeScale();
+    const PylithReal densityScale = pylith::scales::ElasticityScales::getDensityScale(*_mydata->scales);
+    const PylithReal accelerationScale = pylith::scales::ElasticityScales::getAccelerationScale(*_mydata->scales);
+    const PylithReal bodyForceScale = pylith::scales::ElasticityScales::getBodyForceScale(*_mydata->scales);
 
     delete _mymaterial->_auxiliaryField;_mymaterial->_auxiliaryField = new topology::Field(*_mesh);CPPUNIT_ASSERT(_mymaterial->_auxiliaryField);
     _mymaterial->_auxiliaryFieldSetup();
@@ -129,7 +130,7 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::test_auxiliaryFieldSet
         CPPUNIT_ASSERT_EQUAL(size_t(1), info.description.numComponents);
         CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::SCALAR, info.description.vectorFieldType);
-        CPPUNIT_ASSERT_EQUAL(pressureScale, info.description.scale);
+        CPPUNIT_ASSERT_EQUAL(rigidityScale, info.description.scale);
         CPPUNIT_ASSERT_EQUAL(1, info.fe.basisOrder);
         CPPUNIT_ASSERT_EQUAL(1, info.fe.quadOrder);
         CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
@@ -142,7 +143,7 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::test_auxiliaryFieldSet
         CPPUNIT_ASSERT_EQUAL(size_t(1), info.description.numComponents);
         CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::SCALAR, info.description.vectorFieldType);
-        CPPUNIT_ASSERT_EQUAL(pressureScale, info.description.scale);
+        CPPUNIT_ASSERT_EQUAL(rigidityScale, info.description.scale);
         CPPUNIT_ASSERT_EQUAL(1, info.fe.basisOrder);
         CPPUNIT_ASSERT_EQUAL(1, info.fe.quadOrder);
         CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
@@ -207,7 +208,7 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::test_auxiliaryFieldSet
         CPPUNIT_ASSERT_EQUAL(size_t(2), info.description.numComponents);
         CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::VECTOR, info.description.vectorFieldType);
-        CPPUNIT_ASSERT_EQUAL(forceScale, info.description.scale);
+        CPPUNIT_ASSERT_EQUAL(bodyForceScale, info.description.scale);
         CPPUNIT_ASSERT_EQUAL(1, info.fe.basisOrder);
         CPPUNIT_ASSERT_EQUAL(1, info.fe.quadOrder);
         CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
@@ -220,7 +221,7 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::test_auxiliaryFieldSet
         CPPUNIT_ASSERT_EQUAL(size_t(4), info.description.numComponents);
         CPPUNIT_ASSERT_EQUAL(std::string(label), info.description.label);
         CPPUNIT_ASSERT_EQUAL(pylith::topology::Field::OTHER, info.description.vectorFieldType);
-        CPPUNIT_ASSERT_EQUAL(pressureScale, info.description.scale);
+        CPPUNIT_ASSERT_EQUAL(rigidityScale, info.description.scale);
         CPPUNIT_ASSERT_EQUAL(1, info.fe.basisOrder);
         CPPUNIT_ASSERT_EQUAL(1, info.fe.quadOrder);
         CPPUNIT_ASSERT_EQUAL(true, info.fe.isBasisContinuous);
@@ -254,8 +255,8 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::testGetAuxField(void) 
 
     CPPUNIT_ASSERT(_mymaterial);
     CPPUNIT_ASSERT(_mesh);
-    CPPUNIT_ASSERT(_mydata->normalizer);
-    const PylithReal lengthScale = _mydata->normalizer->getLengthScale();
+    CPPUNIT_ASSERT(_mydata->scales);
+    const PylithReal lengthScale = _mydata->scales->getLengthScale();
 
     const pylith::topology::Field* auxField = _mymaterial->auxField();assert(auxField);
     { // Test getting density field.
@@ -457,11 +458,11 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::_setupSolutionFields(v
     CPPUNIT_ASSERT( (!_mydata->isExplicit && 1 == _mydata->numSolnSubfields) ||
                     (_mydata->isExplicit && 2 == _mydata->numSolnSubfields) );
     CPPUNIT_ASSERT(_mydata->solnDiscretizations);
-    CPPUNIT_ASSERT(_mydata->normalizer);
+    CPPUNIT_ASSERT(_mydata->scales);
 
     { // Solution
         pylith::topology::Field& solution = _solutionFields->get("solution");
-        pylith::problems::SolutionFactory factory(solution, *_mydata->normalizer);
+        pylith::problems::SolutionFactory factory(solution, *_mydata->scales);
         factory.displacement(_mydata->solnDiscretizations[0]);
         if (_mydata->isExplicit) {
             factory.velocity(_mydata->solnDiscretizations[1]);
@@ -474,7 +475,7 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::_setupSolutionFields(v
 
     { // Time derivative of solution
         pylith::topology::Field& solutionDot = _solutionFields->get("solution_dot");
-        pylith::problems::SolutionFactory factory(solutionDot, *_mydata->normalizer);
+        pylith::problems::SolutionFactory factory(solutionDot, *_mydata->scales);
         factory.displacementDot(_mydata->solnDiscretizations[0]);
         if (_mydata->isExplicit) {
             factory.velocityDot(_mydata->solnDiscretizations[1]);
@@ -492,7 +493,7 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::_setupSolutionFields(v
         perturbation.createDiscretization();
         perturbation.allocate();
         perturbation.zeroLocal();
-        pylith::problems::SolutionFactory factory(perturbation, *_mydata->normalizer);
+        pylith::problems::SolutionFactory factory(perturbation, *_mydata->scales);
         factory.setValues(_mydata->perturbDB);
     } // Perturbation
 
@@ -503,7 +504,7 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::_setupSolutionFields(v
         perturbationDot.createDiscretization();
         perturbationDot.allocate();
         perturbationDot.zeroLocal();
-        pylith::problems::SolutionFactory factory(perturbationDot, *_mydata->normalizer);
+        pylith::problems::SolutionFactory factory(perturbationDot, *_mydata->scales);
         factory.setValues(_mydata->perturbDB);
     } // Time derivative perturbation
 

@@ -17,15 +17,15 @@
 #include "pylith/topology/Field.hh" // USES pylith::topology::Field::Discretization
 #include "pylith/utils/journals.hh" // USES pythia::journal::debug_t
 
+#include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
+
 // ---------------------------------------------------------------------------------------------------------------------
 namespace pylith {
     class _RigidBodyAcc2D;
 } // pylith
 
 class pylith::_RigidBodyAcc2D {
-    static const double LENGTH_SCALE;
-    static const double TIME_SCALE;
-    static const double PRESSURE_SCALE;
+    static pylith::scales::Scales scales;
     static const double TIME_SNAPSHOT; // nondimensional
 
     // Density
@@ -183,8 +183,7 @@ class pylith::_RigidBodyAcc2D {
         assert(2 == dim);
         assert(x);
         assert(f0);
-        const double velocityScale = LENGTH_SCALE / TIME_SCALE;
-        const double densityScale = PRESSURE_SCALE / (velocityScale * velocityScale);
+        const double densityScale = pylith::scales::ElasticityScales::getDensityScale(scales);
         f0[0] += density(x[0], x[1]) / densityScale * acc_x(x[0], x[1], t);
         f0[1] += density(x[0], x[1]) / densityScale * acc_y(x[0], x[1], t);
     } // mmsBodyForceKernel
@@ -202,10 +201,10 @@ public:
         data->meshFilename = ":UNKNOWN:"; // Set in child class.
         data->boundaryLabel = "boundary";
 
-        data->normalizer.setLengthScale(LENGTH_SCALE);
-        data->normalizer.setTimeScale(TIME_SCALE);
-        data->normalizer.setPressureScale(PRESSURE_SCALE);
-        data->normalizer.computeDensityScale();
+        const double lengthScale = data->scales.getLengthScale(); // domain specific value
+        const double velocityScale = vs(0.0, 0.0);
+        pylith::scales::ElasticityScales::setDynamicElasticity(&scales, lengthScale, velocityScale);
+        data->scales = scales;
         data->formulation = pylith::problems::Physics::DYNAMIC;
 
         // solnDiscretizations set in derived class.
@@ -276,10 +275,7 @@ public:
     } // createData
 
 }; // _RigidBodyAcc2D
-
-const double pylith::_RigidBodyAcc2D::LENGTH_SCALE = 1.0e+3;
-const double pylith::_RigidBodyAcc2D::TIME_SCALE = 15.0;
-const double pylith::_RigidBodyAcc2D::PRESSURE_SCALE = 2.0e+10;
+pylith::scales::Scales pylith::_RigidBodyAcc2D::scales;
 
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*

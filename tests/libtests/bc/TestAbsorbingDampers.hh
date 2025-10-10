@@ -26,7 +26,7 @@
 
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // HOLDSA UserFunctionDB
 #include "spatialdata/geocoords/geocoordsfwd.hh" // HOLDSA CoordSys
-#include "spatialdata/units/unitsfwd.hh" // HOLDSA Nondimensional
+#include "pylith/scales/scalesfwd.hh" // HOLDSA Scales
 
 /// Namespace for pylith package
 namespace pylith {
@@ -46,7 +46,7 @@ class pylith::bc::TestAbsorbingDampers : public CppUnit::TestFixture {
     CPPUNIT_TEST(testAccessors);
     CPPUNIT_TEST(testAuxFieldDiscretization);
     CPPUNIT_TEST(testAuxFieldDB);
-    CPPUNIT_TEST(testNormalizer);
+    CPPUNIT_TEST(testScales);
     CPPUNIT_TEST(testVerifyConfiguration);
     CPPUNIT_TEST(testInitialize);
     CPPUNIT_TEST(testComputeRHSResidual);
@@ -75,8 +75,8 @@ public:
     /// Test auxFieldDB().
     void testAuxFieldDB(void);
 
-    /// Test normalizer().
-    void testNormalizer(void);
+    /// Test scales().
+    void testScales(void);
 
     /// Test verifyConfiguration().
     void testVerifyConfiguration(void);
@@ -130,7 +130,7 @@ public:
     const char* bcLabel; ///< Label defining cells associated with material.
 
     spatialdata::geocoords::CoordSys* cs; ///< Coordinate system.
-    spatialdata::units::Nondimensional* normalizer; ///< Scales for nondimensionalization.
+    pylith::scales::Scales* scales; ///< Scales for nondimensionalization.
 
     const char* field; ///< Name of solution field constrained.
     pylith::topology::FieldBase::VectorFieldEnum vectorFieldType; ///< Vector field type for constrained field.

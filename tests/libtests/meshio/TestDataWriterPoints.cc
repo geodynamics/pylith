@@ -23,7 +23,7 @@
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD*
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "pylith/scales/Scales.hh" // USES Scales
 
 // ------------------------------------------------------------------------------------------------
 // Constructor.
@@ -51,7 +51,7 @@ pylith::meshio::TestDataWriterPoints::setDataTri(TestDataWriterPoints_Data* data
     data->faultLabel = "fault";
     data->faultId = 100;
     data->spaceDim = 2;
-    data->lengthScale = 10.0;
+    data->lengthScale = 0.1;
 
     data->time = 1.0;
     data->timeFormat = "%3.1f";
@@ -91,7 +91,7 @@ pylith::meshio::TestDataWriterPoints::setDataQuad(TestDataWriterPoints_Data* dat
     data->meshFilename = "data/quad4.mesh";
     data->faultId = 100;
     data->spaceDim = 2;
-    data->lengthScale = 10.0;
+    data->lengthScale = 0.1;
 
     data->time = 1.0;
     data->timeFormat = "%3.1f";
@@ -130,7 +130,7 @@ pylith::meshio::TestDataWriterPoints::setDataTet(TestDataWriterPoints_Data* data
     data->meshFilename = "data/tet4.mesh";
     data->faultId = 100;
     data->spaceDim = 3;
-    data->lengthScale = 10.0;
+    data->lengthScale = 0.1;
 
     data->time = 1.0;
     data->timeFormat = "%3.1f";
@@ -171,7 +171,7 @@ pylith::meshio::TestDataWriterPoints::setDataHex(TestDataWriterPoints_Data* data
     data->meshFilename = "data/hex8.mesh";
     data->faultId = 100;
     data->spaceDim = 3;
-    data->lengthScale = 10.0;
+    data->lengthScale = 0.1;
 
     data->time = 1.0;
     data->timeFormat = "%3.1f";
@@ -219,9 +219,9 @@ pylith::meshio::TestDataWriterPoints::_initialize(void) {
     delete _pointMesh;_pointMesh = pylith::topology::MeshOps::createFromPoints(
         data->points, data->numPoints, &cs, data->lengthScale, PETSC_COMM_WORLD, "points");
 
-    spatialdata::units::Nondimensional normalizer;
-    normalizer.setLengthScale(data->lengthScale);
-    pylith::topology::MeshOps::nondimensionalize(_pointMesh, normalizer);
+    pylith::scales::Scales scales;
+    scales.setLengthScale(data->lengthScale);
+    pylith::topology::MeshOps::nondimensionalize(_pointMesh, scales);
 
     PYLITH_METHOD_END;
 } // _initialize

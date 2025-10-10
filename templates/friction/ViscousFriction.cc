@@ -18,9 +18,9 @@
 #include "pylith/materials/Metadata.hh" // USES Metadata
 
 #include "pylith/utils/array.hh" // USES scaary_array
-#include "pylith/utils/constdefs.h" // USES PYLITH_MAXSCALAR
+#include "pylith/utils/constants.hh" // USES PYLITH_MAXSCALAR
 
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "pylith/scales/Scales.hh" // USES Scales
 
 #include <cassert> // USES assert()
 #include <sstream> // USES std::ostringstream
@@ -167,22 +167,22 @@ void
 contrib::friction::ViscousFriction::_nondimProperties(PylithScalar* const values,
                                                       const int nvalues) const { // _nondimProperties
                                                                                  // Check consistency of arguments.
-    assert(_normalizer);
+    assert(_scales);
     assert(values);
     assert(nvalues == _ViscousFriction::numProperties);
 
     // Get scales needed to nondimensional parameters from the
-    // Nondimensional object.
-    const PylithScalar lengthScale = _normalizer->getLengthScale();
-    const PylithScalar timeScale = _normalizer->getTimeScale();
-    const PylithScalar pressureScale = _normalizer->getPressureScale();
+    // Scales object.
+    const PylithScalar lengthScale = _scales->getLengthScale();
+    const PylithScalar timeScale = _scales->getTimeScale();
+    const PylithScalar rigidityScale = _scales->getRigidityScale();
     const PylithScalar velocityScale = lengthScale / timeScale;
 
-    // Use the Nondimensional::nondimensionalize() function to
+    // Use the Scales::nondimensionalize() function to
     // nondimensionalize the quantities using the appropriate scale.
-    values[p_v0] = _normalizer->nondimensionalize(values[p_v0], velocityScale);
+    values[p_v0] = _scales->nondimensionalize(values[p_v0], velocityScale);
     values[p_cohesion] =
-        _normalizer->nondimensionalize(values[p_cohesion], pressureScale);
+        _scales->nondimensionalize(values[p_cohesion], rigidityScale);
 } // _nondimProperties
 
 
@@ -192,22 +192,22 @@ void
 contrib::friction::ViscousFriction::_dimProperties(PylithScalar* const values,
                                                    const int nvalues) const { // _dimProperties
                                                                               // Check consistency of arguments.
-    assert(_normalizer);
+    assert(_scales);
     assert(values);
     assert(nvalues == _ViscousFriction::numProperties);
 
     // Get scales needed to dimensional parameters from the
-    // Nondimensional object.
-    const PylithScalar lengthScale = _normalizer->getLengthScale();
-    const PylithScalar timeScale = _normalizer->getTimeScale();
-    const PylithScalar pressureScale = _normalizer->getPressureScale();
+    // Scales object.
+    const PylithScalar lengthScale = _scales->getLengthScale();
+    const PylithScalar timeScale = _scales->getTimeScale();
+    const PylithScalar rigidityScale = _scales->getRigidityScale();
     const PylithScalar velocityScale = lengthScale / timeScale;
 
-    // Use the Nondimensional::dimensionalize() function to
+    // Use the Scales::dimensionalize() function to
     // dimensionalize the quantities using the appropriate scale.
-    values[p_v0] = _normalizer->dimensionalize(values[p_v0], velocityScale);
+    values[p_v0] = _scales->dimensionalize(values[p_v0], velocityScale);
     values[p_cohesion] =
-        _normalizer->dimensionalize(values[p_cohesion], pressureScale);
+        _scales->dimensionalize(values[p_cohesion], rigidityScale);
 } // _dimProperties
 
 
@@ -237,20 +237,20 @@ void
 contrib::friction::ViscousFriction::_nondimStateVars(PylithScalar* const values,
                                                      const int nvalues) const { // _nondimStateVars
                                                                                 // Check consistency of arguments.
-    assert(_normalizer);
+    assert(_scales);
     assert(values);
     assert(nvalues == _ViscousFriction::numStateVars);
 
     // Get scales needed to nondimensional parameters from the
-    // Nondimensional object.
-    const PylithScalar lengthScale = _normalizer->getLengthScale();
-    const PylithScalar timeScale = _normalizer->getTimeScale();
+    // Scales object.
+    const PylithScalar lengthScale = _scales->getLengthScale();
+    const PylithScalar timeScale = _scales->getTimeScale();
     const PylithScalar velocityScale = lengthScale / timeScale;
 
-    // Use the Nondimensional::dimensionalize() function to
+    // Use the Scales::dimensionalize() function to
     // dimensionalize the quantities using the appropriate scale.
     values[s_slipRate] =
-        _normalizer->nondimensionalize(values[s_slipRate], velocityScale);
+        _scales->nondimensionalize(values[s_slipRate], velocityScale);
 } // _nondimStateVars
 
 
@@ -260,20 +260,20 @@ void
 contrib::friction::ViscousFriction::_dimStateVars(PylithScalar* const values,
                                                   const int nvalues) const { // _dimStateVars
                                                                              // Check consistency of arguments.
-    assert(_normalizer);
+    assert(_scales);
     assert(values);
     assert(nvalues == _ViscousFriction::numStateVars);
 
     // Get scales needed to dimensional parameters from the
-    // Nondimensional object.
-    const PylithScalar lengthScale = _normalizer->getLengthScale();
-    const PylithScalar timeScale = _normalizer->getTimeScale();
+    // Scales object.
+    const PylithScalar lengthScale = _scales->getLengthScale();
+    const PylithScalar timeScale = _scales->getTimeScale();
     const PylithScalar velocityScale = lengthScale / timeScale;
 
-    // Use the Nondimensional::dimensionalize() function to
+    // Use the Scales::dimensionalize() function to
     // dimensionalize the quantities using the appropriate scale.
     values[s_slipRate] =
-        _normalizer->dimensionalize(values[s_slipRate], velocityScale);
+        _scales->dimensionalize(values[s_slipRate], velocityScale);
 } // _dimStateVars
 
 

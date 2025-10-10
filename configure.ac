@@ -114,7 +114,7 @@ AC_CHECK_HEADER([mpi.h], [], [AC_MSG_ERROR([header 'mpi.h' not found])])
 
 dnl PETSC
 AC_LANG(C)
-CIT_PATH_PETSC([3.23.5])
+CIT_PATH_PETSC([3.24.0])
 CIT_HEADER_PETSC
 CIT_CHECK_LIB_PETSC
 
@@ -205,6 +205,7 @@ AC_CONFIG_FILES([Makefile
 		libsrc/pylith/problems/Makefile
 		libsrc/pylith/topology/Makefile
 		libsrc/pylith/utils/Makefile
+		libsrc/pylith/scales/Makefile
         libsrc/pylith/testing/Makefile
 		modulesrc/Makefile
 		modulesrc/include/Makefile
@@ -216,6 +217,7 @@ AC_CONFIG_FILES([Makefile
 		modulesrc/meshio/Makefile
 		modulesrc/mpi/Makefile
 		modulesrc/problems/Makefile
+		modulesrc/scales/Makefile
 		modulesrc/topology/Makefile
 		modulesrc/utils/Makefile
 		tests/Makefile
@@ -233,6 +235,7 @@ AC_CONFIG_FILES([Makefile
 		tests/libtests/problems/Makefile
 		tests/libtests/problems/data/Makefile
 		tests/libtests/meshio/data/Makefile
+		tests/libtests/scales/Makefile
 		tests/libtests/topology/Makefile
 		tests/libtests/topology/data/Makefile
 		tests/libtests/testing/Makefile

@@ -20,7 +20,7 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/FieldOps.hh" // USES FieldOps
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "pylith/scales/Scales.hh" // USES Scales
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
@@ -154,8 +154,8 @@ pylith::bc::AbsorbingDampers::createAuxiliaryField(const pylith::topology::Field
     auxiliaryField->setLabel("auxiliary field");
 
     assert(_auxiliaryFactory);
-    assert(_normalizer);
-    _auxiliaryFactory->initialize(auxiliaryField, *_normalizer, domainMesh.getDimension());
+    assert(_scales);
+    _auxiliaryFactory->initialize(auxiliaryField, *_scales, domainMesh.getDimension());
 
     // :ATTENTION: The order for adding subfields must match the order of the auxiliary fields in the FE kernels.
 

@@ -5,7 +5,7 @@
 # Copyright (c) 2010-2025, University of California, Davis and the PyLith Development Team.
 # All rights reserved.
 #
-# See https://mit-license.org/ and LICENSE.md and for license information. 
+# See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
 
 from .MeshGenerator import MeshGenerator
@@ -17,6 +17,7 @@ class MeshImporter(MeshGenerator):
 
     Implements `MeshGenerator`.
     """
+
     DOC_CONFIG = {
         "cfg": """
             [pylithapp.meshimporter]
@@ -30,32 +31,41 @@ class MeshImporter(MeshGenerator):
     import pythia.pyre.inventory
 
     reorderMesh = pythia.pyre.inventory.bool("reorder_mesh", default=True)
-    reorderMesh.meta['tip'] = "Reorder mesh using reverse Cuthill-McKee."
+    reorderMesh.meta["tip"] = "Reorder mesh using reverse Cuthill-McKee."
 
     checkTopology = pythia.pyre.inventory.bool("check_topology", default=True)
-    checkTopology.meta['tip'] = "Check topology of imported mesh."
+    checkTopology.meta["tip"] = "Check topology of imported mesh."
 
     from pylith.meshio.MeshIOAscii import MeshIOAscii
-    reader = pythia.pyre.inventory.facility("reader", family="mesh_input", factory=MeshIOAscii)
-    reader.meta['tip'] = "Reader for mesh file."
+
+    reader = pythia.pyre.inventory.facility(
+        "reader", family="mesh_input", factory=MeshIOAscii
+    )
+    reader.meta["tip"] = "Reader for mesh file."
 
     from .Distributor import Distributor
-    distributor = pythia.pyre.inventory.facility("distributor", family="mesh_distributor", factory=Distributor)
-    distributor.meta['tip'] = "Distributes mesh among processes."
+
+    distributor = pythia.pyre.inventory.facility(
+        "distributor", family="mesh_distributor", factory=Distributor
+    )
+    distributor.meta["tip"] = "Distributes mesh among processes."
 
     from .MeshRefiner import MeshRefiner
-    refiner = pythia.pyre.inventory.facility("refiner", family="mesh_refiner", factory=MeshRefiner)
-    refiner.meta['tip'] = "Performs uniform global mesh refinement after distribution among processes (default is no refinement)."
+
+    refiner = pythia.pyre.inventory.facility(
+        "refiner", family="mesh_refiner", factory=MeshRefiner
+    )
+    refiner.meta["tip"] = (
+        "Performs uniform global mesh refinement after distribution among processes (default is no refinement)."
+    )
 
     def __init__(self, name="meshimporter"):
-        """Constructor.
-        """
+        """Constructor."""
         MeshGenerator.__init__(self, name)
         self._loggingPrefix = "PL.MeshImporter."
 
     def preinitialize(self, problem):
-        """Do minimal initialization.
-        """
+        """Do minimal initialization."""
         MeshGenerator.preinitialize(self, problem)
 
         self.reader.preinitialize()
@@ -63,10 +73,10 @@ class MeshImporter(MeshGenerator):
         self.refiner.preinitialize()
 
     def create(self, problem, faults=None):
-        """Hook for creating mesh.
-        """
+        """Hook for creating mesh."""
         from pylith.utils.profiling import resourceUsageString
         from pylith.mpi.Communicator import mpi_is_root
+
         isRoot = mpi_is_root()
 
         self._setupLogging()
@@ -84,6 +94,7 @@ class MeshImporter(MeshGenerator):
             if isRoot:
                 self._info.log("Reordering cells and vertices.")
             from pylith.topology.ReverseCuthillMcKee import ReverseCuthillMcKee
+
             ordering = ReverseCuthillMcKee()
             ordering.reorder(mesh)
             self._eventLogger.eventEnd(logEvent2)
@@ -96,6 +107,7 @@ class MeshImporter(MeshGenerator):
 
         # Distribute mesh
         from pylith.mpi.Communicator import mpi_comm_world
+
         comm = mpi_comm_world()
         if comm.size > 1:
             if isRoot:
@@ -113,28 +125,27 @@ class MeshImporter(MeshGenerator):
 
         # Nondimensionalize mesh (coordinates of vertices).
         from pylith.topology.topology import MeshOps_nondimensionalize
-        MeshOps_nondimensionalize(newMesh, problem.normalizer)
+
+        MeshOps_nondimensionalize(newMesh, problem.scales)
 
         self._eventLogger.eventEnd(logEvent)
         return newMesh
 
     def _configure(self):
-        """Set members based on inventory.
-        """
+        """Set members based on inventory."""
         MeshGenerator._configure(self)
 
     def _setupLogging(self):
-        """Setup event logging.
-        """
+        """Setup event logging."""
         MeshGenerator._setupLogging(self)
         self._eventLogger.registerEvent(f"{self._loggingPrefix}reorder")
 
 
 # FACTORIES ////////////////////////////////////////////////////////////
 
+
 def mesh_generator():
-    """Factory associated with MeshImporter.
-    """
+    """Factory associated with MeshImporter."""
     return MeshImporter()
 
 

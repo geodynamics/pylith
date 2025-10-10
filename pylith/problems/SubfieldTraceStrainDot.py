@@ -5,10 +5,11 @@
 # Copyright (c) 2010-2025, University of California, Davis and the PyLith Development Team.
 # All rights reserved.
 #
-# See https://mit-license.org/ and LICENSE.md and for license information. 
+# See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
 
 from .SolutionSubfield import SolutionSubfield
+from pylith.scales.ElasticityScales import ElasticityScales
 
 
 class SubfieldTraceStrainDot(SolutionSubfield):
@@ -17,6 +18,7 @@ class SubfieldTraceStrainDot(SolutionSubfield):
 
     Implements `SolutionSubfield`.
     """
+
     DOC_CONFIG = {
         "cfg": """
         [pylithapp.problems.solution.subfields.trace_strain_t]
@@ -36,14 +38,15 @@ class SubfieldTraceStrainDot(SolutionSubfield):
     def _defaults(self):
         self.userAlias = self.fieldName
 
-    def initialize(self, normalizer, spaceDim):
+    def initialize(self, scales, spaceDim):
         """
         Initialize subfield metadata.
         """
         from pylith.topology.Field import Field
         from pythia.pyre.units.unit import one
+
         self.vectorFieldType = Field.SCALAR
-        self.scale = one / normalizer.getTimeScale()
+        self.scale = ElasticityScales.getStrainScale(scales) / scales.getTimeScale()
         self._setComponents(spaceDim)
 
     def _configure(self):
@@ -51,6 +54,7 @@ class SubfieldTraceStrainDot(SolutionSubfield):
         Set members based using inventory.
         """
         SolutionSubfield._configure(self)
+
 
 # FACTORIES ////////////////////////////////////////////////////////////
 

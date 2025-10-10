@@ -16,6 +16,8 @@
 #include "pylith/topology/Field.hh" // USES pylith::topology::Field::Discretization
 #include "pylith/utils/journals.hh" // USES pythia::journal::debug_t
 
+#include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
+
 namespace pylith {
     class _UniformPressure2D;
 } // pylith
@@ -23,6 +25,9 @@ namespace pylith {
 // ------------------------------------------------------------------------------------------------
 class pylith::_UniformPressure2D {
 private:
+
+    static pylith::scales::Scales scales;
+    static const double PRESSURE; // nondimensional
 
     // Density
     static double density(const double x,
@@ -47,7 +52,7 @@ private:
     // Vp
     static double vp(const double x,
                      const double y) {
-        return 1.0e+15;
+        return 1.0e+20;
     } // vp
 
     static const char* vp_units(void) {
@@ -59,18 +64,24 @@ private:
     // Displacement
     static double disp_x(const double x,
                          const double y) {
-        return 0.0;
+        const double rigidityScale = scales.getRigidityScale();
+        const double bulkModulus = density(x, y) * (vp(x,y)*vp(x,y) - 4.0/3.0*vs(x,y)*vs(x,y)) / rigidityScale;
+
+        return -0.5 * PRESSURE / bulkModulus * x;
     } // disp_x
 
     static double disp_y(const double x,
                          const double y) {
-        return 0.0;
+        const double rigidityScale = scales.getRigidityScale();
+        const double bulkModulus = density(x, y) * (vp(x,y)*vp(x,y) - 4.0/3.0*vs(x,y)*vs(x,y)) / rigidityScale;
+
+        return -0.5 * PRESSURE / bulkModulus * y;
     } // disp_y
 
     // Pressure
     static double pressure(const double x,
                            const double y) {
-        return 5.0+6;
+        return PRESSURE;
     } // pressure
 
     static PetscErrorCode solnkernel_disp(PetscInt spaceDim,
@@ -116,14 +127,12 @@ public:
 
         data->isJacobianLinear = true;
         data->jacobianConvergenceRate = 1.0;
+        data->tolerance = 2.0e-8;
 
         data->meshFilename = ":UNKNOWN:"; // Set in child class.
         data->boundaryLabel = "boundary";
 
-        data->normalizer.setLengthScale(1.0e+03);
-        data->normalizer.setTimeScale(2.0);
-        data->normalizer.setPressureScale(2.25e+10);
-        data->normalizer.computeDensityScale();
+        scales = data->scales;
 
         // solnDiscretizations set in derived class.
 
@@ -186,6 +195,8 @@ public:
     } // createData
 
 }; // _UniformPressure2D
+pylith::scales::Scales pylith::_UniformPressure2D::scales;
+const double pylith::_UniformPressure2D::PRESSURE = 3.0e+6;
 
 // ------------------------------------------------------------------------------------------------
 pylith::TestIncompressibleElasticity_Data*
@@ -222,7 +233,7 @@ pylith::UniformPressure2D::TriP2(void) {
     data->numSolnSubfields = 2;
     static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
         pylith::topology::Field::Discretization(2, 2), // disp
-        pylith::topology::Field::Discretization(1, 2), // pressure
+        pylith::topology::Field::Discretization(0, 2), // pressure
     };
     data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
@@ -247,7 +258,7 @@ pylith::UniformPressure2D::TriP3(void) {
     data->numSolnSubfields = 2;
     static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
         pylith::topology::Field::Discretization(3, 3), // disp
-        pylith::topology::Field::Discretization(2, 3), // pressure
+        pylith::topology::Field::Discretization(0, 3), // pressure
     };
     data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
@@ -272,7 +283,7 @@ pylith::UniformPressure2D::TriP4(void) {
     data->numSolnSubfields = 2;
     static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
         pylith::topology::Field::Discretization(4, 4), // disp
-        pylith::topology::Field::Discretization(3, 4), // pressure
+        pylith::topology::Field::Discretization(0, 4), // pressure
     };
     data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
@@ -315,7 +326,7 @@ pylith::UniformPressure2D::QuadQ2(void) {
     data->numSolnSubfields = 2;
     static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
         pylith::topology::Field::Discretization(2, 2), // disp
-        pylith::topology::Field::Discretization(1, 2), // pressure
+        pylith::topology::Field::Discretization(0, 2), // pressure
     };
     data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
@@ -340,7 +351,7 @@ pylith::UniformPressure2D::QuadQ3(void) {
     data->numSolnSubfields = 2;
     static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
         pylith::topology::Field::Discretization(3, 3), // disp
-        pylith::topology::Field::Discretization(2, 3), // pressure
+        pylith::topology::Field::Discretization(0, 3), // pressure
     };
     data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 
@@ -365,7 +376,7 @@ pylith::UniformPressure2D::QuadQ4(void) {
     data->numSolnSubfields = 2;
     static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
         pylith::topology::Field::Discretization(4, 4), // disp
-        pylith::topology::Field::Discretization(3, 4), // pressure
+        pylith::topology::Field::Discretization(0, 4), // pressure
     };
     data->solnDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_solnDiscretizations);
 

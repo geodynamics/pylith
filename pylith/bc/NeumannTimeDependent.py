@@ -5,7 +5,7 @@
 # Copyright (c) 2010-2025, University of California, Davis and the PyLith Development Team.
 # All rights reserved.
 #
-# See https://mit-license.org/ and LICENSE.md and for license information. 
+# See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
 # @file pylith/bc/NeumannTimeDependent.py
 #
@@ -19,8 +19,7 @@ from pylith.utils.NullComponent import NullComponent
 
 
 def validateDir(value):
-    """Validate direction.
-    """
+    """Validate direction."""
     msg = "Direction must be a 3 component vector (list)."
     if not isinstance(value, list):
         raise ValueError(msg)
@@ -50,13 +49,14 @@ class NeumannTimeDependent(BoundaryCondition, ModuleNeumannTimeDependent):
     See [`AuxSubfieldsTimeDependent` Component](AuxSubfieldsTimeDependent.md) for the functional form of the time depenence.
     :::
     """
+
     DOC_CONFIG = {
         "cfg": """
             # Neumann (traction) boundary condition in 2D on -y boundary.
             [pylithapp.problem.bc.bc_yneg]
             label = boundary_yneg
             field = displacement
-            scale_name = pressure
+            scale_name = stress
 
             use_initial = False
             use_time_history = True
@@ -71,48 +71,66 @@ class NeumannTimeDependent(BoundaryCondition, ModuleNeumannTimeDependent):
             """,
     }
 
-
     import pythia.pyre.inventory
 
-    scaleName = pythia.pyre.inventory.str("scale_name", default="pressure",
-                                   validator=pythia.pyre.inventory.choice(["length", "time", "pressure", "density", "velocity"]))
-    scaleName.meta['tip'] = "Type of scale for nondimensionalizing Neumann boundary condition ('pressure' for elasticity)."
+    scaleName = pythia.pyre.inventory.str(
+        "scale_name",
+        default="stress",
+        validator=pythia.pyre.inventory.choice(["displacement", "stress"]),
+    )
+    scaleName.meta["tip"] = (
+        "Type of scale for nondimensionalizing Neumann boundary condition ('stress' for elasticity)."
+    )
 
     useInitial = pythia.pyre.inventory.bool("use_initial", default=True)
-    useInitial.meta['tip'] = "Use initial term in time-dependent expression."
+    useInitial.meta["tip"] = "Use initial term in time-dependent expression."
 
     useRate = pythia.pyre.inventory.bool("use_rate", default=False)
-    useRate.meta['tip'] = "Use rate term in time-dependent expression."
+    useRate.meta["tip"] = "Use rate term in time-dependent expression."
 
     useTimeHistory = pythia.pyre.inventory.bool("use_time_history", default=False)
-    useTimeHistory.meta['tip'] = "Use time history term in time-dependent expression."
+    useTimeHistory.meta["tip"] = "Use time history term in time-dependent expression."
 
-    dbTimeHistory = pythia.pyre.inventory.facility("time_history", factory=NullComponent, family="temporal_database")
-    dbTimeHistory.meta['tip'] = "Time history with normalized amplitude as a function of time."
+    dbTimeHistory = pythia.pyre.inventory.facility(
+        "time_history", factory=NullComponent, family="temporal_database"
+    )
+    dbTimeHistory.meta["tip"] = (
+        "Time history with normalized amplitude as a function of time."
+    )
 
-    refDir1 = pythia.pyre.inventory.list("ref_dir_1", default=[0.0, 0.0, 1.0], validator=validateDir)
-    refDir1.meta['tip'] = "First choice for reference direction to discriminate among tangential directions in 3D."
+    refDir1 = pythia.pyre.inventory.list(
+        "ref_dir_1", default=[0.0, 0.0, 1.0], validator=validateDir
+    )
+    refDir1.meta["tip"] = (
+        "First choice for reference direction to discriminate among tangential directions in 3D."
+    )
 
-    refDir2 = pythia.pyre.inventory.list("ref_dir_2", default=[0.0, 1.0, 0.0], validator=validateDir)
-    refDir2.meta['tip'] = "Second choice for reference direction to discriminate among tangential directions in 3D."
+    refDir2 = pythia.pyre.inventory.list(
+        "ref_dir_2", default=[0.0, 1.0, 0.0], validator=validateDir
+    )
+    refDir2.meta["tip"] = (
+        "Second choice for reference direction to discriminate among tangential directions in 3D."
+    )
 
     def __init__(self, name="neumanntimedependent"):
-        """Constructor.
-        """
+        """Constructor."""
         BoundaryCondition.__init__(self, name)
         return
 
     def _defaults(self):
         from .AuxSubfieldsTimeDependent import AuxSubfieldsTimeDependent
+
         self.auxiliarySubfields = AuxSubfieldsTimeDependent("auxiliary_subfields")
 
     def preinitialize(self, problem):
-        """Do pre-initialization setup.
-        """
+        """Do pre-initialization setup."""
         from pylith.mpi.Communicator import mpi_is_root
+
         if mpi_is_root():
             self._info.log(
-                "Performing minimal initialization of time-dependent Neumann boundary condition '%s'." % self.aliases[-1])
+                "Performing minimal initialization of time-dependent Neumann boundary condition '%s'."
+                % self.aliases[-1]
+            )
 
         BoundaryCondition.preinitialize(self, problem)
 
@@ -127,38 +145,45 @@ class NeumannTimeDependent(BoundaryCondition, ModuleNeumannTimeDependent):
         return
 
     def _validate(self, context):
-        if self.inventory.useTimeHistory and isinstance(self.inventory.dbTimeHistory, NullComponent):
+        if self.inventory.useTimeHistory and isinstance(
+            self.inventory.dbTimeHistory, NullComponent
+        ):
             trait = self.inventory.getTrait("time_history")
-            self._validationError(context, trait,
-                f"Missing time history database for time-dependent Neumann boundary condition '{self.aliases[-1]}'.")
-        if not self.inventory.useTimeHistory and not isinstance(self.inventory.dbTimeHistory, NullComponent):
+            self._validationError(
+                context,
+                trait,
+                f"Missing time history database for time-dependent Neumann boundary condition '{self.aliases[-1]}'.",
+            )
+        if not self.inventory.useTimeHistory and not isinstance(
+            self.inventory.dbTimeHistory, NullComponent
+        ):
             self._warning.log(
-                f"Time history for time-dependent Neumann boundary condition '{self.aliases[-1]}' not enabled. Ignoring provided time history database.")
+                f"Time history for time-dependent Neumann boundary condition '{self.aliases[-1]}' not enabled. Ignoring provided time history database."
+            )
 
     def _validationError(self, context, trait, msg):
         from pythia.pyre.inventory.Item import Item
+
         error = ValueError(msg)
         descriptor = self.getTraitDescriptor(trait.name)
         context.error(error, items=[Item(trait, descriptor)])
 
     def _configure(self):
-        """Setup members using inventory.
-        """
+        """Setup members using inventory."""
         BoundaryCondition._configure(self)
         return
 
     def _createModuleObj(self):
-        """Create handle to corresponding C++ object.
-        """
+        """Create handle to corresponding C++ object."""
         ModuleNeumannTimeDependent.__init__(self)
         return
 
 
 # Factories
 
+
 def boundary_condition():
-    """Factory associated with NeumannTimeDependent.
-    """
+    """Factory associated with NeumannTimeDependent."""
     return NeumannTimeDependent()
 
 

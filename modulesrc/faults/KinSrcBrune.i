@@ -29,10 +29,10 @@ protected:
 
             /** Setup auxiliary subfields (discretization and query fns).
              *
-             * @param[in] normalizer Normalizer for nondimensionalizing values.
+             * @param[in] scales Scales for nondimensionalizing values.
              * @param[in] cs Coordinate system for problem.
              */
-            void _auxiliaryFieldSetup(const spatialdata::units::Nondimensional& normalizer,
+            void _auxiliaryFieldSetup(const pylith::scales::Scales& scales,
                                       const spatialdata::geocoords::CoordSys* cs);
 
         }; // class KinSrcBrune

@@ -24,6 +24,7 @@ class TriGmsh(object):
         "bc_disp_yneg": MeshEntity(ncells=4, ncorners=2, nvertices=5),
         "bc_disp_ypos": MeshEntity(ncells=4, ncorners=2, nvertices=5),
         "bc_press_ypos": MeshEntity(ncells=4, ncorners=2, nvertices=5),
+        "bc_press_xneg": MeshEntity(ncells=4, ncorners=2, nvertices=5),
     }
 
 
@@ -40,6 +41,7 @@ class QuadGmsh(object):
         "bc_disp_yneg": MeshEntity(ncells=4, ncorners=2, nvertices=5),
         "bc_disp_ypos": MeshEntity(ncells=4, ncorners=2, nvertices=5),
         "bc_press_ypos": MeshEntity(ncells=4, ncorners=2, nvertices=5),
+        "bc_press_xneg": MeshEntity(ncells=4, ncorners=2, nvertices=5),
     }
 
 

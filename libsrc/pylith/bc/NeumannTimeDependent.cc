@@ -22,7 +22,8 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 
 #include "spatialdata/spatialdb/TimeHistory.hh" // USES TimeHistory
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "pylith/scales/Scales.hh" // USES Scales
+#include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
@@ -176,11 +177,8 @@ void
 pylith::bc::NeumannTimeDependent::setScaleName(const char* value) {
     PYLITH_COMPONENT_DEBUG("setScaleName(value"<<value<<")");
 
-    if (( value == std::string("length")) ||
-        ( value == std::string("time")) ||
-        ( value == std::string("pressure")) ||
-        ( value == std::string("density")) ||
-        ( value == std::string("pressure")) ) {
+    if (( value == std::string("displacement")) ||
+        ( value == std::string("stress"))  ) {
         _scaleName = value;
     } else {
         std::ostringstream msg;
@@ -233,26 +231,23 @@ pylith::bc::NeumannTimeDependent::createAuxiliaryField(const pylith::topology::F
     pylith::topology::Field* auxiliaryField = new pylith::topology::Field(domainMesh);assert(auxiliaryField);
     auxiliaryField->setLabel("auxiliary field");
 
+    assert(_scales);
+    const PylithReal displacementScale = _scales->getLengthScale();
+    const PylithReal stressScale = pylith::scales::ElasticityScales::getStressScale(*_scales);
+
     assert(_auxiliaryFactory);
-    assert(_normalizer);
     pylith::topology::Field::Description description = solution.getSubfieldInfo(_subfieldName.c_str()).description;
-    if (_scaleName == std::string("pressure")) {
-        description.scale = _normalizer->getPressureScale();
-    } else if (_scaleName == std::string("velocity")) {
-        description.scale = sqrt(_normalizer->getPressureScale() / _normalizer->getDensityScale());
-    } else if (_scaleName == std::string("length")) {
-        description.scale = _normalizer->getLengthScale();
-    } else if (_scaleName == std::string("time")) {
-        description.scale = sqrt(_normalizer->getDensityScale() / _normalizer->getPressureScale()) * _normalizer->getLengthScale();
-    } else if (_scaleName == std::string("density")) {
-        description.scale = _normalizer->getDensityScale();
+    if (_scaleName == std::string("stress")) {
+        description.scale = stressScale;
+    } else if (_scaleName == std::string("displacement")) {
+        description.scale = displacementScale;
     } else {
         std::ostringstream msg;
         msg << "Unknown name of scale ("<<_scaleName<<") for Neumann boundary condition for '" << getLabelName() << "'.";
         PYLITH_COMPONENT_ERROR(msg.str());
         throw std::logic_error(msg.str());
     } // if/else
-    _auxiliaryFactory->initialize(auxiliaryField, *_normalizer, solution.getSpaceDim(), &description);
+    _auxiliaryFactory->initialize(auxiliaryField, *_scales, solution.getSpaceDim(), &description);
 
     // :ATTENTION: The order of the factory methods must match the order of the auxiliary subfields in the FE kernels.
 
@@ -300,8 +295,8 @@ pylith::bc::NeumannTimeDependent::updateAuxiliaryField(pylith::topology::Field* 
     PYLITH_COMPONENT_DEBUG("updateAuxiliaryField(auxiliaryField="<<auxiliaryField<<", t="<<t<<")");
 
     if (_useTimeHistory) {
-        assert(_normalizer);
-        const PylithScalar timeScale = _normalizer->getTimeScale();
+        assert(_scales);
+        const PylithScalar timeScale = _scales->getTimeScale();
         TimeDependentAuxiliaryFactory::updateAuxiliaryField(auxiliaryField, t, timeScale, _dbTimeHistory);
     } // if
 

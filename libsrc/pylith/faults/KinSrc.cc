@@ -19,7 +19,7 @@
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN
 
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "pylith/scales/Scales.hh" // USES Scales
 
 #include <typeinfo> // USES typeid()
 #include <cassert> // USES assert()
@@ -101,10 +101,10 @@ pylith::faults::KinSrc::auxFieldDB(spatialdata::spatialdb::SpatialDB* value) {
 // Initialize kinematic (prescribed slip) earthquake source.
 void
 pylith::faults::KinSrc::initialize(const pylith::topology::Field& faultAuxField,
-                                   const spatialdata::units::Nondimensional& normalizer,
+                                   const pylith::scales::Scales& scales,
                                    const spatialdata::geocoords::CoordSys* cs) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("initialize(faultAuxField"<<faultAuxField.getLabel()<<", normalizer, cs="<<typeid(cs).name()<<")");
+    PYLITH_COMPONENT_DEBUG("initialize(faultAuxField"<<faultAuxField.getLabel()<<", scales, cs="<<typeid(cs).name()<<")");
 
     // Set default discretization of auxiliary subfields to match slip/slip_rate subfield in integrator auxiliary field.
     assert(_auxiliaryFactory);
@@ -117,7 +117,7 @@ pylith::faults::KinSrc::initialize(const pylith::topology::Field& faultAuxField,
 
     delete _auxiliaryField;_auxiliaryField = new pylith::topology::Field(faultAuxField.getMesh());assert(_auxiliaryField);
     _auxiliaryField->setLabel("auxiliary field");
-    _auxiliaryFieldSetup(normalizer, cs);
+    _auxiliaryFieldSetup(scales, cs);
     _auxiliaryField->subfieldsSetup();
     _auxiliaryField->createDiscretization();
     pylith::topology::FieldOps::checkDiscretization(faultAuxField, *_auxiliaryField);

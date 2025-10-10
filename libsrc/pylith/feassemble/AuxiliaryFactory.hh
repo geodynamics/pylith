@@ -16,7 +16,7 @@
 #include "pylith/topology/FieldQuery.hh" // USES FieldQuery::queryfn_type
 
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // USES SpatialDB
-#include "spatialdata/units/unitsfwd.hh" // HOLDSA Normalizer
+#include "pylith/scales/scalesfwd.hh" // HOLDSA Scales
 
 class pylith::feassemble::AuxiliaryFactory : public pylith::topology::FieldFactory {
     friend class TestAuxiliaryFactory; // unit testing
@@ -45,12 +45,12 @@ public:
     /** Initialize factory for setting up auxiliary subfields.
      *
      * @param[inout] field Auxiliary field for which subfields are to be created.
-     * @param[in] normalizer Scales for nondimensionalization.
+     * @param[in] scales Scales for nondimensionalization.
      * @param[in] spaceDim Spatial dimension of problem.
      * @param[in] defaultDescription Default description for new subfields.
      */
     void initialize(pylith::topology::Field* field,
-                    const spatialdata::units::Nondimensional& normalizer,
+                    const pylith::scales::Scales& scales,
                     const int spaceDim,
                     const pylith::topology::FieldBase::Description* defaultDescription=NULL);
 

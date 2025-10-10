@@ -71,7 +71,7 @@ public:
              *
              * @param[in] dim Nondimensionalizer.
              */
-            void setNormalizer(const spatialdata::units::Nondimensional& dim);
+            void setScales(const pylith::scales::Scales& dim);
 
             /** Set gravity field.
              *

@@ -22,7 +22,7 @@
 #include "pylith/utils/journals.hh" // USES journal::debug_t
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "pylith/scales/Scales.hh" // USES Scales
 
 #include "catch2/catch_test_macros.hpp"
 #include "catch2/matchers/catch_matchers_floating_point.hpp"
@@ -143,9 +143,9 @@ pylith::meshio::TestMeshIO::_createMesh(void) {
     cs.setSpaceDim(_data->geometry->spaceDim);
     _mesh->setCoordSys(&cs);
 
-    spatialdata::units::Nondimensional normalizer;
-    normalizer.setLengthScale(10.0);
-    topology::MeshOps::nondimensionalize(_mesh, normalizer);
+    pylith::scales::Scales scales;
+    scales.setLengthScale(0.01);
+    topology::MeshOps::nondimensionalize(_mesh, scales);
 
     pythia::journal::debug_t debug("TestMeshIO");
     if (debug.state()) {

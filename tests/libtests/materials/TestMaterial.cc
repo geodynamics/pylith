@@ -29,7 +29,7 @@
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "pylith/scales/Scales.hh" // USES Scales
 
 // ----------------------------------------------------------------------
 // Setup testing data.
@@ -144,21 +144,21 @@ pylith::materials::TestMaterial::testAuxFieldDB(void) {
 
 
 // ----------------------------------------------------------------------
-// Test normalizer().
+// Test scales().
 void
-pylith::materials::TestMaterial::testNormalizer(void) {
+pylith::materials::TestMaterial::testScales(void) {
     PYLITH_METHOD_BEGIN;
 
-    spatialdata::units::Nondimensional normalizer;
+    pylith::scales::Scales scales;
     const double scale = 5.0;
-    normalizer.setLengthScale(scale);
+    scales.setLengthScale(scale);
 
     Material* material = _material();CPPUNIT_ASSERT(material);
-    material->normalizer(normalizer);
-    CPPUNIT_ASSERT_EQUAL(scale, material->_normalizer->getLengthScale());
+    material->scales(scales);
+    CPPUNIT_ASSERT_EQUAL(scale, material->_scales->getLengthScale());
 
     PYLITH_METHOD_END;
-} // testNormalizer
+} // testScales
 
 
 // ----------------------------------------------------------------------
@@ -225,8 +225,8 @@ pylith::materials::TestMaterial::testInitialize(void) {
     const PetscDM dm = auxField->dmMesh();CPPUNIT_ASSERT(dm);
     pylith::topology::FieldQuery query(*auxField);
     query.initializeWithDefaultQueryFns();
-    CPPUNIT_ASSERT(data->normalizer);
-    query.openDB(data->auxDB, data->normalizer->getLengthScale());
+    CPPUNIT_ASSERT(data->scales);
+    query.openDB(data->auxDB, data->scales->getLengthScale());
     PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, query.functions(), (void**)query.contextPtrs(), auxField->localVector(), &norm);CPPUNIT_ASSERT(!err);
     query.closeDB(data->auxDB);
     const PylithReal tolerance = 1.0e-6;
@@ -242,8 +242,8 @@ pylith::materials::TestMaterial::testInitialize(void) {
     const PetscDM dmSoln = solution.dmMesh();CPPUNIT_ASSERT(dmSoln);
     pylith::topology::FieldQuery solnQuery(solution);
     solnQuery.initializeWithDefaultQueryFns();
-    CPPUNIT_ASSERT(data->normalizer);
-    solnQuery.openDB(data->solnDB, data->normalizer->getLengthScale());
+    CPPUNIT_ASSERT(data->scales);
+    solnQuery.openDB(data->solnDB, data->scales->getLengthScale());
     err = DMPlexComputeL2DiffLocal(dmSoln, t, solnQuery.functions(), (void**)solnQuery.contextPtrs(), solution.localVector(), &norm);CPPUNIT_ASSERT(!err);
     solnQuery.closeDB(data->solnDB);
     CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Discretized solution field failed representation test.", 0.0, norm, tolerance);
@@ -253,8 +253,8 @@ pylith::materials::TestMaterial::testInitialize(void) {
     const PetscDM dmPerturb = perturbation.dmMesh();CPPUNIT_ASSERT(dmPerturb);
     pylith::topology::FieldQuery perturbQuery(perturbation);
     perturbQuery.initializeWithDefaultQueryFns();
-    CPPUNIT_ASSERT(data->normalizer);
-    perturbQuery.openDB(data->perturbDB, data->normalizer->getLengthScale());
+    CPPUNIT_ASSERT(data->scales);
+    perturbQuery.openDB(data->perturbDB, data->scales->getLengthScale());
     err = DMPlexComputeL2DiffLocal(dmPerturb, t, perturbQuery.functions(), (void**)perturbQuery.contextPtrs(), perturbation.localVector(), &norm);CPPUNIT_ASSERT(!err);
     perturbQuery.closeDB(data->perturbDB);
     CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Discretized perturbation field failed representation test.", 0.0, norm, tolerance);
@@ -596,8 +596,8 @@ pylith::materials::TestMaterial::testUpdateStateVars(void) {
     const PetscDM dm = auxField->dmMesh();CPPUNIT_ASSERT(dm);
     pylith::topology::FieldQuery query(*auxField);
     query.initializeWithDefaultQueryFns();
-    CPPUNIT_ASSERT(data->normalizer);
-    query.openDB(data->auxUpdateDB, data->normalizer->getLengthScale());
+    CPPUNIT_ASSERT(data->scales);
+    query.openDB(data->auxUpdateDB, data->scales->getLengthScale());
 #if 0 // :DEBUG:
     PetscOptionsSetValue(NULL, "-dm_plex_print_l2", "1"); // :DEBUG:
     DMSetFromOptions(dm); // :DEBUG:
@@ -630,11 +630,11 @@ pylith::materials::TestMaterial::_initializeMin(void) {
 
     // Setup coordinates.
     _mesh->setCoordSys(data->cs);
-    CPPUNIT_ASSERT(data->normalizer);
-    pylith::topology::MeshOps::nondimensionalize(_mesh, *data->normalizer);
+    CPPUNIT_ASSERT(data->scales);
+    pylith::topology::MeshOps::nondimensionalize(_mesh, *data->scales);
 
     // id and label initialized in derived class
-    material->normalizer(*data->normalizer);
+    material->scales(*data->scales);
     material->gravityField(data->gravityField);
 
     // Setup solution fields.
@@ -726,7 +726,7 @@ pylith::materials::TestMaterial_Data::TestMaterial_Data(void) :
     cs(NULL),
     gravityField(NULL),
 
-    normalizer(new spatialdata::units::Nondimensional),
+    scales(new pylith::scales::Scales),
 
     t(0.0),
     dt(0.0),
@@ -745,7 +745,7 @@ pylith::materials::TestMaterial_Data::TestMaterial_Data(void) :
     auxUpdateDB(NULL),
 
     isExplicit(false) { // constructor
-    CPPUNIT_ASSERT(normalizer);
+    CPPUNIT_ASSERT(scales);
 
     CPPUNIT_ASSERT(solnDB);
     solnDB->setLabel("solution");
@@ -763,7 +763,7 @@ pylith::materials::TestMaterial_Data::TestMaterial_Data(void) :
 pylith::materials::TestMaterial_Data::~TestMaterial_Data(void) {
     delete cs;cs = NULL;
     delete gravityField;gravityField = NULL;
-    delete normalizer;normalizer = NULL;
+    delete scales;scales = NULL;
     delete solnDB;solnDB = NULL;
     delete auxDB;auxDB = NULL;
     delete auxUpdateDB;auxUpdateDB = NULL;

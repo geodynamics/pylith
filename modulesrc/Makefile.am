@@ -18,6 +18,7 @@ SUBDIRS = \
 	meshio \
 	mpi \
 	problems \
+	scales \
 	topology \
 	utils
 

@@ -23,14 +23,14 @@
 #include "pylith/topology/Stratum.hh" // USES Stratum
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 #include "pylith/problems/SolutionFactory.hh" // USES SolutionFactory
-#include "pylith/utils/constdefs.h" // USES PYLITH_MAXFLOAT
+#include "pylith/utils/constants.hh" // USES PYLITH_MAXFLOAT
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 #include "spatialdata/spatialdb/TimeHistory.hh" // USES TimeHistory
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "pylith/scales/Scales.hh" // USES Scales
 
 const double pylith::bc::TestDirichletTimeDependent::FILL_VALUE = -999.0;
 
@@ -214,21 +214,21 @@ pylith::bc::TestDirichletTimeDependent::testAuxFieldDB(void) {
 
 
 // ----------------------------------------------------------------------
-// Test normalizer().
+// Test scales().
 void
-pylith::bc::TestDirichletTimeDependent::testNormalizer(void) {
+pylith::bc::TestDirichletTimeDependent::testScales(void) {
     PYLITH_METHOD_BEGIN;
 
-    spatialdata::units::Nondimensional normalizer;
-    const double scale = 5.0;
-    normalizer.setLengthScale(scale);
+    pylith::scales::Scales scales;
+    const double scale = 4.0;
+    scales.setLengthScale(scale);
 
     CPPUNIT_ASSERT(_bc);
-    _bc->normalizer(normalizer);
-    CPPUNIT_ASSERT_EQUAL(scale, _bc->_normalizer->getLengthScale());
+    _bc->scales(scales);
+    CPPUNIT_ASSERT_EQUAL(scale, _bc->_scales->getLengthScale());
 
     PYLITH_METHOD_END;
-} // testNormalizer
+} // testScales
 
 
 // ----------------------------------------------------------------------
@@ -300,8 +300,8 @@ pylith::bc::TestDirichletTimeDependent::testInitialize(void) {
     const PetscDM dm = auxField->dmMesh();CPPUNIT_ASSERT(dm);
     pylith::topology::FieldQuery query(*auxField);
     query.initializeWithDefaultQueryFns();
-    CPPUNIT_ASSERT(_data->normalizer);
-    query.openDB(_data->auxDB, _data->normalizer->getLengthScale());
+    CPPUNIT_ASSERT(_data->scales);
+    query.openDB(_data->auxDB, _data->scales->getLengthScale());
     err = DMPlexComputeL2DiffLocal(dm, t, query.functions(), (void**)query.contextPtrs(), auxField->localVector(), &norm);CPPUNIT_ASSERT(!err);
     query.closeDB(_data->auxDB);
     const PylithReal tolerance = 1.0e-6;
@@ -344,8 +344,8 @@ pylith::bc::TestDirichletTimeDependent::testPrestep(void) {
     const PetscDM dm = auxField->dmMesh();CPPUNIT_ASSERT(dm);
     pylith::topology::FieldQuery query(valueField);
     query.initializeWithDefaultQueryFns();
-    CPPUNIT_ASSERT(_data->normalizer);
-    query.openDB(_data->auxDB, _data->normalizer->getLengthScale());
+    CPPUNIT_ASSERT(_data->scales);
+    query.openDB(_data->auxDB, _data->scales->getLengthScale());
     PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, query.functions(), (void**)query.contextPtrs(), valueField.localVector(), &norm);CPPUNIT_ASSERT(!err);
     query.closeDB(_data->auxDB);
     const PylithReal tolerance = 1.0e-6;
@@ -398,8 +398,8 @@ pylith::bc::TestDirichletTimeDependent::testSetSolution(void) {
     const PetscDM dmSoln = _solution->dmMesh();CPPUNIT_ASSERT(dmSoln);
     pylith::topology::FieldQuery query(*_solution);
     query.initializeWithDefaultQueryFns();
-    CPPUNIT_ASSERT(_data->normalizer);
-    query.openDB(_data->solnDB, _data->normalizer->getLengthScale());
+    CPPUNIT_ASSERT(_data->scales);
+    query.openDB(_data->solnDB, _data->scales->getLengthScale());
     err = DMProjectFunction(dmSoln, t, query.functions(), (void**)query.contextPtrs(), INSERT_VALUES, _solution->scatterVector("global"));CPPUNIT_ASSERT(!err);
     query.closeDB(_data->solnDB);
     _solution->scatterContextToLocal("global", INSERT_VALUES);
@@ -413,7 +413,7 @@ pylith::bc::TestDirichletTimeDependent::testSetSolution(void) {
 #endif // :DEBUG:
 
     PylithReal norm = 0.0;
-    query.openDB(_data->solnDB, _data->normalizer->getLengthScale());
+    query.openDB(_data->solnDB, _data->scales->getLengthScale());
     err = DMPlexComputeL2DiffLocal(dmSoln, t, query.functions(), (void**)query.contextPtrs(), _solution->localVector(), &norm);CPPUNIT_ASSERT(!err);
     query.closeDB(_data->solnDB);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
@@ -435,8 +435,8 @@ pylith::bc::TestDirichletTimeDependent::testAuxFieldSetup(void) {
     CPPUNIT_ASSERT(_solution);
     CPPUNIT_ASSERT(_mesh);
     CPPUNIT_ASSERT(_data);
-    CPPUNIT_ASSERT(_data->normalizer);
-    const PylithReal timeScale = _data->normalizer->getTimeScale();
+    CPPUNIT_ASSERT(_data->scales);
+    const PylithReal timeScale = _data->scales->getTimeScale();
 
     delete _bc->_boundaryMesh;_bc->_boundaryMesh = new pylith::topology::Mesh(_solution->mesh(), _data->bcLabel);
     CPPUNIT_ASSERT(_bc->_boundaryMesh);
@@ -575,14 +575,14 @@ pylith::bc::TestDirichletTimeDependent::_initialize(void) {
     iohandler.filename(_data->meshFilename);
     iohandler.read(_mesh);
     _mesh->setCoordSys(_data->cs);
-    CPPUNIT_ASSERT(_data->normalizer);
-    pylith::topology::MeshOps::nondimensionalize(_mesh, *_data->normalizer);
+    CPPUNIT_ASSERT(_data->scales);
+    pylith::topology::MeshOps::nondimensionalize(_mesh, *_data->scales);
 
     _bc->setLabel(_data->bcLabel);
     _bc->field(_data->field);
     _bc->auxFieldDB(_data->auxDB);
     _bc->constrainedDOF(_data->constrainedDOF, _data->numConstrainedDOF);
-    _bc->normalizer(*_data->normalizer);
+    _bc->scales(*_data->scales);
     for (int ifield = 0; ifield < _data->numAuxSubfields; ++ifield) {
         const pylith::topology::Field::Discretization& discretization = _data->auxDiscretizations[ifield];
         const char* name = _data->auxSubfields[ifield];
@@ -610,10 +610,10 @@ pylith::bc::TestDirichletTimeDependent::_setupSolutionField(void) {
 
     CPPUNIT_ASSERT(_mesh);
     CPPUNIT_ASSERT(_data);
-    CPPUNIT_ASSERT(_data->normalizer);
+    CPPUNIT_ASSERT(_data->scales);
 
     delete _solution;_solution = new pylith::topology::Field(*_mesh);
-    pylith::problems::SolutionFactory factory(*_solution, *_data->normalizer);
+    pylith::problems::SolutionFactory factory(*_solution, *_data->scales);
     factory.displacement(_data->solnDiscretizations[0]);
     factory.velocity(_data->solnDiscretizations[1]);
     factory.fluidPressure(_data->solnDiscretizations[2]);
@@ -629,7 +629,7 @@ pylith::bc::TestDirichletTimeDependent_Data::TestDirichletTimeDependent_Data(voi
     meshFilename(NULL),
     bcLabel(NULL),
     cs(NULL),
-    normalizer(new spatialdata::units::Nondimensional),
+    scales(new pylith::scales::Scales),
     field(NULL),
     vectorFieldType(pylith::topology::Field::OTHER),
     numConstrainedDOF(0),
@@ -653,7 +653,7 @@ pylith::bc::TestDirichletTimeDependent_Data::TestDirichletTimeDependent_Data(voi
 // Destructor
 pylith::bc::TestDirichletTimeDependent_Data::~TestDirichletTimeDependent_Data(void) {
     delete cs;cs = NULL;
-    delete normalizer;normalizer = NULL;
+    delete scales;scales = NULL;
     delete auxDB;auxDB = NULL;
     delete solnDB;solnDB = NULL;
 } // destructor

@@ -28,7 +28,7 @@
 
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "pylith/scales/Scales.hh" // USES Scales
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Setup testing data.
@@ -123,8 +123,8 @@ pylith::feassemble::TestIntegratorDomain::testInitialize(void) {
     CPPUNIT_ASSERT_EQUAL(_data->dimension, auxiliaryField->getSpaceDim());
 
     const PylithReal tolerance = 1.0e-6;
-    CPPUNIT_ASSERT(_data->normalizer);
-    const PylithReal lengthScale = _data->normalizer->getLengthScale();
+    CPPUNIT_ASSERT(_data->scales);
+    const PylithReal lengthScale = _data->scales->getLengthScale();
     PylithReal norm = pylith::testing::FieldTester::checkFieldWithDB(*auxiliaryField, _data->auxiliaryDB, lengthScale);
     CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Values in auxiliary field do not match spatial database.", 0.0, norm, tolerance);
 
@@ -162,8 +162,8 @@ pylith::feassemble::TestIntegratorDomain::testPoststep(void) {
     _integrator->poststep(_data->t, _data->tindex, _data->dt, perturbation);
 
     const PylithReal tolerance = 1.0e-6;
-    CPPUNIT_ASSERT(_data->normalizer);
-    const PylithReal lengthScale = _data->normalizer->getLengthScale();
+    CPPUNIT_ASSERT(_data->scales);
+    const PylithReal lengthScale = _data->scales->getLengthScale();
     PylithReal norm = pylith::testing::FieldTester::checkFieldWithDB(*_integrator->getAuxiliaryField(),
                                                                      _data->auxiliaryUpdateDB, lengthScale);
     CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Updated auxiliary field values do not match spatial database.", 0.0, norm, tolerance);
@@ -372,8 +372,8 @@ pylith::feassemble::TestIntegratorDomain::_initializeMin(void) {
 
     // Setup coordinates.
     _mesh->setCoordSys(_data->cs);
-    CPPUNIT_ASSERT(_data->normalizer);
-    pylith::topology::MeshOps::nondimensionalize(_mesh, *_data->normalizer);
+    CPPUNIT_ASSERT(_data->scales);
+    pylith::topology::MeshOps::nondimensionalize(_mesh, *_data->scales);
 
     // Setup solution fields.
     delete _solutionFields;_solutionFields = new pylith::topology::Fields(*_mesh);CPPUNIT_ASSERT(_solutionFields);
@@ -412,11 +412,11 @@ pylith::feassemble::TestIntegratorDomain::_setupSolutionFields(void) {
 
     CPPUNIT_ASSERT(_solutionFields);
     CPPUNIT_ASSERT(_data->solutionDiscretizations);
-    CPPUNIT_ASSERT(_data->normalizer);
+    CPPUNIT_ASSERT(_data->scales);
 
     { // Solution
         pylith::topology::Field& solution = _solutionFields->get("solution");
-        pylith::problems::SolutionFactory factory(solution, *_data->normalizer);
+        pylith::problems::SolutionFactory factory(solution, *_data->scales);
         factory.displacement(_data->solutionDiscretizations[0]);
         if (_data->isExplicit) {
             factory.velocity(_data->solutionDiscretizations[1]);
@@ -429,7 +429,7 @@ pylith::feassemble::TestIntegratorDomain::_setupSolutionFields(void) {
 
     { // Time derivative of solution
         pylith::topology::Field& solutionDot = _solutionFields->get("solution_dot");
-        pylith::problems::SolutionFactory factory(solutionDot, *_data->normalizer);
+        pylith::problems::SolutionFactory factory(solutionDot, *_data->scales);
         factory.displacementDot(_data->solutionDiscretizations[0]);
         if (_data->isExplicit) {
             factory.velocityDot(_data->solutionDiscretizations[1]);
@@ -447,7 +447,7 @@ pylith::feassemble::TestIntegratorDomain::_setupSolutionFields(void) {
         perturbation.createDiscretization();
         perturbation.allocate();
         perturbation.zeroLocal();
-        pylith::problems::SolutionFactory factory(perturbation, *_data->normalizer);
+        pylith::problems::SolutionFactory factory(perturbation, *_data->scales);
         factory.setValues(_data->perturbationDB);
     } // Perturbation
 
@@ -458,7 +458,7 @@ pylith::feassemble::TestIntegratorDomain::_setupSolutionFields(void) {
         perturbationDot.createDiscretization();
         perturbationDot.allocate();
         perturbationDot.zeroLocal();
-        pylith::problems::SolutionFactory factory(perturbationDot, *_data->normalizer);
+        pylith::problems::SolutionFactory factory(perturbationDot, *_data->scales);
         factory.setValues(_data->perturbationDB);
     } // Time derivative perturbation
 
@@ -519,7 +519,7 @@ pylith::feassemble::TestIntegratorDomain_Data::TestIntegratorDomain_Data(void) :
     materialId(0),
     cs(NULL),
 
-    normalizer(new spatialdata::units::Nondimensional),
+    scales(new pylith::scales::Scales),
 
     t(0.0),
     dt(0.0),
@@ -538,7 +538,7 @@ pylith::feassemble::TestIntegratorDomain_Data::TestIntegratorDomain_Data(void) :
     auxiliaryUpdateDB(NULL),
 
     hasLHSJacobianLumpedInv(false) {
-    CPPUNIT_ASSERT(normalizer);
+    CPPUNIT_ASSERT(scales);
 
     CPPUNIT_ASSERT(solutionDB);
     solutionDB->setLabel("solution");
@@ -555,7 +555,7 @@ pylith::feassemble::TestIntegratorDomain_Data::TestIntegratorDomain_Data(void) :
 // Destructor
 pylith::feassemble::TestIntegratorDomain_Data::~TestIntegratorDomain_Data(void) {
     delete cs;cs = NULL;
-    delete normalizer;normalizer = NULL;
+    delete scales;scales = NULL;
     delete solutionDB;solutionDB = NULL;
     delete auxiliaryDB;auxiliaryDB = NULL;
     delete auxiliaryUpdateDB;auxiliaryUpdateDB = NULL;

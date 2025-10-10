@@ -33,7 +33,7 @@
 
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "pylith/scales/Scales.hh" // USES Scales
 
 #include <typeinfo> // USES typeid()
 
@@ -220,8 +220,8 @@ pylith::materials::Elasticity::createAuxiliaryField(const pylith::topology::Fiel
     assert(_rheology);
     pylith::materials::AuxiliaryFactoryElasticity* auxiliaryFactory = _rheology->getAuxiliaryFactory();assert(auxiliaryFactory);
 
-    assert(_normalizer);
-    auxiliaryFactory->initialize(auxiliaryField, *_normalizer, domainMesh.getDimension());
+    assert(_scales);
+    auxiliaryFactory->initialize(auxiliaryField, *_scales, domainMesh.getDimension());
 
     // :ATTENTION: The order for adding subfields must match the order of the auxiliary fields in the FE kernels.
 
@@ -249,7 +249,7 @@ pylith::materials::Elasticity::createAuxiliaryField(const pylith::topology::Fiel
     assert(auxiliaryFactory);
     auxiliaryFactory->setValuesFromDB();
 
-    pythia::journal::debug_t debug("elasticity.view_auxiliary_field");
+    pythia::journal::debug_t debug("elasticity_view_auxiliary_field");
     if (debug.state()) {
         auxiliaryField->view("Elasticity auxiliary field");
     } // if
@@ -276,8 +276,8 @@ pylith::materials::Elasticity::createDerivedField(const pylith::topology::Field&
     pylith::topology::Field* derivedField = new pylith::topology::Field(domainMesh);assert(derivedField);
     derivedField->setLabel("derived field");
 
-    assert(_normalizer);
-    _derivedFactory->initialize(derivedField, *_normalizer, domainMesh.getDimension());
+    assert(_scales);
+    _derivedFactory->initialize(derivedField, *_scales, domainMesh.getDimension());
     _derivedFactory->addSubfields();
 
     derivedField->subfieldsSetup();
@@ -306,6 +306,9 @@ pylith::materials::Elasticity::getSolverDefaults(const bool isParallel,
         options->add("-ts_type", "beuler");
 
         options->add("-pc_type", "gamg");
+        options->add("-pc_gamg_coarse_eq_limit", "200");
+        options->add("-mg_fine_ksp_max_it", "5");
+        options->add("-mg_levels_pc_type", "pbjacobi");
 
         if (hasFault) {
             options->add("-dm_reorder_section");

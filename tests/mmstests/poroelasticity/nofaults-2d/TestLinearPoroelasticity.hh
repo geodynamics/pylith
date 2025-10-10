@@ -18,7 +18,7 @@
 
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "pylith/scales/Scales.hh" // USES Scales
 
 #include "pylith/problems/Physics.hh" // USES FormulationEnum
 #include "pylith/topology/Field.hh" // HASA FieldBase::Discretization
@@ -87,7 +87,7 @@ public:
     PylithReal t; ///< Time for MMS solution.
     PylithReal dt; ///< Time step in simulation.
     spatialdata::geocoords::CSCart cs; ///< Coordinate system.
-    spatialdata::units::Nondimensional normalizer; ///< Scales for nondimensionalization.
+    pylith::scales::Scales scales; ///< Scales for nondimensionalization.
     pylith::problems::Physics::FormulationEnum formulation; ///< Time stepping formulation
 
     pylith::materials::Poroelasticity material; ///< Materials.

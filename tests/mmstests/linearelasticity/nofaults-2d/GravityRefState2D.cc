@@ -15,6 +15,7 @@
 #include "pylith/problems/TimeDependent.hh" // USES TimeDependent
 #include "pylith/topology/Field.hh" // USES pylith::topology::Field::Discretization
 #include "pylith/utils/journals.hh" // USES pythia::journal::debug_t
+#include "pylith/utils/constants.hh" // USES pylith::g_acc
 
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 
@@ -25,8 +26,7 @@ namespace pylith {
 class pylith::_GravityRefState2D {
 private:
 
-    static const double GACC;
-    static const double YMAX;
+    static const double Y_MAX;
 
     // Density
     static double density(const double x,
@@ -60,7 +60,7 @@ private:
 
     static double referenceMeanStress(const double x,
                                       const double y) {
-        return density(x,y) * GACC * (y-YMAX);
+        return density(x,y) * pylith::g_acc * (y-Y_MAX);
     } // referenceMeanStress
 
     static double referenceShearStress(const double x,
@@ -88,7 +88,7 @@ private:
 
     static double setGravityAcc_y(const double x,
                                   const double y) {
-        return -GACC;
+        return -pylith::g_acc;
     } // setGravityAcc_y
 
     static const char* acc_units(void) {
@@ -137,14 +137,9 @@ public:
         data->meshFilename = ":UNKNOWN:"; // Set in child class.
         data->boundaryLabel = "boundary";
 
-        data->normalizer.setLengthScale(1.0e+03);
-        data->normalizer.setTimeScale(2.0);
-        data->normalizer.setPressureScale(2.25e+10);
-        data->normalizer.computeDensityScale();
-
         delete data->gravityField;data->gravityField = new spatialdata::spatialdb::GravityField();
         data->gravityField->setGravityDir(0.0, -1.0, 0.0);
-        data->gravityField->setGravityAcc(GACC);
+        data->gravityField->setGravityAcc(pylith::g_acc);
 
         // solnDiscretizations set in derived class.
 
@@ -211,8 +206,7 @@ public:
     } // createData
 
 }; // _GravityRefState2D
-const double pylith::_GravityRefState2D::GACC = 9.80665;
-const double pylith::_GravityRefState2D::YMAX = +4.0e+3;
+const double pylith::_GravityRefState2D::Y_MAX = +4.0e+3;
 
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*

@@ -24,7 +24,7 @@
 #include "pylith/problems/ObserversPhysics.hh" // USES ObserversPhysics
 
 #include "spatialdata/spatialdb/UniformDB.hh" // USES UniformDB
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "pylith/scales/Scales.hh" // USES Scales
 
 // ---------------------------------------------------------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION(pylith::problems::TestPhysics);
@@ -51,22 +51,22 @@ pylith::problems::TestPhysics::tearDown(void) {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Test setNormalizer().
+// Test setScales().
 void
-pylith::problems::TestPhysics::testSetNormalizer(void) {
+pylith::problems::TestPhysics::testSetScales(void) {
     PYLITH_METHOD_BEGIN;
 
-    spatialdata::units::Nondimensional normalizer;
+    pylith::scales::Scales scales;
     const PylithReal lengthScale = 3.0;
-    normalizer.setLengthScale(lengthScale);
+    scales.setLengthScale(lengthScale);
 
     CPPUNIT_ASSERT(_physics);
-    _physics->setNormalizer(normalizer);
+    _physics->setScales(scales);
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(lengthScale, _physics->_normalizer->getLengthScale(), 1.0e-6);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(lengthScale, _physics->_scales->getLengthScale(), 1.0e-6);
 
     PYLITH_METHOD_END;
-} // testSetNormalizer
+} // testSetScales
 
 
 // ---------------------------------------------------------------------------------------------------------------------
