@@ -19,7 +19,7 @@ class ConvertMeshApp(PetscApplication):
 
     import pythia.pyre.inventory
 
-    from pylith.initializers.Initializer import Initializer
+    from pylith.initializers.Convert import Initializer
     meshInitializer = pythia.pyre.inventory.facility(
         "mesh_initializer", family="mesh_initializer", factory=Initializer)
     meshInitializer.meta["tip"] = "Mesh initializer."

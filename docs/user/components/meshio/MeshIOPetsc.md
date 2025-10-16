@@ -36,7 +36,7 @@ Implements `MeshIOObj`.
 Example of setting `MeshIOPetsc` Pyre properties and facilities in a parameter file.
 
 :::{code-block} cfg
-[pylithapp.mesh_generator.reader]
+[pylithapp.problem.mesh_initializer.phases.read_mesh.reader]
 filename = mesh_quad.msh
 gmsh_mark_vertices = False
 coordsys.space_dim = 2

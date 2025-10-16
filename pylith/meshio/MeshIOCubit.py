@@ -32,7 +32,7 @@ class MeshIOCubit(MeshIOObj, ModuleMeshIOCubit):
     """
     DOC_CONFIG = {
         "cfg": """
-            [pylithapp.mesh_generator.reader]
+            [pylithapp.problem.mesh_initializer.phases.read_mesh.reader]
             filename = mesh_quad.exo
             coordsys.space_dim = 2
         """

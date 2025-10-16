@@ -29,7 +29,7 @@ Implements `MeshIOObj`.
 Example of setting `MeshIOCubit` Pyre properties and facilities in a parameter file.
 
 :::{code-block} cfg
-[pylithapp.mesh_generator.reader]
+[pylithapp.problem.mesh_initializer.phases.read_mesh.reader]
 filename = mesh_quad.exo
 coordsys.space_dim = 2
 :::

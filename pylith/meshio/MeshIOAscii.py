@@ -26,7 +26,7 @@ class MeshIOAscii(MeshIOObj, ModuleMeshIOAscii):
     """
     DOC_CONFIG = {
         "cfg": """
-            [pylithapp.mesh_generator.reader]
+            [pylithapp.problem.mesh_initializer.phases.read_mesh.reader]
             filename = mesh_quad.txt
             coordsys.space_dim = 2
         """

@@ -121,9 +121,41 @@
 [`SolnDispVelLagrange`](problems/SolnDispVelLagrange.md)
 : Solution field with `displacement`, `velocity`, `lagrange_multiplier_fault` subfields.
 
+## Mesh initialization
+
+[`Initializer`](initializers/Initializer.md)
+: Manager for initializing the mesh.
+
+[`Serial`](initializers/Serial.md)
+: Initialization phases for reading a mesh in serial (default).
+
+[`Parallel`](initializers/Parallel.md)
+: Initialization phases for reading a mesh in parallel.
+
+[`Convert`](initializers/Convert.md)
+: Initialization phases for converting a mesh form one format to another (used by `ConvertMeshApp`.
+
+[`MeshReader`](initializers/MeshReader.md)
+: Read a finite-element mesh.
+
+[`MeshWriter`](initializers/MeshWriter.md)
+: Writer a finite-element mesh.
+
+[`MeshReordering`](initializers/MeshReordering.md)
+: Reorder vertices and cells in the finite-element mesh.
+
+[`MeshDistributor`](initializers/MeshDistributor.md)
+: Distribute the finite-element mesh among processes.
+
+[`MeshInsertInterfaces`](initializers/MeshInsertInterfaces.md)
+: Insert fault interfaces (cohesive cells) into the finite-element mesh.
+
+[`MeshRefiner`](initializers/MeshRefiner.md)
+: Adjust the discretization of the finite-element mesh.
+
 ## Mesh readers
 
-[`MeshIOAscii`](meshio/MeshIOAscii.md)
+[`OAscii`](meshio/MeshIOAscii.md)
 : Reader for PyLith ASCII finite-element mesh files.
 
 [`MeshIOCubit`](meshio/MeshIOCubit.md)

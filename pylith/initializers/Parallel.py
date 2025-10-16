@@ -11,9 +11,9 @@
 from pythia.pyre.components.Component import Component
 
 
-class Serial(Component):
+class Parallel(Component):
     """
-    Mesh initialization phases for reading in serial.
+    Mesh initialization phases for reading in parallel.
 
     :::{seealso}
     See [`Initializer` Component](Initializer.md).
@@ -34,20 +34,14 @@ class Serial(Component):
     import pythia.pyre.inventory
 
     from .MeshReader import MeshReader
-    from .MeshReordering import MeshReordering
-    from .MeshInsertInterfaces import MeshInsertInterfaces
     from .MeshDistributor import MeshDistributor
+    from .MeshInsertInterfaces import MeshInsertInterfaces
     from .MeshRefiner import MeshRefiner
 
     read_mesh = pythia.pyre.inventory.facility(
         "read_mesh", family="initialize_phase", factory=MeshReader
     )
-    read_mesh.meta["tip"] = "Read mesh in serial."
-
-    reorder_mesh = pythia.pyre.inventory.facility(
-        "reorder_mesh", family="initialize_phase", factory=MeshReordering
-    )
-    reorder_mesh.meta["tip"] = "Reorder mesh using reverse Cuthill-McKee algorithm."
+    read_mesh.meta["tip"] = "Read mesh in parallel."
 
     distribute_mesh = pythia.pyre.inventory.facility(
         "distribute_mesh", family="initialize_phase", factory=MeshDistributor
@@ -70,9 +64,9 @@ class Serial(Component):
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 
-    def __init__(self, name="serial_phases"):
+    def __init__(self, name="parallel_phases"):
         """Constructor."""
-        Component.__init__(self, name, facility="serial_phases")
+        Component.__init__(self, name, facility="parallel_phases")
 
     def components(self):
         """Order of facilities in Inventory is ambiguous, so overwrite
@@ -81,7 +75,6 @@ class Serial(Component):
         """
         return [
             self.read_mesh,
-            self.reorder_mesh,
             self.distribute_mesh,
             self.insert_interfaces,
             self.refine_mesh,

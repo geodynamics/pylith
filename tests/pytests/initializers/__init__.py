@@ -1,6 +1,7 @@
 from . import (
     TestInitializer,
     TestSerial,
+    TestParallel,
     TestConvert,
     TestInitializePhase,
     TestMeshReader,
@@ -15,6 +16,7 @@ def test_modules():
     return [
         TestInitializer,
         TestSerial,
+        TestParallel,
         TestConvert,
         TestInitializePhase,
         TestMeshReader,

@@ -8,17 +8,26 @@
 # See https://mit-license.org/ and LICENSE.md and for license information. 
 # =================================================================================================
 
-__all__ = [
-    "Initializer",
-    "Serial",
-    "Parallel",
-    "MeshReader",
-    "MeshWriter",
-    "MeshReordering",
-    "MeshRefiner",
-    "MeshDistributor",
-    "MeshInsertInterfaces",
-]
+import unittest
+
+from pylith.testing.TestCases import TestAbstractComponent, make_suite
+import pylith.initializers.Parallel
+
+class TestParallel(TestAbstractComponent):
+    """Unit testing of Parallel object.
+    """
+    _class = pylith.initializers.Parallel.Parallel
+
+
+def load_tests(loader, tests, pattern):
+    TEST_CLASSES = [
+        TestParallel,
+    ]
+    return make_suite(TEST_CLASSES, loader)
+
+
+if __name__ == "__main__":
+    unittest.main(verbosity=2)
 
 
 # End of file

@@ -55,6 +55,7 @@ EXTRA_DIST = \
 	initializers/__init__.py \
 	initializers/Initializer.py \
 	initializers/Serial.py \
+	initializers/Parallel.py \
 	initializers/Convert.py \
 	initializers/InitializePhase.py \
 	initializers/MeshReader.py \
@@ -159,10 +160,8 @@ EXTRA_DIST = \
 	topology/Mesh.py \
 	topology/MeshGenerator.py \
 	topology/MeshImporter.py \
-	topology/MeshImporterDist.py \
-	topology/MeshRefiner.py \
+	topology/RefineMesh.py \
 	topology/RefineUniform.py \
-	topology/ReverseCuthillMcKee.py \
 	topology/Subfield.py \
 	topology/__init__.py \
 	utils/CollectVersionInfo.py \

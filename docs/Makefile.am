@@ -101,6 +101,18 @@ dist_noinst_DATA = \
 	user/components/faults/SingleRupture.md \
 	user/components/faults/index.md \
 	user/components/index.md \
+	user/components/initializers/index.md \
+	user/components/initializers/Initializer.md \
+	user/components/initializers/Serial.md \
+	user/components/initializers/Parallel.md \
+	user/components/initializers/Convert.md \
+	user/components/initializers/InitializePhase.md \
+	user/components/initializers/MeshReader.md \
+	user/components/initializers/MeshWriter.md \
+	user/components/initializers/MeshReordering.md \
+	user/components/initializers/MeshDistributor.md \
+	user/components/initializers/MeshInsertInterfaces.md \
+	user/components/initializers/MeshRefiner.md \
 	user/components/materials/AuxSubfieldsElasticity.md \
 	user/components/materials/AuxSubfieldsIsotropicLinearElasticity.md \
 	user/components/materials/AuxSubfieldsIsotropicLinearGenMaxwell.md \
@@ -694,15 +706,20 @@ dist_noinst_DATA = \
 	user/problems/figs/hdf5layout.svg \
 	user/problems/figs/hdf5layout.tex \
 	user/problems/index.md \
+	user/problems/mesh/index.md \
+	user/problems/mesh/initializer.md \
+	user/problems/mesh/phases.md \
+	user/problems/mesh/figs/cells2d.pdf \
+	user/problems/mesh/figs/cells2d.svg \
+	user/problems/mesh/figs/cells2d.tex \
+	user/problems/mesh/figs/cells3d.pdf \
+	user/problems/mesh/figs/cells3d.svg \
+	user/problems/mesh/figs/cells3d.tex \
+	user/problems/mesh/figs/refinement2x.pdf \
+	user/problems/mesh/figs/refinement2x.svg \
 	user/problems/nondimensionalization.md \
 	user/problems/output.md \
 	user/problems/problems.md \
-	user/run-pylith/figs/cells2d.pdf \
-	user/run-pylith/figs/cells2d.svg \
-	user/run-pylith/figs/cells2d.tex \
-	user/run-pylith/figs/cells3d.pdf \
-	user/run-pylith/figs/cells3d.svg \
-	user/run-pylith/figs/cells3d.tex \
 	user/run-pylith/figs/paramgui_detail.png \
 	user/run-pylith/figs/paramgui_parameters.png \
 	user/run-pylith/figs/paramgui_parameters.xcf \
@@ -712,10 +729,7 @@ dist_noinst_DATA = \
 	user/run-pylith/figs/pylith_simulation.pdf \
 	user/run-pylith/figs/pylith_simulation.svg \
 	user/run-pylith/figs/pylith_simulation.tex \
-	user/run-pylith/figs/refinement2x.pdf \
-	user/run-pylith/figs/refinement2x.svg \
 	user/run-pylith/index.md \
-	user/run-pylith/mesh.md \
 	user/run-pylith/overview.md \
 	user/run-pylith/parameter-gui.md \
 	user/run-pylith/petsc-options.md \

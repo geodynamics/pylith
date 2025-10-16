@@ -12,6 +12,9 @@ No user-specified settings will be overwritten.
 * `collective_io`=\<bool\>: Use default PETSc collective I/O options.
   - **default value**: True
   - **current value**: True, from {default}
+* `impulse_ts`=\<bool\>: Use custom PETSc TS for impulses.
+  - **default value**: False
+  - **current value**: False, from {default}
 * `initial_guess`=\<bool\>: Use initial guess options.
   - **default value**: True
   - **current value**: True, from {default}

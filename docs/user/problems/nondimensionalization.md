@@ -1,3 +1,4 @@
+(sec-user-problem-nondimensionalization)=
 # Nondimensionalization
 
 Nondimensionalization permits solving a system equations across a vast range of scales.
@@ -47,7 +48,7 @@ The scales are specified in terms of the displacement scale, length scale, shear
 ```
 
 :::{admonition} Pyre User Interface
-See [QuasistaticElasticity component](components/scales/QuasistaticElasticity.md).
+See [QuasistaticElasticity component](../components/scales/QuasistaticElasticity.md).
 :::
 
 ## DynamicElasticity
@@ -83,7 +84,7 @@ t_o = l_o / v_s
 ```
 
 :::{admonition} Pyre User Interface
-See [DynamicElasticity component](components/scales/DynamicElasticity.md).
+See [DynamicElasticity component](../components/scales/DynamicElasticity.md).
 :::
 
 ## QuasistaticPoroelasticity
@@ -123,5 +124,5 @@ t_o = \frac{\mu_{f_o}}{k_o} \frac{l_o^2}{\mu_o}
 ```
 
 :::{admonition} Pyre User Interface
-See [QuasistaticPoroelasticity component](components/scales/QuasistaticPoroelasticity.md).
+See [QuasistaticPoroelasticity component](../components/scales/QuasistaticPoroelasticity.md).
 :::

@@ -32,11 +32,12 @@ class Initializer(PetscComponent, ModuleInitializer):
             phases = pylith.initializers.Serial
             
             # Equivalent manual construction of Serial phases
-            phases = [read_mesh, reorder_mesh, distribute_mesh, insert_interfaces]
+            phases = [read_mesh, reorder_mesh, distribute_mesh, insert_interfaces, refine_mesh]
             read_mesh = pylith.initializers.MeshReader
             reorder_mesh = pylith.initializers.MeshReordering
             distribute_mesh = pylith.initializers.MeshDistributor
             insert_interfaces = pylith.initializers.InsertInterfaces
+            refine_mesh = pylith.initializers.MeshRefiner
         """
     }
 

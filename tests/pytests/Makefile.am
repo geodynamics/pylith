@@ -33,6 +33,7 @@ dist_noinst_PYTHON = \
 	initializers/__init__.py \
 	initializers/TestInitializer.py \
 	initializers/TestSerial.py \
+	initializers/TestParallel.py \
 	initializers/TestConvert.py \
 	initializers/TestInitializePhase.py \
 	initializers/TestMeshReader.py \

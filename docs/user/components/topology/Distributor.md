@@ -32,5 +32,8 @@ Example of setting `Distributor` Pyre properties and facilities in a parameter f
 :::{code-block} cfg
 [pylithapp.mesh_generator.distributor]
 partitioner = parmetis
+use_edge_weighting = True
+write_partition = False
+data_writer = pylith.meshio.DataWriterHDF5
 :::
 

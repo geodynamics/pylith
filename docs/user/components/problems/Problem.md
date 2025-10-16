@@ -29,12 +29,15 @@ If the nonlinear (SNES) solver requires multiple iterations to converge for thes
 * `materials`: Materials in problem.
   - **current value**: 'homogeneous', from {default}
   - **configurable as**: homogeneous, materials
-* `scales`: Nondimensionalizer for problem.
-  - **current value**: 'nondimelasticquasistatic', from {default}
-  - **configurable as**: nondimelasticquasistatic, scales
+* `mesh_initializer`: Mesh initializer.
+  - **current value**: 'mesh_initializer', from {default}
+  - **configurable as**: mesh_initializer
 * `petsc_defaults`: Flags controlling which default PETSc options to use.
   - **current value**: 'petscdefaults', from {default}
   - **configurable as**: petscdefaults, petsc_defaults
+* `scales`: Scales for nondimensionalizing boundary value problem.
+  - **current value**: 'quasistaticelasticity', from {default}
+  - **configurable as**: quasistaticelasticity, scales
 * `solution`: Solution field for problem.
   - **current value**: 'solution', from {default}
   - **configurable as**: solution
