@@ -83,12 +83,6 @@ class App(GenerateMesh):
                 dim=1,
                 entities=[self.l_ypos],
             ),
-            BoundaryGroup(
-                name="boundary_ypos_copy",
-                tag=14,
-                dim=1,
-                entities=[self.l_ypos],
-            ),
         )
         for group in face_groups:
             group.create_physical_group()
