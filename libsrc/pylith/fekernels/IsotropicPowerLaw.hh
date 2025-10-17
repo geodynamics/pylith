@@ -732,7 +732,7 @@ private:
         const size_t maxIterations = 50;
 
         // Arbitrary factor by which to increase the brackets.
-        const PylithReal bracketFactor = 2;
+        const PylithReal bracketFactor = 1.5;
         // Minimum allowed value for effective stress.
         const PylithReal xMin = 0.0;
         PylithReal x1 = *px1;

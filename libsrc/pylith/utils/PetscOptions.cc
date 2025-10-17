@@ -86,6 +86,13 @@ public:
             static
             void addInitialGuess(PetscOptions* options);
 
+            /** Add adaptive time stepping options.
+             *
+             * @param[in] options PETSc options.
+             */
+            static
+            void addAdaptiveTimeStepping(PetscOptions* options);
+
         };
     }
 }
@@ -98,7 +105,8 @@ const int pylith::utils::PetscDefaults::PARALLEL = 0x4;
 const int pylith::utils::PetscDefaults::INITIAL_GUESS = 0x8;
 const int pylith::utils::PetscDefaults::TESTING = 0x10;
 const int pylith::utils::PetscDefaults::COLLECTIVE_IO = 0x20;
-const int pylith::utils::PetscDefaults::TS_ADAPT = 0x40;
+const int pylith::utils::PetscDefaults::TS_ADAPTIVE = 0x40;
+const int pylith::utils::PetscDefaults::TS_IMPULSE = 0x80;
 
 // ------------------------------------------------------------------------------------------------
 // Set default PETSc solver options based on solution field and material.
@@ -137,6 +145,9 @@ pylith::utils::PetscDefaults::set(const pylith::topology::Field& solution,
     if (flags & COLLECTIVE_IO) {
         _PetscOptions::addCollectiveIO(options);
     } // if
+    if (flags & TS_ADAPTIVE) {
+        _PetscOptions::addAdaptiveTimeStepping(options);
+    } // if
 
     options->set();
     delete options;options = NULL;
@@ -144,15 +155,18 @@ pylith::utils::PetscDefaults::set(const pylith::topology::Field& solution,
     PYLITH_METHOD_END;
 } // setDefaults
 
+
 // ------------------------------------------------------------------------------------------------
 // Constructor
 pylith::utils::PetscOptions::PetscOptions(void) {
     GenericComponent::setName("petscoptions");
 } // constructor
 
+
 // ------------------------------------------------------------------------------------------------
 // Destructor
 pylith::utils::PetscOptions::~PetscOptions(void) {}
+
 
 // ------------------------------------------------------------------------------------------------
 // Add PETSc option.
@@ -161,6 +175,7 @@ pylith::utils::PetscOptions::add(const char* name,
                                  const char* value) {
     _options[std::string(name)] = value;
 } // add
+
 
 // ------------------------------------------------------------------------------------------------
 // Remove PETSc option.
@@ -172,12 +187,14 @@ pylith::utils::PetscOptions::remove(const char* name) {
     } // if
 } // remove
 
+
 // ------------------------------------------------------------------------------------------------
 // Clear PETSc options.
 void
 pylith::utils::PetscOptions::clear(void) {
     _options.clear();
 } // clear
+
 
 // ------------------------------------------------------------------------------------------------
 // Set PETSc options.
@@ -212,6 +229,7 @@ pylith::utils::PetscOptions::set(void) {
 
     PYLITH_METHOD_END;
 } // set
+
 
 // ------------------------------------------------------------------------------------------------
 // Set PETSc options, overriding any previously set options with the same name.
@@ -261,6 +279,7 @@ pylith::utils::_PetscOptions::write(pythia::journal::info_t& info,
     PYLITH_METHOD_END;
 } // write
 
+
 // ------------------------------------------------------------------------------------------------
 // Check if simulation is running in parallel.
 bool
@@ -274,12 +293,14 @@ pylith::utils::_PetscOptions::isParallel(const pylith::topology::Field& solution
     PYLITH_METHOD_RETURN(numProcs > 1);
 } // isParallel
 
+
 // ------------------------------------------------------------------------------------------------
 // Check if simulation is has a fault.
 bool
 pylith::utils::_PetscOptions::hasFault(const pylith::topology::Field& solution) {
     return solution.hasSubfield("lagrange_multiplier_fault");
 } // hasFault
+
 
 // ------------------------------------------------------------------------------------------------
 // Add debugging options.
@@ -290,6 +311,7 @@ pylith::utils::_PetscOptions::addTesting(PetscOptions* options) {
     // -checkstack only works with PetscInitialize()
     options->add("-malloc_dump");
 } // setDebugging
+
 
 // ------------------------------------------------------------------------------------------------
 // Add monitoring options.
@@ -309,6 +331,7 @@ pylith::utils::_PetscOptions::addMonitoring(PetscOptions* options) {
 
 } // addMonitoring
 
+
 // ------------------------------------------------------------------------------------------------
 // Add collective I/O options.
 void
@@ -318,6 +341,7 @@ pylith::utils::_PetscOptions::addCollectiveIO(PetscOptions* options) {
     options->add("-viewer_hdf5_collective");
 
 } // addMonitoring
+
 
 // ------------------------------------------------------------------------------------------------
 // Add default solver tolerances to options.
@@ -333,6 +357,7 @@ pylith::utils::_PetscOptions::addSolverTolerances(PetscOptions* options,
     options->add("-snes_atol", "4.0e-7");
 } // addSolverTolerances
 
+
 // ------------------------------------------------------------------------------------------------
 // Add initial guess defaults.
 void
@@ -343,5 +368,24 @@ pylith::utils::_PetscOptions::addInitialGuess(PetscOptions* options) {
     options->add("-ksp_guess_pod_size", "8");
 
 } // addInitialGuess
+
+
+// ------------------------------------------------------------------------------------------------
+// Add adaptive time stepping defaults.
+void
+pylith::utils::_PetscOptions::addAdaptiveTimeStepping(PetscOptions* options) {
+    assert(options);
+
+    options->add("-ts_adapt_type", "basic");
+    options->add("-ts_adapt_safety", "0.2");
+    options->add("-ts_adapt_reject_safety", "0.1");
+    options->add("-ts_atol", "0.05");
+    options->add("-ts_rtol", "0.05");
+
+    options->add("-ts_adapt_monitor", "true");
+
+
+} // addAdaaptiveTimeStepping
+
 
 // End of file

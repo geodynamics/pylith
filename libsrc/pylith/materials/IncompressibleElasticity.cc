@@ -236,6 +236,7 @@ pylith::materials::IncompressibleElasticity::getSolverDefaults(const bool isPara
     switch (_formulation) {
     case pylith::problems::Physics::QUASISTATIC:
         options->add("-ts_type", "beuler");
+        options->add("-ts_exact_final_time", "matchstep");
 
         if (!hasFault) {
             options->add("-pc_type", "fieldsplit");
