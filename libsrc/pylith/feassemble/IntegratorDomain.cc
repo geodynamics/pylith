@@ -259,14 +259,6 @@ pylith::feassemble::IntegratorDomain::initialize(const pylith::topology::Field& 
     Integrator::initialize(solution);
 
     assert(_auxiliaryField);
-    PetscErrorCode err;
-    PetscDM dmSoln = solution.getDM();assert(dmSoln);
-    PetscDMLabel dmLabel = NULL;
-    err = DMGetLabel(dmSoln, _labelName.c_str(), &dmLabel);PYLITH_CHECK_ERROR(err);assert(dmLabel);
-    err = DMSetAuxiliaryVec(dmSoln, dmLabel, _labelValue, LHS, _auxiliaryField->getLocalVector());PYLITH_CHECK_ERROR(err);
-    err = DMSetAuxiliaryVec(dmSoln, dmLabel, _labelValue, RHS, _auxiliaryField->getLocalVector());PYLITH_CHECK_ERROR(err);
-    err = DMSetAuxiliaryVec(dmSoln, dmLabel, _labelValue, LHS_LUMPED_INV, _auxiliaryField->getLocalVector());PYLITH_CHECK_ERROR(err);
-
     if (_kernelsUpdateStateVars.size() > 0) {
         delete _updateState;_updateState = new pylith::feassemble::UpdateStateVars;assert(_updateState);
         _updateState->initialize(*_auxiliaryField);
@@ -419,6 +411,7 @@ pylith::feassemble::IntegratorDomain::computeRHSResidual(pylith::topology::Field
     assert(solution->getLocalVector());
     assert(residual->getLocalVector());
     PetscVec solutionDotVec = NULL;
+    err = DMSetAuxiliaryVec(_dsLabel->dm(), key.label, key.value, key.part, _auxiliaryField->getLocalVector());PYLITH_CHECK_ERROR(err);
     err = DMPlexComputeResidualByKey(_dsLabel->dm(), key, _dsLabel->pointsIS(), PETSC_MIN_REAL, solution->getLocalVector(),
                                      solutionDotVec, t, residual->getLocalVector(), NULL);PYLITH_CHECK_ERROR(err);
 
@@ -456,6 +449,7 @@ pylith::feassemble::IntegratorDomain::computeLHSResidual(pylith::topology::Field
     assert(solution->getLocalVector());
     assert(solutionDot->getLocalVector());
     assert(residual->getLocalVector());
+    err = DMSetAuxiliaryVec(_dsLabel->dm(), key.label, key.value, key.part, _auxiliaryField->getLocalVector());PYLITH_CHECK_ERROR(err);
     err = DMPlexComputeResidualByKey(_dsLabel->dm(), key, _dsLabel->pointsIS(), PETSC_MIN_REAL, solution->getLocalVector(),
                                      solutionDot->getLocalVector(), t, residual->getLocalVector(), NULL);PYLITH_CHECK_ERROR(err);
 
@@ -497,6 +491,7 @@ pylith::feassemble::IntegratorDomain::computeLHSJacobian(PetscMat jacobianMat,
     assert(solutionDot->getLocalVector());
     assert(jacobianMat);
     assert(precondMat);
+    err = DMSetAuxiliaryVec(_dsLabel->dm(), key.label, key.value, key.part, _auxiliaryField->getLocalVector());PYLITH_CHECK_ERROR(err);
     err = DMPlexComputeJacobianByKey(_dsLabel->dm(), key, _dsLabel->pointsIS(), t, s_tshift, solution->getLocalVector(),
                                      solutionDot->getLocalVector(), jacobianMat, precondMat, NULL);PYLITH_CHECK_ERROR(err);
 
@@ -548,6 +543,7 @@ pylith::feassemble::IntegratorDomain::computeLHSJacobianLumpedInv(pylith::topolo
 
     assert(jacobianInv);
     assert(jacobianInv->getLocalVector());
+    err = DMSetAuxiliaryVec(_dsLabel->dm(), key.label, key.value, key.part, _auxiliaryField->getLocalVector());PYLITH_CHECK_ERROR(err);
     err = DMPlexComputeJacobianActionByKey(_dsLabel->dm(), key, _dsLabel->pointsIS(), t, s_tshift, vecRowSum, NULL,
                                            vecRowSum, jacobianInv->getLocalVector(), NULL);PYLITH_CHECK_ERROR(err);
 
