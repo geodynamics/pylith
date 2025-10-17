@@ -172,16 +172,9 @@ pylith::feassemble::IntegratorBoundary::initialize(const pylith::topology::Field
 
     Integrator::initialize(solution);
 
-    assert(_auxiliaryField);
-    PetscErrorCode err;
-    PetscDM dmSoln = solution.getDM();assert(dmSoln);
-    PetscDMLabel dmLabel = NULL;
-    err = DMGetLabel(dmSoln, _labelName.c_str(), &dmLabel);PYLITH_CHECK_ERROR(err);assert(dmLabel);
-    err = DMSetAuxiliaryVec(dmSoln, dmLabel, _labelValue, LHS, _auxiliaryField->getLocalVector());PYLITH_CHECK_ERROR(err);
-    err = DMSetAuxiliaryVec(dmSoln, dmLabel, _labelValue, RHS, _auxiliaryField->getLocalVector());PYLITH_CHECK_ERROR(err);
-
     pythia::journal::debug_t debug(GenericComponent::getName());
     if (debug.state()) {
+        assert(_auxiliaryField);
         PYLITH_JOURNAL_DEBUG("Viewing auxiliary field.");
         _auxiliaryField->view("Auxiliary field");
     } // if
@@ -245,6 +238,7 @@ pylith::feassemble::IntegratorBoundary::computeRHSResidual(pylith::topology::Fie
     assert(residual->getLocalVector());
     PetscVec solutionDotVec = NULL;
     err = DMGetCoordinateField(_dsLabel->dm(), &coordField);PYLITH_CHECK_ERROR(err);
+    err = DMSetAuxiliaryVec(_dsLabel->dm(), key.label, key.value, key.part, _auxiliaryField->getLocalVector());PYLITH_CHECK_ERROR(err);
     err = DMPlexComputeBdResidualSingleByKey(_dsLabel->dm(), _dsLabel->weakForm(), key, _dsLabel->pointsIS(), solution->getLocalVector(),
                                              solutionDotVec, t, coordField, residual->getLocalVector());PYLITH_CHECK_ERROR(err);
 
@@ -283,6 +277,7 @@ pylith::feassemble::IntegratorBoundary::computeLHSResidual(pylith::topology::Fie
     assert(solution->getLocalVector());
     assert(residual->getLocalVector());
     err = DMGetCoordinateField(_dsLabel->dm(), &coordField);PYLITH_CHECK_ERROR(err);
+    err = DMSetAuxiliaryVec(_dsLabel->dm(), key.label, key.value, key.part, _auxiliaryField->getLocalVector());PYLITH_CHECK_ERROR(err);
     err = DMPlexComputeBdResidualSingleByKey(_dsLabel->dm(), _dsLabel->weakForm(), key, _dsLabel->pointsIS(), solution->getLocalVector(),
                                              solutionDot->getLocalVector(), t, coordField, residual->getLocalVector());PYLITH_CHECK_ERROR(err);
 
@@ -352,7 +347,9 @@ pylith::feassemble::IntegratorBoundary::_computeDiagnosticField(void) {
     PetscDM diagnosticDM = _diagnosticField->getDM();
     PetscDMLabel diagnosticFieldLabel = NULL;
     const PetscInt labelValue = 1;
+    const PetscInt part = 0;
     err = DMGetLabel(diagnosticDM, "output", &diagnosticFieldLabel);PYLITH_CHECK_ERROR(err);
+    err = DMSetAuxiliaryVec(diagnosticDM, diagnosticFieldLabel, labelValue, part, _auxiliaryField->getLocalVector());PYLITH_CHECK_ERROR(err);
     err = DMProjectBdFieldLabelLocal(diagnosticDM, t, diagnosticFieldLabel, 1, &labelValue, PETSC_DETERMINE, NULL, _auxiliaryField->getLocalVector(), kernelsArray, INSERT_VALUES, _diagnosticField->getLocalVector());PYLITH_CHECK_ERROR(err);
     delete[] kernelsArray;kernelsArray = NULL;
 
