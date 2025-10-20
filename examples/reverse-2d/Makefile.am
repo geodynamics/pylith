@@ -10,7 +10,8 @@
 
 dist_noinst_PYTHON = \
 	generate_gmsh.py \
-	generate_cubit.py
+	generate_cubit.py \
+	plot_compare.py
 
 
 dist_noinst_DATA = \
@@ -32,7 +33,9 @@ dist_noinst_DATA = \
 	step05c_onefault.cfg \
 	step06_twofaults_elastic.cfg \
 	step07_twofaults_maxwell.cfg \
+	step07b_twofaults_maxwell.cfg \
 	step08_twofaults_powerlaw.cfg \
+	step08b_twofaults_powerlaw.cfg \
 	mat_elastic_incompressible.spatialdb \
 	mat_elastic.spatialdb \
 	mat_gravity_refstate.spatialdb \

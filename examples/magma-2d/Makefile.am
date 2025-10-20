@@ -10,7 +10,8 @@
 
 dist_noinst_PYTHON = \
     generate_gmsh.py \
-    generate_cubit.py
+    generate_cubit.py \
+    plot_compare.py
 
 dist_noinst_DATA = \
 	README.md \
@@ -19,4 +20,5 @@ dist_noinst_DATA = \
     mesh_quad.exo \
     pylithapp.cfg \
     step01_inflation.cfg \
+    step01b_inflation.cfg \
     step02_inflation_statevars.cfg
