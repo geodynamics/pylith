@@ -315,6 +315,7 @@ dist_noinst_DATA = \
 	user/examples/magma-2d/meshing-gmsh.md \
 	user/examples/magma-2d/meshing-cubit.md \
 	user/examples/magma-2d/step01-inflation.md \
+	user/examples/magma-2d/step01b-inflation.md \
 	user/examples/magma-2d/step01_inflation-synopsis.md \
 	user/examples/magma-2d/step02-inflation-statevars.md \
 	user/examples/magma-2d/step02_inflation_statevars-synopsis.md \
@@ -333,6 +334,8 @@ dist_noinst_DATA = \
 	user/examples/magma-2d/figs/step01-diagram.svg \
 	user/examples/magma-2d/figs/step01-solution.jpg \
 	user/examples/magma-2d/figs/step02-solution.jpg \
+	user/examples/magma-2d/figs/step01-compare.jpg \
+	user/examples/magma-2d/figs/step02-compare.jpg \
 	user/examples/poroelastic-outerrise-2d/index.md \
 	user/examples/poroelastic-outerrise-2d/meshing-gmsh.md \
 	user/examples/poroelastic-outerrise-2d/common-information.md \
@@ -422,7 +425,11 @@ dist_noinst_DATA = \
 	user/examples/reverse-2d/figs/step06-diagram.svg \
 	user/examples/reverse-2d/figs/step06-solution.jpg \
 	user/examples/reverse-2d/figs/step07-solution.jpg \
+	user/examples/reverse-2d/figs/step07-compare.pdf \
+	user/examples/reverse-2d/figs/step07-compare.svg \
 	user/examples/reverse-2d/figs/step08-solution.jpg \
+	user/examples/reverse-2d/figs/step08-compare.pdf \
+	user/examples/reverse-2d/figs/step08-compare.svg \
 	user/examples/strikeslip-2d/index.md \
 	user/examples/strikeslip-2d/common-information.md \
 	user/examples/strikeslip-2d/exercises.md \
