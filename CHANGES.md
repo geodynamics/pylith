@@ -8,6 +8,14 @@ The version numbers are in the form `MAJOR.MINOR.PATCH`, where major releases in
 ## Version 5.0.0
 
 * **Changed**
+  * Update the nondimensionalization code, moving it from SpatialData to PyLith.
+    * Rename Nondimensional to Scales.
+    * Add displacement scale and improve the names of the other scales.
+    * The time scale for poroelasticity is derived from the other scales and nominal material properties.
+    * Add discussion of nondimensionalization for each of the governing equations.
+    * Update default solver tolerances consistent with new nondimensionalization scales.
+  * Add option to use adaptive time stepping and update examples `reverse-2d` Steps 7 and 8 and `magma-2d` Step 1 to demonstrate its use.
+  * Update solver settings for elasticity for better scalability with problem size.
   * ASCII mesh format
     * Changed `group` to `vertex-group`; remove `group` `type`.
   * Renamed `VertexGroup` to `BoundaryGroup` in `meshio.gmsh_utils` and changed default behavior to not be recursive (generate "face" groups, not "vertex" groups).
