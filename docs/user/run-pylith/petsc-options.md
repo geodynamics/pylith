@@ -20,6 +20,7 @@ We separate the defaults into a few categories to make it easy to select desired
 
 :monitors: Options for basic monitoring of the solver;
 :initial_guess: Options for improving initial guesses at each time step;
+:adaptive_time_stepping: Options for adaptive time stepping
 :collective_io: Options for collective input/output; and
 :testing: Options used in testing.
 :solver: Options for the preconditioner and solver;
@@ -89,6 +90,30 @@ caption: Default PETSc options for initial guesses of the solution. These settin
 [pylithapp.petsc]
 ksp_guess_type = pod
 ksp_guess_pod_size = 8
+```
+
+### Adaptive Time-Stepping Options
+
+*New in v5.0.0.*
+
+Adaptive time stepping (not enabled by default) adjusts the time step based upon the rate of deformation.
+We use the [`basic` PETSc adaptive time-stepping algorithm](https://petsc.org/release/manual/ts/#tab-adaptors).
+Tolerances (`ts_atol` and `ts_rtol`) of around 0.05 work reasonably well in many simulations with viscoelasticity or poroelasticity.
+Increasing the tolerances leds to relatively larger time steps and smaller tolerances lead to small time steps.
+The PETSc documentation provides more details about how the time steps are selected.
+
+```{code-block} cfg
+---
+caption: Default PETSc options for adaptive time stepping. These settings are also in `share/settings/petsc_tsadaptive.cfg]`.
+---
+[pylithapp.petsc]
+ts_adapt_type = basic
+ts_adapt_safety = 0.2
+ts_adapt_reject_safety = 0.1
+ts_atol = 0.05
+ts_rtol = 0.05
+
+ts_adapt_monitor = true
 ```
 
 ### Collective I/O Options

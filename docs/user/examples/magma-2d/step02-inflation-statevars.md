@@ -121,7 +121,7 @@ fieldsplit_pressure_t_pc_type = bjacobi
 fieldsplit_trace_strain_pc_type = bjacobi
 fieldsplit_trace_strain_t_pc_type = bjacobi
 fieldsplit_velocity_pc_type = bjacobi
-ksp_atol = 1.0e-12
+ksp_atol = 1.0e-7
 ksp_converged_reason = true
 ksp_error_if_not_converged = true
 ksp_guess_pod_size = 8
@@ -135,32 +135,34 @@ pc_fieldsplit_4_fields = 4
 pc_fieldsplit_5_fields = 5
 pc_fieldsplit_type = multiplicative
 pc_type = fieldsplit
-snes_atol = 1.0e-9
+snes_atol = 4.0e-7
 snes_converged_reason = true
 snes_error_if_not_converged = true
 snes_monitor = true
 snes_rtol = 1.0e-12
 ts_error_if_step_fails = true
+ts_exact_final_time = matchstep
 ts_monitor = true
 ts_type = beuler
+viewer_hdf5_collective = true
 
  >> /software/unix/py3.12-venv/pylith-opt/lib/python3.12/site-packages/pylith/problems/TimeDependent.py:132:run
  -- timedependent(info)
  -- Solving problem.
-0 TS dt 1. time -1.
-    0 SNES Function norm 7.521665654021e-01
-    Linear solve converged due to CONVERGED_RTOL iterations 42
-    1 SNES Function norm 1.098354113346e-10
-  Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
+0 TS dt 0.151476 time -0.151476
+    0 SNES Function norm 1.991683367474e+00
+      Linear solve converged due to CONVERGED_ATOL iterations 170
+    1 SNES Function norm 4.616670468595e-09
+    Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
 
 # -- many lines omitted --
 
-50 TS dt 1. time 49.
-    0 SNES Function norm 1.583815770737e-01
-    Linear solve converged due to CONVERGED_ATOL iterations 11
-    1 SNES Function norm 1.554020039416e-11
-  Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
-51 TS dt 1. time 50.
+50 TS dt 0.151476 time 7.42235
+    0 SNES Function norm 1.243383877105e-02
+      Linear solve converged due to CONVERGED_ATOL iterations 81
+    1 SNES Function norm 6.572705836167e-09
+    Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
+51 TS dt 0.151476 time 7.57382
  >> /software/unix/py3.12-venv/pylith-opt/lib/python3.12/site-packages/pylith/problems/Problem.py:199:finalize
  -- timedependent(info)
  -- Finalizing problem.

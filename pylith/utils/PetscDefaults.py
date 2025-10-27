@@ -24,6 +24,7 @@ class PetscDefaults(Component):
             parallel = False
             monitors = True
             initial_guess = True
+            adaptive_time_stepping = False
             collective_io = True
             testing = False
         """
@@ -49,8 +50,11 @@ class PetscDefaults(Component):
     testing = pythia.pyre.inventory.bool("testing", default=False)
     testing.meta["tip"] = "Use default PETSc testing options."
 
-    impulse_ts = pythia.pyre.inventory.bool("impulse_ts", default=False)
-    impulse_ts.meta["tip"] = "Use custom PETSc TS for impulses."
+    adaptiveTS = pythia.pyre.inventory.bool("adaptive_time_stepping", default=False)
+    adaptiveTS.meta["tip"] = "Use adaptive time stepping."
+
+    impulseTS = pythia.pyre.inventory.bool("impulse_ts", default=False)
+    impulseTS.meta["tip"] = "Use custom PETSc TS for impulses."
 
     def __init__(self, name="petscdefaults"):
         """Constructor."""
@@ -72,8 +76,10 @@ class PetscDefaults(Component):
             value |= ModuleDefaults.COLLECTIVE_IO
         if self.testing:
             value |= ModuleDefaults.TESTING
-        if self.impulse_ts:
-            value |= ModuleDefaults.TS_ADAPT
+        if self.adaptiveTS:
+            value |= ModuleDefaults.TS_ADAPTIVE
+        if self.impulseTS:
+            value |= ModuleDefaults.TS_IMPULSE
         return value
 
 

@@ -86,45 +86,48 @@ $ pylith step03_gravity_incompressible.cfg
  >> /src/cig/pylith/libsrc/pylith/utils/PetscOptions.cc:235:static void pylith::utils::_PetscOptions::write(pythia::journal::info_t &, const char *, const pylith::utils::PetscOptions &)
  -- petscoptions(info)
  -- Setting PETSc options:
-ksp_atol = 1.0e-12
+fieldsplit_displacement_pc_type = lu
+fieldsplit_pressure_pc_type = lu
+ksp_atol = 1.0e-7
 ksp_converged_reason = true
 ksp_error_if_not_converged = true
+ksp_guess_pod_size = 8
+ksp_guess_type = pod
 ksp_rtol = 1.0e-12
 pc_fieldsplit_schur_factorization_type = full
-snes_atol = 1.0e-9
+pc_fieldsplit_schur_precondition = full
+pc_fieldsplit_type = schur
+pc_type = fieldsplit
+snes_atol = 4.0e-7
 snes_converged_reason = true
 snes_error_if_not_converged = true
 snes_monitor = true
 snes_rtol = 1.0e-12
 ts_error_if_step_fails = true
+ts_exact_final_time = matchstep
 ts_monitor = true
 ts_type = beuler
-
- >> /src/cig/pylith/libsrc/pylith/utils/PetscOptions.cc:235:static void pylith::utils::_PetscOptions::write(pythia::journal::info_t &, const char *, const pylith::utils::PetscOptions &)
- -- petscoptions(info)
- -- Ignoring PETSc options (already set):
-fieldsplit_displacement_pc_type = lu
-fieldsplit_pressure_pc_type = lu
-pc_fieldsplit_schur_precondition = full
-pc_fieldsplit_type = schur
-pc_type = fieldsplit
+viewer_hdf5_collective = true
 
  >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/meshio/MeshIOObj.py:44:read
  -- timedependent(info)
  -- Solving problem.
-0 TS dt 0.01 time 0.
-    0 SNES Function norm 4.866941773461e-01 
-    Linear solve converged due to CONVERGED_ATOL iterations 1
-    1 SNES Function norm 3.099989574301e-13 
-  Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
-1 TS dt 0.01 time 0.01
- >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:201:finalize
+0 TS dt 0.001 time 0.
+    0 SNES Function norm 3.007829881319e+03
+      Linear solve converged due to CONVERGED_ATOL iterations 1
+    1 SNES Function norm 3.205440629187e-10
+    Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
+ >> /src/cig/pylith/libsrc/pylith/topology/MeshOps.cc:233:static pylith::topology::Mesh *pylith::topology::MeshOps::createLowerDimMesh(const pylith::topology::Mesh &, const char *, const int, const char *)
+ -- deprecated(warning)
+ -- DEPRECATION: Creating lower dimension mesh from label with vertices. This feature will be removed in v6.0. In the future, you will need to mark boundaries not vertices for boundary conditions.
+1 TS dt 0.001 time 0.001
+ >> /software/unix/py39-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:232:finalize
  -- timedependent(info)
  -- Finalizing problem.
 ```
 
 PyLith detected use of incompressible elasticity, so it selected a field split preconditioner with an LU preconditioner for each of the solution subfields as described in {ref}`sec-user-run-pylith-petsc-options`.
-As a result, the linear solve converged in 1 iterations.
+As a result, the linear solve converged in 1 iteration.
 
 ## Visualizing the results
 

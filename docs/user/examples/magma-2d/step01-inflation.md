@@ -154,10 +154,10 @@ $ pylith step01_inflation.cfg
  >> /home/pylith-user/software/unix/py312-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:219:_printInfo
  -- timedependent(info)
  -- Scales for nondimensionalization:
-    Length scale: 120*m
-    Time scale: 6.31152e+06*s
-    Pressure scale: 1e+12*m**-1*kg*s**-2
-    Density scale: 3.98353e+19*m**-3*kg
+    Length scale: 5000*m
+    Displacement scale: 10*m
+    Time scale: 4.16667e+07*s
+    Rigidity scale: 6e+09*m**-1*kg*s**-2
     Temperature scale: 1*K
  >> /home/pylith-user/software/unix/py312-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:185:initialize
  -- timedependent(info)
@@ -166,9 +166,9 @@ $ pylith step01_inflation.cfg
  -- petscoptions(info)
  -- Setting PETSc options:
 fieldsplit_displacement_pc_type = lu
-fieldsplit_pressure_pc_type = ilu
-fieldsplit_trace_strain_pc_type = ilu
-ksp_atol = 1.0e-12
+fieldsplit_pressure_pc_type = bjacobi
+fieldsplit_trace_strain_pc_type = bjacobi
+ksp_atol = 1.0e-7
 ksp_converged_reason = true
 ksp_error_if_not_converged = true
 ksp_guess_pod_size = 8
@@ -179,32 +179,34 @@ pc_fieldsplit_1_fields = 1
 pc_fieldsplit_2_fields = 0
 pc_fieldsplit_type = multiplicative
 pc_type = fieldsplit
-snes_atol = 1.0e-9
+snes_atol = 4.0e-7
 snes_converged_reason = true
 snes_error_if_not_converged = true
 snes_monitor = true
 snes_rtol = 1.0e-12
 ts_error_if_step_fails = true
+ts_exact_final_time = matchstep
 ts_monitor = true
 ts_type = beuler
+viewer_hdf5_collective = true
 
  >> /home/pylith-user/software/unix/py312-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/TimeDependent.py:132:run
  -- timedependent(info)
  -- Solving problem.
-0 TS dt 1. time -1.
-    0 SNES Function norm 7.519828144445e-01
-    Linear solve converged due to CONVERGED_ATOL iterations 35
-    1 SNES Function norm 3.553087718548e-11
-  Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
+0 TS dt 0.151476 time -0.151476
+    0 SNES Function norm 1.961889362180e+00
+      Linear solve converged due to CONVERGED_ATOL iterations 127
+    1 SNES Function norm 3.529659939627e-08
+    Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
 
 # -- many lines omitted --
 
-50 TS dt 1. time 49.
-    0 SNES Function norm 3.049429648347e-03
-    Linear solve converged due to CONVERGED_ATOL iterations 5
-    1 SNES Function norm 4.921699643384e-11
-  Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
-51 TS dt 1. time 50.
+50 TS dt 0.151476 time 7.42235
+    0 SNES Function norm 1.887192789745e-03
+      Linear solve converged due to CONVERGED_ATOL iterations 46
+    1 SNES Function norm 3.325985182932e-08
+    Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
+51 TS dt 0.151476 time 7.57382
  >> /home/pylith-user/software/unix/py312-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:199:finalize
  -- timedependent(info)
  -- Finalizing problem.
@@ -215,7 +217,7 @@ The scales for nondimensionalization .
 PyLith detects the use of poroelasticity without a fault and selects appropriate preconditioning options as discussed in {ref}`sec-user-run-pylith-petsc-options`.
 
 At the end of the output written to the terminal, we see that the solver advanced the solution 51 time steps.
-At each time step, the linear converges in about 35 or less iteration and the norm of the residual met the absolute convergence tolerance (`ksp_atol`) .
+The linear solver converges in about 50 or less iteration at most time steps and the norm of the residual met the absolute convergence tolerance (`ksp_atol`) .
 The nonlinear solve converged in 1 iteration, which we expect because this is a linear problem, and the residual met the absolute convergence tolerance (`snes_atol`).
 
 ## Visualizing the results
@@ -235,4 +237,64 @@ pylith_viz --filenames=output/step01_inflation-domain.h5 warp_grid --field=press
 
 Solution for Step 1 at t=100 yr.
 The colors of the shaded surface indicate the fluid pressure, and the deformation is exaggerated by a factor of 1000.
+:::
+
+## Step 1b: Adaptive Time Stepping
+
+In Step 1b we demonstrate the use adaptive time stepping.
+We start with an initial time step of 0.2 years and let the adaptive time stepping algorithm increase the time step as the rate of deformation decreases.
+We dcrease the tolerances slightly (the default tolerances are 0.05) for better agreement with the solution from uniform time stepping.
+
+```{code-block} cfg
+---
+caption: Adaptive time stepping parameters for Step 1b.
+---
+[pylithapp.timedependent]
+start_time = -0.2*year
+initial_dt = 0.2*year
+end_time = 10.0*year
+
+petsc_defaults.adaptive_time_stepping = True
+
+[pylithapp.petsc]
+ts_atol = 0.02
+ts_rtol = 0.02
+```
+
+```{code-block} console
+---
+caption: Run Step 1b simulation
+---
+$ pylith step01_inflation.cfg step01b_inflation.cfg
+
+# The output should look something like the following.
+# -- many lines omitted --
+
+18 TS dt 0.706729 time 6.8671
+    0 SNES Function norm 1.978353923571e-03
+      Linear solve converged due to CONVERGED_ATOL iterations 89
+    1 SNES Function norm 1.607058574037e-08
+    Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
+      TSAdapt basic beuler 0: step  18 accepted t=6.8671     + 7.067e-01 dt=1.325e+00  wlte=0.0114  wltea=   -1 wlter=   -1
+19 TS dt 1.32454 time 7.57382
+ >> /Users/brad/software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:232:finalize
+ -- timedependent(info)
+ -- Finalizing problem.
+```
+
+The afaptive time stepping algorithm shortens a few of the early time steps but then lengthens the time step as the rate of deforation decreases.
+We end up with 19 time steps with adaptive time stepping compared to 51 with uniform time steps.
+
+```{code-block} console
+---
+caption: Compare the results from Step 1 ad 1b using the `plot_compare.py` Python script.
+---
+./plot_compare.py
+```
+
+:::{figure-md} fig:example:magma:2d:step01b:solution
+<img src="figs/step01-compare.*" alt="Vertical displacement and fluid pressure time histories for Step 1 and 1b." width="600px"/>
+
+Vertical displacement and fluid pressure time histories for Step 1 and 1b at locations with the largest changes.
+We find very little difference between the solutions from uniform time stepping (52 time steps) and adaptive time stepping (20 time steps).
 :::

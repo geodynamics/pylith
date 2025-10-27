@@ -135,12 +135,12 @@ $ pylith step04_varslip.cfg
  >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/TimeDependent.py:132:run
  -- timedependent(info)
  -- Solving problem.
-0 TS dt 0.01 time 0.
-    0 SNES Function norm 5.220560316093e-03
-      Linear solve converged due to CONVERGED_ATOL iterations 27
-    1 SNES Function norm 1.523809186100e-12
+0 TS dt 0.001 time 0.
+    0 SNES Function norm 5.134717810501e-02
+      Linear solve converged due to CONVERGED_ATOL iterations 18
+    1 SNES Function norm 7.095489308325e-09
     Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
-1 TS dt 0.01 time 0.01
+1 TS dt 0.001 time 0.001
  >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:199:finalize
  -- timedependent(info)
  -- Finalizing problem.

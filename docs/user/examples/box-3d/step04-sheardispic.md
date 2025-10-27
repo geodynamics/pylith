@@ -54,17 +54,18 @@ $ pylith step04_sheardispic.cfg
  >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/TimeDependent.py:139:run
  -- timedependent(info)
  -- Solving problem.
-0 TS dt 0.01 time 0.
-    0 SNES Function norm 1.164184944610e-17 
-  Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 0
-1 TS dt 0.01 time 0.01
+0 TS dt 0.001 time 0.
+    0 SNES Function norm 2.323383610201e-16
+    Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 0
+1 TS dt 0.001 time 0.001
  >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:201:finalize
  -- timedependent(info)
  -- Finalizing problem.
 WARNING! There are options you set that were not used!
 WARNING! could be spelling mistake, etc!
-There is one unused database option. It is:
-Option left: name:-ksp_converged_reason (no value)
+There are 2 unused database options. They are:
+Option left: name:-mg_fine_ksp_max_it value: 5 source: code
+Option left: name:-mg_levels_pc_type value: pbjacobi source: code
 ```
 
 By design we set the initial condition so that it satisfies the elasticity equation.

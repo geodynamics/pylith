@@ -304,6 +304,7 @@ pylith::materials::Elasticity::getSolverDefaults(const bool isParallel,
     switch (_formulation) {
     case pylith::problems::Physics::QUASISTATIC:
         options->add("-ts_type", "beuler");
+        options->add("-ts_exact_final_time", "matchstep");
 
         options->add("-pc_type", "gamg");
         options->add("-pc_gamg_coarse_eq_limit", "200");

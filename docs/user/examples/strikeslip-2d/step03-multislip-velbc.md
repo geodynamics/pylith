@@ -64,10 +64,10 @@ $ pylith step03_multislip_velbc.cfg
 # -- many lines omitted --
 
 25 TS dt 0.1 time 2.4
-    0 SNES Function norm 1.078084164657e-03
-    Linear solve converged due to CONVERGED_ATOL iterations 3
-    1 SNES Function norm 1.269009043820e-12
-  Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
+    0 SNES Function norm 3.175726348635e+00
+      Linear solve converged due to CONVERGED_ATOL iterations 0
+    1 SNES Function norm 1.889182885363e-09
+    Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
 26 TS dt 0.1 time 2.5
  >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:199:finalize
  -- timedependent(info)

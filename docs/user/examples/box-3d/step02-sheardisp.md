@@ -67,15 +67,19 @@ $ pylith step02_sheardisp.cfg
  >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/TimeDependent.py:139:run
  -- timedependent(info)
  -- Solving problem.
-0 TS dt 0.01 time 0.
-    0 SNES Function norm 1.811215061775e-02 
-    Linear solve converged due to CONVERGED_ATOL iterations 1
-    1 SNES Function norm 2.330640615892e-17 
-  Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
-1 TS dt 0.01 time 0.01
+0 TS dt 0.001 time 0.
+    0 SNES Function norm 5.433645185324e-01
+      Linear solve converged due to CONVERGED_ATOL iterations 4
+    1 SNES Function norm 4.280274905934e-09
+    Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
+1 TS dt 0.001 time 0.001
  >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:201:finalize
  -- timedependent(info)
  -- Finalizing problem.
+WARNING! There are options you set that were not used!
+WARNING! could be spelling mistake, etc!
+There is one unused database option. It is:
+Option left: name:-mg_levels_pc_type value: pbjacobi source: code
 ```
 
 The output written to the terminal is nearly identical to what we saw for Step 1.

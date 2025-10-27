@@ -732,7 +732,7 @@ private:
         const size_t maxIterations = 50;
 
         // Arbitrary factor by which to increase the brackets.
-        const PylithReal bracketFactor = 2;
+        const PylithReal bracketFactor = 1.5;
         // Minimum allowed value for effective stress.
         const PylithReal xMin = 0.0;
         PylithReal x1 = *px1;
@@ -787,8 +787,8 @@ private:
                        const PylithReal powerLawRefStress) {
         const size_t maxIterations = 100;
 
-        // Desired accuracy for root. This is a bit arbitrary for now.
-        const PylithReal accuracy = 1.0e-16;
+        // Desired accuracy for root.
+        const PylithReal accuracy = 1.0e-8;
 
         // Organize search so that _effectiveStressFn(xLow) is less than zero.
         PylithReal funcValueLow = _effectiveStressFn(x1, ae, b, c, d, dt, j2T, powerLawExponent, powerLawRefStrainRate, powerLawRefStress);
@@ -1846,9 +1846,9 @@ public:
         _elasticConstants(&elasticityMat, rheologyContext, devStressTpdt, j2T, j2Tpdt);
 
         /* Nonzero Jacobian entries. */
-        Jf3[ 0] -= elasticityMat.C1111;  /* j0000 */
-        Jf3[ 4] -= elasticityMat.C1212;  /* j0011 */
-        Jf3[ 8] -= elasticityMat.C1313;  /* j0022 */
+        Jf3[ 0] -= elasticityMat.C1111; /* j0000 */
+        Jf3[ 4] -= elasticityMat.C1212; /* j0011 */
+        Jf3[ 8] -= elasticityMat.C1313; /* j0022 */
         Jf3[10] -= elasticityMat.C1122; /* j0101 */
         Jf3[12] -= elasticityMat.C1212; /* j0110 */
         Jf3[20] -= elasticityMat.C1122; /* j0202 */
@@ -1925,9 +1925,9 @@ public:
         _elasticConstants(&elasticityMat, rheologyContext, devStressTpdt, j2T, j2Tpdt);
 
         /* Nonzero Jacobian entries. */
-        Jf3[ 0] -= elasticityMat.C1111;  /* j0000 */
-        Jf3[ 4] -= elasticityMat.C1212;  /* j0011 */
-        Jf3[ 8] -= elasticityMat.C1313;  /* j0022 */
+        Jf3[ 0] -= elasticityMat.C1111; /* j0000 */
+        Jf3[ 4] -= elasticityMat.C1212; /* j0011 */
+        Jf3[ 8] -= elasticityMat.C1313; /* j0022 */
         Jf3[10] -= elasticityMat.C1122; /* j0101 */
         Jf3[12] -= elasticityMat.C1212; /* j0110 */
         Jf3[20] -= elasticityMat.C1122; /* j0202 */

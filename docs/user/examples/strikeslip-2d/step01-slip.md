@@ -100,35 +100,44 @@ $ pylith step01a_slip.cfg
  -- Setting PETSc options:
 dm_reorder_section = true
 dm_reorder_section_type = cohesive
-ksp_atol = 1.0e-12
+ksp_atol = 1.0e-7
 ksp_converged_reason = true
 ksp_error_if_not_converged = true
 ksp_guess_pod_size = 8
 ksp_guess_type = pod
 ksp_rtol = 1.0e-12
+mg_fine_ksp_max_it = 5
 mg_fine_pc_type = vpbjacobi
+mg_levels_pc_type = pbjacobi
+pc_gamg_coarse_eq_limit = 200
 pc_type = gamg
-snes_atol = 1.0e-9
+snes_atol = 4.0e-7
 snes_converged_reason = true
 snes_error_if_not_converged = true
 snes_monitor = true
 snes_rtol = 1.0e-12
 ts_error_if_step_fails = true
+ts_exact_final_time = matchstep
 ts_monitor = true
 ts_type = beuler
+viewer_hdf5_collective = true
 
  >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/TimeDependent.py:132:run
  -- timedependent(info)
  -- Solving problem.
-0 TS dt 0.01 time 0.
-    0 SNES Function norm 4.895713226482e-02
-    Linear solve converged due to CONVERGED_ATOL iterations 21
-    1 SNES Function norm 1.702759841984e-12
-  Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
-1 TS dt 0.01 time 0.01
+0 TS dt 0.001 time 0.
+    0 SNES Function norm 6.787703392741e-01
+      Linear solve converged due to CONVERGED_ATOL iterations 10
+    1 SNES Function norm 4.614413493180e-09
+    Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
+1 TS dt 0.001 time 0.001
  >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:199:finalize
  -- timedependent(info)
  -- Finalizing problem.
+WARNING! There are options you set that were not used!
+WARNING! could be spelling mistake, etc!
+There is one unused database option. It is:
+Option left: name:-mg_levels_pc_type value: pbjacobi source: code
 ```
 
 At the beginning of the output written to the terminal, we see that PyLith is reading the mesh using the `MeshIOPetsc` reader and that it found the domain to extend from -50,000 m to +50,000 m in the x direction and from -75,000 m to +75,000 m in the y direction.
@@ -136,7 +145,7 @@ The scales for nondimensionalization remain the default values for a quasistatic
 PyLith detects the presence of a fault based on the Lagrange multiplier for the fault in the solution field and selects appropriate preconditioning options as discussed in {ref}`sec-user-run-pylith-petsc-options`.
 
 At the end of the output written to the terminal, we see that the solver advanced the solution one time step (static simulation).
-The linear solve converged after 21 iterations and the norm of the residual met the absolute convergence tolerance (`ksp_atol`) .
+The linear solve converged after 10 iterations and the norm of the residual met the absolute convergence tolerance (`ksp_atol`) .
 The nonlinear solve converged in 1 iteration, which we expect because this is a linear problem, and the residual met the absolute convergence tolerance (`snes_atol`).
 
 ### Visualizing the results
@@ -229,18 +238,34 @@ $ pylith step01_slip_cubit.cfg
 
 # -- many lines omitted --
 
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/TimeDependent.py:132:run
+ >> /src/cig/pylith/libsrc/pylith/topology/MeshOps.cc:233:static pylith::topology::Mesh *pylith::topology::MeshOps::createLowerDimMesh(const pylith::topology::Mesh &, const char *, const int, const char *)
+ -- deprecated(warning)
+ -- DEPRECATION: Creating lower dimension mesh from label with vertices. This feature will be removed in v6.0. In the future, you will need to mark boundaries not vertices for boundary conditions.
+ >> /src/cig/pylith/libsrc/pylith/topology/MeshOps.cc:233:static pylith::topology::Mesh *pylith::topology::MeshOps::createLowerDimMesh(const pylith::topology::Mesh &, const char *, const int, const char *)
+ -- deprecated(warning)
+ -- DEPRECATION: Creating lower dimension mesh from label with vertices. This feature will be removed in v6.0. In the future, you will need to mark boundaries not vertices for boundary conditions.
+ >> /Users/brad/software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/TimeDependent.py:145:run
  -- timedependent(info)
  -- Solving problem.
-0 TS dt 0.01 time 0.
-    0 SNES Function norm 4.834519229177e-02
-    Linear solve converged due to CONVERGED_ATOL iterations 22
-    1 SNES Function norm 1.188291484607e-12
-  Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
-1 TS dt 0.01 time 0.01
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:199:finalize
+0 TS dt 0.001 time 0.
+    0 SNES Function norm 6.791309421349e-01
+      Linear solve converged due to CONVERGED_ATOL iterations 10
+    1 SNES Function norm 8.508832621992e-10
+    Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
+ >> /src/cig/pylith/libsrc/pylith/topology/MeshOps.cc:233:static pylith::topology::Mesh *pylith::topology::MeshOps::createLowerDimMesh(const pylith::topology::Mesh &, const char *, const int, const char *)
+ -- deprecated(warning)
+ -- DEPRECATION: Creating lower dimension mesh from label with vertices. This feature will be removed in v6.0. In the future, you will need to mark boundaries not vertices for boundary conditions.
+ >> /src/cig/pylith/libsrc/pylith/topology/MeshOps.cc:233:static pylith::topology::Mesh *pylith::topology::MeshOps::createLowerDimMesh(const pylith::topology::Mesh &, const char *, const int, const char *)
+ -- deprecated(warning)
+ -- DEPRECATION: Creating lower dimension mesh from label with vertices. This feature will be removed in v6.0. In the future, you will need to mark boundaries not vertices for boundary conditions.
+1 TS dt 0.001 time 0.001
+ >> /Users/brad/software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:232:finalize
  -- timedependent(info)
  -- Finalizing problem.
+WARNING! There are options you set that were not used!
+WARNING! could be spelling mistake, etc!
+There is one unused database option. It is:
+Option left: name:-mg_levels_pc_type value: pbjacobi source: code
 ```
 
 The `MeshIOCubit` reader includes diagnostic information in the journal output related to the sizes of the nodesets and material blocks.

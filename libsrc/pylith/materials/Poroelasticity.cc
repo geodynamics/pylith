@@ -300,6 +300,7 @@ pylith::materials::Poroelasticity::getSolverDefaults(const bool isParallel,
     switch (_formulation) {
     case pylith::problems::Physics::QUASISTATIC:
         options->add("-ts_type", "beuler");
+        options->add("-ts_exact_final_time", "matchstep");
 
         options->add("-pc_type", "fieldsplit");
         options->add("-pc_fieldsplit_type", "multiplicative");
