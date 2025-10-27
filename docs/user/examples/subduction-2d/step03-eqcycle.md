@@ -83,19 +83,19 @@ $ pylith step03_eqcycle.cfg
 
 # -- many lines omitted --
 
+60 TS dt 0.05 time 2.95
+    0 SNES Function norm 5.748198611842e-01
+      Linear solve converged due to CONVERGED_ATOL iterations 1
+    1 SNES Function norm 2.523053498061e-08
+    Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
 61 TS dt 0.05 time 3.
-    0 SNES Function norm 5.747931631973e-02
-    Linear solve converged due to CONVERGED_ATOL iterations 6
-    1 SNES Function norm 5.005918018395e-12
-  Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
-62 TS dt 0.05 time 3.05
  >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:199:finalize
  -- timedependent(info)
  -- Finalizing problem.
 ```
 
 The beginning of the output written to the terminal is identical to that from Steps 1 and 2.
-At the end of the output, we see that the simulation advanced the solution 62 time steps.
+At the end of the output, we see that the simulation advanced the solution 61 time steps.
 Remember that the PETSc TS monitor shows the nondimensionalized time and time step values.
 
 ## Visualizing the results

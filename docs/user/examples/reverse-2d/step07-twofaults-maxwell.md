@@ -137,7 +137,7 @@ $ pylith step07_twofaults_maxwell.cfg step07b_twofaults_maxwell.cfg
     Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
       TSAdapt basic beuler 0: step  30 accepted t=4.87932    + 1.207e-01 dt=2.739e-01  wlte=0.00776  wltea=   -1 wlter=   -1
 31 TS dt 0.273922 time 5.
- >> /Users/brad/software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:232:finalize
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:232:finalize
  -- timedependent(info)
  -- Finalizing problem.
 ```

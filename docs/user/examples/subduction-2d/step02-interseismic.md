@@ -110,10 +110,10 @@ $ pylith step02_interseismic.cfg
 # -- many lines omitted --
 
 30 TS dt 0.05 time 1.45
-    0 SNES Function norm 5.747931631477e-02
-    Linear solve converged due to CONVERGED_ATOL iterations 4
-    1 SNES Function norm 5.115112326356e-12
-  Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
+    0 SNES Function norm 5.748198602475e-01
+      Linear solve converged due to CONVERGED_ATOL iterations 4
+    1 SNES Function norm 5.369483396356e-09
+    Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
 31 TS dt 0.05 time 1.5
  >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:199:finalize
  -- timedependent(info)

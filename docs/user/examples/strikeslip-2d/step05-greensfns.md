@@ -87,11 +87,11 @@ $  pylith step05_greensfns.cfg
 
  >> /src/cig/pylith/libsrc/pylith/problems/GreensFns.cc:322:void pylith::problems::GreensFns::solve()
  -- greensfns(info)
- -- Component 'problem': Computing Green's function 12 of 12.
-  0 SNES Function norm 3.027654014246e-03
-  Linear solve converged due to CONVERGED_ATOL iterations 18
-  1 SNES Function norm 1.850212226728e-12
-Nonlinear solve converged due to CONVERGED_ITS iterations 1
+ -- Component 'greensfns.problem': Computing Green's function 13 of 13.
+  0 SNES Function norm 3.827089524877e-02
+    Linear solve converged due to CONVERGED_ATOL iterations 11
+  1 SNES Function norm 1.378783338243e-09
+  Nonlinear solve converged due to CONVERGED_ITS iterations 1
  >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:199:finalize
  -- greensfns(info)
  -- Finalizing problem.
@@ -110,7 +110,7 @@ We get warnings about unused PETSc options because we do not use time stepping.
 
 ## Visualizing the results
 
-In {numref}`fig:example:strikeslip:2d:step05:impulses` we use the `viz/plot_slip_impulses.py` Pyhon script to visualize the slip impulses.
+In {numref}`fig:example:strikeslip:2d:step05:impulses` we use the `viz/plot_slip_impulses.py` Python script to visualize the slip impulses.
 In {numref}`fig:example:strikeslip:2d:step05:solution` we use the `pylith_viz` utility to visualize the y displacement field.
 You can move the slider or use the `p` and `n` keys to change the increment or decrement slip impulses (shown as different time stamps).
 

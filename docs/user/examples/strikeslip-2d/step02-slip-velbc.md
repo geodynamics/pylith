@@ -90,10 +90,10 @@ $ pylith step02_slip_velbc.cfg
 # -- many lines omitted --
 
 24 TS dt 0.05 time 1.15
-    0 SNES Function norm 5.390420823551e-04
-    Linear solve converged due to CONVERGED_ATOL iterations 1
-    1 SNES Function norm 3.564692198930e-12
-  Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
+    0 SNES Function norm 1.587863174573e+00
+      Linear solve converged due to CONVERGED_ATOL iterations 0
+    1 SNES Function norm 2.084776546334e-09
+    Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
 25 TS dt 0.05 time 1.2
  >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:199:finalize
  -- timedependent(info)

@@ -89,10 +89,10 @@ $ pylith step01a_gravity.cfg
  >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:221:_printInfo
  -- timedependent(info)
  -- Scales for nondimensionalization:
-    Length scale: 1000*m
+    Length scale: 100000*m
+    Displacement scale: 1*m
     Time scale: 3.15576e+09*s
-    Pressure scale: 3e+10*m**-1*kg*s**-2
-    Density scale: 2.98765e+23*m**-3*kg
+    Rigidity scale: 1e+10*m**-1*kg*s**-2
     Temperature scale: 1*K
  >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:186:initialize
  -- timedependent(info)
@@ -100,29 +100,36 @@ $ pylith step01a_gravity.cfg
  >> /src/cig/pylith/libsrc/pylith/utils/PetscOptions.cc:235:static void pylith::utils::_PetscOptions::write(pythia::journal::info_t &, const char *, const pylith::utils::PetscOptions &)
  -- petscoptions(info)
  -- Setting PETSc options:
-ksp_atol = 1.0e-12
+ksp_atol = 1.0e-7
 ksp_converged_reason = true
 ksp_error_if_not_converged = true
+ksp_guess_pod_size = 8
+ksp_guess_type = pod
 ksp_rtol = 1.0e-12
-pc_type = lu
-snes_atol = 1.0e-9
+mg_fine_ksp_max_it = 5
+mg_levels_pc_type = pbjacobi
+pc_gamg_coarse_eq_limit = 200
+pc_type = gamg
+snes_atol = 4.0e-7
 snes_converged_reason = true
 snes_error_if_not_converged = true
 snes_monitor = true
 snes_rtol = 1.0e-12
 ts_error_if_step_fails = true
+ts_exact_final_time = matchstep
 ts_monitor = true
 ts_type = beuler
+viewer_hdf5_collective = true
 
  >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/TimeDependent.py:139:run
  -- timedependent(info)
  -- Solving problem.
-0 TS dt 0.01 time 0.
-    0 SNES Function norm 2.873918352757e-01 
-    Linear solve converged due to CONVERGED_RTOL iterations 1
-    1 SNES Function norm 3.025686251687e-13 
-  Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
-1 TS dt 0.01 time 0.01
+0 TS dt 0.001 time 0.
+    0 SNES Function norm 3.007829881319e+03
+      Linear solve converged due to CONVERGED_ATOL iterations 11
+    1 SNES Function norm 4.858620423671e-08
+    Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
+1 TS dt 0.001 time 0.001
  >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:201a:finalize
  -- timedependent(info)
  -- Finalizing problem.
@@ -130,10 +137,9 @@ ts_type = beuler
 
 At the beginning of the output written to the terminal, we see that PyLith is reading the mesh using the `MeshIOPetsc` reader and that it found the domain to extend from -100,000 m to +100,000 m in the x direction and from -100,000 m to 0 in the y direction.
 The output also shows the scales for nondimensionalization and the PETSc options selected by PyLith.
-This simulation did not use a fault, so PyLith used the LU preconditioner.
 
 At the end of the output written to the terminal, we see that the solver advanced the solution one time step (static simulation).
-The linear solve converged after 1 iterations and the norm of the residual met the relative convergence tolerance (`ksp_rtol`) .
+The linear solve converged after 11 iterations and the norm of the residual met the relative convergence tolerance (`ksp_rtol`) .
 The nonlinear solve converged in 1 iteration, which we expect because this is a linear problem, and the residual met the absolute convergence tolerance (`snes_atol`).
 
 ### Visualizing the results

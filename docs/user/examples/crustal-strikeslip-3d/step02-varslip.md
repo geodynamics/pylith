@@ -81,33 +81,39 @@ $ pylith step02_varslip.cfg
  >> /src/cig/pylith/libsrc/pylith/utils/PetscOptions.cc:239:static void pylith::utils::_PetscOptions::write(pythia::journal::info_t &, const char *, const PetscOptions &)
  -- petscoptions(info)
  -- Setting PETSc options:
+dm_reorder_section = true
+dm_reorder_section_type = cohesive
+ksp_atol = 1.0e-7
 ksp_converged_reason = true
+ksp_error_if_not_converged = true
 ksp_guess_pod_size = 8
 ksp_guess_type = pod
-snes_converged_reason = true
-snes_monitor = true
-ts_error_if_step_fails = true
-ts_monitor = true
-
- >> /src/cig/pylith/libsrc/pylith/utils/PetscOptions.cc:239:static void pylith::utils::_PetscOptions::write(pythia::journal::info_t &, const char *, const PetscOptions &)
- -- petscoptions(info)
- -- Using user values rather then the following default PETSc options:
-ksp_atol = 1.0e-12
-ksp_error_if_not_converged = true
 ksp_rtol = 1.0e-12
-snes_atol = 1.0e-9
+mg_fine_ksp_max_it = 5
+mg_fine_pc_type = vpbjacobi
+mg_levels_pc_type = pbjacobi
+pc_gamg_coarse_eq_limit = 200
+pc_type = gamg
+snes_atol = 4.0e-7
+snes_converged_reason = true
 snes_error_if_not_converged = true
+snes_monitor = true
 snes_rtol = 1.0e-12
+ts_error_if_step_fails = true
+ts_exact_final_time = matchstep
+ts_monitor = true
+ts_type = beuler
+viewer_hdf5_collective = true
 
  >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/TimeDependent.py:132:run
  -- timedependent(info)
  -- Solving problem.
-0 TS dt 0.01 time 0.
-    0 SNES Function norm 1.964459680179e-01
-      Linear solve converged due to CONVERGED_ATOL iterations 88
-    1 SNES Function norm 2.694681290776e-12
+0 TS dt 0.001 time 0.
+    0 SNES Function norm 6.832405452737e-03
+      Linear solve converged due to CONVERGED_ATOL iterations 23
+    1 SNES Function norm 5.890913567211e-09
     Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
-1 TS dt 0.01 time 0.01
+1 TS dt 0.001 time 0.001
  >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:199:finalize
  -- timedependent(info)
  -- Finalizing problem.
@@ -118,7 +124,7 @@ The scales for nondimensionalization remain the default values for a quasistatic
 PyLith detects the presence of a fault based on the Lagrange multiplier for the fault in the solution field and selects appropriate preconditioning options as discussed in {ref}`sec-user-run-pylith-petsc-options`.
 
 At the end of the output written to the terminal, we see that the solver advanced the solution one time step (static simulation).
-The linear solve converged after 88 iterations and the norm of the residual met the absolute convergence tolerance (`ksp_atol`) .
+The linear solve converged after 23 iterations and the norm of the residual met the absolute convergence tolerance (`ksp_atol`) .
 The nonlinear solve converged in 1 iteration, which we expect because this is a linear problem, and the residual met the absolute convergence tolerance (`snes_atol`).
 
 ## Visualizing the results

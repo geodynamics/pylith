@@ -83,12 +83,12 @@ $ pylith step03_faults_flexure.cfg
 
 # -- many lines omitted --
 
-50 TS dt 6000. time 294000.
-    0 SNES Function norm 1.697753482119e+02 
-    Linear solve converged due to CONVERGED_RTOL iterations 24
-    1 SNES Function norm 3.574116140624e-10 
-  Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
-51 TS dt 6000. time 300000.
+50 TS dt 8.41536 time 412.353
+    0 SNES Function norm 1.624022924802e+03
+      Linear solve converged due to CONVERGED_ATOL iterations 40
+    1 SNES Function norm 3.554990699299e-09
+    Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
+51 TS dt 8.41536 time 420.768
  >> /software/pylith-debug/lib/python3.11/site-packages/pylith/problems/Problem.py:199:finalize
  -- timedependent(info)
  -- Finalizing problem.

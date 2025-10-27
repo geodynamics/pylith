@@ -91,10 +91,10 @@ $ pylith step01_slip.cfg
  >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:219:_printInfo
  -- timedependent(info)
  -- Scales for nondimensionalization:
-    Length scale: 1000*m
+    Length scale: 100000*m
+    Displacement scale: 1*m
     Time scale: 3.15576e+09*s
-    Pressure scale: 3e+10*m**-1*kg*s**-2
-    Density scale: 2.98765e+23*m**-3*kg
+    Rigidity scale: 1e+10*m**-1*kg*s**-2
     Temperature scale: 1*K
  >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:185:initialize
  -- timedependent(info)
@@ -102,33 +102,39 @@ $ pylith step01_slip.cfg
  >> /src/cig/pylith/libsrc/pylith/utils/PetscOptions.cc:239:static void pylith::utils::_PetscOptions::write(pythia::journal::info_t &, const char *, const PetscOptions &)
  -- petscoptions(info)
  -- Setting PETSc options:
+dm_reorder_section = true
+dm_reorder_section_type = cohesive
+ksp_atol = 1.0e-7
 ksp_converged_reason = true
+ksp_error_if_not_converged = true
 ksp_guess_pod_size = 8
 ksp_guess_type = pod
-snes_converged_reason = true
-snes_monitor = true
-ts_error_if_step_fails = true
-ts_monitor = true
-
- >> /src/cig/pylith/libsrc/pylith/utils/PetscOptions.cc:239:static void pylith::utils::_PetscOptions::write(pythia::journal::info_t &, const char *, const PetscOptions &)
- -- petscoptions(info)
- -- Using user values rather then the following default PETSc options:
-ksp_atol = 1.0e-12
-ksp_error_if_not_converged = true
 ksp_rtol = 1.0e-12
-snes_atol = 1.0e-9
+mg_fine_ksp_max_it = 5
+mg_fine_pc_type = vpbjacobi
+mg_levels_pc_type = pbjacobi
+pc_gamg_coarse_eq_limit = 200
+pc_type = gamg
+snes_atol = 4.0e-7
+snes_converged_reason = true
 snes_error_if_not_converged = true
+snes_monitor = true
 snes_rtol = 1.0e-12
+ts_error_if_step_fails = true
+ts_exact_final_time = matchstep
+ts_monitor = true
+ts_type = beuler
+viewer_hdf5_collective = true
 
  >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/TimeDependent.py:132:run
  -- timedependent(info)
  -- Solving problem.
-0 TS dt 0.01 time 0.
-    0 SNES Function norm 4.696586307427e-02
-      Linear solve converged due to CONVERGED_ATOL iterations 19
-    1 SNES Function norm 7.572811652012e-13
+0 TS dt 0.001 time 0.
+    0 SNES Function norm 2.419639130581e-01
+      Linear solve converged due to CONVERGED_ATOL iterations 14
+    1 SNES Function norm 2.221961415753e-09
     Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
-1 TS dt 0.01 time 0.01
+1 TS dt 0.001 time 0.001
  >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:199:finalize
  -- timedependent(info)
  -- Finalizing problem.
@@ -296,12 +302,12 @@ $ pylith step01_slip_cubit.cfg
  >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/TimeDependent.py:132:run
  -- timedependent(info)
  -- Solving problem.
-0 TS dt 0.01 time 0.
-    0 SNES Function norm 2.540894009864e-02
-      Linear solve converged due to CONVERGED_ATOL iterations 45
-    1 SNES Function norm 1.131725395538e-12
+0 TS dt 0.001 time 0.
+    0 SNES Function norm 2.428257473425e-01
+      Linear solve converged due to CONVERGED_ATOL iterations 15
+    1 SNES Function norm 3.631583176571e-09
     Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
-1 TS dt 0.01 time 0.01
+1 TS dt 0.001 time 0.001
  >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:199:finalize
  -- timedependent(info)
  -- Finalizing problem.

@@ -65,16 +65,19 @@ $ pylith step02_sheardisp.cfg
  >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/TimeDependent.py:139:run
  -- timedependent(info)
  -- Solving problem.
-0 TS dt 0.01 time 0.
-    0 SNES Function norm 2.239977678460e-03 
-    Linear solve converged due to CONVERGED_ATOL iterations 1
-    1 SNES Function norm 1.964321818484e-18 
-  Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
-1 TS dt 0.01 time 0.01
+0 TS dt 0.001 time 0.
+    0 SNES Function norm 6.719933035381e+00
+      Linear solve converged due to CONVERGED_ATOL iterations 3
+    1 SNES Function norm 1.640603910123e-07
+    Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
+1 TS dt 0.001 time 0.001
  >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:201:finalize
  -- timedependent(info)
  -- Finalizing problem.
-```
+WARNING! There are options you set that were not used!
+WARNING! could be spelling mistake, etc!
+There is one unused database option. It is:
+Option left: name:-mg_levels_pc_type value: pbjacobi source: code```
 
 The output written to the terminal is nearly identical to what we saw for Step 1.
 We omit the middle portion of the output which shows that the domain, the scales for nondimensionalization, and PETSc options all remain the same.

@@ -154,10 +154,10 @@ $ pylith step01_inflation.cfg
  >> /home/pylith-user/software/unix/py312-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:219:_printInfo
  -- timedependent(info)
  -- Scales for nondimensionalization:
-    Length scale: 120*m
-    Time scale: 6.31152e+06*s
-    Pressure scale: 1e+12*m**-1*kg*s**-2
-    Density scale: 3.98353e+19*m**-3*kg
+    Length scale: 5000*m
+    Displacement scale: 10*m
+    Time scale: 4.16667e+07*s
+    Rigidity scale: 6e+09*m**-1*kg*s**-2
     Temperature scale: 1*K
  >> /home/pylith-user/software/unix/py312-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:185:initialize
  -- timedependent(info)
@@ -166,9 +166,9 @@ $ pylith step01_inflation.cfg
  -- petscoptions(info)
  -- Setting PETSc options:
 fieldsplit_displacement_pc_type = lu
-fieldsplit_pressure_pc_type = ilu
-fieldsplit_trace_strain_pc_type = ilu
-ksp_atol = 1.0e-12
+fieldsplit_pressure_pc_type = bjacobi
+fieldsplit_trace_strain_pc_type = bjacobi
+ksp_atol = 1.0e-7
 ksp_converged_reason = true
 ksp_error_if_not_converged = true
 ksp_guess_pod_size = 8
@@ -179,32 +179,34 @@ pc_fieldsplit_1_fields = 1
 pc_fieldsplit_2_fields = 0
 pc_fieldsplit_type = multiplicative
 pc_type = fieldsplit
-snes_atol = 1.0e-9
+snes_atol = 4.0e-7
 snes_converged_reason = true
 snes_error_if_not_converged = true
 snes_monitor = true
 snes_rtol = 1.0e-12
 ts_error_if_step_fails = true
+ts_exact_final_time = matchstep
 ts_monitor = true
 ts_type = beuler
+viewer_hdf5_collective = true
 
  >> /home/pylith-user/software/unix/py312-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/TimeDependent.py:132:run
  -- timedependent(info)
  -- Solving problem.
-0 TS dt 1. time -1.
-    0 SNES Function norm 7.519828144445e-01
-    Linear solve converged due to CONVERGED_ATOL iterations 35
-    1 SNES Function norm 3.553087718548e-11
-  Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
+0 TS dt 0.151476 time -0.151476
+    0 SNES Function norm 1.961889362180e+00
+      Linear solve converged due to CONVERGED_ATOL iterations 127
+    1 SNES Function norm 3.529659939627e-08
+    Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
 
 # -- many lines omitted --
 
-50 TS dt 1. time 49.
-    0 SNES Function norm 3.049429648347e-03
-    Linear solve converged due to CONVERGED_ATOL iterations 5
-    1 SNES Function norm 4.921699643384e-11
-  Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
-51 TS dt 1. time 50.
+50 TS dt 0.151476 time 7.42235
+    0 SNES Function norm 1.887192789745e-03
+      Linear solve converged due to CONVERGED_ATOL iterations 46
+    1 SNES Function norm 3.325985182932e-08
+    Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
+51 TS dt 0.151476 time 7.57382
  >> /home/pylith-user/software/unix/py312-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:199:finalize
  -- timedependent(info)
  -- Finalizing problem.
@@ -215,7 +217,7 @@ The scales for nondimensionalization .
 PyLith detects the use of poroelasticity without a fault and selects appropriate preconditioning options as discussed in {ref}`sec-user-run-pylith-petsc-options`.
 
 At the end of the output written to the terminal, we see that the solver advanced the solution 51 time steps.
-At each time step, the linear converges in about 35 or less iteration and the norm of the residual met the absolute convergence tolerance (`ksp_atol`) .
+The linear solver converges in about 50 or less iteration at most time steps and the norm of the residual met the absolute convergence tolerance (`ksp_atol`) .
 The nonlinear solve converged in 1 iteration, which we expect because this is a linear problem, and the residual met the absolute convergence tolerance (`snes_atol`).
 
 ## Visualizing the results
@@ -281,7 +283,7 @@ $ pylith step01_inflation.cfg step01b_inflation.cfg
 ```
 
 The afaptive time stepping algorithm shortens a few of the early time steps but then lengthens the time step as the rate of deforation decreases.
-We end up with 20 time steps with adaptive time stepping compared to 52 with uniform time steps.
+We end up with 19 time steps with adaptive time stepping compared to 51 with uniform time steps.
 
 ```{code-block} console
 ---

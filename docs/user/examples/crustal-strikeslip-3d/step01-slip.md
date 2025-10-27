@@ -71,33 +71,39 @@ $ pylith step01_slip.cfg
  >> /src/cig/pylith/libsrc/pylith/utils/PetscOptions.cc:239:static void pylith::utils::_PetscOptions::write(pythia::journal::info_t &, const char *, const PetscOptions &)
  -- petscoptions(info)
  -- Setting PETSc options:
+dm_reorder_section = true
+dm_reorder_section_type = cohesive
+ksp_atol = 1.0e-7
 ksp_converged_reason = true
+ksp_error_if_not_converged = true
 ksp_guess_pod_size = 8
 ksp_guess_type = pod
-snes_converged_reason = true
-snes_monitor = true
-ts_error_if_step_fails = true
-ts_monitor = true
-
- >> /src/cig/pylith/libsrc/pylith/utils/PetscOptions.cc:239:static void pylith::utils::_PetscOptions::write(pythia::journal::info_t &, const char *, const PetscOptions &)
- -- petscoptions(info)
- -- Using user values rather then the following default PETSc options:
-ksp_atol = 1.0e-12
-ksp_error_if_not_converged = true
 ksp_rtol = 1.0e-12
-snes_atol = 1.0e-9
+mg_fine_ksp_max_it = 5
+mg_fine_pc_type = vpbjacobi
+mg_levels_pc_type = pbjacobi
+pc_gamg_coarse_eq_limit = 200
+pc_type = gamg
+snes_atol = 4.0e-7
+snes_converged_reason = true
 snes_error_if_not_converged = true
+snes_monitor = true
 snes_rtol = 1.0e-12
+ts_error_if_step_fails = true
+ts_exact_final_time = matchstep
+ts_monitor = true
+ts_type = beuler
+viewer_hdf5_collective = true
 
  >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/TimeDependent.py:132:run
  -- timedependent(info)
  -- Solving problem.
-0 TS dt 0.01 time 0.
-    0 SNES Function norm 1.964459680179e-01
-      Linear solve converged due to CONVERGED_ATOL iterations 88
-    1 SNES Function norm 2.694681290776e-12
+0 TS dt 0.001 time 0.
+    0 SNES Function norm 1.964459680179e-02
+      Linear solve converged due to CONVERGED_ATOL iterations 24
+    1 SNES Function norm 3.941660769344e-11
     Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
-1 TS dt 0.01 time 0.01
+1 TS dt 0.001 time 0.001
  >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:199:finalize
  -- timedependent(info)
  -- Finalizing problem.
@@ -108,7 +114,7 @@ The scales for nondimensionalization remain the default values for a quasistatic
 PyLith detects the presence of a fault based on the Lagrange multiplier for the fault in the solution field and selects appropriate preconditioning options as discussed in {ref}`sec-user-run-pylith-petsc-options`.
 
 At the end of the output written to the terminal, we see that the solver advanced the solution one time step (static simulation).
-The linear solve converged after 88 iterations and the norm of the residual met the absolute convergence tolerance (`ksp_atol`) .
+The linear solve converged after 24 iterations and the norm of the residual met the absolute convergence tolerance (`ksp_atol`) .
 The nonlinear solve converged in 1 iteration, which we expect because this is a linear problem, and the residual met the absolute convergence tolerance (`snes_atol`).
 
 ### Earthquake rupture parameters
@@ -209,65 +215,76 @@ $ pylith step01_slip_cubit.cfg
  >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:77:main
  -- pylithapp(info)
  -- Running on 1 process(es).
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/meshio/MeshIOObj.py:38:read
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/meshio/MeshIOObj.py:41:read
  -- meshiocubit(info)
  -- Reading finite-element mesh
- >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:148:void pylith::meshio::MeshIOCubit::_readVertices(ExodusII &, scalar_array *, int *, int *) const
+ >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:185:virtual void pylith::meshio::MeshIOCubit::_read()
  -- meshiocubit(info)
- -- Component 'reader': Reading 1610 vertices.
- >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:208:void pylith::meshio::MeshIOCubit::_readCells(ExodusII &, int_array *, int_array *, int *, int *) const
+ -- Component 'meshiocubit.reader': Read 5253 vertices.
+ >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:189:virtual void pylith::meshio::MeshIOCubit::_read()
  -- meshiocubit(info)
- -- Component 'reader': Reading 3125 cells in 1 blocks.
- >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:270:void pylith::meshio::MeshIOCubit::_readGroups(ExodusII &)
+ -- Component 'meshiocubit.reader': Read 27596 cells.
+ >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:356:void pylith::meshio::MeshIOCubit::_readNodeSets(ExodusII &)
  -- meshiocubit(info)
- -- Component 'reader': Found 10 node sets.
- >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:296:void pylith::meshio::MeshIOCubit::_readGroups(ExodusII &)
+ -- Component 'meshiocubit.reader': Found 3 node sets.
+ >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:382:void pylith::meshio::MeshIOCubit::_readNodeSets(ExodusII &)
  -- meshiocubit(info)
- -- Component 'reader': Reading node set 'boundary_south' with id 10 containing 25 nodes.
- >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:296:void pylith::meshio::MeshIOCubit::_readGroups(ExodusII &)
+ -- Component 'meshiocubit.reader': Reading node set 'fault_main_edges' with id 30 containing 27 nodes.
+ >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:382:void pylith::meshio::MeshIOCubit::_readNodeSets(ExodusII &)
  -- meshiocubit(info)
- -- Component 'reader': Reading node set 'boundary_east' with id 11 containing 25 nodes.
- >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:296:void pylith::meshio::MeshIOCubit::_readGroups(ExodusII &)
+ -- Component 'meshiocubit.reader': Reading node set 'fault_west_edges' with id 31 containing 18 nodes.
+ >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:382:void pylith::meshio::MeshIOCubit::_readNodeSets(ExodusII &)
  -- meshiocubit(info)
- -- Component 'reader': Reading node set 'boundary_north' with id 12 containing 24 nodes.
- >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:296:void pylith::meshio::MeshIOCubit::_readGroups(ExodusII &)
+ -- Component 'meshiocubit.reader': Reading node set 'fault_east_edges' with id 32 containing 15 nodes.
+ >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:407:void pylith::meshio::MeshIOCubit::_readSideSets(ExodusII &)
  -- meshiocubit(info)
- -- Component 'reader': Reading node set 'boundary_west' with id 13 containing 23 nodes.
- >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:296:void pylith::meshio::MeshIOCubit::_readGroups(ExodusII &)
+ -- Component 'meshiocubit.reader': Found 9 side sets.
+ >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:439:void pylith::meshio::MeshIOCubit::_readSideSets(ExodusII &)
  -- meshiocubit(info)
- -- Component 'reader': Reading node set 'fault_main' with id 20 containing 37 nodes.
- >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:296:void pylith::meshio::MeshIOCubit::_readGroups(ExodusII &)
+ -- Component 'meshiocubit.reader': Reading side set 'boundary_south' with id 10 containing 286 faces.
+ >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:439:void pylith::meshio::MeshIOCubit::_readSideSets(ExodusII &)
  -- meshiocubit(info)
- -- Component 'reader': Reading node set 'fault_west' with id 21 containing 13 nodes.
- >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:296:void pylith::meshio::MeshIOCubit::_readGroups(ExodusII &)
+ -- Component 'meshiocubit.reader': Reading side set 'boundary_east' with id 11 containing 179 faces.
+ >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:439:void pylith::meshio::MeshIOCubit::_readSideSets(ExodusII &)
  -- meshiocubit(info)
- -- Component 'reader': Reading node set 'fault_east' with id 22 containing 6 nodes.
- >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:296:void pylith::meshio::MeshIOCubit::_readGroups(ExodusII &)
+ -- Component 'meshiocubit.reader': Reading side set 'boundary_north' with id 12 containing 290 faces.
+ >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:439:void pylith::meshio::MeshIOCubit::_readSideSets(ExodusII &)
  -- meshiocubit(info)
- -- Component 'reader': Reading node set 'fault_main_ends' with id 30 containing 2 nodes.
- >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:296:void pylith::meshio::MeshIOCubit::_readGroups(ExodusII &)
+ -- Component 'meshiocubit.reader': Reading side set 'boundary_west' with id 13 containing 172 faces.
+ >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:439:void pylith::meshio::MeshIOCubit::_readSideSets(ExodusII &)
  -- meshiocubit(info)
- -- Component 'reader': Reading node set 'fault_west_ends' with id 31 containing 2 nodes.
- >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:296:void pylith::meshio::MeshIOCubit::_readGroups(ExodusII &)
+ -- Component 'meshiocubit.reader': Reading side set 'boundary_bottom' with id 14 containing 583 faces.
+ >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:439:void pylith::meshio::MeshIOCubit::_readSideSets(ExodusII &)
  -- meshiocubit(info)
- -- Component 'reader': Reading node set 'fault_east_ends' with id 32 containing 2 nodes.
- >> /src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:85:void pylith::meshio::MeshIO::read(pylith::topology::Mesh *, const bool)
+ -- Component 'meshiocubit.reader': Reading side set 'boundary_top' with id 15 containing 930 faces.
+ >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:439:void pylith::meshio::MeshIOCubit::_readSideSets(ExodusII &)
  -- meshiocubit(info)
- -- Component 'reader': Domain bounding box:
-    (410000, 490000)
-    (3.91e+06, 3.99e+06)
+ -- Component 'meshiocubit.reader': Reading side set 'fault_main' with id 20 containing 197 faces.
+ >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:439:void pylith::meshio::MeshIOCubit::_readSideSets(ExodusII &)
+ -- meshiocubit(info)
+ -- Component 'meshiocubit.reader': Reading side set 'fault_west' with id 21 containing 72 faces.
+ >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:439:void pylith::meshio::MeshIOCubit::_readSideSets(ExodusII &)
+ -- meshiocubit(info)
+ -- Component 'meshiocubit.reader': Reading side set 'fault_east' with id 22 containing 38 faces.
+ >> /src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:75:void pylith::meshio::MeshIO::read(pylith::topology::Mesh *, const bool)
+ -- meshiocubit(info)
+ -- Component 'meshiocubit.reader': Domain bounding box:
+    (413700, 493700)
+    (3.917e+06, 3.977e+06)
+    (-40000, 0)
+
 
 -- many lines omitted --
 
  >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/TimeDependent.py:132:run
  -- timedependent(info)
  -- Solving problem.
-0 TS dt 0.01 time 0.
-    0 SNES Function norm 2.540894009864e-02
-      Linear solve converged due to CONVERGED_ATOL iterations 45
-    1 SNES Function norm 1.131725395538e-12
+0 TS dt 0.001 time 0.
+    0 SNES Function norm 2.003292919077e-02
+      Linear solve converged due to CONVERGED_ATOL iterations 19
+    1 SNES Function norm 1.024898741592e-10
     Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
-1 TS dt 0.01 time 0.01
+1 TS dt 0.001 time 0.001
  >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:199:finalize
  -- timedependent(info)
  -- Finalizing problem.

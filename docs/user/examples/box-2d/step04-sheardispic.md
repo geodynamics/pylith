@@ -61,8 +61,9 @@ $ pylith step04_sheardispic.cfg
  -- Finalizing problem.
 WARNING! There are options you set that were not used!
 WARNING! could be spelling mistake, etc!
-There is one unused database option. It is:
-Option left: name:-ksp_converged_reason (no value)
+There are 2 unused database options. They are:
+Option left: name:-mg_fine_ksp_max_it value: 5 source: code
+Option left: name:-mg_levels_pc_type value: pbjacobi source: code
 ```
 
 By design we set the initial condition so that it satisfies the elasticity equation.

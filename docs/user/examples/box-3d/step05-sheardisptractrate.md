@@ -97,10 +97,10 @@ $ pylith step05_sheardisptractrate.cfg
 # -- many lines omitted --
 
 5 TS dt 0.1 time 0.4
-    0 SNES Function norm 7.135615733940e-03 
-    Linear solve converged due to CONVERGED_ATOL iterations 1
-    1 SNES Function norm 1.130764208982e-17 
-  Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
+    0 SNES Function norm 2.140684720394e-01
+      Linear solve converged due to CONVERGED_ATOL iterations 0
+    1 SNES Function norm 4.123676062187e-10
+    Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
 6 TS dt 0.1 time 0.5
  >> /software/unix/py38-venv/pylith-debug/lib/python3.8/site-packages/pylith/problems/Problem.py:201:finalize
  -- timedependent(info)
