@@ -13,16 +13,19 @@ The version numbers are in the form `MAJOR.MINOR.PATCH`, where major releases in
     * Add displacement scale and improve the names of the other scales.
     * The time scale for poroelasticity is derived from the other scales and nominal material properties.
     * Add discussion of nondimensionalization for each of the governing equations.
-    * Update default solver tolerances consistent with new nondimensionalization scales.
+    * Update default solver tolerances consistent with the new nondimensionalization scales.
   * Add option to use adaptive time stepping and update examples `reverse-2d` Steps 7 and 8 and `magma-2d` Step 1 to demonstrate its use.
-  * Update solver settings for elasticity for better scalability with problem size.
-  * ASCII mesh format
-    * Changed `group` to `vertex-group`; remove `group` `type`.
-  * Renamed `VertexGroup` to `BoundaryGroup` in `meshio.gmsh_utils` and changed default behavior to not be recursive (generate "face" groups, not "vertex" groups).
+  * Update multi-grid preconditioner solver settings for elasticity for better scalability with problem size.
+  * Mesh formats
+    * Add support for use of Cubit side sets and Gmsh physical groups with edges (2D) and surfaces (3D). Use of Cubit vertex sets and Gmsh physical groups with vertices are deprecated and support for them will be removed in version 6.0.0.
+      * Use of Cubit side sets and Gmsh physical groups with curves (2D) and surfaces (3D) are using
+    * ASCII mesh format
+      * Changed `group` to `vertex-group`; remove `group` `type`.
+    * Renamed `VertexGroup` to `BoundaryGroup` in `meshio.gmsh_utils` and changed default behavior to not be recursive (generate "face" groups, not "vertex" groups).
   * Use the VTU (XML) format for VTK files instead of the legacy ASCII format.
   * Material `description` property is no longer used; a deprecation warning is printed to stdout if it is specified. This feature will be removed in v6.0.
   * Internal labels for meshes and fields are now derived from the Pyre component name and identifier.
-  * Update PETSc to 3.23.1
+  * Update PETSc to 3.24.0
 * **Added**
   * Improved documentation for `pylith_eqinfo` and illustrate use in `examples/strikdslip-2d`, `examples/crustal-strikeslip-2d`, and `examples/crustal-strikeslip-3d`.
   * Added `pylith_convertmesh` for converting Cubit and Gmsh files to the PETSc HDF5 mesh format.
