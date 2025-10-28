@@ -472,13 +472,13 @@ pylith::materials::Elasticity::_setKernelsResidual(pylith::feassemble::Integrato
     default:
         PYLITH_COMPONENT_LOGICERROR("Unknown case (bitUse=" << bitUse << ") for residual kernels.");
     } // switch
-    const PetscPointFn* r1 = _rheology->getKernelf1v(coordsys);
+    PetscPointFn* r1 = _rheology->getKernelf1v(coordsys);
 
     std::vector<ResidualKernels> kernels;
     switch (_formulation) {
     case QUASISTATIC: {
-        const PetscPointFn* f0u = r0;
-        const PetscPointFn* f1u = r1;
+        PetscPointFn* f0u = r0;
+        PetscPointFn* f1u = r1;
 
         kernels.resize(1);
         kernels[0] = ResidualKernels("displacement", pylith::feassemble::Integrator::LHS, f0u, f1u);
@@ -486,16 +486,16 @@ pylith::materials::Elasticity::_setKernelsResidual(pylith::feassemble::Integrato
     } // QUASISTATIC
     case DYNAMIC: {
         // Displacement
-        const PetscPointFn* f0u = pylith::fekernels::DispVel::f0u;
-        const PetscPointFn* f1u = NULL;
-        const PetscPointFn* g0u = pylith::fekernels::DispVel::g0u;
-        const PetscPointFn* g1u = NULL;
+        PetscPointFn* f0u = pylith::fekernels::DispVel::f0u;
+        PetscPointFn* f1u = NULL;
+        PetscPointFn* g0u = pylith::fekernels::DispVel::g0u;
+        PetscPointFn* g1u = NULL;
 
         // Velocity
-        const PetscPointFn* f0v = pylith::fekernels::Elasticity::f0v;
-        const PetscPointFn* f1v = NULL;
-        const PetscPointFn* g0v = r0;
-        const PetscPointFn* g1v = r1;
+        PetscPointFn* f0v = pylith::fekernels::Elasticity::f0v;
+        PetscPointFn* f1v = NULL;
+        PetscPointFn* g0v = r0;
+        PetscPointFn* g1v = r1;
 
         kernels.resize(4);
         kernels[0] = ResidualKernels("displacement", pylith::feassemble::Integrator::LHS, f0u, f1u);
@@ -506,16 +506,16 @@ pylith::materials::Elasticity::_setKernelsResidual(pylith::feassemble::Integrato
     } // DYNAMIC
     case DYNAMIC_IMEX: {
         // Displacement
-        const PetscPointFn* f0u = pylith::fekernels::DispVel::f0u;
-        const PetscPointFn* f1u = NULL;
-        const PetscPointFn* g0u = pylith::fekernels::DispVel::g0u;
-        const PetscPointFn* g1u = NULL;
+        PetscPointFn* f0u = pylith::fekernels::DispVel::f0u;
+        PetscPointFn* f1u = NULL;
+        PetscPointFn* g0u = pylith::fekernels::DispVel::g0u;
+        PetscPointFn* g1u = NULL;
 
         // Velocity
-        const PetscPointFn* f0v = pylith::fekernels::DispVel::f0v;
-        const PetscPointFn* f1v = NULL;
-        const PetscPointFn* g0v = r0;
-        const PetscPointFn* g1v = r1;
+        PetscPointFn* f0v = pylith::fekernels::DispVel::f0v;
+        PetscPointFn* f1v = NULL;
+        PetscPointFn* g0v = r0;
+        PetscPointFn* g1v = r1;
 
         kernels.resize(4);
         kernels[0] = ResidualKernels("displacement", pylith::feassemble::Integrator::LHS, f0u, f1u);
@@ -638,7 +638,7 @@ pylith::materials::Elasticity::_setKernelsDerivedField(pylith::feassemble::Integ
     kernels[0] = ProjectKernels("cauchy_stress", _rheology->getKernelCauchyStressVector(coordsys));
 
     const int spaceDim = coordsys->getSpaceDim();
-    const PetscPointFn* strainKernel =
+    PetscPointFn* strainKernel =
         (3 == spaceDim) ? pylith::fekernels::Elasticity3D::infinitesimalStrain_asVector :
         (2 == spaceDim) ? pylith::fekernels::ElasticityPlaneStrain::infinitesimalStrain_asVector :
         NULL;

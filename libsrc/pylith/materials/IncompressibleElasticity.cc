@@ -328,12 +328,12 @@ pylith::materials::IncompressibleElasticity::_setKernelsResidual(pylith::feassem
     } // switch
 
     // Displacement
-    const PetscPointFn* f0u = r0;
-    const PetscPointFn* f1u = _rheology->getKernelf1u(coordsys);
+    PetscPointFn* f0u = r0;
+    PetscPointFn* f1u = _rheology->getKernelf1u(coordsys);
 
     // Pressure
-    const PetscPointFn* f0p = _rheology->getKernelf0p(coordsys);
-    const PetscPointFn* f1p = NULL;
+    PetscPointFn* f0p = _rheology->getKernelf0p(coordsys);
+    PetscPointFn* f1p = NULL;
 
     std::vector<ResidualKernels> kernels(2);
     kernels[0] = ResidualKernels("displacement", pylith::feassemble::Integrator::LHS, f0u, f1u);
@@ -429,7 +429,7 @@ pylith::materials::IncompressibleElasticity::_setKernelsDerivedField(pylith::fea
     kernels[0] = ProjectKernels("cauchy_stress", _rheology->getKernelCauchyStressVector(coordsys));
 
     const int spaceDim = coordsys->getSpaceDim();
-    const PetscPointFn* strainKernel =
+    PetscPointFn* strainKernel =
         (3 == spaceDim) ? pylith::fekernels::Elasticity3D::infinitesimalStrain_asVector :
         (2 == spaceDim) ? pylith::fekernels::ElasticityPlaneStrain::infinitesimalStrain_asVector :
         NULL;

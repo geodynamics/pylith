@@ -224,11 +224,11 @@ pylith::materials::IsotropicLinearGenMaxwell::addKernelsUpdateStateVars(std::vec
     PYLITH_COMPONENT_DEBUG("addKernelsUpdateStateVars(kernels="<<kernels<<", coordsys="<<coordsys<<")");
 
     const int spaceDim = coordsys->getSpaceDim();
-    const PetscPointFn* funcViscousStrain =
+    PetscPointFn* funcViscousStrain =
         (3 == spaceDim) ? pylith::fekernels::IsotropicLinearGenMaxwell3D::viscousStrain_infinitesimalStrain_asVector :
         (2 == spaceDim) ? pylith::fekernels::IsotropicLinearGenMaxwellPlaneStrain::viscousStrain_infinitesimalStrain_asVector :
         NULL;
-    const PetscPointFn* funcTotalStrain =
+    PetscPointFn* funcTotalStrain =
         (3 == spaceDim) ? pylith::fekernels::Elasticity3D::infinitesimalStrain_asVector :
         (2 == spaceDim) ? pylith::fekernels::ElasticityPlaneStrain::infinitesimalStrain_asVector :
         NULL;

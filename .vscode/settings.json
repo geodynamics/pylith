@@ -39,6 +39,7 @@
         "dm",
         "drucker",
         "elastoplastic",
+        "Gmsh",
         "Knepley",
         "neumann",
         "nodeset",

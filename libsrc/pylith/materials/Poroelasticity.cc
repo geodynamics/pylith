@@ -421,8 +421,8 @@ pylith::materials::Poroelasticity::_setKernelsResidual(pylith::feassemble::Integ
     case QUASISTATIC: {
         if (!_useStateVars) {
             // Displacement
-            const PetscPointFn* f0u = r0;
-            const PetscPointFn* f1u = _rheology->getKernelf1u_implicit(coordsys);
+            PetscPointFn* f0u = r0;
+            PetscPointFn* f1u = _rheology->getKernelf1u_implicit(coordsys);
 
             // Pressure
             PetscPointFn* f0p = _rheology->getKernelf0p_implicit(coordsys, _useBodyForce, _gravityField, _useSourceDensity);
@@ -430,8 +430,8 @@ pylith::materials::Poroelasticity::_setKernelsResidual(pylith::feassemble::Integ
                                                                                                           // velocity
 
             // Volumetric Strain
-            const PetscPointFn* f0e = pylith::fekernels::Poroelasticity::f0e;
-            const PetscPointFn* f1e = NULL;
+            PetscPointFn* f0e = pylith::fekernels::Poroelasticity::f0e;
+            PetscPointFn* f1e = NULL;
 
             kernels.resize(3);
             kernels[0] = ResidualKernels("displacement", pylith::feassemble::Integrator::LHS, f0u, f1u);
@@ -440,27 +440,27 @@ pylith::materials::Poroelasticity::_setKernelsResidual(pylith::feassemble::Integ
         } else {
             // Displacement
             PetscPointFn* f0u = r0;
-            const PetscPointFn* f1u = _rheology->getKernelf1u_implicit(coordsys);
+            PetscPointFn* f1u = _rheology->getKernelf1u_implicit(coordsys);
 
             // Pressure
             PetscPointFn* f0p = _rheology->getKernelf0p_implicit(coordsys, _useBodyForce, _gravityField, _useSourceDensity);
             PetscPointFn* f1p = _rheology->getKernelf1p_implicit(coordsys, _useBodyForce, _gravityField);
 
             // Volumetric Strain
-            const PetscPointFn* f0e = pylith::fekernels::Poroelasticity::f0e;
-            const PetscPointFn* f1e = NULL;
+            PetscPointFn* f0e = pylith::fekernels::Poroelasticity::f0e;
+            PetscPointFn* f1e = NULL;
 
             // Velocity
-            const PetscPointFn* f0v = pylith::fekernels::Poroelasticity::f0v_implicit;
-            const PetscPointFn* f1v = NULL;
+            PetscPointFn* f0v = pylith::fekernels::Poroelasticity::f0v_implicit;
+            PetscPointFn* f1v = NULL;
 
             // Time derivative of pressure
-            const PetscPointFn* f0pdot = pylith::fekernels::Poroelasticity::f0pdot;
-            const PetscPointFn* f1pdot = NULL;
+            PetscPointFn* f0pdot = pylith::fekernels::Poroelasticity::f0pdot;
+            PetscPointFn* f1pdot = NULL;
 
             // Time derivative of Volumetric Strain
-            const PetscPointFn* f0edot = pylith::fekernels::Poroelasticity::f0edot;
-            const PetscPointFn* f1edot = NULL;
+            PetscPointFn* f0edot = pylith::fekernels::Poroelasticity::f0edot;
+            PetscPointFn* f1edot = NULL;
 
             kernels.resize(6);
             kernels[0] = ResidualKernels("displacement", pylith::feassemble::Integrator::LHS, f0u, f1u);
@@ -475,22 +475,22 @@ pylith::materials::Poroelasticity::_setKernelsResidual(pylith::feassemble::Integ
     case DYNAMIC_IMEX:
     case DYNAMIC: {
         // Displacement
-        const PetscPointFn* f0u = pylith::fekernels::DispVel::f0u;
-        const PetscPointFn* f1u = NULL;
-        const PetscPointFn* g0u = pylith::fekernels::Poroelasticity::g0u;
-        const PetscPointFn* g1u = NULL;
+        PetscPointFn* f0u = pylith::fekernels::DispVel::f0u;
+        PetscPointFn* f1u = NULL;
+        PetscPointFn* g0u = pylith::fekernels::Poroelasticity::g0u;
+        PetscPointFn* g1u = NULL;
 
         // Pressure
-        const PetscPointFn* f0p = _rheology->getKernelf0p_explicit(coordsys);
-        const PetscPointFn* f1p = NULL;
-        const PetscPointFn* g0p = _rheology->getKernelg0p(coordsys, _useBodyForce, _gravityField, _useSourceDensity);
-        const PetscPointFn* g1p = _rheology->getKernelg1p_explicit(coordsys, _gravityField); // Darcy velocity
+        PetscPointFn* f0p = _rheology->getKernelf0p_explicit(coordsys);
+        PetscPointFn* f1p = NULL;
+        PetscPointFn* g0p = _rheology->getKernelg0p(coordsys, _useBodyForce, _gravityField, _useSourceDensity);
+        PetscPointFn* g1p = _rheology->getKernelg1p_explicit(coordsys, _gravityField); // Darcy velocity
 
         // Velocity
-        const PetscPointFn* f0v = pylith::fekernels::Poroelasticity::f0v_explicit;
-        const PetscPointFn* f1v = NULL;
-        const PetscPointFn* g0v = r0;
-        const PetscPointFn* g1v = _rheology->getKernelg1v_explicit(coordsys);
+        PetscPointFn* f0v = pylith::fekernels::Poroelasticity::f0v_explicit;
+        PetscPointFn* f1v = NULL;
+        PetscPointFn* g0v = r0;
+        PetscPointFn* g1v = _rheology->getKernelg1v_explicit(coordsys);
 
         kernels.resize(6);
         kernels[0] = ResidualKernels("displacement", pylith::feassemble::Integrator::LHS, f0u, f1u);
@@ -775,13 +775,13 @@ pylith::materials::Poroelasticity::_setKernelsDerivedField(pylith::feassemble::I
     kernels[0] = ProjectKernels("cauchy_stress", _rheology->getKernelCauchyStressVector(coordsys));
 
     const int spaceDim = coordsys->getSpaceDim();
-    const PetscPointFn* strainKernel =
+    PetscPointFn* strainKernel =
         (3 == spaceDim) ? pylith::fekernels::Elasticity3D::infinitesimalStrain_asVector :
         (2 == spaceDim) ? pylith::fekernels::ElasticityPlaneStrain::infinitesimalStrain_asVector :
         NULL;
     kernels[1] = ProjectKernels("cauchy_strain", strainKernel);
 
-    const PetscPointFn* bulkDensity = pylith::fekernels::Poroelasticity::bulkDensity_asScalar;
+    PetscPointFn* bulkDensity = pylith::fekernels::Poroelasticity::bulkDensity_asScalar;
 
     kernels[2] = ProjectKernels("bulk_density", bulkDensity);
 
