@@ -14,6 +14,6 @@
 
 #include "pylith/fekernels/IsotropicLinearGenMaxwell.hh" // Implementation of object methods.
 
-const PylithInt pylith::fekernels::IsotropicLinearGenMaxwell::numParallel = 3;
+// const PylithInt pylith::fekernels::IsotropicLinearGenMaxwell::numParallel = 3;
 
 // End of file

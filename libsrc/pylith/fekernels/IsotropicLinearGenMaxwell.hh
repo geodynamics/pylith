@@ -84,7 +84,7 @@ class pylith::fekernels::IsotropicLinearGenMaxwell {
     // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
 public:
 
-    static const PylithInt numParallel;
+    static const PylithInt numParallel = 3;
 
     struct Context {
         PylithReal shearModulus;

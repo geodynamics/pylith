@@ -634,7 +634,7 @@ pylith::materials::IsotropicLinearPoroelasticity::addKernelsUpdateStateVarsImpli
     if (_useStateVars) {
         const int spaceDim = coordsys->getSpaceDim();
 
-        const PetscPointFn* funcPorosity =
+        PetscPointFn* funcPorosity =
             (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::updatePorosityImplicit :
             (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::updatePorosityImplicit :
             NULL;
@@ -660,7 +660,7 @@ pylith::materials::IsotropicLinearPoroelasticity::addKernelsUpdateStateVarsExpli
     if (_useStateVars) {
         const int spaceDim = coordsys->getSpaceDim();
 
-        const PetscPointFn* funcPorosity =
+        PetscPointFn* funcPorosity =
             (3 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticity3D::updatePorosityExplicit :
             (2 == spaceDim) ? pylith::fekernels::IsotropicLinearPoroelasticityPlaneStrain::updatePorosityExplicit :
             NULL;
