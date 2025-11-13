@@ -19,7 +19,8 @@ import numpy
 import gmsh
 
 # Import the gmsh_utils Python module supplied with PyLith.
-from pylith.meshio.gmsh_utils import (BoundaryGroup, MaterialGroup, GenerateMesh)
+from pylith.meshio.gmsh_utils import BoundaryGroup, MaterialGroup, GenerateMesh
+
 
 class App(GenerateMesh):
     """
@@ -28,6 +29,7 @@ class App(GenerateMesh):
     App uses `GenerateMesh` from `gmsh_utils` for common functionality that we avoid
     duplicating in each of our examples.
     """
+
     #
     #    pNW---------------------------------pNE
     #    |                                   |
@@ -49,14 +51,14 @@ class App(GenerateMesh):
     #    pSW---------------------------------pSE
     #
     #    The fault traces intersect at point pI.
-    
+
     # Locations defining domain
     km = 1000.0
     DOMAIN_CENTER = (453700.0, 3947000.0)
-    DOMAIN_X = 80*km
-    DOMAIN_Y = 60*km
-    DOMAIN_Z = 40*km
-    FAULT_DEPTH = 15.0*km
+    DOMAIN_X = 80 * km
+    DOMAIN_Y = 60 * km
+    DOMAIN_Z = 40 * km
+    FAULT_DEPTH = 15.0 * km
 
     # Files with coordinates of fault traces in UTM zone 11
     FILENAME_MAINTRACE = "faulttrace_main_utm.txt"
@@ -64,12 +66,11 @@ class App(GenerateMesh):
     FILENAME_STRANDETRACE = "faulttrace_east_utm.txt"
 
     # Discretization size on faults and bias (rate of cell size increase away from fault)
-    DX_FAULT = 2.5*km
+    DX_FAULT = 2.5 * km
     DX_BIAS = 1.07
 
     def __init__(self):
-        """Constructor.
-        """
+        """Constructor."""
         super().__init__()
 
         # Set the cell choices available through command line options.
@@ -78,7 +79,7 @@ class App(GenerateMesh):
         self.cell_choices = {
             "default": "tet",
             "choices": ["tet"],
-            }
+        }
         self.filename = "mesh_tet.msh"
 
     def _create_points_from_file(self, filename):
@@ -96,10 +97,12 @@ class App(GenerateMesh):
         We use the fault traces in UTM coordinates given in `faulttrace_{name}_utm.txt`.
         """
         # Create domain
-        xSW = self.DOMAIN_CENTER[0] - 0.5*self.DOMAIN_X
-        ySW = self.DOMAIN_CENTER[1] - 0.5*self.DOMAIN_Y
+        xSW = self.DOMAIN_CENTER[0] - 0.5 * self.DOMAIN_X
+        ySW = self.DOMAIN_CENTER[1] - 0.5 * self.DOMAIN_Y
         zSW = -self.DOMAIN_Z
-        self.v_domain = gmsh.model.occ.add_box(xSW, ySW, zSW, self.DOMAIN_X, self.DOMAIN_Y, self.DOMAIN_Z)
+        self.v_domain = gmsh.model.occ.add_box(
+            xSW, ySW, zSW, self.DOMAIN_X, self.DOMAIN_Y, self.DOMAIN_Z
+        )
 
         # Create points for main fault
         points_fault_main = self._create_points_from_file(self.FILENAME_MAINTRACE)
@@ -120,9 +123,15 @@ class App(GenerateMesh):
         self.s_fault_east = dimTags[1][1]
 
         # Embed faults into domain so cells will align along fault
-        gmsh.model.occ.fragment([(3, self.v_domain)], [(2, self.s_fault_main)], removeTool=True)
-        gmsh.model.occ.fragment([(3, self.v_domain)], [(2, self.s_fault_west)], removeTool=True)
-        gmsh.model.occ.fragment([(3, self.v_domain)], [(2, self.s_fault_east)], removeTool=True)
+        gmsh.model.occ.fragment(
+            [(3, self.v_domain)], [(2, self.s_fault_main)], removeTool=True
+        )
+        gmsh.model.occ.fragment(
+            [(3, self.v_domain)], [(2, self.s_fault_west)], removeTool=True
+        )
+        gmsh.model.occ.fragment(
+            [(3, self.v_domain)], [(2, self.s_fault_east)], removeTool=True
+        )
         gmsh.model.occ.synchronize()
 
         # Get surfaces of domain; identify order of surfaces using GUI
@@ -153,9 +162,7 @@ class App(GenerateMesh):
         # Create a material for the domain.
         # The tag argument specifies the integer tag for the physical group.
         # The entities argument specifies the array of surfaces for the material.
-        materials = (
-            MaterialGroup(tag=1, entities=[self.v_domain]),
-        )
+        materials = (MaterialGroup(tag=1, entities=[self.v_domain]),)
         for material in materials:
             material.create_physical_group()
 
@@ -165,19 +172,39 @@ class App(GenerateMesh):
         # The dimension and entities specify the geometric entities to include in the physical
         # group.
         face_groups = (
-            BoundaryGroup(name="boundary_south", tag=10, dim=2, entities=[self.s_south]),
+            BoundaryGroup(
+                name="boundary_south", tag=10, dim=2, entities=[self.s_south]
+            ),
             BoundaryGroup(name="boundary_east", tag=11, dim=2, entities=[self.s_east]),
-            BoundaryGroup(name="boundary_north", tag=12, dim=2, entities=[self.s_north]),
+            BoundaryGroup(
+                name="boundary_north", tag=12, dim=2, entities=[self.s_north]
+            ),
             BoundaryGroup(name="boundary_west", tag=13, dim=2, entities=[self.s_west]),
-            BoundaryGroup(name="boundary_bottom", tag=14, dim=2, entities=[self.s_bottom]),
+            BoundaryGroup(
+                name="boundary_bottom", tag=14, dim=2, entities=[self.s_bottom]
+            ),
             BoundaryGroup(name="boundary_top", tag=15, dim=2, entities=[self.s_top]),
-
-            BoundaryGroup(name="fault_main", tag=20, dim=2, entities=[self.s_fault_main_north, self.s_fault_main_south]),
-            BoundaryGroup(name="fault_west", tag=21, dim=2, entities=[self.s_fault_west]),
-            BoundaryGroup(name="fault_east", tag=22, dim=2, entities=[self.s_fault_east]),
-            BoundaryGroup(name="fault_main_edges", tag=30, dim=1, entities=self.fault_main_edges),
-            BoundaryGroup(name="fault_west_edges", tag=31, dim=1, entities=self.fault_west_edges),
-            BoundaryGroup(name="fault_east_edges", tag=32, dim=1, entities=self.fault_east_edges),
+            BoundaryGroup(
+                name="fault_main",
+                tag=20,
+                dim=2,
+                entities=[self.s_fault_main_north, self.s_fault_main_south],
+            ),
+            BoundaryGroup(
+                name="fault_west", tag=21, dim=2, entities=[self.s_fault_west]
+            ),
+            BoundaryGroup(
+                name="fault_east", tag=22, dim=2, entities=[self.s_fault_east]
+            ),
+            BoundaryGroup(
+                name="fault_main_edges", tag=30, dim=1, entities=self.fault_main_edges
+            ),
+            BoundaryGroup(
+                name="fault_west_edges", tag=31, dim=1, entities=self.fault_west_edges
+            ),
+            BoundaryGroup(
+                name="fault_east_edges", tag=32, dim=1, entities=self.fault_east_edges
+            ),
         )
         for group in face_groups:
             group.create_physical_group()
@@ -189,7 +216,7 @@ class App(GenerateMesh):
         in our local App class.
         """
         # Set discretization size with geometric progression from distance to the fault.
-        
+
         # We turn off the default sizing methods.
         gmsh.option.set_number("Mesh.MeshSizeFromPoints", 0)
         gmsh.option.set_number("Mesh.MeshSizeFromCurvature", 0)
@@ -197,15 +224,26 @@ class App(GenerateMesh):
 
         # First, we setup a field `field_distance` with the distance from the fault.
         field_distance = gmsh.model.mesh.field.add("Distance")
-        gmsh.model.mesh.field.setNumbers(field_distance, "SurfacesList", [self.s_fault_main_north, self.s_fault_main_south, self.s_fault_west, self.s_fault_east])
+        gmsh.model.mesh.field.setNumbers(
+            field_distance,
+            "SurfacesList",
+            [
+                self.s_fault_main_north,
+                self.s_fault_main_south,
+                self.s_fault_west,
+                self.s_fault_east,
+            ],
+        )
 
         # Second, we setup a field `field_size`, which is the mathematical expression
         # for the cell size as a function of the cell size on the fault, the distance from
         # the fault (as given by `field_size`, and the bias factor.
-        # The `GenerateMesh` class includes a special function `get_math_progression` 
+        # The `GenerateMesh` class includes a special function `get_math_progression`
         # for creating the string with the mathematical function.
         field_size = gmsh.model.mesh.field.add("MathEval")
-        math_exp = GenerateMesh.get_math_progression(field_distance, min_dx=self.DX_FAULT, bias=self.DX_BIAS)
+        math_exp = GenerateMesh.get_math_progression(
+            field_distance, min_dx=self.DX_FAULT, bias=self.DX_BIAS
+        )
         gmsh.model.mesh.field.setString(field_size, "F", math_exp)
 
         # Finally, we use the field `field_size` for the cell size of the mesh.
@@ -228,4 +266,3 @@ if __name__ == "__main__":
 
 
 # End of file
-

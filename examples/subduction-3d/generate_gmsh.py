@@ -24,21 +24,21 @@ class App(GenerateMesh):
     KM = 1000.0  # scale to convert km to m
 
     CONTOURS_FILENAME = "cas_contours_dep.in.txt.gz"
-    FILENAME_LOCALDEM = "topography.nc"
+    FILENAME_LOCALDEM = "etopo2020_bedrock_local.nc"
     SLAB_THICKNESS = 50.0 * KM
     DOMAIN_X = DOMAIN_Y = 800 * KM
     DOMAIN_Z = 400 * KM
+    TOP_BOX = 10.0 * KM
 
     UP_DIP_ELEV = 12.0 * KM
-    UP_DIP_DIST = 600.0 * KM
     UP_DIP_ANGLE = math.radians(20.0)
 
-    DX_MIN = 1.0e4
-    DX_BIAS = 1.1
+    DX_MIN = 20.0 * KM
+    DX_BIAS = 1.08
 
-    CRUST_DEPTH = 40.0 * KM
+    CRUST_DEPTH = 30.0 * KM
     PATCH_LENGTH = 200.0 * KM
-    PATCH_WIDTH = 300.0 * KM
+    PATCH_WIDTH = 275.0 * KM
 
     def __init__(self):
         """Constructor."""
@@ -59,7 +59,6 @@ class App(GenerateMesh):
         topography_surface = self._create_topography_surface()
         slab_top_surface, contours = self._create_slab_top_surface()
         gmsh.model.occ.synchronize()  # needed for surface normal
-        return
 
         slab_normal = self._calculate_surface_avg_normal(slab_top_surface)
         slab_volume = self._create_slab_volume(slab_top_surface, slab_normal)
@@ -68,7 +67,6 @@ class App(GenerateMesh):
         continental_moho = self._create_continental_moho_surface()
 
         gmsh.model.occ.synchronize()
-        return
 
         # Create the topography on top of the bounding box
         tags, _ = gmsh.model.occ.fragment(topography_surface, [(3, domain_box)])
@@ -124,42 +122,53 @@ class App(GenerateMesh):
         slab_tags = tags[0:2]
         if self.debug:
             print(
-                f"Fragment slab with patch, tags={tags}. Setting domain={domain_tag}, crust={crust_tag}, slab={slab_tag} wedge={wedge_tag}, deleting={tags[2:]}"
+                f"Fragment slab with patch, tags={tags}. Setting domain={domain_tag}, crust={crust_tag}, slab={slab_tags} wedge={wedge_tag}, deleting={tags[2:]}"
             )
         gmsh.model.occ.remove(tags[2:], recursive=True)
 
-        # gmsh.model.occ.remove_all_duplicates()
+        # Imprint all volumes on other volumes and remove duplicate entities
+        gmsh.model.occ.remove_all_duplicates()
+        gmsh.model.occ.synchronize()
 
         # Get tags of the different sections using GUI
+
+        # Volumes
         self.mantle_volume = [domain_tag[1]]
         self.crust_volume = [crust_tag[1]]
         self.wedge_volume = [wedge_tag[1]]
-        self.slab_volume = [slab_tag[1]]  # [v for d, v in slab_tags]
+        self.slab_volume = [v for d, v in slab_tags]
 
-        self.slab_top = [33, 42, 46, 50]
+        # Boundary surfaces
+        self.surface_east = [78, 81]
+        self.surface_west = [74, 86, 90, 94]
+        self.surface_west_no_slab = [74]
 
-        gmsh.model.occ.synchronize()
-        return
+        self.surface_north = [73, 76, 85, 92]
+        self.surface_north_no_slab = [73, 76, 85]
+        self.surface_north_no_slab_splay = [76, 85]
+        self.surface_south = [67, 75, 80, 87]
+        self.surface_south_no_slab = [67, 75, 80]
+        self.surface_south_no_slab_splay = [75, 80]
 
-        self.surface_west_xpos = [86, 89]
-        self.surface_south_yneg = [88, 77, 83, 51]
-        self.surface_south_no_slab = [88, 77, 83]
-        self.surface_top_zpos = [52, 60, 68] + [78] + [90]
-        self.surface_north_ypos = [81, 84, 91, 70]
-        self.surface_north_no_slab = [81, 84, 91]
-        self.surface_bottom_zneg = [85]
-        self.surface_east_xneg = [80, 82] + [50, 59, 67]
-        self.surface_east_no_slab = [80, 82]
+        self.surface_top = [68, 82, 88, 93, 95]
+        self.surface_bottom = [77]
 
-        self.slab_top = [52, 56, 57, 58] + [60, 66, 65, 64] + [68, 69, 74, 73]
-        self.slab_top_edge = [177, 191, 200]
-        self.slab_bottom = [54, 62, 71]
-        self.slab_bottom_edge = [176, 190, 199]
-        self.slab_top_patch = [66, 65]
-        self.slab_top_patch_edge = [175, 174, 192, 188, 189]
+        # Faults
+        self.slab_top = [69, 71, 79, 83] + [70, 84]
+        # self.slab_top_edge = [118] # mac
+        self.slab_top_edge = [96]  # linux
 
-        self.surface_splay = [56, 66, 69]
-        self.edge_splay = [178, 193, 198]
+        self.slab_bottom = [57, 66]
+        # self.slab_bottom_edge = [109] # mac
+        self.slab_bottom_edge = [87]  # linux
+
+        self.slab_top_patch = [70, 84]
+        # self.slab_top_patch_edge = [200, 223, 182, 224, 203] # mac
+        self.slab_top_patch_edge = [160, 178, 181, 201, 202]  # linux
+
+        self.surface_splay = [72]
+        # self.splay_edge = [201, 204, 205] # mac
+        self.splay_edge = [179, 182, 183]  # linux
 
     def mark(self):
         """Mark geometry for materials, boundary conditions, faults, etc."""
@@ -172,69 +181,83 @@ class App(GenerateMesh):
 
         for material in materials:
             material.create_physical_group()
-        return
 
         face_groups = (
             BoundaryGroup(
-                name="boundary_yneg", tag=10, dim=2, entities=self.surface_south_yneg
+                name="boundary_south", tag=10, dim=2, entities=self.surface_south
             ),
             BoundaryGroup(
-                name="boundary_xneg", tag=11, dim=2, entities=self.surface_east_xneg
+                name="boundary_east", tag=11, dim=2, entities=self.surface_east
             ),
             BoundaryGroup(
-                name="boundary_ypos", tag=12, dim=2, entities=self.surface_north_ypos
+                name="boundary_north", tag=12, dim=2, entities=self.surface_north
             ),
             BoundaryGroup(
-                name="boundary_xpos", tag=13, dim=2, entities=self.surface_west_xpos
+                name="boundary_west", tag=13, dim=2, entities=self.surface_west
             ),
             BoundaryGroup(
-                name="boundary_zneg", tag=14, dim=2, entities=self.surface_bottom_zneg
+                name="boundary_bottom", tag=14, dim=2, entities=self.surface_bottom
             ),
             BoundaryGroup(
-                name="boundary_zpos", tag=15, dim=2, entities=self.surface_top_zpos
+                name="boundary_top", tag=15, dim=2, entities=self.surface_top
             ),
             BoundaryGroup(
-                name="boundary_xneg_noslab",
+                name="boundary_west_noslab",
                 tag=16,
                 dim=2,
-                entities=self.surface_east_no_slab,
+                entities=self.surface_west_no_slab,
             ),
             BoundaryGroup(
-                name="boundary_yneg_noslab",
+                name="boundary_south_noslab",
                 tag=17,
                 dim=2,
                 entities=self.surface_south_no_slab,
             ),
             BoundaryGroup(
-                name="boundary_ypos_noslab",
+                name="boundary_north_noslab",
                 tag=18,
                 dim=2,
                 entities=self.surface_north_no_slab,
             ),
-            BoundaryGroup(name="fault_slabtop", tag=20, dim=2, entities=self.slab_top),
             BoundaryGroup(
-                name="fault_slabbot", tag=21, dim=2, entities=self.slab_bottom
+                name="boundary_south_noslab_nosplay",
+                tag=19,
+                dim=2,
+                entities=self.surface_south_no_slab_splay,
             ),
             BoundaryGroup(
-                name="fault_slabtop_edge", tag=22, dim=1, entities=self.slab_top_edge
+                name="boundary_north_noslab_nosplay",
+                tag=20,
+                dim=2,
+                entities=self.surface_north_no_slab_splay,
+            ),
+            BoundaryGroup(name="fault_slabtop", tag=30, dim=2, entities=self.slab_top),
+            BoundaryGroup(
+                name="fault_slabtop_edge", tag=130, dim=1, entities=self.slab_top_edge
             ),
             BoundaryGroup(
-                name="fault_slabbot_edge", tag=23, dim=1, entities=self.slab_bottom_edge
+                name="fault_slabbot", tag=31, dim=2, entities=self.slab_bottom
             ),
             BoundaryGroup(
-                name="fault_slabtop_patch", tag=24, dim=2, entities=self.slab_top_patch
+                name="fault_slabbot_edge",
+                tag=131,
+                dim=1,
+                entities=self.slab_bottom_edge,
+            ),
+            BoundaryGroup(
+                name="fault_slabtop_patch", tag=32, dim=2, entities=self.slab_top_patch
             ),
             BoundaryGroup(
                 name="fault_slabtop_patch_edge",
-                tag=25,
+                tag=132,
                 dim=1,
                 entities=self.slab_top_patch_edge,
             ),
             BoundaryGroup(
-                name="fault_splay", tag=30, dim=2, entities=self.surface_splay
+                name="fault_splay", tag=33, dim=2, entities=self.surface_splay
             ),
             BoundaryGroup(
-                name="fault_splay_edge", tag=31, dim=1, entities=self.edge_splay
+                name="fault_splay_edge", tag=133, dim=1, entities=self.splay_edge
             ),
         )
         for group in face_groups:
@@ -258,13 +281,13 @@ class App(GenerateMesh):
         gmsh.model.mesh.field.setAsBackgroundMesh(field_size)
 
         gmsh.model.mesh.generate(3)
-        gmsh.model.mesh.optimize("Laplace2D")
+        gmsh.model.mesh.optimize()
 
     def _create_topography_surface(self):
         dem = netCDF4.Dataset(self.FILENAME_LOCALDEM)
         latitude_1d = dem.variables["lat"][:]
         longitude_1d = dem.variables["lon"][:]
-        elevation_2d = dem.variables["Band1"][:].astype(float)
+        elevation_2d = dem.variables["data"][:].astype(float)
 
         wires = []
         n_longitude = len(longitude_1d)
@@ -322,8 +345,6 @@ class App(GenerateMesh):
                 spline_west,
             ]
         )
-        gmsh.model.occ.synchronize()
-        return None, None
 
         point_tags = numpy.concatenate(all_points_on_grid).tolist()
         surface = gmsh.model.occ.addSurfaceFilling(wire, pointTags=point_tags)
@@ -354,8 +375,7 @@ class App(GenerateMesh):
         contours[5] = numpy.ascontiguousarray(numpy.flip(contours[5], axis=0))
         return contours
 
-    def _smooth_points(self, points):
-
+    def _calculate_local_strike(self, contour):
         def _smooth_values(values):
             window_size = values.shape[0] // 3
             window = numpy.ones(window_size) / window_size
@@ -365,10 +385,15 @@ class App(GenerateMesh):
             values_smoothed = numpy.convolve(values_padded, window, mode="valid")
             return values_smoothed[0:-1]
 
-        points_smoothed = numpy.stack(
-            (_smooth_values(points[:, 0]), _smooth_values(points[:, 1]))
+        contour_smooth = numpy.stack(
+            (_smooth_values(contour[:, 0]), _smooth_values(contour[:, 1]))
         ).T
-        return points_smoothed
+
+        sx = contour_smooth[:-1, 0] - contour_smooth[1:, 0]
+        sy = contour_smooth[:-1, 1] - contour_smooth[1:, 1]
+        strike = numpy.atan2(sx, sy)
+        strike = numpy.concatenate((numpy.array([strike[0]]), strike))
+        return strike
 
     def _create_extended_contours(self, contours):
         """Add contours up-dip from original contours.
@@ -381,29 +406,13 @@ class App(GenerateMesh):
         (2**(n+1)-1)) * dist_horiz, n=0,1,2,...
         """
         n_contours = 5
-        window_size = 20
 
         key = min(contours.keys())
         contour_top = contours[key]
         z_top = contour_top[0][2]
         dist_horiz = (self.UP_DIP_ELEV - z_top) / math.tan(self.UP_DIP_ANGLE)
 
-        contour_smooth = self._smooth_points(contour_top)
-        from matplotlib import pyplot
-
-        pyplot.plot(contour_smooth[:, 0], contour_smooth[:, 1], "rx-")
-        pyplot.show()
-        import pdb
-
-        pdb.set_trace()
-        sx = contour_smooth[:-1, 0] - contour_smooth[1:, 0]
-        sy = contour_smooth[:-1, 1] - contour_smooth[1:, 1]
-        strike = numpy.atan2(sx, sy)
-        strike = numpy.concatenate((numpy.array([strike[0]]), strike))
-        import pdb
-
-        pdb.set_trace()
-
+        strike = self._calculate_local_strike(contour_top)
         dx = -dist_horiz * numpy.cos(strike)
         dy = dist_horiz * numpy.sin(strike)
 
@@ -451,10 +460,10 @@ class App(GenerateMesh):
         domain = gmsh.model.occ.add_box(
             -self.DOMAIN_X / 2,
             -self.DOMAIN_Y / 2,
-            30 * self.KM - self.DOMAIN_Z,
+            -self.DOMAIN_Z,
             self.DOMAIN_X,
             self.DOMAIN_Y,
-            self.DOMAIN_Z,
+            self.TOP_BOX + self.DOMAIN_Z,
         )
         return domain
 

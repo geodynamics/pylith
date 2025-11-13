@@ -8,7 +8,7 @@ SimpleDB {
   num-values = 15 // number of material property values
   value-names =  density vs vp reference_stress_xx reference_stress_yy reference_stress_zz reference_stress_xy reference_stress_yz reference_stress_xz reference_strain_xx reference_strain_yy reference_strain_zz reference_strain_xy reference_strain_yz reference_strain_xz
   value-units =  kg/m**3  km/s  km/s Pa Pa Pa Pa Pa Pa none none none none none none // units
-  num-locs = 2 // number of locations
+  num-locs = 3 // number of locations
   data-dim = 1
   space-dim = 3
   cs-data = geographic {
@@ -34,5 +34,6 @@ SimpleDB {
 // (16) reference_strain_xy (none)
 // (17) reference_strain_yz (none)
 // (18) reference_strain_xz(none)
-0.0  0.0     0.0   3300.0  4.2  7.5  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0
-0.0  0.0  -402.0   3300.0  4.2  7.5  -1.18268199e10  -1.18268199e10  -1.18268199e10  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0
+0.0  0.0     4.0   3000.0  4.0  7.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0
+0.0  0.0     0.0   3000.0  4.0  7.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0
+0.0  0.0  -402.0   3000.0  4.0  7.0  -1.18268199e10  -1.18268199e10  -1.18268199e10  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0
