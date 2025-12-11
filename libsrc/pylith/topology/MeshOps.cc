@@ -129,7 +129,7 @@ pylith::topology::MeshOps::createSubdomainMesh(const pylith::topology::Mesh& mes
     } // if
 
     PetscDM dmSubdomain = NULL;
-    PylithCallPetsc(DMPlexFilter(dmDomain, dmLabel, labelValue, PETSC_FALSE, PETSC_FALSE, NULL, &dmSubdomain));
+    PylithCallPetsc(DMPlexFilter(dmDomain, dmLabel, labelValue, PETSC_FALSE, PETSC_FALSE, mesh.getComm(), NULL, &dmSubdomain));
 
     PetscInt maxConeSizeLocal = 0, maxConeSize = 0;
     PylithCallPetsc(DMPlexGetMaxSizes(dmSubdomain, &maxConeSizeLocal, NULL));
@@ -401,7 +401,7 @@ pylith::topology::MeshOps::removeHangingCells(const PetscDM& dmMesh) {
             PylithCallPetsc(DMLabelSetValue(labelInclude, face, labelValue));
         } // for
 
-        PylithCallPetsc(DMPlexFilter(dmMesh, labelInclude, labelValue, PETSC_FALSE, PETSC_FALSE, PETSC_NULLPTR, &dmClean));
+        PylithCallPetsc(DMPlexFilter(dmMesh, labelInclude, labelValue, PETSC_FALSE, PETSC_FALSE, comm, PETSC_NULLPTR, &dmClean));
         PylithCallPetsc(DMLabelDestroy(&labelInclude));
 
         // Create section using subpoint map to ensure sections are consistent.
