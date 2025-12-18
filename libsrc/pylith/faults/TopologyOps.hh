@@ -25,6 +25,7 @@ public:
     // PUBLIC METHODS /////////////////////////////////////////////////////
 public:
 
+#if 0
     /** Create the fault mesh.
      *
      * @param faultMesh Finite-element mesh of fault (output).
@@ -78,6 +79,7 @@ public:
                          PointSet& noReplaceCells,
                          const int debug);
 
+#endif
     // NEW STUFF
 
     /** Complete labels and change value to match dimension of point.

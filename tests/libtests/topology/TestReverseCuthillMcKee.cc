@@ -78,7 +78,6 @@ pylith::topology::TestReverseCuthillMcKee::testReorder(void) {
 
     // Check groups
     PetscInt numGroupsE, numGroups;
-    PetscErrorCode err;
     PylithCallPetscRequire(DMGetNumLabels(dmOrig, &numGroupsE));
     PylithCallPetscRequire(DMGetNumLabels(dmNew, &numGroups));
     REQUIRE(numGroupsE == numGroups);
@@ -190,7 +189,7 @@ pylith::topology::TestReverseCuthillMcKee::testReorder(void) {
 
 // ------------------------------------------------------------------------------------------------
 void
-pylith::topology::TestReverseCuthillMcKee::_initialize() {
+pylith::topology::TestReverseCuthillMcKee::_initialize(void) {
     PYLITH_METHOD_BEGIN;
     REQUIRE(_data);
 
@@ -207,7 +206,8 @@ pylith::topology::TestReverseCuthillMcKee::_initialize() {
         pylith::faults::FaultCohesiveStub fault;
         fault.setCohesiveLabelValue(100);
         fault.setSurfaceLabelName(_data->faultLabel);
-        fault.adjustTopology(_mesh);
+        pylith::topology::Mesh* meshNew = fault.transformTopology(_mesh);
+        delete _mesh;_mesh = meshNew;
     } // if
 
     PYLITH_METHOD_END;

@@ -14,7 +14,7 @@
 
 #include "pylith/topology/Distributor.hh" // HOLDSA Distributor
 #include "pylith/problems/Problem.hh" // USES Problem
-#include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
+#include "pylith/utils/error.hh" // USES PylithCallPetsc()
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 // ------------------------------------------------------------------------------------------------

@@ -19,6 +19,7 @@
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 #include "pylith/utils/journals.hh"
+#include "pylith/utils/error.hh"
 
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
@@ -292,8 +293,8 @@ pylith::feassemble::TestAuxiliaryFactory::testSetValuesFromDB(void) {
     pylith::topology::FieldQuery query(auxiliaryField);
     query.initializeWithDefaultQueries();
     query.openDB(&auxiliaryDB, scales.getLengthScale());
-    PetscErrorCode err = DMPlexComputeL2DiffLocal(dmField, t, query._functions, (void**)query._contextPtrs,
-                                                  auxiliaryField.getLocalVector(), &norm);REQUIRE(!err);
+    PylithCallPetscRequire(DMPlexComputeL2DiffLocal(dmField, t, query._functions, (void**)query._contextPtrs,
+                                                    auxiliaryField.getLocalVector(), &norm));
     query.closeDB(&auxiliaryDB);
     const PylithReal tolerance = 1.0e-6;
     CHECK_THAT(norm, Catch::Matchers::WithinAbs(0.0, tolerance));

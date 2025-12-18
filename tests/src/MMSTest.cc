@@ -44,8 +44,6 @@ pylith::testing::MMSTest::MMSTest(void) :
 
     REQUIRE(_problem);
     REQUIRE(_mesh);
-
-    _problem->setPetscDefaults(pylith::utils::PetscDefaults::TESTING | pylith::utils::PetscDefaults::SOLVER);
 } // setUp
 
 
@@ -181,7 +179,6 @@ pylith::testing::MMSTest::testJacobianFiniteDiff(void) {
     PYLITH_METHOD_BEGIN;
     assert(_problem);
 
-    PetscErrorCode err = PETSC_SUCCESS;
     pythia::journal::debug_t debug(GenericComponent::getName());
     if (debug.state()) {
         PylithCallPetsc(PetscOptionsSetValue(NULL, "-dm_plex_print_fem", "5"));

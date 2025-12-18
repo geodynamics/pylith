@@ -125,11 +125,10 @@ pylith::topology::RefineUniform::refine(const pylith::topology::Mesh& mesh) {
     PYLITH_METHOD_BEGIN;
     _RefineUniform::Events::logger.eventBegin(_RefineUniform::Events::refine);
 
-    PetscErrorCode err = PETSC_SUCCESS;
     PetscDM dmOrig = mesh.getDM();assert(dmOrig);
 
     if (_numLevels < 1) {
-        err = PetscObjectReference((PetscObject) dmOrig);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(PetscObjectReference((PetscObject) dmOrig));
         pylith::topology::Mesh* meshNew = new pylith::topology::Mesh(dmOrig, mesh);
         PYLITH_METHOD_RETURN(meshNew);
     } // if

@@ -233,6 +233,7 @@ pylith::faults::FaultCohesive::setRefDir2(const double vec[3]) {
 } // setRefDir2
 
 
+#if 0
 // ------------------------------------------------------------------------------------------------
 // Adjust mesh topology for fault implementation.
 void
@@ -299,6 +300,8 @@ pylith::faults::FaultCohesive::adjustTopology(pylith::topology::Mesh* const mesh
 } // adjustTopology
 
 
+#endif
+
 // ------------------------------------------------------------------------------------------------
 // Transform mesh topology for fault implementation.
 pylith::topology::Mesh*
@@ -315,32 +318,32 @@ pylith::faults::FaultCohesive::transformTopology(pylith::topology::Mesh* const m
         PetscDMLabel surfaceLabel = PETSC_NULLPTR;
         PetscBool hasLabel = PETSC_FALSE;
         PetscMPIInt rank;
-        PetscErrorCode err = PETSC_SUCCESS;
         PetscDM dmMesh = mesh->getDM();assert(dmMesh);
-        err = MPI_Comm_rank(PetscObjectComm((PetscObject) dmMesh), &rank);PYLITH_CHECK_ERROR(err);
-        err = DMHasLabel(dmMesh, _surfaceLabelName.c_str(), &hasLabel);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(MPI_Comm_rank(PetscObjectComm((PetscObject) dmMesh), &rank));
+        PylithCallPetsc(DMHasLabel(dmMesh, _surfaceLabelName.c_str(), &hasLabel));
         if (!hasLabel && !rank) {
             std::ostringstream msg;
             msg << "Mesh missing group '" << _surfaceLabelName << "' for fault interface condition.";
             throw std::runtime_error(msg.str());
         } // if
         if (!hasLabel && (rank > 0)) {
-            err = DMCreateLabel(dmMesh, _surfaceLabelName.c_str());PYLITH_CHECK_ERROR(err);
+            PylithCallPetsc(DMCreateLabel(dmMesh, _surfaceLabelName.c_str()));
         } // if
         pylith::faults::TopologyOps::updateCohesiveLabel(mesh, _surfaceLabelName.c_str(), _surfaceLabelValue);
 
-        err = DMGetLabel(dmMesh, _surfaceLabelName.c_str(), &surfaceLabel);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMGetLabel(dmMesh, _surfaceLabelName.c_str(), &surfaceLabel));
 
         DMPlexTransform transform = PETSC_NULLPTR;
-        err = DMPlexTransformCreate(mesh->getComm(), &transform);PYLITH_CHECK_ERROR(err);
-        err = DMPlexTransformSetDM(transform, dmMesh);PYLITH_CHECK_ERROR(err);
-        err = DMPlexTransformSetType(transform, DMPLEXCOHESIVEEXTRUDE);PYLITH_CHECK_ERROR(err);
-        err = DMPlexTransformSetActive(transform, surfaceLabel);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMPlexTransformCreate(mesh->getComm(), &transform));
+        PylithCallPetsc(DMPlexTransformSetDM(transform, dmMesh));
+        PylithCallPetsc(DMPlexTransformSetType(transform, DMPLEXCOHESIVEEXTRUDE));
+        PylithCallPetsc(DMPlexTransformSetActive(transform, surfaceLabel));
         // DMPlexTransformCohesiveExtrudeSetWidth(transform, 0.5); // TEMPORARY
-        err = DMPlexTransformSetUp(transform);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMPlexTransformSetUp(transform));
 
         PetscDM dmMeshNew = PETSC_NULLPTR;
-        err = DMPlexTransformApply(transform, dmMesh, &dmMeshNew);PYLITH_CHECK_ERROR(err);assert(dmMeshNew);
+        PylithCallPetsc(PetscObjectViewFromOptions((PetscObject)transform, NULL, "-dm_plex_transform_view"));
+        PylithCallPetsc(DMPlexTransformApply(transform, dmMesh, &dmMeshNew));assert(dmMeshNew);
 
         // Set label and label value for newly created cohesive cells.
         TopologyOps::setCohesiveCellLabel(dmMeshNew, dmMesh, getLabelName(), getLabelValue());
@@ -350,23 +353,25 @@ pylith::faults::FaultCohesive::transformTopology(pylith::topology::Mesh* const m
 
         // Create buried edge label
         PetscDMLabel transformTypes = NULL;
-        err = DMPlexTransformGetTransformTypes(transform, &transformTypes);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMPlexTransformGetTransformTypes(transform, &transformTypes));
 
         if (_buriedEdgesLabelName.empty()) {
             const std::string buriedEdgeLabelName = _surfaceLabelName + _FaultCohesive::buriedEdgeSuffix;
             PetscBool hasBuriedEdgeLabel = PETSC_FALSE;
-            err = DMHasLabel(dmMeshNew, buriedEdgeLabelName.c_str(), &hasBuriedEdgeLabel);
+            PylithCallPetsc(DMHasLabel(dmMeshNew, buriedEdgeLabelName.c_str(), &hasBuriedEdgeLabel));
             if (hasBuriedEdgeLabel) {
                 // :KLUDGE: Assume it is safe to delete this label.
                 PetscDMLabel dmBuriedEdgeLabel = PETSC_NULLPTR;
-                err = DMGetLabel(dmMeshNew, buriedEdgeLabelName.c_str(), &dmBuriedEdgeLabel);PYLITH_CHECK_ERROR(err);
-                err = DMLabelReset(dmBuriedEdgeLabel);PYLITH_CHECK_ERROR(err);
+                PylithCallPetsc(DMGetLabel(dmMeshNew, buriedEdgeLabelName.c_str(), &dmBuriedEdgeLabel));
+                PylithCallPetsc(DMLabelReset(dmBuriedEdgeLabel));
             } // if
             const PylithInt buriedEdgeLabelValue = 1;
             pylith::faults::TopologyOps::createBuriedEdgeLabel(dmMeshNew, dmMesh, buriedEdgeLabelName.c_str(), buriedEdgeLabelValue, surfaceLabel, transform);
         } // if
         meshNew = new pylith::topology::Mesh(dmMeshNew, *mesh);
-        err = DMPlexTransformDestroy(&transform);PYLITH_CHECK_ERROR(err);
+        // Check consistency of transformed mesh
+        PylithCallPetsc(DMPlexTransformCheck(transform, meshNew->getDM()));
+        PylithCallPetsc(DMPlexTransformDestroy(&transform));
 
         // Check consistency of mesh.
         pylith::topology::MeshOps::checkTopology(*mesh);
@@ -516,7 +521,7 @@ pylith::faults::FaultCohesive::createConstraints(const pylith::topology::Field& 
     PetscDM dm = solution.getDM();
     const std::string buriedEdgeLabelNameAuto = _surfaceLabelName + _FaultCohesive::buriedEdgeSuffix;
     PetscBool hasBuriedEdgeLabelAuto = PETSC_FALSE;
-    err = DMHasLabel(dm, buriedEdgeLabelNameAuto.c_str(), &hasBuriedEdgeLabelAuto);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMHasLabel(dm, buriedEdgeLabelNameAuto.c_str(), &hasBuriedEdgeLabelAuto));
     if (hasBuriedEdgeLabelAuto) {
         setBuriedEdgesLabelName(buriedEdgeLabelNameAuto.c_str());
         setBuriedEdgesLabelValue(1);

@@ -16,32 +16,29 @@
 /// Namespace for pylith package
 namespace pylith {
     namespace faults {
-        class TestAdjustTopology;
-        class TestAdjustTopology_Data;
+        class TestTransformTopology;
+        class TestTransformTopology_Data;
     } // faults
 } // pylith
 
-/// C++ unit testing of FaultCohesive::adjustTopology()
-class pylith::faults::TestAdjustTopology : public pylith::utils::GenericComponent {
+/// C++ unit testing of FaultCohesive::transformTopology()
+class pylith::faults::TestTransformTopology : public pylith::utils::GenericComponent {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Constructor.
-    TestAdjustTopology(TestAdjustTopology_Data* data);
+    TestTransformTopology(TestTransformTopology_Data* data);
 
     /// Destructor.
-    ~TestAdjustTopology(void);
+    ~TestTransformTopology(void);
 
-    /// Test adjustTopology().
+    /// Test transformTopology().
     void run(void);
-
-    /// Test new fault creation.
-    void run_transform(void);
 
     // PROTECTED MEMBERS //////////////////////////////////////////////////////////////////////////
 protected:
 
-    TestAdjustTopology_Data* _data; ///< Data for testing.
+    TestTransformTopology_Data* _data; ///< Data for testing.
     pylith::topology::Mesh* _mesh; ///< Finite-element mesh.
 
     // PRIVATE METHODS ////////////////////////////////////////////////////////////////////////////
@@ -50,17 +47,17 @@ private:
     /// Setup mesh.
     void _initialize();
 
-}; // class TestAdjustTopology
+}; // class TestTransformTopology
 
-class pylith::faults::TestAdjustTopology_Data {
+class pylith::faults::TestTransformTopology_Data {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Constructor
-    TestAdjustTopology_Data(void);
+    TestTransformTopology_Data(void);
 
     /// Destructor
-    ~TestAdjustTopology_Data(void);
+    ~TestTransformTopology_Data(void);
 
     // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
 public:
@@ -100,6 +97,6 @@ public:
 
     bool failureExpected; ///< Flag indicating adjust topology should fail.
 
-}; // TestAdjustTopology_Data
+}; // TestTransformTopology_Data
 
 // End of file

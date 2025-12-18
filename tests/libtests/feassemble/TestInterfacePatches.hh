@@ -68,7 +68,6 @@ public:
 
     const char* filename; ///< Name of mesh file.
     const char* faultLabel; ///< Label for fault.
-    const char* edgeLabel; ///< Label for buried fault edges.
 
     // Information for integration patches for material pairs.
     struct KeyValues {

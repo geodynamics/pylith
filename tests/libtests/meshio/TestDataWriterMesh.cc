@@ -166,7 +166,8 @@ pylith::meshio::TestDataWriterMesh::_initialize(void) {
         pylith::faults::FaultCohesiveStub fault;
         fault.setCohesiveLabelValue(data->faultId);
         fault.setSurfaceLabelName(data->faultLabel);
-        fault.adjustTopology(_mesh);
+        pylith::topology::Mesh* meshNew = fault.transformTopology(_mesh);
+        delete _mesh;_mesh = meshNew;
     } // if
 
     PYLITH_METHOD_END;

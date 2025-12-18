@@ -27,6 +27,7 @@
 
 #include <algorithm> // USES std::sort, std::find
 #include <map> // USES std::map
+#include <set> // USES std::set
 
 namespace pylith {
     namespace topology {
@@ -52,8 +53,20 @@ public:
 
                 static bool isInitialized;
             };
+
+            static
+            void moveFaultVertices(PetscScalar** coordsArray,
+                                   std::set<PetscInt>* movedVertices,
+                                   const PetscDM dmMesh,
+                                   const PetscInt faultFace,
+                                   const PetscReal faultNormal[],
+                                   const PetscReal scale,
+                                   const PetscInt vStart,
+                                   const PetscInt vEnd);
+
         };
     }
+
 }
 pylith::utils::EventLogger pylith::topology::_MeshOps::Events::logger;
 PylithInt pylith::topology::_MeshOps::Events::createSubdomainMesh;
@@ -371,6 +384,154 @@ pylith::topology::MeshOps::nondimensionalize(Mesh* const mesh,
     _MeshOps::Events::logger.eventEnd(_MeshOps::Events::nondimensionalize);
     PYLITH_METHOD_END;
 } // nondimensionalize
+
+
+// ------------------------------------------------------------------------------------------------
+// Create a new mesh with cells for each processes separated by a gap.
+pylith::topology::Mesh*
+pylith::topology::MeshOps::explode(const Mesh& mesh,
+                                   const double scale,
+                                   const double faultWidth) {
+    PYLITH_METHOD_BEGIN;
+    const double shrink = 0.8;
+
+    // Compute center of domain bounding box
+    double domainCenter[3] = {0.0, 0.0, 0.0};
+    PylithReal coordMin[3];
+    PylithReal coordMax[3];
+    PylithCallPetsc(DMGetBoundingBox(mesh.getDM(), coordMin, coordMax));
+    for (int i = 0; i < 3; ++i) {
+        domainCenter[i] = 0.5 * (coordMin[i] + coordMax[i]);
+    } // for
+
+    // Compute centroid of cells on this process
+    const size_t spaceDim = mesh.getDimension();
+    pylith::topology::Stratum cells(mesh.getDM(), topology::Stratum::HEIGHT, 0);
+    const size_t numCellsLocal = cells.size();
+    PetscReal centroid[3] = {0.0, 0.0, 0.0};
+    PetscReal totalVolume = 0.0;
+    for (PetscInt cell = cells.begin(); cell < cells.end(); ++cell) {
+        PetscReal cellCentroid[3];
+        PetscReal cellVolume = 0.0;
+
+        PylithCallPetsc(DMPlexComputeCellGeometryFVM(mesh.getDM(), cell, &cellVolume, cellCentroid, nullptr));
+        for (size_t i = 0; i < spaceDim; ++i) {
+            centroid[i] += cellCentroid[i] * cellVolume;
+        } // for
+        totalVolume += cellVolume;
+    } // for
+    for (size_t i = 0; i < spaceDim; ++i) {
+        centroid[i] /= totalVolume;
+    } // for
+    const double avgCellDim = pow(totalVolume / double(numCellsLocal), 1.0/double(spaceDim));
+    double centroidNew[3];
+    for (size_t i = 0; i < spaceDim; ++i) {
+        centroidNew[i] = centroid[i] + scale * avgCellDim * (centroid[i] - domainCenter[i]);
+    } // for
+
+    pylith::topology::Mesh* meshExploded = mesh.clone();assert(meshExploded);
+    PetscVec coordsOrig = nullptr;
+    PetscVec coordsNew = nullptr;
+    PylithCallPetsc(DMGetCoordinatesLocal(meshExploded->getDM(), &coordsOrig));
+    PylithCallPetsc(VecDuplicate(coordsOrig, &coordsNew));
+    PylithCallPetsc(VecCopy(coordsOrig, coordsNew));
+
+    // Update coordinates
+    PetscScalar* coordsArray = nullptr;
+    PetscInt coordDim = 0;
+    PylithCallPetsc(VecGetArray(coordsNew, &coordsArray));
+    PylithCallPetsc(DMGetCoordinateDim(meshExploded->getDM(), &coordDim));
+
+    // Shift all coordinates on this process
+    pylith::topology::Stratum vertices(meshExploded->getDM(), topology::Stratum::DEPTH, 0);
+    const PetscInt numVertices = vertices.size();
+    const PylithInt vStart = vertices.begin();
+    const PetscInt vEnd = vertices.end();
+    for (PetscInt iPoint = 0; iPoint < numVertices; ++iPoint) {
+        const PetscInt index = iPoint * coordDim;
+        for (PetscInt iDim = 0; iDim < coordDim; ++iDim) {
+            coordsArray[index+iDim] = centroidNew[iDim] + shrink * (coordsArray[index+iDim] - centroid[iDim]);
+        } // for
+    } // for
+
+    // Shift coordinates on fault faces.
+    // :KLUDGE: We move the vertices based on the first fault face we encounter.
+    // An improvement would be to move based on the average fault normal over all
+    // fault faces a vertex is in.
+    PetscDM dmExploded = meshExploded->getDM();
+    std::set<PetscInt> movedVerticesPos;
+    std::set<PetscInt> movedVerticesNeg;
+    for (PetscInt cell = cells.begin(); cell < cells.end(); ++cell) {
+        DMPolytopeType ct;
+        PylithCallPetsc(DMPlexGetCellType(dmExploded, cell, &ct));
+        if ((ct == DM_POLYTOPE_POINT_PRISM_TENSOR) ||
+            (ct == DM_POLYTOPE_SEG_PRISM_TENSOR) ||
+            (ct == DM_POLYTOPE_TRI_PRISM_TENSOR) ||
+            (ct == DM_POLYTOPE_QUAD_PRISM_TENSOR)) {
+            const PetscInt* cone;
+            PetscInt coneSize;
+            PylithCallPetsc(DMPlexGetCone(dmExploded, cell, &cone));
+            PylithCallPetsc(DMPlexGetConeSize(dmExploded, cell, &coneSize));
+            assert(coneSize > 2);
+            const PetscInt faultFaceNeg = cone[0];
+            const PetscInt faultFacePos = cone[1];
+
+            // Get fault normal
+            PetscReal faultNormal[3]; // fault normal points out of cell
+            PylithCallPetsc(DMPlexComputeCellGeometryFVM(dmExploded, faultFaceNeg, nullptr, nullptr, faultNormal));
+
+            PetscReal scale = +0.15 * avgCellDim;
+            _MeshOps::moveFaultVertices(&coordsArray, &movedVerticesNeg, dmExploded, faultFaceNeg, faultNormal, scale, vStart, vEnd);
+
+            scale = -0.15 * avgCellDim;
+            _MeshOps::moveFaultVertices(&coordsArray, &movedVerticesPos, dmExploded, faultFacePos, faultNormal, scale, vStart, vEnd);
+        } // if
+    } // for
+
+    PylithCallPetsc(VecRestoreArray(coordsNew, &coordsArray));
+    PylithCallPetsc(DMSetCoordinatesLocal(meshExploded->getDM(), coordsNew));
+    PylithCallPetsc(VecDestroy(&coordsNew));
+
+    PYLITH_METHOD_RETURN(meshExploded);
+} // explode
+
+
+// ------------------------------------------------------------------------------------------------
+void
+pylith::topology::_MeshOps::moveFaultVertices(PetscScalar** coordsArray,
+                                              std::set<PetscInt>* movedVertices,
+                                              const PetscDM dmMesh,
+                                              const PetscInt faultFace,
+                                              const PetscReal faultNormal[],
+                                              const PetscReal scale,
+                                              const PetscInt vStart,
+                                              const PetscInt vEnd) {
+    PYLITH_METHOD_BEGIN;
+
+    PetscInt coordDim = 0;
+    PylithCallPetsc(DMGetCoordinateDim(dmMesh, &coordDim));
+
+    // Get closure of face and screen out to get just the vertices
+    PetscInt *closure = NULL;
+    PetscInt closureSize = 0;
+    PylithCallPetsc(DMPlexGetTransitiveClosure(dmMesh, faultFace, PETSC_TRUE, &closureSize, &closure));
+    for (PetscInt s = 0; s < closureSize*2; s += 2) {
+        const PetscInt point = closure[s];
+
+        if ((point < vStart) || (point >= vEnd) || (movedVertices->count(point) > 0)) {
+            continue;
+        } // if
+
+        movedVertices->insert(point);
+        const PetscInt index = (point - vStart)* coordDim;
+        for (PetscInt iDim = 0; iDim < coordDim; ++iDim) {
+            (*coordsArray)[index+iDim] += scale * faultNormal[iDim];
+        } // for
+    } // for
+    PylithCallPetsc(DMPlexRestoreTransitiveClosure(dmMesh, faultFace, PETSC_TRUE, &closureSize, &closure));
+
+    PYLITH_METHOD_END;
+} // moveFaultVertices
 
 
 // ------------------------------------------------------------------------------------------------

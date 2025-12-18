@@ -135,7 +135,7 @@ pylith::feassemble::TestInterfacePatches::testCreateMaterialPairs(void) {
     delete patches;patches = NULL;
 
     PYLITH_METHOD_END;
-} // testCreateSinglees
+} // testCreateMaterialPairs
 
 
 // ------------------------------------------------------------------------------------------------
@@ -158,11 +158,8 @@ pylith::feassemble::TestInterfacePatches::_initialize() {
     _fault->setCohesiveLabelValue(101);
     _fault->setSurfaceLabelName(_data->faultLabel);
     _fault->setSurfaceLabelValue(1);
-    if (_data->edgeLabel) {
-        _fault->setBuriedEdgesLabelName(_data->edgeLabel);
-        _fault->setBuriedEdgesLabelValue(1);
-    } // if
-    _fault->adjustTopology(_mesh);
+    pylith::topology::Mesh* meshNew = _fault->transformTopology(_mesh);
+    delete _mesh;_mesh = meshNew;
 
     PYLITH_METHOD_END;
 } // _initialize
@@ -173,7 +170,6 @@ pylith::feassemble::TestInterfacePatches::_initialize() {
 pylith::feassemble::TestInterfacePatches_Data::TestInterfacePatches_Data(void) :
     filename(NULL),
     faultLabel(NULL),
-    edgeLabel(NULL),
     numPatches(0),
     patchKeys(NULL),
     patchNumCells(NULL),

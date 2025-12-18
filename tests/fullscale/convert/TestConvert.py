@@ -5,28 +5,27 @@
 # Copyright (c) 2010-2025, University of California, Davis and the PyLith Development Team.
 # All rights reserved.
 #
-# See https://mit-license.org/ and LICENSE.md and for license information. 
+# See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
 
 import unittest
-import numpy
 import h5py
 
 from pylith.apps.ConvertMeshApp import ConvertMeshApp
 
 
 class TestConvert(unittest.TestCase):
-    """Test converting mesh format.
-    """
+    """Test converting mesh format."""
+
     def setUp(self):
-        """Setup for test.
-        """
+        """Setup for test."""
         run_convert("quad", ["convert_quad.cfg"])
 
     def test_quad(self):
-        """Check mesh.
-        """
-        self._checkMeshHDF5("quad_small.h5", dim=2, numCells=12, numCorners=4, numVertices=17)
+        """Check mesh."""
+        self._checkMeshHDF5(
+            "quad_small.h5", dim=2, numCells=12, numCorners=4, numVertices=17
+        )
 
     def _checkMeshHDF5(self, filename, dim, numCells, numCorners, numVertices):
         groups = (
@@ -58,8 +57,10 @@ class TestConvert(unittest.TestCase):
         self.assertEqual(numCells, cells[:].shape[0])
         self.assertEqual(numCorners, cells[:].shape[1])
 
-        coords = h5["/topologies/domain/dms/coordinateDM/vecs/coordinates/coordinates"][:]
-        self.assertEqual(numVertices*dim, coords.shape[0])
+        coords = h5["/topologies/domain/dms/coordinateDM/vecs/coordinates/coordinates"][
+            :
+        ]
+        self.assertEqual(numVertices * dim, coords.shape[0])
 
         cone_sizes = h5["/topologies/domain/topology/strata/2/cone_sizes"][:]
         self.assertEqual(numCells, cone_sizes[0, 0])
@@ -68,8 +69,7 @@ class TestConvert(unittest.TestCase):
 
 # ----------------------------------------------------------------------
 def run_convert(appName, cfgfiles):
-    """Helper function to run pylith_convert.
-    """
+    """Helper function to run pylith_convert."""
     if str(appName) in dir(run_convert):
         return
 

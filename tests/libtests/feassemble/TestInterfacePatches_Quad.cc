@@ -34,18 +34,17 @@ pylith::feassemble::TestInterfacePatches_Quad::caseA(void) {
 
     data->filename = "data/quad_patches_a.mesh";
     data->faultLabel = "fault";
-    data->edgeLabel = NULL;
 
     static const size_t numPatches = 6;
     data->numPatches = numPatches;
 
     static const TestInterfacePatches_Data::KeyValues patchKeys[numPatches] = {
         {1, 1},
-        {1, 2},
-        {3, 2},
-        {3, 4},
-        {4, 4},
+        {2, 1},
+        {2, 3},
         {4, 3},
+        {4, 4},
+        {3, 4},
     };
     data->patchKeys = const_cast<TestInterfacePatches_Data::KeyValues*>(patchKeys);
 

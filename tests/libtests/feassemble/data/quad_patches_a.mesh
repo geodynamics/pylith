@@ -99,7 +99,7 @@ mesh = {
     }
   }
   vertex-group = {
-    name = fault
+    name = fault_vertices
     count = 8
     indices = {
       1
@@ -112,8 +112,8 @@ mesh = {
      22
     }
   }
-  vertex-group = {
-    name = fault_faces
+  face-group = {
+    name = fault
     count = 7
     indices = {
       0   1  4

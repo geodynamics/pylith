@@ -87,7 +87,7 @@ class App(GenerateMesh):
             #gmsh.model.mesh.set_recombine(3, self.s_xmid)
 
         gmsh.model.mesh.generate(3)
-        gmsh.model.mesh.optimize("Laplace2D")
+        self.improve_quality()
 
 
 if __name__ == "__main__":

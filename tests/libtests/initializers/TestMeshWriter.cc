@@ -104,8 +104,12 @@ pylith::initializers::TestMeshWriter::testRun(void) {
     initializer.setWriter(&io);
 
     pylith::problems::Problem problem;
-    pylith::topology::Mesh* meshNull = initializer.run(&mesh, problem);
-    REQUIRE(meshNull == &mesh);
+    pylith::topology::Mesh* meshNew = initializer.run(&mesh, problem);
+    CHECK(meshNew);
+    CHECK(dim == meshNew->getDimension());
+    CHECK(numCells == pylith::topology::MeshOps::getNumCells(*meshNew));
+    CHECK(numVertices == pylith::topology::MeshOps::getNumVertices(*meshNew));
+    delete meshNew;meshNew = nullptr;
 
     io.read(&mesh);
     CHECK(dim == mesh.getDimension());

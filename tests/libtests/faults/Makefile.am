@@ -18,11 +18,11 @@ TESTS = libtest_faults
 check_PROGRAMS = libtest_faults
 
 libtest_faults_SOURCES = \
-	TestAdjustTopology.cc \
-	TestAdjustTopology_Tri.cc \
-	TestAdjustTopology_Quad.cc \
-	TestAdjustTopology_Tet.cc \
-	TestAdjustTopology_Hex.cc \
+	TestTransformTopology.cc \
+	TestTransformTopology_Tri.cc \
+	TestTransformTopology_Quad.cc \
+	TestTransformTopology_Tet.cc \
+	TestTransformTopology_Hex.cc \
 	TestFaultCohesive.cc \
 	$(top_srcdir)/tests/src/FaultCohesiveStub.cc \
 	$(top_srcdir)/tests/src/StubMethodTracker.cc \
@@ -30,7 +30,7 @@ libtest_faults_SOURCES = \
 
 
 dist_noinst_HEADERS = \
-	TestAdjustTopology.hh
+	TestTransformTopology.hh
 
 
 # End of file

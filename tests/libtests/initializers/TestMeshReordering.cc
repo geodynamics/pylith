@@ -17,6 +17,7 @@
 #include "pylith/topology/MeshOps.hh" // USES MeshOps
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/problems/Problem.hh" // USES Problem
+#include "pylith/utils/error.hh" // USES PylithCallPetscRequire()
 
 #include "catch2/catch_test_macros.hpp"
 #include "catch2/matchers/catch_matchers_floating_point.hpp"
@@ -96,10 +97,9 @@ pylith::initializers::TestMeshReordering::testRun(void) {
     fieldOrig.allocate();
     PetscMat matrix = NULL;
     PetscInt bandwidthOrig = 0;
-    PetscErrorCode err = PETSC_SUCCESS;
-    err = DMCreateMatrix(fieldOrig.getDM(), &matrix);REQUIRE(!err);
-    err = MatComputeBandwidth(matrix, 0.0, &bandwidthOrig);REQUIRE(!err);
-    err = MatDestroy(&matrix);REQUIRE(!err);
+    PylithCallPetscRequire(DMCreateMatrix(fieldOrig.getDM(), &matrix));
+    PylithCallPetscRequire(MatComputeBandwidth(matrix, 0.0, &bandwidthOrig));
+    PylithCallPetscRequire(MatDestroy(&matrix));
 
     MeshReordering initializer;
     pylith::problems::Problem problem;
@@ -116,9 +116,9 @@ pylith::initializers::TestMeshReordering::testRun(void) {
     fieldNew.createDiscretization();
     fieldNew.allocate();
     PetscInt bandwidth = 0;
-    err = DMCreateMatrix(fieldNew.getDM(), &matrix);REQUIRE(!err);
-    err = MatComputeBandwidth(matrix, 0.0, &bandwidth);REQUIRE(!err);
-    err = MatDestroy(&matrix);REQUIRE(!err);
+    PylithCallPetscRequire(DMCreateMatrix(fieldNew.getDM(), &matrix));
+    PylithCallPetscRequire(MatComputeBandwidth(matrix, 0.0, &bandwidth));
+    PylithCallPetscRequire(MatDestroy(&matrix));
 
     CHECK(bandwidthOrig > 0);
     CHECK(bandwidth > 0);

@@ -136,12 +136,12 @@ pylith::topology::RefineOutputInterpolator::initialize(const PetscDM& dmMesh,
         PylithCallPetsc(DMPlexReorderSetDefault(_levels[iLevel].dm, DM_REORDER_DEFAULT_FALSE));
 
 #if 0 // needed for higher order coordinates (not needed for affine coordinates)
-        PetscCall(DMPlexCreateCoordinateSpace(rdm, rd, PETSC_FALSE, NULL));
-        PetscCall(PetscObjectSetName((PetscObject)rdm, "Refined Mesh with Linear Coordinates"));
-        PetscCall(DMGetCoordinateDM(odm, &cdm));
-        PetscCall(DMGetCoordinateDM(rdm, &rcdm));
-        PetscCall(DMGetCoordinatesLocal(odm, &cl));
-        PetscCall(DMGetCoordinatesLocal(rdm, &rcl));
+        PylithCallPetsc(DMPlexCreateCoordinateSpace(rdm, rd, PETSC_FALSE, NULL));
+        PylithCallPetsc(PetscObjectSetName((PetscObject)rdm, "Refined Mesh with Linear Coordinates"));
+        PylithCallPetsc(DMGetCoordinateDM(odm, &cdm));
+        PylithCallPetsc(DMGetCoordinateDM(rdm, &rcdm));
+        PylithCallPetsc(DMGetCoordinatesLocal(odm, &cl));
+        PylithCallPetsc(DMGetCoordinatesLocal(rdm, &rcl));
 #endif
 
         if (iLevel < _levels.size()-1) {

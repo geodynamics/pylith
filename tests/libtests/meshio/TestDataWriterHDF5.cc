@@ -555,6 +555,7 @@ pylith::meshio::TestDataWriterHDF5::checkFile(const char* filename) {
     PYLITH_METHOD_BEGIN;
 
     const std::string filenameE = "data/" + std::string(filename);
+    INFO("Checking file '" << filename << "' againts '" << filenameE << "'.");
 
     std::unique_ptr<_TestDataWriterHDF5::MeshData> reference(_TestDataWriterHDF5::MeshData::load(filenameE.c_str()));
     std::unique_ptr<_TestDataWriterHDF5::MeshData> candidate(_TestDataWriterHDF5::MeshData::load(filename));

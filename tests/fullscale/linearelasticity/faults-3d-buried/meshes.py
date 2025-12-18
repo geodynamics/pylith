@@ -15,10 +15,10 @@ class TetGmsh(object):
     """Mesh information for tet mesh using Gmsh.
     """
     ENTITIES = {
-        "domain": MeshEntity(ncells=1421, ncorners=4, nvertices=420+9),
+        "domain": MeshEntity(ncells=1397, ncorners=4, nvertices=422+9),
 
         # Materials
-        "mat_elastic": MeshEntity(ncells=1421, ncorners=4, nvertices=420+9),
+        "mat_elastic": MeshEntity(ncells=1397, ncorners=4, nvertices=422+9),
 
         # Faults
         "fault": MeshEntity(ncells=22, ncorners=3, nvertices=18),
@@ -27,9 +27,9 @@ class TetGmsh(object):
         "bc_xneg": MeshEntity(ncells=84, ncorners=3, nvertices=55),
         "bc_xpos": MeshEntity(ncells=84, ncorners=3, nvertices=55),
         "bc_yneg": MeshEntity(ncells=84, ncorners=3, nvertices=55),
-        "bc_ypos": MeshEntity(ncells=86, ncorners=3, nvertices=56),
+        "bc_ypos": MeshEntity(ncells=84, ncorners=3, nvertices=55),
         "bc_zneg": MeshEntity(ncells=162, ncorners=3, nvertices=98),
-        "bc_zpos": MeshEntity(ncells=162, ncorners=3, nvertices=93),
+        "bc_zpos": MeshEntity(ncells=164, ncorners=3, nvertices=94),
     }
 
 

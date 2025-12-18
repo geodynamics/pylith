@@ -89,6 +89,12 @@ pylith::feassemble::InterfacePatches::createMaterialPairs(const pylith::faults::
     std::map<std::pair<int,int>, int> integrationPatches;
     PylithInt patchLabelValue = 0;
 
+    PetscSF sf = NULL;
+    PylithCallPetsc(DMGetPointSF(dmSoln, &sf));
+    const PetscInt *leaves = NULL;
+    PetscInt numLeaves = 0, loc = -1;
+    PylithCallPetsc(PetscSFGetGraph(sf, NULL, &numLeaves, &leaves, NULL));
+
     PetscIS cohesiveCellsIS = NULL;
     PylithInt numCohesiveCells = 0;
     const PylithInt* cohesiveCells = NULL;
@@ -100,6 +106,13 @@ pylith::feassemble::InterfacePatches::createMaterialPairs(const pylith::faults::
     for (PylithInt iCohesive = 0; iCohesive < numCohesiveCells; ++iCohesive) {
         const PetscInt cohesiveCell = cohesiveCells[iCohesive];
         assert(pylith::topology::MeshOps::isCohesiveCell(dmSoln, cohesiveCell));
+
+        if (numLeaves > 0) {
+            PylithCallPetsc(PetscFindInt(cohesiveCell, numLeaves, leaves, &loc));
+            if (loc >= 0) { // in PetscSF
+                continue;
+            } // if
+        } // if
 
         PetscInt adjacentCellNegative = -1;
         PetscInt adjacentCellPositive = -1;
@@ -137,6 +150,8 @@ pylith::feassemble::InterfacePatches::createMaterialPairs(const pylith::faults::
         } // if
         PylithCallPetsc(DMSetLabelValue(dmSoln, patchLabelName.c_str(), cohesiveCell, integrationPatches[matPair]));
     } // for
+
+
     PylithCallPetsc(ISRestoreIndices(cohesiveCellsIS, &cohesiveCells));
     PylithCallPetsc(ISDestroy(&cohesiveCellsIS));
 

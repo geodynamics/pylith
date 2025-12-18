@@ -14,10 +14,11 @@
 
 #include "pylith/problems/Problem.hh" // USES Problem
 #include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/MeshOps.hh" // USES MeshOps
 #include "pylith/topology/Distributor.hh" // USES Distributor
 #include "pylith/materials/Material.hh" // USES Material
 #include "pylith/faults/FaultCohesive.hh" // USES FaultCohesive
-#include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
+#include "pylith/utils/error.hh" // USES PylithCallPetsc()
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 // ------------------------------------------------------------------------------------------------
@@ -40,7 +41,6 @@ pylith::initializers::MeshInsertInterfaces::deallocate(void) {
 } // deallocate
 
 
-#include <iostream>
 // ------------------------------------------------------------------------------------------------
 // Run initialization phase.
 pylith::topology::Mesh*
@@ -50,11 +50,19 @@ pylith::initializers::MeshInsertInterfaces::run(pylith::topology::Mesh* mesh,
     assert(mesh);
 
     if (!problem.getInterfaces().size()) {
-        PetscErrorCode err = PETSC_SUCCESS;
         PetscDM dmOrig = mesh->getDM();assert(dmOrig);
-        err = PetscObjectReference((PetscObject) dmOrig);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(PetscObjectReference((PetscObject) dmOrig));
         pylith::topology::Mesh* meshNew = new pylith::topology::Mesh(dmOrig, *mesh);
         PYLITH_METHOD_RETURN(meshNew);
+    } // if
+    PylithCallPetsc(DMPlexCheckGeometry(mesh->getDM()));
+
+    pythia::journal::debug_t debug("initialize_mesh");
+    if (debug.state()) {
+        mesh->view(":mesh_domain_before_faults.txt:ascii_info_detail");
+        pylith::topology::Mesh* meshExploded = pylith::topology::MeshOps::explode(*mesh);
+        meshExploded->view(":mesh_domain_before_faults.tex:ascii_latex");
+        delete meshExploded;meshExploded = nullptr;
     } // if
 
     // Determine starting label value for cohesive cells.
@@ -76,17 +84,31 @@ pylith::initializers::MeshInsertInterfaces::run(pylith::topology::Mesh* mesh,
         cohesiveLabelValue += 1;
     } // for
 
-    std::cout << "BEFORE OVERLAP" << std::endl;
-    meshNew->view();
-    meshNew->view(":before_overlap.tex:ascii_latex");
+    PylithCallPetsc(DMPlexCheckGeometry(meshNew->getDM()));
+
+    if (debug.state()) {
+        DMPlexCheckTransform(meshNew->getDM());
+        meshNew->view(":mesh_domain_before_overlap.txt:ascii_info_detail");
+        pylith::topology::Mesh* meshExploded = pylith::topology::MeshOps::explode(*meshNew);
+        meshExploded->view(":mesh_domain_before_overlap.tex:ascii_latex");
+        delete meshExploded;meshExploded = nullptr;
+    } // if
 
     PetscDM dmNew = nullptr;
+    // Set overlap since cohesive cells can be put in the SF
+    PylithCallPetsc(DMPlexSetOverlap(meshNew->getDM(), nullptr, 1));
     pylith::topology::Distributor::distributeOverlap(&dmNew, meshNew->getDM(), problem.getInterfaces());
     meshNew->setDM(dmNew);
 
-    std::cout << std::endl << "AFTER OVERLAP" << std::endl;
-    meshNew->view();
-    meshNew->view(":after_overlap.tex:ascii_latex");
+    /* Need to reorder supports of cohesive cells after migration */
+    DMPlexTransform tr;
+    PylithCallPetsc(DMPlexTransformCreate(meshNew->getComm(), &tr));
+    PylithCallPetsc(DMPlexTransformSetType(tr, DMPLEXCOHESIVEEXTRUDE));
+    // PylithCallPetsc(DMPlexTransformSetUp(tr));
+    PylithCallPetsc(DMPlexTransformOrderSupports(tr, dmNew, dmNew));
+    PylithCallPetsc(DMPlexTransformDestroy(&tr));
+
+    PylithCallPetsc(DMPlexCheckGeometry(meshNew->getDM()));
 
     PYLITH_METHOD_RETURN(meshNew);
 } // run

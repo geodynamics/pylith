@@ -158,8 +158,6 @@ EXTRA_DIST = \
 	topology/Distributor.py \
 	topology/Field.py \
 	topology/Mesh.py \
-	topology/MeshGenerator.py \
-	topology/MeshImporter.py \
 	topology/RefineMesh.py \
 	topology/RefineUniform.py \
 	topology/Subfield.py \

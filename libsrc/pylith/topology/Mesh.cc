@@ -65,13 +65,12 @@ pylith::topology::Mesh::Mesh(const PetscDM dm,
     } // if
 
     PetscReal lengthScale = 1.0;
-    PetscErrorCode err = PETSC_SUCCESS;
-    err = DMPlexGetScale(meshOrig.getDM(), PETSC_UNIT_LENGTH, &lengthScale);PYLITH_CHECK_ERROR(err);
-    err = DMPlexSetScale(_dm, PETSC_UNIT_LENGTH, lengthScale);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMPlexGetScale(meshOrig.getDM(), PETSC_UNIT_LENGTH, &lengthScale));
+    PylithCallPetsc(DMPlexSetScale(_dm, PETSC_UNIT_LENGTH, lengthScale));
 
     const char* name = nullptr;
-    err = PetscObjectGetName((PetscObject) meshOrig._dm, &name);PYLITH_CHECK_ERROR(err);
-    err = PetscObjectSetName((PetscObject) _dm, name);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(PetscObjectGetName((PetscObject) meshOrig._dm, &name));
+    PylithCallPetsc(PetscObjectSetName((PetscObject) _dm, name));
 
     PYLITH_METHOD_END;
 } // constructor

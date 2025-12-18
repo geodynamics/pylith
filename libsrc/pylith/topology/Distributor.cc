@@ -149,12 +149,16 @@ pylith::topology::Distributor::distribute(const pylith::topology::Mesh& mesh,
     PylithCallPetsc(DMPlexDistribute(dmOrig, overlap, NULL, &dmTmp));
     pylith::topology::Mesh* meshNew = nullptr;
     if (dmTmp) {
+#if 1
         PylithCallPetsc(Distributor::distributeOverlap(&dmNew, dmTmp, faults));
         PylithCallPetsc(DMDestroy(&dmTmp));
         PylithCallPetsc(DMPlexDistributeSetDefault(dmNew, PETSC_FALSE));
         PylithCallPetsc(DMPlexReorderCohesiveSupports(dmNew));
         PylithCallPetsc(DMViewFromOptions(dmNew, NULL, "-pylith_dist_dm_view"));
         meshNew = new pylith::topology::Mesh(dmNew, mesh);assert(meshNew);
+#else
+        meshNew = new pylith::topology::Mesh(dmTmp, mesh);assert(meshNew);
+#endif
     } else {
         PetscObjectReference(PetscObject(dmOrig));
         meshNew = new pylith::topology::Mesh(dmOrig, mesh);assert(meshNew);
@@ -163,10 +167,19 @@ pylith::topology::Distributor::distribute(const pylith::topology::Mesh& mesh,
     pythia::journal::debug_t debug(PyreComponent::getName());
     if (debug.state()) {
         meshNew->view(":mesh_distributed.txt:ascii_info_detail");
-        meshNew->view(":mesh_distributed.tex:ascii_latex");
+        pylith::topology::Mesh* meshExploded = pylith::topology::MeshOps::explode(*meshNew);
+        meshExploded->view(":mesh_domain_after_initialize.tex:ascii_latex");
+        delete meshExploded;meshExploded = nullptr;
     } // if
     if (_writer) {
         _Distributor::write(_writer, *meshNew);
+    } // if
+
+    if (pylith::topology::MeshOps::getNumCells(*meshNew) == 0) {
+        std::ostringstream msg;
+        msg << "No cells are assigned to process " << commRank << " after distribution. "
+            << "Either there are too many processes for the mesh or there is a topology related error.";
+        throw std::runtime_error(msg.str());
     } // if
 
     PYLITH_METHOD_RETURN(meshNew);
@@ -208,9 +221,9 @@ pylith::topology::Distributor::distributeOverlap(PetscDM* dmOverlap,
     PetscInt* ovExcludeLabelValues = (numFaults > 0) ? new PetscInt[numFaults] : NULL;
 
     PylithCallPetsc(DMGetDimension(dmMesh, &dim));
-    for (int i = 0; i < numFaults; ++i) {
+    for (size_t i = 0; i < numFaults; ++i) {
         const char* surfaceLabelName = faults[i]->getSurfaceLabelName();
-        PylithCalLPetsc(DMGetLabel(dmMesh, surfaceLabelName, &ovIncludeLabels[i]));
+        PylithCallPetsc(DMGetLabel(dmMesh, surfaceLabelName, &ovIncludeLabels[i]));
         ovIncludeLabelValues[i] = dim - 1;
 
         const char* cohesiveLabelName = faults[i]->getCohesiveLabelName();
@@ -237,7 +250,7 @@ pylith::topology::Distributor::distributeOverlap(PetscDM* dmOverlap,
     PylithCallPetsc(DMPlexStratifyMigrationSF(dmMesh, sfOverlap, &sfStratified));
     PylithCallPetsc(PetscSFDestroy(&sfOverlap));
     sfOverlap = sfStratified;
-    PylithCallPetsc(PetscObjectSetName((PetscObject) sfOverlap, "Overlap SF"));
+    PylithCallPetsc(PetscObjectSetName((PetscObject) sfOverlap, "Overlap SF "));
     PylithCallPetsc(PetscSFSetFromOptions(sfOverlap));
 
     PylithCallPetsc(PetscSectionDestroy(&rootSection));
@@ -284,15 +297,15 @@ pylith::topology::_Distributor::write(meshio::DataWriter* const writer,
     PylithScalar rankReal = PylithReal(commRank);
 
     pylith::topology::Field partitionField(mesh);
-    partitionField.setLabel("partition");
+    partitionField.setLabel("partition ");
 
     pylith::topology::Field::Description description;
-    description.label = "partition";
-    description.alias = "partition";
+    description.label = "partition ";
+    description.alias = "partition ";
     description.vectorFieldType = pylith::topology::Field::SCALAR;
     description.numComponents = 1;
     description.componentNames.resize(1);
-    description.componentNames[0] = "rank";
+    description.componentNames[0] = "rank ";
     description.scale = 1.0;
     description.validator = NULL;
 
@@ -324,7 +337,7 @@ pylith::topology::_Distributor::write(meshio::DataWriter* const writer,
     const int basisOrder = 0;
     const int refineLevels = 0;
     pylith::meshio::OutputSubfield* outputField =
-        pylith::meshio::OutputSubfield::create(partitionField, mesh, "partition", basisOrder, refineLevels);
+        pylith::meshio::OutputSubfield::create(partitionField, mesh, "partition ", basisOrder, refineLevels);
     outputField->project(partitionField.getOutputVector());
 
     const PylithScalar t = 0.0;
@@ -380,14 +393,7 @@ pylith::topology::_Distributor::DMPlexCopy(DM dmin,
     PylithCallPetsc(DMPlexSetUseCeed(dmout, useCeed));
     PylithCallPetsc(DMPlexGetPartitionBalance(dmin, &balance_partition));
     PylithCallPetsc(DMPlexSetPartitionBalance(dmout, balance_partition));
-    ((DM_Plex *)dmout->data)->useHashLocation = ((DM_Plex *)dmin->data)->useHashLocation;
-    ((DM_Plex *)dmout->data)->printSetValues = ((DM_Plex *)dmin->data)->printSetValues;
-    ((DM_Plex *)dmout->data)->printFEM = ((DM_Plex *)dmin->data)->printFEM;
-    ((DM_Plex *)dmout->data)->printFVM = ((DM_Plex *)dmin->data)->printFVM;
-    ((DM_Plex *)dmout->data)->printL2 = ((DM_Plex *)dmin->data)->printL2;
-    ((DM_Plex *)dmout->data)->printLocate = ((DM_Plex *)dmin->data)->printLocate;
-    ((DM_Plex *)dmout->data)->printProject = ((DM_Plex *)dmin->data)->printProject;
-    ((DM_Plex *)dmout->data)->printTol = ((DM_Plex *)dmin->data)->printTol;
+    PylithCallPetsc(DMPlexCopyFlags(dmin, dmout));
     PetscFunctionReturn(PETSC_SUCCESS);
 }
 

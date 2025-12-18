@@ -116,11 +116,14 @@ public:
      */
     void setRefDir2(const PylithReal vec[3]);
 
+#if 0
     /** Adjust mesh topology for fault implementation.
      *
      * @param mesh[in] PETSc mesh.
      */
     void adjustTopology(pylith::topology::Mesh* const mesh);
+
+#endif
 
     /** Adjust mesh topology for fault implementation.
      *

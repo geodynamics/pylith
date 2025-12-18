@@ -37,13 +37,11 @@ public:
     // PRIVATE METHODS ////////////////////////////////////////////////////////////////////////////
 private:
 
-    /** Setup mesh.
-     *
-     * @mesh Mesh to setup.
-     */
-    void _initializeMesh(Mesh* const mesh);
+    /// Setup mesh.
+    void _initialize(void);
 
     TestRefineUniform_Data* _data; ///< Data for testing.
+    Mesh* _mesh; ///< Finite-element mesh.
 
 }; // class TestRefineUniform
 

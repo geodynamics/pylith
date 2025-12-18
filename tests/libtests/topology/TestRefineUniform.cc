@@ -16,6 +16,7 @@
 #include "tests/src/FaultCohesiveStub.hh" // USES FaultCohesiveStub
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
+#include "pylith/topology/MeshOps.hh" // USES MeshOps
 #include "pylith/topology/Stratum.hh" // USES Stratum
 #include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
@@ -31,14 +32,24 @@
 // Setup testing data.
 pylith::topology::TestRefineUniform::TestRefineUniform(TestRefineUniform_Data* data) :
     _data(data) {
+    PYLITH_METHOD_BEGIN;
     REQUIRE(_data);
+
+    _mesh = nullptr;
+
+    PYLITH_METHOD_END;
 } // constructor
 
 
 // ------------------------------------------------------------------------------------------------
 // Destructor.
 pylith::topology::TestRefineUniform::~TestRefineUniform(void) {
-    delete _data;_data = NULL;
+    PYLITH_METHOD_BEGIN;
+
+    delete _data;_data = nullptr;
+    delete _mesh;_mesh = nullptr;
+
+    PYLITH_METHOD_END;
 } // destructor
 
 
@@ -49,16 +60,17 @@ pylith::topology::TestRefineUniform::testRefine(void) {
     PYLITH_METHOD_BEGIN;
     REQUIRE(_data);
 
-    Mesh mesh(_data->cellDim);
-    _initializeMesh(&mesh);
+    _initialize();
+    REQUIRE(_mesh);
 
     RefineUniform refiner;
     refiner.setNumLevels(_data->refineLevel);
-    Mesh* meshNew = refiner.refine(mesh);
-    const PetscDM dmNewMesh = meshNew->getDM();assert(dmNewMesh);
+    Mesh* meshNew = refiner.refine(*_mesh);
+    delete _mesh;_mesh = meshNew;meshNew = nullptr;
+    const PetscDM dmNewMesh = _mesh->getDM();assert(dmNewMesh);
 
     // Check mesh dimension
-    REQUIRE(_data->cellDim == meshNew->getDimension());
+    REQUIRE(_data->cellDim == _mesh->getDimension());
 
     // Check vertices
     pylith::topology::Stratum verticesStratum(dmNewMesh, topology::Stratum::DEPTH, 0);
@@ -129,11 +141,11 @@ pylith::topology::TestRefineUniform::testRefine(void) {
 
     // Check vertex groups
     pylith::string_vector vertexGroupNames;
-    pylith::meshio::MeshBuilder::getVertexGroupNames(&vertexGroupNames, *meshNew);
+    pylith::meshio::MeshBuilder::getVertexGroupNames(&vertexGroupNames, *_mesh);
     for (size_t iGroup = 0; iGroup < _data->numVertexGroups; ++iGroup) {
         INFO("Checking vertex group '"<<_data->vertexGroupNames[iGroup]<<"'.");
         int_array points;
-        pylith::meshio::MeshBuilder::getVertexGroup(&points, *meshNew, _data->vertexGroupNames[iGroup]);
+        pylith::meshio::MeshBuilder::getVertexGroup(&points, *_mesh, _data->vertexGroupNames[iGroup]);
         REQUIRE(_data->vertexGroupSizes[iGroup] == points.size());
         for (size_t iPoint = 0; iPoint < points.size(); ++iPoint) {
             CHECK(points[iPoint] >= 0);
@@ -142,16 +154,18 @@ pylith::topology::TestRefineUniform::testRefine(void) {
     } // for
 
     // Check face groups
+    const bool hasFault = _data->faultA || _data->faultB;
     pylith::topology::Stratum facesStratum(dmNewMesh, topology::Stratum::HEIGHT, 1);
     const PetscInt fStart = facesStratum.begin();
     const PetscInt fEnd = facesStratum.end();
     pylith::string_vector faceGroupNames;
-    pylith::meshio::MeshBuilder::getFaceGroupNames(&faceGroupNames, *meshNew);
+    pylith::meshio::MeshBuilder::getFaceGroupNames(&faceGroupNames, *_mesh);
     REQUIRE(_data->numFaceGroups == faceGroupNames.size());
     for (size_t iGroup = 0; iGroup < _data->numFaceGroups; ++iGroup) {
-        INFO("Checking face group '"<<_data->faceGroupNames[iGroup]<<"'.");
+        INFO("Checking face group '"<< _data->faceGroupNames[iGroup] <<"'.");
         PetscInt numFaces = 0;
-        const PetscInt labelValue = 1;
+        const PetscInt dim = _mesh->getDimension();
+        const PetscInt labelValue = (hasFault && std::string(_data->faceGroupNames[iGroup]) == std::string("fault")) ? dim-1 : 1;
         PylithCallPetscRequire(DMGetStratumSize(dmNewMesh, _data->faceGroupNames[iGroup], labelValue, &numFaces));
         REQUIRE(_data->faceGroupSizes[iGroup] == size_t(numFaces));
         PetscIS facesIS = NULL;
@@ -165,7 +179,6 @@ pylith::topology::TestRefineUniform::testRefine(void) {
         PylithCallPetscRequire(ISDestroy(&facesIS));
 
     } // for
-    delete meshNew;meshNew = nullptr;
 
     PYLITH_METHOD_END;
 } // testRefine
@@ -173,28 +186,34 @@ pylith::topology::TestRefineUniform::testRefine(void) {
 
 // ------------------------------------------------------------------------------------------------
 void
-pylith::topology::TestRefineUniform::_initializeMesh(Mesh* const mesh) {
+pylith::topology::TestRefineUniform::_initialize(void) {
     PYLITH_METHOD_BEGIN;
     REQUIRE(_data);
-    REQUIRE(mesh);
+
+    delete _mesh;_mesh = new Mesh;REQUIRE(_mesh);
 
     pylith::meshio::MeshIOAscii iohandler;
     iohandler.setFilename(_data->filename);
-    iohandler.read(mesh);
+    iohandler.read(_mesh);
+    REQUIRE(_mesh);
+    REQUIRE(pylith::topology::MeshOps::getNumCells(*_mesh) > 0);
+    REQUIRE(pylith::topology::MeshOps::getNumVertices(*_mesh) > 0);
 
     // Adjust topology if necessary.
     if (_data->faultA) {
         faults::FaultCohesiveStub faultA;
         faultA.setCohesiveLabelValue(100);
         faultA.setSurfaceLabelName(_data->faultA);
-        faultA.adjustTopology(mesh);
+        pylith::topology::Mesh* meshNew = faultA.transformTopology(_mesh);
+        delete _mesh;_mesh = meshNew;
     } // if
 
     if (_data->faultB) {
         faults::FaultCohesiveStub faultB;
         faultB.setCohesiveLabelValue(101);
         faultB.setSurfaceLabelName(_data->faultB);
-        faultB.adjustTopology(mesh);
+        pylith::topology::Mesh* meshNew = faultB.transformTopology(_mesh);
+        delete _mesh;_mesh = meshNew;
     } // if
 
     PYLITH_METHOD_END;

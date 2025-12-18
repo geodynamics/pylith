@@ -13,7 +13,7 @@
 #include "pylith/initializers/MeshReordering.hh" // implementation of class methods
 
 #include "pylith/topology/ReverseCuthillMcKee.hh" // USES ReverseCuthillMcKee
-#include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
+#include "pylith/utils/error.hh" // USES PylithCallPetsc()
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 // ------------------------------------------------------------------------------------------------

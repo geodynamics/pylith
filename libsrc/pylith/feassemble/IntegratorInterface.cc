@@ -661,8 +661,6 @@ pylith::feassemble::_IntegratorInterface::computeResidual(pylith::topology::Fiel
         PylithCallPetsc(ISGetIndices(patchCellsIS, &patchCells));assert(patchCells);
         assert(pylith::topology::MeshOps::isCohesiveCell(dmSoln, patchCells[0]));
 
-        assert(solution->getLocalVector());
-        assert(residual->getLocalVector());
         PylithCallPetsc(DMPlexComputeResidualHybridByKey(dmSoln, weakFormKeys, patchCellsIS, t, solution->getLocalVector(),
                                                          solutionDotVec, t, residual->getLocalVector(), NULL));
         PylithCallPetsc(ISRestoreIndices(patchCellsIS, &patchCells));
@@ -730,11 +728,11 @@ pylith::feassemble::_IntegratorInterface::computeJacobian(PetscMat jacobianMat,
 
         assert(solution->getLocalVector());
         PylithCallPetsc(DMPlexComputeJacobianHybridByKey(dmSoln, weakFormKeys, patchCellsIS, t, s_tshift, solution->getLocalVector(),
-                                                         solutionDot->getLocalVector(), jacobianMat, precondMat,
-                                                         NULL));
+                                                         solutionDot->getLocalVector(), jacobianMat, precondMat, NULL));
         PylithCallPetsc(ISRestoreIndices(patchCellsIS, &patchCells));
         PylithCallPetsc(ISDestroy(&patchCellsIS));
-    }
+    } // for
+
     PYLITH_METHOD_END;
 } // computeJacobian
 
