@@ -23,9 +23,9 @@
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/FieldQuery.hh" // HOLDSA FieldQuery
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
+#include "pylith/scales/Scales.hh" // USES Scales
 
 #include "spatialdata/spatialdb/TimeHistory.hh" // USES TimeHistory
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD*
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL*
@@ -52,7 +52,15 @@ pylith::sources::AuxiliaryFactoryMomentTensorForce::addMomentTensor(void) { // m
     PYLITH_JOURNAL_DEBUG("addMomentTensor(void)");
 
     const char* subfieldName = "moment_tensor";
-    const char* componentNames[6] = {
+    // For 2D: Mxx, Myy, Mxy, Myx (4 components)
+    // For 3D: Mxx, Myy, Mzz, Mxy, Myz, Mxz (6 components using symmetric Voigt notation)
+    const char* componentNames2D[4] = {
+        "moment_tensor_xx",
+        "moment_tensor_yy",
+        "moment_tensor_xy",
+        "moment_tensor_yx"
+    };
+    const char* componentNames3D[6] = {
         "moment_tensor_xx",
         "moment_tensor_yy",
         "moment_tensor_zz",
@@ -60,8 +68,9 @@ pylith::sources::AuxiliaryFactoryMomentTensorForce::addMomentTensor(void) { // m
         "moment_tensor_yz",
         "moment_tensor_xz"
     };
+    const char** componentNames = (3 == _spaceDim) ? componentNames3D : componentNames2D;
     const int tensorSize = (3 == _spaceDim) ? 6 : (2 == _spaceDim) ? 4 : 1;
-    const PylithReal pressureScale = _normalizer->getPressureScale();
+    const PylithReal pressureScale = _scales->getRigidityScale();
 
     pylith::topology::Field::Description description;
     description.label = subfieldName;
@@ -92,7 +101,7 @@ pylith::sources::AuxiliaryFactoryMomentTensorForce::addTimeDelay(void) { // time
     const char* subfieldName = "time_delay";
 
     pylith::topology::Field::Description description;
-    const PylithReal timeScale = _normalizer->getTimeScale();
+    const PylithReal timeScale = _scales->getTimeScale();
     description.label = subfieldName;
     description.alias = subfieldName;
     description.vectorFieldType = pylith::topology::Field::SCALAR;
@@ -119,7 +128,7 @@ pylith::sources::AuxiliaryFactoryMomentTensorForce::addCenterFrequency(void) { /
     PYLITH_JOURNAL_DEBUG("addCenterFrequency(void)");
 
     const char* subfieldName = "center_frequency";
-    const PylithReal timeScale = _normalizer->getTimeScale();
+    const PylithReal timeScale = _scales->getTimeScale();
 
     pylith::topology::Field::Description description;
     description.label = subfieldName;
@@ -148,7 +157,7 @@ pylith::sources::AuxiliaryFactoryMomentTensorForce::addTimeHistoryStartTime(void
     const char* subfieldName = "time_history_start_time";
 
     assert(_defaultDescription);
-    assert(_normalizer);
+    assert(_scales);
     pylith::topology::FieldBase::Description subfieldDescription(*_defaultDescription);
     subfieldDescription.label = subfieldName;
     subfieldDescription.alias = subfieldName;
@@ -156,7 +165,7 @@ pylith::sources::AuxiliaryFactoryMomentTensorForce::addTimeHistoryStartTime(void
     subfieldDescription.numComponents = 1;
     subfieldDescription.componentNames.resize(1);
     subfieldDescription.componentNames[0] = subfieldName;
-    subfieldDescription.scale = _normalizer->getTimeScale();
+    subfieldDescription.scale = _scales->getTimeScale();
     subfieldDescription.validator = NULL;
 
     _field->subfieldAdd(subfieldDescription, getSubfieldDiscretization(subfieldName));
@@ -176,7 +185,7 @@ pylith::sources::AuxiliaryFactoryMomentTensorForce::addTimeHistoryValue(void) {
     const char* subfieldName = "time_history_value";
 
     assert(_defaultDescription);
-    assert(_normalizer);
+    assert(_scales);
     pylith::topology::FieldBase::Description subfieldDescription(*_defaultDescription);
     subfieldDescription.label = subfieldName;
     subfieldDescription.alias = subfieldName;

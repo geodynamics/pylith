@@ -9,10 +9,7 @@
 # =================================================================================================
 
 SUBDIRS = \
-	linearelasticity \
-	incompressibleelasticity \
-    poroelasticity \
-	sources
+	momenttensor-2d
 
 
 # End of file 

@@ -23,9 +23,9 @@
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/FieldQuery.hh" // HOLDSA FieldQuery
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
+#include "pylith/scales/Scales.hh" // USES Scales
 
 #include "spatialdata/spatialdb/TimeHistory.hh" // USES TimeHistory
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD*
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL*
@@ -52,7 +52,7 @@ pylith::sources::AuxiliaryFactorySourceTime::addCenterFrequency(void) { // cente
     PYLITH_JOURNAL_DEBUG("addCenterFrequency(void)");
 
     const char* subfieldName = "center_frequency";
-    const PylithReal timeScale = _normalizer->getTimeScale();
+    const PylithReal timeScale = _scales->getTimeScale();
 
     pylith::topology::Field::Description description;
     description.label = subfieldName;
@@ -80,7 +80,7 @@ pylith::sources::AuxiliaryFactorySourceTime::addTimeHistoryStartTime(void) {
 
     const char* subfieldName = "time_history_start_time";
 
-    assert(_normalizer);
+    assert(_scales);
     pylith::topology::Field::Description description;
     description.label = subfieldName;
     description.alias = subfieldName;
@@ -88,7 +88,7 @@ pylith::sources::AuxiliaryFactorySourceTime::addTimeHistoryStartTime(void) {
     description.numComponents = 1;
     description.componentNames.resize(1);
     description.componentNames[0] = subfieldName;
-    description.scale = _normalizer->getTimeScale();
+    description.scale = _scales->getTimeScale();
     description.validator = NULL;
 
     _field->subfieldAdd(description, getSubfieldDiscretization(subfieldName));
@@ -107,7 +107,7 @@ pylith::sources::AuxiliaryFactorySourceTime::addTimeHistoryValue(void) {
 
     const char* subfieldName = "time_history_value";
 
-    assert(_normalizer);
+    assert(_scales);
     pylith::topology::Field::Description description;
     description.label = subfieldName;
     description.alias = subfieldName;

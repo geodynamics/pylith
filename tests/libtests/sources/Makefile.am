@@ -8,11 +8,7 @@
 # See https://mit-license.org/ and LICENSE.md and for license information. 
 # =================================================================================================
 
-SUBDIRS = \
-	linearelasticity \
-	incompressibleelasticity \
-    poroelasticity \
-	sources
+# Placeholder for sources tests
 
 
-# End of file 
+# End of file

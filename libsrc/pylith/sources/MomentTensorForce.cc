@@ -29,6 +29,7 @@
 #include "pylith/topology/Field.hh" // USES Field::SubfieldInfo
 #include "pylith/topology/FieldOps.hh" // USES FieldOps
 #include "pylith/fekernels/DispVel.hh" // USES DispVel kernels
+#include "pylith/scales/Scales.hh" // USES Scales
 #include "spatialdata/spatialdb/TimeHistory.hh" // USES TimeHistory
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
@@ -116,6 +117,7 @@ pylith::sources::MomentTensorForce::createIntegrator(const pylith::topology::Fie
     pylith::feassemble::IntegratorDomain* integrator = new pylith::feassemble::IntegratorDomain(this);assert(integrator);
     integrator->setLabelName(getLabelName());
     integrator->setLabelValue(getLabelValue());
+    integrator->createLabelDS(solution, solution.getMesh().getDimension());
 
     _setKernelsResidual(integrator, solution);
 
@@ -140,8 +142,8 @@ pylith::sources::MomentTensorForce::createAuxiliaryField(const pylith::topology:
     assert(_sourceTimeFunction);
     pylith::sources::AuxiliaryFactoryMomentTensorForce* auxiliaryFactory = _sourceTimeFunction->getAuxiliaryFactory();assert(auxiliaryFactory);
 
-    assert(_normalizer);
-    auxiliaryFactory->initialize(auxiliaryField, *_normalizer, domainMesh.getDimension());
+    assert(_scales);
+    auxiliaryFactory->initialize(auxiliaryField, *_scales, domainMesh.getDimension());
 
     // :ATTENTION: The order for adding subfields must match the order of the auxiliary fields in the FE kernels.
 
@@ -190,13 +192,13 @@ pylith::sources::MomentTensorForce::updateAuxiliaryField(pylith::topology::Field
     PYLITH_COMPONENT_DEBUG("updateAuxiliaryField(auxiliaryField="<<auxiliaryField<<", t="<<t<<")");
 
     assert(_sourceTimeFunction);
-    const PylithScalar timeScale = _normalizer->getTimeScale();
+    const PylithScalar timeScale = _scales->getTimeScale();
 
-    _sourceTimeFunction->updateAuxiliaryField(auxiliaryField, t, timeScale, _normalizer);
+    _sourceTimeFunction->updateAuxiliaryField(auxiliaryField, t, timeScale);
 
     // if (_useTimeHistory) {
-    //     assert(_normalizer);
-    //     const PylithScalar timeScale = _normalizer->getTimeScale();
+    //     assert(_scales);
+    //     const PylithScalar timeScale = _scales->getTimeScale();
     //     AuxiliaryFactorySourceTime::updateAuxiliaryField(auxiliaryField, t, timeScale, _dbTimeHistory);
     // } // if
 

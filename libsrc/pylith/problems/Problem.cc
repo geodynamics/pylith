@@ -421,7 +421,7 @@ pylith::problems::Problem::preinitialize(const pylith::topology::Mesh& mesh) {
     const size_t numSources = _sources.size();
     for (size_t i = 0; i < numSources; ++i) {
         assert(_sources[i]);
-        _sources[i]->setNormalizer(*_normalizer);
+        _sources[i]->setScales(*_scales);
         _sources[i]->setFormulation(_formulation);
     } // for
 

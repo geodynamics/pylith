@@ -238,6 +238,7 @@ AC_CONFIG_FILES([Makefile
 		tests/libtests/problems/data/Makefile
 		tests/libtests/meshio/data/Makefile
 		tests/libtests/scales/Makefile
+		tests/libtests/sources/Makefile
 		tests/libtests/topology/Makefile
 		tests/libtests/topology/data/Makefile
 		tests/libtests/testing/Makefile
@@ -252,6 +253,8 @@ AC_CONFIG_FILES([Makefile
 		tests/mmstests/incompressibleelasticity/nofaults-2d/Makefile
 		tests/mmstests/poroelasticity/Makefile
 		tests/mmstests/poroelasticity/nofaults-2d/Makefile
+		tests/mmstests/sources/Makefile
+		tests/mmstests/sources/momenttensor-2d/Makefile
 		tests/fullscale/Makefile
 		tests/fullscale/cornercases/Makefile
 		tests/fullscale/cornercases/nofaults-2d/Makefile

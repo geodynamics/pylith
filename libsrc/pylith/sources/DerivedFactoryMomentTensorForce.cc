@@ -21,8 +21,7 @@
 #include "DerivedFactoryMomentTensorForce.hh" // implementation of object methods
 
 #include "pylith/topology/Field.hh" // USES Field
-
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
+#include "pylith/scales/Scales.hh" // USES Scales
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD*
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL*
@@ -51,7 +50,7 @@ pylith::sources::DerivedFactoryMomentTensorForce::addCauchyStress(void) {
     const char* fieldName = "cauchy_stress";
     const char* componentNames[6] = { "stress_xx", "stress_yy", "stress_zz", "stress_xy", "stress_yz", "stress_xz" };
     const int stressSize = (3 == _spaceDim) ? 6 : (2 == _spaceDim) ? 4 : 1;
-    const PylithReal pressureScale = _normalizer->getPressureScale();
+    const PylithReal pressureScale = _scales->getRigidityScale();
 
     pylith::topology::Field::Description description;
     description.label = fieldName;

@@ -89,8 +89,7 @@ public:
              */
             void updateAuxiliaryField(pylith::topology::Field* auxiliaryField,
                                       const PylithReal t,
-                                      const PylithReal timeScale,
-                                      spatialdata::units::Nondimensional* _normalizer);
+                                      const PylithReal timeScale);
 
         };
 
