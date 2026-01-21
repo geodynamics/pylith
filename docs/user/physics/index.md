@@ -5,4 +5,5 @@
 materials/index.md
 bc/index.md
 faults/index.md
+sources/index.md
 :::
