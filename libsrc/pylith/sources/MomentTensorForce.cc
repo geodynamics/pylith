@@ -36,7 +36,6 @@
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
-#include "spatialdata/units/Nondimensional.hh" // USES Nondimensional
 
 #include <typeinfo> // USES typeid()
 
