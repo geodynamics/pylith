@@ -211,12 +211,14 @@ pylith::sources::Source::locateSource(const pylith::topology::Field& solution,
     PetscIS cellIS;
     err = DMLabelGetStratumIS(label, labelValue, &cellIS);PYLITH_CHECK_ERROR(err);
     if (cellIS) {
+        PetscInt numCells;
         const PetscInt* cells;
+        err = ISGetSize(cellIS, &numCells);PYLITH_CHECK_ERROR(err);
         err = ISGetIndices(cellIS, &cells);PYLITH_CHECK_ERROR(err);
         for (PetscInt p = 0; p < pcs; ++p) {
             PetscInt loc;
             if (_cellNumber[p] < 0) continue;
-            err = PetscFindInt(_cellNumber[p], pcs, cells, &loc);PYLITH_CHECK_ERROR(err);
+            err = PetscFindInt(_cellNumber[p], numCells, cells, &loc);PYLITH_CHECK_ERROR(err);
             assert(loc >= 0);
             _cellNumber[p] = loc;
         }

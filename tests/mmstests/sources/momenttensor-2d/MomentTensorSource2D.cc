@@ -278,6 +278,13 @@ public:
         data->source.setLabelValue(24);
         data->source.setSubfieldName("velocity"); // Apply source to velocity field for dynamic problems
 
+        // Source point coordinates (center of domain)
+        data->numSourcePoints = 1;
+        static const PylithReal _sourcePointCoords[2] = {0.0, 0.0}; // Center of domain
+        data->sourcePointCoords = _sourcePointCoords;
+        static const char* _sourcePointNames[1] = {"source_point"};
+        data->sourcePointNames = _sourcePointNames;
+
         // Boundary conditions
         static const PylithInt constrainedDOF[2] = {0, 1};
         static const PylithInt numConstrained = 2;

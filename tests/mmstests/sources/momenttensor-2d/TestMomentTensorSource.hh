@@ -119,6 +119,11 @@ public:
     pylith::topology::Field::Discretization const* sourceAuxDiscretizations; ///< Discretizations for source auxiliary subfields.
     spatialdata::spatialdb::UserFunctionDB sourceAuxDB; ///< Spatial database for source auxiliary field.
 
+    // Source point locations.
+    size_t numSourcePoints; ///< Number of source points.
+    const PylithReal* sourcePointCoords; ///< Coordinates of source points [numSourcePoints * spaceDim].
+    const char* const* sourcePointNames; ///< Names of source points.
+
 }; // TestMomentTensorSource_Data
 
 // End of file

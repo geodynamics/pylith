@@ -96,6 +96,12 @@ pylith::TestMomentTensorSource::_initialize(void) {
     _data->source.setSourceTimeFunction(&_data->sourceTimeFunction);
     _data->source.setAuxiliaryFieldDB(&_data->sourceAuxDB);
 
+    // Set source point coordinates
+    if (_data->numSourcePoints > 0 && _data->sourcePointCoords && _data->sourcePointNames) {
+        _data->source.setPoints(_data->sourcePointCoords, _data->numSourcePoints, _data->spaceDim,
+                                _data->sourcePointNames, _data->numSourcePoints);
+    } // if
+
     for (size_t i = 0; i < _data->numSourceAuxSubfields; ++i) {
         const pylith::topology::FieldBase::Discretization& info = _data->sourceAuxDiscretizations[i];
         _data->source.setAuxiliarySubfieldDiscretization(_data->sourceAuxSubfields[i], info.basisOrder, info.quadOrder,
@@ -180,7 +186,11 @@ pylith::TestMomentTensorSource_Data::TestMomentTensorSource_Data(void) :
 
     numSourceAuxSubfields(0),
     sourceAuxSubfields(NULL),
-    sourceAuxDiscretizations(NULL) {
+    sourceAuxDiscretizations(NULL),
+
+    numSourcePoints(0),
+    sourcePointCoords(NULL),
+    sourcePointNames(NULL) {
     auxDB.setDescription("material auxiliary field spatial database");
     sourceAuxDB.setDescription("source auxiliary field spatial database");
     cs.setSpaceDim(spaceDim);
