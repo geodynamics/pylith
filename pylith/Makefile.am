@@ -139,8 +139,6 @@ EXTRA_DIST = \
 	scales/QuasistaticPoroelasticity.py \
 	scales/QuasistaticElasticity.py \
 	scales/__init__.py \
-	sources/WellboreSource.py \
-	sources/SquarePulseSource.py \
 	sources/SourceTimeFunctionMomentTensorForce.py \
 	sources/Source.py \
 	sources/SquareWavelet.py \
