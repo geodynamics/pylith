@@ -156,6 +156,18 @@ class GenerateMesh(ABC):
         """
         pass
 
+    def improve_quality(self, n_iterations=8):
+        """Improve mesh quality."""
+        for i in range(n_iterations):
+            gmsh.option.setNumber("Mesh.OptimizeThreshold", 0.4 + 0.04 * i)
+            gmsh.model.mesh.optimize("Relocate3D")
+            gmsh.model.mesh.optimize("")
+        gmsh.plugin.setNumber("AnalyseMeshQuality", "ICNMeasure", 1)
+        gmsh.plugin.setNumber("AnalyseMeshQuality", "HidingThreshold", 0.6)
+        gmsh.plugin.setNumber("AnalyseMeshQuality", "CreateView", 1)
+        gmsh.plugin.run("AnalyseMeshQuality")
+
+
     def _parse_command_line(self):
         import argparse
 
