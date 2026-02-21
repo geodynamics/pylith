@@ -23,20 +23,25 @@ class App(GenerateMesh):
 
     KM = 1000.0  # scale to convert km to m
 
-    CONTOURS_FILENAME = "cas_contours_dep.in.txt.gz"
+    SLAB_CONTOURS_FILENAME = "cas_contours_dep.in.txt.gz"
     FILENAME_LOCALDEM = "etopo2020_bedrock_local.nc"
     SLAB_THICKNESS = 50.0 * KM
     DOMAIN_X = DOMAIN_Y = 800 * KM
     DOMAIN_Z = 400 * KM
     TOP_BOX = 10.0 * KM
 
+    # Elevation and dip angle of extra up-dip contours
     UP_DIP_ELEV = 12.0 * KM
     UP_DIP_ANGLE = math.radians(20.0)
 
+    # Discretization size
     DX_MIN = 20.0 * KM
     DX_BIAS = 1.08
 
+    # Depth of bottom of continental crust
     CRUST_DEPTH = 30.0 * KM
+
+    # Size of patch on slab interface where we prescribe coseismic slip
     PATCH_LENGTH = 200.0 * KM
     PATCH_WIDTH = 275.0 * KM
 
@@ -284,6 +289,7 @@ class App(GenerateMesh):
         gmsh.model.mesh.optimize()
 
     def _create_topography_surface(self):
+        """Create topography/bathymetry surface."""
         dem = netCDF4.Dataset(self.FILENAME_LOCALDEM)
         latitude_1d = dem.variables["lat"][:]
         longitude_1d = dem.variables["lon"][:]
@@ -308,6 +314,7 @@ class App(GenerateMesh):
         return topography_surface
 
     def _create_slab_top_surface(self):
+        """Create surface for top of slab."""
         # Read slab contours
         contours = self._create_slab_splines()
         for contour in contours.values():
@@ -355,7 +362,7 @@ class App(GenerateMesh):
         """Read geographic coordinates from "cas_contours_dep.in.txt.gz" and return a dictionary where the keys are
         the depth of the contour and the values are the coordinates (latitude, longitude, elevation) as a numpy array.
         """
-        with gzip.open(self.CONTOURS_FILENAME, "rb") as file:
+        with gzip.open(self.SLAB_CONTOURS_FILENAME, "rb") as file:
             lines = file.readlines()
         contours = {}
         points = []
@@ -376,6 +383,8 @@ class App(GenerateMesh):
         return contours
 
     def _calculate_local_strike(self, contour):
+        """Calculate local strike along contour.
+        """
         def _smooth_values(values):
             window_size = values.shape[0] // 3
             window = numpy.ones(window_size) / window_size
@@ -394,6 +403,15 @@ class App(GenerateMesh):
         strike = numpy.atan2(sx, sy)
         strike = numpy.concatenate((numpy.array([strike[0]]), strike))
         return strike
+
+    def _calculate_surface_avg_normal(self, surface):
+        # Find the normals of the slab surface
+        space = numpy.linspace(0, 1, 10)
+        xv, yv = numpy.meshgrid(space, space)
+        parametricCoords = numpy.column_stack((xv.flatten(), yv.flatten())).ravel()
+        normals = gmsh.model.getNormal(surface, parametricCoords)
+        normal = numpy.average(normals.reshape(-1, 3), axis=0)
+        return normal
 
     def _create_extended_contours(self, contours):
         """Add contours up-dip from original contours.
@@ -427,6 +445,7 @@ class App(GenerateMesh):
         return contours_up_dip
 
     def _create_slab_volume(self, top_surface, surface_normal):
+        """Create slab volume."""
         dx = self.SLAB_THICKNESS * surface_normal[0]
         dy = self.SLAB_THICKNESS * surface_normal[1]
         dz = self.SLAB_THICKNESS * surface_normal[2]
@@ -437,6 +456,7 @@ class App(GenerateMesh):
         return slab_volume
 
     def _create_splay_fault_surface(self, contours):
+        """Create splay fault surface."""
         # Generate the splay fault
         splay_bottom = numpy.copy(contours[15])
         splay_top = numpy.copy(splay_bottom)
@@ -456,6 +476,7 @@ class App(GenerateMesh):
         return surface
 
     def _create_domain_box(self):
+        """Create domain extending above topography/bathymetry."""
         # Generate the bounding box
         domain = gmsh.model.occ.add_box(
             -self.DOMAIN_X / 2,
@@ -468,6 +489,7 @@ class App(GenerateMesh):
         return domain
 
     def _create_continental_moho_surface(self):
+        """Create bottom of continental crust."""
         surface = self._add_xy_plane_surface_at_point(
             -self.DOMAIN_X / 2 - 50 * self.KM,
             -self.DOMAIN_Y / 2 - 50 * self.KM,
@@ -508,18 +530,7 @@ class App(GenerateMesh):
         surface = gmsh.model.occ.add_plane_surface([loop])
         return surface
 
-    def _calculate_surface_avg_normal(self, surface):
-        # Find the normals of the slab surface
-        space = numpy.linspace(0, 1, 10)
-        xv, yv = numpy.meshgrid(space, space)
-        parametricCoords = numpy.column_stack((xv.flatten(), yv.flatten())).ravel()
-        normals = gmsh.model.getNormal(surface, parametricCoords)
-        normal = numpy.average(normals.reshape(-1, 3), axis=0)
-        return normal
-
 
 # If script is called from the command line, run the application.
 if __name__ == "__main__":
     App().main()
-
-# End of file

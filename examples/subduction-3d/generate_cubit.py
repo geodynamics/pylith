@@ -1,5 +1,5 @@
 #!python3
-"""WARNING: This script only works with Python supplied with Cubit.
+"""WARNING: This script only works with the Python supplied with Cubit.
 
 To run this script outside the Cubit GUI, you will need to run it like:
 
@@ -90,7 +90,7 @@ import coordsys
 
 KM = 1000.0  # scale to convert km to m
 
-CONTOURS_FILENAME = "cas_contours_dep.in.txt.gz"
+SLAB_CONTOURS_FILENAME = "cas_contours_dep.in.txt.gz"
 SURFACE_SLABTOP_FILENAME = "scratch/cubit_surf_splay.sat"
 SLAB_THICKNESS = 50.0 * KM
 DOMAIN_X = DOMAIN_Y = 800 * KM
@@ -99,14 +99,18 @@ DOMAIN_Z = 400 * KM
 UP_DIP_ELEV = 5.0 * KM
 UP_DIP_ANGLE = math.radians(30.0)
 
+# Discretization size
 DX_MIN = 20.0 * KM
 DX_BIAS = 1.08
+CELL = "tet"
 
+# Depth of bottom of continental crust
 CRUST_DEPTH = 30.0 * KM
+
+# Size of patch on slab interface where we prescribe coseismic slip
 PATCH_LENGTH = 200.0 * KM
 PATCH_WIDTH = 275.0 * KM
 
-CELL = "tet"
 
 # -------------------------------------------------------------------------------------------------
 # Start cubit
@@ -122,7 +126,7 @@ def _create_slab_points():
     """Read geographic coordinates from "cas_contours_dep.in.txt.gz" and return a dictionary where the keys are
     the depth of the contour and the values are the coordinates (latitude, longitude, elevation) as a numpy array.
     """
-    with gzip.open(CONTOURS_FILENAME, "rb") as file:
+    with gzip.open(SLAB_CONTOURS_FILENAME, "rb") as file:
         lines = file.readlines()
     contours = {}
     points = []
@@ -144,6 +148,8 @@ def _create_slab_points():
 
 
 def _calculate_local_strike(contour):
+    """Calculate local strike along contour.
+    """
     def _smooth_values(values):
         window_size = values.shape[0] // 3
         window = numpy.ones(window_size) / window_size
@@ -164,8 +170,25 @@ def _calculate_local_strike(contour):
     return strike
 
 
+def _calculate_surface_avg_normal(surface):
+    """Calculate average surface normal."""
+    # Find the normals of the slab surface
+    space = numpy.linspace(0, 1, 10)
+    xv, yv = numpy.meshgrid(space, space)
+    parametricCoords = numpy.column_stack((xv.flatten(), yv.flatten()))
+    normals = []
+    for pointUV in parametricCoords:
+        pointXYZ = surface.position_from_u_v(pointUV[0], pointUV[1])
+        if pointXYZ[2] > 0.0:
+            # Skip up-dip points
+            continue
+        normals.append(surface.normal_at(pointXYZ))
+    normal = numpy.average(numpy.array(normals).reshape(-1, 3), axis=0)
+    return normal
+
+
 def _create_extended_contours(contours):
-    """Add contours up-dip from original contours and a few more westward."""
+    """Add contours up-dip from original contours plus a few more westward."""
     n_contours_updip = 5
     n_contours_horiz = 2
 
@@ -194,6 +217,7 @@ def _create_extended_contours(contours):
 
 
 def _create_slab_top_surface():
+    """Create top surface of slab."""
     # Read slab contours
     contours = _create_slab_points()
     for contour in contours.values():
@@ -224,23 +248,8 @@ def _create_slab_top_surface():
     return surface, contours
 
 
-def _calculate_surface_avg_normal(surface):
-    # Find the normals of the slab surface
-    space = numpy.linspace(0, 1, 10)
-    xv, yv = numpy.meshgrid(space, space)
-    parametricCoords = numpy.column_stack((xv.flatten(), yv.flatten()))
-    normals = []
-    for pointUV in parametricCoords:
-        pointXYZ = surface.position_from_u_v(pointUV[0], pointUV[1])
-        if pointXYZ[2] > 0.0:
-            # Skip up-dip points
-            continue
-        normals.append(surface.normal_at(pointXYZ))
-    normal = numpy.average(numpy.array(normals).reshape(-1, 3), axis=0)
-    return normal
-
-
 def _create_slab_volume(top_surface, surface_normal):
+    """Create slab volume."""
     dx = SLAB_THICKNESS * -surface_normal[0]
     dy = SLAB_THICKNESS * -surface_normal[1]
     dz = SLAB_THICKNESS * -surface_normal[2]
@@ -253,6 +262,10 @@ def _create_slab_volume(top_surface, surface_normal):
 
 
 def _create_splay_fault_surface(contours):
+    """Create splay fault surface from slab contours.
+    
+    We use one slab contour for the intersection of the splay fault with the top of the slab.
+    """
     # Generate the splay fault
     splay_bottom = numpy.copy(contours[15])
     splay_top = numpy.copy(splay_bottom)
@@ -286,17 +299,21 @@ v_domain.remove_entity_names()
 v_domain.set_entity_name("domain")
 cubit.move(v_domain, (-25 * KM, 0.0, -0.5 * DOMAIN_Z))
 
+# Create top surface of slab.
 s_slabtop, contours = _create_slab_top_surface()
 slab_normal = _calculate_surface_avg_normal(s_slabtop)
 
+# Create slab volume.
 v_slab = _create_slab_volume(s_slabtop, slab_normal)
 v_slab.remove_entity_names()
 v_slab.set_entity_name("slab")
 
+# Create splay fault.
 s_splay_fault = _create_splay_fault_surface(contours)
 s_splay_fault.remove_entity_names()
 s_splay_fault.set_entity_name("splay_fault")
 
+# Create patch for top of slab interface.
 v_patch = cubit.brick(PATCH_WIDTH, PATCH_LENGTH, 200 * KM)
 v_patch.remove_entity_names()
 v_patch.set_entity_name("patch")
