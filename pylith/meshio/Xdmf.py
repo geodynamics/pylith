@@ -325,7 +325,7 @@ class Xdmf(object):
             "        "
             % (tstamps.shape[0],)
         )
-        for t in tstamps:
+        for t in tstamps.ravel():
             self.file.write("  %16.8e" % t)
         self.file.write(
             "\n"
