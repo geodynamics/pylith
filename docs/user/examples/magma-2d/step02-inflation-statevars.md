@@ -96,24 +96,39 @@ caption: Run Step 2 simulation
 $ pylith step02_inflation_statevars.cfg
 
 # The output should look something like the following.
- >> /software/unix/py3.12-venv/pylith-opt/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:77:main
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:77:main
  -- pylithapp(info)
  -- Running on 1 process(es).
- >> /software/unix/py3.12-venv/pylith-opt/lib/python3.12/site-packages/pylith/meshio/MeshIOObj.py:38:read
- -- meshiocubit(info)
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/meshio/MeshIOObj.py:41:read
+ -- meshiopetsc(info)
  -- Reading finite-element mesh
- >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:148:void pylith::meshio::MeshIOCubit::_readVertices(ExodusII &, scalar_array *, int *, int *) const
- -- meshiocubit(info)
- -- Component 'reader': Reading 747 vertices.
- >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:208:void pylith::meshio::MeshIOCubit::_readCells(ExodusII &, int_array *, int_array *, int *, int *) const
- -- meshiocubit(info)
- -- Component 'reader': Reading 705 cells in 2 blocks.
- >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:270:void pylith::meshio::MeshIOCubit::_readGroups(ExodusII &)
- -- meshiocubit(info)
- -- Component 'reader': Found 5 node sets.
-
-# -- many lines omitted --
-
+ >> /src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:75:void pylith::meshio::MeshIO::read(pylith::topology::Mesh *, const bool)
+ -- meshiopetsc(info)
+ -- Component 'meshiopetsc.reader': Domain bounding box:
+    (0, 20000)
+    (-20000, 0)
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:146:preinitialize
+ -- timedependent(info)
+ -- Performing minimal initialization before verifying configuration.
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Solution.py:43:preinitialize
+ -- solution(info)
+ -- Performing minimal initialization of solution.
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:206:verifyConfiguration
+ -- timedependent(info)
+ -- Verifying compatibility of problem configuration.
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:250:_printInfo
+ -- timedependent(info)
+ -- Scales for nondimensionalization:
+    Length scale: 5000*m
+    Displacement scale: 10*m
+    Time scale: 4.16667e+07*s
+    Rigidity scale: 6e+09*m**-1*kg*s**-2
+    Temperature scale: 1*K
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:217:initialize
+ -- timedependent(info)
+ -- Initializing timedependent problem with quasistatic formulation.
+ >> /src/cig/pylith/libsrc/pylith/utils/PetscOptions.cc:264:static void pylith::utils::_PetscOptions::write(pythia::journal::info_t &, const char *, const PetscOptions &)
+ -- petscoptions(info)
  -- Setting PETSc options:
 fieldsplit_displacement_pc_type = lu
 fieldsplit_pressure_pc_type = bjacobi
@@ -146,27 +161,26 @@ ts_monitor = true
 ts_type = beuler
 viewer_hdf5_collective = true
 
- >> /software/unix/py3.12-venv/pylith-opt/lib/python3.12/site-packages/pylith/problems/TimeDependent.py:132:run
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/TimeDependent.py:145:run
  -- timedependent(info)
  -- Solving problem.
 0 TS dt 0.151476 time -0.151476
-    0 SNES Function norm 1.991683367474e+00
+    0 SNES Function norm 1.052658565901e+00
       Linear solve converged due to CONVERGED_ATOL iterations 170
-    1 SNES Function norm 4.616670468595e-09
+    1 SNES Function norm 4.085073910159e-09
     Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
 
 # -- many lines omitted --
 
 50 TS dt 0.151476 time 7.42235
-    0 SNES Function norm 1.243383877105e-02
-      Linear solve converged due to CONVERGED_ATOL iterations 81
-    1 SNES Function norm 6.572705836167e-09
+    0 SNES Function norm 1.207876038262e-02
+      Linear solve converged due to CONVERGED_ATOL iterations 79
+    1 SNES Function norm 6.174330339004e-09
     Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
 51 TS dt 0.151476 time 7.57382
- >> /software/unix/py3.12-venv/pylith-opt/lib/python3.12/site-packages/pylith/problems/Problem.py:199:finalize
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:232:finalize
  -- timedependent(info)
  -- Finalizing problem.
-
 ```
 
 The linear solver exhibits similar performance with less than 50 iterations at most time steps.

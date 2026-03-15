@@ -21,4 +21,5 @@ dist_noinst_DATA = \
     pylithapp.cfg \
     step01_inflation.cfg \
     step01b_inflation.cfg \
-    step02_inflation_statevars.cfg
+    step02_inflation_statevars.cfg \
+    initial_pressure.spatialdb

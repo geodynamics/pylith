@@ -31,17 +31,17 @@ end_time = 10.0*year
 
 ```{code-block} cfg
 ---
-caption: Initial condition parameters for Step 1. We impose an initial fluid pressure of 5 MPa over the entire domain.
+caption: Initial condition parameters for Step 1. We impose an initial fluid pressure over the entire domain that increases from 0 at the top boundary to 5 MPa at the bottom boundary.
 ---
 [pylithapp.problem]
 ic = [domain]
 ic.domain = pylith.problems.InitialConditionDomain
 
 [pylithapp.problem.ic.domain]
-db = spatialdata.spatialdb.UniformDB
+subfields = [pressure]
+db = spatialdata.spatialdb.SimpleDB
 db.description = Initial conditions for domain
-db.values = [displacement_x, displacement_y, pressure, trace_strain]
-db.data = [0.0*m, 0.0*m, 5.0*MPa, 0.0]
+db.iohandler.filename = initial_pressure.spatialdb
 ```
 
 We create an array of 5 Dirichlet boundary conditions: 3 for displacement and 2 for fluid pressure.
@@ -107,51 +107,26 @@ caption: Run Step 1 simulation
 $ pylith step01_inflation.cfg
 
 # The output should look something like the following.
- >> /home/pylith-user/software/unix/py312-venv/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:77:main
  -- pylithapp(info)
  -- Running on 1 process(es).
- >> /home/pylith-user/software/unix/py312-venv/pylith-debug/lib/python3.12/site-packages/pylith/meshio/MeshIOObj.py:38:read
- -- meshiocubit(info)
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/meshio/MeshIOObj.py:41:read
+ -- meshiopetsc(info)
  -- Reading finite-element mesh
- >> /home/pylith-user/src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:148:void pylith::meshio::MeshIOCubit::_readVertices(ExodusII &, scalar_array *, int *, int *) const
- -- meshiocubit(info)
- -- Component 'reader': Reading 747 vertices.
- >> /home/pylith-user/src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:208:void pylith::meshio::MeshIOCubit::_readCells(ExodusII &, int_array *, int_array *, int *, int *) const
- -- meshiocubit(info)
- -- Component 'reader': Reading 705 cells in 2 blocks.
- >> /home/pylith-user/src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:270:void pylith::meshio::MeshIOCubit::_readGroups(ExodusII &)
- -- meshiocubit(info)
- -- Component 'reader': Found 5 node sets.
- >> /home/pylith-user/src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:296:void pylith::meshio::MeshIOCubit::_readGroups(ExodusII &)
- -- meshiocubit(info)
- -- Component 'reader': Reading node set 'boundary_xneg' with id 20 containing 21 nodes.
- >> /home/pylith-user/src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:296:void pylith::meshio::MeshIOCubit::_readGroups(ExodusII &)
- -- meshiocubit(info)
- -- Component 'reader': Reading node set 'boundary_xpos' with id 21 containing 21 nodes.
- >> /home/pylith-user/src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:296:void pylith::meshio::MeshIOCubit::_readGroups(ExodusII &)
- -- meshiocubit(info)
- -- Component 'reader': Reading node set 'boundary_yneg' with id 22 containing 23 nodes.
- >> /home/pylith-user/src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:296:void pylith::meshio::MeshIOCubit::_readGroups(ExodusII &)
- -- meshiocubit(info)
- -- Component 'reader': Reading node set 'boundary_ypos' with id 23 containing 21 nodes.
- >> /home/pylith-user/src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:296:void pylith::meshio::MeshIOCubit::_readGroups(ExodusII &)
- -- meshiocubit(info)
- -- Component 'reader': Reading node set 'boundary_flow' with id 24 containing 3 nodes.
- >> /home/pylith-user/src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:85:void pylith::meshio::MeshIO::read(pylith::topology::Mesh *, const bool)
- -- meshiocubit(info)
- -- Component 'reader': Domain bounding box:
+ >> /src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:75:void pylith::meshio::MeshIO::read(pylith::topology::Mesh *, const bool)
+ -- meshiopetsc(info)
+ -- Component 'meshiopetsc.reader': Domain bounding box:
     (0, 20000)
     (-20000, 0)
- >> /home/pylith-user/software/unix/py312-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:116:preinitialize
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:146:preinitialize
  -- timedependent(info)
  -- Performing minimal initialization before verifying configuration.
- >> /home/pylith-user/software/unix/py312-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Solution.py:39:preinitialize
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Solution.py:43:preinitialize
  -- solution(info)
  -- Performing minimal initialization of solution.
- >> /home/pylith-user/software/unix/py312-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:174:verifyConfiguration
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:206:verifyConfiguration
  -- timedependent(info)
  -- Verifying compatibility of problem configuration.
- >> /home/pylith-user/software/unix/py312-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:219:_printInfo
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:250:_printInfo
  -- timedependent(info)
  -- Scales for nondimensionalization:
     Length scale: 5000*m
@@ -159,10 +134,10 @@ $ pylith step01_inflation.cfg
     Time scale: 4.16667e+07*s
     Rigidity scale: 6e+09*m**-1*kg*s**-2
     Temperature scale: 1*K
- >> /home/pylith-user/software/unix/py312-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:185:initialize
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:217:initialize
  -- timedependent(info)
  -- Initializing timedependent problem with quasistatic formulation.
- >> /home/pylith-user/src/cig/pylith/libsrc/pylith/utils/PetscOptions.cc:239:static void pylith::utils::_PetscOptions::write(pythia::journal::info_t &, const char *, const PetscOptions &)
+ >> /src/cig/pylith/libsrc/pylith/utils/PetscOptions.cc:264:static void pylith::utils::_PetscOptions::write(pythia::journal::info_t &, const char *, const PetscOptions &)
  -- petscoptions(info)
  -- Setting PETSc options:
 fieldsplit_displacement_pc_type = lu
@@ -190,27 +165,26 @@ ts_monitor = true
 ts_type = beuler
 viewer_hdf5_collective = true
 
- >> /home/pylith-user/software/unix/py312-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/TimeDependent.py:132:run
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/TimeDependent.py:145:run
  -- timedependent(info)
  -- Solving problem.
 0 TS dt 0.151476 time -0.151476
-    0 SNES Function norm 1.961889362180e+00
-      Linear solve converged due to CONVERGED_ATOL iterations 127
-    1 SNES Function norm 3.529659939627e-08
+    0 SNES Function norm 9.951368195027e-01
+      Linear solve converged due to CONVERGED_ATOL iterations 160
+    1 SNES Function norm 3.315089885638e-08
     Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
 
 # -- many lines omitted --
 
 50 TS dt 0.151476 time 7.42235
-    0 SNES Function norm 1.887192789745e-03
-      Linear solve converged due to CONVERGED_ATOL iterations 46
-    1 SNES Function norm 3.325985182932e-08
+    0 SNES Function norm 1.755481622154e-03
+      Linear solve converged due to CONVERGED_ATOL iterations 44
+    1 SNES Function norm 3.243946411840e-08
     Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
 51 TS dt 0.151476 time 7.57382
- >> /home/pylith-user/software/unix/py312-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:199:finalize
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:232:finalize
  -- timedependent(info)
- -- Finalizing problem.
-```
+ -- Finalizing problem.```
 
 At the beginning of the output written to the terminal, we see that PyLith is reading the mesh using the `MeshIOCubit` reader and that it found the domain to extend from 0 to 20 km in the x direction and from -20 km to 0 in the y direction.
 The scales for nondimensionalization .
@@ -224,6 +198,7 @@ The nonlinear solve converged in 1 iteration, which we expect because this is a 
 
 In {numref}`fig:example:magma:2d:step01:solution` we use the `pylith_viz` utility to visualize the pressure field.
 You can move the slider or use the `p` and `n` keys to change the increment or decrement time.
+The initial linear variation in fluid pressure adjusts to match the boundary conditions and spatial variations in constitutive behavior.
 
 ```{code-block} console
 ---
@@ -270,20 +245,19 @@ $ pylith step01_inflation.cfg step01b_inflation.cfg
 # The output should look something like the following.
 # -- many lines omitted --
 
-18 TS dt 0.706729 time 6.8671
-    0 SNES Function norm 1.978353923571e-03
-      Linear solve converged due to CONVERGED_ATOL iterations 89
-    1 SNES Function norm 1.607058574037e-08
+19 TS dt 1.2231 time 6.35073
+    0 SNES Function norm 1.893597646523e-03
+      Linear solve converged due to CONVERGED_ATOL iterations 77
+    1 SNES Function norm 2.064447881404e-08
     Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
-      TSAdapt basic beuler 0: step  18 accepted t=6.8671     + 7.067e-01 dt=1.325e+00  wlte=0.0114  wltea=   -1 wlter=   -1
-19 TS dt 1.32454 time 7.57382
- >> /Users/brad/software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:232:finalize
+      TSAdapt basic beuler 0: step  19 accepted t=6.35073    + 1.223e+00 dt=1.412e+00  wlte= 0.03  wltea=   -1 wlter=   -1
+20 TS dt 1.41194 time 7.57382
+ >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:232:finalize
  -- timedependent(info)
- -- Finalizing problem.
-```
+ -- Finalizing problem.```
 
-The afaptive time stepping algorithm shortens a few of the early time steps but then lengthens the time step as the rate of deforation decreases.
-We end up with 19 time steps with adaptive time stepping compared to 51 with uniform time steps.
+The adaptive time stepping algorithm shortens a few of the early time steps but then lengthens the time step as the rate of deforation decreases.
+We end up with 20 time steps with adaptive time stepping compared to 51 with uniform time steps.
 
 ```{code-block} console
 ---
@@ -296,5 +270,5 @@ caption: Compare the results from Step 1 ad 1b using the `plot_compare.py` Pytho
 <img src="figs/step01-compare.*" alt="Vertical displacement and fluid pressure time histories for Step 1 and 1b." width="600px"/>
 
 Vertical displacement and fluid pressure time histories for Step 1 and 1b at locations with the largest changes.
-We find very little difference between the solutions from uniform time stepping (52 time steps) and adaptive time stepping (20 time steps).
+We find very little difference between the solutions from uniform time stepping (51 time steps) and adaptive time stepping (20 time steps).
 :::
