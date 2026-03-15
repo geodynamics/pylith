@@ -1,0 +1,22 @@
+// This spatial database specifies the initial fluid pressure in the
+// domain. It uses a linear variation (data-dim == 1), so we only
+// need to specify the two end points with a SimpleDB.
+#SPATIAL.ascii 1
+SimpleDB {
+  num-values = 1
+  value-names = pressure
+  value-units = MPa
+  num-locs = 2
+  data-dim = 1
+  space-dim = 2
+  cs-data = cartesian {
+    to-meters = 1.0e+3 // specify coordinates in km
+    space-dim = 2
+  }
+}
+// Columns are
+// (1) x coordinate (km)
+// (2) y coordinate (km)
+// (3) pressure (MPa)
+0.0    0.0   0.0
+0.0  -20.0   5.0
