@@ -10,7 +10,9 @@
     },
     "files.associations": {
         "*.icc": "cpp",
-        "iosfwd": "cpp"
+        "iosfwd": "cpp",
+        "*.tcc": "cpp",
+        "fstream": "cpp"
     },
     "python.formatting.autopep8Args": [
         "-max-line-length",

@@ -11,7 +11,8 @@
 SUBDIRS = \
 	linearelasticity \
 	incompressibleelasticity \
-        poroelasticity
+    poroelasticity \
+	sources
 
 
 # End of file 

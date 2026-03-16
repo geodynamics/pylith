@@ -80,7 +80,7 @@ pylith::feassemble::DSLabelAccess::DSLabelAccess(const PetscDM dm,
         } else {
             err = ISDestroy(&_pointsIS);PYLITH_CHECK_ERROR(err);
         } // if/else
-    } // if
+    }
 
     PYLITH_METHOD_END;
 }

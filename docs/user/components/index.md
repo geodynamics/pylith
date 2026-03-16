@@ -14,6 +14,7 @@ faults/index.md
 materials/index.md
 meshio/index.md
 problems/index.md
+sources/index.md
 testing/index.md
 topology/index.md
 utils/index.md
