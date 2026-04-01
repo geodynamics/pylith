@@ -1,13 +1,10 @@
 #!/usr/bin/env nemesis
-
-import importlib
+"""Plot solver performance for 3D elasticity with faults benchmark."""
 
 from matplotlib import pyplot
 import numpy
 
-import matplotlib_extras
-
-N_UNKNOWNS = numpy.array([3878, 15128, 59696, 237104, 945008, 3773168])
+N_UNKNOWNS = numpy.array([9993, 36620, 123753, 405889, 1347929, 4548594])
 
 # grep LocalTimes STEP.py
 # grep "PL:TimeDependent:solve" STEP.py
@@ -23,19 +20,20 @@ STATS = {
         "solve_time": (33.8381, numpy.nan),
     },
     "step04_vpbjacobi_tunefine": {
-        "n_iterations": (21, ),
-        "total_time": (69.7465,),
-        "solve_time": (34.2697,),
+        "n_iterations": (21, 28, 40, 42, 59, 77),
+        "total_time": (12.7327, 30.8555, 94.7356, 302.843, 1099.08, 4237.81),
+        "solve_time": (5.24415, 16.3172, 56.9097, 189.743, 712.131, 2819.08),
     },
-    "step05_vpbjacobi_tunecoarse": {
-        "n_iterations": (),
-        "total_time": (),
-        "solve_time": (),
-    },
+    # Not better than step04.
+    #    "step05_vpbjacobi_tunecoarse": {
+    #        "n_iterations": (21, 27, 37, 37, 55, 85),
+    #        "total_time": (13.556, 33.2517, 106.624, 346.922, 1316.15, 5420.69),
+    #        "solve_time": (5.93364, 18.4159, 68.769, 233.631, 924.326, 4003.67),
+    #    },
     "step06_vpbjacobi_dispscale": {
-        "n_iterations": (),
-        "total_time": (),
-        "solve_time": (),
+        "n_iterations": (21, 28, 40, 42, 59, 77),
+        "total_time": (12.9884, 30.5839, 96.059, 305.33, 1085.19, 4157.28),
+        "solve_time": (5.41875, 16.3407, 57.6305, 189.651, 704.554, 2763.57),
     },
 }
 
@@ -43,7 +41,7 @@ LABELS = (
     "fieldsplit (selfp)",
     "vpbjacobi (defaults)",
     "vpbjacobi (tunefine)",
-    "vpbjacobi (tunecoarse)",
+    # "vpbjacobi (tunecoarse)",
     "vpbjacobi (dispscale)",
 )
 

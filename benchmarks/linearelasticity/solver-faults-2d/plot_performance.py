@@ -1,42 +1,38 @@
 #!/usr/bin/env nemesis
 
-import importlib
-
 from matplotlib import pyplot
 import numpy
-
-import matplotlib_extras
 
 N_UNKNOWNS = numpy.array([3878, 15128, 59696, 237104, 945008, 3773168])
 
 # grep LocalTimes STEP.py
 # grep "PL:TimeDependent:solve" STEP.py
 STATS = {
-    # "step01_fieldsplit_full": (6, 6, 8,),
     "step02_fieldsplit_selfp": {
-        "n_iterations": (45, 104, numpy.nan),
-        "total_time": (11.3959, 25.3932, numpy.nan),
-        "solve_time": (4.537, 13.5346, numpy.nan),
+        "n_iterations": (37, 84, 1017, numpy.nan),
+        "total_time": (5.78073, 7.67613, 55.4353, numpy.nan),
+        "solve_time": (1.98163, 3.51442, 48.6213, numpy.nan),
     },
     "step03_vpbjacobi": {
-        "n_iterations": (29, 42, 59, 136, 490),
-        "total_time": (12.4386, 24.8782, 80.3902, 319.493, 1606.67),
-        "solve_time": (4.81182, 12.4584, 46.0547, 197.797, 1138.08),
+        "n_iterations": (25, 37, 47, 141, 157, 1182),
+        "total_time": (5.8148, 7.38562, 14.615, 56.6935, 226.305, 3048.99),
+        "solve_time": (2.02259, 3.06247, 8.24445, 40.2364, 171.427, 2824.93),
     },
     "step04_vpbjacobi_tunefine": {
-        "n_iterations": (15, 19, 21, 24, 32, 56),
-        "total_time": (12.0174, 24.4725, 78.0262, 296.251, 1184.62, 5087.16),
-        "solve_time": (4.64184, 12.2738, 44.3372, 175.193, 715.98, 3155.8),
+        "n_iterations": (12, 16, 17, 20, 25, 31),
+        "total_time": (5.62875, 6.98172, 13.5789, 43.8165, 165.896, 712.243),
+        "solve_time": (1.68937, 2.88792, 7.32962, 27.8018, 112.093, 495.028),
     },
-    "step05_vpbjacobi_tunecoarse": {
-        "n_iterations": (16, 20, 26, 34, 56, 58),
-        "total_time": (11.9595, 25.8678, 83.454, 320.817, 1337.99, 5552.66),
-        "solve_time": (4.80032, 13.6441, 50.1707, 202.285, 870.153, 3637.25),
-    },
+    # Not as good as step04
+    # "step05_vpbjacobi_tunecoarse": {
+    #    "n_iterations": (16, 17, 22, 28, 34, 41),
+    #    "total_time": (5.5662, 7.12535, 15.5069, 50.3177, 197.339, 860.028),
+    #    "solve_time": (1.80709, 3.20453, 8.79773, 33.9392, 142.047, 633.503),
+    # },
     "step06_vpbjacobi_dispscale": {
-        "n_iterations": (16, 20, 25, 32, 40, 69),
-        "total_time": (11.6945, 25.7422, 84.2219, 323.161, 1348.64, 5553.58),
-        "solve_time": (4.60636, 13.747, 50.9383, 203.695, 837.982, 3664.83),
+        "n_iterations": (12, 16, 17, 20, 25, 31),
+        "total_time": (5.58084, 7.02474, 14.2053, 43.2277, 166.428, 716.287),
+        "solve_time": (1.86589, 3.0295, 7.58369, 27.4059, 112.378, 498.27),
     },
 }
 
@@ -44,11 +40,10 @@ LABELS = (
     "fieldsplit (selfp)",
     "vpbjacobi (defaults)",
     "vpbjacobi (tunefine)",
-    "vpbjacobi (tunecoarse)",
     "vpbjacobi (dispscale)",
 )
 
-pyplot.style.use("matplotlib_extras.color-darkbg")
+pyplot.style.use("matplotlib_extras.color-lightbg")
 figure, axes = pyplot.subplots(
     ncols=2, nrows=1, figsize=(8.5, 4.0), layout="constrained"
 )
