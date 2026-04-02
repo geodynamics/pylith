@@ -286,7 +286,7 @@ class App(GenerateMesh):
         gmsh.model.mesh.field.setAsBackgroundMesh(field_size)
 
         gmsh.model.mesh.generate(3)
-        gmsh.model.mesh.optimize()
+        self.improve_quality()
 
     def _create_topography_surface(self):
         """Create topography/bathymetry surface."""

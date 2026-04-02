@@ -172,7 +172,6 @@ class GenerateMesh(ABC):
         gmsh.plugin.setNumber("AnalyseMeshQuality", "CreateView", 1)
         gmsh.plugin.run("AnalyseMeshQuality")
 
-
     def _parse_command_line(self):
         import argparse
 
