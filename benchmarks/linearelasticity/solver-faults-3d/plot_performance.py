@@ -10,14 +10,14 @@ N_UNKNOWNS = numpy.array([9993, 36620, 123753, 405889, 1347929, 4548594])
 # grep "PL:TimeDependent:solve" STEP.py
 STATS = {
     "step02_fieldsplit_selfp": {
-        "n_iterations": (1,),
-        "total_time": (0,),
-        "solve_time": (0,),
+        "n_iterations": (50, 1257, numpy.nan),
+        "total_time": (13.2254, 115.714, numpy.nan),
+        "solve_time": (5.76202, 101.251, numpy.nan),
     },
     "step03_vpbjacobi": {
-        "n_iterations": (48, numpy.nan),
-        "total_time": (69.9805, numpy.nan),
-        "solve_time": (33.8381, numpy.nan),
+        "n_iterations": (49, 63, 182, numpy.nan),
+        "total_time": (13.3223, 31.8996, 110.673, numpy.nan),
+        "solve_time": (5.47655, 17.4007, 72.4834, numpy.nan),
     },
     "step04_vpbjacobi_tunefine": {
         "n_iterations": (21, 28, 40, 42, 59, 77),
@@ -45,7 +45,7 @@ LABELS = (
     "vpbjacobi (dispscale)",
 )
 
-pyplot.style.use("matplotlib_extras.color-darkbg")
+pyplot.style.use("matplotlib_extras.color-lightbg")
 figure, axes = pyplot.subplots(
     ncols=2, nrows=1, figsize=(8.5, 4.0), layout="constrained"
 )
