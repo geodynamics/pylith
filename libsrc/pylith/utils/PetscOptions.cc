@@ -350,11 +350,11 @@ pylith::utils::_PetscOptions::addSolverTolerances(PetscOptions* options,
                                                   const pylith::topology::Field& solution) {
     assert(options);
 
-    options->add("-ksp_rtol", "1.0e-12");
+    options->add("-ksp_rtol", "1.0e-14");
     options->add("-ksp_atol", "1.0e-7");
 
-    options->add("-snes_rtol", "1.0e-12");
-    options->add("-snes_atol", "4.0e-7");
+    options->add("-snes_rtol", "1.0e-14");
+    options->add("-snes_atol", "5.0e-7");
 } // addSolverTolerances
 
 
