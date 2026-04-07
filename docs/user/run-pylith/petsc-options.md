@@ -190,11 +190,11 @@ PyLith will set default solver tolerances wheneve the solver defaults are enable
 caption: PETSc solver tolerances used whenever the solver defaults are enabled. These settings are also in `share/settings/petsc_solver_tolerances.cfg`.
 ---
 [pylithapp.petsc]
-ksp_rtol = 1.0e-12
-ksp_atol = 1.0e-12
+ksp_rtol = 1.0e-14
+ksp_atol = 1.0e-7
 
-snes_rtol = 1.0e-12
-snes_atol = 1.0e-9
+snes_rtol = 1.0e-14
+snes_atol = 5.0e-7
 ```
 
 #### Quasistatic Elasticity
@@ -206,6 +206,7 @@ caption: PETSc options used for quasistatic elasticity without a fault. These se
 [pylithapp.petsc]
 ts_type = beuler
 pc_type = gamg
+mg_fine_ksp_max_it = 5
 ```
 
 The Lagrange multiplier corresponding to the tractions on the fault introduces a saddle point in the system of equations.
@@ -218,10 +219,12 @@ caption: PETSc options used for quasistatic elasticity with a fault. These setti
 [pylithapp.petsc]
 ts_type = beuler
 pc_type = gamg
+ksp_gmres_restart = 100
 
 dm_reorder_section = True
 dm_reorder_section_type = cohesive
 mg_fine_pc_type = vpbjacobi
+mg_fine_ksp_max_it = 5
 ```
 
 #### Quasistatic Incompressible Elasticity
@@ -325,7 +328,9 @@ fieldsplit_pressure_pc_type = bjacobi
 
 fieldsplit_displacement_pc_type = ml
 fieldsplit_displacement_ksp_type = gmres
+fieldsplit_displacement_ksp_gmres_restart = 100
 fieldsplit_displacement_mg_fine_pc_type = vpbjacobi
+fieldsplit_displacement_mg_fine_ksp_max_it = 5
 
 fieldsplit_lagrange_multiplier_fault_pc_type = jacobi
 

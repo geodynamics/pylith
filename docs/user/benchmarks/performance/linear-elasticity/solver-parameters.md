@@ -40,7 +40,7 @@ fieldsplit_lagrange_multiplier_fault_pc_type = ml
 
 In PyLith versions 4.1--4.2, the default solver parameters for linear elasticity with prescribed slip use a variable point block Jacobian preconditioner ({numref}`listing:solver:parameters:vpbjacobi:defaults`).
 We reorder the degrees of freedom in the solution vector (`dm_reorder_section_type = cohesive`) to form small blocks with the degrees of freedom associated with the Lagrange multipliers at a point and the corresponding displacements.
-We use the PETSc geometric algebraic multigrid preconditioer with variable point block Jacobi preconditioning at the fine scale (`mg_fine_pc_type = vpbjacobi`) and the  on the rest of the system of equations.
+We use the PETSc geometric algebraic multigrid preconditioer with variable point block Jacobi preconditioning at the fine scale (`mg_fine_pc_type = vpbjacobi`).
 We use the default parameters for the geometric algebraic multigrid preconditioner.
 
 ```{code-block} cfg

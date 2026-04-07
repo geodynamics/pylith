@@ -308,12 +308,12 @@ pylith::materials::Elasticity::getSolverDefaults(const bool isParallel,
 
         options->add("-pc_type", "gamg");
         options->add("-ksp_gmres_restart", "100");
+        options->add("-mg_fine_ksp_max_it", "5");
 
         if (hasFault) {
             options->add("-dm_reorder_section");
             options->add("-dm_reorder_section_type", "cohesive");
             options->add("-mg_fine_pc_type", "vpbjacobi");
-            options->add("-mg_fine_ksp_max_it", "5");
         } // if/else
         break;
     case pylith::problems::Physics::DYNAMIC:
