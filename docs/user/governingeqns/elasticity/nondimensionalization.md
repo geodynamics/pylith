@@ -113,13 +113,23 @@ It also separates the stress scale used to nondimensionalize stress, tractions, 
 
 ```{table} Nondimensionalization of elasticity.
 :name: tab:elasticity:scales
-| **Quantity** | **Scale**          |
-| :---------: | :------------------ |
-| $x_o$       | Length scale        |
-| $u_o$       | Displacement scale  |
-| $\mu_o$     | Rigidity scale      |
-| $t_o$       | Time scale          |
-| $\sigma_o = \mu_o \frac{u_o}{x_o}$  | Stress scale        |
-| $f_o = \frac{\sigma_o}{x_o}$    | Body force scale       |
-| $\rho_o = \mu_o \frac{t_o^2}{x_o^2}$    | Density scale       |
+|             **Quantity**             | **Scale**          |
+| :----------------------------------: | :----------------- |
+|                $x_o$                 | Length scale       |
+|                $u_o$                 | Displacement scale |
+|               $\mu_o$                | Rigidity scale     |
+|                $t_o$                 | Time scale         |
+|  $\sigma_o = \mu_o \frac{u_o}{x_o}$  | Stress scale       |
+|     $f_o = \frac{\sigma_o}{x_o}$     | Body force scale   |
+| $\rho_o = \mu_o \frac{t_o^2}{x_o^2}$ | Density scale      |
 ```
+
+## Quasistatic Elasticity
+
+There is no inherent length scale in quasistatic elasticity.
+Consequently, the solver is relatively insensitive to the length scale for elasticity problems without a fault; however, the solver will be most robust when the length scale roughly matches the size of the domain.
+
+:::{important}
+Our default preconditioner for elasticity with prescribed slip requires that the length scale match the discretization size.
+If your discretization size differs substantially from the default length scale (1.0 km), then you will need to set the length scale.
+:::

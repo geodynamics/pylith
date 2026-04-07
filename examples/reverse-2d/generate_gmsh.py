@@ -36,15 +36,16 @@ class App(GenerateMesh):
 
     We create a reverse fault and a splay fault.
     """
+    KM = 1.0e+3
     # Define some constants that determine the geometry of the domain.
-    DOMAIN_X = 200.0e+3
-    DOMAIN_Y = 100.0e+3
-    FAULT_WIDTH = 60.0e+3
+    DOMAIN_X = 200.0*KM
+    DOMAIN_Y = 100.0*KM
+    FAULT_WIDTH = 60.0*KM
     FAULT_DIP = 30.0
     SPLAY_DIP = 45.0
-    SPLAY_OFFSET = 15.0e+3
+    SPLAY_OFFSET = 15.0*KM
 
-    DX_FAULT = 5.0e+3
+    DX_FAULT = 5.0*KM
     DX_BIAS = 1.1
 
     def __init__(self):

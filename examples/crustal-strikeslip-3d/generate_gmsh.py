@@ -219,7 +219,7 @@ class App(GenerateMesh):
             gmsh.model.mesh.recombine()
         else:
             gmsh.model.mesh.generate(3)
-        gmsh.model.mesh.optimize("Laplace2D")
+        self.improve_quality()
 
 
 # If script is called from the command line, run the application.

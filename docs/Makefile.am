@@ -36,36 +36,45 @@ dist_noinst_DATA = \
 	user/appendices/figs/airy_stress_axial_extension.svg \
 	user/appendices/figs/airy_stress_axial_extension.tex \
 	user/appendices/index.md \
-	user/benchmarks/figs/savageprescott_diagram.pdf \
-	user/benchmarks/figs/savageprescott_diagram.svg \
-	user/benchmarks/figs/savageprescott_soln_profiles.pdf \
-	user/benchmarks/figs/savageprescott_soln_profiles.svg \
-	user/benchmarks/figs/strikeslip_convergence.pdf \
-	user/benchmarks/figs/strikeslip_convergence.svg \
-	user/benchmarks/figs/strikeslip_error_hex8_0250m.pdf \
-	user/benchmarks/figs/strikeslip_error_hex8_0250m.png \
-	user/benchmarks/figs/strikeslip_error_hex8_0500m.pdf \
-	user/benchmarks/figs/strikeslip_error_hex8_0500m.png \
-	user/benchmarks/figs/strikeslip_error_hex8_1000m.pdf \
-	user/benchmarks/figs/strikeslip_error_hex8_1000m.png \
-	user/benchmarks/figs/strikeslip_error_tet4_0250m.pdf \
-	user/benchmarks/figs/strikeslip_error_tet4_0250m.png \
-	user/benchmarks/figs/strikeslip_error_tet4_0500m.pdf \
-	user/benchmarks/figs/strikeslip_error_tet4_0500m.png \
-	user/benchmarks/figs/strikeslip_error_tet4_1000m.pdf \
-	user/benchmarks/figs/strikeslip_error_tet4_1000m.png \
-	user/benchmarks/figs/strikeslip_geometry.pdf \
-	user/benchmarks/figs/strikeslip_geometry.png \
-	user/benchmarks/figs/strikeslip_scaling.pdf \
-	user/benchmarks/figs/strikeslip_scaling.svg \
-	user/benchmarks/figs/strikeslip_soln.pdf \
-	user/benchmarks/figs/strikeslip_soln.png \
-	user/benchmarks/figs/strikeslip_summary.pdf \
-	user/benchmarks/figs/strikeslip_summary.svg \
+	user/benchmarks/performance/linear-elasticity/solver-2d.md \
+	user/benchmarks/performance/linear-elasticity/solver-parameters.md \
+	user/benchmarks/performance/linear-elasticity/figs/solver-performance-2d.svg \
+	user/benchmarks/performance/linear-elasticity/figs/solver-performance-2d.pdf \
+	user/benchmarks/performance/linear-elasticity/figs/solver-performance-3d.svg \
+	user/benchmarks/performance/linear-elasticity/figs/solver-performance-3d.pdf \
+	user/benchmarks/performance/linear-elasticity/solver-3d.md \
+	user/benchmarks/performance/linear-elasticity/index.md \
+	user/benchmarks/performance/index.md \
+	user/benchmarks/legacy/figs/savageprescott_diagram.pdf \
+	user/benchmarks/legacy/figs/savageprescott_diagram.svg \
+	user/benchmarks/legacy/figs/savageprescott_soln_profiles.pdf \
+	user/benchmarks/legacy/figs/savageprescott_soln_profiles.svg \
+	user/benchmarks/legacy/figs/strikeslip_convergence.pdf \
+	user/benchmarks/legacy/figs/strikeslip_convergence.svg \
+	user/benchmarks/legacy/figs/strikeslip_error_hex8_0250m.pdf \
+	user/benchmarks/legacy/figs/strikeslip_error_hex8_0250m.png \
+	user/benchmarks/legacy/figs/strikeslip_error_hex8_0500m.pdf \
+	user/benchmarks/legacy/figs/strikeslip_error_hex8_0500m.png \
+	user/benchmarks/legacy/figs/strikeslip_error_hex8_1000m.pdf \
+	user/benchmarks/legacy/figs/strikeslip_error_hex8_1000m.png \
+	user/benchmarks/legacy/figs/strikeslip_error_tet4_0250m.pdf \
+	user/benchmarks/legacy/figs/strikeslip_error_tet4_0250m.png \
+	user/benchmarks/legacy/figs/strikeslip_error_tet4_0500m.pdf \
+	user/benchmarks/legacy/figs/strikeslip_error_tet4_0500m.png \
+	user/benchmarks/legacy/figs/strikeslip_error_tet4_1000m.pdf \
+	user/benchmarks/legacy/figs/strikeslip_error_tet4_1000m.png \
+	user/benchmarks/legacy/figs/strikeslip_geometry.pdf \
+	user/benchmarks/legacy/figs/strikeslip_geometry.png \
+	user/benchmarks/legacy/figs/strikeslip_scaling.pdf \
+	user/benchmarks/legacy/figs/strikeslip_scaling.svg \
+	user/benchmarks/legacy/figs/strikeslip_soln.pdf \
+	user/benchmarks/legacy/figs/strikeslip_soln.png \
+	user/benchmarks/legacy/figs/strikeslip_summary.pdf \
+	user/benchmarks/legacy/figs/strikeslip_summary.svg \
 	user/benchmarks/index.md \
-	user/benchmarks/quasistatic-strikeslip.md \
-	user/benchmarks/savage-prescott.md \
-	user/benchmarks/scec-dynrup.md \
+	user/benchmarks/legacy/quasistatic-strikeslip.md \
+	user/benchmarks/legacy/savage-prescott.md \
+	user/benchmarks/legacy/scec-dynrup.md \
 	user/components/implementations.md \
 	user/components/apps/EqInfoApp.md \
 	user/components/apps/PyLithApp.md \

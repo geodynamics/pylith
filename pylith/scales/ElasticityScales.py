@@ -23,14 +23,14 @@ class ElasticityScales(ModuleElasticityScales):
     """
 
     @staticmethod
-    def setQuasistaticElasticity(scales, lengthScale=100.0 * km, timeScale=year):
+    def setQuasistaticElasticity(scales, lengthScale=1.0 * km, timeScale=year):
         ModuleElasticityScales.setQuasistaticElasticity(
             scales, lengthScale.value, timeScale.value
         )
 
     @staticmethod
     def setDynamicElasticity(
-        scales, lengthScale=100.0 * km, velocityScale=3.0 * km / second
+        scales, lengthScale=1.0 * km, velocityScale=3.0 * km / second
     ):
         ModuleElasticityScales.setDynamicElasticity(
             scales, lengthScale.value, velocityScale.value
@@ -39,7 +39,7 @@ class ElasticityScales(ModuleElasticityScales):
     @staticmethod
     def setQuasistaticPoroelasticity(
         scales,
-        lengthScale=100.0 * km,
+        lengthScale=1.0 * km,
         permeability=1.0e-12 * meter**2,
         viscosity=1.0e-3 * pascal * second,
         rigidity=25.0e9 * pascal,

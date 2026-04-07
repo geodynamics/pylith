@@ -20,12 +20,13 @@ class App(GenerateMesh):
     """
     Application for generating the mesh.
     """
-    X_WEST = -600.0e+3
-    X_EAST = 600.0e+3
-    Y_BOT = -600.0e+3
-    Y_MOHO = -40.0e+3
+    KM = 1.0e+3
+    X_WEST = -600.0*KM
+    X_EAST = 600.0*KM
+    Y_BOT = -600.0*KM
+    Y_MOHO = -40.0*KM
 
-    DX_FAULT = 5.0e+3
+    DX_FAULT = 5.0*KM
     DX_BIAS = 1.07
 
     # Topography/bathymetry extracted manually from Google Earth

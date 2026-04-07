@@ -8,24 +8,25 @@ The version numbers are in the form `MAJOR.MINOR.PATCH`, where major releases in
 ## Version 5.0.0
 
 * **Changed**
-  * Update the nondimensionalization code, moving it from SpatialData to PyLith.
-    * Rename Nondimensional to Scales.
-    * Add displacement scale and improve the names of the other scales.
+  * Updated the nondimensionalization code, moving it from SpatialData to PyLith.
+    * Renamed Nondimensional to Scales.
+    * Added displacement scale and improve the names of the other scales.
     * The time scale for poroelasticity is derived from the other scales and nominal material properties.
-    * Add discussion of nondimensionalization for each of the governing equations.
-    * Update default solver tolerances consistent with the new nondimensionalization scales.
-  * Add option to use adaptive time stepping and update examples `reverse-2d` Steps 7 and 8 and `magma-2d` Step 1 to demonstrate its use.
-  * Update multi-grid preconditioner solver settings for elasticity for better scalability with problem size.
+    * Added discussion of nondimensionalization for each of the governing equations.
+    * Updated default solver tolerances consistent with the new nondimensionalization scales.
+  * Added option to use adaptive time stepping and update examples `reverse-2d` Steps 7 and 8 and `magma-2d` Step 1 to demonstrate its use.
+  * Updated multi-grid preconditioner solver settings for elasticity for better scalability with problem size.
   * Mesh formats
-    * Add support for use of Cubit side sets and Gmsh physical groups with edges (2D) and surfaces (3D). Use of Cubit vertex sets and Gmsh physical groups with vertices are deprecated and support for them will be removed in version 6.0.0.
+    * Added support for use of Cubit side sets and Gmsh physical groups with edges (2D) and surfaces (3D). Use of Cubit vertex sets and Gmsh physical groups with vertices are deprecated and support for them will be removed in version 6.0.0.
       * Use of Cubit side sets and Gmsh physical groups with curves (2D) and surfaces (3D) are using
     * ASCII mesh format
       * Changed `group` to `vertex-group`; remove `group` `type`.
     * Renamed `VertexGroup` to `BoundaryGroup` in `meshio.gmsh_utils` and changed default behavior to not be recursive (generate "face" groups, not "vertex" groups).
+    * Added `improve_quality()` method to `meshio.gmsh_utils.GenerateMesh` for improving quality in 3D meshes. Used in `examples/crustal-strikeslip-3d`.
   * Use the VTU (XML) format for VTK files instead of the legacy ASCII format.
   * Material `description` property is no longer used; a deprecation warning is printed to stdout if it is specified. This feature will be removed in v6.0.
   * Internal labels for meshes and fields are now derived from the Pyre component name and identifier.
-  * Update PETSc to 3.24.0
+  * Updated PETSc to 3.24.0
 * **Added**
   * Improved documentation for `pylith_eqinfo` and illustrate use in `examples/strikdslip-2d`, `examples/crustal-strikeslip-2d`, and `examples/crustal-strikeslip-3d`.
   * Added `pylith_convertmesh` for converting Cubit and Gmsh files to the PETSc HDF5 mesh format.
@@ -36,12 +37,13 @@ The version numbers are in the form `MAJOR.MINOR.PATCH`, where major releases in
       * `Gmsh`: Create physical groups only at the dimension of the boundary.
       * Added compatibility for reading PETSc HDF5 format
   * Improved the organization of the governing equations section and added documentation for poroelasticity with prescribed fault slip, including governing equations and default PETSc solver settings. Also added a full-scale test.
+  * Added performance benchmarks for linear elasticity with prescribed slip in `benchmarks/performance`.
 * **Fixed**
   * Account for processes without cells in initial condition patch when verifying configuration.
   * Avoid divide by zero for `KinSrcRamp` when final slip is zero.
-  * Remove `solid_bulk_modulus` as a spatial database field for poroelasticity; compute it from the other fields.
+  * Removed `solid_bulk_modulus` as a spatial database field for poroelasticity; compute it from the other fields.
   * Fixed typos in setting up gravity with poroelasticity.
-  * Fix pythia import in `pylith_eqinfo`.
+  * Fixed pythia import in `pylith_eqinfo`.
 
 ## Version 4.2.0 (2025-01-15)
 
