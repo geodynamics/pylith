@@ -16,7 +16,8 @@ SUBDIRS = \
 	materials \
 	meshio \
 	problems \
-        scales \
+    scales \
+	sources \
 	topology \
 	testing \
 	utils

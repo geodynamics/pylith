@@ -1,0 +1,98 @@
+# ----------------------------------------------------------------------
+#
+# Brad T. Aagaard, U.S. Geological Survey
+# Charles A. Williams, GNS Science
+# Matthew G. Knepley, University at Buffalo
+#
+# This code was developed as part of the Computational Infrastructure
+# for Geodynamics (http://geodynamics.org).
+#
+# Copyright (c) 2010-2021 University of California, Davis
+#
+# See LICENSE.md for license information.
+#
+# ----------------------------------------------------------------------
+#
+# @file pylith/sources/TimeHistoryWavelet.py
+#
+# @brief Python source time function for a user defined wavelet.
+#
+# Factory: pointforce_sourcetimefunction
+
+from .SourceTimeFunctionMomentTensorForce import SourceTimeFunctionMomentTensorForce
+from .sources import TimeHistoryWavelet as ModuleTimeHistoryWavelet
+from pylith.utils.NullComponent import NullComponent
+
+
+class TimeHistoryWavelet(SourceTimeFunctionMomentTensorForce, ModuleTimeHistoryWavelet):
+    """Python source time function for time history source.
+
+    FACTORY: pointforce_sourcetimefunction
+    """
+
+    import pythia.pyre.inventory
+
+    useTimeHistory = pythia.pyre.inventory.bool("use_time_history", default=True)
+    useTimeHistory.meta['tip'] = "Use time history term in time-dependent expression."
+
+    dbTimeHistory = pythia.pyre.inventory.facility(
+        "time_history", factory=NullComponent, family="temporal_database")
+    dbTimeHistory.meta['tip'] = "Time history with normalized amplitude as a function of time."
+
+    # PUBLIC METHODS /////////////////////////////////////////////////////
+
+    def __init__(self, name="timehistorywavelet"):
+        """Constructor.
+        """
+        SourceTimeFunctionMomentTensorForce.__init__(self, name)
+        return
+
+    def _defaults(self):
+        from .AuxSubfieldsSourceTime import AuxSubfieldsSourceTime
+        self.auxiliarySubfields = AuxSubfieldsSourceTime("auxiliary_subfields")
+
+    def preinitialize(self, problem):
+        """Do pre-initialization setup.
+        """
+        from pylith.mpi.Communicator import mpi_is_root
+        if mpi_is_root():
+            self._info.log(
+                "Performing minimal initialization of time-dependent Neumann boundary condition '%s'." % self.aliases[-1])
+        
+        
+        SourceTimeFunctionMomentTensorForce.preinitialize(self, problem)
+        ModuleTimeHistoryWavelet.useTimeHistory(self, self.useTimeHistory)
+        if not isinstance(self.dbTimeHistory, NullComponent):
+            ModuleTimeHistoryWavelet.setTimeHistoryDB(
+                self, self.dbTimeHistory)
+        return
+    
+    def _validate(self, context):
+        if isinstance(self.inventory.dbTimeHistory, NullComponent):
+            trait = self.inventory.getTrait("time_history")
+            self._validationError(context, trait,
+                f"Missing time history database for time history wavelet source '{self.aliases[-1]}'.")
+
+    def _validationError(self, context, trait, msg):
+        from pythia.pyre.inventory.Item import Item
+        error = ValueError(msg)
+        descriptor = self.getTraitDescriptor(trait.name)
+        context.error(error, items=[Item(trait, descriptor)])
+
+    # PRIVATE METHODS ////////////////////////////////////////////////////
+
+    def _createModuleObj(self):
+        """Call constructor for module object for access to C++ object.
+        """
+        ModuleTimeHistoryWavelet.__init__(self)
+
+
+# FACTORIES ////////////////////////////////////////////////////////////
+
+def momenttensorforce_sourcetimefunction():
+    """Factory associated with TimeHistoryWavelet.
+    """
+    return TimeHistoryWavelet()
+
+
+# End of file
