@@ -148,8 +148,8 @@ def _create_slab_points():
 
 
 def _calculate_local_strike(contour):
-    """Calculate local strike along contour.
-    """
+    """Calculate local strike along contour."""
+
     def _smooth_values(values):
         window_size = values.shape[0] // 3
         window = numpy.ones(window_size) / window_size
@@ -263,7 +263,7 @@ def _create_slab_volume(top_surface, surface_normal):
 
 def _create_splay_fault_surface(contours):
     """Create splay fault surface from slab contours.
-    
+
     We use one slab contour for the intersection of the splay fault with the top of the slab.
     """
     # Generate the splay fault
@@ -558,4 +558,4 @@ cubit.cmd("nodeset 133 name 'fault_splay_edge'")
 
 
 # Write mesh as ExodusII file
-cubit.cmd(f"export input/mesh 'mesh_{CELL}.exo' dimension 3 overwrite")
+cubit.cmd(f"export mesh 'input/mesh_{CELL}.exo' dimension 3 overwrite")
