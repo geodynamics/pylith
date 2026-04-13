@@ -39,7 +39,7 @@ pylith::faults::TopologyOps::createFault(pylith::topology::Mesh* faultMesh,
 
     if (surfaceLabel) {
         PylithCallPetsc(PetscObjectGetName((PetscObject)surfaceLabel, &groupName));
-    }
+    } // if
 
     PetscInt labelHasVertices = 0;
     { // TEMPORARY: Continue to support creating lower dimension meshes using labels with vertices.
@@ -48,9 +48,11 @@ pylith::faults::TopologyOps::createFault(pylith::topology::Mesh* faultMesh,
         if (surfaceLabel) {
             const PetscInt* labelPoints = NULL;
             PetscInt numPoints = 0;
-            PylithCallPetsc(DMGetStratumIS(dmDomain, groupName, surfaceLabelValue, &labelIS));assert(labelIS);
-            PylithCallPetsc(ISGetIndices(labelIS, &labelPoints));
-            PylithCallPetsc(DMGetStratumSize(dmDomain, groupName, surfaceLabelValue, &numPoints));
+            PylithCallPetsc(DMGetStratumIS(dmDomain, groupName, surfaceLabelValue, &labelIS));
+            if (labelIS) {
+                PylithCallPetsc(ISGetIndices(labelIS, &labelPoints));
+                PylithCallPetsc(DMGetStratumSize(dmDomain, groupName, surfaceLabelValue, &numPoints));
+            } // if
 
             pylith::topology::Stratum verticesStratum(dmDomain, pylith::topology::Stratum::DEPTH, 0);
             PetscInt vStart = 0, vEnd = 0;
@@ -62,10 +64,11 @@ pylith::faults::TopologyOps::createFault(pylith::topology::Mesh* faultMesh,
                     break;
                 } // if
             } // if
-            PylithCallPetsc(ISRestoreIndices(labelIS, &labelPoints));
+            if (labelIS) {
+                PylithCallPetsc(ISRestoreIndices(labelIS, &labelPoints));
+                PylithCallPetsc(ISDestroy(&labelIS));
+            } // if
         } // if
-        PylithCallPetsc(ISDestroy(&labelIS));
-
         PylithCallPetsc(MPI_Allreduce(&labelHasVerticesLocal, &labelHasVertices, 1, MPI_INT, MPI_MAX,
                                       PetscObjectComm((PetscObject) dmDomain)));
 
@@ -97,7 +100,7 @@ pylith::faults::TopologyOps::createFault(pylith::topology::Mesh* faultMesh,
     if (maxConeSize <= 0) {
         PylithCallPetsc(DMDestroy(&dmFault));
         std::ostringstream msg;
-        msg << "Error while creating fault. Fault " << groupName << " with label value "
+        msg << "Error while creating fault. Fault '" << groupName << "' with label value "
             << surfaceLabelValue << " does not contain any cells.\n"
             << "Check that you are using the correct label value.\n";
         throw std::runtime_error(msg.str());
