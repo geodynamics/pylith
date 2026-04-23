@@ -91,14 +91,13 @@ pylith::topology::Distributor::distribute(pylith::topology::Mesh* const newMesh,
              << "Partitioning mesh using PETSc '" << partitionerName << "' partitioner." << pythia::journal::endl;
     } // if
 
-    PetscErrorCode err = 0;
     PetscPartitioner partitioner = 0;
     PetscDM dmOrig = origMesh.getDM();assert(dmOrig);
-    err = DMPlexGetPartitioner(dmOrig, &partitioner);PYLITH_CHECK_ERROR(err);
-    err = PetscPartitionerSetType(partitioner, partitionerName);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMPlexGetPartitioner(dmOrig, &partitioner));
+    PylithCallPetsc(PetscPartitionerSetType(partitioner, partitionerName));
     if ((std::string(partitionerName) == std::string("parmetis")) && useEdgeWeighting) {
-        err = PetscOptionsSetValue(NULL, "-petscpartitioner_use_vertex_weights", "true");PYLITH_CHECK_ERROR(err);
-        err = PetscPartitionerSetFromOptions(partitioner);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(PetscOptionsSetValue(NULL, "-petscpartitioner_use_vertex_weights", "true"));
+        PylithCallPetsc(PetscPartitionerSetFromOptions(partitioner));
     } // if
 
     if (0 == commRank) {
@@ -108,12 +107,12 @@ pylith::topology::Distributor::distribute(pylith::topology::Mesh* const newMesh,
 
     PetscDM dmTmp = NULL, dmNew = NULL;
     const PetscInt overlap = 0;
-    err = DMPlexDistribute(origMesh.getDM(), overlap, NULL, &dmTmp);PYLITH_CHECK_ERROR(err);
-    err = _Distributor::distributeOverlap(&dmNew, dmTmp, faults, numFaults);PYLITH_CHECK_ERROR(err);
-    err = DMDestroy(&dmTmp);PYLITH_CHECK_ERROR(err);
-    err = DMPlexDistributeSetDefault(dmNew, PETSC_FALSE);PYLITH_CHECK_ERROR(err);
-    err = DMPlexReorderCohesiveSupports(dmNew);PYLITH_CHECK_ERROR(err);
-    err = DMViewFromOptions(dmNew, NULL, "-pylith_dist_dm_view");PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMPlexDistribute(origMesh.getDM(), overlap, NULL, &dmTmp));
+    PylithCallPetsc(_Distributor::distributeOverlap(&dmNew, dmTmp, faults, numFaults));
+    PylithCallPetsc(DMDestroy(&dmTmp));
+    PylithCallPetsc(DMPlexDistributeSetDefault(dmNew, PETSC_FALSE));
+    PylithCallPetsc(DMPlexReorderCohesiveSupports(dmNew));
+    PylithCallPetsc(DMViewFromOptions(dmNew, NULL, "-pylith_dist_dm_view"));
     newMesh->setDM(dmNew, "domain");
 
     pythia::journal::debug_t debug(_Distributor::componentName);
@@ -218,10 +217,9 @@ pylith::topology::_Distributor::distributeOverlap(PetscDM* dmOverlap,
     PetscDM dmCoord;
     PetscDMLabel lblOverlap;
     PetscSF sfOverlap, sfStratified, sfPoint;
-    PetscErrorCode err;
 
     if (0 == numFaults) {
-        err = PetscObjectReference((PetscObject)dmMesh);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(PetscObjectReference((PetscObject)dmMesh));
         *dmOverlap = dmMesh;
         PYLITH_METHOD_RETURN(0);
     } // if
@@ -233,11 +231,11 @@ pylith::topology::_Distributor::distributeOverlap(PetscDM* dmOverlap,
 
     for (int i = 0; i < numFaults; ++i) {
         const char* surfaceLabelName = faults[i]->getSurfaceLabelName();
-        err = DMGetLabel(dmMesh, surfaceLabelName, &ovIncludeLabels[i]);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMGetLabel(dmMesh, surfaceLabelName, &ovIncludeLabels[i]));
         ovIncludeLabelValues[i] = faults[i]->getSurfaceLabelValue();
 
         const char* cohesiveLabelName = faults[i]->getCohesiveLabelName();
-        err = DMGetLabel(dmMesh, cohesiveLabelName, &ovExcludeLabels[i]);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMGetLabel(dmMesh, cohesiveLabelName, &ovExcludeLabels[i]));
         ovExcludeLabelValues[i] = faults[i]->getCohesiveLabelValue();
     } // for
 

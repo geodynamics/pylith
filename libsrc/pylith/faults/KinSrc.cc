@@ -170,15 +170,14 @@ pylith::faults::KinSrc::getSlipSubfields(PetscVec slipLocalVec,
     assert(faultAuxiliaryField->getSubfieldNames().size() == numSubfields);
 
     // Create local vector for slip for this source.
-    PetscErrorCode err = 0;
     PetscDM faultAuxiliaryDM = faultAuxiliaryField->getDM();
     PetscDMLabel dmLabel = NULL;
     PetscInt labelValue = 0;
     const PetscInt part = 0;
-    err = DMSetAuxiliaryVec(faultAuxiliaryDM, dmLabel, labelValue, part,
-                            _auxiliaryField->getLocalVector());PYLITH_CHECK_ERROR(err);
-    err = DMProjectFieldLocal(faultAuxiliaryDM, t, slipLocalVec, subfieldKernels, INSERT_VALUES,
-                              slipLocalVec);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMSetAuxiliaryVec(faultAuxiliaryDM, dmLabel, labelValue, part,
+                                      _auxiliaryField->getLocalVector()));
+    PylithCallPetsc(DMProjectFieldLocal(faultAuxiliaryDM, t, slipLocalVec, subfieldKernels, INSERT_VALUES,
+                                        slipLocalVec));
 
     PYLITH_METHOD_END;
 } // getSlipSubfields
@@ -195,13 +194,13 @@ pylith::faults::KinSrc::_setFEConstants(const pylith::topology::Field& faultAuxF
     // the correct one.
     PetscDS ds = NULL;
     PetscDM dmAux = faultAuxField.getDM();assert(dmAux);
-    PetscErrorCode err = DMGetDS(dmAux, &ds);PYLITH_CHECK_ERROR(err);assert(ds);
+    PylithCallPetsc(DMGetDS(dmAux, &ds));assert(ds);
 
     // Pointwise functions have been set in DS
     const int numConstants = 1;
     PylithScalar constants[numConstants];
     constants[0] = _originTime;
-    err = PetscDSSetConstants(ds, numConstants, constants);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(PetscDSSetConstants(ds, numConstants, constants));
 
     PYLITH_METHOD_END;
 } // _setFEConstants

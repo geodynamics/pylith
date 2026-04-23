@@ -252,12 +252,11 @@ pylith::feassemble::Constraint::_computeDiagnosticField(void) {
         kernelsArray[sinfo.index] = _kernelsDiagnosticField[iKernel].f;
     } // for
 
-    PetscErrorCode err = 0;
     PetscDM diagnosticDM = _diagnosticField->getDM();
     PetscDMLabel diagnosticFieldLabel = NULL;
     const PetscInt labelValue = 1;
-    err = DMGetLabel(diagnosticDM, "output", &diagnosticFieldLabel);PYLITH_CHECK_ERROR(err);
-    err = DMProjectBdFieldLabelLocal(diagnosticDM, t, diagnosticFieldLabel, 1, &labelValue, PETSC_DETERMINE, NULL, _auxiliaryField->getLocalVector(), kernelsArray, INSERT_VALUES, _diagnosticField->getLocalVector());PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMGetLabel(diagnosticDM, "output", &diagnosticFieldLabel));
+    PylithCallPetsc(DMProjectBdFieldLabelLocal(diagnosticDM, t, diagnosticFieldLabel, 1, &labelValue, PETSC_DETERMINE, NULL, _auxiliaryField->getLocalVector(), kernelsArray, INSERT_VALUES, _diagnosticField->getLocalVector()));
     delete[] kernelsArray;kernelsArray = NULL;
 
     pythia::journal::debug_t debug(GenericComponent::getName());
@@ -286,11 +285,11 @@ pylith::feassemble::Constraint::_setKernelConstants(const pylith::topology::Fiel
 
     // :KLUDGE: Potentially we may have multiple PetscDS objects. This assumes that the first one (with a NULL label) is
     // the correct one.
-    PetscErrorCode err = DMGetDS(dmSoln, &prob);PYLITH_CHECK_ERROR(err);assert(prob);
+    PylithCallPetsc(DMGetDS(dmSoln, &prob));assert(prob);
     if (constants.size() > 0) {
-        err = PetscDSSetConstants(prob, constants.size(), const_cast<double*>(&constants[0]));PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(PetscDSSetConstants(prob, constants.size(), const_cast<double*>(&constants[0])));
     } else {
-        err = PetscDSSetConstants(prob, 0, NULL);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(PetscDSSetConstants(prob, 0, NULL));
     } // if/else
 
     PYLITH_METHOD_END;

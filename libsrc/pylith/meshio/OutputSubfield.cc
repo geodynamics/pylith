@@ -19,7 +19,7 @@
 #include "pylith/topology/RefineInterpolator.hh" // USES RefineInterpolator
 #include "pylith/fekernels/Solution.hh" // USES Solution::passThruSubfield
 
-#include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
+#include "pylith/utils/error.hh" // USES PylithCallPetsc()
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
 
 #include "petscdm.h" // USES DMReorderSectionSetDefault()
@@ -103,12 +103,11 @@ void
 pylith::meshio::OutputSubfield::deallocate(void) {
     delete _interpolator;_interpolator = NULL;
 
-    PetscErrorCode err;
-    err = VecDestroy(&_projectVector);PYLITH_CHECK_ERROR(err);
-    err = VecDestroy(&_projectVectorInterp);PYLITH_CHECK_ERROR(err);
-    err = DMDestroy(&_projectDM);PYLITH_CHECK_ERROR(err);
-    err = VecDestroy(&_outputVector);PYLITH_CHECK_ERROR(err);
-    err = DMDestroy(&_outputDM);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(VecDestroy(&_projectVector));
+    PylithCallPetsc(VecDestroy(&_projectVectorInterp));
+    PylithCallPetsc(DMDestroy(&_projectDM));
+    PylithCallPetsc(VecDestroy(&_outputVector));
+    PylithCallPetsc(DMDestroy(&_outputDM));
 
     _label = NULL; // Destroyed by DMDestroy()
 } // deallocate
@@ -141,47 +140,45 @@ pylith::meshio::OutputSubfield::create(const pylith::topology::Field& field,
     subfield->_discretization = projectDiscretization;
     subfield->_discretization.basisOrder = outputBasisOrder;
 
-    PetscErrorCode err = PETSC_SUCCESS;
-
     // Setup PETSc DM for projection
     const char* meshName = PETSC_NULLPTR;
-    err = PetscObjectGetName((PetscObject) mesh.getDM(), &meshName);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(PetscObjectGetName((PetscObject) mesh.getDM(), &meshName));
     const std::string& projectName = meshName + std::string(" ") + std::string(name);
-    err = DMClone(mesh.getDM(), &subfield->_projectDM);PYLITH_CHECK_ERROR(err);
-    err = PetscObjectSetName((PetscObject)subfield->_projectDM, projectName.c_str());PYLITH_CHECK_ERROR(err);
-    err = DMReorderSectionSetDefault(subfield->_projectDM, DM_REORDER_DEFAULT_FALSE);PYLITH_CHECK_ERROR(err);
-    err = DMReorderSectionSetType(subfield->_projectDM, NULL);PYLITH_CHECK_ERROR(err);
-    err = DMPlexReorderSetDefault(subfield->_projectDM, DM_REORDER_DEFAULT_FALSE);
+    PylithCallPetsc(DMClone(mesh.getDM(), &subfield->_projectDM));
+    PylithCallPetsc(PetscObjectSetName((PetscObject)subfield->_projectDM, projectName.c_str()));
+    PylithCallPetsc(DMReorderSectionSetDefault(subfield->_projectDM, DM_REORDER_DEFAULT_FALSE));
+    PylithCallPetsc(DMReorderSectionSetType(subfield->_projectDM, NULL));
+    PylithCallPetsc(DMPlexReorderSetDefault(subfield->_projectDM, DM_REORDER_DEFAULT_FALSE));
 
     // Setup PETSc FE (discretization) for projection
     PetscFE projectFE = pylith::topology::FieldOps::createFE(projectDiscretization, subfield->_projectDM,
                                                              info.description.numComponents);assert(projectFE);
-    err = PetscFESetName(projectFE, info.description.label.c_str());PYLITH_CHECK_ERROR(err);
-    err = DMSetField(subfield->_projectDM, 0, NULL, (PetscObject)projectFE);PYLITH_CHECK_ERROR(err);
-    err = DMSetFieldAvoidTensor(subfield->_projectDM, 0, PETSC_TRUE);PYLITH_CHECK_ERROR(err);
-    err = PetscFEDestroy(&projectFE);PYLITH_CHECK_ERROR(err);
-    err = DMCreateDS(subfield->_projectDM);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(PetscFESetName(projectFE, info.description.label.c_str()));
+    PylithCallPetsc(DMSetField(subfield->_projectDM, 0, NULL, (PetscObject)projectFE));
+    PylithCallPetsc(DMSetFieldAvoidTensor(subfield->_projectDM, 0, PETSC_TRUE));
+    PylithCallPetsc(PetscFEDestroy(&projectFE));
+    PylithCallPetsc(DMCreateDS(subfield->_projectDM));
 
     if (!refineLevels) {
         subfield->_outputDM = subfield->_projectDM;
-        err = PetscObjectReference((PetscObject)subfield->_outputDM);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(PetscObjectReference((PetscObject)subfield->_outputDM));
     } else {
         delete subfield->_interpolator;subfield->_interpolator = new pylith::topology::RefineInterpolator();
         assert(subfield->_interpolator);
         subfield->_interpolator->initialize(subfield->_projectDM, refineLevels, outputBasisOrder, info.description, subfield->_discretization);
         subfield->_outputDM = subfield->_interpolator->getOutputDM();
-        err = PetscObjectReference((PetscObject)subfield->_outputDM);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(PetscObjectReference((PetscObject)subfield->_outputDM));
     } // if/else
 
-    err = DMCreateGlobalVector(subfield->_projectDM, &subfield->_projectVector);PYLITH_CHECK_ERROR(err);
-    err = PetscObjectSetName((PetscObject)subfield->_projectVector, name);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMCreateGlobalVector(subfield->_projectDM, &subfield->_projectVector));
+    PylithCallPetsc(PetscObjectSetName((PetscObject)subfield->_projectVector, name));
     if (refineLevels) {
-        err = DMCreateGlobalVector(subfield->_outputDM, &subfield->_outputVector);PYLITH_CHECK_ERROR(err);
-        err = PetscObjectSetName((PetscObject)subfield->_outputVector, name);PYLITH_CHECK_ERROR(err);
-        err = VecDuplicate(subfield->_projectVector, &subfield->_projectVectorInterp);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMCreateGlobalVector(subfield->_outputDM, &subfield->_outputVector));
+        PylithCallPetsc(PetscObjectSetName((PetscObject)subfield->_outputVector, name));
+        PylithCallPetsc(VecDuplicate(subfield->_projectVector, &subfield->_projectVectorInterp));
     } else {
         subfield->_outputVector = subfield->_projectVector;
-        err = PetscObjectReference((PetscObject)subfield->_outputVector);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(PetscObjectReference((PetscObject)subfield->_outputVector));
     } // if/else
 
     // _OutputSubfield::Events::logger.eventEnd(_OutputSubfield::Events::create);
@@ -204,34 +201,33 @@ pylith::meshio::OutputSubfield::create(const pylith::topology::Field& field,
     subfield->_subfieldIndex = info.index;
     subfield->_description = info.description;
 
-    PetscErrorCode err = PETSC_SUCCESS;
-    err = DMClone(mesh.getDM(), &subfield->_projectDM);PYLITH_CHECK_ERROR(err);assert(subfield->_projectDM);
-    err = DMReorderSectionSetDefault(subfield->_projectDM, DM_REORDER_DEFAULT_FALSE);PYLITH_CHECK_ERROR(err);
-    err = DMReorderSectionSetType(subfield->_projectDM, NULL);PYLITH_CHECK_ERROR(err);
-    err = PetscObjectSetName((PetscObject)subfield->_projectDM, name);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMClone(mesh.getDM(), &subfield->_projectDM));assert(subfield->_projectDM);
+    PylithCallPetsc(DMReorderSectionSetDefault(subfield->_projectDM, DM_REORDER_DEFAULT_FALSE));
+    PylithCallPetsc(DMReorderSectionSetType(subfield->_projectDM, NULL));
+    PylithCallPetsc(PetscObjectSetName((PetscObject)subfield->_projectDM, name));
 
     pylith::topology::VecVisitorMesh fieldVisitor(field, name);
     fieldVisitor.selectSection(pylith::topology::VecVisitorMesh::LOCAL_SECTION);
 
     PetscSection subfieldSection = NULL;
     PetscInt pStart = 0, pEnd = 0;
-    err = PetscSectionClone(fieldVisitor.selectedSection(), &subfieldSection);PYLITH_CHECK_ERROR(err);
-    err = PetscSectionGetChart(fieldVisitor.selectedSection(), &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(PetscSectionClone(fieldVisitor.selectedSection(), &subfieldSection));
+    PylithCallPetsc(PetscSectionGetChart(fieldVisitor.selectedSection(), &pStart, &pEnd));
     for (PetscInt point = pStart, offset = 0; point < pEnd; ++point) {
         const PetscInt numDof = fieldVisitor.sectionDof(point);
-        err = PetscSectionSetOffset(subfieldSection, point, offset);PYLITH_CHECK_ERROR(err);
-        err = PetscSectionSetDof(subfieldSection, point, numDof);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(PetscSectionSetOffset(subfieldSection, point, offset));
+        PylithCallPetsc(PetscSectionSetDof(subfieldSection, point, numDof));
         offset += numDof;
     } // for
-    err = DMSetLocalSection(subfield->_projectDM, subfieldSection);PYLITH_CHECK_ERROR(err);
-    err = PetscSectionDestroy(&subfieldSection);PYLITH_CHECK_ERROR(err);
-    err = DMCreateGlobalVector(subfield->_projectDM, &subfield->_projectVector);PYLITH_CHECK_ERROR(err);
-    err = PetscObjectSetName((PetscObject)subfield->_projectVector, name);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMSetLocalSection(subfield->_projectDM, subfieldSection));
+    PylithCallPetsc(PetscSectionDestroy(&subfieldSection));
+    PylithCallPetsc(DMCreateGlobalVector(subfield->_projectDM, &subfield->_projectVector));
+    PylithCallPetsc(PetscObjectSetName((PetscObject)subfield->_projectVector, name));
 
     subfield->_outputDM = subfield->_projectDM;
-    err = PetscObjectReference((PetscObject) subfield->_outputDM);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(PetscObjectReference((PetscObject) subfield->_outputDM));
     subfield->_outputVector = subfield->_projectVector;
-    err = PetscObjectReference((PetscObject) subfield->_outputVector);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(PetscObjectReference((PetscObject) subfield->_outputVector));
 
     _OutputSubfield::Events::logger.eventEnd(_OutputSubfield::Events::createBasisOrder);
     PYLITH_METHOD_RETURN(subfield);
@@ -249,9 +245,8 @@ pylith::meshio::OutputSubfield::setLabel(const char* name,
     if (_label) {
         PYLITH_METHOD_END;
     } // if
-    PetscErrorCode err;
-    err = DMGetLabel(_projectDM, name, &_label);PYLITH_CHECK_ERROR(err);
-    err = DMPlexLabelComplete(_projectDM, _label);
+    PylithCallPetsc(DMGetLabel(_projectDM, name, &_label));
+    PylithCallPetsc(DMPlexLabelComplete(_projectDM, _label));
 
     _labelValue = value;
 
@@ -302,15 +297,14 @@ pylith::meshio::OutputSubfield::project(const PetscVec& fieldVector) {
     assert(_projectVector);
     assert(_outputVector);
 
-    PetscErrorCode err;
     const PetscReal t = PetscReal(_subfieldIndex) + 0.01; // :KLUDGE: Easiest way to get subfield to extract into fn
 
-    err = DMProjectField(_projectDM, t, fieldVector, &_fn, INSERT_VALUES, _projectVector);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMProjectField(_projectDM, t, fieldVector, &_fn, INSERT_VALUES, _projectVector));
     if (_interpolator) {
         pylith::topology::FieldOps::transformVector(&_projectVectorInterp, _interpolator->getInputDM(), _projectVector, _projectDM);
         _interpolator->interpolate(&_outputVector, _projectVectorInterp);
     } // if
-    err = VecScale(_outputVector, _description.scale);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(VecScale(_outputVector, _description.scale));
 
     _OutputSubfield::Events::logger.eventEnd(_OutputSubfield::Events::project);
     PYLITH_METHOD_END;
@@ -328,15 +322,14 @@ pylith::meshio::OutputSubfield::projectWithLabel(const PetscVec& fieldVector) {
     assert(_outputVector);
     assert(_label);
 
-    PetscErrorCode err;
     const PetscReal t = PetscReal(_subfieldIndex) + 0.01; // :KLUDGE: Easiest way to get subfield to extract into fn
 
-    err = DMProjectFieldLabel(_projectDM, t, _label, 1, &_labelValue, PETSC_DETERMINE, NULL, fieldVector, &_fn, INSERT_VALUES, _projectVector);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMProjectFieldLabel(_projectDM, t, _label, 1, &_labelValue, PETSC_DETERMINE, NULL, fieldVector, &_fn, INSERT_VALUES, _projectVector));
     if (_interpolator) {
         pylith::topology::FieldOps::transformVector(&_projectVectorInterp, _interpolator->getInputDM(), _projectVector, _projectDM);
         _interpolator->interpolate(&_outputVector, _projectVectorInterp);
     } // if
-    err = VecScale(_outputVector, _description.scale);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(VecScale(_outputVector, _description.scale));
 
     _OutputSubfield::Events::logger.eventEnd(_OutputSubfield::Events::projectWithLabel);
     PYLITH_METHOD_END;
@@ -351,23 +344,22 @@ pylith::meshio::OutputSubfield::extractSubfield(const pylith::topology::Field& f
     PYLITH_METHOD_BEGIN;
     _OutputSubfield::Events::logger.eventBegin(_OutputSubfield::Events::extractSubfield);
 
-    PetscErrorCode err = PETSC_SUCCESS;
     PetscSection subfieldSection = NULL;
     PetscInt storageSize = 0;
-    err = PetscSectionGetField(field.getGlobalSection(), subfieldIndex, &subfieldSection);PYLITH_CHECK_ERROR(err);
-    err = PetscSectionGetStorageSize(subfieldSection, &storageSize);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(PetscSectionGetField(field.getGlobalSection(), subfieldIndex, &subfieldSection));
+    PylithCallPetsc(PetscSectionGetStorageSize(subfieldSection, &storageSize));
 
     PetscVec subfieldVector = this->getOutputVector();
     PetscInt subfieldSize = 0;
-    err = VecGetLocalSize(subfieldVector, &subfieldSize);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(VecGetLocalSize(subfieldVector, &subfieldSize));
     assert(subfieldSize == storageSize);
 
     assert(field.getOutputVector());
     PetscIS subfieldIS = PETSC_NULLPTR;
-    err = DMCreateSubDM(field.getDM(), 1, &subfieldIndex, &subfieldIS, PETSC_NULLPTR);PYLITH_CHECK_ERROR(err);
-    err = VecISCopy(field.getOutputVector(), subfieldIS, SCATTER_REVERSE, subfieldVector);PYLITH_CHECK_ERROR(err);
-    err = VecScale(subfieldVector, _description.scale);PYLITH_CHECK_ERROR(err);
-    err = ISDestroy(&subfieldIS);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMCreateSubDM(field.getDM(), 1, &subfieldIndex, &subfieldIS, PETSC_NULLPTR));
+    PylithCallPetsc(VecISCopy(field.getOutputVector(), subfieldIS, SCATTER_REVERSE, subfieldVector));
+    PylithCallPetsc(VecScale(subfieldVector, _description.scale));
+    PylithCallPetsc(ISDestroy(&subfieldIS));
 
     _OutputSubfield::Events::logger.eventEnd(_OutputSubfield::Events::extractSubfield);
     PYLITH_METHOD_END;

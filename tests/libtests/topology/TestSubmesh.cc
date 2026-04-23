@@ -210,10 +210,9 @@ pylith::topology::TestSubmesh::_buildMesh(void) {
     pylith::meshio::MeshBuilder::setFaceGroupFromCellVertices(_domainMesh, _data->faceGroupName, faceValues, faceShape);
 
     // Create "subdomain" by setting label of subdomain cells.
-    PetscErrorCode err = PETSC_SUCCESS;
     for (size_t c = 0; c < _data->topology->numCells; ++c) {
-        err = DMSetLabelValue(_domainMesh->getDM(), _data->subdomainLabel, c,
-                              _data->subdomainLabelValues[c]);PYLITH_CHECK_ERROR(err);
+        PetscErrorCode err = DMSetLabelValue(_domainMesh->getDM(), _data->subdomainLabel, c,
+                                             _data->subdomainLabelValues[c]);REQUIRE(!err);
     } // for
 
     PYLITH_METHOD_END;

@@ -209,14 +209,13 @@ pylith::meshio::TestOutputSolnPoints::_testSetupInterpolator(const OutputSolnPoi
     topology::Stratum cellsStratum(dmMesh, topology::Stratum::HEIGHT, 0);
     const PetscInt cStart = cellsStratum.begin();
     const PetscInt cEnd = cellsStratum.end();
-    PetscErrorCode err = 0;
     CPPUNIT_ASSERT_EQUAL(numCellsE, cellsStratum.size());
     for (PetscInt c = cStart, index = 0; c < cEnd; ++c) {
         const PetscInt *cone = NULL;
         PetscInt coneSize = 0;
 
-        err = DMPlexGetConeSize(dmMesh, c, &coneSize);PYLITH_CHECK_ERROR(err);
-        err = DMPlexGetCone(dmMesh, c, &cone);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMPlexGetConeSize(dmMesh, c, &coneSize));
+        PylithCallPetsc(DMPlexGetCone(dmMesh, c, &cone));
 
         CPPUNIT_ASSERT_EQUAL(numCornersE, coneSize);
 
@@ -277,9 +276,8 @@ pylith::meshio::TestOutputSolnPoints::_testInterpolate(const OutputSolnPointsDat
     this->_calcField(&fieldInterpE, data);
 
     PetscDM pointsMeshDM = output.pointsMesh().dmMesh();CPPUNIT_ASSERT(pointsMeshDM);
-    PetscErrorCode err;
-    err = DMInterpolationSetDof(output._interpolator, fiberDim);PYLITH_CHECK_ERROR(err);
-    err = DMInterpolationEvaluate(output._interpolator, field.dmMesh(), field.localVector(), fieldInterp.localVector());PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMInterpolationSetDof(output._interpolator, fiberDim));
+    PylithCallPetsc(DMInterpolationEvaluate(output._interpolator, field.dmMesh(), field.localVector(), fieldInterp.localVector()));
 
     // Check interpolated field
     topology::Stratum verticesStratum(pointsMeshDM, topology::Stratum::DEPTH, 0);

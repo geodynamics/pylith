@@ -257,7 +257,7 @@ pylith::topology::TestFieldQuery::testQueryNull(void) {
     // _field->view("FIELD"); // :DEBUG:
 
     // Expect auxfield to still contain FILL_VALUE values.
-    PetscErrorCode err;
+    PetscErrorCode err = PETSC_SUCCESS;
     const PylithReal tolerance = 1.0e-6;
 
     PylithReal min = 0;
@@ -331,8 +331,8 @@ pylith::topology::TestFieldQuery::_initialize(void) {
     _field->subfieldsSetup();
     _field->createDiscretization();
     _field->allocate();
-    PetscErrorCode err;
-    err = VecSet(_field->getLocalVector(), FILL_VALUE);assert(!err);
+    PetscErrorCode err = PETSC_SUCCESS;
+    err = VecSet(_field->getLocalVector(), FILL_VALUE);REQUIRE(!err);
 
     delete _query;_query = new pylith::topology::FieldQuery(*_field);
 

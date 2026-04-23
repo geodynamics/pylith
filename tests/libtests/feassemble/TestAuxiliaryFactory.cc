@@ -288,12 +288,12 @@ pylith::feassemble::TestAuxiliaryFactory::testSetValuesFromDB(void) {
     // Verify auxiliary field
     PylithReal norm = 0.0;
     PylithReal t = 0.0;
-    const PetscDM dmField = auxiliaryField.getDM();assert(dmField);
+    const PetscDM dmField = auxiliaryField.getDM();REQUIRE(dmField);
     pylith::topology::FieldQuery query(auxiliaryField);
     query.initializeWithDefaultQueries();
     query.openDB(&auxiliaryDB, scales.getLengthScale());
     PetscErrorCode err = DMPlexComputeL2DiffLocal(dmField, t, query._functions, (void**)query._contextPtrs,
-                                                  auxiliaryField.getLocalVector(), &norm);assert(!err);
+                                                  auxiliaryField.getLocalVector(), &norm);REQUIRE(!err);
     query.closeDB(&auxiliaryDB);
     const PylithReal tolerance = 1.0e-6;
     CHECK_THAT(norm, Catch::Matchers::WithinAbs(0.0, tolerance));

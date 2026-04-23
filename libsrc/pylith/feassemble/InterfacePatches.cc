@@ -32,11 +32,10 @@ namespace pylith {
             PetscWeakForm
             getCellWeakForm(PetscDM dm,
                             const PetscInt cell) {
-                PetscErrorCode err = 0;
                 PetscDS ds = NULL;
-                err = DMGetCellDS(dm, cell, &ds, NULL);PYLITH_CHECK_ERROR(err);
+                PylithCallPetsc(DMGetCellDS(dm, cell, &ds, NULL));
                 PetscWeakForm weakForm = NULL;
-                err = PetscDSGetWeakForm(ds, &weakForm);PYLITH_CHECK_ERROR(err);
+                PylithCallPetsc(PetscDSGetWeakForm(ds, &weakForm));
                 return weakForm;
             } // getCellWeakForm
 
@@ -85,7 +84,7 @@ pylith::feassemble::InterfacePatches::createMaterialPairs(const pylith::faults::
     InterfacePatches* patches = new InterfacePatches();assert(patches);
     patches->_labelName = patchLabelName;
 
-    PetscErrorCode err = DMCreateLabel(dmSoln, patchLabelName.c_str());PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMCreateLabel(dmSoln, patchLabelName.c_str()));
 
     std::map<std::pair<int,int>, int> integrationPatches;
     PylithInt patchLabelValue = 0;
@@ -93,10 +92,10 @@ pylith::feassemble::InterfacePatches::createMaterialPairs(const pylith::faults::
     PetscIS cohesiveCellsIS = NULL;
     PylithInt numCohesiveCells = 0;
     const PylithInt* cohesiveCells = NULL;
-    err = DMGetStratumIS(dmSoln, cellsLabelName, fault->getCohesiveLabelValue(), &cohesiveCellsIS);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMGetStratumIS(dmSoln, cellsLabelName, fault->getCohesiveLabelValue(), &cohesiveCellsIS));
     if (!cohesiveCellsIS) {PYLITH_METHOD_RETURN(patches);}
-    err = ISGetSize(cohesiveCellsIS, &numCohesiveCells);PYLITH_CHECK_ERROR(err);assert(numCohesiveCells > 0);
-    err = ISGetIndices(cohesiveCellsIS, &cohesiveCells);PYLITH_CHECK_ERROR(err);assert(cohesiveCells);
+    PylithCallPetsc(ISGetSize(cohesiveCellsIS, &numCohesiveCells));assert(numCohesiveCells > 0);
+    PylithCallPetsc(ISGetIndices(cohesiveCellsIS, &cohesiveCells));assert(cohesiveCells);
 
     for (PylithInt iCohesive = 0; iCohesive < numCohesiveCells; ++iCohesive) {
         const PetscInt cohesiveCell = cohesiveCells[iCohesive];
@@ -109,8 +108,8 @@ pylith::feassemble::InterfacePatches::createMaterialPairs(const pylith::faults::
         assert(adjacentCellPositive >= 0);
 
         std::pair<int, int> matPair;
-        err = DMGetLabelValue(dmSoln, cellsLabelName, adjacentCellNegative, &matPair.first);
-        err = DMGetLabelValue(dmSoln, cellsLabelName, adjacentCellPositive, &matPair.second);
+        PylithCallPetsc(DMGetLabelValue(dmSoln, cellsLabelName, adjacentCellNegative, &matPair.first));
+        PylithCallPetsc(DMGetLabelValue(dmSoln, cellsLabelName, adjacentCellPositive, &matPair.second));
         if (0 == integrationPatches.count(matPair)) {
             integrationPatches[matPair] = ++patchLabelValue;
             pythia::journal::debug_t debug("interfacepatches");
@@ -136,10 +135,10 @@ pylith::feassemble::InterfacePatches::createMaterialPairs(const pylith::faults::
             weakFormKeys.positive = *key;delete key;key = NULL;
             patches->_keys[patchLabelValue] = weakFormKeys;
         } // if
-        err = DMSetLabelValue(dmSoln, patchLabelName.c_str(), cohesiveCell, integrationPatches[matPair]);
+        PylithCallPetsc(DMSetLabelValue(dmSoln, patchLabelName.c_str(), cohesiveCell, integrationPatches[matPair]));
     } // for
-    err = ISRestoreIndices(cohesiveCellsIS, &cohesiveCells);PYLITH_CHECK_ERROR(err);
-    err = ISDestroy(&cohesiveCellsIS);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(ISRestoreIndices(cohesiveCellsIS, &cohesiveCells));
+    PylithCallPetsc(ISDestroy(&cohesiveCellsIS));
 
     PYLITH_METHOD_RETURN(patches);
 } // createMaterialPairs

@@ -12,7 +12,7 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
 
-#include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
+#include "pylith/utils/error.hh" // USES PylithCallPetsc()
 
 // ----------------------------------------------------------------------
 // Constructor with field over a mesh.
@@ -47,11 +47,10 @@ pylith::topology::VecVisitorMesh::initialize(const Field& field,
                                              const char* subfield) {
     clear();
 
-    PetscErrorCode err;
     PetscSection fieldLocalSection = field.getLocalSection();assert(fieldLocalSection);
     PetscSection fieldGlobalSection = field.getGlobalSection();assert(fieldGlobalSection);
     PetscInt numFields = 0;
-    err = PetscSectionGetNumFields(fieldLocalSection, &numFields);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(PetscSectionGetNumFields(fieldLocalSection, &numFields));
 
     if (!subfield) {
         _localSection = fieldLocalSection;
@@ -59,14 +58,14 @@ pylith::topology::VecVisitorMesh::initialize(const Field& field,
     } else {
         const int fieldIndex = field.getSubfieldInfo(subfield).index;
         assert(fieldIndex >= 0 && fieldIndex < numFields);
-        err = PetscSectionGetField(fieldLocalSection, fieldIndex, &_localSection);PYLITH_CHECK_ERROR(err);
-        err = PetscSectionGetField(fieldGlobalSection, fieldIndex, &_globalSection);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(PetscSectionGetField(fieldLocalSection, fieldIndex, &_localSection));
+        PylithCallPetsc(PetscSectionGetField(fieldGlobalSection, fieldIndex, &_globalSection));
     } // if/else
-    err = PetscObjectReference((PetscObject)_localSection);PYLITH_CHECK_ERROR(err);
-    err = PetscObjectReference((PetscObject)_globalSection);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(PetscObjectReference((PetscObject)_localSection));
+    PylithCallPetsc(PetscObjectReference((PetscObject)_globalSection));
     _localVec = field.getLocalVector();assert(_localVec);
 
-    err = VecGetArray(_localVec, &_localArray);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(VecGetArray(_localVec, &_localArray));
 } // initialize
 
 
@@ -75,14 +74,12 @@ pylith::topology::VecVisitorMesh::initialize(const Field& field,
 inline
 void
 pylith::topology::VecVisitorMesh::clear(void) {
-    PetscErrorCode err;
-
     if (_localVec) {
-        err = VecRestoreArray(_localVec, &_localArray);PYLITH_CHECK_ERROR(err);assert(!_localArray);
+        PylithCallPetsc(VecRestoreArray(_localVec, &_localArray));assert(!_localArray);
     } // if
 
-    err = PetscSectionDestroy(&_localSection);PYLITH_CHECK_ERROR(err);
-    err = PetscSectionDestroy(&_globalSection);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(PetscSectionDestroy(&_localSection));
+    PylithCallPetsc(PetscSectionDestroy(&_globalSection));
 
     _localVec = NULL;
 } // clear
@@ -134,7 +131,7 @@ PetscInt
 pylith::topology::VecVisitorMesh::sectionDof(const PetscInt point) const {
     const PetscSection section = selectedSection();assert(section);
     PetscInt dof;
-    PetscErrorCode err = PetscSectionGetDof(section, point, &dof);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(PetscSectionGetDof(section, point, &dof));
     return dof;
 } // sectionDof
 
@@ -147,7 +144,7 @@ pylith::topology::VecVisitorMesh::sectionSubfieldDof(const PetscInt subfield,
                                                      const PetscInt point) const {
     const PetscSection section = selectedSection();assert(section);
     PetscInt dof;
-    PetscErrorCode err = PetscSectionGetFieldDof(section, point, subfield, &dof);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(PetscSectionGetFieldDof(section, point, subfield, &dof));
     return dof;
 } // sectionDof
 
@@ -159,7 +156,7 @@ PetscInt
 pylith::topology::VecVisitorMesh::sectionOffset(const PetscInt point) const {
     const PetscSection section = selectedSection();assert(section);
     PetscInt offset;
-    PetscErrorCode err = PetscSectionGetOffset(section, point, &offset);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(PetscSectionGetOffset(section, point, &offset));
     return offset;
 } // sectionOffset
 
@@ -172,7 +169,7 @@ pylith::topology::VecVisitorMesh::sectionSubfieldOffset(const PetscInt subfield,
                                                         const PetscInt point) const {
     const PetscSection section = selectedSection();assert(section);
     PetscInt offset;
-    PetscErrorCode err = PetscSectionGetFieldOffset(section, point, subfield, &offset);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(PetscSectionGetFieldOffset(section, point, subfield, &offset));
     return offset;
 } // sectionOffset
 
@@ -187,7 +184,7 @@ pylith::topology::VecVisitorMesh::getClosure(PetscScalar** valuesCell,
     assert(_dm);
     assert(_localSection);
     assert(_localVec);
-    PetscErrorCode err = DMPlexVecGetClosure(_dm, _localSection, _localVec, cell, valuesSize, valuesCell);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMPlexVecGetClosure(_dm, _localSection, _localVec, cell, valuesSize, valuesCell));
 } // getClosure
 
 
@@ -203,7 +200,7 @@ pylith::topology::VecVisitorMesh::getClosure(scalar_array* values,
     assert(values);
     PetscScalar* valuesCell = &(*values)[0];
     PetscInt valuesSize = values->size();
-    PetscErrorCode err = DMPlexVecGetClosure(_dm, _localSection, _localVec, cell, &valuesSize, &valuesCell);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMPlexVecGetClosure(_dm, _localSection, _localVec, cell, &valuesSize, &valuesCell));
 } // getClosure
 
 
@@ -217,7 +214,7 @@ pylith::topology::VecVisitorMesh::restoreClosure(PetscScalar** valuesCell,
     assert(_dm);
     assert(_localSection);
     assert(_localVec);
-    PetscErrorCode err = DMPlexVecRestoreClosure(_dm, _localSection, _localVec, cell, valuesSize, valuesCell);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMPlexVecRestoreClosure(_dm, _localSection, _localVec, cell, valuesSize, valuesCell));
 } // restoreClosure
 
 
@@ -232,7 +229,7 @@ pylith::topology::VecVisitorMesh::setClosure(const PetscScalar* valuesCell,
     assert(_dm);
     assert(_localSection);
     assert(_localVec);
-    PetscErrorCode err = DMPlexVecSetClosure(_dm, _localSection, _localVec, cell, valuesCell, mode);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMPlexVecSetClosure(_dm, _localSection, _localVec, cell, valuesCell, mode));
 } // setClosure
 
 
@@ -241,14 +238,12 @@ pylith::topology::VecVisitorMesh::setClosure(const PetscScalar* valuesCell,
 inline
 void
 pylith::topology::VecVisitorMesh::optimizeClosure(const Field& field) {
-    PetscErrorCode err;
-
     PetscSection fieldSection = field.getLocalSection();assert(fieldSection);
     PetscDM dmField = field.getDM();assert(dmField);
     PetscSection indexSection = NULL;
-    err = PetscSectionGetClosureIndex(fieldSection, (PetscObject) dmField, &indexSection, NULL);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(PetscSectionGetClosureIndex(fieldSection, (PetscObject) dmField, &indexSection, NULL));
     if (!indexSection) {
-        err = DMPlexCreateClosureIndex(dmField, fieldSection);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMPlexCreateClosureIndex(dmField, fieldSection));
     } // if
 } // optimizeClosure
 
@@ -263,12 +258,11 @@ pylith::topology::MatVisitorMesh::MatVisitorMesh(const PetscMat mat,
     _localSection(NULL),
     _globalSection(NULL) {
     PetscSF sf = NULL;
-    PetscErrorCode err;
 
     _dm = field.getDM();assert(_dm);
     _localSection = field.getLocalSection();assert(_localSection);
-    err = DMGetPointSF(_dm, &sf);PYLITH_CHECK_ERROR(err);assert(sf);
-    err = PetscSectionCreateGlobalSection(_localSection, sf, PETSC_TRUE, PETSC_FALSE, PETSC_FALSE, &_globalSection);PYLITH_CHECK_ERROR(err);assert(_globalSection);
+    PylithCallPetsc(DMGetPointSF(_dm, &sf));assert(sf);
+    PylithCallPetsc(PetscSectionCreateGlobalSection(_localSection, sf, PETSC_TRUE, PETSC_FALSE, PETSC_FALSE, &_globalSection));assert(_globalSection);
 
     initialize();
 } // constructor
@@ -282,7 +276,7 @@ pylith::topology::MatVisitorMesh::~MatVisitorMesh(void) {
 
     _dm = NULL;
     _localSection = NULL;
-    PetscErrorCode err = PetscSectionDestroy(&_globalSection);PYLITH_CHECK_ERROR_NOTHROW(err);assert(!_globalSection);
+    PylithCallPetscNoThrow(PetscSectionDestroy(&_globalSection));assert(!_globalSection);
 } // destructor
 
 
@@ -315,7 +309,7 @@ pylith::topology::MatVisitorMesh::setClosure(const PetscScalar* valuesCell,
     assert(_mat);
     assert(_localSection);
     assert(_globalSection);
-    PetscErrorCode err = DMPlexMatSetClosure(_dm, _localSection, _globalSection, _mat, cell, valuesCell, mode);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMPlexMatSetClosure(_dm, _localSection, _globalSection, _mat, cell, valuesCell, mode));
 } // setClosure
 
 

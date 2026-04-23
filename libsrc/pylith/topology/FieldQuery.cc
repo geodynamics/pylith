@@ -18,7 +18,7 @@
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 
-#include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
+#include "pylith/utils/error.hh" // USES PylithCallPetsc()
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
 
 namespace pylith {
@@ -221,10 +221,9 @@ pylith::topology::FieldQuery::queryDB(void) {
     PYLITH_METHOD_BEGIN;
     _FieldQuery::Events::logger.eventBegin(_FieldQuery::Events::queryDB);
 
-    PetscErrorCode err = 0;
     PetscReal dummyTime = 0.0;
-    err = DMProjectFunctionLocal(_field.getDM(), dummyTime, _functions, (void**)_contextPtrs, INSERT_ALL_VALUES,
-                                 _field.getLocalVector());PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMProjectFunctionLocal(_field.getDM(), dummyTime, _functions, (void**)_contextPtrs, INSERT_ALL_VALUES,
+                                           _field.getLocalVector()));
 
     _FieldQuery::Events::logger.eventEnd(_FieldQuery::Events::queryDB);
     PYLITH_METHOD_END;
@@ -239,7 +238,6 @@ pylith::topology::FieldQuery::queryDBLabel(const char* labelName,
     PYLITH_METHOD_BEGIN;
     _FieldQuery::Events::logger.eventBegin(_FieldQuery::Events::queryDBLabel);
 
-    PetscErrorCode err = 0;
     PetscReal dummyTime = 0.0;
 
     const Field::subfields_type& subfields = _field._subfields;
@@ -251,10 +249,10 @@ pylith::topology::FieldQuery::queryDBLabel(const char* labelName,
     } // for
 
     PetscDMLabel dmLabel = NULL;
-    err = DMGetLabel(_field.getDM(), labelName, &dmLabel);PYLITH_CHECK_ERROR(err);assert(dmLabel);
-    err = DMProjectFunctionLabelLocal(_field.getDM(), dummyTime, dmLabel, 1, &labelValue,
-                                      numSubfields, &subfieldIndices[0], _functions, (void**)_contextPtrs,
-                                      INSERT_ALL_VALUES, _field.getLocalVector());PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMGetLabel(_field.getDM(), labelName, &dmLabel));assert(dmLabel);
+    PylithCallPetsc(DMProjectFunctionLabelLocal(_field.getDM(), dummyTime, dmLabel, 1, &labelValue,
+                                                numSubfields, &subfieldIndices[0], _functions, (void**)_contextPtrs,
+                                                INSERT_ALL_VALUES, _field.getLocalVector()));
 
     _FieldQuery::Events::logger.eventEnd(_FieldQuery::Events::queryDBLabel);
     PYLITH_METHOD_END;

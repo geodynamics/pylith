@@ -270,16 +270,16 @@ pylith::feassemble::Integrator::_setKernelConstants(const pylith::topology::Fiel
 
     PetscDM dmSoln = solution.getDM();assert(dmSoln);
     PetscInt numDS = 0;
-    PetscErrorCode err = DMGetNumDS(dmSoln, &numDS);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMGetNumDS(dmSoln, &numDS));
     for (PetscInt i = 0; i < numDS; ++i) {
         PetscDMLabel* label = NULL;
         PetscIS* fields = NULL;
         PetscDS ds = NULL;
-        err = DMGetRegionNumDS(dmSoln, i, label, fields, &ds, NULL);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMGetRegionNumDS(dmSoln, i, label, fields, &ds, NULL));
         if (constants.size() > 0) {
-            err = PetscDSSetConstants(ds, constants.size(), const_cast<double*>(&constants[0]));PYLITH_CHECK_ERROR(err);
+            PylithCallPetsc(PetscDSSetConstants(ds, constants.size(), const_cast<double*>(&constants[0])));
         } else {
-            err = PetscDSSetConstants(ds, 0, NULL);PYLITH_CHECK_ERROR(err);
+            PylithCallPetsc(PetscDSSetConstants(ds, 0, NULL));
         } // if/else
     } // for
 

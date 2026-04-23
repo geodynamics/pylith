@@ -234,7 +234,7 @@ pylith::feassemble::TestIntegratorDomain::testComputeResidual(void) {
     residualLHS.view("RESIDUAL LHS"); // :DEBUG:
 #endif // :DEBUG:
 
-    PetscErrorCode err;
+    PetscErrorCode err = PETSC_SUCCESS;
     PetscVec residualVec = NULL;
     err = VecDuplicate(residualRHS.localVector(), &residualVec);CPPUNIT_ASSERT(!err);
     err = VecWAXPY(residualVec, -1.0, residualRHS.localVector(), residualLHS.localVector());CPPUNIT_ASSERT(!err);
@@ -300,7 +300,7 @@ pylith::feassemble::TestIntegratorDomain::testComputeJacobian(void) {
     // residual1.view("RESIDUAL 1 LHS"); // :DEBUG:
     // residual2.view("RESIDUAL 2 LHS"); // :DEBUG:
 
-    PetscErrorCode err;
+    PetscErrorCode err = PETSC_SUCCESS;
 
     PetscVec residualVec = NULL;
     err = VecDuplicate(residual1.localVector(), &residualVec);CPPUNIT_ASSERT(!err);
@@ -318,8 +318,8 @@ pylith::feassemble::TestIntegratorDomain::testComputeJacobian(void) {
 
     _integrator->computeLHSJacobian(jacobianMat, precondMat, t, dt, s_tshift, solution, solutionDot);
     CPPUNIT_ASSERT_EQUAL(false, _integrator->needNewLHSJacobian(false));
-    err = MatAssemblyBegin(jacobianMat, MAT_FINAL_ASSEMBLY);PYLITH_CHECK_ERROR(err);
-    err = MatAssemblyEnd(jacobianMat, MAT_FINAL_ASSEMBLY);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(MatAssemblyBegin(jacobianMat, MAT_FINAL_ASSEMBLY));
+    PylithCallPetsc(MatAssemblyEnd(jacobianMat, MAT_FINAL_ASSEMBLY));
 
     // result = J*(-solutionIncr) + residual
     PetscVec resultVec = NULL;
@@ -483,7 +483,7 @@ pylith::feassemble::TestIntegratorDomain::_zeroBoundary(pylith::topology::Field*
     const PetscInt *points;
     PetscInt numPoints = 0;
     PetscBool hasLabel = PETSC_FALSE;
-    PetscErrorCode err;
+    PetscErrorCode err = PETSC_SUCCESS;
     err = DMHasLabel(dmMesh, _data->boundaryLabel, &hasLabel);CPPUNIT_ASSERT(!err);CPPUNIT_ASSERT(hasLabel);
     err = DMGetLabel(dmMesh, _data->boundaryLabel, &label);CPPUNIT_ASSERT(!err);
     err = DMLabelGetStratumIS(label, 1, &pointIS);CPPUNIT_ASSERT(!err);CPPUNIT_ASSERT(pointIS);
@@ -503,8 +503,8 @@ pylith::feassemble::TestIntegratorDomain::_zeroBoundary(pylith::topology::Field*
         } // for
     } // for
 
-    err = ISRestoreIndices(pointIS, &points);PYLITH_CHECK_ERROR(err);
-    err = ISDestroy(&pointIS);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(ISRestoreIndices(pointIS, &points));
+    PylithCallPetsc(ISDestroy(&pointIS));
 
     PYLITH_METHOD_END;
 } // _zeroBoundary

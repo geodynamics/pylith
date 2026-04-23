@@ -61,7 +61,6 @@ pylith::feassemble::ConstraintSimple::initialize(const pylith::topology::Field& 
     assert(_physics);
     _observers = NULL;
 
-    PetscErrorCode err = 0;
     PetscDM dm = solution.getDM();
     PetscDMLabel label;
     PetscDS ds = NULL;
@@ -71,31 +70,31 @@ pylith::feassemble::ConstraintSimple::initialize(const pylith::topology::Field& 
     PetscIS pointIS;
     const PetscInt *points;
     PetscInt point, cStart, cEnd, clSize;
-    err = DMGetLabel(dm, _labelName.c_str(), &label);PYLITH_CHECK_ERROR(err);
-    err = DMLabelGetStratumIS(label, _labelValue, &pointIS);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMGetLabel(dm, _labelName.c_str(), &label));
+    PylithCallPetsc(DMLabelGetStratumIS(label, _labelValue, &pointIS));
     if (!pointIS) {
         PYLITH_METHOD_END;
     } // if
-    err = ISGetIndices(pointIS, &points);PYLITH_CHECK_ERROR(err);assert(points);
+    PylithCallPetsc(ISGetIndices(pointIS, &points));assert(points);
     point = points[0];
-    err = ISRestoreIndices(pointIS, &points);PYLITH_CHECK_ERROR(err);
-    err = ISDestroy(&pointIS);PYLITH_CHECK_ERROR(err);
-    err = DMPlexGetHeightStratum(dm, 0, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
-    err = DMPlexGetTransitiveClosure(dm, point, PETSC_FALSE, &clSize, &closure);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(ISRestoreIndices(pointIS, &points));
+    PylithCallPetsc(ISDestroy(&pointIS));
+    PylithCallPetsc(DMPlexGetHeightStratum(dm, 0, &cStart, &cEnd));
+    PylithCallPetsc(DMPlexGetTransitiveClosure(dm, point, PETSC_FALSE, &clSize, &closure));
     for (int cl = 0; cl < clSize*2; cl += 2) {
         PetscDS cds;
         const PetscInt q = closure[cl];
         PetscInt Nf;
 
         if ((q < cStart) || (q >= cEnd)) { continue;}
-        err = DMGetCellDS(dm, q, &cds, NULL);PYLITH_CHECK_ERROR(err);
-        err = PetscDSGetNumFields(cds, &Nf);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMGetCellDS(dm, q, &cds, NULL));
+        PylithCallPetsc(PetscDSGetNumFields(cds, &Nf));
         for (int f = 0; f < Nf; ++f) {
             PetscObject disc;
             const char *name;
 
-            err = PetscDSGetDiscretization(cds, f, &disc);PYLITH_CHECK_ERROR(err);
-            err = PetscObjectGetName(disc, &name);PYLITH_CHECK_ERROR(err);
+            PylithCallPetsc(PetscDSGetDiscretization(cds, f, &disc));
+            PylithCallPetsc(PetscObjectGetName(disc, &name));
             if (_subfieldName == std::string(name)) {ds = cds;i_field = f;break;}
         } // for
     } // for
@@ -105,32 +104,31 @@ pylith::feassemble::ConstraintSimple::initialize(const pylith::topology::Field& 
         // :KLUDGE: It is possible for a process to have a DOF that we need to constrain, but the process
         // may not have any cells with that DOF. The underlying code doesn't actually care if the point is
         // in the DS, so just get any DS and use it for the constraint.
-        err = DMGetDS(dm, &ds);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMGetDS(dm, &ds));
         PetscInt numDS = 0, numFields = 0;
         i_field = solution.getSubfieldInfo(_subfieldName.c_str()).index;
         numConstrainedDOF = 0;
         constrainedDOF = NULL;
 
-        err = DMGetNumDS(dm, &numDS);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMGetNumDS(dm, &numDS));
         for (PetscInt s = 0; s < numDS; ++s) {
-            err = DMGetRegionNumDS(dm, s, NULL, NULL, &ds, NULL);PYLITH_CHECK_ERROR(err);
-            err = PetscDSGetNumFields(ds, &numFields);PYLITH_CHECK_ERROR(err);
+            PylithCallPetsc(DMGetRegionNumDS(dm, s, NULL, NULL, &ds, NULL));
+            PylithCallPetsc(PetscDSGetNumFields(ds, &numFields));
             if (i_field < numFields) { break;}
         } // for
 
     } // if
-    err = DMPlexRestoreTransitiveClosure(solution.getDM(), point, PETSC_FALSE, &clSize, &closure);PYLITH_CHECK_ERROR(err);
-    err = DMGetLabel(solution.getDM(), _labelName.c_str(), &label);PYLITH_CHECK_ERROR(err);
-    err = PetscDSAddBoundary(ds, DM_BC_ESSENTIAL, _labelName.c_str(), label, 1, &_labelValue, i_field,
-                             numConstrainedDOF, constrainedDOF, (void (*)(void))_fn, NULL, context, NULL);
-    PYLITH_CHECK_ERROR(err);
-    err = DMViewFromOptions(dm, NULL, "-constraint_simple_dm_view ");PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMPlexRestoreTransitiveClosure(solution.getDM(), point, PETSC_FALSE, &clSize, &closure));
+    PylithCallPetsc(DMGetLabel(solution.getDM(), _labelName.c_str(), &label));
+    PylithCallPetsc(PetscDSAddBoundary(ds, DM_BC_ESSENTIAL, _labelName.c_str(), label, 1, &_labelValue, i_field,
+                                       numConstrainedDOF, constrainedDOF, (void (*)(void)) _fn, NULL, context, NULL));
+    PylithCallPetsc(DMViewFromOptions(dm, NULL, "-constraint_simple_dm_view "));
     {
         PetscInt numDS;
-        err = DMGetNumDS(dm, &numDS);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMGetNumDS(dm, &numDS));
         for (int s = 0; s < numDS; ++s) {
-            err = DMGetRegionNumDS(dm, s, NULL, NULL, &ds, NULL);PYLITH_CHECK_ERROR(err);
-            err = PetscObjectViewFromOptions((PetscObject) ds, NULL, "-constraint_simple_ds_view ");PYLITH_CHECK_ERROR(err);
+            PylithCallPetsc(DMGetRegionNumDS(dm, s, NULL, NULL, &ds, NULL));
+            PylithCallPetsc(PetscObjectViewFromOptions((PetscObject) ds, NULL, "-constraint_simple_ds_view "));
         }
     }
 
@@ -150,22 +148,21 @@ pylith::feassemble::ConstraintSimple::setSolution(pylith::feassemble::Integratio
     assert(solution);
     const PylithReal t = integrationData->getScalar(pylith::feassemble::IntegrationData::time);
 
-    PetscErrorCode err = 0;
     PetscDM dmSoln = solution->getDM();
 
     // Get label for constraint.
     PetscDMLabel dmLabel = NULL;
-    err = DMGetLabel(dmSoln, _labelName.c_str(), &dmLabel);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMGetLabel(dmSoln, _labelName.c_str(), &dmLabel));
 
     void* context = NULL;
     const int _labelValue = 1;
     const int fieldIndex = solution->getSubfieldInfo(_subfieldName.c_str()).index;
     const PylithInt numConstrained = _constrainedDOF.size();
     assert(solution->getLocalVector());
-    err = DMPlexLabelAddCells(dmSoln, dmLabel);PYLITH_CHECK_ERROR(err);
-    err = DMPlexInsertBoundaryValuesEssential(dmSoln, t, fieldIndex, numConstrained, &_constrainedDOF[0], dmLabel, 1,
-                                              &_labelValue, _fn, context, solution->getLocalVector());PYLITH_CHECK_ERROR(err);
-    err = DMPlexLabelClearCells(dmSoln, dmLabel);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMPlexLabelAddCells(dmSoln, dmLabel));
+    PylithCallPetsc(DMPlexInsertBoundaryValuesEssential(dmSoln, t, fieldIndex, numConstrained, &_constrainedDOF[0], dmLabel, 1,
+                                                        &_labelValue, _fn, context, solution->getLocalVector()));
+    PylithCallPetsc(DMPlexLabelClearCells(dmSoln, dmLabel));
 
     pythia::journal::debug_t debug(GenericComponent::getName());
     if (debug.state()) {

@@ -83,7 +83,7 @@ pylith::topology::TestReverseCuthillMcKee::testReorder(void) {
 
     // Check groups
     PetscInt numGroupsE, numGroups;
-    PetscErrorCode err;
+    PetscErrorCode err = PETSC_SUCCESS;
     err = DMGetNumLabels(dmOrig, &numGroupsE);REQUIRE(!err);
     err = DMGetNumLabels(dmMesh, &numGroups);REQUIRE(!err);
     REQUIRE(numGroupsE == numGroups);

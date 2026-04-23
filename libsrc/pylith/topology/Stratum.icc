@@ -9,7 +9,7 @@
 // =================================================================================================
 #pragma once
 
-#include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
+#include "pylith/utils/error.hh" // USES PylithCallPetsc()
 
 // ----------------------------------------------------------------------
 // Default constructor.
@@ -18,13 +18,12 @@ pylith::topology::Stratum::Stratum(const PetscDM dmMesh,
                                    const StratumEnum stype,
                                    const int level) {
     assert(dmMesh);
-    PetscErrorCode err = 0;
     switch (stype) {
     case HEIGHT:
-        err = DMPlexGetHeightStratum(dmMesh, level, &_begin, &_end);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMPlexGetHeightStratum(dmMesh, level, &_begin, &_end));
         break;
     case DEPTH:
-        err = DMPlexGetDepthStratum(dmMesh, level, &_begin, &_end);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMPlexGetDepthStratum(dmMesh, level, &_begin, &_end));
         break;
     default:
         assert(false);
@@ -81,19 +80,18 @@ pylith::topology::StratumIS::StratumIS(const PetscDM dmMesh,
     _size(0),
     _points(0) { // constructor
     assert(dmMesh);
-    PetscErrorCode err;
     if (!includeOnlyCells) {
-        err = DMGetStratumIS(dmMesh, label, id, &_indexSet);PYLITH_CHECK_ERROR(err);assert(_indexSet);
+        PylithCallPetsc(DMGetStratumIS(dmMesh, label, id, &_indexSet));assert(_indexSet);
     } else {
         PetscIS pointsIS = NULL;
         PetscInt numPoints = 0;
         const PetscInt* points = NULL;
-        err = DMGetStratumIS(dmMesh, label, id, &pointsIS);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMGetStratumIS(dmMesh, label, id, &pointsIS));
         if (pointsIS) {
-            err = ISGetSize(pointsIS, &numPoints);PYLITH_CHECK_ERROR(err);assert(numPoints >= 0);
-            err = ISGetIndices(pointsIS, &points);PYLITH_CHECK_ERROR(err);assert(!numPoints || points);
+            PylithCallPetsc(ISGetSize(pointsIS, &numPoints));assert(numPoints >= 0);
+            PylithCallPetsc(ISGetIndices(pointsIS, &points));assert(!numPoints || points);
             PetscInt cStart, cEnd;
-            err = DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
+            PylithCallPetsc(DMPlexGetHeightStratum(dmMesh, 0, &cStart, &cEnd));
             PetscInt* cells = (numPoints > 0) ? new PetscInt[numPoints] : 0;
             PetscInt count = 0;
             for (PetscInt i = 0; i < numPoints; ++i) {
@@ -101,16 +99,16 @@ pylith::topology::StratumIS::StratumIS(const PetscDM dmMesh,
                     cells[count++] = points[i];
                 } // if
             } // for
-            err = ISCreateGeneral(PETSC_COMM_SELF, count, cells, PETSC_COPY_VALUES, &_indexSet);PYLITH_CHECK_ERROR(err);
+            PylithCallPetsc(ISCreateGeneral(PETSC_COMM_SELF, count, cells, PETSC_COPY_VALUES, &_indexSet));
             delete[] cells;cells = 0;
-            err = ISRestoreIndices(pointsIS, &points);PYLITH_CHECK_ERROR(err);_points = NULL;
-            err = ISDestroy(&pointsIS);PYLITH_CHECK_ERROR(err);assert(!pointsIS);
+            PylithCallPetsc(ISRestoreIndices(pointsIS, &points));_points = NULL;
+            PylithCallPetsc(ISDestroy(&pointsIS));assert(!pointsIS);
         } // if
     } // if/else
 
     if (_indexSet) {
-        err = ISGetSize(_indexSet, &_size);PYLITH_CHECK_ERROR(err);assert(_size >= 0);
-        err = ISGetIndices(_indexSet, &_points);PYLITH_CHECK_ERROR(err);assert(!_size || _points);
+        PylithCallPetsc(ISGetSize(_indexSet, &_size));assert(_size >= 0);
+        PylithCallPetsc(ISGetIndices(_indexSet, &_points));assert(!_size || _points);
     } // if
 } // constructor
 
@@ -128,10 +126,9 @@ pylith::topology::StratumIS::~StratumIS(void) { // destructor
 inline
 void
 pylith::topology::StratumIS::deallocate(void) { // deallocate
-    PetscErrorCode err = 0;
     if (_indexSet) {
-        err = ISRestoreIndices(_indexSet, &_points);PYLITH_CHECK_ERROR(err);_points = NULL;
-        err = ISDestroy(&_indexSet);PYLITH_CHECK_ERROR(err);assert(!_indexSet);
+        PylithCallPetsc(ISRestoreIndices(_indexSet, &_points));_points = NULL;
+        PylithCallPetsc(ISDestroy(&_indexSet));assert(!_indexSet);
     } // if
 } // deallocate
 

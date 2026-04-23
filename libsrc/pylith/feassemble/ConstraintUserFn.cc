@@ -88,16 +88,14 @@ pylith::feassemble::ConstraintUserFn::initialize(const pylith::topology::Field& 
 
     // :KLUDGE: Potentially we may have multiple PetscDS objects. This assumes that the first one (with a NULL
     // label) is the correct one.
-    PetscErrorCode err = 0;
     PetscDS prob = NULL;
     DMLabel label = NULL;
     void* context = NULL;
-    err = DMGetDS(solution.getDM(), &prob);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMGetDS(solution.getDM(), &prob));
     const PetscInt i_field = solution.getSubfieldInfo(_subfieldName.c_str()).index;
-    err = DMGetLabel(solution.getDM(), _labelName.c_str(), &label);PYLITH_CHECK_ERROR(err);
-    err = PetscDSAddBoundary(prob, DM_BC_ESSENTIAL, _labelName.c_str(), label, 1, &_labelValue, i_field,
-                             _constrainedDOF.size(), &_constrainedDOF[0], (void (*)(void)) _fn, (void (*)(void)) _fnDot, context, NULL);
-    PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMGetLabel(solution.getDM(), _labelName.c_str(), &label));
+    PylithCallPetsc(PetscDSAddBoundary(prob, DM_BC_ESSENTIAL, _labelName.c_str(), label, 1, &_labelValue, i_field,
+                                       _constrainedDOF.size(), &_constrainedDOF[0], (void (*)(void)) _fn, (void (*)(void)) _fnDot, context, NULL));
 
     PYLITH_METHOD_END;
 } // initialize
@@ -137,21 +135,20 @@ pylith::feassemble::_ConstraintUserFn::setSolution(const pylith::topology::Field
     PYLITH_METHOD_BEGIN;
     assert(field);
 
-    PetscErrorCode err = 0;
     PetscDM dmField = field->getDM();
 
     // Get label for constraint.
     PetscDMLabel dmLabel = NULL;
-    err = DMGetLabel(dmField, constraint._labelName.c_str(), &dmLabel);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMGetLabel(dmField, constraint._labelName.c_str(), &dmLabel));
 
     void* context = NULL;
     const int fieldIndex = field->getSubfieldInfo(constraint._subfieldName.c_str()).index;
     const PylithInt numConstrained = constraint._constrainedDOF.size();
     assert(field->getLocalVector());
-    err = DMPlexLabelAddCells(dmField, dmLabel);PYLITH_CHECK_ERROR(err);
-    err = DMPlexInsertBoundaryValuesEssential(dmField, t, fieldIndex, numConstrained, &constraint._constrainedDOF[0], dmLabel, 1,
-                                              &constraint._labelValue, fn, context, field->getLocalVector());PYLITH_CHECK_ERROR(err);
-    err = DMPlexLabelClearCells(dmField, dmLabel);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMPlexLabelAddCells(dmField, dmLabel));
+    PylithCallPetsc(DMPlexInsertBoundaryValuesEssential(dmField, t, fieldIndex, numConstrained, &constraint._constrainedDOF[0], dmLabel, 1,
+                                                        &constraint._labelValue, fn, context, field->getLocalVector()));
+    PylithCallPetsc(DMPlexLabelClearCells(dmField, dmLabel));
 
     PYLITH_METHOD_END;
 } // setSolution

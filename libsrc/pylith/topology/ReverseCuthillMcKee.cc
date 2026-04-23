@@ -13,60 +13,59 @@
 #include "pylith/topology/ReverseCuthillMcKee.hh" // implementation of class methods
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
-#include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
+#include "pylith/utils/error.hh" // USES PylithCallPetsc()
 
 // ----------------------------------------------------------------------
 // Reorder vertices and cells in mesh.
 void
 pylith::topology::ReverseCuthillMcKee::reorder(topology::Mesh* mesh) {
     assert(mesh);
-    PetscErrorCode err = 0;
 
     PetscDMLabel dmLabel = NULL;
     PetscDM dmOrig = mesh->getDM();
     const char* const labelName = pylith::topology::Mesh::cells_label_name;
-    err = DMGetLabel(dmOrig, labelName, &dmLabel);PYLITH_CHECK_ERROR(err);assert(dmLabel);
+    PylithCallPetsc(DMGetLabel(dmOrig, labelName, &dmLabel));assert(dmLabel);
 
     PetscIS permutation = NULL;
     PetscDM dmNew = NULL;
-    err = DMPlexGetOrdering(dmOrig, MATORDERINGRCM, dmLabel, &permutation);PYLITH_CHECK_ERROR(err);
-    err = DMPlexPermute(dmOrig, permutation, &dmNew);PYLITH_CHECK_ERROR(err);
-    err = ISDestroy(&permutation);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMPlexGetOrdering(dmOrig, MATORDERINGRCM, dmLabel, &permutation));
+    PylithCallPetsc(DMPlexPermute(dmOrig, permutation, &dmNew));
+    PylithCallPetsc(ISDestroy(&permutation));
     mesh->setDM(dmNew, "domain");
 
     // Verify that all material points (cells) are consecutive.
     PetscIS valuesIS = NULL;
     PetscInt numValues = 0;
     const PetscInt* values = NULL;
-    err = DMGetLabel(dmNew, labelName, &dmLabel);PYLITH_CHECK_ERROR(err);assert(dmLabel);
-    err = DMLabelGetValueIS(dmLabel, &valuesIS);PYLITH_CHECK_ERROR(err);
-    err = ISGetLocalSize(valuesIS, &numValues);PYLITH_CHECK_ERROR(err);
-    err = ISGetIndices(valuesIS, &values);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMGetLabel(dmNew, labelName, &dmLabel));assert(dmLabel);
+    PylithCallPetsc(DMLabelGetValueIS(dmLabel, &valuesIS));
+    PylithCallPetsc(ISGetLocalSize(valuesIS, &numValues));
+    PylithCallPetsc(ISGetIndices(valuesIS, &values));
     for (PetscInt iValue = 0; iValue < numValues; ++iValue) {
         PetscIS pointsIS = NULL;
         PetscInt numPoints = 0;
         const PetscInt* points = NULL;
-        err = DMLabelGetStratumIS(dmLabel, values[iValue], &pointsIS);PYLITH_CHECK_ERROR(err);
-        err = ISGetLocalSize(pointsIS, &numPoints);PYLITH_CHECK_ERROR(err);
-        err = ISGetIndices(pointsIS, &points);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMLabelGetStratumIS(dmLabel, values[iValue], &pointsIS));
+        PylithCallPetsc(ISGetLocalSize(pointsIS, &numPoints));
+        PylithCallPetsc(ISGetIndices(pointsIS, &points));
         for (PetscInt iPoint = 1; iPoint < numPoints; ++iPoint) {
             if (points[iPoint] - points[iPoint-1] != 1) {
                 // Cleanup
-                err = ISRestoreIndices(pointsIS, &points);PYLITH_CHECK_ERROR(err);
-                err = ISDestroy(&pointsIS);PYLITH_CHECK_ERROR(err);
-                err = ISRestoreIndices(valuesIS, &values);PYLITH_CHECK_ERROR(err);
-                err = ISDestroy(&valuesIS);PYLITH_CHECK_ERROR(err);
+                PylithCallPetsc(ISRestoreIndices(pointsIS, &points));
+                PylithCallPetsc(ISDestroy(&pointsIS));
+                PylithCallPetsc(ISRestoreIndices(valuesIS, &values));
+                PylithCallPetsc(ISDestroy(&valuesIS));
 
                 std::ostringstream msg;
                 msg << "Cells for label '" << labelName << "' with value " << values[iValue] << " are not consecutive (" << points[iPoint] << " and " << points[iPoint-1] << ").";
                 throw std::runtime_error(msg.str());
             } // if
         } // for
-        err = ISRestoreIndices(pointsIS, &points);PYLITH_CHECK_ERROR(err);
-        err = ISDestroy(&pointsIS);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(ISRestoreIndices(pointsIS, &points));
+        PylithCallPetsc(ISDestroy(&pointsIS));
     } // for
-    err = ISRestoreIndices(valuesIS, &values);PYLITH_CHECK_ERROR(err);
-    err = ISDestroy(&valuesIS);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(ISRestoreIndices(valuesIS, &values));
+    PylithCallPetsc(ISDestroy(&valuesIS));
 } // reorder
 
 

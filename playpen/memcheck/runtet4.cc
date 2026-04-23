@@ -32,7 +32,7 @@ main(int argc,
      char** argv) { // main
     try {
         // Initialize PETSc
-        PetscErrorCode err = PetscInitialize(&argc, &argv, NULL, NULL);
+        err = PetscInitialize(&argc, &argv, NULL, NULL);
         CHKERRQ(err);
 
         // Initialize Python

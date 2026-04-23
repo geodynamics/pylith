@@ -103,10 +103,9 @@ pylith::topology::MeshOps::createSubdomainMesh(const pylith::topology::Mesh& mes
     assert(labelName);
 
     PetscDM dmDomain = mesh.getDM();assert(dmDomain);
-    PetscErrorCode err = 0;
 
     PetscBool hasLabel = PETSC_FALSE;
-    err = DMHasLabel(dmDomain, labelName, &hasLabel);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMHasLabel(dmDomain, labelName, &hasLabel));
     if (!hasLabel) {
         std::ostringstream msg;
         msg << "Could not find group of points '" << labelName << "' in PETSc DM mesh.";
@@ -115,13 +114,13 @@ pylith::topology::MeshOps::createSubdomainMesh(const pylith::topology::Mesh& mes
 
     /* :TODO: Add creation of pointSF for submesh */
     PetscDMLabel dmLabel = NULL;
-    err = DMGetLabel(dmDomain, labelName, &dmLabel);PYLITH_CHECK_ERROR(err);assert(dmLabel);
+    PylithCallPetsc(DMGetLabel(dmDomain, labelName, &dmLabel));assert(dmLabel);
     PetscBool hasLabelValue = PETSC_FALSE;
-    err = DMLabelHasValue(dmLabel, labelValue, &hasLabelValue);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMLabelHasValue(dmLabel, labelValue, &hasLabelValue));
     int hasLabelValueIntLocal = int(hasLabelValue);
     int hasLabelValueInt = 0;
-    err = MPI_Allreduce(&hasLabelValueIntLocal, &hasLabelValueInt, 1, MPI_INT, MPI_MAX,
-                        PetscObjectComm((PetscObject) dmDomain));PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(MPI_Allreduce(&hasLabelValueIntLocal, &hasLabelValueInt, 1, MPI_INT, MPI_MAX,
+                                  PetscObjectComm((PetscObject) dmDomain)));
     if (!hasLabelValueInt) {
         std::ostringstream msg;
         msg << "Could not find group of points '" << labelName << "' with label value '"
@@ -130,15 +129,15 @@ pylith::topology::MeshOps::createSubdomainMesh(const pylith::topology::Mesh& mes
     } // if
 
     PetscDM dmSubdomain = NULL;
-    err = DMPlexFilter(dmDomain, dmLabel, labelValue, PETSC_FALSE, PETSC_FALSE, NULL, &dmSubdomain);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMPlexFilter(dmDomain, dmLabel, labelValue, PETSC_FALSE, PETSC_FALSE, NULL, &dmSubdomain));
 
     PetscInt maxConeSizeLocal = 0, maxConeSize = 0;
-    err = DMPlexGetMaxSizes(dmSubdomain, &maxConeSizeLocal, NULL);PYLITH_CHECK_ERROR(err);
-    err = MPI_Allreduce(&maxConeSizeLocal, &maxConeSize, 1, MPI_INT, MPI_MAX,
-                        PetscObjectComm((PetscObject) dmSubdomain));PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMPlexGetMaxSizes(dmSubdomain, &maxConeSizeLocal, NULL));
+    PylithCallPetsc(MPI_Allreduce(&maxConeSizeLocal, &maxConeSize, 1, MPI_INT, MPI_MAX,
+                                  PetscObjectComm((PetscObject) dmSubdomain)));
 
     if (maxConeSize <= 0) {
-        err = DMDestroy(&dmSubdomain);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMDestroy(&dmSubdomain));
         std::ostringstream msg;
         msg << "Error while creating mesh of subdomain. Subdomain mesh '" << labelName
             << "' with label value " << labelValue << " does not contain any cells.\n"
@@ -147,8 +146,8 @@ pylith::topology::MeshOps::createSubdomainMesh(const pylith::topology::Mesh& mes
     } // if
 
     PylithScalar lengthScale;
-    err = DMPlexGetScale(dmDomain, PETSC_UNIT_LENGTH, &lengthScale);PYLITH_CHECK_ERROR(err);
-    err = DMPlexSetScale(dmSubdomain, PETSC_UNIT_LENGTH, lengthScale);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMPlexGetScale(dmDomain, PETSC_UNIT_LENGTH, &lengthScale));
+    PylithCallPetsc(DMPlexSetScale(dmSubdomain, PETSC_UNIT_LENGTH, lengthScale));
 
     pylith::topology::Mesh* submesh = new pylith::topology::Mesh();assert(submesh);
     submesh->setCoordSys(mesh.getCoordSys());
@@ -176,10 +175,9 @@ pylith::topology::MeshOps::createLowerDimMesh(const pylith::topology::Mesh& mesh
         PYLITH_JOURNAL_LOGICERROR("Cannot create submesh for mesh with dimension < 1.");
     } // if
 
-    PetscErrorCode err = PETSC_SUCCESS;
     PetscDM dmDomain = mesh.getDM();assert(dmDomain);
     PetscBool hasLabel = PETSC_FALSE;
-    err = DMHasLabel(dmDomain, labelName, &hasLabel);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMHasLabel(dmDomain, labelName, &hasLabel));
     if (!hasLabel) {
         std::ostringstream msg;
         msg << "Could not find group of points '" << labelName << "' in PETSc DM mesh.";
@@ -188,13 +186,13 @@ pylith::topology::MeshOps::createLowerDimMesh(const pylith::topology::Mesh& mesh
 
     /* TODO: Add creation of pointSF for submesh */
     PetscDMLabel dmLabel = NULL;
-    err = DMGetLabel(dmDomain, labelName, &dmLabel);PYLITH_CHECK_ERROR(err);assert(dmLabel);
+    PylithCallPetsc(DMGetLabel(dmDomain, labelName, &dmLabel));assert(dmLabel);
     PetscBool hasLabelValue = PETSC_FALSE;
-    err = DMLabelHasValue(dmLabel, labelValue, &hasLabelValue);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMLabelHasValue(dmLabel, labelValue, &hasLabelValue));
     int hasLabelValueIntLocal = int(hasLabelValue);
     int hasLabelValueInt = 0;
-    err = MPI_Allreduce(&hasLabelValueIntLocal, &hasLabelValueInt, 1, MPI_INT, MPI_MAX,
-                        PetscObjectComm((PetscObject) dmDomain));PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(MPI_Allreduce(&hasLabelValueIntLocal, &hasLabelValueInt, 1, MPI_INT, MPI_MAX,
+                                  PetscObjectComm((PetscObject) dmDomain)));
     if (!hasLabelValueInt) {
         std::ostringstream msg;
         msg << "Could not find group of points '" << labelName << "' with label value '"
@@ -207,11 +205,11 @@ pylith::topology::MeshOps::createLowerDimMesh(const pylith::topology::Mesh& mesh
         PetscIS labelIS = NULL;
         const PetscInt* labelPoints = NULL;
         PetscInt numPoints = 0;
-        err = DMGetStratumIS(dmDomain, labelName, labelValue, &labelIS);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMGetStratumIS(dmDomain, labelName, labelValue, &labelIS));
         PetscInt labelHasVerticesLocal = 0;
         if (labelIS) {
-            err = ISGetIndices(labelIS, &labelPoints);PYLITH_CHECK_ERROR(err);
-            err = DMGetStratumSize(dmDomain, labelName, labelValue, &numPoints);PYLITH_CHECK_ERROR(err);
+            PylithCallPetsc(ISGetIndices(labelIS, &labelPoints));
+            PylithCallPetsc(DMGetStratumSize(dmDomain, labelName, labelValue, &numPoints));
 
             topology::Stratum verticesStratum(dmDomain, topology::Stratum::DEPTH, 0);
             const PetscInt vStart = verticesStratum.begin();
@@ -222,11 +220,11 @@ pylith::topology::MeshOps::createLowerDimMesh(const pylith::topology::Mesh& mesh
                     break;
                 } // if
             } // if
-            err = ISRestoreIndices(labelIS, &labelPoints);PYLITH_CHECK_ERROR(err);
+            PylithCallPetsc(ISRestoreIndices(labelIS, &labelPoints));
         } // if
-        err = ISDestroy(&labelIS);PYLITH_CHECK_ERROR(err);
-        err = MPI_Allreduce(&labelHasVerticesLocal, &labelHasVertices, 1, MPI_INT, MPI_MAX,
-                            PetscObjectComm((PetscObject) dmDomain));PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(ISDestroy(&labelIS));
+        PylithCallPetsc(MPI_Allreduce(&labelHasVerticesLocal, &labelHasVertices, 1, MPI_INT, MPI_MAX,
+                                      PetscObjectComm((PetscObject) dmDomain)));
 
         if (labelHasVertices) {
             pythia::journal::warning_t warning("deprecated");
@@ -243,21 +241,21 @@ pylith::topology::MeshOps::createLowerDimMesh(const pylith::topology::Mesh& mesh
     // to set boundary conditions using the auxiliary fields defined over the submesh.
     // DMPlexCreateSubmesh() requires a completed label.
     PetscDMLabel dmLabelFull = NULL;
-    err = DMLabelDuplicate(dmLabel, &dmLabelFull);PYLITH_CHECK_ERROR(err);
-    err = DMPlexLabelComplete(dmDomain, dmLabelFull);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMLabelDuplicate(dmLabel, &dmLabelFull));
+    PylithCallPetsc(DMPlexLabelComplete(dmDomain, dmLabelFull));
 
     PetscDM dmSubmesh = NULL;
     const PetscBool markedFaces = !labelHasVertices ? PETSC_TRUE : PETSC_FALSE;
-    err = DMPlexCreateSubmesh(dmDomain, dmLabelFull, labelValue, markedFaces, &dmSubmesh);PYLITH_CHECK_ERROR(err);
-    err = DMLabelDestroy(&dmLabelFull);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMPlexCreateSubmesh(dmDomain, dmLabelFull, labelValue, markedFaces, &dmSubmesh));
+    PylithCallPetsc(DMLabelDestroy(&dmLabelFull));
 
     PetscInt maxConeSizeLocal = 0, maxConeSize = 0;
-    err = DMPlexGetMaxSizes(dmSubmesh, &maxConeSizeLocal, NULL);PYLITH_CHECK_ERROR(err);
-    err = MPI_Allreduce(&maxConeSizeLocal, &maxConeSize, 1, MPI_INT, MPI_MAX,
-                        PetscObjectComm((PetscObject) dmSubmesh));PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMPlexGetMaxSizes(dmSubmesh, &maxConeSizeLocal, NULL));
+    PylithCallPetsc(MPI_Allreduce(&maxConeSizeLocal, &maxConeSize, 1, MPI_INT, MPI_MAX,
+                                  PetscObjectComm((PetscObject) dmSubmesh)));
 
     if (maxConeSize <= 0) {
-        err = DMDestroy(&dmSubmesh);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMDestroy(&dmSubmesh));
         std::ostringstream msg;
         msg << "Error while creating lower dimension mesh. Submesh '" << labelName
             << "' with label value " << labelValue << " does not contain any cells.\n"
@@ -267,8 +265,8 @@ pylith::topology::MeshOps::createLowerDimMesh(const pylith::topology::Mesh& mesh
 
     // Set length scale
     PylithScalar lengthScale;
-    err = DMPlexGetScale(dmDomain, PETSC_UNIT_LENGTH, &lengthScale);PYLITH_CHECK_ERROR(err);
-    err = DMPlexSetScale(dmSubmesh, PETSC_UNIT_LENGTH, lengthScale);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMPlexGetScale(dmDomain, PETSC_UNIT_LENGTH, &lengthScale));
+    PylithCallPetsc(DMPlexSetScale(dmSubmesh, PETSC_UNIT_LENGTH, lengthScale));
     pylith::topology::Mesh* submesh = new pylith::topology::Mesh(true);assert(submesh);
     submesh->setCoordSys(mesh.getCoordSys());
 
@@ -296,8 +294,6 @@ pylith::topology::MeshOps::createFromPoints(const PylithReal* points,
     _MeshOps::Events::logger.eventBegin(_MeshOps::Events::createFromPoints);
     assert(cs);
 
-    PetscErrorCode err;
-
     const int meshDim = 0;
     pylith::topology::Mesh* mesh = new pylith::topology::Mesh(meshDim, comm);assert(mesh);
 
@@ -311,28 +307,28 @@ pylith::topology::MeshOps::createFromPoints(const PylithReal* points,
 
     const size_t spaceDim = cs->getSpaceDim();
 
-    err = DMPlexCreate(comm, &dmPoints);PYLITH_CHECK_ERROR(err);
-    err = DMSetDimension(dmPoints, 0);PYLITH_CHECK_ERROR(err);
-    err = DMSetCoordinateDim(dmPoints, spaceDim);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMPlexCreate(comm, &dmPoints));
+    PylithCallPetsc(DMSetDimension(dmPoints, 0));
+    PylithCallPetsc(DMSetCoordinateDim(dmPoints, spaceDim));
     if (numPoints > 0) {
-        err = DMPlexCreateFromDAG(dmPoints, depth, dmNumPoints, &dmConeSizes[0], &dmCones[0],
-                                  &dmConeOrientations[0], points);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMPlexCreateFromDAG(dmPoints, depth, dmNumPoints, &dmConeSizes[0], &dmCones[0],
+                                            &dmConeOrientations[0], points));
     } else {
         PetscInt empty[1];
         empty[0] = 0;
-        err = DMPlexCreateFromDAG(dmPoints, depth, dmNumPoints, &empty[0], &empty[0],
-                                  &empty[0], points);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMPlexCreateFromDAG(dmPoints, depth, dmNumPoints, &empty[0], &empty[0],
+                                            &empty[0], points));
     } // if/else
 
     PetscSF sf = NULL;
-    err = DMGetPointSF(dmPoints, &sf);PYLITH_CHECK_ERROR(err);
-    err = PetscSFSetGraph(sf, numPoints, 0, NULL, PETSC_COPY_VALUES, NULL, PETSC_COPY_VALUES);
+    PylithCallPetsc(DMGetPointSF(dmPoints, &sf));
+    PylithCallPetsc(PetscSFSetGraph(sf, numPoints, 0, NULL, PETSC_COPY_VALUES, NULL, PETSC_COPY_VALUES));
 
     mesh->setDM(dmPoints, componentName);
 
     mesh->setCoordSys(cs);
 
-    err = DMPlexSetScale(mesh->getDM(), PETSC_UNIT_LENGTH, lengthScale);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMPlexSetScale(mesh->getDM(), PETSC_UNIT_LENGTH, lengthScale));
 
     _MeshOps::Events::logger.eventEnd(_MeshOps::Events::createFromPoints);
     PYLITH_METHOD_RETURN(mesh);
@@ -352,13 +348,12 @@ pylith::topology::MeshOps::nondimensionalize(Mesh* const mesh,
 
     PetscVec coordVec = NULL;
     const PylithScalar lengthScale = scales.getLengthScale();
-    PetscErrorCode err = 0;
 
     PetscDM dmMesh = mesh->getDM();assert(dmMesh);
-    err = DMGetCoordinatesLocal(dmMesh, &coordVec);PYLITH_CHECK_ERROR(err);assert(coordVec);
-    err = VecScale(coordVec, 1.0/lengthScale);PYLITH_CHECK_ERROR(err);
-    err = DMPlexSetScale(dmMesh, PETSC_UNIT_LENGTH, lengthScale);PYLITH_CHECK_ERROR(err);
-    err = DMViewFromOptions(dmMesh, NULL, "-pylith_nondim_dm_view");PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMGetCoordinatesLocal(dmMesh, &coordVec));assert(coordVec);
+    PylithCallPetsc(VecScale(coordVec, 1.0/lengthScale));
+    PylithCallPetsc(DMPlexSetScale(dmMesh, PETSC_UNIT_LENGTH, lengthScale));
+    PylithCallPetsc(DMViewFromOptions(dmMesh, NULL, "-pylith_nondim_dm_view"));
 
     const PetscInt dim = mesh->getDimension();
     if (dim >= 1) {
@@ -385,7 +380,6 @@ PetscDM
 pylith::topology::MeshOps::removeHangingCells(const PetscDM& dmMesh) {
     PYLITH_METHOD_BEGIN;
 
-    PetscErrorCode err = PETSC_SUCCESS;
     PetscDM dmClean = PETSC_NULLPTR;
 
     MPI_Comm comm = PetscObjectComm((PetscObject) dmMesh);
@@ -393,39 +387,39 @@ pylith::topology::MeshOps::removeHangingCells(const PetscDM& dmMesh) {
     PetscInt hasHangingCellsLocal = 0;
     if (cells.begin() != cells.end()) {
         DMPolytopeType cellType;
-        err = DMPlexGetCellType(dmMesh, cells.begin(), &cellType);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMPlexGetCellType(dmMesh, cells.begin(), &cellType));
         hasHangingCellsLocal = DMPolytopeTypeGetDim(cellType) < 0; // Hanging cells have dim == -1
     } // if
     PetscInt hasHangingCellsGlobal = 0;
-    err = MPI_Allreduce(&hasHangingCellsLocal, &hasHangingCellsGlobal, 1, MPIU_INT, MPI_MAX, comm);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(MPI_Allreduce(&hasHangingCellsLocal, &hasHangingCellsGlobal, 1, MPIU_INT, MPI_MAX, comm));
     if (hasHangingCellsGlobal) {
         // Create label over cells 1 dimension lower
         PetscDMLabel labelInclude = PETSC_NULLPTR;
         const PetscInt labelValue = 1;
-        err = DMLabelCreate(comm, "no_hanging_cells", &labelInclude);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMLabelCreate(comm, "no_hanging_cells", &labelInclude));
         pylith::topology::Stratum faces(dmMesh, pylith::topology::Stratum::HEIGHT, 1);
         for (PetscInt face = faces.begin(); face < faces.end(); ++face) {
-            err = DMLabelSetValue(labelInclude, face, labelValue);PYLITH_CHECK_ERROR(err);
+            PylithCallPetsc(DMLabelSetValue(labelInclude, face, labelValue));
         } // for
 
-        err = DMPlexFilter(dmMesh, labelInclude, labelValue, PETSC_FALSE, PETSC_FALSE, PETSC_NULLPTR, &dmClean);PYLITH_CHECK_ERROR(err);
-        err = DMLabelDestroy(&labelInclude);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMPlexFilter(dmMesh, labelInclude, labelValue, PETSC_FALSE, PETSC_FALSE, PETSC_NULLPTR, &dmClean));
+        PylithCallPetsc(DMLabelDestroy(&labelInclude));
 
         // Create section using subpoint map to ensure sections are consistent.
         PetscIS subpointIS = PETSC_NULLPTR;
         PetscSection sectionOld = PETSC_NULLPTR, sectionNew = PETSC_NULLPTR;
-        err = DMPlexGetSubpointIS(dmClean, &subpointIS);PYLITH_CHECK_ERROR(err);
-        err = DMGetLocalSection(dmMesh, &sectionOld);PYLITH_CHECK_ERROR(err);
-        err = PetscSectionCreateSubmeshSection(sectionOld, subpointIS, &sectionNew);PYLITH_CHECK_ERROR(err);
-        err = DMSetLocalSection(dmClean, sectionNew);PYLITH_CHECK_ERROR(err);
-        err = PetscSectionDestroy(&sectionNew);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMPlexGetSubpointIS(dmClean, &subpointIS));
+        PylithCallPetsc(DMGetLocalSection(dmMesh, &sectionOld));
+        PylithCallPetsc(PetscSectionCreateSubmeshSection(sectionOld, subpointIS, &sectionNew));
+        PylithCallPetsc(DMSetLocalSection(dmClean, sectionNew));
+        PylithCallPetsc(PetscSectionDestroy(&sectionNew));
 
         PetscReal lengthScale = 0.0;
-        err = DMPlexGetScale(dmMesh, PETSC_UNIT_LENGTH, &lengthScale);PYLITH_CHECK_ERROR(err);
-        err = DMPlexSetScale(dmClean, PETSC_UNIT_LENGTH, lengthScale);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMPlexGetScale(dmMesh, PETSC_UNIT_LENGTH, &lengthScale));
+        PylithCallPetsc(DMPlexSetScale(dmClean, PETSC_UNIT_LENGTH, lengthScale));
     } else {
         dmClean = dmMesh;
-        err = PetscObjectReference((PetscObject) dmClean);
+        PylithCallPetsc(PetscObjectReference((PetscObject) dmClean));
     } // if/else
 
     PYLITH_METHOD_RETURN(dmClean);
@@ -443,23 +437,22 @@ pylith::topology::MeshOps::checkTopology(const Mesh& mesh) {
     PetscDM dmMesh = mesh.getDM();assert(dmMesh);
 
     DMLabel subpointMap;
-    PetscErrorCode ierr = DMPlexGetSubpointMap(dmMesh, &subpointMap);PYLITH_CHECK_ERROR(ierr);
+    PylithCallPetsc(DMPlexGetSubpointMap(dmMesh, &subpointMap));
     PetscInt cellHeight = subpointMap ? 1 : 0;
 
-    PetscErrorCode err;
-    err = DMViewFromOptions(dmMesh, NULL, "-pylith_checktopo_dm_view");PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMViewFromOptions(dmMesh, NULL, "-pylith_checktopo_dm_view"));
 
     _MeshOps::Events::logger.eventBegin(_MeshOps::Events::checkTopologyGeometry);
-    err = DMPlexCheckGeometry(dmMesh);PYLITH_CHECK_ERROR_MSG(err, "Error in topology of the mesh.");
+    PylithCallPetsc(DMPlexCheckGeometry(dmMesh));
     _MeshOps::Events::logger.eventEnd(_MeshOps::Events::checkTopologyGeometry);
 
     _MeshOps::Events::logger.eventBegin(_MeshOps::Events::checkTopologySymmetry);
-    err = DMPlexCheckSymmetry(dmMesh);PYLITH_CHECK_ERROR_MSG(err, "Error in topology of mesh associated with symmetry of adjacency information.");
+    PylithCallPetsc(DMPlexCheckSymmetry(dmMesh));
     _MeshOps::Events::logger.eventEnd(_MeshOps::Events::checkTopologySymmetry);
 
     _MeshOps::Events::logger.eventBegin(_MeshOps::Events::checkTopologySkeleton);
-    err = DMPlexCheckSkeleton(dmMesh, cellHeight);PYLITH_CHECK_ERROR_MSG(err, "Error in topology of mesh cells.");
-    err = DMPlexCheckOrphanVertices(dmMesh);PYLITH_CHECK_ERROR_MSG(err, "Mesh contains vertices not connected to cells.");
+    PylithCallPetsc(DMPlexCheckSkeleton(dmMesh, cellHeight));
+    PylithCallPetsc(DMPlexCheckOrphanVertices(dmMesh));
     _MeshOps::Events::logger.eventEnd(_MeshOps::Events::checkTopologySkeleton);
 
     /* Other check functions that we are not using:
@@ -481,16 +474,15 @@ pylith::topology::MeshOps::isSimplexMesh(const Mesh& mesh) {
 
     bool isSimplex = false;
 
-    PetscErrorCode err;
     const PetscDM dm = mesh.getDM();
     PetscInt vStart = 0, vEnd = 0;
-    err = DMPlexGetDepthStratum(dm, 0, &vStart, &vEnd);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMPlexGetDepthStratum(dm, 0, &vStart, &vEnd));
     if (vStart != vEnd) { // Test for simplex only works if we have points.
         PetscInt closureSize = 0;
         PetscInt* closure = NULL;
         const int dim = mesh.getDimension();
 
-        err = DMPlexGetTransitiveClosure(dm, 0, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMPlexGetTransitiveClosure(dm, 0, PETSC_TRUE, &closureSize, &closure));
         PetscInt numVertices = 0;
         for (PetscInt c = 0; c < closureSize*2; c += 2) {
             if ((closure[c] >= vStart) && (closure[c] < vEnd)) {
@@ -500,7 +492,7 @@ pylith::topology::MeshOps::isSimplexMesh(const Mesh& mesh) {
         if (numVertices == dim+1) {
             isSimplex = PETSC_TRUE;
         } // if
-        err = DMPlexRestoreTransitiveClosure(dm, 0, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMPlexRestoreTransitiveClosure(dm, 0, PETSC_TRUE, &closureSize, &closure));
     } // if
 
     // Communicate result of isSimplex to all processes.
@@ -520,7 +512,7 @@ pylith::topology::MeshOps::isCohesiveCell(const PetscDM dm,
     bool isCohesive = false;
 
     DMPolytopeType ct;
-    PetscErrorCode err = DMPlexGetCellType(dm, cell, &ct);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMPlexGetCellType(dm, cell, &ct));
     if ((ct == DM_POLYTOPE_SEG_PRISM_TENSOR) ||
         (ct == DM_POLYTOPE_TRI_PRISM_TENSOR) ||
         (ct == DM_POLYTOPE_QUAD_PRISM_TENSOR)) { isCohesive = true; }
@@ -538,7 +530,7 @@ pylith::topology::MeshOps::getNumVertices(const pylith::topology::Mesh& mesh) {
     PetscDM dmMesh = mesh.getDM();assert(dmMesh);
     PylithInt nvertices = 0;
     PylithInt begin = 0, end = 0;
-    PetscErrorCode err = DMPlexGetDepthStratum(dmMesh, 0, &begin, &end);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMPlexGetDepthStratum(dmMesh, 0, &begin, &end));
     nvertices = end-begin;
 
     PYLITH_METHOD_RETURN(nvertices);
@@ -555,7 +547,7 @@ pylith::topology::MeshOps::getNumCells(const pylith::topology::Mesh& mesh) {
     PetscInt ncells = 0;
     PylithInt begin = 0, end = 0;
     const int cellHeight = 0;
-    PetscErrorCode err = DMPlexGetHeightStratum(dmMesh, cellHeight, &begin, &end);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMPlexGetHeightStratum(dmMesh, cellHeight, &begin, &end));
     ncells = end-begin;
 
     PYLITH_METHOD_RETURN(ncells);
@@ -572,16 +564,15 @@ pylith::topology::MeshOps::getNumCorners(const pylith::topology::Mesh& mesh) {
     PetscDM dmMesh = mesh.getDM();assert(dmMesh);
 
     PetscInt cStart, cEnd, vStart, vEnd, closureSize, *closure = NULL;
-    PetscErrorCode err;
     const int cellHeight = 0;
-    err = DMPlexGetHeightStratum(dmMesh, cellHeight, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
-    err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMPlexGetHeightStratum(dmMesh, cellHeight, &cStart, &cEnd));
+    PylithCallPetsc(DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd));
     if (cEnd > cStart) {
-        err = DMPlexGetTransitiveClosure(dmMesh, cStart, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMPlexGetTransitiveClosure(dmMesh, cStart, PETSC_TRUE, &closureSize, &closure));
         for (PetscInt c = 0; c < closureSize*2; c += 2) {
             if ((closure[c] >= vStart) && (closure[c] < vEnd)) {++numCorners;}
         } // for
-        err = DMPlexRestoreTransitiveClosure(dmMesh, cStart, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMPlexRestoreTransitiveClosure(dmMesh, cStart, PETSC_TRUE, &closureSize, &closure));
     } // if
 
     PYLITH_METHOD_RETURN(numCorners);
@@ -604,8 +595,7 @@ pylith::topology::MeshOps::computeAvgDomainDim(const pylith::topology::Mesh& mes
     PylithReal coordMin[3];
     PylithReal coordMax[3];
 
-    PetscErrorCode err = PETSC_SUCCESS;
-    err = DMGetBoundingBox(mesh.getDM(), coordMin, coordMax);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMGetBoundingBox(mesh.getDM(), coordMin, coordMax));
     PylithReal volume = 1.0;
     for (int i = 0; i < dim; ++i) {
         volume *= coordMax[i] - coordMin[i];
@@ -625,8 +615,6 @@ pylith::topology::MeshOps::checkMaterialLabels(const pylith::topology::Mesh& mes
     _MeshOps::Events::init();
     _MeshOps::Events::logger.eventBegin(_MeshOps::Events::checkMaterialLabels);
 
-    PetscErrorCode err;
-
     // Create map with indices for each material
     const size_t numIds = labelValues.size();
     std::map<int, int> materialIndex;
@@ -644,7 +632,7 @@ pylith::topology::MeshOps::checkMaterialLabels(const pylith::topology::Mesh& mes
 
     PetscDMLabel materialsLabel = NULL;
     const char* const labelName = pylith::topology::Mesh::cells_label_name;
-    err = DMGetLabel(dmMesh, labelName, &materialsLabel);PYLITH_CHECK_ERROR(err);assert(materialsLabel);
+    PylithCallPetsc(DMGetLabel(dmMesh, labelName, &materialsLabel));assert(materialsLabel);
 
     int *matBegin = &labelValues[0];
     int *matEnd = &labelValues[0] + labelValues.size();
@@ -653,7 +641,7 @@ pylith::topology::MeshOps::checkMaterialLabels(const pylith::topology::Mesh& mes
     for (PetscInt c = cStart; c < cEnd; ++c) {
         PetscInt matId;
 
-        err = DMLabelGetValue(materialsLabel, c, &matId);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMLabelGetValue(materialsLabel, c, &matId));
         if (matId < 0) {
             // :KLUDGE: Skip cells that are probably hybrid cells in halo
             // around fault that we currently ignore when looping over
@@ -675,8 +663,8 @@ pylith::topology::MeshOps::checkMaterialLabels(const pylith::topology::Mesh& mes
 
     // Make sure each material has cells.
     int_array matCellCountsAll(matCellCounts.size());
-    err = MPI_Allreduce(&matCellCounts[0], &matCellCountsAll[0],
-                        matCellCounts.size(), MPI_INT, MPI_SUM, mesh.getComm());PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(MPI_Allreduce(&matCellCounts[0], &matCellCountsAll[0],
+                                  matCellCounts.size(), MPI_INT, MPI_SUM, mesh.getComm()));
     for (size_t i = 0; i < numIds; ++i) {
         const int matId = labelValues[i];
         const size_t matIndex = materialIndex[matId];

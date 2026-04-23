@@ -77,14 +77,14 @@ pylith::feassemble::ConstraintSpatialDB::initialize(const pylith::topology::Fiel
     PetscDS prob = NULL;
     PetscDMLabel label = NULL;
     PetscDM dmSoln = solution.getDM();assert(dmSoln);
-    PetscErrorCode err = DMGetDS(dmSoln, &prob);PYLITH_CHECK_ERROR(err);assert(prob);
+    PylithCallPetsc(DMGetDS(dmSoln, &prob));assert(prob);
 
     void* context = NULL;
     const PylithInt numConstrained = _constrainedDOF.size();
     const PetscInt i_field = solution.getSubfieldInfo(_subfieldName.c_str()).index;
-    err = DMGetLabel(dmSoln, _labelName.c_str(), &label);PYLITH_CHECK_ERROR(err);
-    err = PetscDSAddBoundary(prob, DM_BC_ESSENTIAL_BD_FIELD, _labelName.c_str(), label, 1, &_labelValue, i_field,
-                             numConstrained, &_constrainedDOF[0], (void (*)()) _kernelConstraint, NULL, context, NULL);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMGetLabel(dmSoln, _labelName.c_str(), &label));
+    PylithCallPetsc(PetscDSAddBoundary(prob, DM_BC_ESSENTIAL_BD_FIELD, _labelName.c_str(), label, 1, &_labelValue, i_field,
+                                       numConstrained, &_constrainedDOF[0], (void (*)()) _kernelConstraint, NULL, context, NULL));
 
     PYLITH_METHOD_END;
 } // initialize
@@ -128,16 +128,15 @@ pylith::feassemble::ConstraintSpatialDB::setSolution(pylith::feassemble::Integra
     assert(solution);
     const PylithReal t = integrationData->getScalar(pylith::feassemble::IntegrationData::time);
 
-    PetscErrorCode err = 0;
     PetscDM dmSoln = solution->getDM();
 
     // Get label for constraint.
     PetscDMLabel dmLabel = NULL;
-    err = DMGetLabel(dmSoln, _labelName.c_str(), &dmLabel);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMGetLabel(dmSoln, _labelName.c_str(), &dmLabel));
 
     // Set auxiliary data
     const PetscInt part = 0;
-    err = DMSetAuxiliaryVec(dmSoln, dmLabel, _labelValue, part, _auxiliaryField->getLocalVector());PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMSetAuxiliaryVec(dmSoln, dmLabel, _labelValue, part, _auxiliaryField->getLocalVector()));
 
     void* context = NULL;
     const int fieldIndex = solution->getSubfieldInfo(_subfieldName.c_str()).index;
@@ -147,11 +146,11 @@ pylith::feassemble::ConstraintSpatialDB::setSolution(pylith::feassemble::Integra
     // :KLUDGE: We normally don't want the label to contain the domain cells hanging off the submesh, so
     // we use DMPlexLabelAddFaceCells() to add the domain cells so we can project from the submesh
     // to the domain mesh. Then we clear the domain cells from the label afterwards.
-    err = DMPlexLabelAddFaceCells(dmSoln, dmLabel);PYLITH_CHECK_ERROR(err);
-    err = DMPlexInsertBoundaryValuesEssentialBdField(dmSoln, t, solution->getLocalVector(), fieldIndex,
-                                                     numConstrained, &_constrainedDOF[0], dmLabel, 1, &_labelValue,
-                                                     _kernelConstraint, context, solution->getLocalVector());PYLITH_CHECK_ERROR(err);
-    err = DMPlexLabelClearCells(dmSoln, dmLabel);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMPlexLabelAddFaceCells(dmSoln, dmLabel));
+    PylithCallPetsc(DMPlexInsertBoundaryValuesEssentialBdField(dmSoln, t, solution->getLocalVector(), fieldIndex,
+                                                               numConstrained, &_constrainedDOF[0], dmLabel, 1, &_labelValue,
+                                                               _kernelConstraint, context, solution->getLocalVector()));
+    PylithCallPetsc(DMPlexLabelClearCells(dmSoln, dmLabel));
 
     pythia::journal::debug_t debug(GenericComponent::getName());
     if (debug.state()) {

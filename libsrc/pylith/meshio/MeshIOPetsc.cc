@@ -200,7 +200,6 @@ pylith::meshio::MeshIOPetsc::_read(void) {
     _MeshIOPetsc::Events::logger.eventBegin(_MeshIOPetsc::Events::read);
     assert(_mesh);
 
-    PetscErrorCode err = PETSC_SUCCESS;
     if (!_filename.empty()) {
         size_t noptions = 1;
         pylith::string_vector options(noptions*2);
@@ -218,20 +217,20 @@ pylith::meshio::MeshIOPetsc::_read(void) {
         } // if
 
         for (size_t i = 0; i < noptions; ++i) {
-            err = PetscOptionsSetValue(NULL, options[2*i+0].c_str(), options[2*i+1].c_str());
+            PylithCallPetsc(PetscOptionsSetValue(NULL, options[2*i+0].c_str(), options[2*i+1].c_str()));
         } // for
     } // if
 
     PetscDM dmMesh = NULL;
     try {
-        err = DMCreate(_mesh->getComm(), &dmMesh);PYLITH_CHECK_ERROR(err);
-        err = DMSetType(dmMesh, DMPLEX);PYLITH_CHECK_ERROR(err);
-        err = PetscObjectSetName((PetscObject) dmMesh, "domain"); // Needed for reading PETSc HDF5
+        PylithCallPetsc(DMCreate(_mesh->getComm(), &dmMesh));
+        PylithCallPetsc(DMSetType(dmMesh, DMPLEX));
+        PylithCallPetsc(PetscObjectSetName((PetscObject) dmMesh, "domain")); // Needed for reading PETSc HDF5
         if (!_prefix.empty()) {
-            err = PetscObjectSetOptionsPrefix((PetscObject) dmMesh, _prefix.c_str());PYLITH_CHECK_ERROR(err);
+            PylithCallPetsc(PetscObjectSetOptionsPrefix((PetscObject) dmMesh, _prefix.c_str()));
         } // if
-        err = DMPlexDistributeSetDefault(dmMesh, PETSC_FALSE);PYLITH_CHECK_ERROR(err);
-        err = DMSetFromOptions(dmMesh);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMPlexDistributeSetDefault(dmMesh, PETSC_FALSE));
+        PylithCallPetsc(DMSetFromOptions(dmMesh));
         _MeshIOPetsc::fixMaterialLabel(&dmMesh);
         if (_gmshMarkRecursive) {
             _MeshIOPetsc::fixBoundaryLabels(&dmMesh);
@@ -255,23 +254,22 @@ pylith::meshio::MeshIOPetsc::_write(void) const {
     PYLITH_COMPONENT_DEBUG("_write()");
     assert(_mesh);
 
-    PetscErrorCode err = PETSC_SUCCESS;
     PetscViewer viewer = PETSC_NULLPTR;
     if (_format == HDF5) {
-        err = PetscViewerHDF5Open(PETSC_COMM_WORLD, _filename.c_str(), FILE_MODE_WRITE, &viewer);
+        PylithCallPetsc(PetscViewerHDF5Open(PETSC_COMM_WORLD, _filename.c_str(), FILE_MODE_WRITE, &viewer));
 
         DMPlexStorageVersion storageVersion = PETSC_NULLPTR;
-        err = PetscNew(&storageVersion);PYLITH_CHECK_ERROR(err);assert(storageVersion);
+        PylithCallPetsc(PetscNew(&storageVersion));assert(storageVersion);
         storageVersion->major = 3;
         storageVersion->minor = 1;
         storageVersion->subminor = 0;
-        err = PetscViewerHDF5SetDMPlexStorageVersionWriting(viewer, storageVersion);PYLITH_CHECK_ERROR(err);
-        err = PetscFree(storageVersion);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(PetscViewerHDF5SetDMPlexStorageVersionWriting(viewer, storageVersion));
+        PylithCallPetsc(PetscFree(storageVersion));
     } else {
         PYLITH_COMPONENT_LOGICERROR("Unknown mesh format " << _format << ".");
     } // if/else
-    err = DMView(_mesh->getDM(), viewer);PYLITH_CHECK_ERROR(err);
-    err = PetscViewerDestroy(&viewer);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMView(_mesh->getDM(), viewer));
+    PylithCallPetsc(PetscViewerDestroy(&viewer));
 
     PYLITH_METHOD_END;
 } // _write
@@ -285,21 +283,20 @@ pylith::meshio::_MeshIOPetsc::fixMaterialLabel(PetscDM* dmMesh) {
     _MeshIOPetsc::Events::logger.eventBegin(_MeshIOPetsc::Events::fixMaterialLabel);
 
     assert(dmMesh);
-    PetscErrorCode err = 0;
     const char* const labelName = pylith::topology::Mesh::cells_label_name;
 
     const PetscInt cellHeight = 0;
     PetscInt cStart = -1, cEnd = -1;
-    err = DMPlexGetHeightStratum(*dmMesh, cellHeight, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMPlexGetHeightStratum(*dmMesh, cellHeight, &cStart, &cEnd));
     if (cStart == cEnd) {
-        err = DMCreateLabel(*dmMesh, labelName);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMCreateLabel(*dmMesh, labelName));
         PYLITH_METHOD_END;
     } // if
 
     PetscDMLabel dmLabel = NULL;
     PetscInt pStart = -1, pEnd = -1;
-    err = DMGetLabel(*dmMesh, labelName, &dmLabel);PYLITH_CHECK_ERROR(err);
-    err = DMLabelGetBounds(dmLabel, &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMGetLabel(*dmMesh, labelName, &dmLabel));
+    PylithCallPetsc(DMLabelGetBounds(dmLabel, &pStart, &pEnd));
     if (pStart == cStart) { pStart = cEnd; }
     if (pEnd == cEnd) { pEnd = cStart; }
 
@@ -308,18 +305,18 @@ pylith::meshio::_MeshIOPetsc::fixMaterialLabel(PetscDM* dmMesh) {
      * is in the label, getting the label value, and clearing that value.
      */
     PetscIS valuesIS = PETSC_NULLPTR;
-    err = DMLabelGetNonEmptyStratumValuesIS(dmLabel, &valuesIS);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMLabelGetNonEmptyStratumValuesIS(dmLabel, &valuesIS));
     PetscInt numValues;
-    err = ISGetLocalSize(valuesIS, &numValues);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(ISGetLocalSize(valuesIS, &numValues));
     const PetscInt* valuesIndices = PETSC_NULLPTR;
-    err = ISGetIndices(valuesIS, &valuesIndices);
+    PylithCallPetsc(ISGetIndices(valuesIS, &valuesIndices));
     for (PetscInt point = pStart; point < pEnd; ++point) {
         for (PetscInt iValue = 0; iValue < numValues; ++iValue) {
-            err = DMLabelClearValue(dmLabel, point, valuesIndices[iValue]);PYLITH_CHECK_ERROR(err);
+            PylithCallPetsc(DMLabelClearValue(dmLabel, point, valuesIndices[iValue]));
         } // for
     } // for
-    err = ISRestoreIndices(valuesIS, &valuesIndices);
-    err = ISDestroy(&valuesIS);
+    PylithCallPetsc(ISRestoreIndices(valuesIS, &valuesIndices));
+    PylithCallPetsc(ISDestroy(&valuesIS));
 
     _MeshIOPetsc::Events::logger.eventEnd(_MeshIOPetsc::Events::fixMaterialLabel);
     PYLITH_METHOD_END;
@@ -334,7 +331,6 @@ pylith::meshio::_MeshIOPetsc::fixBoundaryLabels(PetscDM* dmMesh) {
     PYLITH_METHOD_BEGIN;
     _MeshIOPetsc::Events::logger.eventBegin(_MeshIOPetsc::Events::fixBoundaryLabels);
     assert(dmMesh);
-    PetscErrorCode err = PETSC_SUCCESS;
 
     // Create set with labels to ignore.
     std::set<std::string> labelsIgnore;
@@ -346,22 +342,22 @@ pylith::meshio::_MeshIOPetsc::fixBoundaryLabels(PetscDM* dmMesh) {
     PetscInt eStart = -1, eEnd = -1;
     PetscInt fStart = -1, fEnd = -1;
     PetscInt cStart = -1, cEnd = -1;
-    err = DMPlexGetDepthStratum(*dmMesh, 0, &vStart, &vEnd);PYLITH_CHECK_ERROR(err);
-    err = DMPlexGetDepthStratum(*dmMesh, 1, &eStart, &eEnd);PYLITH_CHECK_ERROR(err);
-    err = DMPlexGetDepthStratum(*dmMesh, 2, &fStart, &fEnd);PYLITH_CHECK_ERROR(err);
-    err = DMPlexGetDepthStratum(*dmMesh, 3, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMPlexGetDepthStratum(*dmMesh, 0, &vStart, &vEnd));
+    PylithCallPetsc(DMPlexGetDepthStratum(*dmMesh, 1, &eStart, &eEnd));
+    PylithCallPetsc(DMPlexGetDepthStratum(*dmMesh, 2, &fStart, &fEnd));
+    PylithCallPetsc(DMPlexGetDepthStratum(*dmMesh, 3, &cStart, &cEnd));
 
     PetscInt numLabels = 0;
-    err = DMGetNumLabels(*dmMesh, &numLabels);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMGetNumLabels(*dmMesh, &numLabels));
     for (PetscInt iLabel = 0; iLabel < numLabels; ++iLabel) {
         const char* labelName = NULL;
-        err = DMGetLabelName(*dmMesh, iLabel, &labelName);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMGetLabelName(*dmMesh, iLabel, &labelName));
         if (labelsIgnore.count(std::string(labelName)) > 0) { continue; }
 
         PetscDMLabel dmLabel = NULL;
-        err = DMGetLabelByNum(*dmMesh, iLabel, &dmLabel);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMGetLabelByNum(*dmMesh, iLabel, &dmLabel));
         PetscInt pStart = -1, pEnd = -1;
-        err = DMLabelGetBounds(dmLabel, &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMLabelGetBounds(dmLabel, &pStart, &pEnd));
 
         bool hasEdges = false;
         bool hasFaces = false;
@@ -381,26 +377,26 @@ pylith::meshio::_MeshIOPetsc::fixBoundaryLabels(PetscDM* dmMesh) {
                 hasCells = true;
             } // if
             PetscBool hasLabel = PETSC_FALSE;
-            err = DMLabelHasPoint(dmLabel, point, &hasLabel);PYLITH_CHECK_ERROR(err);
+            PylithCallPetsc(DMLabelHasPoint(dmLabel, point, &hasLabel));
             if (hasLabel) {
                 PetscInt labelValue;
-                err = DMLabelGetValue(dmLabel, point, &labelValue);PYLITH_CHECK_ERROR(err);
-                err = DMLabelClearValue(dmLabel, point, labelValue);PYLITH_CHECK_ERROR(err);
+                PylithCallPetsc(DMLabelGetValue(dmLabel, point, &labelValue));
+                PylithCallPetsc(DMLabelClearValue(dmLabel, point, labelValue));
             } // if
         } // for
-        err = DMLabelDestroyIndex(dmLabel);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMLabelDestroyIndex(dmLabel));
 
         // Re-add edges, faces, and cells based upon vertices if present in original label.
-        err = DMLabelComputeIndex(dmLabel);PYLITH_CHECK_ERROR(err);
-        err = DMLabelGetBounds(dmLabel, &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
-        err = DMLabelDestroyIndex(dmLabel);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMLabelComputeIndex(dmLabel));
+        PylithCallPetsc(DMLabelGetBounds(dmLabel, &pStart, &pEnd));
+        PylithCallPetsc(DMLabelDestroyIndex(dmLabel));
         for (PetscInt vertex = pStart; vertex < pEnd; ++vertex) {
             PetscInt labelValue = -1;
-            err = DMLabelGetValue(dmLabel, vertex, &labelValue);PYLITH_CHECK_ERROR(err);
+            PylithCallPetsc(DMLabelGetValue(dmLabel, vertex, &labelValue));
             if (labelValue < 1) { continue; }
 
             PetscInt *star = NULL, starSize;
-            err = DMPlexGetTransitiveClosure(*dmMesh, vertex, PETSC_FALSE, &starSize, &star);PYLITH_CHECK_ERROR(err);
+            PylithCallPetsc(DMPlexGetTransitiveClosure(*dmMesh, vertex, PETSC_FALSE, &starSize, &star));
             for (PetscInt s = 0; s < starSize*2; s += 2) {
                 const PetscInt point = star[s];
 
@@ -412,24 +408,24 @@ pylith::meshio::_MeshIOPetsc::fixBoundaryLabels(PetscDM* dmMesh) {
                 // All vertices in closure must be in label to add point to label.
                 PetscInt *closure = NULL, closureSize, value;
                 PetscBool mark = PETSC_TRUE;
-                err = DMPlexGetTransitiveClosure(*dmMesh, point, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+                PylithCallPetsc(DMPlexGetTransitiveClosure(*dmMesh, point, PETSC_TRUE, &closureSize, &closure));
                 for (PetscInt c = 0; c < closureSize*2; c += 2) {
                     if ((closure[c] >= vStart) && (closure[c] < vEnd)) {
-                        err = DMLabelGetValue(dmLabel, closure[c], &value);PYLITH_CHECK_ERROR(err);
+                        PylithCallPetsc(DMLabelGetValue(dmLabel, closure[c], &value));
                         if (value != labelValue) {
                             mark = PETSC_FALSE;
                             break;
                         } // if
                     } // if
                 } // for
-                err = DMPlexRestoreTransitiveClosure(*dmMesh, point, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+                PylithCallPetsc(DMPlexRestoreTransitiveClosure(*dmMesh, point, PETSC_TRUE, &closureSize, &closure));
                 if (mark) {
-                    err = DMLabelSetValue(dmLabel, point, labelValue);PYLITH_CHECK_ERROR(err);
+                    PylithCallPetsc(DMLabelSetValue(dmLabel, point, labelValue));
                 } // if
             } // for
-            err = DMPlexRestoreTransitiveClosure(*dmMesh, vertex, PETSC_FALSE, &starSize, &star);PYLITH_CHECK_ERROR(err);
+            PylithCallPetsc(DMPlexRestoreTransitiveClosure(*dmMesh, vertex, PETSC_FALSE, &starSize, &star));
         } // for
-        err = DMLabelComputeIndex(dmLabel);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMLabelComputeIndex(dmLabel));
 
     } // for
 

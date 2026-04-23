@@ -161,8 +161,8 @@ class EqInfoApp(Application):
             isnapshot = 0
             for snapshot in self.snapshots:
                 # Get slip at snapshot
-                istep = self._findTimeStep(snapshot, timestamps)
-                slip = h5['vertex_fields/slip'][istep, :, :]
+                i_step = self._findTimeStep(snapshot, timestamps)
+                slip = h5['vertex_fields/slip'][i_step, :, :]
                 if len(slip.shape) > 2:
                     slip = slip.squeeze(axis=0)
 
@@ -175,7 +175,7 @@ class EqInfoApp(Application):
                 moment = numpy.sum(cellsSlipMag * cellsArea * cellsShearMod)
 
                 stats.update(
-                    isnapshot, timestamp=timestamps[istep], ruparea=ruparea, potency=potency, moment=moment)
+                    isnapshot, timestamp=timestamps[i_step], ruparea=ruparea, potency=potency, moment=moment)
 
                 isnapshot += 1
             h5.close()
@@ -185,8 +185,8 @@ class EqInfoApp(Application):
         statsTotal.fault = "all"
         isnapshot = 0
         for snapshot in self.snapshots:
-            istep = self._findTimeStep(snapshot, timestamps)
-            statsTotal.timestamp[isnapshot] = timestamps[istep]
+            i_step = self._findTimeStep(snapshot, timestamps)
+            statsTotal.timestamp[isnapshot] = timestamps[i_step]
             isnapshot += 1
 
         ruparea = statsTotal.ruparea
@@ -254,15 +254,16 @@ class EqInfoApp(Application):
 
     def _findTimeStep(self, value, timestamps):
         if value == -1:
-            i = len(timestamps) - 1
+            i_step = len(timestamps) - 1
         else:
             tdiff = numpy.abs(timestamps - value * self.snapshotUnits.value)
             mindiff = numpy.min(tdiff)
-            i = numpy.where(tdiff < mindiff + 1.0e-10)[0]
-            if len(i) > 1:
+            i_step = numpy.where(tdiff < mindiff + 1.0e-10)[0]
+            if len(i_step) > 1:
                 raise ValueError(
                     "Could not find snapshot %12.4e s in time stamps." % value)
-        return i
+            i_step = i_step[0]
+        return i_step
 
     def _vectorMag(self, v):
         (npts, ndims) = v.shape

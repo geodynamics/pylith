@@ -36,12 +36,12 @@ DMPlexInvertCell_Private(PetscInt dim,
                          PetscInt numCorners,
                          PetscInt cone[]) {
 #define SWAPCONE(cone,i,j)  \
-    do {                      \
-        int _cone_tmp;          \
-        _cone_tmp = (cone)[i];  \
-        (cone)[i] = (cone)[j];  \
-        (cone)[j] = _cone_tmp;  \
-    } while (0)
+        do {                      \
+            int _cone_tmp;          \
+            _cone_tmp = (cone)[i];  \
+            (cone)[i] = (cone)[j];  \
+            (cone)[j] = _cone_tmp;  \
+        } while (0)
 
     PetscFunctionBegin;
     if (dim != 3) { PetscFunctionReturn(0);}
@@ -100,7 +100,7 @@ pylith::meshio::TestMeshIO::_createMesh(void) {
         assert(_data->faceGroupNames);
     } // if
 
-    delete _mesh;_mesh = new topology::Mesh();assert(_mesh);
+    delete _mesh;_mesh = new pylith::topology::Mesh();assert(_mesh);
 
     int_array cellsCopy(_data->topology->cells); // Create copy because building mesh may change cells (invert)
     pylith::meshio::MeshBuilder::buildMesh(_mesh, *_data->topology, *_data->geometry);
@@ -145,7 +145,7 @@ pylith::meshio::TestMeshIO::_createMesh(void) {
 
     pylith::scales::Scales scales;
     scales.setLengthScale(0.01);
-    topology::MeshOps::nondimensionalize(_mesh, scales);
+    pylith::topology::MeshOps::nondimensionalize(_mesh, scales);
 
     pythia::journal::debug_t debug("TestMeshIO");
     if (debug.state()) {
@@ -172,13 +172,13 @@ pylith::meshio::TestMeshIO::_checkVals(void) {
     PetscDM dmMesh = _mesh->getDM();assert(dmMesh);
 
     // Check vertices
-    topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
+    pylith::topology::Stratum verticesStratum(dmMesh, pylith::topology::Stratum::DEPTH, 0);
     const PylithInt vStart = verticesStratum.begin();
     const PylithInt vEnd = verticesStratum.end();
 
     REQUIRE(_data->geometry->numVertices == size_t(verticesStratum.size()));
 
-    topology::CoordsVisitor coordsVisitor(dmMesh);
+    pylith::topology::CoordsVisitor coordsVisitor(dmMesh);
     const PetscScalar* coordsArray = coordsVisitor.localArray();
     const PylithScalar tolerance = 1.0e-06;
     for (PylithInt v = vStart, index = 0; v < vEnd; ++v) {
@@ -192,38 +192,38 @@ pylith::meshio::TestMeshIO::_checkVals(void) {
     } // for
 
     // Check cells
-    topology::Stratum cellsStratum(dmMesh, topology::Stratum::HEIGHT, 0);
+    pylith::topology::Stratum cellsStratum(dmMesh, pylith::topology::Stratum::HEIGHT, 0);
     const PylithInt cStart = cellsStratum.begin();
     const PylithInt cEnd = cellsStratum.end();
     const size_t numCells = cellsStratum.size();
 
     REQUIRE(_data->topology->numCells == numCells);
     const int offset = numCells;
-    PetscErrorCode err = 0;
+    PetscErrorCode err = PETSC_SUCCESS;
     for (PylithInt c = cStart, index = 0; c < cEnd; ++c) {
         PylithInt *closure = NULL;
         PylithInt closureSize;
         size_t numCorners = 0;
 
-        err = DMPlexGetTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+        err = DMPlexGetTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);REQUIRE(!err);
         for (PylithInt p = 0; p < closureSize*2; p += 2) {
             const PylithInt point = closure[p];
             if ((point >= vStart) && (point < vEnd)) {
                 closure[numCorners++] = point;
             } // if
         } // for
-        err = DMPlexInvertCell_Private(_data->topology->dimension, numCorners, closure);PYLITH_CHECK_ERROR(err);
+        err = DMPlexInvertCell_Private(_data->topology->dimension, numCorners, closure);REQUIRE(!err);
         REQUIRE(_data->topology->numCorners == numCorners);
         for (size_t p = 0; p < numCorners; ++p) {
             CHECK(_data->topology->cells[index++] == closure[p]-offset);
         } // for
-        err = DMPlexRestoreTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+        err = DMPlexRestoreTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);REQUIRE(!err);
     } // for
 
     // check materials
     PylithInt matId = 0;
     for (PylithInt c = cStart; c < cEnd; ++c) {
-        err = DMGetLabelValue(dmMesh, pylith::topology::Mesh::cells_label_name, c, &matId);PYLITH_CHECK_ERROR(err);
+        err = DMGetLabelValue(dmMesh, pylith::topology::Mesh::cells_label_name, c, &matId);REQUIRE(!err);
         CHECK(_data->materialIds[c-cStart] == matId);
     } // for
 

@@ -87,7 +87,7 @@ pylith::meshio::OutputSolnBoundary::verifyConfiguration(const pylith::topology::
 
     PetscDM dmSoln = solution.getDM();assert(dmSoln);
     PetscBool hasLabel = PETSC_FALSE;
-    PetscErrorCode err = DMHasLabel(dmSoln, _labelName.c_str(), &hasLabel);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMHasLabel(dmSoln, _labelName.c_str(), &hasLabel));
     if (!hasLabel) {
         std::ostringstream msg;
         msg << "Mesh missing group of points '" << _labelName << " for output using solution boundary observer '"

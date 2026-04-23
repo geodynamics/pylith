@@ -40,7 +40,8 @@ pylith::meshio::MeshIO::~MeshIO(void) {
 // ----------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
-pylith::meshio::MeshIO::deallocate(void) {} // deallocate
+pylith::meshio::MeshIO::deallocate(void) {
+} // deallocate
 
 
 // ----------------------------------------------------------------------
@@ -56,12 +57,10 @@ pylith::meshio::MeshIO::read(pylith::topology::Mesh* mesh,
     _mesh = mesh;
     _read();
 
-    PetscErrorCode err = PETSC_SUCCESS;
-
     // Check for bounding box with positive volume.
     PylithReal cmin[3];
     PylithReal cmax[3];
-    err = DMGetBoundingBox(_mesh->getDM(), cmin, cmax);
+    PylithCallPetsc(DMGetBoundingBox(_mesh->getDM(), cmin, cmax));
     const PetscInt dim = _mesh->getDimension();
     PylithReal volume = 1.0;
     for (int i = 0; i < dim; ++i) {
@@ -94,7 +93,7 @@ pylith::meshio::MeshIO::read(pylith::topology::Mesh* mesh,
         _mesh->view(":mesh.tex:ascii_latex");
     } // if
     // Respond to PETSc diagnostic output
-    err = DMViewFromOptions(_mesh->getDM(), NULL, "-pylith_dm_view");PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMViewFromOptions(_mesh->getDM(), NULL, "-pylith_dm_view"));
 
     _mesh = NULL;
 

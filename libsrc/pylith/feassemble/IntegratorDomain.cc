@@ -137,14 +137,13 @@ pylith::feassemble::IntegratorDomain::setKernelsResidual(const std::vector<Resid
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" setKernelsResidual(# kernels="<<kernels.size()<<")");
 
-    PetscErrorCode err = PETSC_SUCCESS;
     assert(_dsLabel);
     for (size_t i = 0; i < kernels.size(); ++i) {
         const PetscInt i_field = solution.getSubfieldInfo(kernels[i].subfield.c_str()).index;
         const PetscInt i_part = kernels[i].part;
         if (_dsLabel->weakForm()) {
-            err = PetscWeakFormAddResidual(_dsLabel->weakForm(), _dsLabel->label(), _dsLabel->value(), i_field, i_part,
-                                           kernels[i].r0, kernels[i].r1);PYLITH_CHECK_ERROR(err);
+            PylithCallPetsc(PetscWeakFormAddResidual(_dsLabel->weakForm(), _dsLabel->label(), _dsLabel->value(), i_field, i_part,
+                                                     kernels[i].r0, kernels[i].r1));
         } // if
 
         switch (kernels[i].part) {
@@ -161,7 +160,7 @@ pylith::feassemble::IntegratorDomain::setKernelsResidual(const std::vector<Resid
 
     pythia::journal::debug_t debug(GenericComponent::getName());
     if (debug.state()) {
-        err = PetscDSView(_dsLabel->ds(), PETSC_VIEWER_STDOUT_WORLD);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(PetscDSView(_dsLabel->ds(), PETSC_VIEWER_STDOUT_WORLD));
     } // if
 
     PYLITH_METHOD_END;
@@ -175,15 +174,14 @@ pylith::feassemble::IntegratorDomain::setKernelsJacobian(const std::vector<Jacob
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" setKernelsJacobian(# kernels="<<kernels.size()<<")");
 
-    PetscErrorCode err = PETSC_SUCCESS;
     assert(_dsLabel);
     for (size_t i = 0; i < kernels.size(); ++i) {
         const PetscInt i_fieldTrial = solution.getSubfieldInfo(kernels[i].subfieldTrial.c_str()).index;
         const PetscInt i_fieldBasis = solution.getSubfieldInfo(kernels[i].subfieldBasis.c_str()).index;
         const PetscInt i_part = kernels[i].part;
         if (_dsLabel->weakForm()) {
-            err = PetscWeakFormAddJacobian(_dsLabel->weakForm(), _dsLabel->label(), _dsLabel->value(), i_fieldTrial, i_fieldBasis,
-                                           i_part, kernels[i].j0, kernels[i].j1, kernels[i].j2, kernels[i].j3);PYLITH_CHECK_ERROR(err);
+            PylithCallPetsc(PetscWeakFormAddJacobian(_dsLabel->weakForm(), _dsLabel->label(), _dsLabel->value(), i_fieldTrial, i_fieldBasis,
+                                                     i_part, kernels[i].j0, kernels[i].j1, kernels[i].j2, kernels[i].j3));
         } // if
 
         switch (kernels[i].part) {
@@ -200,7 +198,7 @@ pylith::feassemble::IntegratorDomain::setKernelsJacobian(const std::vector<Jacob
 
     pythia::journal::debug_t debug(GenericComponent::getName());
     if (debug.state()) {
-        err = PetscDSView(_dsLabel->ds(), PETSC_VIEWER_STDOUT_WORLD);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(PetscDSView(_dsLabel->ds(), PETSC_VIEWER_STDOUT_WORLD));
     } // if
 
     PYLITH_METHOD_END;
@@ -286,10 +284,9 @@ pylith::feassemble::IntegratorDomain::setInterfaceData(const pylith::topology::F
     typedef pylith::feassemble::InterfacePatches::keysmap_t keysmap_t;
 
     assert(solution);
-    PetscErrorCode err;
     PetscDM dmSoln = solution->getDM();assert(dmSoln);
     PetscDMLabel dmLabel = NULL;
-    err = DMGetLabel(dmSoln, _labelName.c_str(), &dmLabel);PYLITH_CHECK_ERROR(err);assert(dmLabel);
+    PylithCallPetsc(DMGetLabel(dmSoln, _labelName.c_str(), &dmLabel));assert(dmLabel);
 
     const PetscInt numParts = 3;
     const PetscInt parts[numParts] = {
@@ -344,8 +341,8 @@ pylith::feassemble::IntegratorDomain::setInterfaceData(const pylith::topology::F
                     const PetscInt part = integrator->getWeakFormPart(parts[iPart], faultFaces[iFace], patchValue);
 
                     assert(_auxiliaryField);
-                    err = DMSetAuxiliaryVec(dmSoln, dmLabel, _labelValue, part,
-                                            _auxiliaryField->getLocalVector());PYLITH_CHECK_ERROR(err);
+                    PylithCallPetsc(DMSetAuxiliaryVec(dmSoln, dmLabel, _labelValue, part,
+                                                      _auxiliaryField->getLocalVector()));
                 } // for
             } // for
         } // for
@@ -407,13 +404,12 @@ pylith::feassemble::IntegratorDomain::computeRHSResidual(pylith::topology::Field
     key.value = _dsLabel->value();
     key.part = pylith::feassemble::Integrator::RHS;
 
-    PetscErrorCode err;
     assert(solution->getLocalVector());
     assert(residual->getLocalVector());
     PetscVec solutionDotVec = NULL;
-    err = DMSetAuxiliaryVec(_dsLabel->dm(), key.label, key.value, key.part, _auxiliaryField->getLocalVector());PYLITH_CHECK_ERROR(err);
-    err = DMPlexComputeResidualByKey(_dsLabel->dm(), key, _dsLabel->pointsIS(), PETSC_MIN_REAL, solution->getLocalVector(),
-                                     solutionDotVec, t, residual->getLocalVector(), NULL);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMSetAuxiliaryVec(_dsLabel->dm(), key.label, key.value, key.part, _auxiliaryField->getLocalVector()));
+    PylithCallPetsc(DMPlexComputeResidualByKey(_dsLabel->dm(), key, _dsLabel->pointsIS(), PETSC_MIN_REAL, solution->getLocalVector(),
+                                               solutionDotVec, t, residual->getLocalVector(), NULL));
 
     _IntegratorDomain::Events::logger.eventEnd(_IntegratorDomain::Events::computeRHSResidual);
     PYLITH_METHOD_END;
@@ -445,13 +441,12 @@ pylith::feassemble::IntegratorDomain::computeLHSResidual(pylith::topology::Field
     key.value = _dsLabel->value();
     key.part = pylith::feassemble::Integrator::LHS;
 
-    PetscErrorCode err;
     assert(solution->getLocalVector());
     assert(solutionDot->getLocalVector());
     assert(residual->getLocalVector());
-    err = DMSetAuxiliaryVec(_dsLabel->dm(), key.label, key.value, key.part, _auxiliaryField->getLocalVector());PYLITH_CHECK_ERROR(err);
-    err = DMPlexComputeResidualByKey(_dsLabel->dm(), key, _dsLabel->pointsIS(), PETSC_MIN_REAL, solution->getLocalVector(),
-                                     solutionDot->getLocalVector(), t, residual->getLocalVector(), NULL);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMSetAuxiliaryVec(_dsLabel->dm(), key.label, key.value, key.part, _auxiliaryField->getLocalVector()));
+    PylithCallPetsc(DMPlexComputeResidualByKey(_dsLabel->dm(), key, _dsLabel->pointsIS(), PETSC_MIN_REAL, solution->getLocalVector(),
+                                               solutionDot->getLocalVector(), t, residual->getLocalVector(), NULL));
 
     _IntegratorDomain::Events::logger.eventEnd(_IntegratorDomain::Events::computeLHSResidual);
     PYLITH_METHOD_END;
@@ -486,22 +481,21 @@ pylith::feassemble::IntegratorDomain::computeLHSJacobian(PetscMat jacobianMat,
     key.value = _dsLabel->value();
     key.part = pylith::feassemble::Integrator::LHS;
 
-    PetscErrorCode err;
     assert(solution->getLocalVector());
     assert(solutionDot->getLocalVector());
     assert(jacobianMat);
     assert(precondMat);
-    err = DMSetAuxiliaryVec(_dsLabel->dm(), key.label, key.value, key.part, _auxiliaryField->getLocalVector());PYLITH_CHECK_ERROR(err);
-    err = DMPlexComputeJacobianByKey(_dsLabel->dm(), key, _dsLabel->pointsIS(), t, s_tshift, solution->getLocalVector(),
-                                     solutionDot->getLocalVector(), jacobianMat, precondMat, NULL);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMSetAuxiliaryVec(_dsLabel->dm(), key.label, key.value, key.part, _auxiliaryField->getLocalVector()));
+    PylithCallPetsc(DMPlexComputeJacobianByKey(_dsLabel->dm(), key, _dsLabel->pointsIS(), t, s_tshift, solution->getLocalVector(),
+                                               solutionDot->getLocalVector(), jacobianMat, precondMat, NULL));
 
     if (_jacobianValues) {
         _jacobianValues->computeLHSJacobian(jacobianMat, precondMat, t, dt, s_tshift, *solution, *_dsLabel);
-        err = MatAssemblyBegin(jacobianMat, MAT_FINAL_ASSEMBLY);PYLITH_CHECK_ERROR(err);
-        err = MatAssemblyEnd(jacobianMat, MAT_FINAL_ASSEMBLY);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(MatAssemblyBegin(jacobianMat, MAT_FINAL_ASSEMBLY));
+        PylithCallPetsc(MatAssemblyEnd(jacobianMat, MAT_FINAL_ASSEMBLY));
         if (precondMat && ( precondMat != jacobianMat) ) {
-            err = MatAssemblyBegin(precondMat, MAT_FINAL_ASSEMBLY);PYLITH_CHECK_ERROR(err);
-            err = MatAssemblyEnd(precondMat, MAT_FINAL_ASSEMBLY);PYLITH_CHECK_ERROR(err);
+            PylithCallPetsc(MatAssemblyBegin(precondMat, MAT_FINAL_ASSEMBLY));
+            PylithCallPetsc(MatAssemblyEnd(precondMat, MAT_FINAL_ASSEMBLY));
         } // if
     } // if
 
@@ -536,20 +530,19 @@ pylith::feassemble::IntegratorDomain::computeLHSJacobianLumpedInv(pylith::topolo
     key.value = _dsLabel->value();
     key.part = pylith::feassemble::Integrator::LHS_LUMPED_INV;
 
-    PetscErrorCode err;
     PetscVec vecRowSum = NULL;
-    err = DMGetLocalVector(_dsLabel->dm(), &vecRowSum);PYLITH_CHECK_ERROR(err);
-    err = VecSet(vecRowSum, 1.0);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMGetLocalVector(_dsLabel->dm(), &vecRowSum));
+    PylithCallPetsc(VecSet(vecRowSum, 1.0));
 
     assert(jacobianInv);
     assert(jacobianInv->getLocalVector());
-    err = DMSetAuxiliaryVec(_dsLabel->dm(), key.label, key.value, key.part, _auxiliaryField->getLocalVector());PYLITH_CHECK_ERROR(err);
-    err = DMPlexComputeJacobianActionByKey(_dsLabel->dm(), key, _dsLabel->pointsIS(), t, s_tshift, vecRowSum, NULL,
-                                           vecRowSum, jacobianInv->getLocalVector(), NULL);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMSetAuxiliaryVec(_dsLabel->dm(), key.label, key.value, key.part, _auxiliaryField->getLocalVector()));
+    PylithCallPetsc(DMPlexComputeJacobianActionByKey(_dsLabel->dm(), key, _dsLabel->pointsIS(), t, s_tshift, vecRowSum, NULL,
+                                                     vecRowSum, jacobianInv->getLocalVector(), NULL));
 
-    err = DMRestoreLocalVector(_dsLabel->dm(), &vecRowSum);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMRestoreLocalVector(_dsLabel->dm(), &vecRowSum));
     // Compute the Jacobian inverse.
-    err = VecReciprocal(jacobianInv->getLocalVector());PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(VecReciprocal(jacobianInv->getLocalVector()));
 
     _IntegratorDomain::Events::logger.eventEnd(_IntegratorDomain::Events::computeLHSJacobianLumpedInv);
     PYLITH_METHOD_END;
@@ -581,14 +574,13 @@ pylith::feassemble::IntegratorDomain::_updateStateVars(const PylithReal t,
         kernelsStateVars[iKernel] = _kernelsUpdateStateVars[iKernel].f;
     } // for
 
-    PetscErrorCode err = 0;
     PetscDM stateVarsDM = _updateState->stateVarsDM();
     PetscDMLabel dmLabel = NULL;
     PetscInt labelValue = 0;
     const PetscInt part = 0;
-    err = DMSetAuxiliaryVec(stateVarsDM, dmLabel, labelValue, part, _auxiliaryField->getLocalVector());PYLITH_CHECK_ERROR(err);
-    err = DMProjectFieldLocal(stateVarsDM, t, solution.getLocalVector(), kernelsStateVars, INSERT_VALUES,
-                              _updateState->stateVarsLocalVector());PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMSetAuxiliaryVec(stateVarsDM, dmLabel, labelValue, part, _auxiliaryField->getLocalVector()));
+    PylithCallPetsc(DMProjectFieldLocal(stateVarsDM, t, solution.getLocalVector(), kernelsStateVars, INSERT_VALUES,
+                                        _updateState->stateVarsLocalVector()));
     _updateState->restore(_auxiliaryField);
 
     delete[] kernelsStateVars;kernelsStateVars = NULL;
@@ -619,15 +611,13 @@ pylith::feassemble::IntegratorDomain::_computeDerivedField(const PylithReal t,
         kernelsArray[sinfo.index] = _kernelsDerivedField[iKernel].f;
     } // for
 
-    PetscErrorCode err = 0;
-
     PetscDM derivedDM = _derivedField->getDM();
     assert(_auxiliaryField);
     PetscDMLabel dmLabel = NULL;
     PetscInt labelValue = 0;
     const PetscInt part = 0;
-    err = DMSetAuxiliaryVec(derivedDM, dmLabel, labelValue, part, _auxiliaryField->getLocalVector());PYLITH_CHECK_ERROR(err);
-    err = DMProjectFieldLocal(derivedDM, t, solution.getLocalVector(), kernelsArray, INSERT_VALUES, _derivedField->getLocalVector());PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMSetAuxiliaryVec(derivedDM, dmLabel, labelValue, part, _auxiliaryField->getLocalVector()));
+    PylithCallPetsc(DMProjectFieldLocal(derivedDM, t, solution.getLocalVector(), kernelsArray, INSERT_VALUES, _derivedField->getLocalVector()));
     delete[] kernelsArray;kernelsArray = NULL;
 
     pythia::journal::debug_t debug(GenericComponent::getName());

@@ -81,24 +81,24 @@ pylith::topology::TestRefineUniform::testRefine(void) {
     const PetscInt numCells = cellsStratum.size();
 
     REQUIRE(_data->numCells+_data->numCellsCohesive == numCells);
-    PetscErrorCode err;
+    PetscErrorCode err = PETSC_SUCCESS;
     // Normal cells
     for (PetscInt c = cStart; c < _data->numCells; ++c) {
         DMPolytopeType ct;
         PetscInt *closure = NULL;
         PetscInt closureSize, numCorners = 0;
 
-        err = DMPlexGetCellType(dmNewMesh, c, &ct);assert(!err);
-        err = DMPlexGetTransitiveClosure(dmNewMesh, c, PETSC_TRUE, &closureSize, &closure);assert(!err);
+        err = DMPlexGetCellType(dmNewMesh, c, &ct);REQUIRE(!err);
+        err = DMPlexGetTransitiveClosure(dmNewMesh, c, PETSC_TRUE, &closureSize, &closure);REQUIRE(!err);
         for (PetscInt p = 0; p < closureSize*2; p += 2) {
             const PetscInt point = closure[p];
             if ((point >= vStart) && (point < vEnd)) {
                 closure[numCorners++] = point;
             } // if
         } // for
-        err = DMPlexInvertCell(ct, closure);assert(!err);
+        err = DMPlexInvertCell(ct, closure);REQUIRE(!err);
         CHECK(_data->numCorners == numCorners);
-        err = DMPlexRestoreTransitiveClosure(dmNewMesh, c, PETSC_TRUE, &closureSize, &closure);assert(!err);
+        err = DMPlexRestoreTransitiveClosure(dmNewMesh, c, PETSC_TRUE, &closureSize, &closure);REQUIRE(!err);
     } // for
 
     // Cohesive cells
@@ -107,24 +107,24 @@ pylith::topology::TestRefineUniform::testRefine(void) {
         PetscInt *closure = NULL;
         PetscInt closureSize, numCorners = 0;
 
-        err = DMPlexGetCellType(dmNewMesh, c, &ct);assert(!err);
-        err = DMPlexGetTransitiveClosure(dmNewMesh, c, PETSC_TRUE, &closureSize, &closure);assert(!err);
+        err = DMPlexGetCellType(dmNewMesh, c, &ct);REQUIRE(!err);
+        err = DMPlexGetTransitiveClosure(dmNewMesh, c, PETSC_TRUE, &closureSize, &closure);REQUIRE(!err);
         for (PetscInt p = 0; p < closureSize*2; p += 2) {
             const PetscInt point = closure[p];
             if ((point >= vStart) && (point < vEnd)) {
                 closure[numCorners++] = point;
             } // if
         } // for
-        err = DMPlexInvertCell(ct, closure);assert(!err);
+        err = DMPlexInvertCell(ct, closure);REQUIRE(!err);
         CHECK(_data->numCornersCohesive == numCorners);
-        err = DMPlexRestoreTransitiveClosure(dmNewMesh, c, PETSC_TRUE, &closureSize, &closure);assert(!err);
+        err = DMPlexRestoreTransitiveClosure(dmNewMesh, c, PETSC_TRUE, &closureSize, &closure);REQUIRE(!err);
     } // for
 
     // check materials
     PetscInt matId = 0;
     PetscInt matIdSum = 0; // Use sum of material ids as simple checksum.
     for (PetscInt c = cStart; c < cEnd; ++c) {
-        err = DMGetLabelValue(dmNewMesh, pylith::topology::Mesh::cells_label_name, c, &matId);assert(!err);
+        err = DMGetLabelValue(dmNewMesh, pylith::topology::Mesh::cells_label_name, c, &matId);REQUIRE(!err);
         matIdSum += matId;
     } // for
     CHECK(_data->matIdSum == matIdSum);
@@ -159,7 +159,7 @@ pylith::topology::TestRefineUniform::testRefine(void) {
         PetscIS facesIS = NULL;
         const PetscInt *faces = NULL;
         err = DMGetStratumIS(dmNewMesh, _data->faceGroupNames[iGroup], labelValue, &facesIS);REQUIRE(!err);
-        err = ISGetIndices(facesIS, &faces);assert(!err);
+        err = ISGetIndices(facesIS, &faces);REQUIRE(!err);
         for (PetscInt iFace = 0; iFace < numFaces; ++iFace) {
             CHECK((faces[iFace] >= fStart && faces[iFace] < fEnd));
         } // for

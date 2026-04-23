@@ -158,16 +158,19 @@ class pylith::_ThreeBlocksStatic {
         assert(2 == numComponents);
         assert(s);
 
+        PetscErrorCode err = PETSC_SUCCESS;
+
         s[0] = disp_x(x[0], x[1]);
         PetscInt flag = 0;
         if (context) {
-            PetscErrorCode err = PETSC_SUCCESS;
             PetscDM dmMesh = PetscDM(context);
             PetscInt cell = 0;
-            err = DMPlexGetActivePoint(dmMesh, &cell);PYLITH_CHECK_ERROR(err);
+            err = DMPlexGetActivePoint(dmMesh, &cell);
+            if (err) { return err; }
 
             double centroid[3] = {0.0, 0.0, 0.0};
-            err = DMPlexComputeCellGeometryFVM(dmMesh, cell, NULL, centroid, NULL);PYLITH_CHECK_ERROR(err);
+            err = DMPlexComputeCellGeometryFVM(dmMesh, cell, NULL, centroid, NULL);
+            if (err) { return err; }
             flag = 0;
             if (centroid[0] < X_FAULT_LEFT) {
                 flag = 10;
@@ -179,7 +182,7 @@ class pylith::_ThreeBlocksStatic {
         } // if
         s[1] = disp_y(x[0], x[1], flag);
 
-        return PETSC_SUCCESS;
+        return err;
     } // solnkernel_disp
 
     static PetscErrorCode solnkernel_lagrangemultiplier(PetscInt spaceDim,

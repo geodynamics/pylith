@@ -306,7 +306,7 @@ pylith::testing::TestDriver::_initializePetsc(int argc,
     char** argvP = new char*[argcP+1];
     argvP[0] = argv[0];
     argvP[argcP] = NULL; // C standard is argv[argc] == NULL.
-    PetscErrorCode err = PetscInitialize(&argcP, &argvP, NULL, NULL);CHKERRQ(err);
+    err = PetscInitialize(&argcP, &argvP, NULL, NULL);CHKERRQ(err);
     delete[] argvP;argvP = NULL;
 
     if (mallocDump) {

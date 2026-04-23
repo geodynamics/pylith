@@ -14,7 +14,7 @@
 
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/FieldQuery.hh" // USES FieldQuery
-#include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
+#include "pylith/utils/error.hh" // USES PylithCallPetsc()
 
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 
@@ -37,7 +37,7 @@ pylith::testing::FieldTester::checkFieldWithDB(const pylith::topology::Field& fi
     fieldQuery.initializeWithDefaultQueries();
     fieldQuery.openDB(fieldDB, lengthScale);
     PetscErrorCode err = DMPlexComputeL2DiffLocal(dmField, t, fieldQuery._functions, (void**)fieldQuery._contextPtrs,
-                                                  field.getLocalVector(), &norm);assert(!err);
+                                                  field.getLocalVector(), &norm);REQUIRE(!err);
     fieldQuery.closeDB(fieldDB);
 
     PYLITH_METHOD_RETURN(norm);

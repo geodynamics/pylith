@@ -54,7 +54,6 @@ pylith::bc::TestBoundaryMesh::testSubmesh(void) { // testSubmesh
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(_data);
-    PetscErrorCode err;
 
     pylith::topology::Mesh mesh;
     pylith::meshio::MeshIOAscii iohandler;
@@ -89,11 +88,11 @@ pylith::bc::TestBoundaryMesh::testSubmesh(void) { // testSubmesh
         PetscInt *closure = NULL;
         PetscInt closureSize, numVertices = 0;
 
-        err = DMPlexGetTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMPlexGetTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure));
         for (PetscInt p = 0; p < closureSize*2; p += 2) {
             if ((closure[p] >= vStart) && (closure[p] < vEnd)) { numVertices++; }
         } // for
-        err = DMPlexRestoreTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMPlexRestoreTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure));
         CPPUNIT_ASSERT_EQUAL(_data->numCorners, numVertices);
     } // for
 
@@ -108,7 +107,6 @@ pylith::bc::TestBoundaryMesh::testSubmeshFault(void) { // testSubmeshFault
     PYLITH_METHOD_BEGIN;
 
     CPPUNIT_ASSERT(_data);
-    PetscErrorCode err;
 
     pylith::topology::Mesh mesh;
     pylith::meshio::MeshIOAscii iohandler;
@@ -156,11 +154,11 @@ pylith::bc::TestBoundaryMesh::testSubmeshFault(void) { // testSubmeshFault
         PetscInt *closure = NULL;
         PetscInt closureSize, numVertices = 0;
 
-        err = DMPlexGetTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMPlexGetTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure));
         for (PetscInt p = 0; p < closureSize*2; p += 2) {
             if ((closure[p] >= vStart) && (closure[p] < vEnd)) { numVertices++; }
         } // for
-        err = DMPlexRestoreTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMPlexRestoreTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure));
         CPPUNIT_ASSERT_EQUAL(_data->numCorners, numVertices);
     } // for
 

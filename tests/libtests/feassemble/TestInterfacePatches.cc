@@ -114,24 +114,24 @@ pylith::feassemble::TestInterfacePatches::testCreateMaterialPairs(void) {
         CHECK(_data->patchKeys[patchIndex].positive_value == matIdPositive);
 
         // Check labels
-        PetscErrorCode err = 0;
+        PetscErrorCode err = PETSC_SUCCESS;
         PetscDMLabel label = NULL;
         PetscIS pointsIS = NULL;
         PetscInt numPoints = 0;
         const PetscInt* points = NULL;
-        err = DMGetLabel(_mesh->getDM(), labelName.c_str(), &label);assert(!err);
-        err = DMLabelGetStratumIS(label, labelValue, &pointsIS);assert(!err);
-        err = ISGetSize(pointsIS, &numPoints);assert(!err);
+        err = DMGetLabel(_mesh->getDM(), labelName.c_str(), &label);REQUIRE(!err);
+        err = DMLabelGetStratumIS(label, labelValue, &pointsIS);REQUIRE(!err);
+        err = ISGetSize(pointsIS, &numPoints);REQUIRE(!err);
         INFO("Checking integration patch for materials ("<<matIdNegative<<", "<<matIdPositive<<").");
         REQUIRE(_data->patchNumCells[patchIndex] == numPoints);
 
-        err = ISGetIndices(pointsIS, &points);assert(!err);
-        assert(_data->patchCells[patchIndex]);
+        err = ISGetIndices(pointsIS, &points);REQUIRE(!err);
+        REQUIRE(_data->patchCells[patchIndex]);
         for (PetscInt iPoint = 0; iPoint < numPoints; ++iPoint) {
             CHECK(_data->patchCells[patchIndex][iPoint] == points[iPoint]);
         } // for
-        err = ISRestoreIndices(pointsIS, &points);PYLITH_CHECK_ERROR(err);
-        err = ISDestroy(&pointsIS);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(ISRestoreIndices(pointsIS, &points));
+        PylithCallPetsc(ISDestroy(&pointsIS));
     } // for
     delete patches;patches = NULL;
 

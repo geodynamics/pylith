@@ -92,12 +92,11 @@ pylith::meshio::TestOutputSolnSubset::testSubdomainMesh(void) { // testSubdomain
     topology::Stratum cellsStratum(dmMesh, topology::Stratum::HEIGHT, 1);
     const PetscInt cStart = cellsStratum.begin();
     const PetscInt cEnd = cellsStratum.end();
-    PetscErrorCode err = 0;
     CPPUNIT_ASSERT_EQUAL(ncells, cellsStratum.size());
     for (PetscInt c = cStart, index = 0; c < cEnd; ++c) {
         PetscInt *closure = NULL;
         PetscInt closureSize = 0;
-        err = DMPlexGetTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMPlexGetTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure));
         int count = 0;
         for (int i = 0; i < closureSize; ++i) {
             const PetscInt p = closure[2*i];
@@ -108,7 +107,7 @@ pylith::meshio::TestOutputSolnSubset::testSubdomainMesh(void) { // testSubdomain
             } // if
         } // for
         CPPUNIT_ASSERT_EQUAL(ncorners, count);
-        err = DMPlexRestoreTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMPlexRestoreTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure));
     } // for
 
     PYLITH_METHOD_END;

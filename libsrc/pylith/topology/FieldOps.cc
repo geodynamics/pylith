@@ -19,7 +19,7 @@
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 #include "pylith/topology/VisitorSubmesh.hh" // USES VecVisitorSubmesh
 #include "pylith/topology/Stratum.hh" // USES Stratum
-#include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
+#include "pylith/utils/error.hh" // USES PylithCallPetsc()
 
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 
@@ -43,9 +43,8 @@ pylith::topology::FieldOps::createFE(const FieldBase::Discretization& feinfo,
     // Get spatial dimension of mesh.
     PetscFE fe;
     PetscInt dim;
-    PetscErrorCode err;
 
-    err = DMGetDimension(dm, &dim);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMGetDimension(dm, &dim));
     dim = (feinfo.dimension < 0) ? dim : feinfo.dimension;assert(dim > 0);
     FieldBase::Discretization feKey = FieldBase::Discretization(feinfo.basisOrder, feinfo.quadOrder, dim, numComponents,
                                                                 feinfo.isFaultOnly, feinfo.cellBasis, feinfo.feSpace,
@@ -61,40 +60,40 @@ pylith::topology::FieldOps::createFE(const FieldBase::Discretization& feinfo,
 
         // Create space
         PetscSpace space = NULL;
-        err = PetscSpaceCreate(PETSC_COMM_SELF, &space);PYLITH_CHECK_ERROR(err);assert(space);
-        err = PetscSpaceSetType(space, feKey.feSpace == FieldBase::POLYNOMIAL_SPACE ?
-                                PETSCSPACEPOLYNOMIAL : PETSCSPACEPOINT);PYLITH_CHECK_ERROR(err);
-        err = PetscSpaceSetNumComponents(space, numComponents);PYLITH_CHECK_ERROR(err);
-        err = PetscSpaceSetDegree(space, basisOrder, PETSC_DETERMINE);
+        PylithCallPetsc(PetscSpaceCreate(PETSC_COMM_SELF, &space));assert(space);
+        PylithCallPetsc(PetscSpaceSetType(space, feKey.feSpace == FieldBase::POLYNOMIAL_SPACE ?
+                                          PETSCSPACEPOLYNOMIAL : PETSCSPACEPOINT));
+        PylithCallPetsc(PetscSpaceSetNumComponents(space, numComponents));
+        PylithCallPetsc(PetscSpaceSetDegree(space, basisOrder, PETSC_DETERMINE));
         if (feKey.feSpace == FieldBase::POLYNOMIAL_SPACE) {
-            err = PetscSpacePolynomialSetTensor(space, useTensor);PYLITH_CHECK_ERROR(err);
+            PylithCallPetsc(PetscSpacePolynomialSetTensor(space, useTensor));
         } // if
-        err = PetscSpaceSetNumVariables(space, dim);PYLITH_CHECK_ERROR(err);
-        err = PetscSpaceSetUp(space);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(PetscSpaceSetNumVariables(space, dim));
+        PylithCallPetsc(PetscSpaceSetUp(space));
 
         // Create dual space
         PetscDualSpace dualspace = NULL;
         PetscDM dmCell = NULL;
-        err = PetscDualSpaceCreate(PETSC_COMM_SELF, &dualspace);PYLITH_CHECK_ERROR(err);
-        err = DMPlexCreateReferenceCell(PETSC_COMM_SELF, DMPolytopeTypeSimpleShape(dim, simplexBasis), &dmCell);PYLITH_CHECK_ERROR(err);
-        err = PetscDualSpaceSetDM(dualspace, dmCell);PYLITH_CHECK_ERROR(err);
-        err = DMDestroy(&dmCell);PYLITH_CHECK_ERROR(err);
-        err = PetscDualSpaceSetNumComponents(dualspace, numComponents);PYLITH_CHECK_ERROR(err);
-        err = PetscDualSpaceSetType(dualspace, PETSCDUALSPACELAGRANGE);PYLITH_CHECK_ERROR(err);
-        err = PetscDualSpaceLagrangeSetTensor(dualspace, useTensor);PYLITH_CHECK_ERROR(err);
-        err = PetscDualSpaceSetOrder(dualspace, basisOrder);PYLITH_CHECK_ERROR(err);
-        err = PetscDualSpaceLagrangeSetContinuity(dualspace, basisContinuity);
-        err = PetscDualSpaceSetUp(dualspace);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(PetscDualSpaceCreate(PETSC_COMM_SELF, &dualspace));
+        PylithCallPetsc(DMPlexCreateReferenceCell(PETSC_COMM_SELF, DMPolytopeTypeSimpleShape(dim, simplexBasis), &dmCell));
+        PylithCallPetsc(PetscDualSpaceSetDM(dualspace, dmCell));
+        PylithCallPetsc(DMDestroy(&dmCell));
+        PylithCallPetsc(PetscDualSpaceSetNumComponents(dualspace, numComponents));
+        PylithCallPetsc(PetscDualSpaceSetType(dualspace, PETSCDUALSPACELAGRANGE));
+        PylithCallPetsc(PetscDualSpaceLagrangeSetTensor(dualspace, useTensor));
+        PylithCallPetsc(PetscDualSpaceSetOrder(dualspace, basisOrder));
+        PylithCallPetsc(PetscDualSpaceLagrangeSetContinuity(dualspace, basisContinuity));
+        PylithCallPetsc(PetscDualSpaceSetUp(dualspace));
 
         // Create element
-        err = PetscFECreate(PETSC_COMM_SELF, &fe);PYLITH_CHECK_ERROR(err);
-        err = PetscFESetType(fe, PETSCFEBASIC);PYLITH_CHECK_ERROR(err);
-        err = PetscFESetBasisSpace(fe, space);PYLITH_CHECK_ERROR(err);
-        err = PetscFESetDualSpace(fe, dualspace);PYLITH_CHECK_ERROR(err);
-        err = PetscFESetNumComponents(fe, numComponents);PYLITH_CHECK_ERROR(err);
-        err = PetscFESetUp(fe);PYLITH_CHECK_ERROR(err);
-        err = PetscSpaceDestroy(&space);PYLITH_CHECK_ERROR(err);
-        err = PetscDualSpaceDestroy(&dualspace);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(PetscFECreate(PETSC_COMM_SELF, &fe));
+        PylithCallPetsc(PetscFESetType(fe, PETSCFEBASIC));
+        PylithCallPetsc(PetscFESetBasisSpace(fe, space));
+        PylithCallPetsc(PetscFESetDualSpace(fe, dualspace));
+        PylithCallPetsc(PetscFESetNumComponents(fe, numComponents));
+        PylithCallPetsc(PetscFESetUp(fe));
+        PylithCallPetsc(PetscSpaceDestroy(&space));
+        PylithCallPetsc(PetscDualSpaceDestroy(&dualspace));
 
         // Create quadrature
         PetscQuadrature quadrature = NULL;
@@ -107,18 +106,18 @@ pylith::topology::FieldOps::createFE(const FieldBase::Discretization& feinfo,
         case 3: ct = useTensor ? DM_POLYTOPE_HEXAHEDRON : DM_POLYTOPE_TETRAHEDRON;break;
         default: throw std::logic_error("Cannot handle dimension");
         }
-        err = PetscDTCreateDefaultQuadrature(ct, quadOrder, &quadrature, &faceQuadrature);PYLITH_CHECK_ERROR(err);
-        err = PetscFESetQuadrature(fe, quadrature);PYLITH_CHECK_ERROR(err);
-        err = PetscQuadratureDestroy(&quadrature);PYLITH_CHECK_ERROR(err);
-        err = PetscFESetFaceQuadrature(fe, faceQuadrature);PYLITH_CHECK_ERROR(err);
-        err = PetscQuadratureDestroy(&faceQuadrature);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(PetscDTCreateDefaultQuadrature(ct, quadOrder, &quadrature, &faceQuadrature));
+        PylithCallPetsc(PetscFESetQuadrature(fe, quadrature));
+        PylithCallPetsc(PetscQuadratureDestroy(&quadrature));
+        PylithCallPetsc(PetscFESetFaceQuadrature(fe, faceQuadrature));
+        PylithCallPetsc(PetscQuadratureDestroy(&faceQuadrature));
 
         assert(feKey.feSpace == FieldBase::POLYNOMIAL_SPACE);
         pylith::topology::FieldOps::feStore.insert(std::pair<FieldBase::Discretization, pylith::topology::FE>(feKey, fe));
     } else {
         throw std::logic_error("FieldOps::createFE() :TODO: Can't reuse PetscFE due to naming of fields, so make a deep copy of fe.");
         fe = hasFE->second._fe;
-        err = PetscObjectReference((PetscObject) fe);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(PetscObjectReference((PetscObject) fe));
     }
 
     PYLITH_METHOD_RETURN(fe);
@@ -235,16 +234,16 @@ pylith::topology::FieldOps::getSubfieldNamesDomain(const pylith::topology::Field
     // Restrict fields to those defined over the entire domain
     // (as opposed to those defined over a subset like the fault_lagrange_multiplier).
     PetscDS fieldDS = NULL;
-    PetscErrorCode err = DMGetDS(field.getDM(), &fieldDS);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMGetDS(field.getDM(), &fieldDS));
     PylithInt numFields = 0;
-    err = PetscDSGetNumFields(fieldDS, &numFields);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(PetscDSGetNumFields(fieldDS, &numFields));
     assert(numFields > 0);
     pylith::string_vector subfieldNamesDomain(numFields);
     for (PylithInt iField = 0; iField < numFields; ++iField) {
         PetscObject discretization = NULL;
-        err = PetscDSGetDiscretization(fieldDS, iField, &discretization);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(PetscDSGetDiscretization(fieldDS, iField, &discretization));
         PylithInt fieldIndex = -1;
-        err = PetscDSGetFieldIndex(fieldDS, discretization, &fieldIndex);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(PetscDSGetFieldIndex(fieldDS, discretization, &fieldIndex));
         assert(fieldIndex >= 0 && size_t(fieldIndex) < subfieldNames.size());
         subfieldNamesDomain[iField] = subfieldNames[fieldIndex];
     } // for
@@ -288,7 +287,7 @@ pylith::topology::FieldOps::layoutsMatch(const pylith::topology::Field& fieldA,
     // Must match across all processors.
     PetscInt matchLocal = isMatch;
     PetscInt matchGlobal = 0;
-    PetscErrorCode err = MPI_Allreduce(&matchLocal, &matchGlobal, 1, MPIU_INT, MPI_LOR, fieldA.getMesh().getComm());PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(MPI_Allreduce(&matchLocal, &matchGlobal, 1, MPIU_INT, MPI_LOR, fieldA.getMesh().getComm()));
     isMatch = matchGlobal == 1;
 
     // PYLITH_JOURNAL_DEBUG("layoutsMatch return value="<<isMatch<<".");
@@ -305,14 +304,13 @@ pylith::topology::FieldOps::createOutputLabel(const pylith::topology::Field* fie
     const char* outputLabelName = "output";
     PetscDM fieldDM = field->getDM();
     PetscDMLabel outputLabel = NULL;
-    PetscErrorCode err = PETSC_SUCCESS;
-    err = DMCreateLabel(fieldDM, outputLabelName);PYLITH_CHECK_ERROR(err);
-    err = DMGetLabel(fieldDM, outputLabelName, &outputLabel);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMCreateLabel(fieldDM, outputLabelName));
+    PylithCallPetsc(DMGetLabel(fieldDM, outputLabelName, &outputLabel));
     pylith::topology::Stratum faultStratum(fieldDM, pylith::topology::Stratum::HEIGHT, 1);
     for (PetscInt point = faultStratum.begin(); point != faultStratum.end(); ++point) {
-        err = DMLabelSetValue(outputLabel, point, 1);
+        PylithCallPetsc(DMLabelSetValue(outputLabel, point, 1));
     } // for
-    err = DMPlexLabelComplete(fieldDM, outputLabel);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMPlexLabelComplete(fieldDM, outputLabel));
 
     PYLITH_METHOD_END;
 }
@@ -331,33 +329,32 @@ pylith::topology::FieldOps::transformVector(PetscVec* outputVector,
     assert(inputVector);
     assert(inputDM);
 
-    PetscErrorCode err = PETSC_SUCCESS;
     PetscSection inputSection = PETSC_NULLPTR, outputSection = PETSC_NULLPTR;
-    err = DMGetGlobalSection(inputDM, &inputSection);PYLITH_CHECK_ERROR(err);
-    err = DMGetGlobalSection(outputDM, &outputSection);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMGetGlobalSection(inputDM, &inputSection));
+    PylithCallPetsc(DMGetGlobalSection(outputDM, &outputSection));
 
     // Verify sizes
     PetscInt outputNumFields = 0, inputNumFields = 0;
-    err = PetscSectionGetNumFields(inputSection, &inputNumFields);PYLITH_CHECK_ERROR(err);
-    err = PetscSectionGetNumFields(outputSection, &outputNumFields);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(PetscSectionGetNumFields(inputSection, &inputNumFields));
+    PylithCallPetsc(PetscSectionGetNumFields(outputSection, &outputNumFields));
     assert(inputNumFields == outputNumFields);
 
     PetscInt inputSize = 0, outputSize = 0;
-    err = PetscSectionGetStorageSize(inputSection, &inputSize);PYLITH_CHECK_ERROR(err);
-    err = PetscSectionGetStorageSize(outputSection, &outputSize);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(PetscSectionGetStorageSize(inputSection, &inputSize));
+    PylithCallPetsc(PetscSectionGetStorageSize(outputSection, &outputSize));
     assert(inputSize == outputSize);
 
     PetscInt inputVecSize = 0, outputVecSize = 0;
-    err = VecGetLocalSize(inputVector, &inputVecSize);PYLITH_CHECK_ERROR(err);
-    err = VecGetLocalSize(*outputVector, &outputVecSize);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(VecGetLocalSize(inputVector, &inputVecSize));
+    PylithCallPetsc(VecGetLocalSize(*outputVector, &outputVecSize));
     assert(inputVecSize == inputSize);
     assert(outputVecSize == outputSize);
 
     // Copy values from input vector to output vector
     const PetscScalar* inputArray = PETSC_NULLPTR;
     PetscScalar* outputArray = PETSC_NULLPTR;
-    err = VecGetArrayRead(inputVector, &inputArray);PYLITH_CHECK_ERROR(err);
-    err = VecGetArray(*outputVector, &outputArray);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(VecGetArrayRead(inputVector, &inputArray));
+    PylithCallPetsc(VecGetArray(*outputVector, &outputArray));
 
     const PetscInt inputSectionLocalOffset = getGlobalSectionLocalOffset(inputSection);
     const PetscInt outputSectionLocalOffset = getGlobalSectionLocalOffset(outputSection);
@@ -368,30 +365,30 @@ pylith::topology::FieldOps::transformVector(PetscVec* outputVector,
     PetscDMLabel subpointMap = PETSC_NULLPTR; // Mapping of points in output DM back to input DM
     PetscInt pStartIn, pEndIn, pStartOut, pEndOut;
     PetscBool renamePoints = PETSC_FALSE;
-    err = DMPlexGetSubpointMap(outputDM, &subpointMap);PYLITH_CHECK_ERROR(err);
-    err = DMPlexGetChart(inputDM, &pStartIn, &pEndIn);
-    err = DMPlexGetChart(outputDM, &pStartOut, &pEndOut);
+    PylithCallPetsc(DMPlexGetSubpointMap(outputDM, &subpointMap));
+    PylithCallPetsc(DMPlexGetChart(inputDM, &pStartIn, &pEndIn));
+    PylithCallPetsc(DMPlexGetChart(outputDM, &pStartOut, &pEndOut));
     renamePoints = subpointMap && ((pStartIn != pStartOut) || (pEndIn != pEndOut)) ? PETSC_TRUE : PETSC_FALSE;
     if (renamePoints) {
         PetscIS subpointIS = PETSC_NULLPTR; // Mapping of points in output DM back to input DM
         PetscInt subpointISSize = 0;
         const PetscInt* subpointISPoints = PETSC_NULLPTR;
-        err = DMPlexGetSubpointIS(outputDM, &subpointIS);PYLITH_CHECK_ERROR(err);
-        err = ISGetLocalSize(subpointIS, &subpointISSize);PYLITH_CHECK_ERROR(err);
-        err = ISGetIndices(subpointIS, &subpointISPoints);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMPlexGetSubpointIS(outputDM, &subpointIS));
+        PylithCallPetsc(ISGetLocalSize(subpointIS, &subpointISSize));
+        PylithCallPetsc(ISGetIndices(subpointIS, &subpointISPoints));
 
         PetscInt pStart = 0, pEnd = 0;
-        err = PetscSectionGetChart(outputSection, &pStart, &pEnd);
+        PylithCallPetsc(PetscSectionGetChart(outputSection, &pStart, &pEnd));
         for (PetscInt iPoint = 0; iPoint < subpointISSize; ++iPoint) {
             PetscInt inputDof = 0, inputOffset = 0;
             PetscInt outputDof = 0, outputOffset = 0;
             const PetscInt inputPoint = subpointISPoints[iPoint];
             const PetscInt outputPoint = pStart + iPoint;
-            err = PetscSectionGetDof(inputSection, inputPoint, &inputDof);PYLITH_CHECK_ERROR(err);
-            err = PetscSectionGetOffset(inputSection, inputPoint, &inputOffset);PYLITH_CHECK_ERROR(err);
+            PylithCallPetsc(PetscSectionGetDof(inputSection, inputPoint, &inputDof));
+            PylithCallPetsc(PetscSectionGetOffset(inputSection, inputPoint, &inputOffset));
             inputOffset -= inputSectionLocalOffset;
-            err = PetscSectionGetDof(outputSection, outputPoint, &outputDof);PYLITH_CHECK_ERROR(err);
-            err = PetscSectionGetOffset(outputSection, outputPoint, &outputOffset);PYLITH_CHECK_ERROR(err);
+            PylithCallPetsc(PetscSectionGetDof(outputSection, outputPoint, &outputDof));
+            PylithCallPetsc(PetscSectionGetOffset(outputSection, outputPoint, &outputOffset));
             outputOffset -= outputSectionLocalOffset;
 
             assert(inputDof == outputDof);
@@ -401,17 +398,17 @@ pylith::topology::FieldOps::transformVector(PetscVec* outputVector,
         } // for
     } else {
         PetscInt pStart = 0, pEnd = 0;
-        err = PetscSectionGetChart(outputSection, &pStart, &pEnd);
+        PylithCallPetsc(PetscSectionGetChart(outputSection, &pStart, &pEnd));
         for (PetscInt point = pStart; point < pEnd; ++point) {
             PetscInt inputDof = 0, inputOffset = 0;
             PetscInt outputDof = 0, outputOffset = 0;
             const PetscInt inputPoint = point;
             const PetscInt outputPoint = point;
-            err = PetscSectionGetDof(inputSection, inputPoint, &inputDof);PYLITH_CHECK_ERROR(err);
-            err = PetscSectionGetOffset(inputSection, inputPoint, &inputOffset);PYLITH_CHECK_ERROR(err);
+            PylithCallPetsc(PetscSectionGetDof(inputSection, inputPoint, &inputDof));
+            PylithCallPetsc(PetscSectionGetOffset(inputSection, inputPoint, &inputOffset));
             inputOffset -= inputSectionLocalOffset;
-            err = PetscSectionGetDof(outputSection, outputPoint, &outputDof);PYLITH_CHECK_ERROR(err);
-            err = PetscSectionGetOffset(outputSection, outputPoint, &outputOffset);PYLITH_CHECK_ERROR(err);
+            PylithCallPetsc(PetscSectionGetDof(outputSection, outputPoint, &outputDof));
+            PylithCallPetsc(PetscSectionGetOffset(outputSection, outputPoint, &outputOffset));
             outputOffset -= outputSectionLocalOffset;
 
             assert(inputDof == outputDof);
@@ -421,8 +418,8 @@ pylith::topology::FieldOps::transformVector(PetscVec* outputVector,
         } // for
     } // if/else
 
-    err = VecRestoreArrayRead(inputVector, &inputArray);PYLITH_CHECK_ERROR(err);
-    err = VecRestoreArray(*outputVector, &outputArray);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(VecRestoreArrayRead(inputVector, &inputArray));
+    PylithCallPetsc(VecRestoreArray(*outputVector, &outputArray));
 
     PYLITH_METHOD_END;
 }
@@ -433,12 +430,11 @@ PetscInt
 pylith::topology::FieldOps::getGlobalSectionLocalOffset(PetscSection globalSection) {
     PetscInt pStart = 0, pEnd = 0;
     PetscInt localOffset = 0;
-    PetscErrorCode err = PETSC_SUCCESS;
 
-    err = PetscSectionGetChart(globalSection, &pStart, &pEnd);
+    PylithCallPetsc(PetscSectionGetChart(globalSection, &pStart, &pEnd));
     if (pStart < pEnd) {
         for (PetscInt point = pStart; point < pEnd; ++point) {
-            err = PetscSectionGetOffset(globalSection, point, &localOffset);PYLITH_CHECK_ERROR(err);
+            PylithCallPetsc(PetscSectionGetOffset(globalSection, point, &localOffset));
             if (localOffset >= 0) {
                 break;
             } // if

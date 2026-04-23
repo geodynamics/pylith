@@ -12,6 +12,7 @@
 #include "pylith/testing/testingfwd.hh"
 #include "pylith/topology/FieldOps.hh" // USES FieldOps::deallocate()
 #include "pylith/utils/journals.hh" // USES journals
+#include "pylith/utils/error.hh" // USES PylithCallPetsc()
 
 #include "catch2/catch_session.hpp"
 
@@ -155,11 +156,11 @@ pylith::testing::TestDriver::_initializePetsc(char* programName,
     char** argv = new char*[argc+1];
     argv[0] = programName;
     argv[argc] = nullptr; // C standard is argv[argc] == nullptr.
-    PetscErrorCode err = PetscInitialize(&argc, &argv, nullptr, nullptr);CHKERRQ(err);
+    PylithCallPetsc(PetscInitialize(&argc, &argv, nullptr, nullptr));
     delete[] argv;argv = nullptr;
 
     if (mallocDump) {
-        err = PetscOptionsSetValue(nullptr, "-malloc_dump", "");CHKERRQ(err);
+        PylithCallPetsc(PetscOptionsSetValue(nullptr, "-malloc_dump", ""));
     } // if
 
     const std::vector<std::string>& petscOptions = _parseList(petscArgs);
@@ -168,10 +169,10 @@ pylith::testing::TestDriver::_initializePetsc(char* programName,
         if (pos < petscOptions[i].length()) {
             const std::string& arg = std::string("-") + petscOptions[i].substr(0, pos);
             const std::string& value = petscOptions[i].substr(pos+1);
-            err = PetscOptionsSetValue(NULL, arg.c_str(), value.c_str());CHKERRQ(err);
+            PylithCallPetsc(PetscOptionsSetValue(NULL, arg.c_str(), value.c_str()));
         } else {
             const std::string& arg = std::string("-") + petscOptions[i];
-            err = PetscOptionsSetValue(NULL, arg.c_str(), "");CHKERRQ(err);
+            PylithCallPetsc(PetscOptionsSetValue(NULL, arg.c_str(), ""));
         } // if/else
     } // for
 

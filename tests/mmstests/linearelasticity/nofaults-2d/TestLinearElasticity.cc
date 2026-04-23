@@ -60,15 +60,13 @@ pylith::TestLinearElasticity::_initialize(void) {
     assert(_mesh);
     assert(_data);
 
-    PetscErrorCode err = PETSC_SUCCESS;
-
     if (_data->useAsciiMesh) {
         pylith::meshio::MeshIOAscii iohandler;
         iohandler.setFilename(_data->meshFilename);
         iohandler.read(_mesh);assert(_mesh);
     } else {
         if (_data->meshOptions) {
-            err = PetscOptionsInsertString(NULL, _data->meshOptions);PYLITH_CHECK_ERROR(err);
+            PylithCallPetsc(PetscOptionsInsertString(NULL, _data->meshOptions));
         } // if
         pylith::meshio::MeshIOPetsc iohandler;
         iohandler.setFilename(_data->meshFilename);
@@ -134,13 +132,12 @@ pylith::TestLinearElasticity::_setExactSolution(void) {
 
     const pylith::topology::Field* solution = _problem->getSolution();assert(solution);
 
-    PetscErrorCode err = PETSC_SUCCESS;
     PetscDS ds = NULL;
-    err = DMGetDS(solution->getDM(), &ds);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMGetDS(solution->getDM(), &ds));
     for (size_t i = 0; i < _data->numSolnSubfields; ++i) {
-        err = PetscDSSetExactSolution(ds, i, _data->exactSolnFns[i], NULL);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(PetscDSSetExactSolution(ds, i, _data->exactSolnFns[i], NULL));
         if (_data->exactSolnDotFns) {
-            err = PetscDSSetExactSolutionTimeDerivative(ds, i, _data->exactSolnDotFns[i], NULL);PYLITH_CHECK_ERROR(err);
+            PylithCallPetsc(PetscDSSetExactSolutionTimeDerivative(ds, i, _data->exactSolnDotFns[i], NULL));
         } // if
     } // for
 } // _setExactSolution

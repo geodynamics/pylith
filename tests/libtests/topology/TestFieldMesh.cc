@@ -85,7 +85,7 @@ pylith::topology::TestFieldMesh::testCopyConstructor(void) {
     const PylithInt vStart = depthStratum.begin();
     const PylithInt vEnd = depthStratum.end();
 
-    PetscErrorCode err = 0;
+    PetscErrorCode err = PETSC_SUCCESS;
 
     const std::string& label = "field A";
     const std::string& fullLabel = "domain solution " + label;
@@ -93,22 +93,22 @@ pylith::topology::TestFieldMesh::testCopyConstructor(void) {
     field.setLabel(label.c_str());
 
     const char *name = NULL;
-    err = PetscObjectGetName((PetscObject)field.getDM(), &name);assert(!err);
+    err = PetscObjectGetName((PetscObject)field.getDM(), &name);REQUIRE(!err);
     CHECK(fullLabel == std::string(name));
 
-    PetscSection section = field.getLocalSection();assert(section);
-    PetscVec vec = field.getLocalVector();assert(vec);
+    PetscSection section = field.getLocalSection();REQUIRE(section);
+    PetscVec vec = field.getLocalVector();REQUIRE(vec);
 
-    err = PetscObjectGetName((PetscObject) vec, &name);assert(!err);
+    err = PetscObjectGetName((PetscObject) vec, &name);REQUIRE(!err);
     CHECK(fullLabel == std::string(name));
 
     const PylithInt ndof = _data->descriptionA.numComponents + _data->descriptionB.numComponents;
     for (PylithInt v = vStart, iV = 0; v < vEnd; ++v, ++iV) {
         PylithInt dof, cdof;
-        err = PetscSectionGetDof(section, v, &dof);assert(!err);
+        err = PetscSectionGetDof(section, v, &dof);REQUIRE(!err);
         CHECK(ndof == dof);
 
-        err = PetscSectionGetConstraintDof(section, v, &cdof);assert(!err);
+        err = PetscSectionGetConstraintDof(section, v, &cdof);REQUIRE(!err);
 
         // Count number of expected constraints on vertex.
         PylithInt numConstraintsE = 0;
@@ -166,8 +166,7 @@ pylith::topology::TestFieldMesh::testGeneralAccessors(void) {
     _field->setLabel(label.c_str());
     CHECK(fullLabel == std::string(_field->getLabel()));
     const char* name = NULL;
-    PetscErrorCode err = 0;
-    err = PetscObjectGetName((PetscObject)_field->getDM(), &name);assert(!err);
+    PetscErrorCode err = PetscObjectGetName((PetscObject)_field->getDM(), &name);REQUIRE(!err);
     CHECK(fullLabel == std::string(name));
 
     // Test getSpaceDim()
@@ -204,7 +203,7 @@ pylith::topology::TestFieldMesh::testVectorAccessors(void) {
     assert(_data->topology);
     assert(_field);
 
-    PetscErrorCode err;
+    PetscErrorCode err = PETSC_SUCCESS;
     const char* name = NULL;
     PylithInt size = 0;
     const PylithInt ndof =
@@ -213,25 +212,25 @@ pylith::topology::TestFieldMesh::testVectorAccessors(void) {
         _data->bcANumConstrainedDOF*_data->bcANumVertices + _data->bcBNumConstrainedDOF*_data->bcBNumVertices;
 
     const PetscVec& localVec = _field->getLocalVector();assert(localVec);
-    err = PetscObjectGetName((PetscObject)localVec, &name);assert(!err);
+    err = PetscObjectGetName((PetscObject)localVec, &name);REQUIRE(!err);
     CHECK(std::string(_field->getLabel()) == std::string(name));
-    err = VecGetSize(localVec, &size);assert(!err);
+    err = VecGetSize(localVec, &size);REQUIRE(!err);
     CHECK(ndof == size);
 
     _field->createGlobalVector();
     const PetscVec& globalVec = _field->getGlobalVector();assert(globalVec);
     _field->scatterLocalToVector(globalVec);
-    err = PetscObjectGetName((PetscObject)globalVec, &name);assert(!err);
+    err = PetscObjectGetName((PetscObject)globalVec, &name);REQUIRE(!err);
     CHECK(std::string(_field->getLabel()) == std::string(name));
-    err = VecGetSize(globalVec, &size);assert(!err);
+    err = VecGetSize(globalVec, &size);REQUIRE(!err);
     CHECK(ndof - ndofConstrained == size);
 
     _field->createOutputVector();
     _field->scatterLocalToOutput();
     const PetscVec& outputVec = _field->getOutputVector();assert(outputVec);
-    err = PetscObjectGetName((PetscObject)outputVec, &name);assert(!err);
+    err = PetscObjectGetName((PetscObject)outputVec, &name);REQUIRE(!err);
     CHECK(std::string(_field->getLabel()) == std::string(name));
-    err = VecGetSize(outputVec, &size);assert(!err);
+    err = VecGetSize(outputVec, &size);REQUIRE(!err);
     CHECK(ndof == size);
     _checkValues(outputVec);
 
@@ -373,15 +372,15 @@ pylith::topology::TestFieldMesh::_initialize(void) {
 
     PetscErrorCode err = PETSC_SUCCESS;
     PetscDMLabel labelA = NULL, labelB = NULL;
-    err = DMGetLabel(_field->getDM(), _data->bcALabel, &labelA);assert(!err);
-    err = DMGetLabel(_field->getDM(), _data->bcBLabel, &labelB);assert(!err);
+    err = DMGetLabel(_field->getDM(), _data->bcALabel, &labelA);REQUIRE(!err);
+    err = DMGetLabel(_field->getDM(), _data->bcBLabel, &labelB);REQUIRE(!err);
     const PetscInt numLabelValues = 1;
     PetscInt i_field = 0;
     err = DMAddBoundary(_field->getDM(), DM_BC_ESSENTIAL, "bcA", labelA, numLabelValues, &_data->bcALabelId, i_field,
-                        _data->bcANumConstrainedDOF, _data->bcAConstrainedDOF, NULL, NULL, NULL, NULL);assert(!err);
+                        _data->bcANumConstrainedDOF, _data->bcAConstrainedDOF, NULL, NULL, NULL, NULL);REQUIRE(!err);
     i_field = 1;
     err = DMAddBoundary(_field->getDM(), DM_BC_ESSENTIAL, "bcB", labelB, numLabelValues, &_data->bcBLabelId, i_field,
-                        _data->bcBNumConstrainedDOF, _data->bcBConstrainedDOF, NULL, NULL, NULL, NULL);assert(!err);
+                        _data->bcBNumConstrainedDOF, _data->bcBConstrainedDOF, NULL, NULL, NULL, NULL);REQUIRE(!err);
     // Allocate field.
     _field->allocate();
 
@@ -476,11 +475,11 @@ pylith::topology::TestFieldMesh::_checkValues(const PetscVec& vec,
         } // for
     } // for
 
-    PetscErrorCode err;
+    PetscErrorCode err = PETSC_SUCCESS;
     PylithInt size = 0;
     PylithScalar* vecArray = NULL;
-    err = VecGetSize(vec, &size);assert(!err);
-    err = VecGetArray(vec, &vecArray);assert(!err);
+    err = VecGetSize(vec, &size);REQUIRE(!err);
+    err = VecGetArray(vec, &vecArray);REQUIRE(!err);
 
     const PylithInt sizeE = numVertices * (numComponentsA + numComponentsB);
     const PylithReal tolerance = 1.0e-6;
@@ -488,7 +487,7 @@ pylith::topology::TestFieldMesh::_checkValues(const PetscVec& vec,
     for (PylithInt i = 0; i < sizeE; ++i) {
         CHECK_THAT(vecArray[i], Catch::Matchers::WithinAbs(valuesE[i]*scale, tolerance));
     } // for
-    err = VecRestoreArray(vec, &vecArray);assert(!err);
+    err = VecRestoreArray(vec, &vecArray);REQUIRE(!err);
 
     PYLITH_METHOD_END;
 } // _checkValues

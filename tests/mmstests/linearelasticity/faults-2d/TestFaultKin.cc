@@ -65,15 +65,13 @@ pylith::TestFaultKin::_initialize(void) {
     assert(_mesh);
     assert(_data);
 
-    PetscErrorCode err = PETSC_SUCCESS;
-
     if (_data->useAsciiMesh) {
         pylith::meshio::MeshIOAscii iohandler;
         iohandler.setFilename(_data->meshFilename);
         iohandler.read(_mesh);assert(_mesh);
     } else {
         if (_data->meshOptions) {
-            err = PetscOptionsInsertString(nullptr, _data->meshOptions);PYLITH_CHECK_ERROR(err);
+            PylithCallPetsc(PetscOptionsInsertString(nullptr, _data->meshOptions));
         } // if
         pylith::meshio::MeshIOPetsc iohandler;
         iohandler.setFilename(_data->meshFilename);
@@ -156,34 +154,33 @@ pylith::TestFaultKin::_setExactSolution(void) {
 
     const pylith::topology::Field* solution = _problem->getSolution();assert(solution);
 
-    PetscErrorCode err = PETSC_SUCCESS;
     PetscDM dm = solution->getDM();
     PetscDS ds = nullptr;
-    err = DMGetDS(dm, &ds);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMGetDS(dm, &ds));
     for (size_t i = 0; i < _data->numSolnSubfieldsDomain; ++i) {
-        err = PetscDSSetExactSolution(ds, i, _data->exactSolnFns[i], dm);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(PetscDSSetExactSolution(ds, i, _data->exactSolnFns[i], dm));
         if (_data->exactSolnDotFns) {
-            err = PetscDSSetExactSolutionTimeDerivative(ds, i, _data->exactSolnDotFns[i], dm);PYLITH_CHECK_ERROR(err);
+            PylithCallPetsc(PetscDSSetExactSolutionTimeDerivative(ds, i, _data->exactSolnDotFns[i], dm));
         } // if
     } // for
 
     PetscDMLabel label = nullptr;
     PetscIS is = nullptr;
     PetscInt cohesiveCell = -1;
-    err = DMGetLabel(dm, pylith::topology::Mesh::cells_label_name, &label);PYLITH_CHECK_ERROR(err);
-    err = DMLabelGetStratumIS(label, _data->faults[0]->getCohesiveLabelValue(), &is);PYLITH_CHECK_ERROR(err);
-    err = ISGetMinMax(is, &cohesiveCell, nullptr);PYLITH_CHECK_ERROR(err);
-    err = ISDestroy(&is);PYLITH_CHECK_ERROR(err);
-    err = DMGetCellDS(dm, cohesiveCell, &ds, nullptr);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMGetLabel(dm, pylith::topology::Mesh::cells_label_name, &label));
+    PylithCallPetsc(DMLabelGetStratumIS(label, _data->faults[0]->getCohesiveLabelValue(), &is));
+    PylithCallPetsc(ISGetMinMax(is, &cohesiveCell, nullptr));
+    PylithCallPetsc(ISDestroy(&is));
+    PylithCallPetsc(DMGetCellDS(dm, cohesiveCell, &ds, nullptr));
     for (size_t i = 0; i < _data->numSolnSubfieldsDomain; ++i) {
-        err = PetscDSSetExactSolution(ds, i, _data->exactSolnFns[i], nullptr);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(PetscDSSetExactSolution(ds, i, _data->exactSolnFns[i], nullptr));
         if (_data->exactSolnDotFns) {
-            err = PetscDSSetExactSolutionTimeDerivative(ds, i, _data->exactSolnDotFns[i], nullptr);PYLITH_CHECK_ERROR(err);
+            PylithCallPetsc(PetscDSSetExactSolutionTimeDerivative(ds, i, _data->exactSolnDotFns[i], nullptr));
         } // if
     } // for
     for (size_t i = 0; i < _data->numSolnSubfieldsFault; ++i) {
         const size_t iSoln = _data->numSolnSubfieldsDomain + i;
-        err = PetscDSSetExactSolution(ds, iSoln, _data->exactSolnFns[iSoln], nullptr);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(PetscDSSetExactSolution(ds, iSoln, _data->exactSolnFns[iSoln], nullptr));
     } // for
 } // _setExactSolution
 

@@ -20,7 +20,7 @@
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 #include "pylith/scales/Scales.hh" // USES Scales
 
-#include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
+#include "pylith/utils/error.hh" // USES PylithCallPetsc()
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 #include <cassert> // USES assert()
 
@@ -115,7 +115,7 @@ pylith::problems::InitialConditionPatch::verifyConfiguration(const pylith::topol
 
     const PetscDM dmSoln = solution.getDM();
     PetscBool hasLabel = PETSC_FALSE;
-    PetscErrorCode err = DMHasLabel(dmSoln, _labelName.c_str(), &hasLabel);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMHasLabel(dmSoln, _labelName.c_str(), &hasLabel));
     if (!hasLabel) {
         std::ostringstream msg;
         msg << "Could not find label '" << _labelName << "' for setting patch for initial condition '"
@@ -124,13 +124,13 @@ pylith::problems::InitialConditionPatch::verifyConfiguration(const pylith::topol
     } // if
 
     PetscDMLabel dmLabel = NULL;
-    err = DMGetLabel(solution.getDM(), _labelName.c_str(), &dmLabel);PYLITH_CHECK_ERROR(err);assert(dmLabel);
+    PylithCallPetsc(DMGetLabel(solution.getDM(), _labelName.c_str(), &dmLabel));assert(dmLabel);
     PetscBool hasLabelValue = PETSC_FALSE;
-    err = DMLabelHasValue(dmLabel, _labelValue, &hasLabelValue);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMLabelHasValue(dmLabel, _labelValue, &hasLabelValue));
     int hasLabelValueIntLocal = int(hasLabelValue);
     int hasLabelValueInt = 0;
-    err = MPI_Allreduce(&hasLabelValueIntLocal, &hasLabelValueInt, 1, MPI_INT, MPI_MAX,
-                        PetscObjectComm((PetscObject) dmSoln));PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(MPI_Allreduce(&hasLabelValueIntLocal, &hasLabelValueInt, 1, MPI_INT, MPI_MAX,
+                                  PetscObjectComm((PetscObject) dmSoln)));
     if (!hasLabelValueInt) {
         std::ostringstream msg;
         msg << "Label '" << _labelName << "' missing value '" << _labelValue << "' for initial condition '"
@@ -139,7 +139,7 @@ pylith::problems::InitialConditionPatch::verifyConfiguration(const pylith::topol
     } // if
 
     PetscInt stratumStart = -1, stratumEnd = -1;
-    err = DMLabelGetStratumBounds(dmLabel, _labelValue, &stratumStart, &stratumEnd);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMLabelGetStratumBounds(dmLabel, _labelValue, &stratumStart, &stratumEnd));
     pylith::topology::Stratum cellsStratum(dmSoln, pylith::topology::Stratum::HEIGHT, 0);
     if ((stratumStart >= cellsStratum.begin()) && (stratumEnd <= cellsStratum.end())) {
         std::ostringstream msg;
