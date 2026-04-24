@@ -25,7 +25,7 @@
 pylith::topology::TestSubmesh::TestSubmesh(TestSubmesh_Data* data) :
     _data(data) {
     PYLITH_METHOD_BEGIN;
-    assert(data);
+    REQUIRE(data);
 
     _domainMesh = NULL;
     _testMesh = NULL;
@@ -52,14 +52,14 @@ pylith::topology::TestSubmesh::~TestSubmesh(void) {
 void
 pylith::topology::TestSubmesh::testAccessors(void) {
     PYLITH_METHOD_BEGIN;
-    assert(_data);
-    assert(_data->topology);
-    assert(_data->geometry);
+    REQUIRE(_data);
+    REQUIRE(_data->topology);
+    REQUIRE(_data->geometry);
 
     _buildMesh();
     const int labelValue = 1;
-    delete _testMesh;_testMesh = MeshOps::createLowerDimMesh(*_domainMesh, _data->faceGroupName, labelValue, "testAccessors");assert(_testMesh);
-    assert(_testMesh->getCoordSys());
+    delete _testMesh;_testMesh = MeshOps::createLowerDimMesh(*_domainMesh, _data->faceGroupName, labelValue, "testAccessors");REQUIRE(_testMesh);
+    REQUIRE(_testMesh->getCoordSys());
 
     REQUIRE(_data->topology->dimension == _testMesh->getCoordSys()->getSpaceDim());
 
@@ -76,17 +76,17 @@ pylith::topology::TestSubmesh::testAccessors(void) {
 void
 pylith::topology::TestSubmesh::testSizes(void) {
     PYLITH_METHOD_BEGIN;
-    assert(_data);
-    assert(_data->topology);
-    assert(_data->geometry);
+    REQUIRE(_data);
+    REQUIRE(_data->topology);
+    REQUIRE(_data->geometry);
 
     Mesh submesh;
     CHECK(0 == submesh.getDimension());
 
     _buildMesh();
     const int labelValue = 1;
-    delete _testMesh;_testMesh = MeshOps::createLowerDimMesh(*_domainMesh, _data->faceGroupName, labelValue, "testSizes");assert(_testMesh);
-    assert(_testMesh);
+    delete _testMesh;_testMesh = MeshOps::createLowerDimMesh(*_domainMesh, _data->faceGroupName, labelValue, "testSizes");REQUIRE(_testMesh);
+    REQUIRE(_testMesh);
 
     CHECK(_data->topology->dimension-1 == size_t(_testMesh->getDimension()));
 
@@ -98,13 +98,13 @@ pylith::topology::TestSubmesh::testSizes(void) {
 // Test constructor w/mesh.
 void
 pylith::topology::TestSubmesh::testCreateLowerDimMesh(void) {
-    assert(_data);
-    assert(_data->topology);
-    assert(_data->geometry);
+    REQUIRE(_data);
+    REQUIRE(_data->topology);
+    REQUIRE(_data->geometry);
 
     _buildMesh();
     const int labelValue = 1;
-    delete _testMesh;_testMesh = MeshOps::createLowerDimMesh(*_domainMesh, _data->faceGroupName, labelValue, "testCreateLowerDimMesh");assert(_testMesh);
+    delete _testMesh;_testMesh = MeshOps::createLowerDimMesh(*_domainMesh, _data->faceGroupName, labelValue, "testCreateLowerDimMesh");REQUIRE(_testMesh);
 
     REQUIRE(_data->topology->dimension-1 == size_t(_testMesh->getDimension()));
 
@@ -113,7 +113,7 @@ pylith::topology::TestSubmesh::testCreateLowerDimMesh(void) {
     CHECK(int(MPI_CONGRUENT) == result);
 
     // Check vertices
-    const PetscDM dmMesh = _testMesh->getDM();assert(dmMesh);
+    const PetscDM dmMesh = _testMesh->getDM();REQUIRE(dmMesh);
     Stratum depthStratum(dmMesh, Stratum::DEPTH, 0);
     const PetscInt vStart = depthStratum.begin();
     const PetscInt vEnd = depthStratum.end();
@@ -145,13 +145,13 @@ pylith::topology::TestSubmesh::testCreateLowerDimMesh(void) {
 // Test constructor w/mesh.
 void
 pylith::topology::TestSubmesh::testCreateSubdomainMesh(void) {
-    assert(_data);
-    assert(_data->topology);
-    assert(_data->geometry);
+    REQUIRE(_data);
+    REQUIRE(_data->topology);
+    REQUIRE(_data->geometry);
 
     _buildMesh();
     delete _testMesh;_testMesh = MeshOps::createSubdomainMesh(*_domainMesh, _data->subdomainLabel, _data->subdomainLabelValue, "Test subdomain");
-    assert(_testMesh);
+    REQUIRE(_testMesh);
 
     REQUIRE(_data->topology->dimension == size_t(_testMesh->getDimension()));
 
@@ -160,7 +160,7 @@ pylith::topology::TestSubmesh::testCreateSubdomainMesh(void) {
     CHECK(int(MPI_CONGRUENT) == result);
 
     // Check vertices
-    const PetscDM dmMesh = _testMesh->getDM();assert(dmMesh);
+    const PetscDM dmMesh = _testMesh->getDM();REQUIRE(dmMesh);
     Stratum depthStratum(dmMesh, Stratum::DEPTH, 0);
     const PetscInt vStart = depthStratum.begin();
     const PetscInt vEnd = depthStratum.end();
@@ -192,13 +192,13 @@ pylith::topology::TestSubmesh::testCreateSubdomainMesh(void) {
 void
 pylith::topology::TestSubmesh::_buildMesh(void) {
     PYLITH_METHOD_BEGIN;
-    assert(_data);
-    assert(_data->topology);
-    assert(_data->geometry);
-    assert(!_domainMesh);
-    assert(!_testMesh);
+    REQUIRE(_data);
+    REQUIRE(_data->topology);
+    REQUIRE(_data->geometry);
+    REQUIRE(!_domainMesh);
+    REQUIRE(!_testMesh);
 
-    delete _domainMesh;_domainMesh = new pylith::topology::Mesh();assert(_domainMesh);
+    delete _domainMesh;_domainMesh = new pylith::topology::Mesh();REQUIRE(_domainMesh);
     pylith::meshio::MeshBuilder::buildMesh(_domainMesh, *_data->topology, *_data->geometry);
 
     spatialdata::geocoords::CSCart cs;
@@ -211,8 +211,8 @@ pylith::topology::TestSubmesh::_buildMesh(void) {
 
     // Create "subdomain" by setting label of subdomain cells.
     for (size_t c = 0; c < _data->topology->numCells; ++c) {
-        PetscErrorCode err = DMSetLabelValue(_domainMesh->getDM(), _data->subdomainLabel, c,
-                                             _data->subdomainLabelValues[c]);REQUIRE(!err);
+        PylithCallPetscRequire(DMSetLabelValue(_domainMesh->getDM(), _data->subdomainLabel, c,
+                                               _data->subdomainLabelValues[c]));
     } // for
 
     PYLITH_METHOD_END;

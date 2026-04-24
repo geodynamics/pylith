@@ -76,97 +76,97 @@ TEST_CASE("TestReverseCuthillMcKee::Hex_NoFault::testReorder", "[TestReverseCuth
 // ------------------------------------------------------------------------------------------------
 pylith::topology::TestReverseCuthillMcKee_Data*
 pylith::topology::TestReverseCuthillMcKee_Cases::Tri_NoFault(void) {
-    TestReverseCuthillMcKee_Data* data = new TestReverseCuthillMcKee_Data();assert(data);
+    TestReverseCuthillMcKee_Data* data = new TestReverseCuthillMcKee_Data();REQUIRE(data);
 
     data->filename = "data/reorder_tri3.mesh";
     data->faultLabel = NULL;
 
     return data;
-}   // Tri_NoFault
+} // Tri_NoFault
 
 
 // ------------------------------------------------------------------------------------------------
 pylith::topology::TestReverseCuthillMcKee_Data*
 pylith::topology::TestReverseCuthillMcKee_Cases::Tri_Fault(void) {
-    TestReverseCuthillMcKee_Data* data = new TestReverseCuthillMcKee_Data();assert(data);
+    TestReverseCuthillMcKee_Data* data = new TestReverseCuthillMcKee_Data();REQUIRE(data);
 
     data->filename = "data/reorder_tri3.mesh";
     data->faultLabel = "fault";
 
     return data;
-}   // Tri_Fault
+} // Tri_Fault
 
 
 // ------------------------------------------------------------------------------------------------
 pylith::topology::TestReverseCuthillMcKee_Data*
 pylith::topology::TestReverseCuthillMcKee_Cases::Quad_NoFault(void) {
-    TestReverseCuthillMcKee_Data* data = new TestReverseCuthillMcKee_Data();assert(data);
+    TestReverseCuthillMcKee_Data* data = new TestReverseCuthillMcKee_Data();REQUIRE(data);
 
     data->filename = "data/reorder_quad4.mesh";
     data->faultLabel = NULL;
 
     return data;
-}   // Quad_NoFault
+} // Quad_NoFault
 
 
 // ------------------------------------------------------------------------------------------------
 pylith::topology::TestReverseCuthillMcKee_Data*
 pylith::topology::TestReverseCuthillMcKee_Cases::Quad_Fault(void) {
-    TestReverseCuthillMcKee_Data* data = new TestReverseCuthillMcKee_Data();assert(data);
+    TestReverseCuthillMcKee_Data* data = new TestReverseCuthillMcKee_Data();REQUIRE(data);
 
     data->filename = "data/reorder_quad4.mesh";
     data->faultLabel = "fault";
 
     return data;
-}   // Quad_Fault
+} // Quad_Fault
 
 
 // ------------------------------------------------------------------------------------------------
 pylith::topology::TestReverseCuthillMcKee_Data*
 pylith::topology::TestReverseCuthillMcKee_Cases::Tet_NoFault(void) {
-    TestReverseCuthillMcKee_Data* data = new TestReverseCuthillMcKee_Data();assert(data);
+    TestReverseCuthillMcKee_Data* data = new TestReverseCuthillMcKee_Data();REQUIRE(data);
 
     data->filename = "data/reorder_tet4.mesh";
     data->faultLabel = NULL;
 
     return data;
-}   // Tet_NoFault
+} // Tet_NoFault
 
 
 // ------------------------------------------------------------------------------------------------
 pylith::topology::TestReverseCuthillMcKee_Data*
 pylith::topology::TestReverseCuthillMcKee_Cases::Tet_Fault(void) {
-    TestReverseCuthillMcKee_Data* data = new TestReverseCuthillMcKee_Data();assert(data);
+    TestReverseCuthillMcKee_Data* data = new TestReverseCuthillMcKee_Data();REQUIRE(data);
 
     data->filename = "data/reorder_tet4.mesh";
     data->faultLabel = "fault";
 
     return data;
-}   // Tet_Fault
+} // Tet_Fault
 
 
 // ------------------------------------------------------------------------------------------------
 pylith::topology::TestReverseCuthillMcKee_Data*
 pylith::topology::TestReverseCuthillMcKee_Cases::Hex_NoFault(void) {
-    TestReverseCuthillMcKee_Data* data = new TestReverseCuthillMcKee_Data();assert(data);
+    TestReverseCuthillMcKee_Data* data = new TestReverseCuthillMcKee_Data();REQUIRE(data);
 
     data->filename = "data/reorder_hex8.mesh";
     data->faultLabel = NULL;
 
     return data;
-}   // Hex_NoFault
+} // Hex_NoFault
 
 
 // ------------------------------------------------------------------------------------------------
 pylith::topology::TestReverseCuthillMcKee_Data*
 pylith::topology::TestReverseCuthillMcKee_Cases::Hex_Fault(void) {
-    TestReverseCuthillMcKee_Data* data = new TestReverseCuthillMcKee_Data();assert(data);
+    TestReverseCuthillMcKee_Data* data = new TestReverseCuthillMcKee_Data();REQUIRE(data);
 
     data->filename = "data/reorder_hex8.mesh";
     data->faultLabel = "fault";
 
     return data;
-}   // Hex_fault
+} // Hex_fault
 
 
 // End of file

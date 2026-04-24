@@ -94,7 +94,7 @@ TEST_CASE("TestSubmesh::Hex::testCreateSubdomainMesh", "[TestSubmesh][Hex][testC
 // ------------------------------------------------------------------------------------------------
 pylith::topology::TestSubmesh_Data*
 pylith::topology::TestSubmesh_Cases::Tri(void) {
-    TestSubmesh_Data* data = new TestSubmesh_Data();assert(data);
+    TestSubmesh_Data* data = new TestSubmesh_Data();REQUIRE(data);
 
     const size_t numVertices = 4;
     const size_t spaceDim = 2;
@@ -164,7 +164,7 @@ pylith::topology::TestSubmesh_Cases::Tri(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::topology::TestSubmesh_Data*
 pylith::topology::TestSubmesh_Cases::Quad(void) {
-    TestSubmesh_Data* data = new TestSubmesh_Data();assert(data);
+    TestSubmesh_Data* data = new TestSubmesh_Data();REQUIRE(data);
 
     const size_t numVertices = 6;
     const size_t spaceDim = 2;
@@ -236,7 +236,7 @@ pylith::topology::TestSubmesh_Cases::Quad(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::topology::TestSubmesh_Data*
 pylith::topology::TestSubmesh_Cases::Tet(void) {
-    TestSubmesh_Data* data = new TestSubmesh_Data();assert(data);
+    TestSubmesh_Data* data = new TestSubmesh_Data();REQUIRE(data);
 
     const size_t numVertices = 5;
     const size_t spaceDim = 3;
@@ -306,7 +306,7 @@ pylith::topology::TestSubmesh_Cases::Tet(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::topology::TestSubmesh_Data*
 pylith::topology::TestSubmesh_Cases::Hex(void) {
-    TestSubmesh_Data* data = new TestSubmesh_Data();assert(data);
+    TestSubmesh_Data* data = new TestSubmesh_Data();REQUIRE(data);
 
     const size_t numVertices = 12;
     const size_t spaceDim = 3;

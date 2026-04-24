@@ -67,7 +67,7 @@ TEST_CASE("TestFieldMesh::Quad::testView", "[TestFieldMesh][Quad][testView]") {
 // ------------------------------------------------------------------------------------------------
 pylith::topology::TestFieldMesh_Data*
 pylith::topology::TestFieldMesh_Cases::Quad(void) {
-    TestFieldMesh_Data* data = new TestFieldMesh_Data();assert(data);
+    TestFieldMesh_Data* data = new TestFieldMesh_Data();REQUIRE(data);
 
     const size_t numVertices = 4;
     const size_t spaceDim = 2;

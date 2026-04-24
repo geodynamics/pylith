@@ -16,6 +16,8 @@
 #include "pylith/topology/Field.hh" // USES pylith::topology::Field::Discretization
 #include "pylith/utils/journals.hh" // USES pythia::journal::debug_t
 
+#include "catch2/catch_test_macros.hpp"
+
 namespace pylith {
     class _UniformStrain3D;
 } // pylith
@@ -76,7 +78,7 @@ private:
     } // strain_xy
 
     static double strain_yz(void) {
-        return 0;
+        return PETSC_SUCCESS;
     } // strain_yz
 
     static double strain_xz(void) {
@@ -112,23 +114,23 @@ private:
                                           PetscInt numComponents,
                                           PetscScalar* s,
                                           void* context) {
-        assert(3 == spaceDim);
-        assert(x);
-        assert(3 == numComponents);
-        assert(s);
+        REQUIRE(3 == spaceDim);
+        REQUIRE(x);
+        REQUIRE(3 == numComponents);
+        REQUIRE(s);
 
         s[0] = disp_x(x[0], x[1], x[2]);
         s[1] = disp_y(x[0], x[1], x[2]);
         s[2] = disp_z(x[0], x[1], x[2]);
 
-        return 0;
+        return PETSC_SUCCESS;
     } // solnkernel_disp
 
 public:
 
     static
     TestLinearElasticity_Data* createData(void) {
-        TestLinearElasticity_Data* data = new TestLinearElasticity_Data();assert(data);
+        TestLinearElasticity_Data* data = new TestLinearElasticity_Data();REQUIRE(data);
 
         data->journalName = "UniformStrain3D";
 
@@ -166,7 +168,7 @@ public:
         static const PylithInt constrainedDOF[3] = { 0, 1, 2 };
         static const PylithInt numConstrained = 3;
         data->bcs.resize(1);
-        pylith::bc::DirichletUserFn*bc = new pylith::bc::DirichletUserFn();assert(bc);
+        pylith::bc::DirichletUserFn*bc = new pylith::bc::DirichletUserFn();REQUIRE(bc);
         bc->setSubfieldName("displacement");
         bc->setLabelName("boundary");
         bc->setLabelValue(1);
@@ -188,7 +190,7 @@ public:
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::UniformStrain3D::TetP1(void) {
-    TestLinearElasticity_Data* data = pylith::_UniformStrain3D::createData();assert(data);
+    TestLinearElasticity_Data* data = pylith::_UniformStrain3D::createData();REQUIRE(data);
 
     data->meshFilename = "data/tet.msh";
 
@@ -205,7 +207,7 @@ pylith::UniformStrain3D::TetP1(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::UniformStrain3D::TetP2(void) {
-    TestLinearElasticity_Data* data = pylith::_UniformStrain3D::createData();assert(data);
+    TestLinearElasticity_Data* data = pylith::_UniformStrain3D::createData();REQUIRE(data);
 
     data->meshFilename = "data/tet.msh";
 
@@ -229,7 +231,7 @@ pylith::UniformStrain3D::TetP2(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::UniformStrain3D::TetP3(void) {
-    TestLinearElasticity_Data* data = pylith::_UniformStrain3D::createData();assert(data);
+    TestLinearElasticity_Data* data = pylith::_UniformStrain3D::createData();REQUIRE(data);
 
     data->meshFilename = "data/tet.msh";
 
@@ -253,7 +255,7 @@ pylith::UniformStrain3D::TetP3(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::UniformStrain3D::TetP4(void) {
-    TestLinearElasticity_Data* data = pylith::_UniformStrain3D::createData();assert(data);
+    TestLinearElasticity_Data* data = pylith::_UniformStrain3D::createData();REQUIRE(data);
 
     data->meshFilename = "data/tet.msh";
 
@@ -277,7 +279,7 @@ pylith::UniformStrain3D::TetP4(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::UniformStrain3D::HexQ1(void) {
-    TestLinearElasticity_Data* data = pylith::_UniformStrain3D::createData();assert(data);
+    TestLinearElasticity_Data* data = pylith::_UniformStrain3D::createData();REQUIRE(data);
 
     data->meshFilename = "data/hex.msh";
 
@@ -294,7 +296,7 @@ pylith::UniformStrain3D::HexQ1(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::UniformStrain3D::HexQ2(void) {
-    TestLinearElasticity_Data* data = pylith::_UniformStrain3D::createData();assert(data);
+    TestLinearElasticity_Data* data = pylith::_UniformStrain3D::createData();REQUIRE(data);
 
     data->meshFilename = "data/hex.msh";
 
@@ -318,7 +320,7 @@ pylith::UniformStrain3D::HexQ2(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::UniformStrain3D::HexQ3(void) {
-    TestLinearElasticity_Data* data = pylith::_UniformStrain3D::createData();assert(data);
+    TestLinearElasticity_Data* data = pylith::_UniformStrain3D::createData();REQUIRE(data);
 
     data->meshFilename = "data/hex.msh";
 
@@ -342,7 +344,7 @@ pylith::UniformStrain3D::HexQ3(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::UniformStrain3D::HexQ4(void) {
-    TestLinearElasticity_Data* data = pylith::_UniformStrain3D::createData();assert(data);
+    TestLinearElasticity_Data* data = pylith::_UniformStrain3D::createData();REQUIRE(data);
 
     data->meshFilename = "data/hex.msh";
 

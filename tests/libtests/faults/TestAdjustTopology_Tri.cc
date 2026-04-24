@@ -80,7 +80,7 @@ TEST_CASE("TestAdjustTopology_TriI", "[TestAdjustTopology][Tri]") {
 pylith::faults::TestAdjustTopology_Data*
 pylith::faults::TestAdjustTopology_Tri::caseA(void) {
     pylith::faults::TestAdjustTopology_Data* data = new pylith::faults::TestAdjustTopology_Data();
-    assert(data);
+    REQUIRE(data);
 
     data->filename = "data/tri_a.mesh";
 
@@ -121,7 +121,7 @@ pylith::faults::TestAdjustTopology_Tri::caseA(void) {
 pylith::faults::TestAdjustTopology_Data*
 pylith::faults::TestAdjustTopology_Tri::caseB(void) {
     pylith::faults::TestAdjustTopology_Data* data = new pylith::faults::TestAdjustTopology_Data();
-    assert(data);
+    REQUIRE(data);
 
     data->filename = "data/tri_b.mesh";
 
@@ -162,7 +162,7 @@ pylith::faults::TestAdjustTopology_Tri::caseB(void) {
 pylith::faults::TestAdjustTopology_Data*
 pylith::faults::TestAdjustTopology_Tri::caseC(void) {
     pylith::faults::TestAdjustTopology_Data* data = new pylith::faults::TestAdjustTopology_Data();
-    assert(data);
+    REQUIRE(data);
 
     data->filename = "data/tri_c.mesh";
 
@@ -203,7 +203,7 @@ pylith::faults::TestAdjustTopology_Tri::caseC(void) {
 pylith::faults::TestAdjustTopology_Data*
 pylith::faults::TestAdjustTopology_Tri::caseD(void) {
     pylith::faults::TestAdjustTopology_Data* data = new pylith::faults::TestAdjustTopology_Data();
-    assert(data);
+    REQUIRE(data);
 
     data->filename = "data/tri_d.mesh";
 
@@ -244,7 +244,7 @@ pylith::faults::TestAdjustTopology_Tri::caseD(void) {
 pylith::faults::TestAdjustTopology_Data*
 pylith::faults::TestAdjustTopology_Tri::caseE(void) {
     pylith::faults::TestAdjustTopology_Data* data = new pylith::faults::TestAdjustTopology_Data();
-    assert(data);
+    REQUIRE(data);
 
     data->filename = "data/tri_e.mesh";
 
@@ -285,7 +285,7 @@ pylith::faults::TestAdjustTopology_Tri::caseE(void) {
 pylith::faults::TestAdjustTopology_Data*
 pylith::faults::TestAdjustTopology_Tri::caseF(void) {
     pylith::faults::TestAdjustTopology_Data* data = new pylith::faults::TestAdjustTopology_Data();
-    assert(data);
+    REQUIRE(data);
 
     data->filename = "data/tri_f.mesh";
 
@@ -326,7 +326,7 @@ pylith::faults::TestAdjustTopology_Tri::caseF(void) {
 pylith::faults::TestAdjustTopology_Data*
 pylith::faults::TestAdjustTopology_Tri::caseG(void) {
     pylith::faults::TestAdjustTopology_Data* data = new pylith::faults::TestAdjustTopology_Data();
-    assert(data);
+    REQUIRE(data);
 
     data->filename = "data/tri_g.mesh";
 
@@ -367,7 +367,7 @@ pylith::faults::TestAdjustTopology_Tri::caseG(void) {
 pylith::faults::TestAdjustTopology_Data*
 pylith::faults::TestAdjustTopology_Tri::caseH(void) {
     pylith::faults::TestAdjustTopology_Data* data = new pylith::faults::TestAdjustTopology_Data();
-    assert(data);
+    REQUIRE(data);
 
     data->filename = "data/tri_h.mesh";
 
@@ -414,7 +414,7 @@ pylith::faults::TestAdjustTopology_Tri::caseH(void) {
 pylith::faults::TestAdjustTopology_Data*
 pylith::faults::TestAdjustTopology_Tri::caseI(void) {
     pylith::faults::TestAdjustTopology_Data* data = new pylith::faults::TestAdjustTopology_Data();
-    assert(data);
+    REQUIRE(data);
 
     data->filename = "data/tri_i.mesh";
     data->failureExpected = true;

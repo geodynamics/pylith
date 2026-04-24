@@ -16,16 +16,16 @@
 #include "pylith/utils/array.hh" // USES scalar_array
 
 #include <iostream> // USES std::cerr
-#include <cassert> // USES assert()
+#include <cassert>
 
 // ----------------------------------------------------------------------
 // Check to make sure array of values match expected values.
 bool
 pylith::utils::TestArray::check(const PylithScalar* valuesE,
                                 const int nvalues,
-                                const scalar_array& values) { // check(PylithScalar)
-    assert( (0 == nvalues && 0 == valuesE) ||
-            (0 < nvalues && 0 != valuesE) );
+                                const scalar_array& values) {
+    assert( ((0 == nvalues && 0 == valuesE) ||
+             (0 < nvalues && 0 != valuesE)) );
 
     if (size_t(nvalues) != values.size()) {
         std::cerr << "Array size mismatch, expected: " << nvalues

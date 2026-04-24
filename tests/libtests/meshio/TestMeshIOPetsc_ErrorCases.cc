@@ -49,7 +49,7 @@ TEST_CASE("TestMeshIOPetsc::GmshNoSplit2D::testReadError", "[TestMeshIOPetsc][Gm
 // ------------------------------------------------------------------------------------------------
 pylith::meshio::TestMeshIO_Data*
 pylith::meshio::TestMeshIOPetsc_ErrorCases::GmshNoEmbed2D(void) {
-    TestMeshIO_Data* data = new TestMeshIO_Data();assert(data);
+    TestMeshIO_Data* data = new TestMeshIO_Data();REQUIRE(data);
 
     data->filename = "data/noembed_tri.msh";
 
@@ -60,7 +60,7 @@ pylith::meshio::TestMeshIOPetsc_ErrorCases::GmshNoEmbed2D(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::meshio::TestMeshIO_Data*
 pylith::meshio::TestMeshIOPetsc_ErrorCases::GmshNoEmbed3D(void) {
-    TestMeshIO_Data* data = new TestMeshIO_Data();assert(data);
+    TestMeshIO_Data* data = new TestMeshIO_Data();REQUIRE(data);
 
     data->filename = "data/noembed_tet.msh";
 
@@ -71,7 +71,7 @@ pylith::meshio::TestMeshIOPetsc_ErrorCases::GmshNoEmbed3D(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::meshio::TestMeshIO_Data*
 pylith::meshio::TestMeshIOPetsc_ErrorCases::GmshNoSplit2D(void) {
-    TestMeshIO_Data* data = new TestMeshIO_Data();assert(data);
+    TestMeshIO_Data* data = new TestMeshIO_Data();REQUIRE(data);
 
     data->filename = "data/nosplit_tri.msh";
 

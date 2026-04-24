@@ -19,6 +19,8 @@
 
 #include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
 
+#include "catch2/catch_test_macros.hpp"
+
 // ---------------------------------------------------------------------------------------------------------------------
 namespace pylith {
     class _RigidBodyAcc2D;
@@ -117,15 +119,15 @@ class pylith::_RigidBodyAcc2D {
                                           PetscInt numComponents,
                                           PetscScalar* s,
                                           void* context) {
-        assert(2 == spaceDim);
-        assert(x);
-        assert(2 == numComponents);
-        assert(s);
+        REQUIRE(2 == spaceDim);
+        REQUIRE(x);
+        REQUIRE(2 == numComponents);
+        REQUIRE(s);
 
         s[0] = disp_x(x[0], x[1], t);
         s[1] = disp_y(x[0], x[1], t);
 
-        return 0;
+        return PETSC_SUCCESS;
     } // solnkernel_disp
 
     static PetscErrorCode solnkernel_vel(PetscInt spaceDim,
@@ -134,15 +136,15 @@ class pylith::_RigidBodyAcc2D {
                                          PetscInt numComponents,
                                          PetscScalar* s,
                                          void* context) {
-        assert(2 == spaceDim);
-        assert(x);
-        assert(2 == numComponents);
-        assert(s);
+        REQUIRE(2 == spaceDim);
+        REQUIRE(x);
+        REQUIRE(2 == numComponents);
+        REQUIRE(s);
 
         s[0] = vel_x(x[0], x[1], t);
         s[1] = vel_y(x[0], x[1], t);
 
-        return 0;
+        return PETSC_SUCCESS;
     } // solnkernel_vel
 
     static PetscErrorCode solnkernel_acc(PetscInt spaceDim,
@@ -151,15 +153,15 @@ class pylith::_RigidBodyAcc2D {
                                          PetscInt numComponents,
                                          PetscScalar* s,
                                          void* context) {
-        assert(2 == spaceDim);
-        assert(x);
-        assert(2 == numComponents);
-        assert(s);
+        REQUIRE(2 == spaceDim);
+        REQUIRE(x);
+        REQUIRE(2 == numComponents);
+        REQUIRE(s);
 
         s[0] = acc_x(x[0], x[1], t);
         s[1] = acc_y(x[0], x[1], t);
 
-        return 0;
+        return PETSC_SUCCESS;
     } // solnkernel_acc
 
     static void mmsBodyForceKernel(const PylithInt dim,
@@ -180,9 +182,9 @@ class pylith::_RigidBodyAcc2D {
                                    const PylithInt numConstants,
                                    const PylithScalar constants[],
                                    PylithScalar f0[]) {
-        assert(2 == dim);
-        assert(x);
-        assert(f0);
+        REQUIRE(2 == dim);
+        REQUIRE(x);
+        REQUIRE(f0);
         const double densityScale = pylith::scales::ElasticityScales::getDensityScale(scales);
         f0[0] += density(x[0], x[1]) / densityScale * acc_x(x[0], x[1], t);
         f0[1] += density(x[0], x[1]) / densityScale * acc_y(x[0], x[1], t);
@@ -192,7 +194,7 @@ public:
 
     static
     TestLinearElasticity_Data* createData(void) {
-        TestLinearElasticity_Data* data = new TestLinearElasticity_Data();assert(data);
+        TestLinearElasticity_Data* data = new TestLinearElasticity_Data();REQUIRE(data);
 
         data->journalName = "RigidBodyAcc2D";
         data->isJacobianLinear = true;
@@ -242,7 +244,7 @@ public:
         static const PylithInt numConstrained = 2;
         data->bcs.resize(2);
         pylith::bc::DirichletUserFn* bc = NULL;
-        bc = new pylith::bc::DirichletUserFn();assert(bc);
+        bc = new pylith::bc::DirichletUserFn();REQUIRE(bc);
         bc->setSubfieldName("displacement");
         bc->setLabelName("boundary");
         bc->setLabelValue(1);
@@ -251,7 +253,7 @@ public:
         bc->setUserFnDot(solnkernel_vel);
         data->bcs[0] = bc;
 
-        bc = new pylith::bc::DirichletUserFn();assert(bc);
+        bc = new pylith::bc::DirichletUserFn();REQUIRE(bc);
         bc->setSubfieldName("velocity");
         bc->setLabelName("boundary");
         bc->setLabelValue(1);
@@ -280,7 +282,7 @@ pylith::scales::Scales pylith::_RigidBodyAcc2D::scales;
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::RigidBodyAcc2D::TriP1(void) {
-    TestLinearElasticity_Data* data = pylith::_RigidBodyAcc2D::createData();assert(data);
+    TestLinearElasticity_Data* data = pylith::_RigidBodyAcc2D::createData();REQUIRE(data);
 
     data->meshFilename = "data/tri.msh";
     data->useAsciiMesh = false;
@@ -299,7 +301,7 @@ pylith::RigidBodyAcc2D::TriP1(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::RigidBodyAcc2D::TriP2(void) {
-    TestLinearElasticity_Data* data = pylith::_RigidBodyAcc2D::createData();assert(data);
+    TestLinearElasticity_Data* data = pylith::_RigidBodyAcc2D::createData();REQUIRE(data);
 
     data->meshFilename = "data/tri.mesh";
 
@@ -324,7 +326,7 @@ pylith::RigidBodyAcc2D::TriP2(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::RigidBodyAcc2D::TriP3(void) {
-    TestLinearElasticity_Data* data = pylith::_RigidBodyAcc2D::createData();assert(data);
+    TestLinearElasticity_Data* data = pylith::_RigidBodyAcc2D::createData();REQUIRE(data);
 
     data->meshFilename = "data/tri.msh";
     data->useAsciiMesh = false;
@@ -350,7 +352,7 @@ pylith::RigidBodyAcc2D::TriP3(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::RigidBodyAcc2D::TriP4(void) {
-    TestLinearElasticity_Data* data = pylith::_RigidBodyAcc2D::createData();assert(data);
+    TestLinearElasticity_Data* data = pylith::_RigidBodyAcc2D::createData();REQUIRE(data);
 
     data->meshFilename = "data/tri.mesh";
 
@@ -375,7 +377,7 @@ pylith::RigidBodyAcc2D::TriP4(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::RigidBodyAcc2D::QuadQ1(void) {
-    TestLinearElasticity_Data* data = pylith::_RigidBodyAcc2D::createData();assert(data);
+    TestLinearElasticity_Data* data = pylith::_RigidBodyAcc2D::createData();REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 
@@ -393,7 +395,7 @@ pylith::RigidBodyAcc2D::QuadQ1(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::RigidBodyAcc2D::QuadQ1Distorted(void) {
-    TestLinearElasticity_Data* data = pylith::_RigidBodyAcc2D::createData();assert(data);
+    TestLinearElasticity_Data* data = pylith::_RigidBodyAcc2D::createData();REQUIRE(data);
 
     data->meshFilename = "data/quad_distorted.mesh";
 
@@ -411,7 +413,7 @@ pylith::RigidBodyAcc2D::QuadQ1Distorted(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::RigidBodyAcc2D::QuadQ2(void) {
-    TestLinearElasticity_Data* data = pylith::_RigidBodyAcc2D::createData();assert(data);
+    TestLinearElasticity_Data* data = pylith::_RigidBodyAcc2D::createData();REQUIRE(data);
 
     data->meshFilename = "data/quad.msh";
     data->useAsciiMesh = false;
@@ -437,7 +439,7 @@ pylith::RigidBodyAcc2D::QuadQ2(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::RigidBodyAcc2D::QuadQ3(void) {
-    TestLinearElasticity_Data* data = pylith::_RigidBodyAcc2D::createData();assert(data);
+    TestLinearElasticity_Data* data = pylith::_RigidBodyAcc2D::createData();REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 
@@ -462,7 +464,7 @@ pylith::RigidBodyAcc2D::QuadQ3(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::RigidBodyAcc2D::QuadQ4(void) {
-    TestLinearElasticity_Data* data = pylith::_RigidBodyAcc2D::createData();assert(data);
+    TestLinearElasticity_Data* data = pylith::_RigidBodyAcc2D::createData();REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 

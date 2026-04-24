@@ -32,9 +32,9 @@
 pylith::problems::TestSolutionFactory::TestSolutionFactory(TestSolutionFactory_Data* data) :
     _data(data) {
     PYLITH_METHOD_BEGIN;
-    assert(_data);
+    REQUIRE(_data);
 
-    assert(_data->scales);
+    REQUIRE(_data->scales);
     _data->scales->setLengthScale(1.0);
     _data->scales->setTimeScale(2.0);
     _data->scales->setRigidityScale(2.25e+6);
@@ -178,8 +178,8 @@ pylith::problems::TestSolutionFactory::~TestSolutionFactory(void) {
 void
 pylith::problems::TestSolutionFactory::testDispVel(void) {
     PYLITH_METHOD_BEGIN;
-    assert(_factory);
-    assert(_data);
+    REQUIRE(_factory);
+    REQUIRE(_data);
 
     CHECK(!_solution->hasSubfield("displacement"));
     CHECK(!_solution->hasSubfield("velocity"));
@@ -199,8 +199,8 @@ pylith::problems::TestSolutionFactory::testDispVel(void) {
 void
 pylith::problems::TestSolutionFactory::testDispLagrangeFault(void) {
     PYLITH_METHOD_BEGIN;
-    assert(_factory);
-    assert(_data);
+    REQUIRE(_factory);
+    REQUIRE(_data);
 
     CHECK(!_solution->hasSubfield("displacement"));
     CHECK(!_solution->hasSubfield("lagrange_multiplier_fault"));
@@ -220,8 +220,8 @@ pylith::problems::TestSolutionFactory::testDispLagrangeFault(void) {
 void
 pylith::problems::TestSolutionFactory::testPressure(void) {
     PYLITH_METHOD_BEGIN;
-    assert(_factory);
-    assert(_data);
+    REQUIRE(_factory);
+    REQUIRE(_data);
 
     CHECK(!_solution->hasSubfield("pressure"));
     CHECK(!_solution->hasSubfield("trace_strain"));
@@ -241,8 +241,8 @@ pylith::problems::TestSolutionFactory::testPressure(void) {
 void
 pylith::problems::TestSolutionFactory::testDispTemp(void) {
     PYLITH_METHOD_BEGIN;
-    assert(_factory);
-    assert(_data);
+    REQUIRE(_factory);
+    REQUIRE(_data);
 
     CHECK(!_solution->hasSubfield("displacement"));
     CHECK(!_solution->hasSubfield("temperature"));
@@ -262,8 +262,8 @@ pylith::problems::TestSolutionFactory::testDispTemp(void) {
 void
 pylith::problems::TestSolutionFactory::testSetValues(void) {
     PYLITH_METHOD_BEGIN;
-    assert(_factory);
-    assert(_data);
+    REQUIRE(_factory);
+    REQUIRE(_data);
 
     _factory->addDisplacement(_data->subfields["displacement"].fe);
     _factory->addPressure(_data->subfields["pressure"].fe);
@@ -271,7 +271,7 @@ pylith::problems::TestSolutionFactory::testSetValues(void) {
     _solution->createDiscretization();
     _solution->allocate();
 
-    assert(_data->solutionDB);
+    REQUIRE(_data->solutionDB);
     _factory->setValues(_data->solutionDB);
     pylith::testing::FieldTester::checkFieldWithDB(*_solution, _data->solutionDB, _data->scales->getLengthScale());
 
@@ -285,23 +285,23 @@ void
 pylith::problems::TestSolutionFactory::_initialize(void) {
     PYLITH_METHOD_BEGIN;
 
-    assert(_data);
+    REQUIRE(_data);
 
     pylith::meshio::MeshIOAscii iohandler;
-    assert(_data->meshFilename);
+    REQUIRE(_data->meshFilename);
     iohandler.setFilename(_data->meshFilename);
-    _mesh = new pylith::topology::Mesh();assert(_mesh);
+    _mesh = new pylith::topology::Mesh();REQUIRE(_mesh);
     iohandler.read(_mesh);
 
-    assert(pylith::topology::MeshOps::getNumCells(*_mesh) > 0);
-    assert(pylith::topology::MeshOps::getNumVertices(*_mesh) > 0);
+    REQUIRE(pylith::topology::MeshOps::getNumCells(*_mesh) > 0);
+    REQUIRE(pylith::topology::MeshOps::getNumVertices(*_mesh) > 0);
 
     // Setup coordinates.
     _mesh->setCoordSys(_data->cs);
-    assert(_data->scales);
+    REQUIRE(_data->scales);
     pylith::topology::MeshOps::nondimensionalize(_mesh, *_data->scales);
 
-    _solution = new pylith::topology::Field(*_mesh);assert(_solution);
+    _solution = new pylith::topology::Field(*_mesh);REQUIRE(_solution);
     _solution->setLabel("solution");
     _factory = new SolutionFactory(*_solution, *_data->scales);
 

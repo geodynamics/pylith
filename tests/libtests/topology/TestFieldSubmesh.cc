@@ -974,7 +974,7 @@ void
 pylith::topology::TestFieldSubmesh::_buildMesh(Mesh* mesh) { // _buildMesh
     PYLITH_METHOD_BEGIN;
 
-    assert(mesh);
+    REQUIRE(mesh);
 
     const int cellDim = _TestFieldSubmesh::cellDim;
     const int ncells = _TestFieldSubmesh::ncells;

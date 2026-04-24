@@ -48,8 +48,8 @@ pylith::meshio::TestDataWriterHDF5Points::~TestDataWriterHDF5Points(void) {
 void
 pylith::meshio::TestDataWriterHDF5Points::testOpenClose(void) {
     PYLITH_METHOD_BEGIN;
-    assert(_pointMesh);
-    assert(_data);
+    REQUIRE(_pointMesh);
+    REQUIRE(_data);
 
     DataWriterHDF5 writer;
     writer.filename(_data->opencloseFilename);
@@ -73,8 +73,8 @@ pylith::meshio::TestDataWriterHDF5Points::testOpenClose(void) {
 void
 pylith::meshio::TestDataWriterHDF5Points::testWriteVertexField(void) {
     PYLITH_METHOD_BEGIN;
-    assert(_pointMesh);
-    assert(_data);
+    REQUIRE(_pointMesh);
+    REQUIRE(_data);
 
     pylith::topology::Field vertexField(*_pointMesh);
     _createVertexField(&vertexField);
@@ -92,7 +92,7 @@ pylith::meshio::TestDataWriterHDF5Points::testWriteVertexField(void) {
     const size_t numFields = subfieldNames.size();
     for (size_t i = 0; i < numFields; ++i) {
         OutputSubfield* subfield = OutputSubfield::create(vertexField, *_pointMesh, subfieldNames[i].c_str());
-        assert(subfield);
+        REQUIRE(subfield);
 
         const pylith::topology::Field::SubfieldInfo& info = vertexField.getSubfieldInfo(subfieldNames[i].c_str());
         subfield->extractSubfield(vertexField, info.index);

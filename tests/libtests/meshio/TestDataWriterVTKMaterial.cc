@@ -21,8 +21,6 @@
 #include "catch2/catch_test_macros.hpp"
 #include "catch2/matchers/catch_matchers_floating_point.hpp"
 
-#include <cassert> // USES assert()
-
 // ------------------------------------------------------------------------------------------------
 // Constructor.
 pylith::meshio::TestDataWriterVTKMaterial::TestDataWriterVTKMaterial(TestDataWriterVTKMaterial_Data* data) :
@@ -48,8 +46,8 @@ void
 pylith::meshio::TestDataWriterVTKMaterial::testTimeStep(void) {
     PYLITH_METHOD_BEGIN;
 
-    assert(_materialMesh);
-    assert(_data);
+    REQUIRE(_materialMesh);
+    REQUIRE(_data);
 
     DataWriterVTK writer;
 
@@ -85,9 +83,9 @@ void
 pylith::meshio::TestDataWriterVTKMaterial::testWriteVertexField(void) {
     PYLITH_METHOD_BEGIN;
 
-    assert(_domainMesh);
-    assert(_materialMesh);
-    assert(_data);
+    REQUIRE(_domainMesh);
+    REQUIRE(_materialMesh);
+    REQUIRE(_data);
 
     pylith::topology::Field vertexField(*_domainMesh);
     _createVertexField(&vertexField);
@@ -105,10 +103,10 @@ pylith::meshio::TestDataWriterVTKMaterial::testWriteVertexField(void) {
     const size_t numFields = subfieldNames.size();
     for (size_t i = 0; i < numFields; ++i) {
         OutputSubfield* subfield = OutputSubfield::create(vertexField, *_materialMesh, subfieldNames[i].c_str(), 1, 0);
-        assert(subfield);
+        REQUIRE(subfield);
         subfield->project(vertexField.getOutputVector());
         writer.writeVertexField(t, *subfield);
-        assert(writer._wroteVertexHeader);
+        REQUIRE(writer._wroteVertexHeader);
         CHECK(false == writer._wroteCellHeader);
         delete subfield;subfield = NULL;
     } // for
@@ -130,8 +128,8 @@ void
 pylith::meshio::TestDataWriterVTKMaterial::testWriteCellField(void) {
     PYLITH_METHOD_BEGIN;
 
-    assert(_materialMesh);
-    assert(_data);
+    REQUIRE(_materialMesh);
+    REQUIRE(_data);
 
     pylith::topology::Field cellField(*_materialMesh);
     _createCellField(&cellField);
@@ -149,11 +147,11 @@ pylith::meshio::TestDataWriterVTKMaterial::testWriteCellField(void) {
     const size_t numFields = subfieldNames.size();
     for (size_t i = 0; i < numFields; ++i) {
         OutputSubfield* subfield = OutputSubfield::create(cellField, *_materialMesh, subfieldNames[i].c_str(), 0, 0);
-        assert(subfield);
+        REQUIRE(subfield);
         subfield->project(cellField.getOutputVector());
         writer.writeCellField(t, *subfield);
         CHECK(false == writer._wroteVertexHeader);
-        assert(writer._wroteCellHeader);
+        REQUIRE(writer._wroteCellHeader);
         delete subfield;subfield = NULL;
     } // for
     writer.closeTimeStep();

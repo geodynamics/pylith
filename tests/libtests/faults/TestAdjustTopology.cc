@@ -37,7 +37,7 @@
 pylith::faults::TestAdjustTopology::TestAdjustTopology(TestAdjustTopology_Data* data) :
     _data(data),
     _mesh(nullptr) {
-    assert(_data);
+    REQUIRE(_data);
     GenericComponent::setName("TestAdjustTopology");
 } // constructor
 
@@ -55,15 +55,15 @@ pylith::faults::TestAdjustTopology::~TestAdjustTopology(void) {
 void
 pylith::faults::TestAdjustTopology::run(void) {
     _initialize();
-    assert(_mesh);
-    assert(_data);
+    REQUIRE(_mesh);
+    REQUIRE(_data);
 
     for (size_t i = 0; i < _data->numFaults; ++i) {
         FaultCohesiveStub fault;
 
-        assert(_data->interfaceIds);
-        assert(_data->faultSurfaceLabels);
-        assert(_data->faultEdgeLabels);
+        REQUIRE(_data->interfaceIds);
+        REQUIRE(_data->faultSurfaceLabels);
+        REQUIRE(_data->faultEdgeLabels);
 
         fault.setCohesiveLabelName(pylith::topology::Mesh::cells_label_name);
         fault.setCohesiveLabelValue(_data->interfaceIds[i]);
@@ -90,7 +90,7 @@ pylith::faults::TestAdjustTopology::run(void) {
     } // if
 
     REQUIRE(_data->cellDim == size_t(_mesh->getDimension()));
-    PetscDM dmMesh = _mesh->getDM();assert(dmMesh);
+    PetscDM dmMesh = _mesh->getDM();REQUIRE(dmMesh);
 
     // Check vertices
     topology::Stratum verticesStratum(dmMesh, topology::Stratum::DEPTH, 0);
@@ -106,7 +106,7 @@ pylith::faults::TestAdjustTopology::run(void) {
     } // for
 
     // check cells
-    assert(_data->numCorners);
+    REQUIRE(_data->numCorners);
     pylith::topology::Stratum cellsStratum(dmMesh, pylith::topology::Stratum::HEIGHT, 0);
     const PetscInt cStart = cellsStratum.begin();
     const PetscInt cEnd = cellsStratum.end();
@@ -118,11 +118,11 @@ pylith::faults::TestAdjustTopology::run(void) {
     } // for
 
     // check materials
-    assert(_data->materialIds);
+    REQUIRE(_data->materialIds);
     PetscDMLabel labelMaterials = NULL;
     const char* const cellsLabelName = pylith::topology::Mesh::cells_label_name;
     PylithCallPetsc(DMGetLabel(dmMesh, cellsLabelName, &labelMaterials));
-    assert(labelMaterials);
+    REQUIRE(labelMaterials);
     const PetscInt idDefault = -999;
     for (PetscInt c = cStart, cell = 0; c < cEnd; ++c, ++cell) {
         PetscInt value;
@@ -135,9 +135,9 @@ pylith::faults::TestAdjustTopology::run(void) {
     } // for
 
     // Check groups
-    assert(_data->groupSizes);
-    assert(_data->groupNames);
-    assert(_data->groupTypes);
+    REQUIRE(_data->groupSizes);
+    REQUIRE(_data->groupNames);
+    REQUIRE(_data->groupTypes);
     PetscInt numLabels;
     PylithCallPetsc(DMGetNumLabels(dmMesh, &numLabels));
     for (PetscInt iLabel = 0; iLabel < numLabels; ++iLabel) {
@@ -156,7 +156,7 @@ pylith::faults::TestAdjustTopology::run(void) {
 
         PylithCallPetsc(DMGetLabelName(dmMesh, iLabel, &labelName));
         if (ignoreLabels.count(labelName) > 0) { continue; }
-        PylithCallPetsc(DMGetLabel(dmMesh, labelName, &label));assert(label);
+        PylithCallPetsc(DMGetLabel(dmMesh, labelName, &label));REQUIRE(label);
         PylithCallPetsc(DMLabelGetStratumIS(label, 1, &pointIS));
         PylithCallPetsc(ISGetLocalSize(pointIS, &numPoints));
         PylithCallPetsc(ISGetIndices(pointIS, &points));
@@ -188,15 +188,15 @@ pylith::faults::TestAdjustTopology::run(void) {
 void
 pylith::faults::TestAdjustTopology::_initialize(void) {
     PYLITH_METHOD_BEGIN;
-    assert(_data);
+    REQUIRE(_data);
 
-    delete _mesh;_mesh = new pylith::topology::Mesh;assert(_mesh);
+    delete _mesh;_mesh = new pylith::topology::Mesh;REQUIRE(_mesh);
 
     pylith::meshio::MeshIOAscii iohandler;
     iohandler.setFilename(_data->filename);
     iohandler.read(_mesh);
-    assert(pylith::topology::MeshOps::getNumCells(*_mesh) > 0);
-    assert(pylith::topology::MeshOps::getNumVertices(*_mesh) > 0);
+    REQUIRE(pylith::topology::MeshOps::getNumCells(*_mesh) > 0);
+    REQUIRE(pylith::topology::MeshOps::getNumVertices(*_mesh) > 0);
 
     PYLITH_METHOD_END;
 } // _initialize

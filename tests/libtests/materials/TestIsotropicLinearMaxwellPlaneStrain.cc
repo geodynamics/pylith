@@ -258,7 +258,7 @@ pylith::materials::TestIsotropicLinearMaxwellPlaneStrain::testGetAuxField(void) 
     CPPUNIT_ASSERT(_mydata->scales);
     const PylithReal lengthScale = _mydata->scales->getLengthScale();
 
-    const pylith::topology::Field* auxField = _mymaterial->auxField();assert(auxField);
+    const pylith::topology::Field* auxField = _mymaterial->auxField();REQUIRE(auxField);
     { // Test getting density field.
         pylith::topology::Field density(*_mesh);
         density.copySubfield(*auxField, "density");

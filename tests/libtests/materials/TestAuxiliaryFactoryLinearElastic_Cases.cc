@@ -306,20 +306,20 @@ const PylithReal pylith::materials::TestAuxiliaryFactoryLinearElastic_Cases::KM 
 pylith::materials::TestAuxiliaryFactoryLinearElastic_Data*
 pylith::materials::TestAuxiliaryFactoryLinearElastic_Cases::Tri(void) {
     pylith::materials::TestAuxiliaryFactoryLinearElastic_Data* data = new pylith::materials::TestAuxiliaryFactoryLinearElastic_Data();
-    assert(data);
+    REQUIRE(data);
 
     data->auxDim = 2;
     data->dimension = 2;
     data->meshFilename = "data/tri.mesh";
-    data->cs = new spatialdata::geocoords::CSCart();assert(data->cs);
+    data->cs = new spatialdata::geocoords::CSCart();REQUIRE(data->cs);
     data->cs->setSpaceDim(data->dimension);
 
-    assert(data->scales);
+    REQUIRE(data->scales);
     data->scales->setLengthScale(LENGTH_SCALE);
     data->scales->setTimeScale(TIME_SCALE);
     data->scales->setRigidityScale(RIGIDITY_SCALE);
 
-    assert(data->auxiliaryDB);
+    REQUIRE(data->auxiliaryDB);
     data->auxiliaryDB->addValue("density", density_2d, density_units());
     data->auxiliaryDB->addValue("vs", vs_2d, vs_units());
     data->auxiliaryDB->addValue("vp", vp_2d, vp_units());
@@ -344,20 +344,20 @@ pylith::materials::TestAuxiliaryFactoryLinearElastic_Cases::Tri(void) {
 pylith::materials::TestAuxiliaryFactoryLinearElastic_Data*
 pylith::materials::TestAuxiliaryFactoryLinearElastic_Cases::Hex(void) {
     pylith::materials::TestAuxiliaryFactoryLinearElastic_Data* data = new pylith::materials::TestAuxiliaryFactoryLinearElastic_Data();
-    assert(data);
+    REQUIRE(data);
 
     data->auxDim = 3;
     data->dimension = 3;
     data->meshFilename = "data/hex.mesh";
-    data->cs = new spatialdata::geocoords::CSCart();assert(data->cs);
+    data->cs = new spatialdata::geocoords::CSCart();REQUIRE(data->cs);
     data->cs->setSpaceDim(data->dimension);
 
-    assert(data->scales);
+    REQUIRE(data->scales);
     data->scales->setLengthScale(LENGTH_SCALE);
     data->scales->setTimeScale(TIME_SCALE);
     data->scales->setRigidityScale(RIGIDITY_SCALE);
 
-    assert(data->auxiliaryDB);
+    REQUIRE(data->auxiliaryDB);
     data->auxiliaryDB->addValue("density", density_3d, density_units());
     data->auxiliaryDB->addValue("vs", vs_3d, vs_units());
     data->auxiliaryDB->addValue("vp", vp_3d, vp_units());

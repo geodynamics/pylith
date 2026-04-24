@@ -32,12 +32,12 @@ pylith::testing::FieldTester::checkFieldWithDB(const pylith::topology::Field& fi
     PylithReal norm = 0.0;
     PylithReal t = 0.0;
 
-    const PetscDM dmField = field.getDM();assert(dmField);
+    const PetscDM dmField = field.getDM();REQUIRE(dmField);
     pylith::topology::FieldQuery fieldQuery(field);
     fieldQuery.initializeWithDefaultQueries();
     fieldQuery.openDB(fieldDB, lengthScale);
-    PetscErrorCode err = DMPlexComputeL2DiffLocal(dmField, t, fieldQuery._functions, (void**)fieldQuery._contextPtrs,
-                                                  field.getLocalVector(), &norm);REQUIRE(!err);
+    PylithCallPetscRequire(DMPlexComputeL2DiffLocal(dmField, t, fieldQuery._functions, (void**)fieldQuery._contextPtrs,
+                                                    field.getLocalVector(), &norm));
     fieldQuery.closeDB(fieldDB);
 
     PYLITH_METHOD_RETURN(norm);

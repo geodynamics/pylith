@@ -89,7 +89,7 @@ TEST_CASE("TestDataWriterHDF5Mesh::Hex::testWriteCellField", "[DataWriter][HDF5]
 pylith::meshio::TestDataWriterHDF5Mesh_Data*
 pylith::meshio::TestDataWriterHDF5Mesh_Cases::Tri(void) {
     PYLITH_METHOD_BEGIN;
-    TestDataWriterHDF5Mesh_Data* data = new TestDataWriterHDF5Mesh_Data();assert(data);
+    TestDataWriterHDF5Mesh_Data* data = new TestDataWriterHDF5Mesh_Data();REQUIRE(data);
 
     data->opencloseFilename = "tri3.h5";
     data->vertexFilename = "tri3_vertex.h5";
@@ -105,7 +105,7 @@ pylith::meshio::TestDataWriterHDF5Mesh_Cases::Tri(void) {
 pylith::meshio::TestDataWriterHDF5Mesh_Data*
 pylith::meshio::TestDataWriterHDF5Mesh_Cases::Quad(void) {
     PYLITH_METHOD_BEGIN;
-    TestDataWriterHDF5Mesh_Data* data = new TestDataWriterHDF5Mesh_Data();assert(data);
+    TestDataWriterHDF5Mesh_Data* data = new TestDataWriterHDF5Mesh_Data();REQUIRE(data);
 
     data->opencloseFilename = "quad4.h5";
     data->vertexFilename = "quad4_vertex.h5";
@@ -121,7 +121,7 @@ pylith::meshio::TestDataWriterHDF5Mesh_Cases::Quad(void) {
 pylith::meshio::TestDataWriterHDF5Mesh_Data*
 pylith::meshio::TestDataWriterHDF5Mesh_Cases::Tet(void) {
     PYLITH_METHOD_BEGIN;
-    TestDataWriterHDF5Mesh_Data* data = new TestDataWriterHDF5Mesh_Data();assert(data);
+    TestDataWriterHDF5Mesh_Data* data = new TestDataWriterHDF5Mesh_Data();REQUIRE(data);
 
     data->opencloseFilename = "tet4.h5";
     data->vertexFilename = "tet4_vertex.h5";
@@ -137,7 +137,7 @@ pylith::meshio::TestDataWriterHDF5Mesh_Cases::Tet(void) {
 pylith::meshio::TestDataWriterHDF5Mesh_Data*
 pylith::meshio::TestDataWriterHDF5Mesh_Cases::Hex(void) {
     PYLITH_METHOD_BEGIN;
-    TestDataWriterHDF5Mesh_Data* data = new TestDataWriterHDF5Mesh_Data();assert(data);
+    TestDataWriterHDF5Mesh_Data* data = new TestDataWriterHDF5Mesh_Data();REQUIRE(data);
 
     data->opencloseFilename = "hex8.h5";
     data->vertexFilename = "hex8_vertex.h5";

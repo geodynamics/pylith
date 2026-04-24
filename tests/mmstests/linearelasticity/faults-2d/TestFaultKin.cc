@@ -36,11 +36,13 @@
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 #include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
 
+#include "catch2/catch_test_macros.hpp"
+
 // ------------------------------------------------------------------------------------------------
 // Constuctor.
 pylith::TestFaultKin::TestFaultKin(TestFaultKin_Data* data) :
     _data(data) {
-    assert(_data);
+    REQUIRE(_data);
 
     GenericComponent::setName(_data->journalName);
     _jacobianConvergenceRate = _data->jacobianConvergenceRate;
@@ -62,24 +64,24 @@ pylith::TestFaultKin::~TestFaultKin(void) {
 void
 pylith::TestFaultKin::_initialize(void) {
     PYLITH_METHOD_BEGIN;
-    assert(_mesh);
-    assert(_data);
+    REQUIRE(_mesh);
+    REQUIRE(_data);
 
     if (_data->useAsciiMesh) {
         pylith::meshio::MeshIOAscii iohandler;
         iohandler.setFilename(_data->meshFilename);
-        iohandler.read(_mesh);assert(_mesh);
+        iohandler.read(_mesh);REQUIRE(_mesh);
     } else {
         if (_data->meshOptions) {
             PylithCallPetsc(PetscOptionsInsertString(nullptr, _data->meshOptions));
         } // if
         pylith::meshio::MeshIOPetsc iohandler;
         iohandler.setFilename(_data->meshFilename);
-        iohandler.read(_mesh);assert(_mesh);
+        iohandler.read(_mesh);REQUIRE(_mesh);
     } // if/else
 
-    assert(pylith::topology::MeshOps::getNumCells(*_mesh) > 0);
-    assert(pylith::topology::MeshOps::getNumVertices(*_mesh) > 0);
+    REQUIRE(pylith::topology::MeshOps::getNumCells(*_mesh) > 0);
+    REQUIRE(pylith::topology::MeshOps::getNumVertices(*_mesh) > 0);
 
     // Set up coordinates.
     _mesh->setCoordSys(&_data->cs);
@@ -87,7 +89,7 @@ pylith::TestFaultKin::_initialize(void) {
 
     // Set up materials
     for (size_t iMat = 0; iMat < _data->materials.size(); ++iMat) {
-        assert(_data->materials[iMat]);
+        REQUIRE(_data->materials[iMat]);
         _data->materials[iMat]->setAuxiliaryFieldDB(&_data->matAuxDB);
 
         for (size_t iSubfield = 0; iSubfield < _data->matNumAuxSubfields; ++iSubfield) {
@@ -99,10 +101,10 @@ pylith::TestFaultKin::_initialize(void) {
 
     // Set up faults
     for (size_t iFault = 0; iFault < _data->faults.size(); ++iFault) {
-        assert(_data->faults[iFault]);
+        REQUIRE(_data->faults[iFault]);
         _data->faults[iFault]->adjustTopology(_mesh);
 
-        assert(_data->kinSrc);
+        REQUIRE(_data->kinSrc);
         _data->kinSrc->auxFieldDB(&_data->faultAuxDB);
         for (size_t i = 0; i < _data->faultNumAuxSubfields; ++i) {
             const pylith::topology::FieldBase::Discretization& info = _data->faultAuxDiscretizations[i];
@@ -112,7 +114,7 @@ pylith::TestFaultKin::_initialize(void) {
     } // for
 
     // Set up problem.
-    assert(_problem);
+    REQUIRE(_problem);
     _problem->setScales(_data->scales);
     _problem->setGravityField(_data->gravityField);
     _problem->setMaterials(_data->materials.data(), _data->materials.size());
@@ -124,17 +126,17 @@ pylith::TestFaultKin::_initialize(void) {
     _problem->setFormulation(_data->formulation);
 
     // Set up solution field.
-    assert(!_solution);
-    _solution = new pylith::topology::Field(*_mesh);assert(_solution);
+    REQUIRE(!_solution);
+    _solution = new pylith::topology::Field(*_mesh);REQUIRE(_solution);
     _solution->setLabel("solution");
     pylith::problems::SolutionFactory factory(*_solution, _data->scales);
     int iField = 0;
     factory.addDisplacement(_data->solnDiscretizations[iField++]);
     if (pylith::problems::Physics::QUASISTATIC == _data->formulation) {
-        assert(1 == _data->numSolnSubfieldsDomain);
+        REQUIRE(1 == _data->numSolnSubfieldsDomain);
     } else {
-        assert(pylith::problems::Physics::DYNAMIC == _data->formulation);
-        assert(2 == _data->numSolnSubfieldsDomain);
+        REQUIRE(pylith::problems::Physics::DYNAMIC == _data->formulation);
+        REQUIRE(2 == _data->numSolnSubfieldsDomain);
         factory.addVelocity(_data->solnDiscretizations[1]);
     } // if/else
     factory.addLagrangeMultiplierFault(_data->solnDiscretizations[iField++]);
@@ -150,9 +152,9 @@ pylith::TestFaultKin::_initialize(void) {
 // Set functions for computing the exact solution and its time derivative.
 void
 pylith::TestFaultKin::_setExactSolution(void) {
-    assert(_data->exactSolnFns);
+    REQUIRE(_data->exactSolnFns);
 
-    const pylith::topology::Field* solution = _problem->getSolution();assert(solution);
+    const pylith::topology::Field* solution = _problem->getSolution();REQUIRE(solution);
 
     PetscDM dm = solution->getDM();
     PetscDS ds = nullptr;

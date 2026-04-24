@@ -121,7 +121,7 @@ pylith::utils::TestPylithVersion::testGitHash(void) { // testGitHash
     const int len = strlen(hash);
     for (int i = 0; i < len; ++i) {
         const int value = int(hash[i]);
-        assert((value >= int('0') && value <= int('9')) || (value >= int('a') && value <= int('z')));
+        REQUIRE(((value >= int('0') && value <= int('9')) || (value >= int('a') && value <= int('z'))));
     } // for
 #endif
 } // testGitHash

@@ -27,7 +27,7 @@ pylith::feassemble::TestInterfacePatches::TestInterfacePatches(TestInterfacePatc
     _data(data) {
     PYLITH_METHOD_BEGIN;
 
-    assert(_data);
+    REQUIRE(_data);
     _mesh = NULL;
     _fault = NULL;
 
@@ -72,12 +72,12 @@ pylith::feassemble::TestInterfacePatches::testAccessors(void) {
 void
 pylith::feassemble::TestInterfacePatches::testCreateMaterialPairs(void) {
     PYLITH_METHOD_BEGIN;
-    assert(_data);
+    REQUIRE(_data);
 
     _initialize();
-    assert(_fault);
+    REQUIRE(_fault);
     InterfacePatches* patches = InterfacePatches::createMaterialPairs(_fault, _mesh->getDM());
-    assert(patches);
+    REQUIRE(patches);
 
     const std::string& labelName = std::string(_data->faultLabel) + std::string("-integration-patches");
     CHECK(labelName == std::string(patches->getLabelName()));
@@ -86,9 +86,9 @@ pylith::feassemble::TestInterfacePatches::testCreateMaterialPairs(void) {
     REQUIRE(numPatches == patches->_keys.size());
 
     const std::string& cellsLabelName = pylith::topology::Mesh::cells_label_name;
-    assert(_data->patchKeys);
-    assert(_data->patchNumCells);
-    assert(_data->patchCells);
+    REQUIRE(_data->patchKeys);
+    REQUIRE(_data->patchNumCells);
+    REQUIRE(_data->patchCells);
     for (InterfacePatches::keysmap_t::iterator iter = patches->_keys.begin(); iter != patches->_keys.end(); ++iter) {
         const PetscInt labelValue = iter->first;
         const InterfacePatches::WeakFormKeys weakFormKeys = iter->second;
@@ -103,7 +103,7 @@ pylith::feassemble::TestInterfacePatches::testCreateMaterialPairs(void) {
                 break;
             } // if
         } // for
-        assert(patchIndex >= 0);
+        REQUIRE(patchIndex >= 0);
 
         CHECK(labelName == weakFormKeys.cohesive._name);
 
@@ -114,18 +114,17 @@ pylith::feassemble::TestInterfacePatches::testCreateMaterialPairs(void) {
         CHECK(_data->patchKeys[patchIndex].positive_value == matIdPositive);
 
         // Check labels
-        PetscErrorCode err = PETSC_SUCCESS;
         PetscDMLabel label = NULL;
         PetscIS pointsIS = NULL;
         PetscInt numPoints = 0;
         const PetscInt* points = NULL;
-        err = DMGetLabel(_mesh->getDM(), labelName.c_str(), &label);REQUIRE(!err);
-        err = DMLabelGetStratumIS(label, labelValue, &pointsIS);REQUIRE(!err);
-        err = ISGetSize(pointsIS, &numPoints);REQUIRE(!err);
+        PylithCallPetscRequire(DMGetLabel(_mesh->getDM(), labelName.c_str(), &label));
+        PylithCallPetscRequire(DMLabelGetStratumIS(label, labelValue, &pointsIS));
+        PylithCallPetscRequire(ISGetSize(pointsIS, &numPoints));
         INFO("Checking integration patch for materials ("<<matIdNegative<<", "<<matIdPositive<<").");
         REQUIRE(_data->patchNumCells[patchIndex] == numPoints);
 
-        err = ISGetIndices(pointsIS, &points);REQUIRE(!err);
+        PylithCallPetscRequire(ISGetIndices(pointsIS, &points));
         REQUIRE(_data->patchCells[patchIndex]);
         for (PetscInt iPoint = 0; iPoint < numPoints; ++iPoint) {
             CHECK(_data->patchCells[patchIndex][iPoint] == points[iPoint]);
@@ -143,18 +142,18 @@ pylith::feassemble::TestInterfacePatches::testCreateMaterialPairs(void) {
 void
 pylith::feassemble::TestInterfacePatches::_initialize() {
     PYLITH_METHOD_BEGIN;
-    assert(_data);
+    REQUIRE(_data);
 
-    delete _mesh;_mesh = new pylith::topology::Mesh;assert(_mesh);
+    delete _mesh;_mesh = new pylith::topology::Mesh;REQUIRE(_mesh);
 
     pylith::meshio::MeshIOAscii iohandler;
     iohandler.setFilename(_data->filename);
     iohandler.read(_mesh);
-    assert(pylith::topology::MeshOps::getNumCells(*_mesh) > 0);
-    assert(pylith::topology::MeshOps::getNumVertices(*_mesh) > 0);
+    REQUIRE(pylith::topology::MeshOps::getNumCells(*_mesh) > 0);
+    REQUIRE(pylith::topology::MeshOps::getNumVertices(*_mesh) > 0);
 
-    assert(_data->faultLabel);
-    _fault = new pylith::faults::FaultCohesiveStub();assert(_fault);
+    REQUIRE(_data->faultLabel);
+    _fault = new pylith::faults::FaultCohesiveStub();REQUIRE(_fault);
     _fault->setCohesiveLabelName(pylith::topology::Mesh::cells_label_name);
     _fault->setCohesiveLabelValue(101);
     _fault->setSurfaceLabelName(_data->faultLabel);

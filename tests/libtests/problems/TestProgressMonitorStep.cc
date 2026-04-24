@@ -59,7 +59,7 @@ TEST_CASE("TestProgressMonitorStep::testUpdate", "[TestProgressMonitorStep]") {
 // ------------------------------------------------------------------------------------------------
 // Constructor.
 pylith::problems::TestProgressMonitorStep::TestProgressMonitorStep(void) {
-    _monitor = new ProgressMonitorStep();assert(_monitor);
+    _monitor = new ProgressMonitorStep();REQUIRE(_monitor);
 } // setUp
 
 
@@ -75,7 +75,7 @@ pylith::problems::TestProgressMonitorStep::~TestProgressMonitorStep(void) {
 void
 pylith::problems::TestProgressMonitorStep::testOpenClose(void) {
     PYLITH_METHOD_BEGIN;
-    assert(_monitor);
+    REQUIRE(_monitor);
 
     _monitor->open();
     _monitor->close();
@@ -90,7 +90,7 @@ pylith::problems::TestProgressMonitorStep::testOpenClose(void) {
 void
 pylith::problems::TestProgressMonitorStep::testUpdate(void) {
     PYLITH_METHOD_BEGIN;
-    assert(_monitor);
+    REQUIRE(_monitor);
 
     const size_t start = 2;
     const size_t stop = 52;

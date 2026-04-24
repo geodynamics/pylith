@@ -29,7 +29,6 @@
 
 #include <strings.h> // USES strcasecmp()
 #include <stdexcept> // USES std::logic_error
-#include <cassert> // USES assert()
 
 static PetscErrorCode
 DMPlexInvertCell_Private(PetscInt dim,
@@ -60,7 +59,7 @@ DMPlexInvertCell_Private(PetscInt dim,
 // Constructor.
 pylith::meshio::TestMeshIO::TestMeshIO(TestMeshIO_Data* data) :
     _data(data) {
-    assert(_data);
+    REQUIRE(_data);
     _mesh = NULL;
 } // constructor
 
@@ -81,26 +80,26 @@ pylith::meshio::TestMeshIO::~TestMeshIO(void) {
 void
 pylith::meshio::TestMeshIO::_createMesh(void) {
     PYLITH_METHOD_BEGIN;
-    assert(_data);
+    REQUIRE(_data);
 
     // buildTopology() requires zero based index
-    assert(_data->useIndexZero);
+    REQUIRE(_data->useIndexZero);
 
-    assert(_data->topology);
-    assert(_data->geometry);
-    assert(_data->materialIds);
+    REQUIRE(_data->topology);
+    REQUIRE(_data->geometry);
+    REQUIRE(_data->materialIds);
     if (_data->numVertexGroups > 0) {
-        assert(_data->vertexGroups);
-        assert(_data->vertexGroupSizes);
-        assert(_data->vertexGroupNames);
+        REQUIRE(_data->vertexGroups);
+        REQUIRE(_data->vertexGroupSizes);
+        REQUIRE(_data->vertexGroupNames);
     } // if
     if (_data->numFaceGroups > 0) {
-        assert(_data->faceGroups);
-        assert(_data->faceGroupSizes);
-        assert(_data->faceGroupNames);
+        REQUIRE(_data->faceGroups);
+        REQUIRE(_data->faceGroupSizes);
+        REQUIRE(_data->faceGroupNames);
     } // if
 
-    delete _mesh;_mesh = new pylith::topology::Mesh();assert(_mesh);
+    delete _mesh;_mesh = new pylith::topology::Mesh();REQUIRE(_mesh);
 
     int_array cellsCopy(_data->topology->cells); // Create copy because building mesh may change cells (invert)
     pylith::meshio::MeshBuilder::buildMesh(_mesh, *_data->topology, *_data->geometry);
@@ -117,7 +116,7 @@ pylith::meshio::TestMeshIO::_createMesh(void) {
 
     // Vertex groups
     for (size_t iGroup = 0, index = 0; iGroup < _data->numVertexGroups; ++iGroup) {
-        const size_t groupSize = _data->vertexGroupSizes[iGroup];assert(groupSize > 0);
+        const size_t groupSize = _data->vertexGroupSizes[iGroup];REQUIRE(groupSize > 0);
         int_array points(groupSize);
         for (size_t i = 0; i < groupSize; ++i, ++index) {
             points[i] = _data->vertexGroups[index];
@@ -129,7 +128,7 @@ pylith::meshio::TestMeshIO::_createMesh(void) {
     const pylith::meshio::MeshBuilder::shape_t faceShape = pylith::meshio::MeshBuilder::faceShapeFromCellShape(_data->topology->cellShape);
     const size_t numFaceVertices = pylith::meshio::MeshBuilder::getNumVerticesFace(faceShape);
     for (size_t iGroup = 0, index = 0; iGroup < _data->numFaceGroups; ++iGroup) {
-        const size_t numFaces = _data->faceGroupSizes[iGroup];assert(numFaces > 0);
+        const size_t numFaces = _data->faceGroupSizes[iGroup];REQUIRE(numFaces > 0);
         const size_t totalSize = numFaces * (1 + numFaceVertices); // cell + vertices
         int_array faceValues(totalSize);
         for (size_t i = 0; i < totalSize; ++i, ++index) {
@@ -162,14 +161,14 @@ pylith::meshio::TestMeshIO::_createMesh(void) {
 void
 pylith::meshio::TestMeshIO::_checkVals(void) {
     PYLITH_METHOD_BEGIN;
-    assert(_mesh);
-    assert(_data);
+    REQUIRE(_mesh);
+    REQUIRE(_data);
 
     // Check mesh dimension
     CHECK(_data->topology->dimension == size_t(_mesh->getDimension()));
     const int spaceDim = _data->geometry->spaceDim;
 
-    PetscDM dmMesh = _mesh->getDM();assert(dmMesh);
+    PetscDM dmMesh = _mesh->getDM();REQUIRE(dmMesh);
 
     // Check vertices
     pylith::topology::Stratum verticesStratum(dmMesh, pylith::topology::Stratum::DEPTH, 0);
@@ -199,31 +198,30 @@ pylith::meshio::TestMeshIO::_checkVals(void) {
 
     REQUIRE(_data->topology->numCells == numCells);
     const int offset = numCells;
-    PetscErrorCode err = PETSC_SUCCESS;
     for (PylithInt c = cStart, index = 0; c < cEnd; ++c) {
         PylithInt *closure = NULL;
         PylithInt closureSize;
         size_t numCorners = 0;
 
-        err = DMPlexGetTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);REQUIRE(!err);
+        PylithCallPetscRequire(DMPlexGetTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure));
         for (PylithInt p = 0; p < closureSize*2; p += 2) {
             const PylithInt point = closure[p];
             if ((point >= vStart) && (point < vEnd)) {
                 closure[numCorners++] = point;
             } // if
         } // for
-        err = DMPlexInvertCell_Private(_data->topology->dimension, numCorners, closure);REQUIRE(!err);
+        PylithCallPetscRequire(DMPlexInvertCell_Private(_data->topology->dimension, numCorners, closure));
         REQUIRE(_data->topology->numCorners == numCorners);
         for (size_t p = 0; p < numCorners; ++p) {
             CHECK(_data->topology->cells[index++] == closure[p]-offset);
         } // for
-        err = DMPlexRestoreTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);REQUIRE(!err);
+        PylithCallPetscRequire(DMPlexRestoreTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure));
     } // for
 
     // check materials
     PylithInt matId = 0;
     for (PylithInt c = cStart; c < cEnd; ++c) {
-        err = DMGetLabelValue(dmMesh, pylith::topology::Mesh::cells_label_name, c, &matId);REQUIRE(!err);
+        PylithCallPetscRequire(DMGetLabelValue(dmMesh, pylith::topology::Mesh::cells_label_name, c, &matId));
         CHECK(_data->materialIds[c-cStart] == matId);
     } // for
 
@@ -237,10 +235,10 @@ pylith::meshio::TestMeshIO::_checkVals(void) {
         INFO("Checking " << groupName);
 
         PetscBool hasLabel = PETSC_TRUE;
-        err = DMHasLabel(dmMesh, groupName, &hasLabel);assert(!err);
+        PylithCallPetscRequire(DMHasLabel(dmMesh, groupName, &hasLabel));
         REQUIRE(hasLabel);
         PetscDMLabel label = NULL;
-        err = DMGetLabel(dmMesh, groupName, &label);assert(!err);
+        PylithCallPetscRequire(DMGetLabel(dmMesh, groupName, &label));
 
         const PylithInt labelValue = _data->vertexGroupTags ? _data->vertexGroupTags[iGroup] : 1;
         int_array points;
@@ -265,10 +263,10 @@ pylith::meshio::TestMeshIO::_checkVals(void) {
         INFO("Checking " << groupName);
 
         PetscBool hasLabel = PETSC_TRUE;
-        err = DMHasLabel(dmMesh, groupName, &hasLabel);assert(!err);
+        PylithCallPetscRequire(DMHasLabel(dmMesh, groupName, &hasLabel));
         REQUIRE(hasLabel);
         PetscDMLabel label = NULL;
-        err = DMGetLabel(dmMesh, groupName, &label);assert(!err);
+        PylithCallPetscRequire(DMGetLabel(dmMesh, groupName, &label));
 
         const PylithInt labelValue = _data->faceGroupTags ? _data->faceGroupTags[iGroup] : 1;
         int_array faceValues;

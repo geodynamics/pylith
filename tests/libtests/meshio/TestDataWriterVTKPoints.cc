@@ -24,8 +24,6 @@
 #include "catch2/catch_test_macros.hpp"
 #include "catch2/matchers/catch_matchers_floating_point.hpp"
 
-#include <cassert> // USES assert()
-
 // ------------------------------------------------------------------------------------------------
 // Constructor.
 pylith::meshio::TestDataWriterVTKPoints::TestDataWriterVTKPoints(TestDataWriterVTKPoints_Data* data) :
@@ -50,8 +48,8 @@ pylith::meshio::TestDataWriterVTKPoints::~TestDataWriterVTKPoints(void) {
 void
 pylith::meshio::TestDataWriterVTKPoints::testTimeStep(void) {
     PYLITH_METHOD_BEGIN;
-    assert(_pointMesh);
-    assert(_data);
+    REQUIRE(_pointMesh);
+    REQUIRE(_data);
 
     DataWriterVTK writer;
     writer.filename(_data->timestepFilename);
@@ -85,8 +83,8 @@ pylith::meshio::TestDataWriterVTKPoints::testTimeStep(void) {
 void
 pylith::meshio::TestDataWriterVTKPoints::testWriteVertexField(void) {
     PYLITH_METHOD_BEGIN;
-    assert(_pointMesh);
-    assert(_data);
+    REQUIRE(_pointMesh);
+    REQUIRE(_data);
 
     pylith::topology::Field vertexField(*_pointMesh);
     _createVertexField(&vertexField);
@@ -104,13 +102,13 @@ pylith::meshio::TestDataWriterVTKPoints::testWriteVertexField(void) {
     const size_t numFields = subfieldNames.size();
     for (size_t i = 0; i < numFields; ++i) {
         OutputSubfield* subfield = OutputSubfield::create(vertexField, *_pointMesh, subfieldNames[i].c_str());
-        assert(subfield);
+        REQUIRE(subfield);
 
         const pylith::topology::Field::SubfieldInfo& info = vertexField.getSubfieldInfo(subfieldNames[i].c_str());
         subfield->extractSubfield(vertexField, info.index);
 
         writer.writeVertexField(t, *subfield);
-        assert(writer._wroteVertexHeader);
+        REQUIRE(writer._wroteVertexHeader);
         CHECK(false == writer._wroteCellHeader);
         delete subfield;subfield = NULL;
     } // for

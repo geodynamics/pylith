@@ -70,7 +70,7 @@ TEST_CASE("TestMeshIOAscii::Hex_OrphanVertex::testReadError", "[TestMeshIOAscii]
 // ------------------------------------------------------------------------------------------------
 pylith::meshio::TestMeshIO_Data*
 pylith::meshio::TestMeshIOAscii_Cases::Quad2D(void) {
-    TestMeshIO_Data* data = new TestMeshIO_Data();assert(data);
+    TestMeshIO_Data* data = new TestMeshIO_Data();REQUIRE(data);
 
     data->filename = "quad.mesh";
     const size_t numVertices = 9;
@@ -144,7 +144,7 @@ pylith::meshio::TestMeshIOAscii_Cases::Quad2D(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::meshio::TestMeshIO_Data*
 pylith::meshio::TestMeshIOAscii_Cases::Quad2D_Comments(void) {
-    TestMeshIO_Data* data = Quad2D();assert(data);
+    TestMeshIO_Data* data = Quad2D();REQUIRE(data);
 
     data->filename = "data/quad_comments.mesh";
 
@@ -155,7 +155,7 @@ pylith::meshio::TestMeshIOAscii_Cases::Quad2D_Comments(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::meshio::TestMeshIO_Data*
 pylith::meshio::TestMeshIOAscii_Cases::Hex3D(void) {
-    TestMeshIO_Data* data = new TestMeshIO_Data();assert(data);
+    TestMeshIO_Data* data = new TestMeshIO_Data();REQUIRE(data);
 
     data->filename = "hex.mesh";
     const size_t numVertices = 14;
@@ -236,7 +236,7 @@ pylith::meshio::TestMeshIOAscii_Cases::Hex3D(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::meshio::TestMeshIO_Data*
 pylith::meshio::TestMeshIOAscii_Cases::Hex3D_Index1(void) {
-    TestMeshIO_Data* data = Hex3D();assert(data);
+    TestMeshIO_Data* data = Hex3D();REQUIRE(data);
 
     data->filename = "data/hex_index1.mesh";
 
@@ -247,7 +247,7 @@ pylith::meshio::TestMeshIOAscii_Cases::Hex3D_Index1(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::meshio::TestMeshIO_Data*
 pylith::meshio::TestMeshIOAscii_Cases::Tri_OrphanVertex(void) {
-    TestMeshIO_Data* data = new TestMeshIO_Data();assert(data);
+    TestMeshIO_Data* data = new TestMeshIO_Data();REQUIRE(data);
 
     data->filename = "data/tri_orphan_vertex.mesh";
 
@@ -258,7 +258,7 @@ pylith::meshio::TestMeshIOAscii_Cases::Tri_OrphanVertex(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::meshio::TestMeshIO_Data*
 pylith::meshio::TestMeshIOAscii_Cases::Hex_OrphanVertex(void) {
-    TestMeshIO_Data* data = new TestMeshIO_Data();assert(data);
+    TestMeshIO_Data* data = new TestMeshIO_Data();REQUIRE(data);
 
     data->filename = "data/hex_orphan_vertex.mesh";
 

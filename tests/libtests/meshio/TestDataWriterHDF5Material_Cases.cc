@@ -82,7 +82,7 @@ TEST_CASE("TestDataWriterHDF5Material::Hex::testWriteCellField", "[DataWriter][H
 pylith::meshio::TestDataWriterHDF5Material_Data*
 pylith::meshio::TestDataWriterHDF5Material_Cases::Tri(void) {
     PYLITH_METHOD_BEGIN;
-    TestDataWriterHDF5Material_Data* data = new TestDataWriterHDF5Material_Data();assert(data);
+    TestDataWriterHDF5Material_Data* data = new TestDataWriterHDF5Material_Data();REQUIRE(data);
 
     data->opencloseFilename = "tri3_mat.h5";
     data->vertexFilename = "tri3_mat_vertex.h5";
@@ -98,7 +98,7 @@ pylith::meshio::TestDataWriterHDF5Material_Cases::Tri(void) {
 pylith::meshio::TestDataWriterHDF5Material_Data*
 pylith::meshio::TestDataWriterHDF5Material_Cases::Quad(void) {
     PYLITH_METHOD_BEGIN;
-    TestDataWriterHDF5Material_Data* data = new TestDataWriterHDF5Material_Data();assert(data);
+    TestDataWriterHDF5Material_Data* data = new TestDataWriterHDF5Material_Data();REQUIRE(data);
 
     data->opencloseFilename = "quad4_mat.h5";
     data->vertexFilename = "quad4_mat_vertex.h5";
@@ -114,7 +114,7 @@ pylith::meshio::TestDataWriterHDF5Material_Cases::Quad(void) {
 pylith::meshio::TestDataWriterHDF5Material_Data*
 pylith::meshio::TestDataWriterHDF5Material_Cases::Tet(void) {
     PYLITH_METHOD_BEGIN;
-    TestDataWriterHDF5Material_Data* data = new TestDataWriterHDF5Material_Data();assert(data);
+    TestDataWriterHDF5Material_Data* data = new TestDataWriterHDF5Material_Data();REQUIRE(data);
 
     data->opencloseFilename = "tet4_mat.h5";
     data->vertexFilename = "tet4_mat_vertex.h5";
@@ -130,7 +130,7 @@ pylith::meshio::TestDataWriterHDF5Material_Cases::Tet(void) {
 pylith::meshio::TestDataWriterHDF5Material_Data*
 pylith::meshio::TestDataWriterHDF5Material_Cases::Hex(void) {
     PYLITH_METHOD_BEGIN;
-    TestDataWriterHDF5Material_Data* data = new TestDataWriterHDF5Material_Data();assert(data);
+    TestDataWriterHDF5Material_Data* data = new TestDataWriterHDF5Material_Data();REQUIRE(data);
 
     data->opencloseFilename = "hex8_mat.h5";
     data->vertexFilename = "hex8_mat_vertex.h5";

@@ -19,6 +19,8 @@
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 #include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
 
+#include "catch2/catch_test_macros.hpp"
+
 namespace pylith {
     class _Gravity2D;
 } // pylith
@@ -102,10 +104,10 @@ private:
                                           PetscInt numComponents,
                                           PetscScalar* s,
                                           void* context) {
-        assert(2 == spaceDim);
-        assert(2 == numComponents);
-        assert(s);
-        assert(x);
+        REQUIRE(2 == spaceDim);
+        REQUIRE(2 == numComponents);
+        REQUIRE(s);
+        REQUIRE(x);
 
         s[0] = disp_x(x[0], x[1]);
         s[1] = disp_y(x[0], x[1]);
@@ -119,10 +121,10 @@ private:
                                               PetscInt numComponents,
                                               PetscScalar* s,
                                               void* context) {
-        assert(2 == spaceDim);
-        assert(x);
-        assert(1 == numComponents);
-        assert(s);
+        REQUIRE(2 == spaceDim);
+        REQUIRE(x);
+        REQUIRE(1 == numComponents);
+        REQUIRE(s);
 
         s[0] = pressure(x[0], x[1]);
 
@@ -133,7 +135,7 @@ public:
 
     static
     TestIncompressibleElasticity_Data* createData(void) {
-        TestIncompressibleElasticity_Data* data = new TestIncompressibleElasticity_Data();assert(data);
+        TestIncompressibleElasticity_Data* data = new TestIncompressibleElasticity_Data();REQUIRE(data);
 
         data->journalName = "Gravity2D";
 
@@ -179,7 +181,7 @@ public:
         { // disp
             static const PylithInt constrainedDOF[2] = {0, 1};
             static const PylithInt numConstrainedDOF = 2;
-            pylith::bc::DirichletUserFn* bc = new pylith::bc::DirichletUserFn();assert(bc);
+            pylith::bc::DirichletUserFn* bc = new pylith::bc::DirichletUserFn();REQUIRE(bc);
             bc->setSubfieldName("displacement");
             bc->setLabelName("boundary");
             bc->setLabelValue(1);
@@ -191,7 +193,7 @@ public:
         { // pressure
             static const PylithInt constrainedDOF[1] = {0};
             static const PylithInt numConstrainedDOF = 1;
-            pylith::bc::DirichletUserFn* bc = new pylith::bc::DirichletUserFn();assert(bc);
+            pylith::bc::DirichletUserFn* bc = new pylith::bc::DirichletUserFn();REQUIRE(bc);
             bc->setSubfieldName("pressure");
             bc->setLabelName("boundary");
             bc->setLabelValue(1);
@@ -217,7 +219,7 @@ const double pylith::_Gravity2D::Y_MAX = +4.0e+3;
 // ------------------------------------------------------------------------------------------------
 pylith::TestIncompressibleElasticity_Data*
 pylith::Gravity2D::TriP1(void) {
-    TestIncompressibleElasticity_Data* data = pylith::_Gravity2D::createData();assert(data);
+    TestIncompressibleElasticity_Data* data = pylith::_Gravity2D::createData();REQUIRE(data);
 
     data->meshFilename = "data/tri.mesh";
 
@@ -243,7 +245,7 @@ pylith::Gravity2D::TriP1(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestIncompressibleElasticity_Data*
 pylith::Gravity2D::TriP2(void) {
-    TestIncompressibleElasticity_Data* data = pylith::_Gravity2D::createData();assert(data);
+    TestIncompressibleElasticity_Data* data = pylith::_Gravity2D::createData();REQUIRE(data);
 
     data->meshFilename = "data/tri.mesh";
 
@@ -269,7 +271,7 @@ pylith::Gravity2D::TriP2(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestIncompressibleElasticity_Data*
 pylith::Gravity2D::TriP3(void) {
-    TestIncompressibleElasticity_Data* data = pylith::_Gravity2D::createData();assert(data);
+    TestIncompressibleElasticity_Data* data = pylith::_Gravity2D::createData();REQUIRE(data);
 
     data->meshFilename = "data/tri.mesh";
 
@@ -295,7 +297,7 @@ pylith::Gravity2D::TriP3(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestIncompressibleElasticity_Data*
 pylith::Gravity2D::QuadQ2(void) {
-    TestIncompressibleElasticity_Data* data = pylith::_Gravity2D::createData();assert(data);
+    TestIncompressibleElasticity_Data* data = pylith::_Gravity2D::createData();REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 
@@ -321,7 +323,7 @@ pylith::Gravity2D::QuadQ2(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestIncompressibleElasticity_Data*
 pylith::Gravity2D::QuadQ3(void) {
-    TestIncompressibleElasticity_Data* data = pylith::_Gravity2D::createData();assert(data);
+    TestIncompressibleElasticity_Data* data = pylith::_Gravity2D::createData();REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 

@@ -67,7 +67,7 @@ TEST_CASE("TestProgressMonitorTime::testUpdate", "[TestProgressMonitorTime]") {
 // ------------------------------------------------------------------------------------------------
 // Setup testing data.
 pylith::problems::TestProgressMonitorTime::TestProgressMonitorTime(void) {
-    _monitor = new ProgressMonitorTime();assert(_monitor);
+    _monitor = new ProgressMonitorTime();REQUIRE(_monitor);
 } // setUp
 
 
@@ -83,7 +83,7 @@ pylith::problems::TestProgressMonitorTime::~TestProgressMonitorTime(void) {
 void
 pylith::problems::TestProgressMonitorTime::testAccessors(void) {
     PYLITH_METHOD_BEGIN;
-    assert(_monitor);
+    REQUIRE(_monitor);
 
     std::string unit = "second";
     CHECK(unit == std::string(_monitor->getTimeUnit()));
@@ -101,7 +101,7 @@ pylith::problems::TestProgressMonitorTime::testAccessors(void) {
 void
 pylith::problems::TestProgressMonitorTime::testOpenClose(void) {
     PYLITH_METHOD_BEGIN;
-    assert(_monitor);
+    REQUIRE(_monitor);
 
     _monitor->open();
     _monitor->close();
@@ -116,7 +116,7 @@ pylith::problems::TestProgressMonitorTime::testOpenClose(void) {
 void
 pylith::problems::TestProgressMonitorTime::testUpdate(void) {
     PYLITH_METHOD_BEGIN;
-    assert(_monitor);
+    REQUIRE(_monitor);
 
     const double start = 1.0;
     const double stop = 11.0;

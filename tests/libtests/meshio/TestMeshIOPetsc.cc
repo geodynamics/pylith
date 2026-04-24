@@ -21,13 +21,12 @@
 #include "catch2/catch_test_macros.hpp"
 
 #include <strings.h> // USES strcasecmp()
-#include <cassert> // USES assert()
 
 // ------------------------------------------------------------------------------------------------
 // Constructor.
 pylith::meshio::TestMeshIOPetsc::TestMeshIOPetsc(TestMeshIO_Data* data) :
     TestMeshIO(data) {
-    _io = new MeshIOPetsc();assert(_io);
+    _io = new MeshIOPetsc();REQUIRE(_io);
     _io->PyreComponent::setIdentifier("TestMeshIOPetsc");
 } // constructor
 
@@ -44,7 +43,7 @@ pylith::meshio::TestMeshIOPetsc::~TestMeshIOPetsc(void) {
 void
 pylith::meshio::TestMeshIOPetsc::testFilename(void) {
     PYLITH_METHOD_BEGIN;
-    assert(_io);
+    REQUIRE(_io);
 
     const std::string& filename = "hi.h5";
     _io->setFilename(filename.c_str());
@@ -59,14 +58,14 @@ pylith::meshio::TestMeshIOPetsc::testFilename(void) {
 void
 pylith::meshio::TestMeshIOPetsc::testRead(const bool gmshMarkRecursive) {
     PYLITH_METHOD_BEGIN;
-    assert(_io);
-    assert(_data);
+    REQUIRE(_io);
+    REQUIRE(_data);
 
     _io->setGmshMarkRecursive(gmshMarkRecursive);
 
     // Read mesh
     _io->setFilename(_data->filename.c_str());
-    delete _mesh;_mesh = new topology::Mesh;assert(_mesh);
+    delete _mesh;_mesh = new topology::Mesh;REQUIRE(_mesh);
     _io->read(_mesh);
 
     pythia::journal::debug_t debug("TestMeshIOPetsc");
@@ -86,12 +85,12 @@ pylith::meshio::TestMeshIOPetsc::testRead(const bool gmshMarkRecursive) {
 void
 pylith::meshio::TestMeshIOPetsc::testReadError(void) {
     PYLITH_METHOD_BEGIN;
-    assert(_io);
-    assert(_data);
+    REQUIRE(_io);
+    REQUIRE(_data);
 
     // Read mesh
     _io->setFilename(_data->filename.c_str());
-    delete _mesh;_mesh = new topology::Mesh;assert(_mesh);
+    delete _mesh;_mesh = new topology::Mesh;REQUIRE(_mesh);
 
     CHECK_THROWS_AS(_io->read(_mesh), std::runtime_error);
 
@@ -104,9 +103,9 @@ pylith::meshio::TestMeshIOPetsc::testReadError(void) {
 void
 pylith::meshio::TestMeshIOPetsc::testWriteRead(void) {
     PYLITH_METHOD_BEGIN;
-    assert(_io);
+    REQUIRE(_io);
 
-    TestMeshIO::_createMesh();assert(_mesh);
+    TestMeshIO::_createMesh();REQUIRE(_mesh);
 
     // Write mesh
     _io->setFilename(_data->filename.c_str());

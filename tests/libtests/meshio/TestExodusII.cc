@@ -139,10 +139,10 @@ pylith::meshio::TestExodusII::testFilename(void) {
 void
 pylith::meshio::TestExodusII::testOpenClose(void) {
     ExodusII exofile("data/twotri3_13.0.exo");
-    assert(exofile._file);
+    REQUIRE(exofile._file);
 
     exofile.close();
-    assert(!exofile._file);
+    REQUIRE(!exofile._file);
 
     // Attempt to open file that doesn't exist.
     exofile.filename("fail.exo");

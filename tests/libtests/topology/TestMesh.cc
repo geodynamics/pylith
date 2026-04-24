@@ -125,7 +125,7 @@ pylith::topology::TestMesh::testConstructor(void) {
 
 // Test getDM().
 void
-pylith::topology::TestMesh::testDMMesh(void) { // testDMMesh
+pylith::topology::TestMesh::testDMMesh(void) {
     PYLITH_METHOD_BEGIN;
 
     const int dim = 2;
@@ -133,7 +133,7 @@ pylith::topology::TestMesh::testDMMesh(void) { // testDMMesh
     Mesh mesh(dim);
 
     PetscDM dmMesh = mesh.getDM();REQUIRE(dmMesh);
-    PetscErrorCode err = DMGetDimension(dmMesh, &dmDim);REQUIRE(!err);
+    PylithCallPetscRequire(DMGetDimension(dmMesh, &dmDim));
     CHECK(dim == dmDim);
 
     PYLITH_METHOD_END;
@@ -143,7 +143,7 @@ pylith::topology::TestMesh::testDMMesh(void) { // testDMMesh
 // ------------------------------------------------------------------------------------------------
 // Test getCoordSys().
 void
-pylith::topology::TestMesh::testCoordsys(void) { // testCoordsys
+pylith::topology::TestMesh::testCoordsys(void) {
     PYLITH_METHOD_BEGIN;
 
     Mesh mesh;
@@ -162,7 +162,7 @@ pylith::topology::TestMesh::testCoordsys(void) { // testCoordsys
 // ------------------------------------------------------------------------------------------------
 // Test getDimension().
 void
-pylith::topology::TestMesh::testDimension(void) { // testDimension
+pylith::topology::TestMesh::testDimension(void) {
     PYLITH_METHOD_BEGIN;
 
     Mesh mesh;
@@ -179,7 +179,7 @@ pylith::topology::TestMesh::testDimension(void) { // testDimension
 // ------------------------------------------------------------------------------------------------
 // Test numCells(), numVertices().
 void
-pylith::topology::TestMesh::testAccessors(void) { // testAccessors
+pylith::topology::TestMesh::testAccessors(void) {
     PYLITH_METHOD_BEGIN;
 
     { // Tri
@@ -211,7 +211,7 @@ pylith::topology::TestMesh::testAccessors(void) { // testAccessors
 // ------------------------------------------------------------------------------------------------
 // Test comm().
 void
-pylith::topology::TestMesh::testComm(void) { // testComm
+pylith::topology::TestMesh::testComm(void) {
     PYLITH_METHOD_BEGIN;
 
     Mesh mesh;
@@ -231,7 +231,7 @@ pylith::topology::TestMesh::testComm(void) { // testComm
 // ------------------------------------------------------------------------------------------------
 // Test view().
 void
-pylith::topology::TestMesh::testView(void) { // testView
+pylith::topology::TestMesh::testView(void) {
     PYLITH_METHOD_BEGIN;
 
     const char* filename = "data/tri3.mesh";
@@ -248,14 +248,13 @@ pylith::topology::TestMesh::testView(void) { // testView
     mesh.view("hdf5:mesh_xdmf.h5:hdf5_xdmf");
     mesh.view("hdf5:mesh_petsc.h5:hdf5_petsc");
 
-    PetscErrorCode err = PETSC_SUCCESS;
     PetscViewer viewer = NULL;
     PetscDM dm = NULL;
-    err = PetscViewerHDF5Open(PETSC_COMM_SELF, "mesh_petsc.h5", FILE_MODE_READ, &viewer);REQUIRE(!err);
-    err = DMCreate(PETSC_COMM_SELF, &dm);REQUIRE(!err);
-    err = DMLoad(dm, viewer);REQUIRE(!err);
-    err = DMDestroy(&dm);REQUIRE(!err);
-    err = PetscViewerDestroy(&viewer);REQUIRE(!err);
+    PylithCallPetscRequire(PetscViewerHDF5Open(PETSC_COMM_SELF, "mesh_petsc.h5", FILE_MODE_READ, &viewer));
+    PylithCallPetscRequire(DMCreate(PETSC_COMM_SELF, &dm));
+    PylithCallPetscRequire(DMLoad(dm, viewer));
+    PylithCallPetscRequire(DMDestroy(&dm));
+    PylithCallPetscRequire(PetscViewerDestroy(&viewer));
 
     PYLITH_METHOD_END;
 } // testView

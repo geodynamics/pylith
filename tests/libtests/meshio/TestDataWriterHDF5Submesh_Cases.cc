@@ -82,7 +82,7 @@ TEST_CASE("TestDataWriterHDF5Submesh::Hex::testWriteCellField", "[DataWriter][HD
 pylith::meshio::TestDataWriterHDF5Submesh_Data*
 pylith::meshio::TestDataWriterHDF5Submesh_Cases::Tri(void) {
     PYLITH_METHOD_BEGIN;
-    TestDataWriterHDF5Submesh_Data* data = new TestDataWriterHDF5Submesh_Data();assert(data);
+    TestDataWriterHDF5Submesh_Data* data = new TestDataWriterHDF5Submesh_Data();REQUIRE(data);
 
     data->opencloseFilename = "tri3_surf.h5";
     data->vertexFilename = "tri3_surf_vertex.h5";
@@ -98,7 +98,7 @@ pylith::meshio::TestDataWriterHDF5Submesh_Cases::Tri(void) {
 pylith::meshio::TestDataWriterHDF5Submesh_Data*
 pylith::meshio::TestDataWriterHDF5Submesh_Cases::Quad(void) {
     PYLITH_METHOD_BEGIN;
-    TestDataWriterHDF5Submesh_Data* data = new TestDataWriterHDF5Submesh_Data();assert(data);
+    TestDataWriterHDF5Submesh_Data* data = new TestDataWriterHDF5Submesh_Data();REQUIRE(data);
 
     data->opencloseFilename = "quad4_surf.h5";
     data->vertexFilename = "quad4_surf_vertex.h5";
@@ -114,7 +114,7 @@ pylith::meshio::TestDataWriterHDF5Submesh_Cases::Quad(void) {
 pylith::meshio::TestDataWriterHDF5Submesh_Data*
 pylith::meshio::TestDataWriterHDF5Submesh_Cases::Tet(void) {
     PYLITH_METHOD_BEGIN;
-    TestDataWriterHDF5Submesh_Data* data = new TestDataWriterHDF5Submesh_Data();assert(data);
+    TestDataWriterHDF5Submesh_Data* data = new TestDataWriterHDF5Submesh_Data();REQUIRE(data);
 
     data->opencloseFilename = "tet4_surf.h5";
     data->vertexFilename = "tet4_surf_vertex.h5";
@@ -130,7 +130,7 @@ pylith::meshio::TestDataWriterHDF5Submesh_Cases::Tet(void) {
 pylith::meshio::TestDataWriterHDF5Submesh_Data*
 pylith::meshio::TestDataWriterHDF5Submesh_Cases::Hex(void) {
     PYLITH_METHOD_BEGIN;
-    TestDataWriterHDF5Submesh_Data* data = new TestDataWriterHDF5Submesh_Data();assert(data);
+    TestDataWriterHDF5Submesh_Data* data = new TestDataWriterHDF5Submesh_Data();REQUIRE(data);
 
     data->opencloseFilename = "hex8_surf.h5";
     data->vertexFilename = "hex8_surf_vertex.h5";

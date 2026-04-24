@@ -42,8 +42,8 @@ pylith::testing::MMSTest::MMSTest(void) :
     _allowZeroResidual(false) {
     GenericComponent::setName("mmstest"); // Override in child class for finer control of journal output.
 
-    assert(_problem);
-    assert(_mesh);
+    REQUIRE(_problem);
+    REQUIRE(_mesh);
 
     _problem->setPetscDefaults(pylith::utils::PetscDefaults::TESTING | pylith::utils::PetscDefaults::SOLVER);
 } // setUp
@@ -66,7 +66,7 @@ pylith::testing::MMSTest::~MMSTest(void) {
 void
 pylith::testing::MMSTest::testDiscretization(void) {
     PYLITH_METHOD_BEGIN;
-    assert(_problem);
+    REQUIRE(_problem);
 
     pythia::journal::debug_t debug(GenericComponent::getName());
     if (debug.state()) {
@@ -74,7 +74,7 @@ pylith::testing::MMSTest::testDiscretization(void) {
     } // if
 
     _initialize();
-    const pylith::topology::Field* solution = _problem->getSolution();assert(solution);
+    const pylith::topology::Field* solution = _problem->getSolution();REQUIRE(solution);
     if (debug.state()) {
         solution->view("Solution field layout", pylith::topology::Field::VIEW_LAYOUT);
     } // if
@@ -112,7 +112,7 @@ pylith::testing::MMSTest::testDiscretization(void) {
 void
 pylith::testing::MMSTest::testResidual(void) {
     PYLITH_METHOD_BEGIN;
-    assert(_problem);
+    REQUIRE(_problem);
 
     pythia::journal::debug_t debug(GenericComponent::getName());
     if (debug.state()) {
@@ -125,8 +125,8 @@ pylith::testing::MMSTest::testResidual(void) {
         _problem->_integrationData->removeField(pylith::feassemble::IntegrationData::lumped_jacobian_inverse);
     } // if
 
-    assert(_solutionExactVec);
-    assert(_solutionDotExactVec);
+    REQUIRE(_solutionExactVec);
+    REQUIRE(_solutionDotExactVec);
     PylithReal ignoreTolerance = -1.0;
     PylithReal norm = 0.0;
     PylithCallPetsc(DMTSCheckResidual(_problem->getPetscTS(), _problem->getPetscDM(), _problem->getStartTime(), _solutionExactVec,
@@ -150,11 +150,11 @@ pylith::testing::MMSTest::testResidual(void) {
 void
 pylith::testing::MMSTest::testJacobianTaylorSeries(void) {
     PYLITH_METHOD_BEGIN;
-    assert(_problem);
+    REQUIRE(_problem);
     _initialize();
 
-    assert(_solutionExactVec);
-    assert(_solutionDotExactVec);
+    REQUIRE(_solutionExactVec);
+    REQUIRE(_solutionDotExactVec);
 
     PetscBool isLinear = PETSC_FALSE;
     PylithReal convergenceRate = 0.0;
@@ -177,7 +177,7 @@ pylith::testing::MMSTest::testJacobianTaylorSeries(void) {
 void
 pylith::testing::MMSTest::testJacobianFiniteDiff(void) {
     PYLITH_METHOD_BEGIN;
-    assert(_problem);
+    REQUIRE(_problem);
 
     PylithCallPetsc(PetscOptionsSetValue(NULL, "-ts_max_snes_failures", "1"));
     PylithCallPetsc(PetscOptionsSetValue(NULL, "-ts_error_if_step_fails", "false"));
@@ -212,7 +212,7 @@ pylith::testing::MMSTest::testJacobianFiniteDiff(void) {
 void
 pylith::testing::MMSTest::_initialize(void) {
     PYLITH_METHOD_BEGIN;
-    assert(_problem);
+    REQUIRE(_problem);
 
     _problem->setSolverType(pylith::problems::Problem::NONLINEAR);
     _problem->setMaxTimeSteps(1);
@@ -229,7 +229,7 @@ pylith::testing::MMSTest::_initialize(void) {
     } // if
 
     // Global vectors to use for analytical solution in MMS tests.
-    const pylith::topology::Field* solution = _problem->getSolution();assert(solution);
+    const pylith::topology::Field* solution = _problem->getSolution();REQUIRE(solution);
     PylithCallPetsc(VecDuplicate(solution->getGlobalVector(), &_solutionExactVec));
     PylithCallPetsc(VecDuplicate(_solutionExactVec, &_solutionDotExactVec));
 

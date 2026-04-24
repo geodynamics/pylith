@@ -35,6 +35,8 @@
 #include "pylith/scales/Scales.hh" // USES Scales
 #include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
 
+#include "catch2/catch_test_macros.hpp"
+
 namespace pylith {
     class _OneFaultShearNoSlip;
 } // pylith
@@ -161,7 +163,7 @@ class pylith::_OneFaultShearNoSlip {
                             const PylithInt numConstants,
                             const PylithScalar constants[],
                             PylithScalar r0[]) {
-        assert(r0);
+        REQUIRE(r0);
         const double rigidityScale = scales.getRigidityScale();
         const double mu = density(x[0], x[1]) * vs(x[0], x[1]) * vs(x[0], x[1]);
 
@@ -178,10 +180,10 @@ class pylith::_OneFaultShearNoSlip {
                                           PetscInt numComponents,
                                           PetscScalar* s,
                                           void* context) {
-        assert(2 == spaceDim);
-        assert(x);
-        assert(2 == numComponents);
-        assert(s);
+        REQUIRE(2 == spaceDim);
+        REQUIRE(x);
+        REQUIRE(2 == numComponents);
+        REQUIRE(s);
 
         s[0] = disp_x(x[0], x[1]);
         s[1] = disp_y(x[0], x[1]);
@@ -195,10 +197,10 @@ class pylith::_OneFaultShearNoSlip {
                                                         PetscInt numComponents,
                                                         PetscScalar* s,
                                                         void* context) {
-        assert(2 == spaceDim);
-        assert(x);
-        assert(2 == numComponents);
-        assert(s);
+        REQUIRE(2 == spaceDim);
+        REQUIRE(x);
+        REQUIRE(2 == numComponents);
+        REQUIRE(s);
 
         s[0] = faulttraction_x(x[0], x[1]);
         s[1] = faulttraction_y(x[0], x[1]);
@@ -210,7 +212,7 @@ public:
 
     static
     TestFaultKin_Data* createData(void) {
-        TestFaultKin_Data* data = new TestFaultKin_Data();assert(data);
+        TestFaultKin_Data* data = new TestFaultKin_Data();REQUIRE(data);
 
         data->journalName = "OneFaultShearNoSlip";
 
@@ -237,8 +239,8 @@ public:
         data->matAuxDB.addValue("vs", vs, vs_units());
         data->matAuxDB.setCoordSys(data->cs);
 
-        assert(!data->kinSrc);
-        data->kinSrc = new pylith::faults::KinSrcStep();assert(data->kinSrc);
+        REQUIRE(!data->kinSrc);
+        data->kinSrc = new pylith::faults::KinSrcStep();REQUIRE(data->kinSrc);
         data->kinSrc->setOriginTime(0.0);
         data->faultAuxDB.addValue("initiation_time", initiation_time, time_units());
         data->faultAuxDB.addValue("final_slip_opening", finalslip_opening, slip_units());
@@ -256,7 +258,7 @@ public:
         // Materials
         data->materials.resize(3);
         { // xneg
-            pylith::materials::Elasticity* material = new pylith::materials::Elasticity();assert(material);
+            pylith::materials::Elasticity* material = new pylith::materials::Elasticity();REQUIRE(material);
             material->setFormulation(pylith::problems::Physics::QUASISTATIC);
             material->useBodyForce(false);
             material->setIdentifier("elasticity");
@@ -266,7 +268,7 @@ public:
             data->materials[0] = material;
         } // xneg
         { // mid
-            pylith::materials::Elasticity* material = new pylith::materials::Elasticity();assert(material);
+            pylith::materials::Elasticity* material = new pylith::materials::Elasticity();REQUIRE(material);
             material->setFormulation(pylith::problems::Physics::QUASISTATIC);
             material->useBodyForce(false);
             material->setIdentifier("elasticity");
@@ -276,7 +278,7 @@ public:
             data->materials[1] = material;
         } // mid
         { // xpos
-            pylith::materials::Elasticity* material = new pylith::materials::Elasticity();assert(material);
+            pylith::materials::Elasticity* material = new pylith::materials::Elasticity();REQUIRE(material);
             material->setFormulation(pylith::problems::Physics::QUASISTATIC);
             material->useBodyForce(false);
             material->setIdentifier("elasticity");
@@ -361,12 +363,12 @@ pylith::scales::Scales pylith::_OneFaultShearNoSlip::scales;
 // ------------------------------------------------------------------------------------------------
 pylith::TestFaultKin_Data*
 pylith::OneFaultShearNoSlip::TriP1(void) {
-    TestFaultKin_Data* data = pylith::_OneFaultShearNoSlip::createData();assert(data);
+    TestFaultKin_Data* data = pylith::_OneFaultShearNoSlip::createData();REQUIRE(data);
 
     data->meshFilename = "data/tri.mesh";
 
-    assert(1 == data->numSolnSubfieldsDomain);
-    assert(1 == data->numSolnSubfieldsFault);
+    REQUIRE(1 == data->numSolnSubfieldsDomain);
+    REQUIRE(1 == data->numSolnSubfieldsFault);
     static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
         pylith::topology::Field::Discretization(1, 1), // disp
         pylith::topology::Field::Discretization(1, 1, 1, -1, true), // lagrange_multiplier_fault
@@ -380,7 +382,7 @@ pylith::OneFaultShearNoSlip::TriP1(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestFaultKin_Data*
 pylith::OneFaultShearNoSlip::TriP2(void) {
-    TestFaultKin_Data* data = pylith::_OneFaultShearNoSlip::createData();assert(data);
+    TestFaultKin_Data* data = pylith::_OneFaultShearNoSlip::createData();REQUIRE(data);
 
     data->meshFilename = "data/tri.mesh";
 
@@ -396,8 +398,8 @@ pylith::OneFaultShearNoSlip::TriP2(void) {
     };
     data->faultAuxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_faultAuxDiscretizations);
 
-    assert(1 == data->numSolnSubfieldsDomain);
-    assert(1 == data->numSolnSubfieldsFault);
+    REQUIRE(1 == data->numSolnSubfieldsDomain);
+    REQUIRE(1 == data->numSolnSubfieldsFault);
     static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
         pylith::topology::Field::Discretization(2, 2), // disp
         pylith::topology::Field::Discretization(2, 2, 1, -1, true), // lagrange_multiplier_fault
@@ -411,7 +413,7 @@ pylith::OneFaultShearNoSlip::TriP2(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestFaultKin_Data*
 pylith::OneFaultShearNoSlip::TriP3(void) {
-    TestFaultKin_Data* data = pylith::_OneFaultShearNoSlip::createData();assert(data);
+    TestFaultKin_Data* data = pylith::_OneFaultShearNoSlip::createData();REQUIRE(data);
 
     data->meshFilename = "data/tri.mesh";
 
@@ -427,8 +429,8 @@ pylith::OneFaultShearNoSlip::TriP3(void) {
     };
     data->faultAuxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_faultAuxDiscretizations);
 
-    assert(1 == data->numSolnSubfieldsDomain);
-    assert(1 == data->numSolnSubfieldsFault);
+    REQUIRE(1 == data->numSolnSubfieldsDomain);
+    REQUIRE(1 == data->numSolnSubfieldsFault);
     static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
         pylith::topology::Field::Discretization(3, 3), // disp
         pylith::topology::Field::Discretization(3, 3, 1, -1, true), // lagrange_multiplier_fault
@@ -442,7 +444,7 @@ pylith::OneFaultShearNoSlip::TriP3(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestFaultKin_Data*
 pylith::OneFaultShearNoSlip::TriP4(void) {
-    TestFaultKin_Data* data = pylith::_OneFaultShearNoSlip::createData();assert(data);
+    TestFaultKin_Data* data = pylith::_OneFaultShearNoSlip::createData();REQUIRE(data);
 
     data->meshFilename = "data/tri.mesh";
 
@@ -458,8 +460,8 @@ pylith::OneFaultShearNoSlip::TriP4(void) {
     };
     data->faultAuxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_faultAuxDiscretizations);
 
-    assert(1 == data->numSolnSubfieldsDomain);
-    assert(1 == data->numSolnSubfieldsFault);
+    REQUIRE(1 == data->numSolnSubfieldsDomain);
+    REQUIRE(1 == data->numSolnSubfieldsFault);
     static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
         pylith::topology::Field::Discretization(4, 4), // disp
         pylith::topology::Field::Discretization(4, 4, 1, -1, true), // lagrange_multiplier_fault
@@ -473,12 +475,12 @@ pylith::OneFaultShearNoSlip::TriP4(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestFaultKin_Data*
 pylith::OneFaultShearNoSlip::QuadQ1(void) {
-    TestFaultKin_Data* data = pylith::_OneFaultShearNoSlip::createData();assert(data);
+    TestFaultKin_Data* data = pylith::_OneFaultShearNoSlip::createData();REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 
-    assert(1 == data->numSolnSubfieldsDomain);
-    assert(1 == data->numSolnSubfieldsFault);
+    REQUIRE(1 == data->numSolnSubfieldsDomain);
+    REQUIRE(1 == data->numSolnSubfieldsFault);
     static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
         pylith::topology::Field::Discretization(1, 1), // disp
         pylith::topology::Field::Discretization(1, 1, 1, -1, true), // lagrange_multiplier_fault
@@ -492,7 +494,7 @@ pylith::OneFaultShearNoSlip::QuadQ1(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestFaultKin_Data*
 pylith::OneFaultShearNoSlip::QuadQ2(void) {
-    TestFaultKin_Data* data = pylith::_OneFaultShearNoSlip::createData();assert(data);
+    TestFaultKin_Data* data = pylith::_OneFaultShearNoSlip::createData();REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 
@@ -508,8 +510,8 @@ pylith::OneFaultShearNoSlip::QuadQ2(void) {
     };
     data->faultAuxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_faultAuxDiscretizations);
 
-    assert(1 == data->numSolnSubfieldsDomain);
-    assert(1 == data->numSolnSubfieldsFault);
+    REQUIRE(1 == data->numSolnSubfieldsDomain);
+    REQUIRE(1 == data->numSolnSubfieldsFault);
     static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
         pylith::topology::Field::Discretization(2, 2), // disp
         pylith::topology::Field::Discretization(2, 2, 1, -1, true), // lagrange_multiplier_fault
@@ -523,7 +525,7 @@ pylith::OneFaultShearNoSlip::QuadQ2(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestFaultKin_Data*
 pylith::OneFaultShearNoSlip::QuadQ3(void) {
-    TestFaultKin_Data* data = pylith::_OneFaultShearNoSlip::createData();assert(data);
+    TestFaultKin_Data* data = pylith::_OneFaultShearNoSlip::createData();REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 
@@ -539,8 +541,8 @@ pylith::OneFaultShearNoSlip::QuadQ3(void) {
     };
     data->faultAuxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_faultAuxDiscretizations);
 
-    assert(1 == data->numSolnSubfieldsDomain);
-    assert(1 == data->numSolnSubfieldsFault);
+    REQUIRE(1 == data->numSolnSubfieldsDomain);
+    REQUIRE(1 == data->numSolnSubfieldsFault);
     static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
         pylith::topology::Field::Discretization(3, 3), // disp
         pylith::topology::Field::Discretization(3, 3, 1, -1, true), // lagrange_multiplier_fault
@@ -554,7 +556,7 @@ pylith::OneFaultShearNoSlip::QuadQ3(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestFaultKin_Data*
 pylith::OneFaultShearNoSlip::QuadQ4(void) {
-    TestFaultKin_Data* data = pylith::_OneFaultShearNoSlip::createData();assert(data);
+    TestFaultKin_Data* data = pylith::_OneFaultShearNoSlip::createData();REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 
@@ -570,8 +572,8 @@ pylith::OneFaultShearNoSlip::QuadQ4(void) {
     };
     data->faultAuxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_faultAuxDiscretizations);
 
-    assert(1 == data->numSolnSubfieldsDomain);
-    assert(1 == data->numSolnSubfieldsFault);
+    REQUIRE(1 == data->numSolnSubfieldsDomain);
+    REQUIRE(1 == data->numSolnSubfieldsFault);
     static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
         pylith::topology::Field::Discretization(4, 4), // disp
         pylith::topology::Field::Discretization(4, 4, 1, -1, true), // lagrange_multiplier_fault

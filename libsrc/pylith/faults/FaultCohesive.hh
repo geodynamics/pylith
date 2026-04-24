@@ -240,7 +240,7 @@ private:
         for (int c = 0; c < Nc; ++c) {
             u[c] = 0.0;
         } // for
-        return 0;
+        return PETSC_SUCCESS;
     } // _zero
 
     // PROTECTED MEMBERS ////////////////////////////////////////////////////////////////////////////

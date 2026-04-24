@@ -47,4 +47,11 @@
             {PetscError(PETSC_COMM_SELF,__LINE__,PETSC_FUNCTION_NAME,__FILE__,ierr_petsc_call,PETSC_ERROR_REPEAT,0);} \
         } while (0)
 
+#define PylithCallPetscRequire(...) \
+        do { \
+            PetscStackUpdateLine; \
+            PetscErrorCode ierr_petsc_call = __VA_ARGS__; \
+            REQUIRE(!ierr_petsc_call); \
+        } while (0)
+
 // End of file

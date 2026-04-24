@@ -82,7 +82,7 @@ TEST_CASE("TestDataWriterHDF5ExtMaterial::Hex::testWriteCellField", "[DataWriter
 pylith::meshio::TestDataWriterHDF5ExtMaterial_Data*
 pylith::meshio::TestDataWriterHDF5ExtMaterial_Cases::Tri(void) {
     PYLITH_METHOD_BEGIN;
-    TestDataWriterHDF5ExtMaterial_Data* data = new TestDataWriterHDF5ExtMaterial_Data();assert(data);
+    TestDataWriterHDF5ExtMaterial_Data* data = new TestDataWriterHDF5ExtMaterial_Data();REQUIRE(data);
 
     data->opencloseFilename = "tri3_mat.h5";
     data->vertexFilename = "tri3_mat_vertex.h5";
@@ -98,7 +98,7 @@ pylith::meshio::TestDataWriterHDF5ExtMaterial_Cases::Tri(void) {
 pylith::meshio::TestDataWriterHDF5ExtMaterial_Data*
 pylith::meshio::TestDataWriterHDF5ExtMaterial_Cases::Quad(void) {
     PYLITH_METHOD_BEGIN;
-    TestDataWriterHDF5ExtMaterial_Data* data = new TestDataWriterHDF5ExtMaterial_Data();assert(data);
+    TestDataWriterHDF5ExtMaterial_Data* data = new TestDataWriterHDF5ExtMaterial_Data();REQUIRE(data);
 
     data->opencloseFilename = "quad4_mat.h5";
     data->vertexFilename = "quad4_mat_vertex.h5";
@@ -114,7 +114,7 @@ pylith::meshio::TestDataWriterHDF5ExtMaterial_Cases::Quad(void) {
 pylith::meshio::TestDataWriterHDF5ExtMaterial_Data*
 pylith::meshio::TestDataWriterHDF5ExtMaterial_Cases::Tet(void) {
     PYLITH_METHOD_BEGIN;
-    TestDataWriterHDF5ExtMaterial_Data* data = new TestDataWriterHDF5ExtMaterial_Data();assert(data);
+    TestDataWriterHDF5ExtMaterial_Data* data = new TestDataWriterHDF5ExtMaterial_Data();REQUIRE(data);
 
     data->opencloseFilename = "tet4_mat.h5";
     data->vertexFilename = "tet4_mat_vertex.h5";
@@ -130,7 +130,7 @@ pylith::meshio::TestDataWriterHDF5ExtMaterial_Cases::Tet(void) {
 pylith::meshio::TestDataWriterHDF5ExtMaterial_Data*
 pylith::meshio::TestDataWriterHDF5ExtMaterial_Cases::Hex(void) {
     PYLITH_METHOD_BEGIN;
-    TestDataWriterHDF5ExtMaterial_Data* data = new TestDataWriterHDF5ExtMaterial_Data();assert(data);
+    TestDataWriterHDF5ExtMaterial_Data* data = new TestDataWriterHDF5ExtMaterial_Data();REQUIRE(data);
 
     data->opencloseFilename = "hex8_mat.h5";
     data->vertexFilename = "hex8_mat_vertex.h5";

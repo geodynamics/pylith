@@ -31,11 +31,13 @@
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 #include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
 
+#include "catch2/catch_test_macros.hpp"
+
 // ------------------------------------------------------------------------------------------------
 // Constuctor.
 pylith::TestLinearPoroelasticity::TestLinearPoroelasticity(TestLinearPoroelasticity_Data* data) :
     _data(data) {
-    assert(_data);
+    REQUIRE(_data);
 
     GenericComponent::setName(_data->journalName);
     _jacobianConvergenceRate = _data->jacobianConvergenceRate;
@@ -57,24 +59,24 @@ pylith::TestLinearPoroelasticity::~TestLinearPoroelasticity(void) {
 void
 pylith::TestLinearPoroelasticity::_initialize(void) {
     PYLITH_METHOD_BEGIN;
-    assert(_mesh);
-    assert(_data);
+    REQUIRE(_mesh);
+    REQUIRE(_data);
 
     if (_data->useAsciiMesh) {
         pylith::meshio::MeshIOAscii iohandler;
         iohandler.setFilename(_data->meshFilename);
-        iohandler.read(_mesh);assert(_mesh);
+        iohandler.read(_mesh);REQUIRE(_mesh);
     } else {
         if (_data->meshOptions) {
             PylithCallPetsc(PetscOptionsInsertString(NULL, _data->meshOptions));
         } // if
         pylith::meshio::MeshIOPetsc iohandler;
         iohandler.setFilename(_data->meshFilename);
-        iohandler.read(_mesh);assert(_mesh);
+        iohandler.read(_mesh);REQUIRE(_mesh);
     } // if/else
 
-    assert(pylith::topology::MeshOps::getNumCells(*_mesh) > 0);
-    assert(pylith::topology::MeshOps::getNumVertices(*_mesh) > 0);
+    REQUIRE(pylith::topology::MeshOps::getNumCells(*_mesh) > 0);
+    REQUIRE(pylith::topology::MeshOps::getNumVertices(*_mesh) > 0);
 
     // Set up coordinates.
     _mesh->setCoordSys(&_data->cs);
@@ -92,7 +94,7 @@ pylith::TestLinearPoroelasticity::_initialize(void) {
     } // for
 
     // Set up problem.
-    assert(_problem);
+    REQUIRE(_problem);
     _problem->setScales(_data->scales);
     pylith::materials::Material* materials[1] = { &_data->material };
     _problem->setMaterials(materials, 1);
@@ -103,8 +105,8 @@ pylith::TestLinearPoroelasticity::_initialize(void) {
     _problem->setFormulation(_data->formulation);
 
     // Set up solution field.
-    assert(!_solution);
-    _solution = new pylith::topology::Field(*_mesh);assert(_solution);
+    REQUIRE(!_solution);
+    _solution = new pylith::topology::Field(*_mesh);REQUIRE(_solution);
     _solution->setLabel("solution");
     pylith::problems::SolutionFactory factory(*_solution, _data->scales);
     factory.addDisplacement(_data->solnDiscretizations[0]);
@@ -116,7 +118,7 @@ pylith::TestLinearPoroelasticity::_initialize(void) {
             factory.addPressureDot(_data->solnDiscretizations[4]);
             factory.addTraceStrainDot(_data->solnDiscretizations[5]);
         } else {
-            assert(3 == _data->numSolnSubfields);
+            REQUIRE(3 == _data->numSolnSubfields);
         } // if/else
     } else {
         PYLITH_JOURNAL_LOGICERROR("MMS test only implemented for quasistatic formulation.");
@@ -133,9 +135,9 @@ pylith::TestLinearPoroelasticity::_initialize(void) {
 // Set functions for computing the exact solution and its time derivative.
 void
 pylith::TestLinearPoroelasticity::_setExactSolution(void) {
-    assert(_data->exactSolnFns);
+    REQUIRE(_data->exactSolnFns);
 
-    const pylith::topology::Field* solution = _problem->getSolution();assert(solution);
+    const pylith::topology::Field* solution = _problem->getSolution();REQUIRE(solution);
 
     PetscDS ds = NULL;
     PylithCallPetsc(DMGetDS(solution->getDM(), &ds));

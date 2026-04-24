@@ -109,8 +109,8 @@ void
 pylith::meshio::TestDataWriterVTKMesh::testTimeStep(void) {
     PYLITH_METHOD_BEGIN;
 
-    assert(_mesh);
-    assert(_data);
+    REQUIRE(_mesh);
+    REQUIRE(_data);
 
     DataWriterVTK writer;
 
@@ -145,8 +145,8 @@ pylith::meshio::TestDataWriterVTKMesh::testTimeStep(void) {
 void
 pylith::meshio::TestDataWriterVTKMesh::testWriteVertexField(void) {
     PYLITH_METHOD_BEGIN;
-    assert(_mesh);
-    assert(_data);
+    REQUIRE(_mesh);
+    REQUIRE(_data);
 
     pylith::topology::Field vertexField(*_mesh);
     _createVertexField(&vertexField);
@@ -164,10 +164,10 @@ pylith::meshio::TestDataWriterVTKMesh::testWriteVertexField(void) {
     const size_t numFields = subfieldNames.size();
     for (size_t i = 0; i < numFields; ++i) {
         OutputSubfield* subfield = OutputSubfield::create(vertexField, *_mesh, subfieldNames[i].c_str(), 1, 0);
-        assert(subfield);
+        REQUIRE(subfield);
         subfield->project(vertexField.getOutputVector());
         writer.writeVertexField(t, *subfield);
-        assert(writer._wroteVertexHeader);
+        REQUIRE(writer._wroteVertexHeader);
         CHECK(false == writer._wroteCellHeader);
         delete subfield;subfield = nullptr;
     } // for
@@ -188,8 +188,8 @@ void
 pylith::meshio::TestDataWriterVTKMesh::testWriteCellField(void) {
     PYLITH_METHOD_BEGIN;
 
-    assert(_mesh);
-    assert(_data);
+    REQUIRE(_mesh);
+    REQUIRE(_data);
 
     pylith::topology::Field cellField(*_mesh);
     _createCellField(&cellField);
@@ -207,11 +207,11 @@ pylith::meshio::TestDataWriterVTKMesh::testWriteCellField(void) {
     const size_t numFields = subfieldNames.size();
     for (size_t i = 0; i < numFields; ++i) {
         OutputSubfield* subfield = OutputSubfield::create(cellField, *_mesh, subfieldNames[i].c_str(), 0, 0);
-        assert(subfield);
+        REQUIRE(subfield);
         subfield->project(cellField.getOutputVector());
         writer.writeCellField(t, *subfield);
         CHECK(false == writer._wroteVertexHeader);
-        assert(writer._wroteCellHeader);
+        REQUIRE(writer._wroteCellHeader);
         delete subfield;subfield = nullptr;
     } // for
     writer.closeTimeStep();

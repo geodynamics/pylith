@@ -76,7 +76,7 @@ TEST_CASE("TestRefineUniform::Hex_2xFault::testRefine", "[TestRefineUniform][Hex
 // ------------------------------------------------------------------------------------------------
 pylith::topology::TestRefineUniform_Data*
 pylith::topology::TestRefineUniform_Cases::Tri_2xNoFault(void) {
-    TestRefineUniform_Data* data = new TestRefineUniform_Data();assert(data);
+    TestRefineUniform_Data* data = new TestRefineUniform_Data();REQUIRE(data);
 
     data->filename = "data/fourtri3.mesh";
     data->refineLevel = 1;
@@ -128,7 +128,7 @@ pylith::topology::TestRefineUniform_Cases::Tri_2xNoFault(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::topology::TestRefineUniform_Data*
 pylith::topology::TestRefineUniform_Cases::Tri_2xFault(void) {
-    TestRefineUniform_Data* data = new TestRefineUniform_Data();assert(data);
+    TestRefineUniform_Data* data = new TestRefineUniform_Data();REQUIRE(data);
 
     data->filename = "data/fourtri3.mesh";
     data->refineLevel = 1;
@@ -174,7 +174,7 @@ pylith::topology::TestRefineUniform_Cases::Tri_2xFault(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::topology::TestRefineUniform_Data*
 pylith::topology::TestRefineUniform_Cases::Quad_2xNoFault(void) {
-    TestRefineUniform_Data* data = new TestRefineUniform_Data();assert(data);
+    TestRefineUniform_Data* data = new TestRefineUniform_Data();REQUIRE(data);
 
     data->filename = "data/fourquad4.mesh";
     data->refineLevel = 1;
@@ -222,7 +222,7 @@ pylith::topology::TestRefineUniform_Cases::Quad_2xNoFault(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::topology::TestRefineUniform_Data*
 pylith::topology::TestRefineUniform_Cases::Quad_2xFault(void) {
-    TestRefineUniform_Data* data = new TestRefineUniform_Data();assert(data);
+    TestRefineUniform_Data* data = new TestRefineUniform_Data();REQUIRE(data);
 
     data->filename = "data/fourquad4.mesh";
     data->refineLevel = 1;
@@ -270,7 +270,7 @@ pylith::topology::TestRefineUniform_Cases::Quad_2xFault(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::topology::TestRefineUniform_Data*
 pylith::topology::TestRefineUniform_Cases::Tet_2xNoFault(void) {
-    TestRefineUniform_Data* data = new TestRefineUniform_Data();assert(data);
+    TestRefineUniform_Data* data = new TestRefineUniform_Data();REQUIRE(data);
 
     data->filename = "data/twotet4.mesh";
     data->refineLevel = 1;
@@ -321,7 +321,7 @@ pylith::topology::TestRefineUniform_Cases::Tet_2xNoFault(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::topology::TestRefineUniform_Data*
 pylith::topology::TestRefineUniform_Cases::Tet_2xFault(void) {
-    TestRefineUniform_Data* data = new TestRefineUniform_Data();assert(data);
+    TestRefineUniform_Data* data = new TestRefineUniform_Data();REQUIRE(data);
 
     data->filename = "data/twotet4.mesh";
     data->refineLevel = 1;
@@ -374,7 +374,7 @@ pylith::topology::TestRefineUniform_Cases::Tet_2xFault(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::topology::TestRefineUniform_Data*
 pylith::topology::TestRefineUniform_Cases::Hex_2xNoFault(void) {
-    TestRefineUniform_Data* data = new TestRefineUniform_Data();assert(data);
+    TestRefineUniform_Data* data = new TestRefineUniform_Data();REQUIRE(data);
 
     data->filename = "data/twohex8.mesh";
     data->refineLevel = 1;
@@ -424,7 +424,7 @@ pylith::topology::TestRefineUniform_Cases::Hex_2xNoFault(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::topology::TestRefineUniform_Data*
 pylith::topology::TestRefineUniform_Cases::Hex_2xFault(void) {
-    TestRefineUniform_Data* data = new TestRefineUniform_Data();assert(data);
+    TestRefineUniform_Data* data = new TestRefineUniform_Data();REQUIRE(data);
 
     data->filename = "data/twohex8.mesh";
     data->refineLevel = 1;

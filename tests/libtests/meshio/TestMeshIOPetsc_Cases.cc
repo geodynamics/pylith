@@ -154,7 +154,7 @@ TEST_CASE("TestMeshIOPetsc::HDF5BoxHex::testWriteRead", "[TestMeshIOPetsc][HDF5]
 // ------------------------------------------------------------------------------------------------
 pylith::meshio::TestMeshIO_Data*
 pylith::meshio::TestMeshIOPetsc_Cases::GmshBoxTri(void) {
-    TestMeshIO_Data* data = new TestMeshIO_Data();assert(data);
+    TestMeshIO_Data* data = new TestMeshIO_Data();REQUIRE(data);
 
     data->filename = "NONE";
 
@@ -203,7 +203,7 @@ pylith::meshio::TestMeshIOPetsc_Cases::GmshBoxTri(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::meshio::TestMeshIO_Data*
 pylith::meshio::TestMeshIOPetsc_Cases::GmshBoxTriVerticesAscii(void) {
-    TestMeshIO_Data* data = GmshBoxTri();assert(data);
+    TestMeshIO_Data* data = GmshBoxTri();REQUIRE(data);
 
     data->filename = "data/box_tri_vertices_ascii.msh";
 
@@ -240,7 +240,7 @@ pylith::meshio::TestMeshIOPetsc_Cases::GmshBoxTriVerticesAscii(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::meshio::TestMeshIO_Data*
 pylith::meshio::TestMeshIOPetsc_Cases::GmshBoxTriVerticesBinary(void) {
-    TestMeshIO_Data* data = GmshBoxTriVerticesAscii();assert(data);
+    TestMeshIO_Data* data = GmshBoxTriVerticesAscii();REQUIRE(data);
 
     data->filename = "data/box_tri_vertices_binary.msh";
 
@@ -251,7 +251,7 @@ pylith::meshio::TestMeshIOPetsc_Cases::GmshBoxTriVerticesBinary(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::meshio::TestMeshIO_Data*
 pylith::meshio::TestMeshIOPetsc_Cases::GmshBoxTriBoundaryAscii(void) {
-    TestMeshIO_Data* data = GmshBoxTri();assert(data);
+    TestMeshIO_Data* data = GmshBoxTri();REQUIRE(data);
 
     data->filename = "data/box_tri_boundary_binary.msh";
 
@@ -296,7 +296,7 @@ pylith::meshio::TestMeshIOPetsc_Cases::GmshBoxTriBoundaryAscii(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::meshio::TestMeshIO_Data*
 pylith::meshio::TestMeshIOPetsc_Cases::GmshBoxTriBoundaryBinary(void) {
-    TestMeshIO_Data* data = GmshBoxTriBoundaryAscii();assert(data);
+    TestMeshIO_Data* data = GmshBoxTriBoundaryAscii();REQUIRE(data);
 
     data->filename = "data/box_tri_boundary_binary.msh";
 
@@ -307,7 +307,7 @@ pylith::meshio::TestMeshIOPetsc_Cases::GmshBoxTriBoundaryBinary(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::meshio::TestMeshIO_Data*
 pylith::meshio::TestMeshIOPetsc_Cases::GmshBoxQuad(void) {
-    TestMeshIO_Data* data = new TestMeshIO_Data();assert(data);
+    TestMeshIO_Data* data = new TestMeshIO_Data();REQUIRE(data);
 
     data->filename = "data/box_quad_ascii.msh";
 
@@ -357,7 +357,7 @@ pylith::meshio::TestMeshIOPetsc_Cases::GmshBoxQuad(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::meshio::TestMeshIO_Data*
 pylith::meshio::TestMeshIOPetsc_Cases::GmshBoxQuadVerticesAscii(void) {
-    TestMeshIO_Data* data = GmshBoxQuad();assert(data);
+    TestMeshIO_Data* data = GmshBoxQuad();REQUIRE(data);
 
     data->filename = "data/box_quad_vertices_ascii.msh";
 
@@ -394,7 +394,7 @@ pylith::meshio::TestMeshIOPetsc_Cases::GmshBoxQuadVerticesAscii(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::meshio::TestMeshIO_Data*
 pylith::meshio::TestMeshIOPetsc_Cases::GmshBoxQuadVerticesBinary(void) {
-    TestMeshIO_Data* data = GmshBoxQuadVerticesAscii();assert(data);
+    TestMeshIO_Data* data = GmshBoxQuadVerticesAscii();REQUIRE(data);
 
     data->filename = "data/box_quad_vertices_binary.msh";
 
@@ -405,7 +405,7 @@ pylith::meshio::TestMeshIOPetsc_Cases::GmshBoxQuadVerticesBinary(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::meshio::TestMeshIO_Data*
 pylith::meshio::TestMeshIOPetsc_Cases::GmshBoxQuadBoundaryAscii(void) {
-    TestMeshIO_Data* data = GmshBoxQuad();assert(data);
+    TestMeshIO_Data* data = GmshBoxQuad();REQUIRE(data);
 
     data->filename = "data/box_quad_boundary_ascii.msh";
 
@@ -453,7 +453,7 @@ pylith::meshio::TestMeshIOPetsc_Cases::GmshBoxQuadBoundaryAscii(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::meshio::TestMeshIO_Data*
 pylith::meshio::TestMeshIOPetsc_Cases::GmshBoxQuadBoundaryBinary(void) {
-    TestMeshIO_Data* data = GmshBoxQuadBoundaryAscii();assert(data);
+    TestMeshIO_Data* data = GmshBoxQuadBoundaryAscii();REQUIRE(data);
 
     data->filename = "data/box_quad_boundary_binary.msh";
 
@@ -464,7 +464,7 @@ pylith::meshio::TestMeshIOPetsc_Cases::GmshBoxQuadBoundaryBinary(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::meshio::TestMeshIO_Data*
 pylith::meshio::TestMeshIOPetsc_Cases::GmshBoxTet(void) {
-    TestMeshIO_Data* data = new TestMeshIO_Data();assert(data);
+    TestMeshIO_Data* data = new TestMeshIO_Data();REQUIRE(data);
 
     data->filename = "NONE";
 
@@ -603,7 +603,7 @@ pylith::meshio::TestMeshIOPetsc_Cases::GmshBoxTet(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::meshio::TestMeshIO_Data*
 pylith::meshio::TestMeshIOPetsc_Cases::GmshBoxTetVerticesAscii(void) {
-    TestMeshIO_Data* data = GmshBoxTet();assert(data);
+    TestMeshIO_Data* data = GmshBoxTet();REQUIRE(data);
 
     data->filename = "data/box_tet_vertices_ascii.msh";
 
@@ -644,7 +644,7 @@ pylith::meshio::TestMeshIOPetsc_Cases::GmshBoxTetVerticesAscii(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::meshio::TestMeshIO_Data*
 pylith::meshio::TestMeshIOPetsc_Cases::GmshBoxTetVerticesBinary(void) {
-    TestMeshIO_Data* data = GmshBoxTetVerticesAscii();assert(data);
+    TestMeshIO_Data* data = GmshBoxTetVerticesAscii();REQUIRE(data);
 
     data->filename = "data/box_tet_vertices_binary.msh";
 
@@ -655,7 +655,7 @@ pylith::meshio::TestMeshIOPetsc_Cases::GmshBoxTetVerticesBinary(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::meshio::TestMeshIO_Data*
 pylith::meshio::TestMeshIOPetsc_Cases::GmshBoxTetBoundaryAscii(void) {
-    TestMeshIO_Data* data = GmshBoxTet();assert(data);
+    TestMeshIO_Data* data = GmshBoxTet();REQUIRE(data);
 
     data->filename = "data/box_tet_boundary_ascii.msh";
 
@@ -718,7 +718,7 @@ pylith::meshio::TestMeshIOPetsc_Cases::GmshBoxTetBoundaryAscii(void) {
         56,  17,  5,  9,
         57,  17,  9, 22,
 
-        0,    5, 25, 17,// fault
+        0,    5, 25, 17, // fault
         1,   25,  5, 16,
         9,   19,  7, 18,
         10,  16,  4, 19,
@@ -750,7 +750,7 @@ pylith::meshio::TestMeshIOPetsc_Cases::GmshBoxTetBoundaryAscii(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::meshio::TestMeshIO_Data*
 pylith::meshio::TestMeshIOPetsc_Cases::GmshBoxTetBoundaryBinary(void) {
-    TestMeshIO_Data* data = GmshBoxTetBoundaryAscii();assert(data);
+    TestMeshIO_Data* data = GmshBoxTetBoundaryAscii();REQUIRE(data);
 
     data->filename = "data/box_tet_boundary_binary.msh";
 
@@ -761,7 +761,7 @@ pylith::meshio::TestMeshIOPetsc_Cases::GmshBoxTetBoundaryBinary(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::meshio::TestMeshIO_Data*
 pylith::meshio::TestMeshIOPetsc_Cases::GmshBoxHex(void) {
-    TestMeshIO_Data* data = new TestMeshIO_Data();assert(data);
+    TestMeshIO_Data* data = new TestMeshIO_Data();REQUIRE(data);
 
     data->filename = "NONE";
 
@@ -859,7 +859,7 @@ pylith::meshio::TestMeshIOPetsc_Cases::GmshBoxHex(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::meshio::TestMeshIO_Data*
 pylith::meshio::TestMeshIOPetsc_Cases::GmshBoxHexVerticesAscii(void) {
-    TestMeshIO_Data* data = GmshBoxHex();assert(data);
+    TestMeshIO_Data* data = GmshBoxHex();REQUIRE(data);
 
     data->filename = "data/box_hex_vertices_ascii.msh";
 
@@ -900,7 +900,7 @@ pylith::meshio::TestMeshIOPetsc_Cases::GmshBoxHexVerticesAscii(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::meshio::TestMeshIO_Data*
 pylith::meshio::TestMeshIOPetsc_Cases::GmshBoxHexVerticesBinary(void) {
-    TestMeshIO_Data* data = GmshBoxHexVerticesAscii();assert(data);
+    TestMeshIO_Data* data = GmshBoxHexVerticesAscii();REQUIRE(data);
 
     data->filename = "data/box_hex_vertices_binary.msh";
 
@@ -911,7 +911,7 @@ pylith::meshio::TestMeshIOPetsc_Cases::GmshBoxHexVerticesBinary(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::meshio::TestMeshIO_Data*
 pylith::meshio::TestMeshIOPetsc_Cases::GmshBoxHexBoundaryAscii(void) {
-    TestMeshIO_Data* data = GmshBoxHex();assert(data);
+    TestMeshIO_Data* data = GmshBoxHex();REQUIRE(data);
 
     data->filename = "data/box_hex_boundary_ascii.msh";
 
@@ -1001,7 +1001,7 @@ pylith::meshio::TestMeshIOPetsc_Cases::GmshBoxHexBoundaryAscii(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::meshio::TestMeshIO_Data*
 pylith::meshio::TestMeshIOPetsc_Cases::GmshBoxHexBoundaryBinary(void) {
-    TestMeshIO_Data* data = GmshBoxHexBoundaryAscii();assert(data);
+    TestMeshIO_Data* data = GmshBoxHexBoundaryAscii();REQUIRE(data);
 
     data->filename = "data/box_hex_boundary_binary.msh";
 
@@ -1012,7 +1012,7 @@ pylith::meshio::TestMeshIOPetsc_Cases::GmshBoxHexBoundaryBinary(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::meshio::TestMeshIO_Data*
 pylith::meshio::TestMeshIOPetsc_Cases::HDF5BoxTri(void) {
-    TestMeshIO_Data* data = GmshBoxTriBoundaryBinary();assert(data);
+    TestMeshIO_Data* data = GmshBoxTriBoundaryBinary();REQUIRE(data);
 
     data->filename = "box_tri.h5";
     static const PylithInt faceGroupTags[5] = {
@@ -1027,7 +1027,7 @@ pylith::meshio::TestMeshIOPetsc_Cases::HDF5BoxTri(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::meshio::TestMeshIO_Data*
 pylith::meshio::TestMeshIOPetsc_Cases::HDF5BoxQuad(void) {
-    TestMeshIO_Data* data = GmshBoxQuadBoundaryBinary();assert(data);
+    TestMeshIO_Data* data = GmshBoxQuadBoundaryBinary();REQUIRE(data);
 
     data->filename = "box_quad.h5";
     static const PylithInt faceGroupTags[5] = {
@@ -1042,7 +1042,7 @@ pylith::meshio::TestMeshIOPetsc_Cases::HDF5BoxQuad(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::meshio::TestMeshIO_Data*
 pylith::meshio::TestMeshIOPetsc_Cases::HDF5BoxTet(void) {
-    TestMeshIO_Data* data = GmshBoxTetBoundaryBinary();assert(data);
+    TestMeshIO_Data* data = GmshBoxTetBoundaryBinary();REQUIRE(data);
 
     data->filename = "box_tet.h5";
     static const PylithInt faceGroupTags[7] = {
@@ -1057,7 +1057,7 @@ pylith::meshio::TestMeshIOPetsc_Cases::HDF5BoxTet(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::meshio::TestMeshIO_Data*
 pylith::meshio::TestMeshIOPetsc_Cases::HDF5BoxHex(void) {
-    TestMeshIO_Data* data = GmshBoxHexBoundaryBinary();assert(data);
+    TestMeshIO_Data* data = GmshBoxHexBoundaryBinary();REQUIRE(data);
 
     data->filename = "box_hex.h5";
     static const PylithInt faceGroupTags[7] = {

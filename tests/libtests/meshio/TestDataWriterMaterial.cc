@@ -26,6 +26,8 @@
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "pylith/scales/Scales.hh" // USES Scales
 
+#include "catch2/catch_test_macros.hpp"
+
 // ------------------------------------------------------------------------------------------------
 // Constructor.
 pylith::meshio::TestDataWriterMaterial::TestDataWriterMaterial(void) :
@@ -48,7 +50,7 @@ pylith::meshio::TestDataWriterMaterial::~TestDataWriterMaterial(void) {
 // ------------------------------------------------------------------------------------------------
 void
 pylith::meshio::TestDataWriterMaterial::setDataTri(TestDataWriterMaterial_Data* data) {
-    assert(data);
+    REQUIRE(data);
 
     data->meshFilename = "data/tri3.mesh";
     data->materialId = 0;
@@ -94,7 +96,7 @@ pylith::meshio::TestDataWriterMaterial::setDataTri(TestDataWriterMaterial_Data* 
 // ------------------------------------------------------------------------------------------------
 void
 pylith::meshio::TestDataWriterMaterial::setDataQuad(TestDataWriterMaterial_Data* data) {
-    assert(data);
+    REQUIRE(data);
 
     // We do not use a fault in this test case.
     data->meshFilename = "data/quad4.mesh";
@@ -139,7 +141,7 @@ pylith::meshio::TestDataWriterMaterial::setDataQuad(TestDataWriterMaterial_Data*
 // ------------------------------------------------------------------------------------------------
 void
 pylith::meshio::TestDataWriterMaterial::setDataTet(TestDataWriterMaterial_Data* data) {
-    assert(data);
+    REQUIRE(data);
 
     data->meshFilename = "data/tet4.mesh";
     data->materialId = 1;
@@ -188,7 +190,7 @@ pylith::meshio::TestDataWriterMaterial::setDataTet(TestDataWriterMaterial_Data* 
 // ------------------------------------------------------------------------------------------------
 void
 pylith::meshio::TestDataWriterMaterial::setDataHex(TestDataWriterMaterial_Data* data) {
-    assert(data);
+    REQUIRE(data);
 
     data->meshFilename = "data/hex8.mesh";
     data->materialId = 0;
@@ -247,9 +249,9 @@ void
 pylith::meshio::TestDataWriterMaterial::_initialize(void) {
     PYLITH_METHOD_BEGIN;
 
-    const TestDataWriterMaterial_Data* data = _getData();assert(data);
+    const TestDataWriterMaterial_Data* data = _getData();REQUIRE(data);
 
-    delete _domainMesh;_domainMesh = new topology::Mesh;assert(_domainMesh);
+    delete _domainMesh;_domainMesh = new topology::Mesh;REQUIRE(_domainMesh);
     MeshIOAscii iohandler;
     iohandler.setFilename(data->meshFilename);
     iohandler.read(_domainMesh);
@@ -271,7 +273,7 @@ pylith::meshio::TestDataWriterMaterial::_initialize(void) {
 
     delete _materialMesh;
     _materialMesh = pylith::topology::MeshOps::createSubdomainMesh(*_domainMesh, pylith::topology::Mesh::cells_label_name, data->materialId, "material");
-    assert(_materialMesh);
+    REQUIRE(_materialMesh);
 
     PYLITH_METHOD_END;
 } // _initialize
@@ -282,9 +284,9 @@ pylith::meshio::TestDataWriterMaterial::_initialize(void) {
 void
 pylith::meshio::TestDataWriterMaterial::_createVertexField(pylith::topology::Field* field) {
     PYLITH_METHOD_BEGIN;
-    assert(field);
+    REQUIRE(field);
 
-    const TestDataWriterMaterial_Data* data = _getData();assert(data);
+    const TestDataWriterMaterial_Data* data = _getData();REQUIRE(data);
 
     FieldFactory factory(*field);
     factory.addScalar(data->vertexDiscretization);
@@ -310,9 +312,9 @@ pylith::meshio::TestDataWriterMaterial::_createVertexField(pylith::topology::Fie
 void
 pylith::meshio::TestDataWriterMaterial::_createCellField(pylith::topology::Field* field) {
     PYLITH_METHOD_BEGIN;
-    assert(field);
+    REQUIRE(field);
 
-    const TestDataWriterMaterial_Data* data = _getData();assert(data);
+    const TestDataWriterMaterial_Data* data = _getData();REQUIRE(data);
 
     FieldFactory factory(*field);
     factory.addScalar(data->cellDiscretization);

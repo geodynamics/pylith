@@ -51,7 +51,7 @@ namespace pylith {
 pylith::topology::TestFieldQuery::TestFieldQuery(TestFieldQuery_Data* data) :
     _data(data) {
     PYLITH_METHOD_BEGIN;
-    assert(_data);
+    REQUIRE(_data);
 
     _mesh = NULL;
     _field = NULL;
@@ -99,7 +99,7 @@ pylith::topology::TestFieldQuery::testConstructor(void) {
 void
 pylith::topology::TestFieldQuery::testSetQuery(void) {
     PYLITH_METHOD_BEGIN;
-    assert(_query);
+    REQUIRE(_query);
 
     { // Test with spatial database values, convert function, and database.
         const char* subfieldName = "ab";
@@ -188,7 +188,7 @@ pylith::topology::TestFieldQuery::testSetQuery(void) {
 void
 pylith::topology::TestFieldQuery::testOpenClose(void) {
     PYLITH_METHOD_BEGIN;
-    assert(_query);
+    REQUIRE(_query);
 
     _query->initializeWithDefaultQueries();
 
@@ -211,10 +211,10 @@ pylith::topology::TestFieldQuery::testOpenClose(void) {
 void
 pylith::topology::TestFieldQuery::testQuery(void) {
     PYLITH_METHOD_BEGIN;
-    assert(_query);
-    assert(_field);
-    assert(_data);
-    assert(_data->scales);
+    REQUIRE(_query);
+    REQUIRE(_field);
+    REQUIRE(_data);
+    REQUIRE(_data->scales);
 
     _query->initializeWithDefaultQueries();
 
@@ -231,8 +231,8 @@ pylith::topology::TestFieldQuery::testQuery(void) {
     pylith::topology::FieldQuery query(*_field);
     query.initializeWithDefaultQueries();
     query.openDB(_data->auxDB, _data->scales->getLengthScale());
-    PetscErrorCode err = DMPlexComputeL2DiffLocal(_field->getDM(), t, query._functions, (void**)query._contextPtrs,
-                                                  _field->getLocalVector(), &norm);REQUIRE(!err);
+    PylithCallPetscRequire(DMPlexComputeL2DiffLocal(_field->getDM(), t, query._functions, (void**)query._contextPtrs,
+                                                    _field->getLocalVector(), &norm));
     query.closeDB(_data->auxDB);
     const PylithReal tolerance = 1.0e-6;
     CHECK_THAT(norm, Catch::Matchers::WithinAbs(0.0, tolerance));
@@ -246,7 +246,7 @@ pylith::topology::TestFieldQuery::testQuery(void) {
 void
 pylith::topology::TestFieldQuery::testQueryNull(void) {
     PYLITH_METHOD_BEGIN;
-    assert(_query);
+    REQUIRE(_query);
 
     _query->initializeWithDefaultQueries();
 
@@ -257,15 +257,14 @@ pylith::topology::TestFieldQuery::testQueryNull(void) {
     // _field->view("FIELD"); // :DEBUG:
 
     // Expect auxfield to still contain FILL_VALUE values.
-    PetscErrorCode err = PETSC_SUCCESS;
     const PylithReal tolerance = 1.0e-6;
 
     PylithReal min = 0;
-    err = VecMin(_field->getLocalVector(), NULL, &min);REQUIRE(!err);
+    PylithCallPetscRequire(VecMin(_field->getLocalVector(), NULL, &min));
     CHECK_THAT(min, Catch::Matchers::WithinAbs(FILL_VALUE, abs(FILL_VALUE*tolerance)));
 
     PylithReal max = 0.0;
-    err = VecMax(_field->getLocalVector(), NULL, &max);REQUIRE(!err);
+    PylithCallPetscRequire(VecMax(_field->getLocalVector(), NULL, &max));
     CHECK_THAT(max, Catch::Matchers::WithinAbs(FILL_VALUE, abs(FILL_VALUE*tolerance)));
 
     PYLITH_METHOD_END;
@@ -308,31 +307,30 @@ pylith::topology::TestFieldQuery::testValidatorNonnegative(void) {
 void
 pylith::topology::TestFieldQuery::_initialize(void) {
     PYLITH_METHOD_BEGIN;
-    assert(_data);
-    assert(_data->topology);
-    assert(_data->geometry);
+    REQUIRE(_data);
+    REQUIRE(_data->topology);
+    REQUIRE(_data->geometry);
 
-    delete _mesh;_mesh = new Mesh;assert(_mesh);
+    delete _mesh;_mesh = new Mesh;REQUIRE(_mesh);
     pylith::meshio::MeshBuilder::buildMesh(_mesh, *_data->topology, *_data->geometry);
 
-    assert(_data->cs);
+    REQUIRE(_data->cs);
     _mesh->setCoordSys(_data->cs);
-    assert(_data->scales);
+    REQUIRE(_data->scales);
     pylith::topology::MeshOps::nondimensionalize(_mesh, *_data->scales);
 
     // Setup field
-    delete _field;_field = new pylith::topology::Field(*_mesh);assert(_field);
+    delete _field;_field = new pylith::topology::Field(*_mesh);REQUIRE(_field);
     _field->setLabel("auxiliary test field");
     for (int i = 0; i < _data->numAuxSubfields; ++i) {
-        assert(_data->auxDescriptions);
-        assert(_data->auxDiscretizations);
+        REQUIRE(_data->auxDescriptions);
+        REQUIRE(_data->auxDiscretizations);
         _field->subfieldAdd(_data->auxDescriptions[i], _data->auxDiscretizations[i]);
     } // for
     _field->subfieldsSetup();
     _field->createDiscretization();
     _field->allocate();
-    PetscErrorCode err = PETSC_SUCCESS;
-    err = VecSet(_field->getLocalVector(), FILL_VALUE);REQUIRE(!err);
+    PylithCallPetscRequire(VecSet(_field->getLocalVector(), FILL_VALUE));
 
     delete _query;_query = new pylith::topology::FieldQuery(*_field);
 

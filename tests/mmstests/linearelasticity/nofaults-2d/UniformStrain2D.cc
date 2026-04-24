@@ -16,6 +16,8 @@
 #include "pylith/topology/Field.hh" // USES pylith::topology::Field::Discretization
 #include "pylith/utils/journals.hh" // USES pythia::journal::debug_t
 
+#include "catch2/catch_test_macros.hpp"
+
 // ------------------------------------------------------------------------------------------------
 namespace pylith {
     class _UniformStrain2D;
@@ -89,10 +91,10 @@ private:
                                    PetscInt numComponents,
                                    PetscScalar* s,
                                    void* context) {
-        assert(2 == spaceDim);
-        assert(x);
-        assert(2 == numComponents);
-        assert(s);
+        REQUIRE(2 == spaceDim);
+        REQUIRE(x);
+        REQUIRE(2 == numComponents);
+        REQUIRE(s);
 
         s[0] = disp_x(x[0], x[1]);
         s[1] = disp_y(x[0], x[1]);
@@ -104,7 +106,7 @@ public:
 
     static
     TestLinearElasticity_Data* createData(void) {
-        TestLinearElasticity_Data* data = new TestLinearElasticity_Data();assert(data);
+        TestLinearElasticity_Data* data = new TestLinearElasticity_Data();REQUIRE(data);
 
         data->journalName = "UniformStrain2D";
 
@@ -142,7 +144,7 @@ public:
         static const PylithInt constrainedDOF[2] = {0, 1};
         static const PylithInt numConstrained = 2;
         data->bcs.resize(1);
-        pylith::bc::DirichletUserFn* bc = new pylith::bc::DirichletUserFn();assert(bc);
+        pylith::bc::DirichletUserFn* bc = new pylith::bc::DirichletUserFn();REQUIRE(bc);
         bc->setSubfieldName("displacement");
         bc->setLabelName("boundary");
         bc->setLabelValue(1);
@@ -164,7 +166,7 @@ public:
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::UniformStrain2D::TriP1(void) {
-    TestLinearElasticity_Data* data = pylith::_UniformStrain2D::createData();assert(data);
+    TestLinearElasticity_Data* data = pylith::_UniformStrain2D::createData();REQUIRE(data);
 
     data->meshFilename = "data/tri.msh";
     data->useAsciiMesh = false;
@@ -182,7 +184,7 @@ pylith::UniformStrain2D::TriP1(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::UniformStrain2D::TriP2(void) {
-    TestLinearElasticity_Data* data = pylith::_UniformStrain2D::createData();assert(data);
+    TestLinearElasticity_Data* data = pylith::_UniformStrain2D::createData();REQUIRE(data);
 
     data->meshFilename = "data/tri.mesh";
 
@@ -206,7 +208,7 @@ pylith::UniformStrain2D::TriP2(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::UniformStrain2D::TriP3(void) {
-    TestLinearElasticity_Data* data = pylith::_UniformStrain2D::createData();assert(data);
+    TestLinearElasticity_Data* data = pylith::_UniformStrain2D::createData();REQUIRE(data);
 
     data->meshFilename = "data/tri.msh";
     data->useAsciiMesh = false;
@@ -231,7 +233,7 @@ pylith::UniformStrain2D::TriP3(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::UniformStrain2D::TriP4(void) {
-    TestLinearElasticity_Data* data = pylith::_UniformStrain2D::createData();assert(data);
+    TestLinearElasticity_Data* data = pylith::_UniformStrain2D::createData();REQUIRE(data);
 
     data->meshFilename = "data/tri.mesh";
 
@@ -255,7 +257,7 @@ pylith::UniformStrain2D::TriP4(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::UniformStrain2D::QuadQ1(void) {
-    TestLinearElasticity_Data* data = pylith::_UniformStrain2D::createData();assert(data);
+    TestLinearElasticity_Data* data = pylith::_UniformStrain2D::createData();REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 
@@ -272,7 +274,7 @@ pylith::UniformStrain2D::QuadQ1(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::UniformStrain2D::QuadQ1Distorted(void) {
-    TestLinearElasticity_Data* data = pylith::_UniformStrain2D::createData();assert(data);
+    TestLinearElasticity_Data* data = pylith::_UniformStrain2D::createData();REQUIRE(data);
 
     data->meshFilename = "data/quad_distorted.mesh";
 
@@ -289,7 +291,7 @@ pylith::UniformStrain2D::QuadQ1Distorted(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::UniformStrain2D::QuadQ2(void) {
-    TestLinearElasticity_Data* data = pylith::_UniformStrain2D::createData();assert(data);
+    TestLinearElasticity_Data* data = pylith::_UniformStrain2D::createData();REQUIRE(data);
 
     data->meshFilename = "data/quad.msh";
     data->useAsciiMesh = false;
@@ -314,7 +316,7 @@ pylith::UniformStrain2D::QuadQ2(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::UniformStrain2D::QuadQ3(void) {
-    TestLinearElasticity_Data* data = pylith::_UniformStrain2D::createData();assert(data);
+    TestLinearElasticity_Data* data = pylith::_UniformStrain2D::createData();REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 
@@ -338,7 +340,7 @@ pylith::UniformStrain2D::QuadQ3(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::UniformStrain2D::QuadQ4(void) {
-    TestLinearElasticity_Data* data = pylith::_UniformStrain2D::createData();assert(data);
+    TestLinearElasticity_Data* data = pylith::_UniformStrain2D::createData();REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 
