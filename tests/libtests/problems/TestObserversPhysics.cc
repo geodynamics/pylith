@@ -93,7 +93,7 @@ TEST_CASE("TestObservesPhysics::testNotifyObservers", "[TestObserversPhysics]") 
 // Constructor
 pylith::problems::TestObserversPhysics::TestObserversPhysics(void) :
     _observers(new ObserversPhysics()) {
-    assert(_observers);
+    REQUIRE(_observers);
     _observers->registerObserver(&observerA);
     _observers->registerObserver(&observerB);
 } // constructor
@@ -110,7 +110,7 @@ pylith::problems::TestObserversPhysics::~TestObserversPhysics(void) {
 // Test registerObserver().
 void
 pylith::problems::TestObserversPhysics::testRegisterObserver(void) {
-    assert(_observers);
+    REQUIRE(_observers);
     CHECK(size_t(1) == _observers->_observers.count(&observerA));
     CHECK(size_t(1) == _observers->_observers.count(&observerB));
     CHECK(size_t(2) == _observers->size());
@@ -121,7 +121,7 @@ pylith::problems::TestObserversPhysics::testRegisterObserver(void) {
 // Test removeObserver().
 void
 pylith::problems::TestObserversPhysics::testRemoveObserver(void) {
-    assert(_observers);
+    REQUIRE(_observers);
     CHECK(size_t(1) == _observers->_observers.count(&observerA));
     CHECK(size_t(1) == _observers->_observers.count(&observerB));
     CHECK(size_t(2) == _observers->size());
@@ -144,7 +144,7 @@ void
 pylith::problems::TestObserversPhysics::testSetPhysicsImplementation(void) {
     pylith::feassemble::PhysicsImplementationStub physics;
 
-    assert(_observers);
+    REQUIRE(_observers);
     _observers->setPhysicsImplementation(&physics);
 } // testSetPhysicsImplementation
 
@@ -153,7 +153,7 @@ pylith::problems::TestObserversPhysics::testSetPhysicsImplementation(void) {
 // Test setgetTimeScale().
 void
 pylith::problems::TestObserversPhysics::testTimeScale(void) {
-    assert(_observers);
+    REQUIRE(_observers);
 
     // Check default
     PylithReal value = 1.0;
@@ -172,7 +172,7 @@ pylith::problems::TestObserversPhysics::testTimeScale(void) {
 // Test verifyObservers().
 void
 pylith::problems::TestObserversPhysics::testVerifyObservers(void) {
-    assert(_observers);
+    REQUIRE(_observers);
 
     pylith::testing::StubMethodTracker tracker;
     tracker.clear();
@@ -189,7 +189,7 @@ pylith::problems::TestObserversPhysics::testVerifyObservers(void) {
 // Test notifyObservers().
 void
 pylith::problems::TestObserversPhysics::testNotifyObservers(void) {
-    assert(_observers);
+    REQUIRE(_observers);
 
     pylith::testing::StubMethodTracker tracker;
     tracker.clear();

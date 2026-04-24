@@ -12,7 +12,7 @@
 
 #include "TestDataWriterVTK.hh" // Implementation of class methods
 
-#include "pylith/utils/error.h" // USES PYLITH_METHOD_BEGIN/END
+#include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 
 #include "catch2/catch_test_macros.hpp"
 #include "catch2/matchers/catch_matchers_floating_point.hpp"
@@ -51,13 +51,13 @@ pylith::meshio::TestDataWriterVTK::checkFile(const char* filenameRoot,
     if (!fileInE.is_open()) {
         std::cerr << "Could not open file '" << filenameE << "'." << std::endl;
     } // if
-    assert(fileInE.is_open());
+    REQUIRE(fileInE.is_open());
 
     std::ifstream fileIn(filename.c_str());
     if (!fileIn.is_open()) {
         std::cerr << "Could not open file '" << filename << "'." << std::endl;
     } // if
-    assert(fileIn.is_open());
+    REQUIRE(fileIn.is_open());
 
     const int maxLen = 256;
     char line[maxLen];

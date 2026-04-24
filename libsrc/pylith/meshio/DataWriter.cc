@@ -154,11 +154,10 @@ pylith::meshio::DataWriter::getCoordsGlobalVec(PetscVec* coordsGlobalVec,
     PetscDMLabel subpointMapF = NULL;
 
     PylithInt dim, dimF, pStart, pEnd, qStart, qEnd, cStart, cEnd, cMax, vEnd, vMax = -1;
-    PetscErrorCode err;
 
-    err = DMGetCoordinateDM(dmMesh, &dmCoord);PYLITH_CHECK_ERROR(err);assert(dmCoord);
-    err = DMPlexGetHeightStratum(dmCoord, 0, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
-    err = DMPlexGetDepthStratum(dmCoord, 0, NULL, &vEnd);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMGetCoordinateDM(dmMesh, &dmCoord));assert(dmCoord);
+    PylithCallPetsc(DMPlexGetHeightStratum(dmCoord, 0, &cStart, &cEnd));
+    PylithCallPetsc(DMPlexGetDepthStratum(dmCoord, 0, NULL, &vEnd));
     cMax = cStart;
     for (PetscInt cell = cStart; cell < cEnd; ++cell, ++cMax) {
         if (pylith::topology::MeshOps::isCohesiveCell(dmMesh, cell)) { break; }
@@ -166,41 +165,41 @@ pylith::meshio::DataWriter::getCoordsGlobalVec(PetscVec* coordsGlobalVec,
     PylithInt excludeRanges[4] = {cMax, cEnd, vMax, vEnd};
     PylithInt numExcludes = (cMax < cEnd ? 1 : 0) + (vMax >= 0 ? 1 : 0);
 
-    err = DMGetLocalSection(dmCoord, &section);PYLITH_CHECK_ERROR(err);
-    err = DMGetDimension(dmMesh,  &dim);PYLITH_CHECK_ERROR(err);
-    err = DMGetDimension(dmCoord, &dimF);PYLITH_CHECK_ERROR(err);
-    err = DMPlexGetChart(dmMesh,  &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
-    err = DMPlexGetChart(dmCoord, &qStart, &qEnd);PYLITH_CHECK_ERROR(err);
-    err = DMPlexGetSubpointMap(dmMesh,  &subpointMap);PYLITH_CHECK_ERROR(err);
-    err = DMPlexGetSubpointMap(dmCoord, &subpointMapF);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMGetLocalSection(dmCoord, &section));
+    PylithCallPetsc(DMGetDimension(dmMesh,  &dim));
+    PylithCallPetsc(DMGetDimension(dmCoord, &dimF));
+    PylithCallPetsc(DMPlexGetChart(dmMesh,  &pStart, &pEnd));
+    PylithCallPetsc(DMPlexGetChart(dmCoord, &qStart, &qEnd));
+    PylithCallPetsc(DMPlexGetSubpointMap(dmMesh,  &subpointMap));
+    PylithCallPetsc(DMPlexGetSubpointMap(dmCoord, &subpointMapF));
     if (((dim != dimF) || ((pEnd-pStart) < (qEnd-qStart))) && subpointMap && !subpointMapF) {
         const PylithInt *indices = NULL;
         PetscIS subpointIS = NULL;
         PylithInt n = 0;
 
-        err = PetscSectionGetChart(section, &qStart, &qEnd);PYLITH_CHECK_ERROR(err);
-        err = DMPlexGetSubpointIS(dmMesh, &subpointIS);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(PetscSectionGetChart(section, &qStart, &qEnd));
+        PylithCallPetsc(DMPlexGetSubpointIS(dmMesh, &subpointIS));
         if (subpointIS) {
-            err = ISGetLocalSize(subpointIS, &n);PYLITH_CHECK_ERROR(err);
-            err = ISGetIndices(subpointIS, &indices);PYLITH_CHECK_ERROR(err);
+            PylithCallPetsc(ISGetLocalSize(subpointIS, &n));
+            PylithCallPetsc(ISGetIndices(subpointIS, &indices));
         } // if
-        err = PetscSectionCreate(mesh.getComm(), &subSection);PYLITH_CHECK_ERROR(err);
-        err = PetscSectionSetChart(subSection, pStart, pEnd);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(PetscSectionCreate(mesh.getComm(), &subSection));
+        PylithCallPetsc(PetscSectionSetChart(subSection, pStart, pEnd));
         for (PylithInt q = qStart; q < qEnd; ++q) {
             PylithInt dof, off, p;
 
-            err = PetscSectionGetDof(section, q, &dof);PYLITH_CHECK_ERROR(err);
+            PylithCallPetsc(PetscSectionGetDof(section, q, &dof));
             if (dof) {
-                err = PetscFindInt(q, n, indices, &p);PYLITH_CHECK_ERROR(err);
+                PylithCallPetsc(PetscFindInt(q, n, indices, &p));
                 if ((p >= pStart) && (p < pEnd)) {
-                    err = PetscSectionSetDof(subSection, p, dof);PYLITH_CHECK_ERROR(err);
-                    err = PetscSectionGetOffset(section, q, &off);PYLITH_CHECK_ERROR(err);
-                    err = PetscSectionSetOffset(subSection, p, off);PYLITH_CHECK_ERROR(err);
+                    PylithCallPetsc(PetscSectionSetDof(subSection, p, dof));
+                    PylithCallPetsc(PetscSectionGetOffset(section, q, &off));
+                    PylithCallPetsc(PetscSectionSetOffset(subSection, p, off));
                 } // if
             } // if
         } // for
         if (subpointIS) {
-            err = ISRestoreIndices(subpointIS, &indices);PYLITH_CHECK_ERROR(err);
+            PylithCallPetsc(ISRestoreIndices(subpointIS, &indices));
         } // if
           /* No need to setup section */
         section = subSection;
@@ -210,32 +209,32 @@ pylith::meshio::DataWriter::getCoordsGlobalVec(PetscVec* coordsGlobalVec,
 
     PetscSF sf = NULL;
     PetscDM dmCoordGlobal = NULL;
-    err = DMClone(dmCoord, &dmCoordGlobal);PYLITH_CHECK_ERROR(err);
-    err = DMCopyDisc(dmCoord, dmCoordGlobal);PYLITH_CHECK_ERROR(err);
-    err = PetscSectionClone(section, &newSection);PYLITH_CHECK_ERROR(err);
-    err = DMSetLocalSection(dmCoordGlobal, newSection);PYLITH_CHECK_ERROR(err);
-    err = PetscSectionDestroy(&newSection);PYLITH_CHECK_ERROR(err);
-    err = DMGetPointSF(dmCoordGlobal, &sf);PYLITH_CHECK_ERROR(err);
-    err = PetscSectionCreateGlobalSectionCensored(section, sf, PETSC_TRUE, numExcludes, excludeRanges, &gsection);PYLITH_CHECK_ERROR(err);
-    err = DMSetGlobalSection(dmCoordGlobal, gsection);PYLITH_CHECK_ERROR(err);
-    err = PetscSectionDestroy(&gsection);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMClone(dmCoord, &dmCoordGlobal));
+    PylithCallPetsc(DMCopyDisc(dmCoord, dmCoordGlobal));
+    PylithCallPetsc(PetscSectionClone(section, &newSection));
+    PylithCallPetsc(DMSetLocalSection(dmCoordGlobal, newSection));
+    PylithCallPetsc(PetscSectionDestroy(&newSection));
+    PylithCallPetsc(DMGetPointSF(dmCoordGlobal, &sf));
+    PylithCallPetsc(PetscSectionCreateGlobalSectionCensored(section, sf, PETSC_TRUE, numExcludes, excludeRanges, &gsection));
+    PylithCallPetsc(DMSetGlobalSection(dmCoordGlobal, gsection));
+    PylithCallPetsc(PetscSectionDestroy(&gsection));
 
-    err = VecDestroy(coordsGlobalVec);PYLITH_CHECK_ERROR(err);
-    err = DMCreateGlobalVector(dmCoordGlobal, coordsGlobalVec);PYLITH_CHECK_ERROR(err);
-    err = PetscObjectSetName((PetscObject) *coordsGlobalVec, "vertices");PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(VecDestroy(coordsGlobalVec));
+    PylithCallPetsc(DMCreateGlobalVector(dmCoordGlobal, coordsGlobalVec));
+    PylithCallPetsc(PetscObjectSetName((PetscObject) *coordsGlobalVec, "vertices"));
 
-    err = PetscSectionDestroy(&subSection);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(PetscSectionDestroy(&subSection));
 
     InsertMode mode = INSERT_VALUES;
     PetscVec coordsLocalVec = NULL;
-    err = DMGetCoordinatesLocal(dmMesh, &coordsLocalVec);PYLITH_CHECK_ERROR(err);
-    err = DMLocalToGlobalBegin(dmCoordGlobal, coordsLocalVec, mode, *coordsGlobalVec);PYLITH_CHECK_ERROR(err);
-    err = DMLocalToGlobalEnd(dmCoordGlobal, coordsLocalVec, mode, *coordsGlobalVec);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMGetCoordinatesLocal(dmMesh, &coordsLocalVec));
+    PylithCallPetsc(DMLocalToGlobalBegin(dmCoordGlobal, coordsLocalVec, mode, *coordsGlobalVec));
+    PylithCallPetsc(DMLocalToGlobalEnd(dmCoordGlobal, coordsLocalVec, mode, *coordsGlobalVec));
 
     PylithReal lengthScale = 1.0;
-    err = DMPlexGetScale(dmMesh, PETSC_UNIT_LENGTH, &lengthScale);PYLITH_CHECK_ERROR(err);
-    err = VecScale(*coordsGlobalVec, lengthScale);PYLITH_CHECK_ERROR(err);
-    err = DMDestroy(&dmCoordGlobal);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMPlexGetScale(dmMesh, PETSC_UNIT_LENGTH, &lengthScale));
+    PylithCallPetsc(VecScale(*coordsGlobalVec, lengthScale));
+    PylithCallPetsc(DMDestroy(&dmCoordGlobal));
 
     PYLITH_METHOD_END;
 } // getCoordsGlobalVec
@@ -253,20 +252,19 @@ pylith::meshio::DataWriter::_writeVec(PetscVec vector,
     const PetscScalar *array;
     const char* vecName;
     PetscLayout map;
-    PetscErrorCode err = PETSC_SUCCESS;
 
-    err = VecCreate(PetscObjectComm((PetscObject)vector), &temp);PYLITH_CHECK_ERROR(err);
-    err = PetscObjectGetName((PetscObject)vector, &vecName);PYLITH_CHECK_ERROR(err);
-    err = PetscObjectSetName((PetscObject)temp, vecName);PYLITH_CHECK_ERROR(err);
-    err = VecGetLayout(vector, &map);PYLITH_CHECK_ERROR(err);
-    err = VecSetLayout(temp, map);PYLITH_CHECK_ERROR(err);
-    err = VecSetUp(temp);PYLITH_CHECK_ERROR(err);
-    err = VecGetArrayRead(vector, &array);PYLITH_CHECK_ERROR(err);
-    err = VecPlaceArray(temp, array);PYLITH_CHECK_ERROR(err);
-    err = VecView(temp, viewer);PYLITH_CHECK_ERROR(err);
-    err = VecResetArray(temp);PYLITH_CHECK_ERROR(err);
-    err = VecRestoreArrayRead(vector, &array);PYLITH_CHECK_ERROR(err);
-    err = VecDestroy(&temp);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(VecCreate(PetscObjectComm((PetscObject)vector), &temp));
+    PylithCallPetsc(PetscObjectGetName((PetscObject)vector, &vecName));
+    PylithCallPetsc(PetscObjectSetName((PetscObject)temp, vecName));
+    PylithCallPetsc(VecGetLayout(vector, &map));
+    PylithCallPetsc(VecSetLayout(temp, map));
+    PylithCallPetsc(VecSetUp(temp));
+    PylithCallPetsc(VecGetArrayRead(vector, &array));
+    PylithCallPetsc(VecPlaceArray(temp, array));
+    PylithCallPetsc(VecView(temp, viewer));
+    PylithCallPetsc(VecResetArray(temp));
+    PylithCallPetsc(VecRestoreArrayRead(vector, &array));
+    PylithCallPetsc(VecDestroy(&temp));
 } // _writeVec
 
 

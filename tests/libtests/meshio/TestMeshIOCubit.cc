@@ -22,13 +22,12 @@
 #include "catch2/catch_test_macros.hpp"
 
 #include <strings.h> // USES strcasecmp()
-#include <cassert> // USES assert()
 
 // ----------------------------------------------------------------------
 // Constructor.
 pylith::meshio::TestMeshIOCubit::TestMeshIOCubit(TestMeshIO_Data* data) :
     TestMeshIO(data) {
-    _io = new MeshIOCubit();assert(_io);
+    _io = new MeshIOCubit();REQUIRE(_io);
     _io->PyreComponent::setIdentifier("TestMeshIOCubit");
 } // constructor
 
@@ -45,7 +44,7 @@ pylith::meshio::TestMeshIOCubit::~TestMeshIOCubit(void) {
 void
 pylith::meshio::TestMeshIOCubit::testFilename(void) {
     PYLITH_METHOD_BEGIN;
-    assert(_io);
+    REQUIRE(_io);
 
     const std::string& filename = "hi.exo";
     _io->setFilename(filename.c_str());
@@ -60,13 +59,13 @@ pylith::meshio::TestMeshIOCubit::testFilename(void) {
 void
 pylith::meshio::TestMeshIOCubit::testRead(void) {
     PYLITH_METHOD_BEGIN;
-    assert(_io);
-    assert(_data);
+    REQUIRE(_io);
+    REQUIRE(_data);
 
     _io->setFilename(_data->filename.c_str());
 
     // Read mesh
-    delete _mesh;_mesh = new topology::Mesh;assert(_mesh);
+    delete _mesh;_mesh = new topology::Mesh;REQUIRE(_mesh);
     _io->read(_mesh);
 
     pythia::journal::debug_t debug("TestMeshIOCubit");

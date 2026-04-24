@@ -62,9 +62,8 @@ pylith::meshio::DataWriterHDF5::deallocate(void) {
 
     DataWriter::deallocate();
 
-    PetscErrorCode err = 0;
-    err = PetscViewerDestroy(&_viewer);PYLITH_CHECK_ERROR(err);assert(!_viewer);
-    err = VecDestroy(&_tstamp);PYLITH_CHECK_ERROR(err);assert(!_tstamp);
+    PylithCallPetsc(PetscViewerDestroy(&_viewer));assert(!_viewer);
+    PylithCallPetsc(VecDestroy(&_tstamp));assert(!_tstamp);
 
     PYLITH_METHOD_END;
 } // deallocate
@@ -90,8 +89,6 @@ pylith::meshio::DataWriterHDF5::open(const pylith::topology::Mesh& mesh,
     DataWriter::open(mesh, isInfo);
 
     try {
-        PetscErrorCode err = 0;
-
         deallocate();
 
         const std::string& filename = hdf5Filename();
@@ -99,17 +96,17 @@ pylith::meshio::DataWriterHDF5::open(const pylith::topology::Mesh& mesh,
         _timesteps.clear();
         _tstampIndex = 0;
         PetscMPIInt commRank;
-        err = MPI_Comm_rank(mesh.getComm(), &commRank);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(MPI_Comm_rank(mesh.getComm(), &commRank));
         const int localSize = (!commRank) ? 1 : 0;
-        err = VecCreateMPI(mesh.getComm(), localSize, 1, &_tstamp);PYLITH_CHECK_ERROR(err);assert(_tstamp);
-        err = VecSetBlockSize(_tstamp, 1);PYLITH_CHECK_ERROR(err);
-        err = PetscObjectSetName((PetscObject) _tstamp, "time");PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(VecCreateMPI(mesh.getComm(), localSize, 1, &_tstamp));assert(_tstamp);
+        PylithCallPetsc(VecSetBlockSize(_tstamp, 1));
+        PylithCallPetsc(PetscObjectSetName((PetscObject) _tstamp, "time"));
 
-        err = PetscViewerHDF5Open(mesh.getComm(), filename.c_str(), FILE_MODE_WRITE, &_viewer);PYLITH_CHECK_ERROR(err);
-        err = PetscViewerPushFormat(_viewer, PETSC_VIEWER_HDF5_VIZ);PYLITH_CHECK_ERROR(err);
-        err = PetscViewerHDF5SetBaseDimension2(_viewer, PETSC_TRUE);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(PetscViewerHDF5Open(mesh.getComm(), filename.c_str(), FILE_MODE_WRITE, &_viewer));
+        PylithCallPetsc(PetscViewerPushFormat(_viewer, PETSC_VIEWER_HDF5_VIZ));
+        PylithCallPetsc(PetscViewerHDF5SetBaseDimension2(_viewer, PETSC_TRUE));
 
-        err = DMView(mesh.getDM(), _viewer);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMView(mesh.getDM(), _viewer));
 
     } catch (const std::exception& err) {
         std::ostringstream msg;
@@ -131,9 +128,8 @@ void
 pylith::meshio::DataWriterHDF5::close(void) {
     PYLITH_METHOD_BEGIN;
 
-    PetscErrorCode err = 0;
-    err = PetscViewerDestroy(&_viewer);PYLITH_CHECK_ERROR(err);assert(!_viewer);
-    err = VecDestroy(&_tstamp);PYLITH_CHECK_ERROR(err);assert(!_tstamp);
+    PylithCallPetsc(PetscViewerDestroy(&_viewer));assert(!_viewer);
+    PylithCallPetsc(VecDestroy(&_tstamp));assert(!_tstamp);
 
     _timesteps.clear();
     _tstampIndex = 0;
@@ -141,7 +137,7 @@ pylith::meshio::DataWriterHDF5::close(void) {
     if (isOpen()) {
         // Write Xdmf file on process 0
         PetscMPIInt commRank;
-        err = MPI_Comm_rank(PETSC_COMM_WORLD, &commRank);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(MPI_Comm_rank(PETSC_COMM_WORLD, &commRank));
         if (!commRank) {
             try {
                 Xdmf::write(hdf5Filename().c_str());
@@ -168,8 +164,6 @@ pylith::meshio::DataWriterHDF5::writeVertexField(const PylithScalar t,
 
     const char* name = subfield.getDescription().label.c_str();
     try {
-        PetscErrorCode err;
-
         if (_timesteps.find(name) == _timesteps.end()) {
             _timesteps[name] = 0;
         } else {
@@ -178,25 +172,25 @@ pylith::meshio::DataWriterHDF5::writeVertexField(const PylithScalar t,
         const int istep = _timesteps[name];
         // Add time stamp to "/time" if necessary.
         MPI_Comm comm;
-        err = PetscObjectGetComm((PetscObject)subfield.getOutputDM(), &comm);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(PetscObjectGetComm((PetscObject)subfield.getOutputDM(), &comm));
         PetscMPIInt commRank;
-        err = MPI_Comm_rank(comm, &commRank);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(MPI_Comm_rank(comm, &commRank));
         if (_tstampIndex == istep) {
             _writeTimeStamp(t, commRank);
         } // if
 
-        err = PetscViewerHDF5PushGroup(_viewer, "/vertex_fields");PYLITH_CHECK_ERROR(err);
-        err = PetscViewerHDF5PushTimestepping(_viewer);PYLITH_CHECK_ERROR(err);
-        err = PetscViewerHDF5SetTimestep(_viewer, istep);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(PetscViewerHDF5PushGroup(_viewer, "/vertex_fields"));
+        PylithCallPetsc(PetscViewerHDF5PushTimestepping(_viewer));
+        PylithCallPetsc(PetscViewerHDF5SetTimestep(_viewer, istep));
 
         PetscVec vector = subfield.getOutputVector();assert(vector);
-        DataWriter::_writeVec(vector, _viewer);PYLITH_CHECK_ERROR(err);
-        err = PetscViewerHDF5PopTimestepping(_viewer);PYLITH_CHECK_ERROR(err);
-        err = PetscViewerHDF5PopGroup(_viewer);PYLITH_CHECK_ERROR(err);
+        DataWriter::_writeVec(vector, _viewer);
+        PylithCallPetsc(PetscViewerHDF5PopTimestepping(_viewer));
+        PylithCallPetsc(PetscViewerHDF5PopGroup(_viewer));
 
         if (0 == istep) {
             hid_t h5 = -1;
-            err = PetscViewerHDF5GetFileId(_viewer, &h5);PYLITH_CHECK_ERROR(err);
+            PylithCallPetsc(PetscViewerHDF5GetFileId(_viewer, &h5));
             assert(h5 >= 0);
             std::string fullName = std::string("/vertex_fields/") + std::string(name);
             const char* sattr = pylith::topology::FieldBase::vectorFieldString(subfield.getDescription().vectorFieldType);
@@ -231,8 +225,6 @@ pylith::meshio::DataWriterHDF5::writeCellField(const PylithScalar t,
 
     const char* name = subfield.getDescription().label.c_str();
     try {
-        PetscErrorCode err;
-
         if (_timesteps.find(name) == _timesteps.end()) {
             _timesteps[name] = 0;
         } else {
@@ -242,23 +234,23 @@ pylith::meshio::DataWriterHDF5::writeCellField(const PylithScalar t,
         // Add time stamp to "/time" if necessary.
         MPI_Comm comm = PetscObjectComm((PetscObject)subfield.getOutputDM());
         PetscMPIInt commRank;
-        err = MPI_Comm_rank(comm, &commRank);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(MPI_Comm_rank(comm, &commRank));
         if (_tstampIndex == istep) {
             _writeTimeStamp(t, commRank);
         } // if
 
-        err = PetscViewerHDF5PushGroup(_viewer, "/cell_fields");PYLITH_CHECK_ERROR(err);
-        err = PetscViewerHDF5PushTimestepping(_viewer);PYLITH_CHECK_ERROR(err);
-        err = PetscViewerHDF5SetTimestep(_viewer, istep);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(PetscViewerHDF5PushGroup(_viewer, "/cell_fields"));
+        PylithCallPetsc(PetscViewerHDF5PushTimestepping(_viewer));
+        PylithCallPetsc(PetscViewerHDF5SetTimestep(_viewer, istep));
 
         PetscVec vector = subfield.getOutputVector();assert(vector);
         DataWriter::_writeVec(vector, _viewer);
-        err = PetscViewerHDF5PopTimestepping(_viewer);PYLITH_CHECK_ERROR(err);
-        err = PetscViewerHDF5PopGroup(_viewer);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(PetscViewerHDF5PopTimestepping(_viewer));
+        PylithCallPetsc(PetscViewerHDF5PopGroup(_viewer));
 
         if (0 == istep) {
             hid_t h5 = -1;
-            err = PetscViewerHDF5GetFileId(_viewer, &h5);PYLITH_CHECK_ERROR(err);
+            PylithCallPetsc(PetscViewerHDF5GetFileId(_viewer, &h5));
             assert(h5 >= 0);
             std::string fullName = std::string("/cell_fields/") + std::string(name);
             const char* sattr = pylith::topology::FieldBase::vectorFieldString(subfield.getDescription().vectorFieldType);
@@ -328,7 +320,7 @@ pylith::meshio::DataWriterHDF5::writePointNames(const pylith::string_vector& nam
         } // for
 
         hid_t h5 = -1;
-        PetscErrorCode petscerr = PetscViewerHDF5GetFileId(_viewer, &h5);PYLITH_CHECK_ERROR(petscerr);
+        PylithCallPetsc(PetscViewerHDF5GetFileId(_viewer, &h5));
         assert(h5 >= 0);
         const char* parent = "/";
         const char* name = "stations";
@@ -444,21 +436,20 @@ void
 pylith::meshio::DataWriterHDF5::_writeTimeStamp(const PylithScalar t,
                                                 const int commRank) {
     assert(_tstamp);
-    PetscErrorCode err = 0;
 
     if (!commRank) {
         const PylithScalar tDim = t * DataWriter::_timeScale;
-        err = VecSetValue(_tstamp, 0, tDim, INSERT_VALUES);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(VecSetValue(_tstamp, 0, tDim, INSERT_VALUES));
     } // if
-    err = VecAssemblyBegin(_tstamp);PYLITH_CHECK_ERROR(err);
-    err = VecAssemblyEnd(_tstamp);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(VecAssemblyBegin(_tstamp));
+    PylithCallPetsc(VecAssemblyEnd(_tstamp));
 
-    err = PetscViewerHDF5PushGroup(_viewer, "/");PYLITH_CHECK_ERROR(err);
-    err = PetscViewerHDF5PushTimestepping(_viewer);PYLITH_CHECK_ERROR(err);
-    err = PetscViewerHDF5SetTimestep(_viewer, _tstampIndex);PYLITH_CHECK_ERROR(err);
-    err = VecView(_tstamp, _viewer);PYLITH_CHECK_ERROR(err);
-    err = PetscViewerHDF5PopTimestepping(_viewer);PYLITH_CHECK_ERROR(err);
-    err = PetscViewerHDF5PopGroup(_viewer);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(PetscViewerHDF5PushGroup(_viewer, "/"));
+    PylithCallPetsc(PetscViewerHDF5PushTimestepping(_viewer));
+    PylithCallPetsc(PetscViewerHDF5SetTimestep(_viewer, _tstampIndex));
+    PylithCallPetsc(VecView(_tstamp, _viewer));
+    PylithCallPetsc(PetscViewerHDF5PopTimestepping(_viewer));
+    PylithCallPetsc(PetscViewerHDF5PopGroup(_viewer));
 
     _tstampIndex++;
 } // _writeTimeStamp

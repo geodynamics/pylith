@@ -273,7 +273,7 @@ pylith::bc::TestNeumannTimeDependent::testInitialize(void) {
     query.initializeWithDefaultQueryFns();
     CPPUNIT_ASSERT(_data->scales);
     query.openDB(_data->auxDB, _data->scales->getLengthScale());
-    PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, query.functions(), (void**)query.contextPtrs(), auxField->localVector(), &norm);CPPUNIT_ASSERT(!err);
+    err = DMPlexComputeL2DiffLocal(dm, t, query.functions(), (void**)query.contextPtrs(), auxField->localVector(), &norm);CPPUNIT_ASSERT(!err);
     query.closeDB(_data->auxDB);
     const PylithReal tolerance = 1.0e-6;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
@@ -312,7 +312,7 @@ pylith::bc::TestNeumannTimeDependent::testPrestep(void) {
     query.initializeWithDefaultQueryFns();
     CPPUNIT_ASSERT(_data->scales);
     query.openDB(_data->auxDB, _data->scales->getLengthScale());
-    PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, query.functions(), (void**)query.contextPtrs(), valueField.localVector(), &norm);CPPUNIT_ASSERT(!err);
+    err = DMPlexComputeL2DiffLocal(dm, t, query.functions(), (void**)query.contextPtrs(), valueField.localVector(), &norm);CPPUNIT_ASSERT(!err);
     query.closeDB(_data->auxDB);
     const PylithReal tolerance = 1.0e-6;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
@@ -345,14 +345,13 @@ pylith::bc::TestNeumannTimeDependent::testComputeRHSResidual(void) {
 
     // Verify number and DOF of constraints in solution field.
     int iConstraint = 0;
-    PetscErrorCode err = 0;
     for (PetscInt v = vStart; v < vEnd; ++v) {
         PetscInt dof, cdof, fdof, fcdof;
 
-        err = PetscSectionGetDof(fieldSection, v, &dof);PYLITH_CHECK_ERROR(err);
-        err = PetscSectionGetConstraintDof(fieldSection, v, &cdof);PYLITH_CHECK_ERROR(err);
-        err = PetscSectionGetFieldDof(fieldSection, v, 0, &fdof);PYLITH_CHECK_ERROR(err);
-        err = PetscSectionGetFieldConstraintDof(fieldSection, v, 0, &fcdof);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(PetscSectionGetDof(fieldSection, v, &dof));
+        PylithCallPetsc(PetscSectionGetConstraintDof(fieldSection, v, &cdof));
+        PylithCallPetsc(PetscSectionGetFieldDof(fieldSection, v, 0, &fdof));
+        PylithCallPetsc(PetscSectionGetFieldConstraintDof(fieldSection, v, 0, &fcdof));
         if (v != _data->constrainedPoints[iConstraint] + offset) {
             CPPUNIT_ASSERT_EQUAL(_data->numDOF, dof);
             CPPUNIT_ASSERT_EQUAL(0, cdof);
@@ -374,7 +373,7 @@ pylith::bc::TestNeumannTimeDependent::testComputeRHSResidual(void) {
     pylith::topology::FieldQuery* query = _db->_auxiliaryFieldsQuery;
     query->openDB(queryDB, _data->lengthScale);
 
-    PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, query->functions(), (void**)query->contextPtrs(), _solution->localVector(), &norm);CPPUNIT_ASSERT(!err);
+    err = DMPlexComputeL2DiffLocal(dm, t, query->functions(), (void**)query->contextPtrs(), _solution->localVector(), &norm);CPPUNIT_ASSERT(!err);
     query->closeDB(queryDB);
     const PylithReal tolerance = 1.0e-6;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);

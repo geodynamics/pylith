@@ -16,6 +16,8 @@
 #include "pylith/topology/Field.hh" // USES pylith::topology::Field::Discretization
 #include "pylith/utils/journals.hh" // USES pythia::journal::debug_t
 
+#include "catch2/catch_test_macros.hpp"
+
 namespace pylith {
     class _UniformShear2D;
 } // pylith
@@ -57,11 +59,11 @@ private:
     // Solution subfields.
 
     static double strain_xx(void) {
-        return 0;
+        return 0.0;
     } // strain_xx
 
     static double strain_yy(void) {
-        return 0;
+        return 0.0;
     } // strain_yy
 
     static double strain_xy(void) {
@@ -90,10 +92,10 @@ private:
                                           PetscInt numComponents,
                                           PetscScalar* s,
                                           void* context) {
-        assert(2 == spaceDim);
-        assert(x);
-        assert(2 == numComponents);
-        assert(s);
+        REQUIRE(2 == spaceDim);
+        REQUIRE(x);
+        REQUIRE(2 == numComponents);
+        REQUIRE(s);
 
         s[0] = disp_x(x[0], x[1]);
         s[1] = disp_y(x[0], x[1]);
@@ -107,10 +109,10 @@ private:
                                               PetscInt numComponents,
                                               PetscScalar* s,
                                               void* context) {
-        assert(2 == spaceDim);
-        assert(x);
-        assert(1 == numComponents);
-        assert(s);
+        REQUIRE(2 == spaceDim);
+        REQUIRE(x);
+        REQUIRE(1 == numComponents);
+        REQUIRE(s);
 
         s[0] = pressure(x[0], x[1]);
 
@@ -121,7 +123,7 @@ public:
 
     static
     TestIncompressibleElasticity_Data* createData(void) {
-        TestIncompressibleElasticity_Data* data = new TestIncompressibleElasticity_Data();assert(data);
+        TestIncompressibleElasticity_Data* data = new TestIncompressibleElasticity_Data();REQUIRE(data);
 
         data->journalName = "UniformShear2D";
 
@@ -157,7 +159,7 @@ public:
         { // disp
             static const PylithInt constrainedDOF[2] = {0, 1};
             static const PylithInt numConstrainedDOF = 2;
-            pylith::bc::DirichletUserFn* bc = new pylith::bc::DirichletUserFn();assert(bc);
+            pylith::bc::DirichletUserFn* bc = new pylith::bc::DirichletUserFn();REQUIRE(bc);
             bc->setSubfieldName("displacement");
             bc->setLabelName("boundary");
             bc->setLabelValue(1);
@@ -169,7 +171,7 @@ public:
         { // pressure
             static const PylithInt constrainedDOF[1] = {0};
             static const PylithInt numConstrainedDOF = 1;
-            pylith::bc::DirichletUserFn* bc = new pylith::bc::DirichletUserFn();assert(bc);
+            pylith::bc::DirichletUserFn* bc = new pylith::bc::DirichletUserFn();REQUIRE(bc);
             bc->setSubfieldName("pressure");
             bc->setLabelName("boundary");
             bc->setLabelValue(1);
@@ -193,7 +195,7 @@ public:
 // ------------------------------------------------------------------------------------------------
 pylith::TestIncompressibleElasticity_Data*
 pylith::UniformShear2D::TriP1(void) {
-    TestIncompressibleElasticity_Data* data = pylith::_UniformShear2D::createData();assert(data);
+    TestIncompressibleElasticity_Data* data = pylith::_UniformShear2D::createData();REQUIRE(data);
 
     data->meshFilename = "data/tri.mesh";
 
@@ -211,7 +213,7 @@ pylith::UniformShear2D::TriP1(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestIncompressibleElasticity_Data*
 pylith::UniformShear2D::TriP2(void) {
-    TestIncompressibleElasticity_Data* data = pylith::_UniformShear2D::createData();assert(data);
+    TestIncompressibleElasticity_Data* data = pylith::_UniformShear2D::createData();REQUIRE(data);
 
     data->meshFilename = "data/tri.mesh";
 
@@ -236,7 +238,7 @@ pylith::UniformShear2D::TriP2(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestIncompressibleElasticity_Data*
 pylith::UniformShear2D::TriP3(void) {
-    TestIncompressibleElasticity_Data* data = pylith::_UniformShear2D::createData();assert(data);
+    TestIncompressibleElasticity_Data* data = pylith::_UniformShear2D::createData();REQUIRE(data);
 
     data->meshFilename = "data/tri.mesh";
 
@@ -261,7 +263,7 @@ pylith::UniformShear2D::TriP3(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestIncompressibleElasticity_Data*
 pylith::UniformShear2D::TriP4(void) {
-    TestIncompressibleElasticity_Data* data = pylith::_UniformShear2D::createData();assert(data);
+    TestIncompressibleElasticity_Data* data = pylith::_UniformShear2D::createData();REQUIRE(data);
 
     data->meshFilename = "data/tri.mesh";
 
@@ -286,7 +288,7 @@ pylith::UniformShear2D::TriP4(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestIncompressibleElasticity_Data*
 pylith::UniformShear2D::QuadQ1(void) {
-    TestIncompressibleElasticity_Data* data = pylith::_UniformShear2D::createData();assert(data);
+    TestIncompressibleElasticity_Data* data = pylith::_UniformShear2D::createData();REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 
@@ -304,7 +306,7 @@ pylith::UniformShear2D::QuadQ1(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestIncompressibleElasticity_Data*
 pylith::UniformShear2D::QuadQ2(void) {
-    TestIncompressibleElasticity_Data* data = pylith::_UniformShear2D::createData();assert(data);
+    TestIncompressibleElasticity_Data* data = pylith::_UniformShear2D::createData();REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 
@@ -329,7 +331,7 @@ pylith::UniformShear2D::QuadQ2(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestIncompressibleElasticity_Data*
 pylith::UniformShear2D::QuadQ3(void) {
-    TestIncompressibleElasticity_Data* data = pylith::_UniformShear2D::createData();assert(data);
+    TestIncompressibleElasticity_Data* data = pylith::_UniformShear2D::createData();REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 
@@ -354,7 +356,7 @@ pylith::UniformShear2D::QuadQ3(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestIncompressibleElasticity_Data*
 pylith::UniformShear2D::QuadQ4(void) {
-    TestIncompressibleElasticity_Data* data = pylith::_UniformShear2D::createData();assert(data);
+    TestIncompressibleElasticity_Data* data = pylith::_UniformShear2D::createData();REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 

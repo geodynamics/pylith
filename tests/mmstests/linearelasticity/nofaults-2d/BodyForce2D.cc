@@ -18,6 +18,9 @@
 
 #include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
 
+#include "catch2/catch_test_macros.hpp"
+
+
 namespace pylith {
     class _BodyForce2D;
 } // pylith
@@ -98,21 +101,21 @@ class pylith::_BodyForce2D {
                                           PetscInt numComponents,
                                           PetscScalar* s,
                                           void* context) {
-        assert(2 == spaceDim);
-        assert(2 == numComponents);
-        assert(s);
+        REQUIRE(2 == spaceDim);
+        REQUIRE(2 == numComponents);
+        REQUIRE(s);
 
         s[0] = disp_x(x[0], x[1]);
         s[1] = disp_y(x[0], x[1]);
 
-        return 0;
+        return PETSC_SUCCESS;
     } // solnkernel_disp
 
 public:
 
     static
     TestLinearElasticity_Data* createData(void) {
-        TestLinearElasticity_Data* data = new TestLinearElasticity_Data();assert(data);
+        TestLinearElasticity_Data* data = new TestLinearElasticity_Data();REQUIRE(data);
 
         data->journalName = "BodyForce2D";
         data->isJacobianLinear = true;
@@ -160,7 +163,7 @@ public:
         static const PylithInt constrainedDOF[2] = {0, 1};
         static const PylithInt numConstrained = 2;
         data->bcs.resize(1);
-        pylith::bc::DirichletUserFn*bc = new pylith::bc::DirichletUserFn();assert(bc);
+        pylith::bc::DirichletUserFn*bc = new pylith::bc::DirichletUserFn();REQUIRE(bc);
         bc->setSubfieldName("displacement");
         bc->setLabelName("boundary");
         bc->setLabelValue(1);
@@ -185,7 +188,7 @@ const double pylith::_BodyForce2D::X_MAX = 4.0e+3;
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::BodyForce2D::TriP2(void) {
-    TestLinearElasticity_Data* data = pylith::_BodyForce2D::createData();assert(data);
+    TestLinearElasticity_Data* data = pylith::_BodyForce2D::createData();REQUIRE(data);
 
     data->meshFilename = "data/tri.mesh";
 
@@ -210,7 +213,7 @@ pylith::BodyForce2D::TriP2(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::BodyForce2D::TriP3(void) {
-    TestLinearElasticity_Data* data = pylith::_BodyForce2D::createData();assert(data);
+    TestLinearElasticity_Data* data = pylith::_BodyForce2D::createData();REQUIRE(data);
 
     data->meshFilename = "data/tri.mesh";
 
@@ -235,7 +238,7 @@ pylith::BodyForce2D::TriP3(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::BodyForce2D::QuadQ2(void) {
-    TestLinearElasticity_Data* data = pylith::_BodyForce2D::createData();assert(data);
+    TestLinearElasticity_Data* data = pylith::_BodyForce2D::createData();REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 
@@ -260,7 +263,7 @@ pylith::BodyForce2D::QuadQ2(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::BodyForce2D::QuadQ3(void) {
-    TestLinearElasticity_Data* data = pylith::_BodyForce2D::createData();assert(data);
+    TestLinearElasticity_Data* data = pylith::_BodyForce2D::createData();REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 

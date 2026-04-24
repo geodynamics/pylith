@@ -27,7 +27,7 @@ We use 4 spaces for indentation. Configure your editor to use spaces instead of 
   - All user errors should be trapped as early as possible and reported with an informative error message by throwing an appropriate exception. If possible, suggest ways to correct the error.
   - Messages for internal errors should indicate the location in the code where the error was trapped.
   - All pointers should be checked for `NULL` values before use. Usually we use `assert()` to do this.
-  - Check the return values for all calls to functions in external libraries. For PETSc functions, we use `PYLITH_CHECK_ERROR(returnValue)`.
+  - Check the return values for all calls to functions in external libraries. For PETSc functions, we use `PylithCallPetsc(PetscFunction(args));`.
 - Testing
   - All C++ methods should be covered by unit tests.
   - All governing equations should be covered by Method of Manufactured solution tests.
@@ -67,7 +67,7 @@ If it encounters a fatal error, then it should generate an appropriate error mes
 In C++ we throw `std::runtime_error` exceptions for errors resulting from user input and `std::logic_error` exceptions for internal inconsistencies or logic errors.
 In Python we use standard exception objects.
 
-Additional protections against crashing include: using asserts to verify pointers are non-null before using them and using the `PYLITH_CHECK_ERROR` macro to check the return value after *every* call to a PETSc function.
+Additional protections against crashing include: using asserts to verify pointers are non-null before using them and using the `PylithCallPetsc()` macro to check the return value for *every* call to a PETSc function.
 
 ```{code-block} c++
 ---
@@ -91,9 +91,9 @@ When we build the code for production runs, we usually configure with `CPPFLAGS=
 
 ```{code-block} c++
 ---
-caption: Example of using `PYLITH_CHECK_ERROR` macro.
+caption: Example of using `PylithCallPetsc()` macro.
 ---
-PetscErrorCode err = TSGetTimeStep(ts, &dt);PYLITH_CHECK_ERROR(err);
+PylithCallPetsc(TSGetTimeStep(ts, &dt));
 ```
 
 In combination with the above procedures, we also make use of the Pyre journals to display warnings and errors to facilitate debugging.
@@ -151,8 +151,8 @@ macros:
 `PYLITH_RETURN_END`
 : Use this macro at the end of all methods that begin with `PYLITH_METHOD_BEGIN` and return non-void values.
 
-`PYLITH_CHECK_ERROR`
-: Use this macro after *every* call to a PETSc function to check the return value.
+`PylithCallPetsc()`
+: Use this macro in *every* call to a PETSc function to check the return value.
 
 `PYLITH_JOURNAL_DEBUG`
 : Use this macro immediately after `PYLITH_METHOD_BEGIN` in methods of all objects that inherit from `GenericComponent`.

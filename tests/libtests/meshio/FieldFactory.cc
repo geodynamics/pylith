@@ -16,6 +16,8 @@
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 
+#include "catch2/catch_test_macros.hpp"
+
 // ------------------------------------------------------------------------------------------------
 // Default constructor.
 pylith::meshio::FieldFactory::FieldFactory(pylith::topology::Field& field) :
@@ -86,7 +88,7 @@ pylith::meshio::FieldFactory::addTensor(const pylith::topology::FieldBase::Discr
     const char* fieldName = "tensor";
 
     const int spaceDim = _field.getSpaceDim();
-    assert(2 == spaceDim || 3 == spaceDim);
+    REQUIRE((2 == spaceDim || 3 == spaceDim));
 
     pylith::topology::Field::Description description;
     description.label = fieldName;
@@ -153,9 +155,9 @@ pylith::meshio::FieldFactory::setValues(const PylithScalar* values,
     PYLITH_METHOD_BEGIN;
 
     pylith::topology::VecVisitorMesh fieldVisitor(_field);
-    PylithScalar* fieldArray = fieldVisitor.localArray();assert(fieldArray);
+    PylithScalar* fieldArray = fieldVisitor.localArray();REQUIRE(fieldArray);
     const PylithInt fieldSize = numPoints * numDOF;
-    assert(fieldSize == _field.getStorageSize());
+    REQUIRE(fieldSize == _field.getStorageSize());
     for (PylithInt i = 0; i < fieldSize; ++i) {
         fieldArray[i] = values[i];
     } // for

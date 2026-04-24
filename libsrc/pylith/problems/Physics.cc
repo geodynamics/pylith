@@ -28,6 +28,7 @@
 // Constructor
 pylith::problems::Physics::Physics(void) :
     _scales(NULL),
+    _formulation(QUASISTATIC),
     _labelName(pylith::topology::Mesh::cells_label_name),
     _labelValue(1),
     _observers(new pylith::problems::ObserversPhysics) {}

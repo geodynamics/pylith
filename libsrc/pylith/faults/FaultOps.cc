@@ -61,7 +61,6 @@ pylith::faults::FaultOps::createDAEMassWeighting(pylith::feassemble::Integration
 void
 pylith::faults::FaultOps::updateDAEMassWeighting(pylith::feassemble::IntegrationData* integrationData) {
     PYLITH_METHOD_BEGIN;
-    PetscErrorCode err;
 
     const pylith::topology::Field* jacobianLumpedInv =
         integrationData->getField(pylith::feassemble::IntegrationData::lumped_jacobian_inverse);assert(jacobianLumpedInv);
@@ -74,10 +73,10 @@ pylith::faults::FaultOps::updateDAEMassWeighting(pylith::feassemble::Integration
     PetscScalar* domainArray = domainVisitor.localArray();
     PetscScalar* faultsArray = faultsVisitor.localArray();
 
-    err = VecSet(weighting->getLocalVector(), 1.0);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(VecSet(weighting->getLocalVector(), 1.0));
     PetscInt pStart = 0;
     PetscInt pEnd = 0;
-    err = PetscSectionGetChart(faultsVisitor.selectedSection(), &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(PetscSectionGetChart(faultsVisitor.selectedSection(), &pStart, &pEnd));
     for (PetscInt point = pStart; point < pEnd; ++point) {
         PetscInt numDof = faultsVisitor.sectionDof(point);
         if (numDof > 0) {

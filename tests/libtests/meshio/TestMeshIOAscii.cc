@@ -21,13 +21,12 @@
 #include "catch2/catch_test_macros.hpp"
 
 #include <strings.h> // USES strcasecmp()
-#include <cassert> // USES assert()
 
 // ----------------------------------------------------------------------
 // Constructor.
 pylith::meshio::TestMeshIOAscii::TestMeshIOAscii(TestMeshIO_Data* data) :
     TestMeshIO(data) {
-    _io = new MeshIOAscii();assert(_io);
+    _io = new MeshIOAscii();REQUIRE(_io);
     _io->PyreComponent::setIdentifier("TestMeshIOAscii");
 } // constructor
 
@@ -44,7 +43,7 @@ pylith::meshio::TestMeshIOAscii::~TestMeshIOAscii(void) {
 void
 pylith::meshio::TestMeshIOAscii::testFilename(void) {
     PYLITH_METHOD_BEGIN;
-    assert(_io);
+    REQUIRE(_io);
 
     const std::string& filename = "hi.txt";
     _io->setFilename(filename.c_str());
@@ -59,9 +58,9 @@ pylith::meshio::TestMeshIOAscii::testFilename(void) {
 void
 pylith::meshio::TestMeshIOAscii::testWriteRead(void) {
     PYLITH_METHOD_BEGIN;
-    assert(_io);
+    REQUIRE(_io);
 
-    TestMeshIO::_createMesh();assert(_mesh);
+    TestMeshIO::_createMesh();REQUIRE(_mesh);
 
     // Write mesh
     _io->setFilename(_data->filename.c_str());
@@ -83,7 +82,7 @@ pylith::meshio::TestMeshIOAscii::testWriteRead(void) {
 void
 pylith::meshio::TestMeshIOAscii::testRead(void) {
     PYLITH_METHOD_BEGIN;
-    assert(_io);
+    REQUIRE(_io);
 
     // Read mesh
     delete _mesh;_mesh = new pylith::topology::Mesh;
@@ -102,7 +101,7 @@ pylith::meshio::TestMeshIOAscii::testRead(void) {
 void
 pylith::meshio::TestMeshIOAscii::testReadError(void) {
     PYLITH_METHOD_BEGIN;
-    assert(_io);
+    REQUIRE(_io);
 
     // Read mesh
     delete _mesh;_mesh = new pylith::topology::Mesh;

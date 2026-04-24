@@ -13,6 +13,7 @@
 // Header files for module C++ code
 %{
 #include <petsc.h>
+#include "pylith/utils/error.hh"
 %}
 
 %include "exception.i"

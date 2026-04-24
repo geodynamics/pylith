@@ -25,6 +25,8 @@
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "pylith/scales/Scales.hh" // USES Scales
 
+#include "catch2/catch_test_macros.hpp"
+
 // ------------------------------------------------------------------------------------------------
 // Constructor.
 pylith::meshio::TestDataWriterPoints::TestDataWriterPoints(void) :
@@ -45,7 +47,7 @@ pylith::meshio::TestDataWriterPoints::~TestDataWriterPoints(void) {
 // ------------------------------------------------------------------------------------------------
 void
 pylith::meshio::TestDataWriterPoints::setDataTri(TestDataWriterPoints_Data* data) {
-    assert(data);
+    REQUIRE(data);
 
     data->meshFilename = "data/tri3.mesh";
     data->faultLabel = "fault";
@@ -86,7 +88,7 @@ pylith::meshio::TestDataWriterPoints::setDataTri(TestDataWriterPoints_Data* data
 // ------------------------------------------------------------------------------------------------
 void
 pylith::meshio::TestDataWriterPoints::setDataQuad(TestDataWriterPoints_Data* data) {
-    assert(data);
+    REQUIRE(data);
 
     data->meshFilename = "data/quad4.mesh";
     data->faultId = 100;
@@ -125,7 +127,7 @@ pylith::meshio::TestDataWriterPoints::setDataQuad(TestDataWriterPoints_Data* dat
 // ------------------------------------------------------------------------------------------------
 void
 pylith::meshio::TestDataWriterPoints::setDataTet(TestDataWriterPoints_Data* data) {
-    assert(data);
+    REQUIRE(data);
 
     data->meshFilename = "data/tet4.mesh";
     data->faultId = 100;
@@ -166,7 +168,7 @@ pylith::meshio::TestDataWriterPoints::setDataTet(TestDataWriterPoints_Data* data
 // ------------------------------------------------------------------------------------------------
 void
 pylith::meshio::TestDataWriterPoints::setDataHex(TestDataWriterPoints_Data* data) {
-    assert(data);
+    REQUIRE(data);
 
     data->meshFilename = "data/hex8.mesh";
     data->faultId = 100;
@@ -211,7 +213,7 @@ void
 pylith::meshio::TestDataWriterPoints::_initialize(void) {
     PYLITH_METHOD_BEGIN;
 
-    const TestDataWriterPoints_Data* data = _getData();assert(data);
+    const TestDataWriterPoints_Data* data = _getData();REQUIRE(data);
 
     spatialdata::geocoords::CSCart cs;
     cs.setSpaceDim(data->spaceDim);
@@ -232,9 +234,9 @@ pylith::meshio::TestDataWriterPoints::_initialize(void) {
 void
 pylith::meshio::TestDataWriterPoints::_createVertexField(pylith::topology::Field* field) {
     PYLITH_METHOD_BEGIN;
-    assert(field);
+    REQUIRE(field);
 
-    const TestDataWriterPoints_Data* data = _getData();assert(data);
+    const TestDataWriterPoints_Data* data = _getData();REQUIRE(data);
 
     FieldFactory factory(*field);
     factory.addScalar(data->vertexDiscretization);

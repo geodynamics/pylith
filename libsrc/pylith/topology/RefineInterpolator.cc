@@ -90,8 +90,7 @@ PetscDM
 pylith::topology::RefineInterpolator::getInputDM(void) {
     PetscDM dmStart = PETSC_NULLPTR;
     if (_levels.size() > 0) {
-        PetscErrorCode err = PETSC_SUCCESS;
-        err = DMGetCoarseDM(_levels[0].dm, &dmStart);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMGetCoarseDM(_levels[0].dm, &dmStart));
     } // if
     return dmStart;
 }
@@ -117,10 +116,9 @@ pylith::topology::RefineInterpolator::initialize(const PetscDM& dmMesh,
     _RefineInterpolator::Events::logger.eventBegin(_RefineInterpolator::Events::initialize);
 
     _levels.resize(refineLevels);
-    PetscErrorCode err = PETSC_SUCCESS;
 
     PetscDM dmStart = pylith::topology::MeshOps::removeHangingCells(dmMesh);assert(dmStart);
-    err = DMCopyDisc(dmMesh, dmStart);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMCopyDisc(dmMesh, dmStart));
 
     PetscDM dmPrev = dmStart;
     PetscReal lengthScale = 1.0;
@@ -130,12 +128,12 @@ pylith::topology::RefineInterpolator::initialize(const PetscDM& dmMesh,
         _levels[iLevel].interpolateMatrix = PETSC_NULLPTR;
         _levels[iLevel].vector = PETSC_NULLPTR;
 
-        err = DMPlexSetRefinementUniform(dmPrev, PETSC_TRUE);PYLITH_CHECK_ERROR(err);
-        err = DMRefine(dmPrev, comm, &_levels[iLevel].dm);PYLITH_CHECK_ERROR(err);
-        err = DMSetCoarseDM(_levels[iLevel].dm, dmPrev);PYLITH_CHECK_ERROR(err);
-        err = DMPlexGetScale(dmPrev, PETSC_UNIT_LENGTH, &lengthScale);PYLITH_CHECK_ERROR(err);
-        err = DMPlexSetScale(_levels[iLevel].dm, PETSC_UNIT_LENGTH, lengthScale);PYLITH_CHECK_ERROR(err);
-        err = DMPlexReorderSetDefault(_levels[iLevel].dm, DM_REORDER_DEFAULT_FALSE);
+        PylithCallPetsc(DMPlexSetRefinementUniform(dmPrev, PETSC_TRUE));
+        PylithCallPetsc(DMRefine(dmPrev, comm, &_levels[iLevel].dm));
+        PylithCallPetsc(DMSetCoarseDM(_levels[iLevel].dm, dmPrev));
+        PylithCallPetsc(DMPlexGetScale(dmPrev, PETSC_UNIT_LENGTH, &lengthScale));
+        PylithCallPetsc(DMPlexSetScale(_levels[iLevel].dm, PETSC_UNIT_LENGTH, lengthScale));
+        PylithCallPetsc(DMPlexReorderSetDefault(_levels[iLevel].dm, DM_REORDER_DEFAULT_FALSE));
 
 #if 0 // needed for higher order coordinates (not needed for affine coordinates)
         PetscCall(DMPlexCreateCoordinateSpace(rdm, rd, PETSC_FALSE, NULL));
@@ -147,19 +145,19 @@ pylith::topology::RefineInterpolator::initialize(const PetscDM& dmMesh,
 #endif
 
         if (iLevel < _levels.size()-1) {
-            err = DMCopyDisc(dmPrev, _levels[iLevel].dm);PYLITH_CHECK_ERROR(err);
+            PylithCallPetsc(DMCopyDisc(dmPrev, _levels[iLevel].dm));
         } else {
             const PetscInt minBasisOrder = PETSC_DETERMINE;
             const PetscInt maxBasisOrder = outputBasisOrder;
-            err = DMCopyFields(dmPrev, minBasisOrder, maxBasisOrder, _levels[iLevel].dm);PYLITH_CHECK_ERROR(err);
-            err = DMCopyDS(dmPrev, minBasisOrder, maxBasisOrder, _levels[iLevel].dm);PYLITH_CHECK_ERROR(err);
+            PylithCallPetsc(DMCopyFields(dmPrev, minBasisOrder, maxBasisOrder, _levels[iLevel].dm));
+            PylithCallPetsc(DMCopyDS(dmPrev, minBasisOrder, maxBasisOrder, _levels[iLevel].dm));
         } // else
-        err = DMCreateGlobalVector(_levels[iLevel].dm, &_levels[iLevel].vector);PYLITH_CHECK_ERROR(err);
-        err = DMCreateInterpolation(dmPrev, _levels[iLevel].dm, &_levels[iLevel].interpolateMatrix, NULL);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMCreateGlobalVector(_levels[iLevel].dm, &_levels[iLevel].vector));
+        PylithCallPetsc(DMCreateInterpolation(dmPrev, _levels[iLevel].dm, &_levels[iLevel].interpolateMatrix, NULL));
 
         dmPrev = _levels[iLevel].dm;
     } // for
-    err = DMDestroy(&dmStart);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMDestroy(&dmStart));
 
     _RefineInterpolator::Events::logger.eventEnd(_RefineInterpolator::Events::initialize);
     PYLITH_METHOD_END;
@@ -176,12 +174,11 @@ pylith::topology::RefineInterpolator::interpolate(const PetscVec* vectorOut,
     assert(vectorOut);
 
     PetscVec vectorPrev = vectorIn;
-    PetscErrorCode err = PETSC_SUCCESS;
     for (auto level : _levels) {
-        err = MatMult(level.interpolateMatrix, vectorPrev, level.vector);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(MatMult(level.interpolateMatrix, vectorPrev, level.vector));
         vectorPrev = level.vector;
     } // for
-    err = VecCopy(vectorPrev, *vectorOut);
+    PylithCallPetsc(VecCopy(vectorPrev, *vectorOut));
 
     _RefineInterpolator::Events::logger.eventEnd(_RefineInterpolator::Events::interpolate);
     PYLITH_METHOD_END;

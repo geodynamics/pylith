@@ -82,7 +82,7 @@ TEST_CASE("TestDataWriterVTKMaterial::Hex::testWriteCellField", "[DataWriter][VT
 pylith::meshio::TestDataWriterVTKMaterial_Data*
 pylith::meshio::TestDataWriterVTKMaterial_Cases::Tri(void) {
     PYLITH_METHOD_BEGIN;
-    TestDataWriterVTKMaterial_Data* data = new TestDataWriterVTKMaterial_Data();assert(data);
+    TestDataWriterVTKMaterial_Data* data = new TestDataWriterVTKMaterial_Data();REQUIRE(data);
 
     data->timestepFilename = "tri3_mat.vtu";
     data->vertexFilename = "tri3_mat_vertex.vtu";
@@ -98,7 +98,7 @@ pylith::meshio::TestDataWriterVTKMaterial_Cases::Tri(void) {
 pylith::meshio::TestDataWriterVTKMaterial_Data*
 pylith::meshio::TestDataWriterVTKMaterial_Cases::Quad(void) {
     PYLITH_METHOD_BEGIN;
-    TestDataWriterVTKMaterial_Data* data = new TestDataWriterVTKMaterial_Data();assert(data);
+    TestDataWriterVTKMaterial_Data* data = new TestDataWriterVTKMaterial_Data();REQUIRE(data);
 
     data->timestepFilename = "quad4_mat.vtu";
     data->vertexFilename = "quad4_mat_vertex.vtu";
@@ -114,7 +114,7 @@ pylith::meshio::TestDataWriterVTKMaterial_Cases::Quad(void) {
 pylith::meshio::TestDataWriterVTKMaterial_Data*
 pylith::meshio::TestDataWriterVTKMaterial_Cases::Tet(void) {
     PYLITH_METHOD_BEGIN;
-    TestDataWriterVTKMaterial_Data* data = new TestDataWriterVTKMaterial_Data();assert(data);
+    TestDataWriterVTKMaterial_Data* data = new TestDataWriterVTKMaterial_Data();REQUIRE(data);
 
     data->timestepFilename = "tet4_mat.vtu";
     data->vertexFilename = "tet4_mat_vertex.vtu";
@@ -130,7 +130,7 @@ pylith::meshio::TestDataWriterVTKMaterial_Cases::Tet(void) {
 pylith::meshio::TestDataWriterVTKMaterial_Data*
 pylith::meshio::TestDataWriterVTKMaterial_Cases::Hex(void) {
     PYLITH_METHOD_BEGIN;
-    TestDataWriterVTKMaterial_Data* data = new TestDataWriterVTKMaterial_Data();assert(data);
+    TestDataWriterVTKMaterial_Data* data = new TestDataWriterVTKMaterial_Data();REQUIRE(data);
 
     data->timestepFilename = "hex8_mat.vtu";
     data->vertexFilename = "hex8_mat_vertex.vtu";

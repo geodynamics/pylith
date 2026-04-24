@@ -85,7 +85,7 @@ TEST_CASE("TestAdjustTopology_HexJ", "[TestAdjustTopology][Hex]") {
 pylith::faults::TestAdjustTopology_Data*
 pylith::faults::TestAdjustTopology_Hex::caseA(void) {
     pylith::faults::TestAdjustTopology_Data* data = new pylith::faults::TestAdjustTopology_Data();
-    assert(data);
+    REQUIRE(data);
 
     data->filename = "data/hex_a.mesh";
 
@@ -126,7 +126,7 @@ pylith::faults::TestAdjustTopology_Hex::caseA(void) {
 pylith::faults::TestAdjustTopology_Data*
 pylith::faults::TestAdjustTopology_Hex::caseB(void) {
     pylith::faults::TestAdjustTopology_Data* data = new pylith::faults::TestAdjustTopology_Data();
-    assert(data);
+    REQUIRE(data);
 
     data->filename = "data/hex_b.mesh";
 
@@ -167,7 +167,7 @@ pylith::faults::TestAdjustTopology_Hex::caseB(void) {
 pylith::faults::TestAdjustTopology_Data*
 pylith::faults::TestAdjustTopology_Hex::caseC(void) {
     pylith::faults::TestAdjustTopology_Data* data = new pylith::faults::TestAdjustTopology_Data();
-    assert(data);
+    REQUIRE(data);
 
     data->filename = "data/hex_c.mesh";
 
@@ -208,7 +208,7 @@ pylith::faults::TestAdjustTopology_Hex::caseC(void) {
 pylith::faults::TestAdjustTopology_Data*
 pylith::faults::TestAdjustTopology_Hex::caseD(void) {
     pylith::faults::TestAdjustTopology_Data* data = new pylith::faults::TestAdjustTopology_Data();
-    assert(data);
+    REQUIRE(data);
 
     data->filename = "data/hex_d.mesh";
 
@@ -249,7 +249,7 @@ pylith::faults::TestAdjustTopology_Hex::caseD(void) {
 pylith::faults::TestAdjustTopology_Data*
 pylith::faults::TestAdjustTopology_Hex::caseE(void) {
     pylith::faults::TestAdjustTopology_Data* data = new pylith::faults::TestAdjustTopology_Data();
-    assert(data);
+    REQUIRE(data);
 
     data->filename = "data/hex_e.mesh";
 
@@ -290,7 +290,7 @@ pylith::faults::TestAdjustTopology_Hex::caseE(void) {
 pylith::faults::TestAdjustTopology_Data*
 pylith::faults::TestAdjustTopology_Hex::caseF(void) {
     pylith::faults::TestAdjustTopology_Data* data = new pylith::faults::TestAdjustTopology_Data();
-    assert(data);
+    REQUIRE(data);
 
     data->filename = "data/hex_e.mesh";
 
@@ -331,7 +331,7 @@ pylith::faults::TestAdjustTopology_Hex::caseF(void) {
 pylith::faults::TestAdjustTopology_Data*
 pylith::faults::TestAdjustTopology_Hex::caseG(void) {
     pylith::faults::TestAdjustTopology_Data* data = new pylith::faults::TestAdjustTopology_Data();
-    assert(data);
+    REQUIRE(data);
 
     data->filename = "data/hex_g.mesh";
 
@@ -372,7 +372,7 @@ pylith::faults::TestAdjustTopology_Hex::caseG(void) {
 pylith::faults::TestAdjustTopology_Data*
 pylith::faults::TestAdjustTopology_Hex::caseH(void) {
     pylith::faults::TestAdjustTopology_Data* data = new pylith::faults::TestAdjustTopology_Data();
-    assert(data);
+    REQUIRE(data);
 
     data->filename = "data/hex_h.mesh";
 
@@ -413,7 +413,7 @@ pylith::faults::TestAdjustTopology_Hex::caseH(void) {
 pylith::faults::TestAdjustTopology_Data*
 pylith::faults::TestAdjustTopology_Hex::caseI(void) {
     pylith::faults::TestAdjustTopology_Data* data = new pylith::faults::TestAdjustTopology_Data();
-    assert(data);
+    REQUIRE(data);
 
     data->filename = "data/hex_i.mesh";
 
@@ -454,7 +454,7 @@ pylith::faults::TestAdjustTopology_Hex::caseI(void) {
 pylith::faults::TestAdjustTopology_Data*
 pylith::faults::TestAdjustTopology_Hex::caseJ(void) {
     pylith::faults::TestAdjustTopology_Data* data = new pylith::faults::TestAdjustTopology_Data();
-    assert(data);
+    REQUIRE(data);
 
     data->filename = "data/hex_j.mesh";
 

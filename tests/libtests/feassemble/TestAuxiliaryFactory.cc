@@ -112,12 +112,12 @@ pylith::feassemble::TestAuxiliaryFactory::testQueryDB(void) {
     const std::string& dbLabel = "test database";
     db.setDescription(dbLabel.c_str());
 
-    assert(_factory);
-    assert(!_factory->getQueryDB());
+    REQUIRE(_factory);
+    REQUIRE(!_factory->getQueryDB());
     _factory->setQueryDB(&db);
 
     const spatialdata::spatialdb::SpatialDB* dbTest = _factory->getQueryDB();
-    assert(dbTest);
+    REQUIRE(dbTest);
     REQUIRE(dbLabel == std::string(dbTest->getDescription()));
 } // testQueryDB
 
@@ -131,7 +131,7 @@ pylith::feassemble::TestAuxiliaryFactory::testSubfieldDiscretization(void) {
     pylith::topology::FieldBase::Discretization feVel(3, 2, 1, 2, true, pylith::topology::FieldBase::SIMPLEX_BASIS,
                                                       pylith::topology::FieldBase::POINT_SPACE, false);
 
-    assert(_factory);
+    REQUIRE(_factory);
     _factory->setSubfieldDiscretization("displacement", feDisp.basisOrder, feDisp.quadOrder, feDisp.dimension,
                                         feDisp.isFaultOnly, feDisp.cellBasis, feDisp.feSpace, feDisp.isBasisContinuous);
     _factory->setSubfieldDiscretization("velocity", feVel.basisOrder, feVel.quadOrder, feVel.dimension,
@@ -192,7 +192,7 @@ pylith::feassemble::TestAuxiliaryFactory::testInitialize(void) {
     description.componentNames[0] = "displacement_x";
     description.scale = scales.getDisplacementScale();
 
-    assert(_factory);
+    REQUIRE(_factory);
     _factory->initialize(&field, scales, spaceDim, &description);
 
     CHECK(&field == _factory->_field);
@@ -209,7 +209,7 @@ pylith::feassemble::TestAuxiliaryFactory::testInitialize(void) {
     CHECK(description.scale == descriptionTest->scale);
     CHECK(description.validator == descriptionTest->validator);
 
-    assert(_factory->_fieldQuery);
+    REQUIRE(_factory->_fieldQuery);
 } // testInitialize
 
 
@@ -267,10 +267,10 @@ pylith::feassemble::TestAuxiliaryFactory::testSetValuesFromDB(void) {
     mesh.setCoordSys(&cs);
     pylith::topology::MeshOps::nondimensionalize(&mesh, scales);
 
-    assert(pylith::topology::MeshOps::getNumCells(mesh) > 0);
-    assert(pylith::topology::MeshOps::getNumVertices(mesh) > 0);
+    REQUIRE(pylith::topology::MeshOps::getNumCells(mesh) > 0);
+    REQUIRE(pylith::topology::MeshOps::getNumVertices(mesh) > 0);
 
-    assert(_factory);
+    REQUIRE(_factory);
     _factory->setQueryDB(&auxiliaryDB);
 
     pylith::topology::Field auxiliaryField(mesh);
@@ -288,12 +288,12 @@ pylith::feassemble::TestAuxiliaryFactory::testSetValuesFromDB(void) {
     // Verify auxiliary field
     PylithReal norm = 0.0;
     PylithReal t = 0.0;
-    const PetscDM dmField = auxiliaryField.getDM();assert(dmField);
+    const PetscDM dmField = auxiliaryField.getDM();REQUIRE(dmField);
     pylith::topology::FieldQuery query(auxiliaryField);
     query.initializeWithDefaultQueries();
     query.openDB(&auxiliaryDB, scales.getLengthScale());
     PetscErrorCode err = DMPlexComputeL2DiffLocal(dmField, t, query._functions, (void**)query._contextPtrs,
-                                                  auxiliaryField.getLocalVector(), &norm);assert(!err);
+                                                  auxiliaryField.getLocalVector(), &norm);REQUIRE(!err);
     query.closeDB(&auxiliaryDB);
     const PylithReal tolerance = 1.0e-6;
     CHECK_THAT(norm, Catch::Matchers::WithinAbs(0.0, tolerance));

@@ -82,7 +82,7 @@ TEST_CASE("TestDataWriterVTKSubmesh::Hex::testWriteCellField", "[DataWriter][VTK
 pylith::meshio::TestDataWriterVTKSubmesh_Data*
 pylith::meshio::TestDataWriterVTKSubmesh_Cases::Tri(void) {
     PYLITH_METHOD_BEGIN;
-    TestDataWriterVTKSubmesh_Data* data = new TestDataWriterVTKSubmesh_Data();assert(data);
+    TestDataWriterVTKSubmesh_Data* data = new TestDataWriterVTKSubmesh_Data();REQUIRE(data);
 
     data->timestepFilename = "tri3_surf.vtu";
     data->vertexFilename = "tri3_surf_vertex.vtu";
@@ -98,7 +98,7 @@ pylith::meshio::TestDataWriterVTKSubmesh_Cases::Tri(void) {
 pylith::meshio::TestDataWriterVTKSubmesh_Data*
 pylith::meshio::TestDataWriterVTKSubmesh_Cases::Quad(void) {
     PYLITH_METHOD_BEGIN;
-    TestDataWriterVTKSubmesh_Data* data = new TestDataWriterVTKSubmesh_Data();assert(data);
+    TestDataWriterVTKSubmesh_Data* data = new TestDataWriterVTKSubmesh_Data();REQUIRE(data);
 
     data->timestepFilename = "quad4_surf.vtu";
     data->vertexFilename = "quad4_surf_vertex.vtu";
@@ -114,7 +114,7 @@ pylith::meshio::TestDataWriterVTKSubmesh_Cases::Quad(void) {
 pylith::meshio::TestDataWriterVTKSubmesh_Data*
 pylith::meshio::TestDataWriterVTKSubmesh_Cases::Tet(void) {
     PYLITH_METHOD_BEGIN;
-    TestDataWriterVTKSubmesh_Data* data = new TestDataWriterVTKSubmesh_Data();assert(data);
+    TestDataWriterVTKSubmesh_Data* data = new TestDataWriterVTKSubmesh_Data();REQUIRE(data);
 
     data->timestepFilename = "tet4_surf.vtu";
     data->vertexFilename = "tet4_surf_vertex.vtu";
@@ -130,7 +130,7 @@ pylith::meshio::TestDataWriterVTKSubmesh_Cases::Tet(void) {
 pylith::meshio::TestDataWriterVTKSubmesh_Data*
 pylith::meshio::TestDataWriterVTKSubmesh_Cases::Hex(void) {
     PYLITH_METHOD_BEGIN;
-    TestDataWriterVTKSubmesh_Data* data = new TestDataWriterVTKSubmesh_Data();assert(data);
+    TestDataWriterVTKSubmesh_Data* data = new TestDataWriterVTKSubmesh_Data();REQUIRE(data);
 
     data->timestepFilename = "hex8_surf.vtu";
     data->vertexFilename = "hex8_surf_vertex.vtu";

@@ -34,6 +34,8 @@
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "pylith/scales/Scales.hh" // USES Scales
 
+#include "catch2/catch_test_macros.hpp"
+
 namespace pylith {
     class _TwoBlocksStatic;
 } // pylith
@@ -138,26 +140,29 @@ class pylith::_TwoBlocksStatic {
                                           PetscInt numComponents,
                                           PetscScalar* s,
                                           void* context) {
-        assert(2 == spaceDim);
-        assert(x);
-        assert(2 == numComponents);
-        assert(s);
+        REQUIRE(2 == spaceDim);
+        REQUIRE(x);
+        REQUIRE(2 == numComponents);
+        REQUIRE(s);
+
+        PetscErrorCode err = PETSC_SUCCESS;
 
         s[0] = disp_x(x[0], x[1]);
         PetscInt flag = 0;
         if (context) {
-            PetscErrorCode err = PETSC_SUCCESS;
             PetscDM dmMesh = PetscDM(context);
             PetscInt cell = 0;
-            err = DMPlexGetActivePoint(dmMesh, &cell);PYLITH_CHECK_ERROR(err);
+            err = DMPlexGetActivePoint(dmMesh, &cell);
+            if (err) { return err; }
 
             double centroid[3] = {0.0, 0.0, 0.0};
-            err = DMPlexComputeCellGeometryFVM(dmMesh, cell, NULL, centroid, NULL);PYLITH_CHECK_ERROR(err);
+            err = DMPlexComputeCellGeometryFVM(dmMesh, cell, NULL, centroid, NULL);
+            if (err) { return err; }
             flag = centroid[0] < X_FAULT ? -1 : +1;
         } // if
         s[1] = disp_y(x[0], x[1], flag);
 
-        return PETSC_SUCCESS;
+        return err;
     } // solnkernel_disp
 
     static PetscErrorCode solnkernel_lagrangemultiplier(PetscInt spaceDim,
@@ -166,10 +171,10 @@ class pylith::_TwoBlocksStatic {
                                                         PetscInt numComponents,
                                                         PetscScalar* s,
                                                         void* context) {
-        assert(2 == spaceDim);
-        assert(x);
-        assert(2 == numComponents);
-        assert(s);
+        REQUIRE(2 == spaceDim);
+        REQUIRE(x);
+        REQUIRE(2 == numComponents);
+        REQUIRE(s);
 
         s[0] = faulttraction_x(x[0], x[1]);
         s[1] = faulttraction_y(x[0], x[1]);
@@ -181,7 +186,7 @@ public:
 
     static
     TestFaultKin_Data* createData(void) {
-        TestFaultKin_Data* data = new TestFaultKin_Data();assert(data);
+        TestFaultKin_Data* data = new TestFaultKin_Data();REQUIRE(data);
 
         data->journalName = "TwoBlocksStatic";
 
@@ -210,8 +215,8 @@ public:
         data->matAuxDB.addValue("vs", vs, vs_units());
         data->matAuxDB.setCoordSys(data->cs);
 
-        assert(!data->kinSrc);
-        data->kinSrc = new pylith::faults::KinSrcStep();assert(data->kinSrc);
+        REQUIRE(!data->kinSrc);
+        data->kinSrc = new pylith::faults::KinSrcStep();REQUIRE(data->kinSrc);
         data->kinSrc->setOriginTime(0.0);
         data->faultAuxDB.addValue("initiation_time", initiation_time, time_units());
         data->faultAuxDB.addValue("final_slip_opening", finalslip_opening, slip_units());
@@ -229,7 +234,7 @@ public:
         // Materials
         data->materials.resize(3);
         { // xneg
-            pylith::materials::Elasticity* material = new pylith::materials::Elasticity();assert(material);
+            pylith::materials::Elasticity* material = new pylith::materials::Elasticity();REQUIRE(material);
             material->setFormulation(pylith::problems::Physics::QUASISTATIC);
             material->useBodyForce(false);
             material->setIdentifier("elasticity");
@@ -239,7 +244,7 @@ public:
             data->materials[0] = material;
         } // xneg
         { // mid
-            pylith::materials::Elasticity* material = new pylith::materials::Elasticity();assert(material);
+            pylith::materials::Elasticity* material = new pylith::materials::Elasticity();REQUIRE(material);
             material->setFormulation(pylith::problems::Physics::QUASISTATIC);
             material->useBodyForce(false);
             material->setIdentifier("elasticity");
@@ -249,7 +254,7 @@ public:
             data->materials[1] = material;
         } // mid
         { // xpos
-            pylith::materials::Elasticity* material = new pylith::materials::Elasticity();assert(material);
+            pylith::materials::Elasticity* material = new pylith::materials::Elasticity();REQUIRE(material);
             material->setFormulation(pylith::problems::Physics::QUASISTATIC);
             material->useBodyForce(false);
             material->setIdentifier("elasticity");
@@ -321,13 +326,13 @@ const double pylith::_TwoBlocksStatic::X_FAULT = +2.0e+3;
 // ------------------------------------------------------------------------------------------------
 pylith::TestFaultKin_Data*
 pylith::TwoBlocksStatic::TriP1(void) {
-    TestFaultKin_Data* data = pylith::_TwoBlocksStatic::createData();assert(data);
+    TestFaultKin_Data* data = pylith::_TwoBlocksStatic::createData();REQUIRE(data);
 
     data->meshFilename = "data/tri.mesh";
     data->allowZeroResidual = true;
 
-    assert(1 == data->numSolnSubfieldsDomain);
-    assert(1 == data->numSolnSubfieldsFault);
+    REQUIRE(1 == data->numSolnSubfieldsDomain);
+    REQUIRE(1 == data->numSolnSubfieldsFault);
     static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
         pylith::topology::Field::Discretization(1, 1), // disp
         pylith::topology::Field::Discretization(1, 1, 1, -1, true), // lagrange_multiplier_fault
@@ -341,7 +346,7 @@ pylith::TwoBlocksStatic::TriP1(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestFaultKin_Data*
 pylith::TwoBlocksStatic::TriP2(void) {
-    TestFaultKin_Data* data = pylith::_TwoBlocksStatic::createData();assert(data);
+    TestFaultKin_Data* data = pylith::_TwoBlocksStatic::createData();REQUIRE(data);
 
     data->meshFilename = "data/tri.mesh";
 
@@ -357,8 +362,8 @@ pylith::TwoBlocksStatic::TriP2(void) {
     };
     data->faultAuxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_faultAuxDiscretizations);
 
-    assert(1 == data->numSolnSubfieldsDomain);
-    assert(1 == data->numSolnSubfieldsFault);
+    REQUIRE(1 == data->numSolnSubfieldsDomain);
+    REQUIRE(1 == data->numSolnSubfieldsFault);
     static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
         pylith::topology::Field::Discretization(2, 2), // disp
         pylith::topology::Field::Discretization(2, 2, 1, -1, true), // lagrange_multiplier_fault
@@ -372,7 +377,7 @@ pylith::TwoBlocksStatic::TriP2(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestFaultKin_Data*
 pylith::TwoBlocksStatic::TriP3(void) {
-    TestFaultKin_Data* data = pylith::_TwoBlocksStatic::createData();assert(data);
+    TestFaultKin_Data* data = pylith::_TwoBlocksStatic::createData();REQUIRE(data);
 
     data->meshFilename = "data/tri.mesh";
 
@@ -388,8 +393,8 @@ pylith::TwoBlocksStatic::TriP3(void) {
     };
     data->faultAuxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_faultAuxDiscretizations);
 
-    assert(1 == data->numSolnSubfieldsDomain);
-    assert(1 == data->numSolnSubfieldsFault);
+    REQUIRE(1 == data->numSolnSubfieldsDomain);
+    REQUIRE(1 == data->numSolnSubfieldsFault);
     static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
         pylith::topology::Field::Discretization(3, 3), // disp
         pylith::topology::Field::Discretization(3, 3, 1, -1, true), // lagrange_multiplier_fault
@@ -403,7 +408,7 @@ pylith::TwoBlocksStatic::TriP3(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestFaultKin_Data*
 pylith::TwoBlocksStatic::TriP4(void) {
-    TestFaultKin_Data* data = pylith::_TwoBlocksStatic::createData();assert(data);
+    TestFaultKin_Data* data = pylith::_TwoBlocksStatic::createData();REQUIRE(data);
 
     data->meshFilename = "data/tri.mesh";
 
@@ -419,8 +424,8 @@ pylith::TwoBlocksStatic::TriP4(void) {
     };
     data->faultAuxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_faultAuxDiscretizations);
 
-    assert(1 == data->numSolnSubfieldsDomain);
-    assert(1 == data->numSolnSubfieldsFault);
+    REQUIRE(1 == data->numSolnSubfieldsDomain);
+    REQUIRE(1 == data->numSolnSubfieldsFault);
     static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
         pylith::topology::Field::Discretization(4, 4), // disp
         pylith::topology::Field::Discretization(4, 4, 1, -1, true), // lagrange_multiplier_fault
@@ -434,12 +439,12 @@ pylith::TwoBlocksStatic::TriP4(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestFaultKin_Data*
 pylith::TwoBlocksStatic::QuadQ1(void) {
-    TestFaultKin_Data* data = pylith::_TwoBlocksStatic::createData();assert(data);
+    TestFaultKin_Data* data = pylith::_TwoBlocksStatic::createData();REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 
-    assert(1 == data->numSolnSubfieldsDomain);
-    assert(1 == data->numSolnSubfieldsFault);
+    REQUIRE(1 == data->numSolnSubfieldsDomain);
+    REQUIRE(1 == data->numSolnSubfieldsFault);
     static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
         pylith::topology::Field::Discretization(1, 1), // disp
         pylith::topology::Field::Discretization(1, 1, 1, -1, true), // lagrange_multiplier_fault
@@ -453,7 +458,7 @@ pylith::TwoBlocksStatic::QuadQ1(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestFaultKin_Data*
 pylith::TwoBlocksStatic::QuadQ2(void) {
-    TestFaultKin_Data* data = pylith::_TwoBlocksStatic::createData();assert(data);
+    TestFaultKin_Data* data = pylith::_TwoBlocksStatic::createData();REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 
@@ -469,8 +474,8 @@ pylith::TwoBlocksStatic::QuadQ2(void) {
     };
     data->faultAuxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_faultAuxDiscretizations);
 
-    assert(1 == data->numSolnSubfieldsDomain);
-    assert(1 == data->numSolnSubfieldsFault);
+    REQUIRE(1 == data->numSolnSubfieldsDomain);
+    REQUIRE(1 == data->numSolnSubfieldsFault);
     static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
         pylith::topology::Field::Discretization(2, 2), // disp
         pylith::topology::Field::Discretization(2, 2, 1, -1, true), // lagrange_multiplier_fault
@@ -484,7 +489,7 @@ pylith::TwoBlocksStatic::QuadQ2(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestFaultKin_Data*
 pylith::TwoBlocksStatic::QuadQ3(void) {
-    TestFaultKin_Data* data = pylith::_TwoBlocksStatic::createData();assert(data);
+    TestFaultKin_Data* data = pylith::_TwoBlocksStatic::createData();REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 
@@ -500,8 +505,8 @@ pylith::TwoBlocksStatic::QuadQ3(void) {
     };
     data->faultAuxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_faultAuxDiscretizations);
 
-    assert(1 == data->numSolnSubfieldsDomain);
-    assert(1 == data->numSolnSubfieldsFault);
+    REQUIRE(1 == data->numSolnSubfieldsDomain);
+    REQUIRE(1 == data->numSolnSubfieldsFault);
     static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
         pylith::topology::Field::Discretization(3, 3), // disp
         pylith::topology::Field::Discretization(3, 3, 1, -1, true), // lagrange_multiplier_fault
@@ -515,7 +520,7 @@ pylith::TwoBlocksStatic::QuadQ3(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestFaultKin_Data*
 pylith::TwoBlocksStatic::QuadQ4(void) {
-    TestFaultKin_Data* data = pylith::_TwoBlocksStatic::createData();assert(data);
+    TestFaultKin_Data* data = pylith::_TwoBlocksStatic::createData();REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 
@@ -531,8 +536,8 @@ pylith::TwoBlocksStatic::QuadQ4(void) {
     };
     data->faultAuxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_faultAuxDiscretizations);
 
-    assert(1 == data->numSolnSubfieldsDomain);
-    assert(1 == data->numSolnSubfieldsFault);
+    REQUIRE(1 == data->numSolnSubfieldsDomain);
+    REQUIRE(1 == data->numSolnSubfieldsFault);
     static const pylith::topology::Field::Discretization _solnDiscretizations[2] = {
         pylith::topology::Field::Discretization(4, 4), // disp
         pylith::topology::Field::Discretization(4, 4, 1, -1, true), // lagrange_multiplier_fault

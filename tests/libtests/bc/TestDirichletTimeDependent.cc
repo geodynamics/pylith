@@ -274,7 +274,7 @@ pylith::bc::TestDirichletTimeDependent::testInitialize(void) {
     CPPUNIT_ASSERT(_solution);
 
     PetscDS prob = NULL;
-    PetscErrorCode err = DMGetDS(_solution->dmMesh(), &prob);CPPUNIT_ASSERT(!err);
+    err = DMGetDS(_solution->dmMesh(), &prob);CPPUNIT_ASSERT(!err);
     int numBCBefore = 0;
     err = PetscDSGetNumBoundary(prob, &numBCBefore);CPPUNIT_ASSERT(!err);
 
@@ -346,7 +346,7 @@ pylith::bc::TestDirichletTimeDependent::testPrestep(void) {
     query.initializeWithDefaultQueryFns();
     CPPUNIT_ASSERT(_data->scales);
     query.openDB(_data->auxDB, _data->scales->getLengthScale());
-    PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, query.functions(), (void**)query.contextPtrs(), valueField.localVector(), &norm);CPPUNIT_ASSERT(!err);
+    err = DMPlexComputeL2DiffLocal(dm, t, query.functions(), (void**)query.contextPtrs(), valueField.localVector(), &norm);CPPUNIT_ASSERT(!err);
     query.closeDB(_data->auxDB);
     const PylithReal tolerance = 1.0e-6;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, norm, tolerance);
@@ -371,7 +371,7 @@ pylith::bc::TestDirichletTimeDependent::testSetSolution(void) {
 
     // Initialize solution field.
     _solution->allocate();
-    PetscErrorCode err;
+    PetscErrorCode err = PETSC_SUCCESS;
     err = VecSet(_solution->localVector(), FILL_VALUE);CPPUNIT_ASSERT(!err);
 
     // Set solution field.

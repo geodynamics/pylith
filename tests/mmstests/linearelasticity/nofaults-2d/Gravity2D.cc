@@ -20,6 +20,8 @@
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 #include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
 
+#include "catch2/catch_test_macros.hpp"
+
 // ------------------------------------------------------------------------------------------------
 namespace pylith {
     class _Gravity2D;
@@ -103,22 +105,22 @@ private:
                                           PetscInt numComponents,
                                           PetscScalar* s,
                                           void* context) {
-        assert(2 == spaceDim);
-        assert(2 == numComponents);
-        assert(s);
-        assert(x);
+        REQUIRE(2 == spaceDim);
+        REQUIRE(2 == numComponents);
+        REQUIRE(s);
+        REQUIRE(x);
 
         s[0] = disp_x(x[0], x[1]);
         s[1] = disp_y(x[0], x[1]);
 
-        return 0;
+        return PETSC_SUCCESS;
     } // solnkernel_disp
 
 public:
 
     static
     TestLinearElasticity_Data* createData(void) {
-        TestLinearElasticity_Data* data = new TestLinearElasticity_Data();assert(data);
+        TestLinearElasticity_Data* data = new TestLinearElasticity_Data();REQUIRE(data);
 
         data->journalName = "Gravity2D";
         data->isJacobianLinear = true;
@@ -168,7 +170,7 @@ public:
         static const PylithInt constrainedDOF[2] = {0, 1};
         static const PylithInt numConstrained = 2;
         data->bcs.resize(1);
-        pylith::bc::DirichletUserFn*bc = new pylith::bc::DirichletUserFn();assert(bc);
+        pylith::bc::DirichletUserFn*bc = new pylith::bc::DirichletUserFn();REQUIRE(bc);
         bc->setSubfieldName("displacement");
         bc->setLabelName("boundary");
         bc->setLabelValue(1);
@@ -193,7 +195,7 @@ const double pylith::_Gravity2D::Y_MAX = +4.0e+3;
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::Gravity2D::TriP2(void) {
-    TestLinearElasticity_Data* data = pylith::_Gravity2D::createData();assert(data);
+    TestLinearElasticity_Data* data = pylith::_Gravity2D::createData();REQUIRE(data);
 
     data->meshFilename = "data/tri.mesh";
 
@@ -218,7 +220,7 @@ pylith::Gravity2D::TriP2(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::Gravity2D::TriP3(void) {
-    TestLinearElasticity_Data* data = pylith::_Gravity2D::createData();assert(data);
+    TestLinearElasticity_Data* data = pylith::_Gravity2D::createData();REQUIRE(data);
 
     data->meshFilename = "data/tri.mesh";
 
@@ -243,7 +245,7 @@ pylith::Gravity2D::TriP3(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::Gravity2D::QuadQ2(void) {
-    TestLinearElasticity_Data* data = pylith::_Gravity2D::createData();assert(data);
+    TestLinearElasticity_Data* data = pylith::_Gravity2D::createData();REQUIRE(data);
 
     data->meshFilename = "data/quad.msh";
     data->useAsciiMesh = false;
@@ -269,7 +271,7 @@ pylith::Gravity2D::QuadQ2(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::Gravity2D::QuadQ3(void) {
-    TestLinearElasticity_Data* data = pylith::_Gravity2D::createData();assert(data);
+    TestLinearElasticity_Data* data = pylith::_Gravity2D::createData();REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 

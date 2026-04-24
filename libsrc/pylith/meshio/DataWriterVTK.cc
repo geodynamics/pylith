@@ -124,10 +124,9 @@ pylith::meshio::DataWriterVTK::open(const pylith::topology::Mesh& mesh,
     DataWriter::open(mesh, isInfo);
 
     // Save handle for actions required in closeTimeStep() and close();
-    PetscErrorCode err = 0;
-    err = DMDestroy(&_dm);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMDestroy(&_dm));
     _dm = mesh.getDM();assert(_dm);
-    err = PetscObjectReference((PetscObject) _dm);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(PetscObjectReference((PetscObject) _dm));
 
     PYLITH_METHOD_END;
 } // open
@@ -141,7 +140,7 @@ pylith::meshio::DataWriterVTK::close(void) {
 
     if (_isOpen) {
         assert(_dm);
-        PetscErrorCode err = DMDestroy(&_dm);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMDestroy(&_dm));
     } // if
 
     DataWriter::close();
@@ -161,8 +160,8 @@ pylith::meshio::DataWriterVTK::openTimeStep(const PylithScalar t,
     assert(_isOpen && !_isOpenTimeStep);
 
     const std::string& filename = _vtkFilename(t);
-    PetscErrorCode err = PetscViewerVTKOpen(mesh.getComm(), filename.c_str(), FILE_MODE_WRITE,
-                                            &_viewer);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(PetscViewerVTKOpen(mesh.getComm(), filename.c_str(), FILE_MODE_WRITE,
+                                       &_viewer));
 
     _isOpenTimeStep = true;
 
@@ -176,19 +175,17 @@ void
 pylith::meshio::DataWriterVTK::closeTimeStep(void) {
     PYLITH_METHOD_BEGIN;
 
-    PetscErrorCode err = 0;
-
     // Destroy the viewer (which also writes the file).
-    err = PetscViewerDestroy(&_viewer);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(PetscViewerDestroy(&_viewer));
 
     // Remove label
     if (_isOpenTimeStep) {
         assert(_dm);
         PetscBool hasLabel = PETSC_FALSE;
-        err = DMHasLabel(_dm, "vtk", &hasLabel);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMHasLabel(_dm, "vtk", &hasLabel));
         if (hasLabel) {
-            err = DMClearLabelStratum(_dm, "vtk", 1);PYLITH_CHECK_ERROR(err);
-            err = DMClearLabelStratum(_dm, "vtk", 2);PYLITH_CHECK_ERROR(err);
+            PylithCallPetsc(DMClearLabelStratum(_dm, "vtk", 1));
+            PylithCallPetsc(DMClearLabelStratum(_dm, "vtk", 2));
         } // if
     } // if
 
@@ -208,12 +205,11 @@ pylith::meshio::DataWriterVTK::writeVertexField(const PylithScalar t,
     PYLITH_METHOD_BEGIN;
     assert(_isOpen && _isOpenTimeStep);
 
-    PetscErrorCode err;
     PetscViewerVTKFieldType ft = subfield.getDescription().vectorFieldType == pylith::topology::FieldBase::VECTOR ?
                                  PETSC_VTK_POINT_VECTOR_FIELD : PETSC_VTK_POINT_FIELD;
-    err = PetscViewerVTKAddField(_viewer, (PetscObject)_dm, DMPlexVTKWriteAll, PETSC_DEFAULT, ft,
-                                 PETSC_TRUE, (PetscObject)subfield.getOutputVector());PYLITH_CHECK_ERROR(err);
-    err = PetscObjectReference((PetscObject) subfield.getOutputVector());PYLITH_CHECK_ERROR(err); // Viewer destroys Vec
+    PylithCallPetsc(PetscViewerVTKAddField(_viewer, (PetscObject)_dm, DMPlexVTKWriteAll, PETSC_DEFAULT, ft,
+                                           PETSC_TRUE, (PetscObject)subfield.getOutputVector()));
+    PylithCallPetsc(PetscObjectReference((PetscObject) subfield.getOutputVector())); // Viewer destroys Vec
 
     _wroteVertexHeader = true;
 
@@ -230,12 +226,11 @@ pylith::meshio::DataWriterVTK::writeCellField(const PylithScalar t,
 
     assert(_isOpen && _isOpenTimeStep);
 
-    PetscErrorCode err;
     PetscViewerVTKFieldType ft = subfield.getDescription().vectorFieldType == pylith::topology::FieldBase::VECTOR ?
                                  PETSC_VTK_CELL_VECTOR_FIELD : PETSC_VTK_CELL_FIELD;
-    err = PetscViewerVTKAddField(_viewer, (PetscObject)_dm, DMPlexVTKWriteAll, PETSC_DEFAULT, ft,
-                                 PETSC_TRUE, (PetscObject)subfield.getOutputVector());PYLITH_CHECK_ERROR(err);
-    err = PetscObjectReference((PetscObject) subfield.getOutputVector());PYLITH_CHECK_ERROR(err); // Viewer destroys Vec
+    PylithCallPetsc(PetscViewerVTKAddField(_viewer, (PetscObject)_dm, DMPlexVTKWriteAll, PETSC_DEFAULT, ft,
+                                           PETSC_TRUE, (PetscObject)subfield.getOutputVector()));
+    PylithCallPetsc(PetscObjectReference((PetscObject) subfield.getOutputVector())); // Viewer destroys Vec
 
     _wroteCellHeader = true;
 

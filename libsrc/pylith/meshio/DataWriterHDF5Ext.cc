@@ -54,12 +54,11 @@ pylith::meshio::DataWriterHDF5Ext::deallocate(void) {
 
     DataWriter::deallocate();
 
-    PetscErrorCode err = 0;
     const dataset_type::const_iterator& dEnd = _datasets.end();
     for (dataset_type::iterator d_iter = _datasets.begin();
          d_iter != dEnd;
          ++d_iter) {
-        err = PetscViewerDestroy(&d_iter->second.viewer);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(PetscViewerDestroy(&d_iter->second.viewer));
     } // for
 
     PYLITH_METHOD_END;
@@ -91,16 +90,16 @@ pylith::meshio::DataWriterHDF5Ext::open(const pylith::topology::Mesh& mesh,
 
         PetscDM dmMesh = mesh.getDM();assert(dmMesh);
         MPI_Comm comm;
-        PetscErrorCode err = PetscObjectGetComm((PetscObject) dmMesh, &comm);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(PetscObjectGetComm((PetscObject) dmMesh, &comm));
 
         PetscViewer viewer;
 
-        err = PetscViewerHDF5Open(mesh.getComm(), hdf5Filename().c_str(), FILE_MODE_WRITE, &viewer);PYLITH_CHECK_ERROR(err);
-        err = PetscViewerPushFormat(viewer, PETSC_VIEWER_HDF5_VIZ);PYLITH_CHECK_ERROR(err);
-        err = PetscViewerHDF5SetBaseDimension2(viewer, PETSC_TRUE);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(PetscViewerHDF5Open(mesh.getComm(), hdf5Filename().c_str(), FILE_MODE_WRITE, &viewer));
+        PylithCallPetsc(PetscViewerPushFormat(viewer, PETSC_VIEWER_HDF5_VIZ));
+        PylithCallPetsc(PetscViewerHDF5SetBaseDimension2(viewer, PETSC_TRUE));
 
-        err = DMView(mesh.getDM(), viewer);PYLITH_CHECK_ERROR(err);
-        err = PetscViewerDestroy(&viewer);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMView(mesh.getDM(), viewer));
+        PylithCallPetsc(PetscViewerDestroy(&viewer));
 
         _tstampIndex = 0;
 
@@ -149,12 +148,11 @@ pylith::meshio::DataWriterHDF5Ext::writeVertexField(const PylithScalar t,
     const char* name = subfield.getDescription().label.c_str();
     try {
         PetscDM dmMesh = subfield.getOutputDM();assert(dmMesh);
-        PetscErrorCode err;
 
         MPI_Comm comm;
         PetscMPIInt commRank;
-        err = PetscObjectGetComm((PetscObject) dmMesh, &comm);PYLITH_CHECK_ERROR(err);
-        err = MPI_Comm_rank(comm, &commRank);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(PetscObjectGetComm((PetscObject) dmMesh, &comm));
+        PylithCallPetsc(MPI_Comm_rank(comm, &commRank));
         const bool isMPIRoot = 0 == commRank;
 
         const hid_t scalartype = (sizeof(double) == sizeof(PylithScalar)) ? H5T_IEEE_F64BE : H5T_IEEE_F32BE;
@@ -165,8 +163,8 @@ pylith::meshio::DataWriterHDF5Ext::writeVertexField(const PylithScalar t,
         if (_datasets.find(name) != _datasets.end()) {
             binaryViewer = _datasets[name].viewer;
         } else {
-            err = PetscViewerBinaryOpen(comm, _datasetFilename(name).c_str(), FILE_MODE_WRITE, &binaryViewer);PYLITH_CHECK_ERROR(err);
-            err = PetscViewerBinarySetSkipHeader(binaryViewer, PETSC_TRUE);PYLITH_CHECK_ERROR(err);
+            PylithCallPetsc(PetscViewerBinaryOpen(comm, _datasetFilename(name).c_str(), FILE_MODE_WRITE, &binaryViewer));
+            PylithCallPetsc(PetscViewerBinarySetSkipHeader(binaryViewer, PETSC_TRUE));
             ExternalDataset dataset;
             dataset.numTimeSteps = 0;
             dataset.viewer = binaryViewer;
@@ -198,25 +196,25 @@ pylith::meshio::DataWriterHDF5Ext::writeVertexField(const PylithScalar t,
             PetscInt dof = 0, n, numVerticesLocal = 0, numVertices, vStart;
             PetscIS globalVertexNumbers = NULL;
 
-            err = VecGetDM(vector, &dm);PYLITH_CHECK_ERROR(err);assert(dm);
-            err = DMGetLocalSection(dm, &section);PYLITH_CHECK_ERROR(err);assert(section);
+            PylithCallPetsc(VecGetDM(vector, &dm));assert(dm);
+            PylithCallPetsc(DMGetLocalSection(dm, &section));assert(section);
 
-            err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, NULL);PYLITH_CHECK_ERROR(err);
-            err = DMPlexGetVertexNumbering(dmMesh, &globalVertexNumbers);PYLITH_CHECK_ERROR(err);
-            err = ISGetLocalSize(globalVertexNumbers, &n);PYLITH_CHECK_ERROR(err);
+            PylithCallPetsc(DMPlexGetDepthStratum(dmMesh, 0, &vStart, NULL));
+            PylithCallPetsc(DMPlexGetVertexNumbering(dmMesh, &globalVertexNumbers));
+            PylithCallPetsc(ISGetLocalSize(globalVertexNumbers, &n));
             if (n > 0) {
                 const PetscInt *indices = NULL;
-                err = ISGetIndices(globalVertexNumbers, &indices);PYLITH_CHECK_ERROR(err);
-                err = PetscSectionGetDof(section, vStart, &dof);PYLITH_CHECK_ERROR(err);
+                PylithCallPetsc(ISGetIndices(globalVertexNumbers, &indices));
+                PylithCallPetsc(PetscSectionGetDof(section, vStart, &dof));
                 for (PetscInt v = 0; v < n; ++v) {
                     if (indices[v] >= 0) {++numVerticesLocal;}
                 } // for
-                err = ISRestoreIndices(globalVertexNumbers, &indices);PYLITH_CHECK_ERROR(err);
+                PylithCallPetsc(ISRestoreIndices(globalVertexNumbers, &indices));
             } // if
             int fiberDimLocal = dof;
             int fiberDim = 0;
-            err = MPI_Allreduce(&fiberDimLocal, &fiberDim, 1, MPI_INT, MPI_MAX, comm);PYLITH_CHECK_ERROR(err);
-            err = MPI_Allreduce(&numVerticesLocal, &numVertices, 1, MPI_INT, MPI_SUM, comm);PYLITH_CHECK_ERROR(err);
+            PylithCallPetsc(MPI_Allreduce(&fiberDimLocal, &fiberDim, 1, MPI_INT, MPI_MAX, comm));
+            PylithCallPetsc(MPI_Allreduce(&numVerticesLocal, &numVertices, 1, MPI_INT, MPI_SUM, comm));
             assert(fiberDim > 0);assert(numVertices > 0);
 
             datasetInfo.numPoints = numVertices;
@@ -286,13 +284,11 @@ pylith::meshio::DataWriterHDF5Ext::writeCellField(const PylithScalar t,
 
     const char* name = subfield.getDescription().label.c_str();
     try {
-        PetscErrorCode err;
-
         PetscDM dmMesh = subfield.getOutputDM();assert(dmMesh);
         MPI_Comm comm;
         PetscMPIInt commRank;
-        err = PetscObjectGetComm((PetscObject) dmMesh, &comm);PYLITH_CHECK_ERROR(err);
-        err = MPI_Comm_rank(comm, &commRank);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(PetscObjectGetComm((PetscObject) dmMesh, &comm));
+        PylithCallPetsc(MPI_Comm_rank(comm, &commRank));
         const bool isMPIRoot = 0 == commRank;
 
         const hid_t scalartype = (sizeof(double) == sizeof(PylithScalar)) ? H5T_IEEE_F64BE : H5T_IEEE_F32BE;
@@ -303,8 +299,8 @@ pylith::meshio::DataWriterHDF5Ext::writeCellField(const PylithScalar t,
         if (_datasets.find(name) != _datasets.end()) {
             binaryViewer = _datasets[name].viewer;
         } else {
-            err = PetscViewerBinaryOpen(comm, _datasetFilename(name).c_str(), FILE_MODE_WRITE, &binaryViewer);PYLITH_CHECK_ERROR(err);
-            err = PetscViewerBinarySetSkipHeader(binaryViewer, PETSC_TRUE);PYLITH_CHECK_ERROR(err);
+            PylithCallPetsc(PetscViewerBinaryOpen(comm, _datasetFilename(name).c_str(), FILE_MODE_WRITE, &binaryViewer));
+            PylithCallPetsc(PetscViewerBinarySetSkipHeader(binaryViewer, PETSC_TRUE));
             ExternalDataset dataset;
             dataset.numTimeSteps = 0;
             dataset.viewer = binaryViewer;
@@ -333,27 +329,27 @@ pylith::meshio::DataWriterHDF5Ext::writeCellField(const PylithScalar t,
         if (createdExternalDataset) {
             // Get cell information
             PetscSection section = NULL;
-            err = DMGetLocalSection(subfield.getOutputDM(), &section);assert(section);
+            PylithCallPetsc(DMGetLocalSection(subfield.getOutputDM(), &section));assert(section);
             PetscInt dof = 0, numLocalCells = 0, numCells, cellHeight, cStart, cEnd;
             PetscIS globalCellNumbers;
 
-            err = DMPlexGetVTKCellHeight(dmMesh, &cellHeight);PYLITH_CHECK_ERROR(err);
-            err = DMPlexGetHeightStratum(dmMesh, cellHeight, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
-            err = DMPlexGetCellNumbering(dmMesh, &globalCellNumbers);PYLITH_CHECK_ERROR(err);
-            err = ISGetLocalSize(globalCellNumbers, &numCells);PYLITH_CHECK_ERROR(err);
+            PylithCallPetsc(DMPlexGetVTKCellHeight(dmMesh, &cellHeight));
+            PylithCallPetsc(DMPlexGetHeightStratum(dmMesh, cellHeight, &cStart, &cEnd));
+            PylithCallPetsc(DMPlexGetCellNumbering(dmMesh, &globalCellNumbers));
+            PylithCallPetsc(ISGetLocalSize(globalCellNumbers, &numCells));
             if (numCells > 0) {
                 const PetscInt *indices = NULL;
-                err = ISGetIndices(globalCellNumbers, &indices);PYLITH_CHECK_ERROR(err);
-                err = PetscSectionGetDof(section, cStart, &dof);PYLITH_CHECK_ERROR(err);
+                PylithCallPetsc(ISGetIndices(globalCellNumbers, &indices));
+                PylithCallPetsc(PetscSectionGetDof(section, cStart, &dof));
                 for (PetscInt v = 0; v < numCells; ++v) {
                     if (indices[v] >= 0) {++numLocalCells;}
                 } // for
-                err = ISRestoreIndices(globalCellNumbers, &indices);PYLITH_CHECK_ERROR(err);
+                PylithCallPetsc(ISRestoreIndices(globalCellNumbers, &indices));
             } // if
             int fiberDimLocal = dof;
             int fiberDim = 0;
             MPI_Allreduce(&fiberDimLocal, &fiberDim, 1, MPI_INT, MPI_MAX, comm);
-            err = MPI_Allreduce(&numLocalCells, &numCells, 1, MPI_INT, MPI_SUM, comm);PYLITH_CHECK_ERROR(err);
+            PylithCallPetsc(MPI_Allreduce(&numLocalCells, &numCells, 1, MPI_INT, MPI_SUM, comm));
             assert(fiberDim > 0);assert(numCells > 0);
 
             datasetInfo.numPoints = numCells;

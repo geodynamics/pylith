@@ -235,7 +235,7 @@ pylith::materials::TestIsotropicLinearElasticity3D::testGetAuxField(void) {
         PylithReal norm = 0.0;
         const PylithReal t = _mydata->t;
         const PetscDM dm = density.dmMesh();CPPUNIT_ASSERT(dm);
-        PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, queryDensity.functions(), (void**)queryDensity.contextPtrs(), density.localVector(), &norm);CPPUNIT_ASSERT(!err);
+        err = DMPlexComputeL2DiffLocal(dm, t, queryDensity.functions(), (void**)queryDensity.contextPtrs(), density.localVector(), &norm);CPPUNIT_ASSERT(!err);
         queryDensity.closeDB(_mydata->auxDB);
 
         const PylithReal tolerance = 1.0e-6;
@@ -259,7 +259,7 @@ pylith::materials::TestIsotropicLinearElasticity3D::testGetAuxField(void) {
         PylithReal norm = 0.0;
         const PylithReal t = _mydata->t;
         const PetscDM dm = shearModulus.dmMesh();CPPUNIT_ASSERT(dm);
-        PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, queryShearModulus.functions(), (void**)queryShearModulus.contextPtrs(), shearModulus.localVector(), &norm);CPPUNIT_ASSERT(!err);
+        err = DMPlexComputeL2DiffLocal(dm, t, queryShearModulus.functions(), (void**)queryShearModulus.contextPtrs(), shearModulus.localVector(), &norm);CPPUNIT_ASSERT(!err);
         queryShearModulus.closeDB(_mydata->auxDB);
 
         const PylithReal tolerance = 1.0e-6;
@@ -283,7 +283,7 @@ pylith::materials::TestIsotropicLinearElasticity3D::testGetAuxField(void) {
         PylithReal norm = 0.0;
         const PylithReal t = _mydata->t;
         const PetscDM dm = bulkModulus.dmMesh();CPPUNIT_ASSERT(dm);
-        PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, queryBulkModulus.functions(), (void**)queryBulkModulus.contextPtrs(), bulkModulus.localVector(), &norm);CPPUNIT_ASSERT(!err);
+        err = DMPlexComputeL2DiffLocal(dm, t, queryBulkModulus.functions(), (void**)queryBulkModulus.contextPtrs(), bulkModulus.localVector(), &norm);CPPUNIT_ASSERT(!err);
         queryBulkModulus.closeDB(_mydata->auxDB);
 
         const PylithReal tolerance = 1.0e-6;
@@ -307,7 +307,7 @@ pylith::materials::TestIsotropicLinearElasticity3D::testGetAuxField(void) {
         PylithReal norm = 0.0;
         const PylithReal t = _mydata->t;
         const PetscDM dm = referenceStrain.dmMesh();CPPUNIT_ASSERT(dm);
-        PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, queryRefStrain.functions(), (void**)queryRefStrain.contextPtrs(), referenceStrain.localVector(), &norm);CPPUNIT_ASSERT(!err);
+        err = DMPlexComputeL2DiffLocal(dm, t, queryRefStrain.functions(), (void**)queryRefStrain.contextPtrs(), referenceStrain.localVector(), &norm);CPPUNIT_ASSERT(!err);
         queryRefStrain.closeDB(_mydata->auxDB);
 
         const PylithReal tolerance = 1.0e-6;
@@ -331,7 +331,7 @@ pylith::materials::TestIsotropicLinearElasticity3D::testGetAuxField(void) {
         PylithReal norm = 0.0;
         const PylithReal t = _mydata->t;
         const PetscDM dm = referenceStress.dmMesh();CPPUNIT_ASSERT(dm);
-        PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, queryRefStress.functions(), (void**)queryRefStress.contextPtrs(), referenceStress.localVector(), &norm);CPPUNIT_ASSERT(!err);
+        err = DMPlexComputeL2DiffLocal(dm, t, queryRefStress.functions(), (void**)queryRefStress.contextPtrs(), referenceStress.localVector(), &norm);CPPUNIT_ASSERT(!err);
         queryRefStress.closeDB(_mydata->auxDB);
 
         const PylithReal tolerance = 1.0e-6;

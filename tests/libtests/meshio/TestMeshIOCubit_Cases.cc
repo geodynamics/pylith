@@ -99,7 +99,7 @@ TEST_CASE("TestMeshIOCubit::Hex_v16::testRead", "[TestMeshIOCubit][Hex][v16][tes
 // ------------------------------------------------------------------------------------------------
 pylith::meshio::TestMeshIO_Data*
 pylith::meshio::TestMeshIOCubit_Cases::Tri_v12(void) {
-    TestMeshIO_Data* data = new TestMeshIO_Data();assert(data);
+    TestMeshIO_Data* data = new TestMeshIO_Data();REQUIRE(data);
 
     data->filename = "data/twotri3_12.2.exo";
 
@@ -149,7 +149,7 @@ pylith::meshio::TestMeshIOCubit_Cases::Tri_v12(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::meshio::TestMeshIO_Data*
 pylith::meshio::TestMeshIOCubit_Cases::Tri_v13(void) {
-    TestMeshIO_Data* data = Tri_v12();assert(data);
+    TestMeshIO_Data* data = Tri_v12();REQUIRE(data);
 
     data->filename = "data/twotri3_13.0.exo";
 
@@ -160,7 +160,7 @@ pylith::meshio::TestMeshIOCubit_Cases::Tri_v13(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::meshio::TestMeshIO_Data*
 pylith::meshio::TestMeshIOCubit_Cases::Tri_v16(void) {
-    TestMeshIO_Data* data = new TestMeshIO_Data();assert(data);
+    TestMeshIO_Data* data = new TestMeshIO_Data();REQUIRE(data);
 
     data->filename = "data/smalltri_v16.exo";
 
@@ -230,7 +230,7 @@ pylith::meshio::TestMeshIOCubit_Cases::Tri_v16(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::meshio::TestMeshIO_Data*
 pylith::meshio::TestMeshIOCubit_Cases::Quad_v12(void) {
-    TestMeshIO_Data* data = new TestMeshIO_Data();assert(data);
+    TestMeshIO_Data* data = new TestMeshIO_Data();REQUIRE(data);
 
     data->filename = "data/twoquad4_12.2.exo";
 
@@ -282,7 +282,7 @@ pylith::meshio::TestMeshIOCubit_Cases::Quad_v12(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::meshio::TestMeshIO_Data*
 pylith::meshio::TestMeshIOCubit_Cases::Quad_v13(void) {
-    TestMeshIO_Data* data = Quad_v12();assert(data);
+    TestMeshIO_Data* data = Quad_v12();REQUIRE(data);
 
     data->filename = "data/twoquad4_13.0.exo";
 
@@ -293,7 +293,7 @@ pylith::meshio::TestMeshIOCubit_Cases::Quad_v13(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::meshio::TestMeshIO_Data*
 pylith::meshio::TestMeshIOCubit_Cases::Quad_v16(void) {
-    TestMeshIO_Data* data = new TestMeshIO_Data();assert(data);
+    TestMeshIO_Data* data = new TestMeshIO_Data();REQUIRE(data);
 
     data->filename = "data/smallquad_v16.exo";
 
@@ -361,7 +361,7 @@ pylith::meshio::TestMeshIOCubit_Cases::Quad_v16(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::meshio::TestMeshIO_Data*
 pylith::meshio::TestMeshIOCubit_Cases::Tet_v12(void) {
-    TestMeshIO_Data* data = new TestMeshIO_Data();assert(data);
+    TestMeshIO_Data* data = new TestMeshIO_Data();REQUIRE(data);
 
     data->filename = "data/twotet4_12.2.exo";
 
@@ -412,7 +412,7 @@ pylith::meshio::TestMeshIOCubit_Cases::Tet_v12(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::meshio::TestMeshIO_Data*
 pylith::meshio::TestMeshIOCubit_Cases::Tet_v13(void) {
-    TestMeshIO_Data* data = Tet_v12();assert(data);
+    TestMeshIO_Data* data = Tet_v12();REQUIRE(data);
 
     data->filename = "data/twotet4_13.0.exo";
 
@@ -423,7 +423,7 @@ pylith::meshio::TestMeshIOCubit_Cases::Tet_v13(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::meshio::TestMeshIO_Data*
 pylith::meshio::TestMeshIOCubit_Cases::Tet_v16(void) {
-    TestMeshIO_Data* data = new TestMeshIO_Data();assert(data);
+    TestMeshIO_Data* data = new TestMeshIO_Data();REQUIRE(data);
 
     data->filename = "data/smalltet_v16.exo";
 
@@ -519,7 +519,7 @@ pylith::meshio::TestMeshIOCubit_Cases::Tet_v16(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::meshio::TestMeshIO_Data*
 pylith::meshio::TestMeshIOCubit_Cases::Hex_v12(void) {
-    TestMeshIO_Data* data = new TestMeshIO_Data();assert(data);
+    TestMeshIO_Data* data = new TestMeshIO_Data();REQUIRE(data);
 
     data->filename = "data/twohex8_12.2.exo";
 
@@ -577,7 +577,7 @@ pylith::meshio::TestMeshIOCubit_Cases::Hex_v12(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::meshio::TestMeshIO_Data*
 pylith::meshio::TestMeshIOCubit_Cases::Hex_v13(void) {
-    TestMeshIO_Data* data = Hex_v12();assert(data);
+    TestMeshIO_Data* data = Hex_v12();REQUIRE(data);
 
     data->filename = "data/twohex8_13.0.exo";
 
@@ -588,7 +588,7 @@ pylith::meshio::TestMeshIOCubit_Cases::Hex_v13(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::meshio::TestMeshIO_Data*
 pylith::meshio::TestMeshIOCubit_Cases::Hex_v16(void) {
-    TestMeshIO_Data* data = new TestMeshIO_Data();assert(data);
+    TestMeshIO_Data* data = new TestMeshIO_Data();REQUIRE(data);
 
     data->filename = "data/smallhex_v16.exo";
 

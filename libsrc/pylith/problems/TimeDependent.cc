@@ -29,7 +29,7 @@
 
 #include "petscts.h" // USES PetscTS
 
-#include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
+#include "pylith/utils/error.hh" // USES PylithCallPetsc()
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 #include <cassert> // USES assert()
 #include <iostream> // USES std::cout in debugging
@@ -136,7 +136,7 @@ pylith::problems::TimeDependent::deallocate(void) {
 
     _monitor = NULL; // Memory handle in Python. :TODO: Use shared pointer.
 
-    PetscErrorCode err = TSDestroy(&_ts);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(TSDestroy(&_ts));
 
     PYLITH_METHOD_END;
 } // deallocate
@@ -280,7 +280,7 @@ pylith::problems::TimeDependent::getPetscDM(void) {
     PYLITH_METHOD_BEGIN;
 
     PetscDM dm = NULL;
-    PetscErrorCode err = TSGetDM(_ts, &dm);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(TSGetDM(_ts, &dm));
 
     PYLITH_METHOD_RETURN(dm);
 } // getPetscTS
@@ -296,7 +296,7 @@ pylith::problems::TimeDependent::getPetscSNES(void) {
     PYLITH_METHOD_BEGIN;
 
     PetscSNES snes = NULL;
-    PetscErrorCode err = TSGetSNES(_ts, &snes);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(TSGetSNES(_ts, &snes));
 
     PYLITH_METHOD_RETURN(snes);
 } // getPetscSNES
@@ -350,22 +350,21 @@ pylith::problems::TimeDependent::initialize(void) {
     pylith::topology::Field* solution = _integrationData->getField(pylith::feassemble::IntegrationData::solution);
     assert(solution);
 
-    PetscErrorCode err = TSDestroy(&_ts);PYLITH_CHECK_ERROR(err);assert(!_ts);
+    PylithCallPetsc(TSDestroy(&_ts));assert(!_ts);
     const pylith::topology::Mesh& mesh = solution->getMesh();
-    err = TSCreate(mesh.getComm(), &_ts);PYLITH_CHECK_ERROR(err);assert(_ts);
-    // err = TSSetType(_ts, TSBEULER);PYLITH_CHECK_ERROR(err); // Backward Euler is default time stepping method.
-    err = TSSetExactFinalTime(_ts, TS_EXACTFINALTIME_STEPOVER);PYLITH_CHECK_ERROR(err); // Ok to step over final time.
-    err = TSSetApplicationContext(_ts, (void*)this);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(TSCreate(mesh.getComm(), &_ts));assert(_ts);
+    PylithCallPetsc(TSSetExactFinalTime(_ts, TS_EXACTFINALTIME_STEPOVER)); // Ok to step over final time.
+    PylithCallPetsc(TSSetApplicationContext(_ts, (void*)this));
 
     // Set time stepping paramters.
     switch (getSolverType()) {
     case LINEAR:
         PYLITH_COMPONENT_DEBUG("Setting PetscTS problem type to 'linear'.");
-        err = TSSetProblemType(_ts, TS_LINEAR);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(TSSetProblemType(_ts, TS_LINEAR));
         break;
     case NONLINEAR:
         PYLITH_COMPONENT_DEBUG("Setting PetscTS problem type to 'nonlinear'.");
-        err = TSSetProblemType(_ts, TS_NONLINEAR);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(TSSetProblemType(_ts, TS_NONLINEAR));
         break;
     default:
         PYLITH_COMPONENT_ERROR("Unknown problem type.");
@@ -379,11 +378,11 @@ pylith::problems::TimeDependent::initialize(void) {
 
     assert(_scales);
     const PylithReal timeScale = _scales->getTimeScale();
-    err = TSSetTime(_ts, _startTime / timeScale);PYLITH_CHECK_ERROR(err);
-    err = TSSetTimeStep(_ts, _dtInitial / timeScale);PYLITH_CHECK_ERROR(err);
-    err = TSSetMaxSteps(_ts, _maxTimeSteps);PYLITH_CHECK_ERROR(err);
-    err = TSSetMaxTime(_ts, _endTime / timeScale);PYLITH_CHECK_ERROR(err);
-    err = TSSetDM(_ts, solution->getDM());PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(TSSetTime(_ts, _startTime / timeScale));
+    PylithCallPetsc(TSSetTimeStep(_ts, _dtInitial / timeScale));
+    PylithCallPetsc(TSSetMaxSteps(_ts, _maxTimeSteps));
+    PylithCallPetsc(TSSetMaxTime(_ts, _endTime / timeScale));
+    PylithCallPetsc(TSSetDM(_ts, solution->getDM()));
 
     // Set initial solution.
     PYLITH_COMPONENT_DEBUG("Setting PetscTS initial conditions using global vector for solution.");
@@ -395,7 +394,7 @@ pylith::problems::TimeDependent::initialize(void) {
     } // for
     PetscVec solutionVector = solution->getGlobalVector();
     solution->scatterLocalToVector(solutionVector);
-    err = TSSetSolution(_ts, solutionVector);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(TSSetSolution(_ts, solutionVector));
     assert(_observers);
     _observers->setTimeScale(timeScale);
 
@@ -411,23 +410,23 @@ pylith::problems::TimeDependent::initialize(void) {
 
     // Set callbacks.
     PYLITH_COMPONENT_DEBUG("Setting PetscTS callback for poststep().");
-    err = TSSetPostStep(_ts, poststep);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(TSSetPostStep(_ts, poststep));
 
     switch (_formulation) {
     case pylith::problems::Physics::QUASISTATIC:
         PYLITH_COMPONENT_DEBUG("Setting PetscTS callbacks computeIFunction() and computeIJacobian().");
-        err = TSSetIFunction(_ts, NULL, computeLHSResidual, (void*)this);PYLITH_CHECK_ERROR(err);
-        err = TSSetIJacobian(_ts, NULL, NULL, computeLHSJacobian, (void*)this);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(TSSetIFunction(_ts, NULL, computeLHSResidual, (void*)this));
+        PylithCallPetsc(TSSetIJacobian(_ts, NULL, NULL, computeLHSJacobian, (void*)this));
         break;
     case pylith::problems::Physics::DYNAMIC_IMEX:
         PYLITH_COMPONENT_DEBUG("Setting PetscTS callbacks computeLHSJacobian() and computeLHSFunction().");
-        err = TSSetIFunction(_ts, NULL, computeLHSResidual, (void*)this);PYLITH_CHECK_ERROR(err);
-        err = TSSetIJacobian(_ts, NULL, NULL, computeLHSJacobian, (void*)this);PYLITH_CHECK_ERROR(err);
-        err = TSSetEquationType(_ts, TS_EQ_EXPLICIT);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(TSSetIFunction(_ts, NULL, computeLHSResidual, (void*)this));
+        PylithCallPetsc(TSSetIJacobian(_ts, NULL, NULL, computeLHSJacobian, (void*)this));
+        PylithCallPetsc(TSSetEquationType(_ts, TS_EQ_EXPLICIT));
         pylith::faults::FaultOps::createDAEMassWeighting(_integrationData);
     case pylith::problems::Physics::DYNAMIC: {
         PYLITH_COMPONENT_DEBUG("Setting PetscTS callback for computeRHSFunction().");
-        err = TSSetRHSFunction(_ts, NULL, computeRHSResidual, (void*)this);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(TSSetRHSFunction(_ts, NULL, computeRHSResidual, (void*)this));
 
         PYLITH_COMPONENT_DEBUG("Setting up field for inverse of lumped LHS Jacobian.");
         pylith::topology::Field* jacobianLHSLumpedInv = new pylith::topology::Field(*solution);assert(jacobianLHSLumpedInv);
@@ -441,16 +440,16 @@ pylith::problems::TimeDependent::initialize(void) {
     } // default
     } // switch
 
-    err = TSSetFromOptions(_ts);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(TSSetFromOptions(_ts));
     if (_petscDefaults & pylith::utils::PetscDefaults::TS_IMPULSE) {
         pylith::utils::TSAdaptImpulse::set(_ts);
     } // if
-    err = TSSetUp(_ts);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(TSSetUp(_ts));
 
     pythia::journal::debug_t debug(pylith::utils::PyreComponent::getName());
     if (debug.state()) {
         PetscDS prob = NULL;
-        err = DMGetDS(solution->getDM(), &prob);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMGetDS(solution->getDM(), &prob));
         debug << pythia::journal::at(__HERE__)
               << "Solution discretization" << pythia::journal::endl;
         PetscDSView(prob, PETSC_VIEWER_STDOUT_SELF);
@@ -477,7 +476,7 @@ pylith::problems::TimeDependent::solve(void) {
     PYLITH_COMPONENT_DEBUG("solve()");
     _TimeDependent::Events::logger.eventBegin(_TimeDependent::Events::solve);
 
-    PetscErrorCode err = TSSolve(_ts, NULL);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(TSSolve(_ts, NULL));
 
     _TimeDependent::Events::logger.eventEnd(_TimeDependent::Events::solve);
     PYLITH_METHOD_END;
@@ -493,14 +492,13 @@ pylith::problems::TimeDependent::poststep(void) {
     _TimeDependent::Events::logger.eventBegin(_TimeDependent::Events::poststep);
 
     // Get current solution. After first time step, t==dt, and tindex==1.
-    PetscErrorCode err;
     PylithReal t = 0.0, dt = 0.0;
     PylithInt tindex = 0;
     PetscVec solutionVec = NULL;
-    err = TSGetTime(_ts, &t);PYLITH_CHECK_ERROR(err);
-    err = TSGetTimeStep(_ts, &dt);PYLITH_CHECK_ERROR(err);
-    err = TSGetStepNumber(_ts, &tindex);PYLITH_CHECK_ERROR(err);
-    err = TSGetSolution(_ts, &solutionVec);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(TSGetTime(_ts, &t));
+    PylithCallPetsc(TSGetTimeStep(_ts, &dt));
+    PylithCallPetsc(TSGetStepNumber(_ts, &tindex));
+    PylithCallPetsc(TSGetSolution(_ts, &solutionVec));
     const pylith::problems::Observer::NotificationType notification = pylith::problems::Observer::SOLUTION;
 
     // Update PyLith view of the solution.
@@ -607,14 +605,14 @@ pylith::problems::TimeDependent::computeRHSResidual(PetscVec residualVec,
     } // for
 
     // Assemble residual values across processes.
-    PetscErrorCode err = VecSet(residualVec, 0.0);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(VecSet(residualVec, 0.0));
     residual->scatterLocalToVector(residualVec, ADD_VALUES);
 
     if (hasLumpedJacobianInverse) {
         // Multiply RHS, G(t,s), by M^{-1}
         const pylith::topology::Field* jacobianLumpedInv =
             _integrationData->getField(pylith::feassemble::IntegrationData::lumped_jacobian_inverse);assert(jacobianLumpedInv);
-        err = VecPointwiseMult(residualVec, jacobianLumpedInv->getGlobalVector(), residualVec);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(VecPointwiseMult(residualVec, jacobianLumpedInv->getGlobalVector(), residualVec));
     } // if
 
     pythia::journal::debug_t debug("timedependent.view_residual");
@@ -663,7 +661,7 @@ pylith::problems::TimeDependent::computeLHSResidual(PetscVec residualVec,
     } // for
 
     // Assemble residual values across processes.
-    PetscErrorCode err = VecSet(residualVec, 0.0);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(VecSet(residualVec, 0.0));
     residual->scatterLocalToVector(residualVec, ADD_VALUES);
 
     _integrationData->setScalar(pylith::feassemble::IntegrationData::t_state, t);
@@ -714,13 +712,12 @@ pylith::problems::TimeDependent::computeLHSJacobian(PetscMat jacobianMat,
     _integrationData->setScalar(pylith::feassemble::IntegrationData::s_tshift, s_tshift);
 
     // Zero LHS Jacobian
-    PetscErrorCode err = 0;
     PetscDS solnDS = NULL;
     PetscBool hasJacobian = PETSC_FALSE;
-    err = DMGetDS(solution->getDM(), &solnDS);PYLITH_CHECK_ERROR(err);
-    err = PetscDSHasJacobian(solnDS, &hasJacobian);PYLITH_CHECK_ERROR(err);
-    if (hasJacobian) { err = MatZeroEntries(jacobianMat);PYLITH_CHECK_ERROR(err); }
-    err = MatZeroEntries(precondMat);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMGetDS(solution->getDM(), &solnDS));
+    PylithCallPetsc(PetscDSHasJacobian(solnDS, &hasJacobian));
+    if (hasJacobian) { PylithCallPetsc(MatZeroEntries(jacobianMat)); }
+    PylithCallPetsc(MatZeroEntries(precondMat));
 
     // Update PyLith view of the solution.
     setSolutionLocal(t, solutionVec, solutionDotVec);
@@ -738,11 +735,11 @@ pylith::problems::TimeDependent::computeLHSJacobian(PetscMat jacobianMat,
 
     // Assemble matrices
     if (jacobianMat != precondMat) {
-        err = MatAssemblyBegin(jacobianMat, MAT_FINAL_ASSEMBLY);
-        err = MatAssemblyEnd(jacobianMat, MAT_FINAL_ASSEMBLY);
+        PylithCallPetsc(MatAssemblyBegin(jacobianMat, MAT_FINAL_ASSEMBLY));
+        PylithCallPetsc(MatAssemblyEnd(jacobianMat, MAT_FINAL_ASSEMBLY));
     }
-    err = MatAssemblyBegin(precondMat, MAT_FINAL_ASSEMBLY);
-    err = MatAssemblyEnd(precondMat, MAT_FINAL_ASSEMBLY);
+    PylithCallPetsc(MatAssemblyBegin(precondMat, MAT_FINAL_ASSEMBLY));
+    PylithCallPetsc(MatAssemblyEnd(precondMat, MAT_FINAL_ASSEMBLY));
 
     _TimeDependent::Events::logger.eventEnd(_TimeDependent::Events::computeLHSJacobian);
     PYLITH_METHOD_END;
@@ -821,7 +818,7 @@ pylith::problems::TimeDependent::computeRHSResidual(PetscTS ts,
 
     // Get current time step.
     PylithReal dt;
-    PetscErrorCode err = TSGetTimeStep(ts, &dt);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(TSGetTimeStep(ts, &dt));
 
     pylith::problems::TimeDependent* problem = (pylith::problems::TimeDependent*)context;assert(problem);
     problem->computeRHSResidual(residualVec, t, dt, solutionVec);
@@ -846,7 +843,7 @@ pylith::problems::TimeDependent::computeLHSResidual(PetscTS ts,
 
     // Get current time step.
     PylithReal dt;
-    PetscErrorCode err = TSGetTimeStep(ts, &dt);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(TSGetTimeStep(ts, &dt));
     pylith::problems::TimeDependent* problem = (pylith::problems::TimeDependent*)context;
     problem->computeLHSResidual(residualVec, t, dt, solutionVec, solutionDotVec);
 
@@ -873,7 +870,7 @@ pylith::problems::TimeDependent::computeLHSJacobian(PetscTS ts,
 
     // Get current time step.
     PylithReal dt;
-    PetscErrorCode err = TSGetTimeStep(ts, &dt);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(TSGetTimeStep(ts, &dt));
 
     pylith::problems::TimeDependent* problem = (pylith::problems::TimeDependent*)context;
     problem->computeLHSJacobian(jacobianMat, precondMat, t, dt, s_tshift, solutionVec, solutionDotVec);
@@ -892,7 +889,7 @@ pylith::problems::TimeDependent::poststep(PetscTS ts) {
           << "poststep(ts="<<ts<<")" << pythia::journal::endl;
 
     TimeDependent* problem = NULL;
-    PetscErrorCode err = TSGetApplicationContext(ts, (void*)&problem);PYLITH_CHECK_ERROR(err);assert(problem);
+    PylithCallPetsc(TSGetApplicationContext(ts, (void*)&problem));assert(problem);
     problem->poststep();
 
     PYLITH_METHOD_RETURN(0);

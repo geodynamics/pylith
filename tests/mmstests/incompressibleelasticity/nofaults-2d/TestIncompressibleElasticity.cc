@@ -31,11 +31,13 @@
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 #include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
 
+#include "catch2/catch_test_macros.hpp"
+
 // ------------------------------------------------------------------------------------------------
 // Constuctor.
 pylith::TestIncompressibleElasticity::TestIncompressibleElasticity(TestIncompressibleElasticity_Data* data) :
     _data(data) {
-    assert(_data);
+    REQUIRE(_data);
 
     GenericComponent::setName(_data->journalName);
     _jacobianConvergenceRate = _data->jacobianConvergenceRate;
@@ -57,26 +59,24 @@ pylith::TestIncompressibleElasticity::~TestIncompressibleElasticity(void) {
 void
 pylith::TestIncompressibleElasticity::_initialize(void) {
     PYLITH_METHOD_BEGIN;
-    assert(_mesh);
-    assert(_data);
-
-    PetscErrorCode err = 0;
+    REQUIRE(_mesh);
+    REQUIRE(_data);
 
     if (_data->useAsciiMesh) {
         pylith::meshio::MeshIOAscii iohandler;
         iohandler.setFilename(_data->meshFilename);
-        iohandler.read(_mesh);assert(_mesh);
+        iohandler.read(_mesh);REQUIRE(_mesh);
     } else {
         if (_data->meshOptions) {
-            err = PetscOptionsInsertString(NULL, _data->meshOptions);PYLITH_CHECK_ERROR(err);
+            PylithCallPetsc(PetscOptionsInsertString(NULL, _data->meshOptions));
         } // if
         pylith::meshio::MeshIOPetsc iohandler;
         iohandler.setFilename(_data->meshFilename);
-        iohandler.read(_mesh);assert(_mesh);
+        iohandler.read(_mesh);REQUIRE(_mesh);
     } // if/else
 
-    assert(pylith::topology::MeshOps::getNumCells(*_mesh) > 0);
-    assert(pylith::topology::MeshOps::getNumVertices(*_mesh) > 0);
+    REQUIRE(pylith::topology::MeshOps::getNumCells(*_mesh) > 0);
+    REQUIRE(pylith::topology::MeshOps::getNumVertices(*_mesh) > 0);
 
     // Set up coordinates.
     _mesh->setCoordSys(&_data->cs);
@@ -94,7 +94,7 @@ pylith::TestIncompressibleElasticity::_initialize(void) {
     } // for
 
     // Set up problem.
-    assert(_problem);
+    REQUIRE(_problem);
     _problem->setScales(_data->scales);
     _problem->setGravityField(_data->gravityField);
     pylith::materials::Material* materials[1] = { &_data->material };
@@ -106,18 +106,18 @@ pylith::TestIncompressibleElasticity::_initialize(void) {
     _problem->setFormulation(_data->formulation);
 
     // Set up solution field.
-    assert(!_solution);
-    _solution = new pylith::topology::Field(*_mesh);assert(_solution);
+    REQUIRE(!_solution);
+    _solution = new pylith::topology::Field(*_mesh);REQUIRE(_solution);
     _solution->setLabel("solution");
     pylith::problems::SolutionFactory factory(*_solution, _data->scales);
     int iField = 0;
     factory.addDisplacement(_data->solnDiscretizations[iField++]);
     factory.addPressure(_data->solnDiscretizations[iField++]);
     if (pylith::problems::Physics::QUASISTATIC == _data->formulation) {
-        assert(2 == _data->numSolnSubfields);
+        REQUIRE(2 == _data->numSolnSubfields);
     } else {
-        assert(pylith::problems::Physics::DYNAMIC == _data->formulation);
-        assert(3 == _data->numSolnSubfields);
+        REQUIRE(pylith::problems::Physics::DYNAMIC == _data->formulation);
+        REQUIRE(3 == _data->numSolnSubfields);
         factory.addVelocity(_data->solnDiscretizations[1]);
     } // if/else
     _problem->setSolution(_solution);
@@ -132,17 +132,16 @@ pylith::TestIncompressibleElasticity::_initialize(void) {
 // Set functions for computing the exact solution and its time derivative.
 void
 pylith::TestIncompressibleElasticity::_setExactSolution(void) {
-    assert(_data->exactSolnFns);
+    REQUIRE(_data->exactSolnFns);
 
-    const pylith::topology::Field* solution = _problem->getSolution();assert(solution);
+    const pylith::topology::Field* solution = _problem->getSolution();REQUIRE(solution);
 
-    PetscErrorCode err = 0;
     PetscDS ds = NULL;
-    err = DMGetDS(solution->getDM(), &ds);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMGetDS(solution->getDM(), &ds));
     for (size_t i = 0; i < _data->numSolnSubfields; ++i) {
-        err = PetscDSSetExactSolution(ds, i, _data->exactSolnFns[i], NULL);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(PetscDSSetExactSolution(ds, i, _data->exactSolnFns[i], NULL));
         if (_data->exactSolnDotFns) {
-            err = PetscDSSetExactSolutionTimeDerivative(ds, i, _data->exactSolnDotFns[i], NULL);PYLITH_CHECK_ERROR(err);
+            PylithCallPetsc(PetscDSSetExactSolutionTimeDerivative(ds, i, _data->exactSolnDotFns[i], NULL));
         } // if
     } // for
 } // _setExactSolution

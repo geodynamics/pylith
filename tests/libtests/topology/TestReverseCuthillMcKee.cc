@@ -32,7 +32,7 @@
 pylith::topology::TestReverseCuthillMcKee::TestReverseCuthillMcKee(TestReverseCuthillMcKee_Data* data) :
     _data(data) {
     PYLITH_METHOD_BEGIN;
-    assert(_data);
+    REQUIRE(_data);
 
     _mesh = NULL;
 
@@ -59,7 +59,7 @@ pylith::topology::TestReverseCuthillMcKee::testReorder(void) {
     PYLITH_METHOD_BEGIN;
 
     _initialize();
-    assert(_mesh);
+    REQUIRE(_mesh);
 
     // Get original DM and create Mesh for it
     const PetscDM dmOrig = _mesh->getDM();
@@ -69,7 +69,7 @@ pylith::topology::TestReverseCuthillMcKee::testReorder(void) {
 
     ReverseCuthillMcKee::reorder(_mesh);
 
-    const PetscDM& dmMesh = _mesh->getDM();assert(dmMesh);
+    const PetscDM& dmMesh = _mesh->getDM();REQUIRE(dmMesh);
 
     // Check vertices (size only)
     topology::Stratum verticesStratumE(dmOrig, topology::Stratum::DEPTH, 0);
@@ -83,18 +83,17 @@ pylith::topology::TestReverseCuthillMcKee::testReorder(void) {
 
     // Check groups
     PetscInt numGroupsE, numGroups;
-    PetscErrorCode err;
-    err = DMGetNumLabels(dmOrig, &numGroupsE);REQUIRE(!err);
-    err = DMGetNumLabels(dmMesh, &numGroups);REQUIRE(!err);
+    PylithCallPetscRequire(DMGetNumLabels(dmOrig, &numGroupsE));
+    PylithCallPetscRequire(DMGetNumLabels(dmMesh, &numGroups));
     REQUIRE(numGroupsE == numGroups);
 
     for (PetscInt iGroup = 0; iGroup < numGroups; ++iGroup) {
         const char *name = NULL;
-        err = DMGetLabelName(dmMesh, iGroup, &name);REQUIRE(!err);
+        PylithCallPetscRequire(DMGetLabelName(dmMesh, iGroup, &name));
 
         PetscInt numPointsE, numPoints;
-        err = DMGetStratumSize(dmOrig, name, 1, &numPointsE);REQUIRE(!err);
-        err = DMGetStratumSize(dmMesh, name, 1, &numPoints);REQUIRE(!err);
+        PylithCallPetscRequire(DMGetStratumSize(dmOrig, name, 1, &numPointsE));
+        PylithCallPetscRequire(DMGetStratumSize(dmMesh, name, 1, &numPoints));
         CHECK(numPointsE == numPoints);
     } // for
 
@@ -168,9 +167,9 @@ pylith::topology::TestReverseCuthillMcKee::testReorder(void) {
     fieldOrig.allocate();
     PetscMat matrix = NULL;
     PetscInt bandwidthOrig = 0;
-    err = DMCreateMatrix(fieldOrig.getDM(), &matrix);REQUIRE(!err);
-    err = MatComputeBandwidth(matrix, 0.0, &bandwidthOrig);REQUIRE(!err);
-    err = MatDestroy(&matrix);REQUIRE(!err);
+    PylithCallPetscRequire(DMCreateMatrix(fieldOrig.getDM(), &matrix));
+    PylithCallPetscRequire(MatComputeBandwidth(matrix, 0.0, &bandwidthOrig));
+    PylithCallPetscRequire(MatDestroy(&matrix));
 
     Field field(*_mesh);
     field.subfieldAdd(description, discretization);
@@ -178,9 +177,9 @@ pylith::topology::TestReverseCuthillMcKee::testReorder(void) {
     field.createDiscretization();
     field.allocate();
     PetscInt bandwidth = 0;
-    err = DMCreateMatrix(field.getDM(), &matrix);REQUIRE(!err);
-    err = MatComputeBandwidth(matrix, 0.0, &bandwidth);REQUIRE(!err);
-    err = MatDestroy(&matrix);REQUIRE(!err);
+    PylithCallPetscRequire(DMCreateMatrix(field.getDM(), &matrix));
+    PylithCallPetscRequire(MatComputeBandwidth(matrix, 0.0, &bandwidth));
+    PylithCallPetscRequire(MatDestroy(&matrix));
 
     REQUIRE(bandwidthOrig > 0);
     REQUIRE(bandwidth > 0);
@@ -194,15 +193,15 @@ pylith::topology::TestReverseCuthillMcKee::testReorder(void) {
 void
 pylith::topology::TestReverseCuthillMcKee::_initialize() {
     PYLITH_METHOD_BEGIN;
-    assert(_data);
+    REQUIRE(_data);
 
-    delete _mesh;_mesh = new Mesh;assert(_mesh);
+    delete _mesh;_mesh = new Mesh;REQUIRE(_mesh);
 
     meshio::MeshIOAscii iohandler;
     iohandler.setFilename(_data->filename);
     iohandler.read(_mesh);
-    assert(pylith::topology::MeshOps::getNumCells(*_mesh) > 0);
-    assert(pylith::topology::MeshOps::getNumVertices(*_mesh) > 0);
+    REQUIRE(pylith::topology::MeshOps::getNumCells(*_mesh) > 0);
+    REQUIRE(pylith::topology::MeshOps::getNumVertices(*_mesh) > 0);
 
     // Adjust topology if necessary.
     if (_data->faultLabel) {

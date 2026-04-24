@@ -169,20 +169,20 @@ const PylithReal pylith::materials::TestAuxiliaryFactoryElasticity_Cases::KM = 1
 pylith::materials::TestAuxiliaryFactoryElasticity_Data*
 pylith::materials::TestAuxiliaryFactoryElasticity_Cases::Tri(void) {
     pylith::materials::TestAuxiliaryFactoryElasticity_Data* data = new pylith::materials::TestAuxiliaryFactoryElasticity_Data();
-    assert(data);
+    REQUIRE(data);
 
     data->auxDim = 2;
     data->dimension = 2;
     data->meshFilename = "data/tri.mesh";
-    data->cs = new spatialdata::geocoords::CSCart();assert(data->cs);
+    data->cs = new spatialdata::geocoords::CSCart();REQUIRE(data->cs);
     data->cs->setSpaceDim(data->dimension);
 
-    assert(data->scales);
+    REQUIRE(data->scales);
     data->scales->setLengthScale(LENGTH_SCALE);
     data->scales->setTimeScale(TIME_SCALE);
     data->scales->setRigidityScale(RIGIDITY_SCALE);
 
-    assert(data->auxiliaryDB);
+    REQUIRE(data->auxiliaryDB);
     data->auxiliaryDB->addValue("density", density_2d, density_units());
     data->auxiliaryDB->addValue("body_force_x", body_force_2d_x, body_force_units());
     data->auxiliaryDB->addValue("body_force_y", body_force_2d_y, body_force_units());
@@ -191,7 +191,7 @@ pylith::materials::TestAuxiliaryFactoryElasticity_Cases::Tri(void) {
     data->auxiliaryDB->setDescription("auxiliary");
     data->auxiliaryDB->setCoordSys(*data->cs);
 
-    assert(data->gravityField);
+    REQUIRE(data->gravityField);
     data->gravityField->setGravityDir(0.0, -1.0, 0.0);
 
     return data;
@@ -202,20 +202,20 @@ pylith::materials::TestAuxiliaryFactoryElasticity_Cases::Tri(void) {
 pylith::materials::TestAuxiliaryFactoryElasticity_Data*
 pylith::materials::TestAuxiliaryFactoryElasticity_Cases::Hex(void) {
     pylith::materials::TestAuxiliaryFactoryElasticity_Data* data = new pylith::materials::TestAuxiliaryFactoryElasticity_Data();
-    assert(data);
+    REQUIRE(data);
 
     data->auxDim = 3;
     data->dimension = 3;
     data->meshFilename = "data/hex.mesh";
-    data->cs = new spatialdata::geocoords::CSCart();assert(data->cs);
+    data->cs = new spatialdata::geocoords::CSCart();REQUIRE(data->cs);
     data->cs->setSpaceDim(data->dimension);
 
-    assert(data->scales);
+    REQUIRE(data->scales);
     data->scales->setLengthScale(LENGTH_SCALE);
     data->scales->setTimeScale(TIME_SCALE);
     data->scales->setRigidityScale(RIGIDITY_SCALE);
 
-    assert(data->auxiliaryDB);
+    REQUIRE(data->auxiliaryDB);
     data->auxiliaryDB->addValue("density", density_3d, density_units());
     data->auxiliaryDB->addValue("body_force_x", body_force_3d_x, body_force_units());
     data->auxiliaryDB->addValue("body_force_y", body_force_3d_y, body_force_units());
@@ -226,7 +226,7 @@ pylith::materials::TestAuxiliaryFactoryElasticity_Cases::Hex(void) {
     data->auxiliaryDB->setDescription("auxiliary");
     data->auxiliaryDB->setCoordSys(*data->cs);
 
-    assert(data->gravityField);
+    REQUIRE(data->gravityField);
     data->gravityField->setGravityDir(0.0, 0.0, -1.0);
 
     data->subfields["body_force"].description.numComponents = 3;

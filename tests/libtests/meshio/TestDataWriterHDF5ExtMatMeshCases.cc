@@ -17,7 +17,7 @@
 #include "data/DataWriterHDF5DataMatMeshTet4.hh"
 #include "data/DataWriterHDF5DataMatMeshHex8.hh"
 
-#include "pylith/utils/error.h" // USES PYLITH_METHOD_BEGIN/END
+#include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 
 // ----------------------------------------------------------------------
 CPPUNIT_TEST_SUITE_REGISTRATION(pylith::meshio::TestDataWriterHDF5ExtMatMeshTri3);

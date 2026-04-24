@@ -44,6 +44,9 @@ The version numbers are in the form `MAJOR.MINOR.PATCH`, where major releases in
   * Removed `solid_bulk_modulus` as a spatial database field for poroelasticity; compute it from the other fields.
   * Fixed typos in setting up gravity with poroelasticity.
   * Fixed pythia import in `pylith_eqinfo`.
+* **Developer Changes**
+  * Replace `err = PetscFoo(args); PYLITH_CHECK_ERROR(err);` with `PylithCallPetsc(PetscFoo(args));`.
+  * Replace `assert(arg)` in test code with `REQUIRE(arg);`.
 
 ## Version 4.2.0 (2025-01-15)
 

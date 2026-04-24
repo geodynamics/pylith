@@ -15,7 +15,7 @@
   initialize(int argc,
 	     char** argv)
   { // initialize
-    PetscErrorCode err = PetscInitialize(&argc, &argv, NULL, NULL);CHKERRQ(err);
+    PylithCallPetsc(PetscInitialize(&argc, &argv, NULL, NULL));
     return 0;
   } // initialize
 %} // inline
@@ -26,7 +26,7 @@
   int
   finalize(void)
   { // finalize
-    PetscErrorCode err = PetscFinalize();CHKERRQ(err);
+    PylithCallPetsc(PetscFinalize());
     return 0;
   } // finalize
 %} // inline
@@ -38,7 +38,7 @@
   optionsSetValue(const char* name,
 		  const char* value)
   { // optionsSetValue
-    PetscErrorCode err = PetscOptionsSetValue(NULL, name, value);CHKERRQ(err);
+    PylithCallPetsc(PetscOptionsSetValue(NULL, name, value));
     return 0;
   } // optionsSetValue
 %} // inline
@@ -51,7 +51,7 @@
 		   const char* pre)
   { // optionsHasName
     PetscBool hasName = PetscBool(0);
-    PetscErrorCode err = PetscOptionsHasName(NULL, pre, name, &hasName);CHKERRQ(err);
+    PylithCallPetsc(PetscOptionsHasName(NULL, pre, name, &hasName));
 
     return (hasName) ? true : false;
   } // optionsHasName
@@ -65,7 +65,7 @@
     citationsRegister(const char* entry)
   { // citationsRegister
     PetscBool set = PetscBool(PETSC_FALSE);
-    PetscErrorCode err = PetscCitationsRegister(entry, &set);CHKERRQ(err);
+    PylithCallPetsc(PetscCitationsRegister(entry, &set));
 
     return 0;
   } // citationsRegister

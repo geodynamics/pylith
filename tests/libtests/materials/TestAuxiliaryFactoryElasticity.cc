@@ -123,8 +123,8 @@ void
 pylith::materials::TestAuxiliaryFactoryElasticity::testAdd(void) {
     PYLITH_METHOD_BEGIN;
 
-    assert(_factory);
-    assert(_data);
+    REQUIRE(_factory);
+    REQUIRE(_data);
 
     CHECK(!_auxiliaryField->hasSubfield("density"));
     CHECK(!_auxiliaryField->hasSubfield("body_force"));
@@ -132,10 +132,10 @@ pylith::materials::TestAuxiliaryFactoryElasticity::testAdd(void) {
 
     _factory->addDensity();
     _factory->addBodyForce();
-    assert(_data->gravityField);
+    REQUIRE(_data->gravityField);
     _factory->addGravityField(_data->gravityField);
 
-    assert(_data->scales);
+    REQUIRE(_data->scales);
 
     pylith::testing::FieldTester::checkSubfieldInfo(*_auxiliaryField, _data->subfields["density"]);
     pylith::testing::FieldTester::checkSubfieldInfo(*_auxiliaryField, _data->subfields["body_force"]);
@@ -151,18 +151,18 @@ void
 pylith::materials::TestAuxiliaryFactoryElasticity::testSetValuesFromDB(void) {
     PYLITH_METHOD_BEGIN;
 
-    assert(_factory);
+    REQUIRE(_factory);
 
     _factory->addDensity();
     _factory->addBodyForce();
-    assert(_data->gravityField);
+    REQUIRE(_data->gravityField);
     _factory->addGravityField(_data->gravityField);
     _auxiliaryField->subfieldsSetup();
     _auxiliaryField->createDiscretization();
     _auxiliaryField->allocate();
 
-    assert(_data);
-    assert(_data->scales);
+    REQUIRE(_data);
+    REQUIRE(_data->scales);
     _factory->setValuesFromDB();
     pylith::testing::FieldTester::checkFieldWithDB(*_auxiliaryField, _data->auxiliaryDB, _data->scales->getLengthScale());
 
@@ -175,27 +175,27 @@ pylith::materials::TestAuxiliaryFactoryElasticity::testSetValuesFromDB(void) {
 void
 pylith::materials::TestAuxiliaryFactoryElasticity::_initialize(void) {
     PYLITH_METHOD_BEGIN;
-    assert(_data);
+    REQUIRE(_data);
 
     pylith::meshio::MeshIOAscii iohandler;
-    assert(_data->meshFilename);
+    REQUIRE(_data->meshFilename);
     iohandler.setFilename(_data->meshFilename);
-    _mesh = new pylith::topology::Mesh();assert(_mesh);
+    _mesh = new pylith::topology::Mesh();REQUIRE(_mesh);
     iohandler.read(_mesh);
 
-    assert(pylith::topology::MeshOps::getNumCells(*_mesh) > 0);
-    assert(pylith::topology::MeshOps::getNumVertices(*_mesh) > 0);
+    REQUIRE(pylith::topology::MeshOps::getNumCells(*_mesh) > 0);
+    REQUIRE(pylith::topology::MeshOps::getNumVertices(*_mesh) > 0);
 
     // Setup coordinates.
     _mesh->setCoordSys(_data->cs);
-    assert(_data->scales);
+    REQUIRE(_data->scales);
     pylith::topology::MeshOps::nondimensionalize(_mesh, *_data->scales);
 
-    _auxiliaryField = new pylith::topology::Field(*_mesh);assert(_auxiliaryField);
+    _auxiliaryField = new pylith::topology::Field(*_mesh);REQUIRE(_auxiliaryField);
     _auxiliaryField->setLabel("auxiliary");
 
     _factory = new AuxiliaryFactoryElasticity();
-    assert(_data->auxiliaryDB);
+    REQUIRE(_data->auxiliaryDB);
     _factory->setQueryDB(_data->auxiliaryDB);
     typedef std::map<std::string, pylith::topology::Field::SubfieldInfo>::const_iterator subfield_iter;
     for (subfield_iter iter = _data->subfields.begin(); iter != _data->subfields.end(); ++iter) {
@@ -204,7 +204,7 @@ pylith::materials::TestAuxiliaryFactoryElasticity::_initialize(void) {
         _factory->setSubfieldDiscretization(subfieldName, fe.basisOrder, fe.quadOrder, fe.dimension, fe.isFaultOnly, fe.cellBasis,
                                             fe.feSpace, fe.isBasisContinuous);
     } // for
-    assert(_data->scales);
+    REQUIRE(_data->scales);
     _factory->initialize(_auxiliaryField, *_data->scales, _data->dimension);
 
     PYLITH_METHOD_END;

@@ -13,7 +13,7 @@
 #include "TestDataWriterHDF5.hh" // Implementation of class methods
 
 #include "pylith/utils/types.hh" // HASA PylithScalar
-#include "pylith/utils/error.h" // HASA PYLITH_METHOD_BEGIN/END
+#include "pylith/utils/error.hh" // HASA PYLITH_METHOD_BEGIN/END
 
 #include "catch2/catch_test_macros.hpp"
 #include "catch2/matchers/catch_matchers_floating_point.hpp"
@@ -31,25 +31,25 @@ pylith_meshio_TestDataWriterHDF5_checkObject(hid_t id,
                                              const H5O_info_t* info,
                                              void* data) {
     PYLITH_METHOD_BEGIN;
-    assert(info);
-    assert(data);
+    REQUIRE(info);
+    REQUIRE(data);
 
     INFO("Checking dataset '" << name << "'.");
 
-    hid_t* file = (hid_t*) data;assert(H5Iis_valid(*file));
+    hid_t* file = (hid_t*) data;REQUIRE(H5Iis_valid(*file));
     herr_t err = 0;
 
     switch (info->type) {
     case H5O_TYPE_GROUP: {
-        hid_t group = H5Gopen2(*file, name, H5P_DEFAULT);assert(group >= 0);
-        err = H5Gclose(group);assert(err >= 0);
+        hid_t group = H5Gopen2(*file, name, H5P_DEFAULT);REQUIRE(group >= 0);
+        err = H5Gclose(group);REQUIRE(err >= 0);
         break;
     } // group
     case H5O_TYPE_DATASET: {
         // Get expected dataset.
-        hid_t datasetE = H5Dopen2(id, name, H5P_DEFAULT);assert(datasetE >= 0);
-        hid_t dataspaceE = H5Dget_space(datasetE);assert(dataspaceE >= 0);
-        const int ndimsE = H5Sget_simple_extent_ndims(dataspaceE);assert(ndimsE > 0);
+        hid_t datasetE = H5Dopen2(id, name, H5P_DEFAULT);REQUIRE(datasetE >= 0);
+        hid_t dataspaceE = H5Dget_space(datasetE);REQUIRE(dataspaceE >= 0);
+        const int ndimsE = H5Sget_simple_extent_ndims(dataspaceE);REQUIRE(ndimsE > 0);
         hsize_t* dimsE = (ndimsE > 0) ? new hsize_t[ndimsE] : 0;
         const int ndimsECheck = H5Sget_simple_extent_dims(dataspaceE, dimsE, 0);
         REQUIRE(ndimsE == ndimsECheck);
@@ -59,9 +59,9 @@ pylith_meshio_TestDataWriterHDF5_checkObject(hid_t id,
         } // for
 
         // Get dataset
-        hid_t dataset = H5Dopen2(*file, name, H5P_DEFAULT);assert(dataset >= 0);
-        hid_t dataspace = H5Dget_space(dataset);assert(dataspace >= 0);
-        const int ndims = H5Sget_simple_extent_ndims(dataspace);assert(ndims > 0);
+        hid_t dataset = H5Dopen2(*file, name, H5P_DEFAULT);REQUIRE(dataset >= 0);
+        hid_t dataspace = H5Dget_space(dataset);REQUIRE(dataspace >= 0);
+        const int ndims = H5Sget_simple_extent_ndims(dataspace);REQUIRE(ndims > 0);
         hsize_t* dims = (ndims > 0) ? new hsize_t[ndims] : 0;
         const int ndimsCheck = H5Sget_simple_extent_dims(dataspace, dims, 0);
         REQUIRE(ndims == ndimsCheck);
@@ -77,19 +77,19 @@ pylith_meshio_TestDataWriterHDF5_checkObject(hid_t id,
         } // for
 
         // Check the expected datatype
-        hid_t datatypeE = H5Dget_type(datasetE);assert(datatypeE >= 0);
-        hid_t dataclassE = H5Tget_class(datatypeE);assert(dataclassE >= 0);
+        hid_t datatypeE = H5Dget_type(datasetE);REQUIRE(datatypeE >= 0);
+        hid_t dataclassE = H5Tget_class(datatypeE);REQUIRE(dataclassE >= 0);
 
-        hid_t datatype = H5Dget_type(dataset);assert(datatype >= 0);
-        hid_t dataclass = H5Tget_class(datatype);assert(dataclass >= 0);
+        hid_t datatype = H5Dget_type(dataset);REQUIRE(datatype >= 0);
+        hid_t dataclass = H5Tget_class(datatype);REQUIRE(dataclass >= 0);
 
         switch (dataclassE) {
         case H5T_FLOAT: {
-            double* dataE = (sizeE > 0) ? new double[sizeE] : 0;assert(sizeE > 0);
-            err = H5Dread(datasetE, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT, (void*) dataE);assert(err >= 0);
+            double* dataE = (sizeE > 0) ? new double[sizeE] : 0;REQUIRE(sizeE > 0);
+            err = H5Dread(datasetE, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT, (void*) dataE);REQUIRE(err >= 0);
 
-            double* data = (size > 0) ? new double[size] : 0;assert(size > 0);
-            err = H5Dread(dataset, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT, (void*) data);assert(err >= 0);
+            double* data = (size > 0) ? new double[size] : 0;REQUIRE(size > 0);
+            err = H5Dread(dataset, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT, (void*) data);REQUIRE(err >= 0);
 
             REQUIRE(sizeE == size);
 
@@ -107,11 +107,11 @@ pylith_meshio_TestDataWriterHDF5_checkObject(hid_t id,
         } // H5T_DOUBLE
 
         case H5T_INTEGER: {
-            int* dataE = (sizeE > 0) ? new int[sizeE] : 0;assert(sizeE > 0);
-            err = H5Dread(datasetE, H5T_NATIVE_INT, H5S_ALL, H5S_ALL, H5P_DEFAULT, (void*) dataE);assert(err >= 0);
+            int* dataE = (sizeE > 0) ? new int[sizeE] : 0;REQUIRE(sizeE > 0);
+            err = H5Dread(datasetE, H5T_NATIVE_INT, H5S_ALL, H5S_ALL, H5P_DEFAULT, (void*) dataE);REQUIRE(err >= 0);
 
-            int* data = (size > 0) ? new int[size] : 0;assert(size > 0);
-            err = H5Dread(dataset, H5T_NATIVE_INT, H5S_ALL, H5S_ALL, H5P_DEFAULT, (void*) data);assert(err >= 0);
+            int* data = (size > 0) ? new int[size] : 0;REQUIRE(size > 0);
+            err = H5Dread(dataset, H5T_NATIVE_INT, H5S_ALL, H5S_ALL, H5P_DEFAULT, (void*) data);REQUIRE(err >= 0);
 
             REQUIRE(sizeE == size);
 
@@ -127,20 +127,20 @@ pylith_meshio_TestDataWriterHDF5_checkObject(hid_t id,
         } // H5T_INTEGER
 
         case H5T_STRING: {
-            const int slenE = H5Tget_size(datatypeE);assert(slenE > 0);
+            const int slenE = H5Tget_size(datatypeE);REQUIRE(slenE > 0);
             sizeE *= slenE;
 
-            const int slen = H5Tget_size(datatype);assert(slen > 0);
+            const int slen = H5Tget_size(datatype);REQUIRE(slen > 0);
             size *= slen;
 
             REQUIRE(slenE == slen);
             REQUIRE(sizeE == size);
 
-            char* dataE = (sizeE > 0) ? new char[sizeE] : 0;assert(sizeE > 0);
-            err = H5Dread(datasetE, datatypeE, H5S_ALL, H5S_ALL, H5P_DEFAULT, dataE);assert(err >= 0);
+            char* dataE = (sizeE > 0) ? new char[sizeE] : 0;REQUIRE(sizeE > 0);
+            err = H5Dread(datasetE, datatypeE, H5S_ALL, H5S_ALL, H5P_DEFAULT, dataE);REQUIRE(err >= 0);
 
-            char* data = (size > 0) ? new char[size] : 0;assert(size > 0);
-            err = H5Dread(dataset, datatype, H5S_ALL, H5S_ALL, H5P_DEFAULT, data);assert(err >= 0);
+            char* data = (size > 0) ? new char[size] : 0;REQUIRE(size > 0);
+            err = H5Dread(dataset, datatype, H5S_ALL, H5S_ALL, H5P_DEFAULT, data);REQUIRE(err >= 0);
 
             for (int i = 0; i < size; ++i) {
                 CHECK(dataE[i] == data[i]);
@@ -153,14 +153,14 @@ pylith_meshio_TestDataWriterHDF5_checkObject(hid_t id,
         } // H5T_C_S1
 
         default:
-            assert(false);
+            REQUIRE(false);
         } // switch
 
-        err = H5Sclose(dataspaceE);assert(err >= 0);
-        err = H5Dclose(datasetE);assert(err >= 0);
+        err = H5Sclose(dataspaceE);REQUIRE(err >= 0);
+        err = H5Dclose(datasetE);REQUIRE(err >= 0);
 
-        err = H5Sclose(dataspace);assert(err >= 0);
-        err = H5Dclose(dataset);assert(err >= 0);
+        err = H5Sclose(dataspace);REQUIRE(err >= 0);
+        err = H5Dclose(dataset);REQUIRE(err >= 0);
 
         delete[] dimsE;dimsE = 0;
         delete[] dims;dims = 0;
@@ -168,7 +168,7 @@ pylith_meshio_TestDataWriterHDF5_checkObject(hid_t id,
         break;
     } // dataset
     default:
-        assert(false);
+        REQUIRE(false);
     } // switch
 
     PYLITH_METHOD_RETURN(0);
@@ -185,20 +185,20 @@ pylith::meshio::TestDataWriterHDF5::checkFile(const char* filename) {
 
     herr_t err = 0;
 
-    hid_t fileE = H5Fopen(filenameE.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT);assert(fileE >= 0);
+    hid_t fileE = H5Fopen(filenameE.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT);REQUIRE(fileE >= 0);
 
-    hid_t file = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT);assert(file >= 0);
+    hid_t file = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT);REQUIRE(file >= 0);
 #if defined(PYLITH_HDF5_USE_API_112)
     // Traverse recursively file with expected values.
-    err = H5Ovisit(fileE, H5_INDEX_NAME, H5_ITER_NATIVE, pylith_meshio_TestDataWriterHDF5_checkObject, (void*) &file, H5O_INFO_ALL);assert(err >= 0);
+    err = H5Ovisit(fileE, H5_INDEX_NAME, H5_ITER_NATIVE, pylith_meshio_TestDataWriterHDF5_checkObject, (void*) &file, H5O_INFO_ALL);REQUIRE(err >= 0);
 #else
-    err = H5Ovisit(fileE, H5_INDEX_NAME, H5_ITER_NATIVE, pylith_meshio_TestDataWriterHDF5_checkObject, (void*) &file);assert(err >= 0);
+    err = H5Ovisit(fileE, H5_INDEX_NAME, H5_ITER_NATIVE, pylith_meshio_TestDataWriterHDF5_checkObject, (void*) &file);REQUIRE(err >= 0);
 #endif
     err = H5Fclose(fileE);
-    assert(err >= 0);
+    REQUIRE(err >= 0);
 
     err = H5Fclose(file);
-    assert(err >= 0);
+    REQUIRE(err >= 0);
 
     PYLITH_METHOD_END;
 } // checkFile

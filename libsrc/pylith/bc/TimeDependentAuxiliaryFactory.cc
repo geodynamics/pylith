@@ -311,11 +311,9 @@ pylith::bc::TimeDependentAuxiliaryFactory::updateAuxiliaryField(pylith::topology
     assert(auxiliaryField);
     assert(dbTimeHistory);
 
-    PetscErrorCode err = 0;
-
     PetscSection auxiliaryFieldSection = auxiliaryField->getLocalSection();assert(auxiliaryFieldSection);
     PetscInt pStart = 0, pEnd = 0;
-    err = PetscSectionGetChart(auxiliaryFieldSection, &pStart, &pEnd);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(PetscSectionGetChart(auxiliaryFieldSection, &pStart, &pEnd));
     if (pStart == pEnd) {
         PYLITH_METHOD_END;
     } // if

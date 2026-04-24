@@ -67,7 +67,7 @@ TEST_CASE("TestProgressMonitor::testUpdate", "[TestProgressMonitor]") {
 // ------------------------------------------------------------------------------------------------
 // Constructor.
 pylith::problems::TestProgressMonitor::TestProgressMonitor(void) {
-    _monitor = new ProgressMonitorStub();assert(_monitor);
+    _monitor = new ProgressMonitorStub();REQUIRE(_monitor);
 } // setUp
 
 
@@ -83,7 +83,7 @@ pylith::problems::TestProgressMonitor::~TestProgressMonitor(void) {
 void
 pylith::problems::TestProgressMonitor::testAccessors(void) {
     PYLITH_METHOD_BEGIN;
-    assert(_monitor);
+    REQUIRE(_monitor);
     const double tolerance = 1.0e-6;
 
     { // updatePercent
@@ -117,7 +117,7 @@ pylith::problems::TestProgressMonitor::testOpenClose(void) {
     pylith::testing::StubMethodTracker tracker;
     tracker.clear();
 
-    assert(_monitor);
+    REQUIRE(_monitor);
     _monitor->open();
     CHECK(size_t(1) == tracker.getMethodCount("pylith::problems::ProgressMonitorStub::_open"));
 
@@ -140,7 +140,7 @@ pylith::problems::TestProgressMonitor::testUpdate(void) {
     pylith::testing::StubMethodTracker tracker;
     tracker.clear();
 
-    assert(_monitor);
+    REQUIRE(_monitor);
     _monitor->open();
     _monitor->close();
 

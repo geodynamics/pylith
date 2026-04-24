@@ -9,7 +9,7 @@
 // =================================================================================================
 #pragma once
 
-#include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
+#include "pylith/utils/error.hh" // USES PylithCallPetsc()
 
 // ----------------------------------------------------------------------
 // Default constructor.
@@ -39,11 +39,10 @@ void
 pylith::topology::CoordsVisitor::initialize(void) { // initialize
     assert(_dm);
     PetscInt size;
-    PetscErrorCode err;
-    err = DMGetCoordinateSection(_dm, &_section);PYLITH_CHECK_ERROR(err);assert(_section);
-    err = DMGetCoordinatesLocal(_dm, &_localVec);PYLITH_CHECK_ERROR(err);assert(_localVec);
-    err = VecGetLocalSize(_localVec, &size);PYLITH_CHECK_ERROR(err);
-    err = VecGetArray(_localVec, &_localArray);PYLITH_CHECK_ERROR(err);assert(!size || _localArray);
+    PylithCallPetsc(DMGetCoordinateSection(_dm, &_section));assert(_section);
+    PylithCallPetsc(DMGetCoordinatesLocal(_dm, &_localVec));assert(_localVec);
+    PylithCallPetsc(VecGetLocalSize(_localVec, &size));
+    PylithCallPetsc(VecGetArray(_localVec, &_localArray));assert(!size || _localArray);
 } // initialize
 
 
@@ -53,7 +52,7 @@ inline
 void
 pylith::topology::CoordsVisitor::clear(void) { // clear
     if (_localVec) {
-        PetscErrorCode err = VecRestoreArray(_localVec, &_localArray);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(VecRestoreArray(_localVec, &_localArray));
     } // if
 
     _localVec = NULL;
@@ -78,7 +77,7 @@ PetscInt
 pylith::topology::CoordsVisitor::sectionDof(const PetscInt point) const { // sectionDof
     assert(_section);
     PetscInt dof;
-    PetscErrorCode err = PetscSectionGetDof(_section, point, &dof);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(PetscSectionGetDof(_section, point, &dof));
     return dof;
 } // sectionDof
 
@@ -90,7 +89,7 @@ PetscInt
 pylith::topology::CoordsVisitor::sectionOffset(const PetscInt point) const { // sectionOffset
     assert(_section);
     PetscInt offset;
-    PetscErrorCode err = PetscSectionGetOffset(_section, point, &offset);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(PetscSectionGetOffset(_section, point, &offset));
     return offset;
 } // sectionOffset
 
@@ -105,7 +104,7 @@ pylith::topology::CoordsVisitor::getClosure(PetscScalar** coordsCell,
     assert(_dm);
     assert(_section);
     assert(_localVec);
-    PetscErrorCode err = DMPlexVecGetClosure(_dm, _section, _localVec, cell, coordsSize, coordsCell);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMPlexVecGetClosure(_dm, _section, _localVec, cell, coordsSize, coordsCell));
 } // getClosure
 
 
@@ -121,7 +120,7 @@ pylith::topology::CoordsVisitor::getClosure(scalar_array* coords,
     assert(coords);
     PetscScalar* coordsCell = &(*coords)[0];
     PetscInt coordsSize = coords->size();
-    PetscErrorCode err = DMPlexVecGetClosure(_dm, _section, _localVec, cell, &coordsSize, &coordsCell);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMPlexVecGetClosure(_dm, _section, _localVec, cell, &coordsSize, &coordsCell));
 } // getClosure
 
 
@@ -135,7 +134,7 @@ pylith::topology::CoordsVisitor::restoreClosure(PetscScalar** coordsCell,
     assert(_dm);
     assert(_section);
     assert(_localVec);
-    PetscErrorCode err = DMPlexVecRestoreClosure(_dm, _section, _localVec, cell, coordsSize, coordsCell);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMPlexVecRestoreClosure(_dm, _section, _localVec, cell, coordsSize, coordsCell));
 } // restoreClosure
 
 
@@ -146,14 +145,13 @@ void
 pylith::topology::CoordsVisitor::optimizeClosure(PetscDM dmMesh) { // optimizeClosure
     assert(dmMesh);
 
-    PetscErrorCode err;
     PetscSection fieldSection = NULL;
-    err = DMGetCoordinateSection(dmMesh, &fieldSection);PYLITH_CHECK_ERROR(err);assert(fieldSection);
+    PylithCallPetsc(DMGetCoordinateSection(dmMesh, &fieldSection));assert(fieldSection);
 
     PetscSection indexSection = NULL;
-    err = PetscSectionGetClosureIndex(fieldSection, (PetscObject) dmMesh, &indexSection, NULL);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(PetscSectionGetClosureIndex(fieldSection, (PetscObject) dmMesh, &indexSection, NULL));
     if (!indexSection) {
-        err = DMPlexCreateClosureIndex(dmMesh, fieldSection);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMPlexCreateClosureIndex(dmMesh, fieldSection));
     } // if
 
 } // optimizeClosure

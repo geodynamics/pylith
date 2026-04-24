@@ -240,9 +240,8 @@ pylith::topology::TestFieldSubmesh::testCloneSection(void) { // testCloneSection
     Mesh submesh(mesh, _TestFieldSubmesh::label);
 
     PetscDM dmMesh = submesh.getDM();CPPUNIT_ASSERT(dmMesh);
-    PetscErrorCode err = 0;
     PetscInt vStart, vEnd;
-    err = DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMPlexGetDepthStratum(dmMesh, 0, &vStart, &vEnd));
 
     // Create field with atlas to use to create new field
     Field fieldSrc(submesh);
@@ -251,14 +250,14 @@ pylith::topology::TestFieldSubmesh::testCloneSection(void) { // testCloneSection
         PetscSection section = fieldSrc.selectedSection();CPPUNIT_ASSERT(section);
         int iV = 0;
         for (PetscInt v = vStart; v < vEnd; ++v) {
-            err = PetscSectionAddConstraintDof(section, v, nconstraints[iV++]);PYLITH_CHECK_ERROR(err);
+            PylithCallPetsc(PetscSectionAddConstraintDof(section, v, nconstraints[iV++]));
         } // for
         fieldSrc.allocate();
 
         int index = 0;
         iV = 0;
         for (PetscInt v = vStart; v < vEnd; ++v, index += nconstraints[iV++]) {
-            err = PetscSectionSetConstraintIndices(section, v, (PetscInt *) &constraints[index]);PYLITH_CHECK_ERROR(err);
+            PylithCallPetsc(PetscSectionSetConstraintIndices(section, v, (PetscInt *) &constraints[index]));
         } // for
         fieldSrc.zero();
     } // Setup source field
@@ -271,8 +270,8 @@ pylith::topology::TestFieldSubmesh::testCloneSection(void) { // testCloneSection
     int iV = 0;
     for (PetscInt v = vStart; v < vEnd; ++v) {
         PetscInt dof, cdof;
-        err = PetscSectionGetDof(section, v, &dof);PYLITH_CHECK_ERROR(err);
-        err = PetscSectionGetConstraintDof(section, v, &cdof);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(PetscSectionGetDof(section, v, &dof));
+        PylithCallPetsc(PetscSectionGetConstraintDof(section, v, &cdof));
         CPPUNIT_ASSERT_EQUAL(fiberDim, dof);
         CPPUNIT_ASSERT_EQUAL(nconstraints[iV++], cdof);
     } // for
@@ -846,7 +845,7 @@ pylith::topology::TestFieldSubmesh::testVector(void) { // testVector
     const PetscVec vec = field.vector();
     CPPUNIT_ASSERT_EQUAL(sinfo.vector, vec);
     int size = 0;
-    PetscErrorCode err = VecGetSize(vec, &size);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(VecGetSize(vec, &size));
     const int sizeE = (vEnd-vStart) * fiberDim;
     CPPUNIT_ASSERT_EQUAL(sizeE, size);
 
@@ -895,12 +894,11 @@ pylith::topology::TestFieldSubmesh::testScatterLocalToGlobal(void) { // testScat
     field.createScatter(submesh, context);
     field.scatterLocalToGlobal(context);
 
-    PetscErrorCode err = 0;
     const PetscVec vec = field.vector(context);CPPUNIT_ASSERT(vec);
     PetscInt size = 0;
-    err = VecGetSize(vec, &size);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(VecGetSize(vec, &size));
     PetscScalar* valuesVec = NULL;
-    err = VecGetArray(vec, &valuesVec);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(VecGetArray(vec, &valuesVec));
 
     const PylithScalar tolerance = 1.0e-06;
     const int sizeE = (vEnd-vStart) * fiberDim;
@@ -908,7 +906,7 @@ pylith::topology::TestFieldSubmesh::testScatterLocalToGlobal(void) { // testScat
     for (int i = 0; i < sizeE; ++i) {
         CPPUNIT_ASSERT_DOUBLES_EQUAL(valuesE[i], valuesVec[i], tolerance);
     }
-    err = VecRestoreArray(vec, &valuesVec);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(VecRestoreArray(vec, &valuesVec));
 
     PYLITH_METHOD_END;
 } // testScatterLocalToGlobal
@@ -944,15 +942,15 @@ pylith::topology::TestFieldSubmesh::testScatterGlobalToLocal(void) { // testScat
 
     const PetscVec vec = field.vector(context);CPPUNIT_ASSERT(vec);
     PetscInt size = 0;
-    PetscErrorCode err = VecGetSize(vec, &size);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(VecGetSize(vec, &size));
     PetscScalar* valuesVec = NULL;
-    err = VecGetArray(vec, &valuesVec);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(VecGetArray(vec, &valuesVec));
     const int sizeE = (vEnd-vStart) * fiberDim;
     CPPUNIT_ASSERT_EQUAL(sizeE, size);
     for (int i = 0; i < sizeE; ++i) {
         valuesVec[i] = valuesE[i];
     }
-    err = VecRestoreArray(vec, &valuesVec);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(VecRestoreArray(vec, &valuesVec));
 
     field.scatterGlobalToLocal(context);
 
@@ -976,7 +974,7 @@ void
 pylith::topology::TestFieldSubmesh::_buildMesh(Mesh* mesh) { // _buildMesh
     PYLITH_METHOD_BEGIN;
 
-    assert(mesh);
+    REQUIRE(mesh);
 
     const int cellDim = _TestFieldSubmesh::cellDim;
     const int ncells = _TestFieldSubmesh::ncells;
@@ -987,57 +985,55 @@ pylith::topology::TestFieldSubmesh::_buildMesh(Mesh* mesh) { // _buildMesh
     const PylithScalar* coordinates = _TestFieldSubmesh::coordinates;
     const bool interpolate = false;
 
-    PetscErrorCode err = 0;
-
     MeshOps::createDMMesh(mesh, _TestFieldSubmesh::cellDim);
     PetscDM dmMesh = mesh->getDM();CPPUNIT_ASSERT(dmMesh);
-    err = DMPlexSetChart(dmMesh, 0, ncells+nvertices);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMPlexSetChart(dmMesh, 0, ncells+nvertices));
     for (PetscInt c = 0; c < ncells; ++c) {
-        err = DMPlexSetConeSize(dmMesh, c, ncorners);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMPlexSetConeSize(dmMesh, c, ncorners));
     } // for
-    err = DMSetUp(dmMesh);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMSetUp(dmMesh));
     PetscInt *cone = new PetscInt[ncorners];
     for (PetscInt c = 0; c < ncells; ++c) {
         for (PetscInt v = 0; v < ncorners; ++v) {
             cone[v] = cells[c*ncorners+v]+ncells;
         } // for
-        err = DMPlexSetCone(dmMesh, c, cone);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMPlexSetCone(dmMesh, c, cone));
     } // for
     delete[] cone;cone = 0;
-    err = DMPlexSymmetrize(dmMesh);PYLITH_CHECK_ERROR(err);
-    err = DMPlexStratify(dmMesh);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMPlexSymmetrize(dmMesh));
+    PylithCallPetsc(DMPlexStratify(dmMesh));
 
     PetscSection coordSection = NULL;
     PetscVec coordVec = NULL;
     PetscScalar *coords = NULL;
     PetscInt coordSize = 0;
-    err = DMGetCoordinateSection(dmMesh, &coordSection);PYLITH_CHECK_ERROR(err);
-    err = PetscSectionSetNumFields(coordSection, 1);PYLITH_CHECK_ERROR(err);
-    err = PetscSectionSetFieldComponents(coordSection, 0, spaceDim);PYLITH_CHECK_ERROR(err);
-    err = PetscSectionSetChart(coordSection, ncells, ncells+nvertices);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMGetCoordinateSection(dmMesh, &coordSection));
+    PylithCallPetsc(PetscSectionSetNumFields(coordSection, 1));
+    PylithCallPetsc(PetscSectionSetFieldComponents(coordSection, 0, spaceDim));
+    PylithCallPetsc(PetscSectionSetChart(coordSection, ncells, ncells+nvertices));
     for (PetscInt v = ncells; v < ncells+nvertices; ++v) {
-        err = PetscSectionSetDof(coordSection, v, spaceDim);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(PetscSectionSetDof(coordSection, v, spaceDim));
     } // for
-    err = PetscSectionSetUp(coordSection);PYLITH_CHECK_ERROR(err);
-    err = PetscSectionGetStorageSize(coordSection, &coordSize);PYLITH_CHECK_ERROR(err);
-    err = VecCreate(mesh->comm(), &coordVec);PYLITH_CHECK_ERROR(err);
-    err = VecSetSizes(coordVec, coordSize, PETSC_DETERMINE);PYLITH_CHECK_ERROR(err);
-    err = VecSetFromOptions(coordVec);PYLITH_CHECK_ERROR(err);
-    err = VecGetArray(coordVec, &coords);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(PetscSectionSetUp(coordSection));
+    PylithCallPetsc(PetscSectionGetStorageSize(coordSection, &coordSize));
+    PylithCallPetsc(VecCreate(mesh->comm(), &coordVec));
+    PylithCallPetsc(VecSetSizes(coordVec, coordSize, PETSC_DETERMINE));
+    PylithCallPetsc(VecSetFromOptions(coordVec));
+    PylithCallPetsc(VecGetArray(coordVec, &coords));
     for (PetscInt v = 0; v < nvertices; ++v) {
         PetscInt off;
-        err = PetscSectionGetOffset(coordSection, v+ncells, &off);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(PetscSectionGetOffset(coordSection, v+ncells, &off));
         for (PetscInt d = 0; d < spaceDim; ++d) {
             coords[off+d] = coordinates[v*spaceDim+d];
         } // for
     } // for
-    err = VecRestoreArray(coordVec, &coords);PYLITH_CHECK_ERROR(err);
-    err = DMSetCoordinatesLocal(dmMesh, coordVec);PYLITH_CHECK_ERROR(err);
-    err = VecDestroy(&coordVec);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(VecRestoreArray(coordVec, &coords));
+    PylithCallPetsc(DMSetCoordinatesLocal(dmMesh, coordVec));
+    PylithCallPetsc(VecDestroy(&coordVec));
 
     const int numPoints = _TestFieldSubmesh::groupSize;
     for (PetscInt i = 0; i < numPoints; ++i) {
-        err = DMSetLabelValue(dmMesh, _TestFieldSubmesh::label, ncells+_TestFieldSubmesh::groupVertices[i], 1);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMSetLabelValue(dmMesh, _TestFieldSubmesh::label, ncells+_TestFieldSubmesh::groupVertices[i], 1));
     } // for
 
     spatialdata::geocoords::CSCart cs;

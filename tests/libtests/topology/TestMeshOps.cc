@@ -100,14 +100,14 @@ pylith::topology::TestMeshOps::testNondimensionalize(void) {
     MeshOps::nondimensionalize(&mesh, scales);
 
     // Get vertices
-    PetscDM dmMesh = mesh.getDM();assert(dmMesh);
+    PetscDM dmMesh = mesh.getDM();REQUIRE(dmMesh);
     Stratum depthStratum(dmMesh, Stratum::DEPTH, 0);
     const PetscInt vStart = depthStratum.begin();
     const PetscInt vEnd = depthStratum.end();
 
     // Check nondimensional coordinates
     CoordsVisitor coordsVisitor(dmMesh);
-    const PetscScalar* coordsArray = coordsVisitor.localArray();assert(coordsArray);
+    const PetscScalar* coordsArray = coordsVisitor.localArray();REQUIRE(coordsArray);
 
     const PylithScalar tolerance = 1.0e-06;
     for (PetscInt v = vStart, i = 0; v < vEnd; ++v) {

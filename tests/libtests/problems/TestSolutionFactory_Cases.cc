@@ -131,14 +131,14 @@ TEST_CASE("TestSolutionFactory::Hex::testSetValues", "[TestSolutionFactory][test
 pylith::problems::TestSolutionFactory_Data*
 pylith::problems::TestSolutionFactory_Cases::Tri(void) {
     pylith::problems::TestSolutionFactory_Data* data = new pylith::problems::TestSolutionFactory_Data();
-    assert(data);
+    REQUIRE(data);
 
     data->dimension = 2;
     data->meshFilename = "data/tri.mesh";
-    data->cs = new spatialdata::geocoords::CSCart();assert(data->cs);
+    data->cs = new spatialdata::geocoords::CSCart();REQUIRE(data->cs);
     data->cs->setSpaceDim(data->dimension);
 
-    assert(data->solutionDB);
+    REQUIRE(data->solutionDB);
     data->solutionDB->addValue("displacement_x", displacement_2d_x, displacement_units());
     data->solutionDB->addValue("displacement_y", displacement_2d_y, displacement_units());
     data->solutionDB->addValue("pressure", pressure_2d, pressure_units());
@@ -157,14 +157,14 @@ pylith::problems::TestSolutionFactory_Cases::Tri(void) {
 pylith::problems::TestSolutionFactory_Data*
 pylith::problems::TestSolutionFactory_Cases::Hex(void) {
     pylith::problems::TestSolutionFactory_Data* data = new pylith::problems::TestSolutionFactory_Data();
-    assert(data);
+    REQUIRE(data);
 
     data->dimension = 3;
     data->meshFilename = "data/hex.mesh";
-    data->cs = new spatialdata::geocoords::CSCart();assert(data->cs);
+    data->cs = new spatialdata::geocoords::CSCart();REQUIRE(data->cs);
     data->cs->setSpaceDim(data->dimension);
 
-    assert(data->solutionDB);
+    REQUIRE(data->solutionDB);
     data->solutionDB->addValue("displacement_x", displacement_3d_x, displacement_units());
     data->solutionDB->addValue("displacement_y", displacement_3d_y, displacement_units());
     data->solutionDB->addValue("displacement_z", displacement_3d_z, displacement_units());

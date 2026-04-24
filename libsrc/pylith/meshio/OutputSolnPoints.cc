@@ -58,7 +58,7 @@ pylith::meshio::OutputSolnPoints::deallocate(void) {
     OutputSoln::deallocate();
 
     if (_interpolator) {
-        PetscErrorCode err = DMInterpolationDestroy(&_interpolator);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMInterpolationDestroy(&_interpolator));
     } // if
 
     delete _pointMesh;_pointMesh = NULL;
@@ -163,9 +163,8 @@ void
 pylith::meshio::OutputSolnPoints::_setupInterpolator(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
 
-    PetscErrorCode err;
     if (_interpolator) {
-        err = DMInterpolationDestroy(&_interpolator);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMInterpolationDestroy(&_interpolator));
     } // if
     assert(!_interpolator);
 
@@ -177,20 +176,20 @@ pylith::meshio::OutputSolnPoints::_setupInterpolator(const pylith::topology::Fie
     // Setup interpolator object
     PetscDM dmSoln = solution.getDM();assert(dmSoln);
 
-    err = DMInterpolationCreate(comm, &_interpolator);PYLITH_CHECK_ERROR(err);
-    err = DMInterpolationSetDim(_interpolator, spaceDim);PYLITH_CHECK_ERROR(err);
-    err = DMInterpolationAddPoints(_interpolator, _pointNames.size(), (PetscReal*) &_pointCoords[0]);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMInterpolationCreate(comm, &_interpolator));
+    PylithCallPetsc(DMInterpolationSetDim(_interpolator, spaceDim));
+    PylithCallPetsc(DMInterpolationAddPoints(_interpolator, _pointNames.size(), (PetscReal*) &_pointCoords[0]));
     const PetscBool pointsAllProcs = PETSC_TRUE;
     const PetscBool ignoreOutsideDomain = PETSC_FALSE;
-    err = DMInterpolationSetUp(_interpolator, dmSoln, pointsAllProcs, ignoreOutsideDomain);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMInterpolationSetUp(_interpolator, dmSoln, pointsAllProcs, ignoreOutsideDomain));
 
     // Create mesh corresponding to local points.
     const size_t numPointsLocal = _interpolator->n;
     PylithScalar* pointsLocal = NULL;
-    err = VecGetArray(_interpolator->coords, &pointsLocal);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(VecGetArray(_interpolator->coords, &pointsLocal));
 
     PylithReal lengthScale = 1.0;
-    err = DMPlexGetScale(dmSoln, PETSC_UNIT_LENGTH, &lengthScale);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMPlexGetScale(dmSoln, PETSC_UNIT_LENGTH, &lengthScale));
 
     const spatialdata::geocoords::CoordSys* cs = solution.getMesh().getCoordSys();
     const char* componentName = this->getFullIdentifier();
@@ -214,7 +213,7 @@ pylith::meshio::OutputSolnPoints::_setupInterpolator(const pylith::topology::Fie
             } // if
         } // for
     } // for
-    err = VecGetArray(_interpolator->coords, &pointsLocal);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(VecGetArray(_interpolator->coords, &pointsLocal));
 
     _pointNames = pointNamesLocal;
     _pointCoords.resize(0);
@@ -229,7 +228,7 @@ pylith::meshio::OutputSolnPoints::_setupInterpolator(const pylith::topology::Fie
             numDof += info.description.numComponents;
         } // if
     } // for
-    err = DMInterpolationSetDof(_interpolator, numDof);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMInterpolationSetDof(_interpolator, numDof));
 
     delete _pointSoln;_pointSoln = new pylith::topology::Field(*_pointMesh);
     for (size_t i = 0; i < subfieldNames.size(); ++i) {
@@ -255,9 +254,8 @@ pylith::meshio::OutputSolnPoints::_interpolateField(const pylith::topology::Fiel
     PYLITH_METHOD_BEGIN;
     assert(_pointSoln);
 
-    PetscErrorCode err = PETSC_SUCCESS;
-    err = DMInterpolationEvaluate(_interpolator, solution.getDM(), solution.getLocalVector(),
-                                  _pointSoln->getOutputVector());PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMInterpolationEvaluate(_interpolator, solution.getDM(), solution.getLocalVector(),
+                                            _pointSoln->getOutputVector()));
 
     PYLITH_METHOD_END;
 } // _interpolateField

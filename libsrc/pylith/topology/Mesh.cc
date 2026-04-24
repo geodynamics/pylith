@@ -16,7 +16,7 @@
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "pylith/utils/array.hh" // USES scalar_array
-#include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
+#include "pylith/utils/error.hh" // USES PylithCallPetsc()
 #include "pylith/utils/journals.hh" // USES pythia::journal_t
 #include "pylith/utils/petscfwd.h" // USES PetscVec
 
@@ -42,11 +42,10 @@ pylith::topology::Mesh::Mesh(const int dim,
     _dm(NULL) {
     PYLITH_METHOD_BEGIN;
 
-    PetscErrorCode err;
-    err = DMCreate(comm, &_dm);PYLITH_CHECK_ERROR(err);
-    err = DMSetType(_dm, DMPLEX);PYLITH_CHECK_ERROR(err);
-    err = DMSetDimension(_dm, dim);PYLITH_CHECK_ERROR(err);
-    err = PetscObjectSetName((PetscObject) _dm, "domain");PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMCreate(comm, &_dm));
+    PylithCallPetsc(DMSetType(_dm, DMPLEX));
+    PylithCallPetsc(DMSetDimension(_dm, dim));
+    PylithCallPetsc(PetscObjectSetName((PetscObject) _dm, "domain"));
 
     PYLITH_METHOD_END;
 } // constructor
@@ -66,7 +65,7 @@ pylith::topology::Mesh::deallocate(void) {
     PYLITH_METHOD_BEGIN;
 
     delete _coordSys;_coordSys = NULL;
-    PetscErrorCode err = DMDestroy(&_dm);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMDestroy(&_dm));
 
     PYLITH_METHOD_END;
 } // deallocate
@@ -81,15 +80,14 @@ pylith::topology::Mesh::clone(void) const {
     Mesh* mesh = new Mesh();assert(mesh);
     mesh->setCoordSys(this->getCoordSys());
 
-    PetscErrorCode err = PETSC_SUCCESS;
     if (this->_dm) {
         PetscDM dmClone = NULL;
-        err = DMClone(this->_dm, &dmClone);
+        PylithCallPetsc(DMClone(this->_dm, &dmClone));
         mesh->setDM(dmClone);
 
         const char* name = NULL;
-        err = PetscObjectGetName((PetscObject)this->_dm, &name);PYLITH_CHECK_ERROR(err);
-        err = PetscObjectSetName((PetscObject)mesh->_dm,  name);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(PetscObjectGetName((PetscObject)this->_dm, &name));
+        PylithCallPetsc(PetscObjectSetName((PetscObject)mesh->_dm,  name));
     } // if
 
     PYLITH_METHOD_RETURN(mesh);
@@ -111,11 +109,10 @@ pylith::topology::Mesh::setDM(PetscDM dm,
                               const char* label) {
     PYLITH_METHOD_BEGIN;
 
-    PetscErrorCode err = PETSC_SUCCESS;
-    err = DMDestroy(&_dm);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMDestroy(&_dm));
     _dm = dm;
     if (_dm && label) {
-        err = PetscObjectSetName((PetscObject) _dm, label);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(PetscObjectSetName((PetscObject) _dm, label));
     } // if
 
     PYLITH_METHOD_END;
@@ -150,7 +147,7 @@ pylith::topology::Mesh::getDimension(void) const {
 
     PetscInt dim = 0;
     if (_dm) {
-        PetscErrorCode err = DMGetDimension(_dm, &dim);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMGetDimension(_dm, &dim));
     } // if
 
     PYLITH_METHOD_RETURN(dim);
@@ -196,21 +193,20 @@ pylith::topology::Mesh::view(const char* viewOption) const {
 
     assert(_dm);
 
-    PetscErrorCode err;
     if (strlen(viewOption) > 0) {
         const char* label = 0;
-        err = PetscObjectGetName((PetscObject) _dm, &label);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(PetscObjectGetName((PetscObject) _dm, &label));
 
         std::ostringstream optionname, optionprefix;
         optionprefix << label << "_";
         optionname << "-" << label << "_dm_view";
 
-        err = DMSetOptionsPrefix(_dm, optionprefix.str().c_str());PYLITH_CHECK_ERROR(err);
-        err = PetscOptionsSetValue(NULL, optionname.str().c_str(), viewOption);PYLITH_CHECK_ERROR(err);
-        err = DMViewFromOptions(_dm, NULL, "-dm_view");PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMSetOptionsPrefix(_dm, optionprefix.str().c_str()));
+        PylithCallPetsc(PetscOptionsSetValue(NULL, optionname.str().c_str(), viewOption));
+        PylithCallPetsc(DMViewFromOptions(_dm, NULL, "-dm_view"));
 
     } else {
-        err = DMView(_dm, PETSC_VIEWER_STDOUT_WORLD);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMView(_dm, PETSC_VIEWER_STDOUT_WORLD));
     } // if/else
 
     PYLITH_METHOD_END;

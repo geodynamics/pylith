@@ -19,6 +19,8 @@
 #include "pylith/meshio/OutputSubfield.hh" // USES OutputSubfield
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD*
 
+#include "catch2/catch_test_macros.hpp"
+
 // ------------------------------------------------------------------------------------------------
 // Constructor.
 pylith::meshio::TestDataWriterHDF5ExtSubmesh::TestDataWriterHDF5ExtSubmesh(TestDataWriterHDF5ExtSubmesh_Data* data) :
@@ -43,8 +45,8 @@ pylith::meshio::TestDataWriterHDF5ExtSubmesh::~TestDataWriterHDF5ExtSubmesh(void
 void
 pylith::meshio::TestDataWriterHDF5ExtSubmesh::testOpenClose(void) {
     PYLITH_METHOD_BEGIN;
-    assert(_submesh);
-    assert(_data);
+    REQUIRE(_submesh);
+    REQUIRE(_data);
 
     DataWriterHDF5Ext writer;
 
@@ -65,9 +67,9 @@ pylith::meshio::TestDataWriterHDF5ExtSubmesh::testOpenClose(void) {
 void
 pylith::meshio::TestDataWriterHDF5ExtSubmesh::testWriteVertexField(void) {
     PYLITH_METHOD_BEGIN;
-    assert(_mesh);
-    assert(_submesh);
-    assert(_data);
+    REQUIRE(_mesh);
+    REQUIRE(_submesh);
+    REQUIRE(_data);
 
     DataWriterHDF5Ext writer;
 
@@ -88,7 +90,7 @@ pylith::meshio::TestDataWriterHDF5ExtSubmesh::testWriteVertexField(void) {
     const size_t numFields = subfieldNames.size();
     for (size_t i = 0; i < numFields; ++i) {
         OutputSubfield* subfield = OutputSubfield::create(vertexField, *_submesh, subfieldNames[i].c_str(), 1, 0);
-        assert(subfield);
+        REQUIRE(subfield);
         subfield->project(vertexField.getOutputVector());
         writer.writeVertexField(t, *subfield);
         delete subfield;subfield = NULL;
@@ -107,8 +109,8 @@ pylith::meshio::TestDataWriterHDF5ExtSubmesh::testWriteVertexField(void) {
 void
 pylith::meshio::TestDataWriterHDF5ExtSubmesh::testWriteCellField(void) {
     PYLITH_METHOD_BEGIN;
-    assert(_submesh);
-    assert(_data);
+    REQUIRE(_submesh);
+    REQUIRE(_data);
 
     DataWriterHDF5Ext writer;
 
@@ -129,7 +131,7 @@ pylith::meshio::TestDataWriterHDF5ExtSubmesh::testWriteCellField(void) {
     const size_t numFields = subfieldNames.size();
     for (size_t i = 0; i < numFields; ++i) {
         OutputSubfield* subfield = OutputSubfield::create(cellField, *_submesh, subfieldNames[i].c_str(), 0, 0);
-        assert(subfield);
+        REQUIRE(subfield);
         subfield->project(cellField.getOutputVector());
         writer.writeCellField(t, *subfield);
         delete subfield;subfield = NULL;

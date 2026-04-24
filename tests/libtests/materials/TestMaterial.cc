@@ -227,7 +227,7 @@ pylith::materials::TestMaterial::testInitialize(void) {
     query.initializeWithDefaultQueryFns();
     CPPUNIT_ASSERT(data->scales);
     query.openDB(data->auxDB, data->scales->getLengthScale());
-    PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, query.functions(), (void**)query.contextPtrs(), auxField->localVector(), &norm);CPPUNIT_ASSERT(!err);
+    err = DMPlexComputeL2DiffLocal(dm, t, query.functions(), (void**)query.contextPtrs(), auxField->localVector(), &norm);CPPUNIT_ASSERT(!err);
     query.closeDB(data->auxDB);
     const PylithReal tolerance = 1.0e-6;
     CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test of auxiliary field values failed.", 0.0, norm, tolerance);
@@ -314,7 +314,7 @@ pylith::materials::TestMaterial::testComputeResidual(void) {
     residualLHS.view("RESIDUAL LHS"); // :DEBUG:
 #endif // :DEBUG:
 
-    PetscErrorCode err;
+    PetscErrorCode err = PETSC_SUCCESS;
     PetscVec residualVec = NULL;
     err = VecDuplicate(residualRHS.localVector(), &residualVec);CPPUNIT_ASSERT(!err);
     err = VecWAXPY(residualVec, -1.0, residualRHS.localVector(), residualLHS.localVector());CPPUNIT_ASSERT(!err);
@@ -382,7 +382,7 @@ pylith::materials::TestMaterial::testComputeJacobian(void) {
     // residual2.view("RESIDUAL 2 RHS"); // :DEBUG:
 
     // Compute Jacobian
-    PetscErrorCode err;
+    PetscErrorCode err = PETSC_SUCCESS;
     PetscMat jacobianMat = NULL;
     err = DMCreateMatrix(solution.dmMesh(), &jacobianMat);CPPUNIT_ASSERT(!err);
     err = MatZeroEntries(jacobianMat);CPPUNIT_ASSERT(!err);
@@ -392,8 +392,8 @@ pylith::materials::TestMaterial::testComputeJacobian(void) {
     CPPUNIT_ASSERT_EQUAL(false, material->needNewLHSJacobian());
     // _zeroBoundary(&residual1);
     // _zeroBoundary(&residual2, jacobianMat);
-    err = MatAssemblyBegin(jacobianMat, MAT_FINAL_ASSEMBLY);PYLITH_CHECK_ERROR(err);
-    err = MatAssemblyEnd(jacobianMat, MAT_FINAL_ASSEMBLY);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(MatAssemblyBegin(jacobianMat, MAT_FINAL_ASSEMBLY));
+    PylithCallPetsc(MatAssemblyEnd(jacobianMat, MAT_FINAL_ASSEMBLY));
 
     // Check that J(s)*(p - s) = G(p) - G(s).
 
@@ -488,7 +488,7 @@ pylith::materials::TestMaterial::testComputeLHSJacobianImplicit(void) {
     // residual1.view("RESIDUAL 1 LHS"); // :DEBUG:
     // residual2.view("RESIDUAL 2 LHS"); // :DEBUG:
 
-    PetscErrorCode err;
+    PetscErrorCode err = PETSC_SUCCESS;
 
     PetscVec residualVec = NULL;
     err = VecDuplicate(residual1.localVector(), &residualVec);CPPUNIT_ASSERT(!err);
@@ -506,8 +506,8 @@ pylith::materials::TestMaterial::testComputeLHSJacobianImplicit(void) {
 
     material->computeLHSJacobianImplicit(jacobianMat, precondMat, t, dt, s_tshift, solution, solutionDot);
     CPPUNIT_ASSERT_EQUAL(false, material->needNewLHSJacobian());
-    err = MatAssemblyBegin(jacobianMat, MAT_FINAL_ASSEMBLY);PYLITH_CHECK_ERROR(err);
-    err = MatAssemblyEnd(jacobianMat, MAT_FINAL_ASSEMBLY);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(MatAssemblyBegin(jacobianMat, MAT_FINAL_ASSEMBLY));
+    PylithCallPetsc(MatAssemblyEnd(jacobianMat, MAT_FINAL_ASSEMBLY));
 
     // result = J*(-solnIncr) + residual
     PetscVec resultVec = NULL;
@@ -602,7 +602,7 @@ pylith::materials::TestMaterial::testUpdateStateVars(void) {
     PetscOptionsSetValue(NULL, "-dm_plex_print_l2", "1"); // :DEBUG:
     DMSetFromOptions(dm); // :DEBUG:
 #endif
-    PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, query.functions(), (void**)query.contextPtrs(), auxField->localVector(), &norm);CPPUNIT_ASSERT(!err);
+    err = DMPlexComputeL2DiffLocal(dm, t, query.functions(), (void**)query.contextPtrs(), auxField->localVector(), &norm);CPPUNIT_ASSERT(!err);
     query.closeDB(data->auxUpdateDB);
     const PylithReal tolerance = 1.0e-6;
     CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Check of updated auxiliary field values failed.", 0.0, norm, tolerance);
@@ -690,7 +690,7 @@ pylith::materials::TestMaterial::_zeroBoundary(pylith::topology::Field* field) {
     const PetscInt *points;
     PetscInt numPoints = 0;
     PetscBool hasLabel = PETSC_FALSE;
-    PetscErrorCode err;
+    PetscErrorCode err = PETSC_SUCCESS;
     err = DMHasLabel(dmMesh, data->boundaryLabel, &hasLabel);CPPUNIT_ASSERT(!err);CPPUNIT_ASSERT(hasLabel);
     err = DMGetLabel(dmMesh, data->boundaryLabel, &label);CPPUNIT_ASSERT(!err);
     err = DMLabelGetStratumIS(label, 1, &pointIS);CPPUNIT_ASSERT(!err);CPPUNIT_ASSERT(pointIS);
@@ -710,8 +710,8 @@ pylith::materials::TestMaterial::_zeroBoundary(pylith::topology::Field* field) {
         } // for
     } // for
 
-    err = ISRestoreIndices(pointIS, &points);PYLITH_CHECK_ERROR(err);
-    err = ISDestroy(&pointIS);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(ISRestoreIndices(pointIS, &points));
+    PylithCallPetsc(ISDestroy(&pointIS));
 
     PYLITH_METHOD_END;
 } // _zeroBoundary

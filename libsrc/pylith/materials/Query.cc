@@ -14,7 +14,7 @@
 
 #include "pylith/topology/FieldQuery.hh" // USES DBQueryContext
 #include "pylith/feassemble/AuxiliaryFactory.hh" // USES AuxiliaryFactory
-#include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END, PYLITH_ERROR_RETURN
+#include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 #include "pylith/utils/array.hh" // USES scalar_array, int_array
 #include "pylith/utils/types.hh" // USES PylithScalar
 #include "pylith/utils/constants.hh" // USES pylith::max_real

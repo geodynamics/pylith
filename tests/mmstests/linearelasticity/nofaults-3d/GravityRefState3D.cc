@@ -19,6 +19,8 @@
 
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 
+#include "catch2/catch_test_macros.hpp"
+
 namespace pylith {
     class _GravityRefState3D;
 } // pylith
@@ -114,23 +116,23 @@ class pylith::_GravityRefState3D {
                                           PetscInt numComponents,
                                           PetscScalar* s,
                                           void* context) {
-        assert(3 == spaceDim);
-        assert(3 == numComponents);
-        assert(s);
-        assert(x);
+        REQUIRE(3 == spaceDim);
+        REQUIRE(3 == numComponents);
+        REQUIRE(s);
+        REQUIRE(x);
 
         s[0] = disp_x(x[0], x[1], x[2]);
         s[1] = disp_y(x[0], x[1], x[2]);
         s[2] = disp_y(x[0], x[1], x[2]);
 
-        return 0;
+        return PETSC_SUCCESS;
     } // solnkernel_disp
 
 public:
 
     static
     TestLinearElasticity_Data* createData(void) {
-        TestLinearElasticity_Data* data = new TestLinearElasticity_Data();assert(data);
+        TestLinearElasticity_Data* data = new TestLinearElasticity_Data();REQUIRE(data);
 
         data->journalName = "GravityRefState3D";
 
@@ -194,7 +196,7 @@ public:
         static const PylithInt constrainedDOF[3] = { 0, 1, 2 };
         static const PylithInt numConstrained = 3;
         data->bcs.resize(1);
-        pylith::bc::DirichletUserFn*bc = new pylith::bc::DirichletUserFn();assert(bc);
+        pylith::bc::DirichletUserFn*bc = new pylith::bc::DirichletUserFn();REQUIRE(bc);
         bc->setSubfieldName("displacement");
         bc->setLabelName("boundary");
         bc->setLabelValue(1);
@@ -217,7 +219,7 @@ const double pylith::_GravityRefState3D::Z_MAX = +4.0e+3;
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::GravityRefState3D::TetP1(void) {
-    TestLinearElasticity_Data* data = pylith::_GravityRefState3D::createData();assert(data);
+    TestLinearElasticity_Data* data = pylith::_GravityRefState3D::createData();REQUIRE(data);
 
     data->meshFilename = "data/tet.msh";
 
@@ -244,7 +246,7 @@ pylith::GravityRefState3D::TetP1(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::GravityRefState3D::TetP2(void) {
-    TestLinearElasticity_Data* data = pylith::_GravityRefState3D::createData();assert(data);
+    TestLinearElasticity_Data* data = pylith::_GravityRefState3D::createData();REQUIRE(data);
 
     data->meshFilename = "data/tet.msh";
 
@@ -271,7 +273,7 @@ pylith::GravityRefState3D::TetP2(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::GravityRefState3D::TetP3(void) {
-    TestLinearElasticity_Data* data = pylith::_GravityRefState3D::createData();assert(data);
+    TestLinearElasticity_Data* data = pylith::_GravityRefState3D::createData();REQUIRE(data);
 
     data->meshFilename = "data/tet.msh";
 
@@ -298,7 +300,7 @@ pylith::GravityRefState3D::TetP3(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::GravityRefState3D::HexQ1(void) {
-    TestLinearElasticity_Data* data = pylith::_GravityRefState3D::createData();assert(data);
+    TestLinearElasticity_Data* data = pylith::_GravityRefState3D::createData();REQUIRE(data);
 
     data->meshFilename = "data/hex.msh";
 
@@ -325,7 +327,7 @@ pylith::GravityRefState3D::HexQ1(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::GravityRefState3D::HexQ2(void) {
-    TestLinearElasticity_Data* data = pylith::_GravityRefState3D::createData();assert(data);
+    TestLinearElasticity_Data* data = pylith::_GravityRefState3D::createData();REQUIRE(data);
 
     data->meshFilename = "data/hex.msh";
 
@@ -352,7 +354,7 @@ pylith::GravityRefState3D::HexQ2(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::GravityRefState3D::HexQ3(void) {
-    TestLinearElasticity_Data* data = pylith::_GravityRefState3D::createData();assert(data);
+    TestLinearElasticity_Data* data = pylith::_GravityRefState3D::createData();REQUIRE(data);
 
     data->meshFilename = "data/hex.msh";
 

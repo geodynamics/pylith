@@ -18,6 +18,8 @@
 
 #include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
 
+#include "catch2/catch_test_macros.hpp"
+
 // ---------------------------------------------------------------------------------------------------------------------
 namespace pylith {
     class _PlanePWave2D;
@@ -130,15 +132,15 @@ class pylith::_PlanePWave2D {
                                           PetscInt numComponents,
                                           PetscScalar* s,
                                           void* context) {
-        assert(2 == spaceDim);
-        assert(x);
-        assert(2 == numComponents);
-        assert(s);
+        REQUIRE(2 == spaceDim);
+        REQUIRE(x);
+        REQUIRE(2 == numComponents);
+        REQUIRE(s);
 
         s[0] = disp_x(x[0], x[1], t);
         s[1] = disp_y(x[0], x[1], t);
 
-        return 0;
+        return PETSC_SUCCESS;
     } // solnkernel_disp
 
     static PetscErrorCode solnkernel_vel(PetscInt spaceDim,
@@ -147,15 +149,15 @@ class pylith::_PlanePWave2D {
                                          PetscInt numComponents,
                                          PetscScalar* s,
                                          void* context) {
-        assert(2 == spaceDim);
-        assert(x);
-        assert(2 == numComponents);
-        assert(s);
+        REQUIRE(2 == spaceDim);
+        REQUIRE(x);
+        REQUIRE(2 == numComponents);
+        REQUIRE(s);
 
         s[0] = vel_x(x[0], x[1], t);
         s[1] = vel_y(x[0], x[1], t);
 
-        return 0;
+        return PETSC_SUCCESS;
     } // solnkernel_vel
 
     static PetscErrorCode solnkernel_acc(PetscInt spaceDim,
@@ -164,22 +166,22 @@ class pylith::_PlanePWave2D {
                                          PetscInt numComponents,
                                          PetscScalar* s,
                                          void* context) {
-        assert(2 == spaceDim);
-        assert(x);
-        assert(2 == numComponents);
-        assert(s);
+        REQUIRE(2 == spaceDim);
+        REQUIRE(x);
+        REQUIRE(2 == numComponents);
+        REQUIRE(s);
 
         s[0] = acc_x(x[0], x[1], t);
         s[1] = acc_y(x[0], x[1], t);
 
-        return 0;
+        return PETSC_SUCCESS;
     } // solnkernel_acc
 
 public:
 
     static
     TestLinearElasticity_Data* createData(void) {
-        TestLinearElasticity_Data* data = new TestLinearElasticity_Data();assert(data);
+        TestLinearElasticity_Data* data = new TestLinearElasticity_Data();REQUIRE(data);
 
         data->journalName = "PlanePWave2D";
         data->isJacobianLinear = true;
@@ -228,7 +230,7 @@ public:
         static const PylithInt numConstrained = 2;
         pylith::bc::DirichletUserFn* bc = NULL;
         data->bcs.resize(2);
-        bc = new pylith::bc::DirichletUserFn();assert(bc);
+        bc = new pylith::bc::DirichletUserFn();REQUIRE(bc);
         bc->setSubfieldName("displacement");
         bc->setLabelName("boundary");
         bc->setLabelValue(1);
@@ -237,7 +239,7 @@ public:
         bc->setUserFnDot(solnkernel_vel);
         data->bcs[0] = bc;
 
-        bc = new pylith::bc::DirichletUserFn();assert(bc);
+        bc = new pylith::bc::DirichletUserFn();REQUIRE(bc);
         bc->setSubfieldName("velocity");
         bc->setLabelName("boundary");
         bc->setLabelValue(1);
@@ -270,7 +272,7 @@ const double pylith::_PlanePWave2D::AMPLITUDE = 0.1;
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::PlanePWave2D::TriP1(void) {
-    TestLinearElasticity_Data* data = pylith::_PlanePWave2D::createData();assert(data);
+    TestLinearElasticity_Data* data = pylith::_PlanePWave2D::createData();REQUIRE(data);
 
     data->meshFilename = "data/tri.msh";
     data->useAsciiMesh = false;
@@ -289,7 +291,7 @@ pylith::PlanePWave2D::TriP1(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::PlanePWave2D::TriP2(void) {
-    TestLinearElasticity_Data* data = pylith::_PlanePWave2D::createData();assert(data);
+    TestLinearElasticity_Data* data = pylith::_PlanePWave2D::createData();REQUIRE(data);
 
     data->meshFilename = "data/tri.msh";
     data->useAsciiMesh = false;
@@ -315,7 +317,7 @@ pylith::PlanePWave2D::TriP2(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::PlanePWave2D::TriP3(void) {
-    TestLinearElasticity_Data* data = pylith::_PlanePWave2D::createData();assert(data);
+    TestLinearElasticity_Data* data = pylith::_PlanePWave2D::createData();REQUIRE(data);
 
     data->meshFilename = "data/tri.msh";
     data->useAsciiMesh = false;
@@ -341,7 +343,7 @@ pylith::PlanePWave2D::TriP3(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::PlanePWave2D::TriP4(void) {
-    TestLinearElasticity_Data* data = pylith::_PlanePWave2D::createData();assert(data);
+    TestLinearElasticity_Data* data = pylith::_PlanePWave2D::createData();REQUIRE(data);
 
     data->meshFilename = "data/tri.mesh";
 
@@ -366,7 +368,7 @@ pylith::PlanePWave2D::TriP4(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::PlanePWave2D::QuadQ1(void) {
-    TestLinearElasticity_Data* data = pylith::_PlanePWave2D::createData();assert(data);
+    TestLinearElasticity_Data* data = pylith::_PlanePWave2D::createData();REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 
@@ -384,7 +386,7 @@ pylith::PlanePWave2D::QuadQ1(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::PlanePWave2D::QuadQ1Distorted(void) {
-    TestLinearElasticity_Data* data = pylith::_PlanePWave2D::createData();assert(data);
+    TestLinearElasticity_Data* data = pylith::_PlanePWave2D::createData();REQUIRE(data);
 
     data->meshFilename = "data/quad_distorted.mesh";
 
@@ -402,7 +404,7 @@ pylith::PlanePWave2D::QuadQ1Distorted(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::PlanePWave2D::QuadQ2(void) {
-    TestLinearElasticity_Data* data = pylith::_PlanePWave2D::createData();assert(data);
+    TestLinearElasticity_Data* data = pylith::_PlanePWave2D::createData();REQUIRE(data);
 
     data->meshFilename = "data/quad.msh";
     data->useAsciiMesh = false;
@@ -428,7 +430,7 @@ pylith::PlanePWave2D::QuadQ2(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::PlanePWave2D::QuadQ3(void) {
-    TestLinearElasticity_Data* data = pylith::_PlanePWave2D::createData();assert(data);
+    TestLinearElasticity_Data* data = pylith::_PlanePWave2D::createData();REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 
@@ -453,7 +455,7 @@ pylith::PlanePWave2D::QuadQ3(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestLinearElasticity_Data*
 pylith::PlanePWave2D::QuadQ4(void) {
-    TestLinearElasticity_Data* data = pylith::_PlanePWave2D::createData();assert(data);
+    TestLinearElasticity_Data* data = pylith::_PlanePWave2D::createData();REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 

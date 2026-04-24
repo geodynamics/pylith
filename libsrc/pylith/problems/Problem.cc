@@ -32,7 +32,7 @@
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 
 #include "pylith/utils/EventLogger.hh" // HASA EventLogger
-#include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
+#include "pylith/utils/error.hh" // USES PylithCallPetsc
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 #include <cassert> // USES assert()
@@ -460,7 +460,7 @@ pylith::problems::Problem::initialize(void) {
 
     // Initialize solution field.
     pylith::utils::PetscDefaults::set(*solution, _materials[0], _petscDefaults);
-    PetscErrorCode err = DMSetFromOptions(solution->getDM());PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMSetFromOptions(solution->getDM()));
     _setupSolution();
     pylith::topology::CoordsVisitor::optimizeClosure(solution->getDM());
 
@@ -651,11 +651,10 @@ pylith::problems::Problem::_setupSolution(void) {
     for (size_t i = 0; i < subfieldNames.size(); ++i) {
         const pylith::topology::Field::SubfieldInfo& subfieldInfo = solution->getSubfieldInfo(subfieldNames[i].c_str());
         if (subfieldInfo.fe.isFaultOnly) {
-            PetscErrorCode err;
             PetscDS ds = NULL;
             PetscInt cStart = 0, cEnd = 0;
             PetscDM dmSoln = solution->getDM();assert(dmSoln);
-            err = DMPlexGetHeightStratum(dmSoln, 0, &cStart, &cEnd);PYLITH_CHECK_ERROR(err);
+            PylithCallPetsc(DMPlexGetHeightStratum(dmSoln, 0, &cStart, &cEnd));
             PetscInt cell = cStart;
             bool found = false;
             for (; cell < cEnd; ++cell) {
@@ -667,9 +666,9 @@ pylith::problems::Problem::_setupSolution(void) {
             if (!found) {
                 continue;
             } // if
-            err = DMGetCellDS(dmSoln, cell, &ds, NULL);PYLITH_CHECK_ERROR(err);
+            PylithCallPetsc(DMGetCellDS(dmSoln, cell, &ds, NULL));
             assert(ds);
-            err = PetscDSSetImplicit(ds, subfieldInfo.index, PETSC_TRUE);PYLITH_CHECK_ERROR(err);
+            PylithCallPetsc(PetscDSSetImplicit(ds, subfieldInfo.index, PETSC_TRUE));
         } // if
     } // for
 
@@ -689,9 +688,8 @@ pylith::problems::_Problem::createNullSpace(const pylith::topology::Field* solut
     const int spaceDim = solution->getSpaceDim();
     const PetscInt m = (spaceDim * (spaceDim + 1)) / 2;assert(m > 0 && m <= 6);
 
-    PetscErrorCode err = 0;
     PetscInt numDofUnconstrained = 0;
-    err = PetscSectionGetConstrainedStorageSize(solution->getLocalSection(), &numDofUnconstrained);
+    PylithCallPetsc(PetscSectionGetConstrainedStorageSize(solution->getLocalSection(), &numDofUnconstrained));
     if (m > numDofUnconstrained) {
         PYLITH_METHOD_END;
     } // if
@@ -699,12 +697,12 @@ pylith::problems::_Problem::createNullSpace(const pylith::topology::Field* solut
     const PetscDM dmSoln = solution->getDM();
     const pylith::topology::Field::SubfieldInfo info = solution->getSubfieldInfo(subfieldName);
     MatNullSpace nullSpace = NULL;
-    err = DMPlexCreateRigidBody(dmSoln, info.index, &nullSpace);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMPlexCreateRigidBody(dmSoln, info.index, &nullSpace));
 
     PetscObject field = NULL;
-    err = DMGetField(dmSoln, info.index, NULL, &field);PYLITH_CHECK_ERROR(err);
-    err = PetscObjectCompose(field, "nearnullspace", (PetscObject) nullSpace);PYLITH_CHECK_ERROR(err);
-    err = MatNullSpaceDestroy(&nullSpace);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMGetField(dmSoln, info.index, NULL, &field));
+    PylithCallPetsc(PetscObjectCompose(field, "nearnullspace", (PetscObject) nullSpace));
+    PylithCallPetsc(MatNullSpaceDestroy(&nullSpace));
 
     PYLITH_METHOD_END;
 } // createNullSpace

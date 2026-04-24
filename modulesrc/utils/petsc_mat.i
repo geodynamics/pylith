@@ -16,13 +16,12 @@
   mat_assemble(Mat* mat,
                const char* mode)
   { // mat_assemble
-    PetscErrorCode err = 0;
     if (0 == strcmp(mode, "final_assembly")) {
-      err = MatAssemblyBegin(*mat, MAT_FINAL_ASSEMBLY);CHKERRQ(err);
-      err = MatAssemblyEnd(*mat, MAT_FINAL_ASSEMBLY);CHKERRQ(err);
+      PylithCallPetsc(MatAssemblyBegin(*mat, MAT_FINAL_ASSEMBLY));
+      PylithCallPetsc(MatAssemblyEnd(*mat, MAT_FINAL_ASSEMBLY));
     } else if (0 == strcmp(mode, "flush_assembly")) {
-      err = MatAssemblyBegin(*mat, MAT_FLUSH_ASSEMBLY); CHKERRQ(err);
-      err = MatAssemblyEnd(*mat, MAT_FLUSH_ASSEMBLY); CHKERRQ(err);
+      PylithCallPetsc(MatAssemblyBegin(*mat, MAT_FLUSH_ASSEMBLY););
+      PylithCallPetsc(MatAssemblyEnd(*mat, MAT_FLUSH_ASSEMBLY););
     } else
       throw std::runtime_error("Unknown mode");
   return 0;
@@ -36,7 +35,7 @@
   int
   mat_setzero(Mat* mat)
   { // mat_setzero
-    PetscErrorCode err = MatZeroEntries(*mat); CHKERRQ(err);
+    PylithCallPetsc(MatZeroEntries(*mat));
     return 0;
   } // mat_setzero
 %} // inline
@@ -48,8 +47,7 @@
   int
   mat_view(Mat* mat)
   { // mat_view
-    PetscErrorCode err = 
-      MatView(*mat, PETSC_VIEWER_STDOUT_WORLD); CHKERRQ(err);
+      PylithCallPetsc(MatView(*mat, PETSC_VIEWER_STDOUT_WORLD));
     return 0;
   } // mat_view
 %} // inline
@@ -63,11 +61,9 @@
 		    const char* filename)
   { // mat_view_binary
   PetscViewer viewer;
-  PetscErrorCode err = 
-    PetscViewerBinaryOpen(PETSC_COMM_WORLD, filename,
-			  FILE_MODE_WRITE, &viewer); CHKERRQ(err);
-  err = MatView(*mat, viewer); CHKERRQ(err);
-  err = PetscViewerDestroy(viewer); CHKERRQ(err);
+  PylithCallPetsc(PetscViewerBinaryOpen(PETSC_COMM_WORLD, filename, FILE_MODE_WRITE, &viewer));
+  PylithCallPetsc(MatView(*mat, viewer););
+  PylithCallPetsc(PetscViewerDestroy(viewer););
   return 0;
   } // mat_view_binary
 %} // inline

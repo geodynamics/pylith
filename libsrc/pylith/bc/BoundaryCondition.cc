@@ -141,7 +141,7 @@ pylith::bc::BoundaryCondition::verifyConfiguration(const pylith::topology::Field
 
     const PetscDM dmSoln = solution.getDM();
     PetscBool hasLabel = PETSC_FALSE;
-    PetscErrorCode err = DMHasLabel(dmSoln, getLabelName(), &hasLabel);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMHasLabel(dmSoln, getLabelName(), &hasLabel));
     if (!hasLabel) {
         std::ostringstream msg;
         msg << "Could not find group of points '" << getLabelName() << "' in boundary condition '"

@@ -31,7 +31,6 @@ subpkginclude_HEADERS = \
 	lapack.h \
 	macrodefs.h \
 	petscfwd.h \
-	error.h \
 	error.hh \
 	types.hh \
 	utilsfwd.hh

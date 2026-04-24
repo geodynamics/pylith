@@ -15,7 +15,7 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "tests/src/StubMethodTracker.hh" // USES StubMethodTracker
 
-#include <cassert>
+#include "catch2/catch_test_macros.hpp"
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Constructor.
@@ -37,7 +37,7 @@ const pylith::topology::Mesh&
 pylith::feassemble::PhysicsImplementationStub::getPhysicsDomainMesh(void) const {
     pylith::testing::StubMethodTracker tracker("pylith::feassemble::PhysicsImplementationStub::getPhysicsDomainMesh");
 
-    assert(_mesh);
+    REQUIRE(_mesh);
     return *_mesh;
 } // verifyConfiguration
 

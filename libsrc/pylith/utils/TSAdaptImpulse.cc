@@ -42,7 +42,7 @@ void
 pylith::utils::TSAdaptImpulse::set(PetscTS ts) {
     TSAdapt adapt;
 
-    PetscErrorCode err = TSGetAdapt(ts, &adapt);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(TSGetAdapt(ts, &adapt));
     adapt->ops->choose = TSAdaptChoose;
 }
 

@@ -80,13 +80,12 @@ pylith::feassemble::JacobianValues::computeLHSJacobian(PetscMat jacobianMat,
 
     PetscDM dm = dsLabel.dm();assert(dm);
 
-    PetscErrorCode err;
     const PetscInt numCells = dsLabel.numPoints();
     const PetscInt* cellIndices = NULL;
-    err = ISGetIndices(dsLabel.pointsIS(), &cellIndices);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(ISGetIndices(dsLabel.pointsIS(), &cellIndices));
 
     PetscInt totalDof = 0;
-    err = PetscDSGetTotalDimension(dsLabel.ds(), &totalDof);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(PetscDSGetTotalDimension(dsLabel.ds(), &totalDof));
     scalar_array cellMat(totalDof*totalDof);
 
     if (jacobianMat) {
@@ -97,8 +96,8 @@ pylith::feassemble::JacobianValues::computeLHSJacobian(PetscMat jacobianMat,
             for (size_t i = 0; i < _kernelsJacobian.size(); ++i) {
                 _JacobianValues::evaluateKernel(&cellMat, _kernelsJacobian[i], t, dt, s_tshift, solution, dsLabel);
             } // for
-            err = DMPlexMatSetClosure(dsLabel.dm(), NULL, NULL, jacobianMat, cell, &cellMat[0],
-                                      INSERT_VALUES);PYLITH_CHECK_ERROR(err);
+            PylithCallPetsc(DMPlexMatSetClosure(dsLabel.dm(), NULL, NULL, jacobianMat, cell, &cellMat[0],
+                                                INSERT_VALUES));
         } // for
     } // if
 
@@ -110,11 +109,11 @@ pylith::feassemble::JacobianValues::computeLHSJacobian(PetscMat jacobianMat,
             for (size_t i = 0; i < _kernelsPrecond.size(); ++i) {
                 _JacobianValues::evaluateKernel(&cellMat, _kernelsPrecond[i], t, dt, s_tshift, solution, dsLabel);
             } // for
-            err = DMPlexMatSetClosure(dsLabel.dm(), NULL, NULL, precondMat, cell, &cellMat[0],
-                                      INSERT_VALUES);PYLITH_CHECK_ERROR(err);
+            PylithCallPetsc(DMPlexMatSetClosure(dsLabel.dm(), NULL, NULL, precondMat, cell, &cellMat[0],
+                                                INSERT_VALUES));
         } // for
     } // if
-    err = ISRestoreIndices(dsLabel.pointsIS(), &cellIndices);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(ISRestoreIndices(dsLabel.pointsIS(), &cellIndices));
 
     PYLITH_METHOD_END;
 } // computeLHSJacobian
@@ -156,19 +155,18 @@ pylith::feassemble::_JacobianValues::evaluateKernel(scalar_array* cellMat,
     const size_t i_trial = infoTrial.index;
     const size_t i_basis = infoBasis.index;
 
-    PetscErrorCode err;
     PetscInt trialOff, trialDof, basisOff, basisDof;
     PetscFE fe = NULL;
-    err = PetscDSGetFieldOffset(dsLabel.ds(), i_trial, &trialOff);PYLITH_CHECK_ERROR(err);
-    err = PetscDSGetDiscretization(dsLabel.ds(), i_trial, (PetscObject*) &fe);PYLITH_CHECK_ERROR(err);
-    err = PetscFEGetDimension(fe, &trialDof);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(PetscDSGetFieldOffset(dsLabel.ds(), i_trial, &trialOff));
+    PylithCallPetsc(PetscDSGetDiscretization(dsLabel.ds(), i_trial, (PetscObject*) &fe));
+    PylithCallPetsc(PetscFEGetDimension(fe, &trialDof));
 
-    err = PetscDSGetFieldOffset(dsLabel.ds(), i_basis, &basisOff);PYLITH_CHECK_ERROR(err);
-    err = PetscDSGetDiscretization(dsLabel.ds(), i_basis, (PetscObject*) &fe);PYLITH_CHECK_ERROR(err);
-    err = PetscFEGetDimension(fe, &basisDof);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(PetscDSGetFieldOffset(dsLabel.ds(), i_basis, &basisOff));
+    PylithCallPetsc(PetscDSGetDiscretization(dsLabel.ds(), i_basis, (PetscObject*) &fe));
+    PylithCallPetsc(PetscFEGetDimension(fe, &basisDof));
 
     PetscInt totalDof = 0;
-    err = PetscDSGetTotalDimension(dsLabel.ds(), &totalDof);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(PetscDSGetTotalDimension(dsLabel.ds(), &totalDof));
 
     kernel.function(cellMat, t, dt, s_tshift, trialDof, trialOff, basisDof, basisOff, totalDof);
 } // evaluateKernel

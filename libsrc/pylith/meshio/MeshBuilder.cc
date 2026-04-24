@@ -17,7 +17,7 @@
 #include "pylith/topology/Stratum.hh" // USES Stratum
 #include "pylith/utils/array.hh" // USES scalar_array, int_array
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL*
-#include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
+#include "pylith/utils/error.hh" // USES PylithCallPetsc()
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
 
 #include "pylith/scales/Scales.hh" // USES Scales
@@ -116,7 +116,6 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
     assert(mesh);
     MPI_Comm comm = mesh->getComm();
     PetscInt dim = topology.dimension;
-    PetscErrorCode err;
 
     { // Check to make sure every vertex is in at least one cell.
       // This is required by PETSc
@@ -138,7 +137,7 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
         } // if
     } // check
 
-    err = MPI_Bcast(&dim, 1, MPIU_INT, 0, comm);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(MPI_Bcast(&dim, 1, MPIU_INT, 0, comm));
     const PetscInt bound = topology.numCells * topology.numCorners;
     int_array cellsCopy(topology.cells); // Use copy because we reuse in testing.
     if (3 == topology.dimension) {
@@ -150,13 +149,13 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
             PYLITH_JOURNAL_LOGICERROR("Unknown cell shape.");
         }
         for (PetscInt coff = 0; coff < bound; coff += topology.numCorners) {
-            err = DMPlexInvertCell(ct, (int *) &cellsCopy[coff]);PYLITH_CHECK_ERROR(err);
+            PylithCallPetsc(DMPlexInvertCell(ct, (int *) &cellsCopy[coff]));
         } // for
     } // if
 
     PetscDM dmMesh = NULL;
     PetscBool interpolate = PETSC_TRUE;
-    err = DMPlexCreateFromCellListPetsc(comm, dim, topology.numCells, geometry.numVertices, topology.numCorners, interpolate, &cellsCopy[0], dim, &geometry.vertices[0], &dmMesh);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMPlexCreateFromCellListPetsc(comm, dim, topology.numCells, geometry.numVertices, topology.numCorners, interpolate, &cellsCopy[0], dim, &geometry.vertices[0], &dmMesh));
     mesh->setDM(dmMesh, "domain");
 
     _MeshBuilder::Events::logger.eventEnd(_MeshBuilder::Events::buildMesh);
@@ -174,7 +173,6 @@ pylith::meshio::MeshBuilder::setMaterials(pylith::topology::Mesh* mesh,
 
     const char* const labelName = pylith::topology::Mesh::cells_label_name;
     PetscDM dmMesh = mesh->getDM();assert(dmMesh);
-    PetscErrorCode err = PETSC_SUCCESS;
     if (!mesh->getCommRank()) {
         pylith::topology::Stratum cellsStratum(dmMesh, topology::Stratum::HEIGHT, 0);
         const PetscInt cStart = cellsStratum.begin();
@@ -187,10 +185,10 @@ pylith::meshio::MeshBuilder::setMaterials(pylith::topology::Mesh* mesh,
             throw std::runtime_error(msg.str());
         } // if
         for (PetscInt c = cStart; c < cEnd; ++c) {
-            err = DMSetLabelValue(dmMesh, labelName, c, materialIds[c-cStart]);PYLITH_CHECK_ERROR(err);
+            PylithCallPetsc(DMSetLabelValue(dmMesh, labelName, c, materialIds[c-cStart]));
         } // for
     } else {
-        err = DMCreateLabel(dmMesh, labelName);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMCreateLabel(dmMesh, labelName));
     } // if/else
 
     PYLITH_METHOD_END;
@@ -212,10 +210,9 @@ pylith::meshio::MeshBuilder::setVertexGroup(pylith::topology::Mesh* mesh,
     PetscDM dmMesh = mesh->getDM();assert(dmMesh);
     const PetscInt numPoints = points.size();
     DMLabel dmLabel = PETSC_NULLPTR;
-    PetscErrorCode err = PETSC_SUCCESS;
 
-    err = DMCreateLabel(dmMesh, name);PYLITH_CHECK_ERROR(err);
-    err = DMGetLabel(dmMesh, name, &dmLabel);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMCreateLabel(dmMesh, name));
+    PylithCallPetsc(DMGetLabel(dmMesh, name, &dmLabel));
 
     pylith::topology::Stratum cellsStratum(dmMesh, pylith::topology::Stratum::HEIGHT, 0);
     const PetscInt cStart = cellsStratum.begin();
@@ -227,31 +224,31 @@ pylith::meshio::MeshBuilder::setVertexGroup(pylith::topology::Mesh* mesh,
     const PetscInt vEnd = verticesStratum.end();
 
     for (PetscInt p = 0; p < numPoints; ++p) {
-        err = DMLabelSetValue(dmLabel, offset+points[p], labelValue);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMLabelSetValue(dmLabel, offset+points[p], labelValue));
     } // for
     // Also add any non-cells which have all vertices marked
     for (PetscInt p = 0; p < numPoints; ++p) {
         const PetscInt vertex = offset+points[p];
         PetscInt      *star = NULL, starSize, s;
 
-        err = DMPlexGetTransitiveClosure(dmMesh, vertex, PETSC_FALSE, &starSize, &star);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMPlexGetTransitiveClosure(dmMesh, vertex, PETSC_FALSE, &starSize, &star));
         for (s = 0; s < starSize*2; s += 2) {
             const PetscInt point = star[s];
             PetscInt      *closure = NULL, closureSize, c, value;
             PetscBool marked = PETSC_TRUE;
 
             if ((point >= cStart) && (point < cEnd)) { continue;}
-            err = DMPlexGetTransitiveClosure(dmMesh, point, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+            PylithCallPetsc(DMPlexGetTransitiveClosure(dmMesh, point, PETSC_TRUE, &closureSize, &closure));
             for (c = 0; c < closureSize*2; c += 2) {
                 if ((closure[c] >= vStart) && (closure[c] < vEnd)) {
-                    err = DMLabelGetValue(dmLabel, closure[c], &value);PYLITH_CHECK_ERROR(err);
+                    PylithCallPetsc(DMLabelGetValue(dmLabel, closure[c], &value));
                     if (value != 1) {marked = PETSC_FALSE;break;}
                 } // if
             } // for
-            err = DMPlexRestoreTransitiveClosure(dmMesh, point, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
-            if (marked) {err = DMLabelSetValue(dmLabel, point, labelValue);PYLITH_CHECK_ERROR(err);}
+            PylithCallPetsc(DMPlexRestoreTransitiveClosure(dmMesh, point, PETSC_TRUE, &closureSize, &closure));
+            if (marked) {PylithCallPetsc(DMLabelSetValue(dmLabel, point, labelValue));}
         } // for
-        err = DMPlexRestoreTransitiveClosure(dmMesh, vertex, PETSC_FALSE, &starSize, &star);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMPlexRestoreTransitiveClosure(dmMesh, vertex, PETSC_FALSE, &starSize, &star));
     } // for
 
     _MeshBuilder::Events::logger.eventEnd(_MeshBuilder::Events::setGroup);
@@ -277,9 +274,8 @@ pylith::meshio::MeshBuilder::setFaceGroupFromCellVertices(pylith::topology::Mesh
 
     PetscDM dmMesh = mesh->getDM();assert(dmMesh);
     DMLabel dmLabel = PETSC_NULLPTR;
-    PetscErrorCode err = PETSC_SUCCESS;
-    err = DMCreateLabel(dmMesh, name);PYLITH_CHECK_ERROR(err);
-    err = DMGetLabel(dmMesh, name, &dmLabel);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMCreateLabel(dmMesh, name));
+    PylithCallPetsc(DMGetLabel(dmMesh, name, &dmLabel));
 
     pylith::topology::Stratum cellsStratum(dmMesh, pylith::topology::Stratum::HEIGHT, 0);
     const PetscInt offset = cellsStratum.size();
@@ -290,7 +286,7 @@ pylith::meshio::MeshBuilder::setFaceGroupFromCellVertices(pylith::topology::Mesh
         faceVertices += offset;
         PetscInt face = -1;
         _MeshBuilder::faceFromCellVertices(&face, cell, &faceVertices[0], numFaceValues-1, dmMesh);
-        err = DMLabelSetValue(dmLabel, face, labelValue);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMLabelSetValue(dmLabel, face, labelValue));
     } // for
 
     PYLITH_METHOD_END;
@@ -313,16 +309,15 @@ pylith::meshio::MeshBuilder::setFaceGroupFromCellSide(pylith::topology::Mesh* me
 
     PetscDM dmMesh = mesh->getDM();assert(dmMesh);
     DMLabel dmLabel = PETSC_NULLPTR;
-    PetscErrorCode err = PETSC_SUCCESS;
-    err = DMCreateLabel(dmMesh, name);PYLITH_CHECK_ERROR(err);
-    err = DMGetLabel(dmMesh, name, &dmLabel);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMCreateLabel(dmMesh, name));
+    PylithCallPetsc(DMGetLabel(dmMesh, name, &dmLabel));
 
     for (size_t index = 0, iFace = 0; iFace < numFaces; ++iFace) {
         const PylithInt cell = faceValues[index++];
         const PylithInt side = faceValues[index++];
         PetscInt face = -1;
         _MeshBuilder::faceFromCellSide(&face, cell, side, dmMesh);
-        err = DMLabelSetValue(dmLabel, face, labelValue);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMLabelSetValue(dmLabel, face, labelValue));
     } // for
 
     PYLITH_METHOD_END;
@@ -344,15 +339,14 @@ pylith::meshio::MeshBuilder::getVertices(Geometry* geometry,
     PetscScalar* coordArray = NULL;
     PetscInt coordSize = 0;
     PylithScalar lengthScale = 1.0;
-    PetscErrorCode err = 0;
 
     // Get length scale for dimensioning
-    err = DMPlexGetScale(dmMesh, PETSC_UNIT_LENGTH, &lengthScale);
+    PylithCallPetsc(DMPlexGetScale(dmMesh, PETSC_UNIT_LENGTH, &lengthScale));
 
     // Get coordinates and dimensionalize values
-    err = DMGetCoordinatesLocal(dmMesh, &coordVec);PYLITH_CHECK_ERROR(err);
-    err = VecGetArray(coordVec, &coordArray);PYLITH_CHECK_ERROR(err);
-    err = VecGetLocalSize(coordVec, &coordSize);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMGetCoordinatesLocal(dmMesh, &coordVec));
+    PylithCallPetsc(VecGetArray(coordVec, &coordArray));
+    PylithCallPetsc(VecGetLocalSize(coordVec, &coordSize));
     assert(0 == coordSize % geometry->spaceDim);
     geometry->numVertices = coordSize / geometry->spaceDim;
 
@@ -360,7 +354,7 @@ pylith::meshio::MeshBuilder::getVertices(Geometry* geometry,
     for (PetscInt i = 0; i < coordSize; ++i) {
         geometry->vertices[i] = coordArray[i]*lengthScale;
     } // for
-    err = VecRestoreArray(coordVec, &coordArray);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(VecRestoreArray(coordVec, &coordArray));
 
     PYLITH_METHOD_END;
 } // _getVertices
@@ -393,16 +387,15 @@ pylith::meshio::MeshBuilder::getCells(Topology* topology,
 
     PetscIS globalVertexNumbers = NULL;
     const PetscInt* gvertex = NULL;
-    PetscErrorCode err = 0;
 
-    err = DMPlexGetVertexNumbering(dmMesh, &globalVertexNumbers);PYLITH_CHECK_ERROR(err);
-    err = ISGetIndices(globalVertexNumbers, &gvertex);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMPlexGetVertexNumbering(dmMesh, &globalVertexNumbers));
+    PylithCallPetsc(ISGetIndices(globalVertexNumbers, &gvertex));
     for (PetscInt c = cStart, index = 0; c < cEnd; ++c) {
         DMPolytopeType ct;
         PetscInt numCorners = 0, closureSize, *closure = NULL;
 
-        err = DMPlexGetCellType(dmMesh, c, &ct);PYLITH_CHECK_ERROR(err);
-        err = DMPlexGetTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMPlexGetCellType(dmMesh, c, &ct));
+        PylithCallPetsc(DMPlexGetTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure));
         for (PetscInt cl = 0; cl < closureSize*2; cl += 2) {
             if ((closure[cl] >= vStart) && (closure[cl] < vEnd)) {
                 const PetscInt gv = gvertex[closure[cl]-vStart];
@@ -410,11 +403,11 @@ pylith::meshio::MeshBuilder::getCells(Topology* topology,
                 ++numCorners;
             }
         } // for
-        err = DMPlexRestoreTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
-        err = DMPlexInvertCell(ct, &topology->cells[index-numCorners]);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMPlexRestoreTransitiveClosure(dmMesh, c, PETSC_TRUE, &closureSize, &closure));
+        PylithCallPetsc(DMPlexInvertCell(ct, &topology->cells[index-numCorners]));
         assert(size_t(numCorners) == topology->numCorners);
     } // for
-    err = ISRestoreIndices(globalVertexNumbers, &gvertex);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(ISRestoreIndices(globalVertexNumbers, &gvertex));
 
     PYLITH_METHOD_END;
 } // getCells
@@ -434,11 +427,10 @@ pylith::meshio::MeshBuilder::getMaterials(int_array* materialIds,
     const PetscInt cEnd = cellsStratum.end();
 
     materialIds->resize(cellsStratum.size());
-    PetscErrorCode err = PETSC_SUCCESS;
     PetscInt matId = 0;
     const char* const labelName = pylith::topology::Mesh::cells_label_name;
     for (PetscInt c = cStart, index = 0; c < cEnd; ++c) {
-        err = DMGetLabelValue(dmMesh, labelName, c, &matId);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMGetLabelValue(dmMesh, labelName, c, &matId));
         (*materialIds)[index++] = matId;
     } // for
 
@@ -645,8 +637,7 @@ pylith::meshio::_MeshBuilder::getGroupNames(string_vector* names,
 
     PetscDM dmMesh = mesh.getDM();assert(dmMesh);
     PetscInt numLabels = 0;
-    PetscErrorCode err = PETSC_SUCCESS;
-    err = DMGetNumLabels(dmMesh, &numLabels);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMGetNumLabels(dmMesh, &numLabels));
 
     const std::string& materialLabelName = pylith::topology::Mesh::cells_label_name;
 
@@ -654,24 +645,24 @@ pylith::meshio::_MeshBuilder::getGroupNames(string_vector* names,
     names->resize(numLabels);
     for (int iLabel = 0; iLabel < numLabels; ++iLabel) {
         const char* labelStr = NULL;
-        err = DMGetLabelName(dmMesh, iLabel, &labelStr);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMGetLabelName(dmMesh, iLabel, &labelStr));
         const std::string labelName = std::string(labelStr);
 
         if ((labelName != std::string("depth"))
             && (labelName != std::string("celltype"))
             && (labelName != materialLabelName)) {
             PetscDMLabel dmLabel = PETSC_NULLPTR;
-            err = DMGetLabel(dmMesh, labelStr, &dmLabel);PYLITH_CHECK_ERROR(err);
+            PylithCallPetsc(DMGetLabel(dmMesh, labelStr, &dmLabel));
             PetscInt numLabelValues;
             PetscIS labelValuesIS = PETSC_NULLPTR;
             const PetscInt* labelValues = PETSC_NULLPTR;
-            err = DMLabelGetNumValues(dmLabel, &numLabelValues);PYLITH_CHECK_ERROR(err); // assert(1 == numLabelValues);
-            err = DMLabelGetValueIS(dmLabel, &labelValuesIS);PYLITH_CHECK_ERROR(err);assert(labelValuesIS);
-            err = ISGetIndices(labelValuesIS, &labelValues);PYLITH_CHECK_ERROR(err);assert(labelValues);
+            PylithCallPetsc(DMLabelGetNumValues(dmLabel, &numLabelValues)); // assert(1 == numLabelValues);
+            PylithCallPetsc(DMLabelGetValueIS(dmLabel, &labelValuesIS));assert(labelValuesIS);
+            PylithCallPetsc(ISGetIndices(labelValuesIS, &labelValues));assert(labelValues);
             const PetscInt labelValue = labelValues[0];
 
-            err = ISRestoreIndices(labelValuesIS, &labelValues);PYLITH_CHECK_ERROR(err);
-            err = ISDestroy(&labelValuesIS);PYLITH_CHECK_ERROR(err);
+            PylithCallPetsc(ISRestoreIndices(labelValuesIS, &labelValues));
+            PylithCallPetsc(ISDestroy(&labelValuesIS));
 
             pylith::topology::StratumIS pointIS(dmMesh, labelStr, labelValue);
             const PetscInt* points = pointIS.points();
@@ -711,15 +702,13 @@ pylith::meshio::_MeshBuilder::faceFromCellSide(PetscInt* face,
     PYLITH_METHOD_BEGIN;
     assert(face);
 
-    PetscErrorCode err = PETSC_SUCCESS;
-
     DMPolytopeType cellType;
-    err = DMPlexGetCellType(dmMesh, cell, &cellType);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMPlexGetCellType(dmMesh, cell, &cellType));
 
     const PetscInt* cone = NULL;
     PetscInt coneSize = 0;
-    err = DMPlexGetCone(dmMesh, cell, &cone);PYLITH_CHECK_ERROR(err);
-    err = DMPlexGetConeSize(dmMesh, cell, &coneSize);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMPlexGetCone(dmMesh, cell, &cone));
+    PylithCallPetsc(DMPlexGetConeSize(dmMesh, cell, &coneSize));
     if ((side < 0) || (side >= coneSize)) {
         std::ostringstream msg;
         msg << "Cell side '" << side << "' must be in [0, " << coneSize << ").";
@@ -784,10 +773,9 @@ pylith::meshio::_MeshBuilder::faceFromCellVertices(PetscInt* face,
     PYLITH_METHOD_BEGIN;
     assert(face);
 
-    PetscErrorCode err = PETSC_SUCCESS;
     PetscInt numFaces = 0;
     const PetscInt* faces = PETSC_NULLPTR;
-    err = DMPlexGetFullJoin(dmMesh, numFaceVertices, faceVertices, &numFaces, &faces);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMPlexGetFullJoin(dmMesh, numFaceVertices, faceVertices, &numFaces, &faces));
     if (numFaces > 1) {
         std::ostringstream msg;
         msg << "Found multiple faces corresponding to vertices";
@@ -795,7 +783,7 @@ pylith::meshio::_MeshBuilder::faceFromCellVertices(PetscInt* face,
             msg << " " << faceVertices[i];
         } // for
         msg << " in cell " << cell << ".";
-        err = DMPlexRestoreJoin(dmMesh, numFaceVertices, faceVertices, &numFaces, &faces);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMPlexRestoreJoin(dmMesh, numFaceVertices, faceVertices, &numFaces, &faces));
         throw std::runtime_error(msg.str());
     } else if (0 == numFaces) {
         std::ostringstream msg;
@@ -804,11 +792,11 @@ pylith::meshio::_MeshBuilder::faceFromCellVertices(PetscInt* face,
             msg << " " << faceVertices[i];
         } // for
         msg << " in cell " << cell << ".";
-        err = DMPlexRestoreJoin(dmMesh, numFaceVertices, faceVertices, &numFaces, &faces);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMPlexRestoreJoin(dmMesh, numFaceVertices, faceVertices, &numFaces, &faces));
         throw std::runtime_error(msg.str());
     } // if
     *face = faces[0];
-    err = DMPlexRestoreJoin(dmMesh, numFaceVertices, faceVertices, &numFaces, &faces);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMPlexRestoreJoin(dmMesh, numFaceVertices, faceVertices, &numFaces, &faces));
 
     PYLITH_METHOD_END;
 } // faceFromCellVertices
@@ -822,11 +810,10 @@ pylith::meshio::_MeshBuilder::cellVerticesFromFace(PetscInt* cell,
                                                    PetscDM dmMesh) {
     PYLITH_METHOD_BEGIN;
 
-    PetscErrorCode err = PETSC_SUCCESS;
     const PetscInt* support = NULL;
     PetscInt supportSize = 0;
-    err = DMPlexGetSupport(dmMesh, face, &support);PYLITH_CHECK_ERROR(err);
-    err = DMPlexGetSupportSize(dmMesh, face, &supportSize);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMPlexGetSupport(dmMesh, face, &support));
+    PylithCallPetsc(DMPlexGetSupportSize(dmMesh, face, &supportSize));
     if (!supportSize || !support) {
         PYLITH_JOURNAL_LOGICERROR("Could not find support for face " << face << ".");
     } // if
@@ -838,7 +825,7 @@ pylith::meshio::_MeshBuilder::cellVerticesFromFace(PetscInt* cell,
 
     PetscInt closureSize = 0;
     PetscInt* closure = PETSC_NULLPTR;
-    err = DMPlexGetTransitiveClosure(dmMesh, face, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMPlexGetTransitiveClosure(dmMesh, face, PETSC_TRUE, &closureSize, &closure));
     int_array buffer(closureSize);
     size_t numFaceVertices = 0;
     for (PetscInt iClosure = 0; iClosure < closureSize*2; iClosure += 2) {
@@ -846,7 +833,7 @@ pylith::meshio::_MeshBuilder::cellVerticesFromFace(PetscInt* cell,
             buffer[numFaceVertices++] = closure[iClosure];
         } // if
     } // for
-    err = DMPlexRestoreTransitiveClosure(dmMesh, face, PETSC_TRUE, &closureSize, &closure);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMPlexRestoreTransitiveClosure(dmMesh, face, PETSC_TRUE, &closureSize, &closure));
     *faceVertices = int_array(&buffer[0], numFaceVertices);
 
     PYLITH_METHOD_END;

@@ -201,7 +201,6 @@ pylith::utils::PetscOptions::clear(void) {
 void
 pylith::utils::PetscOptions::set(void) {
     PYLITH_METHOD_BEGIN;
-    PetscErrorCode err = 0;
 
     PetscOptions optionsUsed;
     PetscOptions optionsIgnored;
@@ -210,9 +209,9 @@ pylith::utils::PetscOptions::set(void) {
         const char* value = iter->second.c_str();
 
         PetscBool exists = PETSC_FALSE;
-        err = PetscOptionsHasName(NULL, NULL, name, &exists);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(PetscOptionsHasName(NULL, NULL, name, &exists));
         if (!exists) {
-            err = PetscOptionsSetValue(NULL, name, value);PYLITH_CHECK_ERROR(err);
+            PylithCallPetsc(PetscOptionsSetValue(NULL, name, value));
             optionsUsed.add(name, value);
         } else {
             optionsIgnored.add(name, value);
@@ -236,13 +235,12 @@ pylith::utils::PetscOptions::set(void) {
 void
 pylith::utils::PetscOptions::override (void) {
     PYLITH_METHOD_BEGIN;
-    PetscErrorCode err = 0;
 
     for (options_t::iterator iter = _options.begin(); iter != _options.end(); ++iter) {
         const char* name = iter->first.c_str();
         const char* value = iter->second.c_str();
 
-        err = PetscOptionsSetValue(NULL, name, value);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(PetscOptionsSetValue(NULL, name, value));
     } // for
 
     pythia::journal::info_t info(GenericComponent::getName());

@@ -243,26 +243,25 @@ pylith::faults::FaultCohesive::adjustTopology(topology::Mesh* const mesh) {
         PetscBool hasLabel = PETSC_FALSE;
         PetscInt depth, gdepth, dim;
         PetscMPIInt rank;
-        PetscErrorCode err;
         // We do not have labels on all ranks until after distribution
-        err = MPI_Comm_rank(PetscObjectComm((PetscObject) dmMesh), &rank);PYLITH_CHECK_ERROR(err);
-        err = DMHasLabel(dmMesh, _surfaceLabelName.c_str(), &hasLabel);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(MPI_Comm_rank(PetscObjectComm((PetscObject) dmMesh), &rank));
+        PylithCallPetsc(DMHasLabel(dmMesh, _surfaceLabelName.c_str(), &hasLabel));
         if (!hasLabel && !rank) {
             std::ostringstream msg;
             msg << "Mesh missing group of vertices '" << _surfaceLabelName
                 << "' for fault interface condition.";
             throw std::runtime_error(msg.str());
         } // if
-        err = DMGetDimension(dmMesh, &dim);PYLITH_CHECK_ERROR(err);
-        err = DMPlexGetDepth(dmMesh, &depth);PYLITH_CHECK_ERROR(err);
-        err = MPI_Allreduce(&depth, &gdepth, 1, MPIU_INT, MPI_MAX, mesh->getComm());PYLITH_CHECK_ERROR(err);
-        err = DMGetLabel(dmMesh, _surfaceLabelName.c_str(), &surfaceLabel);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMGetDimension(dmMesh, &dim));
+        PylithCallPetsc(DMPlexGetDepth(dmMesh, &depth));
+        PylithCallPetsc(MPI_Allreduce(&depth, &gdepth, 1, MPIU_INT, MPI_MAX, mesh->getComm()));
+        PylithCallPetsc(DMGetLabel(dmMesh, _surfaceLabelName.c_str(), &surfaceLabel));
         TopologyOps::createFault(&faultMesh, *mesh, surfaceLabel, _surfaceLabelValue);
         PetscDMLabel buriedEdgesLabel = NULL;
 
         // We do not have labels on all ranks until after distribution
         if ((_buriedEdgesLabelName.length() > 0) && !rank) {
-            err = DMGetLabel(dmMesh, _buriedEdgesLabelName.c_str(), &buriedEdgesLabel);PYLITH_CHECK_ERROR(err);
+            PylithCallPetsc(DMGetLabel(dmMesh, _buriedEdgesLabelName.c_str(), &buriedEdgesLabel));
             if (!buriedEdgesLabel) {
                 std::ostringstream msg;
                 msg << "Could not find label '" << _buriedEdgesLabelName << "' marking buried edges for fault '" << _surfaceLabelName << "'.";
@@ -350,14 +349,13 @@ pylith::faults::FaultCohesive::createDerivedField(const pylith::topology::Field&
     const char* outputLabelName = "output";
     PetscDM derivedDM = derivedField->getDM();
     PetscDMLabel outputLabel = NULL;
-    PetscErrorCode err = PETSC_SUCCESS;
-    err = DMCreateLabel(derivedDM, outputLabelName);PYLITH_CHECK_ERROR(err);
-    err = DMGetLabel(derivedDM, outputLabelName, &outputLabel);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMCreateLabel(derivedDM, outputLabelName));
+    PylithCallPetsc(DMGetLabel(derivedDM, outputLabelName, &outputLabel));
     pylith::topology::Stratum faultStratum(derivedDM, pylith::topology::Stratum::HEIGHT, 1);
     for (PetscInt point = faultStratum.begin(); point != faultStratum.end(); ++point) {
-        err = DMLabelSetValue(outputLabel, point, 1);
+        PylithCallPetsc(DMLabelSetValue(outputLabel, point, 1));
     } // for
-    err = DMPlexLabelComplete(derivedDM, outputLabel);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMPlexLabelComplete(derivedDM, outputLabel));
 
     assert(_derivedFactory);
     const pylith::topology::FieldBase::Discretization& discretization = solution.getSubfieldInfo("lagrange_multiplier_fault").fe;
@@ -440,38 +438,37 @@ pylith::faults::FaultCohesive::createConstraints(const pylith::topology::Field& 
     std::ostringstream labelstream;
     labelstream << getBuriedEdgesLabelName() << "_cohesive";
     std::string buriedLabelName = labelstream.str();
-    PetscErrorCode err;
 
-    err = DMCreateLabel(dm, buriedLabelName.c_str());PYLITH_CHECK_ERROR(err);
-    err = DMGetLabel(dm, getBuriedEdgesLabelName(), &buriedLabel);PYLITH_CHECK_ERROR(err);
-    err = DMGetLabel(dm, buriedLabelName.c_str(), &buriedCohesiveLabel);PYLITH_CHECK_ERROR(err);
-    err = DMLabelGetStratumIS(buriedLabel, getBuriedEdgesLabelValue(), &pointIS);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMCreateLabel(dm, buriedLabelName.c_str()));
+    PylithCallPetsc(DMGetLabel(dm, getBuriedEdgesLabelName(), &buriedLabel));
+    PylithCallPetsc(DMGetLabel(dm, buriedLabelName.c_str(), &buriedCohesiveLabel));
+    PylithCallPetsc(DMLabelGetStratumIS(buriedLabel, getBuriedEdgesLabelValue(), &pointIS));
     if (pointIS) {
-        err = ISGetLocalSize(pointIS, &numPoints);PYLITH_CHECK_ERROR(err);
-        err = ISGetIndices(pointIS, &points);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(ISGetLocalSize(pointIS, &numPoints));
+        PylithCallPetsc(ISGetIndices(pointIS, &points));
     } // if
     for (int p = 0; p < numPoints; ++p) {
         const PetscInt *support = NULL;
         PetscInt supportSize;
 
-        err = DMPlexGetSupportSize(dm, points[p], &supportSize);PYLITH_CHECK_ERROR(err);
-        err = DMPlexGetSupport(dm, points[p], &support);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMPlexGetSupportSize(dm, points[p], &supportSize));
+        PylithCallPetsc(DMPlexGetSupport(dm, points[p], &support));
         for (int s = 0; s < supportSize; ++s) {
             DMPolytopeType ct;
             const PetscInt spoint = support[s];
 
-            err = DMPlexGetCellType(dm, spoint, &ct);PYLITH_CHECK_ERROR(err);
+            PylithCallPetsc(DMPlexGetCellType(dm, spoint, &ct));
             if ((ct == DM_POLYTOPE_SEG_PRISM_TENSOR) || (ct == DM_POLYTOPE_POINT_PRISM_TENSOR)) {
                 const PetscInt *cone = NULL;
                 PetscInt coneSize;
 
-                err = DMPlexGetConeSize(dm, spoint, &coneSize);PYLITH_CHECK_ERROR(err);
-                err = DMPlexGetCone(dm, spoint, &cone);PYLITH_CHECK_ERROR(err);
+                PylithCallPetsc(DMPlexGetConeSize(dm, spoint, &coneSize));
+                PylithCallPetsc(DMPlexGetCone(dm, spoint, &cone));
                 for (int c = 0; c < coneSize; ++c) {
                     PetscInt val;
-                    err = DMLabelGetValue(buriedLabel, cone[c], &val);PYLITH_CHECK_ERROR(err);
+                    PylithCallPetsc(DMLabelGetValue(buriedLabel, cone[c], &val));
                     if (val >= 0) {
-                        err = DMLabelSetValue(buriedCohesiveLabel, spoint, 1);PYLITH_CHECK_ERROR(err);
+                        PylithCallPetsc(DMLabelSetValue(buriedCohesiveLabel, spoint, 1));
                         break;
                     } // if
                 } // for
@@ -479,15 +476,15 @@ pylith::faults::FaultCohesive::createConstraints(const pylith::topology::Field& 
         } // for
     } // for
     if (pointIS) {
-        err = ISRestoreIndices(pointIS, &points);PYLITH_CHECK_ERROR(err);
-        err = ISDestroy(&pointIS);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(ISRestoreIndices(pointIS, &points));
+        PylithCallPetsc(ISDestroy(&pointIS));
     } // if
 
     std::vector<pylith::feassemble::Constraint*> constraintArray;
     pylith::feassemble::ConstraintSimple *constraint = new pylith::feassemble::ConstraintSimple(this);assert(constraint);
     constraint->setLabelName(buriedLabelName.c_str());
-    err = PetscObjectViewFromOptions((PetscObject) buriedLabel, NULL, "-buried_edge_label_view");
-    err = PetscObjectViewFromOptions((PetscObject) buriedCohesiveLabel, NULL, "-buried_cohesive_edge_label_view");
+    PylithCallPetsc(PetscObjectViewFromOptions((PetscObject) buriedLabel, NULL, "-buried_edge_label_view"));
+    PylithCallPetsc(PetscObjectViewFromOptions((PetscObject) buriedCohesiveLabel, NULL, "-buried_cohesive_edge_label_view"));
     constraint->setConstrainedDOF(&constrainedDOF[0], constrainedDOF.size());
     constraint->setSubfieldName(lagrangeName);
     constraint->setUserFn(_zero);

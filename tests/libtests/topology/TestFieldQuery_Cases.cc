@@ -120,7 +120,7 @@ TEST_CASE("TestFieldQuery::Quad::testValidatorNonnegative", "[TestFieldQuery][Tr
 // ------------------------------------------------------------------------------------------------
 void
 pylith::topology::TestFieldQuery_Cases::_setData(TestFieldQuery_Data* data) {
-    assert(data->scales);
+    REQUIRE(data->scales);
     data->scales->setLengthScale(0.02);
     data->scales->setTimeScale(10.0);
     data->scales->setRigidityScale(1.0e+6);
@@ -161,10 +161,10 @@ pylith::topology::TestFieldQuery_Cases::_setData(TestFieldQuery_Data* data) {
 void
 pylith::topology::TestFieldQuery_Cases::_setData2D(TestFieldQuery_Data* data) {
     _setData(data);
-    assert(data->cs);
+    REQUIRE(data->cs);
     data->cs->setSpaceDim(2);
 
-    assert(data->auxDB);
+    REQUIRE(data->auxDB);
     data->auxDB->setDescription("Auxiliary db 2D");
     data->auxDB->setCoordSys(*data->cs);
     data->auxDB->addValue("displacement_x", disp_2d_x, disp_units());
@@ -177,7 +177,7 @@ pylith::topology::TestFieldQuery_Cases::_setData2D(TestFieldQuery_Data* data) {
 // ------------------------------------------------------------------------------------------------
 pylith::topology::TestFieldQuery_Data*
 pylith::topology::TestFieldQuery_Cases::Tri(void) {
-    TestFieldQuery_Data* data = new TestFieldQuery_Data();assert(data);
+    TestFieldQuery_Data* data = new TestFieldQuery_Data();REQUIRE(data);
 
     _setData2D(data);
 
@@ -210,7 +210,7 @@ pylith::topology::TestFieldQuery_Cases::Tri(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::topology::TestFieldQuery_Data*
 pylith::topology::TestFieldQuery_Cases::Quad(void) {
-    TestFieldQuery_Data* data = new TestFieldQuery_Data();assert(data);
+    TestFieldQuery_Data* data = new TestFieldQuery_Data();REQUIRE(data);
 
     _setData2D(data);
 
@@ -247,10 +247,10 @@ void
 pylith::topology::TestFieldQuery_Cases::_setData3D(TestFieldQuery_Data* data) {
     _setData(data);
 
-    assert(data->cs);
+    REQUIRE(data->cs);
     data->cs->setSpaceDim(3);
 
-    assert(data->auxDB);
+    REQUIRE(data->auxDB);
     data->auxDB->setDescription("Auxiliary db 3D");
     data->auxDB->setCoordSys(*data->cs);
     data->auxDB->addValue("displacement_x", disp_3d_x, disp_units());
@@ -263,7 +263,7 @@ pylith::topology::TestFieldQuery_Cases::_setData3D(TestFieldQuery_Data* data) {
 // ------------------------------------------------------------------------------------------------
 pylith::topology::TestFieldQuery_Data*
 pylith::topology::TestFieldQuery_Cases::Tet(void) {
-    TestFieldQuery_Data* data = new TestFieldQuery_Data();assert(data);
+    TestFieldQuery_Data* data = new TestFieldQuery_Data();REQUIRE(data);
 
     _setData3D(data);
 
@@ -297,7 +297,7 @@ pylith::topology::TestFieldQuery_Cases::Tet(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::topology::TestFieldQuery_Data*
 pylith::topology::TestFieldQuery_Cases::Hex(void) {
-    TestFieldQuery_Data* data = new TestFieldQuery_Data();assert(data);
+    TestFieldQuery_Data* data = new TestFieldQuery_Data();REQUIRE(data);
 
     _setData3D(data);
 

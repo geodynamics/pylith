@@ -289,7 +289,7 @@ pylith::materials::TestIsotropicLinearGenMaxwell3D::testGetAuxField(void) {
         PylithReal norm = 0.0;
         const PylithReal t = _mydata->t;
         const PetscDM dm = density.dmMesh();CPPUNIT_ASSERT(dm);
-        PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, queryDensity.functions(), (void**)queryDensity.contextPtrs(), density.localVector(), &norm);CPPUNIT_ASSERT(!err);
+        err = DMPlexComputeL2DiffLocal(dm, t, queryDensity.functions(), (void**)queryDensity.contextPtrs(), density.localVector(), &norm);CPPUNIT_ASSERT(!err);
         queryDensity.closeDB(_mydata->auxDB);
 
         const PylithReal tolerance = 1.0e-6;
@@ -313,7 +313,7 @@ pylith::materials::TestIsotropicLinearGenMaxwell3D::testGetAuxField(void) {
         PylithReal norm = 0.0;
         const PylithReal t = _mydata->t;
         const PetscDM dm = bulkModulus.dmMesh();CPPUNIT_ASSERT(dm);
-        PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, queryBulkModulus.functions(), (void**)queryBulkModulus.contextPtrs(), bulkModulus.localVector(), &norm);CPPUNIT_ASSERT(!err);
+        err = DMPlexComputeL2DiffLocal(dm, t, queryBulkModulus.functions(), (void**)queryBulkModulus.contextPtrs(), bulkModulus.localVector(), &norm);CPPUNIT_ASSERT(!err);
         queryBulkModulus.closeDB(_mydata->auxDB);
 
         const PylithReal tolerance = 1.0e-6;
@@ -337,7 +337,7 @@ pylith::materials::TestIsotropicLinearGenMaxwell3D::testGetAuxField(void) {
         PylithReal norm = 0.0;
         const PylithReal t = _mydata->t;
         const PetscDM dm = maxwellTime.dmMesh();CPPUNIT_ASSERT(dm);
-        PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, queryMaxwellTime.functions(), (void**)queryMaxwellTime.contextPtrs(), maxwellTime.localVector(), &norm);CPPUNIT_ASSERT(!err);
+        err = DMPlexComputeL2DiffLocal(dm, t, queryMaxwellTime.functions(), (void**)queryMaxwellTime.contextPtrs(), maxwellTime.localVector(), &norm);CPPUNIT_ASSERT(!err);
         queryMaxwellTime.closeDB(_mydata->auxDB);
 
         const PylithReal tolerance = 1.0e-6;
@@ -361,7 +361,7 @@ pylith::materials::TestIsotropicLinearGenMaxwell3D::testGetAuxField(void) {
         PylithReal norm = 0.0;
         const PylithReal t = _mydata->t;
         const PetscDM dm = shearModulusRatio.dmMesh();CPPUNIT_ASSERT(dm);
-        PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, queryShearModulusRatio.functions(), (void**)queryShearModulusRatio.contextPtrs(), shearModulusRatio.localVector(), &norm);CPPUNIT_ASSERT(!err);
+        err = DMPlexComputeL2DiffLocal(dm, t, queryShearModulusRatio.functions(), (void**)queryShearModulusRatio.contextPtrs(), shearModulusRatio.localVector(), &norm);CPPUNIT_ASSERT(!err);
         queryShearModulusRatio.closeDB(_mydata->auxDB);
 
         const PylithReal tolerance = 1.0e-6;
@@ -385,7 +385,7 @@ pylith::materials::TestIsotropicLinearGenMaxwell3D::testGetAuxField(void) {
         PylithReal norm = 0.0;
         const PylithReal t = _mydata->t;
         const PetscDM dm = viscousStrain.dmMesh();CPPUNIT_ASSERT(dm);
-        PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, queryViscousStrain.functions(), (void**)queryViscousStrain.contextPtrs(), viscousStrain.localVector(), &norm);CPPUNIT_ASSERT(!err);
+        err = DMPlexComputeL2DiffLocal(dm, t, queryViscousStrain.functions(), (void**)queryViscousStrain.contextPtrs(), viscousStrain.localVector(), &norm);CPPUNIT_ASSERT(!err);
         queryViscousStrain.closeDB(_mydata->auxDB);
 
         const PylithReal tolerance = 1.0e-6;
@@ -409,7 +409,7 @@ pylith::materials::TestIsotropicLinearGenMaxwell3D::testGetAuxField(void) {
         PylithReal norm = 0.0;
         const PylithReal t = _mydata->t;
         const PetscDM dm = totalStrain.dmMesh();CPPUNIT_ASSERT(dm);
-        PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, queryTotalStrain.functions(), (void**)queryTotalStrain.contextPtrs(), totalStrain.localVector(), &norm);CPPUNIT_ASSERT(!err);
+        err = DMPlexComputeL2DiffLocal(dm, t, queryTotalStrain.functions(), (void**)queryTotalStrain.contextPtrs(), totalStrain.localVector(), &norm);CPPUNIT_ASSERT(!err);
         queryTotalStrain.closeDB(_mydata->auxDB);
 
         const PylithReal tolerance = 1.0e-6;
@@ -433,7 +433,7 @@ pylith::materials::TestIsotropicLinearGenMaxwell3D::testGetAuxField(void) {
         PylithReal norm = 0.0;
         const PylithReal t = _mydata->t;
         const PetscDM dm = referenceStress.dmMesh();CPPUNIT_ASSERT(dm);
-        PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, queryRefStress.functions(), (void**)queryRefStress.contextPtrs(), referenceStress.localVector(), &norm);CPPUNIT_ASSERT(!err);
+        err = DMPlexComputeL2DiffLocal(dm, t, queryRefStress.functions(), (void**)queryRefStress.contextPtrs(), referenceStress.localVector(), &norm);CPPUNIT_ASSERT(!err);
         queryRefStress.closeDB(_mydata->auxDB);
 
         const PylithReal tolerance = 1.0e-6;
@@ -457,7 +457,7 @@ pylith::materials::TestIsotropicLinearGenMaxwell3D::testGetAuxField(void) {
         PylithReal norm = 0.0;
         const PylithReal t = _mydata->t;
         const PetscDM dm = referenceStrain.dmMesh();CPPUNIT_ASSERT(dm);
-        PetscErrorCode err = DMPlexComputeL2DiffLocal(dm, t, queryRefStrain.functions(), (void**)queryRefStrain.contextPtrs(), referenceStrain.localVector(), &norm);CPPUNIT_ASSERT(!err);
+        err = DMPlexComputeL2DiffLocal(dm, t, queryRefStrain.functions(), (void**)queryRefStrain.contextPtrs(), referenceStrain.localVector(), &norm);CPPUNIT_ASSERT(!err);
         queryRefStrain.closeDB(_mydata->auxDB);
 
         const PylithReal tolerance = 1.0e-6;

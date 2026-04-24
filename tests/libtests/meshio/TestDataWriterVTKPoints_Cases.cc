@@ -72,7 +72,7 @@ TEST_CASE("TestDataWriterVTKPoints::Hex::testWriteVertexField", "[DataWriter][VT
 pylith::meshio::TestDataWriterVTKPoints_Data*
 pylith::meshio::TestDataWriterVTKPoints_Cases::Tri(void) {
     PYLITH_METHOD_BEGIN;
-    TestDataWriterVTKPoints_Data* data = new TestDataWriterVTKPoints_Data();assert(data);
+    TestDataWriterVTKPoints_Data* data = new TestDataWriterVTKPoints_Data();REQUIRE(data);
 
     data->timestepFilename = "tri3_points.vtu";
     data->vertexFilename = "tri3_points_vertex.vtu";
@@ -87,7 +87,7 @@ pylith::meshio::TestDataWriterVTKPoints_Cases::Tri(void) {
 pylith::meshio::TestDataWriterVTKPoints_Data*
 pylith::meshio::TestDataWriterVTKPoints_Cases::Quad(void) {
     PYLITH_METHOD_BEGIN;
-    TestDataWriterVTKPoints_Data* data = new TestDataWriterVTKPoints_Data();assert(data);
+    TestDataWriterVTKPoints_Data* data = new TestDataWriterVTKPoints_Data();REQUIRE(data);
 
     data->timestepFilename = "quad4_points.vtu";
     data->vertexFilename = "quad4_points_vertex.vtu";
@@ -102,7 +102,7 @@ pylith::meshio::TestDataWriterVTKPoints_Cases::Quad(void) {
 pylith::meshio::TestDataWriterVTKPoints_Data*
 pylith::meshio::TestDataWriterVTKPoints_Cases::Tet(void) {
     PYLITH_METHOD_BEGIN;
-    TestDataWriterVTKPoints_Data* data = new TestDataWriterVTKPoints_Data();assert(data);
+    TestDataWriterVTKPoints_Data* data = new TestDataWriterVTKPoints_Data();REQUIRE(data);
 
     data->timestepFilename = "tet4_points.vtu";
     data->vertexFilename = "tet4_points_vertex.vtu";
@@ -117,7 +117,7 @@ pylith::meshio::TestDataWriterVTKPoints_Cases::Tet(void) {
 pylith::meshio::TestDataWriterVTKPoints_Data*
 pylith::meshio::TestDataWriterVTKPoints_Cases::Hex(void) {
     PYLITH_METHOD_BEGIN;
-    TestDataWriterVTKPoints_Data* data = new TestDataWriterVTKPoints_Data();assert(data);
+    TestDataWriterVTKPoints_Data* data = new TestDataWriterVTKPoints_Data();REQUIRE(data);
 
     data->timestepFilename = "hex8_points.vtu";
     data->vertexFilename = "hex8_points_vertex.vtu";

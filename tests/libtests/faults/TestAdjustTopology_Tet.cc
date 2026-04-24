@@ -85,7 +85,7 @@ TEST_CASE("TestAdjustTopology_TetK", "[TestAdjustTopology][Tet]") {
 pylith::faults::TestAdjustTopology_Data*
 pylith::faults::TestAdjustTopology_Tet::caseA(void) {
     pylith::faults::TestAdjustTopology_Data* data = new pylith::faults::TestAdjustTopology_Data();
-    assert(data);
+    REQUIRE(data);
 
     data->filename = "data/tet_a.mesh";
 
@@ -126,7 +126,7 @@ pylith::faults::TestAdjustTopology_Tet::caseA(void) {
 pylith::faults::TestAdjustTopology_Data*
 pylith::faults::TestAdjustTopology_Tet::caseB(void) {
     pylith::faults::TestAdjustTopology_Data* data = new pylith::faults::TestAdjustTopology_Data();
-    assert(data);
+    REQUIRE(data);
 
     data->filename = "data/tet_b.mesh";
 
@@ -167,7 +167,7 @@ pylith::faults::TestAdjustTopology_Tet::caseB(void) {
 pylith::faults::TestAdjustTopology_Data*
 pylith::faults::TestAdjustTopology_Tet::caseC(void) {
     pylith::faults::TestAdjustTopology_Data* data = new pylith::faults::TestAdjustTopology_Data();
-    assert(data);
+    REQUIRE(data);
 
     data->filename = "data/tet_c.mesh";
 
@@ -208,7 +208,7 @@ pylith::faults::TestAdjustTopology_Tet::caseC(void) {
 pylith::faults::TestAdjustTopology_Data*
 pylith::faults::TestAdjustTopology_Tet::caseD(void) {
     pylith::faults::TestAdjustTopology_Data* data = new pylith::faults::TestAdjustTopology_Data();
-    assert(data);
+    REQUIRE(data);
 
     data->filename = "data/tet_d.mesh";
 
@@ -249,7 +249,7 @@ pylith::faults::TestAdjustTopology_Tet::caseD(void) {
 pylith::faults::TestAdjustTopology_Data*
 pylith::faults::TestAdjustTopology_Tet::caseF(void) {
     pylith::faults::TestAdjustTopology_Data* data = new pylith::faults::TestAdjustTopology_Data();
-    assert(data);
+    REQUIRE(data);
 
     data->filename = "data/tet_f.mesh";
 
@@ -290,7 +290,7 @@ pylith::faults::TestAdjustTopology_Tet::caseF(void) {
 pylith::faults::TestAdjustTopology_Data*
 pylith::faults::TestAdjustTopology_Tet::caseG(void) {
     pylith::faults::TestAdjustTopology_Data* data = new pylith::faults::TestAdjustTopology_Data();
-    assert(data);
+    REQUIRE(data);
 
     data->filename = "data/tet_g.mesh";
 
@@ -331,7 +331,7 @@ pylith::faults::TestAdjustTopology_Tet::caseG(void) {
 pylith::faults::TestAdjustTopology_Data*
 pylith::faults::TestAdjustTopology_Tet::caseH(void) {
     pylith::faults::TestAdjustTopology_Data* data = new pylith::faults::TestAdjustTopology_Data();
-    assert(data);
+    REQUIRE(data);
 
     data->filename = "data/tet_h.mesh";
 
@@ -372,7 +372,7 @@ pylith::faults::TestAdjustTopology_Tet::caseH(void) {
 pylith::faults::TestAdjustTopology_Data*
 pylith::faults::TestAdjustTopology_Tet::caseI(void) {
     pylith::faults::TestAdjustTopology_Data* data = new pylith::faults::TestAdjustTopology_Data();
-    assert(data);
+    REQUIRE(data);
 
     data->filename = "data/tet_i.mesh";
 
@@ -413,7 +413,7 @@ pylith::faults::TestAdjustTopology_Tet::caseI(void) {
 pylith::faults::TestAdjustTopology_Data*
 pylith::faults::TestAdjustTopology_Tet::caseJ(void) {
     pylith::faults::TestAdjustTopology_Data* data = new pylith::faults::TestAdjustTopology_Data();
-    assert(data);
+    REQUIRE(data);
 
     data->filename = "data/tet_j.mesh";
 
@@ -454,7 +454,7 @@ pylith::faults::TestAdjustTopology_Tet::caseJ(void) {
 pylith::faults::TestAdjustTopology_Data*
 pylith::faults::TestAdjustTopology_Tet::caseK(void) {
     pylith::faults::TestAdjustTopology_Data* data = new pylith::faults::TestAdjustTopology_Data();
-    assert(data);
+    REQUIRE(data);
 
     data->filename = "data/tet_k.mesh";
 

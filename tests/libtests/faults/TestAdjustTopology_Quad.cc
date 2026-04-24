@@ -80,7 +80,7 @@ TEST_CASE("TestAdjustTopology_QuadI", "[TestAdjustTopology][Quad]") {
 pylith::faults::TestAdjustTopology_Data*
 pylith::faults::TestAdjustTopology_Quad::caseA(void) {
     pylith::faults::TestAdjustTopology_Data* data = new pylith::faults::TestAdjustTopology_Data();
-    assert(data);
+    REQUIRE(data);
 
     data->filename = "data/quad_a.mesh";
 
@@ -121,7 +121,7 @@ pylith::faults::TestAdjustTopology_Quad::caseA(void) {
 pylith::faults::TestAdjustTopology_Data*
 pylith::faults::TestAdjustTopology_Quad::caseB(void) {
     pylith::faults::TestAdjustTopology_Data* data = new pylith::faults::TestAdjustTopology_Data();
-    assert(data);
+    REQUIRE(data);
 
     data->filename = "data/quad_b.mesh";
 
@@ -162,7 +162,7 @@ pylith::faults::TestAdjustTopology_Quad::caseB(void) {
 pylith::faults::TestAdjustTopology_Data*
 pylith::faults::TestAdjustTopology_Quad::caseC(void) {
     pylith::faults::TestAdjustTopology_Data* data = new pylith::faults::TestAdjustTopology_Data();
-    assert(data);
+    REQUIRE(data);
 
     data->filename = "data/quad_c.mesh";
 
@@ -203,7 +203,7 @@ pylith::faults::TestAdjustTopology_Quad::caseC(void) {
 pylith::faults::TestAdjustTopology_Data*
 pylith::faults::TestAdjustTopology_Quad::caseD(void) {
     pylith::faults::TestAdjustTopology_Data* data = new pylith::faults::TestAdjustTopology_Data();
-    assert(data);
+    REQUIRE(data);
 
     data->filename = "data/quad_d.mesh";
 
@@ -244,7 +244,7 @@ pylith::faults::TestAdjustTopology_Quad::caseD(void) {
 pylith::faults::TestAdjustTopology_Data*
 pylith::faults::TestAdjustTopology_Quad::caseE(void) {
     pylith::faults::TestAdjustTopology_Data* data = new pylith::faults::TestAdjustTopology_Data();
-    assert(data);
+    REQUIRE(data);
 
     data->filename = "data/quad_e.mesh";
 
@@ -285,7 +285,7 @@ pylith::faults::TestAdjustTopology_Quad::caseE(void) {
 pylith::faults::TestAdjustTopology_Data*
 pylith::faults::TestAdjustTopology_Quad::caseF(void) {
     pylith::faults::TestAdjustTopology_Data* data = new pylith::faults::TestAdjustTopology_Data();
-    assert(data);
+    REQUIRE(data);
 
     data->filename = "data/quad_f.mesh";
 
@@ -326,7 +326,7 @@ pylith::faults::TestAdjustTopology_Quad::caseF(void) {
 pylith::faults::TestAdjustTopology_Data*
 pylith::faults::TestAdjustTopology_Quad::caseG(void) {
     pylith::faults::TestAdjustTopology_Data* data = new pylith::faults::TestAdjustTopology_Data();
-    assert(data);
+    REQUIRE(data);
 
     data->filename = "data/quad_g.mesh";
 
@@ -367,7 +367,7 @@ pylith::faults::TestAdjustTopology_Quad::caseG(void) {
 pylith::faults::TestAdjustTopology_Data*
 pylith::faults::TestAdjustTopology_Quad::caseH(void) {
     pylith::faults::TestAdjustTopology_Data* data = new pylith::faults::TestAdjustTopology_Data();
-    assert(data);
+    REQUIRE(data);
 
     data->filename = "data/quad_h.mesh";
 
@@ -411,7 +411,7 @@ pylith::faults::TestAdjustTopology_Quad::caseH(void) {
 pylith::faults::TestAdjustTopology_Data*
 pylith::faults::TestAdjustTopology_Quad::caseI(void) {
     pylith::faults::TestAdjustTopology_Data* data = new pylith::faults::TestAdjustTopology_Data();
-    assert(data);
+    REQUIRE(data);
 
     data->filename = "data/quad_i.mesh";
 

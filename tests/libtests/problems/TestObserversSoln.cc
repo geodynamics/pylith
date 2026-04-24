@@ -88,7 +88,7 @@ TEST_CASE("TestObservesSoln::testNotifyObservers", "[TestObserversSoln]") {
 // Constructor.
 pylith::problems::TestObserversSoln::TestObserversSoln(void) :
     _observers(new ObserversSoln()) {
-    assert(_observers);
+    REQUIRE(_observers);
     _observers->registerObserver(&observerA);
     _observers->registerObserver(&observerB);
 } // setUp
@@ -105,7 +105,7 @@ pylith::problems::TestObserversSoln::~TestObserversSoln(void) {
 // Test registerObserver().
 void
 pylith::problems::TestObserversSoln::testRegisterObserver(void) {
-    assert(_observers);
+    REQUIRE(_observers);
     CHECK(size_t(1) == _observers->_observers.count(&observerA));
     CHECK(size_t(1) == _observers->_observers.count(&observerB));
 } // testRegisterObserver
@@ -115,7 +115,7 @@ pylith::problems::TestObserversSoln::testRegisterObserver(void) {
 // Test removeObserver().
 void
 pylith::problems::TestObserversSoln::testRemoveObserver(void) {
-    assert(_observers);
+    REQUIRE(_observers);
     CHECK(size_t(1) == _observers->_observers.count(&observerA));
     CHECK(size_t(1) == _observers->_observers.count(&observerB));
 
@@ -133,7 +133,7 @@ pylith::problems::TestObserversSoln::testRemoveObserver(void) {
 // Test setgetTimeScale().
 void
 pylith::problems::TestObserversSoln::testTimeScale(void) {
-    assert(_observers);
+    REQUIRE(_observers);
 
     // Check default
     PylithReal value = 1.0;
@@ -152,7 +152,7 @@ pylith::problems::TestObserversSoln::testTimeScale(void) {
 // Test verifyObservers().
 void
 pylith::problems::TestObserversSoln::testVerifyObservers(void) {
-    assert(_observers);
+    REQUIRE(_observers);
 
     pylith::testing::StubMethodTracker tracker;
     tracker.clear();
@@ -169,7 +169,7 @@ pylith::problems::TestObserversSoln::testVerifyObservers(void) {
 // Test notifyObservers().
 void
 pylith::problems::TestObserversSoln::testNotifyObservers(void) {
-    assert(_observers);
+    REQUIRE(_observers);
 
     pylith::testing::StubMethodTracker tracker;
     tracker.clear();

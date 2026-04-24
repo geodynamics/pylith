@@ -33,6 +33,8 @@
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "pylith/scales/Scales.hh" // USES Scales
 
+#include "catch2/catch_test_macros.hpp"
+
 namespace pylith {
     namespace mmstests {
         class TestFaultKin2D_ConstRateDynamic;
@@ -183,7 +185,7 @@ class pylith::mmstests::TestFaultKin2D_ConstRateDynamic :
         s[1] = disp_y(x[0], x[1], 0);
         std::cout << "BOUNDARY x=("<<x[0]<<", "<<x[1]<<"), s=("<<s[0]<<", "<<s[1]<<")" << std::endl;
 
-        return 0;
+        return PETSC_SUCCESS;
     } // bckernel_disp
 
     static PetscErrorCode solnkernel_disp(PetscInt spaceDim,
@@ -220,7 +222,7 @@ class pylith::mmstests::TestFaultKin2D_ConstRateDynamic :
         s[1] = disp_y(x[0], x[1], flag);
         std::cout << "SOLUTION x=("<<x[0]<<", "<<x[1]<<"), s=("<<s[0]<<", "<<s[1]<<")" << std::endl;
 
-        return 0;
+        return PETSC_SUCCESS;
     } // solnkernel_disp
 
     static PetscErrorCode solnkernel_lagrangemultiplier(PetscInt spaceDim,
@@ -238,7 +240,7 @@ class pylith::mmstests::TestFaultKin2D_ConstRateDynamic :
         s[0] = faulttraction_x(x[0], x[1]);
         s[1] = faulttraction_y(x[0], x[1]);
 
-        return 0;
+        return PETSC_SUCCESS;
     } // solnkernel_lagrangemultiplier
 
 protected:
@@ -309,7 +311,7 @@ protected:
         // Materials
         _materials.resize(3);
         { // xneg
-            pylith::materials::Elasticity* material = new pylith::materials::Elasticity();assert(material);
+            pylith::materials::Elasticity* material = new pylith::materials::Elasticity();REQUIRE(material);
             material->setFormulation(pylith::problems::Physics::QUASISTATIC);
             material->useBodyForce(false);
             material->setIdentifier("elasticity");
@@ -319,7 +321,7 @@ protected:
             _materials[0] = material;
         } // xneg
         { // mid
-            pylith::materials::Elasticity* material = new pylith::materials::Elasticity();assert(material);
+            pylith::materials::Elasticity* material = new pylith::materials::Elasticity();REQUIRE(material);
             material->setFormulation(pylith::problems::Physics::QUASISTATIC);
             material->useBodyForce(false);
             material->setIdentifier("elasticity");
@@ -329,7 +331,7 @@ protected:
             _materials[1] = material;
         } // mid
         { // xpos
-            pylith::materials::Elasticity* material = new pylith::materials::Elasticity();assert(material);
+            pylith::materials::Elasticity* material = new pylith::materials::Elasticity();REQUIRE(material);
             material->setFormulation(pylith::problems::Physics::QUASISTATIC);
             material->useBodyForce(false);
             material->setIdentifier("elasticity");
@@ -386,7 +388,7 @@ protected:
         PetscDMLabel label;
         PetscIS is;
         PetscInt cohesiveCell;
-        PetscErrorCode err = 0;
+        PetscErrorCode err = PETSC_SUCCESS;
         PetscDS ds = NULL;
         err = DMGetDS(dm, &ds);CPPUNIT_ASSERT(!err);
         err = PetscDSSetExactSolution(ds, 0, solnkernel_disp, dm);CPPUNIT_ASSERT(!err);

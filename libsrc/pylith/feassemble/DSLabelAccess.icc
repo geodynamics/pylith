@@ -9,7 +9,9 @@
 // =================================================================================================
 #pragma once
 
-#include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
+#include "DSLabelAccess.hh"
+
+#include "pylith/utils/error.hh" // USES PylithCallPetsc()
 
 // ------------------------------------------------------------------------------------------------
 // Constructor with PetscDM, label name, and label value.
@@ -30,32 +32,31 @@ pylith::feassemble::DSLabelAccess::DSLabelAccess(const PetscDM dm,
     PYLITH_METHOD_BEGIN;
 
     assert(dm);
-    PetscErrorCode err = PETSC_SUCCESS;
     PetscBool hasLabel = PETSC_FALSE;
-    err = DMHasLabel(_dm, labelName, &hasLabel);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMHasLabel(_dm, labelName, &hasLabel));
     if (!hasLabel) {
         std::ostringstream msg;
         const char* dmName = NULL;
-        err = PetscObjectGetName((PetscObject)_dm, &dmName);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(PetscObjectGetName((PetscObject)_dm, &dmName));
         msg << "PETSc DM '" << dmName << "' missing label '" << labelName << "'.";
         throw std::runtime_error(msg.str());
     } // if
-    err = DMGetLabel(_dm, labelName, &_label);PYLITH_CHECK_ERROR(err);assert(_label);
+    PylithCallPetsc(DMGetLabel(_dm, labelName, &_label));assert(_label);
 
-    err = DMGetStratumIS(dm, labelName, labelValue, &_pointsIS);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMGetStratumIS(dm, labelName, labelValue, &_pointsIS));
     if (_pointsIS) {
-        err = ISGetSize(_pointsIS, &_numPoints);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(ISGetSize(_pointsIS, &_numPoints));
         if (_numPoints > 0) {
             const PetscInt* pointIndicesOrig = NULL;
             const PetscInt numPointsOrig = _numPoints;
-            err = ISGetIndices(_pointsIS, &pointIndicesOrig);PYLITH_CHECK_ERROR(err);
-            err = DMGetCellDS(dm, pointIndicesOrig[0], &_ds, NULL);PYLITH_CHECK_ERROR(err);assert(_ds);
-            err = PetscDSGetWeakForm(_ds, &_weakForm);PYLITH_CHECK_ERROR(err);assert(_weakForm);
+            PylithCallPetsc(ISGetIndices(_pointsIS, &pointIndicesOrig));
+            PylithCallPetsc(DMGetCellDS(dm, pointIndicesOrig[0], &_ds, NULL));assert(_ds);
+            PylithCallPetsc(PetscDSGetWeakForm(_ds, &_weakForm));assert(_weakForm);
             PetscInt numPointsNew = 0;
             for (PetscInt iPoint = 0; iPoint < numPointsOrig; ++iPoint) {
                 const PetscInt point = pointIndicesOrig[iPoint];
                 PetscInt depth = 0;
-                err = DMPlexGetPointDepth(_dm, point, &depth);PYLITH_CHECK_ERROR(err);
+                PylithCallPetsc(DMPlexGetPointDepth(_dm, point, &depth));
                 if (depth == _dim) {
                     ++numPointsNew;
                 } // if
@@ -63,22 +64,22 @@ pylith::feassemble::DSLabelAccess::DSLabelAccess(const PetscDM dm,
 
             // Create array with points over which to integrate.
             PetscInt* pointIndicesNew = NULL;
-            err = PetscMalloc1(numPointsNew*sizeof(PetscInt), &pointIndicesNew);PYLITH_CHECK_ERROR(err);
+            PylithCallPetsc(PetscMalloc1(numPointsNew*sizeof(PetscInt), &pointIndicesNew));
             for (PetscInt iPoint = 0, index = 0; iPoint < numPointsOrig; ++iPoint) {
                 const PetscInt point = pointIndicesOrig[iPoint];
                 PetscInt depth = 0;
-                err = DMPlexGetPointDepth(_dm, point, &depth);PYLITH_CHECK_ERROR(err);
+                PylithCallPetsc(DMPlexGetPointDepth(_dm, point, &depth));
                 if (depth == _dim) {
                     pointIndicesNew[index++] = point;
                 } // if
             } // for
 
-            err = ISRestoreIndices(_pointsIS, &pointIndicesOrig);PYLITH_CHECK_ERROR(err);
-            err = ISDestroy(&_pointsIS);PYLITH_CHECK_ERROR(err);
-            err = ISCreateGeneral(PETSC_COMM_SELF, numPointsNew, pointIndicesNew, PETSC_OWN_POINTER, &_pointsIS);PYLITH_CHECK_ERROR(err);
+            PylithCallPetsc(ISRestoreIndices(_pointsIS, &pointIndicesOrig));
+            PylithCallPetsc(ISDestroy(&_pointsIS));
+            PylithCallPetsc(ISCreateGeneral(PETSC_COMM_SELF, numPointsNew, pointIndicesNew, PETSC_OWN_POINTER, &_pointsIS));
             _numPoints = numPointsNew;
         } else {
-            err = ISDestroy(&_pointsIS);PYLITH_CHECK_ERROR(err);
+            PylithCallPetsc(ISDestroy(&_pointsIS));
         } // if/else
     } // if
 
@@ -164,13 +165,11 @@ void
 pylith::feassemble::DSLabelAccess::removeOverlap(void) {
     PYLITH_METHOD_BEGIN;
 
-    PetscErrorCode err;
-
     PetscSF sf = NULL;
-    err = DMGetPointSF(_dm, &sf);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMGetPointSF(_dm, &sf));
     const PetscInt *leaves = NULL;
     PetscInt numLeaves = 0, loc = -1;
-    err = PetscSFGetGraph(sf, NULL, &numLeaves, &leaves, NULL);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(PetscSFGetGraph(sf, NULL, &numLeaves, &leaves, NULL));
     if ((_numPoints <= 0) || (numLeaves <= 0)) {
         PYLITH_METHOD_END;
     } // if
@@ -180,14 +179,14 @@ pylith::feassemble::DSLabelAccess::removeOverlap(void) {
 
     const PetscInt* pointIndicesOrig = NULL;
     const PetscInt numPointsOrig = _numPoints;
-    err = ISGetIndices(_pointsIS, &pointIndicesOrig);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(ISGetIndices(_pointsIS, &pointIndicesOrig));
 
     // Count number of cells over which to integrate.
     PetscInt numPointsNew = 0;
     for (PetscInt iPoint = 0; iPoint < numPointsOrig; ++iPoint) {
         const PetscInt point = pointIndicesOrig[iPoint];
 
-        err = PetscFindInt(point, numLeaves, leaves, &loc);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(PetscFindInt(point, numLeaves, leaves, &loc));
         if (loc < 0) { // not in PetscSF
             ++numPointsNew;
         } // if
@@ -195,19 +194,19 @@ pylith::feassemble::DSLabelAccess::removeOverlap(void) {
 
     // Create array with cells over which to integrate.
     PetscInt* pointIndicesNew = NULL;
-    err = PetscMalloc1(numPointsNew*sizeof(PetscInt), &pointIndicesNew);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(PetscMalloc1(numPointsNew*sizeof(PetscInt), &pointIndicesNew));
     for (PetscInt iPoint = 0, index = 0; iPoint < numPointsOrig; ++iPoint) {
         const PetscInt cell = pointIndicesOrig[iPoint];
 
-        err = PetscFindInt(cell, numLeaves, leaves, &loc);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(PetscFindInt(cell, numLeaves, leaves, &loc));
         if (loc < 0) { // not in PetscSF
             pointIndicesNew[index++] = cell;
         } // if
     } // for
 
-    err = ISRestoreIndices(_pointsIS, &pointIndicesOrig);PYLITH_CHECK_ERROR(err);
-    err = ISDestroy(&_pointsIS);PYLITH_CHECK_ERROR(err);
-    err = ISCreateGeneral(PETSC_COMM_SELF, numPointsNew, pointIndicesNew, PETSC_OWN_POINTER, &_pointsIS);
+    PylithCallPetsc(ISRestoreIndices(_pointsIS, &pointIndicesOrig));
+    PylithCallPetsc(ISDestroy(&_pointsIS));
+    PylithCallPetsc(ISCreateGeneral(PETSC_COMM_SELF, numPointsNew, pointIndicesNew, PETSC_OWN_POINTER, &_pointsIS));
     _numPoints = numPointsNew;
 
     PYLITH_METHOD_END;

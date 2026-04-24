@@ -89,7 +89,7 @@ TEST_CASE("TestDataWriterVTKMesh::Hex::testWriteCellField", "[DataWriter][VTK][M
 pylith::meshio::TestDataWriterVTKMesh_Data*
 pylith::meshio::TestDataWriterVTKMesh_Cases::Tri(void) {
     PYLITH_METHOD_BEGIN;
-    TestDataWriterVTKMesh_Data* data = new TestDataWriterVTKMesh_Data();assert(data);
+    TestDataWriterVTKMesh_Data* data = new TestDataWriterVTKMesh_Data();REQUIRE(data);
 
     data->timestepFilename = "tri3.vtu";
     data->vertexFilename = "tri3_vertex.vtu";
@@ -105,7 +105,7 @@ pylith::meshio::TestDataWriterVTKMesh_Cases::Tri(void) {
 pylith::meshio::TestDataWriterVTKMesh_Data*
 pylith::meshio::TestDataWriterVTKMesh_Cases::Quad(void) {
     PYLITH_METHOD_BEGIN;
-    TestDataWriterVTKMesh_Data* data = new TestDataWriterVTKMesh_Data();assert(data);
+    TestDataWriterVTKMesh_Data* data = new TestDataWriterVTKMesh_Data();REQUIRE(data);
 
     data->timestepFilename = "quad4.vtu";
     data->vertexFilename = "quad4_vertex.vtu";
@@ -121,7 +121,7 @@ pylith::meshio::TestDataWriterVTKMesh_Cases::Quad(void) {
 pylith::meshio::TestDataWriterVTKMesh_Data*
 pylith::meshio::TestDataWriterVTKMesh_Cases::Tet(void) {
     PYLITH_METHOD_BEGIN;
-    TestDataWriterVTKMesh_Data* data = new TestDataWriterVTKMesh_Data();assert(data);
+    TestDataWriterVTKMesh_Data* data = new TestDataWriterVTKMesh_Data();REQUIRE(data);
 
     data->timestepFilename = "tet4.vtu";
     data->vertexFilename = "tet4_vertex.vtu";
@@ -137,7 +137,7 @@ pylith::meshio::TestDataWriterVTKMesh_Cases::Tet(void) {
 pylith::meshio::TestDataWriterVTKMesh_Data*
 pylith::meshio::TestDataWriterVTKMesh_Cases::Hex(void) {
     PYLITH_METHOD_BEGIN;
-    TestDataWriterVTKMesh_Data* data = new TestDataWriterVTKMesh_Data();assert(data);
+    TestDataWriterVTKMesh_Data* data = new TestDataWriterVTKMesh_Data();REQUIRE(data);
 
     data->timestepFilename = "hex8.vtu";
     data->vertexFilename = "hex8_vertex.vtu";

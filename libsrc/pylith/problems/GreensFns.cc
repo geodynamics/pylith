@@ -27,7 +27,7 @@
 
 #include "petscsnes.h" // USES PetscSNES
 
-#include "pylith/utils/error.hh" // USES PYLITH_CHECK_ERROR
+#include "pylith/utils/error.hh" // USES PylithCallPetsc()
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 #include <cassert> // USES assert()
 
@@ -80,7 +80,7 @@ pylith::problems::GreensFns::deallocate(void) {
 
     _monitor = NULL; // Memory handle in Python. :TODO: Use shared pointer.
 
-    PetscErrorCode err = SNESDestroy(&_snes);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(SNESDestroy(&_snes));
 
     PYLITH_METHOD_END;
 } // deallocate
@@ -141,7 +141,7 @@ pylith::problems::GreensFns::getPetscDM(void) {
     PYLITH_METHOD_BEGIN;
 
     PetscDM dm = NULL;
-    PetscErrorCode err = SNESGetDM(_snes, &dm);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(SNESGetDM(_snes, &dm));
 
     PYLITH_METHOD_RETURN(dm);
 } // getPetscDM
@@ -204,18 +204,18 @@ pylith::problems::GreensFns::initialize(void) {
     } // for
     assert(_faultImpulses);
 
-    PetscErrorCode err = SNESDestroy(&_snes);PYLITH_CHECK_ERROR(err);assert(!_snes);
+    PylithCallPetsc(SNESDestroy(&_snes));assert(!_snes);
     assert(_integrationData);
     pylith::topology::Field* solution = _integrationData->getField(pylith::feassemble::IntegrationData::solution);
     assert(solution);
 
-    err = SNESCreate(solution->getMesh().getComm(), &_snes);PYLITH_CHECK_ERROR(err);assert(_snes);
-    err = SNESSetApplicationContext(_snes, (void*)this);PYLITH_CHECK_ERROR(err);
-    err = SNESSetDM(_snes, solution->getDM());PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(SNESCreate(solution->getMesh().getComm(), &_snes));assert(_snes);
+    PylithCallPetsc(SNESSetApplicationContext(_snes, (void*)this));
+    PylithCallPetsc(SNESSetDM(_snes, solution->getDM()));
 
     PetscVec solutionVector = solution->getGlobalVector();
     solution->scatterLocalToVector(solutionVector);
-    err = SNESSetSolution(_snes, solutionVector);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(SNESSetSolution(_snes, solutionVector));
 
     // Initialize solution_dot.
     pylith::topology::Field* solutionDot = new pylith::topology::Field(*solution);assert(solutionDot);
@@ -234,10 +234,10 @@ pylith::problems::GreensFns::initialize(void) {
     switch (_formulation) {
     case pylith::problems::Physics::QUASISTATIC:
         PYLITH_COMPONENT_DEBUG("Setting PetscSNES callbacks SNESSetFunction() and SNESSetJacobian().");
-        err = SNESSetFunction(_snes, NULL, computeResidual, (void*)this);PYLITH_CHECK_ERROR(err);
-        err = SNESSetJacobian(_snes, NULL, NULL, computeJacobian, (void*)this);PYLITH_CHECK_ERROR(err);
-        err = SNESSetType(_snes, SNESKSPONLY);PYLITH_CHECK_ERROR(err);
-        err = SNESSetLagJacobian(_snes, -2);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(SNESSetFunction(_snes, NULL, computeResidual, (void*)this));
+        PylithCallPetsc(SNESSetJacobian(_snes, NULL, NULL, computeJacobian, (void*)this));
+        PylithCallPetsc(SNESSetType(_snes, SNESKSPONLY));
+        PylithCallPetsc(SNESSetLagJacobian(_snes, -2));
         break;
     case pylith::problems::Physics::DYNAMIC_IMEX:
         PYLITH_COMPONENT_LOGICERROR("Dynamic Green's functions problems not yet supported.");
@@ -250,8 +250,8 @@ pylith::problems::GreensFns::initialize(void) {
     } // default
     } // switch
 
-    err = SNESSetFromOptions(_snes);PYLITH_CHECK_ERROR(err);
-    err = SNESSetUp(_snes);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(SNESSetFromOptions(_snes));
+    PylithCallPetsc(SNESSetUp(_snes));
 
     // Get integrator for fault with impulses.
     assert(!_integratorImpulses);
@@ -271,7 +271,7 @@ pylith::problems::GreensFns::initialize(void) {
     pythia::journal::debug_t debug(pylith::utils::PyreComponent::getName());
     if (debug.state()) {
         PetscDS dsSoln = NULL;
-        err = DMGetDS(solution->getDM(), &dsSoln);PYLITH_CHECK_ERROR(err);
+        PylithCallPetsc(DMGetDS(solution->getDM(), &dsSoln));
         debug << pythia::journal::at(__HERE__)
               << "Solution Discretization" << pythia::journal::endl;
         PetscDSView(dsSoln, PETSC_VIEWER_STDOUT_SELF);
@@ -297,18 +297,17 @@ pylith::problems::GreensFns::solve(void) {
     assert(solution);
     pylith::topology::Field* residual = _integrationData->getField(pylith::feassemble::IntegrationData::residual);assert(residual);
 
-    PetscErrorCode err;
     int mpiRank = 0;
     int mpiNumProcs = 0;
     PetscDM dm = getPetscDM();
     MPI_Comm comm = PetscObjectComm((PetscObject)dm);
-    err = MPI_Comm_rank(comm, &mpiRank);
-    err = MPI_Comm_size(comm, &mpiNumProcs);PYLITH_CHECK_ERROR(err);
+    int err = MPI_Comm_rank(comm, &mpiRank);assert(!err);
+    err = MPI_Comm_size(comm, &mpiNumProcs);assert(!err);
 
     PetscInt numImpulsesLocal = _faultImpulses->getNumImpulsesLocal();
     PYLITH_COMPONENT_DEBUG("[" << mpiRank << "] Contributing " << numImpulsesLocal << " impulses for Green's functions.");
     int_array numImpulses(mpiNumProcs);
-    err = MPI_Allgather(&numImpulsesLocal, 1, MPI_INT, &numImpulses[0], 1, MPI_INT, comm);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(MPI_Allgather(&numImpulsesLocal, 1, MPI_INT, &numImpulses[0], 1, MPI_INT, comm));
 
     size_t numImpulsesGlobal = 0;
     for (int iProc = 0; iProc < mpiNumProcs; ++iProc) {
@@ -326,7 +325,7 @@ pylith::problems::GreensFns::solve(void) {
             const PetscReal impulseReal = (mpiRank == iProc) ? iImpulseLocal + tolerance : -1.0;
             _integratorImpulses->setState(impulseReal);
 
-            err = SNESSolve(_snes, residual->getGlobalVector(), solution->getGlobalVector());PYLITH_CHECK_ERROR(err);
+            PylithCallPetsc(SNESSolve(_snes, residual->getGlobalVector(), solution->getGlobalVector()));
             solution->scatterVectorToLocal(solution->getGlobalVector());
             solution->scatterLocalToOutput();
             poststep(size_t(iImpulseGlobal), numImpulsesGlobal);
@@ -429,7 +428,7 @@ pylith::problems::GreensFns::computeResidual(PetscVec residualVec,
     } // for
 
     // Assemble residual values across processes.
-    PetscErrorCode err = VecSet(residualVec, 0.0);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(VecSet(residualVec, 0.0));
     residual->scatterLocalToVector(residualVec, ADD_VALUES);
 
     PYLITH_METHOD_END;
@@ -453,17 +452,16 @@ pylith::problems::GreensFns::computeJacobian(PetscMat jacobianMat,
     assert(solution);
 
     // Zero Jacobian
-    PetscErrorCode err = 0;
     PetscDS dsSoln = NULL;
-    err = DMGetDS(solution->getDM(), &dsSoln);PYLITH_CHECK_ERROR(err);
+    PylithCallPetsc(DMGetDS(solution->getDM(), &dsSoln));
 
     PetscBool hasJacobian = PETSC_FALSE;
-    err = PetscDSHasJacobian(dsSoln, &hasJacobian);PYLITH_CHECK_ERROR(err);
-    if (hasJacobian) { err = MatZeroEntries(jacobianMat);PYLITH_CHECK_ERROR(err); }
+    PylithCallPetsc(PetscDSHasJacobian(dsSoln, &hasJacobian));
+    if (hasJacobian) { PylithCallPetsc(MatZeroEntries(jacobianMat)); }
 
     PetscBool hasPreconditioner = PETSC_FALSE;
-    err = PetscDSHasJacobianPreconditioner(dsSoln, &hasPreconditioner);PYLITH_CHECK_ERROR(err);
-    if (hasPreconditioner) { err = MatZeroEntries(precondMat);PYLITH_CHECK_ERROR(err); }
+    PylithCallPetsc(PetscDSHasJacobianPreconditioner(dsSoln, &hasPreconditioner));
+    if (hasPreconditioner) { PylithCallPetsc(MatZeroEntries(precondMat)); }
 
     // Update PyLith view of the solution.
     setSolutionLocal(solutionVec);
@@ -476,11 +474,11 @@ pylith::problems::GreensFns::computeJacobian(PetscMat jacobianMat,
 
     // Assemble matrices
     if (jacobianMat != precondMat) {
-        err = MatAssemblyBegin(jacobianMat, MAT_FINAL_ASSEMBLY);
-        err = MatAssemblyEnd(jacobianMat, MAT_FINAL_ASSEMBLY);
+        PylithCallPetsc(MatAssemblyBegin(jacobianMat, MAT_FINAL_ASSEMBLY));
+        PylithCallPetsc(MatAssemblyEnd(jacobianMat, MAT_FINAL_ASSEMBLY));
     }
-    err = MatAssemblyBegin(precondMat, MAT_FINAL_ASSEMBLY);
-    err = MatAssemblyEnd(precondMat, MAT_FINAL_ASSEMBLY);
+    PylithCallPetsc(MatAssemblyBegin(precondMat, MAT_FINAL_ASSEMBLY));
+    PylithCallPetsc(MatAssemblyEnd(precondMat, MAT_FINAL_ASSEMBLY));
 
     PYLITH_METHOD_END;
 } // computeJacobian

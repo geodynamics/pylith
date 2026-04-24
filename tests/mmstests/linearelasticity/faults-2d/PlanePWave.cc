@@ -34,6 +34,8 @@
 #include "pylith/scales/Scales.hh" // USES Scales
 #include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
 
+#include "catch2/catch_test_macros.hpp"
+
 // ------------------------------------------------------------------------------------------------
 namespace pylith {
     class _PlanePWave;
@@ -171,10 +173,10 @@ class pylith::_PlanePWave {
                                           PetscInt numComponents,
                                           PetscScalar* s,
                                           void* context) {
-        assert(2 == spaceDim);
-        assert(x);
-        assert(2 == numComponents);
-        assert(s);
+        REQUIRE(2 == spaceDim);
+        REQUIRE(x);
+        REQUIRE(2 == numComponents);
+        REQUIRE(s);
 
         s[0] = disp_x(x[0], x[1]);
         PetscInt flag = 0;
@@ -207,10 +209,10 @@ class pylith::_PlanePWave {
                                          PetscInt numComponents,
                                          PetscScalar* s,
                                          void* context) {
-        assert(2 == spaceDim);
-        assert(x);
-        assert(2 == numComponents);
-        assert(s);
+        REQUIRE(2 == spaceDim);
+        REQUIRE(x);
+        REQUIRE(2 == numComponents);
+        REQUIRE(s);
 
         s[0] = vel_x(x[0], x[1]);
         PetscInt flag = 0;
@@ -243,10 +245,10 @@ class pylith::_PlanePWave {
                                          PetscInt numComponents,
                                          PetscScalar* s,
                                          void* context) {
-        assert(2 == spaceDim);
-        assert(x);
-        assert(2 == numComponents);
-        assert(s);
+        REQUIRE(2 == spaceDim);
+        REQUIRE(x);
+        REQUIRE(2 == numComponents);
+        REQUIRE(s);
 
         s[0] = acc_x(x[0], x[1]);
         s[1] = acc_y(x[0], x[1]);
@@ -260,10 +262,10 @@ class pylith::_PlanePWave {
                                                         PetscInt numComponents,
                                                         PetscScalar* s,
                                                         void* context) {
-        assert(2 == spaceDim);
-        assert(x);
-        assert(2 == numComponents);
-        assert(s);
+        REQUIRE(2 == spaceDim);
+        REQUIRE(x);
+        REQUIRE(2 == numComponents);
+        REQUIRE(s);
 
         s[0] = faulttraction_x(x[0], x[1]);
         s[1] = faulttraction_y(x[0], x[1]);
@@ -275,7 +277,7 @@ public:
 
     static
     TestFault_Data* createData(void) {
-        TestFault_Data* data = new TestFault_Data();assert(data);
+        TestFault_Data* data = new TestFault_Data();REQUIRE(data);
 
         data->journalName = "PlanePWave";
         data->allowZeroResidual = true;
@@ -306,8 +308,8 @@ public:
         data->matAuxDB.addValue("vs", vs, vs_units());
         data->matAuxDB.setCoordSys(data->cs);
 
-        assert(!data->kinSrc);
-        data->kinSrc = new pylith::faults::KinSrcStep();assert(data->kinSrc);
+        REQUIRE(!data->kinSrc);
+        data->kinSrc = new pylith::faults::KinSrcStep();REQUIRE(data->kinSrc);
         data->kinSrc->setOriginTime(0.0);
         data->faultAuxDB.addValue("initiation_time", initiation_time, time_units());
         data->faultAuxDB.addValue("final_slip_opening", finalslip_opening, slip_units());
@@ -325,7 +327,7 @@ public:
         // Materials
         data->materials.resize(3);
         { // xneg
-            pylith::materials::Elasticity* material = new pylith::materials::Elasticity();assert(material);
+            pylith::materials::Elasticity* material = new pylith::materials::Elasticity();REQUIRE(material);
             material->setFormulation(data->formulation);
             material->useBodyForce(false);
             material->setIdentifier("elasticity");
@@ -335,7 +337,7 @@ public:
             data->materials[0] = material;
         } // xneg
         { // mid
-            pylith::materials::Elasticity* material = new pylith::materials::Elasticity();assert(material);
+            pylith::materials::Elasticity* material = new pylith::materials::Elasticity();REQUIRE(material);
             material->setFormulation(data->formulation);
             material->useBodyForce(false);
             material->setIdentifier("elasticity");
@@ -345,7 +347,7 @@ public:
             data->materials[1] = material;
         } // mid
         { // xpos
-            pylith::materials::Elasticity* material = new pylith::materials::Elasticity();assert(material);
+            pylith::materials::Elasticity* material = new pylith::materials::Elasticity();REQUIRE(material);
             material->setFormulation(data->formulation);
             material->useBodyForce(false);
             material->setIdentifier("elasticity");
@@ -444,12 +446,12 @@ const double pylith::_PlanePWave::TIME_SNAPSHOT = 5.0;
 // ------------------------------------------------------------------------------------------------
 pylith::TestFault_Data*
 pylith::PlanePWave::TriP1(void) {
-    TestFault_Data* data = pylith::_PlanePWave::createData();assert(data);
+    TestFault_Data* data = pylith::_PlanePWave::createData();REQUIRE(data);
 
     data->meshFilename = "data/tri.mesh";
 
-    assert(2 == data->numSolnSubfieldsDomain);
-    assert(1 == data->numSolnSubfieldsFault);
+    REQUIRE(2 == data->numSolnSubfieldsDomain);
+    REQUIRE(1 == data->numSolnSubfieldsFault);
     static const pylith::topology::Field::Discretization _solnDiscretizations[3] = {
         pylith::topology::Field::Discretization(1, 1), // disp
         pylith::topology::Field::Discretization(1, 1), // vel
@@ -464,7 +466,7 @@ pylith::PlanePWave::TriP1(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestFault_Data*
 pylith::PlanePWave::TriP2(void) {
-    TestFault_Data* data = pylith::_PlanePWave::createData();assert(data);
+    TestFault_Data* data = pylith::_PlanePWave::createData();REQUIRE(data);
 
     data->meshFilename = "data/tri.mesh";
 
@@ -480,8 +482,8 @@ pylith::PlanePWave::TriP2(void) {
     };
     data->faultAuxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_faultAuxDiscretizations);
 
-    assert(2 == data->numSolnSubfieldsDomain);
-    assert(1 == data->numSolnSubfieldsFault);
+    REQUIRE(2 == data->numSolnSubfieldsDomain);
+    REQUIRE(1 == data->numSolnSubfieldsFault);
     static const pylith::topology::Field::Discretization _solnDiscretizations[3] = {
         pylith::topology::Field::Discretization(2, 2), // disp
         pylith::topology::Field::Discretization(2, 2), // vel
@@ -496,7 +498,7 @@ pylith::PlanePWave::TriP2(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestFault_Data*
 pylith::PlanePWave::TriP3(void) {
-    TestFault_Data* data = pylith::_PlanePWave::createData();assert(data);
+    TestFault_Data* data = pylith::_PlanePWave::createData();REQUIRE(data);
 
     data->meshFilename = "data/tri.mesh";
 
@@ -512,8 +514,8 @@ pylith::PlanePWave::TriP3(void) {
     };
     data->faultAuxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_faultAuxDiscretizations);
 
-    assert(2 == data->numSolnSubfieldsDomain);
-    assert(1 == data->numSolnSubfieldsFault);
+    REQUIRE(2 == data->numSolnSubfieldsDomain);
+    REQUIRE(1 == data->numSolnSubfieldsFault);
     static const pylith::topology::Field::Discretization _solnDiscretizations[3] = {
         pylith::topology::Field::Discretization(3, 3), // disp
         pylith::topology::Field::Discretization(3, 3), // vel
@@ -528,7 +530,7 @@ pylith::PlanePWave::TriP3(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestFault_Data*
 pylith::PlanePWave::TriP4(void) {
-    TestFault_Data* data = pylith::_PlanePWave::createData();assert(data);
+    TestFault_Data* data = pylith::_PlanePWave::createData();REQUIRE(data);
 
     data->meshFilename = "data/tri.mesh";
 
@@ -544,8 +546,8 @@ pylith::PlanePWave::TriP4(void) {
     };
     data->faultAuxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_faultAuxDiscretizations);
 
-    assert(2 == data->numSolnSubfieldsDomain);
-    assert(1 == data->numSolnSubfieldsFault);
+    REQUIRE(2 == data->numSolnSubfieldsDomain);
+    REQUIRE(1 == data->numSolnSubfieldsFault);
     static const pylith::topology::Field::Discretization _solnDiscretizations[3] = {
         pylith::topology::Field::Discretization(4, 4), // disp
         pylith::topology::Field::Discretization(4, 4), // vel
@@ -560,12 +562,12 @@ pylith::PlanePWave::TriP4(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestFault_Data*
 pylith::PlanePWave::QuadQ1(void) {
-    TestFault_Data* data = pylith::_PlanePWave::createData();assert(data);
+    TestFault_Data* data = pylith::_PlanePWave::createData();REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 
-    assert(2 == data->numSolnSubfieldsDomain);
-    assert(1 == data->numSolnSubfieldsFault);
+    REQUIRE(2 == data->numSolnSubfieldsDomain);
+    REQUIRE(1 == data->numSolnSubfieldsFault);
     static const pylith::topology::Field::Discretization _solnDiscretizations[3] = {
         pylith::topology::Field::Discretization(1, 1), // disp
         pylith::topology::Field::Discretization(1, 1), // vel
@@ -580,7 +582,7 @@ pylith::PlanePWave::QuadQ1(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestFault_Data*
 pylith::PlanePWave::QuadQ2(void) {
-    TestFault_Data* data = pylith::_PlanePWave::createData();assert(data);
+    TestFault_Data* data = pylith::_PlanePWave::createData();REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 
@@ -596,8 +598,8 @@ pylith::PlanePWave::QuadQ2(void) {
     };
     data->faultAuxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_faultAuxDiscretizations);
 
-    assert(2 == data->numSolnSubfieldsDomain);
-    assert(1 == data->numSolnSubfieldsFault);
+    REQUIRE(2 == data->numSolnSubfieldsDomain);
+    REQUIRE(1 == data->numSolnSubfieldsFault);
     static const pylith::topology::Field::Discretization _solnDiscretizations[3] = {
         pylith::topology::Field::Discretization(2, 2), // disp
         pylith::topology::Field::Discretization(2, 2), // vel
@@ -612,7 +614,7 @@ pylith::PlanePWave::QuadQ2(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestFault_Data*
 pylith::PlanePWave::QuadQ3(void) {
-    TestFault_Data* data = pylith::_PlanePWave::createData();assert(data);
+    TestFault_Data* data = pylith::_PlanePWave::createData();REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 
@@ -628,8 +630,8 @@ pylith::PlanePWave::QuadQ3(void) {
     };
     data->faultAuxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_faultAuxDiscretizations);
 
-    assert(2 == data->numSolnSubfieldsDomain);
-    assert(1 == data->numSolnSubfieldsFault);
+    REQUIRE(2 == data->numSolnSubfieldsDomain);
+    REQUIRE(1 == data->numSolnSubfieldsFault);
     static const pylith::topology::Field::Discretization _solnDiscretizations[3] = {
         pylith::topology::Field::Discretization(3, 3), // disp
         pylith::topology::Field::Discretization(3, 3), // vel
@@ -644,7 +646,7 @@ pylith::PlanePWave::QuadQ3(void) {
 // ------------------------------------------------------------------------------------------------
 pylith::TestFault_Data*
 pylith::PlanePWave::QuadQ4(void) {
-    TestFault_Data* data = pylith::_PlanePWave::createData();assert(data);
+    TestFault_Data* data = pylith::_PlanePWave::createData();REQUIRE(data);
 
     data->meshFilename = "data/quad.mesh";
 
@@ -660,8 +662,8 @@ pylith::PlanePWave::QuadQ4(void) {
     };
     data->faultAuxDiscretizations = const_cast<pylith::topology::Field::Discretization*>(_faultAuxDiscretizations);
 
-    assert(2 == data->numSolnSubfieldsDomain);
-    assert(1 == data->numSolnSubfieldsFault);
+    REQUIRE(2 == data->numSolnSubfieldsDomain);
+    REQUIRE(1 == data->numSolnSubfieldsFault);
     static const pylith::topology::Field::Discretization _solnDiscretizations[3] = {
         pylith::topology::Field::Discretization(4, 4), // disp
         pylith::topology::Field::Discretization(4, 4), // vel
