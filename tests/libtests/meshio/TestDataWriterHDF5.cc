@@ -13,7 +13,7 @@
 #include "TestDataWriterHDF5.hh" // Implementation of class methods
 
 #include "pylith/utils/types.hh" // HASA PylithScalar
-#include "pylith/utils/error.h" // HASA PYLITH_METHOD_BEGIN/END
+#include "pylith/utils/error.hh" // HASA PYLITH_METHOD_BEGIN/END
 
 #include "catch2/catch_test_macros.hpp"
 #include "catch2/matchers/catch_matchers_floating_point.hpp"
