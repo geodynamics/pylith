@@ -9,49 +9,21 @@
 // =================================================================================================
 #pragma once
 
-#include "pylith/meshio/meshiofwd.hh"
+#include "pylith/meshio/meshiofwd.hh" // forward declarations
+
 #include "pylith/utils/arrayfwd.hh" // USES string_vector
 
-#include "hdf5.h"
+#include <hdf5.h> // USES hid_t
 
-#include <string>
-#include <vector>
-
-class pylith::meshio::HDF5 {
+// HDF5 -----------------------------------------------------------------
+/** High-level serial interface for HDF5 operations.
+ *
+ * @warning Do not use this object for parallel I/O.
+ */
+class pylith::meshio::HDF5 { // HDF5
     friend class TestHDF5; // Unit testing
 
-    // PUBLIC STRUCTS ---------------------------------------------------------------------
-public:
-
-    // Structs for packaging method arguments and return values.
-
-    /// Dataset.
-    template <typename T>
-    struct Dataset {
-        std::vector<T>      data;
-        std::vector<hsize_t> dims;
-    };
-
-    /// Dimensions of a dataset.
-    struct DatasetDims {
-        std::vector<hsize_t> dims;
-    };
-
-    /// Full shape specification for a chunked dataset.
-    struct DatasetShape {
-        std::vector<hsize_t> maxDims; ///< Maximum extents; H5S_UNLIMITED allowed in [0].
-        std::vector<hsize_t> chunkDims; ///< Chunk extents (same rank as maxDims).
-    };
-
-    /// Identifies a single chunk within a chunked dataset.
-    struct ChunkInfo {
-        std::vector<hsize_t> fullDims; ///< Full dataset extent to set via H5Dset_extent.
-        std::vector<hsize_t> chunkDims; ///< Shape of the memory buffer (fullDims but [0]=1).
-        int chunk{0}; ///< Index along the first (time) axis.
-    };
-
-
-    // PUBLIC METHODS ---------------------------------------------------------------------
+    // PUBLIC METHODS -------------------------------------------------------
 public:
 
     /// Default constructor.
@@ -66,10 +38,7 @@ public:
          hid_t mode);
 
     /// Destructor
-    ~HDF5() noexcept;
-
-    HDF5(const HDF5&) = delete;
-    HDF5& operator=(const HDF5&) = delete;
+    ~HDF5(void) noexcept;
 
     /** Open HDF5 file.
      *
@@ -80,13 +49,13 @@ public:
               hid_t mode);
 
     /// Close HDF5 file.
-    void close();
+    void close(void);
 
     /** Check if HDF5 file is open.
      *
      * @returns True if HDF5 file is open, false otherwise.
      */
-    bool isOpen() const;
+    bool isOpen(void) const;
 
     /** Check if HDF5 file has group.
      *
@@ -102,6 +71,26 @@ public:
      */
     bool hasDataset(const char* name);
 
+    /** Get dimensions of dataset.
+     *
+     * @param dims Array of dimensions. [output]
+     * @param ndims Number of dimensions. [output]
+     * @param parent Full path of parent dataset for attribute.
+     * @param name Name of attribute.
+     */
+    void getDatasetDims(hsize_t** dims,
+                        int* ndims,
+                        const char* parent,
+                        const char* name);
+
+    /** Get names of datasets in group.
+     *
+     * @param names Names of datasets.
+     * @param group Name of parent.
+     */
+    void getGroupDatasets(string_vector* names,
+                          const char* parent);
+
     /** Create group.
      *
      * Create group and leave group open for further operations.
@@ -110,62 +99,17 @@ public:
      */
     void createGroup(const char* name);
 
-
-    /** Get dimensions of dataset.
-     *
-     * @param parent Full path of parent dataset for attribute.
-     * @param name Name of attribute.
-     * @returns Dataset dimensions.
-     */
-    DatasetDims getDatasetDims(const char* parent,
-                               const char* name);
-
-    /** Get names of datasets in group.
-     *
-     * @param group Name of parent.
-     * @returns Names of datasets.
-     */
-    string_vector getGroupDatasets(const char* parent);
-
     /** Set scalar attribute.
      *
      * @param parent Full path of parent dataset for attribute.
      * @param name Name of attribute.
      * @param value Attribute value.
+     * @param datatype Datatype of scalar.
      */
-    template <typename T>
     void writeAttribute(const char* parent,
                         const char* name,
-                        T value);
-
-    /** Read scalar attribute.
-     *
-     * @param parent Full path of parent dataset for attribute.
-     * @param name Name of attribute.
-     * @returns Attribute value.
-     */
-    template <typename T>
-    T readAttribute(const char* parent,
-                    const char* name);
-
-    /** Set string attribute.
-     *
-     * @param parent Full path of parent dataset for attribute.
-     * @param name Name of attribute.
-     * @param value String value
-     */
-    void writeAttributeString(const char* parent,
-                              const char* name,
-                              const char* value);
-
-    /** Read string attribute.
-     *
-     * @param parent Full path of parent dataset for attribute.
-     * @param name Name of attribute.
-     * @returns value String value
-     */
-    std::string readAttributeString(const char* parent,
-                                    const char* name);
+                        const void* value,
+                        hid_t datatype);
 
     /** Set scalar attribute (used with external handle to HDF5 file,
      * such as PetscHDF5Viewer).
@@ -174,12 +118,24 @@ public:
      * @param parent Full path of parent dataset for attribute.
      * @param name Name of attribute.
      * @param value Attribute value.
+     * @param datatype Datatype of scalar.
      */
-    template <typename T>
-    static void writeAttribute(hid_t h5,
-                               const char* parent,
-                               const char* name,
-                               T value);
+    static
+    void writeAttribute(hid_t h5,
+                        const char* parent,
+                        const char* name,
+                        const void* value,
+                        hid_t datatype);
+
+    /** Set string attribute.
+     *
+     * @param parent Full path of parent dataset for attribute.
+     * @param name Name of attribute.
+     * @param value String value
+     */
+    void writeAttribute(const char* parent,
+                        const char* name,
+                        const char* value);
 
     /** Set string attribute (used with external handle to HDF5 file,
      * such as PetscHDF5Viewer).
@@ -189,44 +145,82 @@ public:
      * @param name Name of attribute.
      * @param value String value
      */
-    static void writeAttributeString(hid_t h5,
-                                     const char* parent,
-                                     const char* name,
-                                     const char* value);
+    static
+    void writeAttribute(hid_t h5,
+                        const char* parent,
+                        const char* name,
+                        const char* value);
+
+    /** Read scalar attribute.
+     *
+     * @param parent Full path of parent dataset for attribute.
+     * @param name Name of attribute.
+     * @param value Attribute value.
+     */
+    void readAttribute(const char* parent,
+                       const char* name,
+                       void* value);
+
+    /** Read string attribute.
+     *
+     * @param parent Full path of parent dataset for attribute.
+     * @param name Name of attribute.
+     * @returns value String value
+     */
+    std::string readAttribute(const char* parent,
+                              const char* name);
 
     /** Create dataset.
      *
      * @param parent Full path of parent group for dataset.
      * @param name Name of dataset.
-     * @param shape Dataset dimensions.
+     * @param maxDims Maximum dimensions of data.
+     * @param dimsChunk Dimensions of data chunks.
+     * @param ndims Number of dimensions of data.
+     * @param datatype Type of data.
      */
-    template <typename T>
     void createDataset(const char* parent,
                        const char* name,
-                       const DatasetShape& shape);
+                       const hsize_t* maxDims,
+                       const hsize_t* dimsChunk,
+                       const int ndims,
+                       hid_t datatype);
 
     /** Read dataset.
      *
+     * @param data Data.
+     * @param dims Dimensions of data.
+     * @param ndims Number of dimensions of data.
+     * @param datatype Type of data.
      * @param parent Full path of parent group for dataset.
      * @param name Name of dataset.
-     * @returns Dataset.
      */
-    template <typename T>
-    Dataset<T> readDataset(const char* parent,
-                           const char* name);
+    void readDataset(char** const data,
+                     hsize_t** const dims,
+                     int* const ndims,
+                     hid_t datatype,
+                     const char* parent,
+                     const char* name);
 
     /** Append chunk to dataset.
      *
      * @param parent Full path of parent group for dataset.
      * @param name Name of dataset.
      * @param data Data.
-     * @param chunk Chunk information.
+     * @param dims Current total dimensions of data.
+     * @param dimsChunk Dimension of data chunk to write.
+     * @param ndims Number of dimensions of data.
+     * @param chunk Index of data chunk.
+     * @param datatype Type of data.
      */
-    template <typename T>
     void writeDatasetChunk(const char* parent,
                            const char* name,
-                           const std::vector<T>& data,
-                           const ChunkInfo& chunk);
+                           const void* data,
+                           const hsize_t* dims,
+                           const hsize_t* dimsChunk,
+                           const int ndims,
+                           const int chunk,
+                           hid_t datatype);
 
     /** Read dataset chunk.
      *
@@ -234,13 +228,19 @@ public:
      *
      * @param parent Full path of parent group for dataset.
      * @param name Name of dataset.
+     * @param data Data.
+     * @param dims Dimensions of chunk.
+     * @param ndims Number of dimensions of chunk.
      * @param chunk Index of data slice.
-     * @returns Dataset chunk.
+     * @param datatype Type of data.
      */
-    template <typename T>
-    Dataset<T> readDatasetChunk(const char* parent,
-                                const char* name,
-                                int chunk);
+    void readDatasetChunk(const char* parent,
+                          const char* name,
+                          char** const data,
+                          hsize_t** const dimsChunk,
+                          int* const ndims,
+                          const int chunk,
+                          hid_t datatype);
 
     /** Create dataset associated with data stored in a raw external
      * binary file.
@@ -248,14 +248,16 @@ public:
      * @param parent Full path of parent group for dataset.
      * @param name Name of dataset.
      * @param filename Name of external raw data file.
-     * @param maxDims Maximum dimensions.
-     * @param datatype Datatype of external data.
+     * @param maxDims Maximum dimensions of data.
+     * @param ndims Number of dimensions of data.
+     * @param datatype Type of data.
      */
     void createDatasetRawExternal(const char* parent,
                                   const char* name,
                                   const char* filename,
-                                  const DatasetDims& maxDims,
-                                  const hid_t datatype);
+                                  const hsize_t* maxDims,
+                                  const int ndims,
+                                  hid_t datatype);
 
     /** Update the properties of a dataset associated with data stored
      * in a raw external binary file.
@@ -263,10 +265,12 @@ public:
      * @param parent Full path of parent group for dataset.
      * @param name Name of dataset.
      * @param dims Dimensions of data.
+     * @param ndims Number of dimensions of data.
      */
     void extendDatasetRawExternal(const char* parent,
                                   const char* name,
-                                  const DatasetDims& dims);
+                                  const hsize_t* dims,
+                                  const int ndims);
 
     /** Write dataset comprised of an array of strings.
      *
@@ -281,7 +285,7 @@ public:
     void writeDataset(const char* parent,
                       const char* name,
                       const char* const* sarray,
-                      int nstrings);
+                      const int nstrings);
 
     /** Write dataset comprised of an array of fixed length strings.
      *
@@ -294,23 +298,26 @@ public:
     void writeDataset(const char* parent,
                       const char* name,
                       const char* sarray,
-                      int nstrings,
-                      int slen);
+                      const int nstrings,
+                      const int slen);
 
-    /** Write dataset comprised of an array of fixed length strings.
+    /** Write dataset comprised of an array of fixed length strings (used with
+     * external handle to HDF5 file, such as PetscHDF5Viewer).
      *
+     * @param h5 HDF5 file.
      * @param parent Full path of parent group for dataset.
      * @param name Name of dataset.
      * @param sarray Array of null terminated C strings.
      * @param nstrings Size of array.
      * @param slen Fixed string length.
      */
-    static void writeDataset(hid_t h5,
-                             const char* parent,
-                             const char* name,
-                             const char* sarray,
-                             int nstrings,
-                             int slen);
+    static
+    void writeDataset(hid_t h5,
+                      const char* parent,
+                      const char* name,
+                      const char* sarray,
+                      const int nstrings,
+                      const int slen);
 
     /** Read dataset comprised of an array of strings.
      *
@@ -321,19 +328,11 @@ public:
     pylith::string_vector readDataset(const char* parent,
                                       const char* name);
 
-    // PRIVATE METHODS --------------------------------------------------------------------
+    // PRIVATE MEMBERS ------------------------------------------------------
 private:
 
-    // Map a C++ scalar type to the corresponding native HDF5 type.
-    template <typename T> static hid_t _h5NativeType();
+    hid_t _file; ///< HDF5 file
 
-    // PRIVATE MEMBERS --------------------------------------------------------------------
-private:
-
-    hid_t _file;
 }; // HDF5
-
-
-#include "HDF5.icc"
 
 // End of file

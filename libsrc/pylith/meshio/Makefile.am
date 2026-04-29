@@ -15,6 +15,7 @@ include $(top_srcdir)/subpackage.am
 subpkginclude_HEADERS = \
 	DataWriter.hh \
 	HDF5.hh \
+	HDF5.icc \
 	Xdmf.hh \
 	DataWriterHDF5.hh \
 	DataWriterHDF5.icc \

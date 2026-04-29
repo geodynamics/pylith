@@ -194,7 +194,7 @@ pylith::meshio::DataWriterHDF5::writeVertexField(const PylithScalar t,
             assert(h5 >= 0);
             std::string fullName = std::string("/vertex_fields/") + std::string(name);
             const char* sattr = pylith::topology::FieldBase::vectorFieldString(subfield.getDescription().vectorFieldType);
-            HDF5::writeAttribute(h5, fullName.c_str(), "vector_field_type", sattr);
+            HDF5::writeAttributeString(h5, fullName.c_str(), "vector_field_type", sattr);
         } // if
 
     } catch (const std::exception& err) {
@@ -254,7 +254,7 @@ pylith::meshio::DataWriterHDF5::writeCellField(const PylithScalar t,
             assert(h5 >= 0);
             std::string fullName = std::string("/cell_fields/") + std::string(name);
             const char* sattr = pylith::topology::FieldBase::vectorFieldString(subfield.getDescription().vectorFieldType);
-            HDF5::writeAttribute(h5, fullName.c_str(), "vector_field_type", sattr);
+            HDF5::writeAttributeString(h5, fullName.c_str(), "vector_field_type", sattr);
         } // if
     } catch (const std::exception& err) {
         std::ostringstream msg;

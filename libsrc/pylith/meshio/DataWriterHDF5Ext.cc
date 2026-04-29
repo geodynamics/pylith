@@ -71,8 +71,7 @@ pylith::meshio::DataWriterHDF5Ext::DataWriterHDF5Ext(const DataWriterHDF5Ext& w)
     DataWriter(w),
     _filename(w._filename),
     _h5(new HDF5),
-    _tstampIndex(0) { // copy constructor
-} // copy constructor
+    _tstampIndex(0) {}
 
 
 // ----------------------------------------------------------------------
@@ -155,8 +154,6 @@ pylith::meshio::DataWriterHDF5Ext::writeVertexField(const PylithScalar t,
         PylithCallPetsc(MPI_Comm_rank(comm, &commRank));
         const bool isMPIRoot = 0 == commRank;
 
-        const hid_t scalartype = (sizeof(double) == sizeof(PylithScalar)) ? H5T_IEEE_F64BE : H5T_IEEE_F32BE;
-
         // Create external dataset if necessary
         PetscViewer binaryViewer;
         bool createdExternalDataset = false;
@@ -211,27 +208,27 @@ pylith::meshio::DataWriterHDF5Ext::writeVertexField(const PylithScalar t,
                 } // for
                 PylithCallPetsc(ISRestoreIndices(globalVertexNumbers, &indices));
             } // if
-            int fiberDimLocal = dof;
-            int fiberDim = 0;
-            PylithCallPetsc(MPI_Allreduce(&fiberDimLocal, &fiberDim, 1, MPI_INT, MPI_MAX, comm));
+            int numComponentsLocal = dof;
+            int numComponents = 0;
+            PylithCallPetsc(MPI_Allreduce(&numComponentsLocal, &numComponents, 1, MPI_INT, MPI_MAX, comm));
             PylithCallPetsc(MPI_Allreduce(&numVerticesLocal, &numVertices, 1, MPI_INT, MPI_SUM, comm));
-            assert(fiberDim > 0);assert(numVertices > 0);
+            assert(numComponents > 0);assert(numVertices > 0);
 
             datasetInfo.numPoints = numVertices;
-            datasetInfo.fiberDim = fiberDim;
+            datasetInfo.numComponents = numComponents;
 
             if (isMPIRoot) {
                 // Add new external dataset to HDF5 file.
-                const hsize_t ndims = 3;
-                hsize_t maxDims[ndims];
+                HDF5::DatasetDims maxDims;
+                maxDims.dims.resize(3);
                 if (!DataWriter::_isInfo) {
-                    maxDims[0] = H5S_UNLIMITED;
-                    maxDims[1] = datasetInfo.numPoints;
-                    maxDims[2] = datasetInfo.fiberDim;
+                    maxDims.dims[0] = H5S_UNLIMITED;
+                    maxDims.dims[1] = datasetInfo.numPoints;
+                    maxDims.dims[2] = datasetInfo.numComponents;
                 } else {
-                    maxDims[0] = 1;
-                    maxDims[1] = datasetInfo.numPoints;
-                    maxDims[2] = datasetInfo.fiberDim;
+                    maxDims.dims[0] = 1;
+                    maxDims.dims[1] = datasetInfo.numPoints;
+                    maxDims.dims[2] = datasetInfo.numComponents;
                 } // else
 
                 // Create 'vertex_fields' group if necessary.
@@ -239,20 +236,22 @@ pylith::meshio::DataWriterHDF5Ext::writeVertexField(const PylithScalar t,
                     _h5->createGroup("/vertex_fields");
                 } // if
 
-                _h5->createDatasetRawExternal("/vertex_fields", name, _datasetFilename(name).c_str(), maxDims, ndims, scalartype);
+                // PETSc writes binary data as big endian
+                const hid_t scalarType = (sizeof(double) == sizeof(PylithScalar)) ? H5T_IEEE_F64BE : H5T_IEEE_F32BE;
+                _h5->createDatasetRawExternal("/vertex_fields", name, _datasetFilename(name).c_str(), maxDims, scalarType);
                 std::string fullName = std::string("/vertex_fields/") + name;
                 const char* sattr = pylith::topology::FieldBase::vectorFieldString(subfield.getDescription().vectorFieldType);
-                _h5->writeAttribute(fullName.c_str(), "vector_field_type", sattr);
+                _h5->writeAttributeString(fullName.c_str(), "vector_field_type", sattr);
             } // if
         } else if (isMPIRoot) {
             // Update number of time steps in external dataset info in HDF5 file.
-            const hsize_t ndims = 3;
-            hsize_t dims[3];
-            dims[0] = datasetInfo.numTimeSteps; // update to current value
-            dims[1] = datasetInfo.numPoints;
-            dims[2] = datasetInfo.fiberDim;
+            HDF5::DatasetDims currentDims;
+            currentDims.dims.resize(3);
+            currentDims.dims[0] = datasetInfo.numTimeSteps; // update to current value
+            currentDims.dims[1] = datasetInfo.numPoints;
+            currentDims.dims[2] = datasetInfo.numComponents;
 
-            _h5->extendDatasetRawExternal("/vertex_fields", name, dims, ndims);
+            _h5->extendDatasetRawExternal("/vertex_fields", name, currentDims);
         } // if/else
 
         if (isMPIRoot) {
@@ -290,8 +289,6 @@ pylith::meshio::DataWriterHDF5Ext::writeCellField(const PylithScalar t,
         PylithCallPetsc(PetscObjectGetComm((PetscObject) dmMesh, &comm));
         PylithCallPetsc(MPI_Comm_rank(comm, &commRank));
         const bool isMPIRoot = 0 == commRank;
-
-        const hid_t scalartype = (sizeof(double) == sizeof(PylithScalar)) ? H5T_IEEE_F64BE : H5T_IEEE_F32BE;
 
         // Create external dataset if necessary
         PetscViewer binaryViewer;
@@ -346,27 +343,27 @@ pylith::meshio::DataWriterHDF5Ext::writeCellField(const PylithScalar t,
                 } // for
                 PylithCallPetsc(ISRestoreIndices(globalCellNumbers, &indices));
             } // if
-            int fiberDimLocal = dof;
-            int fiberDim = 0;
-            MPI_Allreduce(&fiberDimLocal, &fiberDim, 1, MPI_INT, MPI_MAX, comm);
+            int numComponentsLocal = dof;
+            int numComponents = 0;
+            MPI_Allreduce(&numComponentsLocal, &numComponents, 1, MPI_INT, MPI_MAX, comm);
             PylithCallPetsc(MPI_Allreduce(&numLocalCells, &numCells, 1, MPI_INT, MPI_SUM, comm));
-            assert(fiberDim > 0);assert(numCells > 0);
+            assert(numComponents > 0);assert(numCells > 0);
 
             datasetInfo.numPoints = numCells;
-            datasetInfo.fiberDim = fiberDim;
+            datasetInfo.numComponents = numComponents;
 
             if (isMPIRoot) {
                 // Add new external dataset to HDF5 file.
-                const hsize_t ndims = 3;
-                hsize_t maxDims[ndims];
+                HDF5::DatasetDims maxDims;
+                maxDims.dims.resize(3);
                 if (!DataWriter::_isInfo) {
-                    maxDims[0] = H5S_UNLIMITED;
-                    maxDims[1] = datasetInfo.numPoints;
-                    maxDims[2] = datasetInfo.fiberDim;
+                    maxDims.dims[0] = H5S_UNLIMITED;
+                    maxDims.dims[1] = datasetInfo.numPoints;
+                    maxDims.dims[2] = datasetInfo.numComponents;
                 } else {
-                    maxDims[0] = 1;
-                    maxDims[1] = datasetInfo.numPoints;
-                    maxDims[2] = fiberDim;
+                    maxDims.dims[0] = 1;
+                    maxDims.dims[1] = datasetInfo.numPoints;
+                    maxDims.dims[2] = numComponents;
                 } // else
 
                 // Create 'cell_fields' group if necessary.
@@ -374,20 +371,22 @@ pylith::meshio::DataWriterHDF5Ext::writeCellField(const PylithScalar t,
                     _h5->createGroup("/cell_fields");
                 } // if
 
-                _h5->createDatasetRawExternal("/cell_fields", name, _datasetFilename(name).c_str(), maxDims, ndims, scalartype);
+                // PETSc writes binary data as big endian
+                const hid_t scalarType = (sizeof(double) == sizeof(PylithScalar)) ? H5T_IEEE_F64BE : H5T_IEEE_F32BE;
+                _h5->createDatasetRawExternal("/cell_fields", name, _datasetFilename(name).c_str(), maxDims, scalarType);
                 std::string fullName = std::string("/cell_fields/") + name;
                 const char* sattr = pylith::topology::FieldBase::vectorFieldString(subfield.getDescription().vectorFieldType);
-                _h5->writeAttribute(fullName.c_str(), "vector_field_type", sattr);
+                _h5->writeAttributeString(fullName.c_str(), "vector_field_type", sattr);
             } // if
 
         } else if (isMPIRoot) {
             // Update number of time steps in external dataset info in HDF5 file.
-            const hsize_t ndims = 3;
-            hsize_t dims[3];
-            dims[0] = datasetInfo.numTimeSteps; // update to current value
-            dims[1] = datasetInfo.numPoints;
-            dims[2] = datasetInfo.fiberDim;
-            _h5->extendDatasetRawExternal("/cell_fields", name, dims, ndims);
+            HDF5::DatasetDims currentDims;
+            currentDims.dims.resize(3);
+            currentDims.dims[0] = datasetInfo.numTimeSteps; // update to current value
+            currentDims.dims[1] = datasetInfo.numPoints;
+            currentDims.dims[2] = datasetInfo.numComponents;
+            _h5->extendDatasetRawExternal("/cell_fields", name, currentDims);
         } // if/else
 
         if (isMPIRoot) {
@@ -531,33 +530,33 @@ pylith::meshio::DataWriterHDF5Ext::_writeTimeStamp(const PylithScalar t) {
 
     assert(_h5);
 
-    const int ndims = 3;
-    const hid_t scalartype = (sizeof(double) == sizeof(PylithScalar)) ? H5T_NATIVE_DOUBLE : H5T_NATIVE_FLOAT;
+    const int ndims = 3; // Use 3 dims for compatibility with PETSc viewer
+    HDF5::DatasetShape shape;
 
     // Each time stamp has a size of 1.
-    hsize_t dimsChunk[3]; // Use 3 dims for compatibility with PETSc viewer
-    dimsChunk[0] = 1;
-    dimsChunk[1] = 1;
-    dimsChunk[2] = 1;
+    shape.chunkDims.resize(ndims);
+    shape.chunkDims[0] = 1;
+    shape.chunkDims[1] = 1;
+    shape.chunkDims[2] = 1;
 
     if (!_h5->hasDataset("/time")) {
-        // Create dataset
-        // Dataset has unknown size.
-        hsize_t dims[3];
-        dims[0] = H5S_UNLIMITED;
-        dims[1] = 1;
-        dims[2] = 1;
-        _h5->createDataset("/", "time", dims, dimsChunk, ndims, scalartype);
+        shape.maxDims.resize(ndims);
+        shape.maxDims[0] = H5S_UNLIMITED;
+        shape.maxDims[1] = 1;
+        shape.maxDims[2] = 1;
+        _h5->createDataset<PylithReal>("/", "time", shape);
     } // if
 
     // Write time stamp as chunk to HDF5 file.
-    // Current dimensions of dataset.
-    hsize_t dims[3];
-    dims[0] = _tstampIndex+1;
-    dims[1] = 1;
-    dims[2] = 1;
-    const PylithScalar tDim = t * DataWriter::_timeScale;
-    _h5->writeDatasetChunk("/", "time", &tDim, dims, dimsChunk, ndims, _tstampIndex, scalartype);
+    HDF5::ChunkInfo chunk;
+    chunk.fullDims.resize(ndims);
+    chunk.fullDims[0] = _tstampIndex+1;
+    chunk.fullDims[1] = 1;
+    chunk.fullDims[2] = 1;
+    chunk.chunkDims = shape.chunkDims;
+    std::vector<PylithReal> tDim(1);
+    tDim[0] = t * DataWriter::_timeScale;
+    _h5->writeDatasetChunk<PylithReal>("/", "time", tDim, chunk);
 
     _tstampIndex++;
 

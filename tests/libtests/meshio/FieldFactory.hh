@@ -60,18 +60,14 @@ public:
 
     /** Set values in field.
      *
-     * @param[in] values Array of values for all subfields.
-     * @param[in] numPoints Number of points associated with values.
-     * @param[in] numDOF Total number of values per point.
+     * @param[in] fieldFn Function used to populate field values.
      */
-    void setValues(const PylithScalar* values,
-                   const PylithInt numPoints,
-                   const PylithInt numDOF);
+    void setValues(PetscUserFieldFunc fieldFn);
 
     // PRIVATE MEMBERS ////////////////////////////////////////////////////
 private:
 
-    pylith::topology::Field& _field; ///< Field witn subfields.
+    pylith::topology::Field& _field; ///< Field with subfields.
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////
 private:

@@ -246,7 +246,7 @@ pylith::meshio::DataWriter::_writeVec(PetscVec vector,
                                       PetscViewer viewer) {
     // From plexhdf5.c DMPlexGlobalVectorView_HDF5_Internal
 
-    /* To save vec in where we want, we create a new Vec (temp) with           */
+    /* To save vec where we want, we create a new Vec (temp) with           */
     /* VecCreate(), wrap the vec data in temp, and call VecView(temp, viewer). */
     PetscVec temp;
     const PetscScalar *array;
