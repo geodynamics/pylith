@@ -5,7 +5,7 @@ We consider the solver parameters used in PyLith versions 3.x (Schur complement)
 ## Schur Complement
 
 In PyLith versions 3.0--4.0, the default solver parameters for linear elasticity with prescribed slip use a Schur complement approach ({numref}`listing:solver:parameters:fieldsplit:selfp`).
-We use lower factorization (`pc_fieldsplit_schur_factorization_type = lower`) with the preconditioning for the Schur complement generated from an explicitly-assembled approximation (`pc_fieldsplit_schur_precondition = selfp`), $S_p=A_{11} − A_{10} (\mathit{diag}(A_{00}))^{-1} A_{01}$ \cite{petsc}.
+We use lower factorization (`pc_fieldsplit_schur_factorization_type = lower`) with the preconditioning for the Schur complement generated from an explicitly-assembled approximation (`pc_fieldsplit_schur_precondition = selfp`), $S_p=A_{11} - A_{10} (\mathit{diag}(A_{00}))^{-1} A_{01}$ \cite{petsc}.
 Within the blocks, we use algebraic multigrid preconditioning with only one application of the preconditioner (`preonly`).
 
 ```{code-block} cfg
@@ -163,6 +163,6 @@ To achieve a given level of accuracy in the displacement field relative to the s
 For example, to achieve an accuracy in the displacement field of 1.0e-7 relative to the nominal displacement, $u_\mathit{nominal}$, we use
 
 \begin{gather}
-\text{ksp_atol} = 1.0 \times 10^{-7} \ u_\mathit{nominal} / h_o, \\
-\text{snes_atol} = 4.0 \times 10^{-7} \ u_\mathit{nominal} / h_o.
+\text{ksp\_atol} = 1.0 \times 10^{-7} \ u_\mathit{nominal} / h_o, \\
+\text{snes\_atol} = 4.0 \times 10^{-7} \ u_\mathit{nominal} / h_o.
 \end{gather}
