@@ -91,7 +91,6 @@ import coordsys
 KM = 1000.0  # scale to convert km to m
 
 SLAB_CONTOURS_FILENAME = "cas_contours_dep.in.txt.gz"
-SURFACE_SLABTOP_FILENAME = "scratch/cubit_surf_splay.sat"
 SLAB_THICKNESS = 50.0 * KM
 DOMAIN_X = DOMAIN_Y = 800 * KM
 DOMAIN_Z = 400 * KM
@@ -243,7 +242,6 @@ def _create_slab_top_surface():
     cubit.cmd(f"create surface skin curve {ids_from_entities(splines)}")
     cubit.cmd("delete curve all")
     cubit.cmd("delete vertex all")
-    cubit.cmd(f"export acis '{SURFACE_SLABTOP_FILENAME}' overwrite")
     surface = get_last_entity("surface")
     return surface, contours
 
@@ -288,7 +286,6 @@ def _create_splay_fault_surface(contours):
     cubit.cmd(f"create surface skin curve {ids_from_entities(splines)}")
     cubit.cmd("delete curve all")
     cubit.cmd("delete vertex all")
-    cubit.cmd(f"export acis '{SURFACE_SLABTOP_FILENAME}' overwrite")
     surface = get_last_entity("surface")
     return surface
 
@@ -352,7 +349,7 @@ v_crust = get_entity("volume", "crust@A")
 v_crust.remove_entity_names()
 v_crust.set_entity_name("crust")
 
-# Enscribe the rupture patch onto the geometry of the subducting slab
+# Inscribe the rupture patch onto the geometry of the subducting slab
 # surface by chopping the original slab volume and then imprinting the surface
 # onto the wedge and crust.
 v_slabtop = s_slabtop.volumes()[0]
