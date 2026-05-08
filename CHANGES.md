@@ -16,6 +16,7 @@ The version numbers are in the form `MAJOR.MINOR.PATCH`, where major releases in
     * Updated default solver tolerances consistent with the new nondimensionalization scales.
   * Added option to use adaptive time stepping and update examples `reverse-2d` Steps 7 and 8 and `magma-2d` Step 1 to demonstrate its use.
   * Updated multi-grid preconditioner solver settings for elasticity for better scalability with problem size.
+  * Updated `examples/subduction-3d` to include generation of the finite-element mesh using Gmsh or Cubit using Python scripts. The Gmsh model includes topography and bathymetry.
   * Mesh formats
     * Added support for use of Cubit side sets and Gmsh physical groups with edges (2D) and surfaces (3D). Use of Cubit vertex sets and Gmsh physical groups with vertices are deprecated and support for them will be removed in version 6.0.0.
       * Use of Cubit side sets and Gmsh physical groups with curves (2D) and surfaces (3D) are using
