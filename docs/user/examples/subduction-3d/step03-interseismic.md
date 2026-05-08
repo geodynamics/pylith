@@ -31,7 +31,7 @@ We also adjust the nodesets used for the boundary conditions to remove overlap w
 
 ```{code-block} console
 ---
-caption: Run Step 3 simulation
+caption: Run Step 3 simulation using the Gmsh mesh.
 ---
 $ pylith step03_interseismic.cfg mat_viscoelastic.cfg
 
@@ -87,7 +87,6 @@ ts_type = beuler
  >> /software/unix/py3.12-venv/pylith-opt/lib/python3.12/site-packages/pylith/problems/Problem.py:199:finalize
  -- timedependent(info)
  -- Finalizing problem.
-
 ```
 
 The beginning of the output is nearly the same as in Step 2.
@@ -95,6 +94,13 @@ The simulation advances 21 time steps.
 The linear solve converged after 13 iterations and the norm of the residual met the absolute convergence tolerance (`ksp_atol`) .
 In this simulation the fault interfaces on the top and bottom of the slab occupy a significant fraction of the domain.
 As a result, the linear solver requires many more iterations to converge compared to the limited fault interface in Step 2.
+
+```{code-block} console
+---
+caption: Alternatively, run Step 3 simulation using the Cubit mesh.
+---
+$ pylith step03_interseismic.cfg step03_interseismic_cubit.cfg mat_viscoelastic.cfg
+```
 
 ## Visualizing the results
 

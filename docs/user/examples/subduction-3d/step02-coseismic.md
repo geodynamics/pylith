@@ -35,7 +35,7 @@ We impose oblique slip with 1.0 m of right-lateral slip and 4.0 m of reverse sli
 
 ```{code-block} console
 ---
-caption: Run Step 2 simulation
+caption: Run Step 2 simulation using the Gmsh mesh.
 ---
 $ pylith step02_coseismic.cfg mat_viscoelastic.cfg
 
@@ -101,6 +101,13 @@ We also see the PETSc solver options, which show use of the variable point-block
 At the end of the output written to the terminal, we see that the solver advanced the solution 21 time steps.
 The linear solve converged after 5 iterations and the norm of the residual met the absolute convergence tolerance (`ksp_atol`) .
 The nonlinear solve converged in 1 iteration, which we expect because this is a linear problem, and the residual met the absolute convergence tolerance (`snes_atol`).
+
+```{code-block} console
+---
+caption: Alternatively, run Step 2 simulation using the Cubit mesh.
+---
+$ pylith step02_coseismic.cfg step02_coseismic_cubit.cfg mat_viscoelastic.cfg
+```
 
 ## Visualizing the results
 

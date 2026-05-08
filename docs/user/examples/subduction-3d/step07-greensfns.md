@@ -35,7 +35,7 @@ For Green's functions we use the `FaultCohesiveImpulses` kinematic source to pre
 
 ```{code-block} console
 ---
-caption: Run Step 7a and 7b simulations
+caption: Run Step 7a and 7b simulations using the Gmsh mesh.
 ---
 $ pylith step07a_leftlateral.cfg mat_elastic.cfg
 $ pylith step07b_reverse.cfg mat_elastic.cfg
@@ -102,6 +102,14 @@ ts_type = beuler
 The beginning of the output is nearly the same as in several previous examples.
 In this case, however, rather than stepping through time, we are stepping through impulse numbers. In each simulation, there are 93 impulses applied on the fault.
 
+```{code-block} console
+---
+caption: Alternatively, run Step 7a and 7b simulations using the Cubit mesh.
+---
+$ pylith step07a_leftlateral.cfg step07a_leftlateral_cubit.cfg mat_elastic.cfg
+$ pylith step07b_reverse.cfg step07b_reverse_subit.cfg mat_elastic.cfg
+```
+
 ## Visualizing the results
 
 In {numref}`fig:example:subduction:3d:step07a:slip` we use the `pylith_viz` utility to visualize the slip for the impulses on the fault surface.
@@ -124,22 +132,23 @@ The colors of the shaded surface indicate the magnitude of the slip.
 ## Performing a simple inversion
 
 To perform our simulated inversion, we first postprocess the displacement results from Step 6.
-We do this using the `make_synthetic_gnssdisp.py` Python script, which in turn reads the parameters from the `make_synthetic_gnssdisp.cfg` file:
+We do this using the `generate_synthetic_gnssdisp.py` Python script, which in turn reads the parameters from the `generate_synthetic_gnssdisp.cfg` file:
 
 ```{code-block} console
 ---
 caption: Generate synthetic data for inversion
 ---
-$ ./make_synthetic_gnssdisp.py
+$ ./generate_synthetic_gnssdisp.py
 ```
-This script will produce the files `cgnss_synthetic_displacement.txt` and `cgnss_synthetic_displacement.vtk`, which are used in the inversion.
-Once these have been created (and both sets of Green's functions have been generated), we can perform a simple inversion using the `slip_invert.py` script, which in turn reads the inversion parameters from `slip_invert.cfg`.
+
+This script will produce the files `cgnss_synthetic_displacement.txt`, which is used in the inversion.
+Once these have been created (and both sets of Green's functions have been generated), we can perform a simple inversion using the `invert_slip.py` script, which in turn reads the inversion parameters from `invert_slip.cfg`.
 
 ```{code-block} console
 ---
 caption: Perform inversion of synthetic data
 ---
-$ ./slip_invert.py
+$ ./invert_slip.py
 ```
 
 The Python script performs a simple weighted generalized least-squares inversion, with penalty values applied to the deviation of the solution from the a priori value (zero, in this case).

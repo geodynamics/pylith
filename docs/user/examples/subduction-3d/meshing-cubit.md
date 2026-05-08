@@ -4,59 +4,53 @@ We use Cubit to generate the finite-element mesh.
 Due to its size, we do not include the finite-element mesh in the PyLith source or binary distributions.
 See the instructions in the `input/README.md` file for how to download the mesh.
 
-:::{admonition} To-do
-
-- Add Gmsh Python script to generate the finite-element mesh.
-- Replace use of Cubit Journal files with a Python script.
-
-:::
-
-## Setup
+## Overview
 
 We use contours of the Cascadia Subduction Zone from Slab v1.0 {cite}`Hayes:etal:2012` for the geometry of the subduction interface.
-To make use of these contours from within Cubit, we use a Python script (`./generate_surfjou.py`) to read the contours file and create a Cubit journal file (`scratch/cubit_create_surfs.jou`) that adds additional contours west of the trench and then constructs the top and bottom surfaces of the slab. The Python script also constructs a splay fault by copying a contour to a depth below the slab and above the ground surface.
+We ignore topography and bathymetry and use a flat surface at an elevation of mean sea level.
+The data file `cas_contours_dep.in.txt.gz` provides the subduction interface contours.
+The Python script `generate_cubit.py` reads in the subduction interface contour files, constructs the geometry, marks the boundaries, fault surfaces, and materials, and generates the finite-element mesh.
 
 :::{tip}
-We define the coordinate systems we use in the simulations in the Python script `coordsys.py` to make it easier to convert to and from various georeference coordinate systems in the pre- and post-processing. PyLith will automatically convert among compatible coordinate systems during the simulation.
+We define the coordinate systems we use in the simulations in the Python script `coordsys.py` to make it easier to convert to and from various georeference coordinate systems in the pre- and post-processing.
+PyLith will automatically convert among compatible coordinate systems during the simulation.
 :::
-
-```{code-block} console
----
-caption: Generate `generate_surfs.jou`
----
-# Make sure you are in the subduction-3d directory and then run the Python
-# script to generate the journal file scratch/cubit_create_surfs.jou.
-$ ./generate_surfjou.py
-```
-
-## Meshing using Journal Scripts
-
-The next step is to use Cubit to run the `scratch/cubit_create_surfs.jou` journal file to generate the spline surfaces for the slab and splay fault and save them as ACIS surfaces. Note that when using Cubit you will need to set the directory to the `scratch` directory and run the journal file from there.
 
 :::{important}
-The Cubit journal files name objects and then later reference them by name.
-When objects are cut, a suffix of `@LETTER` is appended to the original name (for example, `domain` becomes `domain` and `domain@A`).
-However, which one retains the original name and which ones gets the suffix is ambiguous.
-In general, the names are consistent across versions of Cubit with the same version of the underlying ACIS library.
-**As a result, you may need to update the ids in the references to previously named objects that have been split (for example `domain@A` may need to be changed to `domain@B`, etc) in order to account for differences in how your version of Cubit has named split objects.**
+We recommend running the `generate_cubit.py` Python script from within the Cubit application. You can copy and paste the lines into the command console or load the Python script into the Cubit script editor.
 :::
 
-Currently we discretize the domain using a uniform, coarse resolution of 25 km.
-This allows the simulations to run relatively quickly and fit on a laptop.
-In a real research problem, we would tailor the resolution to match the length scales we want to capture and use a finer resolution.
-We provide journal files for both a mesh with tetrahedral cells (`cubit_tet.jou`) and a mesh with hexahedral cells (`cubit_hex.jou`).
-In the following examples, we will focus exclusively on the mesh with tetrahedral cells because the mesh with hexahedral cells contains cells that are significantly distorted; this illustrates how it is often difficult to generate high quality meshes with hexahedral cells for domains with complex 3D geometry.
+## Geometry
 
-After you generate the ACIS surface files, run the `cubit_tet.jou` journal file to construct the geometry, and generate the mesh. Note that you will need to set your directory back to the `subduction-3d` directory within Cubit before you run this journal file.
-In the end you will have an Exodus-II file `mesh_tet.exo`, which is a NetCDF file, in the `input` directory.
-You can load this file into ParaView.
+We construct the geometry with the following steps:
 
-:::{tip}
-We recommend carefully examining the `cubit_geometry.jou` journal file to understand how we assemble the 3D slab and cut the rectangular domain into pieces.
-:::
+1. Construct basic building blocks.
+   1. Construct a box for the domain.
+   2. Load the subduction interface contours and construct a surface.
+   3. Calculate the average surface normal for the top of the slab.
+   4. Construct the bottom of the slab and build a volume for the slab.
+   5. Construct a splay fault using the slab interface contours.
+   6. Create a box to subdivide the surface for the top of the slab.
+   7. Construct a surface corresponding to the continental Moho.
+2. Combine the basic building blocks.
+   1. Fragment the domain with the slab volume.
+   2. Fragment the domain with the continental Moho surface.
+   3. Fragment the domain with the splay surface to create a wedge.
+   4. Inscribe the patch onto the top of the slab.
+3. Get ids of the various surfaces for use in marking boundaries, faults, and materials.
 
-:::{figure-md} fig:example:subduction:3d:mesh
+## Generate the mesh
+
+We increase the discretization size with distance from the top of the subduction interface.
+We generate the mesh and then use Gmsh mesh quality tools to improve the shape of the cells.
+
+:::{figure-md} fig:example:subduction:3d:cubit
 <img src="figs/cubit-tet.*" alt="Finite-element mesh with tetrahedral cells generated by Cubit." width="75%"/>
 
 Finite-element mesh with tetrahedral cells generated by Cubit.
 :::
+
+## Mark boundaries, faults, and materials
+
+1. Create material blocks for each volume to make it easy to assign different material properties to each one.
+2. Create sidesets corresponding to boundary conditions and faults.

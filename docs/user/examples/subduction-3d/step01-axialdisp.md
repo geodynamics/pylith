@@ -28,7 +28,7 @@ for larger simulations these are sometimes more efficient than the defaults for 
 
 ```{code-block} console
 ---
-caption: Run Step 1 simulation
+caption: Run Step 1 simulation using the Gmsh mesh.
 ---
 $ pylith step01_axialdisp.cfg mat_elastic.cfg
 
@@ -91,7 +91,6 @@ ts_type = beuler
  >> /software/unix/py3.12-venv/pylith-opt/lib/python3.12/site-packages/pylith/problems/Problem.py:199:finalize
  -- timedependent(info)
  -- Finalizing problem.
-
 ```
 
 At the beginning of the output written to the terminal, we see that PyLith is reading the mesh using the `MeshIOCubit` reader and that it found the domain to extend from -460 km to +340 km in the x direction, from -400 km to +400 km in the y direction, and from -400 km to 0 in the z direction.
@@ -100,6 +99,13 @@ The output also includes the scales used for nondimensionalization and the defau
 At the end of the output written to the terminal, we see that the solver advanced the solution 1 time step (static simulation).
 The linear solve converged after 17 iterations and the norm of the residual met the absolute convergence tolerance (`ksp_atol`) .
 The nonlinear solve converged in 1 iteration, which we expect because this is a linear problem, and the residual met the absolute convergence tolerance (`snes_atol`).
+
+```{code-block} console
+---
+caption: Alternatively, run Step 1 simulation using the Cubit mesh.
+---
+$ pylith step01_axialdisp.cfg step01_axialdisp_cubit.cfg mat_elastic.cfg
+```
 
 ## Visualizing the results
 

@@ -2,7 +2,7 @@
 
 This example simulates several slow slip events on the slab interface.
 We prescribe a time history of slip, varying the slip amplitude as a function of time.
-We also output the displacement field at fake CGNSS stations using `OutputSolnPoints`.
+We also output the displacement field at fake GNSS stations using `OutputSolnPoints`.
 For this simulation, we use linearly elastic materials.
 {numref}`fig:example:subduction:3d:step06:diagram` shows the boundary conditions on the domain.
 
@@ -28,19 +28,24 @@ The parameters specific to this example are in `step06_slowslip.cfg` and include
 
 For slow slip we use the `KinSrcTimeHistory` kinematic source to prescribe time-varying slip. We also use `OutputSolnPoints` to simulate output at CGNSS stations.
 
-Prior to running the simulation, we use the `generate_slowslip.py` Python script, which in turn reads the parameters in `generate_slowslip.cfg`. This will generate a spatial database and a time database needed for the simulation:
+Prior to running the simulation, we use the `generate_slowslip.py` Python script to generate spatial database input files for the prescribed slip.
+
 ```{code-block} console
 ---
-caption: Generate database files needed for Step 6
+caption: Generate database files needed for Step 6.
 ---
 # Generate fault_slabtop_slowslip.spatialdb and fault_slabtop_slowslip.timedb.
 $ ./generate_slowslip.py
 ```
-Once the database files have been generated we can run the simulation.
+
+:::{note}
+The GNSS station file for use with the mesh from Gmsh (`cgnss_stations.txt`) requires elevation values consistent with the topography in the model.
+The `generate_cgnss.py` Python script uses the ground surface output from Step 1 to set the elevation of stations just below the ground surface consistent with the topogrpahy.
+:::
 
 ```{code-block} console
 ---
-caption: Run Step 6 simulation
+caption: Run Step 6 simulation using the Gmsh mesh.
 ---
 $ pylith step06_slowslip.cfg mat_elastic.cfg
 
@@ -100,6 +105,13 @@ ts_type = beuler
 ```
 
 The beginning of the output is nearly the same as in previous examples. The simulation advances 17 time steps; however, no slip occurs after step 15.
+
+```{code-block} console
+---
+caption: Alternatively, run Step 6 simulation using the Cubit mesh.
+---
+$ pylith step06_slowslip.cfg step06_slowslip_subit.cfg mat_elastic.cfg
+```
 
 ## Visualizing the results
 

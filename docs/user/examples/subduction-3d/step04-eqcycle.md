@@ -34,7 +34,7 @@ As in Step 3 we also adjust the nodesets used for the boundary conditions to rem
 
 ```{code-block} console
 ---
-caption: Run Step 4 simulation
+caption: Run Step 4 simulation using the Gmsh mesh.
 ---
 $ pylith step04_eqcycle.cfg mat_viscoelastic.cfg
 
@@ -99,6 +99,13 @@ ts_type = beuler
 The beginning of the output is near the same as in Steps 2 and 3.
 The simulation advances 31 time steps.
 As in Step 3 each linear solve requires about 400 iterations to converge.
+
+```{code-block} console
+---
+caption: Alternatively, run Step 4 simulation using the Cubit mesh.
+---
+$ pylith step04_eqcycle.cfg step04_eqcycle_cubit.cfg mat_viscoelastic.cfg
+```
 
 ## Visualizing the results
 
