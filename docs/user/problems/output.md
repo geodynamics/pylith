@@ -180,7 +180,7 @@ This transformation is useful for plotting fault tractions and slip in 3D visual
 
 *New in v4.2.0.*
 
-Output observers can output information on a finer resolution mesh than the one used in the simulaiton.
+Output observers can output information on a finer resolution mesh than the one used in the simulation.
 This is useful when using a basis order of 2 or greater for the discretization of the solution and writing output at a basis order of 1.
 In this case, output using a mesh that is 4-8 times finer and fields discretized using a basis order of 1 (usually required by visualization tools) will do a good job representing the fields with a basis order of 2 on the mesh used in the simulation.
 This feature is used in [`examples/strikeslip-2d/step04-varslip`](../examples/strikeslip-2d/step04-varslip.md).
@@ -196,7 +196,7 @@ The solution observers get notified of updates to the solution.
 | Object               | Use Cases                                       |
 | :------------------- | :---------------------------------------------- |
 | `OutputSoln`         | Output of the solution over the domain          |
-| `OutputSolnBoundary` | Output of the solutin over an external boundary |
+| `OutputSolnBoundary` | Output of the solution over an external boundary |
 | `OutputSolnPoints`   | Output of the solution at discrete points       |
 ```
 
@@ -208,7 +208,7 @@ The solution observers get notified of updates to the solution.
 #### Output at Discrete Points
 
 In many situations with recorded observations, one would like to extract the solution at the same locations as the recorded observation.
-=The locations are specified in a text file.
+The locations are specified in a text file.
 
 #### `PointsList` Reader
 

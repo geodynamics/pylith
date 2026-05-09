@@ -4,7 +4,7 @@
 You can use the `Elasticity` component to solve the elasticity equation with or without inertia.
 Whether inertia or body forces are included is determined by the `Elasticity` property settings.
 Gravitational body forces are included if the `gravity_field` is set in the `Problem`.
-{numref}`tab:elasticity:rheologies` lists the various elastic, viscoelastic, and elastoplastic bulk constitutive models implemented for the elaticity equation.
+{numref}`tab:elasticity:rheologies` lists the various elastic, viscoelastic, and elastoplastic bulk constitutive models implemented for the elasticity equation.
 
 ```{table} Elasticity bulk rheologies
 :name: tab:elasticity:rheologies

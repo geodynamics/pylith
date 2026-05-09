@@ -60,7 +60,7 @@ $ cd parametersgui
 $ ./pylith_paramviewer
 ```
 
-The script will instruct you to point your web browswer to a local port on your computer.
+The script will instruct you to point your web browser to a local port on your computer.
 The default is <http://127.0.0.1:9000>.
 You can change the default port using the `--port` command line argument to the `pylith_paramviewer` script.
 

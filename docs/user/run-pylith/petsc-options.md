@@ -27,7 +27,7 @@ We separate the defaults into a few categories to make it easy to select desired
 :parallel: Options used when running in parallel (can be used in serial as well);
 
 :::{seealso}
-See [`PetscDefaults` Component](../components/utils/PetscDefaults.md) for more information about the the Pyre interface for specifying default PETSc options.
+See [`PetscDefaults` Component](../components/utils/PetscDefaults.md) for more information about the Pyre interface for specifying default PETSc options.
 :::
 
 ### Monitoring Options

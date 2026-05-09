@@ -68,7 +68,7 @@ These features are not yet assigned to a release.
 They may be added to the planned releases based upon further discussion and contributions from the community.
 
 * Adaptive mesh refinement ![expert](images/expert.png)
-* Faults with poroelastic properties ![expert]{images/expert.png} [80%]
+* Faults with poroelastic properties ![expert](images/expert.png) [80%]
 * Elasticity with self-gravitation ![intermediate](images/intermediate.png) [0%]
 * Coupling of problems with compatible meshes ![difficult](images/difficult.png) [10%]\
     Implement "injectors" for solution and state variables.
