@@ -97,7 +97,7 @@ pylith::faults::FaultCohesive::deallocate(void) {
 // Set name of label identifying cohesive cells.
 void
 pylith::faults::FaultCohesive::setCohesiveLabelName(const char* value) {
-    PYLITH_COMPONENT_DEBUG("setCohesiveLabelName(value="<<value<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setCohesiveLabelName(value="<<value<<")");
 
     setLabelName(value);
 }
@@ -131,7 +131,7 @@ pylith::faults::FaultCohesive::getCohesiveLabelValue(void) const {
 // Set name of label marking surface of interface.
 void
 pylith::faults::FaultCohesive::setSurfaceLabelName(const char* value) {
-    PYLITH_COMPONENT_DEBUG("setSurfaceLabelName(value="<<value<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setSurfaceLabelName(value="<<value<<")");
 
     if (strlen(value) == 0) {
         throw std::runtime_error("Empty string given for name of label for fault surface.");
@@ -169,7 +169,7 @@ pylith::faults::FaultCohesive::getSurfaceLabelValue(void) const {
 // Set name of label marking buried edges of interface surface.
 void
 pylith::faults::FaultCohesive::setBuriedEdgesLabelName(const char* value) {
-    PYLITH_COMPONENT_DEBUG("setBuriedEdgesLabelName(value="<<value<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setBuriedEdgesLabelName(value="<<value<<")");
 
     _buriedEdgesLabelName = value;
 }
@@ -330,7 +330,7 @@ pylith::topology::Field*
 pylith::faults::FaultCohesive::createDiagnosticField(const pylith::topology::Field& solution,
                                                      const pylith::topology::Mesh& physicsMesh) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("createDiagnosticField(solution="<<solution.getLabel()<<", physicsMesh=)"<<typeid(physicsMesh).name()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "createDiagnosticField(solution="<<solution.getLabel()<<", physicsMesh=)"<<typeid(physicsMesh).name()<<")");
 
     assert(_scales);
 
@@ -372,7 +372,7 @@ pylith::topology::Field*
 pylith::faults::FaultCohesive::createDerivedField(const pylith::topology::Field& solution,
                                                   const pylith::topology::Mesh& domainMesh) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("createDerivedField(solution="<<solution.getLabel()<<", domainMesh=)"<<typeid(domainMesh).name()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "createDerivedField(solution="<<solution.getLabel()<<", domainMesh=)"<<typeid(domainMesh).name()<<")");
 
     assert(_scales);
 
@@ -421,7 +421,7 @@ pylith::feassemble::Integrator*
 pylith::faults::FaultCohesive::createIntegrator(const pylith::topology::Field& solution,
                                                 const std::vector<pylith::materials::Material*>& materials) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("createIntegrator(solution="<<solution.getLabel()<<")");
+    PYLITH_COMPONENT_INFO_ROOT(pylith::journal::application_flow_detail3, "Creating integrator for " << getLabelName() << "("<<getLabelValue()<<").");
 
     pylith::feassemble::IntegratorInterface* integrator = new pylith::feassemble::IntegratorInterface(this);assert(integrator);
     integrator->setLabelName(getCohesiveLabelName());
@@ -447,7 +447,7 @@ pylith::faults::FaultCohesive::createIntegrator(const pylith::topology::Field& s
 std::vector<pylith::feassemble::Constraint*>
 pylith::faults::FaultCohesive::createConstraints(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("createConstraints(solution="<<solution.getLabel()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "createConstraints(solution="<<solution.getLabel()<<")");
 
     PetscDM dm = solution.getDM();
     const std::string buriedEdgeLabelNameAuto = _surfaceLabelName + _FaultCohesive::buriedEdgeSuffix;
@@ -526,7 +526,7 @@ pylith::faults::FaultCohesive::createConstraints(const pylith::topology::Field& 
 void
 pylith::faults::FaultCohesive::_updateKernelConstants(const PylithReal dt) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_setKernelConstants(dt="<<dt<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "_setKernelConstants(dt="<<dt<<")");
 
     if (6 != _kernelConstants.size()) { _kernelConstants.resize(6);}
     _kernelConstants[0] = _refDir1[0];
@@ -569,7 +569,7 @@ void
 pylith::faults::FaultCohesive::_setKernelsDiagnosticField(pylith::feassemble::IntegratorInterface* integrator,
                                                           const pylith::topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_setKernelsDiagnosticField(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "_setKernelsDiagnosticField(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
 
     const spatialdata::geocoords::CoordSys* coordsys = solution.getMesh().getCoordSys();
     assert(coordsys);
@@ -595,7 +595,7 @@ void
 pylith::faults::FaultCohesive::_setKernelsDerivedField(pylith::feassemble::IntegratorInterface* integrator,
                                                        const pylith::topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_setKernelsDerivedField(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "_setKernelsDerivedField(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
 
     const spatialdata::geocoords::CoordSys* coordsys = solution.getMesh().getCoordSys();
     assert(coordsys);

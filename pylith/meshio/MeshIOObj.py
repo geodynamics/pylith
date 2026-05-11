@@ -36,10 +36,6 @@ class MeshIOObj(PetscComponent, ModuleMeshIO):
 
         @returns PETSc DMPlex mesh object containing finite-element mesh
         """
-        from pylith.mpi.Communicator import mpi_is_root
-        if mpi_is_root():
-            self._info.log("Reading finite-element mesh")
-
         # Initialize coordinate system
         if self.coordsys is None:
             raise ValueError("Coordinate system for mesh is unknown.")
@@ -60,7 +56,7 @@ class MeshIOObj(PetscComponent, ModuleMeshIO):
         """
         from pylith.mpi.Communicator import mpi_is_root
         if mpi_is_root():
-            self._info.log("Writing finite-element mesh")
+            self._flow.log("Writing finite-element mesh")
         ModuleMeshIO.write(self, mesh)
 
     def _configure(self):

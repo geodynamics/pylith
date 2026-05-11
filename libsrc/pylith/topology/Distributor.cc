@@ -126,10 +126,7 @@ pylith::topology::Distributor::distribute(const pylith::topology::Mesh& mesh,
     PYLITH_METHOD_BEGIN;
 
 
-    const int commRank = mesh.getCommRank();
-    if (0 == commRank) {
-        PYLITH_COMPONENT_INFO("Partitioning mesh using PETSc '" << _partitioner << "' partitioner.");
-    } // if
+    PYLITH_INFO_ROOT(pylith::journal::application_flow, "Partitioning mesh using PETSc '" << partitionerName << "' partitioner.");
 
     PetscPartitioner partitioner = nullptr;
     PetscDM dmOrig = mesh.getDM();assert(dmOrig);
@@ -140,9 +137,7 @@ pylith::topology::Distributor::distribute(const pylith::topology::Mesh& mesh,
         PylithCallPetsc(PetscPartitionerSetFromOptions(partitioner));
     } // if
 
-    if (0 == commRank) {
-        PYLITH_COMPONENT_INFO("Distributing partitioner mesh.");
-    } // if
+    PYLITH_INFO_ROOT(pylith::journal::application_flow, "Distributing partitioned mesh.");
 
     PetscDM dmTmp = NULL, dmNew = NULL;
     const PetscInt overlap = 0;
@@ -164,7 +159,7 @@ pylith::topology::Distributor::distribute(const pylith::topology::Mesh& mesh,
         meshNew = new pylith::topology::Mesh(dmOrig, mesh);assert(meshNew);
     } // if/else
 
-    pythia::journal::debug_t debug(PyreComponent::getName());
+    pythia::journal::debug_t debug(pylith::journal::mesh_full_detail);
     if (debug.state()) {
         meshNew->view(":mesh_distributed.txt:ascii_info_detail");
         pylith::topology::Mesh* meshExploded = pylith::topology::MeshOps::explode(*meshNew);
@@ -291,6 +286,7 @@ void
 pylith::topology::_Distributor::write(meshio::DataWriter* const writer,
                                       const topology::Mesh& mesh) {
     PYLITH_METHOD_BEGIN;
+    PYLITH_INFO_ROOT(pylith::journal::application_flow, "Writing partition.");
 
     // Setup and allocate PETSc vector
     const int commRank = mesh.getCommRank();

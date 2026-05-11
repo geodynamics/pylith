@@ -207,7 +207,7 @@ pylith::utils::PetscOptions::set(void) {
         } // if/else
     } // for
 
-    pythia::journal::info_t info(GenericComponent::getName());
+    pythia::journal::info_t info(pylith::journal::application_flow);
     if (info.state() && pylith::utils::MPI::isRoot()) {
         _PetscOptions::write(info, "Setting PETSc options:", optionsUsed);
         if (optionsIgnored._options.size() > 0) {
@@ -232,7 +232,7 @@ pylith::utils::PetscOptions::override (void) {
         PylithCallPetsc(PetscOptionsSetValue(NULL, name, value));
     } // for
 
-    pythia::journal::info_t info(GenericComponent::getName());
+    pythia::journal::info_t info(pylith::journal::application_flow);
     if (info.state()) {
         _PetscOptions::write(info, "Setting PETSc options:", (*this));
     } // if

@@ -20,6 +20,7 @@
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
+#include "pylith/utils/Exceptions.hh" // USES Exception
 
 #include <iostream> // USES std::cout
 #include <typeinfo> // USES typeid()
@@ -55,7 +56,7 @@ void
 pylith::meshio::OutputSoln::setOutputSubfields(const char* names[],
                                                const int numNames) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("OutputSoln::dataFields(names="<<names<<", numNames="<<numNames<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "OutputSoln::dataFields(names="<<names<<", numNames="<<numNames<<")");
 
     assert((names && numNames) || (!names && !numNames));
 
@@ -74,7 +75,7 @@ pylith::meshio::OutputSoln::setOutputSubfields(const char* names[],
 const pylith::string_vector&
 pylith::meshio::OutputSoln::getOutputSubfields(void) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("OutputSoln::dataFields()");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "OutputSoln::dataFields()");
 
     PYLITH_METHOD_RETURN(_subfieldNames);
 } // getOutputSubfields
@@ -93,7 +94,7 @@ pylith::meshio::OutputSoln::setTimeScale(const PylithReal value) {
 void
 pylith::meshio::OutputSoln::verifyConfiguration(const pylith::topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("verifyConfiguration(solution="<<solution.getLabel()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "verifyConfiguration(solution="<<solution.getLabel()<<")");
 
     const size_t numSubfieldNames = _subfieldNames.size();
     if ((numSubfieldNames > 0) && (std::string("all") != _subfieldNames[0])) {
@@ -130,10 +131,10 @@ pylith::meshio::OutputSoln::update(const PylithReal t,
 void
 pylith::meshio::OutputSoln::_open(const pylith::topology::Mesh& mesh) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("OutputSoln::open(mesh="<<typeid(mesh).name()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "OutputSoln::open(mesh="<<typeid(mesh).name()<<")");
 
     if (!_writer) {
-        PYLITH_COMPONENT_LOGICERROR("Writer for solution output observer '"<<getIdentifier()<<"'.");
+        PYLITH_COMPONENT_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Writer for solution output observer '"<<getIdentifier()<<"'.");
     } // if
 
     assert(_trigger);
@@ -153,7 +154,7 @@ pylith::meshio::OutputSoln::_open(const pylith::topology::Mesh& mesh) {
 void
 pylith::meshio::OutputSoln::_close(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("OutputSoln::_close()");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "OutputSoln::_close()");
 
     assert(_writer);
     _writer->close();
@@ -168,7 +169,7 @@ void
 pylith::meshio::OutputSoln::_openSolnStep(const PylithReal t,
                                           const pylith::topology::Mesh& mesh) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("OutputSoln::_openSolnStep(t="<<t<<", mesh="<<typeid(mesh).name()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "OutputSoln::_openSolnStep(t="<<t<<", mesh="<<typeid(mesh).name()<<")");
 
     assert(_writer);
     if (!_writer->isOpen()) {
@@ -197,7 +198,7 @@ pylith::meshio::OutputSoln::_writeSolnStep(const PylithReal t,
                                            const PylithInt tindex,
                                            const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("OutputSoln::_writeSolnStep(t="<<t<<", tindex="<<tindex<<", solution="<<solution.getLabel()<<") empty method");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "OutputSoln::_writeSolnStep(t="<<t<<", tindex="<<tindex<<", solution="<<solution.getLabel()<<") empty method");
 
     // Empty method.
 

@@ -125,12 +125,10 @@ pylith::feassemble::InterfacePatches::createMaterialPairs(const pylith::faults::
         PylithCallPetsc(DMGetLabelValue(dmSoln, cellsLabelName, adjacentCellPositive, &matPair.second));
         if (0 == integrationPatches.count(matPair)) {
             integrationPatches[matPair] = ++patchLabelValue;
-            pythia::journal::debug_t debug("interfacepatches");
-            debug << pythia::journal::at(__HERE__)
-                  << "Creating integration patch on fault '" << fault->getSurfaceLabelName()
-                  << "' for material pair ("<< matPair.first << "," << matPair.second<< ") "
-                  << "using label '" << patchLabelName << "' with value " << patchLabelValue << "."
-                  << pythia::journal::endl;
+            PYLITH_DEBUG(pylith::journal::integration_kernels,
+                         "Creating integration patch on fault '" << fault->getSurfaceLabelName()
+                                                                 << "' for material pair ("<< matPair.first << "," << matPair.second<< ") "
+                                                                 << "using label '" << patchLabelName << "' with value " << patchLabelValue << ".");
 
             // Get weak forms.
             PetscWeakForm weakFormCohesive = _InterfacePatches::getCellWeakForm(dmSoln, cohesiveCell);

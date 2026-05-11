@@ -34,6 +34,7 @@
 #include "pylith/utils/EventLogger.hh" // HASA EventLogger
 #include "pylith/utils/error.hh" // USES PylithCallPetsc
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
+#include "pylith/utils/Exceptions.hh" // USES Exception
 
 #include <cassert> // USES assert()
 #include <typeinfo> // USES typeid()
@@ -169,7 +170,7 @@ pylith::problems::Problem::deallocate(void) {
 void
 pylith::problems::Problem::setFormulation(const pylith::problems::Physics::FormulationEnum value) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("setFormulation(value="<<value<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::debug_parameters, "formulation="<<value);
 
     _formulation = value;
 
@@ -189,7 +190,7 @@ pylith::problems::Problem::getFormulation(void) const {
 // Set problem type.
 void
 pylith::problems::Problem::setSolverType(const SolverTypeEnum value) {
-    PYLITH_COMPONENT_DEBUG("Problem::setSolverType(value="<<value<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::debug_parameters, "solver="<<value);
 
     _solverType = value;
 } // setSolverType
@@ -216,8 +217,8 @@ pylith::problems::Problem::setPetscDefaults(const int flags) {
 // ------------------------------------------------------------------------------------------------
 // Set manager of scales used to nondimensionalize problem.
 void
-pylith::problems::Problem::setScales(const pylith::scales::Scales& scales) {
-    PYLITH_COMPONENT_DEBUG("Problem::setScales(scales="<<typeid(scales).name()<<")");
+pylith::problems::Problem::setScales(const pylith::scales::Scales& dim) {
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "Setting scales for nondimensionalization.");
 
     if (!_scales) {
         _scales = new pylith::scales::Scales(scales);
@@ -240,7 +241,7 @@ pylith::problems::Problem::getScales(void) const {
 // Set gravity field.
 void
 pylith::problems::Problem::setGravityField(spatialdata::spatialdb::GravityField* const g) {
-    PYLITH_COMPONENT_DEBUG("Problem::setGravityField(g="<<typeid(g).name()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "Setting gravity field.");
 
     _gravityField = g;
 } // setGravityField
@@ -251,7 +252,7 @@ pylith::problems::Problem::setGravityField(spatialdata::spatialdb::GravityField*
 void
 pylith::problems::Problem::registerObserver(pylith::problems::ObserverSoln* observer) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("registerObserver(observer="<<typeid(observer).name()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "Register observer.");
 
     assert(_observers);
     assert(_scales);
@@ -267,7 +268,7 @@ pylith::problems::Problem::registerObserver(pylith::problems::ObserverSoln* obse
 void
 pylith::problems::Problem::removeObserver(pylith::problems::ObserverSoln* observer) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("removeObserver(observer="<<typeid(observer).name()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "Removing observerr.");
 
     assert(_observers);
     _observers->removeObserver(observer);
@@ -280,7 +281,7 @@ pylith::problems::Problem::removeObserver(pylith::problems::ObserverSoln* observ
 // Set solution field.
 void
 pylith::problems::Problem::setSolution(pylith::topology::Field* field) {
-    PYLITH_COMPONENT_DEBUG("Problem::setSolution(field="<<typeid(*field).name()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "Setting solution.");
     _Problem::Events::logger.eventBegin(_Problem::Events::setSolution);
 
     assert(_integrationData);
@@ -326,7 +327,7 @@ void
 pylith::problems::Problem::setMaterials(pylith::materials::Material* materials[],
                                         const int numMaterials) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("Problem::setMaterials("<<materials<<", numMaterials="<<numMaterials<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::debug_parameters, "Setting "<<numMaterials<<" materials.");
 
     assert( (!materials && 0 == numMaterials) || (materials && 0 < numMaterials) );
 
@@ -353,7 +354,7 @@ void
 pylith::problems::Problem::setBoundaryConditions(pylith::bc::BoundaryCondition* bc[],
                                                  const int numBC) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("Problem::setBoundaryConditions("<<bc<<", numBC="<<numBC<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::debug_parameters, "Setting "<<numBC<<" boundary conditions.");
 
     assert( (!bc && 0 == numBC) || (bc && 0 < numBC) );
 
@@ -380,7 +381,7 @@ void
 pylith::problems::Problem::setInterfaces(pylith::faults::FaultCohesive* interfaces[],
                                          const int numInterfaces) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("Problem::setInterfaces("<<interfaces<<", numInterfaces="<<numInterfaces<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::debug_parameters, "Setting "<<numInterfaces<<" interior interfaces.");
 
     assert( (!interfaces && 0 == numInterfaces) || (interfaces && 0 < numInterfaces) );
 
@@ -406,7 +407,7 @@ pylith::problems::Problem::getInterfaces(void) const {
 void
 pylith::problems::Problem::preinitialize(const pylith::topology::Mesh& mesh) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("Problem::preinitialzie(mesh="<<typeid(mesh).name()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "Preinitializing problem.");
     _Problem::Events::logger.eventBegin(_Problem::Events::preinitialize);
 
     assert(_scales);
@@ -443,7 +444,7 @@ pylith::problems::Problem::preinitialize(const pylith::topology::Mesh& mesh) {
 void
 pylith::problems::Problem::verifyConfiguration(void) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("Problem::verifyConfiguration(void)");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "Verifying configuration.");
     _Problem::Events::logger.eventBegin(_Problem::Events::verifyConfiguration);
 
     assert(_integrationData);
@@ -486,7 +487,7 @@ pylith::problems::Problem::verifyConfiguration(void) const {
 void
 pylith::problems::Problem::initialize(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("Problem::initialize()");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "Initializing problem.");
     _Problem::Events::logger.eventBegin(_Problem::Events::initialize);
 
     assert(_integrationData);
@@ -525,13 +526,13 @@ pylith::problems::Problem::initialize(void) {
         _Problem::createNullSpace(solution, "displacement");
         break;
     default:
-        PYLITH_COMPONENT_LOGICERROR("Unknown formulation '"<<_formulation<<".");
+        PYLITH_COMPONENT_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown formulation '"<<_formulation<<".");
     } // switch
     _Problem::setInterfaceData(solution, _integrators);
 
-    pythia::journal::debug_t debug(PyreComponent::getName());
+    pythia::journal::debug_t debug(pylith::journal::solution);
     if (debug.state()) {
-        PYLITH_COMPONENT_DEBUG("Displaying solution field layout");
+        PYLITH_COMPONENT_DEBUG(pylith::journal::solution, "Displaying solution field layout");
         solution->view("Solution field", pylith::topology::Field::VIEW_LAYOUT);
     } // if
 
@@ -545,7 +546,7 @@ pylith::problems::Problem::initialize(void) {
 void
 pylith::problems::Problem::_checkMaterialLabels(void) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("Problem::_checkMaterialLabels()");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "Checking material labels.");
     _Problem::Events::logger.eventBegin(_Problem::Events::checkMaterials);
 
     const size_t numMaterials = _materials.size();
@@ -577,7 +578,7 @@ pylith::problems::Problem::_checkMaterialLabels(void) const {
 void
 pylith::problems::Problem::_createIntegrators(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("Problem::_createIntegrators()");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "Creating integrators.");
     _Problem::Events::logger.eventBegin(_Problem::Events::createIntegrators);
 
     const size_t numMaterials = _materials.size();
@@ -626,7 +627,7 @@ pylith::problems::Problem::_createIntegrators(void) {
 void
 pylith::problems::Problem::_createConstraints(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("Problem::_createConstraints()");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "Creating constraints.");
     _Problem::Events::logger.eventBegin(_Problem::Events::createConstraints);
 
     const size_t numMaterials = _materials.size();
@@ -670,8 +671,8 @@ pylith::problems::Problem::_createConstraints(void) {
 void
 pylith::problems::Problem::_setupSolution(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("Problem::_setupSolution()");
-    _Problem::Events::logger.eventBegin(_Problem::Events::setupSolution);
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "Setting up solution field.");
+    _Problem::Events::logger.eventBegin(_Problem::Events::createConstraints);
 
     assert(_integrationData);
     pylith::topology::Field* solution = _integrationData->getField("solution");

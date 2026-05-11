@@ -40,7 +40,7 @@ pylith::faults::KinSrcAuxiliaryFactory::~KinSrcAuxiliaryFactory(void) {}
 void
 pylith::faults::KinSrcAuxiliaryFactory::addInitiationTime(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addInitiationTime(void)");
+    PYLITH_DEBUG(pylith::journal::application_flow, "addInitiationTime(void)");
 
     const char* subfieldName = "initiation_time";
     const PylithReal timeScale = _scales->getTimeScale();
@@ -67,7 +67,7 @@ pylith::faults::KinSrcAuxiliaryFactory::addInitiationTime(void) {
 void
 pylith::faults::KinSrcAuxiliaryFactory::addRiseTime(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addRiseTime(void)");
+    PYLITH_DEBUG(pylith::journal::application_flow, "addRiseTime(void)");
 
     const char* subfieldName = "rise_time";
     const PylithReal timeScale = _scales->getTimeScale();
@@ -94,7 +94,7 @@ pylith::faults::KinSrcAuxiliaryFactory::addRiseTime(void) {
 void
 pylith::faults::KinSrcAuxiliaryFactory::addImpulseDuration(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addImpulseDuration(void)");
+    PYLITH_DEBUG(pylith::journal::application_flow, "addImpulseDuration(void)");
 
     const char* subfieldName = "impulse_duration";
     const PylithReal timeScale = _scales->getTimeScale();
@@ -121,7 +121,7 @@ pylith::faults::KinSrcAuxiliaryFactory::addImpulseDuration(void) {
 void
 pylith::faults::KinSrcAuxiliaryFactory::addFinalSlip(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addFinalSlip(void)");
+    PYLITH_DEBUG(pylith::journal::application_flow, "addFinalSlip(void)");
 
     const char* subfieldName = "final_slip";
     const char* componentNames[3] = { "final_slip_opening", "final_slip_left_lateral", "final_slip_reverse" };
@@ -152,7 +152,7 @@ pylith::faults::KinSrcAuxiliaryFactory::addFinalSlip(void) {
 void
 pylith::faults::KinSrcAuxiliaryFactory::addSlipRate(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addSlipRate(void)");
+    PYLITH_DEBUG(pylith::journal::application_flow, "addSlipRate(void)");
 
     const char* subfieldName = "slip_rate";
     const char* componentNames[3] = { "slip_rate_opening", "slip_rate_left_lateral", "slip_rate_reverse" };
@@ -184,7 +184,7 @@ pylith::faults::KinSrcAuxiliaryFactory::addSlipRate(void) {
 void
 pylith::faults::KinSrcAuxiliaryFactory::addTimeHistoryValue(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addTimeHistoryValue(void)");
+    PYLITH_DEBUG(pylith::journal::application_flow, "addTimeHistoryValue(void)");
 
     const char* subfieldName = "time_history_value";
 
@@ -211,12 +211,7 @@ pylith::faults::KinSrcAuxiliaryFactory::updateTimeHistoryValue(pylith::topology:
                                                                const PylithReal timeScale,
                                                                spatialdata::spatialdb::TimeHistory* const dbTimeHistory) {
     PYLITH_METHOD_BEGIN;
-    pythia::journal::debug_t debug("kinsrcauxiliaryfactory");
-    debug << pythia::journal::at(__HERE__)
-          << "KinSrcAuxiliaryFactory::updateTimeHistoryValue(auxiliaryField="<<auxiliaryField<<", t="<<t
-          <<", timeScale="<<timeScale<<", dbTimeHistory="<<dbTimeHistory<<")"
-          << pythia::journal::endl;
-
+    PYLITH_DEBUG(pylith::journal::application_flow_detail5, "Updating time history value, t="<<t<<", timeScale="<<timeScale);
     assert(auxiliaryField);
     assert(dbTimeHistory);
 

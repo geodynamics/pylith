@@ -99,10 +99,10 @@ pylith::faults::FaultCohesiveImpulses::deallocate(void) {
 void
 pylith::faults::FaultCohesiveImpulses::setImpulseDOF(const int* flags,
                                                      const size_t size) {
-    PYLITH_COMPONENT_DEBUG("setImpulseDOF(flags="<<flags<<", size="<<size<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setImpulseDOF(flags="<<flags<<", size="<<size<<")");
 
     if (((size == 0) && flags) || ((size > 0) && !flags)) {
-        PYLITH_COMPONENT_LOGICERROR("Inconsistent array size ("<<size<<") and values ("<<flags<<").");
+        PYLITH_COMPONENT_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Inconsistent array size ("<<size<<") and values ("<<flags<<").");
     } // if
 
     _impulseDOF.resize(size);
@@ -116,7 +116,7 @@ pylith::faults::FaultCohesiveImpulses::setImpulseDOF(const int* flags,
 // Set threshold for nonzero impulse amplitude.
 void
 pylith::faults::FaultCohesiveImpulses::setThreshold(const double value) {
-    PYLITH_COMPONENT_DEBUG("setThreshold(value="<<value<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setThreshold(value="<<value<<")");
 
     if (value < 0) {
         std::ostringstream msg;
@@ -141,7 +141,7 @@ pylith::faults::FaultCohesiveImpulses::getNumImpulsesLocal(void) {
 void
 pylith::faults::FaultCohesiveImpulses::verifyConfiguration(const pylith::topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("verifyConfiguration(solution="<<solution.getLabel()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "verifyConfiguration(solution="<<solution.getLabel()<<")");
 
     // Verify solution contains required fields.
     std::string reason = "interface 'FaultCohesiveImpulses'.";
@@ -164,7 +164,7 @@ pylith::topology::Field*
 pylith::faults::FaultCohesiveImpulses::createAuxiliaryField(const pylith::topology::Field& solution,
                                                             const pylith::topology::Mesh& domainMesh) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("createAuxiliaryField(solution="<<solution.getLabel()<<", domainMesh=)"<<typeid(domainMesh).name()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "createAuxiliaryField(solution="<<solution.getLabel()<<", domainMesh=)"<<typeid(domainMesh).name()<<")");
 
     assert(_scales);
 
@@ -192,10 +192,10 @@ pylith::faults::FaultCohesiveImpulses::createAuxiliaryField(const pylith::topolo
         break;
     case DYNAMIC_IMEX:
     case DYNAMIC:
-        PYLITH_COMPONENT_LOGICERROR("Green's functions for dynamic simulations is not yet supported.");
+        PYLITH_COMPONENT_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Green's functions for dynamic simulations is not yet supported.");
         break;
     default:
-        PYLITH_COMPONENT_LOGICERROR("Unknown formulation for equations (" << _formulation << ").");
+        PYLITH_COMPONENT_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown formulation for equations (" << _formulation << ").");
     } // switch
 
     auxiliaryField->subfieldsSetup();
@@ -209,9 +209,9 @@ pylith::faults::FaultCohesiveImpulses::createAuxiliaryField(const pylith::topolo
     _auxiliaryFactory->setValuesFromDB();
     _FaultCohesiveImpulses::findImpulsePoints(&_impulsePoints, *auxiliaryField, _threshold);
 
-    pythia::journal::debug_t debug(PyreComponent::getName());
+    pythia::journal::debug_t debug(pylith::journal::auxiliary_fields);
     if (debug.state()) {
-        PYLITH_COMPONENT_DEBUG("Displaying auxiliary field");
+        PYLITH_COMPONENT_DEBUG(pylith::journal::auxiliary_fields, "Displaying auxiliary field");
         auxiliaryField->view("FaultCohesiveImpulses auxiliary field");
     } // if
 
@@ -225,7 +225,7 @@ void
 pylith::faults::FaultCohesiveImpulses::updateAuxiliaryField(pylith::topology::Field* auxiliaryField,
                                                             const double impulseReal) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("updateAuxiliaryField(auxiliaryField="<<auxiliaryField<<", impulseReal="<<impulseReal<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "updateAuxiliaryField(auxiliaryField="<<auxiliaryField<<", impulseReal="<<impulseReal<<")");
 
     assert(auxiliaryField);
     assert(_scales);
@@ -236,10 +236,10 @@ pylith::faults::FaultCohesiveImpulses::updateAuxiliaryField(pylith::topology::Fi
         break;
     case DYNAMIC_IMEX:
     case DYNAMIC:
-        PYLITH_COMPONENT_LOGICERROR("Green's functions for dynamic simulations is not yet supported.");
+        PYLITH_COMPONENT_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Green's functions for dynamic simulations is not yet supported.");
         break;
     default:
-        PYLITH_COMPONENT_LOGICERROR("Unknown formulation for equations (" << _formulation << ").");
+        PYLITH_COMPONENT_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown formulation for equations (" << _formulation << ").");
     } // switch
 
     PYLITH_METHOD_END;
@@ -260,7 +260,7 @@ void
 pylith::faults::FaultCohesiveImpulses::_updateSlip(pylith::topology::Field* auxiliaryField,
                                                    const long impulseStep) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_updateSlip(auxiliaryField="<<auxiliaryField<<", impulseStep="<<impulseStep<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "_updateSlip(auxiliaryField="<<auxiliaryField<<", impulseStep="<<impulseStep<<")");
 
     assert(auxiliaryField);
     assert(_scales);
@@ -281,9 +281,10 @@ pylith::faults::FaultCohesiveImpulses::_updateSlip(pylith::topology::Field* auxi
         auxiliaryArray[slipOff+dof] = 1.0 / _scales->getDisplacementScale();
     } // if
 
-    pythia::journal::debug_t debug(pylith::utils::PyreComponent::getName());
+    pythia::journal::debug_t debug(pylith::journal::auxiliary_fields);
     if (debug.state()) {
-        auxiliaryField->view("Fault auxiliary field after setting impulse.");
+        PYLITH_COMPONENT_DEBUG(pylith::journal::auxiliary_fields, "Fault auxiliary field after setting impulse.");
+        auxiliaryField->view("FaultCohesiveImpulses auxiliary field.");
     } // if
 
     PylithCallPetsc(VecSet(auxiliaryField->getGlobalVector(), 0.0));
@@ -301,7 +302,7 @@ pylith::faults::FaultCohesiveImpulses::_setKernelsResidual(pylith::feassemble::I
                                                            const pylith::topology::Field& solution,
                                                            const std::vector<pylith::materials::Material*>& materials) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_setKernelsResidual(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "_setKernelsResidual(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
     typedef pylith::feassemble::IntegratorInterface integrator_t;
 
     std::vector<ResidualKernels> kernels;
@@ -331,9 +332,9 @@ pylith::faults::FaultCohesiveImpulses::_setKernelsResidual(pylith::feassemble::I
     } // QUASISTATIC
     case pylith::problems::Physics::DYNAMIC_IMEX:
     case pylith::problems::Physics::DYNAMIC:
-        PYLITH_COMPONENT_LOGICERROR("Green's functions for dynamic simulations is not yet supported.");
+        PYLITH_COMPONENT_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Green's functions for dynamic simulations is not yet supported.");
     default:
-        PYLITH_COMPONENT_LOGICERROR("Unknown formulation '"<<_formulation<<"'.");
+        PYLITH_COMPONENT_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown formulation '"<<_formulation<<"'.");
     } // switch
 
     assert(integrator);
@@ -350,7 +351,7 @@ pylith::faults::FaultCohesiveImpulses::_setKernelsJacobian(pylith::feassemble::I
                                                            const pylith::topology::Field& solution,
                                                            const std::vector<pylith::materials::Material*>& materials) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_setKernelsJacobian(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "_setKernelsJacobian(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
     typedef pylith::feassemble::IntegratorInterface integrator_t;
 
     std::vector<JacobianKernels> kernels;
@@ -384,9 +385,9 @@ pylith::faults::FaultCohesiveImpulses::_setKernelsJacobian(pylith::feassemble::I
     } // QUASISTATIC
     case pylith::problems::Physics::DYNAMIC_IMEX:
     case pylith::problems::Physics::DYNAMIC:
-        PYLITH_COMPONENT_LOGICERROR("Green's functions for dynamic simulations is not yet supported.");
+        PYLITH_COMPONENT_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Green's functions for dynamic simulations is not yet supported.");
     default:
-        PYLITH_COMPONENT_LOGICERROR("Unknown formulation '"<<_formulation<<"'.");
+        PYLITH_COMPONENT_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown formulation '"<<_formulation<<"'.");
     } // switch
 
     assert(integrator);
@@ -403,7 +404,8 @@ pylith::faults::_FaultCohesiveImpulses::findImpulsePoints(int_array* impulsePoin
                                                           const pylith::topology::Field& auxiliaryField,
                                                           const double threshold) {
     PYLITH_METHOD_BEGIN;
-    // PYLITH_JOURNAL_DEBUG("_updateSlip(auxiliaryField="<<auxiliaryField<<", impulseStep="<<impulseStep<<")");
+    // PYLITH_DEBUG(pylith::journal::application_flow, "_updateSlip(auxiliaryField="<<auxiliaryField<<",
+    // impulseStep="<<impulseStep<<")");
 
     PetscSection auxiliaryFieldSection = auxiliaryField.getGlobalSection();assert(auxiliaryFieldSection);
     PetscInt pStart = 0, pEnd = 0;

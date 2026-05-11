@@ -24,6 +24,7 @@
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
+#include "pylith/utils/Exceptions.hh" // USES Exception
 #include "pylith/utils/error.hh" // USES PylithCallPetsc()
 
 #include <cassert> // USES assert()
@@ -86,7 +87,7 @@ pylith::topology::Field::Field(const Field& src) :
     _subfields = src._subfields;
 
     if (!src._mesh) {
-        PYLITH_JOURNAL_LOGICERROR("Source field _mesh must be non-NULL.");
+        PYLITH_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Source field _mesh must be non-NULL.");
     } // if
     _mesh = src._mesh->clone();
 
@@ -360,7 +361,7 @@ pylith::topology::Field::view(const char* label,
                     cellBasisString = "default";
                     break;
                 default:
-                    PYLITH_JOURNAL_LOGICERROR("Unknown cell basis");
+                    PYLITH_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown cell basis");
                 } // switch
                 std::cout << ", scale: " << sinfo.description.scale
                           << ", basisOrder: " << sinfo.fe.basisOrder

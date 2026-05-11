@@ -18,6 +18,7 @@
 #include "pylith/utils/array.hh" // USES scalar_array, int_array
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL*
 #include "pylith/utils/error.hh" // USES PylithCallPetsc()
+#include "pylith/utils/Exceptions.hh" // USES Exception
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
 
 #include "pylith/scales/Scales.hh" // USES Scales
@@ -146,8 +147,8 @@ pylith::meshio::MeshBuilder::buildMesh(pylith::topology::Mesh* mesh,
         case TETRAHEDRON: ct = DM_POLYTOPE_TETRAHEDRON;break;
         case HEXAHEDRON: ct = DM_POLYTOPE_HEXAHEDRON;break;
         default:
-            PYLITH_JOURNAL_LOGICERROR("Unknown cell shape.");
-        }
+            PYLITH_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown cell shape.");
+        } // switch
         for (PetscInt coff = 0; coff < bound; coff += topology.numCorners) {
             PylithCallPetsc(DMPlexInvertCell(ct, (int *) &cellsCopy[coff]));
         } // for
@@ -582,7 +583,7 @@ pylith::meshio::MeshBuilder::cellShapeFromCorners(const size_t cellDim,
     } else if ((3 == cellDim) && (8 == numCorners)) {
         cellShape = HEXAHEDRON;
     } else {
-        PYLITH_JOURNAL_LOGICERROR("Unknown cell type. dim=" << cellDim <<", # corners="<<numCorners<<".");
+        PYLITH_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown cell type. dim=" << cellDim <<", # corners="<<numCorners<<".");
     } // if/else
 
     return cellShape;
@@ -601,7 +602,7 @@ pylith::meshio::MeshBuilder::faceShapeFromCellShape(const shape_t cellShape) {
     case TETRAHEDRON: faceShape = TRIANGLE;break;
     case HEXAHEDRON: faceShape = QUADRILATERAL;break;
     default:
-        PYLITH_JOURNAL_LOGICERROR("Unknown cell shape '"<<cellShape<<"'.");
+        PYLITH_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown cell shape '"<<cellShape<<"'.");
     } // switch
 
     return faceShape;
@@ -619,7 +620,7 @@ pylith::meshio::MeshBuilder::getNumVerticesFace(const shape_t faceShape) {
     case TRIANGLE: numVertices = 3;break;
     case QUADRILATERAL: numVertices = 4;break;
     default:
-        PYLITH_JOURNAL_LOGICERROR("Unknown face shape '" << faceShape << "'.");
+        PYLITH_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown face shape '" << faceShape << "'.");
     } // switch
 
     return numVertices;
@@ -759,7 +760,7 @@ pylith::meshio::_MeshBuilder::faceFromCellSide(PetscInt* face,
     case DM_POLYTOPE_SEGMENT:
     case DM_POLYTOPE_POINT:
     default:
-        PYLITH_JOURNAL_LOGICERROR("Can only get faces for triangles, quadrilaterals, tetrahedra, and hexahedra.");
+        PYLITH_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Can only get faces for triangles, quadrilaterals, tetrahedra, and hexahedra.");
     } // switch
     assert(coneIndex >= 0);
     *face = cone[coneIndex];
@@ -820,7 +821,7 @@ pylith::meshio::_MeshBuilder::cellVerticesFromFace(PetscInt* cell,
     PylithCallPetsc(DMPlexGetSupport(dmMesh, face, &support));
     PylithCallPetsc(DMPlexGetSupportSize(dmMesh, face, &supportSize));
     if (!supportSize || !support) {
-        PYLITH_JOURNAL_LOGICERROR("Could not find support for face " << face << ".");
+        PYLITH_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Could not find support for face " << face << ".");
     } // if
     *cell = support[0];
 

@@ -24,6 +24,8 @@ namespace pylith {
     class IOError;
     class TopologyError;
 
+    class ExternalError;
+
     class InternalError;
     class InternalLogicError;
 } // namespace
@@ -98,6 +100,15 @@ public:
 
 /// The mesh or its topology is invalid or inconsistent.
 class pylith::TopologyError : public Error {
+public:
+
+    using Error::Error;
+};
+
+
+/// Error originating in PETSc library.
+
+class pylith::ExternalError : public Error {
 public:
 
     using Error::Error;

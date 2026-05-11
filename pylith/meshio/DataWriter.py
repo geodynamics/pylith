@@ -40,10 +40,10 @@ class DataWriter(PetscComponent):
         from pylith.mpi.Communicator import mpi_is_root
         isRoot = mpi_is_root()
         if isRoot:
-            self._info.log("Creating path for output file '{}'".format(filename))
-        relpath = pathlib.Path(filename).parent.resolve()
-        if isRoot:
-            relpath.mkdir(exist_ok=True, parents=True)
+            relpath = pathlib.Path(filename).parent.resolve()
+            if not relpath.is_dir():
+                self._flow.log("Creating path for output file '{}'".format(filename))
+                relpath.mkdir(exist_ok=True, parents=True)
 
     def verifyConfiguration(self):
         """Verify compatibility of configuration.

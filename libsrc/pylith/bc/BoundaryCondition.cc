@@ -65,7 +65,7 @@ pylith::bc::BoundaryCondition::deallocate(void) {
 // Set name of solution subfield associated with boundary condition.
 void
 pylith::bc::BoundaryCondition::setSubfieldName(const char* value) {
-    PYLITH_COMPONENT_DEBUG("setSubfieldName(value="<<value<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setSubfieldName(value="<<value<<")");
 
     if (!value || (0 == strlen(value))) {
         std::ostringstream msg;
@@ -89,7 +89,7 @@ pylith::bc::BoundaryCondition::getSubfieldName(void) const {
 // Set first choice for reference direction to discriminate among tangential directions in 3-D.
 void
 pylith::bc::BoundaryCondition::setRefDir1(const PylithReal vec[3]) {
-    PYLITH_COMPONENT_DEBUG("setRefDir1(vec="<<vec[0]<<","<<vec[1]<<","<<vec[2]<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setRefDir1(vec="<<vec[0]<<","<<vec[1]<<","<<vec[2]<<")");
 
     // Set reference direction, insuring it is a unit vector.
     const PylithReal mag = sqrt(vec[0]*vec[0] + vec[1]*vec[1] + vec[2]*vec[2]);
@@ -109,7 +109,7 @@ pylith::bc::BoundaryCondition::setRefDir1(const PylithReal vec[3]) {
 // Set second choice for reference direction to discriminate among tangential directions in 3-D.
 void
 pylith::bc::BoundaryCondition::setRefDir2(const PylithReal vec[3]) {
-    PYLITH_COMPONENT_DEBUG("setRefDir2(vec="<<vec[0]<<","<<vec[1]<<","<<vec[2]<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setRefDir2(vec="<<vec[0]<<","<<vec[1]<<","<<vec[2]<<")");
 
     // Set reference direction, insuring it is a unit vector.
     const PylithReal mag = sqrt(vec[0]*vec[0] + vec[1]*vec[1] + vec[2]*vec[2]);
@@ -130,7 +130,7 @@ pylith::bc::BoundaryCondition::setRefDir2(const PylithReal vec[3]) {
 void
 pylith::bc::BoundaryCondition::verifyConfiguration(const pylith::topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("verifyConfiguration(solution="<<solution.getLabel()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "verifyConfiguration(solution="<<solution.getLabel()<<")");
 
     if (!solution.hasSubfield(_subfieldName.c_str())) {
         std::ostringstream msg;
@@ -159,7 +159,7 @@ pylith::topology::Field*
 pylith::bc::BoundaryCondition::createDiagnosticField(const pylith::topology::Field& solution,
                                                      const pylith::topology::Mesh& physicsMesh) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("createDiagnosticField(solution="<<solution.getLabel()<<", physicsMesh=)"<<typeid(physicsMesh).name()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "createDiagnosticField(solution="<<solution.getLabel()<<", physicsMesh=)"<<typeid(physicsMesh).name()<<")");
 
     assert(_scales);
 
@@ -200,7 +200,7 @@ pylith::bc::BoundaryCondition::createDiagnosticField(const pylith::topology::Fie
 void
 pylith::bc::BoundaryCondition::_updateKernelConstants(const PylithReal dt) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_setKernelConstants(dt="<<dt<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "_setKernelConstants(dt="<<dt<<")");
 
     if (6 != _kernelConstants.size()) { _kernelConstants.resize(6);}
     _kernelConstants[0] = _refDir1[0];
@@ -220,7 +220,7 @@ void
 pylith::bc::BoundaryCondition::_setKernelsDiagnosticField(pylith::feassemble::IntegratorBoundary* integrator,
                                                           const pylith::topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_setKernelsDiagnosticField(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "_setKernelsDiagnosticField(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
     typedef pylith::feassemble::IntegratorBoundary::ProjectKernels ProjectKernels;
 
     const spatialdata::geocoords::CoordSys* coordsys = solution.getMesh().getCoordSys();
@@ -249,7 +249,7 @@ void
 pylith::bc::BoundaryCondition::_setKernelsDiagnosticField(pylith::feassemble::Constraint* constraint,
                                                           const pylith::topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_setKernelsDiagnosticField(constraint="<<constraint<<", solution="<<solution.getLabel()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "_setKernelsDiagnosticField(constraint="<<constraint<<", solution="<<solution.getLabel()<<")");
     typedef pylith::feassemble::Constraint::ProjectKernels ProjectKernels;
 
     const spatialdata::geocoords::CoordSys* coordsys = solution.getMesh().getCoordSys();

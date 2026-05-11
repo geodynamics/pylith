@@ -273,7 +273,7 @@ void
 pylith::faults::KinSrcLiuCos::_auxiliaryFieldSetup(const pylith::scales::Scales& scales,
                                                    const spatialdata::geocoords::CoordSys* cs) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_auxiliaryFieldSetup()");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "_auxiliaryFieldSetup()");
 
     assert(_auxiliaryFactory);
     assert(cs);

@@ -18,13 +18,15 @@
 #include "pylith/topology/MeshOps.hh" // USES MeshOps
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
+#include "pylith/scales/Scales.hh" // USES Scales
+#include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
+
 #include "pylith/utils/journals.hh"
 #include "pylith/utils/error.hh"
+#include "pylith/utils/Exceptions.hh"
 
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
-#include "pylith/scales/Scales.hh" // USES Scales
-#include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
 
 #include "catch2/catch_test_macros.hpp"
 #include "catch2/matchers/catch_matchers_floating_point.hpp"
@@ -300,9 +302,9 @@ pylith::feassemble::TestAuxiliaryFactory::testSetValuesFromDB(void) {
     CHECK_THAT(norm, Catch::Matchers::WithinAbs(0.0, tolerance));
 
     AuxiliaryFactory emptyFactory;
-    pythia::journal::error_t error("auxiliaryfactory");
+    pythia::journal::error_t error(pylith::journal::auxiliary_fields);
     error.deactivate();
-    REQUIRE_THROWS_AS(emptyFactory.setValuesFromDB(), std::logic_error);
+    REQUIRE_THROWS_AS(emptyFactory.setValuesFromDB(), pylith::InternalError);
 } // testSetValuesFromDB
 
 

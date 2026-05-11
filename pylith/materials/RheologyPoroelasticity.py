@@ -31,11 +31,6 @@ class RheologyPoroelasticity(PetscComponent, ModuleRheology):
         PetscComponent.__init__(self, name, facility="rheologyporoelasticity")
 
     def preinitialize(self, problem):
-        from pylith.mpi.Communicator import mpi_is_root
-        if mpi_is_root():
-            self._info.log("Performing minimal initialization of poroelasticity rheology '%s'." %
-                           self.aliases[-1])
-
         self._createModuleObj()
 
     def addAuxiliarySubfields(self, material, problem):

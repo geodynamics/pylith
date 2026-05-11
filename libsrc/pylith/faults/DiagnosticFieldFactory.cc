@@ -38,7 +38,7 @@ pylith::faults::DiagnosticFieldFactory::~DiagnosticFieldFactory(void) {}
 void
 pylith::faults::DiagnosticFieldFactory::addNormalDir(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addNormalDir(void)");
+    PYLITH_DEBUG(pylith::journal::application_flow, "addNormalDir(void)");
 
     const char* fieldName = "normal_dir";
     const char* componentNames[3] = { "normal_dir_x", "normal_dir_y", "normal_dir_z" };
@@ -67,7 +67,7 @@ pylith::faults::DiagnosticFieldFactory::addNormalDir(void) {
 void
 pylith::faults::DiagnosticFieldFactory::addStrikeDir(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addStrikeDir(void)");
+    PYLITH_DEBUG(pylith::journal::application_flow, "addStrikeDir(void)");
 
     const char* fieldName = "strike_dir";
     const char* componentNames[3] = { "strike_dir_x", "strike_dir_y", "strike_dir_z" };
@@ -96,7 +96,7 @@ pylith::faults::DiagnosticFieldFactory::addStrikeDir(void) {
 void
 pylith::faults::DiagnosticFieldFactory::addUpDipDir(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addUpDipDir(void)");
+    PYLITH_DEBUG(pylith::journal::application_flow, "addUpDipDir(void)");
 
     const char* fieldName = "up_dip_dir";
     const char* componentNames[3] = { "up_dip_dir_x", "up_dip_dir_y", "up_dip_dir_z" };
@@ -125,7 +125,7 @@ pylith::faults::DiagnosticFieldFactory::addUpDipDir(void) {
 void
 pylith::faults::DiagnosticFieldFactory::addSubfields(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addSubfields(void)");
+    PYLITH_DEBUG(pylith::journal::application_flow, "addSubfields(void)");
 
     if (_subfieldDiscretizations.find("normal_dir") != _subfieldDiscretizations.end()) {
         addNormalDir();

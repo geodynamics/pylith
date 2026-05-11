@@ -30,6 +30,7 @@
 
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
+#include "pylith/utils/Exceptions.hh" // USES Exception
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "pylith/scales/Scales.hh" // USES Nondimensionalizer
@@ -102,7 +103,7 @@ pylith::faults::FaultCohesiveKin::setEqRuptures(const char* const * names,
                                                 KinSrc** ruptures,
                                                 const int numRuptures) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("setEqRuptures(names="<<names<<", numNames="<<numNames<<", ruptures="<<ruptures<<", numRuptures="<<numRuptures<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setEqRuptures(names="<<names<<", numNames="<<numNames<<", ruptures="<<ruptures<<", numRuptures="<<numRuptures<<")");
 
     assert(numNames == numRuptures);
 
@@ -126,7 +127,7 @@ pylith::faults::FaultCohesiveKin::setEqRuptures(const char* const * names,
 void
 pylith::faults::FaultCohesiveKin::verifyConfiguration(const pylith::topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("verifyConfiguration(solution="<<solution.getLabel()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "verifyConfiguration(solution="<<solution.getLabel()<<")");
 
     // Verify solution contains required fields.
     std::string reason = "interface 'FaultCohesiveKin'.";
@@ -145,10 +146,10 @@ pylith::faults::FaultCohesiveKin::verifyConfiguration(const pylith::topology::Fi
         requiredFields[numRequired++] = "velocity";
         break;
     case DYNAMIC:
-        PYLITH_COMPONENT_LOGICERROR("Fault implementation is incompatible with 'dynamic' formulation. Use 'dynamic_imex'.");
+        PYLITH_COMPONENT_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Fault implementation is incompatible with 'dynamic' formulation. Use 'dynamic_imex'.");
         break;
     default:
-        PYLITH_COMPONENT_LOGICERROR("Unknown formulation for equations (" << _formulation << ").");
+        PYLITH_COMPONENT_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown formulation for equations (" << _formulation << ").");
     } // switch
     requiredFields.resize(numRequired);
 
@@ -164,7 +165,7 @@ pylith::topology::Field*
 pylith::faults::FaultCohesiveKin::createAuxiliaryField(const pylith::topology::Field& solution,
                                                        const pylith::topology::Mesh& domainMesh) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("createAuxiliaryField(solution="<<solution.getLabel()<<", domainMesh=)"<<typeid(domainMesh).name()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "createAuxiliaryField(solution="<<solution.getLabel()<<", domainMesh=)"<<typeid(domainMesh).name()<<")");
 
     assert(_scales);
 
@@ -195,10 +196,10 @@ pylith::faults::FaultCohesiveKin::createAuxiliaryField(const pylith::topology::F
         _auxiliaryFactory->addSlipAcceleration(); // 1
         break;
     case DYNAMIC:
-        PYLITH_COMPONENT_LOGICERROR("Fault implementation is incompatible with 'dynamic' time-stepping formulation. Use 'dynamic_imex'.");
+        PYLITH_COMPONENT_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Fault implementation is incompatible with 'dynamic' time-stepping formulation. Use 'dynamic_imex'.");
         break;
     default:
-        PYLITH_COMPONENT_LOGICERROR("Unknown formulation for equations (" << _formulation << ").");
+        PYLITH_COMPONENT_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown formulation for equations (" << _formulation << ").");
     } // switch
 
     auxiliaryField->subfieldsSetup();
@@ -233,7 +234,7 @@ void
 pylith::faults::FaultCohesiveKin::updateAuxiliaryField(pylith::topology::Field* auxiliaryField,
                                                        const double t) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("updateAuxiliaryField(auxiliaryField="<<auxiliaryField<<", t="<<t<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "updateAuxiliaryField(auxiliaryField="<<auxiliaryField<<", t="<<t<<")");
 
     assert(auxiliaryField);
     assert(_scales);
@@ -247,10 +248,10 @@ pylith::faults::FaultCohesiveKin::updateAuxiliaryField(pylith::topology::Field* 
         bitSlipSubfields = pylith::faults::KinSrc::GET_SLIP | pylith::faults::KinSrc::GET_SLIP_ACC;
         break;
     case DYNAMIC:
-        PYLITH_COMPONENT_LOGICERROR("Fault implementation is incompatible with 'dynamic' formulation. Use 'dynamic_imex'.");
+        PYLITH_COMPONENT_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Fault implementation is incompatible with 'dynamic' formulation. Use 'dynamic_imex'.");
         break;
     default:
-        PYLITH_COMPONENT_LOGICERROR("Unknown formulation for equations (" << _formulation << ").");
+        PYLITH_COMPONENT_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown formulation for equations (" << _formulation << ").");
     } // switch
 
     this->_updateSlip(auxiliaryField, t, bitSlipSubfields);
@@ -266,7 +267,7 @@ pylith::faults::FaultCohesiveKin::_updateSlip(pylith::topology::Field* auxiliary
                                               const double t,
                                               const int bitSlipSubfields) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("updateSlip(auxiliaryField="<<auxiliaryField<<", t="<<t<<", bitSlipSubfields="<<bitSlipSubfields<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "updateSlip(auxiliaryField="<<auxiliaryField<<", t="<<t<<", bitSlipSubfields="<<bitSlipSubfields<<")");
 
     assert(auxiliaryField);
     assert(_scales);
@@ -315,8 +316,9 @@ pylith::faults::FaultCohesiveKin::_updateSlip(pylith::topology::Field* auxiliary
     } // for
     PylithCallPetsc(VecRestoreArrayRead(_slipVecTotal, &slipArray));
 
-    pythia::journal::debug_t debug(pylith::utils::PyreComponent::getName());
+    pythia::journal::debug_t debug(pylith::journal::auxiliary_fields);
     if (debug.state()) {
+        PYLITH_COMPONENT_DEBUG(pylith::journal::auxiliary_fields, "Displaying auxiliary field");
         auxiliaryField->view("Fault auxiliary field after updating slip subfields.");
     } // if
 
@@ -331,7 +333,7 @@ pylith::faults::FaultCohesiveKin::_setKernelsResidual(pylith::feassemble::Integr
                                                       const pylith::topology::Field& solution,
                                                       const std::vector<pylith::materials::Material*>& materials) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_setKernelsResidual(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "_setKernelsResidual(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
     typedef pylith::feassemble::IntegratorInterface integrator_t;
 
     std::vector<ResidualKernels> kernels;
@@ -384,9 +386,9 @@ pylith::faults::FaultCohesiveKin::_setKernelsResidual(pylith::feassemble::Integr
         break;
     } // DYNAMIC_IMEX
     case pylith::problems::Physics::DYNAMIC:
-        PYLITH_COMPONENT_LOGICERROR("Fault implementation is incompatible with 'dynamic' formulation. Use 'dynamic_imex'.");
+        PYLITH_COMPONENT_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Fault implementation is incompatible with 'dynamic' formulation. Use 'dynamic_imex'.");
     default:
-        PYLITH_COMPONENT_LOGICERROR("Unknown formulation '"<<_formulation<<"'.");
+        PYLITH_COMPONENT_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown formulation '"<<_formulation<<"'.");
     } // switch
 
     assert(integrator);
@@ -403,7 +405,7 @@ pylith::faults::FaultCohesiveKin::_setKernelsJacobian(pylith::feassemble::Integr
                                                       const pylith::topology::Field& solution,
                                                       const std::vector<pylith::materials::Material*>& materials) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_setKernelsJacobian(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "_setKernelsJacobian(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
     typedef pylith::feassemble::IntegratorInterface integrator_t;
 
     std::vector<JacobianKernels> kernels;
@@ -449,9 +451,9 @@ pylith::faults::FaultCohesiveKin::_setKernelsJacobian(pylith::feassemble::Integr
         break;
     } // DYNAMIC_IMEX
     case pylith::problems::Physics::DYNAMIC:
-        PYLITH_COMPONENT_LOGICERROR("Fault implementation is incompatible with 'dynamic' formulation. Use 'dynamic_imex'.");
+        PYLITH_COMPONENT_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Fault implementation is incompatible with 'dynamic' formulation. Use 'dynamic_imex'.");
     default:
-        PYLITH_COMPONENT_LOGICERROR("Unknown formulation '"<<_formulation<<"'.");
+        PYLITH_COMPONENT_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown formulation '"<<_formulation<<"'.");
     } // switch
 
     assert(integrator);
@@ -467,7 +469,7 @@ void
 pylith::faults::FaultCohesiveKin::_setKernelsDerivedField(pylith::feassemble::IntegratorInterface* integrator,
                                                           const topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_setKernelsDerivedField(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "_setKernelsDerivedField(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
 
     const spatialdata::geocoords::CoordSys* coordsys = solution.getMesh().getCoordSys();
     assert(coordsys);

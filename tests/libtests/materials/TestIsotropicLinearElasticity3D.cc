@@ -21,8 +21,6 @@
 #include "pylith/problems/SolutionFactory.hh" // USES SolutionFactory
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
-#include "pylith/utils/journals.hh" // USES JournalingComponent
-
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "pylith/scales/Scales.hh" // USES Scales
@@ -45,10 +43,6 @@ pylith::materials::TestIsotropicLinearElasticity3D::setUp(void) {
 // Deallocate testing data.
 void
 pylith::materials::TestIsotropicLinearElasticity3D::tearDown(void) {
-    const char* journal = _mymaterial->PyreComponent::getName();
-    pythia::journal::debug_t debug(journal);
-    debug.deactivate(); // DEBUGGING
-
     TestMaterial::tearDown();
 
     delete _mymaterial;_mymaterial = NULL;

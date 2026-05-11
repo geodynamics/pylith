@@ -56,7 +56,7 @@ void
 pylith::feassemble::JacobianValues::setKernels(const std::vector<JacobianKernel>& kernelsJacobian,
                                                const std::vector<JacobianKernel>& kernelsPrecond) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("setKernels(# Jacobian kernels="<<kernelsJacobian.size()<<", # preconditioner kernels="<<kernelsPrecond.size()<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, "setKernels(# Jacobian kernels="<<kernelsJacobian.size()<<", # preconditioner kernels="<<kernelsPrecond.size()<<")");
 
     _kernelsJacobian = kernelsJacobian;
     _kernelsPrecond = kernelsPrecond;
@@ -76,7 +76,7 @@ pylith::feassemble::JacobianValues::computeLHSJacobian(PetscMat jacobianMat,
                                                        const pylith::topology::Field& solution,
                                                        const pylith::feassemble::DSLabelAccess& dsLabel) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("computeLHSJacobian (jacobianMat = "<<jacobianMat<<", precondMat = "<<precondMat<<", t = "<<t<<", dt = "<<dt<<", solution = "<<solution.getLabel()<<") ");
+    PYLITH_DEBUG(pylith::journal::application_flow, "computeLHSJacobian (jacobianMat = "<<jacobianMat<<", precondMat = "<<precondMat<<", t = "<<t<<", dt = "<<dt<<", solution = "<<solution.getLabel()<<") ");
 
     PetscDM dm = dsLabel.dm();assert(dm);
 

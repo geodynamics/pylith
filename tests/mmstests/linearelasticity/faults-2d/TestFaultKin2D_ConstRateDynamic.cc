@@ -27,7 +27,7 @@
 
 #include "pylith/topology/Mesh.hh" // USES pylith::topology::Mesh::cells_label_name
 #include "pylith/topology/Field.hh" // USES pylith::topology::Field::Discretization
-#include "pylith/utils/journals.hh" // USES pythia::journal::debug_t
+#include "pylith/utils/journals.hh" // USES PYLITH_DEBUG
 
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart

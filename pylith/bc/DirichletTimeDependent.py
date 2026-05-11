@@ -12,7 +12,6 @@ from .BoundaryCondition import BoundaryCondition
 from .bc import DirichletTimeDependent as ModuleDirichletTimeDependent
 from pylith.utils.NullComponent import NullComponent
 
-
 class DirichletTimeDependent(BoundaryCondition, ModuleDirichletTimeDependent):
     """
     Dirichlet (prescribed values) time-dependent boundary condition.
@@ -80,11 +79,6 @@ class DirichletTimeDependent(BoundaryCondition, ModuleDirichletTimeDependent):
         """Do pre-initialization setup.
         """
         import numpy
-
-        from pylith.mpi.Communicator import mpi_is_root
-        if mpi_is_root():
-            self._info.log(
-                "Performing minimal initialization of time-dependent Dirichlet boundary condition '%s'." % self.aliases[-1])
 
         BoundaryCondition.preinitialize(self, problem)
 

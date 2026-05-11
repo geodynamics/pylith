@@ -23,6 +23,7 @@
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
+#include "pylith/utils/Exceptions.hh" // USES Exception
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
 
 #include <iostream> // USES std::cout
@@ -104,7 +105,7 @@ void
 pylith::meshio::OutputPhysics::setInfoFields(const char* names[],
                                              const int numNames) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("OutputPhysics::setInfoFields(names="<<names<<", numNames="<<numNames<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "OutputPhysics::setInfoFields(names="<<names<<", numNames="<<numNames<<")");
 
     assert((names && numNames) || (!names && !numNames));
 
@@ -123,7 +124,7 @@ pylith::meshio::OutputPhysics::setInfoFields(const char* names[],
 const pylith::string_vector&
 pylith::meshio::OutputPhysics::getInfoFields(void) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("OutputPhysics::setInfoFields()");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "OutputPhysics::setInfoFields()");
 
     PYLITH_METHOD_RETURN(_infoFieldNames);
 } // getInfoFields
@@ -135,7 +136,7 @@ void
 pylith::meshio::OutputPhysics::setDataFields(const char* names[],
                                              const int numNames) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("OutputPhysics::setDataFields(names="<<names<<", numNames="<<numNames<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "OutputPhysics::setDataFields(names="<<names<<", numNames="<<numNames<<")");
 
     assert((names && numNames) || (!names && !numNames));
 
@@ -154,7 +155,7 @@ pylith::meshio::OutputPhysics::setDataFields(const char* names[],
 const pylith::string_vector&
 pylith::meshio::OutputPhysics::getDataFields(void) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("OutputPhysics::getDataFields()");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "OutputPhysics::getDataFields()");
 
     PYLITH_METHOD_RETURN(_dataFieldNames);
 } // getDataFields
@@ -173,7 +174,7 @@ pylith::meshio::OutputPhysics::setTimeScale(const PylithReal value) {
 void
 pylith::meshio::OutputPhysics::verifyConfiguration(const pylith::topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("OutputPhysics::verifyConfiguration(solution="<<solution.getLabel()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "OutputPhysics::verifyConfiguration(solution="<<solution.getLabel()<<")");
     _OutputPhysics::Events::logger.eventBegin(_OutputPhysics::Events::verifyConfiguration);
 
     assert(_physics);
@@ -247,7 +248,7 @@ pylith::meshio::OutputPhysics::update(const PylithReal t,
         break;
     }
     default:
-        PYLITH_JOURNAL_LOGICERROR("Unknown notification for updating observers.");
+        PYLITH_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown notification for updating observers.");
     } // if/else
 
     _OutputPhysics::Events::logger.eventEnd(_OutputPhysics::Events::update);
@@ -260,7 +261,7 @@ pylith::meshio::OutputPhysics::update(const PylithReal t,
 void
 pylith::meshio::OutputPhysics::_writeInfo(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("OutputPhysics::_writeInfo()");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "OutputPhysics::_writeInfo()");
     _OutputPhysics::Events::logger.eventBegin(_OutputPhysics::Events::writeInfo);
 
     if (!_physics) { PYLITH_METHOD_END;}
@@ -290,10 +291,8 @@ pylith::meshio::OutputPhysics::_writeInfo(void) {
             subfield = _getSubfield(*diagnosticField, domainMesh, infoNames[i].c_str());
             subfield->project(diagnosticVector);
         } else {
-            std::ostringstream msg;
-            msg << "Internal Error: Could not find subfield '" << infoNames[i] << "' for info output.";
-            PYLITH_COMPONENT_ERROR(msg.str());
-            throw std::runtime_error(msg.str());
+            PYLITH_COMPONENT_ERROR(pylith::InternalLogicError, pylith::journal::logic,
+                                   "Internal Error: Could not find subfield '" << infoNames[i] << "' for info output.");
         } // if/else
 
         if (0 == i) {
@@ -320,11 +319,12 @@ void
 pylith::meshio::OutputPhysics::_open(const pylith::topology::Mesh& mesh,
                                      const bool isInfo) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("OutputPhysics::open(mesh="<<typeid(mesh).name()<<", isInfo="<<isInfo<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "OutputPhysics::open(mesh="<<typeid(mesh).name()<<", isInfo="<<isInfo<<")");
     _OutputPhysics::Events::logger.eventBegin(_OutputPhysics::Events::open);
 
     if (!_writer) {
-        PYLITH_COMPONENT_ERROR("Writer for physics output '" << PyreComponent::getIdentifier() << "' not set.");
+        PYLITH_COMPONENT_FIREWALL(pylith::InternalLogicError, pylith::journal::logic,
+                                  "Writer for physics output not set.");
     } // if
 
     assert(_trigger);
@@ -344,7 +344,7 @@ pylith::meshio::OutputPhysics::_open(const pylith::topology::Mesh& mesh,
 void
 pylith::meshio::OutputPhysics::_close(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("OutputPhysics::_close()");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "OutputPhysics::_close()");
 
     assert(_writer);
     _writer->close();
@@ -359,7 +359,7 @@ void
 pylith::meshio::OutputPhysics::_openDataStep(const PylithReal t,
                                              const pylith::topology::Mesh& mesh) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("OutputPhysics::_openDataStep(t="<<t<<", mesh="<<typeid(mesh).name()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "OutputPhysics::_openDataStep(t="<<t<<", mesh="<<typeid(mesh).name()<<")");
     _OutputPhysics::Events::logger.eventBegin(_OutputPhysics::Events::openDataStep);
 
     assert(_writer);
@@ -391,7 +391,7 @@ pylith::meshio::OutputPhysics::_writeDataStep(const PylithReal t,
                                               const PylithInt tindex,
                                               const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("OutputPhysics::_writeDataStep(t="<<t<<", tindex="<<tindex<<", solution="<<solution.getLabel()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "OutputPhysics::_writeDataStep(t="<<t<<", tindex="<<tindex<<", solution="<<solution.getLabel()<<")");
     _OutputPhysics::Events::logger.eventBegin(_OutputPhysics::Events::writeDataStep);
 
     assert(_physics);
@@ -427,10 +427,8 @@ pylith::meshio::OutputPhysics::_writeDataStep(const PylithReal t,
             subfield->setLabel(labelName, labelValue);
             subfield->project(derivedVector);
         } else {
-            std::ostringstream msg;
-            msg << "Internal Error: Could not find subfield '" << dataNames[i] << "' for data output.";
-            PYLITH_COMPONENT_ERROR(msg.str());
-            throw std::runtime_error(msg.str());
+            PYLITH_COMPONENT_FIREWALL(pylith::InternalLogicError, pylith::journal::logic,
+                                      "Internal Error: Could not find subfield '" << dataNames[i] << "' for data output.");
         } // if/else
 
         if (0 == i) {

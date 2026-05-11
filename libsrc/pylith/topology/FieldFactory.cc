@@ -63,7 +63,7 @@ pylith::topology::FieldFactory::setSubfieldDiscretization(const char* subfieldNa
                                                           const pylith::topology::FieldBase::SpaceEnum feSpace,
                                                           const bool isBasisContinuous) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("setSubfieldDiscretization(subfieldName="<<subfieldName<<", basisOrder="<<basisOrder<<", quadOrder="<<quadOrder<<", dimension="<<dimension<<", cellBasis="<<cellBasis<<", isBasisContinuous="<<isBasisContinuous<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, "setSubfieldDiscretization(subfieldName="<<subfieldName<<", basisOrder="<<basisOrder<<", quadOrder="<<quadOrder<<", dimension="<<dimension<<", cellBasis="<<cellBasis<<", isBasisContinuous="<<isBasisContinuous<<")");
     assert(dimension != 0);
 
     pylith::topology::FieldBase::Discretization feInfo;
@@ -85,7 +85,7 @@ pylith::topology::FieldFactory::setSubfieldDiscretization(const char* subfieldNa
 const pylith::topology::FieldBase::Discretization&
 pylith::topology::FieldFactory::getSubfieldDiscretization(const char* subfieldName) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("getSubfieldDiscretization(subfieldName="<<subfieldName<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, "getSubfieldDiscretization(subfieldName="<<subfieldName<<")");
 
     pylith::topology::FieldBase::discretizations_map::const_iterator iter = _subfieldDiscretizations.find(subfieldName);
     if (iter != _subfieldDiscretizations.end()) {
@@ -109,7 +109,7 @@ pylith::topology::FieldFactory::initialize(pylith::topology::Field* field,
                                            const int spaceDim,
                                            const pylith::topology::FieldBase::Description* defaultDescription) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("initialize(field="<<field<<", scales="<<&scales<<", spaceDim="<<spaceDim<<", defaultDescription="<<defaultDescription<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, "initialize(field="<<field<<", scales="<<&scales<<", spaceDim="<<spaceDim<<", defaultDescription="<<defaultDescription<<")");
 
     assert(field);
 

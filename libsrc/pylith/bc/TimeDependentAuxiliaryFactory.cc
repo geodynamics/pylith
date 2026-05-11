@@ -20,6 +20,7 @@
 #include "pylith/scales/Scales.hh" // USES Scales
 
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL*
+#include "pylith/utils/Exceptions.hh" // USES Exceptions
 
 #include <cassert>
 
@@ -67,7 +68,7 @@ pylith::bc::TimeDependentAuxiliaryFactory::~TimeDependentAuxiliaryFactory(void) 
 void
 pylith::bc::TimeDependentAuxiliaryFactory::_setVectorFieldComponentNames(pylith::topology::FieldBase::Description* description) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("_setVectorFieldComponentNames(description)");
+    PYLITH_DEBUG(pylith::journal::application_flow, "_setVectorFieldComponentNames(description)");
 
     assert(description);
 
@@ -82,8 +83,7 @@ pylith::bc::TimeDependentAuxiliaryFactory::_setVectorFieldComponentNames(pylith:
         } // if/else
     } // if/else
     if (!componentNames) {
-        PYLITH_JOURNAL_ERROR("Unknown case for auxiliary component reference ("<<_auxComponents<<") and spatial dimension ("<<_spaceDim<<").");
-        throw std::logic_error("Unknown case for auxiliary component reference and spatial dimension.");
+        PYLITH_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown case for auxiliary component reference ("<<_auxComponents<<") and spatial dimension ("<<_spaceDim<<").");
     } // if
 
     assert(size_t(_spaceDim) == description->numComponents);
@@ -100,7 +100,7 @@ pylith::bc::TimeDependentAuxiliaryFactory::_setVectorFieldComponentNames(pylith:
 void
 pylith::bc::TimeDependentAuxiliaryFactory::addInitialAmplitude(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addInitialAmplitude(void)");
+    PYLITH_DEBUG(pylith::journal::application_flow, "addInitialAmplitude(void)");
 
     const char* subfieldName = "initial_amplitude";
 
@@ -123,8 +123,7 @@ pylith::bc::TimeDependentAuxiliaryFactory::addInitialAmplitude(void) {
         break;
     } // VECTOR
     default:
-        PYLITH_JOURNAL_ERROR("Unknown vector field case.");
-        throw std::logic_error("Unknown vector field case in TimeDependentAuxiliaryFactory::initialAmplitude().");
+        PYLITH_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown vector field case.");
     } // switch
 
     _field->subfieldAdd(subfieldDescription, getSubfieldDiscretization(subfieldName));
@@ -139,7 +138,7 @@ pylith::bc::TimeDependentAuxiliaryFactory::addInitialAmplitude(void) {
 void
 pylith::bc::TimeDependentAuxiliaryFactory::addRateAmplitude(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addRateAmplitude(void)");
+    PYLITH_DEBUG(pylith::journal::application_flow, "addRateAmplitude(void)");
 
     const char* subfieldName = "rate_amplitude";
 
@@ -163,8 +162,7 @@ pylith::bc::TimeDependentAuxiliaryFactory::addRateAmplitude(void) {
         break;
     } // VECTOR
     default:
-        PYLITH_JOURNAL_ERROR("Unknown vector field case.");
-        throw std::logic_error("Unknown vector field case in TimeDependentAuxiliaryFactory::addRateAmplitude().");
+        PYLITH_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown vector field case.");
     } // switch
 
     _field->subfieldAdd(subfieldDescription, getSubfieldDiscretization(subfieldName));
@@ -179,7 +177,7 @@ pylith::bc::TimeDependentAuxiliaryFactory::addRateAmplitude(void) {
 void
 pylith::bc::TimeDependentAuxiliaryFactory::addRateStartTime(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addRateStartTime(void)");
+    PYLITH_DEBUG(pylith::journal::application_flow, "addRateStartTime(void)");
 
     const char* subfieldName = "rate_start_time";
 
@@ -207,7 +205,7 @@ pylith::bc::TimeDependentAuxiliaryFactory::addRateStartTime(void) {
 void
 pylith::bc::TimeDependentAuxiliaryFactory::addTimeHistoryAmplitude(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addTimeHistoryAmplitude(void)");
+    PYLITH_DEBUG(pylith::journal::application_flow, "addTimeHistoryAmplitude(void)");
 
     const char* subfieldName = "time_history_amplitude";
 
@@ -229,8 +227,7 @@ pylith::bc::TimeDependentAuxiliaryFactory::addTimeHistoryAmplitude(void) {
         break;
     } // VECTOR
     default:
-        PYLITH_JOURNAL_ERROR("Unknown vector field case.");
-        throw std::logic_error("Unknown vector field case in TimeDependentAuxiliaryFactory::addTimeHistoryAmplitude().");
+        PYLITH_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown vector field case.");
     } // switch
 
     _field->subfieldAdd(subfieldDescription, getSubfieldDiscretization(subfieldName));
@@ -245,7 +242,7 @@ pylith::bc::TimeDependentAuxiliaryFactory::addTimeHistoryAmplitude(void) {
 void
 pylith::bc::TimeDependentAuxiliaryFactory::addTimeHistoryStartTime(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addTimeHistoryStartTime(void)");
+    PYLITH_DEBUG(pylith::journal::application_flow, "addTimeHistoryStartTime(void)");
 
     const char* subfieldName = "time_history_start_time";
 
@@ -273,7 +270,7 @@ pylith::bc::TimeDependentAuxiliaryFactory::addTimeHistoryStartTime(void) {
 void
 pylith::bc::TimeDependentAuxiliaryFactory::addTimeHistoryValue(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addTimeHistoryValue(void)");
+    PYLITH_DEBUG(pylith::journal::application_flow, "addTimeHistoryValue(void)");
 
     const char* subfieldName = "time_history_value";
 
@@ -302,12 +299,7 @@ pylith::bc::TimeDependentAuxiliaryFactory::updateAuxiliaryField(pylith::topology
                                                                 const PylithReal timeScale,
                                                                 spatialdata::spatialdb::TimeHistory* const dbTimeHistory) {
     PYLITH_METHOD_BEGIN;
-    pythia::journal::debug_t debug(_TimeDependentAuxiliaryFactory::genericComponent);
-    debug << pythia::journal::at(__HERE__)
-          << "TimeDependentAuxiliaryFactory::updateAuxiliaryField(auxiliaryField="<<auxiliaryField<<", t="<<t
-          <<", timeScale="<<timeScale<<", dbTimeHistory="<<dbTimeHistory<<")"
-          << pythia::journal::endl;
-
+    PYLITH_DEBUG(pylith::journal::application_flow_detail5, "Updating auxiliary field");
     assert(auxiliaryField);
     assert(dbTimeHistory);
 

@@ -44,7 +44,7 @@ pylith::materials::AuxiliaryFactoryViscoelastic::~AuxiliaryFactoryViscoelastic(v
 void
 pylith::materials::AuxiliaryFactoryViscoelastic::addMaxwellTime(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addMaxwellTime(void)");
+    PYLITH_DEBUG(pylith::journal::application_flow, "addMaxwellTime(void)");
 
     const char* subfieldName = "maxwell_time";
     const PylithReal timeScale = _scales->getTimeScale();
@@ -71,7 +71,7 @@ pylith::materials::AuxiliaryFactoryViscoelastic::addMaxwellTime(void) {
 void
 pylith::materials::AuxiliaryFactoryViscoelastic::addMaxwellTimeGeneralizedMaxwell(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addMaxwellTimeGeneralizedMaxwell(void)");
+    PYLITH_DEBUG(pylith::journal::application_flow, "addMaxwellTimeGeneralizedMaxwell(void)");
 
     const char* subfieldName = "maxwell_time";
     const char* componentNames[3] = {
@@ -105,7 +105,7 @@ pylith::materials::AuxiliaryFactoryViscoelastic::addMaxwellTimeGeneralizedMaxwel
 void
 pylith::materials::AuxiliaryFactoryViscoelastic::addShearModulusRatioGeneralizedMaxwell(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addShearModulusRatioGeneralizedMaxwell(void)");
+    PYLITH_DEBUG(pylith::journal::application_flow, "addShearModulusRatioGeneralizedMaxwell(void)");
 
     const char* subfieldName = "shear_modulus_ratio";
 
@@ -138,7 +138,7 @@ pylith::materials::AuxiliaryFactoryViscoelastic::addShearModulusRatioGeneralized
 void
 pylith::materials::AuxiliaryFactoryViscoelastic::addPowerLawReferenceStrainRate(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addPowerLawReferenceStrainRate(void)");
+    PYLITH_DEBUG(pylith::journal::application_flow, "addPowerLawReferenceStrainRate(void)");
 
     const char* subfieldName = "power_law_reference_strain_rate";
     const PylithReal strainRateScale = pylith::scales::ElasticityScales::getStrainScale(*_scales) / _scales->getTimeScale();
@@ -165,7 +165,7 @@ pylith::materials::AuxiliaryFactoryViscoelastic::addPowerLawReferenceStrainRate(
 void
 pylith::materials::AuxiliaryFactoryViscoelastic::addPowerLawReferenceStress(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addPowerLawReferenceStress(void)");
+    PYLITH_DEBUG(pylith::journal::application_flow, "addPowerLawReferenceStress(void)");
 
     const char* subfieldName = "power_law_reference_stress";
     const PylithReal stressScale = pylith::scales::ElasticityScales::getStressScale(*_scales);
@@ -192,7 +192,7 @@ pylith::materials::AuxiliaryFactoryViscoelastic::addPowerLawReferenceStress(void
 void
 pylith::materials::AuxiliaryFactoryViscoelastic::addPowerLawExponent(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addPowerLawExponent(void)");
+    PYLITH_DEBUG(pylith::journal::application_flow, "addPowerLawExponent(void)");
 
     const char* subfieldName = "power_law_exponent";
 
@@ -218,7 +218,7 @@ pylith::materials::AuxiliaryFactoryViscoelastic::addPowerLawExponent(void) {
 void
 pylith::materials::AuxiliaryFactoryViscoelastic::addTotalStrain(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addTotalStrain(void)");
+    PYLITH_DEBUG(pylith::journal::application_flow, "addTotalStrain(void)");
 
     const char* subfieldName = "total_strain";
     const char* componentNames[6] = {
@@ -257,7 +257,7 @@ pylith::materials::AuxiliaryFactoryViscoelastic::addTotalStrain(void) {
 void
 pylith::materials::AuxiliaryFactoryViscoelastic::addDeviatoricStress(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addDeviatoricStress(void)");
+    PYLITH_DEBUG(pylith::journal::application_flow, "addDeviatoricStress(void)");
 
     const char* subfieldName = "deviatoric_stress";
     const char* componentNames[6] = {
@@ -297,7 +297,7 @@ pylith::materials::AuxiliaryFactoryViscoelastic::addDeviatoricStress(void) {
 void
 pylith::materials::AuxiliaryFactoryViscoelastic::addViscousStrain(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addViscousStrain(void)");
+    PYLITH_DEBUG(pylith::journal::application_flow, "addViscousStrain(void)");
 
     const char* subfieldName = "viscous_strain";
     const char* componentNames[6] = {
@@ -336,7 +336,7 @@ pylith::materials::AuxiliaryFactoryViscoelastic::addViscousStrain(void) {
 void
 pylith::materials::AuxiliaryFactoryViscoelastic::addViscousStrainGeneralizedMaxwell(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addViscousStrainGeneralizedMaxwell(void)");
+    PYLITH_DEBUG(pylith::journal::application_flow, "addViscousStrainGeneralizedMaxwell(void)");
 
     const char* subfieldName = "viscous_strain";
     const char* componentElementNumbers[3] = { "_1", "_2", "_3" };

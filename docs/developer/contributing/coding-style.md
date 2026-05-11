@@ -117,7 +117,7 @@ case 0x0:
     PYLITH_COMPONENT_WARNING("Dirichlet BC provides no constraints.");
     break;
 default:
-    PYLITH_COMPONENT_LOGICERROR("Unknown combination of flags for Dirichlet BC terms "
+    PYLITH_FIREWALL("Unknown combination of flags for Dirichlet BC terms "
         << "(useInitial="<<_useInitial<<", useRate="<<_useRate<<").");
 } // switch
 ```

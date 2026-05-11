@@ -25,6 +25,7 @@
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
+#include "pylith/utils/Exceptions.hh" // USES Exception
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/geocoords/Converter.hh" // USES Converter
@@ -105,10 +106,10 @@ pylith::meshio::OutputSolnPoints::_writeSolnStep(const PylithReal t,
                                                  const PylithInt tindex,
                                                  const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_writeSolnStep(t="<<t<<", tindex="<<tindex<<", solution="<<solution.getLabel()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "_writeSolnStep(t="<<t<<", tindex="<<tindex<<", solution="<<solution.getLabel()<<")");
 
     if (dynamic_cast<pylith::meshio::DataWriterVTK*>(_writer)) {
-        PYLITH_JOURNAL_LOGICERROR("PETSc VTK writer using the VTU format does not support output at points. Use the default DataWriterHDF5 writer.");
+        PYLITH_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "PETSc VTK writer using the VTU format does not support output at points. Use the default DataWriterHDF5 writer.");
     } // if
 
     if (!_interpolator) {
@@ -147,7 +148,7 @@ pylith::meshio::OutputSolnPoints::_getSubfield(const pylith::topology::Field& fi
                                                const pylith::topology::Mesh& submesh,
                                                const char* name) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_getSubfield(field="<<field.getLabel()<<", name="<<name<<", submesh="<<typeid(submesh).name()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "_getSubfield(field="<<field.getLabel()<<", name="<<name<<", submesh="<<typeid(submesh).name()<<")");
 
     if (_subfields.count(name) == 0) {
         _subfields[name] = OutputSubfield::create(field, submesh, name);

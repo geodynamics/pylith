@@ -39,7 +39,7 @@ pylith::faults::DerivedFieldFactory::~DerivedFieldFactory(void) {}
 void
 pylith::faults::DerivedFieldFactory::addTractionChange(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addTractionChange(void)");
+    PYLITH_DEBUG(pylith::journal::application_flow, "addTractionChange(void)");
 
     const char* fieldName = "traction_change";
     const char* componentNames[3] = { "traction_change_opening", "traction_change_left_lateral", "traction_change_reverse" };
@@ -68,7 +68,7 @@ pylith::faults::DerivedFieldFactory::addTractionChange(void) {
 void
 pylith::faults::DerivedFieldFactory::addSubfields(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addSubfields(void)");
+    PYLITH_DEBUG(pylith::journal::application_flow, "addSubfields(void)");
 
     if (_subfieldDiscretizations.find("traction_change") != _subfieldDiscretizations.end()) {
         addTractionChange();

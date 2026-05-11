@@ -107,7 +107,7 @@ pylith::feassemble::Integrator::deallocate(void) {
 // Set name of label used to identify integration domain.
 void
 pylith::feassemble::Integrator::setLabelName(const char* name) {
-    PYLITH_JOURNAL_DEBUG("setLabelName(name="<<name<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, "setLabelName(name="<<name<<")");
 
     if (strlen(name) == 0) {
         throw std::runtime_error("Empty string given for name of label for integration domain.");
@@ -129,7 +129,7 @@ pylith::feassemble::Integrator::getLabelName(void) const {
 // Set value of label used to identify integration domain.
 void
 pylith::feassemble::Integrator::setLabelValue(const int value) {
-    PYLITH_JOURNAL_DEBUG("setLabelValue(value="<<value<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, "setLabelValue(value="<<value<<")");
     _labelValue = value;
 }
 
@@ -201,7 +201,7 @@ pylith::feassemble::Integrator::createLabelDS(const pylith::topology::Field& sol
 void
 pylith::feassemble::Integrator::initialize(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("initialize(solution="<<solution.getLabel()<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, "initialize(solution="<<solution.getLabel()<<")");
     _Integrator::Events::logger.eventBegin(_Integrator::Events::initialize);
 
     const pylith::topology::Mesh& physicsDomainMesh = getPhysicsDomainMesh();
@@ -230,7 +230,7 @@ pylith::feassemble::Integrator::initialize(const pylith::topology::Field& soluti
 void
 pylith::feassemble::Integrator::setState(const PylithReal t) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("setState(t="<<t<<") empty method");
+    PYLITH_DEBUG(pylith::journal::application_flow, "setState(t="<<t<<") empty method");
 
     PYLITH_METHOD_END;
 } // setState
@@ -245,7 +245,7 @@ pylith::feassemble::Integrator::poststep(const PylithReal t,
                                          const pylith::topology::Field& solution,
                                          const pylith::problems::Observer::NotificationType notification) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("poststep(t="<<t<<", dt="<<dt<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, "poststep(t="<<t<<", dt="<<dt<<")");
     _Integrator::Events::logger.eventBegin(_Integrator::Events::poststep);
 
     _updateStateVars(t, dt, solution);
@@ -263,7 +263,7 @@ void
 pylith::feassemble::Integrator::_setKernelConstants(const pylith::topology::Field& solution,
                                                     const PylithReal dt) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("_setKernelConstants(solution="<<solution.getLabel()<<", dt="<<dt<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, "_setKernelConstants(solution="<<solution.getLabel()<<", dt="<<dt<<")");
 
     assert(_physics);
     const pylith::real_array& constants = _physics->getKernelConstants(dt);
@@ -294,7 +294,7 @@ pylith::feassemble::Integrator::_updateStateVars(const PylithReal t,
                                                  const PylithReal dt,
                                                  const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("_updateStateVars(t="<<t<<", dt="<<dt<<", solution="<<solution.getLabel()<<") empty method");
+    PYLITH_DEBUG(pylith::journal::application_flow, "_updateStateVars(t="<<t<<", dt="<<dt<<", solution="<<solution.getLabel()<<") empty method");
 
     // Default is to do nothing.
 
@@ -307,7 +307,7 @@ pylith::feassemble::Integrator::_updateStateVars(const PylithReal t,
 void
 pylith::feassemble::Integrator::_computeDiagnosticField(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("_computeDiagnosticField() empty method");
+    PYLITH_DEBUG(pylith::journal::application_flow, "_computeDiagnosticField() empty method");
 
     // Default is to do nothing.
 
@@ -322,7 +322,7 @@ pylith::feassemble::Integrator::_computeDerivedField(const PylithReal t,
                                                      const PylithReal dt,
                                                      const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("_computeDerivedField(t="<<t<<", dt="<<dt<<", solution="<<solution.getLabel()<<") empty method");
+    PYLITH_DEBUG(pylith::journal::application_flow, "_computeDerivedField(t="<<t<<", dt="<<dt<<", solution="<<solution.getLabel()<<") empty method");
 
     // Default is to do nothing.
 

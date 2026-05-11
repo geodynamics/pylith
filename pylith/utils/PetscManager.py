@@ -45,14 +45,14 @@ class PetscManager(PropertyList):
         petsc.initialize(args)
         from pylith.mpi.Communicator import mpi_is_root
         if mpi_is_root():
-            self._info.log("Initialized PETSc.")
+            self._flow.log("Initialized PETSc.")
 
     def finalize(self):
         """Finalize PETSc.
         """
         from pylith.mpi.Communicator import mpi_is_root
         if mpi_is_root():
-            self._info.log("Finalizing PETSc.")
+            self._flow.log("Finalizing PETSc.")
         petsc.finalize()
 
     def setOption(self, name, value):

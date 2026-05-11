@@ -13,6 +13,7 @@
 #include "pylith/testing/testingfwd.hh"
 #include "pylith/topology/FieldOps.hh" // USES FieldOps::deallocate()
 #include "pylith/utils/journals.hh" // USES journals
+#include "pylith/utils/Exceptions.hh" // USES Exception
 
 #include "petsc.h"
 #include <Python.h>
@@ -364,7 +365,7 @@ pylith::testing::TestDriver::_activateJournals(void) {
             break;
         } // INFO
         default:
-            PYLITH_JOURNAL_LOGICERROR("Unknown journal category '"<<category<<"'.");
+            PYLITH_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown journal category '"<<category<<"'.");
         } // switch
     } // for
 } // _activateJournal

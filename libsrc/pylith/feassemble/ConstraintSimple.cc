@@ -56,7 +56,7 @@ pylith::feassemble::ConstraintSimple::setUserFn(const PetscUserFieldFunc fn) {
 void
 pylith::feassemble::ConstraintSimple::initialize(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("initialize (solution = "<<solution.getLabel()<<") ");
+    PYLITH_DEBUG(pylith::journal::application_flow, "initialize (solution = "<<solution.getLabel()<<") ");
 
     assert(_physics);
     _observers = NULL;
@@ -142,7 +142,7 @@ void
 pylith::feassemble::ConstraintSimple::setSolution(pylith::feassemble::IntegrationData* integrationData) {
     assert(integrationData);
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("setSolution (integrationData = "<<integrationData->str()<<") ");
+    PYLITH_DEBUG(pylith::journal::application_flow, "setSolution (integrationData = "<<integrationData->str()<<") ");
 
     const pylith::topology::Field* solution = integrationData->getField(pylith::feassemble::IntegrationData::solution);
     assert(solution);
@@ -164,9 +164,9 @@ pylith::feassemble::ConstraintSimple::setSolution(pylith::feassemble::Integratio
                                                         &_labelValue, _fn, context, solution->getLocalVector()));
     PylithCallPetsc(DMPlexLabelClearCells(dmSoln, dmLabel));
 
-    pythia::journal::debug_t debug(GenericComponent::getName());
+    pythia::journal::debug_t debug(pylith::journal::solution);
     if (debug.state()) {
-        PYLITH_JOURNAL_DEBUG("Displaying solution field ");
+        PYLITH_DEBUG(pylith::journal::solution, "Displaying solution field ");
         solution->view("solution field ");
     } // if
 

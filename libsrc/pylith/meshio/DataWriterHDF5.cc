@@ -22,6 +22,7 @@
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT*
+#include "pylith/utils/Exceptions.hh" // USES Exception
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 
@@ -142,8 +143,7 @@ pylith::meshio::DataWriterHDF5::close(void) {
             try {
                 Xdmf::write(hdf5Filename().c_str());
             } catch (const std::exception& err) {
-                pythia::journal::error_t error("datawriter");
-                error << err.what() << pythia::journal::endl;
+                PYLITH_COMPONENT_ERROR(pylith::IOError, pylith::journal::output, err.what());
             } // catch
         } // if
     } // if

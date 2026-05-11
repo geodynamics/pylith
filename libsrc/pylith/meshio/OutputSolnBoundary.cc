@@ -81,7 +81,7 @@ pylith::meshio::OutputSolnBoundary::setLabelValue(const int value) {
 void
 pylith::meshio::OutputSolnBoundary::verifyConfiguration(const pylith::topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("verifyConfiguration(solution="<<solution.getLabel()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "verifyConfiguration(solution="<<solution.getLabel()<<")");
 
     OutputSoln::verifyConfiguration(solution);
 
@@ -106,7 +106,7 @@ pylith::meshio::OutputSolnBoundary::_writeSolnStep(const PylithReal t,
                                                    const PylithInt tindex,
                                                    const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_writeSolnStep(t="<<t<<", tindex="<<tindex<<", solution="<<solution.getLabel()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "_writeSolnStep(t="<<t<<", tindex="<<tindex<<", solution="<<solution.getLabel()<<")");
 
     if (!_boundaryMesh) {
         const char* componentName = this->getFullIdentifier();

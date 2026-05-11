@@ -18,6 +18,7 @@
 #include "pylith/utils/array.hh" // USES scalar_array, int_array
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_INFO
+#include "pylith/utils/Exceptions.hh" // USES Exception
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 
 #include <cassert> // USES assert()
@@ -74,15 +75,14 @@ pylith::meshio::MeshIO::read(pylith::topology::Mesh* mesh,
     for (int i = 0; i < dim; ++i) {
         msg << "\n    (" << cmin[i] << ", " << cmax[i] << ")";
     } // for
-    PYLITH_COMPONENT_INFO_ROOT(msg.str());
+    PYLITH_COMPONENT_INFO_ROOT(pylith::journal::application_flow, msg.str());
     const PetscReal tolerance = 1.0e-8;
     if (volume < tolerance) {
-        msg.clear();
-        msg << "Domain bounding box volume (" << volume << ") is less than minimum tolerance ("
-            << tolerance << "). This usually means you are trying to use a 2D mesh in 3D. Check that you are exporting "
-            << "your mesh from the mesh generation software correctly and that your have specified the correct "
-            << " coordinate system for the problem.";
-        throw std::runtime_error(msg.str());
+        PYLITH_ERROR(pylith::ValueError, pylith::journal::user_input,
+                     "Domain bounding box volume (" << volume << ") is less than minimum tolerance ("
+                                                    << tolerance << "). This usually means you are trying to use a 2D mesh in 3D. Check that you are exporting "
+                                                    << "your mesh from the mesh generation software correctly and that your have specified the correct "
+                                                    << " coordinate system for the problem.");
     } // if
 
     // Check mesh consistency
@@ -94,13 +94,11 @@ pylith::meshio::MeshIO::read(pylith::topology::Mesh* mesh,
         _mesh->setCoordSys(_cs);
     } // if
 
-    pythia::journal::debug_t debug(PyreComponent::getName());
+    pythia::journal::debug_t debug(pylith::journal::mesh_full_detail);
     if (debug.state()) {
         _mesh->view("::ascii_info_detail");
         _mesh->view(":mesh.tex:ascii_latex");
     } // if
-    // Respond to PETSc diagnostic output
-    PylithCallPetsc(DMViewFromOptions(_mesh->getDM(), NULL, "-pylith_dm_view"));
 
     _mesh = NULL;
 

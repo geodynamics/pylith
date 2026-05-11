@@ -23,6 +23,7 @@
 #include "spatialdata/spatialdb/GravityField.hh" // HASA GravityField
 
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
+#include "pylith/utils/Exceptions.hh" // USES Exception
 
 #include "petscds.h" // USES PetscDS
 
@@ -79,7 +80,7 @@ pylith::feassemble::IntegratorBoundary::deallocate(void) {
 // Set name of solution subfield associated with boundary condition.
 void
 pylith::feassemble::IntegratorBoundary::setSubfieldName(const char* value) {
-    PYLITH_JOURNAL_DEBUG("setSubfieldName(value="<<value<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, "setSubfieldName(value="<<value<<")");
 
     if (!value || (0 == strlen(value))) {
         std::ostringstream msg;
@@ -113,7 +114,7 @@ void
 pylith::feassemble::IntegratorBoundary::setKernelsResidual(const std::vector<ResidualKernels>& kernels,
                                                            const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" setKernelsResidual(# kernels="<<kernels.size()<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, _labelName<<"="<<_labelValue<<" setKernelsResidual(# kernels="<<kernels.size()<<")");
 
     assert(_dsLabel);
     for (size_t i = 0; i < kernels.size(); ++i) {
@@ -132,11 +133,11 @@ pylith::feassemble::IntegratorBoundary::setKernelsResidual(const std::vector<Res
             _hasRHSResidual = true;
             break;
         default:
-            PYLITH_JOURNAL_LOGICERROR("Unknown residual part " << kernels[i].part <<".");
+            PYLITH_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown residual part " << kernels[i].part <<".");
         } // switch
     } // for
 
-    pythia::journal::debug_t debug(GenericComponent::getName());
+    pythia::journal::debug_t debug(pylith::journal::integration_kernels);
     if (debug.state()) {
         PylithCallPetsc(PetscDSView(_dsLabel->ds(), PETSC_VIEWER_STDOUT_WORLD));
     } // if
@@ -149,7 +150,7 @@ pylith::feassemble::IntegratorBoundary::setKernelsResidual(const std::vector<Res
 void
 pylith::feassemble::IntegratorBoundary::setKernelsDiagnosticField(const std::vector<ProjectKernels>& kernels) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" setKernelsDiagnosticField(# kernels="<<kernels.size()<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, _labelName<<"="<<_labelValue<<" setKernelsDiagnosticField(# kernels="<<kernels.size()<<")");
 
     _kernelsDiagnosticField = kernels;
 
@@ -162,7 +163,7 @@ pylith::feassemble::IntegratorBoundary::setKernelsDiagnosticField(const std::vec
 void
 pylith::feassemble::IntegratorBoundary::initialize(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" initialize(solution="<<solution.getLabel()<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, _labelName<<"="<<_labelValue<<" initialize(solution="<<solution.getLabel()<<")");
 
     const char* componentName = _physics->getFullIdentifier();
     delete _boundaryMesh;_boundaryMesh = pylith::topology::MeshOps::createLowerDimMesh(solution.getMesh(), _labelName.c_str(), _labelValue, componentName);
@@ -171,11 +172,11 @@ pylith::feassemble::IntegratorBoundary::initialize(const pylith::topology::Field
 
     Integrator::initialize(solution);
 
-    pythia::journal::debug_t debug(GenericComponent::getName());
+    pythia::journal::debug_t debug(pylith::journal::auxiliary_fields);
     if (debug.state()) {
         assert(_auxiliaryField);
-        PYLITH_JOURNAL_DEBUG("Viewing auxiliary field.");
-        _auxiliaryField->view("Auxiliary field");
+        PYLITH_DEBUG(pylith::journal::auxiliary_fields, "Viewing auxiliary field.");
+        _auxiliaryField->view("IntegratorBoundary auxiliary field");
     } // if
 
     PYLITH_METHOD_END;
@@ -187,19 +188,19 @@ pylith::feassemble::IntegratorBoundary::initialize(const pylith::topology::Field
 void
 pylith::feassemble::IntegratorBoundary::setState(const double t) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" setState(t="<<t<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, _labelName<<"="<<_labelValue<<" setState(t="<<t<<")");
 
     Integrator::setState(t);
 
     assert(_physics);
     _physics->updateAuxiliaryField(_auxiliaryField, t);
 
-    pythia::journal::debug_t debug(GenericComponent::getName());
+    pythia::journal::debug_t debug(pylith::journal::auxiliary_fields);
     if (debug.state()) {
         assert(_auxiliaryField);
-        PYLITH_JOURNAL_DEBUG("IntegratorInterface component '" << GenericComponent::getName() << "' for '"
-                                                               <<_physics->getIdentifier()
-                                                               << "': viewing auxiliary field.");
+        PYLITH_DEBUG(pylith::journal::auxiliary_fields, "IntegratorInterface component for '"
+                     <<_physics->getIdentifier()
+                     << "' viewing auxiliary field.");
         _auxiliaryField->view("IntegratorInterface auxiliary field", pylith::topology::Field::VIEW_ALL);
     } // if
 
@@ -213,7 +214,7 @@ void
 pylith::feassemble::IntegratorBoundary::computeRHSResidual(pylith::topology::Field* residual,
                                                            const pylith::feassemble::IntegrationData& integrationData) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" computeRHSResidual(residual="<<residual<<", integrationData="<<integrationData.str()<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, _labelName<<"="<<_labelValue<<" computeRHSResidual(residual="<<residual<<", integrationData="<<integrationData.str()<<")");
     if (!_hasRHSResidual) { PYLITH_METHOD_END;}
     assert(residual);
 
@@ -250,7 +251,7 @@ void
 pylith::feassemble::IntegratorBoundary::computeLHSResidual(pylith::topology::Field* residual,
                                                            const pylith::feassemble::IntegrationData& integrationData) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" computeLHSResidual(residual="<<residual<<", integrationData="<<integrationData.str()<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, _labelName<<"="<<_labelValue<<" computeLHSResidual(residual="<<residual<<", integrationData="<<integrationData.str()<<")");
     if (!_hasLHSResidual) { PYLITH_METHOD_END;}
     assert(residual);
 
@@ -289,7 +290,7 @@ pylith::feassemble::IntegratorBoundary::computeLHSJacobian(PetscMat jacobianMat,
                                                            PetscMat precondMat,
                                                            const pylith::feassemble::IntegrationData& integrationData) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" computeLHSJacobian(jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", integrationData="<<integrationData.str()<<") empty method");
+    PYLITH_DEBUG(pylith::journal::application_flow, _labelName<<"="<<_labelValue<<" computeLHSJacobian(jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", integrationData="<<integrationData.str()<<") empty method");
 
     _needNewLHSJacobian = false;
     // No implementation needed for boundary.
@@ -304,7 +305,7 @@ void
 pylith::feassemble::IntegratorBoundary::computeLHSJacobianLumpedInv(pylith::topology::Field* jacobianInv,
                                                                     const pylith::feassemble::IntegrationData& integrationData) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" computeLHSJacobianLumpedInv(jacobianInv="<<jacobianInv<<", integrationData="<<integrationData.str()<<") empty method");
+    PYLITH_DEBUG(pylith::journal::application_flow, _labelName<<"="<<_labelValue<<" computeLHSJacobianLumpedInv(jacobianInv="<<jacobianInv<<", integrationData="<<integrationData.str()<<") empty method");
 
     _needNewLHSJacobianLumped = false;
     // No implementation needed for boundary.
@@ -318,7 +319,7 @@ pylith::feassemble::IntegratorBoundary::computeLHSJacobianLumpedInv(pylith::topo
 void
 pylith::feassemble::IntegratorBoundary::_computeDiagnosticField(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("_computeDiagnosticField()");
+    PYLITH_DEBUG(pylith::journal::application_flow, "_computeDiagnosticField()");
 
     // We create the diagnostic field for all BCs, but we don't set the kernel for
     // BCs associated with analytical user functions.
@@ -349,9 +350,9 @@ pylith::feassemble::IntegratorBoundary::_computeDiagnosticField(void) {
     PylithCallPetsc(DMProjectBdFieldLabelLocal(diagnosticDM, t, diagnosticFieldLabel, 1, &labelValue, PETSC_DETERMINE, NULL, _auxiliaryField->getLocalVector(), kernelsArray, INSERT_VALUES, _diagnosticField->getLocalVector()));
     delete[] kernelsArray;kernelsArray = NULL;
 
-    pythia::journal::debug_t debug(GenericComponent::getName());
+    pythia::journal::debug_t debug(pylith::journal::auxiliary_fields);
     if (debug.state()) {
-        PYLITH_JOURNAL_DEBUG("Viewing diagnostic field.");
+        PYLITH_DEBUG(pylith::journal::application_flow, "Viewing diagnostic field.");
         _diagnosticField->view("Diagnostic field");
     } // if
 

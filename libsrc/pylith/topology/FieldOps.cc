@@ -130,7 +130,7 @@ void
 pylith::topology::FieldOps::checkDiscretization(const pylith::topology::Field& target,
                                                 const pylith::topology::Field& auxiliary) {
     PYLITH_METHOD_BEGIN;
-    // PYLITH_JOURNAL_DEBUG("checkDiscretization(target="<<target.getLabel()<<",
+    // PYLITH_DEBUG(pylith::journal::application_flow, "checkDiscretization(target="<<target.getLabel()<<",
     // auxiliary="<<auxiliary.getLabel()<<")");
 
     // Verify that the quadrature order of the target subfields all
@@ -258,7 +258,8 @@ bool
 pylith::topology::FieldOps::layoutsMatch(const pylith::topology::Field& fieldA,
                                          const pylith::topology::Field& fieldB) {
     PYLITH_METHOD_BEGIN;
-    // PYLITH_JOURNAL_DEBUG("layoutsMatch(fieldA="<<fieldA.getLabel()<<", fieldB="<<fieldB.getLabel()<<")");
+    // PYLITH_DEBUG(pylith::journal::application_flow, "layoutsMatch(fieldA="<<fieldA.getLabel()<<",
+    // fieldB="<<fieldB.getLabel()<<")");
 
     bool isMatch = true;
 
@@ -290,7 +291,7 @@ pylith::topology::FieldOps::layoutsMatch(const pylith::topology::Field& fieldA,
     PylithCallPetsc(MPI_Allreduce(&matchLocal, &matchGlobal, 1, MPIU_INT, MPI_LOR, fieldA.getMesh().getComm()));
     isMatch = matchGlobal == 1;
 
-    // PYLITH_JOURNAL_DEBUG("layoutsMatch return value="<<isMatch<<".");
+    // PYLITH_DEBUG(pylith::journal::application_flow, "layoutsMatch return value="<<isMatch<<".");
     PYLITH_METHOD_RETURN(isMatch);
 } // layoutsMatch
 

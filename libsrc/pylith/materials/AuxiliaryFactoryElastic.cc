@@ -42,7 +42,7 @@ pylith::materials::AuxiliaryFactoryElastic::~AuxiliaryFactoryElastic(void) {}
 void
 pylith::materials::AuxiliaryFactoryElastic::addShearModulus(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addShearModulus(void)");
+    PYLITH_DEBUG(pylith::journal::application_flow, "addShearModulus(void)");
 
     const char* subfieldName = "shear_modulus";
     const PylithReal rigidityScale = _scales->getRigidityScale();
@@ -69,7 +69,7 @@ pylith::materials::AuxiliaryFactoryElastic::addShearModulus(void) {
 void
 pylith::materials::AuxiliaryFactoryElastic::addBulkModulus(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addBulkModulus(void)");
+    PYLITH_DEBUG(pylith::journal::application_flow, "addBulkModulus(void)");
 
     const char* subfieldName = "bulk_modulus";
     const PylithReal rigidityScale = _scales->getRigidityScale();
@@ -96,7 +96,7 @@ pylith::materials::AuxiliaryFactoryElastic::addBulkModulus(void) {
 void
 pylith::materials::AuxiliaryFactoryElastic::addReferenceStress(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addReferenceStress(void)");
+    PYLITH_DEBUG(pylith::journal::application_flow, "addReferenceStress(void)");
 
     const char* subfieldName = "reference_stress";
     const char* componentNames[6] = {
@@ -133,7 +133,7 @@ pylith::materials::AuxiliaryFactoryElastic::addReferenceStress(void) {
 void
 pylith::materials::AuxiliaryFactoryElastic::addReferenceStrain(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addRefrenceStrain(void)");
+    PYLITH_DEBUG(pylith::journal::application_flow, "addRefrenceStrain(void)");
 
     const char* subfieldName = "reference_strain";
     const char* componentNames[6] = {

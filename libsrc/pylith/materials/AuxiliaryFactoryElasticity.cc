@@ -42,7 +42,7 @@ pylith::materials::AuxiliaryFactoryElasticity::~AuxiliaryFactoryElasticity(void)
 void
 pylith::materials::AuxiliaryFactoryElasticity::addDensity(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addDensity(void)");
+    PYLITH_DEBUG(pylith::journal::application_flow, "addDensity(void)");
 
     const char* subfieldName = "density";
     const PylithReal densityScale = pylith::scales::ElasticityScales::getDensityScale(*_scales);
@@ -69,7 +69,7 @@ pylith::materials::AuxiliaryFactoryElasticity::addDensity(void) {
 void
 pylith::materials::AuxiliaryFactoryElasticity::addBodyForce(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addBodyForce(void)");
+    PYLITH_DEBUG(pylith::journal::application_flow, "addBodyForce(void)");
 
     const char* subfieldName = "body_force";
     const char* componentNames[3] = {
@@ -104,7 +104,7 @@ pylith::materials::AuxiliaryFactoryElasticity::addBodyForce(void) {
 void
 pylith::materials::AuxiliaryFactoryElasticity::addGravityField(spatialdata::spatialdb::GravityField* gf) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addGravityField(void)");
+    PYLITH_DEBUG(pylith::journal::application_flow, "addGravityField(void)");
 
     const char* subfieldName = "gravitational_acceleration";
     const char* componentNames[3] = {

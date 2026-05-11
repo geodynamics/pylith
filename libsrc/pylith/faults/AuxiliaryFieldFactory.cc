@@ -41,7 +41,7 @@ pylith::faults::AuxiliaryFieldFactory::~AuxiliaryFieldFactory(void) {}
 void
 pylith::faults::AuxiliaryFieldFactory::addSlip(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addSlip(void)");
+    PYLITH_DEBUG(pylith::journal::application_flow, "addSlip(void)");
 
     const char* fieldName = "slip";
     const char* componentNames[3] = { "slip_opening", "slip_left_lateral", "slip_reverse" };
@@ -72,7 +72,7 @@ pylith::faults::AuxiliaryFieldFactory::addSlip(void) {
 void
 pylith::faults::AuxiliaryFieldFactory::addSlipRate(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addSlipRate(void)");
+    PYLITH_DEBUG(pylith::journal::application_flow, "addSlipRate(void)");
 
     const char* fieldName = "slip_rate";
     const char* componentNames[3] = { "slip_rate_opening", "slip_rate_left_lateral", "slip_rate_reverse" };
@@ -103,7 +103,7 @@ pylith::faults::AuxiliaryFieldFactory::addSlipRate(void) {
 void
 pylith::faults::AuxiliaryFieldFactory::addSlipAcceleration(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addSlipAcceleration(void)");
+    PYLITH_DEBUG(pylith::journal::application_flow, "addSlipAcceleration(void)");
 
     const char* fieldName = "slip_acceleration";
     const char* componentNames[3] = {

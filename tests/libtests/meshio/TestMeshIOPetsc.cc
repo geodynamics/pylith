@@ -68,7 +68,7 @@ pylith::meshio::TestMeshIOPetsc::testRead(const bool gmshMarkRecursive) {
     delete _mesh;_mesh = new topology::Mesh;REQUIRE(_mesh);
     _io->read(_mesh);
 
-    pythia::journal::debug_t debug("TestMeshIOPetsc");
+    pythia::journal::debug_t debug(pylith::journal::mesh_full_detail);
     if (debug.state()) {
         _mesh->view();
     } // if
@@ -116,7 +116,7 @@ pylith::meshio::TestMeshIOPetsc::testWriteRead(void) {
     delete _mesh;_mesh = new pylith::topology::Mesh;
     _io->read(_mesh);
 
-    pythia::journal::debug_t debug("TestMeshIOPetsc");
+    pythia::journal::debug_t debug(pylith::journal::mesh_full_detail);
     if (debug.state()) {
         _mesh->view();
         _mesh->view(":mesh.tex:ascii_latex");

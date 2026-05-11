@@ -27,6 +27,7 @@
 #include "pylith/meshio/MeshIOPetsc.hh" // USES MeshIOPetsc
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 #include "pylith/utils/journals.hh" // pythia::journal
+#include "pylith/utils/Exceptions.hh" // USES Exception
 
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 #include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
@@ -121,7 +122,7 @@ pylith::TestLinearPoroelasticity::_initialize(void) {
             REQUIRE(3 == _data->numSolnSubfields);
         } // if/else
     } else {
-        PYLITH_JOURNAL_LOGICERROR("MMS test only implemented for quasistatic formulation.");
+        PYLITH_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "MMS test only implemented for quasistatic formulation.");
     } // if/else
     _problem->setSolution(_solution);
 

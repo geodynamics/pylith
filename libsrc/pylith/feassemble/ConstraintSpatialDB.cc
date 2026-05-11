@@ -54,7 +54,7 @@ pylith::feassemble::ConstraintSpatialDB::setKernelConstraint(PetscBdPointFn* ker
 void
 pylith::feassemble::ConstraintSpatialDB::initialize(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" initialize(solution="<<solution.getLabel()<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, _labelName<<"="<<_labelValue<<" initialize(solution="<<solution.getLabel()<<")");
 
     Constraint::initialize(solution);
 
@@ -95,18 +95,16 @@ pylith::feassemble::ConstraintSpatialDB::initialize(const pylith::topology::Fiel
 void
 pylith::feassemble::ConstraintSpatialDB::setState(const double t) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" setState(t="<<t<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, _labelName<<"="<<_labelValue<<" setState(t="<<t<<")");
 
     assert(_physics);
     _physics->updateAuxiliaryField(_auxiliaryField, t);
 
-    pythia::journal::debug_t debug(GenericComponent::getName());
+    pythia::journal::debug_t debug(pylith::journal::auxiliary_fields);
     if (debug.state()) {
         assert(_auxiliaryField);
-        debug << pythia::journal::at(__HERE__)
-              << "Constraint component '" << GenericComponent::getName() << "' for '"
-              <<_physics->getIdentifier()<<"': viewing auxiliary field." << pythia::journal::endl;
-        _auxiliaryField->view("Constraint auxiliary field", pylith::topology::Field::VIEW_ALL);
+        PYLITH_DEBUG(pylith::journal::auxiliary_fields, "Displaying constraint auxiliary field.");
+        _auxiliaryField->view("ConstraintSpatialDB auxiliary field", pylith::topology::Field::VIEW_ALL);
     } // if
 
     PYLITH_METHOD_END;
@@ -119,7 +117,7 @@ void
 pylith::feassemble::ConstraintSpatialDB::setSolution(pylith::feassemble::IntegrationData* integrationData) {
     assert(integrationData);
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" setSolution(integrationData="<<integrationData->str()<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, _labelName<<"="<<_labelValue<<" setSolution(integrationData="<<integrationData->str()<<")");
 
     assert(_auxiliaryField);
     assert(_physics);
@@ -152,13 +150,10 @@ pylith::feassemble::ConstraintSpatialDB::setSolution(pylith::feassemble::Integra
                                                                _kernelConstraint, context, solution->getLocalVector()));
     PylithCallPetsc(DMPlexLabelClearCells(dmSoln, dmLabel));
 
-    pythia::journal::debug_t debug(GenericComponent::getName());
+    pythia::journal::debug_t debug(pylith::journal::auxiliary_fields);
     if (debug.state()) {
-        debug << pythia::journal::at(__HERE__)
-              << "Constraint component '" << GenericComponent::getName() << "' for '"
-              <<_physics->getIdentifier()<<"''." << pythia::journal::endl;
-        _auxiliaryField->view("Auxiliary field", pylith::topology::Field::VIEW_ALL);
-        solution->view("Solution field after setting constrained values", pylith::topology::Field::VIEW_ALL);
+        PYLITH_DEBUG(pylith::journal::auxiliary_fields, "Displaying constraint auxiliary field after setting values.");
+        solution->view("ConstraintSpatialDB auxiliary field", pylith::topology::Field::VIEW_ALL);
     } // if
 
     PYLITH_METHOD_END;

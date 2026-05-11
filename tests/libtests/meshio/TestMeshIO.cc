@@ -19,7 +19,7 @@
 #include "pylith/meshio/MeshIO.hh" // USES MeshIO
 
 #include "pylith/utils/array.hh" // USES int_array
-#include "pylith/utils/journals.hh" // USES journal::debug_t
+#include "pylith/utils/journals.hh" // USES PYLITH_DEBUG
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "pylith/scales/Scales.hh" // USES Scales
@@ -146,7 +146,7 @@ pylith::meshio::TestMeshIO::_createMesh(void) {
     scales.setLengthScale(0.01);
     pylith::topology::MeshOps::nondimensionalize(_mesh, scales);
 
-    pythia::journal::debug_t debug("TestMeshIO");
+    pythia::journal::debug_t debug(pylith::journal::mesh_full_detail);
     if (debug.state()) {
         _mesh->view();
         _mesh->view(":mesh.tex:ascii_latex");

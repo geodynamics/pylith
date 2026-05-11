@@ -54,7 +54,7 @@ pylith::problems::InitialConditionDomain::deallocate(void) {
 void
 pylith::problems::InitialConditionDomain::setDB(spatialdata::spatialdb::SpatialDB* db) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("setDB(db="<<db<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setDB(db="<<db<<")");
 
     _db = db;
 
@@ -68,7 +68,7 @@ void
 pylith::problems::InitialConditionDomain::setValues(pylith::topology::Field* solution,
                                                     const pylith::scales::Scales& scales) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("setValues(solution="<<solution<<", scales)");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setValues(solution="<<solution<<", scales)");
 
     assert(solution);
 
@@ -86,10 +86,10 @@ pylith::problems::InitialConditionDomain::setValues(pylith::topology::Field* sol
     fieldQuery.queryDB();
     fieldQuery.closeDB(_db);
 
-    pythia::journal::debug_t debug(PyreComponent::getName());
+    pythia::journal::debug_t debug(pylith::journal::solution);
     if (debug.state()) {
-        PYLITH_COMPONENT_DEBUG("Displaying solution field");
-        solution->view("Solution field with initial values", pylith::topology::Field::VIEW_ALL);
+        PYLITH_COMPONENT_DEBUG(pylith::journal::solution, "Displaying solution field");
+        solution->view("Solution field with initial condition values", pylith::topology::Field::VIEW_ALL);
     } // if
 
     PYLITH_METHOD_END;

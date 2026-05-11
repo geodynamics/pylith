@@ -57,7 +57,7 @@ pylith::problems::InitialConditionPatch::deallocate(void) {
 // Set name of label marking initial condition patch.
 void
 pylith::problems::InitialConditionPatch::setLabelName(const char* value) {
-    PYLITH_COMPONENT_DEBUG("setLabelName(value="<<value<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setLabelName(value="<<value<<")");
 
     if (strlen(value) == 0) {
         throw std::runtime_error("Empty string given for label of initial condition patch.");
@@ -96,7 +96,7 @@ pylith::problems::InitialConditionPatch::getLabelValue(void) const {
 void
 pylith::problems::InitialConditionPatch::setDB(spatialdata::spatialdb::SpatialDB* db) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("setDB(db="<<db<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setDB(db="<<db<<")");
 
     _db = db;
 
@@ -109,7 +109,7 @@ pylith::problems::InitialConditionPatch::setDB(spatialdata::spatialdb::SpatialDB
 void
 pylith::problems::InitialConditionPatch::verifyConfiguration(const pylith::topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("verifyConfiguration(solution="<<solution.getLabel()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "verifyConfiguration(solution="<<solution.getLabel()<<")");
 
     InitialCondition::verifyConfiguration(solution);
 
@@ -161,7 +161,7 @@ void
 pylith::problems::InitialConditionPatch::setValues(pylith::topology::Field* solution,
                                                    const pylith::scales::Scales& scales) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("setValues(solution="<<solution<<", scales)");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setValues(solution="<<solution<<", scales)");
 
     assert(solution);
 
@@ -179,10 +179,10 @@ pylith::problems::InitialConditionPatch::setValues(pylith::topology::Field* solu
     fieldQuery.queryDBLabel(_labelName.c_str(), _labelValue);
     fieldQuery.closeDB(_db);
 
-    pythia::journal::debug_t debug(PyreComponent::getName());
+    pythia::journal::debug_t debug(pylith::journal::solution);
     if (debug.state()) {
-        PYLITH_COMPONENT_DEBUG("Displaying solution field");
-        solution->view("Solution field with initial values");
+        PYLITH_COMPONENT_DEBUG(pylith::journal::solution, "Displaying solution field");
+        solution->view("Solution field with initial condition values");
     } // if
 
     PYLITH_METHOD_END;

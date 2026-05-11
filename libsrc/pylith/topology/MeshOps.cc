@@ -14,12 +14,13 @@
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Stratum.hh" // USES Stratum
+#include "pylith/scales/Scales.hh" // USES Scales
 #include "pylith/utils/array.hh" // USES int_array
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL*
+#include "pylith/utils/Exceptions.hh" // USES Exception
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
-#include "pylith/scales/Scales.hh" // USES Scales
 
 #include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream
@@ -185,7 +186,7 @@ pylith::topology::MeshOps::createLowerDimMesh(const pylith::topology::Mesh& mesh
     assert(labelName);
 
     if (mesh.getDimension() < 1) {
-        PYLITH_JOURNAL_LOGICERROR("Cannot create submesh for mesh with dimension < 1.");
+        PYLITH_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Cannot create submesh for mesh with dimension < 1.");
     } // if
 
     PetscDM dmDomain = mesh.getDM();assert(dmDomain);
@@ -240,12 +241,10 @@ pylith::topology::MeshOps::createLowerDimMesh(const pylith::topology::Mesh& mesh
                                       PetscObjectComm((PetscObject) dmDomain)));
 
         if (labelHasVertices) {
-            pythia::journal::warning_t warning("deprecated");
-            warning << pythia::journal::at(__HERE__)
-                    << "DEPRECATION: Creating lower dimension mesh from label with vertices. "
-                    << "This feature will be removed in v6.0. "
-                    << "In the future, you will need to mark boundaries not vertices for boundary conditions."
-                    << pythia::journal::endl;
+            PYLITH_WARNING(pylith::journal::deprecation,
+                           "Creating lower dimension mesh from label with vertices. "
+                           << "This feature will be removed in v6.0. "
+                           << "In the future, you will need to mark boundaries not vertices for boundary conditions.");
         } // if
     } // TEMPORARY
 

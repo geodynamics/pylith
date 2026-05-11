@@ -15,6 +15,7 @@
 
 #include "pylith/utils/types.hh"
 #include "pylith/utils/journals.hh"
+#include "pylith/utils/Exceptions.hh" // USES Exception
 
 #include <cassert> // USES assert()
 
@@ -177,7 +178,7 @@ public:
 
         switch (spaceDim) {
         case 2: {
-            PYLITH_JOURNAL_LOGICERROR("Dip direction is not defined in 2D.");
+            PYLITH_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Dip direction is not defined in 2D.");
             break;
         } // case 2
         case 3: {
