@@ -39,66 +39,65 @@ caption: Run Step 4 simulation using the Gmsh mesh.
 $ pylith step04_eqcycle.cfg mat_viscoelastic.cfg
 
 # The output should look something like the following.
- >> /software/py38-venv/pylith-opt/lib/python3.8/site-packages/pylith/meshio/MeshIOObj.py:44:read
- -- meshiocubit(info)
+ >> /software/pylith-opt/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:77:main
+ -- pylithapp(info)
+ -- Running on 1 process(es).
+ >> /software/pylith-opt/lib/python3.12/site-packages/pylith/meshio/MeshIOObj.py:41:read
+ -- meshiopetsc(info)
  -- Reading finite-element mesh
- >> /pylith/libsrc/pylith/meshio/MeshIOCubit.cc:157:void pylith::meshio::MeshIOCubit::_readVertices(pylith::meshio::ExodusII&,
-pylith::scalar_array*, int*, int*) const
- -- meshiocubit(info)
- -- Component 'reader': Reading 24824 vertices.
- >> /pylith/libsrc/pylith/meshio/MeshIOCubit.cc:217:void pylith::meshio::MeshIOCubit::_readCells(pylith::meshio::ExodusII&, pyl
-ith::int_array*, pylith::int_array*, int*, int*) const
- -- meshiocubit(info)
- -- Component 'reader': Reading 134381 cells in 4 blocks.
+ >> /src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:74:void pylith::meshio::MeshIO::read(pylith::topology::Mesh*, bool)
+ -- meshiopetsc(info)
+ -- Component 'meshiopetsc.reader': Domain bounding box:
+    (-400000, 400000)
+    (-400000, 400000)
+    (-400000, 2017.5)
 
 # -- many lines omitted --
 
- >> /pylith/libsrc/pylith/utils/PetscOptions.cc:235:static void pylith::utils::_PetscOptions::write(pythia::journal::info_t&, const char*, const pylith::utils::PetscOptions&)
+ >> /src/cig/pylith/libsrc/pylith/utils/PetscOptions.cc:262:static void pylith::utils::_PetscOptions::write(pythia::journal::info_t&, const char*, const pylith::utils::PetscOptions&)
  -- petscoptions(info)
  -- Setting PETSc options:
-fieldsplit_displacement_ksp_type = preonly
-fieldsplit_displacement_mg_levels_ksp_type = richardson
-fieldsplit_displacement_mg_levels_pc_type = sor
-fieldsplit_displacement_pc_type = gamg
-fieldsplit_lagrange_multiplier_fault_ksp_type = preonly
-fieldsplit_lagrange_multiplier_fault_mg_levels_ksp_type = richardson
-fieldsplit_lagrange_multiplier_fault_mg_levels_pc_type = sor
-fieldsplit_lagrange_multiplier_fault_pc_type = gamg
-ksp_atol = 1.0e-12
+dm_reorder_section = true
+dm_reorder_section_type = cohesive
 ksp_converged_reason = true
 ksp_error_if_not_converged = true
-ksp_rtol = 1.0e-12
-pc_fieldsplit_schur_factorization_type = lower
-pc_fieldsplit_schur_precondition = selfp
-pc_fieldsplit_schur_scale = 1.0
-pc_fieldsplit_type = schur
-pc_type = fieldsplit
-pc_use_amat = true
-snes_atol = 1.0e-9
+ksp_gmres_restart = 100
+ksp_guess_pod_size = 8
+ksp_guess_type = pod
+ksp_rtol = 1.0e-14
+mg_fine_ksp_max_it = 5
+mg_fine_pc_type = vpbjacobi
+pc_type = gamg
+snes_atol = 5.0e-7
 snes_converged_reason = true
 snes_error_if_not_converged = true
 snes_monitor = true
-snes_rtol = 1.0e-12
+snes_rtol = 1.0e-14
 ts_error_if_step_fails = true
+ts_exact_final_time = matchstep
 ts_monitor = true
 ts_type = beuler
+viewer_hdf5_collective = true
 
 # -- many lines omitted --
 
 30 TS dt 0.1 time 2.9
-    0 SNES Function norm 8.197330252849e+00
-    Linear solve converged due to CONVERGED_ATOL iterations 416
-    1 SNES Function norm 4.780619312733e-10
-  Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
+    0 SNES Function norm 3.515714246561e+03
+      Linear solve converged due to CONVERGED_ATOL iterations 22
+    1 SNES Function norm 8.157356157583e-07
+      Linear solve converged due to CONVERGED_ATOL iterations 1
+    2 SNES Function norm 6.740861225135e-07
+    Nonlinear solve converged due to CONVERGED_SNORM_RELATIVE iterations 2
 31 TS dt 0.1 time 3.
- >> /software/unix/py38-venv/pylith-opt/lib/python3.8/site-packages/pylith/problems/Problem.py:201:finalize
+ >> /software/pylith-opt/lib/python3.12/site-packages/pylith/problems/Problem.py:232:finalize
  -- timedependent(info)
  -- Finalizing problem.
  ```
 
 The beginning of the output is near the same as in Steps 2 and 3.
 The simulation advances 31 time steps.
-As in Step 3 each linear solve requires about 400 iterations to converge.
+As in Step 3 each linear solve requires about 20 iterations to converge.
+Some time steps require 2 SNES iterations (likley due to poor mesh quality along the trench) although the linear solve in the second SNES iteration requires no more than 1 iterations in most cases.
 
 ```{code-block} console
 ---
@@ -117,7 +116,6 @@ You can move the slider or use the `p` and `n` keys to change the increment or d
 caption: Visualize PyLith output using `pylith_viz`.
 ---
 pylith_viz --filename=output/step04_eqcycle-domain.h5 warp_grid --component=x --exaggeration=5000
-
 ```
 
 :::{figure-md} fig:example:subduction:3d:step04:solution

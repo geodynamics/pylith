@@ -41,66 +41,56 @@ $ pylith step07a_leftlateral.cfg mat_elastic.cfg
 $ pylith step07b_reverse.cfg mat_elastic.cfg
 
 # The output should look something like the following.
->> software/virtualenv/python312/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:77:main
+ >> /home/baagaard/software/micromamba/envs/pylith-opt/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:77:main
  -- pylithapp(info)
  -- Running on 1 process(es).
- >> software/virtualenv/python312/lib/python3.12/site-packages/pylith/meshio/MeshIOObj.py:38:read
- -- meshiocubit(info)
+ >> /home/baagaard/software/micromamba/envs/pylith-opt/lib/python3.12/site-packages/pylith/meshio/MeshIOObj.py:41:read
+ -- meshiopetsc(info)
  -- Reading finite-element mesh
- >> software/cig/pylith3/source/pylith-fork/libsrc/pylith/meshio/MeshIOCubit.cc:148:void pylith::meshio::MeshIOCubit::_readVertices(ExodusII &, scalar_array *, int *, int *) const
- -- meshiocubit(info)
- -- Component 'reader': Reading 24738 vertices.
- >> software/cig/pylith3/source/pylith-fork/libsrc/pylith/meshio/MeshIOCubit.cc:208:void pylith::meshio::MeshIOCubit::_readCells(ExodusII &, int_array *, int_array *, int *, int *) const
- -- meshiocubit(info)
- -- Component 'reader': Reading 133827 cells in 4 blocks.
+ >> /home/baagaard/src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:74:void pylith::meshio::MeshIO::read(pylith::topology::Mesh*, bool)
+ -- meshiopetsc(info)
+ -- Component 'meshiopetsc.reader': Domain bounding box:
+    (-400000, 400000)
+    (-400000, 400000)
+    (-400000, 2017.5)
 
 # -- many lines omitted --
 
->> software/cig/pylith3/source/pylith-fork/libsrc/pylith/utils/PetscOptions.cc:239:static void pylith::utils::_PetscOptions::write(pythia::journal::info_t &, const char *, const PetscOptions &)
- -- petscoptions(info)
- -- Setting PETSc options:
-dm_reorder_section = true
-dm_reorder_section_type = cohesive
-ksp_atol = 1.0e-12
-ksp_converged_reason = true
-ksp_error_if_not_converged = true
-ksp_guess_pod_size = 8
-ksp_guess_type = pod
-ksp_rtol = 1.0e-12
-mg_fine_pc_type = vpbjacobi
-pc_type = gamg
-snes_atol = 1.0e-9
-snes_converged_reason = true
-snes_error_if_not_converged = true
-snes_monitor = true
-snes_rtol = 1.0e-12
-ts_error_if_step_fails = true
-ts_monitor = true
-ts_type = beuler
+ >> /home/baagaard/software/micromamba/envs/pylith-opt/lib/python3.12/site-packages/pylith/problems/GreensFns.py:105:run
+ -- greensfns(info)
+ -- Solving problem.
+ >> /home/baagaard/src/cig/pylith/libsrc/pylith/problems/GreensFns.cc:321:void pylith::problems::GreensFns::solve()
+ -- greensfns(info)
+ -- Component 'greensfns.problem': Computing Green's function 1 of 96.
+  0 SNES Function norm 5.684788384324e-02
+    Linear solve converged due to CONVERGED_ATOL iterations 11
+  1 SNES Function norm 1.157087800256e-08
+  Nonlinear solve converged due to CONVERGED_ITS iterations 1
 
 # -- many lines omitted --
 
->> software/cig/pylith3/source/pylith-fork/libsrc/pylith/problems/GreensFns.cc:322:void pylith::problems::GreensFns::solve()
+ >> /home/baagaard/src/cig/pylith/libsrc/pylith/problems/GreensFns.cc:321:void pylith::problems::GreensFns::solve()
  -- greensfns(info)
- -- Component 'problem': Computing Green's function 92 of 93.
-  0 SNES Function norm 7.551182042932e-02
-    Linear solve converged due to CONVERGED_ATOL iterations 20
-  1 SNES Function norm 1.971805442527e-10
+ -- Component 'greensfns.problem': Computing Green's function 96 of 96.
+  0 SNES Function norm 6.580456779117e-02
+    Linear solve converged due to CONVERGED_ATOL iterations 10
+  1 SNES Function norm 6.832632664165e-09
   Nonlinear solve converged due to CONVERGED_ITS iterations 1
- >> software/cig/pylith3/source/pylith-fork/libsrc/pylith/problems/GreensFns.cc:322:void pylith::problems::GreensFns::solve()
- -- greensfns(info)
- -- Component 'problem': Computing Green's function 93 of 93.
-  0 SNES Function norm 6.572171502838e-02
-    Linear solve converged due to CONVERGED_ATOL iterations 21
-  1 SNES Function norm 1.378742924611e-10
-  Nonlinear solve converged due to CONVERGED_ITS iterations 1
- >> software/virtualenv/python312/lib/python3.12/site-packages/pylith/problems/Problem.py:199:finalize
+ >> /home/baagaard/software/micromamba/envs/pylith-opt/lib/python3.12/site-packages/pylith/problems/Problem.py:232:finalize
  -- greensfns(info)
  -- Finalizing problem.
+WARNING! There are options you set that were not used!
+WARNING! could be spelling mistake, etc!
+There are 4 unused database options. They are:
+Option left: name:-ts_error_if_step_fails (no value) source: code
+Option left: name:-ts_exact_final_time value: matchstep source: code
+Option left: name:-ts_monitor (no value) source: code
+Option left: name:-ts_type value: beuler source: code
 ```
 
 The beginning of the output is nearly the same as in several previous examples.
-In this case, however, rather than stepping through time, we are stepping through impulse numbers. In each simulation, there are 93 impulses applied on the fault.
+In this case, however, rather than stepping through time, we are stepping through impulse numbers. In each simulation, there are 96 impulses applied on the fault.
+Because we are not time stepping, we do not use all of the default PETSc options.
 
 ```{code-block} console
 ---
@@ -119,7 +109,7 @@ You can move the slider or use the `p` and `n` keys to increment or decrement th
 ---
 caption: Visualize PyLith output using `pylith_viz`.
 ---
-pylith_viz --filename=output/step07a_leftlateral-faultslabtop.h5 plot_field
+pylith_viz --filename=output/step07a_leftlateral-fault_slabtop.h5 plot_field --field=slip
 ```
 
 :::{figure-md} fig:example:subduction:3d:step07a:slip
@@ -165,7 +155,7 @@ We provide a Matplotlib Python script to visualize the data misfit for various p
 ---
 caption: Visualize data misfit
 ---
-$ viz/plot_inversion_misfit.py --summary=output/step07-inversion-summary.txt
+$ viz/plot_inversion_misfit.py
 ```
 
 {numref}`fig:example:subduction:3d:step07:inversion_summary` shows the data residual versus the penalty residual, showing very clearly the 'corner' of the L-curve.
