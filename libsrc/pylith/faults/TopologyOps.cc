@@ -482,7 +482,11 @@ pylith::faults::TopologyOps::updateCohesiveLabel(const pylith::topology::Mesh* m
         PylithCallPetsc(ISRestoreIndices(valueIS, &values));
         PylithCallPetsc(ISDestroy(&valueIS));
     }
-    PylithCallPetsc(DMPlexLabelCohesiveComplete(dmMesh, dmLabel, nullptr, 0, PETSC_FALSE, PETSC_FALSE, NULL));
+    PylithCallPetsc(DMPlexCheckOrientationLabel(dmMesh, dmLabel));
+    PylithCallPetsc(DMPlexLabelCohesiveComplete(dmMesh, dmLabel, nullptr, 0, PETSC_FALSE, NULL));
+    DMLabel bdlabel = nullptr;
+    PylithCallPetsc(DMGetLabel(dmMesh, "fault_edges", &bdlabel));
+    PylithCallPetsc(DMPlexLabelCohesiveCheck(dmMesh, dmLabel, bdlabel));
 } // updateCohesiveLabel
 
 

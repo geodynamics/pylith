@@ -84,8 +84,6 @@ pylith::initializers::MeshInsertInterfaces::run(pylith::topology::Mesh* mesh,
         cohesiveLabelValue += 1;
     } // for
 
-    PylithCallPetsc(DMPlexCheckGeometry(meshNew->getDM()));
-
     if (debug.state()) {
         DMPlexCheckTransform(meshNew->getDM());
         meshNew->view(":mesh_domain_before_overlap.txt:ascii_info_detail");
@@ -93,6 +91,9 @@ pylith::initializers::MeshInsertInterfaces::run(pylith::topology::Mesh* mesh,
         meshExploded->view(":mesh_domain_before_overlap.tex:ascii_latex");
         delete meshExploded;meshExploded = nullptr;
     } // if
+
+    PylithCallPetsc(DMPlexCheckSkeleton(meshNew->getDM(), 0));
+    PylithCallPetsc(DMPlexCheckGeometry(meshNew->getDM()));
 
     PetscDM dmNew = nullptr;
     // Set overlap since cohesive cells can be put in the SF
