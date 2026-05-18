@@ -25,6 +25,7 @@ mesh = {
       18  10.0  0.0   0.0
       19  20.0  0.0   0.0
       20  30.0  0.0   0.0
+
       21  10.0 70.0 -10.0
       22  20.0 70.0 -10.0
       23  30.0 70.0 -10.0
@@ -45,6 +46,7 @@ mesh = {
       38  10.0  0.0 -10.0
       39  20.0  0.0 -10.0
       40  30.0  0.0 -10.0
+
       41  10.0 70.0 -20.0
       42  20.0 70.0 -20.0
       43  30.0 70.0 -20.0
@@ -116,29 +118,6 @@ mesh = {
     }
   }
   vertex-group = {
-    name = fault_vertices
-    count = 6
-    indices = {
-      6
-     11
-     16
-     26
-     31
-     36
-    }
-  }
-  vertex-group = {
-    name = fault_edge_vertices
-    count = 5
-    indices = {
-      6
-     26
-     31
-     36
-     16
-    }
-  }
-  vertex-group = {
     name = output_vertices
     count = 20
     indices = {
@@ -168,8 +147,8 @@ mesh = {
     name = fault_faces
     count = 2
     indices = {
+      1    2  6 22 26
       5    6 11 26 31
-     13   11 16 31 36
     }
   }
   face-group = {

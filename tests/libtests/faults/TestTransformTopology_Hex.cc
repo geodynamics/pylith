@@ -50,38 +50,6 @@ private:
 // ------------------------------------------------------------------------------------------------
 #include "catch2/catch_test_macros.hpp"
 
-#if 0
-TEST_CASE("TestTransformTopology_HexA", "[TestTransformTopology][Hex]") {
-    pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Hex::caseA()).run();
-}
-TEST_CASE("TestTransformTopology_HexB", "[TestTransformTopology][Hex]") {
-    pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Hex::caseB()).run();
-}
-TEST_CASE("TestTransformTopology_HexC", "[TestTransformTopology][Hex]") {
-    pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Hex::caseC()).run();
-}
-TEST_CASE("TestTransformTopology_HexD", "[TestTransformTopology][Hex]") {
-    pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Hex::caseD()).run();
-}
-TEST_CASE("TestTransformTopology_HexE", "[TestTransformTopology][Hex]") {
-    pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Hex::caseE()).run();
-}
-TEST_CASE("TestTransformTopology_HexF", "[TestTransformTopology][Hex]") {
-    pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Hex::caseF()).run();
-}
-TEST_CASE("TestTransformTopology_HexG", "[TestTransformTopology][Hex]") {
-    pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Hex::caseG()).run();
-}
-TEST_CASE("TestTransformTopology_HexH", "[TestTransformTopology][Hex]") {
-    pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Hex::caseH()).run();
-}
-TEST_CASE("TestTransformTopology_HexI", "[TestTransformTopology][Hex]") {
-    pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Hex::caseI()).run();
-}
-TEST_CASE("TestTransformTopology_HexJ", "[TestTransformTopology][Hex]") {
-    pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Hex::caseJ()).run();
-}
-#endif
 TEST_CASE("TestTransform_HexA", "[TestTransform][Hex]") {
     pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Hex::caseA()).run();
 }
@@ -451,12 +419,12 @@ pylith::faults::TestTransformTopology_Hex::caseI(void) {
 
     data->cellDim = 3;
     data->spaceDim = 3;
-    data->numVertices = 36;
+    data->numVertices = 39+3;
 
-    static const size_t numCells = 9;
+    static const size_t numCells = 14;
     data->numCells = numCells;
 
-    static const int numCorners[numCells] = { 6, 6, 6, 6, 6, 6, 6, 6, 6, };
+    static const int numCorners[numCells] = { 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6 };
     data->numCorners = const_cast<int*>(numCorners);
     data->getMatId = [](const int cell,
                         const int numNoncohesiveCells,
@@ -468,13 +436,13 @@ pylith::faults::TestTransformTopology_Hex::caseI(void) {
                          return value;
                      };
 
-    static const size_t numGroups = 4;
+    static const size_t numGroups = 5;
     data->numGroups = numGroups;
-    static const int groupSizes[numGroups] = { 10+13+4, 12+14+4, 4, 14 }; // vertices + edges + faces
+    static const int groupSizes[numGroups] = { 10+13+4, 9+12+4, 4, 10, 2 }; // vertices + edges + faces
     data->groupSizes = const_cast<int*>(groupSizes);
-    static const char* groupNames[numGroups] = { "output_vertices", "fault_vertices", "output_faces", "fault_faces" };
+    static const char* groupNames[numGroups] = { "output_vertices", "fault_vertices", "output_faces", "fault_faces", "fault_faces_edge_auto" };
     data->groupNames = const_cast<char**>(groupNames);
-    static const char* groupTypes[numGroups] = { "vertex", "vertex", "face", "face" };
+    static const char* groupTypes[numGroups] = { "vertex", "vertex", "face", "face", "face" };
     data->groupTypes = const_cast<char**>(groupTypes);
 
     return data;
@@ -520,13 +488,13 @@ pylith::faults::TestTransformTopology_Hex::caseJ(void) {
                          return value;
                      };
 
-    static const size_t numGroups = 6;
+    static const size_t numGroups = 4;
     data->numGroups = numGroups;
-    static const int groupSizes[numGroups] = { 22+31+10, 6+5, 8+11+4, 10, 8, 3 }; // vertices + edges + faces
+    static const int groupSizes[numGroups] = { 22+31+10, 10, 8, 3 }; // vertices + edges + faces
     data->groupSizes = const_cast<int*>(groupSizes);
-    static const char* groupNames[numGroups] = { "output_vertices", "fault_edge_vertices", "fault_vertices", "output_faces", "fault_faces", "fault_faces_edge_auto" };
+    static const char* groupNames[numGroups] = { "output_vertices", "output_faces", "fault_faces", "fault_faces_edge_auto" };
     data->groupNames = const_cast<char**>(groupNames);
-    static const char* groupTypes[numGroups] = { "vertex", "vertex", "vertex", "face", "face", "face" };
+    static const char* groupTypes[numGroups] = { "vertex", "face", "face", "face" };
     data->groupTypes = const_cast<char**>(groupTypes);
 
     return data;
