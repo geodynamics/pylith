@@ -50,34 +50,34 @@ private:
 // ------------------------------------------------------------------------------------------------
 #include "catch2/catch_test_macros.hpp"
 
-TEST_CASE("TestTransform_HexA", "[TestTransform][Hex]") {
+TEST_CASE("TestTransform_HexA", "[TestTransformTopology][Hex]") {
     pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Hex::caseA()).run();
 }
-TEST_CASE("TestTransform_HexB", "[TestTransform][Hex]") {
+TEST_CASE("TestTransform_HexB", "[TestTransformTopology][Hex]") {
     pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Hex::caseB()).run();
 }
-TEST_CASE("TestTransform_HexC", "[TestTransform][Hex]") {
+TEST_CASE("TestTransform_HexC", "[TestTransformTopology][Hex]") {
     pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Hex::caseC()).run();
 }
-TEST_CASE("TestTransform_HexD", "[TestTransform][Hex]") {
+TEST_CASE("TestTransform_HexD", "[TestTransformTopology][Hex]") {
     pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Hex::caseD()).run();
 }
-TEST_CASE("TestTransform_HexE", "[TestTransform][Hex]") {
+TEST_CASE("TestTransform_HexE", "[TestTransformTopology][Hex]") {
     pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Hex::caseE()).run();
 }
-TEST_CASE("TestTransform_HexF", "[TestTransform][Hex]") {
+TEST_CASE("TestTransform_HexF", "[TestTransformTopology][Hex]") {
     pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Hex::caseF()).run();
 }
-TEST_CASE("TestTransform_HexG", "[TestTransform][Hex]") {
+TEST_CASE("TestTransform_HexG", "[TestTransformTopology][Hex]") {
     pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Hex::caseG()).run();
 }
-TEST_CASE("TestTransform_HexH", "[TestTransform][Hex]") {
+TEST_CASE("TestTransform_HexH", "[TestTransformTopology][Hex]") {
     pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Hex::caseH()).run();
 }
-TEST_CASE("TestTransform_HexI", "[TestTransform][Hex]") {
+TEST_CASE("TestTransform_HexI", "[TestTransformTopology][Hex]") {
     pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Hex::caseI()).run();
 }
-TEST_CASE("TestTransform_HexJ", "[TestTransform][Hex]") {
+TEST_CASE("TestTransform_HexJ", "[TestTransformTopology][Hex]") {
     pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Hex::caseJ()).run();
 }
 

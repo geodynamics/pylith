@@ -90,11 +90,7 @@ dist_noinst_PYTHON = \
 	topology/TestDistributor.py \
 	topology/TestField.py \
 	topology/TestMesh.py \
-	topology/TestMeshGenerator.py \
-	topology/TestMeshImporter.py \
-	topology/TestMeshRefiner.py \
 	topology/TestRefineUniform.py \
-	topology/TestReverseCuthillMcKee.py \
 	topology/TestSubfield.py \
 	utils/__init__.py \
 	utils/TestCollectVersionInfo.py \

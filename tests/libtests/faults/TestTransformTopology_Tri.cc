@@ -48,57 +48,28 @@ private:
 // ------------------------------------------------------------------------------------------------
 #include "catch2/catch_test_macros.hpp"
 
-#if 0
-TEST_CASE("TestTransformTopology_TriA", "[TestTransformTopology][Tri]") {
+TEST_CASE("TestTransform_TriA", "[TestTransformTopology][Tri]") {
     pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Tri::caseA()).run();
 }
-TEST_CASE("TestTransformTopology_TriB", "[TestTransformTopology][Tri]") {
+TEST_CASE("TestTransform_TriB", "[TestTransformTopology][Tri]") {
     pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Tri::caseB()).run();
 }
-TEST_CASE("TestTransformTopology_TriC", "[TestTransformTopology][Tri]") {
+TEST_CASE("TestTransform_TriC", "[TestTransformTopology][Tri]") {
     pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Tri::caseC()).run();
 }
-TEST_CASE("TestTransformTopology_TriD", "[TestTransformTopology][Tri]") {
+TEST_CASE("TestTransform_TriD", "[TestTransformTopology][Tri]") {
     pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Tri::caseD()).run();
 }
-TEST_CASE("TestTransformTopology_TriE", "[TestTransformTopology][Tri]") {
+TEST_CASE("TestTransform_TriE", "[TestTransformTopology][Tri]") {
     pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Tri::caseE()).run();
 }
-TEST_CASE("TestTransformTopology_TriF", "[TestTransformTopology][Tri]") {
+TEST_CASE("TestTransform_TriF", "[TestTransformTopology][Tri]") {
     pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Tri::caseF()).run();
 }
-TEST_CASE("TestTransformTopology_TriG", "[TestTransformTopology][Tri]") {
+TEST_CASE("TestTransform_TriG", "[TestTransformTopology][Tri]") {
     pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Tri::caseG()).run();
 }
-TEST_CASE("TestTransformTopology_TriH", "[TestTransformTopology][Tri]") {
-    pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Tri::caseH()).run();
-}
-TEST_CASE("TestTransformTopology_TriI", "[TestTransformTopology][Tri]") {
-    pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Tri::caseI()).run();
-}
-#endif
-TEST_CASE("TestTransform_TriA", "[TestTransform][Tri]") {
-    pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Tri::caseA()).run();
-}
-TEST_CASE("TestTransform_TriB", "[TestTransform][Tri]") {
-    pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Tri::caseB()).run();
-}
-TEST_CASE("TestTransform_TriC", "[TestTransform][Tri]") {
-    pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Tri::caseC()).run();
-}
-TEST_CASE("TestTransform_TriD", "[TestTransform][Tri]") {
-    pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Tri::caseD()).run();
-}
-TEST_CASE("TestTransform_TriE", "[TestTransform][Tri]") {
-    pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Tri::caseE()).run();
-}
-TEST_CASE("TestTransform_TriF", "[TestTransform][Tri]") {
-    pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Tri::caseF()).run();
-}
-TEST_CASE("TestTransform_TriG", "[TestTransform][Tri]") {
-    pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Tri::caseG()).run();
-}
-TEST_CASE("TestTransform_TriH", "[TestTransform][Tri]") {
+TEST_CASE("TestTransform_TriH", "[TestTransformTopology][Tri]") {
     pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Tri::caseH()).run();
 }
 

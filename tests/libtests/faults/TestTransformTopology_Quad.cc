@@ -48,60 +48,31 @@ private:
 // ------------------------------------------------------------------------------------------------
 #include "catch2/catch_test_macros.hpp"
 
-#if 0
-TEST_CASE("TestTransformTopology_QuadA", "[TestTransformTopology][Quad]") {
+TEST_CASE("TestTransform_QuadA", "[TestTransformTopology][Quad]") {
     pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Quad::caseA()).run();
 }
-TEST_CASE("TestTransformTopology_QuadB", "[TestTransformTopology][Quad]") {
+TEST_CASE("TestTransform_QuadB", "[TestTransformTopology][Quad]") {
     pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Quad::caseB()).run();
 }
-TEST_CASE("TestTransformTopology_QuadC", "[TestTransformTopology][Quad]") {
+TEST_CASE("TestTransform_QuadC", "[TestTransformTopology][Quad]") {
     pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Quad::caseC()).run();
 }
-TEST_CASE("TestTransformTopology_QuadD", "[TestTransformTopology][Quad]") {
+TEST_CASE("TestTransform_QuadD", "[TestTransformTopology][Quad]") {
     pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Quad::caseD()).run();
 }
-TEST_CASE("TestTransformTopology_QuadE", "[TestTransformTopology][Quad]") {
+TEST_CASE("TestTransform_QuadE", "[TestTransformTopology][Quad]") {
     pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Quad::caseE()).run();
 }
-TEST_CASE("TestTransformTopology_QuadF", "[TestTransformTopology][Quad]") {
+TEST_CASE("TestTransform_QuadF", "[TestTransformTopology][Quad]") {
     pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Quad::caseF()).run();
 }
-TEST_CASE("TestTransformTopology_QuadG", "[TestTransformTopology][Quad]") {
+TEST_CASE("TestTransform_QuadG", "[TestTransformTopology][Quad]") {
     pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Quad::caseG()).run();
 }
-TEST_CASE("TestTransformTopology_QuadH", "[TestTransformTopology][Quad]") {
+TEST_CASE("TestTransform_QuadH", "[TestTransformTopology][Quad]") {
     pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Quad::caseH()).run();
 }
-TEST_CASE("TestTransformTopology_QuadI", "[TestTransformTopology][Quad]") {
-    pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Quad::caseI()).run();
-}
-#endif
-TEST_CASE("TestTransform_QuadA", "[TestTransform][Quad]") {
-    pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Quad::caseA()).run();
-}
-TEST_CASE("TestTransform_QuadB", "[TestTransform][Quad]") {
-    pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Quad::caseB()).run();
-}
-TEST_CASE("TestTransform_QuadC", "[TestTransform][Quad]") {
-    pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Quad::caseC()).run();
-}
-TEST_CASE("TestTransform_QuadD", "[TestTransform][Quad]") {
-    pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Quad::caseD()).run();
-}
-TEST_CASE("TestTransform_QuadE", "[TestTransform][Quad]") {
-    pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Quad::caseE()).run();
-}
-TEST_CASE("TestTransform_QuadF", "[TestTransform][Quad]") {
-    pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Quad::caseF()).run();
-}
-TEST_CASE("TestTransform_QuadG", "[TestTransform][Quad]") {
-    pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Quad::caseG()).run();
-}
-TEST_CASE("TestTransform_QuadH", "[TestTransform][Quad]") {
-    pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Quad::caseH()).run();
-}
-TEST_CASE("TestTransform_QuadI", "[TestTransform][Quad]") {
+TEST_CASE("TestTransform_QuadI", "[TestTransformTopology][Quad]") {
     pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Quad::caseI()).run();
 }
 

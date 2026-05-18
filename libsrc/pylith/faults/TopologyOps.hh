@@ -25,63 +25,6 @@ public:
     // PUBLIC METHODS /////////////////////////////////////////////////////
 public:
 
-#if 0
-    /** Create the fault mesh.
-     *
-     * @param faultMesh Finite-element mesh of fault (output).
-     * @param mesh Finite-element mesh of domain.
-     * @param surfaceLabel Label for points on fault surface.
-     * @param surfaceLabelValue Value for label for points on fault surface.
-     */
-    static
-    void createFault(topology::Mesh* faultMesh,
-                     const topology::Mesh& mesh,
-                     PetscDMLabel surfaceLabel,
-                     const int surfaceLabelValue);
-
-    /** Create cohesive cells in an interpolated mesh.
-     *
-     * @param fault Finite-element mesh of fault (output)
-     * @param mesh Finite-element mesh
-     * @param materialId Material id for cohesive elements.
-     */
-    static
-    void create(topology::Mesh* mesh,
-                const topology::Mesh& faultMesh,
-                PetscDMLabel faultBdLabel,
-                const int faultBdLabelValue,
-                const int cohesiveLabelValue);
-
-    /** Create (distributed) fault mesh from cohesive cells.
-     *
-     * @param faultMesh Finite-element mesh of fault (output).
-     * @param mesh Finite-element mesh.
-     * @param labelValue Value of label associated with integration domain.
-     * @param labelName Name of label associated with integration domain.
-     * @param surfaceLabel Name of label for interface surface.
-     */
-    static
-    void createFaultParallel(topology::Mesh* faultMesh,
-                             const topology::Mesh& mesh,
-                             const int labelValue,
-                             const char* labelName,
-                             const char* surfaceLabel);
-
-    /** Classify cells adjacent to the fault as to the side of the fault each cell is on.
-     */
-    static
-    void classifyCellsDM(PetscDM dmMesh,
-                         PetscInt vertex,
-                         const int depth,
-                         const int faceSize,
-                         PetscInt firstCohesiveCell,
-                         PointSet& replaceCells,
-                         PointSet& noReplaceCells,
-                         const int debug);
-
-#endif
-    // NEW STUFF
-
     /** Complete labels and change value to match dimension of point.
      */
     static

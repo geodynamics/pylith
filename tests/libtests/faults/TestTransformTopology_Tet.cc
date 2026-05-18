@@ -50,66 +50,34 @@ private:
 // ------------------------------------------------------------------------------------------------
 #include "catch2/catch_test_macros.hpp"
 
-#if 0
-TEST_CASE("TestTransformTopology_TetA", "[TestTransformTopology][Tet]") {
+TEST_CASE("TestTransform_TetA", "[TestTransformTopology][Tet]") {
     pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Tet::caseA()).run();
 }
-TEST_CASE("TestTransformTopology_TetB", "[TestTransformTopology][Tet]") {
+TEST_CASE("TestTransform_TetB", "[TestTransformTopology][Tet]") {
     pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Tet::caseB()).run();
 }
-TEST_CASE("TestTransformTopology_TetC", "[TestTransformTopology][Tet]") {
+TEST_CASE("TestTransform_TetC", "[TestTransformTopology][Tet]") {
     pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Tet::caseC()).run();
 }
-TEST_CASE("TestTransformTopology_TetD", "[TestTransformTopology][Tet]") {
+TEST_CASE("TestTransform_TetD", "[TestTransformTopology][Tet]") {
     pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Tet::caseD()).run();
 }
-TEST_CASE("TestTransformTopology_TetF", "[TestTransformTopology][Tet]") {
+TEST_CASE("TestTransform_TetF", "[TestTransformTopology][Tet]") {
     pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Tet::caseF()).run();
 }
-TEST_CASE("TestTransformTopology_TetG", "[TestTransformTopology][Tet]") {
+TEST_CASE("TestTransform_TetG", "[TestTransformTopology][Tet]") {
     pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Tet::caseG()).run();
 }
-TEST_CASE("TestTransformTopology_TetH", "[TestTransformTopology][Tet]") {
+TEST_CASE("TestTransform_TetH", "[TestTransformTopology][Tet]") {
     pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Tet::caseH()).run();
 }
-TEST_CASE("TestTransformTopology_TetI", "[TestTransformTopology][Tet]") {
+TEST_CASE("TestTransform_TetI", "[TestTransformTopology][Tet]") {
     pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Tet::caseI()).run();
 }
-TEST_CASE("TestTransformTopology_TetJ", "[TestTransformTopology][Tet]") {
+TEST_CASE("TestTransform_TetJ", "[TestTransformTopology][Tet]") {
     pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Tet::caseJ()).run();
 }
-TEST_CASE("TestTransformTopology_TetK", "[TestTransformTopology][Tet]") {
-    pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Tet::caseK()).run();
-}
-#endif
-TEST_CASE("TestTransform_TetA", "[TestTransform][Tet]") {
-    pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Tet::caseA()).run();
-}
-TEST_CASE("TestTransform_TetB", "[TestTransform][Tet]") {
-    pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Tet::caseB()).run();
-}
-TEST_CASE("TestTransform_TetC", "[TestTransform][Tet]") {
-    pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Tet::caseC()).run();
-}
-TEST_CASE("TestTransform_TetD", "[TestTransform][Tet]") {
-    pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Tet::caseD()).run();
-}
-TEST_CASE("TestTransform_TetF", "[TestTransform][Tet]") {
-    pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Tet::caseF()).run();
-}
-TEST_CASE("TestTransform_TetG", "[TestTransform][Tet]") {
-    pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Tet::caseG()).run();
-}
-TEST_CASE("TestTransform_TetH", "[TestTransform][Tet]") {
-    pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Tet::caseH()).run();
-}
-TEST_CASE("TestTransform_TetI", "[TestTransform][Tet]") {
-    pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Tet::caseI()).run();
-}
-TEST_CASE("TestTransform_TetJ", "[TestTransform][Tet]") {
-    pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Tet::caseJ()).run();
-}
-TEST_CASE("TestTransform_TetK", "[TestTransform][Tet]") {
+TEST_CASE("TestTransform_TetK", "[TestTransformTopology][Tet]") {
     pylith::faults::TestTransformTopology(pylith::faults::TestTransformTopology_Tet::caseK()).run();
 }
 

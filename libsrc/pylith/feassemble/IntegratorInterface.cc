@@ -442,13 +442,7 @@ pylith::feassemble::IntegratorInterface::initialize(const pylith::topology::Fiel
     PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" initialize(solution="<<solution.getLabel()<<")");
 
     delete _interfaceMesh;_interfaceMesh = new pylith::topology::Mesh();assert(_interfaceMesh);
-#if 0
-    pylith::faults::TopologyOps::createFaultParallel(_interfaceMesh, solution.getMesh(), _labelValue, _labelName.c_str(),
-                                                     _surfaceLabelName.c_str());
-    pylith::topology::MeshOps::checkTopology(*_interfaceMesh);
-#else
     pylith::faults::TopologyOps::createFaultFromCohesiveCells(_interfaceMesh, solution.getMesh(), _labelName.c_str(), _labelValue, _surfaceLabelName.c_str());
-#endif
     pylith::topology::CoordsVisitor::optimizeClosure(_interfaceMesh->getDM());
 
     Integrator::initialize(solution);
