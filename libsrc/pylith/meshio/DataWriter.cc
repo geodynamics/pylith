@@ -36,8 +36,7 @@ pylith::meshio::DataWriter::~DataWriter(void) {
 // ----------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
-pylith::meshio::DataWriter::deallocate(void) {
-}
+pylith::meshio::DataWriter::deallocate(void) {}
 
 
 // ----------------------------------------------------------------------
@@ -118,6 +117,7 @@ pylith::meshio::DataWriter::closeTimeStep(void) {
 // ----------------------------------------------------------------------
 // Copy constructor.
 pylith::meshio::DataWriter::DataWriter(const DataWriter& w) :
+    PyreComponent(),
     _context(w._context),
     _isInfo(w._isInfo),
     _isOpen(w._isOpen) {}

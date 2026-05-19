@@ -75,6 +75,8 @@ pylith::topology::Field::Field(const pylith::topology::Mesh& mesh) :
 // ------------------------------------------------------------------------------------------------
 // Constructor with field to use for layout.
 pylith::topology::Field::Field(const Field& src) :
+    FieldBase(),
+    GenericComponent(),
     _mesh(NULL),
     _localVec(NULL),
     _globalVec(NULL),

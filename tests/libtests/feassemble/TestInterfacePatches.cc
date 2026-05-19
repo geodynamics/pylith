@@ -96,14 +96,16 @@ pylith::feassemble::TestInterfacePatches::testCreateMaterialPairs(void) {
         const int matIdNegative = weakFormKeys.negative._value;
         const int matIdPositive = weakFormKeys.positive._value;
         size_t patchIndex = -1;
+        bool found = false;
         for (size_t i = 0; i < _data->numPatches; ++i) {
             if ((matIdNegative == _data->patchKeys[i].negative_value) &&
                 (matIdPositive == _data->patchKeys[i].positive_value) ) {
                 patchIndex = i;
+                found = true;
                 break;
             } // if
         } // for
-        REQUIRE(patchIndex >= 0);
+        REQUIRE(found);
 
         CHECK(labelName == weakFormKeys.cohesive._name);
 

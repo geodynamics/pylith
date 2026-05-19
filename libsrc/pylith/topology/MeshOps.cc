@@ -817,7 +817,7 @@ pylith::topology::MeshOps::checkMaterialLabels(const pylith::topology::Mesh& mes
         } // if
 
         const size_t matIndex = materialIndex[matId];
-        assert(0 <= matIndex && matIndex < numIds);
+        assert(matIndex < numIds);
         ++matCellCounts[matIndex];
     } // for
 
@@ -828,7 +828,7 @@ pylith::topology::MeshOps::checkMaterialLabels(const pylith::topology::Mesh& mes
     for (size_t i = 0; i < numIds; ++i) {
         const int matId = labelValues[i];
         const size_t matIndex = materialIndex[matId];
-        assert(0 <= matIndex && matIndex < numIds);
+        assert(matIndex < numIds);
         if (matCellCountsAll[matIndex] <= 0) {
             std::ostringstream msg;
             msg << "No cells associated with material with id '" << matId << "'.";
