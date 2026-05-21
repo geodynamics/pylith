@@ -15,6 +15,8 @@
 #include "pylith/meshio/HDF5.hh" // USES HDF5
 #include "pylith/utils/types.hh" // HASA PylithScalar
 #include "pylith/utils/error.hh" // HASA PYLITH_METHOD_BEGIN/END
+#include "pylith/utils/journals.hh" // USES journal macros
+#include "pylith/utils/Exceptions.hh" // USES Exceptio
 
 #include "catch2/catch_test_macros.hpp"
 #include "catch2/matchers/catch_matchers_floating_point.hpp"
@@ -310,14 +312,12 @@ pylith::meshio::_TestDataWriterHDF5::MeshData::load(const char* filename) {
         h5.close();
     } catch (const std::exception& err) {
         delete data;
-        std::ostringstream msg;
-        msg << "I/O error loading data from " << filename << "." << err.what();
-        throw std::runtime_error(msg.str());
+        PYLITH_ERROR(pylith::IOError, pylith::journal::output,
+                     "Error loading data from " << filename << "." << err.what());
     } catch (...) {
         delete data;
-        std::ostringstream msg;
-        msg << "Unknown I/O error while loading data from " << filename << ".";
-        throw std::runtime_error(msg.str());
+        PYLITH_ERROR(pylith::IOError, pylith::journal::output,
+                     "Unknown error while loading data from " << filename << ".");
     } // try/catch
 
     PYLITH_METHOD_RETURN(data);

@@ -22,7 +22,6 @@
 
 #include <cassert> // USES assert()
 #include <typeinfo> // USES typeid()
-#include <stdexcept> // USES std::runtime_error
 
 // ------------------------------------------------------------------------------------------------
 // Constructor
@@ -61,7 +60,8 @@ pylith::problems::Physics::setLabelName(const char* value) {
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setLabelName(value="<<value<<")");
 
     if (strlen(value) == 0) {
-        throw std::runtime_error("Empty string given for material label.");
+        PYLITH_COMPONENT_ERROR(pylith::ValueError, pylith::journal::user_input,
+                               "Empty string given for label name.");
     } // if
 
     _labelName = value;

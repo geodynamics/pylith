@@ -15,8 +15,9 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES isCohesiveCell()
 
-#include "pylith/utils/error.hh" \
-    // USES PYLITH_METHOD_BEGIN/END
+#include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
+#include "pylith/utils/journals.hh" // USES journals
+#include "pylith/utils/Exceptions.hh" // USES Exception
 
 // Constructor
 pylith::meshio::DataWriter::DataWriter(void) :
@@ -46,9 +47,8 @@ pylith::meshio::DataWriter::setTimeScale(const PylithScalar value) {
     PYLITH_METHOD_BEGIN;
 
     if (value <= 0.0) {
-        std::ostringstream msg;
-        msg << "Time scale for simulation time (" << value << " must be positive.";
-        throw std::runtime_error(msg.str());
+        PYLITH_COMPONENT_ERROR(pylith::ValueError, pylith::journal::user_input,
+                               "Time scale for simulation time (" << value << " must be positive.");
     } // if
 
     _timeScale = value;

@@ -26,7 +26,6 @@
 #include <strings.h> // USES strcasecmp()
 #include <cassert> // USES assert()
 #include <fstream> // USES std::ifstream, std::ofstream
-#include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream
 #include <typeinfo> // USES std::typeid
 
@@ -232,8 +231,9 @@ pylith::meshio::MeshIOAscii::_read(void) {
                     readCells = true;
                 } else if (0 == strcasecmp(token.c_str(), "vertex-group")) {
                     if (!builtMesh) {
-                        throw std::runtime_error("Both 'vertices' and 'cells' must "
-                                                 "precede any groups in the mesh file.");
+                        PYLITH_COMPONENT_ERROR(pylith::IOError, pylith::journal::user_input,
+                                               "Both 'vertices' and 'cells' must "
+                                               "precede any groups in the mesh file.");
                     } // if
 
                     std::string name;

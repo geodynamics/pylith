@@ -17,11 +17,12 @@
 #include "pylith/topology/Stratum.hh" // USES StratumIS
 #include "pylith/meshio/OutputSubfield.hh" // USES OutputSubfieldIS
 
+#include "pylith/utils/journals.hh" // USES journal macros
+#include "pylith/utils/Exceptions.hh" // USES Exception
+
 #include "petscdmplex.h"
 
 #include <cassert> // USES assert()
-#include <sstream> // USES std::ostringstream
-#include <stdexcept> // USES std::runtime_error
 
 extern
 PetscErrorCode DMPlexVTKWriteAll(PetscObject odm,
@@ -85,10 +86,9 @@ pylith::meshio::DataWriterVTK::timeConstant(const PylithScalar value) {
     PYLITH_METHOD_BEGIN;
 
     if (value <= 0.0) {
-        std::ostringstream msg;
-        msg << "Time used to normalize time stamp in VTK data files must be "
-            << "positive.\nCurrent value is " << value << ".";
-        throw std::runtime_error(msg.str());
+        PYLITH_COMPONENT_ERROR(pylith::ValueError, pylith::journal::user_input,
+                               "Time used to normalize time stamp in VTK data files must be "
+                               << "positive.\nCurrent value is " << value << ".");
     } // if
     _timeConstant = value;
 
@@ -103,9 +103,8 @@ pylith::meshio::DataWriterVTK::precision(const int value) {
     PYLITH_METHOD_BEGIN;
 
     if (value <= 0) {
-        std::ostringstream msg;
-        msg << "Floating point precision (" << value << ") must be positive.";
-        throw std::runtime_error(msg.str());
+        PYLITH_COMPONENT_ERROR(pylith::ValueError, pylith::journal::user_input,
+                               "Floating point precision (" << value << ") must be positive.");
     } // if
 
     _precision = value;

@@ -21,9 +21,9 @@
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
+#include "pylith/utils/Exceptions.hh" // USES Exception
 
 #include <cassert> // USES assert()
-#include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream
 #include <typeinfo> // USES typeid()
 
@@ -122,11 +122,10 @@ pylith::bc::DirichletUserFn::verifyConfiguration(const pylith::topology::Field& 
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "verifyConfiguration(solution="<<solution.getLabel()<<")");
 
     if (!solution.hasSubfield(_subfieldName.c_str())) {
-        std::ostringstream msg;
-        msg << "Cannot constrain field '"<< _subfieldName
-            << "' in component '" << PyreComponent::getIdentifier() << "'"
-            << "; field is not in solution.";
-        throw std::runtime_error(msg.str());
+        PYLITH_COMPONENT_ERROR(pylith::ValueError, pylith::journal::user_input,
+                               "Cannot constrain field '"<< _subfieldName
+                                                         << "' in component '" << PyreComponent::getIdentifier() << "'"
+                                                         << "; field is not in solution.");
     } // if
 
     const topology::Field::SubfieldInfo& info = solution.getSubfieldInfo(_subfieldName.c_str());
@@ -134,11 +133,9 @@ pylith::bc::DirichletUserFn::verifyConfiguration(const pylith::topology::Field& 
     const int numConstrained = _constrainedDOF.size();
     for (int iConstrained = 0; iConstrained < numConstrained; ++iConstrained) {
         if (_constrainedDOF[iConstrained] >= numComponents) {
-            std::ostringstream msg;
-            msg << "Cannot constrain degree of freedom '" << _constrainedDOF[iConstrained] << "'"
-                << " in component '" << PyreComponent::getIdentifier() << "'"
-                << "; solution field '" << _subfieldName << "' contains only " << numComponents << " components.";
-            throw std::runtime_error(msg.str());
+            PYLITH_COMPONENT_ERROR(pylith::ValueError, pylith::journal::user_input,
+                                   "Cannot constrain degree of freedom '" << _constrainedDOF[iConstrained] << "'"
+                                                                          << "; solution field '" << _subfieldName << "' contains only " << numComponents << " components.");
         } // if
     } // for
 

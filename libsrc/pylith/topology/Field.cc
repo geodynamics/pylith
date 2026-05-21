@@ -526,11 +526,10 @@ pylith::topology::Field::subfieldsSetup(void) {
 
         if (quadOrderSet) {
             if (quadOrder != sinfo.fe.quadOrder) {
-                std::ostringstream msg;
-                msg << "PETSc DMPlex routines currently assume all subfields use the same quadrature order. Quadrature order of "
-                    << sinfo.fe.quadOrder << " for subfield '" << sname << "' does not match the quadrature order of " << quadOrder
-                    << " for other subfields in field '" << getLabel() << "'.";
-                throw std::runtime_error(msg.str());
+                PYLITH_ERROR(pylith::ValueError, pylith::journal::user_input,
+                             "PETSc DMPlex routines currently assume all subfields use the same quadrature order. Quadrature order of "
+                             << sinfo.fe.quadOrder << " for subfield '" << sname << "' does not match the quadrature order of " << quadOrder
+                             << " for other subfields in field '" << getLabel() << "'.");
             } // if
         } else {
             quadOrder = sinfo.fe.quadOrder;
@@ -606,7 +605,7 @@ pylith::topology::Field::getSubfieldInfo(const char* name) const {
         } // for
         msg << std::endl;
 
-        throw std::runtime_error(msg.str());
+        PYLITH_ERROR(pylith::ValueError, pylith::journal::user_input, msg.str());
     } // if
 
     PYLITH_METHOD_RETURN(iter->second);

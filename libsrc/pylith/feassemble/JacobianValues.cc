@@ -19,7 +19,6 @@
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
 
 #include <cassert> // USES assert()
-#include <stdexcept> // USES std::runtime_error
 
 namespace pylith {
     namespace feassemble {

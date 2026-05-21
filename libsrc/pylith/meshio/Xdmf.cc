@@ -13,11 +13,10 @@
 #include "pylith/meshio/Xdmf.hh" // implementation of class methods
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
+#include "pylith/utils/journals.hh" // PYLITH_ journal macros
+#include "pylith/utils/Exceptions.hh" // USES Exception
 
 #include <Python.h>
-
-#include <sstream> // USES std::ostringstream
-#include <stdexcept> // USES std::runtime_error
 
 // ----------------------------------------------------------------------
 // Use Python Xdmf object to write Xdmf file corresponding to HDF5 file.
@@ -40,15 +39,18 @@ pylith::meshio::Xdmf::write(const char* filenameH5) {
     // Should check for NULL, decode the exception, and throw a C++ equivalent
     PyObject* mod = PyImport_ImportModule("pylith.meshio.Xdmf");
     if (!mod) {
-        throw std::runtime_error("Could not import module 'pylith.meshio.Xdmf'.");
+        PYLITH_ERROR(pylith::InternalError, pylith::journal::internal,
+                     "Could not import module 'pylith.meshio.Xdmf'.");
     } // if
     PyObject* cls = PyObject_GetAttrString(mod, "Xdmf");
     if (!cls) {
-        throw std::runtime_error("Could not get 'Xdmf' attribute in pylith.meshio.Xdmf module.");
+        PYLITH_ERROR(pylith::InternalError, pylith::journal::internal,
+                     "Could not get 'Xdmf' attribute in pylith.meshio.Xdmf module.");
     } // if
     PyObject* pyXdmf = PyObject_CallFunctionObjArgs(cls, NULL);
     if (!pyXdmf) {
-        throw std::runtime_error("Could not create Python Xdmf object.");
+        PYLITH_ERROR(pylith::InternalError, pylith::journal::internal,
+                     "Could not create Python Xdmf object.");
     } // if
     Py_DECREF(cls);
     Py_DECREF(mod);
@@ -58,9 +60,8 @@ pylith::meshio::Xdmf::write(const char* filenameH5) {
         if (PyErr_Occurred()) {
             PyErr_Clear();
         } // if
-        std::ostringstream msg;
-        msg << "Could not generate Xdmf file for HDF5 file '" << filenameH5 << "'.";
-        throw std::runtime_error(msg.str());
+        PYLITH_ERROR(pylith::InternalError, pylith::journal::internal,
+                     "Could not generate Xdmf file for HDF5 file '" << filenameH5 << "'.");
     } // if
     Py_DECREF(pyWrite);
     Py_CLEAR(pyXdmf);

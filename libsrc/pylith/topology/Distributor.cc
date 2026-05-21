@@ -20,14 +20,13 @@
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 #include "pylith/faults/FaultCohesive.hh" // USES FaultCohesive
 #include "pylith/meshio/DataWriter.hh" // USES DataWriter
-#include "pylith/utils/journals.hh" // pythia::journal
+#include "pylith/utils/journals.hh" // USES pythia::journal
+#include "pylith/utils/Exceptions.hh" // USES Exception
 
 #include "petsc/private/dmpleximpl.h"
 
 #include <cstring> // USES strlen()
 #include <strings.h> // USES strcasecmp()
-#include <stdexcept> // USES std::runtime_error
-#include <sstream> // USES std::ostringstream
 #include <cassert> // USES assert()
 
 // ------------------------------------------------------------------------------------------------
@@ -111,9 +110,8 @@ pylith::topology::Distributor::setPartitioner(const char* partitioner) {
     if ((0 == strcasecmp(partitioner, "parmetis")) || (0 == strcasecmp(partitioner, "chaco")) || (0 == strcasecmp(partitioner, "simple"))) {
         _partitioner = partitioner;
     } else {
-        std::ostringstream msg;
-        msg << "Unknown partitioner '" << partitioner << "'. Partitioner must be 'parmetis', 'chaco', or 'simple'.";
-        throw std::runtime_error(msg.str());
+        PYLITH_ERROR(pylith::ValueError, pylith::journal::user_input,
+                     "Unknown partitioner '" << partitioner << "'. Partitioner must be 'parmetis', 'chaco', or 'simple'.");
     } // if/else
 } // setPartitioner
 
@@ -124,9 +122,7 @@ pylith::topology::Mesh*
 pylith::topology::Distributor::distribute(const pylith::topology::Mesh& mesh,
                                           const std::vector<pylith::faults::FaultCohesive*>& faults) const {
     PYLITH_METHOD_BEGIN;
-
-
-    PYLITH_INFO_ROOT(pylith::journal::application_flow, "Partitioning mesh using PETSc '" << partitionerName << "' partitioner.");
+    PYLITH_INFO_ROOT(pylith::journal::application_flow_detail3, "Partitioning mesh using PETSc '" << _partitioner << "' partitioner.");
 
     PetscPartitioner partitioner = nullptr;
     PetscDM dmOrig = mesh.getDM();assert(dmOrig);
@@ -137,23 +133,19 @@ pylith::topology::Distributor::distribute(const pylith::topology::Mesh& mesh,
         PylithCallPetsc(PetscPartitionerSetFromOptions(partitioner));
     } // if
 
-    PYLITH_INFO_ROOT(pylith::journal::application_flow, "Distributing partitioned mesh.");
+    PYLITH_INFO_ROOT(pylith::journal::application_flow_detail3, "Distributing partitioned mesh.");
 
     PetscDM dmTmp = NULL, dmNew = NULL;
     const PetscInt overlap = 0;
     PylithCallPetsc(DMPlexDistribute(dmOrig, overlap, NULL, &dmTmp));
     pylith::topology::Mesh* meshNew = nullptr;
     if (dmTmp) {
-#if 1
         PylithCallPetsc(Distributor::distributeOverlap(&dmNew, dmTmp, faults));
         PylithCallPetsc(DMDestroy(&dmTmp));
         PylithCallPetsc(DMPlexDistributeSetDefault(dmNew, PETSC_FALSE));
         PylithCallPetsc(DMPlexReorderCohesiveSupports(dmNew));
         PylithCallPetsc(DMViewFromOptions(dmNew, NULL, "-pylith_dist_dm_view"));
         meshNew = new pylith::topology::Mesh(dmNew, mesh);assert(meshNew);
-#else
-        meshNew = new pylith::topology::Mesh(dmTmp, mesh);assert(meshNew);
-#endif
     } else {
         PetscObjectReference(PetscObject(dmOrig));
         meshNew = new pylith::topology::Mesh(dmOrig, mesh);assert(meshNew);
@@ -171,10 +163,10 @@ pylith::topology::Distributor::distribute(const pylith::topology::Mesh& mesh,
     } // if
 
     if (pylith::topology::MeshOps::getNumCells(*meshNew) == 0) {
-        std::ostringstream msg;
-        msg << "No cells are assigned to process " << commRank << " after distribution. "
-            << "Either there are too many processes for the mesh or there is a topology related error.";
-        throw std::runtime_error(msg.str());
+        const int commRank = meshNew->getCommRank();
+        PYLITH_ERROR(pylith::TopologyError, pylith::journal::internal,
+                     "No cells are assigned to process " << commRank << " after distribution. "
+                                                         << "Either there are too many processes for the mesh or there is a topology related error.");
     } // if
 
     PYLITH_METHOD_RETURN(meshNew);

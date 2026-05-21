@@ -32,7 +32,6 @@
 
 #include <cassert> // USES assert()
 #include <typeinfo> // USES typeid()
-#include <stdexcept> // USES std::runtime_error
 
 // ------------------------------------------------------------------------------------------------
 // Local "private" functions.
@@ -179,7 +178,8 @@ pylith::feassemble::IntegratorInterface::setSurfaceLabelName(const char* value) 
     PYLITH_DEBUG(pylith::journal::application_flow, "setSurfaceLabelName(value="<<value<<")");
 
     if (strlen(value) == 0) {
-        throw std::runtime_error("Empty string given for boundary condition label.");
+        PYLITH_ERROR(pylith::ValueError, pylith::journal::user_input,
+                     "Empty string given for boundary condition label.");
     } // if
 
     _surfaceLabelName = value;
@@ -214,13 +214,12 @@ pylith::feassemble::IntegratorInterface::setIntegrationPatches(pylith::feassembl
         const size_t numPatches = patches->getKeys().size();
         const size_t maxNumPatches = _IntegratorInterface::max_patches;
         if (numPatches > maxNumPatches) {
-            std::ostringstream msg;
-            msg << "Number of integration patches ("<< numPatches << ") for interface integration "
-                << _labelName << "=" << _labelValue
-                << " exceeds maximum number of allowed patches (" << maxNumPatches << ").\n"
-                << "Consolidate bulk materials or adjust maximum number of patches in "
-                << "pylith::feassemble::IntegratorInterface.";
-            throw std::range_error(msg.str());
+            PYLITH_ERROR(pylith::ValueError, pylith::journal::internal,
+                         "Number of integration patches ("<< numPatches << ") for interface integration "
+                                                          << _labelName << "=" << _labelValue
+                                                          << " exceeds maximum number of allowed patches (" << maxNumPatches << ").\n"
+                                                          << "Consolidate bulk materials or adjust maximum number of patches in "
+                                                          << "pylith::feassemble::IntegratorInterface.");
         } // if
     } // if
 

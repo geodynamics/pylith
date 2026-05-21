@@ -42,7 +42,6 @@
 #include <cstdlib> // USES atoi()
 #include <cassert> // USES assert()
 #include <sstream> // USES std::ostringstream
-#include <stdexcept> // USES std::runtime_error
 #include <typeinfo> // USES typeid()
 
 // ------------------------------------------------------------------------------------------------
@@ -111,9 +110,8 @@ pylith::faults::FaultCohesiveKin::setEqRuptures(const char* const * names,
     _ruptures.clear();
     for (int i = 0; i < numRuptures; ++i) {
         if (!ruptures[i]) {
-            std::ostringstream msg;
-            msg << "Null earthquake rupture object for earthquake rupture '" << names[i] << "'.";
-            throw std::runtime_error(msg.str());
+            PYLITH_COMPONENT_ERROR(pylith::InternalLogicError, pylith::journal::logic,
+                                   "Null earthquake rupture object for earthquake rupture '" << names[i] << "'.");
         } // if
         _ruptures[std::string(names[i])] = ruptures[i];
     } // for

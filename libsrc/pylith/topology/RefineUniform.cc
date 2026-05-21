@@ -16,6 +16,8 @@
 #include "pylith/topology/MeshOps.hh" // USES MeshOps
 #include "pylith/topology/Stratum.hh" // USES Stratum
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
+#include "pylith/utils/journals.hh" // USES journal macros
+#include "pylith/utils/Exceptions.hh" // USES Exception
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
 
 #include "pylith/meshio/MeshBuilder.hh" // USES MeshBuilder
@@ -138,10 +140,8 @@ pylith::topology::RefineUniform::refine(const pylith::topology::Mesh& mesh) {
 
     const int meshDim = mesh.getDimension();
     if (( meshDim > 0) && ( meshDepth != meshDim) ) {
-        std::ostringstream msg;
-        msg << "Mesh refinement for uninterpolated meshes not supported.\n"
-            << "Turn on interpolated meshes using 'interpolate' mesh generator property.";
-        throw std::runtime_error(msg.str());
+        PYLITH_ERROR(pylith::InternalLogicError, pylith::journal::logic,
+                     "Mesh refinement for uninterpolated meshes not supported.");
     } // if
 
     // Refine, keeping original mesh intact.

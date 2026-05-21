@@ -26,7 +26,6 @@
 #include "pylith/utils/Exceptions.hh" // USES Exception
 
 #include <cassert> // USES assert()
-#include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream
 #include <typeinfo> // USES typeid()
 

@@ -12,8 +12,9 @@
 
 #include "Scales.hh" // implementation of class methods
 
-#include <sstream> // USES std::ostringstream
-#include <stdexcept> // USES std::runtime_error
+#include "pylith/utils/journals.hh" // USES journal macros
+#include "pylith/utils/Exceptions.hh" // USES Exception
+
 #include <cassert> // USES assert()
 
 // ----------------------------------------------------------------------
@@ -62,9 +63,8 @@ pylith::scales::Scales::operator=(const Scales& dim) {
 void
 pylith::scales::Scales::setLengthScale(const double value) {
     if (value <= 0.0) {
-        std::ostringstream msg;
-        msg << "Length scale (" << value << ") must be positive.";
-        throw std::invalid_argument(msg.str());
+        PYLITH_ERROR(pylith::ValueError, pylith::journal::user_input,
+                     "Length scale (" << value << ") must be positive.");
     } // if
     _length = value;
 } // setLengthScale
@@ -75,9 +75,8 @@ pylith::scales::Scales::setLengthScale(const double value) {
 void
 pylith::scales::Scales::setDisplacementScale(const double value) {
     if (value <= 0.0) {
-        std::ostringstream msg;
-        msg << "Displacement scale (" << value << ") must be positive.";
-        throw std::invalid_argument(msg.str());
+        PYLITH_ERROR(pylith::ValueError, pylith::journal::user_input,
+                     "Displacement scale (" << value << ") must be positive.");
     } // if
     _displacement = value;
 } // setDisplacementScale
@@ -88,9 +87,8 @@ pylith::scales::Scales::setDisplacementScale(const double value) {
 void
 pylith::scales::Scales::setRigidityScale(const double value) {
     if (value <= 0.0) {
-        std::ostringstream msg;
-        msg << "Rigidity scale (" << value << ") must be positive.";
-        throw std::invalid_argument(msg.str());
+        PYLITH_ERROR(pylith::ValueError, pylith::journal::user_input,
+                     "Rigidity scale (" << value << ") must be positive.");
     } // if
     _rigidity = value;
 } // setRigidityScale
@@ -101,9 +99,8 @@ pylith::scales::Scales::setRigidityScale(const double value) {
 void
 pylith::scales::Scales::setTimeScale(const double value) {
     if (value <= 0.0) {
-        std::ostringstream msg;
-        msg << "Time scale (" << value << ") must be positive.";
-        throw std::invalid_argument(msg.str());
+        PYLITH_ERROR(pylith::ValueError, pylith::journal::user_input,
+                     "Time scale (" << value << ") must be positive.");
     } // if
     _time = value;
 } // setTimeScale
@@ -114,9 +111,8 @@ pylith::scales::Scales::setTimeScale(const double value) {
 void
 pylith::scales::Scales::setTemperatureScale(const double value) {
     if (value <= 0.0) {
-        std::ostringstream msg;
-        msg << "Temperature scale (" << value << ") must be positive.";
-        throw std::invalid_argument(msg.str());
+        PYLITH_ERROR(pylith::ValueError, pylith::journal::user_input,
+                     "Temperature scale (" << value << ") must be positive.");
     } // if
     _temperature = value;
 } // setTemperatureScale

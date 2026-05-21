@@ -26,6 +26,7 @@
 
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
+#include "pylith/utils/Exceptions.hh" // Exception
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "pylith/scales/Scales.hh" // USES Nondimensionalizer
@@ -34,8 +35,6 @@
 #include <cmath> // USES pow(), sqrt()
 #include <cstdlib> // USES atoi()
 #include <cassert> // USES assert()
-#include <sstream> // USES std::ostringstream
-#include <stdexcept> // USES std::runtime_error
 #include <typeinfo> // USES typeid()
 
 // ------------------------------------------------------------------------------------------------
@@ -119,9 +118,8 @@ pylith::faults::FaultCohesiveImpulses::setThreshold(const double value) {
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setThreshold(value="<<value<<")");
 
     if (value < 0) {
-        std::ostringstream msg;
-        msg << "Threshold ("<< value << ") for impulse amplitude must be nonnegative.";
-        throw std::out_of_range(msg.str());
+        PYLITH_COMPONENT_ERROR(pylith::ValueError, pylith::journal::user_input,
+                               "Threshold ("<< value << ") for impulse amplitude must be nonnegative.");
     } // if
     assert(_scales);
     _threshold = value / _scales->getDisplacementScale();

@@ -32,7 +32,6 @@
 #include "catch2/matchers/catch_matchers_floating_point.hpp"
 #include "catch2/matchers/catch_matchers_exception.hpp"
 
-#include <stdexcept>
 
 namespace pylith {
     namespace feassemble {

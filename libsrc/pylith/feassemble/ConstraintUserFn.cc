@@ -24,7 +24,6 @@
 
 #include <cassert> // USES assert()
 #include <typeinfo> // USES typeid()
-#include <stdexcept> // USES std::runtime_error
 
 namespace pylith {
     namespace feassemble {

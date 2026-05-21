@@ -24,7 +24,6 @@
 #include "pylith/utils/array.hh" // USES int_array
 
 #include <strings.h> // USES strcasecmp()
-#include <stdexcept> // USES std::logic_error
 
 #include "catch2/catch_test_macros.hpp"
 

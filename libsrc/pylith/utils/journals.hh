@@ -129,7 +129,7 @@ namespace pylith::journal {
     static const std::string deprecation = "deprecation";
 
     // error
-    // static const std::string user = "user";
+    // static const std::string user_input = "user-input";
     static const std::string external = "external";
     static const std::string output = "output";
 

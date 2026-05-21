@@ -190,15 +190,14 @@ pylith::meshio::OutputPhysics::verifyConfiguration(const pylith::topology::Field
         for (size_t i = 0; i < numInfoFields; ++i) {
             msg << "    " << _infoFieldNames[i] << "\n";
         } // for
-        throw std::runtime_error(msg.str());
+        PYLITH_COMPONENT_ERROR(pylith::InternalLogicError, pylith::journal::logic, msg.str());
     } else if ((numInfoFields > 0) && (std::string("all") != _infoFieldNames[0])) {
         assert(auxiliaryField);
         for (size_t i = 0; i < numInfoFields; i++) {
             if (!auxiliaryField->hasSubfield(_infoFieldNames[i].c_str())) {
-                std::ostringstream msg;
-                msg << "Could not find subfield '" << _infoFieldNames[i] << "' in auxiliary field '"
-                    << auxiliaryField->getLabel() << "' for physics output '" << PyreComponent::getIdentifier() << "''.";
-                throw std::runtime_error(msg.str());
+                PYLITH_COMPONENT_ERROR(pylith::ValueError, pylith::journal::user_input,
+                                       "Could not find subfield '" << _infoFieldNames[i] << "' in auxiliary field '"
+                                                                   << auxiliaryField->getLabel() << "' for output.");
             } // if
         } // for
     } // if/else
@@ -211,12 +210,10 @@ pylith::meshio::OutputPhysics::verifyConfiguration(const pylith::topology::Field
             if (auxiliaryField && auxiliaryField->hasSubfield(_dataFieldNames[i].c_str())) { continue;}
             if (derivedField && derivedField->hasSubfield(_dataFieldNames[i].c_str())) { continue;}
 
-            std::ostringstream msg;
-            msg << "Could not find subfield '" << _dataFieldNames[i] << "' in solution field '" << solution.getLabel()
-                << ", auxiliary field '" << (auxiliaryField ? auxiliaryField->getLabel() : "NULL") << "', or derived field "
-                << (derivedField ? derivedField->getLabel() : "NULL") << "' for physics output '"
-                << PyreComponent::getIdentifier() << "'.";
-            throw std::runtime_error(msg.str());
+            PYLITH_COMPONENT_ERROR(pylith::ValueError, pylith::journal::user_input,
+                                   "Could not find subfield '" << _dataFieldNames[i] << "' in solution field '" << solution.getLabel()
+                                                               << ", auxiliary field '" << (auxiliaryField ? auxiliaryField->getLabel() : "NULL") << "', or derived field "
+                                                               << (derivedField ? derivedField->getLabel() : "NULL") << "' for output.");
         } // for
     } // if
 

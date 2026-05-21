@@ -22,6 +22,7 @@
 
 #include "pylith/utils/array.hh" // USES int_array, scalar_array
 #include "pylith/utils/journals.hh" // USES journals
+#include "pylith/utils/Exceptions.hh" // USES Exceptions
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 
 #include "pylith/scales/Scales.hh" // USES Scales

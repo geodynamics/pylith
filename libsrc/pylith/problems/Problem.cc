@@ -221,9 +221,9 @@ pylith::problems::Problem::setScales(const pylith::scales::Scales& dim) {
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "Setting scales for nondimensionalization.");
 
     if (!_scales) {
-        _scales = new pylith::scales::Scales(scales);
+        _scales = new pylith::scales::Scales(dim);
     } else {
-        *_scales = scales;
+        *_scales = dim;
     } // if/else
 } // setScales
 

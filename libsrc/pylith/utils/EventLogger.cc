@@ -13,9 +13,9 @@
 #include "pylith/utils/EventLogger.hh" // Implementation of class methods
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
+#include "pylith/utils/journals.hh" // USES journal macros
+#include "pylith/utils/Exceptions.hh" // USES Exception
 
-#include <stdexcept> // USES std::runtime_error
-#include <sstream> // USES std::ostringstream
 #include <cassert> // USES assert()
 
 // ----------------------------------------------------------------------
@@ -37,7 +37,8 @@ pylith::utils::EventLogger::initialize(void) {
     PYLITH_METHOD_BEGIN;
 
     if (_className == "") {
-        throw std::logic_error("Must set logging class name before initializing EventLogger.");
+        PYLITH_FIREWALL(pylith::InternalLogicError, pylith::journal::logic,
+                        "Must set logging class name before initializing EventLogger.");
     }
 
     _events.clear();
@@ -61,9 +62,8 @@ pylith::utils::EventLogger::registerEvent(const char* name) {
     int id = 0;
     PetscErrorCode err = PetscLogEventRegister(name, _classId, &id);
     if (err) {
-        std::ostringstream msg;
-        msg << "Could not register logging event '" << name << "' for logging class '" << _className << "'.";
-        throw std::runtime_error(msg.str());
+        PYLITH_ERROR(pylith::ValueError, pylith::journal::internal,
+                     "Could not register logging event '" << name << "' for logging class '" << _className << "'.");
     } // if
     _events[name] = id;
     PYLITH_METHOD_RETURN(id);
@@ -78,9 +78,8 @@ pylith::utils::EventLogger::getEventId(const char* name) {
 
     map_event_type::iterator iter = _events.find(name);
     if (iter == _events.end()) {
-        std::ostringstream msg;
-        msg << "Could not find logging event '" << name << "' in logging class '" << _className << "'.";
-        throw std::runtime_error(msg.str());
+        PYLITH_ERROR(pylith::ValueError, pylith::journal::internal,
+                     "Could not find logging event '" << name << "' in logging class '" << _className << "'.");
     } // if
 
     PYLITH_METHOD_RETURN(iter->second);
@@ -97,9 +96,8 @@ pylith::utils::EventLogger::registerStage(const char* name) {
     int id = 0;
     PetscErrorCode err = PetscLogStageRegister(name, &id);
     if (err) {
-        std::ostringstream msg;
-        msg << "Could not register logging stage '" << name << "'.";
-        throw std::runtime_error(msg.str());
+        PYLITH_ERROR(pylith::ValueError, pylith::journal::internal,
+                     "Could not register logging stage '" << name << "'.");
     } // if
     _stages[name] = id;
 

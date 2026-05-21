@@ -94,7 +94,8 @@ pylith::problems::GreensFns::setFaultLabelName(const char* value) {
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setFaultLabelName(value="<<value<<")");
 
     if (strlen(value) == 0) {
-        throw std::runtime_error("Empty string given for name of label for fault with impulses.");
+        PYLITH_COMPONENT_ERROR(pylith::ValueError, pylith::journal::user_input,
+                               "Empty string given for name of label for fault with impulses.");
     } // if
 
     _faultLabelName = value;
@@ -165,18 +166,16 @@ pylith::problems::GreensFns::verifyConfiguration(void) const {
             (_faultLabelValue == _interfaces[i]->getSurfaceLabelValue())) {
             faultImpulses = dynamic_cast<pylith::faults::FaultCohesiveImpulses*>(_interfaces[i]);
             if (!faultImpulses) {
-                std::ostringstream msg;
-                msg << "Found fault with "<<_faultLabelName<<"="<<_faultLabelValue
-                    <<" in interfaces for imposing impulses, but type is not FaultCohesiveImpulses.";
-                throw std::runtime_error(msg.str());
+                PYLITH_COMPONENT_ERROR(pylith::ValueError, pylith::journal::user_input,
+                                       "Found fault with "<<_faultLabelName<<"="<<_faultLabelValue
+                                                          <<" in interfaces for imposing impulses, but type is not FaultCohesiveImpulses.");
             } // if
             break;
         } // if
     } // for
     if (!faultImpulses) {
-        std::ostringstream msg;
-        msg << "Could not find fault with "<<_faultLabelName<<"="<<_faultLabelValue<<" in interfaces for imposing impulses.";
-        throw std::runtime_error(msg.str());
+        PYLITH_COMPONENT_ERROR(pylith::ValueError, pylith::journal::user_input,
+                               "Could not find fault with "<<_faultLabelName<<"="<<_faultLabelValue<<" in interfaces for imposing impulses.");
     } // if
 
     PYLITH_METHOD_END;
@@ -264,9 +263,8 @@ pylith::problems::GreensFns::initialize(void) {
         } // if
     } // for
     if (!_integratorImpulses) {
-        std::ostringstream msg;
-        msg << "Could not find integrator for fault "<<_faultLabelName<<"="<<_faultLabelValue<<" in integrators for problem.";
-        throw std::runtime_error(msg.str());
+        PYLITH_COMPONENT_ERROR(pylith::InternalLogicError, pylith::journal::logic,
+                               "Could not find integrator for fault "<<_faultLabelName<<"="<<_faultLabelValue<<" in integrators for problem.");
     } // if
 
     pythia::journal::debug_t debug(pylith::journal::solution);

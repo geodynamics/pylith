@@ -22,8 +22,6 @@
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 
-#include <stdexcept> // USES std::runtime_error
-#include <sstream> // USES std::ostringstream
 #include <cassert> // USES assert()
 
 #include <algorithm> // USES std::sort, std::find
@@ -121,9 +119,8 @@ pylith::topology::MeshOps::createSubdomainMesh(const pylith::topology::Mesh& mes
     PetscBool hasLabel = PETSC_FALSE;
     PylithCallPetsc(DMHasLabel(dmDomain, labelName, &hasLabel));
     if (!hasLabel) {
-        std::ostringstream msg;
-        msg << "Could not find group of points '" << labelName << "' in PETSc DM mesh.";
-        throw std::runtime_error(msg.str());
+        PYLITH_ERROR(pylith::ValueError, pylith::journal::user_input,
+                     "Could not find group of points '" << labelName << "' in PETSc DM mesh.");
     } // if
 
     /* :TODO: Add creation of pointSF for submesh */
@@ -136,10 +133,9 @@ pylith::topology::MeshOps::createSubdomainMesh(const pylith::topology::Mesh& mes
     PylithCallPetsc(MPI_Allreduce(&hasLabelValueIntLocal, &hasLabelValueInt, 1, MPI_INT, MPI_MAX,
                                   PetscObjectComm((PetscObject) dmDomain)));
     if (!hasLabelValueInt) {
-        std::ostringstream msg;
-        msg << "Could not find group of points '" << labelName << "' with label value '"
-            << labelValue << "' in PETSc DM mesh.";
-        throw std::runtime_error(msg.str());
+        PYLITH_ERROR(pylith::ValueError, pylith::journal::user_input,
+                     "Could not find group of points '" << labelName << "' with label value '"
+                                                        << labelValue << "' in PETSc DM mesh.");
     } // if
 
     PetscDM dmSubdomain = NULL;
@@ -152,11 +148,10 @@ pylith::topology::MeshOps::createSubdomainMesh(const pylith::topology::Mesh& mes
 
     if (maxConeSize <= 0) {
         PylithCallPetsc(DMDestroy(&dmSubdomain));
-        std::ostringstream msg;
-        msg << "Error while creating mesh of subdomain. Subdomain mesh '" << labelName
-            << "' with label value " << labelValue << " does not contain any cells.\n"
-            << "Check that you are using the correct label name and value.\n";
-        throw std::runtime_error(msg.str());
+        PYLITH_ERROR(pylith::ValueError, pylith::journal::user_input,
+                     "Error while creating mesh of subdomain. Subdomain mesh '" << labelName
+                                                                                << "' with label value " << labelValue << " does not contain any cells.\n"
+                                                                                << "Check that you are using the correct label name and value.");
     } // if
 
     PylithScalar lengthScale;
@@ -193,9 +188,8 @@ pylith::topology::MeshOps::createLowerDimMesh(const pylith::topology::Mesh& mesh
     PetscBool hasLabel = PETSC_FALSE;
     PylithCallPetsc(DMHasLabel(dmDomain, labelName, &hasLabel));
     if (!hasLabel) {
-        std::ostringstream msg;
-        msg << "Could not find group of points '" << labelName << "' in PETSc DM mesh.";
-        throw std::runtime_error(msg.str());
+        PYLITH_ERROR(pylith::ValueError, pylith::journal::user_input,
+                     "Could not find group '" << labelName << "' in PETSc DM mesh.");
     } // if
 
     /* TODO: Add creation of pointSF for submesh */
@@ -208,10 +202,8 @@ pylith::topology::MeshOps::createLowerDimMesh(const pylith::topology::Mesh& mesh
     PylithCallPetsc(MPI_Allreduce(&hasLabelValueIntLocal, &hasLabelValueInt, 1, MPI_INT, MPI_MAX,
                                   PetscObjectComm((PetscObject) dmDomain)));
     if (!hasLabelValueInt) {
-        std::ostringstream msg;
-        msg << "Could not find group of points '" << labelName << "' with label value '"
-            << labelValue << "' in PETSc DM mesh.";
-        throw std::runtime_error(msg.str());
+        PYLITH_ERROR(pylith::ValueError, pylith::journal::user_input,
+                     "Could not find label value '" << labelValue << "' in group '" << labelName << "' in PETSc DM mesh.");
     } // if
 
     PetscInt labelHasVertices = 0;
@@ -268,11 +260,10 @@ pylith::topology::MeshOps::createLowerDimMesh(const pylith::topology::Mesh& mesh
 
     if (maxConeSize <= 0) {
         PylithCallPetsc(DMDestroy(&dmSubmesh));
-        std::ostringstream msg;
-        msg << "Error while creating lower dimension mesh. Submesh '" << labelName
-            << "' with label value " << labelValue << " does not contain any cells.\n"
-            << "Check that you are using the correct label name and value.\n";
-        throw std::runtime_error(msg.str());
+        PYLITH_ERROR(pylith::ValueError, pylith::journal::user_input,
+                     "Error while creating lower dimension mesh. Submesh '" << labelName
+                                                                            << "' with label value " << labelValue << " does not contain any cells.\n"
+                                                                            << "Check that you are using the correct label name and value.");
     } // if
 
     // Set length scale
@@ -371,12 +362,11 @@ pylith::topology::MeshOps::nondimensionalize(Mesh* const mesh,
         const PylithReal avgDomainDim = computeAvgDomainDim(*mesh);
         const PylithReal avgDimTolerance = 0.01;
         if (avgDomainDim < avgDimTolerance) {
-            std::ostringstream msg;
-            msg << "Average domain dimension (" << avgDomainDim << ") is less than minimum tolerance ("
-                << avgDimTolerance << "). This usually means the length scale (" << lengthScale << ") used in the "
-                << "nondimensionalization needs to be smaller. The length scale should be on the order of the size "
-                << "of the features controlling the displacement variations (fault length or domain size).";
-            throw std::runtime_error(msg.str());
+            PYLITH_ERROR(pylith::ValueError, pylith::journal::user_input,
+                         "Average domain dimension (" << avgDomainDim << ") is less than minimum tolerance ("
+                                                      << avgDimTolerance << "). This usually means the length scale (" << lengthScale << ") used in the "
+                                                      << "nondimensionalization needs to be smaller. The length scale should be on the order of the size "
+                                                      << "of the features controlling the displacement variations (fault length or domain size).");
         } // if/else
     } // if
 
@@ -809,10 +799,9 @@ pylith::topology::MeshOps::checkMaterialLabels(const pylith::topology::Mesh& mes
         } // if
         const int *result = std::find(matBegin, matEnd, matId);
         if (result == matEnd) {
-            std::ostringstream msg;
-            msg << "Material label_value '" << matId << "' for cell '" << c
-                << "' does not match the label_value of any materials or interfaces.";
-            throw std::runtime_error(msg.str());
+            PYLITH_ERROR(pylith::ValueError, pylith::journal::user_input,
+                         "Material label_value '" << matId << "' for cell '" << c
+                                                  << "' does not match the label_value of any materials or interfaces.");
         } // if
 
         const size_t matIndex = materialIndex[matId];
@@ -829,9 +818,8 @@ pylith::topology::MeshOps::checkMaterialLabels(const pylith::topology::Mesh& mes
         const size_t matIndex = materialIndex[matId];
         assert(matIndex < numIds);
         if (matCellCountsAll[matIndex] <= 0) {
-            std::ostringstream msg;
-            msg << "No cells associated with material with id '" << matId << "'.";
-            throw std::runtime_error(msg.str());
+            PYLITH_ERROR(pylith::ValueError, pylith::journal::user_input,
+                         "No cells associated with material with id '" << matId << "'.");
         } // if
     } // for
 

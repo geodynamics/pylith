@@ -21,12 +21,12 @@
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
+#include "pylith/utils/Exceptions.hh" // USES Exception
 
 #include "pylith/scales/Scales.hh" // USES Scales
 
 #include <cassert> // USES assert()
 #include <typeinfo> // USES typeid()
-#include <stdexcept> // USES std::runtime_error
 
 // ------------------------------------------------------------------------------------------------
 namespace pylith {
@@ -110,7 +110,8 @@ pylith::feassemble::Integrator::setLabelName(const char* name) {
     PYLITH_DEBUG(pylith::journal::application_flow, "setLabelName(name="<<name<<")");
 
     if (strlen(name) == 0) {
-        throw std::runtime_error("Empty string given for name of label for integration domain.");
+        PYLITH_ERROR(pylith::ValueError, pylith::journal::user_input,
+                     "Empty string given for name of label for integration domain.");
     } // if
 
     _labelName = name;

@@ -28,7 +28,6 @@
 #include "catch2/matchers/catch_matchers_floating_point.hpp"
 
 #include <strings.h> // USES strcasecmp()
-#include <stdexcept> // USES std::logic_error
 
 static PetscErrorCode
 DMPlexInvertCell_Private(PetscInt dim,

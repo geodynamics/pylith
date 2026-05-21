@@ -14,6 +14,8 @@
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/utils/error.hh" // USES PylithCallPetsc()
+#include "pylith/utils/journals.hh" // USES journal macros
+#include "pylith/utils/Exceptions.hh" // USES Exception
 
 // ----------------------------------------------------------------------
 // Reorder vertices and cells in mesh.
@@ -56,9 +58,8 @@ pylith::topology::ReverseCuthillMcKee::reorder(const pylith::topology::Mesh& mes
                 PylithCallPetsc(ISRestoreIndices(valuesIS, &values));
                 PylithCallPetsc(ISDestroy(&valuesIS));
 
-                std::ostringstream msg;
-                msg << "Cells for label '" << labelName << "' with value " << values[iValue] << " are not consecutive (" << points[iPoint] << " and " << points[iPoint-1] << ").";
-                throw std::runtime_error(msg.str());
+                PYLITH_ERROR(pylith::InternalLogicError, pylith::journal::logic,
+                             "Cells for label '" << labelName << "' with value " << values[iValue] << " are not consecutive (" << points[iPoint] << " and " << points[iPoint-1] << ").");
             } // if
         } // for
         PylithCallPetsc(ISRestoreIndices(pointsIS, &points));

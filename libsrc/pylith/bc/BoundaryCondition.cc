@@ -23,9 +23,9 @@
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
+#include "pylith/utils/Exceptions.hh" // USES Exception
 
 #include <cstring> // USES strlen()
-#include <stdexcept> // USES std::runtime_error()
 
 // ------------------------------------------------------------------------------------------------
 
@@ -68,10 +68,9 @@ pylith::bc::BoundaryCondition::setSubfieldName(const char* value) {
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setSubfieldName(value="<<value<<")");
 
     if (!value || (0 == strlen(value))) {
-        std::ostringstream msg;
-        msg << "Empty string given for name of solution subfield for boundary condition '"
-            << getLabelName() <<"'.";
-        throw std::runtime_error(msg.str());
+        PYLITH_COMPONENT_ERROR(pylith::ValueError, pylith::journal::user_input,
+                               "Empty string given for name of solution subfield for boundary condition '"
+                               << getLabelName() <<"'.");
     } // if
     _subfieldName = value;
 } // setSubfieldName
@@ -94,10 +93,9 @@ pylith::bc::BoundaryCondition::setRefDir1(const PylithReal vec[3]) {
     // Set reference direction, insuring it is a unit vector.
     const PylithReal mag = sqrt(vec[0]*vec[0] + vec[1]*vec[1] + vec[2]*vec[2]);
     if (mag < 1.0e-6) {
-        std::ostringstream msg;
-        msg << "Magnitude of reference direction 1 ("<<vec[0]<<", "<<vec[1]<<", "<<vec[2]
-            <<") for boundary condition '" << getLabelName() << "' is negligible. Use a unit vector.";
-        throw std::runtime_error(msg.str());
+        PYLITH_COMPONENT_ERROR(pylith::ValueError, pylith::journal::user_input,
+                               "Magnitude of reference direction 1 ("<<vec[0]<<", "<<vec[1]<<", "<<vec[2]
+                                                                     <<") for boundary condition '" << getLabelName() << "' is negligible. Use a unit vector.");
     } // if
     for (int i = 0; i < 3; ++i) {
         _refDir1[i] = vec[i] / mag;
@@ -114,10 +112,9 @@ pylith::bc::BoundaryCondition::setRefDir2(const PylithReal vec[3]) {
     // Set reference direction, insuring it is a unit vector.
     const PylithReal mag = sqrt(vec[0]*vec[0] + vec[1]*vec[1] + vec[2]*vec[2]);
     if (mag < 1.0e-6) {
-        std::ostringstream msg;
-        msg << "Magnitude of reference direction 2 ("<<vec[0]<<", "<<vec[1]<<", "<<vec[2]
-            <<") for boundary condition '" << getLabelName() << "' is negligible. Use a unit vector.";
-        throw std::runtime_error(msg.str());
+        PYLITH_COMPONENT_ERROR(pylith::ValueError, pylith::journal::user_input,
+                               "Magnitude of reference direction 2 ("<<vec[0]<<", "<<vec[1]<<", "<<vec[2]
+                                                                     <<") for boundary condition '" << getLabelName() << "' is negligible. Use a unit vector.");
     } // if
     for (int i = 0; i < 3; ++i) {
         _refDir2[i] = vec[i] / mag;
@@ -133,20 +130,17 @@ pylith::bc::BoundaryCondition::verifyConfiguration(const pylith::topology::Field
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "verifyConfiguration(solution="<<solution.getLabel()<<")");
 
     if (!solution.hasSubfield(_subfieldName.c_str())) {
-        std::ostringstream msg;
-        msg << "Cannot apply boundary condition to field '"<< _subfieldName
-            << "'; field is not in solution.";
-        throw std::runtime_error(msg.str());
+        PYLITH_COMPONENT_ERROR(pylith::ValueError, pylith::journal::user_input,
+                               "Cannot apply boundary condition to field '"<< _subfieldName
+                                                                           << "'; field is not in solution.");
     } // if
 
     const PetscDM dmSoln = solution.getDM();
     PetscBool hasLabel = PETSC_FALSE;
     PylithCallPetsc(DMHasLabel(dmSoln, getLabelName(), &hasLabel));
     if (!hasLabel) {
-        std::ostringstream msg;
-        msg << "Could not find group of points '" << getLabelName() << "' in boundary condition '"
-            << PyreComponent::getIdentifier() <<"'.";
-        throw std::runtime_error(msg.str());
+        PYLITH_COMPONENT_ERROR(pylith::ValueError, pylith::journal::user_input,
+                               "Could not find group '" << getLabelName() << "' for boundary condition.");
     } // if
 
     PYLITH_METHOD_END;

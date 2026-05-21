@@ -28,7 +28,6 @@
 #include "pylith/utils/Exceptions.hh" // USES Exception
 
 #include <cassert> // USES assert()
-#include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream
 #include <typeinfo> // USES typeid()
 
@@ -195,11 +194,10 @@ pylith::bc::DirichletTimeDependent::verifyConfiguration(const pylith::topology::
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "verifyConfiguration(solution="<<solution.getLabel()<<")");
 
     if (!solution.hasSubfield(_subfieldName.c_str())) {
-        std::ostringstream msg;
-        msg << "Cannot constrain field '"<< _subfieldName
-            << "' in component '" << PyreComponent::getIdentifier() << "'"
-            << "; field is not in solution.";
-        throw std::runtime_error(msg.str());
+        PYLITH_COMPONENT_ERROR(pylith::ValueError, pylith::journal::user_input,
+                               "Cannot constrain field '"<< _subfieldName
+                                                         << "' in component '" << PyreComponent::getIdentifier() << "'"
+                                                         << "; field is not in solution.");
     } // if
 
     const topology::Field::SubfieldInfo& info = solution.getSubfieldInfo(_subfieldName.c_str());
@@ -382,7 +380,6 @@ pylith::bc::_DirichletTimeDependent::setKernelConstraint(pylith::feassemble::Con
         PYLITH_FIREWALL(pylith::InternalLogicError, pylith::journal::logic,
                         "Unknown combination of flags for Dirichlet BC terms (useInitial="<<bc.useInitial()
                                                                                           << ", useRate="<<bc.useRate()<<", useTimeHistory="<<bc.useTimeHistory()<<").");
-        throw std::logic_error("Unknown combination of flags for Dirichlet BC terms.");
     } // default
     } // switch
 

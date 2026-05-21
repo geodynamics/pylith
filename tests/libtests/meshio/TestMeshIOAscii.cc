@@ -106,7 +106,7 @@ pylith::meshio::TestMeshIOAscii::testReadError(void) {
     // Read mesh
     delete _mesh;_mesh = new pylith::topology::Mesh;
     _io->setFilename(_data->filename.c_str());
-    CHECK_THROWS_AS(_io->read(_mesh), std::runtime_error);
+    CHECK_THROWS_AS(_io->read(_mesh), pylith::IOError);
 
     PYLITH_METHOD_END;
 } // testRead

@@ -30,12 +30,11 @@
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
+#include "pylith/utils/Exceptions.hh" // USES Exception
 
 #include <utility> // USES std::pair
 #include <map> // USES std::map
 #include <cassert> // USES assert()
-#include <sstream> // USES std::ostringstream
-#include <stdexcept> // USES std::runtime_error
 
 namespace pylith {
     namespace faults {
@@ -134,7 +133,8 @@ pylith::faults::FaultCohesive::setSurfaceLabelName(const char* value) {
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setSurfaceLabelName(value="<<value<<")");
 
     if (strlen(value) == 0) {
-        throw std::runtime_error("Empty string given for name of label for fault surface.");
+        PYLITH_COMPONENT_ERROR(pylith::ValueError, pylith::journal::user_input,
+                               "Empty string given for name of label for fault surface.");
     } // if
 
     _surfaceLabelName = value;
@@ -206,9 +206,8 @@ pylith::faults::FaultCohesive::setRefDir1(const double vec[3]) {
     // Set reference direction, insuring it is a unit vector.
     const PylithReal mag = sqrt(vec[0]*vec[0] + vec[1]*vec[1] + vec[2]*vec[2]);
     if (mag < 1.0e-6) {
-        std::ostringstream msg;
-        msg << "Magnitude of reference direction 1 ("<<vec[0]<<", "<<vec[1]<<", "<<vec[2]<<") is negligible. Use a unit vector.";
-        throw std::runtime_error(msg.str());
+        PYLITH_COMPONENT_ERROR(pylith::ValueError, pylith::journal::user_input,
+                               "Magnitude of reference direction 1 ("<<vec[0]<<", "<<vec[1]<<", "<<vec[2]<<") is negligible. Use a unit vector.");
     } // if
     for (int i = 0; i < 3; ++i) {
         _refDir1[i] = vec[i] / mag;
@@ -223,9 +222,8 @@ pylith::faults::FaultCohesive::setRefDir2(const double vec[3]) {
     // Set reference direction, insuring it is a unit vector.
     const PylithReal mag = sqrt(vec[0]*vec[0] + vec[1]*vec[1] + vec[2]*vec[2]);
     if (mag < 1.0e-6) {
-        std::ostringstream msg;
-        msg << "Magnitude of reference direction 2 ("<<vec[0]<<", "<<vec[1]<<", "<<vec[2]<<") is negligible. Use a unit vector.";
-        throw std::runtime_error(msg.str());
+        PYLITH_COMPONENT_ERROR(pylith::ValueError, pylith::journal::user_input,
+                               "Magnitude of reference direction 2 ("<<vec[0]<<", "<<vec[1]<<", "<<vec[2]<<") is negligible. Use a unit vector.");
     } // if
     for (int i = 0; i < 3; ++i) {
         _refDir2[i] = vec[i] / mag;
@@ -253,9 +251,8 @@ pylith::faults::FaultCohesive::transformTopology(pylith::topology::Mesh* const m
         PylithCallPetsc(MPI_Comm_rank(PetscObjectComm((PetscObject) dmMesh), &rank));
         PylithCallPetsc(DMHasLabel(dmMesh, _surfaceLabelName.c_str(), &hasLabel));
         if (!hasLabel && !rank) {
-            std::ostringstream msg;
-            msg << "Mesh missing group '" << _surfaceLabelName << "' for fault interface condition.";
-            throw std::runtime_error(msg.str());
+            PYLITH_ERROR(pylith::ValueError, pylith::journal::user_input,
+                         "Mesh missing group '" << _surfaceLabelName << "' for fault interface condition.");
         } // if
         if (!hasLabel && (rank > 0)) {
             PylithCallPetsc(DMCreateLabel(dmMesh, _surfaceLabelName.c_str()));
@@ -314,10 +311,9 @@ pylith::faults::FaultCohesive::transformTopology(pylith::topology::Mesh* const m
         } // if
 
     } catch (const std::exception& err) {
-        std::ostringstream msg;
-        msg << "Error occurred while transforming topology to create cohesive cells for fault '" << _surfaceLabelName << "'.\n"
-            << err.what();
-        throw std::runtime_error(msg.str());
+        PYLITH_ERROR(pylith::TopologyError, pylith::journal::internal,
+                     "Error occurred while transforming topology to create cohesive cells for fault '" << _surfaceLabelName << "'.\n"
+                                                                                                       << err.what());
     } // try/catch
 
     PYLITH_METHOD_RETURN(meshNew);

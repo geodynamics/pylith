@@ -100,10 +100,9 @@ pylith::meshio::OutputSoln::verifyConfiguration(const pylith::topology::Field& s
     if ((numSubfieldNames > 0) && (std::string("all") != _subfieldNames[0])) {
         for (size_t iField = 0; iField < numSubfieldNames; iField++) {
             if (!solution.hasSubfield(_subfieldNames[iField].c_str())) {
-                std::ostringstream msg;
-                msg << "Could not find subfield '" << _subfieldNames[iField] << "' in solution '" << solution.getLabel()
-                    << "' for output using solution observer ''" << PyreComponent::getIdentifier() <<"''.";
-                throw std::runtime_error(msg.str());
+                PYLITH_COMPONENT_ERROR(pylith::ValueError, pylith::journal::user_input,
+                                       "Could not find subfield '" << _subfieldNames[iField] << "' in solution '" << solution.getLabel()
+                                                                   << "' for output.");
             } // if
         } // for
     } // if

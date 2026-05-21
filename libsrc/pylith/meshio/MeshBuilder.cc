@@ -27,7 +27,6 @@
 
 #include <cassert> // USES assert()
 #include <sstream> // USES std::ostringstream
-#include <stdexcept> // USES std::runtime_error
 
 namespace pylith {
     namespace meshio {
@@ -132,9 +131,8 @@ pylith::meshio::MeshBuilder::buildMesh(pylith::topology::Mesh* mesh,
             }
         }
         if (count > 0) {
-            std::ostringstream msg;
-            msg << "Mesh contains " << count << " vertices that are not in any cells.";
-            throw std::runtime_error(msg.str());
+            PYLITH_ERROR(pylith::IOError, pylith::journal::user_input,
+                         "Mesh contains " << count << " vertices that are not in any cells.");
         } // if
     } // check
 
@@ -182,10 +180,9 @@ pylith::meshio::MeshBuilder::setMaterials(pylith::topology::Mesh* mesh,
         const PetscInt cEnd = cellsStratum.end();
 
         if (size_t(cellsStratum.size()) != materialIds.size()) {
-            std::ostringstream msg;
-            msg << "Mismatch in size of materials identifier array ("
-                << materialIds.size() << ") and number of cells in mesh ("<< (cEnd - cStart) << ").";
-            throw std::runtime_error(msg.str());
+            PYLITH_ERROR(pylith::ValueError, pylith::journal::user_input,
+                         "Mismatch in size of materials identifier array ("
+                         << materialIds.size() << ") and number of cells in mesh ("<< (cEnd - cStart) << ").");
         } // if
         for (PetscInt c = cStart; c < cEnd; ++c) {
             PylithCallPetsc(DMSetLabelValue(dmMesh, labelName, c, materialIds[c-cStart]));
@@ -716,9 +713,8 @@ pylith::meshio::_MeshBuilder::faceFromCellSide(PetscInt* face,
     PylithCallPetsc(DMPlexGetCone(dmMesh, cell, &cone));
     PylithCallPetsc(DMPlexGetConeSize(dmMesh, cell, &coneSize));
     if ((side < 0) || (side >= coneSize)) {
-        std::ostringstream msg;
-        msg << "Cell side '" << side << "' must be in [0, " << coneSize << ").";
-        throw std::runtime_error(msg.str());
+        PYLITH_ERROR(pylith::ValueError, pylith::journal::user_input,
+                     "Cell side '" << side << "' must be in [0, " << coneSize << ").");
     } // if
     PetscInt coneIndex = -1;
     switch (cellType) {
@@ -790,7 +786,7 @@ pylith::meshio::_MeshBuilder::faceFromCellVertices(PetscInt* face,
         } // for
         msg << " in cell " << cell << ".";
         PylithCallPetsc(DMPlexRestoreJoin(dmMesh, numFaceVertices, faceVertices, &numFaces, &faces));
-        throw std::runtime_error(msg.str());
+        PYLITH_ERROR(pylith::ValueError, pylith::journal::user_input, msg.str());
     } else if (0 == numFaces) {
         std::ostringstream msg;
         msg << "Could not find face corresponding to vertices";
@@ -799,7 +795,7 @@ pylith::meshio::_MeshBuilder::faceFromCellVertices(PetscInt* face,
         } // for
         msg << " in cell " << cell << ".";
         PylithCallPetsc(DMPlexRestoreJoin(dmMesh, numFaceVertices, faceVertices, &numFaces, &faces));
-        throw std::runtime_error(msg.str());
+        PYLITH_ERROR(pylith::ValueError, pylith::journal::user_input, msg.str());
     } // if
     *face = faces[0];
     PylithCallPetsc(DMPlexRestoreJoin(dmMesh, numFaceVertices, faceVertices, &numFaces, &faces));

@@ -20,7 +20,6 @@
 
 #include <cassert> // USES assert()
 #include <typeinfo> // USES typeid()
-#include <stdexcept> // USES std::runtime_error
 
 // ------------------------------------------------------------------------------------------------
 const std::string pylith::feassemble::IntegrationData::time = "t";

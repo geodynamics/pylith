@@ -31,7 +31,6 @@
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
 
 #include <cassert> // USES assert()
-#include <stdexcept> // USES std::runtime_error
 
 namespace pylith {
     namespace feassemble {

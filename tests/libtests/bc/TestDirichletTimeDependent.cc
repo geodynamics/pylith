@@ -248,13 +248,13 @@ pylith::bc::TestDirichletTimeDependent::testVerifyConfiguration(void) {
 
     // Check for failure with field not in solution.
     _bc->field("dslfjadsf");
-    CPPUNIT_ASSERT_THROW(_bc->verifyConfiguration(*_solution), std::runtime_error);
+    CPPUNIT_ASSERT_THROW(_bc->verifyConfiguration(*_solution), pylith::ValueError);
 
     // Check for failure with constrained DOF not in solution.
     const size_t numConstrainedDOF = 1;
     const int constrainedDOF[1] = { 9999 };
     _bc->constrainedDOF(constrainedDOF, numConstrainedDOF);
-    CPPUNIT_ASSERT_THROW(_bc->verifyConfiguration(*_solution), std::runtime_error);
+    CPPUNIT_ASSERT_THROW(_bc->verifyConfiguration(*_solution), pylith::ValueError);
 
     PYLITH_METHOD_END;
 } // testVerifyConfiguration

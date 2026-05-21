@@ -169,72 +169,6 @@ pylith::faults::TopologyOps::labelsRemoveCohesivePoints(PetscDM dmMeshNew) {
                         PylithCallPetsc(DMLabelClearValue(dmLabel, point, valuesIndices[iValue]));
                     } // for
                 } // if
-            } // if
-            if (labelIS) {
-                PylithCallPetsc(ISRestoreIndices(labelIS, &labelPoints));
-                PylithCallPetsc(ISDestroy(&labelIS));
-            } // if
-        } // if
-        PylithCallPetsc(MPI_Allreduce(&labelHasVerticesLocal, &labelHasVertices, 1, MPI_INT, MPI_MAX,
-                                      PetscObjectComm((PetscObject) dmDomain)));
-
-        if (labelHasVertices) {
-            pythia::journal::warning_t warning("deprecated");
-            warning << pythia::journal::at(__HERE__)
-                    << "DEPRECATION: Creating fault mesh from label with vertices. "
-                    << "This feature will be removed in v6.0. "
-                    << "In the future, you will need to mark boundaries not vertices for boundary conditions."
-                    << pythia::journal::endl; \
-        } // if
-    } // TEMPORARY
-
-    PetscDMLabel surfaceLabelFull = PETSC_NULLPTR;
-    if (surfaceLabel) {
-        PylithCallPetsc(DMLabelDuplicate(surfaceLabel, &surfaceLabelFull));
-        PylithCallPetsc(DMPlexLabelComplete(dmDomain, surfaceLabelFull));
-    } // if
-
-    const PetscBool markedFaces = !labelHasVertices ? PETSC_TRUE : PETSC_FALSE;
-    PylithCallPetsc(DMPlexCreateSubmesh(dmDomain, surfaceLabelFull, surfaceLabelValue, markedFaces, &dmFault));
-    PylithCallPetsc(DMLabelDestroy(&surfaceLabelFull));
-
-    PetscInt maxConeSizeLocal = 0, maxConeSize = 0;
-    PylithCallPetsc(DMPlexGetMaxSizes(dmFault, &maxConeSizeLocal, NULL));
-    PylithCallPetsc(MPI_Allreduce(&maxConeSizeLocal, &maxConeSize, 1, MPI_INT, MPI_MAX,
-                                  PetscObjectComm((PetscObject) dmFault)));
-
-    if (maxConeSize <= 0) {
-        PylithCallPetsc(DMDestroy(&dmFault));
-        std::ostringstream msg;
-        msg << "Error while creating fault. Fault '" << groupName << "' with label value "
-            << surfaceLabelValue << " does not contain any cells.\n"
-            << "Check that you are using the correct label value.\n";
-        throw std::runtime_error(msg.str());
-    } // if
-
-    // Check that no cells have all vertices on the fault
-    if (surfaceLabel) {
-        PetscIS subpointIS;
-        const PetscInt *dmpoints;
-        PetscInt defaultValue, cStart, cEnd, vStart, vEnd;
-
-        PylithCallPetsc(DMLabelGetDefaultValue(surfaceLabel, &defaultValue));
-        PylithCallPetsc(DMPlexGetSubpointIS(dmFault, &subpointIS));
-        PylithCallPetsc(DMPlexGetHeightStratum(dmFault, 0, &cStart, &cEnd));
-        PylithCallPetsc(DMPlexGetDepthStratum(dmDomain, 0, &vStart, &vEnd));
-        PylithCallPetsc(ISGetIndices(subpointIS, &dmpoints));
-        for (PetscInt c = cStart; c < cEnd; ++c) {
-            PetscBool invalidCell = PETSC_TRUE;
-            PetscInt *closure = NULL;
-            PetscInt closureSize;
-
-            PylithCallPetsc(DMPlexGetTransitiveClosure(dmDomain, dmpoints[c], PETSC_TRUE, &closureSize, &closure));
-            for (PetscInt cl = 0; cl < closureSize*2; cl += 2) {
-                PetscInt value = 0;
-
-                if ((closure[cl] < vStart) || (closure[cl] >= vEnd)) { continue;}
-                PylithCallPetsc(DMLabelGetValue(surfaceLabel, closure[cl], &value));
-                if (value == defaultValue) {invalidCell = PETSC_FALSE;break;}
             } // for
             PylithCallPetsc(ISRestoreIndices(valuesIS, &valuesIndices));
             PylithCallPetsc(ISDestroy(&valuesIS));
@@ -430,14 +364,17 @@ pylith::faults::TopologyOps::getAdjacentCells(PylithInt* adjacentCellNegative,
         PylithCallPetsc(DMPlexGetSupport(dmDomain, cone[iCone], &support));
         PylithCallPetsc(DMPlexGetSupportSize(dmDomain, cone[iCone], &supportSize));
         if (2 != supportSize) {
-            PYLITH_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Inconsistent topology. Expected support of size 2 for cohesive cell "
-                            <<cohesiveCell<<". Support has size "<<supportSize<<".");
+            PYLITH_ERROR(pylith::TopologyError, pylith::journal::logic,
+                         "Inconsistent topology. Expected support of size 2 for face "
+                         << cone[iCone] << " of cohesive cell " << cohesiveCell
+                         <<". Support has size "<<supportSize<<".");
         } // if
         assert(2 == supportSize);
         if ((cohesiveCell != support[0]) && (cohesiveCell != support[1]) ) {
-            PYLITH_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Inconsistent topology. Cohesive cell "
-                            <<cohesiveCell<<" not in support of its own cone. "
-                            <<"Support: "<<support[0]<< ", "<<support[1]<<".");
+            PYLITH_ERROR(pylith::TopologyError, pylith::journal::logic,
+                         "Inconsistent topology. Cohesive cell "
+                         <<cohesiveCell<<" not in support of its own cone. "
+                         <<"Support: "<<support[0]<< ", "<<support[1]<<".");
         } // if
         adjacentCells[iCone] = (support[0] == cohesiveCell) ? support[1] : support[0];
     } // for

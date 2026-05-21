@@ -16,6 +16,7 @@
 
 #include "pylith/utils/error.hh" // USES PylithCallPetsc()
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_
+#include "pylith/utils/Exceptions.hh" // USES Exception
 
 // ----------------------------------------------------------------------
 // Constructor
@@ -68,11 +69,10 @@ pylith::problems::InitialCondition::verifyConfiguration(const pylith::topology::
     const size_t numSubfields = _subfields.size();
     for (size_t i = 0; i < numSubfields; ++i) {
         if (!solution.hasSubfield(_subfields[i].c_str())) {
-            std::ostringstream msg;
-            msg << "Cannot specify initial conditions for solution subfield '"<< _subfields[i]
-                << "' in component '" << PyreComponent::getIdentifier() << "'"
-                << "; field is not in solution.";
-            throw std::runtime_error(msg.str());
+            PYLITH_COMPONENT_ERROR(pylith::ValueError, pylith::journal::user_input,
+                                   "Cannot specify initial conditions for solution subfield '"<< _subfields[i]
+                                                                                              << "' in component '" << PyreComponent::getIdentifier() << "'"
+                                                                                              << "; field is not in solution.");
         } // if
     } // for
 

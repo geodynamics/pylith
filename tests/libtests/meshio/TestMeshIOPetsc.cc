@@ -92,7 +92,7 @@ pylith::meshio::TestMeshIOPetsc::testReadError(void) {
     _io->setFilename(_data->filename.c_str());
     delete _mesh;_mesh = new topology::Mesh;REQUIRE(_mesh);
 
-    CHECK_THROWS_AS(_io->read(_mesh), std::runtime_error);
+    CHECK_THROWS_AS(_io->read(_mesh), pylith::ExternalError);
 
     PYLITH_METHOD_END;
 } // testReadError

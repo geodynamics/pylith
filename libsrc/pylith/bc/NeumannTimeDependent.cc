@@ -30,7 +30,6 @@
 #include "pylith/utils/Exceptions.hh" // USES Exception
 
 #include <cassert> // USES assert()
-#include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream
 #include <typeinfo> // USES typeid()
 
@@ -182,9 +181,8 @@ pylith::bc::NeumannTimeDependent::setScaleName(const char* value) {
         ( value == std::string("stress"))  ) {
         _scaleName = value;
     } else {
-        std::ostringstream msg;
-        msg << "Unknown name of scale ("<<value<<") for Neumann boundary condition '" << getLabelName() << "'.";
-        throw std::runtime_error(msg.str());
+        PYLITH_COMPONENT_ERROR(pylith::ValueError, pylith::journal::user_input,
+                               "Unknown name of scale ("<<value<<") for Neumann boundary condition '" << getLabelName() << "'.");
     } // if
 } // setScaleName
 

@@ -25,7 +25,6 @@
 #include "pylith/scales/Scales.hh" // USES Scales
 
 #include <cassert> // USES assert()
-#include <stdexcept> // USES std::runtime_error
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.

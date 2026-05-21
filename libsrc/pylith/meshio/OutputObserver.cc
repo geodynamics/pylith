@@ -144,9 +144,8 @@ pylith::meshio::OutputObserver::setOutputBasisOrder(const int value) {
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "OutputObserver::setBasisOrder(value="<<value<<")");
 
     if (value < 0) {
-        std::ostringstream msg;
-        msg << "Basis order for output (" << value << ") must be nonnegative.";
-        throw std::out_of_range(msg.str());
+        PYLITH_COMPONENT_ERROR(pylith::ValueError, pylith::journal::user_input,
+                               "Basis order for output (" << value << ") must be nonnegative.");
     } // if
 
     _outputBasisOrder = value;
@@ -164,9 +163,8 @@ pylith::meshio::OutputObserver::setRefineLevels(const int value) {
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "OutputObserver::setRefineLevels(value="<<value<<")");
 
     if (value < 0) {
-        std::ostringstream msg;
-        msg << "Number of refinement levels for output (" << value << ") must be nonnegative.";
-        throw std::out_of_range(msg.str());
+        PYLITH_COMPONENT_ERROR(pylith::ValueError, pylith::journal::user_input,
+                               "Number of refinement levels for output (" << value << ") must be nonnegative.");
     } // if
 
     _refineLevels = value;
@@ -180,9 +178,8 @@ pylith::meshio::OutputObserver::setRefineLevels(const int value) {
 void
 pylith::meshio::OutputObserver::setTimeScale(const PylithReal value) {
     if (value <= 0.0) {
-        std::ostringstream msg;
-        msg << "Time scale ("<<value<<") for output observer is nonpositive.";
-        throw std::logic_error(msg.str());
+        PYLITH_COMPONENT_ERROR(pylith::ValueError, pylith::journal::user_input,
+                               "Time scale ("<<value<<") for output observer is nonpositive.");
     } // if
     _timeScale = value;
 } // setTimeScale

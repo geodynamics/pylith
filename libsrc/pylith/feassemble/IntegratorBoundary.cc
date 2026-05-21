@@ -28,7 +28,6 @@
 #include "petscds.h" // USES PetscDS
 
 #include <cassert> // USES assert()
-#include <stdexcept> // USES std::runtime_error
 
 // ------------------------------------------------------------------------------------------------
 // Local "private" functions.
@@ -83,10 +82,9 @@ pylith::feassemble::IntegratorBoundary::setSubfieldName(const char* value) {
     PYLITH_DEBUG(pylith::journal::application_flow, "setSubfieldName(value="<<value<<")");
 
     if (!value || (0 == strlen(value))) {
-        std::ostringstream msg;
-        msg << "Empty string given for name of solution subfield for boundary condition '" << _boundarySurfaceLabel
-            <<"'.";
-        throw std::runtime_error(msg.str());
+        PYLITH_ERROR(pylith::ValueError, pylith::journal::user_input,
+                     "Empty string given for name of solution subfield for boundary condition '" << _boundarySurfaceLabel
+                                                                                                 <<"'.");
     } // if
     _subfieldName = value;
 } // setSubfieldName

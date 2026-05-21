@@ -23,7 +23,6 @@
 #include <utility> // USES std::pair
 #include <cassert> // USES assert()
 #include <sstream> // USES std::ostringstream
-#include <stdexcept> // USES std::runtime_error
 
 namespace pylith {
     namespace feassemble {

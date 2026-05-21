@@ -22,8 +22,6 @@
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 
 #include <cassert> // USES assert()
-#include <sstream> // USES std::ostringstream
-#include <stdexcept>
 
 // ----------------------------------------------------------------------
 // Constructor

@@ -21,11 +21,11 @@
 
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
+#include "pylith/utils/Exceptions.hh" // USES Exception
 
 #include "pylith/scales/Scales.hh" // USES Scales
 
 #include <cassert> // USES assert()
-#include <stdexcept> // USES std::runtime_error
 
 // ------------------------------------------------------------------------------------------------
 // Default constructor.
@@ -65,9 +65,8 @@ pylith::feassemble::Constraint::setSubfieldName(const char* value) {
     if (!value || (0 == strlen(value))) {
         std::ostringstream msg;
         assert(_physics);
-        msg << "Empty string given for name of solution subfield for constraint '" << _physics->getIdentifier()
-            <<"'.";
-        throw std::runtime_error(msg.str());
+        PYLITH_ERROR(pylith::ValueError, pylith::journal::user_input,
+                     "Empty string given for name of solution subfield.");
     } // if
     _subfieldName = value;
 } // setSubfieldName
@@ -88,7 +87,8 @@ pylith::feassemble::Constraint::setLabelName(const char* value) {
     PYLITH_DEBUG(pylith::journal::application_flow, "setLabelName(value="<<value<<")");
 
     if (strlen(value) == 0) {
-        throw std::runtime_error("Empty string given for constraint label.");
+        PYLITH_ERROR(pylith::ValueError, pylith::journal::user_input,
+                     "Empty string given for constraint label.");
     } // if
 
     _labelName = value;
@@ -132,10 +132,8 @@ pylith::feassemble::Constraint::setConstrainedDOF(const int* flags,
     _constrainedDOF.resize(size);
     for (int i = 0; i < size; ++i) {
         if (flags[i] < 0) {
-            std::ostringstream msg;
-            assert(_physics);
-            msg << "Constrained DOF '" << flags[i] << "' must be nonnegative in constraint component '" << _physics->getIdentifier() << "'.";
-            throw std::runtime_error(msg.str());
+            PYLITH_ERROR(pylith::ValueError, pylith::journal::user_input,
+                         "Constrained DOF '" << flags[i] << "' must be nonnegative in constraint.");
         } // if
         _constrainedDOF[i] = flags[i];
     } // for

@@ -290,7 +290,7 @@ pylith::topology::TestFieldMesh::testSubfieldAccessors(void) {
         CHECK(_data->discretizationB.isBasisContinuous == infoB.fe.isBasisContinuous);
     } // Test getSubfieldInfo() for subfield B.
 
-    CHECK_THROWS_AS(_field->getSubfieldInfo("aabbccdd"), std::runtime_error);
+    CHECK_THROWS_AS(_field->getSubfieldInfo("aabbccdd"), pylith::ValueError);
 } /// testSubfieldAccessors
 
 
