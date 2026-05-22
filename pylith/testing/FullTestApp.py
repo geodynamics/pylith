@@ -446,7 +446,6 @@ def run_pylith(appName, cfgfiles=[], dbClass=None, nprocs=1):
     app.nodes = appNumProcs
     setattr(run_pylith, str(appName), True)
     app.run(argv=["pylith"] + cfgfiles)
-    return
 
 
 # End of file

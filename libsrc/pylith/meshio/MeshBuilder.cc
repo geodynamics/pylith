@@ -105,7 +105,7 @@ pylith::meshio::_MeshBuilder::Events::init(void) {
 // ------------------------------------------------------------------------------------------------
 // Set vertices and cells in mesh.
 void
-pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
+pylith::meshio::MeshBuilder::buildMesh(pylith::topology::Mesh* mesh,
                                        const Topology& topology,
                                        const Geometry& geometry,
                                        const bool isParallel) {
@@ -156,6 +156,8 @@ pylith::meshio::MeshBuilder::buildMesh(topology::Mesh* mesh,
     PetscDM dmMesh = NULL;
     PetscBool interpolate = PETSC_TRUE;
     PylithCallPetsc(DMPlexCreateFromCellListPetsc(comm, dim, topology.numCells, geometry.numVertices, topology.numCorners, interpolate, &cellsCopy[0], dim, &geometry.vertices[0], &dmMesh));
+    PylithCallPetsc(DMPlexDistributeSetDefault(dmMesh, PETSC_FALSE));
+    PylithCallPetsc(DMSetFromOptions(dmMesh));
     mesh->setDM(dmMesh, "domain");
 
     _MeshBuilder::Events::logger.eventEnd(_MeshBuilder::Events::buildMesh);
@@ -636,6 +638,7 @@ pylith::meshio::_MeshBuilder::getGroupNames(string_vector* names,
     assert(names);
 
     PetscDM dmMesh = mesh.getDM();assert(dmMesh);
+    const PetscInt dim = mesh.getDimension();
     PetscInt numLabels = 0;
     PylithCallPetsc(DMGetNumLabels(dmMesh, &numLabels));
 
@@ -656,10 +659,12 @@ pylith::meshio::_MeshBuilder::getGroupNames(string_vector* names,
             PetscInt numLabelValues;
             PetscIS labelValuesIS = PETSC_NULLPTR;
             const PetscInt* labelValues = PETSC_NULLPTR;
-            PylithCallPetsc(DMLabelGetNumValues(dmLabel, &numLabelValues)); // assert(1 == numLabelValues);
+            PylithCallPetsc(DMLabelGetNumValues(dmLabel, &numLabelValues));
             PylithCallPetsc(DMLabelGetValueIS(dmLabel, &labelValuesIS));assert(labelValuesIS);
             PylithCallPetsc(ISGetIndices(labelValuesIS, &labelValues));assert(labelValues);
-            const PetscInt labelValue = labelValues[0];
+            // :KLUDGE: Only expect multiple label values for a fault after transforming.
+            // Fault 'faces' have label values of dim-1 after transforming.
+            const PetscInt labelValue = numLabelValues == 1 ? labelValues[0] : dim-1;
 
             PylithCallPetsc(ISRestoreIndices(labelValuesIS, &labelValues));
             PylithCallPetsc(ISDestroy(&labelValuesIS));

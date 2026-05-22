@@ -103,7 +103,6 @@ libtest_hdf5_SOURCES = \
 	$(top_srcdir)/tests/src/StubMethodTracker.cc \
 	$(top_srcdir)/tests/src/driver_catch2.cc
 
-
 # :TODO: @brad
 # TestDataWriterHDF5FaultMesh.cc \
 # TestDataWriterHDF5FaultMeshCases.cc \

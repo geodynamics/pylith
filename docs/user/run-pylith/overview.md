@@ -13,7 +13,7 @@ $ pylith strikeslip.cfg
 See {ref}`sec-user-run-pylith-setting-parameters` for more information about setting parameters via parameter files and the command line.
 
 :::{tip}
-When running PyLith in parallel, convert your finite-element mesh to an HDF5 file in the PETSc mesh format to allow it to be read in parallel.
+When running PyLith in parallel with a large mesh, use {ref}`sec-user-run-pylith-convertmesh` to convert your finite-element mesh to an HDF5 file in the PETSc mesh format to allow it to be read in parallel.
 :::
 
 ### Running in Parallel on a Desktop or Laptop
@@ -236,7 +236,7 @@ Post-processing is generally done using the HDF5 files with Python or Matlab scr
 PyLith scales all parameters provided by the user so that the simulation solves the equations using nondimensional quantities.
 This permits application of PyLith to problems across a vast range of spatial and temporal scales.
 The scales used to nondimensionalize the problem are length, pressure, density, and time. SpatialData provides two scales objects to make it easy to provide reasonable scales for quasi-static and dynamic elasticity boundary value problems.
-See <https://spatialdata.readthedocs.io/en/latest/user/nondimensionalization.html> for details.
+Refer to {ref}`sec-user-problem-nondimensionalization` for details.
 
 ## Finite-Element Implementation User Interface
 

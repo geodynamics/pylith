@@ -50,6 +50,7 @@ import_array();
 %include "FieldBase.i"
 %include "Field.i"
 %include "Distributor.i"
+%include "RefineMesh.i"
 %include "RefineUniform.i"
 %include "ReverseCuthillMcKee.i"
 

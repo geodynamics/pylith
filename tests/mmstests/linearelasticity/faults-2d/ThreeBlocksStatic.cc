@@ -345,7 +345,7 @@ public:
         data->exactSolnDotFns = nullptr;
 
         return data;
-    } // ccreateData
+    } // createData
 
 }; // TestFaultKin2D_ThreeBlocksStatic
 pylith::scales::Scales pylith::_ThreeBlocksStatic::scales;

@@ -72,8 +72,8 @@ class AnalyticalSoln(object):
                 "fault_xneg": self.slip_xneg,
             },
             "traction_change": self.traction_change,
-            "normal_dir": self.orientation_dir((+1, 0)),
-            "strike_dir": self.orientation_dir((0, +1)),
+            "normal_dir": self.orientation_dir((-1, 0)),
+            "strike_dir": self.orientation_dir((0, -1)),
         }
 
     def getField(self, name, mesh_entity, pts):

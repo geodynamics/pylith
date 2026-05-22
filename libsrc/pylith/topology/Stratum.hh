@@ -71,7 +71,7 @@ private:
 
 // StratumIS ------------------------------------------------------------
 /// Index set associated with stratum (usually over label of points).
-class pylith::topology::StratumIS { // StratumIS
+class pylith::topology::StratumIS {
     friend class TestStratumIS; // unit testing
 
     // PUBLIC METHODS ///////////////////////////////////////////////////////

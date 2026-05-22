@@ -23,14 +23,13 @@ Implements `MeshIOObj`.
 * `filename`=\<str\>: Name of mesh file
   - **default value**: ''
   - **current value**: '', from {default}
-  - **validator**: <function validateFilename at 0x11f289670>
 
 ## Example
 
 Example of setting `MeshIOAscii` Pyre properties and facilities in a parameter file.
 
 :::{code-block} cfg
-[pylithapp.mesh_generator.reader]
+[pylithapp.problem.mesh_initializer.phases.read_mesh.reader]
 filename = mesh_quad.txt
 coordsys.space_dim = 2
 :::

@@ -15,6 +15,7 @@ __all__ = [
     "bc",
     "faults",
     "feassemble",
+    "initializers",
     "materials",
     "meshio",
     "mpi",

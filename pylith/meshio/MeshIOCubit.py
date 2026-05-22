@@ -32,7 +32,7 @@ class MeshIOCubit(MeshIOObj, ModuleMeshIOCubit):
     """
     DOC_CONFIG = {
         "cfg": """
-            [pylithapp.mesh_generator.reader]
+            [pylithapp.problem.mesh_initializer.phases.read_mesh.reader]
             filename = mesh_quad.exo
             coordsys.space_dim = 2
         """
@@ -57,6 +57,7 @@ class MeshIOCubit(MeshIOObj, ModuleMeshIOCubit):
         """Do minimal initialization."""
         MeshIOObj.preinitialize(self)
         ModuleMeshIOCubit.setFilename(self, self.filename)
+        ModuleMeshIOCubit.setCoordSys(self, self.coordsys)
 
     def _configure(self):
         """Set members based using inventory.

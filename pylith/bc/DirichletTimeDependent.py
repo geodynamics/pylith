@@ -101,8 +101,8 @@ class DirichletTimeDependent(BoundaryCondition, ModuleDirichletTimeDependent):
     def verifyConfiguration(self):
         """Verify compatibility of configuration.
         """
-        BoundaryCondition.verifyConfiguration(self, self.mesh())
-        spaceDim = self.mesh().coordsys().getSpaceDim()
+        BoundaryCondition.verifyConfiguration(self, self.mesh)
+        spaceDim = self.mesh.coordsys().getSpaceDim()
         for d in self.bcDOF:
             if d < 0 or d >= spaceDim:
                 raise ValueError("Attempting to constrain DOF (%d) that doesn't exist for time-dependent Dirichlet boundary condition '%s'. Space dimension is %d." %

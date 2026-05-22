@@ -16,7 +16,7 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/FieldOps.hh" // USES FieldOps
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
-#include "pylith/topology/RefineInterpolator.hh" // USES RefineInterpolator
+#include "pylith/topology/RefineOutputInterpolator.hh" // USES RefineOutputInterpolator
 #include "pylith/fekernels/Solution.hh" // USES Solution::passThruSubfield
 
 #include "pylith/utils/error.hh" // USES PylithCallPetsc()
@@ -163,7 +163,7 @@ pylith::meshio::OutputSubfield::create(const pylith::topology::Field& field,
         subfield->_outputDM = subfield->_projectDM;
         PylithCallPetsc(PetscObjectReference((PetscObject)subfield->_outputDM));
     } else {
-        delete subfield->_interpolator;subfield->_interpolator = new pylith::topology::RefineInterpolator();
+        delete subfield->_interpolator;subfield->_interpolator = new pylith::topology::RefineOutputInterpolator();
         assert(subfield->_interpolator);
         subfield->_interpolator->initialize(subfield->_projectDM, refineLevels, outputBasisOrder, info.description, subfield->_discretization);
         subfield->_outputDM = subfield->_interpolator->getOutputDM();

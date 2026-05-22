@@ -1,15 +1,13 @@
 (sec-user-run-pylith-pylithapp)=
 # PyLith Application
 
-The top-level object is the PyLith application with five facilities:
+The top-level object is the PyLith application with four facilities:
 
 :metadata: Simulation metadata;
 :petsc: PETSc settings.
-:mesher: Importer for the finite-element mesh;
 :problem: Problem to run, including materials, boundary conditions, etc.; and
 :dump_parameters: Dump parameters used and version information to file.
 
-The `mesher` facility handles getting the finite-element mesh information, such as importing a mesh from a file.
 The `problem` facility defines of the boundary value problem to solve and contains the most information.
 It defines the finite-element discretization, materials, faults, initial conditions, boundary conditions, and output.
 

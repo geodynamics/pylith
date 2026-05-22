@@ -28,15 +28,18 @@ Implements `Problem`.
 * `materials`: Materials in problem.
   - **current value**: 'homogeneous', from {default}
   - **configurable as**: homogeneous, materials
-* `scales`: Nondimensionalizer for problem.
-  - **current value**: 'nondimelasticquasistatic', from {default}
-  - **configurable as**: nondimelasticquasistatic, scales
+* `mesh_initializer`: Mesh initializer.
+  - **current value**: 'mesh_initializer', from {default}
+  - **configurable as**: mesh_initializer
 * `petsc_defaults`: Flags controlling which default PETSc options to use.
   - **current value**: 'petscdefaults', from {default}
   - **configurable as**: petscdefaults, petsc_defaults
 * `progress_monitor`: Simple progress monitor via text file.
   - **current value**: 'progressmonitortime', from {default}
   - **configurable as**: progressmonitortime, progress_monitor
+* `scales`: Scales for nondimensionalizing boundary value problem.
+  - **current value**: 'quasistaticelasticity', from {default}
+  - **configurable as**: quasistaticelasticity, scales
 * `solution`: Solution field for problem.
   - **current value**: 'solution', from {default}
   - **configurable as**: solution
@@ -90,7 +93,7 @@ ic = [domain]
 gravity_field = spatialdata.spatialdb.GravityField
 
 # Set the scales for nondimensionalizing the problem
-scales = pylith.scales.NondimElasticQuasistatic
+scales = pylith.scales.QuasistaticElasticity
 
 # Set the subfields in the solution
 solution = = pylith.problems.SolnDispLagrange

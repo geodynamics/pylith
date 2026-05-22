@@ -142,7 +142,7 @@ private:
         PetscViewer viewer;
         PetscInt numTimeSteps;
         PetscInt numPoints;
-        PetscInt fiberDim;
+        PetscInt numComponents;
     };
     typedef std::map<std::string, ExternalDataset> dataset_type;
 

@@ -40,13 +40,13 @@ public:
 
     /** Set default PETSc solver options based on solution field and material.
      *
-     * @param[in] solution Solution field for problem.
-     * @param[in] material Solution field.
+     * @param[in] material Material in problem.
+     * @param[in] hasFault True if problem has at least one fault.
      * @param[in] flags Flags for turning on defaults for PETSc options.
      */
     static
-    void set(const pylith::topology::Field& solution,
-             const pylith::materials::Material* material,
+    void set(const pylith::materials::Material* material,
+             const bool hasFault,
              const int flags);
 
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////

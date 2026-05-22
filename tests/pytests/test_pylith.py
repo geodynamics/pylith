@@ -28,6 +28,7 @@ class TestApp:
         "apps",
         "bc",
         "faults",
+        "initializers",
         "materials",
         "meshio",
         "mpi",

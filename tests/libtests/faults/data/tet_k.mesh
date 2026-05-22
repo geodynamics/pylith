@@ -1916,7 +1916,7 @@ mesh = {
     }
   }
   vertex-group = {
-    name = fault
+    name = fault_vertices
     count = 30
     indices = {
     15
@@ -1952,23 +1952,19 @@ mesh = {
     }
   }
   vertex-group = {
-    name = fault_edge
-    count = 14
+    name = fault_edge_vertices
+    count = 10
     indices = {
     15
     22
     24
     33
-    38
-    39
     45
-    51
     53
     64
     68
     69
     108
-    126
     }
   }
   vertex-group = {

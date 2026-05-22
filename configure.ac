@@ -95,9 +95,13 @@ AC_PROG_CXXCPP
 AC_DISABLE_STATIC
 
 AC_PROG_LIBTOOL
+LT_INIT
 AC_PROG_INSTALL
 
 AX_CXX_COMPILE_STDCXX(14)
+
+
+CIT_LIBTOOL_CONDA_FIX_CRT_OBJECTS
 
 dnl PYTHON/PYTHIA (nemesis must be set before python)
 CIT_PATH_NEMESIS
@@ -114,7 +118,7 @@ AC_CHECK_HEADER([mpi.h], [], [AC_MSG_ERROR([header 'mpi.h' not found])])
 
 dnl PETSC
 AC_LANG(C)
-CIT_PATH_PETSC([3.24.0])
+CIT_PATH_PETSC([3.25.1])
 CIT_HEADER_PETSC
 CIT_CHECK_LIB_PETSC
 
@@ -200,6 +204,7 @@ AC_CONFIG_FILES([Makefile
 		libsrc/pylith/fekernels/Makefile
 		libsrc/pylith/faults/Makefile
 		libsrc/pylith/friction/Makefile
+		libsrc/pylith/initializers/Makefile
 		libsrc/pylith/materials/Makefile
 		libsrc/pylith/meshio/Makefile
 		libsrc/pylith/problems/Makefile
@@ -213,6 +218,7 @@ AC_CONFIG_FILES([Makefile
 		modulesrc/faults/Makefile
 		modulesrc/feassemble/Makefile
 		modulesrc/friction/Makefile
+		modulesrc/initializers/Makefile
 		modulesrc/materials/Makefile
 		modulesrc/meshio/Makefile
 		modulesrc/mpi/Makefile
@@ -229,6 +235,8 @@ AC_CONFIG_FILES([Makefile
 		tests/libtests/faults/data/Makefile
 		tests/libtests/feassemble/Makefile
 		tests/libtests/feassemble/data/Makefile
+		tests/libtests/initializers/Makefile
+		tests/libtests/initializers/data/Makefile
 		tests/libtests/materials/Makefile
 		tests/libtests/materials/data/Makefile
 		tests/libtests/meshio/Makefile
@@ -276,6 +284,7 @@ AC_CONFIG_FILES([Makefile
 		tests/fullscale/poroelasticity/cryer/Makefile
 		tests/fullscale/petsc/Makefile
 		tests/fullscale/eqinfo/Makefile
+		tests/fullscale/convert/Makefile
 		tests/manual/Makefile
 		tests/manual/powerlaw-2d/Makefile
 		tests/manual/powerlaw-3d/Makefile

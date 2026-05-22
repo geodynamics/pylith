@@ -88,6 +88,21 @@ public:
     void nondimensionalize(Mesh* const mesh,
                            const pylith::scales::Scales& scales);
 
+    /** Create a new mesh with cells for each processes separated by a gap.
+     *
+     * Used to visualize the topology of a distributed mesh.
+     *
+     * @param[in] mesh Finite-element mesh.
+     * @param[in] scale Scale factor for the gap between processes.
+     * @param[in] faultWidth Finite width of cohesive cells.
+     *
+     * @returns New finite-element mesh with gaps between processes.
+     */
+    static
+    Mesh* explode(const Mesh& mesh,
+                  const double scale=8.0,
+                  const double faultWidth=0.1);
+
     /** Check topology of mesh.
      *
      * @param[in] mesh Finite-element mesh.

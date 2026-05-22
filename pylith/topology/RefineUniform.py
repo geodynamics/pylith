@@ -8,11 +8,11 @@
 # See https://mit-license.org/ and LICENSE.md and for license information. 
 # =================================================================================================
 
-from .MeshRefiner import MeshRefiner
+from pylith.utils.PetscComponent import PetscComponent
 from .topology import RefineUniform as ModuleRefineUniform
 
 
-class RefineUniform(MeshRefiner, ModuleRefineUniform):
+class RefineUniform(PetscComponent, ModuleRefineUniform):
     """
     Uniform global mesh refinement in parallel.
 
@@ -22,24 +22,22 @@ class RefineUniform(MeshRefiner, ModuleRefineUniform):
         "cfg": """
             # Refine mesh twice to reduce size of cell edges by a factor of 4.
             [pylithapp.mesh_generator.refiner]
-            levels = 2
+            levels = 0
         """
     }
 
     import pythia.pyre.inventory
 
-    levels = pythia.pyre.inventory.int("levels", default=1, validator=pythia.pyre.inventory.greaterEqual(1))
+    levels = pythia.pyre.inventory.int("levels", default=0, validator=pythia.pyre.inventory.greaterEqual(0))
     levels.meta['tip'] = "Number of refinement levels."
 
     def __init__(self, name="refineuniform"):
         """Constructor.
         """
-        MeshRefiner.__init__(self, name)
+        PetscComponent.__init__(self, name, facility="mesh_refiner")
 
     def preinitialize(self):
         """Do minimal initialization."""
-        MeshRefiner.preinitialize(self)
-
         self._createModuleObj()
 
     def refine(self, mesh):
@@ -65,7 +63,7 @@ class RefineUniform(MeshRefiner, ModuleRefineUniform):
     def _configure(self):
         """Set members based using inventory.
         """
-        MeshRefiner._configure(self)
+        PetscComponent._configure(self)
 
     def _createModuleObj(self):
         """Create handle to C++ object.

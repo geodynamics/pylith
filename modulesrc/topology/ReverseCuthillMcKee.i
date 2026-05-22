@@ -28,7 +28,7 @@ public:
              * @param mesh PyLith finite-element mesh.
              */
             static
-            void reorder(topology::Mesh* mesh);
+            pylith::topology::Mesh* reorder(const pylith::topology::Mesh& mesh);
 
         }; // ReverseCuthillMcKee
 

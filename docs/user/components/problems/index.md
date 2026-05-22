@@ -16,7 +16,6 @@ ProblemDefaults.md
 ProgressMonitor.md
 ProgressMonitorStep.md
 ProgressMonitorTime.md
-SingleProblem.md
 SolnDisp.md
 SolnDispLagrange.md
 SolnDispPres.md

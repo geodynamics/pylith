@@ -371,7 +371,6 @@ pylith::bc::TestDirichletTimeDependent::testSetSolution(void) {
 
     // Initialize solution field.
     _solution->allocate();
-    PetscErrorCode err = PETSC_SUCCESS;
     err = VecSet(_solution->localVector(), FILL_VALUE);CPPUNIT_ASSERT(!err);
 
     // Set solution field.

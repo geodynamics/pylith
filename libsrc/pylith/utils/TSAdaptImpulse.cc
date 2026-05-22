@@ -64,7 +64,7 @@ pylith::utils::TSAdaptImpulse::TSAdaptChoose(TSAdapt adapt,
     PetscInt step;
 
     PetscFunctionBeginUser;
-    PetscCall(TSGetStepNumber(ts, &step));
+    PylithCallPetsc(TSGetStepNumber(ts, &step));
     if (!step) {
         if (PetscAbsReal(dtInitial - h) > PETSC_SMALL) {
             *accept = PETSC_FALSE;

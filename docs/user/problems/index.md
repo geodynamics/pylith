@@ -3,6 +3,7 @@
 
 :::{toctree}
 problems.md
+mesh/index.md
 nondimensionalization.md
 output.md
 :::

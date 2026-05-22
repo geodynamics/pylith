@@ -27,7 +27,7 @@ class MeshIOPetsc(MeshIOObj, ModuleMeshIOPetsc):
     """
     DOC_CONFIG = {
         "cfg": """
-            [pylithapp.mesh_generator.reader]
+            [pylithapp.problem.mesh_initializer.phases.read_mesh.reader]
             filename = mesh_quad.msh
             gmsh_mark_vertices = False
             coordsys.space_dim = 2
@@ -60,6 +60,7 @@ class MeshIOPetsc(MeshIOObj, ModuleMeshIOPetsc):
         ModuleMeshIOPetsc.setFilename(self, self.filename)
         ModuleMeshIOPetsc.setPrefix(self, self.prefix)
         ModuleMeshIOPetsc.setGmshMarkRecursive(self, self.gmshMarkRecursive)
+        ModuleMeshIOPetsc.setCoordSys(self, self.coordsys)
 
     def _configure(self):
         """Set members based using inventory.

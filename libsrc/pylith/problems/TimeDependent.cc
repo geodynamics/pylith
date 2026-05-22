@@ -670,7 +670,7 @@ pylith::problems::TimeDependent::computeLHSResidual(PetscVec residualVec,
     if (debug.state()) {
         residual->view("LHS RESIDUAL");
         std::cout << "LHS RESIDUAL GLOBAL VEC" << std::endl;
-        VecView(residualVec, PETSC_VIEWER_STDOUT_SELF);
+        VecView(residualVec, PETSC_VIEWER_STDOUT_WORLD);
     } // if
 
     _TimeDependent::Events::logger.eventEnd(_TimeDependent::Events::computeLHSResidual);

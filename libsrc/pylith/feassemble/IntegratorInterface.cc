@@ -441,11 +441,8 @@ pylith::feassemble::IntegratorInterface::initialize(const pylith::topology::Fiel
     PYLITH_METHOD_BEGIN;
     PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" initialize(solution="<<solution.getLabel()<<")");
 
-    const bool isSubmesh = true;
-    delete _interfaceMesh;_interfaceMesh = new pylith::topology::Mesh(isSubmesh);assert(_interfaceMesh);
-    pylith::faults::TopologyOps::createFaultParallel(_interfaceMesh, solution.getMesh(), _labelValue, _labelName.c_str(),
-                                                     _surfaceLabelName.c_str());
-    pylith::topology::MeshOps::checkTopology(*_interfaceMesh);
+    delete _interfaceMesh;_interfaceMesh = new pylith::topology::Mesh();assert(_interfaceMesh);
+    pylith::faults::TopologyOps::createFaultFromCohesiveCells(_interfaceMesh, solution.getMesh(), _labelName.c_str(), _labelValue, _surfaceLabelName.c_str());
     pylith::topology::CoordsVisitor::optimizeClosure(_interfaceMesh->getDM());
 
     Integrator::initialize(solution);
@@ -658,8 +655,6 @@ pylith::feassemble::_IntegratorInterface::computeResidual(pylith::topology::Fiel
         PylithCallPetsc(ISGetIndices(patchCellsIS, &patchCells));assert(patchCells);
         assert(pylith::topology::MeshOps::isCohesiveCell(dmSoln, patchCells[0]));
 
-        assert(solution->getLocalVector());
-        assert(residual->getLocalVector());
         PylithCallPetsc(DMPlexComputeResidualHybridByKey(dmSoln, weakFormKeys, patchCellsIS, t, solution->getLocalVector(),
                                                          solutionDotVec, t, residual->getLocalVector(), NULL));
         PylithCallPetsc(ISRestoreIndices(patchCellsIS, &patchCells));
@@ -727,11 +722,11 @@ pylith::feassemble::_IntegratorInterface::computeJacobian(PetscMat jacobianMat,
 
         assert(solution->getLocalVector());
         PylithCallPetsc(DMPlexComputeJacobianHybridByKey(dmSoln, weakFormKeys, patchCellsIS, t, s_tshift, solution->getLocalVector(),
-                                                         solutionDot->getLocalVector(), jacobianMat, precondMat,
-                                                         NULL));
+                                                         solutionDot->getLocalVector(), jacobianMat, precondMat, NULL));
         PylithCallPetsc(ISRestoreIndices(patchCellsIS, &patchCells));
         PylithCallPetsc(ISDestroy(&patchCellsIS));
-    }
+    } // for
+
     PYLITH_METHOD_END;
 } // computeJacobian
 

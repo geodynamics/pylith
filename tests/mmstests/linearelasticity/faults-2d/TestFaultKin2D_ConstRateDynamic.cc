@@ -388,17 +388,16 @@ protected:
         PetscDMLabel label;
         PetscIS is;
         PetscInt cohesiveCell;
-        PetscErrorCode err = PETSC_SUCCESS;
         PetscDS ds = NULL;
-        err = DMGetDS(dm, &ds);CPPUNIT_ASSERT(!err);
-        err = PetscDSSetExactSolution(ds, 0, solnkernel_disp, dm);CPPUNIT_ASSERT(!err);
-        err = DMGetLabel(dm, pylith::topology::Mesh::cells_label_name, &label);CPPUNIT_ASSERT(!err);
-        err = DMLabelGetStratumIS(label, _faults[0]->getCohesiveLabelValue(), &is);CPPUNIT_ASSERT(!err);
-        err = ISGetMinMax(is, &cohesiveCell, NULL);CPPUNIT_ASSERT(!err);
-        err = ISDestroy(&is);CPPUNIT_ASSERT(!err);
-        err = DMGetCellDS(dm, cohesiveCell, &ds, NULL);CPPUNIT_ASSERT(!err);
-        err = PetscDSSetExactSolution(ds, 0, solnkernel_disp, NULL);CPPUNIT_ASSERT(!err);
-        err = PetscDSSetExactSolution(ds, 1, solnkernel_lagrangemultiplier, NULL);CPPUNIT_ASSERT(!err);
+        PylithCallPetscRequire(DMGetDS(dm, &ds));
+        PylithCallPetscRequire(PetscDSSetExactSolution(ds, 0, solnkernel_disp, dm));
+        PylithCallPetscRequire(DMGetLabel(dm, pylith::topology::Mesh::cells_label_name, &label));
+        PylithCallPetscRequire(DMLabelGetStratumIS(label, _faults[0]->getCohesiveLabelValue(), &is));
+        PylithCallPetscRequire(ISGetMinMax(is, &cohesiveCell, NULL));
+        PylithCallPetscRequire(ISDestroy(&is));
+        PylithCallPetscRequire(DMGetCellDS(dm, cohesiveCell, &ds, NULL));
+        PylithCallPetscRequire(PetscDSSetExactSolution(ds, 0, solnkernel_disp, NULL));
+        PylithCallPetscRequire(PetscDSSetExactSolution(ds, 1, solnkernel_lagrangemultiplier, NULL));
     } // _setExactSolution
 
 }; // TestFaultKin2D_ConstRateDynamic

@@ -99,7 +99,7 @@ class FaultCohesiveKin(FaultCohesive, ModuleFaultCohesiveKin):
         """Verify compatibility of configuration.
         """
         FaultCohesive.verifyConfiguration(self)
-        ModuleFaultCohesiveKin.verifyConfiguration(self, self.mesh())
+        ModuleFaultCohesiveKin.verifyConfiguration(self, self.mesh)
 
         for eqsrc in self.eqRuptures.components():
             eqsrc.verifyConfiguration()

@@ -36,8 +36,7 @@ pylith::meshio::DataWriter::~DataWriter(void) {
 // ----------------------------------------------------------------------
 // Deallocate PETSc and local data structures.
 void
-pylith::meshio::DataWriter::deallocate(void) {
-}
+pylith::meshio::DataWriter::deallocate(void) {}
 
 
 // ----------------------------------------------------------------------
@@ -118,6 +117,7 @@ pylith::meshio::DataWriter::closeTimeStep(void) {
 // ----------------------------------------------------------------------
 // Copy constructor.
 pylith::meshio::DataWriter::DataWriter(const DataWriter& w) :
+    PyreComponent(),
     _context(w._context),
     _isInfo(w._isInfo),
     _isOpen(w._isOpen) {}
@@ -246,7 +246,7 @@ pylith::meshio::DataWriter::_writeVec(PetscVec vector,
                                       PetscViewer viewer) {
     // From plexhdf5.c DMPlexGlobalVectorView_HDF5_Internal
 
-    /* To save vec in where we want, we create a new Vec (temp) with           */
+    /* To save vec where we want, we create a new Vec (temp) with           */
     /* VecCreate(), wrap the vec data in temp, and call VecView(temp, viewer). */
     PetscVec temp;
     const PetscScalar *array;

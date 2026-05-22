@@ -30,6 +30,18 @@ dist_noinst_PYTHON = \
 	faults/TestFaultCohesiveImpulses.py \
 	faults/TestKinSrc.py \
 	faults/TestSingleRupture.py \
+	initializers/__init__.py \
+	initializers/TestInitializer.py \
+	initializers/TestSerial.py \
+	initializers/TestParallel.py \
+	initializers/TestConvert.py \
+	initializers/TestInitializePhase.py \
+	initializers/TestMeshReader.py \
+    initializers/TestMeshWriter.py \
+    initializers/TestMeshReordering.py \
+    initializers/TestMeshRefiner.py \
+    initializers/TestMeshDistributor.py \
+    initializers/TestMeshInsertInterfaces.py \
 	materials/__init__.py \
 	materials/TestAuxiliarySubfields.py \
 	materials/TestDerivedSubfields.py \
@@ -78,11 +90,7 @@ dist_noinst_PYTHON = \
 	topology/TestDistributor.py \
 	topology/TestField.py \
 	topology/TestMesh.py \
-	topology/TestMeshGenerator.py \
-	topology/TestMeshImporter.py \
-	topology/TestMeshRefiner.py \
 	topology/TestRefineUniform.py \
-	topology/TestReverseCuthillMcKee.py \
 	topology/TestSubfield.py \
 	utils/__init__.py \
 	utils/TestCollectVersionInfo.py \

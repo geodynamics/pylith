@@ -154,8 +154,7 @@ pylith::utils::TestPetscVersion::testPetscDir(void) {
 // Test petscArch()
 void
 pylith::utils::TestPetscVersion::testPetscArch(void) {
-    // Not defined for PETSc prefix installs, so use minimal test.
-    CHECK(strlen(PetscVersion::petscArch()) >= 0);
+    // Not defined for PETSc prefix installs, so empty string is valid.
 } // testPetscArch
 
 

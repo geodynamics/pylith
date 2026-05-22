@@ -57,7 +57,7 @@ public:
      *
      * @returns PETSc weak form object.
      */
-    const PetscWeakForm getWeakForm(void) const;
+    PetscWeakForm getWeakForm(void) const;
 
     /** Get PETSc weak form key for integration.
      *

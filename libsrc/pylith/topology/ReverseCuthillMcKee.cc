@@ -17,12 +17,12 @@
 
 // ----------------------------------------------------------------------
 // Reorder vertices and cells in mesh.
-void
-pylith::topology::ReverseCuthillMcKee::reorder(topology::Mesh* mesh) {
-    assert(mesh);
+pylith::topology::Mesh*
+pylith::topology::ReverseCuthillMcKee::reorder(const pylith::topology::Mesh& mesh) {
+    PYLITH_METHOD_BEGIN;
 
     PetscDMLabel dmLabel = NULL;
-    PetscDM dmOrig = mesh->getDM();
+    PetscDM dmOrig = mesh.getDM();
     const char* const labelName = pylith::topology::Mesh::cells_label_name;
     PylithCallPetsc(DMGetLabel(dmOrig, labelName, &dmLabel));assert(dmLabel);
 
@@ -31,7 +31,7 @@ pylith::topology::ReverseCuthillMcKee::reorder(topology::Mesh* mesh) {
     PylithCallPetsc(DMPlexGetOrdering(dmOrig, MATORDERINGRCM, dmLabel, &permutation));
     PylithCallPetsc(DMPlexPermute(dmOrig, permutation, &dmNew));
     PylithCallPetsc(ISDestroy(&permutation));
-    mesh->setDM(dmNew, "domain");
+    pylith::topology::Mesh* meshNew = new pylith::topology::Mesh(dmNew, mesh);
 
     // Verify that all material points (cells) are consecutive.
     PetscIS valuesIS = NULL;
@@ -66,6 +66,8 @@ pylith::topology::ReverseCuthillMcKee::reorder(topology::Mesh* mesh) {
     } // for
     PylithCallPetsc(ISRestoreIndices(valuesIS, &values));
     PylithCallPetsc(ISDestroy(&valuesIS));
+
+    PYLITH_METHOD_RETURN(meshNew);
 } // reorder
 
 

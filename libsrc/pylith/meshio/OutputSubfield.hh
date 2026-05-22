@@ -15,7 +15,7 @@
 
 #include "pylith/topology/FieldBase.hh" // HASA Description, Discretization
 
-#include "pylith/topology/topologyfwd.hh" // USES Field, RefineInterpolator
+#include "pylith/topology/topologyfwd.hh" // USES Field, RefineOutputInterpolator
 #include "pylith/utils/petscfwd.h" // HASA PetscVec
 
 class pylith::meshio::OutputSubfield : public pylith::utils::GenericComponent {
@@ -130,7 +130,7 @@ protected:
     PetscPointFn* _fn; ///< PETSc point function for projection.
     PetscDM _outputDM; ///< PETSc DM for subfield output.
     PetscVec _outputVector; ///< PETSc global vector for subfield output.
-    pylith::topology::RefineInterpolator* _interpolator; ///< Interpolator for refined output.
+    pylith::topology::RefineOutputInterpolator* _interpolator; ///< Interpolator for refined output.
 
     PetscDMLabel _label; ///< PETSc label associated with subfield.
     PetscInt _labelValue; ///< Value of PETSc label associated with subfield.

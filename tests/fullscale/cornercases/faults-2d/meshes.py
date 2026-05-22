@@ -5,49 +5,45 @@
 # Copyright (c) 2010-2025, University of California, Davis and the PyLith Development Team.
 # All rights reserved.
 #
-# See https://mit-license.org/ and LICENSE.md and for license information. 
+# See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
 
 from pylith.testing.FullTestApp import MeshEntity
 
 
 class Tri(object):
-    """Mesh information for tri mesh.
-    """
+    """Mesh information for tri mesh."""
+
     ENTITIES = {
-        "domain": MeshEntity(ncells=8, ncorners=3, nvertices=9+3),
-
+        "domain": MeshEntity(ncells=28, ncorners=3, nvertices=21 + 3),
         # Materials
-        "elastic": MeshEntity(ncells=8, ncorners=3, nvertices=9+3),
-
+        "mat_xneg": MeshEntity(ncells=14, ncorners=3, nvertices=12),
+        "mat_xpos": MeshEntity(ncells=14, ncorners=3, nvertices=12),
         # Faults
         "fault": MeshEntity(ncells=2, ncorners=2, nvertices=3),
-
         # Boundaries
         "bc_xneg": MeshEntity(ncells=2, ncorners=2, nvertices=3),
         "bc_xpos": MeshEntity(ncells=2, ncorners=2, nvertices=3),
-        "bc_yneg": MeshEntity(ncells=2, ncorners=2, nvertices=3+1),
-        "bc_ypos": MeshEntity(ncells=2, ncorners=2, nvertices=3+1),
+        "bc_yneg": MeshEntity(ncells=4, ncorners=2, nvertices=5 + 1),
+        "bc_ypos": MeshEntity(ncells=4, ncorners=2, nvertices=5 + 1),
     }
 
 
 class Quad(object):
-    """Mesh information for quad mesh.
-    """
+    """Mesh information for quad mesh."""
+
     ENTITIES = {
-        "domain": MeshEntity(ncells=4, ncorners=4, nvertices=9+3),
-
+        "domain": MeshEntity(ncells=8, ncorners=4, nvertices=15 + 3),
         # Materials
-        "elastic": MeshEntity(ncells=4, ncorners=4, nvertices=9+3),
-
+        "mat_xneg": MeshEntity(ncells=4, ncorners=4, nvertices=9),
+        "mat_xpos": MeshEntity(ncells=4, ncorners=4, nvertices=9),
         # Faults
         "fault": MeshEntity(ncells=2, ncorners=2, nvertices=3),
-
         # Boundaries
         "bc_xneg": MeshEntity(ncells=2, ncorners=2, nvertices=3),
         "bc_xpos": MeshEntity(ncells=2, ncorners=2, nvertices=3),
-        "bc_yneg": MeshEntity(ncells=2, ncorners=2, nvertices=3+1),
-        "bc_ypos": MeshEntity(ncells=2, ncorners=2, nvertices=3+1),
+        "bc_yneg": MeshEntity(ncells=4, ncorners=2, nvertices=5 + 1),
+        "bc_ypos": MeshEntity(ncells=4, ncorners=2, nvertices=5 + 1),
     }
 
 

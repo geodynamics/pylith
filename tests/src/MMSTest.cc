@@ -44,8 +44,6 @@ pylith::testing::MMSTest::MMSTest(void) :
 
     REQUIRE(_problem);
     REQUIRE(_mesh);
-
-    _problem->setPetscDefaults(pylith::utils::PetscDefaults::TESTING | pylith::utils::PetscDefaults::SOLVER);
 } // setUp
 
 
@@ -87,7 +85,8 @@ pylith::testing::MMSTest::testDiscretization(void) {
                                               _solutionExactVec, ignoreTolerance, &error[0]));
 
     if (debug.state()) {
-        solution->view("Solution field");
+        debug << "Solution vector" << pythia::journal::endl;
+        VecView(_solutionExactVec, PETSC_VIEWER_STDOUT_SELF);
     } // if
 
     bool fail = false;
@@ -117,6 +116,7 @@ pylith::testing::MMSTest::testResidual(void) {
     pythia::journal::debug_t debug(GenericComponent::getName());
     if (debug.state()) {
         PylithCallPetsc(PetscOptionsSetValue(NULL, "-dm_plex_print_fem", "2"));
+        PylithCallPetsc(PetscOptionsSetValue(NULL, "-petscds_print_integrate", "5"));
         PylithCallPetsc(PetscOptionsSetValue(NULL, "-dm_plex_print_l2", "2"));
     } // if
 
@@ -177,16 +177,18 @@ pylith::testing::MMSTest::testJacobianTaylorSeries(void) {
 void
 pylith::testing::MMSTest::testJacobianFiniteDiff(void) {
     PYLITH_METHOD_BEGIN;
-    REQUIRE(_problem);
+    assert(_problem);
+
+    pythia::journal::debug_t debug(GenericComponent::getName());
+    if (debug.state()) {
+        PylithCallPetsc(PetscOptionsSetValue(NULL, "-dm_plex_print_fem", "5"));
+        PylithCallPetsc(PetscOptionsSetValue(NULL, "-snes_test_jacobian_view", ""));
+    } // if
 
     PylithCallPetsc(PetscOptionsSetValue(NULL, "-ts_max_snes_failures", "1"));
     PylithCallPetsc(PetscOptionsSetValue(NULL, "-ts_error_if_step_fails", "false"));
     _initialize();
 
-    pythia::journal::debug_t debug(GenericComponent::getName());
-    if (debug.state()) {
-        PylithCallPetsc(PetscOptionsSetValue(NULL, "-snes_test_jacobian_view", ""));
-    } // if
     PylithCallPetsc(PetscOptionsSetValue(NULL, "-snes_error_if_not_converged", "false"));
     PylithCallPetsc(SNESSetFromOptions(_problem->getPetscSNES()));
 
@@ -214,6 +216,7 @@ pylith::testing::MMSTest::_initialize(void) {
     PYLITH_METHOD_BEGIN;
     REQUIRE(_problem);
 
+    _problem->setPetscDefaults(pylith::utils::PetscDefaults::TESTING | pylith::utils::PetscDefaults::SOLVER);
     _problem->setSolverType(pylith::problems::Problem::NONLINEAR);
     _problem->setMaxTimeSteps(1);
     _problem->preinitialize(*_mesh);

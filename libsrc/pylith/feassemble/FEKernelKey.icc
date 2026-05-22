@@ -29,7 +29,7 @@ pylith::feassemble::FEKernelKey::~FEKernelKey(void) {}
 // ------------------------------------------------------------------------------------------------
 // Get PETSc weak form.
 inline
-const PetscWeakForm
+PetscWeakForm
 pylith::feassemble::FEKernelKey::getWeakForm(void) const {
     return _weakForm;
 } // getWeakForm

@@ -11,9 +11,7 @@
 
 #include "pylith/topology/topologyfwd.hh" // forward declarations
 
-// ReverseCuthillMcKee --------------------------------------------------
-/// Interface to PETSc reverse Cuthill-McKee reordering.
-class pylith::topology::ReverseCuthillMcKee { // ReverseCuthillMcKee
+class pylith::topology::ReverseCuthillMcKee {
     // PUBLIC MEMBERS ///////////////////////////////////////////////////////
 public:
 
@@ -21,9 +19,10 @@ public:
      * implementing reverse Cuthill-McKee algorithm.
      *
      * @param mesh PyLith finite-element mesh.
+     * @returns Mesh after reordering.
      */
     static
-    void reorder(topology::Mesh* mesh);
+    pylith::topology::Mesh* reorder(const pylith::topology::Mesh& mesh);
 
 }; // ReverseCuthillMcKee
 

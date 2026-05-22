@@ -80,16 +80,13 @@ class GreensFns(Problem, ModuleGreensFns):
         """
         Problem.__init__(self, name)
 
-    def preinitialize(self, mesh):
+    def preinitialize(self):
         """Setup integrators for each element family (material/quadrature,
         bc/quadrature, etc.).
         """
         self._setupLogging()
 
-        import weakref
-        self.mesh = weakref.ref(mesh)
-
-        Problem.preinitialize(self, mesh)
+        Problem.preinitialize(self)
 
         ModuleGreensFns.setFaultLabelName(self, self.faultLabelName)
         ModuleGreensFns.setFaultLabelValue(self, self.faultLabelValue)

@@ -10,7 +10,7 @@ assignees: ''
 ## URL(s)
 
 Provide complete URL(s) for the documentation page on <https://pylith.readthedocs.io>.
-Example: <https://pylith.readthedocs.io/en/latest/user/run-pylith/overview.html>.
+Example: <https://pylith.readthedocs.io/en/stable/user/run-pylith/overview.html>.
 
 ## Description
 

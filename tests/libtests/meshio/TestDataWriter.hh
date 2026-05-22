@@ -40,15 +40,10 @@ public:
     PylithScalar time; ///< Time for fields.
     const char* timeFormat; ///< Format for time stamp.
 
-    PylithInt vertexNumPoints; ///< Number of points in vertex field.
-    pylith::topology::FieldBase::Discretization vertexDiscretization; ///< Discretization for vertex fields.
-    PylithScalar* vertexValues; ///< Values for vertex field (vertexNumPoints, vertexNumDOF).
-    PylithInt vertexNumDOF; ///< Number of values per vertex.
+    PetscUserFieldFunc fieldFn; ///< Function for populating field values.
 
-    PylithInt cellNumPoints; ///< Number of points in cell field.
+    pylith::topology::FieldBase::Discretization vertexDiscretization; ///< Discretization for vertex fields.
     pylith::topology::FieldBase::Discretization cellDiscretization; ///< Discretization for cell fields.
-    PylithScalar* cellValues; ///< Values for cell field (cellNumPoints, cellNumDOF).
-    PylithInt cellNumDOF; ///< Number of values per cell.
 
 }; // class TestDataWriter_Data
 

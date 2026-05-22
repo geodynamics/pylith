@@ -54,13 +54,13 @@ mesh = {
     }
     material-ids = {
              0   0
-             1   0
+             1   2
              2   2
-             3   2
+             3   0
     }
   }
   vertex-group = {
-    name = fault
+    name = fault_vertices
     count = 2
     indices = {
       2
@@ -84,7 +84,7 @@ mesh = {
     }
   }
   face-group = {
-    name = output
+    name = output_faces
     count = 2
     indices = {
       0   1  3

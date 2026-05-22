@@ -52,6 +52,18 @@ EXTRA_DIST = \
 	faults/__init__.py \
 	feassemble/__init__.py \
 	friction/__init__.py \
+	initializers/__init__.py \
+	initializers/Initializer.py \
+	initializers/Serial.py \
+	initializers/Parallel.py \
+	initializers/Convert.py \
+	initializers/InitializePhase.py \
+	initializers/MeshReader.py \
+	initializers/MeshWriter.py \
+	initializers/MeshReordering.py \
+	initializers/MeshRefiner.py \
+	initializers/MeshDistributor.py \
+	initializers/MeshInsertInterfaces.py \
 	materials/AuxSubfieldsElasticity.py \
 	materials/AuxSubfieldsIsotropicLinearElasticity.py \
 	materials/AuxSubfieldsIsotropicLinearGenMaxwell.py \
@@ -146,12 +158,8 @@ EXTRA_DIST = \
 	topology/Distributor.py \
 	topology/Field.py \
 	topology/Mesh.py \
-	topology/MeshGenerator.py \
-	topology/MeshImporter.py \
-	topology/MeshImporterDist.py \
-	topology/MeshRefiner.py \
+	topology/RefineMesh.py \
 	topology/RefineUniform.py \
-	topology/ReverseCuthillMcKee.py \
 	topology/Subfield.py \
 	topology/__init__.py \
 	utils/CollectVersionInfo.py \

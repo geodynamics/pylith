@@ -118,9 +118,13 @@ public:
 
     /** Adjust mesh topology for fault implementation.
      *
+     * :KLUDGE: We adjust the label in the "original" mesh before transforming
+     * the topology.
+     *
      * @param mesh[in] PETSc mesh.
+     * @returns Mesh with transformed topology.
      */
-    void adjustTopology(pylith::topology::Mesh* const mesh);
+    pylith::topology::Mesh* transformTopology(pylith::topology::Mesh* const mesh);
 
     /** Create integrator and set kernels.
      *

@@ -94,17 +94,16 @@ pylith::topology::TestRefineUniform_Cases::Tri_2xNoFault(void) {
 
     data->matIdSum = 8*1 + 8*2;
 
-    data->numVertexGroups = 4;
-    static const size_t _vertexGroupSizes[4] = {
-        5, 3, 2, 5,
+    data->numVertexGroups = 3;
+    static const size_t _vertexGroupSizes[3] = {
+        5, 3, 5,
     };
     data->vertexGroupSizes = const_cast<size_t*>(_vertexGroupSizes);
 
-    static const char* _vertexGroupNames[4] = {
+    static const char* _vertexGroupNames[3] = {
         "bc1_vertices",
         "bc2_vertices",
-        "endpoints",
-        "fault",
+        "fault_vertices",
     };
     data->vertexGroupNames = const_cast<const char**>(_vertexGroupNames);
 
@@ -117,7 +116,7 @@ pylith::topology::TestRefineUniform_Cases::Tri_2xNoFault(void) {
     static const char* _faceGroupNames[3] = {
         "bc1",
         "bc2",
-        "fault_faces",
+        "fault",
     };
     data->faceGroupNames = const_cast<const char**>(_faceGroupNames);
 
@@ -146,11 +145,16 @@ pylith::topology::TestRefineUniform_Cases::Tri_2xFault(void) {
 
     data->matIdSum = 8*1 + 8*2 + 4*100;
 
-    static const char* _vertexGroupNames[4] = {
+    data->numVertexGroups = 3;
+    static const size_t _vertexGroupSizes[3] = {
+        7, 4, 10,
+    };
+    data->vertexGroupSizes = const_cast<size_t*>(_vertexGroupSizes);
+
+    static const char* _vertexGroupNames[3] = {
         "bc1_vertices",
         "bc2_vertices",
-        "endpoints",
-        "fault",
+        "fault_vertices",
     };
     data->vertexGroupNames = const_cast<const char**>(_vertexGroupNames);
 
@@ -163,7 +167,7 @@ pylith::topology::TestRefineUniform_Cases::Tri_2xFault(void) {
     static const char* _faceGroupNames[3] = {
         "bc1",
         "bc2",
-        "fault_faces",
+        "fault",
     };
     data->faceGroupNames = const_cast<const char**>(_faceGroupNames);
 
@@ -192,14 +196,13 @@ pylith::topology::TestRefineUniform_Cases::Quad_2xNoFault(void) {
 
     data->matIdSum = 8*1 + 8*2;
 
-    data->numVertexGroups = 3;
-    static const size_t _vertexGroupSizes[3] = {
-        5, 5, 5,
+    data->numVertexGroups = 2;
+    static const size_t _vertexGroupSizes[2] = {
+        5, 5,
     };
     data->vertexGroupSizes = const_cast<size_t*>(_vertexGroupSizes);
-    static const char* _vertexGroupNames[3] = {
-        "fault",
-        "endpoints",
+    static const char* _vertexGroupNames[2] = {
+        "fault_vertices",
         "bc_vertices",
     };
     data->vertexGroupNames = const_cast<const char**>(_vertexGroupNames);
@@ -210,7 +213,7 @@ pylith::topology::TestRefineUniform_Cases::Quad_2xNoFault(void) {
     };
     data->faceGroupSizes = const_cast<size_t*>(_faceGroupSizes);
     static const char* _faceGroupNames[2] = {
-        "fault_faces",
+        "fault",
         "bc",
     };
     data->faceGroupNames = const_cast<const char**>(_faceGroupNames);
@@ -240,14 +243,13 @@ pylith::topology::TestRefineUniform_Cases::Quad_2xFault(void) {
 
     data->matIdSum = 8*1 + 8*2 + 4*100;
 
-    data->numVertexGroups = 3;
-    static const size_t _vertexGroupSizes[3] = {
-        10, 5, 5+1,
+    data->numVertexGroups = 2;
+    static const size_t _vertexGroupSizes[2] = {
+        10, 5+1,
     };
     data->vertexGroupSizes = const_cast<size_t*>(_vertexGroupSizes);
-    static const char* _vertexGroupNames[3] = {
-        "fault",
-        "endpoints",
+    static const char* _vertexGroupNames[2] = {
+        "fault_vertices",
         "bc_vertices",
     };
     data->vertexGroupNames = const_cast<const char**>(_vertexGroupNames);
@@ -258,7 +260,7 @@ pylith::topology::TestRefineUniform_Cases::Quad_2xFault(void) {
     };
     data->faceGroupSizes = const_cast<size_t*>(_faceGroupSizes);
     static const char* _faceGroupNames[2] = {
-        "fault_faces",
+        "fault",
         "bc",
     };
     data->faceGroupNames = const_cast<const char**>(_faceGroupNames);
@@ -288,17 +290,16 @@ pylith::topology::TestRefineUniform_Cases::Tet_2xNoFault(void) {
 
     data->matIdSum = 8*1 + 8*2;
 
-    data->numVertexGroups = 4;
-    static const size_t _vertexGroupSizes[4] = {
-        3, 3, 2, 6,
+    data->numVertexGroups = 3;
+    static const size_t _vertexGroupSizes[3] = {
+        3, 3, 6,
     };
     data->vertexGroupSizes = const_cast<size_t*>(_vertexGroupSizes);
 
-    static const char* _vertexGroupNames[4] = {
+    static const char* _vertexGroupNames[3] = {
         "bc1_vertices",
         "bc2_vertices",
-        "endpoints",
-        "fault",
+        "fault_vertices",
     };
     data->vertexGroupNames = const_cast<const char**>(_vertexGroupNames);
 
@@ -310,7 +311,7 @@ pylith::topology::TestRefineUniform_Cases::Tet_2xNoFault(void) {
     static const char* _faceGroupNames[3] = {
         "bc1",
         "bc2",
-        "fault_faces",
+        "fault",
     };
     data->faceGroupNames = const_cast<const char**>(_faceGroupNames);
 
@@ -341,17 +342,16 @@ pylith::topology::TestRefineUniform_Cases::Tet_2xFault(void) {
 
     data->numVertexGroups = 4;
 
-    data->numVertexGroups = 4;
-    static const size_t _vertexGroupSizes[4] = {
-        3+1, 3+1, 2, 12,
+    data->numVertexGroups = 3;
+    static const size_t _vertexGroupSizes[3] = {
+        3+1, 3+1, 12,
     };
     data->vertexGroupSizes = const_cast<size_t*>(_vertexGroupSizes);
 
-    static const char* _vertexGroupNames[4] = {
+    static const char* _vertexGroupNames[3] = {
         "bc1_vertices",
         "bc2_vertices",
-        "endpoints",
-        "fault",
+        "fault_vertices",
     };
     data->vertexGroupNames = const_cast<const char**>(_vertexGroupNames);
 
@@ -363,7 +363,7 @@ pylith::topology::TestRefineUniform_Cases::Tet_2xFault(void) {
     static const char* _faceGroupNames[3] = {
         "bc1",
         "bc2",
-        "fault_faces",
+        "fault",
     };
     data->faceGroupNames = const_cast<const char**>(_faceGroupNames);
 
@@ -392,14 +392,13 @@ pylith::topology::TestRefineUniform_Cases::Hex_2xNoFault(void) {
 
     data->matIdSum = 8*1 + 8*2;
 
-    data->numVertexGroups = 4;
-    static const size_t _vertexGroupSizes[4] = {
-        9, 2, 9, 9,
+    data->numVertexGroups = 3;
+    static const size_t _vertexGroupSizes[3] = {
+        9, 9, 9,
     };
     data->vertexGroupSizes = const_cast<size_t*>(_vertexGroupSizes);
-    static const char* _vertexGroupNames[4] = {
-        "fault",
-        "endpoints",
+    static const char* _vertexGroupNames[3] = {
+        "fault_vertices",
         "face1_vertices",
         "face2_vertices",
     };
@@ -411,7 +410,7 @@ pylith::topology::TestRefineUniform_Cases::Hex_2xNoFault(void) {
     };
     data->faceGroupSizes = const_cast<size_t*>(_faceGroupSizes);
     static const char* _faceGroupNames[3] = {
-        "fault_faces",
+        "fault",
         "face1",
         "face2",
     };
@@ -442,14 +441,13 @@ pylith::topology::TestRefineUniform_Cases::Hex_2xFault(void) {
 
     data->matIdSum = 8*1 + 8*2 + 4*100;
 
-    data->numVertexGroups = 4;
-    static const size_t _vertexGroupSizes[4] = {
-        18, 2, 9, 12,
+    data->numVertexGroups = 3;
+    static const size_t _vertexGroupSizes[3] = {
+        18, 9, 12,
     };
     data->vertexGroupSizes = const_cast<size_t*>(_vertexGroupSizes);
-    static const char* _vertexGroupNames[4] = {
-        "fault",
-        "endpoints",
+    static const char* _vertexGroupNames[3] = {
+        "fault_vertices",
         "face1_vertices",
         "face2_vertices",
     };
@@ -461,7 +459,7 @@ pylith::topology::TestRefineUniform_Cases::Hex_2xFault(void) {
     };
     data->faceGroupSizes = const_cast<size_t*>(_faceGroupSizes);
     static const char* _faceGroupNames[3] = {
-        "fault_faces",
+        "fault",
         "face1",
         "face2",
     };

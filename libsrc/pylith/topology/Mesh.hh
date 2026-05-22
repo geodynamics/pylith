@@ -42,6 +42,14 @@ public:
     Mesh(const int dim,
          const MPI_Comm& comm=PETSC_COMM_WORLD);
 
+    /** Constructor with new PETSc DM and original mesh.
+     *
+     * @param dm PETSc DM for mesh.
+     * @param meshOrig Original mesh used in creating new DM.
+     */
+    Mesh(const PetscDM dm,
+         const Mesh& meshOrig);
+
     /// Default destructor
     ~Mesh(void);
 
@@ -111,6 +119,7 @@ public:
      *   VTU vtk:refined.vtu:vtk_vtu
      *   HDF5 PETSc hdf5:mesh.h5:hdf5_petsc
      *   HDF5 XDMF hdf5:mesh.h5:hdf5_xdmf
+     *   PyVista pyvista:myscript.py
      */
     void view(const char* viewOption="::ascii_info_detail") const;
 

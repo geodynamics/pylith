@@ -77,14 +77,6 @@ dist_noinst_DATA = \
 	tet4_surf_cell_t10.vtu \
 	hex8_surf_vertex_t10.vtu \
 	hex8_surf_cell_t10.vtu \
-	tri3_bc_vertex_t10.vtu \
-	tri3_bc_cell_t10.vtu \
-	quad4_bc_vertex_t10.vtu \
-	quad4_bc_cell_t10.vtu \
-	tet4_bc_vertex_t10.vtu \
-	tet4_bc_cell_t10.vtu \
-	hex8_bc_vertex_t10.vtu \
-	hex8_bc_cell_t10.vtu \
 	tri3_fault_vertex_t10.vtu \
 	tri3_fault_cell_t10.vtu \
 	quad4_fault_vertex_t10.vtu \
@@ -134,18 +126,6 @@ dist_noinst_DATA = \
 	hex8_surf.h5 \
 	hex8_surf_vertex.h5 \
 	hex8_surf_cell.h5 \
-	tri3_bc.h5 \
-	tri3_bc_vertex.h5 \
-	tri3_bc_cell.h5 \
-	quad4_bc.h5 \
-	quad4_bc_vertex.h5 \
-	quad4_bc_cell.h5 \
-	tet4_bc.h5 \
-	tet4_bc_vertex.h5 \
-	tet4_bc_cell.h5 \
-	hex8_bc.h5 \
-	hex8_bc_vertex.h5 \
-	hex8_bc_cell.h5 \
 	tri3_fault.h5 \
 	tri3_fault_vertex.h5 \
 	tri3_fault_cell.h5 \

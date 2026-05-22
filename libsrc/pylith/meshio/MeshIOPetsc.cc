@@ -293,6 +293,10 @@ pylith::meshio::_MeshIOPetsc::fixMaterialLabel(PetscDM* dmMesh) {
         PYLITH_METHOD_END;
     } // if
 
+    /** Get all values for a label up front and then clear all label values for
+     * all non-cell points. This is much faster than checking to see if a point
+     * is in the label, getting the label value, and clearing that value.
+     */
     PetscDMLabel dmLabel = NULL;
     PetscInt pStart = -1, pEnd = -1;
     PylithCallPetsc(DMGetLabel(*dmMesh, labelName, &dmLabel));
@@ -300,10 +304,6 @@ pylith::meshio::_MeshIOPetsc::fixMaterialLabel(PetscDM* dmMesh) {
     if (pStart == cStart) { pStart = cEnd; }
     if (pEnd == cEnd) { pEnd = cStart; }
 
-    /** Get all values for a label up front and then clear all label values for
-     * all non-cell points. This is much faster than checking to see if a point
-     * is in the label, getting the label value, and clearing that value.
-     */
     PetscIS valuesIS = PETSC_NULLPTR;
     PylithCallPetsc(DMLabelGetNonEmptyStratumValuesIS(dmLabel, &valuesIS));
     PetscInt numValues;

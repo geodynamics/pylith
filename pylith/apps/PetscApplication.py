@@ -67,7 +67,6 @@ class PetscApplication(Application):
 
         self.cleanup()
         self.petsc.finalize()
-        return
 
     def cleanup(self):
         """Deallocate data structures.
@@ -84,7 +83,6 @@ class PetscApplication(Application):
                         subcomponent.cleanup()
 
         self._cleanup()
-        return
 
     def citations(self):
         """Register BibTeX entries for citing software.
@@ -97,12 +95,10 @@ class PetscApplication(Application):
         """Setup members using inventory.
         """
         Application._configure(self)
-        return
 
     def _cleanup(self):
         """Deallocate locally managed data structures.
         """
-        return
 
 
 # End of file

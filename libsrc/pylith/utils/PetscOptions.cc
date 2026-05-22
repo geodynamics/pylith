@@ -39,15 +39,7 @@ public:
              * @returns True if solving problem in parallel, False if in serial.
              */
             static
-            bool isParallel(const pylith::topology::Field& solution);
-
-            /** Check if simulation is has a fault.
-             *
-             * @param[in] solution Solution field for problem.
-             * @returns True if problem has a fault, false otherwise;
-             */
-            static
-            bool hasFault(const pylith::topology::Field& solution);
+            bool isParallel(void);
 
             /** Add debugging options.
              *
@@ -73,11 +65,9 @@ public:
             /** Add default solver tolerances to options.
              *
              * @param[in] options PETSc options.
-             * @param[in] solution Solution field for problem.
              */
             static
-            void addSolverTolerances(PetscOptions* options,
-                                     const pylith::topology::Field& solution);
+            void addSolverTolerances(PetscOptions* options);
 
             /** Add initial guess options.
              *
@@ -111,8 +101,8 @@ const int pylith::utils::PetscDefaults::TS_IMPULSE = 0x80;
 // ------------------------------------------------------------------------------------------------
 // Set default PETSc solver options based on solution field and material.
 void
-pylith::utils::PetscDefaults::set(const pylith::topology::Field& solution,
-                                  const pylith::materials::Material* material,
+pylith::utils::PetscDefaults::set(const pylith::materials::Material* material,
+                                  const bool hasFault,
                                   const int flags) {
     PYLITH_METHOD_BEGIN;
     assert(material);
@@ -123,8 +113,7 @@ pylith::utils::PetscDefaults::set(const pylith::topology::Field& solution,
 
     PetscOptions* options = NULL;
     if (flags & SOLVER) {
-        const bool isParallel = flags & PARALLEL || _PetscOptions::isParallel(solution);
-        const bool hasFault = _PetscOptions::hasFault(solution);
+        const bool isParallel = flags & PARALLEL || _PetscOptions::isParallel();
         options = material->getSolverDefaults(isParallel, hasFault);
     } // if
     if (!options) {
@@ -132,7 +121,7 @@ pylith::utils::PetscDefaults::set(const pylith::topology::Field& solution,
     } // if
     assert(options);
 
-    _PetscOptions::addSolverTolerances(options, solution);
+    _PetscOptions::addSolverTolerances(options);
     if (flags & INITIAL_GUESS) {
         _PetscOptions::addInitialGuess(options);
     } // if
@@ -281,23 +270,15 @@ pylith::utils::_PetscOptions::write(pythia::journal::info_t& info,
 // ------------------------------------------------------------------------------------------------
 // Check if simulation is running in parallel.
 bool
-pylith::utils::_PetscOptions::isParallel(const pylith::topology::Field& solution) {
+pylith::utils::_PetscOptions::isParallel(void) {
     PYLITH_METHOD_BEGIN;
 
-    MPI_Comm comm = solution.getMesh().getComm();
+    MPI_Comm comm = PETSC_COMM_WORLD;
     int numProcs = 0;
     MPI_Comm_size(comm, &numProcs);
 
     PYLITH_METHOD_RETURN(numProcs > 1);
 } // isParallel
-
-
-// ------------------------------------------------------------------------------------------------
-// Check if simulation is has a fault.
-bool
-pylith::utils::_PetscOptions::hasFault(const pylith::topology::Field& solution) {
-    return solution.hasSubfield("lagrange_multiplier_fault");
-} // hasFault
 
 
 // ------------------------------------------------------------------------------------------------
@@ -344,8 +325,7 @@ pylith::utils::_PetscOptions::addCollectiveIO(PetscOptions* options) {
 // ------------------------------------------------------------------------------------------------
 // Add default solver tolerances to options.
 void
-pylith::utils::_PetscOptions::addSolverTolerances(PetscOptions* options,
-                                                  const pylith::topology::Field& solution) {
+pylith::utils::_PetscOptions::addSolverTolerances(PetscOptions* options) {
     assert(options);
 
     options->add("-ksp_rtol", "1.0e-14");

@@ -227,7 +227,7 @@ pylith::materials::TestMaterial::testInitialize(void) {
     query.initializeWithDefaultQueryFns();
     CPPUNIT_ASSERT(data->scales);
     query.openDB(data->auxDB, data->scales->getLengthScale());
-    err = DMPlexComputeL2DiffLocal(dm, t, query.functions(), (void**)query.contextPtrs(), auxField->localVector(), &norm);CPPUNIT_ASSERT(!err);
+    PylithCallPetscRequire(DMPlexComputeL2DiffLocal(dm, t, query.functions(), (void**)query.contextPtrs(), auxField->localVector(), &norm));
     query.closeDB(data->auxDB);
     const PylithReal tolerance = 1.0e-6;
     CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test of auxiliary field values failed.", 0.0, norm, tolerance);
@@ -244,7 +244,7 @@ pylith::materials::TestMaterial::testInitialize(void) {
     solnQuery.initializeWithDefaultQueryFns();
     CPPUNIT_ASSERT(data->scales);
     solnQuery.openDB(data->solnDB, data->scales->getLengthScale());
-    err = DMPlexComputeL2DiffLocal(dmSoln, t, solnQuery.functions(), (void**)solnQuery.contextPtrs(), solution.localVector(), &norm);CPPUNIT_ASSERT(!err);
+    PylithCallPetscRequire(DMPlexComputeL2DiffLocal(dmSoln, t, solnQuery.functions(), (void**)solnQuery.contextPtrs(), solution.localVector(), &norm));
     solnQuery.closeDB(data->solnDB);
     CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Discretized solution field failed representation test.", 0.0, norm, tolerance);
 
@@ -255,7 +255,7 @@ pylith::materials::TestMaterial::testInitialize(void) {
     perturbQuery.initializeWithDefaultQueryFns();
     CPPUNIT_ASSERT(data->scales);
     perturbQuery.openDB(data->perturbDB, data->scales->getLengthScale());
-    err = DMPlexComputeL2DiffLocal(dmPerturb, t, perturbQuery.functions(), (void**)perturbQuery.contextPtrs(), perturbation.localVector(), &norm);CPPUNIT_ASSERT(!err);
+    PylithCallPetscRequire(DMPlexComputeL2DiffLocal(dmPerturb, t, perturbQuery.functions(), (void**)perturbQuery.contextPtrs(), perturbation.localVector(), &norm));
     perturbQuery.closeDB(data->perturbDB);
     CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Discretized perturbation field failed representation test.", 0.0, norm, tolerance);
 #endif
@@ -314,18 +314,17 @@ pylith::materials::TestMaterial::testComputeResidual(void) {
     residualLHS.view("RESIDUAL LHS"); // :DEBUG:
 #endif // :DEBUG:
 
-    PetscErrorCode err = PETSC_SUCCESS;
     PetscVec residualVec = NULL;
-    err = VecDuplicate(residualRHS.localVector(), &residualVec);CPPUNIT_ASSERT(!err);
-    err = VecWAXPY(residualVec, -1.0, residualRHS.localVector(), residualLHS.localVector());CPPUNIT_ASSERT(!err);
+    PylithCallPetscRequire(VecDuplicate(residualRHS.localVector(), &residualVec));
+    PylithCallPetscRequire(VecWAXPY(residualVec, -1.0, residualRHS.localVector(), residualLHS.localVector()));
 
     PylithReal norm = 0.0;
     PylithReal normRHS = 0.0;
     PylithReal normLHS = 0.0;
-    err = VecNorm(residualRHS.localVector(), NORM_2, &normRHS);CPPUNIT_ASSERT(!err);
-    err = VecNorm(residualLHS.localVector(), NORM_2, &normLHS);CPPUNIT_ASSERT(!err);
-    err = VecNorm(residualVec, NORM_2, &norm);CPPUNIT_ASSERT(!err);
-    err = VecDestroy(&residualVec);CPPUNIT_ASSERT(!err);
+    PylithCallPetscRequire(VecNorm(residualRHS.localVector(), NORM_2, &normRHS));
+    PylithCallPetscRequire(VecNorm(residualLHS.localVector(), NORM_2, &normLHS));
+    PylithCallPetscRequire(VecNorm(residualVec, NORM_2, &norm));
+    PylithCallPetscRequire(VecDestroy(&residualVec));
     const PylithReal tolerance = 1.0e-6;
     CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Test of F(s) - G(s) == 0 failed.", 0.0, norm, tolerance);
     // Avoid trivial satisfaction of norm with zero values.
@@ -382,10 +381,10 @@ pylith::materials::TestMaterial::testComputeJacobian(void) {
     // residual2.view("RESIDUAL 2 RHS"); // :DEBUG:
 
     // Compute Jacobian
-    PetscErrorCode err = PETSC_SUCCESS;
+    PetscErrorCode PylithCallPetsc);
     PetscMat jacobianMat = NULL;
-    err = DMCreateMatrix(solution.dmMesh(), &jacobianMat);CPPUNIT_ASSERT(!err);
-    err = MatZeroEntries(jacobianMat);CPPUNIT_ASSERT(!err);
+    PylithCallPetscRequire(DMCreateMatrix(solution.dmMesh(), &jacobianMat));
+    PylithCallPetscRequire(MatZeroEntries(jacobianMat));
     PetscMat precondMat = jacobianMat; // Use Jacobian == preconditioner
 
     material->computeLHSJacobian(jacobianMat, precondMat, t, dt, solution);
@@ -398,19 +397,19 @@ pylith::materials::TestMaterial::testComputeJacobian(void) {
     // Check that J(s)*(p - s) = G(p) - G(s).
 
     PetscVec residualVec = NULL;
-    err = VecDuplicate(residual1.localVector(), &residualVec);CPPUNIT_ASSERT(!err);
-    err = VecWAXPY(residualVec, -1.0, residual1.localVector(), residual2.localVector());CPPUNIT_ASSERT(!err);
+    PylithCallPetscRequire(VecDuplicate(residual1.localVector(), &residualVec));
+    PylithCallPetscRequire(VecWAXPY(residualVec, -1.0, residual1.localVector(), residual2.localVector()));
 
     PetscVec solnIncrVec = NULL;
-    err = VecDuplicate(solution.localVector(), &solnIncrVec);CPPUNIT_ASSERT(!err);
-    err = VecWAXPY(solnIncrVec, -1.0, solution.localVector(), perturbation.localVector());CPPUNIT_ASSERT(!err);
+    PylithCallPetscRequire(VecDuplicate(solution.localVector(), &solnIncrVec));
+    PylithCallPetscRequire(VecWAXPY(solnIncrVec, -1.0, solution.localVector(), perturbation.localVector()));
 
     // result = Jg*(-solnIncr) + residual
     PetscVec resultVec = NULL;
-    err = VecDuplicate(residualVec, &resultVec);CPPUNIT_ASSERT(!err);
-    err = VecZeroEntries(resultVec);CPPUNIT_ASSERT(!err);
-    err = VecScale(solnIncrVec, -1.0);CPPUNIT_ASSERT(!err);
-    err = MatMultAdd(jacobianMat, solnIncrVec, residualVec, resultVec);CPPUNIT_ASSERT(!err);
+    PylithCallPetscRequire(VecDuplicate(residualVec, &resultVec));
+    PylithCallPetscRequire(VecZeroEntries(resultVec));
+    PylithCallPetscRequire(VecScale(solnIncrVec, -1.0));
+    PylithCallPetscRequire(MatMultAdd(jacobianMat, solnIncrVec, residualVec, resultVec));
 
 #if 0 // :DEBUG:
     std::cout << "SOLN INCR" << std::endl;
@@ -422,11 +421,11 @@ pylith::materials::TestMaterial::testComputeJacobian(void) {
 #endif // :DEBUG:
 
     PylithReal norm = 0.0;
-    err = VecNorm(resultVec, NORM_2, &norm);CPPUNIT_ASSERT(!err);
-    err = VecDestroy(&resultVec);CPPUNIT_ASSERT(!err);
-    err = VecDestroy(&solnIncrVec);CPPUNIT_ASSERT(!err);
-    err = VecDestroy(&residualVec);CPPUNIT_ASSERT(!err);
-    err = MatDestroy(&jacobianMat);CPPUNIT_ASSERT(!err);
+    PylithCallPetscRequire(VecNorm(resultVec, NORM_2, &norm));
+    PylithCallPetscRequire(VecDestroy(&resultVec));
+    PylithCallPetscRequire(VecDestroy(&solnIncrVec));
+    PylithCallPetscRequire(VecDestroy(&residualVec));
+    PylithCallPetscRequire(MatDestroy(&jacobianMat));
 
     const PylithReal tolerance = 1.0e-6;
     CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Check of Jg(s)*(p-s) - (G(p) - G(s)) == 0 failed.", 0.0, norm, tolerance);
@@ -488,20 +487,20 @@ pylith::materials::TestMaterial::testComputeLHSJacobianImplicit(void) {
     // residual1.view("RESIDUAL 1 LHS"); // :DEBUG:
     // residual2.view("RESIDUAL 2 LHS"); // :DEBUG:
 
-    PetscErrorCode err = PETSC_SUCCESS;
+    PetscErrorCode PylithCallPetsc);
 
     PetscVec residualVec = NULL;
-    err = VecDuplicate(residual1.localVector(), &residualVec);CPPUNIT_ASSERT(!err);
-    err = VecWAXPY(residualVec, -1.0, residual1.localVector(), residual2.localVector());CPPUNIT_ASSERT(!err);
+    PylithCallPetscRequire(VecDuplicate(residual1.localVector(), &residualVec));
+    PylithCallPetscRequire(VecWAXPY(residualVec, -1.0, residual1.localVector(), residual2.localVector()));
 
     PetscVec solnIncrVec = NULL;
-    err = VecDuplicate(solution.localVector(), &solnIncrVec);CPPUNIT_ASSERT(!err);
-    err = VecWAXPY(solnIncrVec, -1.0, solution.localVector(), perturbation.localVector());CPPUNIT_ASSERT(!err);
+    PylithCallPetscRequire(VecDuplicate(solution.localVector(), &solnIncrVec));
+    PylithCallPetscRequire(VecWAXPY(solnIncrVec, -1.0, solution.localVector(), perturbation.localVector()));
 
     // Compute Jacobian
     PetscMat jacobianMat = NULL;
-    err = DMCreateMatrix(solution.dmMesh(), &jacobianMat);CPPUNIT_ASSERT(!err);
-    err = MatZeroEntries(jacobianMat);CPPUNIT_ASSERT(!err);
+    PylithCallPetscRequire(DMCreateMatrix(solution.dmMesh(), &jacobianMat));
+    PylithCallPetscRequire(MatZeroEntries(jacobianMat));
     PetscMat precondMat = jacobianMat; // Use Jacobian == preconditioner
 
     material->computeLHSJacobianImplicit(jacobianMat, precondMat, t, dt, s_tshift, solution, solutionDot);
@@ -511,10 +510,10 @@ pylith::materials::TestMaterial::testComputeLHSJacobianImplicit(void) {
 
     // result = J*(-solnIncr) + residual
     PetscVec resultVec = NULL;
-    err = VecDuplicate(residualVec, &resultVec);CPPUNIT_ASSERT(!err);
-    err = VecZeroEntries(resultVec);CPPUNIT_ASSERT(!err);
-    err = VecScale(solnIncrVec, -1.0);CPPUNIT_ASSERT(!err);
-    err = MatMultAdd(jacobianMat, solnIncrVec, residualVec, resultVec);CPPUNIT_ASSERT(!err);
+    PylithCallPetscRequire(VecDuplicate(residualVec, &resultVec));
+    PylithCallPetscRequire(VecZeroEntries(resultVec));
+    PylithCallPetscRequire(VecScale(solnIncrVec, -1.0));
+    PylithCallPetscRequire(MatMultAdd(jacobianMat, solnIncrVec, residualVec, resultVec));
 
 #if 0 // :DEBUG:
     std::cout << "SOLN INCR" << std::endl;
@@ -526,13 +525,13 @@ pylith::materials::TestMaterial::testComputeLHSJacobianImplicit(void) {
 #endif // :DEBUG:
 
     PylithReal norm = 0.0, normSolnIncr = 0.0, normResidual = 0.0;
-    err = VecNorm(resultVec, NORM_2, &norm);CPPUNIT_ASSERT(!err);
-    err = VecNorm(solnIncrVec, NORM_2, &normSolnIncr);CPPUNIT_ASSERT(!err);
-    err = VecNorm(residualVec, NORM_2, &normResidual);CPPUNIT_ASSERT(!err);
-    err = VecDestroy(&resultVec);CPPUNIT_ASSERT(!err);
-    err = VecDestroy(&solnIncrVec);CPPUNIT_ASSERT(!err);
-    err = VecDestroy(&residualVec);CPPUNIT_ASSERT(!err);
-    err = MatDestroy(&jacobianMat);CPPUNIT_ASSERT(!err);
+    PylithCallPetscRequire(VecNorm(resultVec, NORM_2, &norm));
+    PylithCallPetscRequire(VecNorm(solnIncrVec, NORM_2, &normSolnIncr));
+    PylithCallPetscRequire(VecNorm(residualVec, NORM_2, &normResidual));
+    PylithCallPetscRequire(VecDestroy(&resultVec));
+    PylithCallPetscRequire(VecDestroy(&solnIncrVec));
+    PylithCallPetscRequire(VecDestroy(&residualVec));
+    PylithCallPetscRequire(MatDestroy(&jacobianMat));
 
     const PylithReal tolerance = 1.0e-6;
     CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Check of Jf(s)*(p-s) - (F(p) - F(s)) == 0 failed.", 0.0, norm, tolerance);
@@ -602,7 +601,7 @@ pylith::materials::TestMaterial::testUpdateStateVars(void) {
     PetscOptionsSetValue(NULL, "-dm_plex_print_l2", "1"); // :DEBUG:
     DMSetFromOptions(dm); // :DEBUG:
 #endif
-    err = DMPlexComputeL2DiffLocal(dm, t, query.functions(), (void**)query.contextPtrs(), auxField->localVector(), &norm);CPPUNIT_ASSERT(!err);
+    PylithCallPetscRequire(DMPlexComputeL2DiffLocal(dm, t, query.functions(), (void**)query.contextPtrs(), auxField->localVector(), &norm));
     query.closeDB(data->auxUpdateDB);
     const PylithReal tolerance = 1.0e-6;
     CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Check of updated auxiliary field values failed.", 0.0, norm, tolerance);
@@ -690,12 +689,12 @@ pylith::materials::TestMaterial::_zeroBoundary(pylith::topology::Field* field) {
     const PetscInt *points;
     PetscInt numPoints = 0;
     PetscBool hasLabel = PETSC_FALSE;
-    PetscErrorCode err = PETSC_SUCCESS;
-    err = DMHasLabel(dmMesh, data->boundaryLabel, &hasLabel);CPPUNIT_ASSERT(!err);CPPUNIT_ASSERT(hasLabel);
-    err = DMGetLabel(dmMesh, data->boundaryLabel, &label);CPPUNIT_ASSERT(!err);
-    err = DMLabelGetStratumIS(label, 1, &pointIS);CPPUNIT_ASSERT(!err);CPPUNIT_ASSERT(pointIS);
-    err = ISGetLocalSize(pointIS, &numPoints);CPPUNIT_ASSERT(!err);
-    err = ISGetIndices(pointIS, &points);CPPUNIT_ASSERT(!err);
+    PetscErrorCode PylithCallPetsc);
+    PylithCallPetscRequire(DMHasLabel(dmMesh, data->boundaryLabel, &hasLabel);CPPUNIT_ASSERT(!err);CPP);
+    PylithCallPetscRequire(DMGetLabel(dmMesh, data->boundaryLabel, &label));
+    PylithCallPetscRequire(DMLabelGetStratumIS(label, 1, &pointIS);CPPUNIT_ASSERT(!err);CP);
+    PylithCallPetscRequire(ISGetLocalSize(pointIS, &numPoints));
+    PylithCallPetscRequire(ISGetIndices(pointIS, &points));
 
     pylith::topology::VecVisitorMesh fieldVisitor(*field);
     PylithScalar* fieldArray = fieldVisitor.localArray();CPPUNIT_ASSERT(fieldArray);

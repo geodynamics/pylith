@@ -5,7 +5,7 @@
 # Copyright (c) 2010-2025, University of California, Davis and the PyLith Development Team.
 # All rights reserved.
 #
-# See https://mit-license.org/ and LICENSE.md and for license information. 
+# See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
 
 from pylith.problems.Physics import Physics
@@ -13,17 +13,14 @@ from .faults import FaultCohesive as ModuleFaultCohesive
 
 
 def validateLabel(value):
-    """Validate label for group/nodeset/pset.
-    """
+    """Validate label for group/nodeset/pset."""
     if 0 == len(value):
-        raise ValueError(
-            "Label for fault group/nodeset/pset in mesh not specified.")
+        raise ValueError("Label for fault group/nodeset/pset in mesh not specified.")
     return value
 
 
 def validateDir(value):
-    """Validate direction.
-    """
+    """Validate direction."""
     msg = "Direction must be a 3 component vector (list)."
     if not isinstance(value, list):
         raise ValueError(msg)
@@ -44,32 +41,38 @@ class FaultCohesive(Physics, ModuleFaultCohesive):
     import pythia.pyre.inventory
 
     labelName = pythia.pyre.inventory.str("label", default="", validator=validateLabel)
-    labelName.meta['tip'] = "Name of label identifier for fault."
+    labelName.meta["tip"] = "Name of label identifier for fault."
 
     labelValue = pythia.pyre.inventory.int("label_value", default=1)
-    labelValue.meta['tip'] = "Value of label identifier for fault."
+    labelValue.meta["tip"] = "Value of label identifier for fault."
 
     edgeName = pythia.pyre.inventory.str("edge", default="")
-    edgeName.meta['tip'] = "Name of label identifier for buried fault edges."
+    edgeName.meta["tip"] = "Name of label identifier for buried fault edges."
 
     edgeValue = pythia.pyre.inventory.int("edge_value", default=1)
-    edgeValue.meta['tip'] = "Value of label identifier for buried fault edges."
+    edgeValue.meta["tip"] = "Value of label identifier for buried fault edges."
 
-    refDir1 = pythia.pyre.inventory.list("ref_dir_1", default=[0.0, 0.0, 1.0], validator=validateDir)
-    refDir1.meta['tip'] = "First choice for reference direction to discriminate among tangential directions in 3-D."
+    refDir1 = pythia.pyre.inventory.list(
+        "ref_dir_1", default=[0.0, 0.0, 1.0], validator=validateDir
+    )
+    refDir1.meta["tip"] = (
+        "First choice for reference direction to discriminate among tangential directions in 3D; should roughly match the up-dir direction."
+    )
 
-    refDir2 = pythia.pyre.inventory.list("ref_dir_2", default=[0.0, 1.0, 0.0], validator=validateDir)
-    refDir2.meta['tip'] = "Second choice for reference direction to discriminate among tangential directions in 3-D."
+    refDir2 = pythia.pyre.inventory.list(
+        "ref_dir_2", default=[0.0, 1.0, 0.0], validator=validateDir
+    )
+    refDir2.meta["tip"] = (
+        "Second choice for reference direction to discriminate among tangential directions in 3D; should roughly match the fault normal direction."
+    )
 
     def __init__(self, name="fault"):
-        """Constructor.
-        """
+        """Constructor."""
         Physics.__init__(self, name)
         return
 
     def preinitialize(self, problem):
-        """Setup fault.
-        """
+        """Setup fault."""
         Physics.preinitialize(self, problem)
 
         ModuleFaultCohesive.setSurfaceLabelName(self, self.labelName)
@@ -81,21 +84,19 @@ class FaultCohesive(Physics, ModuleFaultCohesive):
         return
 
     def verifyConfiguration(self):
-        """Verify compatibility of configuration.
-        """
+        """Verify compatibility of configuration."""
         return
 
     def _configure(self):
-        """Setup members using inventory.
-        """
+        """Setup members using inventory."""
         Physics._configure(self)
         return
 
     def _createModuleObj(self):
-        """Create handle to corresponding C++ object.
-        """
+        """Create handle to corresponding C++ object."""
         raise NotImplementedError(
-            "Please implement _createModuleObj() in derived class.")
+            "Please implement _createModuleObj() in derived class."
+        )
 
 
 # End of file

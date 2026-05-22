@@ -57,6 +57,12 @@ public:
 
         // tranDir2 = normalDir x tanDir1
         _unitCrossProduct(tanDir2, normalDir, tanDir1);
+
+        if (refDir2[0]*normalDir[0] + refDir2[1]*normalDir[1] + refDir2[1]*normalDir[1] < 0.0) {
+            for (int i = 0; i < dim; ++i) {
+                tanDir2[i] *= -1.0;
+            } // for
+        } // if
     }
 
     // ------------------------------------------------------------------------------------------------

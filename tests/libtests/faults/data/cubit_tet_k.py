@@ -77,15 +77,15 @@ cubit.cmd("block 10 name 'elastic'")
 # ----------------------------------------------------------------------
 # Create nodesets for faults
 # ----------------------------------------------------------------------
-cubit.cmd(f"group 'fault' add node in surface fault_surface")
-cubit.cmd("nodeset 10 group fault")
-cubit.cmd("nodeset 10 name 'fault'")
+cubit.cmd("group 'fault_vertices' add node in surface fault_surface")
+cubit.cmd("nodeset 10 group fault_vertices")
+cubit.cmd("nodeset 10 name 'fault_vertices'")
 
-cubit.cmd("group 'fault_edge' add node in curve 45")
-cubit.cmd("group 'fault_edge' add node in curve 46")
-cubit.cmd("group 'fault_edge' add node in curve 47")
-cubit.cmd("nodeset 11 group fault_edge")
-cubit.cmd("nodeset 11 name 'fault_edge'")
+cubit.cmd("group 'fault_edge_vertices' add node in curve 45")
+#cubit.cmd("group 'fault_edge_vertices' add node in curve 46")
+cubit.cmd("group 'fault_edge_vertices' add node in curve 47")
+cubit.cmd("nodeset 11 group fault_edge_vertices")
+cubit.cmd("nodeset 11 name 'fault_edge_vertices'")
 
 # ----------------------------------------------------------------------
 # Create nodeset for +z face
@@ -98,7 +98,7 @@ cubit.cmd("nodeset 20 name 'vertices_zpos'")
 # ----------------------------------------------------------------------
 # Create sideset for fault
 # ----------------------------------------------------------------------
-cubit.cmd(f"group 'fault_faces' add surface fault_surface")
+cubit.cmd("group 'fault_faces' add surface fault_surface")
 cubit.cmd("sideset 110 group fault_faces")
 cubit.cmd("sideset 110 name 'fault_faces'")
 

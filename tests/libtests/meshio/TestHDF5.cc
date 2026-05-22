@@ -18,6 +18,7 @@
 #include "catch2/catch_test_macros.hpp"
 #include "catch2/matchers/catch_matchers_floating_point.hpp"
 
+#include <memory> // USGS std::unique_ptr
 #include <fstream> // USES ofstream
 
 #if H5_VERS_MAJOR == 1 && H5_VERS_MINOR >= 8
@@ -206,9 +207,7 @@ pylith::meshio::TestHDF5::testHasDataset(void) {
 
     HDF5 h5("test.h5", H5F_ACC_TRUNC);
 
-    const hsize_t ndims = 1;
-    const hsize_t dims[ndims] = { 2 };
-    h5.createDataset("/", "data", dims, dims, ndims, H5T_NATIVE_INT);
+    h5.createDataset<int>("/", "data", HDF5::DatasetShape{{2}, {2}});
     h5.close();
 
     h5.open("test.h5", H5F_ACC_RDONLY);
@@ -228,24 +227,19 @@ pylith::meshio::TestHDF5::testGetDatasetDims(void) {
 
     HDF5 h5("test.h5", H5F_ACC_TRUNC);
 
-    const int ndimsE = 2;
+    const size_t ndimsE = 2;
     const hsize_t dimsE[ndimsE] = { 3, 2 };
-    const hsize_t dimsChunkE[ndimsE] = { 1, 2 };
-    h5.createDataset("/", "data", dimsE, dimsChunkE, ndimsE, H5T_NATIVE_INT);
+    h5.createDataset<int>("/", "data", HDF5::DatasetShape{{3, 2}, {1, 2}});
     h5.close();
 
     h5.open("test.h5", H5F_ACC_RDONLY);
-    hsize_t* dims = 0;
-    int ndims = 0;
-    h5.getDatasetDims(&dims, &ndims, "/", "data");
+    HDF5::DatasetDims result = h5.getDatasetDims("/", "data");
     h5.close();
-    REQUIRE(ndimsE == ndims);
+    REQUIRE(ndimsE == result.dims.size());
 
-    for (int i = 0; i < ndimsE; ++i) {
-        CHECK(dimsE[i] == dims[i]);
-    }
-
-    delete[] dims;dims = 0;
+    for (size_t i = 0; i < ndimsE; ++i) {
+        CHECK(dimsE[i] == result.dims[i]);
+    } // for
 
     PYLITH_METHOD_END;
 } // testGetDatasetDims
@@ -263,28 +257,23 @@ pylith::meshio::TestHDF5::testGetGroupDatasets(void) {
         "dataB",
         "dataC",
     };
-    const hsize_t ndims = 2;
-    const hsize_t dims[ndims] = { 3, 2 };
-    const hsize_t dimsChunk[ndims] = { 1, 2 };
 
     HDF5 h5("test.h5", H5F_ACC_TRUNC);
     h5.createGroup("/mygroup");
     for (int i = 0; i < ngroupsE; ++i) {
-        h5.createDataset("/mygroup", namesE[i], dims, dimsChunk, ndims,
-                         H5T_NATIVE_INT);
+        h5.createDataset<int>("/mygroup", namesE[i], HDF5::DatasetShape{{3, 2}, {1, 2}});
     }
     h5.close();
 
-    string_vector names;
     h5.open("test.h5", H5F_ACC_RDONLY);
-    h5.getGroupDatasets(&names, "/mygroup");
+    pylith::string_vector names = h5.getGroupDatasets("/mygroup");
     h5.close();
 
     const int ngroups = names.size();
     REQUIRE(ngroupsE == ngroups);
     for (int i = 0; i < ngroups; ++i) {
         CHECK(std::string(namesE[i]) == names[i]);
-    }
+    } // for
 
     PYLITH_METHOD_END;
 } // testGetGroupDatasets
@@ -301,16 +290,16 @@ pylith::meshio::TestHDF5::testCreateGroup(void) {
     h5.createGroup("/mygroup");
     h5.close();
 
+    _HDF5::H5Handle group(-1, H5Gclose);
+
     h5.open("test.h5", H5F_ACC_RDONLY);
 #if defined(PYLITH_HDF5_USE_API_18)
-    hid_t group = H5Gopen2(h5._file, "/mygroup", H5P_DEFAULT);
+    group.id = H5Gopen2(h5._file, "/mygroup", H5P_DEFAULT);
 #else
-    hid_t group = H5Gopen(h5._file, "/mygroup");
+    group.id = H5Gopen(h5._file, "/mygroup");
 #endif
-    CHECK(group >= 0);
-    herr_t err = H5Gclose(group);
-    CHECK(err >= 0);
     h5.close();
+    CHECK(group.id >= 0);
 
     PYLITH_METHOD_END;
 } // testCreateGroup
@@ -324,18 +313,15 @@ pylith::meshio::TestHDF5::testAttributeScalar(void) {
 
     HDF5 h5("test.h5", H5F_ACC_TRUNC);
 
-    const hsize_t ndims = 1;
-    const hsize_t dims[ndims] = { 2 };
-    h5.createDataset("/", "data", dims, dims, ndims, H5T_NATIVE_INT);
+    h5.createDataset<int>("/", "data", HDF5::DatasetShape{{2}, {2}});
 
     const PylithScalar scalarE = 2.5;
-    h5.writeAttribute("/data", "myscalar", (void*)&scalarE, H5T_NATIVE_DOUBLE);
+    h5.writeAttribute<PylithScalar>("/data", "myscalar", scalarE);
     h5.close();
 
     const PylithScalar tolerance = 1.0e-06;
     h5.open("test.h5", H5F_ACC_RDONLY);
-    PylithScalar scalar = 0;
-    h5.readAttribute("/data", "myscalar", (void*)&scalar, H5T_NATIVE_DOUBLE);
+    PylithScalar scalar = h5.readAttribute<PylithScalar>("/data", "myscalar");
     CHECK_THAT(scalar, Catch::Matchers::WithinAbs(scalarE, tolerance));
     h5.close();
 
@@ -351,30 +337,27 @@ pylith::meshio::TestHDF5::testCreateDataset(void) {
 
     HDF5 h5("test.h5", H5F_ACC_TRUNC);
 
-    const hsize_t ndims = 2;
-    const hsize_t dims[ndims] = { 3, 2 };
-    const hsize_t dimsChunk[ndims] = { 1, 2 };
-    h5.createDataset("/", "data", dims, dimsChunk, ndims, H5T_NATIVE_INT);
+    h5.createDataset<int>("/", "data", HDF5::DatasetShape{{{3, 2}}, {{1, 2}}});
     h5.close();
+
+    _HDF5::H5Handle group(-1, H5Gclose);
+    _HDF5::H5Handle dataset(-1, H5Dclose);
 
     h5.open("test.h5", H5F_ACC_RDONLY);
 #if defined(PYLITH_HDF5_USE_API_18)
-    hid_t group = H5Gopen2(h5._file, "/", H5P_DEFAULT);
+    group.id = H5Gopen2(h5._file, "/", H5P_DEFAULT);
 #else
-    hid_t group = H5Gopen(h5._file, "/");
+    group.id = H5Gopen(h5._file, "/");
 #endif
-    CHECK(group >= 0);
+    REQUIRE(group.id >= 0);
 #if defined(PYLITH_HDF5_USE_API_18)
-    hid_t dataset = H5Dopen2(group, "data", H5P_DEFAULT);
+    dataset.id = H5Dopen2(group.id, "data", H5P_DEFAULT);
 #else
-    hid_t dataset = H5Dopen(group, "data");
+    dataset.id = H5Dopen(group.id, "data");
 #endif
-    CHECK(dataset >= 0);
-    herr_t err = H5Dclose(dataset);
-    CHECK(err >= 0);
-    err = H5Gclose(group);
-    CHECK(err >= 0);
     h5.close();
+
+    CHECK(dataset.id >= 0);
 
     PYLITH_METHOD_END;
 } // testCreateDataset
@@ -388,7 +371,6 @@ pylith::meshio::TestHDF5::testDatasetChunk(void) {
 
     const int ndimsE = 3;
     const hsize_t dimsE[ndimsE] = { 4, 2, 3 };
-    const hsize_t dimsChunkE[ndimsE] = { 1, 2, 3 };
 
     // Create data.
     hsize_t nitems = dimsE[0];
@@ -397,40 +379,33 @@ pylith::meshio::TestHDF5::testDatasetChunk(void) {
         nitems *= dimsE[i];
         nitemsS *= dimsE[i];
     } // for
-    int* valuesE = (nitems > 0) ? new int[nitems] : 0;
+    std::unique_ptr<int[]> valuesE((nitems > 0) ? new int[nitems] : nullptr);
     for (size_t i = 0; i < nitems; ++i) {
         valuesE[i] = 2 * i + 1;
-    }
-
-    HDF5 h5("test.h5", H5F_ACC_TRUNC);
-    h5.createDataset("/", "data", dimsE, dimsChunkE, ndimsE, H5T_NATIVE_INT);
-
-    for (size_t i = 0; i < dimsE[0]; ++i) {
-        h5.writeDatasetChunk("/", "data", (void*)&valuesE[i*nitemsS],
-                             dimsE, dimsChunkE, ndimsE, i, H5T_NATIVE_INT);
-    }
-    h5.close();
-
-    int ndims = 0;
-    hsize_t* dims = 0;
-    int* values = 0;
-    h5.open("test.h5", H5F_ACC_RDONLY);
-    for (size_t i = 0; i < dimsE[0]; ++i) {
-        h5.readDatasetChunk("/", "data", (char**)&values, &dims, &ndims, i,
-                            H5T_NATIVE_INT);
-        REQUIRE(ndimsE == ndims);
-        for (int iDim = 1; iDim < ndims; ++iDim) {
-            CHECK(dimsE[iDim] == dims[iDim]);
-        }
-
-        for (size_t ii = 0; ii < nitemsS; ++ii) {
-            CHECK(valuesE[i*nitemsS+ii] == values[ii]);
-        }
     } // for
 
-    delete[] values;values = 0;
-    delete[] dims;dims = 0;
-    delete[] valuesE;valuesE = 0;
+    HDF5 h5("test.h5", H5F_ACC_TRUNC);
+    h5.createDataset<int>("/", "data", HDF5::DatasetShape{{{4, 2, 3}}, {{1, 2, 3}}});
+
+    for (size_t i = 0; i < dimsE[0]; ++i) {
+        const std::vector<int> chunk(valuesE.get() + i*nitemsS, valuesE.get() + (i+1)*nitemsS);
+        HDF5::ChunkInfo chunkInfo{{i+1, 2, 3}, {1, 2, 3}, (int)i};
+        h5.writeDatasetChunk<int>("/", "data", chunk, chunkInfo);
+    } // for
+    h5.close();
+
+    h5.open("test.h5", H5F_ACC_RDONLY);
+    for (size_t i = 0; i < dimsE[0]; ++i) {
+        HDF5::Dataset<int> chunk = h5.readDatasetChunk<int>("/", "data", i);
+        REQUIRE(ndimsE == chunk.dims.size());
+        for (int iDim = 1; iDim < ndimsE; ++iDim) {
+            REQUIRE(dimsE[iDim] == chunk.dims[iDim]);
+        } // for
+
+        for (size_t ii = 0; ii < nitemsS; ++ii) {
+            CHECK(valuesE[i*nitemsS+ii] == chunk.data[ii]);
+        }
+    } // for
 
     h5.close();
 
@@ -446,7 +421,6 @@ pylith::meshio::TestHDF5::testDatasetRawExternal(void) {
 
     const int ndimsE = 2;
     const hsize_t dimsE[ndimsE] = { 6, 3 };
-    hsize_t dims[ndimsE];
 
     // Create raw data file
     hsize_t nitems = dimsE[0];
@@ -454,64 +428,57 @@ pylith::meshio::TestHDF5::testDatasetRawExternal(void) {
         nitems *= dimsE[i];
     }
     const hsize_t sizeBytes = nitems * H5Tget_size(H5T_NATIVE_INT);
-    int* valuesE = (nitems > 0) ? new int[nitems] : 0;
+    std::unique_ptr<int[]> valuesE((nitems > 0) ? new int[nitems] : nullptr);
     for (size_t i = 0; i < nitems; ++i) {
         valuesE[i] = 2 * i + 1;
-    }
+    } // for
     std::ofstream fout("test.dat");
-    fout.write((char*)valuesE, sizeBytes);
+    fout.write((char*)valuesE.get(), sizeBytes);
     fout.close();
 
     HDF5 h5("test.h5", H5F_ACC_TRUNC);
-    dims[0] = H5S_UNLIMITED;
-    dims[1] = dimsE[1];
-    h5.createDatasetRawExternal("/", "data", "test.dat", dims, ndimsE,
-                                H5T_NATIVE_INT);
-    h5.extendDatasetRawExternal("/", "data", dimsE, ndimsE);
+    const hid_t intType = sizeof(int) == 64 ? H5T_NATIVE_INT64 : H5T_NATIVE_INT32;
+    h5.createDatasetRawExternal("/", "data", "test.dat", HDF5::DatasetDims{{{H5S_UNLIMITED, dimsE[1]}}}, intType);
+    h5.extendDatasetRawExternal("/", "data", HDF5::DatasetDims{{{dimsE[0], dimsE[1]}}});
     h5.close();
+
+    _HDF5::H5Handle group(-1, H5Gclose);
+    _HDF5::H5Handle dataset(-1, H5Dclose);
+    _HDF5::H5Handle dataspace(-1, H5Sclose);
 
     h5.open("test.h5", H5F_ACC_RDONLY);
 #if defined(PYLITH_HDF5_USE_API_18)
-    hid_t group = H5Gopen2(h5._file, "/", H5P_DEFAULT);
+    group.id = H5Gopen2(h5._file, "/", H5P_DEFAULT);
 #else
-    hid_t group = H5Gopen(h5._file, "/");
+    group.id = H5Gopen(h5._file, "/");
 #endif
-    CHECK(group >= 0);
+    CHECK(group.id >= 0);
 #if defined(PYLITH_HDF5_USE_API_18)
-    hid_t dataset = H5Dopen2(group, "data", H5P_DEFAULT);
+    dataset.id = H5Dopen2(group.id, "data", H5P_DEFAULT);
 #else
-    hid_t dataset = H5Dopen(group, "data");
+    dataset.id = H5Dopen(group.id, "data");
 #endif
-    CHECK(dataset >= 0);
+    CHECK(dataset.id >= 0);
 
-    hid_t dataspace = H5Dget_space(dataset);
-    CHECK(dataspace >= 0);
+    dataspace.id = H5Dget_space(dataset.id);
+    CHECK(dataspace.id >= 0);
 
-    const int ndims = H5Sget_simple_extent_ndims(dataspace);
+    const int ndims = H5Sget_simple_extent_ndims(dataspace.id);
     REQUIRE(ndimsE == ndims);
-    H5Sget_simple_extent_dims(dataspace, dims, 0);
+    hsize_t dims[ndimsE];
+    H5Sget_simple_extent_dims(dataspace.id, dims, 0);
     for (int i = 0; i < ndims; ++i) {
         CHECK(dimsE[i] == dims[i]);
-    }
+    } // for
 
-    int* values = (nitems > 0) ? new int[nitems] : 0;
-    herr_t err = H5Dread(dataset, H5T_NATIVE_INT, dataspace, dataspace,
-                         H5P_DEFAULT, (void*)values);
+    std::unique_ptr<int[]> values((nitems > 0) ? new int[nitems] : nullptr);
+    herr_t err = H5Dread(dataset.id, H5T_NATIVE_INT, dataspace.id, dataspace.id, H5P_DEFAULT, (void*)values.get());
+    h5.close();
     CHECK(err >= 0);
 
     for (size_t i = 0; i < nitems; ++i) {
         CHECK(valuesE[i] == values[i]);
-    }
-    delete[] valuesE;valuesE = 0;
-    delete[] values;values = 0;
-
-    err = H5Sclose(dataspace);
-    CHECK(err >= 0);
-    err = H5Dclose(dataset);
-    CHECK(err >= 0);
-    err = H5Gclose(group);
-    CHECK(err >= 0);
-    h5.close();
+    } // for
 
     PYLITH_METHOD_END;
 } // testDatasetRawExternal
@@ -525,18 +492,16 @@ pylith::meshio::TestHDF5::testAttributeString(void) {
 
     HDF5 h5("test.h5", H5F_ACC_TRUNC);
 
-    const hsize_t ndims = 1;
-    const hsize_t dims[ndims] = { 2 };
-    h5.createDataset("/", "data", dims, dims, ndims, H5T_NATIVE_INT);
+    h5.createDataset<int>("/", "data", HDF5::DatasetShape{{2}, {2}});
 
     const std::string valueE = "abcd";
-    h5.writeAttribute("/data", "mystring", valueE.c_str());
+    h5.writeAttributeString("/data", "mystring", valueE.c_str());
     h5.close();
 
     h5.open("test.h5", H5F_ACC_RDONLY);
-    std::string value = h5.readAttribute("/data", "mystring");
-    CHECK(valueE == value);
+    std::string value = h5.readAttributeString("/data", "mystring");
     h5.close();
+    CHECK(valueE == value);
 
     PYLITH_METHOD_END;
 } // testAttributeString
