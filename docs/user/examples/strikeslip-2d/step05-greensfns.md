@@ -105,7 +105,6 @@ Option left: name:-ts_type value: beuler source: code
 
 The beginning of the output written to the terminal matches that in our previous simulations.
 The second half of the output written to the terminal resembles the output from time-dependent problems, but with the time step information replaced by the impulse information.
-The journal info associated with the `GreensFns` component (`journal.info.greensfns`) turns on the impulse information.
 We get warnings about unused PETSc options because we do not use time stepping.
 
 ## Visualizing the results

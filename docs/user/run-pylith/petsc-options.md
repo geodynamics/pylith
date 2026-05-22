@@ -26,17 +26,6 @@ We separate the defaults into a few categories to make it easy to select desired
 :solver: Options for the preconditioner and solver;
 :parallel: Options used when running in parallel (can be used in serial as well);
 
-:::{tip}
-You can see which options PyLith sets using the `petscoptions` Pyre Journal.
-Either use the `--journal.info.petscoptions` command line argument or in your `.cfg` file include
-
-```{code-blocK} cfg
-[journal.info]
-petscoptions = 1
-```
-
-:::
-
 :::{seealso}
 See [`PetscDefaults` Component](../components/utils/PetscDefaults.md) for more information about the the Pyre interface for specifying default PETSc options.
 :::

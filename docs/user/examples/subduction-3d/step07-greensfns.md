@@ -29,7 +29,6 @@ The parameters specific to this example are in `step07a_leftlateral.cfg` and `st
 * `pylithapp.metadata` Metadata for this simulation. Even when the author and version are the same for all simulations in a directory, we prefer to keep that metadata in each simulation file as a reminder to keep it up-to-date for each simulation.
 * `pylithapp` Parameters defining where to write the output. We also change the problem type to `pylith.problems.GreensFns`.
 * `pylithapp.problem` Parameters for the time step information as well as solution field with displacement and Lagrange multiplier subfields.
-* `pylithapp.journal.info` We turn on `greensfns` info for this problem.
 * `pylithapp.interfaces` Parameters for the slip impulses applied on the top of the slab.
 
 For Green's functions we use the `FaultCohesiveImpulses` kinematic source to prescribe slip impulses for left-lateral (Step 7a -- `impulse_dof = [1]`) and reverse (Step 7b -- `impulse_dof = [2]`) slip directions. As for Step 6, we use `OutputSolnPoints` to output the solution at fake CGNSS stations.

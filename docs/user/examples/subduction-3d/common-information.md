@@ -6,7 +6,6 @@ We specify parameters common to all simulations in a directory in `pylithapp.cfg
 The settings contained in `pylithapp.cfg` for this problem consist of:
 
 * `pylithapp.metadata` Metadata common to all of the simulations in the directory.
-* `pylithapp.journal.info` Parameters that control the verbosity of the output written to stdout for the different components.
 * `pylithapp.mesh_generator` Parameters for importing the finite-element mesh.
 * `pylithapp.problem` Parameters that define the boundary value problem and its solution, such as the type of solver, solution fields, and output over the domain.
 * `pylithapp.problem.materials` Parameters that specify the governing equation and bulk rheologies.
