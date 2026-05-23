@@ -27,7 +27,7 @@ public:
     /// Add boundary normal direction subfield to diagnostic field.
     void addNormalDir(void);
 
-    /// Add (horizontla) tangential direction subfield to diagnostic field.
+    /// Add (horizontal) tangential direction subfield to diagnostic field.
     void addTangentialDirHoriz(void);
 
     /// Add (vertical) tangential direction subfield to diagnostic field.

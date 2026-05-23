@@ -59,10 +59,10 @@ class AuxSubfieldsTimeDependent(PetscComponent):
 
     timeHistoryAmplitude = pythia.pyre.inventory.facility(
         "time_history_amplitude", family="auxiliary_subfield", factory=Subfield)
-    timeHistoryAmplitude.meta['tip'] = "Time history amplitude, f_2(x). subfield"
+    timeHistoryAmplitude.meta['tip'] = "Time history amplitude, f_2(x), subfield."
 
     timeHistoryStart = pythia.pyre.inventory.facility("time_history_start_time", family="auxiliary_subfield", factory=Subfield)
-    timeHistoryStart.meta['tip'] = "Time history starting time, t_2(s), subfield."
+    timeHistoryStart.meta['tip'] = "Time history starting time, t_2(x), subfield."
 
     # PUBLIC METHODS /////////////////////////////////////////////////////
 

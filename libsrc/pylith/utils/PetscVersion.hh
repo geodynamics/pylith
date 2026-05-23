@@ -23,7 +23,7 @@ public:
     /// Default constructor.
     PetscVersion(void);
 
-    /// Default destrictor.
+    /// Default destructor.
     ~PetscVersion(void);
 
     /** Is source from a release?

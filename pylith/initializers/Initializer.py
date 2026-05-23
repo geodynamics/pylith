@@ -61,7 +61,7 @@ class Initializer(PetscComponent, ModuleInitializer):
         ModuleInitializer.setPhases(self, self.phases.components())
 
     def _configure(self):
-        """Set members based using inventory."""
+        """Set members using inventory."""
         PetscComponent._configure(self)
 
 

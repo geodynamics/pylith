@@ -25,7 +25,7 @@ class InitializePhase(PetscComponent):
         self._createModuleObj()
 
     def _configure(self):
-        """Set members based using inventory.
+        """Set members using inventory.
         """
         PetscComponent._configure(self)
 

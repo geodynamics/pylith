@@ -566,7 +566,7 @@ pylith::feassemble::IntegratorDomain::_updateStateVars(const PylithReal t,
     _setKernelConstants(solution, dt);
 
     // We assume order of the update state variable kernels matches
-    // the order of the correspoinding subfields in the auxiliary
+    // the order of the corresponding subfields in the auxiliary
     // field.
     const size_t numKernels = _kernelsUpdateStateVars.size();
     PetscPointFn** kernelsStateVars = (numKernels > 0) ? new PetscPointFn*[numKernels] : NULL;

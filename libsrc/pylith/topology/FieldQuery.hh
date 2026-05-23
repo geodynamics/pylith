@@ -122,7 +122,7 @@ public:
      *
      * @param[in] dim Spatial dimension.
      * @param[in] t Current time.
-     * @param[in] x Coordinates (nondimensioned) of point location for query.
+     * @param[in] x Coordinates (nondimensionalized) of point location for query.
      * @param[in] numValues Size of values array.
      * @param[out] values Array of values to be returned.
      * @param[in] context Query context.

@@ -51,7 +51,7 @@ public:
     /** Create auxiliary field.
      *
      * @param[in] solution Solution field.
-     * @param[in\ domainMesh Finite-element mesh associated with integration domain.
+     * @param[in] domainMesh Finite-element mesh associated with integration domain.
      *
      * @returns Auxiliary field if applicable, otherwise NULL.
      */

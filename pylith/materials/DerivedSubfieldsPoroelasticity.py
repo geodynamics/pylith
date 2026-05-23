@@ -33,10 +33,10 @@ class DerivedSubfieldsPoroelasticity(DerivedSubfieldsElasticity):
     from pylith.topology.Subfield import Subfield
 
     bulkDensity = pythia.pyre.inventory.facility("bulk_density", family="subfield", factory=Subfield)
-    bulkDensity.meta['tip'] = "bulk density subfield."
+    bulkDensity.meta['tip'] = "Bulk density subfield."
 
     waterContent = pythia.pyre.inventory.facility("water_content", family="subfield", factory=Subfield)
-    waterContent.meta['tip'] = "water content subfield"
+    waterContent.meta['tip'] = "Water content subfield."
 
 
     def __init__(self, name="derivedsubfieldsporoelasticity"):

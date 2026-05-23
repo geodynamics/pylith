@@ -14,7 +14,7 @@ from .meshio import OutputTriggerTime as ModuleOutputTriggerTime
 
 class OutputTriggerTime(OutputTrigger, ModuleOutputTriggerTime):
     """
-    Define how often output is written in terms of elasped simulation time.
+    Define how often output is written in terms of elapsed simulation time.
 
     :::{tip}
     Due to floating point roundoff, it is usually a good idea to use a value that is a fraction of a time step smaller than the desired value.
@@ -48,7 +48,7 @@ class OutputTriggerTime(OutputTrigger, ModuleOutputTriggerTime):
         ModuleOutputTriggerTime.setTimeSkip(self, self.timeSkip.value)
 
     def _configure(self):
-        """Set members based using inventory.
+        """Set members using inventory.
         """
         OutputTrigger._configure(self)
 

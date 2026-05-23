@@ -35,13 +35,13 @@ public:
 
     /** Set user function specifying constrained values.
      *
-     * @param[in] fn Function specifying contrained values.
+     * @param[in] fn Function specifying constrained values.
      */
     void setUserFn(const PetscUserFieldFunc fn);
 
     /** Set user function time derivative specifying constrained values.
      *
-     * @param[in] fnDot Function specifying contrained values time derivative.
+     * @param[in] fnDot Function specifying constrained values time derivative.
      */
     void setUserFnDot(const PetscUserFieldFunc fnDot);
 

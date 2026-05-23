@@ -73,7 +73,7 @@ class General(Component, ModuleScales):
 
     def setTimeScale(self, value):
         """
-        Get time scale.
+        Set time scale.
         """
         return ModuleScales.setTimeScale(self, value.value)
 
@@ -87,7 +87,7 @@ class General(Component, ModuleScales):
 
     def setTemperatureScale(self, value):
         """
-        Get temperature scale.
+        Set temperature scale.
         """
         return ModuleScales.setTemperatureScale(self, value.value)
 

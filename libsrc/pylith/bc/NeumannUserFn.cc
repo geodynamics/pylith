@@ -12,7 +12,7 @@
 
 #include "pylith/bc/NeumannUserFn.hh" // implementation of object methods
 
-#include "pylith/fekernels/NeumannTimeDependent.hh" // USES NeumannTimeDepndent kernels
+#include "pylith/fekernels/NeumannTimeDependent.hh" // USES NeumannTimeDependent kernels
 
 #include "pylith/feassemble/IntegratorBoundary.hh" // USES IntegratorBoundary
 #include "pylith/topology/Field.hh" // USES Field

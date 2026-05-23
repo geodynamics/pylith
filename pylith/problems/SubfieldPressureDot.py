@@ -57,7 +57,7 @@ class SubfieldPressureDot(SolutionSubfield):
 
     def _configure(self):
         """
-        Set members based using inventory.
+        Set members using inventory.
         """
         SolutionSubfield._configure(self)
 

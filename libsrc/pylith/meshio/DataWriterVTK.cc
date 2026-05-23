@@ -55,8 +55,8 @@ void
 pylith::meshio::DataWriterVTK::deallocate(void) { // deallocate
     PYLITH_METHOD_BEGIN;
 
-    closeTimeStep(); // Insure time step is closed.
-    close(); // Insure clean up.
+    closeTimeStep(); // Ensure time step is closed.
+    close(); // Ensure clean up.
     DataWriter::deallocate();
 
     PYLITH_METHOD_END;

@@ -90,7 +90,7 @@ void
 pylith::bc::BoundaryCondition::setRefDir1(const PylithReal vec[3]) {
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setRefDir1(vec="<<vec[0]<<","<<vec[1]<<","<<vec[2]<<")");
 
-    // Set reference direction, insuring it is a unit vector.
+    // Set reference direction, ensuring it is a unit vector.
     const PylithReal mag = sqrt(vec[0]*vec[0] + vec[1]*vec[1] + vec[2]*vec[2]);
     if (mag < 1.0e-6) {
         PYLITH_COMPONENT_ERROR(pylith::ValueError, pylith::journal::user_input,
@@ -109,7 +109,7 @@ void
 pylith::bc::BoundaryCondition::setRefDir2(const PylithReal vec[3]) {
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setRefDir2(vec="<<vec[0]<<","<<vec[1]<<","<<vec[2]<<")");
 
-    // Set reference direction, insuring it is a unit vector.
+    // Set reference direction, ensuring it is a unit vector.
     const PylithReal mag = sqrt(vec[0]*vec[0] + vec[1]*vec[1] + vec[2]*vec[2]);
     if (mag < 1.0e-6) {
         PYLITH_COMPONENT_ERROR(pylith::ValueError, pylith::journal::user_input,

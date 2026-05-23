@@ -638,7 +638,7 @@ pylith::problems::Problem::_createConstraints(void) {
     const pylith::topology::Field* solution = _integrationData->getField("solution");
     assert(solution);
 
-    _constraints.resize(0); // insure we start with an empty array.
+    _constraints.resize(0); // ensure we start with an empty array.
 
     for (size_t i = 0; i < numMaterials; ++i) {
         assert(_materials[i]);

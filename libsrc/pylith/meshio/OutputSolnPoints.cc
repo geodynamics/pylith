@@ -70,7 +70,7 @@ pylith::meshio::OutputSolnPoints::deallocate(void) {
 
 
 // ------------------------------------------------------------------------------------------------
-// Set point names and coordinates of points .
+// Set point names and coordinates of points.
 void
 pylith::meshio::OutputSolnPoints::setPoints(const PylithReal* pointCoords,
                                             const int numPoints,

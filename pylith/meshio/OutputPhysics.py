@@ -56,7 +56,7 @@ class OutputPhysics(OutputObserver, ModuleOutputPhysics):
         OutputObserver.__init__(self, name)
 
     def preinitialize(self, problem, identifier):
-        """Do mimimal initialization.
+        """Do minimal initialization.
         """
         OutputObserver.preinitialize(self, problem)
         ModuleOutputPhysics.setInfoFields(self, self.infoFields)

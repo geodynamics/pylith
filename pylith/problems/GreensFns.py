@@ -19,7 +19,7 @@ from .problems import GreensFns as ModuleGreensFns
 
 class GreensFns(Problem, ModuleGreensFns):
     """
-    Static Green's function problem type with each Green's function corresponding to a fault slip impulses.
+    Static Green's function problem type with each Green's function corresponding to a fault-slip impulse.
 
     Implements `Problem`.
     """
@@ -100,7 +100,7 @@ class GreensFns(Problem, ModuleGreensFns):
         ModuleGreensFns.solve(self)
 
     def _configure(self):
-        """Set members based using inventory.
+        """Set members using inventory.
         """
         Problem._configure(self)
 

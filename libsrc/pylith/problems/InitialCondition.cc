@@ -77,7 +77,7 @@ pylith::problems::InitialCondition::verifyConfiguration(const pylith::topology::
     } // for
 
     PYLITH_METHOD_END;
-} // verityConfiguration
+} // verifyConfiguration
 
 
 // End of file

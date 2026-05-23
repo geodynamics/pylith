@@ -50,7 +50,7 @@ public:
 private:
 
     PylithReal _timeSkip; ///< Elapsed (dimensional) time between writes.
-    PylithReal _timeNondimWrote; ///< Time (nondimensional) when data was previously writtern.
+    PylithReal _timeNondimWrote; ///< Time (nondimensional) when data was previously written.
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:

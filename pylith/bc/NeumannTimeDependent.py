@@ -46,7 +46,7 @@ class NeumannTimeDependent(BoundaryCondition, ModuleNeumannTimeDependent):
     :::
 
     :::{seealso}
-    See [`AuxSubfieldsTimeDependent` Component](AuxSubfieldsTimeDependent.md) for the functional form of the time depenence.
+    See [`AuxSubfieldsTimeDependent` Component](AuxSubfieldsTimeDependent.md) for the functional form of the time dependence.
     :::
     """
 

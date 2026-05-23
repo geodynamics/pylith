@@ -444,7 +444,7 @@ pylith::topology::Field::scatterLocalToOutput(InsertMode mode) const {
 
 
 // ------------------------------------------------------------------------------------------------
-// Add subfield to current field (inteface to use from SWIG).
+// Add subfield to current field (interface to use from SWIG).
 void
 pylith::topology::Field::subfieldAdd(const char *name,
                                      const char* alias,

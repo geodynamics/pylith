@@ -36,7 +36,7 @@ pylith::utils::PetscVersion::PetscVersion(void) {}
 
 
 // ----------------------------------------------------------------------
-// Default destrictor.
+// Default destructor.
 pylith::utils::PetscVersion::~PetscVersion(void) {}
 
 

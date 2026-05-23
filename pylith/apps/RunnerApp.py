@@ -70,7 +70,7 @@ class RunnerApp():
     def _parse_command_line(self):
         """Parse command line arguments.
 
-        Returns (argsparse.Namespace)
+        Returns (argparse.Namespace)
            Command line arguments.
         """
         DESCRIPTION = (

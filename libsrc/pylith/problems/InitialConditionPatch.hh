@@ -72,7 +72,7 @@ public:
     void setValues(pylith::topology::Field* solution,
                    const pylith::scales::Scales& scales);
 
-    // PRIVATE MEMEBRS
+    // PRIVATE MEMBERS
     // //////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 

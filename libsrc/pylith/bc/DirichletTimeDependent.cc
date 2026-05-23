@@ -373,7 +373,7 @@ pylith::bc::_DirichletTimeDependent::setKernelConstraint(pylith::feassemble::Con
                    pylith::fekernels::TimeDependentFn::initialRateTimeHistory_vector_boundary;
         break;
     case 0x0: {
-        PYLITH_WARNING(pylith::journal::user_input, "DirichetBC does not have any constraints.");
+        PYLITH_WARNING(pylith::journal::user_input, "DirichletBC does not have any constraints.");
         break;
     } // case 0x0
     default: {

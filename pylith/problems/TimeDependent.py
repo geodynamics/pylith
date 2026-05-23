@@ -138,7 +138,7 @@ class TimeDependent(Problem, ModuleTimeDependent):
         ModuleTimeDependent.solve(self)
 
     def _configure(self):
-        """Set members based using inventory."""
+        """Set members using inventory."""
         Problem._configure(self)
         if self.startTime > self.endTime:
             raise ValueError(

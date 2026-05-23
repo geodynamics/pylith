@@ -63,7 +63,7 @@ class OutputSolnBoundary(OutputSoln, ModuleOutputSolnBoundary):
         OutputSoln.__init__(self, name)
 
     def preinitialize(self, problem):
-        """Do mimimal initialization.
+        """Do minimal initialization.
         """
         OutputSoln.preinitialize(self, problem)
         ModuleOutputSolnBoundary.setLabelName(self, self.labelName)
@@ -73,7 +73,7 @@ class OutputSolnBoundary(OutputSoln, ModuleOutputSolnBoundary):
         self.writer.setFilename(problem.defaults.outputDir, problem.defaults.simName, identifier)
 
     def _configure(self):
-        """Set members based using inventory.
+        """Set members using inventory.
         """
         OutputSoln._configure(self)
 

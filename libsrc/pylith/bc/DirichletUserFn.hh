@@ -55,7 +55,7 @@ public:
 
     /** Get user function specifying field on boundary
      *
-     * @preturns Function specifying field on boundary.
+     * @returns Function specifying field on boundary.
      */
     PetscUserFieldFunc getUserFn(void) const;
 
@@ -67,7 +67,7 @@ public:
 
     /** Get user function specifying time derivative of field on boundary
      *
-     * @preturns Function specifying time derivative of field on boundary.
+     * @returns Function specifying time derivative of field on boundary.
      */
     PetscUserFieldFunc getUserFnDot(void) const;
 
@@ -94,7 +94,7 @@ public:
     /** Create auxiliary field.
      *
      * @param[in] solution Solution field.
-     * @param[in\ domainMesh Finite-element mesh associated with integration domain.
+     * @param[in] domainMesh Finite-element mesh associated with integration domain.
      *
      * @returns Auxiliary field if applicable, otherwise NULL.
      */

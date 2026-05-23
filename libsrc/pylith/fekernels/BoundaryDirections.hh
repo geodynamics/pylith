@@ -26,7 +26,7 @@ public:
     /** Compute tangential directions for boundary in 3D.
      *
      * @param[out] tanDir1 First tangential direction.
-     * @param[out] tanDIr2 Second tangential direction.
+     * @param[out] tanDir2 Second tangential direction.
      * @param[in] refDir1 First choice for reference direction.
      * @param[in] refDir2 Second choice for reference direction if first fails.
      * @param[in] normDir Normal direction.
@@ -203,7 +203,7 @@ public:
     /** Transform values from (tangential, normal) to (x, y).
      *
      * @param[out] valueXY Values in xy coordinate system.
-     * @param[in] valuesTN Values in tagential-normal coordinate system.
+     * @param[in] valuesTN Values in tangential-normal coordinate system.
      * @param[in] normalDir Normal direction unit vector.
      */
     static inline
@@ -221,7 +221,7 @@ public:
     /** Transform values from (tangential 1, tangential 2, normal) to (x, y, z).
      *
      * @param[out] valueXYZ Values in xyz coordinate system.
-     * @param[in] valuesTN Values in tagential-normal coordinate system.
+     * @param[in] valuesTN Values in tangential-normal coordinate system.
      * @param[in] refDir1 Reference direction 1.
      * @param[in] refDir2 Reference direction 2.
      * @param[in] normalDir Normal direction unit vector.

@@ -68,7 +68,7 @@ class SolnDispPresTracStrainVelPdotTdot(PetscComponent):
 
     def components(self):
         """Order of facilities in Inventory is ambiguous, so overwrite
-        components() to insure order is [displacement, pressure, trace_strain].
+        components() to ensure order is [displacement, pressure, trace_strain].
 
         """
         return [self.displacement, self.pressure, self.trace_strain, self.velocity, self.pressure_t, self.trace_strain_t]

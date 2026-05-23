@@ -63,7 +63,7 @@ const char*
 pylith::feassemble::PhysicsImplementation::getPhysicsLabelName(void) const {
     assert(_physics);
     return _physics->getLabelName();
-} // getPhysicaLabelName
+} // getPhysicsLabelName
 
 
 // ------------------------------------------------------------------------------------------------

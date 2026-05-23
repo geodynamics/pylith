@@ -50,7 +50,7 @@ class MeshIOObj(PetscComponent, ModuleMeshIO):
         return mesh
 
     def write(self, mesh):
-        """Write finite-element mesh.stored in Sieve mesh object.
+        """Write finite-element mesh stored in Sieve mesh object.
 
         @param mesh PETSc mesh object containing finite-element mesh
         """
@@ -60,7 +60,7 @@ class MeshIOObj(PetscComponent, ModuleMeshIO):
         ModuleMeshIO.write(self, mesh)
 
     def _configure(self):
-        """Set members based using inventory.
+        """Set members using inventory.
         """
         PetscComponent._configure(self)
 

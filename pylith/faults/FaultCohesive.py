@@ -35,7 +35,7 @@ def validateDir(value):
 
 class FaultCohesive(Physics, ModuleFaultCohesive):
     """
-    Abstract base class for a fault surface implemeted with cohesive cells.
+    Abstract base class for a fault surface implemented with cohesive cells.
     """
 
     import pythia.pyre.inventory

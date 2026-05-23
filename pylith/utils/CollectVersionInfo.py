@@ -89,7 +89,7 @@ class CollectVersionInfo(Component):
 
     @classmethod
     def _collect(cls):
-        """Collect version infoformation.
+        """Collect version information.
         """
         info = {
             "platform": cls._collectPlatform(),

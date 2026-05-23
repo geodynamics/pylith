@@ -104,7 +104,7 @@ pylith::topology::FieldFactory::getSubfieldDiscretization(const char* subfieldNa
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Initialie factory for setting up auxiliary subfields.
+// Initialize factory for setting up auxiliary subfields.
 void
 pylith::topology::FieldFactory::initialize(pylith::topology::Field* field,
                                            const pylith::scales::Scales& scales,

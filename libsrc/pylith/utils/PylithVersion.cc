@@ -27,7 +27,7 @@ pylith::utils::PylithVersion::PylithVersion(void) {}
 
 
 // ----------------------------------------------------------------------
-// Default destrictor.
+// Default destructor.
 pylith::utils::PylithVersion::~PylithVersion(void) {}
 
 

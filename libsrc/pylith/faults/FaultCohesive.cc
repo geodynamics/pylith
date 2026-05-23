@@ -203,7 +203,7 @@ pylith::faults::FaultCohesive::getBuriedEdgesLabelValue(void) const {
 // Set first choice for reference direction to discriminate among tangential directions in 3-D.
 void
 pylith::faults::FaultCohesive::setRefDir1(const double vec[3]) {
-    // Set reference direction, insuring it is a unit vector.
+    // Set reference direction, ensuring it is a unit vector.
     const PylithReal mag = sqrt(vec[0]*vec[0] + vec[1]*vec[1] + vec[2]*vec[2]);
     if (mag < 1.0e-6) {
         PYLITH_COMPONENT_ERROR(pylith::ValueError, pylith::journal::user_input,
@@ -219,7 +219,7 @@ pylith::faults::FaultCohesive::setRefDir1(const double vec[3]) {
 // Set second choice for reference direction to discriminate among tangential directions in 3-D.
 void
 pylith::faults::FaultCohesive::setRefDir2(const double vec[3]) {
-    // Set reference direction, insuring it is a unit vector.
+    // Set reference direction, ensuring it is a unit vector.
     const PylithReal mag = sqrt(vec[0]*vec[0] + vec[1]*vec[1] + vec[2]*vec[2]);
     if (mag < 1.0e-6) {
         PYLITH_COMPONENT_ERROR(pylith::ValueError, pylith::journal::user_input,

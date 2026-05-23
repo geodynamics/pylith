@@ -363,7 +363,7 @@ pylith::utils::_PetscOptions::addAdaptiveTimeStepping(PetscOptions* options) {
     options->add("-ts_adapt_monitor", "true");
 
 
-} // addAdaaptiveTimeStepping
+} // addAdaptiveTimeStepping
 
 
 // End of file

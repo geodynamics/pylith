@@ -92,7 +92,7 @@ namespace pylith {
                                   const int_array& points,
                                   const char* name);
 
-            /** Read a point group with facs.
+            /** Read a point group with faces.
              *
              * @param[out] faceValues Array of cell+vertices for each face.
              * @param[out] name Name of group.

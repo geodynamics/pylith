@@ -188,7 +188,7 @@ pylith::materials::AuxiliaryFactoryViscoelastic::addPowerLawReferenceStress(void
 
 
 // ------------------------------------------------------------------------------------------------
-// Add power-law exponenet subfield to auxiliary fields.
+// Add power-law exponent subfield to auxiliary fields.
 void
 pylith::materials::AuxiliaryFactoryViscoelastic::addPowerLawExponent(void) {
     PYLITH_METHOD_BEGIN;

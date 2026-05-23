@@ -271,7 +271,7 @@ pylith::materials::_Query::vmToBulkModulus(PylithScalar valueSubfield[],
 
 
 // ------------------------------------------------------------------------------------------------
-// Compute Maxwell time from from density, Vs, and viscosity.
+// Compute Maxwell time from density, Vs, and viscosity.
 std::string
 pylith::materials::_Query::vmToMaxwellTime(PylithScalar valueSubfield[],
                                            const PylithInt numComponents,
@@ -466,7 +466,7 @@ pylith::materials::_Query::dbToGravityField(PylithScalar valueSubfield[],
 
 
 // ------------------------------------------------------------------------------------------------
-// Compute Biot's modulus from Biot's coefficient, solid grain bulk moduls,
+// Compute Biot's modulus from Biot's coefficient, solid grain bulk modulus,
 // fluid bulk modulus, and porosity
 std::string
 pylith::materials::_Query::inputToBiotModulus(PylithScalar valueSubfield[],

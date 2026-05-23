@@ -43,7 +43,7 @@ class SolnDispVel(PetscComponent):
 
     def components(self):
         """Order of facilities in Inventory is ambiguous, so overwrite
-        components() to insure order is [displacement, velocity].
+        components() to ensure order is [displacement, velocity].
 
         """
         return [self.displacement, self.velocity]

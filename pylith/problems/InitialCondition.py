@@ -36,7 +36,7 @@ class InitialCondition(PetscComponent, ModuleInitialCondition):
     def _createModuleObj(self):
         """Call constructor for module object for access to C++ object.
         """
-        raise NotImplementedError("Please implement _createModuleOb() in derived class.")
+        raise NotImplementedError("Please implement _createModuleObj() in derived class.")
 
 
 # End of file

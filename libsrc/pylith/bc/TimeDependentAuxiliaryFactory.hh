@@ -30,7 +30,7 @@ public:
 
     /** Default constructor.
      *
-     * @param[in] reference Reference for coordinate directions in auxiliary subfield.s
+     * @param[in] reference Reference for coordinate directions in auxiliary subfields.
      */
     TimeDependentAuxiliaryFactory(const ReferenceEnum reference=XYZ);
 

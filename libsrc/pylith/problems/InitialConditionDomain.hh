@@ -42,7 +42,7 @@ public:
     void setValues(pylith::topology::Field* solution,
                    const pylith::scales::Scales& scales);
 
-    // PRIVATE MEMEBRS /////////////////////////////////////////////////////////////////////////////////////////////////
+    // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
     spatialdata::spatialdb::SpatialDB* _db; ///< Spatial database with values for initial condition.

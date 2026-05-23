@@ -199,7 +199,7 @@ pylith::faults::KinSrcAuxiliaryFactory::addTimeHistoryValue(void) {
     description.validator = NULL;
 
     _field->subfieldAdd(description, getSubfieldDiscretization("final_slip"));
-    // No subfield query; populated at begining of time step.
+    // No subfield query; populated at beginning of time step.
 
     PYLITH_METHOD_END;
 } // addTimeHistoryValue

@@ -23,7 +23,7 @@ public:
     /// Default constructor.
     PylithVersion(void);
 
-    /// Default destrictor.
+    /// Default destructor.
     ~PylithVersion(void);
 
     /** Is source from a release?
