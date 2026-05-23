@@ -16,7 +16,7 @@ def validateDescription(value):
     """Validate description.
     """
     if len(value) > 0:
-        print("WARNING: Specifying a 'description' for a material is deprecated starting in v5.0; this will be remove in v6.0.")
+        print("WARNING: Specifying a 'description' for a material is deprecated starting in v5.0; this will be removed in v6.0.")
     return value
 
 
