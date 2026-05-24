@@ -53,6 +53,7 @@ class RunnerApp():
             arguments (list of str)
                 Command line arguments.
         """
+        import sys
         workdir = filename.parent
         cwd = os.getcwd()
 
@@ -62,6 +63,7 @@ class RunnerApp():
             print(f"RUNNING {workdir} - pylith {args}...")
         else:
             print(f"RUNNING: pylith {args}...")
+        sys.stdout.flush()
 
         app = PyLithApp()
         app.run(argv=["pylith"] + arguments)
