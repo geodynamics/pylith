@@ -256,9 +256,9 @@ pylith::utils::_PetscOptions::write(pythia::journal::info_t& info,
         const std::string name = iter->first.substr(1);
         const std::string value = iter->second;
         if (iter->second.empty()) {
-            info << name << " = true\n";
+            info << "    " << name << " = true\n";
         } else {
-            info << name << " = " << value << "\n";
+            info << "    " << name << " = " << value << "\n";
         } // if/else
     } // for
     info << pythia::journal::endl;

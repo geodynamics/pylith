@@ -7,9 +7,6 @@
 #
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
-# @file pylith/apps/PyLithApp.py
-#
-# @brief Python PyLith application
 
 from .PetscApplication import PetscApplication
 
@@ -77,6 +74,7 @@ class PyLithApp(PetscApplication):
         if mpi_is_root():
             comm = mpi_comm_world()
             self._flow.log("Running on %d process(es)." % comm.size)
+        self.petsc.showOptions()
 
         self._setupLogging()
 
