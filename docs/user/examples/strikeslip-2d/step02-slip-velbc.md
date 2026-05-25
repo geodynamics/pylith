@@ -75,28 +75,34 @@ caption: Run Step 2 simulation
 $ pylith step02_slip_velbc.cfg
 
 # The output should look something like the following.
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:77:main
- -- pylithapp(info)
+ >> software/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:79:main
+ -- info (application-flow)
  -- Running on 1 process(es).
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/meshio/MeshIOObj.py:38:read
- -- meshiopetsc(info)
- -- Reading finite-element mesh
- >> /src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:85:void pylith::meshio::MeshIO::read(pylith::topology::Mesh *, const bool)
- -- meshiopetsc(info)
- -- Component 'reader': Domain bounding box:
-    (-50000, 50000)
-    (-75000, 75000)
+
+# -- many lines omitted --
+
+ >> src/cig/pylith/libsrc/pylith/problems/TimeDependent.cc:473:void pylith::problems::TimeDependent::solve()
+ -- info (application-flow)
+ -- Component 'timedependent.problem': Solving equations.
+0 TS dt 0.05 time -0.05
+    0 SNES Function norm 0.000000000000e+00
+    Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 0
+1 TS dt 0.05 time 0.
+    0 SNES Function norm 1.587863174294e+00
+      Linear solve converged due to CONVERGED_ATOL iterations 9
+    1 SNES Function norm 4.122054854127e-08
+    Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
 
 # -- many lines omitted --
 
 24 TS dt 0.05 time 1.15
-    0 SNES Function norm 1.587863174573e+00
-      Linear solve converged due to CONVERGED_ATOL iterations 0
-    1 SNES Function norm 2.084776546334e-09
+    0 SNES Function norm 1.587863188128e+00
+      Linear solve converged due to CONVERGED_ATOL iterations 1
+    1 SNES Function norm 4.146299281838e-08
     Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
 25 TS dt 0.05 time 1.2
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:199:finalize
- -- timedependent(info)
+ >> software/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:222:finalize
+ -- info (application-flow)
  -- Finalizing problem.
 ```
 

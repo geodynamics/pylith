@@ -54,82 +54,74 @@ caption: Run Step 1 simulation
 $ pylith step01_axialdisp.cfg
 
 # The output should look something like the following.
- >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/meshio/MeshIOObj.py:44:read
- -- meshiopetsc(info)
- -- Reading finite-element mesh
- >> /src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:94:void pylith::meshio::MeshIO::read(topology::Mesh *)
- -- meshiopetsc(info)
- -- Component 'reader': Domain bounding box:
+ >> software/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:79:main
+ -- info (application-flow)
+ -- Running on 1 process(es).
+ >> src/cig/pylith/libsrc/pylith/utils/PetscOptions.cc:251:static void pylith::utils::_PetscOptions::write(pythia::journal::info_t &, const char *, const PetscOptions &)
+ -- info (application-flow)
+ -- Setting PETSc options:
+    ksp_atol = 1.0e-7
+    ksp_converged_reason = true
+    ksp_error_if_not_converged = true
+    ksp_gmres_restart = 100
+    ksp_guess_pod_size = 8
+    ksp_guess_type = pod
+    ksp_rtol = 1.0e-14
+    mg_fine_ksp_max_it = 5
+    pc_type = gamg
+    snes_atol = 5.0e-7
+    snes_converged_reason = true
+    snes_error_if_not_converged = true
+    snes_monitor = true
+    snes_rtol = 1.0e-14
+    ts_error_if_step_fails = true
+    ts_exact_final_time = matchstep
+    ts_monitor = true
+    ts_type = beuler
+    viewer_hdf5_collective = true
+
+ >> src/cig/pylith/libsrc/pylith/meshio/MeshIOPetsc.cc:205:virtual void pylith::meshio::MeshIOPetsc::_read()
+ -- info (application-flow)
+ -- Component 'meshiopetsc.reader': Reading finite-element mesh from 'mesh_hex.msh'.
+ >> src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:76:void pylith::meshio::MeshIO::read(pylith::topology::Mesh *, const bool)
+ -- info (application-flow)
+ -- Component 'meshiopetsc.reader': Domain bounding box:
     (-6000, 6000)
     (-6000, 6000)
     (-9000, 0)
- >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:116:preinitialize
- -- timedependent(info)
- -- Performing minimal initialization before verifying configuration.
- >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Solution.py:44:preinitialize
- -- solution(info)
- -- Performing minimal initialization of solution.
- >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:175:verifyConfiguration
- -- timedependent(info)
- -- Verifying compatibility of problem configuration.
- >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:221:_printInfo
- -- timedependent(info)
+ >> src/cig/pylith/libsrc/pylith/problems/TimeDependent.cc:316:virtual void pylith::problems::TimeDependent::verifyConfiguration() const
+ -- info (application-flow)
+ -- Component 'timedependent.problem': Verifying problem configuration.
+ >> software/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:238:_printInfo
+ -- info (application-flow)
  -- Scales for nondimensionalization:
     Length scale: 100000*m
     Displacement scale: 1*m
     Time scale: 3.15576e+09*s
     Rigidity scale: 1e+10*m**-1*kg*s**-2
     Temperature scale: 1*K
- >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:186:initialize
- -- timedependent(info)
- -- Initializing timedependent problem with quasistatic formulation.
- >> /src/cig/pylith/libsrc/pylith/utils/PetscOptions.cc:235:static void pylith::utils::_PetscOptions::write(pythia::journal::info_t &, const char *, const pylith::utils::PetscOptions &)
- -- petscoptions(info)
- -- Setting PETSc options:
-ksp_atol = 1.0e-7
-ksp_converged_reason = true
-ksp_error_if_not_converged = true
-ksp_guess_pod_size = 8
-ksp_guess_type = pod
-ksp_rtol = 1.0e-12
-mg_fine_ksp_max_it = 5
-mg_levels_pc_type = pbjacobi
-pc_gamg_coarse_eq_limit = 200
-pc_type = gamg
-snes_atol = 4.0e-7
-snes_converged_reason = true
-snes_error_if_not_converged = true
-snes_monitor = true
-snes_rtol = 1.0e-12
-ts_error_if_step_fails = true
-ts_exact_final_time = matchstep
-ts_monitor = true
-ts_type = beuler
-viewer_hdf5_collective = true
-
- >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/TimeDependent.py:139:run
- -- timedependent(info)
- -- Solving problem.
+ >> src/cig/pylith/libsrc/pylith/problems/TimeDependent.cc:342:virtual void pylith::problems::TimeDependent::initialize()
+ -- info (application-flow)
+ -- Component 'timedependent.problem': Initializing problem.
+ >> src/cig/pylith/libsrc/pylith/problems/TimeDependent.cc:473:void pylith::problems::TimeDependent::solve()
+ -- info (application-flow)
+ -- Component 'timedependent.problem': Solving equations.
 0 TS dt 0.001 time 0.
     0 SNES Function norm 2.045040813383e+00
       Linear solve converged due to CONVERGED_ATOL iterations 4
     1 SNES Function norm 3.894554358059e-09
     Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
 1 TS dt 0.001 time 0.001
- >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:201:finalize
- -- timedependent(info)
+ >> software/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:222:finalize
+ -- info (application-flow)
  -- Finalizing problem.
-WARNING! There are options you set that were not used!
-WARNING! could be spelling mistake, etc!
-There is one unused database option. It is:
-Option left: name:-mg_levels_pc_type value: pbjacobi source: code
 ```
 
-At the beginning of the output written to the terminal, we see that PyLith is reading the mesh using the `MeshIOAscii` reader and that it found the domain to extend from -6000 m to +6000 m in the x and y directions and from -9000 m to 0 m in the z direction.
+At the beginning of the output written to the terminal, we see the PETSc options PyLith selected based on the governing equations and formulation as discussed in {ref}`sec-user-run-pylith-petsc-options`.
+Next, we see that PyLith is reading the mesh using the `MeshIOPetsc` reader and that it reports the bounding box of the domain.
 We also see the scales used to nondimensionalize the problem.
 
-Near the end of the output written to the terminal, we see the PETSc options PyLith selected based on the governing equations and formulation as discussed in {ref}`sec-user-run-pylith-petsc-options`.
-The solver advanced the solution one time step (static simulation).
+Near the end of the output written to the terminal, we see the solver advanced the solution one time step (static simulation).
 The linear solve converged in 4 iterations.
 The norm of the residual met the absolute tolerance convergence criterion (`ksp_atol`).
 The nonlinear solve converged in 1 iteration, which we expect because this is a linear problem, and the residual met the absolute convergence tolerance (`snes_atol`).

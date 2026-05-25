@@ -74,14 +74,21 @@ caption: Run Step 5 simulation
 $ pylith step05_sheardisptractrate.cfg
 
 # The output should look something like the following.
- >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/meshio/MeshIOObj.py:44:read
- -- meshioascii(info)
- -- Reading finite-element mesh
- >> /src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:94:void pylith::meshio::MeshIO::read(topology::Mesh *)
- -- meshioascii(info)
- -- Component 'reader': Domain bounding box:
-    (-6000, 6000)
-    (-16000, -0)
+ >> software/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:79:main
+ -- info (application-flow)
+ -- Running on 1 process(es).
+
+# -- many lines omitted --
+
+ >> src/cig/pylith/libsrc/pylith/problems/TimeDependent.cc:473:void pylith::problems::TimeDependent::solve()
+ -- info (application-flow)
+ -- Component 'timedependent.problem': Solving equations.
+0 TS dt 0.1 time -0.1
+    0 SNES Function norm 1.817939142477e+01
+      Linear solve converged due to CONVERGED_ATOL iterations 3
+    1 SNES Function norm 8.280473801872e-08
+    Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
+
 
 # -- many lines omitted --
 
@@ -91,8 +98,8 @@ $ pylith step05_sheardisptractrate.cfg
     1 SNES Function norm 1.606117666093e-07
     Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
 6 TS dt 0.1 time 0.5
- >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:201:finalize
- -- timedependent(info)
+ >> software/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:222:finalize
+ -- info (application-flow)
  -- Finalizing problem.
 ```
 

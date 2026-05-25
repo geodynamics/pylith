@@ -50,102 +50,80 @@ caption: Run Step 1 simulation
 $ pylith step01_slip.cfg
 
 # The output should look something like the following.
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:77:main
- -- pylithapp(info)
+ >> software/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:79:main
+ -- info (application-flow)
  -- Running on 1 process(es).
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/meshio/MeshIOObj.py:38:read
- -- meshiopetsc(info)
- -- Reading finite-element mesh
- >> /src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:85:void pylith::meshio::MeshIO::read(pylith::topology::Mesh *, const bool)
- -- meshiopetsc(info)
- -- Component 'reader': Domain bounding box:
+ >> src/cig/pylith/libsrc/pylith/utils/PetscOptions.cc:251:static void pylith::utils::_PetscOptions::write(pythia::journal::info_t &, const char *, const PetscOptions &)
+ -- info (application-flow)
+ -- Setting PETSc options:
+    dm_reorder_section = true
+    dm_reorder_section_type = cohesive
+    ksp_atol = 1.0e-7
+    ksp_converged_reason = true
+    ksp_error_if_not_converged = true
+    ksp_gmres_restart = 100
+    ksp_guess_pod_size = 8
+    ksp_guess_type = pod
+    ksp_rtol = 1.0e-14
+    mg_fine_ksp_max_it = 5
+    mg_fine_pc_type = vpbjacobi
+    pc_type = gamg
+    snes_atol = 5.0e-7
+    snes_converged_reason = true
+    snes_error_if_not_converged = true
+    snes_monitor = true
+    snes_rtol = 1.0e-14
+    ts_error_if_step_fails = true
+    ts_exact_final_time = matchstep
+    ts_monitor = true
+    ts_type = beuler
+    viewer_hdf5_collective = true
+
+ >> src/cig/pylith/libsrc/pylith/meshio/MeshIOPetsc.cc:205:virtual void pylith::meshio::MeshIOPetsc::_read()
+ -- info (application-flow)
+ -- Component 'meshiopetsc.reader': Reading finite-element mesh from 'mesh_tri.msh'.
+ >> src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:76:void pylith::meshio::MeshIO::read(pylith::topology::Mesh *, const bool)
+ -- info (application-flow)
+ -- Component 'meshiopetsc.reader': Domain bounding box:
     (410000, 490000)
     (3.91e+06, 3.99e+06)
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/faults/FaultCohesiveKin.py:87:preinitialize
- -- faultcohesivekin(info)
- -- Pre-initializing fault 'fault_main'.
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/faults/FaultCohesiveKin.py:87:preinitialize
- -- faultcohesivekin(info)
- -- Pre-initializing fault 'fault_west'.
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/faults/FaultCohesiveKin.py:87:preinitialize
- -- faultcohesivekin(info)
- -- Pre-initializing fault 'fault_east'.
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:116:preinitialize
- -- timedependent(info)
- -- Performing minimal initialization before verifying configuration.
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Solution.py:39:preinitialize
- -- solution(info)
- -- Performing minimal initialization of solution.
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/faults/FaultCohesiveKin.py:87:preinitialize
- -- faultcohesivekin(info)
- -- Pre-initializing fault 'fault_main'.
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/faults/FaultCohesiveKin.py:87:preinitialize
- -- faultcohesivekin(info)
- -- Pre-initializing fault 'fault_west'.
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/faults/FaultCohesiveKin.py:87:preinitialize
- -- faultcohesivekin(info)
- -- Pre-initializing fault 'fault_east'.
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:174:verifyConfiguration
- -- timedependent(info)
- -- Verifying compatibility of problem configuration.
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:219:_printInfo
- -- timedependent(info)
+ >> src/cig/pylith/libsrc/pylith/problems/TimeDependent.cc:316:virtual void pylith::problems::TimeDependent::verifyConfiguration() const
+ -- info (application-flow)
+ -- Component 'timedependent.problem': Verifying problem configuration.
+ >> software/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:238:_printInfo
+ -- info (application-flow)
  -- Scales for nondimensionalization:
-    Length scale: 100000*m
+    Length scale: 1000*m
     Displacement scale: 1*m
     Time scale: 3.15576e+09*s
     Rigidity scale: 1e+10*m**-1*kg*s**-2
     Temperature scale: 1*K
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:185:initialize
- -- timedependent(info)
- -- Initializing timedependent problem with quasistatic formulation.
- >> /src/cig/pylith/libsrc/pylith/utils/PetscOptions.cc:239:static void pylith::utils::_PetscOptions::write(pythia::journal::info_t &, const char *, const PetscOptions &)
- -- petscoptions(info)
- -- Setting PETSc options:
-dm_reorder_section = true
-dm_reorder_section_type = cohesive
-ksp_atol = 1.0e-7
-ksp_converged_reason = true
-ksp_error_if_not_converged = true
-ksp_guess_pod_size = 8
-ksp_guess_type = pod
-ksp_rtol = 1.0e-12
-mg_fine_ksp_max_it = 5
-mg_fine_pc_type = vpbjacobi
-mg_levels_pc_type = pbjacobi
-pc_gamg_coarse_eq_limit = 200
-pc_type = gamg
-snes_atol = 4.0e-7
-snes_converged_reason = true
-snes_error_if_not_converged = true
-snes_monitor = true
-snes_rtol = 1.0e-12
-ts_error_if_step_fails = true
-ts_exact_final_time = matchstep
-ts_monitor = true
-ts_type = beuler
-viewer_hdf5_collective = true
-
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/TimeDependent.py:132:run
- -- timedependent(info)
- -- Solving problem.
+ >> src/cig/pylith/libsrc/pylith/problems/TimeDependent.cc:342:virtual void pylith::problems::TimeDependent::initialize()
+ -- info (application-flow)
+ -- Component 'timedependent.problem': Initializing problem.
+ >> src/cig/pylith/libsrc/pylith/problems/TimeDependent.cc:473:void pylith::problems::TimeDependent::solve()
+ -- info (application-flow)
+ -- Component 'timedependent.problem': Solving equations.
 0 TS dt 0.001 time 0.
-    0 SNES Function norm 2.419639130581e-01
-      Linear solve converged due to CONVERGED_ATOL iterations 14
-    1 SNES Function norm 2.221961415753e-09
+    0 SNES Function norm 2.419639130581e+01
+      Linear solve converged due to CONVERGED_ATOL iterations 13
+    1 SNES Function norm 6.875321480887e-08
     Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
 1 TS dt 0.001 time 0.001
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:199:finalize
- -- timedependent(info)
+ >> software/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:222:finalize
+ -- info (application-flow)
  -- Finalizing problem.
+ >> software/pylith-debug/lib/python3.12/site-packages/pylith/utils/PetscManager.py:60:finalize
+ -- info (application-flow)
+ -- Finalizing PETSc.
 ```
 
 At the beginning of the output written to the terminal, we see that PyLith is reading the mesh using the `MeshIOPetsc` reader and that it found the domain to extend from 410000 to 490000 in the x direction and from 3.91e+06 to 3.99e+06 in the y direction.
-The scales for nondimensionalization remain the default values for a quasistatic problem.
 PyLith detects the presence of a fault based on the Lagrange multiplier for the fault in the solution field and selects appropriate preconditioning options as discussed in {ref}`sec-user-run-pylith-petsc-options`.
+The scales for nondimensionalization remain the default values for a quasistatic problem.
 
 At the end of the output written to the terminal, we see that the solver advanced the solution one time step (static simulation).
-The linear solve converged after 19 iterations and the norm of the residual met the absolute convergence tolerance (`ksp_atol`) .
+The linear solve converged after 13 iterations and the norm of the residual met the absolute convergence tolerance (`ksp_atol`) .
 The nonlinear solve converged in 1 iteration, which we expect because this is a linear problem, and the residual met the absolute convergence tolerance (`snes_atol`).
 
 ### Earthquake rupture parameters
@@ -246,71 +224,31 @@ caption: Run Step 1 simulation with the Cubit mesh
 $ pylith step01_slip_cubit.cfg
 
 # The output should look something like the following.
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:77:main
- -- pylithapp(info)
+ >> software/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:79:main
+ -- info (application-flow)
  -- Running on 1 process(es).
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/meshio/MeshIOObj.py:38:read
- -- meshiocubit(info)
- -- Reading finite-element mesh
- >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:148:void pylith::meshio::MeshIOCubit::_readVertices(ExodusII &, scalar_array *, int *, int *) const
- -- meshiocubit(info)
- -- Component 'reader': Reading 1610 vertices.
- >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:208:void pylith::meshio::MeshIOCubit::_readCells(ExodusII &, int_array *, int_array *, int *, int *) const
- -- meshiocubit(info)
- -- Component 'reader': Reading 3125 cells in 1 blocks.
- >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:270:void pylith::meshio::MeshIOCubit::_readGroups(ExodusII &)
- -- meshiocubit(info)
- -- Component 'reader': Found 10 node sets.
- >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:296:void pylith::meshio::MeshIOCubit::_readGroups(ExodusII &)
- -- meshiocubit(info)
- -- Component 'reader': Reading node set 'boundary_south' with id 10 containing 25 nodes.
- >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:296:void pylith::meshio::MeshIOCubit::_readGroups(ExodusII &)
- -- meshiocubit(info)
- -- Component 'reader': Reading node set 'boundary_east' with id 11 containing 25 nodes.
- >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:296:void pylith::meshio::MeshIOCubit::_readGroups(ExodusII &)
- -- meshiocubit(info)
- -- Component 'reader': Reading node set 'boundary_north' with id 12 containing 24 nodes.
- >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:296:void pylith::meshio::MeshIOCubit::_readGroups(ExodusII &)
- -- meshiocubit(info)
- -- Component 'reader': Reading node set 'boundary_west' with id 13 containing 23 nodes.
- >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:296:void pylith::meshio::MeshIOCubit::_readGroups(ExodusII &)
- -- meshiocubit(info)
- -- Component 'reader': Reading node set 'fault_main' with id 20 containing 37 nodes.
- >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:296:void pylith::meshio::MeshIOCubit::_readGroups(ExodusII &)
- -- meshiocubit(info)
- -- Component 'reader': Reading node set 'fault_west' with id 21 containing 13 nodes.
- >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:296:void pylith::meshio::MeshIOCubit::_readGroups(ExodusII &)
- -- meshiocubit(info)
- -- Component 'reader': Reading node set 'fault_east' with id 22 containing 6 nodes.
- >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:296:void pylith::meshio::MeshIOCubit::_readGroups(ExodusII &)
- -- meshiocubit(info)
- -- Component 'reader': Reading node set 'fault_main_ends' with id 30 containing 2 nodes.
- >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:296:void pylith::meshio::MeshIOCubit::_readGroups(ExodusII &)
- -- meshiocubit(info)
- -- Component 'reader': Reading node set 'fault_west_ends' with id 31 containing 2 nodes.
- >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:296:void pylith::meshio::MeshIOCubit::_readGroups(ExodusII &)
- -- meshiocubit(info)
- -- Component 'reader': Reading node set 'fault_east_ends' with id 32 containing 2 nodes.
- >> /src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:85:void pylith::meshio::MeshIO::read(pylith::topology::Mesh *, const bool)
- -- meshiocubit(info)
- -- Component 'reader': Domain bounding box:
-    (410000, 490000)
-    (3.91e+06, 3.99e+06)
+ 
+ # -- many lines omitted --
 
--- many lines omitted --
+ >> src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:170:virtual void pylith::meshio::MeshIOCubit::_read()
+ -- info (application-flow)
+ -- Component 'meshiocubit.reader': Reading finite-element mesh from 'mesh_tri.exo'.
+ >> src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:207:virtual void pylith::meshio::MeshIOCubit::_read()
+ -- info (application-flow)
+ -- Component 'meshiocubit.reader': Read 3125 cells and 1610 vertices.
 
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/TimeDependent.py:132:run
- -- timedependent(info)
- -- Solving problem.
+# -- many lines omitted --
+
+>> src/cig/pylith/libsrc/pylith/problems/TimeDependent.cc:473:void pylith::problems::TimeDependent::solve()
+ -- info (application-flow)
+ -- Component 'timedependent.problem': Solving equations.
 0 TS dt 0.001 time 0.
-    0 SNES Function norm 2.428257473425e-01
-      Linear solve converged due to CONVERGED_ATOL iterations 15
-    1 SNES Function norm 3.631583176571e-09
+    0 SNES Function norm 2.428257473425e+01
+      Linear solve converged due to CONVERGED_ATOL iterations 14
+    1 SNES Function norm 1.922622064928e-08
     Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
 1 TS dt 0.001 time 0.001
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:199:finalize
- -- timedependent(info)
+ >> software/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:222:finalize
+ -- info (application-flow)
  -- Finalizing problem.
 ```
-
-The `MeshIOCubit` reader includes diagnostic information in the journal output related to the sizes of the nodesets and material blocks.

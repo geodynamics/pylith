@@ -46,98 +46,84 @@ caption: Run Step 1a simulation
 $ pylith step01a_slip.cfg
 
 # The output should look something like the following.
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:77:main
- -- pylithapp(info)
+ >> software/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:79:main
+ -- info (application-flow)
  -- Running on 1 process(es).
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/meshio/MeshIOObj.py:38:read
- -- meshiopetsc(info)
- -- Reading finite-element mesh
- >> /src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:85:void pylith::meshio::MeshIO::read(pylith::topology::Mesh *, const bool)
- -- meshiopetsc(info)
- -- Component 'reader': Domain bounding box:
+ >> src/cig/pylith/libsrc/pylith/utils/PetscOptions.cc:251:static void pylith::utils::_PetscOptions::write(pythia::journal::info_t &, const char *, const PetscOptions &)
+ -- info (application-flow)
+ -- Setting PETSc options:
+    dm_reorder_section = true
+    dm_reorder_section_type = cohesive
+    ksp_atol = 1.0e-7
+    ksp_converged_reason = true
+    ksp_error_if_not_converged = true
+    ksp_gmres_restart = 100
+    ksp_guess_pod_size = 8
+    ksp_guess_type = pod
+    ksp_rtol = 1.0e-14
+    mg_fine_ksp_max_it = 5
+    mg_fine_pc_type = vpbjacobi
+    pc_type = gamg
+    snes_atol = 5.0e-7
+    snes_converged_reason = true
+    snes_error_if_not_converged = true
+    snes_monitor = true
+    snes_rtol = 1.0e-14
+    ts_error_if_step_fails = true
+    ts_exact_final_time = matchstep
+    ts_monitor = true
+    ts_type = beuler
+    viewer_hdf5_collective = true
+
+ >> src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:170:virtual void pylith::meshio::MeshIOCubit::_read()
+ -- info (application-flow)
+ -- Component 'meshiocubit.reader': Reading finite-element mesh from 'mesh_tri.exo'.
+ >> src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:207:virtual void pylith::meshio::MeshIOCubit::_read()
+ -- info (application-flow)
+ -- Component 'meshiocubit.reader': Read 378 cells and 213 vertices.
+ >> src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:76:void pylith::meshio::MeshIO::read(pylith::topology::Mesh *, const bool)
+ -- info (application-flow)
+ -- Component 'meshiocubit.reader': Domain bounding box:
     (-50000, 50000)
     (-75000, 75000)
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/faults/FaultCohesiveKin.py:87:preinitialize
- -- faultcohesivekin(info)
- -- Pre-initializing fault 'fault'.
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:116:preinitialize
- -- timedependent(info)
- -- Performing minimal initialization before verifying configuration.
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Solution.py:39:preinitialize
- -- solution(info)
- -- Performing minimal initialization of solution.
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/materials/RheologyElasticity.py:35:preinitialize
- -- isotropiclinearelasticity(info)
- -- Performing minimal initialization of elasticity rheology 'bulk_rheology'.
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/materials/RheologyElasticity.py:35:preinitialize
- -- isotropiclinearelasticity(info)
- -- Performing minimal initialization of elasticity rheology 'bulk_rheology'.
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/bc/DirichletTimeDependent.py:86:preinitialize
- -- dirichlettimedependent(info)
- -- Performing minimal initialization of time-dependent Dirichlet boundary condition 'bc_xneg'.
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/bc/DirichletTimeDependent.py:86:preinitialize
- -- dirichlettimedependent(info)
- -- Performing minimal initialization of time-dependent Dirichlet boundary condition 'bc_xpos'.
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/faults/FaultCohesiveKin.py:87:preinitialize
- -- faultcohesivekin(info)
- -- Pre-initializing fault 'fault'.
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:174:verifyConfiguration
- -- timedependent(info)
- -- Verifying compatibility of problem configuration.
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:219:_printInfo
- -- timedependent(info)
+ >> src/cig/pylith/libsrc/pylith/problems/TimeDependent.cc:316:virtual void pylith::problems::TimeDependent::verifyConfiguration() const
+ -- info (application-flow)
+ -- Component 'timedependent.problem': Verifying problem configuration.
+ >> software/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:238:_printInfo
+ -- info (application-flow)
  -- Scales for nondimensionalization:
-    Length scale: 1000*m
+    Length scale: 8000*m
+    Displacement scale: 1*m
     Time scale: 3.15576e+09*s
-    Pressure scale: 3e+10*m**-1*kg*s**-2
-    Density scale: 2.98765e+23*m**-3*kg
+    Rigidity scale: 1e+10*m**-1*kg*s**-2
     Temperature scale: 1*K
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:185:initialize
- -- timedependent(info)
- -- Initializing timedependent problem with quasistatic formulation.
- >> /src/cig/pylith/libsrc/pylith/utils/PetscOptions.cc:239:static void pylith::utils::_PetscOptions::write(pythia::journal::info_t &, const char *, const PetscOptions &)
- -- petscoptions(info)
- -- Setting PETSc options:
-dm_reorder_section = true
-dm_reorder_section_type = cohesive
-ksp_atol = 1.0e-7
-ksp_converged_reason = true
-ksp_error_if_not_converged = true
-ksp_guess_pod_size = 8
-ksp_guess_type = pod
-ksp_rtol = 1.0e-12
-mg_fine_ksp_max_it = 5
-mg_fine_pc_type = vpbjacobi
-mg_levels_pc_type = pbjacobi
-pc_gamg_coarse_eq_limit = 200
-pc_type = gamg
-snes_atol = 4.0e-7
-snes_converged_reason = true
-snes_error_if_not_converged = true
-snes_monitor = true
-snes_rtol = 1.0e-12
-ts_error_if_step_fails = true
-ts_exact_final_time = matchstep
-ts_monitor = true
-ts_type = beuler
-viewer_hdf5_collective = true
-
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/TimeDependent.py:132:run
- -- timedependent(info)
- -- Solving problem.
+ >> src/cig/pylith/libsrc/pylith/problems/TimeDependent.cc:342:virtual void pylith::problems::TimeDependent::initialize()
+ -- info (application-flow)
+ -- Component 'timedependent.problem': Initializing problem.
+ >> src/cig/pylith/libsrc/pylith/topology/MeshOps.cc:239:static pylith::topology::Mesh *pylith::topology::MeshOps::createLowerDimMesh(const pylith::topology::Mesh &, const char *, const int, const char *)
+ -- warning (deprecation)
+ -- Creating lower dimension mesh from label with vertices. This feature will be removed in v6.0. In the future, you will need to mark boundaries instead of vertices.
+ >> src/cig/pylith/libsrc/pylith/topology/MeshOps.cc:239:static pylith::topology::Mesh *pylith::topology::MeshOps::createLowerDimMesh(const pylith::topology::Mesh &, const char *, const int, const char *)
+ -- warning (deprecation)
+ -- Creating lower dimension mesh from label with vertices. This feature will be removed in v6.0. In the future, you will need to mark boundaries instead of vertices.
+ >> src/cig/pylith/libsrc/pylith/problems/TimeDependent.cc:473:void pylith::problems::TimeDependent::solve()
+ -- info (application-flow)
+ -- Component 'timedependent.problem': Solving equations.
 0 TS dt 0.001 time 0.
-    0 SNES Function norm 6.787703392741e-01
-      Linear solve converged due to CONVERGED_ATOL iterations 10
-    1 SNES Function norm 4.614413493180e-09
+    0 SNES Function norm 8.489136776687e+00
+      Linear solve converged due to CONVERGED_ATOL iterations 9
+    1 SNES Function norm 3.930434823490e-08
     Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
+ >> src/cig/pylith/libsrc/pylith/topology/MeshOps.cc:239:static pylith::topology::Mesh *pylith::topology::MeshOps::createLowerDimMesh(const pylith::topology::Mesh &, const char *, const int, const char *)
+ -- warning (deprecation)
+ -- Creating lower dimension mesh from label with vertices. This feature will be removed in v6.0. In the future, you will need to mark boundaries instead of vertices.
+ >> src/cig/pylith/libsrc/pylith/topology/MeshOps.cc:239:static pylith::topology::Mesh *pylith::topology::MeshOps::createLowerDimMesh(const pylith::topology::Mesh &, const char *, const int, const char *)
+ -- warning (deprecation)
+ -- Creating lower dimension mesh from label with vertices. This feature will be removed in v6.0. In the future, you will need to mark boundaries instead of vertices.
 1 TS dt 0.001 time 0.001
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:199:finalize
- -- timedependent(info)
+ >> software/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:222:finalize
+ -- info (application-flow)
  -- Finalizing problem.
-WARNING! There are options you set that were not used!
-WARNING! could be spelling mistake, etc!
-There is one unused database option. It is:
-Option left: name:-mg_levels_pc_type value: pbjacobi source: code
 ```
 
 At the beginning of the output written to the terminal, we see that PyLith is reading the mesh using the `MeshIOPetsc` reader and that it found the domain to extend from -50,000 m to +50,000 m in the x direction and from -75,000 m to +75,000 m in the y direction.
@@ -145,7 +131,7 @@ The scales for nondimensionalization remain the default values for a quasistatic
 PyLith detects the presence of a fault based on the Lagrange multiplier for the fault in the solution field and selects appropriate preconditioning options as discussed in {ref}`sec-user-run-pylith-petsc-options`.
 
 At the end of the output written to the terminal, we see that the solver advanced the solution one time step (static simulation).
-The linear solve converged after 10 iterations and the norm of the residual met the absolute convergence tolerance (`ksp_atol`) .
+The linear solve converged after 9 iterations and the norm of the residual met the absolute convergence tolerance (`ksp_atol`) .
 The nonlinear solve converged in 1 iteration, which we expect because this is a linear problem, and the residual met the absolute convergence tolerance (`snes_atol`).
 
 ### Visualizing the results
@@ -200,72 +186,85 @@ caption: Run Step 1 simulation with the Cubit mesh
 $ pylith step01_slip_cubit.cfg
 
 # The output should look something like the following.
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:77:main
- -- pylithapp(info)
+ >> software/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:79:main
+ -- info (application-flow)
  -- Running on 1 process(es).
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/meshio/MeshIOObj.py:38:read
- -- meshiocubit(info)
- -- Reading finite-element mesh
- >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:148:void pylith::meshio::MeshIOCubit::_readVertices(ExodusII &, scalar_array *, int *, int *) const
- -- meshiocubit(info)
- -- Component 'reader': Reading 682 vertices.
- >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:208:void pylith::meshio::MeshIOCubit::_readCells(ExodusII &, int_array *, int_array *, int *, int *) const
- -- meshiocubit(info)
- -- Component 'reader': Reading 1276 cells in 2 blocks.
- >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:270:void pylith::meshio::MeshIOCubit::_readGroups(ExodusII &)
- -- meshiocubit(info)
- -- Component 'reader': Found 5 node sets.
- >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:296:void pylith::meshio::MeshIOCubit::_readGroups(ExodusII &)
- -- meshiocubit(info)
- -- Component 'reader': Reading node set 'fault' with id 10 containing 39 nodes.
- >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:296:void pylith::meshio::MeshIOCubit::_readGroups(ExodusII &)
- -- meshiocubit(info)
- -- Component 'reader': Reading node set 'boundary_xpos' with id 21 containing 24 nodes.
- >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:296:void pylith::meshio::MeshIOCubit::_readGroups(ExodusII &)
- -- meshiocubit(info)
- -- Component 'reader': Reading node set 'boundary_xneg' with id 22 containing 24 nodes.
- >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:296:void pylith::meshio::MeshIOCubit::_readGroups(ExodusII &)
- -- meshiocubit(info)
- -- Component 'reader': Reading node set 'boundary_ypos' with id 23 containing 21 nodes.
- >> /src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:296:void pylith::meshio::MeshIOCubit::_readGroups(ExodusII &)
- -- meshiocubit(info)
- -- Component 'reader': Reading node set 'boundary_yneg' with id 24 containing 21 nodes.
- >> /src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:85:void pylith::meshio::MeshIO::read(pylith::topology::Mesh *, const bool)
- -- meshiocubit(info)
- -- Component 'reader': Domain bounding box:
+ >> src/cig/pylith/libsrc/pylith/utils/PetscOptions.cc:251:static void pylith::utils::_PetscOptions::write(pythia::journal::info_t &, const char *, const PetscOptions &)
+ -- info (application-flow)
+ -- Setting PETSc options:
+    dm_reorder_section = true
+    dm_reorder_section_type = cohesive
+    ksp_atol = 1.0e-7
+    ksp_converged_reason = true
+    ksp_error_if_not_converged = true
+    ksp_gmres_restart = 100
+    ksp_guess_pod_size = 8
+    ksp_guess_type = pod
+    ksp_rtol = 1.0e-14
+    mg_fine_ksp_max_it = 5
+    mg_fine_pc_type = vpbjacobi
+    pc_type = gamg
+    snes_atol = 5.0e-7
+    snes_converged_reason = true
+    snes_error_if_not_converged = true
+    snes_monitor = true
+    snes_rtol = 1.0e-14
+    ts_error_if_step_fails = true
+    ts_exact_final_time = matchstep
+    ts_monitor = true
+    ts_type = beuler
+    viewer_hdf5_collective = true
+
+ >> src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:170:virtual void pylith::meshio::MeshIOCubit::_read()
+ -- info (application-flow)
+ -- Component 'meshiocubit.reader': Reading finite-element mesh from 'mesh_tri.exo'.
+ >> src/cig/pylith/libsrc/pylith/meshio/MeshIOCubit.cc:207:virtual void pylith::meshio::MeshIOCubit::_read()
+ -- info (application-flow)
+ -- Component 'meshiocubit.reader': Read 378 cells and 213 vertices.
+ >> src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:76:void pylith::meshio::MeshIO::read(pylith::topology::Mesh *, const bool)
+ -- info (application-flow)
+ -- Component 'meshiocubit.reader': Domain bounding box:
     (-50000, 50000)
     (-75000, 75000)
-
-# -- many lines omitted --
-
- >> /src/cig/pylith/libsrc/pylith/topology/MeshOps.cc:233:static pylith::topology::Mesh *pylith::topology::MeshOps::createLowerDimMesh(const pylith::topology::Mesh &, const char *, const int, const char *)
- -- deprecated(warning)
- -- DEPRECATION: Creating lower dimension mesh from label with vertices. This feature will be removed in v6.0. In the future, you will need to mark boundaries not vertices for boundary conditions.
- >> /src/cig/pylith/libsrc/pylith/topology/MeshOps.cc:233:static pylith::topology::Mesh *pylith::topology::MeshOps::createLowerDimMesh(const pylith::topology::Mesh &, const char *, const int, const char *)
- -- deprecated(warning)
- -- DEPRECATION: Creating lower dimension mesh from label with vertices. This feature will be removed in v6.0. In the future, you will need to mark boundaries not vertices for boundary conditions.
- >> /Users/brad/software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/TimeDependent.py:145:run
- -- timedependent(info)
- -- Solving problem.
+ >> src/cig/pylith/libsrc/pylith/problems/TimeDependent.cc:316:virtual void pylith::problems::TimeDependent::verifyConfiguration() const
+ -- info (application-flow)
+ -- Component 'timedependent.problem': Verifying problem configuration.
+ >> software/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:238:_printInfo
+ -- info (application-flow)
+ -- Scales for nondimensionalization:
+    Length scale: 8000*m
+    Displacement scale: 1*m
+    Time scale: 3.15576e+09*s
+    Rigidity scale: 1e+10*m**-1*kg*s**-2
+    Temperature scale: 1*K
+ >> src/cig/pylith/libsrc/pylith/problems/TimeDependent.cc:342:virtual void pylith::problems::TimeDependent::initialize()
+ -- info (application-flow)
+ -- Component 'timedependent.problem': Initializing problem.
+ >> src/cig/pylith/libsrc/pylith/topology/MeshOps.cc:239:static pylith::topology::Mesh *pylith::topology::MeshOps::createLowerDimMesh(const pylith::topology::Mesh &, const char *, const int, const char *)
+ -- warning (deprecation)
+ -- Creating lower dimension mesh from label with vertices. This feature will be removed in v6.0. In the future, you will need to mark boundaries instead of vertices.
+ >> src/cig/pylith/libsrc/pylith/topology/MeshOps.cc:239:static pylith::topology::Mesh *pylith::topology::MeshOps::createLowerDimMesh(const pylith::topology::Mesh &, const char *, const int, const char *)
+ -- warning (deprecation)
+ -- Creating lower dimension mesh from label with vertices. This feature will be removed in v6.0. In the future, you will need to mark boundaries instead of vertices.
+ >> src/cig/pylith/libsrc/pylith/problems/TimeDependent.cc:473:void pylith::problems::TimeDependent::solve()
+ -- info (application-flow)
+ -- Component 'timedependent.problem': Solving equations.
 0 TS dt 0.001 time 0.
-    0 SNES Function norm 6.791309421349e-01
-      Linear solve converged due to CONVERGED_ATOL iterations 10
-    1 SNES Function norm 8.508832621992e-10
+    0 SNES Function norm 8.489136776687e+00
+      Linear solve converged due to CONVERGED_ATOL iterations 9
+    1 SNES Function norm 3.930434823490e-08
     Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
- >> /src/cig/pylith/libsrc/pylith/topology/MeshOps.cc:233:static pylith::topology::Mesh *pylith::topology::MeshOps::createLowerDimMesh(const pylith::topology::Mesh &, const char *, const int, const char *)
- -- deprecated(warning)
- -- DEPRECATION: Creating lower dimension mesh from label with vertices. This feature will be removed in v6.0. In the future, you will need to mark boundaries not vertices for boundary conditions.
- >> /src/cig/pylith/libsrc/pylith/topology/MeshOps.cc:233:static pylith::topology::Mesh *pylith::topology::MeshOps::createLowerDimMesh(const pylith::topology::Mesh &, const char *, const int, const char *)
- -- deprecated(warning)
- -- DEPRECATION: Creating lower dimension mesh from label with vertices. This feature will be removed in v6.0. In the future, you will need to mark boundaries not vertices for boundary conditions.
+ >> src/cig/pylith/libsrc/pylith/topology/MeshOps.cc:239:static pylith::topology::Mesh *pylith::topology::MeshOps::createLowerDimMesh(const pylith::topology::Mesh &, const char *, const int, const char *)
+ -- warning (deprecation)
+ -- Creating lower dimension mesh from label with vertices. This feature will be removed in v6.0. In the future, you will need to mark boundaries instead of vertices.
+ >> src/cig/pylith/libsrc/pylith/topology/MeshOps.cc:239:static pylith::topology::Mesh *pylith::topology::MeshOps::createLowerDimMesh(const pylith::topology::Mesh &, const char *, const int, const char *)
+ -- warning (deprecation)
+ -- Creating lower dimension mesh from label with vertices. This feature will be removed in v6.0. In the future, you will need to mark boundaries instead of vertices.
 1 TS dt 0.001 time 0.001
- >> /Users/brad/software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:232:finalize
- -- timedependent(info)
+ >> software/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:222:finalize
+ -- info (application-flow)
  -- Finalizing problem.
-WARNING! There are options you set that were not used!
-WARNING! could be spelling mistake, etc!
-There is one unused database option. It is:
-Option left: name:-mg_levels_pc_type value: pbjacobi source: code
+
 ```
 
 The `MeshIOCubit` reader includes diagnostic information in the journal output related to the sizes of the nodesets and material blocks.

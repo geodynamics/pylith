@@ -24,6 +24,7 @@ step01-error02.md
 step01-error03.md
 step01-error04.md
 step01-error05.md
+step01-error06.md
 step06-twofaults.md
 step06-error01.md
 step06-error02.md

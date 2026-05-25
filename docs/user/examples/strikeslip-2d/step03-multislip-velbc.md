@@ -50,27 +50,20 @@ caption: Run Step 3 simulation
 $ pylith step03_multislip_velbc.cfg
 
 # The output should look something like the following.
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:77:main
- -- pylithapp(info)
+ >> software/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:79:main
+ -- info (application-flow)
  -- Running on 1 process(es).
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/meshio/MeshIOObj.py:38:read
- -- meshiopetsc(info)
- -- Reading finite-element mesh
- >> /src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:85:void pylith::meshio::MeshIO::read(pylith::topology::Mesh *, const bool)
- -- meshiopetsc(info)
- -- Component 'reader': Domain bounding box:
-    (-50000, 50000)
-    (-75000, 75000)
-# -- many lines omitted --
+ 
+ # -- many lines omitted --
 
 25 TS dt 0.1 time 2.4
-    0 SNES Function norm 3.175726348635e+00
+    0 SNES Function norm 3.175726344664e+00
       Linear solve converged due to CONVERGED_ATOL iterations 0
-    1 SNES Function norm 1.889182885363e-09
+    1 SNES Function norm 1.372645307731e-08
     Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
 26 TS dt 0.1 time 2.5
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:199:finalize
- -- timedependent(info)
+ >> software/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:222:finalize
+ -- info (application-flow)
  -- Finalizing problem.
 ```
 

@@ -1,13 +1,11 @@
-# Step 6: Error 7
-
-## Error Message
+# Step 1: Successful run
 
 ```{code-block} console
 ---
-caption: Output when running Step 6.
+caption: Output when running Step 1.
 linenos: True
 ---
-$ pylith step06_twofaults.cfg
+$ pylith step01a_gravity.cfg
 
  >> software/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:76:main
  -- info (application-flow)
@@ -15,8 +13,6 @@ $ pylith step06_twofaults.cfg
  >> src/cig/pylith/libsrc/pylith/utils/PetscOptions.cc:251:static void pylith::utils::_PetscOptions::write(pythia::journal::info_t&, const char*, const pylith::utils::PetscOptions&)
  -- info (application-flow)
  -- Setting PETSc options:
-    dm_reorder_section = true
-    dm_reorder_section_type = cohesive
     ksp_atol = 1.0e-7
     ksp_converged_reason = true
     ksp_error_if_not_converged = true
@@ -25,7 +21,6 @@ $ pylith step06_twofaults.cfg
     ksp_guess_type = pod
     ksp_rtol = 1.0e-14
     mg_fine_ksp_max_it = 5
-    mg_fine_pc_type = vpbjacobi
     pc_type = gamg
     snes_atol = 5.0e-7
     snes_converged_reason = true
@@ -52,7 +47,7 @@ $ pylith step06_twofaults.cfg
  >> software/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:238:_printInfo
  -- info (application-flow)
  -- Scales for nondimensionalization:
-    Length scale: 2500*m
+    Length scale: 5000*m
     Displacement scale: 1*m
     Time scale: 3.15576e+09*s
     Rigidity scale: 1e+10*m**-1*kg*s**-2
@@ -63,39 +58,15 @@ $ pylith step06_twofaults.cfg
  >> src/cig/pylith/libsrc/pylith/problems/TimeDependent.cc:473:void pylith::problems::TimeDependent::solve()
  -- info (application-flow)
  -- Component 'timedependent.problem': Solving equations.
-0 TS dt 0.2 time -0.2
-    0 SNES Function norm 7.734839381701e+00
-      Linear solve converged due to CONVERGED_ATOL iterations 14
-    1 SNES Function norm 5.384136432949e-08
+0 TS dt 0.001 time 0.
+    0 SNES Function norm 3.007829881319e+03
+      Linear solve converged due to CONVERGED_ATOL iterations 11
+    1 SNES Function norm 3.524261285349e-07
     Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
-1 TS dt 0.2 time 0.
-    0 SNES Function norm 5.384136432949e-08
-    Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 0
-2 TS dt 0.2 time 0.2
-    0 SNES Function norm 3.245094761947e+00
-      Linear solve converged due to CONVERGED_ATOL iterations 13
-    1 SNES Function norm 4.882143081495e-08
-    Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
-3 TS dt 0.2 time 0.4
+1 TS dt 0.001 time 0.001
  >> software/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:222:finalize
  -- info (application-flow)
  -- Finalizing problem.
 ```
 
-## Troubleshooting Strategy
-
-The simulation ran without errors.
-In visualizing the output we notice the slip distribution contains a sharp transition from 0 m to 2.0 m; we intended to prescribe slip that is uniform above y=-20 km and tapers linearly to 0 at y=-30 km.
-We load the JSON parameter file into the PyLith Parameter Viewer and find that we are using the default `query_type` of `nearest` for the earthquake rupture parameters.
-For our intended piecewise linear variation in slip, we need to use `linear` for the `query_type`.
-
-## Resolution
-
-```{code-block} cfg
----
-caption: Correct error in `step06_twofaults.cfg`.
----
-[pylithapp.problem.interfaces.fault]
-...
-db_auxiliary_field.query_type = linear
-```
+Our simulation now runs without errors and the output looks correct.

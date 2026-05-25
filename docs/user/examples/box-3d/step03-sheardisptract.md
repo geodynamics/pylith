@@ -67,38 +67,28 @@ caption: Run Step 3 simulation
 $ pylith step03_sheardisptract.cfg
 
 # The output should look something like the following.
- >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/meshio/MeshIOObj.py:44:read
- -- meshiopetsc(info)
- -- Reading finite-element mesh
- >> /src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:94:void pylith::meshio::MeshIO::read(topology::Mesh *)
- -- meshiopetsc(info)
- -- Component 'reader': Domain bounding box:
-    (-6000, 6000)
-    (-6000, 6000)
-    (-9000, 0)
+ >> software/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:79:main
+ -- info (application-flow)
+ -- Running on 1 process(es).
 
 # -- many lines omitted --
 
- >> /software/unix/py38-venv/pylith-debug/lib/python3.8/site-packages/pylith/problems/TimeDependent.py:139:run
- -- timedependent(info)
- -- Solving problem.
+ >> src/cig/pylith/libsrc/pylith/problems/TimeDependent.cc:473:void pylith::problems::TimeDependent::solve()
+ -- info (application-flow)
+ -- Component 'timedependent.problem': Solving equations.
 0 TS dt 0.001 time 0.
     0 SNES Function norm 8.562738880728e-01
       Linear solve converged due to CONVERGED_ATOL iterations 4
     1 SNES Function norm 3.584100837616e-09
     Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
 1 TS dt 0.001 time 0.001
- >> /software/unix/py38-venv/pylith-debug/lib/python3.8/site-packages/pylith/problems/Problem.py:201:finalize
- -- timedependent(info)
+ >> software/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:222:finalize
+ -- info (application-flow)
  -- Finalizing problem.
-WARNING! There are options you set that were not used!
-WARNING! could be spelling mistake, etc!
-There is one unused database option. It is:
-Option left: name:-mg_levels_pc_type value: pbjacobi source: code
 ```
 
 The output written to the terminal is nearly identical to what we saw for Step 2.
-The linear solve did require only 7 iteration to converge.
+The linear solve did require only 4 iteration to converge.
 
 ## Visualizing the results
 

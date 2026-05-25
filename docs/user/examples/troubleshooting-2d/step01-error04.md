@@ -6,63 +6,89 @@
 ---
 caption: Error message 4 when running Step 1.
 linenos: True
-emphasize-lines: 52
+emphasize-lines: 41-42, 54
 ---
 $ pylith step01a_gravity.cfg
 
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:77:main
- -- pylithapp(info)
+ >> software/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:76:main
+ -- info (application-flow)
  -- Running on 1 process(es).
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/meshio/MeshIOObj.py:38:read
- -- meshiopetsc(info)
- -- Reading finite-element mesh
- >> /src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:85:void pylith::meshio::MeshIO::read(pylith::topology::Mesh *, const bool)
- -- meshiopetsc(info)
- -- Component 'reader': Domain bounding box:
+ >> src/cig/pylith/libsrc/pylith/utils/PetscOptions.cc:251:static void pylith::utils::_PetscOptions::write(pythia::journal::info_t&, const char*, const pylith::utils::PetscOptions&)
+ -- info (application-flow)
+ -- Setting PETSc options:
+    ksp_atol = 1.0e-7
+    ksp_converged_reason = true
+    ksp_error_if_not_converged = true
+    ksp_gmres_restart = 100
+    ksp_guess_pod_size = 8
+    ksp_guess_type = pod
+    ksp_rtol = 1.0e-14
+    mg_fine_ksp_max_it = 5
+    pc_type = gamg
+    snes_atol = 5.0e-7
+    snes_converged_reason = true
+    snes_error_if_not_converged = true
+    snes_monitor = true
+    snes_rtol = 1.0e-14
+    ts_error_if_step_fails = true
+    ts_exact_final_time = matchstep
+    ts_monitor = true
+    ts_type = beuler
+    viewer_hdf5_collective = true
+
+ >> src/cig/pylith/libsrc/pylith/meshio/MeshIOPetsc.cc:204:virtual void pylith::meshio::MeshIOPetsc::_read()
+ -- info (application-flow)
+ -- Component 'meshiopetsc.reader': Reading finite-element mesh from 'mesh_tri.msh'.
+ >> src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:76:void pylith::meshio::MeshIO::read(pylith::topology::Mesh*, bool)
+ -- info (application-flow)
+ -- Component 'meshiopetsc.reader': Domain bounding box:
     (-100000, 100000)
     (-100000, 0)
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:116:preinitialize
- -- timedependent(info)
- -- Performing minimal initialization before verifying configuration.
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Solution.py:39:preinitialize
- -- solution(info)
- -- Performing minimal initialization of solution.
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/materials/RheologyElasticity.py:35:preinitialize
- -- isotropiclinearelasticity(info)
- -- Performing minimal initialization of elasticity rheology 'bulk_rheology'.
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/materials/RheologyElasticity.py:35:preinitialize
- -- isotropiclinearelasticity(info)
- -- Performing minimal initialization of elasticity rheology 'bulk_rheology'.
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/materials/RheologyElasticity.py:35:preinitialize
- -- isotropiclinearelasticity(info)
- -- Performing minimal initialization of elasticity rheology 'bulk_rheology'.
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/bc/DirichletTimeDependent.py:86:preinitialize
- -- dirichlettimedependent(info)
- -- Performing minimal initialization of time-dependent Dirichlet boundary condition 'bc_xneg'.
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/bc/DirichletTimeDependent.py:86:preinitialize
- -- dirichlettimedependent(info)
- -- Performing minimal initialization of time-dependent Dirichlet boundary condition 'bc_xpos'.
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/bc/DirichletTimeDependent.py:86:preinitialize
- -- dirichlettimedependent(info)
- -- Performing minimal initialization of time-dependent Dirichlet boundary condition 'bc_yneg'.
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:174:verifyConfiguration
- -- timedependent(info)
- -- Verifying compatibility of problem configuration.
+ >> src/cig/pylith/libsrc/pylith/problems/TimeDependent.cc:316:virtual void pylith::problems::TimeDependent::verifyConfiguration() const
+ -- info (application-flow)
+ -- Component 'timedependent.problem': Verifying problem configuration.
+ >> src/cig/pylith/libsrc/pylith/topology/MeshOps.cc:802:static void pylith::topology::MeshOps::checkMaterialLabels(const pylith::topology::Mesh&, pylith::int_array&)
+ -- error (user-input)
+ -- Material label_value '3' for cell '609' does not match the label_value of any materials or interfaces.
 Fatal error. Calling MPI_Abort() to abort PyLith application.
 Traceback (most recent call last):
-  File "/software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/apps/PetscApplication.py", line 55, in onComputeNodes
+  File "software/pylith-debug/lib/python3.12/site-packages/pylith/apps/PetscApplication.py", line 55, in onComputeNodes
     self.main(*args, **kwds)
-  File "/software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py", line 101, in main
+  File "software/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py", line 84, in main
     self.problem.verifyConfiguration()
-  File "/software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py", line 176, in verifyConfiguration
+  File "software/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py", line 206, in verifyConfiguration
     ModuleProblem.verifyConfiguration(self)
-  File "/software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/problems.py", line 162, in verifyConfiguration
+  File "software/pylith-debug/lib/python3.12/site-packages/pylith/problems/problems.py", line 162, in verifyConfiguration
     return _problems.Problem_verifyConfiguration(self)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 RuntimeError: Material label_value '3' for cell '609' does not match the label_value of any materials or interfaces.
-Abort(-1) on node 0 (rank 0 in comm 0): application called MPI_Abort(MPI_COMM_WORLD, -1) - process 0
-/software/unix/py3.12-venv/pylith-debug/bin/nemesis: mpiexec: exit 255
-/software/unix/py3.12-venv/pylith-debug/bin/pylith: /software/unix/py3.12-venv/pylith-debug/bin/nemesis: exit 1
+C++ traceback (9 frames):
+  [0]  software/pylith-debug/lib/libpylith.so.0(_ZN6pylith8topology7MeshOps19checkMaterialLabelsERKNS0_4MeshERSt8valarrayIiE+0x7b9) [0x74544c5780c7]
+  [1]  software/pylith-debug/lib/libpylith.so.0(_ZNK6pylith8problems7Problem20_checkMaterialLabelsEv+0x4f6) [0x74544c51e69e]
+  [2]  software/pylith-debug/lib/libpylith.so.0(_ZNK6pylith8problems7Problem19verifyConfigurationEv+0x552) [0x74544c51d046]
+  [3]  software/pylith-debug/lib/libpylith.so.0(_ZNK6pylith8problems13TimeDependent19verifyConfigurationEv+0x253) [0x74544c52c8e5]
+  [4]  software/pylith-debug/lib/python3.12/site-packages/pylith/problems/_problems.so(+0x15af4) [0x745445fd8af4]
+  [5]  software/pylith-debug/bin/mpinemesis(+0x15a51) [0x612c79077a51]
+  [6]  /lib/x86_64-linux-gnu/libc.so.6(+0x29d90) [0x745468c29d90]
+  [7]  /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0x80) [0x745468c29e40]
+  [8]  software/pylith-debug/bin/mpinemesis(+0x5805) [0x612c79067805]
+
+--------------------------------------------------------------------------
+MPI_ABORT was invoked on rank 0 in communicator MPI_COMM_WORLD
+  Proc: [[1354,1],0]
+  Errorcode: -1
+
+NOTE: invoking MPI_ABORT causes Open MPI to kill all MPI processes.
+You may or may not see output from other processes, depending on
+exactly when Open MPI kills them.
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+prterun has exited due to process rank 0 with PID 0 on node igskci164warlng calling
+"abort". This may have caused other processes in the application to be
+terminated by signals sent by prterun (as reported here).
+--------------------------------------------------------------------------
+software/pylith-debug/bin/nemesis: mpiexec: exit 255
+software/pylith-debug/bin/pylith: software/pylith-debug/bin/nemesis: exit 1
 ```
 
 ## Troubleshooting Strategy

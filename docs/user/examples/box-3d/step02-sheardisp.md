@@ -52,19 +52,13 @@ caption: Run Step 2 simulation
 $ pylith step02_sheardisp.cfg
 
 # The output should look something like the following.
- >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/meshio/MeshIOObj.py:44:read
- -- meshiopetsc(info)
- -- Reading finite-element mesh
- >> /src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:94:void pylith::meshio::MeshIO::read(topology::Mesh *)
- -- meshiopetsc(info)
- -- Component 'reader': Domain bounding box:
-    (-6000, 6000)
-    (-6000, 6000)
-    (-9000, 0)
-
+ >> software/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:79:main
+ -- info (application-flow)
+ -- Running on 1 process(es).
+ 
 # -- many lines omitted --
 
- >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/TimeDependent.py:139:run
+ >> software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/TimeDependent.py:139:run
  -- timedependent(info)
  -- Solving problem.
 0 TS dt 0.001 time 0.
@@ -73,7 +67,7 @@ $ pylith step02_sheardisp.cfg
     1 SNES Function norm 4.280274905934e-09
     Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
 1 TS dt 0.001 time 0.001
- >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:201:finalize
+ >> software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:201:finalize
  -- timedependent(info)
  -- Finalizing problem.
 WARNING! There are options you set that were not used!
