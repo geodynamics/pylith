@@ -236,7 +236,7 @@ pylith::topology::MeshOps::createLowerDimMesh(const pylith::topology::Mesh& mesh
             PYLITH_WARNING(pylith::journal::deprecation,
                            "Creating lower dimension mesh from label with vertices. "
                            << "This feature will be removed in v6.0. "
-                           << "In the future, you will need to mark boundaries not vertices for boundary conditions.");
+                           << "In the future, you will need to mark boundaries instead of vertices.");
         } // if
     } // TEMPORARY
 
