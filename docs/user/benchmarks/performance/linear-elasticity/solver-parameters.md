@@ -101,6 +101,7 @@ These changes resulted in slight increases in the number of iterations required 
 ```{code-block} cfg
 ---
 caption: Variable point block Jacobi solver parameters with adjustments at the fine and coarse scales of the multigrid preconditioner (`vpbjacobi (tunecoarse)`). Adjusting the parameters and the coarse scale did not improve performance.
+name: listing:solver:parameters:vpbjacobi:tunecoarse
 emphasize-lines: 18-20
 ---
 [pylithapp.problem.scales]
@@ -134,6 +135,7 @@ Consequently, the solver tolerances become independent of the discretization siz
 ```{code-block} cfg
 ---
 caption: Variable point block Jacobi solver parameters with adjustments at the fine scale of the multigrid preconditioner and separation of length and displacement scales (`vpbjacobi (dispscale)`).
+name: listing:solver:parameters:vpbjacobi:dispscale
 emphasize-lines: 3
 ---
 [pylithapp.problem.scales]
