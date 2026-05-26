@@ -6,7 +6,7 @@
 #SPATIAL.ascii 1
 SimpleDB {
   num-values = 3
-  value-names = final_slip_left_lateral  final_slip_opening  initiation_time
+  value-names = final-slip-left-lateral  final-slip-opening  initiation-time
   value-units =  m  m  year
   num-locs = 3
   data-dim = 2
