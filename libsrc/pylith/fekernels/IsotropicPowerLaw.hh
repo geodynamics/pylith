@@ -75,6 +75,8 @@
 #include "pylith/fekernels/IsotropicLinearElasticity.hh" // USES IsotropicLinearElasticity* kernels
 
 #include "pylith/utils/types.hh"
+#include "pylith/utils/journals.hh"
+#include "pylith/utils/Exceptions.hh"
 
 // ------------------------------------------------------------------------------------------------
 /// Kernels for isotropic power-law viscoelasticity (dimension independent).
@@ -734,12 +736,13 @@ private:
         // Arbitrary factor by which to increase the brackets.
         const PylithReal bracketFactor = 1.5;
         // Minimum allowed value for effective stress.
-        const PylithReal xMin = 0.0;
+        const PylithReal xMin = 1.0e-12;
         PylithReal x1 = *px1;
         PylithReal x2 = *px2;
 
         PylithReal funcValue1 = _effectiveStressFn(x1, ae, b, c, d, dt, j2T, powerLawExponent, powerLawRefStrainRate, powerLawRefStress);
         PylithReal funcValue2 = _effectiveStressFn(x2, ae, b, c, d, dt, j2T, powerLawExponent, powerLawRefStrainRate, powerLawRefStress);
+
 
         bool bracketed = false;
         for (size_t i = 0; i < maxIterations; ++i) {
@@ -749,21 +752,22 @@ private:
             } // if
 
             if (fabs(funcValue1) < fabs(funcValue2)) {
-                x1 += bracketFactor * (x1 - x2);
+                // Expand x1 away from current point, or away from zero
+                x1 = x1 * 1.0/bracketFactor;
                 x1 = std::max(x1, xMin);
                 funcValue1 = _effectiveStressFn(x1, ae, b, c, d, dt, j2T, powerLawExponent, powerLawRefStrainRate, powerLawRefStress);
             } else {
-                x2 += bracketFactor * (x1 - x2);
+                x2 = x2 * bracketFactor;
                 x2 = std::max(x2, xMin);
                 funcValue2 = _effectiveStressFn(x2, ae, b, c, d, dt, j2T, powerLawExponent, powerLawRefStrainRate, powerLawRefStress);
-            } // else
+            } // if/else
         } // for
 
         *px1 = x1;
         *px2 = x2;
 
         if (!bracketed) {
-            throw std::runtime_error("Unable to bracket effective stress.");
+            PYLITH_ERROR(pylith::RunTimeError, pylith::journal::internal, "Unable to bracket effective stress x1=" << x1 << ", fn(x1)=" << funcValue1 << ", x2=" << x2 << ", fn(x2)=" << funcValue2 << ".");
         } // if
     }
 
@@ -842,7 +846,7 @@ private:
         } // for
 
         if (!converged) {
-            throw std::runtime_error("Cannot find root of effective stress function.");
+            PYLITH_ERROR(pylith::RunTimeError, pylith::journal::internal, "Could not find root of effective stress function.");
         } // if
 
         return effStress;
