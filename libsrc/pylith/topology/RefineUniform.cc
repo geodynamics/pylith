@@ -121,7 +121,7 @@ pylith::topology::RefineUniform::getNumLevels(void) const {
 
 
 // ----------------------------------------------------------------------
-// Refine mesh->
+// Refine mesh
 pylith::topology::Mesh*
 pylith::topology::RefineUniform::refine(const pylith::topology::Mesh& mesh) {
     PYLITH_METHOD_BEGIN;

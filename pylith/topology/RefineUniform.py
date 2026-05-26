@@ -39,31 +39,7 @@ class RefineUniform(PetscComponent, ModuleRefineUniform):
     def preinitialize(self):
         """Do minimal initialization."""
         self._createModuleObj()
-
-    def refine(self, mesh):
-        """Refine mesh.
-        """
-        self._setupLogging()
-        logEvent = f"{self._loggingPrefix}refine"
-        self._eventLogger.eventBegin(logEvent)
-
-        from pylith.mpi.Communicator import mpi_is_root
-        if mpi_is_root():
-            self._info.log("Refining mesh using uniform refinement.")
-
-        from .Mesh import Mesh
-        newMesh = Mesh()
-        newMesh.setCoordSys(mesh.getCoordSys())
-        ModuleRefineUniform.refine(self, newMesh, mesh, self.levels)
-        mesh.cleanup()
-
-        self._eventLogger.eventEnd(logEvent)
-        return newMesh
-
-    def _configure(self):
-        """Set members using inventory.
-        """
-        PetscComponent._configure(self)
+        ModuleRefineUniform.setNumLevels(self, self.levels)
 
     def _createModuleObj(self):
         """Create handle to C++ object.
