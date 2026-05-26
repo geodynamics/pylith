@@ -10,7 +10,7 @@ For poroelastic materials these derived subfields are available for output in ad
 
 ## Pyre Facilities
 
-* `bulk_density`: bulk density subfield.
+* `bulk_density`: Bulk density subfield.
   - **current value**: 'subfield', from {default}
   - **configurable as**: subfield, bulk_density
 * `cauchy_strain`: Cauchy strain subfield.
@@ -19,7 +19,7 @@ For poroelastic materials these derived subfields are available for output in ad
 * `cauchy_stress`: Cauchy stress subfield.
   - **current value**: 'subfield', from {default}
   - **configurable as**: subfield, cauchy_stress
-* `water_content`: water content subfield
+* `water_content`: Water content subfield.
   - **current value**: 'subfield', from {default}
   - **configurable as**: subfield, water_content
 

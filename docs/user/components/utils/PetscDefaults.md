@@ -9,6 +9,9 @@ No user-specified settings will be overwritten.
 
 ## Pyre Properties
 
+* `adaptive_time_stepping`=\<bool\>: Use adaptive time stepping.
+  - **default value**: False
+  - **current value**: False, from {default}
 * `collective_io`=\<bool\>: Use default PETSc collective I/O options.
   - **default value**: True
   - **current value**: True, from {default}
@@ -41,6 +44,7 @@ solver = True
 parallel = False
 monitors = True
 initial_guess = True
+adaptive_time_stepping = False
 collective_io = True
 testing = False
 :::

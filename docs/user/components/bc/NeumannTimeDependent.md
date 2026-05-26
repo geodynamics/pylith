@@ -16,7 +16,7 @@ The second tangential direction is $\vec{n} \times \vec{t}_1$.
 :::
 
 :::{seealso}
-See [`AuxSubfieldsTimeDependent` Component](AuxSubfieldsTimeDependent.md) for the functional form of the time depenence.
+See [`AuxSubfieldsTimeDependent` Component](AuxSubfieldsTimeDependent.md) for the functional form of the time dependence.
 :::
 
 ## Pyre Facilities
@@ -56,11 +56,11 @@ See [`AuxSubfieldsTimeDependent` Component](AuxSubfieldsTimeDependent.md) for th
 * `ref_dir_2`=\<list\>: Second choice for reference direction to discriminate among tangential directions in 3D.
   - **default value**: [0.0, 1.0, 0.0]
   - **current value**: [0.0, 1.0, 0.0], from {default}
-  - **validator**: <function validateDir at 0x11c485dc0>
-* `scale_name`=\<str\>: Type of scale for nondimensionalizing Neumann boundary condition ('pressure' for elasticity).
-  - **default value**: 'pressure'
-  - **current value**: 'pressure', from {default}
-  - **validator**: (in ['length', 'time', 'pressure', 'density', 'velocity'])
+  - **validator**: <function validateDir at 0x108d365c0>
+* `scale_name`=\<str\>: Type of scale for nondimensionalizing Neumann boundary condition ('stress' for elasticity).
+  - **default value**: 'stress'
+  - **current value**: 'stress', from {default}
+  - **validator**: (in ['displacement', 'stress'])
 * `use_initial`=\<bool\>: Use initial term in time-dependent expression.
   - **default value**: True
   - **current value**: True, from {default}
@@ -80,7 +80,7 @@ Example of setting `NeumannTimeDependent` Pyre properties and facilities in a pa
 [pylithapp.problem.bc.bc_yneg]
 label = boundary_yneg
 field = displacement
-scale_name = pressure
+scale_name = stress
 
 use_initial = False
 use_time_history = True

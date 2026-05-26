@@ -10,7 +10,7 @@ This boundary condition sets values of a single solution subfield on a boundary.
 To set multiple solution subfields on a boundary, use multiple Dirichlet boundary conditions.
 
 :::{seealso}
-See [`AuxSubfieldsTimeDependent` Component](AuxSubfieldsTimeDependent.md) for the functional form of the time depenence.
+See [`AuxSubfieldsTimeDependent` Component](AuxSubfieldsTimeDependent.md) for the functional form of the time dependence.
 :::
 
 Implements `BoundaryCondition`.

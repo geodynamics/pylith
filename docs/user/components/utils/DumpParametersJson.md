@@ -16,7 +16,7 @@ Implements `DumpParameters`.
 * `filename`=\<str\>: Name of file written with parameters.
   - **default value**: ''
   - **current value**: '', from {default}
-* `indent`=\<int\>: Nmber of spaces to indent, use a negative number for no newlines.
+* `indent`=\<int\>: Number of spaces to indent, use a negative number for no newlines.
   - **default value**: 4
   - **current value**: 4, from {default}
 * `style`=\<str\>: Style of JSON file [compact, normal].
