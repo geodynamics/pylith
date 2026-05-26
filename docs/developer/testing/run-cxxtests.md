@@ -10,9 +10,9 @@ All of the C++ unit test or MMS test executables support the following command l
 * **`--list`** List tests run by the executable.
 * **`--tests=TESTS`** Run subset of the tests. `TESTS` is a comma separated list of tests.
 * **`--petsc VALUE=ARG`** Set PETSc option `-VALUE=ARG`.
-* **`--journal.info=NAME`** Activate Pythia info journal for `NAME`.
-* **`--journal.debug=NAME`** Activate Pythia debug journal for `NAME`.
-* **`--journal.warning=NAME`** Activate Pythia warning journal for `NAME`.
+* **`--journal.info=CHANNEL`** Activate Pythia info journal channel `CHANNEL`.
+* **`--journal.debug=CHANNEL`** Activate Pythia debug journal channel `CHANNEL`.
+* **`--journal.warning=CHANNEL`** Activate Pythia warning journal channel `CHANNEL`.
 
 ```{code-block} console
 ---
@@ -29,11 +29,11 @@ $ ./test_problems --tests=pylith::problems::TestObserversPhysics
 # Run TestObserversPhysics testVerifyObservers and testNotifyObservers tests.
 $ ./test_problems --tests=pylith::problems::TestObserversPhysics::testVerifyObservers,pylith::problems::TestObserversPhysics::testNotifyObservers
 
-# Turn on timedependent info journal.
-$ ./test_problems --journal.info=timedependent
+# Turn on mesh info journal.
+$ ./test_problems --journal.info=mesh
 
-# Turn on timedependent debug journal.
-$ ./test_problems --journal.debug=timedependent
+# Turn on solution debug journal.
+$ ./test_problems --journal.debug=solution
 ```
 
 # Running MMS tests
@@ -45,9 +45,9 @@ All of the C++ unit test or MMS test executables support the following command l
 * **`--help`** Show help for command line arguments.
 * **`--list-tests`** List tests run by the executable.
 * **`--petsc VALUE=ARG`** Set PETSc option `-VALUE=ARG`.
-* **`--journal.info=NAME`** Activate Pythia info journal for `NAME`.
-* **`--journal.debug=NAME`** Activate Pythia debug journal for `NAME`.
-* **`--journal.warning=NAME`** Activate Pythia warning journal for `NAME`.
+* **`--journal.info=CHANNEL`** Activate Pythia info journal channel `CHANNEL`.
+* **`--journal.debug=CHANNEL`** Activate Pythia debug journal channel `CHANNEL`.
+* **`--journal.warning=CHANNEL`** Activate Pythia warning journal channel `CHANNEL`.
 
 ```{code-block} console
 ---
@@ -64,11 +64,11 @@ $ ./mmstest_linearelasticity_nofaults2d [UniformStrain2D]
 # Run all UniformStrain2D residual tests
 $ ./mmstest_linearelasticity_nofaults2d [UniformStrain2D][testResidual]
 
-# Turn on timedependent info journal.
-$ ./mmstest_linearelasticity_nofaults2d --journal.info=timedependent
+# Turn on application-flow info journal.
+$ ./mmstest_linearelasticity_nofaults2d --journal.info=application-flow
 
-# Turn on timedependent debug journal.
-$ ./mmstest_linearelasticity_nofaults2d --journal.debug=timedependent
+# Turn on mms-test debug journal.
+$ ./mmstest_linearelasticity_nofaults2d --journal.debug=mms-test
 ```
 
 ## Using the debugger
