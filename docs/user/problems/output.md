@@ -8,6 +8,105 @@ PyLith produces four kinds of output:
 * Output of the solution over the domain, external boundary, or at discrete points (see {ref}`sec-user-solution-observers`); and
 * Output of the solution or state variables over a material, interface, or external boundary (see {ref}`sec-user-physics-observers`).
 
+(sec-user-journals)=
+## Journal
+
+*New in v5.0.0.*
+
+The Pyre journal module controls information written to stdout (terminal window).
+The default PyLith behavior is to show the `application-flow` info journal channel and all warnings, errors, and firewalls.
+Errors and firewalls will throw Python or C++ exceptions, which will cause PyLith to abort.
+
+```{code-block} console
+---
+caption: A Python or C++ call to a journal channel writes a message to stdout (terminal window). The first line contains `FILE:LINE:FUNCTION` in which the call to journal originates in function `FUNCTION` at line `LINE` in file `FILE`. The second line contains `SEVERITY (CHANNEL)` in which `SEVERITY` is `info`, `debug`, `warning`, `error`, or `firewall` and `CHANNEL` is the name of the journal channel. The third and any subsequent lines contain the journal message.
+---
+>> FILE:LINE:FUNCTION
+-- SEVERITY (CHANNEL)
+-- MESSAGE
+```
+
+### Devices
+
+The examples set the journal device to `color-console`, which will use colors to highlight journal  information sent to the terminal window (console).
+
+```{code-block} cfg
+---
+caption: Setting the journal device to `color-console` to use colors to highlight journal information sent to the terminal window (console).
+---
+[pylithapp.journal]
+device = color-console
+
+# Color scheme for use on terminals with a dark background (default)
+device.renderer.color-scheme = dark-bg
+
+# Light color scheme for use on terminals with a light background
+device.renderer.color-scheme = light-bg
+```
+
+:::{tip}
+If you do not see colors in your journal output but see escape characters and other garbled text in the journal output, you likely need to set your `TERM` environment variable.
+We recommend setting `TERM` to `xtern-256color` in your environment (Bash: `export TERM=xtern-256color`).
+:::
+
+### Channels
+
+You can enable and disable journal channels by setting their state.
+
+```{code-block} cfg
+---
+caption: Enabling and disabling journal channels in a PyLithApp parameter file.
+---
+[pylithapp]
+# Disable application-flow info channel; this is a special case.
+show_application_flow = False
+
+[pylithapp.journal]
+# Enable 'debug-parameters' info channel.
+info.debug-parameters = True
+
+# Turn off deprecation warnings (not recommended).
+warning.deprecation = False
+```
+
+Within PyLith, we use journals with predefined names to allow the user to select how much information is written to stdout (terminal window) at runtime.
+
+### Info
+
+* `about`: General information about application.
+* `application-flow`: High-level information simulation status.
+* `application-flow-detail-3`: Additional details about simulation status.
+* `debug-parameters`: Detailed reporting of simulation parameters being set in C++ code.
+
+### Warning
+
+* `user-input`: Warnings related to user input.
+* `deprecation`: Warnings about using deprecated features.
+
+### Error
+
+* `user-input`: Errors related to user input.
+* `external`: Errors related to external libraries.
+* `output`: Errors related to output.
+
+### Firewall
+
+* `internal`: Internal error.
+* `logic`: Internal logic error.
+
+### Debug
+
+* `auxiliary-fields`: Show auxiliary fields.
+* `solution`: Show solution field.
+* `residual`: Show residual.
+* `mms-test`: Show debugging information for MMS test.
+* `full-scale-test`: Show debugging information for full-scale test.
+* `integration-kernels`: Show integration kernels.
+* `solver`: Show solver information.
+* `mesh`: Show mesh information.
+* `mesh-detail-3`: Show additional mesh information.
+* `mesh-detail-5`: Show detailed mesh information.
+
 (sec-user-progress-monitors)=
 ## Progress Monitors
 
@@ -159,10 +258,10 @@ Most HDF5 files will contain either `vertex_fields` or `cell_fields` but not bot
 
 ```{table} General ordering and names of vector and tensor components in HDF5 output.
 :name: tab:output:components:order
-| Vector Field Type| Components         |
-|:-------------|:-----------------------|
-| vector       | x, y, z                |
-| tensor       | xx, yy, zz, xy, yz, xz |
+| Vector Field Type | Components             |
+| :---------------- | :--------------------- |
+| vector            | x, y, z                |
+| tensor            | xx, yy, zz, xy, yz, xz |
 ```
 
 PyLith provides two different data writers for HDF5 files.
