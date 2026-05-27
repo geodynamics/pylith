@@ -47,6 +47,7 @@ pylith::topology::Mesh*
 pylith::initializers::MeshInsertInterfaces::run(pylith::topology::Mesh* mesh,
                                                 const pylith::problems::Problem& problem) {
     PYLITH_METHOD_BEGIN;
+    PYLITH_INFO_ROOT(pylith::journal::application_flow, "Inserting cohesive cells.");
     assert(mesh);
 
     if (!problem.getInterfaces().size()) {

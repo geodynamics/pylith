@@ -63,7 +63,7 @@ pylith::initializers::Initializer::setPhases(pylith::initializers::InitializePha
 pylith::topology::Mesh*
 pylith::initializers::Initializer::runPhases(const pylith::problems::Problem& problem) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "initialize(problem)");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "Running mesh initialization.");
 
     pylith::topology::Mesh* meshNew = nullptr;
     pylith::topology::Mesh* meshPhase = nullptr;
