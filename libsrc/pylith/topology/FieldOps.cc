@@ -107,6 +107,7 @@ pylith::topology::FieldOps::createFE(const FieldBase::Discretization& feinfo,
         case 1: ct = DM_POLYTOPE_SEGMENT;break;
         case 2: ct = useTensor ? DM_POLYTOPE_QUADRILATERAL : DM_POLYTOPE_TRIANGLE;break;
         case 3: ct = useTensor ? DM_POLYTOPE_HEXAHEDRON : DM_POLYTOPE_TETRAHEDRON;break;
+        default:
             PYLITH_ERROR(pylith::InternalLogicError, pylith::journal::logic, "Unknown dimension " << dim << ".");
         }
         PylithCallPetsc(PetscDTCreateDefaultQuadrature(ct, quadOrder, &quadrature, &faceQuadrature));
