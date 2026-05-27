@@ -103,6 +103,9 @@ pylith::meshio::DataWriterHDF5Ext::open(const pylith::topology::Mesh& mesh,
 
         _tstampIndex = 0;
 
+    } catch (pylith::Error& err) {
+        err.addContext(pylith::ErrorMessage() << "Error while opening HDF5 file " << _filename << ".\n");
+        throw;
     } catch (const std::exception& err) {
         PYLITH_ERROR(pylith::IOError, pylith::journal::output,
                      "Error while opening HDF5 file " << _filename << ".\n" << err.what());
@@ -256,6 +259,10 @@ pylith::meshio::DataWriterHDF5Ext::writeVertexField(const PylithScalar t,
         if (isMPIRoot) {
             _h5->close();
         } // if
+    } catch (pylith::Error& err) {
+        err.addContext(pylith::ErrorMessage() << "Error while writing field '" << name << "' at time "
+                                              << t << " for HDF5 file '" << _filename << "'.\n");
+        throw;
     } catch (const std::exception& err) {
         PYLITH_ERROR(pylith::IOError, pylith::journal::output,
                      "Error while writing field '" << name << "' at time "
@@ -389,6 +396,10 @@ pylith::meshio::DataWriterHDF5Ext::writeCellField(const PylithScalar t,
         if (isMPIRoot) {
             _h5->close();
         } // if
+    } catch (pylith::Error& err) {
+        err.addContext(pylith::ErrorMessage() << "Error while writing field '" << name << "' at time "
+                                              << t << " for HDF5 file '" << _filename << "'.\n");
+        throw;
     } catch (const std::exception& err) {
         PYLITH_ERROR(pylith::IOError, pylith::journal::output,
                      "Error while writing field '" << name << "' at time "
@@ -470,6 +481,9 @@ pylith::meshio::DataWriterHDF5Ext::writePointNames(const pylith::string_vector& 
             _h5->close();
         } // if
 
+    } catch (pylith::Error& err) {
+        err.addContext(pylith::ErrorMessage() << "Error while writing stations to HDF5 file '" << hdf5Filename() << "'.\n");
+        throw;
     } catch (const std::exception& err) {
         PYLITH_ERROR(pylith::IOError, pylith::journal::output,
                      "Error while writing stations to HDF5 file '" << hdf5Filename() << "'.\n" << err.what());

@@ -44,10 +44,13 @@ public:
     /// Full formatted message, including source location when available.
     const char* what() const noexcept override;
 
+    /// Add context to existing error message.
+    void addContext(const pylith::ErrorMessage& context);
+
 protected:
 
     /// Rebuild _what so that what() reflects the current state.
-    void _buildWhat();
+    void _buildWhat(const std::string& context="");
 
     /// Capture the stack frames into _traceback.
     void _captureTraceback();

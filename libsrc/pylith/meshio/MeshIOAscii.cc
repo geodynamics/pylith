@@ -271,6 +271,9 @@ pylith::meshio::MeshIOAscii::_read(void) {
                 PYLITH_COMPONENT_ERROR(pylith::IOError, pylith::journal::user_input,
                                        "I/O error occurred while parsing mesh tokens.");
             }
+        } catch (pylith::Error& err) {
+            err.addContext(pylith::ErrorMessage() << "Error occurred while reading PyLith mesh ASCII file '" << _filename << "'.\n");
+            throw;
         } catch (const std::exception& err) {
             PYLITH_COMPONENT_ERROR(pylith::IOError, pylith::journal::user_input,
                                    "Error occurred while reading PyLith mesh ASCII file '"

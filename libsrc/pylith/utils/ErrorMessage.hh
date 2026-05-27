@@ -30,7 +30,6 @@ public:
     inline
     ErrorMessage& operator<<(const T& value);
 
-
     /// Extract the assembled string.
     inline std::string str() const;
 

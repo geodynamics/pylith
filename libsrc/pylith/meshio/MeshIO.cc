@@ -92,7 +92,7 @@ pylith::meshio::MeshIO::read(pylith::topology::Mesh* mesh,
         _mesh->setCoordSys(_cs);
     } // if
 
-    pythia::journal::debug_t debug(pylith::journal::mesh_full_detail);
+    pythia::journal::debug_t debug(pylith::journal::mesh_detail5);
     if (debug.state()) {
         _mesh->view("::ascii_info_detail");
         _mesh->view(":mesh.tex:ascii_latex");

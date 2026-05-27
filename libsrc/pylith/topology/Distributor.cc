@@ -151,7 +151,7 @@ pylith::topology::Distributor::distribute(const pylith::topology::Mesh& mesh,
         meshNew = new pylith::topology::Mesh(dmOrig, mesh);assert(meshNew);
     } // if/else
 
-    pythia::journal::debug_t debug(pylith::journal::mesh_full_detail);
+    pythia::journal::debug_t debug(pylith::journal::mesh_detail5);
     if (debug.state()) {
         meshNew->view(":mesh_distributed.txt:ascii_info_detail");
         pylith::topology::Mesh* meshExploded = pylith::topology::MeshOps::explode(*meshNew);

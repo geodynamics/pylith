@@ -310,6 +310,9 @@ pylith::faults::FaultCohesive::transformTopology(pylith::topology::Mesh* const m
             mesh->view("vtk:mesh_transformed.vtu:vtk_vtu");
         } // if
 
+    } catch (pylith::Error& err) {
+        err.addContext(pylith::ErrorMessage() << "Error occurred while transforming topology to create cohesive cells for fault '" << _surfaceLabelName << "'.\n");
+        throw;
     } catch (const std::exception& err) {
         PYLITH_ERROR(pylith::TopologyError, pylith::journal::internal,
                      "Error occurred while transforming topology to create cohesive cells for fault '" << _surfaceLabelName << "'.\n"

@@ -18,7 +18,6 @@
 #include <sstream> // USES std::ostringstream
 #include <cstring> // USES std::strlen
 
-#include <iostream>
 // ------------------------------------------------------------------------------------------------
 pylith::Error::Error(const ErrorMessage& message)
     : std::runtime_error(message.str()) {
@@ -35,10 +34,21 @@ pylith::Error::what() const noexcept {
 
 
 // ------------------------------------------------------------------------------------------------
+// Add context to existing error message.
 void
-pylith::Error::_buildWhat() {
+pylith::Error::addContext(const pylith::ErrorMessage& context) {
+    _buildWhat(context.str());
+}
+
+
+// ------------------------------------------------------------------------------------------------
+void
+pylith::Error::_buildWhat(const std::string& context) {
     std::ostringstream oss;
     oss << std::runtime_error::what();
+    if (context.length() > 0) {
+        oss << "\n" << context;
+    } // if
     oss << _formatTraceback();
 
     _what = oss.str();
@@ -50,17 +60,20 @@ void
 pylith::Error::_captureTraceback() {
 #if defined(HAVE_BACKTRACE)
     void*  frames[MAX_FRAMES];
-    const size_t numFrames = ::backtrace(frames, MAX_FRAMES);
+    const size_t skipFrames = 3; // Skip exception lines in traceback
+
+    size_t numFrames = ::backtrace(frames, MAX_FRAMES);
     if (numFrames <= 0) {return;}
 
     char** symbols = ::backtrace_symbols(frames, numFrames);
     if (!symbols) {return;}
 
     _traceback.reserve(numFrames);
-    for (size_t i = 0; i < numFrames; ++i) {
+    for (size_t i = skipFrames; i < numFrames; ++i) {
         _traceback.emplace_back(symbols[i] ? symbols[i] : "<unknown>");
     }
     std::free(symbols);
+    numFrames -= skipFrames;
 
     // Remove libpython from traceback
     size_t last = 0;

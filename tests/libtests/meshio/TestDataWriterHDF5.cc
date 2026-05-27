@@ -310,14 +310,9 @@ pylith::meshio::_TestDataWriterHDF5::MeshData::load(const char* filename) {
         data->vertexFields = _loadFields(h5, "/vertex_fields");
         data->cellFields = _loadFields(h5, "/cell_fields");
         h5.close();
-    } catch (const std::exception& err) {
-        delete data;
-        PYLITH_ERROR(pylith::IOError, pylith::journal::output,
-                     "Error loading data from " << filename << "." << err.what());
     } catch (...) {
         delete data;
-        PYLITH_ERROR(pylith::IOError, pylith::journal::output,
-                     "Unknown error while loading data from " << filename << ".");
+        throw;
     } // try/catch
 
     PYLITH_METHOD_RETURN(data);

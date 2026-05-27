@@ -34,12 +34,12 @@ DMPlexInvertCell_Private(PetscInt dim,
                          PetscInt numCorners,
                          PetscInt cone[]) {
 #define SWAPCONE(cone,i,j)  \
-        do {                      \
-            int _cone_tmp;          \
-            _cone_tmp = (cone)[i];  \
-            (cone)[i] = (cone)[j];  \
-            (cone)[j] = _cone_tmp;  \
-        } while (0)
+    do {                      \
+        int _cone_tmp;          \
+        _cone_tmp = (cone)[i];  \
+        (cone)[i] = (cone)[j];  \
+        (cone)[j] = _cone_tmp;  \
+    } while (0)
 
     PetscFunctionBegin;
     if (dim != 3) { PetscFunctionReturn(0);}
@@ -145,7 +145,7 @@ pylith::meshio::TestMeshIO::_createMesh(void) {
     scales.setLengthScale(0.01);
     pylith::topology::MeshOps::nondimensionalize(_mesh, scales);
 
-    pythia::journal::debug_t debug(pylith::journal::mesh_full_detail);
+    pythia::journal::debug_t debug(pylith::journal::mesh_detail5);
     if (debug.state()) {
         _mesh->view();
         _mesh->view(":mesh.tex:ascii_latex");
