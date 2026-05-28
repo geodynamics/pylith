@@ -1,14 +1,16 @@
 {
-    "creators": [
-	{
-	    "name": "Aagaard, Brad",
-	    "affiliation": "US Geological Survey, USA"
-	},{
-	    "name": "Knepley, Matthew",
-	    "affiliation": "University at Buffalo, New York, USA"
-	},{
-	    "name": "Williams, Charles",
-	    "affiliation": "GNS Science, New Zealand"
-	}
-    ]
+	"creators": [
+		{
+			"name": "Aagaard, Brad",
+			"affiliation": "U.S. Geological Survey, USA"
+		},
+		{
+			"name": "Knepley, Matthew",
+			"affiliation": "University at Buffalo, New York, USA"
+		},
+		{
+			"name": "Williams, Charles",
+			"affiliation": "Earth Sciences New Zealand, New Zealand"
+		}
+	]
 }
