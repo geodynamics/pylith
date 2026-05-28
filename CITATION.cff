@@ -31,8 +31,8 @@ keywords:
   - earthquake
   - finite element
 license: MIT
-version: 4.2.0
-date-released: "2025-01-17"
+version: 5.0.0
+date-released: "2026-06-02"
 preferred-citation:
   type: article
   authors:
