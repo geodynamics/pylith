@@ -2,7 +2,7 @@
 // This code is part of SpatialData, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/spatialdata).
 //
-// Copyright (c) 2010-2025, University of California, Davis and the SpatialData Development Team.
+// Copyright (c) 2010-2026, University of California, Davis and the SpatialData Development Team.
 // All rights reserved.
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
@@ -55,7 +55,7 @@ pylith::scales::Scales::getTemperatureScale(void) const {
 inline
 double
 pylith::scales::Scales::nondimensionalize(const double value,
-                                              const double scale) const {
+                                          const double scale) const {
     return value / scale;
 }
 
@@ -64,8 +64,8 @@ pylith::scales::Scales::nondimensionalize(const double value,
 inline
 void
 pylith::scales::Scales::nondimensionalize(double* const values,
-                                              const size_t nvalues,
-                                              const double scale) const {
+                                          const size_t nvalues,
+                                          const double scale) const {
     assert( (0 < nvalues && values) ||
             (0 == nvalues && !values) );
 
@@ -79,8 +79,8 @@ pylith::scales::Scales::nondimensionalize(double* const values,
 inline
 void
 pylith::scales::Scales::nondimensionalize(float* const values,
-                                              const size_t nvalues,
-                                              const double scale) const {
+                                          const size_t nvalues,
+                                          const double scale) const {
     assert( (0 < nvalues && values) ||
             (0 == nvalues && !values) );
 
@@ -94,7 +94,7 @@ pylith::scales::Scales::nondimensionalize(float* const values,
 inline
 double
 pylith::scales::Scales::dimensionalize(const double value,
-                                           const double scale) const {
+                                       const double scale) const {
     return value * scale;
 }
 
@@ -103,8 +103,8 @@ pylith::scales::Scales::dimensionalize(const double value,
 inline
 void
 pylith::scales::Scales::dimensionalize(double* const values,
-                                           const size_t nvalues,
-                                           const double scale) const {
+                                       const size_t nvalues,
+                                       const double scale) const {
     assert( (0 < nvalues && values) ||
             (0 == nvalues && !values) );
 
@@ -118,8 +118,8 @@ pylith::scales::Scales::dimensionalize(double* const values,
 inline
 void
 pylith::scales::Scales::dimensionalize(float* const values,
-                                           const size_t nvalues,
-                                           const double scale) const {
+                                       const size_t nvalues,
+                                       const double scale) const {
     assert( (0 < nvalues && values) ||
             (0 == nvalues && !values) );
 
