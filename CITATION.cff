@@ -22,7 +22,7 @@ authors:
     orcid: "https://orcid.org/0000-0001-7435-9196"
 identifiers:
   - type: doi
-    value: 10.5281/zenodo.14635926
+    value: 10.5281/zenodo.20430260
 repository-code: "https://github.com/geodynamics/pylith"
 url: "https://geodynamics.org/resources/pylith"
 keywords:
