@@ -34,6 +34,7 @@ subpkginclude_HEADERS = \
 	error.hh \
 	Exceptions.hh \
 	ErrorMessage.hh \
+	ErrorMessage.icc \
 	types.hh \
 	utilsfwd.hh
 
