@@ -9,12 +9,21 @@
 # =================================================================================================
 
 
+dist_noinst_PYTHON = \
+	coordsys.py \
+	generate_cgnss.py \
+	generate_cubit.py \
+	generate_gmsh.py \
+	generate_localdem.py \
+	generate_refstate_grav.py \
+	generate_slowslip.py \
+	generate_synthetic_gnssdisp.py \
+	invert_slip.py \
+	viz/plot_inversion_misfit.py
+
+
 dist_noinst_DATA = \
 	README.md \
-	cubit_bc.jou \
-	cubit_geometry.jou \
-	cubit_hex.jou \
-	cubit_tet.jou \
 	fault_slabtop_coseismic.spatialdb \
 	fault_slabtop_creep.spatialdb \
 	fault_slabtop_slipweakening.spatialdb \
@@ -27,7 +36,6 @@ dist_noinst_DATA = \
 	mat_viscoelastic.cfg \
 	mat_viscosity.spatialdb \
 	mat_elastic_incompressible.cfg \
-	mat_initial_stress_grav.spatialdb \
 	pylithapp.cfg \
 	step01_axialdisp.cfg \
 	step02_coseismic.cfg \
@@ -40,17 +48,8 @@ dist_noinst_DATA = \
 	step08b_gravity_incompressible.cfg \
 	step08c_gravity_viscoelastic.cfg \
 	cas_contours_dep.in.txt.gz \
-	coordsys.py \
-	generate_initial_stress.py \
-	generate_slowslip.py \
-	generate_slowslip.cfg \
-	generate_surfjou.py \
-	make_synthetic_gnssdisp.py \
-	make_synthetic_gnssdisp.cfg \
 	cgnss_stations.txt \
-	slip_invert.py \
-	slip_invert.cfg \
-	viz/plot_inversion_misfit.py \
+	invert_slip.cfg \
 	input/README.md \
 	scratch/README.md
 
