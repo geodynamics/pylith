@@ -98,35 +98,35 @@ caption: Run Step 6 simulation
 $ pylith step06_twofaults_elastic.cfg
 
 # The output should look something like the following.
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:77:main
- -- pylithapp(info)
+ >> software/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:79:main
+ -- info (application-flow)
  -- Running on 1 process(es).
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/meshio/MeshIOObj.py:38:read
- -- meshiopetsc(info)
- -- Reading finite-element mesh
- >> /src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:85:void pylith::meshio::MeshIO::read(pylith::topology::Mesh *, const bool)
- -- meshiopetsc(info)
- -- Component 'reader': Domain bounding box:
-    (-100000, 100000)
-    (-100000, 0)
 
 # -- many lines omitted --
 
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/TimeDependent.py:132:run
- -- timedependent(info)
- -- Solving problem.
-0 TS dt 0.01 time 0.
-    0 SNES Function norm 2.225574998436e-02
-    Linear solve converged due to CONVERGED_ATOL iterations 41
-    1 SNES Function norm 2.051112304555e-12
-  Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
-1 TS dt 0.01 time 0.01
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:199:finalize
- -- timedependent(info)
+ >> src/cig/pylith/libsrc/pylith/problems/TimeDependent.cc:473:void pylith::problems::TimeDependent::solve()
+ -- info (application-flow)
+ -- Component 'timedependent.problem': Solving equations.
+0 TS dt 0.2 time -0.2
+    0 SNES Function norm 9.084511105523e+00
+      Linear solve converged due to CONVERGED_ATOL iterations 14
+    1 SNES Function norm 5.480772341407e-08
+    Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
+1 TS dt 0.2 time 0.
+    0 SNES Function norm 5.480772341407e-08
+    Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 0
+2 TS dt 0.2 time 0.2
+    0 SNES Function norm 3.245094761897e+00
+      Linear solve converged due to CONVERGED_ATOL iterations 13
+    1 SNES Function norm 3.950115997088e-08
+    Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
+3 TS dt 0.2 time 0.4
+ >> software/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:222:finalize
+ -- info (application-flow)
  -- Finalizing problem.
 ```
 
-From the end of the output written to the terminal window, we see that the linear solver converged in 41 iterations and met the absolute convergence tolerance (`ksp_atol`).
+From the end of the output written to the terminal window, we see that the linear solver converged in 13-14 iterations and met the absolute convergence tolerance (`ksp_atol`).
 As we expect for this linear problem, the nonlinear solver converged in 1 iteration.
 
 ## Visualizing the results

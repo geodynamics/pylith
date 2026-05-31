@@ -158,7 +158,8 @@ libpylith_la_SOURCES = \
 	utils/PetscVersion.cc \
 	utils/DependenciesVersion.cc \
 	utils/TSAdaptImpulse.cc \
-	utils/TestArray.cc
+	utils/TestArray.cc \
+	utils/Exceptions.cc
 
 
 libpylith_la_CXXFLAGS = $(SANITIZER_CXXFLAGS)

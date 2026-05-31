@@ -19,6 +19,8 @@
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 
 #include "pylith/utils/error.hh" // USES PylithCallPetsc()
+#include "pylith/utils/journals.hh" // USES journals
+#include "pylith/utils/Exceptions.hh" // USES Exception
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
 
 namespace pylith {
@@ -457,9 +459,9 @@ pylith::topology::_FieldQuery::findQueryIndices(FieldQuery::DBQueryContext* cont
             std::ostringstream msg;
             if (0 == numDBValues) {
                 delete dbValues;dbValues = NULL;
-                msg << "No values found in spatial database '"
-                    << context->db->getDescription() << "'. Did you forget to open the database?";
-                throw std::logic_error(msg.str());
+                PYLITH_ERROR(pylith::InternalLogicError, pylith::journal::logic,
+                             "No values found in spatial database '"
+                             << context->db->getDescription() << "'. Did you forget to open the database?");
             } // if
             msg << "Could not find value '" << valuesForSubfield[iValue] << "' in spatial database '"
                 << context->db->getDescription() << "'. Available values are:";
@@ -468,7 +470,7 @@ pylith::topology::_FieldQuery::findQueryIndices(FieldQuery::DBQueryContext* cont
             } // for
             msg << "\n";
             delete dbValues;dbValues = NULL;
-            throw std::out_of_range(msg.str());
+            PYLITH_ERROR(pylith::ValueError, pylith::journal::user_input, msg.str());
         } // if
     } // for
     delete[] dbValues;dbValues = NULL;

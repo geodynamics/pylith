@@ -16,7 +16,7 @@ Implements `DumpParameters`.
 * `filename`=\<str\>: Name of file written with parameters.
   - **default value**: ''
   - **current value**: '', from {default}
-* `indent`=\<int\>: Nmber of spaces to indent.
+* `indent`=\<int\>: Number of spaces to indent.
   - **default value**: 4
   - **current value**: 4, from {default}
 * `verbose`=\<bool\>: Include description, location, and aliases.

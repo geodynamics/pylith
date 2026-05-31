@@ -6,118 +6,98 @@
 ---
 caption: Error message 5 when running Step 6.
 linenos: True
-emphasize-lines: 97-100
+emphasize-lines: 65-66
 ---
 $ pylith step06_twofaults.cfg
 
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:77:main
- -- pylithapp(info)
+ >> softwarepylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:76:main
+ -- info (application-flow)
  -- Running on 1 process(es).
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/meshio/MeshIOObj.py:38:read
- -- meshiopetsc(info)
- -- Reading finite-element mesh
- >> /src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:85:void pylith::meshio::MeshIO::read(pylith::topology::Mesh *, const bool)
- -- meshiopetsc(info)
- -- Component 'reader': Domain bounding box:
+ >> src/cig/pylith/libsrc/pylith/utils/PetscOptions.cc:251:static void pylith::utils::_PetscOptions::write(pythia::journal::info_t&, const char*, const pylith::utils::PetscOptions&)
+ -- info (application-flow)
+ -- Setting PETSc options:
+    dm_reorder_section = true
+    dm_reorder_section_type = cohesive
+    ksp_atol = 1.0e-7
+    ksp_converged_reason = true
+    ksp_error_if_not_converged = true
+    ksp_gmres_restart = 100
+    ksp_guess_pod_size = 8
+    ksp_guess_type = pod
+    ksp_rtol = 1.0e-14
+    mg_fine_ksp_max_it = 5
+    mg_fine_pc_type = vpbjacobi
+    pc_type = gamg
+    snes_atol = 5.0e-7
+    snes_converged_reason = true
+    snes_error_if_not_converged = true
+    snes_monitor = true
+    snes_rtol = 1.0e-14
+    ts_error_if_step_fails = true
+    ts_exact_final_time = matchstep
+    ts_monitor = true
+    ts_type = beuler
+    viewer_hdf5_collective = true
+
+ >> src/cig/pylith/libsrc/pylith/meshio/MeshIOPetsc.cc:204:virtual void pylith::meshio::MeshIOPetsc::_read()
+ -- info (application-flow)
+ -- Component 'meshiopetsc.reader': Reading finite-element mesh from 'mesh_tri.msh'.
+ >> src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:76:void pylith::meshio::MeshIO::read(pylith::topology::Mesh*, bool)
+ -- info (application-flow)
+ -- Component 'meshiopetsc.reader': Domain bounding box:
     (-100000, 100000)
     (-100000, 0)
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/faults/FaultCohesiveKin.py:87:preinitialize
- -- faultcohesivekin(info)
- -- Pre-initializing fault 'splay'.
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/faults/FaultCohesiveKin.py:87:preinitialize
- -- faultcohesivekin(info)
- -- Pre-initializing fault 'fault'.
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:116:preinitialize
- -- timedependent(info)
- -- Performing minimal initialization before verifying configuration.
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Solution.py:39:preinitialize
- -- solution(info)
- -- Performing minimal initialization of solution.
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/materials/RheologyElasticity.py:35:preinitialize
- -- isotropiclinearelasticity(info)
- -- Performing minimal initialization of elasticity rheology 'bulk_rheology'.
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/materials/RheologyElasticity.py:35:preinitialize
- -- isotropiclinearelasticity(info)
- -- Performing minimal initialization of elasticity rheology 'bulk_rheology'.
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/materials/RheologyElasticity.py:35:preinitialize
- -- isotropiclinearelasticity(info)
- -- Performing minimal initialization of elasticity rheology 'bulk_rheology'.
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/bc/DirichletTimeDependent.py:86:preinitialize
- -- dirichlettimedependent(info)
- -- Performing minimal initialization of time-dependent Dirichlet boundary condition 'bc_xneg'.
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/bc/DirichletTimeDependent.py:86:preinitialize
- -- dirichlettimedependent(info)
- -- Performing minimal initialization of time-dependent Dirichlet boundary condition 'bc_xpos'.
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/bc/DirichletTimeDependent.py:86:preinitialize
- -- dirichlettimedependent(info)
- -- Performing minimal initialization of time-dependent Dirichlet boundary condition 'bc_yneg'.
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/faults/FaultCohesiveKin.py:87:preinitialize
- -- faultcohesivekin(info)
- -- Pre-initializing fault 'splay'.
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/faults/FaultCohesiveKin.py:87:preinitialize
- -- faultcohesivekin(info)
- -- Pre-initializing fault 'fault'.
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:174:verifyConfiguration
- -- timedependent(info)
- -- Verifying compatibility of problem configuration.
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:219:_printInfo
- -- timedependent(info)
+ >> src/cig/pylith/libsrc/pylith/problems/TimeDependent.cc:316:virtual void pylith::problems::TimeDependent::verifyConfiguration() const
+ -- info (application-flow)
+ -- Component 'timedependent.problem': Verifying problem configuration.
+ >> softwarepylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:238:_printInfo
+ -- info (application-flow)
  -- Scales for nondimensionalization:
-    Length scale: 1000*m
+    Length scale: 2500*m
+    Displacement scale: 1*m
     Time scale: 3.15576e+09*s
-    Pressure scale: 3e+10*m**-1*kg*s**-2
-    Density scale: 2.98765e+23*m**-3*kg
+    Rigidity scale: 1e+10*m**-1*kg*s**-2
     Temperature scale: 1*K
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:185:initialize
- -- timedependent(info)
- -- Initializing timedependent problem with quasistatic formulation.
- >> /src/cig/pylith/libsrc/pylith/utils/PetscOptions.cc:239:static void pylith::utils::_PetscOptions::write(pythia::journal::info_t &, const char *, const PetscOptions &)
- -- petscoptions(info)
- -- Setting PETSc options:
-dm_reorder_section = true
-dm_reorder_section_type = cohesive
-ksp_atol = 1.0e-12
-ksp_converged_reason = true
-ksp_error_if_not_converged = true
-ksp_guess_pod_size = 8
-ksp_guess_type = pod
-ksp_rtol = 1.0e-12
-mg_fine_pc_type = vpbjacobi
-pc_type = gamg
-snes_atol = 1.0e-9
-snes_converged_reason = true
-snes_error_if_not_converged = true
-snes_monitor = true
-snes_rtol = 1.0e-12
-ts_error_if_step_fails = true
-ts_monitor = true
-ts_type = beuler
-
+ >> src/cig/pylith/libsrc/pylith/problems/TimeDependent.cc:342:virtual void pylith::problems::TimeDependent::initialize()
+ -- info (application-flow)
+ -- Component 'timedependent.problem': Initializing problem.
 Fatal error. Calling MPI_Abort() to abort PyLith application.
 Traceback (most recent call last):
-  File "/software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/apps/PetscApplication.py", line 55, in onComputeNodes
+  File "softwarepylith-debug/lib/python3.12/site-packages/pylith/apps/PetscApplication.py", line 55, in onComputeNodes
     self.main(*args, **kwds)
-  File "/software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py", line 103, in main
+  File "softwarepylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py", line 85, in main
     self.problem.initialize()
-  File "/software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py", line 187, in initialize
+  File "softwarepylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py", line 212, in initialize
     ModuleProblem.initialize(self)
-  File "/software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/problems.py", line 165, in initialize
+  File "softwarepylith-debug/lib/python3.12/site-packages/pylith/problems/problems.py", line 165, in initialize
     return _problems.Problem_initialize(self)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-RuntimeError: Could not find value 'final_slip_opening' in spatial database 'Fault rupture for main fault'. Available values are:
-  final-slip-left-lateral
-  final-slip-opening
-  initiation-time
+RuntimeError: Error occurred while reading spatial database file 'fault_slip.spatialdb'.
+Read data for 3 out of 4 points.
+Error reading coordinates from buffer ''.
+--------------------------------------------------------------------------
+MPI_ABORT was invoked on rank 0 in communicator MPI_COMM_WORLD
+  Proc: [[11816,1],0]
+  Errorcode: -1
 
-/software/unix/py3.12-venv/pylith-debug/bin/nemesis: mpiexec: exit 255
-/software/unix/py3.12-venv/pylith-debug/bin/pylith: /software/unix/py3.12-venv/pylith-debug/bin/nemesis: exit 1
+NOTE: invoking MPI_ABORT causes Open MPI to kill all MPI processes.
+You may or may not see output from other processes, depending on
+exactly when Open MPI kills them.
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+prterun has exited due to process rank 0 with PID 0 on node igskci164warlng calling
+"abort". This may have caused other processes in the application to be
+terminated by signals sent by prterun (as reported here).
+--------------------------------------------------------------------------
+softwarepylith-debug/bin/nemesis: mpiexec: exit 255
+softwarepylith-debug/bin/pylith: softwarepylith-debug/bin/nemesis: exit 1
 ```
 
 ## Troubleshooting Strategy
 
-We have more errors with `fault_slip.spatialdb`.
-The error message on lines 97-100 shows that PyLith is looking for `final_slip_opening` in the spatial database, but it found `final-slip-opening` instead.
-We need to change the dashes (used in PyLith v1.x and v2.x) to underscores (used in PyLith v3.x); we made this change to be consistent with the names of the output fields.
+The error message on lines 97-98 indicates there is an error reading the `fault_slip.spatialdb` spatial database for the fault slip.
+PyLith was able to read data for 3 of 4 points.
+The file `fault_slip.spatialdb` contains only 3 points but `num-locs` is 4.
 
 ## Resolution
 
@@ -126,8 +106,8 @@ We need to change the dashes (used in PyLith v1.x and v2.x) to underscores (used
 caption: Correct error in `fault_slip.spatialdb`.
 ---
 # Error
-value-names = final-slip-left-lateral  final-slip-opening  initiation-time
+num-locs = 4
 
 # Correct
-value-names = final_slip_left_lateral  final_slip_opening  initiation_time
+num-locs = 3
 ```

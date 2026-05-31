@@ -41,7 +41,7 @@ pylith::materials::DerivedFactoryPoroelasticity::~DerivedFactoryPoroelasticity(v
 void
 pylith::materials::DerivedFactoryPoroelasticity::addBulkDensity(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addBulkDensity(void)");
+    PYLITH_DEBUG(pylith::journal::application_flow, "addBulkDensity(void)");
 
     const char* fieldName = "bulk_density";
     const PylithReal densityScale = pylith::scales::ElasticityScales::getDensityScale(*_scales);
@@ -67,7 +67,7 @@ pylith::materials::DerivedFactoryPoroelasticity::addBulkDensity(void) {
 void
 pylith::materials::DerivedFactoryPoroelasticity::addWaterContent(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addWaterContent(void)");
+    PYLITH_DEBUG(pylith::journal::application_flow, "addWaterContent(void)");
 
     const char* fieldName = "water_content";
 
@@ -91,7 +91,7 @@ pylith::materials::DerivedFactoryPoroelasticity::addWaterContent(void) {
 void
 pylith::materials::DerivedFactoryPoroelasticity::addSubfields(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addSubfields(void)");
+    PYLITH_DEBUG(pylith::journal::application_flow, "addSubfields(void)");
 
     if (_subfieldDiscretizations.find("cauchy_stress") != _subfieldDiscretizations.end()) {
         addCauchyStress();

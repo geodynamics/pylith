@@ -89,7 +89,7 @@ public:
 
     /** Get requested slip subfields at time t.
      *
-     * @param[inout] slipLocalVec Local PETSc vector for slip, slip rate, or slip accelerationvalues.
+     * @param[inout] slipLocalVec Local PETSc vector for slip, slip rate, or slip acceleration values.
      * @param[in] faultAuxiliaryField Auxiliary field for fault.
      * @param[in] t Time t.
      * @param[in] timeScale Time scale for nondimensionalization.

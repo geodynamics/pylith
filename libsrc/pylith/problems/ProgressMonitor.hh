@@ -40,7 +40,7 @@ public:
 
     /** Get how often to report status.
      *
-     * @preturns Percentage of completion between status reports.
+     * @returns Percentage of completion between status reports.
      */
     double getUpdatePercent(void) const;
 
@@ -52,7 +52,7 @@ public:
 
     /** Get filename for output.
      *
-     * @preturns Name of output file.
+     * @returns Name of output file.
      */
     const char* getFilename(void) const;
 

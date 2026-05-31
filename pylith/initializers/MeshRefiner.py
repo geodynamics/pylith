@@ -49,7 +49,7 @@ class MeshRefiner(InitializePhase):
         ModuleMeshRefiner.setRefiner(self, self.refiner)
 
     def _configure(self):
-        """Set members based using inventory.
+        """Set members using inventory.
         """
         InitializePhase._configure(self)
 

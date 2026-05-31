@@ -51,7 +51,7 @@ class SolnDispLagrange(PetscComponent):
 
     def components(self):
         """Order of facilities in Inventory is ambiguous, so overwrite
-        components() to insure order is [displacement, lagrange_multiplier_fault].
+        components() to ensure order is [displacement, lagrange_multiplier_fault].
 
         """
         return [self.displacement, self.lagrangeFault]

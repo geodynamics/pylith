@@ -16,6 +16,7 @@
 #include "pylith/topology/MeshOps.hh" // USES isCohesiveCell()
 #include "pylith/utils/error.hh" // USES PylithCallPetsc()
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
+#include "pylith/utils/Exceptions.hh" // USES Exception
 
 #include <iostream> // USES std::cout
 #include <cassert> // USES assert()
@@ -363,15 +364,17 @@ pylith::faults::TopologyOps::getAdjacentCells(PylithInt* adjacentCellNegative,
         PylithCallPetsc(DMPlexGetSupport(dmDomain, cone[iCone], &support));
         PylithCallPetsc(DMPlexGetSupportSize(dmDomain, cone[iCone], &supportSize));
         if (2 != supportSize) {
-            PYLITH_JOURNAL_LOGICERROR("Inconsistent topology. Expected support of size 2 for face "
-                                      << cone[iCone] << " of cohesive cell " <<cohesiveCell
-                                      <<". Support has size "<<supportSize<<".");
+            PYLITH_ERROR(pylith::TopologyError, pylith::journal::logic,
+                         "Inconsistent topology. Expected support of size 2 for face "
+                         << cone[iCone] << " of cohesive cell " << cohesiveCell
+                         <<". Support has size "<<supportSize<<".");
         } // if
         assert(2 == supportSize);
         if ((cohesiveCell != support[0]) && (cohesiveCell != support[1]) ) {
-            PYLITH_JOURNAL_LOGICERROR("Inconsistent topology. Cohesive cell "
-                                      <<cohesiveCell<<" not in support of its own cone. "
-                                      <<"Support: "<<support[0]<< ", "<<support[1]<<".");
+            PYLITH_ERROR(pylith::TopologyError, pylith::journal::logic,
+                         "Inconsistent topology. Cohesive cell "
+                         <<cohesiveCell<<" not in support of its own cone. "
+                         <<"Support: "<<support[0]<< ", "<<support[1]<<".");
         } // if
         adjacentCells[iCone] = (support[0] == cohesiveCell) ? support[1] : support[0];
     } // for

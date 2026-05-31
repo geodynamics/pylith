@@ -11,17 +11,17 @@ emphasize-lines: 3-6
 $ pylith step06_twofaults.cfg
 
  >> {default}::
- -- pyre.inventory(error)
+ -- error (pyre.inventory)
  -- timedependent.interfaces.faultcohesivekin.singlerupture.kinsrcstep.simpledb.simpleioascii.filename <- ''
  -- Filename for spatial database not specified.
- >> step06_twofaults.cfg:85:
- -- pyre.inventory(error)
+ >> step06_twofaults.cfg:84:
+ -- error (pyre.inventory)
  -- timedependent.interfaces.faultcohesivekin.singlerupture.kinsrcstep.simpledb.filename <- 'fault_slip.spatialdb'
  -- unrecognized property 'timedependent.interfaces.faultcohesivekin.singlerupture.kinsrcstep.simpledb.filename'
 usage: pylith [--<property>=<value>] [--<facility>.<property>=<value>] [FILE.cfg] ...
 component 'pylithapp'
-    properties: dump_parameters, help, help-components, help-persistence, help-properties, include-citations, initialize_only, job, launcher, mesh_generator, metadata, nodes, petsc, problem, scheduler, start_python_debugger, typos, weaver
-    facilities: dump_parameters,job,launcher,mesh_generator,metadata,petsc,problem,scheduler,weaver
+    properties: dump_parameters, help, help-components, help-persistence, help-properties, include-citations, initialize_only, job, launcher, metadata, nodes, petsc, problem, scheduler, show_application_flow, start_python_debugger, typos, weaver
+    facilities: dump_parameters,job,launcher,metadata,petsc,problem,scheduler,weaver
 For more information:
   --help-properties: prints details about user settable properties
   --help-components: prints details about user settable facilities and components

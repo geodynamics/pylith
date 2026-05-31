@@ -31,10 +31,10 @@ The association of these functions with the auxiliary subfields is:
 * `rate_start_time`: Rate starting time, t_1(x), subfield.
   - **current value**: 'subfield', from {default}
   - **configurable as**: subfield, rate_start_time
-* `time_history_amplitude`: Time history amplitude, f_2(x). subfield
+* `time_history_amplitude`: Time history amplitude, f_2(x), subfield.
   - **current value**: 'subfield', from {default}
   - **configurable as**: subfield, time_history_amplitude
-* `time_history_start_time`: Time history starting time, t_2(s), subfield.
+* `time_history_start_time`: Time history starting time, t_2(x), subfield.
   - **current value**: 'subfield', from {default}
   - **configurable as**: subfield, time_history_start_time
 

@@ -47,7 +47,7 @@ pylith::problems::ObserversPhysics::deallocate(void) {
 void
 pylith::problems::ObserversPhysics::registerObserver(pylith::problems::ObserverPhysics* observer) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("registerObserver(observer="<<typeid(observer).name()<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, "registerObserver(observer="<<typeid(observer).name()<<")");
 
     if (observer) {
         _observers.insert(observer);
@@ -62,7 +62,7 @@ pylith::problems::ObserversPhysics::registerObserver(pylith::problems::ObserverP
 void
 pylith::problems::ObserversPhysics::removeObserver(pylith::problems::ObserverPhysics* observer) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("removeObserver(observer="<<typeid(observer).name()<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, "removeObserver(observer="<<typeid(observer).name()<<")");
 
     if (observer) {
         _observers.erase(observer);
@@ -85,7 +85,7 @@ pylith::problems::ObserversPhysics::size(void) const {
 void
 pylith::problems::ObserversPhysics::setPhysicsImplementation(const pylith::feassemble::PhysicsImplementation* const physics) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("setPhysicsImplementation(physics="<<physics<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, "setPhysicsImplementation(physics="<<physics<<")");
 
     for (iterator iter = _observers.begin(); iter != _observers.end(); ++iter) {
         assert(*iter);
@@ -101,7 +101,7 @@ pylith::problems::ObserversPhysics::setPhysicsImplementation(const pylith::feass
 void
 pylith::problems::ObserversPhysics::setTimeScale(const PylithReal value) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("setTimeScale(value="<<value<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, "setTimeScale(value="<<value<<")");
 
     for (iterator iter = _observers.begin(); iter != _observers.end(); ++iter) {
         assert(*iter);
@@ -117,7 +117,7 @@ pylith::problems::ObserversPhysics::setTimeScale(const PylithReal value) {
 void
 pylith::problems::ObserversPhysics::verifyObservers(const pylith::topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("verifyObservers(solution="<<solution.getLabel()<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, "verifyObservers(solution="<<solution.getLabel()<<")");
 
     for (iterator iter = _observers.begin(); iter != _observers.end(); ++iter) {
         assert(*iter);
@@ -136,7 +136,7 @@ pylith::problems::ObserversPhysics::notifyObservers(const PylithReal t,
                                                     const pylith::topology::Field& solution,
                                                     const pylith::problems::Observer::NotificationType notification) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("notifyObservers(t="<<t<<", tindex="<<tindex<<", solution="<<solution.getLabel()<<", " <<notification<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, "notifyObservers(t="<<t<<", tindex="<<tindex<<", solution="<<solution.getLabel()<<", " <<notification<<")");
 
     for (iterator iter = _observers.begin(); iter != _observers.end(); ++iter) {
         assert(*iter);

@@ -66,7 +66,7 @@ public:
 
     /** Get name of constrained solution subfield.
      *
-     * @preturn Name of solution subfield.
+     * @returns Name of solution subfield.
      */
     const char* getSubfieldName(void) const;
 

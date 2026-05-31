@@ -118,37 +118,29 @@ caption: Run Step 4 simulation
 $ pylith step04_varslip.cfg
 
 # The output should look something like the following.
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:77:main
- -- pylithapp(info)
+ >> software/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:79:main
+ -- info (application-flow)
  -- Running on 1 process(es).
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/meshio/MeshIOObj.py:38:read
- -- meshiopetsc(info)
- -- Reading finite-element mesh
- >> /src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:85:void pylith::meshio::MeshIO::read(pylith::topology::Mesh *, const bool)
- -- meshiopetsc(info)
- -- Component 'reader': Domain bounding box:
-    (-50000, 50000)
-    (-75000, 75000)
 
 # -- many lines omitted --
 
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/TimeDependent.py:132:run
- -- timedependent(info)
- -- Solving problem.
+ >> src/cig/pylith/libsrc/pylith/problems/TimeDependent.cc:473:void pylith::problems::TimeDependent::solve()
+ -- info (application-flow)
+ -- Component 'timedependent.problem': Solving equations.
 0 TS dt 0.001 time 0.
-    0 SNES Function norm 5.134717810501e-02
-      Linear solve converged due to CONVERGED_ATOL iterations 18
-    1 SNES Function norm 7.095489308325e-09
+    0 SNES Function norm 2.567358905251e+00
+      Linear solve converged due to CONVERGED_ATOL iterations 17
+    1 SNES Function norm 6.879508633532e-08
     Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
 1 TS dt 0.001 time 0.001
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:199:finalize
- -- timedependent(info)
+ >> software/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:222:finalize
+ -- info (application-flow)
  -- Finalizing problem.
 ```
 
 The beginning of the output written to the terminal matches that in our previous simulations.
 At the end of the output written to the terminal, we see that the solver advanced the solution one time step (static simulation).
-The linear solve converged after 27 iterations and the norm of the residual met the absolute convergence tolerance (`ksp_atol`).
+The linear solve converged after 17 iterations and the norm of the residual met the absolute convergence tolerance (`ksp_atol`).
 The nonlinear solve converged in 1 iteration, which we expect because this is a linear problem, and the residual met the absolute convergence tolerance (`snes_atol`).
 
 ## Earthquake rupture parameters

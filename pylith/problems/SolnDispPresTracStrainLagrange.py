@@ -51,7 +51,7 @@ class SolnDispPresTracStrainLagrange(PetscComponent):
 
     def components(self):
         """Order of facilities in Inventory is ambiguous, so overwrite
-        components() to insure order is [displacement, pressure, trace_strain, lagrange_multiplier_fault].
+        components() to ensure order is [displacement, pressure, trace_strain, lagrange_multiplier_fault].
 
         """
         return [self.displacement, self.pressure, self.traceStrain, self.lagrangeFault]

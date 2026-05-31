@@ -107,67 +107,62 @@ caption: Run Step 1 simulation
 $ pylith step01_inflation.cfg
 
 # The output should look something like the following.
- -- pylithapp(info)
+ >> software/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:80:main
+ -- info (application-flow)
  -- Running on 1 process(es).
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/meshio/MeshIOObj.py:41:read
- -- meshiopetsc(info)
- -- Reading finite-element mesh
- >> /src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:75:void pylith::meshio::MeshIO::read(pylith::topology::Mesh *, const bool)
- -- meshiopetsc(info)
+  >> src/cig/pylith/libsrc/pylith/utils/PetscOptions.cc:251:static void pylith::utils::_PetscOptions::write(pythia::journal::info_t &, const char *, const PetscOptions &)
+ -- info (application-flow)
+ -- Setting PETSc options:
+    fieldsplit_displacement_pc_type = lu
+    fieldsplit_pressure_pc_type = bjacobi
+    fieldsplit_trace_strain_pc_type = bjacobi
+    ksp_atol = 1.0e-7
+    ksp_converged_reason = true
+    ksp_error_if_not_converged = true
+    ksp_guess_pod_size = 8
+    ksp_guess_type = pod
+    ksp_rtol = 1.0e-14
+    pc_fieldsplit_0_fields = 2
+    pc_fieldsplit_1_fields = 1
+    pc_fieldsplit_2_fields = 0
+    pc_fieldsplit_type = multiplicative
+    pc_type = fieldsplit
+    snes_atol = 5.0e-7
+    snes_converged_reason = true
+    snes_error_if_not_converged = true
+    snes_monitor = true
+    snes_rtol = 1.0e-14
+    ts_error_if_step_fails = true
+    ts_exact_final_time = matchstep
+    ts_monitor = true
+    ts_type = beuler
+    viewer_hdf5_collective = true
+
+ >> src/cig/pylith/libsrc/pylith/meshio/MeshIOPetsc.cc:205:virtual void pylith::meshio::MeshIOPetsc::_read()
+ -- info (application-flow)
+ -- Component 'meshiopetsc.reader': Reading finite-element mesh from 'mesh_tri.msh'.
+ >> src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:76:void pylith::meshio::MeshIO::read(pylith::topology::Mesh *, const bool)
+ -- info (application-flow)
  -- Component 'meshiopetsc.reader': Domain bounding box:
     (0, 20000)
     (-20000, 0)
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:146:preinitialize
- -- timedependent(info)
- -- Performing minimal initialization before verifying configuration.
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Solution.py:43:preinitialize
- -- solution(info)
- -- Performing minimal initialization of solution.
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:206:verifyConfiguration
- -- timedependent(info)
- -- Verifying compatibility of problem configuration.
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:250:_printInfo
- -- timedependent(info)
+ >> src/cig/pylith/libsrc/pylith/problems/TimeDependent.cc:316:virtual void pylith::problems::TimeDependent::verifyConfiguration() const
+ -- info (application-flow)
+ -- Component 'timedependent.problem': Verifying problem configuration.
+ >> software/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:238:_printInfo
+ -- info (application-flow)
  -- Scales for nondimensionalization:
     Length scale: 5000*m
     Displacement scale: 10*m
     Time scale: 4.16667e+07*s
     Rigidity scale: 6e+09*m**-1*kg*s**-2
     Temperature scale: 1*K
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:217:initialize
- -- timedependent(info)
- -- Initializing timedependent problem with quasistatic formulation.
- >> /src/cig/pylith/libsrc/pylith/utils/PetscOptions.cc:264:static void pylith::utils::_PetscOptions::write(pythia::journal::info_t &, const char *, const PetscOptions &)
- -- petscoptions(info)
- -- Setting PETSc options:
-fieldsplit_displacement_pc_type = lu
-fieldsplit_pressure_pc_type = bjacobi
-fieldsplit_trace_strain_pc_type = bjacobi
-ksp_atol = 1.0e-7
-ksp_converged_reason = true
-ksp_error_if_not_converged = true
-ksp_guess_pod_size = 8
-ksp_guess_type = pod
-ksp_rtol = 1.0e-12
-pc_fieldsplit_0_fields = 2
-pc_fieldsplit_1_fields = 1
-pc_fieldsplit_2_fields = 0
-pc_fieldsplit_type = multiplicative
-pc_type = fieldsplit
-snes_atol = 4.0e-7
-snes_converged_reason = true
-snes_error_if_not_converged = true
-snes_monitor = true
-snes_rtol = 1.0e-12
-ts_error_if_step_fails = true
-ts_exact_final_time = matchstep
-ts_monitor = true
-ts_type = beuler
-viewer_hdf5_collective = true
-
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/TimeDependent.py:145:run
- -- timedependent(info)
- -- Solving problem.
+ >> src/cig/pylith/libsrc/pylith/problems/TimeDependent.cc:342:virtual void pylith::problems::TimeDependent::initialize()
+ -- info (application-flow)
+ -- Component 'timedependent.problem': Initializing problem.
+ >> src/cig/pylith/libsrc/pylith/problems/TimeDependent.cc:473:void pylith::problems::TimeDependent::solve()
+ -- info (application-flow)
+ -- Component 'timedependent.problem': Solving equations.
 0 TS dt 0.151476 time -0.151476
     0 SNES Function norm 9.951368195027e-01
       Linear solve converged due to CONVERGED_ATOL iterations 160
@@ -182,12 +177,12 @@ viewer_hdf5_collective = true
     1 SNES Function norm 3.243946411840e-08
     Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
 51 TS dt 0.151476 time 7.57382
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:232:finalize
- -- timedependent(info)
- -- Finalizing problem.```
+ >> software/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:222:finalize
+ -- info (application-flow)
+ -- Finalizing problem.
+ ```
 
-At the beginning of the output written to the terminal, we see that PyLith is reading the mesh using the `MeshIOCubit` reader and that it found the domain to extend from 0 to 20 km in the x direction and from -20 km to 0 in the y direction.
-The scales for nondimensionalization .
+At the beginning of the output written to the terminal, we see that PyLith is reading the mesh using the `MeshIOPetsc` reader and that it found the domain to extend from 0 to 20 km in the x direction and from -20 km to 0 in the y direction.
 PyLith detects the use of poroelasticity without a fault and selects appropriate preconditioning options as discussed in {ref}`sec-user-run-pylith-petsc-options`.
 
 At the end of the output written to the terminal, we see that the solver advanced the solution 51 time steps.
@@ -243,6 +238,46 @@ caption: Run Step 1b simulation
 $ pylith step01_inflation.cfg step01b_inflation.cfg
 
 # The output should look something like the following.
+ >> software/pylith-debug/lib/python3.12/site-packages/pylith/utils/PetscManager.py:55:initialize
+ -- info (application-flow)
+ -- Initialized PETSc with user options
+    ts_atol = 0.02
+    ts_rtol = 0.02
+ >> software/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:80:main
+ -- info (application-flow)
+ -- Running on 1 process(es).
+ >> src/cig/pylith/libsrc/pylith/utils/PetscOptions.cc:251:static void pylith::utils::_PetscOptions::write(pythia::journal::info_t &, const char *, const PetscOptions &)
+ -- info (application-flow)
+ -- Setting PETSc options:
+    fieldsplit_displacement_pc_type = lu
+    fieldsplit_pressure_pc_type = bjacobi
+    fieldsplit_trace_strain_pc_type = bjacobi
+    ksp_atol = 1.0e-7
+    ksp_converged_reason = true
+    ksp_error_if_not_converged = true
+    ksp_guess_pod_size = 8
+    ksp_guess_type = pod
+    ksp_rtol = 1.0e-14
+    pc_fieldsplit_0_fields = 2
+    pc_fieldsplit_1_fields = 1
+    pc_fieldsplit_2_fields = 0
+    pc_fieldsplit_type = multiplicative
+    pc_type = fieldsplit
+    snes_atol = 5.0e-7
+    snes_converged_reason = true
+    snes_error_if_not_converged = true
+    snes_monitor = true
+    snes_rtol = 1.0e-14
+    ts_adapt_monitor = true
+    ts_adapt_reject_safety = 0.1
+    ts_adapt_safety = 0.2
+    ts_adapt_type = basic
+    ts_error_if_step_fails = true
+    ts_exact_final_time = matchstep
+    ts_monitor = true
+    ts_type = beuler
+    viewer_hdf5_collective = true
+
 # -- many lines omitted --
 
 19 TS dt 1.2231 time 6.35073
@@ -250,13 +285,14 @@ $ pylith step01_inflation.cfg step01b_inflation.cfg
       Linear solve converged due to CONVERGED_ATOL iterations 77
     1 SNES Function norm 2.064447881404e-08
     Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
-      TSAdapt basic beuler 0: step  19 accepted t=6.35073    + 1.223e+00 dt=1.412e+00  wlte= 0.03  wltea=   -1 wlter=   -1
+  TSAdapt basic beuler 0: step  19 accepted t=6.35073    + 1.223e+00 dt=1.412e+00  wlte= 0.03  wltea=   -1 wlter=   -1
 20 TS dt 1.41194 time 7.57382
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:232:finalize
- -- timedependent(info)
- -- Finalizing problem.```
+ >> software/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:222:finalize
+ -- info (application-flow)
+ -- Finalizing problem.
+ ```
 
-The adaptive time stepping algorithm shortens a few of the early time steps but then lengthens the time step as the rate of deforation decreases.
+The adaptive time stepping algorithm shortens a few of the early time steps but then lengthens the time step as the rate of deformation decreases.
 We end up with 20 time steps with adaptive time stepping compared to 51 with uniform time steps.
 
 ```{code-block} console

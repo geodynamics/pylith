@@ -16,10 +16,10 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
+#include "pylith/utils/Exceptions.hh" // USES Exception
 
 #include <cassert> // USES assert()
 #include <typeinfo> // USES typeid()
-#include <stdexcept> // USES std::runtime_error
 
 // ------------------------------------------------------------------------------------------------
 const std::string pylith::feassemble::IntegrationData::time = "t";
@@ -77,7 +77,7 @@ void
 pylith::feassemble::IntegrationData::setScalar(const std::string& name,
                                                const PylithReal value) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("setScalar(name="<<name<<", value="<<value<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, "setScalar(name="<<name<<", value="<<value<<")");
 
     _scalars[name] = value;
 
@@ -90,11 +90,11 @@ pylith::feassemble::IntegrationData::setScalar(const std::string& name,
 PylithReal
 pylith::feassemble::IntegrationData::getScalar(const std::string& name) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("getScalar(name="<<name<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, "getScalar(name="<<name<<")");
 
     scalars_map_t::const_iterator iter = _scalars.find(name);
     if (iter == _scalars.end()) {
-        PYLITH_JOURNAL_LOGICERROR("No scalar value '" << name << "' in integration data.");
+        PYLITH_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "No scalar value '" << name << "' in integration data.");
     } // if
 
     PYLITH_METHOD_RETURN(iter->second);
@@ -106,7 +106,7 @@ pylith::feassemble::IntegrationData::getScalar(const std::string& name) const {
 void
 pylith::feassemble::IntegrationData::removeScalar(const std::string& name) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("removeScalar(name="<<name<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, "removeScalar(name="<<name<<")");
 
     if (_scalars.count(name)) {
         _scalars.erase(name);
@@ -130,7 +130,7 @@ void
 pylith::feassemble::IntegrationData::setField(const std::string& name,
                                               pylith::topology::Field* const field) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("setField(name="<<name<<", field="<<typeid(field).name()<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, "setField(name="<<name<<", field="<<typeid(field).name()<<")");
 
     fields_map_t::iterator iter = _fields.find(name);
     if (iter != _fields.end()) {
@@ -148,11 +148,11 @@ pylith::feassemble::IntegrationData::setField(const std::string& name,
 pylith::topology::Field*
 pylith::feassemble::IntegrationData::getField(const std::string& name) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("getField(name="<<name<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, "getField(name="<<name<<")");
 
     fields_map_t::const_iterator iter = _fields.find(name);
     if (iter == _fields.end()) {
-        PYLITH_JOURNAL_LOGICERROR("No field '" << name << "' in integration data.");
+        PYLITH_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "No field '" << name << "' in integration data.");
     } // if
 
     PYLITH_METHOD_RETURN(iter->second);
@@ -164,7 +164,7 @@ pylith::feassemble::IntegrationData::getField(const std::string& name) const {
 void
 pylith::feassemble::IntegrationData::removeField(const std::string& name) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("removeField(name="<<name<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, "removeField(name="<<name<<")");
 
     if (_fields.count(name)) {
         fields_map_t::iterator iter = _fields.find(name);
@@ -182,7 +182,7 @@ void
 pylith::feassemble::IntegrationData::setMesh(const std::string& name,
                                              pylith::topology::Mesh* const mesh) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("setMesh(name="<<name<<", mesh="<<typeid(mesh).name()<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, "setMesh(name="<<name<<", mesh="<<typeid(mesh).name()<<")");
 
     meshes_map_t::iterator iter = _meshes.find(name);
     if (iter != _meshes.end()) {
@@ -200,11 +200,11 @@ pylith::feassemble::IntegrationData::setMesh(const std::string& name,
 pylith::topology::Mesh*
 pylith::feassemble::IntegrationData::getMesh(const std::string& name) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("getMesh(name="<<name<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, "getMesh(name="<<name<<")");
 
     meshes_map_t::const_iterator iter = _meshes.find(name);
     if (iter == _meshes.end()) {
-        PYLITH_JOURNAL_LOGICERROR("No mesh '" << name << "' in integration data.");
+        PYLITH_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "No mesh '" << name << "' in integration data.");
     } // if
 
     PYLITH_METHOD_RETURN(iter->second);

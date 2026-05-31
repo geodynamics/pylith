@@ -53,7 +53,7 @@ class MeshIOAscii(MeshIOObj, ModuleMeshIOAscii):
         ModuleMeshIOAscii.setCoordSys(self, self.coordsys)
 
     def _configure(self):
-        """Set members based using inventory.
+        """Set members using inventory.
         """
         MeshIOObj._configure(self)
 

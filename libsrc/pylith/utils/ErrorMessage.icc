@@ -1,0 +1,48 @@
+// =================================================================================================
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
+//
+// Copyright (c) 2010-2025, University of California, Davis and the PyLith Development Team.
+// All rights reserved.
+//
+// See https://mit-license.org/ and LICENSE.md and for license information.
+// =================================================================================================
+#pragma once
+
+#include "ErrorMessage.hh"
+
+// ------------------------------------------------------------------------------------------------
+// Constructor from const char*.
+pylith::ErrorMessage::ErrorMessage(const char* message) {
+    _buffer << message;
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// Start a message from a std::string.
+pylith::ErrorMessage::ErrorMessage(const std::string& message) {
+    _buffer << message;
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// Append any streamable value; returns *this so chains work left-to-right.
+template <typename T>
+pylith::ErrorMessage&
+pylith::ErrorMessage::operator<<(const T& value) {
+    _buffer << value;
+    return *this;
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// Extract the assembled string.  Called by Error's constructor.
+std::string
+pylith::ErrorMessage::str() const {
+    return _buffer.str();
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// Implicit conversion so std::string can be passed to constructor.
+pylith::ErrorMessage::operator std::string() const { return _buffer.str(); }

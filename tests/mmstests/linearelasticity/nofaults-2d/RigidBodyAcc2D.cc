@@ -15,7 +15,7 @@
 #include "pylith/problems/TimeDependent.hh" // USES TimeDependent
 #include "pylith/feassemble/IntegratorDomain.hh" // USES IntegratorDomain
 #include "pylith/topology/Field.hh" // USES pylith::topology::Field::Discretization
-#include "pylith/utils/journals.hh" // USES pythia::journal::debug_t
+#include "pylith/utils/journals.hh" // USES PYLITH_DEBUG
 
 #include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
 

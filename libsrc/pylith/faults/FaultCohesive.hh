@@ -146,7 +146,7 @@ public:
     /** Create derived field.
      *
      * @param[in] solution Solution field.
-     * @param[in\ domainMesh Finite-element mesh associated with integration domain.
+     * @param[in] domainMesh Finite-element mesh associated with integration domain.
      *
      * @returns Derived field if applicable, otherwise NULL.
      */

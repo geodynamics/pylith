@@ -12,7 +12,7 @@
 
 #include "pylith/bc/NeumannUserFn.hh" // implementation of object methods
 
-#include "pylith/fekernels/NeumannTimeDependent.hh" // USES NeumannTimeDepndent kernels
+#include "pylith/fekernels/NeumannTimeDependent.hh" // USES NeumannTimeDependent kernels
 
 #include "pylith/feassemble/IntegratorBoundary.hh" // USES IntegratorBoundary
 #include "pylith/topology/Field.hh" // USES Field
@@ -23,9 +23,9 @@
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
+#include "pylith/utils/Exceptions.hh" // USES Exception
 
 #include <cassert> // USES assert()
-#include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream
 #include <typeinfo> // USES typeid()
 
@@ -91,7 +91,7 @@ pylith::bc::NeumannUserFn::deallocate(void) {
 // Set user function specifying field on boundary.
 void
 pylith::bc::NeumannUserFn::setUserFn(PetscBdPointFn* fn) {
-    PYLITH_COMPONENT_DEBUG("setUserFn(fn="<<fn<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setUserFn(fn="<<fn<<")");
 
     _fn = fn;
 } // setUserFn
@@ -110,7 +110,7 @@ pylith::bc::NeumannUserFn::getUserFn(void) const {
 pylith::feassemble::Integrator*
 pylith::bc::NeumannUserFn::createIntegrator(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("createIntegrator(solution="<<solution.getLabel()<<")");
+    PYLITH_COMPONENT_INFO_ROOT(pylith::journal::application_flow_detail3, "Creating integrator for " << _subfieldName << " on " << getLabelName() << "("<<getLabelValue()<<").");
 
     pylith::feassemble::IntegratorBoundary* integrator = new pylith::feassemble::IntegratorBoundary(this);assert(integrator);
     integrator->setSubfieldName(getSubfieldName());
@@ -129,7 +129,7 @@ pylith::bc::NeumannUserFn::createIntegrator(const pylith::topology::Field& solut
 std::vector<pylith::feassemble::Constraint*>
 pylith::bc::NeumannUserFn::createConstraints(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("createConstraints(solution="<<solution.getLabel()<<") empty method");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "createConstraints(solution="<<solution.getLabel()<<") empty method");
     std::vector<pylith::feassemble::Constraint*> constraintArray;
 
     PYLITH_METHOD_RETURN(constraintArray);
@@ -142,15 +142,15 @@ pylith::topology::Field*
 pylith::bc::NeumannUserFn::createAuxiliaryField(const pylith::topology::Field& solution,
                                                 const pylith::topology::Mesh& domainMesh) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("createAuxiliaryField(solution="<<solution.getLabel()<<", domainMesh=)"<<typeid(domainMesh).name()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "createAuxiliaryField(solution="<<solution.getLabel()<<", domainMesh=)"<<typeid(domainMesh).name()<<")");
 
     pylith::topology::Field* auxiliaryField = new pylith::topology::Field(domainMesh);assert(auxiliaryField);
     auxiliaryField->setLabel("auxiliary field (not used)");
 
-    pythia::journal::debug_t debug(PyreComponent::getName());
+    pythia::journal::debug_t debug(pylith::journal::auxiliary_fields);
     if (debug.state()) {
-        PYLITH_COMPONENT_DEBUG("Displaying auxiliary field");
-        auxiliaryField->view("Neumann auxiliary field");
+        PYLITH_COMPONENT_DEBUG(pylith::journal::auxiliary_fields, "Displaying auxiliary field");
+        auxiliaryField->view("NeumannUserFn auxiliary field");
     } // if
 
     PYLITH_METHOD_RETURN(auxiliaryField);
@@ -173,11 +173,7 @@ pylith::bc::_NeumannUserFn::setKernelsResidual(pylith::feassemble::IntegratorBou
                                                const topology::Field& solution,
                                                const pylith::problems::Physics::FormulationEnum formulation) {
     PYLITH_METHOD_BEGIN;
-    pythia::journal::debug_t debug(_NeumannUserFn::pyreComponent);
-    debug << pythia::journal::at(__HERE__)
-          << "setKernelsResidual(integrator="<<integrator<<", bc="<<typeid(bc).name()<<", solution="
-          << solution.getLabel()<<")"
-          << pythia::journal::endl;
+    PYLITH_DEBUG(pylith::journal::application_flow_detail5, "Setting residual kernels");
 
     PetscBdPointFn* r0 = bc.getUserFn();
     PetscBdPointFn* r1 = NULL;
@@ -192,7 +188,7 @@ pylith::bc::_NeumannUserFn::setKernelsResidual(pylith::feassemble::IntegratorBou
         kernels[0] = ResidualKernels(bc.getSubfieldName(), pylith::feassemble::Integrator::RHS, r0, r1);
         break;
     default:
-        PYLITH_JOURNAL_LOGICERROR("Unknown formulation for equations ("<<formulation<<").");
+        PYLITH_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown formulation for equations ("<<formulation<<").");
     } // switch
 
     assert(integrator);

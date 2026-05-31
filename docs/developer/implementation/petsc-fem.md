@@ -71,7 +71,7 @@ Global vectors are used for the algebraic solver because we do not want solution
 
 The `Field::view()` method will print the `Field` metadata and the `PetscSection` in a more useful format compared to the corresponding PETSc viewer functions.
 
-% ./mmstest_linearelasticity_faults2d OneFaultShearNoSlip::QuadQ1::testResidual --journal.debug=timedependent
+% ./mmstest_linearelasticity_faults2d OneFaultShearNoSlip::QuadQ1::testResidual --journal.debug=solution
 ```{code-block} bash
 ---
 caption: Output from `pylith::topology::Field::view()` for a solution field with two subfields showing only the sections (layout of the field). The displacement subfield has degrees of freedom on the vertices of the bulk cells. The lagrange_multiplier_fault subfield has degrees of freedom on the edges of the cohesive cells. The order of the values (offsets in the PetscVec) follows the ordering of the points (cells, vertices, edges, and faces). The local section includes the constrained degrees of freedom, whereas the global section does not. The sections list the point and then the degree of freedom associated with the components of the fields.

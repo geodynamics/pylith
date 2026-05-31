@@ -9,7 +9,6 @@
 // =================================================================================================
 
 #include <portinfo>
-#include <stdexcept>
 
 #include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
@@ -146,11 +145,11 @@ pylith::meshio::TestExodusII::testOpenClose(void) {
 
     // Attempt to open file that doesn't exist.
     exofile.filename("fail.exo");
-    CHECK_THROWS_AS(exofile.open(), std::runtime_error);
+    CHECK_THROWS_AS(exofile.open(), pylith::IOError);
 
     // Attempt to close file with bad handle.
     exofile._file = 1;
-    CHECK_THROWS_AS(exofile.close(), std::runtime_error);
+    CHECK_THROWS_AS(exofile.close(), pylith::IOError);
 } // testOpenClose
 
 
@@ -203,7 +202,7 @@ pylith::meshio::TestExodusII::testGetAttr(void) {
     CHECK(cellShape == std::string("TRI3"));
 
     std::string missing;
-    CHECK_THROWS_AS(exofile.getAttr(&missing, nullptr, "aabbcc"), std::runtime_error);
+    CHECK_THROWS_AS(exofile.getAttr(&missing, nullptr, "aabbcc"), pylith::IOError);
 
     PYLITH_METHOD_END;
 } // testGetAttr
@@ -250,14 +249,14 @@ pylith::meshio::TestExodusII::testGetVarDouble(void) {
     }
 
     // Attempt to get variable that doesn't exist.
-    CHECK_THROWS_AS(exofile.getVar(&coords[0], dims, ndims, "aabbcc"), std::runtime_error);
+    CHECK_THROWS_AS(exofile.getVar(&coords[0], dims, ndims, "aabbcc"), pylith::IOError);
 
     // Attempt to get variable with wrong number of dimensions.
-    CHECK_THROWS_AS(exofile.getVar(&coords[0], dims, ndims+1, "coord"), std::runtime_error);
+    CHECK_THROWS_AS(exofile.getVar(&coords[0], dims, ndims+1, "coord"), pylith::IOError);
 
     // Attempt to get variable with wrong dimension.
     dims[0] = 99;
-    CHECK_THROWS_AS(exofile.getVar(&coords[0], dims, ndims, "coord"), std::runtime_error);
+    CHECK_THROWS_AS(exofile.getVar(&coords[0], dims, ndims, "coord"), pylith::IOError);
 } // testGetVarDouble
 
 
@@ -282,14 +281,14 @@ pylith::meshio::TestExodusII::testGetVarInt(void) {
     }
 
     // Attempt to get variable that doesn't exist.
-    CHECK_THROWS_AS(exofile.getVar(&connect[0], dims, ndims, "aabbcc"), std::runtime_error);
+    CHECK_THROWS_AS(exofile.getVar(&connect[0], dims, ndims, "aabbcc"), pylith::IOError);
 
     // Attempt to get variable with wrong number of dimensions.
-    CHECK_THROWS_AS(exofile.getVar(&connect[0], dims, ndims+1, "connect2"), std::runtime_error);
+    CHECK_THROWS_AS(exofile.getVar(&connect[0], dims, ndims+1, "connect2"), pylith::IOError);
 
     // Attempt to get variable with wrong dimension.
     dims[0] = 99;
-    CHECK_THROWS_AS(exofile.getVar(&connect[0], dims, ndims, "connect2"), std::runtime_error);
+    CHECK_THROWS_AS(exofile.getVar(&connect[0], dims, ndims, "connect2"), pylith::IOError);
 } // testGetVarDouble
 
 
@@ -310,10 +309,10 @@ pylith::meshio::TestExodusII::testGetVarString(void) {
     }
 
     // Attempt to get variable that doesn't exist.
-    CHECK_THROWS_AS(exofile.getVar(&names, dim, "aabbcc"), std::runtime_error);
+    CHECK_THROWS_AS(exofile.getVar(&names, dim, "aabbcc"), pylith::IOError);
 
     // Attempt to get variable with wrong number of dimensions.
-    CHECK_THROWS_AS(exofile.getVar(&names, dim+1, "coord_names"), std::runtime_error);
+    CHECK_THROWS_AS(exofile.getVar(&names, dim+1, "coord_names"), pylith::IOError);
 } // testGetVarString
 
 

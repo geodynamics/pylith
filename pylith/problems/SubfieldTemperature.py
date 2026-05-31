@@ -44,7 +44,7 @@ class SubfieldTemperature(SolutionSubfield):
         self._setComponents(spaceDim)
 
     def _configure(self):
-        """Set members based using inventory."""
+        """Set members using inventory."""
         SolutionSubfield._configure(self)
 
 

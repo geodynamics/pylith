@@ -22,6 +22,8 @@
 
 #include "pylith/utils/error.hh" // USES PylithCallPetsc()
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
+#include "pylith/utils/Exceptions.hh" // USES Exception
+
 #include <cassert> // USES assert()
 
 // ------------------------------------------------------------------------------------------------
@@ -57,10 +59,11 @@ pylith::problems::InitialConditionPatch::deallocate(void) {
 // Set name of label marking initial condition patch.
 void
 pylith::problems::InitialConditionPatch::setLabelName(const char* value) {
-    PYLITH_COMPONENT_DEBUG("setLabelName(value="<<value<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setLabelName(value="<<value<<")");
 
     if (strlen(value) == 0) {
-        throw std::runtime_error("Empty string given for label of initial condition patch.");
+        PYLITH_COMPONENT_ERROR(pylith::ValueError, pylith::journal::user_input,
+                               "Empty string given for label of initial condition patch.");
     } // if
 
     _labelName = value;
@@ -96,7 +99,7 @@ pylith::problems::InitialConditionPatch::getLabelValue(void) const {
 void
 pylith::problems::InitialConditionPatch::setDB(spatialdata::spatialdb::SpatialDB* db) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("setDB(db="<<db<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setDB(db="<<db<<")");
 
     _db = db;
 
@@ -109,7 +112,7 @@ pylith::problems::InitialConditionPatch::setDB(spatialdata::spatialdb::SpatialDB
 void
 pylith::problems::InitialConditionPatch::verifyConfiguration(const pylith::topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("verifyConfiguration(solution="<<solution.getLabel()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "verifyConfiguration(solution="<<solution.getLabel()<<")");
 
     InitialCondition::verifyConfiguration(solution);
 
@@ -117,10 +120,8 @@ pylith::problems::InitialConditionPatch::verifyConfiguration(const pylith::topol
     PetscBool hasLabel = PETSC_FALSE;
     PylithCallPetsc(DMHasLabel(dmSoln, _labelName.c_str(), &hasLabel));
     if (!hasLabel) {
-        std::ostringstream msg;
-        msg << "Could not find label '" << _labelName << "' for setting patch for initial condition '"
-            << PyreComponent::getIdentifier() << "'.";
-        throw std::runtime_error(msg.str());
+        PYLITH_COMPONENT_ERROR(pylith::ValueError, pylith::journal::user_input,
+                               "Could not find label '" << _labelName << "' for setting patch for initial condition.");
     } // if
 
     PetscDMLabel dmLabel = NULL;
@@ -132,23 +133,19 @@ pylith::problems::InitialConditionPatch::verifyConfiguration(const pylith::topol
     PylithCallPetsc(MPI_Allreduce(&hasLabelValueIntLocal, &hasLabelValueInt, 1, MPI_INT, MPI_MAX,
                                   PetscObjectComm((PetscObject) dmSoln)));
     if (!hasLabelValueInt) {
-        std::ostringstream msg;
-        msg << "Label '" << _labelName << "' missing value '" << _labelValue << "' for initial condition '"
-            << PyreComponent::getIdentifier() << "'.";
-        throw std::runtime_error(msg.str());
+        PYLITH_COMPONENT_ERROR(pylith::ValueError, pylith::journal::user_input,
+                               "Label '" << _labelName << "' missing value '" << _labelValue << "' for initial condition.");
     } // if
 
     PetscInt stratumStart = -1, stratumEnd = -1;
     PylithCallPetsc(DMLabelGetStratumBounds(dmLabel, _labelValue, &stratumStart, &stratumEnd));
     pylith::topology::Stratum cellsStratum(dmSoln, pylith::topology::Stratum::HEIGHT, 0);
     if ((stratumStart >= cellsStratum.begin()) && (stratumEnd <= cellsStratum.end())) {
-        std::ostringstream msg;
-        msg << "Label '" << _labelName << "' with value '" << _labelValue << "' for initial condition '"
-            << PyreComponent::getIdentifier() << "' contains only cells. Labels for initial conditions must "
-                                             "contain cells and lower dimension points (for example, vertices, edges, and faces). These are "
-                                             "not available for Cubit meshes; the are available for physical groups created using VertexGroup "
-                                             "in Gmsh Python scripts.";
-        throw std::runtime_error(msg.str());
+        PYLITH_COMPONENT_ERROR(pylith::ValueError, pylith::journal::user_input,
+                               "Label '" << _labelName << "' with value '" << _labelValue << "' for initial condition contains only cells. "
+                                         << "Labels for initial conditions must contain cells and lower dimension points "
+                                         << "(for example, vertices, edges, and faces). These are not available for Cubit meshes; "
+                                         << "they are available for physical groups created in Gmsh.");
     } // if
 
     PYLITH_METHOD_END;
@@ -161,7 +158,7 @@ void
 pylith::problems::InitialConditionPatch::setValues(pylith::topology::Field* solution,
                                                    const pylith::scales::Scales& scales) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("setValues(solution="<<solution<<", scales)");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setValues(solution="<<solution<<", scales)");
 
     assert(solution);
 
@@ -179,10 +176,10 @@ pylith::problems::InitialConditionPatch::setValues(pylith::topology::Field* solu
     fieldQuery.queryDBLabel(_labelName.c_str(), _labelValue);
     fieldQuery.closeDB(_db);
 
-    pythia::journal::debug_t debug(PyreComponent::getName());
+    pythia::journal::debug_t debug(pylith::journal::solution);
     if (debug.state()) {
-        PYLITH_COMPONENT_DEBUG("Displaying solution field");
-        solution->view("Solution field with initial values");
+        PYLITH_COMPONENT_DEBUG(pylith::journal::solution, "Displaying solution field");
+        solution->view("Solution field with initial condition values");
     } // if
 
     PYLITH_METHOD_END;

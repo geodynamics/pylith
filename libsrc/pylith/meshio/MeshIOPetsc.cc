@@ -20,6 +20,7 @@
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
+#include "pylith/utils/Exceptions.hh" // USES Exception
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
 
 #include "petscviewerhdf5.h"
@@ -27,7 +28,6 @@
 
 #include <set> // USES std::set
 #include <cassert> // USES assert()
-#include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream
 #include <typeinfo> // USES std::typeid
 
@@ -130,7 +130,7 @@ pylith::meshio::MeshIOPetsc::setFilename(const char* name) {
     } else if (hdf5Suffix == _filename.substr(_filename.size()-hdf5Suffix.size(), hdf5Suffix.size())) {
         _format = HDF5;
     } else {
-        PYLITH_COMPONENT_LOGICERROR("Could not determine format for mesh file " << _filename << " from suffix (must be '.msh' for GMSH and '.h5' for HDF5).");
+        PYLITH_COMPONENT_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Could not determine format for mesh file " << _filename << " from suffix (must be '.msh' for GMSH and '.h5' for HDF5).");
     } // if/else
 }
 
@@ -196,11 +196,13 @@ pylith::meshio::MeshIOPetsc::getGmshMarkRecursive(void) const {
 void
 pylith::meshio::MeshIOPetsc::_read(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_read()");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "_read()");
     _MeshIOPetsc::Events::logger.eventBegin(_MeshIOPetsc::Events::read);
     assert(_mesh);
 
     if (!_filename.empty()) {
+        PYLITH_COMPONENT_INFO_ROOT(pylith::journal::application_flow,
+                                   "Reading finite-element mesh from '" << _filename << "'.");
         size_t noptions = 1;
         pylith::string_vector options(noptions*2);
         options[0] = "-" + _prefix + "dm_plex_filename";
@@ -251,7 +253,7 @@ pylith::meshio::MeshIOPetsc::_read(void) {
 void
 pylith::meshio::MeshIOPetsc::_write(void) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_write()");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "_write()");
     assert(_mesh);
 
     PetscViewer viewer = PETSC_NULLPTR;
@@ -266,7 +268,7 @@ pylith::meshio::MeshIOPetsc::_write(void) const {
         PylithCallPetsc(PetscViewerHDF5SetDMPlexStorageVersionWriting(viewer, storageVersion));
         PylithCallPetsc(PetscFree(storageVersion));
     } else {
-        PYLITH_COMPONENT_LOGICERROR("Unknown mesh format " << _format << ".");
+        PYLITH_COMPONENT_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown mesh format '" << _format << "'.");
     } // if/else
     PylithCallPetsc(DMView(_mesh->getDM(), viewer));
     PylithCallPetsc(PetscViewerDestroy(&viewer));

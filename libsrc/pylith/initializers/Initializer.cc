@@ -45,7 +45,7 @@ void
 pylith::initializers::Initializer::setPhases(pylith::initializers::InitializePhase* phases[],
                                              const size_t numPhases) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("Initializer::setPhases("<<phases<<", numPhases="<<numPhases<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setPhases(numPhases="<<numPhases<<")");
 
     assert( (!phases && 0 == numPhases) || (phases && 0 < numPhases) );
 
@@ -63,7 +63,7 @@ pylith::initializers::Initializer::setPhases(pylith::initializers::InitializePha
 pylith::topology::Mesh*
 pylith::initializers::Initializer::runPhases(const pylith::problems::Problem& problem) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("Initializer::initialize(problem)");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "Running mesh initialization.");
 
     pylith::topology::Mesh* meshNew = nullptr;
     pylith::topology::Mesh* meshPhase = nullptr;
@@ -75,7 +75,7 @@ pylith::initializers::Initializer::runPhases(const pylith::problems::Problem& pr
         delete meshPhase;meshPhase = meshNew;
     } // for
 
-    pythia::journal::debug_t debug("initialize_mesh");
+    pythia::journal::debug_t debug(pylith::journal::mesh);
     if (debug.state()) {
         meshNew->view(":mesh_domain_after_initialize.txt:ascii_info_detail");
         pylith::topology::Mesh* meshExploded = pylith::topology::MeshOps::explode(*meshNew);

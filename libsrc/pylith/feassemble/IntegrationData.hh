@@ -109,7 +109,7 @@ public:
     /** Get mesh.
      *
      * @param[in] name Name of mesh.
-     * @returns Finite-elemebt mesh.
+     * @returns Finite-element mesh.
      */
     pylith::topology::Mesh* getMesh(const std::string& name) const;
 

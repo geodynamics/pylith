@@ -25,9 +25,9 @@
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
+#include "pylith/utils/Exceptions.hh" // USES Exception
 
 #include <cassert> // USES assert()
-#include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream
 #include <typeinfo> // USES typeid()
 
@@ -96,7 +96,7 @@ pylith::bc::DirichletTimeDependent::deallocate(void) {
 void
 pylith::bc::DirichletTimeDependent::setConstrainedDOF(const int* flags,
                                                       const int size) {
-    PYLITH_COMPONENT_DEBUG("setConstrainedDOF(flags="<<flags<<", size"<<size<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setConstrainedDOF(flags="<<flags<<", size"<<size<<")");
 
     assert((flags && size > 0) || (!flags && 0 == size) );
     _constrainedDOF.resize(size);
@@ -118,7 +118,7 @@ pylith::bc::DirichletTimeDependent::getConstrainedDOF(void) const {
 // Set time history database.
 void
 pylith::bc::DirichletTimeDependent::setTimeHistoryDB(spatialdata::spatialdb::TimeHistory* th) {
-    PYLITH_COMPONENT_DEBUG("setTimeHistoryDB(th"<<th<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setTimeHistoryDB(th"<<th<<")");
 
     _dbTimeHistory = th;
 } // setTimeHistoryDB
@@ -136,7 +136,7 @@ pylith::bc::DirichletTimeDependent::getTimeHistoryDB(void) {
 // Use initial value term in time history expression.
 void
 pylith::bc::DirichletTimeDependent::useInitial(const bool value) {
-    PYLITH_COMPONENT_DEBUG("useInitial(value="<<value<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "useInitial(value="<<value<<")");
 
     _useInitial = value;
 } // useInitial
@@ -154,7 +154,7 @@ pylith::bc::DirichletTimeDependent::useInitial(void) const {
 // Use rate value term in time history expression.
 void
 pylith::bc::DirichletTimeDependent::useRate(const bool value) {
-    PYLITH_COMPONENT_DEBUG("useRate(value="<<value<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "useRate(value="<<value<<")");
 
     _useRate = value;
 } // useRate
@@ -172,7 +172,7 @@ pylith::bc::DirichletTimeDependent::useRate(void) const {
 // Use time history term in time history expression.
 void
 pylith::bc::DirichletTimeDependent::useTimeHistory(const bool value) {
-    PYLITH_COMPONENT_DEBUG("useTimeHistory(value="<<value<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "useTimeHistory(value="<<value<<")");
 
     _useTimeHistory = value;
 } // useTimeHistory
@@ -191,14 +191,13 @@ pylith::bc::DirichletTimeDependent::useTimeHistory(void) const {
 void
 pylith::bc::DirichletTimeDependent::verifyConfiguration(const pylith::topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("verifyConfiguration(solution="<<solution.getLabel()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "verifyConfiguration(solution="<<solution.getLabel()<<")");
 
     if (!solution.hasSubfield(_subfieldName.c_str())) {
-        std::ostringstream msg;
-        msg << "Cannot constrain field '"<< _subfieldName
-            << "' in component '" << PyreComponent::getIdentifier() << "'"
-            << "; field is not in solution.";
-        throw std::runtime_error(msg.str());
+        PYLITH_COMPONENT_ERROR(pylith::ValueError, pylith::journal::user_input,
+                               "Cannot constrain field '"<< _subfieldName
+                                                         << "' in component '" << PyreComponent::getIdentifier() << "'"
+                                                         << "; field is not in solution.");
     } // if
 
     const topology::Field::SubfieldInfo& info = solution.getSubfieldInfo(_subfieldName.c_str());
@@ -206,11 +205,11 @@ pylith::bc::DirichletTimeDependent::verifyConfiguration(const pylith::topology::
     const int numConstrained = _constrainedDOF.size();
     for (int iConstrained = 0; iConstrained < numConstrained; ++iConstrained) {
         if (_constrainedDOF[iConstrained] >= numComponents) {
-            std::ostringstream msg;
-            msg << "Cannot constrain degree of freedom '" << _constrainedDOF[iConstrained] << "'"
-                << " in component '" << PyreComponent::getIdentifier() << "'"
-                << "; solution field '" << _subfieldName << "' contains only " << numComponents << " components.";
-            throw std::runtime_error(msg.str());
+            PYLITH_COMPONENT_ERROR(pylith::ValueError,
+                                   pylith::journal::user_input,
+                                   "Cannot constrain degree of freedom '" << _constrainedDOF[iConstrained] << "'"
+                                                                          << " in component '" << PyreComponent::getIdentifier() << "'"
+                                                                          << "; solution field '" << _subfieldName << "' contains only " << numComponents << " components.");
         } // if
     } // for
 
@@ -222,7 +221,7 @@ pylith::bc::DirichletTimeDependent::verifyConfiguration(const pylith::topology::
 // Create integrator and set kernels.
 pylith::feassemble::Integrator*
 pylith::bc::DirichletTimeDependent::createIntegrator(const pylith::topology::Field& solution) {
-    PYLITH_COMPONENT_DEBUG("createIntegrator(solution="<<solution.getLabel()<<") empty method");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "createIntegrator(solution="<<solution.getLabel()<<") empty method");
 
     return NULL;
 } // createIntegrator
@@ -233,7 +232,7 @@ pylith::bc::DirichletTimeDependent::createIntegrator(const pylith::topology::Fie
 std::vector<pylith::feassemble::Constraint*>
 pylith::bc::DirichletTimeDependent::createConstraints(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("createConstraints(solution="<<solution.getLabel()<<")");
+    PYLITH_COMPONENT_INFO_ROOT(pylith::journal::application_flow_detail3, "Creating " << _subfieldName << " constraint on " << getLabelName() << "("<<getLabelValue()<<").");
 
     std::vector<pylith::feassemble::Constraint*> constraintArray;
     pylith::feassemble::ConstraintSpatialDB* constraint = new pylith::feassemble::ConstraintSpatialDB(this);assert(constraint);
@@ -259,7 +258,7 @@ pylith::topology::Field*
 pylith::bc::DirichletTimeDependent::createAuxiliaryField(const pylith::topology::Field& solution,
                                                          const pylith::topology::Mesh& domainMesh) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("createAuxiliaryField(solution="<<solution.getLabel()<<", domainMesh=)"<<typeid(domainMesh).name()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "createAuxiliaryField(solution="<<solution.getLabel()<<", domainMesh=)"<<typeid(domainMesh).name()<<")");
 
     pylith::topology::Field* auxiliaryField = new pylith::topology::Field(domainMesh);assert(auxiliaryField);
     auxiliaryField->setLabel("auxiliary field");
@@ -306,7 +305,7 @@ void
 pylith::bc::DirichletTimeDependent::updateAuxiliaryField(pylith::topology::Field* auxiliaryField,
                                                          const double t) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("updateAuxiliaryField(auxiliaryField="<<auxiliaryField<<", t="<<t<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "updateAuxiliaryField(auxiliaryField="<<auxiliaryField<<", t="<<t<<")");
 
     if (_useTimeHistory) {
         assert(_scales);
@@ -333,10 +332,7 @@ pylith::bc::_DirichletTimeDependent::setKernelConstraint(pylith::feassemble::Con
                                                          const pylith::bc::DirichletTimeDependent& bc,
                                                          const topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    pythia::journal::debug_t debug(_DirichletTimeDependent::pyreComponent);
-    debug << pythia::journal::at(__HERE__)
-          << "setKernelConstraint(constraint="<<constraint<<", bc="<<typeid(bc).name()<<", solution="<<solution.getLabel()
-          <<")" << pythia::journal::endl;
+    PYLITH_DEBUG(pylith::journal::application_flow_detail5, "Setting residual kernels.");
 
     PetscBdPointFn* bcKernel = NULL;
 
@@ -377,19 +373,13 @@ pylith::bc::_DirichletTimeDependent::setKernelConstraint(pylith::feassemble::Con
                    pylith::fekernels::TimeDependentFn::initialRateTimeHistory_vector_boundary;
         break;
     case 0x0: {
-        pythia::journal::warning_t warning(_DirichletTimeDependent::pyreComponent);
-        warning << pythia::journal::at(__HERE__)
-                << "Dirichlet BC provides no constraints."
-                << pythia::journal::endl;
+        PYLITH_WARNING(pylith::journal::user_input, "DirichletBC does not have any constraints.");
         break;
     } // case 0x0
     default: {
-        pythia::journal::error_t error(_DirichletTimeDependent::pyreComponent);
-        error << pythia::journal::at(__HERE__)
-              << "Unknown combination of flags for Dirichlet BC terms (useInitial="<<bc.useInitial()
-              << ", useRate="<<bc.useRate()<<", useTimeHistory="<<bc.useTimeHistory()<<")."
-              << pythia::journal::endl;
-        throw std::logic_error("Unknown combination of flags for Dirichlet BC terms.");
+        PYLITH_FIREWALL(pylith::InternalLogicError, pylith::journal::logic,
+                        "Unknown combination of flags for Dirichlet BC terms (useInitial="<<bc.useInitial()
+                                                                                          << ", useRate="<<bc.useRate()<<", useTimeHistory="<<bc.useTimeHistory()<<").");
     } // default
     } // switch
 

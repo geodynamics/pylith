@@ -11,7 +11,9 @@
 
 #include "pylith/meshio/OutputTrigger.hh" // Implementation of class methods
 
-#include <stdexcept>
+#include "pylith/utils/journals.hh" // USES journal macros
+#include "pylith/utils/Exceptions.hh" // USES Exception
+
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Constructor
@@ -29,9 +31,8 @@ pylith::meshio::OutputTrigger::~OutputTrigger(void) {}
 void
 pylith::meshio::OutputTrigger::setTimeScale(const PylithReal value) {
     if (value <= 0.0) {
-        std::ostringstream msg;
-        msg << "Time scale ("<<value<<") for solution observer is nonpositive.";
-        throw std::logic_error(msg.str());
+        PYLITH_COMPONENT_ERROR(pylith::ValueError, pylith::journal::user_input,
+                               "Time scale ("<<value<<") for solution observer is nonpositive.");
     } // if
     _timeScale = value;
 } // setTimeScale

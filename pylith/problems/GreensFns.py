@@ -19,7 +19,7 @@ from .problems import GreensFns as ModuleGreensFns
 
 class GreensFns(Problem, ModuleGreensFns):
     """
-    Static Green's function problem type with each Green's function corresponding to a fault slip impulses.
+    Static Green's function problem type with each Green's function corresponding to a fault-slip impulse.
 
     Implements `Problem`.
     """
@@ -97,14 +97,10 @@ class GreensFns(Problem, ModuleGreensFns):
     def run(self, app):
         """Solve time dependent problem.
         """
-        from pylith.mpi.Communicator import mpi_is_root
-        if mpi_is_root():
-            self._info.log("Solving problem.")
-
         ModuleGreensFns.solve(self)
 
     def _configure(self):
-        """Set members based using inventory.
+        """Set members using inventory.
         """
         Problem._configure(self)
 

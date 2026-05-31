@@ -41,23 +41,15 @@ caption: Run Step 1 simulation
 $ pylith step01_no_faults_no_flexure.cfg
 
 # The output should look something like the following.
->> /software/pylith-debug/lib/python3.11/site-packages/pylith/apps/PyLithApp.py:77:main
- -- pylithapp(info)
+ >> software/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:79:main
+ -- info (application-flow)
  -- Running on 1 process(es).
- >> /software/pylith-debug/lib/python3.11/site-packages/pylith/meshio/MeshIOObj.py:38:read
- -- meshiopetsc(info)
- -- Reading finite-element mesh
- >> /pylith-main/libsrc/pylith/meshio/MeshIO.cc:85:void pylith::meshio::MeshIO::read(pylith::topology::Mesh *, const bool)
- -- meshiopetsc(info)
- -- Component 'reader': Domain bounding box:
-    (0, 150000)
-    (-30000, 0)
 
 # -- many lines omitted --
 
->> /software/pylith-debug/lib/python3.11/site-packages/pylith/problems/TimeDependent.py:132:run
- -- timedependent(info)
- -- Solving problem.
+ >> src/cig/pylith/libsrc/pylith/problems/TimeDependent.cc:473:void pylith::problems::TimeDependent::solve()
+ -- info (application-flow)
+ -- Component 'timedependent.problem': Solving equations.
 0 TS dt 8.41536 time -8.41536
     0 SNES Function norm 1.780933174156e+03
       Linear solve converged due to CONVERGED_ATOL iterations 23
@@ -77,8 +69,8 @@ $ pylith step01_no_faults_no_flexure.cfg
     1 SNES Function norm 3.145787316430e-13
     Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
 51 TS dt 8.41536 time 420.768
- >> /software/pylith-debug/lib/python3.11/site-packages/pylith/problems/Problem.py:199:finalize
- -- timedependent(info)
+ >> software/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:222:finalize
+ -- info (application-flow)
  -- Finalizing problem.
 ```
 

@@ -39,7 +39,7 @@ public:
 
     /** Get name of solution subfield associated with boundary condition.
      *
-     * @preturn Name of solution subfield.
+     * @returns Name of solution subfield.
      */
     const char* getSubfieldName(void) const;
 

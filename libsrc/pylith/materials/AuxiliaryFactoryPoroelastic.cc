@@ -42,7 +42,7 @@ pylith::materials::AuxiliaryFactoryPoroelastic::~AuxiliaryFactoryPoroelastic(voi
 void
 pylith::materials::AuxiliaryFactoryPoroelastic::addIsotropicPermeability(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addIsotropicPermeability(void)");
+    PYLITH_DEBUG(pylith::journal::application_flow, "addIsotropicPermeability(void)");
 
     const char* subfieldName = "isotropic_permeability";
     const PylithReal permeabilityScale = pylith::scales::ElasticityScales::getPermeabilityScale(*_scales);
@@ -68,7 +68,7 @@ pylith::materials::AuxiliaryFactoryPoroelastic::addIsotropicPermeability(void) {
 void
 pylith::materials::AuxiliaryFactoryPoroelastic::addTensorPermeability(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addTensorPermeability(void)");
+    PYLITH_DEBUG(pylith::journal::application_flow, "addTensorPermeability(void)");
 
     const char* subfieldName = "tensor_permeability";
     const char* componentNames[6] = {
@@ -105,7 +105,7 @@ pylith::materials::AuxiliaryFactoryPoroelastic::addTensorPermeability(void) {
 void
 pylith::materials::AuxiliaryFactoryPoroelastic::addDrainedBulkModulus(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addDrainedBulkModulus(void)");
+    PYLITH_DEBUG(pylith::journal::application_flow, "addDrainedBulkModulus(void)");
 
     const char* subfieldName = "drained_bulk_modulus";
     const PylithReal rigidityScale = _scales->getRigidityScale();
@@ -132,7 +132,7 @@ pylith::materials::AuxiliaryFactoryPoroelastic::addDrainedBulkModulus(void) {
 void
 pylith::materials::AuxiliaryFactoryPoroelastic::addBiotCoefficient(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addBiotCoefficient(void)");
+    PYLITH_DEBUG(pylith::journal::application_flow, "addBiotCoefficient(void)");
 
     const char* subfieldName = "biot_coefficient";
     const PylithReal scale = 1.0;
@@ -159,7 +159,7 @@ pylith::materials::AuxiliaryFactoryPoroelastic::addBiotCoefficient(void) {
 void
 pylith::materials::AuxiliaryFactoryPoroelastic::addBiotModulus(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addBiotModulus(void)");
+    PYLITH_DEBUG(pylith::journal::application_flow, "addBiotModulus(void)");
 
     const char* subfieldName = "biot_modulus";
     const PylithReal rigidityScale = _scales->getRigidityScale();
@@ -186,7 +186,7 @@ pylith::materials::AuxiliaryFactoryPoroelastic::addBiotModulus(void) {
 void
 pylith::materials::AuxiliaryFactoryPoroelastic::addReferenceStress(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addReferenceStress(void)");
+    PYLITH_DEBUG(pylith::journal::application_flow, "addReferenceStress(void)");
 
     const char* subfieldName = "reference_stress";
     const char* componentNames[6] = {
@@ -224,7 +224,7 @@ pylith::materials::AuxiliaryFactoryPoroelastic::addReferenceStress(void) {
 void
 pylith::materials::AuxiliaryFactoryPoroelastic::addReferenceStrain(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addRefrenceStrain(void)");
+    PYLITH_DEBUG(pylith::journal::application_flow, "addRefrenceStrain(void)");
 
     const char* subfieldName = "reference_strain";
     const char* componentNames[6] = {
@@ -262,7 +262,7 @@ pylith::materials::AuxiliaryFactoryPoroelastic::addReferenceStrain(void) {
 void
 pylith::materials::AuxiliaryFactoryPoroelastic::addShearModulus(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addShearModulus(void)");
+    PYLITH_DEBUG(pylith::journal::application_flow, "addShearModulus(void)");
 
     const char* subfieldName = "shear_modulus";
     const PylithReal rigidityScale = _scales->getRigidityScale();

@@ -70,34 +70,45 @@ caption: Run Step 8 simulation
 $ pylith step08_twofaults_powerlaw.cfg
 
 # The output should look something like the following.
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:77:main
- -- pylithapp(info)
+ >> software/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:79:main
+ -- info (application-flow)
  -- Running on 1 process(es).
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/meshio/MeshIOObj.py:38:read
- -- meshiopetsc(info)
- -- Reading finite-element mesh
- >> /src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:85:void pylith::meshio::MeshIO::read(pylith::topology::Mesh *, const bool)
- -- meshiopetsc(info)
- -- Component 'reader': Domain bounding box:
-    (-100000, 100000)
-    (-100000, 0)
+
+# -- many lines omitted --
+
+ >> src/cig/pylith/libsrc/pylith/problems/TimeDependent.cc:473:void pylith::problems::TimeDependent::solve()
+ -- info (application-flow)
+ -- Component 'timedependent.problem': Solving equations.
+0 TS dt 0.2 time -0.2
+    0 SNES Function norm 6.969252188583e+00
+      Linear solve converged due to CONVERGED_ATOL iterations 23
+    1 SNES Function norm 3.410200001998e-01
+      Linear solve converged due to CONVERGED_ATOL iterations 15
+    2 SNES Function norm 1.086370548021e-02
+      Linear solve converged due to CONVERGED_ATOL iterations 11
+    3 SNES Function norm 3.546734950165e-04
+      Linear solve converged due to CONVERGED_ATOL iterations 7
+    4 SNES Function norm 1.156742268560e-05
+      Linear solve converged due to CONVERGED_ATOL iterations 3
+    5 SNES Function norm 3.793910664255e-07
+    Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 5
 
 # -- many lines omitted --
 
 25 TS dt 0.2 time 4.8
-    0 SNES Function norm 3.244406041330e-02
-      Linear solve converged due to CONVERGED_ATOL iterations 16
-    1 SNES Function norm 4.276521889496e-04
-      Linear solve converged due to CONVERGED_ATOL iterations 10
-    2 SNES Function norm 1.467733852722e-05
-      Linear solve converged due to CONVERGED_ATOL iterations 6
-    3 SNES Function norm 5.094245096618e-07
-      Linear solve converged due to CONVERGED_ATOL iterations 2
-    4 SNES Function norm 1.675562142387e-08
+    0 SNES Function norm 8.706014661840e-02
+      Linear solve converged due to CONVERGED_ATOL iterations 15
+    1 SNES Function norm 1.154191339686e-03
+      Linear solve converged due to CONVERGED_ATOL iterations 9
+    2 SNES Function norm 2.319736370610e-05
+      Linear solve converged due to CONVERGED_ATOL iterations 4
+    3 SNES Function norm 5.416653473355e-07
+      Linear solve converged due to CONVERGED_ATOL iterations 1
+    4 SNES Function norm 3.211036236790e-08
     Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 4
 26 TS dt 0.2 time 5.
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:232:finalize
- -- timedependent(info)
+ >> software/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:222:finalize
+ -- info (application-flow)
  -- Finalizing problem.
 ```
 
@@ -137,28 +148,47 @@ caption: Run Step 8b simulation
 $ pylith step08_twofaults_maxwell.cfg step08b_twofaults_maxwell.cfg
 
 # The output should look something like the following.
+ >> software/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:79:main
+ -- info (application-flow)
+ -- Running on 1 process(es).
+
 # -- many lines omitted --
 
-14 TS dt 1.14678 time 3.85322
-    0 SNES Function norm 2.159008163685e-01
-      Linear solve converged due to CONVERGED_ATOL iterations 18
-    1 SNES Function norm 1.088600033252e-02
-      Linear solve converged due to CONVERGED_ATOL iterations 14
-    2 SNES Function norm 7.037994748778e-04
-      Linear solve converged due to CONVERGED_ATOL iterations 10
-    3 SNES Function norm 4.539417964138e-05
-      Linear solve converged due to CONVERGED_ATOL iterations 7
-    4 SNES Function norm 2.925595088171e-06
-      Linear solve converged due to CONVERGED_ATOL iterations 3
-    5 SNES Function norm 1.884520992392e-07
-    Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 5
-      TSAdapt basic beuler 0: step  14 accepted t=3.85322    + 1.147e+00 dt=2.660e+00  wlte=0.00744  wltea=   -1 wlter=   -1
-15 TS dt 2.65981 time 5.
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:232:finalize
- -- timedependent(info)
- -- Finalizing problem.```
+ >> src/cig/pylith/libsrc/pylith/problems/TimeDependent.cc:473:void pylith::problems::TimeDependent::solve()
+ -- info (application-flow)
+ -- Component 'timedependent.problem': Solving equations.
+0 TS dt 0.01 time -0.01
+    0 SNES Function norm 6.969252188583e+00
+      Linear solve converged due to CONVERGED_ATOL iterations 23
+    1 SNES Function norm 2.536646382544e-02
+      Linear solve converged due to CONVERGED_ATOL iterations 11
+    2 SNES Function norm 8.123236908769e-05
+      Linear solve converged due to CONVERGED_ATOL iterations 5
+    3 SNES Function norm 2.954288172419e-07
+    Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 3
+  TSAdapt basic beuler 0: step   0 accepted t=-0.01      + 1.000e-02 dt=1.000e-02
 
-The deformation rate is smoother with the power-law rheology yielding more efficient results with the adaptive time stepper which uses 11 few time steps compared with the uniform time step of 4 years.
+# -- many lines omitted --
+
+19 TS dt 0.776784 time 4.22322
+    0 SNES Function norm 3.212286568880e-01
+      Linear solve converged due to CONVERGED_ATOL iterations 17
+    1 SNES Function norm 8.434433734286e-03
+      Linear solve converged due to CONVERGED_ATOL iterations 12
+    2 SNES Function norm 2.503978690373e-04
+      Linear solve converged due to CONVERGED_ATOL iterations 7
+    3 SNES Function norm 9.325515431121e-06
+      Linear solve converged due to CONVERGED_ATOL iterations 3
+    4 SNES Function norm 3.575321328214e-07
+    Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 4
+  TSAdapt basic beuler 0: step  19 accepted t=4.22322    + 7.768e-01 dt=2.634e+00  wlte=0.00348  wltea=   -1 wlter=   -1
+20 TS dt 2.63361 time 5.
+ >> software/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:222:finalize
+ -- info (application-flow)
+ -- Finalizing problem.
+ ```
+
+The deformation rate is smoother with the power-law rheology yielding more efficient results with the adaptive time stepper which uses 6 fewer time steps compared with the uniform time step of 4 years.
 
 ```{code-block} console
 ---

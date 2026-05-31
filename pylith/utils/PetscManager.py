@@ -43,17 +43,25 @@ class PetscManager(PropertyList):
             for arg in options:
                 args.append(arg)
         petsc.initialize(args)
-        from pylith.mpi.Communicator import mpi_is_root
-        if mpi_is_root():
-            self._info.log("Initialized PETSc.")
 
     def finalize(self):
         """Finalize PETSc.
         """
-        from pylith.mpi.Communicator import mpi_is_root
-        if mpi_is_root():
-            self._info.log("Finalizing PETSc.")
         petsc.finalize()
+
+    def showOptions(self):
+        from pylith.mpi.Communicator import mpi_is_root
+
+        options = self._getOptions()
+        if mpi_is_root():
+            if len(options) > 0:
+                msg = ["PETSc user options:"]
+                for option in options:
+                    if option.startswith("-"):
+                        msg += [f"    {option[1:]}"]
+                    else:
+                        msg[-1] += f" = {option}"
+                self._flow.log("\n".join(msg))
 
     def setOption(self, name, value):
         """Set option after PETSc initialization.

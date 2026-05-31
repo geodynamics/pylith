@@ -47,10 +47,6 @@ pylith::materials::TestIsotropicLinearElasticityPlaneStrain::setUp(void) {
 // Deallocate testing data.
 void
 pylith::materials::TestIsotropicLinearElasticityPlaneStrain::tearDown(void) {
-    const char* journal = _mymaterial->PyreComponent::getName();
-    pythia::journal::debug_t debug(journal);
-    debug.deactivate(); // DEBUGGING
-
     TestMaterial::tearDown();
 
     delete _mymaterial;_mymaterial = NULL;

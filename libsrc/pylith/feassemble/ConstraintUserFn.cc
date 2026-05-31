@@ -24,7 +24,6 @@
 
 #include <cassert> // USES assert()
 #include <typeinfo> // USES typeid()
-#include <stdexcept> // USES std::runtime_error
 
 namespace pylith {
     namespace feassemble {
@@ -79,7 +78,7 @@ pylith::feassemble::ConstraintUserFn::setUserFnDot(const PetscUserFieldFunc fnDo
 void
 pylith::feassemble::ConstraintUserFn::initialize(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" initialize(solution="<<solution.getLabel()<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, _labelName<<"="<<_labelValue<<" initialize(solution="<<solution.getLabel()<<")");
 
     Constraint::initialize(solution);
 
@@ -107,7 +106,7 @@ void
 pylith::feassemble::ConstraintUserFn::setSolution(pylith::feassemble::IntegrationData* integrationData) {
     assert(integrationData);
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" setSolution(integrationData="<<integrationData->str()<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, _labelName<<"="<<_labelValue<<" setSolution(integrationData="<<integrationData->str()<<")");
 
     const pylith::topology::Field* solution = integrationData->getField(pylith::feassemble::IntegrationData::solution);
     assert(solution);

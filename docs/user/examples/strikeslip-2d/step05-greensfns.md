@@ -71,41 +71,46 @@ caption: Run Step 5 simulation
 $  pylith step05_greensfns.cfg
 
 # The output should look something like the following.
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:77:main
- -- pylithapp(info)
+ >> software/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:79:main
+ -- info (application-flow)
  -- Running on 1 process(es).
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/meshio/MeshIOObj.py:38:read
- -- meshiopetsc(info)
- -- Reading finite-element mesh
- >> /src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:85:void pylith::meshio::MeshIO::read(pylith::topology::Mesh *, const bool)
- -- meshiopetsc(info)
- -- Component 'reader': Domain bounding box:
-    (-50000, 50000)
-    (-75000, 75000)
 
 # -- many lines omitted --
 
- >> /src/cig/pylith/libsrc/pylith/problems/GreensFns.cc:322:void pylith::problems::GreensFns::solve()
- -- greensfns(info)
- -- Component 'greensfns.problem': Computing Green's function 13 of 13.
-  0 SNES Function norm 3.827089524877e-02
-    Linear solve converged due to CONVERGED_ATOL iterations 11
-  1 SNES Function norm 1.378783338243e-09
+ >> src/cig/pylith/libsrc/pylith/problems/GreensFns.cc:291:void pylith::problems::GreensFns::solve()
+ -- info (application-flow)
+ -- Component 'greensfns.problem': Computing Green's functions.
+ >> src/cig/pylith/libsrc/pylith/problems/GreensFns.cc:318:void pylith::problems::GreensFns::solve()
+ -- info (application-flow)
+ -- Component 'greensfns.problem': Computing Green's function 1 of 13.
+  0 SNES Function norm 6.961541624902e-01
+    Linear solve converged due to CONVERGED_ATOL iterations 9
+  1 SNES Function norm 6.826069208403e-08
   Nonlinear solve converged due to CONVERGED_ITS iterations 1
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:199:finalize
- -- greensfns(info)
+
+# -- many lines omitted --
+
+ >> /Users/baagaard/src/cig/pylith/libsrc/pylith/problems/GreensFns.cc:318:void pylith::problems::GreensFns::solve()
+ -- info (application-flow)
+ -- Component 'greensfns.problem': Computing Green's function 13 of 13.
+  0 SNES Function norm 9.567723812071e-01
+    Linear solve converged due to CONVERGED_ATOL iterations 10
+  1 SNES Function norm 2.578211184664e-08
+  Nonlinear solve converged due to CONVERGED_ITS iterations 1
+ >> /Users/baagaard/software/unix/micromamba/envs/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:222:finalize
+ -- info (application-flow)
  -- Finalizing problem.
 WARNING! There are options you set that were not used!
 WARNING! could be spelling mistake, etc!
-There are 3 unused database options. They are:
+There are 4 unused database options. They are:
 Option left: name:-ts_error_if_step_fails (no value) source: code
+Option left: name:-ts_exact_final_time value: matchstep source: code
 Option left: name:-ts_monitor (no value) source: code
 Option left: name:-ts_type value: beuler source: code
 ```
 
 The beginning of the output written to the terminal matches that in our previous simulations.
 The second half of the output written to the terminal resembles the output from time-dependent problems, but with the time step information replaced by the impulse information.
-The journal info associated with the `GreensFns` component (`journal.info.greensfns`) turns on the impulse information.
 We get warnings about unused PETSc options because we do not use time stepping.
 
 ## Visualizing the results

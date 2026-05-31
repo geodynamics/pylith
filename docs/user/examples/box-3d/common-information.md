@@ -7,7 +7,6 @@ This limits duplicate information in the parameter files for each simulation.
 ## Metadata, Mesh, and Output
 
 The `pylithapp.metadata` section specifies metadata common to all simulations in the directory.
-We control the verbosity of the output written to stdout using `journal.info`.
 We use `MeshIOPetsc` to import finite-element mesh from Gmsh.
 
 ```{code-block} cfg

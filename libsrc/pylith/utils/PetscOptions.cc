@@ -207,7 +207,7 @@ pylith::utils::PetscOptions::set(void) {
         } // if/else
     } // for
 
-    pythia::journal::info_t info(GenericComponent::getName());
+    pythia::journal::info_t info(pylith::journal::application_flow);
     if (info.state() && pylith::utils::MPI::isRoot()) {
         _PetscOptions::write(info, "Setting PETSc options:", optionsUsed);
         if (optionsIgnored._options.size() > 0) {
@@ -232,7 +232,7 @@ pylith::utils::PetscOptions::override (void) {
         PylithCallPetsc(PetscOptionsSetValue(NULL, name, value));
     } // for
 
-    pythia::journal::info_t info(GenericComponent::getName());
+    pythia::journal::info_t info(pylith::journal::application_flow);
     if (info.state()) {
         _PetscOptions::write(info, "Setting PETSc options:", (*this));
     } // if
@@ -256,9 +256,9 @@ pylith::utils::_PetscOptions::write(pythia::journal::info_t& info,
         const std::string name = iter->first.substr(1);
         const std::string value = iter->second;
         if (iter->second.empty()) {
-            info << name << " = true\n";
+            info << "    " << name << " = true\n";
         } else {
-            info << name << " = " << value << "\n";
+            info << "    " << name << " = " << value << "\n";
         } // if/else
     } // for
     info << pythia::journal::endl;
@@ -363,7 +363,7 @@ pylith::utils::_PetscOptions::addAdaptiveTimeStepping(PetscOptions* options) {
     options->add("-ts_adapt_monitor", "true");
 
 
-} // addAdaaptiveTimeStepping
+} // addAdaptiveTimeStepping
 
 
 // End of file

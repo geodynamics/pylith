@@ -86,7 +86,7 @@ public:
 
     /** Get name of solution subfield associated with boundary condition.
      *
-     * @preturn Name of solution subfield.
+     * @returns Name of solution subfield.
      */
     const char* getSubfieldName(void) const;
 
@@ -98,7 +98,7 @@ public:
 
     /** Set kernels for RHS residual.
      *
-     * @param[in] kernels Array of kernerls for computing the RHS residual.
+     * @param[in] kernels Array of kernels for computing the RHS residual.
      * @param[in] solution Solution field.
      */
     void setKernelsResidual(const std::vector<ResidualKernels>& kernels,

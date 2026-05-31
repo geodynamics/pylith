@@ -54,7 +54,7 @@ pylith::utils::DependenciesVersion::DependenciesVersion(void) {}
 
 
 // ----------------------------------------------------------------------
-// Default destrictor.
+// Default destructor.
 pylith::utils::DependenciesVersion::~DependenciesVersion(void) {}
 
 

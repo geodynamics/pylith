@@ -14,7 +14,7 @@
 
 #include "pylith/problems/TimeDependent.hh" // USES TimeDependent
 #include "pylith/topology/Field.hh" // USES pylith::topology::Field::Discretization
-#include "pylith/utils/journals.hh" // USES pythia::journal::debug_t
+#include "pylith/utils/journals.hh" // USES PYLITH_DEBUG
 #include "pylith/utils/constants.hh" // USES pylith::g_acc
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 #include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales

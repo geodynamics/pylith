@@ -34,7 +34,7 @@ pylith::meshio::OutputTriggerStep::~OutputTriggerStep(void) {}
 // Set number of steps to skip between writes.
 void
 pylith::meshio::OutputTriggerStep::setNumStepsSkip(const int value) {
-    PYLITH_COMPONENT_DEBUG("OutputTriggerStep::setNumStepsSkip(value="<<value<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "OutputTriggerStep::setNumStepsSkip(value="<<value<<")");
 
     _numStepsSkip = (value >= 0) ? value : 0;
 } // setNumStepsSkip
@@ -54,7 +54,7 @@ bool
 pylith::meshio::OutputTriggerStep::shouldWrite(const PylithReal t,
                                                const PylithInt tindex) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("OutputTriggerStep::shouldWrite(t="<<t<<", tindex="<<tindex<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "OutputTriggerStep::shouldWrite(t="<<t<<", tindex="<<tindex<<")");
 
     bool isWrite = false;
     if (tindex - _stepWrote > _numStepsSkip) {

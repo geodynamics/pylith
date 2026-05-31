@@ -135,15 +135,10 @@ class TimeDependent(Problem, ModuleTimeDependent):
 
     def run(self, app):
         """Solve time dependent problem."""
-        from pylith.mpi.Communicator import mpi_is_root
-
-        if mpi_is_root():
-            self._info.log("Solving problem.")
-
         ModuleTimeDependent.solve(self)
 
     def _configure(self):
-        """Set members based using inventory."""
+        """Set members using inventory."""
         Problem._configure(self)
         if self.startTime > self.endTime:
             raise ValueError(

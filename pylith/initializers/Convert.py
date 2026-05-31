@@ -53,7 +53,7 @@ class Convert(Component):
 
     def components(self):
         """Order of facilities in Inventory is ambiguous, so overwrite
-        components() to insure order is [displacement, pressure, trace_strain].
+        components() to ensure order is [displacement, pressure, trace_strain].
 
         """
         return [

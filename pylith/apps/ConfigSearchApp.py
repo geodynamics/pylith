@@ -68,7 +68,7 @@ class ConfigSearchApp():
         """Set filters for display from command line option.
 
         Args:
-            options (argsparse.Namespace)
+            options (argparse.Namespace)
                 Command line options.
         """
         if options.keywords:
@@ -251,7 +251,7 @@ class ConfigSearchApp():
     def _parse_command_line(self):
         """Parse command line arguments.
 
-        Returns (argsparse.Namespace)
+        Returns (argparse.Namespace)
            Command line arguments.
         """
         DESCRIPTION = (

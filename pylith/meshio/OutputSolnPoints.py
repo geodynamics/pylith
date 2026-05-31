@@ -67,7 +67,7 @@ class OutputSolnPoints(OutputSoln, ModuleOutputSolnPoints):
         return
 
     def preinitialize(self, problem):
-        """Do mimimal initialization."""
+        """Do minimal initialization."""
         OutputSoln.preinitialize(self, problem)
 
         stationNames, stationCoords = self.reader.read()

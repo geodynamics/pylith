@@ -40,7 +40,7 @@ pylith::bc::AbsorbingDampersAuxiliaryFactory::~AbsorbingDampersAuxiliaryFactory(
 void
 pylith::bc::AbsorbingDampersAuxiliaryFactory::addDensity(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addDensity(void)");
+    PYLITH_DEBUG(pylith::journal::application_flow, "addDensity(void)");
 
     const char* subfieldName = "density";
     const PylithReal densityScale = pylith::scales::ElasticityScales::getDensityScale(*_scales);
@@ -67,7 +67,7 @@ pylith::bc::AbsorbingDampersAuxiliaryFactory::addDensity(void) {
 void
 pylith::bc::AbsorbingDampersAuxiliaryFactory::addVs(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addVs(void)");
+    PYLITH_DEBUG(pylith::journal::application_flow, "addVs(void)");
 
     const char* subfieldName = "vs";
     const PylithReal velocityScale = _scales->getLengthScale() / _scales->getTimeScale();
@@ -94,7 +94,7 @@ pylith::bc::AbsorbingDampersAuxiliaryFactory::addVs(void) {
 void
 pylith::bc::AbsorbingDampersAuxiliaryFactory::addVp(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addVp(void)");
+    PYLITH_DEBUG(pylith::journal::application_flow, "addVp(void)");
 
     const char* subfieldName = "vp";
     const PylithReal velocityScale = _scales->getLengthScale() / _scales->getTimeScale();

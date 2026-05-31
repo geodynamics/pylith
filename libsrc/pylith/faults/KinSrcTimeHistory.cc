@@ -39,7 +39,7 @@ pylith::faults::KinSrcTimeHistory::~KinSrcTimeHistory(void) {
 // Set time history database.
 void
 pylith::faults::KinSrcTimeHistory::setTimeHistoryDB(spatialdata::spatialdb::TimeHistory* th) {
-    PYLITH_COMPONENT_DEBUG("setTimeHistoryDB(th"<<th<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setTimeHistoryDB(th"<<th<<")");
 
     _dbTimeHistory = th;
 } // setTimeHistoryDB
@@ -62,9 +62,9 @@ pylith::faults::KinSrcTimeHistory::getSlipSubfields(PetscVec slipLocalVec,
                                                     const PylithScalar timeScale,
                                                     const int bitSlipSubfields) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("getSlipSubfields="<<slipLocalVec<<", faultAuxiliaryField="<<faultAuxiliaryField
-                                              <<", t="<<t<<", timeScale="<<timeScale
-                                              <<", bitSlipSubfields="<<bitSlipSubfields<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "getSlipSubfields="<<slipLocalVec<<", faultAuxiliaryField="<<faultAuxiliaryField
+                                                                                 <<", t="<<t<<", timeScale="<<timeScale
+                                                                                 <<", bitSlipSubfields="<<bitSlipSubfields<<")");
     KinSrcAuxiliaryFactory::updateTimeHistoryValue(_auxiliaryField, t, timeScale, _dbTimeHistory);
     KinSrc::getSlipSubfields(slipLocalVec, faultAuxiliaryField, t, timeScale, bitSlipSubfields);
 
@@ -234,7 +234,7 @@ void
 pylith::faults::KinSrcTimeHistory::_auxiliaryFieldSetup(const pylith::scales::Scales& scales,
                                                         const spatialdata::geocoords::CoordSys* cs) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_auxiliaryFieldSetup()");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "_auxiliaryFieldSetup()");
 
     assert(_auxiliaryFactory);
     assert(cs);

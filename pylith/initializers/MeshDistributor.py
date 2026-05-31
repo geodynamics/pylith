@@ -49,7 +49,7 @@ class MeshDistributor(InitializePhase):
         ModuleMeshDistributor.setDistributor(self, self.distributor)
 
     def _configure(self):
-        """Set members based using inventory.
+        """Set members using inventory.
         """
         InitializePhase._configure(self)
 

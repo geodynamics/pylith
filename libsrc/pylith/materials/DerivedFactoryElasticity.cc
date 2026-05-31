@@ -38,7 +38,7 @@ pylith::materials::DerivedFactoryElasticity::~DerivedFactoryElasticity(void) {}
 void
 pylith::materials::DerivedFactoryElasticity::addCauchyStress(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addCauchyStress(void)");
+    PYLITH_DEBUG(pylith::journal::application_flow, "addCauchyStress(void)");
 
     const char* fieldName = "cauchy_stress";
     const char* componentNames[6] = { "stress_xx", "stress_yy", "stress_zz", "stress_xy", "stress_yz", "stress_xz" };
@@ -67,7 +67,7 @@ pylith::materials::DerivedFactoryElasticity::addCauchyStress(void) {
 void
 pylith::materials::DerivedFactoryElasticity::addCauchyStrain(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addCauchyStrain(void)");
+    PYLITH_DEBUG(pylith::journal::application_flow, "addCauchyStrain(void)");
 
     const char* fieldName = "cauchy_strain";
     const char* componentNames[6] = { "strain_xx", "strain_yy", "strain_zz", "strain_xy", "strain_yz", "strain_xz" };
@@ -96,7 +96,7 @@ pylith::materials::DerivedFactoryElasticity::addCauchyStrain(void) {
 void
 pylith::materials::DerivedFactoryElasticity::addSubfields(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addSubfields(void)");
+    PYLITH_DEBUG(pylith::journal::application_flow, "addSubfields(void)");
 
     if (_subfieldDiscretizations.find("cauchy_stress") != _subfieldDiscretizations.end()) {
         addCauchyStress();

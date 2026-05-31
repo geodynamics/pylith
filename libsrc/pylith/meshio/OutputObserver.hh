@@ -39,7 +39,7 @@ public:
      */
     void setTrigger(pylith::meshio::OutputTrigger* const trigger);
 
-    /** Get trigger for how often to write otuput.
+    /** Get trigger for how often to write output.
      *
      * @returns Output trigger.
      */

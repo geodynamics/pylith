@@ -57,7 +57,7 @@ pylith::materials::IsotropicPowerLaw::deallocate(void) {
 // strain?
 void
 pylith::materials::IsotropicPowerLaw::useReferenceState(const bool value) {
-    PYLITH_COMPONENT_DEBUG("useReferenceState="<<value<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "useReferenceState="<<value<<")");
 
     _useReferenceState = value;
 } // useReferenceState
@@ -85,7 +85,7 @@ pylith::materials::IsotropicPowerLaw::getAuxiliaryFactory(void) {
 void
 pylith::materials::IsotropicPowerLaw::addAuxiliarySubfields(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("addAuxiliarySubfields(void)");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "addAuxiliarySubfields(void)");
 
     // :ATTENTION: The order for adding subfields must match the order of the auxiliary fields in the point-wise
     // functions (kernels).
@@ -111,7 +111,7 @@ pylith::materials::IsotropicPowerLaw::addAuxiliarySubfields(void) {
 PetscPointFn*
 pylith::materials::IsotropicPowerLaw::getKernelf1v(const spatialdata::geocoords::CoordSys* coordsys) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("getKernelf1v(coordsys="<<typeid(coordsys).name()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "getKernelf1v(coordsys="<<typeid(coordsys).name()<<")");
 
     const int spaceDim = coordsys->getSpaceDim();
     PetscPointFn* f1u =
@@ -130,7 +130,7 @@ pylith::materials::IsotropicPowerLaw::getKernelf1v(const spatialdata::geocoords:
 PetscPointJacFn*
 pylith::materials::IsotropicPowerLaw::getKernelJf3vu(const spatialdata::geocoords::CoordSys* coordsys) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("getKernelJf3vu(coordsys="<<typeid(coordsys).name()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "getKernelJf3vu(coordsys="<<typeid(coordsys).name()<<")");
 
     const int spaceDim = coordsys->getSpaceDim();
     PetscPointJacFn* Jf3uu =
@@ -149,7 +149,7 @@ pylith::materials::IsotropicPowerLaw::getKernelJf3vu(const spatialdata::geocoord
 PetscBdPointFn*
 pylith::materials::IsotropicPowerLaw::getKernelf0Neg(const spatialdata::geocoords::CoordSys* coordsys) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("getKernelf0Neg(coordsys="<<typeid(coordsys).name()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "getKernelf0Neg(coordsys="<<typeid(coordsys).name()<<")");
 
     const int spaceDim = coordsys->getSpaceDim();
     PetscBdPointFn* kernel =
@@ -168,7 +168,7 @@ pylith::materials::IsotropicPowerLaw::getKernelf0Neg(const spatialdata::geocoord
 PetscBdPointFn*
 pylith::materials::IsotropicPowerLaw::getKernelf0Pos(const spatialdata::geocoords::CoordSys* coordsys) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("getKernelf0Pos(coordsys="<<typeid(coordsys).name()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "getKernelf0Pos(coordsys="<<typeid(coordsys).name()<<")");
 
     const int spaceDim = coordsys->getSpaceDim();
     PetscBdPointFn* kernel =
@@ -187,7 +187,7 @@ pylith::materials::IsotropicPowerLaw::getKernelf0Pos(const spatialdata::geocoord
 PetscPointFn*
 pylith::materials::IsotropicPowerLaw::getKernelCauchyStressVector(const spatialdata::geocoords::CoordSys* coordsys) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("getKernelCauchyStressVector(coordsys="<<typeid(coordsys).name()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "getKernelCauchyStressVector(coordsys="<<typeid(coordsys).name()<<")");
 
     const int spaceDim = coordsys->getSpaceDim();
     PetscPointFn* kernel =
@@ -207,7 +207,7 @@ void
 pylith::materials::IsotropicPowerLaw::updateKernelConstants(pylith::real_array* kernelConstants,
                                                             const PylithReal dt) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("updateKernelConstants(kernelConstants"<<kernelConstants<<", dt="<<dt<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "updateKernelConstants(kernelConstants"<<kernelConstants<<", dt="<<dt<<")");
 
     assert(kernelConstants);
 
@@ -224,7 +224,7 @@ void
 pylith::materials::IsotropicPowerLaw::addKernelsUpdateStateVars(std::vector<ProjectKernels>* kernels,
                                                                 const spatialdata::geocoords::CoordSys* coordsys) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("addKernelsUpdateStateVars(kernels="<<kernels<<", coordsys="<<coordsys<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "addKernelsUpdateStateVars(kernels="<<kernels<<", coordsys="<<coordsys<<")");
 
     const int spaceDim = coordsys->getSpaceDim();
     PetscPointFn* funcViscousStrain =

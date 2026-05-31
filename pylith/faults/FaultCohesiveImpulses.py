@@ -18,7 +18,7 @@ def validateDOF(value):
     """Validate list of fixed degrees of freedom.
     """
     def error():
-        raise ValueError("'impuluse_dof' must be a zero based list of indices of degrees of "
+        raise ValueError("'impulse_dof' must be a zero based list of indices of degrees of "
           "freedom at a vertex.")
     try:
         size = len(value)
@@ -36,7 +36,7 @@ class FaultCohesiveImpulses(FaultCohesive, ModuleFaultCohesiveImpulses):
     """
     Fault surface with slip impulses for Green's functions implemented with cohesive cells.
 
-    The comopnents 
+    The components
 
     Implements `FaultCohesiveKin`.
     """
@@ -91,9 +91,6 @@ class FaultCohesiveImpulses(FaultCohesive, ModuleFaultCohesiveImpulses):
     def preinitialize(self, problem):
         """Do pre-initialization setup.
         """
-        from pylith.mpi.Communicator import mpi_is_root
-        if mpi_is_root():
-            self._info.log(f"Pre-initializing fault '{self.labelName}={self.labelValue}'.")
         FaultCohesive.preinitialize(self, problem)
         ModuleFaultCohesiveImpulses.setThreshold(self, self.threshold.value)
         impulseDOF = numpy.array(self.impulseDOF, dtype=numpy.intc)

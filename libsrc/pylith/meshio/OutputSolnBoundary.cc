@@ -81,7 +81,7 @@ pylith::meshio::OutputSolnBoundary::setLabelValue(const int value) {
 void
 pylith::meshio::OutputSolnBoundary::verifyConfiguration(const pylith::topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("verifyConfiguration(solution="<<solution.getLabel()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "verifyConfiguration(solution="<<solution.getLabel()<<")");
 
     OutputSoln::verifyConfiguration(solution);
 
@@ -89,10 +89,8 @@ pylith::meshio::OutputSolnBoundary::verifyConfiguration(const pylith::topology::
     PetscBool hasLabel = PETSC_FALSE;
     PylithCallPetsc(DMHasLabel(dmSoln, _labelName.c_str(), &hasLabel));
     if (!hasLabel) {
-        std::ostringstream msg;
-        msg << "Mesh missing group of points '" << _labelName << " for output using solution boundary observer '"
-            << PyreComponent::getIdentifier() << "'.";
-        throw std::runtime_error(msg.str());
+        PYLITH_COMPONENT_ERROR(pylith::ValueError, pylith::journal::user_input,
+                               "Mesh missing group of points '" << _labelName << " for output using solution boundary observer.");
     } // if
 
     PYLITH_METHOD_END;
@@ -106,7 +104,7 @@ pylith::meshio::OutputSolnBoundary::_writeSolnStep(const PylithReal t,
                                                    const PylithInt tindex,
                                                    const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_writeSolnStep(t="<<t<<", tindex="<<tindex<<", solution="<<solution.getLabel()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "_writeSolnStep(t="<<t<<", tindex="<<tindex<<", solution="<<solution.getLabel()<<")");
 
     if (!_boundaryMesh) {
         const char* componentName = this->getFullIdentifier();

@@ -36,7 +36,7 @@ public:
 
     /** Get user function specifying field on boundary
      *
-     * @preturns Function specifying field on boundary.
+     * @returns Function specifying field on boundary.
      */
     PetscBdPointFn* getUserFn(void) const;
 
@@ -57,7 +57,7 @@ public:
     /** Create auxiliary field.
      *
      * @param[in] solution Solution field.
-     * @param[in\ domainMesh Finite-element mesh associated with integration domain.
+     * @param[in] domainMesh Finite-element mesh associated with integration domain.
      *
      * @returns Auxiliary field if applicable, otherwise NULL.
      */

@@ -19,7 +19,10 @@
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 #include "pylith/topology/VisitorSubmesh.hh" // USES VecVisitorSubmesh
 #include "pylith/topology/Stratum.hh" // USES Stratum
+
 #include "pylith/utils/error.hh" // USES PylithCallPetsc()
+#include "pylith/utils/journals.hh" // USES journal macros
+#include "pylith/utils/Exceptions.hh" // USES Exception
 
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 
@@ -104,7 +107,8 @@ pylith::topology::FieldOps::createFE(const FieldBase::Discretization& feinfo,
         case 1: ct = DM_POLYTOPE_SEGMENT;break;
         case 2: ct = useTensor ? DM_POLYTOPE_QUADRILATERAL : DM_POLYTOPE_TRIANGLE;break;
         case 3: ct = useTensor ? DM_POLYTOPE_HEXAHEDRON : DM_POLYTOPE_TETRAHEDRON;break;
-        default: throw std::logic_error("Cannot handle dimension");
+        default:
+            PYLITH_ERROR(pylith::InternalLogicError, pylith::journal::logic, "Unknown dimension " << dim << ".");
         }
         PylithCallPetsc(PetscDTCreateDefaultQuadrature(ct, quadOrder, &quadrature, &faceQuadrature));
         PylithCallPetsc(PetscFESetQuadrature(fe, quadrature));
@@ -115,7 +119,8 @@ pylith::topology::FieldOps::createFE(const FieldBase::Discretization& feinfo,
         assert(feKey.feSpace == FieldBase::POLYNOMIAL_SPACE);
         pylith::topology::FieldOps::feStore.insert(std::pair<FieldBase::Discretization, pylith::topology::FE>(feKey, fe));
     } else {
-        throw std::logic_error("FieldOps::createFE() :TODO: Can't reuse PetscFE due to naming of fields, so make a deep copy of fe.");
+        PYLITH_ERROR(pylith::InternalLogicError, pylith::journal::logic,
+                     ":KLUDGE: Can't reuse PetscFE due to naming of fields, so make a deep copy of fe.");
         fe = hasFE->second._fe;
         PylithCallPetsc(PetscObjectReference((PetscObject) fe));
     }
@@ -130,7 +135,7 @@ void
 pylith::topology::FieldOps::checkDiscretization(const pylith::topology::Field& target,
                                                 const pylith::topology::Field& auxiliary) {
     PYLITH_METHOD_BEGIN;
-    // PYLITH_JOURNAL_DEBUG("checkDiscretization(target="<<target.getLabel()<<",
+    // PYLITH_DEBUG(pylith::journal::application_flow, "checkDiscretization(target="<<target.getLabel()<<",
     // auxiliary="<<auxiliary.getLabel()<<")");
 
     // Verify that the quadrature order of the target subfields all
@@ -147,11 +152,10 @@ pylith::topology::FieldOps::checkDiscretization(const pylith::topology::Field& t
             const pylith::topology::Field::SubfieldInfo& sinfo = target.getSubfieldInfo(subfieldNames[i].c_str());
             if (quadOrder > 0) {
                 if (quadOrder != sinfo.fe.quadOrder) {
-                    std::ostringstream msg;
-                    msg << "Quadrature order of subfields in target field '" << target.getLabel()
-                        << "' must all be the same. Expected quadrature order of " << quadOrder << ", but subfield '"
-                        << subfieldNames[i] << "' has a quadrature order of " << sinfo.fe.quadOrder << ".";
-                    throw std::runtime_error(msg.str());
+                    PYLITH_ERROR(pylith::ValueError, pylith::journal::user_input,
+                                 "Quadrature order of subfields in target field '" << target.getLabel()
+                                                                                   << "' must all be the same. Expected quadrature order of " << quadOrder << ", but subfield '"
+                                                                                   << subfieldNames[i] << "' has a quadrature order of " << sinfo.fe.quadOrder << ".");
                 } // if
             } else {
                 quadOrder = sinfo.fe.quadOrder;
@@ -167,12 +171,11 @@ pylith::topology::FieldOps::checkDiscretization(const pylith::topology::Field& t
             const pylith::topology::Field::SubfieldInfo& sinfo = auxiliary.getSubfieldInfo(subfieldNames[i].c_str());
             if (quadOrder > 0) {
                 if (quadOrder != sinfo.fe.quadOrder) {
-                    std::ostringstream msg;
-                    msg << "Quadrature order of subfields in auxiliary field '" << auxiliary.getLabel()
-                        << "' must all match the quadrature order in the target subfields '" << target.getLabel()
-                        << "'. Expected quadrature order of " << quadOrder << ", but subfield '" << subfieldNames[i]
-                        << "' has a quadrature order of " << sinfo.fe.quadOrder << ".";
-                    throw std::runtime_error(msg.str());
+                    PYLITH_ERROR(pylith::ValueError, pylith::journal::user_input,
+                                 "Quadrature order of subfields in auxiliary field '" << auxiliary.getLabel()
+                                                                                      << "' must all match the quadrature order in the target subfields '" << target.getLabel()
+                                                                                      << "'. Expected quadrature order of " << quadOrder << ", but subfield '" << subfieldNames[i]
+                                                                                      << "' has a quadrature order of " << sinfo.fe.quadOrder << ".");
                 } // if
             } else {
                 quadOrder = sinfo.fe.quadOrder;
@@ -218,7 +221,7 @@ pylith::topology::FieldOps::checkSubfieldsExist(const pylith::string_vector& req
             }
         } // for
         msg << "; the missing fields are required for " << reason;
-        throw std::runtime_error(msg.str());
+        PYLITH_ERROR(pylith::ValueError, pylith::journal::user_input, msg.str());
     } // if
 
 } // checkSubfieldsExist
@@ -258,7 +261,8 @@ bool
 pylith::topology::FieldOps::layoutsMatch(const pylith::topology::Field& fieldA,
                                          const pylith::topology::Field& fieldB) {
     PYLITH_METHOD_BEGIN;
-    // PYLITH_JOURNAL_DEBUG("layoutsMatch(fieldA="<<fieldA.getLabel()<<", fieldB="<<fieldB.getLabel()<<")");
+    // PYLITH_DEBUG(pylith::journal::application_flow, "layoutsMatch(fieldA="<<fieldA.getLabel()<<",
+    // fieldB="<<fieldB.getLabel()<<")");
 
     bool isMatch = true;
 
@@ -290,7 +294,7 @@ pylith::topology::FieldOps::layoutsMatch(const pylith::topology::Field& fieldA,
     PylithCallPetsc(MPI_Allreduce(&matchLocal, &matchGlobal, 1, MPIU_INT, MPI_LOR, fieldA.getMesh().getComm()));
     isMatch = matchGlobal == 1;
 
-    // PYLITH_JOURNAL_DEBUG("layoutsMatch return value="<<isMatch<<".");
+    // PYLITH_DEBUG(pylith::journal::application_flow, "layoutsMatch return value="<<isMatch<<".");
     PYLITH_METHOD_RETURN(isMatch);
 } // layoutsMatch
 

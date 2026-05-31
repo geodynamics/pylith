@@ -31,7 +31,7 @@ public:
 
     /** Get time history database.
      *
-     * @preturns Time history database.
+     * @returns Time history database.
      */
     const spatialdata::spatialdb::TimeHistory* getTimeHistoryDB(void);
 

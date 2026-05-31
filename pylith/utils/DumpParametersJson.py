@@ -41,7 +41,7 @@ class DumpParametersJson(DumpParameters):
     style.meta['tip'] = "Style of JSON file [compact, normal]."
 
     indent = pythia.pyre.inventory.int("indent", default=4)
-    indent.meta['tip'] = "Nmber of spaces to indent, use a negative number for no newlines."
+    indent.meta['tip'] = "Number of spaces to indent, use a negative number for no newlines."
 
     def __init__(self, name="dumpparametersjson"):
         """Constructor.

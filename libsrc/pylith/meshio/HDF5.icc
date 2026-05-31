@@ -179,6 +179,9 @@ pylith::meshio::HDF5::writeAttribute(hid_t h5,
             throw std::runtime_error("Could not write");
         }
 
+    } catch (pylith::Error& err) {
+        err.addContext(pylith::ErrorMessage() << " attribute '" << name << "' of '" << parent << "'.\n");
+        throw;
     } catch (const std::exception& err) {
         std::ostringstream msg;
         msg << err.what() << " attribute '" << name << "' of '" << parent << "'.";
@@ -225,6 +228,9 @@ pylith::meshio::HDF5::readAttribute(const char* parent,
             throw std::runtime_error("Could not read");
         }
 
+    } catch (pylith::Error& err) {
+        err.addContext(pylith::ErrorMessage() << " attribute '" << name << "' of '" << parent << "'.\n");
+        throw;
     } catch (const std::exception& err) {
         std::ostringstream msg;
         msg << err.what() << " attribute '" << name << "' of '" << parent << "'.";
@@ -296,6 +302,10 @@ pylith::meshio::HDF5::createDataset(const char* parent,
             throw std::runtime_error("Could not create dataset.");
         }
 
+    } catch (pylith::Error& err) {
+        err.addContext(pylith::ErrorMessage() << "Error occurred while creating dataset '"
+                                              << parent << "/" << name << "'.\n");
+        throw;
     } catch (const std::exception& err) {
         std::ostringstream msg;
         msg << "Error occurred while creating dataset '"
@@ -383,6 +393,10 @@ pylith::meshio::HDF5::readDataset(const char* parent,
             }
         }
 
+    } catch (pylith::Error& err) {
+        err.addContext(pylith::ErrorMessage() << "Error occurred while reading dataset '"
+                                              << parent << "/" << name << "'.\n");
+        throw;
     } catch (const std::exception& err) {
         std::ostringstream msg;
         msg << "Error occurred while reading dataset '"
@@ -476,6 +490,10 @@ pylith::meshio::HDF5::writeDatasetChunk(const char* parent,
             throw std::runtime_error("Could not write data.");
         }
 
+    } catch (pylith::Error& err) {
+        err.addContext(pylith::ErrorMessage() << "Error occurred while writing dataset '"
+                                              << parent << "/" << name << "'.\n");
+        throw;
     } catch (const std::exception& err) {
         std::ostringstream msg;
         msg << "Error occurred while writing dataset '"
@@ -586,6 +604,10 @@ pylith::meshio::HDF5::readDatasetChunk(const char* parent,
             }
         }
 
+    } catch (pylith::Error& err) {
+        err.addContext(pylith::ErrorMessage() << "Error occurred while reading dataset '"
+                                              << parent << "/" << name << "'.\n");
+        throw;
     } catch (const std::exception& err) {
         std::ostringstream msg;
         msg << "Error occurred while reading dataset '"

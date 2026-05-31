@@ -49,7 +49,7 @@ class SubfieldPressure(SolutionSubfield):
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
-        """Set members based using inventory."""
+        """Set members using inventory."""
         SolutionSubfield._configure(self)
         return
 

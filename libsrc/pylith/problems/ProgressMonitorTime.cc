@@ -20,7 +20,6 @@
 #include <iomanip> // USES std::setw, etcm
 #include <iostream> // USES std::ofstream
 #include <cassert> // USES assert()
-#include <stdexcept> // USES std::runtime_error
 
 // ------------------------------------------------------------------------------------------------
 // Constructor

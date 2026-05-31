@@ -52,7 +52,7 @@ pylith::materials::IsotropicLinearElasticity::deallocate(void) {
 // strain?
 void
 pylith::materials::IsotropicLinearElasticity::useReferenceState(const bool value) {
-    PYLITH_COMPONENT_DEBUG("useReferenceState="<<value<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "useReferenceState="<<value<<")");
 
     _useReferenceState = value;
 } // useReferenceState
@@ -80,7 +80,7 @@ pylith::materials::IsotropicLinearElasticity::getAuxiliaryFactory(void) {
 void
 pylith::materials::IsotropicLinearElasticity::addAuxiliarySubfields(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("addAuxiliarySubfields(void)");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "addAuxiliarySubfields(void)");
 
     // :ATTENTION: The order for adding subfields must match the order of the auxiliary fields in the point-wise
     // functions (kernels).
@@ -101,7 +101,7 @@ pylith::materials::IsotropicLinearElasticity::addAuxiliarySubfields(void) {
 PetscPointFn*
 pylith::materials::IsotropicLinearElasticity::getKernelf1v(const spatialdata::geocoords::CoordSys* coordsys) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("getKernelResidualStress(coordsys="<<typeid(coordsys).name()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "getKernelResidualStress(coordsys="<<typeid(coordsys).name()<<")");
 
     const int spaceDim = coordsys->getSpaceDim();
     PetscPointFn* f1v =
@@ -120,7 +120,7 @@ pylith::materials::IsotropicLinearElasticity::getKernelf1v(const spatialdata::ge
 PetscPointJacFn*
 pylith::materials::IsotropicLinearElasticity::getKernelJf3vu(const spatialdata::geocoords::CoordSys* coordsys) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("getKernelJacobianElasticConstants(coordsys="<<typeid(coordsys).name()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "getKernelJacobianElasticConstants(coordsys="<<typeid(coordsys).name()<<")");
 
     const int spaceDim = coordsys->getSpaceDim();
     PetscPointJacFn* Jf3vu =
@@ -137,7 +137,7 @@ pylith::materials::IsotropicLinearElasticity::getKernelJf3vu(const spatialdata::
 PetscBdPointFn*
 pylith::materials::IsotropicLinearElasticity::getKernelf0Neg(const spatialdata::geocoords::CoordSys* coordsys) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("getKernelf0Neg(coordsys="<<typeid(coordsys).name()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "getKernelf0Neg(coordsys="<<typeid(coordsys).name()<<")");
 
     const int spaceDim = coordsys->getSpaceDim();
     PetscBdPointFn* kernel =
@@ -156,7 +156,7 @@ pylith::materials::IsotropicLinearElasticity::getKernelf0Neg(const spatialdata::
 PetscBdPointFn*
 pylith::materials::IsotropicLinearElasticity::getKernelf0Pos(const spatialdata::geocoords::CoordSys* coordsys) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("getKernelf0Pos(coordsys="<<typeid(coordsys).name()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "getKernelf0Pos(coordsys="<<typeid(coordsys).name()<<")");
 
     const int spaceDim = coordsys->getSpaceDim();
     PetscBdPointFn* kernel =
@@ -175,7 +175,7 @@ pylith::materials::IsotropicLinearElasticity::getKernelf0Pos(const spatialdata::
 PetscPointFn*
 pylith::materials::IsotropicLinearElasticity::getKernelCauchyStressVector(const spatialdata::geocoords::CoordSys* coordsys) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("getKernelDerivedCauchyStress(coordsys="<<typeid(coordsys).name()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "getKernelDerivedCauchyStress(coordsys="<<typeid(coordsys).name()<<")");
 
     const int spaceDim = coordsys->getSpaceDim();
     PetscPointFn* kernel =

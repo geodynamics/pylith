@@ -48,7 +48,7 @@ class SolutionSubfield(Subfield):
         raise NotImplementedError("Implement in derived class.")
 
     def _configure(self):
-        """Set members based using inventory."""
+        """Set members using inventory."""
         from pylith.topology.topology import FieldBase
 
         Subfield._configure(self)

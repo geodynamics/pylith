@@ -13,13 +13,13 @@
 #include "pylith/problems/ProgressMonitor.hh" // implementation of class methods
 
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
+#include "pylith/utils/Exceptions.hh" // USES Exception
 
 #include <mpi.h> // USES MPI_Comm_rank, MPI_COMM_WORLD
 
 #include <fstream> // HASA std::ofstream
 #include <cassert> // USES assert()
 #include <sstream> // USES std::ostringstream
-#include <stdexcept> // USES std::runtime_error
 
 // ------------------------------------------------------------------------------------------------
 // Constructor
@@ -49,9 +49,8 @@ pylith::problems::ProgressMonitor::deallocate(void) {
 void
 pylith::problems::ProgressMonitor::setUpdatePercent(const double value) {
     if (value <= 0.0) {
-        std::ostringstream msg;
-        msg << "Update percentage value (" << value << ") must be positive.";
-        throw std::runtime_error(msg.str());
+        PYLITH_COMPONENT_ERROR(pylith::ValueError, pylith::journal::user_input,
+                               "Update percentage value (" << value << ") must be positive.");
     } // if
 
     _updatePercent = value;
@@ -71,7 +70,8 @@ pylith::problems::ProgressMonitor::getUpdatePercent(void) const {
 void
 pylith::problems::ProgressMonitor::setFilename(const char* filename) {
     if (!strlen(filename)) {
-        throw std::runtime_error("Progress monitor output filename set to empty string.");
+        PYLITH_COMPONENT_ERROR(pylith::ValueError, pylith::journal::user_input,
+                               "Progress monitor output filename set to empty string.");
     } // if
     _filename = filename;
 } // setFilename

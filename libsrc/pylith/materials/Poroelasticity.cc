@@ -26,6 +26,7 @@
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
+#include "pylith/utils/Exceptions.hh" // USES Exception
 
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
@@ -74,7 +75,7 @@ pylith::materials::Poroelasticity::deallocate(void) {
 // Include body force?
 void
 pylith::materials::Poroelasticity::useBodyForce(const bool value) {
-    PYLITH_COMPONENT_DEBUG("useBodyForce(value="<<value<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "useBodyForce(value="<<value<<")");
 
     _useBodyForce = value;
 } // useBodyForce
@@ -92,7 +93,7 @@ pylith::materials::Poroelasticity::useBodyForce(void) const {
 // Include source density?
 void
 pylith::materials::Poroelasticity::useSourceDensity(const bool value) {
-    PYLITH_COMPONENT_DEBUG("useSourceDensity(value="<<value<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "useSourceDensity(value="<<value<<")");
 
     _useSourceDensity = value;
 } // useSourceDensity
@@ -110,7 +111,7 @@ pylith::materials::Poroelasticity::useSourceDensity(void) const {
 // Update Fields?
 void
 pylith::materials::Poroelasticity::useStateVars(const bool value) {
-    PYLITH_COMPONENT_DEBUG("useStateVars(value=" << value << ")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "useStateVars(value=" << value << ")");
     _useStateVars = value;
 } // useStateVars
 
@@ -127,7 +128,7 @@ pylith::materials::Poroelasticity::useStateVars(void) const {
 // Set bulk rheology.
 void
 pylith::materials::Poroelasticity::setBulkRheology(pylith::materials::RheologyPoroelasticity* const rheology) {
-    PYLITH_COMPONENT_DEBUG("setBulkRheology(rheology="<<rheology<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setBulkRheology(rheology="<<rheology<<")");
 
     _rheology = rheology;
 } // setBulkRheology
@@ -146,7 +147,7 @@ pylith::materials::Poroelasticity::getBulkRheology(void) const {
 void
 pylith::materials::Poroelasticity::verifyConfiguration(const pylith::topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("verifyConfiguration(solution="<<solution.getLabel()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "verifyConfiguration(solution="<<solution.getLabel()<<")");
 
     // Verify solution contains required fields.
     std::string reason = "material 'Poroelasticity'.";
@@ -184,7 +185,7 @@ pylith::materials::Poroelasticity::verifyConfiguration(const pylith::topology::F
 pylith::feassemble::Integrator*
 pylith::materials::Poroelasticity::createIntegrator(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("createIntegrator(solution="<<solution.getLabel()<<")");
+    PYLITH_COMPONENT_INFO_ROOT(pylith::journal::application_flow_detail3, "Creating integrator for " << getLabelName() << "("<<getLabelValue()<<").");
 
     pylith::feassemble::IntegratorDomain* integrator = new pylith::feassemble::IntegratorDomain(this);assert(integrator);
     integrator->setLabelName(getLabelName());
@@ -206,7 +207,7 @@ pylith::topology::Field*
 pylith::materials::Poroelasticity::createAuxiliaryField(const pylith::topology::Field& solution,
                                                         const pylith::topology::Mesh& domainMesh) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("createAuxiliaryField(solution="<<solution.getLabel()<<", domainMesh=)"<<typeid(domainMesh).name()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "createAuxiliaryField(solution="<<solution.getLabel()<<", domainMesh=)"<<typeid(domainMesh).name()<<")");
 
     pylith::topology::Field* auxiliaryField = new pylith::topology::Field(domainMesh);assert(auxiliaryField);
     auxiliaryField->setLabel("auxiliary field");
@@ -248,8 +249,9 @@ pylith::materials::Poroelasticity::createAuxiliaryField(const pylith::topology::
     assert(auxiliaryFactory);
     auxiliaryFactory->setValuesFromDB();
 
-    pythia::journal::debug_t debug("poroelasticity.view_auxiliary_field");
+    pythia::journal::debug_t debug(pylith::journal::auxiliary_fields);
     if (debug.state()) {
+        PYLITH_COMPONENT_DEBUG(pylith::journal::auxiliary_fields, "Viewing poroelasticity auxiliary field.");
         auxiliaryField->view("Poroelasticity auxiliary field");
     } // if
 
@@ -263,7 +265,7 @@ pylith::topology::Field*
 pylith::materials::Poroelasticity::createDerivedField(const pylith::topology::Field& solution,
                                                       const pylith::topology::Mesh& domainMesh) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("createDerivedField(solution="<<solution.getLabel()<<", domainMesh=)"<<typeid(domainMesh).name()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "createDerivedField(solution="<<solution.getLabel()<<", domainMesh=)"<<typeid(domainMesh).name()<<")");
 
     assert(_derivedFactory);
     if (_derivedFactory->getNumSubfields() == 1) {
@@ -293,7 +295,7 @@ pylith::utils::PetscOptions*
 pylith::materials::Poroelasticity::getSolverDefaults(const bool isParallel,
                                                      const bool hasFault) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("getSolverDefaults(isParallel="<<isParallel<<", hasFault="<<hasFault<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "getSolverDefaults(isParallel="<<isParallel<<", hasFault="<<hasFault<<")");
 
     pylith::utils::PetscOptions* options = new pylith::utils::PetscOptions();assert(options);
 
@@ -354,7 +356,7 @@ pylith::materials::Poroelasticity::getSolverDefaults(const bool isParallel,
     case pylith::problems::Physics::DYNAMIC_IMEX:
         break;
     default:
-        PYLITH_COMPONENT_LOGICERROR("Unknown formulation '" << _formulation << "'.");
+        PYLITH_COMPONENT_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown formulation '" << _formulation << "'.");
     } // switch
 
     PYLITH_METHOD_RETURN(options);
@@ -393,7 +395,7 @@ void
 pylith::materials::Poroelasticity::_setKernelsResidual(pylith::feassemble::IntegratorDomain* integrator,
                                                        const topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_setKernelsResidual(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "_setKernelsResidual(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
 
     const spatialdata::geocoords::CoordSys* coordsys = solution.getMesh().getCoordSys();
 
@@ -415,7 +417,7 @@ pylith::materials::Poroelasticity::_setKernelsResidual(pylith::feassemble::Integ
         r0 = pylith::fekernels::Poroelasticity::g0v_grav_bodyforce;
         break;
     default:
-        PYLITH_COMPONENT_LOGICERROR("Unknown case (bitUse=" << bitUse << ") for residual kernels.");
+        PYLITH_COMPONENT_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown case (bitUse=" << bitUse << ") for residual kernels.");
     } // switch
 
     std::vector<ResidualKernels> kernels;
@@ -503,7 +505,7 @@ pylith::materials::Poroelasticity::_setKernelsResidual(pylith::feassemble::Integ
         kernels[5] = ResidualKernels("velocity", pylith::feassemble::Integrator::RHS, g0v, g1v);
     } // DYNAMIC
     default:
-        PYLITH_COMPONENT_LOGICERROR("Unknown formulation for equations (" << _formulation << ").");
+        PYLITH_COMPONENT_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown formulation for equations (" << _formulation << ").");
     } // switch
 
     // Add any MMS body force kernels.
@@ -522,7 +524,7 @@ void
 pylith::materials::Poroelasticity::_setKernelsJacobian(pylith::feassemble::IntegratorDomain* integrator,
                                                        const topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_setKernelsJacobian(integrator="<<integrator<<",solution="<<solution.getLabel()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "_setKernelsJacobian(integrator="<<integrator<<",solution="<<solution.getLabel()<<")");
     const spatialdata::geocoords::CoordSys* coordsys = solution.getMesh().getCoordSys();
     std::vector<JacobianKernels> kernels(7);
 
@@ -717,7 +719,7 @@ pylith::materials::Poroelasticity::_setKernelsJacobian(pylith::feassemble::Integ
         break;
     } // DYNAMIC
     default:
-        PYLITH_COMPONENT_LOGICERROR("Unknown formulation for equations (" << _formulation << ").");
+        PYLITH_COMPONENT_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown formulation for equations (" << _formulation << ").");
     } // switch
 
     assert(integrator);
@@ -733,7 +735,7 @@ void
 pylith::materials::Poroelasticity::_setKernelsUpdateStateVars(pylith::feassemble::IntegratorDomain* integrator,
                                                               const topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_setKernelsUpdateStateVars(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "_setKernelsUpdateStateVars(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
 
     const spatialdata::geocoords::CoordSys* coordsys = solution.getMesh().getCoordSys();
     assert(coordsys);
@@ -753,7 +755,7 @@ pylith::materials::Poroelasticity::_setKernelsUpdateStateVars(pylith::feassemble
         break;
     } // DYNAMIC
     default:
-        PYLITH_COMPONENT_LOGICERROR("Unknown formulation for equations (" << _formulation << ").");
+        PYLITH_COMPONENT_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown formulation for equations (" << _formulation << ").");
     } // switch
 
     integrator->setKernelsUpdateStateVars(kernels);
@@ -768,7 +770,7 @@ void
 pylith::materials::Poroelasticity::_setKernelsDerivedField(pylith::feassemble::IntegratorDomain* integrator,
                                                            const topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_setKernelsDerivedField(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "_setKernelsDerivedField(integrator="<<integrator<<", solution="<<solution.getLabel()<<")");
 
     const spatialdata::geocoords::CoordSys* coordsys = solution.getMesh().getCoordSys();
     assert(coordsys);

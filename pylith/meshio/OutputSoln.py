@@ -30,13 +30,13 @@ class OutputSoln(OutputObserver, ModuleOutputSoln):
         OutputObserver.__init__(self, name)
 
     def preinitialize(self, problem):
-        """Do mimimal initialization.
+        """Do minimal initialization.
         """
         OutputObserver.preinitialize(self, problem)
         ModuleOutputSoln.setOutputSubfields(self, self.dataFields)
 
     def _configure(self):
-        """Set members based using inventory.
+        """Set members using inventory.
         """
         OutputObserver._configure(self)
 

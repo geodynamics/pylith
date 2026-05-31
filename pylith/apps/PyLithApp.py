@@ -7,26 +7,23 @@
 #
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
-# @file pylith/apps/PyLithApp.py
-#
-# @brief Python PyLith application
 
 from .PetscApplication import PetscApplication
-
-# PyLithApp class
-
 
 class PyLithApp(PetscApplication):
     """Python PyLithApp application."""
 
     import pythia.pyre.inventory
 
-    typos = pythia.pyre.inventory.str(
-        "typos",
-        default="pedantic",
-        validator=pythia.pyre.inventory.choice(["relaxed", "strict", "pedantic"]),
-    )
-    typos.meta["tip"] = "Specifies the handling of unknown properties and facilities"
+    pdbOn = pythia.pyre.inventory.bool("start_python_debugger", default=False)
+    pdbOn.meta['tip'] = "Start python debugger at beginning of main()."
+
+    typos = pythia.pyre.inventory.str("typos", default="pedantic",
+                                      validator=pythia.pyre.inventory.choice(['relaxed', 'strict', 'pedantic']))
+    typos.meta['tip'] = "Specifies the handling of unknown properties and facilities"
+
+    showAppFlow = pythia.pyre.inventory.bool("show_application_flow", default=True)
+    showAppFlow.meta['tip'] = "Show application flow (application-flow journal)"
 
     initializeOnly = pythia.pyre.inventory.bool("initialize_only", default=False)
     initializeOnly.meta["tip"] = "Stop simulation after initializing problem."
@@ -60,7 +57,14 @@ class PyLithApp(PetscApplication):
         self._loggingPrefix = "PL.PyLithApp."
 
     def main(self, *args, **kwds):
-        """Run the application."""
+        """Run the application.
+        """
+        if self.pdbOn:
+            import pdb
+            pdb.set_trace()
+        if self.showAppFlow:
+            self._flow.activate()
+
         # Dump parameters and version information
         self.parameters.preinitialize()
         self.parameters.write(self)
@@ -69,7 +73,8 @@ class PyLithApp(PetscApplication):
 
         if mpi_is_root():
             comm = mpi_comm_world()
-            self._info.log("Running on %d process(es)." % comm.size)
+            self._flow.log("Running on %d process(es)." % comm.size)
+        self.petsc.showOptions()
 
         self._setupLogging()
 
@@ -109,8 +114,10 @@ class PyLithApp(PetscApplication):
         for citation in self.citations():
             msg += citation + "\n"
 
-        print(msg)
-        return
+        from pythia.journal.diagnostics import info
+        channel = info("about")
+        channel.activate()
+        channel.log(msg)
 
     def citations(self):
         import pylith.utils.utils as utils
@@ -182,15 +189,7 @@ class PyLithApp(PetscApplication):
             "2. Attach the PyLith parameters .json file\n"
             "3. Send the *entire* error message, not just what you think is important (entire log is best).\n"
             "\n"
-            "Description and help for PyLithApp component:\n"
-        )
-        if self.inventory.usage:
-            print(msg)
-
-        PetscApplication.showHelp(self)
-
-        msg = (
-            "\nExamples using step01_axialdisp.cfg in directory examples/box-2d):\n"
+            "Examples using step01_axialdisp.cfg in directory examples/box-2d):\n"
             "1. List components and properties for a given component (--help)\n"
             "  pylith step01_axialdisp.cfg --problem.bc.bc_xpos.help\n"
             "\n"
@@ -199,17 +198,22 @@ class PyLithApp(PetscApplication):
             "\n"
             "3. List properties of a given component (--help-properties)\n"
             "  pylith step01_axialdisp.cfg --problem.bc.bc_xpos.help-properties\n"
+            "\n"
+            "Description and help for PyLithApp component:\n"
         )
         if self.inventory.usage:
-            print(msg)
-        return
+            from pythia.journal.diagnostics import info
+            channel = info("about")
+            channel.activate()
+            channel.log(msg)
+
+        PetscApplication.showHelp(self)
 
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
         """Setup members using inventory."""
         PetscApplication._configure(self)
-        return
 
     def _setupLogging(self):
         """Setup event logging."""
@@ -220,7 +224,6 @@ class PyLithApp(PetscApplication):
         logger.initialize()
 
         self._eventLogger = logger
-        return
 
 
 # ======================================================================

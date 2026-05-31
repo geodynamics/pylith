@@ -19,7 +19,7 @@
 #include "pylith/meshio/MeshIO.hh" // USES MeshIO
 
 #include "pylith/utils/array.hh" // USES int_array
-#include "pylith/utils/journals.hh" // USES journal::debug_t
+#include "pylith/utils/journals.hh" // USES PYLITH_DEBUG
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "pylith/scales/Scales.hh" // USES Scales
@@ -28,19 +28,18 @@
 #include "catch2/matchers/catch_matchers_floating_point.hpp"
 
 #include <strings.h> // USES strcasecmp()
-#include <stdexcept> // USES std::logic_error
 
 static PetscErrorCode
 DMPlexInvertCell_Private(PetscInt dim,
                          PetscInt numCorners,
                          PetscInt cone[]) {
 #define SWAPCONE(cone,i,j)  \
-        do {                      \
-            int _cone_tmp;          \
-            _cone_tmp = (cone)[i];  \
-            (cone)[i] = (cone)[j];  \
-            (cone)[j] = _cone_tmp;  \
-        } while (0)
+    do {                      \
+        int _cone_tmp;          \
+        _cone_tmp = (cone)[i];  \
+        (cone)[i] = (cone)[j];  \
+        (cone)[j] = _cone_tmp;  \
+    } while (0)
 
     PetscFunctionBegin;
     if (dim != 3) { PetscFunctionReturn(0);}
@@ -146,7 +145,7 @@ pylith::meshio::TestMeshIO::_createMesh(void) {
     scales.setLengthScale(0.01);
     pylith::topology::MeshOps::nondimensionalize(_mesh, scales);
 
-    pythia::journal::debug_t debug("TestMeshIO");
+    pythia::journal::debug_t debug(pylith::journal::mesh_detail5);
     if (debug.state()) {
         _mesh->view();
         _mesh->view(":mesh.tex:ascii_latex");

@@ -14,7 +14,7 @@
 
 #include "pylith/faults/KinSrcAuxiliaryFactory.hh" // USES KinSrcAuxiliaryFactory
 #include "pylith/topology/Field.hh" // USES Field
-#include "pylith/topology/FieldOps.hh" // USES FieldOps::checkDisretization()
+#include "pylith/topology/FieldOps.hh" // USES FieldOps::checkDiscretization()
 
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN
@@ -88,7 +88,7 @@ pylith::faults::KinSrc::auxField(void) const {
 void
 pylith::faults::KinSrc::auxFieldDB(spatialdata::spatialdb::SpatialDB* value) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("auxFieldDB(value="<<typeid(value).name()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "auxFieldDB(value="<<typeid(value).name()<<")");
 
     assert(_auxiliaryFactory);
     _auxiliaryFactory->setQueryDB(value);
@@ -104,7 +104,7 @@ pylith::faults::KinSrc::initialize(const pylith::topology::Field& faultAuxField,
                                    const pylith::scales::Scales& scales,
                                    const spatialdata::geocoords::CoordSys* cs) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("initialize(faultAuxField"<<faultAuxField.getLabel()<<", scales, cs="<<typeid(cs).name()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "initialize(faultAuxField"<<faultAuxField.getLabel()<<", scales, cs="<<typeid(cs).name()<<")");
 
     // Set default discretization of auxiliary subfields to match slip/slip_rate subfield in integrator auxiliary field.
     assert(_auxiliaryFactory);
@@ -125,9 +125,9 @@ pylith::faults::KinSrc::initialize(const pylith::topology::Field& faultAuxField,
 
     _auxiliaryFactory->setValuesFromDB();
 
-    pythia::journal::debug_t debug(PyreComponent::getName());
+    pythia::journal::debug_t debug(pylith::journal::auxiliary_fields);
     if (debug.state()) {
-        PYLITH_COMPONENT_DEBUG("Displaying kinematic earthquake source auxiliary field");
+        PYLITH_COMPONENT_DEBUG(pylith::journal::auxiliary_fields, "Displaying kinematic earthquake source auxiliary field");
         _auxiliaryField->view("KinSrc auxiliary field");
     } // if
 
@@ -144,8 +144,8 @@ pylith::faults::KinSrc::getSlipSubfields(PetscVec slipLocalVec,
                                          const PylithScalar timeScale,
                                          const int bitSlipSubfields) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("getSlipSubfields(slipLocalVec="<<slipLocalVec<<", faultAuxiliaryField="<<faultAuxiliaryField
-                                                           <<", t="<<t<<", timeScale="<<timeScale<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "getSlipSubfields(slipLocalVec="<<slipLocalVec<<", faultAuxiliaryField="<<faultAuxiliaryField
+                                                                                              <<", t="<<t<<", timeScale="<<timeScale<<")");
 
     if (!_slipFnKernel || (t < _originTime)) {
         PYLITH_METHOD_END;
@@ -188,7 +188,7 @@ pylith::faults::KinSrc::getSlipSubfields(PetscVec slipLocalVec,
 void
 pylith::faults::KinSrc::_setFEConstants(const pylith::topology::Field& faultAuxField) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_setFEConstants(faultAuxField="<<faultAuxField.getLabel()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "_setFEConstants(faultAuxField="<<faultAuxField.getLabel()<<")");
 
     // :KLUDGE: Potentially we may have multiple PetscDS objects. This assumes that the first one (with a NULL label) is
     // the correct one.

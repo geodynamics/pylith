@@ -68,29 +68,22 @@ caption: Run Step 7 simulation
 $ pylith step07_twofaults_maxwell.cfg
 
 # The output should look something like the following.
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:77:main
- -- pylithapp(info)
+ >> software/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:79:main
+ -- info (application-flow)
  -- Running on 1 process(es).
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/meshio/MeshIOObj.py:38:read
- -- meshiopetsc(info)
- -- Reading finite-element mesh
- >> /src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:85:void pylith::meshio::MeshIO::read(pylith::topology::Mesh *, const bool)
- -- meshiopetsc(info)
- -- Component 'reader': Domain bounding box:
-    (-100000, 100000)
-    (-100000, 0)
 
 # -- many lines omitted --
 
 25 TS dt 0.2 time 4.8
-    0 SNES Function norm 1.841529893626e-01
-      Linear solve converged due to CONVERGED_ATOL iterations 16
-    1 SNES Function norm 4.357719233336e-09
+    0 SNES Function norm 3.491930818111e-01
+      Linear solve converged due to CONVERGED_ATOL iterations 12
+    1 SNES Function norm 6.649621549079e-08
     Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
 26 TS dt 0.2 time 5.
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:232:finalize
- -- timedependent(info)
- -- Finalizing problem.```
+ >> software/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:222:finalize
+ -- info (application-flow)
+ -- Finalizing problem.
+ ```
 
 From the end of the output written to the terminal window, we see that the simulation advanced the solution 26 time steps.
 The PETSc TS display time in the nondimensional units, so a time of 5 corresponds to 100 years.
@@ -128,17 +121,44 @@ caption: Run Step 7b simulation
 $ pylith step07_twofaults_maxwell.cfg step07b_twofaults_maxwell.cfg
 
 # The output should look something like the following.
+ >> software/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:80:main
+ -- info (application-flow)
+ -- Running on 1 process(es).
+
 # -- many lines omitted --
 
-30 TS dt 0.120677 time 4.87932
-    0 SNES Function norm 1.161325530040e-01
-      Linear solve converged due to CONVERGED_ATOL iterations 19
-    1 SNES Function norm 8.829574302098e-09
+ >> src/cig/pylith/libsrc/pylith/problems/TimeDependent.cc:473:void pylith::problems::TimeDependent::solve()
+ -- info (application-flow)
+ -- Component 'timedependent.problem': Solving equations.
+0 TS dt 0.01 time -0.01
+    0 SNES Function norm 9.786738657687e+00
+      Linear solve converged due to CONVERGED_ATOL iterations 21
+    1 SNES Function norm 4.181718260419e-08
     Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
-      TSAdapt basic beuler 0: step  30 accepted t=4.87932    + 1.207e-01 dt=2.739e-01  wlte=0.00776  wltea=   -1 wlter=   -1
-31 TS dt 0.273922 time 5.
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:232:finalize
- -- timedependent(info)
+  TSAdapt basic beuler 0: step   0 accepted t=-0.01      + 1.000e-02 dt=1.000e-02
+1 TS dt 0.01 time 0.
+    0 SNES Function norm 6.800013826439e-02
+      Linear solve converged due to CONVERGED_ATOL iterations 15
+    1 SNES Function norm 4.941010511485e-08
+    Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
+  TSAdapt basic beuler 0: step   1 rejected t=0          + 1.000e-02 dt=1.495e-03  wlte= 1.79  wltea=   -1 wlter=   -1
+    0 SNES Function norm 3.573809583653e-02
+      Linear solve converged due to CONVERGED_ATOL iterations 13
+    1 SNES Function norm 3.795363345199e-08
+    Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
+  TSAdapt basic beuler 0: step   1 accepted t=0          + 1.495e-03 dt=1.041e-03  wlte=0.0824  wltea=   -1 wlter=   -1
+
+# -- many lines omitted --
+
+30 TS dt 0.363756 time 4.63624
+    0 SNES Function norm 5.855825329812e-01
+      Linear solve converged due to CONVERGED_ATOL iterations 17
+    1 SNES Function norm 7.186563774310e-08
+    Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
+  TSAdapt basic beuler 0: step  30 accepted t=4.63624    + 3.638e-01 dt=3.432e-01  wlte=0.0449  wltea=   -1 wlter=   -1
+31 TS dt 0.343229 time 5.
+ >> software/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:222:finalize
+ -- info (application-flow)
  -- Finalizing problem.
 ```
 

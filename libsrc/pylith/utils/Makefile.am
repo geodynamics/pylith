@@ -32,6 +32,9 @@ subpkginclude_HEADERS = \
 	macrodefs.h \
 	petscfwd.h \
 	error.hh \
+	Exceptions.hh \
+	ErrorMessage.hh \
+	ErrorMessage.icc \
 	types.hh \
 	utilsfwd.hh
 

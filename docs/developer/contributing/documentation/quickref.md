@@ -135,7 +135,7 @@ caption: Config code block.
 ---
 # Comment
 [pylithapp]
-journal.info.problem = 1
+journal.device = color-console
 
 [pylithapp.petsc]
 ksp_rtol = 1.0e-3
@@ -150,7 +150,7 @@ This is likely a bug.
 ```{table} Table caption
 :name: tab:quickref:example
 |             Header 1 |   Header 2    | Header 3       |
-|---------------------:|:-------------:|:---------------|
+| -------------------: | :-----------: | :------------- |
 |        right aligned |   centered    | left aligned   |
 | more data, more data | yet more data | even more data |
 ```

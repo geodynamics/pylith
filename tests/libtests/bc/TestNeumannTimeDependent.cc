@@ -236,7 +236,7 @@ pylith::bc::TestNeumannTimeDependent::testVerifyConfiguration(void) {
 
     // Check for failure with field not in solution.
     _bc->field("dslfjadsf");
-    CPPUNIT_ASSERT_THROW(_bc->verifyConfiguration(*_solution), std::runtime_error);
+    CPPUNIT_ASSERT_THROW(_bc->verifyConfiguration(*_solution), pylith::ValueError);
 
     PYLITH_METHOD_END;
 } // testVerifyConfiguration

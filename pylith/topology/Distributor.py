@@ -56,7 +56,7 @@ class Distributor(PetscComponent, ModuleDistributor):
             ModuleDistributor.setDataWriter(self, self.dataWriter)
 
     def _configure(self):
-        """Set members based using inventory.
+        """Set members using inventory.
         """
         PetscComponent._configure(self)
 

@@ -54,6 +54,7 @@ pylith::topology::Mesh*
 pylith::initializers::MeshDistributor::run(pylith::topology::Mesh* mesh,
                                            const pylith::problems::Problem& problem) {
     PYLITH_METHOD_BEGIN;
+    PYLITH_INFO_ROOT(pylith::journal::application_flow, "Distributing mesh.");
     assert(_distributor);
     assert(mesh);
 

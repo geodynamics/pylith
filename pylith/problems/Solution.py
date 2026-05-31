@@ -36,13 +36,12 @@ class Solution(PetscComponent):
 
     def preinitialize(self, problem, mesh):
         """Do minimal initialization of solution."""
-        from pylith.mpi.Communicator import mpi_is_root
+        from pylith.topology.Field import Field
 
+        from pylith.mpi.Communicator import mpi_is_root
         isRoot = mpi_is_root()
         if isRoot:
-            self._info.log("Performing minimal initialization of solution.")
-
-        from pylith.topology.Field import Field
+            self._debug.log("Performing minimal initialization of solution.")
 
         self.field = Field(mesh)
         self.field.setLabel("solution")
@@ -78,7 +77,7 @@ class Solution(PetscComponent):
             )
 
     def _configure(self):
-        """Set members based using inventory."""
+        """Set members using inventory."""
         PetscComponent._configure(self)
 
     def _cleanup(self):

@@ -13,6 +13,7 @@
 #include "pylith/topology/FieldOps.hh" // USES FieldOps::deallocate()
 #include "pylith/utils/journals.hh" // USES journals
 #include "pylith/utils/error.hh" // USES PylithCallPetsc()
+#include "pylith/utils/Exceptions.hh" // USES Exception
 
 #include "catch2/catch_session.hpp"
 
@@ -206,7 +207,7 @@ pylith::testing::TestDriver::_activateJournals(JournalEnum category,
             break;
         } // DEBUG
         default:
-            PYLITH_JOURNAL_LOGICERROR("Unknown journal category '"<<category<<"'.");
+            PYLITH_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown journal category '"<<category<<"'.");
         } // switch
     } // for
 } // _activateJournal

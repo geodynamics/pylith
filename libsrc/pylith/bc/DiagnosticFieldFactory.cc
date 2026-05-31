@@ -38,7 +38,7 @@ pylith::bc::DiagnosticFieldFactory::~DiagnosticFieldFactory(void) {}
 void
 pylith::bc::DiagnosticFieldFactory::addNormalDir(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addNormalDir(void)");
+    PYLITH_DEBUG(pylith::journal::application_flow, "addNormalDir(void)");
 
     const char* fieldName = "normal_dir";
     const char* componentNames[3] = { "normal_dir_x", "normal_dir_y", "normal_dir_z" };
@@ -67,7 +67,7 @@ pylith::bc::DiagnosticFieldFactory::addNormalDir(void) {
 void
 pylith::bc::DiagnosticFieldFactory::addTangentialDirHoriz(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addTangentialDirHoriz(void)");
+    PYLITH_DEBUG(pylith::journal::application_flow, "addTangentialDirHoriz(void)");
 
     const char* fieldName = _spaceDim == 2 ? "tangential_dir" : "horizontal_tangential_dir";
     const char* componentNames2D[2] = {
@@ -104,7 +104,7 @@ pylith::bc::DiagnosticFieldFactory::addTangentialDirHoriz(void) {
 void
 pylith::bc::DiagnosticFieldFactory::addTangentialDirVert(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addTangentialDirVert(void)");
+    PYLITH_DEBUG(pylith::journal::application_flow, "addTangentialDirVert(void)");
 
     const char* fieldName = "vertical_tangential_dir";
     const char* componentNames[3] = {
@@ -137,7 +137,7 @@ pylith::bc::DiagnosticFieldFactory::addTangentialDirVert(void) {
 void
 pylith::bc::DiagnosticFieldFactory::addSubfields(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addSubfields(void)");
+    PYLITH_DEBUG(pylith::journal::application_flow, "addSubfields(void)");
 
     if (_subfieldDiscretizations.find("normal_dir") != _subfieldDiscretizations.end()) {
         addNormalDir();

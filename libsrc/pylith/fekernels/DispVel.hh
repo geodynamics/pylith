@@ -194,7 +194,7 @@ public:
 
     /** Jf0 function for displacement equation with zero values on diagonal.
      *
-     * This is associated with the elasticity equation without intertia.
+     * This is associated with the elasticity equation without inertia.
      *
      * Solution fields: [...]
      */

@@ -37,7 +37,7 @@ class DumpParametersAscii(DumpParameters):
     filename.meta["tip"] = "Name of file written with parameters."
 
     indent = pythia.pyre.inventory.int("indent", default=4)
-    indent.meta["tip"] = "Nmber of spaces to indent."
+    indent.meta["tip"] = "Number of spaces to indent."
 
     verbose = pythia.pyre.inventory.bool("verbose", default=True)
     verbose.meta["tip"] = "Include description, location, and aliases."

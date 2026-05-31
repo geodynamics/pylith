@@ -44,7 +44,7 @@ void
 pylith::materials::RheologyPoroelasticity::updateKernelConstants(pylith::real_array* kernelConstants,
                                                                  const PylithReal dt) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("updateKernelConstants(kernelConstants"<<kernelConstants<<", dt="<<dt<<") empty method");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "updateKernelConstants(kernelConstants"<<kernelConstants<<", dt="<<dt<<") empty method");
 
     // Default is to do nothing.
 
@@ -59,7 +59,7 @@ pylith::materials::RheologyPoroelasticity::addKernelsUpdateStateVarsImplicit(std
                                                                              const spatialdata::geocoords::CoordSys* coordsys,
                                                                              const bool _useStateVars) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("addKernelsUpdateStateVarsImplicit(kernels="<<kernels<<", coordsys="<<coordsys<<") empty method");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "addKernelsUpdateStateVarsImplicit(kernels="<<kernels<<", coordsys="<<coordsys<<") empty method");
 
     // Default is to do nothing.
 
@@ -74,7 +74,7 @@ pylith::materials::RheologyPoroelasticity::addKernelsUpdateStateVarsExplicit(std
                                                                              const spatialdata::geocoords::CoordSys* coordsys,
                                                                              const bool _useStateVars) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("addKernelsUpdateStateVarsExplicit(kernels="<<kernels<<", coordsys="<<coordsys<<") empty method");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "addKernelsUpdateStateVarsExplicit(kernels="<<kernels<<", coordsys="<<coordsys<<") empty method");
 
     // Default is to do nothing.
 

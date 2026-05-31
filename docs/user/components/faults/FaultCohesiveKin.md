@@ -44,11 +44,11 @@ Implements `FaultCohesive`.
 * `label_value`=\<int\>: Value of label identifier for fault.
   - **default value**: 1
   - **current value**: 1, from {default}
-* `ref_dir_1`=\<list\>: First choice for reference direction to discriminate among tangential directions in 3-D.
+* `ref_dir_1`=\<list\>: First choice for reference direction to discriminate among tangential directions in 3D; should roughly match the up-dir direction.
   - **default value**: [0.0, 0.0, 1.0]
   - **current value**: [0.0, 0.0, 1.0], from {default}
-  - **validator**: <function validateDir at 0x124b02dc0>
-* `ref_dir_2`=\<list\>: Second choice for reference direction to discriminate among tangential directions in 3-D.
+  - **validator**: <function validateDir at 0x108bf6840>
+* `ref_dir_2`=\<list\>: Second choice for reference direction to discriminate among tangential directions in 3D; should roughly match the fault normal direction.
   - **default value**: [0.0, 1.0, 0.0]
   - **current value**: [0.0, 1.0, 0.0], from {default}
   - **validator**: <function validateDir at 0x124b02dc0>

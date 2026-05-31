@@ -49,7 +49,7 @@ class MeshReader(InitializePhase, ModuleMeshReader):
         ModuleMeshReader.setReader(self, self.reader)
 
     def _configure(self):
-        """Set members based using inventory.
+        """Set members using inventory.
         """
         InitializePhase._configure(self)
 

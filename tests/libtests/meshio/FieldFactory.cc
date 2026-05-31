@@ -16,6 +16,9 @@
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/utils/error.hh" // USES PylithCallPetscRequire()
 
+#include "pylith/utils/journals.hh" // USES journals
+#include "pylith/utils/Exceptions.hh" // USES Exception
+
 #include "catch2/catch_test_macros.hpp"
 
 // ------------------------------------------------------------------------------------------------
@@ -110,7 +113,8 @@ pylith::meshio::FieldFactory::addTensor(const pylith::topology::FieldBase::Discr
             description.componentNames[i] = componentNames[i];
         } // for
     } else {
-        throw std::logic_error("Unknown spatial dimension.");
+        PYLITH_ERROR(pylith::InternalLogicError, pylith::journal::logic,
+                     "Unknown spatial dimension " << spaceDim << ".");
     } // if/else
     description.scale = 1.0;
     description.validator = NULL;

@@ -7,7 +7,6 @@ The `pylithapp.cfg` file contains numerous comments, so we only summarize the pa
 ## Metadata, Mesh, and Output
 
 The `pylithapp.metadata` section specifies metadata common to all simulations in the directory.
-We control the verbosity of the output written to stdout using `journal.info`.
 We set the parameters for importing the finite-element mesh from Gmsh in `pylithapp.mesh_generator`. 
 
 ## Physics

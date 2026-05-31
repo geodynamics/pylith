@@ -59,72 +59,84 @@ caption: Run Step 2 simulation
 ---
 $ pylith step02_varslip.cfg
 
-# The output should look something like the following.
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:77:main
- -- pylithapp(info)
+ >> software/pylith-opt/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:76:main
+ -- info (application-flow)
  -- Running on 1 process(es).
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/meshio/MeshIOObj.py:38:read
- -- meshiopetsc(info)
- -- Reading finite-element mesh
- >> /src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:85:void pylith::meshio::MeshIO::read(pylith::topology::Mesh *, const bool)
- -- meshiopetsc(info)
- -- Component 'reader': Domain bounding box:
+ >> src/cig/pylith/libsrc/pylith/utils/PetscOptions.cc:251:static void pylith::utils::_PetscOptions::write(pythia::journal::info_t&, const char*, const pylith::utils::PetscOptions&)
+ -- info (application-flow)
+ -- Setting PETSc options:
+    dm_reorder_section = true
+    dm_reorder_section_type = cohesive
+    ksp_atol = 1.0e-7
+    ksp_converged_reason = true
+    ksp_error_if_not_converged = true
+    ksp_gmres_restart = 100
+    ksp_guess_pod_size = 8
+    ksp_guess_type = pod
+    ksp_rtol = 1.0e-14
+    mg_fine_ksp_max_it = 5
+    mg_fine_pc_type = vpbjacobi
+    pc_type = gamg
+    snes_atol = 5.0e-7
+    snes_converged_reason = true
+    snes_error_if_not_converged = true
+    snes_monitor = true
+    snes_rtol = 1.0e-14
+    ts_error_if_step_fails = true
+    ts_exact_final_time = matchstep
+    ts_monitor = true
+    ts_type = beuler
+    viewer_hdf5_collective = true
+
+ >> src/cig/pylith/libsrc/pylith/meshio/MeshIOPetsc.cc:204:virtual void pylith::meshio::MeshIOPetsc::_read()
+ -- info (application-flow)
+ -- Component 'meshiopetsc.reader': Reading finite-element mesh from 'mesh_tet.msh'.
+ >> src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:76:void pylith::meshio::MeshIO::read(pylith::topology::Mesh*, bool)
+ -- info (application-flow)
+ -- Component 'meshiopetsc.reader': Domain bounding box:
     (413700, 493700)
     (3.917e+06, 3.977e+06)
     (-40000, 0)
-
--- many lines omitted --
-
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:185:initialize
- -- timedependent(info)
- -- Initializing timedependent problem with quasistatic formulation.
- >> /src/cig/pylith/libsrc/pylith/utils/PetscOptions.cc:239:static void pylith::utils::_PetscOptions::write(pythia::journal::info_t &, const char *, const PetscOptions &)
- -- petscoptions(info)
- -- Setting PETSc options:
-dm_reorder_section = true
-dm_reorder_section_type = cohesive
-ksp_atol = 1.0e-7
-ksp_converged_reason = true
-ksp_error_if_not_converged = true
-ksp_guess_pod_size = 8
-ksp_guess_type = pod
-ksp_rtol = 1.0e-12
-mg_fine_ksp_max_it = 5
-mg_fine_pc_type = vpbjacobi
-mg_levels_pc_type = pbjacobi
-pc_gamg_coarse_eq_limit = 200
-pc_type = gamg
-snes_atol = 4.0e-7
-snes_converged_reason = true
-snes_error_if_not_converged = true
-snes_monitor = true
-snes_rtol = 1.0e-12
-ts_error_if_step_fails = true
-ts_exact_final_time = matchstep
-ts_monitor = true
-ts_type = beuler
-viewer_hdf5_collective = true
-
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/TimeDependent.py:132:run
- -- timedependent(info)
- -- Solving problem.
+ >> src/cig/pylith/libsrc/pylith/initializers/MeshDistributor.cc:57:virtual pylith::topology::Mesh* pylith::initializers::MeshDistributor::run(pylith::topology::Mesh*, const pylith::problems::Problem&)
+ -- info (application-flow)
+ -- Distributing mesh.
+ >> src/cig/pylith/libsrc/pylith/initializers/MeshInsertInterfaces.cc:50:virtual pylith::topology::Mesh* pylith::initializers::MeshInsertInterfaces::run(pylith::topology::Mesh*, const pylith::problems::Problem&)
+ -- info (application-flow)
+ -- Inserting cohesive cells.
+ >> src/cig/pylith/libsrc/pylith/problems/TimeDependent.cc:316:virtual void pylith::problems::TimeDependent::verifyConfiguration() const
+ -- info (application-flow)
+ -- Component 'timedependent.problem': Verifying problem configuration.
+ >> software/pylith-opt/lib/python3.12/site-packages/pylith/problems/Problem.py:238:_printInfo
+ -- info (application-flow)
+ -- Scales for nondimensionalization:
+    Length scale: 2500*m
+    Displacement scale: 1*m
+    Time scale: 3.15576e+09*s
+    Rigidity scale: 1e+10*m**-1*kg*s**-2
+    Temperature scale: 1*K
+ >> src/cig/pylith/libsrc/pylith/problems/TimeDependent.cc:342:virtual void pylith::problems::TimeDependent::initialize()
+ -- info (application-flow)
+ -- Component 'timedependent.problem': Initializing problem.
+ >> src/cig/pylith/libsrc/pylith/problems/TimeDependent.cc:473:void pylith::problems::TimeDependent::solve()
+ -- info (application-flow)
+ -- Component 'timedependent.problem': Solving equations.
 0 TS dt 0.001 time 0.
-    0 SNES Function norm 6.832405452737e-03
-      Linear solve converged due to CONVERGED_ATOL iterations 23
-    1 SNES Function norm 5.890913567211e-09
+    0 SNES Function norm 1.091558353128e+01
+      Linear solve converged due to CONVERGED_ATOL iterations 18
+    1 SNES Function norm 2.786048497788e-08
     Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
 1 TS dt 0.001 time 0.001
- >> /software/unix/py3.12-venv/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:199:finalize
- -- timedependent(info)
+ >> software/pylith-opt/lib/python3.12/site-packages/pylith/problems/Problem.py:222:finalize
+ -- info (application-flow)
  -- Finalizing problem.
 ```
 
-At the beginning of the output written to the terminal, we see that PyLith is reading the mesh using the `MeshIOPetsc` reader and that it found the domain to extend from 410000 to 490000 in the x direction, from 3.91e+06 to 3.99e+06 in the y direction, and from -40000 to 0 in the z direction.
+At the beginning of the output written to the terminal, we see that PyLith is reading the mesh using the `MeshIOPetsc` reader and that it found the domain to extend from 413700 to 493700 in the x direction, from 3.92e+06 to 3.98e+06 in the y direction, and from -40000 to 0 in the z direction.
 The scales for nondimensionalization remain the default values for a quasistatic problem.
 PyLith detects the presence of a fault based on the Lagrange multiplier for the fault in the solution field and selects appropriate preconditioning options as discussed in {ref}`sec-user-run-pylith-petsc-options`.
 
 At the end of the output written to the terminal, we see that the solver advanced the solution one time step (static simulation).
-The linear solve converged after 23 iterations and the norm of the residual met the absolute convergence tolerance (`ksp_atol`) .
+The linear solve converged after 18 iterations and the norm of the residual met the absolute convergence tolerance (`ksp_atol`) .
 The nonlinear solve converged in 1 iteration, which we expect because this is a linear problem, and the residual met the absolute convergence tolerance (`snes_atol`).
 
 ## Visualizing the results

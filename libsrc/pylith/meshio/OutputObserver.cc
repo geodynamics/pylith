@@ -23,6 +23,7 @@
 #include "pylith/utils/constants.hh" // USES pylith::max_real
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
+#include "pylith/utils/Exceptions.hh" // USES PYLITH_COMPONENT_*
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
 
 #include <iostream> // USES std::cout
@@ -108,7 +109,7 @@ pylith::meshio::OutputObserver::deallocate(void) {
 // Set trigger for how often to write output.
 void
 pylith::meshio::OutputObserver::setTrigger(pylith::meshio::OutputTrigger* const trigger) {
-    PYLITH_COMPONENT_DEBUG("OutputObserver::setTrigger(otrigger="<<typeid(trigger).name()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "OutputObserver::setTrigger(otrigger="<<typeid(trigger).name()<<")");
 
     _trigger = trigger;
 } // setTrigger
@@ -127,7 +128,7 @@ pylith::meshio::OutputObserver::getTrigger(void) const {
 void
 pylith::meshio::OutputObserver::setWriter(DataWriter* const writer) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("OutputObserver::setWrite(datawriter="<<typeid(writer).name()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "OutputObserver::setWrite(datawriter="<<typeid(writer).name()<<")");
 
     _writer = writer; // :TODO: Use shared pointer
 
@@ -140,12 +141,11 @@ pylith::meshio::OutputObserver::setWriter(DataWriter* const writer) {
 void
 pylith::meshio::OutputObserver::setOutputBasisOrder(const int value) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("OutputObserver::setBasisOrder(value="<<value<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "OutputObserver::setBasisOrder(value="<<value<<")");
 
     if (value < 0) {
-        std::ostringstream msg;
-        msg << "Basis order for output (" << value << ") must be nonnegative.";
-        throw std::out_of_range(msg.str());
+        PYLITH_COMPONENT_ERROR(pylith::ValueError, pylith::journal::user_input,
+                               "Basis order for output (" << value << ") must be nonnegative.");
     } // if
 
     _outputBasisOrder = value;
@@ -160,12 +160,11 @@ pylith::meshio::OutputObserver::setOutputBasisOrder(const int value) {
 void
 pylith::meshio::OutputObserver::setRefineLevels(const int value) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("OutputObserver::setRefineLevels(value="<<value<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "OutputObserver::setRefineLevels(value="<<value<<")");
 
     if (value < 0) {
-        std::ostringstream msg;
-        msg << "Number of refinement levels for output (" << value << ") must be nonnegative.";
-        throw std::out_of_range(msg.str());
+        PYLITH_COMPONENT_ERROR(pylith::ValueError, pylith::journal::user_input,
+                               "Number of refinement levels for output (" << value << ") must be nonnegative.");
     } // if
 
     _refineLevels = value;
@@ -179,9 +178,8 @@ pylith::meshio::OutputObserver::setRefineLevels(const int value) {
 void
 pylith::meshio::OutputObserver::setTimeScale(const PylithReal value) {
     if (value <= 0.0) {
-        std::ostringstream msg;
-        msg << "Time scale ("<<value<<") for output observer is nonpositive.";
-        throw std::logic_error(msg.str());
+        PYLITH_COMPONENT_ERROR(pylith::ValueError, pylith::journal::user_input,
+                               "Time scale ("<<value<<") for output observer is nonpositive.");
     } // if
     _timeScale = value;
 } // setTimeScale
@@ -211,7 +209,7 @@ pylith::meshio::OutputObserver::_getSubfield(const pylith::topology::Field& fiel
                                              const pylith::topology::Mesh& submesh,
                                              const char* name) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_getSubfield(field="<<field.getLabel()<<", name="<<name<<", submesh="<<typeid(submesh).name()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "_getSubfield(field="<<field.getLabel()<<", name="<<name<<", submesh="<<typeid(submesh).name()<<")");
     _OutputObserver::Events::logger.eventBegin(_OutputObserver::Events::getSubfield);
 
     if (0 == _subfields.count(name) ) {
@@ -229,7 +227,7 @@ void
 pylith::meshio::OutputObserver::_appendField(const PylithReal t,
                                              const pylith::meshio::OutputSubfield& subfield) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_appendField(t="<<t<<", subfield="<<typeid(subfield).name()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "_appendField(t="<<t<<", subfield="<<typeid(subfield).name()<<")");
     _OutputObserver::Events::logger.eventBegin(_OutputObserver::Events::appendField);
 
     // Use basis order from subfield since requested basis order for output may be greater than original basis order.
@@ -244,10 +242,9 @@ pylith::meshio::OutputObserver::_appendField(const PylithReal t,
         break;
 
     default:
-        PYLITH_COMPONENT_ERROR(
-            "Unsupported basis order ("<< basisOrder <<") for output. Skipping output of '"
-                                       << subfield.getDescription().label << "' field."
-            );
+        PYLITH_COMPONENT_ERROR(pylith::OutOfRangeError, pylith::journal::user_input,
+                               "Unsupported basis order ("<< basisOrder <<") for output. Skipping output of '"
+                                                          << subfield.getDescription().label << "' field.");
     } // switch
 
     _OutputObserver::Events::logger.eventEnd(_OutputObserver::Events::appendField);

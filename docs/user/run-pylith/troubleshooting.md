@@ -9,10 +9,36 @@
 * The rate of convergence in quasistatic (implicit) problems can sometimes be improved by renumbering the vertices in the finite-element mesh to reduce the bandwidth of the sparse matrix. PyLith can use the reverse Cuthill-McKee algorithm to reorder the vertices and cells.
 * If you encounter errors or warnings, run `pylith_dumpparameters` or use the `--help`, `--help-components`, or `--help-properties` command-line arguments when running PyLith to check the parameters to make sure PyLith is using the parameters you intended.
 * Use the `--petsc.log_view`, `--petsc.ksp_monitor`, `--petsc.ksp_view`, `--petsc.ksp_converged_reason`, and `--petsc.snes_converged_reason` command-line arguments (or set them in a parameter file) to view PyLith performance and monitor the convergence.
-* Turn on the journals (see the examples) to monitor the progress of the code.
+* Turn on additional journals (Refer to Section {ref}`sec-user-journals`) to monitor what the code is doing.
 
 See {ref}`sec-user-examples-troubleshooting-2d` for examples of how to troubleshoot running PyLith simulations.
 Also consult the PyLith category in the [CIG community forum](https://community.geodynamics.org) to see if someone else encountered a similar issue.
+
+## Error Message Format
+
+### Configuration
+
+Errors caught in simple verification of simulation parameters will display information in the form:
+
+```{code-block} console
+ >> FILEN:LINE:
+ -- error (pyre.inventory)
+ -- COMPONENT <- VALUE
+ -- MESSAGE
+```
+
+where the assignment of value `VALUE` to component `COMPONENT` at line `LINE` in file `FILE` generates the error message `MESSAGE`.
+
+### Python
+
+Errors caught in Python code will display the Python backtrace followed by the error message.
+
+### C++
+
+*New in v5.0.0.*
+
+Errors caught in C++ code will display the error message using an error or firewall journal channel, the Python backtrace, the exception message, and then the full C++ backtrace with raw symbols names for the functions.
+You can use the `c++filt` utility to demangle the function names.
 
 ## Common Error Messages
 
@@ -31,11 +57,11 @@ If you are building PyLith from source, please consult the instructions for buil
 ### Unrecognized Property 'p4wd'
 
 ```{code-block} bash
--- pyre.inventory(error) } \\
+-- error (pyre.inventory) } \\
 -- p4wd <- 'true' } \\
 -- unrecognized property 'p4wd' } \\
 >> command line:: } \\
--- pyre.inventory(error) } \\
+-- error (pyre.inventory) } \\
 -- p4pg <- 'true' } \\
 -- unrecognized property ' p4pg'}
 ```
@@ -118,6 +144,3 @@ The following steps can help diagnose the source of the problem.
 1. If using `preonly` for the KSP type (often the default), then try switching to `gmres` with a KSP tolerance of `1.0e-12`.
   If that works, then try backing off on the tolerance.
   Helpful PETSc settings include `--petsc.ksp_view=true`, `--petsc.ksp_type=gmres` and `--petsc.ksp_rtol=1.0e-12`.
-
-
-% End of file

@@ -24,6 +24,7 @@
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
+#include "pylith/utils/Exceptions.hh" // USES Exception
 #include "pylith/utils/error.hh" // USES PylithCallPetsc()
 
 #include <cassert> // USES assert()
@@ -86,7 +87,7 @@ pylith::topology::Field::Field(const Field& src) :
     _subfields = src._subfields;
 
     if (!src._mesh) {
-        PYLITH_JOURNAL_LOGICERROR("Source field _mesh must be non-NULL.");
+        PYLITH_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Source field _mesh must be non-NULL.");
     } // if
     _mesh = src._mesh->clone();
 
@@ -360,7 +361,7 @@ pylith::topology::Field::view(const char* label,
                     cellBasisString = "default";
                     break;
                 default:
-                    PYLITH_JOURNAL_LOGICERROR("Unknown cell basis");
+                    PYLITH_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown cell basis");
                 } // switch
                 std::cout << ", scale: " << sinfo.description.scale
                           << ", basisOrder: " << sinfo.fe.basisOrder
@@ -443,7 +444,7 @@ pylith::topology::Field::scatterLocalToOutput(InsertMode mode) const {
 
 
 // ------------------------------------------------------------------------------------------------
-// Add subfield to current field (inteface to use from SWIG).
+// Add subfield to current field (interface to use from SWIG).
 void
 pylith::topology::Field::subfieldAdd(const char *name,
                                      const char* alias,
@@ -525,11 +526,10 @@ pylith::topology::Field::subfieldsSetup(void) {
 
         if (quadOrderSet) {
             if (quadOrder != sinfo.fe.quadOrder) {
-                std::ostringstream msg;
-                msg << "PETSc DMPlex routines currently assume all subfields use the same quadrature order. Quadrature order of "
-                    << sinfo.fe.quadOrder << " for subfield '" << sname << "' does not match the quadrature order of " << quadOrder
-                    << " for other subfields in field '" << getLabel() << "'.";
-                throw std::runtime_error(msg.str());
+                PYLITH_ERROR(pylith::ValueError, pylith::journal::user_input,
+                             "PETSc DMPlex routines currently assume all subfields use the same quadrature order. Quadrature order of "
+                             << sinfo.fe.quadOrder << " for subfield '" << sname << "' does not match the quadrature order of " << quadOrder
+                             << " for other subfields in field '" << getLabel() << "'.");
             } // if
         } else {
             quadOrder = sinfo.fe.quadOrder;
@@ -605,7 +605,7 @@ pylith::topology::Field::getSubfieldInfo(const char* name) const {
         } // for
         msg << std::endl;
 
-        throw std::runtime_error(msg.str());
+        PYLITH_ERROR(pylith::ValueError, pylith::journal::user_input, msg.str());
     } // if
 
     PYLITH_METHOD_RETURN(iter->second);

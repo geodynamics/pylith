@@ -20,7 +20,6 @@
 #include "pylith/utils/journals.hh" // USES pythia::journal_t
 #include "pylith/utils/petscfwd.h" // USES PetscVec
 
-#include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream
 #include <cassert> // USES assert()
 

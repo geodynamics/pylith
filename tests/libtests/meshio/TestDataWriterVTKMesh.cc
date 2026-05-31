@@ -62,15 +62,15 @@ pylith::meshio::TestDataWriterVTKMesh::testAccessors(void) {
     CHECK_THAT(writer._timeConstant, Catch::Matchers::WithinAbs(value, tolerance));
 
     // Verify error with negative time constant.
-    CHECK_THROWS_AS(writer.timeConstant(-1.0), std::runtime_error);
+    CHECK_THROWS_AS(writer.timeConstant(-1.0), pylith::ValueError);
 
     const int ivalue = 4;
     writer.precision(ivalue);
     CHECK(ivalue == writer._precision);
 
     // Verify error with nonpositive precision.
-    CHECK_THROWS_AS(writer.precision(0), std::runtime_error);
-    CHECK_THROWS_AS(writer.precision(-1), std::runtime_error);
+    CHECK_THROWS_AS(writer.precision(0), pylith::ValueError);
+    CHECK_THROWS_AS(writer.precision(-1), pylith::ValueError);
 } // testFilename
 
 

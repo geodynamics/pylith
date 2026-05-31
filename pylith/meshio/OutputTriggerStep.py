@@ -43,7 +43,7 @@ class OutputTriggerStep(OutputTrigger, ModuleOutputTriggerStep):
         ModuleOutputTriggerStep.setNumStepsSkip(self, self.numSkip)
 
     def _configure(self):
-        """Set members based using inventory.
+        """Set members using inventory.
         """
         OutputTrigger._configure(self)
 

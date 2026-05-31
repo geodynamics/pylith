@@ -47,7 +47,7 @@ pylith::problems::ObserversSoln::deallocate(void) {
 void
 pylith::problems::ObserversSoln::registerObserver(pylith::problems::ObserverSoln* observer) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("registerObserver(observer="<<typeid(observer).name()<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, "registerObserver(observer="<<typeid(observer).name()<<")");
 
     if (observer) {
         observer->index = _observers.size();
@@ -63,7 +63,7 @@ pylith::problems::ObserversSoln::registerObserver(pylith::problems::ObserverSoln
 void
 pylith::problems::ObserversSoln::removeObserver(pylith::problems::ObserverSoln* observer) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("removeObserver(observer="<<typeid(observer).name()<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, "removeObserver(observer="<<typeid(observer).name()<<")");
 
     if (observer) {
         _observers.erase(observer);
@@ -78,7 +78,7 @@ pylith::problems::ObserversSoln::removeObserver(pylith::problems::ObserverSoln* 
 void
 pylith::problems::ObserversSoln::setTimeScale(const PylithReal value) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("setTimeScale(value="<<value<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, "setTimeScale(value="<<value<<")");
 
     for (iterator iter = _observers.begin(); iter != _observers.end(); ++iter) {
         assert(*iter);
@@ -94,7 +94,7 @@ pylith::problems::ObserversSoln::setTimeScale(const PylithReal value) {
 void
 pylith::problems::ObserversSoln::verifyObservers(const pylith::topology::Field& solution) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("verifyObservers(solution="<<solution.getLabel()<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, "verifyObservers(solution="<<solution.getLabel()<<")");
 
     for (iterator iter = _observers.begin(); iter != _observers.end(); ++iter) {
         assert(*iter);
@@ -113,7 +113,7 @@ pylith::problems::ObserversSoln::notifyObservers(const PylithReal t,
                                                  const pylith::topology::Field& solution,
                                                  const pylith::problems::Observer::NotificationType notification) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("notifyObservers(t="<<t<<", tindex="<<tindex<<", solution="<<solution.getLabel()<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, "notifyObservers(t="<<t<<", tindex="<<tindex<<", solution="<<solution.getLabel()<<")");
 
     for (iterator iter = _observers.begin(); iter != _observers.end(); ++iter) {
         assert(*iter);

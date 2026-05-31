@@ -43,7 +43,7 @@ pylith::materials::AuxiliaryFactoryPoroelasticity::~AuxiliaryFactoryPoroelastici
 void
 pylith::materials::AuxiliaryFactoryPoroelasticity::addBodyForce(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addBodyForce(void)");
+    PYLITH_DEBUG(pylith::journal::application_flow, "addBodyForce(void)");
 
     const char* subfieldName = "body_force";
     const char* componentNames[3] = {
@@ -78,7 +78,7 @@ pylith::materials::AuxiliaryFactoryPoroelasticity::addBodyForce(void) {
 void
 pylith::materials::AuxiliaryFactoryPoroelasticity::addGravityField(spatialdata::spatialdb::GravityField* gf) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addGravityField(void)");
+    PYLITH_DEBUG(pylith::journal::application_flow, "addGravityField(void)");
 
     const char* subfieldName = "gravitational_acceleration";
     const char* componentNames[3] = {
@@ -112,7 +112,7 @@ pylith::materials::AuxiliaryFactoryPoroelasticity::addGravityField(spatialdata::
 void
 pylith::materials::AuxiliaryFactoryPoroelasticity::addPorosity(void) { // porosity
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addPorosity(void)");
+    PYLITH_DEBUG(pylith::journal::application_flow, "addPorosity(void)");
 
     const char* subfieldName = "porosity";
     const PylithReal porosityScale = 1.0;
@@ -141,7 +141,7 @@ pylith::materials::AuxiliaryFactoryPoroelasticity::addPorosity(void) { // porosi
 void
 pylith::materials::AuxiliaryFactoryPoroelasticity::addSolidDensity(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addSolidDensity(void)");
+    PYLITH_DEBUG(pylith::journal::application_flow, "addSolidDensity(void)");
 
     const char* subfieldName = "solid_density";
     const PylithReal densityScale = pylith::scales::ElasticityScales::getDensityScale(*_scales);
@@ -168,7 +168,7 @@ pylith::materials::AuxiliaryFactoryPoroelasticity::addSolidDensity(void) {
 void
 pylith::materials::AuxiliaryFactoryPoroelasticity::addFluidDensity(void) { // fluidDensity
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addFluidDensity(void)");
+    PYLITH_DEBUG(pylith::journal::application_flow, "addFluidDensity(void)");
 
     const char* subfieldName = "fluid_density";
     const PylithReal densityScale = pylith::scales::ElasticityScales::getDensityScale(*_scales);
@@ -195,7 +195,7 @@ pylith::materials::AuxiliaryFactoryPoroelasticity::addFluidDensity(void) { // fl
 void
 pylith::materials::AuxiliaryFactoryPoroelasticity::addFluidViscosity(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addFluidViscosity(void)");
+    PYLITH_DEBUG(pylith::journal::application_flow, "addFluidViscosity(void)");
 
     const char* subfieldName = "fluid_viscosity";
     const PylithReal viscosityScale = pylith::scales::ElasticityScales::getViscosityScale(*_scales);
@@ -223,7 +223,7 @@ pylith::materials::AuxiliaryFactoryPoroelasticity::addFluidViscosity(void) {
 void
 pylith::materials::AuxiliaryFactoryPoroelasticity::addSourceDensity(void) { // sourceDensity
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("addSourceDensity(void)");
+    PYLITH_DEBUG(pylith::journal::application_flow, "addSourceDensity(void)");
 
     const char* subfieldName = "source_density";
     const PylithReal timeScale = _scales->getTimeScale();

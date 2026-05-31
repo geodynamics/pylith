@@ -44,32 +44,26 @@ caption: Run Step 2 simulation
 $ pylith step02_gravity_refstate.cfg
 
 # The output should look something like the following.
- >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/meshio/MeshIOObj.py:44:read
- -- meshiopetsc(info)
- -- Reading finite-element mesh
- >> /src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:94:void pylith::meshio::MeshIO::read(pylith::topology::Mesh*)
- -- meshiopetsc(info)
- -- Component 'reader': Domain bounding box:
-    (-100000, 100000)
-    (-100000, 0)
+ >> software/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:79:main
+ -- info (application-flow)
+ -- Running on 1 process(es).
 
 # -- many lines omitted --
 
- >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/TimeDependent.py:139:run
- -- timedependent(info)
- -- Solving problem.
+ >> src/cig/pylith/libsrc/pylith/problems/TimeDependent.cc:473:void pylith::problems::TimeDependent::solve()
+ -- info (application-flow)
+ -- Component 'timedependent.problem': Solving equations.
 0 TS dt 0.001 time 0.
-    0 SNES Function norm 6.644395243532e-12
+    0 SNES Function norm 6.916025621683e-12
     Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 0
 1 TS dt 0.001 time 0.001
- >> /software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pylith/problems/Problem.py:201:finalize
- -- timedependent(info)
+ >> software/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:222:finalize
+ -- info (application-flow)
  -- Finalizing problem.
 WARNING! There are options you set that were not used!
 WARNING! could be spelling mistake, etc!
-There are 2 unused database options. They are:
+There is one unused database option. It is:
 Option left: name:-mg_fine_ksp_max_it value: 5 source: code
-Option left: name:-mg_levels_pc_type value: pbjacobi source: code
 ```
 
 By design we set the reference stress state so that it matches the loading from gravitational body forces in our domain with uniform material properties.

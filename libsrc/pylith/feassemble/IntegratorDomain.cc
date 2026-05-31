@@ -27,10 +27,10 @@
 #include "petscds.h" // USES PetscDS
 
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
+#include "pylith/utils/Exceptions.hh" // USES Exception
 #include "pylith/utils/EventLogger.hh" // USES EventLogger
 
 #include <cassert> // USES assert()
-#include <stdexcept> // USES std::runtime_error
 
 namespace pylith {
     namespace feassemble {
@@ -135,7 +135,7 @@ void
 pylith::feassemble::IntegratorDomain::setKernelsResidual(const std::vector<ResidualKernels>& kernels,
                                                          const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" setKernelsResidual(# kernels="<<kernels.size()<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, _labelName<<"="<<_labelValue<<" setKernelsResidual(# kernels="<<kernels.size()<<")");
 
     assert(_dsLabel);
     for (size_t i = 0; i < kernels.size(); ++i) {
@@ -154,11 +154,11 @@ pylith::feassemble::IntegratorDomain::setKernelsResidual(const std::vector<Resid
             _hasRHSResidual = true;
             break;
         default:
-            PYLITH_JOURNAL_LOGICERROR("Unknown residual part " << kernels[i].part <<".");
+            PYLITH_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown residual part " << kernels[i].part <<".");
         } // switch
     } // for
 
-    pythia::journal::debug_t debug(GenericComponent::getName());
+    pythia::journal::debug_t debug(pylith::journal::integration_kernels);
     if (debug.state()) {
         PylithCallPetsc(PetscDSView(_dsLabel->ds(), PETSC_VIEWER_STDOUT_WORLD));
     } // if
@@ -172,7 +172,7 @@ void
 pylith::feassemble::IntegratorDomain::setKernelsJacobian(const std::vector<JacobianKernels>& kernels,
                                                          const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" setKernelsJacobian(# kernels="<<kernels.size()<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, _labelName<<"="<<_labelValue<<" setKernelsJacobian(# kernels="<<kernels.size()<<")");
 
     assert(_dsLabel);
     for (size_t i = 0; i < kernels.size(); ++i) {
@@ -192,11 +192,11 @@ pylith::feassemble::IntegratorDomain::setKernelsJacobian(const std::vector<Jacob
             _hasLHSJacobianLumped = true;
             break;
         default:
-            PYLITH_JOURNAL_LOGICERROR("Unknown Jacobian part " << kernels[i].part <<".");
+            PYLITH_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown Jacobian part " << kernels[i].part <<".");
         } // switch
     } // for
 
-    pythia::journal::debug_t debug(GenericComponent::getName());
+    pythia::journal::debug_t debug(pylith::journal::integration_kernels);
     if (debug.state()) {
         PylithCallPetsc(PetscDSView(_dsLabel->ds(), PETSC_VIEWER_STDOUT_WORLD));
     } // if
@@ -220,7 +220,7 @@ pylith::feassemble::IntegratorDomain::setKernelsJacobian(const std::vector<pylit
 void
 pylith::feassemble::IntegratorDomain::setKernelsUpdateStateVars(const std::vector<ProjectKernels>& kernels) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" setKernelsUpdateStateVars(# kernels="<<kernels.size()<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, _labelName<<"="<<_labelValue<<" setKernelsUpdateStateVars(# kernels="<<kernels.size()<<")");
 
     _kernelsUpdateStateVars = kernels;
 
@@ -232,7 +232,7 @@ pylith::feassemble::IntegratorDomain::setKernelsUpdateStateVars(const std::vecto
 void
 pylith::feassemble::IntegratorDomain::setKernelsDerivedField(const std::vector<ProjectKernels>& kernels) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" setKernelsDerivedField(# kernels="<<kernels.size()<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, _labelName<<"="<<_labelValue<<" setKernelsDerivedField(# kernels="<<kernels.size()<<")");
 
     _kernelsDerivedField = kernels;
 
@@ -245,7 +245,7 @@ pylith::feassemble::IntegratorDomain::setKernelsDerivedField(const std::vector<P
 void
 pylith::feassemble::IntegratorDomain::initialize(const pylith::topology::Field& solution) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" initialize(solution="<<solution.getLabel()<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, _labelName<<"="<<_labelValue<<" initialize(solution="<<solution.getLabel()<<")");
     _IntegratorDomain::Events::logger.eventBegin(_IntegratorDomain::Events::initialize);
 
     assert(_physics);
@@ -262,10 +262,10 @@ pylith::feassemble::IntegratorDomain::initialize(const pylith::topology::Field& 
         _updateState->initialize(*_auxiliaryField);
     } // if
 
-    pythia::journal::debug_t debug(GenericComponent::getName());
+    pythia::journal::debug_t debug(pylith::journal::auxiliary_fields);
     if (debug.state()) {
-        PYLITH_JOURNAL_DEBUG("Viewing auxiliary field.");
-        _auxiliaryField->view("Auxiliary field");
+        PYLITH_DEBUG(pylith::journal::auxiliary_fields, "Viewing auxiliary field.");
+        _auxiliaryField->view("IntegratorDomain auxiliary field");
     } // if
 
     _IntegratorDomain::Events::logger.eventEnd(_IntegratorDomain::Events::initialize);
@@ -279,7 +279,7 @@ void
 pylith::feassemble::IntegratorDomain::setInterfaceData(const pylith::topology::Field* solution,
                                                        const std::vector<pylith::feassemble::IntegratorInterface*> interfaceIntegrators) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" setInterfaceData(# interfaceIntegrators="<<interfaceIntegrators.size()<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, _labelName<<"="<<_labelValue<<" setInterfaceData(# interfaceIntegrators="<<interfaceIntegrators.size()<<")");
     _IntegratorDomain::Events::logger.eventBegin(_IntegratorDomain::Events::setInterfaceData);
     typedef pylith::feassemble::InterfacePatches::keysmap_t keysmap_t;
 
@@ -319,7 +319,7 @@ pylith::feassemble::IntegratorDomain::setInterfaceData(const pylith::topology::F
             } // if
 
             if (faceCount > 0) { // JOURNAL DEBUGGING
-                pythia::journal::debug_t debug(GenericComponent::getName());
+                pythia::journal::debug_t debug(pylith::journal::integration_kernels);
                 debug << pythia::journal::at(__HERE__) \
                       << "    Found matching interface patch "
                       << patches->getLabelName() << "=" << iter->first << ":";
@@ -358,7 +358,7 @@ pylith::feassemble::IntegratorDomain::setInterfaceData(const pylith::topology::F
 void
 pylith::feassemble::IntegratorDomain::setState(const PylithReal t) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("setState(t="<<t<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, "setState(t="<<t<<")");
     _IntegratorDomain::Events::logger.eventBegin(_IntegratorDomain::Events::setState);
 
     Integrator::setState(t);
@@ -366,12 +366,12 @@ pylith::feassemble::IntegratorDomain::setState(const PylithReal t) {
     assert(_physics);
     _physics->updateAuxiliaryField(_auxiliaryField, t);
 
-    pythia::journal::debug_t debug(GenericComponent::getName());
+    pythia::journal::debug_t debug(pylith::journal::integration_kernels);
     if (debug.state()) {
         assert(_auxiliaryField);
-        PYLITH_JOURNAL_DEBUG("IntegratorInterface component '" << GenericComponent::getName() << "' for '"
-                                                               <<_physics->getIdentifier()
-                                                               << "': viewing auxiliary field.");
+        PYLITH_DEBUG(pylith::journal::integration_kernels, "IntegratorInterface component for '"
+                     <<_physics->getIdentifier()
+                     << "': viewing auxiliary field.");
         _auxiliaryField->view("IntegratorInterface auxiliary field", pylith::topology::Field::VIEW_ALL);
     } // if
 
@@ -387,7 +387,7 @@ pylith::feassemble::IntegratorDomain::computeRHSResidual(pylith::topology::Field
                                                          const pylith::feassemble::IntegrationData& integrationData) {
     if (!_hasRHSResidual) { return; }
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" computeRHSResidual(residual="<<residual<<", integrationData="<<integrationData.str()<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, _labelName<<"="<<_labelValue<<" computeRHSResidual(residual="<<residual<<", integrationData="<<integrationData.str()<<")");
     _IntegratorDomain::Events::logger.eventBegin(_IntegratorDomain::Events::computeRHSResidual);
     assert(residual);
 
@@ -423,7 +423,7 @@ pylith::feassemble::IntegratorDomain::computeLHSResidual(pylith::topology::Field
                                                          const pylith::feassemble::IntegrationData& integrationData) {
     if (!_hasLHSResidual) { return; }
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" computeLHSResidual(residual="<<residual<<", integrationData="<<integrationData.str()<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, _labelName<<"="<<_labelValue<<" computeLHSResidual(residual="<<residual<<", integrationData="<<integrationData.str()<<")");
     _IntegratorDomain::Events::logger.eventBegin(_IntegratorDomain::Events::computeLHSResidual);
 
     const pylith::topology::Field* solution = integrationData.getField(pylith::feassemble::IntegrationData::solution);
@@ -461,7 +461,7 @@ pylith::feassemble::IntegratorDomain::computeLHSJacobian(PetscMat jacobianMat,
                                                          const pylith::feassemble::IntegrationData& integrationData) {
     if (!_hasLHSJacobian) { return;}
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" computeLHSJacobian(jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", integrationData="<<integrationData.str()<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, _labelName<<"="<<_labelValue<<" computeLHSJacobian(jacobianMat="<<jacobianMat<<", precondMat="<<precondMat<<", integrationData="<<integrationData.str()<<")");
     _IntegratorDomain::Events::logger.eventBegin(_IntegratorDomain::Events::computeLHSJacobian);
 
     _needNewLHSJacobian = false;
@@ -511,7 +511,7 @@ pylith::feassemble::IntegratorDomain::computeLHSJacobianLumpedInv(pylith::topolo
                                                                   const pylith::feassemble::IntegrationData& integrationData) {
     if (!_hasLHSJacobianLumped) { return; }
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG(_labelName<<"="<<_labelValue<<" computeLHSJacobianLumpedInv(jacobianInv="<<jacobianInv<<", integrationData="<<integrationData.str()<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, _labelName<<"="<<_labelValue<<" computeLHSJacobianLumpedInv(jacobianInv="<<jacobianInv<<", integrationData="<<integrationData.str()<<")");
     _IntegratorDomain::Events::logger.eventBegin(_IntegratorDomain::Events::computeLHSJacobianLumpedInv);
 
     _needNewLHSJacobianLumped = false;
@@ -557,7 +557,7 @@ pylith::feassemble::IntegratorDomain::_updateStateVars(const PylithReal t,
                                                        const pylith::topology::Field& solution) {
     if (0 == _kernelsUpdateStateVars.size()) { return; }
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("_updateStateVars(t="<<t<<", dt="<<dt<<", solution="<<solution.getLabel()<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, "_updateStateVars(t="<<t<<", dt="<<dt<<", solution="<<solution.getLabel()<<")");
     _IntegratorDomain::Events::logger.eventBegin(_IntegratorDomain::Events::updateStateVars);
 
     assert(_updateState);
@@ -566,7 +566,7 @@ pylith::feassemble::IntegratorDomain::_updateStateVars(const PylithReal t,
     _setKernelConstants(solution, dt);
 
     // We assume order of the update state variable kernels matches
-    // the order of the correspoinding subfields in the auxiliary
+    // the order of the corresponding subfields in the auxiliary
     // field.
     const size_t numKernels = _kernelsUpdateStateVars.size();
     PetscPointFn** kernelsStateVars = (numKernels > 0) ? new PetscPointFn*[numKernels] : NULL;
@@ -598,7 +598,7 @@ pylith::feassemble::IntegratorDomain::_computeDerivedField(const PylithReal t,
                                                            const pylith::topology::Field& solution) {
     if (!_derivedField) { return; }
     PYLITH_METHOD_BEGIN;
-    PYLITH_JOURNAL_DEBUG("_computeDerivedField(t="<<t<<", dt="<<dt<<", solution="<<solution.getLabel()<<")");
+    PYLITH_DEBUG(pylith::journal::application_flow, "_computeDerivedField(t="<<t<<", dt="<<dt<<", solution="<<solution.getLabel()<<")");
     _IntegratorDomain::Events::logger.eventBegin(_IntegratorDomain::Events::computeDerivedField);
 
     assert(_derivedField);
@@ -620,10 +620,10 @@ pylith::feassemble::IntegratorDomain::_computeDerivedField(const PylithReal t,
     PylithCallPetsc(DMProjectFieldLocal(derivedDM, t, solution.getLocalVector(), kernelsArray, INSERT_VALUES, _derivedField->getLocalVector()));
     delete[] kernelsArray;kernelsArray = NULL;
 
-    pythia::journal::debug_t debug(GenericComponent::getName());
+    pythia::journal::debug_t debug(pylith::journal::auxiliary_fields);
     if (debug.state()) {
-        PYLITH_JOURNAL_DEBUG("Viewing derived field.");
-        _derivedField->view("Derived field");
+        PYLITH_DEBUG(pylith::journal::auxiliary_fields, "Viewing derived field.");
+        _derivedField->view("IntegratorDomainDerived field");
     } // if
 
     _IntegratorDomain::Events::logger.eventEnd(_IntegratorDomain::Events::computeDerivedField);

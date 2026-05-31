@@ -13,6 +13,7 @@
 #include "pylith/utils/GenericComponent.hh" // Test subject
 
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
+#include "pylith/utils/Exceptions.hh" // USES Exception
 
 #include "catch2/catch_test_macros.hpp"
 
@@ -76,35 +77,27 @@ pylith::utils::TestGenericComponent::testName(void) {
 
 
 // ------------------------------------------------------------------------------------------------
-// Test PYLITH_JOURNAL_*.
-namespace pylith {
-    namespace utils {
-        class TestGenericJournals : public GenericComponent {
-public:
-
-            void test(void) {
-                PYLITH_JOURNAL_DEBUG("CORRECT: This is a debug message.");
-                PYLITH_JOURNAL_INFO("CORRECT: This is an info mesasge.");
-                PYLITH_JOURNAL_INFO_ROOT("CORRECT: This is an info mesasge.");
-                PYLITH_JOURNAL_WARNING("CORRECT: This is a warning mesasge.");
-                PYLITH_JOURNAL_ERROR("CORRECT: This is an error mesage.");
-            } // testJournals
-
-        };
-    } // utils
-} // pylith
-
 void
 pylith::utils::TestGenericComponent::testJournals(void) {
-    const char* name = "test";
-    pythia::journal::info_t info(name);info.activate();
-    pythia::journal::debug_t debug(name);debug.activate();
-    pythia::journal::warning_t warning(name);warning.activate();
-    pythia::journal::error_t error(name);error.activate();
+    pythia::journal::info_t info(pylith::journal::application_flow);info.activate();
+    pythia::journal::info_t info2(pylith::journal::about);info2.activate();
+    pythia::journal::debug_t debug(pylith::journal::mms_test);debug.activate();
+    pythia::journal::warning_t warning(pylith::journal::deprecation);warning.activate();
+    pythia::journal::error_t error(pylith::journal::user_input);error.activate();
+    pythia::journal::error_t error2(pylith::journal::logic);error2.activate();
 
-    TestGenericJournals journals;
-    journals.setName("test");
-    journals.test();
+    PYLITH_INFO_ROOT(pylith::journal::application_flow, "CORRECT: This is an info message.");
+    PYLITH_INFO(pylith::journal::about, "CORRECT: This is an info message.");
+    PYLITH_DEBUG(pylith::journal::mms_test, "CORRECT: This is a debug message.");
+    PYLITH_WARNING(pylith::journal::deprecation, "CORRECT: This is a warning message.");
+
+    // CHECK_THROWS_AS() does not seem to work with PYLITH_COMPONENT* macros.
+    try {
+        PYLITH_ERROR(pylith::IOError, pylith::journal::user_input, "CORRECT: This is an error message.");
+    } catch (const pylith::IOError& err) {}
+    try {
+        PYLITH_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "CORRECT: This is an error message.");
+    } catch (const pylith::InternalLogicError& err) {}
 } // testJournals
 
 

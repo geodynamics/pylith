@@ -18,11 +18,11 @@
 #include "pylith/utils/array.hh" // USES scalar_array, int_array, string_vector
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
+#include "pylith/utils/Exceptions.hh" // USES Exception
 
 #include "petsc.h" // USES MPI_Comm
 
 #include <cassert> // USES assert()
-#include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream
 #include <typeinfo> // USES std::typeid
 
@@ -166,7 +166,8 @@ pylith::meshio::MeshIOCubit::getFilename(void) const {
 void
 pylith::meshio::MeshIOCubit::_read(void) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_read()");
+    PYLITH_COMPONENT_INFO_ROOT(pylith::journal::application_flow,
+                               "Reading finite-element mesh from '" << _filename << "'.");
     assert(_mesh);
 
     const int commRank = _mesh->getCommRank();
@@ -180,13 +181,9 @@ pylith::meshio::MeshIOCubit::_read(void) {
             pylith::meshio::ExodusII exoFile(_filename.c_str());
 
             topology.dimension = exoFile.getDim("num_dim");
-
             _MeshIOCubit::readVertices(&geometry, exoFile);
-            PYLITH_COMPONENT_INFO_ROOT("Read " << geometry.numVertices << " vertices.");
-
             _MeshIOCubit::readCells(&topology, &materialIds, exoFile);
             topology.cellShape = pylith::meshio::MeshBuilder::cellShapeFromCorners(topology.dimension, topology.numCorners);
-            PYLITH_COMPONENT_INFO_ROOT("Read " << topology.numCells << " cells.");
 
             _MeshIOCubit::orientCells(&topology);
             pylith::meshio::MeshBuilder::buildMesh(_mesh, topology, geometry);
@@ -194,20 +191,23 @@ pylith::meshio::MeshIOCubit::_read(void) {
 
             _readNodeSets(exoFile);
             _readSideSets(exoFile);
+        } catch (pylith::Error& err) {
+            err.addContext(pylith::ErrorMessage() << "Error while reading Cubit Exodus file '" << _filename << "'.\n");
+            throw;
         } catch (std::exception& err) {
-            std::ostringstream msg;
-            msg << "Error while reading Cubit Exodus file '" << _filename << "'.\n"
-                << err.what();
-            throw std::runtime_error(msg.str());
+            PYLITH_COMPONENT_ERROR(pylith::IOError, pylith::journal::user_input,
+                                   "Error while reading Cubit Exodus file '" << _filename << "'.\n " << err.what());
         } catch (...) {
-            std::ostringstream msg;
-            msg << "Unknown error while reading Cubit Exodus file '" << _filename << "'.";
-            throw std::runtime_error(msg.str());
+            PYLITH_COMPONENT_ERROR(pylith::IOError, pylith::journal::user_input,
+                                   "Unknown error while reading Cubit Exodus file '" << _filename << "'.");
         } // try/catch
     } else {
         pylith::meshio::MeshBuilder::buildMesh(_mesh, topology, geometry);
         pylith::meshio::MeshBuilder::setMaterials(_mesh, materialIds);
     } // if/else
+
+    PYLITH_COMPONENT_INFO_ROOT(pylith::journal::application_flow,
+                               "Read " << topology.numCells << " cells and " << geometry.numVertices << " vertices.");
 
     PYLITH_METHOD_END;
 } // read
@@ -218,9 +218,9 @@ pylith::meshio::MeshIOCubit::_read(void) {
 void
 pylith::meshio::MeshIOCubit::_write(void) const {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_write()");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "_write () ");
 
-    throw std::logic_error("MeshIOCubit::_write() not implemented.");
+    PYLITH_COMPONENT_FIREWALL(pylith::InternalLogicError, pylith::journal::internal, "Not implemented.");
 
     PYLITH_METHOD_END;
 } // write
@@ -308,13 +308,12 @@ pylith::meshio::_MeshIOCubit::readCells(pylith::meshio::MeshBuilder::Topology* t
             const int size = (topology->numCells) * (topology->numCorners);
             topology->cells.resize(size);
         } else if (size_t(exoFile.getDim(varName.str().c_str())) != topology->numCorners) {
-            std::ostringstream msg;
-            msg << "All materials must have the same number of vertices per cell.\n"
-                << "Expected " << topology->numCorners << " vertices per cell, but block "
-                << blockIds[iMaterial] << " has "
-                << exoFile.getDim(varName.str().c_str())
-                << " vertices.";
-            throw std::runtime_error(msg.str());
+            PYLITH_ERROR(pylith::IOError, pylith::journal::user_input,
+                         "All materials must have the same number of vertices per cell.\n"
+                         << "Expected " << topology->numCorners << " vertices per cell, but block "
+                         << blockIds[iMaterial] << " has "
+                         << exoFile.getDim(varName.str().c_str())
+                         << " vertices.");
         } // if
 
         varName.str("");
@@ -346,14 +345,14 @@ pylith::meshio::_MeshIOCubit::readCells(pylith::meshio::MeshBuilder::Topology* t
 void
 pylith::meshio::MeshIOCubit::_readNodeSets(ExodusII& exoFile) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_readNodeSets(exoFile="<<typeid(exoFile).name()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "_readNodeSets (exoFile = "<<typeid(exoFile).name()<<") ");
 
     if (!exoFile.hasDim("num_node_sets", NULL)) {
-        PYLITH_COMPONENT_INFO_ROOT("No nodesets found.");
+        PYLITH_COMPONENT_INFO_ROOT(pylith::journal::application_flow_detail3, "No nodesets found.");
         PYLITH_METHOD_END;
     } // if
     const int numGroups = exoFile.getDim("num_node_sets");
-    PYLITH_COMPONENT_INFO_ROOT("Found " << numGroups << " node sets.");
+    PYLITH_COMPONENT_INFO_ROOT(pylith::journal::application_flow_detail3, "Found " << numGroups << " node sets.");
     if (!numGroups) {
         PYLITH_METHOD_END;
     } // if
@@ -379,7 +378,7 @@ pylith::meshio::MeshIOCubit::_readNodeSets(ExodusII& exoFile) {
         ndims = 1;
         dims[0] = nodesetSize;
 
-        PYLITH_COMPONENT_INFO_ROOT("Reading node set '" << groupNames[iGroup] << "' with id " << ids[iGroup] << " containing " << nodesetSize << " nodes.");
+        PYLITH_COMPONENT_INFO_ROOT(pylith::journal::application_flow_detail3, "Reading node set '" << groupNames[iGroup] << "' with id " << ids[iGroup] << " containing " << nodesetSize << " nodes.");
         exoFile.getVar(&points[0], dims, ndims, varName.str().c_str());
 
         std::sort(&points[0], &points[0]+nodesetSize);
@@ -397,14 +396,14 @@ pylith::meshio::MeshIOCubit::_readNodeSets(ExodusII& exoFile) {
 void
 pylith::meshio::MeshIOCubit::_readSideSets(ExodusII& exoFile) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_COMPONENT_DEBUG("_readSideSets(exoFile="<<typeid(exoFile).name()<<")");
+    PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "_readSideSets (exoFile = "<<typeid(exoFile).name()<<") ");
 
     if (!exoFile.hasDim("num_side_sets", NULL)) {
-        PYLITH_COMPONENT_INFO_ROOT("No sidesets found.");
+        PYLITH_COMPONENT_INFO_ROOT(pylith::journal::application_flow_detail3, "No sidesets found.");
         PYLITH_METHOD_END;
     } // if
     const int numGroups = exoFile.getDim("num_side_sets");
-    PYLITH_COMPONENT_INFO_ROOT("Found " << numGroups << " side sets.");
+    PYLITH_COMPONENT_INFO_ROOT(pylith::journal::application_flow_detail3, "Found " << numGroups << " side sets.");
     if (!numGroups) {
         PYLITH_METHOD_END;
     } // if
@@ -436,7 +435,8 @@ pylith::meshio::MeshIOCubit::_readSideSets(ExodusII& exoFile) {
         int_array ioBuffer(sideSetSize);
         int_array points(2*sideSetSize);
 
-        PYLITH_COMPONENT_INFO_ROOT("Reading side set '" << groupNames[iGroup] << "' with id " << ids[iGroup] << " containing " << sideSetSize << " faces.");
+        PYLITH_COMPONENT_INFO_ROOT(pylith::journal::application_flow_detail3,
+                                   "Reading side set '" << groupNames[iGroup] << "' with id " << ids[iGroup] << " containing " << sideSetSize << " faces.");
 
         // Read cells
         varName.str("");

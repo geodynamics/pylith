@@ -188,8 +188,12 @@ dist_noinst_DATA = \
 	user/components/problems/SubfieldTraceStrainDot.md \
 	user/components/problems/SubfieldVelocity.md \
 	user/components/problems/TimeDependent.md \
-	user/components/problems/SingleProblem.md \
 	user/components/problems/index.md \
+	user/components/scales/General.md \
+	user/components/scales/QuasistaticElasticity.md \
+	user/components/scales/index.md \
+	user/components/scales/QuasistaticPoroelasticity.md \
+	user/components/scales/DynamicElasticity.md \
 	user/components/testing/UnitTestApp.md \
 	user/components/testing/index.md \
 	user/components/toc.json \
@@ -596,6 +600,7 @@ dist_noinst_DATA = \
 	user/examples/troubleshooting-2d/step01-error03.md \
 	user/examples/troubleshooting-2d/step01-error04.md \
 	user/examples/troubleshooting-2d/step01-error05.md \
+	user/examples/troubleshooting-2d/step01-error06.md \
 	user/examples/troubleshooting-2d/step06-twofaults.md \
 	user/examples/troubleshooting-2d/step06-error01.md \
 	user/examples/troubleshooting-2d/step06-error02.md \

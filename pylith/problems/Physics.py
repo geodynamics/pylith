@@ -122,7 +122,7 @@ class Physics(PetscComponent, ModulePhysics):
     def _createModuleObj(self):
         """Call constructor for module object for access to C++ object."""
         raise NotImplementedError(
-            "Please implement _createModuleOb() in derived class."
+            "Please implement _createModuleObj() in derived class."
         )
 
 

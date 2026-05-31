@@ -145,13 +145,6 @@ class Problem(PetscComponent, ModuleProblem):
 
     def preinitialize(self):
         """Do minimal initialization."""
-        from pylith.mpi.Communicator import mpi_is_root
-
-        if mpi_is_root():
-            self._info.log(
-                "Performing minimal initialization before verifying configuration."
-            )
-
         self._createModuleObj()
         ModuleProblem.setIdentifier(self, self.aliases[-1])
         self.defaults.preinitialize()
@@ -210,23 +203,12 @@ class Problem(PetscComponent, ModuleProblem):
     def verifyConfiguration(self):
         """Verify compatibility of configuration."""
         from pylith.mpi.Communicator import mpi_is_root
-
-        if mpi_is_root():
-            self._info.log("Verifying compatibility of problem configuration.")
-
         ModuleProblem.verifyConfiguration(self)
         if mpi_is_root():
             self._printInfo()
 
     def initialize(self):
         """Initialize integrators and constraints."""
-        from pylith.mpi.Communicator import mpi_is_root
-
-        if mpi_is_root():
-            self._info.log(
-                f"Initializing {self.name} problem with {self.formulation} formulation."
-            )
-
         ModuleProblem.initialize(self)
 
     def run(self, app):
@@ -236,9 +218,8 @@ class Problem(PetscComponent, ModuleProblem):
     def finalize(self):
         """Cleanup after running problem."""
         from pylith.mpi.Communicator import mpi_is_root
-
         if mpi_is_root():
-            self._info.log("Finalizing problem.")
+            self._flow.log("Finalizing problem.")
         self.mesh.deallocate()
         del self.mesh
 
@@ -254,7 +235,7 @@ class Problem(PetscComponent, ModuleProblem):
             "    Rigidity scale: {}".format(self.scales.getRigidityScale()),
             "    Temperature scale: {}".format(self.scales.getTemperatureScale()),
         )
-        self._info.log("\n".join(msg))
+        self._flow.log("\n".join(msg))
 
     def _setupLogging(self):
         """Setup event logging."""

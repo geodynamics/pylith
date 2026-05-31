@@ -9,10 +9,11 @@
 // =================================================================================================
 #pragma once
 
+#include "Exceptions.hh"
+
 #include "petsc.h"
 
 #include <cassert>
-#include <stdexcept>
 #include <sstream>
 
 #undef __FUNCT__
@@ -36,7 +37,7 @@
             PetscErrorCode ierr_petsc_call = __VA_ARGS__; \
             if (PetscUnlikely(ierr_petsc_call != PETSC_SUCCESS)) \
             {PetscError(PETSC_COMM_SELF,__LINE__,PETSC_FUNCTION_NAME,__FILE__,ierr_petsc_call,PETSC_ERROR_REPEAT,0); \
-             throw std::runtime_error("Error detected while in PETSc function.");} \
+             throw pylith::ExternalError("Error detected while in PETSc function.");} \
         } while (0)
 
 #define PylithCallPetscNoThrow(...) \
