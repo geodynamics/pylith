@@ -6,7 +6,6 @@
 ---
 maxdepth: 1
 ---
-DynamicElasticity.md
 General.md
 QuasistaticElasticity.md
 QuasistaticPoroelasticity.md
