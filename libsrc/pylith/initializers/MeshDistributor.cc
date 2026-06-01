@@ -13,6 +13,7 @@
 #include "pylith/initializers/MeshDistributor.hh" // implementation of class methods
 
 #include "pylith/topology/Distributor.hh" // HOLDSA Distributor
+#include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/problems/Problem.hh" // USES Problem
 #include "pylith/utils/error.hh" // USES PylithCallPetsc()
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
@@ -54,9 +55,14 @@ pylith::topology::Mesh*
 pylith::initializers::MeshDistributor::run(pylith::topology::Mesh* mesh,
                                            const pylith::problems::Problem& problem) {
     PYLITH_METHOD_BEGIN;
-    PYLITH_INFO_ROOT(pylith::journal::application_flow, "Distributing mesh.");
-    assert(_distributor);
     assert(mesh);
+    MPI_Comm comm = mesh->getComm();
+    int size = 0;
+    MPI_Comm_size(comm, &size);
+    if (size > 1) {
+        PYLITH_INFO_ROOT(pylith::journal::application_flow, "Distributing mesh.");
+    } // if
+    assert(_distributor);
 
     pylith::topology::Mesh* newMesh = _distributor->distribute(*mesh, problem.getInterfaces());
 
