@@ -107,7 +107,7 @@ Refer to {ref}`sec-user-run-pylith-convertmesh` for how to convert an Exodus II 
 :::{important}
 A Gmsh file must end in `.msh` for the reader to recognize that it is a Gmsh file.
 
-The HDF5 file must end in `.h5` for the reader to recognize tht it is an HDF5 file.
+The HDF5 file must end in `.h5` for the reader to recognize that it is an HDF5 file.
 :::
 
 :::{tip}

@@ -7,6 +7,7 @@ from dataclasses import dataclass
 
 import gmsh
 
+
 @dataclass
 class BoundaryGroup:
     name: str
@@ -16,6 +17,7 @@ class BoundaryGroup:
 
     def create_physical_group(self, recursive=False):
         create_group(self.name, self.tag, self.dim, self.entities, recursive)
+
 
 @dataclass
 class MaterialGroup:
@@ -34,12 +36,11 @@ def create_group(name, tag, dim, entities, recursive=True, exclude=None):
         entities_up, entities_down = gmsh.model.get_adjacencies(dim, entity)
         entities_lowerdim += [e for e in entities_down]
     if recursive and dim >= 1:
-        create_group(name, tag, dim-1, entities_lowerdim)
+        create_group(name, tag, dim - 1, entities_lowerdim)
 
 
 def get_physical_group(name):
-    """Get all physical groups matching name.
-    """
+    """Get all physical groups matching name."""
     groups = {}
     dimTags = gmsh.model.get_physical_groups()
     for dim, tag in dimTags:
@@ -49,16 +50,18 @@ def get_physical_group(name):
         raise ValueError(f"Could not find physical group '{name}'.")
     return groups
 
+
 def group_exclude(group_name, exclude_name, new_name, new_tag):
-    """Remove entities from physical group `exclude_name` from physical group `group_name`.
-    """
+    """Remove entities from physical group `exclude_name` from physical group `group_name`."""
     groups = get_physical_group(group_name)
     groups_exclude = get_physical_group(exclude_name)
 
     for dim, tag in groups.items():
         entities = set(gmsh.model.get_entities_for_physical_group(dim, tag))
         if dim in groups_exclude:
-            entities_exclude = gmsh.model.get_entities_for_physical_group(dim, groups_exclude[dim])
+            entities_exclude = gmsh.model.get_entities_for_physical_group(
+                dim, groups_exclude[dim]
+            )
             entities = entities.difference(set(entities_exclude))
         tags = [tag for tag in entities]
         gmsh.model.add_physical_group(dim, tags, new_tag)
@@ -67,11 +70,15 @@ def group_exclude(group_name, exclude_name, new_name, new_tag):
 
 def create_material(tag, entities):
     if tag <= 0:
-        raise ValueError(f"ERROR: Attempting to use non-positive material tag '{tag}'. Tags for physical groups must be positive.")
+        raise ValueError(
+            f"ERROR: Attempting to use non-positive material tag '{tag}'. Tags for physical groups must be positive."
+        )
     dim = gmsh.model.get_dimension()
     name = gmsh.model.get_physical_name(dim, tag)
     if name:
-        raise ValueError(f"ERROR: Attempting to use material tag '{tag}' that is already in use for material '{name}'.")
+        raise ValueError(
+            f"ERROR: Attempting to use material tag '{tag}' that is already in use for material '{name}'."
+        )
     gmsh.model.addPhysicalGroup(dim, entities, tag)
     gmsh.model.setPhysicalName(dim, tag, f"material-id:{tag}")
 
@@ -93,7 +100,7 @@ class GenerateMesh(ABC):
 
     def __init__(self):
         self.cell_choices = {"required": False}
-        self.filename = "mesh.msh"
+        self.filename = "mesh_{cell}.msh"
 
     def main(self):
         """
@@ -107,9 +114,9 @@ class GenerateMesh(ABC):
         if args.mark:
             self.mark()
         if args.generate:
-            self.generate_mesh(args.cell)
+            self.generate_mesh(cell=args.cell)
         if args.write:
-            self.write(args.filename, args.binary)
+            self.write(filename=args.filename, cell=args.cell, binary=args.binary)
         self.finalize(args.gui)
 
     def initialize(self, args):
@@ -127,33 +134,31 @@ class GenerateMesh(ABC):
         if gui:
             gmsh.fltk.run()
         gmsh.finalize()
-    
-    def write(self, filename: str, binary=True):
+
+    def write(self, filename: str, cell: str, binary=True):
         """Write mesh to file.
 
         :param filename: Name of file.
+        :param cell: Cell shape.
         :param binary: Write as binary file if True.
         """
         binary_flag = 1 if binary else 0
         gmsh.option.setNumber("Mesh.Binary", binary_flag)
-        gmsh.write(filename)
+        gmsh.write(filename.format(cell=cell))
 
     @abstractmethod
     def create_geometry(self):
-        """Create geometry.
-        """
+        """Create geometry."""
         pass
 
     @abstractmethod
     def mark(self):
-        """Mark geometry for materials, boundary conditions, faults, etc.
-        """
+        """Mark geometry for materials, boundary conditions, faults, etc."""
         pass
 
     @abstractmethod
-    def generate_mesh(self, cell):
-        """Generate the mesh. Should also include optimizing the mesh quality.
-        """
+    def generate_mesh(self, cell: str):
+        """Generate the mesh. Should also include optimizing the mesh quality."""
         pass
 
     def improve_quality(self, n_iterations=8):
@@ -167,23 +172,56 @@ class GenerateMesh(ABC):
         gmsh.plugin.setNumber("AnalyseMeshQuality", "CreateView", 1)
         gmsh.plugin.run("AnalyseMeshQuality")
 
-
     def _parse_command_line(self):
         import argparse
 
         parser = argparse.ArgumentParser()
-        parser.add_argument("--geometry", action="store_true", dest="geometry", help="Create geometry.")
-        parser.add_argument("--mark", action="store_true", dest="mark", help="Mark entities (materials, boundary conditions).")
-        parser.add_argument("--generate", action="store_true", dest="generate", help="Generate mesh.")
-        parser.add_argument("--write", action="store_true", dest="write", help="Write mesh to file.")
+        parser.add_argument(
+            "--geometry", action="store_true", dest="geometry", help="Create geometry."
+        )
+        parser.add_argument(
+            "--mark",
+            action="store_true",
+            dest="mark",
+            help="Mark entities (materials, boundary conditions).",
+        )
+        parser.add_argument(
+            "--generate", action="store_true", dest="generate", help="Generate mesh."
+        )
+        parser.add_argument(
+            "--write", action="store_true", dest="write", help="Write mesh to file."
+        )
 
-        parser.add_argument("--name", action="store", dest="name", help="Name of mesh in Gmsh.", default="mesh")
-        parser.add_argument("--filename", action="store", dest="filename", help="Name of output mesh file.", default=self.filename)
-        parser.add_argument("--ascii", action="store_false", dest="binary", help="Write mesh to ASCII file (detault is binary).", default=True)
+        parser.add_argument(
+            "--name",
+            action="store",
+            dest="name",
+            help="Name of mesh in Gmsh.",
+            default="mesh",
+        )
+        parser.add_argument(
+            "--filename",
+            action="store",
+            dest="filename",
+            help="Name of output mesh file.",
+            default=self.filename,
+        )
+        parser.add_argument(
+            "--ascii",
+            action="store_false",
+            dest="binary",
+            help="Write mesh to ASCII file (detault is binary).",
+            default=True,
+        )
 
         parser.add_argument("--cell", action="store", dest="cell", **self.cell_choices)
 
-        parser.add_argument("--gui", action="store_true", dest="gui", help="Show GUI after running steps.")
+        parser.add_argument(
+            "--gui",
+            action="store_true",
+            dest="gui",
+            help="Show GUI after running steps.",
+        )
 
         self._add_arguments(parser)
         args = parser.parse_args()
@@ -201,4 +239,3 @@ class GenerateMesh(ABC):
 
 
 # End of file
-

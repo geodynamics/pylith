@@ -1,221 +1,99 @@
 #!/usr/bin/env nemesis
 """Python application to create spatial databases for a synthetic event with time-varying Gaussian slip.
+
+For simplicity we specify the slip on a horizontal plane in latitude and longitude coordinates.
 """
 
 import math
 import numpy
-from spatialdata.spatialdb.SimpleGridDB import SimpleGridDB
 from spatialdata.spatialdb.SimpleGridAscii import createWriter
 from spatialdata.spatialdb import TimeHistoryIO
-from spatialdata.geocoords.CSGeo import CSGeo
+import coordsys
 
-from pythia.pyre.applications.Script import Script as Application
+FILENAME_SPATIALDB = "fault_slabtop_slowslip.spatialdb"
+FILENAME_TIMEDB = "fault_slabtop_slowslip.timedb"
 
+CS_GEO3D = coordsys.cs_geo3D()
+LONGITUDE = numpy.arange(-126.4, -123.0, 0.04)
+LATITUDE = numpy.arange(44.4, 46.441, 0.04)
 
-class GenerateSlowslip(Application):
-    """Python application to create spatial databases for a synthetic
-    SSE with time-varying Gaussian slip.
-    """
+RAKE = 110.0
+SLIP_CENTER = (45.5, -124.0)
+SLIP_MAXRADIUS = 0.7
+SLIP_MAX = 8.0
+SLIP_STD = 0.3
 
-    import pythia.pyre.inventory
-    # Python object for managing GenerateSlowslip facilities and properties.
-    #
-    # \b Properties
-    # @li \b rake Rake of fault slip (degrees).
-    # @li \b slip_center (lon,lat) coordinates of slip center.
-    # @li \b slip_radius Radius of slip region (degrees).
-    # @li \b slip_max Maximum slip value (meters).
-    # @li \b slip_sigma_lon Sigma value for longitude.
-    # @li \b slip_sigma_lat Sigma value for latitude.
-    # @li \b slip_times List of times for which to provide amplitudes.
-    # @li \b slip_time_units Units used for slip times.
-    # @li \b slip_amplitudes List of slip amplitudes.
-    # @li \b grid_lon_range Min and max longitude values for grid.
-    # @li \b grid_lat_range Min and max latitude values for grid.
-    # @li \b grid_incr Grid increment (degrees) for spatial database.
-    # @li \b time_db_filename Name of temporal DB output file.
-    # @li \b database_filename Filename for generated spatial database.
-    #
-    # \b Facilities
-    # @li \b coordsys Coordinate system for output database.
-
-    rake = pythia.pyre.inventory.float("rake", default=1.0)
-    rake.meta['tip'] = "Rake of fault slip (degrees)."
-
-    slipCenter = pythia.pyre.inventory.list("slip_center", default=[0.0, 0.0])
-    slipCenter.meta['tip'] = "(lon,lat) coordinates of slip center."
-
-    slipRadius = pythia.pyre.inventory.float("slip_radius", default=1.0)
-    slipRadius.meta['tip'] = "Radius of slip region (degrees)."
-
-    slipMax = pythia.pyre.inventory.float("slip_max", default=5.0)
-    slipMax.meta['tip'] = "Maximum slip value (meters)."
-
-    slipSigmaLon = pythia.pyre.inventory.float("slip_sigma_lon", default=0.2)
-    slipSigmaLon.meta['tip'] = "Sigma value for longitude."
-
-    slipSigmaLat = pythia.pyre.inventory.float("slip_sigma_lat", default=0.2)
-    slipSigmaLat.meta['tip'] = "Sigma value for latitude."
-
-    slipTimes = pythia.pyre.inventory.list("slip_times", default=[0.0, 0.5, 1.0])
-    slipTimes.meta['tip'] = "List of times for which to provide amplitudes."
-
-    slipTimeUnits = pythia.pyre.inventory.str("slip_time_units", default="year")
-    slipTimeUnits.meta['tip'] = "Units used for slip times."
-
-    slipAmplitudes = pythia.pyre.inventory.list("slip_amplitudes", default=[0.0, 0.5, 1.0])
-    slipAmplitudes.meta['tip'] = "List of slip amplitudes."
-
-    gridLonRange = pythia.pyre.inventory.list("grid_lon_range", default=[-124.0, -123.0])
-    gridLonRange.meta['tip'] = "Min and max longitude values for grid."
-
-    gridLatRange = pythia.pyre.inventory.list("grid_lat_range", default=[45.0, 46.0])
-    gridLatRange.meta['tip'] = "Min and max latitude values for grid."
-
-    gridIncr = pythia.pyre.inventory.float("grid_incr", default=0.05)
-    gridIncr.meta['tip'] = "Sigma value for latitude."
-
-    timeDbFilename = pythia.pyre.inventory.str("time_db_filename", default="slip.timedb")
-    timeDbFilename.meta['tip'] = "Filename of temporal DB output file."
-
-    coordsys = pythia.pyre.inventory.facility("coordsys", family="coordsys", factory=CSGeo)
-    coordsys.meta['tip'] = "Coordinate system for output database."
-
-    dbFilename = pythia.pyre.inventory.str("database_filename", default="slip.spatialdb")
-    dbFilename.meta['tip'] = "Filename for generated spatial database."
-
-    # PUBLIC METHODS /////////////////////////////////////////////////////
-
-    def __init__(self, name="generate_slowslip"):
-        Application.__init__(self, name)
-
-        self.lon = None
-        self.lat = None
-        self.z = None
-        self.grid = None
-        self.faultSlip = None
-
-        return
-
-    def main(self):
-        self._makeGrid()
-        self._computeGauss()
-        self._writeSpatialdb()
-        self._writeTemporaldb()
-
-        return
-
-    # PRIVATE METHODS /////////////////////////////////////////////////////
-
-    def _configure(self):
-        """Setup members using inventory.
-        """
-        Application._configure(self)
-
-    def _makeGrid(self):
-        """Function to create a mesh grid for computations.
-        """
-
-        lonMin = float(self.gridLonRange[0])
-        lonMax = float(self.gridLonRange[1])
-        latMin = float(self.gridLatRange[0])
-        latMax = float(self.gridLatRange[1])
-
-        lonDiff = lonMax - lonMin
-        latDiff = latMax - latMin
-        numLon = int(round(lonDiff / self.gridIncr)) + 1
-        numLat = int(round(latDiff / self.gridIncr)) + 1
-
-        self.lon = numpy.linspace(lonMin, lonMax, num=numLon, dtype=numpy.float64)
-        self.lat = numpy.linspace(latMin, latMax, num=numLat, dtype=numpy.float64)
-        self.z = numpy.zeros(1, dtype=numpy.float64)
-
-        latGrid, lonGrid = numpy.meshgrid(self.lat, self.lon)
-        zGrid = numpy.zeros_like(latGrid)
-        self.grid = numpy.column_stack((
-            latGrid.flatten(),
-            lonGrid.flatten(),
-            zGrid.flatten(),
-        ))
-
-    def _computeGauss(self):
-        """Function to compute 2D Gaussian slip distribution.
-        """
-
-        latShift = self.grid[:, 0] - float(self.slipCenter[0])
-        lonShift = self.grid[:, 1] - float(self.slipCenter[1])
-
-        distance = numpy.sqrt(lonShift * lonShift + latShift * latShift)
-        outside = numpy.where(distance > self.slipRadius)
-
-        lonFac = 0.5 * lonShift * lonShift / (self.slipSigmaLon * self.slipSigmaLon)
-        latFac = 0.5 * latShift * latShift / (self.slipSigmaLat * self.slipSigmaLat)
-
-        slip = self.slipMax * numpy.exp(-(lonFac + latFac))
-        slip[outside] = 0.0
-
-        rakeRadians = math.radians(self.rake)
-        llComp = math.cos(rakeRadians)
-        udComp = math.sin(rakeRadians)
-
-        llSlip = llComp * slip
-        udSlip = udComp * slip
-        opSlip = numpy.zeros_like(llSlip)
-
-        self.faultSlip = numpy.column_stack((llSlip, udSlip, opSlip))
-
-    def _writeSpatialdb(self):
-        """Write spatial database with fault slip.
-        """
-        initTime = numpy.zeros_like(self.faultSlip[:,0])
-        llSlipInfo = {'name': "final_slip_left_lateral",
-                      'units': "m",
-                      'data': self.faultSlip[:, 0]}
-
-        udSlipInfo = {'name': "final_slip_reverse",
-                      'units': "m",
-                      'data': self.faultSlip[:, 1]}
-
-        openInfo = {'name': "final_slip_opening",
-                    'units': "m",
-                    'data': self.faultSlip[:, 2]}
-
-        initTimeInfo = {'name': "initiation_time",
-                        'units': "day",
-                        'data': initTime}
-
-        data = {'num-x': self.lat.shape[0],
-                'num-y': self.lon.shape[0],
-                'num-z': 1,
-                'points': self.grid,
-                'x': self.lat,
-                'y': self.lon,
-                'z': self.z,
-                'coordsys': self.coordsys,
-                'data_dim': 2,
-                'values': [llSlipInfo, udSlipInfo, openInfo, initTimeInfo]}
-
-        writer = createWriter(self.dbFilename)
-        writer.write(data)
-
-    def _writeTemporaldb(self):
-        """Write temporal database with time variation of fault slip.
-        """
-
-        if (len(self.slipTimes) == 1):
-            return
-
-        time = [float(i) for i in self.slipTimes]
-        timeArr = numpy.array(time, dtype=numpy.float64)
-
-        amplitude = [float(i) for i in self.slipAmplitudes]
-        amplitudeArr = numpy.array(amplitude, dtype=numpy.float64)
-
-        TimeHistoryIO.write(timeArr, amplitudeArr, self.slipTimeUnits, self.timeDbFilename)
+SLIP_TIME_UNITS = "day"
+SLIP_TIME = numpy.array((
+    (0.0, 0.0),
+    (6.0, 0.2),
+    (12.0, 0.5),
+    (18.0, 0.8),
+    (24.0, 0.9),
+    (30.0, 1.0),
+    (36.0, 1.0),
+))
 
 
-# ----------------------------------------------------------------------
-if __name__ == '__main__':
-    GenerateSlowslip().run()
+latitude_2d, longitude_2d = numpy.meshgrid(LATITUDE, LONGITUDE)
+elevation_2d = numpy.zeros_like(latitude_2d)
+grid = numpy.column_stack((
+    latitude_2d.flatten(),
+    longitude_2d.flatten(),
+    elevation_2d.flatten(),
+))
 
-# End of file
+latitude_relative = grid[:, 0] - SLIP_CENTER[0]
+longitude_relative = grid[:, 1] - SLIP_CENTER[1]
+
+longitude_normalized = 0.5 * longitude_relative**2 / SLIP_STD**2
+latitude_normalized = 0.5 * latitude_relative**2 / SLIP_STD**2
+
+slip = SLIP_MAX * numpy.exp(-(longitude_normalized + latitude_normalized))
+distance = numpy.sqrt(longitude_relative**2 + latitude_relative**2)
+slip[distance > SLIP_MAXRADIUS] = 0.0
+
+rake_radians = math.radians(RAKE)
+left_lateral = slip * math.cos(rake_radians)
+reverse_slip = slip * math.sin(rake_radians)
+opening_slip = numpy.zeros_like(left_lateral)
+
+slip = numpy.column_stack((left_lateral, reverse_slip, opening_slip))
+
+data = {
+    'num-x': LATITUDE.shape[0],
+    'num-y': LONGITUDE.shape[0],
+    'num-z': 1,
+    'points': grid,
+    'x': LATITUDE,
+    'y': LONGITUDE,
+    'z': numpy.array([0.0]),
+    'coordsys': CS_GEO3D,
+    'data_dim': 2,
+    'values': [
+        {
+            'name': "final_slip_left_lateral",
+            'units': "m",
+            'data': slip[:, 0]
+        },
+        {
+            'name': "final_slip_reverse",
+            'units': "m",
+            'data': slip[:, 1]
+        },
+        {
+            'name': "final_slip_opening",
+            'units': "m",
+            'data': slip[:, 2]
+        },
+        {
+            'name': "initiation_time",
+            'units': SLIP_TIME_UNITS,
+            'data': numpy.zeros_like(slip[:,0]),
+        },
+    ]
+}
+writer = createWriter(FILENAME_SPATIALDB)
+writer.write(data)
+
+TimeHistoryIO.write(SLIP_TIME[:,0], SLIP_TIME[:,1], SLIP_TIME_UNITS, FILENAME_TIMEDB)

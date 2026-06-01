@@ -14,7 +14,8 @@ AC_INIT([PyLith], [5.0.0dev], [https://geodynamics.org/resources/pylith])
 AC_CONFIG_AUX_DIR([./aux-config])
 AC_CONFIG_HEADER([portinfo])
 AC_CONFIG_MACRO_DIR([m4])
-AM_INIT_AUTOMAKE([foreign subdir-objects tar-pax])
+AM_INIT_AUTOMAKE([foreign subdir-objects tar-pax color-tests])
+AM_SILENT_RULES([yes])
 
 dnl ----------------------------------------------------------------------
 dnl PYTHON
@@ -100,8 +101,6 @@ AC_PROG_INSTALL
 
 AX_CXX_COMPILE_STDCXX(14)
 
-
-CIT_LIBTOOL_CONDA_FIX_CRT_OBJECTS
 
 dnl PYTHON/PYTHIA (nemesis must be set before python)
 CIT_PATH_NEMESIS

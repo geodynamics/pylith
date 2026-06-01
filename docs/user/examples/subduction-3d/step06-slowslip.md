@@ -2,7 +2,7 @@
 
 This example simulates several slow slip events on the slab interface.
 We prescribe a time history of slip, varying the slip amplitude as a function of time.
-We also output the displacement field at fake CGNSS stations using `OutputSolnPoints`.
+We also output the displacement field at fake GNSS stations using `OutputSolnPoints`.
 For this simulation, we use linearly elastic materials.
 {numref}`fig:example:subduction:3d:step06:diagram` shows the boundary conditions on the domain.
 
@@ -26,80 +26,90 @@ The parameters specific to this example are in `step06_slowslip.cfg` and include
 * `pylithapp.problem` Parameters for the time step information as well as solution field with displacement and Lagrange multiplier subfields.
 * `pylithapp.interfaces` Parameters for the time-varying slip on the top of the slab.
 
-For slow slip we use the `KinSrcTimeHistory` kinematic source to prescribe time-varying slip. We also use `OutputSolnPoints` to simulate output at CGNSS stations.
+For slow slip we use the `KinSrcTimeHistory` kinematic source to prescribe time-varying slip. We also use `OutputSolnPoints` to simulate output at continuous GNSS stations.
 
-Prior to running the simulation, we use the `generate_slowslip.py` Python script, which in turn reads the parameters in `generate_slowslip.cfg`. This will generate a spatial database and a time database needed for the simulation:
+Prior to running the simulation, we use the `generate_slowslip.py` Python script to generate spatial database input files for the prescribed slip.
+
 ```{code-block} console
 ---
-caption: Generate database files needed for Step 6
+caption: Generate database files needed for Step 6.
 ---
 # Generate fault_slabtop_slowslip.spatialdb and fault_slabtop_slowslip.timedb.
 $ ./generate_slowslip.py
 ```
-Once the database files have been generated we can run the simulation.
+
+:::{note}
+The GNSS station file for use with the mesh from Gmsh (`cgnss_stations.txt`) requires elevation values consistent with the topography in the model.
+The `generate_cgnss.py` Python script uses the ground surface output from Step 1 to set the elevation of stations just below the ground surface consistent with the topogrpahy.
+:::
 
 ```{code-block} console
 ---
-caption: Run Step 6 simulation
+caption: Run Step 6 simulation using the Gmsh mesh.
 ---
 $ pylith step06_slowslip.cfg mat_elastic.cfg
 
-# The output should look something like the following.
- >> software/virtualenv/python312/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:77:main
+ >> /software/pylith-opt/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:77:main
  -- pylithapp(info)
  -- Running on 1 process(es).
- >> software/virtualenv/python312/lib/python3.12/site-packages/pylith/meshio/MeshIOObj.py:38:read
- -- meshiocubit(info)
+ >> /software/pylith-opt/lib/python3.12/site-packages/pylith/meshio/MeshIOObj.py:41:read
+ -- meshiopetsc(info)
  -- Reading finite-element mesh
- >> software/cig/pylith3/source/pylith-fork/libsrc/pylith/meshio/MeshIOCubit.cc:148:void pylith::meshio::MeshIOCubit::_readVertices(ExodusII &, scalar_array *, int *, int *) const
- -- meshiocubit(info)
- -- Component 'reader': Reading 24738 vertices.
- >> software/cig/pylith3/source/pylith-fork/libsrc/pylith/meshio/MeshIOCubit.cc:208:void pylith::meshio::MeshIOCubit::_readCells(ExodusII &, int_array *, int_array *, int *, int *) const
- -- meshiocubit(info)
- -- Component 'reader': Reading 133827 cells in 4 blocks.
+ >> /src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:74:void pylith::meshio::MeshIO::read(pylith::topology::Mesh*, bool)
+ -- meshiopetsc(info)
+ -- Component 'meshiopetsc.reader': Domain bounding box:
+    (-400000, 400000)
+    (-400000, 400000)
+    (-400000, 2017.5)
 
 # -- many lines omitted --
 
- >> software/cig/pylith3/source/pylith-fork/libsrc/pylith/utils/PetscOptions.cc:239:static void pylith::utils::_PetscOptions::write(pythia::journal::info_t &, const char *, const PetscOptions &)
+ >> /src/cig/pylith/libsrc/pylith/utils/PetscOptions.cc:262:static void pylith::utils::_PetscOptions::write(pythia::journal::info_t&, const char*, const pylith::utils::PetscOptions&)
  -- petscoptions(info)
  -- Setting PETSc options:
 dm_reorder_section = true
 dm_reorder_section_type = cohesive
-ksp_atol = 1.0e-12
 ksp_converged_reason = true
 ksp_error_if_not_converged = true
+ksp_gmres_restart = 100
 ksp_guess_pod_size = 8
 ksp_guess_type = pod
-ksp_rtol = 1.0e-12
+ksp_rtol = 1.0e-14
+mg_fine_ksp_max_it = 5
 mg_fine_pc_type = vpbjacobi
 pc_type = gamg
-snes_atol = 1.0e-9
+snes_atol = 5.0e-7
 snes_converged_reason = true
 snes_error_if_not_converged = true
 snes_monitor = true
-snes_rtol = 1.0e-12
+snes_rtol = 1.0e-14
 ts_error_if_step_fails = true
+ts_exact_final_time = matchstep
 ts_monitor = true
 ts_type = beuler
+viewer_hdf5_collective = true
 
 # -- many lines omitted --
 
 15 TS dt 5.4757e-05 time 0.000766598
-    0 SNES Function norm 2.850925995479e-01
-      Linear solve converged due to CONVERGED_ATOL iterations 4
-    1 SNES Function norm 2.450595224581e-10
+    0 SNES Function norm 1.140833293430e-01
+      Linear solve converged due to CONVERGED_ATOL iterations 0
+    1 SNES Function norm 1.386302589692e-08
     Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 1
 16 TS dt 5.4757e-05 time 0.000821355
-    0 SNES Function norm 2.450592912419e-10
-    Nonlinear solve converged due to CONVERGED_FNORM_ABS iterations 0
-17 TS dt 5.4757e-05 time 0.000876112
- >> software/virtualenv/python312/lib/python3.12/site-packages/pylith/problems/Problem.py:199:finalize
+ >> /software/pylith-opt/lib/python3.12/site-packages/pylith/problems/Problem.py:232:finalize
  -- timedependent(info)
  -- Finalizing problem.
-
 ```
 
-The beginning of the output is nearly the same as in previous examples. The simulation advances 17 time steps; however, no slip occurs after step 15.
+The beginning of the output is nearly the same as in previous examples. The simulation advances 16 time steps.
+
+```{code-block} console
+---
+caption: Alternatively, run Step 6 simulation using the Cubit mesh.
+---
+$ pylith step06_slowslip.cfg step06_slowslip_subit.cfg mat_elastic.cfg
+```
 
 ## Visualizing the results
 
@@ -114,8 +124,8 @@ pylith_viz --filename=output/step06_slowslip-domain.h5 warp_grid --component=x -
 ```
 
 :::{figure-md} fig:example:subduction:3d:step06:solution
-<img src="figs/step06-solution.*" alt="Solution for Step 6 at t=0.09 yr. The colors indicate the x displacement, and the deformation is exaggerated by a factor of 10,000." width="600px"/>
+<img src="figs/step06-solution.*" alt="Solution for Step 6 at t=0.08 yr. The colors indicate the x displacement, and the deformation is exaggerated by a factor of 10,000." width="600px"/>
 
-Solution for Step 6 at t=0.09 yr.
+Solution for Step 6 at t=0.08 yr.
 The colors of the shaded surface indicate the x displacement, and the deformation is exaggerated by a factor of 10,000.
 :::

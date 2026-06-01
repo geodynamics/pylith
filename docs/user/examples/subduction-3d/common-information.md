@@ -17,3 +17,6 @@ We use `mat_viscoelastic.cfg` when we want the mantle and bottom of the slab to 
 The physical properties for each material are specified in spatial database files.
 For example, the elastic properties for the crust are in `mat_crust_elastic.spatialdb`.
 The spatial database files for elastic properties all use just a single point to specify uniform physical properties within each material.
+
+The distorted cells at the trench result in a small degradation in the preconditioning, so the default KSP absolute tolerance is not quite small enough for the nonlinear solver in a single iteration.
+Consequently, we reduce the KSP absolute tolerance to 2.0e-8, which allow the nonlinear solver to converge in a single iteration.

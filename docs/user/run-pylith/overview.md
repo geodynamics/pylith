@@ -52,7 +52,7 @@ Pyre's `scheduler` facility is used to specify the type of job scheduler system 
 
 ```{code-block} cfg
 [pylithapp]
-# The valid values for scheduler are 'lsf", 'pbs', 'globus', and 'none.
+# The valid values for scheduler are `lsf`, `pbs`, `globus`, and `none`.
 scheduler = lsf
 # Pyre's launcher facility is used to specify the MPI implementation.
 # The valid values for launcher include 'mpich' and 'lam-mpi'.

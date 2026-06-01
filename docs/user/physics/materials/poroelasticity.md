@@ -4,7 +4,7 @@
 You can use the `Poroelasticity` component to solve the poroelasticity equation with or without inertia.
 Whether inertia or body forces are included is determined by the `Poroelasticity` property settings.
 Gravitational body forces are included if the `gravity_field` is set in the `Problem`.
-{numref}`tab:poroelasticity:rheologies` lists the poroelastic bulk rheology implemented for the poroelaticity equation.
+{numref}`tab:poroelasticity:rheologies` lists the poroelastic bulk rheology implemented for the poroelasticity equation.
 
 ```{table} Elasticity bulk rheologies.
 :name: tab:poroelasticity:rheologies

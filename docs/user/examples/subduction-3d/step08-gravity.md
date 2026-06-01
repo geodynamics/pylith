@@ -6,13 +6,9 @@ This example demonstrates the use of gravitational body forces as well as the us
 * **Step 8b**: Gravitational body forces with 3-D density variations in incompressible elastic materials.
 * **Step 8c**: Gravitational body forces with 3-D density variations in elastic and viscoelastic materials and initial stresses from Step 8a plus finite strain formulation (does not reach a steady-state solution). This example is not yet implemented for PyLith v3+.
 
-:::{warning}
-Step 8c is still being updated for use with PyLith v3+.
-:::
-
 :::{danger}
 Step 8b takes an extremely long time to run and does not presently run in parallel.
-We are working to select better preconditioners to improve the solvers and reduce the runtime.
+We are working to implement better preconditioners to improve the solvers and reduce the runtime.
 :::
 
 All these simulations use the default `ZeroDB` displacement boundary conditions on the lateral and bottom boundaries, and they all use `spatialdata.spatialdb.GravityField` to apply gravitational body forces. Step 8a uses reference stresses (provided in the associated spatial databases for each material) to balance the deformation induced by turning on body forces. The reference stresses assume a constant density, while there is actually a density contrast between materials, meaning that the stresses don't balance and there is some resulting deformation. Step 8b uses incompressible elasticity (using `pylith.problems.SolnDispPres`) to prevent the vertical deformation that would otherwise occur. In this case it is necessary to provide an additional Dirichlet zero pressure boundary condition on the ground surface.
@@ -44,7 +40,7 @@ For all of the problems involving gravitational body forces we use `spatialdata.
 
 ```{code-block} console
 ---
-caption: Run Step 8a and 8b simulations
+caption: Run Step 8a and 8b simulations using the Gmsh mesh.
 ---
 $ pylith step08a_gravity_refstate.cfg
 $ pylith step08b_gravity_incompressible.cfg mat_elastic_incompressible.cfg
@@ -104,6 +100,14 @@ ts_type = beuler
 ```
 
 The beginning of the output is nearly the same as in several previous examples. Both of these problems are static, however, so there is only a single time step.
+
+```{code-block} console
+---
+caption: Alternatively, run Step 8a and 8b simulations using the Cubit mesh.
+---
+$ pylith step08a_gravity_refstate.cfg step08a_gravity_refstate_cubit.cfg
+$ pylith step08b_gravity_incompressible.cfg step08b_gravity_incompressible_cubit.cfg mat_elastic_incompressible.cfg
+```
 
 ## Visualizing the results
 

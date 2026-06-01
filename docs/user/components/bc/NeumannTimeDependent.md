@@ -22,7 +22,7 @@ See [`AuxSubfieldsTimeDependent` Component](AuxSubfieldsTimeDependent.md) for th
 ## Pyre Facilities
 
 * `auxiliary_subfields`: Discretization information for auxiliary subfields.
-  - **current value**: 'auxiliary_subfields', from {file='/home/pylith-user/software/unix/py39-venv/pylith-debug/lib/python3.9/site-packages/pythia/pyre/inventory/ConfigurableClass.py', line=26, function='__set__'}
+  - **current value**: 'auxiliary_subfields', from {file='/Users/baagaard/software/unix/micromamba/envs/pylith-debug/lib/python3.12/site-packages/pythia/pyre/inventory/ConfigurableClass.py', line=26, function='__set__'}
   - **configurable as**: auxiliary_subfields
 * `db_auxiliary_field`: Database for physical property parameters.
   - **current value**: 'simpledb', from {default}
@@ -45,14 +45,14 @@ See [`AuxSubfieldsTimeDependent` Component](AuxSubfieldsTimeDependent.md) for th
 * `label`=\<str\>: Name of label identifying boundary.
   - **default value**: ''
   - **current value**: '', from {default}
-  - **validator**: <function validateLabel at 0x11c4858b0>
+  - **validator**: <function validateLabel at 0x108fedc60>
 * `label_value`=\<int\>: Value of label identifying boundary (tag of physical group in Gmsh files).
   - **default value**: 1
   - **current value**: 1, from {default}
 * `ref_dir_1`=\<list\>: First choice for reference direction to discriminate among tangential directions in 3D.
   - **default value**: [0.0, 0.0, 1.0]
   - **current value**: [0.0, 0.0, 1.0], from {default}
-  - **validator**: <function validateDir at 0x11c485dc0>
+  - **validator**: <function validateDir at 0x108fedf80>
 * `ref_dir_2`=\<list\>: Second choice for reference direction to discriminate among tangential directions in 3D.
   - **default value**: [0.0, 1.0, 0.0]
   - **current value**: [0.0, 1.0, 0.0], from {default}
