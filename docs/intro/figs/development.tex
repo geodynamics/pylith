@@ -1,11 +1,15 @@
 \documentclass[tikz, border=2pt, svgnames]{standalone}
 \usepackage[none]{hyphenat}
 \usepackage{helvet}
+\usepackage{pifont}
 \renewcommand{\familydefault}{phv}
 \usepackage{ifthen}
 
 \begin{document}
 \pagestyle{empty}
+
+\newcommand{\highpriority}{\ding{72}}
+\newcommand{\newlayout}{\ding{93}}
 
 \newcommand{\level}[3]{%
   \node [anchor=west] at ($(#1.east)+(0,1.2ex)$) {\includegraphics[height=1.2em]{../images/#2}};
@@ -55,6 +59,7 @@ draw=yellow!80!black,
 
 \tikzstyle{arrowto} = [-latex, line width=2pt, opacity=0.5]
 
+
 \foreach \figpart in {1,...,2}{
 \begin{tikzpicture}[
   node distance=1.5em and 4.0em,
@@ -65,35 +70,38 @@ draw=yellow!80!black,
 
   % Maintenance
   \node (maintenance) [category, xshift=-38em, below=of root] {Code Maintenance};
-  \node (side-sets) [sustainability, below=of maintenance] {Face group BCs};\level{side-sets}{intermediate}{3, 75\%}
-  \node (vtk)  [sustainability, below=of side-sets] {VTK $\rightarrow$ VTU};\level{vtk}{easy}{2}
-  \node (qs-vel) [sustainability, below=of vtk] {QS Disp+Vel};\level{qs-vel}{easy}{2}
-  \node (rate-rheologies) [sustainability, below=of qs-vel] {Reformulate viscoelastic rheologies};\level{rate-rheologies}{intermediate}{4}
-  \node (pybind11) [sustainability, below=of rate-rheologies] {SWIG $\rightarrow$ pybind11};\level{pybind11}{difficult}{5}
-  \node (pyre) [sustainability, below=of pybind11] {New Pyre};\level{pyre}{difficult}{5}
+  \node (refactor-kernels) [sustainability, below=of maintenance] {\highpriority{}Refactor kernels};\level{refactor-kernels}{difficult}{4, 10\%}
+  \node (pybind11) [sustainability, below=of refactor-kernels] {\newlayout{}SWIG $\rightarrow$ pybind11};\level{pybind11}{difficult}{4}
+  \node (pyre) [sustainability, below=of pybind11] {\newlayout{}New Pyre};\level{pyre}{difficult}{5, 5\%}
+  \node (refactor-materials)  [sustainability, below=of pyre] {\newlayout{}Refactor eqns+materials};\level{refactor-materials}{intermediate}{3, 5\%}
+  \node (qs-vel) [sustainability, below=of refactor-materials] {\newlayout{}QS Disp+Vel};\level{qs-vel}{easy}{2}
+  \node (rate-rheologies) [sustainability, below=of qs-vel] {\newlayout{}Reformulate viscoelastic rheologies};\level{rate-rheologies}{intermediate}{4}
 
 % Performance
   \node (performance) [category, right=of maintenance] {Performance};
-  \node (parallel-loading) [performance, below=of performance] {Parallel mesh loading};\level{parallel-loading}{expert}{5,85\%}
-  \node (dmproject) [performance, below=of parallel-loading] {DMProject optimization};\level{dmproject}{difficult}{3}
-  \node (incompressible-pc) [performance, below=of dmproject] {Incompressible elasticity preconditioner};\level{incompressible-pc}{difficult}{2,80\%}
+  \node (cohesive-opt) [performance, below=of performance] {\highpriority{}Cohesive cell optimization};\level{cohesive-opt}{difficult}{2}
+  \node (dmproject) [performance, below=of cohesive-opt] {\highpriority{}DMProject optimization};\level{dmproject}{difficult}{3}
+  \node (incompressible-pc) [performance, below=of dmproject] {\highpriority{}Incompressible elasticity preconditioner};\level{incompressible-pc}{difficult}{2,80\%}
   \node (libceed) [performance, below=of incompressible-pc] {libCEED integration};\level{libceed}{expert}{5}
 
   % Usability
   \node (usability) [category, right=of performance] {Usability};
-  \node (pylith-viz)  [usability, below=of usability] {Expand pylith\_viz};\level{pylith-viz}{intermediate}{2}
-  \node (material-labels) [usability, below=of pylith-viz] {User material labels};\level{material-labels}{intermediate}{2}
+  \node (material-labels) [usability, below=of usability] {User material labels};\level{material-labels}{intermediate}{2}
   \node (geomodelgrids)  [usability, below=of material-labels] {GeoModelGrids spatial database};\level{geomodelgrids}{intermediate}{2}
-  \node (field-settings)  [usability, below=of geomodelgrids] {Simplify field settings};\level{field-settings}{intermediate}{3}
-  \node (jupyter-notebooks)  [usability, below=of field-settings] {Jupyter notebooks};\level{jupyter-notebooks}{intermediate}{5}
-  \node (scec-gfm) [usability, below=of jupyter-notebooks] {SCEC CRM spatial database};\level{scec-gfm}{intermediate}{3}
-  \node (hdf5)  [usability, below=of scec-gfm] {Reorganize HDF5 output};\level{hdf5}{intermediate}{4}
-  \node (amr)  [usability, below=of hdf5] {Adaptive Mesh Refinement};\level{amr}{expert}{4}
+  \node (pylith-viz)  [usability, below=of geomodelgrids] {Expand pylith\_viz};\level{pylith-viz}{intermediate}{2}
+  \node (field-settings)  [usability, below=of pylith-viz] {\newlayout{}Simplify field settings};\level{field-settings}{intermediate}{3}
+  \node (example-notebooks)  [usability, below=of field-settings] {\newlayout{}Examples as notebooks};\level{example-notebooks}{intermediate}{5}
+  \node (gui-viewer) [usability, below=of example-notebooks] {\newlayout{}Configuration viewer};\level{gui-viewer}{difficult}{3}
+  \node (gui-editor) [usability, below=of gui-viewer] {\newlayout{}Configuration editor};\level{gui-editor}{expert}{4}
+  \node (gui-monitor) [usability, below=of gui-editor] {\newlayout{}Simulation monitor};\level{gui-monitor}{difficult}{3}
+  \node (hdf5)  [usability, below=of gui-monitor] {Reorganize HDF5 output};\level{hdf5}{intermediate}{4}
+  \node (scec-gfm) [usability, below=of hdf5] {SCEC CRM spatial database};\level{scec-gfm}{intermediate}{3}
+  \node (amr)  [usability, below=of scec-gfm] {Adaptive Mesh Refinement};\level{amr}{expert}{4}
   
   % Earthquake cycle
   \node (eqcycle) [category, right=of usability] {Earthquake Cycle};
-  \node (dyn-kin)  [features, below=of eqcycle] {Prescribed dynamic slip};\level{dyn-kin}{expert}{5,80\%}
-  \node (dynrup)  [features, below=of dyn-kin] {Spontaneous rupture};\level{dynrup}{expert}{5,30\%}
+  \node (dyn-kin)  [features, below=of eqcycle] {\highpriority{}Prescribed dynamic slip};\level{dyn-kin}{expert}{5,80\%}
+  \node (dynrup)  [features, below=of dyn-kin] {\highpriority{}Spontaneous rupture};\level{dynrup}{expert}{5,30\%}
   \node (drucker-prager)  [features, below=of dynrup] {Drucker-Prager viscoelastoplastic};\level{drucker-prager}{difficult}{3,10\%}
   \node (small-strain)  [features, below=of drucker-prager] {Small strain};\level{small-strain}{intermediate}{3}
   \node (eqcycle-same)  [features, below=of small-strain] {QS+Dyn same mesh};\level{eqcycle-same}{difficult}{5}
@@ -104,38 +112,50 @@ draw=yellow!80!black,
 
   % Data assimilation
   \node (data-assimilation) [category, right=of eqcycle] {Data Assimilation};
-  \node (catmip-integration) [features, below=of data-assimilation] {CATMIP integration};\level{catmip-integration}{difficult}{4}
-  \node (point-sources) [features, below=of catmip-integration] {Point sources};\level{point-sources}{difficult}{4,60\%}
+  \node (altar-integration) [features, below=of data-assimilation] {AlTar integration};\level{altar-integration}{difficult}{4}
+  \node (point-sources) [features, below=of altar-integration] {Point sources};\level{point-sources}{difficult}{4,80\%}
   \node (adjoint) [features, below=of point-sources] {Adjoints};\level{adjoint}{expert}{5}
 
   % Multiphysics
   \node (multiphysics) [category, right=of data-assimilation] {Multiphysics};
-  \node (poro-faults) [features, below=of multiphysics] {Faults with poroelastic properties};\level{poro-faults}{difficult}{4, 80\%}
-  \node (sympy-physics) [features, below=of poro-faults] {Physics via SymPy};\level{sympy-physics}{expert}{5}
+  \node (poro-viscoelasticity) [features, below=of multiphysics] {Poro-viscoelasticity};\level{poro-viscoelasticity}{difficult}{3, 90\%}
+  \node (poro-faults) [features, below=of poro-viscoelasticity] {Faults with poroelastic properties};\level{poro-faults}{difficult}{4, 70\%}
+  \node (thermoelasticity) [features, below=of poro-faults] {Thermoelasticity};\level{thermoelasticity}{difficult}{4, 20\%}
+  \node (sympy-physics) [features, below=of thermoelasticity] {Physics via SymPy};\level{sympy-physics}{expert}{5}
   
   % Surface loading
   \node (surf-load) [category, right=of multiphysics] {Surface Loading};
-  \node (st-data) [features, below=of surf-load] {SpatialData $\rightarrow$ SpatialTimeData};\level{st-data}{intermediate}{4}
-  \node (complex-bcs) [features, below=of st-data] {Complex spatial+temporal BCs};\level{complex-bcs}{intermediate}{3}
+  \node (st-data) [features, below=of surf-load] {\newlayout{}SpatialData $\rightarrow$ SpatialTimeData};\level{st-data}{intermediate}{4}
+  \node (complex-bcs) [features, below=of st-data] {\newlayout{}Complex spatial+temporal BCs};\level{complex-bcs}{intermediate}{3, 2\%}
 
 
 \ifthenelse{\figpart=2}{
   \begin{scope}[on background layer]
-    \draw[arrowto] (pybind11.south) -- (pyre.north);
-    \draw[arrowto] (pyre.east) -- (jupyter-notebooks.west);
+    \draw (refactor-kernels.west) edge[out=-110,in=110,arrowto] (refactor-materials.west);
+    \draw (refactor-kernels.west) edge[out=-110,in=110,arrowto] (qs-vel.west);
+    \draw[arrowto] (refactor-kernels.east) -- (poro-viscoelasticity.west);
+    \draw[arrowto] (refactor-kernels.east) -- (poro-faults.west);
+    \draw[arrowto] (refactor-kernels.east) -- (thermoelasticity.west);
 
+    \draw[arrowto] (pybind11.south) -- (pyre.north);
+    \draw[arrowto] (pybind11.east) -- (geomodelgrids.west);
+
+    \draw[arrowto] (pyre.east) -- (example-notebooks.west);
+    \draw[arrowto] (pyre.east) -- (gui-viewer.west);
+    \draw[arrowto] (gui-viewer.south) -- (gui-editor.north);
+    \draw[arrowto] (pyre.east) -- (gui-monitor.west);
     \draw[arrowto] (pyre.east) -- (eqcycle-same.west);
     \draw[arrowto] (amr.east) -- (eqcycle-diff.west);
+
     \draw[arrowto] (eqcycle-same.south) -- (eqcycle-diff.north);
+    
     \draw[arrowto] (libceed.east) -- (eqcycle-same.west);
-    \draw (parallel-loading.east) edge[out=-25,in=-155,arrowto] (dyn-kin.west);
     \draw[arrowto] (dyn-kin.south) -- (dynrup.north);
+    
     \draw (dynrup.west) edge[out=-110,in=110,arrowto] (eqcycle-same.west);
     \draw (drucker-prager.west) edge[out=-110,in=110,arrowto] (eqcycle-same.west);
     
     \draw[arrowto] (qs-vel.south) -- (rate-rheologies.north);
-    
-    \draw[arrowto] (pybind11.east) -- (geomodelgrids.west);
     
     \draw[arrowto] (field-settings.east) -- (sympy-physics.west);
 
