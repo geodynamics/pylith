@@ -81,7 +81,7 @@ pylith::topology::StratumIS::StratumIS(const PetscDM dmMesh,
     _points(0) { // constructor
     assert(dmMesh);
     if (!includeOnlyCells) {
-        PylithCallPetsc(DMGetStratumIS(dmMesh, label, id, &_indexSet));assert(_indexSet);
+        PylithCallPetsc(DMGetStratumIS(dmMesh, label, id, &_indexSet));
     } else {
         PetscIS pointsIS = NULL;
         PetscInt numPoints = 0;

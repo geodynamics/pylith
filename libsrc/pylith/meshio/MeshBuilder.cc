@@ -658,35 +658,37 @@ pylith::meshio::_MeshBuilder::getGroupNames(string_vector* names,
             PetscIS labelValuesIS = PETSC_NULLPTR;
             const PetscInt* labelValues = PETSC_NULLPTR;
             PylithCallPetsc(DMLabelGetNumValues(dmLabel, &numLabelValues));
-            PylithCallPetsc(DMLabelGetValueIS(dmLabel, &labelValuesIS));assert(labelValuesIS);
-            PylithCallPetsc(ISGetIndices(labelValuesIS, &labelValues));assert(labelValues);
-            // :KLUDGE: Only expect multiple label values for a fault after transforming.
-            // Fault 'faces' have label values of dim-1 after transforming.
-            const PetscInt labelValue = numLabelValues == 1 ? labelValues[0] : dim-1;
+            if (numLabelValues > 0) {
+                PylithCallPetsc(DMLabelGetValueIS(dmLabel, &labelValuesIS));assert(labelValuesIS);
+                PylithCallPetsc(ISGetIndices(labelValuesIS, &labelValues));assert(labelValues);
+                // :KLUDGE: Only expect multiple label values for a fault after transforming.
+                // Fault 'faces' have label values of dim-1 after transforming.
+                const PetscInt labelValue = numLabelValues == 1 ? labelValues[0] : dim-1;
 
-            PylithCallPetsc(ISRestoreIndices(labelValuesIS, &labelValues));
-            PylithCallPetsc(ISDestroy(&labelValuesIS));
+                PylithCallPetsc(ISRestoreIndices(labelValuesIS, &labelValues));
+                PylithCallPetsc(ISDestroy(&labelValuesIS));
 
-            pylith::topology::StratumIS pointIS(dmMesh, labelStr, labelValue);
-            const PetscInt* points = pointIS.points();
-            const PetscInt numPoints = pointIS.size();
-            bool hasOtherPoints = false;
-            bool foundPoint = false;
-            for (PetscInt iPoint = 0; iPoint < numPoints; ++iPoint) {
-                if ((points[iPoint] >= pStart) && (points[iPoint] < pEnd) ) {
-                    foundPoint = true;
-                    if (!exclusive) {
-                        break;
-                    } // if
-                } else {
-                    hasOtherPoints = true;
-                    if (exclusive) {
-                        break;
-                    } // if
-                } // if/else
-            } // for
-            if ((foundPoint && !exclusive) || (foundPoint && exclusive && !hasOtherPoints)) {
-                (*names)[numNames++] = labelName;
+                pylith::topology::StratumIS pointIS(dmMesh, labelStr, labelValue);
+                const PetscInt* points = pointIS.points();
+                const PetscInt numPoints = pointIS.size();
+                bool hasOtherPoints = false;
+                bool foundPoint = false;
+                for (PetscInt iPoint = 0; iPoint < numPoints; ++iPoint) {
+                    if ((points[iPoint] >= pStart) && (points[iPoint] < pEnd) ) {
+                        foundPoint = true;
+                        if (!exclusive) {
+                            break;
+                        } // if
+                    } else {
+                        hasOtherPoints = true;
+                        if (exclusive) {
+                            break;
+                        } // if
+                    } // if/else
+                } // for
+                if ((foundPoint && !exclusive) || (foundPoint && exclusive && !hasOtherPoints)) {
+                    (*names)[numNames++] = labelName;
+                } // of
             } // if
         } // if
     } // for
