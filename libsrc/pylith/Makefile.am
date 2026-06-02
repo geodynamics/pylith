@@ -14,6 +14,7 @@ SUBDIRS = \
 	utils \
 	topology \
 	feassemble \
+	initializers \
 	problems \
 	meshio \
 	materials \
@@ -21,7 +22,7 @@ SUBDIRS = \
 	faults \
 	friction \
 	fekernels \
-        testing
+    testing
 
 
 lib_LTLIBRARIES = libpylith.la

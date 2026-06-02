@@ -86,6 +86,9 @@ dist_noinst_PYTHON = \
 	problems/TestSolution.py \
 	problems/TestSolutionSubfields.py \
 	problems/TestTimeDependent.py \
+	scales/__init__.py \
+	scales/TestGeneral.py \
+	scales/TestQuasistaticElasticity.py \
 	topology/__init__.py \
 	topology/TestDistributor.py \
 	topology/TestField.py \
