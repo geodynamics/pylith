@@ -2,7 +2,7 @@
 // This code is part of SpatialData, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/spatialdata).
 //
-// Copyright (c) 2010-2025, University of California, Davis and the SpatialData Development Team.
+// Copyright (c) 2010-2026, University of California, Davis and the SpatialData Development Team.
 // All rights reserved.
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
@@ -18,8 +18,8 @@
 // Set defaults scales for quasi-static elasticity.
 void
 pylith::scales::ElasticityScales::setQuasistaticElasticity(pylith::scales::Scales* scales,
-                                                               const double lengthScale,
-                                                               const double timeScale) {
+                                                           const double lengthScale,
+                                                           const double timeScale) {
     const double length = lengthScale;
     const double displacement = 1.0;
     const double rigidity = 2.5e+10;
@@ -35,8 +35,8 @@ pylith::scales::ElasticityScales::setQuasistaticElasticity(pylith::scales::Scale
 // Set defaults scales for dynamic elasticity.
 void
 pylith::scales::ElasticityScales::setDynamicElasticity(pylith::scales::Scales* scales,
-                                                           const double lengthScale,
-                                                           const double velocityScale) {
+                                                       const double lengthScale,
+                                                       const double velocityScale) {
     const double displacement = 1.0;
     const double rigidity = 2.25e+10;
     const double time = lengthScale / velocityScale;
@@ -52,10 +52,10 @@ pylith::scales::ElasticityScales::setDynamicElasticity(pylith::scales::Scales* s
 // Set defaults scales for quasi-static poroelasticity.
 void
 pylith::scales::ElasticityScales::setQuasistaticPoroelasticity(pylith::scales::Scales* scales,
-                                                                   const double lengthScale,
-                                                                   const double permeability,
-                                                                   const double viscosity,
-                                                                   const double rigidity) {
+                                                               const double lengthScale,
+                                                               const double permeability,
+                                                               const double viscosity,
+                                                               const double rigidity) {
     const double length = lengthScale;
     const double displacement = 1.0;
     const double time = computePoroelasticityTimeScale(viscosity, permeability, length, rigidity);
@@ -71,9 +71,9 @@ pylith::scales::ElasticityScales::setQuasistaticPoroelasticity(pylith::scales::S
 // Compute time scale for poroelasticity.
 double
 pylith::scales::ElasticityScales::computePoroelasticityTimeScale(const double viscosity,
-                                                                     const double permeability,
-                                                                     const double length,
-                                                                     const double rigidity) {
+                                                                 const double permeability,
+                                                                 const double length,
+                                                                 const double rigidity) {
     return (viscosity / permeability) * (length * length / rigidity);
 } // computePoroelasticityTimeScale
 

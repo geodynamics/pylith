@@ -17,12 +17,12 @@ authors:
     orcid: "https://orcid.org/0000-0002-2292-0735"
   - given-names: Charles A
     family-names: Williams
-    email: c.williams@gns.cri.nz
-    affiliation: GNS Science
+    email: charles.williams@earthsciences.nz
+    affiliation: Earth Sciences New Zealand
     orcid: "https://orcid.org/0000-0001-7435-9196"
 identifiers:
   - type: doi
-    value: 10.5281/zenodo.14635926
+    value: 10.5281/zenodo.20430260
 repository-code: "https://github.com/geodynamics/pylith"
 url: "https://geodynamics.org/resources/pylith"
 keywords:
@@ -31,8 +31,8 @@ keywords:
   - earthquake
   - finite element
 license: MIT
-version: 4.2.0
-date-released: "2025-01-17"
+version: 5.0.0
+date-released: "2026-06-02"
 preferred-citation:
   type: article
   authors:

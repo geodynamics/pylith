@@ -2,7 +2,7 @@
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2025, University of California, Davis and the PyLith Development Team.
+# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
 # All rights reserved.
 #
 # See https://mit-license.org/ and LICENSE.md and for license information. 
@@ -47,7 +47,8 @@ EXTRA_DIST = \
 	announce_v4.1.1.md \
 	announce_v4.1.2.md \
 	announce_v4.1.3.md \
-	announce_v4.2.0.md
+	announce_v4.2.0.md \
+	announce_v5.0.0.md
 
 
 # End of file 

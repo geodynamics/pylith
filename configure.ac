@@ -2,7 +2,7 @@ dnl ============================================================================
 dnl This code is part of PyLith, developed through the Computational Infrastructure
 dnl for Geodynamics (https://github.com/geodynamics/pylith).
 dnl
-dnl Copyright (c) 2010-2025, University of California, Davis and the PyLith Development Team.
+dnl Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
 dnl All rights reserved.
 dnl
 dnl See https://mit-license.org/ and LICENSE.md and for license information. 
@@ -10,7 +10,7 @@ dnl ============================================================================
 dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT([PyLith], [5.0.0dev], [https://geodynamics.org/resources/pylith])
+AC_INIT([PyLith], [5.0.0], [https://geodynamics.org/resources/pylith])
 AC_CONFIG_AUX_DIR([./aux-config])
 AC_CONFIG_HEADER([portinfo])
 AC_CONFIG_MACRO_DIR([m4])
@@ -191,7 +191,7 @@ CIT_FUNCTIONSTRING
 dnl VERSION
 CIG_PKG_GIT(PYLITH)
 AC_DEFINE_UNQUOTED([PYLITH_VERSION], ["$PACKAGE_VERSION"], [Define PyLith version])
-AC_DEFINE_UNQUOTED([PYLITH_DOI], ["10.5281/zenodo.14635926"], [Define PyLith doi])
+AC_DEFINE_UNQUOTED([PYLITH_DOI], ["10.5281/zenodo.20430260"], [Define PyLith doi])
 
 dnl ENDIANNESS
 AC_C_BIGENDIAN

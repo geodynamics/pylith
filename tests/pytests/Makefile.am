@@ -2,7 +2,7 @@
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2025, University of California, Davis and the PyLith Development Team.
+# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
 # All rights reserved.
 #
 # See https://mit-license.org/ and LICENSE.md and for license information. 
@@ -86,6 +86,9 @@ dist_noinst_PYTHON = \
 	problems/TestSolution.py \
 	problems/TestSolutionSubfields.py \
 	problems/TestTimeDependent.py \
+	scales/__init__.py \
+	scales/TestGeneral.py \
+	scales/TestQuasistaticElasticity.py \
 	topology/__init__.py \
 	topology/TestDistributor.py \
 	topology/TestField.py \

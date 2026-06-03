@@ -27,7 +27,7 @@ The primary developers are:
 
 * Brad Aagaard (U.S. Geological Survey)
 * Matthew Knepley (University at Buffalo)
-* Charles Williams (GNS Science)
+* Charles Williams (Earth Sciences New Zealand)
 
 ```{include} ../LICENSE.md
 ```

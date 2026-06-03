@@ -2,7 +2,7 @@
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2025, University of California, Davis and the PyLith Development Team.
+// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
 // All rights reserved.
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
@@ -22,16 +22,18 @@
 namespace pylith {
     namespace meshio {
         namespace _HDF5 {
-
             /// RAII wrapper for HDF5 object handles.
             class H5Handle {
                 using closer_t = herr_t (*)(hid_t);
 public:
+
                 hid_t id{-1};
                 closer_t closer{nullptr};
 
                 H5Handle() = default;
-                H5Handle(hid_t h, closer_t c) : id(h), closer(c) {}
+                H5Handle(hid_t h,
+                         closer_t c) : id(h), closer(c) {}
+
 
                 ~H5Handle() {
                     if ((id >= 0) && closer) { closer(id); }
@@ -53,6 +55,7 @@ public:
                     }
                     return *this;
                 }
+
             };
 
         } // _HDF5

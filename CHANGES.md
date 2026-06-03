@@ -5,7 +5,7 @@ Starting with v3.0.0, we strictly follow the [semantic versioning guidelines](ht
 The version numbers are in the form `MAJOR.MINOR.PATCH`, where major releases indicate changes to the public API (parameters), minor releases indicate new functionality that is backward compatible, and patch releases indicate backward compatible bug fixes.
 :::
 
-## Version 5.0.0
+## Version 5.0.0 (2026-06-02)
 
 * **Changed**
   * Updated the nondimensionalization code, moving it from SpatialData to PyLith.
@@ -57,6 +57,19 @@ The version numbers are in the form `MAJOR.MINOR.PATCH`, where major releases in
 * **Developer Changes**
   * Replace `err = PetscFoo(args); PYLITH_CHECK_ERROR(err);` with `PylithCallPetsc(PetscFoo(args));`.
   * Replace `assert(arg)` in test code with `REQUIRE(arg);`.
+
+### Known issues
+
+* The default PETSc options provide a computationally expensive preconditioner when solving incompressible elasticity problems. We expect to have a more optimal preconditioner in the next few months.
+
+### Contributors
+
+* Brad Aagaard ![ORCID iD](/_static/images/ORCIDiD_icon32x32.png){w=16px}[0000-0002-8795-9833](https://orcid.org/0000-0002-8795-9833)
+* Matthew Knepley ![ORCID iD](/_static/images/ORCIDiD_icon32x32.png){w=16px}[0000-0002-2292-0735](https://orcid.org/0000-0002-2292-0735)
+* Charles Williams ![ORCID iD](/_static/images/ORCIDiD_icon32x32.png){w=16px}[0000-0001-7435-9196](https://orcid.org/0000-0001-7435-9196)
+* Ritwik Patil ![ORCID iD](/_static/images/ORCIDiD_icon32x32.png){w=16px}[0009-0008-3305-6728](https://orcid.org/0009-0008-3305-6728)
+
+% =================================================================================================
 
 ## Version 4.2.0 (2025-01-15)
 

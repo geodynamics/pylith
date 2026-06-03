@@ -7,10 +7,6 @@
 maxdepth: 1
 ---
 Distributor.md
-MeshGenerator.md
-MeshImporter.md
-MeshImporterDist.md
-MeshRefiner.md
 RefineMesh.md
 RefineUniform.md
 Subfield.md

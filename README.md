@@ -1,6 +1,6 @@
 # PyLith
 
-[![DOI](https://www.zenodo.org/badge/DOI/10.5281/zenodo.14635926.svg)](https://doi.org/10.5281/zenodo.14635926)
+[![DOI](https://www.zenodo.org/badge/DOI/10.5281/zenodo.20430260.svg)](https://doi.org/10.5281/zenodo.20430260)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/geodynamics/pylith/blob/main/LICENSE.md)
 [![Build Status](https://github.com/geodynamics/pylith/actions/workflows/ci-main.yml/badge.svg)](https://github.com/geodynamics/pylith/actions/workflows/ci-main.yml)
 
@@ -47,7 +47,7 @@ PyLith is continually being improved by a growing, collaborative, and inclusive 
 
 * Brad Aagaard, Geologic Hazards Science Center, U.S. Geological Survey, USA <img alt="ORCID iD" src="docs/_static/images/ORCIDiD_icon32x32.png" width="16px"/>[0000-0002-8795-9833](https://orcid.org/0000-0002-8795-9833)
 * Matthew Knepley, Computer Science and Engineering, University at Buffalo, USA <img alt="ORCID iD" src="docs/_static/images/ORCIDiD_icon32x32.png" width="16px"/>[0000-0002-2292-0735](https://orcid.org/0000-0002-2292-0735)
-* Charles Williams, Tectonophysics, GNS Science, New Zealand <img alt="ORCID iD" src="docs/_static/images/ORCIDiD_icon32x32.png" width="16px"/>[0000-0001-7435-9196](https://orcid.org/0000-0001-7435-9196)
+* Charles Williams, Tectonophysics, Earth Sciences New Zealand, New Zealand <img alt="ORCID iD" src="docs/_static/images/ORCIDiD_icon32x32.png" width="16px"/>[0000-0001-7435-9196](https://orcid.org/0000-0001-7435-9196)
 
 For a more complete list of contributors, refer to the [GitHub contributors](https://github.com/geodynamics/pylith/graphs/contributors).
 

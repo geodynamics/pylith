@@ -2,7 +2,7 @@
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
 #
-# Copyright (c) 2010-2025, University of California, Davis and the PyLith Development Team.
+# Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
 # All rights reserved.
 #
 # See https://mit-license.org/ and LICENSE.md and for license information. 
@@ -31,6 +31,8 @@ dist_noinst_DATA = \
 	intro/quickstart.md \
 	intro/release-notes.md \
 	intro/conventions.md \
+	intro/figs/development-1.pdf \
+	intro/figs/development-1.svg \
 	user/appendices/analytical-solns.md \
 	user/appendices/figs/airy_stress_axial_extension.pdf \
 	user/appendices/figs/airy_stress_axial_extension.svg \
@@ -78,6 +80,7 @@ dist_noinst_DATA = \
 	user/components/implementations.md \
 	user/components/apps/EqInfoApp.md \
 	user/components/apps/PyLithApp.md \
+	user/components/apps/ConvertMeshApp.md \
 	user/components/apps/index.md \
 	user/components/bc/AbsorbingDampers.md \
 	user/components/bc/AuxSubfieldsAbsorbingDampers.md \
@@ -198,10 +201,7 @@ dist_noinst_DATA = \
 	user/components/testing/index.md \
 	user/components/toc.json \
 	user/components/topology/Distributor.md \
-	user/components/topology/MeshGenerator.md \
-	user/components/topology/MeshImporter.md \
-	user/components/topology/MeshImporterDist.md \
-	user/components/topology/MeshRefiner.md \
+	user/components/topology/RefineMesh.md \
 	user/components/topology/RefineUniform.md \
 	user/components/topology/Subfield.md \
 	user/components/topology/index.md \
@@ -548,6 +548,7 @@ dist_noinst_DATA = \
 	user/examples/subduction-3d/index.md \
 	user/examples/subduction-3d/common-information.md \
 	user/examples/subduction-3d/meshing-cubit.md \
+	user/examples/subduction-3d/meshing-gmsh.md \
 	user/examples/subduction-3d/step01-axialdisp.md \
 	user/examples/subduction-3d/step01_axialdisp-synopsis.md \
 	user/examples/subduction-3d/step02-coseismic.md \
@@ -569,6 +570,7 @@ dist_noinst_DATA = \
 	user/examples/subduction-3d/figs/cubit-geometry-patch.png \
 	user/examples/subduction-3d/figs/cubit-geometry.png \
 	user/examples/subduction-3d/figs/cubit-tet.png \
+	user/examples/subduction-3d/figs/gmsh-tet.png \
 	user/examples/subduction-3d/figs/diagrams.tex \
 	user/examples/subduction-3d/figs/step01-diagram.pdf \
 	user/examples/subduction-3d/figs/step01-diagram.svg \
@@ -630,6 +632,7 @@ dist_noinst_DATA = \
 	user/governingeqns/petsc-formulation.md \
 	user/governingeqns/elasticity/index.md \
 	user/governingeqns/elasticity/derivation.md \
+	user/governingeqns/elasticity/nondimensionalization.md \
 	user/governingeqns/elasticity/infinitesimal-strain.md \
 	user/governingeqns/elasticity/infinitesimal-strain-quasistatic.md \
 	user/governingeqns/elasticity/infinitesimal-strain-dynamic.md \
@@ -646,11 +649,13 @@ dist_noinst_DATA = \
 	user/governingeqns/elasticity/bulk-rheologies/figs/viscoelastic-schematic.pdf \
 	user/governingeqns/elasticity/bulk-rheologies/figs/viscoelastic-schematic.svg \
 	user/governingeqns/incompressible-elasticity/index.md \
+	user/governingeqns/incompressible-elasticity/nondimensionalization.md \
 	user/governingeqns/incompressible-elasticity/infinitesimal-strain.md \
 	user/governingeqns/incompressible-elasticity/infinitesimal-strain-quasistatic.md \
 	user/governingeqns/incompressible-elasticity/bulk-rheologies/index.md \
 	user/governingeqns/incompressible-elasticity/bulk-rheologies/linear-elastic.md \
 	user/governingeqns/poroelasticity/index.md \
+	user/governingeqns/poroelasticity/nondimensionalization.md \
 	user/governingeqns/poroelasticity/infinitesimal-strain.md \
 	user/governingeqns/poroelasticity/infinitesimal-strain-quasistatic.md \
 	user/governingeqns/poroelasticity/infinitesimal-strain-dynamic.md \

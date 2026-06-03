@@ -15,6 +15,7 @@ Short-term priorities focus on reimplementing features in version 2.2 that have 
 PyLith development priorities by category.
 Information to the right of each feature indicates difficulty (colored icon), the relative amount of effort (lower left), and an estimate of how much is completed (lower right percentage).
 The arrows indicate the order in which some features must be implemented.
+Star symbols indicate high priority for implementation, and asterisk symbols indicate features that are part of the major code restructuring associated with use of the new Pyre implementation.
 :::
 
 ## Anticipated Releases
@@ -24,32 +25,28 @@ Because we strictly follow the [semantic versioning guidelines](https://semver.o
 This can happen if realize that we should modify the parameters to improve maintainability or prepare for future changes.
 :::
 
-## Version 5.0 (May 2025)
+## Version 5.1 (November 2026)
 
-This version will include a few very minor changes to the public API.
+* Reorganize finite-element kernels ![expert](images/expert.png) [10%]
+* Additional code clean up ![intermediate](images/intermediate.png) [0%]
 
-* Parallel mesh loading ![expert](images/expert.png) [90%]
-* Specify boundary conditions using faces instead of vertices ![expert](images/intermediate.png) [100%]
-* Update VTK output to use `vtu` files rather than legacy `vtk` files ![easy](images/easy.png) [100%]
-
-## Version 5.1 (August 2025)
+## Version 5.2 (February 2027)
 
 * Dynamic prescribed slip with diagonal Jacobian for explicit part of IMEX formulation ![expert](images/expert.png) [80%]
-* Add `examples/barwaves-2d` ![expert](images/expert.png) [25%]
-* Better preconditioner for incompressible elasticity ![expert](images/expert.png) [80%]
+* Better preconditioner for incompressible elasticity ![expert](images/expert.png) [50%]
 
-## Version 5.2 (December 2025)
+## Version 5.3 (July 2027)
 
 * Spontaneous rupture for quasistatic and dynamic simulations ![expert](images/expert.png) [30%]
 
-## Version 6.0 (June 2026)
+## Version 6.0 (June 2028)
 
 This version will include major changes to the public API associated with the switch to the current version of the Pyre Python framework.
 
 * Convert from SWIG to pybind11 ![intermediate](images/intermediate.png) [0%]
 * Add support for GeoModelGrids implementation of spatial databases for 3D seismic velocity models. ![intermediate](images/intermediate.png) [0%]
 * Update to current version of Pyre ![difficult](images/difficult.png)
-* Migrate examples to Jupyter notebooks ![intermediate](images/intermediate.png)
+* Migrate examples to notebooks ![intermediate](images/intermediate.png)
 * Improve robustness of HDF5 output by opening/closing at each time step ![easy](images/easy.png)[0%]
 * Improve creation of auxiliary, diagnostic, and derived fields.
 * More flexible specification of time-dependent boundary conditions. ![difficult](images/difficult.png) [0%]
@@ -73,7 +70,7 @@ They may be added to the planned releases based upon further discussion and cont
 * Coupling of problems with compatible meshes ![difficult](images/difficult.png) [10%]\
     Implement "injectors" for solution and state variables.
 * Reimplementation of small strain formulation for elasticity ![difficult](images/difficult.png) [20%]
-* Moment tensor point sources  [60%]\
+* Moment tensor point sources  [80%]\
   Moment tensor point sources provide a mesh independent deformation source that is better suited for Green's function calculations than slip on a fault surface via cohesive cells.
 * Line/point fluid sources in poroelasticity ![expert](images/expert.png) [20%]
 * Consolidate HDF5 output into a single file ![difficult](images/difficult.png)

@@ -2,7 +2,7 @@
 // This code is part of PyLith, developed through the Computational Infrastructure
 // for Geodynamics (https://github.com/geodynamics/pylith).
 //
-// Copyright (c) 2010-2025, University of California, Davis and the PyLith Development Team.
+// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
 // All rights reserved.
 //
 // See https://mit-license.org/ and LICENSE.md and for license information.
@@ -81,7 +81,7 @@ pylith::topology::StratumIS::StratumIS(const PetscDM dmMesh,
     _points(0) { // constructor
     assert(dmMesh);
     if (!includeOnlyCells) {
-        PylithCallPetsc(DMGetStratumIS(dmMesh, label, id, &_indexSet));assert(_indexSet);
+        PylithCallPetsc(DMGetStratumIS(dmMesh, label, id, &_indexSet));
     } else {
         PetscIS pointsIS = NULL;
         PetscInt numPoints = 0;
