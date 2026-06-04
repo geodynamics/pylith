@@ -36,6 +36,7 @@ dist_noinst_DATA = \
 	mat_viscoelastic.cfg \
 	mat_viscosity.spatialdb \
 	mat_elastic_incompressible.cfg \
+	mat_elastic_refstate.spatialdb \
 	pylithapp.cfg \
 	step01_axialdisp.cfg \
 	step02_coseismic.cfg \
@@ -50,6 +51,8 @@ dist_noinst_DATA = \
 	etopo2020_bedrock_local.nc \
 	cas_contours_dep.in.txt.gz \
 	cgnss_stations.txt \
+	cgnss_stations_flat.txt \
+	cgnss_stations_latlon.txt \
 	invert_slip.cfg \
 	input/README.md \
 	scratch/README.md
