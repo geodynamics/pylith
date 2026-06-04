@@ -47,6 +47,7 @@ dist_noinst_DATA = \
 	step08a_gravity_refstate.cfg \
 	step08b_gravity_incompressible.cfg \
 	step08c_gravity_viscoelastic.cfg \
+	etopo2020_bedrock_local.nc \
 	cas_contours_dep.in.txt.gz \
 	cgnss_stations.txt \
 	invert_slip.cfg \
