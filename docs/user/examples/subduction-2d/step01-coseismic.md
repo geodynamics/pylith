@@ -51,7 +51,7 @@ caption: Dirichlet boundary condition parameters for Step 1. We only show the de
 bc = [bc_east_crust, bc_east_mantle, bc_west, bc_bottom]
 
 [pylithapp.problem.bc.bc_east_crust]
-label = bndry_east_crust
+label = boundary_east_crust
 label_value = 12
 constrained_dof = [0]
 db_auxiliary_field = pylith.bc.ZeroDB
