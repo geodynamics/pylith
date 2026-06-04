@@ -18,7 +18,7 @@ OUTPUT_DIR = pathlib.Path("output")
 
 FILENAME_MODELS = OUTPUT_DIR / "step06_inversion-results.txt"
 FILENAME_PRESCRIBED = OUTPUT_DIR / "step04_varslip-fault.h5"
-FILENAME_RAW = OUTPUT_DIR / "slip_variable.txt"
+FILENAME_RAW = "slip_variable.txt"
 
 
 def cli():

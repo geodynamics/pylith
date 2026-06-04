@@ -37,7 +37,8 @@ dist_noinst_DATA = \
 	disprate_bc_xpos.spatialdb \
 	gnss_stations.txt \
 	slip_impulses.spatialdb \
-	slip_variable.spatialdb
+	slip_variable.spatialdb \
+	slip_variable.txt
 
 
 # End of file
