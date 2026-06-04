@@ -10,10 +10,10 @@ emphasize-lines: 65-66
 ---
 $ pylith step06_twofaults.cfg
 
- >> softwarepylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:76:main
+ >> software/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:76:main
  -- info (application-flow)
  -- Running on 1 process(es).
- >> src/cig/pylith/libsrc/pylith/utils/PetscOptions.cc:251:static void pylith::utils::_PetscOptions::write(pythia::journal::info_t&, const char*, const pylith::utils::PetscOptions&)
+ >> src/cig/pylith/libsrc/pylith/utils/PetscOptions.cc:251:static void pylith::utils::_PetscOptions::write(pythia::journal::info_t &, const char *, const PetscOptions &)
  -- info (application-flow)
  -- Setting PETSc options:
     dm_reorder_section = true
@@ -39,18 +39,21 @@ $ pylith step06_twofaults.cfg
     ts_type = beuler
     viewer_hdf5_collective = true
 
- >> src/cig/pylith/libsrc/pylith/meshio/MeshIOPetsc.cc:204:virtual void pylith::meshio::MeshIOPetsc::_read()
+ >> src/cig/pylith/libsrc/pylith/meshio/MeshIOPetsc.cc:205:virtual void pylith::meshio::MeshIOPetsc::_read()
  -- info (application-flow)
  -- Component 'meshiopetsc.reader': Reading finite-element mesh from 'mesh_tri.msh'.
- >> src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:76:void pylith::meshio::MeshIO::read(pylith::topology::Mesh*, bool)
+ >> src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:76:void pylith::meshio::MeshIO::read(pylith::topology::Mesh *, const bool)
  -- info (application-flow)
  -- Component 'meshiopetsc.reader': Domain bounding box:
     (-100000, 100000)
     (-100000, 0)
+ >> src/cig/pylith/libsrc/pylith/initializers/MeshInsertInterfaces.cc:51:virtual pylith::topology::Mesh *pylith::initializers::MeshInsertInterfaces::run(pylith::topology::Mesh *, const pylith::problems::Problem &)
+ -- info (application-flow)
+ -- Inserting cohesive cells.
  >> src/cig/pylith/libsrc/pylith/problems/TimeDependent.cc:316:virtual void pylith::problems::TimeDependent::verifyConfiguration() const
  -- info (application-flow)
  -- Component 'timedependent.problem': Verifying problem configuration.
- >> softwarepylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:238:_printInfo
+ >> software/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:238:_printInfo
  -- info (application-flow)
  -- Scales for nondimensionalization:
     Length scale: 2500*m
@@ -61,43 +64,54 @@ $ pylith step06_twofaults.cfg
  >> src/cig/pylith/libsrc/pylith/problems/TimeDependent.cc:342:virtual void pylith::problems::TimeDependent::initialize()
  -- info (application-flow)
  -- Component 'timedependent.problem': Initializing problem.
+ >> src/cig/pylith/libsrc/pylith/topology/FieldQuery.cc:473:static void pylith::topology::_FieldQuery::findQueryIndices(FieldQuery::DBQueryContext *, const pylith::string_vector &)
+ -- error (user-input)
+ -- Could not find value 'final_slip_opening' in spatial database 'Fault rupture for main fault'. Available values are:
+  final-slip-left-lateral
+  final-slip-opening
+  initiation-time
+
 Fatal error. Calling MPI_Abort() to abort PyLith application.
 Traceback (most recent call last):
-  File "softwarepylith-debug/lib/python3.12/site-packages/pylith/apps/PetscApplication.py", line 55, in onComputeNodes
+  File "software/pylith-debug/lib/python3.12/site-packages/pylith/apps/PetscApplication.py", line 55, in onComputeNodes
     self.main(*args, **kwds)
-  File "softwarepylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py", line 85, in main
+  File "software/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py", line 85, in main
     self.problem.initialize()
-  File "softwarepylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py", line 212, in initialize
+  File "software/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py", line 212, in initialize
     ModuleProblem.initialize(self)
-  File "softwarepylith-debug/lib/python3.12/site-packages/pylith/problems/problems.py", line 165, in initialize
+  File "software/pylith-debug/lib/python3.12/site-packages/pylith/problems/problems.py", line 165, in initialize
     return _problems.Problem_initialize(self)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-RuntimeError: Error occurred while reading spatial database file 'fault_slip.spatialdb'.
-Read data for 3 out of 4 points.
-Error reading coordinates from buffer ''.
---------------------------------------------------------------------------
-MPI_ABORT was invoked on rank 0 in communicator MPI_COMM_WORLD
-  Proc: [[11816,1],0]
-  Errorcode: -1
+RuntimeError: Could not find value 'final_slip_opening' in spatial database 'Fault rupture for main fault'. Available values are:
+  final-slip-left-lateral
+  final-slip-opening
+  initiation-time
 
-NOTE: invoking MPI_ABORT causes Open MPI to kill all MPI processes.
-You may or may not see output from other processes, depending on
-exactly when Open MPI kills them.
---------------------------------------------------------------------------
---------------------------------------------------------------------------
-prterun has exited due to process rank 0 with PID 0 on node igskci164warlng calling
-"abort". This may have caused other processes in the application to be
-terminated by signals sent by prterun (as reported here).
---------------------------------------------------------------------------
-softwarepylith-debug/bin/nemesis: mpiexec: exit 255
-softwarepylith-debug/bin/pylith: softwarepylith-debug/bin/nemesis: exit 1
+C++ traceback (13 frames):
+  [0]  3   libpylith.0.dylib                   0x00000001041c2e40 _ZN6pylith10ValueErrorCI1NS_5ErrorEERKNS_12ErrorMessageE + 36
+  [1]  4   libpylith.0.dylib                   0x000000010441a864 _ZN6pylith8topology11_FieldQuery16findQueryIndicesEPNS0_10FieldQuery14DBQueryContextERKNSt3__16vectorINS5_12basic_stringIcNS5_11char_traitsIcEENS5_9allocatorIcEEEENSA_ISC_EEEE + 1624
+  [2]  5   libpylith.0.dylib                   0x0000000104418ae4 _ZN6pylith8topology10FieldQuery6openDBEPN11spatialdata9spatialdb9SpatialDBEd + 1720
+  [3]  6   libpylith.0.dylib                   0x000000010428b090 _ZN6pylith10feassemble16AuxiliaryFactory15setValuesFromDBEv + 596
+  [4]  7   libpylith.0.dylib                   0x0000000104216d48 _ZN6pylith6faults6KinSrc10initializeERKNS_8topology5FieldERKNS_6scales6ScalesEPKN11spatialdata9geocoords8CoordSysE + 1180
+  [5]  8   libpylith.0.dylib                   0x00000001041fef64 _ZN6pylith6faults16FaultCohesiveKin20createAuxiliaryFieldERKNS_8topology5FieldERKNS2_4MeshE + 2764
+  [6]  9   libpylith.0.dylib                   0x00000001042349bc _ZN6pylith10feassemble10Integrator10initializeERKNS_8topology5FieldE + 560
+  [7]  10  libpylith.0.dylib                   0x0000000104255944 _ZN6pylith10feassemble19IntegratorInterface10initializeERKNS_8topology5FieldE + 924
+  [8]  11  libpylith.0.dylib                   0x0000000104399014 _ZN6pylith8problems7Problem10initializeEv + 936
+  [9]  12  libpylith.0.dylib                   0x00000001043a9610 _ZN6pylith8problems13TimeDependent10initializeEv + 652
+  [10]  13  _problems.so                        0x00000001079ce3f0 _ZL24_wrap_Problem_initializeP7_objectS0_ + 216
+  [11]  47  mpinemesis                          0x00000001006e9d70 main + 616
+  [12]  48  dyld                                0x0000000197e0eb98 start + 6076
+
+Abort(-1) on node 0 (rank 0 in comm 0): application called MPI_Abort(MPI_COMM_WORLD, -1) - process 0
+software/pylith-debug/bin/nemesis: mpiexec: exit 255
+software/pylith-debug/bin/pylith: software/pylith-debug/bin/nemesis: exit 1
 ```
 
 ## Troubleshooting Strategy
 
-The error message on lines 97-98 indicates there is an error reading the `fault_slip.spatialdb` spatial database for the fault slip.
-PyLith was able to read data for 3 of 4 points.
-The file `fault_slip.spatialdb` contains only 3 points but `num-locs` is 4.
+We have more errors with `fault_slip.spatialdb`.
+The error message on lines 97-100 shows that PyLith is looking for `final_slip_opening` in the spatial database, but it found `final-slip-opening` instead.
+We need to change the dashes (used in PyLith v1.x and v2.x) to underscores (used in PyLith v3.x); we made this change to be consistent with the names of the output fields.
 
 ## Resolution
 
@@ -106,8 +120,8 @@ The file `fault_slip.spatialdb` contains only 3 points but `num-locs` is 4.
 caption: Correct error in `fault_slip.spatialdb`.
 ---
 # Error
-num-locs = 4
+value-names = final-slip-left-lateral  final-slip-opening  initiation-time
 
 # Correct
-num-locs = 3
+value-names = final_slip_left_lateral  final_slip_opening  initiation_time
 ```
