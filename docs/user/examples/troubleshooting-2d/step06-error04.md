@@ -6,7 +6,7 @@
 ---
 caption: Error message 4 when running Step 6.
 linenos: True
-emphasize-lines: 44-45, 57
+emphasize-lines: 68-69
 ---
 $ pylith step06_twofaults.cfg
 
