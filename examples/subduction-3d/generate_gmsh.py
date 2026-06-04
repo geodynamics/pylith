@@ -400,7 +400,7 @@ class App(GenerateMesh):
 
         sx = contour_smooth[:-1, 0] - contour_smooth[1:, 0]
         sy = contour_smooth[:-1, 1] - contour_smooth[1:, 1]
-        strike = numpy.atan2(sx, sy)
+        strike = numpy.arctan2(sx, sy)
         strike = numpy.concatenate((numpy.array([strike[0]]), strike))
         return strike
 
