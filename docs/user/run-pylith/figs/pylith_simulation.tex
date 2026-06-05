@@ -1,4 +1,5 @@
 \documentclass[crop,tikz]{standalone}
+\usepackage[x11names]{xcolor}
 \usepackage{tikz}
 \usepackage[scaled]{helvet}
 \renewcommand*\familydefault{\sfdefault}
@@ -6,15 +7,15 @@
 \begin{document}
 
 \pgfdeclarelayer{background}
-\pgfsetlayers{background,main}
+\pgfdeclarelayer{annotation}
+\pgfsetlayers{background,annotation,main}
 
 \usetikzlibrary{arrows,shapes,positioning}
-\input{../../../tikz-styles/figcolors}
-\tikzstyle{maincomps} = [rectangle, text centered, very thick, font=\bf\large]
-\tikzstyle{mesh} = [maincomps, draw=green!0!white, fill=ltgreen!50!white]
-\tikzstyle{params} = [maincomps, draw=dkyellow!0!white, fill=yellow!50!white]
-\tikzstyle{visualize} = [maincomps, draw=blue!0!white, fill=ltblue!50!white]
-\tikzstyle{postprocess} = [maincomps, draw=purple!0!white, fill=ltpurple!50!white]
+\tikzstyle{maincomps} = [rectangle, text centered, very thick, font=\bf\large, top color=DodgerBlue1!50!white, bottom color=DodgerBlue3]
+\tikzstyle{mesh} = [maincomps]
+\tikzstyle{params} = [maincomps]
+\tikzstyle{visualize} = [maincomps]
+\tikzstyle{postprocess} = [maincomps]
 
 \tikzstyle{pylith} = [rectangle, 
                       font=\bf\large,
@@ -23,31 +24,31 @@
                       rounded corners=0.75em,
                       minimum height=3.0em,
                       very thick,
-                      draw=red!80!black,
-                      top color=ltred!50!white,
-                      bottom color=red]
+                      draw=Red2!80!black,
+                      top color=Red1!30!white,
+                      bottom color=Red3]
 
 \tikzstyle{subcomps} = [rectangle, text width=6em, text centered, very thick, minimum height=1.5em, font=\small, node distance=2.0em]
 \tikzstyle{app} = [subcomps,
                       rounded corners=0.75em,
-                      draw=orange!80!black,
-                      top color=ltorange!50!white,
-                      bottom color=orange]
+                      draw=Orange2!80!black,
+                      top color=Orange1!50!white,
+                      bottom color=Orange3]
 \tikzstyle{input} = [subcomps,
                       font=\tt,
-                      draw=green!80!black,
-                      top color=ltgreen!50!white,
-                      bottom color=green]
+                      draw=Green2!80!black,
+                      top color=Green1!50!white,
+                      bottom color=Green3]
 \tikzstyle{output} = [subcomps, 
                       font=\tt,
-                      draw=blue!80!black,
-                      top color=ltblue!50!white,
-                      bottom color=blue]
+                      draw=Yellow1!80!black,
+                      top color=Yellow1!50!white,
+                      bottom color=Yellow3]
 
-\tikzstyle{arrowto} = [>=latex, ->, very thick]
-\tikzstyle{arrowto_minor} = [arrowto, thin]
-\tikzstyle{connect} = [very thick]
-\tikzstyle{connect_opt} = [connect, dashed]
+\tikzstyle{arrowto} = [>=latex, ->, ultra thick, gray]
+\tikzstyle{arrowto_minor} = [arrowto, thick, color=black]
+\tikzstyle{connect} = [ultra thick, gray]
+\tikzstyle{connect_opt} = [connect, dashed, color=black]
 
 \begin{tikzpicture}[node distance=3.0em]
 
@@ -55,15 +56,16 @@
     
     \node (pylith) [pylith] {PyLith};
 
-    \node (mesh) [mesh, above left=of pylith, text depth=11em, minimum width=26em, xshift=8em] {Mesh Generator};
-    \node (params) [params, above right=of pylith, text depth=11em, minimum width=18em, xshift=0em] {Simulation Parameters};
+    \node (mesh) [mesh, above left=of pylith, text depth=11em, minimum width=36em, xshift=+14em] {Mesh Generator};
+    \node (params) [params, above right=of pylith, text depth=11em, minimum width=18em, xshift=+7em] {Simulation Parameters};
     \node (viz) [visualize, below= of pylith, text height=15em, minimum width=28em] {Visualization};
     \node (postprocess) [postprocess, right=of viz, text height=8em, xshift=2em] {Post-processing};
     
   \end{pgfonlayer}
-  
+
+
   % Mesh
-  \node (cubit) [app, xshift=-9em, yshift=+3em] at (mesh) {Cubit};
+  \node (cubit) [app, xshift=-13em, yshift=+3em] at (mesh) {Cubit};
   \node (exodus) [input, below=of cubit, yshift=1em] {Exodus file [.exo]};
 
   \node (gmsh) [app, right=of cubit] {Gmsh};
@@ -72,6 +74,9 @@
 
   \node (textedit) [app, right=of gmsh] {Text Editor};
   \node (asciimesh) [input, below=of textedit, yshift=+1em] {ASCII File [.mesh]};
+
+  \node (converter) [app, right=of textedit] {{\ttfamily convertmesh}};
+  \node (hdf5mesh) [input, below=of converter, yshift=+1em] {PETSc HDF5 [.h5]};
 
   % Simulation parameters
   \node (textedit2) [app, yshift=+3em] at (params) {Text Editor};
@@ -86,7 +91,6 @@
   \node (visit) [app, right=of paraview] {Visit};
   \node (pylith-viz) [app, right=of visit] {pylith\_viz (PyVista)};
 
-
   % Post-processing
   \node (h5py) [app, yshift=+2em] at (postprocess) {Python w/h5py};
   \node (matlab) [app, below=of h5py, yshift=1em] {Matlab};
@@ -95,6 +99,13 @@
   \draw[connect_opt] (exodus.south) |- (mesh.south);
   \draw[connect_opt] (msh.south) |- (mesh.south);
   \draw[connect_opt] (asciimesh.south) |- (mesh.south);
+  \draw[connect_opt] (hdf5mesh.south) |- (mesh.south);
+
+  \begin{pgfonlayer}{annotation}
+    \draw (exodus.south) edge[out=-70,in=210,arrowto_minor] (converter.west);
+    \draw (msh.south) edge[out=-70,in=210,arrowto_minor] (converter.west);
+  \end{pgfonlayer}
+
   \draw[arrowto] (mesh.south) |- (pylith.west);
   \draw[arrowto] (cfg.south) |- (pylith.east);
   \draw[arrowto] (spatialdb.south) |- (pylith.east);
@@ -108,6 +119,7 @@
   \path (cubit) edge[arrowto_minor] (exodus);
   \path (gmsh) edge[arrowto_minor] (msh);
   \path (textedit) edge[arrowto_minor] (asciimesh);
+  \path (converter) edge[arrowto_minor] (hdf5mesh);
 
   \path (textedit2.south) edge[arrowto_minor] (cfg.north);
   \path (textedit2.south) edge[arrowto_minor] (spatialdb.north);
