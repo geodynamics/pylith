@@ -131,8 +131,8 @@ draw=yellow!80!black,
 
 \ifthenelse{\figpart=2}{
   \begin{scope}[on background layer]
-    \draw (refactor-kernels.west) edge[out=-110,in=110,arrowto] (refactor-materials.west);
-    \draw (refactor-kernels.west) edge[out=-110,in=110,arrowto] (qs-vel.west);
+    \draw (refactor-kernels.east) edge[out=-80,in=80,arrowto] (refactor-materials.east);
+    \draw (refactor-kernels.east) edge[out=-80,in=80,arrowto] (qs-vel.east);
     \draw[arrowto] (refactor-kernels.east) -- (poro-viscoelasticity.west);
     \draw[arrowto] (refactor-kernels.east) -- (poro-faults.west);
     \draw[arrowto] (refactor-kernels.east) -- (thermoelasticity.west);
