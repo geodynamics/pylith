@@ -10,7 +10,7 @@ dnl ============================================================================
 dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT([PyLith], [5.0.0], [https://geodynamics.org/resources/pylith])
+AC_INIT([PyLith], [5.0.1], [https://geodynamics.org/resources/pylith])
 AC_CONFIG_AUX_DIR([./aux-config])
 AC_CONFIG_HEADER([portinfo])
 AC_CONFIG_MACRO_DIR([m4])
@@ -117,7 +117,7 @@ AC_CHECK_HEADER([mpi.h], [], [AC_MSG_ERROR([header 'mpi.h' not found])])
 
 dnl PETSC
 AC_LANG(C)
-CIT_PATH_PETSC([3.25.1])
+CIT_PATH_PETSC([3.25.2])
 CIT_HEADER_PETSC
 CIT_CHECK_LIB_PETSC
 
@@ -191,7 +191,7 @@ CIT_FUNCTIONSTRING
 dnl VERSION
 CIG_PKG_GIT(PYLITH)
 AC_DEFINE_UNQUOTED([PYLITH_VERSION], ["$PACKAGE_VERSION"], [Define PyLith version])
-AC_DEFINE_UNQUOTED([PYLITH_DOI], ["10.5281/zenodo.20430260"], [Define PyLith doi])
+AC_DEFINE_UNQUOTED([PYLITH_DOI], ["10.5281/zenodo.20557504"], [Define PyLith doi])
 
 dnl ENDIANNESS
 AC_C_BIGENDIAN
@@ -290,6 +290,10 @@ AC_CONFIG_FILES([Makefile
 		tests/manual/Makefile
 		tests/manual/powerlaw-2d/Makefile
 		tests/manual/powerlaw-3d/Makefile
+		benchmarks/Makefile
+		benchmarks/linearelasticity/Makefile
+		benchmarks/linearelasticity/solver-faults-2d/Makefile
+		benchmarks/linearelasticity/solver-faults-3d/Makefile
 		developer/Makefile
 		docs/Makefile
 		release-notes/Makefile

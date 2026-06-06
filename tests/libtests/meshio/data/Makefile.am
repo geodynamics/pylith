@@ -154,8 +154,9 @@ dist_noinst_DATA = \
 
 dist_noinst_PYTHON = \
 	cubit_smalltri.py \
-	cubit_smallquad.py
-
+	cubit_smallquad.py \
+	generate_gmsh.py \
+  	generate_gmsh_errors.py
 
 noinst_TMP =
 

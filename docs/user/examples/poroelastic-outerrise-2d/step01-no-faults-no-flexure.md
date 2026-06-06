@@ -34,7 +34,7 @@ db_auxiliary_field.filename = no_faultzone_permeability.spatialdb
 
 ## Running the simulation
 
-```{code-block} console
+```{code-block} pyrejournal
 ---
 caption: Run Step 1 simulation
 ---

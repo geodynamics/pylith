@@ -22,6 +22,7 @@ swig_sources = \
 	../problems/Physics.i \
 	BoundaryCondition.i \
 	DirichletTimeDependent.i \
+	Neumann.i \
 	NeumannTimeDependent.i \
 	AbsorbingDampers.i
 

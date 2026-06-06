@@ -35,10 +35,10 @@ dist_noinst_HEADERS = \
 	TestLinearPoroelasticity.hh	\
 	PressureGradient.hh
 
-
 dist_noinst_DATA = \
 	data/tri.mesh \
-	data/quad.mesh
+	data/quad.mesh \
+	test_cases.ipynb
 
 export_datadir = $(abs_builddir)
 include $(top_srcdir)/tests/data.am

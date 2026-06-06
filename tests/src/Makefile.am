@@ -20,5 +20,7 @@ dist_noinst_HEADERS = \
 	ObserverSolnStub.hh \
 	MMSTest.hh
 
+dist_noinst_DATA = \
+	PhysicsStub.cc
 
 # End of file

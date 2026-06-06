@@ -14,7 +14,8 @@ We impose flow into the conduit at the external boundary, which leads to inflati
 magma reservoir.
 
 To run the example:
-```
+
+```bash
 pylith step01_inflation.cfg
 ```
 
@@ -23,6 +24,7 @@ pylith step01_inflation.cfg
 Same as Step 1 with evolution of porosity state variable.
 
 To run the example:
-```
+
+```bash
 pylith step02_inflation_statevars.cfg
 ```

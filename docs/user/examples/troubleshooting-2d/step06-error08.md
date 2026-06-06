@@ -2,18 +2,19 @@
 
 ## Error Message
 
-```{code-block} console
+```{code-block} pyrejournal
 ---
 caption: Error message 8 when running Step 6.
 linenos: True
-emphasize-lines: 55-56
+emphasize-lines: 58-59
 ---
 $ pylith step06_twofaults.cfg
 
+# Output
  >> software/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:76:main
  -- info (application-flow)
  -- Running on 1 process(es).
- >> src/cig/pylith/libsrc/pylith/utils/PetscOptions.cc:251:static void pylith::utils::_PetscOptions::write(pythia::journal::info_t&, const char*, const pylith::utils::PetscOptions&)
+ >> src/cig/pylith/libsrc/pylith/utils/PetscOptions.cc:251:static void pylith::utils::_PetscOptions::write(pythia::journal::info_t &, const char *, const PetscOptions &)
  -- info (application-flow)
  -- Setting PETSc options:
     dm_reorder_section = true
@@ -39,14 +40,17 @@ $ pylith step06_twofaults.cfg
     ts_type = beuler
     viewer_hdf5_collective = true
 
- >> src/cig/pylith/libsrc/pylith/meshio/MeshIOPetsc.cc:204:virtual void pylith::meshio::MeshIOPetsc::_read()
+ >> src/cig/pylith/libsrc/pylith/meshio/MeshIOPetsc.cc:205:virtual void pylith::meshio::MeshIOPetsc::_read()
  -- info (application-flow)
  -- Component 'meshiopetsc.reader': Reading finite-element mesh from 'mesh_tri.msh'.
- >> src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:76:void pylith::meshio::MeshIO::read(pylith::topology::Mesh*, bool)
+ >> src/cig/pylith/libsrc/pylith/meshio/MeshIO.cc:76:void pylith::meshio::MeshIO::read(pylith::topology::Mesh *, const bool)
  -- info (application-flow)
  -- Component 'meshiopetsc.reader': Domain bounding box:
     (-100000, 100000)
     (-100000, 0)
+ >> src/cig/pylith/libsrc/pylith/initializers/MeshInsertInterfaces.cc:51:virtual pylith::topology::Mesh *pylith::initializers::MeshInsertInterfaces::run(pylith::topology::Mesh *, const pylith::problems::Problem &)
+ -- info (application-flow)
+ -- Inserting cohesive cells.
  >> src/cig/pylith/libsrc/pylith/problems/TimeDependent.cc:316:virtual void pylith::problems::TimeDependent::verifyConfiguration() const
  -- info (application-flow)
  -- Component 'timedependent.problem': Verifying problem configuration.
@@ -85,16 +89,16 @@ $ pylith step06_twofaults.cfg
 [0]PETSC ERROR:   Option left: name:-ts_monitor (no value) source: code
 [0]PETSC ERROR:   Option left: name:-ts_type value: beuler source: code
 [0]PETSC ERROR: See https://petsc.org/release/faq/ for trouble shooting.
-[0]PETSC ERROR: PETSc Development Git Revision: v3.25.1-168-g70613f6caab Git Date: 2026-05-21 15:15:28 +0000
-[0]PETSC ERROR: software/pylith-debug/bin/mpinemesis with 1 MPI process(es) and PETSC_ARCH arch-pylith-debug on igskci164warlng.gs.doi.net by baagaard Tue May 26 12:55:27 2026
-[0]PETSC ERROR: Configure options: --PETSC_ARCH=arch-pylith-debug --with-debugging=1 --with-clanguage=c --with-mpi-compilers=1 --with-shared-libraries=1 --with-64-bit-points=1 --with-large-file-io=1 --with-lgrind=0 --download-parmetis=1 --download-metis=1 --download-triangle --download-ml=1 --download-superlu=1 --with-fc=0 --download-f2cblaslapack --with-hdf5=1 --with-hdf5-dir=software/pylith-debug --with-zlib=1 CFLAGS+=-g
-[0]PETSC ERROR: #1 static PetscErrorCode pylith::topology::FieldQuery::queryDBPointFn(PylithInt, PylithReal, const PylithReal*, PylithInt, PylithScalar*, void*)() at src/cig/pylith/libsrc/pylith/topology/FieldQuery.cc:320
-[0]PETSC ERROR: #2 DMProjectPoint_Func_Private() at /software/baagaard/petsc-dev/src/dm/impls/plex/plexproject.c:143
-[0]PETSC ERROR: #3 DMProjectPoint_Private() at /software/baagaard/petsc-dev/src/dm/impls/plex/plexproject.c:545
-[0]PETSC ERROR: #4 DMProjectLocal_Generic_Plex() at /software/baagaard/petsc-dev/src/dm/impls/plex/plexproject.c:1083
-[0]PETSC ERROR: #5 DMProjectFunctionLocal_Plex() at /software/baagaard/petsc-dev/src/dm/impls/plex/plexproject.c:1114
-[0]PETSC ERROR: #6 DMProjectFunctionLocal() at /software/baagaard/petsc-dev/src/dm/interface/dm.c:8361
-[0]PETSC ERROR: #7 void pylith::topology::FieldQuery::queryDB()() at src/cig/pylith/libsrc/pylith/topology/FieldQuery.cc:227
+[0]PETSC ERROR: PETSc Development Git Revision: v3.25.1-142-g990e4f00326 Git Date: 2026-05-15 01:03:36 -0400
+[0]PETSC ERROR: software/pylith-debug/bin/mpinemesis with 1 MPI process(es) and PETSC_ARCH arch-pylith-debug on IGSKCI164LM006 by baagaard Thu Jun  4 12:15:03 2026
+[0]PETSC ERROR: Configure options: --PETSC_ARCH=arch-pylith-debug --with-debugging=1 --with-clanguage=c --with-mpi-compilers=1 --with-shared-libraries=1 --with-64-bit-points=1 --with-large-file-io=1 --with-lgrind=0 --download-parmetis=1 --download-metis=1 --download-triangle --download-ml=1 --download-superlu=1 --with-fc=0 --download-f2cblaslapack --with-hdf5=1 --with-hdf5-include=software/pylith-debug/include --with-hdf5-lib=software/pylith-debug/lib/libhdf5.dylib --with-zlib=1 CFLAGS+=-g
+[0]PETSC ERROR: #1 static PetscErrorCode pylith::topology::FieldQuery::queryDBPointFn(PylithInt, PylithReal, const PylithReal *, PylithInt, PylithScalar *, void *)() at src/cig/pylith/libsrc/pylith/topology/FieldQuery.cc:320
+[0]PETSC ERROR: #2 DMProjectPoint_Func_Private() at software/unix/petsc-dev/src/dm/impls/plex/plexproject.c:143
+[0]PETSC ERROR: #3 DMProjectPoint_Private() at software/unix/petsc-dev/src/dm/impls/plex/plexproject.c:545
+[0]PETSC ERROR: #4 DMProjectLocal_Generic_Plex() at software/unix/petsc-dev/src/dm/impls/plex/plexproject.c:1083
+[0]PETSC ERROR: #5 DMProjectFunctionLocal_Plex() at software/unix/petsc-dev/src/dm/impls/plex/plexproject.c:1114
+[0]PETSC ERROR: #6 DMProjectFunctionLocal() at software/unix/petsc-dev/src/dm/interface/dm.c:8361
+[0]PETSC ERROR: #7 void pylith::topology::FieldQuery::queryDB()() at src/cig/pylith/libsrc/pylith/topology/FieldQuery.cc:228
 Fatal error. Calling MPI_Abort() to abort PyLith application.
 Traceback (most recent call last):
   File "software/pylith-debug/lib/python3.12/site-packages/pylith/apps/PetscApplication.py", line 55, in onComputeNodes
@@ -107,46 +111,33 @@ Traceback (most recent call last):
     return _problems.Problem_initialize(self)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 RuntimeError: Error detected while in PETSc function.
-C++ traceback (13 frames):
-  [0]  software/pylith-debug/lib/libpylith.so.0(_ZN6pylith8topology10FieldQuery7queryDBEv+0x292) [0x75c8149a1782]
-  [1]  software/pylith-debug/lib/libpylith.so.0(_ZN6pylith10feassemble16AuxiliaryFactory15setValuesFromDBEv+0x2ca) [0x75c8148025e4]
-  [2]  software/pylith-debug/lib/libpylith.so.0(_ZN6pylith6faults6KinSrc10initializeERKNS_8topology5FieldERKNS_6scales6ScalesEPKN11spatialdata9geocoords8CoordSysE+0x51d) [0x75c8147880cd]
-  [3]  software/pylith-debug/lib/libpylith.so.0(_ZN6pylith6faults16FaultCohesiveKin20createAuxiliaryFieldERKNS_8topology5FieldERKNS2_4MeshE+0xa51) [0x75c81476f305]
-  [4]  software/pylith-debug/lib/libpylith.so.0(_ZN6pylith10feassemble10Integrator10initializeERKNS_8topology5FieldE+0x29f) [0x75c8147a7693]
-  [5]  software/pylith-debug/lib/libpylith.so.0(_ZN6pylith10feassemble19IntegratorInterface10initializeERKNS_8topology5FieldE+0x3d6) [0x75c8147ca87c]
-  [6]  software/pylith-debug/lib/libpylith.so.0(_ZN6pylith8problems7Problem10initializeEv+0x400) [0x75c81491d846]
-  [7]  software/pylith-debug/lib/libpylith.so.0(_ZN6pylith8problems13TimeDependent10initializeEv+0x26f) [0x75c81492d011]
-  [8]  software/pylith-debug/lib/python3.12/site-packages/pylith/problems/_problems.so(+0x15c30) [0x75c803d7ac30]
-  [9]  software/pylith-debug/bin/mpinemesis(+0x15a51) [0x5717b3696a51]
-  [10]  /lib/x86_64-linux-gnu/libc.so.6(+0x29d90) [0x75c827029d90]
-  [11]  /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0x80) [0x75c827029e40]
-  [12]  software/pylith-debug/bin/mpinemesis(+0x5805) [0x5717b3686805]
+C++ traceback (12 frames):
+  [0]  3   libpylith.0.dylib                   0x000000010653c9fc _ZN6pylith13ExternalErrorCI1NS_5ErrorEERKNS_12ErrorMessageE + 36
+  [1]  4   libpylith.0.dylib                   0x0000000106792c28 _ZN6pylith8topology10FieldQuery7queryDBEv + 592
+  [2]  5   libpylith.0.dylib                   0x000000010660309c _ZN6pylith10feassemble16AuxiliaryFactory15setValuesFromDBEv + 608
+  [3]  6   libpylith.0.dylib                   0x000000010658ed48 _ZN6pylith6faults6KinSrc10initializeERKNS_8topology5FieldERKNS_6scales6ScalesEPKN11spatialdata9geocoords8CoordSysE + 1180
+  [4]  7   libpylith.0.dylib                   0x0000000106576f64 _ZN6pylith6faults16FaultCohesiveKin20createAuxiliaryFieldERKNS_8topology5FieldERKNS2_4MeshE + 2764
+  [5]  8   libpylith.0.dylib                   0x00000001065ac9bc _ZN6pylith10feassemble10Integrator10initializeERKNS_8topology5FieldE + 560
+  [6]  9   libpylith.0.dylib                   0x00000001065cd944 _ZN6pylith10feassemble19IntegratorInterface10initializeERKNS_8topology5FieldE + 924
+  [7]  10  libpylith.0.dylib                   0x0000000106711014 _ZN6pylith8problems7Problem10initializeEv + 936
+  [8]  11  libpylith.0.dylib                   0x0000000106721610 _ZN6pylith8problems13TimeDependent10initializeEv + 652
+  [9]  12  _problems.so                        0x00000001096e23f0 _ZL24_wrap_Problem_initializeP7_objectS0_ + 216
+  [10]  46  mpinemesis                          0x0000000102addd70 main + 616
+  [11]  47  dyld                                0x0000000197e0eb98 start + 6076
 
---------------------------------------------------------------------------
-MPI_ABORT was invoked on rank 0 in communicator MPI_COMM_WORLD
-  Proc: [[4252,1],0]
-  Errorcode: -1
-
-NOTE: invoking MPI_ABORT causes Open MPI to kill all MPI processes.
-You may or may not see output from other processes, depending on
-exactly when Open MPI kills them.
---------------------------------------------------------------------------
---------------------------------------------------------------------------
-prterun has exited due to process rank 0 with PID 0 on node igskci164warlng calling
-"abort". This may have caused other processes in the application to be
-terminated by signals sent by prterun (as reported here).
---------------------------------------------------------------------------
+Abort(-1) on node 0 (rank 0 in comm 0): application called MPI_Abort(MPI_COMM_WORLD, -1) - process 0
 software/pylith-debug/bin/nemesis: mpiexec: exit 255
 software/pylith-debug/bin/pylith: software/pylith-debug/bin/nemesis: exit 1
-
 ```
 
 ## Troubleshooting Strategy
 
-With the linear interpolation we get an error about not being able to find an initiation time for a point.
-This suggests there are errors in our spatial database file related to interpolation.
+We still get an error about not being able to find an initiation time for a point.
+This suggests there are still one or more errors in our spatial database file related to interpolation.
 We examine the header and data points for errors.
-We notice that our points lie along a line (data dimension is 1), but our header has `data-dim=2`.
+We notice that our deepest point has a y coordinate of -25 km, but PyLith is looking for values at a point with a y coordinate of -27.621 km.
+We need to add an additional point to our spatial database.
+This explains why we had `num-locs=4` when we started!
 
 ## Resolution
 
@@ -154,9 +145,10 @@ We notice that our points lie along a line (data dimension is 1), but our header
 ---
 caption: Correct error in `fault_slip.spatialdb`.
 ---
-# Error
-data-dim = 2
-    
-# Correct
-data-dim = 1
+num-locs = 4
+...
+0.0   99.0     -2.0       0.0   0.0
+0.0  -20.0     -2.0       0.0   0.0
+0.0  -25.0      0.0       0.0   0.0
+0.0  -99.0      0.0       0.0   0.0
 ```

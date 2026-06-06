@@ -51,6 +51,9 @@ dist_noinst_HEADERS = \
 	PlanePWave2D.hh
 
 
+dist_noinst_PYTHON = \
+	data/generate_gmsh_2d.py
+
 dist_noinst_DATA = \
 	data/tri.mesh \
 	data/tri.msh \

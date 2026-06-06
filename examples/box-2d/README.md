@@ -15,7 +15,8 @@ Axial extension with Dirichlet boundary conditions on the +x, -x, and
 -y boundaries.
 
 To run the example:
-```
+
+```bash
 pylith step01_axialdisp.cfg
 ```
 
@@ -24,7 +25,8 @@ pylith step01_axialdisp.cfg
 Simple shear with Dirichlet boundary conditions on all four boundaries.
 
 To run the example:
-```
+
+```bash
 pylith step02_sheardisp.cfg
 ```
 
@@ -43,7 +45,8 @@ The simulation parameters are in the `pylithapp.cfg` and
 `step03_sheardisptract.cfg` files.
 
 To run the example:
-```
+
+```bash
 pylith step03_sheardisptract.cfg
 ```
 
@@ -63,7 +66,8 @@ The simulation parameters are in the `pylithapp.cfg` and
 `step04_sheardispic.cfg` files.
 
 To run the example:
-```
+
+```bash
 pylith step04_sheardispic.cfg
 ```
 
@@ -83,7 +87,8 @@ The simulation parameters are in the `pylithapp.cfg` and
 `step05_sheardisptractrate.cfg` files.
 
 To run the example:
-```
+
+```bash
 pylith step05_sheardisptractrate.cfg
 ```
 

@@ -34,25 +34,25 @@ nodeset 20 name "fault"
 # ----------------------------------------------------------------------
 # Create nodeset for boundaries
 # ----------------------------------------------------------------------
-group "bndry_south" add node in curve 6
-group "bndry_south" add node in curve 7
-group "bndry_south" remove node in group fault
-nodeset 11 group bndry_south
-nodeset 11 name "bndry_south"
+group "boundary_south" add node in curve 6
+group "boundary_south" add node in curve 7
+group "boundary_south" remove node in group fault
+nodeset 11 group boundary_south
+nodeset 11 name "boundary_south"
 
-group "bndry_north" add node in curve 9
-group "bndry_north" add node in curve 8
-group "bndry_north" remove node in group fault
-nodeset 12 group bndry_north
-nodeset 12 name "bndry_north"
+group "boundary_north" add node in curve 9
+group "boundary_north" add node in curve 8
+group "boundary_north" remove node in group fault
+nodeset 12 group boundary_north
+nodeset 12 name "boundary_north"
 
-group "bndry_west" add node in curve 4
-nodeset 13 group bndry_west
-nodeset 13 name "bndry_west"
+group "boundary_west" add node in curve 4
+nodeset 13 group boundary_west
+nodeset 13 name "boundary_west"
 
-group "bndry_east" add node in curve 2
-nodeset 14 group bndry_east
-nodeset 14 name "bndry_east"
+group "boundary_east" add node in curve 2
+nodeset 14 group boundary_east
+nodeset 14 name "boundary_east"
 
 # End of file
 

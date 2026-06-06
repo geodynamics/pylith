@@ -43,7 +43,7 @@ db_auxiliary_field.data = [0.0*s, 1.0*m, 0.0*m]
 
 ## Running the simulation
 
-```{code-block} console
+```{code-block} pyrejournal
 ---
 caption: Run Step 1 simulation
 ---
@@ -218,7 +218,7 @@ Using the Cubit mesh rather than the Gmsh mesh involves two changes:
 
 The file `step01_slip_cubit.cfg` provides these changes and updates the names for output.
 
-```{code-block} console
+```{code-block} pyrejournal
 ---
 caption: Run Step 1 simulation with the Cubit mesh
 ---

@@ -2,7 +2,7 @@
 
 ## Error Message
 
-```{code-block} console
+```{code-block} pyrejournal
 ---
 caption: Error message 4 when running Step 1.
 linenos: True
@@ -10,6 +10,7 @@ emphasize-lines: 41-42, 54
 ---
 $ pylith step01a_gravity.cfg
 
+# Output
  >> software/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:76:main
  -- info (application-flow)
  -- Running on 1 process(es).

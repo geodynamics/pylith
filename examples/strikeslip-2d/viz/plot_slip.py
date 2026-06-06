@@ -5,7 +5,7 @@ import numpy
 
 from pythia.pyre.units.length import km
 
-FILENAME = "output/slip_variable.txt"
+FILENAME = "slip_variable.txt"
 
 data = numpy.loadtxt(FILENAME)
 x = data[:,0] / km.value

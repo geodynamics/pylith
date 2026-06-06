@@ -284,27 +284,27 @@ if False:
     cubit.cmd("nodeset 10 name 'groundsurf'")
 
     # Create nodesets for west boundary
-    cubit.cmd("group 'bndry_west' add node in curve c_west")
-    cubit.cmd("group 'bndry_west' add node in curve c_west@A")
-    cubit.cmd("nodeset 11 group bndry_west")
-    cubit.cmd("nodeset 11 name 'bndry_west'")
+    cubit.cmd("group 'boundary_west' add node in curve c_west")
+    cubit.cmd("group 'boundary_west' add node in curve c_west@A")
+    cubit.cmd("nodeset 11 group boundary_west")
+    cubit.cmd("nodeset 11 name 'boundary_west'")
 
     # Create nodeset for east boundary
     # Crust
-    cubit.cmd("group 'bndry_east_crust' add node in curve c_east")
-    cubit.cmd("nodeset 12 group bndry_east_crust")
-    cubit.cmd("nodeset 12 name 'bndry_east_crust'")
+    cubit.cmd("group 'boundary_east_crust' add node in curve c_east")
+    cubit.cmd("nodeset 12 group boundary_east_crust")
+    cubit.cmd("nodeset 12 name 'boundary_east_crust'")
 
     # Mantle
-    cubit.cmd("group 'bndry_east_mantle' add node in curve c_east@A")
-    cubit.cmd("group 'bndry_east_mantle' remove node in group fault_slabbot")
-    cubit.cmd("nodeset 13 group bndry_east_mantle")
-    cubit.cmd("nodeset 13 name 'bndry_east_mantle'")
+    cubit.cmd("group 'boundary_east_mantle' add node in curve c_east@A")
+    cubit.cmd("group 'boundary_east_mantle' remove node in group fault_slabbot")
+    cubit.cmd("nodeset 13 group boundary_east_mantle")
+    cubit.cmd("nodeset 13 name 'boundary_east_mantle'")
 
     # Create nodesets for bottom boundary
-    cubit.cmd("group 'bndry_bot' add node in curve c_bot")
-    cubit.cmd("nodeset 14 group bndry_bot")
-    cubit.cmd("nodeset 14 name 'bndry_bot'")
+    cubit.cmd("group 'boundary_bot' add node in curve c_bot")
+    cubit.cmd("nodeset 14 group boundary_bot")
+    cubit.cmd("nodeset 14 name 'boundary_bot'")
 
 
 # Sidesets
@@ -338,27 +338,27 @@ if True:
     cubit.cmd("sideset 10 name 'groundsurf'")
 
     ## Create sideset for west boundary
-    cubit.cmd("group 'bndry_west' add curve c_west")
-    cubit.cmd("group 'bndry_west' add curve c_west@A")
-    cubit.cmd("sideset 11 group bndry_west")
-    cubit.cmd("sideset 11 name 'bndry_west'")
+    cubit.cmd("group 'boundary_west' add curve c_west")
+    cubit.cmd("group 'boundary_west' add curve c_west@A")
+    cubit.cmd("sideset 11 group boundary_west")
+    cubit.cmd("sideset 11 name 'boundary_west'")
 
     # Create sideset for east boundary
     # Crust
-    cubit.cmd("group 'bndry_east_crust' add curve c_east")
-    cubit.cmd("sideset 12 group bndry_east_crust")
-    cubit.cmd("sideset 12 name 'bndry_east_crust'")
+    cubit.cmd("group 'boundary_east_crust' add curve c_east")
+    cubit.cmd("sideset 12 group boundary_east_crust")
+    cubit.cmd("sideset 12 name 'boundary_east_crust'")
 
     # Mantle
-    cubit.cmd("group 'bndry_east_mantle' add curve c_east@A")
-    cubit.cmd("group 'bndry_east_mantle' remove group fault_slabbot")
-    cubit.cmd("sideset 13 group bndry_east_mantle")
-    cubit.cmd("sideset 13 name 'bndry_east_mantle'")
+    cubit.cmd("group 'boundary_east_mantle' add curve c_east@A")
+    cubit.cmd("group 'boundary_east_mantle' remove group fault_slabbot")
+    cubit.cmd("sideset 13 group boundary_east_mantle")
+    cubit.cmd("sideset 13 name 'boundary_east_mantle'")
 
     # Create sideset for bottom boundary
-    cubit.cmd("group 'bndry_bot' add curve c_bot")
-    cubit.cmd("sideset 14 group bndry_bot")
-    cubit.cmd("sideset 14 name 'bndry_bot'")
+    cubit.cmd("group 'boundary_bot' add curve c_bot")
+    cubit.cmd("sideset 14 group boundary_bot")
+    cubit.cmd("sideset 14 name 'boundary_bot'")
 
 
     # Buried edges :TODO: Remove after using transform to create fault

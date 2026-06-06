@@ -47,7 +47,7 @@ db_auxiliary_field.query_type = linear
 
 ## Running the simulation
 
-```{code-block} console
+```{code-block} pyrejournal
 ---
 caption: Run Step 2 simulation
 ---

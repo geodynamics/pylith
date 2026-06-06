@@ -2,14 +2,15 @@
 
 ## Error Message
 
-```{code-block} console
+```{code-block} pyrejournal
 ---
 caption: Error message 3 when running Step 1.
 linenos: True
-emphasize-lines: 3-6
+emphasize-lines: 4-7
 ---
 $ pylith step01a_gravity.cfg
 
+# Output
  >> ./pylithapp.cfg:112:
  -- error (pyre.inventory)
  -- pylithapp.timedependent.materials.elasticity.auxiliary_subfields.bulk_modulus.basis_order <- '0'

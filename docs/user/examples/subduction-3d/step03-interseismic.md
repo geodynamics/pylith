@@ -30,7 +30,7 @@ For aseismic slip we use the `KinSrcConstRate` kinematic source to prescribe a c
 We also adjust the groups used for the boundary conditions to remove overlap with the slab to allow the slab to move independently.
 We adjust the displacement scale to match the slow deformation and tighten the KSP absolute tolerance to facilitate convergence in a single SNES iteration.
 
-```{code-block} console
+```{code-block} pyrejournal
 ---
 caption: Run Step 3 simulation using the Gmsh mesh.
 ---
@@ -97,7 +97,7 @@ In this simulation the fault interfaces on the top and bottom of the slab occupy
 As a result, the linear solver requires more iterations to converge compared to the limited fault interface in Step 2.
 
 
-```{code-block} console
+```{code-block} pyrejournal
 ---
 caption: Alternatively, run Step 3 simulation using the Cubit mesh.
 ---

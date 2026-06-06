@@ -2,14 +2,15 @@
 
 ## Error Message
 
-```{code-block} console
+```{code-block} pyrejournal
 ---
 caption: Error message 1 when running Step 1.
 linenos: True
-emphasize-lines: 3-6
+emphasize-lines: 4-7
 ---
 $ pylith step01a_gravity.cfg
 
+# Output
  >> {default}::
  -- error (pyre.inventory)
  -- timedependent.problem_defaults.name <- ''

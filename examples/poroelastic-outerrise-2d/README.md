@@ -38,7 +38,7 @@ To run the example:
 pylith step02_no_faults_flexure.cfg
 ```
 
-## Step 1: Faults with flexure
+## Step 3: Faults with flexure
 
 The permeability field is depth dependent, decreasing with depth and also varies laterally,
 simulating the enhanced permeability within normal faults in the outer-rise. The lithosphere is
@@ -48,5 +48,5 @@ outer-rise of a subduction zone.
 To run the example:
 
 ```bash
-step03_faults_flexure.cfg
+pylith step03_faults_flexure.cfg
 ```

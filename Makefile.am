@@ -23,6 +23,7 @@ endif
 
 DIST_SUBDIRS = $(SUBDIRS) \
 	examples \
+	benchmarks \
 	developer \
 	docs \
 	release-notes \
@@ -50,6 +51,7 @@ EXTRA_DIST = \
 	LICENSE.md \
 	NEWS \
 	README.md \
+	CLAUDE.md \
 	setup.cfg \
 	setup.py \
 	docker/pylith-testenv \

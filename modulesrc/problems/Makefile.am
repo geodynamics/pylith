@@ -27,13 +27,15 @@ swig_sources = \
 	TimeDependent.i \
 	GreensFns.i \
 	Physics.i \
+	Observer.i \
 	ObserverSoln.i \
 	ObserverPhysics.i \
 	InitialCondition.i \
 	InitialConditionDomain.i \
 	InitialConditionPatch.i \
 	ProgressMonitor.i \
-	ProgressMonitorTime.i
+	ProgressMonitorTime.i \
+	ProgressMonitorStep.i
 
 
 swig_generated = \

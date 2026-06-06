@@ -25,12 +25,11 @@ dist_noinst_DATA = \
 	.step06-fix01-step06_twofaults.cfg \
 	.step06-fix02-step06_twofaults.cfg \
 	.step06-fix03-step06_twofaults.cfg \
-	.step06-fix04-step06_twofaults.cfg \
+	.step06-fix04-fault_slip.spatialdb \
 	.step06-fix05-fault_slip.spatialdb \
-	.step06-fix06-fault_slip.spatialdb \
-	.step06-fix07-step06_twofaults.cfg \
+	.step06-fix06-step06_twofaults.cfg \
+	.step06-fix07-fault_slip.spatialdb \
 	.step06-fix08-fault_slip.spatialdb \
-	.step06-fix09-fault_slip.spatialdb \
 	README.md \
 	fault_slip.spatialdb \
 	mat_elastic.spatialdb \

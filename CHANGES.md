@@ -5,6 +5,17 @@ Starting with v3.0.0, we strictly follow the [semantic versioning guidelines](ht
 The version numbers are in the form `MAJOR.MINOR.PATCH`, where major releases indicate changes to the public API (parameters), minor releases indicate new functionality that is backward compatible, and patch releases indicate backward compatible bug fixes.
 :::
 
+## Version 5.0.1 (2026-06-07)
+
+* **Changed**
+  * Updated PETSc to 3.25.2.
+* **Fixed**
+  * Fixed PETSc bug in output of processor rank for materials when running in parallel.
+  * Updated `examples/troubleshooting-2d` to match behavior after latest bugfixes.
+  * Add missing files for `examples/subduction-3d` to source distribution.
+  * Switch from `numpy.atan2()` to `numpy.arctan2()` in `examples/subduction-3d/generate_gmsh.py` for compatibility with numpy 1.x.
+  * Additional clean up of parameter files for `reverse-2d` and `subduction-2d` examples.
+
 ## Version 5.0.0 (2026-06-02)
 
 * **Changed**

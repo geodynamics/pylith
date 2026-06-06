@@ -36,6 +36,7 @@ dist_noinst_DATA = \
 	mat_viscoelastic.cfg \
 	mat_viscosity.spatialdb \
 	mat_elastic_incompressible.cfg \
+	mat_elastic_refstate.spatialdb \
 	pylithapp.cfg \
 	step01_axialdisp.cfg \
 	step02_coseismic.cfg \
@@ -47,8 +48,21 @@ dist_noinst_DATA = \
 	step08a_gravity_refstate.cfg \
 	step08b_gravity_incompressible.cfg \
 	step08c_gravity_viscoelastic.cfg \
+	step01_axialdisp_cubit.cfg \
+	step02_coseismic_cubit.cfg \
+	step03_interseismic_cubit.cfg \
+	step04_eqcycle_cubit.cfg \
+	step06_slowslip_cubit.cfg \
+	step07a_leftlateral_cubit.cfg \
+	step07b_reverse_cubit.cfg \
+	step08a_gravity_refstate_cubit.cfg \
+	step08b_gravity_incompressible_cubit.cfg \
+	step08c_gravity_viscoelastic_cubit.cfg \
+	etopo2020_bedrock_local.nc \
 	cas_contours_dep.in.txt.gz \
 	cgnss_stations.txt \
+	cgnss_stations_flat.txt \
+	cgnss_stations_latlon.txt \
 	invert_slip.cfg \
 	input/README.md \
 	scratch/README.md

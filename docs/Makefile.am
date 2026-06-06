@@ -10,14 +10,17 @@
 
 dist_noinst_DATA = \
 	conf.py \
+	build.sh \
 	requirements.txt \
 	_static/css/custom.css \
+	_static/css/pyrejournal.css \
 	_static/images/cig_logo_dots.png \
 	_static/images/cig_short_nolabel.png \
 	_static/images/cig_short_pylith.png \
 	_static/images/ORCIDiD_icon32x32.png \
 	_templates/sidebar-cig.html \
 	tikz-styles/figcolors.tex \
+	tikz-styles/example-style.tex \
 	index.md \
 	references.bib \
 	references.md \
@@ -31,9 +34,15 @@ dist_noinst_DATA = \
 	intro/quickstart.md \
 	intro/release-notes.md \
 	intro/conventions.md \
+	intro/figs/development.tex \
 	intro/figs/development-1.pdf \
 	intro/figs/development-1.svg \
-	user/appendices/analytical-solns.md \
+	markup/README.md \
+  	markup/__init__.py \
+  	markup/pyproject.toml \
+  	markup/pyrejournal_lexer.py \
+  	markup/pyrejournal_style.py \
+  	user/appendices/analytical-solns.md \
 	user/appendices/figs/airy_stress_axial_extension.pdf \
 	user/appendices/figs/airy_stress_axial_extension.svg \
 	user/appendices/figs/airy_stress_axial_extension.tex \
@@ -370,6 +379,7 @@ dist_noinst_DATA = \
 	user/examples/poroelastic-outerrise-2d/step03-faults-flexure.md \
 	user/examples/poroelastic-outerrise-2d/step03_faults_flexure-synopsis.md \
 	user/examples/poroelastic-outerrise-2d/exercises.md \
+	user/examples/poroelastic-outerrise-2d/figs/generate_diagrams.py \
 	user/examples/poroelastic-outerrise-2d/figs/diagrams.tex \
 	user/examples/poroelastic-outerrise-2d/figs/geometry.svg \
 	user/examples/poroelastic-outerrise-2d/figs/geometry.pdf \
@@ -546,6 +556,7 @@ dist_noinst_DATA = \
 	user/examples/subduction-2d/figs/step03-diagram.svg \
 	user/examples/subduction-2d/figs/step03-solution.jpg \
 	user/examples/subduction-3d/index.md \
+	user/examples/subduction-3d/figs/generate_diagrams.py \
 	user/examples/subduction-3d/common-information.md \
 	user/examples/subduction-3d/meshing-cubit.md \
 	user/examples/subduction-3d/meshing-gmsh.md \
@@ -613,7 +624,6 @@ dist_noinst_DATA = \
 	user/examples/troubleshooting-2d/step06-error07.md \
 	user/examples/troubleshooting-2d/step06-error08.md \
 	user/examples/troubleshooting-2d/step06-error09.md \
-	user/examples/troubleshooting-2d/step06-error10.md \
 	user/examples/troubleshooting-2d/figs/step01-diagram.pdf \
 	user/examples/troubleshooting-2d/figs/step01-diagram.svg \
 	user/examples/troubleshooting-2d/figs/step06-diagram.pdf \

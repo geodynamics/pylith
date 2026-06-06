@@ -32,7 +32,7 @@ Now that we have both earthquake rupture and aseismic creep on the top of the sl
 We impose uniform slip on the splay fault using a `UniformDB`.
 As in Step 3 we also adjust the nodesets used for the boundary conditions to remove overlap with the slab to allow the slab to move independently. Note that the aseismic slip uses `KinSrcConstRate`, while the two ruptures use the default `KinSrcStep`.
 
-```{code-block} console
+```{code-block} pyrejournal
 ---
 caption: Run Step 4 simulation using the Gmsh mesh.
 ---
@@ -99,7 +99,7 @@ The simulation advances 31 time steps.
 As in Step 3 each linear solve requires about 20 iterations to converge.
 Some time steps require 2 SNES iterations (likley due to poor mesh quality along the trench) although the linear solve in the second SNES iteration requires no more than 1 iterations in most cases.
 
-```{code-block} console
+```{code-block} pyrejournal
 ---
 caption: Alternatively, run Step 4 simulation using the Cubit mesh.
 ---

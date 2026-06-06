@@ -43,7 +43,7 @@ The GNSS station file for use with the mesh from Gmsh (`cgnss_stations.txt`) req
 The `generate_cgnss.py` Python script uses the ground surface output from Step 1 to set the elevation of stations just below the ground surface consistent with the topogrpahy.
 :::
 
-```{code-block} console
+```{code-block} pyrejournal
 ---
 caption: Run Step 6 simulation using the Gmsh mesh.
 ---
@@ -104,7 +104,7 @@ viewer_hdf5_collective = true
 
 The beginning of the output is nearly the same as in previous examples. The simulation advances 16 time steps.
 
-```{code-block} console
+```{code-block} pyrejournal
 ---
 caption: Alternatively, run Step 6 simulation using the Cubit mesh.
 ---

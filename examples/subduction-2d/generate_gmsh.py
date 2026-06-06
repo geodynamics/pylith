@@ -211,10 +211,10 @@ class App(GenerateMesh):
         # Create physical groups for the boundaries and the fault.
         face_groups = (
             BoundaryGroup(name="groundsurf", tag=10, dim=1, entities=[self.c_topo_west, self.c_topo_east]),
-            BoundaryGroup(name="bndry_west", tag=11, dim=1, entities=[self.c_west_mantle, self.c_west_crust]),
-            BoundaryGroup(name="bndry_east_crust", tag=12, dim=1, entities=[self.c_east_crust]),
-            BoundaryGroup(name="bndry_east_mantle_tmp", tag=113, dim=1, entities=[self.c_east_mantle]),
-            BoundaryGroup(name="bndry_bot", tag=14, dim=1, entities=[self.c_bot]),
+            BoundaryGroup(name="boundary_west", tag=11, dim=1, entities=[self.c_west_mantle, self.c_west_crust]),
+            BoundaryGroup(name="boundary_east_crust", tag=12, dim=1, entities=[self.c_east_crust]),
+            BoundaryGroup(name="boundary_east_mantle_tmp", tag=113, dim=1, entities=[self.c_east_mantle]),
+            BoundaryGroup(name="boundary_bot", tag=14, dim=1, entities=[self.c_bot]),
             BoundaryGroup(name="fault_coseismic", tag=20, dim=1, entities=[self.c_slabtop_mantle_upper, self.c_slabtop_crust]),
             BoundaryGroup(name="fault_coseismic_edge", tag=30, dim=0, entities=[self.p_slabtop_coseismic]),
             BoundaryGroup(name="fault_slabtop", tag=21, dim=1, entities=[self.c_slabtop_mantle_lower, self.c_slabtop_mantle_upper, self.c_slabtop_crust]),
@@ -224,7 +224,7 @@ class App(GenerateMesh):
         )
         for group in face_groups:
             group.create_physical_group()
-        group_exclude("bndry_east_mantle_tmp", "fault_slabbot", new_name="bndry_east_mantle", new_tag=13)
+        group_exclude("boundary_east_mantle_tmp", "fault_slabbot", new_name="boundary_east_mantle", new_tag=13)
 
     def generate_mesh(self, cell):
         """Generate the mesh.

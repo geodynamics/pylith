@@ -64,7 +64,7 @@ auxiliary_subfields.slip.basis_order = 1
 
 ## Running the simulation
 
-```{code-block} console
+```{code-block} pyrejournal
 ---
 caption: Run Step 5 simulation
 ---

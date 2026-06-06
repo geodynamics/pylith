@@ -2,14 +2,15 @@
 
 ## Error Message
 
-```{code-block} console
+```{code-block} pyrejournal
 ---
 caption: Error message 2 when running Step 6.
 linenos: True
-emphasize-lines: 3-6
+emphasize-lines: 4-7
 ---
 $ pylith step06_twofaults.cfg
 
+# Output
  >> {default}::
  -- error (pyre.inventory)
  -- timedependent.interfaces.faultcohesivekin.singlerupture.kinsrcstep.simpledb.simpleioascii.filename <- ''

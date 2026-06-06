@@ -33,7 +33,7 @@ The parameters specific to this example are in `step07a_leftlateral.cfg` and `st
 
 For Green's functions we use the `FaultCohesiveImpulses` kinematic source to prescribe slip impulses for left-lateral (Step 7a -- `impulse_dof = [1]`) and reverse (Step 7b -- `impulse_dof = [2]`) slip directions. As for Step 6, we use `OutputSolnPoints` to output the solution at fake CGNSS stations.
 
-```{code-block} console
+```{code-block} pyrejournal
 ---
 caption: Run Step 7a and 7b simulations using the Gmsh mesh.
 ---
@@ -92,7 +92,7 @@ The beginning of the output is nearly the same as in several previous examples.
 In this case, however, rather than stepping through time, we are stepping through impulse numbers. In each simulation, there are 96 impulses applied on the fault.
 Because we are not time stepping, we do not use all of the default PETSc options.
 
-```{code-block} console
+```{code-block} pyrejournal
 ---
 caption: Alternatively, run Step 7a and 7b simulations using the Cubit mesh.
 ---

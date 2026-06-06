@@ -43,7 +43,7 @@ db_auxiliary_field.data = [200.0*year, -3.0*m, 0.0*m]
 
 ## Running the simulation
 
-```{code-block} console
+```{code-block} pyrejournal
 ---
 caption: Run Step 3 simulation
 ---
