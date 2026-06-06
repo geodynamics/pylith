@@ -22,8 +22,10 @@ swig_sources = \
 	MeshOps.i \
 	FieldBase.i \
 	Field.i \
+	Jacobian.i \
 	Distributor.i \
 	RefineUniform.i \
+	RefineMesh.i \
 	ReverseCuthillMcKee.i
 
 swig_generated = \

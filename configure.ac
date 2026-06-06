@@ -290,6 +290,10 @@ AC_CONFIG_FILES([Makefile
 		tests/manual/Makefile
 		tests/manual/powerlaw-2d/Makefile
 		tests/manual/powerlaw-3d/Makefile
+		benchmarks/Makefile
+		benchmarks/linearelasticity/Makefile
+		benchmarks/linearelasticity/solver-faults-2d/Makefile
+		benchmarks/linearelasticity/solver-faults-3d/Makefile
 		developer/Makefile
 		docs/Makefile
 		release-notes/Makefile

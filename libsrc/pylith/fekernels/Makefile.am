@@ -34,7 +34,8 @@ subpkginclude_HEADERS = \
 	
 dist_noinst_HEADERS =
 
-dist_noinst_DATA =
+dist_noinst_DATA = \
+	notes.md
 
 
 # End of file

@@ -19,6 +19,7 @@ EXTRA_DIST = \
 	settings/petsc_monitoring.cfg \
 	settings/petsc_solver_tolerances.cfg \
 	settings/petsc_testing.cfg \
+	settings/petsc_tsadaptive.cfg \
 	settings/solver_elasticity.cfg \
 	settings/solver_elasticity_fault_fieldsplit.cfg \
 	settings/solver_elasticity_fault_vpbjacobi.cfg \

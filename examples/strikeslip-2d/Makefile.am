@@ -29,6 +29,7 @@ dist_noinst_DATA = \
 	step01a_slip.cfg \
 	step01b_slip.cfg \
 	step01c_slip.cfg \
+	step01_slip_cubit.cfg \
 	step02_slip_velbc.cfg \
 	step03_multislip_velbc.cfg \
 	step04_varslip.cfg \
@@ -38,7 +39,10 @@ dist_noinst_DATA = \
 	gnss_stations.txt \
 	slip_impulses.spatialdb \
 	slip_variable.spatialdb \
-	slip_variable.txt
-
+	slip_variable.txt \
+	catmip_parameters.txt \
+	cfcatmip_parameters.txt \
+	step07a_catmip.in \
+	step07b_cfcatmip.in
 
 # End of file

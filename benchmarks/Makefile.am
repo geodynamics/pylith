@@ -8,19 +8,8 @@
 # See https://mit-license.org/ and LICENSE.md and for license information. 
 # =================================================================================================
 
+SUBDIRS = \
+	linearelasticity
 
-dist_noinst_HEADERS = \
-	StubMethodTracker.hh \
-	FaultCohesiveStub.hh \
-	FieldTester.hh \
-	PhysicsStub.hh \
-	PhysicsImplementationStub.hh \
-	ProgressMonitorStub.hh \
-	ObserverPhysicsStub.hh \
-	ObserverSolnStub.hh \
-	MMSTest.hh
 
-dist_noinst_DATA = \
-	PhysicsStub.cc
-
-# End of file
+# End of file 

@@ -24,7 +24,8 @@ swig_sources = \
 	MeshReordering.i \
 	MeshRefiner.i \
 	MeshDistributor.i \
-	MeshInsertInterfaces.i
+	MeshInsertInterfaces.i \
+	InitializePhase.i
 
 swig_generated = \
 	initializers_wrap.cxx \

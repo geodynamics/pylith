@@ -45,6 +45,9 @@ dist_noinst_HEADERS = \
 	BodyForce3D.hh
 
 
+dist_noinst_PYTHON = \
+	data/generate_gmsh_3d.py
+
 dist_noinst_DATA = \
 	data/tet.msh \
 	data/hex.msh
