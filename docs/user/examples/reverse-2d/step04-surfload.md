@@ -49,7 +49,7 @@ auxiliary_subfields.initial_amplitude.basis_order = 1
 
 ### Running the simulation
 
-```{code-block} console
+```{code-block} pyrejournal
 ---
 caption: Run Step 4a simulation
 ---
@@ -123,7 +123,7 @@ refiner = pylith.topology.RefineUniform
 
 ### Running the simulation
 
-```{code-block} console
+```{code-block} pyrejournal
 ---
 caption: Run Step 4b simulation
 ---
@@ -194,7 +194,7 @@ derived_subfields.cauchy_stress.basis_order = 1
 
 ### Running the simulation
 
-```{code-block} console
+```{code-block} pyrejournal
 ---
 caption: Run Step 4c simulation
 ---

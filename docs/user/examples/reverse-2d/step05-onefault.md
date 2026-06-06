@@ -64,7 +64,7 @@ db_auxiliary_field.data = [0.0*s, -2.0*m, 0.0*m]
 
 ### Running the simulation
 
-```{code-block} console
+```{code-block} pyrejournal
 ---
 caption: Run Step 5a simulation
 ---
@@ -144,7 +144,7 @@ refiner = pylith.topology.RefineUniform
 
 ### Running the simulation
 
-```{code-block} console
+```{code-block} pyrejournal
 ---
 caption: Run Step 5b simulation
 ---
@@ -219,7 +219,7 @@ derived_subfields.cauchy_stress.basis_order = 1
 
 ### Running the simulation
 
-```{code-block} console
+```{code-block} pyrejournal
 ---
 caption: Run Step 5c simulation
 ---

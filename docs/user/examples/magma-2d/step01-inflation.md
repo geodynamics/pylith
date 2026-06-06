@@ -100,7 +100,7 @@ db_auxiliary_field.data = [10.0*MPa]
 
 ## Running the simulation
 
-```{code-block} console
+```{code-block} pyrejournal
 ---
 caption: Run Step 1 simulation
 ---
@@ -231,7 +231,7 @@ ts_atol = 0.02
 ts_rtol = 0.02
 ```
 
-```{code-block} console
+```{code-block} pyrejournal
 ---
 caption: Run Step 1b simulation
 ---

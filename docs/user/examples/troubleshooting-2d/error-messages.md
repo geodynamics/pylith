@@ -4,7 +4,7 @@ Summary of error messages addressed in this set of examples.
 
 ## Configuration Errors
 
-```{code-block} bash
+```{code-block} pyrejournal
 ---
 caption: Refer to [Step 1, Error 1](step01-error01.md).
 ---
@@ -14,7 +14,7 @@ caption: Refer to [Step 1, Error 1](step01-error01.md).
  -- Missing required property 'name' in default options for problem.
 ```
 
-```{code-block} bash
+```{code-block} pyrejournal
 ---
 caption: Refer to [Step 1, Error 2](step01-error02.md).
 ---
@@ -24,7 +24,7 @@ caption: Refer to [Step 1, Error 2](step01-error02.md).
  -- Label for boundary condition group/nodeset/pset in mesh not specified.
 ```
 
-```{code-block} bash
+```{code-block} pyrejournal
 ---
 caption: Refer to [Step 1, Error 3](step01-error03.md).
 ---
@@ -34,7 +34,7 @@ caption: Refer to [Step 1, Error 3](step01-error03.md).
  -- unknown component 'pylithapp.timedependent.materials.elasticity.auxiliary_subfields.bulk_modulus'
 ```
 
-```{code-block}
+```{code-block} pyrejournal
 ---
 caption: Refer to [Step 6, Error 1](step06-error01.md).
 ---
@@ -44,7 +44,7 @@ caption: Refer to [Step 6, Error 1](step06-error01.md).
  -- Description for spatial database not specified.
 ```
 
-```{code-block}
+```{code-block} pyrejournal
 ---
 caption: Refer to [Step 6, Error 2](step06-error02.md).
 ---
@@ -56,7 +56,7 @@ caption: Refer to [Step 6, Error 2](step06-error02.md).
 
 ## Runtime Errors
 
-```{code-block} bash
+```{code-block} pyrejournal
 ---
 caption: Refer to [Step 1, Error 4](step01-error04.md).
 ---
@@ -65,7 +65,7 @@ caption: Refer to [Step 1, Error 4](step01-error04.md).
  -- Material label_value '3' for cell '609' does not match the label_value of any materials or interfaces.
 ```
 
-```{code-block} bash
+```{code-block} pyrejournal
 ---
 caption: Refer to [Step 1, Error 5](step01-error05.md).
 ---
@@ -73,7 +73,7 @@ caption: Refer to [Step 1, Error 5](step01-error05.md).
 [0]PETSC ERROR: Error converting spatial database values for gravitational_acceleration at (  -92285.3  -72772.7) in spatial database 'Gravity field'. Found near zero magnitude (0) for gravity field vector (  0  0).
 ```
 
-```{code-block}
+```{code-block} pyrejournal
 ---
 caption: Refer to [Step 6, Error 3](step06-error03.md).
 ---
@@ -82,7 +82,7 @@ caption: Refer to [Step 6, Error 3](step06-error03.md).
  -- Could not find 'lagrange_multiplier_fault' in domain solution field. Field contains: 'displacement'; the missing fields are required for interface 'FaultCohesiveKin'.
 ```
 
-```{code-block} bash
+```{code-block} pyrejournal
 ---
 caption: Refer to [Step 6, Error 4](step06-error04.md).
 ---
@@ -90,7 +90,7 @@ RuntimeError: Error occurred while reading spatial database file 'fault_slip.spa
 Read data for 3 out of 4 points.
 ```
 
-```{code-block} bash
+```{code-block} pyrejournal
 ---
 caption: Refer to [Step 6, Error 5](step06-error05.md).
 ---
@@ -100,7 +100,7 @@ RuntimeError: Could not find value 'final_slip_opening' in spatial database 'Fau
   initiation-time
 ```
 
-```{code-block} bash
+```{code-block} pyrejournal
 ---
 caption: Refer to [Step 6, Error 6](step06-error06.md).
 ---
@@ -112,7 +112,7 @@ caption: Refer to [Step 6, Error 6](step06-error06.md).
   initiation-time
 ```
 
-```{code-block} bash
+```{code-block} pyrejournal
 ---
 caption: Refer to [Step 6, Error 7](step06-error07.md).
 ---

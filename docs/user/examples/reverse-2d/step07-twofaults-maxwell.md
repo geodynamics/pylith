@@ -61,7 +61,7 @@ bulk_rheology.auxiliary_subfields.maxwell_time.basis_order = 0
 
 ## Running the simulation
 
-```{code-block} console
+```{code-block} pyrejournal
 ---
 caption: Run Step 7 simulation
 ---
@@ -114,7 +114,7 @@ Viscoelastic relaxation results in significant deformation in the `slab` materia
 In Step 7b we demonstrate the use adaptive time stepping.
 We start with an initial time step of 0.2 years and let the adaptive time stepping algorithm increase the time step as the rate of deformation decreases.
 
-```{code-block} console
+```{code-block} pyrejournal
 ---
 caption: Run Step 7b simulation
 ---

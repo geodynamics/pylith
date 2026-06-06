@@ -2,14 +2,15 @@
 
 ## Error Message
 
-```{code-block} console
+```{code-block} pyrejournal
 ---
 caption: Error message 3 when running Step 6.
 linenos: True
-emphasize-lines: 41-42, 60
+emphasize-lines: 47-48, 60
 ---
 $ pylith step06_twofaults.cfg
 
+# Output
  >> software/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:76:main
  -- info (application-flow)
  -- Running on 1 process(es).

@@ -65,7 +65,7 @@ observers.observer.data_fields = [pressure]
 
 ## Running the simulation
 
-```{code-block} console
+```{code-block} pyrejournal
 ---
 caption: Run Step 3 simulation
 ---

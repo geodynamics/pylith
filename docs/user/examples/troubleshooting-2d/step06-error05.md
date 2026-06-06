@@ -2,7 +2,7 @@
 
 ## Error Message
 
-```{code-block} console
+```{code-block} pyrejournal
 ---
 caption: Error message 5 when running Step 6.
 linenos: True
@@ -10,7 +10,8 @@ emphasize-lines: 58-62,75-78
 ---
 $ pylith step06_twofaults.cfg
 
- >> software/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:76:main
+# Output
+>> software/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:76:main
  -- info (application-flow)
  -- Running on 1 process(es).
  >> src/cig/pylith/libsrc/pylith/utils/PetscOptions.cc:251:static void pylith::utils::_PetscOptions::write(pythia::journal::info_t &, const char *, const PetscOptions &)

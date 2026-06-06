@@ -1,0 +1,275 @@
+pre {
+    line-height: 125%;
+}
+
+td.linenos .normal {
+    color: inherit;
+    background-color: transparent;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+span.linenos {
+    color: inherit;
+    background-color: transparent;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+td.linenos .special {
+    color: #000000;
+    background-color: #ffffc0;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+span.linenos.special {
+    color: #000000;
+    background-color: #ffffc0;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+html[data-theme="light"] .highlight-pyrejournal .hll {
+    background-color: #ffffcc
+}
+
+html[data-theme="light"] .highlight-pyrejournal {
+    background: #aaaaaa;
+    color: #000
+}
+
+html[data-theme="light"] .highlight-pyrejournal .c {
+    color: #AAA
+}
+
+/* Comment */
+html[data-theme="light"] .highlight-pyrejournal .k {
+    color: #0A0;
+    font-weight: bold
+}
+
+/* Keyword */
+html[data-theme="light"] .highlight-pyrejournal .ch {
+    color: #AAA
+}
+
+/* Comment.Hashbang */
+html[data-theme="light"] .highlight-pyrejournal .cm {
+    color: #AAA
+}
+
+/* Comment.Multiline */
+html[data-theme="light"] .highlight-pyrejournal .cp {
+    color: #AAA
+}
+
+/* Comment.Preproc */
+html[data-theme="light"] .highlight-pyrejournal .cpf {
+    color: #AAA
+}
+
+/* Comment.PreprocFile */
+html[data-theme="light"] .highlight-pyrejournal .highlight .c1 {
+    color: rgb(6, 133, 223);
+    font-style: italic
+}
+
+/* Comment.Single */
+html[data-theme="light"] .highlight-pyrejournal .cs {
+    color: #AAA
+}
+
+/* Comment.Special */
+html[data-theme="light"] .highlight-pyrejournal .gr {
+    color: #A00;
+    font-weight: bold
+}
+
+/* Generic.Error */
+html[data-theme="light"] .highlight-pyrejournal .g-Marker {
+    color: #AAA
+}
+
+/* Generic.Marker */
+html[data-theme="light"] .highlight-pyrejournal .g-Path {
+    color: #BBB
+}
+
+/* Generic.Path */
+html[data-theme="light"] .highlight-pyrejournal .g-Warning {
+    color: #F60;
+    font-weight: bold
+}
+
+/* Generic.Warning */
+html[data-theme="light"] .highlight-pyrejournal .kc {
+    color: #0A0;
+    font-weight: bold
+}
+
+/* Keyword.Constant */
+html[data-theme="light"] .highlight-pyrejournal .kd {
+    color: #0A0;
+    font-weight: bold
+}
+
+/* Keyword.Declaration */
+html[data-theme="light"] .highlight-pyrejournal .kn {
+    color: #0A0;
+    font-weight: bold
+}
+
+/* Keyword.Namespace */
+html[data-theme="light"] .highlight-pyrejournal .kp {
+    color: #0A0;
+    font-weight: bold
+}
+
+/* Keyword.Pseudo */
+html[data-theme="light"] .highlight-pyrejournal .kr {
+    color: #0A0;
+    font-weight: bold
+}
+
+/* Keyword.Reserved */
+html[data-theme="light"] .highlight-pyrejournal .kt {
+    color: #0A0;
+    font-weight: bold
+}
+
+/* Keyword.Type */
+html[data-theme="light"] .highlight-pyrejournal .nt {
+    color: #A0A;
+    font-weight: bold
+}
+
+/* Name.Tag */
+html[data-theme="light"] .highlight-pyrejournal .w {
+    color: #000
+}
+
+/* Text.Whitespace */
+
+
+
+html[data-theme="dark"] .highlight-pyrejournal .hll {
+    background-color: #ffffcc
+}
+
+html[data-theme="dark"] .highlight-pyrejournal {
+    background: #aaaaaa;
+    color: #000
+}
+
+html[data-theme="dark"] .highlight-pyrejournal .c {
+    color: #AAA
+}
+
+/* Comment */
+html[data-theme="dark"] .highlight-pyrejournal .k {
+    color: #0A0;
+    font-weight: bold
+}
+
+/* Keyword */
+html[data-theme="dark"] .highlight-pyrejournal .ch {
+    color: #AAA
+}
+
+/* Comment.Hashbang */
+html[data-theme="dark"] .highlight-pyrejournal .cm {
+    color: #AAA
+}
+
+/* Comment.Multiline */
+html[data-theme="dark"] .highlight-pyrejournal .cp {
+    color: #AAA
+}
+
+/* Comment.Preproc */
+html[data-theme="dark"] .highlight-pyrejournal .cpf {
+    color: #AAA
+}
+
+/* Comment.PreprocFile */
+html[data-theme="dark"] .highlight-pyrejournal .highlight .c1 {
+    color: rgb(6, 133, 223);
+    font-style: italic
+}
+
+/* Comment.Single */
+html[data-theme="dark"] .highlight-pyrejournal .cs {
+    color: #AAA
+}
+
+/* Comment.Special */
+html[data-theme="dark"] .highlight-pyrejournal .gr {
+    color: #A00;
+    font-weight: bold
+}
+
+/* Generic.Error */
+html[data-theme="dark"] .highlight-pyrejournal .g-Marker {
+    color: #AAA
+}
+
+/* Generic.Marker */
+html[data-theme="dark"] .highlight-pyrejournal .g-Path {
+    color: #BBB
+}
+
+/* Generic.Path */
+html[data-theme="dark"] .highlight-pyrejournal .g-Warning {
+    color: #F60;
+    font-weight: bold
+}
+
+/* Generic.Warning */
+html[data-theme="dark"] .highlight-pyrejournal .kc {
+    color: #0A0;
+    font-weight: bold
+}
+
+/* Keyword.Constant */
+html[data-theme="dark"] .highlight-pyrejournal .kd {
+    color: #0A0;
+    font-weight: bold
+}
+
+/* Keyword.Declaration */
+html[data-theme="dark"] .highlight-pyrejournal .kn {
+    color: #0A0;
+    font-weight: bold
+}
+
+/* Keyword.Namespace */
+html[data-theme="dark"] .highlight-pyrejournal .kp {
+    color: #0A0;
+    font-weight: bold
+}
+
+/* Keyword.Pseudo */
+html[data-theme="dark"] .highlight-pyrejournal .kr {
+    color: #0A0;
+    font-weight: bold
+}
+
+/* Keyword.Reserved */
+html[data-theme="dark"] .highlight-pyrejournal .kt {
+    color: #0A0;
+    font-weight: bold
+}
+
+/* Keyword.Type */
+html[data-theme="dark"] .highlight-pyrejournal .nt {
+    color: #A0A;
+    font-weight: bold
+}
+
+/* Name.Tag */
+html[data-theme="dark"] .highlight-pyrejournal .w {
+    color: #000
+}
+
+/* Text.Whitespace */

@@ -2,13 +2,14 @@
 
 ## Error Message
 
-```{code-block} console
+```{code-block} pyrejournal
 ---
 caption: Error message 6 when running Step 6.
 linenos: True
 ---
 $ pylith step06_twofaults.cfg
 
+# Output
  >> software/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:76:main
  -- info (application-flow)
  -- Running on 1 process(es).

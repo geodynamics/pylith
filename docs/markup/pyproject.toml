@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pyre-journal-lexer"
+version = "0.1.0"
+description = "Pygments lexer and style for Pyre journal channels"
+dependencies = ["Pygments>=2.0"]
+
+[tool.setuptools]
+py-modules = ["pyrejournal_lexer", "pyrejournal_style"]
+
+[project.entry-points."pygments.lexers"]
+pyre_journal = "pyrejournal_lexer:PyreJournalLexer"
+
+[project.entry-points."pygments.styles"]
+pyre_journal_style = "pyrejournal_style:PyreJournalStyle"

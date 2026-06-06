@@ -38,7 +38,7 @@ The parameters specific to this example are in `step08a_gravity_refstate.cfg` an
 
 For all of the problems involving gravitational body forces we use `spatialdata.spatialdb.GravityField` to define the `gravity_field`. For Step 8a, we use higher order `quadrature_order` and `basis_order` to accurately capture the displacement field. This is not needed for Step 8b, which has much smaller displacements. Note that Step 8b also requires `mat_elastic_incompressible.cfg`, which provides all of the necessary properties using a `UniformDB`.
 
-```{code-block} console
+```{code-block} pyrejournal
 ---
 caption: Run Step 8a and 8b simulations using the Gmsh mesh.
 ---
@@ -101,7 +101,7 @@ ts_type = beuler
 
 The beginning of the output is nearly the same as in several previous examples. Both of these problems are static, however, so there is only a single time step.
 
-```{code-block} console
+```{code-block} pyrejournal
 ---
 caption: Alternatively, run Step 8a and 8b simulations using the Cubit mesh.
 ---

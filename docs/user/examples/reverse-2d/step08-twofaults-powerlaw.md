@@ -63,7 +63,7 @@ pylith_powerlaw_gendb powerlaw_gendb.cfg
 
 ## Running the simulation
 
-```{code-block} console
+```{code-block} pyrejournal
 ---
 caption: Run Step 8 simulation
 ---
@@ -141,7 +141,7 @@ Our parameters for the power-law bulk rheology result in much less viscoelastic 
 In Step 8b we demonstrate the use adaptive time stepping.
 We start with an initial time step of 0.2 years and let the adaptive time stepping algorithm increase the time step as the rate of deformation decreases.
 
-```{code-block} console
+```{code-block} pyrejournal
 ---
 caption: Run Step 8b simulation
 ---

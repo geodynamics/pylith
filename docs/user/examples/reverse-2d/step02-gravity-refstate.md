@@ -37,7 +37,7 @@ auxiliary_subfields.reference_strain.basis_order = 0
 
 ## Running the simulation
 
-```{code-block} console
+```{code-block} pyrejournal
 ---
 caption: Run Step 2 simulation
 ---

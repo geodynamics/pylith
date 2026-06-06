@@ -77,7 +77,7 @@ db_auxiliary_field.data = [-9.0*MPa, 0.0*MPa, 0.0*MPa, 1.0*year, -2.25*MPa/year,
 
 ## Running the simulation
 
-```{code-block} console
+```{code-block} pyrejournal
 ---
 caption: Run Step 5 simulation
 ---

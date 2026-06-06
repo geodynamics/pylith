@@ -89,7 +89,7 @@ ksp_divtol = 1.0e+5
 
 ## Running the simulation
 
-```{code-block} console
+```{code-block} pyrejournal
 ---
 caption: Run Step 2 simulation
 ---

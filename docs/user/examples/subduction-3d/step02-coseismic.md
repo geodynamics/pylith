@@ -32,7 +32,7 @@ We set the slip initiation time to 10 years with the default step time function 
 Alternatively, we could have set the `origin_time` of the earthquake rupture to 10 years and used an `initiation_time` of 0 years.
 We impose oblique slip with 1.0 m of right-lateral slip and 4.0 m of reverse slip.
 
-```{code-block} console
+```{code-block} pyrejournal
 ---
 caption: Run Step 2 simulation using the Gmsh mesh.
 ---
@@ -122,7 +122,7 @@ At the end of the output written to the terminal, we see that the solver advance
 The linear solve converged after 14 iterations and the norm of the residual met the absolute convergence tolerance (`ksp_atol`) .
 The nonlinear solve converged in 1 iteration, which we expect because this is a linear problem, and the residual met the absolute convergence tolerance (`snes_atol`).
 
-```{code-block} console
+```{code-block} pyrejournal
 ---
 caption: Alternatively, run Step 2 simulation using the Cubit mesh.
 ---

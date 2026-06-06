@@ -26,7 +26,7 @@ We replace the `ZeroDB` spatial database for zero displacement values with a `Un
 For a more efficient solve we use the PETSc default solver options for elasticity in parallel;
 for larger simulations these are sometimes more efficient than the defaults for running in serial.
 
-```{code-block} console
+```{code-block} pyrejournal
 ---
 caption: Run Step 1 simulation using the Gmsh mesh.
 ---
@@ -102,7 +102,7 @@ At the end of the output written to the terminal, we see that the solver advance
 The linear solve converged after 14 iterations and the norm of the residual met the absolute convergence tolerance (`ksp_atol`) .
 The nonlinear solve converged in 1 iteration, which we expect because this is a linear problem, and the residual met the absolute convergence tolerance (`snes_atol`).
 
-```{code-block} console
+```{code-block} pyrejournal
 ---
 caption: Alternatively, run Step 1 simulation using the Cubit mesh.
 ---

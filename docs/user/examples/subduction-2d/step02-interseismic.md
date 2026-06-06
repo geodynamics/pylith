@@ -88,7 +88,7 @@ bc = [bc_east_mantle, bc_west, bc_bottom]
 
 ## Running the simulation
 
-```{code-block} console
+```{code-block} pyrejournal
 ---
 caption: Run Step 2 simulation
 ---

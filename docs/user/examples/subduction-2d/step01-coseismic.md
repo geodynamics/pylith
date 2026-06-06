@@ -60,7 +60,7 @@ db_auxiliary_field.description = Dirichlet BC on east boundary (crust)
 
 ## Running the simulation
 
-```{code-block} console
+```{code-block} pyrejournal
 ---
 caption: Run Step 1 simulation
 ---

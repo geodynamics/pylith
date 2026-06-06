@@ -189,20 +189,23 @@ In the binary distribution, the examples are located in `src/pylith-5.0.1/exampl
 {ref}`sec-examples` discusses how to run and visualize the results for the examples.
 To run the example discussed in Section {ref}`sec-examples-box-2d`:
 
-```{code-block} bash
+```{code-block} pyrejournal
 $ cd examples/box-2d
 $ pylith step01_axialdisp.cfg
+
 # A bunch of stuff will be written to stdout. The last few lines should be:
- >> .../lib/python3.9/site-packages/pylith/problems/Problem.py:201:finalize
- -- timedependent(info)
+ >> .../lib/python3.12/site-packages/pylith/problems/Problem.py:201:finalize
+ -- info (application-flow)
  -- Finalizing problem.
 ```
 
 If you run PyLith in a directory without any input, you will get the error
 message:
 
-```{code-block} bash
+```{code-block} pyrejournal
 $ pylith
+
+# Output
  >> {default}::
  -- pyre.inventory(error)
  -- metadata.description <- ''

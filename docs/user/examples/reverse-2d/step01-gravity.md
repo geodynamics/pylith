@@ -44,7 +44,7 @@ gravity_field.gravity_dir = [0.0, -1.0, 0.0]
 
 ### Running the simulation
 
-```{code-block} console
+```{code-block} pyrejournal
 ---
 caption: Run Step 1a simulation
 ---
@@ -178,7 +178,7 @@ refiner = pylith.topology.RefineUniform
 
 ### Running the simulation
 
-```{code-block} console
+```{code-block} pyrejournal
 ---
 caption: Run Step 1b simulation
 ---
@@ -254,7 +254,7 @@ derived_subfields.cauchy_stress.basis_order = 1
 
 ### Running the simulation
 
-```{code-block} console
+```{code-block} pyrejournal
 ---
 caption: Run Step 1c simulation
 ---
