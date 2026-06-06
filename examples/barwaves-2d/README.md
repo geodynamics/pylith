@@ -23,10 +23,10 @@ The simulation parameters are in the `pylithapp.cfg` and
 `step01_pwave_reflected.cfg` files.
 
 To run the example:
-```
+
+```bash
 pylith step01_pwave_reflected.cfg
 ```
-
 
 ## Step02: Shear wave using a time-dependent Neumann boundary condition
 
@@ -38,10 +38,10 @@ The simulation parameters are in the `pylithapp.cfg` and
 `step02_swave_reflected.cfg` files.
 
 To run the example:
-```
+
+```bash
 pylith step02_swave_reflected.cfg
 ```
-
 
 ## Step03: Shear wave and absorbing boundary
 
@@ -52,7 +52,8 @@ The simulation parameters are in the `pylithapp.cfg` and
 `step03_swave_absorbed.cfg` files.
 
 To run the example:
-```
+
+```bash
 pylith step03_swave_absorbed.cfg
 ```
 

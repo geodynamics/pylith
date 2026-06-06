@@ -11,7 +11,7 @@ boundaries, and gravitational body forces.
 
 To run the example:
 
-```bash
+```{code-block} console
 # Coarse mesh
 pylith step01a_gravity.cfg
 
@@ -28,7 +28,7 @@ Same as Step 1 but with a reference stress state to balance the gravitational bo
 
 To run the example:
 
-```bash
+```{code-block} console
 pylith step02_gravity_refstate.cfg
 ```
 
