@@ -66,7 +66,7 @@ You should not have a Python virtual environment activated as PyLith uses its ow
       ```
 4. Set environment variables.
 The provided `setup.sh` script only works if you are using a bash compatible shell.
-If you are using a different shell, you will need to alter how the environment variables are set in `setup.sh`.
+If you are using a different shell, you will need to alter how the environment variables are set in `setup.sh`. Move to the newly extracted directory and run the following.
     ```{code-block} console
     $ source setup.sh
     Ready to run PyLith.
