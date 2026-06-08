@@ -242,7 +242,7 @@ pylith::materials::IncompressibleElasticity::getSolverDefaults(const bool isPara
         if (!hasFault) {
             options->add("-pc_type", "fieldsplit");
             options->add("-pc_fieldsplit_type", "schur");
-            options->add("-pc_fieldsplit_schur_factorization_type", "full");
+            options->add("-pc_fieldsplit_schur_factorization_type", "lower");
             options->add("-pc_fieldsplit_schur_precondition", "full");
             if (!isParallel) {
                 options->add("-fieldsplit_displacement_pc_type", "lu");
