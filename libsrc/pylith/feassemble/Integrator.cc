@@ -18,7 +18,7 @@
 #include "pylith/problems/ObserversPhysics.hh" // USES ObserversPhysics
 #include "pylith/problems/Physics.hh" // USES Physics
 
-#include "pylith/utils/EventLogger.hh" // USES EventLogger
+#include "pylith/petsc/EventLogger.hh" // USES EventLogger
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
 #include "pylith/utils/Exceptions.hh" // USES Exception
@@ -110,7 +110,7 @@ pylith::feassemble::Integrator::setLabelName(const char* name) {
     PYLITH_DEBUG(pylith::journal::application_flow, "setLabelName(name="<<name<<")");
 
     if (strlen(name) == 0) {
-        PYLITH_ERROR(pylith::ValueError, pylith::journal::user_input,
+        PYLITH_ERROR(pylith::exceptions::ValueError, pylith::journal::user_input,
                      "Empty string given for name of label for integration domain.");
     } // if
 

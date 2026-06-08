@@ -94,7 +94,7 @@ pylith::feassemble::IntegrationData::getScalar(const std::string& name) const {
 
     scalars_map_t::const_iterator iter = _scalars.find(name);
     if (iter == _scalars.end()) {
-        PYLITH_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "No scalar value '" << name << "' in integration data.");
+        PYLITH_FIREWALL(pylith::exceptions::InternalLogicError, pylith::journal::logic, "No scalar value '" << name << "' in integration data.");
     } // if
 
     PYLITH_METHOD_RETURN(iter->second);
@@ -152,7 +152,7 @@ pylith::feassemble::IntegrationData::getField(const std::string& name) const {
 
     fields_map_t::const_iterator iter = _fields.find(name);
     if (iter == _fields.end()) {
-        PYLITH_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "No field '" << name << "' in integration data.");
+        PYLITH_FIREWALL(pylith::exceptions::InternalLogicError, pylith::journal::logic, "No field '" << name << "' in integration data.");
     } // if
 
     PYLITH_METHOD_RETURN(iter->second);
@@ -204,7 +204,7 @@ pylith::feassemble::IntegrationData::getMesh(const std::string& name) const {
 
     meshes_map_t::const_iterator iter = _meshes.find(name);
     if (iter == _meshes.end()) {
-        PYLITH_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "No mesh '" << name << "' in integration data.");
+        PYLITH_FIREWALL(pylith::exceptions::InternalLogicError, pylith::journal::logic, "No mesh '" << name << "' in integration data.");
     } // if
 
     PYLITH_METHOD_RETURN(iter->second);

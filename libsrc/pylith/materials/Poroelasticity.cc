@@ -356,7 +356,7 @@ pylith::materials::Poroelasticity::getSolverDefaults(const bool isParallel,
     case pylith::problems::Physics::DYNAMIC_IMEX:
         break;
     default:
-        PYLITH_COMPONENT_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown formulation '" << _formulation << "'.");
+        PYLITH_COMPONENT_FIREWALL(pylith::exceptions::InternalLogicError, pylith::journal::logic, "Unknown formulation '" << _formulation << "'.");
     } // switch
 
     PYLITH_METHOD_RETURN(options);
@@ -417,7 +417,7 @@ pylith::materials::Poroelasticity::_setKernelsResidual(pylith::feassemble::Integ
         r0 = pylith::fekernels::Poroelasticity::g0v_grav_bodyforce;
         break;
     default:
-        PYLITH_COMPONENT_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown case (bitUse=" << bitUse << ") for residual kernels.");
+        PYLITH_COMPONENT_FIREWALL(pylith::exceptions::InternalLogicError, pylith::journal::logic, "Unknown case (bitUse=" << bitUse << ") for residual kernels.");
     } // switch
 
     std::vector<ResidualKernels> kernels;
@@ -505,7 +505,7 @@ pylith::materials::Poroelasticity::_setKernelsResidual(pylith::feassemble::Integ
         kernels[5] = ResidualKernels("velocity", pylith::feassemble::Integrator::RHS, g0v, g1v);
     } // DYNAMIC
     default:
-        PYLITH_COMPONENT_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown formulation for equations (" << _formulation << ").");
+        PYLITH_COMPONENT_FIREWALL(pylith::exceptions::InternalLogicError, pylith::journal::logic, "Unknown formulation for equations (" << _formulation << ").");
     } // switch
 
     // Add any MMS body force kernels.
@@ -719,7 +719,7 @@ pylith::materials::Poroelasticity::_setKernelsJacobian(pylith::feassemble::Integ
         break;
     } // DYNAMIC
     default:
-        PYLITH_COMPONENT_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown formulation for equations (" << _formulation << ").");
+        PYLITH_COMPONENT_FIREWALL(pylith::exceptions::InternalLogicError, pylith::journal::logic, "Unknown formulation for equations (" << _formulation << ").");
     } // switch
 
     assert(integrator);
@@ -755,7 +755,7 @@ pylith::materials::Poroelasticity::_setKernelsUpdateStateVars(pylith::feassemble
         break;
     } // DYNAMIC
     default:
-        PYLITH_COMPONENT_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown formulation for equations (" << _formulation << ").");
+        PYLITH_COMPONENT_FIREWALL(pylith::exceptions::InternalLogicError, pylith::journal::logic, "Unknown formulation for equations (" << _formulation << ").");
     } // switch
 
     integrator->setKernelsUpdateStateVars(kernels);

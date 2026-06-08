@@ -18,7 +18,7 @@
 #include "pylith/topology/FieldOps.hh" // USES FieldOps
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
-#include "pylith/utils/EventLogger.hh" // USES EventLogger
+#include "pylith/petsc/EventLogger.hh" // USES EventLogger
 
 #include <cassert> // USES assert()
 

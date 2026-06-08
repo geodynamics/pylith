@@ -177,12 +177,12 @@ void
 pylith::bc::NeumannTimeDependent::setScaleName(const char* value) {
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setScaleName(value"<<value<<")");
 
-    if (( value == std::string("displacement")) ||
-        ( value == std::string("stress"))  ) {
+    if (( std::string(value) == std::string("displacement")) ||
+        ( std::string(value) == std::string("stress"))  ) {
         _scaleName = value;
     } else {
-        PYLITH_COMPONENT_ERROR(pylith::ValueError, pylith::journal::user_input,
-                               "Unknown name of scale ("<<value<<") for Neumann boundary condition '" << getLabelName() << "'.");
+        PYLITH_COMPONENT_ERROR_NEW(pylith::exceptions::InvalidNameError,
+                                   "Unknown name of scale ("<<value<<") for Neumann boundary condition '" << getLabelName() << "'.");
     } // if
 } // setScaleName
 
@@ -241,8 +241,8 @@ pylith::bc::NeumannTimeDependent::createAuxiliaryField(const pylith::topology::F
     } else if (_scaleName == std::string("displacement")) {
         description.scale = displacementScale;
     } else {
-        PYLITH_COMPONENT_ERROR(pylith::ValueError, pylith::journal::logic,
-                               "Unknown name of scale ("<<_scaleName<<") for Neumann boundary condition for '" << getLabelName() << "'.");
+        PYLITH_COMPONENT_ERROR_NEW(pylith::exceptions::InvalidNameError,
+                                   "Unknown name of scale ("<<_scaleName<<") for Neumann boundary condition for '" << getLabelName() << "'.");
     } // if/else
     _auxiliaryFactory->initialize(auxiliaryField, *_scales, solution.getSpaceDim(), &description);
 
@@ -363,9 +363,10 @@ pylith::bc::_NeumannTimeDependent::setKernelsResidual(pylith::feassemble::Integr
         break;
     } // case 0x0
     default: {
-        PYLITH_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown combination of flags for Neumann BC terms (useInitial="
-                        <<bc.useInitial()
-                        << ", useRate="<<bc.useRate()<<", useTimeHistory="<<bc.useTimeHistory()<<").");
+        PYLITH_ERROR_NEW(pylith::exceptions::InternalLogicError,
+                         "Unknown combination of flags for Neumann BC terms (useInitial="
+                         <<bc.useInitial()
+                         << ", useRate="<<bc.useRate()<<", useTimeHistory="<<bc.useTimeHistory()<<").");
     } // default
     } // switch
 
@@ -379,7 +380,8 @@ pylith::bc::_NeumannTimeDependent::setKernelsResidual(pylith::feassemble::Integr
         kernels[0] = ResidualKernels(bc.getSubfieldName(), pylith::feassemble::Integrator::RHS, r0, r1);
         break;
     default: {
-        PYLITH_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown formulation for equations ("<<formulation<<").");
+        PYLITH_ERROR_NEW(pylith::exceptions::SwitchLogicError,
+                         "Unknown formulation for equations ("<<formulation<<").");
     } // default
     } // switch
 

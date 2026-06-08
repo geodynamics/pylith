@@ -19,8 +19,8 @@
 #undef __FUNCT__
 #if defined(__FUNCTION_NAME__)
 #define __FUNCT__ __FUNCTION_NAME__
-#undef PETSC_FUNCTION_NAME
-#define PETSC_FUNCTION_NAME __FUNCT__
+#undef PYLITH_FUNCTION_NAME
+#define PYLITH_FUNCTION_NAME __FUNCT__
 #else
 #define __FUNCT__ __func__
 #endif
@@ -36,8 +36,7 @@
             PetscStackUpdateLine; \
             PetscErrorCode ierr_petsc_call = __VA_ARGS__; \
             if (PetscUnlikely(ierr_petsc_call != PETSC_SUCCESS)) \
-            {PetscError(PETSC_COMM_SELF,__LINE__,PETSC_FUNCTION_NAME,__FILE__,ierr_petsc_call,PETSC_ERROR_REPEAT,0); \
-             throw pylith::ExternalError("Error detected while in PETSc function.");} \
+            {PetscError(PETSC_COMM_SELF,__LINE__,PYLITH_FUNCTION_NAME,__FILE__,ierr_petsc_call,PETSC_ERROR_REPEAT,0);} \
         } while (0)
 
 #define PylithCallPetscNoThrow(...) \
@@ -45,7 +44,7 @@
             PetscStackUpdateLine; \
             PetscErrorCode ierr_petsc_call = __VA_ARGS__; \
             if (PetscUnlikely(ierr_petsc_call != PETSC_SUCCESS)) \
-            {PetscError(PETSC_COMM_SELF,__LINE__,PETSC_FUNCTION_NAME,__FILE__,ierr_petsc_call,PETSC_ERROR_REPEAT,0);} \
+            {PetscError(PETSC_COMM_SELF,__LINE__,PYLITH_FUNCTION_NAME,__FILE__,ierr_petsc_call,PETSC_ERROR_REPEAT,0);} \
         } while (0)
 
 #define PylithCallPetscRequire(...) \

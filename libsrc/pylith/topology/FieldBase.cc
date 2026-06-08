@@ -50,7 +50,7 @@ pylith::topology::FieldBase::vectorFieldString(VectorFieldEnum value) { // vecto
     case MULTI_OTHER:
         return "multi_other";
     default:
-        PYLITH_ERROR(pylith::InternalLogicError, pylith::journal::logic,
+        PYLITH_ERROR(pylith::exceptions::InternalLogicError, pylith::journal::logic,
                      "Unknown vector field type " << value << ".");
     } // switch
 } // vectorFieldString
@@ -79,7 +79,7 @@ pylith::topology::FieldBase::parseVectorFieldString(const char* value) { // pars
     } else if (0 == strcmp(value, "multi_other")) {
         valueEnum = MULTI_OTHER;
     } else {
-        PYLITH_ERROR(pylith::InternalLogicError, pylith::journal::logic,
+        PYLITH_ERROR(pylith::exceptions::InternalLogicError, pylith::journal::logic,
                      "Unrecognized vector field string '" << value << "'.");
     } // else
 

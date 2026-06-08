@@ -31,7 +31,7 @@
 #include "pylith/scales/Scales.hh" // USES Scales
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 
-#include "pylith/utils/EventLogger.hh" // HASA EventLogger
+#include "pylith/petsc/EventLogger.hh" // HASA EventLogger
 #include "pylith/utils/error.hh" // USES PylithCallPetsc
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 #include "pylith/utils/Exceptions.hh" // USES Exception
@@ -526,7 +526,7 @@ pylith::problems::Problem::initialize(void) {
         _Problem::createNullSpace(solution, "displacement");
         break;
     default:
-        PYLITH_COMPONENT_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown formulation '"<<_formulation<<".");
+        PYLITH_COMPONENT_FIREWALL(pylith::exceptions::InternalLogicError, pylith::journal::logic, "Unknown formulation '"<<_formulation<<".");
     } // switch
     _Problem::setInterfaceData(solution, _integrators);
 

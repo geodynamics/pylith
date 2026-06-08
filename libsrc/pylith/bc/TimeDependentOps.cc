@@ -68,7 +68,7 @@ pylith::bc::TimeDependentOps::updateAuxiliaryField(pylith::topology::Field* auxi
             pylith::real tDim = tRel * timeScale;
             const int err = dbTimeHistory->query(&value, tDim);
             if (err) {
-                PYLITH_COMPONENT_ERROR(pylith::ValueError, pylith::journal::external,
+                PYLITH_COMPONENT_ERROR(pylith::exceptions::ValueError, pylith::journal::external,
                                        "Error querying for time '" << tDim << "' in time history database '" << dbTimeHistory->getDescription() << "'.");
             } // if
         } // if

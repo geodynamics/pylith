@@ -26,7 +26,7 @@
 
 #include "pylith/topology/topologyfwd.hh" // forward declarations
 
-#include "pylith/utils/petscfwd.h" // HASA PetscVec, PetscSection
+#include "pylith/petsc/petsc_types.h" // HASA PetscVec, PetscSection
 
 // VecVisitorSubmesh -------------------------------------------------------
 /** @brief Helper class for accessing field values at points in a

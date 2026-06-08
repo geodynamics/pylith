@@ -10,9 +10,9 @@
 
 #include <portinfo>
 
-#include "pylith/utils/PetscVersion.hh" // Implementation of class methods
+#include "PetscVersion.hh" // Implementation of class methods
 
-#include "petsc.h"
+#include "petscsys.h"
 
 // ----------------------------------------------------------------------
 #define STR_HELPER(x) #x

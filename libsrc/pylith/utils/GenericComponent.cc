@@ -23,7 +23,7 @@
 pylith::utils::GenericComponent::GenericComponent(void) :
     _name("") {
     if (!Py_IsInitialized()) {
-        PYLITH_ERROR(pylith::InternalLogicError, pylith::journal::logic,
+        PYLITH_ERROR(pylith::exceptions::InternalLogicError, pylith::journal::logic,
                      "Python must be initialized to use GenericComponent in C++.");
     } // if
 } // constructor
@@ -39,7 +39,7 @@ pylith::utils::GenericComponent::~GenericComponent(void) {}
 void
 pylith::utils::GenericComponent::setName(const char* value) {
     if (!strlen(value)) {
-        PYLITH_ERROR(pylith::InternalLogicError, pylith::journal::logic,
+        PYLITH_ERROR(pylith::exceptions::InternalLogicError, pylith::journal::logic,
                      "Cannot set name of Generic component to empty string.");
     } // if
     _name = value;

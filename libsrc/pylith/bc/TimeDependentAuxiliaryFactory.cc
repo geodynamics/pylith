@@ -83,7 +83,8 @@ pylith::bc::TimeDependentAuxiliaryFactory::_setVectorFieldComponentNames(pylith:
         } // if/else
     } // if/else
     if (!componentNames) {
-        PYLITH_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown case for auxiliary component reference ("<<_auxComponents<<") and spatial dimension ("<<_spaceDim<<").");
+        PYLITH_ERROR_NEW(pylith::exceptions::InternalLogicError,
+                         "Unknown case for auxiliary component reference ("<<_auxComponents<<") and spatial dimension ("<<_spaceDim<<").");
     } // if
 
     assert(size_t(_spaceDim) == description->numComponents);
@@ -123,7 +124,7 @@ pylith::bc::TimeDependentAuxiliaryFactory::addInitialAmplitude(void) {
         break;
     } // VECTOR
     default:
-        PYLITH_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown vector field case.");
+        PYLITH_ERROR_NEW(pylith::exceptions::InternalLogicError, "Unknown vector field case.");
     } // switch
 
     _field->subfieldAdd(subfieldDescription, getSubfieldDiscretization(subfieldName));
@@ -162,7 +163,7 @@ pylith::bc::TimeDependentAuxiliaryFactory::addRateAmplitude(void) {
         break;
     } // VECTOR
     default:
-        PYLITH_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown vector field case.");
+        PYLITH_ERROR_NEW(pylith::exceptions::InternalLogicError, "Unknown vector field case.");
     } // switch
 
     _field->subfieldAdd(subfieldDescription, getSubfieldDiscretization(subfieldName));
@@ -227,7 +228,7 @@ pylith::bc::TimeDependentAuxiliaryFactory::addTimeHistoryAmplitude(void) {
         break;
     } // VECTOR
     default:
-        PYLITH_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown vector field case.");
+        PYLITH_ERROR_NEW(pylith::exceptions::InternalLogicError, "Unknown vector field case.");
     } // switch
 
     _field->subfieldAdd(subfieldDescription, getSubfieldDiscretization(subfieldName));
@@ -333,8 +334,8 @@ pylith::bc::TimeDependentAuxiliaryFactory::updateAuxiliaryField(pylith::topology
             PylithScalar tDim = tRel * timeScale;
             const int err = dbTimeHistory->query(&value, tDim);
             if (err) {
-                PYLITH_ERROR(pylith::ValueError, pylith::journal::external,
-                             "Error querying for time '" << tDim << "' in time history database '" << dbTimeHistory->getDescription() << "'.");
+                PYLITH_ERROR_NEW(pylith::exceptions::OutOfRangeError,
+                                 "Error querying for time '" << tDim << "' in time history database '" << dbTimeHistory->getDescription() << "'.");
             } // if
         } // if
 

@@ -24,7 +24,7 @@
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 #include "pylith/utils/Exceptions.hh" // USES PYLITH_COMPONENT_*
-#include "pylith/utils/EventLogger.hh" // USES EventLogger
+#include "pylith/petsc/EventLogger.hh" // USES EventLogger
 
 #include <iostream> // USES std::cout
 #include <typeinfo> // USES typeid()
@@ -144,7 +144,7 @@ pylith::meshio::OutputObserver::setOutputBasisOrder(const int value) {
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "OutputObserver::setBasisOrder(value="<<value<<")");
 
     if (value < 0) {
-        PYLITH_COMPONENT_ERROR(pylith::ValueError, pylith::journal::user_input,
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::ValueError, pylith::journal::user_input,
                                "Basis order for output (" << value << ") must be nonnegative.");
     } // if
 
@@ -163,7 +163,7 @@ pylith::meshio::OutputObserver::setRefineLevels(const int value) {
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "OutputObserver::setRefineLevels(value="<<value<<")");
 
     if (value < 0) {
-        PYLITH_COMPONENT_ERROR(pylith::ValueError, pylith::journal::user_input,
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::ValueError, pylith::journal::user_input,
                                "Number of refinement levels for output (" << value << ") must be nonnegative.");
     } // if
 
@@ -178,7 +178,7 @@ pylith::meshio::OutputObserver::setRefineLevels(const int value) {
 void
 pylith::meshio::OutputObserver::setTimeScale(const PylithReal value) {
     if (value <= 0.0) {
-        PYLITH_COMPONENT_ERROR(pylith::ValueError, pylith::journal::user_input,
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::ValueError, pylith::journal::user_input,
                                "Time scale ("<<value<<") for output observer is nonpositive.");
     } // if
     _timeScale = value;
@@ -242,7 +242,7 @@ pylith::meshio::OutputObserver::_appendField(const PylithReal t,
         break;
 
     default:
-        PYLITH_COMPONENT_ERROR(pylith::OutOfRangeError, pylith::journal::user_input,
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::OutOfRangeError, pylith::journal::user_input,
                                "Unsupported basis order ("<< basisOrder <<") for output. Skipping output of '"
                                                           << subfield.getDescription().label << "' field.");
     } // switch

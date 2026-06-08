@@ -10,9 +10,9 @@
 
 #include <portinfo>
 
-#include "pylith/utils/error.hh"
+#include "TSAdaptImpulse.hh" // implementation of class methods
 
-#include "pylith/utils/TSAdaptImpulse.hh" // implementation of class methods
+#include "pylith/utils/error.hh"
 
 #include "petscts.h"
 #include "petsc/private/tsimpl.h"

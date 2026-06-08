@@ -8,9 +8,13 @@
 // See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
 #pragma once
+#include <petscsystypes.h>
 
 /// forward declaration for PETSc PetscErrorCode
 typedef int PetscErrorCode;
+
+/// forward delcaration of PETSc context.
+typedef void *PetscCtx;
 
 /// forward declaration for PETSc Mat
 typedef struct _p_Mat* PetscMat;
@@ -63,9 +67,5 @@ typedef struct _p_PetscFE* PetscFE;
 /// forward declaration for PETSc weak form
 typedef struct _p_PetscWeakForm* PetscWeakForm;
 
-/// Forward declaration for point function
-typedef PetscPointFn* PetscPointFnWrapper;
-typedef PetscPointJacFn* PetscPointJacFnWrapper;
-typedef PetscBdPointFn* PetscBdPointFnWrapper;
 
 // End of file

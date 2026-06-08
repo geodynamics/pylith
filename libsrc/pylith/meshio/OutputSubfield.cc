@@ -20,7 +20,7 @@
 #include "pylith/fekernels/Solution.hh" // USES Solution::passThruSubfield
 
 #include "pylith/utils/error.hh" // USES PylithCallPetsc()
-#include "pylith/utils/EventLogger.hh" // USES EventLogger
+#include "pylith/petsc/EventLogger.hh" // USES EventLogger
 
 #include "petscdm.h" // USES DMReorderSectionSetDefault()
 

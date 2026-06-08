@@ -18,7 +18,7 @@
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/utils/journals.hh" // USES journal macros
 #include "pylith/utils/Exceptions.hh" // USES Exception
-#include "pylith/utils/EventLogger.hh" // USES EventLogger
+#include "pylith/petsc/EventLogger.hh" // USES EventLogger
 
 #include "pylith/meshio/MeshBuilder.hh" // USES MeshBuilder
 
@@ -140,7 +140,7 @@ pylith::topology::RefineUniform::refine(const pylith::topology::Mesh& mesh) {
 
     const int meshDim = mesh.getDimension();
     if (( meshDim > 0) && ( meshDepth != meshDim) ) {
-        PYLITH_ERROR(pylith::InternalLogicError, pylith::journal::logic,
+        PYLITH_ERROR(pylith::exceptions::InternalLogicError, pylith::journal::logic,
                      "Mesh refinement for uninterpolated meshes not supported.");
     } // if
 

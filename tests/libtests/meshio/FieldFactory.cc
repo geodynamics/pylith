@@ -113,7 +113,7 @@ pylith::meshio::FieldFactory::addTensor(const pylith::topology::FieldBase::Discr
             description.componentNames[i] = componentNames[i];
         } // for
     } else {
-        PYLITH_ERROR(pylith::InternalLogicError, pylith::journal::logic,
+        PYLITH_ERROR(pylith::exceptions::InternalLogicError, pylith::journal::logic,
                      "Unknown spatial dimension " << spaceDim << ".");
     } // if/else
     description.scale = 1.0;

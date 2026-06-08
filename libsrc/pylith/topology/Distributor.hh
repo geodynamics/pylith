@@ -15,7 +15,7 @@
 
 #include "pylith/meshio/meshiofwd.hh" // USES DataWriter
 #include "pylith/faults/faultsfwd.hh" // USES FaultCohesive
-#include "pylith/utils/petscfwd.h" // USES PetscDM
+#include "pylith/petsc/petsc_types.h" // USES PetscDM
 
 #include <vector> // USES std::vector
 

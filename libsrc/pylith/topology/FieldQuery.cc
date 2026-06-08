@@ -21,7 +21,7 @@
 #include "pylith/utils/error.hh" // USES PylithCallPetsc()
 #include "pylith/utils/journals.hh" // USES journals
 #include "pylith/utils/Exceptions.hh" // USES Exception
-#include "pylith/utils/EventLogger.hh" // USES EventLogger
+#include "pylith/petsc/EventLogger.hh" // USES EventLogger
 
 namespace pylith {
     namespace topology {
@@ -459,7 +459,7 @@ pylith::topology::_FieldQuery::findQueryIndices(FieldQuery::DBQueryContext* cont
             std::ostringstream msg;
             if (0 == numDBValues) {
                 delete dbValues;dbValues = NULL;
-                PYLITH_ERROR(pylith::InternalLogicError, pylith::journal::logic,
+                PYLITH_ERROR(pylith::exceptions::InternalLogicError, pylith::journal::logic,
                              "No values found in spatial database '"
                              << context->db->getDescription() << "'. Did you forget to open the database?");
             } // if
@@ -470,7 +470,7 @@ pylith::topology::_FieldQuery::findQueryIndices(FieldQuery::DBQueryContext* cont
             } // for
             msg << "\n";
             delete dbValues;dbValues = NULL;
-            PYLITH_ERROR(pylith::ValueError, pylith::journal::user_input, msg.str());
+            PYLITH_ERROR(pylith::exceptions::ValueError, pylith::journal::user_input, msg.str());
         } // if
     } // for
     delete[] dbValues;dbValues = NULL;

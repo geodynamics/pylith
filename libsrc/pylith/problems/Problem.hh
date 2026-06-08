@@ -30,7 +30,7 @@
 #include "pylith/topology/topologyfwd.hh" // USES Mesh, Field
 #include "pylith/scales/scalesfwd.hh" // HASA Scales
 
-#include "pylith/utils/petscfwd.h" // USES PetscVec, PetscMat
+#include "pylith/petsc/petsc_types.h" // USES PetscVec, PetscMat
 
 #include "pylith/problems/Physics.hh" // USES Problem::Formulation
 

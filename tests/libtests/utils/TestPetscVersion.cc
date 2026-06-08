@@ -11,7 +11,7 @@
 
 #include <portinfo>
 
-#include "pylith/utils/PetscVersion.hh" // Test subject
+#include "pylith/petsc/PetscVersion.hh" // Test subject
 
 #include "petsc.h" // USES PETSC_VERSION_*
 

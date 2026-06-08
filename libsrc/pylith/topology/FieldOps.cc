@@ -108,7 +108,7 @@ pylith::topology::FieldOps::createFE(const FieldBase::Discretization& feinfo,
         case 2: ct = useTensor ? DM_POLYTOPE_QUADRILATERAL : DM_POLYTOPE_TRIANGLE;break;
         case 3: ct = useTensor ? DM_POLYTOPE_HEXAHEDRON : DM_POLYTOPE_TETRAHEDRON;break;
         default:
-            PYLITH_ERROR(pylith::InternalLogicError, pylith::journal::logic, "Unknown dimension " << dim << ".");
+            PYLITH_ERROR(pylith::exceptions::InternalLogicError, pylith::journal::logic, "Unknown dimension " << dim << ".");
         }
         PylithCallPetsc(PetscDTCreateDefaultQuadrature(ct, quadOrder, &quadrature, &faceQuadrature));
         PylithCallPetsc(PetscFESetQuadrature(fe, quadrature));
@@ -119,7 +119,7 @@ pylith::topology::FieldOps::createFE(const FieldBase::Discretization& feinfo,
         assert(feKey.feSpace == FieldBase::POLYNOMIAL_SPACE);
         pylith::topology::FieldOps::feStore.insert(std::pair<FieldBase::Discretization, pylith::topology::FE>(feKey, fe));
     } else {
-        PYLITH_ERROR(pylith::InternalLogicError, pylith::journal::logic,
+        PYLITH_ERROR(pylith::exceptions::InternalLogicError, pylith::journal::logic,
                      ":KLUDGE: Can't reuse PetscFE due to naming of fields, so make a deep copy of fe.");
         fe = hasFE->second._fe;
         PylithCallPetsc(PetscObjectReference((PetscObject) fe));
@@ -152,7 +152,7 @@ pylith::topology::FieldOps::checkDiscretization(const pylith::topology::Field& t
             const pylith::topology::Field::SubfieldInfo& sinfo = target.getSubfieldInfo(subfieldNames[i].c_str());
             if (quadOrder > 0) {
                 if (quadOrder != sinfo.fe.quadOrder) {
-                    PYLITH_ERROR(pylith::ValueError, pylith::journal::user_input,
+                    PYLITH_ERROR(pylith::exceptions::ValueError, pylith::journal::user_input,
                                  "Quadrature order of subfields in target field '" << target.getLabel()
                                                                                    << "' must all be the same. Expected quadrature order of " << quadOrder << ", but subfield '"
                                                                                    << subfieldNames[i] << "' has a quadrature order of " << sinfo.fe.quadOrder << ".");
@@ -171,7 +171,7 @@ pylith::topology::FieldOps::checkDiscretization(const pylith::topology::Field& t
             const pylith::topology::Field::SubfieldInfo& sinfo = auxiliary.getSubfieldInfo(subfieldNames[i].c_str());
             if (quadOrder > 0) {
                 if (quadOrder != sinfo.fe.quadOrder) {
-                    PYLITH_ERROR(pylith::ValueError, pylith::journal::user_input,
+                    PYLITH_ERROR(pylith::exceptions::ValueError, pylith::journal::user_input,
                                  "Quadrature order of subfields in auxiliary field '" << auxiliary.getLabel()
                                                                                       << "' must all match the quadrature order in the target subfields '" << target.getLabel()
                                                                                       << "'. Expected quadrature order of " << quadOrder << ", but subfield '" << subfieldNames[i]
@@ -221,7 +221,7 @@ pylith::topology::FieldOps::checkSubfieldsExist(const pylith::string_vector& req
             }
         } // for
         msg << "; the missing fields are required for " << reason;
-        PYLITH_ERROR(pylith::ValueError, pylith::journal::user_input, msg.str());
+        PYLITH_ERROR(pylith::exceptions::ValueError, pylith::journal::user_input, msg.str());
     } // if
 
 } // checkSubfieldsExist

@@ -16,7 +16,7 @@
 #include "pylith/meshio/meshiofwd.hh" // USES OutputSubfield
 #include "pylith/topology/topologyfwd.hh" // USES Mesh
 
-#include "pylith/utils/petscfwd.h" // USES PetscVec
+#include "pylith/petsc/petsc_types.h" // USES PetscVec
 #include "pylith/utils/arrayfwd.hh"
 
 #include <string> // HASA std::string

@@ -13,7 +13,7 @@
 #include "tests/src/MMSTest.hh" // implementation of class methods
 #include "pylith/problems/TimeDependent.hh" // USES TimeDependent
 #include "pylith/feassemble/IntegrationData.hh" // USES IntegrationData
-#include "pylith/utils/PetscOptions.hh" // USES PetscOptions
+#include "pylith/petsc/PetscOptions.hh" // USES PetscOptions
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES MeshOps

@@ -12,11 +12,11 @@
 
 // Header files for module C++ code
 %{
-#include "pylith/utils/EventLogger.hh"
+#include "pylith/petsc/EventLogger.hh"
 #include "pylith/utils/PyreComponent.hh"
-#include "pylith/utils/PetscOptions.hh"
+#include "pylith/petsc/PetscOptions.hh"
 #include "pylith/utils/PylithVersion.hh"
-#include "pylith/utils/PetscVersion.hh"
+#include "pylith/petsc/PetscVersion.hh"
 #include "pylith/utils/DependenciesVersion.hh"
 #include "pylith/utils/TestArray.hh"
 #include "pylith/utils/constants.hh"

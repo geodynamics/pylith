@@ -58,7 +58,7 @@ pylith::topology::ReverseCuthillMcKee::reorder(const pylith::topology::Mesh& mes
                 PylithCallPetsc(ISRestoreIndices(valuesIS, &values));
                 PylithCallPetsc(ISDestroy(&valuesIS));
 
-                PYLITH_ERROR(pylith::InternalLogicError, pylith::journal::logic,
+                PYLITH_ERROR(pylith::exceptions::InternalLogicError, pylith::journal::logic,
                              "Cells for label '" << labelName << "' with value " << values[iValue] << " are not consecutive (" << points[iPoint] << " and " << points[iPoint-1] << ").");
             } // if
         } // for

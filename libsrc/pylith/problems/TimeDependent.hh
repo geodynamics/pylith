@@ -257,6 +257,9 @@ public:
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
+    /// Register monitors.
+    void _registerMonitors(void);
+
     /** Check whether we need to reform the Jacobian.
      *
      * @param[in] dt Current time step.

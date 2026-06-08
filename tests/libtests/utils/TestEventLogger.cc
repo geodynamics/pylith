@@ -12,7 +12,7 @@
 
 #include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
-#include "pylith/utils/EventLogger.hh" // USES EventLogger
+#include "pylith/petsc/EventLogger.hh" // USES EventLogger
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 

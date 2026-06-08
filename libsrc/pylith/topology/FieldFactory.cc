@@ -94,7 +94,7 @@ pylith::topology::FieldFactory::getSubfieldDiscretization(const char* subfieldNa
     } else { // not found so try default
         iter = _subfieldDiscretizations.find("default");
         if (iter == _subfieldDiscretizations.end()) {
-            PYLITH_ERROR(pylith::InternalLogicError, pylith::journal::logic,
+            PYLITH_ERROR(pylith::exceptions::InternalLogicError, pylith::journal::logic,
                          "Default discretization not set in field factory.");
         } // if
     } // if/else

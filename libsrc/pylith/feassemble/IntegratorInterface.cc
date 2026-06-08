@@ -178,7 +178,7 @@ pylith::feassemble::IntegratorInterface::setSurfaceLabelName(const char* value) 
     PYLITH_DEBUG(pylith::journal::application_flow, "setSurfaceLabelName(value="<<value<<")");
 
     if (strlen(value) == 0) {
-        PYLITH_ERROR(pylith::ValueError, pylith::journal::user_input,
+        PYLITH_ERROR(pylith::exceptions::ValueError, pylith::journal::user_input,
                      "Empty string given for boundary condition label.");
     } // if
 
@@ -214,7 +214,7 @@ pylith::feassemble::IntegratorInterface::setIntegrationPatches(pylith::feassembl
         const size_t numPatches = patches->getKeys().size();
         const size_t maxNumPatches = _IntegratorInterface::max_patches;
         if (numPatches > maxNumPatches) {
-            PYLITH_ERROR(pylith::ValueError, pylith::journal::internal,
+            PYLITH_ERROR(pylith::exceptions::ValueError, pylith::journal::internal,
                          "Number of integration patches ("<< numPatches << ") for interface integration "
                                                           << _labelName << "=" << _labelValue
                                                           << " exceeds maximum number of allowed patches (" << maxNumPatches << ").\n"
@@ -274,7 +274,7 @@ pylith::feassemble::IntegratorInterface::setKernels(const std::vector<ResidualKe
                 key = iter->second.cohesive.getPetscKey(solution, interfacePart, patchKernels[i].subfield.c_str());
                 break;
             default:
-                PYLITH_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown integration face ("<<patchKernels[i].face<<").");
+                PYLITH_FIREWALL(pylith::exceptions::InternalLogicError, pylith::journal::logic, "Unknown integration face ("<<patchKernels[i].face<<").");
             } // switch
             if (weakForm) {
                 PylithCallPetsc(PetscWeakFormAddBdResidual(weakForm, key.label, key.value, key.field, key.part,
@@ -292,7 +292,7 @@ pylith::feassemble::IntegratorInterface::setKernels(const std::vector<ResidualKe
                 _hasRHSResidual = true;
                 break;
             default:
-                PYLITH_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown residual part " << kernels[i].part <<".");
+                PYLITH_FIREWALL(pylith::exceptions::InternalLogicError, pylith::journal::logic, "Unknown residual part " << kernels[i].part <<".");
             } // switch
         } // for
     } // for
@@ -349,7 +349,7 @@ pylith::feassemble::IntegratorInterface::setKernels(const std::vector<JacobianKe
                                                         patchKernels[i].subfieldBasis.c_str());
                 break;
             default:
-                PYLITH_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown integration face.");
+                PYLITH_FIREWALL(pylith::exceptions::InternalLogicError, pylith::journal::logic, "Unknown integration face.");
             } // switch
             const PetscInt i_trial = key.field / numFields;
             const PetscInt i_basis = key.field % numFields;
@@ -369,7 +369,7 @@ pylith::feassemble::IntegratorInterface::setKernels(const std::vector<JacobianKe
                 _hasLHSJacobianLumped = true;
                 break;
             default:
-                PYLITH_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown Jacobian part " << patchKernels[i].part <<".");
+                PYLITH_FIREWALL(pylith::exceptions::InternalLogicError, pylith::journal::logic, "Unknown Jacobian part " << patchKernels[i].part <<".");
             } // switch
         } // for
     } // for
@@ -734,7 +734,7 @@ pylith::feassemble::IntegratorInterface::_updateStateVars(const PylithReal t,
         PYLITH_METHOD_END;
     } // if
 
-    PYLITH_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "_updateStateVars() not implemented.");
+    PYLITH_FIREWALL(pylith::exceptions::InternalLogicError, pylith::journal::logic, "_updateStateVars() not implemented.");
 
     PYLITH_METHOD_END;
 } // _updateStateVars

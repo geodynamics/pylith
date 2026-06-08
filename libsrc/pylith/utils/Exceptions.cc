@@ -19,8 +19,14 @@
 #include <cstring> // USES std::strlen
 
 // ------------------------------------------------------------------------------------------------
-pylith::Error::Error(const ErrorMessage& message)
-    : std::runtime_error(message.str()) {
+pylith::exceptions::Error::Error(const pylith::exceptions::ErrorMessage& message,
+                                 const char* filename,
+                                 const long line,
+                                 const char* function) :
+    std::runtime_error(message.str()),
+    _line(line),
+    _function(function),
+    _filename(filename) {
     _captureTraceback();
     _buildWhat();
 } // constructor
@@ -28,7 +34,7 @@ pylith::Error::Error(const ErrorMessage& message)
 
 // ------------------------------------------------------------------------------------------------
 const char*
-pylith::Error::what() const noexcept {
+pylith::exceptions::Error::what() const noexcept {
     return _what.c_str();
 } // destructor
 
@@ -36,16 +42,17 @@ pylith::Error::what() const noexcept {
 // ------------------------------------------------------------------------------------------------
 // Add context to existing error message.
 void
-pylith::Error::addContext(const pylith::ErrorMessage& context) {
+pylith::exceptions::Error::addContext(const pylith::exceptions::ErrorMessage& context) {
     _buildWhat(context.str());
 }
 
 
 // ------------------------------------------------------------------------------------------------
 void
-pylith::Error::_buildWhat(const std::string& context) {
+pylith::exceptions::Error::_buildWhat(const std::string& context) {
     std::ostringstream oss;
-    oss << std::runtime_error::what();
+    oss << _filename << ":" << _line << " " << _function << "\n"
+        << std::runtime_error::what();
     if (context.length() > 0) {
         oss << "\n" << context;
     } // if
@@ -57,7 +64,7 @@ pylith::Error::_buildWhat(const std::string& context) {
 
 // ------------------------------------------------------------------------------------------------
 void
-pylith::Error::_captureTraceback() {
+pylith::exceptions::Error::_captureTraceback() {
 #if defined(HAVE_BACKTRACE)
     void*  frames[MAX_FRAMES];
     const size_t skipFrames = 3; // Skip exception lines in traceback
@@ -108,7 +115,7 @@ pylith::Error::_captureTraceback() {
 
 // ------------------------------------------------------------------------------------------------
 std::string
-pylith::Error::_formatTraceback() const {
+pylith::exceptions::Error::_formatTraceback() const {
     if (_traceback.empty()) {
         return "(backtrace not available)\n";
     } // if

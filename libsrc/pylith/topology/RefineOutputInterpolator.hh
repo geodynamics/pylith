@@ -10,7 +10,7 @@
 #pragma once
 
 #include "pylith/topology/topologyfwd.hh" // forward declarations
-#include "pylith/utils/petscfwd.h" // USES PetscDM
+#include "pylith/petsc/petsc_types.h" // USES PetscDM
 
 #include "pylith/topology/FieldBase.hh" // USES FieldBase
 

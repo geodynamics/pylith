@@ -10,7 +10,7 @@
 
 #include <portinfo>
 
-#include "pylith/utils/PetscOptions.hh" // implementation of object methods
+#include "PetscOptions.hh" // implementation of object methods
 
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Mesh.hh" // USES Mesh
@@ -298,16 +298,12 @@ void
 pylith::utils::_PetscOptions::addMonitoring(PetscOptions* options) {
     assert(options);
 
-    options->add("-ksp_converged_reason");
     options->add("-ksp_error_if_not_converged");
-
-    options->add("-snes_monitor");
-    options->add("-snes_converged_reason");
     options->add("-snes_error_if_not_converged");
-
-    options->add("-ts_monitor");
     options->add("-ts_error_if_step_fails");
 
+    pythia::journal::info_t solver(pylith::journal::solver);
+    solver.activate();
 } // addMonitoring
 
 

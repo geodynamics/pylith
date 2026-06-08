@@ -11,7 +11,7 @@
 
 #include "pylith/utils/utilsfwd.hh" // forward declarations
 
-#include "pylith/utils/petscfwd.h"
+#include "pylith/petsc/petsc_types.h"
 
 #include "petscts.h"
 

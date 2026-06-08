@@ -13,7 +13,7 @@
 
 #include "pylith/meshio/meshiofwd.hh"
 #include "pylith/topology/topologyfwd.hh"
-#include "pylith/utils/petscfwd.h"
+#include "pylith/petsc/petsc_types.h"
 
 #include "spatialdata/geocoords/geocoordsfwd.hh" // USES CoordSys
 

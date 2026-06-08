@@ -33,7 +33,7 @@
 
 #include "pylith/meshio/DataWriter.hh" // ISA DataWriter
 
-#include "pylith/utils/petscfwd.h" // HASA PetscVec
+#include "pylith/petsc/petsc_types.h" // HASA PetscVec
 
 #include <string> // USES std::string
 #include <map> // HASA std::map

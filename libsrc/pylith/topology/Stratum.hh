@@ -11,7 +11,7 @@
 
 #include "pylith/topology/topologyfwd.hh" // forward declarations
 
-#include "pylith/utils/petscfwd.h" // HASA PetscDM, PetscIS
+#include "pylith/petsc/petsc_types.h" // HASA PetscDM, PetscIS
 
 // Stratum --------------------------------------------------------
 /// Height or depth stratum.

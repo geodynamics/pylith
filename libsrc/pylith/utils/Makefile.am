@@ -13,16 +13,11 @@ subpackage = utils
 include $(top_srcdir)/subpackage.am
 
 subpkginclude_HEADERS = \
-	EventLogger.hh \
-	EventLogger.icc \
 	PyreComponent.hh \
 	GenericComponent.hh \
 	journals.hh \
-	PetscOptions.hh \
 	PylithVersion.hh \
-	PetscVersion.hh \
 	DependenciesVersion.hh \
-	TSAdaptImpulse.hh \
 	TestArray.hh \
 	array.hh \
 	mpi.hh \
@@ -30,7 +25,6 @@ subpkginclude_HEADERS = \
 	constants.hh \
 	lapack.h \
 	macrodefs.h \
-	petscfwd.h \
 	error.hh \
 	Exceptions.hh \
 	ErrorMessage.hh \

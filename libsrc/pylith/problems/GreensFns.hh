@@ -136,6 +136,12 @@ public:
                                    PetscMat precondMat,
                                    void* context);
 
+    // PRIVATE METHODS ////////////////////////////////////////////////////////////////////////////
+
+    /// Register monitors.
+    void _registerMonitors(void);
+
+
     // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
 private:
 

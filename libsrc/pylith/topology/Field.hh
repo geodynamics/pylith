@@ -12,7 +12,7 @@
 #include "pylith/topology/FieldBase.hh" // ISA FieldBase
 #include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
-#include "pylith/utils/petscfwd.h" // HASA PetscVec
+#include "pylith/petsc/petsc_types.h" // HASA PetscVec
 #include "spatialdata/geocoords/geocoordsfwd.hh" // HOLDSA CoordSys
 
 #include <map> // USES std::map

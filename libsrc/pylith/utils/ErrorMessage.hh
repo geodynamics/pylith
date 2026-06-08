@@ -13,10 +13,12 @@
 #include <sstream>
 
 namespace pylith {
-    class ErrorMessage;
+    namespace exceptions {
+        class ErrorMessage;
+    }
 }
 
-class pylith::ErrorMessage {
+class pylith::exceptions::ErrorMessage {
 public:
 
     inline ErrorMessage(const char* text);

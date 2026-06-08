@@ -63,7 +63,7 @@ pylith::scales::Scales::operator=(const Scales& dim) {
 void
 pylith::scales::Scales::setLengthScale(const double value) {
     if (value <= 0.0) {
-        PYLITH_ERROR(pylith::ValueError, pylith::journal::user_input,
+        PYLITH_ERROR(pylith::exceptions::ValueError, pylith::journal::user_input,
                      "Length scale (" << value << ") must be positive.");
     } // if
     _length = value;
@@ -75,7 +75,7 @@ pylith::scales::Scales::setLengthScale(const double value) {
 void
 pylith::scales::Scales::setDisplacementScale(const double value) {
     if (value <= 0.0) {
-        PYLITH_ERROR(pylith::ValueError, pylith::journal::user_input,
+        PYLITH_ERROR(pylith::exceptions::ValueError, pylith::journal::user_input,
                      "Displacement scale (" << value << ") must be positive.");
     } // if
     _displacement = value;
@@ -87,7 +87,7 @@ pylith::scales::Scales::setDisplacementScale(const double value) {
 void
 pylith::scales::Scales::setRigidityScale(const double value) {
     if (value <= 0.0) {
-        PYLITH_ERROR(pylith::ValueError, pylith::journal::user_input,
+        PYLITH_ERROR(pylith::exceptions::ValueError, pylith::journal::user_input,
                      "Rigidity scale (" << value << ") must be positive.");
     } // if
     _rigidity = value;
@@ -99,7 +99,7 @@ pylith::scales::Scales::setRigidityScale(const double value) {
 void
 pylith::scales::Scales::setTimeScale(const double value) {
     if (value <= 0.0) {
-        PYLITH_ERROR(pylith::ValueError, pylith::journal::user_input,
+        PYLITH_ERROR(pylith::exceptions::ValueError, pylith::journal::user_input,
                      "Time scale (" << value << ") must be positive.");
     } // if
     _time = value;
@@ -111,7 +111,7 @@ pylith::scales::Scales::setTimeScale(const double value) {
 void
 pylith::scales::Scales::setTemperatureScale(const double value) {
     if (value <= 0.0) {
-        PYLITH_ERROR(pylith::ValueError, pylith::journal::user_input,
+        PYLITH_ERROR(pylith::exceptions::ValueError, pylith::journal::user_input,
                      "Temperature scale (" << value << ") must be positive.");
     } // if
     _temperature = value;

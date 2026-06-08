@@ -13,7 +13,7 @@
 #include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
 #include "pylith/topology/topologyfwd.hh" // USES Field
-#include "pylith/utils/petscfwd.h" // USES PetscMat
+#include "pylith/petsc/petsc_types.h" // USES PetscMat
 #include "pylith/utils/arrayfwd.hh" // HASA std::vector
 
 class pylith::feassemble::JacobianValues : public pylith::utils::GenericComponent {

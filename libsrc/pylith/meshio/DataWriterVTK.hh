@@ -20,7 +20,7 @@
 #include "pylith/meshio/DataWriter.hh" // ISA DataWriter
 
 #include "pylith/topology/topologyfwd.hh" // HOLDSA Field
-#include "pylith/utils/petscfwd.h" // HASA PetscDM
+#include "pylith/petsc/petsc_types.h" // HASA PetscDM
 
 // DataWriterVTK --------------------------------------------------------
 /// Object for writing finite-element data to VTK file.

@@ -121,6 +121,13 @@ libpylith_la_SOURCES = \
 	meshio/OutputTrigger.cc \
 	meshio/OutputTriggerStep.cc \
 	meshio/OutputTriggerTime.cc \
+	petsc/EventLogger.cc \
+	petsc/PetscOptions.cc \
+	petsc/PetscVersion.cc \
+	petsc/TSAdaptImpulse.cc \
+	petsc/TSMonitor.cc \
+	petsc/SNESMonitor.cc \
+	petsc/KSPMonitor.cc \
 	problems/Problem.cc \
 	problems/TimeDependent.cc \
 	problems/GreensFns.cc \
@@ -151,14 +158,10 @@ libpylith_la_SOURCES = \
 	topology/RefineOutputInterpolator.cc \
 	scales/ElasticityScales.cc \
 	scales/Scales.cc \
-	utils/EventLogger.cc \
 	utils/PyreComponent.cc \
 	utils/GenericComponent.cc \
-	utils/PetscOptions.cc \
 	utils/PylithVersion.cc \
-	utils/PetscVersion.cc \
 	utils/DependenciesVersion.cc \
-	utils/TSAdaptImpulse.cc \
 	utils/TestArray.cc \
 	utils/Exceptions.cc
 

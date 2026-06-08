@@ -12,7 +12,7 @@
 #include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
 #include "pylith/topology/topologyfwd.hh" // forward declarations
-#include "pylith/utils/petscfwd.h" // forward declarations
+#include "pylith/petsc/petsc_types.h" // forward declarations
 
 #include "pylith/topology/FieldBase.hh" // USES FieldBase::Description
 #include "pylith/meshio/MeshBuilder.hh" // USES MeshBuilder

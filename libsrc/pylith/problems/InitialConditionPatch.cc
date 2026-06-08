@@ -62,7 +62,7 @@ pylith::problems::InitialConditionPatch::setLabelName(const char* value) {
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setLabelName(value="<<value<<")");
 
     if (strlen(value) == 0) {
-        PYLITH_COMPONENT_ERROR(pylith::ValueError, pylith::journal::user_input,
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::ValueError, pylith::journal::user_input,
                                "Empty string given for label of initial condition patch.");
     } // if
 
@@ -120,7 +120,7 @@ pylith::problems::InitialConditionPatch::verifyConfiguration(const pylith::topol
     PetscBool hasLabel = PETSC_FALSE;
     PylithCallPetsc(DMHasLabel(dmSoln, _labelName.c_str(), &hasLabel));
     if (!hasLabel) {
-        PYLITH_COMPONENT_ERROR(pylith::ValueError, pylith::journal::user_input,
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::ValueError, pylith::journal::user_input,
                                "Could not find label '" << _labelName << "' for setting patch for initial condition.");
     } // if
 
@@ -133,7 +133,7 @@ pylith::problems::InitialConditionPatch::verifyConfiguration(const pylith::topol
     PylithCallPetsc(MPI_Allreduce(&hasLabelValueIntLocal, &hasLabelValueInt, 1, MPI_INT, MPI_MAX,
                                   PetscObjectComm((PetscObject) dmSoln)));
     if (!hasLabelValueInt) {
-        PYLITH_COMPONENT_ERROR(pylith::ValueError, pylith::journal::user_input,
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::ValueError, pylith::journal::user_input,
                                "Label '" << _labelName << "' missing value '" << _labelValue << "' for initial condition.");
     } // if
 
@@ -141,7 +141,7 @@ pylith::problems::InitialConditionPatch::verifyConfiguration(const pylith::topol
     PylithCallPetsc(DMLabelGetStratumBounds(dmLabel, _labelValue, &stratumStart, &stratumEnd));
     pylith::topology::Stratum cellsStratum(dmSoln, pylith::topology::Stratum::HEIGHT, 0);
     if ((stratumStart >= cellsStratum.begin()) && (stratumEnd <= cellsStratum.end())) {
-        PYLITH_COMPONENT_ERROR(pylith::ValueError, pylith::journal::user_input,
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::ValueError, pylith::journal::user_input,
                                "Label '" << _labelName << "' with value '" << _labelValue << "' for initial condition contains only cells. "
                                          << "Labels for initial conditions must contain cells and lower dimension points "
                                          << "(for example, vertices, edges, and faces). These are not available for Cubit meshes; "

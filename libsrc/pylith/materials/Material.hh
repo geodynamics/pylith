@@ -15,7 +15,7 @@
 #include "pylith/feassemble/IntegratorDomain.hh" // HOLDSA IntegratorDomain::ResidualKenels
 #include "pylith/feassemble/IntegratorInterface.hh" // USES IntegratorInterface::ResidualKernels
 
-#include "pylith/utils/PetscOptions.hh" // USES PetscOptions
+#include "pylith/petsc/PetscOptions.hh" // USES PetscOptions
 
 #include <string> // HASA std::string
 
