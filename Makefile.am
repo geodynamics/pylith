@@ -9,7 +9,6 @@
 # =================================================================================================
 
 ACLOCAL_AMFLAGS = -I m4
-AM_MAKEFLAGS = --output-sync=target
 
 SUBDIRS = \
 	libsrc \
