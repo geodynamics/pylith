@@ -5,7 +5,7 @@
 // Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
 // All rights reserved.
 //
-// See https://mit-license.org/ and LICENSE.md and for license information. 
+// See https://mit-license.org/ and LICENSE.md and for license information.
 // =================================================================================================
 //
 
@@ -17,7 +17,7 @@
 # Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
 # All rights reserved.
 #
-# See https://mit-license.org/ and LICENSE.md and for license information. 
+# See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
 
 
@@ -29,7 +29,7 @@
  * Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
  * All rights reserved.
  *
- * See https://mit-license.org/ and LICENSE.md and for license information. 
+ * See https://mit-license.org/ and LICENSE.md and for license information.
  * =================================================================================================
  */
 
@@ -41,6 +41,6 @@ dnl
 dnl Copyright (c) 2010-2023, University of California, Davis and the PyLith Development Team.
 dnl All rights reserved.
 dnl
-dnl See https://mit-license.org/ and LICENSE.md and for license information. 
+dnl See https://mit-license.org/ and LICENSE.md and for license information.
 dnl ================================================================================================
       

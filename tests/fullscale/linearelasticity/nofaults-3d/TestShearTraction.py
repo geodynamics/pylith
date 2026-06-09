@@ -6,7 +6,7 @@
 # Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
 # All rights reserved.
 #
-# See https://mit-license.org/ and LICENSE.md and for license information. 
+# See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
 # @file tests/fullscale/linearelasticity/nofaults-3d/TestShearTraction.py
 #

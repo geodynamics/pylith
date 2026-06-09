@@ -6,7 +6,7 @@
 # Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
 # All rights reserved.
 #
-# See https://mit-license.org/ and LICENSE.md and for license information. 
+# See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
 """Create spatial database for power law bulk rheology for axial traction
 problem with n=1 that is consistent with the analytical solution for the

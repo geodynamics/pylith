@@ -5,7 +5,7 @@ dnl
 dnl Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
 dnl All rights reserved.
 dnl
-dnl See https://mit-license.org/ and LICENSE.md and for license information. 
+dnl See https://mit-license.org/ and LICENSE.md and for license information.
 dnl ================================================================================================
 dnl Process this file with autoconf to produce a configure script.
 
