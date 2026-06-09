@@ -5,7 +5,7 @@
 # Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
 # All rights reserved.
 #
-# See https://mit-license.org/ and LICENSE.md and for license information. 
+# See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
 AC_PREREQ(2.59)
 AC_INIT([materialscontrib], [0.0.1], [cig-short@geodynamics.org])
