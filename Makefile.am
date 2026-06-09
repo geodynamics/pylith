@@ -86,6 +86,9 @@ clean-coverage:
 endif
 
 
+check-tarball:
+	pushd $(top_srcdir) && developer/check_tarball.py --tarball=$(abs_top_builddir)/pylith-$(PACKAGE_VERSION).tar.gz --exclude=developer/tarball_exclude.txt && popd
+
 # Remove .info files from list of intermediate files
 .SECONDARY: coverage-libtests.info coverage-mmstests.info coverage-pytests.xml coverage-fullscale.info
 

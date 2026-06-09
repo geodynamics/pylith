@@ -10,13 +10,18 @@
 .vscode/*
 .zenodo.json
 azure-pipelines.yml
+autom4te.cache/*
 benchmarks/linearelasticity/solver-faults-2d/mesh_tri.msh
+build/*
 ci-config/*
 developer/*
 docs/user/examples/update_synopsis.sh
 m4/*
 m4
 playpen/*
+pylith.egg-info/*
+templates/*/m4/*
+templates/*/m4
 tests/manual/*
 tests/src/driver_cppunit.cc
 # NYI

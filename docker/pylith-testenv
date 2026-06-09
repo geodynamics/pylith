@@ -69,7 +69,7 @@ RUN ${src_dir}/configure --prefix=${INSTALL_DIR} --enable-hdf5 --enable-cubit --
 
 # ----------------------------------------
 from src as build
-RUN make -j$(nproc) install && make dist
+RUN make -j$(nproc) install && make dist && make check-tarball
 
 
 WORKDIR ${src_dir}
