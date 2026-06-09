@@ -61,7 +61,6 @@ Example of setting `FaultCohesiveKin` Pyre properties and facilities in a parame
 # Specify prescribed slip on a fault via two earthquakes in a 2D domain.
 [pylithapp.problem.interfaces.fault]
 label = fault
-edge = fault_edge
 
 observers.observer.data_fields = [slip, traction_change]
 

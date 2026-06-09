@@ -160,20 +160,9 @@ class App(GenerateMesh):
 
         # Faults
         self.slab_top = [69, 71, 79, 83] + [70, 84]
-        # self.slab_top_edge = [118] # mac
-        self.slab_top_edge = [96]  # linux
-
         self.slab_bottom = [57, 66]
-        # self.slab_bottom_edge = [109] # mac
-        self.slab_bottom_edge = [87]  # linux
-
         self.slab_top_patch = [70, 84]
-        # self.slab_top_patch_edge = [200, 223, 182, 224, 203] # mac
-        self.slab_top_patch_edge = [160, 178, 181, 201, 202]  # linux
-
         self.surface_splay = [72]
-        # self.splay_edge = [201, 204, 205] # mac
-        self.splay_edge = [179, 182, 183]  # linux
 
     def mark(self):
         """Mark geometry for materials, boundary conditions, faults, etc."""
@@ -238,31 +227,13 @@ class App(GenerateMesh):
             ),
             BoundaryGroup(name="fault_slabtop", tag=30, dim=2, entities=self.slab_top),
             BoundaryGroup(
-                name="fault_slabtop_edge", tag=130, dim=1, entities=self.slab_top_edge
-            ),
-            BoundaryGroup(
                 name="fault_slabbot", tag=31, dim=2, entities=self.slab_bottom
-            ),
-            BoundaryGroup(
-                name="fault_slabbot_edge",
-                tag=131,
-                dim=1,
-                entities=self.slab_bottom_edge,
             ),
             BoundaryGroup(
                 name="fault_slabtop_patch", tag=32, dim=2, entities=self.slab_top_patch
             ),
             BoundaryGroup(
-                name="fault_slabtop_patch_edge",
-                tag=132,
-                dim=1,
-                entities=self.slab_top_patch_edge,
-            ),
-            BoundaryGroup(
                 name="fault_splay", tag=33, dim=2, entities=self.surface_splay
-            ),
-            BoundaryGroup(
-                name="fault_splay_edge", tag=133, dim=1, entities=self.splay_edge
             ),
         )
         for group in face_groups:

@@ -43,8 +43,6 @@ interfaces = [fault_slabtop, fault_slabbot]
 [pylithapp.problem.interfaces.fault_slabtop]
 label = fault_slabtop
 label_value = 21
-edge = fault_slabtop_edge
-edge_value = 31
 
 observers.observer.data_fields = [slip, traction_change]
 
@@ -61,8 +59,6 @@ db_auxiliary_field.query_type = linear
 [pylithapp.problem.interfaces.fault_slabbot]
 label = fault_slabbot
 label_value = 22
-edge = fault_slabbot_edge
-edge_value = 32
 
 observers.observer.data_fields = [slip, traction_change]
 

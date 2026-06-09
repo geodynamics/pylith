@@ -158,15 +158,11 @@ class App(GenerateMesh):
         self.s_bottom = surfaces[4]
         self.s_east = surfaces[5]
 
-        # Get fault surfaces and edges using the GUI
+        # Get fault surfaces using the GUI
         self.s_fault_main_north = 17
         self.s_fault_main_south = 18
         self.s_fault_west = 16
         self.s_fault_east = 9
-
-        self.fault_main_edges = [20, 21, 22, 23]
-        self.fault_west_edges = [17, 18, 19]
-        self.fault_east_edges = [19, 24, 25]
 
     def mark(self):
         """Mark geometry for materials, boundary conditions, faults, etc.
@@ -210,15 +206,6 @@ class App(GenerateMesh):
             ),
             BoundaryGroup(
                 name="fault_east", tag=22, dim=2, entities=[self.s_fault_east]
-            ),
-            BoundaryGroup(
-                name="fault_main_edges", tag=30, dim=1, entities=self.fault_main_edges
-            ),
-            BoundaryGroup(
-                name="fault_west_edges", tag=31, dim=1, entities=self.fault_west_edges
-            ),
-            BoundaryGroup(
-                name="fault_east_edges", tag=32, dim=1, entities=self.fault_east_edges
             ),
         )
         for group in face_groups:
