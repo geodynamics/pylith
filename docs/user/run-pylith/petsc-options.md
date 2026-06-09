@@ -229,7 +229,7 @@ ts_type = beuler
 pc_type = fieldsplit
 pc_fieldsplit_type = schur
 
-pc_fieldsplit_schur_factorization_type = full
+pc_fieldsplit_schur_factorization_type = lower
 pc_fieldsplit_schur_precondition = full
 
 fieldsplit_displacement_pc_type = lu
@@ -245,7 +245,7 @@ ts_type = beuler
 pc_type = fieldsplit
 pc_fieldsplit_type = schur
 
-pc_fieldsplit_schur_factorization_type = full
+pc_fieldsplit_schur_factorization_type = lower
 pc_fieldsplit_schur_precondition = full
 
 fieldsplit_displacement_pc_type = ml
