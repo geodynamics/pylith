@@ -354,7 +354,7 @@ class App(GenerateMesh):
         )
 
         point_tags = numpy.concatenate(all_points_on_grid).tolist()
-        surface = gmsh.model.occ.addSurfaceFilling(wire, pointTags=point_tags)
+        surface = gmsh.model.occ.addSurfaceFilling(wire, pointTags=point_tags, tol3d=1.0, numIter=5)
         gmsh.model.occ.remove([(0, point) for point in point_tags])
         return surface, contours
 
