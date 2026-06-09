@@ -5,6 +5,17 @@ Starting with v3.0.0, we strictly follow the [semantic versioning guidelines](ht
 The version numbers are in the form `MAJOR.MINOR.PATCH`, where major releases indicate changes to the public API (parameters), minor releases indicate new functionality that is backward compatible, and patch releases indicate backward compatible bug fixes.
 :::
 
+## Version 5.0.2 (2026-XX-XX)
+
+* **Changed**
+  * Update default solver settings for incompressible elasticity for Schur factoriztion from `full` to `lower`.
+* **Added**
+  * `examples/subduction-3d`: Add expected Gmsh output for geometric operations.
+* **Fixed**
+  * `examples/subduction-3d`: Increase tolerance for slab surface creation.
+* **Developer Changes**
+  * Remove flag (`--output-sync=target`) in top-level `Makefile.am` that is not backwards compatible.
+
 ## Version 5.0.1 (2026-06-07)
 
 * **Changed**
