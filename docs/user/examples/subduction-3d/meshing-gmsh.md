@@ -21,6 +21,15 @@ PyLith will automatically convert among compatible coordinate systems during the
 caption: [Optional] Generate the finite-elemet mesh using `generate_gmsh.py`. If you do not want to generate the finite-element mesh, refer to the instructions in `input/README.md` on how to download the Gmsh file.
 ---
 $ ./generate_gmsh.py --write --filename=mesh_tet.msh
+
+# When creating the geometry you should see the following output. If your output does not
+# match, you likely need to update the id values in the generate_gmsh.py script.
+Fragment domain with topography, tags=[(3, 2), (3, 3), (2, 27)]. Setting domain=(3, 2), deleting=[(3, 3), (2, 27)]
+Fragment domain with slab.
+Fragment domain with slab, tags=[(3, 1), (3, 2), (3, 3)]. Setting domain=(3, 1), slab=(3, 2), deleting=[(3, 3)]
+Fragment domain with splay fault, tags=[(3, 3), (3, 4), (2, 41)]. Setting domain=(3, 3), slab=(3, 2) wedge=(3, 4), deleting=[(2, 41)]
+Fragment domain with moho, tags=[(3, 5), (3, 6), (2, 53)]. Setting domain=(3, 5), crust=(3, 6), slab=(3, 2) wedge=(3, 4), deleting=[(2, 53)]
+Fragment slab with patch, tags=[(3, 7), (3, 8), (3, 9), (3, 10)]. Setting domain=(3, 5), crust=(3, 6), slab=[(3, 7), (3, 8)] wedge=(3, 4), deleting=[(3, 9), (3, 10)]
 ```
 
 ## Geometry
