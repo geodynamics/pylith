@@ -28,11 +28,10 @@ class DumpParameters(Component):
         """Do minimal initialization."""
         return
 
-    def write(self, app):
-        """Write parameters to ASCII file.
+    def write(self, app, using_mpi):
+        """Write parameters to file.
         """
-        # Do nothing
-        return
+        raise NotImplementedError()
 
     def collect(self, app):
         """Collect version information and parameters.

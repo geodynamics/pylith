@@ -67,7 +67,7 @@ class PyLithApp(PetscApplication):
 
         # Dump parameters and version information
         self.parameters.preinitialize()
-        self.parameters.write(self)
+        self.parameters.write(self, using_mpi=True)
 
         from pylith.mpi.Communicator import mpi_is_root, mpi_comm_world
 

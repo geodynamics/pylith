@@ -56,7 +56,7 @@ class ParametersApp(object):
         dumper.inventory.filename = self.filename
         dumper._configure()
 
-        dumper.write(targetapp)
+        dumper.write(targetapp, using_mpi=False)
         return
 
 # ----------------------------------------------------------------------
