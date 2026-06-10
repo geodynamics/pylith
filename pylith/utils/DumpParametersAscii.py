@@ -47,12 +47,13 @@ class DumpParametersAscii(DumpParameters):
         """
         DumpParameters.__init__(self, name)
 
-    def write(self, app):
+    def write(self, app, using_mpi):
         """Write parameters to ASCII file.
         """
-        from pylith.mpi.Communicator import mpi_is_root
-        if not mpi_is_root():
-            return
+        if using_mpi:
+            from pylith.mpi.Communicator import mpi_is_root
+            if not mpi_is_root():
+                return
 
         if self.info is None:
             self.collect(app)
