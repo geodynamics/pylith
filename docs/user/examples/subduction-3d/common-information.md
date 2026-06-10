@@ -5,11 +5,11 @@ We specify parameters common to all simulations in a directory in `pylithapp.cfg
 
 The settings contained in `pylithapp.cfg` for this problem consist of:
 
-* `pylithapp.metadata` Metadata common to all of the simulations in the directory.
-* `pylithapp.mesh_generator` Parameters for importing the finite-element mesh.
-* `pylithapp.problem` Parameters that define the boundary value problem and its solution, such as the type of solver, solution fields, and output over the domain.
-* `pylithapp.problem.materials` Parameters that specify the governing equation and bulk rheologies.
-* `pylithapp.problem.bc` Parameters that specify the boundary conditions.
+:`pylithapp.metadata`: Metadata common to all of the simulations in the directory.
+:`pylithapp.mesh_generator`: Parameters for importing the finite-element mesh.
+:`pylithapp.problem`: Parameters that define the boundary value problem and its solution, such as the type of solver, solution fields, and output over the domain.
+:`pylithapp.problem.materials`: Parameters that specify the governing equation and bulk rheologies.
+:`pylithapp.problem.bc`: Parameters that specify the boundary conditions.
 
 To make it easier to switch between different bulk rheologies for different simulations, we separate the material parameters relevant to the bulk rheologies into three parameter files: `mat_elastic.cfg`, `mat_viscoelastic.cfg`, and `mat_elastic_incompressible.cfg`.
 We use `mat_elastic.cfg` when we want all materials to use elastic bulk rheologies.
