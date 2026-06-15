@@ -1,4 +1,4 @@
-# docker build --build-arg BASE_IMAGE=${VARIABLE_NAME} --build-arg TEST_COVERAGE=yes/no --build-arg PYTHON_COVERAGE=${COVERAGE_EXECUTABLE} -f DOCKERFILE . -t IMAGE_NAME .
+# docker build --build-arg BASE_IMAGE=${VARIABLE_NAME} --build-arg TEST_COVERAGE=yes/no --build-arg PYTHON_COVERAGE=${COVERAGE_EXECUTABLE} -f DOCKERFILE -t IMAGE_NAME .
 
 # BUILD CIG DEPENDENCIES ----------
 ARG BASE_IMAGE
