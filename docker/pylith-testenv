@@ -1,4 +1,4 @@
-# docker build --build-arg BASE_IMAGE=${VARIABLE_NAME} --build-arg TEST_COVERAGE=yes/no --build-arg PYTHON_COVERAGE=${COVERAGE_EXECUTABLE} -f DOCKERFILE . -t IMAGE_NAME .
+# docker build --build-arg BASE_IMAGE=${VARIABLE_NAME} --build-arg TEST_COVERAGE=yes/no --build-arg PYTHON_COVERAGE=${COVERAGE_EXECUTABLE} -f DOCKERFILE -t IMAGE_NAME .
 
 # BUILD CIG DEPENDENCIES ----------
 ARG BASE_IMAGE
@@ -69,7 +69,7 @@ RUN ${src_dir}/configure --prefix=${INSTALL_DIR} --enable-hdf5 --enable-cubit --
 
 # ----------------------------------------
 from src as build
-RUN make -j$(nproc) install && make dist
+RUN make -j$(nproc) install && make dist && make check-tarball
 
 
 WORKDIR ${src_dir}
