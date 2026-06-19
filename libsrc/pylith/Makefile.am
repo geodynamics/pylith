@@ -121,6 +121,8 @@ libpylith_la_SOURCES = \
 	meshio/OutputTrigger.cc \
 	meshio/OutputTriggerStep.cc \
 	meshio/OutputTriggerTime.cc \
+	petsc/Application.cc \
+	petsc/ErrorHandler.cc \
 	petsc/EventLogger.cc \
 	petsc/PetscOptions.cc \
 	petsc/PetscVersion.cc \
@@ -178,6 +180,10 @@ AM_CPPFLAGS = -I$(top_srcdir)/libsrc
 AM_CPPFLAGS += $(PETSC_CC_INCLUDES)
 
 AM_CPPFLAGS += $(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR)
+
+if ENABLE_CPPTRACE
+  libpylith_la_LIBADD += -lcpptrace
+endif
 
 if ENABLE_CUBIT
   libpylith_la_SOURCES += \

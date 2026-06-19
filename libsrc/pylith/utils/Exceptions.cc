@@ -10,9 +10,13 @@
 
 #include "Exceptions.hh"
 
+#if defined(HAVE_CPPTRACE)
+#include "cpptrace/cpptrace.hpp"
+#else
 #if defined(HAVE_BACKTRACE)
 #include <execinfo.h>
 #include <cstdlib> // USES std::free
+#endif
 #endif
 
 #include <sstream> // USES std::ostringstream
@@ -51,8 +55,9 @@ pylith::exceptions::Error::addContext(const pylith::exceptions::ErrorMessage& co
 void
 pylith::exceptions::Error::_buildWhat(const std::string& context) {
     std::ostringstream oss;
-    oss << _filename << ":" << _line << " " << _function << "\n"
-        << std::runtime_error::what();
+    oss << std::runtime_error::what() << "\n"
+        << "    File: \"" << _filename << "\", line " << _line << "\n"
+        << "    Function: " << _function << "\n";
     if (context.length() > 0) {
         oss << "\n" << context;
     } // if
@@ -65,8 +70,27 @@ pylith::exceptions::Error::_buildWhat(const std::string& context) {
 // ------------------------------------------------------------------------------------------------
 void
 pylith::exceptions::Error::_captureTraceback() {
+    size_t numFrames = 0;
+#if defined(HAVE_CPPTRACE)
+    const size_t skipFrames = 6; // Skip exception lines in traceback
+
+    cpptrace::stacktrace trace = cpptrace::generate_trace(skipFrames);
+
+    for (const auto& frame : trace.frames) {
+        std::ostringstream oss;
+        oss << (frame.symbol.empty() ? "??" : frame.symbol)
+            << " at "
+            << (frame.filename.empty() ? "??" : frame.filename)
+            << ":"
+            << frame.line.value_or(0);
+
+        _traceback.push_back(oss.str());
+    } // for
+    numFrames = trace.frames.size();
+
+#else
 #if defined(HAVE_BACKTRACE)
-    void*  frames[MAX_FRAMES];
+    void* frames[MAX_FRAMES];
     const size_t skipFrames = 3; // Skip exception lines in traceback
 
     size_t numFrames = ::backtrace(frames, MAX_FRAMES);
@@ -81,6 +105,9 @@ pylith::exceptions::Error::_captureTraceback() {
     }
     std::free(symbols);
     numFrames -= skipFrames;
+
+#endif
+#endif
 
     // Remove libpython from traceback
     size_t last = 0;
@@ -109,7 +136,6 @@ pylith::exceptions::Error::_captureTraceback() {
             _traceback.resize(newSize);
         } // if
     } // if
-#endif
 } // captureTraceback
 
 

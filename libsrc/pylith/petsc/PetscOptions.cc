@@ -142,7 +142,7 @@ pylith::utils::PetscDefaults::set(const pylith::materials::Material* material,
     delete options;options = NULL;
 
     PYLITH_METHOD_END;
-} // setDefaults
+} // set
 
 
 // ------------------------------------------------------------------------------------------------

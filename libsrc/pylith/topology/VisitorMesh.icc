@@ -276,7 +276,7 @@ pylith::topology::MatVisitorMesh::~MatVisitorMesh(void) {
 
     _dm = NULL;
     _localSection = NULL;
-    PylithCallPetscNoThrow(PetscSectionDestroy(&_globalSection));assert(!_globalSection);
+    PetscSectionDestroy(&_globalSection);
 } // destructor
 
 

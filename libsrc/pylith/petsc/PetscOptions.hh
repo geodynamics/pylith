@@ -52,9 +52,9 @@ public:
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
 private:
 
-    PetscDefaults(void); ///< Not implemented
-    PetscDefaults(const PetscDefaults &); ///< Not implemented.
-    const PetscDefaults& operator=(const PetscDefaults&); ///< Not implemented
+    PetscDefaults(void) = delete;
+    PetscDefaults(const PetscDefaults &) = delete;
+    const PetscDefaults& operator=(const PetscDefaults&) = delete;
 
 }; // class PetscDefaults
 

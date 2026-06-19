@@ -13,6 +13,7 @@
 # that uses PETSc.
 
 from pythia.mpi import Application
+from pylith.utils.utils import Application as ModulePetscApplication
 
 
 class PetscApplication(Application):
@@ -47,9 +48,8 @@ class PetscApplication(Application):
         if self.inventory.includeCitations:
             self.petsc.setOption("-citations", "")
 
-            from pylith.utils.petsc import citationsRegister
             for entry in self.citations():
-                citationsRegister(entry)
+                ModulePetscApplication.registerCitation(entry)
 
         try:
             self.main(*args, **kwds)
@@ -58,8 +58,12 @@ class PetscApplication(Application):
             import sys
 
             self.cleanup()  # Attempt to clean up memory.
-            print("Fatal error. Calling MPI_Abort() to abort PyLith application.")
-            traceback.print_exc(file=sys.stdout)
+            frames = traceback.extract_tb(err.__traceback__)
+            python_tb = (
+                "\nPython traceback:\n" +
+                "".join(traceback.format_list(reversed(frames)))
+            )
+            self._error.log(str(err) + python_tb)
             sys.stdout.flush()
             from pylith.mpi import mpi
             errorCode = -1

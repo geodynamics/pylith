@@ -14,26 +14,33 @@
 #include "pylith/petsc/petsc_types.h" // USES PetscErrorCode
 #include "pylith/utils/PyreComponent.hh" // ISA PyreComponent
 
+#include <mpi.h>
+#include <petscerror.h>
+#include <stdexcept> // USES std::exception_ptr
+
 class pylith::petsc::ErrorHandler : public pylith::utils::PyreComponent {
     friend class TestErrorHandler; // unit testing
 
     // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
-    /// Constructor
-    ErrorHandler(void);
-
-    /// Destructor
-    ~ErrorHandler(void);
-
-    /// Deallocate PETSc and local data structures.
-    void deallocate(void);
-
-    /** Register monitor with PETSc.
+    /** Capture the first exception.
      *
-     * @param[inout] ts PETSc TS.
+     * Ignore overwrites from other frames.
+     *
+     * @param[in] exceptionPtr Exception pointer
      */
-    void registerErrorHandler(void);
+    static
+    void set(std::exception_ptr exceptionPtr) noexcept;
+
+    static
+    std::exception_ptr release(void) noexcept;
+
+    static
+    bool exists(void) noexcept;
+
+    static
+    void clear(void) noexcept;
 
     /** PyLith error handling function.
      *
@@ -57,11 +64,16 @@ public:
                                       PetscCtx context);
 
 
+    // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
+private:
+
+    static thread_local std::exception_ptr _exception;
+
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
 private:
 
+    ErrorHandler(void) = delete;
     ErrorHandler(const ErrorHandler&) = delete;
-
     const ErrorHandler& operator=(const ErrorHandler&) = delete;
 
 }; // ErrorHandler

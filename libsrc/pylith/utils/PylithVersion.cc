@@ -16,6 +16,7 @@
 const bool pylith::utils::PylithVersion::_isRelease = int(PYLITH_RELEASE_VERSION);
 const char* pylith::utils::PylithVersion::_version = PYLITH_VERSION;
 const char* pylith::utils::PylithVersion::_doi = PYLITH_DOI;
+const char* pylith::utils::PylithVersion::_releaseDate = PYLITH_RELEASE_DATE;
 const char* pylith::utils::PylithVersion::_gitBranch = PYLITH_GIT_BRANCH;
 const char* pylith::utils::PylithVersion::_gitRevision = PYLITH_GIT_REVISION;
 const char* pylith::utils::PylithVersion::_gitDate = PYLITH_GIT_DATE;
@@ -53,6 +54,14 @@ const char*
 pylith::utils::PylithVersion::doi(void) { // doi
     return _doi;
 } // doi
+
+
+// ----------------------------------------------------------------------
+// Get release date.
+const char*
+pylith::utils::PylithVersion::releaseDate(void) {
+    return _releaseDate;
+}
 
 
 // ----------------------------------------------------------------------

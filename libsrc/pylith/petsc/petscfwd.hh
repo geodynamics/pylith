@@ -11,11 +11,12 @@
 
 namespace pylith {
     namespace petsc {
+        class Application;
+        class ErrorHandler;
+
         class KSPMonitor;
         class SNESMonitor;
         class TSMonitor;
-
-        class ErrorHandler;
 
     } // petsc
 } // pylith

@@ -13,6 +13,8 @@ subpackage = petsc
 include $(top_srcdir)/subpackage.am
 
 subpkginclude_HEADERS = \
+	Application.hh \
+	ErrorHandler.hh \
 	EventLogger.hh \
 	EventLogger.icc \
 	PetscOptions.hh \

@@ -74,6 +74,17 @@ fi
 AM_CONDITIONAL([ENABLE_CUBIT], [test "$enable_cubit" = yes])
 AC_SUBST(PYLITH_SWIG_CPPFLAGS)
 
+dnl cpptrace
+AC_ARG_ENABLE([cpptrace],
+    [AC_HELP_STRING([--enable-cpptrace],
+        [enable C++ traceback using cpptrace (requires cpptrace and libdwarf) @<:@default=no@:>@])],
+	[if test "$enableval" = yes; then enable_cpptrace=yes; else enable_cpptrace=no; fi],
+	[enable_cpptrace=no])
+if test "$enable_cpptrace" = "yes"; then
+  CPPFLAGS="-DENABLE_CPPTRACE $CPPFLAGS"; export CPPFLAGS
+fi
+AM_CONDITIONAL([ENABLE_CPPTRACE], [test "$enable_cpptrace" = yes])
+
 dnl PETSc w/HDF5
 AC_ARG_ENABLE([hdf5],
     [AC_HELP_STRING([--enable-hdf5],
@@ -130,6 +141,11 @@ CIT_CHECK_LIB_PETSC
 
 dnl Large file support
 AC_SYS_LARGEFILE
+
+if test "$enable_cpptrace" = "yes" ; then
+  CIT_CPPTRACE_HEADER
+  CIT_CPPTRACE_LIB
+fi
 
 dnl backtrace support
 CIT_CHECK_BACKTRACE

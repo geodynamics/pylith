@@ -10,6 +10,7 @@
 #pragma once
 
 #include "Exceptions.hh"
+#include "pylith/petsc/ErrorHandler.hh"
 
 #include "petsc.h"
 
@@ -19,8 +20,6 @@
 #undef __FUNCT__
 #if defined(__FUNCTION_NAME__)
 #define __FUNCT__ __FUNCTION_NAME__
-#undef PYLITH_FUNCTION_NAME
-#define PYLITH_FUNCTION_NAME __FUNCT__
 #else
 #define __FUNCT__ __func__
 #endif
@@ -35,16 +34,13 @@
         do { \
             PetscStackUpdateLine; \
             PetscErrorCode ierr_petsc_call = __VA_ARGS__; \
-            if (PetscUnlikely(ierr_petsc_call != PETSC_SUCCESS)) \
-            {PetscError(PETSC_COMM_SELF,__LINE__,PYLITH_FUNCTION_NAME,__FILE__,ierr_petsc_call,PETSC_ERROR_REPEAT,0);} \
-        } while (0)
-
-#define PylithCallPetscNoThrow(...) \
-        do { \
-            PetscStackUpdateLine; \
-            PetscErrorCode ierr_petsc_call = __VA_ARGS__; \
-            if (PetscUnlikely(ierr_petsc_call != PETSC_SUCCESS)) \
-            {PetscError(PETSC_COMM_SELF,__LINE__,PYLITH_FUNCTION_NAME,__FILE__,ierr_petsc_call,PETSC_ERROR_REPEAT,0);} \
+            if (PetscUnlikely(ierr_petsc_call != PETSC_SUCCESS)) { \
+                auto exPtr = pylith::petsc::ErrorHandler::release(); \
+                if (exPtr) { \
+                    std::rethrow_exception(exPtr); \
+                } \
+                throw pylith::exceptions::PetscError("PETSc error with no handler-captured diagnostics.", __FILE__, __LINE__, __FUNCT__); \
+            } \
         } while (0)
 
 #define PylithCallPetscRequire(...) \
