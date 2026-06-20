@@ -19,10 +19,7 @@ class PetscManager(PropertyList):
     DOC_CONFIG = {
         "cfg": """
             [pylithapp.petsc]
-            ts_monitor = true
-            ksp_monitor = true
             ksp_converged_reason = true
-            snes_monitor = true
             snes_converged_reason = true
             snes_linesearch_monitor = true
         """
@@ -62,11 +59,6 @@ class PetscManager(PropertyList):
                     else:
                         msg[-1] += f" = {option}"
                 self._flow.log("\n".join(msg))
-
-    def setOption(self, name, value):
-        """Set option after PETSc initialization.
-        """
-        petsc.optionsSetValue(name, value)
 
     def _getOptions(self):
         """Cleanup options for PETSc.

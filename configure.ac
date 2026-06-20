@@ -10,7 +10,7 @@ dnl ============================================================================
 dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT([PyLith], [5.0.2], [https://geodynamics.org/resources/pylith])
+AC_INIT([PyLith], [5.1.0dev], [https://geodynamics.org/resources/pylith])
 AC_CONFIG_AUX_DIR([./aux-config])
 AC_CONFIG_HEADER([portinfo])
 AC_CONFIG_MACRO_DIR([m4])
@@ -119,6 +119,14 @@ AC_PROG_INSTALL
 
 AX_CXX_COMPILE_STDCXX(14)
 
+dnl Large file support
+AC_SYS_LARGEFILE
+
+dnl Check whether compiler sets variable with function names.
+CIT_FUNCTIONSTRING
+
+dnl ENDIANNESS
+AC_C_BIGENDIAN
 
 dnl PYTHON/PYTHIA (nemesis must be set before python)
 CIT_PATH_NEMESIS
@@ -139,9 +147,7 @@ CIT_PATH_PETSC([3.25.4])
 CIT_HEADER_PETSC
 CIT_CHECK_LIB_PETSC
 
-dnl Large file support
-AC_SYS_LARGEFILE
-
+dnl cpptrace support
 if test "$enable_cpptrace" = "yes" ; then
   CIT_CPPTRACE_HEADER
   CIT_CPPTRACE_LIB
@@ -208,13 +214,11 @@ if test "$enable_test_coverage" = "yes" ; then
   fi
 fi
 
-dnl Check whether compiler sets variable with function names.
-CIT_FUNCTIONSTRING
-
 dnl VERSION
 CIG_PKG_GIT(PYLITH)
 AC_DEFINE_UNQUOTED([PYLITH_VERSION], ["$PACKAGE_VERSION"], [Define PyLith version])
 AC_DEFINE_UNQUOTED([PYLITH_DOI], ["10.5281/zenodo.21909051"], [Define PyLith doi])
+AC_DEFINE_UNQUOTED([PYLITH_RELEASE_DATE], ["2026-08-17"], [Define PyLith release date])
 
 dnl ENDIANNESS
 AC_C_BIGENDIAN

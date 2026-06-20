@@ -121,10 +121,11 @@ class PyLithApp(PetscApplication):
 
     def citations(self):
         import pylith.utils.utils as utils
+        import datetime
 
         v = utils.PylithVersion()
         verNum = v.version()
-        verYear = 2023
+        verDate = datetime.date.fromisoformat(v.releaseDate())
         verDOI = v.doi()
 
         software = (
@@ -135,7 +136,7 @@ class PyLithApp(PetscApplication):
             "  address      = {University of California, Davis},\n"
             "  year         = {%d},\n"
             "  doi         = {%s}\n"
-            "}\n" % (verNum, verYear, verDOI)
+            "}\n" % (verNum, verDate.year, verDOI)
         )
 
         manual = (
@@ -146,7 +147,7 @@ class PyLithApp(PetscApplication):
             "  address      = {University of California, Davis},\n"
             "  year         = {%d},\n"
             "  note         = {https://pylith.readthedocs.io/en/v%s}\n"
-            "}\n" % (verNum, verYear, verNum)
+            "}\n" % (verNum, verDate.year, verNum)
         )
 
         faultRup = (

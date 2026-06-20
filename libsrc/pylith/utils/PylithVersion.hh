@@ -47,6 +47,13 @@ public:
     static
     const char* doi(void);
 
+    /** Get release date.
+     *
+     * @returns Release date.
+     */
+    static
+    const char* releaseDate(void);
+
     /** Get GIT revision.
      *
      * @returns GIT revision.
@@ -86,7 +93,8 @@ private:
 
     static const bool _isRelease; ///< Is source code from a release?
     static const char* _version; ///< Version number.
-    static const char* _doi; ///< DOI..
+    static const char* _doi; ///< DOI.
+    static const char* _releaseDate; ///< Release date.
     static const char* _gitRevision; ///< GIT revision.
     static const char* _gitDate; ///< Date of GIT revision.
     static const char* _gitHash; ///< GIT hash.

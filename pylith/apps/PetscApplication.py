@@ -44,10 +44,8 @@ class PetscApplication(Application):
         """Run the application in parallel on the compute nodes.
         """
         self.petsc.initialize()
-
+        
         if self.inventory.includeCitations:
-            self.petsc.setOption("-citations", "")
-
             for entry in self.citations():
                 ModulePetscApplication.registerCitation(entry)
 
