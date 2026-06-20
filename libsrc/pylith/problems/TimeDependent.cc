@@ -172,7 +172,7 @@ pylith::problems::TimeDependent::setEndTime(const double value) {
     PYLITH_COMPONENT_DEBUG(pylith::journal::debug_parameters, "endTime="<<value<<")");
 
     if (value < 0.0) {
-        PYLITH_COMPONENT_ERROR(pylith::exceptions::OutOfRangeError, pylith::journal::user_input,
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::OutOfRangeError,
                                "End time (" << value << " seconds) for problem must be positive.");
     } // if
     _endTime = value;
@@ -197,7 +197,7 @@ pylith::problems::TimeDependent::setMaxTimeSteps(const size_t value) {
     PYLITH_COMPONENT_DEBUG(pylith::journal::debug_parameters, "maxTimeSteps="<<value<<")");
 
     if (value <= 0) {
-        PYLITH_COMPONENT_ERROR(pylith::exceptions::OutOfRangeError, pylith::journal::user_input,
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::OutOfRangeError,
                                "Maximum number of time steps (" << value << ") for problem must be positive.");
     } // if
     _maxTimeSteps = value;
@@ -222,7 +222,7 @@ pylith::problems::TimeDependent::setInitialTimeStep(const double value) {
     PYLITH_COMPONENT_DEBUG(pylith::journal::debug_parameters, "initialTimeStep="<<value<<")");
 
     if (value < 0.0) {
-        PYLITH_COMPONENT_ERROR(pylith::exceptions::OutOfRangeError, pylith::journal::user_input,
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::OutOfRangeError,
                                "Initial time step (" << value << " seconds) for problem must be positive.");
     } // if
     _dtInitial = value;
@@ -369,7 +369,7 @@ pylith::problems::TimeDependent::initialize(void) {
         PylithCallPetsc(TSSetProblemType(_ts, TS_NONLINEAR));
         break;
     default:
-        PYLITH_COMPONENT_ERROR(pylith::exceptions::ValueError, pylith::journal::logic, "Unknown problem type.");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::SwitchLogicError, "Unknown problem type.");
     } // switch
     PYLITH_COMPONENT_DEBUG(pylith::journal::debug_parameters, "Setting PetscTS parameters: "
                            <<"dtInitial="<<_dtInitial
@@ -437,7 +437,7 @@ pylith::problems::TimeDependent::initialize(void) {
         break;
     }
     default: {
-        PYLITH_COMPONENT_FIREWALL(pylith::exceptions::InternalLogicError, pylith::journal::logic, "Unknown time stepping formulation '" << _formulation << "'.");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::SwitchLogicError, "Unknown time stepping formulation '" << _formulation << "'.");
     } // default
     } // switch
 

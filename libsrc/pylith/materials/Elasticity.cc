@@ -171,7 +171,7 @@ pylith::materials::Elasticity::verifyConfiguration(const pylith::topology::Field
         requiredFields[numRequired++] = "velocity";
         break;
     default:
-        PYLITH_COMPONENT_FIREWALL(pylith::exceptions::InternalLogicError, pylith::journal::logic, "Unknown formulation for equations (" << _formulation << ").");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::SwitchLogicError, "Unknown formulation for equations (" << _formulation << ").");
     } // switch
     requiredFields.resize(numRequired);
 
@@ -322,7 +322,7 @@ pylith::materials::Elasticity::getSolverDefaults(const bool isParallel,
     case pylith::problems::Physics::DYNAMIC_IMEX:
         break;
     default:
-        PYLITH_COMPONENT_FIREWALL(pylith::exceptions::InternalLogicError, pylith::journal::logic, "Unknown formulation '" << _formulation << "'.");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::SwitchLogicError, "Unknown formulation '" << _formulation << "'.");
     } // switch
 
     PYLITH_METHOD_RETURN(options);
@@ -356,7 +356,7 @@ pylith::materials::Elasticity::getInterfaceKernelsResidual(const pylith::topolog
             f0l = _rheology->getKernelf0Pos(coordsys);
             break;
         default:
-            PYLITH_COMPONENT_FIREWALL(pylith::exceptions::InternalLogicError, pylith::journal::logic, "Unknown interface face ("<<face<<").");
+            PYLITH_COMPONENT_ERROR(pylith::exceptions::SwitchLogicError, "Unknown interface face ("<<face<<").");
         } // switch
 
         kernels.resize(1);
@@ -365,7 +365,7 @@ pylith::materials::Elasticity::getInterfaceKernelsResidual(const pylith::topolog
         break;
     } // DYNAMIC_IMEX
     default:
-        PYLITH_COMPONENT_FIREWALL(pylith::exceptions::InternalLogicError, pylith::journal::logic, "Unknown formulation for equations (" << _formulation << ").");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::SwitchLogicError, "Unknown formulation for equations (" << _formulation << ").");
     } // switch
 
     PYLITH_METHOD_RETURN(kernels);
@@ -399,7 +399,7 @@ pylith::materials::Elasticity::getInterfaceKernelsJacobian(const pylith::topolog
             Jf0ll = pylith::fekernels::FaultCohesiveKin::Jf0ll_pos;
             break;
         default:
-            PYLITH_COMPONENT_FIREWALL(pylith::exceptions::InternalLogicError, pylith::journal::logic, "Unknown interface face ("<<face<<").");
+            PYLITH_COMPONENT_ERROR(pylith::exceptions::SwitchLogicError, "Unknown interface face ("<<face<<").");
         } // switch
 
         kernels.resize(1);
@@ -409,7 +409,7 @@ pylith::materials::Elasticity::getInterfaceKernelsJacobian(const pylith::topolog
         break;
     } // DYNAMIC_IMEX
     default:
-        PYLITH_COMPONENT_FIREWALL(pylith::exceptions::InternalLogicError, pylith::journal::logic, "Unknown formulation for equations (" << _formulation << ").");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::SwitchLogicError, "Unknown formulation for equations (" << _formulation << ").");
     } // switch
 
     PYLITH_METHOD_RETURN(kernels);
@@ -470,7 +470,7 @@ pylith::materials::Elasticity::_setKernelsResidual(pylith::feassemble::Integrato
     case 0x0:
         break;
     default:
-        PYLITH_COMPONENT_FIREWALL(pylith::exceptions::InternalLogicError, pylith::journal::logic, "Unknown case (bitUse=" << bitUse << ") for residual kernels.");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::SwitchLogicError, "Unknown case (bitUse=" << bitUse << ") for residual kernels.");
     } // switch
     PetscPointFn* r1 = _rheology->getKernelf1v(coordsys);
 
@@ -525,7 +525,7 @@ pylith::materials::Elasticity::_setKernelsResidual(pylith::feassemble::Integrato
         break;
     } // DYNAMIC
     default:
-        PYLITH_COMPONENT_FIREWALL(pylith::exceptions::InternalLogicError, pylith::journal::logic, "Unknown formulation for equations (" << _formulation << ").");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::SwitchLogicError, "Unknown formulation for equations (" << _formulation << ").");
     } // switch
 
     // Add any MMS body force kernels.
@@ -594,7 +594,7 @@ pylith::materials::Elasticity::_setKernelsJacobian(pylith::feassemble::Integrato
         break;
     } // DYNAMIC
     default:
-        PYLITH_COMPONENT_FIREWALL(pylith::exceptions::InternalLogicError, pylith::journal::logic, "Unknown formulation for equations (" << _formulation << ").");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::SwitchLogicError, "Unknown formulation for equations (" << _formulation << ").");
     } // switch
 
     integrator->setKernelsJacobian(kernels, solution);

@@ -109,7 +109,7 @@ pylith::meshio::OutputSolnPoints::_writeSolnStep(const PylithReal t,
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "_writeSolnStep(t="<<t<<", tindex="<<tindex<<", solution="<<solution.getLabel()<<")");
 
     if (dynamic_cast<pylith::meshio::DataWriterVTK*>(_writer)) {
-        PYLITH_FIREWALL(pylith::exceptions::InternalLogicError, pylith::journal::logic, "PETSc VTK writer using the VTU format does not support output at points. Use the default DataWriterHDF5 writer.");
+        PYLITH_ERROR(pylith::exceptions::InternalLogicError, "PETSc VTK writer using the VTU format does not support output at points. Use the default DataWriterHDF5 writer.");
     } // if
 
     if (!_interpolator) {

@@ -76,7 +76,7 @@ pylith::meshio::MeshIO::read(pylith::topology::Mesh* mesh,
     PYLITH_COMPONENT_INFO_ROOT(pylith::journal::application_flow, msg.str());
     const PetscReal tolerance = 1.0e-8;
     if (volume < tolerance) {
-        PYLITH_ERROR(pylith::exceptions::ValueError, pylith::journal::user_input,
+        PYLITH_ERROR(pylith::exceptions::ValueError,
                      "Domain bounding box volume (" << volume << ") is less than minimum tolerance ("
                                                     << tolerance << "). This usually means you are trying to use a 2D mesh in 3D. Check that you are exporting "
                                                     << "your mesh from the mesh generation software correctly and that your have specified the correct "

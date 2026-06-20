@@ -23,7 +23,6 @@ subpkginclude_HEADERS = \
 	TSMonitor.hh \
 	SNESMonitor.hh \
 	KSPMonitor.hh \
-	petscfwd.h \
 	petsc_types.h \
 	petscfwd.hh
 

@@ -365,7 +365,7 @@ pylith::testing::TestDriver::_activateJournals(void) {
             break;
         } // INFO
         default:
-            PYLITH_FIREWALL(pylith::exceptions::InternalLogicError, pylith::journal::logic, "Unknown journal category '"<<category<<"'.");
+            PYLITH_ERROR(pylith::exceptions::SwitchLogicError, "Unknown journal category '"<<category<<"'.");
         } // switch
     } // for
 } // _activateJournal

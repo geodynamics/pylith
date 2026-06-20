@@ -110,7 +110,7 @@ pylith::faults::FaultCohesiveKin::setEqRuptures(const char* const * names,
     _ruptures.clear();
     for (int i = 0; i < numRuptures; ++i) {
         if (!ruptures[i]) {
-            PYLITH_COMPONENT_ERROR(pylith::exceptions::InternalLogicError, pylith::journal::logic,
+            PYLITH_COMPONENT_ERROR(pylith::exceptions::InvalidParameterError,
                                    "Null earthquake rupture object for earthquake rupture '" << names[i] << "'.");
         } // if
         _ruptures[std::string(names[i])] = ruptures[i];
@@ -144,10 +144,10 @@ pylith::faults::FaultCohesiveKin::verifyConfiguration(const pylith::topology::Fi
         requiredFields[numRequired++] = "velocity";
         break;
     case DYNAMIC:
-        PYLITH_COMPONENT_FIREWALL(pylith::exceptions::InternalLogicError, pylith::journal::logic, "Fault implementation is incompatible with 'dynamic' formulation. Use 'dynamic_imex'.");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::NotImplementedError, "Fault implementation is incompatible with 'dynamic' formulation. Use 'dynamic_imex'.");
         break;
     default:
-        PYLITH_COMPONENT_FIREWALL(pylith::exceptions::InternalLogicError, pylith::journal::logic, "Unknown formulation for equations (" << _formulation << ").");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::SwitchLogicError, "Unknown formulation for equations (" << _formulation << ").");
     } // switch
     requiredFields.resize(numRequired);
 
@@ -194,10 +194,10 @@ pylith::faults::FaultCohesiveKin::createAuxiliaryField(const pylith::topology::F
         _auxiliaryFactory->addSlipAcceleration(); // 1
         break;
     case DYNAMIC:
-        PYLITH_COMPONENT_FIREWALL(pylith::exceptions::InternalLogicError, pylith::journal::logic, "Fault implementation is incompatible with 'dynamic' time-stepping formulation. Use 'dynamic_imex'.");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::NotImplementedError, "Fault implementation is incompatible with 'dynamic' time-stepping formulation. Use 'dynamic_imex'.");
         break;
     default:
-        PYLITH_COMPONENT_FIREWALL(pylith::exceptions::InternalLogicError, pylith::journal::logic, "Unknown formulation for equations (" << _formulation << ").");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::SwitchLogicError, "Unknown formulation for equations (" << _formulation << ").");
     } // switch
 
     auxiliaryField->subfieldsSetup();
@@ -246,10 +246,10 @@ pylith::faults::FaultCohesiveKin::updateAuxiliaryField(pylith::topology::Field* 
         bitSlipSubfields = pylith::faults::KinSrc::GET_SLIP | pylith::faults::KinSrc::GET_SLIP_ACC;
         break;
     case DYNAMIC:
-        PYLITH_COMPONENT_FIREWALL(pylith::exceptions::InternalLogicError, pylith::journal::logic, "Fault implementation is incompatible with 'dynamic' formulation. Use 'dynamic_imex'.");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::NotImplementedError, "Fault implementation is incompatible with 'dynamic' formulation. Use 'dynamic_imex'.");
         break;
     default:
-        PYLITH_COMPONENT_FIREWALL(pylith::exceptions::InternalLogicError, pylith::journal::logic, "Unknown formulation for equations (" << _formulation << ").");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::SwitchLogicError, "Unknown formulation for equations (" << _formulation << ").");
     } // switch
 
     this->_updateSlip(auxiliaryField, t, bitSlipSubfields);
@@ -384,9 +384,9 @@ pylith::faults::FaultCohesiveKin::_setKernelsResidual(pylith::feassemble::Integr
         break;
     } // DYNAMIC_IMEX
     case pylith::problems::Physics::DYNAMIC:
-        PYLITH_COMPONENT_FIREWALL(pylith::exceptions::InternalLogicError, pylith::journal::logic, "Fault implementation is incompatible with 'dynamic' formulation. Use 'dynamic_imex'.");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::NotImplementedError, "Fault implementation is incompatible with 'dynamic' formulation. Use 'dynamic_imex'.");
     default:
-        PYLITH_COMPONENT_FIREWALL(pylith::exceptions::InternalLogicError, pylith::journal::logic, "Unknown formulation '"<<_formulation<<"'.");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::SwitchLogicError, "Unknown formulation '"<<_formulation<<"'.");
     } // switch
 
     assert(integrator);
@@ -449,9 +449,9 @@ pylith::faults::FaultCohesiveKin::_setKernelsJacobian(pylith::feassemble::Integr
         break;
     } // DYNAMIC_IMEX
     case pylith::problems::Physics::DYNAMIC:
-        PYLITH_COMPONENT_FIREWALL(pylith::exceptions::InternalLogicError, pylith::journal::logic, "Fault implementation is incompatible with 'dynamic' formulation. Use 'dynamic_imex'.");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::NotImplementedError, "Fault implementation is incompatible with 'dynamic' formulation. Use 'dynamic_imex'.");
     default:
-        PYLITH_COMPONENT_FIREWALL(pylith::exceptions::InternalLogicError, pylith::journal::logic, "Unknown formulation '"<<_formulation<<"'.");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::SwitchLogicError, "Unknown formulation '"<<_formulation<<"'.");
     } // switch
 
     assert(integrator);

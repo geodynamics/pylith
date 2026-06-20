@@ -110,7 +110,7 @@ pylith::feassemble::Integrator::setLabelName(const char* name) {
     PYLITH_DEBUG(pylith::journal::application_flow, "setLabelName(name="<<name<<")");
 
     if (strlen(name) == 0) {
-        PYLITH_ERROR(pylith::exceptions::ValueError, pylith::journal::user_input,
+        PYLITH_ERROR(pylith::exceptions::EmptyStringError,
                      "Empty string given for name of label for integration domain.");
     } // if
 

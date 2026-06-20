@@ -12,6 +12,7 @@
 SUBDIRS = \
 	scales \
 	utils \
+	petsc \
 	topology \
 	feassemble \
 	initializers \

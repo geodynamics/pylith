@@ -130,7 +130,7 @@ pylith::meshio::MeshIOPetsc::setFilename(const char* name) {
     } else if (hdf5Suffix == _filename.substr(_filename.size()-hdf5Suffix.size(), hdf5Suffix.size())) {
         _format = HDF5;
     } else {
-        PYLITH_COMPONENT_FIREWALL(pylith::exceptions::InternalLogicError, pylith::journal::logic, "Could not determine format for mesh file " << _filename << " from suffix (must be '.msh' for GMSH and '.h5' for HDF5).");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::InternalLogicError, "Could not determine format for mesh file " << _filename << " from suffix (must be '.msh' for GMSH and '.h5' for HDF5).");
     } // if/else
 }
 
@@ -268,7 +268,7 @@ pylith::meshio::MeshIOPetsc::_write(void) const {
         PylithCallPetsc(PetscViewerHDF5SetDMPlexStorageVersionWriting(viewer, storageVersion));
         PylithCallPetsc(PetscFree(storageVersion));
     } else {
-        PYLITH_COMPONENT_FIREWALL(pylith::exceptions::InternalLogicError, pylith::journal::logic, "Unknown mesh format '" << _format << "'.");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::InternalLogicError, "Unknown mesh format '" << _format << "'.");
     } // if/else
     PylithCallPetsc(DMView(_mesh->getDM(), viewer));
     PylithCallPetsc(PetscViewerDestroy(&viewer));

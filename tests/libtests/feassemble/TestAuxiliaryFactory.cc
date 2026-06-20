@@ -303,7 +303,7 @@ pylith::feassemble::TestAuxiliaryFactory::testSetValuesFromDB(void) {
     AuxiliaryFactory emptyFactory;
     pythia::journal::error_t error(pylith::journal::auxiliary_fields);
     error.deactivate();
-    REQUIRE_THROWS_AS(emptyFactory.setValuesFromDB(), pylith::InternalError);
+    REQUIRE_THROWS_AS(emptyFactory.setValuesFromDB(), pylith::exceptions::InternalError);
 } // testSetValuesFromDB
 
 

@@ -60,7 +60,7 @@ pylith::problems::Physics::setLabelName(const char* value) {
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setLabelName(value="<<value<<")");
 
     if (strlen(value) == 0) {
-        PYLITH_COMPONENT_ERROR(pylith::exceptions::ValueError, pylith::journal::user_input,
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::EmptyStringError,
                                "Empty string given for label name.");
     } // if
 

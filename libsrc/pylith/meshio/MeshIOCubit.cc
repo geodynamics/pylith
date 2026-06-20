@@ -195,10 +195,10 @@ pylith::meshio::MeshIOCubit::_read(void) {
             err.addContext(pylith::exceptions::ErrorMessage() << "Error while reading Cubit Exodus file '" << _filename << "'.\n");
             throw;
         } catch (std::exception& err) {
-            PYLITH_COMPONENT_ERROR(pylith::exceptions::IOError, pylith::journal::user_input,
+            PYLITH_COMPONENT_ERROR(pylith::exceptions::IOError,
                                    "Error while reading Cubit Exodus file '" << _filename << "'.\n " << err.what());
         } catch (...) {
-            PYLITH_COMPONENT_ERROR(pylith::exceptions::IOError, pylith::journal::user_input,
+            PYLITH_COMPONENT_ERROR(pylith::exceptions::IOError,
                                    "Unknown error while reading Cubit Exodus file '" << _filename << "'.");
         } // try/catch
     } else {
@@ -220,7 +220,7 @@ pylith::meshio::MeshIOCubit::_write(void) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "_write () ");
 
-    PYLITH_COMPONENT_FIREWALL(pylith::exceptions::InternalLogicError, pylith::journal::internal, "Not implemented.");
+    PYLITH_COMPONENT_ERROR(pylith::exceptions::NotImplementedError, "Not implemented.");
 
     PYLITH_METHOD_END;
 } // write
@@ -308,7 +308,7 @@ pylith::meshio::_MeshIOCubit::readCells(pylith::meshio::MeshBuilder::Topology* t
             const int size = (topology->numCells) * (topology->numCorners);
             topology->cells.resize(size);
         } else if (size_t(exoFile.getDim(varName.str().c_str())) != topology->numCorners) {
-            PYLITH_ERROR(pylith::exceptions::IOError, pylith::journal::user_input,
+            PYLITH_ERROR(pylith::exceptions::IOError,
                          "All materials must have the same number of vertices per cell.\n"
                          << "Expected " << topology->numCorners << " vertices per cell, but block "
                          << blockIds[iMaterial] << " has "

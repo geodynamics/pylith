@@ -188,8 +188,8 @@ pylith::bc::_NeumannUserFn::setKernelsResidual(pylith::feassemble::IntegratorBou
         kernels[0] = ResidualKernels(bc.getSubfieldName(), pylith::feassemble::Integrator::RHS, r0, r1);
         break;
     default:
-        PYLITH_ERROR_NEW(pylith::exceptions::SwitchLogicError,
-                         "Unknown formulation for equations ("<<formulation<<").");
+        PYLITH_ERROR(pylith::exceptions::SwitchLogicError,
+                     "Unknown formulation for equations ("<<formulation<<").");
     } // switch
 
     assert(integrator);

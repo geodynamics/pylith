@@ -89,7 +89,7 @@ pylith::meshio::OutputSolnBoundary::verifyConfiguration(const pylith::topology::
     PetscBool hasLabel = PETSC_FALSE;
     PylithCallPetsc(DMHasLabel(dmSoln, _labelName.c_str(), &hasLabel));
     if (!hasLabel) {
-        PYLITH_COMPONENT_ERROR(pylith::exceptions::ValueError, pylith::journal::user_input,
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::LabelNotFoundError,
                                "Mesh missing group of points '" << _labelName << " for output using solution boundary observer.");
     } // if
 

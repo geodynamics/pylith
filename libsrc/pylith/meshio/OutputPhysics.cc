@@ -190,12 +190,12 @@ pylith::meshio::OutputPhysics::verifyConfiguration(const pylith::topology::Field
         for (size_t i = 0; i < numInfoFields; ++i) {
             msg << "    " << _infoFieldNames[i] << "\n";
         } // for
-        PYLITH_COMPONENT_ERROR(pylith::exceptions::InternalLogicError, pylith::journal::logic, msg.str());
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::InternalLogicError, msg.str());
     } else if ((numInfoFields > 0) && (std::string("all") != _infoFieldNames[0])) {
         assert(auxiliaryField);
         for (size_t i = 0; i < numInfoFields; i++) {
             if (!auxiliaryField->hasSubfield(_infoFieldNames[i].c_str())) {
-                PYLITH_COMPONENT_ERROR(pylith::exceptions::ValueError, pylith::journal::user_input,
+                PYLITH_COMPONENT_ERROR(pylith::exceptions::SubfieldNotFoundError,
                                        "Could not find subfield '" << _infoFieldNames[i] << "' in auxiliary field '"
                                                                    << auxiliaryField->getLabel() << "' for output.");
             } // if
@@ -210,7 +210,7 @@ pylith::meshio::OutputPhysics::verifyConfiguration(const pylith::topology::Field
             if (auxiliaryField && auxiliaryField->hasSubfield(_dataFieldNames[i].c_str())) { continue;}
             if (derivedField && derivedField->hasSubfield(_dataFieldNames[i].c_str())) { continue;}
 
-            PYLITH_COMPONENT_ERROR(pylith::exceptions::ValueError, pylith::journal::user_input,
+            PYLITH_COMPONENT_ERROR(pylith::exceptions::SubfieldNotFoundError,
                                    "Could not find subfield '" << _dataFieldNames[i] << "' in solution field '" << solution.getLabel()
                                                                << ", auxiliary field '" << (auxiliaryField ? auxiliaryField->getLabel() : "NULL") << "', or derived field "
                                                                << (derivedField ? derivedField->getLabel() : "NULL") << "' for output.");
@@ -245,7 +245,7 @@ pylith::meshio::OutputPhysics::update(const PylithReal t,
         break;
     }
     default:
-        PYLITH_FIREWALL(pylith::exceptions::InternalLogicError, pylith::journal::logic, "Unknown notification for updating observers.");
+        PYLITH_ERROR(pylith::exceptions::SwitchLogicError, "Unknown notification for updating observers.");
     } // if/else
 
     _OutputPhysics::Events::logger.eventEnd(_OutputPhysics::Events::update);
@@ -288,7 +288,7 @@ pylith::meshio::OutputPhysics::_writeInfo(void) {
             subfield = _getSubfield(*diagnosticField, domainMesh, infoNames[i].c_str());
             subfield->project(diagnosticVector);
         } else {
-            PYLITH_COMPONENT_ERROR(pylith::exceptions::InternalLogicError, pylith::journal::logic,
+            PYLITH_COMPONENT_ERROR(pylith::exceptions::SubfieldNotFoundError,
                                    "Internal Error: Could not find subfield '" << infoNames[i] << "' for info output.");
         } // if/else
 
@@ -320,8 +320,7 @@ pylith::meshio::OutputPhysics::_open(const pylith::topology::Mesh& mesh,
     _OutputPhysics::Events::logger.eventBegin(_OutputPhysics::Events::open);
 
     if (!_writer) {
-        PYLITH_COMPONENT_FIREWALL(pylith::exceptions::InternalLogicError, pylith::journal::logic,
-                                  "Writer for physics output not set.");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::InternalLogicError, "Writer for physics output not set.");
     } // if
 
     assert(_trigger);
@@ -424,8 +423,8 @@ pylith::meshio::OutputPhysics::_writeDataStep(const PylithReal t,
             subfield->setLabel(labelName, labelValue);
             subfield->project(derivedVector);
         } else {
-            PYLITH_COMPONENT_FIREWALL(pylith::exceptions::InternalLogicError, pylith::journal::logic,
-                                      "Internal Error: Could not find subfield '" << dataNames[i] << "' for data output.");
+            PYLITH_COMPONENT_ERROR(pylith::exceptions::InternalLogicError,
+                                   "Internal Error: Could not find subfield '" << dataNames[i] << "' for data output.");
         } // if/else
 
         if (0 == i) {

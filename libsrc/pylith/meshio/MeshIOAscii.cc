@@ -182,7 +182,7 @@ pylith::meshio::MeshIOAscii::_read(void) {
     if (0 == commRank) {
         std::ifstream filein(_filename.c_str());
         if (!filein.is_open() || !filein.good()) {
-            PYLITH_COMPONENT_ERROR(pylith::exceptions::IOError, pylith::journal::user_input,
+            PYLITH_COMPONENT_ERROR(pylith::exceptions::IOError,
                                    "Could not open mesh file '" << _filename << "' for reading.");
         } // if
 
@@ -196,7 +196,7 @@ pylith::meshio::MeshIOAscii::_read(void) {
         buffer.str(parser.next());
         buffer >> token;
         if (strcasecmp(token.c_str(), "mesh")) {
-            PYLITH_COMPONENT_ERROR(pylith::exceptions::IOError, pylith::journal::user_input,
+            PYLITH_COMPONENT_ERROR(pylith::exceptions::IOError,
                                    "Expected 'mesh' token but encountered '" << token << "'.");
         } // if
 
@@ -231,7 +231,7 @@ pylith::meshio::MeshIOAscii::_read(void) {
                     readCells = true;
                 } else if (0 == strcasecmp(token.c_str(), "vertex-group")) {
                     if (!builtMesh) {
-                        PYLITH_COMPONENT_ERROR(pylith::exceptions::IOError, pylith::journal::user_input,
+                        PYLITH_COMPONENT_ERROR(pylith::exceptions::IOError,
                                                "Both 'vertices' and 'cells' must "
                                                "precede any groups in the mesh file.");
                     } // if
@@ -242,7 +242,7 @@ pylith::meshio::MeshIOAscii::_read(void) {
                     pylith::meshio::MeshBuilder::setVertexGroup(_mesh, name.c_str(), points);
                 } else if (0 == strcasecmp(token.c_str(), "face-group")) {
                     if (!builtMesh) {
-                        PYLITH_COMPONENT_ERROR(pylith::exceptions::IOError, pylith::journal::user_input,
+                        PYLITH_COMPONENT_ERROR(pylith::exceptions::IOError,
                                                "Both 'vertices' and 'cells' must precede any groups in the mesh file.");
                     } // if
 
@@ -252,7 +252,7 @@ pylith::meshio::MeshIOAscii::_read(void) {
                     _MeshIOAscii::readFaceGroup(&faceValues, &name, parser, faceShape, _useIndexZero);
                     pylith::meshio::MeshBuilder::setFaceGroupFromCellVertices(_mesh, name.c_str(), faceValues, faceShape);
                 } else {
-                    PYLITH_COMPONENT_ERROR(pylith::exceptions::IOError, pylith::journal::user_input,
+                    PYLITH_COMPONENT_ERROR(pylith::exceptions::IOError,
                                            "Could not parse '" << token << "' into a mesh setting.");
                 } // else
 
@@ -268,18 +268,18 @@ pylith::meshio::MeshIOAscii::_read(void) {
                 buffer >> token;
             } // while
             if (token != "}") {
-                PYLITH_COMPONENT_ERROR(pylith::exceptions::IOError, pylith::journal::user_input,
+                PYLITH_COMPONENT_ERROR(pylith::exceptions::IOError,
                                        "I/O error occurred while parsing mesh tokens.");
             }
         } catch (pylith::exceptions::Error& err) {
             err.addContext(pylith::exceptions::ErrorMessage() << "Error occurred while reading PyLith mesh ASCII file '" << _filename << "'.\n");
             throw;
         } catch (const std::exception& err) {
-            PYLITH_COMPONENT_ERROR(pylith::exceptions::IOError, pylith::journal::user_input,
+            PYLITH_COMPONENT_ERROR(pylith::exceptions::IOError,
                                    "Error occurred while reading PyLith mesh ASCII file '"
                                    << _filename << "'.\n" << err.what());
         } catch (...) {
-            PYLITH_COMPONENT_ERROR(pylith::exceptions::IOError, pylith::journal::user_input,
+            PYLITH_COMPONENT_ERROR(pylith::exceptions::IOError,
                                    "Unknown I/O error while reading PyLith mesh ASCII file '"
                                    << _filename << "'.");
         } // catch
@@ -304,7 +304,7 @@ pylith::meshio::MeshIOAscii::_write(void) const {
 
     std::ofstream fileout(_filename.c_str());
     if (!fileout.is_open() || !fileout.good()) {
-        PYLITH_COMPONENT_ERROR(pylith::exceptions::IOError, pylith::journal::output,
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::IOError,
                                "Could not open mesh file '" << _filename << "' for writing.");
     } // if
 
@@ -374,7 +374,7 @@ pylith::meshio::_MeshIOAscii::readVertices(pylith::meshio::MeshBuilder::Geometry
         } else if (0 == strcasecmp(token.c_str(), "coordinates")) {
             const int size = (geometry->numVertices) * (geometry->spaceDim);
             if (0 == size) {
-                PYLITH_ERROR(pylith::exceptions::IOError, pylith::journal::user_input,
+                PYLITH_ERROR(pylith::exceptions::IOError,
                              "Tokens 'dimension' and 'count' must precede 'coordinates'.");
             } // if
             geometry->vertices.resize(size);
@@ -389,7 +389,7 @@ pylith::meshio::_MeshIOAscii::readVertices(pylith::meshio::MeshBuilder::Geometry
             } // for
             parser.ignore('}');
         } else {
-            PYLITH_ERROR(pylith::exceptions::IOError, pylith::journal::user_input,
+            PYLITH_ERROR(pylith::exceptions::IOError,
                          "Could not parse '" << token << "' into a vertices setting.");
         } // else
         buffer.str(parser.next());
@@ -397,7 +397,7 @@ pylith::meshio::_MeshIOAscii::readVertices(pylith::meshio::MeshBuilder::Geometry
         buffer >> token;
     } // while
     if (token != "}") {
-        PYLITH_ERROR(pylith::exceptions::IOError, pylith::journal::user_input,
+        PYLITH_ERROR(pylith::exceptions::IOError,
                      "I/O error while parsing vertices.");
     } // if
 
@@ -464,7 +464,7 @@ pylith::meshio::_MeshIOAscii::readCells(pylith::meshio::MeshBuilder::Topology* t
         } else if (0 == strcasecmp(token.c_str(), "simplices")) {
             const int size = (topology->numCells) * (topology->numCorners);
             if (0 == size) {
-                PYLITH_ERROR(pylith::exceptions::IOError, pylith::journal::user_input,
+                PYLITH_ERROR(pylith::exceptions::IOError,
                              "Tokens 'num-corners' and 'count' must precede 'cells'.");
             } // if
             topology->cells.resize(size);
@@ -485,7 +485,7 @@ pylith::meshio::_MeshIOAscii::readCells(pylith::meshio::MeshBuilder::Topology* t
             parser.ignore('}');
         } else if (0 == strcasecmp(token.c_str(), "material-ids")) {
             if (0 == topology->numCells) {
-                PYLITH_ERROR(pylith::exceptions::IOError, pylith::journal::user_input,
+                PYLITH_ERROR(pylith::exceptions::IOError,
                              "Token 'count' must precede 'material-ids'.");
             } // if
             materialIds->resize(topology->numCells);
@@ -501,7 +501,7 @@ pylith::meshio::_MeshIOAscii::readCells(pylith::meshio::MeshBuilder::Topology* t
 
             parser.ignore('}');
         } else {
-            PYLITH_ERROR(pylith::exceptions::IOError, pylith::journal::user_input,
+            PYLITH_ERROR(pylith::exceptions::IOError,
                          "Could not parse '" << token << "' into an cells setting.");
         } // else
         buffer.str(parser.next());
@@ -509,7 +509,7 @@ pylith::meshio::_MeshIOAscii::readCells(pylith::meshio::MeshBuilder::Topology* t
         buffer >> token;
     } // while
     if (token != "}") {
-        PYLITH_ERROR(pylith::exceptions::IOError, pylith::journal::user_input,
+        PYLITH_ERROR(pylith::exceptions::IOError,
                      "I/O error while parsing cells.");
     } // if
     topology->cellShape = pylith::meshio::MeshBuilder::cellShapeFromCorners(topology->dimension, topology->numCorners);
@@ -594,7 +594,7 @@ pylith::meshio::_MeshIOAscii::readVertexGroup(int_array* points,
             buffer >> groupSize;
         } else if (0 == strcasecmp(token.c_str(), "indices")) {
             if (-1 == groupSize) {
-                PYLITH_ERROR(pylith::exceptions::IOError, pylith::journal::user_input,
+                PYLITH_ERROR(pylith::exceptions::IOError,
                              "Tokens 'count' must precede 'indices'.");
             } // if
             points->resize(groupSize);
@@ -611,7 +611,7 @@ pylith::meshio::_MeshIOAscii::readVertexGroup(int_array* points,
             } // while
             parser.ignore('}');
         } else {
-            PYLITH_ERROR(pylith::exceptions::IOError, pylith::journal::user_input,
+            PYLITH_ERROR(pylith::exceptions::IOError,
                          "Could not parse '" << token << "' into a group setting.");
         } // else
         buffer.str(parser.next());
@@ -619,7 +619,7 @@ pylith::meshio::_MeshIOAscii::readVertexGroup(int_array* points,
         buffer >> token;
     } // while
     if (token != "}") {
-        PYLITH_ERROR(pylith::exceptions::IOError, pylith::journal::user_input,
+        PYLITH_ERROR(pylith::exceptions::IOError,
                      "I/O error while parsing group '" << *name << "'.");
     } // if
 
@@ -690,7 +690,7 @@ pylith::meshio::_MeshIOAscii::readFaceGroup(int_array* faceValues,
             buffer >> numFaces;
         } else if (0 == strcasecmp(token.c_str(), "indices")) {
             if (-1 == numFaces) {
-                PYLITH_ERROR(pylith::exceptions::IOError, pylith::journal::user_input,
+                PYLITH_ERROR(pylith::exceptions::IOError,
                              "Tokens 'count' must precede 'indices'.");
             } // if
             const size_t size = numFaces * numFaceValues;
@@ -708,7 +708,7 @@ pylith::meshio::_MeshIOAscii::readFaceGroup(int_array* faceValues,
             } // while
             parser.ignore('}');
         } else {
-            PYLITH_ERROR(pylith::exceptions::IOError, pylith::journal::user_input,
+            PYLITH_ERROR(pylith::exceptions::IOError,
                          "Could not parse '" << token << "' into a group setting.");
         } // else
         buffer.str(parser.next());
@@ -716,7 +716,7 @@ pylith::meshio::_MeshIOAscii::readFaceGroup(int_array* faceValues,
         buffer >> token;
     } // while
     if (token != "}") {
-        PYLITH_ERROR(pylith::exceptions::IOError, pylith::journal::user_input,
+        PYLITH_ERROR(pylith::exceptions::IOError,
                      "I/O error while parsing group '" << *name << "'.");
     } // if
 

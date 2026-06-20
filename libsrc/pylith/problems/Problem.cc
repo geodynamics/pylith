@@ -526,7 +526,7 @@ pylith::problems::Problem::initialize(void) {
         _Problem::createNullSpace(solution, "displacement");
         break;
     default:
-        PYLITH_COMPONENT_FIREWALL(pylith::exceptions::InternalLogicError, pylith::journal::logic, "Unknown formulation '"<<_formulation<<".");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::SwitchLogicError, "Unknown formulation '"<<_formulation<<".");
     } // switch
     _Problem::setInterfaceData(solution, _integrators);
 

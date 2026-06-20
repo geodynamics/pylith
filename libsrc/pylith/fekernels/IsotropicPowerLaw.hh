@@ -767,7 +767,7 @@ private:
         *px2 = x2;
 
         if (!bracketed) {
-            PYLITH_ERROR(pylith::exceptions::RuntimeError, pylith::journal::internal, "Unable to bracket effective stress x1=" << x1 << ", fn(x1)=" << funcValue1 << ", x2=" << x2 << ", fn(x2)=" << funcValue2 << ".");
+            PYLITH_ERROR(pylith::exceptions::InternalLogicError, "Unable to bracket effective stress x1=" << x1 << ", fn(x1)=" << funcValue1 << ", x2=" << x2 << ", fn(x2)=" << funcValue2 << ".");
         } // if
     }
 
@@ -846,7 +846,7 @@ private:
         } // for
 
         if (!converged) {
-            PYLITH_ERROR(pylith::exceptions::RuntimeError, pylith::journal::internal, "Could not find root of effective stress function.");
+            PYLITH_ERROR(pylith::exceptions::InternalLogicError, "Could not find root of effective stress function.");
         } // if
 
         return effStress;

@@ -16,6 +16,7 @@ build/*
 ci-config/*
 developer/*
 docs/user/examples/update_synopsis.sh
+docs/_build/*
 m4/*
 m4
 playpen/*

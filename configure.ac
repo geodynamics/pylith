@@ -239,6 +239,7 @@ AC_CONFIG_FILES([Makefile
 		libsrc/pylith/problems/Makefile
 		libsrc/pylith/topology/Makefile
 		libsrc/pylith/utils/Makefile
+		libsrc/pylith/petsc/Makefile
 		libsrc/pylith/scales/Makefile
         libsrc/pylith/testing/Makefile
 		modulesrc/Makefile

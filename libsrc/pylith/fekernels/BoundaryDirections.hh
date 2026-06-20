@@ -178,7 +178,7 @@ public:
 
         switch (spaceDim) {
         case 2: {
-            PYLITH_ERROR_NEW(pylith::exceptions::InternalLogicError, "Dip direction is not defined in 2D.");
+            PYLITH_ERROR(pylith::exceptions::InternalLogicError, "Dip direction is not defined in 2D.");
             break;
         } // case 2
         case 3: {

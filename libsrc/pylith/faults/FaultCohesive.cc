@@ -133,7 +133,7 @@ pylith::faults::FaultCohesive::setSurfaceLabelName(const char* value) {
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setSurfaceLabelName(value="<<value<<")");
 
     if (strlen(value) == 0) {
-        PYLITH_COMPONENT_ERROR(pylith::exceptions::ValueError, pylith::journal::user_input,
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::EmptyStringError,
                                "Empty string given for name of label for fault surface.");
     } // if
 
@@ -206,7 +206,7 @@ pylith::faults::FaultCohesive::setRefDir1(const double vec[3]) {
     // Set reference direction, ensuring it is a unit vector.
     const PylithReal mag = sqrt(vec[0]*vec[0] + vec[1]*vec[1] + vec[2]*vec[2]);
     if (mag < 1.0e-6) {
-        PYLITH_COMPONENT_ERROR(pylith::exceptions::ValueError, pylith::journal::user_input,
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::InvalidUnitVectorError,
                                "Magnitude of reference direction 1 ("<<vec[0]<<", "<<vec[1]<<", "<<vec[2]<<") is negligible. Use a unit vector.");
     } // if
     for (int i = 0; i < 3; ++i) {
@@ -222,7 +222,7 @@ pylith::faults::FaultCohesive::setRefDir2(const double vec[3]) {
     // Set reference direction, ensuring it is a unit vector.
     const PylithReal mag = sqrt(vec[0]*vec[0] + vec[1]*vec[1] + vec[2]*vec[2]);
     if (mag < 1.0e-6) {
-        PYLITH_COMPONENT_ERROR(pylith::exceptions::ValueError, pylith::journal::user_input,
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::InvalidUnitVectorError,
                                "Magnitude of reference direction 2 ("<<vec[0]<<", "<<vec[1]<<", "<<vec[2]<<") is negligible. Use a unit vector.");
     } // if
     for (int i = 0; i < 3; ++i) {
@@ -251,7 +251,7 @@ pylith::faults::FaultCohesive::transformTopology(pylith::topology::Mesh* const m
         PylithCallPetsc(MPI_Comm_rank(PetscObjectComm((PetscObject) dmMesh), &rank));
         PylithCallPetsc(DMHasLabel(dmMesh, _surfaceLabelName.c_str(), &hasLabel));
         if (!hasLabel && !rank) {
-            PYLITH_ERROR(pylith::exceptions::ValueError, pylith::journal::user_input,
+            PYLITH_ERROR(pylith::exceptions::LabelNotFoundError,
                          "Mesh missing group '" << _surfaceLabelName << "' for fault interface condition.");
         } // if
         if (!hasLabel && (rank > 0)) {
@@ -314,7 +314,7 @@ pylith::faults::FaultCohesive::transformTopology(pylith::topology::Mesh* const m
         err.addContext(pylith::exceptions::ErrorMessage() << "Error occurred while transforming topology to create cohesive cells for fault '" << _surfaceLabelName << "'.\n");
         throw;
     } catch (const std::exception& err) {
-        PYLITH_ERROR(pylith::exceptions::TopologyError, pylith::journal::internal,
+        PYLITH_ERROR(pylith::exceptions::TopologyError,
                      "Error occurred while transforming topology to create cohesive cells for fault '" << _surfaceLabelName << "'.\n"
                                                                                                        << err.what());
     } // try/catch

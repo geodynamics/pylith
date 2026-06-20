@@ -154,7 +154,7 @@ pylith::feassemble::IntegratorDomain::setKernelsResidual(const std::vector<Resid
             _hasRHSResidual = true;
             break;
         default:
-            PYLITH_FIREWALL(pylith::exceptions::InternalLogicError, pylith::journal::logic, "Unknown residual part " << kernels[i].part <<".");
+            PYLITH_ERROR(pylith::exceptions::SwitchLogicError, "Unknown residual part " << kernels[i].part <<".");
         } // switch
     } // for
 
@@ -192,7 +192,7 @@ pylith::feassemble::IntegratorDomain::setKernelsJacobian(const std::vector<Jacob
             _hasLHSJacobianLumped = true;
             break;
         default:
-            PYLITH_FIREWALL(pylith::exceptions::InternalLogicError, pylith::journal::logic, "Unknown Jacobian part " << kernels[i].part <<".");
+            PYLITH_ERROR(pylith::exceptions::SwitchLogicError, "Unknown Jacobian part " << kernels[i].part <<".");
         } // switch
     } // for
 

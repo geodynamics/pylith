@@ -100,8 +100,8 @@ pylith::bc::AbsorbingDampers::verifyConfiguration(const pylith::topology::Field&
 
     const pylith::topology::Field::SubfieldInfo& info = solution.getSubfieldInfo(_subfieldName.c_str());
     if (pylith::topology::Field::VECTOR != info.description.vectorFieldType) {
-        PYLITH_COMPONENT_ERROR_NEW(pylith::exceptions::InvalidParameterError,
-                                   "Absorbing boundary condition cannot be applied to non-vector field '"<< _subfieldName << "' in solution.");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::InvalidParameterError,
+                               "Absorbing boundary condition cannot be applied to non-vector field '"<< _subfieldName << "' in solution.");
     } // if
 
     PYLITH_METHOD_END;

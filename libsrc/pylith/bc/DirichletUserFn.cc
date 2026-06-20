@@ -122,7 +122,7 @@ pylith::bc::DirichletUserFn::verifyConfiguration(const pylith::topology::Field& 
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "verifyConfiguration(solution="<<solution.getLabel()<<")");
 
     if (!solution.hasSubfield(_subfieldName.c_str())) {
-        PYLITH_COMPONENT_ERROR(pylith::exceptions::ValueError, pylith::journal::user_input,
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::SubfieldNotFoundError,
                                "Cannot constrain field '"<< _subfieldName
                                                          << "' in component '" << PyreComponent::getIdentifier() << "'"
                                                          << "; field is not in solution.");
@@ -133,7 +133,7 @@ pylith::bc::DirichletUserFn::verifyConfiguration(const pylith::topology::Field& 
     const int numConstrained = _constrainedDOF.size();
     for (int iConstrained = 0; iConstrained < numConstrained; ++iConstrained) {
         if (_constrainedDOF[iConstrained] >= numComponents) {
-            PYLITH_COMPONENT_ERROR(pylith::exceptions::ValueError, pylith::journal::user_input,
+            PYLITH_COMPONENT_ERROR(pylith::exceptions::ValueError,
                                    "Cannot constrain degree of freedom '" << _constrainedDOF[iConstrained] << "'"
                                                                           << "; solution field '" << _subfieldName << "' contains only " << numComponents << " components.");
         } // if

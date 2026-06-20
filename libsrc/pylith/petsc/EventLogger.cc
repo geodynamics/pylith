@@ -10,7 +10,7 @@
 
 #include <portinfo>
 
-#include "pylith/utils/EventLogger.hh" // Implementation of class methods
+#include "pylith/petsc/EventLogger.hh" // Implementation of class methods
 
 #include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
 #include "pylith/utils/journals.hh" // USES journal macros
@@ -37,8 +37,8 @@ pylith::utils::EventLogger::initialize(void) {
     PYLITH_METHOD_BEGIN;
 
     if (_className == "") {
-        PYLITH_FIREWALL(pylith::exceptions::InternalLogicError, pylith::journal::logic,
-                        "Must set logging class name before initializing EventLogger.");
+        PYLITH_ERROR(pylith::exceptions::InternalLogicError,
+                     "Must set logging class name before initializing EventLogger.");
     }
 
     _events.clear();
@@ -62,7 +62,7 @@ pylith::utils::EventLogger::registerEvent(const char* name) {
     int id = 0;
     PetscErrorCode err = PetscLogEventRegister(name, _classId, &id);
     if (err) {
-        PYLITH_ERROR(pylith::exceptions::ValueError, pylith::journal::internal,
+        PYLITH_ERROR(pylith::exceptions::PetscError,
                      "Could not register logging event '" << name << "' for logging class '" << _className << "'.");
     } // if
     _events[name] = id;
@@ -78,7 +78,7 @@ pylith::utils::EventLogger::getEventId(const char* name) {
 
     map_event_type::iterator iter = _events.find(name);
     if (iter == _events.end()) {
-        PYLITH_ERROR(pylith::exceptions::ValueError, pylith::journal::internal,
+        PYLITH_ERROR(pylith::exceptions::PetscError,
                      "Could not find logging event '" << name << "' in logging class '" << _className << "'.");
     } // if
 
@@ -96,7 +96,7 @@ pylith::utils::EventLogger::registerStage(const char* name) {
     int id = 0;
     PetscErrorCode err = PetscLogStageRegister(name, &id);
     if (err) {
-        PYLITH_ERROR(pylith::exceptions::ValueError, pylith::journal::internal,
+        PYLITH_ERROR(pylith::exceptions::PetscError,
                      "Could not register logging stage '" << name << "'.");
     } // if
     _stages[name] = id;

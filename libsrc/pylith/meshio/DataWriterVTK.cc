@@ -86,7 +86,7 @@ pylith::meshio::DataWriterVTK::timeConstant(const PylithScalar value) {
     PYLITH_METHOD_BEGIN;
 
     if (value <= 0.0) {
-        PYLITH_COMPONENT_ERROR(pylith::exceptions::ValueError, pylith::journal::user_input,
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::OutOfRangeError,
                                "Time used to normalize time stamp in VTK data files must be "
                                << "positive.\nCurrent value is " << value << ".");
     } // if
@@ -103,7 +103,7 @@ pylith::meshio::DataWriterVTK::precision(const int value) {
     PYLITH_METHOD_BEGIN;
 
     if (value <= 0) {
-        PYLITH_COMPONENT_ERROR(pylith::exceptions::ValueError, pylith::journal::user_input,
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::OutOfRangeError,
                                "Floating point precision (" << value << ") must be positive.");
     } // if
 

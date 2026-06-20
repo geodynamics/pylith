@@ -195,7 +195,7 @@ class pylith::_PlanePWave {
                 numCellsLeftFault = 6;
                 break;
             default:
-                PYLITH_FIREWALL(pylith::exceptions::InternalLogicError, pylith::journal::logic, "Unknown cell type in solution displacement kernel.");
+                PYLITH_ERROR(pylith::exceptions::SwitchLogicError, "Unknown cell type in solution displacement kernel.");
             }
             flag = cell < numCellsLeftFault ? -1 : +1;
         } // if
@@ -231,7 +231,7 @@ class pylith::_PlanePWave {
                 numCellsLeftFault = 6;
                 break;
             default:
-                PYLITH_FIREWALL(pylith::exceptions::InternalLogicError, pylith::journal::logic, "Unknown cell type in solution displacement kernel.");
+                PYLITH_ERROR(pylith::exceptions::SwitchLogicError, "Unknown cell type in solution displacement kernel.");
             }
             flag = cell < numCellsLeftFault ? -1 : +1;
         } // if

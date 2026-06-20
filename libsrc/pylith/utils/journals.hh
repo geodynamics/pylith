@@ -55,32 +55,12 @@
                     << msg << pythia::journal::endl; \
         } while (0)
 
-#define PYLITH_COMPONENT_ERROR_NEW(ExceptionType, msg) \
+#define PYLITH_COMPONENT_ERROR(ExceptionType, msg) \
         do { \
             throw ExceptionType((pylith::exceptions::ErrorMessage() \
                                  << "Component '" << PyreComponent::getFullIdentifier() << ": " \
                                  << msg), \
                                 __HERE__); \
-        } while (0)
-
-
-#define PYLITH_COMPONENT_ERROR(ExceptionType, channel, msg) \
-        do { \
-            pythia::journal::error_t error(channel); \
-            error << pythia::journal::at(__HERE__) \
-                  << "Component '"<<PyreComponent::getFullIdentifier()<<"': " \
-                  << msg << pythia::journal::endl; \
-            throw ExceptionType((pylith::exceptions::ErrorMessage() << msg), __HERE__); \
-        } while (0)
-
-
-#define PYLITH_COMPONENT_FIREWALL(ExceptionType, channel, msg) \
-        do { \
-            pythia::journal::error_t firewall(channel); \
-            firewall << pythia::journal::at(__HERE__) \
-                     << "Component '"<<PyreComponent::getFullIdentifier()<<"': " \
-                     << msg << pythia::journal::endl; \
-            throw ExceptionType((pylith::exceptions::ErrorMessage() << msg), __HERE__); \
         } while (0)
 
 
@@ -114,29 +94,12 @@
                     << msg << pythia::journal::endl; \
         } while (0)
 
-#define PYLITH_ERROR_NEW(ExceptionType, msg) \
+#define PYLITH_ERROR(ExceptionType, msg) \
         do { \
             throw ExceptionType((pylith::exceptions::ErrorMessage() \
                                  << msg), \
                                 __HERE__); \
         } while (0)
-
-#define PYLITH_ERROR(ExceptionType, channel, msg) \
-        do { \
-            pythia::journal::error_t error(channel); \
-            error << pythia::journal::at(__HERE__) \
-                  << msg << pythia::journal::endl; \
-            throw ExceptionType((pylith::exceptions::ErrorMessage() << msg), __HERE__); \
-        } while (0)
-
-#define PYLITH_FIREWALL(ExceptionType, channel, msg) \
-        do { \
-            pythia::journal::error_t firewall(channel); \
-            firewall << pythia::journal::at(__HERE__) \
-                     << msg << pythia::journal::endl; \
-            throw ExceptionType((pylith::exceptions::ErrorMessage() << msg), __HERE__); \
-        } while (0)
-
 
 // Channel names ----------------------------------------------------------------------------------
 namespace pylith {

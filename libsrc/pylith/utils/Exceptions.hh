@@ -31,6 +31,7 @@ namespace pylith {
         class OutOfRangeError;
 
         class IOError;
+
         class TopologyError;
 
         class ExternalError;

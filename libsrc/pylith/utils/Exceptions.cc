@@ -93,7 +93,7 @@ pylith::exceptions::Error::_captureTraceback() {
     void* frames[MAX_FRAMES];
     const size_t skipFrames = 3; // Skip exception lines in traceback
 
-    size_t numFrames = ::backtrace(frames, MAX_FRAMES);
+    numFrames = ::backtrace(frames, MAX_FRAMES);
     if (numFrames <= 0) {return;}
 
     char** symbols = ::backtrace_symbols(frames, numFrames);

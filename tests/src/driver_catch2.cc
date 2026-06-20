@@ -207,7 +207,7 @@ pylith::testing::TestDriver::_activateJournals(JournalEnum category,
             break;
         } // DEBUG
         default:
-            PYLITH_FIREWALL(pylith::exceptions::InternalLogicError, pylith::journal::logic, "Unknown journal category '"<<category<<"'.");
+            PYLITH_ERROR(pylith::exceptions::SwitchLogicError, "Unknown journal category '"<<category<<"'.");
         } // switch
     } // for
 } // _activateJournal

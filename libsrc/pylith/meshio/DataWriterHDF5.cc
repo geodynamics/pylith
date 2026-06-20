@@ -111,10 +111,10 @@ pylith::meshio::DataWriterHDF5::open(const pylith::topology::Mesh& mesh,
         err.addContext(pylith::exceptions::ErrorMessage() << "Error while opening HDF5 file " << hdf5Filename() << ".\n");
         throw;
     } catch (const std::exception& err) {
-        PYLITH_ERROR(pylith::exceptions::IOError, pylith::journal::output,
+        PYLITH_ERROR(pylith::exceptions::IOError,
                      "Error while opening HDF5 file " << hdf5Filename() << ".\n" << err.what());
     } catch (...) {
-        PYLITH_ERROR(pylith::exceptions::IOError, pylith::journal::output,
+        PYLITH_ERROR(pylith::exceptions::IOError,
                      "Unknown error while opening HDF5 file " << hdf5Filename() << ".");
     } // try/catch
 
@@ -143,7 +143,7 @@ pylith::meshio::DataWriterHDF5::close(void) {
                 Xdmf::write(hdf5Filename().c_str());
             } catch (const std::exception& err) {
                 DataWriter::close();
-                PYLITH_COMPONENT_ERROR(pylith::exceptions::IOError, pylith::journal::output, err.what());
+                PYLITH_COMPONENT_ERROR(pylith::exceptions::IOError, err.what());
             } // catch
         } // if
     } // if
@@ -202,12 +202,12 @@ pylith::meshio::DataWriterHDF5::writeVertexField(const PylithScalar t,
                                                           << t << " to HDF5 file '" << hdf5Filename() << "'.\n");
         throw;
     } catch (const std::exception& err) {
-        PYLITH_ERROR(pylith::exceptions::IOError, pylith::journal::output,
+        PYLITH_ERROR(pylith::exceptions::IOError,
                      "Error while writing field '" << name << "' at time "
                                                    << t << " to HDF5 file '" << hdf5Filename() << "'.\n" << err.what());
 
     } catch (...) {
-        PYLITH_ERROR(pylith::exceptions::IOError, pylith::journal::output,
+        PYLITH_ERROR(pylith::exceptions::IOError,
                      "Error while writing field '" << name << "' at time "
                                                    << t << " to HDF5 file '" << hdf5Filename() << "'.");
     } // try/catch
@@ -263,11 +263,11 @@ pylith::meshio::DataWriterHDF5::writeCellField(const PylithScalar t,
                                                           << t << " to HDF5 file '" << hdf5Filename() << "'.\n");
         throw;
     } catch (const std::exception& err) {
-        PYLITH_ERROR(pylith::exceptions::IOError, pylith::journal::output,
+        PYLITH_ERROR(pylith::exceptions::IOError,
                      "Error while writing field '" << name << "' at time "
                                                    << t << " to HDF5 file '" << hdf5Filename() << "'.\n" << err.what());
     } catch (...) {
-        PYLITH_ERROR(pylith::exceptions::IOError, pylith::journal::output,
+        PYLITH_ERROR(pylith::exceptions::IOError,
                      "Error while writing field '" << name << "' at time "
                                                    << t << " to HDF5 file '" << hdf5Filename() << "'.");
     } // try/catch
@@ -335,36 +335,36 @@ pylith::meshio::DataWriterHDF5::writePointNames(const pylith::string_vector& nam
 #else
         hid_t group = H5Gopen(h5, parent);
 #endif
-        if (group < 0) { PYLITH_ERROR(pylith::exceptions::IOError, pylith::journal::output, "Could not open group.");}
+        if (group < 0) { PYLITH_ERROR(pylith::exceptions::IOError, "Could not open group.");}
 
         hid_t datatype = H5Tcopy(H5T_C_S1);
-        if (datatype < 0) { PYLITH_ERROR(pylith::exceptions::IOError, pylith::journal::output, "Could not create datatype.");}
+        if (datatype < 0) { PYLITH_ERROR(pylith::exceptions::IOError, "Could not create datatype.");}
         herr_t err = H5Tset_size(datatype, maxStringLength);
-        if (err < 0) { PYLITH_ERROR(pylith::exceptions::IOError, pylith::journal::output, "Could not set size of datatype.");}
+        if (err < 0) { PYLITH_ERROR(pylith::exceptions::IOError, "Could not set size of datatype.");}
 
         // Create the filespace
         const int ndims = 1;
         hsize_t dims[ndims];
         dims[0] = numNames;
         hid_t filespace = H5Screate_simple(ndims, dims, NULL);
-        if (filespace < 0) { PYLITH_ERROR(pylith::exceptions::IOError, pylith::journal::output, "Could not create filespace.");}
+        if (filespace < 0) { PYLITH_ERROR(pylith::exceptions::IOError, "Could not create filespace.");}
 
 #if defined(PYLITH_HDF5_USE_API_18)
         hid_t dataset = H5Dcreate2(group, name, datatype, filespace, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 #else
         hid_t dataset = H5Dcreate(group, name, datatype, filespace, H5P_DEFAULT);
 #endif
-        if (dataset < 0) { PYLITH_ERROR(pylith::exceptions::IOError, pylith::journal::output, "Could not create dataset.");}
+        if (dataset < 0) { PYLITH_ERROR(pylith::exceptions::IOError, "Could not create dataset.");}
         err = H5Sclose(filespace);
-        if (err < 0) { PYLITH_ERROR(pylith::exceptions::IOError, pylith::journal::output, "Could not close filespace.");}
+        if (err < 0) { PYLITH_ERROR(pylith::exceptions::IOError, "Could not close filespace.");}
 
         // Create the memspace
         dims[0] = numNamesLocal;
         hid_t memspace = H5Screate_simple(ndims, dims, NULL);
-        if (memspace < 0) {PYLITH_ERROR(pylith::exceptions::IOError, pylith::journal::output, "Could not create memspace.");}
+        if (memspace < 0) {PYLITH_ERROR(pylith::exceptions::IOError, "Could not create memspace.");}
 
         hid_t dataspace = H5Dget_space(dataset);
-        if (dataspace < 0) {PYLITH_ERROR(pylith::exceptions::IOError, pylith::journal::output, "Could not get dataspace.");}
+        if (dataspace < 0) {PYLITH_ERROR(pylith::exceptions::IOError, "Could not get dataspace.");}
         hsize_t offset[1] = {0};
         for (int i = 0; i < commRank; ++i) {
             offset[0] += numNamesArray[i];
@@ -372,30 +372,30 @@ pylith::meshio::DataWriterHDF5::writePointNames(const pylith::string_vector& nam
         hsize_t count[1];
         count[0] = numNamesLocal;
         err = H5Sselect_hyperslab(dataspace, H5S_SELECT_SET, offset, NULL, count, NULL);
-        if (err < 0) {PYLITH_ERROR(pylith::exceptions::IOError, pylith::journal::output, "Could not select hyperslab.");}
+        if (err < 0) {PYLITH_ERROR(pylith::exceptions::IOError, "Could not select hyperslab.");}
 
         hid_t property = H5Pcreate(H5P_DATASET_XFER);
         if (property < 0) {
-            PYLITH_ERROR(pylith::exceptions::IOError, pylith::journal::output, "Could not create property.");
+            PYLITH_ERROR(pylith::exceptions::IOError, "Could not create property.");
         }
         H5Pset_dxpl_mpio(property, H5FD_MPIO_COLLECTIVE);
 
         err = H5Dwrite(dataset, datatype, memspace, dataspace, property, namesFixedLength);
-        if (err < 0) {PYLITH_ERROR(pylith::exceptions::IOError, pylith::journal::output, "Could not write dataset.");}
+        if (err < 0) {PYLITH_ERROR(pylith::exceptions::IOError, "Could not write dataset.");}
 
         err = H5Sclose(memspace);
-        if (err < 0) {PYLITH_ERROR(pylith::exceptions::IOError, pylith::journal::output, "Could not close memspace.");}
+        if (err < 0) {PYLITH_ERROR(pylith::exceptions::IOError, "Could not close memspace.");}
         err = H5Sclose(dataspace);
-        if (err < 0) {PYLITH_ERROR(pylith::exceptions::IOError, pylith::journal::output, "Could not close dataspace.");}
+        if (err < 0) {PYLITH_ERROR(pylith::exceptions::IOError, "Could not close dataspace.");}
         err = H5Pclose(property);
-        if (err < 0) {PYLITH_ERROR(pylith::exceptions::IOError, pylith::journal::output, "Could not close property.");}
+        if (err < 0) {PYLITH_ERROR(pylith::exceptions::IOError, "Could not close property.");}
         err = H5Dclose(dataset);
-        if (err < 0) {PYLITH_ERROR(pylith::exceptions::IOError, pylith::journal::output, "Could not close dataset.");}
+        if (err < 0) {PYLITH_ERROR(pylith::exceptions::IOError, "Could not close dataset.");}
         err = H5Tclose(datatype);
-        if (err < 0) {PYLITH_ERROR(pylith::exceptions::IOError, pylith::journal::output, "Could not close datatype.");}
+        if (err < 0) {PYLITH_ERROR(pylith::exceptions::IOError, "Could not close datatype.");}
 
         err = H5Gclose(group);
-        if (err < 0) {PYLITH_ERROR(pylith::exceptions::IOError, pylith::journal::output, "Could not close group.");}
+        if (err < 0) {PYLITH_ERROR(pylith::exceptions::IOError, "Could not close group.");}
 
         delete[] namesFixedLength;namesFixedLength = NULL;
     } catch (pylith::exceptions::Error& err) {
@@ -406,13 +406,13 @@ pylith::meshio::DataWriterHDF5::writePointNames(const pylith::string_vector& nam
 
         std::ostringstream msg;
         msg << "Error while writing stations to HDF5 file '" << hdf5Filename() << "'.\n" << err.what();
-        PYLITH_ERROR(pylith::exceptions::IOError, pylith::journal::output, msg.str());
+        PYLITH_ERROR(pylith::exceptions::IOError, msg.str());
     } catch (...) {
         delete[] namesFixedLength;namesFixedLength = NULL;
 
         std::ostringstream msg;
         msg << "Error while writing stations to HDF5 file '" << hdf5Filename() << "'.";
-        PYLITH_ERROR(pylith::exceptions::IOError, pylith::journal::output, msg.str());
+        PYLITH_ERROR(pylith::exceptions::IOError, msg.str());
     } // try/catch
 
     PYLITH_METHOD_END;

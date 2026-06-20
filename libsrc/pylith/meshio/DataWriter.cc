@@ -48,7 +48,7 @@ pylith::meshio::DataWriter::setTimeScale(const PylithScalar value) {
     PYLITH_METHOD_BEGIN;
 
     if (value <= 0.0) {
-        PYLITH_COMPONENT_ERROR(pylith::exceptions::ValueError, pylith::journal::user_input,
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::OutOfRangeError,
                                "Time scale for simulation time (" << value << " must be positive.");
     } // if
 

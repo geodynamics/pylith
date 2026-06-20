@@ -31,7 +31,7 @@ pylith::meshio::OutputTrigger::~OutputTrigger(void) {}
 void
 pylith::meshio::OutputTrigger::setTimeScale(const PylithReal value) {
     if (value <= 0.0) {
-        PYLITH_COMPONENT_ERROR(pylith::exceptions::ValueError, pylith::journal::user_input,
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::OutOfRangeError,
                                "Time scale ("<<value<<") for solution observer is nonpositive.");
     } // if
     _timeScale = value;

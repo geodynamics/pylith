@@ -65,7 +65,7 @@ pylith::feassemble::Constraint::setSubfieldName(const char* value) {
     if (!value || (0 == strlen(value))) {
         std::ostringstream msg;
         assert(_physics);
-        PYLITH_ERROR(pylith::exceptions::ValueError, pylith::journal::user_input,
+        PYLITH_ERROR(pylith::exceptions::EmptyStringError,
                      "Empty string given for name of solution subfield.");
     } // if
     _subfieldName = value;
@@ -87,7 +87,7 @@ pylith::feassemble::Constraint::setLabelName(const char* value) {
     PYLITH_DEBUG(pylith::journal::application_flow, "setLabelName(value="<<value<<")");
 
     if (strlen(value) == 0) {
-        PYLITH_ERROR(pylith::exceptions::ValueError, pylith::journal::user_input,
+        PYLITH_ERROR(pylith::exceptions::EmptyStringError,
                      "Empty string given for constraint label.");
     } // if
 
@@ -132,7 +132,7 @@ pylith::feassemble::Constraint::setConstrainedDOF(const int* flags,
     _constrainedDOF.resize(size);
     for (int i = 0; i < size; ++i) {
         if (flags[i] < 0) {
-            PYLITH_ERROR(pylith::exceptions::ValueError, pylith::journal::user_input,
+            PYLITH_ERROR(pylith::exceptions::OutOfRangeError,
                          "Constrained DOF '" << flags[i] << "' must be nonnegative in constraint.");
         } // if
         _constrainedDOF[i] = flags[i];

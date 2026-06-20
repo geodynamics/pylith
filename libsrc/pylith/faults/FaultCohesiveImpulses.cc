@@ -101,8 +101,8 @@ pylith::faults::FaultCohesiveImpulses::setImpulseDOF(const int* flags,
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setImpulseDOF(flags="<<flags<<", size="<<size<<")");
 
     if (((size == 0) && flags) || ((size > 0) && !flags)) {
-        PYLITH_COMPONENT_ERROR_NEW(pylith::exceptions::InternalLogicError,
-                                   "Inconsistent array size ("<<size<<") and values ("<<flags<<").");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::InternalLogicError,
+                               "Inconsistent array size ("<<size<<") and values ("<<flags<<").");
     } // if
 
     _impulseDOF.resize(size);
@@ -119,8 +119,8 @@ pylith::faults::FaultCohesiveImpulses::setThreshold(const double value) {
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setThreshold(value="<<value<<")");
 
     if (value < 0) {
-        PYLITH_COMPONENT_ERROR_NEW(pylith::exceptions::OutOfRangeError,
-                                   "Threshold ("<< value << ") for impulse amplitude must be nonnegative.");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::OutOfRangeError,
+                               "Threshold ("<< value << ") for impulse amplitude must be nonnegative.");
     } // if
     assert(_scales);
     _threshold = value / _scales->getDisplacementScale();
@@ -191,12 +191,12 @@ pylith::faults::FaultCohesiveImpulses::createAuxiliaryField(const pylith::topolo
         break;
     case DYNAMIC_IMEX:
     case DYNAMIC:
-        PYLITH_COMPONENT_ERROR_NEW(pylith::exceptions::NotImplementedError,
-                                   "Green's functions for dynamic simulations is not yet supported.");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::NotImplementedError,
+                               "Green's functions for dynamic simulations is not yet supported.");
         break;
     default:
-        PYLITH_COMPONENT_ERROR_NEW(pylith::exceptions::SwitchLogicError,
-                                   "Unknown formulation for equations (" << _formulation << ").");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::SwitchLogicError,
+                               "Unknown formulation for equations (" << _formulation << ").");
     } // switch
 
     auxiliaryField->subfieldsSetup();
@@ -237,12 +237,12 @@ pylith::faults::FaultCohesiveImpulses::updateAuxiliaryField(pylith::topology::Fi
         break;
     case DYNAMIC_IMEX:
     case DYNAMIC:
-        PYLITH_COMPONENT_ERROR_NEW(pylith::exceptions::NotImplementedError,
-                                   "Green's functions for dynamic simulations is not yet supported.");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::NotImplementedError,
+                               "Green's functions for dynamic simulations is not yet supported.");
         break;
     default:
-        PYLITH_COMPONENT_ERROR_NEW(pylith::exceptions::InternalLogicError,
-                                   "Unknown formulation for equations (" << _formulation << ").");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::InternalLogicError,
+                               "Unknown formulation for equations (" << _formulation << ").");
     } // switch
 
     PYLITH_METHOD_END;
@@ -335,11 +335,11 @@ pylith::faults::FaultCohesiveImpulses::_setKernelsResidual(pylith::feassemble::I
     } // QUASISTATIC
     case pylith::problems::Physics::DYNAMIC_IMEX:
     case pylith::problems::Physics::DYNAMIC:
-        PYLITH_COMPONENT_ERROR_NEW(pylith::exceptions::NotImplementedError,
-                                   "Green's functions for dynamic simulations is not yet supported.");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::NotImplementedError,
+                               "Green's functions for dynamic simulations is not yet supported.");
     default:
-        PYLITH_COMPONENT_ERROR_NEW(pylith::exceptions::SwitchLogicError,
-                                   "Unknown formulation '"<<_formulation<<"'.");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::SwitchLogicError,
+                               "Unknown formulation '"<<_formulation<<"'.");
     } // switch
 
     assert(integrator);
@@ -390,11 +390,11 @@ pylith::faults::FaultCohesiveImpulses::_setKernelsJacobian(pylith::feassemble::I
     } // QUASISTATIC
     case pylith::problems::Physics::DYNAMIC_IMEX:
     case pylith::problems::Physics::DYNAMIC:
-        PYLITH_COMPONENT_ERROR_NEW(pylith::exceptions::NotImplementedError,
-                                   "Green's functions for dynamic simulations is not yet supported.");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::NotImplementedError,
+                               "Green's functions for dynamic simulations is not yet supported.");
     default:
-        PYLITH_COMPONENT_ERROR_NEW(pylith::exceptions::SwitchLogicError,
-                                   "Unknown formulation '"<<_formulation<<"'.");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::SwitchLogicError,
+                               "Unknown formulation '"<<_formulation<<"'.");
     } // switch
 
     assert(integrator);

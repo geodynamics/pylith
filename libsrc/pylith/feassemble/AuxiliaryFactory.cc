@@ -89,8 +89,8 @@ pylith::feassemble::AuxiliaryFactory::setValuesFromDB(void) {
         _fieldQuery->queryDB();
         _fieldQuery->closeDB(_queryDB);
     } else {
-        PYLITH_ERROR_NEW(pylith::exceptions::InternalLogicError,
-                         "Unknown case for filling auxiliary subfields.");
+        PYLITH_ERROR(pylith::exceptions::InternalLogicError,
+                     "Unknown case for filling auxiliary subfields.");
     } // if/else
 
     delete _fieldQuery;_fieldQuery = NULL;

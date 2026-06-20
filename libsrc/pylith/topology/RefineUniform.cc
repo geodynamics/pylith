@@ -140,7 +140,7 @@ pylith::topology::RefineUniform::refine(const pylith::topology::Mesh& mesh) {
 
     const int meshDim = mesh.getDimension();
     if (( meshDim > 0) && ( meshDepth != meshDim) ) {
-        PYLITH_ERROR(pylith::exceptions::InternalLogicError, pylith::journal::logic,
+        PYLITH_ERROR(pylith::exceptions::NotImplementedError,
                      "Mesh refinement for uninterpolated meshes not supported.");
     } // if
 

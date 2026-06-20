@@ -82,7 +82,7 @@ pylith::feassemble::IntegratorBoundary::setSubfieldName(const char* value) {
     PYLITH_DEBUG(pylith::journal::application_flow, "setSubfieldName(value="<<value<<")");
 
     if (!value || (0 == strlen(value))) {
-        PYLITH_ERROR(pylith::exceptions::ValueError, pylith::journal::user_input,
+        PYLITH_ERROR(pylith::exceptions::EmptyStringError,
                      "Empty string given for name of solution subfield for boundary condition '" << _boundarySurfaceLabel
                                                                                                  <<"'.");
     } // if
@@ -131,7 +131,7 @@ pylith::feassemble::IntegratorBoundary::setKernelsResidual(const std::vector<Res
             _hasRHSResidual = true;
             break;
         default:
-            PYLITH_FIREWALL(pylith::exceptions::InternalLogicError, pylith::journal::logic, "Unknown residual part " << kernels[i].part <<".");
+            PYLITH_ERROR(pylith::exceptions::SwitchLogicError, "Unknown residual part " << kernels[i].part <<".");
         } // switch
     } // for
 

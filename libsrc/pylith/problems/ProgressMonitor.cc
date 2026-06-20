@@ -49,7 +49,7 @@ pylith::problems::ProgressMonitor::deallocate(void) {
 void
 pylith::problems::ProgressMonitor::setUpdatePercent(const double value) {
     if (value <= 0.0) {
-        PYLITH_COMPONENT_ERROR(pylith::exceptions::ValueError, pylith::journal::user_input,
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::OutOfRangeError,
                                "Update percentage value (" << value << ") must be positive.");
     } // if
 
@@ -70,7 +70,7 @@ pylith::problems::ProgressMonitor::getUpdatePercent(void) const {
 void
 pylith::problems::ProgressMonitor::setFilename(const char* filename) {
     if (!strlen(filename)) {
-        PYLITH_COMPONENT_ERROR(pylith::exceptions::ValueError, pylith::journal::user_input,
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::EmptyStringError,
                                "Progress monitor output filename set to empty string.");
     } // if
     _filename = filename;

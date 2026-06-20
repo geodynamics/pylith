@@ -93,10 +93,10 @@ pylith::utils::TestGenericComponent::testJournals(void) {
 
     // CHECK_THROWS_AS() does not seem to work with PYLITH_COMPONENT* macros.
     try {
-        PYLITH_ERROR(pylith::exceptions::IOError, pylith::journal::user_input, "CORRECT: This is an error message.");
+        PYLITH_ERROR(pylith::exceptions::IOError, "CORRECT: This is an error message.");
     } catch (const pylith::exceptions::IOError& err) {}
     try {
-        PYLITH_FIREWALL(pylith::exceptions::InternalLogicError, pylith::journal::logic, "CORRECT: This is an error message.");
+        PYLITH_ERROR(pylith::exceptions::InternalLogicError, "CORRECT: This is an error message.");
     } catch (const pylith::exceptions::InternalLogicError& err) {}
 } // testJournals
 
