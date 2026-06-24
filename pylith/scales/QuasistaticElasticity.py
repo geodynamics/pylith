@@ -21,7 +21,7 @@ class QuasistaticElasticity(General):
     DOC_CONFIG = {
         "cfg": """
             [normalizer]
-            length_scale = 100.0*km
+            length_scale = 1.0*km
             displacement_scale = 50.0*km
             shear_modulus = 25.0*GPa
             time_scale = 100.0*year
@@ -34,10 +34,11 @@ class QuasistaticElasticity(General):
     from pythia.pyre.units.length import meter, km
     from pythia.pyre.units.time import year
 
-    lengthScale = pythia.pyre.inventory.dimensional("length_scale", default=100.0 * km)
+    lengthScale = pythia.pyre.inventory.dimensional("length_scale", default=1.0 * km)
     lengthScale.validator = pythia.pyre.inventory.greater(0.0 * meter)
     lengthScale.meta["tip"] = (
-        "Length scale in boundary value problem (size of feature controlling displacement, fault)."
+        "Length scale in boundary value problem (size of feature controlling displacement; "
+        "discretization size on fault for simulations with a fault)."
     )
 
     displacementScale = pythia.pyre.inventory.dimensional(
