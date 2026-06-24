@@ -31,8 +31,6 @@ interfaces = [fault]
 [pylithapp.problem.interfaces.fault]
 label = fault_slabtop
 label_value = 21
-edge = fault_slabtop_edge
-edge_value = 31
 
 observers.observer.data_fields = [slip, traction_change]
 

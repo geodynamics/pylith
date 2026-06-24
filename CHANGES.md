@@ -9,10 +9,11 @@ The version numbers are in the form `MAJOR.MINOR.PATCH`, where major releases in
 
 * **Changed**
   * Update default solver settings for incompressible elasticity for Schur factoriztion from `full` to `lower`.
+  * Set the default length scale to 1 km instead of 100 km for consistency with most quasi-static problem with faults. For simulations with faults, the length scale should be set to the discretization size on the fault; this is related to the preconditioner which links the length scale to the discretization size.
 * **Added**
-  * `examples/subduction-3d`: Add expected Gmsh output for geometric operations.
+  * `examples/subduction-3d`: Add expected Gmsh output for geometric operations in documentation.
 * **Fixed**
-  * `examples/subduction-3d`: Increase tolerance for slab surface creation.
+  * `examples/subduction-3d`: Increase tolerance for slab surface creation. Fix setting mesh filename in parameter files using Cubit mesh.
 * **Developer Changes**
   * Remove flag (`--output-sync=target`) in top-level `Makefile.am` that is not backwards compatible.
 

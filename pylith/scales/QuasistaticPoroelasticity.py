@@ -21,7 +21,7 @@ class QuasistaticPoroelasticity(General):
     DOC_CONFIG = {
         "cfg": """
             [normalizer]
-            length_scale = 100.0*km
+            length_scale = 1.0*km
             displacement_scale = 50.0*km
             shear_modulus = 25.0*GPa
             viscosity = 0.001*Pa*s

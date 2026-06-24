@@ -51,8 +51,6 @@ solution = pylith.problems.SolnDispLagrange
 [pylithapp.problem.interfaces.fault]
 label = fault
 label_value = 20
-edge = fault_end
-edge_value = 21
 observers.observer.data_fields = [slip, traction_change]
 
 [pylithapp.problem.interfaces.fault.eq_ruptures.rupture]

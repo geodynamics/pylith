@@ -100,9 +100,6 @@ interfaces = [main_fault, west_branch, east_branch]
 label = fault_main
 label_value = 20
 
-edge = fault_main_ends
-edge_value = 30
-
 # Output `slip` and `traction_changes` on the fault.
 observers.observer.data_fields = [slip, traction_change]
 
@@ -113,9 +110,6 @@ observers.observer.data_fields = [slip, traction_change]
 label =  fault_west
 label_value = 21
 
-edge = fault_west_ends 
-edge_value = 31
-
 # Output `slip` and `traction_changes` on the fault.
 observers.observer.data_fields = [slip, traction_change]
 
@@ -125,9 +119,6 @@ observers.observer.data_fields = [slip, traction_change]
 ## physical group in the Gmsh Python script.
 label = fault_east
 label_value = 22
-
-edge = fault_east_ends
-edge_value = 32
 
 # Output `slip` and `traction_changes` on the fault.
 observers.observer.data_fields = [slip, traction_change]

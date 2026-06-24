@@ -216,11 +216,8 @@ class App(GenerateMesh):
             BoundaryGroup(name="boundary_east_mantle_tmp", tag=113, dim=1, entities=[self.c_east_mantle]),
             BoundaryGroup(name="boundary_bot", tag=14, dim=1, entities=[self.c_bot]),
             BoundaryGroup(name="fault_coseismic", tag=20, dim=1, entities=[self.c_slabtop_mantle_upper, self.c_slabtop_crust]),
-            BoundaryGroup(name="fault_coseismic_edge", tag=30, dim=0, entities=[self.p_slabtop_coseismic]),
             BoundaryGroup(name="fault_slabtop", tag=21, dim=1, entities=[self.c_slabtop_mantle_lower, self.c_slabtop_mantle_upper, self.c_slabtop_crust]),
-            BoundaryGroup(name="fault_slabtop_edge", tag=31, dim=0, entities=[self.p_slabtop_west]),
             BoundaryGroup(name="fault_slabbot", tag=22, dim=1, entities=[self.c_slabbot]),
-            BoundaryGroup(name="fault_slabbot_edge", tag=32, dim=0, entities=[self.p_slabbot_west]),
         )
         for group in face_groups:
             group.create_physical_group()

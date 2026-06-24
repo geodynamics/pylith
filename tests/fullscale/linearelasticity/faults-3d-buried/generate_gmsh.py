@@ -74,7 +74,6 @@ class App(GenerateMesh):
             BoundaryGroup(name="boundary_zneg", tag=14, dim=2, entities=[self.s_zneg]),
             BoundaryGroup(name="boundary_zpos", tag=15, dim=2, entities=[self.s_zpos]),
             BoundaryGroup(name="fault", tag=20, dim=2, entities=[self.s_fault]),
-            BoundaryGroup(name="fault_edges", tag=21, dim=1, entities=[self.c_fault_yneg, self.c_faultbot, self.c_fault_ypos]),
         )
         for group in face_groups:
             group.create_physical_group()

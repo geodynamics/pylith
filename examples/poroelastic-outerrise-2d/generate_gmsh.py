@@ -132,8 +132,6 @@ class App(GenerateMesh):
             face_groups = np.append(face_groups, BoundaryGroup(name="fault_" + str(i), \
                                                                  tag=201 + i, dim=1, entities=[self.c_outer_rise_faults[i]]))
 
-            face_groups = np.append(face_groups, BoundaryGroup(name="edge_fault_" + str(i), tag=301 + i, dim=0, \
-                                                                 entities=[int(self.outer_rise_fault_buried_edges[i])]))
         for group in face_groups:
             group.create_physical_group()
 

@@ -33,7 +33,7 @@ Example of setting `DynamicElasticity` Pyre properties and facilities in a param
 
 :::{code-block} cfg
 [normalizer]
-length_scale = 100.0*km
+length_scale = 1.0*km
 displacement_scale = 50.0*km
 shear_modulus = 25.0*GPa
 velocity_scale = 3.0*km/s

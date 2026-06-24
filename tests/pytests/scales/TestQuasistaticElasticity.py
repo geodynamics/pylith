@@ -28,7 +28,7 @@ class TestElasticityScales(unittest.TestCase):
 
         # Default values
         displacementScale = 1.0 * meter
-        lengthScale = 100.0 * kilometer
+        lengthScale = 1.0 * kilometer
         rigidityScale = 1.0e10 * pascal
         timeScale = 1.0e2 * year
 
