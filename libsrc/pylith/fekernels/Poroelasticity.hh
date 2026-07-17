@@ -1029,7 +1029,7 @@ public:
                const PylithScalar constants[],
                PylithScalar Jf1[]) {
         for (PylithInt d = 0; d < dim; ++d) {
-            Jf1[d*dim+d] = 1.0;
+            Jf1[d*dim+d] = 1.0; // delta_jl
         } // for
     } // Jf1eu
 
