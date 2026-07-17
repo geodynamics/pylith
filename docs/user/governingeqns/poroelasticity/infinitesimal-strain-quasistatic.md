@@ -79,7 +79,7 @@ Three fields yields potentially 9 Jacobian pointwise functions for the LHS:
 % Jf3uu
   J_F^{uu} &= \frac{\partial F^u}{\partial u} + s_{tshift} \frac{\partial F^u}{\partial \dot{u}} = \int_{\Omega} \nabla {\vec{\psi}_\mathit{trial}^{u}} : \frac{\partial}{\partial u} (- \sigma(\vec{u},p,\epsilon_{v})) \
   d\Omega = \int_{\Omega} \nabla {\vec{\psi}_\mathit{trial}^{u}} : \frac{\partial}{\partial u} (-(\boldsymbol{C}:\boldsymbol{\varepsilon} -\alpha p \boldsymbol{I})) \ d\Omega \\
-  &= \int_{\Omega} \nabla {\vec{\psi}_\mathit{trial}^{u}} : -\boldsymbol{C}: \frac{1}{2} (\nabla + \nabla^T) {\vec{\psi}_\mathit{basis}^{u}} \ d\Omega = \int_{\Omega} {\psi_\mathit{trial}^{u}}_{i,k}{\color{blue}  \underbrace{\color{black}\left(-C_{ikjl}\right)}_{\color{blue}{J_{f3}^{uu}}}} {\psi_\mathit{basis}^{u}}_{j,l} \ d\Omega \\
+  &= \int_{\Omega} \nabla {\vec{\psi}_\mathit{trial}^{u}} : -\boldsymbol{C}: \frac{1}{2} (\nabla + \nabla^T) {\vec{\psi}_\mathit{basis}^{u}} \ d\Omega = \int_{\Omega} {\psi_\mathit{trial}^{u}}_{i,k}{\color{blue}  \underbrace{\color{black}\left(-C_{ikjl} (\delta_{ij}\delta_{kl} + \delta_{il}\delta_{jk})\right)}_{\color{blue}{J_{f3}^{uu}}}} {\psi_\mathit{basis}^{u}}_{j,l} \ d\Omega \\
 %
 % JF_UP
 % Jf2up
@@ -118,8 +118,8 @@ Three fields yields potentially 9 Jacobian pointwise functions for the LHS:
 % Jf1eu
   J_F^{\epsilon_{v}u} &= \frac{\partial F^{\epsilon_{v}}}{\partial u} + s_{tshift} \frac{\partial F^{\epsilon_{v}}}{\partial \dot{u}} =
   \int_{\Omega} \psi_{trial}^{\epsilon_{v}} \nabla \cdot \vec{\psi}_{basis}^u \ d\Omega = \int_{\Omega}
-  {\psi_\mathit{basis}^{\epsilon_{v}}} {\color{blue}  \underbrace{\color{black}\left(\delta_{ij}\right)}_{\color{blue}{J_{f1}^{\epsilon_{v}u}}}}
-  {\psi_\mathit{basis}^{u}}_{i,j} \ d\Omega\\
+  {\psi_\mathit{basis}^{\epsilon_{v}}} {\color{blue}  \underbrace{\color{black}\left(\delta_{jl}\right)}_{\color{blue}{J_{f1}^{\epsilon_{v}u}}}}
+  {\psi_\mathit{basis}^{u}}_{j,l} \ d\Omega\\
 %
 % JF_EP
 %

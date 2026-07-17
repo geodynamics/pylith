@@ -1395,6 +1395,8 @@ public:
         // Rheological Auxiliaries
         const PylithScalar shearModulus = rheologyContext.shearModulus;
 
+        // -C_ikjl (delta_ij delta_kl + delta_il delta_jk)
+        // No contributions associated with lambda
         for (PylithInt i = 0; i < _dim; ++i) {
             for (PylithInt j = 0; j < _dim; ++j) {
                 Jf3[((i * _dim + i) * _dim + j) * _dim + j] -= shearModulus;
