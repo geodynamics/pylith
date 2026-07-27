@@ -54,7 +54,12 @@ Considering isotropic, linear elasticity we have
 \boldsymbol{\sigma} = \boldsymbol{C} : \boldsymbol{\epsilon} = \boldsymbol{C} : \frac{1}{2}\left(\boldsymbol{\nabla} + \boldsymbol{\nabla}^T \right) \vec{u}.
 \end{equation}
 %
-Substituting in our nondimensional values yields
+We define
+%
+\begin{equation}
+C^* = \frac{C}{\mu_o},
+\end{equation}
+and substituting yields
 %
 \begin{equation}
 \sigma_o \boldsymbol{\sigma}^* = \mu_o \boldsymbol{C}^* : \frac{u_o}{x_o} \frac{1}{2}\left(\boldsymbol{\nabla}^* + \boldsymbol{\nabla}^{*^T}\right) \vec{u}^*.
