@@ -69,7 +69,7 @@ It also separates the stress scale used to nondimensionalize stress, tractions, 
 | $u_o$       | Displacement scale  |
 | $\mu_o$     | Rigidity scale      |
 | $t_o$       | Time scale          |
-| $\sigma_o = p_o = \mu_o \frac{u_o}{x_o}$  | Stress scale        |
+| $\sigma_o = p_o = \mu_o \frac{u_o}{x_o}$  | Stress and pressure scale        |
 | $f_o = \frac{\sigma_o}{x_o}$    | Body force scale       |
 | $\rho_o = \mu_o \frac{t_o^2}{x_o^2}$    | Density scale       |
 ```
