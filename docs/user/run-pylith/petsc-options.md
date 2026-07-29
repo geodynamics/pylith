@@ -41,6 +41,7 @@ Additional monitoring can be turned on using the user-specified options.
 | :---------------------------- | :------------------------------------------------------- |
 | `ts_monitor`                  | Show time-stepping progress.                             |
 | `ksp_monitor`                 | Show preconditioned residual norm.                       |
+| `ksp_monitor_true_residual`   | Show preconditioned and true residual norm.              |
 | `ksp_error_if_not_converged`  | Generate an error if linear solver does not converge.    |
 | `ksp_converged_reason`        | Indicate why iterating stopped in linear solve.          |
 | `snes_monitor`                | Show residual norm for each nonlinear solve iteration.   |
@@ -89,7 +90,8 @@ Adaptive time stepping (not enabled by default) adjusts the time step based upon
 We use the [`basic` PETSc adaptive time-stepping algorithm](https://petsc.org/release/manual/ts/#tab-adaptors).
 Tolerances (`ts_atol` and `ts_rtol`) of around 0.05 work reasonably well in many simulations with viscoelasticity or poroelasticity.
 Increasing the tolerances leds to relatively larger time steps and smaller tolerances lead to small time steps.
-The PETSc documentation provides more details about how the time steps are selected.
+The `ts_adapt_clip`, `ts_adapt_safety` and `ts_adapt_reject_safety` parameters also influence the time step selection.
+The [PETSc TS documentation](https://petsc.org/release/manual/ts/#error-control-via-variable-time-stepping) provides more details about how time steps are selected.
 
 ```{code-block} cfg
 ---
@@ -138,31 +140,23 @@ The solver options are enabled by default.
 PyLith selects options based on the governing equation, formulation, presence of a fault, and whether the simulation is running in parallel.
 In some cases the solver settings for running in parallel are different than those for running in serial; in such cases, the settings for running in parallel often given give comparable or better performance.
 If you have a moderate or large simulation, you should enable the parallel settings.
-Additionally, PyLith specifies general options related to the solver tolerances and triggering errors if the linear or nonlinear solver fails to converge.
-The different sets of defaults are detailed in the following code blocks.
-
-:::{warning}
-When running in parallel in cases in which a fault face is split across processes, the current solver settings will result in a diverged solution.
-We attempt to prevent this from happening by specifying a penalty for splitting across the fault; however, sometimes the partitioner will still split a fault face across processes.
-In cases in which the default settings fail and the solver diverges, you can fall back to the previous settings by using the field split preconditioner in `share/settings/solver_elasticity_fault_fieldsplit.cfg`.
-Simply add this `.cfg` file to your command line options.
-
-This issue will go away once we implement parallel mesh loading.
-
-:::{note}
-If you do use the field split fall back, you need to be aware that it also has deficiencies.
-The split fields and algebraic multigrid preconditioning currently fails in problems with a nonzero null space.
-This most often occurs when a problem contains multiple faults that extend through the entire domain and create subdomains without any Dirichlet boundary conditions.
-The workaround is to use the `ilu` preconditioner.
-However, it only works in serial.
-An alternative is to use the `asm` preconditioner (Additive Schwarz) which works in parallel and serial.
-:::
-
-:::
+Additionally, PyLith specifies default solver tolerances and options for triggering errors if the linear or nonlinear solver fails to converge.
 
 #### Solver tolerances
 
-PyLith will set default solver tolerances wheneve the solver defaults are enabled.
+PyLith will set default solver tolerances whenever the solver defaults are enabled.
+
+We set the KSP and SNES relative tolerances (`ksp_rtol` and `snes_rtol`) to extremely small values (1.0e-14) so that convergence is never triggered by the relative criterion; these tolerances specify the residual reduction relative to the initial residual, and setting them this small effectively disables them in favor of the absolute tolerances described below.
+
+The SNES absolute tolerance (`snes_atol`) is the true residual norm we consider sufficient for convergence. We use a default value of 5.0e-7, which yields displacements and stresses accurate to about that fraction of their respective characteristic scales.
+This provides ample accuracy for most crustal deformation problems and is also small enough to be meaningful in our full-scale tests.
+
+The KSP absolute tolerance (`ksp_atol`) controls when the linear solver declares convergence, but it is evaluated on the *preconditioned* residual, not the true residual, so the two do not match directly.
+Under good conditions — an appropriate nondimensionalization, an effective preconditioner, and a mesh free of badly distorted cells — the preconditioned residual is typically within about an order of magnitude of the true residual.
+In typical real-world simulations, this factor can grow to about 100.
+
+To account for these variable conditions, we set `ksp_atol` to be smaller than `snes_atol` by a factor of 5, ensuring the linear solver converges tightly enough to satisfy the SNES convergence criterion without performing excessive iterations.
+If preconditioned and true residual norms diverge by more than expected — e.g., due to a poorly scaled problem or a badly distorted mesh — you should try to improve the mesh quality and then assess convergence by inspecting the true residual (`ksp_monitor_true_residual`) and adjust the `ksp_atol` if necessary.
 
 ```{table} Summary of PETSc solver tolerances.
 :name: tab-petsc-options-solver
