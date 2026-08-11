@@ -17,7 +17,7 @@ make-manifest:
 endif
 
 install-exec-local: make-manifest
-	$(PYTHON) -m pip install --no-build-isolation --prefix=$(prefix) $(top_srcdir)
+	$(PYTHON) -m pip install --prefix=$(prefix) $(top_srcdir)
 
 EXTRA_DIST = \
 	__init__.py \
