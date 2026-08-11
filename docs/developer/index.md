@@ -10,5 +10,6 @@ git-workflow/index.md
 debugging/index.md
 performance/index.md
 contributing/index.md
+design-specifications/index.md
 ides/index.md
 ```

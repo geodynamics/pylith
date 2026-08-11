@@ -115,18 +115,16 @@ pylith::meshio::HDF5::hasGroup(const char* name) {
 
     bool exists = false;
     if (H5Lexists(_file, name, H5P_DEFAULT)) {
-        hid_t obj = H5Oopen(_file, name, H5P_DEFAULT);
-        assert(obj >= 0);
+        _HDF5::H5Handle obj(H5Oopen(_file, name, H5P_DEFAULT), H5Oclose);
+        assert(obj.id >= 0);
         H5O_info_t info;
 #if defined(PYLITH_HDF5_USE_API_112)
-        herr_t err = H5Oget_info(obj, &info, H5O_INFO_ALL);
+        herr_t err = H5Oget_info(obj.id, &info, H5O_INFO_ALL);
 #else
-        herr_t err = H5Oget_info(obj, &info);
+        herr_t err = H5Oget_info(obj.id, &info);
 #endif
         assert(err >= 0);
         exists = (H5O_TYPE_GROUP == info.type);
-        err = H5Oclose(obj);
-        assert(err >= 0);
     }
 
     PYLITH_METHOD_RETURN(exists);
@@ -144,18 +142,16 @@ pylith::meshio::HDF5::hasDataset(const char* name) {
 
     bool exists = false;
     if (H5Lexists(_file, name, H5P_DEFAULT)) {
-        hid_t obj = H5Oopen(_file, name, H5P_DEFAULT);
-        assert(obj >= 0);
+        _HDF5::H5Handle obj(H5Oopen(_file, name, H5P_DEFAULT), H5Oclose);
+        assert(obj.id >= 0);
         H5O_info_t info;
 #if defined(PYLITH_HDF5_USE_API_112)
-        herr_t err = H5Oget_info(obj, &info, H5O_INFO_ALL);
+        herr_t err = H5Oget_info(obj.id, &info, H5O_INFO_ALL);
 #else
-        herr_t err = H5Oget_info(obj, &info);
+        herr_t err = H5Oget_info(obj.id, &info);
 #endif
         assert(err >= 0);
         exists = (H5O_TYPE_DATASET == info.type);
-        err = H5Oclose(obj);
-        assert(err >= 0);
     }
 
     PYLITH_METHOD_RETURN(exists);

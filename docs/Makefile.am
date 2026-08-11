@@ -765,6 +765,8 @@ dist_noinst_DATA = \
 	developer/design/code-layout.md \
 	developer/design/index.md \
 	developer/design/application-flow.md \
+	developer/design-specifications/index.md \
+	developer/design-specifications/mms-tests.md \
 	developer/contributing/documentation/install.md \
 	developer/contributing/documentation/index.md \
 	developer/contributing/documentation/quickref.md \

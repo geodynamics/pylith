@@ -5,15 +5,19 @@ Starting with v3.0.0, we strictly follow the [semantic versioning guidelines](ht
 The version numbers are in the form `MAJOR.MINOR.PATCH`, where major releases indicate changes to the public API (parameters), minor releases indicate new functionality that is backward compatible, and patch releases indicate backward compatible bug fixes.
 :::
 
-## Version 5.0.2 (2026-XX-XX)
+## Version 5.0.2 (2026-08-17)
 
 * **Changed**
   * Update default solver settings for incompressible elasticity for Schur factoriztion from `full` to `lower`.
   * Set the default length scale to 1 km instead of 100 km for consistency with most quasi-static problem with faults. For simulations with faults, the length scale should be set to the discretization size on the fault; this is related to the preconditioner which links the length scale to the discretization size.
+  * Improved documentation for solver tolerances and adaptive time stepping.
+  * Removed manual marking of buried edges (use automatic marking) in examples and tests.
+  * Update PETSc version to 3.25.4.
 * **Added**
   * `examples/subduction-3d`: Add expected Gmsh output for geometric operations in documentation.
 * **Fixed**
   * `examples/subduction-3d`: Increase tolerance for slab surface creation. Fix setting mesh filename in parameter files using Cubit mesh.
+  * Corrected documentation for isotropic linear poroelasticity Jacobian terms (Jf3uu and Jf1eu; now matches code).
 * **Developer Changes**
   * Remove flag (`--output-sync=target`) in top-level `Makefile.am` that is not backwards compatible.
 
