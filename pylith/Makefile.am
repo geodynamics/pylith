@@ -16,8 +16,12 @@ make-manifest:
 	echo "exclude meshio/MeshIOCubit.py" > $@
 endif
 
+if PIP_BUILD_ISOLATION
+else
+PIP_ISOLATION_FLAG=--no-build-isolation
+endif
 install-exec-local: make-manifest
-	$(PYTHON) -m pip install --prefix=$(prefix) $(top_srcdir)
+	$(PYTHON) -m pip install --prefix=$(prefix) $(PIP_ISOLATION_FLAG) $(top_srcdir)
 
 EXTRA_DIST = \
 	__init__.py \
