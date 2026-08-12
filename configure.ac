@@ -87,6 +87,13 @@ fi
 AM_CONDITIONAL([ENABLE_HDF5], [test "$enable_hdf5" = yes])
 AC_SUBST(PYLITH_SWIG_CPPFLAGS)
 
+dnl pip install with build isolation
+AC_ARG_WITH([build-isolation],
+    [AC_HELP_STRING([--with-build-isolation],
+        [run pip with build-isolation @<:@default=yes@:>@])],
+	[build_isolation=$withval],
+	[build_isolation="yes"])
+AM_CONDITIONAL([PIP_BUILD_ISOLATION], [test "$build_isolation" = yes])
 
 dnl ----------------------------------------------------------------------
 dnl C/C++/libtool/install
