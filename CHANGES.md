@@ -15,11 +15,18 @@ The version numbers are in the form `MAJOR.MINOR.PATCH`, where major releases in
   * Update PETSc version to 3.25.4.
 * **Added**
   * `examples/subduction-3d`: Add expected Gmsh output for geometric operations in documentation.
+  * Added configure option for pip install without build isolation (`--without-build-isolation`).
 * **Fixed**
+  * Optimized the check of cohesive cells, which greatly reduces the total time for inserting cohesive cells.
   * `examples/subduction-3d`: Increase tolerance for slab surface creation. Fix setting mesh filename in parameter files using Cubit mesh.
   * Corrected documentation for isotropic linear poroelasticity Jacobian terms (Jf3uu and Jf1eu; now matches code).
 * **Developer Changes**
   * Remove flag (`--output-sync=target`) in top-level `Makefile.am` that is not backwards compatible.
+
+### Note
+
+This is the last release for which we will make a binary package for macOS x86_64 (Intel architecture); we plan to continue to make binary packages for Linux x86_64 and macOS arm64.
+
 
 ## Version 5.0.1 (2026-06-07)
 

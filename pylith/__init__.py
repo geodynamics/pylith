@@ -8,7 +8,7 @@
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
 
-__version__ = "5.0.1"
+__version__ = "5.0.2"
 
 __all__ = [
     "apps",
