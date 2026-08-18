@@ -13,20 +13,20 @@ This is the last release for which we will make a binary package for macOS x86_6
 ## Version 5.0.2 (2026-08-17)
 
 * **Changed**
-  * Update default solver settings for incompressible elasticity for Schur factoriztion from `full` to `lower`.
+  * Updated default solver settings for incompressible elasticity for Schur factoriztion from `full` to `lower`.
   * Set the default length scale to 1 km instead of 100 km for consistency with most quasi-static problem with faults. For simulations with faults, the length scale should be set to the discretization size on the fault; this is related to the preconditioner which links the length scale to the discretization size.
   * Improved documentation for solver tolerances and adaptive time stepping.
   * Removed manual marking of buried edges (use automatic marking) in examples and tests.
-  * Update PETSc version to 3.25.4.
+  * Updated PETSc version to 3.25.4.
 * **Added**
-  * `examples/subduction-3d`: Add expected Gmsh output for geometric operations in documentation.
+  * `examples/subduction-3d`: Added expected Gmsh output for geometric operations in documentation.
   * Added configure option for pip install without build isolation (`--without-build-isolation`).
 * **Fixed**
   * Optimized the check of cohesive cells, which greatly reduces the total time for inserting cohesive cells.
-  * `examples/subduction-3d`: Increase tolerance for slab surface creation. Fix setting mesh filename in parameter files using Cubit mesh.
+  * `examples/subduction-3d`: Increased tolerance for slab surface creation. Fixed setting mesh filename in parameter files using Cubit mesh.
   * Corrected documentation for isotropic linear poroelasticity Jacobian terms (Jf3uu and Jf1eu; now matches code).
 * **Developer Changes**
-  * Remove flag (`--output-sync=target`) in top-level `Makefile.am` that is not backwards compatible.
+  * Removed flag (`--output-sync=target`) in top-level `Makefile.am` that is not backwards compatible.
 
 ## Version 5.0.1 (2026-06-07)
 
