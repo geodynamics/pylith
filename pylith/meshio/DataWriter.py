@@ -10,10 +10,10 @@
 
 import pathlib
 
-from pylith.utils.PetscComponent import PetscComponent
+from pylith.petsc.Component import Component
 
 
-class DataWriter(PetscComponent):
+class DataWriter(Component):
     """
     Abstract base class writing solution, auxiliary, and derived subfields.
     """
@@ -21,7 +21,7 @@ class DataWriter(PetscComponent):
     def __init__(self, name="datawriter"):
         """Constructor.
         """
-        PetscComponent.__init__(self, name, facility="datawriter")
+        Component.__init__(self, name, facility="datawriter")
 
     def preinitialize(self):
         """Setup data writer.

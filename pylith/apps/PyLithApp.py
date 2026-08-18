@@ -8,9 +8,9 @@
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
 
-from .PetscApplication import PetscApplication
+from pylith.petsc.Application import Application
 
-class PyLithApp(PetscApplication):
+class PyLithApp(Application):
     """Python PyLithApp application."""
 
     import pythia.pyre.inventory
@@ -53,7 +53,7 @@ class PyLithApp(PetscApplication):
 
     def __init__(self, name="pylithapp"):
         """Constructor."""
-        PetscApplication.__init__(self, name)
+        Application.__init__(self, name)
         self._loggingPrefix = "PL.PyLithApp."
 
     def main(self, *args, **kwds):
@@ -208,17 +208,17 @@ class PyLithApp(PetscApplication):
             channel.activate()
             channel.log(msg)
 
-        PetscApplication.showHelp(self)
+        Application.showHelp(self)
 
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
         """Setup members using inventory."""
-        PetscApplication._configure(self)
+        Application._configure(self)
 
     def _setupLogging(self):
         """Setup event logging."""
-        from pylith.utils.EventLogger import EventLogger
+        from pylith.petsc.EventLogger import EventLogger
 
         logger = EventLogger()
         logger.setClassName("PyLith")

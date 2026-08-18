@@ -61,7 +61,7 @@ $ pylith step08b_gravity_incompressible.cfg mat_elastic_incompressible.cfg
 
 # -- many lines omitted --
 
- >> /home/charlesw/cig/pylith3/source/pylith-fork/libsrc/pylith/utils/PetscOptions.cc:239:static void pylith::utils::_PetscOptions::write(pythia::journal::info_t&, const char*, const pylith::utils::PetscOptions&)
+ >> /home/charlesw/cig/pylith3/source/pylith-fork/libsrc/pylith/petsc/Options.cc:239:static void pylith::utils::_Options::write(pythia::journal::info_t&, const char*, const pylith::petsc::Options&)
  -- petscoptions(info)
  -- Setting PETSc options:
 fieldsplit_displacement_pc_type = lu

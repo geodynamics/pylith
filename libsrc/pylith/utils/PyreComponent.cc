@@ -13,7 +13,7 @@
 #include "pylith/utils/PyreComponent.hh" // Implementation of class methods
 
 #include "pylith/utils/journals.hh"
-#include "pylith/utils/Exceptions.hh"
+#include "pylith/exceptions/Exceptions.hh"
 
 #include <Python.h>
 

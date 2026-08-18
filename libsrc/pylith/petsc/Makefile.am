@@ -17,7 +17,7 @@ subpkginclude_HEADERS = \
 	ErrorHandler.hh \
 	EventLogger.hh \
 	EventLogger.icc \
-	PetscOptions.hh \
+	Options.hh \
 	PetscVersion.hh \
 	TSAdaptImpulse.hh \
 	TSMonitor.hh \

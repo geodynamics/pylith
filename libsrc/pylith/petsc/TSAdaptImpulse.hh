@@ -9,13 +9,13 @@
 // =================================================================================================
 #pragma once
 
-#include "pylith/utils/utilsfwd.hh" // forward declarations
+#include "petscfwd.hh" // forward declarations
 
 #include "pylith/petsc/petsc_types.h"
 
 #include "petscts.h"
 
-class pylith::utils::TSAdaptImpulse {
+class pylith::petsc::TSAdaptImpulse {
     friend class TestTSAdapImpulse; // unit testing
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////

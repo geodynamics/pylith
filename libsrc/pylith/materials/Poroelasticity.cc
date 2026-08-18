@@ -24,9 +24,9 @@
 #include "pylith/fekernels/Elasticity.hh" // USES Elasticity kernels
 #include "pylith/fekernels/DispVel.hh" // USES DispVel kernels
 
-#include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
-#include "pylith/utils/Exceptions.hh" // USES Exception
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
 
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
@@ -291,13 +291,13 @@ pylith::materials::Poroelasticity::createDerivedField(const pylith::topology::Fi
 
 // ------------------------------------------------------------------------------------------------
 // Get default PETSc solver options appropriate for material.
-pylith::utils::PetscOptions*
+pylith::petsc::Options*
 pylith::materials::Poroelasticity::getSolverDefaults(const bool isParallel,
                                                      const bool hasFault) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "getSolverDefaults(isParallel="<<isParallel<<", hasFault="<<hasFault<<")");
 
-    pylith::utils::PetscOptions* options = new pylith::utils::PetscOptions();assert(options);
+    pylith::petsc::Options* options = new pylith::petsc::Options();assert(options);
 
     switch (_formulation) {
     case pylith::problems::Physics::QUASISTATIC:

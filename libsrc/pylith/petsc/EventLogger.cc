@@ -12,28 +12,28 @@
 
 #include "pylith/petsc/EventLogger.hh" // Implementation of class methods
 
-#include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_BEGIN/END
 #include "pylith/utils/journals.hh" // USES journal macros
-#include "pylith/utils/Exceptions.hh" // USES Exception
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
 
 #include <cassert> // USES assert()
 
 // ----------------------------------------------------------------------
 // Constructor
-pylith::utils::EventLogger::EventLogger(void) :
+pylith::petsc::EventLogger::EventLogger(void) :
     _className(""),
     _classId(0) {}
 
 
 // ----------------------------------------------------------------------
 // Destructor
-pylith::utils::EventLogger::~EventLogger(void) {}
+pylith::petsc::EventLogger::~EventLogger(void) {}
 
 
 // ----------------------------------------------------------------------
 // Setup logging class.
 void
-pylith::utils::EventLogger::initialize(void) {
+pylith::petsc::EventLogger::initialize(void) {
     PYLITH_METHOD_BEGIN;
 
     if (_className == "") {
@@ -55,7 +55,7 @@ pylith::utils::EventLogger::initialize(void) {
 // ----------------------------------------------------------------------
 // Register event.
 int
-pylith::utils::EventLogger::registerEvent(const char* name) {
+pylith::petsc::EventLogger::registerEvent(const char* name) {
     PYLITH_METHOD_BEGIN;
 
     assert(_classId);
@@ -73,7 +73,7 @@ pylith::utils::EventLogger::registerEvent(const char* name) {
 // ----------------------------------------------------------------------
 // Get event identifier.
 int
-pylith::utils::EventLogger::getEventId(const char* name) {
+pylith::petsc::EventLogger::getEventId(const char* name) {
     PYLITH_METHOD_BEGIN;
 
     map_event_type::iterator iter = _events.find(name);
@@ -89,7 +89,7 @@ pylith::utils::EventLogger::getEventId(const char* name) {
 // ----------------------------------------------------------------------
 // Register stage.
 int
-pylith::utils::EventLogger::registerStage(const char* name) {
+pylith::petsc::EventLogger::registerStage(const char* name) {
     PYLITH_METHOD_BEGIN;
 
     assert(_classId);
@@ -108,7 +108,7 @@ pylith::utils::EventLogger::registerStage(const char* name) {
 // ----------------------------------------------------------------------
 // Get stage identifier.
 int
-pylith::utils::EventLogger::getStageId(const char* name) {
+pylith::petsc::EventLogger::getStageId(const char* name) {
     PYLITH_METHOD_BEGIN;
 
     map_event_type::iterator iter = _stages.find(name);

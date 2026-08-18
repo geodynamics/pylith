@@ -18,9 +18,9 @@
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 
-#include "pylith/utils/error.hh" // USES PylithCallPetsc()
+#include "pylith/exceptions/error.hh" // USES PylithCallPetsc()
 #include "pylith/utils/journals.hh" // USES journals
-#include "pylith/utils/Exceptions.hh" // USES Exception
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
 #include "pylith/petsc/EventLogger.hh" // USES EventLogger
 
 namespace pylith {
@@ -43,7 +43,7 @@ public:
                 static
                 void init(void);
 
-                static pylith::utils::EventLogger logger;
+                static pylith::petsc::EventLogger logger;
                 static PylithInt queryDB;
                 static PylithInt queryDBLabel;
                 static PylithInt openDB;
@@ -52,7 +52,7 @@ public:
         }; // _FieldQuery
     } // topology
 } // pylith
-pylith::utils::EventLogger pylith::topology::_FieldQuery::Events::logger;
+pylith::petsc::EventLogger pylith::topology::_FieldQuery::Events::logger;
 PylithInt pylith::topology::_FieldQuery::Events::queryDB;
 PylithInt pylith::topology::_FieldQuery::Events::queryDBLabel;
 PylithInt pylith::topology::_FieldQuery::Events::openDB;

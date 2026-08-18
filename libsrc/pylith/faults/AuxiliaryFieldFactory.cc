@@ -18,7 +18,7 @@
 #include "pylith/scales/Scales.hh" // USES Scales
 #include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
 
-#include "pylith/utils/error.hh" // USES PYLITH_METHOD*
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD*
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL*
 
 #include <cmath> // USES pow()

@@ -18,9 +18,9 @@
 #include "pylith/utils/array.hh" // USES scalar_array, int_array, string_vector
 #include "spatialdata/utils/LineParser.hh" // USES LineParser
 
-#include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
-#include "pylith/utils/Exceptions.hh" // USES Exception
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
 #include "pylith/petsc/EventLogger.hh" // USES EventLogger
 
 #include "petscviewerhdf5.h"
@@ -61,7 +61,7 @@ public:
                 static
                 void init(void);
 
-                static pylith::utils::EventLogger logger;
+                static pylith::petsc::EventLogger logger;
                 static PylithInt read;
                 static PylithInt fixMaterialLabel;
                 static PylithInt fixBoundaryLabels;
@@ -71,7 +71,7 @@ public:
     } // meshio
 } // pylith
 
-pylith::utils::EventLogger pylith::meshio::_MeshIOPetsc::Events::logger;
+pylith::petsc::EventLogger pylith::meshio::_MeshIOPetsc::Events::logger;
 PylithInt pylith::meshio::_MeshIOPetsc::Events::read;
 PylithInt pylith::meshio::_MeshIOPetsc::Events::fixMaterialLabel;
 PylithInt pylith::meshio::_MeshIOPetsc::Events::fixBoundaryLabels;

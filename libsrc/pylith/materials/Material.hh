@@ -15,7 +15,7 @@
 #include "pylith/feassemble/IntegratorDomain.hh" // HOLDSA IntegratorDomain::ResidualKenels
 #include "pylith/feassemble/IntegratorInterface.hh" // USES IntegratorInterface::ResidualKernels
 
-#include "pylith/petsc/PetscOptions.hh" // USES PetscOptions
+#include "pylith/petsc/Options.hh" // USES PetscOptions
 
 #include <string> // HASA std::string
 
@@ -87,8 +87,8 @@ public:
      * @returns PETSc solver options.
      */
     virtual
-    pylith::utils::PetscOptions* getSolverDefaults(const bool isParallel,
-                                                   const bool hasFault) const;
+    pylith::petsc::Options* getSolverDefaults(const bool isParallel,
+                                              const bool hasFault) const;
 
     /** Get residual kernels for an interior interface bounding material.
      *

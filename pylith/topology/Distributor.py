@@ -8,11 +8,11 @@
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
 
-from pylith.utils.PetscComponent import PetscComponent
+from pylith.petsc.Component import Component
 from .topology import Distributor as ModuleDistributor
 
 
-class Distributor(PetscComponent, ModuleDistributor):
+class Distributor(Component, ModuleDistributor):
     """
     Distributor of the the mesh among processes.
     """
@@ -45,7 +45,7 @@ class Distributor(PetscComponent, ModuleDistributor):
     def __init__(self, name="mesh_distributor"):
         """Constructor.
         """
-        PetscComponent.__init__(self, name, facility="mesh_distributor")
+        Component.__init__(self, name, facility="mesh_distributor")
 
     def preinitialize(self):
         """Do minimal initialization."""
@@ -58,7 +58,7 @@ class Distributor(PetscComponent, ModuleDistributor):
     def _configure(self):
         """Set members using inventory.
         """
-        PetscComponent._configure(self)
+        Component._configure(self)
 
 
 # FACTORIES ////////////////////////////////////////////////////////////

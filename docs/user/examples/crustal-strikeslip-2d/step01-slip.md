@@ -53,7 +53,7 @@ $ pylith step01_slip.cfg
  >> software/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:79:main
  -- info (application-flow)
  -- Running on 1 process(es).
- >> src/cig/pylith/libsrc/pylith/utils/PetscOptions.cc:251:static void pylith::utils::_PetscOptions::write(pythia::journal::info_t &, const char *, const PetscOptions &)
+ >> src/cig/pylith/libsrc/pylith/petsc/Options.cc:251:static void pylith::utils::_Options::write(pythia::journal::info_t &, const char *, const PetscOptions &)
  -- info (application-flow)
  -- Setting PETSc options:
     dm_reorder_section = true
@@ -113,7 +113,7 @@ $ pylith step01_slip.cfg
  >> software/pylith-debug/lib/python3.12/site-packages/pylith/problems/Problem.py:222:finalize
  -- info (application-flow)
  -- Finalizing problem.
- >> software/pylith-debug/lib/python3.12/site-packages/pylith/utils/PetscManager.py:60:finalize
+ >> software/pylith-debug/lib/python3.12/site-packages/pylith/petsc/Manager.py:60:finalize
  -- info (application-flow)
  -- Finalizing PETSc.
 ```

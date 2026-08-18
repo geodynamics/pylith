@@ -28,9 +28,9 @@
 #include "pylith/topology/MeshOps.hh" // USES MeshOps::checkTopology()
 #include "pylith/topology/Stratum.hh" // USES Stratum
 
-#include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
-#include "pylith/utils/Exceptions.hh" // USES Exception
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
 
 #include <utility> // USES std::pair
 #include <map> // USES std::map

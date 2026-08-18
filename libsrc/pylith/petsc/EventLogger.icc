@@ -12,7 +12,7 @@
 // Set name of logging class.
 inline
 void
-pylith::utils::EventLogger::setClassName(const char* name) {
+pylith::petsc::EventLogger::setClassName(const char* name) {
     _className = name;
 }
 
@@ -20,7 +20,7 @@ pylith::utils::EventLogger::setClassName(const char* name) {
 // Get name of logging class.
 inline
 const char*
-pylith::utils::EventLogger::getClassName(void) const {
+pylith::petsc::EventLogger::getClassName(void) const {
     return _className.c_str();
 }
 
@@ -28,7 +28,7 @@ pylith::utils::EventLogger::getClassName(void) const {
 // Log event begin.
 inline
 void
-pylith::utils::EventLogger::eventBegin(const int id) {
+pylith::petsc::EventLogger::eventBegin(const int id) {
     PetscLogEventBegin(id, 0, 0, 0, 0);
 } // eventBegin
 
@@ -36,7 +36,7 @@ pylith::utils::EventLogger::eventBegin(const int id) {
 // Log event end.
 inline
 void
-pylith::utils::EventLogger::eventEnd(const int id) {
+pylith::petsc::EventLogger::eventEnd(const int id) {
     PetscLogEventEnd(id, 0, 0, 0, 0);
 } // eventEnd
 
@@ -44,7 +44,7 @@ pylith::utils::EventLogger::eventEnd(const int id) {
 // Log stage begin.
 inline
 void
-pylith::utils::EventLogger::stagePush(const int id) {
+pylith::petsc::EventLogger::stagePush(const int id) {
     PetscLogStagePush(id);
 } // stagePush
 
@@ -52,7 +52,7 @@ pylith::utils::EventLogger::stagePush(const int id) {
 // Log stage end.
 inline
 void
-pylith::utils::EventLogger::stagePop(void) {
+pylith::petsc::EventLogger::stagePop(void) {
     PetscLogStagePop();
 } // stagePop
 

@@ -15,7 +15,6 @@ dist_check_SCRIPTS = test_pylith.py
 
 dist_noinst_PYTHON = \
 	apps/__init__.py \
-	apps/TestPetscApplication.py \
 	apps/TestPyLithApp.py \
 	apps/TestEqInfoApp.py \
 	bc/__init__.py \
@@ -95,6 +94,11 @@ dist_noinst_PYTHON = \
 	topology/TestMesh.py \
 	topology/TestRefineUniform.py \
 	topology/TestSubfield.py \
+	petsc/__init__.py \
+	petsc/TestApplication.py \
+	petsc/TestEventLogger.py \
+	petsc/TestManager.py \
+	petsc/TestPetscVersion.py \
 	utils/__init__.py \
 	utils/TestCollectVersionInfo.py \
 	utils/TestConstants.py \
@@ -103,10 +107,7 @@ dist_noinst_PYTHON = \
 	utils/TestDumpParametersAscii.py \
 	utils/TestDumpParametersJson.py \
 	utils/TestEmptyBin.py \
-	utils/TestEventLogger.py \
 	utils/TestNullComponent.py \
-	utils/TestPetscManager.py \
-	utils/TestPetscVersion.py \
 	utils/TestProfiling.py \
 	utils/TestPylithVersion.py
 

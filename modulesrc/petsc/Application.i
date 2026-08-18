@@ -9,7 +9,7 @@
 // =================================================================================================
 
 /**
- * @file modulesrc/utils/PetscOptions.i
+ * @file modulesrc/utils/Options.i
  *
  * @brief Python interface to C++ PetscDefaults.
  */

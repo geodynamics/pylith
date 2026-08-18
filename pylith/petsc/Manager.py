@@ -9,10 +9,10 @@
 # =================================================================================================
 
 from .PropertyList import PropertyList
-from pylith.utils.utils import Application as ModulePetscApplication
+from pylith.petsc.petsc import Application as ModuleApplication
 
 
-class PetscManager(PropertyList):
+class Manager(PropertyList):
     """
     Manage PETSc options.
     """
@@ -39,12 +39,12 @@ class PetscManager(PropertyList):
         if len(options) > 0:
             for arg in options:
                 args.append(arg)
-        ModulePetscApplication.initialize(args)
+        ModuleApplication.initialize(args)
 
     def finalize(self):
         """Finalize PETSc.
         """
-        ModulePetscApplication.finalize()
+        ModuleApplication.finalize()
 
     def showOptions(self):
         from pylith.mpi.Communicator import mpi_is_root
@@ -75,9 +75,9 @@ class PetscManager(PropertyList):
 
 def property_list():
     """
-    Factory associated with PetscManager.
+    Factory associated with Manager.
     """
-    return PetscManager()
+    return Manager()
 
 
 # End of file

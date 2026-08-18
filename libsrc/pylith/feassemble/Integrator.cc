@@ -19,9 +19,9 @@
 #include "pylith/problems/Physics.hh" // USES Physics
 
 #include "pylith/petsc/EventLogger.hh" // USES EventLogger
-#include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
-#include "pylith/utils/Exceptions.hh" // USES Exception
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
 
 #include "pylith/scales/Scales.hh" // USES Scales
 
@@ -40,7 +40,7 @@ public:
                 static
                 void init(void);
 
-                static pylith::utils::EventLogger logger;
+                static pylith::petsc::EventLogger logger;
                 static PylithInt initialize;
                 static PylithInt poststep;
                 static PylithInt setState;
@@ -53,7 +53,7 @@ public:
     } // feassemble
 } // pylith
 
-pylith::utils::EventLogger pylith::feassemble::_Integrator::Events::logger;
+pylith::petsc::EventLogger pylith::feassemble::_Integrator::Events::logger;
 PylithInt pylith::feassemble::_Integrator::Events::initialize;
 PylithInt pylith::feassemble::_Integrator::Events::poststep;
 

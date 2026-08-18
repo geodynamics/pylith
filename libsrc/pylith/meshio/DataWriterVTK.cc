@@ -18,7 +18,7 @@
 #include "pylith/meshio/OutputSubfield.hh" // USES OutputSubfieldIS
 
 #include "pylith/utils/journals.hh" // USES journal macros
-#include "pylith/utils/Exceptions.hh" // USES Exception
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
 
 #include "petscdmplex.h"
 

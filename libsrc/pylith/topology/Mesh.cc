@@ -16,7 +16,7 @@
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "pylith/utils/array.hh" // USES scalar_array
-#include "pylith/utils/error.hh" // USES PylithCallPetsc()
+#include "pylith/exceptions/error.hh" // USES PylithCallPetsc()
 #include "pylith/utils/journals.hh" // USES pythia::journal_t
 #include "pylith/petsc/petsc_types.h" // USES PetscVec
 

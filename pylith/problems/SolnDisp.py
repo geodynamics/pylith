@@ -8,10 +8,10 @@
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
 
-from pylith.utils.PetscComponent import PetscComponent
+from pylith.petsc.Component import Component
 
 
-class SolnDisp(PetscComponent):
+class SolnDisp(Component):
     """
     Container for solution subfields with displacement subfield.
     """
@@ -25,10 +25,10 @@ class SolnDisp(PetscComponent):
     def __init__(self, name="solndisp"):
         """Constructor.
         """
-        PetscComponent.__init__(self, name, facility="soln_subfields")
+        Component.__init__(self, name, facility="soln_subfields")
 
     def _configure(self):
-        PetscComponent._configure(self)
+        Component._configure(self)
 
     def components(self):
         """Order of facilities in Inventory is ambiguous, so overwrite

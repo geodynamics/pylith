@@ -12,7 +12,7 @@
 #include "pylith/meshio/OutputTrigger.hh" // Implementation of class methods
 
 #include "pylith/utils/journals.hh" // USES journal macros
-#include "pylith/utils/Exceptions.hh" // USES Exception
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
 
 
 // ---------------------------------------------------------------------------------------------------------------------

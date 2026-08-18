@@ -8,11 +8,11 @@
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
 
-from pylith.utils.PetscComponent import PetscComponent
+from pylith.petsc.Component import Component
 from .materials import RheologyElasticity as ModuleRheology
 
 
-class RheologyElasticity(PetscComponent, ModuleRheology):
+class RheologyElasticity(Component, ModuleRheology):
     """
     Abstract base class for bulk rheology of elastic material.
     """
@@ -27,7 +27,7 @@ class RheologyElasticity(PetscComponent, ModuleRheology):
     def __init__(self, name="rheologyelasticity"):
         """Constructor.
         """
-        PetscComponent.__init__(self, name, facility="rheologyelasticity")
+        Component.__init__(self, name, facility="rheologyelasticity")
 
     def preinitialize(self, problem):
         self._createModuleObj()

@@ -11,6 +11,7 @@
 from pythia.pyre.components.Component import Component
 
 import pylith.utils.utils as utils
+import pylith.petsc.petsc as petsc
 
 import platform
 import sys
@@ -163,7 +164,7 @@ class CollectVersionInfo(Component):
 
     @staticmethod
     def _collectVersionPetsc():
-        v = utils.PetscVersion()
+        v = petsc.PetscVersion()
         if v.isRelease():
             info = {
                 "isRelease": True,

@@ -15,7 +15,7 @@
 #include "pylith/materials/AuxiliaryFactoryElastic.hh" // USES AuxiliaryFactoryElastic
 #include "pylith/fekernels/IsotropicLinearElasticity.hh" // USES IsotropicLinearElasticity kernels
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
-#include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_BEGIN/END
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 

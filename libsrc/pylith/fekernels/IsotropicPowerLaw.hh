@@ -76,7 +76,7 @@
 
 #include "pylith/utils/types.hh"
 #include "pylith/utils/journals.hh"
-#include "pylith/utils/Exceptions.hh"
+#include "pylith/exceptions/Exceptions.hh"
 
 // ------------------------------------------------------------------------------------------------
 /// Kernels for isotropic power-law viscoelasticity (dimension independent).

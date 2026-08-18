@@ -1,4 +1,3 @@
-#!/usr/bin/env nemesis
 # =================================================================================================
 # This code is part of PyLith, developed through the Computational Infrastructure
 # for Geodynamics (https://github.com/geodynamics/pylith).
@@ -8,28 +7,9 @@
 #
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
-
-import unittest
-
-from pylith.apps.PetscApplication import PetscApplication
-from pylith.testing.TestCases import make_suite
-
-
-class TestPetscApplication(unittest.TestCase):
-    """Unit testing of PetscApplication object.
-    """
-
-    def test_constructor(self):
-        app = PetscApplication()
-
-
-def load_tests(loader, tests, pattern):
-    TEST_CLASSES = [TestPetscApplication]
-    return make_suite(TEST_CLASSES, loader)
-
-
-if __name__ == "__main__":
-    unittest.main(verbosity=2)
+__all__ = ['Component',
+           'Manager',
+           ]
 
 
 # End of file

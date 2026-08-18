@@ -26,11 +26,7 @@ utils_swig_sources = \
 	PylithVersion.i \
 	DependenciesVersion.i \
 	TestArray.i \
-	constants.i \
-	PetscVersion.i \
-	Application.i \
-	PetscOptions.i \
-	EventLogger.i
+	constants.i
 
 utils_swig_generated = \
 	utils_wrap.cxx \

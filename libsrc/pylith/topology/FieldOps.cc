@@ -20,9 +20,9 @@
 #include "pylith/topology/VisitorSubmesh.hh" // USES VecVisitorSubmesh
 #include "pylith/topology/Stratum.hh" // USES Stratum
 
-#include "pylith/utils/error.hh" // USES PylithCallPetsc()
+#include "pylith/exceptions/error.hh" // USES PylithCallPetsc()
 #include "pylith/utils/journals.hh" // USES journal macros
-#include "pylith/utils/Exceptions.hh" // USES Exception
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
 
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 

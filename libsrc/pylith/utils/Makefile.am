@@ -25,10 +25,6 @@ subpkginclude_HEADERS = \
 	constants.hh \
 	lapack.h \
 	macrodefs.h \
-	error.hh \
-	Exceptions.hh \
-	ErrorMessage.hh \
-	ErrorMessage.icc \
 	types.hh \
 	utilsfwd.hh
 

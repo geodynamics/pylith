@@ -18,7 +18,7 @@
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 #include "pylith/scales/Scales.hh" // USES Scales
 
-#include "pylith/utils/error.hh" // USES PylithCallPetsc()
+#include "pylith/exceptions/error.hh" // USES PylithCallPetsc()
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 #include <cassert> // USES assert()
 

@@ -52,7 +52,7 @@ $ pylith step03_interseismic.cfg mat_viscoelastic.cfg
 
 # -- many lines omitted --
 
- >> /src/cig/pylith/libsrc/pylith/utils/PetscOptions.cc:262:static void pylith::utils::_PetscOptions::write(pythia::journal::info_t&, const char*, const pylith::utils::PetscOptions&)
+ >> /src/cig/pylith/libsrc/pylith/petsc/Options.cc:262:static void pylith::utils::_Options::write(pythia::journal::info_t&, const char*, const pylith::petsc::Options&)
  -- petscoptions(info)
  -- Setting PETSc options:
 dm_reorder_section = true

@@ -8,7 +8,7 @@
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
 
-from .utils import EventLogger as ModuleEventLogger
+from .petsc import EventLogger as ModuleEventLogger
 
 
 class EventLogger(ModuleEventLogger):

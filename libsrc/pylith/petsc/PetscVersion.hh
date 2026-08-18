@@ -9,12 +9,12 @@
 // =================================================================================================
 #pragma once
 
-#include "pylith/utils/utilsfwd.hh" // forward declarations
+#include "petscfwd.hh" // forward declarations
 
 // Version ----------------------------------------------------------
 /** @brief C++ object for getting version info.
  */
-class pylith::utils::PetscVersion { // PetscVersion
+class pylith::petsc::PetscVersion { // PetscVersion
     friend class TestPetscVersion; // unit testing
 
     // PUBLIC MEMBERS ///////////////////////////////////////////////////////

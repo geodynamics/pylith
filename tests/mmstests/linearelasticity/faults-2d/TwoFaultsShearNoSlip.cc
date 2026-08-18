@@ -352,7 +352,7 @@ public:
             data->faults[1] = fault;
         } // xpos
 
-        pylith::utils::PetscOptions options;
+        pylith::petsc::Options options;
         options.add("-fieldsplit_displacement_pc_type", "ilu");
         options.override ();
 

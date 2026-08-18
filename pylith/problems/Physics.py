@@ -8,7 +8,7 @@
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
 
-from pylith.utils.PetscComponent import PetscComponent
+from pylith.petsc.Component import Component
 from .problems import Physics as ModulePhysics
 
 from pylith.meshio.OutputPhysics import OutputPhysics
@@ -23,7 +23,7 @@ def observerFactory(name):
     return facility(name, family="observer", factory=OutputPhysics)
 
 
-class Physics(PetscComponent, ModulePhysics):
+class Physics(Component, ModulePhysics):
     """
     Abstract base class for objects defining physics.
     """
@@ -61,7 +61,7 @@ class Physics(PetscComponent, ModulePhysics):
 
     def __init__(self, name="physics", facility="physics"):
         """Constructor."""
-        PetscComponent.__init__(self, name, facility)
+        Component.__init__(self, name, facility)
 
     def preinitialize(self, problem):
         """Do pre-initialization setup."""

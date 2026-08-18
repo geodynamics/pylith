@@ -13,7 +13,7 @@
 #include "FaultCohesiveStub.hh" // implementation of object methods
 
 #include "StubMethodTracker.hh" // USES StubMethodTracker
-#include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_*
 
 // ------------------------------------------------------------------------------------------------
 // Default constructor.

@@ -21,9 +21,9 @@
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/FieldOps.hh" // USES FieldOps
 
-#include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
-#include "pylith/utils/Exceptions.hh" // USES Exception
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
 #include "pylith/petsc/EventLogger.hh" // USES EventLogger
 
 #include <iostream> // USES std::cout
@@ -41,7 +41,7 @@ public:
                 static
                 void init(void);
 
-                static pylith::utils::EventLogger logger;
+                static pylith::petsc::EventLogger logger;
                 static PylithInt verifyConfiguration;
                 static PylithInt update;
                 static PylithInt writeInfo;
@@ -54,7 +54,7 @@ public:
     } // meshio
 } // pylith
 
-pylith::utils::EventLogger pylith::meshio::_OutputPhysics::Events::logger;
+pylith::petsc::EventLogger pylith::meshio::_OutputPhysics::Events::logger;
 PylithInt pylith::meshio::_OutputPhysics::Events::verifyConfiguration;
 PylithInt pylith::meshio::_OutputPhysics::Events::update;
 PylithInt pylith::meshio::_OutputPhysics::Events::writeInfo;

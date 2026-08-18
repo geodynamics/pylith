@@ -24,8 +24,8 @@
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
-#include "pylith/utils/Exceptions.hh" // USES Exception
-#include "pylith/utils/error.hh" // USES PylithCallPetsc()
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
+#include "pylith/exceptions/error.hh" // USES PylithCallPetsc()
 
 #include <cassert> // USES assert()
 #include <iostream> // USES std::cout

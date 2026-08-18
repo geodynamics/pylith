@@ -18,7 +18,7 @@
 #include "pylith/utils/array.hh" // USES int_array
 #include "pylith/petsc/EventLogger.hh" // USES EventLogger
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL*
-#include "pylith/utils/Exceptions.hh" // USES Exception
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 
@@ -39,7 +39,7 @@ public:
                 static
                 void init(void);
 
-                static pylith::utils::EventLogger logger;
+                static pylith::petsc::EventLogger logger;
                 static PylithInt createSubdomainMesh;
                 static PylithInt createLowerDimMesh;
                 static PylithInt createFromPoints;
@@ -67,7 +67,7 @@ public:
     }
 
 }
-pylith::utils::EventLogger pylith::topology::_MeshOps::Events::logger;
+pylith::petsc::EventLogger pylith::topology::_MeshOps::Events::logger;
 PylithInt pylith::topology::_MeshOps::Events::createSubdomainMesh;
 PylithInt pylith::topology::_MeshOps::Events::createLowerDimMesh;
 PylithInt pylith::topology::_MeshOps::Events::createFromPoints;

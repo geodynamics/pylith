@@ -1,6 +1,6 @@
 # Logging
 
-PyLith includes `pylith::utils::EventLogger` as a high-level interface for event logging with PETSc.
+PyLith includes `pylith::petsc::EventLogger` as a high-level interface for event logging with PETSc.
 We create local `Events` classes within the C++ implementation files (`*.cc`) to create variables that hold the event ids.
 This streamlines logging events within the C++ code.
 We identify events using variables rather than strings, which means that typos in names are detected at compile time rather than at runtime.

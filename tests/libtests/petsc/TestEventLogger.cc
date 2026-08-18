@@ -14,18 +14,18 @@
 
 #include "pylith/petsc/EventLogger.hh" // USES EventLogger
 
-#include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_BEGIN/END
 
 #include "catch2/catch_test_macros.hpp"
 
 // ------------------------------------------------------------------------------------------------
 namespace pylith {
-    namespace utils {
+    namespace petsc {
         class TestEventLogger;
     }
 }
 
-class pylith::utils::TestEventLogger : public pylith::utils::GenericComponent {
+class pylith::petsc::TestEventLogger : public pylith::utils::GenericComponent {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
@@ -69,37 +69,37 @@ public:
 
 // ------------------------------------------------------------------------------------------------
 TEST_CASE("TestEventLogger::testConstructor", "[TestEventLogger]") {
-    pylith::utils::TestEventLogger::testConstructor();
+    pylith::petsc::TestEventLogger::testConstructor();
 }
 TEST_CASE("TestEventLogger::testClassName", "[TestEventLogger]") {
-    pylith::utils::TestEventLogger::testClassName();
+    pylith::petsc::TestEventLogger::testClassName();
 }
 TEST_CASE("TestEventLogger::testInitialize", "[TestEventLogger]") {
-    pylith::utils::TestEventLogger::testInitialize();
+    pylith::petsc::TestEventLogger::testInitialize();
 }
 TEST_CASE("TestEventLogger::testRegisterEvent", "[TestEventLogger]") {
-    pylith::utils::TestEventLogger::testRegisterEvent();
+    pylith::petsc::TestEventLogger::testRegisterEvent();
 }
 TEST_CASE("TestEventLogger::testGetEventId", "[TestEventLogger]") {
-    pylith::utils::TestEventLogger::testGetEventId();
+    pylith::petsc::TestEventLogger::testGetEventId();
 }
 TEST_CASE("TestEventLogger::testEventLogging", "[TestEventLogger]") {
-    pylith::utils::TestEventLogger::testEventLogging();
+    pylith::petsc::TestEventLogger::testEventLogging();
 }
 TEST_CASE("TestEventLogger::testRegisterStage", "[TestEventLogger]") {
-    pylith::utils::TestEventLogger::testRegisterStage();
+    pylith::petsc::TestEventLogger::testRegisterStage();
 }
 TEST_CASE("TestEventLogger::testGetStageId", "[TestEventLogger]") {
-    pylith::utils::TestEventLogger::testGetStageId();
+    pylith::petsc::TestEventLogger::testGetStageId();
 }
 TEST_CASE("TestEventLogger::testStageLogging", "[TestEventLogger]") {
-    pylith::utils::TestEventLogger::testStageLogging();
+    pylith::petsc::TestEventLogger::testStageLogging();
 }
 
 // ------------------------------------------------------------------------------------------------
 // Test constructor.
 void
-pylith::utils::TestEventLogger::testConstructor(void) {
+pylith::petsc::TestEventLogger::testConstructor(void) {
     PYLITH_METHOD_BEGIN;
 
     EventLogger logger;
@@ -111,7 +111,7 @@ pylith::utils::TestEventLogger::testConstructor(void) {
 // ------------------------------------------------------------------------------------------------
 // Test get/setClassName().
 void
-pylith::utils::TestEventLogger::testClassName(void) {
+pylith::petsc::TestEventLogger::testClassName(void) {
     PYLITH_METHOD_BEGIN;
 
     EventLogger logger;
@@ -128,7 +128,7 @@ pylith::utils::TestEventLogger::testClassName(void) {
 // ------------------------------------------------------------------------------------------------
 // Test initialize().
 void
-pylith::utils::TestEventLogger::testInitialize(void) {
+pylith::petsc::TestEventLogger::testInitialize(void) {
     PYLITH_METHOD_BEGIN;
 
     EventLogger logger;
@@ -144,7 +144,7 @@ pylith::utils::TestEventLogger::testInitialize(void) {
 // ------------------------------------------------------------------------------------------------
 // Test registerEvent().
 void
-pylith::utils::TestEventLogger::testRegisterEvent(void) {
+pylith::petsc::TestEventLogger::testRegisterEvent(void) {
     PYLITH_METHOD_BEGIN;
 
     EventLogger logger;
@@ -172,7 +172,7 @@ pylith::utils::TestEventLogger::testRegisterEvent(void) {
 // ------------------------------------------------------------------------------------------------
 // Test getEventId().
 void
-pylith::utils::TestEventLogger::testGetEventId(void) {
+pylith::petsc::TestEventLogger::testGetEventId(void) {
     PYLITH_METHOD_BEGIN;
 
     EventLogger logger;
@@ -204,7 +204,7 @@ pylith::utils::TestEventLogger::testGetEventId(void) {
 // ------------------------------------------------------------------------------------------------
 // Test eventBegin() and eventEnd().
 void
-pylith::utils::TestEventLogger::testEventLogging(void) {
+pylith::petsc::TestEventLogger::testEventLogging(void) {
     PYLITH_METHOD_BEGIN;
 
     EventLogger logger;
@@ -241,7 +241,7 @@ pylith::utils::TestEventLogger::testEventLogging(void) {
 // ------------------------------------------------------------------------------------------------
 // Test registerStage().
 void
-pylith::utils::TestEventLogger::testRegisterStage(void) {
+pylith::petsc::TestEventLogger::testRegisterStage(void) {
     PYLITH_METHOD_BEGIN;
 
     EventLogger logger;
@@ -269,7 +269,7 @@ pylith::utils::TestEventLogger::testRegisterStage(void) {
 // ------------------------------------------------------------------------------------------------
 // Test stageId().
 void
-pylith::utils::TestEventLogger::testGetStageId(void) {
+pylith::petsc::TestEventLogger::testGetStageId(void) {
     PYLITH_METHOD_BEGIN;
 
     EventLogger logger;
@@ -304,7 +304,7 @@ pylith::utils::TestEventLogger::testGetStageId(void) {
 // ------------------------------------------------------------------------------------------------
 // Test statePush() and statePop().
 void
-pylith::utils::TestEventLogger::testStageLogging(void) {
+pylith::petsc::TestEventLogger::testStageLogging(void) {
     PYLITH_METHOD_BEGIN;
 
     EventLogger logger;

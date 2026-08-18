@@ -21,9 +21,9 @@
 #include "pylith/topology/FieldOps.hh" // USES FieldOps
 
 #include "pylith/utils/constants.hh" // USES pylith::max_real
-#include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
-#include "pylith/utils/Exceptions.hh" // USES PYLITH_COMPONENT_*
+#include "pylith/exceptions/Exceptions.hh" // USES PYLITH_COMPONENT_*
 #include "pylith/petsc/EventLogger.hh" // USES EventLogger
 
 #include <iostream> // USES std::cout
@@ -41,7 +41,7 @@ public:
                 static
                 void init(void);
 
-                static pylith::utils::EventLogger logger;
+                static pylith::petsc::EventLogger logger;
                 static PylithInt getSubfield;
                 static PylithInt appendField;
             };
@@ -50,7 +50,7 @@ public:
     } // meshio
 } // pylith
 
-pylith::utils::EventLogger pylith::meshio::_OutputObserver::Events::logger;
+pylith::petsc::EventLogger pylith::meshio::_OutputObserver::Events::logger;
 PylithInt pylith::meshio::_OutputObserver::Events::getSubfield;
 PylithInt pylith::meshio::_OutputObserver::Events::appendField;
 

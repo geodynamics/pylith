@@ -8,10 +8,10 @@
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
 
-from pythia.pyre.components.Component import Component
+from pythia.pyre.components.Component import Component as PyreComponent
 
 
-class PetscComponent(Component):
+class Component(PyreComponent):
     """
     Extension of Pyre Component object for deallocating data structures before calling PetscFinalize().
     """
@@ -19,19 +19,19 @@ class PetscComponent(Component):
     def __init__(self, name, facility):
         """Constructor.
         """
-        Component.__init__(self, name, facility)
+        PyreComponent.__init__(self, name, facility)
 
     def cleanup(self):
         """Deallocate data structures.
         """
         for component in self.components():
-            if isinstance(component, PetscComponent):
+            if isinstance(component, Component):
                 component.cleanup()
 
-            # Facility arrays are not PetscComponents but have components().
+            # Facility arrays are not Components but have components().
             elif hasattr(component, "components"):
                 for subcomponent in component.components():
-                    if isinstance(subcomponent, PetscComponent):
+                    if isinstance(subcomponent, Component):
                         subcomponent.cleanup()
 
         self._cleanup()

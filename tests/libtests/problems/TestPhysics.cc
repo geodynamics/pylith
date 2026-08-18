@@ -19,7 +19,7 @@
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/feassemble/AuxiliaryFactory.hh" // USES AuxiliaryFactory
 #include "pylith/utils/types.hh" // USES PylithReal
-#include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_*
 
 #include "pylith/problems/ObserversPhysics.hh" // USES ObserversPhysics
 

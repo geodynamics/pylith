@@ -6,10 +6,7 @@ from . import (
     TestDumpParameters,
     TestDumpParametersAscii,
     TestDumpParametersJson,
-    TestEventLogger,
-    TestPetscManager,
     TestDependenciesVersion,
-    TestPetscVersion,
     TestPylithVersion,
     TestProfiling,
 )
@@ -24,10 +21,7 @@ def test_modules():
         TestDumpParameters,
         TestDumpParametersAscii,
         TestDumpParametersJson,
-        TestEventLogger,
-        TestPetscManager,
         TestDependenciesVersion,
-        TestPetscVersion,
         TestPylithVersion,
         TestProfiling,
     ]

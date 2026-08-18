@@ -28,7 +28,7 @@
 #include "pylith/topology/Mesh.hh" // USES pylith::topology::Mesh::cells_label_name
 #include "pylith/topology/Field.hh" // USES pylith::topology::Field::Discretization
 #include "pylith/utils/journals.hh" // USES PYLITH_DEBUG
-#include "pylith/utils/Exceptions.hh" // USES Exception
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
 
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
@@ -417,7 +417,7 @@ public:
             data->faults[0] = fault;
         } // xpos
 
-        pylith::utils::PetscOptions options;
+        pylith::petsc::Options options;
         options.add("-fieldsplit_displacement_pc_type", "lu");
         options.override ();
 

@@ -16,7 +16,7 @@
 #include "pylith/fekernels/IsotropicLinearMaxwell.hh" // USES IsotropicLinearMaxwell kernels
 #include "pylith/feassemble/Integrator.hh" // USES Integrator
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
-#include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_BEGIN/END
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 

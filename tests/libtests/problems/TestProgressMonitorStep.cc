@@ -14,7 +14,7 @@
 
 #include "pylith/problems/ProgressMonitorStep.hh" // USES ProgressMonitorStep
 
-#include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_BEGIN/END
 
 #include "catch2/catch_test_macros.hpp"
 #include "catch2/matchers/catch_matchers_floating_point.hpp"

@@ -17,7 +17,7 @@
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 #include "pylith/meshio/DataWriterHDF5.hh" // USES DataWriterHDF5
 #include "pylith/meshio/OutputSubfield.hh" // USES OutputSubfield
-#include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_*
 
 #include "catch2/catch_test_macros.hpp"
 

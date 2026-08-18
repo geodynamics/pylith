@@ -19,7 +19,7 @@
 #include "pylith/topology/RefineOutputInterpolator.hh" // USES RefineOutputInterpolator
 #include "pylith/fekernels/Solution.hh" // USES Solution::passThruSubfield
 
-#include "pylith/utils/error.hh" // USES PylithCallPetsc()
+#include "pylith/exceptions/error.hh" // USES PylithCallPetsc()
 #include "pylith/petsc/EventLogger.hh" // USES EventLogger
 
 #include "petscdm.h" // USES DMReorderSectionSetDefault()
@@ -38,7 +38,7 @@ public:
                 static
                 void init(void);
 
-                static pylith::utils::EventLogger logger;
+                static pylith::petsc::EventLogger logger;
                 static PylithInt create;
                 static PylithInt createBasisOrder;
                 static PylithInt setLabel;
@@ -51,7 +51,7 @@ public:
     } // meshio
 } // pylith
 
-pylith::utils::EventLogger pylith::meshio::_OutputSubfield::Events::logger;
+pylith::petsc::EventLogger pylith::meshio::_OutputSubfield::Events::logger;
 PylithInt pylith::meshio::_OutputSubfield::Events::create;
 PylithInt pylith::meshio::_OutputSubfield::Events::createBasisOrder;
 PylithInt pylith::meshio::_OutputSubfield::Events::setLabel;

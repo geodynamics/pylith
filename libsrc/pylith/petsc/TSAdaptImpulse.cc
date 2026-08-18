@@ -12,18 +12,18 @@
 
 #include "TSAdaptImpulse.hh" // implementation of class methods
 
-#include "pylith/utils/error.hh"
+#include "pylith/exceptions/error.hh"
 
 #include "petscts.h"
 #include "petsc/private/tsimpl.h"
 
 // ------------------------------------------------------------------------------------------------
-double pylith::utils::TSAdaptImpulse::_impulseStep = 1.0e-6;
+double pylith::petsc::TSAdaptImpulse::_impulseStep = 1.0e-6;
 
 // ------------------------------------------------------------------------------------------------
 // Set time step for impulse portion.
 void
-pylith::utils::TSAdaptImpulse::setImpulseTimeStep(const double timestep) {
+pylith::petsc::TSAdaptImpulse::setImpulseTimeStep(const double timestep) {
     _impulseStep = timestep;
 }
 
@@ -31,7 +31,7 @@ pylith::utils::TSAdaptImpulse::setImpulseTimeStep(const double timestep) {
 // ------------------------------------------------------------------------------------------------
 // Get time step for impulse portion.
 double
-pylith::utils::TSAdaptImpulse::getImpulseTimeStep(void) {
+pylith::petsc::TSAdaptImpulse::getImpulseTimeStep(void) {
     return _impulseStep;
 }
 
@@ -39,7 +39,7 @@ pylith::utils::TSAdaptImpulse::getImpulseTimeStep(void) {
 // ------------------------------------------------------------------------------------------------
 // Set PETSc TS adapt.
 void
-pylith::utils::TSAdaptImpulse::set(PetscTS ts) {
+pylith::petsc::TSAdaptImpulse::set(PetscTS ts) {
     TSAdapt adapt;
 
     PylithCallPetsc(TSGetAdapt(ts, &adapt));
@@ -50,7 +50,7 @@ pylith::utils::TSAdaptImpulse::set(PetscTS ts) {
 // ------------------------------------------------------------------------------------------------
 // PETSc adaptive time stepper.
 PetscErrorCode
-pylith::utils::TSAdaptImpulse::TSAdaptChoose(TSAdapt adapt,
+pylith::petsc::TSAdaptImpulse::TSAdaptChoose(TSAdapt adapt,
                                              TS ts,
                                              PetscReal h,
                                              PetscInt *next_sc,

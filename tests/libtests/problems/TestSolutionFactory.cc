@@ -19,7 +19,7 @@
 #include "pylith/topology/MeshOps.hh" // USES MeshOps
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
-#include "pylith/utils/error.hh" // USES PyLITH_METHOD*
+#include "pylith/exceptions/error.hh" // USES PyLITH_METHOD*
 
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys

@@ -27,7 +27,7 @@
 #include "petscds.h" // USES PetscDS
 
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
-#include "pylith/utils/Exceptions.hh" // USES Exception
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
 #include "pylith/petsc/EventLogger.hh" // USES EventLogger
 
 #include <cassert> // USES assert()
@@ -43,7 +43,7 @@ public:
                 static
                 void init(void);
 
-                static pylith::utils::EventLogger logger;
+                static pylith::petsc::EventLogger logger;
                 static PylithInt initialize;
                 static PylithInt setInterfaceData;
                 static PylithInt setState;
@@ -58,7 +58,7 @@ public:
 
     }
 }
-pylith::utils::EventLogger pylith::feassemble::_IntegratorDomain::Events::logger;
+pylith::petsc::EventLogger pylith::feassemble::_IntegratorDomain::Events::logger;
 PylithInt pylith::feassemble::_IntegratorDomain::Events::initialize;
 PylithInt pylith::feassemble::_IntegratorDomain::Events::setInterfaceData;
 PylithInt pylith::feassemble::_IntegratorDomain::Events::setState;

@@ -18,32 +18,32 @@
 #define STR_HELPER(x) #x
 #define STR(x) STR_HELPER(x)
 #define PYLITH_PETSC_VERSION STR(PETSC_VERSION_MAJOR) "." STR(PETSC_VERSION_MINOR) "." STR(PETSC_VERSION_SUBMINOR)
-const bool pylith::utils::PetscVersion::_isRelease = PETSC_VERSION_RELEASE;
-const char* pylith::utils::PetscVersion::_version = PYLITH_PETSC_VERSION;
+const bool pylith::petsc::PetscVersion::_isRelease = PETSC_VERSION_RELEASE;
+const char* pylith::petsc::PetscVersion::_version = PYLITH_PETSC_VERSION;
 #if defined(PETSC_VERSION_BRANCH_GIT)
-const char* pylith::utils::PetscVersion::_gitBranch = PETSC_VERSION_BRANCH_GIT;
+const char* pylith::petsc::PetscVersion::_gitBranch = PETSC_VERSION_BRANCH_GIT;
 #else
-const char* pylith::utils::PetscVersion::_gitBranch = "branch-not-available";
+const char* pylith::petsc::PetscVersion::_gitBranch = "branch-not-available";
 #endif
-const char* pylith::utils::PetscVersion::_gitRevision = PETSC_VERSION_GIT;
-const char* pylith::utils::PetscVersion::_gitDate = PETSC_VERSION_DATE_GIT;
-const char* pylith::utils::PetscVersion::_petscDir = PETSC_DIR;
-const char* pylith::utils::PetscVersion::_petscArch = PETSC_ARCH;
+const char* pylith::petsc::PetscVersion::_gitRevision = PETSC_VERSION_GIT;
+const char* pylith::petsc::PetscVersion::_gitDate = PETSC_VERSION_DATE_GIT;
+const char* pylith::petsc::PetscVersion::_petscDir = PETSC_DIR;
+const char* pylith::petsc::PetscVersion::_petscArch = PETSC_ARCH;
 
 // ----------------------------------------------------------------------
 // Default constructor.
-pylith::utils::PetscVersion::PetscVersion(void) {}
+pylith::petsc::PetscVersion::PetscVersion(void) {}
 
 
 // ----------------------------------------------------------------------
 // Default destructor.
-pylith::utils::PetscVersion::~PetscVersion(void) {}
+pylith::petsc::PetscVersion::~PetscVersion(void) {}
 
 
 // ----------------------------------------------------------------------
 // Is source from a release?
 bool
-pylith::utils::PetscVersion::isRelease(void) { // isRelease
+pylith::petsc::PetscVersion::isRelease(void) { // isRelease
     return _isRelease;
 } // isRelease
 
@@ -51,7 +51,7 @@ pylith::utils::PetscVersion::isRelease(void) { // isRelease
 // ----------------------------------------------------------------------
 // Get version number.
 const char*
-pylith::utils::PetscVersion::version(void) { // version
+pylith::petsc::PetscVersion::version(void) { // version
     return _version;
 } // version
 
@@ -59,7 +59,7 @@ pylith::utils::PetscVersion::version(void) { // version
 // ----------------------------------------------------------------------
 // Get GIT revision.
 const char*
-pylith::utils::PetscVersion::gitRevision(void) { // gitRevision
+pylith::petsc::PetscVersion::gitRevision(void) { // gitRevision
     return _gitRevision;
 } // gitRevision
 
@@ -67,7 +67,7 @@ pylith::utils::PetscVersion::gitRevision(void) { // gitRevision
 // ----------------------------------------------------------------------
 // Get date of GIT revision.
 const char*
-pylith::utils::PetscVersion::gitDate(void) { // gitDate
+pylith::petsc::PetscVersion::gitDate(void) { // gitDate
     return _gitDate;
 } // gitDate
 
@@ -75,7 +75,7 @@ pylith::utils::PetscVersion::gitDate(void) { // gitDate
 // ----------------------------------------------------------------------
 // Get GIT branch.
 const char*
-pylith::utils::PetscVersion::gitBranch(void) { // gitBranch
+pylith::petsc::PetscVersion::gitBranch(void) { // gitBranch
     return _gitBranch;
 } // gitBranch
 
@@ -83,7 +83,7 @@ pylith::utils::PetscVersion::gitBranch(void) { // gitBranch
 // ----------------------------------------------------------------------
 // Get PETSC_DIR.
 const char*
-pylith::utils::PetscVersion::petscDir(void) { // petscDir
+pylith::petsc::PetscVersion::petscDir(void) { // petscDir
     return _petscDir;
 } // petscDir
 
@@ -91,7 +91,7 @@ pylith::utils::PetscVersion::petscDir(void) { // petscDir
 // ----------------------------------------------------------------------
 // Get PETSC_ARCH.
 const char*
-pylith::utils::PetscVersion::petscArch(void) { // petscArch
+pylith::petsc::PetscVersion::petscArch(void) { // petscArch
     return _petscArch;
 } // petscArch
 

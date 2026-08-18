@@ -21,13 +21,13 @@
 #include "pylith/topology/Field.hh" // USES Field::SubfieldInfo
 #include "pylith/topology/FieldOps.hh" // USES FieldOps
 
-#include "pylith/petsc/PetscOptions.hh" // USES PetscOptions
+#include "pylith/petsc/Options.hh" // USES PetscOptions
 
 #include "pylith/fekernels/Elasticity.hh" // USES Elasticity kernels
 #include "pylith/fekernels/DispVel.hh" // USES DispVel kernels
 #include "pylith/fekernels/FaultCohesiveKin.hh" // USES FaultCohesiveKin kernels
 
-#include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 #include "pylith/petsc/EventLogger.hh" // EventLogger
 
@@ -49,7 +49,7 @@ public:
                 static
                 void init(void);
 
-                static pylith::utils::EventLogger logger;
+                static pylith::petsc::EventLogger logger;
                 static PylithInt verifyConfiguration;
                 static PylithInt createIntegrator;
                 static PylithInt createAuxiliaryField;
@@ -60,7 +60,7 @@ public:
     } // materials
 } // pylith
 
-pylith::utils::EventLogger pylith::materials::_Elasticity::Events::logger;
+pylith::petsc::EventLogger pylith::materials::_Elasticity::Events::logger;
 PylithInt pylith::materials::_Elasticity::Events::verifyConfiguration;
 PylithInt pylith::materials::_Elasticity::Events::createIntegrator;
 PylithInt pylith::materials::_Elasticity::Events::createAuxiliaryField;
@@ -294,13 +294,13 @@ pylith::materials::Elasticity::createDerivedField(const pylith::topology::Field&
 
 // ------------------------------------------------------------------------------------------------
 // Get default PETSc solver options appropriate for material.
-pylith::utils::PetscOptions*
+pylith::petsc::Options*
 pylith::materials::Elasticity::getSolverDefaults(const bool isParallel,
                                                  const bool hasFault) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "getSolverDefaults(isParallel="<<isParallel<<", hasFault="<<hasFault<<")");
 
-    pylith::utils::PetscOptions* options = new pylith::utils::PetscOptions();assert(options);
+    pylith::petsc::Options* options = new pylith::petsc::Options();assert(options);
 
     switch (_formulation) {
     case pylith::problems::Physics::QUASISTATIC:

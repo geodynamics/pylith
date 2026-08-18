@@ -22,7 +22,7 @@
 #include "pylith/topology/FieldOps.hh" // USES FieldOps
 #include "pylith/scales/Scales.hh" // USES Scales
 
-#include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 #include <strings.h> // USES strcasecmp()

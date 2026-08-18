@@ -17,7 +17,7 @@
 #include "pylith/topology/MeshOps.hh" // USES MeshOps
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/problems/Problem.hh" // USES Problem
-#include "pylith/utils/error.hh" // USES PylithCallPetscRequire()
+#include "pylith/exceptions/error.hh" // USES PylithCallPetscRequire()
 
 #include "catch2/catch_test_macros.hpp"
 #include "catch2/matchers/catch_matchers_floating_point.hpp"

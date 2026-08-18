@@ -9,7 +9,7 @@
 // =================================================================================================
 #pragma once
 
-#include "pylith/utils/utilsfwd.hh" // forward declarations
+#include "petscfwd.hh" // forward declarations
 #include "pylith/utils/GenericComponent.hh" // ISA GenericComponent
 
 #include "pylith/topology/topologyfwd.hh" // USES Field
@@ -19,8 +19,8 @@
 #include <string> // HASA std::string
 
 // ================================================================================================
-class pylith::utils::PetscDefaults : public pylith::utils::GenericComponent {
-    friend class TestPetscDefaults; // unit testing
+class pylith::petsc::Defaults : public pylith::utils::GenericComponent {
+    friend class TestDefaults; // unit testing
 
     // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////////////
 public:
@@ -52,25 +52,25 @@ public:
     // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
 private:
 
-    PetscDefaults(void) = delete;
-    PetscDefaults(const PetscDefaults &) = delete;
-    const PetscDefaults& operator=(const PetscDefaults&) = delete;
+    Defaults(void) = delete;
+    Defaults(const Defaults &) = delete;
+    const Defaults& operator=(const Defaults&) = delete;
 
-}; // class PetscDefaults
+}; // class Defaults
 
 // ================================================================================================
-class pylith::utils::PetscOptions : public pylith::utils::GenericComponent {
-    friend class TestPetscOptions; // unit testing
-    friend class _PetscOptions; // Internal
+class pylith::petsc::Options : public pylith::utils::GenericComponent {
+    friend class TestOptions; // unit testing
+    friend class _Options; // Internal
 
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Constructor
-    PetscOptions(void);
+    Options(void);
 
     /// Destructor
-    ~PetscOptions(void);
+    ~Options(void);
 
     /** Add PETSc option.
      *
@@ -107,6 +107,6 @@ private:
     typedef std::map<std::string, std::string> options_t; ///< Map of option name to value.
     options_t _options; ///< Map with PETSc options.
 
-}; // PetscOptions
+}; // Options
 
 // End of file

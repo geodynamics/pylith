@@ -10,28 +10,28 @@
 
 #include <portinfo>
 
-#include "PetscOptions.hh" // implementation of object methods
+#include "Options.hh" // implementation of object methods
 
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/materials/Material.hh" // USES Material
 
-#include "pylith/utils/error.hh" // USES PYLITH_METHOD*
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD*
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL*
 #include "pylith/utils/mpi.hh" // USES isRoot()
 
 #include <cassert>
 
 namespace pylith {
-    namespace utils {
-        class _PetscOptions {
+    namespace petsc {
+        class _Options {
 public:
 
             /// Write options to journal;
             static
             void write(pythia::journal::info_t& info,
                        const char* heading,
-                       const PetscOptions& options);
+                       const Options& options);
 
             /** Check if simulation is running in parallel.
              *
@@ -46,64 +46,64 @@ public:
              * @param[in] options PETSc options.
              */
             static
-            void addTesting(PetscOptions* options);
+            void addTesting(Options* options);
 
             /** Add monitoring options.
              *
              * @param[in] options PETSc options.
              */
             static
-            void addMonitoring(PetscOptions* options);
+            void addMonitoring(Options* options);
 
             /** Add collective I/O options.
              *
              * @param[in] options PETSc options.
              */
             static
-            void addCollectiveIO(PetscOptions* options);
+            void addCollectiveIO(Options* options);
 
             /** Add default solver tolerances to options.
              *
              * @param[in] options PETSc options.
              */
             static
-            void addSolverTolerances(PetscOptions* options);
+            void addSolverTolerances(Options* options);
 
             /** Add initial guess options.
              *
              * @param[in] options PETSc options.
              */
             static
-            void addInitialGuess(PetscOptions* options);
+            void addInitialGuess(Options* options);
 
             /** Add adaptive time stepping options.
              *
              * @param[in] options PETSc options.
              */
             static
-            void addAdaptiveTimeStepping(PetscOptions* options);
+            void addAdaptiveTimeStepping(Options* options);
 
         };
     }
 }
 
 // ------------------------------------------------------------------------------------------------
-const int pylith::utils::PetscDefaults::NONE = 0x0;
-const int pylith::utils::PetscDefaults::MONITORS = 0x1;
-const int pylith::utils::PetscDefaults::SOLVER = 0x2;
-const int pylith::utils::PetscDefaults::PARALLEL = 0x4;
-const int pylith::utils::PetscDefaults::INITIAL_GUESS = 0x8;
-const int pylith::utils::PetscDefaults::TESTING = 0x10;
-const int pylith::utils::PetscDefaults::COLLECTIVE_IO = 0x20;
-const int pylith::utils::PetscDefaults::TS_ADAPTIVE = 0x40;
-const int pylith::utils::PetscDefaults::TS_IMPULSE = 0x80;
+const int pylith::petsc::Defaults::NONE = 0x0;
+const int pylith::petsc::Defaults::MONITORS = 0x1;
+const int pylith::petsc::Defaults::SOLVER = 0x2;
+const int pylith::petsc::Defaults::PARALLEL = 0x4;
+const int pylith::petsc::Defaults::INITIAL_GUESS = 0x8;
+const int pylith::petsc::Defaults::TESTING = 0x10;
+const int pylith::petsc::Defaults::COLLECTIVE_IO = 0x20;
+const int pylith::petsc::Defaults::TS_ADAPTIVE = 0x40;
+const int pylith::petsc::Defaults::TS_IMPULSE = 0x80;
 
 // ------------------------------------------------------------------------------------------------
 // Set default PETSc solver options based on solution field and material.
 void
-pylith::utils::PetscDefaults::set(const pylith::materials::Material* material,
-                                  const bool hasFault,
-                                  const int flags) {
+pylith::petsc::Defaults::set(const pylith::materials::Material* material,
+                             const bool hasFault,
+                             const int flags) {
     PYLITH_METHOD_BEGIN;
     assert(material);
 
@@ -111,31 +111,31 @@ pylith::utils::PetscDefaults::set(const pylith::materials::Material* material,
         PYLITH_METHOD_END;
     } // if
 
-    PetscOptions* options = NULL;
+    pylith::petsc::Options* options = NULL;
     if (flags & SOLVER) {
-        const bool isParallel = flags & PARALLEL || _PetscOptions::isParallel();
+        const bool isParallel = flags & PARALLEL || _Options::isParallel();
         options = material->getSolverDefaults(isParallel, hasFault);
     } // if
     if (!options) {
-        options = new PetscOptions();
+        options = new pylith::petsc::Options();
     } // if
     assert(options);
 
-    _PetscOptions::addSolverTolerances(options);
+    _Options::addSolverTolerances(options);
     if (flags & INITIAL_GUESS) {
-        _PetscOptions::addInitialGuess(options);
+        _Options::addInitialGuess(options);
     } // if
     if (flags & TESTING) {
-        _PetscOptions::addTesting(options);
+        _Options::addTesting(options);
     } // if
     if (flags & MONITORS) {
-        _PetscOptions::addMonitoring(options);
+        _Options::addMonitoring(options);
     } // if
     if (flags & COLLECTIVE_IO) {
-        _PetscOptions::addCollectiveIO(options);
+        _Options::addCollectiveIO(options);
     } // if
     if (flags & TS_ADAPTIVE) {
-        _PetscOptions::addAdaptiveTimeStepping(options);
+        _Options::addAdaptiveTimeStepping(options);
     } // if
 
     options->set();
@@ -147,21 +147,21 @@ pylith::utils::PetscDefaults::set(const pylith::materials::Material* material,
 
 // ------------------------------------------------------------------------------------------------
 // Constructor
-pylith::utils::PetscOptions::PetscOptions(void) {
+pylith::petsc::Options::Options(void) {
     GenericComponent::setName("petscoptions");
 } // constructor
 
 
 // ------------------------------------------------------------------------------------------------
 // Destructor
-pylith::utils::PetscOptions::~PetscOptions(void) {}
+pylith::petsc::Options::~Options(void) {}
 
 
 // ------------------------------------------------------------------------------------------------
 // Add PETSc option.
 void
-pylith::utils::PetscOptions::add(const char* name,
-                                 const char* value) {
+pylith::petsc::Options::add(const char* name,
+                            const char* value) {
     _options[std::string(name)] = value;
 } // add
 
@@ -169,7 +169,7 @@ pylith::utils::PetscOptions::add(const char* name,
 // ------------------------------------------------------------------------------------------------
 // Remove PETSc option.
 void
-pylith::utils::PetscOptions::remove(const char* name) {
+pylith::petsc::Options::remove(const char* name) {
     const options_t::iterator iter = _options.find(std::string(name));
     if (_options.end() != iter) {
         _options.erase(iter);
@@ -180,7 +180,7 @@ pylith::utils::PetscOptions::remove(const char* name) {
 // ------------------------------------------------------------------------------------------------
 // Clear PETSc options.
 void
-pylith::utils::PetscOptions::clear(void) {
+pylith::petsc::Options::clear(void) {
     _options.clear();
 } // clear
 
@@ -188,11 +188,11 @@ pylith::utils::PetscOptions::clear(void) {
 // ------------------------------------------------------------------------------------------------
 // Set PETSc options.
 void
-pylith::utils::PetscOptions::set(void) {
+pylith::petsc::Options::set(void) {
     PYLITH_METHOD_BEGIN;
 
-    PetscOptions optionsUsed;
-    PetscOptions optionsIgnored;
+    pylith::petsc::Options optionsUsed;
+    pylith::petsc::Options optionsIgnored;
     for (options_t::iterator iter = _options.begin(); iter != _options.end(); ++iter) {
         const char* name = iter->first.c_str();
         const char* value = iter->second.c_str();
@@ -209,9 +209,9 @@ pylith::utils::PetscOptions::set(void) {
 
     pythia::journal::info_t info(pylith::journal::application_flow);
     if (info.state() && pylith::utils::MPI::isRoot()) {
-        _PetscOptions::write(info, "Setting PETSc options:", optionsUsed);
+        _Options::write(info, "Setting PETSc options:", optionsUsed);
         if (optionsIgnored._options.size() > 0) {
-            _PetscOptions::write(info, "Using user values rather then the following default PETSc options:", optionsIgnored);
+            _Options::write(info, "Using user values rather then the following default PETSc options:", optionsIgnored);
         } // if
     } // if
 
@@ -222,7 +222,7 @@ pylith::utils::PetscOptions::set(void) {
 // ------------------------------------------------------------------------------------------------
 // Set PETSc options, overriding any previously set options with the same name.
 void
-pylith::utils::PetscOptions::override (void) {
+pylith::petsc::Options::override (void) {
     PYLITH_METHOD_BEGIN;
 
     for (options_t::iterator iter = _options.begin(); iter != _options.end(); ++iter) {
@@ -234,7 +234,7 @@ pylith::utils::PetscOptions::override (void) {
 
     pythia::journal::info_t info(pylith::journal::application_flow);
     if (info.state()) {
-        _PetscOptions::write(info, "Setting PETSc options:", (*this));
+        _Options::write(info, "Setting PETSc options:", (*this));
     } // if
 
     PYLITH_METHOD_END;
@@ -243,16 +243,16 @@ pylith::utils::PetscOptions::override (void) {
 // ------------------------------------------------------------------------------------------------
 // Write options to journal;
 void
-pylith::utils::_PetscOptions::write(pythia::journal::info_t& info,
-                                    const char* heading,
-                                    const PetscOptions& options) {
+pylith::petsc::_Options::write(pythia::journal::info_t& info,
+                               const char* heading,
+                               const Options& options) {
     PYLITH_METHOD_BEGIN;
 
     info << pythia::journal::at(__HERE__)
          << heading << "\n";
-    const PetscOptions::options_t::const_iterator begin = options._options.begin();
-    const PetscOptions::options_t::const_iterator end = options._options.end();
-    for (PetscOptions::options_t::const_iterator iter = begin; iter != end; ++iter) {
+    const Options::options_t::const_iterator begin = options._options.begin();
+    const Options::options_t::const_iterator end = options._options.end();
+    for (Options::options_t::const_iterator iter = begin; iter != end; ++iter) {
         const std::string name = iter->first.substr(1);
         const std::string value = iter->second;
         if (iter->second.empty()) {
@@ -270,7 +270,7 @@ pylith::utils::_PetscOptions::write(pythia::journal::info_t& info,
 // ------------------------------------------------------------------------------------------------
 // Check if simulation is running in parallel.
 bool
-pylith::utils::_PetscOptions::isParallel(void) {
+pylith::petsc::_Options::isParallel(void) {
     PYLITH_METHOD_BEGIN;
 
     MPI_Comm comm = PETSC_COMM_WORLD;
@@ -284,7 +284,7 @@ pylith::utils::_PetscOptions::isParallel(void) {
 // ------------------------------------------------------------------------------------------------
 // Add debugging options.
 void
-pylith::utils::_PetscOptions::addTesting(PetscOptions* options) {
+pylith::petsc::_Options::addTesting(Options* options) {
     assert(options);
 
     // -checkstack only works with PetscInitialize()
@@ -295,7 +295,7 @@ pylith::utils::_PetscOptions::addTesting(PetscOptions* options) {
 // ------------------------------------------------------------------------------------------------
 // Add monitoring options.
 void
-pylith::utils::_PetscOptions::addMonitoring(PetscOptions* options) {
+pylith::petsc::_Options::addMonitoring(Options* options) {
     assert(options);
 
     options->add("-ksp_error_if_not_converged");
@@ -310,7 +310,7 @@ pylith::utils::_PetscOptions::addMonitoring(PetscOptions* options) {
 // ------------------------------------------------------------------------------------------------
 // Add collective I/O options.
 void
-pylith::utils::_PetscOptions::addCollectiveIO(PetscOptions* options) {
+pylith::petsc::_Options::addCollectiveIO(Options* options) {
     assert(options);
 
     options->add("-viewer_hdf5_collective");
@@ -321,7 +321,7 @@ pylith::utils::_PetscOptions::addCollectiveIO(PetscOptions* options) {
 // ------------------------------------------------------------------------------------------------
 // Add default solver tolerances to options.
 void
-pylith::utils::_PetscOptions::addSolverTolerances(PetscOptions* options) {
+pylith::petsc::_Options::addSolverTolerances(Options* options) {
     assert(options);
 
     options->add("-ksp_rtol", "1.0e-14");
@@ -335,7 +335,7 @@ pylith::utils::_PetscOptions::addSolverTolerances(PetscOptions* options) {
 // ------------------------------------------------------------------------------------------------
 // Add initial guess defaults.
 void
-pylith::utils::_PetscOptions::addInitialGuess(PetscOptions* options) {
+pylith::petsc::_Options::addInitialGuess(Options* options) {
     assert(options);
 
     options->add("-ksp_guess_type", "pod");
@@ -347,7 +347,7 @@ pylith::utils::_PetscOptions::addInitialGuess(PetscOptions* options) {
 // ------------------------------------------------------------------------------------------------
 // Add adaptive time stepping defaults.
 void
-pylith::utils::_PetscOptions::addAdaptiveTimeStepping(PetscOptions* options) {
+pylith::petsc::_Options::addAdaptiveTimeStepping(Options* options) {
     assert(options);
 
     options->add("-ts_adapt_type", "basic");

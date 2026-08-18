@@ -8,11 +8,11 @@
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
 
-from pylith.utils.PetscComponent import PetscComponent
+from pylith.petsc.Component import Component
 from .Solution import Solution as SolutionBase
 
 
-class SolnDispPresLagrange(PetscComponent):
+class SolnDispPresLagrange(Component):
     """
     Container for solution subfields with displacement, pressure, and fault Lagrange multiplier subfields.
     """
@@ -40,10 +40,10 @@ class SolnDispPresLagrange(PetscComponent):
     def __init__(self, name="solndisppres"):
         """Constructor.
         """
-        PetscComponent.__init__(self, name, facility="soln_subfields")
+        Component.__init__(self, name, facility="soln_subfields")
 
     def _configure(self):
-        PetscComponent._configure(self)
+        Component._configure(self)
 
     def components(self):
         """Order of facilities in Inventory is ambiguous, so overwrite

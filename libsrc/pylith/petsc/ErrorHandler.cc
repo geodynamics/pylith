@@ -13,8 +13,8 @@
 #include "pylith/petsc/ErrorHandler.hh" // implementation of class methods
 
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
-#include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
-#include "pylith/utils/Exceptions.hh" // USES PetscError
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_*
+#include "pylith/exceptions/Exceptions.hh" // USES PetscError
 
 #include <petscsys.h>
 

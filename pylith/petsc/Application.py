@@ -7,25 +7,25 @@
 #
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
-# @file pylith/apps/PetscApplication.py
+# @file pylith/petsc/Application.py
 #
 # @brief Python PETSc application for creating an MPI application
 # that uses PETSc.
 
-from pythia.mpi import Application
-from pylith.utils.utils import Application as ModulePetscApplication
+from pythia.mpi import Application as MPIApplication
+from pylith.petsc.petsc import Application as ModuleApplication
 
 
-class PetscApplication(Application):
+class Application(MPIApplication):
     """Python PETSc application for creating an MPI application that uses PETSc.
     """
 
     import pythia.pyre.inventory
 
     # Dummy facility for passing options to PETSc
-    from pylith.utils.PetscManager import PetscManager
+    from pylith.petsc.Manager import Manager
     petsc = pythia.pyre.inventory.facility(
-        "petsc", family="petsc_manager", factory=PetscManager)
+        "petsc", family="petsc_manager", factory=Manager)
     petsc.meta['tip'] = "Manager for PETSc options."
 
     includeCitations = pythia.pyre.inventory.bool(
@@ -37,8 +37,7 @@ class PetscApplication(Application):
     def __init__(self, name="petscapp"):
         """Constructor.
         """
-        Application.__init__(self, name)
-        return
+        MPIApplication.__init__(self, name)
 
     def onComputeNodes(self, *args, **kwds):
         """Run the application in parallel on the compute nodes.
@@ -47,7 +46,7 @@ class PetscApplication(Application):
         
         if self.inventory.includeCitations:
             for entry in self.citations():
-                ModulePetscApplication.registerCitation(entry)
+                ModuleApplication.registerCitation(entry)
 
         try:
             self.main(*args, **kwds)
@@ -73,15 +72,15 @@ class PetscApplication(Application):
     def cleanup(self):
         """Deallocate data structures.
         """
-        from pylith.utils.PetscComponent import PetscComponent
+        from pylith.petsc.Component import Component
         for component in self.components():
-            if isinstance(component, PetscComponent):
+            if isinstance(component, Component):
                 component.cleanup()
 
-            # Facility arrays are not PetscComponents but have components().
+            # Facility arrays are not Components but have components().
             elif hasattr(component, "components"):
                 for subcomponent in component.components():
-                    if isinstance(subcomponent, PetscComponent):
+                    if isinstance(subcomponent, Component):
                         subcomponent.cleanup()
 
         self._cleanup()
@@ -96,7 +95,7 @@ class PetscApplication(Application):
     def _configure(self):
         """Setup members using inventory.
         """
-        Application._configure(self)
+        MPIApplication._configure(self)
 
     def _cleanup(self):
         """Deallocate locally managed data structures.

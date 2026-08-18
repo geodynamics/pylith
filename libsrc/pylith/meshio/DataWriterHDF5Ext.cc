@@ -21,7 +21,7 @@
 #include "pylith/meshio/OutputSubfield.hh" // USES OutputSubfield
 
 #include "pylith/utils/journals.hh" // USES journal macros
-#include "pylith/utils/Exceptions.hh" // USES Exceptio
+#include "pylith/exceptions/Exceptions.hh" // USES Exceptio
 
 #include "spatialdata/geocoords/CoordSys.hh" /// USES CoordSys
 

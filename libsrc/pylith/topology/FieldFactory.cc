@@ -16,9 +16,9 @@
 
 #include "pylith/scales/Scales.hh" // USES Scales
 
-#include "pylith/utils/error.hh" // USES PYLITH_METHOD*
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD*
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL*
-#include "pylith/utils/Exceptions.hh" // USES Exception
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
 
 #include <cassert>
 

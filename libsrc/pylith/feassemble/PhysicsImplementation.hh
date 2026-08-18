@@ -19,7 +19,7 @@
 #include "pylith/problems/Observer.hh" // USES Observer
 
 #include "pylith/utils/array.hh" // HASA int_array
-#include "pylith/utils/utilsfwd.hh" // HOLDSA Logger
+#include "pylith/petsc/petscfwd.hh" // HOLDSA Logger
 
 class pylith::feassemble::PhysicsImplementation : public pylith::utils::GenericComponent {
     friend class TestPhysicsImplementation; // unit testing
@@ -97,7 +97,7 @@ protected:
     pylith::topology::Field* _derivedField;
     pylith::problems::ObserversPhysics* _observers;
 
-    pylith::utils::EventLogger* _logger;
+    pylith::petsc::EventLogger* _logger;
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:

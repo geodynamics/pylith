@@ -8,10 +8,10 @@
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
 
-from pylith.utils.PetscComponent import PetscComponent
+from pylith.petsc.Component import Component
 
 
-class AuxSubfieldsPoroelasticity(PetscComponent):
+class AuxSubfieldsPoroelasticity(Component):
     """
     Auxiliary subfields associated with the poroelasticity equation.
 
@@ -63,10 +63,10 @@ class AuxSubfieldsPoroelasticity(PetscComponent):
     def __init__(self, name="auxsubfieldsporoelasticity"):
         """Constructor.
         """
-        PetscComponent.__init__(self, name, facility="auxiliary_subfields")
+        Component.__init__(self, name, facility="auxiliary_subfields")
 
     def _configure(self):
-        PetscComponent._configure(self)
+        Component._configure(self)
 
 
 # FACTORIES ////////////////////////////////////////////////////////////

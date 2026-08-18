@@ -17,7 +17,7 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/scales/Scales.hh" // USES Scales
 
-#include "pylith/utils/error.hh" // USES PYLITH_JMETHOD_*
+#include "pylith/exceptions/error.hh" // USES PYLITH_JMETHOD_*
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 #include <cassert> // USES assert()

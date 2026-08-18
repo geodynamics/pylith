@@ -11,7 +11,7 @@
 import unittest
 
 from pylith.testing.TestCases import make_suite
-from pylith.utils.EventLogger import EventLogger
+from pylith.petsc.EventLogger import EventLogger
 
 class TestEventLogger(unittest.TestCase):
     """Unit testing of EventLogger object.
@@ -100,8 +100,8 @@ def load_tests(loader, tests, pattern):
 
 
 if __name__ == "__main__":
-    from pylith.utils.PetscManager import PetscManager
-    petsc = PetscManager()
+    from pylith.petsc.Manager import Manager
+    petsc = Manager()
     petsc.initialize()
 
     unittest.main(verbosity=2)

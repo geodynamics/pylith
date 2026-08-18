@@ -9,13 +9,13 @@
 // =================================================================================================
 
 /**
- * @file modulesrc/utils/EventLogger.i
+ * @file modulesrc/petsc/EventLogger.i
  *
  * @brief Python interface to C++ EventLogger.
  */
 
 namespace pylith {
-    namespace utils {
+    namespace petsc {
         class EventLogger
         { // EventLogger
           // PUBLIC MEMBERS /////////////////////////////////////////////////

@@ -21,7 +21,7 @@
 #include "pylith/faults/FaultCohesive.hh" // USES FaultCohesive
 #include "pylith/meshio/DataWriter.hh" // USES DataWriter
 #include "pylith/utils/journals.hh" // USES pythia::journal
-#include "pylith/utils/Exceptions.hh" // USES Exception
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
 
 #include "petsc/private/dmpleximpl.h"
 

@@ -10,6 +10,7 @@
 
 
 SUBDIRS = \
+	exceptions \
 	scales \
 	utils \
 	petsc \
@@ -125,7 +126,7 @@ libpylith_la_SOURCES = \
 	petsc/Application.cc \
 	petsc/ErrorHandler.cc \
 	petsc/EventLogger.cc \
-	petsc/PetscOptions.cc \
+	petsc/Options.cc \
 	petsc/PetscVersion.cc \
 	petsc/TSAdaptImpulse.cc \
 	petsc/TSMonitor.cc \
@@ -166,7 +167,7 @@ libpylith_la_SOURCES = \
 	utils/PylithVersion.cc \
 	utils/DependenciesVersion.cc \
 	utils/TestArray.cc \
-	utils/Exceptions.cc
+	exceptions/Exceptions.cc
 
 
 libpylith_la_CXXFLAGS = $(SANITIZER_CXXFLAGS)

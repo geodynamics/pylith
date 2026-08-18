@@ -8,10 +8,10 @@
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
 
-from pylith.utils.PetscComponent import PetscComponent
+from pylith.petsc.Component import Component
 
 
-class EmptyBin(PetscComponent):
+class EmptyBin(Component):
   """
   Empty container for a collection of objects.
   """
@@ -19,7 +19,7 @@ class EmptyBin(PetscComponent):
   def __init__(self, name="emptybin"):
     """Constructor.
     """
-    PetscComponent.__init__(self, name, facility="empty_bin")
+    Component.__init__(self, name, facility="empty_bin")
 
 
 # End of file

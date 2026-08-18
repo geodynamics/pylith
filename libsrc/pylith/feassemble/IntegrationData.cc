@@ -15,8 +15,8 @@
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
-#include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
-#include "pylith/utils/Exceptions.hh" // USES Exception
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_*
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
 
 #include <cassert> // USES assert()
 #include <typeinfo> // USES typeid()

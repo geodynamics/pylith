@@ -19,7 +19,7 @@
 #include "pylith/meshio/OutputSubfield.hh" // USES OutputSubfield
 
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
-#include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_BEGIN/END
 
 // ------------------------------------------------------------------------------------------------
 // Constructor

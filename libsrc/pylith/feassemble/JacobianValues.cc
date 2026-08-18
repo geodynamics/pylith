@@ -16,7 +16,7 @@
 #include "pylith/feassemble/DSLabelAccess.hh" // USES DSLabelAccess
 
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
-#include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_*
 
 #include <cassert> // USES assert()
 

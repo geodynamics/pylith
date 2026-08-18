@@ -14,10 +14,10 @@
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
-#include "pylith/utils/error.hh" // USES PylithCallPetscRequire()
+#include "pylith/exceptions/error.hh" // USES PylithCallPetscRequire()
 
 #include "pylith/utils/journals.hh" // USES journals
-#include "pylith/utils/Exceptions.hh" // USES Exception
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
 
 #include "catch2/catch_test_macros.hpp"
 

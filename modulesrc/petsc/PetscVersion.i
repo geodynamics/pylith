@@ -9,13 +9,13 @@
 // =================================================================================================
 
 /**
- * @file modulesrc/utils/PetscVersion.i
+ * @file modulesrc/petsc/PetscVersion.i
  *
  * @brief C++ object for PETSc version information.
  */
 
 namespace pylith {
-    namespace utils {
+    namespace petsc {
         class PetscVersion
         { // PetscVersion
           // PUBLIC MEMBERS ///////////////////////////////////////////////////////

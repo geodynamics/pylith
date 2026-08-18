@@ -14,7 +14,7 @@
 
 #include "pylith/topology/Field.hh" // USES Field
 
-#include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_*
 
 #include <cassert> // USES assert()
 

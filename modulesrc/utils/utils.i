@@ -12,10 +12,6 @@
 
 // Header files for module C++ code
 %{
-#include "pylith/petsc/Application.hh"
-#include "pylith/petsc/EventLogger.hh"
-#include "pylith/petsc/PetscOptions.hh"
-#include "pylith/petsc/PetscVersion.hh"
 #include "pylith/utils/PyreComponent.hh"
 #include "pylith/utils/PylithVersion.hh"
 #include "pylith/utils/DependenciesVersion.hh"
@@ -55,10 +51,5 @@
 %include "DependenciesVersion.i"
 %include "TestArray.i"
 %include "constants.i"
-
-%include "PetscVersion.i"
-%include "Application.i"
-%include "PetscOptions.i"
-%include "EventLogger.i"
 
 // End of file

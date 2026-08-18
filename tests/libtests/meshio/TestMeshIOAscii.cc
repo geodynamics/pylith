@@ -15,7 +15,7 @@
 #include "pylith/meshio/MeshIOAscii.hh"
 #include "pylith/topology/Mesh.hh" // USES Mesh
 
-#include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_BEGIN/END
 #include "pylith/utils/journals.hh" // USES JournalingComponent
 
 #include "catch2/catch_test_macros.hpp"

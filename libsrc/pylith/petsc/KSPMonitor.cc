@@ -13,7 +13,7 @@
 #include "pylith/petsc/KSPMonitor.hh" // implementation of class methods
 
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
-#include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_*
 
 #include <iomanip> // USES setw()
 

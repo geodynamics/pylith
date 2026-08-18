@@ -130,8 +130,8 @@ public:
      * @param[in] hasFault True if problem has fault, False otherwise.
      * @returns PETSc solver options.
      */
-    pylith::utils::PetscOptions* getSolverDefaults(const bool isParallel,
-                                                   const bool hasFault) const;
+    pylith::petsc::Options* getSolverDefaults(const bool isParallel,
+                                              const bool hasFault) const;
 
     // PROTECTED METHODS ///////////////////////////////////////////////////////////////////////////////////////////////
 protected:

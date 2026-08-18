@@ -8,10 +8,10 @@
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
 
-from pylith.utils.PetscComponent import PetscComponent
+from pylith.petsc.Component import Component
 
 
-class SingleRupture(PetscComponent):
+class SingleRupture(Component):
     """
     Kinematic slip source container with one source.
 
@@ -31,7 +31,7 @@ class SingleRupture(PetscComponent):
     def __init__(self, name="singlerupture"):
         """Constructor.
         """
-        PetscComponent.__init__(self, name, facility="rupture")
+        Component.__init__(self, name, facility="rupture")
         return
 
 

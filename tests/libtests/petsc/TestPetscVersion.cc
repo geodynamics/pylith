@@ -23,12 +23,12 @@
 
 // ------------------------------------------------------------------------------------------------
 namespace pylith {
-    namespace utils {
+    namespace petsc {
         class TestPetscVersion;
     }
 }
 
-class pylith::utils::TestPetscVersion {
+class pylith::petsc::TestPetscVersion {
     // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
@@ -64,31 +64,31 @@ public:
 
 // ------------------------------------------------------------------------------------------------
 TEST_CASE("TestPetscVersion::testIsRelease", "[TestPetscVersion]") {
-    pylith::utils::TestPetscVersion::testIsRelease();
+    pylith::petsc::TestPetscVersion::testIsRelease();
 }
 TEST_CASE("TestPetscVersion::testVersion", "[TestPetscVersion]") {
-    pylith::utils::TestPetscVersion::testVersion();
+    pylith::petsc::TestPetscVersion::testVersion();
 }
 TEST_CASE("TestPetscVersion::testGitRevision", "[TestPetscVersion]") {
-    pylith::utils::TestPetscVersion::testGitRevision();
+    pylith::petsc::TestPetscVersion::testGitRevision();
 }
 TEST_CASE("TestPetscVersion::testGitDate", "[TestPetscVersion]") {
-    pylith::utils::TestPetscVersion::testGitDate();
+    pylith::petsc::TestPetscVersion::testGitDate();
 }
 TEST_CASE("TestPetscVersion::testGitBranch", "[TestPetscVersion]") {
-    pylith::utils::TestPetscVersion::testGitBranch();
+    pylith::petsc::TestPetscVersion::testGitBranch();
 }
 TEST_CASE("TestPetscVersion::testPetscDir", "[TestPetscVersion]") {
-    pylith::utils::TestPetscVersion::testPetscDir();
+    pylith::petsc::TestPetscVersion::testPetscDir();
 }
 TEST_CASE("TestPetscVersion::testPetscArch", "[TestPetscVersion]") {
-    pylith::utils::TestPetscVersion::testPetscArch();
+    pylith::petsc::TestPetscVersion::testPetscArch();
 }
 
 // ------------------------------------------------------------------------------------------------
 // Test isRelease()
 void
-pylith::utils::TestPetscVersion::testIsRelease(void) {
+pylith::petsc::TestPetscVersion::testIsRelease(void) {
 #if PETSC_VERSION_RELEASE
     CHECK(PetscVersion::isRelease());
 #else
@@ -100,7 +100,7 @@ pylith::utils::TestPetscVersion::testIsRelease(void) {
 // ------------------------------------------------------------------------------------------------
 // Test version()
 void
-pylith::utils::TestPetscVersion::testVersion(void) {
+pylith::petsc::TestPetscVersion::testVersion(void) {
     const int maxsize = 64;
     char value[maxsize];
     snprintf(value, maxsize-1, "%d.%d.%d", PETSC_VERSION_MAJOR, PETSC_VERSION_MINOR, PETSC_VERSION_SUBMINOR);
@@ -111,7 +111,7 @@ pylith::utils::TestPetscVersion::testVersion(void) {
 // ------------------------------------------------------------------------------------------------
 // Test gitRevision()
 void
-pylith::utils::TestPetscVersion::testGitRevision(void) {
+pylith::petsc::TestPetscVersion::testGitRevision(void) {
 #if PETSC_VERSION_RELEASE
 #else
     // Git revision should be of the form vX.X.X-gXXXXX.
@@ -124,7 +124,7 @@ pylith::utils::TestPetscVersion::testGitRevision(void) {
 // ------------------------------------------------------------------------------------------------
 // Test gitDate()
 void
-pylith::utils::TestPetscVersion::testGitDate(void) {
+pylith::petsc::TestPetscVersion::testGitDate(void) {
     const char* datetime = PetscVersion::gitDate();
     CHECK(strlen(datetime) > 0);
 } // testGitDate
@@ -133,7 +133,7 @@ pylith::utils::TestPetscVersion::testGitDate(void) {
 // ------------------------------------------------------------------------------------------------
 // Test gitBranch()
 void
-pylith::utils::TestPetscVersion::testGitBranch(void) {
+pylith::petsc::TestPetscVersion::testGitBranch(void) {
 #if PETSC_VERSION_RELEASE
 #else
     const char* branch = PetscVersion::gitBranch();
@@ -145,7 +145,7 @@ pylith::utils::TestPetscVersion::testGitBranch(void) {
 // ------------------------------------------------------------------------------------------------
 // Test petscDir()
 void
-pylith::utils::TestPetscVersion::testPetscDir(void) {
+pylith::petsc::TestPetscVersion::testPetscDir(void) {
     CHECK(strlen(PetscVersion::petscDir()) > 0);
 } // testPetscDir
 
@@ -153,7 +153,7 @@ pylith::utils::TestPetscVersion::testPetscDir(void) {
 // ------------------------------------------------------------------------------------------------
 // Test petscArch()
 void
-pylith::utils::TestPetscVersion::testPetscArch(void) {
+pylith::petsc::TestPetscVersion::testPetscArch(void) {
     // Not defined for PETSc prefix installs, so empty string is valid.
 } // testPetscArch
 

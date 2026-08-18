@@ -21,7 +21,7 @@
 #include "pylith/problems/ObserversSoln.hh" // USES ObserversSoln
 #include "pylith/problems/InitialCondition.hh" // USES InitialCondition
 #include "pylith/problems/ProgressMonitorTime.hh" // USES ProgressMonitorTime
-#include "pylith/petsc/PetscOptions.hh" // USES PetscDefaults
+#include "pylith/petsc/Options.hh" // USES PetscDefaults
 #include "pylith/petsc/TSAdaptImpulse.hh" // USES TSAdaptImpulse
 #include "pylith/petsc/TSMonitor.hh" // USES TSMonitor
 #include "pylith/petsc/SNESMonitor.hh" // USES SNESMonitor
@@ -32,8 +32,8 @@
 
 #include "petscts.h" // USES PetscTS
 
-#include "pylith/utils/error.hh" // USES PylithCallPetsc()
-#include "pylith/utils/Exceptions.hh" // USES PylithCallPetsc()
+#include "pylith/exceptions/error.hh" // USES PylithCallPetsc()
+#include "pylith/exceptions/Exceptions.hh" // USES PylithCallPetsc()
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 #include <cassert> // USES assert()
 #include <iostream> // USES std::cout in debugging
@@ -53,7 +53,7 @@ public:
                 static
                 void init(void);
 
-                static pylith::utils::EventLogger logger;
+                static pylith::petsc::EventLogger logger;
                 static PylithInt verifyConfiguration;
                 static PylithInt initialize;
                 static PylithInt solve;
@@ -69,7 +69,7 @@ public:
         };
         const char* _TimeDependent::pyreComponent = "timedependent";
 
-        pylith::utils::EventLogger _TimeDependent::Events::logger;
+        pylith::petsc::EventLogger _TimeDependent::Events::logger;
         PylithInt _TimeDependent::Events::verifyConfiguration;
         PylithInt _TimeDependent::Events::initialize;
         PylithInt _TimeDependent::Events::solve;
@@ -442,8 +442,8 @@ pylith::problems::TimeDependent::initialize(void) {
     } // switch
 
     PylithCallPetsc(TSSetFromOptions(_ts));
-    if (_petscDefaults & pylith::utils::PetscDefaults::TS_IMPULSE) {
-        pylith::utils::TSAdaptImpulse::set(_ts);
+    if (_petscDefaults & pylith::petsc::Defaults::TS_IMPULSE) {
+        pylith::petsc::TSAdaptImpulse::set(_ts);
     } // if
     PylithCallPetsc(TSSetUp(_ts));
 

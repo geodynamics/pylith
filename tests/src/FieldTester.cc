@@ -14,7 +14,7 @@
 
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/FieldQuery.hh" // USES FieldQuery
-#include "pylith/utils/error.hh" // USES PylithCallPetsc()
+#include "pylith/exceptions/error.hh" // USES PylithCallPetsc()
 
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 

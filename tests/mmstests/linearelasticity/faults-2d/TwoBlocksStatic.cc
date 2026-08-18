@@ -300,7 +300,7 @@ public:
             data->faults[0] = fault;
         } // xpos
 
-        pylith::utils::PetscOptions options;
+        pylith::petsc::Options options;
         options.add("-fieldsplit_displacement_pc_type", "lu");
         options.override ();
 

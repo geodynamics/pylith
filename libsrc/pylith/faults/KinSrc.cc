@@ -17,7 +17,7 @@
 #include "pylith/topology/FieldOps.hh" // USES FieldOps::checkDiscretization()
 
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
-#include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_BEGIN
 
 #include "pylith/scales/Scales.hh" // USES Scales
 

@@ -13,7 +13,7 @@
 #include "pylith/petsc/Application.hh" // implementation of class methods
 
 #include "pylith/petsc/ErrorHandler.hh" // USES ErrorHandler
-#include "pylith/utils/error.hh" // USES PylithCallPetsc
+#include "pylith/exceptions/error.hh" // USES PylithCallPetsc
 
 #include <petscsys.h>
 

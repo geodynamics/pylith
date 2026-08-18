@@ -13,7 +13,7 @@
 #include "pylith/utils/GenericComponent.hh" // Test subject
 
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
-#include "pylith/utils/Exceptions.hh" // USES Exception
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
 
 #include "catch2/catch_test_macros.hpp"
 

@@ -16,9 +16,9 @@
 #include "pylith/meshio/ExodusII.hh" // USES ExodusII
 
 #include "pylith/utils/array.hh" // USES scalar_array, int_array, string_vector
-#include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
-#include "pylith/utils/Exceptions.hh" // USES Exception
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
 
 #include "petsc.h" // USES MPI_Comm
 

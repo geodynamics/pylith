@@ -8,10 +8,10 @@
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
 
-from pylith.utils.PetscComponent import PetscComponent
+from pylith.petsc.Component import Component
 
 
-class AuxSubfieldsFault(PetscComponent):
+class AuxSubfieldsFault(Component):
     """
     Auxiliary subfields associated with a fault.
     """
@@ -32,10 +32,10 @@ class AuxSubfieldsFault(PetscComponent):
     def __init__(self, name="auxsubfieldfault"):
         """Constructor.
         """
-        PetscComponent.__init__(self, name, facility="auxiliary_subfields")
+        Component.__init__(self, name, facility="auxiliary_subfields")
 
     def _configure(self):
-        PetscComponent._configure(self)
+        Component._configure(self)
 
 
 # FACTORIES ////////////////////////////////////////////////////////////

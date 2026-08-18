@@ -8,12 +8,12 @@
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
 
-from pylith.utils.PetscComponent import PetscComponent
+from pylith.petsc.Component import Component
 from .problems import Problem as ModuleProblem
 from .problems import Physics
 from pylith.utils.NullComponent import NullComponent
 from .ProblemDefaults import ProblemDefaults
-from pylith.utils.PetscDefaults import PetscDefaults
+from pylith.petsc.Defaults import Defaults as PetscDefaults
 
 
 def materialFactory(name):
@@ -48,7 +48,7 @@ def observerFactory(name):
     return facility(name, family="observer", factory=OutputSolnDomain)
 
 
-class Problem(PetscComponent, ModuleProblem):
+class Problem(Component, ModuleProblem):
     """
     Abstract base class for a problem.
 
@@ -140,7 +140,7 @@ class Problem(PetscComponent, ModuleProblem):
 
     def __init__(self, name="problem"):
         """Constructor."""
-        PetscComponent.__init__(self, name, facility="problem")
+        Component.__init__(self, name, facility="problem")
         self.mesh = None
 
     def preinitialize(self):
@@ -242,7 +242,7 @@ class Problem(PetscComponent, ModuleProblem):
         if not "_loggingPrefix" in dir(self):
             self._loggingPrefix = "PL.Problem."
 
-        from pylith.utils.EventLogger import EventLogger
+        from pylith.petsc.EventLogger import EventLogger
 
         logger = EventLogger()
         logger.setClassName("Problem")

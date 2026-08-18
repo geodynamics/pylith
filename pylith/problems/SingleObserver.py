@@ -8,10 +8,10 @@
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
 
-from pylith.utils.PetscComponent import PetscComponent
+from pylith.petsc.Component import Component
 
 
-class SingleSolnObserver(PetscComponent):
+class SingleSolnObserver(Component):
     """
     Container of solution observers with one observer.
     """
@@ -25,10 +25,10 @@ class SingleSolnObserver(PetscComponent):
     def __init__(self, name="singlesolnobserver"):
         """Constructor.
         """
-        PetscComponent.__init__(self, name, facility="singlesolnobserver")
+        Component.__init__(self, name, facility="singlesolnobserver")
 
 
-class SinglePhysicsObserver(PetscComponent):
+class SinglePhysicsObserver(Component):
     """
     Container of physics observers with one observer.
     """
@@ -42,7 +42,7 @@ class SinglePhysicsObserver(PetscComponent):
     def __init__(self, name="singlephysicsobserver"):
         """Constructor.
         """
-        PetscComponent.__init__(self, name, facility="singlephysicsobserver")
+        Component.__init__(self, name, facility="singlephysicsobserver")
 
 
 # End of file

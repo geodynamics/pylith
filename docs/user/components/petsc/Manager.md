@@ -1,14 +1,14 @@
-# PetscManager
+# Manager
 
 % WARNING: Do not edit; this is a generated file!
-:Full name: `pylith.utils.PetscManager`
+:Full name: `pylith.petsc.Manager`
 :Journal name: `petsc`
 
 Manage PETSc options.
 
 ## Example
 
-Example of setting `PetscManager` Pyre properties and facilities in a parameter file.
+Example of setting `Manager` Pyre properties and facilities in a parameter file.
 
 :::{code-block} cfg
 [pylithapp.petsc]

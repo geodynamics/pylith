@@ -9,7 +9,7 @@
 // =================================================================================================
 #pragma once
 
-#include "pylith/utils/utilsfwd.hh" // forward declarations
+#include "petscfwd.hh" // forward declarations
 
 #include <string> // USES std::string
 #include <map> // USES std::map
@@ -22,7 +22,7 @@
  *
  * Each logger object manages the events for a single "logging class".
  */
-class pylith::utils::EventLogger {
+class pylith::petsc::EventLogger {
     friend class TestEventLogger; // unit testing
 
     // PUBLIC MEMBERS ///////////////////////////////////////////////////////

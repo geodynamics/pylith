@@ -110,7 +110,7 @@ $ pylith step01_inflation.cfg
  >> software/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:80:main
  -- info (application-flow)
  -- Running on 1 process(es).
-  >> src/cig/pylith/libsrc/pylith/utils/PetscOptions.cc:251:static void pylith::utils::_PetscOptions::write(pythia::journal::info_t &, const char *, const PetscOptions &)
+  >> src/cig/pylith/libsrc/pylith/petsc/Options.cc:251:static void pylith::utils::_Options::write(pythia::journal::info_t &, const char *, const PetscOptions &)
  -- info (application-flow)
  -- Setting PETSc options:
     fieldsplit_displacement_pc_type = lu
@@ -238,7 +238,7 @@ caption: Run Step 1b simulation
 $ pylith step01_inflation.cfg step01b_inflation.cfg
 
 # The output should look something like the following.
- >> software/pylith-debug/lib/python3.12/site-packages/pylith/utils/PetscManager.py:55:initialize
+ >> software/pylith-debug/lib/python3.12/site-packages/pylith/petsc/Manager.py:55:initialize
  -- info (application-flow)
  -- Initialized PETSc with user options
     ts_atol = 0.02
@@ -246,7 +246,7 @@ $ pylith step01_inflation.cfg step01b_inflation.cfg
  >> software/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:80:main
  -- info (application-flow)
  -- Running on 1 process(es).
- >> src/cig/pylith/libsrc/pylith/utils/PetscOptions.cc:251:static void pylith::utils::_PetscOptions::write(pythia::journal::info_t &, const char *, const PetscOptions &)
+ >> src/cig/pylith/libsrc/pylith/petsc/Options.cc:251:static void pylith::utils::_Options::write(pythia::journal::info_t &, const char *, const PetscOptions &)
  -- info (application-flow)
  -- Setting PETSc options:
     fieldsplit_displacement_pc_type = lu

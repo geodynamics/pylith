@@ -9,14 +9,14 @@
 // =================================================================================================
 
 /**
- * @file modulesrc/utils/PetscOptions.i
+ * @file modulesrc/petsc/Options.i
  *
- * @brief Python interface to C++ PetscDefaults.
+ * @brief Python interface to C++ Defaults.
  */
 
 namespace pylith {
-    namespace utils {
-        class pylith::utils::PetscDefaults: public pylith::utils::GenericComponent {
+    namespace petsc {
+        class Defaults: public pylith::utils::GenericComponent {
             // PUBLIC MEMBERS /////////////////////////////////////////////////////////////////////
 public:
 
@@ -33,11 +33,11 @@ public:
             // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////
 private:
 
-            PetscDefaults(void); ///< Not implemented
-            PetscDefaults(const PetscDefaults &); ///< Not implemented.
-            const PetscDefaults& operator = (const PetscDefaults&); ///< Not implemented
+            Defaults(void); ///< Not implemented
+            Defaults(const Defaults &); ///< Not implemented.
+            const Defaults& operator = (const Defaults&); ///< Not implemented
 
-        }; // class PetscDefaults
+        }; // class Defaults
 
     } // utils
 } // pylith

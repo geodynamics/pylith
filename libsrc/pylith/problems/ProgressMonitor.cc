@@ -13,7 +13,7 @@
 #include "pylith/problems/ProgressMonitor.hh" // implementation of class methods
 
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
-#include "pylith/utils/Exceptions.hh" // USES Exception
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
 
 #include <mpi.h> // USES MPI_Comm_rank, MPI_COMM_WORLD
 

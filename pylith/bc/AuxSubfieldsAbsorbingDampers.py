@@ -11,10 +11,10 @@
 #
 # @brief Python container for absorbing dampers subfields.
 
-from pylith.utils.PetscComponent import PetscComponent
+from pylith.petsc.Component import Component
 
 
-class AuxSubfieldsAbsorbingDampers(PetscComponent):
+class AuxSubfieldsAbsorbingDampers(Component):
     """
     Auxiliary subfields for the absorbing dampers boundary condition.
     """
@@ -45,13 +45,13 @@ class AuxSubfieldsAbsorbingDampers(PetscComponent):
     def __init__(self, name="auxsubfieldsabsorbingdampers"):
         """Constructor.
         """
-        PetscComponent.__init__(self, name, facility="auxiliary_subfields")
+        Component.__init__(self, name, facility="auxiliary_subfields")
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
-        PetscComponent._configure(self)
+        Component._configure(self)
         return
 
 

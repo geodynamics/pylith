@@ -23,7 +23,7 @@
 #include "pylith/topology/FieldQuery.hh" // USES FieldQuery
 #include "pylith/feassemble/AuxiliaryFactory.hh" // USES AuxiliaryFactory
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
-#include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_BEGIN/END
 #include "pylith/utils/journals.hh" // pythia::journal
 
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB

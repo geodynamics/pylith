@@ -14,7 +14,7 @@
 
 #include "pylith/feassemble/Integrator.hh" // USES NEW_JACOBIAN_NEVER
 
-#include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_BEGIN/END
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_DEBUG
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys

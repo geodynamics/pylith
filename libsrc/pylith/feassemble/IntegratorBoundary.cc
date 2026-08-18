@@ -23,7 +23,7 @@
 #include "spatialdata/spatialdb/GravityField.hh" // HASA GravityField
 
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
-#include "pylith/utils/Exceptions.hh" // USES Exception
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
 
 #include "petscds.h" // USES PetscDS
 

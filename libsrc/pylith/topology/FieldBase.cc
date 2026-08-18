@@ -12,9 +12,9 @@
 
 #include "pylith/topology/FieldBase.hh" // implementation of class methods
 
-#include "pylith/utils/error.hh" // USES std::logic_error
+#include "pylith/exceptions/error.hh" // USES std::logic_error
 #include "pylith/utils/journals.hh" // USES journal macros
-#include "pylith/utils/Exceptions.hh" // USES Exception
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
 
 // ----------------------------------------------------------------------
 // Default constructor.

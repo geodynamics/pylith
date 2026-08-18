@@ -17,8 +17,8 @@
 #include "pylith/topology/Stratum.hh" // USES Stratum
 #include "pylith/utils/array.hh" // USES scalar_array, int_array
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL*
-#include "pylith/utils/error.hh" // USES PylithCallPetsc()
-#include "pylith/utils/Exceptions.hh" // USES Exception
+#include "pylith/exceptions/error.hh" // USES PylithCallPetsc()
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
 #include "pylith/petsc/EventLogger.hh" // USES EventLogger
 
 #include "pylith/scales/Scales.hh" // USES Scales
@@ -71,7 +71,7 @@ public:
                 static
                 void init(void);
 
-                static pylith::utils::EventLogger logger;
+                static pylith::petsc::EventLogger logger;
                 static PylithInt buildMesh;
                 static PylithInt setGroup;
                 static PylithInt setGroupAddPoints;
@@ -81,7 +81,7 @@ public:
         };
     }
 }
-pylith::utils::EventLogger pylith::meshio::_MeshBuilder::Events::logger;
+pylith::petsc::EventLogger pylith::meshio::_MeshBuilder::Events::logger;
 PylithInt pylith::meshio::_MeshBuilder::Events::buildMesh;
 PylithInt pylith::meshio::_MeshBuilder::Events::setGroup;
 PylithInt pylith::meshio::_MeshBuilder::Events::setGroupAddPoints;

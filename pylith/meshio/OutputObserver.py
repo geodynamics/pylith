@@ -8,11 +8,11 @@
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
 
-from pylith.utils.PetscComponent import PetscComponent
+from pylith.petsc.Component import Component
 from .meshio import OutputObserver as ModuleOutputObserver
 
 
-class OutputObserver(PetscComponent, ModuleOutputObserver):
+class OutputObserver(Component, ModuleOutputObserver):
     """
     Abstract base class for managing output of solution information.
     """
@@ -36,7 +36,7 @@ class OutputObserver(PetscComponent, ModuleOutputObserver):
     def __init__(self, name="outputobserver"):
         """Constructor.
         """
-        PetscComponent.__init__(self, name, facility="outputobserver")
+        Component.__init__(self, name, facility="outputobserver")
 
     def preinitialize(self, problem):
         """Setup output manager.
@@ -61,7 +61,7 @@ class OutputObserver(PetscComponent, ModuleOutputObserver):
     def _configure(self):
         """Set members using inventory.
         """
-        PetscComponent._configure(self)
+        Component._configure(self)
 
     def _createModuleObj(self):
         """Create handle to C++ object.

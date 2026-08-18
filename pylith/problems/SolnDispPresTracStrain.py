@@ -8,11 +8,11 @@
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
 
-from pylith.utils.PetscComponent import PetscComponent
+from pylith.petsc.Component import Component
 from .Solution import Solution as SolutionBase
 
 
-class SolnDispPresTracStrain(PetscComponent):
+class SolnDispPresTracStrain(Component):
     """
     Container for solution subfields with displacement, pore pressure, and trace strain subfields.
     """
@@ -40,10 +40,10 @@ class SolnDispPresTracStrain(PetscComponent):
     def __init__(self, name="solndispprestracstrain"):
         """Constructor.
         """
-        PetscComponent.__init__(self, name, facility="soln_subfields")
+        Component.__init__(self, name, facility="soln_subfields")
 
     def _configure(self):
-        PetscComponent._configure(self)
+        Component._configure(self)
 
     def components(self):
         """Order of facilities in Inventory is ambiguous, so overwrite

@@ -14,9 +14,9 @@
 
 #include "pylith/topology/Stratum.hh" // USES Stratum
 #include "pylith/topology/MeshOps.hh" // USES isCohesiveCell()
-#include "pylith/utils/error.hh" // USES PylithCallPetsc()
+#include "pylith/exceptions/error.hh" // USES PylithCallPetsc()
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
-#include "pylith/utils/Exceptions.hh" // USES Exception
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
 
 #include <iostream> // USES std::cout
 #include <cassert> // USES assert()

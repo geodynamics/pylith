@@ -14,7 +14,7 @@
 \begin{tikzpicture}[node distance=10em, line width=1.5pt]
 
   \node (mpi-application) [abstract-class] {\umlemptyclass{pythia.mpi.Application}};
-  \node (petsc-application) [abstract-class] at ($(mpi-application.south)-(0,4em)$) {\umlemptyclass{PetscApplication}};
+  \node (petsc-application) [abstract-class] at ($(mpi-application.south)-(0,4em)$) {\umlemptyclass{Application}};
   \node (pylithapp) [concrete-class] at ($(petsc-application.south)-(0,4em)$) {\umlclass{PyLithApp}{metadata\\parameters\\mesher\\problem}};
 
   \node (pyre-component) [abstract-class, anchor=west] at ($(mpi-application.east)+(12em,0)$) {\umlemptyclass{pythia.pyre.components.Component}};

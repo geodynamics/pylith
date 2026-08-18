@@ -24,11 +24,11 @@
 #include "pylith/scales/Scales.hh" // USES Scales
 #include "pylith/petsc/SNESMonitor.hh" // USES SNESMonitor
 #include "pylith/petsc/KSPMonitor.hh" // USES KSPMonitor
-#include "pylith/petsc/PetscOptions.hh" // USES SolverDefaults
+#include "pylith/petsc/Options.hh" // USES SolverDefaults
 
-#include "pylith/utils/error.hh" // USES PylithCallPetsc()
+#include "pylith/exceptions/error.hh" // USES PylithCallPetsc()
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
-#include "pylith/utils/Exceptions.hh" // USES Exception
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
 
 #include "petscsnes.h" // USES PetscSNES
 

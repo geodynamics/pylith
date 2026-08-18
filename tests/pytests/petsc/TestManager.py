@@ -11,18 +11,18 @@
 import unittest
 
 from pylith.testing.TestCases import TestComponent, make_suite
-from pylith.utils.PetscManager import (PetscManager, property_list)
+from pylith.petsc.Manager import (Manager, property_list)
 
 
-class TestPetscManager(TestComponent):
-    """Unit testing of PetscManager object.
+class TestManager(TestComponent):
+    """Unit testing of Manager object.
     """
-    _class = PetscManager
+    _class = Manager
     _factory = property_list
 
 
 def load_tests(loader, tests, pattern):
-    TEST_CLASSES = [TestPetscManager]
+    TEST_CLASSES = [TestManager]
     return make_suite(TEST_CLASSES, loader)
 
 

@@ -15,7 +15,7 @@
 #include "pylith/initializers/InitializePhase.hh" // HASA InitializePhase
 #include "pylith/topology/Mesh.hh" // HASA Mesh
 #include "pylith/topology/MeshOps.hh" // USES MeshOps
-#include "pylith/utils/error.hh" // USES PylithCallPetsc()
+#include "pylith/exceptions/error.hh" // USES PylithCallPetsc()
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 

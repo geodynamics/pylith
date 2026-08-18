@@ -27,7 +27,7 @@ EXTRA_DIST = \
 	__init__.py \
 	apps/ConfigSearchApp.py \
 	apps/EqInfoApp.py \
-	apps/PetscApplication.py \
+	petsc/Application.py \
 	apps/PyLithApp.py \
 	apps/RunnerApp.py \
 	apps/VizApp.py \
@@ -166,17 +166,18 @@ EXTRA_DIST = \
 	topology/RefineUniform.py \
 	topology/Subfield.py \
 	topology/__init__.py \
+	petsc/__init__.py \
+	petsc/EventLogger.py \
+	petsc/Component.py \
+	petsc/Defaults.py \
+	petsc/Manager.py \
+	petsc/PropertyList.py \
 	utils/CollectVersionInfo.py \
 	utils/DumpParameters.py \
 	utils/DumpParametersAscii.py \
 	utils/DumpParametersJson.py \
 	utils/EmptyBin.py \
-	utils/EventLogger.py \
 	utils/NullComponent.py \
-	utils/PetscComponent.py \
-	utils/PetscDefaults.py \
-	utils/PetscManager.py \
-	utils/PropertyList.py \
 	utils/SimulationMetadata.py \
 	utils/__init__.py \
 	utils/converters.py \

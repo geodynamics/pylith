@@ -8,11 +8,11 @@
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
 
-from pylith.utils.PetscComponent import PetscComponent
+from pylith.petsc.Component import Component
 from .meshio import OutputTrigger as ModuleOutputTrigger
 
 
-class OutputTrigger(PetscComponent, ModuleOutputTrigger):
+class OutputTrigger(Component, ModuleOutputTrigger):
     """
     Abstract base class for managing how often output is written.
     """
@@ -20,12 +20,12 @@ class OutputTrigger(PetscComponent, ModuleOutputTrigger):
     def __init__(self, name="outputtrigger"):
         """Constructor.
         """
-        PetscComponent.__init__(self, name, facility="outputtrigger")
+        Component.__init__(self, name, facility="outputtrigger")
 
     def _configure(self):
         """Set members using inventory.
         """
-        PetscComponent._configure(self)
+        Component._configure(self)
 
 
 # End of file

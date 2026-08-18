@@ -11,7 +11,7 @@
 from pythia.pyre.components.Component import Component
 
 
-class PetscDefaults(Component):
+class Defaults(Component):
     """
     Flags controlling use of default PETSc settings.
     No user-specified settings will be overwritten.
@@ -61,7 +61,7 @@ class PetscDefaults(Component):
         Component.__init__(self, name)
 
     def flags(self):
-        from .utils import PetscDefaults as ModuleDefaults
+        from .petsc import Defaults as ModuleDefaults
 
         value = ModuleDefaults.NONE
         if self.solver:
@@ -88,7 +88,7 @@ class PetscDefaults(Component):
 
 def petsc_defaults():
     """Factory associated with PetscDefaults."""
-    return PetscDefaults()
+    return Defaults()
 
 
 # End of file

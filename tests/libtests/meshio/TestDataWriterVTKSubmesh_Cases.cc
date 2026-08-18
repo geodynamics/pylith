@@ -12,7 +12,7 @@
 
 #include "TestDataWriterVTKSubmesh.hh" // Implementation of class methods
 
-#include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_BEGIN/END
 
 #include "catch2/catch_test_macros.hpp"
 
