@@ -300,10 +300,6 @@ public:
             data->faults[0] = fault;
         } // xpos
 
-        pylith::petsc::Options options;
-        options.add("-fieldsplit_displacement_pc_type", "lu");
-        options.override ();
-
         data->numSolnSubfieldsDomain = 1;
         data->numSolnSubfieldsFault = 1;
         static const pylith::testing::MMSTest::solution_fn _exactSolnFns[2] = {
