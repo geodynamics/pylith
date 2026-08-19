@@ -24,8 +24,9 @@
 #include "pylith/fekernels/Elasticity.hh" // USES Elasticity kernels
 #include "pylith/fekernels/DispVel.hh" // USES DispVel kernels
 
-#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_*
+#include "pylith/petsc/Options.hh" // USES Options
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/exceptions/Exceptions.hh" // USES Exception
 
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField

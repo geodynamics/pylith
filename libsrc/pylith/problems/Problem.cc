@@ -28,13 +28,15 @@
 #include "pylith/topology/MeshOps.hh" // USES MeshOps
 #include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor::optimizeClosure()
 
+#include "pylith/petsc/Options.hh" // USES Options
+#include "pylith/petsc/EventLogger.hh" // HASA EventLogger
+
 #include "pylith/scales/Scales.hh" // USES Scales
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 
-#include "pylith/petsc/EventLogger.hh" // HASA EventLogger
 #include "pylith/exceptions/error.hh" // USES PylithCallPetsc
-#include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 #include "pylith/exceptions/Exceptions.hh" // USES Exception
+#include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 #include <cassert> // USES assert()
 #include <typeinfo> // USES typeid()
