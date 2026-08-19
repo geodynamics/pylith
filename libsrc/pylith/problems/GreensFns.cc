@@ -22,11 +22,13 @@
 #include "pylith/problems/ObserversSoln.hh" // USES ObserversSoln
 #include "pylith/problems/ProgressMonitorStep.hh" // USES ProgressMonitorStep
 #include "pylith/scales/Scales.hh" // USES Scales
-#include "pylith/utils/PetscOptions.hh" // USES SolverDefaults
+#include "pylith/petsc/SNESMonitor.hh" // USES SNESMonitor
+#include "pylith/petsc/KSPMonitor.hh" // USES KSPMonitor
+#include "pylith/petsc/Options.hh" // USES SolverDefaults
 
-#include "pylith/utils/error.hh" // USES PylithCallPetsc()
+#include "pylith/exceptions/error.hh" // USES PylithCallPetsc()
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
-#include "pylith/utils/Exceptions.hh" // USES Exception
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
 
 #include "petscsnes.h" // USES PetscSNES
 
@@ -94,7 +96,7 @@ pylith::problems::GreensFns::setFaultLabelName(const char* value) {
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setFaultLabelName(value="<<value<<")");
 
     if (strlen(value) == 0) {
-        PYLITH_COMPONENT_ERROR(pylith::ValueError, pylith::journal::user_input,
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::EmptyStringError,
                                "Empty string given for name of label for fault with impulses.");
     } // if
 
@@ -166,7 +168,7 @@ pylith::problems::GreensFns::verifyConfiguration(void) const {
             (_faultLabelValue == _interfaces[i]->getSurfaceLabelValue())) {
             faultImpulses = dynamic_cast<pylith::faults::FaultCohesiveImpulses*>(_interfaces[i]);
             if (!faultImpulses) {
-                PYLITH_COMPONENT_ERROR(pylith::ValueError, pylith::journal::user_input,
+                PYLITH_COMPONENT_ERROR(pylith::exceptions::ValueError,
                                        "Found fault with "<<_faultLabelName<<"="<<_faultLabelValue
                                                           <<" in interfaces for imposing impulses, but type is not FaultCohesiveImpulses.");
             } // if
@@ -174,7 +176,7 @@ pylith::problems::GreensFns::verifyConfiguration(void) const {
         } // if
     } // for
     if (!faultImpulses) {
-        PYLITH_COMPONENT_ERROR(pylith::ValueError, pylith::journal::user_input,
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::LabelNotFoundError,
                                "Could not find fault with "<<_faultLabelName<<"="<<_faultLabelValue<<" in interfaces for imposing impulses.");
     } // if
 
@@ -240,13 +242,13 @@ pylith::problems::GreensFns::initialize(void) {
         PylithCallPetsc(SNESSetLagJacobian(_snes, -2));
         break;
     case pylith::problems::Physics::DYNAMIC_IMEX:
-        PYLITH_COMPONENT_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Dynamic Green's functions problems not yet supported.");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::NotImplementedError, "Dynamic Green's functions problems not yet supported.");
         break;
     case pylith::problems::Physics::DYNAMIC:
-        PYLITH_COMPONENT_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Dynamic Green's functions problems not yet supported.");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::NotImplementedError, "Dynamic Green's functions problems not yet supported.");
         break;
     default: {
-        PYLITH_COMPONENT_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown Green's functions formulation '" << _formulation << "'.");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::SwitchLogicError, "Unknown Green's functions formulation '" << _formulation << "'.");
     } // default
     } // switch
 
@@ -263,7 +265,7 @@ pylith::problems::GreensFns::initialize(void) {
         } // if
     } // for
     if (!_integratorImpulses) {
-        PYLITH_COMPONENT_ERROR(pylith::InternalLogicError, pylith::journal::logic,
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::LabelNotFoundError,
                                "Could not find integrator for fault "<<_faultLabelName<<"="<<_faultLabelValue<<" in integrators for problem.");
     } // if
 
@@ -513,6 +515,23 @@ pylith::problems::GreensFns::computeJacobian(PetscSNES snes,
 
     PYLITH_METHOD_RETURN(0);
 } // computeJacobian
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+void
+pylith::problems::GreensFns::_registerMonitors(void) {
+    PYLITH_METHOD_BEGIN;
+
+    pylith::petsc::SNESMonitor monitorSNES;
+    monitorSNES.registerMonitor(_snes);
+
+    PetscKSP ksp;
+    PylithCallPetsc(SNESGetKSP(_snes, &ksp));
+    pylith::petsc::KSPMonitor monitorKSP;
+    monitorKSP.registerMonitor(ksp);
+
+    PYLITH_METHOD_END;
+}
 
 
 // End of file

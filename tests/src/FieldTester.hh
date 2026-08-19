@@ -12,7 +12,7 @@
 #include "pylith/testing/testingfwd.hh" // forward declarations
 
 #include "pylith/topology/Field.hh" // USES Field::SubfieldInfo
-#include "pylith/utils/petscfwd.h" // USES PetscFE
+#include "pylith/petsc/petsc_types.h" // USES PetscFE
 
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // USES SpatialDB
 

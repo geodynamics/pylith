@@ -17,9 +17,9 @@
 
 #include "pylith/scales/Scales.hh" // USES Scales
 
-#include "pylith/utils/error.hh" // USES PYLITH_METHOD*
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD*
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL*
-#include "pylith/utils/Exceptions.hh" // USES Exception
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
 
 #include <cassert>
 
@@ -89,7 +89,8 @@ pylith::feassemble::AuxiliaryFactory::setValuesFromDB(void) {
         _fieldQuery->queryDB();
         _fieldQuery->closeDB(_queryDB);
     } else {
-        PYLITH_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown case for filling auxiliary subfields.");
+        PYLITH_ERROR(pylith::exceptions::InternalLogicError,
+                     "Unknown case for filling auxiliary subfields.");
     } // if/else
 
     delete _fieldQuery;_fieldQuery = NULL;

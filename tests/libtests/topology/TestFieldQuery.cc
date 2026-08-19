@@ -18,7 +18,7 @@
 
 #include "pylith/meshio/MeshBuilder.hh" // Uses MeshBuilder
 #include "pylith/topology/MeshOps.hh" // USES MeshOps
-#include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_*
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB

@@ -5,6 +5,15 @@ Starting with v3.0.0, we strictly follow the [semantic versioning guidelines](ht
 The version numbers are in the form `MAJOR.MINOR.PATCH`, where major releases indicate changes to the public API (parameters), minor releases indicate new functionality that is backward compatible, and patch releases indicate backward compatible bug fixes.
 :::
 
+## Version 5.1.0 (2026-XX-XX)
+
+* **Changed**
+  * Refactored the error handling to use Pyre journal and a PETSc error handler specific to PyLith.
+  * Used custom PyLith-specific TS, KSP, and SNES monitors that use Pyre journal.
+* **Added**
+  * Implemented C++ exceptions specific to PyLith.
+  * Added optional use of cpptrace for getting the full C++ stacktrace.
+
 ## Version 5.0.2 (2026-08-17)
 
 * **Changed**

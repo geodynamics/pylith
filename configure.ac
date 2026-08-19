@@ -74,6 +74,17 @@ fi
 AM_CONDITIONAL([ENABLE_CUBIT], [test "$enable_cubit" = yes])
 AC_SUBST(PYLITH_SWIG_CPPFLAGS)
 
+dnl cpptrace
+AC_ARG_ENABLE([cpptrace],
+    [AC_HELP_STRING([--enable-cpptrace],
+        [enable C++ traceback using cpptrace (requires cpptrace and libdwarf) @<:@default=no@:>@])],
+	[if test "$enableval" = yes; then enable_cpptrace=yes; else enable_cpptrace=no; fi],
+	[enable_cpptrace=no])
+if test "$enable_cpptrace" = "yes"; then
+  CPPFLAGS="-DENABLE_CPPTRACE $CPPFLAGS"; export CPPFLAGS
+fi
+AM_CONDITIONAL([ENABLE_CPPTRACE], [test "$enable_cpptrace" = yes])
+
 dnl PETSc w/HDF5
 AC_ARG_ENABLE([hdf5],
     [AC_HELP_STRING([--enable-hdf5],
@@ -108,6 +119,14 @@ AC_PROG_INSTALL
 
 AX_CXX_COMPILE_STDCXX(14)
 
+dnl Large file support
+AC_SYS_LARGEFILE
+
+dnl Check whether compiler sets variable with function names.
+CIT_FUNCTIONSTRING
+
+dnl ENDIANNESS
+AC_C_BIGENDIAN
 
 dnl PYTHON/PYTHIA (nemesis must be set before python)
 CIT_PATH_NEMESIS
@@ -128,8 +147,11 @@ CIT_PATH_PETSC([3.25.4])
 CIT_HEADER_PETSC
 CIT_CHECK_LIB_PETSC
 
-dnl Large file support
-AC_SYS_LARGEFILE
+dnl cpptrace support
+if test "$enable_cpptrace" = "yes" ; then
+  CIT_CPPTRACE_HEADER
+  CIT_CPPTRACE_LIB
+fi
 
 dnl backtrace support
 CIT_CHECK_BACKTRACE
@@ -192,13 +214,11 @@ if test "$enable_test_coverage" = "yes" ; then
   fi
 fi
 
-dnl Check whether compiler sets variable with function names.
-CIT_FUNCTIONSTRING
-
 dnl VERSION
 CIG_PKG_GIT(PYLITH)
 AC_DEFINE_UNQUOTED([PYLITH_VERSION], ["$PACKAGE_VERSION"], [Define PyLith version])
 AC_DEFINE_UNQUOTED([PYLITH_DOI], ["10.5281/zenodo.21909051"], [Define PyLith doi])
+AC_DEFINE_UNQUOTED([PYLITH_RELEASE_DATE], ["2026-08-17"], [Define PyLith release date])
 
 dnl ENDIANNESS
 AC_C_BIGENDIAN
@@ -209,6 +229,7 @@ AC_CONFIG_FILES([Makefile
 		libsrc/Makefile
 		libsrc/pylith/Makefile
 		libsrc/pylith/bc/Makefile
+		libsrc/pylith/exceptions/Makefile
 		libsrc/pylith/feassemble/Makefile
 		libsrc/pylith/fekernels/Makefile
 		libsrc/pylith/faults/Makefile
@@ -219,6 +240,7 @@ AC_CONFIG_FILES([Makefile
 		libsrc/pylith/problems/Makefile
 		libsrc/pylith/topology/Makefile
 		libsrc/pylith/utils/Makefile
+		libsrc/pylith/petsc/Makefile
 		libsrc/pylith/scales/Makefile
         libsrc/pylith/testing/Makefile
 		modulesrc/Makefile
@@ -234,6 +256,7 @@ AC_CONFIG_FILES([Makefile
 		modulesrc/problems/Makefile
 		modulesrc/scales/Makefile
 		modulesrc/topology/Makefile
+		modulesrc/petsc/Makefile
 		modulesrc/utils/Makefile
 		tests/Makefile
 		tests/src/Makefile
@@ -256,6 +279,7 @@ AC_CONFIG_FILES([Makefile
 		tests/libtests/topology/Makefile
 		tests/libtests/topology/data/Makefile
 		tests/libtests/testing/Makefile
+		tests/libtests/petsc/Makefile
 		tests/libtests/utils/Makefile
 		tests/pytests/Makefile
 		tests/mmstests/Makefile

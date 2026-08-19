@@ -2058,7 +2058,7 @@ produce files matching this interface exactly.
 #include "pylith/topology/Field.hh"
 #include "pylith/meshio/MeshIOAscii.hh"
 #include "pylith/meshio/MeshIOPetsc.hh"
-#include "pylith/utils/error.hh"
+#include "pylith/exceptions/error.hh"
 #include "pylith/utils/journals.hh"
 #include "spatialdata/spatialdb/GravityField.hh"
 #include "catch2/catch_test_macros.hpp"

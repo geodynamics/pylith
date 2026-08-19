@@ -29,6 +29,12 @@
 #include "pylith/materials/IsotropicLinearPoroelasticity.hh"
 
 #include "pylith/utils/arrayfwd.hh"
+
+/// Forward declaration for point function
+typedef PetscPointFn* PetscPointFnWrapper;
+typedef PetscPointJacFn* PetscPointJacFnWrapper;
+typedef PetscBdPointFn* PetscBdPointFnWrapper;
+
 %}
 
 %include "exception.i"

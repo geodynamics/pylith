@@ -28,13 +28,15 @@
 #include "pylith/topology/MeshOps.hh" // USES MeshOps
 #include "pylith/topology/CoordsVisitor.hh" // USES CoordsVisitor::optimizeClosure()
 
+#include "pylith/petsc/Options.hh" // USES Options
+#include "pylith/petsc/EventLogger.hh" // HASA EventLogger
+
 #include "pylith/scales/Scales.hh" // USES Scales
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 
-#include "pylith/utils/EventLogger.hh" // HASA EventLogger
-#include "pylith/utils/error.hh" // USES PylithCallPetsc
+#include "pylith/exceptions/error.hh" // USES PylithCallPetsc
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
-#include "pylith/utils/Exceptions.hh" // USES Exception
 
 #include <cassert> // USES assert()
 #include <typeinfo> // USES typeid()
@@ -77,7 +79,7 @@ public:
                 static
                 void init(void);
 
-                static pylith::utils::EventLogger logger;
+                static pylith::petsc::EventLogger logger;
                 static PylithInt setSolution;
                 static PylithInt preinitialize;
                 static PylithInt verifyConfiguration;
@@ -91,7 +93,7 @@ public:
         };
     }
 }
-pylith::utils::EventLogger pylith::problems::_Problem::Events::logger;
+pylith::petsc::EventLogger pylith::problems::_Problem::Events::logger;
 PylithInt pylith::problems::_Problem::Events::setSolution;
 PylithInt pylith::problems::_Problem::Events::preinitialize;
 PylithInt pylith::problems::_Problem::Events::verifyConfiguration;
@@ -126,7 +128,7 @@ pylith::problems::Problem::Problem() :
     _observers(new pylith::problems::ObserversSoln),
     _formulation(pylith::problems::Physics::QUASISTATIC),
     _solverType(LINEAR),
-    _petscDefaults(pylith::utils::PetscDefaults::SOLVER | pylith::utils::PetscDefaults::TESTING) {
+    _petscDefaults(pylith::petsc::Defaults::SOLVER | pylith::petsc::Defaults::TESTING) {
     _Problem::Events::init();
 }
 
@@ -210,7 +212,7 @@ void
 pylith::problems::Problem::setPetscDefaults(const int flags) {
     _petscDefaults = flags;
     const bool hasFault = _interfaces.size() > 0;
-    pylith::utils::PetscDefaults::set(_materials[0], hasFault, _petscDefaults);
+    pylith::petsc::Defaults::set(_materials[0], hasFault, _petscDefaults);
 } // setPetscDefaults
 
 
@@ -526,7 +528,7 @@ pylith::problems::Problem::initialize(void) {
         _Problem::createNullSpace(solution, "displacement");
         break;
     default:
-        PYLITH_COMPONENT_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown formulation '"<<_formulation<<".");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::SwitchLogicError, "Unknown formulation '"<<_formulation<<".");
     } // switch
     _Problem::setInterfaceData(solution, _integrators);
 

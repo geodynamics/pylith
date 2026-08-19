@@ -17,5 +17,6 @@ meshio/index.md
 problems/index.md
 scales/index.md
 topology/index.md
+petsc/index.md
 utils/index.md
 :::

@@ -13,7 +13,7 @@
 #include "pylith/utils/PyreComponent.hh" // Implementation of class methods
 
 #include "pylith/utils/journals.hh"
-#include "pylith/utils/Exceptions.hh"
+#include "pylith/exceptions/Exceptions.hh"
 
 #include <Python.h>
 
@@ -23,7 +23,7 @@ pylith::utils::PyreComponent::PyreComponent(void) :
     _name(""),
     _identifier("unknown") { // constructor
     if (!Py_IsInitialized()) {
-        PYLITH_ERROR(pylith::InternalLogicError, pylith::journal::logic,
+        PYLITH_ERROR(pylith::exceptions::InternalLogicError,
                      "Python must be initialized to use PyreComponent in C++.");
     } // if
 } // constructor
@@ -39,7 +39,7 @@ pylith::utils::PyreComponent::~PyreComponent(void) {}
 void
 pylith::utils::PyreComponent::setName(const char* value) {
     if (!strlen(value)) {
-        PYLITH_ERROR(pylith::InternalLogicError, pylith::journal::logic,
+        PYLITH_ERROR(pylith::exceptions::EmptyStringError,
                      "Cannot set name of Pyre component to empty string.");
     } // if
     _name = value;
@@ -60,7 +60,7 @@ pylith::utils::PyreComponent::getName(void) const {
 void
 pylith::utils::PyreComponent::setIdentifier(const char* value) {
     if (!strlen(value)) {
-        PYLITH_ERROR(pylith::InternalLogicError, pylith::journal::logic,
+        PYLITH_ERROR(pylith::exceptions::EmptyStringError,
                      "Cannot set name of Pyre identifier to empty string.");
     } // if
     _identifier = value;

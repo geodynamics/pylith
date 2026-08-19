@@ -8,8 +8,6 @@
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
 __all__ = ['NullComponent',
-           'PetscComponent',
-           'PetscManager',
            ]
 
 

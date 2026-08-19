@@ -16,7 +16,7 @@
 #include "pylith/topology/FieldBase.hh" // HASA Description, Discretization
 
 #include "pylith/topology/topologyfwd.hh" // USES Field, RefineOutputInterpolator
-#include "pylith/utils/petscfwd.h" // HASA PetscVec
+#include "pylith/petsc/petsc_types.h" // HASA PetscVec
 
 class pylith::meshio::OutputSubfield : public pylith::utils::GenericComponent {
     friend class TestOutputSubfield; // unit testing

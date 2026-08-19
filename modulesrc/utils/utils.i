@@ -12,11 +12,8 @@
 
 // Header files for module C++ code
 %{
-#include "pylith/utils/EventLogger.hh"
 #include "pylith/utils/PyreComponent.hh"
-#include "pylith/utils/PetscOptions.hh"
 #include "pylith/utils/PylithVersion.hh"
-#include "pylith/utils/PetscVersion.hh"
 #include "pylith/utils/DependenciesVersion.hh"
 #include "pylith/utils/TestArray.hh"
 #include "pylith/utils/constants.hh"
@@ -36,6 +33,7 @@
 
 %include "typemaps.i"
 %include "../include/scalartypemaps.i"
+%include "../include/chararray.i"
 
 // Numpy interface stuff
 %{
@@ -48,11 +46,8 @@
 
 // Interfaces
 %include "pylith_general.i"
-%include "EventLogger.i"
 %include "PyreComponent.i"
-%include "PetscOptions.i"
 %include "PylithVersion.i"
-%include "PetscVersion.i"
 %include "DependenciesVersion.i"
 %include "TestArray.i"
 %include "constants.i"

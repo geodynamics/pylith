@@ -17,11 +17,9 @@ check_PROGRAMS = libtest_utils
 
 # Primary source files
 libtest_utils_SOURCES = \
-	TestEventLogger.cc \
 	TestPyreComponent.cc \
 	TestGenericComponent.cc \
 	TestPylithVersion.cc \
-	TestPetscVersion.cc \
 	TestDependenciesVersion.cc \
 	$(top_srcdir)/tests/src/driver_catch2.cc
 

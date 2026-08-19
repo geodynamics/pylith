@@ -15,7 +15,7 @@
 #include "pylith/topology/Distributor.hh" // HOLDSA Distributor
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/problems/Problem.hh" // USES Problem
-#include "pylith/utils/error.hh" // USES PylithCallPetsc()
+#include "pylith/exceptions/error.hh" // USES PylithCallPetsc()
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 // ------------------------------------------------------------------------------------------------

@@ -21,9 +21,9 @@
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/FieldOps.hh" // USES FieldOps::createOutputLabel()
 
-#include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_BEGIN/END
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
-#include "pylith/utils/Exceptions.hh" // USES Exception
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
 
 #include <cstring> // USES strlen()
 
@@ -68,7 +68,7 @@ pylith::bc::BoundaryCondition::setSubfieldName(const char* value) {
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "setSubfieldName(value="<<value<<")");
 
     if (!value || (0 == strlen(value))) {
-        PYLITH_COMPONENT_ERROR(pylith::ValueError, pylith::journal::user_input,
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::EmptyStringError,
                                "Empty string given for name of solution subfield for boundary condition '"
                                << getLabelName() <<"'.");
     } // if
@@ -93,7 +93,7 @@ pylith::bc::BoundaryCondition::setRefDir1(const PylithReal vec[3]) {
     // Set reference direction, ensuring it is a unit vector.
     const PylithReal mag = sqrt(vec[0]*vec[0] + vec[1]*vec[1] + vec[2]*vec[2]);
     if (mag < 1.0e-6) {
-        PYLITH_COMPONENT_ERROR(pylith::ValueError, pylith::journal::user_input,
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::InvalidUnitVectorError,
                                "Magnitude of reference direction 1 ("<<vec[0]<<", "<<vec[1]<<", "<<vec[2]
                                                                      <<") for boundary condition '" << getLabelName() << "' is negligible. Use a unit vector.");
     } // if
@@ -112,7 +112,7 @@ pylith::bc::BoundaryCondition::setRefDir2(const PylithReal vec[3]) {
     // Set reference direction, ensuring it is a unit vector.
     const PylithReal mag = sqrt(vec[0]*vec[0] + vec[1]*vec[1] + vec[2]*vec[2]);
     if (mag < 1.0e-6) {
-        PYLITH_COMPONENT_ERROR(pylith::ValueError, pylith::journal::user_input,
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::InvalidUnitVectorError,
                                "Magnitude of reference direction 2 ("<<vec[0]<<", "<<vec[1]<<", "<<vec[2]
                                                                      <<") for boundary condition '" << getLabelName() << "' is negligible. Use a unit vector.");
     } // if
@@ -130,7 +130,7 @@ pylith::bc::BoundaryCondition::verifyConfiguration(const pylith::topology::Field
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "verifyConfiguration(solution="<<solution.getLabel()<<")");
 
     if (!solution.hasSubfield(_subfieldName.c_str())) {
-        PYLITH_COMPONENT_ERROR(pylith::ValueError, pylith::journal::user_input,
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::SubfieldNotFoundError,
                                "Cannot apply boundary condition to field '"<< _subfieldName
                                                                            << "'; field is not in solution.");
     } // if
@@ -139,7 +139,7 @@ pylith::bc::BoundaryCondition::verifyConfiguration(const pylith::topology::Field
     PetscBool hasLabel = PETSC_FALSE;
     PylithCallPetsc(DMHasLabel(dmSoln, getLabelName(), &hasLabel));
     if (!hasLabel) {
-        PYLITH_COMPONENT_ERROR(pylith::ValueError, pylith::journal::user_input,
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::LabelNotFoundError,
                                "Could not find group '" << getLabelName() << "' for boundary condition.");
     } // if
 

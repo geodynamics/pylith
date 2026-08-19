@@ -11,7 +11,7 @@
 
 #include "DSLabelAccess.hh"
 
-#include "pylith/utils/error.hh" // USES PylithCallPetsc()
+#include "pylith/exceptions/error.hh" // USES PylithCallPetsc()
 
 // ------------------------------------------------------------------------------------------------
 // Constructor with PetscDM, label name, and label value.

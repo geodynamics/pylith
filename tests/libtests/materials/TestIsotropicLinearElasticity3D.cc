@@ -20,7 +20,7 @@
 #include "pylith/topology/FieldQuery.hh" // USES FieldQuery
 #include "pylith/problems/SolutionFactory.hh" // USES SolutionFactory
 
-#include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_BEGIN/END
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 #include "pylith/scales/Scales.hh" // USES Scales

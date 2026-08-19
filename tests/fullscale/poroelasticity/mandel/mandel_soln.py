@@ -17,7 +17,7 @@
 # src/ts/tutorials/ex53.c.
 #
 # Notes:
-# - The surface loading is impulsive, so we use a custom PETSc TS (pylith/utils/TSAdaptImpulse),
+# - The surface loading is impulsive, so we use a custom PETSc TS (pylith/petsc/TSAdaptImpulse),
 #   which uses a very small time step for the first step before using the user-specified time step.
 # - The accuracy of the solution is poor in the first few time steps due to the impulsive loading
 #   so we only check the last time step in the simulation, which is more accurate and select a

@@ -21,6 +21,7 @@ SUBDIRS = \
 	problems \
 	scales \
 	topology \
+	petsc \
 	utils
 
 #	friction 

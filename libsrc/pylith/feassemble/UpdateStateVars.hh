@@ -15,7 +15,7 @@
 
 #include "pylith/topology/topologyfwd.hh" // USES Field
 
-#include "pylith/utils/petscfwd.h" // USES PetscIS, PetscDM, PetscVec
+#include "pylith/petsc/petsc_types.h" // USES PetscIS, PetscDM, PetscVec
 
 class pylith::feassemble::UpdateStateVars : public pylith::utils::GenericComponent {
     friend class TestUpdateStateVars; // unit testing

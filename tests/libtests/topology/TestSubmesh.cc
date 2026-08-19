@@ -15,7 +15,7 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES createLowerDimMesh()
 #include "pylith/topology/Stratum.hh" // USES Stratum
-#include "pylith/utils/Exceptions.hh" // USES Exception
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
 
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
 
@@ -137,8 +137,8 @@ pylith::topology::TestSubmesh::testCreateLowerDimMesh(void) {
     } // for
 
     delete _testMesh;_testMesh = NULL;
-    REQUIRE_THROWS_AS(MeshOps::createLowerDimMesh(*_domainMesh, "zzyyxx", labelValue, "testFail1"), pylith::ValueError);
-    REQUIRE_THROWS_AS(MeshOps::createLowerDimMesh(*_domainMesh, _data->faceGroupName, labelValue+99, "testFail2"), pylith::ValueError);
+    REQUIRE_THROWS_AS(MeshOps::createLowerDimMesh(*_domainMesh, "zzyyxx", labelValue, "testFail1"), pylith::exceptions::ValueError);
+    REQUIRE_THROWS_AS(MeshOps::createLowerDimMesh(*_domainMesh, _data->faceGroupName, labelValue+99, "testFail2"), pylith::exceptions::ValueError);
 } // testCreateLowerDimMesh
 
 
@@ -184,8 +184,8 @@ pylith::topology::TestSubmesh::testCreateSubdomainMesh(void) {
     } // for
 
     delete _testMesh;_testMesh = NULL;
-    CHECK_THROWS_AS(MeshOps::createSubdomainMesh(*_domainMesh, "material-id", -9, "Test subdomain"), pylith::ValueError);
-    CHECK_THROWS_AS(MeshOps::createSubdomainMesh(*_domainMesh, "zzyyxx", -9, "Test subdomain"), pylith::ValueError);
+    CHECK_THROWS_AS(MeshOps::createSubdomainMesh(*_domainMesh, "material-id", -9, "Test subdomain"), pylith::exceptions::ValueError);
+    CHECK_THROWS_AS(MeshOps::createSubdomainMesh(*_domainMesh, "zzyyxx", -9, "Test subdomain"), pylith::exceptions::ValueError);
 } // testCreateLowerDimMesh
 
 

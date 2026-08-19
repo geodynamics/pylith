@@ -29,8 +29,8 @@ def load_tests(loader, tests, pattern):
 
 
 if __name__ == "__main__":
-    from pylith.utils.PetscManager import PetscManager
-    petsc = PetscManager()
+    from pylith.petsc.Manager import Manager
+    petsc = Manager()
     petsc.initialize()
 
     unittest.main(verbosity=2)

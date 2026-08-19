@@ -21,9 +21,9 @@
 
 #include "pylith/scales/Scales.hh" // USES Scales
 
-#include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_BEGIN/END
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
-#include "pylith/utils/Exceptions.hh" // USES Exception
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
 
 #include <cassert> // USES assert()
 #include <sstream> // USES std::ostringstream
@@ -188,7 +188,8 @@ pylith::bc::_NeumannUserFn::setKernelsResidual(pylith::feassemble::IntegratorBou
         kernels[0] = ResidualKernels(bc.getSubfieldName(), pylith::feassemble::Integrator::RHS, r0, r1);
         break;
     default:
-        PYLITH_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown formulation for equations ("<<formulation<<").");
+        PYLITH_ERROR(pylith::exceptions::SwitchLogicError,
+                     "Unknown formulation for equations ("<<formulation<<").");
     } // switch
 
     assert(integrator);

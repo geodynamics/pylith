@@ -23,9 +23,9 @@
 #include "spatialdata/spatialdb/TimeHistory.hh" // USES TimeHistory
 #include "pylith/scales/Scales.hh" // USES Scales
 
-#include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_BEGIN/END
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
-#include "pylith/utils/Exceptions.hh" // USES Exception
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
 
 #include <cassert> // USES assert()
 #include <sstream> // USES std::ostringstream
@@ -194,7 +194,7 @@ pylith::bc::DirichletTimeDependent::verifyConfiguration(const pylith::topology::
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "verifyConfiguration(solution="<<solution.getLabel()<<")");
 
     if (!solution.hasSubfield(_subfieldName.c_str())) {
-        PYLITH_COMPONENT_ERROR(pylith::ValueError, pylith::journal::user_input,
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::SubfieldNotFoundError,
                                "Cannot constrain field '"<< _subfieldName
                                                          << "' in component '" << PyreComponent::getIdentifier() << "'"
                                                          << "; field is not in solution.");
@@ -205,8 +205,7 @@ pylith::bc::DirichletTimeDependent::verifyConfiguration(const pylith::topology::
     const int numConstrained = _constrainedDOF.size();
     for (int iConstrained = 0; iConstrained < numConstrained; ++iConstrained) {
         if (_constrainedDOF[iConstrained] >= numComponents) {
-            PYLITH_COMPONENT_ERROR(pylith::ValueError,
-                                   pylith::journal::user_input,
+            PYLITH_COMPONENT_ERROR(pylith::exceptions::ValueError,
                                    "Cannot constrain degree of freedom '" << _constrainedDOF[iConstrained] << "'"
                                                                           << " in component '" << PyreComponent::getIdentifier() << "'"
                                                                           << "; solution field '" << _subfieldName << "' contains only " << numComponents << " components.");
@@ -377,9 +376,9 @@ pylith::bc::_DirichletTimeDependent::setKernelConstraint(pylith::feassemble::Con
         break;
     } // case 0x0
     default: {
-        PYLITH_FIREWALL(pylith::InternalLogicError, pylith::journal::logic,
-                        "Unknown combination of flags for Dirichlet BC terms (useInitial="<<bc.useInitial()
-                                                                                          << ", useRate="<<bc.useRate()<<", useTimeHistory="<<bc.useTimeHistory()<<").");
+        PYLITH_ERROR(pylith::exceptions::SwitchLogicError,
+                     "Unknown combination of flags for Dirichlet BC terms (useInitial="<<bc.useInitial()
+                                                                                       << ", useRate="<<bc.useRate()<<", useTimeHistory="<<bc.useTimeHistory()<<").");
     } // default
     } // switch
 

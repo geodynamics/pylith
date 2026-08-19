@@ -13,7 +13,7 @@
 #include "pylith/initializers/MeshWriter.hh" // implementation of class methods
 
 #include "pylith/meshio/MeshIO.hh" // HOLDSA MeshIO
-#include "pylith/utils/error.hh" // USES PylithCallPetsc()
+#include "pylith/exceptions/error.hh" // USES PylithCallPetsc()
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 // ------------------------------------------------------------------------------------------------

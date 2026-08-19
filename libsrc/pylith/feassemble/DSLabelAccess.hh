@@ -12,7 +12,7 @@
 #include "pylith/feassemble/feassemblefwd.hh" // forward declarations
 
 #include "pylith/utils/types.hh" // USES PetscInt
-#include "pylith/utils/petscfwd.h" // HASA PetscDM, PetscDS, PetscWeakForm
+#include "pylith/petsc/petsc_types.h" // HASA PetscDM, PetscDS, PetscWeakForm
 
 #include <string> // HASA std::string
 

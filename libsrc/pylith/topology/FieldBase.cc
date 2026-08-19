@@ -12,9 +12,9 @@
 
 #include "pylith/topology/FieldBase.hh" // implementation of class methods
 
-#include "pylith/utils/error.hh" // USES std::logic_error
+#include "pylith/exceptions/error.hh" // USES std::logic_error
 #include "pylith/utils/journals.hh" // USES journal macros
-#include "pylith/utils/Exceptions.hh" // USES Exception
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
 
 // ----------------------------------------------------------------------
 // Default constructor.
@@ -50,7 +50,7 @@ pylith::topology::FieldBase::vectorFieldString(VectorFieldEnum value) { // vecto
     case MULTI_OTHER:
         return "multi_other";
     default:
-        PYLITH_ERROR(pylith::InternalLogicError, pylith::journal::logic,
+        PYLITH_ERROR(pylith::exceptions::SwitchLogicError,
                      "Unknown vector field type " << value << ".");
     } // switch
 } // vectorFieldString
@@ -79,7 +79,7 @@ pylith::topology::FieldBase::parseVectorFieldString(const char* value) { // pars
     } else if (0 == strcmp(value, "multi_other")) {
         valueEnum = MULTI_OTHER;
     } else {
-        PYLITH_ERROR(pylith::InternalLogicError, pylith::journal::logic,
+        PYLITH_ERROR(pylith::exceptions::SwitchLogicError,
                      "Unrecognized vector field string '" << value << "'.");
     } // else
 

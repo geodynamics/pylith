@@ -10,22 +10,22 @@
 # =================================================================================================
 # @file tests/petsc/TestPetscApp.py
 #
-# @brief Test PetscApplication and PetscComponent.
+# @brief Test Application and Component.
 
 import unittest
 
 import pythia.pyre.inventory
 
-from pylith.utils.PetscComponent import PetscComponent
-from pylith.apps.PetscApplication import PetscApplication
+from pylith.petsc.Component import Component
+from pylith.petsc.Application import Application
 
 
-class FooBar(PetscComponent):
+class FooBar(Component):
 
     value = pythia.pyre.inventory.int("value", default=0)
 
     def __init__(self, name="foobar", facility="foo"):
-        PetscComponent.__init__(self, name, facility)
+        Component.__init__(self, name, facility)
         return
 
     def _cleanup(self):
@@ -33,13 +33,13 @@ class FooBar(PetscComponent):
         return
 
 
-class TestApp(PetscApplication):
-    """PetscApplication with one facility, 'foo'.
+class TestApp(Application):
+    """Application with one facility, 'foo'.
     """
     foo = pythia.pyre.inventory.facility("foo", factory=FooBar)
 
     def __init__(self):
-        PetscApplication.__init__(self, name="testapp")
+        Application.__init__(self, name="testapp")
         return
 
     def main(self, *args, **kwds):
@@ -51,14 +51,14 @@ class TestApp(PetscApplication):
         return
 
     def onComputeNodes(self, *args, **kwds):
-        PetscApplication.onComputeNodes(self, args, kwds)
+        Application.onComputeNodes(self, args, kwds)
         assert(-1 == self.foo.value)
         assert("_cleanup" == self.label)
         return
 
 
 class TestPetscApp(unittest.TestCase):
-    """Test of PetscApplication.
+    """Test of Application.
     """
 
     def test_run(self):

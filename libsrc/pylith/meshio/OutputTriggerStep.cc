@@ -13,7 +13,7 @@
 #include "pylith/meshio/OutputTriggerStep.hh" // Implementation of class methods
 
 #include "pylith/utils/constants.hh" // USES pylith::min_int
-#include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_BEGIN/END
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 // ---------------------------------------------------------------------------------------------------------------------

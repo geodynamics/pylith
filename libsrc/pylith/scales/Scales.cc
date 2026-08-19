@@ -13,7 +13,7 @@
 #include "Scales.hh" // implementation of class methods
 
 #include "pylith/utils/journals.hh" // USES journal macros
-#include "pylith/utils/Exceptions.hh" // USES Exception
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
 
 #include <cassert> // USES assert()
 
@@ -63,7 +63,7 @@ pylith::scales::Scales::operator=(const Scales& dim) {
 void
 pylith::scales::Scales::setLengthScale(const double value) {
     if (value <= 0.0) {
-        PYLITH_ERROR(pylith::ValueError, pylith::journal::user_input,
+        PYLITH_ERROR(pylith::exceptions::OutOfRangeError,
                      "Length scale (" << value << ") must be positive.");
     } // if
     _length = value;
@@ -75,7 +75,7 @@ pylith::scales::Scales::setLengthScale(const double value) {
 void
 pylith::scales::Scales::setDisplacementScale(const double value) {
     if (value <= 0.0) {
-        PYLITH_ERROR(pylith::ValueError, pylith::journal::user_input,
+        PYLITH_ERROR(pylith::exceptions::OutOfRangeError,
                      "Displacement scale (" << value << ") must be positive.");
     } // if
     _displacement = value;
@@ -87,7 +87,7 @@ pylith::scales::Scales::setDisplacementScale(const double value) {
 void
 pylith::scales::Scales::setRigidityScale(const double value) {
     if (value <= 0.0) {
-        PYLITH_ERROR(pylith::ValueError, pylith::journal::user_input,
+        PYLITH_ERROR(pylith::exceptions::OutOfRangeError,
                      "Rigidity scale (" << value << ") must be positive.");
     } // if
     _rigidity = value;
@@ -99,7 +99,7 @@ pylith::scales::Scales::setRigidityScale(const double value) {
 void
 pylith::scales::Scales::setTimeScale(const double value) {
     if (value <= 0.0) {
-        PYLITH_ERROR(pylith::ValueError, pylith::journal::user_input,
+        PYLITH_ERROR(pylith::exceptions::OutOfRangeError,
                      "Time scale (" << value << ") must be positive.");
     } // if
     _time = value;
@@ -111,7 +111,7 @@ pylith::scales::Scales::setTimeScale(const double value) {
 void
 pylith::scales::Scales::setTemperatureScale(const double value) {
     if (value <= 0.0) {
-        PYLITH_ERROR(pylith::ValueError, pylith::journal::user_input,
+        PYLITH_ERROR(pylith::exceptions::OutOfRangeError,
                      "Temperature scale (" << value << ") must be positive.");
     } // if
     _temperature = value;

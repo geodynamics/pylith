@@ -12,7 +12,7 @@
 
 #include "pylith/materials/Material.hh" // implementation of object methods
 
-#include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 #include <cassert> // USES assert()
@@ -74,7 +74,7 @@ pylith::materials::Material::createConstraints(const pylith::topology::Field& so
 
 // ------------------------------------------------------------------------------------------------
 // Get default PETSc solver options appropriate for material.
-pylith::utils::PetscOptions*
+pylith::petsc::Options*
 pylith::materials::Material::getSolverDefaults(const bool isParallel,
                                                const bool hasFault) const {
     return NULL;

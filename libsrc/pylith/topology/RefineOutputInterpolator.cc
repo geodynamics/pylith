@@ -17,8 +17,8 @@
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/topology/FieldOps.hh" // USES FieldOps
 
-#include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
-#include "pylith/utils/EventLogger.hh" // USES EventLogger
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_*
+#include "pylith/petsc/EventLogger.hh" // USES EventLogger
 
 #include <cassert> // USES assert()
 
@@ -34,7 +34,7 @@ public:
                 static
                 void init(void);
 
-                static pylith::utils::EventLogger logger;
+                static pylith::petsc::EventLogger logger;
                 static PylithInt initialize;
                 static PylithInt interpolate;
             };
@@ -43,7 +43,7 @@ public:
     } // topology
 } // pylith
 
-pylith::utils::EventLogger pylith::topology::_RefineOutputInterpolator::Events::logger;
+pylith::petsc::EventLogger pylith::topology::_RefineOutputInterpolator::Events::logger;
 PylithInt pylith::topology::_RefineOutputInterpolator::Events::initialize;
 PylithInt pylith::topology::_RefineOutputInterpolator::Events::interpolate;
 

@@ -17,8 +17,8 @@
 #include "pylith/fekernels/Elasticity.hh" // USES Elasticity kernels
 
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
-#include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
-#include "pylith/utils/Exceptions.hh" // USES Exception
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_BEGIN/END
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 
@@ -180,7 +180,7 @@ pylith::materials::IsotropicLinearPoroelasticity::getKernelg0p(const spatialdata
               NULL;
         break;
     default:
-        PYLITH_COMPONENT_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown case (bitUse=" << bitUse << ").");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::SwitchLogicError, "Unknown case (bitUse=" << bitUse << ").");
     } // switch
 
     PYLITH_METHOD_RETURN(g0p);
@@ -224,7 +224,7 @@ pylith::materials::IsotropicLinearPoroelasticity::getKernelg1p_explicit(const sp
               NULL;
         break;
     default:
-        PYLITH_COMPONENT_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown case (bitUse=" << bitUse << ").");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::SwitchLogicError, "Unknown case (bitUse=" << bitUse << ").");
     } // switch
 
     PYLITH_METHOD_RETURN(g1p);
@@ -256,7 +256,7 @@ pylith::materials::IsotropicLinearPoroelasticity::getKernelg1v_explicit(const sp
               NULL;
         break;
     default:
-        PYLITH_COMPONENT_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown case (bitUse=" << bitUse << ").");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::SwitchLogicError, "Unknown case (bitUse=" << bitUse << ").");
     } // switch
 
     PYLITH_METHOD_RETURN(g1v);
@@ -334,7 +334,7 @@ pylith::materials::IsotropicLinearPoroelasticity::getKernelf0p_implicit(const sp
               NULL;
         break;
     default:
-        PYLITH_COMPONENT_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown case (bitUse=" << bitUse << ").");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::SwitchLogicError, "Unknown case (bitUse=" << bitUse << ").");
     } // switch
 
     PYLITH_METHOD_RETURN(f0p);
@@ -366,7 +366,7 @@ pylith::materials::IsotropicLinearPoroelasticity::getKernelf1u_implicit(const sp
               NULL;
         break;
     default:
-        PYLITH_COMPONENT_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown case (bitUse=" << bitUse << ").");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::SwitchLogicError, "Unknown case (bitUse=" << bitUse << ").");
     } // switch
 
     PYLITH_METHOD_RETURN(f1u);
@@ -433,7 +433,7 @@ pylith::materials::IsotropicLinearPoroelasticity::getKernelf1p_implicit(const sp
         break;
 
     default:
-        PYLITH_COMPONENT_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown case (bitUse=" << bitUse << ").");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::SwitchLogicError, "Unknown case (bitUse=" << bitUse << ").");
     } // switch
 
     PYLITH_METHOD_RETURN(f1p);
@@ -532,7 +532,7 @@ pylith::materials::IsotropicLinearPoroelasticity::getKernelJf3pp(const spatialda
                 NULL;
         break;
     default:
-        PYLITH_COMPONENT_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown case (bitUse=" << bitUse << ").");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::SwitchLogicError, "Unknown case (bitUse=" << bitUse << ").");
     } // switch
 
     PYLITH_METHOD_RETURN(Jf3pp);
@@ -583,7 +583,7 @@ pylith::materials::IsotropicLinearPoroelasticity::getKernelCauchyStressVector(co
                  NULL;
         break;
     default:
-        PYLITH_COMPONENT_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown case (bitUse=" << bitUse << ").");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::SwitchLogicError, "Unknown case (bitUse=" << bitUse << ").");
     } // switch
 
     PYLITH_METHOD_RETURN(kernel);

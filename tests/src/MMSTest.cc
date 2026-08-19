@@ -13,7 +13,7 @@
 #include "tests/src/MMSTest.hh" // implementation of class methods
 #include "pylith/problems/TimeDependent.hh" // USES TimeDependent
 #include "pylith/feassemble/IntegrationData.hh" // USES IntegrationData
-#include "pylith/utils/PetscOptions.hh" // USES PetscOptions
+#include "pylith/petsc/Options.hh" // USES PetscOptions
 
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES MeshOps
@@ -21,7 +21,7 @@
 
 #include "petscts.h" // USES PetscTS
 
-#include "pylith/utils/error.hh" // USES PylithCallPetsc()
+#include "pylith/exceptions/error.hh" // USES PylithCallPetsc()
 #include "pylith/utils/array.hh" // USES real_array, string_vector
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
@@ -216,7 +216,7 @@ pylith::testing::MMSTest::_initialize(void) {
     PYLITH_METHOD_BEGIN;
     REQUIRE(_problem);
 
-    _problem->setPetscDefaults(pylith::utils::PetscDefaults::TESTING | pylith::utils::PetscDefaults::SOLVER);
+    _problem->setPetscDefaults(pylith::petsc::Defaults::TESTING | pylith::petsc::Defaults::SOLVER);
     _problem->setSolverType(pylith::problems::Problem::NONLINEAR);
     _problem->setMaxTimeSteps(1);
     _problem->preinitialize(*_mesh);

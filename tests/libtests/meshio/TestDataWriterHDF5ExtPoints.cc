@@ -17,7 +17,7 @@
 #include "pylith/meshio/OutputSolnPoints.hh" // USES OutputSolnPoints
 #include "pylith/meshio/DataWriterHDF5Ext.hh" // USES DataWriterHDF5Ext
 #include "pylith/meshio/OutputSubfield.hh" // USES OutputSubfield
-#include "pylith/utils/error.hh" // USES PYLITH_METHOD*
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD*
 
 #include "pylith/scales/Scales.hh" // USES Scales
 

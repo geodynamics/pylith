@@ -53,7 +53,7 @@ public:
              * @returns PETSc solver options.
              */
             virtual
-            pylith::utils::PetscOptions* getSolverDefaults(const bool isParallel,
+            pylith::petsc::Options* getSolverDefaults(const bool isParallel,
                                                            const bool hasFault) const;
 
         }; // class Material

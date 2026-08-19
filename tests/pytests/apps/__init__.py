@@ -1,9 +1,8 @@
-from . import (TestPetscApplication, TestPyLithApp, TestEqInfoApp)
+from . import (TestPyLithApp, TestEqInfoApp)
 
 
 def test_modules():
     return [
-        TestPetscApplication,
         TestPyLithApp,
         TestEqInfoApp,
     ]

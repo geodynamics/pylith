@@ -25,7 +25,7 @@
 #include "pylith/topology/VisitorMesh.hh" // USES VecVisitorMesh
 
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
-#include "pylith/utils/Exceptions.hh" // USES Exception
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/geocoords/Converter.hh" // USES Converter
@@ -109,7 +109,7 @@ pylith::meshio::OutputSolnPoints::_writeSolnStep(const PylithReal t,
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "_writeSolnStep(t="<<t<<", tindex="<<tindex<<", solution="<<solution.getLabel()<<")");
 
     if (dynamic_cast<pylith::meshio::DataWriterVTK*>(_writer)) {
-        PYLITH_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "PETSc VTK writer using the VTU format does not support output at points. Use the default DataWriterHDF5 writer.");
+        PYLITH_ERROR(pylith::exceptions::InternalLogicError, "PETSc VTK writer using the VTU format does not support output at points. Use the default DataWriterHDF5 writer.");
     } // if
 
     if (!_interpolator) {

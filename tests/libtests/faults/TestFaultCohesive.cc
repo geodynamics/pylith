@@ -14,7 +14,7 @@
 
 #include "tests/src/FaultCohesiveStub.hh" // USES FaultCohesiveStub
 #include "pylith/topology/Mesh.hh" // USES Mesh::cells_label_name
-#include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_*
 
 #include "catch2/catch_test_macros.hpp"
 #include "catch2/matchers/catch_matchers_floating_point.hpp"

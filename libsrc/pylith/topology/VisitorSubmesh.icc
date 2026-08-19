@@ -9,7 +9,7 @@
 // =================================================================================================
 #pragma once
 
-#include "pylith/utils/error.hh" // USES PylithCallPetsc()
+#include "pylith/exceptions/error.hh" // USES PylithCallPetsc()
 
 // ----------------------------------------------------------------------
 // Default constructor.
@@ -221,9 +221,9 @@ inline
 pylith::topology::MatVisitorSubmesh::~MatVisitorSubmesh(void) { // destructor
     clear();
 
-    PylithCallPetscNoThrow(PetscSectionDestroy(&_subsection));assert(!_subsection);
-    PylithCallPetscNoThrow(PetscSectionDestroy(&_globalSubsection));assert(!_globalSubsection);
-    PylithCallPetscNoThrow(PetscSectionDestroy(&_globalSection));assert(!_globalSection);
+    PetscSectionDestroy(&_subsection);
+    PetscSectionDestroy(&_globalSubsection);
+    PetscSectionDestroy(&_globalSection);
 } // destructor
 
 

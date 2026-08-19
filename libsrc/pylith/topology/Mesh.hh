@@ -12,7 +12,7 @@
 #include "pylith/topology/topologyfwd.hh" // forward declarations
 #include "spatialdata/geocoords/geocoordsfwd.hh" // forward declarations
 
-#include "pylith/utils/petscfwd.h" // HASA PetscDM
+#include "pylith/petsc/petsc_types.h" // HASA PetscDM
 
 // Mesh -----------------------------------------------------------------
 /** @brief PyLith finite-element mesh.

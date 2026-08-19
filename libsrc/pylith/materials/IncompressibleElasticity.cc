@@ -24,9 +24,10 @@
 #include "pylith/fekernels/Elasticity.hh" // USES Elasticity kernels
 #include "pylith/fekernels/DispVel.hh" // USES DispVel kernels
 
-#include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
+#include "pylith/petsc/Options.hh" // USES Options
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
-#include "pylith/utils/Exceptions.hh" // USES Exception
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_*
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
 
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
@@ -226,13 +227,13 @@ pylith::materials::IncompressibleElasticity::createDerivedField(const pylith::to
 
 // ------------------------------------------------------------------------------------------------
 // Get default PETSc solver options appropriate for material.
-pylith::utils::PetscOptions*
+pylith::petsc::Options*
 pylith::materials::IncompressibleElasticity::getSolverDefaults(const bool isParallel,
                                                                const bool hasFault) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "getSolverDefaults(isParallel="<<isParallel<<", hasFault="<<hasFault<<")");
 
-    pylith::utils::PetscOptions* options = new pylith::utils::PetscOptions();assert(options);
+    pylith::petsc::Options* options = new pylith::petsc::Options();assert(options);
 
     switch (_formulation) {
     case pylith::problems::Physics::QUASISTATIC:
@@ -264,7 +265,7 @@ pylith::materials::IncompressibleElasticity::getSolverDefaults(const bool isPara
     case pylith::problems::Physics::DYNAMIC_IMEX:
         break;
     default:
-        PYLITH_COMPONENT_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown formulation '" << _formulation << "'.");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::SwitchLogicError, "Unknown formulation '" << _formulation << "'.");
     } // switch
 
     PYLITH_METHOD_RETURN(options);
@@ -325,7 +326,7 @@ pylith::materials::IncompressibleElasticity::_setKernelsResidual(pylith::feassem
     case 0x0:
         break;
     default:
-        PYLITH_COMPONENT_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown case (bitUse=" << bitUse << ") for residual kernels.");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::SwitchLogicError, "Unknown case (bitUse=" << bitUse << ") for residual kernels.");
     } // switch
 
     // Displacement

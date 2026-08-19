@@ -13,7 +13,7 @@
 #include "pylith/utils/GenericComponent.hh" // Test subject
 
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
-#include "pylith/utils/Exceptions.hh" // USES Exception
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
 
 #include "catch2/catch_test_macros.hpp"
 
@@ -93,11 +93,11 @@ pylith::utils::TestGenericComponent::testJournals(void) {
 
     // CHECK_THROWS_AS() does not seem to work with PYLITH_COMPONENT* macros.
     try {
-        PYLITH_ERROR(pylith::IOError, pylith::journal::user_input, "CORRECT: This is an error message.");
-    } catch (const pylith::IOError& err) {}
+        PYLITH_ERROR(pylith::exceptions::IOError, "CORRECT: This is an error message.");
+    } catch (const pylith::exceptions::IOError& err) {}
     try {
-        PYLITH_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "CORRECT: This is an error message.");
-    } catch (const pylith::InternalLogicError& err) {}
+        PYLITH_ERROR(pylith::exceptions::InternalLogicError, "CORRECT: This is an error message.");
+    } catch (const pylith::exceptions::InternalLogicError& err) {}
 } // testJournals
 
 

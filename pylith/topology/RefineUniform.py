@@ -8,11 +8,11 @@
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
 
-from pylith.utils.PetscComponent import PetscComponent
+from pylith.petsc.Component import Component
 from .topology import RefineUniform as ModuleRefineUniform
 
 
-class RefineUniform(PetscComponent, ModuleRefineUniform):
+class RefineUniform(Component, ModuleRefineUniform):
     """
     Uniform global mesh refinement in parallel.
 
@@ -34,7 +34,7 @@ class RefineUniform(PetscComponent, ModuleRefineUniform):
     def __init__(self, name="refineuniform"):
         """Constructor.
         """
-        PetscComponent.__init__(self, name, facility="mesh_refiner")
+        Component.__init__(self, name, facility="mesh_refiner")
 
     def preinitialize(self):
         """Do minimal initialization."""

@@ -27,8 +27,8 @@
 #include "petscds.h" // USES PetscDS
 
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
-#include "pylith/utils/Exceptions.hh" // USES Exception
-#include "pylith/utils/EventLogger.hh" // USES EventLogger
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
+#include "pylith/petsc/EventLogger.hh" // USES EventLogger
 
 #include <cassert> // USES assert()
 
@@ -43,7 +43,7 @@ public:
                 static
                 void init(void);
 
-                static pylith::utils::EventLogger logger;
+                static pylith::petsc::EventLogger logger;
                 static PylithInt initialize;
                 static PylithInt setInterfaceData;
                 static PylithInt setState;
@@ -58,7 +58,7 @@ public:
 
     }
 }
-pylith::utils::EventLogger pylith::feassemble::_IntegratorDomain::Events::logger;
+pylith::petsc::EventLogger pylith::feassemble::_IntegratorDomain::Events::logger;
 PylithInt pylith::feassemble::_IntegratorDomain::Events::initialize;
 PylithInt pylith::feassemble::_IntegratorDomain::Events::setInterfaceData;
 PylithInt pylith::feassemble::_IntegratorDomain::Events::setState;
@@ -154,7 +154,7 @@ pylith::feassemble::IntegratorDomain::setKernelsResidual(const std::vector<Resid
             _hasRHSResidual = true;
             break;
         default:
-            PYLITH_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown residual part " << kernels[i].part <<".");
+            PYLITH_ERROR(pylith::exceptions::SwitchLogicError, "Unknown residual part " << kernels[i].part <<".");
         } // switch
     } // for
 
@@ -192,7 +192,7 @@ pylith::feassemble::IntegratorDomain::setKernelsJacobian(const std::vector<Jacob
             _hasLHSJacobianLumped = true;
             break;
         default:
-            PYLITH_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown Jacobian part " << kernels[i].part <<".");
+            PYLITH_ERROR(pylith::exceptions::SwitchLogicError, "Unknown Jacobian part " << kernels[i].part <<".");
         } // switch
     } // for
 

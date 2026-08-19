@@ -215,16 +215,17 @@ dist_noinst_DATA = \
 	user/components/topology/Subfield.md \
 	user/components/topology/index.md \
 	user/components/update_components.sh \
+	user/components/petsc/index.md \
+	user/components/petsc/Manager.md \
+	user/components/petsc/Defaults.md \
+	user/components/petsc/PropertyList.md \
 	user/components/utils/CollectVersionInfo.md \
 	user/components/utils/DumpParameters.md \
 	user/components/utils/DumpParametersAscii.md \
 	user/components/utils/DumpParametersJson.md \
 	user/components/utils/EmptyBin.md \
 	user/components/utils/NullComponent.md \
-	user/components/utils/PetscManager.md \
-	user/components/utils/PropertyList.md \
 	user/components/utils/SimulationMetadata.md \
-	user/components/utils/PetscDefaults.md \
 	user/components/utils/index.md \
 	user/examples/box-2d/index.md \
 	user/examples/box-2d/common-information.md \

@@ -8,11 +8,11 @@
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
 
-from pylith.utils.PetscComponent import PetscComponent
+from pylith.petsc.Component import Component
 from .faults import KinSrc as ModuleKinSrc
 
 
-class KinSrc(PetscComponent, ModuleKinSrc):
+class KinSrc(Component, ModuleKinSrc):
     """
     Abstract base class for a prescribed slip source.
     """
@@ -33,7 +33,7 @@ class KinSrc(PetscComponent, ModuleKinSrc):
 
     def __init__(self, name="kinsrc"):
         """Constructor."""
-        PetscComponent.__init__(self, name, facility="eq_kinematic_src")
+        Component.__init__(self, name, facility="eq_kinematic_src")
         return
 
     def preinitialize(self, problem):
@@ -55,7 +55,7 @@ class KinSrc(PetscComponent, ModuleKinSrc):
 
     def _configure(self):
         """Setup members using inventory."""
-        PetscComponent._configure(self)
+        Component._configure(self)
         return
 
     def _createModuleObj(self):

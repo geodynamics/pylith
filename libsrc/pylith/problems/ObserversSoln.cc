@@ -15,7 +15,7 @@
 #include "pylith/problems/ObserverSoln.hh" // USES ObserverSoln
 #include "pylith/topology/Field.hh" // USES Field
 
-#include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_BEGIN/END
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_DEBUG
 
 #include <typeinfo> // USES typeid()

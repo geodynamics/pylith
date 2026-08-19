@@ -15,10 +15,10 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/MeshOps.hh" // USES MeshOps
 #include "pylith/topology/Stratum.hh" // USES Stratum
-#include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/utils/journals.hh" // USES journal macros
-#include "pylith/utils/Exceptions.hh" // USES Exception
-#include "pylith/utils/EventLogger.hh" // USES EventLogger
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
+#include "pylith/petsc/EventLogger.hh" // USES EventLogger
 
 #include "pylith/meshio/MeshBuilder.hh" // USES MeshBuilder
 
@@ -54,7 +54,7 @@ public:
                 static
                 void init(void);
 
-                static pylith::utils::EventLogger logger;
+                static pylith::petsc::EventLogger logger;
                 static PylithInt refine;
                 static PylithInt refineFixFaceLabels;
                 static PylithInt refineFixCellsLabel;
@@ -65,7 +65,7 @@ public:
     } // topology
 } // pylith
 
-pylith::utils::EventLogger pylith::topology::_RefineUniform::Events::logger;
+pylith::petsc::EventLogger pylith::topology::_RefineUniform::Events::logger;
 PylithInt pylith::topology::_RefineUniform::Events::refine;
 PylithInt pylith::topology::_RefineUniform::Events::refineFixFaceLabels;
 PylithInt pylith::topology::_RefineUniform::Events::refineFixCellsLabel;
@@ -140,7 +140,7 @@ pylith::topology::RefineUniform::refine(const pylith::topology::Mesh& mesh) {
 
     const int meshDim = mesh.getDimension();
     if (( meshDim > 0) && ( meshDepth != meshDim) ) {
-        PYLITH_ERROR(pylith::InternalLogicError, pylith::journal::logic,
+        PYLITH_ERROR(pylith::exceptions::NotImplementedError,
                      "Mesh refinement for uninterpolated meshes not supported.");
     } // if
 

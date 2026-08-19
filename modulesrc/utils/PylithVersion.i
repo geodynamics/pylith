@@ -48,6 +48,13 @@ public:
             static
             const char* doi(void);
 
+            /** Get release date.
+             *
+             * @returns Release date.
+             */
+            static
+            const char* releaseDate(void);
+
             /** Get GIT revision.
              *
              * @returns GIT revision.

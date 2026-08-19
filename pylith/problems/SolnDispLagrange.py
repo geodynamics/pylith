@@ -12,11 +12,11 @@
 # @brief Python subfields container with displacement and fault
 # Lagrange multiplier subfields.
 
-from pylith.utils.PetscComponent import PetscComponent
+from pylith.petsc.Component import Component
 from .Solution import Solution as SolutionBase
 
 
-class SolnDispLagrange(PetscComponent):
+class SolnDispLagrange(Component):
     """
     Container for solution subfields with displacement and fault Lagrange multiplier subfields.
     """
@@ -42,11 +42,11 @@ class SolnDispLagrange(PetscComponent):
     def __init__(self, name="solndisplagrange"):
         """Constructor.
         """
-        PetscComponent.__init__(self, name, facility="soln_subfields")
+        Component.__init__(self, name, facility="soln_subfields")
         return
 
     def _configure(self):
-        PetscComponent._configure(self)
+        Component._configure(self)
         return
 
     def components(self):

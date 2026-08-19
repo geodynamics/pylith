@@ -8,10 +8,10 @@
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
 
-from pylith.utils.PetscComponent import PetscComponent
+from pylith.petsc.Component import Component
 
 
-class DerivedSubfieldsElasticity(PetscComponent):
+class DerivedSubfieldsElasticity(Component):
     """
     Derived subfields associated with the elasticity equation.
 
@@ -39,7 +39,7 @@ class DerivedSubfieldsElasticity(PetscComponent):
     def __init__(self, name="derivedsubfieldselasticity"):
         """Constructor.
         """
-        PetscComponent.__init__(self, name, facility="derived_subfields")
+        Component.__init__(self, name, facility="derived_subfields")
 
     def _defaults(self):
         self.cauchyStress.basisOrder = 0

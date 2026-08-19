@@ -8,10 +8,10 @@
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
 
-from pylith.utils.PetscComponent import PetscComponent
+from pylith.petsc.Component import Component
 
 
-class Solution(PetscComponent):
+class Solution(Component):
     """
     Abstract base class for solution field for problem.
     """
@@ -31,7 +31,7 @@ class Solution(PetscComponent):
 
     def __init__(self, name="solution"):
         """Constructor."""
-        PetscComponent.__init__(self, name, facility="solution")
+        Component.__init__(self, name, facility="solution")
         self.field = None
 
     def preinitialize(self, problem, mesh):
@@ -78,7 +78,7 @@ class Solution(PetscComponent):
 
     def _configure(self):
         """Set members using inventory."""
-        PetscComponent._configure(self)
+        Component._configure(self)
 
     def _cleanup(self):
         if self.field:

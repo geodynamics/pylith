@@ -10,8 +10,10 @@
 
 
 SUBDIRS = \
+	exceptions \
 	scales \
 	utils \
+	petsc \
 	topology \
 	feassemble \
 	initializers \
@@ -121,6 +123,15 @@ libpylith_la_SOURCES = \
 	meshio/OutputTrigger.cc \
 	meshio/OutputTriggerStep.cc \
 	meshio/OutputTriggerTime.cc \
+	petsc/Application.cc \
+	petsc/ErrorHandler.cc \
+	petsc/EventLogger.cc \
+	petsc/Options.cc \
+	petsc/PetscVersion.cc \
+	petsc/TSAdaptImpulse.cc \
+	petsc/TSMonitor.cc \
+	petsc/SNESMonitor.cc \
+	petsc/KSPMonitor.cc \
 	problems/Problem.cc \
 	problems/TimeDependent.cc \
 	problems/GreensFns.cc \
@@ -151,16 +162,12 @@ libpylith_la_SOURCES = \
 	topology/RefineOutputInterpolator.cc \
 	scales/ElasticityScales.cc \
 	scales/Scales.cc \
-	utils/EventLogger.cc \
 	utils/PyreComponent.cc \
 	utils/GenericComponent.cc \
-	utils/PetscOptions.cc \
 	utils/PylithVersion.cc \
-	utils/PetscVersion.cc \
 	utils/DependenciesVersion.cc \
-	utils/TSAdaptImpulse.cc \
 	utils/TestArray.cc \
-	utils/Exceptions.cc
+	exceptions/Exceptions.cc
 
 
 libpylith_la_CXXFLAGS = $(SANITIZER_CXXFLAGS)
@@ -175,6 +182,10 @@ AM_CPPFLAGS = -I$(top_srcdir)/libsrc
 AM_CPPFLAGS += $(PETSC_CC_INCLUDES)
 
 AM_CPPFLAGS += $(PYTHON_EGG_CPPFLAGS) -I$(PYTHON_INCDIR)
+
+if ENABLE_CPPTRACE
+  libpylith_la_LIBADD += -lcpptrace
+endif
 
 if ENABLE_CUBIT
   libpylith_la_SOURCES += \

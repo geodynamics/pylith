@@ -14,7 +14,7 @@ $ pylith step06_twofaults.cfg
 >> software/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:76:main
  -- info (application-flow)
  -- Running on 1 process(es).
- >> src/cig/pylith/libsrc/pylith/utils/PetscOptions.cc:251:static void pylith::utils::_PetscOptions::write(pythia::journal::info_t &, const char *, const PetscOptions &)
+ >> src/cig/pylith/libsrc/pylith/petsc/Options.cc:251:static void pylith::utils::_Options::write(pythia::journal::info_t &, const char *, const PetscOptions &)
  -- info (application-flow)
  -- Setting PETSc options:
     dm_reorder_section = true
@@ -74,7 +74,7 @@ $ pylith step06_twofaults.cfg
 
 Fatal error. Calling MPI_Abort() to abort PyLith application.
 Traceback (most recent call last):
-  File "software/pylith-debug/lib/python3.12/site-packages/pylith/apps/PetscApplication.py", line 55, in onComputeNodes
+  File "software/pylith-debug/lib/python3.12/site-packages/pylith/petsc/Application.py", line 55, in onComputeNodes
     self.main(*args, **kwds)
   File "software/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py", line 85, in main
     self.problem.initialize()

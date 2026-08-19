@@ -17,7 +17,7 @@
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 #include "pylith/meshio/DataWriterVTK.hh" // USES DataWriterVTK
 #include "pylith/meshio/OutputSubfield.hh" // USES OutputSubfield
-#include "pylith/utils/error.hh" // USES PYLITH_METHOD*
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD*
 
 #include "catch2/catch_test_macros.hpp"
 #include "catch2/matchers/catch_matchers_floating_point.hpp"
@@ -62,15 +62,15 @@ pylith::meshio::TestDataWriterVTKMesh::testAccessors(void) {
     CHECK_THAT(writer._timeConstant, Catch::Matchers::WithinAbs(value, tolerance));
 
     // Verify error with negative time constant.
-    CHECK_THROWS_AS(writer.timeConstant(-1.0), pylith::ValueError);
+    CHECK_THROWS_AS(writer.timeConstant(-1.0), pylith::exceptions::ValueError);
 
     const int ivalue = 4;
     writer.precision(ivalue);
     CHECK(ivalue == writer._precision);
 
     // Verify error with nonpositive precision.
-    CHECK_THROWS_AS(writer.precision(0), pylith::ValueError);
-    CHECK_THROWS_AS(writer.precision(-1), pylith::ValueError);
+    CHECK_THROWS_AS(writer.precision(0), pylith::exceptions::ValueError);
+    CHECK_THROWS_AS(writer.precision(-1), pylith::exceptions::ValueError);
 } // testFilename
 
 

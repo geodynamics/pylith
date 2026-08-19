@@ -23,7 +23,7 @@
 #include "pylith/meshio/MeshIOAscii.hh" // USES MeshIOAscii
 #include "pylith/problems/SolutionFactory.hh" // USES SolutionFactory
 
-#include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_BEGIN/END
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
@@ -236,7 +236,7 @@ pylith::bc::TestNeumannTimeDependent::testVerifyConfiguration(void) {
 
     // Check for failure with field not in solution.
     _bc->field("dslfjadsf");
-    CPPUNIT_ASSERT_THROW(_bc->verifyConfiguration(*_solution), pylith::ValueError);
+    CPPUNIT_ASSERT_THROW(_bc->verifyConfiguration(*_solution), pylith::exceptions::ValueError);
 
     PYLITH_METHOD_END;
 } // testVerifyConfiguration

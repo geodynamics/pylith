@@ -22,8 +22,8 @@
 #include "pylith/scales/ElasticityScales.hh" // USES ElasticityScales
 
 #include "pylith/utils/journals.hh"
-#include "pylith/utils/error.hh"
-#include "pylith/utils/Exceptions.hh"
+#include "pylith/exceptions/error.hh"
+#include "pylith/exceptions/Exceptions.hh"
 
 #include "spatialdata/spatialdb/UserFunctionDB.hh" // USES UserFunctionDB
 #include "spatialdata/geocoords/CSCart.hh" // USES CSCart
@@ -303,7 +303,7 @@ pylith::feassemble::TestAuxiliaryFactory::testSetValuesFromDB(void) {
     AuxiliaryFactory emptyFactory;
     pythia::journal::error_t error(pylith::journal::auxiliary_fields);
     error.deactivate();
-    REQUIRE_THROWS_AS(emptyFactory.setValuesFromDB(), pylith::InternalError);
+    REQUIRE_THROWS_AS(emptyFactory.setValuesFromDB(), pylith::exceptions::InternalError);
 } // testSetValuesFromDB
 
 

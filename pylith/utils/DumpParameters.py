@@ -10,7 +10,7 @@
 
 from pythia.pyre.components.Component import Component
 
-from .PropertyList import PropertyList
+from pylith.petsc.PropertyList import PropertyList
 
 
 class DumpParameters(Component):

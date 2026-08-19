@@ -8,13 +8,13 @@
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
 
-from .PetscApplication import PetscApplication
+from pylith.petsc.Application import Application
 
 from pylith.problems.TimeDependent import TimeDependent
 from pylith.scales.General import General
 
 
-class ConvertMeshApp(PetscApplication):
+class ConvertMeshApp(Application):
     """Application for pre-initializing mesh (reordering, converting formats)."""
 
     import pythia.pyre.inventory
@@ -28,7 +28,7 @@ class ConvertMeshApp(PetscApplication):
 
     def __init__(self, name="convertmeshapp"):
         """Constructor."""
-        PetscApplication.__init__(self, name)
+        Application.__init__(self, name)
 
     def main(self, *args, **kwds):
         """Run the application."""
@@ -43,7 +43,7 @@ class ConvertMeshApp(PetscApplication):
 
     def _configure(self):
         """Setup members using inventory."""
-        PetscApplication._configure(self)
+        Application._configure(self)
 
 
 # End of file

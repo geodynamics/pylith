@@ -16,9 +16,9 @@
 #include "pylith/topology/Stratum.hh" // USES Stratum
 #include "pylith/scales/Scales.hh" // USES Scales
 #include "pylith/utils/array.hh" // USES int_array
-#include "pylith/utils/EventLogger.hh" // USES EventLogger
+#include "pylith/petsc/EventLogger.hh" // USES EventLogger
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL*
-#include "pylith/utils/Exceptions.hh" // USES Exception
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 
@@ -39,7 +39,7 @@ public:
                 static
                 void init(void);
 
-                static pylith::utils::EventLogger logger;
+                static pylith::petsc::EventLogger logger;
                 static PylithInt createSubdomainMesh;
                 static PylithInt createLowerDimMesh;
                 static PylithInt createFromPoints;
@@ -67,7 +67,7 @@ public:
     }
 
 }
-pylith::utils::EventLogger pylith::topology::_MeshOps::Events::logger;
+pylith::petsc::EventLogger pylith::topology::_MeshOps::Events::logger;
 PylithInt pylith::topology::_MeshOps::Events::createSubdomainMesh;
 PylithInt pylith::topology::_MeshOps::Events::createLowerDimMesh;
 PylithInt pylith::topology::_MeshOps::Events::createFromPoints;
@@ -119,7 +119,7 @@ pylith::topology::MeshOps::createSubdomainMesh(const pylith::topology::Mesh& mes
     PetscBool hasLabel = PETSC_FALSE;
     PylithCallPetsc(DMHasLabel(dmDomain, labelName, &hasLabel));
     if (!hasLabel) {
-        PYLITH_ERROR(pylith::ValueError, pylith::journal::user_input,
+        PYLITH_ERROR(pylith::exceptions::LabelNotFoundError,
                      "Could not find group of points '" << labelName << "' in PETSc DM mesh.");
     } // if
 
@@ -133,7 +133,7 @@ pylith::topology::MeshOps::createSubdomainMesh(const pylith::topology::Mesh& mes
     PylithCallPetsc(MPI_Allreduce(&hasLabelValueIntLocal, &hasLabelValueInt, 1, MPI_INT, MPI_MAX,
                                   PetscObjectComm((PetscObject) dmDomain)));
     if (!hasLabelValueInt) {
-        PYLITH_ERROR(pylith::ValueError, pylith::journal::user_input,
+        PYLITH_ERROR(pylith::exceptions::LabelNotFoundError,
                      "Could not find group of points '" << labelName << "' with label value '"
                                                         << labelValue << "' in PETSc DM mesh.");
     } // if
@@ -148,7 +148,7 @@ pylith::topology::MeshOps::createSubdomainMesh(const pylith::topology::Mesh& mes
 
     if (maxConeSize <= 0) {
         PylithCallPetsc(DMDestroy(&dmSubdomain));
-        PYLITH_ERROR(pylith::ValueError, pylith::journal::user_input,
+        PYLITH_ERROR(pylith::exceptions::TopologyError,
                      "Error while creating mesh of subdomain. Subdomain mesh '" << labelName
                                                                                 << "' with label value " << labelValue << " does not contain any cells.\n"
                                                                                 << "Check that you are using the correct label name and value.");
@@ -181,14 +181,14 @@ pylith::topology::MeshOps::createLowerDimMesh(const pylith::topology::Mesh& mesh
     assert(labelName);
 
     if (mesh.getDimension() < 1) {
-        PYLITH_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Cannot create submesh for mesh with dimension < 1.");
+        PYLITH_ERROR(pylith::exceptions::InternalLogicError, "Cannot create submesh for mesh with dimension < 1.");
     } // if
 
     PetscDM dmDomain = mesh.getDM();assert(dmDomain);
     PetscBool hasLabel = PETSC_FALSE;
     PylithCallPetsc(DMHasLabel(dmDomain, labelName, &hasLabel));
     if (!hasLabel) {
-        PYLITH_ERROR(pylith::ValueError, pylith::journal::user_input,
+        PYLITH_ERROR(pylith::exceptions::LabelNotFoundError,
                      "Could not find group '" << labelName << "' in PETSc DM mesh.");
     } // if
 
@@ -202,7 +202,7 @@ pylith::topology::MeshOps::createLowerDimMesh(const pylith::topology::Mesh& mesh
     PylithCallPetsc(MPI_Allreduce(&hasLabelValueIntLocal, &hasLabelValueInt, 1, MPI_INT, MPI_MAX,
                                   PetscObjectComm((PetscObject) dmDomain)));
     if (!hasLabelValueInt) {
-        PYLITH_ERROR(pylith::ValueError, pylith::journal::user_input,
+        PYLITH_ERROR(pylith::exceptions::LabelNotFoundError,
                      "Could not find label value '" << labelValue << "' in group '" << labelName << "' in PETSc DM mesh.");
     } // if
 
@@ -260,7 +260,7 @@ pylith::topology::MeshOps::createLowerDimMesh(const pylith::topology::Mesh& mesh
 
     if (maxConeSize <= 0) {
         PylithCallPetsc(DMDestroy(&dmSubmesh));
-        PYLITH_ERROR(pylith::ValueError, pylith::journal::user_input,
+        PYLITH_ERROR(pylith::exceptions::LabelNotFoundError,
                      "Error while creating lower dimension mesh. Submesh '" << labelName
                                                                             << "' with label value " << labelValue << " does not contain any cells.\n"
                                                                             << "Check that you are using the correct label name and value.");
@@ -362,7 +362,7 @@ pylith::topology::MeshOps::nondimensionalize(Mesh* const mesh,
         const PylithReal avgDomainDim = computeAvgDomainDim(*mesh);
         const PylithReal avgDimTolerance = 0.01;
         if (avgDomainDim < avgDimTolerance) {
-            PYLITH_ERROR(pylith::ValueError, pylith::journal::user_input,
+            PYLITH_ERROR(pylith::exceptions::ValueError,
                          "Average domain dimension (" << avgDomainDim << ") is less than minimum tolerance ("
                                                       << avgDimTolerance << "). This usually means the length scale (" << lengthScale << ") used in the "
                                                       << "nondimensionalization needs to be smaller. The length scale should be on the order of the size "
@@ -799,9 +799,9 @@ pylith::topology::MeshOps::checkMaterialLabels(const pylith::topology::Mesh& mes
         } // if
         const int *result = std::find(matBegin, matEnd, matId);
         if (result == matEnd) {
-            PYLITH_ERROR(pylith::ValueError, pylith::journal::user_input,
-                         "Material label_value '" << matId << "' for cell '" << c
-                                                  << "' does not match the label_value of any materials or interfaces.");
+            PYLITH_ERROR(pylith::exceptions::LabelNotFoundError,
+                         "Material label value '" << matId << "' for cell '" << c
+                                                  << "' does not match the label value of any materials or interfaces.");
         } // if
 
         const size_t matIndex = materialIndex[matId];
@@ -818,7 +818,7 @@ pylith::topology::MeshOps::checkMaterialLabels(const pylith::topology::Mesh& mes
         const size_t matIndex = materialIndex[matId];
         assert(matIndex < numIds);
         if (matCellCountsAll[matIndex] <= 0) {
-            PYLITH_ERROR(pylith::ValueError, pylith::journal::user_input,
+            PYLITH_ERROR(pylith::exceptions::InvalidParameterError,
                          "No cells associated with material with id '" << matId << "'.");
         } // if
     } // for

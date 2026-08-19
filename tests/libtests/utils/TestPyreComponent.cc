@@ -13,7 +13,7 @@
 #include "pylith/utils/PyreComponent.hh" // Test subject
 
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
-#include "pylith/utils/Exceptions.hh" // USES Exception
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
 
 #include "catch2/catch_test_macros.hpp"
 
@@ -112,11 +112,8 @@ public:
 
                 // CHECK_THROWS_AS() does not seem to work with PYLITH_COMPONENT* macros.
                 try {
-                    PYLITH_COMPONENT_ERROR(pylith::IOError, pylith::journal::user_input, "CORRECT: This is an error message.");
-                } catch (const pylith::IOError& err) {}
-                try {
-                    PYLITH_COMPONENT_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "CORRECT: This is an error message.");
-                } catch (const pylith::InternalLogicError& err) {}
+                    PYLITH_COMPONENT_ERROR(pylith::exceptions::IOError, "CORRECT: This is an error message.");
+                } catch (const pylith::exceptions::IOError& err) {}
 
             } // testJournals
 

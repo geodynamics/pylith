@@ -18,7 +18,7 @@
 #include "pylith/problems/SolutionFactory.hh" // USES SolutionFactory
 #include "pylith/feassemble/IntegrationData.hh" // USES IntegrationData
 
-#include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_*
 
 #include <cassert> // USES assert()
 

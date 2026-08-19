@@ -16,9 +16,9 @@
 
 #include "pylith/scales/Scales.hh" // USES Scales
 
-#include "pylith/utils/error.hh" // USES PYLITH_METHOD*
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD*
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL*
-#include "pylith/utils/Exceptions.hh" // USES Exception
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
 
 #include <cassert>
 
@@ -94,7 +94,7 @@ pylith::topology::FieldFactory::getSubfieldDiscretization(const char* subfieldNa
     } else { // not found so try default
         iter = _subfieldDiscretizations.find("default");
         if (iter == _subfieldDiscretizations.end()) {
-            PYLITH_ERROR(pylith::InternalLogicError, pylith::journal::logic,
+            PYLITH_ERROR(pylith::exceptions::InternalLogicError,
                          "Default discretization not set in field factory.");
         } // if
     } // if/else

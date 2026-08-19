@@ -16,7 +16,7 @@
 #include "pylith/topology/Field.hh" // USES Field
 #include "pylith/meshio/DataWriterHDF5Ext.hh" // USES DataWriterHDF5Ext
 #include "pylith/meshio/OutputSubfield.hh" // USES OutputSubfield
-#include "pylith/utils/error.hh" // USES PYLITH_METHOD*
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD*
 
 #include "catch2/catch_test_macros.hpp"
 

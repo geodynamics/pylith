@@ -22,7 +22,7 @@
 #include "pylith/topology/FieldOps.hh" // USES FieldOps
 #include "pylith/scales/Scales.hh" // USES Scales
 
-#include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 
 #include <strings.h> // USES strcasecmp()
@@ -100,7 +100,7 @@ pylith::bc::AbsorbingDampers::verifyConfiguration(const pylith::topology::Field&
 
     const pylith::topology::Field::SubfieldInfo& info = solution.getSubfieldInfo(_subfieldName.c_str());
     if (pylith::topology::Field::VECTOR != info.description.vectorFieldType) {
-        PYLITH_COMPONENT_ERROR(pylith::ValueError, pylith::journal::user_input,
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::InvalidParameterError,
                                "Absorbing boundary condition cannot be applied to non-vector field '"<< _subfieldName << "' in solution.");
     } // if
 

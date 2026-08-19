@@ -8,10 +8,10 @@
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
 
-from pylith.utils.PetscComponent import PetscComponent
+from pylith.petsc.Component import Component
 
 
-class AuxSubfieldsIsotropicLinearMaxwell(PetscComponent):
+class AuxSubfieldsIsotropicLinearMaxwell(Component):
     """
     Auxiliary subfields associated with the isotropic linear Maxwell viscoelastic bulk rheology.
     """
@@ -55,10 +55,10 @@ class AuxSubfieldsIsotropicLinearMaxwell(PetscComponent):
     def __init__(self, name="auxfieldsisotropiclinearmaxwell"):
         """Constructor.
         """
-        PetscComponent.__init__(self, name, facility="auxiliary_fields")
+        Component.__init__(self, name, facility="auxiliary_fields")
 
     def _configure(self):
-        PetscComponent._configure(self)
+        Component._configure(self)
 
 
 # FACTORIES ////////////////////////////////////////////////////////////

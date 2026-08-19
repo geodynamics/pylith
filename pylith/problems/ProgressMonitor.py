@@ -8,11 +8,11 @@
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
 
-from pylith.utils.PetscComponent import PetscComponent
+from pylith.petsc.Component import Component
 from .problems import ProgressMonitor as ModuleProgressMonitor
 
 
-class ProgressMonitor(PetscComponent, ModuleProgressMonitor):
+class ProgressMonitor(Component, ModuleProgressMonitor):
     """
     Abstract base class for simulation progress monitor.
     """
@@ -29,7 +29,7 @@ class ProgressMonitor(PetscComponent, ModuleProgressMonitor):
     def __init__(self, name="progressmonitor"):
         """Constructor.
         """
-        PetscComponent.__init__(self, name, facility="progress_monitor")
+        Component.__init__(self, name, facility="progress_monitor")
 
     def preinitialize(self, defaults):
         """Do minimal initialization.

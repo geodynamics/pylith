@@ -16,9 +16,9 @@
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "pylith/utils/array.hh" // USES scalar_array
-#include "pylith/utils/error.hh" // USES PylithCallPetsc()
+#include "pylith/exceptions/error.hh" // USES PylithCallPetsc()
 #include "pylith/utils/journals.hh" // USES pythia::journal_t
-#include "pylith/utils/petscfwd.h" // USES PetscVec
+#include "pylith/petsc/petsc_types.h" // USES PetscVec
 
 #include <sstream> // USES std::ostringstream
 #include <cassert> // USES assert()

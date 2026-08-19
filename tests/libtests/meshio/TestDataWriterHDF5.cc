@@ -14,9 +14,9 @@
 
 #include "pylith/meshio/HDF5.hh" // USES HDF5
 #include "pylith/utils/types.hh" // HASA PylithScalar
-#include "pylith/utils/error.hh" // HASA PYLITH_METHOD_BEGIN/END
+#include "pylith/exceptions/error.hh" // HASA PYLITH_METHOD_BEGIN/END
 #include "pylith/utils/journals.hh" // USES journal macros
-#include "pylith/utils/Exceptions.hh" // USES Exceptio
+#include "pylith/exceptions/Exceptions.hh" // USES Exceptio
 
 #include "catch2/catch_test_macros.hpp"
 #include "catch2/matchers/catch_matchers_floating_point.hpp"

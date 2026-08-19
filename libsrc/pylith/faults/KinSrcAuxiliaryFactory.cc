@@ -20,7 +20,7 @@
 #include "pylith/scales/Scales.hh" // USES Scales
 
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL*
-#include "pylith/utils/Exceptions.hh" // USES Exception
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
 
 #include <cassert>
 
@@ -243,7 +243,7 @@ pylith::faults::KinSrcAuxiliaryFactory::updateTimeHistoryValue(pylith::topology:
             PylithScalar tDim = tRel * timeScale;
             const int err = dbTimeHistory->query(&value, tDim);
             if (err) {
-                PYLITH_ERROR(pylith::ValueError, pylith::journal::external,
+                PYLITH_ERROR(pylith::exceptions::OutOfRangeError,
                              "Error querying for time '" << tDim << "' in time history database '" << dbTimeHistory->getDescription() << "'.");
             } // if
         } // if

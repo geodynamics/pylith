@@ -18,10 +18,10 @@
 #include "pylith/problems/ObserversPhysics.hh" // USES ObserversPhysics
 #include "pylith/problems/Physics.hh" // USES Physics
 
-#include "pylith/utils/EventLogger.hh" // USES EventLogger
-#include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
+#include "pylith/petsc/EventLogger.hh" // USES EventLogger
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/utils/journals.hh" // USES PYLITH_JOURNAL_*
-#include "pylith/utils/Exceptions.hh" // USES Exception
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
 
 #include "pylith/scales/Scales.hh" // USES Scales
 
@@ -40,7 +40,7 @@ public:
                 static
                 void init(void);
 
-                static pylith::utils::EventLogger logger;
+                static pylith::petsc::EventLogger logger;
                 static PylithInt initialize;
                 static PylithInt poststep;
                 static PylithInt setState;
@@ -53,7 +53,7 @@ public:
     } // feassemble
 } // pylith
 
-pylith::utils::EventLogger pylith::feassemble::_Integrator::Events::logger;
+pylith::petsc::EventLogger pylith::feassemble::_Integrator::Events::logger;
 PylithInt pylith::feassemble::_Integrator::Events::initialize;
 PylithInt pylith::feassemble::_Integrator::Events::poststep;
 
@@ -110,7 +110,7 @@ pylith::feassemble::Integrator::setLabelName(const char* name) {
     PYLITH_DEBUG(pylith::journal::application_flow, "setLabelName(name="<<name<<")");
 
     if (strlen(name) == 0) {
-        PYLITH_ERROR(pylith::ValueError, pylith::journal::user_input,
+        PYLITH_ERROR(pylith::exceptions::EmptyStringError,
                      "Empty string given for name of label for integration domain.");
     } // if
 

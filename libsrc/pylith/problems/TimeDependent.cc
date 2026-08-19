@@ -21,16 +21,19 @@
 #include "pylith/problems/ObserversSoln.hh" // USES ObserversSoln
 #include "pylith/problems/InitialCondition.hh" // USES InitialCondition
 #include "pylith/problems/ProgressMonitorTime.hh" // USES ProgressMonitorTime
-#include "pylith/utils/PetscOptions.hh" // USES PetscDefaults
-#include "pylith/utils/TSAdaptImpulse.hh" // USES TSAdaptImpulse
-#include "pylith/utils/EventLogger.hh" // USES EventLogger
+#include "pylith/petsc/Options.hh" // USES PetscDefaults
+#include "pylith/petsc/TSAdaptImpulse.hh" // USES TSAdaptImpulse
+#include "pylith/petsc/TSMonitor.hh" // USES TSMonitor
+#include "pylith/petsc/SNESMonitor.hh" // USES SNESMonitor
+#include "pylith/petsc/KSPMonitor.hh" // USES KSPMonitor
+#include "pylith/petsc/EventLogger.hh" // USES EventLogger
 
 #include "pylith/scales/Scales.hh" // USES Scales
 
 #include "petscts.h" // USES PetscTS
 
-#include "pylith/utils/error.hh" // USES PylithCallPetsc()
-#include "pylith/utils/Exceptions.hh" // USES PylithCallPetsc()
+#include "pylith/exceptions/error.hh" // USES PylithCallPetsc()
+#include "pylith/exceptions/Exceptions.hh" // USES PylithCallPetsc()
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
 #include <cassert> // USES assert()
 #include <iostream> // USES std::cout in debugging
@@ -50,7 +53,7 @@ public:
                 static
                 void init(void);
 
-                static pylith::utils::EventLogger logger;
+                static pylith::petsc::EventLogger logger;
                 static PylithInt verifyConfiguration;
                 static PylithInt initialize;
                 static PylithInt solve;
@@ -66,7 +69,7 @@ public:
         };
         const char* _TimeDependent::pyreComponent = "timedependent";
 
-        pylith::utils::EventLogger _TimeDependent::Events::logger;
+        pylith::petsc::EventLogger _TimeDependent::Events::logger;
         PylithInt _TimeDependent::Events::verifyConfiguration;
         PylithInt _TimeDependent::Events::initialize;
         PylithInt _TimeDependent::Events::solve;
@@ -169,7 +172,7 @@ pylith::problems::TimeDependent::setEndTime(const double value) {
     PYLITH_COMPONENT_DEBUG(pylith::journal::debug_parameters, "endTime="<<value<<")");
 
     if (value < 0.0) {
-        PYLITH_COMPONENT_ERROR(pylith::OutOfRangeError, pylith::journal::user_input,
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::OutOfRangeError,
                                "End time (" << value << " seconds) for problem must be positive.");
     } // if
     _endTime = value;
@@ -194,7 +197,7 @@ pylith::problems::TimeDependent::setMaxTimeSteps(const size_t value) {
     PYLITH_COMPONENT_DEBUG(pylith::journal::debug_parameters, "maxTimeSteps="<<value<<")");
 
     if (value <= 0) {
-        PYLITH_COMPONENT_ERROR(pylith::OutOfRangeError, pylith::journal::user_input,
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::OutOfRangeError,
                                "Maximum number of time steps (" << value << ") for problem must be positive.");
     } // if
     _maxTimeSteps = value;
@@ -219,7 +222,7 @@ pylith::problems::TimeDependent::setInitialTimeStep(const double value) {
     PYLITH_COMPONENT_DEBUG(pylith::journal::debug_parameters, "initialTimeStep="<<value<<")");
 
     if (value < 0.0) {
-        PYLITH_COMPONENT_ERROR(pylith::OutOfRangeError, pylith::journal::user_input,
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::OutOfRangeError,
                                "Initial time step (" << value << " seconds) for problem must be positive.");
     } // if
     _dtInitial = value;
@@ -353,6 +356,7 @@ pylith::problems::TimeDependent::initialize(void) {
     PylithCallPetsc(TSCreate(mesh.getComm(), &_ts));assert(_ts);
     PylithCallPetsc(TSSetExactFinalTime(_ts, TS_EXACTFINALTIME_STEPOVER)); // Ok to step over final time.
     PylithCallPetsc(TSSetApplicationContext(_ts, (void*)this));
+    _registerMonitors();
 
     // Set time stepping paramters.
     switch (getSolverType()) {
@@ -365,7 +369,7 @@ pylith::problems::TimeDependent::initialize(void) {
         PylithCallPetsc(TSSetProblemType(_ts, TS_NONLINEAR));
         break;
     default:
-        PYLITH_COMPONENT_ERROR(pylith::ValueError, pylith::journal::logic, "Unknown problem type.");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::SwitchLogicError, "Unknown problem type.");
     } // switch
     PYLITH_COMPONENT_DEBUG(pylith::journal::debug_parameters, "Setting PetscTS parameters: "
                            <<"dtInitial="<<_dtInitial
@@ -433,13 +437,13 @@ pylith::problems::TimeDependent::initialize(void) {
         break;
     }
     default: {
-        PYLITH_COMPONENT_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown time stepping formulation '" << _formulation << "'.");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::SwitchLogicError, "Unknown time stepping formulation '" << _formulation << "'.");
     } // default
     } // switch
 
     PylithCallPetsc(TSSetFromOptions(_ts));
-    if (_petscDefaults & pylith::utils::PetscDefaults::TS_IMPULSE) {
-        pylith::utils::TSAdaptImpulse::set(_ts);
+    if (_petscDefaults & pylith::petsc::Defaults::TS_IMPULSE) {
+        pylith::petsc::TSAdaptImpulse::set(_ts);
     } // if
     PylithCallPetsc(TSSetUp(_ts));
 
@@ -882,6 +886,26 @@ pylith::problems::TimeDependent::poststep(PetscTS ts) {
 
     PYLITH_METHOD_RETURN(0);
 } // poststep
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+void
+pylith::problems::TimeDependent::_registerMonitors(void) {
+    PYLITH_METHOD_BEGIN;
+
+    pylith::petsc::TSMonitor monitorTS;
+    monitorTS.registerMonitor(_ts);
+
+    pylith::petsc::SNESMonitor monitorSNES;
+    monitorSNES.registerMonitor(getPetscSNES());
+
+    PetscKSP ksp;
+    PylithCallPetsc(SNESGetKSP(getPetscSNES(), &ksp));
+    pylith::petsc::KSPMonitor monitorKSP;
+    monitorKSP.registerMonitor(ksp);
+
+    PYLITH_METHOD_END;
+}
 
 
 // ---------------------------------------------------------------------------------------------------------------------

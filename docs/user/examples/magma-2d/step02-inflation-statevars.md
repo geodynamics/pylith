@@ -99,7 +99,7 @@ $ pylith step02_inflation_statevars.cfg
  >> software/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:76:main
  -- info (application-flow)
  -- Running on 1 process(es).
- >> software/pylith-debug/lib/python3.12/site-packages/pylith/utils/PetscManager.py:64:showOptions
+ >> software/pylith-debug/lib/python3.12/site-packages/pylith/petsc/Manager.py:64:showOptions
  -- info (application-flow)
  -- PETSc user options:
     ksp_divtol = 1.0e+6

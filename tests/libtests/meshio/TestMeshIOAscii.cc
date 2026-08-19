@@ -15,7 +15,7 @@
 #include "pylith/meshio/MeshIOAscii.hh"
 #include "pylith/topology/Mesh.hh" // USES Mesh
 
-#include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_BEGIN/END
 #include "pylith/utils/journals.hh" // USES JournalingComponent
 
 #include "catch2/catch_test_macros.hpp"
@@ -106,7 +106,7 @@ pylith::meshio::TestMeshIOAscii::testReadError(void) {
     // Read mesh
     delete _mesh;_mesh = new pylith::topology::Mesh;
     _io->setFilename(_data->filename.c_str());
-    CHECK_THROWS_AS(_io->read(_mesh), pylith::IOError);
+    CHECK_THROWS_AS(_io->read(_mesh), pylith::exceptions::IOError);
 
     PYLITH_METHOD_END;
 } // testRead

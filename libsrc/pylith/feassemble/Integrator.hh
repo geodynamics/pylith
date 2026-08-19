@@ -14,7 +14,7 @@
 #include "pylith/problems/problemsfwd.hh" // HASA Physics
 #include "pylith/topology/topologyfwd.hh" // USES Field
 
-#include "pylith/utils/petscfwd.h" // USES PetscMat, PetscVec
+#include "pylith/petsc/petsc_types.h" // USES PetscMat, PetscVec
 #include "pylith/utils/utilsfwd.hh" // HOLDSA Logger
 
 class pylith::feassemble::Integrator : public pylith::feassemble::PhysicsImplementation {

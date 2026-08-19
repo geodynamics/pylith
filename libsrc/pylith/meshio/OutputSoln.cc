@@ -18,9 +18,9 @@
 #include "pylith/topology/Mesh.hh" // USES Mesh
 #include "pylith/topology/Field.hh" // USES Field
 
-#include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
-#include "pylith/utils/Exceptions.hh" // USES Exception
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
 
 #include <iostream> // USES std::cout
 #include <typeinfo> // USES typeid()
@@ -100,7 +100,7 @@ pylith::meshio::OutputSoln::verifyConfiguration(const pylith::topology::Field& s
     if ((numSubfieldNames > 0) && (std::string("all") != _subfieldNames[0])) {
         for (size_t iField = 0; iField < numSubfieldNames; iField++) {
             if (!solution.hasSubfield(_subfieldNames[iField].c_str())) {
-                PYLITH_COMPONENT_ERROR(pylith::ValueError, pylith::journal::user_input,
+                PYLITH_COMPONENT_ERROR(pylith::exceptions::SubfieldNotFoundError,
                                        "Could not find subfield '" << _subfieldNames[iField] << "' in solution '" << solution.getLabel()
                                                                    << "' for output.");
             } // if
@@ -133,7 +133,7 @@ pylith::meshio::OutputSoln::_open(const pylith::topology::Mesh& mesh) {
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "OutputSoln::open(mesh="<<typeid(mesh).name()<<")");
 
     if (!_writer) {
-        PYLITH_COMPONENT_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Writer for solution output observer '"<<getIdentifier()<<"'.");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::InternalLogicError, "Writer for solution output observer '"<<getIdentifier()<<"' not set.");
     } // if
 
     assert(_trigger);

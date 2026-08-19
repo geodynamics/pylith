@@ -11,7 +11,7 @@
 
 #include "pylith/topology/topologyfwd.hh" // forward declarations
 
-#include "pylith/utils/petscfwd.h" // USES PetscDM
+#include "pylith/petsc/petsc_types.h" // USES PetscDM
 #include "pylith/utils/array.hh" // USES int_array
 
 #include "spatialdata/geocoords/geocoordsfwd.hh"

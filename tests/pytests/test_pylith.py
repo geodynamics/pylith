@@ -35,6 +35,7 @@ class TestApp:
         "problems",
         "scales",
         "topology",
+        "petsc",
         "utils",
     ]
 
@@ -52,8 +53,8 @@ class TestApp:
         if self.cov:
             self.cov.start()
 
-        from pylith.utils.PetscManager import PetscManager
-        petsc = PetscManager()
+        from pylith.petsc.Manager import Manager
+        petsc = Manager()
         petsc.initialize()
 
         success = unittest.TextTestRunner(verbosity=2).run(self._suite()).wasSuccessful()

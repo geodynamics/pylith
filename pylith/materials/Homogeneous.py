@@ -8,10 +8,10 @@
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
 
-from pylith.utils.PetscComponent import PetscComponent
+from pylith.petsc.Component import Component
 
 
-class Homogeneous(PetscComponent):
+class Homogeneous(Component):
     """
     Materials container with one material.
 
@@ -31,7 +31,7 @@ class Homogeneous(PetscComponent):
     def __init__(self, name="homogeneous"):
         """Constructor.
         """
-        PetscComponent.__init__(self, name, facility="material")
+        Component.__init__(self, name, facility="material")
 
 
 # End of file

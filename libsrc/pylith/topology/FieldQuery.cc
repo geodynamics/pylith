@@ -18,10 +18,10 @@
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
 #include "spatialdata/spatialdb/SpatialDB.hh" // USES SpatialDB
 
-#include "pylith/utils/error.hh" // USES PylithCallPetsc()
+#include "pylith/exceptions/error.hh" // USES PylithCallPetsc()
 #include "pylith/utils/journals.hh" // USES journals
-#include "pylith/utils/Exceptions.hh" // USES Exception
-#include "pylith/utils/EventLogger.hh" // USES EventLogger
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
+#include "pylith/petsc/EventLogger.hh" // USES EventLogger
 
 namespace pylith {
     namespace topology {
@@ -43,7 +43,7 @@ public:
                 static
                 void init(void);
 
-                static pylith::utils::EventLogger logger;
+                static pylith::petsc::EventLogger logger;
                 static PylithInt queryDB;
                 static PylithInt queryDBLabel;
                 static PylithInt openDB;
@@ -52,7 +52,7 @@ public:
         }; // _FieldQuery
     } // topology
 } // pylith
-pylith::utils::EventLogger pylith::topology::_FieldQuery::Events::logger;
+pylith::petsc::EventLogger pylith::topology::_FieldQuery::Events::logger;
 PylithInt pylith::topology::_FieldQuery::Events::queryDB;
 PylithInt pylith::topology::_FieldQuery::Events::queryDBLabel;
 PylithInt pylith::topology::_FieldQuery::Events::openDB;
@@ -459,7 +459,7 @@ pylith::topology::_FieldQuery::findQueryIndices(FieldQuery::DBQueryContext* cont
             std::ostringstream msg;
             if (0 == numDBValues) {
                 delete dbValues;dbValues = NULL;
-                PYLITH_ERROR(pylith::InternalLogicError, pylith::journal::logic,
+                PYLITH_ERROR(pylith::exceptions::InternalLogicError,
                              "No values found in spatial database '"
                              << context->db->getDescription() << "'. Did you forget to open the database?");
             } // if
@@ -470,7 +470,7 @@ pylith::topology::_FieldQuery::findQueryIndices(FieldQuery::DBQueryContext* cont
             } // for
             msg << "\n";
             delete dbValues;dbValues = NULL;
-            PYLITH_ERROR(pylith::ValueError, pylith::journal::user_input, msg.str());
+            PYLITH_ERROR(pylith::exceptions::ValueError, msg.str());
         } // if
     } // for
     delete[] dbValues;dbValues = NULL;

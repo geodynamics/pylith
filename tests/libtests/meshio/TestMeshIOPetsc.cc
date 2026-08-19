@@ -15,7 +15,7 @@
 #include "pylith/meshio/MeshIOPetsc.hh"
 #include "pylith/topology/Mesh.hh" // USES Mesh
 
-#include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_BEGIN/END
 #include "pylith/utils/journals.hh" // USES JournalingComponent
 
 #include "catch2/catch_test_macros.hpp"
@@ -92,7 +92,7 @@ pylith::meshio::TestMeshIOPetsc::testReadError(void) {
     _io->setFilename(_data->filename.c_str());
     delete _mesh;_mesh = new topology::Mesh;REQUIRE(_mesh);
 
-    CHECK_THROWS_AS(_io->read(_mesh), pylith::ExternalError);
+    CHECK_THROWS_AS(_io->read(_mesh), pylith::exceptions::PetscError);
 
     PYLITH_METHOD_END;
 } // testReadError

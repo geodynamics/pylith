@@ -12,10 +12,10 @@
 # @brief Python subfields container for isotropic, linear elasticity
 # subfields.
 
-from pylith.utils.PetscComponent import PetscComponent
+from pylith.petsc.Component import Component
 
 
-class AuxSubfieldsTimeDependent(PetscComponent):
+class AuxSubfieldsTimeDependent(Component):
     """
     Auxiliary subfields for time-dependent boundary conditions.
 
@@ -69,13 +69,13 @@ class AuxSubfieldsTimeDependent(PetscComponent):
     def __init__(self, name="auxfieldstimedependent"):
         """Constructor.
         """
-        PetscComponent.__init__(self, name, facility="auxiliary_fields")
+        Component.__init__(self, name, facility="auxiliary_fields")
         return
 
     # PRIVATE METHODS ////////////////////////////////////////////////////
 
     def _configure(self):
-        PetscComponent._configure(self)
+        Component._configure(self)
         return
 
 

@@ -8,10 +8,10 @@
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
 
-from pylith.utils.PetscComponent import PetscComponent
+from pylith.petsc.Component import Component
 
 
-class RefineMesh(PetscComponent):
+class RefineMesh(Component):
     """
     Abstract base class for refining a mesh in parallel.
     """
@@ -19,7 +19,7 @@ class RefineMesh(PetscComponent):
     def __init__(self, name="refiner"):
         """Constructor.
         """
-        PetscComponent.__init__(self, name, facility="refiner")
+        Component.__init__(self, name, facility="refiner")
 
     def preinitialize(self):
         """Do minimal initialization."""
@@ -28,7 +28,7 @@ class RefineMesh(PetscComponent):
     def _configure(self):
         """Set members using inventory.
         """
-        PetscComponent._configure(self)
+        Component._configure(self)
 
     def _createModuleObj(self):
         raise NotImplementedError("Implement _createModuleObj().")

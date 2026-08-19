@@ -21,7 +21,7 @@
 #include "pylith/meshio/OutputSubfield.hh" // USES OutputSubfield
 
 #include "pylith/utils/journals.hh" // USES journal macros
-#include "pylith/utils/Exceptions.hh" // USES Exceptio
+#include "pylith/exceptions/Exceptions.hh" // USES Exceptio
 
 #include "spatialdata/geocoords/CoordSys.hh" /// USES CoordSys
 
@@ -103,14 +103,14 @@ pylith::meshio::DataWriterHDF5Ext::open(const pylith::topology::Mesh& mesh,
 
         _tstampIndex = 0;
 
-    } catch (pylith::Error& err) {
-        err.addContext(pylith::ErrorMessage() << "Error while opening HDF5 file " << _filename << ".\n");
+    } catch (pylith::exceptions::Error& err) {
+        err.addContext(pylith::exceptions::ErrorMessage() << "Error while opening HDF5 file " << _filename << ".\n");
         throw;
     } catch (const std::exception& err) {
-        PYLITH_ERROR(pylith::IOError, pylith::journal::output,
+        PYLITH_ERROR(pylith::exceptions::IOError,
                      "Error while opening HDF5 file " << _filename << ".\n" << err.what());
     } catch (...) {
-        PYLITH_ERROR(pylith::IOError, pylith::journal::output,
+        PYLITH_ERROR(pylith::exceptions::IOError,
                      "Unknown error while opening HDF5 file " << _filename << ".");
     } // try/catch
 
@@ -259,16 +259,16 @@ pylith::meshio::DataWriterHDF5Ext::writeVertexField(const PylithScalar t,
         if (isMPIRoot) {
             _h5->close();
         } // if
-    } catch (pylith::Error& err) {
-        err.addContext(pylith::ErrorMessage() << "Error while writing field '" << name << "' at time "
-                                              << t << " for HDF5 file '" << _filename << "'.\n");
+    } catch (pylith::exceptions::Error& err) {
+        err.addContext(pylith::exceptions::ErrorMessage() << "Error while writing field '" << name << "' at time "
+                                                          << t << " for HDF5 file '" << _filename << "'.\n");
         throw;
     } catch (const std::exception& err) {
-        PYLITH_ERROR(pylith::IOError, pylith::journal::output,
+        PYLITH_ERROR(pylith::exceptions::IOError,
                      "Error while writing field '" << name << "' at time "
                                                    << t << " for HDF5 file '" << _filename << "'.\n" << err.what());
     } catch (...) {
-        PYLITH_ERROR(pylith::IOError, pylith::journal::output,
+        PYLITH_ERROR(pylith::exceptions::IOError,
                      "Error while writing field '" << name << "' at time "
                                                    << t << " for HDF5 file '" << _filename << "'.");
     } // try/catch
@@ -396,16 +396,16 @@ pylith::meshio::DataWriterHDF5Ext::writeCellField(const PylithScalar t,
         if (isMPIRoot) {
             _h5->close();
         } // if
-    } catch (pylith::Error& err) {
-        err.addContext(pylith::ErrorMessage() << "Error while writing field '" << name << "' at time "
-                                              << t << " for HDF5 file '" << _filename << "'.\n");
+    } catch (pylith::exceptions::Error& err) {
+        err.addContext(pylith::exceptions::ErrorMessage() << "Error while writing field '" << name << "' at time "
+                                                          << t << " for HDF5 file '" << _filename << "'.\n");
         throw;
     } catch (const std::exception& err) {
-        PYLITH_ERROR(pylith::IOError, pylith::journal::output,
+        PYLITH_ERROR(pylith::exceptions::IOError,
                      "Error while writing field '" << name << "' at time "
                                                    << t << " for HDF5 file '" << _filename << "'.\n" << err.what());
     } catch (...) {
-        PYLITH_ERROR(pylith::IOError, pylith::journal::output,
+        PYLITH_ERROR(pylith::exceptions::IOError,
                      "Error while writing field '" << name << "' at time "
                                                    << t << " for HDF5 file '" << _filename << "'.");
     } // try/catch
@@ -481,14 +481,14 @@ pylith::meshio::DataWriterHDF5Ext::writePointNames(const pylith::string_vector& 
             _h5->close();
         } // if
 
-    } catch (pylith::Error& err) {
-        err.addContext(pylith::ErrorMessage() << "Error while writing stations to HDF5 file '" << hdf5Filename() << "'.\n");
+    } catch (pylith::exceptions::Error& err) {
+        err.addContext(pylith::exceptions::ErrorMessage() << "Error while writing stations to HDF5 file '" << hdf5Filename() << "'.\n");
         throw;
     } catch (const std::exception& err) {
-        PYLITH_ERROR(pylith::IOError, pylith::journal::output,
+        PYLITH_ERROR(pylith::exceptions::IOError,
                      "Error while writing stations to HDF5 file '" << hdf5Filename() << "'.\n" << err.what());
     } catch (...) {
-        PYLITH_ERROR(pylith::IOError, pylith::journal::output,
+        PYLITH_ERROR(pylith::exceptions::IOError,
                      "Error while writing stations to HDF5 file '" << hdf5Filename() << "'.");
     } // try/catch
 

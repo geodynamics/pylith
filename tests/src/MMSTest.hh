@@ -16,7 +16,7 @@
 #include "pylith/problems/problemsfwd.hh" // HOLDSA TimeDependent
 #include "pylith/topology/topologyfwd.hh" // HOLDSA Mesh
 
-#include "pylith/utils/petscfwd.h" // HASA PetscVec
+#include "pylith/petsc/petsc_types.h" // HASA PetscVec
 
 class pylith::testing::MMSTest : public pylith::utils::GenericComponent {
     // PUBLIC TYPEDEFS ////////////////////////////////////////////////////////////////////////////

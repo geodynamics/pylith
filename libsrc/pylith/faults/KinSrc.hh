@@ -15,7 +15,7 @@
 
 #include "pylith/topology/FieldBase.hh" // USES FieldBase::SpaceDim
 #include "pylith/feassemble/feassemblefwd.hh" // USES AuxiliaryFactory
-#include "pylith/utils/petscfwd.h" // HASA PetscVec
+#include "pylith/petsc/petsc_types.h" // HASA PetscVec
 
 #include "spatialdata/geocoords/geocoordsfwd.hh" // USES CoordSys
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // USES SpatialDB

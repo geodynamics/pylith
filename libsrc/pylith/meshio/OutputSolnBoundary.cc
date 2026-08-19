@@ -19,7 +19,7 @@
 #include "pylith/meshio/OutputSubfield.hh" // USES OutputSubfield
 
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
-#include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_BEGIN/END
 
 // ------------------------------------------------------------------------------------------------
 // Constructor
@@ -89,7 +89,7 @@ pylith::meshio::OutputSolnBoundary::verifyConfiguration(const pylith::topology::
     PetscBool hasLabel = PETSC_FALSE;
     PylithCallPetsc(DMHasLabel(dmSoln, _labelName.c_str(), &hasLabel));
     if (!hasLabel) {
-        PYLITH_COMPONENT_ERROR(pylith::ValueError, pylith::journal::user_input,
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::LabelNotFoundError,
                                "Mesh missing group of points '" << _labelName << " for output using solution boundary observer.");
     } // if
 

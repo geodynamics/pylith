@@ -12,8 +12,5 @@ DumpParametersAscii.md
 DumpParametersJson.md
 EmptyBin.md
 NullComponent.md
-PetscDefaults.md
-PetscManager.md
-PropertyList.md
 SimulationMetadata.md
 :::

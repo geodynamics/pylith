@@ -13,7 +13,7 @@
 
 #include "pylith/topology/topologyfwd.hh" // USES Field
 #include "pylith/feassemble/Integrator.hh" // USES EquationPart, eqnPart
-#include "pylith/utils/petscfwd.h" // HASA PetscDM
+#include "pylith/petsc/petsc_types.h" // HASA PetscDM
 
 class pylith::feassemble::FEKernelKey {
     friend class TestFEKernelKey; // unit testing

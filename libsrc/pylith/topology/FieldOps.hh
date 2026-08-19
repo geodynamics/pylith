@@ -12,7 +12,7 @@
 #include "pylith/topology/topologyfwd.hh" // forward declarations
 
 #include "pylith/topology/FieldBase.hh" // USES FieldBase::Discretization
-#include "pylith/utils/petscfwd.h" // USES PetscFE
+#include "pylith/petsc/petsc_types.h" // USES PetscFE
 
 #include "spatialdata/spatialdb/spatialdbfwd.hh" // USES SpatialDB
 #include <map>

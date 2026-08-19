@@ -8,10 +8,10 @@
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
 
-from .PetscComponent import PetscComponent
+from pylith.petsc.Component import Component
 
 
-class NullComponent(PetscComponent):
+class NullComponent(Component):
     """
     Empty Pyre component.
     """
@@ -19,7 +19,7 @@ class NullComponent(PetscComponent):
     def __init__(self):
         """Constructor.
         """
-        PetscComponent.__init__(self, name="nullcomponent", facility="nullcomponent")
+        Component.__init__(self, name="nullcomponent", facility="nullcomponent")
 
     def _cleanup(self):
         """Deallocate locally managed data structures.

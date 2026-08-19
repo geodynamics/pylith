@@ -8,11 +8,11 @@
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
 
-from pylith.utils.PetscComponent import PetscComponent
+from pylith.petsc.Component import Component
 from .meshio import MeshIO as ModuleMeshIO
 
 
-class MeshIOObj(PetscComponent, ModuleMeshIO):
+class MeshIOObj(Component, ModuleMeshIO):
     """
     Abstract base class for finite-element mesh readers.
     """
@@ -22,7 +22,7 @@ class MeshIOObj(PetscComponent, ModuleMeshIO):
     def __init__(self, mode=READ, name="meshio"):
         """Constructor.
         """
-        PetscComponent.__init__(self, name, facility="mesh_io")
+        Component.__init__(self, name, facility="mesh_io")
         self.coordsys = None
         self.mode = mode
 
@@ -62,7 +62,7 @@ class MeshIOObj(PetscComponent, ModuleMeshIO):
     def _configure(self):
         """Set members using inventory.
         """
-        PetscComponent._configure(self)
+        Component._configure(self)
 
     def _createModuleObj(self):
         """Create C++ MeshIO object.

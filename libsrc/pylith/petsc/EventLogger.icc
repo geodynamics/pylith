@@ -1,0 +1,60 @@
+// =================================================================================================
+// This code is part of PyLith, developed through the Computational Infrastructure
+// for Geodynamics (https://github.com/geodynamics/pylith).
+//
+// Copyright (c) 2010-2026, University of California, Davis and the PyLith Development Team.
+// All rights reserved.
+//
+// See https://mit-license.org/ and LICENSE.md and for license information.
+// =================================================================================================
+#pragma once
+
+// Set name of logging class.
+inline
+void
+pylith::petsc::EventLogger::setClassName(const char* name) {
+    _className = name;
+}
+
+
+// Get name of logging class.
+inline
+const char*
+pylith::petsc::EventLogger::getClassName(void) const {
+    return _className.c_str();
+}
+
+
+// Log event begin.
+inline
+void
+pylith::petsc::EventLogger::eventBegin(const int id) {
+    PetscLogEventBegin(id, 0, 0, 0, 0);
+} // eventBegin
+
+
+// Log event end.
+inline
+void
+pylith::petsc::EventLogger::eventEnd(const int id) {
+    PetscLogEventEnd(id, 0, 0, 0, 0);
+} // eventEnd
+
+
+// Log stage begin.
+inline
+void
+pylith::petsc::EventLogger::stagePush(const int id) {
+    PetscLogStagePush(id);
+} // stagePush
+
+
+// Log stage end.
+inline
+void
+pylith::petsc::EventLogger::stagePop(void) {
+    PetscLogStagePop();
+} // stagePop
+
+
+// End of file

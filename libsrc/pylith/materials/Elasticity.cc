@@ -21,19 +21,19 @@
 #include "pylith/topology/Field.hh" // USES Field::SubfieldInfo
 #include "pylith/topology/FieldOps.hh" // USES FieldOps
 
-#include "pylith/utils/PetscOptions.hh" // USES PetscOptions
+#include "pylith/petsc/Options.hh" // USES Options
+#include "pylith/scales/Scales.hh" // USES Scales
 
 #include "pylith/fekernels/Elasticity.hh" // USES Elasticity kernels
 #include "pylith/fekernels/DispVel.hh" // USES DispVel kernels
 #include "pylith/fekernels/FaultCohesiveKin.hh" // USES FaultCohesiveKin kernels
 
-#include "pylith/utils/error.hh" // USES PYLITH_METHOD_*
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_*
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_*
-#include "pylith/utils/EventLogger.hh" // EventLogger
+#include "pylith/petsc/EventLogger.hh" // EventLogger
 
 #include "spatialdata/spatialdb/GravityField.hh" // USES GravityField
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys
-#include "pylith/scales/Scales.hh" // USES Scales
 
 #include <typeinfo> // USES typeid()
 
@@ -49,7 +49,7 @@ public:
                 static
                 void init(void);
 
-                static pylith::utils::EventLogger logger;
+                static pylith::petsc::EventLogger logger;
                 static PylithInt verifyConfiguration;
                 static PylithInt createIntegrator;
                 static PylithInt createAuxiliaryField;
@@ -60,7 +60,7 @@ public:
     } // materials
 } // pylith
 
-pylith::utils::EventLogger pylith::materials::_Elasticity::Events::logger;
+pylith::petsc::EventLogger pylith::materials::_Elasticity::Events::logger;
 PylithInt pylith::materials::_Elasticity::Events::verifyConfiguration;
 PylithInt pylith::materials::_Elasticity::Events::createIntegrator;
 PylithInt pylith::materials::_Elasticity::Events::createAuxiliaryField;
@@ -171,7 +171,7 @@ pylith::materials::Elasticity::verifyConfiguration(const pylith::topology::Field
         requiredFields[numRequired++] = "velocity";
         break;
     default:
-        PYLITH_COMPONENT_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown formulation for equations (" << _formulation << ").");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::SwitchLogicError, "Unknown formulation for equations (" << _formulation << ").");
     } // switch
     requiredFields.resize(numRequired);
 
@@ -294,13 +294,13 @@ pylith::materials::Elasticity::createDerivedField(const pylith::topology::Field&
 
 // ------------------------------------------------------------------------------------------------
 // Get default PETSc solver options appropriate for material.
-pylith::utils::PetscOptions*
+pylith::petsc::Options*
 pylith::materials::Elasticity::getSolverDefaults(const bool isParallel,
                                                  const bool hasFault) const {
     PYLITH_METHOD_BEGIN;
     PYLITH_COMPONENT_DEBUG(pylith::journal::application_flow, "getSolverDefaults(isParallel="<<isParallel<<", hasFault="<<hasFault<<")");
 
-    pylith::utils::PetscOptions* options = new pylith::utils::PetscOptions();assert(options);
+    pylith::petsc::Options* options = new pylith::petsc::Options();assert(options);
 
     switch (_formulation) {
     case pylith::problems::Physics::QUASISTATIC:
@@ -322,7 +322,7 @@ pylith::materials::Elasticity::getSolverDefaults(const bool isParallel,
     case pylith::problems::Physics::DYNAMIC_IMEX:
         break;
     default:
-        PYLITH_COMPONENT_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown formulation '" << _formulation << "'.");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::SwitchLogicError, "Unknown formulation '" << _formulation << "'.");
     } // switch
 
     PYLITH_METHOD_RETURN(options);
@@ -356,7 +356,7 @@ pylith::materials::Elasticity::getInterfaceKernelsResidual(const pylith::topolog
             f0l = _rheology->getKernelf0Pos(coordsys);
             break;
         default:
-            PYLITH_COMPONENT_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown interface face ("<<face<<").");
+            PYLITH_COMPONENT_ERROR(pylith::exceptions::SwitchLogicError, "Unknown interface face ("<<face<<").");
         } // switch
 
         kernels.resize(1);
@@ -365,7 +365,7 @@ pylith::materials::Elasticity::getInterfaceKernelsResidual(const pylith::topolog
         break;
     } // DYNAMIC_IMEX
     default:
-        PYLITH_COMPONENT_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown formulation for equations (" << _formulation << ").");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::SwitchLogicError, "Unknown formulation for equations (" << _formulation << ").");
     } // switch
 
     PYLITH_METHOD_RETURN(kernels);
@@ -399,7 +399,7 @@ pylith::materials::Elasticity::getInterfaceKernelsJacobian(const pylith::topolog
             Jf0ll = pylith::fekernels::FaultCohesiveKin::Jf0ll_pos;
             break;
         default:
-            PYLITH_COMPONENT_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown interface face ("<<face<<").");
+            PYLITH_COMPONENT_ERROR(pylith::exceptions::SwitchLogicError, "Unknown interface face ("<<face<<").");
         } // switch
 
         kernels.resize(1);
@@ -409,7 +409,7 @@ pylith::materials::Elasticity::getInterfaceKernelsJacobian(const pylith::topolog
         break;
     } // DYNAMIC_IMEX
     default:
-        PYLITH_COMPONENT_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown formulation for equations (" << _formulation << ").");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::SwitchLogicError, "Unknown formulation for equations (" << _formulation << ").");
     } // switch
 
     PYLITH_METHOD_RETURN(kernels);
@@ -470,7 +470,7 @@ pylith::materials::Elasticity::_setKernelsResidual(pylith::feassemble::Integrato
     case 0x0:
         break;
     default:
-        PYLITH_COMPONENT_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown case (bitUse=" << bitUse << ") for residual kernels.");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::SwitchLogicError, "Unknown case (bitUse=" << bitUse << ") for residual kernels.");
     } // switch
     PetscPointFn* r1 = _rheology->getKernelf1v(coordsys);
 
@@ -525,7 +525,7 @@ pylith::materials::Elasticity::_setKernelsResidual(pylith::feassemble::Integrato
         break;
     } // DYNAMIC
     default:
-        PYLITH_COMPONENT_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown formulation for equations (" << _formulation << ").");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::SwitchLogicError, "Unknown formulation for equations (" << _formulation << ").");
     } // switch
 
     // Add any MMS body force kernels.
@@ -594,7 +594,7 @@ pylith::materials::Elasticity::_setKernelsJacobian(pylith::feassemble::Integrato
         break;
     } // DYNAMIC
     default:
-        PYLITH_COMPONENT_FIREWALL(pylith::InternalLogicError, pylith::journal::logic, "Unknown formulation for equations (" << _formulation << ").");
+        PYLITH_COMPONENT_ERROR(pylith::exceptions::SwitchLogicError, "Unknown formulation for equations (" << _formulation << ").");
     } // switch
 
     integrator->setKernelsJacobian(kernels, solution);

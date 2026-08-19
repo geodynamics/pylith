@@ -8,11 +8,11 @@
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
 
-from pylith.utils.PetscComponent import PetscComponent
+from pylith.petsc.Component import Component
 from .problems import InitialCondition as ModuleInitialCondition
 
 
-class InitialCondition(PetscComponent, ModuleInitialCondition):
+class InitialCondition(Component, ModuleInitialCondition):
     """
     Abstract base class for specifying initial conditions for the solution.
     """
@@ -24,7 +24,7 @@ class InitialCondition(PetscComponent, ModuleInitialCondition):
     def __init__(self, name="initialconditions"):
         """Constructor.
         """
-        PetscComponent.__init__(self, name, facility="initial_conditions")
+        Component.__init__(self, name, facility="initial_conditions")
 
     def preinitialize(self, problem):
         """Setup initial conditions.

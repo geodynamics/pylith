@@ -12,7 +12,7 @@
 
 #include "pylith/materials/RheologyPoroelasticity.hh" // implementation of object methods
 
-#include "pylith/utils/error.hh" // USES PYLITH_METHOD_BEGIN/END
+#include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_BEGIN/END
 #include "pylith/utils/journals.hh" // USES PYLITH_COMPONENT_DEBUG
 
 #include "spatialdata/geocoords/CoordSys.hh" // USES CoordSys

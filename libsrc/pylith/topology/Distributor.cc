@@ -21,7 +21,7 @@
 #include "pylith/faults/FaultCohesive.hh" // USES FaultCohesive
 #include "pylith/meshio/DataWriter.hh" // USES DataWriter
 #include "pylith/utils/journals.hh" // USES pythia::journal
-#include "pylith/utils/Exceptions.hh" // USES Exception
+#include "pylith/exceptions/Exceptions.hh" // USES Exception
 
 #include "petsc/private/dmpleximpl.h"
 
@@ -110,7 +110,7 @@ pylith::topology::Distributor::setPartitioner(const char* partitioner) {
     if ((0 == strcasecmp(partitioner, "parmetis")) || (0 == strcasecmp(partitioner, "chaco")) || (0 == strcasecmp(partitioner, "simple"))) {
         _partitioner = partitioner;
     } else {
-        PYLITH_ERROR(pylith::ValueError, pylith::journal::user_input,
+        PYLITH_ERROR(pylith::exceptions::InvalidParameterError,
                      "Unknown partitioner '" << partitioner << "'. Partitioner must be 'parmetis', 'chaco', or 'simple'.");
     } // if/else
 } // setPartitioner
@@ -164,7 +164,7 @@ pylith::topology::Distributor::distribute(const pylith::topology::Mesh& mesh,
 
     if (pylith::topology::MeshOps::getNumCells(*meshNew) == 0) {
         const int commRank = meshNew->getCommRank();
-        PYLITH_ERROR(pylith::TopologyError, pylith::journal::internal,
+        PYLITH_ERROR(pylith::exceptions::TopologyError,
                      "No cells are assigned to process " << commRank << " after distribution. "
                                                          << "Either there are too many processes for the mesh or there is a topology related error.");
     } // if

@@ -14,7 +14,7 @@ $ pylith step01a_gravity.cfg
  >> software/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py:76:main
  -- info (application-flow)
  -- Running on 1 process(es).
- >> src/cig/pylith/libsrc/pylith/utils/PetscOptions.cc:251:static void pylith::utils::_PetscOptions::write(pythia::journal::info_t&, const char*, const pylith::utils::PetscOptions&)
+ >> src/cig/pylith/libsrc/pylith/petsc/Options.cc:251:static void pylith::utils::_Options::write(pythia::journal::info_t&, const char*, const pylith::petsc::Options&)
  -- info (application-flow)
  -- Setting PETSc options:
     ksp_atol = 1.0e-7
@@ -95,7 +95,7 @@ $ pylith step01a_gravity.cfg
 [0]PETSC ERROR: #7 void pylith::topology::FieldQuery::queryDB()() at src/cig/pylith/libsrc/pylith/topology/FieldQuery.cc:227
 Fatal error. Calling MPI_Abort() to abort PyLith application.
 Traceback (most recent call last):
-  File "software/pylith-debug/lib/python3.12/site-packages/pylith/apps/PetscApplication.py", line 55, in onComputeNodes
+  File "software/pylith-debug/lib/python3.12/site-packages/pylith/petsc/Application.py", line 55, in onComputeNodes
     self.main(*args, **kwds)
   File "software/pylith-debug/lib/python3.12/site-packages/pylith/apps/PyLithApp.py", line 85, in main
     self.problem.initialize()

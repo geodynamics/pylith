@@ -20,6 +20,7 @@ SUBDIRS = \
     scales \
 	topology \
 	testing \
+	petsc \
 	utils
 
 

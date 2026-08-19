@@ -200,7 +200,7 @@ pylith::topology::TestMeshOps::testCheckMaterialIds(void) {
     MeshOps::checkMaterialLabels(mesh, materialValues);
 
     materialValues[0] = 99;
-    REQUIRE_THROWS_AS(MeshOps::checkMaterialLabels(mesh, materialValues), pylith::ValueError);
+    REQUIRE_THROWS_AS(MeshOps::checkMaterialLabels(mesh, materialValues), pylith::exceptions::ValueError);
 } // testCheckMaterialIds
 
 
