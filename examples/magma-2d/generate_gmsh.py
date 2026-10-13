@@ -59,9 +59,10 @@ class App(GenerateMesh):
     def create_geometry(self):
         """Create geometry.
         """
+        gmsh.option.setNumber("Geometry.OCCBooleanPreserveNumbering", 0)
+
         # Create domain surface
-        domain_box = gmsh.model.occ.add_rectangle(0, -self.DEPTH, 0, self.LENGTH, self.DEPTH)
-        gmsh.model.occ.add_plane_surface([domain_box])
+        s_domain_box = gmsh.model.occ.add_rectangle(0, -self.DEPTH, 0, self.LENGTH, self.DEPTH)
 
         # Create chamber surface
         chamber = gmsh.model.occ.add_ellipse(self.RES_CENTER[0], self.RES_CENTER[1], self.RES_CENTER[2], self.MAJOR_AXIS, self.MINOR_AXIS)
@@ -74,10 +75,12 @@ class App(GenerateMesh):
         s_conduit = gmsh.model.occ.add_rectangle(x0, y0, 0, self.CONDUIT_LENGTH, self.CONDUIT_DEPTH)
 
         # Join conduit and chamber into reservoir
-        self.s_reservoir = gmsh.model.occ.fuse([(2, s_chamber)], [(2, s_conduit)])[0][0][1]
+        reservoir = gmsh.model.occ.fuse([(2, s_chamber)], [(2, s_conduit)])[0][0][1]
 
         # Embed reservoir in domain
-        self.s_domain = gmsh.model.occ.fragment([(2, domain_box)], [(2, self.s_reservoir)])[0][1][1]
+        fragments, _ = gmsh.model.occ.fragment([(2, s_domain_box)], [(2, reservoir)])
+        self.s_domain = fragments[0][1]
+        self.s_reservoir = fragments[1][1]
 
         gmsh.model.occ.remove_all_duplicates() # Duplicate points at intersection
 
