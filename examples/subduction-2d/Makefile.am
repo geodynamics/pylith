@@ -16,6 +16,7 @@ dist_noinst_PYTHON = \
 
 dist_noinst_DATA = \
 	README.md \
+	examples.yaml \
 	pylithapp.cfg \
 	step01_coseismic.cfg \
 	step02_interseismic.cfg \

@@ -1,0 +1,5 @@
+commands:
+  - ./generate_gmsh.py --write
+  - pylith step01_slip.cfg
+  - pylith step01_slip_cubit.cfg
+  - pylith step02_varslip.cfg

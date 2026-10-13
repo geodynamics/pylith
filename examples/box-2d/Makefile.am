@@ -10,6 +10,7 @@
 
 dist_noinst_DATA = \
 	README.md \
+	examples.yaml \
 	quad.mesh \
 	tri.mesh \
 	pylithapp.cfg \

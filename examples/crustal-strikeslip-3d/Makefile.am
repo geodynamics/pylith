@@ -14,6 +14,7 @@ dist_noinst_PYTHON = \
 
 dist_noinst_DATA = \
 	README.md \
+	examples.yaml \
 	mesh_tet.msh \
 	pylithapp.cfg \
     eqinfoapp.cfg \

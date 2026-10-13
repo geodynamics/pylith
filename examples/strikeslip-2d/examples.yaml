@@ -1,0 +1,12 @@
+commands:
+  - ./generate_gmsh.py --write
+  - pylith step01a_slip.cfg
+  - pylith step01b_slip.cfg
+  - pylith step01c_slip.cfg
+  - pylith step01_slip_cubit.cfg
+  - pylith step02_slip_velbc.cfg
+  - pylith step03_multislip_velbc.cfg
+  - ./generate_gnssstations.py
+  - pylith step04_varslip.cfg
+  - pylith step05_greensfns.cfg
+  - ./invert_slip.py
