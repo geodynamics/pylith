@@ -18,6 +18,7 @@ import pythia.pyre.inventory
 
 from pylith.petsc.Component import Component
 from pylith.petsc.Application import Application
+from pylith.testing.FullTestApp import TestDriver
 
 
 class FooBar(Component):
@@ -68,12 +69,16 @@ class TestPetscApp(unittest.TestCase):
         return
 
 
-# ----------------------------------------------------------------------
-if __name__ == '__main__':
+# -------------------------------------------------------------------------------------------------
+def test_classes():
+    return [
+        TestPetscApp,
+    ]
 
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestPetscApp))
-    unittest.TextTestRunner(verbosity=2).run(suite)
+
+# -------------------------------------------------------------------------------------------------
+if __name__ == "__main__":
+    TestDriver(test_classes=test_classes()).run()
 
 
 # End of file

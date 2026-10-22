@@ -12,9 +12,7 @@
 #
 # @brief Test suite for testing pylith with 3-D time-dependent simple shear.
 
-import unittest
-
-from pylith.testing.FullTestApp import (FullTestCase, Check, check_data)
+from pylith.testing.FullTestApp import FullTestCase, TestDriver, Check
 
 import meshes
 import sheartraction_rate_soln
@@ -90,7 +88,7 @@ class TestTet(TestCase):
 
 
 # ----------------------------------------------------------------------------------------------------------------------
-def test_cases():
+def test_classes():
     return [
         TestHex,
         TestTet,
@@ -98,13 +96,11 @@ def test_cases():
 
 
 # ----------------------------------------------------------------------------------------------------------------------
-if __name__ == '__main__':
+if __name__ == "__main__":
     FullTestCase.parse_args()
 
-    suite = unittest.TestSuite()
-    for test in test_cases():
-        suite.addTest(unittest.makeSuite(test))
-    unittest.TextTestRunner(verbosity=2).run(suite)
+    app = TestDriver(test_classes=test_classes())
+    app.run()
 
 
 # End of file

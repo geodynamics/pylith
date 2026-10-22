@@ -159,11 +159,11 @@ class FullTestCase(unittest.TestCase):
 class TestDriver(object):
     """Driver application for running full-scale tests."""
 
-    def __init__(self):
+    def __init__(self, test_classes):
         """Constructor."""
-        return
+        self.test_classes = test_classes
 
-    def main(self):
+    def run(self):
         """Run the test suite."""
         success = (
             unittest.TextTestRunner(verbosity=2).run(self._suite()).wasSuccessful()
@@ -174,6 +174,13 @@ class TestDriver(object):
 
             sys.exit(1)
         return
+
+    def _suite(self):
+        loader = unittest.defaultTestLoader
+        suite = unittest.TestSuite()
+        for cls in self.test_classes:
+            suite.addTests(loader.loadTestsFromTestCase(cls))
+        return suite
 
 
 # -------------------------------------------------------------------------------------------------
@@ -198,7 +205,7 @@ class HDF5Checker(object):
             self.testcase.assertTrue("geometry" in self.h5.keys())
             self.testcase.assertTrue("vertices" in self.h5["geometry"].keys())
             vertices = self.h5["geometry/vertices"][:]
-            (nvertices, spaceDim) = vertices.shape
+            nvertices, spaceDim = vertices.shape
             self.testcase.assertEqual(self.mesh.nvertices, nvertices)
             self.vertices = vertices
         return self.vertices
@@ -211,7 +218,7 @@ class HDF5Checker(object):
             self.testcase.assertTrue("cells" in self.h5["viz/topology"].keys())
             cells = self.h5["viz/topology/cells"][:].astype(numpy.int64)
             ncells, ncorners = cells.shape
-            (nvertices, spaceDim) = vertices.shape
+            nvertices, spaceDim = vertices.shape
             centroids = numpy.zeros((ncells, spaceDim), dtype=numpy.float64)
             for icorner in range(ncorners):
                 centroids[:, :] += vertices[cells[:, icorner], :]
@@ -239,7 +246,7 @@ class HDF5Checker(object):
             field = field[-1, :, :].reshape(1, dims[1], dims[2])
 
         vertices = self._getVertices()
-        (nvertices, spaceDim) = vertices.shape
+        nvertices, spaceDim = vertices.shape
         self.testcase.assertEqual(exact_soln.SPACE_DIM, spaceDim)
         fieldE = exact_soln.getField(fieldName, mesh_entity, vertices)
         mask = None
@@ -277,8 +284,8 @@ class HDF5Checker(object):
         return
 
     def _checkField(self, fieldE, field, maskField, tolerance, scale):
-        (nstepsE, nptsE, ncompsE) = fieldE.shape
-        (nsteps, npts, ncomps) = field.shape
+        nstepsE, nptsE, ncompsE = fieldE.shape
+        nsteps, npts, ncomps = field.shape
         self.testcase.assertEqual(
             nstepsE, nsteps, msg="Mismatch in number of time steps"
         )
@@ -338,8 +345,8 @@ class HDF5SizeChecker(HDF5Checker):
         self._checkDims(dimsE, dims)
 
     def _checkDims(self, dimsE, dims):
-        (nstepsE, nptsE, ncompsE) = dimsE
-        (nsteps, npts, ncomps) = dims
+        nstepsE, nptsE, ncompsE = dimsE
+        nsteps, npts, ncomps = dims
         self.testcase.assertEqual(
             nstepsE, nsteps, msg="Mismatch in number of time steps"
         )

@@ -9,9 +9,7 @@
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
 
-import unittest
-
-from pylith.testing.FullTestApp import FullTestCase, Check
+from pylith.testing.FullTestApp import FullTestCase, TestDriver, Check
 from pylith.testing import TestCases
 
 import meshes
@@ -114,18 +112,21 @@ class TestTriGmsh(TestCase):
 
 
 # -------------------------------------------------------------------------------------------------
-def load_tests(loader, tests, pattern):
-    TEST_CLASSES = (
+def test_classes():
+    return [
         TestQuadGmsh,
         TestTriGmsh,
-    )
-    return TestCases.make_suite(test_classes=TEST_CLASSES, loader=loader)
+    ]
 
 
 # -------------------------------------------------------------------------------------------------
 if __name__ == "__main__":
     FullTestCase.parse_args()
-    unittest.main(verbosity=2, argv=["test"])
+
+    app = TestDriver(test_classes=test_classes())
+    app.run()
+
+
 
 
 # End of file

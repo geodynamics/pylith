@@ -9,9 +9,7 @@
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
 
-import unittest
-
-from pylith.testing.FullTestApp import (FullTestCase, Check, check_sizes)
+from pylith.testing.FullTestApp import FullTestCase, TestDriver, Check, check_sizes
 
 import meshes
 import faultimpulses_soln
@@ -124,7 +122,7 @@ class TestTri(TestCase):
 
 
 # -------------------------------------------------------------------------------------------------
-def test_cases():
+def test_classes():
     return [
         TestQuad,
         TestTri,
@@ -132,13 +130,11 @@ def test_cases():
 
 
 # -------------------------------------------------------------------------------------------------
-if __name__ == '__main__':
+if __name__ == "__main__":
     FullTestCase.parse_args()
 
-    suite = unittest.TestSuite()
-    for test in test_cases():
-        suite.addTest(unittest.makeSuite(test))
-    unittest.TextTestRunner(verbosity=2).run(suite)
+    app = TestDriver(test_classes=test_classes())
+    app.run()
 
 
 # End of file

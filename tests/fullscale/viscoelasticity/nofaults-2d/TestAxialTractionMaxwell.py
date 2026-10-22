@@ -12,9 +12,7 @@
 #
 # @brief Test suite for testing Maxwell material with 2-D axial extension (Neumann BC).
 
-import unittest
-
-from pylith.testing.FullTestApp import (FullTestCase, Check, check_data)
+from pylith.testing.FullTestApp import FullTestCase, TestDriver, Check
 
 import meshes
 import axialtraction_maxwell_soln
@@ -92,7 +90,7 @@ class TestTri(TestCase):
 
 
 # -------------------------------------------------------------------------------------------------
-def test_cases():
+def test_classes():
     return [
         TestQuad,
         TestTri,
@@ -100,13 +98,11 @@ def test_cases():
 
 
 # -------------------------------------------------------------------------------------------------
-if __name__ == '__main__':
+if __name__ == "__main__":
     FullTestCase.parse_args()
 
-    suite = unittest.TestSuite()
-    for test in test_cases():
-        suite.addTest(unittest.makeSuite(test))
-    unittest.TextTestRunner(verbosity=2).run(suite)
+    app = TestDriver(test_classes=test_classes())
+    app.run()
 
 
 # End of file
