@@ -17,34 +17,18 @@ import TestBodyForce
 import TestGravity
 import TestGravityBodyForce
 
-TEST_MODULES = (
-    TestBodyForce,
-    TestGravity,
-    TestGravityBodyForce,
+TEST_CLASSES = (
+    *TestBodyForce.test_classes(),
+    *TestGravity.test_classes(),
+    *TestGravityBodyForce.test_classes(),
 )
-
-
-class TestApp(TestDriver):
-    """Driver application for full-scale tests."""
-
-    def __init__(self):
-        """Constructor."""
-        TestDriver.__init__(self)
-
-    def _suite(self):
-        """Create test suite."""
-
-        loader = unittest.defaultTestLoader
-        suite = unittest.TestSuite()
-        for mod in TEST_MODULES:
-            suite.addTests(loader.loadTestsFromModule(mod))
-        return suite
 
 
 # ----------------------------------------------------------------------
 if __name__ == "__main__":
     FullTestCase.parse_args()
-    TestApp().main()
+
+    TestDriver(test_classes=TEST_CLASSES).run()
 
 
 # End of file

@@ -8,41 +8,25 @@
 #
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
-import unittest
-
 from pylith.testing.FullTestApp import TestDriver
 
 
-class TestApp(TestDriver):
-    """Driver application for full-scale tests.
-    """
+import TestEqInfoLine
+import TestEqInfoTri
+import TestEqInfoQuad
 
-    def __init__(self):
-        """Constructor.
-        """
-        TestDriver.__init__(self)
-        return
 
-    def _suite(self):
-        """Create test suite.
-        """
-        suite = unittest.TestSuite()
+TEST_CLASSES = (
+    *TestEqInfoLine.test_classes(),
+    *TestEqInfoTri.test_classes(),
+    *TestEqInfoQuad.test_classes(),
+)
 
-        from TestEqInfoLine import TestEqInfoLine
-        suite.addTest(unittest.makeSuite(TestEqInfoLine))
-
-        from TestEqInfoTri import TestEqInfoTri
-        suite.addTest(unittest.makeSuite(TestEqInfoTri))
-
-        from TestEqInfoQuad import TestEqInfoQuad
-        suite.addTest(unittest.makeSuite(TestEqInfoQuad))
-
-        return suite
 
 
 # ----------------------------------------------------------------------
 if __name__ == '__main__':
-    TestApp().main()
+    TestDriver(test_classes=TEST_CLASSES).run()
 
 
 # End of file
