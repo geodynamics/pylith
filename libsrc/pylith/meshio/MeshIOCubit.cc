@@ -25,6 +25,7 @@
 #include <cassert> // USES assert()
 #include <sstream> // USES std::ostringstream
 #include <typeinfo> // USES std::typeid
+#include <algorithm> // USES std::sort
 
 // ------------------------------------------------------------------------------------------------
 namespace pylith {

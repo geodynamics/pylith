@@ -27,6 +27,7 @@
 #include <cstdint>
 #include <map>
 #include <numeric>
+#include <algorithm>
 
 #if H5_VERSION_GE(1,12,0)
 #define PYLITH_HDF5_USE_API_112
