@@ -11,7 +11,10 @@ on:
 
 jobs:
   stage-1:
-    uses: ./.github/workflows/ci-stage-1.yml
+    uses: ./.github/workflows/pr-stage-1.yaml
   stage-2:
-    uses: ./.github/workflows/ci-stage-2.yml
+    uses: ./.github/workflows/pr-stage-2.yaml
+    needs: [stage-1]
+  conda:
+    uses: ./.github/workflows/pr-conda.yaml
     needs: [stage-1]
