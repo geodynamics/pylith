@@ -8,12 +8,10 @@
 #
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
-# @file tests/fullscale/eqinfo/TestEqInfoQuad.py
-#
-# @brief Test suite for testing pylith_eqinfo with quad fault meshes.
 
 import numpy
 
+from pylith.testing.FullTestApp import TestDriver
 from TestEqInfo import TestEqInfo, run_eqinfo
 
 
@@ -69,13 +67,16 @@ class TestEqInfoQuad(TestEqInfo):
         return
 
 
+# -------------------------------------------------------------------------------------------------
+def test_classes():
+    return [
+        TestEqInfoQuad,
+    ]
+
+
 # ----------------------------------------------------------------------
 if __name__ == '__main__':
-    import unittest
-
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestEqInfoQuad))
-    unittest.TextTestRunner(verbosity=2).run(suite)
+    TestDriver(test_classes=test_classes()).run()
 
 
 # End of file

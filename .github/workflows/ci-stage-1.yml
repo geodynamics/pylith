@@ -7,7 +7,6 @@ env:
   IMAGE_REGISTRY: "ghcr.io/geodynamics/pylith_installer"
 
 jobs:
-
   # CI tests
   tests:
     strategy:
@@ -16,9 +15,10 @@ jobs:
           - debian-stable
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - name: Checkout pylith
+        uses: actions/checkout@v7
         with:
+          fetch-depth: 0
           submodules: recursive
 
       - name: Build Docker image
@@ -38,5 +38,3 @@ jobs:
 
       - name: Build Docker image
         run: docker build -t pylith-docenv --build-arg BASE_IMAGE=$IMAGE_REGISTRY/testenv-ubuntu-22.04 -f docker/pylith-docenv .
-
-

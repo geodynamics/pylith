@@ -11,42 +11,21 @@
 
 from pylith.testing.FullTestApp import TestDriver, FullTestCase
 
-import unittest
+import TestAxialStrainRateGenMaxwell
+import TestAxialTractionMaxwell
+import TestAxialStrainGenMaxwell
 
-class TestApp(TestDriver):
-    """Driver application for full-scale tests.
-    """
-
-    def __init__(self):
-        """Constructor.
-        """
-        TestDriver.__init__(self)
-        return
-
-    def _suite(self):
-        """Create test suite.
-        """
-        suite = unittest.TestSuite()
-
-        import TestAxialStrainRateGenMaxwell
-        for test in TestAxialStrainRateGenMaxwell.test_cases():
-            suite.addTest(unittest.makeSuite(test))
-
-        import TestAxialTractionMaxwell
-        for test in TestAxialTractionMaxwell.test_cases():
-            suite.addTest(unittest.makeSuite(test))
-
-        import TestAxialStrainGenMaxwell
-        for test in TestAxialStrainGenMaxwell.test_cases():
-            suite.addTest(unittest.makeSuite(test))
-
-        return suite
-
+TEST_CLASSES = [
+    *TestAxialStrainRateGenMaxwell.test_classes(),
+    *TestAxialTractionMaxwell.test_classes(),
+    *TestAxialStrainGenMaxwell.test_classes(),
+]
 
 # ----------------------------------------------------------------------
-if __name__ == '__main__':
+if __name__ == "__main__":
     FullTestCase.parse_args()
-    TestApp().main()
+
+    TestDriver(test_classes=TEST_CLASSES).run()
 
 
 # End of file

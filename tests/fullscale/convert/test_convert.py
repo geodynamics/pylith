@@ -8,35 +8,18 @@
 #
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
-import unittest
-
 from pylith.testing.FullTestApp import TestDriver
 
+import TestConvert
 
-class TestApp(TestDriver):
-    """Driver application for full-scale tests.
-    """
-
-    def __init__(self):
-        """Constructor.
-        """
-        TestDriver.__init__(self)
-        return
-
-    def _suite(self):
-        """Create test suite.
-        """
-        suite = unittest.TestSuite()
-
-        from TestConvert import TestConvert
-        suite.addTest(unittest.makeSuite(TestConvert))
-
-        return suite
+TEST_CLASSES = (
+    *TestConvert.test_classes(),
+)
 
 
 # ----------------------------------------------------------------------
-if __name__ == '__main__':
-    TestApp().main()
+if __name__ == "__main__":
+    TestDriver(test_classes=TEST_CLASSES).run()
 
 
 # End of file

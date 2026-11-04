@@ -11,39 +11,19 @@
 
 from pylith.testing.FullTestApp import TestDriver, FullTestCase
 
-import unittest
+import TestAxialDispOneCell
+import TestAxialDispConstrained
 
-
-class TestApp(TestDriver):
-    """Driver application for full-scale tests.
-    """
-
-    def __init__(self):
-        """Constructor.
-        """
-        TestDriver.__init__(self)
-        return
-
-    def _suite(self):
-        """Create test suite.
-        """
-        suite = unittest.TestSuite()
-
-        import TestAxialDispOneCell
-        for test in TestAxialDispOneCell.test_cases():
-            suite.addTest(unittest.makeSuite(test))
-
-        import TestAxialDispConstrained
-        for test in TestAxialDispConstrained.test_cases():
-            suite.addTest(unittest.makeSuite(test))
-
-        return suite
-
+TEST_CLASSES = [
+    *TestAxialDispOneCell.test_classes(),
+    *TestAxialDispConstrained.test_classes(),
+]
 
 # ----------------------------------------------------------------------
-if __name__ == '__main__':
+if __name__ == "__main__":
     FullTestCase.parse_args()
-    TestApp().main()
+
+    TestDriver(test_classes=TEST_CLASSES).run()
 
 
 # End of file

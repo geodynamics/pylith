@@ -7,27 +7,28 @@ env:
   IMAGE_REGISTRY: "ghcr.io/geodynamics/pylith_installer"
 
 jobs:
-
   # CI tests
   tests:
     strategy:
       matrix:
         os:
-          - ubuntu-20.04
           - ubuntu-22.04
           - ubuntu-24.04
-          - ubuntu-24.10
+          - ubuntu-26.04
+          - ubuntu-26.10
           - debian-testing
-          - fedora-39
-          - fedora-40
-          - rockylinux-8
+          - fedora-44
+          - fedora-45
+          - fedora-46
           - rockylinux-9
+          - rockylinux-10
 
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - name: Checkout pylith
+        uses: actions/checkout@v7
         with:
+          fetch-depth: 0
           submodules: recursive
 
       - name: Build Docker image

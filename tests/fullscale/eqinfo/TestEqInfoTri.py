@@ -8,13 +8,11 @@
 #
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
-# @file tests/fullscale/eqinfo/TestEqInfoTri.py
-#
-# @brief Test suite for testing pylith_eqinfo with tri fault meshes.
 
 
 import numpy
 
+from pylith.testing.FullTestApp import TestDriver
 from TestEqInfo import TestEqInfo, run_eqinfo
 
 
@@ -63,13 +61,16 @@ class TestEqInfoTri(TestEqInfo):
         return
 
 
+# # -------------------------------------------------------------------------------------------------
+def test_classes():
+    return [
+        TestEqInfoTri,
+    ]
+
+
 # ----------------------------------------------------------------------
 if __name__ == '__main__':
-    import unittest
-
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestEqInfoTri))
-    unittest.TextTestRunner(verbosity=2).run(suite)
+    TestDriver(test_classes=test_classes()).run()
 
 
 # End of file

@@ -10,33 +10,16 @@
 # =================================================================================================
 from pylith.testing.FullTestApp import TestDriver
 
-import unittest
+import TestPetscApp
 
-
-class TestApp(TestDriver):
-    """Driver application for full-scale tests.
-    """
-
-    def __init__(self):
-        """Constructor.
-        """
-        TestDriver.__init__(self)
-        return
-
-    def _suite(self):
-        """Create test suite.
-        """
-        suite = unittest.TestSuite()
-
-        from TestPetscApp import TestPetscApp
-        suite.addTest(unittest.makeSuite(TestPetscApp))
-
-        return suite
+TEST_CLASSES = (
+    *TestPetscApp.test_classes(),
+)
 
 
 # ----------------------------------------------------------------------
-if __name__ == '__main__':
-    TestApp().main()
+if __name__ == "__main__":
+    TestDriver(test_classes=TEST_CLASSES).run()
 
 
 # End of file

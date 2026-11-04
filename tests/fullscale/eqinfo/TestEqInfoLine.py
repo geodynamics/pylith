@@ -14,6 +14,7 @@
 
 import numpy
 
+from pylith.testing.FullTestApp import TestDriver
 from TestEqInfo import TestEqInfo, run_eqinfo
 
 
@@ -61,13 +62,16 @@ class TestEqInfoLine(TestEqInfo):
         return
 
 
+# -------------------------------------------------------------------------------------------------
+def test_classes():
+    return [
+        TestEqInfoLine,
+    ]
+
+
 # ----------------------------------------------------------------------
 if __name__ == '__main__':
-    import unittest
-
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestEqInfoLine))
-    unittest.TextTestRunner(verbosity=2).run(suite)
+    TestDriver(test_classes=test_classes()).run()
 
 
 # End of file

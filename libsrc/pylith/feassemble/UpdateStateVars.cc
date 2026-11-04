@@ -16,6 +16,7 @@
 
 #include "pylith/exceptions/error.hh" // USES PYLITH_METHOD_*
 
+#include <algorithm> // USES std::sort()
 #include <cassert> // USES assert()
 
 // ---------------------------------------------------------------------------------------------------------------------

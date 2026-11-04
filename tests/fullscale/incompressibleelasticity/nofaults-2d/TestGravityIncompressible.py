@@ -12,9 +12,7 @@
 #
 # @brief Test suite for testing pylith with 2-D gravitational body forces for incompssible elasticity.
 
-import unittest
-
-from pylith.testing.FullTestApp import (FullTestCase, Check, check_data)
+from pylith.testing.FullTestApp import FullTestCase, TestDriver, Check
 
 import meshes
 import gravity_incompressible_soln
@@ -112,7 +110,7 @@ class TestTriIC(TestCase):
 
 
 # ------------------------------------------------------------------------------------------------------
-def test_cases():
+def test_classes():
     return [
         TestQuad,
         TestTri,
@@ -122,13 +120,11 @@ def test_cases():
 
 
 # ------------------------------------------------------------------------------------------------------
-if __name__ == '__main__':
+if __name__ == "__main__":
     FullTestCase.parse_args()
 
-    suite = unittest.TestSuite()
-    for test in test_cases():
-        suite.addTest(unittest.makeSuite(test))
-    unittest.TextTestRunner(verbosity=2).run(suite)
+    app = TestDriver(test_classes=test_classes())
+    app.run()
 
 
 # End of file

@@ -10,9 +10,12 @@ The version numbers are in the form `MAJOR.MINOR.PATCH`, where major releases in
 * **Changed**
   * Refactored the error handling to use Pyre journal and a PETSc error handler specific to PyLith.
   * Used custom PyLith-specific TS, KSP, and SNES monitors that use Pyre journal.
+  * Update minimum Python version to 3.10.
 * **Added**
   * Implemented C++ exceptions specific to PyLith.
   * Added optional use of cpptrace for getting the full C++ stacktrace.
+* **Fixed**
+  * Updated full-scale tests to use unittest default loader instead of deprecated makeSuite().
 
 ## Version 5.0.2 (2026-08-17)
 

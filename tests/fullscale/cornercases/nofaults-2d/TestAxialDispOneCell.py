@@ -8,13 +8,8 @@
 #
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
-# @file tests/fullscale/cornercases/2d/TestAxialDispOneCell.py
-#
-# @brief Test suite for testing pylith with 3-D axial extension.
 
-import unittest
-
-from pylith.testing.FullTestApp import (FullTestCase, Check, check_data)
+from pylith.testing.FullTestApp import FullTestCase, TestDriver, Check
 
 import meshes
 import axialdisp_soln
@@ -39,13 +34,13 @@ class TestCase(FullTestCase):
             Check(
                 mesh_entities=["elastic"],
                 filename="output/{name}-{mesh_entity}_info.h5",
-                cell_fields = ["density", "bulk_modulus", "shear_modulus"],
+                cell_fields=["density", "bulk_modulus", "shear_modulus"],
                 defaults=defaults,
             ),
             Check(
                 mesh_entities=["elastic"],
-                vertex_fields = ["displacement"],
-                cell_fields = ["cauchy_strain", "cauchy_stress"],
+                vertex_fields=["displacement"],
+                cell_fields=["cauchy_strain", "cauchy_stress"],
                 defaults=defaults,
             ),
             Check(
@@ -78,20 +73,21 @@ class TestQuad(TestCase):
 
 
 # -------------------------------------------------------------------------------------------------
-def test_cases():
+def test_classes():
     return [
         TestQuad,
     ]
 
 
 # -------------------------------------------------------------------------------------------------
-if __name__ == '__main__':
+if __name__ == "__main__":
     FullTestCase.parse_args()
 
-    suite = unittest.TestSuite()
-    for test in test_cases():
-        suite.addTest(unittest.makeSuite(test))
-    unittest.TextTestRunner(verbosity=2).run(suite)
+if __name__ == "__main__":
+    FullTestCase.parse_args()
+
+    app = TestDriver(test_classes=test_classes())
+    app.run()
 
 
 # End of file

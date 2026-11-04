@@ -78,4 +78,11 @@ def run_convert(appName, cfgfiles):
     app.run(argv=["test_convert"] + cfgfiles)
 
 
+# -------------------------------------------------------------------------------------------------
+def test_classes():
+    return [
+        TestConvert,
+    ]
+
+
 # End of file
