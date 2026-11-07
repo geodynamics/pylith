@@ -1,0 +1,195 @@
+# =================================================================================================
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
+#
+# Copyright (c) 2010-2026 All rights reserved.
+#
+# See https://mit-license.org/ and LICENSE.md and for license information.
+# =================================================================================================
+
+name: pr-conda
+
+on:
+  # once a week: this workflow guards against drift in {conda-forge}, which moves without any
+  # commit to {pylith}, so a merge is the wrong thing to key on; Sundays at 07:00 UTC
+  # minute         0-59
+  # hour           0-23
+  # day of month   1-31
+  # month          1-12 (or names, see below)
+  # day of week    0-7 (0 or 7 is Sun, or use names)
+  schedule:
+    - cron: "0 7 * * 0"
+  # and manually
+  workflow_dispatch:
+
+jobs:
+  # build and test the ref that launched this action against a conda-forge toolchain
+  build:
+    name: ${{matrix.target}}-${{matrix.os}}
+    runs-on: ${{matrix.os}}
+    # a login shell so the micromamba environment is active in every step
+    defaults:
+      run:
+        shell: bash -el {0}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        target: [opt]
+        include:
+          - os: ubuntu-latest
+            environment-file: pylith/.github/configs/conda-ubuntu.yaml
+            toolchain: gcc gxx
+            cc: mpicc
+            cxx: mpicxx
+          - target: opt
+            cflags: -Wall -g -O3
+            cxxflags: -Wall -g -O3
+    env:
+      PETSC_DIR: ${{github.workspace}}/petsc
+      PETSC_ARCH: arch-pylith
+      PRTE_MCA_rmaps_default_mapping_policy: ":oversubscribe"
+      OMPI_MCA_smsc: "^cma"
+      OMPI_MCA_pml: "ob1"
+      OMPI_MCA_btl: "self,sm,tcp"
+      OMPI_MCA_btl_tcp_if_include: "lo"
+
+    steps:
+      - name: checkout pylith
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          path: pylith
+          submodules: recursive
+
+      - name: conda-forge environment
+        uses: mamba-org/setup-micromamba@v3
+        with:
+          micromamba-version: latest
+          environment-file: ${{matrix.environment-file}}
+          # conda-forge only, with strict priority so nothing leaks in from defaults
+          condarc: |
+            channels:
+              - conda-forge
+            channel_priority: strict
+          create-args: >-
+            ${{matrix.toolchain}}
+
+      - name: versions
+        run: |
+          echo " -- conda prefix"
+          echo "${CONDA_PREFIX}"
+          echo " -- make"
+          make --version
+          echo " -- C compiler"
+          ${{matrix.cc}} --version
+          echo " -- C++ compiler"
+          ${{matrix.cxx}} --version
+          echo " -- python"
+          python3 --version
+          echo "    -- prefix"
+          python3-config --prefix
+          echo "    -- includes"
+          python3-config --includes
+          echo "    -- libs"
+          python3-config --libs
+          echo " -- platform tag from python"
+          python3 -c "import sys; print(sys.platform)"
+          echo " -- distribution tag from python"
+          python3 -c "import platform as p; v = p.mac_ver()[0]; print(f'macOS {v}' if v else p.freedesktop_os_release()['PRETTY_NAME'])"
+
+      # pythia/pyre/nemesis
+      - name: clone pythia
+        run: |
+          echo " -- cloning pythia"
+          git clone --recursive --depth 1 https://github.com/geodynamics/pythia
+
+      - name: build pythia
+        run: |
+          echo " -- switching to the pythia source directory"
+          cd pythia
+          autoreconf --install --verbose --force
+          echo " -- creating build directory"
+          mkdir ../pythia-build && cd ../pythia-build
+          echo " -- configure pythia"
+          ../pythia/configure --enable-testing --without-build-isolation --prefix=${CONDA_PREFIX} CC=${{ matrix.cc }} CXX=${{ matrix.cxx }} CFLAGS="${{matrix.cflags}}" CXXFLAGS="${{matrix.cxxflags}}"
+          echo " -- building pythia into the conda prefix"
+          make -j$(nproc) install
+
+      - name: test pythia
+        run: |
+          echo " -- switching to the pythia build directory"
+          cd pythia-build
+          echo " -- running pythia tests"
+          make -j$(nproc) check
+
+      # spatialdata
+      - name: clone spatialdata
+        run: |
+          echo " -- cloning spatialdata"
+          git clone --recursive --depth 50 https://github.com/geodynamics/spatialdata
+
+      - name: build spatialdata
+        run: |
+          echo " -- switching to the spatialdata source directory"
+          cd spatialdata
+          autoreconf --install --verbose --force
+          echo " -- creating build directory"
+          mkdir ../spatialdata-build && cd ../spatialdata-build
+          echo " -- configure spatialdata"
+          ../spatialdata/configure --enable-testing --enable-swig --without-build-isolation --prefix=${CONDA_PREFIX} CC=${{ matrix.cc }} CXX=${{ matrix.cxx }} CFLAGS="${{matrix.cflags}}" CXXFLAGS="${{matrix.cxxflags}}"
+          echo " -- building spatialdata into the conda prefix"
+          make -j$(nproc) install
+
+      - name: test spatialdata
+        run: |
+          echo " -- switching to the spatialdata build directory"
+          cd spatialdata-build
+          echo " -- running spatialdata tests"
+          make -j$(nproc) check VERBOSE=1
+
+      # petsc
+      - name: clone petsc
+        run: |
+          echo " -- PETSC_DIR"
+          echo ${PETSC_DIR}
+          echo " -- cloning petsc"
+          git clone --branch knepley/pylith --single-branch https://gitlab.com/petsc/petsc.git ${PETSC_DIR}
+
+      - name: build petsc
+        run: |
+          echo " -- switching to the petsc directory"
+          cd ${PETSC_DIR}
+          echo " -- configure petsc"
+          python3 ./configure --with-clanguage=c --with-mpi-compilers=1 --with-shared-libraries=1 --download-parmetis=1 --download-metis=1 --download-ml=1 --download-f2cblaslapack=1 --with-hdf5=1 --with-hdf5-include=${CONDA_PREFIX}/include --with-hdf5-lib=${CONDA_PREFIX}/lib/libhdf5.so --with-zlib=1 --LIBS=-lz --with-debugging=0 --with-fc=0 --with-64-bit-points=1 --with-large-file-io=1
+          echo " -- building petsc"
+          make -j$(nproc)
+
+      - name: test petsc
+        run: |
+          echo " -- switching to the petsc directory"
+          cd ${PETSC_DIR}
+          echo " -- running petsc check"
+          make check VERBOSE=1
+
+      # pylith
+      - name: build pylith
+        run: |
+          echo " -- switching to the pylith source directory"
+          cd pylith
+          autoreconf --install --verbose --force
+          echo " -- creating build directory"
+          mkdir ../pylith-build && cd ../pylith-build
+          echo " -- configure pylith"
+          ../pylith/configure --enable-hdf5 --enable-cubit --enable-testing --enable-swig --without-build-isolation --prefix=${CONDA_PREFIX} CC=${{ matrix.cc }} CXX=${{ matrix.cxx }} CFLAGS="${{matrix.cflags}}" CXXFLAGS="${{matrix.cxxflags}}"
+          echo " -- building pylith into the conda prefix"
+          make -j$(nproc) install VERBOSE=1
+
+      - name: test pylith
+        run: |
+          echo " -- switching to the pylith build directory"
+          cd pylith-build
+          echo " -- running pylith tests"
+          make -j$(nproc) check VERBOSE=1
+
+# end of file
