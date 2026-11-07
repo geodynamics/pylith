@@ -16,7 +16,7 @@ on:
 
 jobs:
   # build and test the ref that launched this action against a conda-forge toolchain
-  build:
+  tests:
     name: ${{matrix.target}}-${{matrix.os}}
     runs-on: ${{matrix.os}}
     # a login shell so the micromamba environment is active in every step
