@@ -1,0 +1,40 @@
+# =================================================================================================
+# This code is part of PyLith, developed through the Computational Infrastructure
+# for Geodynamics (https://github.com/geodynamics/pylith).
+#
+# Copyright (c) 2010-2026 All rights reserved.
+#
+# See https://mit-license.org/ and LICENSE.md and for license information.
+# =================================================================================================
+# micromamba environment for Ubuntu with the pylith build dependencies
+name: ci-conda
+
+channels:
+  - conda-forge
+
+dependencies:
+  - gxx
+  - clang-format
+  - python
+  - python-gil
+  - libpython
+  - setuptools
+  - cmake
+  - autoconf
+  - automake
+  - libtool
+  - make
+  - lcov
+  - zlib
+  - swig
+  - catch2
+  - cpptrace
+  - openmpi
+  - hdf5=1.14.6=mpi_openmpi*
+  - h5py=3.16.0=mpi_openmpi*
+  - netcdf4
+  - proj
+  - proj-data
+  - pyyaml
+
+# End of file
