@@ -7,7 +7,7 @@
 # See https://mit-license.org/ and LICENSE.md and for license information.
 # =================================================================================================
 
-name: pr-conda
+name: cron-conda
 
 on:
   # once a week: this workflow guards against drift in {conda-forge}, which moves without any
