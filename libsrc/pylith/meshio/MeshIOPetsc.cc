@@ -83,6 +83,7 @@ pylith::meshio::_MeshIOPetsc::Events::init(void) {
     logger.initialize();
     read = logger.registerEvent("PL:MeshIOPetsc:read");
     fixMaterialLabel = logger.registerEvent("PL:MeshIOPetsc:fixMaterialLabel");
+    fixBoundaryLabels = logger.registerEvent("PL:MeshIOPetsc:fixBoundaryLabels");
 }
 
 
